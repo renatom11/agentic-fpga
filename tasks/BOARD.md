@@ -39,11 +39,9 @@ Exit: item 9 (sponsor, branch protection) + audit re-verification.
 
 ## Pending escalations to sponsor
 
-- **E1/G0 item 9**: branch protection on `main` AND the working branch —
-  exact click-path in `docs/gates/G0-checklist.md`. Sponsor chose to make the
-  repository public (2026-08-01) because GitHub does not enforce rulesets on
-  private repos without a paid plan; rulesets bite once visibility flips.
-  (Item 8 ratified; item 10 delivered PASS WITH FINDINGS.)
+_None pending. G0 items 1–10 signed; item 11 (auditor re-verification of
+the AUD-0001 CRITICAL disposition) is in flight — the last thing between the
+org and M1 kickoff._
 
 ## Decisions on record
 

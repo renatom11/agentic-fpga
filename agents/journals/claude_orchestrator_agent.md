@@ -462,3 +462,39 @@ sponsor instructed. G0 item 9 remains open until the pattern is fixed.
 none
 ### Files-in-this-commit
 - (none)
+
+## [J-orchestrator-0011] 2026-08-01T20:22:40Z | task:none | G0 item 9 closed: protection verified by live fire on both branches
+### Trigger
+Sponsor reconfigured protect-history with an all-branches include and
+reported done.
+### Inputs
+Rejection output from two deliberate history-rewrite attempts; git ls-remote;
+docs/gates/G0-checklist.md; tasks/BOARD.md.
+### Reasoning
+Item 9's signature requires more than the sponsor's click — the J-0010 test
+proved a saved-looking ruleset can silently match nothing. Verified
+empirically: rewrite attempts against BOTH branches now return "push declined
+due to repository rule violations" with tips unchanged, and a subsequent
+normal push (this commit) succeeds — protection blocks rewrites without
+blocking work. The append-only journal guarantee is now mechanical
+end-to-end: agent_commit.sh locally, full-history CI on every push, and
+GitHub refusing history rewrites even from the admin account. I sign gate G0
+item 9 (verification half; the configuration half is the sponsor's act,
+2026-08-01).
+### Actions
+Checked item 9 with dual-basis signature; BOARD pending-escalations cleared
+to none-pending with item 11 noted in flight.
+### Evidence
+git push --force origin HEAD~1:refs/heads/claude/fpga-hardcaml-agent-orchestration-37ceyf
+→ "! [remote rejected] ... (push declined due to repository rule violations)";
+same for 7f54130:refs/heads/main; git ls-remote --heads origin shows both tips
+unchanged (c976c5b, bd7fbcf). This commit's successful push is the
+normal-work control.
+### Outcome
+G0 items 1-10 signed. Sole remaining: item 11, auditor re-verification —
+dispatched immediately after this commit. Handoff: auditor.
+### Open-questions
+none
+### Files-in-this-commit
+- docs/gates/G0-checklist.md
+- tasks/BOARD.md
