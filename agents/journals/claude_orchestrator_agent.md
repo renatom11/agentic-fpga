@@ -120,3 +120,48 @@ none
 - README.md
 - docs/adr/ADR-0001-org-design.md
 - docs/gates/G0-checklist.md
+
+## [J-orchestrator-0003] 2026-08-01T16:08:17Z | task:none | Commit the nine agent charters (parallel-drafted, pre-review)
+### Trigger
+Charter-writer fan-out completed: nine parallel agents, one per charter, each
+working from agents/PROTOCOL.md, the handoff templates, and its per-agent
+design brief (judged org design + review grafts).
+### Inputs
+agents/PROTOCOL.md; agents/handoffs/README.md; scratchpad briefs
+(design responsibilities, evaluation criteria, grafts per agent); nine
+writer reports with open questions.
+### Reasoning
+Charters were drafted in parallel for speed with consistency protected by a
+fixed section structure, a shared vocabulary (roster names, packet prefixes,
+gate names, E1-E6), and PROTOCOL as required reading. Committing the drafts
+before the adversarial review — rather than after — keeps the review's
+findings and fixes visible in history as their own attributable unit, which
+is itself a demonstration of the journaling guarantee. Writers surfaced ten
+open questions (notably: mutation-manifest mechanics for an auditor that can
+only stage docs/reports/audit/; attack-plan canonical path
+test/attack_plans/AP-<module>.md; traceability-matrix ownership split;
+golden-model authorship vs data_wrangler execution). All are queued as input
+to the adversarial review round rather than resolved ad hoc here.
+### Actions
+Committed agents/charters/{orchestrator,architect_docs_lead,rtl_lead,dv_lead,
+auditor,rtl_module_dev,tb_writer,data_wrangler,formal_dv}.md as drafted by
+the writer fan-out.
+### Evidence
+Writer fan-out: 9/9 agents completed, 0 failed (workflow wf_e4ece6e4-409).
+Spot-check read of dv_lead.md confirmed structure, grafts, and honest
+enforcement notes present.
+### Outcome
+G0 item 2 materially complete pending review disposition (G0 item 6).
+Handoff: adversarial review round (three independent reviewers).
+### Open-questions
+Ten writer questions queued for the review round (see Reasoning).
+### Files-in-this-commit
+- agents/charters/architect_docs_lead.md
+- agents/charters/auditor.md
+- agents/charters/data_wrangler.md
+- agents/charters/dv_lead.md
+- agents/charters/formal_dv.md
+- agents/charters/orchestrator.md
+- agents/charters/rtl_lead.md
+- agents/charters/rtl_module_dev.md
+- agents/charters/tb_writer.md
