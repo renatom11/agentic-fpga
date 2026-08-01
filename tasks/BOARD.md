@@ -7,15 +7,17 @@ agents with open work.
 
 ## Current milestone
 
-**M0 — Org & charter** (in progress). Deliverables: org chart, agent charters,
-operating protocol, journal/commit enforcement, this board. Exit: sponsor
-critique of the org chart; G0 checklist items closed.
+**M0 — Org & charter** (orchestrator work complete; awaiting sponsor).
+All artifacts committed, adversarially reviewed (26 findings applied,
+ADR-0002), 24-scenario enforcement self-test and CI green. Exit: sponsor
+critique/ratification (G0 item 8) + branch protection (G0 item 9) + the
+auditor's G0 retro-audit (item 10).
 
 ## Milestone roadmap
 
 | Milestone | Scope | Status |
 |---|---|---|
-| M0 | Org, charters, protocol, enforcement, CI journal-check | **In progress** |
+| M0 | Org, charters, protocol, enforcement, CI journal-check | **Awaiting sponsor (items 8–10)** |
 | M1 | Toolchain-lane ADR, dune/opam skeleton, OCaml CI, REQ-### requirements, top-level architecture spec, P1-spec-freeze gate | Pending |
 | M2 (Phase 1) | XGMII 64-bit 10G MAC (rx/tx, CRC-32, IFG) + ARP/IPv4/UDP stack; per-module DV; differential co-sim vs verilog-ethernet | Pending |
 | M3 (Phase 2) | ITCH stimulus toolchain, MoldUDP64, ITCH 5.0 realignment parser, order book (1 symbol, ToB + 8 levels), full-day replay, latency histograms | Pending |
@@ -33,9 +35,10 @@ _None. First work orders are issued at M1 kickoff._
 
 ## Pending escalations to sponsor
 
-- **E1/G0**: ratify the org chart and charters (this milestone's exit).
-- **G0 item**: configure branch protection on `main` (sponsor-only action; see
-  G0 checklist).
+- **E1/G0**: ratify the org chart and charters — start at `ORG_CHART.md`,
+  open any charter; critique freely, changes land by ADR (G0 item 8).
+- **G0 item 9**: branch protection on `main` AND the working branch —
+  exact click-path in `docs/gates/G0-checklist.md`.
 
 ## Decisions on record
 

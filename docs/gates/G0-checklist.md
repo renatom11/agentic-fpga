@@ -6,13 +6,13 @@ G0 passes. Signatures are journal-entry references (PROTOCOL §7).
 
 | # | Item | Owner | Status | Signature |
 |---|---|---|---|---|
-| 1 | Operating protocol committed (`agents/PROTOCOL.md`) | orchestrator | ☐ | |
-| 2 | All nine charters committed (`agents/charters/`), consistent with PROTOCOL and ORG_CHART | orchestrator | ☐ | |
-| 3 | Journals seeded, append-only from birth; INDEX committed | orchestrator | ☐ | |
-| 4 | Enforcement self-test green (`bash scripts/test_protocol.sh`, 24 scenarios) | orchestrator | ☐ | |
-| 5 | `journal-check` CI green on the pushed branch | orchestrator | ☐ | |
-| 6 | Adversarial charter review completed; findings dispositioned | orchestrator | ☐ | |
-| 7 | Every M0 commit itself satisfies the commit protocol | orchestrator | ☐ | |
+| 1 | Operating protocol committed (`agents/PROTOCOL.md`) | orchestrator | ✅ | J-orchestrator-0001, J-orchestrator-0004 |
+| 2 | All nine charters committed (`agents/charters/`), consistent with PROTOCOL and ORG_CHART | orchestrator | ✅ | J-orchestrator-0003, J-orchestrator-0004 |
+| 3 | Journals seeded, append-only from birth; INDEX committed | orchestrator | ✅ | J-orchestrator-0001 |
+| 4 | Enforcement self-test green (`bash scripts/test_protocol.sh`, 24 scenarios) | orchestrator | ✅ | J-orchestrator-0004 |
+| 5 | `journal-check` CI green on the pushed branch | orchestrator | ✅ | J-orchestrator-0005 (runs 1–3 all green) |
+| 6 | Adversarial charter review completed; findings dispositioned | orchestrator | ✅ | J-orchestrator-0004, ADR-0002 |
+| 7 | Every M0 commit itself satisfies the commit protocol | orchestrator | ✅ | J-orchestrator-0005 (CI range checks over full history) |
 | 8 | **Sponsor**: org chart + charters ratified (critique round closed) | Renato | ☐ | (sponsor approval, recorded in orchestrator journal) |
 | 9 | **Sponsor**: branch protection on `main` AND the working branch (`claude/fpga-hardcaml-agent-orchestration-37ceyf` — daily commits land there; `main` receives milestone PRs only). Exact click-path below. | Renato | ☐ | (sponsor confirmation) |
 | 10 | Auditor's G0 retro-audit of the M0 commit range committed to `docs/reports/audit/` | auditor | ☐ | |

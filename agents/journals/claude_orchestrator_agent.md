@@ -236,3 +236,38 @@ none
 - scripts/check_journals.sh
 - scripts/policy.sh
 - scripts/test_protocol.sh
+
+## [J-orchestrator-0005] 2026-08-01T17:56:54Z | task:none | Close out orchestrator-side G0 items; hand M0 to the sponsor
+### Trigger
+CI green on the review-fix commit (journal-check runs 1-3 all successful);
+all orchestrator-side M0 work complete.
+### Inputs
+GitHub Actions run history for journal-check.yml; docs/gates/G0-checklist.md;
+tasks/BOARD.md; agents/journals/INDEX.md.
+### Reasoning
+G0 items 1-7 are orchestrator-verifiable and now evidenced: protocol +
+charters + seeds committed (0001/0003/0004), 24-scenario self-test green
+(0004), CI green across the full pushed history (runs 1-3, with run 1
+covering the whole range via the zero-before --all path), review completed
+and dispositioned (0004 + ADR-0002). Signature transcription follows the
+COH-4 rule ratified in ADR-0002: the checklist edit is clerical, authority
+is this entry. Items 8-10 are not mine to sign: 8 and 9 are sponsor-only,
+10 belongs to the auditor's first spawn (G0 retro-audit) after ratification.
+### Actions
+Checked off G0 items 1-7 with journal-entry signatures; updated BOARD.md
+(M0 → awaiting sponsor, pending-escalations sharpened) and INDEX.md
+(orchestrator row: last entry 0005).
+### Evidence
+GitHub Actions: journal-check runs 30707323951, 30707471108, 30711401488 —
+all conclusion=success on branch claude/fpga-hardcaml-agent-orchestration-37ceyf.
+bash scripts/test_protocol.sh → "protocol self-test: 24 passed, 0 failed".
+### Outcome
+M0 orchestrator work complete. Handoff: sponsor critique of ORG_CHART.md and
+charters (G0 item 8), branch protection (item 9); then auditor G0 retro
+(item 10) and, on ratification, M1 work orders.
+### Open-questions
+none
+### Files-in-this-commit
+- agents/journals/INDEX.md
+- docs/gates/G0-checklist.md
+- tasks/BOARD.md

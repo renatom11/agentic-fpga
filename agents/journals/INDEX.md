@@ -6,7 +6,7 @@ each journal's tail is its own source of truth.
 
 | Agent | Journal | Last entry | State |
 |---|---|---|---|
-| orchestrator | [claude_orchestrator_agent.md](claude_orchestrator_agent.md) | — | M0 scaffolding in progress |
+| orchestrator | [claude_orchestrator_agent.md](claude_orchestrator_agent.md) | J-orchestrator-0005 | M0 complete pending sponsor (G0 items 8–10) |
 | architect_docs_lead | [claude_architect_docs_lead_agent.md](claude_architect_docs_lead_agent.md) | — | Not yet activated (first spawn: M1) |
 | rtl_lead | [claude_rtl_lead_agent.md](claude_rtl_lead_agent.md) | — | Not yet activated (first spawn: M2) |
 | dv_lead | [claude_dv_lead_agent.md](claude_dv_lead_agent.md) | — | Not yet activated (first spawn: M2) |
