@@ -720,3 +720,49 @@ none
 - libs/hardcaml_ethernet/src/word_counter.mli
 - test/hardcaml_ethernet/dune
 - test/hardcaml_ethernet/test_word_counter.ml
+
+## [J-orchestrator-0017] 2026-08-01T21:02:56Z | task:none | ADR-0005: CI is the authoritative build environment (local toolchain impossible)
+### Trigger
+Three toolchain install attempts failed in the container; the sponsor offered
+to supply the Hardcaml sources directly, which required determining whether
+that would actually help before answering.
+### Inputs
+Install logs from three attempts (scratchpad, ephemeral — cited per the F5
+rule); direct curl probes of five package/compiler endpoints; ADR-0004;
+opam solver output naming the exact version constraints.
+### Reasoning
+Diagnosis before decision. The proxy denies opam.ocaml.org entirely and
+returns 403 for github /archive/ and codeload, but permits git clone and
+GitHub release assets — which is why dune installed and nothing else did.
+The binding constraint is the COMPILER, not Hardcaml: waveterm v0.17
+requires OCaml >= 5.1, master requires >= 5.3, the system compiler is 4.14.1,
+and every 5.x source URL probed is blocked or absent. So the sponsor's offer
+to hand over the Hardcaml repo would not produce a working switch — it
+solves neither the compiler nor the ~40 transitive Jane Street packages —
+and vendoring third-party sources would also cut against the licensing
+discipline. Recorded that reasoning in the ADR rather than only declining.
+The decision that matters is not "we lack a toolchain" but "which
+environment is authoritative": CI, whose network is unrestricted. That
+choice has teeth — Evidence for OCaml work must cite CI run IDs, and expect
+snapshots must be promoted from CI's diff rather than hand-authored, because
+inventing a waveform would be exactly the fabricated evidence the journal
+protocol exists to prevent. Stated explicitly so no future agent "fixes" a
+failing expect test by writing what it thinks the output should be.
+### Actions
+Wrote docs/adr/ADR-0005-build-environment.md.
+### Evidence
+curl probes at this SHA, reproducible from any shell in this container:
+opam.ocaml.org/index.tar.gz -> connection refused by proxy;
+github.com/ocaml/ocaml/archive/5.1.1.tar.gz -> 403;
+codeload.github.com/... -> 403;
+github.com/ocaml/dune/releases/download/3.24.1/dune-3.24.1.tbz -> 200;
+raw.githubusercontent.com/ocaml/opam-repository/master/version -> 200.
+opam solver: "hardcaml_waveterm >= v0.17.0 -> ocaml >= 5.1.0"; git-pinned
+hardcaml -> "ocaml >= 5.3.0" against invariant ocaml-system 4.14.1.
+### Outcome
+Build environment settled. M1 continues: build CI running on 9e97c09,
+architect still working WO-0002. Handoff: none.
+### Open-questions
+none
+### Files-in-this-commit
+- docs/adr/ADR-0005-build-environment.md
