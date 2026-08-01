@@ -802,3 +802,38 @@ none
 ### Files-in-this-commit
 - bin/generate.ml
 - test/hardcaml_ethernet/test_word_counter.ml
+
+## [J-orchestrator-0019] 2026-08-01T21:52:00Z | task:none | Promote word_counter waveform snapshot from CI diff (ADR-0005 rule 2)
+### Trigger
+build run 30719333716 (cecd703) failed exactly as predicted in J-0018:
+compile now clean, dune runtest rejects the intentionally-empty expect
+snapshot and prints the corrected waveform.
+### Inputs
+CI job 91420359473 log (the git-diff block dune emits for
+test_word_counter.ml.corrected); ADR-0005 rule 2.
+### Reasoning
+The failing step printed the exact expect-block contents dune would have
+written via `dune promote`. Since no local toolchain exists, the CI log IS
+the promotion channel: I copied the +lines of that diff into the expect
+block byte-for-byte (box-drawing glyphs, internal spacing, truncated
+"00." value labels included) and authored nothing. The waveform itself is
+sane for the stimulus [clear; 1;1;1;0;1]: count steps 0000->0003 through
+the visible window, incrementing only under valid — the display window
+(width 70, wave_width 1) clips the trailing idle+final cycle, which is
+fine for a snapshot whose job is to prove the DV loop, not to be a spec.
+Next run should go green end-to-end; if `git diff --exit-code` then fails
+on rtl_snapshots/word_counter.v drift instead, that is a genuinely new
+fact (non-deterministic emission) and gets its own entry.
+### Actions
+Filled the expect block in test_word_counter.ml with the CI-diff content.
+### Evidence
+CI run 30719333716 conclusion: failure at "Run tests" only; its log
+contains the diff whose + side equals this commit's expect block
+(externally verifiable per the F5 rule). The next build run on this
+commit is the pass/fail check.
+### Outcome
+Snapshot promoted; awaiting green build. Handoff: none.
+### Open-questions
+none
+### Files-in-this-commit
+- test/hardcaml_ethernet/test_word_counter.ml

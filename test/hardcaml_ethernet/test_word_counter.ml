@@ -22,5 +22,18 @@ let%expect_test "counts only the cycles where valid is high" =
     i.valid := (if v = 1 then Bits.vdd else Bits.gnd);
     Cyclesim.cycle sim);
   Waveform.print ~display_height:12 ~display_width:70 ~wave_width:1 waves;
-  [%expect {| |}]
+  [%expect {|
+    ┌Signals────────┐┌Waves──────────────────────────────────────────────┐
+    │clock          ││┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐│
+    │               ││  └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └│
+    │clear          ││────┐                                              │
+    │               ││    └───────────────────                           │
+    │valid          ││    ┌───────────┐   ┌───                           │
+    │               ││────┘           └───┘                              │
+    │               ││────────┬───┬───┬───────                           │
+    │count          ││ 0000   │00.│00.│0003                              │
+    │               ││────────┴───┴───┴───────                           │
+    │               ││                                                   │
+    └───────────────┘└───────────────────────────────────────────────────┘
+    |}]
 ;;
