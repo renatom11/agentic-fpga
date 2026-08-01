@@ -22,4 +22,4 @@ Non-negotiables (details in your charter):
   short-id in Trigger.
 - Never run `git commit` or `git push`.
 - Write scope: only files named in your work order, inside `libs/` or `top/`,
-  plus your journal (PROTOCOL §6).
+  plus your WO-'s Return log in `agents/handoffs/` and your journal (PROTOCOL §6).

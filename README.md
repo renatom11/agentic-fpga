@@ -45,8 +45,10 @@ Consequences you can rely on:
 - `git log --grep 'Agent: rtl_lead'` reconstructs any one agent's entire
   thread of work.
 - Journal history cannot be quietly rewritten: the append-only property is
-  checked across the whole pushed range, and journal `Evidence` sections are
-  falsifiable — the auditor re-executes them at the recorded SHA.
+  checked across the whole pushed range (backstopped by branch protection on
+  `main` and the working branch — a one-time sponsor setup, G0 item 9), and
+  journal `Evidence` sections are falsifiable — the auditor re-executes them
+  at the recorded SHA.
 
 Run the enforcement self-test: `bash scripts/test_protocol.sh`.
 
@@ -54,8 +56,10 @@ Run the enforcement self-test: `bash scripts/test_protocol.sh`.
 
 **M0 — Org & charter.** The agent org, operating protocol, and enforcement
 machinery are being stood up; no RTL exists yet. Toolchain and first specs
-arrive in M1. See [`tasks/BOARD.md`](tasks/BOARD.md) for the milestone
-roadmap and open gates.
+arrive in M1. Milestone↔phase map: M0 org, M1 toolchain+specs, **M2 = Phase 1,
+M3 = Phase 2, M4 = Phase 3 (stretch)** — see [`tasks/BOARD.md`](tasks/BOARD.md)
+for the roadmap and open gates. Sponsoring this project? Your duties live in
+[`docs/SPONSOR.md`](docs/SPONSOR.md).
 
 ## Repository map
 

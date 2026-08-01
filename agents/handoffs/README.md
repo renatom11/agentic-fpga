@@ -3,7 +3,9 @@
 All inter-agent transfers are versioned files in this directory, never
 chat-only (`agents/PROTOCOL.md` §3). Naming: `WO-NNNN_<slug>.md`,
 `SO-<module>.md`, `BUG-NNNN_<slug>.md`, `RV-NNNN_<slug>.md`. Numbers are
-zero-padded and monotonic per prefix.
+zero-padded and monotonic per prefix; the **orchestrator allocates** the next
+number when a packet is first committed (drafts use a placeholder id), making
+the sole committer the sole numbering authority (PROTOCOL §3).
 
 ## Work order (`WO-`) — lead/orchestrator → worker or lead
 

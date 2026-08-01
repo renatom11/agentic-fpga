@@ -30,28 +30,43 @@ fi
 TMP=$(mktemp -d)
 trap 'rm -rf "$TMP"' EXIT
 
-get_trailer() { # message-file key -> value (last occurrence) or empty
-  grep -E "^$2: " "$1" | tail -n 1 | sed -E "s/^$2: //" || true
-}
-
 checked=0
 for C in $COMMITS; do
   short=$(git rev-parse --short "$C")
 
-  # Merge commits are skipped: their constituent commits are checked
-  # individually. Conflict-resolution content in a merge commit is not
-  # journal-checked — milestone merges must therefore be conflict-free.
-  nparents=$(git rev-list --parents -n 1 "$C" | wc -w)
-  if [ "$nparents" -gt 2 ]; then
-    echo "WARN: skipping merge commit $short (see R9)"
-    continue
+  # Merge commits (R9): constituent commits are checked individually, so a
+  # merge itself must be TRIVIAL — its tree must equal one parent's tree,
+  # proving it introduces no content of its own (no conflict resolutions).
+  nwords=$(git rev-list --parents -n 1 "$C" | wc -w)   # 1 + parent count
+  if [ "$nwords" -gt 3 ]; then
+    fail "$short: octopus merge commits are forbidden (R9)"
+  fi
+  if [ "$nwords" -eq 3 ]; then
+    t=$(git rev-parse "$C^{tree}")
+    p1=$(git rev-parse "$C^1^{tree}")
+    p2=$(git rev-parse "$C^2^{tree}")
+    if [ "$t" = "$p1" ] || [ "$t" = "$p2" ]; then
+      echo "OK: merge $short is content-free (tree equals a parent); constituents checked individually (R9)"
+      checked=$((checked + 1))
+      continue
+    fi
+    fail "$short: merge commit introduces content found in neither parent (conflict resolution or divergent auto-merge) (R9)"
   fi
 
   git show -s --format=%B "$C" > "$TMP/msg"
-  AGENT=$(get_trailer "$TMP/msg" Agent)
-  ENTRY=$(get_trailer "$TMP/msg" Journal-Entry)
-  WORK_ORDER=$(get_trailer "$TMP/msg" Work-Order)
-  JOURNAL_ONLY=$(get_trailer "$TMP/msg" Journal-Only)
+  # Trailer parsing: only the message's final trailer block counts, and the
+  # protected keys must be unique — a crafted body line or duplicate trailer
+  # cannot shadow the real one (R6).
+  git interpret-trailers --parse < "$TMP/msg" > "$TMP/trailers"
+  for key in Agent Journal-Entry Work-Order Journal-Only; do
+    n=$(grep -cE "^$key: " "$TMP/trailers" || true)
+    [ "$n" -le 1 ] || fail "$short: duplicate '$key:' trailer (R6)"
+  done
+  get_trailer() { grep -E "^$2: " "$1" | sed -E "s/^$2: //" || true; }
+  AGENT=$(get_trailer "$TMP/trailers" Agent)
+  ENTRY=$(get_trailer "$TMP/trailers" Journal-Entry)
+  WORK_ORDER=$(get_trailer "$TMP/trailers" Work-Order)
+  JOURNAL_ONLY=$(get_trailer "$TMP/trailers" Journal-Only)
 
   [ -n "$AGENT" ] || fail "$short: missing 'Agent:' trailer (R6)"
   is_known_agent "$AGENT" || fail "$short: unknown agent '$AGENT' (R6)"
@@ -62,7 +77,7 @@ for C in $COMMITS; do
 
   JOURNAL="$(journal_path_for "$AGENT")"
 
-  if [ "$nparents" -eq 2 ]; then
+  if [ "$nwords" -eq 2 ]; then
     PARENT=$(git rev-parse "$C^")
     git diff-tree -r --no-renames --no-commit-id --name-status "$PARENT" "$C" > "$TMP/changes"
   else

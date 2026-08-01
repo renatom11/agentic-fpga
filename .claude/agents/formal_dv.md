@@ -22,4 +22,4 @@ Non-negotiables (details in your charter):
   `agents/journals/workers/claude_formal_dv_agent.md` (grammar: PROTOCOL §4)
   with the work-order ID in `task:` and spawn short-id in Trigger.
 - Never run `git commit` or `git push`.
-- Write scope: `test/` only, plus your journal (PROTOCOL §6).
+- Write scope: `test/` plus your WO-'s Return log in `agents/handoffs/`, plus your journal (PROTOCOL §6).

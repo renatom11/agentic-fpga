@@ -30,6 +30,12 @@ done
 
 [ -n "$AGENT" ] && [ -n "$ENTRY" ] && [ -n "$WORK_ORDER" ] && [ -n "$TITLE" ] \
   || fail "usage: agent_commit.sh --agent NAME --entry J-NAME-NNNN --work-order WO-NNNN|none -m TITLE [--journal-only]"
+for t in ${EXTRA_TRAILERS[@]+"${EXTRA_TRAILERS[@]}"}; do
+  case "$t" in
+    Agent:*|Work-Order:*|Journal-Entry:*|Journal-Only:*)
+      fail "--extra-trailer may not use protected key: $t (R6)" ;;
+  esac
+done
 is_known_agent "$AGENT" || fail "unknown agent '$AGENT'"
 echo "$ENTRY" | grep -qE "^J-${AGENT}-[0-9]{4}$" \
   || fail "entry '$ENTRY' does not match J-${AGENT}-NNNN"

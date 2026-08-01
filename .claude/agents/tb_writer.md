@@ -24,4 +24,4 @@ Non-negotiables (details in your charter):
   recording which spec clauses each test discharges, with the work-order ID in
   `task:` and your spawn short-id in Trigger.
 - Never run `git commit` or `git push`.
-- Write scope: `test/` only, plus your journal (PROTOCOL §6).
+- Write scope: `test/` plus your WO-'s Return log in `agents/handoffs/`, plus your journal (PROTOCOL §6).

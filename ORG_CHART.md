@@ -31,7 +31,7 @@ flowchart TD
     V["DV LEAD — Opus 5
     verification + validation
     spec-derived tests · golden models
-    replays · latency · SO sign-offs"]
+    replays · latency · DV sign-off packets (SO-)"]
 
     X["AUDITOR — Opus 5, independent
     journal/commit invariants · spec drift
@@ -49,7 +49,7 @@ flowchart TD
     spec-derived tests
     (work orders omit RTL source)"]
 
-    DW["data_wrangler — Haiku/Sonnet
+    DW["data_wrangler — Sonnet
     ITCH data · packetizer
     golden trajectories"]
 
@@ -63,7 +63,7 @@ flowchart TD
     O --> V
     O --> X
     R -. "logical direction, spawned by O" .-> RW
-    R -. contingent .-> RM
+    O -. "activates via E2 (Phase 2)" .-> RM
     V -. "logical direction, spawned by O" .-> TW
     V -. "logical direction, spawned by O" .-> DW
     V -. "on activation" .-> FD
@@ -88,9 +88,12 @@ flowchart TD
 | `auditor` | Opus 5 (independent) | orchestrator → findings verbatim to Renato | [charter](agents/charters/auditor.md) | [journal](agents/journals/claude_auditor_agent.md) | Activates at G0 retro |
 | `rtl_module_dev` | Sonnet (×N per WO) | rtl_lead (logical) | [charter](agents/charters/rtl_module_dev.md) | [journal](agents/journals/workers/claude_rtl_module_dev_agent.md) | Worker template |
 | `tb_writer` | Sonnet (×N per WO) | dv_lead (logical) | [charter](agents/charters/tb_writer.md) | [journal](agents/journals/workers/claude_tb_writer_agent.md) | Worker template |
-| `data_wrangler` | Haiku/Sonnet | dv_lead (logical) | [charter](agents/charters/data_wrangler.md) | [journal](agents/journals/workers/claude_data_wrangler_agent.md) | Worker template |
+| `data_wrangler` | Sonnet | dv_lead (logical) | [charter](agents/charters/data_wrangler.md) | [journal](agents/journals/workers/claude_data_wrangler_agent.md) | Worker template |
 | `formal_dv` | Sonnet | dv_lead (logical) | [charter](agents/charters/formal_dv.md) | [journal](agents/journals/workers/claude_formal_dv_agent.md) | Dormant |
-| `rtl_lead_md` | Opus 5 | orchestrator | see § in [rtl_lead charter](agents/charters/rtl_lead.md) | seeded at activation | Contingent (Phase 2) |
+| `rtl_lead_md` | Opus 5 | orchestrator | see "Contingent role: rtl_lead_md" in the [rtl_lead charter](agents/charters/rtl_lead.md) | seeded at activation | Contingent (Phase 2) |
+
+Milestones referenced above: M0 org · M1 toolchain + specs · M2 = Phase 1 ·
+M3 = Phase 2 · M4 = Phase 3 (stretch) — roadmap in [`tasks/BOARD.md`](tasks/BOARD.md).
 
 ## How the hierarchy actually executes
 

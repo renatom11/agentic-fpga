@@ -65,22 +65,22 @@ agent_may_write() {
       esac ;;
     rtl_module_dev)
       case "$path" in
-        libs/*|top/*) return 0 ;;
+        libs/*|top/*|agents/handoffs/*) return 0 ;;
         *) return 1 ;;
       esac ;;
     tb_writer)
       case "$path" in
-        test/*) return 0 ;;
+        test/*|agents/handoffs/*) return 0 ;;
         *) return 1 ;;
       esac ;;
     data_wrangler)
       case "$path" in
-        tools/*) return 0 ;;
+        tools/*|agents/handoffs/*) return 0 ;;
         *) return 1 ;;
       esac ;;
     formal_dv)
       case "$path" in
-        test/*) return 0 ;;
+        test/*|agents/handoffs/*) return 0 ;;
         *) return 1 ;;
       esac ;;
     *)

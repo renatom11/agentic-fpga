@@ -165,3 +165,74 @@ Ten writer questions queued for the review round (see Reasoning).
 - agents/charters/rtl_lead.md
 - agents/charters/rtl_module_dev.md
 - agents/charters/tb_writer.md
+
+## [J-orchestrator-0004] 2026-08-01T17:56:02Z | task:none | Adversarial review round: 26 findings accepted and applied
+### Trigger
+Three-lens adversarial review completed (coherence / enforceability /
+readability, run twice — the first run died with the session interruption and
+was resumed from cache). 26 findings: 1 CRITICAL, 9 MAJOR, 16 MINOR, plus
+dispositions for all ten charter-writer open questions.
+### Inputs
+Review findings (workflow wf_acb9c08a-c02); agents/PROTOCOL.md; all nine
+charters; scripts/*; ORG_CHART.md; README.md; docs/gates/G0-checklist.md.
+### Reasoning
+All 26 findings accepted — none were wrong, which is itself evidence the
+review lenses were well-chosen. Load-bearing decisions, each recorded with
+alternatives in ADR-0002: worker write scopes extended to agents/handoffs/
+(fixing the CRITICAL unexecutable Return-log lifecycle; rejected the
+lead-transcription alternative as an attribution-blurring extra hop);
+mutation discipline unified on the transient model with explicit sequencing
+(RV- ACCEPT → campaign → SO- PASS) and the orchestrator chartered as
+mutation-window operator; gate signatures orchestrator-transcribed with
+authority in the signer's journal; merge commits now mechanically required
+to be trivial (tree equals a parent) instead of skipped — closing the one
+real bypass in the range checker; branch protection extended to the working
+branch with a novice-executable click-path; honesty corrections so no
+charter claims mechanical enforcement that is actually audit-enforced;
+data_wrangler pinned to Sonnet because the launcher model field is the only
+mechanism that actually selects a model. Deliberately deferred: mechanical
+blob-size gate (M1 CI); code-fence-aware journal parsers (documented
+no-fake-header rule + audit instead).
+### Actions
+Amended PROTOCOL (§2-§11), eight charters, four worker launchers, policy.sh
+(worker scopes), agent_commit.sh (protected extra-trailer guard),
+check_journals.sh (trivial-merge check, interpret-trailers parsing,
+duplicate-trailer rejection), test_protocol.sh (13→24 scenarios), ORG_CHART,
+README, G0 checklist (item 9 click-path), handoffs README (numbering
+authority); created docs/SPONSOR.md and ADR-0002.
+### Evidence
+bash scripts/test_protocol.sh → "protocol self-test: 24 passed, 0 failed"
+(new scenarios S13-S22 incl. entry-bearing foreign seed, journal deletion,
+multi-entry append, trailer mismatch, journal-only-with-work, missing
+files-section, architect deny-order, worker handoffs scope, protected
+extra-trailer, trivial-vs-content-bearing merges).
+### Outcome
+G0 items 2 and 6 materially complete. Charter set fit for sponsor
+ratification per all three reviewer verdicts (post-fix). Handoff: sponsor
+critique round (G0 item 8).
+### Open-questions
+none
+### Files-in-this-commit
+- .claude/agents/data_wrangler.md
+- .claude/agents/formal_dv.md
+- .claude/agents/rtl_module_dev.md
+- .claude/agents/tb_writer.md
+- ORG_CHART.md
+- README.md
+- agents/PROTOCOL.md
+- agents/charters/auditor.md
+- agents/charters/data_wrangler.md
+- agents/charters/dv_lead.md
+- agents/charters/formal_dv.md
+- agents/charters/orchestrator.md
+- agents/charters/rtl_lead.md
+- agents/charters/rtl_module_dev.md
+- agents/charters/tb_writer.md
+- agents/handoffs/README.md
+- docs/SPONSOR.md
+- docs/adr/ADR-0002-adversarial-review-fixes.md
+- docs/gates/G0-checklist.md
+- scripts/agent_commit.sh
+- scripts/check_journals.sh
+- scripts/policy.sh
+- scripts/test_protocol.sh

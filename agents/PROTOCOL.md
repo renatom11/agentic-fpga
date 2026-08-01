@@ -36,7 +36,7 @@ non-negotiable:
   output returns to the lead for review; the lead's verdict goes back through
   the orchestrator. The chain is reconstructible from packets, journals, and
   commit trailers.
-- Leads are spawned as Opus-class agents, workers as Sonnet/Haiku-class agents,
+- Leads are spawned as Opus-class agents, workers as Sonnet-class agents,
   via the launcher definitions in `.claude/agents/`. Each launcher's first
   mandatory action is to read its charter in `agents/charters/` and this
   protocol.
@@ -64,7 +64,14 @@ Work-order lifecycle: `DRAFT → ISSUED → RETURNED → ACCEPTED | BOUNCED`
 (state recorded in the packet header; BOUNCED packets carry the defect list and
 respawn as a new ISSUED revision). Every work order carries the
 definition-of-done template (spec section, tests required, journal obligation,
-docs touched).
+docs touched). Workers update their packet's Return log directly —
+`agents/handoffs/` is inside every agent's write scope (§6) precisely so the
+packet lifecycle is executable by its participants.
+
+**Packet numbering**: the orchestrator — as sole committer — allocates the
+next `NNNN` per prefix when a packet is first committed; drafts circulating
+before commit use a placeholder id. This makes monotonic-per-prefix numbering
+enforceable by a single authority.
 
 ## 4. Journals — the reasoning record
 
@@ -79,7 +86,13 @@ header, the file grows **only by whole entries appended at end-of-file**.
 Nothing above the last byte is ever edited. No agent writes another agent's
 journal.
 
-### 4.1 Entry grammar (machine-checked)
+### 4.1 Entry grammar (structure machine-checked; narrative audit-enforced)
+
+Only the entry's *structure* is mechanically verified: the header line, the
+one-entry-per-commit rule, monotonic IDs, and the `Files-in-this-commit`
+section (presence + set-equality). The presence and quality of the narrative
+sections (Trigger through Open-questions) are enforced by auditor sampling,
+not by script.
 
 ```markdown
 ## [J-<agent>-<NNNN>] <UTC ISO-8601> | task:<WO-id|none> | <one-line title>
@@ -109,9 +122,15 @@ Rules:
 - `NNNN` is zero-padded and **strictly monotonic per journal** (next = last + 1).
 - Worker entries additionally put the work-order ID in the header `task:` field
   and the spawn short-id in Trigger, preserving attribution within the shared
-  template journal.
+  template journal. **Spawn short-id**: a unique token the orchestrator mints
+  into every worker spawn prompt — work-order id + spawn UTC timestamp, e.g.
+  `WO-0012/2026-08-01T16:00Z` — which the worker copies verbatim into Trigger.
 - The entry is written **before** the commit that carries the work, in the same
   working tree, so entry and work are inseparable in the diff.
+- An entry body must never contain a line beginning `## [J-<own-agent>-NNNN]`
+  (quote prior headers indented or inside a sentence, never at column 0) —
+  the structural parsers are deliberately simple and count such lines as
+  entry headers.
 - Entries that describe WHAT without WHY are an audit finding (vacuity).
 
 ### 4.2 `Files-in-this-commit`
@@ -128,7 +147,11 @@ The orchestrator commits exclusively via **`scripts/agent_commit.sh`**, which
 enforces, before any commit is created:
 
 - **R1 — One agent per commit.** Mixed-agent changes are split into separate
-  sequential commits.
+  sequential commits. *Honesty note*: for scoped agents this is emergent from
+  R7+R8 (a commit cannot mix two scoped agents' work); for the orchestrator —
+  whose scope is everything — correct attribution and splitting is
+  audit-enforced, not mechanical. The mechanical invariant is one journal
+  append per commit.
 - **R2 — Coupling.** Any commit touching work products must stage a pure
   EOF-append to exactly the responsible agent's journal containing the new
   entry. Work-without-journal is refused. Journal-without-work is allowed only
@@ -146,7 +169,11 @@ enforces, before any commit is created:
   Work-Order: <WO-id or none>
   Journal-Entry: J-<agent>-<NNNN>
   ```
-  plus `Journal-Only: true` when applicable.
+  plus `Journal-Only: true` when applicable. Additional informational
+  trailers (e.g. `Co-Authored-By:`, `Claude-Session:`) may be appended via
+  the script's `--extra-trailer` flag; the four protected keys above are
+  rejected as extra trailers, and CI rejects duplicate protected trailers so
+  none can be shadowed.
 - **R7 — Path isolation.** Every staged non-journal path must be inside the
   committing agent's write scope (§6).
 - **R8 — Foreign journal seeding only.** A commit may additionally stage
@@ -154,8 +181,16 @@ enforces, before any commit is created:
   and zero entries (bootstrap/onboarding). Modifying another agent's existing
   journal is always refused.
 - **R9 — Serialized history.** All commits land sequentially on the single
-  working branch. No per-agent branches, no rebases of pushed history, no
-  force pushes. Merges to `main` happen only at milestone boundaries via PR.
+  working branch (currently `claude/fpga-hardcaml-agent-orchestration-37ceyf`;
+  the current name is always recorded in `tasks/BOARD.md`). No per-agent
+  branches, no rebases of pushed history, no force pushes. Merges to `main`
+  happen only at milestone boundaries via PR and must be **trivial**: CI
+  verifies a merge commit's tree equals one of its parents' trees (it
+  introduces no content of its own — constituent commits are checked
+  individually); octopus merges are rejected outright. No-force-push is
+  ultimately guaranteed by GitHub branch protection on *both* `main` and the
+  working branch — a sponsor-side setting (G0 checklist), without which R9 is
+  convention only.
 
 **CI re-verification**: `.github/workflows/journal-check.yml` runs
 `scripts/check_journals.sh` over the entire pushed range and re-checks
@@ -163,8 +198,9 @@ R1–R8 for every commit (append-only across the range, monotonic IDs,
 files-list equality, trailer well-formedness, path isolation). A locally
 bypassed check (`git commit --no-verify` outside the script) still fails on
 GitHub before merge. **One out-of-repo dependency**: branch protection on
-`main` (no force push, `journal-check` required) must be configured once by
-the human sponsor — G0 checklist item.
+`main` **and the working branch** (no force push, no deletion, `journal-check`
+required, no admin bypass) must be configured once by the human sponsor — G0
+checklist item.
 
 Result: `git log --grep 'Agent: rtl_lead'` reconstructs any agent's thread;
 `git diff A..B` always contains the reasoning for what changed.
@@ -183,10 +219,10 @@ such; Claude Code has no native per-path read denial).
 | `rtl_lead` | `libs/**`, `top/**`, `bin/**`, `rtl_snapshots/**`, `agents/handoffs/**` |
 | `dv_lead` | `test/**`, `tools/**`, `docs/reports/latency/**`, `agents/handoffs/**` |
 | `auditor` | `docs/reports/audit/**` only |
-| `rtl_module_dev` | `libs/**`, `top/**` (narrowed further by its work order) |
-| `tb_writer` | `test/**` |
-| `data_wrangler` | `tools/**` |
-| `formal_dv` | `test/**` |
+| `rtl_module_dev` | `libs/**`, `top/**` (narrowed further by its work order), `agents/handoffs/**` (its packet's Return log) |
+| `tb_writer` | `test/**`, `agents/handoffs/**` (its packet's Return log) |
+| `data_wrangler` | `tools/**`, `agents/handoffs/**` (its packet's Return log) |
+| `formal_dv` | `test/**`, `agents/handoffs/**` (its packet's Return log) |
 
 Key consequences: RTL-line agents can never stage tests or golden models;
 DV-line agents can never stage RTL; the auditor can never fix what it finds.
@@ -203,6 +239,16 @@ journal-entry reference (`J-<agent>-NNNN`), so governance itself is diffable.
 | `P<n>-spec-freeze` | Architect's specs complete with REQ-### requirements; interface records compile; dv_lead countersigns testability. |
 | `P<n>-module-ready` | Per-module DV sign-off packets (`SO-*.md`) PASS; auditor's seeded mutations all killed by the DV suite; line-rate stress green for rx-path modules. |
 | `P<n>-phase-accept` | System replay clean; latency report committed; audit report committed with no open CRITICAL findings; sponsor approval (escalation class E1). |
+
+**Signature transcription**: signers cannot stage `docs/gates/**` themselves
+(§6), so the **orchestrator transcribes** all gate-checklist signatures. A
+signature's authority is the referenced `J-<agent>-NNNN` entry, which must
+itself state "I sign gate X item Y" in the signer's own journal — the
+checklist edit is clerical and commits under `Agent: orchestrator`.
+
+**Phase hardening**: "P\<n\> hardening" means the window between
+`P<n>-module-ready` and `P<n>-phase-accept`. It is the activation window for
+`formal_dv` and the overlap trigger for the contingent `rtl_lead_md`.
 
 ## 8. Escalation to the human sponsor
 
@@ -241,8 +287,17 @@ The org must survive the loss of any session, including the orchestrator's:
   MAC/UDP vs verilog-ethernet differential co-sim).
 - The **auditor owns the DV-escape ledger** (`docs/reports/audit/`): any
   post-sign-off divergence found later is recorded there, not by DV.
-- Mutation discipline: per module, the auditor plants N seeded RTL mutations;
-  the DV suite must kill all N before `module-ready` is signed.
+- Mutation discipline — the **transient model**, sequenced: the auditor
+  authors mutation manifests (patches) under `docs/reports/audit/mutations/`;
+  the **orchestrator applies each manifest transiently in an uncommitted
+  working tree**, runs the DV suite against it, reverts fully, and never lets
+  mutated RTL enter history. Sequencing: for each module, the campaign runs
+  **after rtl_lead's `RV-` ACCEPT and before dv_lead may issue `SO-` PASS**,
+  so every PASS reports kills N/N (N ≥ 3, spanning distinct defect classes)
+  and `module-ready` merely re-checks it. No RTL-line or worker agent is
+  spawned while a manifest is applied; the "report, never repair a suspected
+  seeded mutation" clauses in RTL-line charters are the safety net for a
+  sequencing error, not the normal case.
 - Licensing: `verilog-ethernet` (MIT) may be read and co-simulated freely.
   `Essenceia/Nasdaq-HFT-FPGA` (CC BY-NC) is prior art to *consult only* —
   never port code. All shipped RTL is written from specs.
@@ -253,3 +308,10 @@ Any change to this protocol, a charter, or the enforcement scripts requires:
 (1) a numbered ADR in `docs/adr/` recording alternatives and rationale,
 (2) an orchestrator journal entry, (3) if the change alters enforcement
 semantics, an updated `scripts/test_protocol.sh` case proving the new behavior.
+
+Program-scope parameters (phase decomposition, clock/datapath figures,
+book depth, message subsets) are canonically stated in README's phase table
+(from M1: the top-level spec in `docs/specs/`); charters restate them only
+for convenience. A scope-parameter change updates the canonical statement
+AND every restatement — the amending ADR lists the touched files (grep for
+the changed value).

@@ -29,7 +29,7 @@ mkdir -p scripts
 cp "$REPO_ROOT"/scripts/policy.sh "$REPO_ROOT"/scripts/agent_commit.sh \
    "$REPO_ROOT"/scripts/check_journals.sh scripts/
 chmod +x scripts/*.sh
-mkdir -p agents/journals/workers libs docs/reports/audit test
+mkdir -p agents/journals/workers agents/handoffs libs docs/reports/audit test
 
 seed_journal() { # path agent
   mkdir -p "$(dirname "$1")"
@@ -187,6 +187,120 @@ git commit -q -m "scrub"
 expect_fail "journal rewrite caught (R3/R8)" scripts/check_journals.sh --all
 git checkout -q scratch
 git branch -q -D rewrite
+
+# ---- S13: foreign journal seed that already contains entries ----------------
+say "S13: foreign seed containing entries"
+J_DV=agents/journals/claude_dv_lead_agent.md
+seed_journal "$J_DV" dv_lead
+entry dv_lead 0001 "smuggled entry inside a seed" >> "$J_DV"
+echo n1 > docs/reports/audit/note.md
+entry auditor 0001 "audit note with dirty seed" docs/reports/audit/note.md "$J_DV" >> "$J_AUD"
+git add docs/reports/audit/note.md "$J_DV" "$J_AUD"
+expect_fail "entry-bearing foreign seed rejected (R8)" \
+  scripts/agent_commit.sh --agent auditor --entry J-auditor-0001 --work-order none -m "dirty seed"
+git reset -q; git checkout -q -- "$J_AUD"; rm -f "$J_DV" docs/reports/audit/note.md
+
+# ---- S14: journal deletion --------------------------------------------------
+say "S14: staged journal deletion"
+git rm -q -f "$J_RTL"
+entry orchestrator 0002 "delete a journal" "$J_RTL" >> "$J_ORCH"
+git add "$J_ORCH"
+expect_fail "journal deletion rejected (R3)" \
+  scripts/agent_commit.sh --agent orchestrator --entry J-orchestrator-0002 --work-order none -m "delete"
+git reset -q --hard HEAD
+
+# ---- S15: two entry headers in one append -----------------------------------
+say "S15: two entries appended in one commit"
+echo m >> libs/mod.ml
+entry rtl_lead 0003 "first of two" libs/mod.ml >> "$J_RTL"
+entry rtl_lead 0004 "second of two" >> "$J_RTL"
+git add libs/mod.ml "$J_RTL"
+expect_fail "multi-entry append rejected (R5)" \
+  scripts/agent_commit.sh --agent rtl_lead --entry J-rtl_lead-0003 --work-order WO-0001 -m "two entries"
+git reset -q; git checkout -q -- "$J_RTL" libs/mod.ml
+
+# ---- S16: --entry does not match the appended header ------------------------
+say "S16: trailer/entry vs appended-header mismatch"
+echo m >> libs/mod.ml
+entry rtl_lead 0003 "header says 0003" libs/mod.ml >> "$J_RTL"
+git add libs/mod.ml "$J_RTL"
+expect_fail "mismatched --entry rejected (R6)" \
+  scripts/agent_commit.sh --agent rtl_lead --entry J-rtl_lead-0004 --work-order WO-0001 -m "mismatch"
+git reset -q; git checkout -q -- "$J_RTL" libs/mod.ml
+
+# ---- S17: --journal-only with staged work products --------------------------
+say "S17: journal-only flag with work staged"
+echo m >> libs/mod.ml
+entry rtl_lead 0003 "claims journal-only" >> "$J_RTL"
+git add libs/mod.ml "$J_RTL"
+expect_fail "journal-only with work rejected (R2)" \
+  scripts/agent_commit.sh --agent rtl_lead --entry J-rtl_lead-0003 --work-order none -m "jo" --journal-only
+git reset -q; git checkout -q -- "$J_RTL" libs/mod.ml
+
+# ---- S18: entry missing Files-in-this-commit section ------------------------
+say "S18: entry without Files-in-this-commit"
+echo m >> libs/mod.ml
+cat >> "$J_RTL" <<'EOF'
+
+## [J-rtl_lead-0003] 2026-08-01T00:00:00Z | task:none | no files section
+### Trigger
+x
+### Reasoning
+x
+EOF
+git add libs/mod.ml "$J_RTL"
+expect_fail "missing files section rejected (R4)" \
+  scripts/agent_commit.sh --agent rtl_lead --entry J-rtl_lead-0003 --work-order none -m "nofiles"
+git reset -q; git checkout -q -- "$J_RTL" libs/mod.ml
+
+# ---- S19: architect deny-inside-allow ordering ------------------------------
+say "S19: architect_docs_lead staging docs/reports/audit/"
+J_ARCH=agents/journals/claude_architect_docs_lead_agent.md
+seed_journal "$J_ARCH" architect_docs_lead
+echo x > docs/reports/audit/fake.md
+entry architect_docs_lead 0001 "architect writes into audit dir" docs/reports/audit/fake.md "$J_ARCH" >> "$J_ARCH"
+git add docs/reports/audit/fake.md "$J_ARCH"
+expect_fail "architect blocked from docs/reports/audit (R7)" \
+  scripts/agent_commit.sh --agent architect_docs_lead --entry J-architect_docs_lead-0001 --work-order none -m "deny-order"
+git reset -q; rm -f "$J_ARCH" docs/reports/audit/fake.md
+
+# ---- S20: worker may stage its WO- Return log -------------------------------
+say "S20: worker commit touching agents/handoffs/"
+J_TBW=agents/journals/workers/claude_tb_writer_agent.md
+seed_journal "$J_TBW" tb_writer
+echo bench > test/bench.ml
+echo "RETURNED" > agents/handoffs/WO-0002_bench.md
+entry tb_writer 0001 "bench + WO return log" test/bench.ml agents/handoffs/WO-0002_bench.md >> "$J_TBW"
+git add test/bench.ml agents/handoffs/WO-0002_bench.md "$J_TBW"
+expect_ok "tb_writer WO- return accepted (COH-1 fix)" \
+  scripts/agent_commit.sh --agent tb_writer --entry J-tb_writer-0001 --work-order WO-0002 -m "bench return"
+
+# ---- S21: protected key via --extra-trailer ---------------------------------
+say "S21: --extra-trailer with protected key"
+entry orchestrator 0002 "extra trailer abuse" >> "$J_ORCH"
+git add "$J_ORCH"
+expect_fail "protected extra trailer rejected (R6)" \
+  scripts/agent_commit.sh --agent orchestrator --entry J-orchestrator-0002 --work-order none \
+    -m "abuse" --journal-only --extra-trailer "Agent: auditor"
+git reset -q; git checkout -q -- "$J_ORCH"
+
+# ---- S22: merge commits — trivial passes, content-bearing fails --------------
+say "S22: merge-commit handling in range check"
+git checkout -q -b side
+echo side > libs/side.ml
+entry rtl_lead 0003 "side branch work" libs/side.ml >> "$J_RTL"
+git add libs/side.ml "$J_RTL"
+scripts/agent_commit.sh --agent rtl_lead --entry J-rtl_lead-0003 --work-order WO-0001 -m "side work" > /dev/null
+git checkout -q scratch
+git merge -q --no-ff side -m "milestone merge" > /dev/null 2>&1
+expect_ok "trivial (content-free) merge accepted (R9)" scripts/check_journals.sh --all
+git cat-file blob "HEAD:libs/side.ml" > /dev/null   # sanity: merged content present
+echo sneak > libs/sneak.ml
+git add libs/sneak.ml
+git commit -q --amend --no-edit
+expect_fail "content-bearing merge rejected (R9)" scripts/check_journals.sh --all
+git reset -q --hard HEAD~1
+git branch -q -D side
 
 # ---- summary ----------------------------------------------------------------
 say ""

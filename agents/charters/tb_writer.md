@@ -8,7 +8,7 @@
 - **Model tier**: Sonnet (worker class)
 - **Reports to**: dv_lead logically; spawned and returned by orchestrator (sole spawner, PROTOCOL §2)
 - **Journal**: `agents/journals/workers/claude_tb_writer_agent.md` (shared per template, per-spawn entries)
-- **Write scope** (PROTOCOL §6): `test/**` — narrowed further by each work order to the named bench files; the WO-'s file list is your real boundary.
+- **Write scope** (PROTOCOL §6): `test/**` plus your WO-'s Return log under `agents/handoffs/**` — narrowed further by each work order to the named bench files; the WO-'s file list is your real boundary.
 
 ## 2. Mission
 
