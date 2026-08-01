@@ -17,23 +17,37 @@ G0 passes. Signatures are journal-entry references (PROTOCOL §7).
 | 9 | **Sponsor**: branch protection on `main` AND the working branch (`claude/fpga-hardcaml-agent-orchestration-37ceyf` — daily commits land there; `main` receives milestone PRs only). Exact click-path below. | Renato | ☐ | (sponsor confirmation) |
 | 10 | Auditor's G0 retro-audit of the M0 commit range committed to `docs/reports/audit/` | auditor | ☐ | |
 
-## Item 9 click-path (branch protection)
+## Item 9 click-path (branch rulesets)
 
+Use GitHub's **rulesets** (Settings → Rules → Rulesets), not classic branch
+protection — an empty bypass list makes a ruleset admin-proof by default.
 Do this **only after item 5 is green** — the `journal-check` status check must
-have run at least once before GitHub will list it. Then, for **each** of
-`main` and `claude/fpga-hardcaml-agent-orchestration-37ceyf`:
+have run at least once before GitHub will list it in the picker.
 
-1. GitHub → repo → **Settings** → **Branches** → **Add branch protection rule**.
-2. *Branch name pattern*: the branch name (one rule per branch).
-3. Check **"Require status checks to pass before merging"** and select
-   `journal-check` from the picker.
-4. Leave **"Allow force pushes"** and **"Allow deletions"** UNCHECKED (they
-   are off by default — there is no "disable" toggle to find).
-5. Check **"Do not allow bypassing the above settings"** — without this, the
-   admin account (the same one this session pushes with) can still
-   force-push, which voids the append-only guarantee this item exists for
-   (ADR-0001).
-6. **Save**.
+**Ruleset 1 — "protect-history"** (guards git history on both branches):
+1. **New ruleset → New branch ruleset**; name it `protect-history`.
+2. *Enforcement status*: **Active**.
+3. *Bypass list*: leave **empty** — this is what stops the admin account
+   (the same one this session pushes with) from force-pushing history away
+   (ADR-0001's append-only guarantee depends on it).
+4. *Target branches* → Include by pattern → add `main`, then add
+   `claude/fpga-hardcaml-agent-orchestration-37ceyf`.
+5. *Rules*: check **Restrict deletions** and **Block force pushes**.
+6. **Create**.
+
+**Ruleset 2 — "main-requires-ci"** (`main` only):
+1. New branch ruleset, name `main-requires-ci`, Active, empty bypass list.
+2. *Target branches*: `main` only.
+3. *Rules*: **Require status checks to pass** → add `journal-check`.
+   Optionally also **Require a pull request before merging** (R9: `main`
+   receives milestone PRs only).
+4. **Create**.
+
+**Why the split**: GitHub rejects direct pushes to any branch with required
+status checks (new commits can't have passing checks yet). The orchestrator
+pushes directly to the working branch, so the check requirement must bind
+`main` only; the working branch is guarded by force-push/deletion blocking,
+with CI failing publicly on every push as the detection mechanism.
 
 **Exit**: all items checked → orchestrator declares G0 passed in its journal,
 updates `tasks/BOARD.md`, and M1 work orders may issue.

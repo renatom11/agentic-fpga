@@ -328,3 +328,33 @@ none
 ### Files-in-this-commit
 - docs/gates/G0-checklist.md
 - tasks/BOARD.md
+
+## [J-orchestrator-0008] 2026-08-01T19:50:28Z | task:none | Correct G0 item-9 click-path: rulesets, and required checks on main only
+### Trigger
+Sponsor asked whether to use "Add branch ruleset" or classic branch
+protection while executing G0 item 9.
+### Inputs
+docs/gates/G0-checklist.md; GitHub rulesets vs classic protection semantics.
+### Reasoning
+Two corrections. (1) Recommend rulesets over classic: one ruleset targets
+both branches, and an empty bypass list is admin-proof by default, versus
+classic's easy-to-miss "do not allow bypassing" checkbox. (2) A real defect
+in the prior instructions: requiring the journal-check status on the WORKING
+branch would block the orchestrator's own direct pushes (GitHub rejects
+direct pushes to branches with required checks), locking the org out of its
+branch. Required checks therefore bind main only; the working branch gets
+force-push/deletion blocking, with post-push CI as public detection —
+which is the guarantee the docs actually claim. The checklist now explains
+the split so a future reader does not "fix" it back.
+### Actions
+Rewrote the item-9 click-path as two rulesets (protect-history on both
+branches; main-requires-ci on main only) with the rationale inline.
+### Evidence
+none (documentation correction; behavior verifiable when sponsor applies it)
+### Outcome
+Item 9 executable as written without breaking the working branch. Handoff:
+sponsor performs the click-path.
+### Open-questions
+none
+### Files-in-this-commit
+- docs/gates/G0-checklist.md
