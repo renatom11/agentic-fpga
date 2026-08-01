@@ -1,0 +1,43 @@
+name: journal-check
+
+# Re-verifies the journal/commit protocol (agents/PROTOCOL.md §5) over every
+# pushed commit, so a locally bypassed check still fails before merge.
+# This workflow is intentionally OCaml-free; the build/test CI arrives in M1.
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  journal-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Protocol enforcement self-test
+        run: bash scripts/test_protocol.sh
+
+      - name: Verify commit range
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          BEFORE_SHA: ${{ github.event.before }}
+          AFTER_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            RANGE="$BASE_SHA..$AFTER_SHA"
+          elif [ -n "$BEFORE_SHA" ] \
+              && [ "$BEFORE_SHA" != "0000000000000000000000000000000000000000" ] \
+              && git cat-file -e "$BEFORE_SHA" 2>/dev/null; then
+            RANGE="$BEFORE_SHA..$AFTER_SHA"
+          else
+            RANGE=""
+          fi
+          if [ -n "$RANGE" ]; then
+            bash scripts/check_journals.sh --range "$RANGE"
+          else
+            bash scripts/check_journals.sh --all
+          fi

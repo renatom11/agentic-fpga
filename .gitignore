@@ -1,0 +1,14 @@
+# OCaml / dune (arrives in M1)
+_build/
+_opam/
+*.install
+.merlin
+
+# Market data — never committed; fetch scripts + checksums live in tools/
+*.NASDAQ_ITCH50
+*.NASDAQ_ITCH50.gz
+tools/data/
+
+# Editor / OS noise
+*.swp
+.DS_Store
