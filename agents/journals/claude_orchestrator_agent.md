@@ -1058,3 +1058,31 @@ Sponsor: confirm the 24-cycle rx latency budget stands as a REQ.
 ### Files-in-this-commit
 - agents/handoffs/WO-0002_p1-requirements-architecture.md
 - tasks/BOARD.md
+
+## [J-orchestrator-0026] 2026-08-02T00:02:00Z | task:WO-0002 | Correction: WO-0002 board row missed in fd4bcca
+### Trigger
+Post-push read of tasks/BOARD.md: the open-work paragraph was updated but
+the WO-0002 table row still said ISSUED — J-0025's Actions overstated
+what landed.
+### Inputs
+tasks/BOARD.md at fd4bcca; the failed command's stderr.
+### Reasoning
+The row edit ran through sed with `#` as the substitution delimiter, and
+the replacement text itself contains "Spawn #1" — sed died with "unknown
+option to `s'" and the compound command carried on to the commit. Two
+lessons applied: the row is now edited with the same assert-guarded
+python pattern as the paragraph edit (fails loudly if the target string
+is absent), and J-0025 stands corrected here rather than edited (R3:
+journals are append-only; corrections are new entries, per the auditor's
+own precedent in J-auditor-0002).
+### Actions
+BOARD WO-0002 row → ACCEPTED (the text J-0025 described).
+### Evidence
+fd4bcca's tree shows the row unchanged (`git show fd4bcca:tasks/BOARD.md`
+line for WO-0002); this commit's diff is exactly the one row.
+### Outcome
+Board consistent with the Return log and J-0025's intent. Handoff: none.
+### Open-questions
+none
+### Files-in-this-commit
+- tasks/BOARD.md
