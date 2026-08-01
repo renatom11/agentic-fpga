@@ -1,0 +1,4 @@
+(executable
+ (name generate)
+ (libraries hardcaml hardcaml_ethernet)
+ (preprocess (pps ppx_jane)))

@@ -1,0 +1,40 @@
+name: build
+
+# The authoritative build/test environment for this project. The development
+# container's network policy blocks opam package downloads (see ADR-0005), so
+# CI — not a developer machine — is where OCaml correctness is established.
+# Every RTL and DV work order is verified here before its gate signature.
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up OCaml
+        uses: ocaml/setup-ocaml@v3
+        with:
+          ocaml-compiler: "5.1"
+          dune-cache: true
+
+      - name: Install dependencies
+        run: opam install . --deps-only --with-test --yes
+
+      - name: Build
+        run: opam exec -- dune build @default
+
+      - name: Run tests (expect tests, waveform snapshots)
+        run: opam exec -- dune runtest
+
+      - name: Generate RTL
+        run: opam exec -- dune exec bin/generate.exe
+
+      - name: Verify nothing was left unpromoted or non-deterministic
+        # Catches two distinct failures with one check:
+        #  * an expect test whose output changed but was never promoted
+        #  * RTL generation that is not byte-reproducible (rtl_snapshots drift)
+        run: git diff --exit-code

@@ -657,3 +657,66 @@ none
 ### Files-in-this-commit
 - scripts/agent_commit.sh
 - scripts/test_protocol.sh
+
+## [J-orchestrator-0016] 2026-08-01T21:01:06Z | task:none | M1 skeleton: dune project, first Hardcaml module, expect test, RTL generator, build CI
+### Trigger
+M1 toolchain stream. ADR-0004 pinned the lane (released Hardcaml v0.17.x);
+this lays the project structure every later work order builds into.
+### Inputs
+docs/adr/ADR-0004-toolchain-lane.md; hardcaml_template_project conventions
+and hardcaml_zprize layout from M0 research; agents/PROTOCOL.md §6 (the
+write-scope tree the layout must match).
+### Reasoning
+The skeleton is deliberately a WORKING vertical slice rather than empty
+directories: a typed Interface record with [@@deriving hardcaml], a
+registered state element, hierarchical instantiation, a Cyclesim expect test
+with a waveterm snapshot, and Verilog emission into rtl_snapshots/. That
+proves the whole toolchain path — build, simulate, snapshot-diff, emit —
+before any real module depends on it, so a Phase-1 module failure is a
+design failure and never a plumbing failure. word_counter is scaffolding
+(one word per cycle, no backpressure — the shape every rx-path module
+takes); the frozen specs decide what replaces it.
+Layout matches PROTOCOL §6 exactly: libs/ and bin/ and rtl_snapshots/ are
+rtl_lead's scope, test/ is dv_lead's — so the write-scope rules bind real
+directories from the first OCaml commit rather than hypothetical ones.
+CI is structured as the four-step verification chain: build, runtest,
+generate, then git diff --exit-code, which catches an unpromoted expect
+snapshot and non-deterministic Verilog with one check. Note the expect
+snapshot is intentionally empty in this commit: with no local toolchain
+(see the environment constraint below) the true waveform must come from CI's
+own diff, and promoting from CI output is the honest path — the alternative,
+inventing a snapshot, would be fabricated evidence.
+ENVIRONMENT CONSTRAINT discovered this milestone: the container's network
+policy denies opam package fetches — opam.ocaml.org unreachable, GitHub
+/archive/ and codeload 403 (git clone and GitHub /releases/ do pass). CI has
+no such restriction, so GitHub Actions is the authoritative build
+environment; a local switch is a convenience being pursued separately, not a
+dependency. This is recorded in the build workflow header and will be an ADR
+if it persists.
+### Actions
+Wrote dune-project, agentic_fpga.opam (version-bounded to the v0.17 line per
+ADR-0004), .ocamlformat; libs/hardcaml_ethernet/src/{dune,word_counter.ml,
+word_counter.mli}; bin/{dune,generate.ml}; test/hardcaml_ethernet/{dune,
+test_word_counter.ml}; .github/workflows/build.yml.
+### Evidence
+bash scripts/test_protocol.sh → "protocol self-test: 29 passed, 0 failed"
+(unchanged by this commit; the OCaml chain's evidence is the build workflow
+run triggered by this push — CI run ID cited in the follow-up entry once it
+reports, per the F5 rule).
+### Outcome
+Project skeleton committed; OCaml correctness now verifiable in CI. Expect
+snapshot pending promotion from the first CI diff. Handoff: none.
+### Open-questions
+none
+### Files-in-this-commit
+- .github/workflows/build.yml
+- .ocamlformat
+- agentic_fpga.opam
+- bin/dune
+- bin/generate.ml
+- dune-project
+- libs/hardcaml_ethernet/src/dune
+- libs/hardcaml_ethernet/src/word_counter.ml
+- libs/hardcaml_ethernet/src/word_counter.mli
+- test/hardcaml_ethernet/dune
+- test/hardcaml_ethernet/test_word_counter.ml

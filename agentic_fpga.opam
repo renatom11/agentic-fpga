@@ -1,0 +1,17 @@
+opam-version: "2.0"
+synopsis: "Agent-built Hardcaml trading NIC (Phase 1: 10G Ethernet subsystem)"
+maintainer: "renatom11"
+authors: ["Agentic FPGA org"]
+homepage: "https://github.com/renatom11/agentic-fpga"
+bug-reports: "https://github.com/renatom11/agentic-fpga/issues"
+depends: [
+  "ocaml"              {>= "4.14"}
+  "dune"               {>= "3.0"}
+  "hardcaml"           {>= "v0.17" & < "v0.18"}
+  "ppx_hardcaml"       {>= "v0.17" & < "v0.18"}
+  "hardcaml_waveterm"  {>= "v0.17" & < "v0.18"}
+  "ppx_expect"         {>= "v0.17" & < "v0.18"}
+  "ppx_jane"           {>= "v0.17" & < "v0.18"}
+  "core"               {>= "v0.17" & < "v0.18"}
+]
+build: [["dune" "build" "-p" name "-j" jobs]]
