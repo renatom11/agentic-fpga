@@ -16,7 +16,13 @@
 - **Verdict (G0 checklist item 10)**: **PASS WITH FINDINGS** (the deliverable
   exists and is committed) — but **G0 as a whole is BLOCKED** by one CRITICAL
   finding, per WO-0001's own rule that "CRITICAL findings block G0".
-  Tally: **1 CRITICAL, 5 MAJOR, 7 MINOR, 4 NOTE**.
+  Tally: **1 CRITICAL, 7 MAJOR, 7 MINOR, 2 NOTE** (17 findings).
+  *Correction, `J-auditor-0002`*: the version of this report committed at
+  `bd7fbcf` stated "5 MAJOR ... 4 NOTE" in this line and in §10 — my own
+  arithmetic error, of the same class as the one I filed as AUD-0001-F6 against
+  the orchestrator. Corrected here rather than quietly; the per-finding
+  severities themselves never changed except AUD-0001-F15, raised NOTE → MAJOR
+  for the reason given in that finding.
 - **E4 relay required**: AUD-0001-F17 is CRITICAL and must reach the human
   sponsor **verbatim** (PROTOCOL §8, charter §7). It concerns a contradiction
   inside the constitution being ratified at this gate.
@@ -272,10 +278,10 @@ Findings are numbered in discovery order, not severity order. Index:
 | F10 | MINOR | Stale branch-protection restatement in `orchestrator.md:37` | orchestrator |
 | F11 | MINOR | Six of ten open questions recorded nowhere | orchestrator |
 | F12 | MINOR | G0 item 7's signature precedes its own evidence | orchestrator |
+| F15 | MAJOR | Shared tree committed from 3× mid-audit; this report published mid-edit | orchestrator |
 | F16 | MINOR | One pending sponsor item carries no escalation class | orchestrator |
 | F13 | NOTE | Non-roster subagent content under orchestrator trailer (precedent boundary) | — |
 | F14 | NOTE | 26/26 review acceptance is an unmeasured independence signal | — |
-| F15 | NOTE | Audit baseline moved mid-audit; shared-tree commit hazard | — |
 
 Every finding is against the orchestrator for the structural reason given in §1:
 it authored all seven commits. That is not a judgement of the orchestrator
@@ -383,7 +389,17 @@ newest push, and no run since `b135a7f` has re-examined `7f54130`.
 the ultimate guarantee. Until item 9 lands, PROTOCOL §5's append-only property is
 enforced by nothing but the orchestrator's own discipline.
 
-**Note on cost**: the repository is 7 commits; `check_journals.sh --all` took
+**Interaction with the corrected item 9** (`J-orchestrator-0008`, `b35c72f`,
+landed while this audit was running): the click-path now binds required status
+checks to `main` only, and gives the working branch force-push/deletion blocking
+with "post-push CI as public detection". That resolves a real lockout defect and
+does **not** weaken this finding — force-push blocking is precisely what F3 needs
+— but it makes the reasoning explicit that the working branch's append-only
+property rests on *blocking rewrites*, not on *detecting* them, because CI as
+configured cannot detect them (this finding). The two controls are not redundant
+there; only one of them exists.
+
+**Note on cost**: the repository is 8 commits; `check_journals.sh --all` took
 well under a second in run 1. I state this only to characterise the finding, not
 to prescribe — I do not fix what I find, and the disposition is the
 orchestrator's.
@@ -639,26 +655,67 @@ E5 exists for disputes between *leads*; there is no analogue for a review round.
 
 ---
 
-### AUD-0001-F15 — **NOTE** — The audit baseline moved mid-audit; shared-tree commit hazard
+### AUD-0001-F15 — **MAJOR** — The shared working tree was committed from three times mid-audit, and the third commit published this report in a mid-edit state
 
-While this audit was executing, the orchestrator committed and pushed `75d47ed`
-(`J-orchestrator-0007`), moving `HEAD` from `bace24f`. Confirmed in the reflog:
-`75d47ed HEAD@{0}: commit` / `bace24f HEAD@{1}: commit`, with `75d47ed` authored
-`2026-08-01T19:41:51Z` and CI run 6 at `19:41:54Z` — after my spawn.
+**Severity raised from NOTE to MAJOR during the audit**, because the hazard
+stopped being hypothetical and occurred.
 
-Nothing in PROTOCOL forbids this, and I raise no defect. Two consequences worth
-recording:
+**What happened**: `bd7fbcf` ("AUD-0001: G0 retro-audit of the M0 commit range",
+`Agent: auditor`, `Journal-Entry: J-auditor-0001`) staged and pushed this report
+and my journal entry **while I was still editing the report**. The commit itself
+is protocol-clean — correct trailer, correct attribution to me, R4-exact — but
+it captured an intermediate draft. Twenty-eight lines of corrections I had
+already written (the re-verified SHA basis, this finding's own update, and the
+item-9 interaction note in AUD-0001-F3) were not in it, and `bd7fbcf` is now
+pushed, so R9 forbids amending it. A follow-up commit is required to land the
+corrections, which is why `J-auditor-0002` exists.
 
-1. **Baseline drift.** My window was defined against `bace24f`; citations in this
-   report were re-checked at `75d47ed` and all still hold, but a longer audit
-   against a moving tip would produce citations that no longer resolve.
-2. **A real R1/R4/R7 hazard.** Agents write deliverables into the *shared*
-   working tree and the orchestrator stages from it. A commit landing while
-   another agent's uncommitted files sit in that tree can sweep them into an
-   orchestrator-attributed commit — which R4 would catch only if the files-list
-   happened to mismatch, and R7 would never catch, because the orchestrator's
-   scope is everything. A commit freeze for the duration of a spawn, or
-   explicit path-scoped staging (never `git add -A`), would close it.
+**Verified**: `git ls-remote origin` tip == `bd7fbcf` == local `HEAD`;
+`git diff --stat docs/reports/audit/AUD-0001-g0-retro.md` at that moment showed
+`1 file changed, 28 insertions(+), 12 deletions(-)` still uncommitted;
+`git show --format='' --name-status bd7fbcf` →
+`M agents/journals/claude_auditor_agent.md`, `A docs/reports/audit/AUD-0001-g0-retro.md`.
+
+**No agent signalled completion.** I had not returned, and — per AUD-0001-F17 — I
+*cannot* signal completion the protocol way, because moving `WO-0001` to
+RETURNED requires writing a packet outside my scope. The two findings compound:
+F17 removes the completion signal, and without it the committer has nothing to
+wait for.
+
+**Full sequence.** While this audit was executing, `HEAD` moved three times:
+`bace24f` → `75d47ed` (`J-orchestrator-0007`, `19:41:51Z`, CI run 6 at
+`19:41:54Z`) → `b35c72f` (`J-orchestrator-0008`, "G0: item-9 click-path
+corrected") → `bd7fbcf` (the commit of this report, described above). All three
+are after my spawn and after `WO-0001` was issued.
+
+I raise no defect against the *content* of the first two — `J-orchestrator-0008`
+in particular corrects a real lockout defect it found in the item-9 instructions
+(required status checks on the working branch would have blocked the org's own
+direct pushes), which is good work found by the orchestrator itself. The defect
+is in the *timing discipline*, and its consequences are:
+
+1. **Baseline drift.** My window was defined against `bace24f` and the tip moved
+   twice underneath it. I re-verified every file:line citation at `b35c72f` and
+   all of them still resolve, but that re-verification was luck of timing, not
+   design: a third commit touching `agents/PROTOCOL.md` or `scripts/policy.sh`
+   would have invalidated citations in a report already written.
+2. **Premature capture of an agent's deliverable** — the event described above.
+   Here it produced a stale-but-honest report. The same timing against a
+   different agent produces worse: a half-written `SO-` packet committed as a
+   PASS, or RTL staged between two edits and signed off in that state.
+3. **A latent R1/R4/R7 hazard** that did not fire this time but is adjacent.
+   Agents write deliverables into the *shared* working tree and the orchestrator
+   stages from it. A commit landing while a *different* agent's uncommitted files
+   sit in that tree can sweep them into a commit attributed to someone else —
+   which R4 catches only if the files-list happens to mismatch, and R7 never
+   catches when the committer is the orchestrator, whose scope is everything.
+   At M0 there was only ever one other agent in the tree (me); from M1 there
+   will be several.
+
+**Recommended control** (orchestrator's to choose): a commit freeze for the
+duration of a spawn, or path-scoped staging that never uses `git add -A`, plus
+an explicit completion signal from the spawned agent — which today requires
+fixing AUD-0001-F17 first, since the packet Return log is that signal.
 
 ---
 
@@ -813,7 +870,7 @@ inferring it from the absence of findings:
 
 | Gate | Item | Verdict | Basis |
 |---|---|---|---|
-| `G0` | **10 — Auditor's G0 retro-audit of the M0 commit range committed to `docs/reports/audit/`** | **PASS WITH FINDINGS** | Item 10's own condition — an audit report committed — is satisfied by this file. 1 CRITICAL, 5 MAJOR, 7 MINOR, 4 NOTE. |
+| `G0` | **10 — Auditor's G0 retro-audit of the M0 commit range committed to `docs/reports/audit/`** | **PASS WITH FINDINGS** | Item 10's own condition — an audit report committed — is satisfied by this file. 1 CRITICAL, 7 MAJOR, 7 MINOR, 2 NOTE. |
 | `G0` | **gate as a whole** | **BLOCKED** | `WO-0001` states "CRITICAL findings block G0". **AUD-0001-F17** is open. G0 cannot close until it is dispositioned by ADR and re-verified by me. Item 9 (sponsor, branch protection) is also still outstanding. |
 
 The two rows are deliberately separate. Item 10 asks for a committed audit
@@ -843,10 +900,13 @@ its being a committed file under `docs/reports/audit/` is the compensating
 control that lets the sponsor read it without the relaying party in between.
 
 **Recommended disposition order** (the orchestrator decides; I do not fix):
-**AUD-0001-F17 first** — it blocks G0 and requires an ADR either way. Then
-AUD-0001-F1, F2 and F3, which concern the enforcement machinery's evidence and
-should be closed before that machinery is asked to carry RTL. Then F4 and F7,
-which concern governance records and will compound at every subsequent gate.
+**AUD-0001-F17 first** — it blocks G0, requires an ADR either way, and is a
+precondition for fixing F15 (the packet Return log is the completion signal a
+commit-freeze discipline needs). **F15 second** — it has already fired once and
+will fire against RTL and `SO-` packets from M1. Then AUD-0001-F1, F2 and F3,
+which concern the enforcement machinery's evidence and should be closed before
+that machinery is asked to carry RTL. Then F4 and F7, which concern governance
+records and will compound at every subsequent gate.
 Each should be closed with a journal entry and re-verified by me, or accepted in
 writing with a rationale; silence is not a disposition.
 

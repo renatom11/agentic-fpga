@@ -256,3 +256,120 @@ authority.
    finding I can close.
 ### Files-in-this-commit
 - docs/reports/audit/AUD-0001-g0-retro.md
+
+## [J-auditor-0002] 2026-08-01T20:04:00Z | task:WO-0001 | Correct AUD-0001 after it was committed mid-edit; raise F15 to MAJOR
+### Trigger
+While I was still editing docs/reports/audit/AUD-0001-g0-retro.md, the
+orchestrator staged, committed and pushed it as bd7fbcf ("AUD-0001: G0
+retro-audit of the M0 commit range", Agent: auditor, Journal-Entry:
+J-auditor-0001). The commit captured an intermediate draft: 28 lines of
+corrections I had already written were left uncommitted. bd7fbcf is pushed, so
+R9 forbids amending it and a follow-up commit is the only lawful repair. R2
+requires that follow-up commit to carry a journal append, which is this entry.
+No new audit work was performed; this is a correction of AUD-0001 only.
+### Inputs
+docs/reports/audit/AUD-0001-g0-retro.md (the committed version at bd7fbcf and my
+working copy); agents/journals/claude_auditor_agent.md (J-auditor-0001, read but
+not modified — it is committed and append-only); commit objects 75d47ed,
+b35c72f, bd7fbcf; `git ls-remote origin`; agents/PROTOCOL.md §5 R9, §4.2.
+### Reasoning
+Three things needed fixing and one needed deciding.
+
+FIX 1, my own arithmetic error. The committed report's header and gate-verdict
+row both said "1 CRITICAL, 5 MAJOR, 7 MINOR, 4 NOTE". Counting the severity tags
+on the 17 finding headings gives 1/7/7/2. The per-finding severities were never
+wrong — only the summary. I corrected it in place and, rather than silently, I
+annotated the correction in the report and named it as the same class of defect
+I had just filed against the orchestrator as AUD-0001-F6 (a misstated severity
+tally). An auditor who files F6 and then quietly fixes its own instance of F6
+has forfeited the standing to file it.
+
+FIX 2, restore the 28 lost lines: the re-verified SHA basis (every file:line
+citation re-checked at b35c72f after the tip moved), the AUD-0001-F3 note on how
+the corrected item-9 click-path interacts with that finding, and the F15 update.
+
+FIX 3, severity. I raised AUD-0001-F15 from NOTE to MAJOR. When I wrote it, it
+described a hazard: "a commit landing while another agent's uncommitted files sit
+in the tree can capture them". Before I finished the report, that hazard fired
+and captured this report. A finding that predicts an event which then occurs
+inside the same audit cannot honestly stay a NOTE. I considered whether raising
+it looks self-serving, since the event inconvenienced me — I concluded the
+opposite risk is worse: leaving it at NOTE would understate a control gap that
+from M1 could commit a half-written SO- packet as a PASS or sign off RTL caught
+between two edits. The severity follows the consequence class, not the victim.
+
+THE DECISION: whether to write this second entry at all. My spawn instruction
+said "append exactly one journal entry", which assumed one commit. Two commits
+now exist, and R2 makes one journal append per commit mandatory; a second commit
+with no entry would be refused by agent_commit.sh and would be a coupling
+violation in CI. Protocol beats instruction. I kept the entry narrow — correction
+only, no new findings, no re-opened analysis — so the record stays proportionate
+to what actually changed. I also considered leaving the stale report standing and
+noting the errors in a future AUD-0002; I rejected that because a committed audit
+report carrying a wrong severity tally in its own header is a false claim sitting
+in the evidence base for a gate, and audit reports are the one artifact that
+cannot be allowed to be wrong-but-superseded.
+
+I did not touch J-auditor-0001. It is committed, append-only, and its Evidence
+records HEAD as 75d47ed — true when observed. The divergence between that and
+the eventual commit parent is itself evidence for AUD-0001-F15 and is explained
+in the report rather than edited away.
+### Actions
+Recounted all 17 finding severities from the report's own headings; corrected
+the tally in the report header and in the §10 gate-verdict row with an inline
+note of the correction; restored the SHA-basis paragraph, the AUD-0001-F3
+item-9 interaction note, and the rewritten AUD-0001-F15; raised F15 to MAJOR and
+updated the §8 findings index and the §10 disposition order accordingly. Ran no
+git command that writes: no commit, no push, no amend, no checkout, no force.
+### Evidence
+`git log --oneline -1` -> bd7fbcf "AUD-0001: G0 retro-audit of the M0 commit range"
+`git show --format='' --name-status bd7fbcf` ->
+  M agents/journals/claude_auditor_agent.md
+  A docs/reports/audit/AUD-0001-g0-retro.md
+`git log -1 --format=%B bd7fbcf` -> trailers Agent: auditor, Work-Order: WO-0001,
+  Journal-Entry: J-auditor-0001 (the commit itself is protocol-correct; only its
+  timing is the finding)
+`git ls-remote origin refs/heads/claude/fpga-hardcaml-agent-orchestration-37ceyf`
+  -> bd7fbcf == local HEAD, i.e. already pushed, so R9 bars amending it.
+`git diff --stat docs/reports/audit/AUD-0001-g0-retro.md` at the moment of
+  discovery -> "1 file changed, 28 insertions(+), 12 deletions(-)" uncommitted.
+
+Severity recount, from the report's own finding headings
+(`grep -o '^### AUD-0001-F[0-9]* — \*\*[A-Z]*\*\*' | sort | uniq -c`):
+  1 CRITICAL (F17); 7 MAJOR (F1,F2,F3,F4,F5,F7,F15); 7 MINOR
+  (F6,F8,F9,F10,F11,F12,F16); 2 NOTE (F13,F14). Total 17.
+  Committed-at-bd7fbcf header claimed 1/5/7/4 -> corrected to 1/7/7/2.
+
+Citation re-verification at b35c72f (all still resolve, hence the report's
+SHA-basis note): agents/PROTOCOL.md:66-69 and :221 (the F17 contradiction);
+scripts/policy.sh:61-65; scripts/test_protocol.sh:112; scripts/check_journals.sh:41-43
+and :60-64; agents/charters/orchestrator.md:37; tasks/BOARD.md:34 and :40;
+docs/adr/ADR-0002-adversarial-review-fixes.md:8 and :15-17;
+.claude/agents/data_wrangler.md:4. Re-ran the F17 probe at b35c72f:
+`. scripts/policy.sh; agent_may_write auditor agents/handoffs/x.md` -> DENIED.
+
+Journal append integrity for this entry: the file as committed at bd7fbcf is a
+byte-prefix of the file I am handing over (verified with cmp against a
+pre-append copy), so R3 holds and J-auditor-0001 is untouched.
+### Outcome
+DoD: the correction is complete and AUD-0001 now states its own findings
+accurately. The audit's substantive verdict is UNCHANGED — G0 checklist item 10
+PASS WITH FINDINGS, G0 as a whole BLOCKED by the open CRITICAL AUD-0001-F17.
+The tally is now 1 CRITICAL, 7 MAJOR, 7 MINOR, 2 NOTE.
+Handoff: docs/reports/audit/AUD-0001-g0-retro.md to the orchestrator for a
+second commit under trailer Agent: auditor, Journal-Entry: J-auditor-0002. That
+commit is required, not optional — without it the pushed report misstates its
+own severity tally. WO-0001's Return log remains untranscribed and outside my
+write scope (AUD-0001-F17); the orchestrator must write it.
+### Open-questions
+1. All five open questions from J-auditor-0001 remain open; none are closed by
+   this correction.
+2. AUD-0001-F15 now needs a concrete control chosen by the orchestrator (commit
+   freeze during a spawn, or path-scoped staging plus an explicit completion
+   signal). The completion signal depends on AUD-0001-F17 being fixed first,
+   since the packet Return log is that signal and I cannot write it.
+3. If the orchestrator disputes raising F15 to MAJOR, my charter §7 puts that on
+   the E5 path: one round of written argument in packets, and the finding stands
+   as written until adjudicated. I will not soften it to settle.
+### Files-in-this-commit
+- docs/reports/audit/AUD-0001-g0-retro.md
