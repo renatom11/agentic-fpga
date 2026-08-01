@@ -1,7 +1,9 @@
 name: journal-check
 
-# Re-verifies the journal/commit protocol (agents/PROTOCOL.md §5) over every
-# pushed commit, so a locally bypassed check still fails before merge.
+# Re-verifies the journal/commit protocol (agents/PROTOCOL.md §5). Runs the
+# check over the FULL history every time — an incremental range check cannot
+# detect a rewrite of already-pushed history (AUD-0001-F3) — and then over the
+# pushed range for a precise failure message.
 # This workflow is intentionally OCaml-free; the build/test CI arrives in M1.
 
 on:
@@ -18,6 +20,9 @@ jobs:
 
       - name: Protocol enforcement self-test
         run: bash scripts/test_protocol.sh
+
+      - name: Verify full history (append-only cannot be re-checked incrementally)
+        run: bash scripts/check_journals.sh --all
 
       - name: Verify commit range
         env:

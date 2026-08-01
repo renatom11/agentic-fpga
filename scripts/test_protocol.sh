@@ -18,7 +18,20 @@ bad()  { FAIL=$((FAIL + 1)); say "  FAIL: $*"; }
 
 # expect_ok / expect_fail run a command and check its exit status.
 expect_ok()   { local d="$1"; shift; if "$@" > /dev/null 2>&1; then ok "$d"; else bad "$d (unexpectedly rejected)"; fi; }
-expect_fail() { local d="$1"; shift; if "$@" > /dev/null 2>&1; then bad "$d (unexpectedly accepted)"; else ok "$d"; fi; }
+# expect_fail asserts BOTH that the command failed AND that it failed for the
+# named reason — a non-zero exit alone would let a scenario pass on an
+# unrelated rejection (AUD-0001-F1).
+expect_fail() {
+  local d="$1" pat="$2"; shift 2
+  local out
+  if out=$("$@" 2>&1); then
+    bad "$d (unexpectedly accepted)"
+  elif [ -n "$pat" ] && ! printf '%s\n' "$out" | grep -qE "$pat"; then
+    bad "$d (rejected, but for the wrong reason: $(printf '%s\n' "$out" | grep -i 'VIOLATION\|fatal' | tail -1))"
+  else
+    ok "$d"
+  fi
+}
 
 # ---- scratch repo -----------------------------------------------------------
 cd "$SANDBOX"
@@ -90,7 +103,7 @@ expect_ok "bootstrap commit accepted" \
 say "S2: work without journal append"
 echo x > libs/mod.ml
 git add libs/mod.ml
-expect_fail "work-only commit rejected (R2)" \
+expect_fail "work-only commit rejected (R2)" "R2" \
   scripts/agent_commit.sh --agent rtl_lead --entry J-rtl_lead-0001 --work-order WO-0001 -m "no journal"
 git reset -q
 
@@ -107,9 +120,9 @@ sed -i 's/test reasoning/REVISED HISTORY/' "$J_RTL"
 entry rtl_lead 0002 "tamper attempt" libs/mod.ml >> "$J_RTL"
 echo y >> libs/mod.ml
 git add libs/mod.ml "$J_RTL"
-expect_fail "non-append journal edit rejected (R3)" \
+expect_fail "non-append journal edit rejected (R3)" "R3" \
   scripts/agent_commit.sh --agent rtl_lead --entry J-rtl_lead-0002 --work-order WO-0001 -m "tamper"
-git checkout -q -- "$J_RTL"; git reset -q; git checkout -q -- libs/mod.ml
+git reset -q; git checkout -q HEAD -- "$J_RTL" libs/mod.ml
 
 # ---- S5: files-list mismatch ------------------------------------------------
 say "S5: Files-in-this-commit mismatch"
@@ -117,7 +130,7 @@ echo y >> libs/mod.ml
 echo z > libs/other.ml
 entry rtl_lead 0002 "claims one file, stages two" libs/mod.ml >> "$J_RTL"
 git add libs/mod.ml libs/other.ml "$J_RTL"
-expect_fail "files-list mismatch rejected (R4)" \
+expect_fail "files-list mismatch rejected (R4)" "R4" \
   scripts/agent_commit.sh --agent rtl_lead --entry J-rtl_lead-0002 --work-order WO-0001 -m "mismatch"
 git reset -q; git checkout -q -- "$J_RTL" libs/mod.ml; rm -f libs/other.ml
 
@@ -126,7 +139,7 @@ say "S6: rtl_lead staging a test file"
 echo t > test/mod_test.ml
 entry rtl_lead 0002 "rtl touches tests" test/mod_test.ml >> "$J_RTL"
 git add test/mod_test.ml "$J_RTL"
-expect_fail "rtl_lead writing test/ rejected (R7)" \
+expect_fail "rtl_lead writing test/ rejected (R7)" "R7" \
   scripts/agent_commit.sh --agent rtl_lead --entry J-rtl_lead-0002 --work-order WO-0001 -m "cross-scope"
 git reset -q; git checkout -q -- "$J_RTL"; rm -f test/mod_test.ml
 
@@ -134,7 +147,7 @@ say "S6b: auditor staging outside docs/reports/audit/"
 echo a > libs/hack.ml
 entry auditor 0001 "auditor fixes code" libs/hack.ml >> "$J_AUD"
 git add libs/hack.ml "$J_AUD"
-expect_fail "auditor writing libs/ rejected (R7)" \
+expect_fail "auditor writing libs/ rejected (R7)" "R7" \
   scripts/agent_commit.sh --agent auditor --entry J-auditor-0001 --work-order none -m "auditor-fix"
 git reset -q; git checkout -q -- "$J_AUD"; rm -f libs/hack.ml
 
@@ -143,7 +156,7 @@ say "S7: non-monotonic entry number"
 echo w >> libs/mod.ml
 entry rtl_lead 0005 "skips ahead" libs/mod.ml >> "$J_RTL"
 git add libs/mod.ml "$J_RTL"
-expect_fail "entry 0005 after 0001 rejected (R5)" \
+expect_fail "entry 0005 after 0001 rejected (R5)" "R5" \
   scripts/agent_commit.sh --agent rtl_lead --entry J-rtl_lead-0005 --work-order WO-0001 -m "skip"
 git reset -q; git checkout -q -- "$J_RTL" libs/mod.ml
 
@@ -153,7 +166,7 @@ echo w >> libs/mod.ml
 entry rtl_lead 0002 "also edits orchestrator journal" libs/mod.ml >> "$J_RTL"
 echo "sneaky line" >> "$J_ORCH"
 git add libs/mod.ml "$J_RTL" "$J_ORCH"
-expect_fail "foreign journal modification rejected (R8)" \
+expect_fail "foreign journal modification rejected (R8)" "R8" \
   scripts/agent_commit.sh --agent rtl_lead --entry J-rtl_lead-0002 --work-order WO-0001 -m "sneak"
 git reset -q; git checkout -q -- "$J_RTL" "$J_ORCH" libs/mod.ml
 
@@ -174,7 +187,7 @@ say "S11: hand-made non-compliant commit is caught by CI checker"
 echo bad > libs/bad.ml
 git add libs/bad.ml
 git commit -q -m "raw commit, no protocol"
-expect_fail "raw git commit caught by check_journals.sh" \
+expect_fail "raw git commit caught by check_journals.sh" "R2|R6" \
   scripts/check_journals.sh --all
 git reset -q --hard HEAD~1
 
@@ -182,9 +195,19 @@ git reset -q --hard HEAD~1
 say "S12: rewriting journal history is caught by range check"
 git checkout -q -b rewrite
 sed -i 's/test reasoning/SCRUBBED/' "$J_ORCH"
+entry orchestrator 0002 "well-formed entry riding a scrubbed journal" >> "$J_ORCH"
 git add "$J_ORCH"
-git commit -q -m "scrub"
-expect_fail "journal rewrite caught (R3/R8)" scripts/check_journals.sh --all
+# Trailers are deliberately well-formed so R6 cannot fire first — this must be
+# caught by the append-only byte-prefix check (R3) and nothing else.
+git commit -q -F - <<'MSG'
+scrub with valid trailers
+
+Agent: orchestrator
+Work-Order: none
+Journal-Entry: J-orchestrator-0002
+Journal-Only: true
+MSG
+expect_fail "journal rewrite caught by append-only check (R3)" "R3" scripts/check_journals.sh --all
 git checkout -q scratch
 git branch -q -D rewrite
 
@@ -196,7 +219,7 @@ entry dv_lead 0001 "smuggled entry inside a seed" >> "$J_DV"
 echo n1 > docs/reports/audit/note.md
 entry auditor 0001 "audit note with dirty seed" docs/reports/audit/note.md "$J_DV" >> "$J_AUD"
 git add docs/reports/audit/note.md "$J_DV" "$J_AUD"
-expect_fail "entry-bearing foreign seed rejected (R8)" \
+expect_fail "entry-bearing foreign seed rejected (R8)" "R8" \
   scripts/agent_commit.sh --agent auditor --entry J-auditor-0001 --work-order none -m "dirty seed"
 git reset -q; git checkout -q -- "$J_AUD"; rm -f "$J_DV" docs/reports/audit/note.md
 
@@ -205,7 +228,7 @@ say "S14: staged journal deletion"
 git rm -q -f "$J_RTL"
 entry orchestrator 0002 "delete a journal" "$J_RTL" >> "$J_ORCH"
 git add "$J_ORCH"
-expect_fail "journal deletion rejected (R3)" \
+expect_fail "journal deletion rejected (R3)" "R3" \
   scripts/agent_commit.sh --agent orchestrator --entry J-orchestrator-0002 --work-order none -m "delete"
 git reset -q --hard HEAD
 
@@ -215,7 +238,7 @@ echo m >> libs/mod.ml
 entry rtl_lead 0003 "first of two" libs/mod.ml >> "$J_RTL"
 entry rtl_lead 0004 "second of two" >> "$J_RTL"
 git add libs/mod.ml "$J_RTL"
-expect_fail "multi-entry append rejected (R5)" \
+expect_fail "multi-entry append rejected (R5)" "exactly one new entry" \
   scripts/agent_commit.sh --agent rtl_lead --entry J-rtl_lead-0003 --work-order WO-0001 -m "two entries"
 git reset -q; git checkout -q -- "$J_RTL" libs/mod.ml
 
@@ -224,7 +247,7 @@ say "S16: trailer/entry vs appended-header mismatch"
 echo m >> libs/mod.ml
 entry rtl_lead 0003 "header says 0003" libs/mod.ml >> "$J_RTL"
 git add libs/mod.ml "$J_RTL"
-expect_fail "mismatched --entry rejected (R6)" \
+expect_fail "mismatched --entry rejected (R6)" "does not match --entry" \
   scripts/agent_commit.sh --agent rtl_lead --entry J-rtl_lead-0004 --work-order WO-0001 -m "mismatch"
 git reset -q; git checkout -q -- "$J_RTL" libs/mod.ml
 
@@ -233,7 +256,7 @@ say "S17: journal-only flag with work staged"
 echo m >> libs/mod.ml
 entry rtl_lead 0003 "claims journal-only" >> "$J_RTL"
 git add libs/mod.ml "$J_RTL"
-expect_fail "journal-only with work rejected (R2)" \
+expect_fail "journal-only with work rejected (R2)" "journal-only" \
   scripts/agent_commit.sh --agent rtl_lead --entry J-rtl_lead-0003 --work-order none -m "jo" --journal-only
 git reset -q; git checkout -q -- "$J_RTL" libs/mod.ml
 
@@ -249,7 +272,7 @@ x
 x
 EOF
 git add libs/mod.ml "$J_RTL"
-expect_fail "missing files section rejected (R4)" \
+expect_fail "missing files section rejected (R4)" "R4" \
   scripts/agent_commit.sh --agent rtl_lead --entry J-rtl_lead-0003 --work-order none -m "nofiles"
 git reset -q; git checkout -q -- "$J_RTL" libs/mod.ml
 
@@ -258,9 +281,9 @@ say "S19: architect_docs_lead staging docs/reports/audit/"
 J_ARCH=agents/journals/claude_architect_docs_lead_agent.md
 seed_journal "$J_ARCH" architect_docs_lead
 echo x > docs/reports/audit/fake.md
-entry architect_docs_lead 0001 "architect writes into audit dir" docs/reports/audit/fake.md "$J_ARCH" >> "$J_ARCH"
+entry architect_docs_lead 0001 "architect writes into audit dir" docs/reports/audit/fake.md >> "$J_ARCH"
 git add docs/reports/audit/fake.md "$J_ARCH"
-expect_fail "architect blocked from docs/reports/audit (R7)" \
+expect_fail "architect blocked from docs/reports/audit (R7)" "R7" \
   scripts/agent_commit.sh --agent architect_docs_lead --entry J-architect_docs_lead-0001 --work-order none -m "deny-order"
 git reset -q; rm -f "$J_ARCH" docs/reports/audit/fake.md
 
@@ -279,7 +302,7 @@ expect_ok "tb_writer WO- return accepted (COH-1 fix)" \
 say "S21: --extra-trailer with protected key"
 entry orchestrator 0002 "extra trailer abuse" >> "$J_ORCH"
 git add "$J_ORCH"
-expect_fail "protected extra trailer rejected (R6)" \
+expect_fail "protected extra trailer rejected (R6)" "R6" \
   scripts/agent_commit.sh --agent orchestrator --entry J-orchestrator-0002 --work-order none \
     -m "abuse" --journal-only --extra-trailer "Agent: auditor"
 git reset -q; git checkout -q -- "$J_ORCH"
@@ -298,9 +321,55 @@ git cat-file blob "HEAD:libs/side.ml" > /dev/null   # sanity: merged content pre
 echo sneak > libs/sneak.ml
 git add libs/sneak.ml
 git commit -q --amend --no-edit
-expect_fail "content-bearing merge rejected (R9)" scripts/check_journals.sh --all
+expect_fail "content-bearing merge rejected (R9)" "R9" scripts/check_journals.sh --all
 git reset -q --hard HEAD~1
 git branch -q -D side
+
+# ---- S23: duplicate protected trailer (AUD-0001-F2) -------------------------
+say "S23: duplicate Agent: trailer in a hand-made commit"
+echo dup > libs/dup.ml
+entry rtl_lead 0004 "dup trailer" libs/dup.ml >> "$J_RTL"
+git add libs/dup.ml "$J_RTL"
+git commit -q -F - <<'MSG'
+duplicate agent trailer
+
+Agent: rtl_lead
+Agent: auditor
+Work-Order: none
+Journal-Entry: J-rtl_lead-0004
+MSG
+expect_fail "duplicate protected trailer rejected (R6)" "duplicate" \
+  scripts/check_journals.sh --all
+git reset -q --hard HEAD~1
+
+# ---- S24: octopus merge is refused outright (AUD-0001-F2) -------------------
+say "S24: octopus merge commit"
+# Two branches touching DIFFERENT journals so the merge itself is conflict-free
+# and an actual 3-parent commit gets created for the checker to reject.
+RL_LAST=$(grep -oE "^## \[J-rtl_lead-[0-9]{4}\]" "$J_RTL" | grep -oE "[0-9]{4}" | tail -1)
+RL_NEXT=$(printf "%04d" $((10#$RL_LAST + 1)))
+OR_LAST=$(grep -oE "^## \[J-orchestrator-[0-9]{4}\]" "$J_ORCH" | grep -oE "[0-9]{4}" | tail -1)
+OR_NEXT=$(printf "%04d" $((10#$OR_LAST + 1)))
+git checkout -q -b oct1
+echo o1 > libs/o1.ml
+entry rtl_lead "$RL_NEXT" "oct1" libs/o1.ml >> "$J_RTL"
+git add libs/o1.ml "$J_RTL"
+scripts/agent_commit.sh --agent rtl_lead --entry "J-rtl_lead-$RL_NEXT" --work-order none -m "oct1" > /dev/null
+git checkout -q scratch
+git checkout -q -b oct2
+echo o2 > libs/o2.ml
+entry orchestrator "$OR_NEXT" "oct2" libs/o2.ml >> "$J_ORCH"
+git add libs/o2.ml "$J_ORCH"
+scripts/agent_commit.sh --agent orchestrator --entry "J-orchestrator-$OR_NEXT" --work-order none -m "oct2" > /dev/null
+git checkout -q scratch
+if git merge -q --no-ff oct1 oct2 -m "octopus" > /dev/null 2>&1; then
+  expect_fail "octopus merge rejected (R9)" "octopus" scripts/check_journals.sh --all
+  git reset -q --hard HEAD~1
+else
+  bad "octopus merge could not be created (scenario setup failed)"
+  git merge --abort 2>/dev/null || true
+fi
+git branch -q -D oct1 oct2 2>/dev/null || true
 
 # ---- summary ----------------------------------------------------------------
 say ""

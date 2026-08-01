@@ -45,8 +45,9 @@ Consequences you can rely on:
 - `git log --grep 'Agent: rtl_lead'` reconstructs any one agent's entire
   thread of work.
 - Journal history cannot be quietly rewritten: the append-only property is
-  checked across the whole pushed range (backstopped by branch protection on
-  `main` and the working branch — a one-time sponsor setup, G0 item 9), and
+  re-checked over the FULL history on every push (an incremental range check
+  cannot detect a rewrite — AUD-0001-F3), and backstopped by branch protection
+  on `main` and the working branch (a one-time sponsor setup, G0 item 9), and
   journal `Evidence` sections are falsifiable — the auditor re-executes them
   at the recorded SHA.
 

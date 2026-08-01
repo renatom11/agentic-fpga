@@ -358,3 +358,73 @@ sponsor performs the click-path.
 none
 ### Files-in-this-commit
 - docs/gates/G0-checklist.md
+
+## [J-orchestrator-0009] 2026-08-01T20:10:33Z | task:WO-0001 | Disposition AUD-0001: fix CRITICAL F17 and all MAJORs; harden enforcement 24→26
+### Trigger
+Auditor returned WO-0001 with AUD-0001: 1 CRITICAL, 7 MAJOR, 7 MINOR, 2 NOTE
+(corrected tally per J-auditor-0002), every finding against orchestrator work.
+G0 BLOCKED on F17. PROTOCOL §11 requires an ADR for the implied protocol and
+enforcement changes.
+### Inputs
+docs/reports/audit/AUD-0001-g0-retro.md (at de85393); agents/journals/claude_auditor_agent.md
+(J-auditor-0001, J-auditor-0002); agents/PROTOCOL.md §3/§5/§6/§7; ADR-0002
+(COH-1 disposition); scripts/test_protocol.sh; .github/workflows/journal-check.yml.
+### Reasoning
+All 17 findings accepted; none disputed. The load-bearing decision is F17.
+The auditor could not move its own work order to RETURNED because §6 grants it
+docs/reports/audit/** only, while §3 claimed handoffs/ was in every agent's
+scope — a sentence I wrote in ADR-0002 that overstated a fix covering workers
+only. Two repairs were possible: extend the auditor's scope (symmetric, simple)
+or correct §3 and have the orchestrator transcribe (asymmetric, one extra step).
+Chose the latter: giving the auditor write access to the packet directory would
+let it modify artifacts it audits, destroying the bright-line property that
+makes its "zero write-scope violations" criterion checkable. Independence beats
+symmetry. The auditor recommended the same, but the reason above is why it is
+right.
+F1 was the most instructive: expect_fail asserted only non-zero exit, so three
+scenarios passed on unrelated rejections. Tightening it to assert the rejection
+REASON immediately reproduced the auditor's exact claim — three real test bugs,
+including a cleanup that restored a tampered journal from the index rather than
+HEAD. The suite that certified G0 item 4 was weaker than its own name claimed.
+F3 was a genuine hole: incremental range checks structurally cannot detect a
+rewrite of old history, so CI now runs the full-history check every push.
+Also discovered while configuring branch protection: main did not exist, so
+both rulesets targeted zero branches and R9's PR-to-main model had no target.
+Created main at current HEAD.
+### Actions
+Wrote docs/adr/ADR-0003-aud-0001-disposition.md. Corrected PROTOCOL §3
+(auditor exception + orchestrator transcription rule). Rewrote expect_fail to
+assert rejection reasons and gave all 18 rejection sites a pattern; fixed the
+three miscovered scenarios (S5 index-vs-HEAD cleanup, S12 trailered rewrite,
+S19 own-journal in files list); added S23 (duplicate trailer) and S24 (octopus
+merge). CI now runs check_journals.sh --all before the range check. Transcribed
+the auditor's RETURNED verdict into WO-0001. Updated BOARD (WO table, milestone
+status, escalation class), README (CI claim), G0 checklist (item 4 re-signed at
+26 scenarios, item 10 signed, new item 11 for audit re-verification).
+Created the main branch on the remote.
+### Evidence
+bash scripts/test_protocol.sh → "protocol self-test: 26 passed, 0 failed"
+(reproducible from a repo checkout at this SHA). Before the F1 fix the same
+suite reported "21 passed, 3 failed", naming exactly the three scenarios the
+auditor predicted. git ls-remote --heads origin now lists refs/heads/main and
+refs/heads/claude/fpga-hardcaml-agent-orchestration-37ceyf.
+### Outcome
+DoD: F17 dispositioned by ADR as the auditor required; all MAJORs fixed in
+code or codified as standing rules. G0 item 10 signed — **I sign G0 checklist
+item 10** on the auditor's PASS WITH FINDINGS verdict, and **I sign G0
+checklist item 4** in its corrected 26-scenario form (F4's authority formula,
+which no prior signature satisfied). Gate stays BLOCKED pending item 11:
+auditor re-verification. Handoff: re-verification spawn to the auditor.
+### Open-questions
+protect-history reports "targeting 0 branches" although the working branch
+exists — sponsor to re-check the pattern in the GitHub UI; main now exists so
+main-requires-ci should bind.
+### Files-in-this-commit
+- .github/workflows/journal-check.yml
+- README.md
+- agents/PROTOCOL.md
+- agents/handoffs/WO-0001_g0-retro-audit.md
+- docs/adr/ADR-0003-aud-0001-disposition.md
+- docs/gates/G0-checklist.md
+- scripts/test_protocol.sh
+- tasks/BOARD.md

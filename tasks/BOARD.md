@@ -7,11 +7,13 @@ agents with open work.
 
 ## Current milestone
 
-**M0 — Org & charter** (orchestrator work complete; awaiting sponsor).
-All artifacts committed, adversarially reviewed (26 findings applied,
-ADR-0002), 24-scenario enforcement self-test and CI green. Exit: sponsor
-critique/ratification (G0 item 8) + branch protection (G0 item 9) + the
-auditor's G0 retro-audit (item 10).
+**M0 — Org & charter** (awaiting sponsor + audit re-verification).
+Org ratified (item 8). The auditor's first audit (AUD-0001) returned
+1 CRITICAL / 6 MAJOR / 6 MINOR / 4 NOTE against orchestrator work; all
+accepted and dispositioned in ADR-0003. Enforcement hardened to 26 scenarios
+with reason-asserting rejection tests and full-history CI re-checking.
+**G0 remains BLOCKED** until the auditor re-verifies F17 and the MAJOR fixes.
+Exit: item 9 (sponsor, branch protection) + audit re-verification.
 
 ## Milestone roadmap
 
@@ -31,13 +33,17 @@ auditor's G0 retro-audit (item 10).
 
 ## Open work orders
 
-_None. First work orders are issued at M1 kickoff._
+| Packet | From → To | State | Note |
+|---|---|---|---|
+| [WO-0001](../agents/handoffs/WO-0001_g0-retro-audit.md) | orchestrator → auditor | RETURNED | G0 retro-audit delivered ([AUD-0001](../docs/reports/audit/AUD-0001-g0-retro.md)); findings dispositioned in ADR-0003; re-verification pending |
 
 ## Pending escalations to sponsor
 
-- **G0 item 9**: branch protection on `main` AND the working branch —
-  exact click-path in `docs/gates/G0-checklist.md`. (Last sponsor item; item 8
-  ratified 2026-08-01, item 10 in flight as WO-0001.)
+- **E1/G0 item 9**: branch protection on `main` AND the working branch —
+  exact click-path in `docs/gates/G0-checklist.md`. Sponsor chose to make the
+  repository public (2026-08-01) because GitHub does not enforce rulesets on
+  private repos without a paid plan; rulesets bite once visibility flips.
+  (Item 8 ratified; item 10 delivered PASS WITH FINDINGS.)
 
 ## Decisions on record
 

@@ -1,5 +1,5 @@
 # WO-0001: G0 retro-audit of the M0 commit range
-- **State**: ISSUED
+- **State**: RETURNED
 - **From** / **To**: orchestrator → auditor
 - **Spec basis**: agents/charters/auditor.md (full charter); agents/PROTOCOL.md §4–§7, §10; docs/gates/G0-checklist.md item 10
 - **Deliverables**: docs/reports/audit/AUD-0001-g0-retro.md (numbered, severity-tagged findings, specific and falsifiable); one journal entry appended to agents/journals/claude_auditor_agent.md
@@ -10,3 +10,18 @@
 Perform your charter's G0 retro-audit: audit the commits that built the org, after the fact, including the orchestrator's own conduct. CRITICAL findings block G0 and are relayed to the sponsor verbatim. Note honestly in the report that this range predates your existence and that all five commits share one author-agent — attribution audit is therefore substance-vs-narrative checking, not cross-agent boundary checking.
 ## Return / verdict log
 (auditor appends on RETURNED)
+
+**RETURNED** — transcribed by the orchestrator under ADR-0003 (the auditor's
+write scope is `docs/reports/audit/**` only and deliberately excludes this
+directory, so it cannot move its own packet; authority for this entry is the
+auditor's committed artifacts below).
+
+- **Report**: `docs/reports/audit/AUD-0001-g0-retro.md`
+- **Auditor verdict** (report §10, signed `J-auditor-0001`):
+  G0 item 10 **PASS WITH FINDINGS**; gate **BLOCKED** on `AUD-0001-F17`
+  (CRITICAL) until dispositioned by ADR and re-verified by the auditor.
+- **Findings**: 1 CRITICAL, 6 MAJOR, 6 MINOR, 4 NOTE — all accepted, none
+  disputed; dispositioned in `docs/adr/ADR-0003-aud-0001-disposition.md`.
+- **DoD status**: met, with one item the auditor was mechanically barred from
+  performing (this Return-log entry) — which is itself finding F17.
+- **Next**: re-verification spawn to confirm F17 and the MAJOR fixes are closed.

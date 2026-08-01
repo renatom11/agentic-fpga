@@ -9,13 +9,14 @@ G0 passes. Signatures are journal-entry references (PROTOCOL §7).
 | 1 | Operating protocol committed (`agents/PROTOCOL.md`) | orchestrator | ✅ | J-orchestrator-0001, J-orchestrator-0004 |
 | 2 | All nine charters committed (`agents/charters/`), consistent with PROTOCOL and ORG_CHART | orchestrator | ✅ | J-orchestrator-0003, J-orchestrator-0004 |
 | 3 | Journals seeded, append-only from birth; INDEX committed | orchestrator | ✅ | J-orchestrator-0001 |
-| 4 | Enforcement self-test green (`bash scripts/test_protocol.sh`, 24 scenarios) | orchestrator | ✅ | J-orchestrator-0004 |
+| 4 | Enforcement self-test green (`bash scripts/test_protocol.sh`, 26 scenarios, each rejection asserting its rule) | orchestrator | ✅ | J-orchestrator-0009 (re-signed; 24→26 per AUD-0001-F1/F2) |
 | 5 | `journal-check` CI green on the pushed branch | orchestrator | ✅ | J-orchestrator-0005 (runs 1–3 all green) |
 | 6 | Adversarial charter review completed; findings dispositioned | orchestrator | ✅ | J-orchestrator-0004, ADR-0002 |
 | 7 | Every M0 commit itself satisfies the commit protocol | orchestrator | ✅ | J-orchestrator-0005 (CI range checks over full history) |
 | 8 | **Sponsor**: org chart + charters ratified (critique round closed) | Renato | ✅ | Sponsor approval 2026-08-01, recorded in J-orchestrator-0007 |
 | 9 | **Sponsor**: branch protection on `main` AND the working branch (`claude/fpga-hardcaml-agent-orchestration-37ceyf` — daily commits land there; `main` receives milestone PRs only). Exact click-path below. | Renato | ☐ | (sponsor confirmation) |
-| 10 | Auditor's G0 retro-audit of the M0 commit range committed to `docs/reports/audit/` | auditor | ☐ | |
+| 10 | Auditor's G0 retro-audit of the M0 commit range committed to `docs/reports/audit/` | auditor | ✅ | J-auditor-0001 — **PASS WITH FINDINGS** ([AUD-0001](../reports/audit/AUD-0001-g0-retro.md)) |
+| 11 | **Gate release**: AUD-0001 CRITICAL (F17) dispositioned by ADR **and re-verified by the auditor** | auditor | ☐ | ADR-0003 written; re-verification pending |
 
 ## Item 9 click-path (branch rulesets)
 

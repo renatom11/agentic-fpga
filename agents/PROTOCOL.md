@@ -64,9 +64,18 @@ Work-order lifecycle: `DRAFT → ISSUED → RETURNED → ACCEPTED | BOUNCED`
 (state recorded in the packet header; BOUNCED packets carry the defect list and
 respawn as a new ISSUED revision). Every work order carries the
 definition-of-done template (spec section, tests required, journal obligation,
-docs touched). Workers update their packet's Return log directly —
-`agents/handoffs/` is inside every agent's write scope (§6) precisely so the
-packet lifecycle is executable by its participants.
+docs touched). Packet participants update their packet's Return log directly —
+`agents/handoffs/` is inside every agent's write scope (§6) **except the
+auditor's**, precisely so the packet lifecycle is executable by its
+participants.
+
+**Auditor exception (ADR-0003)**: the auditor stages `docs/reports/audit/**`
+and nothing else, ever — deliberately, so it can never modify an artifact it
+audits, including other agents' packets. Its `RETURNED` verdicts are therefore
+recorded in its committed report and journal entry, and the **orchestrator
+transcribes** them into the packet's Return log under its own trailer — the
+same clerical-transcription rule §7 uses for gate signatures, with authority
+living in the auditor's own committed artifacts.
 
 **Packet numbering**: the orchestrator — as sole committer — allocates the
 next `NNNN` per prefix when a packet is first committed; drafts circulating
