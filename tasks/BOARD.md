@@ -35,13 +35,18 @@ _None. First work orders are issued at M1 kickoff._
 
 ## Pending escalations to sponsor
 
-- **E1/G0**: ratify the org chart and charters — start at `ORG_CHART.md`,
-  open any charter; critique freely, changes land by ADR (G0 item 8).
 - **G0 item 9**: branch protection on `main` AND the working branch —
-  exact click-path in `docs/gates/G0-checklist.md`.
+  exact click-path in `docs/gates/G0-checklist.md`. (Last sponsor item; item 8
+  ratified 2026-08-01, item 10 in flight as WO-0001.)
 
 ## Decisions on record
 
 - 2026-08-01 — Sponsor selected: phased NIC→feed-handler project,
   simulation-first target, M0 = org+charter only, direct-commit git flow
   (recorded in `docs/adr/ADR-0001-org-design.md`).
+- 2026-08-01 — Sponsor ratified the org (G0 item 8) and set org-evolution
+  policy: the current structure is the best first guess, not a commitment —
+  roles may be added or reshaped as the program learns, via the existing
+  E2 + ADR + journal-seed mechanism. Deferred intent on record: at program
+  end, extract the generic (project-agnostic) workflow from this org using
+  accumulated ADRs/journals as the lessons-learned source.

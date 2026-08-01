@@ -13,7 +13,7 @@ G0 passes. Signatures are journal-entry references (PROTOCOL §7).
 | 5 | `journal-check` CI green on the pushed branch | orchestrator | ✅ | J-orchestrator-0005 (runs 1–3 all green) |
 | 6 | Adversarial charter review completed; findings dispositioned | orchestrator | ✅ | J-orchestrator-0004, ADR-0002 |
 | 7 | Every M0 commit itself satisfies the commit protocol | orchestrator | ✅ | J-orchestrator-0005 (CI range checks over full history) |
-| 8 | **Sponsor**: org chart + charters ratified (critique round closed) | Renato | ☐ | (sponsor approval, recorded in orchestrator journal) |
+| 8 | **Sponsor**: org chart + charters ratified (critique round closed) | Renato | ✅ | Sponsor approval 2026-08-01, recorded in J-orchestrator-0007 |
 | 9 | **Sponsor**: branch protection on `main` AND the working branch (`claude/fpga-hardcaml-agent-orchestration-37ceyf` — daily commits land there; `main` receives milestone PRs only). Exact click-path below. | Renato | ☐ | (sponsor confirmation) |
 | 10 | Auditor's G0 retro-audit of the M0 commit range committed to `docs/reports/audit/` | auditor | ☐ | |
 

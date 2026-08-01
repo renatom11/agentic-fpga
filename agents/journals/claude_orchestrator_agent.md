@@ -298,3 +298,33 @@ with this packet.
 none
 ### Files-in-this-commit
 - agents/handoffs/WO-0001_g0-retro-audit.md
+
+## [J-orchestrator-0007] 2026-08-01T19:41:51Z | task:none | Record sponsor ratification of the org (G0 item 8)
+### Trigger
+Sponsor message: "I approve of the org structure, looks good", with the
+stated policy that the structure is a best first guess — new roles may be
+added as the program learns.
+### Inputs
+docs/gates/G0-checklist.md; tasks/BOARD.md; sponsor message (E1/G0 class).
+### Reasoning
+Item 8 is independent of items 9-10, so it is signed now rather than held
+for a batch close. The sponsor's evolution stance is recorded as a standing
+decision, not a charter change: the org already supports role addition via
+E2 + ADR + R8 journal seeding, so no rule amendment is needed — the record
+simply pre-endorses using that path. The sponsor's earlier deferred intent
+(extract a generic workflow at program end) is added to the decision log so
+it survives rehydration. Signature transcription per PROTOCOL §7: authority
+for the item-8 signature is this entry.
+### Actions
+Checked G0 item 8 with signature ref; updated BOARD pending-escalations
+(item 9 now the sole sponsor item) and decisions-on-record.
+### Evidence
+none (clerical gate transcription; sponsor approval is the quoted trigger)
+### Outcome
+G0 items 1-8 signed. Remaining: item 9 (sponsor, branch protection),
+item 10 (auditor retro-audit in flight, WO-0001). Handoff: none.
+### Open-questions
+none
+### Files-in-this-commit
+- docs/gates/G0-checklist.md
+- tasks/BOARD.md
