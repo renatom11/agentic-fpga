@@ -371,6 +371,46 @@ else
 fi
 git branch -q -D oct1 oct2 2>/dev/null || true
 
+# ---- S25: auditor denied on agents/handoffs (AUD-0002 N4a) ------------------
+say "S25: auditor staging a handoff packet"
+AUD_NEXT=$( { grep -oE "^## \\[J-auditor-[0-9]{4}\\]" "$J_AUD" || true; } | { grep -oE "[0-9]{4}" || true; } | tail -1 )
+AUD_NEXT=$(printf "%04d" $((10#${AUD_NEXT:-0} + 1)))
+echo "sneaky verdict edit" >> agents/handoffs/WO-0002_bench.md 2>/dev/null || echo "sneak" > agents/handoffs/WO-0002_bench.md
+entry auditor "$AUD_NEXT" "auditor edits a packet" agents/handoffs/WO-0002_bench.md >> "$J_AUD"
+git add agents/handoffs/WO-0002_bench.md "$J_AUD"
+expect_fail "auditor writing agents/handoffs rejected (R7)" "R7" \
+  scripts/agent_commit.sh --agent auditor --entry "J-auditor-$AUD_NEXT" --work-order none -m "packet edit"
+git reset -q; git checkout -q HEAD -- "$J_AUD" agents/handoffs/WO-0002_bench.md 2>/dev/null || git checkout -q HEAD -- "$J_AUD"
+
+# ---- S26: body text cannot shadow the final trailer block (AUD-0002 N4b) ----
+say "S26: trailer parsing uses the final block only"
+OR_LAST=$(grep -oE "^## \\[J-orchestrator-[0-9]{4}\\]" "$J_ORCH" | grep -oE "[0-9]{4}" | tail -1)
+OR_NEXT=$(printf "%04d" $((10#$OR_LAST + 1)))
+echo trailertest > libs/trailertest.ml
+entry orchestrator "$OR_NEXT" "body-line decoy" libs/trailertest.ml >> "$J_ORCH"
+git add libs/trailertest.ml "$J_ORCH"
+git commit -q -F - <<MSG
+decoy commit body mentions
+Agent: auditor
+mid-message, which must NOT shadow the real trailers below
+
+Agent: orchestrator
+Work-Order: none
+Journal-Entry: J-orchestrator-$OR_NEXT
+MSG
+expect_ok "final trailer block wins over body decoy" scripts/check_journals.sh --all
+
+# ---- S27: blob gate (ADR-0002 debt) -----------------------------------------
+say "S27: oversized staged file"
+OR_LAST=$(grep -oE "^## \\[J-orchestrator-[0-9]{4}\\]" "$J_ORCH" | grep -oE "[0-9]{4}" | tail -1)
+OR_NEXT=$(printf "%04d" $((10#$OR_LAST + 1)))
+head -c 1500000 /dev/zero > libs/big.bin
+entry orchestrator "$OR_NEXT" "big blob" libs/big.bin >> "$J_ORCH"
+git add libs/big.bin "$J_ORCH"
+expect_fail "1.5MB staged file rejected (blob gate)" "blob threshold" \
+  scripts/agent_commit.sh --agent orchestrator --entry "J-orchestrator-$OR_NEXT" --work-order none -m "big"
+git reset -q; git checkout -q HEAD -- "$J_ORCH"; rm -f libs/big.bin
+
 # ---- summary ----------------------------------------------------------------
 say ""
 say "protocol self-test: $PASS passed, $FAIL failed"

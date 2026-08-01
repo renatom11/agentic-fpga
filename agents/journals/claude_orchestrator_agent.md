@@ -607,3 +607,53 @@ none
 ### Files-in-this-commit
 - agents/handoffs/WO-0002_p1-requirements-architecture.md
 - tasks/BOARD.md
+
+## [J-orchestrator-0015] 2026-08-01T20:58:57Z | task:none | Close enforcement debts: mechanical blob gate + AUD-0002 N4 scenarios (26→29)
+### Trigger
+Both debts were recorded as due before P1-spec-freeze: the blob-size gate
+(ADR-0002 "remaining accepted debt", deferred to M1 CI) and AUD-0002 N4
+(no scenario covered the auditor/handoffs denial or the trailer final-block
+parse). M1 is the milestone they were deferred to.
+### Inputs
+docs/adr/ADR-0002-adversarial-review-fixes.md (debt list);
+docs/reports/audit/AUD-0002-g0-reverification.md (N4);
+scripts/agent_commit.sh; scripts/test_protocol.sh.
+### Reasoning
+The blob gate closes an honesty gap flagged as COH-8 in the M0 review:
+data_wrangler's charter had claimed mechanical enforcement that did not
+exist, and was re-worded to ".gitignore + audit-guarded (a mechanical size
+gate arrives with the M1 toolchain CI)". It now exists — a staged-size check
+in agent_commit.sh with a 1 MB default, overridable via
+AGENT_COMMIT_BLOB_MAX for a deliberate exception. Placed AFTER the R4
+files-list check so a violating commit reports the more informative failure
+first, and it skips deletions (a deleted path has no staged blob).
+N4a matters more than it looks: S6b proved the auditor cannot write libs/,
+but nothing proved it cannot write agents/handoffs/ — which is precisely the
+boundary the F17 CRITICAL turned on. The org chose transcription over
+extending the auditor's scope; S25 is the test that keeps that choice honest
+if policy.sh is ever "simplified". N4b (S26) pins the interpret-trailers
+behavior with a commit whose BODY contains a decoy "Agent: auditor" line
+above the real trailer block: parse-by-last-match would attribute the commit
+to the wrong agent, parse-by-final-block does not.
+Two harness bugs surfaced while writing these and are fixed: an unguarded
+grep pipeline under set -o pipefail hung S25 when the auditor journal had no
+entries yet, and the S25 cleanup needed a HEAD checkout rather than an index
+restore (the same index-vs-HEAD trap that caused F1's S5 miscoverage).
+### Actions
+Added the blob gate to scripts/agent_commit.sh; added scenarios S25 (auditor
+denied on agents/handoffs), S26 (final-trailer-block parse), S27 (oversized
+staged file) to scripts/test_protocol.sh.
+### Evidence
+bash scripts/test_protocol.sh → "protocol self-test: 29 passed, 0 failed"
+(reproducible from a checkout at this SHA). S27 rejects a 1.5 MB staged file
+with "staged file exceeds blob threshold"; S25 rejects with R7; S26 accepts,
+proving the decoy body line does not shadow the real trailers.
+### Outcome
+Both pre-P1-spec-freeze enforcement debts closed. PROTOCOL §11 satisfied:
+enforcement-semantics change (blob gate) ships with its proving scenario.
+Handoff: none.
+### Open-questions
+none
+### Files-in-this-commit
+- scripts/agent_commit.sh
+- scripts/test_protocol.sh

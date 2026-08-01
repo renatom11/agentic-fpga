@@ -131,6 +131,16 @@ if ! diff -u "$TMPDIR_P/claimed" "$TMPDIR_P/staged_list" > "$TMPDIR_P/files_diff
   fail "Files-in-this-commit list does not equal the staged non-journal set (R4)"
 fi
 
+# ---- Blob gate (ADR-0002 accepted debt, closed in M1) ------------------------
+BLOB_MAX="${AGENT_COMMIT_BLOB_MAX:-1000000}"
+while IFS=$'\t' read -r status path; do
+  [ -n "$path" ] || continue
+  [ "$status" = "D" ] && continue
+  sz=$(git cat-file -s ":$path" 2>/dev/null || echo 0)
+  [ "$sz" -le "$BLOB_MAX" ] \
+    || fail "staged file exceeds blob threshold: $path (${sz} > ${BLOB_MAX} bytes; large data ships as fetch script + checksum manifest — blob gate, ADR-0002)"
+done <<< "$STATUS_LIST"
+
 # ---- R7: path isolation ------------------------------------------------------
 for p in ${WORK_PATHS[@]+"${WORK_PATHS[@]}"}; do
   agent_may_write "$AGENT" "$p" \
