@@ -876,3 +876,40 @@ none
 ### Files-in-this-commit
 - .github/workflows/build.yml
 - bin/generate.ml
+
+## [J-orchestrator-0021] 2026-08-01T22:35:00Z | task:none | Promotion channel worked — and caught a self-instantiating snapshot
+### Trigger
+build run 30720777777 (fc66462) behaved exactly as designed: runtest
+green, generate.exe wrote rtl_snapshots/word_counter.v, and the staged
+verify step failed printing the full .v as a new-file diff — the
+promotion source.
+### Inputs
+CI job 91424065264 log (the 30-line word_counter.v diff); bin/generate.ml.
+### Reasoning
+I did NOT promote the printed file, and the reason is the point of
+reading before promoting: the emitted Verilog declares `module
+word_counter` and instantiates `word_counter` inside itself — a
+self-instantiating shell with none of the counter logic. Cause: the
+top-level wrapper circuit and the inner hierarchical module both carry
+the name "word_counter", so Rtl.output suppresses the inner module (the
+one holding the reg) as a duplicate of the top. Promoting that would
+have committed a snapshot that elaborates to infinite recursion and
+contains no design — precisely the kind of hollow artifact the snapshot
+directory exists to prevent. Fix: name the wrapper "word_counter_top".
+The next run's diff should contain BOTH modules (the real logic plus the
+wrapper), which then gets promoted verbatim as the committed snapshot.
+### Actions
+bin/generate.ml: wrapper circuit renamed word_counter_top, with a
+comment stating the collision rule for future generator entries.
+### Evidence
+CI run 30720777777: "Run tests" exit 0; "Generate RTL" wrote the file;
+"Verify" printed the new-file diff (blob 5b6bd00) whose body instantiates
+its own module name — externally verifiable in the job log per the F5
+rule. The next build run tests the rename.
+### Outcome
+One more planned red run (its diff = the corrected snapshot), then the
+.v gets committed, then green. Handoff: none.
+### Open-questions
+none
+### Files-in-this-commit
+- bin/generate.ml

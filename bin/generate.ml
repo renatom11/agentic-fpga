@@ -9,8 +9,11 @@ open Hardcaml_ethernet
 let emit_word_counter out_channel =
   let scope = Scope.create ~flatten_design:false () in
   let module Circuit = Circuit.With_interface (Word_counter.I) (Word_counter.O) in
+  (* The wrapper needs a name distinct from the hierarchical module it
+     instantiates: with both named "word_counter", Rtl.output drops the inner
+     module (its logic) and emits a self-instantiating shell. *)
   let circuit =
-    Circuit.create_exn ~name:"word_counter" (Word_counter.hierarchical scope)
+    Circuit.create_exn ~name:"word_counter_top" (Word_counter.hierarchical scope)
   in
   Rtl.output
     ~database:(Scope.circuit_database scope)
