@@ -271,3 +271,30 @@ none
 - agents/journals/INDEX.md
 - docs/gates/G0-checklist.md
 - tasks/BOARD.md
+
+## [J-orchestrator-0006] 2026-08-01T19:39:18Z | task:WO-0001 | Issue WO-0001: auditor G0 retro-audit
+### Trigger
+Sponsor asked for the next step; G0 items 8-9 are sponsor-side, item 10
+(auditor retro-audit) is org-side and unblocks nothing by waiting — and its
+report is useful input to the sponsor's ratification decision.
+### Inputs
+docs/gates/G0-checklist.md; agents/charters/auditor.md; agents/handoffs/README.md
+(WO- template); tasks/BOARD.md.
+### Reasoning
+First real use of the packet system. The work order deliberately points the
+auditor at the orchestrator's own conduct and notes the structural honesty
+caveat (single-author range, auditor did not exist yet) so the report states
+its own limits rather than overclaiming. Packet number 0001 allocated per
+PROTOCOL §3 (orchestrator is numbering authority). The auditor spawns after
+this commit lands so the packet it reads is the committed one.
+### Actions
+Wrote agents/handoffs/WO-0001_g0-retro-audit.md (ISSUED).
+### Evidence
+none (packet issuance; enforcement evidence accrues on the audit commit)
+### Outcome
+DoD: packet committed and auditor spawn queued. Handoff: auditor via spawn
+with this packet.
+### Open-questions
+none
+### Files-in-this-commit
+- agents/handoffs/WO-0001_g0-retro-audit.md
