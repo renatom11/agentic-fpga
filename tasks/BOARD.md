@@ -7,15 +7,25 @@ agents with open work.
 
 ## Current milestone
 
-**M1 — Toolchain & first specs** (just opened). **G0 PASSED 2026-08-01**:
+**M1 — Toolchain & first specs.** **G0 PASSED 2026-08-01**:
 all 11 checklist items signed; the auditor's re-verification (AUD-0002) lifted
 the CRITICAL block and signed item 11. M0 closed with the full audit cycle
 exercised end-to-end: audit → disposition ADR → adversarial re-verification.
-Open M1 work: E3 toolchain-lane escalation (with sponsor), dune/opam skeleton,
-architect activation (REQ-### requirements + top-level architecture spec),
-P1-spec-freeze gate. Deferred dispositions due before P1-spec-freeze:
-AUD-0002 N4 scenarios (auditor/handoffs denial; trailer final-block parse),
-N1/N2 residuals closed per ADR-0003 Corrections.
+
+**Build lane GREEN 2026-08-01** (run 30721584772 on c5011a3): the `build`
+workflow passes end-to-end — Hardcaml v0.17 stack install, `dune build`,
+expect tests (waveform snapshot promoted from CI diff), RTL emission, and
+the staged-diff byte-determinism check. Toolchain is CI-authoritative per
+ADR-0005 (container network blocks opam; local switches are convenience
+only). Bring-up findings fixed en route: untracked files were invisible to
+the old `git diff --exit-code` determinism check (now stages first), and a
+top-level/hierarchical name collision made Rtl.output emit a
+self-instantiating shell (wrapper renamed `word_counter_top`).
+
+Open M1 work: WO-0002 return (architect, in flight), per-module spec WOs,
+P1-spec-freeze gate. Deferred dispositions closed 2026-08-01: AUD-0002 N4
+scenarios landed as S25–S27 (29 green); N1/N2 residuals closed per ADR-0003
+Corrections.
 
 ## Milestone roadmap
 
@@ -31,7 +41,7 @@ N1/N2 residuals closed per ADR-0003 Corrections.
 
 | Gate | Status | Checklist |
 |---|---|---|
-| G0 | Open | [docs/gates/G0-checklist.md](../docs/gates/G0-checklist.md) |
+| G0 | **PASSED 2026-08-01** | [docs/gates/G0-checklist.md](../docs/gates/G0-checklist.md) |
 
 ## Open work orders
 

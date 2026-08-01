@@ -946,3 +946,36 @@ Awaiting the expected first fully-green build run. Handoff: none.
 none
 ### Files-in-this-commit
 - rtl_snapshots/word_counter.v
+
+## [J-orchestrator-0023] 2026-08-01T22:48:00Z | task:none | Build lane green end-to-end; board updated
+### Trigger
+build run 30721584772 (c5011a3): SUCCESS — the first fully green build.
+### Inputs
+GitHub Actions run list for build.yml; tasks/BOARD.md.
+### Reasoning
+Every leg of the OCaml lane is now proven in the authoritative
+environment: dependency install (full Hardcaml v0.17 stack), dune build,
+expect tests with a CI-promoted waveform snapshot, RTL emission into an
+existing snapshot, and the staged-diff check passing — which specifically
+proves emission is byte-deterministic against the committed
+word_counter.v. That closes the two M1 infrastructure threads (toolchain
+bring-up, resolved as CI-authoritative per ADR-0005; build CI alongside
+journal-check). Board updated to record the green run by ID, the two
+bring-up findings fixed en route (untracked-file blindness in the
+determinism check; top-level name collision emitting a self-instantiating
+shell), and to correct a stale line: the Gates table still said G0 was
+Open — it passed 2026-08-01, which the milestone paragraph already said.
+Remaining M1 scope is spec work: WO-0002 (architect, in flight) then
+per-module spec WOs then P1-spec-freeze.
+### Actions
+tasks/BOARD.md: build-lane-green block added, M1 open-work list pruned to
+spec work, G0 row set to PASSED.
+### Evidence
+CI run 30721584772 conclusion: success (externally verifiable per the F5
+rule). journal-check green on every push to date.
+### Outcome
+M1 infrastructure complete; awaiting WO-0002 return. Handoff: none.
+### Open-questions
+none
+### Files-in-this-commit
+- tasks/BOARD.md
