@@ -41,14 +41,16 @@ N1/N2 residuals closed per ADR-0003 Corrections.
 
 ## Pending escalations to sponsor
 
-- **E3 (open)**: Hardcaml toolchain-lane decision — options + recommendation
-  delivered to the sponsor 2026-08-01; M1 build work starts on the answer.
+_None pending. E3 toolchain lane decided 2026-08-01: released Hardcaml
+v0.17.x from opam (ADR-0004). Next sponsor touchpoint: P1-spec-freeze._
 
 ## Decisions on record
 
 - 2026-08-01 — Sponsor selected: phased NIC→feed-handler project,
   simulation-first target, M0 = org+charter only, direct-commit git flow
   (recorded in `docs/adr/ADR-0001-org-design.md`).
+- 2026-08-01 — E3: toolchain lane = released Hardcaml v0.17.x from opam
+  (ADR-0004); master-pin and OxCaml rejected; API gaps trigger a new E3.
 - 2026-08-01 — Sponsor ratified the org (G0 item 8) and set org-evolution
   policy: the current structure is the best first guess, not a commitment —
   roles may be added or reshaped as the program learns, via the existing

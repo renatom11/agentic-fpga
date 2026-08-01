@@ -548,3 +548,31 @@ none
 - docs/adr/ADR-0003-aud-0001-disposition.md
 - docs/gates/G0-checklist.md
 - tasks/BOARD.md
+
+## [J-orchestrator-0013] 2026-08-01T20:42:03Z | task:none | E3 decided: toolchain lane is released Hardcaml v0.17.x (ADR-0004)
+### Trigger
+Sponsor answered the program's first formal E3 escalation, choosing the
+recommended option: released v0.17.x from opam.
+### Inputs
+Sponsor decision; Hardcaml ecosystem research (M0 planning); ADR-0004 draft;
+tasks/BOARD.md.
+### Reasoning
+Escalation was delivered decision-ready per §8 (three options, recommendation,
+cost). Decision recorded as ADR-0004 with the re-escalation trigger made
+explicit: a missing API is a new E3 naming the specific gap, never a quiet
+re-pin — protecting reproducibility from drift by convenience. M1 execution
+now unblocked: dune/opam skeleton and OCaml CI (my absorbed toolchain role),
+then architect_docs_lead activation for REQ-### requirements and the
+top-level architecture spec, exiting via P1-spec-freeze.
+### Actions
+Wrote docs/adr/ADR-0004-toolchain-lane.md; BOARD: E3 closed in pending
+escalations, decision logged in decisions-on-record.
+### Evidence
+none (decision record; build evidence accrues with the M1 skeleton commits)
+### Outcome
+E3 closed. M1 execution begins. Handoff: none.
+### Open-questions
+none
+### Files-in-this-commit
+- docs/adr/ADR-0004-toolchain-lane.md
+- tasks/BOARD.md
