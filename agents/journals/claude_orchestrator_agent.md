@@ -67,3 +67,56 @@ none
 - scripts/policy.sh
 - scripts/test_protocol.sh
 - tasks/BOARD.md
+
+## [J-orchestrator-0002] 2026-08-01T16:03:46Z | task:none | Org chart, README, ADR-0001, G0 checklist, agent launchers
+### Trigger
+Continuation of M0 bootstrap after J-orchestrator-0001 landed the enforcement
+core.
+### Inputs
+agents/PROTOCOL.md; judged org design + synthesis notes (grafts 1–15);
+project-scoping research (phase decomposition, references, licensing).
+### Reasoning
+Charters are the operative truth and launchers are deliberately thin: the
+.claude/agents/ files carry only model tier, spawn guidance, and
+non-negotiables, each pointing at its charter — keeping the human-reviewable
+charter as the single source of instructions and the launcher immune to
+drift. ORG_CHART encodes the two independence lines (DV never graded by
+design; auditor graded only by the sponsor) and states honestly that solid
+arrows terminate at the orchestrator because subagents cannot spawn
+subagents. ADR-0001 records the full design provenance including rejected
+alternatives, so a future session can reconstruct why this org looks the way
+it does. Mermaid edge labels kept single-line to avoid GitHub render risk.
+G0 checklist includes the one action only the sponsor can take (branch
+protection on main) — the append-only guarantee is voidable without it.
+### Actions
+Wrote ORG_CHART.md, README.md, docs/adr/ADR-0001-org-design.md,
+docs/gates/G0-checklist.md, and eight launchers under .claude/agents/
+(architect_docs_lead, rtl_lead, dv_lead, auditor, rtl_module_dev, tb_writer,
+data_wrangler, formal_dv; rtl_lead_md gets one at activation). Note:
+--extra-trailer support for session attribution was added to
+scripts/agent_commit.sh before J-orchestrator-0001 was committed, so it is
+already part of that commit's staged set, not this one's — the R4 check
+rejected this entry's first draft for claiming it, which is the mechanism
+working as intended.
+### Evidence
+bash scripts/test_protocol.sh → "protocol self-test: 13 passed, 0 failed"
+(re-run after the agent_commit.sh change).
+### Outcome
+G0 items 1–4 now materially complete; charters (item 2) in progress via
+nine parallel charter writers, to land as the next unit with an adversarial
+review to follow. Handoff: none.
+### Open-questions
+none
+### Files-in-this-commit
+- .claude/agents/architect_docs_lead.md
+- .claude/agents/auditor.md
+- .claude/agents/data_wrangler.md
+- .claude/agents/dv_lead.md
+- .claude/agents/formal_dv.md
+- .claude/agents/rtl_lead.md
+- .claude/agents/rtl_module_dev.md
+- .claude/agents/tb_writer.md
+- ORG_CHART.md
+- README.md
+- docs/adr/ADR-0001-org-design.md
+- docs/gates/G0-checklist.md
