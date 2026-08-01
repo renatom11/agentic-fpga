@@ -14,3 +14,12 @@
 First activation of the architecture function. Produce the four deliverables at the quality bar the charters set: specs precise enough that an implementer and a test-writer who never speak converge on the same module. Where you make a non-obvious architectural choice (fabric style, module split, ARP placement), record the alternatives in your journal Reasoning — an ADR may be extracted later.
 ## Return / verdict log
 (architect appends on RETURNED)
+- 2026-08-01T23:20Z (orchestrator): INCIDENT — spawn #1 (WO-0002/2026-08-01T20:58Z)
+  was killed ~5 minutes in by a session interruption at 20:57Z and never
+  resumed; no deliverables were written (docs/specs/ empty, working tree
+  clean, subagent transcript ends at the interruption). No partial state to
+  clean up. Re-spawning with the identical packet as spawn #2
+  (WO-0002/2026-08-01T23:20Z); the only prompt change is factual: the
+  toolchain note now cites ADR-0005 (CI is the authoritative build
+  environment; build lane green at run 30721584772) instead of "being
+  installed in parallel". State remains ISSUED until spawn #2 RETURNS.

@@ -979,3 +979,41 @@ M1 infrastructure complete; awaiting WO-0002 return. Handoff: none.
 none
 ### Files-in-this-commit
 - tasks/BOARD.md
+
+## [J-orchestrator-0024] 2026-08-01T23:20:00Z | task:WO-0002 | Architect spawn #1 died at 20:57Z interruption — re-spawning
+### Trigger
+Fallback check-in: no WO-0002 completion after >2 h. Investigated instead
+of waiting longer.
+### Inputs
+docs/specs/ (empty); git status (clean); subagent transcript
+agent-ad40ee17b4d29d226.jsonl.
+### Reasoning
+The architect's transcript ends at 2026-08-01T20:57:07Z with a session
+interruption — the same moment the sponsor interrupted my test rerun.
+The subagent was collateral: killed five minutes after spawn, before any
+file writes, and a completion notification will never arrive. Diagnosis
+over assumption: I verified all three facts (empty deliverable dir, clean
+tree, transcript tail) rather than inferring a hang. Recovery is a clean
+re-spawn with the byte-identical packet recovered from the dead
+transcript's first message, marked spawn #2 with a fresh spawn short-id
+per PROTOCOL §4. One deliberate prompt correction: the original said the
+toolchain was "being installed in parallel", which is now false — it
+cites ADR-0005 and the green build run instead, so the architect writes
+against reality. Lesson recorded: interrupting the orchestrator kills
+in-flight subagents silently; future long-running spawns get a fallback
+check-in armed at spawn time, not after.
+### Actions
+WO-0002 Return log: incident note appended (state stays ISSUED).
+Re-spawn follows this commit.
+### Evidence
+Subagent transcript agent-ad8950df... (sic: ad40ee17b4d29d226) first
+event 20:52:47Z, last event 20:57:07Z "[Request interrupted by user]";
+`ls docs/specs/` empty at this commit's parent; `git status --short`
+clean before this commit.
+### Outcome
+Spawn #2 launched with identical scope. Handoff: WO-0002 remains with
+architect_docs_lead.
+### Open-questions
+none
+### Files-in-this-commit
+- agents/handoffs/WO-0002_p1-requirements-architecture.md
