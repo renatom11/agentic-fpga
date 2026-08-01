@@ -16,7 +16,7 @@ G0 passes. Signatures are journal-entry references (PROTOCOL §7).
 | 8 | **Sponsor**: org chart + charters ratified (critique round closed) | Renato | ✅ | Sponsor approval 2026-08-01, recorded in J-orchestrator-0007 |
 | 9 | **Sponsor**: branch protection on `main` AND the working branch (`claude/fpga-hardcaml-agent-orchestration-37ceyf` — daily commits land there; `main` receives milestone PRs only). Exact click-path below. | Renato | ✅ | Sponsor configured 2026-08-01 (rulesets protect-history all-branches + main-requires-ci); rejection verified by live fire on both branches — J-orchestrator-0011 |
 | 10 | Auditor's G0 retro-audit of the M0 commit range committed to `docs/reports/audit/` | auditor | ✅ | J-auditor-0001 — **PASS WITH FINDINGS** ([AUD-0001](../reports/audit/AUD-0001-g0-retro.md)) |
-| 11 | **Gate release**: AUD-0001 CRITICAL (F17) dispositioned by ADR **and re-verified by the auditor** | auditor | ☐ | ADR-0003 written; re-verification pending |
+| 11 | **Gate release**: AUD-0001 CRITICAL (F17) dispositioned by ADR **and re-verified by the auditor** | auditor | ✅ | J-auditor-0003 — F17 **CLOSED**, block lifted ([AUD-0002](../reports/audit/AUD-0002-g0-reverification.md)); transcribed per ADR-0003 auditor exception |
 
 ## Item 9 click-path (branch rulesets)
 
@@ -52,3 +52,10 @@ with CI failing publicly on every push as the detection mechanism.
 
 **Exit**: all items checked → orchestrator declares G0 passed in its journal,
 updates `tasks/BOARD.md`, and M1 work orders may issue.
+
+---
+
+## G0: PASSED — 2026-08-01
+
+All 11 items signed. Declared in `J-orchestrator-0012`; the org is ratified,
+mechanically enforced end-to-end, audited, and re-verified. M1 is open.

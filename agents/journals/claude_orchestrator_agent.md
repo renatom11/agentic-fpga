@@ -498,3 +498,53 @@ none
 ### Files-in-this-commit
 - docs/gates/G0-checklist.md
 - tasks/BOARD.md
+
+## [J-orchestrator-0012] 2026-08-01T20:40:17Z | task:WO-0001 | G0 PASSED: transcribe item 11, honor the auditor's pre-transcription request, open M1
+### Trigger
+AUD-0002 (J-auditor-0003): F17 CLOSED, CRITICAL block lifted, auditor signs
+item 11, with an explicit non-blocking request — correct the N1 tally lines
+and state F15's severity position before transcription.
+### Inputs
+docs/reports/audit/AUD-0002-g0-reverification.md; J-auditor-0003; ADR-0003;
+docs/gates/G0-checklist.md; tasks/BOARD.md; agents/PROTOCOL.md §7.
+### Reasoning
+The auditor's request is honored BEFORE transcription, in this same commit:
+three tally lines corrected to 1 CRITICAL / 7 MAJOR / 7 MINOR / 2 NOTE, and
+F15's raise to MAJOR is explicitly ACCEPTED. AUD-0002's new findings are
+handled by class: N1/N2 (my derivative-artifact errors and ADR overclaims)
+corrected via visible Corrections sections in ADR-0002/0003 rather than
+silent rewrites; N3 (BOARD contradictions) fixed; N4 (two missing scenarios)
+and N5 tracked on the board for disposition before P1-spec-freeze; N6 (the
+live-fire R9 exception was self-authorized) accepted — the standing rule
+going forward is that deliberate protection tests are pre-declared to the
+sponsor or covered by an ADR'd procedure. Per F4, signatures now state their
+authority explicitly: **I sign gate G0 items 1, 2, 3, 5, 6, and 7**
+(re-affirmation of the pre-formula signatures, per ADR-0003/F4), and I
+transcribe item 11 on the authority of J-auditor-0003. With all 11 items
+signed, **I declare gate G0 PASSED**. M1 opens with the E3 toolchain-lane
+escalation to the sponsor.
+### Actions
+Corrected tallies in WO-0001/ADR-0003/BOARD; appended Corrections sections to
+ADR-0002 and ADR-0003; fixed the orchestrator charter sponsor row (F10);
+promoted the F5 Evidence rule into PROTOCOL §4.1; marked WO-0001 ACCEPTED
+with transcription note; signed item 11 and declared G0 passed in the
+checklist; updated BOARD to M1-open and refreshed the journal INDEX at the
+gate boundary.
+### Evidence
+bash scripts/check_journals.sh --all at this commit's parent → "OK: 13
+commit(s) satisfy the journal/commit protocol". AUD-0002 gate row: "The F17
+CRITICAL block LIFTS. G0 MAY CLOSE." (docs/reports/audit/AUD-0002-g0-reverification.md).
+### Outcome
+G0 PASSED — all 11 items signed. WO-0001 ACCEPTED, cycle complete. M1 open;
+first action is the E3 escalation (Hardcaml toolchain lane) to the sponsor.
+### Open-questions
+none
+### Files-in-this-commit
+- agents/PROTOCOL.md
+- agents/charters/orchestrator.md
+- agents/handoffs/WO-0001_g0-retro-audit.md
+- agents/journals/INDEX.md
+- docs/adr/ADR-0002-adversarial-review-fixes.md
+- docs/adr/ADR-0003-aud-0001-disposition.md
+- docs/gates/G0-checklist.md
+- tasks/BOARD.md

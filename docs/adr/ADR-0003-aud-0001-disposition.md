@@ -10,7 +10,9 @@
 ## Context
 
 The auditor audited the five commits that built the org, including the
-orchestrator's own conduct. It found 1 CRITICAL, 6 MAJOR, 6 MINOR, 4 NOTE.
+orchestrator's own conduct. It found 1 CRITICAL, 7 MAJOR, 7 MINOR, 2 NOTE
+(tally as corrected by the auditor in J-auditor-0002; this line originally
+carried the superseded draft tally — see the Corrections section).
 PROTOCOL §11 requires an ADR for the protocol/enforcement changes the
 dispositions imply.
 
@@ -136,3 +138,32 @@ mid-audit) is a shared-tree hazard: future audits pin a SHA at spawn.
   in the one role that review didn't extend. That is the audit function
   working as designed, and it argues for keeping the auditor's write scope
   narrow rather than convenient.
+
+## Corrections after AUD-0002 (re-verification)
+
+The re-verification audit (AUD-0002, `J-auditor-0003`) found this ADR itself
+contained errors. Recorded here rather than silently rewritten:
+
+- **Tally**: the Context line originally quoted the superseded draft tally
+  ("6 MAJOR … 4 NOTE"); the auditor's corrected tally is
+  **1 CRITICAL, 7 MAJOR, 7 MINOR, 2 NOTE** (fixed in place, marked).
+- **F15's severity**: `J-auditor-0002` raised F15 (mid-edit commit of the
+  audit report) from NOTE to MAJOR. This ADR filed it under "NOTE — no
+  action" while claiming "none disputed". **Position now stated explicitly:
+  the raise to MAJOR is ACCEPTED, not disputed.** Its disposition: audits
+  are committed only after the auditor's completion signal — applied to
+  AUD-0002, whose commit followed the auditor's finished report (N15's
+  completion-signal half is hereby the standing rule).
+- **Three overclaims falsified by AUD-0002 (N2)**, now made true or retracted:
+  (a) "stale branch-protection restatement corrected" — the orchestrator
+  charter's sponsor-interface row still said `main` only; fixed in the same
+  commit as this section. (b) "re-affirms them in the required form" — only
+  items 4 and 10 were re-signed in `J-orchestrator-0009`; items 1, 2, 3, 5,
+  6, 7 are re-signed in the required "I sign" form in `J-orchestrator-0012`.
+  (c) "the `git interpret-trailers` parsing change is exercised by S23" —
+  S23 exercises the duplicate-key rejection, not the final-block property;
+  claim retracted, scenario coverage for the final-block parse and the
+  auditor/handoffs denial is tracked on the board for disposition before
+  P1-spec-freeze (N4).
+- **F5's standing Evidence rule** is promoted from this ADR into
+  PROTOCOL §4.1, where every agent's mandatory reading reaches it.

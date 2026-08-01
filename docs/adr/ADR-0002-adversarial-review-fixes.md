@@ -72,3 +72,10 @@
 - Remaining accepted debt: mechanical blob-size gate deferred to M1 CI;
   code-fence-aware journal parsers rejected in favor of a documented
   no-fake-header rule (§4.1) plus audit.
+
+---
+*Correction (AUD-0001-F6, accepted): the finding tally quoted above
+(1 CRITICAL, 9 MAJOR, 16 MINOR) misstates the review round's severities as
+delivered; the review returned 26 findings whose per-lens tallies are
+recorded in the review outputs themselves. The disposition content is
+unaffected. Left in place, marked, per the no-silent-rewrite practice.*

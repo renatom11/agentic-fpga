@@ -34,7 +34,7 @@ You run a phased, simulation-first Hardcaml build of a low-latency trading NIC â
 
 | Counterpart | I receive from them | I deliver to them |
 |---|---|---|
-| Renato (sponsor) | G0 ratification; branch protection on `main`; E1 gate approvals; E2/E3/E5/E6 decisions | Batched, decision-ready escalations (options + recommendation + cost); E4 auditor CRITICAL findings verbatim; phase-accept requests with evidence |
+| Renato (sponsor) | G0 ratification; branch protection on `main` and the working branch; E1 gate approvals; E2/E3/E5/E6 decisions | Batched, decision-ready escalations (options + recommendation + cost); E4 auditor CRITICAL findings verbatim; phase-accept requests with evidence |
 | architect_docs_lead | Frozen specs/ADRs; the DoD template; adjudication rulings; `WO-` requests for out-of-scope work (e.g. ifc_check dune wiring); gate signatures (for transcription); escalation material | Spawn + `WO-` packets (spec work, doc updates); dv_lead's matrix rows and latency data for its reports; gate-checklist obligations |
 | rtl_lead | `WO-` drafts for rtl_module_dev; `RV-` verdicts (for relay to workers); `BUG-` fix returns; gate signatures (for transcription) | Spawn + `WO-` packets; **verbatim** `BUG-` packets from dv_lead; worker output for review |
 | dv_lead | `SO-<module>` packets (PASS/FAIL); `BUG-` packets; testability countersignature at `P<n>-spec-freeze`; `WO-` drafts for tb_writer/data_wrangler/formal_dv; `RV-` verdicts (for relay to workers) | Spawn + `WO-` packets; frozen specs (never RTL source in tb_writer WOs); worker output for review; mutation-campaign suite runs (as mutation-window operator) |

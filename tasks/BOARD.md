@@ -7,20 +7,22 @@ agents with open work.
 
 ## Current milestone
 
-**M0 — Org & charter** (awaiting sponsor + audit re-verification).
-Org ratified (item 8). The auditor's first audit (AUD-0001) returned
-1 CRITICAL / 6 MAJOR / 6 MINOR / 4 NOTE against orchestrator work; all
-accepted and dispositioned in ADR-0003. Enforcement hardened to 26 scenarios
-with reason-asserting rejection tests and full-history CI re-checking.
-**G0 remains BLOCKED** until the auditor re-verifies F17 and the MAJOR fixes.
-Exit: item 9 (sponsor, branch protection) + audit re-verification.
+**M1 — Toolchain & first specs** (just opened). **G0 PASSED 2026-08-01**:
+all 11 checklist items signed; the auditor's re-verification (AUD-0002) lifted
+the CRITICAL block and signed item 11. M0 closed with the full audit cycle
+exercised end-to-end: audit → disposition ADR → adversarial re-verification.
+Open M1 work: E3 toolchain-lane escalation (with sponsor), dune/opam skeleton,
+architect activation (REQ-### requirements + top-level architecture spec),
+P1-spec-freeze gate. Deferred dispositions due before P1-spec-freeze:
+AUD-0002 N4 scenarios (auditor/handoffs denial; trailer final-block parse),
+N1/N2 residuals closed per ADR-0003 Corrections.
 
 ## Milestone roadmap
 
 | Milestone | Scope | Status |
 |---|---|---|
-| M0 | Org, charters, protocol, enforcement, CI journal-check | **Awaiting sponsor (items 8–10)** |
-| M1 | Toolchain-lane ADR, dune/opam skeleton, OCaml CI, REQ-### requirements, top-level architecture spec, P1-spec-freeze gate | Pending |
+| M0 | Org, charters, protocol, enforcement, CI journal-check | **Done — G0 PASSED 2026-08-01** |
+| M1 | Toolchain-lane ADR, dune/opam skeleton, OCaml CI, REQ-### requirements, top-level architecture spec, P1-spec-freeze gate | **In progress** |
 | M2 (Phase 1) | XGMII 64-bit 10G MAC (rx/tx, CRC-32, IFG) + ARP/IPv4/UDP stack; per-module DV; differential co-sim vs verilog-ethernet | Pending |
 | M3 (Phase 2) | ITCH stimulus toolchain, MoldUDP64, ITCH 5.0 realignment parser, order book (1 symbol, ToB + 8 levels), full-day replay, latency histograms | Pending |
 | M4 (stretch) | 10GBASE-R soft PCS (64b/66b + scrambler), wire-to-wire latency report | Pending |
@@ -35,13 +37,12 @@ Exit: item 9 (sponsor, branch protection) + audit re-verification.
 
 | Packet | From → To | State | Note |
 |---|---|---|---|
-| [WO-0001](../agents/handoffs/WO-0001_g0-retro-audit.md) | orchestrator → auditor | RETURNED | G0 retro-audit delivered ([AUD-0001](../docs/reports/audit/AUD-0001-g0-retro.md)); findings dispositioned in ADR-0003; re-verification pending |
+| [WO-0001](../agents/handoffs/WO-0001_g0-retro-audit.md) | orchestrator → auditor | ACCEPTED | Full cycle complete: [AUD-0001](../docs/reports/audit/AUD-0001-g0-retro.md) → ADR-0003 → [AUD-0002](../docs/reports/audit/AUD-0002-g0-reverification.md) re-verification (F17 CLOSED, gate lifted) |
 
 ## Pending escalations to sponsor
 
-_None pending. G0 items 1–10 signed; item 11 (auditor re-verification of
-the AUD-0001 CRITICAL disposition) is in flight — the last thing between the
-org and M1 kickoff._
+- **E3 (open)**: Hardcaml toolchain-lane decision — options + recommendation
+  delivered to the sponsor 2026-08-01; M1 build work starts on the answer.
 
 ## Decisions on record
 

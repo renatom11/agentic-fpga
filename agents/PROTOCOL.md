@@ -117,7 +117,9 @@ What was done (modules touched, commands run).
 ### Evidence
 Exact reproducible commands and their observed results (test names, pass/fail,
 artifact paths). Claims here must reproduce at this commit's SHA — the auditor
-re-executes samples.
+re-executes samples. Cite only (a) commands runnable from a repo checkout, or
+(b) externally verifiable references (e.g. a CI run ID and its conclusion);
+mentions of ephemeral artifacts must say so explicitly (ADR-0003/F5).
 ### Outcome
 DoD status vs the work order (met / partially met + gaps) and the handoff
 (packet path or reviewer).

@@ -1,5 +1,5 @@
 # WO-0001: G0 retro-audit of the M0 commit range
-- **State**: RETURNED
+- **State**: ACCEPTED
 - **From** / **To**: orchestrator → auditor
 - **Spec basis**: agents/charters/auditor.md (full charter); agents/PROTOCOL.md §4–§7, §10; docs/gates/G0-checklist.md item 10
 - **Deliverables**: docs/reports/audit/AUD-0001-g0-retro.md (numbered, severity-tagged findings, specific and falsifiable); one journal entry appended to agents/journals/claude_auditor_agent.md
@@ -20,8 +20,14 @@ auditor's committed artifacts below).
 - **Auditor verdict** (report §10, signed `J-auditor-0001`):
   G0 item 10 **PASS WITH FINDINGS**; gate **BLOCKED** on `AUD-0001-F17`
   (CRITICAL) until dispositioned by ADR and re-verified by the auditor.
-- **Findings**: 1 CRITICAL, 6 MAJOR, 6 MINOR, 4 NOTE — all accepted, none
+- **Findings**: 1 CRITICAL, 7 MAJOR, 7 MINOR, 2 NOTE (corrected per J-auditor-0002) — all accepted, none
   disputed; dispositioned in `docs/adr/ADR-0003-aud-0001-disposition.md`.
 - **DoD status**: met, with one item the auditor was mechanically barred from
   performing (this Return-log entry) — which is itself finding F17.
 - **Next**: re-verification spawn to confirm F17 and the MAJOR fixes are closed.
+
+**ACCEPTED** — transcribed by the orchestrator (ADR-0003 auditor exception).
+Re-verification AUD-0002 (J-auditor-0003): F17 CLOSED, CRITICAL block lifted,
+G0 item 11 signed by the auditor. Six new findings (3 MAJOR, 3 MINOR) logged;
+pre-transcription corrections (N1 tallies, F15 severity position) applied in
+the same commit as this entry. Full cycle: AUD-0001 → ADR-0003 → AUD-0002.
