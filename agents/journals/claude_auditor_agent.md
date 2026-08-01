@@ -373,3 +373,229 @@ write scope (AUD-0001-F17); the orchestrator must write it.
    as written until adjudicated. I will not soften it to settle.
 ### Files-in-this-commit
 - docs/reports/audit/AUD-0001-g0-retro.md
+
+## [J-auditor-0003] 2026-08-01T20:35:30Z | task:WO-0001 | Re-verification of the AUD-0001 dispositions: F17 CLOSED, gate block lifts, 6 new findings
+### Trigger
+Orchestrator re-verification spawn under WO-0001, spawn short-id
+WO-0001/2026-08-01T20:32Z, for G0 checklist item 11 ("AUD-0001 CRITICAL (F17)
+dispositioned by ADR and re-verified by the auditor"). I am a fresh spawn; my
+predecessor's two entries and AUD-0001 are committed, and I relied only on
+repository artifacts. Baseline pinned in the spawn prompt at e57511b — the
+AUD-0001-F15 control, applied to me and honored.
+### Inputs
+agents/charters/auditor.md; agents/PROTOCOL.md (esp. §3 as amended, §4.1, §5
+R1-R9, §6, §7, §8, §11); agents/handoffs/WO-0001_g0-retro-audit.md (RETURNED,
+incl. the transcribed Return log); docs/reports/audit/AUD-0001-g0-retro.md (as
+corrected at de85393); docs/adr/ADR-0003-aud-0001-disposition.md;
+docs/adr/ADR-0002-adversarial-review-fixes.md:8; docs/gates/G0-checklist.md;
+tasks/BOARD.md; README.md:45-51; agents/charters/orchestrator.md:26,37;
+scripts/policy.sh, scripts/agent_commit.sh, scripts/check_journals.sh,
+scripts/test_protocol.sh; .github/workflows/journal-check.yml;
+agents/journals/claude_orchestrator_agent.md (J-orchestrator-0009, 0010, 0011,
+and 0001-0008 for the signature grep); agents/journals/claude_auditor_agent.md
+(J-auditor-0001, J-auditor-0002 — read, never modified above EOF); GitHub
+Actions run/job records for renatom11/agentic-fpga.
+### Reasoning
+SAMPLING FRAME. Window: the three commits since AUD-0001's report landed —
+89d7b2b (ADR-0003 + fixes), c976c5b (live-fire journal-only), e57511b (item 9
+signed). Census on all three. Census on all 17 AUD-0001 findings, not the six
+the spawn prompt named: a disposition ADR is a single artifact and grading only
+part of it would let the ungraded part carry unverified claims into the gate —
+which is exactly where two of my six new findings came from. All 26 enforcement
+scenarios instrumented. Five of six Evidence claims in the three new
+orchestrator entries re-executed or externally corroborated. DELIBERATELY
+SKIPPED: the M0 range itself (AUD-0001 did a census; the full-history
+check_journals re-proves nothing was rewritten), the five inactive charters
+(still unexercised), and every charter duty with no subject matter yet —
+spec-drift, mutation, replay, licensing, DV independence. This is a
+re-verification, not a second full audit, and the report says so.
+
+METHOD: adversarial by instruction and by preference. I took no ADR sentence on
+trust. Where ADR-0003 says "fixed", I re-executed. Where it says "corrections
+applied", I ran git log on the cited file. That single discipline produced
+AUD-0002-N2: three claims of delivered work that the repository falsifies
+(orchestrator.md:37 never touched; only items 4 and 10 re-affirmed, not the
+historical set; S23 does not exercise the interpret-trailers change). None of
+those would have surfaced from reading the ADR carefully — only from checking it.
+
+F17, THE LOAD-BEARING JUDGEMENT. Three separable questions. (1) Is the
+contradiction gone? Yes: §3 now says "except the auditor's" and adds the
+transcription paragraph; §6:230 is unchanged; they now agree. (2) Is the
+boundary really unchanged? Yes, and I insisted on proving it by executing the
+shipped policy rather than reading the table — auditor DENIED on
+agents/handoffs/, all eight others ALLOWED, and auditor ALLOWED on its own
+report path. policy.sh has not been touched since d499ce8, which is the
+strongest possible evidence that the repair was documentary. (3) Is the
+rationale right on its merits? I judged it right, and for a reason ADR-0003
+does not state: policy.sh matches path prefixes and cannot express "the auditor
+may write its OWN packet's Return log". So option A was never "grant the
+auditor its own Return log" — it was necessarily "grant the auditor every
+packet in the program, including the SO- and BUG- packets whose relay fidelity
+it polices". There is no mechanically expressible middle. That makes B the only
+sound option, which is a stronger conclusion than the ADR's "symmetry loses to
+crispness of measurement". I verified the premise instead of assuming it.
+
+What I would not let pass: ADR-0003 never engages the objection AUD-0001-F17
+itself raised against option B — that transcription hands a participant's
+lifecycle action to the party it audits. I judged that this does not reopen
+F17, because the compensating control is genuine (authority lives in my
+append-only journal and a committed report the sponsor reads unmediated) and
+because I then exercised the control and it worked: the fidelity diff caught a
+defect. But it converts fidelity spot-checking from "sample" to "standing" for
+transcribed Return logs, and I said so rather than leaving it implicit.
+
+THE HARDEST CALL: severity of N1. The Return log, ADR-0003:13 and BOARD:12 all
+state a tally (1/6/6/4) my predecessor never wrote, and the direction is not
+neutral — ADR-0003:119 files F15 under "NOTE, no action" when J-auditor-0002
+raised it to MAJOR with reasons. Charter §3 says any edit found in a
+relay-fidelity diff of verbatim-class material is CRITICAL, and my findings are
+verbatim class. I argued myself toward CRITICAL and then rejected it on three
+grounds recorded in the report: the protected artifact (AUD-0001) is
+byte-intact and reaches the sponsor directly, which is what the verbatim rule
+exists to protect; the defective statements sit in Summarizable-class
+derivatives where PROTOCOL §3 permits summarisation; and inflating an
+arithmetic-plus-classification slip into a gate block would damage the audit
+function's credibility as badly as softening one. MAJOR, with the rejected
+CRITICAL argument written out so a reader can overrule me on the evidence. I
+also refused the tempting symmetry of blocking G0 on a finding that concerns
+how my own predecessor's severities were restated — that would be an auditor
+using the gate to defend its own tally, which is the wrong instinct.
+
+N6 (R9 force-push exception) I nearly filed as MINOR, because it was
+disclosed, reversed within one second, and cost zero history — all verified.
+MAJOR is right anyway: the sole committer suspended, on its own authority, the
+one rule that makes every other rule durable, on the branch R9 protects, with
+89d7b2b (the CRITICAL's disposition) momentarily off the remote, and recorded
+it only in its own journal. PROTOCOL has no exception clause and §11 requires
+an ADR. Honest disclosure after the fact is not authorization before it. I also
+wrote the countervailing fact at full strength — the test found that
+protect-history matched zero branches, so item 9 would otherwise have been
+signed on a ruleset guarding nothing — because a finding that hides the good
+reason behind the act is not a fair finding, and because I do not want the
+lesson taken to be "disclose less".
+
+GATE RULING. AUD-0001 §8's severity key, which ADR-0003 accepted, says CRITICAL
+blocks the gate and MAJOR must be dispositioned before the NEXT gate. No open
+CRITICAL exists. So the block lifts and G0 may close, and I say so plainly
+rather than inventing a reason to keep a gate I have leverage over. I recorded
+one REQUEST (correct N1's three tally lines before item 11 is transcribed) and
+labelled it explicitly as a request, not a block — the distinction matters more
+than getting my way on it.
+### Actions
+Wrote docs/reports/audit/AUD-0002-g0-reverification.md (per-finding verdict
+table for all 17 AUD-0001 findings, six new findings N1-N6, gate rows).
+Re-executed scripts/test_protocol.sh and scripts/check_journals.sh --all at
+e57511b. Built two scratch derivatives of test_protocol.sh (never in the repo):
+one with expect_fail instrumented to print every captured rejection, one with
+only the S4/S12/S19 fixes reverted to their de85393 form. Ran a hand-built
+scratch repo to probe trailer body-line shadowing. Executed the AUD-0001-F17
+policy probe against the shipped scripts/policy.sh. Queried GitHub Actions run
+and job records. Ran no git command that writes: no commit, push, amend,
+checkout, stash, reset, or worktree. Edited no file outside my write scope.
+### Evidence
+Baseline: `git rev-parse HEAD` -> e57511bc2d510942e76a62e9e4d89495f63e78b8;
+`git status --porcelain` -> empty, before and after everything below.
+
+F1/F2 — `bash scripts/test_protocol.sh` -> "protocol self-test: 26 passed, 0
+failed" (exit 0). Instrumented re-run: all 20 rejection scenarios print a
+rejection matching the rule they name; specifically S5 -> "Files-in-this-commit
+list does not equal the staged non-journal set (R4)", S12 -> "...is not a pure
+EOF-append (R3)", S19 -> "path outside architect_docs_lead's write scope:
+docs/reports/audit/fake.md (R7)". S23 -> "duplicate 'Agent:' trailer (R6)";
+S24 -> "octopus merge commits are forbidden (R9)". Reconstruction of the
+pre-fix state (reason assertions kept, three scenario fixes reverted) ->
+"23 passed, 3 failed", failing exactly S5, S12, S19 with exactly the reasons
+AUD-0001-F1 predicted; 23+3 vs J-orchestrator-0009's 21+3 is the two added
+scenarios, so that claim reproduces in substance (it is reproducible from no
+SHA — AUD-0002-N5). Trailer-shadowing probe in a scratch repo: a message with
+"Agent: auditor" in an earlier paragraph and "Agent: rtl_lead" in the final
+block yields `git interpret-trailers --parse` -> "Agent: rtl_lead" only.
+
+F3 — `bash scripts/check_journals.sh --all` -> "OK: 13 commit(s) satisfy the
+journal/commit protocol" (exit 0). .github/workflows/journal-check.yml:24-25 is
+an unconditional step. GitHub run 30716890065 (head e57511b), job 91413875421:
+step 4 "Verify full history (append-only cannot be re-checked incrementally)"
+= success, step 5 "Verify commit range" = success.
+
+F17 — `. scripts/policy.sh; agent_may_write <agent> agents/handoffs/WO-0001_g0-retro-audit.md`
+-> auditor: DENIED; tb_writer, dv_lead, rtl_lead, architect_docs_lead,
+rtl_module_dev, data_wrangler, formal_dv, orchestrator: ALLOWED.
+`agent_may_write auditor docs/reports/audit/AUD-0002-g0-reverification.md`
+-> ALLOWED. `git log --oneline -- scripts/policy.sh` -> d499ce8, 7f54130.
+agents/PROTOCOL.md:66-70 and :72-78 vs :230 — consistent.
+
+Tamper checks — `git log --oneline -- docs/reports/audit/AUD-0001-g0-retro.md`
+-> de85393, bd7fbcf. `git log --oneline -- agents/journals/claude_auditor_agent.md`
+-> de85393, bd7fbcf, 7f54130. Neither touched since handover.
+
+N1 — WO-0001_g0-retro-audit.md:23, ADR-0003:13, BOARD:12 all read
+"1 CRITICAL, 6 MAJOR, 6 MINOR, 4 NOTE"; AUD-0001:19 and :873 read 1/7/7/2;
+claude_auditor_agent.md:337-341 recounts per finding. ADR-0003's own body
+carries 6 MAJOR headings, 7 MINOR (:104), 3 NOTE (:119) = a third tally.
+J-orchestrator-0009 (claude_orchestrator_agent.md:364-365) states 1/7/7/2
+correctly in the same commit.
+
+N2 — `git log --oneline -- agents/charters/orchestrator.md` -> d499ce8,
+f43f71f (both pre-audit), so ADR-0003:106's "corrections applied ... stale
+branch-protection restatement" is false; :37 still reads "branch protection on
+`main`" against :26's "on `main` and the working branch".
+`git log --oneline -- docs/adr/ADR-0002-adversarial-review-fixes.md` -> d499ce8
+only; :8 still "(1 CRITICAL, 9 MAJOR, 16 MINOR)". `grep -rn "I sign"
+agents/journals docs/` -> three statements only, covering G0 items 4, 9, 10;
+items 1, 2, 3, 5, 6, 7 unaffirmed. agents/PROTOCOL.md:117-120 unchanged, so
+F5's standing rule is nowhere an agent must read.
+
+N6 — GitHub runs 30716399563 (89d7b2b, 20:10:36Z), 30716528552 (de85393,
+20:14:12Z), 30716529281 (89d7b2b, 20:14:13Z): independent corroboration that
+the working-branch tip rewound one commit and returned, matching
+J-orchestrator-0010's disclosure. `git ls-remote --heads origin` ->
+e57511bc2d51... (working branch), bd7fbcf33c27... (main).
+`git rev-list --merges --all | wc -l` -> 0.
+### Outcome
+DoD vs the re-verification task: MET.
+  1. F17 re-verified: §3/§6 contradiction gone, repair confirmed (auditor scope
+     unchanged at docs/reports/audit/** only; orchestrator transcribes),
+     Return log diffed for relay fidelity, independence rationale judged on its
+     merits and endorsed with a stronger premise than the ADR's — MET.
+  2. F1/F2: suite re-run, expect_fail confirmed to assert reasons, S5/S12/S19
+     confirmed to test the rules they name, S23/S24 present, 26/26 green — MET;
+     F2 graded PARTIALLY CLOSED with the residual named.
+  3. F3: workflow runs --all unconditionally, verified in a real CI job; ran it
+     myself over 13 commits — MET.
+  4. F4: signature statements checked against §7's formula; forward-only
+     application judged coherent and correct, and the ADR's overstatement of
+     what was re-affirmed recorded — MET.
+  5. F7: BOARD tracks WO-0001; new internal contradictions found — MET.
+  6. Spot-checks: F5, F6, F9, F10, F11, F12, F13, F14, F15, F16 and the
+     J-orchestrator-0010/0011 live-fire disclosures all graded — MET.
+Verdicts: F17 CLOSED. CLOSED: F1, F3, F8, F12, F13. PARTIALLY CLOSED: F2, F4,
+F5, F7, F15. STILL OPEN: F6, F10. Otherwise dispositioned: F9 (by decision),
+F11 (accepted, undemonstrated), F14 (acknowledged), F16 (moot).
+New findings: N1 MAJOR, N2 MAJOR, N3 MINOR, N4 MINOR, N5 MINOR, N6 MAJOR. No
+CRITICAL. Nothing found blocks the gate.
+GATE: the F17 CRITICAL block LIFTS; G0 MAY CLOSE. I sign G0 checklist item 11.
+Authority for that signature is this entry plus
+docs/reports/audit/AUD-0002-g0-reverification.md; the orchestrator transcribes
+the checklist row (PROTOCOL §7) and any Return-log entry (PROTOCOL §3 auditor
+exception) under its own trailer — I stage neither.
+Handoff: docs/reports/audit/AUD-0002-g0-reverification.md to the orchestrator
+for commit under trailer Agent: auditor, Journal-Entry: J-auditor-0003. N1 and
+N2 concern the relaying party; per charter §7 this report is relayed unedited.
+### Open-questions
+1. N1's disposition is not mine: correct the three tally lines, and either
+   accept F15 at MAJOR or declare an E5 dispute. "Accepted, none disputed"
+   alongside a lowered severity cannot both stand.
+2. N6 needs a ruling on whether R9 admits a verification exception. If it does,
+   it needs an ADR with preconditions and a disclosure duty; if it does not,
+   the record should say the exception was a violation accepted after the fact.
+3. F6 and F10 remain open, and ADR-0003 says otherwise. Whether ADR-0002 is
+   immutable history (like ADR-0001) or a correctable current record is the
+   orchestrator's call — but the disposition should state which.
+4. F15's completion-signal control exists in practice and in no committed
+   artifact. It worked for this spawn; it will not survive a rehydration.
+5. Charter naming (F9) still disagrees with practice at auditor.md:29. Harmless
+   now, ambiguous by AUD-0003.
+6. Whether a sponsor canary was planted in this window is unknown to me by
+   design. I found none and say so.
+### Files-in-this-commit
+- docs/reports/audit/AUD-0002-g0-reverification.md
