@@ -70,3 +70,14 @@ First activation of the architecture function. Produce the four deliverables at 
   24-cycle latency budget is the architect's figure, not a sponsor
   requirement; (7) dv_lead testability review should land before the
   `P1-spec-freeze` checklist is opened.
+- 2026-08-01T23:55Z (orchestrator): ACCEPTED at 08899d3. Issuer review:
+  four deliverables present; REQ set (108) provably equals the traceability
+  row set (diff of extracted ID sets — empty); line-rate and XGMII
+  closure/sim-only are REQ-004/017/018 with verification methods; module
+  inventory M01–M20 named with verilog-ethernet counterparts; Return log
+  and journal grammar verified mechanically at commit. dv_lead testability
+  countersign remains a P1-spec-freeze precondition (architect's own Q7 —
+  agreed). Follow-ups opened on the board: hardcaml_axi dependency +
+  ifc_check dune wiring (orchestrator, blocking batch A), spec batching
+  decision, README phase-table pointer, 24-cycle budget confirmation with
+  sponsor.

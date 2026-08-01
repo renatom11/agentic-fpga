@@ -1017,3 +1017,44 @@ architect_docs_lead.
 none
 ### Files-in-this-commit
 - agents/handoffs/WO-0002_p1-requirements-architecture.md
+
+## [J-orchestrator-0025] 2026-08-01T23:55:00Z | task:WO-0002 | WO-0002 accepted; M1 pivots to spec-freeze runway
+### Trigger
+Architect spawn #2 completed WO-0002 (subagent duration ~24 min,
+returned all deliverables).
+### Inputs
+docs/specs/{requirements,architecture,SPEC-TEMPLATE,traceability}.md;
+WO-0002 Return log; architect journal entry J-architect_docs_lead-0001.
+### Reasoning
+Issuer review before accepting: (a) REQ set equality with the
+traceability matrix checked by diffing the extracted ID sets — equal at
+108, so the matrix cannot silently drop a requirement; (b) the two
+non-negotiables the packet demanded as numbered REQs are there —
+line-rate is REQ-004 with a 10 000-frame stress criterion, XGMII closure
+and sim-only are REQ-017/018 with structural verification methods;
+(c) inventory M01–M20 maps one-to-one onto verilog-ethernet counterparts
+for differential co-sim; (d) grammar/scope enforcement was mechanical at
+commit time. I accepted without deep-reading all 1183 lines: the
+testability judgment belongs to dv_lead (the architect's own open
+question 7 proposes exactly that sequencing), and acceptance here means
+"complete and well-formed against the DoD", not "frozen". Notable org
+first: 08899d3 is the first work commit carrying a lead agent's own
+trailer end-to-end through the protocol machinery.
+### Actions
+WO-0002 Return log: ACCEPTED entry. BOARD: WO row → ACCEPTED; open M1
+work replaced with the concrete spec-freeze runway (hardcaml_axi dep,
+ifc_check wiring, batching decision, dv_lead activation, README pointer,
+latency-budget confirmation).
+### Evidence
+Commit 08899d3 (architect's, R1–R9 enforced); `diff` of REQ ID sets
+empty at that SHA — command reproducible from the repo:
+diff <(grep -oE 'REQ-[0-9]{3}' docs/specs/requirements.md | sort -u)
+     <(grep -oE '^\| REQ-[0-9]{3}' docs/specs/traceability.md | grep -oE 'REQ-[0-9]{3}' | sort -u)
+### Outcome
+M1 spec phase open. Next orchestrator work: hardcaml_axi + ifc_check
+lanes, then dv_lead activation WO. Handoff: none.
+### Open-questions
+Sponsor: confirm the 24-cycle rx latency budget stands as a REQ.
+### Files-in-this-commit
+- agents/handoffs/WO-0002_p1-requirements-architecture.md
+- tasks/BOARD.md
