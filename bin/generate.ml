@@ -20,6 +20,8 @@ let emit_word_counter out_channel =
 ;;
 
 let () =
+  let dir = "rtl_snapshots" in
+  if not (Stdlib.Sys.file_exists dir) then Stdlib.Sys.mkdir dir 0o755;
   let path = "rtl_snapshots/word_counter.v" in
   Stdio.Out_channel.with_file path ~f:emit_word_counter;
   Stdio.printf "wrote %s\n" path

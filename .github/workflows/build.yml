@@ -34,7 +34,12 @@ jobs:
         run: opam exec -- dune exec bin/generate.exe
 
       - name: Verify nothing was left unpromoted or non-deterministic
-        # Catches two distinct failures with one check:
+        # Catches three distinct failures with one check:
         #  * an expect test whose output changed but was never promoted
         #  * RTL generation that is not byte-reproducible (rtl_snapshots drift)
-        run: git diff --exit-code
+        #  * a generated file that was never committed (plain `git diff`
+        #    ignores untracked files, so stage everything first)
+        # On failure the printed diff IS the promotion source (ADR-0005).
+        run: |
+          git add -A
+          git diff --cached --exit-code

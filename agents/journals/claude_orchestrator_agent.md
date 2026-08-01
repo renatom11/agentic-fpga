@@ -837,3 +837,42 @@ Snapshot promoted; awaiting green build. Handoff: none.
 none
 ### Files-in-this-commit
 - test/hardcaml_ethernet/test_word_counter.ml
+
+## [J-orchestrator-0020] 2026-08-01T22:20:00Z | task:none | Generator mkdir + CI untracked-snapshot gap closed
+### Trigger
+build run 30720032719 (78fef56): dune runtest PASSED — the promoted
+waveform snapshot is correct — then `dune exec bin/generate.exe` failed:
+Sys_error("rtl_snapshots/word_counter.v: No such file or directory").
+### Inputs
+CI job 91422161588 log; bin/generate.ml; .github/workflows/build.yml.
+### Reasoning
+Two defects, one visible and one latent. Visible: rtl_snapshots/ has
+never existed in a fresh checkout (git cannot track an empty directory
+and no .v is committed yet), so open_out fails; the generator now
+creates its output directory. Latent, found while fixing the first: the
+workflow's determinism check was `git diff --exit-code`, which ignores
+untracked files — a generated snapshot that was never committed would
+sail through as if verified. Changed the check to stage everything first
+(`git add -A; git diff --cached --exit-code`), which fails on untracked
+output and, in failing, prints the full new-file diff. That makes the
+next run's expected failure self-serving: its log will contain the
+complete word_counter.v, which is the promotion source for committing
+the snapshot (ADR-0005 rule 2 — same channel as the waveform, never
+hand-authored). Expected sequence: one more planned red run (the .v
+printed as a new-file diff), then the .v gets committed, then green.
+### Actions
+bin/generate.ml: mkdir rtl_snapshots if missing (Stdlib.Sys, no new
+dependency). build.yml: final check stages before diffing; comment
+updated to name all three failure classes it catches.
+### Evidence
+CI run 30720032719: "Run tests" step exited 0 (snapshot accepted);
+"Generate RTL" failed with the Sys_error above at generate.ml:24 (run ID
+externally verifiable per the F5 rule). The next build run tests both
+fixes.
+### Outcome
+Fixes committed; awaiting the planned promotion-source run. Handoff: none.
+### Open-questions
+none
+### Files-in-this-commit
+- .github/workflows/build.yml
+- bin/generate.ml
