@@ -1,5 +1,5 @@
 # WO-0002: Phase-1 requirements and top-level architecture
-- **State**: ISSUED
+- **State**: RETURNED (2026-08-01, spawn #2; see Return log)
 - **From** / **To**: orchestrator → architect_docs_lead
 - **Spec basis**: agents/charters/architect_docs_lead.md; agents/PROTOCOL.md §1, §7, §10; docs/adr/ADR-0001 (project scope), ADR-0004 (toolchain lane: released Hardcaml v0.17.x)
 - **Deliverables**:
@@ -23,3 +23,50 @@ First activation of the architecture function. Produce the four deliverables at 
   toolchain note now cites ADR-0005 (CI is the authoritative build
   environment; build lane green at run 30721584772) instead of "being
   installed in parallel". State remains ISSUED until spawn #2 RETURNS.
+- 2026-08-01T23:48Z (architect_docs_lead): **RETURNED** — spawn #2
+  (WO-0002/2026-08-01T23:20Z) complete; journal `J-architect_docs_lead-0001`.
+  Four deliverables, all new files, nothing else in `docs/specs/` touched:
+  - `docs/specs/requirements.md` — **108 numbered requirements** in ten blocks
+    (21 programme invariants, 13 XGMII rx, 10 XGMII tx, 6 CRC-32, 10 Ethernet
+    framing, 12 ARP, 12 IPv4, 9 UDP, 9 top-level/config, 6 process). Each row
+    is one testable SHALL with a Kind tag and a named verification method,
+    written for dv_lead's countersignature and for tb_writer excerpts. The
+    line-rate invariant is REQ-004 (min frames, 12-octet IFG, alternating
+    lane-0/lane-4 starts, one frame per 10.5 cycles, 10 000 frames, zero drop,
+    zero backpressure) and the XGMII boundary is REQ-017 (port closure) plus
+    REQ-018 (simulation-only, no PMA/PCS/serdes/vendor primitives) — numbered,
+    not prose, per the DoD. A closing table records 14 explicit
+    non-requirements so every absence is a decision.
+  - `docs/specs/architecture.md` — canonical Phase-1 scope parameters
+    (PROTOCOL §11), datapath arithmetic, eight architectural decisions each
+    with its rejected alternative, the XGMII attach boundary and the contract
+    for its DV-owned stub, a **20-module inventory** (M01–M20) mapped to
+    verilog-ethernet counterparts and REQ ranges, the 24-cycle receive latency
+    budget with per-stage ceilings, deliberate deviations from the reference
+    decomposition, three Mermaid diagrams, freeze prerequisites, and the
+    dependency-ordered six-batch plan for the twenty per-module specs.
+  - `docs/specs/SPEC-TEMPLATE.md` — 13-section per-module form: compilable
+    Hardcaml v0.17 Interface block (`[@@deriving hardcaml]`, `[@bits n]`,
+    `[@rtlprefix]`, entry points inside a `module type S`), port table, timing
+    contract, mandatory line-rate stress section for rx-path modules,
+    errors/strobes table, REQ-coverage table, freeze record demanding a CI run
+    id per ADR-0005, and a post-freeze change log requiring an ADR.
+  - `docs/specs/traceability.md` — 108 rows, one per REQ, with owning module
+    and empty test column; row set proven equal to the REQ set of
+    requirements.md by a command quoted in the journal Evidence.
+  **DoD**: met as scoped. The charter §5 interface compile check is open by the
+  packet's own terms — no OCaml was compiled, `docs/specs/ifc_check/` does not
+  exist, and per ADR-0005 the only acceptable evidence is a CI `build` run at
+  freeze time.
+  **Open questions for the orchestrator** (detail in the journal entry):
+  (1) add `hardcaml_axi` to `agentic_fpga.opam` and the ethernet lib's dune
+  `libraries` — blocking, it pulls `hardcaml_circuits` + `hardcaml_handshake`,
+  fallback is a local stream record plus an ADR; (2) `docs/specs/ifc_check/`
+  dune wiring — blocking for batch A freeze; (3) UDP transmit checksum is
+  specified as zero and receive checksums are not verified — judged in-role,
+  not E2, but flagged; (4) spec batching (six work orders proposed, ordering
+  fixed); (5) README's phase table is now a restatement of architecture.md §1
+  and should be pointed at it by a small follow-up doc work order; (6) the
+  24-cycle latency budget is the architect's figure, not a sponsor
+  requirement; (7) dv_lead testability review should land before the
+  `P1-spec-freeze` checklist is opened.
