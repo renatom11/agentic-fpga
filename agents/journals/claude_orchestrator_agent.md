@@ -576,3 +576,34 @@ none
 ### Files-in-this-commit
 - docs/adr/ADR-0004-toolchain-lane.md
 - tasks/BOARD.md
+
+## [J-orchestrator-0014] 2026-08-01T20:51:12Z | task:WO-0002 | M1 kickoff: issue WO-0002 (requirements + architecture), toolchain install started
+### Trigger
+Sponsor: "go ahead and start M1."
+### Inputs
+tasks/BOARD.md; ADR-0004; agents/charters/architect_docs_lead.md; M0
+project-scoping research (module inventory facts).
+### Reasoning
+M1 runs three parallel streams: (1) toolchain bring-up (my chartered role) —
+opam/OCaml 5.1.1/hardcaml v0.17.x installing in the background, dune skeleton
+and smoke test to follow on completion; (2) architect first activation via
+WO-0002, scoped to the four foundation documents and explicitly NOT
+per-module specs, so the packet stays reviewable and the module specs become
+their own numbered WOs; (3) enforcement debts due before P1-spec-freeze
+(ADR-0002 blob gate, AUD-0002 N4 scenarios), which I close while the other
+two streams run. WO committed before the spawn so the packet the architect
+reads is the one in history. Board updated in this commit (F7 rule).
+### Actions
+Wrote agents/handoffs/WO-0002_p1-requirements-architecture.md (ISSUED);
+BOARD: WO-0002 row added, M1 stream status recorded.
+### Evidence
+Toolchain install running (log at scratchpad/toolchain_install.log —
+ephemeral, stated per the F5 rule; the durable evidence will be the committed
+dune skeleton building in CI).
+### Outcome
+WO-0002 ISSUED; architect spawn follows this commit. Handoff: architect_docs_lead.
+### Open-questions
+none
+### Files-in-this-commit
+- agents/handoffs/WO-0002_p1-requirements-architecture.md
+- tasks/BOARD.md

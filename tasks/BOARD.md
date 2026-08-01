@@ -37,6 +37,7 @@ N1/N2 residuals closed per ADR-0003 Corrections.
 
 | Packet | From → To | State | Note |
 |---|---|---|---|
+| [WO-0002](../agents/handoffs/WO-0002_p1-requirements-architecture.md) | orchestrator → architect_docs_lead | ISSUED | Phase-1 requirements + top-level architecture (architect's first activation) |
 | [WO-0001](../agents/handoffs/WO-0001_g0-retro-audit.md) | orchestrator → auditor | ACCEPTED | Full cycle complete: [AUD-0001](../docs/reports/audit/AUD-0001-g0-retro.md) → ADR-0003 → [AUD-0002](../docs/reports/audit/AUD-0002-g0-reverification.md) re-verification (F17 CLOSED, gate lifted) |
 
 ## Pending escalations to sponsor
