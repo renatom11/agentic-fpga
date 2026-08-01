@@ -913,3 +913,36 @@ One more planned red run (its diff = the corrected snapshot), then the
 none
 ### Files-in-this-commit
 - bin/generate.ml
+
+## [J-orchestrator-0022] 2026-08-01T22:40:00Z | task:none | Promote word_counter.v snapshot from CI (both modules, logic verified)
+### Trigger
+build run 30721176338 (87ba952): Verify step printed the regenerated
+rtl_snapshots/word_counter.v as a 67-line new-file diff — the corrected
+promotion source after the J-0021 rename.
+### Inputs
+CI job 91425147502 log; bin/generate.ml (word_counter_top rename).
+### Reasoning
+Before promoting I checked the content against what J-0021 predicted:
+the file now holds TWO modules. The inner word_counter carries the
+actual design — reg [15:0] _11, constant-1 increment (_13 = _11 + _12),
+synchronous clear-to-zero with priority over the enable, increment gated
+on valid, count driven from the register. The word_counter_top wrapper
+instantiates it by name with the ports mapped straight through. That
+matches Word_counter.create's reg_fb semantics, so this snapshot is the
+real emitted design, not a shell. Promoted byte-for-byte from the log
+(ADR-0005 rule 2), including the trailing newline the diff implies (no
+"\ No newline" marker). Next run regenerates the file over the committed
+copy; `git add -A; git diff --cached --exit-code` passing then proves
+byte-determinism of emission — the last unproven leg of the build lane.
+### Actions
+Committed rtl_snapshots/word_counter.v exactly as printed by CI.
+### Evidence
+CI run 30721176338: Verify step diff, new blob e30ee9c, 67 lines
+(externally verifiable in the job log per the F5 rule). The next build
+run on this commit is the determinism check.
+### Outcome
+Awaiting the expected first fully-green build run. Handoff: none.
+### Open-questions
+none
+### Files-in-this-commit
+- rtl_snapshots/word_counter.v
