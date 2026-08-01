@@ -766,3 +766,39 @@ architect still working WO-0002. Handoff: none.
 none
 ### Files-in-this-commit
 - docs/adr/ADR-0005-build-environment.md
+
+## [J-orchestrator-0018] 2026-08-01T21:31:57Z | task:none | Fix first build-CI failure; toolchain proven working in CI
+### Trigger
+build run 30718233745 failed (sponsor received the failure email — expected
+during bring-up; red-to-green CI mail is the heartbeat of this phase).
+### Inputs
+CI job 91417470961 logs; test/hardcaml_ethernet/test_word_counter.ml;
+bin/generate.ml.
+### Reasoning
+The important fact in the log is the part that PASSED: the full ADR-0004
+dependency stack (hardcaml v0.17.0, ppx_hardcaml, hardcaml_waveterm, core,
+~40 transitive packages) resolved, downloaded, and compiled on the runner —
+proving ADR-0005's premise that CI can be the authoritative environment.
+The failure is a beginner-grade namespacing bug in my test file: the test
+library never opened Hardcaml_ethernet, so Word_counter was unbound.
+Fixed, plus the same class of latent bug in bin/generate.ml (bare
+To_channel needs its Rtl.Output_mode path) — caught by reading my own code
+with the compiler's complaint in mind rather than waiting one more CI
+round trip for it. Expected next: dune runtest fails with the waveform
+diff for the intentionally-empty expect snapshot; that diff IS the
+promotion source per ADR-0005 rule 2.
+### Actions
+test_word_counter.ml: open Hardcaml_ethernet. generate.ml: qualify
+Rtl.Output_mode.To_channel.
+### Evidence
+CI run 30718233745 conclusion: failure, single error "Unbound module
+Word_counter" at test_word_counter.ml:9 (per the F5 rule: externally
+verifiable run ID). Local OCaml verification impossible per ADR-0005;
+this push's build run is the test.
+### Outcome
+Fixes pushed; awaiting next build run. Handoff: none.
+### Open-questions
+none
+### Files-in-this-commit
+- bin/generate.ml
+- test/hardcaml_ethernet/test_word_counter.ml

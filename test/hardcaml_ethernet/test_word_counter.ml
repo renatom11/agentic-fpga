@@ -6,6 +6,7 @@
 open! Base
 open Hardcaml
 open Hardcaml_waveterm
+open Hardcaml_ethernet
 module Sim = Cyclesim.With_interface (Word_counter.I) (Word_counter.O)
 
 let%expect_test "counts only the cycles where valid is high" =

@@ -12,8 +12,11 @@ let emit_word_counter out_channel =
   let circuit =
     Circuit.create_exn ~name:"word_counter" (Word_counter.hierarchical scope)
   in
-  Rtl.output ~database:(Scope.circuit_database scope) ~output_mode:(To_channel out_channel)
-    Verilog circuit
+  Rtl.output
+    ~database:(Scope.circuit_database scope)
+    ~output_mode:(Rtl.Output_mode.To_channel out_channel)
+    Verilog
+    circuit
 ;;
 
 let () =
