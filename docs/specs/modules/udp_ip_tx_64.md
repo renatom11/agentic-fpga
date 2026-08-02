@@ -96,7 +96,7 @@ legitimate, and §1.1 allocates it no latency ceiling.
 | REQ-011 | `tkeep` on the incoming application `tlast` word says how many octets of that word are payload; `tkeep` on the emitted `tlast` word marks exactly the octets the frame carries, which is where the declared count is enforced (§6.1). |
 | REQ-012 | Header octets are emitted first wire octet first: `src_port`[15:8] is UDP octet 0, the length field's high octet is UDP octet 4. Application payload octet position k maps to output octet 8 + k (§6.1). |
 | REQ-014 | `tstrb` on the application input is ignored; `tstrb` on the output is driven to 0. |
-| REQ-015 | One `tlast` per frame in each direction. At most **184** words between two `tlast` words on the output stream (1472 octets of payload plus the 8-octet UDP header is 1480 octets, 185 words — see §11.3 for the declared-length bound), the `tlast` word included. |
+| REQ-015 | One `tlast` per frame in each direction. At most **185** words between two `tlast` words on the output stream (1472 octets of payload plus the 8-octet UDP header is 1480 octets, and 1480/8 = **185** words exactly — see §11.3 for the declared-length bound), the `tlast` word included. This is the figure §10 quotes; **184** would flag a conformant maximum-length frame (ledger **C-35**). |
 | REQ-016 | The application **may** deassert `tvalid` between words and M18 tolerates it without corrupting the frame — M18 simply does not advance. REQ-016's tolerance ends three modules later, at M04's source port (REQ-206), which is what makes an application gap indistinguishable from an under-delivery **to M04** and is why M18 and not M04 detects REQ-709 (§9). |
 | REQ-019 | No instance: M18 is not on the chain REQ-006 measures and §1.1 allocates it nothing. Its storage is **one** payload word — the registered output — because the header it prepends is a whole datapath word and no realignment shift exists (§7). That is one word less than M07 and M15 each hold for the same job with a header that is not word-aligned. |
 | REQ-020 | Datagrams leave in the order the application offered them; M18 holds one at a time (§6.2), so reordering is not expressible. |
@@ -471,10 +471,27 @@ Reset state and `clear` state are both `Idle`.
 |---|---|---|---|
 | `Idle` | reset; `clear`; the output `tlast` word is accepted; an under-delivered frame has been reported (§9) | `ip_payload_tvalid` = 0, `ip_hdr_valid` = 0, `payload_tready` = 0, strobe 0; samples `cfg_tx_enable` | `Offer` on the first cycle `request_valid` = 1 **and** `cfg_tx_enable` = 1, capturing the four request fields and computing both lengths |
 | `Offer` | a request was taken | asserts `ip_hdr_valid` = 1 and presents output word 0 — the UDP header — holding both with every field stable until that word is accepted (ADR-0008 decisions 1 and 2); `payload_tready` = 0 | `Body` on the cycle `ip_payload_tvalid` and `ip_payload_tready` are both 1 for output word 0, accepting the application's payload word 0 on that same cycle |
-| `Body` | output word 0 was accepted | emits output word n carrying application word n − 1 while `ip_payload_tready` = 1; accepts an application word on every such cycle; counts delivered octets against the declared count | `Drain` on the cycle it accepts the application word that completes the **declared** count; `Excess` on accepting a word beyond it (REQ-710); `Short` on accepting a word carrying `tlast` before it (REQ-709) |
-| `Drain` | the declared count is complete | emits the last output word — the one carrying the declared count's final octets, with `ip_payload_tlast` = 1, the `tkeep` the declared count implies and the inherited `tuser`[0] — and holds `payload_tready` = 0 | `Idle` when that word is accepted |
+| `Body` | output word 0 was accepted | emits output word n carrying application word n − 1 while `ip_payload_tready` = 1; accepts an application word on every such cycle; counts delivered octets against the declared count | `Drain` on the cycle it accepts the application word whose **last** octet is the declared count's; `Excess` on accepting a word carrying **any** octet beyond the declared count (REQ-710); `Short` on accepting a word carrying `tlast` before the count is reached (REQ-709) |
+| `Drain` | the declared count is complete and the word that completed it carried no octet beyond it | emits the last output word — the one carrying the declared count's final octets, with `ip_payload_tlast` = 1, the `tkeep` the declared count implies and the inherited `tuser`[0] — and holds `payload_tready` = 0 | `Idle` when that word is accepted |
 | `Excess` | the application presented a word beyond the declared count (REQ-710) | pulses `error_tx_length_mismatch` **once**, on entry; completes the output frame exactly as `Drain` does, with exactly the declared octet count; holds `payload_tready` = **1** and accepts and **discards** every further application word so the application is never stalled | `Idle` when both the output `tlast` has been accepted and the application's `tlast` has been accepted |
 | `Short` | the application's `tlast` arrived before the declared count (REQ-709) | pulses `error_tx_length_mismatch` **once**, on entry; emits the octets it holds **without** `ip_payload_tlast`, then presents no further word for this frame, ever; holds `payload_tready` = 0 | **nowhere by itself.** The frame is never terminated downstream; M04 underflows and terminates it on the wire, and `clear` returns this module and the whole transmit chain to `Idle` (ADR-0011, §9) |
+
+**`Body`'s two forward exits are disjoint by construction, and the disjointness
+is stated because a declared count ending mid-word makes them look like they
+overlap** (ledger **C-34**). A word that completes the declared count *and*
+carries octets beyond it satisfies "completes the declared count" and "a word
+beyond it" on the naive reading, and **§8 item 4's own stimulus is that case**:
+declare 100 and supply 110, and application word 12 carries declared octets
+97–100 and excess octets 101–104 (payload octets counted from 1, as §8 item 4
+counts them; dv_lead's C-34 counts them from 0 and reads 96–99 against 100–103 —
+the same word). The rule: **`Excess` takes precedence whenever
+the accepted word carries any octet beyond the declared count; `Drain` applies
+only where that word's last octet is the declared count's.** Only that reading
+satisfies REQ-710 and §8 item 4's own assertions — the `Drain` reading pulses no
+strobe, drops `payload_tready` to 0 with the application's `tlast` still pending,
+and returns to `Idle` where the stale word is consumed as the next frame's word 0
+— and it is the reading §9's pinned strobe cycle already implies by naming "the
+first word beyond the declared count".
 
 A cycle on which `ip_payload_tready` = 0, or on which the application presents no
 payload word, holds every state and every register: it is not a condition and it
@@ -656,7 +673,12 @@ invent them:
    output frame carries exactly 100 payload octets with `ip_payload_tlast` on the
    word carrying octets 97–100 and `tkeep` = 0x0F; that `payload_tready` is **1**
    on every cycle from the declared count to the application's `tlast`, so the ten
-   excess words are accepted and discarded and the application is never stalled;
+   excess **octets** — ten octets in **two** words and not ten words: application
+   word 12 carries the declared count's last four (97–100) *and* the first four
+   excess ones (101–104), and word 13 carries the remaining six; that double duty
+   is exactly the case §6.2 gives `Excess` precedence over `Drain` for, and this
+   item is its stimulus (ledger **C-34**) — are accepted and discarded and the
+   application is never stalled;
    that `error_tx_length_mismatch` pulses **once**; that `error_underflow` does
    **not** pulse anywhere; and that the next frame transmits correctly with no
    `clear`.

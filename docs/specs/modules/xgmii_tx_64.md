@@ -511,8 +511,16 @@ the other end of a loopback.
 
 **Co-occurrence.**
 
-- `error_underflow` with `error_tx_length_mismatch` (REQ-709): these pulse
-  **together**, from different modules, for one event. When the application
+- `error_underflow` with `error_tx_length_mismatch` (REQ-709): two modules'
+  reports of one event, **ordered and unpinned — not simultaneous**.
+  `error_tx_length_mismatch` pulses first, at M18, on the cycle M18 accepts the
+  short `tlast` (SPEC-M18 §9); `error_underflow` pulses here, later, on the first
+  cycle M04 requires a word the path can no longer supply — later by the number of
+  words in flight between M18 and M04, which depends on how far M15's drain had
+  progressed. **Neither the separation nor a bound on it is pinned**, and a bench
+  asserts **one pulse of each per under-delivered frame** and nothing about their
+  relative timing (ADR-0011; requirements.md REQ-709's verification column;
+  SPEC-M18 §9, which says the same from the other end). When the application
   delivers fewer octets than it declared, M18 stops presenting words and M04
   underflows; M04 detects and reports only its own condition, M18 reports the
   length mismatch, and requirements.md §0.6's rule — a module never re-reports
@@ -585,3 +593,4 @@ interface.
 | 2026-08-02 | §6.2 `Idle` row and §7 reset bullet: the reset clause is stated as the exception to `tx_tready` = `cfg_tx_enable` and as the winner, and the first-cycle-after-`clear` frame is explained (ledger **C-14.2**) | no | none — §7 already governed; the `Idle` row was incomplete | `J-architect_docs_lead-0005` |
 | 2026-08-02 | §4.3 and §6.3 item 5: a configuration change landing on its own sampling cycle is deliberately unconstrained (ledger **C-14.5**) | no | none — makes an implication explicit so no bench asserts on it | `J-architect_docs_lead-0005` |
 | 2026-08-02 | §7 throughput bullet completed for the cycle after the `tlast` word is accepted (C+8): the value is 1, a word presented there is the next frame's first and is accepted into the vacated slot, the start character stays at C+12 under REQ-204, and the C+8/C+11 pair cannot exceed the two-word depth. §6.2's `Idle` row gains the second entry condition and the table gains a paragraph; §10's REQ-209 hook gains the corresponding prohibition (ledger **C-16**) | no | none — §6.1's cycle table already asserted the governing value and §7's REQ-210 bullet already permitted a delayed start character; this states what a word presented there does, which nothing said. No §4 record, no strobe, no gap arithmetic and no latency constant moves | `J-architect_docs_lead-0006` |
+| 2026-08-02 | §9 co-occurrence bullet: `error_underflow` and `error_tx_length_mismatch` no longer "pulse **together**" — they are stated as **ordered and unpinned**, M18's first on the cycle it accepts the short `tlast` and M04's later by an unpinned number of cycles that depends on M15's drain, with a bench asserting **one pulse of each per under-delivered frame** and nothing about the separation (ledger **C-31**) | no — no strobe, port, record, state, cycle table or latency constant moves; the bullet is brought into agreement with what two committed documents already say of it | **ADR-0011**, whose Consequences bullet ("it now says ordered-and-unpinned") and whose Affects header both assert this diff and are the authority for its wording; dv_lead's owed item **C-31**, preferred repair (WO-0020 Return log, answer (7)) | `J-architect_docs_lead-0009` |

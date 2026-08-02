@@ -2456,3 +2456,234 @@ now two-sided with no `pending` cell anywhere in the matrix.
 - docs/specs/modules/xgmii_rx_64.md
 - docs/specs/requirements.md
 - docs/specs/traceability.md
+
+## [J-architect_docs_lead-0009] 2026-08-02T15:30:00Z | task:WO-0021 | F-1 repaired in SPEC-M17 DRAFT text (the abort bit the `Tail` class cannot carry); C-31's §13 diff at frozen SPEC-M04; C-34/C-35 at SPEC-M18
+
+### Trigger
+
+WO-0021, `agents/handoffs/WO-0021_f1-repair.md`, issued by the orchestrator after
+dv_lead **withheld** the batch-F countersignature on exactly one item (WO-0020
+Return log at `14e8999`, `J-dv_lead-0010`). SPEC-M18, SPEC-M19 and SPEC-M20 were
+SIGNED; SPEC-M17 was CONTESTED on **F-1**, and six carry-forwards C-31…C-36 were
+raised. This activation is the one architect activation dv_lead priced between
+the withheld signature and 20/20 FROZEN.
+
+### Inputs
+
+- `agents/charters/architect_docs_lead.md`, `agents/PROTOCOL.md` (§4 grammar,
+  §6 scope, §7 gates) — re-read at spawn.
+- `agents/handoffs/WO-0021_f1-repair.md` (the work order) and
+  `agents/handoffs/WO-0020_batch-f-countersign.md` **in full** — §2's F-1
+  derivation and four-clause owed-diff list, §4's C-31…C-36 table, §5's bounded
+  re-review surface and pre-worded countersignature sentence.
+- `docs/specs/modules/udp_ip_rx_64.md` (SPEC-M17, all thirteen sections),
+  `docs/specs/modules/udp_ip_tx_64.md` (SPEC-M18 §3, §6.2, §8, §9, §13),
+  `docs/specs/modules/xgmii_tx_64.md` (SPEC-M04 §9, §13, status header).
+- `docs/specs/requirements.md` — REQ-007, REQ-013, REQ-703, REQ-707, REQ-709,
+  §0.6's abort/discard and strobe-multiplicity paragraphs, the §13 change log.
+- `docs/adr/ADR-0011-under-delivery-leaves-the-transmit-path-unterminated.md` —
+  Affects header and Consequences (the authority for C-31's wording).
+- `docs/specs/traceability.md` — REQ-007 and REQ-013 rows, to establish that
+  neither carries an M17-specific cell and so no traceability diff is owed.
+- `libs/**` was not read and no RTL exists for any batch-F module.
+
+### Reasoning
+
+**F-1 is real and the derivation is dv_lead's, reproduced rather than accepted.**
+With N the octets IPv4 delivered, N′ the UDP length, K = ⌈N/8⌉ input words and
+M = ⌈(N′−8)/8⌉ application words, the input `tlast` is presented on Ci + K − 1
+and the application `tlast` word leaves on Ci + M + 1. Using M = ⌈N′/8⌉ − 1 for
+every N′ ≥ 9, the separation is **⌈N′/8⌉ − ⌈N/8⌉ + 1** cycles, so a registered
+output can carry the bit only where ⌈N′/8⌉ = ⌈N/8⌉. I rewrote the paragraph
+around that quantity rather than around the inequality, because the failure mode
+of the original text was precisely that it argued a direction instead of
+computing a number: "Since N′ ≤ N, M + 1 ≥ ⌈(N − 8)/8⌉ + 1 ≥ K" runs backwards —
+N′ ≤ N gives M ≤ ⌈(N − 8)/8⌉ — and the residue algebra beside it is right but
+proves only the N′ = N case. A separation formula cannot be run the wrong way.
+
+**Keying everything on D = ⌈N/8⌉ − ⌈N′/8⌉ was the choice that made the rest
+fall out.** Once the word-count deficit has a name, `Tail` and D ≥ 1 are provably
+the same class (`Tail` is entered exactly when input word M precedes the input
+`tlast` word, i.e. M + 1 < K), the three regimes are a table rather than prose,
+the 182-cycle worst case is D − 1 at N = 1480 / N′ = 9 rather than a quoted
+figure, and — the part I judged worth adding beyond the owed diff — **the class
+is visibly a word test and not an octet test**. dv_lead's own phrase, "under-
+declares by at least one whole word", reads as N − N′ ≥ 8, which is wrong in both
+directions: N = 25 / N′ = 24 under-declares by one octet and is D = 1, and
+N = 32 / N′ = 25 under-declares by seven and is D = 0. A bench built on the octet
+reading fails a conformant design on the first and passes a broken one on the
+second, so §8 now drives one datagram of each and the assertion differs between
+them. That pair is the only thing in this commit that was neither owed nor asked
+for, and it exists because the boundary is the part a test writer gets wrong.
+
+**The clause-3 fork: dv_lead's reading, not a REQ-007 scoping clause — and the
+reason is dv_lead's own test applied to a case where it points the other way.**
+dv_lead offered both routes and committed to re-review on either. The
+substantive question is whether requirements.md REQ-007 ("every downstream module
+that emits an output frame **for it** SHALL mark the corresponding final word …
+`tuser`[0] = 1") should gain an exception, or whether M17 should state that the
+under-declaring datagram's application frame is a frame for the *declared*
+datagram and that REQ-007's universal does not reach it.
+
+I record that I do **not** think dv_lead's subject reading is forced. It is
+available — "for it" can individuate by what the frame purports to be rather than
+by what arrived — but the plain reading binds M17, and a design that delivers
+octets from an invalid frame with `tuser`[0] = 0 has lost something REQ-007
+exists to provide. So the honest disposition is: the scoping clause is owed **in
+principle**, and the question is only *when*.
+
+What decided *when* is the asymmetry between this item and F-1 itself.
+**F-1's price rises at the flip**: it is DRAFT §6 text today and a post-freeze §6
+behavioural diff the moment batch F freezes — the exact cost class ADR-0011
+spends three paragraphs refusing to pay at M04, which is why dv_lead was right to
+withhold and why the repair had to be now. **requirements.md is already FROZEN**,
+so a REQ-007 scoping clause is a post-freeze normative diff to a requirement
+today and at any later date: **its price does not rise at the batch-F flip.**
+Repair what gets dearer; price and carry what does not. Taking it in this commit
+would additionally have moved requirements.md, traceability.md's REQ-007 row and
+the REQ-007 hook of every implementer — all outside dv_lead's bounded re-review
+surface, costing a fresh derivation at the last item of the gate — for no saving
+whatever. So §11.4 carries it, with the clause **written out** rather than
+promised, the price itemised, the closing gate named (`SO-udp_ip_rx_64.md`, the
+packet that would otherwise claim REQ-007 whole at M17), and the residual hole
+stated in terms rather than buried: on this class the application cannot discard
+on the bit, and no strobe covers it either.
+
+**The rejected alternatives at M17 are recorded because an implementer will
+propose them.** Marking `tuser`[0] = 1 on the class instead of 0 aborts every
+conformant under-declaring datagram, which §6.2 makes legal and silent; holding
+the datagram to its input `tlast` makes the latency length-dependent and kills
+REQ-005; a combinational `ip_payload_tuser` → `payload_tuser` path rescues only
+D = 1, never D ≥ 2, and is the shape §7 already rejects for `tdata`. **0 is the
+only implementable value**, and — the sentence I wanted the spec to carry — it is
+not a copy and not a guess: it is the value the bit *has* at the instant the word
+is emitted.
+
+**§11.4 also states why the exception is at M17 and nowhere else, in a form that
+can be falsified.** M17 is the only module on the chain whose output frame's
+extent is fixed by a count declared *inside the data* — the UDP length — rather
+than by its input's `tlast`. At M03, M06, M08, M10, M14, M16 and M19 the output
+frame ends on or after the input frame does, so the propagation obligation is
+satisfiable by construction. Without that sentence the item reads as a local
+quirk; with it, a reader can check the claim module by module.
+
+**Two sites moved outside dv_lead's named surface, deliberately.** dv_lead's F-1
+diagnosis names **five** sites stating the unimplementable rule but commissions
+repairs at three. Leaving §3's REQ-007 row and §4.2's `payload_tuser` row
+unqualified would have left SPEC-M17 contradicting its own §6.2 — which is
+exactly the pathology C-31 exists to fix, manufactured in the commit that fixes
+C-31. Both were moved by adding a pointer to §6.2/§11.4 and asserting nothing
+new, and both are quoted verbatim in the Return log so dv_lead's check is
+byte-wise rather than derivational. §2's in-scope bullet was **left** and the
+decision is stated in the Return log: dv_lead did not name it, and it reads as a
+scope enumeration rather than as a statement of the mechanism.
+
+**C-31: the §13 diff at SPEC-M04, not the ADR-0011 correction.** dv_lead
+recommended the first and the reasoning holds independently — the second leaves a
+frozen specification saying the wrong thing and makes ADR-0011's Affects header
+false in a different way. One row, `Breaking? no`, appended last because the
+table is chronological by journal id; ADR-0011's own Consequences bullet is
+quoted in the ADR cell as the authority for the wording, so the diff and the
+document that claims it now agree word for word.
+
+**C-34 was landed at three sites rather than one**, because the overlap is
+visible in the state table, in the rule, and in the stimulus that exercises it:
+`Body`'s exits are reworded to be disjoint at the source, `Drain`'s entry
+condition excludes the mid-word case, a new paragraph states the precedence with
+dv_lead's reason for it, and §8 item 4's "ten excess words" becomes "ten excess
+octets — ten octets in two words". The octet-numbering convention differs
+between §8 (from 1) and dv_lead's C-34 (from 0), so the paragraph says so; an
+unexplained 96–99 against 97–100 would read as a disagreement.
+
+**C-32, C-33 and C-36 were not taken.** Each needs text at modules outside the
+bounded surface (SPEC-M14, M19, M20, and M18 §10), their gates are later, and
+none is cheap enough to justify a fresh derivation from dv_lead at the last item
+of the gate. Their cost does not rise at the flip either — the same test applied
+consistently.
+
+### Actions
+
+- `docs/specs/modules/udp_ip_rx_64.md` (SPEC-M17, DRAFT — no §13 row owed):
+  §6.1's availability paragraph replaced by the corrected derivation, the D-keyed
+  regime table, the scoped residue algebra, the words-not-octets note and the
+  `Tail`-class outcome, plus a new paragraph separating the over-declared case;
+  §6.2's `Payload` and `Tail` rows qualified; §3's REQ-007 row and §4.2's
+  `payload_tuser` row given the §6.2/§11.4 pointer; §8's under-declaring datagram
+  given the two-run `tuser`[0] = 0 assertion and a D = 0 boundary companion
+  (IPv4 total length 52, UDP length 25); §10's REQ-007/REQ-013 hook split with a
+  positive assertion for the excluded class; **new §11.4**.
+- `docs/specs/modules/udp_ip_tx_64.md` (SPEC-M18, DRAFT — no §13 row owed):
+  §3's REQ-015 bound 184 → **185** with the arithmetic and the consequence
+  (C-35); §6.2's `Body` exits and `Drain` entry reworded plus a new precedence
+  paragraph (C-34); §8 item 4's units corrected to octets with the two-word
+  breakdown and the numbering convention named (C-34).
+- `docs/specs/modules/xgmii_tx_64.md` (SPEC-M04, **FROZEN**): §9's co-occurrence
+  bullet rewritten as ordered-and-unpinned; one **§13 row** appended
+  (`Breaking? no`, `ADR: ADR-0011`) (C-31).
+- `agents/handoffs/WO-0021_f1-repair.md`: Return log with per-item dispositions,
+  the clause-by-clause repair, the clause-3 choice and its reason, the two
+  out-of-surface sites quoted verbatim, and the re-review offer.
+- **No `§4.1` block was touched anywhere**, dv_lead's re-review being byte-wise
+  on the lifts. No requirements diff, no ADR diff, no traceability diff, no
+  `docs/gates/`, no RTL, no tests. No git command was run.
+
+### Evidence
+
+Reproducible from a checkout at this commit's SHA:
+
+- `bash tools/dv_checks.sh` → **exit 0**. `check_records_vs_appendix.sh`:
+  **23 checks run, 0 failures** — all twenty §4.1 blocks byte-identical to their
+  `docs/specs/ifc_check/*.ml` lifts (including `udp_ip_rx_64_ifc.ml`,
+  `udp_ip_tx_64_ifc.ml`, `udp_complete_64_ifc.ml`, `nic_top_ifc.ml`), the
+  `Status`/`Config` records equal to requirements.md §12/§9.1, and
+  `test/monitors/strobes.ml` in agreement. `check_emitted_verilog.sh`: **OK**,
+  4 checks, 0 failures, 4 pending (REQ-306, REQ-808, REQ-017, REQ-903 — all
+  P1-module-ready conditions, unchanged by this commit).
+- REQ set equality, recomputed by script rather than read:
+  `grep -oE '^\| \*\*REQ-[0-9]{3}\*\*' docs/specs/requirements.md` → **110**
+  rows, 110 distinct; the REQ row leaders of `docs/specs/traceability.md` → **110**
+  rows, 110 distinct; `diff` of the two sorted sets → **empty**. No REQ was
+  added, dropped or renumbered by this commit.
+- `git diff --stat` → three specification files, **+107 / −22** lines, and
+  `git diff -- docs/specs/modules/` contains **no** OCaml source line (no
+  `module I = struct`, no `[@@deriving …]`, no `open! …`) — the mechanical form
+  of "no §4.1 lift was touched".
+- The **CI `build` run at this commit** is owed and is the orchestrator's to
+  record: its head SHA must be this commit for batch F's four §12 evidence rows
+  to fill with no witnessing argument, which is item 4 of dv_lead's §5 list.
+  That run does not exist at the time this entry is written and is not claimed
+  here.
+
+### Outcome
+
+**DoD met.** F-1's three owed clauses plus the optional fourth are landed in
+SPEC-M17 DRAFT text; C-31's §13 row is landed at SPEC-M04; C-34 and C-35 are
+landed at SPEC-M18; set equality holds; no §4.1 lift moved. The one judgement
+the work order left to me — dv_lead's clause-3 direction versus a REQ-007 scoping
+clause — went to dv_lead's direction, with the scoping clause written out,
+priced and carried as SPEC-M17 §11.4 rather than dismissed, and the reasoning
+stated in the Return log so dv_lead can re-review the choice and not merely the
+text. Two sites beyond the bounded surface moved and are quoted verbatim for a
+byte-wise check. Handoff: `agents/handoffs/WO-0021_f1-repair.md` Return log →
+orchestrator → dv_lead for the bounded re-review and, if it holds, the
+pre-worded batch-F countersignature at this commit's SHA.
+
+### Open-questions
+
+- **REQ-007's scoping clause is owed in principle and deferred on price**
+  (SPEC-M17 §11.4). If dv_lead or the auditor judges that a frozen requirement
+  may not stand while a module states an exception to it, the clause is written
+  out in §11.4 and I will take it as a requirements diff with traceability's
+  REQ-007 row and each implementer's hook — one activation, and its cost is the
+  same before and after the freeze flip.
+- **§2's in-scope abort bullet at SPEC-M17** was left unqualified as a scope
+  enumeration. One parenthetical if dv_lead wants it.
+- C-32, C-33 and C-36 remain open ledger rows with later gates; C-2, C-3, C-5,
+  C-7 and C-9's REQ-903 half are unchanged by this commit.
+
+### Files-in-this-commit
+
+- agents/handoffs/WO-0021_f1-repair.md
+- docs/specs/modules/udp_ip_rx_64.md
+- docs/specs/modules/udp_ip_tx_64.md
+- docs/specs/modules/xgmii_tx_64.md
