@@ -1,11 +1,12 @@
 # WO-0038: The programme's first bench — M03's clean-frame spine
-- **State**: ACCEPTED (round 4, at `RV-0038-R4-VERDICT` at the foot of this
-  packet — R4-1/2/3 applied verbatim, the promotion discarded byte-exactly,
-  and the driver **verified by execution** to run ascending. M03 has still
-  never been tested: the next `runtest` produces its first true recording,
-  which returns to me for conformance review, and **WO-0038 §8's mutation
-  spot-check is a hard precondition** before any `SO-`. One follow-up,
-  `R5-1`, is owed against my own R4-2 text — see the verdict.)
+- **State**: BOUNCED (round 5 owed. Run 30772333717 drove FORWARD and the row
+  assertions fired with substance — but four of the five failures are the
+  bench's oracle, not M03's behaviour: the sampling convention labels every
+  OUTPUT one cycle early, proven against this repository's own committed
+  waveform. **No M03 conviction is issued.** One observation — an extra
+  delivered octet at length 65 — survives as provisional finding **F-M03-1**
+  with a falsifiable lane-dependent prediction, to be settled by the clean
+  run. Ruling at `RV-0038-R5`, foot of this packet.)
 - **From** / **To**: dv_lead → tb_writer
 - **Spec basis**: `docs/specs/modules/xgmii_rx_64.md` (SPEC-M03) at the
   countersigned SHA — §4.1 ports, §6.1 cycle table, §6.3 output rules,
@@ -2193,3 +2194,228 @@ merely stated. Fold it in whenever the file is next touched.
 - **Defects**: none outstanding against the worker
 - **Owed**: R5-1 (against dv_lead's own R4-2 text), next round
 - **Signed**: J-dv_lead-0028
+
+---
+
+### RV-0038-R5: adjudication of run 30772333717 — four bench defects, ZERO M03 convictions, one provisional finding — dv_lead, `J-dv_lead-0029`
+
+**Ruling: the oracle is the defect on items 1, 2, 4 and 5. No conviction
+against M03 is issued.** Item 3 survives as a provisional finding with a
+falsifiable prediction; it is **not** routed to rtl_lead yet, and the
+reason is given below. Packet back to **BOUNCED**; round 5 is four items.
+
+The promotion must stay unharvested — for the second time, and for a
+different reason. Committing these would freeze *the bench's counting
+convention* into the repository as M03's timing contract.
+
+#### The discriminator was already in the tree, committed and CI-promoted
+
+The question is whether `drive → Cyclesim.cycle → sample` reads the
+outputs of the cycle whose input was just driven, or of the next one. I did
+not reason about Hardcaml's documentation. **`test/hardcaml_ethernet/test_word_counter.ml`
+carries a promoted waveform from a green CI run**, and it settles it.
+
+That bench drives one reset cycle, then `valid` = 1,1,1,0,1. Its snapshot
+shows `valid` high through cycles 1–3 and `count` reading `0000` across
+cycles 0 **and 1**, changing at cycle 2, reaching `0003` at cycle 4. So
+`valid` high during cycle 1 produces `count` = 1 **during cycle 2** — the
+ordinary hardware relation, input at cycle N, registered output at N+1.
+
+Now trace a `drive → cycle → sample` reader over that same design. Its
+first call drives `valid` = 1 and cycles; reading afterwards it sees
+`count` = 1 — the value the waveform places at **cycle 2**, while the input
+it just drove belongs to **cycle 1**. `Cyclesim.cycle` returns with outputs
+recomputed from the post-edge register state.
+
+**So a sample taken after call *c* is the output of the cycle whose input
+is word(*c*+1). `Bench.sample_cycle` labels it *c*.** Every output
+observation in this bench is labelled **one cycle early**.
+
+#### Items 1, 2 and 4 are that, exactly — and they say M03 is CONFORMANT
+
+§6.1's table numbers from the start word as cycle 0 and puts word 0 out on
+cycle 3. Under the bench's labelling, a design that does precisely that is
+observed at `start_cycle + 2`.
+
+- **Item 1** — "word 0 expected on cycle 4, observed on cycle 3", with
+  `start_cycle` = 1. Observed label 3 → the output belongs to cycle 4 →
+  ΔC = 3. **§6.1 satisfied.**
+- **Item 2** — "ΔC = 2 … expected 3 (REQ-019)". Same measurement, same
+  correction: the true ΔC is 3, which is §7's pinned constant and sits one
+  under §1.1's ceiling of 4. **REQ-019 satisfied.**
+- **Item 4** — M03-C4's one-word runt "did not arrive on start_cycle + 3".
+  Same off-by-one. **Satisfied.**
+
+Had I read ΔC = 2 as a conviction, I would have sent rtl_lead hunting a
+pipeline stage that is exactly where the specification puts it.
+
+#### Item 5 is a bench defect too, and the monitor is the one in the right
+
+`scaffolding: latency tagger unclean: [M03 rx] frames=0 octets=0
+latency=(no octet compared)` — with **no error lines**. So
+`Latency.errors` was empty and `is_clean` was false, which by its own
+definition (`is_constant` and no errors) means `is_constant` returned false
+over zero observations.
+
+**That is the correct answer.** A tagger that has compared nothing has not
+established constancy, and declining to claim it is the honest behaviour —
+the same refusal-to-pass-vacuously this programme has been enforcing
+everywhere else. The defect is that the scaffolding smoke test drives no
+frames and then demands cleanliness of a monitor it gave nothing to.
+
+#### Item 3 — the one observation that is NOT explained by any of this
+
+`M03-C1 (lane 0, length 65): expected 61 delivered octets, got 62`.
+
+This is a **count**, not a time. The labelling error shifts *when* samples
+are attributed, never *how many* octets they carry; every post-edge state
+in the run is sampled either way, and `drain:8` covers the frame. So the
+observation stands: for a 65-octet frame at lane 0, **M03 delivered one
+octet more than REQ-103 allows**.
+
+And it is **length-dependent**, which is the informative part: the message
+names length 65, so at least one other length in 64…71 passed the same
+check — a uniform "strips three octets instead of four" would have failed
+all eight.
+
+**A mechanism that predicts exactly that.** At lane 0 the frame's octets
+start at octet time 16, so the four FCS octets occupy octet times
+(12 + L) … (15 + L), and they **straddle a 64-bit word boundary** iff
+`floor((12+L)/8) ≠ floor((15+L)/8)`:
+
+| L | FCS octet times | words | straddle |
+|---|---|---|---|
+| 64 | 76–79 | 9 | no |
+| **65** | 77–80 | 9,10 | **yes** |
+| **66** | 78–81 | 9,10 | **yes** |
+| **67** | 79–82 | 9,10 | **yes** |
+| 68–71 | 80–86 | 10 | no |
+
+65 is the **first** straddling length in ascending order, and it is the one
+that failed. An FCS strip that only accounts for the FCS octets present in
+the terminate word would deliver the leftovers — one extra octet at L = 65.
+
+**The prediction that makes this falsifiable.** At lane 4 the origin shifts
+by four octet times: FCS occupies (16 + L) … (19 + L), so the straddling
+lengths are **69, 70, 71** and 64–68 are clean. So:
+
+> **F-M03-1 (provisional).** If the mechanism is FCS-straddle
+> mis-accounting, the clean run fails **65, 66, 67 at lane 0** and
+> **69, 70, 71 at lane 4**, and no others. If instead every length fails at
+> both lanes, the mechanism is a uniform strip/count error. If nothing
+> fails once the oracle is fixed, item 3 was an artefact and F-M03-1 is
+> withdrawn.
+
+This is the charter's named hard class arriving early: a payload boundary
+straddling a 64-bit word, on the receive path, at the FCS instead of at an
+ITCH message.
+
+#### Why F-M03-1 is NOT issued as a `BUG-` today
+
+Three reasons, and the first is sufficient.
+
+1. **I am simultaneously ruling this instrument defective.** Issuing an RTL
+   conviction from a run of a bench whose oracle I have just found wrong in
+   four places would be indefensible, even though this particular
+   observation is independent of those four. Four rounds of this packet
+   have taught exactly that lesson.
+2. **One data point.** The exception aborts each test at its first failure,
+   so I have length 65 at lane 0 and nothing else. The lane-4 rows never
+   ran — the lane-0 failures aborted first.
+3. **Round 5 costs one CI run and converts a suspicion into a signature.**
+   With R5-4 below, a single run returns the complete pattern across all
+   eight lengths at both lanes, and F-M03-1 is either confirmed with a
+   named mechanism — which is worth far more to rtl_lead than "one length
+   delivered one extra octet" — or withdrawn.
+
+#### Round-5 fix list
+
+**R5-1 — REQUIRED (carried from `RV-0038-R4-VERDICT`).** The
+`sample_cycle` choke-point ordering guard, with `mutable cycles_driven` on
+`t`. Text is in that verdict; unchanged.
+
+**R5-2 — BLOCKING. Label outputs with the cycle they belong to.** Add a
+second field to `sample` and use it for every OUTPUT observation:
+
+```ocaml
+type sample =
+  { cycle : int        (* schedule cycle whose INPUT word was driven *)
+  ; out_cycle : int    (* cycle the sampled OUTPUT belongs to = cycle + 1 *)
+  ; in_word : Dv_xgmii.Xgmii_word.t
+  ; out : Dv_monitors.Stream_word.t
+  ; errors_high : string list
+  }
+```
+
+with, in `sample_cycle`, a comment recording *why* — that
+`Cyclesim.cycle` returns having recomputed outputs from post-edge register
+state, so the value read belongs to the following cycle, and that this
+repository's own promoted waveform in
+`test/hardcaml_ethernet/test_word_counter.ml` is the evidence.
+
+Every consumer of an **output** moves to `out_cycle`; `cycle` keeps its
+meaning for the input word and for R5-1's guard. The call sites are:
+
+- `bench.ml` — `Protocol_monitor.observe ~cycle`, `Strobe_monitor.sample
+  ~cycle`, `error_pulses` (emit `s.out_cycle`), and `account_clean_frame`'s
+  `Octet_time.of_words` pairs (**this one matters most** — the latency
+  tagger derives octet times from output word cycles).
+- `test_m03_a.ml` — `run_a1_a2`'s `expected_cycle` comparison and
+  `assert_own_deltac`'s `first.cycle - start_cycle`.
+- `test_m03_c.ml` — `run_c4`'s output-word cycle check; its
+  `Strobe_monitor.expect` window and `expected_pulse_cycle` are already in
+  output terms and need no change once `error_pulses` reports `out_cycle`.
+
+`Strobe_monitor`'s strictly-ascending requirement is preserved: `cycle + 1`
+is monotone.
+
+**R5-3 — BLOCKING. `assert_monitors_clean` must not demand constancy of a
+tagger that compared nothing.** Split the latency check:
+
+```ocaml
+  (* The tagger's ERRORS are always meaningful; its CONSTANCY is a claim it
+     can only make once it has compared a frame, and it correctly declines
+     to make it over an empty set. A frameless run — the scaffolding smoke
+     test, and family I's idle-only rows later — must not be asked for
+     is_clean. RV-0038-R5. *)
+  (match Octet_time.Latency.errors t.latency with
+   | [] -> ()
+   | errs ->
+     failwith
+       (String.concat [ row; ": latency tagger errors:\n"
+                      ; String.concat ~sep:"\n" errs ]));
+  if Octet_time.Latency.frames_compared t.latency > 0
+     && not (Octet_time.Latency.is_clean t.latency)
+  then
+    failwith
+      (String.concat
+         [ row; ": latency tagger unclean:\n"
+         ; Octet_time.Latency.report t.latency ])
+```
+
+`dv_monitors` is **not** to be changed. Its behaviour is right.
+
+**R5-4 — REQUIRED. Make M03-C1 report the whole pattern instead of
+aborting at the first failing length.** In `run_c1_c2`, collect each
+length's outcome — delivered count expected vs observed, tlast `tkeep`,
+`tuser`, terminate lane — into a list, and raise **once at the end** with
+every length's line, so one CI run returns the complete signature at both
+lanes. F-M03-1 cannot be settled by a fail-fast loop.
+
+The eleven rows' stimuli and oracles are otherwise untouched.
+
+#### What this run did establish, and it is not nothing
+
+The schedule drives forward, the DUT elaborates and runs, `Arrival` builds
+correct schedules, the probes drive and sample real ports, and every row
+assertion fired with substantive content. Item 3 is the first observation
+in this programme that is *about M03* and survives scrutiny. That is
+progress, and it arrived because the bench finally worked well enough to be
+wrong about something interesting.
+
+- **M03 convictions**: **none issued.** F-M03-1 provisional, with a
+  falsifiable lane-dependent prediction
+- **Bench defects**: R5-1 (carried), R5-2, R5-3, R5-4
+- **Promotion**: stays unharvested; these payloads must never become
+  expectations
+- **Signed**: J-dv_lead-0029
