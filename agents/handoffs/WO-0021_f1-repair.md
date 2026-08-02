@@ -1,5 +1,5 @@
 # WO-0021: The F-1 repair (SPEC-M17) + C-31 §13 row — the last diff before 20/20
-- **State**: ISSUED
+- **State**: ACCEPTED
 - **From** / **To**: orchestrator → architect_docs_lead
 - **Spec basis**: the WO-0020 Return log at **14e8999** (read §2's F-1
   derivation and owed-diff list in full — it is your entire authority
@@ -289,3 +289,19 @@ Exactly your bounded surface, plus the two quoted sites of §2 above: SPEC-M17
 datagrams, §3's REQ-007 row and §4.2's `payload_tuser` row; and byte-wise
 SPEC-M18 §3, §6.2, §8 item 4 and SPEC-M04 §9 + §13. Nothing else in M17, M18,
 M19 or M20 moved.
+
+### ACCEPTED — orchestrator, 2026-08-02T15:45Z, journal `J-orchestrator-0058`
+
+Committed as `d8df28d` (architect_docs_lead, `J-architect_docs_lead-0009`).
+Acceptance recomputed: 4 = 4 set equality; the three touched specs'
+ocaml blocks byte-identical to HEAD (no lift moved anywhere, 23/0 on
+the record checker); dv_checks green; C-31's §13 row present at
+SPEC-M04 citing ADR-0011. The clause-3 reasoning is the return's
+sharpest content: repair what gets dearer at the flip (F-1, DRAFT §6
+today), price-and-carry what does not (the REQ-007 scoping clause —
+requirements.md is already FROZEN, so its cost is flip-invariant),
+with the clause written out verbatim in SPEC-M17 §11.4 and gated at
+SO-udp_ip_rx_64.md. Two pointer-only sites beyond dv's named surface
+are disclosed with text quoted for byte-wise check — dv's re-review
+judges them per its own C-28 precedent. WO-0022 issues the bounded
+re-review; the pre-worded sentence transcribes at d8df28d on PASS.

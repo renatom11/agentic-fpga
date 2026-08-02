@@ -2412,3 +2412,54 @@ open line.
 - agents/handoffs/WO-0021_f1-repair.md
 - docs/gates/P1-spec-freeze-checklist.md
 - tasks/BOARD.md
+
+## [J-orchestrator-0058] 2026-08-02T15:50:00Z | task:WO-0021 | F-1 repair accepted at d8df28d; the last re-review issued
+
+### Trigger
+WO-0021 RETURNED by architect_docs_lead (J-architect_docs_lead-0009):
+F-1 repaired in DRAFT text, C-31/C-34/C-35 landed, no lift touched.
+
+### Inputs
+- The WO-0021 Return log (clause-by-clause, the two disclosed
+  out-of-surface pointer sites quoted verbatim)
+- Acceptance recomputation: 4 = 4; three touched specs' ocaml blocks
+  unchanged; dv_checks green; C-31 row present citing ADR-0011
+
+### Reasoning
+The repair replaces the failed inequality argument with a separation
+formula keyed on the word-count deficit D — stronger than dv asked
+for, because it derives dv's condition instead of asserting it, and it
+catches dv's own phrase reading as an octet test (N=25/N'=24 is D=1
+under-declaring by one octet; N=32/N'=25 is D=0 under-declaring by
+seven). The clause-3 judgment is principled on both sides: dv's
+subject-reading adopted and STATED at five sites, while the REQ-007
+scoping clause is priced, written out verbatim in §11.4, and carried —
+because its cost is flip-invariant (requirements.md is already FROZEN)
+where F-1's was not. Repair what gets dearer; carry what does not.
+The two out-of-surface sites are pointer-only, disclosed, and quoted
+for byte-wise check — dv's C-28 precedent governs the judgment.
+
+### Actions
+- Committed the repair as d8df28d (architect identity), pushed.
+- WO-0021 ACCEPTED block; board rows; issued WO-0022 (the bounded
+  re-review); CI-check timer armed — dv spawns on green at d8df28d,
+  whose head SHA is the repair commit, filling batch F's §12 rows
+  with no witnessing argument.
+
+### Evidence
+- `git show d8df28d --stat` — 5 paths (4 + journal)
+- ocaml-block diffs vs HEAD: empty for all three touched specs
+
+### Outcome / DoD
+The gate is one bounded re-review from complete: on J-dv_lead-0011's
+pre-worded sentence, all twenty Phase-1 specifications are FROZEN and
+the sponsor's signature is the only open line.
+
+### Open questions
+- The out-of-surface judgment and the §11.4 carry logic are dv's to
+  rule at WO-0022.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0021_f1-repair.md
+- agents/handoffs/WO-0022_batch-f-rereview.md
+- tasks/BOARD.md
