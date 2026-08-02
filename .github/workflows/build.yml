@@ -40,9 +40,27 @@ jobs:
         #  * a generated file that was never committed (plain `git diff`
         #    ignores untracked files, so stage everything first)
         # On failure the printed diff IS the promotion source (ADR-0005).
+        # The diff alone is not retrievable when it outgrows the log-fetch
+        # window, so failure also prints a compact PROMOTION BLOCK: sha256 +
+        # base64 of every staged path, always within reach of the log tail.
+        # The checksum makes the promotion byte-verifiable at apply time.
         run: |
           git add -A
-          git diff --cached --exit-code
+          git diff --cached --exit-code || {
+            echo '=== PROMOTION BLOCK: sha256 + base64 -w 400 of every staged path ==='
+            git diff --cached --name-only | while read -r f; do
+              if [ -f "$f" ]; then
+                echo "--- FILE $f"
+                sha256sum "$f"
+                base64 -w 400 "$f"
+                echo "--- END $f"
+              else
+                echo "--- DELETED $f"
+              fi
+            done
+            echo '=== END PROMOTION BLOCK ==='
+            exit 1
+          }
       - name: DV mechanical checks (C-9 record-vs-appendix, X-9 emitted Verilog)
         run: tools/dv_checks.sh
 

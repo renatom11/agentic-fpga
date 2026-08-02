@@ -2874,3 +2874,72 @@ owner; REQ-902's evidence remains owed by the promoting commit.
 - agents/handoffs/WO-0027_attack-plans.md
 - agents/handoffs/WO-0028_x9-alias-repair.md
 - tasks/BOARD.md
+
+## [J-orchestrator-0068] 2026-08-02T23:40:00Z | task:WO-0026 | Promotion blocked by a second machinery gap — the log-fetch window — closed permanently: determinism failure now prints a sha256+base64 promotion block
+
+### Trigger
+Run 30751985756 (head `1045ed8`) went red at the determinism step as
+designed, with the three emitted `.v` files as its printed diff — the
+promotion source. Retrieving that source failed twice.
+
+### Inputs
+- Run 30751985756's failed-job log via the GitHub MCP log fetch: the
+  content window caps at 5,000 lines and the three-file diff is ~11k
+  lines, so the window opens mid-file — exactly one `diff --git`
+  header (`rtl_snapshots/xgmii_tx_64.v`) survives; `eth_mac_10g.v`
+  and `xgmii_rx_64.v` are cut off above it.
+- The raw-log URL (Azure blob storage): the container's egress proxy
+  returns 403 CONNECT for that domain — unreachable by policy.
+- ADR-0005 rule 2: snapshots are never hand-written; the promoting
+  bytes must come from CI itself.
+
+### Reasoning
+Options: (a) reconstruct from stitched log windows — impossible, the
+fetch has no offset, only a tail; (b) have CI push the promotion
+itself — violates the sole-committer rule and puts write credentials
+in the workflow; (c) a temporary retrieval workflow — two throwaway
+commits of history noise; (d) make the determinism step itself emit a
+compact, byte-verifiable promotion source on every failure: sha256 +
+`base64 -w 400` of each staged path, printed AFTER the diff so it
+always sits at the log tail, well inside any fetch window (~1k lines
+for all three files vs ~11k for their diff). (d) is the second
+permanent repair to the same promotion loop (the first was the step
+reorder at `1045ed8`) and keeps working for every future promotion,
+so (d).
+Sequencing: dv_lead's WO-0028 checker repair returned while this was
+in flight and is committed FIRST (`ff2d54a`), so the eventual
+promotion run is judged by the repaired X-9 rule over the promoted
+text — one run then carries both REQ-902's determinism evidence and
+the first real X-9 verdict on the MAC trio, which is exactly the
+combined green WO-0026 needs.
+
+### Actions
+- Committed dv_lead's WO-0028 return under its own identity
+  (`ff2d54a`, J-dv_lead-0014) after appended-region verification:
+  pure EOF append at byte 295409, Files list set-equal to the three
+  staged paths, 17/17 self-test fixtures green locally.
+- Amended the determinism step in `.github/workflows/build.yml` with
+  the on-failure PROMOTION BLOCK (sha256 + base64 of every staged
+  path, DELETED marker for removals). No step order change.
+
+### Evidence
+- `git show 1045ed8:.github/workflows/build.yml | grep -n exit-code`
+  vs the new block: the guard clause is additive; the step still
+  exits 1 on any staged diff.
+- Proxy denial: `curl` to the run's signed log URL → exit 56,
+  `CONNECT tunnel failed, response 403`.
+- Window truncation: MCP log fetch of job 91507524131 with a 12,000
+  tail returned exactly 5,000 lines whose first line is mid-assign
+  inside a `.v` diff body.
+
+### Outcome / DoD
+The next push goes red at determinism (files still unpromoted, by
+design) and prints the block; I decode, verify each sha256, write the
+three files verbatim, and the promotion commit follows. Combined
+green on that head = REQ-902 evidence + X-9's first real verdict.
+
+### Open questions
+- None new. WO-0026 acceptance still gated on the combined green.
+
+### Files-in-this-commit
+- .github/workflows/build.yml
