@@ -4633,3 +4633,49 @@ follows its direction.
 
 ### Files-in-this-commit
 _None — journal-only entry._
+
+## [J-orchestrator-0107] 2026-08-03T00:00:00Z | task:WO-0038 | The bench speaks forward - and the first substantive disagreement between bench and DUT is on the table
+
+### Trigger
+Scheduled CI check-in for the round-4 push.
+
+### Inputs
+- Run 30772333717 (9937d5b): Build green; runtest red; promotion
+  block of three files harvested and sha256-verified.
+- Sanity scan (new this round, per the R4 escape): uncaught_exn
+  payloads present in all three - NOT written to the tree.
+- But these are not reversal artifacts: the assertions fired with
+  content. Lane 0: word 0 observed cycle 3 vs expected 4; ΔC = 2
+  observed vs REQ-019's 3; length 65: 62 delivered octets vs
+  expected 61; C4 single-word timing miss; structural latency
+  tagger unclean on the empty-schedule smoke. test_m03_b.ml
+  absent from the block - B1 apparently passed.
+
+### Reasoning
+Two live hypotheses with different signatures: M03 genuinely one
+cycle early and one octet over (first real RTL conviction, spec-
+ruling path) versus a bench oracle miscount (origin convention,
+inclusive/exclusive, FCS accounting - round-5 fix). Lane-4 rows
+never ran (lane-0 aborts first), so the discriminating lane-4
+evidence does not exist yet. Adjudication routed to dv_lead with
+both hypotheses and their predictions stated; the poisoned
+promotion held out of the tree per the standing rule that these
+payloads must never become expectations.
+
+### Actions
+- Harvest + scan; verbatim failures to dv_lead; this journal-only
+  commit.
+
+### Evidence
+- sha256 OK on all three promoted paths; scan counts 4/4/2
+  uncaught_exn hits; failure strings quoted in the dispatch.
+
+### Outcome / DoD
+First substantive bench-vs-DUT disagreement of the programme,
+under adjudication. No tree changes.
+
+### Open questions
+- ΔC=2 vs 3: whose count is wrong - the module's or the oracle's?
+
+### Files-in-this-commit
+_None — journal-only entry._
