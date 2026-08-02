@@ -62,6 +62,7 @@ Corrections.
 
 | Packet | From → To | State | Note |
 |---|---|---|---|
+| [WO-0029](../agents/handoffs/WO-0029_consolidated-spec-queue.md) | orchestrator → architect_docs_lead | ISSUED | Consolidated spec queue: M14-K7 (reachable total-length<20 defect, ADR-0012 revision path), M14-B5 hole, four M03 rulings (Q2, N2, N3, N4), five editorial diffs (C-41 ×3, C-40 sweep, M03-O2, REQ-001 column) |
 | [WO-0016](../agents/handoffs/WO-0016_m01-m02-implementation.md) | orchestrator → rtl_lead | ACCEPTED | 189d5b2: **first RTL green on first elaboration** (run 30738000890) — M01 Axi64 (types, lift-identical) + M02 Crc32_eth (64-step prefix chain, ADR-0006/0007 honoured); 2 questions queued for architect (Axi64.Axi64 convention; named module type S) |
 | [WO-0025](../agents/handoffs/WO-0025_m14-recountersign.md) | orchestrator → dv_lead | ACCEPTED | 68eb0cf: **SPEC-M14 revision re-countersigned** — 8,720,452-pair quantified verification (new tools/check_abort_availability.sh, CI-wired); C-37 CLOSED; residual endorsed + sharpened (band = totals 29–36); C-41/C-42 raised; dv correctly refused my false R4 flag |
 | [WO-0028](../agents/handoffs/WO-0028_x9-alias-repair.md) | orchestrator → dv_lead | ACCEPTED | ff2d54a: **X-9 repaired by its owner** — concur on false-FAIL + two teeth-losses found beyond mandate (cross-module alias leak, instantiation-time gating), both now held by 17 CI fixtures; first real pass at run 30753089901; REQ-001 wording request → architect |

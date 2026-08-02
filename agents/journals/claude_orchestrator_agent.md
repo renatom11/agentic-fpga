@@ -3036,3 +3036,47 @@ site, M03-N2/N4 rulings).
 - agents/handoffs/WO-0026_emission-registration.md
 - agents/handoffs/WO-0028_x9-alias-repair.md
 - tasks/BOARD.md
+
+## [J-orchestrator-0071] 2026-08-03T00:45:00Z | task:WO-0029 | The consolidated spec queue issued — everything three work orders returned, in one architect sitting
+
+### Trigger
+WO-0026/WO-0028 closed at a8a874d; the queue their returns (plus
+WO-0027's and WO-0024's) built for the architect is now the
+pipeline's blocking item — the two attack plans stall on four M03
+readings, the M14 rows on the K7 defect.
+
+### Inputs
+- WO-0027 Return "Four items for the architect" (J-dv_lead-0013);
+  AP-M03 §8 + rows N2/N3/N4; WO-0024 §6 questions 2–4
+  (J-rtl_lead-0002); WO-0028 §5 (J-dv_lead-0014); ledger C-40/C-41.
+
+### Reasoning
+One consolidated packet, not five: every item is spec text under one
+owner, the items interlock (M03-N2 vs Q2 are the same reading tested
+at two positions), and the ADR-0012 revision-path constraint has to
+bind the whole batch identically — a FROZEN spec revises only
+through revision blocks + dv re-countersign, which I issue as the
+follow-up WO on return. Out-of-scope keeps the REQ-001 fix at the
+requirements column: dv's checker already implements the rule;
+the text follows the tool that survived falsification, not vice
+versa.
+
+### Actions
+- Authored agents/handoffs/WO-0029_consolidated-spec-queue.md;
+  BOARD row added; spawning architect_docs_lead with the packet.
+
+### Evidence
+- Blocking claims: AP-M03 rows M03-N2/N4 carry Status RULING;
+  AP-M14 §0 names K7's family reachable; both files at df3e474.
+
+### Outcome / DoD
+Architect activated on the full queue; on return, expected
+follow-ups: dv re-countersign WO for any normative M14 revision,
+then the tb_writer machinery WO (X-1…X-11) unblocks.
+
+### Open questions
+- Whether N4 resolves textually or needs an ADR — architect's call.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0029_consolidated-spec-queue.md
+- tasks/BOARD.md
