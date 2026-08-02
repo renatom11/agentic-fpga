@@ -3182,3 +3182,290 @@ this review created or unblocked.
 
 ### Files-in-this-commit
 - agents/handoffs/WO-0018_batch-de-countersign.md
+
+## [J-dv_lead-0010] 2026-08-02T15:05:00Z | task:WO-0020 | Batch-F countersignature WITHHELD at aaa55b2: M18/M19/M20 SIGNED, SPEC-M17 CONTESTED on F-1 (an abort bit copied from a word that has not arrived); seven questions answered, ADR-0011 endorsed with a correction owed against its own text; C-24…C-30 and twelve §11 closures reaffirmed; C-31 … C-36 raised
+
+### Trigger
+Orchestrator spawn under work order WO-0020 (ISSUED at 7185649), spawn short-id
+`WO-0020/2026-08-02T13:45Z`. Tenth activation. The sixth and final countersign
+cycle of P1-spec-freeze: on a positive verdict all twenty Phase-1 specifications
+freeze and the gate goes to the sponsor.
+
+### Inputs
+- `agents/charters/dv_lead.md` (§3 spec-derived verification, §5 DoD, §6
+  evaluation criteria, §7 escalation, §8 journaling); `agents/PROTOCOL.md` §4
+  (entry grammar), §6 (write scope), §7 (gates, transcription), §10
+  (independence and evidence).
+- `agents/handoffs/WO-0020_batch-f-countersign.md` at 7185649 (with the
+  orchestrator's uncommitted evidence appendix) — my work order.
+- `agents/handoffs/WO-0019_batch-f-specs.md` Return log **in full**, including
+  the seven ordered questions, the eleven-claimed §11 closures, the C-24…C-30
+  dispositions, the two conventions answers and the ACCEPTED block.
+- **Batch F at aaa55b2, all four read in full**: `docs/specs/modules/
+  udp_ip_rx_64.md` (SPEC-M17), `udp_ip_tx_64.md` (SPEC-M18),
+  `udp_complete_64.md` (SPEC-M19), `nic_top.md` (SPEC-M20); their four lifts in
+  `docs/specs/ifc_check/` plus that directory's `dune`.
+- `docs/adr/ADR-0010-consumer-conventions-for-the-frozen-records.md` and
+  `docs/adr/ADR-0011-under-delivery-leaves-the-transmit-path-unterminated.md`,
+  both in full; ADR-0008's C-22 precedence clause.
+- **Frozen text re-read for the derivations rather than trusted through
+  summaries**: SPEC-M03 §7 (both start lanes), SPEC-M05 §7, SPEC-M06 §7,
+  SPEC-M08 §7, SPEC-M14 §7/§8/§9/§13, SPEC-M15 §6.1 (steps 1–4), §6.2, §7,
+  §8, §12, SPEC-M16 §7/§13, SPEC-M04 §9 in full and its `cfg_tx_enable` rows,
+  SPEC-M13 §13, SPEC-M10 §11.2/§11.4.
+- `docs/specs/requirements.md`: §0.5 in full, §0.6, §0.7, §1.1 and its new
+  currency table, REQ-004 … REQ-021, REQ-605, REQ-610, REQ-703 … REQ-710,
+  REQ-801 … REQ-810, §9.1, §11's non-requirements table, §12, §13's revision
+  rows. `docs/specs/traceability.md` (all batch-F rows and the REQ-810,
+  REQ-707, REQ-708, REQ-610, REQ-807 rows). `docs/specs/architecture.md` §6.4
+  in full.
+- `docs/gates/P1-spec-freeze-checklist.md` at 7185649.
+- My own `J-dv_lead-0008` (the standard for contesting rather than carrying) and
+  `J-dv_lead-0009` (the batch-D/E line, and C-24 … C-30 as I raised them).
+- CI: runs **30742781586** (aaa55b2) and **30742821837** (7185649), both fetched
+  through the GitHub API with their step breakdowns, not accepted from the
+  packet.
+- **`libs/**` was never opened, in this or any previous activation.** No RTL
+  exists for any batch-F module; every figure below is arithmetic from
+  specification text or an existing script.
+
+### Reasoning
+**I withheld the last signature of the gate, and the fact that it is the last is
+the reason to hold it rather than to grant it.** The work order says that on a
+positive verdict twenty specifications freeze and the gate goes to the sponsor.
+That framing is exactly the pressure a countersignature exists to resist. F-1
+costs one architect activation and one CI run to repair in DRAFT text; after the
+flip the identical repair is a post-freeze **§6 behavioural** diff — which is the
+second of the three grounds ADR-0011 itself gives for refusing its own
+alternative (a) at M04. I am not willing to manufacture at M17, in the last hour,
+the cost the batch's own ADR spends three paragraphs declining to pay.
+
+**F-1 is D-1's shape and I applied D-1's test, not D-1's feeling.** The test I
+wrote at WO-0015 and applied in both directions at WO-0018 is: carry when a
+document one level up states the correct reading (C-26, settled by REQ-605) or
+when no committed hook asserts the wrong one (C-24); contest when no section
+anywhere states the correct reading and several state the wrong one. At M17,
+**five sites** state that the application `tlast` word carries `tuser`[0] copied
+from the input `tlast` word — §3's REQ-007 row, §4.2's port row, §6.1's proof and
+its conclusion, §6.2's `Payload` row, §10's REQ-007/REQ-013 hook — and **no
+site** states what M17 emits when that word has not arrived. §6.3 does not list
+the value among the deliberately unconstrained. requirements.md REQ-007 settles
+it in the impossible direction. The test returns contest, and I would have had to
+argue myself out of my own standard to sign.
+
+**How I found it, because the route matters for the auditor.** I did not go
+looking for it. I was recomputing §6.1's abort-availability argument as an
+ordinary check of a proof the specification offers — the same way I recomputed
+M14's M + 3 ≥ K inequality at WO-0018, which held — and the algebra came out
+backwards: the text argues "Since N′ ≤ N, M + 1 ≥ ⌈(N − 8)/8⌉ + 1 ≥ K", and
+N′ ≤ N gives M ≤ ⌈(N − 8)/8⌉. The residue identity beside it is correct and
+proves the **equality** case, which is the full-delivery case and no more. Then
+the `Tail` state — which §6.2 goes out of its way to insist "is not dead code" —
+is precisely the class where the equality fails, and §8 drives it with IPv4 total
+length 46 against UDP length 20. So the specification commissions a directed test
+for a class on which its own feasibility proof does not hold.
+
+**The three regimes, worked out before I decided anything.** With N the octets
+IPv4 delivered, N′ the UDP length, K = ⌈N/8⌉, M = ⌈(N′ − 8)/8⌉: the input
+`tlast` is at Ci + K − 1 and the application `tlast` at Ci + M + 1. Availability
+needs ⌈N′/8⌉ = ⌈N/8⌉. One word of under-declaration makes the two coincide (§8's
+own datagram: K = 4, M = 2, both at Ci + 3), which would need a combinational
+`ip_payload_tuser` → `payload_tuser` path on the emitting cycle that no section
+sanctions; two words or more makes the application `tlast` leave **strictly
+before** the input `tlast` arrives, up to 182 cycles early at N = 1480, N′ = 9,
+which no implementation can do. I checked that the case is not vacuous before
+raising it: a bad-FCS frame carries `tuser`[0] = 1 down the whole chain and its
+corrupted UDP length field may under-declare by any amount, so a conformant M17
+can be *required* by REQ-007 to mark a bit it cannot have. And I noted that the
+defect does not even need an abort — with `tuser`[0] = 0 upstream, §6.2 still
+directs a copy from a word that has not arrived, so the emitted value is
+unspecified for every under-declaring datagram and a monitor has nothing to
+assert.
+
+**Why I priced the repair at three clauses and named the value.** I could have
+contested and left the fix open. I did not, because a contest whose repair is
+undetermined costs a round trip: at WO-0015 I gave the architect R-1/R-2 and
+D-2a/D-2b to choose between and the choice came back better than my
+recommendation. Here there is only one implementable value — `tuser`[0] = 0 on
+the application `tlast` word when the declared count completes first, because no
+abort has been observed at that point — so I named it, said what the alternative
+(making it unconstrained in §6.3) would require, and said which REQ-007 reading
+avoids a normative requirements diff: REQ-007's subject is "every downstream
+module that emits an output frame **for it**", and an under-declaring datagram's
+application frame is a frame for the declared datagram rather than the delivered
+one. That reading has to be *stated*, which is clause 3, but it keeps the repair
+editorial.
+
+**Three specifications signed, and the signatures are not consolation.** M18's
+W − J = 1 is the sharpest single derivation in the batch and I recomputed it from
+the events rather than the formula: M18 adds exactly one word at every payload
+length with no residue classes, acceptances fall on C … C + J − 1 and emissions
+on C … C + J, so the emission window contains all J acceptances and exactly one
+stalled cycle. Against M15, whose first body word leaves at C + 1 so its window
+contains J − 1 acceptances and W − J + 1 stalls — three, in its own worked frame.
+The architect's generalisation, "W − J + 1 is not a programme constant; it is a
+consequence of where the first output word sits relative to the first
+acceptance", is a better statement of C-17(b) than the one I wrote when I raised
+it, and I said so in the packet. M20's REQ-006 = 13 checks by the stage sum
+(3 + 3 + 1 + 4 + 2), by the octet route ((54 + 50)/8 = (50 + 54)/8) and by a
+third route the architect did not claim — requirements.md §1.1's own Σ h row
+(50 / 54) agreeing with M20 §7's totals. The 11-cycle itemisation audits term by
+term: reserve 1 + 0 + 0 + 1 + 2 = 4 at M03/M14/M17, architect's slack 24 − 17 = 7,
+and 13 + 4 + 7 = 24.
+
+**On ADR-0011 I endorsed the decision and then found a defect in the ADR
+itself.** The decision is right for a testability reason rather than a design
+one: `clear` is a **top-level port** whose effect is already stated at five
+modules' §7, so the recovery is observable and drivable without inventing a
+mechanism, while alternative (c)'s back-signal would have coupled four modules
+through a signal with no port at which the abandonment is visible. The pricing is
+right too, and ground 1 is the one I would have led with, because SPEC-M04 §11.2
+records **my own** WO-0010 classification of the REQ-206/REQ-207 interaction as
+compelled by REQ-207's unconditional wording — reversing that at the freeze gate
+would reopen a closed item of mine, and "a real NIC would want it" is not an
+argument at this phase. But ADR-0011's Consequences says SPEC-M04 §9 "**now
+says** ordered-and-unpinned" and its Affects header lists SPEC-M04 §9, and
+neither is true: the bullet still reads "pulse **together**", bolded, exactly as
+the WO-0019 Return log correctly says it was left. requirements.md REQ-709's new
+column compounds it by citing SPEC-M04 §9 for the same reading. That converts
+question 7 from a judgement call into an owed correction: had the question been
+only whether a bench writer might misread "pulse together", I would have carried
+it, because SPEC-M18 §6.3 item 5, §9 and REQ-709's column all state the correct
+reading. It does not carry, because two committed documents now cite a frozen
+spec for the opposite of what it says, and an ADR describing a diff nobody made
+is a worse artifact than an unedited bullet.
+
+**Where I chose to carry rather than contest, and why each is defensible.** C-32
+(the `hdr_valid` lead is gapless-only while four sites state it unconditionally)
+carries because §6.1 explicitly scopes its cycle formulas to a gapless stimulus,
+so the correct reading exists in the document — and because the figure §7 calls
+gap-invariant genuinely **is** gap-invariant; it is the *derived* lead that is
+not. C-33 (M19 §9 fact 2's locality claim) carries because the operative
+instruction — count frames, not pulses — is correct and is what a monitor needs;
+only the claim about where it first bites is wrong. C-34 (M18's `Body` exit
+overlap) carries because §9's pinned strobe cycle and §8's own assertions both
+imply the `Excess` reading, so a careful implementer gets there. C-35 (184 versus
+185) carries because §10 states the right number. Each of the four would have
+been a contest if the correct reading existed nowhere; each is a ledger row
+because it exists somewhere. That distinction is the whole content of my
+signature and it has now cut in both directions in three consecutive cycles.
+
+**Two counting corrections I offer as corrections.** WO-0019's Return log says
+"six" §13-recorded diffs and lists three plus three plus one, and seven rows
+exist; and it says "eleven" §11 closures where twelve rows read CLOSED (WO-0019).
+Both undercount the architect's own work. I recorded them because a ledger whose
+arithmetic is carried forward wrong stops being a ledger, which is the same
+reason C-24 was worth a row.
+
+**What I did not do.** I did not touch `docs/specs/**`, `docs/adr/**` or
+`docs/gates/**`, though every owed diff is written out to the clause in the
+Return log — they are the architect's text and the orchestrator's checklist. I
+added no `test/**` or `tools/**` machinery: every check here was arithmetic by
+hand or an existing script, and a commit carrying a contest, three signatures and
+six ledger items is easier to audit without code in it. I bounded the re-review
+surface in advance, as I did at WO-0015, so the architect can price the repair
+before writing it.
+
+### Actions
+- Verified the specs-unchanged claim myself: `git diff --stat aaa55b2 7185649 --
+  docs/specs/ docs/adr/` is empty; only the two packets, the orchestrator
+  journal, the gate checklist and `tasks/BOARD.md` moved. Review SHA fixed at
+  **aaa55b2**.
+- Fetched both CI runs through the GitHub API with step breakdowns; confirmed
+  run 30742781586 is workflow `build` at head SHA aaa55b2 with conclusion
+  `success` and all twelve steps green, and that the four new lifts sit in the
+  single `ifc_check` library so `Build` green is their first elaboration.
+- Re-ran `tools/check_records_vs_appendix.sh` (23 checks, 0 failures) and
+  `tools/dv_checks.sh` (exit 0) at the working tree.
+- Recomputed REQ set equality by script (110 = 110 = 110 distinct, symmetric
+  difference empty, no Spec-section cell reading `pending`) and recounted
+  architecture.md §6.4 by strict row shape (119 = 26 + 40 + 31 + 22, the
+  `cfg_tx_enable → M18` row present).
+- Re-derived, by hand: M17's L/h/ΔC by both of §0.5's routes; M17's abort
+  availability in all three regimes (**F-1**); M18's W − J = 1 against M15's
+  W − J + 1 from the two modules' worked frames; M19's chain of 10 against 13
+  and its 12 + 2 + 1 = 15 and 15 + 6 = 21; M20's REQ-006 = 13 by the stage sum,
+  by the octet route at both lanes and against §1.1's own Σ h row, plus the
+  11-cycle itemisation term by term; C-24's residue rule from first principles
+  (7 for N ≡ 0,1,2 (mod 8), else 8; N = 64 → 7, 67 → 8, 1518 → 8); C-25's five
+  frame lengths 46–50; the one-application-word figure behind the
+  `cfg_tx_enable → M18` edge, from SPEC-M15 §6.1 step 3.
+- Counted the §13 rows (seven, not six) and the WO-0019 §11 closures (twelve,
+  not eleven) by grep across `docs/specs/modules/`.
+- Wrote the Return log into `agents/handoffs/WO-0020_batch-f-countersign.md`:
+  four verdicts, seven answers, the ledger reaffirmation, C-31 … C-36, the owed
+  diff list, the bounded re-review surface and the pre-worded sentence.
+
+### Evidence
+Reproducible from a checkout at this commit:
+
+- `git diff --stat aaa55b2 7185649 -- docs/specs/ docs/adr/` → **no output**
+  (specs and ADRs byte-identical between the spec commit and the working tree).
+- `bash tools/check_records_vs_appendix.sh` → **23 check(s) run, 0 failure(s)**,
+  including the four batch-F rows `modules/{udp_ip_rx_64,udp_ip_tx_64,
+  udp_complete_64,nic_top}.md §4.1 == ifc_check/<name>_ifc.ml (byte identical)`.
+- `bash tools/dv_checks.sh` → exit 0, `4 check(s) run, 0 failure(s), 4 pending`,
+  `check_emitted_verilog.sh: OK`, `dv_checks: all checks passed`.
+- REQ set equality, recomputed: requirements.md **110** bolded row leaders,
+  traceability.md **110** rows and **110** distinct, symmetric difference
+  **empty**, zero Spec-section cells reading `pending`.
+- architecture.md §6.4 recounted by strict row shape: **119** edges =
+  **26 + 40 + 31 + 22**; `M20.cfg_tx_enable → M18.cfg_tx_enable` present in
+  §6.4.3 beside the M04 row.
+- `grep -c "CLOSED (WO-0019)" docs/specs/modules/*.md` → **twelve** rows across
+  nine files (M03, M05, M06, M08, M10 ×2, M13, M14, M15, M16 ×3).
+- **Externally verifiable references** (GitHub API, this repository): workflow
+  run **30742781586** — workflow `build`, event `push`, head SHA
+  `aaa55b288e4ea580dfb157132c8aa478a10133b9`, conclusion **`success`**, steps
+  `Build`, `Run tests`, `Generate RTL`, `DV mechanical checks` and `Verify
+  nothing was left unpromoted` all `success`; run **30742821837** — head SHA
+  `71856497340569733555caef1b5a5607aaec7ac8`, conclusion **`success`**.
+- **F-1's arithmetic, reproducible with pencil from SPEC-M17 §6.1 alone**: input
+  `tlast` at Ci + K − 1 with K = ⌈N/8⌉; application `tlast` at Ci + M + 1 with
+  M = ⌈(N′ − 8)/8⌉; availability iff ⌈N′/8⌉ = ⌈N/8⌉. §8's under-declaring
+  datagram (N = 26, N′ = 20) gives K = 4, M = 2 — both `tlast` words on cycle
+  Ci + 3. N = 26, N′ = 9 gives K = 4, M = 1 — the application `tlast` leaves one
+  cycle **before** the input `tlast` arrives. N = 1480, N′ = 9 gives 182 cycles
+  early.
+- **REQ-006 = 13, both routes**: 3 + 3 + 1 + 4 + 2 = 13; (16+10+8+12+8) +
+  (8+14+0+20+8) = 54 + 50 = 104, 104/8 = 13 at lane 0; (12+10+8+12+8) +
+  (12+14+0+20+8) = 50 + 54 = 104, 104/8 = 13 at lane 4. 13 × 6.4 ns = 83.2 ns
+  against 24 cycles / 153.6 ns. Slack: (4−3)+(3−3)+(1−1)+(5−4)+(4−2) = 4 module
+  reserve, 24 − 17 = 7 architect's slack, 13 + 4 + 7 = 24.
+- **M18's stall count**: W = ⌈(P+8)/8⌉ = ⌈P/8⌉ + 1 = J + 1 at every P; for P = 18,
+  J = 3 and W = 4, acceptances at C, C+1, C+2 and emissions at C … C+3, so
+  `payload_tready` = 0 on C+3 alone — **W − J = 1**. M15's worked frame: J = 4,
+  W = 6, `payload_tready` = 0 at C+4, C+5, C+6 — **W − J + 1 = 3**.
+
+No ephemeral artifact is cited. No claim above rests on RTL, which does not exist
+for these modules.
+
+### Outcome
+**DoD partially met by design, and the gap is the deliverable.** Four verdicts
+delivered (three SIGNED, one CONTESTED); the seven questions answered in order;
+C-24 … C-30 reaffirmed as landed with two arithmetic corrections to the Return
+log's counts; the §11 closures reaffirmed at twelve; ADR-0010's two answers
+accepted and ADR-0011's decision and pricing endorsed. **The countersignature
+sentence is not given**, because deliverable 5's condition — all four verdicts
+positive — is not met; the exact owed-diff list is given instead, with the
+re-review surface bounded in advance and the sentence pre-worded for the repair
+commit. Handoff: `agents/handoffs/WO-0020_batch-f-countersign.md` Return log, to
+the orchestrator for relay to architect_docs_lead.
+
+### Open-questions
+- **F-1 blocks the batch-F flip and therefore the gate.** One architect
+  activation plus one CI run. No escalation class: this is normal packet flow
+  under charter §7, not an E5 — there is no dispute yet, only a finding.
+- **C-31 needs the architect to choose** between the SPEC-M04 §13 diff
+  (recommended) and a correction to ADR-0011's Consequences and Affects. Either
+  closes it; neither is mine to write.
+- **If the architect judges that REQ-007 needs a scoping clause** rather than the
+  M17-side statement of clause 3, F-1's repair becomes a normative requirements
+  diff rather than an editorial one. That is a legitimate answer and I will
+  re-review on that basis, but it should be declared in the Return log rather
+  than discovered at re-review.
+- C-2, C-3, C-5, C-7 and C-9's REQ-903 half remain open and unchanged by this
+  batch; C-32 … C-36 join them with the gates stated in the packet.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0020_batch-f-countersign.md
