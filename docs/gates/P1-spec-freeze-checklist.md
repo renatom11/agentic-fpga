@@ -30,7 +30,7 @@ by the orchestrator from the signing agent's journal entry, per PROTOCOL
 | C | M06, M07, M08, M09 | 508eea2 (WO-0011) | run 30733153172 green | **SIGNED** (J-dv_lead-0007) | **FROZEN at 508eea2** |
 | D | M10, M11, M12, M13 | a9993ff (WO-0014); D-1/D-2 repaired 3f6accc (WO-0017: R-1 + D-2a/ADR-0009) | runs 30736107842 (2f29888) + 30739442056 (3f6accc) green | **SIGNED** (J-dv_lead-0009, WO-0018 re-review after J-dv_lead-0008 withheld) | **FROZEN at 3f6accc** |
 | E | M14 `Ip_eth_rx_64`, M15 `Ip_eth_tx_64`, M16 `Ip_complete_64` | 3f6accc (WO-0017) | run 30739442056 green (head SHA = spec commit; no witnessing owed) | **SIGNED** (J-dv_lead-0009) | **FROZEN at 3f6accc** |
-| F | M17, M18, M19, M20 | — | — | — | — |
+| F | M17 `Udp_ip_rx_64`, M18 `Udp_ip_tx_64`, M19 `Udp_complete_64`, M20 `Nic_top` | aaa55b2 (WO-0019) | pending | — | — |
 
 ## Batch-A countersignature (transcribed)
 
@@ -92,7 +92,9 @@ confirmed WO-0010); C-9 partially closed (scripts live + CI-wired;
 REQ-903 half unblocks now that C-8 is closed); **C-19, C-20, C-21,
 C-22, C-23 CLOSED (WO-0017 at 3f6accc, all five REAFFIRMED at the
 WO-0018 re-review; C-22 additionally discharged at its first new
-instance)** — C-23 homed in requirements.md §0.6 (generalises)
+instance)**; **C-24…C-30 CLOSED (WO-0019 at aaa55b2, each a
+§13-recorded diff on frozen text touching no §4.1 lift — verified at
+acceptance; pending dv reaffirmation at the WO-0020 countersign)** — C-23 homed in requirements.md §0.6 (generalises)
 + REQ-502 disambiguation; note REQ-502's derivation moved 6→7 under
 D-2a, dv re-review question 1; **C-6, C-15, C-16, C-17
 (all five items), C-18 CLOSED (WO-0014 at a9993ff)** — dispositions

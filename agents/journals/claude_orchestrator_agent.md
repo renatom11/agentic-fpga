@@ -2294,3 +2294,63 @@ the only open item — the morning-report centerpiece.
 - agents/handoffs/WO-0019_batch-f-specs.md
 - docs/gates/P1-spec-freeze-checklist.md
 - tasks/BOARD.md
+
+## [J-orchestrator-0056] 2026-08-02T13:30:00Z | task:WO-0019 | 20/20 specs exist; batch F drafted at aaa55b2; final countersign issued
+
+### Trigger
+WO-0019 RETURNED by architect_docs_lead (J-architect_docs_lead-0008):
+all five deliverables complete — the twentieth Phase-1 specification
+exists, sixteen are FROZEN, and the final batch awaits its
+countersignature.
+
+### Inputs
+- The WO-0019 Return log; the declared 26-file list
+- Acceptance recomputation: 26 = 26; four batch-F lifts byte-identical;
+  eleven modified frozen specs' ocaml blocks unchanged; REQ 110 = 110,
+  zero pending traceability cells; D/E Status flips present; dv_checks
+  green at the tree
+
+### Reasoning
+Two beyond-packet items both accepted with approval rather than
+bounced: (1) batch D's §12 rows gained compile evidence at their own
+freeze SHA — the architect is right that resting freeze evidence on a
+diff-emptiness argument two commits back was the weaker position, and
+appending is strictly more evidence; (2) the README status refresh is
+the architect's charter scope and closes a deferred board item. The
+eleven §11 closures beyond the packet honour arrived closing gates —
+"a closing gate that arrives and is not honoured is how a
+deferred-item table stops meaning anything." ADR-0010 answers both
+rtl_lead conventions questions decisively (open! Axi64 house rule;
+no named module type S, with the functorisation rejected on
+check_emitted_verilog grounds) — batch-B RTL is now unblocked.
+ADR-0011 is the return's sharpest content: writing SPEC-M18 exposed
+that REQ-709's remedy failed its own verification column on a
+conformant design; the abandon-in-place decision + priced deferral of
+the frozen-§6-contradicting repair leads the WO-0020 question list.
+REQ-006 closes at 13/24 cycles derived by two independent routes —
+the sponsor's delegated latency thread ends with 11 cycles of
+itemised slack.
+
+### Actions
+- Committed the return as aaa55b2 (architect identity), pushed.
+- WO-0019 ACCEPTED block; board rows; checklist batch-F row +
+  C-24…C-30 status marks.
+- Issued WO-0020 (final countersign, seven ordered questions); spawn
+  follows CI green on aaa55b2 with fallback.
+
+### Evidence
+- `git show aaa55b2 --stat` — 27 paths (26 + journal)
+- Lift/frozen-block/set-equality recomputations: this session
+
+### Outcome / DoD
+20/20 drafted, 16/20 FROZEN, final countersign in flight next. On its
+signature: the sponsor line is the gate's only open item.
+
+### Open questions
+- The seven WO-0019 questions ride WO-0020 (dv's calls).
+
+### Files-in-this-commit
+- agents/handoffs/WO-0019_batch-f-specs.md
+- agents/handoffs/WO-0020_batch-f-countersign.md
+- docs/gates/P1-spec-freeze-checklist.md
+- tasks/BOARD.md

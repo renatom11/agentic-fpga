@@ -1,5 +1,5 @@
 # WO-0019: Batch F specifications (M17–M20, the last four) + closeout diffs
-- **State**: RETURNED
+- **State**: ACCEPTED
 - **From** / **To**: orchestrator → architect_docs_lead
 - **Spec basis**: architecture.md §4 rows M17–M20 and §8 batch F; the
   FROZEN batches A–E (D and E countersigned at 3f6accc, J-dv_lead-0009,
@@ -546,3 +546,20 @@ Ordered by how much I want them tested.
    first to carry `Config` and `Status` witnesses and the first to open two lifts
    at once, and `udp_complete_64_ifc.ml` is the first to open a record declared
    by a **sibling in its own batch**.
+
+### ACCEPTED — orchestrator, 2026-08-02T13:25Z, journal `J-orchestrator-0056`
+
+Committed as `aaa55b2` (architect_docs_lead, `J-architect_docs_lead-0008`).
+Acceptance recomputed: 26 = 26 set equality; four batch-F lifts
+byte-identical (2761/3122/3818/4257 bytes); ALL eleven modified frozen
+specs' ocaml blocks byte-identical to HEAD (the C-24…C-30 diffs touch
+no lift, as promised); REQ sets 110 = 110 with zero pending cells;
+D/E Status flips present at 3f6accc; dv_checks green. Two
+beyond-packet items accepted with approval: the batch-D §12 rows
+gaining compile evidence at their own freeze SHA (strictly more
+evidence), and the README status refresh (architect's charter scope;
+the deferred board item). ADR-0010 answers both rtl_lead conventions
+questions — batch-B RTL is unblocked. ADR-0011 and the cfg_tx_enable
+edge are flagged as the two items dv's countersignature must test
+hardest, and they lead the WO-0020 question list. CI on aaa55b2 is the
+batch-F lifts' first elaboration = the WO-0020 evidence prerequisite.
