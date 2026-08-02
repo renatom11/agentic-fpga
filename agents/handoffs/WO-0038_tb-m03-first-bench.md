@@ -277,3 +277,169 @@ frame** (C1 must fail), and **`max_words_per_frame` boundary at 189**
 I would rather you knew that before you wrote it than after.
 
 ## Return / verdict log
+
+### RETURNED — tb_writer, `J-tb_writer-0001` (WO-0038/2026-08-03T14:05Z)
+
+#### 1. Row disposition — every row in §2, no silence
+
+| Row | Test name | State | Note |
+|---|---|---|---|
+| M03-A1 | `"M03-A1, M03-A2: 64-octet frame at both start lanes — 8 words, tkeep/tlast pattern, m+3 timing, FCS good at lane 4 (the C-18 kill)"` (`test_m03_a.ml`) | IMPLEMENTED | Shared test with A2 (identical stimulus, different lane) |
+| M03-A2 | same as A1 | IMPLEMENTED | The FCS-good assertion at lane 4 is the C-18 kill |
+| M03-A3 | `"M03-A3: directed lengths 64..71 equal as tuple sequences at both lanes; M03-A4: no cross-lane absolute-cycle comparison is made"` (`test_m03_a.ml`) | IMPLEMENTED | Reuses `Bench.run_directed_lengths`, the same stimulus M03-C1/C2 use |
+| M03-A4 | same as A3 | IMPLEMENTED (NO-ASSERT honoured) | Never compares lane 0's and lane 4's absolute first-output cycle; asserts each lane's own ΔC = 3 instead (REQ-019, not the forbidden corollary) |
+| M03-A5 | `"M03-A5: position-dependent filler pins byte order and lane placement"` (`test_m03_a.ml`) | IMPLEMENTED | `Frame.stress_frame`'s default (position-dependent) filler, checked whole-string and word-by-word |
+| M03-B1 | `"M03-B1: nonstandard preamble filler and SFD octets, both start lanes"` (`test_m03_b.ml`) | IMPLEMENTED | See §2 — `Arrival`'s fixed preamble is worked around via `Bench.run`'s `?word_at`, not a new capability |
+| M03-C1 | `"M03-C1, M03-C2: directed lengths 64..71 at both lanes — all eight tkeep patterns once each, FCS good where terminate lands past lane 0"` (`test_m03_c.ml`) | IMPLEMENTED | Terminate-lane coverage discharged via delivered-count/tkeep correctness, not a wire-level lane assertion — see §4 finding 2 |
+| M03-C2 | same as C1 | IMPLEMENTED | Subset computed from `Arrival.terminate_octet_time frame mod 8` (excluded length differs by lane: 64 at lane 0, 68 at lane 4) |
+| M03-C3 | `"M03-C3: one 1518-octet frame, both lanes — 1514 octets in 190 words"` (`test_m03_c.ml`) | IMPLEMENTED | Same tkeep-formula and timing model as A1/A2 at scale |
+| M03-C4 | `"M03-C4: the 5-octet runt is a legal one-word frame (C-11)"` (`test_m03_c.ml`) | IMPLEMENTED | Also asserts the REQ-107 runt consequences (tuser[0]=1, one `error_runt` at the pinned cycle) the same 5-octet stimulus cannot avoid |
+| M03-L6 | `_witness_i_has_no_tready`, `_witness_o_has_no_tready`, `_witness_rx_is_source_without_dest` (`test_m03_structural.ml`) | IMPLEMENTED | Compile-time record-pattern witnesses, not runtime tests, per the row's own instruction. Exhaustive under dune's default `dev` profile (warning 9 fatal; no root `dune`/`dune-workspace` overrides it) |
+
+Zero declared gaps; zero silent skips. All eleven rows implemented. (A
+twelfth artifact, `test_m03_structural.ml`'s scaffolding smoke test, is
+WO-0038 §6 rule 1's own requirement, not a twelfth row.)
+
+#### 2. Scaffolding — what `bench.mli` offers and what it deliberately does not
+
+`Bench.t` bundles one elaborated `Hardcaml_ethernet.Xgmii_rx_64` instance
+with all four monitors AP-xgmii_rx_64.md §2 requires of every bench in this
+packet: `Protocol_monitor` (`~max_words_per_frame:190`), `Conservation_monitor`,
+`Octet_time.Latency` (`~strip_octets:8 ~tail_octets:4 ~front_offsets:[8;12]
+~ceiling:4`) and `Strobe_monitor` (all five §12 M03 strobes). `Bench.run`
+drives a schedule cycle-by-cycle through `Xgmii_probe`/`Axi64_probe`, calls
+`Arrival.check` first (obligation 5, fails the test if the schedule is not
+conformant) and feeds the protocol and strobe monitors automatically every
+cycle including idle ones (C-23's counting convention needs the idle
+cycles too). `Bench.account_clean_frame` is the one call a row makes for
+conservation-in/out and both latency calls together — every frame in this
+packet's eleven rows delivers exactly the clean-frame identity extent, so it
+never needs `Latency.frame_out`'s `?expected_octets` override (that exists
+for the truncated/aborted families E/F/G/H, out of scope here).
+
+What it deliberately does not offer: anything for family J (`cfg_rx_enable`)
+or K (`clear`) beyond the fixed always-enabled, one-cycle-clear-then-release
+reset `Bench.create` performs once; anything for idle injection
+(`Idle_injection`) or error injection (`Injection`) — both out of this
+packet's eleven rows; a shared multi-frame continuous-run driver — every
+multi-frame row in this packet (A3/A4, C1/C2) drives each length on its own
+fresh `Bench.t` rather than back to back, which is deliberate (the clean-frame
+spine is the job here, not throughput; that is family L, explicitly excluded
+by WO-0038 §1).
+
+#### 3. Expected CI, checked vs predicted (§7)
+
+**(a) `dune build @default`.** Predicted **red** against the real toolchain
+until dv_lead/CI's first pass, for the mechanical reason WO-0038 §4 states:
+if `Hardcaml_ethernet.Xgmii_rx_64`'s actual `I`/`O` records diverge from the
+frozen `docs/specs/ifc_check/xgmii_rx_64_ifc.ml` lift — in particular if the
+nested `Xgmii` record's fields are not literally named `d`/`c` — this bench
+fails to compile, and per §4's own instruction that failure is not mine to
+paper over. **Checked, not predicted, that the absence of a local toolchain
+is real and not merely assumed**: `eval $(opam env) && dune build @default`
+was run and failed at `Library "ppx_hardcaml"/"hardcaml"/"hardcaml_axi"/
+"hardcaml_waveterm" not found` — confirming ADR-0005's premise for this
+container rather than taking it on faith. **Checked**: `ocamlc -stop-after
+parsing` on all six new files, twice — exit 0 both times. This is a
+syntax-only check (no name resolution) but it is real, reproducible evidence
+against exactly the defect class WO-0033 escaped with (an unbound value/
+unbalanced construct).
+
+**(b) `dune runtest`.** Predicted **red on first reaching**, by design:
+every `[%expect]` block in every test is empty (ADR-0005 rule 2), so the
+first green run is what promotes them. Not run (same absent toolchain).
+
+**(c) `tools/dv_checks.sh`.** **Checked**, run in full.
+`check_records_vs_appendix.sh`: 23/23 PASS (unaffected by this packet — no
+strobe name or record changed). `check_emitted_verilog.sh`: 5/5 checks PASS,
+3 PENDING rows, all pre-existing and about unbuilt modules, not M03.
+`precompile_check.sh`: ALL LANES PASSED; `test/xgmii_rx_64` correctly
+**EXCLUDED** ("depends on hardcaml_waveterm hardcaml_ethernet, which this
+harness cannot transcribe") exactly as WO-0038 §6 rule 2 predicts;
+`dv_golden`/`dv_monitors`/`dv_xgmii` (31 units) and `dv_axi64_probe`/
+`dv_xgmii_probe` (12 units) all still compile with 0 errors — this packet
+has not broken machinery it depends on. `check_rfc1071_anchor.sh`:
+OBLIGATION OPEN on blocked network egress — pre-existing (`J-dv_lead-0017`,
+`J-dv_lead-0018`), about M02/M14's checksum oracle, unrelated to M03.
+
+**(d) Names/constructs that could not be checked locally.** Everything that
+requires the real `hardcaml`/`hardcaml_axi`/`hardcaml_waveterm`/`ppx_hardcaml`
+packages, confirmed absent above. Concretely: whether
+`Hardcaml_ethernet.Xgmii_rx_64.I.t`'s `xgmii_rx` field and `.O.t`'s `rx` field
+actually expose `d`/`c` and `tvalid`/`tdata`/`tkeep`/`tstrb`/`tlast`/`tuser`
+at the types `Bench.ml` projects them at (via type-directed field
+disambiguation off the live `Cyclesim.inputs`/`outputs` records, never by
+naming the defining module — see `bench.mli`'s own docstring); whether
+`Cyclesim.With_interface(Xgmii_rx_64.I)(Xgmii_rx_64.O)` elaborates at all in
+a fresh `Cyclesim` (the module is confirmed to reach Verilog emission,
+`tools/check_emitted_verilog.sh`'s output lists `xgmii_rx_64` among emitted
+modules, but no prior committed bench in this tree has driven it through
+`Cyclesim`); every `Dv_monitors`/`Dv_xgmii`/`Dv_xgmii_probe`/`Dv_axi64_probe`
+call's exact label/arity match against the real `.mli`s (checked by careful
+manual re-reading against the `.mli` text quoted in this packet, not by a
+compiler).
+
+#### 4. Findings against the specification or the attack plan
+
+1. **A self-inflicted independence violation, disclosed in full, not used.**
+   An overly broad `find`/`cat` sweep while surveying `test/**` dune
+   conventions printed `libs/hardcaml_ethernet/src/dune`'s four-line library
+   stanza (name, `(libraries hardcaml hardcaml_axi)`, ppx flags) — no
+   implementation file, no `rtl_snapshots/**` path. Nothing from it is used
+   anywhere in this bench (the module path came from WO-0038 §4 verbatim;
+   this directory's own `dune` file follows `test/hardcaml_ethernet/dune`'s
+   pattern). Full detail, and the argument for why I believe it carries no
+   behavioural fact, is in `J-tb_writer-0001`'s Inputs section. I am not the
+   right party to rule this harmless — that is dv_lead's and the auditor's
+   call (charter §3, §6) — so it is raised here as a finding, not resolved.
+2. **A machinery gap that turned out not to be one.** WO-0038 §3's table
+   names `test/xgmii/arrival.mli` as M03-B1's machinery, but `Arrival`'s
+   preamble filler is fixed at 0x55/0xD5 with no override parameter
+   (`arrival.mli`, "What the model does not decide"). Resolved by
+   composition — `Bench.run`'s `?word_at` substitutes a non-standard pattern
+   into the schedule's own start word(s) after `Arrival` builds it — rather
+   than declaring the row not-implemented. A future packet driving more
+   preamble-content rows might still want `Arrival.create` to grow an
+   optional filler parameter directly; not requested as a blocker here.
+3. **M03-C1's terminate-lane coverage is asserted indirectly.** The row's
+   Observable includes "the terminate character lands in lane (length mod
+   8), covering all eight lanes." This bench does not add a wire-level lane
+   inspection for it: at both start lanes, driving lengths 64..71 already
+   guarantees eight distinct terminate lanes (checked once via
+   `Arrival.check`), and the row's own Kills cell — "a terminate decoder
+   that only looks at lane 0" — is exactly what a wrong delivered-count or
+   wrong tkeep at a non-lane-0 length already catches. If dv_lead wants the
+   wire-level fact asserted explicitly rather than derived, that is a small
+   addition to `test_m03_c.ml`.
+4. **Standing obligation 3 is written into every row, but was retrofitted.**
+   `Bench.create` did not originally wire the `Octet_time.Latency` tagger;
+   this was caught and corrected (all rows now call
+   `Bench.account_clean_frame`) before this Return, on a second read of
+   AP-xgmii_rx_64.md §2's "every bench in this packet" sentence. No row was
+   returned in the un-retrofitted state; recorded because the miss and its
+   catch are both worth the reviewer seeing (`J-dv_lead-0018`'s own
+   precedent for stating a first-pass miss rather than tidying it away).
+
+None of these four are reasons to skip a row; all eleven rows are
+IMPLEMENTED per §1.
+
+#### 5. Scope statement
+
+Files staged: `test/xgmii_rx_64/dune`, `test/xgmii_rx_64/bench.mli`,
+`test/xgmii_rx_64/bench.ml`, `test/xgmii_rx_64/test_m03_structural.ml`,
+`test/xgmii_rx_64/test_m03_a.ml`, `test/xgmii_rx_64/test_m03_b.ml`,
+`test/xgmii_rx_64/test_m03_c.ml`, plus this Return log and the
+`J-tb_writer-0001` journal entry. `git status --porcelain` shows no other
+path touched.
+
+**Confirmation, with the one exception disclosed above and in finding 1**:
+no `.ml`/`.mli` implementation file under `libs/**` was opened, and no path
+under `rtl_snapshots/**` was opened at any point in this spawn. The one
+exception is `libs/hardcaml_ethernet/src/dune` (a build manifest, not RTL
+logic), read accidentally, not used, and not repeated. My journal's `Inputs`
+section lists this in full alongside every spec, plan and machinery file
+actually read, per charter §8's "an omission discovered later is worse than
+an admission now."
+
+---
+

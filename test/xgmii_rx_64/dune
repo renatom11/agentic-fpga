@@ -1,0 +1,38 @@
+; WO-0038 — the programme's first bench: the clean-frame spine of M03
+; Xgmii_rx_64 (eleven AP-xgmii_rx_64.md rows: A1-A5, B1, C1-C4, L6).
+;
+; Depends on hardcaml_ethernet (the design under test — REQ-010's
+; type-identity check does its job if the ports diverge from
+; docs/specs/ifc_check/xgmii_rx_64_ifc.ml) and hardcaml_waveterm (the
+; Cyclesim/Waveform shape test/hardcaml_ethernet/test_word_counter.ml
+; already shows). tools/precompile_check.sh's STUBBABLE set does not cover
+; either, so this directory is EXCLUDED from that harness by construction
+; (WO-0038 §6 rule 2) and CI's `dune build @default` is the only compiler
+; that reaches it (ADR-0005).
+;
+; dv_xgmii, dv_xgmii_probe, dv_axi64_probe and dv_monitors are the
+; DUT-independent machinery named in WO-0038 §3: the link-partner schedule
+; and frame builder, the XGMII drive/sample seam, the Axi64 sample seam, and
+; the standing monitors (protocol, conservation, strobe). None of
+; libs/hardcaml_ethernet/src/xgmii_rx_64.ml or rtl_snapshots/** was opened
+; to write anything in this directory (PROTOCOL §10, WO-0038 §5) — bench.ml
+; reaches the DUT's ports only through the field names SPEC-M03 §4.1 and
+; the WO itself state, via type-directed record-field projection, never by
+; naming the concrete module that defines them.
+;
+; ifc_check is not a dependency: bench.ml drives and samples the DUT's ports
+; via Bits.t ref projection (Xgmii_probe.to_refs / Axi64_probe.of_refs), not
+; via the Ifc_check.Axi64_ifc types, so it needs no opinion about whether
+; hardcaml_ethernet's Xgmii/Axi64 records are literally that library's types
+; or structurally identical ones of their own.
+;
+; ppx_hardcaml ppx_jane ppx_expect, matching test/hardcaml_ethernet/dune —
+; this is the one directory in this packet that touches Signal.t/Bits.t and
+; needs Base's operators alongside Hardcaml's ppx.
+
+(library
+ (name test_xgmii_rx_64)
+ (inline_tests)
+ (libraries hardcaml hardcaml_waveterm hardcaml_ethernet dv_xgmii dv_xgmii_probe dv_axi64_probe dv_monitors)
+ (preprocess
+  (pps ppx_hardcaml ppx_jane ppx_expect)))
