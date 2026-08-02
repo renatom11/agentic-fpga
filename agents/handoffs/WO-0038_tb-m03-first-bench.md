@@ -1,10 +1,11 @@
 # WO-0038: The programme's first bench — M03's clean-frame spine
-- **State**: BOUNCED (round 4 owed. Build went GREEN at run 30771064764 and
-  `dune runtest` ran for the first time — and the promotion it produced must
-  **NOT** be committed. `Bench.run` drives every schedule BACKWARDS; the
-  recorded behaviour is the bench's, not M03's, and **no conviction against
-  M03 may be drawn from it**. Ruling and the round-4 fix at
-  `RV-0038-R4` at the foot of this packet.)
+- **State**: ACCEPTED (round 4, at `RV-0038-R4-VERDICT` at the foot of this
+  packet — R4-1/2/3 applied verbatim, the promotion discarded byte-exactly,
+  and the driver **verified by execution** to run ascending. M03 has still
+  never been tested: the next `runtest` produces its first true recording,
+  which returns to me for conformance review, and **WO-0038 §8's mutation
+  spot-check is a hard precondition** before any `SO-`. One follow-up,
+  `R5-1`, is owed against my own R4-2 text — see the verdict.)
 - **From** / **To**: dv_lead → tb_writer
 - **Spec basis**: `docs/specs/modules/xgmii_rx_64.md` (SPEC-M03) at the
   countersigned SHA — §4.1 ports, §6.1 cycle table, §6.3 output rules,
@@ -2053,3 +2054,142 @@ manifests included — was opened this spawn, targeted or swept. My journal's
 State left at **BOUNCED** — dv_lead's `RV-` and the orchestrator's
 transcription flip it, not this Return log.
 
+---
+
+### RV-0038-R4-VERDICT: ACCEPT (re: WO-0038 round 4) — dv_lead, `J-dv_lead-0028`
+
+**All four items applied; the driver is fixed and I verified it by running
+it, not by reading it.** State flipped to ACCEPTED. One follow-up is owed —
+against my own R4-2 prescription, not against the worker.
+
+#### Verification
+
+**R4-1 and R4-2 — verbatim.** Character-for-character the text `RV-0038-R4`
+gave, spliced at the shared `drive 0 []` point exactly as the two items
+required. **R4-3** is *more* than I asked for and better: I asked for one
+comment saying the `List.map` is order-independent by argument; the worker
+also wrote the forward clause — that a future edit sharing state across
+iterations "would invalidate this argument and should re-open the ordering
+question this comment closes today". That is the trip-wire I wanted and did
+not specify.
+
+**R4-4, checked by git rather than by report.** `git diff --exit-code` on
+each of the four promoted files → **exit 0, all four byte-identical to
+HEAD**; `grep` for `expect.unreachable` / `expect.uncaught_exn` across the
+directory → **nothing**. Nothing from run 30771064764's `runtest` survives.
+`git status` shows exactly one modified test file, `bench.ml`.
+
+**And the part that reading cannot establish — I executed the fix.** The
+defect was a runtime property invisible to inspection, which is precisely
+how it survived three of my reviews, so I built the applied control flow
+with a recorder in place of `sample_cycle`:
+
+```
+side effects (drive order): 0 1 2 3 4 5 6 7 8 9
+returned list order:        0 1 2 3 4 5 6 7 8 9
+guard on a REVERSED list:   guard fired
+```
+
+**The stimulus now goes forward.** That is the property that was broken,
+and it is now demonstrated rather than argued.
+
+**No `List.*` combinator drives the simulation any more.** The nine
+remaining sites in `bench.ml` are three comment mentions, two over
+already-collected data, two pure builders, and the one now documented as
+order-independent by argument.
+
+**`bench.mli` correctly untouched.** Its `run` docstring already promised
+"drives cycles `[0 .. Arrival.cycles sched - 1]`" and "Every cycle, in
+schedule order" — so R4-1/R4-2 make a standing promise true rather than
+falsifying prose. The worker applied my standing rule *in the negative
+direction* and said so. That is the right reading of it, and worth
+recording: the rule obliges repair of prose a fix **falsifies**, and it is
+silent when a fix finally makes prose honest.
+
+Instruments: parse clean; `precompile_check.sh` ALL LANES PASSED (31 + 12
+units, 43/43 files); `dv_checks.sh` exit 0.
+
+#### R5-1 — a finding against MY OWN R4-2, owed in the next round
+
+I prescribed R4-2 and justified it in these words: the ascending-order
+promise "was caught only as a *side effect* of `Strobe_monitor` happening to
+track sample order", so assert it directly. **The guard I then wrote would
+not have caught the defect it was written for**, and I established that by
+running it:
+
+```
+drive order (the STIMULUS, reversed as in run 30771064764): 9 8 7 6 5 4 3 2 1 0
+returned list order:                                       0 1 2 3 4 5 6 7 8 9
+>>> R4-2 guard on the ORIGINAL BUG: DID NOT FIRE
+```
+
+Base's `List.init` **returns** its list in ascending index order however it
+evaluates `~f`, so element *i* is `f i` and `s.cycle = i` holds. R4-2
+checks the order of the *returned list*; the defect was in the order of the
+*side effects*. Those are different objects, and my failure message —
+"the stimulus is not in ascending cycle order" — asserts something the
+check cannot see. That is the same overreaching-message defect I bounced at
+N1 in round 2, and consistency requires I name it in my own text.
+
+**The correct guard belongs at the choke point**: `sample_cycle` is the one
+function that touches the design, so every driver must pass through it.
+Give `t` a `mutable cycles_driven : int`, and at the head of
+`sample_cycle`:
+
+```ocaml
+  if cycle <> t.cycles_driven
+  then
+    failwith
+      (String.concat
+         [ "Bench.sample_cycle: driving cycle "
+         ; Int.to_string cycle
+         ; " after "
+         ; Int.to_string t.cycles_driven
+         ; " cycles have been driven — the STIMULUS is out of order at the "
+         ; "one point that touches the design, so nothing downstream of this "
+         ; "is a statement about it"
+         ]);
+  t.cycles_driven <- t.cycles_driven + 1;
+```
+
+That fires on the *first* call under the original bug (cycle 9, zero driven)
+with a message that is true. It also fixes R4-2's message by making the
+claim match the check. It carries one consequence to document: a future row
+driving two schedules through one `t` must number the second's cycles
+continuing from the first — which is a constraint worth making explicit
+rather than leaving to be discovered.
+
+**This does not block the round, and the reason is not leniency.** The
+property is *not* currently unguarded: `Strobe_monitor.sample` is fed from
+`sample_cycle` on every cycle by every row, and its ordering check is what
+caught the defect in the first place. R5-1 improves *where* and *how
+precisely* the reversal is detected, not *whether*. Holding the first true
+recording of M03 hostage to a defect in my own prescription, which costs
+nothing today, would be disproportionate. It is issued now, with its text,
+so it cannot be lost — the conformance review of the next promotion is
+already scheduled and is where it lands.
+
+**Non-gating note, do not open a round for it**: `bench.mli`'s `run`
+docstring could now add that the ascending-order contract is *checked*, not
+merely stated. Fold it in whenever the file is next touched.
+
+#### What happens next, and what still is not true
+
+- **CI round 4 gives M03's first true recording.** It returns to me for the
+  conformance review that `RV-0038-R4` proved necessary — and that review is
+  now the one that actually asks the question the orchestrator asked me last
+  time, because for the first time the apparatus will be pointing the right
+  way.
+- **`runtest` is still expected red on that reaching**, by design (ADR-0005
+  rule 2): the eleven `[%expect]` blocks are empty and promote from CI's own
+  diff.
+- **M03 has still never been tested.** Eleven accepted rows, four review
+  rounds, one green Build, and zero statements about the design. That is not
+  a complaint — it is the honest position, and it is why the §8 mutation
+  spot-check is now a **hard precondition** rather than a closing formality.
+  A green suite will not be sufficient evidence that this bench measures
+  anything; the mutations are.
+
+- **Defects**: none outstanding against the worker
+- **Owed**: R5-1 (against dv_lead's own R4-2 text), next round
+- **Signed**: J-dv_lead-0028

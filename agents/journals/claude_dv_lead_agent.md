@@ -8587,3 +8587,212 @@ does with it.
 
 ### Files-in-this-commit
 - agents/handoffs/WO-0038_tb-m03-first-bench.md
+
+## [J-dv_lead-0028] 2026-08-04T18:05Z | task:WO-0038 | Round 4 ACCEPT: the driver verified ascending by execution rather than by reading — and the guard I prescribed to catch the reversal turns out not to catch it, established by running my own text against the original bug
+
+### Trigger
+Orchestrator: tb_writer's **round 4** returned — one modified test file
+(`bench.ml`), the four promoted files restored, `J-tb_writer-0004` appended,
+State left BOUNCED. Task: verify verbatim application of R4-1/R4-2/R4-3,
+confirm the R4-4 restoration by git myself, give the verdict.
+
+### Inputs
+- `git diff HEAD -- test/xgmii_rx_64/bench.ml` in full.
+- `git diff --exit-code` on each of the four previously promoted files, and a
+  grep for surviving `expect.unreachable` / `expect.uncaught_exn` payloads.
+- My own `RV-0038-R4` text, to compare the applied code against what I
+  prescribed.
+- `test/xgmii_rx_64/bench.mli`'s `run` docstring, to check the worker's claim
+  that nothing needed prose repair.
+- `ocamlc` 4.14.1 for two executable reductions: the applied control flow, and
+  my own R4-2 guard against a faithful reproduction of Base's `List.init`.
+- `tools/precompile_check.sh`, `tools/dv_checks.sh`; a grep for surviving
+  `List.*` combinators in `bench.ml`.
+- **No `libs/**`, no `rtl_snapshots/**`.**
+
+### Reasoning
+
+**I ran the fix instead of reading it, and that was the whole point.** The
+defect I missed three times was a runtime property invisible to inspection.
+Accepting its repair on inspection would have been the same mistake with a
+happier ending, and a happier ending is not a method. So I rebuilt the applied
+control flow with a recorder standing in for `sample_cycle` and watched the
+side effects: `0 1 2 3 4 5 6 7 8 9`. The stimulus goes forward. That is the
+property that was broken and it is now demonstrated.
+
+This is the general form of what `J-dv_lead-0027` said I had never done to the
+scaffolding: put a **runtime** question to it. Reading establishes what code
+says; only execution establishes what it does. For a bench — an instrument
+whose entire job is to produce a sequence of events in a particular order —
+those are not close to the same thing.
+
+**R4-1 and R4-3 need little comment.** Verbatim, and R4-3 is better than what I
+asked for: I wanted a comment recording that `run_directed_lengths`' `List.map`
+is order-independent by argument; the worker added the forward clause that a
+future edit sharing state "would invalidate this argument and should re-open
+the ordering question this comment closes today". That is the trip-wire I
+wanted and did not think to specify. A comment that says only "this is fine"
+rots; one that says "this is fine *because X*, and here is what would break X"
+is a check written in prose.
+
+**The `bench.mli` decision is a small piece of jurisprudence worth keeping.**
+The worker left the interface untouched and argued that its `run` docstring
+already promised ascending drive, so R4-1/R4-2 make a standing promise true
+rather than falsifying prose — my round-3 standing rule "applied in the
+negative direction". I checked the docstring and the claim holds. The rule
+obliges repair of prose a fix **falsifies**; it is silent when a fix finally
+makes prose honest. A worker reasoning about the *direction* of a rule I wrote,
+rather than pattern-matching it, is worth more than the edit it declined to
+make.
+
+**And then the finding against myself, which is the substance of this entry.**
+I prescribed R4-2 with an explicit justification: the ascending-order promise
+"was caught only as a side effect of `Strobe_monitor` happening to track sample
+order", so assert it directly and stop relying on that accident. Having just
+learned to run things rather than read them, I ran my own guard — against a
+faithful reproduction of Base's `List.init`, evaluating `~f` high-to-low and
+returning the list ascending, which is its documented result:
+
+    drive order (the STIMULUS, as in run 30771064764): 9 8 7 6 5 4 3 2 1 0
+    returned list order:                              0 1 2 3 4 5 6 7 8 9
+    >>> R4-2 guard on the ORIGINAL BUG: DID NOT FIRE
+
+**The guard I wrote to catch the reversal does not catch the reversal.** Element
+*i* of `List.init`'s result is `f i` however `f` was evaluated, so `s.cycle = i`
+holds and the check passes. R4-2 examines the order of the *returned list*; the
+defect lived in the order of the *side effects*. Different objects — and my
+failure message, "the stimulus is not in ascending cycle order", asserts
+something the check cannot see.
+
+That is precisely the defect class I bounced at N1 in round 2, where the tkeep
+multiset check reported a DUT fact and computed a bench fact. I required the
+worker to make the message true. I then wrote a message that is not.
+
+The diagnosis is familiar and getting more specific with each instance. C-44,
+the WO-0031 prose, C-48, the build prediction, the invented flag string, the
+two-solutions equivalence at the addendum — and now a guard whose *stated
+purpose* and *actual coverage* diverge. The common root is not carelessness
+about facts; it is **failing to ask what a check would do against the thing it
+was written for.** The counter-move is now concrete enough to be mechanical:
+*before shipping a guard, run it against the defect it names.* That is
+`--self-test` again, applied to a three-line assertion instead of a tool.
+
+**The correct guard belongs where every driver must pass**, not where one
+driver's output happens to land: `sample_cycle` is the single function that
+touches the design. A `mutable cycles_driven` on `t`, checked and incremented
+at its head, fires on the *first* call under the original bug — cycle 9 with
+zero driven — with a message that is true. I wrote it out in full as R5-1
+rather than gesturing at it, because a follow-up without text is a follow-up
+that gets re-derived or dropped.
+
+**Whether R5-1 should block: no, and not out of leniency.** The property is not
+unguarded today. `Strobe_monitor.sample` is fed from `sample_cycle` on every
+cycle by every row, and its ordering check is what caught the defect in the
+first place. R5-1 improves where and how precisely the reversal is detected,
+not whether. Against that, blocking would hold M03's first true recording
+hostage to an error in my own prescription that costs nothing this round.
+Issued now with its text, landing in the conformance review that is already
+scheduled.
+
+I also declined to open a round for a `bench.mli` docstring improvement (that
+the contract is now *checked*, not merely stated) and said so explicitly.
+Knowing which findings not to act on is part of the job, and I have now written
+that sentence twice in this packet — which suggests it is a real part of the
+role and not a one-off.
+
+**On the state of the work, honestly.** Eleven accepted rows, four review
+rounds, one green Build, and **M03 has still never been tested**. That is not a
+complaint; it is the position, and it is why I have made the §8 mutation
+spot-check a hard precondition rather than a closing formality. A green suite
+is about to become available, and a green suite is not evidence that this bench
+measures anything — the mutations are. `J-dv_lead-0027` established that the
+spot-check would have caught the reversal at round 1; I am not going to learn
+that lesson and then schedule the check last again.
+
+### Actions
+- Compared the `bench.ml` diff against `RV-0038-R4`'s text: R4-1 and R4-2
+  verbatim, R4-3 a superset.
+- Confirmed R4-4 by git rather than by report: `git diff --exit-code` on all
+  four previously promoted files (exit 0 each), and a grep showing no
+  `expect.unreachable` / `expect.uncaught_exn` payload survives.
+- **Executed** the applied control flow with a recorder for `sample_cycle` and
+  confirmed the side effects run 0 … 9, and that the R4-2 guard fires on a
+  reversed list.
+- **Executed my own R4-2 guard against a faithful reproduction of Base's
+  `List.init`** and established that it would not have caught the original
+  defect.
+- Verified no `List.*` combinator drives the simulation any more.
+- Verified `bench.mli`'s `run` docstring already promised ascending drive, so
+  the worker's decision not to touch it is correct.
+- Ran `tools/precompile_check.sh` and `tools/dv_checks.sh`; parse-checked
+  `bench.ml`.
+- Flipped the packet State to **ACCEPTED** on a title + state anchor, with the
+  round's limits in the State line, and appended `RV-0038-R4-VERDICT`
+  including **R5-1** with full replacement text.
+- Edited none of the worker's files. No `git commit`, no `git push`.
+
+### Evidence
+1. **R4-1/R4-2 verbatim**; R4-3 a superset of the prescribed comment, adding
+   the "a future edit that shares state … should re-open the ordering question"
+   clause.
+2. **Restoration, by git.** `git diff --exit-code` on
+   `test_m03_{a,b,c,structural}.ml` → exit 0 for all four. `grep -rn
+   "expect.unreachable\|expect.uncaught_exn" test/xgmii_rx_64/` → no match.
+   `git status --short` → one modified test file, `bench.ml`.
+3. **The fix, executed.** Applied control flow with a recorder:
+   `side effects (drive order): 0 1 2 3 4 5 6 7 8 9`;
+   `returned list order: 0 1 2 3 4 5 6 7 8 9`;
+   the R4-2 guard on a deliberately reversed list → `guard fired`.
+4. **My R4-2 guard against the original bug, executed.** A reproduction of
+   Base's `List.init` (evaluate high→low, return ascending) gives drive order
+   `9 8 7 6 5 4 3 2 1 0` with returned order `0 1 2 3 4 5 6 7 8 9`, and the
+   guard **did not fire**.
+5. **No combinator drives the sim.** The nine `List.*` sites in `bench.ml` are
+   three comment mentions, two over already-collected data, two pure builders,
+   and the one documented as order-independent by argument.
+6. **`bench.mli` needed no repair.** Its `run` docstring already reads "drives
+   cycles [0 .. Arrival.cycles sched - 1]" and "Every cycle, in schedule
+   order".
+7. **Instruments.** `ocamlc -stop-after parsing` clean on `bench.ml`;
+   `precompile_check.sh` ALL LANES PASSED (31 + 12 units, 43/43 files, no
+   unqualified sibling reference); `dv_checks.sh` exit 0.
+8. **Scope.** `git status --short` shows my two paths plus the worker's
+   `bench.ml`, its journal and the packet.
+
+### Outcome
+**RV-0038-R4-VERDICT: ACCEPT.** All four items applied — three verbatim or
+better, the fourth confirmed by git — and the driver **verified by execution**
+to drive ascending. No defects outstanding against the worker.
+
+**R5-1 is owed against my own R4-2 text**: the guard I prescribed to catch the
+reversal does not catch it, proven by running it, and its failure message
+claims more than it checks. Full replacement text is in the verdict; it lands
+in the conformance review of the next promotion. It does not block, because
+`Strobe_monitor`'s ordering check still guards the property today.
+
+**M03 has still never been tested.** The next `runtest` produces its first true
+recording, and that review is the one that finally asks the conformance
+question with the apparatus pointing the right way.
+
+### Open-questions
+- **R5-1**, with text, in the next round.
+- **The §8 mutation spot-check is a hard precondition, not a formality.** After
+  the next green suite I seed all four and confirm the bench dies on each and
+  survives without them, before any `SO-`. `J-dv_lead-0027` showed it would
+  have caught the reversal at round 1.
+- **The next promotion needs the same conformance review**, and this time the
+  question is answerable: whatever it records will be M03's behaviour.
+- **Owed by me, still**: the `precompile_check.sh` lane grepping `test/**` for
+  a side-effecting call inside a `List.*` combinator — mechanically detectable,
+  and it would have caught this without any toolchain;
+  `tools/precompile_stubs/ifc_check.ml`'s stale `UNVERIFIED-TRANSCRIPTION`
+  note; SPEC-M01 §11.4's caveat retirement for architect_docs_lead; and, for
+  the next bench packet's §7, the alerts-are-errors datum, the prose-repair
+  standing rule, and now **"run a guard against the defect it names before
+  shipping it"**.
+- **My M04 contamination from `J-dv_lead-0024` stands.**
+- **Unchanged**: the RFC 1071 anchor closes on the next CI run that fetches;
+  X-7, X-10, X-11 remain deferred; L1–L5 still owed.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0038_tb-m03-first-bench.md
