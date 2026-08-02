@@ -3215,3 +3215,43 @@ in flight). Next issuance after it: the dv machinery WO (X-1…X-11).
 - agents/handoffs/WO-0031_m03-r1r2-repair.md
 - docs/gates/P1-spec-freeze-checklist.md
 - tasks/BOARD.md
+
+## [J-orchestrator-0075] 2026-08-03T06:35:00Z | task:none | P1-spec-freeze CLOSED — the sponsor signed
+
+### Trigger
+Sponsor message, verbatim: "I sign P1-spec-freeze" — 2026-08-02T16:53Z
+(message time), the checklist's only open line.
+
+### Inputs
+- The completed checklist at 98524fe: six frozen batches, six
+  countersignatures, the revision chain in force, ledger C-1…C-47.
+
+### Reasoning
+A sponsor signature is transcribed verbatim with the state of the
+record at signature time stated beside it, so the signature's scope
+is never later in dispute: what was signed is what the checklist
+said when he signed it, including one named in-flight implementation
+item (WO-0032) that is not a gate item. Signature gets its own
+commit — the gate's closure should be one diff, findable forever.
+
+### Actions
+- Sign-off box checked, signature transcribed, CLOSED line added;
+  BOARD gate row flipped to CLOSED.
+
+### Evidence
+- git log --oneline on this commit shows the closure as a single
+  diff over exactly the checklist + BOARD + this journal.
+
+### Outcome / DoD
+The programme's first gate is closed end-to-end: spec-freeze
+achieved 20/20 with every signature real, adversarial, and on the
+record — two withheld-then-granted batch cycles and three revision
+countersignatures included. Next gate: P1-module-ready (DV sign-off
+packets + mutation kills per module).
+
+### Open questions
+- None. The gate is closed.
+
+### Files-in-this-commit
+- docs/gates/P1-spec-freeze-checklist.md
+- tasks/BOARD.md

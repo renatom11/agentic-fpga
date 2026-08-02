@@ -56,7 +56,7 @@ Corrections.
 | Gate | Status | Checklist |
 |---|---|---|
 | G0 | **PASSED 2026-08-01** | [docs/gates/G0-checklist.md](../docs/gates/G0-checklist.md) |
-| P1-spec-freeze | **ALL 20/20 FROZEN — six batches, six countersignatures. AWAITING SPONSOR SIGNATURE (the only open line)** | [docs/gates/P1-spec-freeze-checklist.md](../docs/gates/P1-spec-freeze-checklist.md) |
+| P1-spec-freeze | **CLOSED 2026-08-02T16:53Z — sponsor signed.** 20/20 FROZEN, six countersignatures + the full revision chain (J-dv_lead-0012/0015/0016) standing; ledger C-1…C-47 carried; REQ-902 proven | [docs/gates/P1-spec-freeze-checklist.md](../docs/gates/P1-spec-freeze-checklist.md) |
 
 ## Open work orders
 

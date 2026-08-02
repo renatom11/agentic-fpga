@@ -378,4 +378,6 @@ sentence is the whole of the next signature):
 ## Sign-off
 
 - [x] All six batches FROZEN (table complete) — A+B f78766e, C 508eea2, D+E 3f6accc, F d8df28d; six countersignatures J-dv_lead-0003/0005/0007/0009/0011, two of them granted at re-reviews after properly withheld first verdicts
-- [ ] Sponsor signature
+- [x] Sponsor signature — **"I sign P1-spec-freeze"** — Renato (sponsor), 2026-08-02T16:53Z, transcribed verbatim by the orchestrator (J-orchestrator-0075). State of the record at signature time: 20/20 specs FROZEN with every countersignature standing, including the full post-freeze revision chain in force (ADR-0012 at 8641455, ADR-0013/0014 at 541ea43, the R1/R2 repair at 06c1eba — countersignatures J-dv_lead-0012/0015/0016); carry-forward ledger C-1…C-47 with every open row carried on a named artefact; REQ-902 byte-determinism proven at run 30753089901. One work order in flight (WO-0032, M03 RTL conformance against frozen batch-A text) — an implementation item under an already-frozen spec, not a gate item.
+
+**P1-spec-freeze: CLOSED 2026-08-02T16:53Z.**
