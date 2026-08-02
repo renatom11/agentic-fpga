@@ -2822,3 +2822,55 @@ construction (tb_writer WOs per plan families) is now issuable.
 - agents/handoffs/WO-0027_attack-plans.md
 - docs/gates/P1-spec-freeze-checklist.md
 - tasks/BOARD.md
+
+## [J-orchestrator-0067] 2026-08-02T23:10:00Z | task:WO-0026 | Verdict (b) accepted; CI step order fixed (the checker-suppresses-its-own-evidence deadlock); WO-0028 to dv
+
+### Trigger
+rtl_lead's WO-0026 addendum (J-rtl_lead-0004, ad3a042): my
+clock-aliasing hypothesis refuted with tree evidence (word_counter.v
+aliases identically through the hierarchical path); the netlist is
+REQ-001-clean at source (one Reg_spec per module, i.clock only); the
+honest repairs are a checker fix (dv's) and a workflow step swap
+(mine). No emission change — post-processing emitted Verilog to
+satisfy a checker would be fabricating conformance.
+
+### Inputs
+- The addendum's evidence chain (word_counter.v's assign _6 = clock;
+  the 9/18 flagged blocks in eth_mac_10g.v being child-module bodies
+  emitted via hierarchical)
+- build.yml (dv_checks before determinism = the deadlock)
+
+### Reasoning
+The deadlock is real and mine to break: a checker failure before the
+promotion step suppresses the diff that is the promotion source, so
+the text under test can never become reviewable. Determinism now runs
+first; dv_checks follows. Expected sequence: next run red at
+determinism (three .v files = promotion source), promote, then red at
+X-9 against COMMITTED text until dv repairs the alias resolution —
+each red now diagnosable. WO-0028 gives dv the checker question with
+rtl_lead's recommended repair (transitive closure over pure rename
+assigns only, so a gated clock still fails) as input, not
+prescription. Also: WO-0027's header State line fixed (the earlier
+double-match miss, disclosed at J-orchestrator-0066).
+
+### Actions
+- Committed rtl_lead's addendum as ad3a042.
+- build.yml step swap; WO-0027 header fix; WO-0028 issued; board rows;
+  this entry; commit; push; dv spawn + fallback; CI timer for the
+  expected determinism red.
+
+### Evidence
+- ad3a042; the build.yml step listing at this commit
+
+### Outcome / DoD
+The promotion path is un-deadlocked; the checker question is with its
+owner; REQ-902's evidence remains owed by the promoting commit.
+
+### Open questions
+- dv's verdict on the alias-closure repair (WO-0028).
+
+### Files-in-this-commit
+- .github/workflows/build.yml
+- agents/handoffs/WO-0027_attack-plans.md
+- agents/handoffs/WO-0028_x9-alias-repair.md
+- tasks/BOARD.md

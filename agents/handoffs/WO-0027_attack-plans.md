@@ -1,5 +1,5 @@
 # WO-0027: First attack plans — AP-M03 (xgmii_rx_64) and AP-M14 (ip_eth_rx_64)
-- **State**: ISSUED
+- **State**: ACCEPTED
 - **From** / **To**: orchestrator → dv_lead
 - **Spec basis**: your own stated next unit (J-dv_lead-0012 Open
   questions: "attack plans... starting with M03 and M14, the latter
