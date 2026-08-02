@@ -1910,3 +1910,146 @@ green. It is the check that would have made three rounds unnecessary.
   R4-4 (blocking — discard the promotion)
 - **M03 convictions**: **none**, and none may be inferred from this run
 - **Signed**: J-dv_lead-0027
+
+---
+
+### ROUND-4 RETURNED — tb_writer, `J-tb_writer-0004` (WO-0038/2026-08-02T23:35Z)
+
+**All four items on RV-0038-R4 (`J-dv_lead-0027`) executed, R4-1/R4-2 verbatim,
+R4-3 to the direction given (no verbatim text was supplied for it), R4-4 by
+restoration-and-diff-proof rather than by hand-editing back toward round 3.**
+
+| Item | File:line (pre-fix) | Fix | State |
+|---|---|---|---|
+| R4-1 (BLOCKING) | `bench.ml:131` | `List.init total ~f:(fun cycle -> sample_cycle t ~cycle (word_at ~cycle))` replaced with the explicit ascending `let rec drive cycle acc = …` recursion, verbatim per the packet's text, including the doc comment naming run 30771064764 and `test/xgmii/arrival.ml:37-40` as precedent | FIXED |
+| R4-2 (REQUIRED) | `bench.ml:131` (same site, continues R4-1's text) | `run`'s own "ascending cycles" contract asserted in code: `let samples = drive 0 [] in` followed by a `List.iteri` check that `s.cycle = i` for every position, `failwith`ing by name otherwise; `samples` is the new return value. Verbatim per the packet's text, spliced at the one point the two blocks share (`drive 0 []`) | FIXED |
+| R4-3 (REQUIRED) | `bench.ml:178` (pre-fix numbering), above `run_directed_lengths` | One comment added documenting the `List.map` there as order-independent BY ARGUMENT — every iteration builds its own fresh `octets`/`sched`/`bench` from `length` alone and shares nothing with any other iteration — with a forward-looking sentence that a future shared-state edit would invalidate the argument. No verbatim text was given for this item; wording is mine, to the instruction's own "order-independent BY ARGUMENT" phrasing | FIXED |
+| R4-4 (BLOCKING) | `test_m03_a.ml`, `test_m03_b.ml`, `test_m03_c.ml`, `test_m03_structural.ml` (whole files) | Each restored to HEAD content byte-exactly via `git show HEAD:test/xgmii_rx_64/<file>` written over the working-tree file — no hand-editing. Verified with `git diff --exit-code` per file and as a group: empty, both times | FIXED |
+
+`bench.mli` was read in full and confirmed to need no change: its `run`
+docstring already states "drives cycles `[0 .. Arrival.cycles sched - 1]`"
+as a promise, and R4-1+R4-2 make that promise true and checked rather than
+requiring new prose — unlike round 3's docstring, nothing in the `.mli`
+becomes newly false by this round's fix, so `RV-0038-R3-VERDICT`'s standing
+rule ("a verbatim fix carries the obligation to repair any prose it
+falsifies") does not trigger here. Not edited.
+
+No row's stimulus, oracle or assertion content from the eleven rows
+accepted at `RV-0038`/`RV-0038-R2`/`RV-0038-R3-VERDICT` was touched or
+re-derived this round — none of them was ever reached by the reversed run,
+and this round's fix is entirely in the driver that feeds them, plus the
+mechanical restoration of the four promoted files.
+
+#### Why this run yields zero M03 convictions, in one sentence
+
+`sample_cycle` drives a register-backed input and advances a `Cyclesim`
+clock, so unlike `Arrival.word_at`'s pure schedule lookup, the *order*
+`run` calls it in is itself part of the stimulus; Base's `List.init`
+applied that order highest-index-first, so M03 was handed every schedule
+in reverse and its zero-output response to a stimulus containing no
+wire-order `/S/` is exactly what a conformant design does — the four
+promoted exceptions are evidence about the driver, not about the design,
+and I am not treating them as evidence about either the eleven rows'
+oracles or M03 itself.
+
+#### Self-check output, verbatim
+
+**`ocamlc -stop-after parsing`, system `ocamlc` 4.14.1, on the changed file:**
+```
+$ ocamlc -stop-after parsing bench.ml
+exit: 0
+```
+
+**`bash tools/precompile_check.sh`:**
+```
+--- LANE 1 — Hardcaml-free DV libraries, compiled for real
+  RESULT: 31 units compiled, 0 errors
+--- LANE 2 — Hardcaml-facing DV libraries, against tools/precompile_stubs/
+  RESULT: 12 units compiled, 0 errors
+--- LANE 3a — coverage sweep
+  EXCLUDED hardcaml_ethernet — depends on hardcaml_waveterm hardcaml_ethernet, which this harness cannot transcribe
+  EXCLUDED xgmii_rx_64 — depends on hardcaml_ethernet, which this harness cannot transcribe
+  RESULT: 43 files in compiled directories, all 43 materialised and compiled.
+--- LANE 3b — qualification sweep
+  RESULT: no unqualified sibling-library reference.
+--- SUMMARY
+  precompile_check: ALL LANES PASSED
+  2 transcription(s) remain UNVERIFIED here and are settled only by CI
+```
+
+**`bash tools/dv_checks.sh`:**
+```
+check_records_vs_appendix.sh: 23/23 check(s) passed, 0 failures
+check_emitted_verilog.sh: 5/5 check(s) passed, 0 failures, 3 PENDING
+  (pre-existing: REQ-808/REQ-017/REQ-903 on unbuilt modules, not M03)
+precompile_check.sh: ALL LANES PASSED (as above)
+check_rfc1071_anchor.sh: VERDICT: OBLIGATION OPEN — RFC 1071 could not be
+  fetched (blocked network egress; pre-existing, J-dv_lead-0017/0018,
+  concerns M02/M14's checksum oracle, unrelated to M03 and to this round)
+dv_checks: every check that COULD run passed, and 1 obligation is still OPEN
+```
+
+**`git status --porcelain` (repo root), after this round's edit and the four
+restorations, before this Return log edit and the journal entry were staged:**
+```
+ M test/xgmii_rx_64/bench.ml
+```
+Exactly one path — `bench.ml`, the only file R4-1/R4-2/R4-3 touch. None of
+the four promoted files appear: restored, not merely reverted-looking.
+
+**`git diff --exit-code` proof that the four promoted files are restored
+byte-exact to HEAD (R4-4's own acceptance criterion):**
+```
+$ git diff --exit-code -- test/xgmii_rx_64/test_m03_a.ml \
+    test/xgmii_rx_64/test_m03_b.ml test/xgmii_rx_64/test_m03_c.ml \
+    test/xgmii_rx_64/test_m03_structural.ml
+exit: 0
+```
+Empty diff, all four files, checked together and (before this Return log
+edit) individually. This is the evidence R4-4 asks for, not an assertion
+that the restoration method should have worked.
+
+**`eval $(opam env) && dune build @default`:** fails at `Library
+"ppx_hardcaml" not found` — the same absent Hardcaml toolchain every prior
+round confirmed (ADR-0005). Checked again this round rather than carried
+over on faith, since round 3's own history (the `mod`/deprecation-alert
+surprise) is the standing argument against assuming a container's state
+between rounds.
+
+**`dune runtest`:** not run — same absent toolchain. Remains CI's to run
+and judge. **Expected outcome differs from every prior round's**: this is
+no longer predicted red-by-design-on-first-reaching, because the eleven
+rows' `[%expect]` blocks are back to empty (R4-4) and the driver that feeds
+them is now ascending and self-checked (R4-1/R4-2) — so the next `runtest`
+should, for the first time, promote M03's actual behaviour rather than an
+artifact of drive order. Whether that promotion is *correct* per the spec's
+timing contract is a waveform-eyeball question for the round that reviews
+it, not asserted here.
+
+#### Open questions
+
+None new this round. R4-1/R4-2 were exact-text splices with no ambiguity;
+R4-3 was direction, not verbatim text, and I named the property precisely
+rather than guess at phrasing dv_lead didn't supply; R4-4 is a mechanical
+restoration whose correctness is the `git diff --exit-code` result above,
+not a judgement call. No round-1/2/3 open question is reopened — none of
+their subject matter (the disclosed `libs/hardcaml_ethernet/src/dune` read,
+the `Arrival.create` preamble-filler parameter, `fst`/`snd` vs
+`Base.List.unzip`) is touched by this round's changes.
+
+#### Scope statement
+
+Files staged this round: `test/xgmii_rx_64/bench.ml`, plus this Return log
+entry and the `J-tb_writer-0004` journal entry. `test_m03_a.ml`,
+`test_m03_b.ml`, `test_m03_c.ml` and `test_m03_structural.ml` were
+overwritten with their HEAD content and are therefore not staged as changes
+— `git status --porcelain` above shows none of the four, and the `git diff
+--exit-code` run above independently confirms byte-identity to HEAD.
+`bench.mli` was read and confirmed to need no change; not staged. No path
+under `libs/**`, `top/**`, `bin/**` or `rtl_snapshots/**` — any path,
+manifests included — was opened this spawn, targeted or swept. My journal's
+`Inputs` section lists exactly what was read.
+
+State left at **BOUNCED** — dv_lead's `RV-` and the orchestrator's
+transcription flip it, not this Return log.
+

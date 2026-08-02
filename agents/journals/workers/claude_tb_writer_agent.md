@@ -708,3 +708,247 @@ separately.
 - test/xgmii_rx_64/test_m03_c.ml
 - test/xgmii_rx_64/test_m03_structural.ml
 - agents/handoffs/WO-0038_tb-m03-first-bench.md
+
+---
+
+## [J-tb_writer-0004] 2026-08-02T23:50Z | task:WO-0038 | Round 4 — ascending-order drive, run's contract checked not promised, discard the reversed-schedule promotion
+
+### Trigger
+
+WO-0038/2026-08-02T23:35Z (dv_lead, via the orchestrator): round-4 fix list
+after round 3's Build went green and `dune runtest` reached the eleven rows
+for the first time — but the promotion it produced was every schedule
+played BACKWARDS. `RV-0038-R4` (`J-dv_lead-0027`) is the authoritative,
+verbatim instruction: `bench.ml:131`'s `List.init` applies Base's `~f` from
+the highest index down to 0, and since `sample_cycle` drives the XGMII port
+and steps the clock, evaluation order *is* the stimulus — so run
+30771064764 fed M03 every word in reverse cycle order (the strobe monitor's
+own record inside the promoted text shows cycles 20, 19, … 0). All four
+promoted `[%expect.unreachable]`/`[@@expect.uncaught_exn]` blocks are
+explained fully by that reversal (no `/S/` in wire order → no frame opens →
+zero output, which is the *conformant* response to a reversed stimulus).
+**Zero convictions against M03 may be drawn from that run, and RV-0038-R4
+rules none may be.** Packet state BOUNCED. Four items: R4-1 (BLOCKING,
+exact replacement text given — ascending explicit recursion, sequenced by a
+`let` so argument-evaluation order cannot matter either), R4-2 (REQUIRED,
+exact text given — assert `run`'s own "ascending cycles" contract in code,
+standing obligation 5's principle applied to the driver itself), R4-3
+(REQUIRED — document `bench.ml:178`'s `List.map` in `run_directed_lengths`
+as order-independent BY ARGUMENT, since every iteration builds its own
+fresh `t` and shares nothing), R4-4 (BLOCKING — discard the promotion
+entirely; restore `test_m03_a.ml`, `test_m03_b.ml`, `test_m03_c.ml`,
+`test_m03_structural.ml` to HEAD byte-exactly, so the eleven `[%expect]`
+blocks go back to empty and the next `runtest` records M03's actual
+behaviour). This round touches no row's stimulus, oracle or assertion
+content — none of the eleven rows was ever reached by the reversed run.
+
+### Inputs
+
+`agents/charters/tb_writer.md`; `agents/PROTOCOL.md` §2-6 and §10 (re-read
+in full); `agents/handoffs/WO-0038_tb-m03-first-bench.md` in full, including
+every prior round's Return log and every dv_lead verdict up to and
+including `RV-0038-R4` (`J-dv_lead-0027`) at the foot — read multiple times
+to copy R4-1's and R4-2's exact replacement text rather than paraphrase it,
+and to confirm R4-3 gives direction (document as order-independent BY
+ARGUMENT) rather than verbatim text, and R4-4 gives a restoration
+instruction (HEAD content, byte-exact) rather than new text. This journal's
+own header and my `J-tb_writer-0001`/`0002`/`0003` entries, to confirm the
+next entry id (0004) and avoid re-deriving what prior rounds already
+recorded. `test/xgmii_rx_64/bench.ml`, re-read in full before editing to
+locate line 131 and line 178 exactly and confirm no other `List.init` /
+`List.mapi` call exists in the file (grep, not assumption — the file has
+exactly one other `List.init`, at `directed_lengths`, over a fixed integer
+range with no side effect, out of R4's scope and untouched).
+`test/xgmii_rx_64/bench.mli`, re-read to confirm R4-2's fix is entirely
+inside `bench.ml` and requires no `.mli` change (the existing `run`
+docstring's "drives cycles `[0 .. Arrival.cycles sched - 1]`" sentence
+becomes true rather than needing new text). `git show HEAD:test/xgmii_rx_64/
+{test_m03_a,test_m03_b,test_m03_c,test_m03_structural}.ml` — the committed
+content R4-4 requires restoring verbatim, read into scratch copies and then
+written over the four working-tree files, followed by `git diff --exit-code`
+against each to confirm byte-identity rather than assert it. `git log
+--oneline -5` and `git status --porcelain`, to confirm the four promoted
+files were the only working-tree diff before this round's edits and that no
+other path had drifted. No path under `libs/**`, `top/**`, `bin/**` or
+`rtl_snapshots/**` — any path, manifests included — was opened this spawn,
+targeted or swept.
+
+### Reasoning
+
+**Why this is a bench defect and not an M03 finding, restated in my own
+words rather than only cited from the verdict.** `Arrival.cycles`/
+`Arrival.word_at` build a schedule that is a pure function of index: cycle
+*i*'s word does not depend on any other cycle having been sampled yet.
+`sample_cycle`, by contrast, is not pure with respect to its caller's
+iteration order — it drives a register-backed input and advances a
+`Cyclesim` clock, so the *sequence* in which cycles 0..N are handed to it is
+observable state, not an implementation detail. `List.init`'s two
+implementations (Stdlib ascending, Base's actual descending-`~f`-application
+behaviour, both legal under a spec that leaves evaluation order
+unspecified) therefore differ in more than performance for this one caller:
+one produces the schedule and the other produces its reverse. A design fed
+a reversed 64-octet frame correctly sees no `/S/` in wire order and forwards
+nothing — that is REQ-102/§6.2's `Idle` behaviour operating exactly as
+specified on a stimulus that was never the schedule `Arrival` built. The
+four uncaught-exception blocks are the shape a correct M03 leaves when handed
+that stimulus, not a shape M03's own logic produced through any path
+`Arrival.check`, standing obligation 5, or any assertion in this packet's
+eleven rows could have caught — `Arrival.check` validates the schedule as
+data (octet times, gaps, start lanes), and the schedule *was* valid data;
+the corruption was introduced afterward, in how `run` walked it. This is
+exactly why RV-0038-R4 could rule zero convictions with confidence rather
+than hedge: every failure traces to the driver, and none traces to a
+disagreement between M03's output and any Observable this packet asserts.
+
+**R4-1 and R4-2, applied verbatim, no independent semantic re-derivation.**
+RV-0038-R4 gives exact replacement text for both — an explicit `rec drive`
+that recurses ascending from 0, with `let s = sample_cycle … in` sequencing
+the drive-and-sample call strictly before the recursive step (so the fix
+holds regardless of whether some future OCaml implementation ever changed
+function-application argument order, not only `List.init`'s iteration
+order), followed by an `iteri`-based check that `run`'s own returned
+samples carry cycle numbers 0, 1, 2, … in position order, `failwith`ing by
+name if not. I copied both blocks character-for-character rather than
+reconstruct them from the surrounding prose, and combined them at the one
+splice point the two blocks share: R4-1 ends with `drive 0 []` as the
+function's return value; R4-2's text opens with `let samples = drive 0 []
+in` — i.e. R4-2 replaces that same tail expression with a `let`-bound name,
+the `iteri` check, and `samples` as the new return value. I confirmed by
+reading both blocks against each other line by line that this is the only
+way they compose (no line of R4-2 duplicates a line of R4-1, and R4-2's
+`drive 0 []` occurrence is the identical text R4-1's final line produces),
+rather than assuming it.
+
+Why R4-2 earns its place independently of R4-1 having already fixed the
+underlying bug: RV-0038-R4's own postmortem is that this defect was
+*invisible to every review that asked whether the code says what it means*
+and was caught only as a side effect of the strobe monitor happening to
+record per-cycle order in its report — a check nobody wrote *for* that
+purpose. Standing obligation 5 already establishes the principle that an
+unchecked stimulus generator is an unverified assertion about the design;
+`run`'s own docstring promise ("drives cycles `[0 .. Arrival.cycles sched -
+1]`") was exactly such an unchecked claim, sitting in the one component
+obligation 5's own `Arrival.check` call cannot reach, because `Arrival.check`
+validates the schedule `Arrival` built, not the order in which `run` walks
+it. Asserting it in code closes that gap for good: a future edit to `run`
+that reintroduces any order-scrambling combinator now fails loudly on its
+own first execution, rather than only if a downstream monitor happens to be
+sensitive to order and someone happens to read its report closely enough to
+notice, as happened this time only because dv_lead did.
+
+**R4-3, direction given rather than verbatim text — I wrote the comment to
+match the instruction's own wording.** RV-0038-R4 and the parent prompt both
+say to document `run_directed_lengths`'s `List.map` as "order-independent BY
+ARGUMENT" without supplying exact prose, unlike R4-1/R4-2. I stated the
+property precisely: each iteration of the `List.map` is a self-contained
+function of `length` alone — it builds its own `octets`, `sched`, `bench`
+(a *fresh* `create ()`, never a shared one) and calls `run` once, returning
+a 4-tuple that no other iteration reads or writes. That is the exact
+property that makes iteration order irrelevant to the *result* even though
+each iteration still has an ambient side effect (elaborating and running a
+`Cyclesim` instance) — order-independent by argument, not order-independent
+absolutely, and I named the distinction so the comment cannot be
+misread as "this file has no side-effect-order hazards", which would be
+false (`run`'s own body, one function above this one, is the counterexample
+in the same file). I added the forward-looking sentence RV-0038-R4 itself
+asked for — that a future edit sharing state across iterations (a running
+`bench`, an accumulator) would invalidate the argument — so the comment is
+falsifiable by a future diff rather than a permanent assertion.
+
+**R4-4: restoration verified by diff, not by re-typing.** I did not
+hand-edit the four files back toward what I remembered writing in round 3;
+I read each one's committed HEAD content via `git show` into scratch
+copies and overwrote the working-tree file with that exact content, then
+ran `git diff --exit-code` against each of the four individually and as a
+group. An empty diff is the only evidence this packet's own R4-4 accepts
+("Verify with `git diff` that the four are byte-identical to HEAD
+afterwards (empty diff)"), so I produced exactly that evidence rather than
+asserting the restoration was correct because the method should have
+worked.
+
+**Why `bench.mli` needed no edit.** R4-2's fix is entirely a `bench.ml`
+change: the `run` docstring already states "drives cycles `[0 ..
+Arrival.cycles sched - 1]`" as a promise, and R4-1+R4-2 together make that
+promise true and checked rather than false and unchecked — no word of the
+existing `.mli` text becomes newly inaccurate the way round 3's stale
+docstring did, so there is nothing here for the "a verbatim fix carries the
+obligation to repair any prose it falsifies" rule (RV-0038-R3-VERDICT,
+`J-dv_lead-0026`) to trigger. I re-read the `.mli`'s `run` docstring in full
+to confirm this rather than assume it, since that standing rule is exactly
+the kind of thing a rushed round misses.
+
+### Actions
+
+One targeted `Edit` against `test/xgmii_rx_64/bench.ml`: the `List.init`
+line at (pre-edit) line 131 replaced with R4-1+R4-2's combined text
+verbatim; one comment block inserted immediately above
+`run_directed_lengths` per R4-3, in my own wording per the instruction's
+direction. Four files restored to HEAD content byte-exactly via `git show
+HEAD:test/xgmii_rx_64/<file>` piped to each working-tree path:
+`test_m03_a.ml`, `test_m03_b.ml`, `test_m03_c.ml`, `test_m03_structural.ml`
+— no manual editing of any of the four. `bench.mli` was read and confirmed
+to need no change; not edited. No file under `libs/**`/`rtl_snapshots/**`/
+`top/**`/`bin/**` was opened.
+
+### Evidence
+
+All commands run from a repo checkout at this SHA.
+
+- `ocamlc -stop-after parsing test/xgmii_rx_64/bench.ml`: exit 0.
+- `git diff --exit-code -- test/xgmii_rx_64/test_m03_a.ml
+  test/xgmii_rx_64/test_m03_b.ml test/xgmii_rx_64/test_m03_c.ml
+  test/xgmii_rx_64/test_m03_structural.ml`: exit 0, empty diff — the four
+  promoted files are byte-identical to HEAD.
+- `git status --porcelain`: only `M test/xgmii_rx_64/bench.ml` — the four
+  restored files show no diff and do not appear.
+- `bash tools/precompile_check.sh`: `precompile_check: ALL LANES PASSED`;
+  `dv_golden`/`dv_monitors`/`dv_xgmii` (31 units) and
+  `dv_axi64_probe`/`dv_xgmii_probe` (12 units) all still compile with 0
+  errors; `test/xgmii_rx_64` still correctly `EXCLUDED` (depends on
+  `hardcaml_ethernet`, which this harness cannot transcribe) — unaffected
+  by this round's edit.
+- `bash tools/dv_checks.sh`: `check_records_vs_appendix.sh` 23/23 PASS;
+  `check_emitted_verilog.sh` 5/5 PASS, 3 PENDING (pre-existing, not M03);
+  `precompile_check.sh` as above; `check_rfc1071_anchor.sh` OBLIGATION OPEN
+  on blocked network egress (pre-existing, `J-dv_lead-0017/0018`, M02/M14's
+  checksum oracle, unrelated to M03 and to this round);
+  `dv_checks: every check that COULD run passed, and 1 obligation is still
+  OPEN`.
+- `eval $(opam env) && dune build @default`: fails at `Library
+  "ppx_hardcaml" not found` (same absent Hardcaml toolchain every prior
+  round confirmed, ADR-0005) — checked again this round rather than assumed
+  carried over, since a container change between rounds is exactly the kind
+  of silent-drift risk this packet's own history (the `mod`/deprecation
+  surprise at round 3) argues against taking on faith.
+- `dune runtest`: not run — same absent toolchain. Remains CI's to run and
+  judge; per WO-0038 §7 and every prior round, it is expected to reach the
+  eleven rows' now-empty `[%expect]` blocks and promote real M03 output for
+  the first time, which is the round this fix exists to make trustworthy
+  when it happens.
+
+### Outcome
+
+DoD status vs RV-0038-R4: R4-1 met (ascending explicit recursion, exact
+text, verified parsing-clean); R4-2 met (contract checked in code, exact
+text, combined correctly with R4-1 at their shared splice point); R4-3 met
+(order-independent-by-argument documented at `bench.ml:178`, direction
+followed, no verbatim text was given to deviate from); R4-4 met (all four
+promoted files restored to HEAD, `git diff --exit-code` empty on each,
+confirmed rather than asserted). Handoff: Return log appended to
+`agents/handoffs/WO-0038_tb-m03-first-bench.md` as a ROUND-4 RETURNED
+block; packet state left BOUNCED, since only dv_lead's `RV-` and the
+orchestrator's transcription may flip it. No `SO-` claimed or offered;
+M03 has still never been tested by a correctly-ordered run.
+
+### Open-questions
+
+None new this round. R4-1/R4-2/R4-3 were exact-text-or-clear-direction
+fixes with no ambiguity to raise; R4-4 is a mechanical restoration verified
+by diff. Every open question from rounds 1-3 was already closed by the
+verdicts that closed them (`RV-0038`, `RV-0038-R2`, `RV-0038-R3-VERDICT`)
+and none is reopened by this round's changes, which touch no row's
+stimulus, oracle or assertion.
+
+### Files-in-this-commit
+- test/xgmii_rx_64/bench.ml
+- agents/handoffs/WO-0038_tb-m03-first-bench.md

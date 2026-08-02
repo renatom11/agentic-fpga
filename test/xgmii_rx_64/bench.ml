@@ -128,7 +128,38 @@ let run t sched ~drain ?word_at () =
     | None -> fun ~cycle -> Arrival.word_at sched ~cycle
   in
   let total = Arrival.cycles sched + drain in
-  List.init total ~f:(fun cycle -> sample_cycle t ~cycle (word_at ~cycle))
+  (* Cycles are driven in ASCENDING order by an explicit recursion, never by
+     a [List.*] combinator. [sample_cycle] drives the port and steps the
+     clock, so its evaluation order IS the stimulus: Base's [List.init]
+     applies [~f] from the highest index DOWN to 0 (Stdlib's ascends), and
+     under it run 30771064764 played every schedule BACKWARDS — the strobe
+     monitor recorded cycles 20, 19, … 0 and M03 saw a terminate before a
+     start. This is the hazard test/xgmii/arrival.ml:37-40 already refuses
+     [List.mapi] for. The [let] below sequences the sample before the
+     recursive call, so the order cannot depend on argument-evaluation order
+     either. *)
+  let rec drive cycle acc =
+    if cycle >= total
+    then List.rev acc
+    else (
+      let s = sample_cycle t ~cycle (word_at ~cycle) in
+      drive (cycle + 1) (s :: acc))
+  in
+  let samples = drive 0 [] in
+  (* [run]'s own contract, checked rather than promised (RV-0038-R4). *)
+  List.iteri samples ~f:(fun i s ->
+    if s.cycle <> i
+    then
+      failwith
+        (String.concat
+           [ "Bench.run: cycle "
+           ; Int.to_string s.cycle
+           ; " was driven at position "
+           ; Int.to_string i
+           ; " — the stimulus is not in ascending cycle order, so nothing "
+           ; "downstream of this is a statement about the design"
+           ]));
+  samples
 ;;
 
 let delivered_samples samples = List.filter samples ~f:(fun s -> s.out.tvalid)
@@ -174,6 +205,15 @@ let directed_frame_octets ~length =
   Frame.with_fcs da_through_payload
 ;;
 
+(* [List.map] here also has side effects per iteration (each one elaborates
+   and runs a fresh simulation), but unlike [run]'s driver above it is
+   order-independent BY ARGUMENT: every iteration builds and returns its own
+   fresh [bench]/[sched]/[samples] from [length] alone, so no iteration reads
+   or mutates anything another iteration wrote. That is what makes today's
+   use correct regardless of [List.map]'s evaluation order (RV-0038-R4). A
+   future edit that shares state across iterations (e.g. a running [bench]
+   or an accumulator) would invalidate this argument and should re-open the
+   ordering question this comment closes today. *)
 let run_directed_lengths ~lane =
   List.map directed_lengths ~f:(fun length ->
     let octets = directed_frame_octets ~length in
