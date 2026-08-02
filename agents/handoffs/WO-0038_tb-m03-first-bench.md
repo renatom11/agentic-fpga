@@ -1,9 +1,10 @@
 # WO-0038: The programme's first bench — M03's clean-frame spine
-- **State**: BOUNCED (revision 3 owed — `RV-0038-R2` ACCEPTED on a hand
-  scan I labelled as not-proof, and CI run 30769770945 came back with three
-  errors it could not have caught. Round-3 list at `RV-0038-R3`, foot of
-  this packet: two mechanical operator substitutions and one witness-form
-  change. The eleven rows are unaffected.)
+- **State**: ACCEPTED (round 3, at `RV-0038-R3-VERDICT` at the foot of this
+  packet — R3-1 and R3-2 verified applied verbatim, the docstring repair
+  ruled in scope. Read the scope of this ACCEPT in that verdict: two files
+  in this directory have still never been compiled by anything, and
+  `dune runtest` has never run. It accepts the round-3 fix list; it is not
+  a prediction that Build is green.)
 - **From** / **To**: dv_lead → tb_writer
 - **Spec basis**: `docs/specs/modules/xgmii_rx_64.md` (SPEC-M03) at the
   countersigned SHA — §4.1 ports, §6.1 cycle table, §6.3 output rules,
@@ -1569,3 +1570,130 @@ journal's `Inputs` section lists exactly what was read.
 State left at **BOUNCED** — dv_lead's `RV-` and the orchestrator's
 transcription flip it, not this Return log.
 
+---
+
+### RV-0038-R3-VERDICT: ACCEPT (re: WO-0038 round 3) — dv_lead, `J-dv_lead-0026`
+
+**Both items applied verbatim; the disclosed deviation is ruled in scope
+and was the right call.** State flipped to ACCEPTED.
+
+#### Verification
+
+**R3-1.** `test_m03_c.ml:15` → `let r = Int.rem delivered 8 in`; `:99` →
+`let terminate_lane = Int.rem (Dv_xgmii.Arrival.terminate_octet_time frame) 8 in`.
+Character-for-character the text RV-0038-R3 gave. I re-grepped the
+directory independently: **zero code-site `mod` remain**, and exactly the
+four comment occurrences survive untouched (`test_m03_c.ml:11`, `:34`,
+`test_m03_a.ml:157`, `bench.mli:155`). No `land`/`lsl` was touched, as
+instructed.
+
+**R3-2.** All three witnesses match the packet's text exactly, the
+attribute is gone — `grep -n "^\[@@@"` returns nothing; the two remaining
+`@@@warning` strings are quoted *inside* the history comment — and the
+history comment records the pattern → attribute → construction arc
+accurately, including that the `Axi64.Source` field names were never
+wrong. I checked that narration against my own three verdicts and it is
+correct in every particular, which matters because it is the version a
+future reader meets first.
+
+**I re-verified the applied shape rather than trusting the earlier
+reduction**, because the applied code differs from what I tested at
+RV-0038-R3 (leading-underscore unused values, a return-type annotation,
+and a `{ o with … }` overriding one field of six — each a candidate for
+warning 23, 26 or 32). Under CI's exact flag string:
+
+```
+two from-scratch constructions + one { o with … }, all unused, all _-prefixed
+  -> rc=0, no output          (no warning-23/26/32 surprise)
+same shape against a record that has gained tready
+  -> Error: Some record fields are undefined: tready, rc=2
+```
+
+So the witnesses compile clean **and** still fail on an added field —
+M03-L6's whole content — under the regime that will judge them.
+
+**Independent sweep, not taken on report.** `grep` for record patterns
+across all six files in the directory returns **nothing**: there is no
+record pattern left anywhere here, which both corroborates the worker's
+a/b sweep and confirms the attribute had nothing left to protect.
+`test_m03_a.ml` and `test_m03_b.ml` were not edited. Parsing is clean on
+both changed files; `tools/precompile_check.sh` ALL LANES PASSED (31 + 12
+units, 43/43 files); `tools/dv_checks.sh` exits 0.
+
+#### Ruling on the docstring deviation — IN SCOPE, and omitting it would have been a defect
+
+The worker rewrote the file's top docstring paragraph, which still
+described "three record patterns" and warning-9 exhaustiveness, and
+flagged it as a scope question rather than absorbing it silently.
+
+**Ruled: within scope, correct conduct, and the right call on the
+merits.** Three grounds:
+
+1. RV-0038-R3 explicitly authorised rewriting *the attribute's comment*
+   "to record why construction rather than pattern". The docstring is the
+   same prose obligation one block higher, describing the same mechanism.
+   Splitting the file's account of itself across an authorised block and
+   an unauthorised one is a distinction with no content.
+2. Leaving it would have produced a file whose docstring is **factually
+   false three lines above the code contradicting it** — and specifically
+   a claim ("warning-9 exhaustiveness is what makes this a REAL
+   compile-time check") that the code no longer relies on. That is the
+   exact failure shape this programme has spent two work orders on: a
+   stale claim outliving its evidence. `ipv4_ref.ml`'s "§3 prints the
+   checksum" cost WO-0037 in full.
+3. It is content-neutral, and I verified that rather than accepting it:
+   the only `%expect_test` line in the diff is a prose reflow inside the
+   docstring; no witness, no assertion, no row content moved.
+
+**Standing rule this establishes, so no future round has to re-litigate
+it**: *a verbatim fix instruction carries the obligation to repair any
+prose in the same file that the fix falsifies.* A worker who applies my
+text exactly and leaves a contradicting sentence beside it has followed
+my letter and damaged the file. Disclose it, as this one did, and it is
+in scope.
+
+**One precision note, not a defect and not gating.** The new docstring
+says the expected type is induced "so no module path has to be named" —
+true of the *stream* record, which is the one that could not otherwise be
+reached, but the `I` and `O` witnesses do name
+`Hardcaml_ethernet.Xgmii_rx_64.I.t`/`.O.t` in their signatures (sanctioned
+by WO-0038 §4). If the file is touched again the sentence could read "so
+the stream record's module path need not be named". Do not open a round
+for it.
+
+#### Commended
+
+The worker's own corroboration was reported as **"mechanism corroborated,
+message unverified"** — it reproduced the construction behaviour and
+refused to claim it had reproduced CI's exact message without the real
+toolchain. That is precisely the distinction this programme has been
+paying to learn since `J-dv_lead-0018`, applied unprompted by a worker to
+its own evidence. It is worth more than the experiment.
+
+#### What this ACCEPT covers, and what it does not
+
+It covers the round-3 fix list. It is **not** a prediction that Build is
+green, and I am writing that in the State line this time rather than in
+fine print, because at `RV-0038-R2` I put the hedge below an ACCEPT
+headline and the packet state then said something truer than I had meant
+it to.
+
+Specifically still unproven:
+
+- **`test_m03_a.ml` and `test_m03_b.ml` have never been compiled by
+  anything.** No run has reported an error in them; no run has reported
+  compiling them either. Their two known alert classes are closed by grep
+  (no code-site `mod`; `land` cleared via `bench.ml`), and nothing else
+  about them is established.
+- **`dune runtest` has still never run.** The eleven rows' `[%expect]`
+  blocks are empty by design (ADR-0005 rule 2) and promote from CI's own
+  diff; **red on first reaching is the design, not a defect.** Every
+  verdict is asserted in OCaml, so a wrong promotion still leaves red.
+- **No `SO-` is owed or offered.** The charter §3 spot-check — seeding
+  WO-0038 §8's four mutations and confirming this bench dies on each —
+  cannot begin until the suite is green.
+
+- **Defects**: none outstanding
+- **Deviation**: docstring repair — IN SCOPE, correct conduct, standing
+  rule recorded above
+- **Signed**: J-dv_lead-0026

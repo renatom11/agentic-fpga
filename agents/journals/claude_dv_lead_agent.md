@@ -8162,3 +8162,196 @@ problems the construction form solved, and error 3 is the other one.
 
 ### Files-in-this-commit
 - agents/handoffs/WO-0038_tb-m03-first-bench.md
+
+## [J-dv_lead-0026] 2026-08-04T14:05Z | task:WO-0038 | Round 3 ACCEPT: both fixes verbatim, re-verified in the shape they were actually applied rather than the shape I tested; the docstring repair ruled in scope with a standing rule so it is not re-litigated; and an ACCEPT whose limits are in the state line this time
+
+### Trigger
+Orchestrator: tb_writer's **round 3** returned — two changed files uncommitted
+against `b051250`, `J-tb_writer-0003` appended, packet State left BOUNCED, with
+**one disclosed deviation**: the worker also rewrote the file's top docstring
+paragraph, which still described record patterns and warning-9 exhaustiveness.
+Task: verify verbatim application, rule on the deviation, give a verdict.
+
+### Inputs
+- `git diff HEAD -- test/xgmii_rx_64/` in full: `test_m03_c.ml` (2 lines) and
+  `test_m03_structural.ml` (the three witnesses, the attribute, the comment and
+  the docstring).
+- My own `RV-0038-R3` text, to compare the applied code against what I
+  prescribed character by character.
+- The packet's ROUND-3 RETURNED block and the worker's disclosure.
+- `ocamlc` 4.14.1 with CI's exact `-w` string, for a second reduction in the
+  shape actually applied.
+- Independent greps over all six files in `test/xgmii_rx_64/`: record patterns,
+  `mod` sites, `^[@@@` attributes, opens.
+- `tools/precompile_check.sh`, `tools/dv_checks.sh`.
+- **No `libs/**`, no `rtl_snapshots/**`.** Greps scoped to `test/`, per the
+  practice change I owed myself from `J-dv_lead-0024`.
+
+### Reasoning
+
+**I re-ran the reduction instead of reusing the one from two sittings ago, and
+that was not ceremony.** What I verified at `RV-0038-R3` was
+`{ o with rx = { … } }` in isolation. What the worker applied differs in three
+ways that are each a candidate for a different fatal warning: the values carry
+**leading underscores** and are never called (warning 32 territory), they carry
+**return-type annotations**, and the third one overrides **one field of six**
+in a `with` clause (warning 23 fires when a `with` overrides all of them). None
+of those were in my original reduction. So I built the applied shape and
+compiled it under CI's flag string: clean, and still erroring on an added
+`tready`.
+
+This is the specific lesson from `J-dv_lead-0023`, where I generalised from a
+warning-flag string I had invented rather than the one that judges the code.
+The general form is: **a reduction is evidence about the shape you reduced, not
+about the shape that ships.** Two sittings ago that cost two withdrawn
+severities. Here it cost four minutes and bought a real answer.
+
+**On the deviation I ruled in scope, and I want the reasoning to outlive this
+packet.** The literal position is defensible: I authorised rewriting *the
+attribute's comment*, not the docstring. But the docstring described the same
+mechanism one block higher, and after the fix it said "three record patterns"
+and "warning-9 exhaustiveness is what makes this a REAL compile-time check"
+three lines above code that is neither. A worker who applied my text exactly
+and left that sentence would have followed my letter and damaged the file.
+
+That is not a hypothetical harm in this programme. It is the shape that cost
+WO-0037 an entire work order: `ipv4_ref.ml` said §3 "prints" the checksum long
+after that stopped being true, and the whole of that sitting was spent finding
+out. A stale claim beside working code is worse than a missing one, because it
+is *read*.
+
+So I ruled it in scope and wrote the general rule into the verdict: **a
+verbatim fix instruction carries the obligation to repair any prose in the same
+file that the fix falsifies.** Disclosed, as this was, and it is in scope. That
+converts a judgement call into a rule, which is what stops the next round
+re-litigating it — and it is the same move I made when I refused to rest the
+worker's independence ruling on "it was only four lines".
+
+I checked content-neutrality rather than accepting it: the only `%expect_test`
+line in the diff is a prose reflow inside the docstring itself. No witness, no
+assertion, no row content moved.
+
+**I also checked the history comment for accuracy, because it narrates my own
+rulings.** It says RV-0038 first asked for constructions, the addendum narrowed
+that to the attribute judging the two equivalent, they were not equivalent, and
+the pattern form failed on label resolution — a scoping error the attribute
+cannot reach — while the `Axi64.Source` field names were never wrong. Every
+clause of that is correct, including the correction of the mis-reading I was
+handed. It records my error in the code, which is the right place for it: the
+auditor will meet that comment before it meets my journal.
+
+**On the ACCEPT's framing I changed something deliberately.** At `RV-0038-R2` I
+put ACCEPT in the headline and the limits in the body — "expected green,
+UNVERIFIED", "a second defect would be the instrument working" — and then CI
+found three errors and the packet state said something truer than I had meant
+it to. The hedges were honest and their *placement* was not. So this time the
+State line itself carries the limits: two files in this directory have never
+been compiled by anything, `runtest` has never run, and this accepts the fix
+list rather than predicting a green Build. If it comes back red again, the
+packet will already have said so.
+
+That is a smaller correction than it sounds. Nothing about my verification
+changed; what changed is that the summary a reader meets first is now as
+qualified as the evidence is.
+
+**What I did not do.** I did not open a round for the docstring's one
+imprecision — it says the induced type means "no module path has to be named",
+which is true of the stream record and not of the `I`/`O` annotations three
+lines below. It is accurate about the mechanism it describes, the annotations
+are visible, and opening a fourth round over a prose nuance would cost more
+than it buys. I noted the exact correction in the verdict for whenever the file
+is next touched and said explicitly not to open a round for it. Knowing which
+findings not to act on is part of the job.
+
+**And I commended something, on purpose.** The worker reported its own
+corroboration as "mechanism corroborated, message unverified" — it reproduced
+the construction behaviour and refused to claim it had reproduced CI's exact
+message without the real toolchain. That is the distinction this programme has
+been paying to learn since `J-dv_lead-0018`, applied unprompted by a worker to
+its own evidence. A review that only names faults teaches a smaller diff, not a
+better one.
+
+### Actions
+- Compared both applied diffs against `RV-0038-R3`'s prescribed text
+  character by character; confirmed verbatim application at all five sites
+  (two operator substitutions, three witnesses) plus the attribute deletion.
+- Built a second reduction **in the applied shape** — leading-underscore
+  unused values, return annotations, one-field `with` — and compiled it under
+  CI's exact `-w` string, plus the added-`tready` case.
+- Swept the directory independently: zero record patterns anywhere, zero
+  code-site `mod`, the four comment `mod`s intact, no column-0 attribute,
+  opens still used.
+- Verified content-neutrality of the docstring edit from the diff.
+- Checked the history comment's narration against my own three verdicts.
+- Ran `tools/precompile_check.sh` and `tools/dv_checks.sh`.
+- Ruled the deviation IN SCOPE and recorded the standing rule.
+- Flipped the packet State to **ACCEPTED** on a title + state anchor, with the
+  ACCEPT's limits stated in the State line itself, and appended
+  `RV-0038-R3-VERDICT`.
+- Edited none of the worker's files. No `git commit`, no `git push`.
+
+### Evidence
+1. **R3-1 verbatim.** `test_m03_c.ml:15` is `let r = Int.rem delivered 8 in`;
+   `:99` is
+   `let terminate_lane = Int.rem (Dv_xgmii.Arrival.terminate_octet_time frame) 8 in`.
+   Both match RV-0038-R3's text exactly.
+2. **`mod` accounting.** `grep -n "\bmod\b"` over the directory returns
+   **four** hits, all inside comments (`test_m03_c.ml:11`, `:34`,
+   `test_m03_a.ml:157`, `bench.mli:155`). Zero code sites.
+3. **R3-2 verbatim**, and the attribute is gone: `grep -n "^\[@@@"` over the
+   directory returns nothing; the two surviving `@@@warning` strings are quoted
+   inside the history comment at lines 30 and 40.
+4. **The applied shape, under CI's flag string.** Two from-scratch
+   constructions plus one `{ o with … }`, all unused and `_`-prefixed,
+   compiled with
+   `-w '@1..3@5..28@30..39@43@46..47@49..57@61..62-40' -strict-sequence`
+   → **rc=0, no output**. The same shape against a record that has gained
+   `tready` → `Error: Some record fields are undefined: tready`, rc=2.
+5. **No record pattern remains anywhere.** A grep for pattern-position braces
+   across all six files returns nothing — corroborating the worker's a/b sweep
+   and confirming the removed attribute had nothing left to protect.
+6. **Content-neutral docstring edit.** The only `%expect_test` line in the
+   diff is a prose reflow inside the docstring; the scaffolding test is
+   untouched.
+7. **Instruments.** `ocamlc -stop-after parsing` clean on both changed files;
+   `precompile_check.sh` ALL LANES PASSED (31 + 12 units, 43/43 files, no
+   unqualified sibling reference); `dv_checks.sh` exit 0.
+8. **Scope.** `git status --short` shows my two paths plus the worker's two
+   test files, its journal and the packet — I touched neither test file.
+
+### Outcome
+**RV-0038-R3-VERDICT: ACCEPT.** R3-1 and R3-2 applied verbatim and re-verified
+in the shape they were actually applied. The docstring deviation is **in
+scope**, correct conduct, and the standing rule is recorded so the next round
+does not argue it again. No defects outstanding.
+
+The ACCEPT's limits are in the packet's State line, not its footnotes:
+`test_m03_a.ml` and `test_m03_b.ml` have never been compiled by anything;
+`dune runtest` has never run and is **expected red on first reaching** by
+design; no `SO-` is owed until the suite is green and WO-0038 §8's four
+mutations have been seeded and killed.
+
+### Open-questions
+- **Round 3's Build is the first real chance at green**, and it is also the
+  first time `test_m03_a.ml` and `test_m03_b.ml` may be compiled at all. A red
+  there is new information, not a regression.
+- **`runtest`'s first reaching is expected red** with the promotion block. That
+  is ADR-0005 rule 2's cadence and must not be read as a bench defect; the
+  promotions then need committing before any sign-off.
+- **Owed by me, still**: `tools/precompile_stubs/ifc_check.ml`'s
+  `UNVERIFIED-TRANSCRIPTION — Axi64.Source / Axi64.Dest` note is stale since
+  run 30769770945 compiled all six names, and should cite that run id.
+- **For architect_docs_lead, via the orchestrator**: SPEC-M01 §11.4's
+  "unverified by compilation" caveat can be retired against the same run.
+- **For the next bench packet's §7**: deprecation alerts are errors in this
+  build; and the standing rule from this verdict — a verbatim fix instruction
+  carries the obligation to repair prose the fix falsifies — belongs in the
+  packet template's expectations rather than being rediscovered.
+- **My M04 contamination from `J-dv_lead-0024` stands**, unaffected by this
+  sitting.
+- **Unchanged**: the RFC 1071 anchor closes on the next CI run that fetches and
+  confirms; X-7, X-10, X-11 remain deferred; L1–L5 still owed and still want
+  `test/cost_probe/`'s figure read against this suite's ~43 elaborations.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0038_tb-m03-first-bench.md
