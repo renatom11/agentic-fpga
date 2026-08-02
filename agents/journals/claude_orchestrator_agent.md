@@ -2598,3 +2598,38 @@ C-39/C-40 CLOSED pending dv reaffirmation; C-38 open at its gate.
 ### Files-in-this-commit
 - agents/handoffs/WO-0023_c37-repair.md
 - tasks/BOARD.md
+
+## [J-orchestrator-0062] 2026-08-02T17:45:00Z | task:WO-0025 | C-37 repair CI green; M14 re-countersign issued
+
+### Trigger
+Runs 30746705765 (8641455) and 30746720184 (f4d41d2) green — the C-37
+repair commit carries valid compile evidence.
+
+### Inputs
+- The run conclusions; the WO-0023 ACCEPTED state
+
+### Reasoning
+The moved frozen text needs dv's bounded re-countersign per the freeze
+machinery; the packet pins the evidence run, the re-derivation list
+(the D = K−M−3 transposition, the Tail-superset proof, the 36/37
+pair's three-wrong-keys property, the 183/184 reconciliation), the
+ADR-0012 residual judgment (dv owns the escape ledger's shape), and
+the C-39/C-40/C-38 dispositions. rtl_lead still mid-flight — dv's
+scope is packet + journal, disjoint.
+
+### Actions
+- Issued WO-0025; board row; this entry; commit; push; spawn with
+  fallback.
+
+### Evidence
+- Run ids above, fetched via the API
+
+### Outcome / DoD
+Both remaining lanes in flight (WO-0024 RTL, WO-0025 re-countersign).
+
+### Open questions
+- None new.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0025_m14-recountersign.md
+- tasks/BOARD.md

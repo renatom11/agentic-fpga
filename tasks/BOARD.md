@@ -63,6 +63,7 @@ Corrections.
 | Packet | From → To | State | Note |
 |---|---|---|---|
 | [WO-0016](../agents/handoffs/WO-0016_m01-m02-implementation.md) | orchestrator → rtl_lead | ACCEPTED | 189d5b2: **first RTL green on first elaboration** (run 30738000890) — M01 Axi64 (types, lift-identical) + M02 Crc32_eth (64-step prefix chain, ADR-0006/0007 honoured); 2 questions queued for architect (Axi64.Axi64 convention; named module type S) |
+| [WO-0025](../agents/handoffs/WO-0025_m14-recountersign.md) | orchestrator → dv_lead | ISSUED | Bounded re-countersign of the moved SPEC-M14 text (C-37 repair at 8641455, run 30746705765 green) + ADR-0012 residual judgment |
 | [WO-0024](../agents/handoffs/WO-0024_batch-b-rtl.md) | orchestrator → rtl_lead | ISSUED | **Batch-B RTL**: M03/M04/M05 (MAC layer) from f78766e specs + their §13 rows; ADR-0010 conventions; parallel with WO-0023 (disjoint) |
 | [WO-0023](../agents/handoffs/WO-0023_c37-repair.md) | orchestrator → architect_docs_lead | ACCEPTED | 8641455: C-37 repaired (**ADR-0012**: copy iff D ≤ 0 — M17's rule transposed; residual carried with named E2 reversal conditions); C-39/C-40 landed; batch-F spec flip ratified; dv re-countersign next |
 | [WO-0022](../agents/handoffs/WO-0022_batch-f-rereview.md) | orchestrator → dv_lead | ACCEPTED | 0536819: **batch F COUNTERSIGNED at d8df28d — ALL TWENTY SPECS FROZEN**; both architect additions judged improvements on dv's own text; C-37 (F-1's twin at frozen M14, dv's self-reported escape) → WO-0023; C-38/39/40 |
