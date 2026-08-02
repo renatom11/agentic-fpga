@@ -1307,3 +1307,47 @@ none
 - agents/handoffs/WO-0004_requirements-spec-diffs.md
 - agents/handoffs/WO-0005_spec-diff-re-review.md
 - tasks/BOARD.md
+
+## [J-orchestrator-0033] 2026-08-02T03:40:00Z | task:WO-0005 | WO-0005 SIGNED; P1-spec-freeze checklist open; batch A issued
+### Trigger
+dv_lead returned WO-0005: sixteen verdicts all CLOSED, testability
+precondition SIGNED at b4b4cf4, seven non-blocking carry-forwards.
+### Inputs
+WO-0005 Return log at cdde5f3; architecture.md §7 prerequisites; the
+J-dv_lead-0002 signature sentence.
+### Reasoning
+The re-review did what the loop is for in both directions: it adopted
+the architect's D-4 refutation after independently re-walking the lanes
+(and identified why its own check missed the lane-4 case), and it
+corrected its own 9.5% figure and stress-list enumeration while closing
+D-1/D-3. Reading §7 before declaring prerequisites met caught a real
+gap: 7.1 requires hardcaml_axi in the LIBRARY dune stanza as well as
+opam, and only opam was done — fixed in this commit, CI on this push is
+the evidence. The gate checklist opens now with the signature
+transcribed verbatim (PROTOCOL §7 transcription rule), the per-batch
+freeze table empty, the carry-forward ledger with deadline gates so
+C-1/C-4 cannot silently miss batch B, and the two sponsor items attached
+to the gate where they belong — C-1's finding directly informs the
+sponsor's pending 24-cycle-budget confirmation (the ceilings currently
+consume it exactly). Batch A issues to the architect as WO-0006, scoped
+to the two foundation specs plus their ifc_check lifts.
+### Actions
+libs/hardcaml_ethernet/src/dune: + hardcaml_axi. Gate checklist created.
+WO-0005 ACCEPTED (in its Return log via this entry's evidence trail —
+acceptance recorded on the board row). WO-0006 packet written. Board
+updated. Architect spawn follows as WO-0006/2026-08-02T03:45Z, fallback
+armed.
+### Evidence
+Commit cdde5f3 (dv_lead's, R1-R9 enforced); signature sentence in
+J-dv_lead-0002; prerequisite evidence run 30724505231; CI on this push
+covers the dune addition.
+### Outcome
+Spec production line open: batch A drafting. Handoff: WO-0006 to
+architect_docs_lead.
+### Open-questions
+none
+### Files-in-this-commit
+- agents/handoffs/WO-0006_batch-a-specs.md
+- docs/gates/P1-spec-freeze-checklist.md
+- libs/hardcaml_ethernet/src/dune
+- tasks/BOARD.md

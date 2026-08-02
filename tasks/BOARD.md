@@ -27,10 +27,12 @@ Open M1 work (post WO-0002 acceptance): batch-A blockers CLOSED
 compile lane builds the template Interface block (build run 30724505231
 on 98e1607, green); spec batching DECIDED 2026-08-02: the
 architect's six ordered batches stand as six WOs (sizing accepted as
-proposed); spec-diff loop: WO-0004 ACCEPTED at
-b4b4cf4 (16/16 applied, 110 REQs); WO-0005 dv re-review in flight —
-countersignature is the freeze-checklist precondition; parked: REQ-810
-tready semantics for rtl_lead at M18/M20; rulings on record: emitted-Verilog
+proposed); spec-diff loop CLOSED: WO-0004 16/16
+applied, WO-0005 re-review 16/16 CLOSED and SIGNED at b4b4cf4; the
+P1-spec-freeze checklist is OPEN (docs/gates/P1-spec-freeze-checklist.md,
+prerequisites 7.1–7.3 all satisfied) with carry-forwards C-1…C-7 tracked
+against their deadline gates; batch A (WO-0006) in flight; parked:
+REQ-810 tready semantics for rtl_lead at M18/M20; rulings on record: emitted-Verilog
 structural checks are dv-ownable tools (not RTL-derived tests);
 hardcaml_step_testbench added to deps (CI validates); Cyclesim cost
 probe approved for dv's bench-setup WO; README phase-table pointer follow-up; sponsor confirmation of the
@@ -54,12 +56,14 @@ Corrections.
 | Gate | Status | Checklist |
 |---|---|---|
 | G0 | **PASSED 2026-08-01** | [docs/gates/G0-checklist.md](../docs/gates/G0-checklist.md) |
+| P1-spec-freeze | OPEN — prerequisites done, batches A–F pending | [docs/gates/P1-spec-freeze-checklist.md](../docs/gates/P1-spec-freeze-checklist.md) |
 
 ## Open work orders
 
 | Packet | From → To | State | Note |
 |---|---|---|---|
-| [WO-0005](../agents/handoffs/WO-0005_spec-diff-re-review.md) | orchestrator → dv_lead | ISSUED | Re-review the sixteen diffs at b4b4cf4; countersign or contest (precondition for opening the P1-spec-freeze checklist) |
+| [WO-0006](../agents/handoffs/WO-0006_batch-a-specs.md) | orchestrator → architect_docs_lead | ISSUED | Batch A per-module specs: SPEC-M01 `Axi64`, SPEC-M02 `Crc32_eth` + their ifc_check lifts |
+| [WO-0005](../agents/handoffs/WO-0005_spec-diff-re-review.md) | orchestrator → dv_lead | ACCEPTED | 16/16 CLOSED; testability precondition **SIGNED at b4b4cf4** (J-dv_lead-0002); 7 carry-forwards C-1…C-7 tracked on the gate checklist |
 | [WO-0004](../agents/handoffs/WO-0004_requirements-spec-diffs.md) | orchestrator → architect_docs_lead | ACCEPTED | Returned + accepted at b4b4cf4: 16/16 applied (D-4 metric corrected to octet times), one IFG convention at all sites, 108→110 REQs, set equality re-verified |
 | [WO-0003](../agents/handoffs/WO-0003_requirements-testability-review.md) | orchestrator → dv_lead | ACCEPTED | Returned + accepted at 9a6195a: 108/108 dispositioned (55 T / 49 A / 4 U), 16 consolidated spec diffs, countersignature withheld pending diffs; REQ-004 stress feasible in Cyclesim |
 | [WO-0002](../agents/handoffs/WO-0002_p1-requirements-architecture.md) | orchestrator → architect_docs_lead | ACCEPTED | Returned + accepted at 08899d3: 108 REQs, 20-module inventory (M01–M20), spec template, traceability skeleton. Spawn #1 killed by interruption (incident in Return log); spawn #2 delivered. |
