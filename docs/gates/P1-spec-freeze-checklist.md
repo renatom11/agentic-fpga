@@ -211,9 +211,13 @@ FROZEN: A+B at f78766e, C at 508eea2, D+E at 3f6accc, F at d8df28d.**
 | C-37 | **F-1's twin at FROZEN SPEC-M14** (dv's largest finding, self-reported as its own WO-0018 escape): M14's output extent is fixed by the IPv4 total length — a count inside the data — and its Tail state consumes Ethernet padding; every total length 21…36 on a padded minimum frame emits the payload tlast up to 184 cycles before the input tlast; §6.1 runs the identical backwards inequality; §10's REQ-007 hook is unscoped and commissions an assertion no conformant design passes on §8's own frames; a bad-FCS minimum-length frame reaches the application unmarked. Does not block batch F (substance at a passed gate; repair price flip-invariant; needs an ADR). Confirms §11.4's carried scoping clause has two customers | **next architect activation (WO-0023), ahead of M14 RTL** |
 | C-38 | SPEC-M18 §6.2 lets a word-aligned over-delivery escape REQ-710 (Drain with tlast pending, no strobe, stale word into next frame); REQ-710 (FROZEN) states the correct reading, so carried on the C-26 line | SO-udp_ip_tx_64.md; mandatory attack-plan row |
 | C-39 | requirements.md REQ-710's verification column carries C-34's units error ("ten excess words"); frozen, flip-invariant | with C-37's requirements-adjacent sweep or any REQ diff |
-| C-40 | SPEC-M17 §3's "on or after" (dv's own phrase) admits D = 1; four unqualified relay statements (§2 ×2, §3 REQ-013 row, §4.2 input row); one sweep | the M17 tb_writer WO |
-| C-41 | The unpassable-assertion class one level up: requirements.md REQ-007/REQ-013/REQ-707 verification columns commission the REQ-007 universal unscoped (satisfiable, so below C-37); REQ-707's is the system bench, gated at neither SO-; the verification-column half is EDITORIAL (C-39's diff proves the class) and closes cheap while the normative clause stays carried | the three editorial column diffs at the next architect activation; REQ-707's before the system bench |
-| C-42 | SPEC-M14 §12's countersignature row over-states dv's WO-0018 proof (M + 3 ≥ K vs the proved ⌈(N−20)/8⌉ + 3 ≥ K) — dv's own over-statement, self-reported | the next SPEC-M14 §12-touching diff |
+| C-40 | SPEC-M17 §3's "on or after" (dv's own phrase) admits D = 1; four unqualified relay statements (§2 ×2, §3 REQ-013 row, §4.2 input row); one sweep | **CLOSED at 541ea43** (sixth site §10 "on or after"→"after"; dv concurrence J-dv_lead-0015) |
+| C-41 | The unpassable-assertion class one level up: requirements.md REQ-007/REQ-013/REQ-707 verification columns commission the REQ-007 universal unscoped (satisfiable, so below C-37); REQ-707's is the system bench, gated at neither SO-; the verification-column half is EDITORIAL (C-39's diff proves the class) and closes cheap while the normative clause stays carried | the three editorial column diffs at the next architect activation; **CLOSED at 541ea43** (three columns carry the M14/M17 scope + REQ-707's pinned frame, dv re-derived D = −1/0; normative clause stays carried under C-36's discipline; dv concurrence J-dv_lead-0015) |
+| C-42 | SPEC-M14 §12's countersignature row over-states dv's WO-0018 proof (M + 3 ≥ K vs the proved ⌈(N−20)/8⌉ + 3 ≥ K) — dv's own over-statement, self-reported | **CLOSED at 541ea43** (corrected form states the WO-0018 proof; dv confirms it is the form that holds; J-dv_lead-0015) |
+| C-43 | requirements.md §12's `error_ip_bad_header` condition cell no longer states what that strobe reports at M14 (ADR-0013's third disjunct absent). §12 is normative, its column is headed "Condition", and it is the enumeration REQ-008 quantifies over — REQ-008 discharged for this discard only once the cell moves. REQ-601's normative sentence is NOT asked for (sufficient condition, unfalsified). One cell | `SO-ip_eth_rx_64.md` |
+| C-44 | SPEC-M14 §6.3 item 4 and §10's REQ-603 hook carry dv's own overclaim — the flag-bit pair is not "the only stimulus" killing a wrong-bit read of octet 6 (M14-B4 already kills the wrong-single-bit design); the pair's real unique kill is the over-broad read. Justification only; row and stimulus stand. dv self-report | `SO-ip_eth_rx_64.md` |
+| C-45 | SPEC-M03 §6.1 and §10's REQ-016 hook forbid idle injection "between a frame's start character and its first octet" on the "occupies preamble positions" ground — true at a lane-4 start, false at lane-0 where the same paragraph derives all eight preamble positions inside the start word. Over-broad by one injection point, the very point where a preamble/frame boundary defect would show. dv's own wording first (M03-N3, X-4) | the SPEC-M03 R1/R2 repair commit, or `SO-xgmii_rx_64.md` |
+| C-46 | requirements.md REQ-810's verification column still commissions "no strobe anywhere" without the no-frame-in-flight scope its own new sentence creates. Passable as written; C-41's family; one cell (may point at SPEC-M03 §10's REQ-802/REQ-810 hook, which already enumerates both cases) | `SO-xgmii_rx_64.md` |
 
 ## Batch-D + batch-E countersignatures (transcribed)
 
@@ -246,6 +250,84 @@ what this checklist has recorded since 55e78f2 — a doc-truthfulness
 repair, disclosed in the Return log, §12 being the architect's section
 (charter §5). The orchestrator verified `docs/gates/` untouched and
 ratifies the transcription here.
+
+## SPEC-M14 revision re-countersignature (ADR-0013 + M14-B5 — transcribed)
+>
+> "I re-countersign the SPEC-M14 text moved at `541ea43` — §2, §4.2, §6.1,
+> §6.2, §6.3 item 4, §8, §9, §10, §12 and the three §13 rows — for
+> `P1-spec-freeze` testability. SPEC-M14 remains FROZEN and its testability
+> countersignature stands: on `J-dv_lead-0009` for the specification as frozen
+> at `3f6accc`, on `J-dv_lead-0012` for the ADR-0012 revision at `8641455`, and
+> on `J-dv_lead-0015` for this one." — dv_lead (WO-0030), transcribed by the
+> orchestrator 2026-08-03. ADR-0013's **substituted ground judged better than
+> the recommendation it replaced**: REQ-605 is unsatisfiable on the class and
+> REQ-008/§0.6 forbid a silent discard, so requirements.md forces the
+> disposition and leaves only the name — with REQ-612 confirmed as the internal
+> precedent that scopes REQ-605 to accepted datagrams. Partition verified total
+> and disjoint over the full 16-bit domain. The flagged question answered: **not
+> REQ-601's normative sentence** (a sufficient condition, unfalsified) but
+> **requirements.md §12's condition cell**, which is normative, is headed
+> "Condition", and is the enumeration REQ-008 quantifies over — carried as
+> **C-43**, not blocking. M14-B5 accepted with the architect's checksum
+> recompute, which repaired a vacuity in dv's own proposed stimulus; its
+> "unkillable" justification is dv's and is **false** — M14-B4 already kills the
+> wrong-single-bit read — carried as **C-44**. Attack plan: **M14-K7 and
+> M14-B5 both converted to ASSERT**, K7 with a total-length-20 anti-vacuity
+> partner added.
+
+## SPEC-M03 revision re-countersignature (ADR-0014 + the M03 rulings — WITHHELD, transcribed)
+>
+> "SPEC-M03 revision re-countersignature **WITHHELD** at `541ea43`." — dv_lead,
+> journal `J-dv_lead-0015` (WO-0030), transcribed by the orchestrator
+> 2026-08-03. Both rulings **endorsed on their merits** — reading (i) on closure
+> characters (with REQ-101's identical-output-stream requirement supplied as a
+> second, independent ground the ruling did not use: the one-closure reading
+> gives one REQ-102 frame two different output streams at the two start lanes)
+> and ADR-0014's admission scope — and §6.3 item 8 endorsed as a bound on the
+> stimulus that excludes no commissioned case. **CONTESTED on two sentences,
+> both in the M03-N2 material.** **M03-R1**: §6.1's new consequence 1, under
+> "Two consequences a bench may rely on", ends "only where it delivered no octet
+> do the two fall together" — false, by this specification's own m + 3 formula
+> and REQ-110's lane rule, for a lane-4 `/S/` aborting a lane-0-started frame
+> that delivered ≥ 1 octet; minimal witness `/S/` lane 0 of W − 1, then `/S/`
+> lane 4 and `/T/` lane 6 of W, four octets delivered and both strobes on W + 2.
+> The strobes coincide in **three** of the four sub-cases, not one. **M03-R2**:
+> §9's "Strobe cycle, pinned" gives a no-output-word frame **W + 2** by its rule
+> and **W + 3** by its own gloss whenever the ending character lies in the
+> frame's **own start word** — one pre-existing instance (REQ-110's commissioned
+> case, missed by dv at `J-dv_lead-0005`) that this ruling turns into a family,
+> already reaching the committed ASSERT rows M03-B2 and M03-B3. Repair surface:
+> **two sentences**; every other site in the commit is endorsed and the
+> re-review is bounded to R1 + R2. Attack plan: **no row converts**; M03-N4's
+> conversion is pre-committed unchanged at the repair SHA. Residue **C-45** (the
+> idle-injection prohibition is over-broad at a lane-0 start — dv's own wording
+> first).
+
+## requirements.md REQ-810 re-countersignature (ADR-0014 — transcribed)
+>
+> "I re-countersign requirements.md **REQ-810** as revised at `541ea43` and its
+> §13 row, for `P1-spec-freeze` testability. requirements.md remains FROZEN and
+> its testability countersignature stands: on `J-dv_lead-0002` for the sixteen
+> applied diffs at `b4b4cf4`, and on `J-dv_lead-0015` for this one." — dv_lead
+> (WO-0030), transcribed by the orchestrator 2026-08-03. The conflict between
+> REQ-810's prohibitions and REQ-803's "never to a frame already in flight" is
+> settled in the only direction that does not open the silent-discard hole
+> REQ-810's own next clause disclaims, and the scope is stated in the
+> requirement's own words. Confirmed: no §0.6 conservation exemption is owed,
+> because nothing is *presented* while the enable is 0 — unlike `clear` (C-2),
+> which abandons an admitted frame. Residue **C-46**: the verification column
+> still reads "no strobe anywhere" without the no-frame-in-flight scope its own
+> new sentence creates — passable as written, C-41's family, one cell.
+
+**Pre-worded for the SPEC-M03 repair SHA** (WO-0022 precedent — the re-review
+surface is R1 and R2 and nothing else; if the repair is confined to them this
+sentence is the whole of the next signature):
+
+> "I re-countersign the SPEC-M03 text moved at `541ea43` as repaired at
+> `<SHA>` — §4.3, §6.1, §6.2, §6.3 item 8, §9, §10 and the four §13 rows — for
+> `P1-spec-freeze` testability. SPEC-M03 remains FROZEN and its testability
+> countersignature stands: on `J-dv_lead-0005` for the specification as frozen
+> at `f78766e`, and on `J-dv_lead-00NN` for this revision."
 
 ## Sponsor items attached to this gate — both decided 2026-08-02
 

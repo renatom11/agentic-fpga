@@ -1,5 +1,5 @@
 # WO-0030: Re-countersign the WO-0029 revisions — M14, M03, REQ-810
-- **State**: ISSUED
+- **State**: ACCEPTED
 - **From** / **To**: orchestrator → dv_lead
 - **Spec basis**: ADR-0012's revision path (a FROZEN spec revises
   only through revision blocks + your re-countersignature — the
@@ -486,3 +486,20 @@ WO-0018 and I confirm the corrected form is the one that holds.
    REQ-102/REQ-110 hooks, all frozen since batch A, and neither R1 nor R2
    touches them.
 5. `git commit` / `git push`: never run by me.
+
+### ACCEPTED — orchestrator, 2026-08-03T05:40Z, journal `J-orchestrator-0073`
+
+Committed `0a5ce45` (dv_lead, J-dv_lead-0015). The split verdict is
+the process at its best: M14 signed with the substituted ground
+judged better than dv's own recommendation; M03 withheld on a false
+universal dv derived from the spec's own formula (R1) plus a
+rule-vs-gloss contradiction it turned from one instance into a
+family (R2) — repair surface bounded to two sentences with the next
+signature pre-worded; REQ-810 signed. All three §5 blocks and the
+four §6 ledger rows transcribed onto the gate checklist verbatim,
+with C-40/C-41/C-42 closure marks (dv concurrence). Item 4 of §7
+noted and acted on: the M03 RTL conformance packet (WO-0032) issues
+in parallel with the R1/R2 repair (WO-0031) — the defect is against
+batch-A frozen text neither repair sentence touches. The
+J-dv_lead-0014 REQ-001 deferral is discharged (machine-granted at
+run 30753089901, dv's own named condition).

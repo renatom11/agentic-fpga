@@ -3129,3 +3129,48 @@ the architect with the defect named.
 - agents/handoffs/WO-0029_consolidated-spec-queue.md
 - agents/handoffs/WO-0030_revision-recountersign.md
 - tasks/BOARD.md
+
+## [J-orchestrator-0073] 2026-08-03T05:40:00Z | task:WO-0030 | Split verdict processed: three blocks transcribed, two follow-ups issued in parallel — the repair and the conviction don't share a file
+
+### Trigger
+dv_lead's WO-0030 completion: M14 SIGNED, REQ-810 SIGNED, M03
+WITHHELD on two named sentences (R1 false universal, R2 rule-vs-
+gloss), four new ledger rows, three gate blocks supplied verbatim.
+
+### Inputs
+- The Return log §5–§7 at 0a5ce45; J-dv_lead-0015 (verified pure
+  append, Files set-equal, committed under dv identity).
+
+### Reasoning
+dv's §7 item 4 is the scheduling unlock: the M03 RTL non-conformance
+is against REQ-102 + §10 hooks frozen at batch A, untouched by
+R1/R2 — so the architect's two-sentence repair (WO-0031) and
+rtl_lead's conformance fix (WO-0032) run in parallel; different
+files, different journals, serialized only at my commit queue.
+Transcription is mine per PROTOCOL §7 (gates outside dv's write
+scope): three blocks verbatim, C-43…C-46, closure marks C-40/41/42
+with dv's concurrence noted.
+
+### Actions
+- Checklist transcription; WO-0030 ACCEPTED; WO-0031 + WO-0032
+  authored; BOARD updated; spawning both agents in parallel.
+
+### Evidence
+- grep 'C-4[3-6]' docs/gates/P1-spec-freeze-checklist.md → 4 rows;
+  the three new '## …re-countersignature' sections present.
+
+### Outcome / DoD
+Both follow-ups in flight. On WO-0031's return: commit, then the
+clerical re-countersign (pre-worded). On WO-0032's: commit, CI
+promotion loop, then dv's M03 plan rows unblock.
+
+### Open questions
+- Whether the R1 repair's cycle statement stays inside two
+  sentences (architect must return, not widen, if not).
+
+### Files-in-this-commit
+- agents/handoffs/WO-0030_revision-recountersign.md
+- agents/handoffs/WO-0031_m03-r1r2-repair.md
+- agents/handoffs/WO-0032_m03-req102-conformance.md
+- docs/gates/P1-spec-freeze-checklist.md
+- tasks/BOARD.md
