@@ -3492,3 +3492,56 @@ arc on the record.
 - test/xgmii/test_idle_injection.ml
 - test/xgmii/test_injection.ml
 - test/xgmii_probe/test_xgmii_probe.ml
+
+## [J-orchestrator-0082] 2026-08-03T09:30:00Z | task:none | The showcase site — the program presents itself, deployable from the repo
+
+### Trigger
+Sponsor request: a public site with a half-technical/half-not
+description, the block diagram, spec atlas and org chart artifacts,
+and a live backlog with progress — hosted via his existing
+Cloudflare/wrangler flow. Journals excluded by his call; the journal
+philosophy and per-agent counts folded into the org-chart section.
+
+### Inputs
+- The three artifact HTML files (self-contained by construction —
+  fonts inlined, zero external requests — which is what makes them
+  trivially deployable); tasks/BOARD.md; the journals; git.
+
+### Reasoning
+The site lives in site/ IN the repo so it versions under protocol
+and the sponsor deploys with `cd site && npx wrangler deploy`
+(Workers static assets). Two generated pages (index, backlog) come
+from site/build.py reading the same files the agents work from — the
+numbers cannot drift from the record. The three artifact pages are
+snapshots with an injected home link; org-chart additionally carries
+the journal-rule strip with per-agent entry counts (119 total,
+1:1 with commits — the stat that IS the project). Orchestrator
+identity: my write scope is unrestricted (policy.sh) and the site is
+reporting, not design.
+
+### Actions
+- site/{build.py,wrangler.jsonc,README.md} + public/{index,backlog,
+  block-diagram,spec-atlas,org-chart}.html; screenshots verified;
+  one honesty fix (5/20 modules, not 6 — word_counter is bootstrap,
+  not inventory).
+
+### Evidence
+- python3 site/build.py output: 119 commits · 119 entries · 33 WOs ·
+  136 attack rows; zero pageerrors under headless chromium.
+
+### Outcome / DoD
+Sponsor can deploy immediately; refresh = rerun build.py + redeploy.
+
+### Open questions
+- Whether to add a CI job that rebuilds backlog.html on push (needs
+  his Cloudflare token as a secret — his call, offered).
+
+### Files-in-this-commit
+- site/README.md
+- site/build.py
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/index.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html
+- site/wrangler.jsonc

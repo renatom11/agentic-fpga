@@ -1,0 +1,7 @@
+// Cloudflare Workers static-assets config for the showcase site.
+// Deploy:  cd site && npx wrangler deploy
+{
+  "name": "agentic-fpga",
+  "compatibility_date": "2026-08-01",
+  "assets": { "directory": "./public" }
+}
