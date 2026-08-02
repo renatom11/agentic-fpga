@@ -2943,3 +2943,50 @@ green on that head = REQ-902 evidence + X-9's first real verdict.
 
 ### Files-in-this-commit
 - .github/workflows/build.yml
+
+## [J-orchestrator-0069] 2026-08-02T23:55:00Z | task:WO-0026 | The three MAC snapshots promoted verbatim from run 30752684889's promotion block — sha256-verified byte transport, ADR-0005 rule 2 held
+
+### Trigger
+Run 30752684889 (head `af1dfc8`) red at the determinism step as
+designed, now printing the J-orchestrator-0068 PROMOTION BLOCK.
+
+### Inputs
+- The block: exactly three `--- FILE` entries — `eth_mac_10g.v`,
+  `xgmii_rx_64.v`, `xgmii_tx_64.v` — each with CI's own sha256 and
+  base64 body, all inside the log-fetch window (lines 4171–4980 of
+  4999). `word_counter.v` absent from the diff, as rtl_lead's Return
+  log required (its movement would have been a real defect).
+
+### Reasoning
+Promotion is byte-transport, not authorship: decode CI's base64,
+recompute sha256 locally, write only on match. All three verified —
+108,946 / 64,017 / 66,186 bytes. No hand edit, no regeneration
+(ADR-0005: the container cannot run OCaml; CI's bytes are the only
+admissible source). Local pre-check: dv's repaired X-9 (ff2d54a) over
+the promoted text passes — 5 checks, 0 failures, REQ-306 live on
+crc32_eth, module inventory matching the §10 names.
+
+### Actions
+- Wrote the three files under `rtl_snapshots/` exactly as decoded.
+- This commit stages them and nothing else.
+
+### Evidence
+- Recorded sha256 prefixes: eth_mac_10g `0c71e2548c0e…`,
+  xgmii_rx_64 `bfc2eea863e2…`, xgmii_tx_64 `6f4cc64a194b…` — compare
+  `sha256sum rtl_snapshots/{eth_mac_10g,xgmii_rx_64,xgmii_tx_64}.v`
+  against run 30752684889's log block.
+- `bash tools/dv_checks.sh` at this tree: exit 0.
+
+### Outcome / DoD
+The next run regenerates these files from source and diffs them
+against this commit: green at determinism = REQ-902's byte-identity
+evidence, then the repaired X-9's first real verdict in CI, then the
+abort quantifier. Combined green closes WO-0026 and WO-0028 together.
+
+### Open questions
+- None; awaiting the run on this head.
+
+### Files-in-this-commit
+- rtl_snapshots/eth_mac_10g.v
+- rtl_snapshots/xgmii_rx_64.v
+- rtl_snapshots/xgmii_tx_64.v
