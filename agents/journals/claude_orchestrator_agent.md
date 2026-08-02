@@ -2739,3 +2739,47 @@ AP-M03 and AP-M14, the latter carrying the abort-availability row).
 - agents/handoffs/WO-0025_m14-recountersign.md
 - docs/gates/P1-spec-freeze-checklist.md
 - tasks/BOARD.md
+
+## [J-orchestrator-0065] 2026-08-02T20:45:00Z | task:WO-0024 | Second RTL wave green first-try; emission + attack-plan WOs issued
+
+### Trigger
+CI run 30750089122 on f840475: success — the batch-B RTL (M03/M04/M05,
+blind-written) elaborates with every step green; all six items of
+rtl_lead's compile-risk register cleared.
+
+### Inputs
+- The run conclusion; the WO-0024 Return log (microarchitecture,
+  four self-fixed defects, four returned questions, the register)
+
+### Reasoning
+Acceptance on the WO-0016 pattern. The programme now carries six RTL
+modules with zero compile errors across two blind-written waves — the
+sources-path environment finding plus the incremental-write discipline
+(after the token-cap incident) both earned their keep. Follow-ups:
+WO-0026 closes rtl_lead's own returned question 1 (emission
+registration, expected-red promotion cycle by design); WO-0027 starts
+dv's attack-plan phase exactly where dv said it should (AP-M03 +
+AP-M14 with C-37's row first). rtl questions 2-4 queue for the
+architect's next docs cycle with C-41. Two lanes in flight, disjoint
+scopes (bin/ vs test/attack_plans/).
+
+### Actions
+- WO-0024 ACCEPTED block; board rows; issued WO-0026 + WO-0027; this
+  entry; commit; push; both spawns with a joint fallback.
+
+### Evidence
+- Run 30750089122 via the API; git show f840475 --stat
+
+### Outcome / DoD
+Steady-state pipeline: RTL advancing, verification planning started,
+gate awaiting the sponsor's signature.
+
+### Open questions
+- rtl questions 2-4 + C-41's three editorial columns: the next
+  architect packet.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0024_batch-b-rtl.md
+- agents/handoffs/WO-0026_emission-registration.md
+- agents/handoffs/WO-0027_attack-plans.md
+- tasks/BOARD.md

@@ -1,5 +1,5 @@
 # WO-0024: Batch-B RTL — M03 `Xgmii_rx_64`, M04 `Xgmii_tx_64`, M05 `Eth_mac_10g`
-- **State**: ISSUED
+- **State**: ACCEPTED
 - **From** / **To**: orchestrator → rtl_lead
 - **Spec basis** (PROTOCOL §10): SPEC-M03/M04/M05, FROZEN at f78766e,
   §13 rows since (M03: C-18 + twin; M04: C-14 set, C-16's C+8 rule,
@@ -302,3 +302,16 @@ Named so the round-trip is cheap, highest first:
 4. **`error_runt` on a frame closed by `/T/` while `cfg_rx_enable`
    went to 0 mid-frame** — covered by my REQ-803 reading in §2 above;
    raised so it is visible rather than assumed.
+
+### ACCEPTED — orchestrator, 2026-08-02T20:35Z, journal `J-orchestrator-0065`
+
+Committed as `f840475` (rtl_lead, `J-rtl_lead-0002`). **CI run
+30750089122: `success`, every step** — the second blind-written RTL
+wave elaborates first-try; all six items of the Return log's
+compile-risk register cleared, including the `Always.State_machine`
+deriving with no repo precedent. dv_checks green with REQ-903 coverage
+at 5/20. The implement-personally call and its stated cost
+(self-review is not review; dv suites + auditor mutation campaign are
+the compensating controls) are accepted as the record. Question 1
+(emission registration) becomes WO-0026; questions 2–4 are queued for
+the architect's next docs cycle alongside C-41's editorial diffs.
