@@ -1414,3 +1414,35 @@ none
 ### Files-in-this-commit
 - docs/gates/P1-spec-freeze-checklist.md
 - tasks/BOARD.md
+
+## [J-orchestrator-0036] 2026-08-02T04:45:00Z | task:WO-0006 | Accept batch A drafts; queue the freeze sequence
+### Trigger
+Architect returned WO-0006: SPEC-M01/M02 complete against the template,
+lifts byte-identical, six open questions.
+### Inputs
+docs/specs/modules/* and ifc_check lifts at 22145b5; WO-0006 Return log.
+### Reasoning
+Acceptance checks were re-run, not read: block-identity via extraction
+and comparison, staged-set equality, and the 21-strobe count against
+§12. The load-bearing design call in SPEC-M02 — ports carry finished
+CRC-32 values so REQ-303/304 constants read directly at crc_out with the
+0xFFFFFFFF init and final XOR internal — is exactly the convention-error
+class this programme already paid for once, spent in the right
+direction; the owed ADR will make it permanent. All six open questions
+disposed into the batch-B packet rather than ad-hoc fixes now, keeping
+requirements.md stable between countersignatures. The one thing
+acceptance cannot supply locally is ppx elaboration of the new records;
+the CI run on 22145b5 is that evidence, and the batch-A freeze row waits
+for it plus dv_lead's countersign (WO-0007, issuing on green).
+### Actions
+WO-0006 ACCEPTED entry with six dispositions; board row updated.
+### Evidence
+Commit 22145b5 (architect's, R1-R9 enforced); acceptance check commands
+reproducible at that SHA; CI run pending on this push.
+### Outcome
+Awaiting ifc_check green, then WO-0007. Handoff: none.
+### Open-questions
+none
+### Files-in-this-commit
+- agents/handoffs/WO-0006_batch-a-specs.md
+- tasks/BOARD.md

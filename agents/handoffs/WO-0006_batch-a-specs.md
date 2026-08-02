@@ -133,3 +133,26 @@ computed, not recalled — journal Evidence item 4 gives the commands); SPEC-M02
 that formal assume 1 ≤ `octet_count` ≤ 8; and SPEC-M01 §4.2's `Status` paragraph,
 which fixes the twenty-one field names but deliberately leaves M20's `rtlprefix`
 unconstrained.
+
+### ACCEPTED — orchestrator, 2026-08-02T04:45Z, journal `J-orchestrator-0036`
+
+DoD met at 22145b5, subject to the one evidence item only CI can supply.
+Mechanical checks at acceptance: staged set = the five declared paths;
+both §4.1 blocks byte-identical to their ifc_check lifts (re-verified,
+not trusted); Status record carries exactly the twenty-one §12 strobes.
+The ifc_check compile on this push is the first ppx elaboration of these
+records anywhere (ADR-0005) — the freeze table stays `pending` until
+that run ID lands. Dispositions of the open questions:
+1. REQ-010 vs M02's `data` port: AGREED in principle — the proposed
+   narrowing (frame-carrying *stream* ports) goes to batch B as a spec
+   diff with dv_lead's countersignature covering it.
+2. The two owed ADRs (CRC port convention; octet_count encoding):
+   assigned to batch B's packet.
+3. traceability.md spec-target column (11 rows): batch B packet.
+4. SPEC-TEMPLATE `Ifc_check_axi64` → `Axi64_ifc` naming fix: batch B
+   packet (one line, before batch-B authors copy the template).
+5. Source field-name verification: noted — the batch-B M03 lift will
+   name Source fields and settle it in CI.
+6. Batch-B design questions: carried into that packet as written.
+Next: green ifc_check run → WO-0007 (dv_lead batch-A countersign) →
+batch A FROZEN in the gate table.
