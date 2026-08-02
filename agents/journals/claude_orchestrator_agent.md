@@ -1983,3 +1983,41 @@ committed under its own identity after acceptance.
 ### Files-in-this-commit
 - agents/handoffs/WO-0016_m01-m02-implementation.md
 - tasks/BOARD.md
+
+## [J-orchestrator-0050] 2026-08-02T07:00:00Z | task:WO-0015 | WO-0015 evidence appendix committed (issuance completion)
+
+### Trigger
+Stop-hook flagged the uncommitted WO-0015 evidence appendix. It is my
+own pre-spawn issuance edit (run 30736107842 pinned into the packet's
+Evidence field), deferred at J-orchestrator-0049 to ride dv's commit.
+
+### Inputs
+- `git status --porcelain` — exactly one modified path, the packet
+- `git diff --cached` — verified the staged content is only the
+  evidence block, no dv_lead Return-log content (dv is mid-flight)
+
+### Reasoning
+The standing rule (commit only after agent completion) guards against
+committing an in-flight agent's partial work under the wrong identity.
+This edit is orchestrator work made before the spawn; staging a
+verified snapshot closes the race with dv's future packet append. The
+packet legitimately appears in issuance, return, and acceptance
+commits — one agent per commit holds for each.
+
+### Actions
+- Staged the packet, verified the staged diff byte-for-byte, this
+  entry, commit as orchestrator, push.
+
+### Evidence
+- `git diff --cached -- agents/handoffs/WO-0015_batch-d-countersign.md`
+  — 6 insertions, all in the Evidence field
+
+### Outcome / DoD
+Tree clean; remote current; dv_lead's eventual return commits cleanly
+on top.
+
+### Open questions
+- None.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0015_batch-d-countersign.md

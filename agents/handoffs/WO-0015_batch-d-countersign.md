@@ -50,8 +50,12 @@
   reaffirmation; countersignature sentence or owed-diff list.
 - **Out of scope**: batches E–F; RTL; editing any spec (diffs are the
   architect's to make); `docs/gates/` (orchestrator transcribes).
-- **Evidence**: CI `build` run on a9993ff (the batch-D lifts' first
-  elaboration — id and conclusion will be appended below before spawn).
+- **Evidence**: CI `build` run **30736107842**, conclusion **`success`**,
+  SHA 2f29888 (whose tree carries a9993ff's specs unchanged —
+  `git diff a9993ff 2f29888 -- docs/specs/` is empty). All 13 lifts
+  elaborate, the four batch-D lifts for the first time; dv_checks step
+  green. This is the run SPEC-M10…M13's §12 rows cite when the
+  architect fills them at the freeze flip.
 ## Task
 Fourth countersign cycle. Batch D is the first protocol-logic batch —
 your verdict decides whether the ARP family freezes at a9993ff or the
