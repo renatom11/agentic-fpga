@@ -211,14 +211,12 @@ a { color:var(--rx); }
 .cap-motion { display:inline; } .cap-static { display:none; }
 @media (prefers-reduced-motion: reduce) {
   .cap-motion { display:none; } .cap-static { display:inline; } }
-.numbers { display:flex; flex-wrap:wrap; gap:.7rem; margin:1.6rem 0; }
-.stat { flex:1 1 9.5rem; border:1px solid var(--line); border-radius:12px;
-  background:var(--panel); padding:.7rem .9rem; }
-a.stat { text-decoration:none; color:var(--ink); transition:border-color .15s; }
-a.stat:hover { border-color:var(--rx); }
-.stat b { display:block; font-family:'Plex Mono',monospace; font-weight:400;
-  font-size:1.25rem; color:var(--rx); font-variant-numeric:tabular-nums; }
-.stat span { font-size:.74rem; color:var(--ink-2); line-height:1.35; display:block; margin-top:.15rem; }
+.statline { display:flex; flex-wrap:wrap; gap:.35rem 1.4rem; margin:1.7rem 0 1.9rem;
+  padding:.9rem 0; border-top:1px solid var(--line); border-bottom:1px solid var(--line);
+  font-size:.88rem; color:var(--ink-2); align-items:baseline; }
+.statline b { font-family:'Plex Mono',monospace; font-weight:600; font-size:1.02rem;
+  color:var(--rx); font-variant-numeric:tabular-nums; margin-right:.35rem; }
+.statline .si { white-space:nowrap; }
 .twocol { display:grid; grid-template-columns:1fr; gap:1.2rem; }
 @media (min-width:840px) { .twocol { grid-template-columns:1fr 1fr; } }
 .col { border:1px solid var(--line); border-radius:14px; background:var(--panel); padding:1.1rem 1.3rem; }
@@ -314,13 +312,13 @@ index = head_block('agentic-fpga — a trading network card built by an AI org',
   <div class="cadence" title="A new minimum-size packet every 67.2 nanoseconds — slowed down exactly 20,000,000× so you can watch it"></div>
   {CAD_CAPTION}
 
-  <div class="numbers">
-    <div class="stat"><b>{n_commits}</b><span>commits — every one paired with the agent’s written reasoning</span></div>
-    <a class="stat" href="spec-atlas.html"><b>20/20</b><span>design specs frozen — each only after a second agent tried to break it; sponsor-signed</span></a>
-    <a class="stat" href="spec-atlas.html"><b>110</b><span>numbered requirements, each traced to the module that satisfies it</span></a>
-    <a class="stat" href="backlog.html"><b>{n_rtl}/20</b><span>modules built in hardware code (RTL) — each compiled clean on its first try; none benched yet</span></a>
-    <a class="stat" href="backlog.html"><b>{n_attack}</b><span>planned attacks — each naming the wrong design it would catch</span></a>
-    <div class="stat"><b>8.7M</b><span>length pairs — the spec’s abort math re-derived by CI on every push; a check of the spec, not yet the chip</span></div>
+  <div class="statline">
+    <span class="si"><b>{n_commits}</b>commits, every one journaled</span>
+    <span class="si"><b>20/20</b>specs frozen &amp; sponsor-signed</span>
+    <span class="si"><b>110</b>requirements</span>
+    <span class="si"><b>{n_rtl}/20</b>modules in RTL</span>
+    <span class="si"><b>{n_attack}</b>planned attacks</span>
+    <span class="si" style="color:var(--ink-2)">benches: the current work</span>
   </div>
 
   <h2>What this is</h2>

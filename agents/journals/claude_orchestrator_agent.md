@@ -4044,3 +4044,41 @@ Sponsor redeploys.
 - site/public/index.html
 - site/public/org-chart.html
 - site/public/spec-atlas.html
+
+## [J-orchestrator-0095] 2026-08-03T15:30:00Z | task:none | The stat cards become a stat line — six boxes of dashboard collapse to one quiet rule
+
+### Trigger
+Sponsor: "I don't like this section on the main page" — the six
+stat tiles under the hero.
+
+### Inputs
+- The .numbers grid in site/build.py.
+
+### Reasoning
+The grid read as a KPI dashboard parked mid-story: six boxes, uneven
+heights, long captions. Replaced with a single wrapping line between
+two hairlines — mono teal numbers, three-word labels, the honesty
+note ("benches: the current work") as a trailing item. The long
+caption content survives where it belongs: the For-engineers
+paragraph and the backlog legend.
+
+### Actions
+- CSS + markup swap; rebuilt; this commit.
+
+### Evidence
+- Screenshot: one-line strip, wraps to two lines at this width,
+  reads in three seconds.
+
+### Outcome / DoD
+Sponsor redeploys.
+
+### Open questions
+- None.
+
+### Files-in-this-commit
+- site/build.py
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/index.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html
