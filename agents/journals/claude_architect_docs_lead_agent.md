@@ -476,3 +476,292 @@ checklist.
 - docs/specs/architecture.md
 - docs/specs/requirements.md
 - docs/specs/traceability.md
+
+## [J-architect_docs_lead-0003] 2026-08-02T04:40:00Z | task:WO-0006 | Batch A specs: SPEC-M01 Axi64 (types only) and SPEC-M02 Crc32_eth, with both §4.1 blocks lifted into ifc_check
+
+### Trigger
+Work order `agents/handoffs/WO-0006_batch-a-specs.md` (state ISSUED, committed at
+1f541a9), spawn short-id `WO-0006/2026-08-02T03:45Z`, third activation of this
+identity. The order: the first two per-module specifications, the ones the other
+eighteen copy their form from, plus the first two real entries in the interface
+compile-check lane.
+
+### Inputs
+- `agents/charters/architect_docs_lead.md` (§5 definition of done, §6 evaluation).
+- `agents/PROTOCOL.md` §4 (entry grammar), §6 (write scope), §7 (gates), §10.
+- `agents/handoffs/WO-0006_batch-a-specs.md` at 1f541a9.
+- `docs/specs/SPEC-TEMPLATE.md` — the normative form; rules 1 (not-applicable
+  plus one sentence of why), 4 (every behavioural claim traces to a REQ), 5
+  (banned phrasing), 6 (verbatim lift, entry points inside `module type S`).
+- `docs/specs/requirements.md` at b4b4cf4 — verified byte-identical to the
+  working tree (`git diff b4b4cf4 -- docs/specs/requirements.md` empty), so the
+  SIGNED text and the text I wrote against are the same text. Read in full:
+  §0.1–§0.7, §1 REQ-001…021, §4 REQ-301…306 and the provenance note, §9.1, §12.
+- `docs/specs/architecture.md` §1, §2.3, §4 (M01/M02 rows, latency ceilings),
+  §6.3, §7, §8, §10.
+- `docs/gates/P1-spec-freeze-checklist.md` — carry-forward ledger; C-1 and C-4
+  are batch-B scoped and were not touched.
+- `docs/specs/traceability.md` header and the rows for REQ-010…014, REQ-301…306,
+  REQ-802 (all `pending` in the Spec-section column).
+- `docs/specs/ifc_check/dune` and `template_ifc.ml` — the proven-compiling form
+  and, decisively, the library name `ifc_check`.
+- No external repository was read for this work order. `verilog-ethernet` is
+  cited only through architecture.md §4/§5, which already records what was taken
+  from it; `Essenceia/Nasdaq-HFT-FPGA` was not consulted and has no Phase-1
+  relevance.
+
+### Reasoning
+
+**1. M01 is a specification of a vocabulary, and the template is written for
+circuits.** Six sections have no circuit to describe: §4.2's port table, §6.2's
+state machine, §7's timing contract, §8's stress obligation, §9's error table,
+and the `create`/`hierarchical` clause of §4.1. The template's rule 1 says these
+are answered, never deleted, and I took "one sentence of why" seriously in each
+— the alternative I rejected was a single blanket "M01 has no circuit" at the
+top and six pointers to it, which is cheaper to write and worse to read, because
+the reader who arrives at §7 looking for a latency figure needs to be told there,
+not three pages earlier, and to be told where the figure does live. §4.2 is the
+one section I did not answer with a bare "not applicable": a types module still
+has a field table, and that table is the thing the other nineteen specs quote, so
+I kept the template's five columns and replaced Dir with a stated reason
+(direction is fixed at the instantiation site — the same `Eth_header` is M06's
+output and M07's input).
+
+**2. What M01 must NOT contain.** Architecture §4's M01 row lists the stream
+types plus `Eth_header`, `Ip_header`, `Udp_header`, `Config` and `Status`, and I
+declined to add anything to that list. Two candidates presented themselves. The
+application transmit request (REQ-705) belongs to SPEC-M18/M20 by requirements.md
+§0.1's explicit deferral, so putting it here would have contradicted a signed
+document. The XGMII lane pair is the more interesting one: four later specs (M03,
+M04, M05, M20) will each restate `xgmii_rxd`[63:0]/`xgmii_rxc`[7:0], which is
+exactly the duplication REQ-010 rejects for streams — but architecture §4 gives
+M01 no such record, architecture.md is read-only under this WO, and inventing one
+now would make batch B's authors quote a record no inventory row authorises. I
+raised it as open question 11.1 against batch B instead, where the cost of four
+restatements becomes visible in a diff rather than in an argument.
+
+**3. The Status record settles a name-versus-port question.** REQ-804 needs one
+field per strobe and requirements.md §0.2 makes the twenty-one strobe names
+normative. Field names I fixed exactly (`error_bad_fcs`, …, in §12's order); the
+`rtlprefix` M20 applies I deliberately left unconstrained (§6.3), because no REQ
+pins the *port* names and I would rather leave a hole a later spec fills than
+assert something the toolchain might contradict. `Config` is the opposite case: I
+constrained its prefix to `cfg_` at every site, because REQ-802 names `cfg_ifg`
+in its own text, and field `ifg` under prefix `cfg_` is the only way that name is
+true. So M01 fixes one prefix and exactly one.
+
+**4. M02's central decision: the ports carry finished CRC values, not the raw
+shift register.** This is the decision the rest of the spec hangs on and it went
+the minority way relative to prior art. Under REQ-301's parameterisation the
+finished value C and the internal register R satisfy R = C XOR 0xFFFFFFFF, so
+either can be carried and the hardware cost is identical (an XOR with a constant
+folds into the surrounding logic). What differs is how many conversions the rest
+of the programme has to get right:
+
+- With finished values, `crc_in` = 0x00000000 is the CRC-32 of the empty string,
+  REQ-303's 0xCBF43926 is read directly at `crc_out`, REQ-304's 0x2144DF1C is
+  read directly at `crc_out`, and the REQ-305 oracle comparison is the identity
+  `crc_out = reference(crc_in, octets)` with no adjustment at either end.
+- With the raw register, the seed is 0xFFFFFFFF and every one of those four
+  comparisons carries an XOR that a bench author, a formal harness and a
+  co-simulation adapter must each apply and none may forget. requirements.md §4's
+  provenance note exists because this programme has *already* lost a review cycle
+  to a convention error on exactly these two constants (0xC704DD7B is the same
+  residue in the non-reflected convention). Removing the remaining conversions
+  from the interface is the cheapest defence against a repeat.
+
+I checked the arithmetic rather than asserting it — see Evidence — including that
+the residue holds at two frame lengths and that the chained 8-then-1 update
+reproduces REQ-303. The rejected convention is recorded in the spec (§6.1 note 3
+gives the conversion in both directions, for a reader comparing against
+`axis_eth_fcs_64.v`), and the decision is booked as an ADR I owe (11.1), since
+charter §3 makes a non-obvious interface choice ADR material and this WO's file
+set excludes `docs/adr/`.
+
+**5. `octet_count` is a 4-bit count with an unconstrained region, and I did not
+close the region by fiat.** A 3-bit count-minus-one would have made the function
+total, which is genuinely attractive for a `formal_dv` proof — no assumption to
+state. I rejected it because it puts an off-by-one at every call site in M03 and
+M04 and in every bench, and an off-by-one that silently computes the CRC of seven
+octets instead of eight is precisely the defect class this module exists to
+prevent. Having chosen the count, the values 0 and 9–15 are outside REQ-302's
+stated domain, and template rule 4 gives two honest options: raise the missing
+requirement, or record it as unconstrained in §6.3. I did both halves — §6.3
+records it unconstrained today with an explicit instruction that DV assert
+nothing there and that formal assume the domain, and 11.2 proposes REQ-307 for
+the zero case *if and only if* M03 or M04 turns out to need an update-by-zero
+cycle. Only those two specs can answer that, so inventing the requirement now
+would be guessing on behalf of a module that does not exist yet.
+
+**6. REQ-010 versus M02, contested rather than glossed.** REQ-010 says all
+frame-carrying ports SHALL use `Axi64.Source`/`Axi64.Dest`. M02's `data` port
+carries frame octets and is deliberately not a stream — REQ-306 forbids it the
+state that would make `tvalid`/`tlast`/`tkeep`/`tuser` mean anything, and its
+interface compile check therefore has no `Axi64` port to witness. Read literally,
+M02 is the single Phase-1 module that cannot satisfy an invariant it is bound by,
+which is a standing audit finding waiting to be written. requirements.md is
+read-only under this WO and the WO says to contest rather than edit, so the
+proposed narrowing ("frame-carrying *stream* ports", naming M02) is in the Return
+log and in SPEC-M02 §11.3. I considered the alternative of giving M02 an
+`Axi64.Source` port and ignoring four of its fields; that is worse, because it
+would put fields on a boundary where no requirement gives them meaning and would
+invite an implementer to start using them.
+
+**7. The lift factoring, and a template defect found by doing it.** SPEC-TEMPLATE
+§4.1's comment tells later specs to write `open Ifc_check_axi64`. No such module
+can exist: rule 6 names the file `<module>_ifc.ml` and `docs/specs/ifc_check/dune`
+declares `(name ifc_check)`, so the file is `axi64_ifc.ml` and the module a
+sibling lift opens is `Axi64_ifc`. Both lifts use the real name; the template
+needs a one-line editorial diff (11.3 in SPEC-M01), which is out of this WO's
+file set. In `crc32_eth_ifc.ml` the open is `open! Axi64_ifc` with the bang and a
+comment saying exactly why: M02 legitimately takes no type from M01, and an
+unbanged open of a module nothing references is a dev-profile warning-33 build
+failure. I considered forcing a real dependency by writing
+`[@bits Axi64_config.data_bits]`, which would have tied M02's word width to M01's
+constant structurally — I rejected it because no block in this repository has yet
+proved that ppx_hardcaml accepts a non-literal `[@bits]` payload, hardcaml is not
+installed in this container (see Evidence), and ADR-0005 makes CI the only place
+that finding could surface. A red CI on the orchestrator's commit is a worse
+trade than a normative sentence in §4.2 saying `data` is one `Axi64` word.
+
+**8. `open!` on both lines of `axi64_ifc.ml`, deviating from the template
+example's `open Hardcaml`.** That file declares no `module type S`, so it names
+neither `Scope` nor `Signal`; whether `Hardcaml` is referenced at all depends on
+whether ppx_hardcaml's generated code qualifies its references, which I cannot
+check here. `open!` costs nothing and removes the failure mode. The comment in
+the file says this, so a reader does not have to re-derive it.
+
+**9. What I did not do.** SPEC-TEMPLATE §10 says the traceability matrix is
+updated in the same commit as the spec; WO-0006 fixes Files-in-this-commit to
+five paths, `traceability.md` not among them. I obeyed the work order and
+recorded the conflict in three places rather than resolving it silently: both
+specs' §10 note it below the table, SPEC-M01 §11.2 owns it, and the Return log
+raises it. Eleven REQ rows (010–014, 301–306, 802) still read `pending`. C-1 and
+C-4 in the gate ledger are batch-B scoped; I neither attempted nor regressed
+them, and nothing in either spec pins a latency constant that C-1's unit question
+would govern — M01 and M02 both contribute zero.
+
+### Actions
+- Wrote `docs/specs/modules/axi64.md` (SPEC-M01, DRAFT): all thirteen template
+  sections; §4.2 as five field tables (Source, Dest, three header records,
+  Config) plus a pointer for Status; §4.1 declaring `Axi64_config`, `Axi64`,
+  `Eth_header`, `Ip_header`, `Udp_header`, `Config` (twelve fields) and `Status`
+  (twenty-one fields); "not applicable" with a reason in §4.2's Dir column, §6.2,
+  §7 (all five clauses individually), §8, §9 and the `create`/`hierarchical`
+  clause of §4.1; four open questions.
+- Wrote `docs/specs/modules/crc32_eth.md` (SPEC-M02, DRAFT): the update contract
+  as an equation over CRC32(·) with the value convention stated explicitly, two
+  worked examples with real numbers (REQ-303 in two updates; a 64-octet frame in
+  eight, both transmit and receive), the REQ-305 oracle relationship including
+  its anchoring obligation, "not applicable" with a reason in §5, §6.2, §8, §9
+  and three clauses of §7; four open questions.
+- Wrote `docs/specs/ifc_check/axi64_ifc.ml` and
+  `docs/specs/ifc_check/crc32_eth_ifc.ml` as byte-identical lifts of the two
+  §4.1 blocks.
+- Appended the RETURNED entry to `agents/handoffs/WO-0006_batch-a-specs.md`.
+- Ran no git command.
+
+### Evidence
+All commands below run from a checkout at this commit's SHA.
+
+1. **The requirements text I specified against is the SIGNED text.**
+   `git diff b4b4cf4 -- docs/specs/requirements.md` → empty output.
+2. **Both lifts are byte-identical to their spec's §4.1 fenced block** (template
+   rule 6, "lifted verbatim"), checked mechanically for both pairs — the spec
+   contains exactly one fenced OCaml block and it equals the `.ml` file byte for
+   byte. Re-runnable, written so the fence characters need no quoting:
+   `python3 -c "import re;F=chr(96)*3;md=open('docs/specs/modules/axi64.md').read();b=re.findall(F+'ocaml\n(.*?)'+F+'\n',md,re.S);print(len(b)==1 and b[0]==open('docs/specs/ifc_check/axi64_ifc.ml').read())"`
+   → `True`; the same command with `crc32_eth` substituted for `axi64` in both
+   paths → `True`.
+3. **Both lifts parse as OCaml.** `ocamlc -stop-after parsing -c axi64_ifc.ml`
+   and `... crc32_eth_ifc.ml` → no output, exit 0, on the container's
+   `ocaml-system.4.14.1` switch. This is a **syntax** result only and is
+   explicitly **not** the compile evidence charter §5 and ADR-0005 require:
+   hardcaml, hardcaml_axi and ppx_hardcaml are not installed in this container
+   (`ocamlfind list | grep -i hardcaml` → no matches), so type checking and ppx
+   elaboration have not run anywhere yet. The freeze record of both specs says
+   `pending` for exactly this reason; the authoritative evidence is the `build`
+   workflow run on the orchestrator's commit, and its run id belongs in §12 when
+   it is green.
+4. **Every constant in SPEC-M02 §6.1 was computed, not recalled.**
+   `python3 -c "import zlib;print(hex(zlib.crc32(b'123456789')),hex(zlib.crc32(b'12345678')),hex(zlib.crc32(b'')),hex(zlib.crc32(b'9',zlib.crc32(b'12345678'))))"`
+   → `0xcbf43926 0x9ae0daaf 0x0 0xcbf43926`. The first confirms REQ-303 at the
+   port with no adjustment, the second is the intermediate in worked example 1,
+   the third is the seed convention (CRC-32 of the empty string is 0x00000000),
+   the fourth confirms the 8-then-1 chaining REQ-302 requires.
+   `python3 -c "import zlib;f=bytes(range(60));print(hex(zlib.crc32(f+zlib.crc32(f).to_bytes(4,'little'))))"`
+   → `0x2144df1c`, confirming REQ-304's residue at a 64-octet frame with the FCS
+   appended least significant octet first (REQ-202); the same computation at
+   1514 payload octets also gives `0x2144df1c`. Python's `zlib` is REQ-301's
+   parameterisation and is the same oracle requirements.md §4's provenance note
+   used; it is a cross-check here, not the REQ-305 bit-serial reference, which
+   dv_lead owns.
+   The two raw-register figures quoted in §6.1 note 3 are one XOR away:
+   0xCBF43926 XOR 0xFFFFFFFF = 0x340BC6D9 and 0x2144DF1C XOR 0xFFFFFFFF =
+   0xDEBB20E3, the latter being the published Ethernet residue in that
+   convention, which is an independent confirmation that the two conventions were
+   not mixed.
+5. **Record cardinalities match the normative sources.** `Config` has twelve
+   fields against requirements.md §9.1's twelve rows; `Status` has twenty-one
+   fields against §12's twenty-one rows, in §12's order, with the names copied
+   character for character.
+
+### Outcome
+DoD vs WO-0006: **met**, with one deliberate deferral.
+- Both specs are template-complete: every numbered section 1–13 is present, and
+  every section that does not apply says so with a reason rather than being
+  dropped (SPEC-M01: §4.1's entry-point clause, §4.2's Dir column, §6.2, §7 all
+  five clauses, §8, §9; SPEC-M02: §4.1's stream clause, §5, §6.2, §8, §9 and
+  three clauses of §7).
+- Every behavioural claim cites a REQ from the b4b4cf4 text; REQ-303/304 are
+  cited with the provenance note pointed at rather than its history restated,
+  as the WO asked.
+- Both lifts are verbatim and parse; `crc32_eth_ifc.ml` opens `Axi64_ifc` and
+  restates nothing.
+- Status is DRAFT in both, with the four freeze rows explicitly `pending`.
+- C-1 and C-4 were not attempted and are not regressed.
+- **Deferral**: `traceability.md`'s Spec-section column for REQ-010…014,
+  REQ-301…306 and REQ-802 still reads `pending`, because the WO's file set
+  excludes the matrix. SPEC-TEMPLATE §10 wants it in the same commit; the WO
+  wins, and the debt is booked (SPEC-M01 §11.2, Return log).
+Handoff: `agents/handoffs/WO-0006_batch-a-specs.md`, state RETURNED, to the
+orchestrator for commit and then to dv_lead for the batch-A testability
+countersignature.
+
+### Open-questions
+1. **Two ADRs owed before freeze, both requested from the orchestrator** (this
+   WO's file set excludes `docs/adr/`): (a) SPEC-M02's finished-value CRC port
+   convention, with the raw-register alternative and the reason the conversion
+   count decided it; (b) `octet_count` as a 4-bit count with domain 1–8, with the
+   count-minus-one alternative. Charter §3 makes both ADR material and charter §6
+   counts untraceable design choices against me.
+2. **REQ-010's wording versus SPEC-M02's non-stream frame-carrying port** — the
+   proposed spec diff narrows REQ-010 to frame-carrying *stream* ports and names
+   M02. Raised, not applied, because requirements.md is read-only under this WO;
+   it needs dv_lead's countersignature since it changes what the interface
+   compile check quantifies over. Left unresolved, M02 is a literal invariant
+   violation on the record.
+3. **`Axi64.Source`'s field names are still unverified by any compile.**
+   `tvalid`/`tdata`/`tkeep`/`tstrb`/`tlast`/`tuser`/`tready` are transcribed from
+   `hardcaml_axi` v0.17.0's `stream_intf.ml` via architecture.md §10, and the
+   green run 30724505231 used the type without naming a field, so a divergence
+   would not have been caught. SPEC-M01 §4.2 and §6.1 quote them normatively and
+   REQ-011/013/014's monitors will be written against them. Batch B settles it.
+4. **`traceability.md` is eleven rows stale** (see Outcome). Either batch B's WO
+   carries the matrix update for A and B together, or a small architect WO does
+   batch A alone. This is a REQ-904 currency obligation with a CI script behind
+   it at the row-set level, but the Spec-section column is not machine-checked,
+   so it will not fail loudly.
+5. **`SPEC-TEMPLATE.md` names a module that cannot exist** (`Ifc_check_axi64`;
+   the real name is `Axi64_ifc`). Editorial one-line diff, outside this WO's file
+   set, owed before batch B authors copy the wrong name.
+6. **Whether M01 should home an XGMII lane-pair record** — deferred to batch B,
+   where four restatements of the same two widths become visible (SPEC-M01
+   §11.1). Adding it later is a spec diff to this file and to architecture.md §4.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0006_batch-a-specs.md
+- docs/specs/ifc_check/axi64_ifc.ml
+- docs/specs/ifc_check/crc32_eth_ifc.ml
+- docs/specs/modules/axi64.md
+- docs/specs/modules/crc32_eth.md
