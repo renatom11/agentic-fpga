@@ -493,24 +493,39 @@ function draw() {
     const r = b.getBoundingClientRect();
     return { l:r.left-dg.left, r:r.right-dg.left, t:r.top-dg.top, b:r.bottom-dg.top };
   });
+  // badges must clear every visible box, not just .blk modules — the .lib
+  // pills, .seg wrappers and .whead headers all have corners a circle can clip.
+  const hardRects = [...document.querySelectorAll('.blk, .lib, .seg, .whead')].map(b => {
+    const r = b.getBoundingClientRect();
+    return { l:r.left-dg.left, r:r.right-dg.left, t:r.top-dg.top, b:r.bottom-dg.top };
+  });
   const obstacles = blkRects.slice();
   function labelPos(x, y, hw) {
-    const clear = (cx, cy) => {
+    const clearAt = m => (cx, cy) => {
       for (const q of obstacles)
-        if (cx + hw > q.l - 3 && cx - hw < q.r + 3 && cy + 4 > q.t - 3 && cy - 9 < q.b + 3) return false;
+        if (cx + hw > q.l - m && cx - hw < q.r + m && cy + 4 > q.t - m && cy - 9 < q.b + m) return false;
       return true;
     };
-    if (clear(x, y)) return [x, y];
-    const cands = [];
-    for (const r of blkRects) {
-      if (x + hw > r.l && x - hw < r.r && y > r.t - 2 && y < r.b + 2) {
+    const cands = [[x, y]];
+    for (const r of obstacles) {
+      if (x + hw > r.l - 3 && x - hw < r.r + 3 && y + 4 > r.t - 3 && y - 9 < r.b + 3) {
         cands.push([x, r.t - 8], [x, r.b + 15], [r.l - hw - 8, y], [r.r + hw + 8, y]);
+        for (const dx of [-22, 22, -44, 44])
+          cands.push([x + dx, r.t - 8], [x + dx, r.b + 15]);
       }
     }
-    for (const dy of [0, -14, 17, -27, 30]) for (const dx of [0, -30, 30, -55, 55, -85, 85])
+    for (const dy of [0, -14, 17, -27, 30, -40, 43, -52, 55]) for (const dx of [0, -30, 30, -55, 55, -85, 85, -115, 115])
       cands.push([x + dx, y + dy]);
-    for (const c of cands) if (clear(c[0], c[1])) return c;
-    return [x, y];
+    // two passes: comfortable (3px margins), then exact-fit — the corridors
+    // between rows are exactly one label tall, so the margined pass can never
+    // use them even though the text genuinely fits.
+    for (const m of [3, 0]) {
+      const clear = clearAt(m);
+      for (const c of cands) if (clear(c[0], c[1])) return c;
+    }
+    // nothing fits even snugly — better no label than a label across a
+    // module; the wire keeps its tooltip and click panel either way.
+    return null;
   }
   // obstacles for label placement: modules, wrapper headers, then (added
   // during pass 1) step badges, then each label as it lands.
@@ -542,10 +557,14 @@ function draw() {
     const short = (s.w || 0) < 150;
     let scx = null;
     if (e.n) {
-      scx = short ? s.mx : s.mx - 28;
-      const circClear = cx => blkRects.every(q =>
+      const base = short ? s.mx : s.mx - 28;
+      const circClear = cx => hardRects.every(q =>
         cx + 13 <= q.l || cx - 13 >= q.r || s.my + 13 <= q.t || s.my - 13 >= q.b);
-      for (const cand of [scx, scx + 16, s.mx, s.mx + 16]) {
+      const span = (s.w || 0) / 2 - 15;
+      scx = base;
+      for (const dx of [0, 16, -16, 32, -32, 48, -48, 64, -64, 80, -80]) {
+        const cand = base + dx;
+        if (span > 15 && Math.abs(cand - s.mx) > span) continue;
         if (circClear(cand)) { scx = cand; break; }
       }
       obstacles.push({ l: scx - 15, r: scx + 15, t: s.my - 15, b: s.my + 15 });
@@ -560,9 +579,12 @@ function draw() {
       const above = short ? -20 : (e.c === 'rx' ? -9 : 14);
       const lx0 = (e.n && !short) ? s.mx + 16 : s.mx;
       const hw = e.label.length * 3.3;
-      const [lx, ly] = labelPos(lx0, s.my + above, hw);
-      obstacles.push({ l: lx - hw, r: lx + hw, t: ly - 10, b: ly + 4 });
-      deferred.push(`<text x="${lx}" y="${ly}" text-anchor="middle">${esc(e.label)}</text>`);
+      const pos = labelPos(lx0, s.my + above, hw);
+      if (pos) {
+        const [lx, ly] = pos;
+        obstacles.push({ l: lx - hw, r: lx + hw, t: ly - 10, b: ly + 4 });
+        deferred.push(`<text x="${lx}" y="${ly}" text-anchor="middle">${esc(e.label)}</text>`);
+      }
     }
   }
   const bar = $('n-CFGBAR') ? rect('CFGBAR') : null;
@@ -604,8 +626,10 @@ function draw() {
     if (!cacheLabeled && state.labels) {
       const chw = 'cache lookup'.length * 3.3;
       const cl = labelPos(s.mx, s.my - 11, chw);
-      deferred.push(`<text x="${cl[0]}" y="${cl[1]}" text-anchor="middle">cache lookup</text>`);
-      cacheLabeled = true;
+      if (cl) {
+        deferred.push(`<text x="${cl[0]}" y="${cl[1]}" text-anchor="middle">cache lookup</text>`);
+        cacheLabeled = true;
+      }
     }
   }
   svg.innerHTML = out + deferred.join('');

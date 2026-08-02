@@ -208,6 +208,11 @@ a { color:var(--rx); }
 @keyframes flow { from { background-position:0 0; } to { background-position:-210px 0; } }
 @media (prefers-reduced-motion: reduce) { .cadence::before { animation:none; } }
 .cadcap { font-size:.76rem; color:var(--ink-2); margin:0 0 1rem; max-width:78ch; }
+dl.mlegend { display:grid; grid-template-columns:max-content 1fr; gap:.35rem 1.1rem;
+  margin:0 0 1.2rem; max-width:78ch; }
+dl.mlegend dt { font-family:'Plex Mono',monospace; font-size:.72rem; letter-spacing:.06em;
+  text-transform:uppercase; color:var(--rx); white-space:nowrap; padding-top:.1rem; }
+dl.mlegend dd { margin:0; font-size:.85rem; color:var(--ink-2); }
 .cap-motion { display:inline; } .cap-static { display:none; }
 @media (prefers-reduced-motion: reduce) {
   .cap-motion { display:none; } .cap-static { display:inline; } }
@@ -449,10 +454,12 @@ backlog = head_block('agentic-fpga — backlog & progress',
   {phases_html}
 
   <h2>Module status — {n_rtl} of 20 built, all specs frozen</h2>
-  <p class="cadcap">spec frozen = design contract locked · rtl built = hardware
-  code written and compiling · attack plan = the catalogue of ways testers will
-  try to break it · benches = those attacks actually running as tests (none yet
-  — that is the current work).</p>
+  <dl class="mlegend">
+    <dt>spec frozen</dt><dd>the design contract is locked</dd>
+    <dt>rtl built</dt><dd>the hardware code is written and compiling</dd>
+    <dt>attack plan</dt><dd>the catalogue of ways testers will try to break it</dd>
+    <dt>benches</dt><dd>those attacks actually running as tests — none yet; that is the current work</dd>
+  </dl>
   <div class="mtable"><table>
     <tr><th>id</th><th>module</th><th>spec frozen</th><th>rtl built</th><th>attack plan</th><th>benches</th></tr>
     {mrows}

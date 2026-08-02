@@ -4260,3 +4260,78 @@ deploy.
 - site/public/index.html
 - site/public/org-chart.html
 - site/public/spec-atlas.html
+
+## [J-orchestrator-0100] 2026-08-02T21:55:00Z | task:none | Badge clearance done right, the matrix legend unpacked - and WO-0038 lands as a bounce-and-fix arc
+
+### Trigger
+Two sponsor items: the circled ② step badge clipping a wrapper
+corner, and the module-matrix legend ("spec frozen = ... · rtl
+built = ...") reading as one undigestible block. Mid-task, the
+tb_writer worker returned WO-0038 and dv_lead delivered RV-0038.
+
+### Inputs
+- The badge clearance test only knew .blk modules; .lib pills, .seg
+  wrappers and .whead headers were invisible to it — exactly the
+  corner ② was clipping.
+- dv_lead's RV-0038: BOUNCE — all eleven rows accepted on
+  substance; D1 (dead `waves` binding), D2 (L6 witnesses must
+  construct records, not pattern-match — sound under every warning
+  regime), D3 (C1's lane coverage never asserted). Independence
+  disclosure ruled NO TAINT with a line-by-line information-gain
+  argument. Sequencing recommendation: commit the bench as-is so
+  the bounce-and-fix arc lives in the diff and CI's first run
+  settles the fatal-warnings question D2 hinges on.
+
+### Reasoning
+Badges now clear every visible box class and slide along their
+wire within its span. That relocation consumed the spots two rx
+Eth_header labels lived in; the audit chased the regression to two
+root causes — the escape-candidate generator used a strict,
+margin-free test over modules only (so a margin-blocked or
+badge-blocked label generated no escape candidates at all), and
+the 3px comfort margins made every 20px inter-row corridor
+mathematically unusable even though a label genuinely fits.
+Placement is now two passes (comfortable, then exact-fit) over
+escape candidates drawn from the full obstacle set, with
+drop-the-label as the final fallback. Audit: 6 badges + 13 labels,
+zero overlaps, at 1500/1100/800px.
+Legend: the run-on paragraph became a term/definition grid
+(dl.mlegend) — four scannable rows.
+WO-0038: accepted dv's sequencing. The packet file carried both
+agents' uncommitted edits, so I reconstructed the worker-era state
+(HEAD + its pure Return-log append, State back to ISSUED) for the
+tb_writer commit, then restored dv's final (BOUNCED flip + RV
+block) for the dv_lead commit — one agent per commit, byte-exact.
+
+### Actions
+- bd_back.py: hardRects badge clearance; two-pass labelPos;
+  escape-candidate fix; rebuilt; artifact republished.
+- site/build.py: dl.mlegend styles + markup replacing the legend
+  paragraph.
+- Committed 026a71f as tb_writer (J-tb_writer-0001), 266ed6a as
+  dv_lead (J-dv_lead-0022); BOARD row flipped to BOUNCED.
+- Site rebuilt over the new history; this commit.
+
+### Evidence
+- Overlap audit before: ② vs wrapper corner; after: CLEAR at all
+  three widths with all 13 labels drawn.
+- agent_commit.sh accepted both split commits; the packet's
+  intermediate diff vs HEAD was pure insertion.
+
+### Outcome / DoD
+Diagram artifact live; site staged here. Next: push triggers CI on
+the bench (Build green load-bearing; runtest may red-by-design on
+empty expect blocks), then the revision-2 worker round for D1–D3.
+
+### Open questions
+- Whether CI's warning regime makes D2's premise true or false —
+  the run this push triggers answers it either way.
+
+### Files-in-this-commit
+- site/build.py
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/index.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html
+- tasks/BOARD.md
