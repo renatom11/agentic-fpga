@@ -7184,3 +7184,289 @@ and exit 1 means a claim failed, and in the second case the log now carries the
 - test/attack_plans/AP-ip_eth_rx_64.md
 - test/golden/ipv4_ref.ml
 - tools/check_rfc1071_anchor.sh
+
+## [J-dv_lead-0022] 2026-08-03T18:10Z | task:WO-0038 | RV-0038 BOUNCE: the eleven rows are right — A4's NO-ASSERT, B1's preamble composition and C2's lane-dependent subset all correct — but the L6 witness and an unread record field are two halves of one dilemma that no warning setting satisfies; and a ruling that a four-line build manifest cannot taint a bench, on the ground that every byte of it is already in `docs/specs/`
+
+### Trigger
+Orchestrator: tb_writer returned WO-0038 — seven files under
+`test/xgmii_rx_64/`, 11/11 rows claimed implemented, plus a **self-reported
+independence breach** (an over-broad `find` printed
+`libs/hardcaml_ethernet/src/dune`). My line-by-line review is the precondition
+for any commit. Charter §3: review worker returns with an `RV-` verdict, and
+spot-check before ACCEPT.
+
+### Inputs
+- The seven returned files, read in full: `test/xgmii_rx_64/{dune,bench.mli,
+  bench.ml,test_m03_a.ml,test_m03_b.ml,test_m03_c.ml,test_m03_structural.ml}`.
+- `agents/handoffs/WO-0038_tb-m03-first-bench.md` — my own packet §1–§8 and the
+  worker's RETURNED block §1–§5.
+- `agents/journals/workers/claude_tb_writer_agent.md` — `J-tb_writer-0001`,
+  Inputs section in full (where the disclosure lives, with the leaked file's
+  four lines quoted verbatim — which is how I ruled on the content **without
+  opening the file myself**).
+- `test/attack_plans/AP-xgmii_rx_64.md` §1 (row format), §2 (standing
+  obligations), §3 (stimulus legality), §4.A, §4.B, §4.C, §4.L.
+- `docs/specs/modules/xgmii_rx_64.md` — §6.1's cycle table and its lane-4
+  paragraph including the parenthesis that row A4 exists for, §9's outcome
+  table (the 5-to-63-octet runt row), §9's co-occurrence note on
+  `error_runt` with a correct FCS, and §9's **Strobe cycle, pinned**.
+- `docs/specs/requirements.md` REQ-102, REQ-107, REQ-018.
+- `docs/specs/ifc_check/{dune,xgmii_rx_64_ifc.ml}` — the second of these for
+  the §4.1 port record, the **first** because it turned out to settle the
+  independence ruling.
+- Machinery `.mli`s re-read to check every call the bench makes:
+  `test/xgmii/{frame,arrival,xgmii_word}.mli`, `test/xgmii/arrival.ml`
+  (`create`/`cycles` on an empty schedule only),
+  `test/monitors/{protocol_monitor,conservation_monitor,strobe_monitor,
+  octet_time,stream_word}.mli`.
+- `dune-project`; the absence of a root `dune` and of any `(env)` stanza.
+- **No `libs/**` and no `rtl_snapshots/**`.** I did not open the leaked dune
+  file to rule on it; the worker's verbatim quotation was sufficient and
+  opening it would have made me the second violator of my own instruction.
+
+### Reasoning
+
+**The review had to be by reading, and I want the limit stated before the
+verdict.** Nothing in `test/xgmii_rx_64/` compiles here: it depends on
+`hardcaml_ethernet` and `hardcaml_waveterm`, which is exactly why
+`precompile_check.sh` excludes it — stubbing the design under test would mean
+reading it. So my instruments were the `.mli` texts, the specification, and
+`ocamlc` used on *reductions* of the questions rather than on the bench. Where
+a question was mechanically decidable I decided it that way; where it was not,
+the verdict says so. I am not going to repeat WO-0033's mistake of reporting a
+reading as a compile.
+
+**The three things I flagged in advance as hard are all correct, and I want
+that on the record before the defects, because a bounce that leads with faults
+misrepresents the work.**
+
+*A4.* The trap here is subtle and the worker did not fall in it. §6.1 says the
+lane-0 and lane-4 output streams are identical as tuple sequences *and* in
+absolute cycle, then adds that REQ-101 requires only the first and "a bench
+SHALL NOT assert [the second] as one". The bench asserts, per lane, that word
+*m* lands `start_cycle + 3 + m` after **that lane's own** start word — which
+§6.1's table pins for lane 0, §6.1's lane-4 paragraph pins for lane 4, and §7's
+constants give as ΔC = (L+h)/8 = 3 in both front-offset classes. It never puts
+lane 0's absolute cycle beside lane 4's. I checked the stronger worry too: in
+this schedule both lanes' start words happen to fall in the same cycle, so the
+two per-lane assertions *entail* the absolute equality — but that entailment is
+a property of the chosen stimulus, not an assertion about the design, and no
+conformant design is rejected by it, because a design that broke the equality
+while keeping both start words in one cycle would have to break ΔC = 3 at one
+lane. That is the correct test for whether a NO-ASSERT row is honoured: not
+"does the text mention the property" but "could a conformant design fail here".
+
+*B1.* `Arrival` fixes its preamble at 0x55/0xD5 and exposes no override — a
+genuine machinery gap the worker hit and solved by composition rather than by
+declaring the row unimplemented. The override is right at **both** lanes,
+which is where I expected an error: lanes 1–7 of the start word at a lane-0
+start; lanes 5–7 of the start word **plus lanes 0–3 of the next** at a lane-4
+start, leaving frame octets 0–3 in lanes 4–7 alone. That is §6.1's "preamble
+continues through lane 3 of cycle 1" implemented exactly, control bits carried
+through untouched, and the SFD position included as the row requires.
+
+*C2.* This is the one I would most have expected to be wrong, and it is right
+for a reason the worker states: the excluded frame differs by start lane. At
+lane 0 the terminate lanes run 0…7 over lengths 64…71; at lane 4 they run
+4,5,6,7,0,1,2,3, so the frame whose terminate lands in lane 0 is length 64 at
+one lane and length 68 at the other. The bench reads the lane from
+`Arrival.terminate_octet_time frame mod 8` instead of hand-deriving it, so it
+gets both. A bench that had hard-coded "skip length 64" would have silently
+tested the wrong seven frames at lane 4 and nothing would have complained.
+
+**The defect that made this a bounce is one I could prove rather than suspect,
+and it is a dilemma rather than a mistake.** `test_m03_structural.ml`'s L6
+witnesses are record *patterns*, and the file argues they are sound because
+warning 9 is fatal under dune's default `dev` profile. Separately,
+`bench.ml`'s `waves` field is written and never read. I reduced both to
+`ocamlc` experiments:
+
+- under a dune-dev-like flag set, warning 69 (`unused-field`) is an **error** —
+  so if the L6 premise holds, the bench does not build;
+- with warnings fully disabled, a partial record **pattern** compiles silently
+  — so if the premise fails, L6 witnesses nothing.
+
+Both claims cannot be satisfied at once, and I cannot settle which world CI is
+in from here: `(lang dune 3.0)`, no root `dune`, no `(env)` stanza, and no
+committed file in this tree contains either shape to serve as precedent. What
+made this comfortable to rule on anyway is that **the dilemma dissolves under
+the fix**: expose the waveform so the field is read, and make the witnesses
+*construct* the records instead of destructuring them. I verified the second
+mechanism directly — a record expression missing a field is `Error: Some record
+fields are undefined`, a hard type error at `-w -a`. So revision 2 is correct in
+both worlds and depends on no build-system assumption at all.
+
+This is the same lesson as WO-0034's stub-fidelity lane, arriving from the
+other side: a check whose teeth depend on a configuration flag is a check that
+can be silently disarmed by someone who never reads it. My own packet §2 asked
+for "not a runtime check that can pass vacuously" and I should have written
+"and not a compile-time one either" — the worker met the letter of what I asked.
+
+**On C1's terminate-lane coverage I split the difference, and the split is the
+point.** The worker argues the row's Kills cell is already covered by
+delivered-count and `tkeep` correctness at non-lane-0 lengths. I accept that
+for the *DUT-observable* half and am not asking for a wire-level lane
+inspection — the argument is sound and the extra assertion would be redundant.
+What I would not accept is leaving the *coverage claim* unasserted: "covering
+all eight lanes" is the reason this is one row and not eight, and today nothing
+would notice if `directed_lengths` or `Arrival`'s gap arithmetic drifted so
+that only five distinct lanes were driven. The bench already computes the lane
+and throws it away. Asserting the set is `{0..7}` is three lines and it guards
+the *stimulus*, which is the thing that can rot silently — standing obligation
+5's principle applied one level up.
+
+**The independence ruling, and why I refused to rest it on "it was only four
+lines".** "Small" is a judgement, and a rule enforced by judgement is a rule
+that erodes under deadline. So I looked for a *checkable* ground and found one:
+the leaked manifest's `(libraries hardcaml hardcaml_axi)` and
+`(preprocess (pps ppx_hardcaml ppx_jane))` lines are **byte-identical** to
+`docs/specs/ifc_check/dune`, which every DV agent is required to read, and its
+`(name hardcaml_ethernet)` is already stated in `test/hardcaml_ethernet/dune`
+(DV's own) and in SPEC-M03's header path that my own §4 quotes as the
+sanctioned source. Information gain: **zero**, demonstrably, line by line. A
+build manifest says what a library *links*, never what a module *does*: no
+port, no width, no cycle, no state. And the negative is checkable too — this
+directory's `dune` lists `hardcaml_waveterm`, which the leaked manifest does
+not, so it was demonstrably not copied from it.
+
+So: no taint, no re-write, and the worker's conduct commended rather than
+merely excused. It disclosed unprompted, in two places, before review, stopped
+the sweep, did not repeat it, and explicitly declined to rule on itself. That
+is exactly the behaviour that makes honest enforcement work in a system where
+Claude Code has no per-path read denial, and treating it as a fault would teach
+every future worker to keep quiet.
+
+Two things I attached to the ruling anyway. First, **it is not a precedent**:
+the bright line stays at `libs/**`, and future accidental reads get disclosed
+and ruled one at a time. A rule with a judgement call at its edge is a rule
+people argue with. Second, **my instruction contributed**: WO-0038 §5 wrote the
+prohibition as `libs/**` and then illustrated it entirely with implementation
+files ("not to debug a red"), which invites reading the scope as "RTL logic".
+The worker's error had a cause on my side and the next packet will say
+*every path, manifests included*, with the reason — not because a manifest is
+dangerous, but because a boundary you have to think about is one you will
+cross. The auditor owns the ledger and may take its own view; I would not
+contest it.
+
+**On sequencing I gave a recommendation rather than an instruction, and the
+reason is that the red run is worth more than a clean history here.** I would
+commit the worker's seven files and `J-tb_writer-0001` as they stand under
+`Agent: tb_writer`, with the bounce recorded separately under mine. Holding
+them back would make the fix-round commit fail R5 (the uncommitted `0001`
+followed by a `0002` append), it would lose the bounce-and-fix arc from the
+diff, and — decisively — **the CI run that commit triggers settles D1/D2's
+dilemma for free**: a red at `unused-field` proves warnings are fatal, a green
+Build proves they are not. I have spent this whole programme learning to prefer
+evidence over argument where evidence is one run away; this is that case, and
+the cost is one expected-red run that my own §7 told everyone to expect.
+
+### Actions
+- Read all seven returned files line by line against the eleven rows, the six
+  standing obligations, and the specification clauses each row cites.
+- Re-derived C2's terminate-lane subset at both start lanes independently and
+  confirmed the excluded length differs (64 at lane 0, 68 at lane 4).
+- Confirmed C4's added REQ-107 assertions against §9's outcome table, §9's
+  co-occurrence note and §9's pinned strobe cycle.
+- Reduced the L6/`waves` question to two `ocamlc` experiments in a scratch
+  directory and ran them.
+- Checked every `Dv_monitors`/`Dv_xgmii`/probe call in the bench against its
+  `.mli` for label, arity and optional-argument position; checked
+  `Arrival.create`/`cycles` tolerate the empty schedule the scaffolding test
+  builds.
+- Ruled on the independence disclosure from the worker's verbatim quotation,
+  cross-checked against `docs/specs/ifc_check/dune` and
+  `test/hardcaml_ethernet/dune`, **without opening the leaked file**.
+- Appended **RV-0038: BOUNCE** to `agents/handoffs/WO-0038_tb-m03-first-bench.md`
+  and flipped its State line to BOUNCED, anchoring the edit on title + state
+  together rather than on a bare state line.
+- Modified **none** of the worker's files (charter §3: defects go back as a
+  list, not as edits by the reviewer). No `libs/**`, no `docs/**`, no
+  `tools/**`. No `git commit`, no `git push`.
+
+### Evidence
+1. **Warning 69 is an error under a dune-dev-like flag set.**
+   `ocamlc -c -w '@1..3@5..28@30..39@43@46..47@49..57@61..62@67@69' m.ml` on a
+   module whose `.mli` makes the type abstract and whose record has an unread
+   field →
+   `Error (warning 69 [unused-field]): record field waves is never read.`
+2. **A partial record pattern compiles silently when warnings are off.**
+   `ocamlc -c -w -a p.ml` with `let { x = _ } = v` on a two-field record →
+   exit 0, no output. This is the vacuous-witness case for M03-L6.
+3. **A record construction missing a field is a hard error regardless.**
+   `ocamlc -c -w -a c.ml` with `{ x = v }` on a two-field record →
+   `Error: Some record fields are undefined: y`, exit 2. This is the fix.
+4. **The independence ruling's ground, checkable.**
+   `docs/specs/ifc_check/dune` contains `(libraries hardcaml hardcaml_axi)` and
+   `(preprocess (pps ppx_hardcaml ppx_jane))` — byte-identical to two of the
+   leaked manifest's four lines as quoted in `J-tb_writer-0001`.
+   `test/hardcaml_ethernet/dune` contains `hardcaml_ethernet` in its own
+   `(libraries)`. Every fact in the leaked file is therefore already in a file
+   DV must read.
+5. **C2's subset, re-derived.** Terminate lane = (start_octet_time + 8 +
+   length) mod 8. At `first_start:8`: lengths 64…71 → lanes 0…7. At
+   `first_start:12`: → lanes 4,5,6,7,0,1,2,3. Exactly one length per lane is
+   excluded from the k > 0 subset, and it is a different length at each lane.
+6. **C4's assertions are the spec's.** SPEC-M03 §9: "5 to 63 octets between
+   start and terminate | `error_runt` | frame forwarded (1 to 59 octets after
+   FCS removal), `tuser`[0] = 1 on `tlast`"; §9's co-occurrence note: a runt
+   with a correct FCS "pulses `error_runt` alone"; §9 **Strobe cycle, pinned**:
+   "on the cycle M03 emits that frame's `tlast` word".
+7. **Latency identity extent holds for every row including the runt.** C4's
+   input trace is 8 preamble + 5 frame octet times = 13; 13 − `strip_octets` 8
+   − `tail_octets` 4 = 1 = the delivered count, so `frame_out` needs no
+   `?expected_octets` override, as `bench.mli` claims.
+8. **`Arrival` tolerates the scaffolding's empty schedule.** `arrival.ml`'s
+   `cycles` returns 0 when `Array.length t.frames = 0`, and `word_at` is total
+   by its own `.mli`, so `run ~drain:10` on `Arrival.create ~first_start:8 []`
+   drives ten idle cycles as the smoke test expects.
+9. **No precedent in the tree settles the warning question.** `dune-project` is
+   `(lang dune 3.0)` with no `(env)`; there is no root `dune`; a grep for
+   partial record patterns across `libs/`, `test/` and `bin/` returns nothing.
+   Recorded so the gap is not mistaken for an unasked question.
+10. **Scope.** `git status --short --untracked-files=all` shows my two paths —
+    `agents/handoffs/WO-0038_tb-m03-first-bench.md` and this journal — alongside
+    the worker's seven files, its journal, and site/ artefacts I did not touch.
+
+### Outcome
+**RV-0038: BOUNCE.** Not a rejection of the work: all eleven rows are
+implemented and, on substance, correct — A4's NO-ASSERT discipline, B1's
+two-lane preamble composition and C2's lane-dependent subset are each right for
+reasons the Return log states accurately. Three blocking items (D1 the unread
+`waves` field, D2 the warning-dependent L6 witnesses, D3 C1's unasserted
+eight-lane coverage), two nits, one advisory. Revision 2 is one sitting and
+every fix is independent of the build-profile question.
+
+**Independence ruling: NO TAINT, conduct commended, not a precedent** — on the
+checkable ground that every byte of the leaked manifest already exists in
+`docs/specs/ifc_check/dune` and `test/hardcaml_ethernet/dune`.
+
+**No `SO-` is owed or offered.** This reviews the bench, not the design. The
+charter §3 spot-check — hand-mutating M03 and confirming the bench goes red —
+has not happened and cannot until the suite runs; the four mutations named in
+WO-0038 §8 remain the gate for ACCEPT.
+
+### Open-questions
+- **D1/D2's dilemma is unresolved locally and one CI run settles it.** My
+  sequencing recommendation (commit the worker's files, let the run adjudicate)
+  is the orchestrator's to accept or refuse; either way revision 2's fixes are
+  correct.
+- **My own packet §2 under-specified L6.** It said "not a runtime check that
+  can pass vacuously" and should have said "and not a compile-time one either —
+  make it a type error, not a warning". The next bench packet carries the
+  correction.
+- **My own packet §5 under-specified the read prohibition** — `libs/**`
+  illustrated only with implementation files. The next packet says *every path,
+  manifests included*, with the reason.
+- **For the auditor**: the disclosure and my ruling are both recorded here and
+  in RV-0038. The escape ledger is yours; I have not written to
+  `docs/reports/audit/**` and would not contest a different view of the process
+  finding.
+- **Runtime is now a live question for the L1–L5 packet.** ~43 `Cyclesim`
+  elaborations in this suite is the programme's first real data point on
+  `Cyclesim` cost at M03, and `test/cost_probe/`'s figure should be read
+  against it before the 10 000-frame stress packet is written.
+- **Unchanged**: the RFC 1071 anchor closes on the next CI run that fetches;
+  X-7, X-10, X-11 remain deferred.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0038_tb-m03-first-bench.md
