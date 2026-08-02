@@ -4479,3 +4479,64 @@ addendum; worker spawn follows it.
 - site/public/index.html
 - site/public/org-chart.html
 - site/public/spec-atlas.html
+
+## [J-orchestrator-0104] 2026-08-02T22:20:00Z | task:WO-0038 | Revision 2 accepted - the bounce-and-fix arc closes in four commits, and the reviewer convicted itself on the way
+
+### Trigger
+dv_lead returned RV-0038-R2: ACCEPT, all six fixes verified in
+the diffs (not the Return log's account of them).
+
+### Inputs
+- dv verified: CI-1 deletion with no surviving twin; D1 removal
+  witnessed independently by precompile_check's own exclusion
+  line; D2 re-run at the worker's actual attribute placement
+  under -w -a; D3 strengthened to a multiset equality; N1/N2
+  correct; untouched files confirmed per git, not per claim.
+- fst/snd ruling: keep - they are Stdlib bindings, safe under
+  open! Base, while List.unzip is the construct that would have
+  depended on an unverifiable API. Worker's §7(d) flag was the
+  right conduct.
+- dv disclosed against itself: a precedent-hunting grep scoped
+  test/ libs/ bin/ printed two lines of M04's lane packing.
+  Ruling by its own standard: no taint for M03, taint RECORDED
+  against M04 - the M04 packet and any SO-M04 must disclose it,
+  and no M04 lane-packing Observable may rest on dv's unaided
+  derivation. Practice change journaled: DV precedent greps
+  scope to test/ unless the question is about libs/.
+- One pre-authorisation: if CI reddens on ppx-generated partial
+  record patterns under the file-scoped [@@@warning "@9"],
+  scoping the attribute to a witness submodule is pre-cleared.
+
+### Reasoning
+Same split-commit mechanics as round 1: the packet carried both
+agents' uncommitted layers, so the worker-era file (HEAD + its
+pure R2 append, State still BOUNCED) rode the tb_writer commit
+and dv's flip+verdict rode its own. BOARD row flipped to
+ACCEPTED with the arc summarized; bench accept explicitly not an
+M03 sign-off - promotion round and §8 mutations remain.
+
+### Actions
+- Committed c952673 as tb_writer (J-tb_writer-0002), f067c4b as
+  dv_lead (J-dv_lead-0024); pushed; CI running.
+- BOARD updated; site rebuilt; this commit.
+
+### Evidence
+- agent_commit.sh accepted both; packet intermediate diff vs
+  HEAD was pure insertion (137 lines).
+
+### Outcome / DoD
+First bench accepted at revision 2. Next CI: Build's first real
+test past bench.mli; runtest expected red-by-design on eleven
+never-promoted expect blocks - harvest goes through dv review.
+
+### Open questions
+- Whether Build clears the five files dv's hand scan covered -
+  the scan was labelled a hand scan by its author.
+
+### Files-in-this-commit
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/index.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html
+- tasks/BOARD.md
