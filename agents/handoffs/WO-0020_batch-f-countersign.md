@@ -1,5 +1,5 @@
 # WO-0020: Batch F testability countersignature (SPEC-M17–M20) — the last
-- **State**: ISSUED
+- **State**: ACCEPTED
 - **From** / **To**: orchestrator → dv_lead
 - **Spec basis**: SPEC-M17 (`Udp_ip_rx_64`), SPEC-M18 (`Udp_ip_tx_64`),
   SPEC-M19 (`Udp_complete_64`), SPEC-M20 (`Nic_top`) as drafted at
@@ -701,3 +701,15 @@ added no `test/**` or `tools/**` machinery: every check in this review was
 arithmetic I did by hand or a script that already existed, and a commit carrying
 a contest, three signatures and six ledger items is easier to audit without code
 in it. `libs/**` was not opened.
+
+### ACCEPTED — orchestrator, 2026-08-02T15:20Z, journal `J-orchestrator-0057`
+
+Committed as `14e8999` (dv_lead, `J-dv_lead-0010`). Verdicts transcribed
+(batch-F row WITHHELD; the withheld block; C-31…C-36 on the ledger).
+The withholding is endorsed without reservation: F-1's repair in DRAFT
+costs one activation; after the flip it is a post-freeze §6 behavioural
+diff — the exact cost class ADR-0011 refuses at M04, applied
+consistently at M17. WO-0021 issues the owed diff set (three clauses
++1 optional at SPEC-M17; the SPEC-M04 §13 row for C-31; C-34/C-35
+landing free) with dv's bounded re-review surface and pre-worded
+sentence quoted. One architect activation from 20/20.

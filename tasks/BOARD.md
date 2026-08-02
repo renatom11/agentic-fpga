@@ -56,14 +56,15 @@ Corrections.
 | Gate | Status | Checklist |
 |---|---|---|
 | G0 | **PASSED 2026-08-01** | [docs/gates/G0-checklist.md](../docs/gates/G0-checklist.md) |
-| P1-spec-freeze | OPEN — **A–E FROZEN (16/20)**, F in flight (WO-0019) — sponsor signature is the only item after F | [docs/gates/P1-spec-freeze-checklist.md](../docs/gates/P1-spec-freeze-checklist.md) |
+| P1-spec-freeze | OPEN — **A–E FROZEN (16/20)**, F countersign withheld on one item (F-1 repair in flight, WO-0021) — then sponsor signature | [docs/gates/P1-spec-freeze-checklist.md](../docs/gates/P1-spec-freeze-checklist.md) |
 
 ## Open work orders
 
 | Packet | From → To | State | Note |
 |---|---|---|---|
 | [WO-0016](../agents/handoffs/WO-0016_m01-m02-implementation.md) | orchestrator → rtl_lead | ACCEPTED | 189d5b2: **first RTL green on first elaboration** (run 30738000890) — M01 Axi64 (types, lift-identical) + M02 Crc32_eth (64-step prefix chain, ADR-0006/0007 honoured); 2 questions queued for architect (Axi64.Axi64 convention; named module type S) |
-| [WO-0020](../agents/handoffs/WO-0020_batch-f-countersign.md) | orchestrator → dv_lead | ISSUED | **Final countersign**: batch F + C-24…C-30 reaffirmation; seven ordered questions (ADR-0011 under-delivery sharpest; cfg_tx_enable edge; REQ-006 = 13 both lanes) |
+| [WO-0021](../agents/handoffs/WO-0021_f1-repair.md) | orchestrator → architect_docs_lead | ISSUED | **F-1 repair** (M17 §6.1 inequality + §6.2 copy-qualification, DRAFT text) + C-31 §13 row at SPEC-M04 + C-34/C-35 free; bounded re-review then 20/20 |
+| [WO-0020](../agents/handoffs/WO-0020_batch-f-countersign.md) | orchestrator → dv_lead | ACCEPTED | 14e8999: countersign **WITHHELD** — M18/M19/M20 SIGNED (REQ-006=13 confirmed 3 routes), M17 CONTESTED (F-1: tuser copy from unarrived word, ≤182 cycles early); ADR-0011+pricing endorsed; C-31…C-36 |
 | [WO-0019](../agents/handoffs/WO-0019_batch-f-specs.md) | orchestrator → architect_docs_lead | ACCEPTED | aaa55b2: **20/20 specs exist** — batch F drafted (M20: REQ-006 closes at 13/24 cycles both lanes), D/E flipped FROZEN, C-24…C-30 landed, ADR-0010 (conventions — **batch-B RTL unblocked**) + ADR-0011, 119-edge table, README refreshed |
 | [WO-0018](../agents/handoffs/WO-0018_batch-de-countersign.md) | orchestrator → dv_lead | ACCEPTED | a8347e0: **both countersigns GRANTED at 3f6accc — batches D+E FROZEN (16/20)**; five answers (REQ-502=7 accepted, gate both; subnet-mask edge accepted); C-19…23 reaffirmed; C-24…C-30 raised |
 | [WO-0017](../agents/handoffs/WO-0017_batch-e-specs.md) | orchestrator → architect_docs_lead | ACCEPTED | 3f6accc: D-1→R-1 (Transmitting state), D-2→D-2a + **ADR-0009**; batch E drafted (M14 ΔC=4/ceil 5; M15 1+2 cycles; M16 structural); 118-edge table; REQ-502 6→7 disclosed |

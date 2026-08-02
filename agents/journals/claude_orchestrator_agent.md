@@ -2354,3 +2354,61 @@ signature: the sponsor line is the gate's only open item.
 - agents/handoffs/WO-0020_batch-f-countersign.md
 - docs/gates/P1-spec-freeze-checklist.md
 - tasks/BOARD.md
+
+## [J-orchestrator-0057] 2026-08-02T15:25:00Z | task:WO-0020 | Batch-F countersign WITHHELD on F-1; repair WO issued — one activation from 20/20
+
+### Trigger
+WO-0020 RETURNED by dv_lead (J-dv_lead-0010): the final countersignature
+is withheld at aaa55b2 — M18/M19/M20 SIGNED, M17 CONTESTED on F-1.
+
+### Inputs
+- The WO-0020 Return log (verdicts, the F-1 derivation with its
+  three-regime table, seven answers, C-31…C-36, the bounded re-review
+  surface, the pre-worded J-dv_lead-0011 sentence)
+- git status: dv touched exactly packet + journal
+
+### Reasoning
+F-1 is the D-1 shape again: §6.2 commissions copying tuser[0] from an
+input tlast word that, for under-declaring UDP lengths, arrives up to
+182 cycles after the application tlast leaves; §6.1's contrary proof
+inverts one inequality and proves only the full-delivery case; five
+sites state the impossible rule and REQ-007 settles it in the
+impossible direction. dv's withholding rationale is the system's
+integrity stated plainly: the last signature is a reason to hold the
+line, and repairing in DRAFT now costs one activation where repairing
+after the flip is a post-freeze §6 behavioural diff — the cost class
+ADR-0011 itself refuses at M04. Endorsed without reservation.
+The other three specs signed with everything recomputed: REQ-006 = 13
+by three independent routes; M18's W−J = 1 verified by event; ADR-0011
+decision AND pricing endorsed by the person who would write the bench.
+WO-0021 is deliberately narrow — dv bounded the re-review surface in
+advance, so the repair must stay inside it.
+
+### Actions
+- Committed dv's return as 14e8999 (dv_lead identity).
+- Checklist: batch-F row WITHHELD; withheld transcription block;
+  C-31…C-36 ledger rows.
+- WO-0020 ACCEPTED block; board rows; gate line updated.
+- Issued WO-0021 (F-1 three clauses + C-31 §13 row + C-34/C-35 free);
+  spawning architect with fallback.
+
+### Evidence
+- `git show 14e8999 --stat` — 2 files
+- The F-1 three-regime table recomputed spot-wise at N=26/N'=20
+  (same-cycle case) and N=1480/N'=9 (182 early) — both reproduce
+
+### Outcome / DoD
+16/20 FROZEN + 3 signed awaiting the batch flip + 1 contested with its
+repair in flight. On the repair: bounded re-review → J-dv_lead-0011 →
+ALL 20 FROZEN → the sponsor's single signature is the gate's only
+open line.
+
+### Open questions
+- Clause (b)'s inferred-vs-REQ-007-scoping choice is the architect's;
+  dv stated both re-review bases in advance.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0020_batch-f-countersign.md
+- agents/handoffs/WO-0021_f1-repair.md
+- docs/gates/P1-spec-freeze-checklist.md
+- tasks/BOARD.md

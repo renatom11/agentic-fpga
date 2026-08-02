@@ -30,7 +30,7 @@ by the orchestrator from the signing agent's journal entry, per PROTOCOL
 | C | M06, M07, M08, M09 | 508eea2 (WO-0011) | run 30733153172 green | **SIGNED** (J-dv_lead-0007) | **FROZEN at 508eea2** |
 | D | M10, M11, M12, M13 | a9993ff (WO-0014); D-1/D-2 repaired 3f6accc (WO-0017: R-1 + D-2a/ADR-0009) | runs 30736107842 (2f29888) + 30739442056 (3f6accc) green | **SIGNED** (J-dv_lead-0009, WO-0018 re-review after J-dv_lead-0008 withheld) | **FROZEN at 3f6accc** |
 | E | M14 `Ip_eth_rx_64`, M15 `Ip_eth_tx_64`, M16 `Ip_complete_64` | 3f6accc (WO-0017) | run 30739442056 green (head SHA = spec commit; no witnessing owed) | **SIGNED** (J-dv_lead-0009) | **FROZEN at 3f6accc** |
-| F | M17 `Udp_ip_rx_64`, M18 `Udp_ip_tx_64`, M19 `Udp_complete_64`, M20 `Nic_top` | aaa55b2 (WO-0019) | pending | — | — |
+| F | M17 `Udp_ip_rx_64`, M18 `Udp_ip_tx_64`, M19 `Udp_complete_64`, M20 `Nic_top` | aaa55b2 (WO-0019) | run 30742781586 green (head SHA = spec commit) | **WITHHELD** (J-dv_lead-0010, WO-0020) — M18/M19/M20 SIGNED, M17 CONTESTED (F-1); repair in flight (WO-0021) | — |
 
 ## Batch-A countersignature (transcribed)
 
@@ -132,6 +132,38 @@ Each carries a §13 record; no frozen §4.1 lift changed, so runs
 > do not reopen. Batch E may be drafted in parallel (neither repair
 > moves a port, record, or latency constant).
 
+
+## Batch-F countersignature (WITHHELD — transcribed)
+
+> "Batch-F countersignature WITHHELD at `aaa55b2`." — dv_lead, journal
+> `J-dv_lead-0010` (WO-0020), transcribed by the orchestrator
+> 2026-08-02. SPEC-M18, SPEC-M19, SPEC-M20 **SIGNED** (M20's REQ-006
+> closure at 13 cycles confirmed by three routes; M18's W−J = 1
+> confirmed by event). SPEC-M17 **CONTESTED** on **F-1**: §6.2 directs
+> M17 to copy `tuser`[0] from an input `tlast` word that, for
+> under-declaring UDP lengths (⌈N′/8⌉ < ⌈N/8⌉), has not yet arrived —
+> up to 182 cycles early at the worst case; §6.1's contrary proof runs
+> one inequality the wrong way and proves only the full-delivery case.
+> Owed: three clauses (+1 optional) in DRAFT text, plus a §13 diff at
+> SPEC-M04 §9 (C-31: ADR-0011's Consequences and REQ-709 cite it as
+> "ordered-and-unpinned" while it still reads "pulse together"). All
+> seven architect questions answered — ADR-0011's decision AND pricing
+> endorsed; the cfg_tx_enable → M18 edge accepted, not E2. C-24…C-30
+> reaffirmed (with two count corrections: seven §13 rows, twelve §11
+> closures); ADR-0010 accepted. The re-review surface is bounded in
+> advance and the countersignature sentence pre-worded for
+> `J-dv_lead-0011` at the repair SHA. Withholding rationale, quoted:
+> the last signature of the gate "is a reason to hold the line rather
+> than to relax it" — repairing F-1 in DRAFT costs one activation;
+> after the flip it is a post-freeze §6 behavioural diff, the exact
+> cost ADR-0011 refuses at M04.
+
+| C-31 | ADR-0011 Consequences + REQ-709 cite SPEC-M04 §9 as "ordered-and-unpinned" while §9 still reads "pulse together" — §13 diff owed at M04 | the F-1 repair commit (WO-0021) |
+| C-32 | M20 §9's conservation decision procedure gap (zero-payload / stimulus-supplied ARP term) | top-level stress bench (with C-3) |
+| C-33 | The gapless-only `hdr_valid` one-cycle lead stated unconditionally at four sites — C-27's class one module down | the M17 tb_writer WO |
+| C-34 | SPEC-M18 §6.2 `Body`/`Excess` exit overlap on §8 item 4's own stimulus (editorial; lands free in the F-1 commit) | the F-1 repair commit |
+| C-35 | SPEC-M18 §3's 184-vs-185 REQ-015 bound (editorial; lands free in the F-1 commit) | the F-1 repair commit |
+| C-36 | cfg_tx_enable's two readers (M04, M18) composed — the disable window's joint observable unstated | AP-udp_ip_tx_64.md and the M20 bench WO |
 
 ## Batch-D + batch-E countersignatures (transcribed)
 
