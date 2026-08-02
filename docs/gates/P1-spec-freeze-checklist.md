@@ -30,7 +30,7 @@ by the orchestrator from the signing agent's journal entry, per PROTOCOL
 | C | M06, M07, M08, M09 | 508eea2 (WO-0011) | run 30733153172 green | **SIGNED** (J-dv_lead-0007) | **FROZEN at 508eea2** |
 | D | M10, M11, M12, M13 | a9993ff (WO-0014); D-1/D-2 repaired 3f6accc (WO-0017: R-1 + D-2a/ADR-0009) | runs 30736107842 (2f29888) + 30739442056 (3f6accc) green | **SIGNED** (J-dv_lead-0009, WO-0018 re-review after J-dv_lead-0008 withheld) | **FROZEN at 3f6accc** |
 | E | M14 `Ip_eth_rx_64`, M15 `Ip_eth_tx_64`, M16 `Ip_complete_64` | 3f6accc (WO-0017) | run 30739442056 green (head SHA = spec commit; no witnessing owed) | **SIGNED** (J-dv_lead-0009) | **FROZEN at 3f6accc** |
-| F | M17 `Udp_ip_rx_64`, M18 `Udp_ip_tx_64`, M19 `Udp_complete_64`, M20 `Nic_top` | aaa55b2 (WO-0019) | run 30742781586 green (head SHA = spec commit) | **WITHHELD** (J-dv_lead-0010, WO-0020) — M18/M19/M20 SIGNED, M17 CONTESTED (F-1); repair in flight (WO-0021) | — |
+| F | M17 `Udp_ip_rx_64`, M18 `Udp_ip_tx_64`, M19 `Udp_complete_64`, M20 `Nic_top` | aaa55b2 (WO-0019); F-1 repaired d8df28d (WO-0021) | runs 30742781586 (aaa55b2) + 30744579228 (d8df28d, head SHA = repair commit) green | **SIGNED** (J-dv_lead-0011, WO-0022 re-review after J-dv_lead-0010 withheld) | **FROZEN at d8df28d** |
 
 ## Batch-A countersignature (transcribed)
 
@@ -92,9 +92,10 @@ confirmed WO-0010); C-9 partially closed (scripts live + CI-wired;
 REQ-903 half unblocks now that C-8 is closed); **C-19, C-20, C-21,
 C-22, C-23 CLOSED (WO-0017 at 3f6accc, all five REAFFIRMED at the
 WO-0018 re-review; C-22 additionally discharged at its first new
-instance)**; **C-24…C-30 CLOSED (WO-0019 at aaa55b2, each a
-§13-recorded diff on frozen text touching no §4.1 lift — verified at
-acceptance; pending dv reaffirmation at the WO-0020 countersign)** — C-23 homed in requirements.md §0.6 (generalises)
+instance)**; **C-24…C-30 CLOSED (WO-0019 at aaa55b2; all seven REAFFIRMED at
+WO-0020 with two count corrections — seven §13 rows, twelve §11
+closures)**; **C-31, C-34, C-35 CLOSED (WO-0021 at d8df28d, verified
+at the WO-0022 re-review)** — C-23 homed in requirements.md §0.6 (generalises)
 + REQ-502 disambiguation; note REQ-502's derivation moved 6→7 under
 D-2a, dv re-review question 1; **C-6, C-15, C-16, C-17
 (all five items), C-18 CLOSED (WO-0014 at a9993ff)** — dispositions
@@ -133,6 +134,26 @@ Each carries a §13 record; no frozen §4.1 lift changed, so runs
 > moves a port, record, or latency constant).
 
 
+## Batch-F countersignature (GRANTED at the re-review — transcribed)
+
+> "I countersign batch F (SPEC-M17, SPEC-M18, SPEC-M19, SPEC-M20) for
+> P1-spec-freeze at `d8df28d`." — dv_lead, journal `J-dv_lead-0011`
+> (WO-0022), transcribed by the orchestrator 2026-08-02. The bounded
+> re-review: every F-1 clause re-derived from the spec's own formulas
+> (the separation is 1 − D; the 182-cycle worst case reproduces as
+> D − 1); the architect's two additions judged improvements on dv's
+> own commissioned text (the octet-vs-word distinction bounds the
+> class from both sides; the D = 0 companion is the executable proof
+> of Tail ≡ D ≥ 1); §11.4's carry logic endorsed with the
+> flip-invariance caveat noted (M19's DRAFT hook is the one component
+> that gets dearer); the out-of-surface §4.2 row accepted, the §3 row
+> found to carry a one-word defect in dv's OWN commissioned phrase
+> ("on or after" admits D = 1) — carried as C-40. Batch F's four §12
+> rows fill from run 30744579228 at the freeze SHA itself.
+
+**With this signature, ALL TWENTY Phase-1 module specifications are
+FROZEN: A+B at f78766e, C at 508eea2, D+E at 3f6accc, F at d8df28d.**
+
 ## Batch-F countersignature (WITHHELD — transcribed)
 
 > "Batch-F countersignature WITHHELD at `aaa55b2`." — dv_lead, journal
@@ -164,6 +185,10 @@ Each carries a §13 record; no frozen §4.1 lift changed, so runs
 | C-34 | SPEC-M18 §6.2 `Body`/`Excess` exit overlap on §8 item 4's own stimulus (editorial; lands free in the F-1 commit) | the F-1 repair commit |
 | C-35 | SPEC-M18 §3's 184-vs-185 REQ-015 bound (editorial; lands free in the F-1 commit) | the F-1 repair commit |
 | C-36 | cfg_tx_enable's two readers (M04, M18) composed — the disable window's joint observable unstated | AP-udp_ip_tx_64.md and the M20 bench WO |
+| C-37 | **F-1's twin at FROZEN SPEC-M14** (dv's largest finding, self-reported as its own WO-0018 escape): M14's output extent is fixed by the IPv4 total length — a count inside the data — and its Tail state consumes Ethernet padding; every total length 21…36 on a padded minimum frame emits the payload tlast up to 184 cycles before the input tlast; §6.1 runs the identical backwards inequality; §10's REQ-007 hook is unscoped and commissions an assertion no conformant design passes on §8's own frames; a bad-FCS minimum-length frame reaches the application unmarked. Does not block batch F (substance at a passed gate; repair price flip-invariant; needs an ADR). Confirms §11.4's carried scoping clause has two customers | **next architect activation (WO-0023), ahead of M14 RTL** |
+| C-38 | SPEC-M18 §6.2 lets a word-aligned over-delivery escape REQ-710 (Drain with tlast pending, no strobe, stale word into next frame); REQ-710 (FROZEN) states the correct reading, so carried on the C-26 line | SO-udp_ip_tx_64.md; mandatory attack-plan row |
+| C-39 | requirements.md REQ-710's verification column carries C-34's units error ("ten excess words"); frozen, flip-invariant | with C-37's requirements-adjacent sweep or any REQ diff |
+| C-40 | SPEC-M17 §3's "on or after" (dv's own phrase) admits D = 1; four unqualified relay statements (§2 ×2, §3 REQ-013 row, §4.2 input row); one sweep | the M17 tb_writer WO |
 
 ## Batch-D + batch-E countersignatures (transcribed)
 
@@ -211,5 +236,5 @@ ratifies the transcription here.
 
 ## Sign-off
 
-- [ ] All six batches FROZEN (table complete)
+- [x] All six batches FROZEN (table complete) — A+B f78766e, C 508eea2, D+E 3f6accc, F d8df28d; six countersignatures J-dv_lead-0003/0005/0007/0009/0011, two of them granted at re-reviews after properly withheld first verdicts
 - [ ] Sponsor signature

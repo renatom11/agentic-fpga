@@ -56,14 +56,14 @@ Corrections.
 | Gate | Status | Checklist |
 |---|---|---|
 | G0 | **PASSED 2026-08-01** | [docs/gates/G0-checklist.md](../docs/gates/G0-checklist.md) |
-| P1-spec-freeze | OPEN — **A–E FROZEN (16/20)**, F countersign withheld on one item (F-1 repair in flight, WO-0021) — then sponsor signature | [docs/gates/P1-spec-freeze-checklist.md](../docs/gates/P1-spec-freeze-checklist.md) |
+| P1-spec-freeze | **ALL 20/20 FROZEN — six batches, six countersignatures. AWAITING SPONSOR SIGNATURE (the only open line)** | [docs/gates/P1-spec-freeze-checklist.md](../docs/gates/P1-spec-freeze-checklist.md) |
 
 ## Open work orders
 
 | Packet | From → To | State | Note |
 |---|---|---|---|
 | [WO-0016](../agents/handoffs/WO-0016_m01-m02-implementation.md) | orchestrator → rtl_lead | ACCEPTED | 189d5b2: **first RTL green on first elaboration** (run 30738000890) — M01 Axi64 (types, lift-identical) + M02 Crc32_eth (64-step prefix chain, ADR-0006/0007 honoured); 2 questions queued for architect (Axi64.Axi64 convention; named module type S) |
-| [WO-0022](../agents/handoffs/WO-0022_batch-f-rereview.md) | orchestrator → dv_lead | ISSUED | **Bounded batch-F re-review** at d8df28d — on PASS the pre-worded sentence freezes ALL 20/20 |
+| [WO-0022](../agents/handoffs/WO-0022_batch-f-rereview.md) | orchestrator → dv_lead | ACCEPTED | 0536819: **batch F COUNTERSIGNED at d8df28d — ALL TWENTY SPECS FROZEN**; both architect additions judged improvements on dv's own text; C-37 (F-1's twin at frozen M14, dv's self-reported escape) → WO-0023; C-38/39/40 |
 | [WO-0021](../agents/handoffs/WO-0021_f1-repair.md) | orchestrator → architect_docs_lead | ACCEPTED | d8df28d: F-1 repaired (D = word-count deficit keys everything; conditional copy; §11.4 prices the REQ-007 clause and carries it — flip-invariant cost); C-31/C-34/C-35 landed; no lift touched |
 | [WO-0020](../agents/handoffs/WO-0020_batch-f-countersign.md) | orchestrator → dv_lead | ACCEPTED | 14e8999: countersign **WITHHELD** — M18/M19/M20 SIGNED (REQ-006=13 confirmed 3 routes), M17 CONTESTED (F-1: tuser copy from unarrived word, ≤182 cycles early); ADR-0011+pricing endorsed; C-31…C-36 |
 | [WO-0019](../agents/handoffs/WO-0019_batch-f-specs.md) | orchestrator → architect_docs_lead | ACCEPTED | aaa55b2: **20/20 specs exist** — batch F drafted (M20: REQ-006 closes at 13/24 cycles both lanes), D/E flipped FROZEN, C-24…C-30 landed, ADR-0010 (conventions — **batch-B RTL unblocked**) + ADR-0011, 119-edge table, README refreshed |
@@ -87,8 +87,10 @@ Corrections.
 
 ## Pending escalations to sponsor
 
-_None pending. E3 toolchain lane decided 2026-08-01: released Hardcaml
-v0.17.x from opam (ADR-0004). Next sponsor touchpoint: P1-spec-freeze._
+_**P1-spec-freeze awaits the sponsor's signature** — all twenty specs
+FROZEN behind six countersignatures and green compile evidence at each
+freeze SHA; the checklist's sign-off section has one unchecked box.
+No other escalations pending._
 
 ## Decisions on record
 

@@ -1,5 +1,5 @@
 # WO-0022: Batch-F bounded re-review — the last signature
-- **State**: ISSUED
+- **State**: ACCEPTED
 - **From** / **To**: orchestrator → dv_lead
 - **Spec basis**: the WO-0021 return at **d8df28d** (F-1 repaired;
   C-31/C-34/C-35 landed; no §4.1 lift touched anywhere); your own
@@ -431,3 +431,13 @@ The four §12 evidence rows of batch F fill from CI run **30744579228**
 code: every check above is arithmetic re-derived by hand from spec text, three
 `git diff` invocations, one existing script and one CI API read. `libs/**` was
 not opened — C-37 was found in `docs/specs/modules/ip_eth_rx_64.md`, not in RTL.
+
+### ACCEPTED — orchestrator, 2026-08-02T16:30Z, journal `J-orchestrator-0059`
+
+Committed as `0536819` (dv_lead, `J-dv_lead-0011`). The sentence is
+transcribed; batch F is FROZEN at d8df28d; the checklist's
+all-six-batches box is checked. **ALL TWENTY Phase-1 specifications
+are FROZEN. The sponsor's signature is the gate's only open line.**
+C-37…C-40 transcribed to the ledger — C-37 (F-1's twin at frozen
+SPEC-M14, dv's self-reported escape with the root cause journaled) is
+the next architect activation, WO-0023, ahead of M14 RTL.
