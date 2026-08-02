@@ -1,7 +1,9 @@
 # SPEC-M20 — `Nic_top`
 
-- **Status**: DRAFT — batch F. Template-complete; the two evidence rows of §12
-  are what the freeze flip waits on
+- **Status**: **FROZEN** (`P1-spec-freeze`, SHA `d8df28d`) — batch F, dv_lead
+  countersignature `J-dv_lead-0011` (WO-0022), **SIGNED** with every number
+  re-derived. Changes to §4, §6 or §7 after this point are spec diffs recorded
+  in §13 (SPEC-TEMPLATE rule 7)
 - **Inventory id**: M20 (architecture.md §4) · **Path**:
   `libs/hardcaml_ethernet/src/nic_top.ml`
 - **Datapath role**: shared/structural (receive-path module **with respect to its
@@ -803,7 +805,7 @@ Item numbers are permanent; a closed item keeps its row (SPEC-TEMPLATE §11).
 
 | # | Item | Status · what a reader assumes meanwhile | Tracked as | Owner | Closes by |
 |---|---|---|---|---|---|
-| 11.1 | **The `ifc_check` compile evidence for this lift is pending**: `nic_top_ifc.ml` is new in this commit and carries the first compile-time witnesses of `Config`'s twelve field names and `Status`'s twenty-one — both records were frozen at f78766e with no user until this module. | **DEFERRED — the witnesses are written, the run is pending.** Meanwhile a reader assumes the record exactly as §4.1 writes it: it declares nothing new, opens M01's types home and M18's record home, and uses the `[@@deriving hardcaml]` form eighteen green lifts already use. `tools/check_records_vs_appendix.sh` already checks both field lists against requirements.md §9.1 and §12 on every commit, so a divergence is caught by script even before the compile; a compile divergence surfaces as a red CI run on this commit and is repaired by an editorial diff to this §4.1 and its lift. | the `Interface compile check` row of §12 | architect_docs_lead, rtl_lead | the batch-F `ifc_check` run |
+| 11.1 | **The `ifc_check` compile evidence for this lift is pending**: `nic_top_ifc.ml` is new in this commit and carries the first compile-time witnesses of `Config`'s twelve field names and `Status`'s twenty-one — both records were frozen at f78766e with no user until this module. | **CLOSED (WO-0022).** CI `build` run **30744579228** at **d8df28d** reports `success` with all twenty lifts in it, this one included, and the run's head SHA **is** this specification's freeze SHA. The first compile-time witnesses of `Config`'s twelve field names and `Status`'s twenty-one both elaborated on their first run, and `tools/check_records_vs_appendix.sh` continues to check the same two field lists against requirements.md §9.1 and §12 on every commit — the compile and the script now agree from two directions. | the `Interface compile check` row of §12 | architect_docs_lead, rtl_lead | closed |
 | 11.2 | **REQ-806 requires *measured* end-to-end figures in this specification's freeze record, and no RTL exists at spec freeze.** §7 derives 13 cycles / 83.2 ns at both start lanes from five pinned constants; the measured figures come from dv_lead's REQ-006 bench. | **DEFERRED — the derived figures are stated, sourced and reproducible today, and nothing downstream is blocked.** A reader designing to this specification implements against 13 cycles and knows exactly which five constants it is the sum of. The measured pair is transcribed into §12's freeze record and into the Phase-1 latency report when dv_lead commits it under `docs/reports/latency/` (REQ-806's own process split: dv produces, the architect transcribes). **A measured figure that differs from 13 is a defect, not a correction** — REQ-019's rule says the packet names which of the two the evidence contradicts — and the derivation is here so that the comparison has something to be against. | REQ-806; `docs/reports/latency/` | architect_docs_lead, dv_lead | M20's `P1-module-ready` |
 | 11.3 | **Eleven of REQ-006's twenty-four cycles are unspent** — 7 the architect's slack, 4 held as module reserve at M03, M14 and M17 (§7) — and requirements.md §1.1 still allocates 17 where 13 are used. | **DEFERRED, and deliberately not re-allocated at this gate.** A reader takes §1.1's ceilings as binding and §7's table as the actual chain; the two disagree by 4 cycles and that is a *reserve*, which is a different thing from slack and is recorded as such at each module. Re-allocating now would move numbers in **three** documents (requirements.md §1.1, architecture.md §4, and each module's §7) to give cycles to stages that have not asked for them, immediately before a freeze gate, and would destroy the property that makes the table useful: that a module which later needs a cycle can take it from its own reserve by an ordinary spec diff instead of a slack release. The right moment to tighten §1.1 is after the first `P1-module-ready`, when measured word delays exist for all five stages. | requirements.md §1.1; architecture.md §4 | architect_docs_lead | first `P1-module-ready`, or a spec diff that needs the slack |
 | 11.4 | **REQ-805's second sentence has no Phase-1 observable.** "The consumer is required to accept one word per cycle indefinitely" binds the Phase-2 feed handler; Phase 1 has no consumer to test and the absence of `tready` is structural rather than behavioural. | **DEFERRED — requirements.md REQ-805 states this in terms and `traceability.md`'s row reaches COVERED on the interface check alone.** Meanwhile a reader implements the port with no `tready` and a bench asserts the type, not the behaviour. The item closes when a Phase-2 consumer exists and can be stalled deliberately to show what breaks — which is a Phase-2 test and not a Phase-1 gap. Recorded so that no sign-off packet claims behavioural coverage of the second sentence. | REQ-805; `traceability.md` | architect_docs_lead, dv_lead | Phase-2 attach |
@@ -811,20 +813,24 @@ Item numbers are permanent; a closed item keeps its row (SPEC-TEMPLATE §11).
 
 ## 12. Freeze record
 
-Filled in at `P1-spec-freeze`. All four rows are required (charter §5); this
-spec is DRAFT.
+Filled in at `P1-spec-freeze`. All four rows are required (charter §5).
 
 | Item | Value |
 |---|---|
-| Interface compile check | pending — CI `build` run `<id>`, conclusion `<success>`, SHA `<sha>`; per ADR-0005 a local build is not acceptable evidence. This run is also §11.1's closure record |
+| Interface compile check | CI `build` run **30744579228**, conclusion **`success`**, SHA **d8df28d** — every lift in the single `ifc_check` library elaborates, the four batch-F lifts among them; per ADR-0005 a local build is not acceptable evidence. **The run's head SHA is this specification's freeze SHA**, so no witnessing argument is owed. This run is also §11.1's closure record |
 | Architect signature | `J-architect_docs_lead-0008` |
-| dv_lead testability countersignature | pending — batch F (SPEC-M17, M18, M19, M20) |
-| Frozen at | pending — SHA `<sha>`, gate `docs/gates/P1-spec-freeze-checklist.md` |
+| dv_lead testability countersignature | **`J-dv_lead-0011`** (WO-0022) — batch F **COUNTERSIGNED at d8df28d**. This specification was **SIGNED on its own merits at WO-0020** (`J-dv_lead-0010`) — REQ-006's 13-cycle close at both lanes re-derived — and is unchanged since |
+| Frozen at | SHA **d8df28d**, gate `docs/gates/P1-spec-freeze-checklist.md` |
 | **REQ-806 measured end-to-end latency** | pending — lane-0 start: `<n>` cycles / `<t>` ns; lane-4 start: `<n>` cycles / `<t>` ns. §7 derives **13 cycles / 83.2 ns at both lanes**; the measured pair is transcribed here from `docs/reports/latency/` (REQ-806, §11.2). This is a fifth row required by REQ-806 in addition to the template's four |
 
 ## 13. Change log
 
-Post-freeze changes only. This spec is DRAFT and has none.
+Post-freeze changes only. Each row cites the ADR that authorised it; a breaking
+interface change is counted against post-freeze churn (charter §6). §4.1's
+records are byte-for-byte unchanged since the freeze SHA, so the `ifc_check`
+evidence of §12 witnesses this revision's interface and
+`tools/check_records_vs_appendix.sh` re-passes on every commit. This
+specification has no post-freeze change yet.
 
 | Date | Change | Breaking? | ADR | Journal |
 |---|---|---|---|---|

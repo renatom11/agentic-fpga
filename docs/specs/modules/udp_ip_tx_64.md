@@ -1,7 +1,9 @@
 # SPEC-M18 — `Udp_ip_tx_64`
 
-- **Status**: DRAFT — batch F. Template-complete; the two evidence rows of §12
-  are what the freeze flip waits on
+- **Status**: **FROZEN** (`P1-spec-freeze`, SHA `d8df28d`) — batch F, dv_lead
+  countersignature `J-dv_lead-0011` (WO-0022), **SIGNED** with every number
+  re-derived. Changes to §4, §6 or §7 after this point are spec diffs recorded
+  in §13 (SPEC-TEMPLATE rule 7)
 - **Inventory id**: M18 (architecture.md §4) · **Path**:
   `libs/hardcaml_ethernet/src/udp_ip_tx_64.ml`
 - **Datapath role**: transmit
@@ -797,26 +799,30 @@ Item numbers are permanent; a closed item keeps its row (SPEC-TEMPLATE §11).
 
 | # | Item | Status · what a reader assumes meanwhile | Tracked as | Owner | Closes by |
 |---|---|---|---|---|---|
-| 11.1 | **The `ifc_check` compile evidence for this lift is pending**: `udp_ip_tx_64_ifc.ml` is new in this commit and declares batch F's only new record, which two later lifts in the same batch `open!`. | **DEFERRED — the record is written, the run is pending.** Meanwhile a reader assumes it exactly as §4.1 writes it. The declare-once shape has compiled green three times already — batch D's three intra-batch `open!`s at run 30736107842 and `ip_eth_tx_64_ifc.ml`'s cross-batch one at run 30739442056 — and there is no cycle, because neither M19's nor M20's lift is referenced here. A divergence is a red CI run on this commit and an editorial diff. | the `Interface compile check` row of §12 | architect_docs_lead, rtl_lead | the batch-F `ifc_check` run |
+| 11.1 | **The `ifc_check` compile evidence for this lift is pending**: `udp_ip_tx_64_ifc.ml` is new in this commit and declares batch F's only new record, which two later lifts in the same batch `open!`. | **CLOSED (WO-0022).** CI `build` run **30744579228** at **d8df28d** reports `success` with all twenty lifts in it, this one included, and the run's head SHA **is** this specification's freeze SHA. Batch F's only new record elaborated on its first run, and the two later lifts that `open!` it — M19's and M20's — elaborated with it, so the declare-once shape is now green across four batches. `tools/check_records_vs_appendix.sh` re-passes the byte-identity check on every later commit. | the `Interface compile check` row of §12 | architect_docs_lead, rtl_lead | closed |
 | 11.2 | **An application that gaps its own payload mid-frame can cause an underflow on the wire** (§6.1). REQ-016 obliges M18 to tolerate the gap and it does; M04's source interface does not tolerate one (REQ-206), and there is no elastic buffer between them by decision (requirements.md §11). So a gap of one cycle at the application port, arriving when M15 has no surplus word held, becomes `/E/` `/T/` and `error_underflow` on the wire. | **DEFERRED — the behaviour is fully specified at every module and a reader is not blocked.** Meanwhile the application's obligation is the one REQ-705's contract implies: present payload words continuously once a frame has been offered. What is *not* stated anywhere is how many cycles of slack the chain actually absorbs — M15 holds two payload words and M07 holds two, so a short gap early in a frame is absorbed and a gap near its end is not — and this specification deliberately does not pin that number, because it is a function of four modules' pipelines and pinning it here would make a change at any of them a diff here. The safe reading, and the one a bench should drive, is **zero slack**. If Phase 2's feed handler needs a stated bound, it is a spec diff at M04 or an elastic buffer, and the second reopens requirements.md §11. | this item; requirements.md §11; SPEC-M04 §7 | architect_docs_lead, dv_lead | Phase-2 transmit scoping, or the first `SO-` packet that drives a gapped transmit frame |
 | 11.3 | **REQ-705 places no upper bound on the declared payload length**, and one exists in fact: above **1472** octets the IPv4 total length M18 computes exceeds REQ-612's 1500 and the frame on the wire exceeds 1518 octets, which nothing in the transmit path checks (M04 pads but never truncates). | **DEFERRED — the bound is derivable and stated here, and nothing is blocked.** A reader implements no check and assumes the application declares **1 ≤ P ≤ 1472**: 1 because a zero-octet payload has no encoding (§6.3 item 3) and 1472 because 1472 + 28 = 1500 = REQ-612's maximum. §6.3 item 4 records M18's behaviour outside that range as unconstrained, so DV asserts nothing about it and no bench may treat a larger declaration as a defect **or** as legal. The repair, if a later phase wants one, is a range clause on REQ-705 plus a strobe — and a strobe means a twenty-second entry in requirements.md §12, which REQ-804 and REQ-008 quantify over, so it is a requirements diff and a `Status` record change rather than a local check. That cost is why it is not taken now for a case the application controls entirely. | this item; requirements.md REQ-705, REQ-612 | architect_docs_lead, dv_lead | Phase-2 transmit scoping (E2) |
 | 11.4 | **An under-delivered frame leaves the transmit chain holding an unterminated frame** and `clear` is its only recovery (ADR-0011, §9). | **DEFERRED — the decision is made, recorded and testable, and a reader is not blocked.** A reader implements §6.2's `Short` state exactly as written; a bench follows §8 item 5, which asserts the two strobes and the wire encoding and **then asserts `clear`** before the next frame, and requirements.md REQ-709's verification column says the same. ADR-0011 carries the three rejected alternatives, the sharpest being that M04 consumes and discards an aborted frame's remainder — which is the right repair the day this design meets real hardware, and which costs a REQ-207 scoping diff and a post-freeze §6 change at M04. The item is here so that the cost is priced before someone pays it by accident. | **ADR-0011**; requirements.md REQ-709 and §11 | architect_docs_lead, dv_lead | Phase-2 hardening, or the first real-hardware attach |
 
 ## 12. Freeze record
 
-Filled in at `P1-spec-freeze`. All four rows are required (charter §5); this
-spec is DRAFT.
+Filled in at `P1-spec-freeze`. All four rows are required (charter §5).
 
 | Item | Value |
 |---|---|
-| Interface compile check | pending — CI `build` run `<id>`, conclusion `<success>`, SHA `<sha>`; per ADR-0005 a local build is not acceptable evidence. This run is also §11.1's closure record |
-| Architect signature | `J-architect_docs_lead-0008` |
-| dv_lead testability countersignature | pending — batch F (SPEC-M17, M18, M19, M20) |
-| Frozen at | pending — SHA `<sha>`, gate `docs/gates/P1-spec-freeze-checklist.md` |
+| Interface compile check | CI `build` run **30744579228**, conclusion **`success`**, SHA **d8df28d** — every lift in the single `ifc_check` library elaborates, the four batch-F lifts among them; per ADR-0005 a local build is not acceptable evidence. **The run's head SHA is this specification's freeze SHA**, so no witnessing argument is owed. This run is also §11.1's closure record |
+| Architect signature | `J-architect_docs_lead-0008`; the C-34 and C-35 diffs of §6.2, §3 and §8 `J-architect_docs_lead-0009` |
+| dv_lead testability countersignature | **`J-dv_lead-0011`** (WO-0022) — batch F **COUNTERSIGNED at d8df28d**. This specification was **SIGNED on its own merits at WO-0020** (`J-dv_lead-0010`) and the two byte-wise corrections landed after it — C-34's three sites and C-35's 184 → 185 — were re-checked and confirmed correct at this SHA |
+| Frozen at | SHA **d8df28d**, gate `docs/gates/P1-spec-freeze-checklist.md` |
 
 ## 13. Change log
 
-Post-freeze changes only. This spec is DRAFT and has none.
+Post-freeze changes only. Each row cites the ADR that authorised it; a breaking
+interface change is counted against post-freeze churn (charter §6). §4.1's
+records are byte-for-byte unchanged since the freeze SHA, so the `ifc_check`
+evidence of §12 witnesses this revision's interface and
+`tools/check_records_vs_appendix.sh` re-passes on every commit. This
+specification has no post-freeze change yet.
 
 | Date | Change | Breaking? | ADR | Journal |
 |---|---|---|---|---|

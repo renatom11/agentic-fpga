@@ -1,7 +1,9 @@
 # SPEC-M19 — `Udp_complete_64`
 
-- **Status**: DRAFT — batch F. Template-complete; the two evidence rows of §12
-  are what the freeze flip waits on
+- **Status**: **FROZEN** (`P1-spec-freeze`, SHA `d8df28d`) — batch F, dv_lead
+  countersignature `J-dv_lead-0011` (WO-0022), **SIGNED** with every number
+  re-derived. Changes to §4, §6 or §7 after this point are spec diffs recorded
+  in §13 (SPEC-TEMPLATE rule 7)
 - **Inventory id**: M19 (architecture.md §4) · **Path**:
   `libs/hardcaml_ethernet/src/udp_complete_64.ml`
 - **Datapath role**: shared/structural (receive-path module **with respect to its
@@ -564,25 +566,29 @@ Item numbers are permanent; a closed item keeps its row (SPEC-TEMPLATE §11).
 
 | # | Item | Status · what a reader assumes meanwhile | Tracked as | Owner | Closes by |
 |---|---|---|---|---|---|
-| 11.1 | **The `ifc_check` compile evidence for this lift is pending**: `udp_complete_64_ifc.ml` is new in this commit and is the first lift to `open!` a record declared **in its own batch** by a sibling module (`Udp_tx_request`, SPEC-M18 §4.1). | **DEFERRED — the record is written, the run is pending.** Meanwhile a reader assumes it exactly as §4.1 writes it. The shape has compiled green four times — batch D's three intra-batch `open!`s at run 30736107842 and batch E's cross-batch one at run 30739442056 — and there is no cycle, because M18's lift references nothing of M19's. A divergence is a red CI run on this commit and an editorial diff. | the `Interface compile check` row of §12 | architect_docs_lead, rtl_lead | the batch-F `ifc_check` run |
+| 11.1 | **The `ifc_check` compile evidence for this lift is pending**: `udp_complete_64_ifc.ml` is new in this commit and is the first lift to `open!` a record declared **in its own batch** by a sibling module (`Udp_tx_request`, SPEC-M18 §4.1). | **CLOSED (WO-0022).** CI `build` run **30744579228** at **d8df28d** reports `success` with all twenty lifts in it, this one included, and the run's head SHA **is** this specification's freeze SHA. The first lift to `open!` a record declared by a sibling **in its own batch** elaborated on its first run, with no cycle, as §4.1 argued it would. | the `Interface compile check` row of §12 | architect_docs_lead, rtl_lead | closed |
 | 11.2 | **Fifteen strobes as fifteen scalars**, which SPEC-M05 §11.1 raised at six and SPEC-M16 §11.2 at twelve. | **DEFERRED — this specification commits to fifteen scalars and nothing downstream is blocked.** A reader wiring M19 today connects fifteen named outputs, and every name is normative (requirements.md §12) whichever container carries it. The programme's rule, settled by batch F, is that **strobes travel as named scalars and are aggregated exactly once, at M20** (SPEC-M20 §4.1), so this row is the last restatement of it and not a new question. Changing M19 to a partial record would be a §4 spec diff plus an ADR and would rename no strobe. | SPEC-M05 §11.1; SPEC-M16 §11.2; SPEC-M20 §4.1 | architect_docs_lead | M19's `P1-module-ready` |
 | 11.3 | **The three REQ-506 parameters are forwarded through four levels** — M20, M19, M16, M13 — and their defaults are restated at each, because a defaulted optional argument must have one. | **DEFERRED — the normative statement is SPEC-M13 §5 and every restatement names it.** A reader implements the defaults as written and changes all four together if any changes. The alternative — a parameter record threaded from the top, or a configuration port — was not taken because it would make three compile-time constants into runtime state at every level, and REQ-506 says explicitly that they are compile-time parameters so tests can use short values. Recorded so that a fifth restatement is noticed as a cost rather than added silently. | SPEC-M13 §5; SPEC-M16 §5; SPEC-M20 §5 | architect_docs_lead | M19's `P1-module-ready` |
 
 ## 12. Freeze record
 
-Filled in at `P1-spec-freeze`. All four rows are required (charter §5); this
-spec is DRAFT.
+Filled in at `P1-spec-freeze`. All four rows are required (charter §5).
 
 | Item | Value |
 |---|---|
-| Interface compile check | pending — CI `build` run `<id>`, conclusion `<success>`, SHA `<sha>`; per ADR-0005 a local build is not acceptable evidence. This run is also §11.1's closure record |
+| Interface compile check | CI `build` run **30744579228**, conclusion **`success`**, SHA **d8df28d** — every lift in the single `ifc_check` library elaborates, the four batch-F lifts among them; per ADR-0005 a local build is not acceptable evidence. **The run's head SHA is this specification's freeze SHA**, so no witnessing argument is owed. This run is also §11.1's closure record |
 | Architect signature | `J-architect_docs_lead-0008` |
-| dv_lead testability countersignature | pending — batch F (SPEC-M17, M18, M19, M20) |
-| Frozen at | pending — SHA `<sha>`, gate `docs/gates/P1-spec-freeze-checklist.md` |
+| dv_lead testability countersignature | **`J-dv_lead-0011`** (WO-0022) — batch F **COUNTERSIGNED at d8df28d**. This specification was **SIGNED on its own merits at WO-0020** (`J-dv_lead-0010`) and is unchanged since; nothing in the batch-F re-review surface touched it |
+| Frozen at | SHA **d8df28d**, gate `docs/gates/P1-spec-freeze-checklist.md` |
 
 ## 13. Change log
 
-Post-freeze changes only. This spec is DRAFT and has none.
+Post-freeze changes only. Each row cites the ADR that authorised it; a breaking
+interface change is counted against post-freeze churn (charter §6). §4.1's
+records are byte-for-byte unchanged since the freeze SHA, so the `ifc_check`
+evidence of §12 witnesses this revision's interface and
+`tools/check_records_vs_appendix.sh` re-passes on every commit. This
+specification has no post-freeze change yet.
 
 | Date | Change | Breaking? | ADR | Journal |
 |---|---|---|---|---|

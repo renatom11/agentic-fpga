@@ -2687,3 +2687,306 @@ pre-worded batch-F countersignature at this commit's SHA.
 - docs/specs/modules/udp_ip_rx_64.md
 - docs/specs/modules/udp_ip_tx_64.md
 - docs/specs/modules/xgmii_tx_64.md
+
+## [J-architect_docs_lead-0010] 2026-08-02T16:50:00Z | task:WO-0023 | C-37 repaired at FROZEN SPEC-M14 (the abort bit ordinary Ethernet padding makes uncopyable) — ADR-0012, the programme's first post-freeze behavioural spec diff; C-39/C-40; batch F flipped FROZEN
+
+### Trigger
+
+WO-0023, `agents/handoffs/WO-0023_c37-repair.md`, issued by the orchestrator
+after dv_lead countersigned batch F at `d8df28d` (WO-0022 Return log at
+`0536819`, `J-dv_lead-0011`) and raised **C-37** — the finding dv_lead called
+the most consequential of the programme, self-reported as its own escape from
+WO-0018. Spawn short-id WO-0023/2026-08-02T16:50Z, tenth activation. dv_lead
+recommended it as the next architect activation ahead of receive-chain RTL and
+the orchestrator sequenced it that way, in parallel with WO-0024 (batch-B RTL,
+`libs/**`, disjoint).
+
+### Inputs
+
+- `agents/charters/architect_docs_lead.md`, `agents/PROTOCOL.md` (§3 packets,
+  §4 grammar, §6 scope, §7 gates) — re-read at spawn.
+- `agents/handoffs/WO-0023_c37-repair.md` and
+  `agents/handoffs/WO-0022_batch-f-rereview.md` **in full** — §3 is C-37's whole
+  statement and my only authority for the defect's shape; §4's C-37…C-40 table;
+  §2's C-40 site list; §5's CI figures (run 30744579228, `success`, head SHA
+  d8df28d).
+- `docs/specs/modules/ip_eth_rx_64.md` (SPEC-M14, all thirteen sections, FROZEN
+  at `3f6accc`), `docs/specs/modules/udp_ip_rx_64.md` (SPEC-M17 §2, §3, §4.2,
+  §6.1, §6.2, §8, §10, §11.4, §12, §13 — the F-1 repair as the wording model),
+  `docs/specs/modules/udp_ip_tx_64.md` (SPEC-M18 §6.2, §7, §8 item 4, §11.1,
+  §12, §13 — to price C-38), `docs/specs/modules/udp_complete_64.md` and
+  `docs/specs/modules/nic_top.md` (§11.1, §12, §13 only, for the freeze flip).
+- `docs/specs/requirements.md` — REQ-007, REQ-013, REQ-104, REQ-408, REQ-605,
+  REQ-702, REQ-707, REQ-710, §0.6, §12's strobe appendix, §13's revision record.
+- `docs/specs/traceability.md` — REQ-007, REQ-013 and REQ-710 rows, to establish
+  that none carries an M14- or M17-specific cell and so no traceability diff is
+  owed.
+- `docs/adr/ADR-0011-...md` as the ADR form to follow; my own
+  `J-architect_docs_lead-0009` for the F-1 reasoning this repair transposes.
+- `tools/dv_checks.sh`, `tools/check_records_vs_appendix.sh` (its Status-vs-§12
+  check reads SPEC-M01's `Status` **record**, not a spec's status header — which
+  is why the freeze flip cannot break it). `tasks/BOARD.md` for programme state.
+- `libs/**` was not opened: rtl_lead is mid-flight there on WO-0024 and C-37 is a
+  defect in `docs/specs/modules/ip_eth_rx_64.md`, not in RTL.
+
+### Reasoning
+
+**C-37 re-derives, and I checked it rather than accepted it.** With N the octets
+of the Ethernet payload (padding included, REQ-408) and N′ the IPv4 total length,
+K = ⌈N/8⌉ input words and M = ⌈(N′−20)/8⌉ payload words, the input `tlast` is at
+Ci + K − 1 and the payload `tlast` word at Ci + M + 3, so the separation is
+⌈(N′−20)/8⌉ − ⌈N/8⌉ + 4. For a 64-octet frame (N = 46) the threshold is N′ ≥ 37,
+so total lengths 21 … 36 all lose the bit; total length 28 sits at separation −1
+and UDP length 9 (total length 29) at exactly 0. The frozen §6.1 argued the
+opposite from "Since N′ ≤ N, M + 3 ≥ ⌈(N − 20)/8⌉ + 3 ≥ K" — the second
+inequality holds, the first runs backwards, character for character F-1's error.
+Its worked example reproduced only because that example carries no padding at
+all, which §8 says in terms; the sentence that followed ("where padding is
+stripped the inequality is slack") inverted the dependence outright — padding is
+what closes the window, since every padding octet raises K and none raises M.
+
+**The one number I could not reproduce, and the reconciliation is worth more than
+either figure.** dv_lead's worst case is 184 cycles; mine is 183. Both are right
+and they measure to different events: M17's regime table — the convention this
+repair copies — measures against the cycle the input `tlast` is *presented*,
+while 184 is the distance to the cycle the bit is *readable by a registered
+output*, one later. I put 183 in the table in the M17 convention and named 184 in
+the same cell, because a later reader finding two numbers in two documents would
+otherwise have to redo the derivation to learn that neither is wrong.
+
+**The design decision was never really open, and the ADR says why in the order the
+alternatives will actually be proposed.** Holding the payload `tlast` to the
+input `tlast` costs REQ-005's per-octet constant, REQ-019's pinned ΔC = 4 and
+§1.1's allocation — three documents — to buy a delay of up to 183 cycles; a
+combinational path rescues only D = 1, and at M14 D ≥ 2 is the *common* member of
+the class (total length 28 in a minimum frame is D = 2), so it rescues almost
+nothing; store-and-forward is REQ-005's explicit prohibition. The alternative I
+spent the most thought rejecting is **marking 1** on the class. At M17 it is
+merely wrong; at M14 it is a different order of wrong, because the class is
+ordinary Ethernet padding — a conformant, valid, correctly received 64-octet
+frame would reach the application marked invalid, and REQ-013's vocabulary
+("this frame was found invalid") would become a false statement made constantly.
+So the derived 0 wins, and the sentence I wanted M14 to carry is M17's: it is not
+a copy and not a guess, it is the value the bit *has* at the instant the word is
+emitted.
+
+**Keying M14 on a cycle deficit rather than reusing M17's word deficit is the
+judgement in this repair, and it is forced by arithmetic rather than taste.**
+M17 strips eight octets — a whole datapath word — so M = ⌈N′/8⌉ − 1 identically
+and its D is simultaneously a word deficit, a cycle deficit and the `Tail`
+predicate. M14 strips twenty. Working through the residues, ⌈(N′−20)/8⌉ is
+⌈N′/8⌉ − 2 at N′ mod 8 ∈ {0,5,6,7} and ⌈N′/8⌉ − 3 at {1,2,3,4}, so M14's cycle
+deficit is the word deficit **less one** at four residues in eight. Three
+consequences, all of which had to be written down or a bench would get them
+wrong: (i) M14's D can be −1, so the ordinary fully delivered datagram sits one
+cycle clear of the boundary here and exactly on it at M17; (ii) the *rule* is
+nevertheless identical at both modules — copy iff D ≤ 0 — and collapses to M17's
+"D = 0" there, which is what lets one scoping clause cover both; and (iii)
+**`Tail` and the derived-0 class are NOT equal at M14**, where M17 pins them
+equal. `Tail` is entered on the word deficit, the copy is lost on the cycle
+deficit, and the first is the larger set — a padded datagram can enter `Tail` and
+still carry the bit. Pinning the two names equal at M14 by analogy would have
+been the single most likely error in this repair, and it would have been
+invisible: it fails only at four residues.
+
+**That is also why §8's directed pair is 36 and 37 rather than one member of the
+class.** The two datagrams agree on everything a wrong design keys on — same
+frame, both padded, both in `Tail`, word deficit exactly 1 for both — and differ
+only in D. A design that copies unconditionally fails 36; a design keyed on "the
+datagram is padded", on `Tail`, or on M17's word deficit drives 0 on both and
+fails 37. dv_lead's own M17 pair bounds a class from both sides; this pair bounds
+a *different* boundary, and it exists because the M14/M17 analogy is the trap.
+
+**The residual is the part of this activation I am least comfortable signing, and
+the discomfort is recorded rather than resolved away.** A bad-FCS 64-octet frame
+carrying a short datagram now reaches the application with `tuser`[0] = 0 and
+cannot be discarded on the bit: REQ-104 → REQ-007 → REQ-707 is broken end to end
+for the commonest small frame. I carry it, on four grounds and with the boundary
+named. (1) The *event* is still reported where it was detected — `error_bad_fcs`
+at M03 reaches the top-level `Status` record — so what is lost is the attribution
+of the loss to one frame at the application port, which is strictly smaller than
+the silent discard §0.6 prohibits. (2) The class is entered only by a frame that
+is already invalid: no valid frame's data is corrupted and none is dropped; the
+failure is a failure to warn, and the alternative that "fixes" it (marking 1)
+converts it into a failure to deliver. (3) It does not compound, and this is the
+hinge the work order handed me: M14's consumer is M17, which since the F-1 repair
+re-derives its own D and treats the inherited bit as data rather than relying on
+its timing, so a derived 0 from M14 is inert there. The composite statement —
+that the application sees the mark iff **both** modules can carry it — is one
+neither specification could make alone, and §11.5 with §11.4 now let a reader
+assemble it. (4) Nothing is bought by blocking: both documents that would move
+are frozen already. What would change the judgement is written into the ADR — a
+Phase-2 feed handler treating an unmarked datagram as authoritative, or a real
+link partner with a non-negligible bad-FCS rate — and the repair then is a strobe
+at M14, which is a new port, a twenty-second name in §12, a `Status` field, three
+relay rows and a new REQ, hence **E2** and not mine to freeze in-role.
+
+**REQ-007's scoping clause is now owed at two modules and is still carried, and I
+applied my own §11.4 test rather than reaching for the bigger instrument because
+the finding felt big.** requirements.md is FROZEN, so the diff costs the same
+today and at either gate: its price does not rise. Taking it here would have
+moved requirements.md, traceability.md's REQ-007 row and the REQ-007 hook of nine
+implementers — eight of them frozen, each owing its own §13 row — inside the
+commit carrying the programme's first post-freeze behavioural repair, for no
+saving whatever. It would also have reversed a disposition dv_lead priced and
+bound itself to, in a commit dv_lead has not been asked to review for that. So
+§11.5 carries it as §11.4's **second customer**, with the corrected
+generalisation, the second gate (`SO-ip_eth_rx_64.md`) and the note that whichever
+gate comes first decides both.
+
+**§11.4's falsified sentence is corrected in the same falsifiable form it was
+written in, not retreated from.** That sentence is why C-37 exists: dv_lead
+checked it module by module because it *could* be checked, found M14, and
+verified M10's safety on a ground §11.4 had not given (M10 emits no stream, so
+there is no `tlast` word to set). Rewriting it as a hedge would remove the
+property that made the escape findable. The corrected claim is exactly as
+checkable: the exception is the modules whose output extent is fixed by an
+in-data count — M14 and M17 and those two only.
+
+**The relay sweep was landed at M14 in the same commit as the behaviour, on
+purpose.** dv_lead raised the equivalent five sites at M17 as C-40; M14 has the
+same five (§2's in-scope bullet, §2's not-my-job row, §3's REQ-007 and REQ-013
+rows, §4.2's two `tuser` rows). Repairing §6 and leaving them unqualified would
+have manufactured, at M14, exactly the pathology C-31 exists to fix — a
+specification contradicting its own §6.2 — in the commit that fixes it one module
+over. So M14 never needs a C-40 of its own.
+
+**C-38 was not taken, and the reason is the test I have just applied twice.**
+dv_lead's repair is precise and I agree with it, but it is not the one-clause
+change the work order's "if genuinely cheap" condition contemplates: it moves
+`Body`'s Does cell, both its forward exits, `Drain`'s entry and Does cells, and
+`Excess`'s "completes the output frame exactly as `Drain` does" sentence, which
+stops being true once the output `tlast` has already been emitted from `Body`
+under §7's pinned 1-cycle latency — and the whole thing must be re-derived
+against §9's pinned strobe cycle. That is a second post-freeze *behavioural*
+repair, at a different module, under a different gate, inside the commit carrying
+the first. SPEC-M18 is already FROZEN, so its price is flip-invariant and nothing
+is bought by taking it now.
+
+**The freeze flip was the one thing I did that no one asked for, and I flag it as
+such.** Batch F's four specifications still carried `DRAFT` headers,
+`pending — CI run <id>` in every §12 row and "This spec is DRAFT and has none"
+over every §13, while `tasks/BOARD.md` and the gate checklist say all twenty are
+FROZEN. Writing post-freeze §13 rows into SPEC-M17 under a preamble asserting it
+has none is incoherent, so the flip is presupposed by this work order's own
+deliverables. I flipped all four rather than the two this WO touches, because a
+split batch signed by one sentence at one SHA would be a new inconsistency where
+there was one; the §12 evidence is dv_lead's own (run 30744579228, `success`,
+head SHA d8df28d) and each §11.1 `ifc_check` item closes against it. It is the
+same act I performed for batches D and E at WO-0019, it is inside `docs/specs/**`,
+and the Return log says plainly that it is cheap to revert.
+
+### Actions
+
+- **New `docs/adr/ADR-0012-the-abort-bit-m14-cannot-copy.md`**: Context (the
+  falsification and the derivation), Decision (six numbered clauses), six priced
+  Alternatives (hold the `tlast`; combinational path; store-and-forward; mark 1;
+  add a strobe — E2; take the REQ-007 clause now), Consequences (the residual's
+  four grounds, what would change the judgement, REQ-605's directed case checked,
+  the escape's ownership, the churn tally).
+- `docs/specs/modules/ip_eth_rx_64.md` (SPEC-M14, **FROZEN**): §6.1's
+  availability paragraph replaced by the separation formula, the D-keyed regime
+  table, the named error, the under-fill threshold and the M17-D distinction;
+  §6.1's cycle table pinned as the D = −1 case; §6.2's `Payload` copy made
+  conditional and `Tail` pinned as a proper superset; §8 gains the 36/37 boundary
+  pair and a band note on the 20 … 28 set; §10's REQ-007/REQ-013 hook split with
+  a positive assertion for the excluded class; new **§11.5**; §2, §3 and §4.2
+  swept at five sites; §13 gains one **behavioural** row citing ADR-0012, and its
+  preamble now separates breaking from behavioural.
+- `docs/specs/modules/udp_ip_rx_64.md` (SPEC-M17): §11.4's enumeration corrected
+  with M10's independent ground and the second customer, its Tracked-as and
+  Closes-by cells extended; **C-40** landed at five sites (§3's "on or after" →
+  "after", pinned to D = 0; §2 ×2, §3's REQ-013 row, §4.2's input row); status
+  header, §11.1, §12 and §13 flipped to FROZEN with two §13 rows.
+- `docs/specs/requirements.md`: **C-39** — REQ-710's verification column's units
+  corrected to octets-in-two-words with the reason; one §13 revision-record row,
+  class editorial. REQ-710's normative sentence untouched.
+- `docs/specs/modules/udp_ip_tx_64.md`, `udp_complete_64.md`, `nic_top.md`:
+  freeze flip only (status header, §11.1 closure, §12's four/five rows, §13
+  preamble). No §6, §7, §8, §9 or §10 text touched in any of the three.
+- `agents/handoffs/WO-0023_c37-repair.md`: State ISSUED → RETURNED; Return log
+  with the ADR's decision, the residual judgement, the per-section diff table,
+  the 183/184 reconciliation, the C-39/C-40 confirmations, the C-38 refusal and
+  the flagged freeze flip.
+- **No `§4.1` block was touched anywhere**; no ADR was edited; no
+  `traceability.md`, `architecture.md`, `docs/gates/`, `docs/reports/`, `libs/`,
+  `test/` or `tools/` file was touched. No git command was run.
+
+### Evidence
+
+Reproducible from a checkout at this commit's SHA:
+
+- `bash tools/dv_checks.sh` → **exit 0**. `check_records_vs_appendix.sh`:
+  **23 checks run, 0 failures** — all twenty §4.1 blocks byte-identical to their
+  `docs/specs/ifc_check/*.ml` lifts, the `Status`/`Config` records equal to
+  requirements.md §12/§9.1, and `test/monitors/strobes.ml` in agreement.
+  `check_emitted_verilog.sh`: **OK**, 4 checks, 0 failures, 4 pending (REQ-306,
+  REQ-808, REQ-017, REQ-903 — all `P1-module-ready` conditions, unchanged here).
+- REQ set equality, recomputed by script rather than read:
+  `grep -oE '^\| \*\*REQ-[0-9]{3}\*\*' docs/specs/requirements.md` → **110** rows,
+  110 distinct; the REQ row leaders of `docs/specs/traceability.md` → **110** rows,
+  110 distinct; `diff` of the two sorted sets → **empty**.
+- **No lift touched**: `docs/specs/ifc_check/` does not appear in
+  `git diff --stat`, and the byte-identity check above is the mechanical witness
+  that no `§4.1` block moved.
+- Markdown-table integrity of every edited file re-checked by script: each table
+  row's unescaped-pipe count equals its own header separator's — **0 mismatches**
+  across the six edited documents and the ADR; and every `**` span on a table row
+  balances, which is what a nested-bold edit breaks silently.
+- Arithmetic re-derived by hand and checkable from the spec text alone: the
+  64-octet worked example (K = 6, M = 4, D = −1, separation 2, matching §6.1's
+  own cycle table at Ci + 5 and Ci + 7); the threshold N′ ≥ 8⌈N/8⌉ − 11 giving 37
+  at N = 46 and 1493 at N = 1500; the §8 pair (36 → M = 2, `tlast` at Ci + 5;
+  37 → M = 3, `tlast` at Ci + 6; word deficit 1 for both); the worst case
+  (K = 188, M = 1, D = 184, 183 cycles before presentation).
+- **CI is owed and is not claimed here.** The `build` run at this commit does not
+  exist as this entry is written; the run cited in the four batch-F §12 rows is
+  **30744579228** at **d8df28d**, dv_lead's own figure from the WO-0022 Return
+  log §0, verified there against the GitHub API rather than by me.
+
+### Outcome
+
+**DoD met.** ADR-0012 exists and decides the M14 abort-bit question with the
+residual argued rather than asserted; SPEC-M14's diff set is landed at every
+section the work order names plus the five relay sites it did not, under one
+§13 row marked behavioural and citing the ADR; SPEC-M17 §11.4's falsified
+enumeration is corrected with the second customer cross-referenced; C-39 and C-40
+are landed with their §13 rows; no §4.1 lift moved and REQ set equality holds.
+C-38's spec half was judged **not cheap** and declined with reasons, which the
+work order permitted. One act beyond the list — flipping batch F's four
+specifications to FROZEN — is flagged in the Return log for reversal if the
+orchestrator wants it in its own commit. Handoff:
+`agents/handoffs/WO-0023_c37-repair.md` Return log → orchestrator → dv_lead, with
+a bounded re-review surface named in §8 of that log.
+
+### Open-questions
+
+- **The residual is carried, not closed** (ADR-0012, SPEC-M14 §11.5): on the
+  D ≥ 1 class a bad-FCS frame reaches the application unmarked. If dv_lead or the
+  auditor judges that unacceptable for Phase 1, the repair is the M14 strobe of
+  alternative (e) and it is an **E2** escalation, not an in-role decision.
+- **REQ-007's scoping clause is owed at two modules and gated at two packets.**
+  If a frozen requirement may not stand while two specifications state exceptions
+  to it, I will take it as one activation: requirements.md REQ-007,
+  traceability.md's REQ-007 row and nine implementers' hooks, each frozen spec
+  owing a §13 row.
+- **C-38 remains open** on dv_lead's M18 attack plan as a mandatory row, gated at
+  `SO-udp_ip_tx_64.md`, with my pricing of it in the Return log §6 for dv_lead to
+  contest.
+- **`requirements.md`'s own status header still reads "DRAFT — candidate for
+  `P1-spec-freeze`"** while §13 treats it as frozen behind `J-dv_lead-0002`. That
+  is arguably correct (the gate is unsigned by the sponsor), but the two readings
+  should be reconciled once the sponsor signs; I did not touch it here.
+- C-2, C-3, C-5, C-7, C-9's REQ-903 half, C-32, C-33 and C-36 remain open ledger
+  rows with later gates, unchanged by this commit.
+
+### Files-in-this-commit
+
+- agents/handoffs/WO-0023_c37-repair.md
+- docs/adr/ADR-0012-the-abort-bit-m14-cannot-copy.md
+- docs/specs/modules/ip_eth_rx_64.md
+- docs/specs/modules/nic_top.md
+- docs/specs/modules/udp_complete_64.md
+- docs/specs/modules/udp_ip_rx_64.md
+- docs/specs/modules/udp_ip_tx_64.md
+- docs/specs/requirements.md

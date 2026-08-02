@@ -53,7 +53,9 @@ It instantiates nothing.
 - Realigning that payload so its first octet is at `ip_payload_tdata`[7:0] of the
   payload stream's first word (REQ-021), at every datagram length.
 - Carrying an inherited abort through to the payload stream's `tlast` word
-  (REQ-007, REQ-013).
+  (REQ-007, REQ-013) **on the class that word can still carry it — §6.1's
+  D ≤ 0 — and driving a derived 0 on the class it cannot, D ≥ 1 (§6.2, §11.5,
+  ADR-0012)**.
 - Doing all of that at the single pinned per-octet constant of §7 (REQ-005,
   REQ-611, REQ-019).
 
@@ -68,7 +70,7 @@ It instantiates nothing.
 | ICMP, or answering anything | **nobody** in Phase 1 (REQ-607, requirements.md §11). A non-UDP datagram is discarded with a strobe and no reply of any kind |
 | Building an IPv4 header for transmission, or computing a checksum to insert | M15 `Ip_eth_tx_64` (REQ-608 … REQ-610). M14 and M15 share the `Ip_header` record and nothing else, and the record's `valid` has a **different discipline** in the two directions (§7, ADR-0008) |
 | Resolving the destination MAC, or knowing one exists | M13 `Arp` (REQ-505 … REQ-509). M14 is a receive module and never looks at a MAC address at all |
-| Acting on the inherited abort bit `payload_tuser`[0] | M14 relays it to the payload `tlast` word and acts on nothing (REQ-013, REQ-007). The ultimate consumer on this branch is the application (REQ-707), reached through M17; unlike the ARP branch, this one has one, which is why REQ-013's clause needs no local discharge here (ADR-0009) |
+| Acting on the inherited abort bit `payload_tuser`[0] | M14 relays it to the payload `tlast` word — where §6.1's D ≤ 0 lets that word carry it, and a derived 0 otherwise (§6.2, §11.5) — and acts on nothing (REQ-013, REQ-007). The ultimate consumer on this branch is the application (REQ-707), reached through M17; unlike the ARP branch, this one has one, which is why REQ-013's clause needs no local discharge here (ADR-0009) |
 
 ## 3. Programme invariants that bind this module
 
@@ -84,13 +86,13 @@ bench (§0.4, REQ-905).
 | REQ-003 | The payload output is `Axi64.Source` **without** `Axi64.Dest`, and the input carries no `tready`: M17 cannot stall M14 and M14 cannot stall M08, structurally (§4.1). |
 | REQ-004 | M14 is on requirements.md §0.4's stress-bench list. Its stimulus is what M08 emits on its `ip_*` ports under REQ-004's arrival pattern, derived by construction and never re-invented (§8). |
 | REQ-005 | Cut-through: no payload word is withheld to the end of its datagram. The per-octet latency is the single constant **L = 12 octet times** of §7, at every datagram length and content M14 accepts. A rejected datagram is rejected before any word is emitted, so REQ-005 has no instance for it. |
-| REQ-007 | An abort inherited on the input `tlast` word is carried to the payload stream's own `tlast` word (§9). M14 originates no abort of its own except REQ-605's truncation, which it marks the same way. |
+| REQ-007 | An abort inherited on the input `tlast` word is carried to the payload stream's own `tlast` word (§9) **where that word is emitted after the input `tlast` is presented — §6.1's D ≤ 0. §6.1 scopes the copy, §6.2 states what M14 emits otherwise, §11.5 records the consequence for REQ-007's universal and ADR-0012 decides it.** M14 originates no abort of its own except REQ-605's truncation, which it marks the same way and which is always available to it. |
 | REQ-008 | M14 owns **seven** of the twenty-one strobes (requirements.md §12) — more than any other Phase-1 module — and §9 pins every pulse cycle. |
 | REQ-009 | Synchronous `clear`. On every cycle `clear` = 1 and on the first cycle it is 0: `ip_payload_tvalid` = 0, `ip_hdr_valid` = 0 and all seven strobes are 0. A datagram in flight is abandoned with no `tlast` and no strobe; a datagram whose first word arrives on the first cycle after `clear` returns to 0 is received correctly (§7). |
 | REQ-010 | Both streams are the programme `Axi64.Source`; the input header is SPEC-M01's `Eth_header` and the output header is SPEC-M01's `Ip_header`, both unchanged. **M14 declares no record of its own** (§4.1). |
 | REQ-011 | `ip_payload_tkeep` is `0xFF` on every payload word except the `tlast` word, where it is 1 to 8 contiguous ones from bit 0. |
 | REQ-012 | Input octet position k is `payload_tdata`[8k+7:8k], IPv4 octet 0 at k = 0 of input word 0; every header field is presented as a numeric value with network byte order already decoded (§6.1). |
-| REQ-013 | `payload_tuser`[0] is read on the input `tlast` word and written on the payload `tlast` word. M14 never drops a datagram because it is set, which is REQ-013's own sentence, and it is not the ultimate consumer on this branch — the application is (REQ-707). |
+| REQ-013 | `payload_tuser`[0] is read on the input `tlast` word and written on the payload `tlast` word **where §6.1's D ≤ 0 puts that word after the input `tlast`; on D ≥ 1 that word leaves on or before the input `tlast` is presented and carries a derived 0 (§6.2, §11.5)**. M14 never drops a datagram because it is set, which is REQ-013's own sentence, and it is not the ultimate consumer on this branch — the application is (REQ-707). |
 | REQ-014 | `payload_tstrb` is ignored on the input and driven to 0 on the payload output. |
 | REQ-015 | One `tlast` per payload frame, the `tlast` word included in the count; at most **185** words between two `tlast` words on the payload stream (1480 octets — the 1500-octet maximum total length less the 20-octet header — is 185 words, 184 full and a final eight-octet word), at least one. |
 | REQ-016 | The input may carry idle cycles inside a datagram and M14 tolerates them: k idle cycles before an input word delay every octet that word carries by exactly 8k octet times and change nothing else (§7). §6.1's cycle formulas are stated on a gapless stimulus; §7's **per-octet constant L = 12** holds on every stimulus, while §7's 3-cycle **parse latency** is scoped to a header delivered on consecutive cycles and grows by the injected count when idle lands inside it (carry-forward **C-27**). |
@@ -216,7 +218,7 @@ Every port in §4.1 appears exactly once. Direction is with respect to M14.
 | `payload_tkeep` | in | 8 | valid octet positions, contiguous from bit 0; read to count delivered octets against total length | REQ-011 |
 | `payload_tstrb` | in | 8 | reserved; ignored | REQ-014 |
 | `payload_tlast` | in | 1 | this word carries the frame's final octets; **closes** a datagram (§6.1) | REQ-015 |
-| `payload_tuser` | in | 1 | bit 0: inherited abort, meaningful only on the `tlast` word; copied out, never acted on | REQ-013, REQ-007 |
+| `payload_tuser` | in | 1 | bit 0: inherited abort, meaningful only on the `tlast` word; **copied out where §6.1's D ≤ 0 and dropped where D ≥ 1** (§6.2, §11.5), never acted on | REQ-013, REQ-007 |
 | `cfg_local_ip` | in | 32 | the configured local IPv4 address; the first accepted destination and the base of the subnet-broadcast address | REQ-604, REQ-802 |
 | `cfg_subnet_mask` | in | 32 | contiguous prefix mask; with `cfg_local_ip` it fixes the subnet-broadcast address REQ-604 accepts | REQ-604, REQ-802 |
 | `cfg_multicast_group` | in | 32 | the one multicast group accepted when multicast is enabled | REQ-604, REQ-802 |
@@ -233,7 +235,7 @@ Every port in §4.1 appears exactly once. Direction is with respect to M14.
 | `ip_payload_tkeep` | out | 8 | valid octet positions, contiguous from bit 0 | REQ-011 |
 | `ip_payload_tstrb` | out | 8 | reserved; driven to 0 | REQ-014 |
 | `ip_payload_tlast` | out | 1 | this word carries the payload's final octets | REQ-015 |
-| `ip_payload_tuser` | out | 1 | bit 0: the inherited abort, or REQ-605's truncation, on the `tlast` word | REQ-007, REQ-013, REQ-605 |
+| `ip_payload_tuser` | out | 1 | bit 0: the inherited abort, or REQ-605's truncation, on the `tlast` word — **inherited by copy only where §6.1's D ≤ 0; driven to 0 on the class whose payload `tlast` word leaves on or before the input `tlast` is presented, D ≥ 1 (§6.2, §11.5)**. REQ-605's truncation mark is M14's own and is unaffected | REQ-007, REQ-013, REQ-605 |
 | `error_ip_bad_header` | out | 1 | one-cycle strobe: version not 4, or header length not 5 words | REQ-601 |
 | `error_ip_bad_checksum` | out | 1 | one-cycle strobe: the header checksum does not verify | REQ-602 |
 | `error_ip_fragment` | out | 1 | one-cycle strobe: more-fragments set, or a non-zero fragment offset | REQ-603 |
@@ -383,7 +385,7 @@ padding, and delivers 46 − 20 = **26** payload octets in 4 words.
 | Ci+4 | input word 4: octets 32–39 (payload 12–19) | payload word 0: payload octets 0–7, `tkeep` = 0xFF |
 | Ci+5 | input word 5: octets 40–45 (payload 20–25), `tkeep` = 0x3F, `tlast` = 1 | payload word 1: payload octets 8–15 |
 | Ci+6 | idle | payload word 2: payload octets 16–23 |
-| Ci+7 | idle | payload word 3: payload octets 24–25, `tkeep` = 0x03, `tlast` = 1, `tuser`[0] = the input `tlast` word's `tuser`[0] |
+| Ci+7 | idle | payload word 3: payload octets 24–25, `tkeep` = 0x03, `tlast` = 1, `tuser`[0] = the input `tlast` word's `tuser`[0] — **this datagram is fully delivered, D = −1, so the copy below applies unconditionally to it** |
 | Ci+8 onward | idle | `ip_payload_tvalid` = 0 |
 
 **The last payload word is not emitted early, and that is REQ-005 rather than
@@ -394,15 +396,87 @@ octet time at 8Ci + 56, which is position 0 of cycle Ci + 7. An implementation
 that emitted it at Ci + 6 because it happened to hold every octet would have
 length-dependent latency and would fail REQ-005's per-octet tagger.
 
-**The abort bit is always available in time (REQ-007, REQ-013).** For an input
-frame of N octets the input has K = ⌈N / 8⌉ words and the payload has
-M = ⌈(N′ − 20) / 8⌉ words, where N′ ≤ N is the datagram's own total length; the
-input `tlast` arrives at Ci + K − 1 and the payload `tlast` word leaves at
-Ci + M + 3. Since N′ ≤ N, M + 3 ≥ ⌈(N − 20)/8⌉ + 3 ≥ K, so the payload `tlast`
-never leaves before the input `tlast` has been seen and M14 never has to guess
-the bit. Where padding is stripped the inequality is slack rather than tight,
-which is the ordinary case: the 64-octet frame above has K = 6 and M = 4, and the
-payload `tlast` leaves two cycles after the input's.
+**When the abort bit is available, and what M14 emits when it is not (REQ-007,
+REQ-013).** Let N be the octets the Ethernet payload delivers — **Ethernet
+padding included**, because REQ-408 leaves the padding in place at M06 and §2
+says M14 removes it only by delivering total length − 20 octets and stopping —
+and N′ the datagram's own IPv4 total length, with N′ ≤ N (an N′ above N is
+REQ-605's truncation and never reaches this question). The input has K = ⌈N/8⌉
+words and the payload frame has M = ⌈(N′ − 20)/8⌉ words. The input `tlast` is
+presented on cycle **Ci + K − 1** and the payload `tlast` word — index M − 1 —
+leaves on **Ci + M + 3**, so the two events are separated by
+
+> (Ci + M + 3) − (Ci + K − 1) = ⌈(N′ − 20)/8⌉ − ⌈N/8⌉ + 4 cycles,
+
+and a **registered** output (§7) can carry the bit only where that number is
+**positive**. Writing **D = ⌈N/8⌉ − ⌈(N′ − 20)/8⌉ − 3 = K − M − 3**, M14's
+**cycle deficit**, the separation is exactly **1 − D** and three regimes exhaust
+the datagrams that produce a payload frame at all (N′ ≥ 21):
+
+| Regime | Payload `tlast` vs input `tlast` | The abort bit |
+|---|---|---|
+| **D ≤ 0** — D never falls below −1 — which includes every fully delivered datagram (N′ = N, where D is 0 or −1 by N's residue modulo 8) | 1 − D cycles **after** | available; **copied** from the input `tlast` word. At D = 0 the margin is exactly zero |
+| **D = 1** | the **same** cycle | not available to a registered output |
+| **D ≥ 2** | D − 1 cycles **before** — up to **183** at N = 1500, N′ = 21, which is 184 cycles before the bit is readable by a registered output | not available to any implementation |
+
+**What the paragraph this replaces got wrong, named as the error it was** (ledger
+**C-37**, dv_lead; **ADR-0012**). It argued "Since N′ ≤ N,
+M + 3 ≥ ⌈(N − 20)/8⌉ + 3 ≥ K". The second inequality holds; **the first runs
+backwards** — N′ ≤ N gives M ≤ ⌈(N − 20)/8⌉, *not* ≥ — and it is the same error
+SPEC-M17 §6.1 made and repaired at the next stripping stage of this chain
+(dv_lead, WO-0020 Return log **F-1**). Its worked example reproduced because that example carries **no padding
+at all**: the 64-octet frame of the cycle table above declares total length 46
+and fills its 46-octet Ethernet payload exactly (§8 says so in terms), so it is
+the N′ = N case, D = −1, and the separation of two cycles it reports is right.
+The sentence that followed it — "where padding is stripped the inequality is
+slack" — inverted the dependence. **Padding is what closes the window**: every
+padding octet raises K and none of them raises M.
+
+**How much under-fill the bit survives, in one number.** The bit is available iff
+**N′ ≥ 8⌈N/8⌉ − 11**, so M14 carries it across an under-fill of at most
+**11 − (8⌈N/8⌉ − N)** octets — between 4 and 11 octets, by N's residue. Ordinary
+Ethernet padding exceeds that at once: REQ-408's own worked example is a 64-octet
+frame carrying a 20-octet datagram, which is 26 octets of padding. For the
+46-octet Ethernet payload of a minimum-length frame the threshold is N′ ≥ 37, so
+**every IPv4 total length from 21 to 36 inside a 64-octet frame is in the
+unavailable class** — including the smallest UDP datagram the programme admits
+(UDP length 9, total length 29, D = 1, separation exactly 0) and §8's own
+directed total lengths 21 … 28.
+
+**D is M14's *cycle* deficit and is not SPEC-M17 §6.1's D.** M17's D is a
+**word-count** deficit, ⌈N/8⌉ − ⌈N′/8⌉, and the two definitions agree there only
+because M17 strips **eight** octets — a whole datapath word — so that
+M = ⌈N′/8⌉ − 1 identically. M14 strips **twenty**, which is not a multiple of 8,
+and no such identity exists: writing r = N′ mod 8,
+
+> D = (⌈N/8⌉ − ⌈N′/8⌉) **− 1** for r ∈ {0, 5, 6, 7}, and
+> D = ⌈N/8⌉ − ⌈N′/8⌉ for r ∈ {1, 2, 3, 4}.
+
+A bench that computes M14's D from M17's formula is wrong by one at **four
+residues in eight**, always in the direction that predicts a derived 0 where a
+conformant design must copy. §8 drives the adjacent pair that catches it.
+
+**The rule itself is the same at both modules — copy iff D ≤ 0** — and at M17 it
+collapses to D = 0 because M17's D cannot be negative. At M14 it can be −1, which
+is why the ordinary fully delivered datagram sits one cycle clear of the boundary
+here and exactly on it there. §11.5 and SPEC-M17 §11.4 carry the single
+instrument that now covers both modules.
+
+**Outcome for the unavailable class (D ≥ 1): `tuser`[0] = 0 on the payload
+`tlast` word.** It is not a copy and it is not a guess. 0 is the value the bit
+*has* at the instant that word is emitted — "no abort has been observed for this
+datagram so far" — and it is the only value M14 can derive from what it has seen;
+marking 1 instead would abort every conformant padded datagram, which is the
+commonest small frame on Ethernet. §6.2's `Payload` row states it, §10's hook
+asserts it on a directed pair, §11.5 records what it costs REQ-007's universal,
+and **ADR-0012** records the decision, the residual and the alternatives it
+rejects.
+
+**A truncated frame (N′ > N) never reaches this question.** It is REQ-605's
+error: the payload frame is closed on the word carrying the last octet that
+arrived and is marked `tuser`[0] = 1 by §9's own rule rather than by inheritance,
+and §9's extensional branch fixes which word that is. M14's *own* abort is always
+available to it, because M14 detects the condition at the input `tlast` itself.
 
 **Gapped stimulus.** A cycle carrying no payload word holds every state and every
 register: it is not a condition, it advances no word index, and it delays every
@@ -433,8 +507,8 @@ the input side**; the output is the fixed-delay pipeline of §7 running behind i
 |---|---|---|---|
 | `Idle` | reset; `clear`; the input `tlast` of the previous datagram; a `hdr_valid` pulse that ends a payload-less frame | ignores the payload stream; `ip_hdr_valid` = 0, `ip_payload_tvalid` = 0, every strobe 0 | `Header` on a `hdr_valid` pulse (the datagram opens) |
 | `Header` | a `hdr_valid` pulse | captures IPv4 octets 0–19 into the field registers as they arrive across input words 0, 1 and 2; accumulates the one's-complement sum; evaluates REQ-601, REQ-603 and REQ-612 on word 0, REQ-607 on word 1, and REQ-602 and REQ-604 on word 2; makes the one report of §6.1 on cycle Ci + 3 | `Payload` on the report cycle if the datagram was accepted, its declared payload is non-empty and at least one payload octet was delivered; `Idle` on the report cycle if it was rejected, if its **declared** payload is empty (total length 20, requirements.md §0.7 — `ip_hdr_valid` pulses and no payload frame follows), if the frame closed before the header completed, or **if the frame closed before any payload octet was delivered** while the declared payload is non-empty. The last two both give one `error_ip_truncated` and **no** `ip_hdr_valid`, so a header record never promises a payload frame that cannot follow (§9, carry-forward **C-26**) |
-| `Payload` | the header was accepted, its declared payload is non-empty **and at least one payload octet was delivered** | forwards payload octets at the fixed delay of §7, realigned, counting them against total length − 20; marks `ip_payload_tlast` on the word carrying the last of them, with `tkeep` marking exactly the octets that exist and `tuser`[0] copied from the input `tlast` word — or, where the frame closed early, on the word carrying the last octet that arrived, with `tuser`[0] = 1 (§9, REQ-605); consumes and drops every input octet beyond the count | `Idle` on the input `tlast` — the state leaves immediately and the pipeline drains behind it; `Tail` if the payload count completes while the frame still runs |
-| `Tail` | the declared payload has been delivered and the frame has not ended | consumes the Ethernet padding: ignores every remaining input octet, emits nothing, pulses nothing | `Idle` on the input `tlast`; `Header` on a `hdr_valid` pulse |
+| `Payload` | the header was accepted, its declared payload is non-empty **and at least one payload octet was delivered** | forwards payload octets at the fixed delay of §7, realigned, counting them against total length − 20; marks `ip_payload_tlast` on the word carrying the last of them, with `tkeep` marking exactly the octets that exist and `tuser`[0] **copied from the input `tlast` word where that word has already been presented — §6.1's D ≤ 0 class, which includes every fully delivered datagram — and driven to 0 where the payload `tlast` word leaves on or before that cycle (D ≥ 1; §6.1, §11.5). The copy is conditional; the condition is D, and it is neither "the frame carries padding" nor the word deficit `Tail` keys on** — or, where the frame closed early, on the word carrying the last octet that arrived, with `tuser`[0] = 1 (§9, REQ-605); consumes and drops every input octet beyond the count | `Idle` on the input `tlast` — the state leaves immediately and the pipeline drains behind it; `Tail` if the payload count completes while the frame still runs |
+| `Tail` | the declared payload has been delivered and the frame has not ended | consumes the Ethernet padding: ignores every remaining input octet, emits nothing, pulses nothing. **`Tail` is entered on the *word* deficit and §6.1's D ≥ 1 class is a proper subset of it, which is where M14 differs from M17 and the difference is deliberate.** Input word ⌈N′/8⌉ − 1 carries the declared count's last octet, so `Tail` is entered exactly when that word precedes the input `tlast` word — ⌈N/8⌉ − ⌈N′/8⌉ ≥ 1 — while the copy is lost only where §6.1's cycle deficit D ≥ 1, and D is the word deficit less one at N′ mod 8 ∈ {0, 5, 6, 7}. So **D ≥ 1 implies `Tail`, and `Tail` does not imply D ≥ 1**: a padded datagram can enter this state and still carry the bit, IPv4 total length **37** in a 64-octet frame being the case §8 drives. SPEC-M17 §6.2 pins its own two names equal; this specification pins them **unequal**, for the reason §6.1 gives — twenty octets is not a whole datapath word and eight is | `Idle` on the input `tlast`; `Header` on a `hdr_valid` pulse |
 
 An input cycle carrying no payload word holds every state and every register: it
 is not a condition and it advances nothing (§6.1).
@@ -699,7 +773,39 @@ frame unless its own length forbids it:
   rather than after it*: at M06 the directed set had to be extended from 14–21 to
   14–22 because the residue claim and the `tkeep`-pattern claim are different
   claims, and the same arithmetic applies here one header down. Total length 1500
-  is the maximum REQ-612 admits and gives a 1480-octet payload in 185 words;
+  is the maximum REQ-612 admits and gives a 1480-octet payload in 185 words.
+  **Note for the bench writer** (ledger **C-37**): inside a 64-octet frame every
+  one of total lengths 21 … 28 is in §6.1's **D ≥ 1** class, so this set asserts
+  nothing whatever about `ip_payload_tuser`[0] — the two datagrams below are what
+  assert it. Total length **1500**, by contrast, is the fully delivered maximum
+  and sits at **D = 0**, the tightest point of the copy class, so it exercises the
+  copy at zero margin;
+- **the abort-bit pair, adjacent by one declared octet and both padded**
+  (REQ-007, REQ-013; ledger **C-37**, ADR-0012). Both inside a **64-octet**
+  Ethernet frame, so N = 46, K = 6 and the input `tlast` is presented at Ci + 5,
+  and both enter §6.2's `Tail` state with a word deficit of exactly 1
+  (⌈46/8⌉ = 6 against ⌈36/8⌉ = ⌈37/8⌉ = 5):
+  - **IPv4 total length 36 — §6.1's D = 1.** M = ⌈16/8⌉ = 2, so the payload
+    `tlast` word leaves at Ci + 5, the **same cycle** the input `tlast` is
+    presented. Assert 16 payload octets in two words, `tlast` on word 1 with
+    `tkeep` = 0xFF, 10 octets of padding dropped and **no strobe**. **Drive it
+    twice, once with `payload_tuser`[0] = 0 on the input `tlast` word and once
+    with 1, and assert `ip_payload_tuser`[0] = 0 on the payload `tlast` word both
+    times.** The bit is derived, not copied, and this is the assertion that fixes
+    it in a test rather than in prose (§6.1, §6.2, §11.5).
+  - **IPv4 total length 37 — §6.1's D = 0, and it is the threshold itself.**
+    M = ⌈17/8⌉ = 3, so the payload `tlast` word leaves at Ci + 6, **one cycle
+    after**. Assert 17 payload octets in three words, `tlast` on word 2 with
+    `tkeep` = 0x01, 9 octets of padding dropped, **no strobe**, and
+    `ip_payload_tuser`[0] **equal to the input `tlast` word's** — driven 1 on one
+    run and 0 on another.
+
+  The pair is what makes the class testable rather than merely named, because the
+  two datagrams agree on everything a wrong design is likely to key on. A design
+  that copies unconditionally fails 36. A design keyed on "the datagram carries
+  padding", or on being in `Tail`, or on SPEC-M17's **word** deficit
+  ⌈N/8⌉ − ⌈N′/8⌉ — all three of which hold identically for both — drives 0 on
+  both and fails 37. Only a design keyed on §6.1's cycle deficit passes both;
 - **a 14-octet Ethernet frame routed here** (requirements.md §0.7): no
   `ip_hdr_valid`, no payload word, exactly one `error_ip_truncated` pulse, and
   the next datagram parsed intact;
@@ -838,7 +944,7 @@ monitor counts high cycles per strobe.
 | REQ-003 | both streams are `Axi64.Source` with no `Dest`; no `tready` in either record | §4.1 | interface compile check |
 | REQ-004 | sustains M08's IPv4-port output pattern — 1 header pulse, 6 words, 4 or 5 idle cycles, alternating — for 10 000 datagrams | §8 | line-rate stress bench |
 | REQ-005 | fixed-delay pipeline; no payload word withheld to the datagram's end; the last word is not emitted early | §6.1, §7 | per-octet latency tagger inside the stress bench; directed total lengths 20–28 and 1500 |
-| REQ-007, REQ-013 | inherited `tuser`[0] copied to the payload `tlast` word and never acted on; the ultimate consumer is the application (REQ-707), not this module | §3, §9 | drive `tuser`[0] = 1 on an accepted datagram's `tlast`; assert the payload frame is delivered intact with the bit set on its last word and no strobe pulses |
+| REQ-007, REQ-013 | inherited `tuser`[0] reaches the payload `tlast` word and is never acted on — **copied** where that word is emitted after the input `tlast` (§6.1's D ≤ 0), **derived as 0** where it leaves on or before that cycle (D ≥ 1; §6.2, §11.5, ADR-0012). The ultimate consumer is the application (REQ-707), not this module | §3, §6.1, §6.2, §9, §11.5 | drive `tuser`[0] = 1 on an accepted **D ≤ 0** datagram's `tlast` and assert the payload frame is delivered intact with the bit **set** on its last word and no strobe pulses; then drive `tuser`[0] = 1 on a **D ≥ 1** datagram and assert the payload frame is delivered with `tuser`[0] = **0** on its last word and no strobe. The second is the class REQ-007's universal does not reach (§11.5): it is **excluded from the "bit set on its last word" assertion and given its own**, so the exclusion is tested rather than left as a silence. §8's adjacent pair — IPv4 total lengths **36** and **37** inside a 64-octet frame — is the D = 1 and D = 0 boundary pair, each driven twice with opposite input bits |
 | REQ-008 | seven conditions, seven strobes, every pulse cycle pinned, co-occurrence stated | §9 | one directed test per rejection class plus the two-condition datagram; frame-conservation monitor |
 | REQ-009 | `clear` empties the pipeline; mid-datagram `clear` abandons it silently | §7 | reset test: assert mid-datagram, deassert, open a datagram on the next cycle and assert it parses intact. **The conservation monitor of §0.6 runs with the `clear` exemption of §8 criterion 1 in this test** — without it the abandoned datagram reads as a silent discard and a conformant M14 fails (carry-forward **C-30**) |
 | REQ-010 | both streams are the programme `Axi64.Source`; both header records are SPEC-M01's, unchanged; M14 declares no record | §4.1 | interface compile check, including the first witness of `Ip_header`'s seven field names |
@@ -879,6 +985,7 @@ Item numbers are permanent; a closed item keeps its row (SPEC-TEMPLATE §11).
 | 11.2 | **M14 pins ΔC = 4 against a §1.1 ceiling of 5**, so it holds one cycle of reserve — the opposite position to SPEC-M06 §11.2, which is pinned exactly at its ceiling with none. | **DEFERRED — the number is decided and buildable, and the reserve is deliberate.** A reader implements ΔC = 4 today, and §7 gives the argument that four is the minimum with a registered output. The reserve is **M14's own allocation** and not the architect's seven cycles of programme slack: a later revision to ΔC = 5 is an ordinary spec diff to §7 with §1.1 and architecture.md §4 untouched, whereas going beyond 5 would be a slack release and would change both copies of the allocation table. Stating which of the two a future cycle would be is the whole point of this row. | this item; requirements.md §1.1 | architect_docs_lead | M14's `P1-module-ready` |
 | 11.3 | **REQ-901's divergence class (a) is a restriction on co-simulation stimulus, not only a note**: the reference design does not verify the IPv4 header checksum, so a co-simulation run that injected a bad-checksum datagram would diverge by design at this boundary. | **DEFERRED — the restriction is stated in REQ-602, in REQ-901's class list and in §10, and a reader is not blocked.** Meanwhile: directed tests carry bad checksums, co-simulation stimulus does not. The item closes when the first co-simulation run reports against this boundary and its report names the class, which is what REQ-901's verification column already requires of it. | REQ-901 class (a); this item | dv_lead, architect_docs_lead | the first co-simulation run at this boundary |
 | 11.4 | **`cfg_subnet_mask` reaches M14 by a control edge batch E adds** (§4.3), and architecture.md §6.4.3 records the fan-out as one row from the top-level source to the reading module, not as a hop per wrapper. The wrapper hops through M16, M19 and M20 are computed from §4's containment, the same way §6.4.4 treats strobes. | **CLOSED (WO-0019).** SPEC-M19 §6.1 and SPEC-M20 §6.1 write the two hops above M16 — M20 decomposes the twelve-field `Config` record into scalars and fans them to M05 and M19, and M19 fans them on to M16, M17 and M18 — and both confirm architecture.md §6.4.3's rows as source-and-reader pairs with the wrapper hops computed from §4's containment. The `Config` **record** appears at exactly one port in the programme, M20's `cfg`, and every module below it reads scalars; no configuration field is renamed anywhere and no partial record was adopted. | architecture.md §6.4.3; SPEC-M19 §6.1; SPEC-M20 §4.3, §6.1 | architect_docs_lead | closed |
+| 11.5 | **REQ-007's universal does not reach the datagram whose Ethernet padding closes M14's copy window** (§6.1's D ≥ 1). REQ-007 reads "every downstream module that emits an output frame for it SHALL mark the corresponding final word of its own output stream `tuser`[0] = 1"; on this class M14's payload `tlast` word leaves on or before the cycle the input `tlast` word is presented, so **no implementation can mark it** and §6.2 makes M14 emit a derived 0. requirements.md states no scope. Raised as ledger **C-37** (dv_lead, WO-0022 Return log §3), decided by **ADR-0012**. | **DEFERRED — the behaviour is decided and stated; what is deferred is whether REQ-007's own text gains the scope.** A reader implements §6.2 today — copy where D ≤ 0, derived 0 where D ≥ 1 — and reads REQ-007 as scoped to the frames a marking module can still mark. **The instrument is not new: it is SPEC-M17 §11.4's carried scoping clause, and this row is its second customer.** §11.4 wrote the clause out, priced it and gated it at `SO-udp_ip_rx_64.md` on a generalisation stated in falsifiable form — "M17 is the only module on the chain whose output frame's extent is fixed by a count declared *inside the data*" — and dv_lead falsified it **here**: M14's extent is fixed by the IPv4 total length, which is such a count, and its `Tail` state exists to consume the Ethernet padding that count exposes. **The corrected generalisation, and the scope of the exception**: it is exactly the modules whose output frame's extent is fixed by an in-data count — **M14 and M17, and those two only**. M10 is safe for a reason §11.4 did not give and which holds independently (SPEC-M10 §3's REQ-007 row: M10 emits no stream, so there is no `tlast` word on which to set the bit); M03, M06, M08, M16 and M19 have no in-data count and end on or after their input frames, as §11.4 says. **The price is unchanged by having two customers and is still flip-invariant**: one normative diff to a FROZEN requirement, `traceability.md`'s REQ-007 row and each implementer's REQ-007 hook, costing the same today and at either closing gate — so there is still nothing bought by taking it early, which is §11.4's own rule applied to §11.4's own item. **What is lost, and it is more than at M17**: M17's class is entered only through a UDP length field that under-declares — in the aborted case, a corrupted one — while M14's is entered by **ordinary Ethernet padding**, so a bad-FCS 64-octet frame carrying a short datagram reaches the application with `tuser`[0] = 0 and cannot be discarded on the bit (REQ-104 → REQ-007 → REQ-707). The event is still reported where it was detected — `error_bad_fcs` at M03 (requirements.md §12) — so nothing is silent at the NIC; what is lost is the **attribution to a frame** at the application port. ADR-0012 records why that residual is carried rather than repaired, and names the repair that would restore attribution (a strobe here, which adds a port and a REQ and is therefore **E2**). | this item; **ADR-0012**; SPEC-M17 §11.4; requirements.md REQ-007; §6.1, §6.2, §8, §10 | architect_docs_lead | **`SO-ip_eth_rx_64.md`** — the packet that would otherwise claim REQ-007 whole at M14 — jointly with `SO-udp_ip_rx_64.md` (SPEC-M17 §11.4). One clause, two gates; whichever comes first decides it for both |
 
 ## 12. Freeze record
 
@@ -899,8 +1006,16 @@ below is breaking**: §4.1's record is byte-for-byte unchanged since the freeze
 SHA, so the `ifc_check` evidence of §12 still witnesses this revision's
 interface, and `tools/check_records_vs_appendix.sh` re-passes on this commit.
 
+**Breaking and behavioural are different columns of the same ledger, and this
+table now carries one of each class.** The three rows of 2026-08-02 that cite no
+ADR are corrections in which no conformant design changes. The **ADR-0012** row
+is **behavioural** — a conformant design's output changes on a reachable class of
+datagrams — and it is the programme's first post-freeze behavioural spec diff.
+It is not breaking, because no record, port, width or pinned constant moves.
+
 | Date | Change | Breaking? | ADR | Journal |
 |---|---|---|---|---|
 | 2026-08-02 | §9's truncation row made **extensional** — a payload frame is emitted and aborted iff the datagram declared payload octets and at least one was delivered — with the 21-to-27-delivered band derived; §6.2's `Payload` entry condition and `Header` `Idle` list follow; the exactly-20-delivered boundary decided (no `ip_hdr_valid`, one strobe); §8 gains both directed sets and §10's REQ-605 hook names them (ledger **C-26**) | no | none — **requirements.md REQ-605 settles it one document up** ("the payload's last word SHALL carry `tuser`[0] = 1" presupposes a word), so this is the specification agreeing with its requirement rather than choosing between two designs; no REQ text moves and no other module is affected | `J-architect_docs_lead-0008` |
 | 2026-08-02 | §7's 3-cycle **parse latency** scoped to a header delivered without internal idle cycles, with the growth rule stated; §3's REQ-016 row and §6.1's gapless paragraph follow; §10's REQ-016 hook now names **L = 12** as the gap-invariant constant and REQ-611's hook names the scope (ledger **C-27**) | no | none — a scoping correction to a figure REQ-611's own gap clause is discharged by L, not by this figure; the pinned numbers 3, 12, 20 and 4 are all unchanged, and §6.1 already stated the scoping obliquely | `J-architect_docs_lead-0008` |
 | 2026-08-02 | §8 criterion 1 gains the **`clear` conservation exemption** (ledger **C-2** at its second module), worded on SPEC-M10 §8's model; §10's REQ-009 hook names it (ledger **C-30**) | no | none — an exemption owed to the *monitor*, not a change to the module: §7 already stated that `clear` abandons an open datagram with no `tlast` and no strobe, and §8's stress run never asserts `clear`, so criterion 1 stands as written for all 10 000 datagrams | `J-architect_docs_lead-0008` |
+| 2026-08-02 | **BEHAVIOURAL — the abort bit M14 cannot copy** (ledger **C-37**, dv_lead, WO-0022 Return log §3; F-1's twin at the IPv4 stage). §6.1's availability argument replaced by a **separation formula** — the payload `tlast` word leaves ⌈(N′−20)/8⌉ − ⌈N/8⌉ + 4 cycles after the input `tlast` is presented — keyed on the cycle deficit **D = ⌈N/8⌉ − ⌈(N′−20)/8⌉ − 3**, with the backwards inequality named as the error it was, the padding dependence corrected (padding *closes* the window; the old example carried none), the under-fill threshold **N′ ≥ 8⌈N/8⌉ − 11** derived, the 21 … 36 band inside a 64-octet frame named, and D distinguished from SPEC-M17's **word** deficit at the four residues where they differ. §6.2's `Payload` copy made **conditional on D ≤ 0**, with a derived 0 on D ≥ 1, and `Tail` pinned as a proper **superset** of that class rather than equal to it. §10's REQ-007/REQ-013 hook split so the excluded class carries a **positive assertion** instead of a silence — the previous hook commissioned an assertion no conformant design passes on §8's own directed frames. §8 gains the adjacent boundary pair, IPv4 total lengths **36** and **37** inside a 64-octet frame, each driven twice with opposite input bits, plus a band note on the existing 20 … 28 set. **New §11.5** carries SPEC-M17 §11.4's REQ-007 scoping clause as its **second customer**. §2's in-scope bullet and not-my-job row, §3's REQ-007 and REQ-013 rows and §4.2's two `tuser` rows are qualified in the same sweep, so no site states the copy unconditionally — the sweep C-40 makes at M17, landed here in the same commit so M14 never needs one of its own | no — **behavioural, not breaking**: a conformant design's `ip_payload_tuser`[0] changes on the D ≥ 1 class, and no record, port, width or pinned constant moves (L, h, ΔC, the parse latency and every strobe cycle are untouched) | **ADR-0012** | `J-architect_docs_lead-0010` |
