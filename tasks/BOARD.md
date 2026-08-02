@@ -56,13 +56,14 @@ Corrections.
 | Gate | Status | Checklist |
 |---|---|---|
 | G0 | **PASSED 2026-08-01** | [docs/gates/G0-checklist.md](../docs/gates/G0-checklist.md) |
-| P1-spec-freeze | OPEN — **A+B+C FROZEN (9/20)**, D–F pending | [docs/gates/P1-spec-freeze-checklist.md](../docs/gates/P1-spec-freeze-checklist.md) |
+| P1-spec-freeze | OPEN — **A+B+C FROZEN (9/20)**, D drafted (a9993ff, countersign in flight), E–F pending | [docs/gates/P1-spec-freeze-checklist.md](../docs/gates/P1-spec-freeze-checklist.md) |
 
 ## Open work orders
 
 | Packet | From → To | State | Note |
 |---|---|---|---|
-| [WO-0014](../agents/handoffs/WO-0014_batch-d-specs.md) | orchestrator → architect_docs_lead | ISSUED | Batch D (SPEC-M10–M13 ARP family) + C-15/C-16/C-17/C-18 diffs |
+| [WO-0015](../agents/handoffs/WO-0015_batch-d-countersign.md) | orchestrator → dv_lead | ISSUED | Batch D countersign at a9993ff; four architect questions (M11 ADR-0008 substitution; M10 bad-FCS learn; M13 REQ-810 — potentially breaking; M13 miss-replacement) |
+| [WO-0014](../agents/handoffs/WO-0014_batch-d-specs.md) | orchestrator → architect_docs_lead | ACCEPTED | a9993ff: SPEC-M10–M13 DRAFT (lifts byte-identical), C-6/15/16/17/18 CLOSED, batch-C freeze flip ratified, 117-edge table; countersign next after CI |
 | [WO-0013](../agents/handoffs/WO-0013_batch-c-countersign.md) | orchestrator → dv_lead | ACCEPTED | **SIGNED at 508eea2 — batch C FROZEN (9/20)**; eight amendments reaffirmed; ADR-0008 accepted; new C-16/17/18 |
 | [WO-0012](../agents/handoffs/WO-0012_dv-wave2.md) | orchestrator → dv_lead | ACCEPTED | a8a6c5e: tagger h-per-frame split (+2nd same-class defect fixed), XGMII link-partner model (emitter = total function of octet time), REQ-903 both halves; 24 snapshots await promotion |
 | [WO-0011](../agents/handoffs/WO-0011_batch-c-specs.md) | orchestrator → architect_docs_lead | ACCEPTED | 508eea2: SPEC-M06–M09 DRAFT, C-11/12/13/14 all applied (8 §13 records, none breaking), ADR-0008, 116-edge connection table; countersign next after CI |

@@ -28,7 +28,7 @@ by the orchestrator from the signing agent's journal entry, per PROTOCOL
 | A | M01 `Axi64`, M02 `Crc32_eth` | 22145b5 (WO-0006), revised f78766e | run 30729342467 green | **SIGNED** (J-dv_lead-0003; §4.1 addition accepted J-dv_lead-0005) | **FROZEN at f78766e** |
 | B | M03, M04, M05 | f78766e (WO-0008) | run 30729342467 green | **SIGNED** (J-dv_lead-0005) | **FROZEN at f78766e** |
 | C | M06, M07, M08, M09 | 508eea2 (WO-0011) | run 30733153172 green | **SIGNED** (J-dv_lead-0007) | **FROZEN at 508eea2** |
-| D | M10, M11, M12, M13 | — | — | — | — |
+| D | M10, M11, M12, M13 | a9993ff (WO-0014) | pending | — | — |
 | E | M14, M15, M16 | — | — | — | — |
 | F | M17, M18, M19, M20 | — | — | — | — |
 
@@ -70,13 +70,30 @@ by the orchestrator from the signing agent's journal entry, per PROTOCOL
 | C-14 | Five readings that alone commission assertions failing conformant designs (sharpest: SPEC-M04 §7 tx_tready-during-gap vs its own §6.1 and REQ-209) | batch-C return |
 | — | dv machinery defect (self-found): Latency.create's single strip_octets conflates two quantities diverging at M03 lane-4 (ΔC misreport 2 vs 3) | dv's next WO, before any M03 bench |
 
+| C-15 | requirements.md §0.5 constancy definition carries its start-lane exception seventy lines away — a monitor built from the unqualified sentence fails a conformant M03 (dv's clause supplied in the WO-0012 Return log; row transcribed late, at closure) | batch-D return |
 | C-16 | SPEC-M04 §7 tx_tready bullet correct but incomplete — the omitted C+8 cycle is the one the composed 11-cycle cadence turns on | before M04/M07 tb_writer WO (batch-D return) |
 | C-17 | Five batch-C readings/coverage claims (M06 inequality inversion; M07 drain W−J+1; M08 §6.3 same-cycle-header; ADR-0008 valid-drop monitor rule; M06 §8 needs 22) | batch-D return |
 | C-18 | C-14.4 repair's example covers four frame octets — read literally, amended §6.2 Frame row fails every lane-4 FCS | before AP-xgmii_rx_64 (batch-D return) |
 
 Status marks: C-1 SEALED (WO-0010); C-4, C-8, C-10 CLOSED (WO-0008,
 confirmed WO-0010); C-9 partially closed (scripts live + CI-wired;
-REQ-903 half unblocks now that C-8 is closed).
+REQ-903 half unblocks now that C-8 is closed); **C-6, C-15, C-16, C-17
+(all five items), C-18 CLOSED (WO-0014 at a9993ff)** — dispositions
+transcribed from the architect's Return log: C-6 closes in SPEC-M10 §8
+(parsed-fields form of REQ-004's four criteria); C-15 applies dv's
+clause verbatim in requirements.md §0.5; C-16 pins tx_tready = 1 at C+8;
+C-17(b) landed in five places not three, C-17(d) in ADR-0008 not
+SPEC-M07; C-18's twin sentence in SPEC-M03 §3 moved in the same diff.
+Each carries a §13 record; no frozen §4.1 lift changed, so runs
+30729342467 and 30733153172 still witness every frozen interface.
+
+**Batch-C spec-status flip ratified (WO-0014).** The architect flipped
+SPEC-M06…M09 from "Status: DRAFT" to FROZEN-at-508eea2 and completed
+their §12 rows (run 30733153172 at f457efc, `J-dv_lead-0007`), matching
+what this checklist has recorded since 55e78f2 — a doc-truthfulness
+repair, disclosed in the Return log, §12 being the architect's section
+(charter §5). The orchestrator verified `docs/gates/` untouched and
+ratifies the transcription here.
 
 ## Sponsor items attached to this gate — both decided 2026-08-02
 

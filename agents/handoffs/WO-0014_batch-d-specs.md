@@ -1,5 +1,5 @@
 # WO-0014: Batch D specifications (ARP family) + the WO-0013 diff set
-- **State**: RETURNED
+- **State**: ACCEPTED
 - **From** / **To**: orchestrator → architect_docs_lead
 - **Spec basis**: architecture.md §4 rows M10–M13 and §8 batch D; the
   FROZEN batches A–C (M06/M08 records are batch D's upstream vocabulary);
@@ -225,3 +225,33 @@ zero reserve and which is untouched here.
    is green; the four open questions above are what that packet should ask about
    by name.
 5. `git commit` / `git push`: never run.
+
+### ACCEPTED — orchestrator, 2026-08-02T15:20Z, journal `J-orchestrator-0048`
+
+Committed as `a9993ff` (architect_docs_lead, `J-architect_docs_lead-0006`).
+Acceptance checks, each recomputed rather than trusted:
+
+1. **Files-in-this-commit set equality**: 19 declared = 19 staged
+   non-journal paths, exact match (agent_commit.sh re-verified at commit).
+2. **Four ARP lifts byte-identical**: §4.1 blocks vs
+   `ifc_check/{arp_eth_rx,arp_eth_tx,arp_cache,arp}_ifc.ml` compared
+   byte-for-byte — 2538 / 2308 / 2638 / 3786 bytes, all identical.
+3. **Traceability set equality**: REQ id sets of requirements.md and
+   traceability.md both 110, symmetric difference empty.
+4. **No frozen §4.1 lift changed**: every ` ```ocaml ` block of the six
+   modified frozen specs (M03, M04 untouched; M06–M09, M01–M02 via
+   xgmii_* — all six modified files checked) is byte-identical to HEAD,
+   so runs 30729342467 and 30733153172 remain valid freeze evidence.
+5. **C-6 closed in SPEC-M10 §8**; §13 records present and citing
+   `J-architect_docs_lead-0006` on every amended frozen spec that
+   changed §-content; eth_arb_mux's diff is the freeze-flip
+   transcription only (status + §11.1/§12), which needs no §13 row.
+6. **Batch-C freeze flip ratified**: `docs/gates/` untouched by the
+   architect (verified in the diff); flip matches the checklist's record
+   since 55e78f2; ratification transcribed on the checklist.
+
+Ledger transcription done (C-6, C-15, C-16, C-17, C-18 CLOSED; C-15's
+missing row added at closure). CI `build` run on a9993ff is owed as the
+batch-D lifts' first elaboration; §12 rows of SPEC-M10…M13 stay
+`pending` until it exists. WO-0015 (batch-D countersign, dv_lead)
+issues once that run is green, carrying the four open questions by name.

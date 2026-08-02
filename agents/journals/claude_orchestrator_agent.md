@@ -1859,3 +1859,68 @@ none
 - agents/handoffs/WO-0014_batch-d-specs.md
 - docs/gates/P1-spec-freeze-checklist.md
 - tasks/BOARD.md
+
+## [J-orchestrator-0048] 2026-08-02T15:25:00Z | task:WO-0014 | Batch D accepted at a9993ff; C-6/15/16/17/18 closed; WO-0015 issued
+
+### Trigger
+WO-0014 RETURNED by architect_docs_lead (`J-architect_docs_lead-0006`,
+2026-08-02T14:55Z): four batch-D specs drafted, nine C-item dispositions,
+batch-C freeze flip performed and disclosed.
+
+### Inputs
+- The uncommitted working tree (the architect's return, 19 non-journal paths)
+- WO-0014 Return log; J-architect_docs_lead-0006 Files-in-this-commit list
+- docs/gates/P1-spec-freeze-checklist.md (ledger + batch table)
+
+### Reasoning
+Acceptance = recomputation, not trust (the WO-0007 precedent). Checks run
+before committing: (1) declared file set vs `git status` non-journal paths —
+19 = 19 exact; (2) the four ARP §4.1 lifts vs their ifc_check files —
+byte-identical at 2538/2308/2638/3786 bytes; (3) REQ set equality — both
+sides 110, symmetric difference empty; (4) every ```ocaml block of the six
+modified frozen specs byte-identical to HEAD, so freeze evidence runs
+30729342467/30733153172 survive; (5) C-6 closure present in SPEC-M10 §8;
+§13 rows cite J-architect_docs_lead-0006; eth_arb_mux's diff inspected —
+freeze-flip transcription only (status/§11.1/§12), no §13 row owed.
+The batch-C status flip: §12 is the architect's section (charter §5), the
+gate record has said FROZEN-at-508eea2 since 55e78f2, and `docs/gates/` is
+untouched in the diff — ratified, not escalated. C-15 had no ledger row
+(transcription gap from WO-0012); added at closure with the gap noted in
+the row text rather than backdated.
+
+### Actions
+- Committed the return as a9993ff (`scripts/agent_commit.sh --agent
+  architect_docs_lead --entry J-architect_docs_lead-0006 --work-order
+  WO-0014`), staging exactly the declared 19 + journal.
+- Checklist: batch-D row drafted-at-a9993ff; C-15 row added; status marks
+  extended (C-6/15/16/17/18 CLOSED at a9993ff); batch-C flip ratification
+  paragraph.
+- WO-0014 packet: State ACCEPTED + verdict block with the six checks.
+- Board: WO-0014 ACCEPTED row, WO-0015 ISSUED row, gate line "D drafted".
+- Issued agents/handoffs/WO-0015_batch-d-countersign.md (dv_lead): four
+  verdicts + the architect's four questions by name (Q3 flagged
+  potentially breaking), ledger reaffirmation, countersignature sentence.
+  Spawn deferred until the CI build run on a9993ff is green — the batch-D
+  lifts' first elaboration is the packet's evidence prerequisite.
+
+### Evidence
+- `git show a9993ff --stat` — 20 paths (19 + journal)
+- `diff <(grep -oE 'REQ-[0-9]{3}' docs/specs/requirements.md | sort -u) <(grep -oE '^\| REQ-[0-9]{3}' docs/specs/traceability.md | grep -oE 'REQ-[0-9]{3}' | sort -u)` — empty
+- python byte-compare of the four §4.1 blocks vs ifc_check files (this
+  session; method identical to the WO-0011 acceptance)
+- `git diff HEAD~1 -- docs/specs/modules/eth_arb_mux.md` — status/§11.1/§12 only
+
+### Outcome / DoD
+Batch D drafted and accepted; ledger current (C-1…C-18 all dispositioned
+or tracked); WO-0015 issued pending CI green on a9993ff.
+
+### Open questions
+- The architect's four §11 questions ride WO-0015 (dv's call, not mine).
+- CI run id for a9993ff to be appended to WO-0015's Evidence line before
+  spawn.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0014_batch-d-specs.md
+- agents/handoffs/WO-0015_batch-d-countersign.md
+- docs/gates/P1-spec-freeze-checklist.md
+- tasks/BOARD.md
