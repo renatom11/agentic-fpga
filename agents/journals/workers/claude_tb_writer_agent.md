@@ -521,3 +521,190 @@ the orchestrator's transcription do the state flip, not me.
 - test/xgmii_rx_64/test_m03_c.ml
 - test/xgmii_rx_64/test_m03_structural.ml
 - agents/handoffs/WO-0038_tb-m03-first-bench.md
+
+---
+
+## [J-tb_writer-0003] 2026-08-02T23:10Z | task:WO-0038 | Round 3 — Int.rem at two sites, L6 witnesses to construction form, on RV-0038-R3
+
+### Trigger
+
+WO-0038/2026-08-02T23:00Z (dv_lead, via the orchestrator): round-3 fix list
+after RV-0038-R2's ACCEPT (`J-dv_lead-0024`) proved not to be a compile —
+CI run 30769770945 on commit `5c37b22` died at three errors, and
+RV-0038-R3 (`J-dv_lead-0025`) is the authoritative, verbatim-execution
+instruction for this spawn: R3-1 (`mod` → `Int.rem` at `test_m03_c.ml:15`
+and `:99`, exact text given, `land`/`lsl` cleared, the four comment `mod`s
+untouched) and R3-2 (the three M03-L6 witnesses in
+`test_m03_structural.ml` from record PATTERNS to the construction form
+`{ o with rx = { ... } }`, exact text given, and delete
+`[@@@warning "@9"]`). Packet state BOUNCED. This is explicitly a
+verbatim-execution round, not a re-derivation round: both fixes are ruled
+fully mechanical by dv_lead and my job is to apply the given text
+precisely, self-check, and re-sweep `test_m03_a.ml`/`test_m03_b.ml` for
+the same two alert classes one more time.
+
+### Inputs
+
+`agents/charters/tb_writer.md`; `agents/PROTOCOL.md` §2-6 and §10 (re-read
+in full); `agents/handoffs/WO-0038_tb-m03-first-bench.md` in full,
+including every prior round's Return log and every dv_lead verdict up to
+and including `RV-0038-R3` (`J-dv_lead-0025`) at the foot, the
+authoritative instruction for this round, read multiple times to copy its
+exact replacement text rather than paraphrase it. This journal's own
+header and my own `J-tb_writer-0001`/`J-tb_writer-0002` entries, to
+confirm the next entry id (0003) and avoid re-deriving what rounds 1-2
+already recorded. The two files this round's fix touches, as they stood
+before my edits: `test/xgmii_rx_64/test_m03_c.ml`,
+`test/xgmii_rx_64/test_m03_structural.ml` — re-read in full to locate
+each exact line RV-0038-R3 named and confirm no other line matched the
+same text (`grep`, not assumption). `test/xgmii_rx_64/test_m03_a.ml` and
+`test/xgmii_rx_64/test_m03_b.ml`, re-read in full plus grepped for `\bmod\b`,
+for record-pattern shapes (`let {`, `(fun {`, `({`), and (by eye, no local
+compiler reaches this) for open-usage, per this round's explicit
+instruction to re-sweep both one more time. No path under `libs/**`,
+`top/**`, `bin/**` or `rtl_snapshots/**` — any path, manifests included —
+was opened this spawn, targeted or swept.
+
+### Reasoning
+
+**R3-1, applied verbatim, no independent semantic re-derivation.**
+RV-0038-R3 gives the exact replacement text for both sites and its own
+ruling for *why* `Int.rem` over `(%)` (the compiler's deprecation alert
+certifies `Int.rem` as equivalent to the `mod` already there, which is a
+strictly stronger guarantee than my own non-negativity argument would be,
+and dv_lead says so explicitly). This is a verbatim round: I did not
+re-derive the semantics myself, re-checked only that I was editing the
+named lines and no others, and grepped afterward for every remaining
+`mod` in the directory to confirm the four comment occurrences
+(`test_m03_c.ml:11`, `:34`, `test_m03_a.ml:157`, `bench.mli:155`) were
+untouched and the two code-site occurrences were the only ones changed.
+
+**R3-2, applied verbatim, with one disclosed prose deviation.** The three
+witnesses are replaced with RV-0038-R3's given text exactly — same
+parameter names (`b`, `i`/`o`), same field lists, same
+`{ o with rx = { ... } }` shape for the third witness. I deleted
+`[@@@warning "@9"]` and rewrote the comment immediately below it (the
+"RV-0038 addendum D2" comment) to record the round-1→addendum→R3-3 history
+and why construction now supersedes the attribute, exactly as R3-2 asks
+("with its comment rewritten to record why construction rather than
+pattern"). I *additionally* rewrote the file's top docstring paragraph
+(originally "three record patterns below... Record-pattern exhaustiveness
+(warning 9...)"), which R3-2's text does not explicitly authorize — I
+judged leaving it factually describing patterns, three lines above code
+that is now constructions, worse than fixing it, since a stale doc
+comment inside the very file being corrected for a scoping defect is the
+kind of small inconsistency this programme's own history (WO-0033,
+`J-dv_lead-0018`) says compounds. Disclosed in the Return log as a named
+deviation from strict verbatim-only scope, not silently folded in — it
+changes no witness, no assertion, no row.
+
+**a/b grep sweep, findings.** `mod`: `test_m03_a.ml:157` is a comment
+("`tdata[8*(j mod 8)+7 : ...]`"); `test_m03_b.ml` has no `mod` anywhere.
+No code-site `mod` in either file — nothing to fix. Bare record patterns:
+zero in either file. `test_m03_a.ml`'s `tuple_of_sample`/`tuple_equal` use
+typed parameters and *tuple* patterns (not record patterns);
+`test_m03_b.ml`'s `preamble_override` builds a record via
+`{ Dv_xgmii.Xgmii_word.data = ...; control = ... }`, a qualified,
+complete *construction*, not a destructuring pattern — R3-2's authorized
+fix class (record-pattern witness → construction) has no target in
+either file. Unused opens: both files open only `Base` (with `!`) and
+`Bench`, both used extensively and unqualified throughout by direct
+inspection; I have no local compiler that reaches warning 33 against the
+real toolchain (ADR-0005, same limitation every prior round noted), so
+this is reported as a manual read, not a compiler verdict. **Conclusion:
+nothing in either file falls into an authorized fix class this round;
+neither file was edited**, matching every prior round's disposition of
+these two files.
+
+### Actions
+
+Two targeted `Edit` calls against `test/xgmii_rx_64/test_m03_c.ml`
+(the two named `mod` sites, verbatim per RV-0038-R3); one file rewrite of
+`test/xgmii_rx_64/test_m03_structural.ml` (the three witnesses to
+construction form, the `[@@@warning "@9"]` deletion and its comment's
+rewrite, plus the disclosed top-docstring update) — the scaffolding
+`%expect_test` and the file's `open! Base` / `open Hardcaml` / `open
+Bench` lines are byte-for-byte unchanged. `test_m03_a.ml` and
+`test_m03_b.ml` were read and grepped but not edited. No file under
+`libs/**`/`rtl_snapshots/**`/`top/**`/`bin/**` was opened.
+
+### Evidence
+
+All commands run from a repo checkout at this SHA.
+
+- `ocamlc -stop-after parsing test_m03_c.ml`: exit 0.
+- `ocamlc -stop-after parsing test_m03_structural.ml`: exit 0.
+- `bash tools/precompile_check.sh`: `precompile_check: ALL LANES PASSED`;
+  `dv_golden`/`dv_monitors`/`dv_xgmii` (31 units) and
+  `dv_axi64_probe`/`dv_xgmii_probe` (12 units) all still compile with 0
+  errors; `test/xgmii_rx_64` still correctly `EXCLUDED` (depends on
+  `hardcaml_ethernet`, which this harness cannot transcribe) — unaffected
+  by this round's edits, since neither fix touches a dependency.
+- `bash tools/dv_checks.sh`: `check_records_vs_appendix.sh` 23/23 PASS;
+  `check_emitted_verilog.sh` 5/5 PASS, 3 PENDING (pre-existing, not M03);
+  `precompile_check.sh` as above; `check_rfc1071_anchor.sh` OBLIGATION
+  OPEN on blocked network egress (pre-existing, `J-dv_lead-0017/0018`,
+  unrelated to M03).
+- `git status --porcelain` (repo root): exactly two paths —
+  `test/xgmii_rx_64/{test_m03_c.ml,test_m03_structural.ml}` — before this
+  entry and the packet Return log were staged.
+- Two **ephemeral**, non-committed scratchpad checks (never inside the
+  repo, deleted after use, not reproducible from a checkout — Evidence
+  rule, PROTOCOL §4.1): (a) a toy `{ o with rx = { ... } }` construction
+  compiles clean when complete and errors
+  (`Some record fields are undefined: <field>`) under `ocamlc -c -w -a`
+  both when a field is omitted and when the target record type has grown
+  an extra field — confirming R3-2's central positive claim independent of
+  any warning setting; (b) an attempt to reproduce the exact negative
+  failure (`Unbound record field tvalid`) using a plain, unambiguous toy
+  record did **not** reproduce it (an unannotated pattern resolves fine
+  when only one candidate type is in scope); only introducing a second,
+  functor-produced record type sharing field labels with an already-`open`
+  type (mirroring `Dv_monitors.Stream_word.t`'s overlap with
+  `Axi64.Source.t` in the real file) produced a comparable failure — a type
+  mismatch, not the literal `Unbound record field` string CI reported.
+  Recorded as "mechanism corroborated, exact message unverified without
+  the real toolchain" rather than claimed as a full reproduction — see
+  Return log for the fuller statement.
+- `dune build @default` / `dune runtest`: not run — same absent toolchain
+  as every prior round; both remain CI's to run and judge.
+
+### Outcome
+
+DoD against WO-0038 and RV-0038-R3: R3-1 fixed at both named sites, exact
+text; R3-2 fixed — all three witnesses in construction form, exact text,
+plus the warning attribute deleted and its comment (and, disclosed, the
+top docstring) rewritten. The eleven rows' stimulus, oracle and assertion
+content is untouched by this round — confirmed by `git status` showing
+only the two named files. `test_m03_a.ml`/`test_m03_b.ml`: re-swept per
+instruction, nothing in either authorized fix class found, neither edited.
+Self-checks (`ocamlc -stop-after parsing`, `precompile_check.sh`,
+`dv_checks.sh`) all clean. `dune build`/`dune runtest`: unverified
+locally, confirmed-absent toolchain, CI is authoritative — this round's
+bet is narrower than any prior one, since both fixes are dv_lead's own
+verified-on-a-reduction text rather than my own derivation. Journal Inputs
+lists no `libs/**`/`top/**`/`bin/**`/`rtl_snapshots/**` path, targeted or
+swept. Diff scope: two files under `test/xgmii_rx_64/` plus this journal
+entry plus the WO-0038 Return log — nothing else.
+
+Handoff: a ROUND-3 RETURNED block appended to
+`agents/handoffs/WO-0038_tb-m03-first-bench.md`'s Return / verdict log.
+State left at **BOUNCED** per this spawn's instruction — dv_lead's `RV-`
+and the orchestrator's transcription do the state flip, not me.
+
+### Open-questions
+
+None new this round. Round 2's open question on `fst`/`snd` was closed by
+`J-dv_lead-0024` ("Keep `fst`/`snd`") and R3-1/R3-2 did not touch that
+code, so it is not reopened. The one item worth a future reviewer's
+explicit ruling, flagged in the Return log rather than here as a
+question needing an answer before this round can be judged: whether
+rewriting `test_m03_structural.ml`'s top docstring paragraph (beyond the
+addendum-D2 comment RV-0038-R3 explicitly authorized rewriting) was within
+this round's scope or should have been left for dv_lead to request
+separately.
+
+### Files-in-this-commit
+- test/xgmii_rx_64/test_m03_c.ml
+- test/xgmii_rx_64/test_m03_structural.ml
+- agents/handoffs/WO-0038_tb-m03-first-bench.md

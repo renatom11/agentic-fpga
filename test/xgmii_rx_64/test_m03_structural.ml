@@ -9,29 +9,38 @@
     M03-L6 (STRUCTURAL, REQ-003, REQ-112, AP-xgmii_rx_64.md row M03-L6):
     "the module exposes no [tready] on the stream under test and no
     [tready] input exists." WO-0038 §2 asks for a compile-time witness, not
-    a runtime check that can pass vacuously — three record patterns below,
-    each naming every field [Hardcaml_ethernet.Xgmii_rx_64]'s [I]/[O]
-    records and the [O.rx] stream actually have. Record-pattern
-    exhaustiveness (warning 9, fatal under dune's default [dev] profile
-    flags — no local project override exists, confirmed by there being no
-    root [dune] or [dune-workspace] file) is what makes this a REAL
-    compile-time check rather than a naming exercise: a future [tready]
-    field on [I], on [O], or inside [O.rx] fails every affected witness to
-    compile, whatever it is named. These bindings are never called from any
-    [%expect_test] — they are witnessed by compiling at all. *)
+    a runtime check that can pass vacuously — three record CONSTRUCTIONS
+    below, each rebuilding [Hardcaml_ethernet.Xgmii_rx_64]'s [I]/[O]
+    records (and the [O.rx] stream) from exactly the fields
+    [docs/specs/ifc_check/xgmii_rx_64_ifc.ml] and [axi64_ifc.ml] — the
+    countersigned lift — declare, with the expected type induced from the
+    live [i]/[o] argument so no module path has to be named. A CONSTRUCTION
+    fails to compile, as a hard type error with every warning switched off,
+    both when a declared field is missing and when the record gains one —
+    which is exactly the "a future [tready] field fails to compile,
+    whatever it is named" property M03-L6 needs. These bindings are never
+    called from any [%expect_test] — they are witnessed by compiling at
+    all. *)
 
-[@@@warning "@9"]
-
-(* RV-0038 addendum D2 (J-dv_lead-0023): warning 9 (missing-record-field-pattern)
-   sits inside CI's fatal `@5..28` range today, but that is a fact about
-   dune's default `dev` profile flags, not about this file — and M03-L6's
-   entire content is the claim that its witnesses cannot silently stop
-   witnessing. Making warning 9 fatal *in this file*, via the attribute
-   rather than the ambient flag set, means the three record-pattern
-   witnesses below keep their teeth even if the project's warning flags ever
-   drift; checked against the strongest possible suppression
-   (`ocamlc -w -a` with this attribute present still errors on a partial
-   pattern). *)
+(* History of M03-L6's discharge mechanism, kept here because the packet
+   record matters as much as the code:
+   - RV-0038 (`J-dv_lead-0022`) first asked for record CONSTRUCTIONS, for
+     exhaustiveness reasons independent of any warning flag.
+   - The RV-0038 ADDENDUM (`J-dv_lead-0023`) narrowed that to the cheaper
+     `[@@@warning "@9"]` attribute kept above the original record
+     PATTERNS, judging the two equivalent for L6's purpose.
+   - They were not equivalent. RV-0038-R3 (`J-dv_lead-0025`), on CI run
+     30769770945: an unannotated record PATTERN — the form the attribute
+     was protecting — gets no type-directed label resolution from its
+     scrutinee, so the pattern-form witnesses failed to build with
+     `Unbound record field tvalid`, a scoping error the attribute cannot
+     reach (it governs exhaustiveness, not name resolution; the real
+     `Axi64.Source` field names were never wrong). A CONSTRUCTION
+     sidesteps that resolution problem *and* keeps the exhaustiveness
+     property `[@@@warning "@9"]` existed to protect, so the attribute is
+     removed rather than left pointing at nothing — with all three
+     witnesses in construction form there is no record pattern left in
+     this file for it to protect. *)
 
 open! Base
 open Hardcaml
@@ -52,26 +61,33 @@ let%expect_test "WO-0038 scaffolding: Xgmii_rx_64 elaborates and runs idle cycle
 ;;
 
 let _witness_i_has_no_tready
-  ({ clock = _; clear = _; xgmii_rx = _; cfg_rx_enable = _ }
-    : Bits.t ref Hardcaml_ethernet.Xgmii_rx_64.I.t)
+  (b : Bits.t ref)
+  (i : Bits.t ref Hardcaml_ethernet.Xgmii_rx_64.I.t)
+  : Bits.t ref Hardcaml_ethernet.Xgmii_rx_64.I.t
   =
-  ()
+  { clock = b; clear = b; xgmii_rx = i.xgmii_rx; cfg_rx_enable = b }
 ;;
 
 let _witness_o_has_no_tready
-  ({ rx = _
-   ; error_bad_fcs = _
-   ; error_bad_frame = _
-   ; error_runt = _
-   ; error_oversize = _
-   ; error_start_without_terminate = _
-   }
-    : Bits.t ref Hardcaml_ethernet.Xgmii_rx_64.O.t)
+  (b : Bits.t ref)
+  (o : Bits.t ref Hardcaml_ethernet.Xgmii_rx_64.O.t)
+  : Bits.t ref Hardcaml_ethernet.Xgmii_rx_64.O.t
   =
-  ()
+  { rx = o.rx
+  ; error_bad_fcs = b
+  ; error_bad_frame = b
+  ; error_runt = b
+  ; error_oversize = b
+  ; error_start_without_terminate = b
+  }
 ;;
 
-let _witness_rx_is_source_without_dest (o : Bits.t ref Hardcaml_ethernet.Xgmii_rx_64.O.t) =
-  let { tvalid = _; tdata = _; tkeep = _; tstrb = _; tlast = _; tuser = _ } = o.rx in
-  ()
+let _witness_rx_is_source_without_dest
+  (b : Bits.t ref)
+  (o : Bits.t ref Hardcaml_ethernet.Xgmii_rx_64.O.t)
+  : Bits.t ref Hardcaml_ethernet.Xgmii_rx_64.O.t
+  =
+  { o with
+    rx = { tvalid = b; tdata = b; tkeep = b; tstrb = b; tlast = b; tuser = b }
+  }
 ;;

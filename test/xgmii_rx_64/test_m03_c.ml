@@ -12,7 +12,7 @@ let fail row msg = failwith (String.concat [ row; ": "; msg ])
    M03-C1's 60..67 delivered octets, M03-C3's 1514 and M03-C4's 1 — computed
    once here rather than re-derived per row. *)
 let expected_tkeep_for ~delivered =
-  let r = delivered mod 8 in
+  let r = Int.rem delivered 8 in
   let last_word_octets = if r = 0 then 8 else r in
   (1 lsl last_word_octets) - 1
 ;;
@@ -96,7 +96,7 @@ let run_c1_c2 ~lane =
       in
       let frame = (Dv_xgmii.Arrival.frames sched).(0) in
       let tkeep = check_directed_length_frame ~row:row1 ~length bench frame samples in
-      let terminate_lane = Dv_xgmii.Arrival.terminate_octet_time frame mod 8 in
+      let terminate_lane = Int.rem (Dv_xgmii.Arrival.terminate_octet_time frame) 8 in
       if terminate_lane > 0
       then (
         let row2 =
