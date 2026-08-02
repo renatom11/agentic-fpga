@@ -1,0 +1,440 @@
+# AP-M03 — attack plan for `Xgmii_rx_64`
+
+- **Module**: M03 `Xgmii_rx_64` · spec `docs/specs/modules/xgmii_rx_64.md`
+- **Status**: **OPEN** — committed before the first M03 bench, as charter §3 and
+  ADR-0001 require. Rows are added by appending; no row is ever renumbered.
+- **Spec basis**: SPEC-M03 **FROZEN at `f78766e`**, *plus every §13 row through
+  the C-18 diff* — the frozen text and its recorded diffs together are the
+  specification (WO-0024's own formulation). requirements.md §0.3, §0.4, §0.5,
+  §0.6, §0.7, §1.1, §2 (REQ-101 … REQ-113), §12; SPEC-M01 §6.1/§6.3 (the stream
+  encoding the output must obey); SPEC-M02 §6.1 + ADR-0006/ADR-0007 (the
+  finished-value convention and the 1-to-8 `octet_count` domain M03 must never
+  leave). Carry-forwards realised as rows: **C-11**, **C-12**, **C-14.3**,
+  **C-14.4**, **C-14.5**, **C-18**, **C-2**, **C-23**.
+- **Derivation (PROTOCOL §10)**: every row below is derived from specification
+  text alone. `libs/**` was not opened by the author of this plan, at this
+  commit or at any earlier one. Where a row exists *because* rtl_lead returned a
+  question (family N), the question is cited as a question — the expected
+  observable in that row is derived from the specification, never from the
+  answer rtl_lead gave.
+- **Author**: dv_lead, journal `J-dv_lead-0013` (WO-0027)
+
+---
+
+## 0. What this document is, and the format it defines
+
+This is the programme's **first** attack plan, so its shape is the template
+every later `test/attack_plans/AP-<module>.md` follows. Sections 1 to 9 below
+are the fixed skeleton; a later plan may add rows and families but not drop a
+section.
+
+An attack plan is **not** a test list. A test list says what will be run; an
+attack plan says, for each attack, **which wrong design it kills**. That last
+column is the one the plan exists for: a row whose "kills" cell says only "a
+broken design" is a row that has not been thought about, and the auditor is
+invited to mine this document for exactly that failure.
+
+The plan is written **before** any bench, so that the bench is commissioned by
+a reviewed adversarial argument rather than by whatever the bench writer
+happened to think of. The `SO-` packet's coverage section maps each test back to
+a row id here, and every row must end in one of: a named test, a declared gap,
+or a NO-ASSERT/NO-STIMULUS ruling with the clause that forbids it.
+
+## 1. Reading a row
+
+Each row has six cells.
+
+| Cell | Meaning |
+|---|---|
+| **Row** | Stable id, `M03-<family letter><index>`. Ids are permanent: a superseded row is struck in §9's change log and keeps its id; new rows append inside their family. Tests and `SO-` packets cite these ids. |
+| **Attacks** | The REQ ids and specification sections the row attacks. A row that cannot name one is not an attack, it is an opinion. |
+| **Stimulus** | What the link-partner model drives, in the specification's own units (octet times, lanes, frame lengths DA through FCS per §0.3). |
+| **Observable** | Exactly what a bench asserts, at the ports only. Nothing internal ever appears here. |
+| **Kills** | The wrong design this row detects, stated concretely enough that a reader can see the row fail against it. |
+| **Status** | See below. |
+
+**Status vocabulary** (the same six values in every plan):
+
+- **ASSERT** — a bench must assert the Observable. The default.
+- **NO-ASSERT** — the stimulus may be driven but the named property must **not**
+  be asserted; the clause that forbids it is cited in the Observable cell.
+  Asserting it would fail a conformant design, or would freeze an unconstrained
+  choice into an accidental requirement.
+- **NO-STIMULUS** — the stimulus must **not** be produced at all: it lies
+  outside the space the specification constrains or outside REQ-018's
+  link-partner contract.
+- **RULING** — the frozen text does not decide the observable. The row records
+  every reading and its consequence, and is **not asserted** until a ruling
+  lands (the precedent is C-12, which `test/xgmii/arrival.mli` already held as
+  NO-ASSERT until requirements.md settled it). A `RULING` row blocks no bench
+  except its own.
+- **GAP** — an attack this plan wants and cannot mount. The reason is named and
+  the row is carried, not deleted, so a sign-off packet cannot claim the
+  coverage by silence.
+- **STRUCTURAL** — discharged by a compile-time or script check, not by a
+  waveform. Recorded so no `SO-` claims a behavioural test that does not exist.
+
+## 2. Standing obligations
+
+These attach to **every** M03 bench and are not repeated per row.
+
+1. **Protocol monitor** (`Dv_monitors.Protocol_monitor`) on the `rx` output
+   stream, with `~max_words_per_frame:190` (REQ-015, SPEC-M03 §7). It carries
+   REQ-011's contiguity and full-word rules and REQ-014's producer half.
+2. **Frame-conservation monitor** (`Dv_monitors.Conservation_monitor`), §0.6.
+   Two exemptions are **mandatory** and are C-2's machinery becoming
+   load-bearing at its first module: a frame presented while `clear` = 1
+   (REQ-009, family K) and a frame presented while `cfg_rx_enable` = 0
+   (REQ-810, family J) are `frame_in_exempt`, never `frame_in`. A monitor
+   without them fails a conformant M03 — that is not a hypothetical, it is what
+   §7's "the one place in this specification where a frame vanishes without a
+   strobe" means for a counter.
+3. **Per-octet latency tagger** (`Dv_monitors.Octet_time.Latency`) configured
+   `~strip_octets:8 ~tail_octets:4 ~front_offsets:[8; 12] ~ceiling:4`
+   (REQ-102, REQ-103, SPEC-M03 §7, §1.1). Constancy is judged **per front-offset
+   class**, never as one L across a two-lane run (§0.5 "Start lanes", C-15).
+4. **Strobe accounting** follows requirements.md §0.6's counting convention as
+   revised by **C-23**: a monitor counts **high cycles, never rising edges**.
+   M03 is not exempt from that convention — see **M03-H4**, which produces two
+   `error_start_without_terminate` events on consecutive cycles.
+5. **Every frame the link partner emits is checked against the requirement it
+   encodes before it is presented** (`Arrival.check`, `Frame.residue_ok`). A
+   stimulus generator nobody has checked is an unverified assertion about the
+   design.
+6. **No bench reads `tdata` at positions where `tkeep` is 0, or any output field
+   on a cycle with `tvalid` = 0** (SPEC-M01 §6.3 item 5, SPEC-M03 §6.3 item 4).
+
+## 3. Stimulus legality
+
+REQ-018 fixes the link partner's contract: it emits start characters **in lane 0
+and lane 4 only**, including REQ-004's alternation; it injects each condition
+named in REQ-104, REQ-105, REQ-107, REQ-108 and REQ-110; and it decodes
+transmit-side XGMII. Three consequences bind every row below.
+
+- A start character in a lane other than 0 or 4 is **never driven** (§6.3 item
+  3, row M03-O4). Rows that would otherwise want one are re-expressed at lane 0
+  or lane 4 or they are not written.
+- The six preamble filler octets and the SFD octet may hold **any** value
+  (REQ-102 forbids M03 from validating them), so no bench may assert on them at
+  the receiver even though the model emits 0x55/0xD5.
+- The inter-frame gap is measured **from the terminate character inclusive**,
+  minimum 12 octets (§0.3). Every spacing figure in this plan is in that
+  convention.
+
+---
+
+## 4. The rows
+
+### 4.A Start detection, alignment and byte order — REQ-101, REQ-012, REQ-021, §6.1
+
+| Row | Attacks | Stimulus | Observable | Kills | Status |
+|---|---|---|---|---|---|
+| **M03-A1** | REQ-101, REQ-103, §6.1 cycle table | One 64-octet frame, lane-0 start, gapless, correct FCS | 8 output words; words 0–6 `tkeep` = 0xFF, word 7 `tkeep` = 0x0F carrying octets 56–59 with `tlast` = 1 and `tuser`[0] = 0; output word m on cycle m + 3 counted from the start word; no strobe | A pipeline one cycle early or late (ΔC ≠ 3); an FCS strip that removes 4 octets from the wrong end | ASSERT |
+| **M03-A2** | REQ-101, REQ-021, §6.1's lane-4 paragraph, **C-18** | The same 64 octets, lane-4 start (`/S/` in lane 4 of cycle 0; frame octets 0–3 in lanes 4–7 of cycle 1) | The same eight words with the same `tdata`/`tkeep`/`tlast`/`tuser` tuples; output word 0 on cycle 3; **FCS verdict good** (`tuser`[0] = 0, no `error_bad_fcs`) | **The C-18 defect made executable**: a design that treats the second preamble word of a lane-4 start as covering no frame octet holds the CRC register across frame octets 0–3 and fails the FCS check of *every* lane-4 frame. Also kills a barrel shifter that aligns to the input word rather than to the frame | ASSERT |
+| **M03-A3** | REQ-101 | The directed length set of M03-C1 driven twice, once per start lane | Equality of the two runs as **ordered sequences of (`tdata`, `tkeep`, `tlast`, `tuser`) tuples over words with `tvalid` = 1** | A design whose lane-4 path drops or duplicates a word, or reorders octets within word 0 | ASSERT |
+| **M03-A4** | REQ-101, §6.1, §10's REQ-101 hook | (same runs as M03-A3) | **The absolute cycle of the first output word is NOT asserted equal between the lanes.** §6.1: the equality M03 happens to achieve "is a property of the constants §7 pins, not an obligation, and a bench SHALL NOT assert it as one for other modules"; §10 repeats it for this module | — (a row that exists to stop a bench freezing an unrequired property into a snapshot) | NO-ASSERT |
+| **M03-A5** | REQ-012, REQ-021 | A 64-octet frame whose octets are **position-dependent** (`Frame.stress_frame`'s default filler), at both start lanes | Frame octet j appears at `tdata`[8·(j mod 8)+7 : 8·(j mod 8)] of word ⌊j/8⌋; octet 0 at `tdata`[7:0] of word 0 | Lane reversal, a byte-swapped word, or a rotation by 4 at a lane-0 start — **all three are invisible under uniform filler**, which is why the filler is position-dependent and stated | ASSERT |
+
+### 4.B Preamble and SFD — REQ-102, §6.1, §9
+
+| Row | Attacks | Stimulus | Observable | Kills | Status |
+|---|---|---|---|---|---|
+| **M03-B1** | REQ-102 | 64-octet frame whose six filler octets and SFD octet are arbitrary non-standard **data** values, both start lanes | The frame is delivered unchanged: same 60 octets, same `tkeep`, `tuser`[0] = 0, no strobe | A receiver that validates the SFD or the filler and drops a legal frame from a nonstandard-but-legal link partner (REQ-102's own reason for forbidding the check) | ASSERT |
+| **M03-B2** | REQ-102, REQ-105, §0.7, §9 row 3 | `/E/` in a preamble position — lane 3 of a lane-0 start word, and lane 7 of the start word at a lane-4 start | **No output word at all** for that frame; exactly one `error_bad_frame` high cycle, on the cycle two after the input word carrying the `/E/`; the next frame is received intact | A design that recognises `/E/` only in `Frame` state and emits nothing *and* pulses nothing (a silent discard, REQ-008); and a design that emits a zero-octet word (`tkeep` = 0, REQ-011) | ASSERT |
+| **M03-B3** | REQ-102, REQ-107, §0.7 | `/T/` in a preamble position (lane 5 of a lane-0 start word) | No output word; exactly one `error_runt` high cycle at the pinned cycle; next frame intact | A design routing a preamble `/T/` to REQ-106 (which would either emit a frame from preamble octets or close silently) | ASSERT |
+| **M03-B4** | REQ-102, REQ-110, §0.7 | `/S/` in lane 4 of a word whose lane 0 carried `/S/` (§10's own hook) | No output word for the first frame; exactly one `error_start_without_terminate`; the second frame is received intact and correct | A design that ignores `/S/` while in `Preamble` — it would mis-align the second frame by four octet times and deliver a corrupt frame with a good-looking `tkeep` | ASSERT |
+
+### 4.C Frame extraction, terminate lanes and `tkeep` — REQ-103, REQ-106, REQ-011, REQ-015
+
+| Row | Attacks | Stimulus | Observable | Kills | Status |
+|---|---|---|---|---|---|
+| **M03-C1** | REQ-103, REQ-106, REQ-011 | Frames of **64 … 71 octets** DA through FCS, at **both** start lanes (16 frames) | Delivered octets = length − 4 (60 … 67); the eight `tlast` `tkeep` patterns 0x0F, 0x1F, 0x3F, 0x7F, 0xFF, 0x01, 0x03, 0x07 occur exactly once each; the terminate character lands in lane (length mod 8), covering all eight lanes; `tuser`[0] = 0 and no strobe throughout | An FCS strip that is right at one residue and wrong at others; a `tkeep` generator that saturates at 0xFF; a terminate decoder that only looks at lane 0 | ASSERT |
+| **M03-C2** | REQ-106, §6.1's second non-instance, **C-18**, ADR-0007 | The subset of M03-C1 whose terminate character lands in lane k > 0 | The k octets in lanes 0 … k−1 of the terminate word are delivered, and the FCS verdict is good | **The C-18 twin**: a design that holds the CRC register on any word containing a control character loses k octets from the CRC and fails the FCS check of seven of the eight terminate lanes. Also kills a design driving M02 with `octet_count` = 0 on the lane-0 case (ADR-0007's prohibition) | ASSERT |
+| **M03-C3** | REQ-103, REQ-015, REQ-011 | One **1518**-octet frame, both start lanes | 1514 delivered octets in **190** words — 189 words of `tkeep` = 0xFF and a final word with `tkeep` = 0x03 and `tlast` = 1; FCS verdict good; no strobe | A design whose one-word lookahead breaks at the maximum length; a REQ-015 monitor bound set to 189 or 191 | ASSERT |
+| **M03-C4** | REQ-015, **C-11** | The 5-octet runt of M03-F1 | A **one-word** frame whose single word carries `tlast`, `tkeep` = 0x01 — legal on this stream, and the deleted REQ-015 sentence would have forbidden it | A protocol monitor that requires a word before every `tlast`; the exact assertion C-11 deleted from REQ-015 and from SPEC-M03 §7 | ASSERT |
+
+### 4.D The FCS check — REQ-104, §6.1
+
+| Row | Attacks | Stimulus | Observable | Kills | Status |
+|---|---|---|---|---|---|
+| **M03-D1** | REQ-104, §9 row 1 | A 64-octet frame with **one payload bit flipped** after the FCS was computed, both start lanes | The same 60 octets delivered (the frame is forwarded in full, REQ-005), `tuser`[0] = 1 on the `tlast` word, exactly one `error_bad_fcs` high cycle **on the `tlast` cycle** (§9's pinned cycle), no other strobe | A design that drops a bad-FCS frame instead of forwarding it (store-and-forward by the back door); a design that reports on the terminate cycle instead of the `tlast` cycle | ASSERT |
+| **M03-D2** | REQ-104, REQ-304 | Every good-FCS frame in this plan | `tuser`[0] = 0 and no `error_bad_fcs`, at all lengths and both lanes | A design that marks every frame invalid — the anti-vacuity partner of M03-D1, without which D1 passes against a design that always asserts the bit | ASSERT |
+| **M03-D3** | REQ-104, §6.1's seeding rule, §6.1's drain paragraph | A **bad-FCS** 64-octet frame followed at the **minimum** 12-octet gap by a **good-FCS** frame (start-to-start 10 or 11 cycles, §0.3) | The bad verdict lands on the first frame's `tlast` word and the second frame is clean: `tuser`[0] = 0, no strobe | A design that reads the CRC register at the `tlast` cycle rather than carrying the verdict with the frame. §6.1 seeds the register in `Preamble`, and §6.1's drain paragraph puts the first frame's `tlast` word up to two cycles after its terminate word — so at the minimum gap the next frame has already re-seeded the register, and the wrong design reports the **second** frame's residue on the **first** frame's word | ASSERT |
+| **M03-D4** | REQ-104, §6.3 item 1 | — | **The realisation is not asserted.** Residue-versus-capture is unobservable (§6.3 item 1); a bench asserts the verdict, never the mechanism | — | NO-ASSERT |
+
+### 4.E Error character inside a frame — REQ-105, §9
+
+| Row | Attacks | Stimulus | Observable | Kills | Status |
+|---|---|---|---|---|---|
+| **M03-E1** | REQ-105, REQ-103's no-removal clause | `/E/` in **each of the eight lanes** of a mid-frame word of a 64-octet frame (8 frames, lane-0 start; repeated at lane-4 start) | The last delivered octet is the one immediately preceding the `/E/` (the REQ-106 rule with `/E/` in place of `/T/`, so `/E/` in lane 0 means the previous word carried the last octet); `tkeep` marks exactly those octets; `tuser`[0] = 1 on the `tlast` word; exactly one `error_bad_frame` on the `tlast` cycle; **no FCS removal** — the four octets before the error character **are** delivered | A design that applies FCS removal on the abort path (REQ-103 forbids it): it would deliver four octets too few and the row's octet-count assertion catches it at every lane | ASSERT |
+| **M03-E2** | REQ-105, §0.7, §9 row 2 | `/E/` at exactly the frame's first octet position (zero delivered octets) | No output word at all; exactly one `error_bad_frame`, on the cycle **two after** the input word carrying the `/E/` — the cycle that frame's `tlast` word would have occupied | A design that emits a `tkeep` = 0 word, or a one-word frame of preamble octets, to have somewhere to put the abort bit | ASSERT |
+| **M03-E3** | REQ-105, §0.6, §9's "aborted-and-forwarded versus discarded-before-emission" | (same as M03-E2) | A monitor asserting "every abort is marked on a `tlast` word" **must not be driven for this frame** — REQ-105's own verification column says so, and the frame is accounted for in §0.6 by its strobe | — (a bench-side rule, not a design property) | NO-ASSERT |
+| **M03-E4** | REQ-105's closure clause, REQ-113, **C-12** | `/E/` **after** a terminate character, in the gap between two frames | Nothing emitted, **no strobe of any kind**, and the following frame received intact | A design whose `/E/` handler is not gated on frame-open: it pulses `error_bad_frame` for a frame already counted and breaks §0.6's conservation equation | ASSERT |
+
+### 4.F Runt frames — REQ-107, §0.7
+
+| Row | Attacks | Stimulus | Observable | Kills | Status |
+|---|---|---|---|---|---|
+| **M03-F1** | REQ-107, REQ-103 | Frames of **5, 16, 60 and 63** octets DA through FCS, correct FCS, both start lanes | 1, 12, 56 and 59 delivered octets; `tuser`[0] = 1 on each `tlast` word; exactly one `error_runt` per frame on the `tlast` cycle; **the FCS is removed and checked** — these frames end with `/T/`, so REQ-103 applies to them | A design that suppresses FCS removal on a runt (delivering four octets too many), and a design that suppresses the output entirely | ASSERT |
+| **M03-F2** | REQ-107, §0.7 | Frames of **0, 1 and 4** octets between start and terminate | No output word at all; exactly one `error_runt` each, at the pinned no-output cycle | A design that emits a `tkeep` = 0 word; a design that attempts FCS removal on a frame with nothing to remove it from and underflows its counter | ASSERT |
+| **M03-F3** | REQ-107, REQ-104, §9's first co-occurrence ruling | A **63-octet** frame with a **wrong** FCS | **Both** `error_runt` and `error_bad_fcs` pulse once; `tuser`[0] is set **once** — it is one bit on one word, not one bit per condition | A first-match or precedence design that reports only the runt; and a design that sets the abort bit twice or widens the pulse | ASSERT |
+| **M03-F4** | REQ-107, §0.3 | The adjacent pair **63** and **64** octets, correct FCS, both lanes | 63 → `error_runt` and `tuser`[0] = 1 with 59 delivered; 64 → no strobe, `tuser`[0] = 0, 60 delivered | The off-by-one threshold (`< 64` implemented as `<= 64` or as a delivered-octet rather than a received-octet count) — the two frames differ by one octet and by everything else | ASSERT |
+| **M03-F5** | REQ-107, §0.7 | The 5-octet frame of M03-F1 | Exactly **one** delivered octet in one word (`tkeep` = 0x01, `tlast` = 1) | A design that treats "fewer than 5" as "fewer than or equal to 5" and emits nothing for the boundary frame REQ-107 requires to be forwarded | ASSERT |
+
+### 4.G Oversize frames — REQ-108, §6.2's `Discard`, §9
+
+| Row | Attacks | Stimulus | Observable | Kills | Status |
+|---|---|---|---|---|---|
+| **M03-G1** | REQ-108, REQ-103 | A **1600**-octet frame followed immediately by a valid 64-octet frame | Exactly **1514** octets delivered; `tuser`[0] = 1 on the `tlast` word; exactly one `error_oversize`; **no `error_bad_fcs`**; the following frame received intact | Truncation at 1518 delivered (the received-count constant used as the delivered-count constant); a design that resynchronises only on `/T/` and loses the next frame | ASSERT |
+| **M03-G2** | REQ-108, REQ-103, §0.3 | The adjacent pair **1518** and **1519** octets, each with a correct FCS over its own length | Both deliver exactly **1514** octets. 1518: no strobe, `tuser`[0] = 0, FCS verdict good. 1519: one `error_oversize`, `tuser`[0] = 1, **no** `error_bad_fcs` | The off-by-one on "more than 1518". The pair is adversarial precisely because the **delivered octet count is identical** — only the strobe, the abort bit and the FCS verdict separate a legal maximum frame from an oversize one | ASSERT |
+| **M03-G3** | REQ-108, REQ-110, §9's sixth ruling, **C-12** | A 1600-octet frame in which a new `/S/` arrives 100 octets past the truncation point | Exactly one `error_oversize` and **no** `error_start_without_terminate`; the new frame is received normally | A design that treats the resynchronising start character as a second abort — it would double-count the frame against §0.6 | ASSERT |
+| **M03-G4** | REQ-108, REQ-105, §9's seventh ruling, **C-12** | The same 1600-octet frame with an `/E/` injected 100 octets past the truncation point | Exactly one `error_oversize`, **no `error_bad_frame`**, nothing emitted after the truncation, following frame intact | The reading §9 row 2's condition text invited before C-12 landed: an `/E/` handler that reads "between the start and terminate characters" literally and pulses for a frame already closed and already reported | ASSERT |
+| **M03-G5** | §6.3 item 6, **C-12** | (same as M03-G4) | The **internal state** after absorbing the `/E/` in `Discard` is not asserted; both encodings produce the pinned observable identically | — | NO-ASSERT |
+| **M03-G6** | REQ-108 | A 1600-octet frame with **no** further character until the next `/S/` (no `/T/` at all) | No output word and **no strobe of any kind** between the truncation point and the next start character, whatever arrives | A design that emits the tail of the discarded frame, or that pulses a second strobe on the eventual `/T/` | ASSERT |
+
+### 4.H Start without terminate — REQ-110, §9
+
+| Row | Attacks | Stimulus | Observable | Kills | Status |
+|---|---|---|---|---|---|
+| **M03-H1** | REQ-110, REQ-103 | A 64-octet frame whose terminate character is **replaced by a new `/S/` in lane 0**, followed by a complete frame | The aborted frame's last delivered octet is the one immediately preceding the new `/S/`; `tuser`[0] = 1; exactly one `error_start_without_terminate`; **no FCS removed** (four octets more delivered than a clean frame of the same length); the second frame received intact | A design that strips the FCS on the abort path; a design that loses the second frame | ASSERT |
+| **M03-H2** | REQ-110, REQ-101, REQ-021 | A new `/S/` in **lane 4** of a mid-frame word, i.e. lanes 0–3 of that word still belong to the aborted frame | Those **four** octets are delivered as part of the aborted frame (`tkeep` and the delivered count prove it); one strobe; the new frame begins at lane 4 and is received intact and correctly aligned | The highest-value row in this family: a design that switches its alignment offset on the **same** cycle it accepts the new start character rotates the aborted frame's trailing four octets by the *new* offset and **loses four delivered octets silently** — a REQ-008 hole with no strobe, invisible to every row that does not count the aborted frame's octets | ASSERT |
+| **M03-H3** | REQ-110, REQ-105, §9's fifth ruling | `/E/` mid-frame, then a `/S/` two cycles later | Exactly one `error_bad_frame` and **no** `error_start_without_terminate`; the frame the `/S/` opens is received normally | A design in which `/E/` marks the frame but does not **close** it: the following `/S/` would then abort a frame that is already reported, breaking §0.6 | ASSERT |
+| **M03-H4** | REQ-110, §0.7, §0.6's counting convention, **C-23** | `/S/` in **lane 0 and lane 4 of one word** (cycle c), then `/S/` in **lane 0 of the next word** (cycle c + 1), then a complete frame. Frame A opens at 8c and is aborted at 8c + 4, strictly inside its own preamble; frame B opens at 8c + 4, its preamble runs 8c+4 … 8c+11, and it is aborted at 8c + 8 — also strictly inside. Both are §9's zero-delivered row, and both start characters are in a contract-legal lane (§3) | Two zero-delivered aborts. §9's pinned no-output cycle — two cycles after the input word carrying the closing character — puts their `error_start_without_terminate` high cycles at **c + 2 and c + 3, consecutively**; no output word for either; the final frame is received intact | **A rising-edge strobe counter**: it sees one event where a conformant M03 reported two. C-23's convention was homed in §0.6 on M13's evidence and is stated there as generalising; this row is the proof that it is load-bearing at M03 as well, and it is the row that makes the strobe monitor's counting rule testable rather than assumed | ASSERT |
+
+### 4.I Silence, ordered sets and idle — REQ-109, REQ-113, REQ-016
+
+| Row | Attacks | Stimulus | Observable | Kills | Status |
+|---|---|---|---|---|---|
+| **M03-I1** | REQ-109 | 1000 idle cycles with no frame in flight | `tvalid` = 0 and all five strobes 0 on every one of them | A design that emits a spurious word or strobe out of an empty pipeline | ASSERT |
+| **M03-I2** | REQ-109, §6.1's drain derivation, **C-14.3** | A 64-octet frame followed by idle | No output activity of any kind **from 3 cycles after the terminate word onward** — the tight ΔC − 1 = **2**-cycle drain window §6.1 derives, *not* ΔC | A real drain defect one cycle long. A bench using ΔC = 3 as the bound is one cycle loose and lets it through; that looseness is the defect C-14.3 removed from the specification and this row keeps out of the bench | ASSERT |
+| **M03-I3** | REQ-113 | 100 cycles of a `/Q/` sequence ordered set between two frames, then a frame | No `tvalid`, no strobe during the ordered set; the frame after it compares **word for word** against the same frame received after idles only | A decoder that treats an unrecognised control character as data (it would open or corrupt a frame) | ASSERT |
+| **M03-I4** | REQ-016, §6.1's gapless qualifier, **C-14.4**, **C-18** | The directed set of M03-C1 driven through an idle-injection wrapper at **0, 1 and 7** idle cycles inside the frame (§10's own figures) | The output **word sequence** is unchanged; the **per-octet** constant of §7 is unchanged (16 at lane 0, 12 at lane 4); every octet is delayed by exactly 8 octet times per injected cycle; FCS verdicts unchanged | A design that decodes an idle word inside an open frame as eight data octets: the CRC is then corrupted and **every** frame the wrapper touches reports a false `error_bad_fcs`. This is the C-14.4 hold rule made executable | ASSERT |
+| **M03-I5** | REQ-016, §6.1, **C-14.4** | (same runs as M03-I4) | **§6.1's `m + 3` cycle formula is NOT asserted under injection.** It is scoped to a gapless stimulus in octet times; a bench asserting it under idle injection fails a conformant design. The gap-invariant quantity is the per-octet constant, and that is what M03-I4 asserts | — | NO-ASSERT |
+| **M03-I6** | REQ-016, REQ-107, REQ-108, §6.2's `Frame` row | A 64-octet frame and a 1518-octet frame, each with **7** idle cycles injected between every pair of words | No strobe pulses at all: the octet counts governing REQ-107 and REQ-108 are unchanged by idle cycles, so neither frame changes class | A design that counts **cycles** rather than **octets** toward the runt and oversize thresholds. Under 7-cycle injection a 1518-octet frame occupies ~1500 cycles and the wrong design pulses `error_oversize`; the 64-octet frame is the anti-vacuity partner | ASSERT |
+
+### 4.J Configuration — REQ-802, REQ-803, REQ-810, §4.3
+
+| Row | Attacks | Stimulus | Observable | Kills | Status |
+|---|---|---|---|---|---|
+| **M03-J1** | REQ-810, §4.3 | `cfg_rx_enable` = 0 held, 100 frames injected (REQ-810's own figure) | No output word, no header effect and **no strobe** anywhere; the conservation monitor records all 100 as `frame_in_exempt` (C-2), not as discards | A design that gates the output but leaves the strobe path live — it would report 100 discards for frames it never accepted, and a monitor without the exemption would report a silent-discard hole where REQ-810 says there is none | ASSERT |
+| **M03-J2** | REQ-803, §4.3 | `cfg_rx_enable` 0 → 1 at least one cycle before a start character; then frames | The first frame whose start character is accepted at least one cycle after the change is received correctly and completely | A design that samples the enable continuously and truncates the frame it just admitted | ASSERT |
+| **M03-J3** | REQ-803, §4.3 | `cfg_rx_enable` 1 → 0 **mid-frame**, at least one cycle away from any start character; the frame ends with `/T/` | The in-flight frame **completes under the old value**: its words, its `tlast`, its FCS/runt verdict and its strobes are exactly those of the same frame with the enable held at 1. The **next** frame's start character is not accepted | A design that gates the datapath rather than the start character: it truncates the in-flight frame with no `tlast` and no strobe, which is a silent discard REQ-009 does **not** license (only `clear` may do that) | ASSERT |
+| **M03-J4** | §4.3, §6.3 item 7, **C-14.5** | — | A change landing on the **exact cycle** of a start character has no determinate outcome and **SHALL NOT** be driven-and-asserted; every enable change in this plan is placed at least one cycle away from any start character | — | NO-STIMULUS |
+
+### 4.K Reset — REQ-009, §7
+
+| Row | Attacks | Stimulus | Observable | Kills | Status |
+|---|---|---|---|---|---|
+| **M03-K1** | REQ-009 | `clear` = 1 for 5 cycles while no frame is in flight | `tvalid` = 0 and all five strobes 0 on every `clear` cycle **and on the first cycle after it returns to 0** | A design whose strobe registers survive `clear`, or that needs a second cycle to settle | ASSERT |
+| **M03-K2** | REQ-009, §7's reset bullet | `clear` asserted **mid-frame**, deasserted, and a new frame whose start character arrives on the **first** cycle after `clear` returns to 0 | The in-flight frame vanishes with **no `tlast` and no strobe**; the new frame is received correctly and completely. The conservation monitor records the abandoned frame as `frame_in_exempt ~reason:"clear"` — without that exemption a conformant M03 fails (C-2 at its first module) | A design that emits a `tlast` on `clear` (a phantom frame downstream); a design that needs one idle cycle before it can accept a start character; a monitor that counts the abandonment as a silent discard | ASSERT |
+| **M03-K3** | REQ-009, REQ-015 | (same as M03-K2) | The protocol monitor's frame-in-progress state is reset on `clear` and **no assertion is made across the clear** | — | NO-ASSERT |
+
+### 4.L Line rate, constancy and order — REQ-004, REQ-005, REQ-111, REQ-019, REQ-020, REQ-112, §8
+
+| Row | Attacks | Stimulus | Observable | Kills | Status |
+|---|---|---|---|---|---|
+| **M03-L1** | REQ-004, §8 checks 1–2 | §8's stress run: **10 000** consecutive 64-octet frames, start lanes alternating 0 and 4, start-to-start spacing alternating **10 and 11** cycles, minimum 12-octet gap, zero error injection | 10 000 frames out for 10 000 in; every frame's 60 delivered octets equal the injected octets 0–59; the four-octet sequence numbers arrive 0, 1, 2, … with no gap and no repeat; conservation holds; no strobe pulses anywhere in the run | Word loss under sustained line rate — the only observable failure mode REQ-112 has (§10). A design with any internal backpressure or a one-cycle recovery between frames fails within the first hundred frames | ASSERT |
+| **M03-L2** | REQ-005, REQ-111, §8 check 3, §0.5 | (the same run, through the latency tagger) | **One** L per front-offset class across all 10 000 frames: L = **16** at h = 8 (lane 0) and L = **12** at h = 12 (lane 4). Not a mean, not one L for the run | A design whose latency depends on frame content or on which frame it is; and a monitor asserting a single L across a two-lane run, which fails a conformant M03 on frame 2 (C-15 — observed, not hypothetical) | ASSERT |
+| **M03-L3** | REQ-019, §1.1, §7 | (the same run) | Measured ΔC = (L + h)/8 = **3** in both classes, against the §1.1 ceiling of **4**; the one unspent cycle is reported as M03's reserve. The observed front offset of every frame is 8 or 12 and no other value | A ΔC computed from the octet-correspondence term instead of §0.5's front offset, which reports **2** at a lane-4 start and understates the hardest receive module by a cycle in its own sign-off packet (the WO-0012 tagger defect, fixed; this row keeps it fixed) | ASSERT |
+| **M03-L4** | REQ-020, §8 check 2 | (the same run) | The delivered sequence is exactly 0 … 9999 | A design holding more than one frame, or reordering across the alternating start lanes | ASSERT |
+| **M03-L5** | REQ-005, REQ-103, §8's directed set | Frames of 64 … 71 and 1518 octets at both start lanes (M03-C1, M03-C3) through the tagger | The same two constants as M03-L2 at every one of those lengths | A pipeline whose delay varies with the final `tkeep` residue — length-dependent latency that a fixed-length stress run cannot see | ASSERT |
+| **M03-L6** | REQ-112, REQ-003 | — | The module exposes **no `tready`** on the stream under test and no `tready` input exists. Structural: a statement about the type, not an assertion that can fail (§8 check 4) | — | STRUCTURAL |
+
+### 4.M Co-occurrence — §9's rulings, §0.6
+
+Each row is one of §9's seven statements about which conditions may co-occur,
+made into an assertion. Stimuli are reused from the families above.
+
+| Row | Attacks | Stimulus | Observable | Kills | Status |
+|---|---|---|---|---|---|
+| **M03-M1** | §9 ruling 1 | M03-F3 | `error_runt` **and** `error_bad_fcs` both pulse once for one frame; `tuser`[0] set once | A precedence design | ASSERT |
+| **M03-M2** | §9 ruling 2, REQ-108 | M03-G1 | `error_bad_fcs` does **not** pulse for the truncated frame | A design that checks the residue at the truncation point, where no FCS is present | ASSERT |
+| **M03-M3** | §9 ruling 3, REQ-105 | M03-E1 | `error_bad_fcs` does **not** pulse for a frame ended by `/E/` | A design that runs the residue comparison on every frame closure regardless of how it closed | ASSERT |
+| **M03-M4** | §9 ruling 4, REQ-110 | M03-H1 | `error_bad_fcs` does **not** pulse for a frame ended by a new `/S/` | (as M03-M3) | ASSERT |
+| **M03-M5** | §9 ruling 5 | M03-H3 | Exactly one `error_bad_frame`; no `error_start_without_terminate` | A design in which `/E/` does not close the frame | ASSERT |
+| **M03-M6** | §9 ruling 6 | M03-G3 | Exactly one `error_oversize`; no `error_start_without_terminate` | A design that re-opens a truncated frame | ASSERT |
+| **M03-M7** | §9 ruling 7, **C-12** | M03-G4 | Exactly one `error_oversize`; no `error_bad_frame` | (the C-12 ruling, as M03-G4) | ASSERT |
+| **M03-M8** | §9 ruling 8 | — | `error_runt` and `error_oversize` cannot co-occur: the octet ranges are disjoint, so **no stimulus exists** and none is written | — | NO-STIMULUS |
+| **M03-M9** | §0.6, §9's closing paragraph | Every row in families E–H | M03 **inherits** no abort and never pulses a strobe to re-report one: it is the origin of `tuser`[0] on this chain, and there is no input bit to re-report | A design that would need this rule is not expressible at M03; the row is stated so no `SO-` claims §0.6's inheritance clause as tested coverage here | STRUCTURAL |
+
+### 4.N Questions returned by rtl_lead — WO-0024 Return log §6
+
+These three rows exist because rtl_lead declared readings rather than leaving
+them to be discovered (WO-0024 Return log §6, items 2–4). The **expected
+observable in each row is derived from SPEC-M03's text**, independently of the
+answer rtl_lead gave; where the text does not decide, the row is `RULING` and is
+not asserted until the architect rules. That is the C-12 precedent, applied
+before a bench exists rather than after one has been written against the wrong
+reading.
+
+| Row | Attacks | Stimulus | Observable | Kills | Status |
+|---|---|---|---|---|---|
+| **M03-N1** | §9's closure list, REQ-113, REQ-105 | Two closure characters in one input word where the **second arrives after the frame is already closed** and no frame is open: `/T/` in lane 0 and `/E/` in lane 5 | The `/T/` closes the frame normally (REQ-106, FCS checked); the `/E/` finds **no open frame** and produces nothing and pulses nothing (§9's third row, C-12) | A design evaluating every control lane of a word against the state the word *started* in | ASSERT |
+| **M03-N2** | §6.1's preamble-routing sentence, §9, REQ-102, REQ-107, REQ-110 | Two closure characters in one input word where the second falls **inside the new frame's preamble**: `/S/` in lane 0 (or lane 4) and `/T/` in a higher lane of the same word — e.g. `/S/` lane 0, `/T/` lane 3 | **Two readings, both written out.** (i) *Text-strict*: §9's closure list closes the open frame at the earliest event, which in octet times (§0.5) is the lower lane, so the `/S/` aborts the open frame (`error_start_without_terminate`, zero or more delivered octets per §9); the new frame is then open and the `/T/` at lane 3 is a **control character in a preamble position**, which §6.1 routes explicitly — "`/T/` to REQ-107" — giving a second, zero-delivered frame with one `error_runt`. Two different strobes, both pinned two cycles after this input word, high on the same cycle (§0.6 permits different strobes to coincide). (ii) *One-closure-per-word*: the `/T/` is not seen at all and only `error_start_without_terminate` pulses. **The readings differ in one observable — whether `error_runt` pulses — so the case is cheaply decidable and cheaply testable, and it is a hole in §0.6's conservation equation while it is open**: under (ii) a frame is opened and never reported | The row kills whichever reading the ruling rejects. It is written now because rtl_lead has **declared** reading (ii) in a returned question, so the moment to settle it is before a bench asserts either | RULING |
+| **M03-N3** | REQ-016, §6.1's "exactly 8 octet times", §10's REQ-016 hook | An idle word placed **inside a frame's own eight preamble octets** | §6.1 fixes the frame's first octet at exactly 8 octet times after the start character, so such a stimulus contradicts the definition of the frame it claims to carry; §10 commissions idle injection **inside the frame**, which begins after those eight octets. **The idle-injection wrapper of M03-I4 SHALL NOT place an idle cycle between the start word and the frame's first octet.** A one-sentence §6.3 addition would close the last place REQ-016 and §6.1 can be read against each other, and is requested in §8 | A wrapper that injects uniformly across the whole frame including the preamble, producing a stimulus outside the specified space and a failure that is the bench's, not the design's | NO-STIMULUS |
+| **M03-N4** | REQ-810, REQ-803, REQ-110, §4.3 | `cfg_rx_enable` goes 0 **mid-frame**, and a new `/S/` (REQ-110's condition) arrives while it is 0, at least one cycle away from the change | **Two readings.** (i) *Enable gates only the beginning of a frame*: the `/S/` still closes the open frame — the abort belongs to a frame accepted under the old value — so `error_start_without_terminate` pulses and `tuser`[0] = 1 on the aborted frame's `tlast`; the new frame does not begin. (ii) *§4.3 literally*: with the enable at 0 "M03 … treats every start character as absent", so the `/S/` neither begins nor aborts and the open frame runs on through that word. The two differ in the delivered octet count of the in-flight frame, in one strobe and in one abort bit. §4.3's two sentences — "treats every start character as absent … pulses no strobe" and "a frame already in flight completes under the old one" — point opposite ways here, and REQ-810's "no frame is accepted, so this creates no silent-discard hole" is an argument only for reading (i), under which the in-flight frame *is* reported | Under reading (ii) the open frame is carried across a character §6.1 routes to REQ-110, and the frame's octet count includes lanes the specification calls a start character. The row is `RULING` because asserting either today would commission a bench that fails a conformant design under the other | RULING |
+
+### 4.O Structural and declared no-instance
+
+| Row | Attacks | Stimulus | Observable | Kills | Status |
+|---|---|---|---|---|---|
+| **M03-O1** | REQ-003, REQ-010, REQ-112, §4.1 | — | Interface compile check: `O` carries `Axi64.Source` with no `Dest`, `I` carries no `tready`; the six `Source` field names witness (SPEC-M01 §11.4) | A hand-rolled stream record with the same fields | STRUCTURAL |
+| **M03-O2** | REQ-014 | — | **No instance at M03 for REQ-014's differential run.** REQ-014's verification column commissions "the same stimulus with `tstrb` = 0x00 and `tstrb` = 0xFF"; M03's input is an XGMII lane pair, which has no `tstrb` to vary (REQ-010 class (b)). The **producer** half — `tstrb` driven 0 on every output word — is asserted by the standing protocol monitor. The consumer half belongs to M06. Raised in §8 as a one-cell hook correction | — (stated so no `SO-` claims REQ-014 whole at M03) | GAP |
+| **M03-O3** | REQ-017, REQ-018, REQ-903, REQ-808 | — | Emitted-Verilog port names `xgmii_rxd`/`xgmii_rxc`; the module whitelist (`tools/check_emitted_verilog.sh`); `.mli`, `create` and `hierarchical` present; the module name appears in `rtl_snapshots/` | A record whose `[@rtlprefix]` drifted; an instantiated primitive outside the §4 inventory | STRUCTURAL |
+| **M03-O4** | §6.3 item 3 | — | A start character in a lane other than 0 or 4 is **never driven** and nothing is asserted about it | — | NO-STIMULUS |
+| **M03-O5** | §6.3 items 2, 4, 5 | — | Nothing is asserted about register placement, FSM encoding, counter direction, `tdata` where `tkeep` is 0, or any field on a `tvalid` = 0 cycle. §9's strobe **cycle**, by contrast, is pinned and **is** asserted (§6.3 item 5 says so explicitly) | A snapshot that freezes an unconstrained value into an accidental requirement | NO-ASSERT |
+
+---
+
+## 5. Attacks considered and rejected
+
+Charter §8 requires the rejected list, because that is what the auditor mines
+for blind spots. Each entry names why the attack is *not* a row.
+
+1. **A random-frame fuzz campaign** (random lengths, random control-character
+   placement, random gaps). Rejected as a *substitute*, not on principle: every
+   observable in §9 is a function of the input trace, so a fuzz run needs the
+   same golden model the directed rows need, and until that model exists a fuzz
+   run can only assert protocol legality — which the standing monitors already
+   do on every directed row. Revisit once the link-partner model can compute a
+   frame's expected §9 outcome; at that point fuzz becomes cheap and is worth a
+   row of its own.
+2. **Asserting the absolute-cycle equality of the two start lanes** (M03-A4) —
+   forbidden by §6.1 and §10.
+3. **Asserting which FCS realisation is used** (M03-D4) — §6.3 item 1 makes it
+   unobservable.
+4. **A start character in lane 1, 2, 3, 5, 6 or 7** (M03-O4) — §6.3 item 3 plus
+   REQ-018's contract. Driving it would commission a test for a stimulus the
+   programme has decided not to produce.
+5. **Two frames overlapping in the same word other than through `/S/`** — not
+   expressible on an XGMII lane pair; the lane pair carries one character per
+   position and §9's closure list is total over them.
+6. **A gap shorter than §0.3's 9-octet DIC floor.** SPEC-M03 §2 says explicitly
+   that reacting to a short gap is *nobody's* job on the receive path; a bench
+   asserting anything about it would be asserting a requirement that does not
+   exist. The link-partner model's own `check` refuses to emit one.
+7. **`tuser`[0] driven on M03's input.** M03 has no input abort bit — it is the
+   origin of the chain (§9's closing paragraph, M03-M9). The attack belongs to
+   M06 and above.
+8. **Asserting the CRC register's intermediate values, the `octet_count` M02
+   sees, or the state M03 occupies in `Discard`.** All internal; ADR-0007's
+   1-to-8 domain is enforced observably instead — by M03-C2 (a held CRC fails
+   seven of eight terminate lanes) and M03-A2 (a held CRC fails every lane-4
+   frame). This is the deliberate choice to attack an internal invariant
+   **through** its observable consequence rather than by reaching inside.
+9. **A frame longer than 1600 octets, or a 9000-octet jumbo.** REQ-108's
+   behaviour is already exercised at 1519 and 1600; a longer frame adds cycles,
+   not classes. If a `Discard`-state counter can overflow it does so at a length
+   no requirement admits, and the attack would be against an unspecified space.
+10. **Deliberately illegal `xgmii_rxc` patterns** (e.g. every lane marked
+    control with data values). Outside REQ-018's contract; the closest legal
+    attack is M03-I3's ordered set, which is a row.
+11. **Preamble longer or shorter than eight octets.** §6.1 fixes it at exactly
+    eight octet times from the start character inclusive; a different preamble
+    is a different stimulus, not a variant of this one, and REQ-102 forbids the
+    receiver from noticing the contents anyway. M03-N3 is the boundary of this
+    argument and is a NO-STIMULUS row for the same reason.
+
+## 6. Coverage map — REQ to rows
+
+Every REQ SPEC-M03 §10 lists appears exactly once. A REQ with no behavioural
+row carries the reason.
+
+| REQ | Rows |
+|---|---|
+| REQ-003 | M03-L6, M03-O1 (structural) |
+| REQ-004 | M03-L1 |
+| REQ-005 | M03-L2, M03-L5, M03-I4 |
+| REQ-007 | M03-D1, M03-E1, M03-F1, M03-G1, M03-H1 (set); M03-E3, M03-F2, M03-B2, M03-B4 (the zero-delivered cases where the bit has no word — §0.7) |
+| REQ-008 | M03-B2, M03-B3, M03-B4, M03-E2, M03-F2, M03-G6, M03-H4 (every discard has a strobe); standing obligation 2 (conservation) |
+| REQ-009 | M03-K1, M03-K2, M03-K3 |
+| REQ-011 | M03-C1, M03-C3, M03-C4; standing obligation 1 |
+| REQ-012 | M03-A5 |
+| REQ-014 | standing obligation 1 (producer half); **M03-O2 declares the differential half has no instance here** |
+| REQ-015 | M03-C3, M03-C4; standing obligation 1 |
+| REQ-016 | M03-I4, M03-I5, M03-I6, M03-N3 |
+| REQ-017, REQ-018 | M03-O3 |
+| REQ-019 | M03-L3 |
+| REQ-020 | M03-L4 |
+| REQ-021 | M03-A2, M03-A5, M03-H2 |
+| REQ-101 | M03-A1, M03-A2, M03-A3, M03-A4 |
+| REQ-102 | M03-B1, M03-B2, M03-B3, M03-B4 |
+| REQ-103 | M03-C1, M03-C3, M03-E1, M03-F1, M03-G1, M03-H1 |
+| REQ-104 | M03-D1, M03-D2, M03-D3, M03-D4, M03-M2, M03-M3, M03-M4 |
+| REQ-105 | M03-B2, M03-E1, M03-E2, M03-E3, M03-E4, M03-G4, M03-M5, M03-M7 |
+| REQ-106 | M03-C1, M03-C2 |
+| REQ-107 | M03-B3, M03-F1 … M03-F5, M03-M1 |
+| REQ-108 | M03-G1 … M03-G6, M03-M2, M03-M6, M03-M7 |
+| REQ-109 | M03-I1, M03-I2 |
+| REQ-110 | M03-B4, M03-H1 … M03-H4, M03-M4, M03-M5, M03-M6 |
+| REQ-111 | M03-L2, M03-L5 |
+| REQ-112 | M03-L1, M03-L6 |
+| REQ-113 | M03-E4, M03-I3 |
+| REQ-802, REQ-810 | M03-J1 … M03-J4 |
+| REQ-803 | M03-J2, M03-J3, M03-N4 |
+| REQ-903, REQ-808 | M03-O3 |
+
+## 7. Machinery this plan requires and does not have
+
+Deliverable 4 of WO-0027: named here, **not built here**. Each is a candidate
+for the next DV work order; the numbering is local to this plan.
+
+| # | Machinery | Which rows need it | Note |
+|---|---|---|---|
+| **X-1** | **The link partner's error-injection catalogue** — REQ-018's second contract clause, deliberately deferred by `test/xgmii/arrival.mli` until this plan existed. Needs: per-frame corruption of one payload bit (bad FCS); replacement of the terminate character by `/S/` or `/E/` at a chosen octet time; placement of `/E/`, `/T/` or `/S/` at a chosen **preamble** position; over-length and under-length frames; and, per injected frame, the **expected §9 outcome** (delivered octet count, `tkeep`, abort bit, strobe name and pinned cycle) so a bench compares against the model rather than against hand-copied constants | B2–B4, D1, D3, E1–E4, F1–F5, G1–G6, H1–H4, M1–M7, N1 | The largest single item. Its expected-outcome side is what makes the fuzz campaign of §5 item 1 possible later |
+| **X-2** | **An XGMII probe** — the `Xgmii_word`-to-live-port sampler, the counterpart of `test/axi64_probe/` on the wire side. `test/xgmii/dune` already records that it "lands with the first M03 bench" | every row | One function, same shape as `Axi64_probe.of_refs` |
+| **X-3** | **A strobe monitor.** No monitor today counts strobes: `Conservation_monitor.strobe_pulse` is a call a bench makes by hand. Needed: (a) **high-cycle** counting per §0.6 as revised by **C-23** — never rising edges; (b) an **expected-cycle** check against §9's pinned cycles (the `tlast` cycle, or two cycles after the closing input word for a frame with no output); (c) the §0.6 window check; (d) "no strobe other than those the stimulus creates" | every strobe row; **M03-H4** is the row that makes (a) load-bearing at this module | C-23's convention was homed in requirements.md §0.6 on M13's evidence and stated there as generalising. M03-H4 is the second instance and the first on the receive chain |
+| **X-4** | **An idle-injection wrapper** at 0, 1 and 7 cycles (§10's figures), with the **M03-N3 constraint** built in: injection never lands between the start word and the frame's first octet | I4, I5, I6 | The constraint is the deliverable as much as the wrapper is |
+| **X-5** | **A truncated-frame entry point on the latency tagger.** `Latency.frame_out` requires the output length to equal (input − `strip_octets` − `tail_octets`), which holds for a clean frame and is false for **every** aborted or truncated frame — families E, F, G and H all deliver a short frame. `frame_dropped` covers only the no-output case. Needed: a per-frame expected output extent | E1, F1, G1, G2, H1, H2 | Same repair serves M14 (see AP-M14 X-9), where the tail varies per datagram rather than per frame class |
+
+Not gaps: `Conservation_monitor`'s exemption machinery (C-2) exists and is used
+by M03-J1 and M03-K2; `Protocol_monitor`'s `max_words_per_frame` covers
+REQ-015's 190; `Latency`'s three-quantity split (WO-0012) is what M03-L3 asserts
+against; `Frame`/`Arrival` already produce the §8 stress schedule and check
+themselves against §0.3.
+
+## 8. Open questions and rulings requested
+
+Routed through the orchestrator to architect_docs_lead. None blocks a bench
+other than its own row.
+
+1. **M03-N2 (RULING, from rtl_lead's returned question 2)** — two closure
+   characters in one input word where the second falls inside the new frame's
+   preamble. §6.1 routes a control character in a preamble position to §9 in
+   terms; rtl_lead has implemented one closure per word. The readings differ in
+   exactly one observable (whether `error_runt` pulses), and under the
+   one-closure reading a frame is opened and never reported, which is a hole in
+   §0.6's conservation equation. **Cheapest repair either way: one row in §6.3
+   (unconstrained) or one row in §9 (specified).** Recommendation: §9, because
+   the text-strict reading is already what §6.1 says and the conservation
+   equation prefers it.
+2. **M03-N3 (from returned question 3)** — an idle word inside a frame's own
+   preamble. §6.1's "exactly 8 octet times" already decides it; the request is
+   one sentence in §6.3 confirming the stimulus is outside the specified space,
+   which closes the last place REQ-016 and §6.1 can be read against each other
+   and pins the idle-injection wrapper's contract (X-4).
+3. **M03-N4 (RULING, from returned question 4)** — `cfg_rx_enable` = 0 arriving
+   with a REQ-110 start character while a frame is open. §4.3's two sentences
+   point opposite ways and the observable differs in a delivered octet count, a
+   strobe and an abort bit. REQ-810's own "no frame is accepted, so this creates
+   no silent-discard hole" is an argument for the reading in which the in-flight
+   frame **is** reported.
+4. **M03-O2 (editorial, one cell)** — SPEC-M03 §10's REQ-014 hook names
+   "REQ-014's differential run", which has no instance at M03: the input is an
+   XGMII lane pair with no `tstrb` (REQ-010 class (b)). This is the C-41 family
+   — a verification column commissioning something a bench cannot build here —
+   and the repair is the form SPEC-M14 §10 already uses for REQ-404 and REQ-810:
+   "none — stated so that no sign-off packet claims coverage here", with the
+   producer half left where it is.
+5. **The carry-forward ledger's unnumbered dv-machinery row** (`P1-spec-freeze`
+   checklist, the row between C-14 and C-15: "Latency.create's single
+   strip_octets conflates two quantities") **was discharged at WO-0012** and
+   carries no id and no closure mark. Clerical, and the orchestrator's to
+   transcribe; noted here because this plan's M03-L3 is the row that keeps the
+   fix honest and a reader of the ledger cannot tell it is done.
+
+## 9. Change log
+
+| Date | Change | Author |
+|---|---|---|
+| 2026-08-02 | Created (WO-0027). **73 rows** across 15 families (A 5, B 4, C 4, D 4, E 4, F 5, G 6, H 4, I 6, J 4, K 3, L 6, M 9, N 4, O 5) — 55 ASSERT, 7 NO-ASSERT, 4 NO-STIMULUS, 2 RULING, 1 GAP, 4 STRUCTURAL; the format defined in §0–§1 becomes the template for every later `AP-`. | dv_lead, `J-dv_lead-0013` |

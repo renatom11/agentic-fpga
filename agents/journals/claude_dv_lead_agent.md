@@ -4092,3 +4092,381 @@ C-41 and C-42 (and C-40's residual site) to architect_docs_lead.
 ### Files-in-this-commit
 - agents/handoffs/WO-0025_m14-recountersign.md
 - tools/check_abort_availability.sh
+
+## [J-dv_lead-0013] 2026-08-02T21:40:00Z | task:WO-0027 | The programme's first two attack plans — AP-M03 (73 rows) and AP-M14 (63 rows, C-37's availability pair first); the row format defined as the template; rtl_lead's three M03 questions become two RULING rows and one NO-STIMULUS; a new undecided class found at M14 by writing the plan (declared total length below 20)
+
+### Trigger
+Orchestrator work order `agents/handoffs/WO-0027_attack-plans.md`, spawn
+short-id `WO-0027/2026-08-02T20:50Z`. This is the unit I named as my own next at
+`J-dv_lead-0012`'s Open-questions ("Next for me is unchanged and now overdue:
+`test/attack_plans/`"), re-ordered by the work order to M03 first and M14
+second, which is the right order: M03's RTL now exists at `f840475` and M14's
+does not, so the plan that will be executed soonest is the one whose format is
+reviewed first.
+
+### Inputs
+- `agents/charters/dv_lead.md`; `agents/PROTOCOL.md`; `agents/handoffs/README.md`
+  (packet forms — there is no `AP-` form, which is why §"Reasoning" below spends
+  its first paragraphs on inventing one).
+- `agents/handoffs/WO-0027_attack-plans.md`; `agents/handoffs/WO-0024_batch-b-rtl.md`
+  (Return log §6, rtl_lead's four returned questions; §2's microarchitecture
+  narrative was read as part of the packet and is treated below as a **declared
+  reading**, never as a source of expected behaviour); `agents/handoffs/WO-0012_dv-wave2.md`.
+- **SPEC-M03** `docs/specs/modules/xgmii_rx_64.md` in full — FROZEN `f78766e`
+  plus all six §13 rows through C-18.
+- **SPEC-M14** `docs/specs/modules/ip_eth_rx_64.md` in full — FROZEN `3f6accc`
+  plus all four §13 rows including the ADR-0012 behavioural row at `8641455`.
+- `docs/specs/requirements.md` §0.3, §0.4, §0.5, §0.6 (including C-23's counting
+  convention), §0.7, §1 (REQ-001 … REQ-021), §1.1, §2 (REQ-101 … REQ-113),
+  §5 (REQ-401 … REQ-410), §7 (REQ-601 … REQ-612), §8 (REQ-703, REQ-707, REQ-708),
+  §9 (REQ-802, REQ-803, REQ-810), §12.
+- `docs/adr/ADR-0012-the-abort-bit-m14-cannot-copy.md` (context, decisions 1–6,
+  alternatives (a) … (f)); ADR-0006/0007 (the CRC finished-value convention and
+  the 1-to-8 `octet_count` domain); ADR-0008 (the two `valid` disciplines);
+  ADR-0009 (ultimate consumers).
+- `docs/gates/P1-spec-freeze-checklist.md` — the carry-forward ledger and its
+  status marks.
+- My own machinery, read to size the gaps: `test/monitors/*.mli`,
+  `test/xgmii/*.mli`, `test/golden/*.mli`, `test/axi64_probe/axi64_probe.ml`,
+  every `test/*/dune`, `test/hardcaml_ethernet/test_word_counter.ml`.
+- `tools/check_abort_availability.sh`, executed.
+- **Not read: `libs/**`.** No file under it was opened by me at this commit or
+  at any earlier one. M03's RTL exists at `f840475` and was deliberately left
+  unopened; the WO-0024 Return log's prose was in my inputs and is the one place
+  a design's shape reached me, which is why every family-N row derives its
+  expected observable from SPEC-M03's text and says so in the plan.
+
+### Reasoning
+
+**What an attack plan is for, and therefore what shape it takes.** The programme
+has no `AP-` form — the handoffs README defines WO/SO/BUG/RV and stops — so the
+first decision was what a row *is*. Charter §3 asks for "an enumerated
+adversarial table" and §"Sign-offs" asks the `SO-` to map tests back to rows;
+those two sentences fix the id and the enumeration but not the columns. I chose
+six cells, and the one that decided the design is **Kills**: the wrong design
+each row detects, stated concretely enough that a reader can see the row fail
+against it. A plan without that column is a test list with adjectives, and the
+failure mode it invites is exactly the one this programme has already paid for
+twice — a hook that commissions an assertion nobody has checked is passable
+(C-41, and SPEC-M14 §10's pre-ADR-0012 REQ-007 row, which commissioned an
+assertion **no conformant design passes** over a directed set every member of
+which was inside the defective band).
+
+Rejected column sets: (i) *REQ · test name · expected result*, which is a
+traceability matrix and the architect already owns one; (ii) adding a
+*severity*, which prices a defect before it exists and would let a plan
+soft-pedal a row; (iii) adding an *owner*, since every row is tb_writer's or
+mine and the WO decides that later; (iv) splitting stimulus and expected into
+separate documents, which is how a stimulus catalogue drifts from the assertions
+it was built for — the `arrival.mli` deferral of the injection catalogue "until
+the attack plan exists" was the right instinct and this format keeps them in one
+row.
+
+**The status vocabulary is six values, and four of them exist because of things
+this programme has already got wrong.** ASSERT is the default. **NO-ASSERT**
+exists because C-14.3, C-14.4, C-14.5 and C-27 are all cases where a bench built
+from a true-looking sentence fails a *conformant* design; a plan that only lists
+what to assert cannot record that, and the assertion re-appears in the next
+bench. **NO-STIMULUS** exists because §6.3 item 3 and REQ-018's contract make
+some inputs meaningless to drive, and a row that says so is cheaper than the
+argument being had again. **RULING** exists because C-12 was held as NO-ASSERT
+in `arrival.mli` until requirements.md settled it, and that worked: the case was
+visible, blocked nothing, and closed with a one-line ruling. **GAP** exists so a
+sign-off cannot claim coverage by silence. STRUCTURAL keeps compile-checked
+facts out of the behavioural count.
+
+**Why C-37's row is the first row of the first family at M14, and how it is
+constructed.** ADR-0012's class is entered by *ordinary Ethernet padding*, so it
+is the commonest small frame on the wire rather than a corner, and three
+plausible keys — "carries padding", "is in `Tail`", and SPEC-M17's **word**
+deficit — agree with the correct rule on almost every datagram. The pair that
+separates them is two datagrams differing by **one declared octet**: IPv4 total
+lengths 36 and 37 in a 64-octet frame, where padding, `Tail` and the word
+deficit are identical and only the cycle deficit D differs. Driving each twice
+with opposite input bits makes the row kill six designs on four runs:
+unconditional copy, padding-keyed, `Tail`-keyed, word-deficit-keyed, and **both
+off-by-one D-keyed designs** (copy iff D ≤ 1 fails 36; copy iff D ≤ −1 fails 37).
+I added **M14-A2** — total length 40, residue 0, D = 0 with a word deficit of 1 —
+because one witness proves an instance while the specification's claim is about
+*four residues in eight*; two witnesses at residues 5 and 0 test the claim. And
+I added **M14-A3/A4/A5** as the anti-vacuity spine: without a row asserting the
+bit is **copied** somewhere (D = −1 at total length 46, D = 0 at 1500), the
+"0 on both runs" assertions pass against a design that never copies anything.
+**M14-A6** is the row that keeps the previous hook from coming back: the whole
+directed 21 … 28 set asserts *nothing* about the bit, and saying so is the only
+way a later reader does not re-derive the unpassable assertion from §8's list.
+
+**The arithmetic was verified before it was written down, twice.** Every D,
+word deficit, `tlast` cycle, `tkeep` and padding figure in family A was
+recomputed independently of the plan text and cross-checked against
+`tools/check_abort_availability.sh`, which reproduces the §8 pair exactly
+(`total length 36: D=1 W=1 Tail=yes … tlast Ci+5, padding=10`;
+`37: D=0 W=1 Tail=yes … tlast Ci+6, padding=9`). This is deliberate discipline
+rather than caution: C-37 exists because an inequality ran backwards in a frozen
+document, and a plan that repeats the error would commission benches that
+enforce it.
+
+**What writing AP-M14 found that no bench would have found for months.**
+SPEC-M14 §6.1's field table justifies "total length ≥ 20" as holding "by
+construction of REQ-601's IHL check". It does not: IHL fixes the *header*
+length; the total-length field is sixteen independent bits an adversary
+controls. A datagram with version 4, IHL 5, a correct checksum, protocol 17, an
+accepted destination, MF = 0 and offset 0, declaring total length 0, passes all
+six header conditions and arrives at §6.2's `Header` branch, which selects on
+*declared payload empty (total length 20)* versus *non-empty* — and this
+datagram is neither. §6.1's own M = ⌈(N′ − 20)/8⌉ is negative for it, so the D
+arithmetic is undefined on the class too. That is C-26's family exactly: a
+reachable band the branch conditions do not cover. It is row **M14-K7**, status
+RULING, with three readings enumerated and a recommendation (fold it into
+REQ-601's class — same detection cycle, no new strobe, no new REQ, no port). I
+note without pleading that this is the first defect the *attack-plan step
+itself* has caught, which is the argument for the step.
+
+**The second M14 finding is a coverage hole I cannot close from inside DV.**
+REQ-603 constrains more-fragments (octet 6 bit 5) and the fragment offset, and
+§6.3 item 4 forbids DV from asserting anything about a datagram that sets DF
+(bit 6) or the reserved bit (bit 7). The consequence is that a design reading
+the **wrong bit** of octet 6 for more-fragments is **unkillable at M14**: the
+only stimulus that distinguishes it is one on which no assertion may be made.
+I could have written the row anyway and been quietly out of conformance with
+§6.3; instead it is M14-B5 (NO-ASSERT) plus an open question naming the
+one-sentence repair. The fragment-offset half *is* killable and is attacked
+properly — M14-B4 drives offset 0x0100, whose low octet is zero, which kills a
+design reading octet 7 alone and accepting every offset that is a multiple of
+256.
+
+**rtl_lead's three returned questions, answered from the specification and not
+from the answer it gave.** This mattered enough to shape the family: rtl_lead
+declared readings in its Return log, and the temptation is to write rows that
+confirm them, which would make my benches a transcription of a design I am not
+allowed to read.
+- *Two closure characters in one word* splits into two cases. Where the second
+  arrives after the frame is closed and no frame is open, §9's third row and
+  C-12 decide it outright — that is **M03-N1**, ASSERT. Where the second falls
+  inside the **new** frame's preamble (`/S/` lane 0, `/T/` lane 3), §6.1 says in
+  terms that a control character in a preamble position "is routed by §9: `/T/`
+  to REQ-107", which gives a second zero-delivered frame and one `error_runt`;
+  rtl_lead's declared one-closure-per-word reading pulses only the abort. The
+  readings differ in exactly one observable, and under the declared one **a
+  frame is opened and never reported**, which is a hole in §0.6's conservation
+  equation. That is **M03-N2**, RULING — because asserting my reading before the
+  architect rules would be DV writing specification, and asserting the other
+  would enshrine RTL.
+- *An idle word inside a frame's own preamble* is decided by §6.1's "exactly 8
+  octet times", so it is **M03-N3**, NO-STIMULUS — and the row is more than an
+  answer: it is the **contract for the idle-injection wrapper** (X-4), which
+  must not inject between the start word and the first frame octet. A wrapper
+  that injects uniformly would produce red benches that are the bench's fault.
+- *`cfg_rx_enable` going 0 mid-frame with a REQ-110 start character arriving*
+  is **M03-N4**, RULING, because §4.3's own two sentences point opposite ways
+  ("treats every start character as absent … pulses no strobe" against "a frame
+  already in flight completes under the old one") and the two readings differ in
+  a delivered octet count, a strobe and an abort bit.
+
+**Rows I am most confident are worth their cost.** M03-H2 (a `/S/` in lane 4
+leaves four octets of the aborted frame behind, and a design that switches its
+alignment offset on the acceptance cycle loses them **silently** — a REQ-008
+hole with no strobe that every row not counting the aborted frame's octets
+misses); M03-G2 (1518 against 1519, which deliver an **identical** 1514 octets
+and differ only in the strobe, the abort bit and whether an FCS check happened);
+M03-I6 (7-cycle idle injection into a 1518-octet frame, which trips any oversize
+detector counting cycles instead of octets); M03-D3 (a bad-FCS frame followed at
+the *minimum* gap by a good one, which catches a design reading the CRC register
+at the `tlast` cycle after the next frame has re-seeded it — derivable from
+§6.1's seeding rule and §6.1's own two-cycle drain bound, with no RTL);
+M03-H4 (two zero-delivered aborts whose pinned strobe cycles are **consecutive**,
+making C-23's high-cycle counting convention load-bearing on the receive chain
+for the first time — the convention was homed in §0.6 on M13's evidence and
+stated there as generalising, and this is the proof); M14-E4 (a frame truncated
+inside the header **whose version nibble is 6**, turning §9's only precedence
+rule from a silence into a positive assertion); M14-B3 (a header whose
+one's-complement sum needs **two** folds, which kills the once-folded 32-bit
+accumulator — a defect that agrees with the correct arithmetic on nearly every
+header and rejects a valid datagram).
+
+**Attacks considered and rejected** — the list the auditor mines, recorded in
+both plans' §5 and summarised here with the ones whose rejection I most want
+challenged. Random fuzz at both modules (rejected as a *substitute*: the oracle
+it needs is the same one the directed rows need, so it becomes cheap only after
+X-1/X-8 exist, and then it is worth a row of its own). Asserting the lane-0 /
+lane-4 absolute-cycle equality at M03 (§6.1 and §10 forbid it — it is a property
+of pinned constants, not an obligation). Asserting which FCS realisation is used
+(§6.3 item 1). A start character in lanes 1, 2, 3, 5, 6 or 7 (§6.3 item 3 plus
+REQ-018 — and note this is why rtl_lead's own example of `/S/` in lane 2 could
+not become a row as posed and had to be re-expressed at a legal lane). A gap
+below §0.3's DIC floor (SPEC-M03 §2: reacting to a short gap is *nobody's* job).
+Asserting `tuser`[0] on M03's input (it has none — M03 originates the bit).
+Reaching into the CRC register or the `octet_count` M02 sees — instead
+ADR-0007's 1-to-8 domain is attacked **through** its observable consequence, by
+M03-C2 (a held CRC fails seven of eight terminate lanes) and M03-A2 (a held CRC
+fails every lane-4 frame); that substitution is the single most important
+methodological choice in AP-M03. At M14: a datagram with N′ > N *and* D ≥ 1
+(unconstructible — N′ > N is REQ-605's truncation, which never reaches the
+availability question); a `hdr_valid` lead other than one cycle (outside the
+producer's contract — it would test M08); datagram adjacency closer than the
+XGMII layer can deliver, which is the only way to attack §9's
+consecutive-cycle claim and would be attacking a producer the programme does not
+have; and a loopback of M15's transmit checksum as an oracle for M14's check,
+rejected on REQ-202's own principle — a systematically wrong but self-consistent
+checksum passes a loopback.
+
+**Machinery: eleven gaps, named and not built.** The work order said note, do
+not build, and the discipline is right — a plan whose author is also building
+its machinery writes rows the machinery can already do. The two that will hurt
+first are **X-1** (the link partner's error-injection catalogue: without it,
+families B, D, E, F, G and H of AP-M03 have no stimulus, and it needs a
+per-frame **expected §9 outcome** so benches compare against the model rather
+than hand-copied constants) and **X-5/X-9**, which are the same repair with two
+customers: `Latency.create` takes `~tail_octets` as a **run** constant and
+`frame_out` requires the output length to be exactly (input − strip − tail).
+Every aborted or truncated M03 frame breaks that, and at M14 the removed tail is
+the Ethernet padding N − N′, which varies **per datagram**. That is a second
+defect in the same tagger WO-0012 already repaired once, found the same way
+(by asking what the module's own frames look like rather than what the parameter
+is called), and I would rather it be a named row here than a wrong number in a
+sign-off packet. **X-3** (the strobe monitor) is the third: nothing today counts
+strobes — `Conservation_monitor.strobe_pulse` is a call a bench makes by hand —
+and both plans pin exact strobe cycles that no monitor can check.
+
+**What I deliberately did not do.** No bench, no `test/**` code, no
+`docs/gates/**`, no spec edit; the three architect items and the clerical ledger
+note leave this packet as questions, which is the only route my scope allows.
+I did not fold `tools/check_abort_availability.sh` into the M14 plan as the
+bench's oracle: it stays the **independent cross-check**, and X-10 asks for a
+separate OCaml D oracle, because two implementations of one formula in two
+languages is the cheapest protection this programme has against the arithmetic
+error that created C-37.
+
+### Actions
+- Read the charter, PROTOCOL, WO-0027, WO-0024's Return log, WO-0012, both
+  specifications in full with every §13 row, the requirements sections listed in
+  Inputs, ADR-0012 and the gate ledger.
+- Read my own machinery's interfaces (`test/monitors`, `test/xgmii`,
+  `test/golden`, `test/axi64_probe`, every `test/*/dune`) to size the gaps in §7
+  of each plan against what exists rather than against what I remember building.
+- Created `test/attack_plans/` and wrote **`AP-xgmii_rx_64.md`** — 73 rows in 15
+  families — and **`AP-ip_eth_rx_64.md`** — 63 rows in 11 families, C-37's pair
+  first.
+- Recomputed every D, word deficit, payload-word count, `tlast` cycle, `tkeep`
+  and padding figure in AP-M14 family A independently, then cross-checked
+  against `tools/check_abort_availability.sh`.
+- Recomputed AP-M03's directed-length arithmetic by hand: delivered = length − 4
+  for 64 … 71 giving all eight `tkeep` patterns and all eight terminate lanes
+  (lane = length mod 8); 1518 → 1514 in 190 words with a final `tkeep` = 0x03;
+  the drain bound of two cycles; the consecutive strobe cycles of M03-H4.
+- Tightened M03-H4's stimulus after checking it: the original three-consecutive-
+  cycle `/S/` schedule put the second start character at the aborted frame's
+  **first frame octet** rather than strictly inside its preamble, which is a
+  different §9 row. Replaced with `/S/` in lanes 0 and 4 of one word then `/S/`
+  in lane 0 of the next, where both aborts are strictly inside their own
+  preambles and the pinned strobe cycles are still consecutive.
+- Wrote the WO-0027 Return log with the row tables, the format summary, the
+  machinery list, the ledger-row mapping and the four architect items.
+- Ran no `git` command beyond `status`; opened no file under `libs/`.
+
+### Evidence
+- `test/attack_plans/AP-xgmii_rx_64.md` — **73 rows**, reproducible:
+  `grep -c '^| \*\*M03-' test/attack_plans/AP-xgmii_rx_64.md` → `73`;
+  `grep -o '^| \*\*M03-[A-O]' … | sort | uniq -c` → A 5, B 4, C 4, D 4, E 4,
+  F 5, G 6, H 4, I 6, J 4, K 3, L 6, M 9, N 4, O 5;
+  status histogram via
+  `grep -o '| ASSERT |\|| NO-ASSERT |\|| NO-STIMULUS |\|| RULING |\|| GAP |\|| STRUCTURAL |' … | sort | uniq -c`
+  → 55 / 7 / 4 / 2 / 1 / 4.
+- `test/attack_plans/AP-ip_eth_rx_64.md` — **63 rows**: same commands with
+  `M14` → A 8, B 10, C 4, D 5, E 7, F 4, G 4, H 3, I 5, J 6, K 7; status
+  histogram 49 ASSERT / 5 NO-ASSERT / 2 NO-STIMULUS / 1 RULING / 0 GAP /
+  6 STRUCTURAL.
+- `bash tools/check_abort_availability.sh` → **exit 0**,
+  `8720452 check(s) run, 0 failure(s)`. The two lines that witness AP-M14
+  family A's boundary pair, quoted verbatim from its output:
+  `M14  §8 pair, total length 36: D=1  W=1  Tail=yes  payload=16 octets in 2 words, tlast Ci+5, padding=10`
+  and
+  `M14  §8 pair, total length 37: D=0  W=1  Tail=yes  payload=17 octets in 3 words, tlast Ci+6, padding=9`,
+  with `M14  §8 pair: padding, Tail and word deficit agree; only D differs` —
+  which is the row's kill argument, mechanised.
+- Independent recomputation of the six lengths AP-M14 family A asserts, by an
+  awk script written for this entry in the session scratchpad (**ephemeral, not
+  committed** — ADR-0003/F5): with K = ⌈N/8⌉, M = ⌈(N′−20)/8⌉, D = K − M − 3 and
+  word deficit W = ⌈N/8⌉ − ⌈N′/8⌉ —
+  (N=46, N′=28) → K 6, M 1, **D 2**, W 2, `tlast` Ci+4, `tkeep` 0xFF;
+  (46, 36) → M 2, **D 1**, W 1, Ci+5, 0xFF;
+  (46, 37) → M 3, **D 0**, W 1, Ci+6, 0x01;
+  (46, 40) → M 3, **D 0**, W 1, Ci+6, 0x0F;
+  (46, 46) → M 4, **D −1**, W 0, Ci+7, 0x03;
+  (1500, 1500) → K 188, M 185, **D 0**, W 0, Ci+188, 0xFF; input `tlast` at
+  Ci + K − 1 = Ci+5 for every 64-octet frame and Ci+187 at 1500. Every figure
+  matches the plan's cells and the first two match the committed tool. The
+  computation reproduces from the formulas in SPEC-M14 §6.1 with no tooling.
+- AP-M03's directed arithmetic, reproducible from §0.3 and §6.1 by hand:
+  lengths 64 … 71 deliver 60 … 67 octets, giving final `tkeep` patterns
+  0x0F, 0x1F, 0x3F, 0x7F, **0xFF**, 0x01, 0x03, 0x07 in that order and terminate
+  lanes 0 … 7 (lane = length mod 8); 1518 delivers 1514 = 189 × 8 + 2, i.e. 190
+  words with a final `tkeep` = 0x03, which is REQ-015's pinned maximum;
+  1519 delivers **the same 1514** and differs only in the strobe, the abort bit
+  and the absence of an FCS check (M03-G2); a 5-octet frame delivers exactly one
+  octet in one word (C-11's legal one-word frame).
+- `git status --porcelain` before this entry: `?? test/attack_plans/` only —
+  no `libs/`, `docs/`, `test/**` code or `tools/` path touched.
+- Verdict artifact: `agents/handoffs/WO-0027_attack-plans.md` Return log, dated
+  2026-08-02T21:40Z.
+
+### Outcome
+**DoD met.** All four deliverables: AP-M03 and AP-M14 committed before either
+module's first bench (charter §3, ADR-0001); the row format defined in AP-M03
+§0–§1 and reused unchanged in AP-M14, so it is a template rather than a
+one-off; C-37's abort-availability pair is AP-M14's first row with the six wrong
+designs it kills named individually; the five ledger rows the work order gated
+on these plans have landed as rows (C-12 → M03-E4/G4/G5/M7, C-18 → M03-A2/C2,
+C-26 → M14-E1/E2/E3, C-27 → M14-F2, C-30 → M14-H2), with C-2, C-11, C-14.3/4/5,
+C-17(e) and C-23 landing alongside them; rtl_lead's three returned questions are
+explicit rows (M03-N1/N2 for the closure-character question, M03-N3 for
+idle-in-preamble, M03-N4 for `cfg_rx_enable` mid-frame); eleven machinery gaps
+are named for later work orders and none is built here.
+
+Handoff: `agents/handoffs/WO-0027_attack-plans.md` Return log, to the
+orchestrator — for the tb_writer work orders these plans now make writable, and
+for relay of the four architect items.
+
+### Open-questions
+- **M14-K7 is the one I want ruled before any M14 bench**, and it is new:
+  SPEC-M14 §6.1's "total length ≥ 20 by construction of REQ-601's IHL check" is
+  false, and a datagram declaring total length 0 … 19 passes all six header
+  conditions and lands on a `Header` branch covering neither of its cases, with
+  M = ⌈(N′ − 20)/8⌉ negative. Reachable and adversary-controlled. Recommended
+  reading: fold into REQ-601's class. It blocks only its own row.
+- **M03-N2 and M03-N4** are RULING rows carrying rtl_lead's declared readings
+  against the text-strict ones; both are cheap to settle (one §6.3 row or one §9
+  row each) and both are worth settling before a tb_writer packet quotes the
+  sections. M03-N2 additionally leaves a frame opened-and-never-reported under
+  the declared reading, which is a §0.6 hole.
+- **M14-B5** — §6.3 item 4's silence makes the more-fragments bit-position
+  defect unkillable at M14. One sentence converts it into a row; carried as a
+  declared gap meanwhile.
+- **M03-O2** — SPEC-M03 §10's REQ-014 hook commissions a differential run with
+  no instance at this module (no input `tstrb`); C-41's family, one cell, the
+  repair form already exists in SPEC-M14 §10.
+- **Clerical**: the `P1-spec-freeze` ledger's unnumbered dv-machinery row
+  (`Latency.create`'s conflated quantities) was discharged at WO-0012 and shows
+  neither an id nor a closure mark. AP-M03's M03-L3 is the row that keeps that
+  fix honest.
+- **Machinery, in the order they block work**: X-1 (link-partner error
+  injection with expected §9 outcomes) and X-5/X-9 (per-frame output extent on
+  the latency tagger — one repair, two modules, and the tagger's **second**
+  defect of this family) gate the first real benches; X-3 (strobe monitor with
+  C-23 high-cycle counting and §9's pinned cycles) gates every strobe assertion
+  in both plans; X-6/X-7/X-8 gate M14 entirely, and X-8's checksum oracle owes
+  an external anchor (RFC 1071's worked example) **before** it judges anything,
+  on the same rule `Crc32_ref` already follows.
+- C-2, C-3, C-5, C-7, C-9's REQ-903 half, C-32, C-33, C-36, C-38, C-40, C-41 and
+  C-42 remain open; C-31, C-34, C-35, C-37 and C-39 are closed.
+- **Next for me**: the machinery work order these plans specify — X-1, X-3 and
+  X-5/X-9 first, because AP-M03's families B through H cannot be driven without
+  X-1 and cannot be measured without X-5. The M03 tb_writer packet should not be
+  drafted before X-1 exists, since its `Context provided` section would
+  otherwise have to restate the injection catalogue in prose, which is the
+  failure mode rtl_lead correctly refused at WO-0024.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0027_attack-plans.md
+- test/attack_plans/AP-ip_eth_rx_64.md
+- test/attack_plans/AP-xgmii_rx_64.md
