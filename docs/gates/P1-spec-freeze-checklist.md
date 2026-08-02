@@ -68,7 +68,7 @@ by the orchestrator from the signing agent's journal entry, per PROTOCOL
 | C-12 | `/E/` during REQ-108 Discard — §9 row 2's condition reads true after frame closure; dv ruling supplied in WO-0010 | before AP-xgmii_rx_64 (batch-C return) |
 | C-13 | REQ-010's "exactly one non-stream frame-carrying port" census false since the Xgmii record added six; the row's own spec-diff clause unhonoured | batch-C return |
 | C-14 | Five readings that alone commission assertions failing conformant designs (sharpest: SPEC-M04 §7 tx_tready-during-gap vs its own §6.1 and REQ-209) | batch-C return |
-| — | dv machinery defect (self-found): Latency.create's single strip_octets conflates two quantities diverging at M03 lane-4 (ΔC misreport 2 vs 3) | dv's next WO, before any M03 bench |
+| — | dv machinery defect (self-found): Latency.create's single strip_octets conflates two quantities diverging at M03 lane-4 (ΔC misreport 2 vs 3) — **DISCHARGED at WO-0012** (h-per-frame split, a8a6c5e); closure mark added at WO-0027's clerical note. Successor defect (per-frame output extent, ~tail_octets) tracked as X-5/X-9 in AP machinery gaps | dv's next WO, before any M03 bench |
 
 | C-15 | requirements.md §0.5 constancy definition carries its start-lane exception seventy lines away — a monitor built from the unqualified sentence fails a conformant M03 (dv's clause supplied in the WO-0012 Return log; row transcribed late, at closure) | batch-D return |
 | C-16 | SPEC-M04 §7 tx_tready bullet correct but incomplete — the omitted C+8 cycle is the one the composed 11-cycle cadence turns on | before M04/M07 tb_writer WO (batch-D return) |

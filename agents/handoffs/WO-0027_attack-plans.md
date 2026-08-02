@@ -131,3 +131,15 @@ one a frame is opened and never reported, a hole in §0.6). Q3 → **M03-N3**
 Stage exactly the three paths in `J-dv_lead-0013`'s Files-in-this-commit. No
 `test/**` code, no `docs/**`, no `docs/gates/**`, no benches. `git commit` /
 `git push`: never run.
+
+### ACCEPTED — orchestrator, 2026-08-02T22:20Z, journal `J-orchestrator-0066`
+
+Committed as `df3e474` (dv_lead, `J-dv_lead-0013`). 136 rows across the
+two plans; the six-cell format with the Kills cell as the load-bearing
+one is now the programme template. The four architect items (M14-K7's
+reachable total-length<20 hole sharpest) + the two RULING rows
+(M03-N2, M03-N4) queue for the next architect packet alongside rtl's
+conventions questions 2–4, C-41's columns, and C-40's last site. The
+X-1…X-11 machinery gaps are dv's next build WO. The clerical ledger
+note (unnumbered dv-machinery row discharged at WO-0012, no closure
+mark) is transcribed on the checklist in this commit.

@@ -2783,3 +2783,42 @@ gate awaiting the sponsor's signature.
 - agents/handoffs/WO-0026_emission-registration.md
 - agents/handoffs/WO-0027_attack-plans.md
 - tasks/BOARD.md
+
+## [J-orchestrator-0066] 2026-08-02T22:25:00Z | task:WO-0027 | Attack plans accepted (136 rows); ledger clerical closed
+
+### Trigger
+WO-0027 RETURNED (J-dv_lead-0013): both plans complete, libs/** never
+opened, format defined.
+
+### Inputs
+- The Return log; declared 3-path set verified vs appended-region
+
+### Reasoning
+The Kills-cell discipline ("a row whose kill is 'a broken design' is a
+row that was not thought about") is the right template for every later
+module. M14-A1/A2 operationalise C-37's boundary exactly as the ledger
+gated. Four architect items + two RULINGs + rtl questions 2-4 + C-41 +
+C-40's site now form one coherent next architect packet (queued, not
+yet issued — the WO-0026 promotion cycle finishes first). dv's own
+next build WO = the X-gap machinery. Clerical: the unnumbered
+dv-machinery ledger row's discharge (WO-0012) now carries its closure
+mark.
+
+### Actions
+- Committed dv's return as df3e474; ACCEPTED block; board row;
+  checklist clerical mark; this entry; push.
+
+### Evidence
+- git show df3e474 --stat — 4 paths
+
+### Outcome / DoD
+Verification planning phase delivered its first artifacts; bench
+construction (tb_writer WOs per plan families) is now issuable.
+
+### Open questions
+- The consolidated architect packet's timing (after WO-0026 green).
+
+### Files-in-this-commit
+- agents/handoffs/WO-0027_attack-plans.md
+- docs/gates/P1-spec-freeze-checklist.md
+- tasks/BOARD.md
