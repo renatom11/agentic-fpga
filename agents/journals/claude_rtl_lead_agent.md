@@ -934,3 +934,189 @@ orchestrator.
 
 - agents/handoffs/WO-0026_emission-registration.md
 - bin/generate.ml
+
+## [J-rtl_lead-0004] 2026-08-02T22:05:00Z | task:WO-0026 | Run 30750975120's REQ-001 red diagnosed and declined: Hardcaml aliases every input port, `word_counter` passes the same rule only by the resolver's one-level reach, so the emission is correct and the tool is dv_lead's to widen
+
+### Trigger
+
+Orchestrator relay, mid-task: WO-0026's first CI run (**30750975120** on
+**7322c9c**) went red one step earlier than I predicted — at `DV mechanical
+checks` / `tools/check_emitted_verilog.sh`, on `FAIL REQ-001 single clock
+domain: an edge expression does not name clock`, with every sequential block in
+the three new snapshots flagged (`posedge _20` in `xgmii_rx_64.v`, `posedge
+_37` in `xgmii_tx_64.v`, both in `eth_mac_10g.v` at 9 and 18 blocks). The relay
+offered a diagnosis — that building the top from `create` rather than
+`hierarchical` leaves the clock reaching the registers through an unnamed wire,
+while `word_counter` passes because the hierarchical path preserves the port
+name — and asked me to confirm or refute it, then choose: **(a)** repair
+emission in `bin/generate.ml`, or **(b)** declare the emission correct and the
+tool too literal, for routing to dv_lead. This was the second item on my own
+J-rtl_lead-0003 real-defect list ("an X-9 failure"), so it is not a surprise
+red, only a differently-located one.
+
+### Inputs
+
+- The orchestrator's relay of run 30750975120 (step, rule, verbatim flagged
+  lines, per-file block counts, and the confirmation that Build, Generate RTL,
+  REQ-306, REQ-018, REQ-808/017/903 and `word_counter.v` all behaved as
+  J-rtl_lead-0003 predicted).
+- `rtl_snapshots/word_counter.v` — the only emitted Verilog available to me,
+  read in full.
+- `tools/check_emitted_verilog.sh`, REQ-001 block and its header comment (read
+  only; dv_lead's scope).
+- `libs/hardcaml_ethernet/src/{xgmii_rx_64,xgmii_tx_64,eth_mac_10g}.ml` —
+  register-spec construction only; not modified.
+- `.github/workflows/build.yml` step order; `docs/adr/ADR-0005-build-environment.md`;
+  `docs/specs/requirements.md` REQ-001, REQ-902.
+- `bin/generate.ml` and `agents/handoffs/WO-0026_emission-registration.md` at
+  7322c9c; my own J-rtl_lead-0003.
+- No Essenceia material consulted.
+
+### Reasoning
+
+**1. The relayed diagnosis is refuted by a file already in the tree.** The
+claim is testable against `rtl_snapshots/word_counter.v`, committed since G0
+and emitted through exactly the `hierarchical` path option (a) would use.
+Inside its child module it reads `input clock;` … `wire _6;` … `assign _6 =
+clock;` … `always @(posedge _6) begin`. The hierarchical path does **not**
+preserve the port name onto the edge expression; it aliases, precisely as my
+files do. Hardcaml's Verilog backend wire-copies every input port and drives
+the logic from the copy — in a one-register module, unconditionally. So
+`always @(posedge clock)` is not a text this emitter produces at all, and no
+wrapper, scope setting or construction call reachable from `bin/generate.ml`
+makes it produce one. The distinction the diagnosis rests on does not exist.
+
+**2. The run's own numbers show the construction path is irrelevant here.**
+`eth_mac_10g.v` flags two edge signals, `_20` with 9 blocks and `_37` with 18.
+M05 owns no registers — SPEC-M05 §6.1's table is total and adds no logic, and
+the same run's REQ-018 whitelist PASS lists its instantiations — so all 27
+blocks live inside the `xgmii_rx_64` and `xgmii_tx_64` child modules, which *in
+that file* are emitted through `hierarchical`, not `create`. They carry the
+same alias names as the `create`-built tops of the other two files because the
+emitted body is identical under both paths. That settles it independently of
+the `word_counter` argument: whatever `_20` is, it is a property of M03's body,
+not of how its top was constructed. Option (a) would therefore have failed
+REQ-001 identically **and** reintroduced the REQ-808/BOOTSTRAP failure I
+avoided — it was never the safer branch.
+
+**3. The netlist is REQ-001-clean; I checked my own source rather than
+assuming.** `grep -n "Reg_spec" libs/hardcaml_ethernet/src/*.ml` returns
+exactly one spec per module — `Reg_spec.create ~clock:i.clock ~clear:i.clear
+()` at M03 :185 and M04 :157 — and M05 fans `i.clock` to both children
+unmodified (:63, :73). One spec per module is exactly why one alias wire serves
+all 9 and all 18 registers respectively. No second clock, no gate, no divider,
+no derived edge. The design satisfies REQ-001; the emitted text merely fails to
+witness it in the form the checker recognises.
+
+**4. Why (b) and not (a).** With the alias unavoidable, the only ways to make
+that text say `clock` would be to post-process the emitted Verilog in
+`bin/generate.ml` — rewriting a build product so a checker passes, which is
+fabricating conformance and the exact class of act ADR-0005 rule 2 and the
+journal protocol exist to prevent — or to change the three modules, which
+WO-0026 puts out of scope and which would not help anyway, since the alias is
+the port copy and survives any naming I add. There is no honest (a). I also
+will not widen the rule myself: `tools/**` is dv_lead's write scope
+(PROTOCOL §6) and a designer editing the check that grades his own RTL is the
+independence violation the protocol is built around, whatever the merits.
+
+**5. What I can and cannot tell dv_lead.** The checker's own comment scopes it
+to one level of aliasing with the `assign` **above** its use — both qualifiers
+calibrated against the only sample that existed, a 13-signal bootstrap module.
+On a real module either the copy is a chain deeper than one hop, or the
+`assign` sits below its first use and the single awk pass has not recorded it
+yet. I cannot discriminate: ADR-0005 leaves me no local build, and the files
+from run 30750975120 are ephemeral CI-workspace state that was never promoted,
+because the job died before the step that prints them. I said so rather than
+guessing. One repair covers both readings — build the alias relation in a first
+pass, take its transitive closure, test edge expressions in a second — and it
+costs the rule nothing: following only pure rename assigns (`assign <wire> =
+<wire>;`) means `assign _20 = clock & cfg_rx_enable;` never enters the relation
+and a genuinely gated clock still fails. That is the reassurance dv_lead needs,
+since the rule's whole purpose is that a derived clock cannot hide behind an
+alias. The final call on the tool is dv_lead's; I state a position, not a
+patch.
+
+**6. A deadlock worth naming, in the orchestrator's scope.** `DV mechanical
+checks` runs before `Verify nothing was left unpromoted or non-deterministic`,
+so a checker failure suppresses the step whose printed diff is the promotion
+source: the Verilog cannot be promoted because the check fails on it, and the
+check cannot be diagnosed precisely because the Verilog was never promoted.
+Swapping the two steps breaks it permanently and is right on its own terms — a
+build product should be promoted before it is judged, or any future checker
+reading `rtl_snapshots/**` can hide its own evidence the same way. I recommend
+the swap and note `continue-on-error` on the dv_checks step as the narrower
+one-run alternative. `.github/**` is the orchestrator's scope, so this is a
+recommendation, not an action.
+
+### Actions
+
+- Refuted the relayed diagnosis against `rtl_snapshots/word_counter.v` and
+  against the run's own per-file block counts; confirmed in source that every
+  register in M03/M04 is clocked by the port signal and that M05 derives no
+  clock.
+- Chose **(b)**. Wrote no code: `bin/generate.ml` is unchanged from 7322c9c and
+  no file under `libs/`, `top/`, `rtl_snapshots/` or `tools/` was touched.
+- Appended the addendum to `agents/handoffs/WO-0026_emission-registration.md`:
+  the refutation with the `word_counter.v` excerpt, the M05-has-no-registers
+  argument, the source-level REQ-001 evidence, the two candidate causes with
+  the single two-pass transitive repair that preserves the rule's teeth, the
+  step-order deadlock and its recommendation, and the note that REQ-902 is
+  still unproven.
+
+### Evidence
+
+- The refutation reproduces from the repository at this SHA:
+  `sed -n '/^module word_counter (/,/^endmodule/p' rtl_snapshots/word_counter.v`
+  contains `assign _6 = clock;` and `always @(posedge _6) begin` inside the
+  hierarchically-emitted child module — an alias, not the port name.
+- `grep -n "Reg_spec" libs/hardcaml_ethernet/src/xgmii_rx_64.ml
+  libs/hardcaml_ethernet/src/xgmii_tx_64.ml` → one
+  `Reg_spec.create ~clock:i.clock ~clear:i.clear ()` each (:185, :157);
+  `grep -n "clock" libs/hardcaml_ethernet/src/eth_mac_10g.ml` → `i.clock`
+  passed to both children (:63, :73) and nowhere else.
+- `grep -n "one level of aliasing" tools/check_emitted_verilog.sh` → the
+  checker's own statement of its scope, including "above it".
+- `git status --porcelain` → `agents/handoffs/WO-0026_emission-registration.md`
+  and this journal only; `bin/generate.ml` is unmodified since 7322c9c.
+- **Not evidence, and flagged as such (ADR-0003/F5)**: the emitted
+  `xgmii_rx_64.v`, `xgmii_tx_64.v` and `eth_mac_10g.v` from run 30750975120
+  are ephemeral CI-workspace files, never promoted and not inspectable at any
+  SHA. Every claim above is drawn from committed files or from the run's
+  reported output as relayed, never from the unpromoted text.
+
+### Outcome
+
+WO-0026's deliverables remain as accepted at 7322c9c; this activation adds a
+diagnosis and no RTL. **Verdict (b)** returned: emission correct, REQ-001's
+implementation in `tools/check_emitted_verilog.sh` too narrow for any module
+larger than the bootstrap sample, routed to dv_lead as its owner. Charter §5
+DoD item "emits deterministically, two consecutive runs byte-identical" is
+**still not met**: no run has reached the determinism step, so no promotion
+diff exists and REQ-902's evidence is still owed by the promoting commit.
+Handoff: `agents/handoffs/WO-0026_emission-registration.md`, Return-log
+addendum, to the orchestrator for routing.
+
+### Open-questions
+
+1. **For dv_lead (tool owner, via orchestrator)**: does REQ-001's resolver
+   widen to a two-pass transitive closure over pure rename assigns? I hold that
+   it costs the rule nothing and that the alternative — designers shaping
+   emitted text to satisfy a text matcher — is worse for REQ-001 than the
+   checker's current blind spot. dv_lead's call; I will not edit the file.
+2. **Which of the two causes** (alias chain depth > 1, or the `assign` below
+   its first use) is the actual one is undetermined and needs the promoted
+   `.v`. It does not change the recommended repair, which covers both.
+3. **For the orchestrator**: swap `DV mechanical checks` and the
+   promotion/determinism step in `.github/workflows/build.yml`, so a checker
+   failure can no longer suppress the diff that is the promotion source.
+   `continue-on-error` for one run is the narrower alternative.
+4. **REQ-902 still owed** (carried from J-rtl_lead-0003 open-question 1): the
+   promoting commit cites the red run that produced the diff and the green run
+   that proves byte-identity. Neither exists yet.
+5. **Carried from WO-0024, untouched**: returned questions 2–4 with the
+   architect (two closure characters in one input word; an idle word inside a
+   frame's own preamble; `cfg_rx_enable` = 0 with a REQ-110 `/S/` mid-frame).
+
+### Files-in-this-commit
+
+- agents/handoffs/WO-0026_emission-registration.md
