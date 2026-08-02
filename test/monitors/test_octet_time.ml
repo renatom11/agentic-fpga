@@ -67,7 +67,13 @@ let%expect_test "octet time is 8 x cycle + position, on both port kinds" =
     "octet times: %s\n"
     (String.concat " " (List.map string_of_int (Array.to_list times)));
   if Array.length times <> 11 then failwith "an idle word contributed octet times";
-  [%expect {| |}]
+  [%expect {|
+    xgmii cycle 10 lane 0 -> 80
+    xgmii cycle 10 lane 4 -> 84
+    axi64 cycle 10 byte 0 -> 80
+    axi64 cycle 10 byte 7 -> 87
+    octet times: 24 25 26 27 28 29 30 31 40 41 42
+    |}]
 ;;
 
 let%expect_test "D-4: the cycle metric takes two values at a lane-4 start, octet time one" =
@@ -111,7 +117,13 @@ let%expect_test "D-4: the cycle metric takes two values at a lane-4 start, octet
    | Some _, None | None, Some _ | None, None ->
      failwith "one of the start lanes did not yield a constant");
   verdict tagger4 ~expect_constant:(Some 20);
-  [%expect {| |}]
+  [%expect {|
+    start lane 0: octet-time latencies 16; cycle-metric values 2
+    start lane 4: octet-time latencies 20; cycle-metric values 2;3
+    lane-0 L = 16, lane-4 L = 20, difference 4 octet times
+    [lane4] frames=1 octets=64 latency=CONSTANT 20 octet times (cycles_floor=2, word_cycles[h=0]=2)
+    VERDICT ok
+    |}]
 ;;
 
 let%expect_test "a stripping stage: constant latency, and C-1's two cycle conversions" =
@@ -143,7 +155,11 @@ let%expect_test "a stripping stage: constant latency, and C-1's two cycle conver
        (Octet_time.word_cycles ~strip_octets:strip l)
        ((8 * (co - ci)) - strip));
   verdict tagger ~expect_constant:(Some 10);
-  [%expect {| |}]
+  [%expect {|
+    L = 10 octet times; cycles_floor = 1; word_cycles = 3; 8(Co-Ci)-h = 10
+    [eth-strip] frames=1 octets=46 latency=CONSTANT 10 octet times (cycles_floor=1, word_cycles[h=14]=3)
+    VERDICT ok
+    |}]
 ;;
 
 let%expect_test "a store-and-forward stage is caught: latency grows with the frame" =
@@ -162,7 +178,12 @@ let%expect_test "a store-and-forward stage is caught: latency grows with the fra
    | None -> failwith "a non-constant latency must name its first offender"
    | Some o -> Printf.printf "first offender: %s\n" o);
   verdict tagger ~expect_constant:None;
-  [%expect {| |}]
+  [%expect {|
+    first offender: frame 0 octet 8 has latency 40 octet times; every earlier octet had 32 (REQ-005, requirements.md §0.5)
+    [store-and-forward] frames=1 octets=32 latency=NOT CONSTANT distinct=[32; 40]
+      first offender: frame 0 octet 8 has latency 40 octet times; every earlier octet had 32 (REQ-005, requirements.md §0.5)
+    VERDICT ok
+    |}]
 ;;
 
 let%expect_test "frames are matched in order, and a discarded frame is popped explicitly" =
@@ -177,7 +198,10 @@ let%expect_test "frames are matched in order, and a discarded frame is popped ex
   Octet_time.Latency.frame_dropped tagger;
   Octet_time.Latency.frame_out tagger (frame ~base:104 ~octets:16);
   verdict tagger ~expect_constant:(Some 24);
-  [%expect {| |}]
+  [%expect {|
+    [ordered] frames=2 octets=32 latency=CONSTANT 24 octet times (cycles_floor=3, word_cycles[h=0]=3)
+    VERDICT ok
+    |}]
 ;;
 
 let%expect_test "an output frame with no matching input is an error, not a latency" =
@@ -188,5 +212,9 @@ let%expect_test "an output frame with no matching input is an error, not a laten
   (match Octet_time.Latency.errors tagger with
    | [] -> failwith "a surplus output frame must be reported"
    | _ :: _ -> print_endline "VERDICT ok");
-  [%expect {| |}]
+  [%expect {|
+    [surplus] frames=0 octets=0 latency=(no octet compared)
+      ERROR: output frame 0 has no matching input frame (frames out exceed frames in)
+    VERDICT ok
+    |}]
 ;;

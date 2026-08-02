@@ -33,6 +33,9 @@ jobs:
       - name: Generate RTL
         run: opam exec -- dune exec bin/generate.exe
 
+      - name: DV mechanical checks (C-9 record-vs-appendix, X-9 emitted Verilog)
+        run: tools/dv_checks.sh
+
       - name: Verify nothing was left unpromoted or non-deterministic
         # Catches three distinct failures with one check:
         #  * an expect test whose output changed but was never promoted

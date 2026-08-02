@@ -53,7 +53,10 @@ let%expect_test "legal traces: the monitor reports nothing" =
     ]
   in
   expect_kinds (run ~name:"legal" trace) [];
-  [%expect {| |}]
+  [%expect {|
+    [legal] frames=3 words=6 octets=31 aborts=1 cleared_mid_frame=0 violations=0
+    VERDICT ok
+    |}]
 ;;
 
 let%expect_test "SPEC-M01 §6.3 item 5: nothing is asserted on a cycle with tvalid = 0" =
@@ -69,7 +72,10 @@ let%expect_test "SPEC-M01 §6.3 item 5: nothing is asserted on a cycle with tval
     ]
   in
   expect_kinds (run ~name:"idle-garbage" trace) [];
-  [%expect {| |}]
+  [%expect {|
+    [idle-garbage] frames=1 words=1 octets=8 aborts=0 cleared_mid_frame=0 violations=0
+    VERDICT ok
+    |}]
 ;;
 
 let%expect_test "SPEC-M01 §6.3 item 5: tdata under a cleared tkeep bit is never read" =
@@ -90,7 +96,13 @@ let%expect_test "SPEC-M01 §6.3 item 5: tdata under a cleared tkeep bit is never
   Printf.printf "rendered: %s\n" (Stream_word.to_string word);
   Printf.printf "rendered idle: %s\n" (Stream_word.to_string (Stream_word.garbage_idle ()));
   expect_kinds (run ~name:"masked-tdata" [ word ]) [];
-  [%expect {| |}]
+  [%expect {|
+    octets read: 01 02 03 04
+    rendered: V keep=0x0f strb=0x00 last=1 user=0 [01 02 03 04]
+    rendered idle: idle
+    [masked-tdata] frames=1 words=1 octets=4 aborts=0 cleared_mid_frame=0 violations=0
+    VERDICT ok
+    |}]
 ;;
 
 let%expect_test "REQ-011: tkeep = 0 with tvalid = 1" =
@@ -98,7 +110,11 @@ let%expect_test "REQ-011: tkeep = 0 with tvalid = 1" =
     Stream_word.raw ~tvalid:true ~tdata:[] ~tkeep:0x00 ~tstrb:0 ~tlast:true ~tuser:0
   in
   expect_kinds (run ~name:"tkeep-zero" [ word ]) [ Protocol_monitor.Tkeep_zero ];
-  [%expect {| |}]
+  [%expect {|
+    [tkeep-zero] frames=1 words=1 octets=0 aborts=0 cleared_mid_frame=0 violations=1
+      cycle 0: Tkeep_zero: tkeep = 0 with tvalid = 1 (REQ-011; a zero-octet frame has no encoding)
+    VERDICT ok
+    |}]
 ;;
 
 let%expect_test "REQ-011: tkeep not contiguous from bit 0" =
@@ -112,7 +128,11 @@ let%expect_test "REQ-011: tkeep not contiguous from bit 0" =
       ~tuser:0
   in
   expect_kinds (run ~name:"tkeep-hole" [ word ]) [ Protocol_monitor.Tkeep_not_contiguous ];
-  [%expect {| |}]
+  [%expect {|
+    [tkeep-hole] frames=1 words=1 octets=3 aborts=0 cleared_mid_frame=0 violations=1
+      cycle 0: Tkeep_not_contiguous: tkeep = 0x0d is not contiguous from bit 0 (REQ-011)
+    VERDICT ok
+    |}]
 ;;
 
 let%expect_test "REQ-011: a partial tkeep on a word that does not carry tlast" =
@@ -130,7 +150,11 @@ let%expect_test "REQ-011: a partial tkeep on a word that does not carry tlast" =
   expect_kinds
     (run ~name:"partial-mid-frame" trace)
     [ Protocol_monitor.Tkeep_partial_on_non_last ];
-  [%expect {| |}]
+  [%expect {|
+    [partial-mid-frame] frames=1 words=2 octets=7 aborts=0 cleared_mid_frame=0 violations=1
+      cycle 0: Tkeep_partial_on_non_last: tkeep = 0x3f on a word without tlast; only the tlast word may be partial (REQ-011)
+    VERDICT ok
+    |}]
 ;;
 
 let%expect_test "REQ-014: a producer driving tstrb non-zero" =
@@ -142,7 +166,12 @@ let%expect_test "REQ-014: a producer driving tstrb non-zero" =
   expect_kinds
     (run ~name:"tstrb" trace)
     [ Protocol_monitor.Tstrb_nonzero; Protocol_monitor.Tstrb_nonzero ];
-  [%expect {| |}]
+  [%expect {|
+    [tstrb] frames=1 words=2 octets=10 aborts=0 cleared_mid_frame=0 violations=2
+      cycle 0: Tstrb_nonzero: tstrb = 0xff; every producer drives 0 (REQ-014)
+      cycle 1: Tstrb_nonzero: tstrb = 0x01; every producer drives 0 (REQ-014)
+    VERDICT ok
+    |}]
 ;;
 
 let%expect_test "REQ-015 residue: a frame longer than the stream's pinned maximum" =
@@ -160,7 +189,11 @@ let%expect_test "REQ-015 residue: a frame longer than the stream's pinned maximu
   expect_kinds
     (run ~name:"too-long" ~max_words_per_frame:2 trace)
     [ Protocol_monitor.Frame_exceeds_max_words ];
-  [%expect {| |}]
+  [%expect {|
+    [too-long] frames=1 words=4 octets=32 aborts=0 cleared_mid_frame=0 violations=1
+      cycle 2: Frame_exceeds_max_words: frame reached 3 words; this stream's pinned maximum is 2 (REQ-015)
+    VERDICT ok
+    |}]
 ;;
 
 let%expect_test "REQ-015: with no pinned maximum the length rule is not invented" =
@@ -169,7 +202,10 @@ let%expect_test "REQ-015: with no pinned maximum the length rule is not invented
     build 300 [ Stream_word.of_octets ~tlast:true all_octets ]
   in
   expect_kinds (run ~name:"unpinned" long_frame) [];
-  [%expect {| |}]
+  [%expect {|
+    [unpinned] frames=1 words=301 octets=2408 aborts=0 cleared_mid_frame=0 violations=0
+    VERDICT ok
+    |}]
 ;;
 
 let%expect_test "REQ-009: clear drops the frame in progress and asserts nothing across it" =
@@ -186,5 +222,8 @@ let%expect_test "REQ-009: clear drops the frame in progress and asserts nothing 
   Protocol_monitor.observe monitor ~cycle:3 (Stream_word.of_octets all_octets);
   Protocol_monitor.observe monitor ~cycle:4 (Stream_word.of_octets ~tlast:true [ 0x77 ]);
   expect_kinds monitor [];
-  [%expect {| |}]
+  [%expect {|
+    [clear] frames=1 words=4 octets=25 aborts=0 cleared_mid_frame=1 violations=0
+    VERDICT ok
+    |}]
 ;;

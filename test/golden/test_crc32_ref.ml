@@ -90,7 +90,14 @@ let%expect_test "REQ-303 anchor: the reference reproduces the published check va
   check ~name:"reflect ~bits:32 0x00000001" ~expected:0x80000000
     (Crc32_ref.reflect ~bits:32 0x00000001);
   finish ();
-  [%expect {| |}]
+  [%expect {|
+    REQ-303 CRC32("123456789")                               0xCBF43926 ok
+    CRC32(empty) — the port seed (SPEC-M02 §6.1 note 1)   0x00000000 ok
+    register_of_running 0 — REQ-301's initial value        0xFFFFFFFF ok
+    running_of_register 0xFFFFFFFF                           0x00000000 ok
+    reflect ~bits:8 0x01                                     0x00000080 ok
+    reflect ~bits:32 0x00000001                              0x80000000 ok
+    |}]
 ;;
 
 let%expect_test "SPEC-M02 §6.1 worked example 1 — two updates, eight octets then one" =
@@ -118,7 +125,12 @@ let%expect_test "SPEC-M02 §6.1 worked example 1 — two updates, eight octets t
   check ~name:"one-octet update ignores uncovered positions" ~expected:Crc32_ref.check_value
     (Crc32_ref.update ~crc_in:after_8 [ Char.code '9' ]);
   finish ();
-  [%expect {| |}]
+  [%expect {|
+    update 1: crc_in=0, 8 octets "12345678"                  0x9AE0DAAF ok
+    update 2: crc_in=0x9AE0DAAF, 1 octet "9"                 0xCBF43926 ok
+    tdata packing of "12345678" (REQ-012)                    0x3837363534333231 ok
+    one-octet update ignores uncovered positions             0xCBF43926 ok
+    |}]
 ;;
 
 let%expect_test "REQ-304 residue over several frame lengths" =
@@ -152,7 +164,17 @@ let%expect_test "REQ-304 residue over several frame lengths" =
     Printf.printf "%-56s UNEXPECTEDLY equals the residue\n"
       "FCS appended most-significant-octet-first");
   finish ();
-  [%expect {| |}]
+  [%expect {|
+    REQ-304 residue over 1-octet frame + its FCS             0x2144DF1C ok
+    REQ-304 residue over 9-octet frame + its FCS             0x2144DF1C ok
+    REQ-304 residue over 26-octet frame + its FCS            0x2144DF1C ok
+    REQ-304 residue over 46-octet frame + its FCS            0x2144DF1C ok
+    REQ-304 residue over 60-octet frame + its FCS            0x2144DF1C ok
+    REQ-304 residue over 64-octet frame + its FCS            0x2144DF1C ok
+    REQ-304 residue over 100-octet frame + its FCS           0x2144DF1C ok
+    REQ-304 residue over 1500-octet frame + its FCS          0x2144DF1C ok
+    FCS appended most-significant-octet-first                differs from the residue, as REQ-202 requires
+    |}]
 ;;
 
 let%expect_test "REQ-302 serial decomposition and the second bit-serial formulation" =
@@ -182,7 +204,10 @@ let%expect_test "REQ-302 serial decomposition and the second bit-serial formulat
   check_int ~name:(Printf.sprintf "cross-formulation mismatches over %d cases" cases)
     ~expected:0 !cross_mismatches;
   finish ();
-  [%expect {| |}]
+  [%expect {|
+    serial-decomposition mismatches over 3000 cases          0 ok
+    cross-formulation mismatches over 3000 cases             0 ok
+    |}]
 ;;
 
 let%expect_test "SPEC-M02 §6.1 worked example 2 — the M03 and M04 update decompositions" =
@@ -211,7 +236,10 @@ let%expect_test "SPEC-M02 §6.1 worked example 2 — the M03 and M04 update deco
   check ~name:"M03: 8x8 over frame+FCS reaches REQ-304's residue"
     ~expected:Crc32_ref.residue !rx;
   finish ();
-  [%expect {| |}]
+  [%expect {|
+    M04: 7x8 + 1x4 equals the whole-frame CRC                0xB8A7FFA3 ok
+    M03: 8x8 over frame+FCS reaches REQ-304's residue        0x2144DF1C ok
+    |}]
 ;;
 
 let%expect_test "raw-register conversions (SPEC-M02 §6.1 note 3) and §4's provenance value" =
@@ -231,5 +259,10 @@ let%expect_test "raw-register conversions (SPEC-M02 §6.1 note 3) and §4's prov
   check ~name:"round trip running -> register -> running" ~expected:Crc32_ref.residue
     (Crc32_ref.running_of_register (Crc32_ref.register_of_running Crc32_ref.residue));
   finish ();
-  [%expect {| |}]
+  [%expect {|
+    REQ-303 in the raw-register convention                   0x340BC6D9 ok
+    REQ-304 in the raw-register convention                   0xDEBB20E3 ok
+    §4 provenance: register_of_running(residue)             0xC704DD7B ok
+    round trip running -> register -> running                0x2144DF1C ok
+    |}]
 ;;

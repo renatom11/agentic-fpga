@@ -1606,3 +1606,47 @@ Awaiting the true promotion run. Handoff: none.
 none
 ### Files-in-this-commit
 - test/cost_probe/cyclesim_cost_probe.ml
+
+## [J-orchestrator-0041] 2026-08-02T08:20:00Z | task:none | Thirty snapshots promoted from CI; §11.4 discharged; cost probe read; dv_checks wired
+### Trigger
+Build run 30729880948 (5cd6cee) — the true promotion run: dune runtest
+red with exactly the four .corrected diffs, no compile errors anywhere.
+### Inputs
+CI job log (ANSI-stripped, diff blocks extracted mechanically);
+tools/dv_checks.sh header (the CI-wiring recommendation).
+### Reasoning
+Promotion was mechanical, not manual: the four unified diffs were
+extracted from the log and applied with patch -p3 (30 hunks, all clean),
+so no snapshot line was typed by hand — the promotion channel stays
+fabrication-proof even at this volume. Three facts fell out of the run.
+(1) SPEC-M01 §11.4 is DISCHARGED: axi64_probe compiled, so
+hardcaml_axi v0.17's Source field names (tvalid/tdata/tkeep/tstrb/
+tlast/tuser) are exactly what the spec quotes normatively — the first
+compile ever to name them. (2) COST-PROBE figures: 3.42M cycles/s at 1
+register, 1.77M at 8, 653k at 32; a 110k-cycle stress costs 0.03–0.17 s
+on this runner, so the 10 000-frame benches are trivially affordable and
+dv_lead's open question about early Verilator is dead — Cyclesim
+headroom is enormous. (3) The promoted CRC anchors show the REQ-303
+check value and the port-seed identity asserting green in the reference
+before it judges anything. dv_checks.sh is wired into build.yml exactly
+as its header requests (I ran it locally first — it is pure bash, the
+one DV artifact ADR-0005 lets the container verify — 3 checks, 0
+failures, 5 pending on C-8).
+### Actions
+Four test files: snapshots promoted. build.yml: dv_checks step added
+after Generate RTL.
+### Evidence
+Run 30729880948 (externally verifiable per the F5 rule); COST-PROBE
+lines quoted above from its log; local dv_checks.sh output "3 check(s)
+run, 0 failure(s)". The run on this commit is the green-confirmation.
+### Outcome
+Awaiting green; then WO-0010 (dual-batch countersign) issues. Handoff:
+none.
+### Open-questions
+none
+### Files-in-this-commit
+- .github/workflows/build.yml
+- test/golden/test_crc32_ref.ml
+- test/monitors/test_conservation_monitor.ml
+- test/monitors/test_octet_time.ml
+- test/monitors/test_protocol_monitor.ml

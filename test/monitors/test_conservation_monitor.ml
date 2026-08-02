@@ -34,7 +34,11 @@ let%expect_test "a run in which every frame is forwarded conserves" =
      tuser[0] = 1 on its last word. §0.6 counts it as emitted. *)
   Conservation_monitor.frame_out m ~aborted:true;
   verdict m ~expect_residual:0 ~expect_clean:true;
-  [%expect {| |}]
+  [%expect {|
+    [balanced] in=10 out=10 (aborted=1) zero_payload=0 discards=0 exempt=0 residual=0 CONSERVED
+      strobes: (none)
+    VERDICT ok
+    |}]
 ;;
 
 let%expect_test "REQ-008: a frame that vanishes with no strobe is a silent discard" =
@@ -46,7 +50,11 @@ let%expect_test "REQ-008: a frame that vanishes with no strobe is a silent disca
     Conservation_monitor.frame_out m ~aborted:false
   done;
   verdict m ~expect_residual:1 ~expect_clean:false;
-  [%expect {| |}]
+  [%expect {|
+    [silent] in=10 out=9 (aborted=0) zero_payload=0 discards=0 exempt=0 residual=1 NOT CONSERVED
+      strobes: (none)
+    VERDICT ok
+    |}]
 ;;
 
 let%expect_test "a discard accounted for by its strobe conserves" =
@@ -60,7 +68,11 @@ let%expect_test "a discard accounted for by its strobe conserves" =
   Conservation_monitor.strobe_pulse m ~name:"error_bad_fcs";
   Conservation_monitor.discarded m ~strobes:[ "error_bad_fcs" ];
   verdict m ~expect_residual:0 ~expect_clean:true;
-  [%expect {| |}]
+  [%expect {|
+    [accounted] in=10 out=9 (aborted=0) zero_payload=0 discards=1 exempt=0 residual=0 CONSERVED
+      strobes: error_bad_fcs=1
+    VERDICT ok
+    |}]
 ;;
 
 let%expect_test "C-2: two co-occurring strobes are two pulses but one discarded frame" =
@@ -90,7 +102,12 @@ let%expect_test "C-2: two co-occurring strobes are two pulses but one discarded 
      - (Conservation_monitor.frames_out m + Conservation_monitor.zero_payload m + 2))
     (Conservation_monitor.residual m);
   verdict m ~expect_residual:0 ~expect_clean:true;
-  [%expect {| |}]
+  [%expect {|
+    pulses would give residual -1; frames give 0
+    [co-occurring] in=4 out=3 (aborted=0) zero_payload=0 discards=1 exempt=0 residual=0 CONSERVED
+      strobes: error_ip_bad_checksum=1 error_ip_bad_header=1
+    VERDICT ok
+    |}]
 ;;
 
 let%expect_test "§0.7: a zero-payload frame is accounted for by its header valid pulse" =
@@ -107,7 +124,11 @@ let%expect_test "§0.7: a zero-payload frame is accounted for by its header vali
   Conservation_monitor.frame_out m ~aborted:false;
   Conservation_monitor.zero_payload_header m;
   verdict m ~expect_residual:0 ~expect_clean:true;
-  [%expect {| |}]
+  [%expect {|
+    [zero-payload] in=3 out=2 (aborted=0) zero_payload=1 discards=0 exempt=0 residual=0 CONSERVED
+      strobes: (none)
+    VERDICT ok
+    |}]
 ;;
 
 let%expect_test "a discard with no strobe, and a strobe requirements.md §12 does not define" =
@@ -120,7 +141,14 @@ let%expect_test "a discard with no strobe, and a strobe requirements.md §12 doe
   (* The equation balances — and the run is still not clean, because a discard
      the specification cannot name is not an accounted discard. *)
   verdict m ~expect_residual:0 ~expect_clean:false;
-  [%expect {| |}]
+  [%expect {|
+    [malformed] in=2 out=0 (aborted=0) zero_payload=0 discards=2 exempt=0 residual=0 NOT CONSERVED
+      strobes: error_frame_was_bad=1
+      ERROR: a discarded frame was reported with no strobe: that is precisely the silent discard REQ-008 prohibits
+      ERROR: discard attributed to "error_frame_was_bad", which is not one of requirements.md §12's 21 names
+      ERROR: strobe "error_frame_was_bad" is not one of requirements.md §12's 21 names
+    VERDICT ok
+    |}]
 ;;
 
 let%expect_test "REQ-009 and REQ-810: frames never accepted are outside the equation" =
@@ -140,7 +168,13 @@ let%expect_test "REQ-009 and REQ-810: frames never accepted are outside the equa
     (Conservation_monitor.frames_exempt m)
     (Conservation_monitor.frames_in m);
   verdict m ~expect_residual:0 ~expect_clean:true;
-  [%expect {| |}]
+  [%expect {|
+    exempt=101, and they are not in frames_in (1)
+    [exempt] in=1 out=1 (aborted=0) zero_payload=0 discards=0 exempt=101 residual=0 CONSERVED
+      strobes: (none)
+      exempt inputs: cfg_rx_enable = 0 (REQ-810) x100, clear asserted (REQ-009) x1
+    VERDICT ok
+    |}]
 ;;
 
 let%expect_test "the strobe list matches requirements.md §12's count" =
@@ -151,5 +185,9 @@ let%expect_test "the strobe list matches requirements.md §12's count" =
   Printf.printf "error_bad_fcs known: %b\n" (Strobes.mem "error_bad_fcs");
   Printf.printf "error_bad_fcs_ known: %b\n" (Strobes.mem "error_bad_fcs_");
   if Strobes.count <> 21 then failwith "requirements.md §12 defines twenty-one strobes";
-  [%expect {| |}]
+  [%expect {|
+    Strobes.count = 21
+    error_bad_fcs known: true
+    error_bad_fcs_ known: false
+    |}]
 ;;
