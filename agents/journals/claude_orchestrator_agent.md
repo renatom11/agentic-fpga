@@ -3584,3 +3584,42 @@ attack rows against real RTL) is the program's next new frontier.
 - agents/handoffs/WO-0035_spec-queue-2.md
 - docs/gates/P1-spec-freeze-checklist.md
 - tasks/BOARD.md
+
+## [J-orchestrator-0084] 2026-08-03T10:40:00Z | task:WO-0035 | The second conviction issued while the first countersign queues — one dv at a time, rtl in parallel
+
+### Trigger
+WO-0035 returned: nine rulings in §9, the new one appended last so
+six committed rows' positional citations survive; the M03 RTL
+convicted a second time on its own returned question.
+
+### Inputs
+- J-architect_docs_lead-0013 at 1fe71ca (verified, committed with
+  exact staging — dv's in-flight WO-0034 files left untracked, per
+  the architect's own warning note).
+
+### Reasoning
+The conviction grounds on FROZEN REQ-104 — untouched by any pending
+countersign — so WO-0036 (rtl) issues NOW, the WO-0032 precedent.
+The countersign queue (two pre-worded + C-43's signature + the §6.1
+one-clause offer) waits for WO-0034's return: one dv sitting at a
+time keeps its journal serial and its independence clean.
+
+### Actions
+- WO-0035 ACCEPTED; WO-0036 authored + BOARD rows; spawning
+  rtl_lead; this commit.
+
+### Evidence
+- tools/dv_checks.sh exit 0 at 1fe71ca (architect's run, spot-held).
+
+### Outcome / DoD
+rtl_lead active on the sub-5-octet repair; dv's countersign sitting
+is next after WO-0034; the first tb_writer WO follows both.
+
+### Open questions
+- Whether the 4-octet all-zero frame passed by accident at d57e028
+  (rtl's self-review will say).
+
+### Files-in-this-commit
+- agents/handoffs/WO-0035_spec-queue-2.md
+- agents/handoffs/WO-0036_m03-sub5-conformance.md
+- tasks/BOARD.md

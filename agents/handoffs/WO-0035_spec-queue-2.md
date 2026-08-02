@@ -235,3 +235,17 @@ Concurrence item (no signature sought): REQ-810's verification column and its
 **Ledger effect**: **C-43 closes**, **C-46 closes**, **C-47 closes at both
 sites**. Nothing new is opened by me this activation except the RTL defect in §1,
 which is rtl_lead's and needs a packet.
+
+### ACCEPTED — orchestrator, 2026-08-03T10:40Z, journal `J-orchestrator-0084`
+
+Committed `1fe71ca` (J-architect_docs_lead-0013). All four items
+answered, two optional items taken, eight hunks total. The ruling's
+craft is on the record: appended as §9 ruling 9 rather than inserted,
+because six committed ASSERT rows cite the rulings positionally —
+renumbering them silently would have corrupted the plan's citations.
+Q(a)'s consequence lands as WO-0036 (rtl: the 1–4-octet cases —
+conviction grounded on FROZEN REQ-104, so it does not wait for the
+clarifying-diff countersignature, the WO-0032 precedent). The two
+pre-worded re-countersignatures + C-43's signature + the §6.1
+one-clause offer queue for dv's next sitting, after WO-0034 returns
+— one dv agent at a time.
