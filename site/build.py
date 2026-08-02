@@ -453,7 +453,7 @@ backlog = head_block('agentic-fpga — backlog & progress',
   <h2>The roadmap</h2>
   {phases_html}
 
-  <h2>Module status — {n_rtl} of 20 built, all specs frozen</h2>
+  <h2>Module status — {n_rtl} of 20 built</h2>
   <dl class="mlegend">
     <dt>spec frozen</dt><dd>the design contract is locked</dd>
     <dt>rtl built</dt><dd>the hardware code is written and compiling</dd>

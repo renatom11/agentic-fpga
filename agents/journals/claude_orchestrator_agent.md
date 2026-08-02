@@ -4424,3 +4424,58 @@ Sponsor redeploys: git pull && cd site && npx wrangler deploy.
 - site/public/index.html
 - site/public/org-chart.html
 - site/public/spec-atlas.html
+
+## [J-orchestrator-0103] 2026-08-02T22:20:00Z | task:none | Module-status heading trimmed; CI returns the bench's first verdict - fatal warnings, with the exact ranges on the record
+
+### Trigger
+Sponsor: the module-status heading should just say "5 of 20
+built" - "all specs frozen" is a milestone, not a property of the
+matrix. And the scheduled CI check-in for push 060579f fired.
+
+### Inputs
+- Run 30768247234 (060579f): Build step red at
+  test/xgmii_rx_64/bench.mli:50 - Error (warning 33
+  [unused-open]): unused open Hardcaml.
+- The log exposes the full warning regime: ocamlc -w
+  @1..3@5..28@30..39@43@46..47@49..57@61..62-40. Warning 9 is
+  fatal (L6 witnesses' premise TRUE); warning 69 is not enabled
+  (the witnesses would not die); warning 26/27 fatal (D1
+  load-bearing); warning 33 fatal (the actual kill).
+- Runs 180558c and 3af5127 red for the same reason (same tree);
+  runtest never ran, so the expect-promotion round is still ahead.
+
+### Reasoning
+The run did what dv_lead predicted it would: settled the D1/D2
+dilemma locally undecidable under ADR-0005 - and with more
+precision than red/green, since the -w string names the exact
+fatal set. It also surfaced a fourth mechanical defect nobody
+listed (the unused open in the .mli). Both horns of D2's dilemma
+resolve favorably for pattern witnesses in THIS CI; whether D2
+stays blocking on flag-drift-robustness grounds is dv's call, so
+the evidence went to dv_lead for the revision-2 addendum rather
+than me editing its defect list.
+
+### Actions
+- Heading trimmed in site/build.py; site rebuilt; this commit.
+- CI evidence relayed to dv_lead with a request for the
+  revision-2 addendum appended to the WO-0038 packet.
+
+### Evidence
+- Log lines quoted above from run 30768698189's failed-job fetch
+  (build.yml, job log tail; timestamps stripped).
+
+### Outcome / DoD
+Site heading fixed. Revision-2 round blocked only on dv's
+addendum; worker spawn follows it.
+
+### Open questions
+- None - the warning-regime question is closed with the flag
+  string on the record.
+
+### Files-in-this-commit
+- site/build.py
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/index.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html
