@@ -3623,3 +3623,37 @@ is next after WO-0034; the first tb_writer WO follows both.
 - agents/handoffs/WO-0035_spec-queue-2.md
 - agents/handoffs/WO-0036_m03-sub5-conformance.md
 - tasks/BOARD.md
+
+## [J-orchestrator-0085] 2026-08-03T10:50:00Z | task:WO-0035 | Header state corrected by append — the WO-0027 lesson, relearned with diagnostics on
+
+### Trigger
+J-orchestrator-0084's flip script reported FAIL 2 (the bare
+`- **State**: ISSUED` anchor matched the header AND a Return-log
+line) and the commit carried the packet with an ISSUED header under
+an ACCEPTED block and BOARD row.
+
+### Inputs
+- The da0a767 precedent: paperwork inconsistencies are corrected by
+  append, never rewrite; the WO-0027 incident that taught
+  header+title anchoring — applied everywhere since except this one
+  script, which used the bare anchor.
+
+### Reasoning
+The diagnostics did their job (FAIL was printed, nothing silent);
+the gap was not gating the commit on the flip. Fix forward in its
+own commit; the anchor is now title+state as it should have been.
+
+### Actions
+- Header flipped with the title-qualified anchor; this commit.
+
+### Evidence
+- git show HEAD:agents/handoffs/WO-0035_spec-queue-2.md | head -2.
+
+### Outcome / DoD
+Record consistent: header, block, BOARD all ACCEPTED.
+
+### Open questions
+- None.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0035_spec-queue-2.md

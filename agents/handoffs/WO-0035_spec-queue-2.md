@@ -1,5 +1,5 @@
 # WO-0035: Second spec queue — two M03 questions now load-bearing, one owed cell
-- **State**: ISSUED
+- **State**: ACCEPTED
 - **From** / **To**: orchestrator → architect_docs_lead
 - **Spec basis**: rtl_lead's WO-0032 Return-log returned questions
   (J-rtl_lead-0005 at d57e028); dv's C-43 (WO-0030 §6, the flagged
