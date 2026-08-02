@@ -2633,3 +2633,56 @@ Both remaining lanes in flight (WO-0024 RTL, WO-0025 re-countersign).
 ### Files-in-this-commit
 - agents/handoffs/WO-0025_m14-recountersign.md
 - tasks/BOARD.md
+
+## [J-orchestrator-0063] 2026-08-02T18:40:00Z | task:WO-0024 | Incident: rtl_lead spawn killed by output-token cap; resumed with incremental-write discipline. dv's WO-0025 return held for a journal correction
+
+### Trigger
+Two concurrent events: (1) the WO-0024 rtl_lead spawn terminated on an
+API error — a single response exceeded the 64,000-output-token maximum
+— before writing any file (libs/ clean, verified); (2) dv_lead's
+WO-0025 return landed on disk with its re-countersignature, but its
+J-dv_lead-0012 Files-in-this-commit section lists the WRONG file
+(WO-0022's packet instead of WO-0025's packet + the new
+tools/check_abort_availability.sh), which R4 would mechanically
+reject.
+
+### Inputs
+- The failure notification; git status (libs/ untouched; WO-0025
+  packet modified; the new tool untracked)
+- The WO-0025 Return log (8,720,452-check quantified verification of
+  the C-37 repair; the re-countersignature sentence in §9; C-41
+  raised; C-40 one site short, stays open; the DV-escape-ledger
+  ownership correction — auditor's, not dv's)
+
+### Reasoning
+The spawn kill is a new incident class (J-0024 was interruption; this
+is output-volume). Remedy: resume the SAME agent from its transcript
+(reading investment preserved) with mandatory incremental-write
+discipline — small Writes + Edits, one module fully on disk before
+the next. The journal defect is a transcription slip in an append-only
+file: the protocol-conformant repair is a correction entry
+(J-dv_lead-0013) appended by dv itself, which then pairs the commit;
+0012 remains the substantive record. Both agents messaged; commits
+held until their confirmations.
+
+### Actions
+- SendMessage to the failed rtl_lead agent — resumed with the
+  four-point discipline.
+- SendMessage to dv_lead — correction entry requested with the exact
+  two-path list.
+- This entry commits alone (journal-only) so the incident is on the
+  record while both lanes work.
+
+### Evidence
+- The task-notification text (64000 output token maximum)
+- git status at receipt: only WO-0025 packet + untracked tool
+
+### Outcome / DoD
+Both lanes live again; dv's commit follows its correction entry.
+
+### Open questions
+- Whether CLAUDE_CODE_MAX_OUTPUT_TOKENS should be raised for RTL-line
+  spawns — deferred; the incremental discipline is the better fix.
+
+### Files-in-this-commit
+_None — journal-only entry._
