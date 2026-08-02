@@ -243,3 +243,232 @@ revision.** Fifty-five rows I would hand to a worker unchanged today.
 ### Files-in-this-commit
 - agents/handoffs/WO-0003_testability-findings.md
 - agents/handoffs/WO-0003_requirements-testability-review.md
+
+## [J-dv_lead-0002] 2026-08-02T03:20:00Z | task:WO-0005 | Re-review of the sixteen applied spec diffs at b4b4cf4: all sixteen CLOSED, D-4 deviation adopted against my own formulation, P1-spec-freeze testability countersignature SIGNED
+
+### Trigger
+Orchestrator spawn under work order WO-0005 (ISSUED at 8259699), spawn short-id
+`WO-0005/2026-08-02T02:55Z`. Second activation. WO-0003 ended with my
+countersignature withheld pending sixteen spec diffs; the architect applied them
+under WO-0004 and the orchestrator accepted at b4b4cf4. This entry records the
+narrow re-review that turns that withheld signature into a decision — sixteen
+dispositions, three named judgments, sign or withhold. My own open question 5 in
+`J-dv_lead-0001` asked for exactly this work order, so the loop closes where I
+asked it to.
+
+### Inputs
+- `agents/charters/dv_lead.md` (refresh); `agents/PROTOCOL.md` §4 (entry
+  grammar), §6 (scopes), §7 (gates and signature transcription), §10.
+- `agents/handoffs/WO-0005_spec-diff-re-review.md` (my work order).
+- `agents/handoffs/WO-0003_testability-findings.md` at 9a6195a — my own review,
+  re-read in full, in particular §2 (X-1 … X-10), §3–§12 (the per-REQ readings I
+  said I would enforce), §13.3 (bench architecture) and §14.3 (D-1 … D-16).
+- `agents/handoffs/WO-0004_requirements-spec-diffs.md` — the architect's Return
+  log (per-diff disposition table, the D-3 defence, the four UNTESTABLE rows,
+  the "beyond the sixteen" list) and the orchestrator's ACCEPTED entry with
+  rulings 1–4.
+- `docs/specs/requirements.md` at b4b4cf4 — read whole, all 110 rows plus the
+  new normative §0.1 … §0.7, §1.1, §9.1 and §12.
+- `docs/specs/architecture.md` at b4b4cf4 — §1 (scope parameters and the IFG
+  convention), §4 (module inventory, Path column, latency allocation table).
+- `docs/specs/SPEC-TEMPLATE.md` at b4b4cf4 — §3, §7, §8, §9.
+- `docs/specs/traceability.md` at b4b4cf4 — counts, matrix rows, open
+  dependencies (in particular item 4, REQ-019's declared partial coverage).
+- No RTL. No `libs/` file was opened; `rtl_snapshots/` was not read. This unit
+  of work is specification text only, as WO-0003 was.
+
+### Reasoning
+The question this work order asks is not "is the document better" — it is "is
+the post-diff text one I can honestly countersign", and the charter makes that
+signature a merge-blocking artefact rather than a courtesy. So I re-derived
+rather than re-read: for every diff whose fix is arithmetic or timing, I
+recomputed the number before accepting it, and for the three items the WO named
+I redid the underlying walk from the spec text.
+
+**The D-4 deviation. I adopted it and refuted my own formulation, because the
+architect is right and I was wrong.** My WO-0003 metric was (cycle of the output
+word carrying octet n) − (cycle of the input word carrying octet n). Under a
+lane-4 start `/S/` sits at lane 4 of word N, the eight preamble octets run to
+lane 3 of word N+1, frame octets 0–3 arrive in word N+1 and octets 4–7 in word
+N+2, and all eight leave in output word 0 — so my metric takes two values inside
+one frame, and a monitor built on findings §5 fails a conformant `Xgmii_rx_64`
+on its first lane-4 frame. The reason the defect survived my own review is
+worth recording, because it is the kind of mistake I will make again: I checked
+constancy *across* the two start lanes (that was X-6, and it was right) and
+never checked constancy *within* the lane-4 frame. Octet times fix it by
+construction — with octet time 8·cycle + lane on XGMII and 8·cycle + byte
+position on `Axi64`, a module stripping h octets has L = 8(Co − Ci) − h for
+every octet at both start lanes — and the fix costs my tagger one extra field.
+I considered whether to accept the intent while contesting the metric (my
+original text is the one traceability will cite) and rejected that: a
+formulation that fails a conformant design is exactly what I spent WO-0003
+objecting to in other people's rows, and the honest record is that the
+architect caught in my review the same class of defect I caught in the document.
+
+Adopting it surfaced a unit question I do own: §1.1's ceilings are word-cycle
+allocations, but §0.5 compares floor(L/8), which understates a stripping stage's
+word-cycle delay by exactly ceil(h/8). I worked the consequence out rather than
+guessing at it — a chain sitting on every ceiling consumes all 24 cycles of
+REQ-006's budget and none of the architect's declared 7-cycle slack. That is
+lenient, not false: no conformant design fails, and REQ-006's end-to-end bench
+is the binding backstop. So it became carry-forward C-1 rather than a contest,
+to land when the first module spec pins a constant — which is the moment the
+arithmetic first matters and the cheapest moment to fix it.
+
+**The D-1 seven-module list. Adopted; the omission was mine.** My REQ-003
+reading spelled the chain M03 → M06 → M08 → {M10, M14} → M17, which contains
+M10, and my REQ-905 entry then said the Path column marks five R modules,
+omitting it. Architecture §4 marks M10 R. My §14.3 therefore contradicted my own
+§3 and its source table, and seven is right. Checking the stimulus rather than
+just the list turned up C-6: M10 emits parsed fields, not a payload octet
+stream, so two of REQ-004's four pass criteria have no observable at its output.
+That belongs in SPEC-M10 (SPEC-TEMPLATE §8 already commissions the statement),
+not in requirements.md, so it is a carry-forward I raise rather than a diff I
+demand now.
+
+**The D-3 resolution. Confirmed by re-walking, and it corrects me twice.** The
+84-octet budget with the gap counted from `/T/` inclusive reproduces starts at
+(0,lane 0), (10,lane 4), (21,lane 0), … — the 10/11 alternation — and the
+lane-0-only transmitter rounds to 16 octets from `/T/`, 88 start to start,
+exactly 11 cycles. My "9.5 %" figure in WO-0003 mixed two comparisons and the
+architect's 4.5 % average / 10 % on the tight frames is the correct statement.
+More importantly, I checked the DIC argument independently instead of accepting
+it, and it is stronger than the one I made: because `/T/` and the next `/S/` both
+sit in lane 0 or lane 4, the gap from `/T/` inclusive is quantised to multiples
+of 4, so the candidates below 12 are 4 and 8 — both under clause 46's 9-octet
+floor. Twelve is therefore the smallest gap any compliant partner can present,
+which makes the 10/11 alternation not a plausible worst case but *the* worst
+case. That is a stronger foundation for the line-rate bench than I had.
+
+**Sign or withhold.** Seven residuals surfaced (C-1 … C-7). The temptation is
+to treat their count as a blocker; the honest test is the one I set myself in
+WO-0003 §1.2 — I withhold when I cannot determine pass/fail for a conformant
+design, when a REQ has no DV observable, or when a stated method cannot detect
+its own violation. None of the seven meets it: each has an unambiguous fix
+direction that any careful reader converges on, each is a false-failure edge or
+an unstated accounting term rather than a missing observable, and each can land
+in a module spec or a one-clause diff before the gate it affects. Against that,
+every one of the three conditions I named in §14.2 as blocking a signature is
+discharged: the two constants are fixed and their provenance recorded, the three
+missing definitions plus the IFG collision are stated normatively in §0.3–§0.5,
+and the four rows that commissioned impossible work are testable. Withholding
+over seven one-clause items after sixteen substantive diffs landed would be
+signature theatre in the opposite direction — treating my own caution as
+evidence — and it would stall Batch B for items that Batch B is the right place
+to fix. I also considered signing quietly and raising the residuals later, and
+rejected that as worse than either alternative: the value of a countersignature
+is that what it does *not* cover is written down at the moment it is given. So:
+signed, with C-1 … C-7 in the packet, each named against the gate it must land
+before, and each mine to raise.
+
+I did not contest the two added REQs or the 21 strobe names. REQ-710 and
+REQ-810 buy me two observables and cost me nothing, and the orchestrator's
+not-an-E2 ruling matches my reading. `error_start_without_terminate` is the name
+I would have chosen; having §12 at all is what makes REQ-008 and REQ-804
+enumerable, and I had to reconstruct that enumeration by hand last time.
+
+### Actions
+- Re-read the four `docs/specs/` files at b4b4cf4 in full, plus my own findings
+  and the WO-0004 Return log; dispositioned each of D-1 … D-16 against the
+  applied text rather than against the architect's description of it.
+- Re-walked the XGMII lane arithmetic for D-4 (both start lanes, two metrics)
+  and D-3 (receive alternation and transmit rounding) with a throwaway Python
+  model written from the spec text; worked the §1.1 unit consequence out stage
+  by stage.
+- Re-checked the derived numbers in D-2 (46, 18/8, 60–67, 46/26/18), D-8 (190
+  words), D-9 (1/12/56/59 delivered) by hand.
+- Re-ran the REQ/traceability set-equality check.
+- Appended the RETURNED verdict entry to
+  `agents/handoffs/WO-0005_spec-diff-re-review.md` (sixteen verdicts, the three
+  named judgments, C-1 … C-7, the signature) and set its header state to
+  RETURNED.
+- Wrote no test code, no golden model and no RTL; touched nothing outside that
+  packet and this journal.
+
+### Evidence
+1. **D-4 and D-3 lane walk** (self-contained; runnable from any checkout):
+   ```
+   python3 - <<'EOF'
+   def walk(start_lane, d, n=64):
+       N = 10; t0 = 8*N + start_lane + 8
+       inp = {k: t0 + k for k in range(n)}
+       Co  = (t0 + 7)//8 + d
+       out = {k: 8*(Co + k//8) + (k % 8) for k in range(n)}
+       return (sorted({out[k]//8 - inp[k]//8 for k in inp}),
+               sorted({out[k]     - inp[k]     for k in inp}))
+   for lane in (0, 4): print(lane, walk(lane, d=2))
+   p = 0; s = []
+   for _ in range(6): s.append((p//8, p % 8)); p += 8 + 64 + 12
+   print(s)
+   EOF
+   ```
+   → lane 0: cycle-metric `[2]`, octet-time `[16]`; lane 4: cycle-metric
+   **`[2, 3]`** (two values inside one frame — my WO-0003 formulation is
+   unsatisfiable there), octet-time `[20]` (constant). The two lane constants
+   differ by 4 octet times, inside §0.5's 8-octet-time bound, and floor(L/8) = 2
+   for both. Gap walk → `[(0,0),(10,4),(21,0),(31,4),(42,0),(52,4)]`, spacings
+   10, 11, 10, 11, 10 — §0.3's alternation reproduced. Observed with Python
+   3.11.15 in this container.
+2. **§1.1 unit consequence.** With ΔC = (L + h)/8, floor(L/8) ≤ ceiling permits
+   ΔC of 5 (M03 lane-0, h = 8), 6 (M03 lane-4, h = 12), 5 (M06, h = 14), 1 (M08,
+   h = 0), 8 (M14, h = 20), 5 (M17, h = 8) — sum 24, exactly REQ-006's budget,
+   leaving none of the declared 7-cycle slack. Arithmetic only; recomputable
+   from §1.1 and §0.5 by hand.
+3. **Set equality at b4b4cf4** —
+   ```
+   diff <(grep -o '^| \*\*REQ-[0-9]\{3\}' docs/specs/requirements.md | grep -o 'REQ-[0-9]*' | sort) \
+        <(grep -o '^| REQ-[0-9]\{3\}'     docs/specs/traceability.md | grep -o 'REQ-[0-9]*' | sort)
+   ```
+   → no output; 110 REQs, 110 rows.
+4. **M10's Path marking**, the fact my §14.3 enumeration contradicted —
+   `grep -n '^| M10' docs/specs/architecture.md` → `| M10 | Arp_eth_rx | R |
+   ARP packet parse into fields. | arp_eth_rx.v | 501 |`.
+5. **No build or test evidence is claimed.** ADR-0005 makes CI authoritative and
+   no Hardcaml toolchain exists in this container; this unit of work compiled
+   nothing, elaborated nothing and ran no bench. The Python above is
+   specification arithmetic, not a design-verification result — the same class
+   of check as the CRC constants in `J-dv_lead-0001`.
+
+### Outcome
+DoD of WO-0005 met. All sixteen dispositions judged — **D-1 … D-16 all
+CLOSED, none contested** — with the three named items judged explicitly: the
+D-4 deviation **adopted and my own formulation refuted** with the lane-4 walk
+that refutes it; the D-1 seven-module stress list **adopted**, the omission
+being an internal contradiction in my own WO-0003 text; the D-3 resolution
+**confirmed** against a fresh lane walk, with two corrections to my own figures
+(the 9.5 % slowdown, and a stronger DIC argument than I made). Signature
+decision explicit and affirmative, in the sentence PROTOCOL §7 requires the
+orchestrator to transcribe:
+
+> I sign the P1-spec-freeze testability precondition at b4b4cf4.
+
+Seven carry-forward items C-1 … C-7 are recorded in
+the packet, none a condition of the signature, each named against the gate it
+must land before and each mine to raise as a spec diff. Handoff:
+`agents/handoffs/WO-0005_spec-diff-re-review.md`, state RETURNED, for the
+orchestrator to transcribe the signature sentence into the `P1-spec-freeze`
+checklist under PROTOCOL §7.
+
+### Open-questions
+1. **C-1 … C-7 are open by design**, not escalations: C-1 (compare pinned
+   latency as (L + h)/8, not floor(L/8) — before SPEC-M03), C-2 (conservation
+   counts discarded frames, not strobe pulses; plus `clear` and receive-enable
+   exemptions — before the first `SO-`), C-3 (top-level accounting of a
+   zero-payload datagram — before the `nic_top` stress bench), C-4 (REQ-105 and
+   REQ-110 zero-delivered-octet wording — before SPEC-M03), C-5
+   (`error_underflow`'s vacuous window bound — editorial, before SPEC-M04), C-6
+   (M10's stress pass criteria — in SPEC-M10), C-7 (a fifth REQ-901 divergence
+   class for REQ-510's reply drop — before the first co-simulation run).
+2. **Still open from `J-dv_lead-0001`, untouched by this WO**: the X-9 executor
+   ruling for the six emitted-Verilog inspections; `hardcaml_verilator` plus a
+   `verilator` binary against REQ-901; and the Cyclesim cost probe before the DV
+   plan commits to 10 000-frame stress at `nic_top`. The probe is now on the
+   critical path for sizing REQ-004 at M20 and REQ-708.
+3. **Sequencing request**: my bench-setup work order should follow the freeze
+   closely. §0.4's stress list, §0.5's octet-time tagger and §0.6's conservation
+   monitor are one piece of machinery serving REQ-004, REQ-005, REQ-008, REQ-019
+   and REQ-020, and C-1 … C-3 all land inside it — building it once, early, is
+   what keeps them cheap.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0005_spec-diff-re-review.md
