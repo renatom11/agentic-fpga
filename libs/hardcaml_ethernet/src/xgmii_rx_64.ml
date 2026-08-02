@@ -12,8 +12,11 @@
 
     Stage A (combinational, on the raw input word) decodes the lane pair and
     decides, for this cycle, how many frame octets it covers, where they sit
-    and which of §9's conditions it raises. Stage B registers the octets and
-    that verdict once. Stage C registers them a second time and is where the
+    and which of §9's conditions it raises — plural, because one word carries
+    up to three frames' octet times and REQ-102 evaluates every start and
+    closure character at its own (§6.1, "More than one event in one input
+    word"). Stage B registers the octets and that verdict once. Stage C
+    registers them a second time and is where the
     output word is produced. Two register levels of payload storage — REQ-019's
     permitted depth and no more — with the second level existing for exactly
     one reason: the four FCS octets of a frame may lie in the input word
@@ -155,11 +158,15 @@ let decode_lanes (xgmii : Signal.t Xgmii.t) =
    [v <> 0]; written as a fold instead so that it is readable as "lane k is the
    first one" and so no borrow chain is implied where none is wanted.
 
-   Why the *lowest* lane: every one of §9's characters ends or begins a frame
-   at its own position, and a word may carry two of them (a [/T/] in lane 2 and
-   an [/E/] in lane 5, say). The one that acts is the earlier on the wire,
-   because the frame is already closed when the later arrives — §9's closure
-   list, applied within one word rather than across words. *)
+   Why the *lowest* lane: a frame is closed by the earliest closure character
+   above the octet time at which that frame opened, because it is already
+   closed when a later character arrives (§9's closure list). That is a
+   statement about **one frame**, not about one word. A word carries up to
+   three frames' octet times — the one open on entry, one opened by a [/S/] in
+   lane 0, one opened by a [/S/] in lane 4 — and each gets its own search over
+   its own lane range, which is how "every start and closure character is
+   evaluated at its own octet time" (REQ-102, SPEC-M03 §6.1) is realised. See
+   the epoch block in {!create}. *)
 let lowest_set v =
   let open Signal in
   let bits = bits_lsb v in
@@ -185,18 +192,17 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
   let spec = Reg_spec.create ~clock:i.clock ~clear:i.clear () in
   let sm = Always.State_machine.create (module State) spec in
   let lanes = decode_lanes i.xgmii_rx in
-  (* The lane searches. Each is the lowest lane carrying that character, which
-     is the one that acts (see {!lowest_set}). *)
-  let start_lane_oh = lowest_set lanes.is_start in
   let have_terminate = any lanes.is_terminate in
-  let start_index = index_of_onehot start_lane_oh in
-  (* REQ-101: only lanes 0 and 4 begin a frame. A start character in any other
-     lane is not legal XGMII and §6.3 item 3 leaves the response unconstrained;
-     recognising only these two is the reading that costs nothing and asserts
-     nothing. *)
-  let start_in_lane0 = bit lanes.is_start 0 in
-  let start_in_lane4 = bit lanes.is_start 4 &: ~:start_in_lane0 in
-  let start_here = (start_in_lane0 |: start_in_lane4) &: i.cfg_rx_enable in
+  (* A control lane that is none of §9's three characters — an idle character
+     or an ordered set. What it means depends on *where* it falls, and REQ-102's
+     third sentence is what decides: in a **preamble position** it is "any other
+     control character" and ends the frame under REQ-105 (§6.2's [Preamble] row;
+     the M03-N3 ruling at 541ea43); anywhere else inside an open frame it ends
+     this word's coverage and carries the frame forward without closing it
+     (REQ-016, C-14.4); outside a frame it is ignored (REQ-113). *)
+  let other_ctl =
+    i.xgmii_rx.c &: ~:(lanes.is_start |: lanes.is_terminate |: lanes.is_error)
+  in
   (* [mask_ge k] — lanes k and above; [mask_lt k] — lanes below k. Both take a
      4-bit index in 0 … 8, so "no lanes" and "all lanes" are expressible
      without a special case. *)
@@ -211,59 +217,77 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
   let mask_ge k = mux k (lane_masks_ge @ List.init 7 ~f:(fun _ -> zero 8)) in
   let mask_lt k = mux k (lane_masks_lt @ List.init 7 ~f:(fun _ -> ones 8)) in
   let keep_of_count c = mux c (lane_masks_lt @ List.init 7 ~f:(fun _ -> ones 8)) in
-  (* ---- which lanes of this word are frame octets (§6.1) ----
-     [cov_first] is the first lane of this word that carries a frame octet.
-     In [Idle] and [Discard] nothing is covered, which is written as lane 8.
-     In [Preamble] — the cycle after the start word — the remaining preamble
-     octets occupy lanes 0 … 3 at a lane-4 start and none at a lane-0 start,
-     so [cov_first] is the frame's own start lane. From [Frame] onward it is 0.
-     This is the whole of REQ-102: eight octets from the start character
-     inclusive are discarded, and their values are never examined. *)
-  let in_idle = sm.is State.Idle in
   let in_preamble = sm.is State.Preamble in
   let in_frame = sm.is State.Frame in
-  let in_discard = sm.is State.Discard in
   (* The start lane of the frame currently being received, captured when that
      frame is accepted. Distinct from [off4] below, which is the *alignment*
      offset and deliberately lags it (see the alignment section). *)
   let frame_start4 = wire 1 in
+  (* ---- the three octet-time epochs of one input word (REQ-102, §6.1) ----
+     A word is decoded as up to three frames' octet times, in lane order:
+
+     - **epoch A**, the frame open on entry to this word (states [Preamble] and
+       [Frame]);
+     - **epoch B**, a frame opened by a [/S/] in lane 0;
+     - **epoch C**, a frame opened by a [/S/] in lane 4.
+
+     REQ-101 begins a frame in lane 0 and in lane 4 only, so there are exactly
+     these three and never a fourth. Each is closed by the lowest closure
+     character *above its own opening octet time* — three independent lane
+     searches, which is what "every start and every closure character is
+     evaluated at its own octet time, against the frame open at that octet
+     time" (§6.1, §9's clause (a)) reduces to on a 64-bit datapath. A [/S/] in
+     lane 2 closes epoch A and opens nothing, because §6.3 item 3 leaves a
+     start character outside lanes 0 and 4 unconstrained and this module's
+     alignment window has two offsets, not eight.
+
+     One fact collapses the coverage problem to what it already was. The eight
+     octets from a start character inclusive are preamble (REQ-102) and a word
+     has eight lanes, so **a frame opened in this word covers no frame octet in
+     it**: only epoch A contributes octets, and its coverage is the same
+     contiguous run this module has always emitted. That is also why epochs B
+     and C always deliver zero octets and always report two cycles later (§9).
+
+     [cov_first] is the first lane of this word carrying an epoch-A octet. In
+     [Idle] and [Discard] nothing is covered, which is written as lane 8. In
+     [Preamble] — the cycle after the start word — the remaining preamble
+     octets occupy lanes 0 … 3 at a lane-4 start and none at a lane-0 start, so
+     [cov_first] is the frame's own start lane. From [Frame] onward it is 0. *)
+  let a_open = in_preamble |: in_frame in
   let cov_first =
-    (* [Preamble] → the frame's start lane (0 or 4); [Frame] → 0; anywhere
-       else → 8, which is "no lane of this word is a frame octet". *)
     mux2
       in_preamble
       (mux2 frame_start4 (of_int ~width:4 4) (of_int ~width:4 0))
       (mux2 in_frame (of_int ~width:4 0) (of_int ~width:4 8))
   in
-  (* ---- where this word ends the frame (§9's closure list) ----
-     A frame is open from the cycle its start character is accepted. Closure
-     characters are searched from [search_from] upward: 0 in every state that
-     is already inside a frame, and one lane past the start character in the
-     start word itself, so that a control character in a preamble position is
-     routed by §9 (REQ-102) while the start character does not close its own
-     frame. The lowest such lane wins — the frame is already closed when a
-     later character in the same word arrives (§9's closure list, applied
-     inside one word). *)
-  let search_from =
-    mux2 in_idle (uresize start_index 4 +:. 1) (zero 4)
+  (* Epoch A's own preamble positions inside this word: lanes 0 … 3, and only
+     at a lane-4 start, where the eight preamble octets run from lane 4 of the
+     start word through lane 3 of this one (§6.1). At a lane-0 start the whole
+     preamble lay inside the start word, which is epoch B's or epoch C's
+     business and never epoch A's. *)
+  let a_pre_mask = repeat (in_preamble &: frame_start4) 8 &: of_int ~width:8 0x0f in
+  (* Epoch A is open from lane 0 of this word, so its search covers all eight
+     lanes. An other-control character closes it only in a preamble position
+     (REQ-102 → REQ-105); elsewhere it is the REQ-016 hold, below. *)
+  let a_closing_v =
+    lanes.is_terminate |: lanes.is_error |: lanes.is_start |: (other_ctl &: a_pre_mask)
   in
-  let search_mask = mask_ge search_from in
-  let closing_terminate_v = lanes.is_terminate &: search_mask in
-  let closing_error_v = lanes.is_error &: search_mask in
-  let closing_start_v = lanes.is_start &: search_mask in
-  let closing_v = closing_terminate_v |: closing_error_v |: closing_start_v in
-  let close_lane_oh = lowest_set closing_v in
-  let char_end = mux2 (any closing_v) (index_of_onehot close_lane_oh) (of_int ~width:4 8) in
-  (* A control lane that is none of the three — an idle character or an ordered
-     set — is not a frame octet and is not a condition. Inside an open frame it
-     ends this word's coverage and carries the frame forward: REQ-016's idle
-     cycle, which §6.1 says holds the frame and delays every later octet by
-     eight octet times, and REQ-113's ordered set, which is ignored. Outside a
-     frame it is already ignored, because nothing is covered there. *)
-  let other_control_v = i.xgmii_rx.c &: ~:(lanes.is_start |: lanes.is_terminate |: lanes.is_error) in
-  let other_masked = other_control_v &: search_mask in
-  let other_end =
-    mux2 (any other_masked) (index_of_onehot (lowest_set other_masked)) (of_int ~width:4 8)
+  let a_close_oh = lowest_set a_closing_v in
+  let a_char_end =
+    mux2 (any a_closing_v) (index_of_onehot a_close_oh) (of_int ~width:4 8)
+  in
+  (* The REQ-016 hold: an other-control lane outside epoch A's preamble
+     positions ends this word's coverage and carries the frame forward (§6.1's
+     C-14.4 paragraph, REQ-113's ordered set). It is not a closure, so a
+     closure character above it still acts at its own octet time — the whole
+     point of the ruling. The stimulus that separates the two readings (an
+     other-control lane *and* a closure character in one word inside an open
+     frame) is not one §10 commissions: REQ-016's wrapper injects whole idle
+     cycles, so the hold lane is lane 0 and no octet is at stake. Where it is
+     driven anyway, coverage still stops at the hold lane. *)
+  let a_hold_v = other_ctl &: ~:a_pre_mask in
+  let a_hold_end =
+    mux2 (any a_hold_v) (index_of_onehot (lowest_set a_hold_v)) (of_int ~width:4 8)
   in
   (* ---- REQ-108's truncation point ----
      [count] is the frame's received-octet total before this word. Coverage is
@@ -286,31 +310,31 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
     mux2 (sum >=:. 8) (of_int ~width:4 8) (uresize sum 4)
   in
   let min2 a b = mux2 (a <: b) a b in
-  let cov_end = min2 (min2 char_end cap_end) other_end in
-  (* A condition is raised only when its character is the first thing that ends
-     this word's coverage: an idle character before it means the frame was
-     already held, and the truncation point before it means REQ-108 closed the
-     frame first. *)
-  let char_first = (char_end <: other_end) &: (char_end <=: cap_end) in
-  let close_oversize = (cap_end <: char_end) &: (cap_end <: other_end) &: (cap_end <:. 8) in
-  let close_terminate = char_first &: any (closing_terminate_v &: close_lane_oh) in
-  let close_error = char_first &: any (closing_error_v &: close_lane_oh) in
-  let close_start = char_first &: any (closing_start_v &: close_lane_oh) in
-  (* A frame is open in [Idle] only on the cycle its start character is
-     accepted; in [Discard] the frame is already closed, so nothing there
-     closes anything and no strobe can pulse (REQ-108, C-12). *)
-  let frame_open = in_preamble |: in_frame |: (in_idle &: start_here) in
-  let close_char = (close_terminate |: close_error |: close_start) &: frame_open in
-  let close_now = (close_char |: (close_oversize &: frame_open)) &: ~:(i.clear) in
-  (* [opens_now] — the frame open during *this* word started in this word, so
-     its octet count and its CRC start here. [restart_now] — a REQ-110 start
-     character closes the frame in flight and opens the next one, whose count
-     and CRC start on the *following* word. Keeping the two apart is what
-     makes a frame that opens and closes inside one word (a `/S/` followed by
-     a `/T/` in a higher lane) report against its own zero-octet count rather
-     than against the previous frame's total. *)
-  let opens_now = (in_idle |: in_discard) &: start_here &: i.cfg_rx_enable in
-  let restart_now = close_start &: frame_open &: i.cfg_rx_enable in
+  let cov_end = min2 (min2 a_char_end cap_end) a_hold_end in
+  (* Which of the two closes epoch A, the truncation point or the character.
+     REQ-108's truncation wins only when coverage actually reaches the cap —
+     a hold lane below it means the count never passed 1518 this cycle, so
+     nothing was truncated. Where the truncation does win, everything above it
+     belongs to a frame already closed and already reported, and pulses nothing
+     (REQ-108, C-12). A character *at* the cap lane still acts, because the
+     count has not passed 1518 at that octet time. *)
+  let a_close_oversize =
+    a_open &: (cap_end <: a_char_end) &: (cap_end <: a_hold_end) &: (cap_end <:. 8)
+  in
+  let a_char_acts = a_open &: ~:a_close_oversize in
+  let a_closes_with v = a_char_acts &: any (v &: a_close_oh) in
+  let a_close_terminate = a_closes_with lanes.is_terminate in
+  (* REQ-102's third sentence, both halves: an `/E/` closes epoch A under
+     REQ-105, and so does *any other* control character standing in one of
+     epoch A's preamble positions — `/I/` and `/Q/` included (§6.2's [Preamble]
+     row as revised at 541ea43). Outside a preamble position the same character
+     is the hold above and closes nothing. *)
+  let a_close_error =
+    a_closes_with (lanes.is_error |: (other_ctl &: a_pre_mask))
+  in
+  let a_close_start = a_closes_with lanes.is_start in
+  let a_close_char = a_close_terminate |: a_close_error |: a_close_start in
+  let a_close_now = (a_close_char |: a_close_oversize) &: ~:(i.clear) in
   (* Covered octets: lanes [cov_first, cov_end). Empty when cov_end <= cov_first,
      which is how a terminate character in lane 0 covers nothing (§6.1's second
      non-instance, C-18) and how [Idle] and [Discard] cover nothing. *)
@@ -327,23 +351,44 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
     sel_bottom (binary_to_onehot cov_first) 8
     &: repeat (in_preamble &: cov_nonempty) 8
   in
-  let count_base = mux2 opens_now (zero count_bits) count in
-  let count_next = count_base +: uresize cov_count count_bits in
-  (* ---- the frame this word begins, if any (REQ-101, REQ-110) ----
-     Two ways a frame begins: a start character accepted in [Idle] or
-     [Discard], and a start character that closes the frame in flight
-     (REQ-110), whose own lane is the new frame's start lane. The second case
-     covers §10's "`/S/` in lane 4 of a word whose lane 0 was `/S/`": the
-     lane-0 character opens a frame, the lane-4 character closes it with
-     zero delivered octets and opens the next.
-     [cfg_rx_enable] gates only the *beginning* of a frame (REQ-810, §4.3): a
-     frame already in flight completes under the old value (REQ-803), and the
-     REQ-110 abort of that frame is still reported, because the abort belongs
-     to a frame that was accepted. *)
-  let restart_lane = index_of_onehot close_lane_oh in
-  let begins = (opens_now |: restart_now) &: ~:(i.clear) in
-  let new_start_lane = mux2 (close_start &: frame_open) restart_lane start_index in
-  let new_start4 = new_start_lane ==:. 4 in
+  (* Epoch A's octet total. Only epoch A covers octets, so there is one counter
+     and no base selection: the register is reloaded with 0 below on every word
+     that hands a *new* frame forward, which is the cycle before that frame's
+     first octet at both start lanes. *)
+  let count_next = count +: uresize cov_count count_bits in
+  (* ---- epochs B and C: the frames this word begins (REQ-101, REQ-110) ----
+     A [/S/] in lane 0 opens epoch B and a [/S/] in lane 4 opens epoch C, each
+     closing whatever was open at its own octet time — epoch A, or epoch B in
+     the case §10's REQ-110 hook commissions ("`/S/` in lane 4 of a word whose
+     lane 0 was `/S/`": the lane-0 character opens a frame, the lane-4
+     character closes it with zero delivered octets and opens the next, one
+     `error_start_without_terminate`).
+
+     Every lane above an epoch's own start character is one of that frame's
+     eight preamble positions, so REQ-102's third sentence routes *every*
+     control character there and there is no hold case to distinguish: [/T/] to
+     REQ-107, [/S/] to REQ-110, anything else — `/I/` and `/Q/` included — to
+     REQ-105.
+
+     [cfg_rx_enable] gates only the *beginning* of a frame (REQ-810, §4.3,
+     ADR-0014): a frame already in flight completes under the old value
+     (REQ-803) and its REQ-110 abort is still reported, because the abort
+     belongs to a frame that was accepted — which is why [a_closing_v] above
+     tests [lanes.is_start] ungated while the two epochs below are gated. *)
+  let inword_closing above =
+    (lanes.is_terminate |: lanes.is_error |: lanes.is_start |: other_ctl) &: above
+  in
+  let b_exists = bit lanes.is_start 0 &: i.cfg_rx_enable &: ~:(i.clear) in
+  let c_exists = bit lanes.is_start 4 &: i.cfg_rx_enable &: ~:(i.clear) in
+  let b_closing = inword_closing (of_int ~width:8 0xfe) in
+  let c_closing = inword_closing (of_int ~width:8 0xe0) in
+  (* The epoch that carries past this word, if any. At most one can: a [/S/] in
+     lane 4 is itself in [b_closing], so epoch C's existence closes epoch B,
+     and both close epoch A. *)
+  let survivor_b = b_exists &: ~:(any b_closing) in
+  let survivor_c = c_exists &: ~:(any c_closing) in
+  let begins = survivor_b |: survivor_c in
+  let new_start4 = survivor_c in
   frame_start4 <== reg spec ~enable:begins new_start4;
   (* ---- the running CRC (§6.1's FCS check, ADR-0006, ADR-0007) ----
      Seeded to 0x00000000 on the cycle a start character is accepted, which is
@@ -352,23 +397,27 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
      1 to 8, never 0. On every other cycle the register is held by its enable
      and M02's result is ignored, so no update-by-zero is ever driven. *)
   let crc_reg = wire 32 in
-  let crc_in_eff = mux2 opens_now (zero 32) crc_reg in
   let crc_data = mux2 (cov_first ==:. 4) (srl i.xgmii_rx.d 32) i.xgmii_rx.d in
   let crc =
     Crc32_eth.hierarchical
       scope
-      { Crc32_eth.I.crc_in = crc_in_eff; data = crc_data; octet_count = cov_count }
+      { Crc32_eth.I.crc_in = crc_reg; data = crc_data; octet_count = cov_count }
   in
   let crc_out = crc.Crc32_eth.O.crc_out in
   let crc_update = cov_count <>:. 0 in
-  crc_reg
-  <== reg spec (mux2 restart_now (zero 32) (mux2 crc_update crc_out crc_in_eff));
   (* The value the residue is compared against is the one *after* this word's
      update, because §6.1 item 3 runs the coverage through the octet
      immediately preceding the terminate character — which is in this word. *)
-  let crc_final = mux2 crc_update crc_out crc_in_eff in
+  let crc_final = mux2 crc_update crc_out crc_reg in
   let bad_fcs = crc_final <>: of_int ~width:32 fcs_residue in
-  count <== reg spec (mux2 restart_now (zero count_bits) count_next);
+  (* One reload condition for both state registers, and it is [begins]: the
+     word that hands a new frame forward is the word before that frame's first
+     octet at both start lanes, whether the frame was admitted from [Idle] /
+     [Discard] or opened by a REQ-110 abort. Epoch A's own closure never
+     coincides with epoch A's opening, which is why the old base-selection mux
+     on the count is gone rather than merely renamed. *)
+  crc_reg <== reg spec (mux2 begins (zero 32) crc_final);
+  count <== reg spec (mux2 begins (zero count_bits) count_next);
   (* ---- the closure record (§9) ----
      Everything §9 needs to say about a frame is decided on the cycle the
      frame closes, but it is *reported* on the cycle that frame's `tlast` word
@@ -378,23 +427,32 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
      always takes the oldest, and a record is always consumed by age 2, which
      is §9's pinned cycle for a frame that emits no word.
 
-     Two closures can never be less than two cycles apart — a closure sends
-     the machine to [Idle] or [Discard] for at least one cycle and a new frame
-     spends its start word there — so at most two records are live and the
-     three ages hold them without a queue. *)
-  let close_runt = close_terminate &: frame_open &: (count_next <:. runt_threshold) in
+     This channel carries **epoch A only** — the frame whose octets this word
+     may cover, and so the only one whose report cycle depends on when a
+     `tlast` word leaves. Epochs B and C have their own path below. Epoch A
+     closes at most once per word, and the three ages still hold every live
+     record without a queue, for a reason worth writing down because the
+     previous one ("two closures are never less than two cycles apart") is no
+     longer true: consecutive-cycle closures are now reachable, since a frame
+     opened at lane 0 or 4 of word W is epoch A of word W + 1 and may close
+     there. But a record born at W + 1 in that situation belongs to a frame
+     whose start word is W, so §6.1's m + 3 puts its first — and only — output
+     word at W + 3, while the record born at W is consumed at W + 2 at the
+     latest. Consumptions therefore never contend, and each record is at age 2
+     exactly when its turn comes. *)
+  let a_close_runt = a_close_terminate &: (count_next <:. runt_threshold) in
   let record_fields ~valid ~terminate ~error ~start ~oversize ~fcs ~runt =
     concat_lsb [ valid; terminate; error; start; oversize; fcs; runt ]
   in
   let r0 =
     record_fields
-      ~valid:close_now
-      ~terminate:close_terminate
-      ~error:close_error
-      ~start:close_start
-      ~oversize:close_oversize
-      ~fcs:(close_terminate &: bad_fcs)
-      ~runt:close_runt
+      ~valid:a_close_now
+      ~terminate:a_close_terminate
+      ~error:a_close_error
+      ~start:a_close_start
+      ~oversize:a_close_oversize
+      ~fcs:(a_close_terminate &: bad_fcs)
+      ~runt:a_close_runt
   in
   (* [consume] is defined by the output decision below; the two are mutually
      recursive through one cycle of register, so the wire is declared here. *)
@@ -415,6 +473,51 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
   let sel_oversize = bit sel 4 in
   let sel_bad_fcs = bit sel 5 in
   let sel_runt = bit sel 6 in
+  (* ---- the second report path: an epoch opened *and* closed in one word ----
+     Such a frame delivers no octet — its eight preamble octets fill the rest of
+     the word — so §9 pins its report to exactly two cycles after this one, with
+     no `tlast` word to carry `tuser`[0] (§0.7). Two fixed register stages are
+     therefore the whole of its reporting path: no ageing, no consumption
+     decision, because the cycle is not a function of anything downstream. This
+     is the cheapest structure that satisfies §6.1's consequence 1, where the
+     aborted frame's report and the new frame's report are pinned to *different*
+     cycles and both must be produced.
+
+     Four bits, not five: REQ-108 has no instance in an epoch that delivers no
+     octet, so `error_oversize` cannot be raised here. `error_bad_fcs` can:
+     a zero-octet frame's running CRC is still the 0x00000000 seed, which is
+     never REQ-304's residue, so it accompanies `error_runt` exactly as it
+     already does for a zero-delivered frame closed in epoch A. That is the
+     behaviour delivered at WO-0024 and this repair does not change it; whether
+     §9's row 6 ("no FCS removal is attempted on a frame with nothing to remove
+     it from") means no `error_bad_fcs` either is returned as a question rather
+     than reinterpreted here.
+
+     Epoch B's and epoch C's reports fall on the same cycle, so their strobe
+     vectors are ORed. Where the two names differ, both pulse — which is what
+     §0.6 permits and §6.1's consequences describe. Where they are the same the
+     observable is one high cycle, which is precisely the stimulus §6.3 item 8
+     declares unconstrained and forbids DV to produce. *)
+  let inword_strobes ~exists ~closing =
+    let oh = lowest_set closing in
+    let closed = exists &: any closing in
+    let terminate = closed &: any (lanes.is_terminate &: oh) in
+    let error = closed &: any ((lanes.is_error |: other_ctl) &: oh) in
+    let start = closed &: any (lanes.is_start &: oh) in
+    (* bit 0 `error_bad_fcs`, 1 `error_bad_frame`, 2 `error_runt`,
+       3 `error_start_without_terminate`. A zero-octet frame is under REQ-107's
+       five-octet threshold, so a terminate character raises both bit 0 and
+       bit 2. *)
+    concat_lsb [ terminate; error; terminate; start ]
+  in
+  let q2 =
+    reg
+      spec
+      (reg
+         spec
+         (inword_strobes ~exists:b_exists ~closing:b_closing
+          |: inword_strobes ~exists:c_exists ~closing:c_closing))
+  in
   (* ---- the state machine (§6.2) ----
      One [Always] switch, and every transition is a function of the closure
      signals decided above, so the table below reads against §6.2 row for row.
@@ -426,19 +529,15 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
      next word, which [cov_first] excludes. §6.3 item 2 leaves the encoding
      and the internal division unconstrained; the observables are
      [cov_first]'s and the CRC enable's, and both are stated above. *)
-  (* A frame continues into the next word iff one begins here and is not
-     closed again by a terminate or error character in a higher lane of the
-     same word. Exactly one closure per word is recognised — the lowest — and
-     the link-partner contract of REQ-018 injects one condition at a time, so
-     a word carrying two closures beyond the `/S/`-then-`/S/` case §10 names
-     is outside both the specification's cases and this design's reporting
-     structure (one record per cycle). This is stated rather than left to be
-     discovered; it is returned as an open question, not resolved silently. *)
-  let to_preamble =
-    (opens_now &: ~:(close_terminate |: close_error)) |: restart_now
-  in
-  let to_preamble = to_preamble &: ~:(i.clear) in
-  let to_discard = close_oversize &: frame_open in
+  (* A frame continues into the next word iff an epoch opened here survives to
+     lane 7 — [begins], computed above from the two in-word epochs and already
+     carrying the `clear` and `cfg_rx_enable` gates. It takes priority over both
+     other exits: over [to_discard] because a start character is REQ-108's
+     resynchronisation rather than a second abort (§9's co-occurrence list), and
+     over [a_close_char] because the frame that closure ended is not the frame
+     that leaves this word. *)
+  let to_preamble = begins in
+  let to_discard = a_close_oversize in
   Always.(
     compile
       [ sm.switch
@@ -450,7 +549,7 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
                   [ if_
                       to_discard
                       [ sm.set_next State.Discard ]
-                      [ if_ close_char [ sm.set_next State.Idle ] [ sm.set_next State.Frame ] ]
+                      [ if_ a_close_char [ sm.set_next State.Idle ] [ sm.set_next State.Frame ] ]
                   ]
               ] )
           ; ( State.Frame
@@ -460,7 +559,7 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
                   [ if_
                       to_discard
                       [ sm.set_next State.Discard ]
-                      [ when_ close_char [ sm.set_next State.Idle ] ]
+                      [ when_ a_close_char [ sm.set_next State.Idle ] ]
                   ]
               ] )
           ; ( State.Discard
@@ -536,7 +635,14 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
   let abort = sel_bad_fcs |: sel_error |: sel_start |: sel_oversize |: sel_runt in
   let tvalid = (emit_full |: emit_tlast) &: ~:(i.clear) in
   consume <== (sel_valid &: (emit_tlast |: sel_is_r2));
+  (* Each strobe is the union of the two report paths: epoch A's, consumed from
+     the aged record on its `tlast` cycle or at age 2, and the in-word epochs',
+     fixed two cycles after their word. §0.6 counts high cycles, so where the
+     two coincide under one name the observable is a single high cycle — the
+     §6.3 item 8 stimulus DV SHALL NOT produce — and where they differ each name
+     is high on its own cycle. *)
   let strobe s = consume &: s &: ~:(i.clear) in
+  let q_strobe k = bit q2 k &: ~:(i.clear) in
   { O.rx =
       { Axi64.Source.tvalid
       ; tdata = al_data_d
@@ -545,11 +651,11 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
       ; tlast = emit_tlast &: ~:(i.clear)
       ; tuser = emit_tlast &: abort
       }
-  ; error_bad_fcs = strobe sel_bad_fcs
-  ; error_bad_frame = strobe sel_error
-  ; error_runt = strobe sel_runt
+  ; error_bad_fcs = strobe sel_bad_fcs |: q_strobe 0
+  ; error_bad_frame = strobe sel_error |: q_strobe 1
+  ; error_runt = strobe sel_runt |: q_strobe 2
   ; error_oversize = strobe sel_oversize
-  ; error_start_without_terminate = strobe sel_start
+  ; error_start_without_terminate = strobe sel_start |: q_strobe 3
   }
 ;;
 

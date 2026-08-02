@@ -1120,3 +1120,276 @@ addendum, to the orchestrator for routing.
 ### Files-in-this-commit
 
 - agents/handoffs/WO-0026_emission-registration.md
+
+## [J-rtl_lead-0005] 2026-08-03T07:15:00Z | task:WO-0032 | M03 made conformant to REQ-102 as ruled: one closure search per word replaced by three, one per octet-time epoch the word can contain, with a second fixed two-cycle report path for a frame opened and closed inside one word
+
+### Trigger
+
+Orchestrator, spawn `WO-0032/2026-08-03T05:45Z`, issuing
+`agents/handoffs/WO-0032_m03-req102-conformance.md`. The architect ruled on my
+WO-0024 Return §6 question 2 **against my declared reading**
+(`J-architect_docs_lead-0011` at `541ea43`): reading (i) — every start and
+closure character is evaluated at its own octet time — is REQ-102's enforced
+meaning, which makes the M03 RTL at `f840475` non-conformant against frozen
+REQ-102 and §10's REQ-102/REQ-110 hooks. Not a bug packet from DV and not a
+spec change: an RTL defect against text frozen since batch A, found by pricing
+a ruling.
+
+### Inputs
+
+- `agents/charters/rtl_lead.md`; `agents/PROTOCOL.md`; my journal tail through
+  `J-rtl_lead-0004`.
+- `agents/handoffs/WO-0032_m03-req102-conformance.md` (the packet).
+- `agents/handoffs/WO-0029_consolidated-spec-queue.md` — the RETURNED block,
+  §3a (the ruling and its REQ-102 grounding, §6.3 item 8's carve-out and its
+  pricing) and §3b/§3c; the orchestrator's ACCEPTED note.
+- `agents/handoffs/WO-0030_revision-recountersign.md` — dv's RETURNED block
+  §2: the REQ-101 second ground (one REQ-102 stimulus gives two different
+  output streams at the two start lanes under the one-closure reading) and
+  defect **M03-R1** with its six-row coincidence table and minimal witness.
+- `agents/handoffs/WO-0031_m03-r1r2-repair.md` — the bounded R1/R2 repair in
+  flight, read to decide whether it reaches my obligation.
+- `docs/specs/modules/xgmii_rx_64.md` at `541ea43` — whole file: §3, §4.3,
+  §6.1 (both consequences, the preamble-position paragraph, the two C-18
+  non-instances, the drain derivation), §6.2's four rows, §6.3 items 2, 3, 6,
+  7 and **new item 8**, §7, §8, §9 (the table, the closure list's clauses (a)
+  and (b), the pinned strobe cycle, the co-occurrence list), §10, §13.
+- `docs/specs/requirements.md` §0.2, §0.5 (octet time, L, front offset h, ΔC),
+  §0.7, REQ-101 … REQ-113, REQ-018, REQ-810.
+- `agents/handoffs/WO-0024_batch-b-rtl.md` — my own §6 question 2 declaration,
+  re-read to implement the ruled reading with the precision the declaration
+  had.
+- `libs/hardcaml_ethernet/src/xgmii_rx_64.ml` and `.mli` at `f840475`;
+  `bin/generate.ml`; `libs/hardcaml_ethernet/src/dune`; `.ocamlformat`;
+  `.github/workflows/build.yml`.
+- **No Essenceia material consulted.** No `verilog-ethernet` source read for
+  this unit of work.
+
+### Reasoning
+
+**1. What was actually wrong, which is narrower and wider than the packet's
+headline.** The old decode searched for closure characters once per word, from
+`search_from` upward, and took the lowest hit. In `Idle` that search began one
+lane past the start character, so the two cases everyone reaches for —
+REQ-102's `/T/`-in-a-preamble-lane at a lane-0 start with no frame open, and
+REQ-110's `/S/`-in-lane-4-of-an-`/S/`-word — already worked at `f840475`. The
+defect is the case where a frame is **already open**: `/S/` lane 4 + `/T/`
+lane 6 aborted the open frame, opened the next, and never saw the `/T/`; the
+new frame ran on and swallowed the following word as its preamble. dv's
+M03-R1 minimal witness is exactly that word. So the ruling's consequence is
+real but its mechanism is "one search, not one per frame", and the fix is to
+give each frame its own search rather than to widen one.
+
+**2. The decomposition, and why it is exhaustive.** A word can contain the
+octet times of at most three frames, because REQ-101 begins a frame in lane 0
+and lane 4 only: the frame open on entry (**epoch A**), a frame opened by
+`/S/` in lane 0 (**B**), a frame opened by `/S/` in lane 4 (**C**). Each is
+closed by the lowest closure character strictly above its own opening octet
+time — three independent `lowest_set` searches over three lane ranges (all
+eight, 1…7, 5…7). That is a direct transcription of §9's clause (a), and it
+made the alternative I first sketched — an eight-stage sequential fold
+carrying `(open, preamble_left)` — unnecessary. I rejected the fold: it is
+more logic, its per-lane preamble countdown is redundant given that only lanes
+0 and 4 open frames, and it would have obscured the one structural fact below.
+
+**3. The fact that keeps the datapath untouched.** The eight octets from a
+start character inclusive are preamble (REQ-102) and a word has eight lanes,
+so **a frame opened inside a word covers no frame octet in it**. Only epoch A
+contributes octets. Coverage, `cov_first`, the rotation window, `tkeep`, the
+CRC sequencing and the FCS-straddle lookahead therefore did not move at all,
+and neither did any pinned constant. This is why the repair is 240 lines of
+diff and not a redesign, and it is the load-bearing observation of the whole
+activation.
+
+**4. The reporting structure, which is where the real design choice was.**
+Epochs B and C always deliver zero octets, so §9 pins their report to exactly
+two cycles after their word — a *constant*, not a function of when a `tlast`
+leaves. I gave them their own path: two fixed register stages carrying a
+four-bit strobe vector, with B's and C's vectors **ORed**. Four bits, not
+five, because REQ-108 has no instance in an epoch that delivers no octet.
+Options considered and rejected: (a) a second aged record channel with its own
+consumption logic — buys nothing, since the cycle is not conditional; (b)
+widening the existing three-age channel to hold two records per age — needs a
+per-age arbiter and would let a B-record be consumed on a `tlast` cycle that
+is not its own; (c) serialising the two reports across consecutive cycles —
+contradicts §9's pinned cycle and would fail dv's M03-R1 table outright. The
+OR is not a shortcut: because both epochs report on the same cycle, the union
+of their strobe bits **is** the correct observable — different names both
+pulse (§0.6 permits it, §6.1's consequences describe it), and the same name
+gives one high cycle, which is precisely the stimulus §6.3 item 8 declares
+unconstrained and forbids DV to produce. Item 8 is the reason this structure
+is sufficient rather than merely convenient.
+
+**5. The record channel's old justification is now false, and the replacement
+is derived rather than asserted.** My WO-0024 comment said "two closures can
+never be less than two cycles apart — a closure sends the machine to `Idle` or
+`Discard` for at least one cycle". Under reading (i) that is wrong: a frame
+opened at lane 0 or 4 of word W is epoch A of word W + 1 and may close there,
+so epoch-A records can be born on consecutive cycles. The three ages still
+suffice, for a different reason, and I wrote the derivation into the source: a
+record born at W + 1 in that situation belongs to a frame whose **start word
+is W**, so §6.1's m + 3 puts its only output word at W + 3, while the record
+born at W is consumed at W + 2 at the latest. Consumptions never contend. I
+traced the four-cycle sequence by hand rather than trusting the shape.
+
+**6. A second REQ-102 gap, found by implementing rather than by being told.**
+REQ-102's third sentence routes **any other** control character in a preamble
+position to REQ-105 — `/I/` and `/Q/` included, which is the M03-N3 ruling
+§6.2's `Preamble` row now carries. `f840475` treated every non-`/S//T//E/`
+control lane as the REQ-016 hold wherever it fell, so an idle in a preamble
+position was absorbed and the frame ran on. Same defect family, different
+character, same frozen sentence, and §10's REQ-102 hook commissions the frame.
+I closed it: `other_ctl` inside the epoch's preamble positions is a closure
+(`error_bad_frame`), outside them it is the hold. Repairing one half of
+REQ-102's third sentence and leaving the other would have been a silent
+deviation of exactly the kind this activation exists to end. Named in the
+Return log rather than folded in quietly.
+
+**7. One deliberate behaviour change on an unproducible stimulus, declared.**
+The old `char_first` required a closure character to precede the first
+other-control lane of the word, so a `/T/` behind an `/I/` in one word was
+swallowed — not reading (i), since an idle does not close the frame and the
+frame is therefore still open at the `/T/`'s octet time. I dropped that term.
+The consequence is that where such a word is driven, the frame closes at the
+character while coverage still stops at the hold lane. REQ-016's wrapper
+injects **whole idle cycles**, so the hold lane is lane 0 and no octet is at
+stake; §10 commissions nothing else here. The alternative — keeping a closure
+character silently swallowed — is the defect class this packet exists to fix,
+so the choice was not close. Declared in the source comment and in the Return
+log.
+
+**8. Why WO-0031's R1/R2 do not change my obligation.** The packet told me to
+return the question rather than guess, so I derived instead of assuming. R1
+repairs a claim about *when* two reports coincide; my design never reads it,
+because each report cycle is computed from §9's two rules directly. R2 is the
+one that could have reached me — §9's rule says W + 2 while its own gloss
+implies W + 3 for a frame whose ending character lies in its own start word,
+which is exactly epochs B and C. I implement **W + 2**, and every committed
+artefact uses W + 2 for that family: dv's M03-R1 table pins B's `error_runt`
+to W + 2 for a frame opened *and* closed in word W; §6.1's consequence 1 puts
+the aborted frame's strobe "one cycle earlier than the new frame's report",
+and a lane-0 `/S/` puts that `tlast` at W + 1; WO-0029 §3a's own correction
+uses W + 2 throughout. R2 aligns the gloss to the rule. If it is resolved the
+other way that is a behavioural change to this module and I have asked for it
+as its own packet — the q-channel depth is the only thing that would move.
+
+**9. What I did not decide.** Whether `error_bad_fcs` may pulse for a frame of
+fewer than five octets. A zero-octet frame's running CRC is still the
+0x00000000 seed, never REQ-304's residue, so the module pulses it alongside
+`error_runt` — behaviour delivered at WO-0024 and **unchanged** here. §9's
+row 6 lists only `error_runt` and says no FCS removal is attempted; §9's
+co-occurrence bullet scopes the pairing to 5–63 octets. The ruling makes it
+load-bearing, because REQ-102's hook now commissions the
+`/T/`-in-a-preamble-lane frame and M03-N2's ASSERT row names two strobes. I
+neither changed it nor reinterpreted it: it is returned as a question, in the
+packet and here. Changing behaviour to match my own reading of an ambiguous
+row would be the same class of act as the declaration this ruling overturned.
+
+### Actions
+
+- Rewrote the decode in `libs/hardcaml_ethernet/src/xgmii_rx_64.ml`: three
+  per-epoch closure searches replacing one; `other_ctl` split into a
+  preamble-position closure and a REQ-016 hold; `a_close_*` classification
+  gated by `a_char_acts` (the truncation point versus the character) instead
+  of the old `char_first`; `search_from`, `start_here`, `opens_now`,
+  `restart_now`, `restart_lane`, `new_start_lane`, `count_base` and
+  `crc_in_eff` removed in favour of one `begins` that reloads the octet count
+  and the CRC seed and drives `to_preamble`.
+- Added the second report path: `inword_strobes` and a two-stage `q2`, ORed
+  into four of the five strobe outputs (`error_oversize` has no instance
+  there).
+- Rewrote every source comment the ruling falsified — the `lowest_set`
+  rationale, the record-ageing justification, and the WO-0024 declaration
+  block in the state-machine comment, which is now the epoch decomposition.
+- Left `.mli`, `bin/generate.ml`, `rtl_snapshots/**`, `top/**`, `test/**` and
+  `tools/**` untouched.
+- Appended the RETURNED block to
+  `agents/handoffs/WO-0032_m03-req102-conformance.md` (mechanism, the second
+  REQ-102 gap, the R1/R2 conclusion with its derivation, expected CI, the
+  constants statement, three returned questions) and set the packet header to
+  RETURNED.
+
+### Evidence
+
+- **Not a build, and not claimed as one (ADR-0005).** `cp` of the module to a
+  scratch path and `ocamlc -stop-after parsing -c` (OCaml 4.14.1) → exit 0.
+  That is a *parse*: no type-checking, no ppx, no elaboration, no simulation.
+  It rules out a syntax error and nothing else.
+- `git diff --stat` at this tree →
+  `libs/hardcaml_ethernet/src/xgmii_rx_64.ml | 380 +++--`, 243 insertions,
+  137 deletions, **one file**. `git status --porcelain` additionally shows
+  only the WO-0032 packet and this journal.
+- `grep -n "close_char\|close_now\|frame_open\|opens_now\|restart_now\|char_first\|other_end\|search_from\|start_here\|count_base\|crc_in_eff" libs/hardcaml_ethernet/src/xgmii_rx_64.ml`
+  → no occurrence of any removed identifier survives (the nine hits are all
+  `a_close_char` / `a_close_now` / `a_char_end`).
+- `awk 'length>90'` over the module → two lines, one of them pre-existing at
+  `f840475`; `.ocamlformat` is not gated by any workflow step
+  (`grep -n "fmt\|ocamlformat\|dune build" .github/workflows/*.yml` → the
+  single `dune build @default` line).
+- **Elaboration and determinism evidence is owed by the promoting commit and
+  does not exist yet.** Expected: `dune build @default` green; the determinism
+  step **red** with `rtl_snapshots/xgmii_rx_64.v` and
+  `rtl_snapshots/eth_mac_10g.v` as the diff and the build.yml promotion block
+  as the source; `rtl_snapshots/xgmii_tx_64.v` and
+  `rtl_snapshots/word_counter.v` **unchanged** (their sources and `Crc32_eth`
+  are untouched — movement in either is a determinism defect, not this
+  change); second run green for REQ-902.
+- **Hand traces**, each run against SPEC-M03 at `541ea43` and recorded in the
+  Return log: the 64-octet frame at a lane-0 and a lane-4 start (output word 0
+  on cycle 3 from the start word in both, so ΔC = 3, h = 8/12 and
+  **L = 16/12** are unmoved — dv's rows M03-L2/L3 survive); dv's M03-R1
+  witness (four delivered octets, `error_start_without_terminate` at W + 2 on
+  the aged channel and `error_runt` at W + 2 on the q channel, different
+  names); REQ-110's `/S/`-lane-4-of-an-`/S/`-word (exactly one pulse, second
+  frame intact); REQ-102's `/T/`, `/E/` and `/I/` in a preamble lane at both
+  start lanes; REQ-108's 1518-legal versus 1519-oversize boundary and its
+  `/S/` resynchronisation; and the record-ageing invariant across four
+  consecutive-cycle closures.
+
+### Outcome
+
+WO-0032 deliverables 1–4 **met**, with two additions named rather than folded
+in: the M03-N3 half of REQ-102's third sentence (deliverable 1's own clause,
+at a character the packet did not name) and the hold-versus-closure ordering.
+Charter §5 DoD: spec implemented with no silent deviation — the one deliberate
+behaviour change and the one preserved ambiguity are both in the Return log;
+house style held (no new primitive, `Always` FSM unchanged in shape, one
+`Reg_spec`); the line-rate invariant is structural here and did not move (no
+`tready`, no new pipeline stage, one word per cycle unconditionally). **Not
+met, and owed by the promoting commit**: "compiles and elaborates
+hierarchically; two consecutive runs byte-identical" — I cannot build
+(ADR-0005) and no run exists at this tree. No DV sign-off claimed; `SO-` is
+dv_lead's. Handoff: `agents/handoffs/WO-0032_m03-req102-conformance.md`,
+RETURNED block, to the orchestrator.
+
+### Open-questions
+
+1. **For the architect (via the orchestrator)**: does `error_bad_fcs` pulse
+   for a frame of fewer than five octets? §9's row 6 lists only `error_runt`
+   and the co-occurrence bullet scopes the pairing to 5–63 octets, while the
+   residue form makes the seed value a mismatch. Behaviour unchanged from
+   `f840475`; the ruling makes it load-bearing at REQ-102's newly commissioned
+   frame and at M03-N2's ASSERT row, which names two strobes.
+2. **For the architect**: WO-0032's example `/S/` lane 2 + `/T/` lane 5 reads
+   as if both act. This module lets a lane-2 `/S/` **close** and open nothing
+   (REQ-101 names two start lanes; §6.3 item 3 leaves the rest unconstrained;
+   the rotation window has two offsets), so the `/T/` finds no open frame.
+   Flagged in case the example was meant literally.
+3. **Carried, for WO-0031's outcome**: if R2 resolves §9's strobe cycle to
+   W + 3 rather than W + 2 for a frame whose ending character lies in its own
+   start word, that is a behavioural change to this module and needs its own
+   packet; the q-channel depth is the only thing that moves.
+4. **Latent, pre-existing, on a stimulus §10 forbids**: `first_v` is gated by
+   `Preamble`, so a frame whose first-octet word is displaced by an idle word
+   injected *inside its own preamble* would carry no new-frame marker for the
+   FCS-straddle lookahead. §10's REQ-016 hook forbids the wrapper from
+   injecting there and §6.2 now aborts that frame under REQ-105 at a lane-4
+   start, so no case is reachable. Recorded because I found it.
+5. **REQ-902 still owed** (carried from `J-rtl_lead-0003` and
+   `J-rtl_lead-0004`): the promoting commit cites the red run that produced
+   the diff and the green run that proves byte-identity.
+
+### Files-in-this-commit
+
+- agents/handoffs/WO-0032_m03-req102-conformance.md
+- libs/hardcaml_ethernet/src/xgmii_rx_64.ml
