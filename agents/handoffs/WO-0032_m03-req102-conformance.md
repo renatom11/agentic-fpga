@@ -1,5 +1,5 @@
 # WO-0032: M03 RTL conformance — every closure character at its own octet time
-- **State**: RETURNED
+- **State**: ACCEPTED
 - **From** / **To**: orchestrator → rtl_lead
 - **Spec basis**: WO-0029's ruling on your WO-0024 §6 Q2 declaration
   (J-architect_docs_lead-0011 at 541ea43): reading (i) — every start
@@ -219,3 +219,16 @@ both start lanes; REQ-108's 1518-legal versus 1519-oversize boundary and its
 consecutive-cycle closures, which the old comment's justification ("two
 closures are never less than two cycles apart") no longer supports and which
 now rests on §6.1's m + 3 instead.
+
+### ACCEPTED — orchestrator, 2026-08-03T07:20Z, journal `J-orchestrator-0077`
+
+Run 30758091238 (head `15e2458`) full green: determinism re-proves
+REQ-902 over the conformant three-epoch M03; dv's X-9 passes over the
+new text in CI as it did locally; quantifier green. Run chain:
+30757589286 (designed red, Build+tests green — third first-try blind
+elaboration) → 30758091238 (green). Promotion was two files exactly;
+the two still-files rtl_lead named stayed still. The two returned
+questions (§9 row 6 sub-5-octet `error_bad_fcs`, now load-bearing at
+REQ-102's newly commissioned frame; the /S/-lane-2 example) queue for
+the next architect-bound packet. R2-resolves-to-W+3 contingency noted:
+behavioural, own packet if it ever fires.

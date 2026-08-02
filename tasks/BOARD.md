@@ -62,7 +62,7 @@ Corrections.
 
 | Packet | From → To | State | Note |
 |---|---|---|---|
-| [WO-0032](../agents/handoffs/WO-0032_m03-req102-conformance.md) | orchestrator → rtl_lead | ISSUED | M03 conformance vs frozen REQ-102: every closure character at its own octet time (reading (i)); does NOT wait on the M03 re-countersign (batch-A text, dv confirms) |
+| [WO-0032](../agents/handoffs/WO-0032_m03-req102-conformance.md) | orchestrator → rtl_lead | ACCEPTED | d57e028 + promotion 15e2458: **three-epoch M03 conformant to reading (i)**, run 30758091238 full green (REQ-902 re-proven); third first-try elaboration; 2nd REQ-102 gap self-found; L constants survive; 2 questions queued for architect |
 | [WO-0031](../agents/handoffs/WO-0031_m03-r1r2-repair.md) | orchestrator → architect_docs_lead | ACCEPTED | 06c1eba repair (three hunks, confined) + e22e3f0 countersign **GRANTED** — SPEC-M03 revisions in force; N2/N4 → ASSERT, plan 0 RULING; C-47; dv's prose-vs-table concession = C-44's pattern named twice |
 | [WO-0030](../agents/handoffs/WO-0030_revision-recountersign.md) | orchestrator → dv_lead | ACCEPTED | 0a5ce45: **split verdict** — M14 SIGNED (substituted ground judged better), REQ-810 SIGNED, M03 WITHHELD on M03-R1/R2 (two sentences, repair bounded); K7+B5 → ASSERT; C-43…C-46; C-40/41/42 CLOSED; REQ-001 deferral discharged |
 | [WO-0029](../agents/handoffs/WO-0029_consolidated-spec-queue.md) | orchestrator → architect_docs_lead | ACCEPTED | 541ea43: **all four readings ruled** — K7 into REQ-601 class on REQ-605-unsatisfiability (ADR-0013); reading (i) on closures makes M03 RTL non-conformant vs frozen REQ-102 (rtl fix WO after countersign); ADR-0014 enable=admission; 5 editorial columns + C-42 |
