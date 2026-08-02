@@ -1122,3 +1122,41 @@ none
 - agentic_fpga.opam
 - docs/specs/ifc_check/dune
 - docs/specs/ifc_check/template_ifc.ml
+
+## [J-orchestrator-0028] 2026-08-02T00:22:00Z | task:WO-0003 | Issue WO-0003 (dv_lead first activation); batching decided
+### Trigger
+Spec-freeze runway: the testability review is the next dependency-free
+step and the architect's Q7 sequencing (review before the checklist
+opens) was accepted at WO-0002 acceptance.
+### Inputs
+docs/specs/requirements.md at 08899d3; dv_lead charter; architect open
+questions 4 and 7.
+### Reasoning
+The packet makes dv_lead review all 108 REQs with no sampling, because a
+sampled review would make the later freeze countersignature partially
+blind — the whole value of sequencing it early is that it is exhaustive
+while still cheap to act on. Findings land in a handoffs file (dv_lead's
+write scope cannot reach docs/specs, and that is deliberate: the fix
+loop stays architect-owned, findings become spec diffs). The packet also
+demands a REQ-004/REQ-005 bench feasibility note so the Cyclesim-vs-
+Verilator tooling decision is made from the bench owner's judgment, not
+my guess. Batching (architect Q4): accepted the proposed six ordered
+batches unchanged — the ordering encodes the dependency structure and
+nothing in the sizing looked wrong; recorded on the board so batch-A WO
+issuance needs no further decision. Spawn practice per the J-0024
+lesson: fallback check-in armed at spawn time.
+### Actions
+agents/handoffs/WO-0003_requirements-testability-review.md written
+(ISSUED). BOARD: WO-0003 row added; open-work list updated (batching
+decided; dv review in flight). Spawn follows this commit.
+### Evidence
+Packet committed in this commit; review target pinned by SHA 08899d3 in
+the packet's Spec basis.
+### Outcome
+dv_lead spawning next as WO-0003/2026-08-02T00:25Z. Handoff: WO-0003 to
+dv_lead.
+### Open-questions
+none
+### Files-in-this-commit
+- agents/handoffs/WO-0003_requirements-testability-review.md
+- tasks/BOARD.md

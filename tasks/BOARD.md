@@ -25,10 +25,10 @@ self-instantiating shell (wrapper renamed `word_counter_top`).
 Open M1 work (post WO-0002 acceptance): add `hardcaml_axi` to the opam
 deps + dune wiring and prove it installs in CI (blocking spec batch A);
 `docs/specs/ifc_check/` dune wiring for Interface compile evidence
-(blocking batch A freeze); decide per-module spec batching (architect
-proposed six ordered WOs over M01–M20); dv_lead activation for
-requirements testability review (before the P1-spec-freeze checklist
-opens); README phase-table pointer follow-up; sponsor confirmation of the
+(blocking batch A freeze); spec batching DECIDED 2026-08-02: the
+architect's six ordered batches stand as six WOs (sizing accepted as
+proposed); dv_lead testability review in flight
+(WO-0003); README phase-table pointer follow-up; sponsor confirmation of the
 24-cycle rx latency budget (architect's figure, REQ-005-adjacent);
 then P1-spec-freeze gate. Deferred dispositions closed 2026-08-01: AUD-0002 N4
 scenarios landed as S25–S27 (29 green); N1/N2 residuals closed per ADR-0003
@@ -54,6 +54,7 @@ Corrections.
 
 | Packet | From → To | State | Note |
 |---|---|---|---|
+| [WO-0003](../agents/handoffs/WO-0003_requirements-testability-review.md) | orchestrator → dv_lead | ISSUED | Testability review of all 108 REQs at 08899d3 + REQ-004/005 bench feasibility note (dv_lead's first activation) |
 | [WO-0002](../agents/handoffs/WO-0002_p1-requirements-architecture.md) | orchestrator → architect_docs_lead | ACCEPTED | Returned + accepted at 08899d3: 108 REQs, 20-module inventory (M01–M20), spec template, traceability skeleton. Spawn #1 killed by interruption (incident in Return log); spawn #2 delivered. |
 | [WO-0001](../agents/handoffs/WO-0001_g0-retro-audit.md) | orchestrator → auditor | ACCEPTED | Full cycle complete: [AUD-0001](../docs/reports/audit/AUD-0001-g0-retro.md) → ADR-0003 → [AUD-0002](../docs/reports/audit/AUD-0002-g0-reverification.md) re-verification (F17 CLOSED, gate lifted) |
 
