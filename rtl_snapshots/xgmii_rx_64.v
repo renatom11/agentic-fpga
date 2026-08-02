@@ -1064,42 +1064,39 @@ module xgmii_rx_64 (
     output error_oversize;
     output error_start_without_terminate;
 
-    wire _498;
-    wire _497;
-    wire _499;
-    wire _370;
-    wire _369;
-    wire _371;
-    wire _500;
-    wire _503;
     wire _502;
+    wire _501;
+    wire _503;
+    wire _374;
+    wire _373;
+    wire _375;
     wire _504;
-    wire _510;
-    wire _509;
-    wire _511;
     wire _507;
     wire _506;
     wire _508;
-    wire _512;
-    wire _518;
-    wire _517;
-    wire _519;
-    wire _515;
     wire _514;
+    wire _513;
+    wire _515;
+    wire _511;
+    wire _510;
+    wire _512;
     wire _516;
-    wire _520;
-    wire _526;
-    wire [3:0] _495;
-    wire [7:0] _485;
-    wire [7:0] _483;
-    wire [7:0] _484;
+    wire _522;
+    wire [2:0] _499;
+    wire [7:0] _489;
+    wire [7:0] _487;
+    wire [7:0] _488;
+    wire _490;
+    wire _491;
+    wire _492;
+    wire [7:0] _482;
+    wire _484;
+    wire _485;
     wire _486;
-    wire _487;
-    wire _488;
-    wire [7:0] _478;
-    wire _480;
-    wire _481;
-    wire _482;
+    wire _474;
+    wire _475;
+    wire _472;
+    wire _473;
     wire _470;
     wire _471;
     wire _468;
@@ -1108,44 +1105,44 @@ module xgmii_rx_64 (
     wire _467;
     wire _464;
     wire _465;
-    wire _462;
-    wire _463;
     wire _460;
-    wire _461;
+    wire _458;
     wire _456;
     wire _454;
     wire _452;
     wire _450;
-    wire _448;
-    wire _446;
-    wire _445;
-    wire _447;
     wire _449;
     wire _451;
     wire _453;
     wire _455;
     wire _457;
-    wire _458;
-    wire _444;
     wire _459;
-    wire [7:0] _472;
-    wire [7:0] _473;
-    wire _475;
-    wire _476;
-    wire _441;
-    wire _442;
-    wire _443;
-    wire _477;
-    wire [3:0] _489;
-    wire [7:0] _424;
-    wire [7:0] _425;
+    wire _461;
+    wire _462;
+    wire _448;
+    wire _463;
+    wire [7:0] _476;
+    wire [7:0] _477;
+    wire _479;
+    wire _480;
+    wire _445;
+    wire _446;
+    wire _447;
+    wire _481;
+    wire [2:0] _493;
+    wire [7:0] _428;
+    wire [7:0] _429;
+    wire _431;
+    wire _432;
+    wire _433;
+    wire [7:0] _423;
+    wire _425;
+    wire _426;
     wire _427;
-    wire _428;
-    wire _429;
-    wire [7:0] _419;
-    wire _421;
-    wire _422;
-    wire _423;
+    wire _415;
+    wire _416;
+    wire _413;
+    wire _414;
     wire _411;
     wire _412;
     wire _409;
@@ -1154,48 +1151,47 @@ module xgmii_rx_64 (
     wire _408;
     wire _405;
     wire _406;
-    wire _403;
-    wire _404;
     wire _401;
-    wire _402;
+    wire _399;
     wire _397;
     wire _395;
     wire _393;
     wire _391;
-    wire _389;
-    wire _387;
-    wire _386;
-    wire _388;
     wire _390;
     wire _392;
     wire _394;
     wire _396;
     wire _398;
-    wire _399;
-    wire _385;
     wire _400;
-    wire [7:0] _413;
-    wire [7:0] _414;
-    wire _416;
-    wire _417;
-    wire _382;
-    wire _383;
-    wire _384;
-    wire _418;
-    wire [3:0] _430;
-    wire [3:0] _490;
-    reg [3:0] _493;
-    reg [3:0] _496;
-    wire _525;
-    wire _527;
-    wire _523;
-    wire _522;
-    wire _524;
-    wire _528;
-    wire _505;
-    wire _368;
-    wire _513;
+    wire _402;
+    wire _403;
+    wire _389;
+    wire _404;
+    wire [7:0] _417;
+    wire [7:0] _418;
+    wire _420;
+    wire _421;
+    wire _386;
+    wire _387;
+    wire _388;
+    wire _422;
+    wire [2:0] _434;
+    wire [2:0] _494;
+    reg [2:0] _497;
+    reg [2:0] _500;
     wire _521;
+    wire _523;
+    wire _519;
+    wire _518;
+    wire _520;
+    wire _524;
+    wire _527;
+    wire _526;
+    wire _528;
+    wire _509;
+    wire _372;
+    wire _517;
+    wire _525;
     wire _719;
     wire _720;
     wire _721;
@@ -1218,10 +1214,11 @@ module xgmii_rx_64 (
     reg [63:0] _748;
     wire _839;
     wire [3:0] _707;
-    wire _501;
+    wire [3:0] _706;
+    wire _505;
     wire _703;
     wire _704;
-    wire [6:0] _366;
+    wire [6:0] _370;
     wire [6:0] _796;
     wire [2:0] _791;
     wire _788;
@@ -1244,7 +1241,6 @@ module xgmii_rx_64 (
     wire _717;
     wire _709;
     wire _692;
-    wire [2:0] _691;
     wire [3:0] _693;
     wire _689;
     wire [3:0] _690;
@@ -1329,10 +1325,10 @@ module xgmii_rx_64 (
     wire [3:0] _780;
     wire [6:0] _782;
     wire [6:0] _783;
-    wire _363;
-    wire _362;
-    wire _364;
-    wire [31:0] _344;
+    wire _367;
+    wire _366;
+    wire _368;
+    wire [31:0] _347;
     wire [31:0] _754;
     wire [31:0] _753;
     wire [63:0] _755;
@@ -1343,16 +1339,20 @@ module xgmii_rx_64 (
     wire [31:0] _771;
     reg [31:0] _774;
     wire [31:0] _13;
+    wire _344;
+    wire _345;
+    wire [31:0] _346;
+    wire _348;
+    wire _349;
+    wire [10:0] _340;
     wire _341;
     wire _342;
-    wire [31:0] _343;
-    wire _345;
-    wire _346;
-    wire _347;
+    wire _350;
+    wire _351;
     wire [10:0] _337;
     wire _338;
     wire _339;
-    wire [6:0] _365;
+    wire [6:0] _369;
     wire [6:0] _784;
     reg [6:0] _787;
     wire [6:0] _14;
@@ -1360,7 +1360,7 @@ module xgmii_rx_64 (
     reg [6:0] _797;
     wire [6:0] _15;
     wire _31;
-    wire [6:0] _367;
+    wire [6:0] _371;
     wire _702;
     wire _705;
     wire [3:0] _708;
@@ -1427,16 +1427,16 @@ module xgmii_rx_64 (
     wire [1:0] _822;
     wire [1:0] _823;
     wire [1:0] _824;
-    wire [7:0] _348;
-    wire _350;
-    wire _351;
-    wire _352;
-    wire [7:0] _353;
-    wire [7:0] _354;
-    wire [7:0] _355;
-    wire _357;
-    wire _358;
-    wire _359;
+    wire [7:0] _352;
+    wire _354;
+    wire _355;
+    wire _356;
+    wire [7:0] _357;
+    wire [7:0] _358;
+    wire [7:0] _359;
+    wire _361;
+    wire _362;
+    wire _363;
     wire _236;
     wire _237;
     wire _234;
@@ -1472,8 +1472,8 @@ module xgmii_rx_64 (
     wire _319;
     wire _320;
     wire _325;
-    wire _360;
-    wire _361;
+    wire _364;
+    wire _365;
     wire [1:0] _818;
     wire _317;
     wire _307;
@@ -1612,17 +1612,17 @@ module xgmii_rx_64 (
     reg _833;
     wire _834;
     wire _828;
-    wire [7:0] _435;
-    wire [7:0] _436;
-    wire [7:0] _437;
     wire [7:0] _439;
+    wire [7:0] _440;
+    wire [7:0] _441;
+    wire [7:0] _443;
     wire _765;
     wire _766;
     wire _767;
-    wire _433;
-    wire _431;
-    wire _432;
-    wire _434;
+    wire _437;
+    wire _435;
+    wire _436;
+    wire _438;
     wire _768;
     wire [7:0] _194;
     wire [7:0] _195;
@@ -1695,15 +1695,15 @@ module xgmii_rx_64 (
     wire _69;
     wire _73;
     wire [7:0] _109;
-    wire [7:0] _376;
-    wire [7:0] _377;
-    wire [7:0] _378;
     wire [7:0] _380;
+    wire [7:0] _381;
+    wire [7:0] _382;
+    wire [7:0] _384;
     wire _760;
     wire _761;
     wire _762;
     wire _22;
-    wire _374;
+    wire _378;
     wire _24;
     wire [7:0] _189;
     wire [7:0] _188;
@@ -1741,9 +1741,9 @@ module xgmii_rx_64 (
     wire _152;
     wire _156;
     wire [7:0] _192;
-    wire _372;
-    wire _373;
-    wire _375;
+    wire _376;
+    wire _377;
+    wire _379;
     wire _763;
     wire _769;
     wire _829;
@@ -1762,172 +1762,166 @@ module xgmii_rx_64 (
     wire _837;
     wire _838;
     wire _840;
-    assign _498 = ~ _22;
-    assign _497 = _496[3:3];
-    assign _499 = _497 & _498;
-    assign _370 = ~ _22;
-    assign _369 = _11 & _368;
-    assign _371 = _369 & _370;
-    assign _500 = _371 | _499;
-    assign _503 = ~ _22;
-    assign _502 = _11 & _501;
-    assign _504 = _502 & _503;
-    assign _510 = ~ _22;
-    assign _509 = _496[2:2];
-    assign _511 = _509 & _510;
+    assign _502 = ~ _22;
+    assign _501 = _500[2:2];
+    assign _503 = _501 & _502;
+    assign _374 = ~ _22;
+    assign _373 = _11 & _372;
+    assign _375 = _373 & _374;
+    assign _504 = _375 | _503;
     assign _507 = ~ _22;
     assign _506 = _11 & _505;
     assign _508 = _506 & _507;
-    assign _512 = _508 | _511;
-    assign _518 = ~ _22;
-    assign _517 = _496[1:1];
-    assign _519 = _517 & _518;
-    assign _515 = ~ _22;
-    assign _514 = _11 & _513;
-    assign _516 = _514 & _515;
-    assign _520 = _516 | _519;
-    assign _526 = ~ _22;
-    assign _495 = 4'b0000;
-    assign _485 = 8'b00000000;
-    assign _483 = _150 | _197;
-    assign _484 = _483 & _472;
-    assign _486 = _484 == _485;
-    assign _487 = ~ _486;
-    assign _488 = _443 & _487;
-    assign _478 = _109 & _472;
-    assign _480 = _478 == _485;
-    assign _481 = ~ _480;
-    assign _482 = _443 & _481;
-    assign _470 = ~ _445;
-    assign _471 = _446 & _470;
-    assign _468 = ~ _447;
-    assign _469 = _448 & _468;
-    assign _466 = ~ _449;
-    assign _467 = _450 & _466;
-    assign _464 = ~ _451;
-    assign _465 = _452 & _464;
-    assign _462 = ~ _453;
-    assign _463 = _454 & _462;
-    assign _460 = ~ _455;
-    assign _461 = _456 & _460;
-    assign _456 = _439[6:6];
-    assign _454 = _439[5:5];
-    assign _452 = _439[4:4];
-    assign _450 = _439[3:3];
-    assign _448 = _439[2:2];
-    assign _446 = _439[1:1];
-    assign _445 = _439[0:0];
-    assign _447 = _445 | _446;
-    assign _449 = _447 | _448;
+    assign _514 = ~ _22;
+    assign _513 = _500[1:1];
+    assign _515 = _513 & _514;
+    assign _511 = ~ _22;
+    assign _510 = _11 & _509;
+    assign _512 = _510 & _511;
+    assign _516 = _512 | _515;
+    assign _522 = ~ _22;
+    assign _499 = 3'b000;
+    assign _489 = 8'b00000000;
+    assign _487 = _150 | _197;
+    assign _488 = _487 & _476;
+    assign _490 = _488 == _489;
+    assign _491 = ~ _490;
+    assign _492 = _447 & _491;
+    assign _482 = _109 & _476;
+    assign _484 = _482 == _489;
+    assign _485 = ~ _484;
+    assign _486 = _447 & _485;
+    assign _474 = ~ _449;
+    assign _475 = _450 & _474;
+    assign _472 = ~ _451;
+    assign _473 = _452 & _472;
+    assign _470 = ~ _453;
+    assign _471 = _454 & _470;
+    assign _468 = ~ _455;
+    assign _469 = _456 & _468;
+    assign _466 = ~ _457;
+    assign _467 = _458 & _466;
+    assign _464 = ~ _459;
+    assign _465 = _460 & _464;
+    assign _460 = _443[6:6];
+    assign _458 = _443[5:5];
+    assign _456 = _443[4:4];
+    assign _454 = _443[3:3];
+    assign _452 = _443[2:2];
+    assign _450 = _443[1:1];
+    assign _449 = _443[0:0];
     assign _451 = _449 | _450;
     assign _453 = _451 | _452;
     assign _455 = _453 | _454;
     assign _457 = _455 | _456;
-    assign _458 = ~ _457;
-    assign _444 = _439[7:7];
-    assign _459 = _444 & _458;
-    assign _472 = { _459,
-                    _461,
-                    _463,
+    assign _459 = _457 | _458;
+    assign _461 = _459 | _460;
+    assign _462 = ~ _461;
+    assign _448 = _443[7:7];
+    assign _463 = _448 & _462;
+    assign _476 = { _463,
                     _465,
                     _467,
                     _469,
                     _471,
-                    _445 };
-    assign _473 = _192 & _472;
-    assign _475 = _473 == _485;
-    assign _476 = ~ _475;
-    assign _441 = _439 == _485;
-    assign _442 = ~ _441;
-    assign _443 = _434 & _442;
-    assign _477 = _443 & _476;
-    assign _489 = { _477,
-                    _482,
-                    _488,
-                    _482 };
-    assign _424 = _150 | _197;
-    assign _425 = _424 & _413;
-    assign _427 = _425 == _485;
-    assign _428 = ~ _427;
-    assign _429 = _384 & _428;
-    assign _419 = _109 & _413;
-    assign _421 = _419 == _485;
-    assign _422 = ~ _421;
-    assign _423 = _384 & _422;
-    assign _411 = ~ _386;
-    assign _412 = _387 & _411;
-    assign _409 = ~ _388;
-    assign _410 = _389 & _409;
-    assign _407 = ~ _390;
-    assign _408 = _391 & _407;
-    assign _405 = ~ _392;
-    assign _406 = _393 & _405;
-    assign _403 = ~ _394;
-    assign _404 = _395 & _403;
-    assign _401 = ~ _396;
-    assign _402 = _397 & _401;
-    assign _397 = _380[6:6];
-    assign _395 = _380[5:5];
-    assign _393 = _380[4:4];
-    assign _391 = _380[3:3];
-    assign _389 = _380[2:2];
-    assign _387 = _380[1:1];
-    assign _386 = _380[0:0];
-    assign _388 = _386 | _387;
-    assign _390 = _388 | _389;
+                    _473,
+                    _475,
+                    _449 };
+    assign _477 = _192 & _476;
+    assign _479 = _477 == _489;
+    assign _480 = ~ _479;
+    assign _445 = _443 == _489;
+    assign _446 = ~ _445;
+    assign _447 = _438 & _446;
+    assign _481 = _447 & _480;
+    assign _493 = { _481,
+                    _486,
+                    _492 };
+    assign _428 = _150 | _197;
+    assign _429 = _428 & _417;
+    assign _431 = _429 == _489;
+    assign _432 = ~ _431;
+    assign _433 = _388 & _432;
+    assign _423 = _109 & _417;
+    assign _425 = _423 == _489;
+    assign _426 = ~ _425;
+    assign _427 = _388 & _426;
+    assign _415 = ~ _390;
+    assign _416 = _391 & _415;
+    assign _413 = ~ _392;
+    assign _414 = _393 & _413;
+    assign _411 = ~ _394;
+    assign _412 = _395 & _411;
+    assign _409 = ~ _396;
+    assign _410 = _397 & _409;
+    assign _407 = ~ _398;
+    assign _408 = _399 & _407;
+    assign _405 = ~ _400;
+    assign _406 = _401 & _405;
+    assign _401 = _384[6:6];
+    assign _399 = _384[5:5];
+    assign _397 = _384[4:4];
+    assign _395 = _384[3:3];
+    assign _393 = _384[2:2];
+    assign _391 = _384[1:1];
+    assign _390 = _384[0:0];
     assign _392 = _390 | _391;
     assign _394 = _392 | _393;
     assign _396 = _394 | _395;
     assign _398 = _396 | _397;
-    assign _399 = ~ _398;
-    assign _385 = _380[7:7];
-    assign _400 = _385 & _399;
-    assign _413 = { _400,
-                    _402,
-                    _404,
+    assign _400 = _398 | _399;
+    assign _402 = _400 | _401;
+    assign _403 = ~ _402;
+    assign _389 = _384[7:7];
+    assign _404 = _389 & _403;
+    assign _417 = { _404,
                     _406,
                     _408,
                     _410,
                     _412,
-                    _386 };
-    assign _414 = _192 & _413;
-    assign _416 = _414 == _485;
-    assign _417 = ~ _416;
-    assign _382 = _380 == _485;
-    assign _383 = ~ _382;
-    assign _384 = _375 & _383;
-    assign _418 = _384 & _417;
-    assign _430 = { _418,
-                    _423,
-                    _429,
-                    _423 };
-    assign _490 = _430 | _489;
+                    _414,
+                    _416,
+                    _390 };
+    assign _418 = _192 & _417;
+    assign _420 = _418 == _489;
+    assign _421 = ~ _420;
+    assign _386 = _384 == _489;
+    assign _387 = ~ _386;
+    assign _388 = _379 & _387;
+    assign _422 = _388 & _421;
+    assign _434 = { _422,
+                    _427,
+                    _433 };
+    assign _494 = _434 | _493;
     always @(posedge _20) begin
         if (_22)
-            _493 <= _495;
+            _497 <= _499;
         else
-            _493 <= _490;
+            _497 <= _494;
     end
     always @(posedge _20) begin
         if (_22)
-            _496 <= _495;
+            _500 <= _499;
         else
-            _496 <= _493;
+            _500 <= _497;
     end
-    assign _525 = _496[0:0];
-    assign _527 = _525 & _526;
-    assign _523 = ~ _22;
-    assign _522 = _11 & _521;
-    assign _524 = _522 & _523;
-    assign _528 = _524 | _527;
-    assign _505 = _367[6:6];
-    assign _368 = _367[3:3];
-    assign _513 = _367[2:2];
-    assign _521 = _367[5:5];
-    assign _719 = _521 | _513;
-    assign _720 = _719 | _368;
-    assign _721 = _720 | _501;
-    assign _722 = _721 | _505;
+    assign _521 = _500[0:0];
+    assign _523 = _521 & _522;
+    assign _519 = ~ _22;
+    assign _518 = _11 & _517;
+    assign _520 = _518 & _519;
+    assign _524 = _520 | _523;
+    assign _527 = ~ _22;
+    assign _526 = _11 & _525;
+    assign _528 = _526 & _527;
+    assign _509 = _371[6:6];
+    assign _372 = _371[3:3];
+    assign _517 = _371[2:2];
+    assign _525 = _371[5:5];
+    assign _719 = _525 | _517;
+    assign _720 = _719 | _372;
+    assign _721 = _720 | _505;
+    assign _722 = _721 | _509;
     assign _723 = _718 & _722;
     assign _724 = ~ _22;
     assign _725 = _718 & _724;
@@ -1940,7 +1934,7 @@ module xgmii_rx_64 (
     always @* begin
         case (_731)
         0:
-            _739 <= _485;
+            _739 <= _489;
         1:
             _739 <= _534;
         2:
@@ -1992,10 +1986,11 @@ module xgmii_rx_64 (
     end
     assign _839 = ~ _22;
     assign _707 = 4'b0100;
-    assign _501 = _367[4:4];
-    assign _703 = _367[1:1];
-    assign _704 = _703 | _501;
-    assign _366 = _34 ? _14 : _365;
+    assign _706 = 4'b0000;
+    assign _505 = _371[4:4];
+    assign _703 = _371[1:1];
+    assign _704 = _703 | _505;
+    assign _370 = _34 ? _14 : _369;
     assign _796 = 7'b0000000;
     assign _791 = { _789,
                     _788 };
@@ -2017,39 +2012,38 @@ module xgmii_rx_64 (
     assign _777 = _775 & _776;
     assign _715 = _708 < _698;
     assign _716 = ~ _715;
-    assign _712 = _698 == _495;
+    assign _712 = _698 == _706;
     assign _713 = ~ _712;
     assign _714 = _613 & _713;
     assign _717 = _714 & _716;
     assign _709 = _708 < _610;
     assign _692 = _577[0:0];
-    assign _691 = 3'b000;
-    assign _693 = { _691,
+    assign _693 = { _499,
                     _692 };
     assign _689 = _577[1:1];
-    assign _690 = { _691,
+    assign _690 = { _499,
                     _689 };
     assign _694 = _690 + _693;
     assign _685 = _577[2:2];
-    assign _686 = { _691,
+    assign _686 = { _499,
                     _685 };
     assign _682 = _577[3:3];
-    assign _683 = { _691,
+    assign _683 = { _499,
                     _682 };
     assign _687 = _683 + _686;
     assign _695 = _687 + _694;
     assign _677 = _577[4:4];
-    assign _678 = { _691,
+    assign _678 = { _499,
                     _677 };
     assign _674 = _577[5:5];
-    assign _675 = { _691,
+    assign _675 = { _499,
                     _674 };
     assign _679 = _675 + _678;
     assign _670 = _577[6:6];
-    assign _671 = { _691,
+    assign _671 = { _499,
                     _670 };
     assign _667 = _577[7:7];
-    assign _668 = { _691,
+    assign _668 = { _499,
                     _667 };
     assign _672 = _668 + _671;
     assign _680 = _672 + _679;
@@ -2120,15 +2114,15 @@ module xgmii_rx_64 (
     assign _656 = _651 & _655;
     always @(posedge _20) begin
         if (_22)
-            _659 <= _485;
+            _659 <= _489;
         else
             _659 <= _656;
     end
     assign _662 = _532 ? _661 : _659;
-    assign _664 = _662 == _485;
+    assign _664 = _662 == _489;
     assign _665 = ~ _664;
-    assign _698 = _665 ? _495 : _696;
-    assign _700 = _698 == _495;
+    assign _698 = _665 ? _706 : _696;
+    assign _700 = _698 == _706;
     assign _701 = _613 & _700;
     assign _710 = _701 & _709;
     assign _718 = _710 | _717;
@@ -2143,10 +2137,10 @@ module xgmii_rx_64 (
     assign _782 = { _780,
                     _781 };
     assign _783 = ~ _782;
-    assign _363 = ~ _22;
-    assign _362 = _361 | _318;
-    assign _364 = _362 & _363;
-    assign _344 = 32'b00100001010001001101111100011100;
+    assign _367 = ~ _22;
+    assign _366 = _365 | _318;
+    assign _368 = _366 & _367;
+    assign _347 = 32'b00100001010001001101111100011100;
     assign _754 = _26[63:32];
     assign _753 = 32'b00000000000000000000000000000000;
     assign _755 = { _753,
@@ -2160,7 +2154,7 @@ module xgmii_rx_64 (
           .octet_count(_334),
           .crc_out(_758[31:0]) );
     assign _12 = _758;
-    assign _771 = _769 ? _753 : _343;
+    assign _771 = _769 ? _753 : _346;
     always @(posedge _20) begin
         if (_22)
             _774 <= _753;
@@ -2168,23 +2162,27 @@ module xgmii_rx_64 (
             _774 <= _771;
     end
     assign _13 = _774;
-    assign _341 = _334 == _495;
+    assign _344 = _334 == _706;
+    assign _345 = ~ _344;
+    assign _346 = _345 ? _12 : _13;
+    assign _348 = _346 == _347;
+    assign _349 = ~ _348;
+    assign _340 = 11'b00000000101;
+    assign _341 = _336 < _340;
     assign _342 = ~ _341;
-    assign _343 = _342 ? _12 : _13;
-    assign _345 = _343 == _344;
-    assign _346 = ~ _345;
-    assign _347 = _325 & _346;
+    assign _350 = _342 & _349;
+    assign _351 = _325 & _350;
     assign _337 = 11'b00001000000;
     assign _338 = _336 < _337;
     assign _339 = _325 & _338;
-    assign _365 = { _339,
-                    _347,
+    assign _369 = { _339,
+                    _351,
                     _318,
-                    _352,
-                    _359,
+                    _356,
+                    _363,
                     _325,
-                    _364 };
-    assign _784 = _365 & _783;
+                    _368 };
+    assign _784 = _369 & _783;
     always @(posedge _20) begin
         if (_22)
             _787 <= _796;
@@ -2201,35 +2199,35 @@ module xgmii_rx_64 (
     end
     assign _15 = _797;
     assign _31 = _15[0:0];
-    assign _367 = _31 ? _15 : _366;
-    assign _702 = _367[0:0];
+    assign _371 = _31 ? _15 : _370;
+    assign _702 = _371[0:0];
     assign _705 = _702 & _704;
-    assign _708 = _705 ? _707 : _495;
+    assign _708 = _705 ? _707 : _706;
     assign _836 = _708 < _698;
     assign _606 = _580[0:0];
-    assign _607 = { _691,
+    assign _607 = { _499,
                     _606 };
     assign _603 = _580[1:1];
-    assign _604 = { _691,
+    assign _604 = { _499,
                     _603 };
     assign _608 = _604 + _607;
     assign _599 = _580[2:2];
-    assign _600 = { _691,
+    assign _600 = { _499,
                     _599 };
     assign _596 = _580[3:3];
-    assign _597 = { _691,
+    assign _597 = { _499,
                     _596 };
     assign _601 = _597 + _600;
     assign _609 = _601 + _608;
     assign _591 = _580[4:4];
-    assign _592 = { _691,
+    assign _592 = { _499,
                     _591 };
     assign _588 = _580[5:5];
-    assign _589 = { _691,
+    assign _589 = { _499,
                     _588 };
     assign _593 = _589 + _592;
     assign _584 = _580[6:6];
-    assign _585 = { _691,
+    assign _585 = { _499,
                     _584 };
     assign _575 = { _571,
                     _574 };
@@ -2266,21 +2264,21 @@ module xgmii_rx_64 (
         7:
             _566 <= _557;
         8:
-            _566 <= _485;
+            _566 <= _489;
         9:
-            _566 <= _485;
+            _566 <= _489;
         10:
-            _566 <= _485;
+            _566 <= _489;
         11:
-            _566 <= _485;
+            _566 <= _489;
         12:
-            _566 <= _485;
+            _566 <= _489;
         13:
-            _566 <= _485;
+            _566 <= _489;
         14:
-            _566 <= _485;
+            _566 <= _489;
         default:
-            _566 <= _485;
+            _566 <= _489;
         endcase
     end
     assign _540 = 8'b01111111;
@@ -2314,19 +2312,19 @@ module xgmii_rx_64 (
     assign _209 = 4'b1000;
     assign _37 = 2'b00;
     assign _826 = _769 ? _35 : _39;
-    assign _822 = _361 ? _37 : _41;
+    assign _822 = _365 ? _37 : _41;
     assign _823 = _318 ? _810 : _822;
     assign _824 = _769 ? _35 : _823;
-    assign _348 = _192 & _238;
-    assign _350 = _348 == _485;
-    assign _351 = ~ _350;
-    assign _352 = _320 & _351;
-    assign _353 = _197 & _203;
-    assign _354 = _150 | _353;
-    assign _355 = _354 & _238;
-    assign _357 = _355 == _485;
-    assign _358 = ~ _357;
-    assign _359 = _320 & _358;
+    assign _352 = _192 & _238;
+    assign _354 = _352 == _489;
+    assign _355 = ~ _354;
+    assign _356 = _320 & _355;
+    assign _357 = _197 & _203;
+    assign _358 = _150 | _357;
+    assign _359 = _358 & _238;
+    assign _361 = _359 == _489;
+    assign _362 = ~ _361;
+    assign _363 = _320 & _362;
     assign _236 = ~ _211;
     assign _237 = _212 & _236;
     assign _234 = ~ _213;
@@ -2364,14 +2362,14 @@ module xgmii_rx_64 (
                     _237,
                     _211 };
     assign _321 = _109 & _238;
-    assign _323 = _321 == _485;
+    assign _323 = _321 == _489;
     assign _324 = ~ _323;
     assign _319 = ~ _318;
     assign _320 = _43 & _319;
     assign _325 = _320 & _324;
-    assign _360 = _325 | _359;
-    assign _361 = _360 | _352;
-    assign _818 = _361 ? _37 : _39;
+    assign _364 = _325 | _363;
+    assign _365 = _364 | _356;
+    assign _818 = _365 ? _37 : _39;
     assign _317 = _68 < _209;
     assign _307 = _294[1:1];
     assign _308 = _307 | _303;
@@ -2432,7 +2430,7 @@ module xgmii_rx_64 (
                     _311 };
     assign _260 = ~ _203;
     assign _261 = _197 & _260;
-    assign _263 = _261 == _485;
+    assign _263 = _261 == _489;
     assign _264 = ~ _263;
     assign _313 = _264 ? _312 : _209;
     assign _314 = _68 < _313;
@@ -2443,7 +2441,7 @@ module xgmii_rx_64 (
     assign _801 = 11'b00000000000;
     assign _333 = _330 - _51;
     assign _331 = _51 < _330;
-    assign _334 = _331 ? _333 : _495;
+    assign _334 = _331 ? _333 : _706;
     assign _335 = { _796,
                     _334 };
     assign _336 = _16 + _335;
@@ -2471,8 +2469,8 @@ module xgmii_rx_64 (
                 _805 <= _768;
     end
     assign _17 = _805;
-    assign _50 = _17 ? _707 : _495;
-    assign _47 = _42 ? _495 : _209;
+    assign _50 = _17 ? _707 : _706;
+    assign _47 = _42 ? _706 : _209;
     assign _51 = _40 ? _50 : _47;
     assign _52 = { gnd,
                    _51 };
@@ -2488,7 +2486,7 @@ module xgmii_rx_64 (
     assign _318 = _315 & _317;
     assign _819 = _318 ? _810 : _818;
     assign _820 = _769 ? _35 : _819;
-    assign _813 = _109 == _485;
+    assign _813 = _109 == _489;
     assign _814 = ~ _813;
     assign _815 = _814 ? _37 : _39;
     assign _816 = _769 ? _35 : _815;
@@ -2523,7 +2521,7 @@ module xgmii_rx_64 (
     assign _151 = _109 | _150;
     assign _193 = _151 | _192;
     assign _205 = _193 | _204;
-    assign _207 = _205 == _485;
+    assign _207 = _205 == _489;
     assign _208 = ~ _207;
     assign _257 = _208 ? _256 : _209;
     assign _327 = _257 < _68;
@@ -2533,7 +2531,7 @@ module xgmii_rx_64 (
     always @* begin
         case (_330)
         0:
-            _549 <= _485;
+            _549 <= _489;
         1:
             _549 <= _534;
         2:
@@ -2570,7 +2568,7 @@ module xgmii_rx_64 (
     assign _571 = _567 & _570;
     always @(posedge _20) begin
         if (_22)
-            _574 <= _485;
+            _574 <= _489;
         else
             _574 <= _571;
     end
@@ -2586,18 +2584,18 @@ module xgmii_rx_64 (
     end
     assign _834 = _833 ? vdd : _532;
     assign _828 = ~ _768;
-    assign _435 = _109 | _150;
-    assign _436 = _435 | _192;
-    assign _437 = _436 | _197;
-    assign _439 = _437 & _555;
-    assign _765 = _439 == _485;
+    assign _439 = _109 | _150;
+    assign _440 = _439 | _192;
+    assign _441 = _440 | _197;
+    assign _443 = _441 & _555;
+    assign _765 = _443 == _489;
     assign _766 = ~ _765;
     assign _767 = ~ _766;
-    assign _433 = ~ _22;
-    assign _431 = _192[4:4];
-    assign _432 = _431 & _24;
-    assign _434 = _432 & _433;
-    assign _768 = _434 & _767;
+    assign _437 = ~ _22;
+    assign _435 = _192[4:4];
+    assign _436 = _435 & _24;
+    assign _438 = _436 & _437;
+    assign _768 = _438 & _767;
     assign _194 = _192 | _109;
     assign _195 = _194 | _150;
     assign _196 = ~ _195;
@@ -2683,15 +2681,15 @@ module xgmii_rx_64 (
                     _98,
                     _103,
                     _108 };
-    assign _376 = _109 | _150;
-    assign _377 = _376 | _192;
-    assign _378 = _377 | _197;
-    assign _380 = _378 & _551;
-    assign _760 = _380 == _485;
+    assign _380 = _109 | _150;
+    assign _381 = _380 | _192;
+    assign _382 = _381 | _197;
+    assign _384 = _382 & _551;
+    assign _760 = _384 == _489;
     assign _761 = ~ _760;
     assign _762 = ~ _761;
     assign _22 = clear;
-    assign _374 = ~ _22;
+    assign _378 = ~ _22;
     assign _24 = cfg_rx_enable;
     assign _189 = 8'b11111011;
     assign _188 = _26[7:0];
@@ -2736,10 +2734,10 @@ module xgmii_rx_64 (
                     _181,
                     _186,
                     _191 };
-    assign _372 = _192[0:0];
-    assign _373 = _372 & _24;
-    assign _375 = _373 & _374;
-    assign _763 = _375 & _762;
+    assign _376 = _192[0:0];
+    assign _377 = _376 & _24;
+    assign _379 = _377 & _378;
+    assign _763 = _379 & _762;
     assign _769 = _763 | _768;
     assign _829 = _769 & _828;
     assign _835 = _829 ? gnd : _834;
@@ -2753,17 +2751,17 @@ module xgmii_rx_64 (
     assign _577 = _532 ? _576 : _574;
     always @(posedge _20) begin
         if (_22)
-            _580 <= _485;
+            _580 <= _489;
         else
             _580 <= _577;
     end
     assign _581 = _580[7:7];
-    assign _582 = { _691,
+    assign _582 = { _499,
                     _581 };
     assign _586 = _582 + _585;
     assign _594 = _586 + _593;
     assign _610 = _594 + _609;
-    assign _612 = _610 == _495;
+    assign _612 = _610 == _706;
     assign _613 = ~ _612;
     assign _837 = _613 & _836;
     assign _838 = _837 | _718;
@@ -2771,13 +2769,13 @@ module xgmii_rx_64 (
     assign rx_tvalid = _840;
     assign rx_tdata = _748;
     assign rx_tkeep = _739;
-    assign rx_tstrb = _485;
+    assign rx_tstrb = _489;
     assign rx_tlast = _725;
     assign rx_tuser = _723;
     assign error_bad_fcs = _528;
-    assign error_bad_frame = _520;
-    assign error_runt = _512;
-    assign error_oversize = _504;
-    assign error_start_without_terminate = _500;
+    assign error_bad_frame = _524;
+    assign error_runt = _516;
+    assign error_oversize = _508;
+    assign error_start_without_terminate = _504;
 
 endmodule

@@ -3711,3 +3711,47 @@ documented for absolute og:image URLs.
 - site/public/og.png
 - site/public/org-chart.html
 - site/public/spec-atlas.html
+
+## [J-orchestrator-0087] 2026-08-03T12:20:00Z | task:WO-0036 | The conformant receiver's bytes promoted — exactly two files, as the Return log demanded
+
+### Trigger
+Run 30763759780 (head `1434f27`): Build + tests green, determinism
+red with the promotion block carrying exactly
+`rtl_snapshots/eth_mac_10g.v` and `rtl_snapshots/xgmii_rx_64.v` —
+the two-file set rtl_lead's Return log pinned, with `xgmii_tx_64.v`
+and `word_counter.v` still, as required.
+
+### Inputs
+- The block, decoded and sha256-verified (110,455 / 65,526 bytes).
+- Local dv_checks over the promoted text: exit 1 is EXPECTED here —
+  the new RFC anchor check exits 2 locally (container egress
+  blocked, obligation open by design) and dv_checks reports it; the
+  X-9/record checks themselves pass. CI's verdict on its own runner
+  comes with the next run.
+
+### Reasoning
+Byte transport as established. The next run decides two things at
+once: REQ-902 re-proof over the three-epoch+sub-5 receiver at the
+determinism step, and the RFC anchor's first CI verdict at the DV
+step — dv designed exit 2 as a hard CI failure so a blocked runner
+keeps the obligation loud; if it reds, the softening decision goes
+back to dv with the run as evidence, not pre-applied.
+
+### Actions
+- Both files written verbatim; this commit stages exactly them.
+
+### Evidence
+- sha256s vs run 30763759780's block; two-file set assertion in the
+  harvest script.
+
+### Outcome / DoD
+Next run: determinism green + the RFC check's first runner verdict.
+WO-0036 acceptance rides that result.
+
+### Open questions
+- Whether the CI runner can reach rfc-editor.org (first data point
+  arrives with the run).
+
+### Files-in-this-commit
+- rtl_snapshots/eth_mac_10g.v
+- rtl_snapshots/xgmii_rx_64.v
