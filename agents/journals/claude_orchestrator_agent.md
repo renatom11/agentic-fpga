@@ -4156,3 +4156,46 @@ Sponsor redeploys for the website copy.
 - site/public/index.html
 - site/public/org-chart.html
 - site/public/spec-atlas.html
+
+## [J-orchestrator-0098] 2026-08-03T16:40:00Z | task:none | Label placement finished properly: two passes, every renderable an obstacle, audit at zero
+
+### Trigger
+Sponsor: "still not perfect" — his zoom showed the ② badge sitting
+on one Axi64.Source label and a second Axi64.Source clipped by the
+Ip_complete_64 header.
+
+### Inputs
+- The expanded detector: BOTH labels are legitimate (two wires carry
+  Axi64.Source — M03→M06 rx, M07→M04 tx) converging in one corridor;
+  the placer knew nothing about badges, wrapper headers, or other
+  labels.
+
+### Reasoning
+Restructured draw() into two passes: pass 1 lays wires and places
+step badges (badges + wrapper headers join the obstacle set), pass 2
+places labels against blocks + headers + badges + every previously
+placed label, with a distance-ordered candidate grid. The audit —
+now covering all four obstacle classes and label-vs-label — reports
+zero overlaps, and runs headless so any future layout change gets
+the same verdict mechanically.
+
+### Actions
+- bd_back.py draw() rewrite; artifact republished; site copy
+  refreshed + site rebuilt; this commit.
+
+### Evidence
+- Audit before: badge-on-label + label-under-header; after: "fully
+  clear".
+
+### Outcome / DoD
+Sponsor redeploys for the site copy.
+
+### Open questions
+- None.
+
+### Files-in-this-commit
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/index.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html

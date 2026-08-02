@@ -493,9 +493,10 @@ function draw() {
     const r = b.getBoundingClientRect();
     return { l:r.left-dg.left, r:r.right-dg.left, t:r.top-dg.top, b:r.bottom-dg.top };
   });
+  const obstacles = blkRects.slice();
   function labelPos(x, y, hw) {
     const clear = (cx, cy) => {
-      for (const q of blkRects)
+      for (const q of obstacles)
         if (cx + hw > q.l - 3 && cx - hw < q.r + 3 && cy + 4 > q.t - 3 && cy - 9 < q.b + 3) return false;
       return true;
     };
@@ -506,12 +507,19 @@ function draw() {
         cands.push([x, r.t - 8], [x, r.b + 15], [r.l - hw - 8, y], [r.r + hw + 8, y]);
       }
     }
-    cands.push([x, y - 14], [x, y + 17], [x - hw - 20, y], [x + hw + 20, y],
-               [x, y - 27], [x, y + 30]);
+    for (const dy of [0, -14, 17, -27, 30]) for (const dx of [0, -30, 30, -55, 55, -85, 85])
+      cands.push([x + dx, y + dy]);
     for (const c of cands) if (clear(c[0], c[1])) return c;
     return [x, y];
   }
+  // obstacles for label placement: modules, wrapper headers, then (added
+  // during pass 1) step badges, then each label as it lands.
+  document.querySelectorAll('.whead').forEach(w => {
+    const r = w.getBoundingClientRect();
+    obstacles.push({ l:r.left-dg.left, r:r.right-dg.left, t:r.top-dg.top, b:r.bottom-dg.top });
+  });
   const pairSeen = {};
+  const drawnEdges = [];
   for (const e of D.trunk) {
     if (!state[e.c]) continue;
     const A0 = rect(e.a), B0 = rect(e.b);
@@ -532,21 +540,29 @@ function draw() {
       marker-mid="url(#mid-${e.c})" marker-end="url(#arr-${e.c})" pointer-events="stroke"><title>${esc(e.via)}</title></path>`;
     if (state.motion) out += `<path class="pulse p-${e.c}" data-a="${e.a}" data-b="${e.b}" d="${s.d}"/>`;
     const short = (s.w || 0) < 150;
-    if (state.labels && e.label && !e.arp) {
-      const above = short ? -20 : (e.c === 'rx' ? -9 : 14);
-      const lx0 = (e.n && !short) ? s.mx + 16 : s.mx;
-      const [lx, ly] = labelPos(lx0, s.my + above, e.label.length * 3.3);
-      deferred.push(`<text x="${lx}" y="${ly}" text-anchor="middle">${esc(e.label)}</text>`);
-    }
+    let scx = null;
     if (e.n) {
-      let scx = short ? s.mx : s.mx - 28;
+      scx = short ? s.mx : s.mx - 28;
       const circClear = cx => blkRects.every(q =>
         cx + 13 <= q.l || cx - 13 >= q.r || s.my + 13 <= q.t || s.my - 13 >= q.b);
       for (const cand of [scx, scx + 16, s.mx, s.mx + 16]) {
         if (circClear(cand)) { scx = cand; break; }
       }
+      obstacles.push({ l: scx - 15, r: scx + 15, t: s.my - 15, b: s.my + 15 });
       deferred.push(`<circle class="stepc" cx="${scx}" cy="${s.my}" r="12.5"/>
         <text class="stepn" x="${scx}" y="${s.my + 4.8}" text-anchor="middle">${e.n}</text>`);
+    }
+    drawnEdges.push({ e, s, short });
+  }
+  for (const de of drawnEdges) {
+    const { e, s, short } = de;
+    if (state.labels && e.label && !e.arp) {
+      const above = short ? -20 : (e.c === 'rx' ? -9 : 14);
+      const lx0 = (e.n && !short) ? s.mx + 16 : s.mx;
+      const hw = e.label.length * 3.3;
+      const [lx, ly] = labelPos(lx0, s.my + above, hw);
+      obstacles.push({ l: lx - hw, r: lx + hw, t: ly - 10, b: ly + 4 });
+      deferred.push(`<text x="${lx}" y="${ly}" text-anchor="middle">${esc(e.label)}</text>`);
     }
   }
   const bar = $('n-CFGBAR') ? rect('CFGBAR') : null;
