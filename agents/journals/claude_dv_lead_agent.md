@@ -3469,3 +3469,307 @@ the orchestrator for relay to architect_docs_lead.
 
 ### Files-in-this-commit
 - agents/handoffs/WO-0020_batch-f-countersign.md
+
+## [J-dv_lead-0011] 2026-08-02T16:00:00Z | task:WO-0022 | Batch F countersigned at d8df28d after the bounded re-review — F-1 repaired in full, ALL TWENTY Phase-1 specs FROZEN; the two out-of-surface sites judged under C-28 (one accepted, one wrong at D = 1 and the wrong word is mine); C-37 raised — F-1's twin at the FROZEN SPEC-M14, found by falsifying §11.4's own generalisation; C-38 … C-40
+
+### Trigger
+Orchestrator work order `agents/handoffs/WO-0022_batch-f-rereview.md`, spawn
+short-id `WO-0022/2026-08-02T16:00Z`, eleventh activation. The bounded batch-F
+re-review I pre-priced at the WO-0020 Return log §5, on the repair the architect
+landed at `d8df28d` under WO-0021. My eleventh unit of work and the last item of
+`P1-spec-freeze` before the sponsor's signature.
+
+### Inputs
+- `agents/charters/dv_lead.md`; `agents/PROTOCOL.md` (§3, §4, §6, §7, §10).
+- `agents/handoffs/WO-0022_batch-f-rereview.md` (the work order, in full).
+- `agents/handoffs/WO-0021_f1-repair.md` — the architect's Return log in full,
+  including its §2 quotations of the two out-of-surface sites.
+- `agents/handoffs/WO-0020_batch-f-countersign.md` — my own §1 (the F-1
+  derivation and owed-diff list), §4 (C-31 … C-36) and §5 (the bounded surface
+  and the pre-worded sentence).
+- Specs, at `d8df28d` and at the working tree (verified identical):
+  `docs/specs/modules/udp_ip_rx_64.md` (§2, §3, §4.2, §6.1, §6.2, §6.3, §8, §9,
+  §10, §11.4), `docs/specs/modules/udp_ip_tx_64.md` (§3, §6.2, §6.3, §8, §9,
+  §10, §11.4), `docs/specs/modules/xgmii_tx_64.md` (§9, §13).
+- For the C-37 derivation, read **after** the batch-F verdict was formed and
+  because SPEC-M17 §11.4 named them as a falsifiable claim:
+  `docs/specs/modules/ip_eth_rx_64.md` (§2, §3, §6.1, §6.2, §8, §10) and
+  `docs/specs/modules/arp_eth_rx.md` (§3's REQ-007 row, §6.2's `Tail` row).
+- `docs/specs/requirements.md` (REQ-007, REQ-013, REQ-707, REQ-709, REQ-710);
+  `docs/adr/ADR-0011-under-delivery-leaves-the-transmit-path-unterminated.md`
+  (Affects header, Consequences).
+- CI: GitHub Actions run **30744579228** (`build`), read via the API.
+- **No RTL.** `libs/**`, `top/**` and `rtl_snapshots/**` were not opened at any
+  point in this review (PROTOCOL §10). C-37 was derived from
+  `docs/specs/modules/ip_eth_rx_64.md` text alone.
+
+### Reasoning
+
+**The standard I applied, stated first because every disposition below turns on
+it.** `P1-spec-freeze` asks me for *testability*: can a bench be derived from
+this text, and does a conformant design pass it while a non-conformant one
+fails? That is the line separating every contest I have raised from every item
+I have carried. F-1 failed it outright — five sites commissioned an assertion
+no implementation could satisfy and no site said what to emit instead. I made
+myself re-apply the test item by item rather than let the momentum of "one
+signature from 20/20" do the work.
+
+**The surface held, and in two places the repair beat my own text.** I
+re-derived the separation from §6.1's own cycle formulas rather than reading the
+architect's: input `tlast` at Ci + K − 1, application `tlast` word at Ci + M + 1,
+M = ⌈N′/8⌉ − 1, so the separation is ⌈N′/8⌉ − ⌈N/8⌉ + 1 = 1 − D and a registered
+output carries the bit iff D = 0. The regime table, the 182 at N = 1480 / N′ = 9
+(reproduced as D − 1, not quoted), the scoped residue algebra, the over-declared
+case at application word K − 2 leaving at Ci + K — all reproduce. The two
+improvements on what I commissioned are the **octet-vs-word distinction**
+(N = 25/N′ = 24 is D = 1 on one octet; N = 32/N′ = 25 is D = 0 on seven, and
+seven is the maximum that stays D = 0) and the **D = 0 boundary companion** at
+§8. The companion is the sharper of the two: its declared count's last octet is
+the first octet of the input `tlast` word, so `Tail` is never entered although
+the datagram under-declares by seven — it is the executable proof of the
+`Tail` ≡ D ≥ 1 pin, not a second stimulus. I had asked for the class; the
+architect gave me the boundary, which is what a bench actually needs.
+
+**Why I endorse §11.4's carry rather than treating it as a dodge.** The
+asymmetry is my own argument applied where it points the other way: F-1's price
+rises at the flip (DRAFT §6 text now, post-freeze *behavioural* diff later), the
+REQ-007 scoping clause's does not (`requirements.md` is already FROZEN, so a
+normative requirements diff costs the same today and at any later date). I
+checked two things rather than accepting them. The flip-invariance is not
+*total* — the clause's cost includes each implementer's REQ-007 hook, and M19's
+is DRAFT today — but that is one editorial hook against a normative requirements
+diff, so the dominant term is flip-invariant and the conclusion survives; I
+recorded the caveat so nobody later reads "flip-invariant" as "free". And
+decisively: my WO-0020 condition was that my reading of REQ-007 be **stated**
+rather than inferred, and it is now stated at six sites with §10 asserting both
+halves. Nothing is left to an implementer's judgment. That was the condition; it
+is met.
+
+**The two out-of-surface sites, under C-28.** I re-derived both rather than
+accepting the quotes. §4.2's is right and pins D = 0. §3's is **wrong at
+D = 1**: it scopes the copy to "on or after" the input `tlast`, and "on or
+after" admits the same cycle, which is exactly the D = 1 case a registered
+output cannot serve. The architect's §6.1 ("only where that number is
+**positive**") is tighter and correct. **The wrong phrase is mine** — my WO-0020
+clause 2 said "on or after" and the architect transcribed my clause faithfully.
+I considered withholding for it and rejected that: five sites pin D = 0, §10's
+hook pins it with a parenthetical, §8 drives the D = 1 datagram twice with
+opposite input bits asserting 0 both times, and no bench derives from §3. It is
+a one-word fix and it fails no part of the testability test. Spending a
+twenty-spec gate on a word I wrote wrong myself, which the architect's own text
+already corrects, would be theatre rather than rigour. It goes on the ledger as
+C-40 with the four unqualified relay statements I found by grepping every
+`tuser` mention in SPEC-M17 (§2 twice, §3's REQ-013 row, §4.2's *input* row) —
+one sweep, one activation.
+
+**C-37 is the reason this entry is long, and the reason I want the reasoning in
+the diff rather than the conclusion.** §11.4 offers its generalisation as
+falsifiable — "that sentence is the generalisation I owe a reader, and it is
+falsifiable". I falsified it. M14's output frame extent is fixed by the IPv4
+total length, a count declared inside the data, and its `Tail` state exists to
+consume Ethernet padding — M14's D ≥ 1. From SPEC-M14's own formulas the
+separation is ⌈(N′−20)/8⌉ − ⌈N/8⌉ + 4, so for a padded 64-octet frame (N = 46,
+K = 6) every total length 21 … 36 emits the payload `tlast` word on or before
+the input `tlast` is presented — total length 28 emits it a full cycle early —
+and §6.1's "the abort bit is always available in time" runs the identical
+backwards inequality F-1 did. It is worse than F-1 on two counts: SPEC-M14 §10's
+REQ-007 hook is unscoped and commissions an assertion no conformant design can
+pass on §8's own directed frames, and the system consequence is that a bad-FCS
+minimum-length frame carrying a short UDP datagram reaches the application
+unmarked — REQ-104 → REQ-007 → REQ-707 broken for the commonest small frame,
+needing no corrupted length field to reach, unlike M17's class.
+
+I bounded the falsification rather than asserting it: exactly three specs have a
+`Tail` state (M10, M14, M17); M10 is safe because it emits no stream at all
+(SPEC-M10 §3's REQ-007 row), and M03, M06, M08, M16 and M19 have no in-data
+count. **M14 is the sole falsification**, so §11.4's sentence needs M14 moved
+from the safe list and the generalisation restated over two modules.
+
+**Why C-37 does not block, argued rather than asserted, because this is the
+judgment the auditor should be able to check.** Four reasons and one honest
+concession. (1) The substance is at SPEC-M14, frozen at 3f6accc at a passed
+gate; withholding batch F repairs nothing there. (2) Its batch-F footprint is
+one non-normative sentence in a Deferred-items rationale cell — it constrains no
+implementer and commissions no test, so SPEC-M17 passes the testability test;
+its correction is a post-freeze §13 row, the same class as C-31, which I
+explicitly declined to make a condition of anything. (3) The M14 repair's price
+is flip-invariant by §11.4's own rule, so there is nothing to buy by blocking.
+(4) The repair is a genuine design decision — hold M14's payload `tlast` to the
+input `tlast` at REQ-005's cost, or scope REQ-007 and derive 0 as F-1 resolved
+one module down — and it wants an ADR and its own activation with §6.1, §6.2,
+§10 and §8 moving together; squeezing that into a gate-closing commit is exactly
+how a decision gets made for the wrong reason. **The concession**: had SPEC-M14
+been DRAFT today I would have contested it, on the two grounds that made F-1 a
+contest — `requirements.md` REQ-007 settles it in the impossible direction, and
+a committed hook asserts the wrong reading. It is a ledger row because of its
+**location**, not its severity, and I said so in the packet so that this
+signature is never read as a judgment that C-37 is small.
+
+**C-37 confirms the architect's carry rather than undermining it**, which is
+worth stating because the opposite reading is available: a REQ-007 scoping
+clause with two customers is more obviously the right instrument than a
+per-module note with one. The carried alternative was the right shape; it now
+has a second gate, `SO-ip_eth_rx_64.md`, alongside `SO-udp_ip_rx_64.md`.
+
+**C-38, and why it is a carry where F-1 was a contest — the distinction is the
+whole of my line.** SPEC-M18 §6.2 lets a word-aligned over-delivery escape
+REQ-710: when the declared count is a multiple of 8, the word completing it
+carries no octet beyond it, so `Body` exits to `Drain`, which drops
+`payload_tready` with the application's `tlast` pending, pulses no strobe and
+returns to `Idle` where the stale word becomes the next frame's word 0. Declare
+96 and supply 104 is the case; §8 item 4's declared 100 is not a multiple of 8
+and never drives it. That is precisely the pathology my own C-34 named, on the
+trigger C-34 did not name — and the C-34 repair I commissioned **hardens** it by
+making `Drain` unambiguously the exit where the older wording left room to
+argue. So it is partly my doing and it is inside the blast radius of my own
+correction, which is why I refused to let its location outside the letter of my
+surface decide it. What decides it is the C-26 line: **`requirements.md` REQ-710
+states the correct reading one level up** ("SHALL discard the excess words while
+continuing to accept them so the application is never stalled, and SHALL pulse
+`error_tx_length_mismatch` once") **and §10's REQ-710 hook asserts it
+correctly**. Both of my carry criteria are met, where at F-1 neither was and
+REQ-007 made things worse rather than better. The difference between an
+expensive post-freeze diff and an expensive *undecided* one is the difference I
+have contested on all along, and I am not going to blur it in either direction
+at the last item of the gate.
+
+**My own escape, recorded before anyone else records it.** SPEC-M14's text was
+in front of me at WO-0018 and I countersigned batch D/E without catching it.
+Root cause: at WO-0018 I checked M14's abort argument for internal consistency
+against its own worked example, which is the *no-padding* case (N′ = N) where
+the separation is 1 or 2 and the claim reproduces — I never quantified over the
+padding regime that M14's own `Tail` state exists to serve. I found it now only
+because F-1's derivation taught me the shape (an output frame whose extent is
+set by an in-data count cannot inherit a bit that arrives with the input frame),
+and because the architect wrote §11.4's generalisation in falsifiable form and
+invited the check. Both halves belong in the record: the escape is mine, and the
+repair's own text is what surfaced it. The lesson generalises into my attack
+plans — **every module with a `Tail`-like state gets an abort-availability row
+computed over the full range of the deficit, not checked against the worked
+example** — and it is the first row of the M14 and M17 attack plans. The auditor
+owns the DV-escape ledger (PROTOCOL §10); this entry is the root cause it will
+want and I will cooperate with its recording.
+
+**What I did not reopen.** Everything WO-0020 signed: M17's L = 8 / h = 8 /
+ΔC = 2, its precedence scoping, its strobe cycles and its stress arithmetic; and
+all of M18, M19 and M20 beyond the two byte-wise corrections — with the single
+exception of C-38, which I raise as a ledger row rather than a verdict precisely
+so that the signature stands where I placed it at WO-0020.
+
+### Actions
+- Read the charter, the protocol, WO-0022, the WO-0021 Return log in full, and
+  my own WO-0020 §1/§4/§5.
+- Verified the specs-unchanged claim myself: `git diff d8df28d..fa7eac5 --
+  docs/specs/ docs/adr/` is empty; `git diff d8df28d^..d8df28d --stat` shows
+  three spec files and no `requirements.md`, `traceability.md`, ADR, RTL or
+  test; hunk offsets confirm no `§4.1` block lies inside any hunk.
+- Re-derived, by hand from spec text: §6.1's separation formula and its three
+  regimes; the 182 worst case; the M = ⌈N′/8⌉ − 1 identity; the
+  `Tail` ≡ D ≥ 1 equivalence (M + 1 < K ⟺ D ≥ 1); the over-declared case's
+  Ci + K; both §8 datagrams' N, N′, D, word counts, `tkeep` and surplus; the
+  D = 0 companion's non-entry into `Tail`; C-34's word-12 boundary under both
+  numbering conventions; C-35's 1480/8 = 185.
+- Cross-checked C-31 across four documents (SPEC-M04 §9 + §13, ADR-0011's
+  Affects and Consequences, `requirements.md` REQ-709, SPEC-M18 §9 and §6.3
+  item 5) and confirmed the §13 row is well formed against §13's own header.
+- Grepped every `tuser` mention in SPEC-M17 to find residual unqualified relay
+  statements; found four, plus §3's "on or after" boundary error.
+- Falsified §11.4's generalisation: derived M14's separation
+  ⌈(N′−20)/8⌉ − ⌈N/8⌉ + 4 from SPEC-M14 §6.1's own cycle rule, validated it
+  against that section's worked example, and bounded the falsification by
+  checking all three `Tail`-state specs.
+- Ran `bash tools/dv_checks.sh`; read CI run 30744579228 via the GitHub API.
+- Wrote the Return log into the WO-0022 packet with the countersignature
+  sentence at `d8df28d` and C-37 … C-40.
+- Wrote no code and touched no spec, ADR, gate or audit file.
+
+### Evidence
+- `git diff d8df28d..fa7eac5 -- docs/specs/ docs/adr/` → **no output** (specs
+  and ADRs byte-identical between the repair commit and the working tree's HEAD
+  `fa7eac5`).
+- `git diff d8df28d^..d8df28d --stat` → `agents/handoffs/WO-0021_f1-repair.md`,
+  `agents/journals/claude_architect_docs_lead_agent.md`,
+  `docs/specs/modules/udp_ip_rx_64.md` (+88 −22 region),
+  `docs/specs/modules/udp_ip_tx_64.md`, `docs/specs/modules/xgmii_tx_64.md`;
+  **5 files changed**, no `requirements.md`, no `traceability.md`, no ADR, no
+  `libs/`, no `test/`.
+- `bash tools/dv_checks.sh` → `dv_checks: all checks passed`; within it
+  `check_records_vs_appendix.sh` → **23 check(s) run, 0 failure(s)** (all twenty
+  §4.1 lifts byte-identical, including all four batch-F lifts);
+  `check_emitted_verilog.sh` → **4 checks, 0 failures, 4 pending**.
+- CI `build` run **30744579228**:
+  `head_sha` = `d8df28dfe3722cd8950fdf753a6019b65cbb6966`,
+  `conclusion` = `success`, `status` = `completed`, `run_number` 56,
+  `event` = `push`, branch `claude/fpga-hardcaml-agent-orchestration-37ceyf`.
+  Head SHA **is** the repair commit, so WO-0020 §5 item 4 is discharged.
+  (Run 30744608560 on `fa7eac5` also green, per the packet; I verified the
+  d8df28d run directly, which is the one the §12 rows cite.)
+- Arithmetic reproducible by hand from the cited sections, no tooling required:
+  - SPEC-M17 §6.1 separation = ⌈N′/8⌉ − ⌈N/8⌉ + 1 = 1 − D; D = 183 and
+    D − 1 = **182** at N = 1480, N′ = 9.
+  - §8 D = 1 datagram: N = 26, N′ = 20, K = 4, M = 2, separation 0, 12 octets,
+    `tkeep` = 0x0F, 6 surplus.
+  - §8 D = 0 companion: N = 32, N′ = 25, K = 4, M = 3, separation 1, 17 octets,
+    `tkeep` = 0x01, 7 surplus, `Tail` not entered (M + 1 = K).
+  - SPEC-M18 C-34 boundary: application word 12 holds declared 97–100 and excess
+    101–104 (1-indexed) = 96–99 and 100–103 (0-indexed); word 13 holds the
+    remaining six; ten excess octets in two words.
+  - SPEC-M18 C-35: 1472 + 8 = 1480, 1480/8 = **185**; §3 and §10 now agree.
+  - **C-37**: SPEC-M14 separation = ⌈(N′−20)/8⌉ − ⌈N/8⌉ + 4. Padded 64-octet
+    frame N = 46 → K = 6, input `tlast` at Ci + 5. Total length 28 → M = 1,
+    payload `tlast` word at Ci + 4 — **one cycle early**. Threshold N′ ≥ 37, so
+    total lengths 21 … 36 are all affected; UDP length 9 (total length 29) gives
+    separation exactly 0. Worst case N = 1500, N′ = 21 → 184 cycles early. The
+    section's own worked example (N′ = N = 46) gives separation 2, which is why
+    it reproduces and why the defect hid.
+- Verdict artifact: `agents/handoffs/WO-0022_batch-f-rereview.md`, Return log
+  dated 2026-08-02T16:00Z, carrying the countersignature sentence at `d8df28d`
+  and the C-37 … C-40 table.
+
+### Outcome
+**DoD met.** The bounded re-review is complete on every item WO-0022 names, the
+two out-of-surface sites are judged under C-28 (one accepted, one found wrong at
+the D = 1 boundary and carried, the wrong word being my own), and the
+countersignature is given:
+
+> "I countersign batch F (SPEC-M17, SPEC-M18, SPEC-M19, SPEC-M20) for
+> P1-spec-freeze at `d8df28d`."
+
+**I sign `P1-spec-freeze`'s testability item for batch F**, and with batches A
+through F signed, **all twenty Phase-1 specifications are FROZEN**. Batch F's
+four §12 evidence rows fill from CI run 30744579228. The gate's sign-off section
+now reduces to the sponsor's signature (E1).
+
+Handoff: `agents/handoffs/WO-0022_batch-f-rereview.md` Return log, to the
+orchestrator for gate transcription and for relay of C-37 … C-40 to
+architect_docs_lead.
+
+### Open-questions
+- **C-37 is the one item I want escalated in attention if not in class.** It is
+  normal packet flow — a spec finding at a frozen module, not an E-class
+  escalation — but it is the largest finding in the programme to date and it
+  must not be lost in the gate's momentum. I recommend it as the **next
+  architect activation after the gate, ahead of any receive-chain RTL**, with an
+  ADR, because its repair is a design choice (hold M14's payload `tlast` at
+  REQ-005's cost, or scope REQ-007 and derive 0) rather than a wording fix. If
+  the orchestrator judges the choice itself needs the sponsor, that is E2 and
+  its call, not mine.
+- **C-37 is also a DV escape of mine** (charter §6 criterion 2). The auditor
+  owns the ledger (PROTOCOL §10); the root cause is in Reasoning above and I
+  will cooperate fully with its recording. I did not and will not write
+  `docs/reports/audit/**`.
+- **C-38 will be caught by a bench before it is caught by a reader**: the
+  declare-96/supply-104 datagram is a mandatory row of the M18 attack plan, and
+  `SO-udp_ip_tx_64.md` is where it closes. If the architect prefers to repair
+  §6.2 before M18's RTL rather than after, that is cheaper and I would take it.
+- **C-39 and C-40 need no decision from me** — one frozen editorial row and one
+  five-site wording sweep, both gated at their modules' sign-off packets.
+- C-2, C-3, C-5, C-7, C-9's REQ-903 half and C-32, C-33, C-36 remain open and
+  unchanged by this review. C-31, C-34 and C-35 are **closed**.
+- **Next for me**: attack plans. With twenty frozen specs there is no further
+  spec-freeze work, and my next unit should be `test/attack_plans/` — starting
+  with M03 and M14, the latter carrying C-37's abort-availability row as its
+  first entry.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0022_batch-f-rereview.md
