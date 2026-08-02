@@ -62,7 +62,9 @@ Corrections.
 
 | Packet | From → To | State | Note |
 |---|---|---|---|
-| [WO-0007](../agents/handoffs/WO-0007_batch-a-countersign.md) | orchestrator → dv_lead | ISSUED | Countersign SPEC-M01/M02 at 22145b5 (ifc_check green: run 30727252770) — freezes batch A |
+| [WO-0009](../agents/handoffs/WO-0009_bench-machinery.md) | orchestrator → dv_lead | ISSUED | Bench machinery: cost probe, protocol/conservation monitors, octet-time tagger, REQ-305 bit-serial reference + anchors, C-9 + X-9 tools scripts |
+| [WO-0008](../agents/handoffs/WO-0008_batch-b-specs.md) | orchestrator → architect_docs_lead | ISSUED | Batch B (SPEC-M03/M04/M05) + §11 reconciliation (unblocks batch-A FROZEN) + accumulated spec-diff backlog + two ADRs + C-1 latency resolution (sponsor-delegated, seals at batch-B countersign) |
+| [WO-0007](../agents/handoffs/WO-0007_batch-a-countersign.md) | orchestrator → dv_lead | ACCEPTED | **SIGNED at 22145b5** (CRC verified via independent bit-serial implementation; 21/21 strobes exact). FROZEN flip pending §11 reconciliation; new ledger items C-8/C-9/C-10 |
 | [WO-0006](../agents/handoffs/WO-0006_batch-a-specs.md) | orchestrator → architect_docs_lead | ACCEPTED | Returned + accepted at 22145b5: SPEC-M01/M02 DRAFT, lifts byte-identical, 21 strobes; ifc_check CI run pending → then dv countersign (WO-0007) freezes batch A |
 | [WO-0005](../agents/handoffs/WO-0005_spec-diff-re-review.md) | orchestrator → dv_lead | ACCEPTED | 16/16 CLOSED; testability precondition **SIGNED at b4b4cf4** (J-dv_lead-0002); 7 carry-forwards C-1…C-7 tracked on the gate checklist |
 | [WO-0004](../agents/handoffs/WO-0004_requirements-spec-diffs.md) | orchestrator → architect_docs_lead | ACCEPTED | Returned + accepted at b4b4cf4: 16/16 applied (D-4 metric corrected to octet times), one IFG convention at all sites, 108→110 REQs, set equality re-verified |

@@ -245,3 +245,19 @@ the constants at M03 and M04 with M02 contributing zero.
   written; the C-9 script exists only as the commands in `J-dv_lead-0003`
   Evidence and will land under `tools/` with my bench-setup work order.
 - `git commit` / `git push`: never run.
+
+### ACCEPTED — orchestrator, 2026-08-02T05:45Z, journal `J-orchestrator-0038`
+
+Both signatures transcribed to the gate table. Dispositions:
+1. §11/FROZEN conflict: AGREED — the flip would be illegal under the form
+   the auditor checks. Resolution assigned as WO-0008's first
+   deliverable: SPEC-TEMPLATE §11 amended so a FROZEN spec may carry no
+   OPEN questions but may cite tracked ledger/WO items; both batch-A
+   specs' §11 converted accordingly (C-10 folded in). Batch A flips
+   FROZEN at WO-0008 acceptance.
+2. §11.4 field-name gap: noted and scheduled — WO-0008's M03 lift names
+   Source fields; the run on that commit settles it.
+3. C-8/C-9/C-10 added to the ledger with deadline gates as proposed.
+4. Bench-setup WO: AGREED and issued as WO-0009, running in parallel
+   with WO-0008 (disjoint write scopes: test/** + tools/** vs
+   docs/specs/**).

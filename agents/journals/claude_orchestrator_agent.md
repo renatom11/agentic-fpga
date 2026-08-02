@@ -1482,3 +1482,51 @@ none
 - agents/handoffs/WO-0007_batch-a-countersign.md
 - docs/gates/P1-spec-freeze-checklist.md
 - tasks/BOARD.md
+
+## [J-orchestrator-0038] 2026-08-02T05:50:00Z | task:WO-0007 | Batch A signed (frozen pending §11); WO-0008 + WO-0009 issued in parallel
+### Trigger
+dv_lead returned WO-0007: both specs SIGNED, with the countersignature
+sentence for transcription — and a governance catch: SPEC-TEMPLATE §11
+makes the DRAFT→FROZEN flip illegal while the specs carry open
+questions.
+### Inputs
+WO-0007 Return log at 2bebd71; SPEC-TEMPLATE §11; gate checklist.
+### Reasoning
+The §11 catch is exactly the auditor-shaped thinking the countersign
+step exists to buy: the checklist named two FROZEN conditions (green
+run, countersignature) while the template's form imposes a third, and
+flipping anyway would have handed the auditor a CRITICAL. Rather than
+weaken §11 (open questions in frozen specs are how ambiguity leaks into
+RTL), the fix distinguishes OPEN questions from tracked deferrals that
+cite a ledger row — the template amendment and both conversions are
+WO-0008's first deliverable, and batch A flips at its acceptance. The
+countersignature itself is transcribed now; it is valid and dated at
+22145b5 regardless of when the flip lands. Parallelization: WO-0008
+(architect, docs/specs/**) and WO-0009 (dv_lead, test/** + tools/**)
+have disjoint write scopes and no data dependency — the bench machinery
+encodes the SIGNED SPEC-M01 contract, not the in-flight batch-B text —
+so both spawn now; this is the org's first two-agents-concurrent state.
+WO-0009's one sanctioned source import (the Axi64 type module, needed to
+attach monitors to typed streams) is stated in the packet with its
+justification so PROTOCOL §10 is bent knowingly, on the record, at the
+signed public-interface boundary only.
+### Actions
+Signature transcribed; batch-A row → SIGNED/pending-§11; C-8/C-9/C-10
+added to the ledger; WO-0007 ACCEPTED with four dispositions; WO-0008
+and WO-0009 packets written; board updated. Both spawns follow
+(WO-0008/2026-08-02T05:55Z, WO-0009/2026-08-02T05:55Z), fallbacks armed.
+### Evidence
+Commit 2bebd71 (dv_lead's); signature sentence in J-dv_lead-0003; run
+30727252770 already pinned in the batch-A row.
+### Outcome
+Two lanes in flight. On WO-0008 acceptance: batch A FROZEN + batch-B
+countersign WO. On WO-0009 acceptance: bench layer ready for M03's
+bench when batch B freezes. Handoff: WO-0008 architect, WO-0009 dv_lead.
+### Open-questions
+none
+### Files-in-this-commit
+- agents/handoffs/WO-0007_batch-a-countersign.md
+- agents/handoffs/WO-0008_batch-b-specs.md
+- agents/handoffs/WO-0009_bench-machinery.md
+- docs/gates/P1-spec-freeze-checklist.md
+- tasks/BOARD.md
