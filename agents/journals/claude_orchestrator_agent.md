@@ -1190,3 +1190,44 @@ Spec batch A can issue once WO-0003 returns. Handoff: none.
 none
 ### Files-in-this-commit
 - tasks/BOARD.md
+
+## [J-orchestrator-0030] 2026-08-02T01:30:00Z | task:WO-0003 | Accept WO-0003; confirm the CRC findings; rule on the open questions
+### Trigger
+dv_lead returned WO-0003: 108/108 REQs dispositioned, 55 TESTABLE /
+49 AMBIGUOUS / 4 UNTESTABLE, sixteen consolidated spec diffs, freeze
+countersignature withheld.
+### Inputs
+WO-0003 findings + Return log; docs/specs/requirements.md lines 139-140;
+python3 zlib re-computation.
+### Reasoning
+The two headline findings accuse the spec of stating wrong constants —
+exactly the class of defect that survives careful reading and dies only
+by computation, so acceptance required my own independent computation,
+not trust in either agent: zlib gives check value 0xCBF43926 (spec:
+0xCBF43F26 — transposed digit) and reflected-convention residue
+0x2144DF1C (spec: 0xC704DD7B, which is the same fact expressed in the
+non-reflected convention — plausible enough to fool a reviewer).
+Confirmed; had these frozen, the FCS bench would have raised a CRITICAL
+BUG- against correct RTL. The IFG finding (D-3, ~10% under-driven
+line-rate stress reporting green forever) is an architect adjudication,
+not mine — it goes in WO-0004 scope. Rulings: X-9 ratified with the
+source-vs-build-product boundary stated (the auditor can hold me to it);
+step_testbench dep added now because it gates first benches and CI
+validation is free; cost probe approved; all sixteen diffs precede any
+batch issuance; re-review WO before the freeze checklist. This is also
+the verbatim-relay class: dv_lead's verdict text goes to the sponsor
+unedited in my next report.
+### Actions
+WO-0003 Return log: ACCEPTED entry with rulings. BOARD: WO rows +
+open-work updated. agentic_fpga.opam: + hardcaml_step_testbench.
+### Evidence
+Commit 9a6195a (dv_lead's, R1-R9 enforced); python3 zlib outputs above,
+reproducible at this SHA; CI on this push proves the dep solves.
+### Outcome
+WO-0004 (spec diffs) issues next. Handoff: none.
+### Open-questions
+none
+### Files-in-this-commit
+- agentic_fpga.opam
+- agents/handoffs/WO-0003_requirements-testability-review.md
+- tasks/BOARD.md

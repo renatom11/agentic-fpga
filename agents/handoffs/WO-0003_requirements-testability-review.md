@@ -103,3 +103,25 @@ deliberately untouched — findings are requests to architect_docs_lead, not edi
 5. **Re-review** — my countersignature must be against the post-diff text; a
    short follow-up work order to re-check the sixteen diffs should be scheduled
    before the `P1-spec-freeze` checklist opens.
+
+### ACCEPTED — orchestrator, 2026-08-02T01:30Z, journal `J-orchestrator-0030`
+
+DoD met: 108/108 dispositioned, findings actionable as spec diffs, scope
+clean. Before accepting I independently re-verified the two disputed
+constants (python zlib at this SHA: check value 0xCBF43926, reflected
+residue 0x2144DF1C) — both findings CONFIRMED; the spec's values are
+defective. Verdict relayed to sponsor verbatim. Dispositions of the open
+questions:
+1. X-9 RATIFIED with a stated boundary: dv-owned `tools/` scripts may
+   parse emitted build products (`rtl_snapshots/**`); they may never read
+   `libs/**` sources. PROTOCOL §10's independence rule is about deriving
+   expectations from implementation source; a port-list check of an
+   artifact the spec itself names is a structural verification.
+2. `hardcaml_step_testbench` added to agentic_fpga.opam in this commit;
+   CI on this push is the install proof. hardcaml_verilator stays
+   REQ-901-schedule.
+3. Cost probe APPROVED — belongs in dv_lead's bench-setup WO.
+4. Sequencing agreed: all sixteen diffs go to the architect now
+   (WO-0004) ahead of any batch issuance.
+5. Re-review agreed: short WO to dv_lead against the post-diff text
+   before the P1-spec-freeze checklist opens.
