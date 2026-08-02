@@ -183,7 +183,16 @@ let%expect_test "D-4: the cycle metric takes two values at a lane-4 start, octet
     ~expected:3
     (Option.value ~default:(-1) (Octet_time.Latency.word_delay tagger4));
   verdict tagger4 ~expect_clean:true;
-  [%expect {| |}]
+  [%expect {|
+    start lane 0: octet-time latencies 16; cycle-metric values 2
+    start lane 4: octet-time latencies 20; cycle-metric values 2;3
+    lane-0 L = 16, lane-4 L = 20, difference 4 octet times
+    lane-4 L = 20
+    lane-4 word delay = 3
+    [lane4] frames=1 octets=64 latency=CONSTANT per front offset (1 class)
+      h=4 L=20 word_delay=3 frames=1 octets=64
+    VERDICT ok
+    |}]
 ;;
 
 let%expect_test "WO-0010's divergent case: the conflated parameter reports word delay 2" =
@@ -262,7 +271,25 @@ let%expect_test "WO-0010's divergent case: the conflated parameter reports word 
   expect_int ~what:"lane-4 (L + h)" ~expected:24 (12 + 12);
   expect_int ~what:"lane-4 floor(L/8), the superseded unit" ~expected:1 (Octet_time.cycles_floor 12);
   verdict lane4 ~expect_clean:true;
-  [%expect {| |}]
+  [%expect {|
+    SPEC-M03 §7 h at a lane-0 start = 8
+    SPEC-M03 §7 h at a lane-4 start = 12
+    lane 0: h=8 L=16 word delay: conflated=3 fixed=3 (SPEC-M03 §7 pins 3); the fixed helper refuses the conflated pairing: no
+    lane 0 L = 16
+    lane 0 word delay (fixed) = 3
+    lane 0 word delay (conflated, truncating) = 3
+    lane 0: (L + 8) refused as not closing mod 8 = 0
+    lane 4: h=12 L=12 word delay: conflated=2 fixed=3 (SPEC-M03 §7 pins 3); the fixed helper refuses the conflated pairing: yes
+    lane 4 L = 12
+    lane 4 word delay (fixed) = 3
+    lane 4 word delay (conflated, truncating) = 2
+    lane 4: (L + 8) refused as not closing mod 8 = 1
+    lane-4 (L + h) = 24
+    lane-4 floor(L/8), the superseded unit = 1
+    [xgmii_rx_64 lane 4] frames=1 octets=60 latency=CONSTANT per front offset (1 class)
+      h=12 L=12 word_delay=3 <= ceiling 4 frames=1 octets=60
+    VERDICT ok
+    |}]
 ;;
 
 let%expect_test "SPEC-M03 §8: alternating start lanes give one L per lane, one word delay" =
@@ -319,7 +346,18 @@ let%expect_test "SPEC-M03 §8: alternating start lanes give one L per lane, one 
    | None -> ()
    | Some _ -> failwith "two start-lane constants were collapsed into one");
   verdict tagger ~expect_clean:true;
-  [%expect {| |}]
+  [%expect {|
+    start lanes: 0 4 0 4 0 4
+    h=8 L=16 word delay=3 frames=3
+    h=12 L=12 word delay=3 frames=3
+    front-offset classes = 2
+    distinct L values over the run = 2
+    the single word delay both lanes agree on = 3
+    [xgmii_rx_64 §8] frames=6 octets=360 latency=CONSTANT per front offset (2 classes)
+      h=8 L=16 word_delay=3 <= ceiling 4 frames=3 octets=180
+      h=12 L=12 word_delay=3 <= ceiling 4 frames=3 octets=180
+    VERDICT ok
+    |}]
 ;;
 
 let%expect_test "§0.5's start-lane bound: a lane-4 word delay two cycles longer is caught" =
@@ -340,7 +378,17 @@ let%expect_test "§0.5's start-lane bound: a lane-4 word delay two cycles longer
   if Octet_time.Latency.is_constant tagger = false
   then failwith "each start lane is individually constant here; the defect is between them";
   verdict tagger ~expect_clean:false;
-  [%expect {| |}]
+  [%expect {|
+    front offset 12: word delay 5 exceeds the requirements.md §1.1 ceiling of 4 (REQ-019)
+    front offsets 8 and 12 have word delays 3 and 5; requirements.md §0.5 admits only the same value or one more for the larger front offset (the two latency constants would differ by 12 octet times, over the 8-octet-time bound)
+    errors reported = 2
+    [lane-skew] frames=2 octets=120 latency=CONSTANT per front offset (2 classes)
+      h=8 L=16 word_delay=3 <= ceiling 4 frames=1 octets=60
+      h=12 L=28 word_delay=5 > ceiling 4 frames=1 octets=60
+      ERROR: front offset 12: word delay 5 exceeds the requirements.md §1.1 ceiling of 4 (REQ-019)
+      ERROR: front offsets 8 and 12 have word delays 3 and 5; requirements.md §0.5 admits only the same value or one more for the larger front offset (the two latency constants would differ by 12 octet times, over the 8-octet-time bound)
+    VERDICT ok
+    |}]
 ;;
 
 let%expect_test "a producer that does not realign is caught by REQ-021 and by §0.5's closure" =
@@ -374,7 +422,17 @@ let%expect_test "a producer that does not realign is caught by REQ-021 and by §
     (Option.value ~default:(-1) (Octet_time.word_cycles ~front_offset:14 14));
   expect_int ~what:"errors reported" ~expected:2 (List.length (Octet_time.Latency.errors tagger));
   verdict tagger ~expect_clean:false;
-  [%expect {| |}]
+  [%expect {|
+    frame 0: the first emitted octet has octet time 52, which is not byte position 0 of a word — the output stream is not word-aligned at its producer (REQ-021)
+    front offset 14: L = 14 gives (L + h) = 28, which is not a multiple of 8 — requirements.md §0.5 makes the word delay a whole number, so no conformant module has this pair
+    word_cycles refuses (L + h) = 28 = -1
+    errors reported = 2
+    [eth-strip-misaligned] frames=1 octets=46 latency=CONSTANT per front offset (1 class)
+      h=14 L=14 word_delay=(undefined) frames=1 octets=46
+      ERROR: frame 0: the first emitted octet has octet time 52, which is not byte position 0 of a word — the output stream is not word-aligned at its producer (REQ-021)
+      ERROR: front offset 14: L = 14 gives (L + h) = 28, which is not a multiple of 8 — requirements.md §0.5 makes the word delay a whole number, so no conformant module has this pair
+    VERDICT ok
+    |}]
 ;;
 
 let%expect_test "a front offset the spec does not pin is reported, not silently classified" =
@@ -391,7 +449,14 @@ let%expect_test "a front offset the spec does not pin is reported, not silently 
   List.iter print_endline (Octet_time.Latency.errors tagger);
   expect_int ~what:"errors reported" ~expected:1 (List.length (Octet_time.Latency.errors tagger));
   verdict tagger ~expect_clean:false;
-  [%expect {| |}]
+  [%expect {|
+    frame 0: observed front offset h = 12 is not one this module's spec §7 pins (declared: 8) — h is a property of the module and the start lane and is not a free choice (requirements.md §0.5)
+    errors reported = 1
+    [lane-0 only] frames=1 octets=60 latency=CONSTANT per front offset (1 class)
+      h=12 L=12 word_delay=3 <= ceiling 4 frames=1 octets=60
+      ERROR: frame 0: observed front offset h = 12 is not one this module's spec §7 pins (declared: 8) — h is a property of the module and the start lane and is not a free choice (requirements.md §0.5)
+    VERDICT ok
+    |}]
 ;;
 
 let%expect_test "a stripping stage: constant latency and the word delay §1.1 is in" =
@@ -425,7 +490,15 @@ let%expect_test "a stripping stage: constant latency and the word delay §1.1 is
   expect_int ~what:"floor(L/8), superseded" ~expected:1 (Octet_time.cycles_floor 10);
   expect_int ~what:"8(Co-Ci)-h" ~expected:10 ((8 * (co - ci)) - strip);
   verdict tagger ~expect_clean:true;
-  [%expect {| |}]
+  [%expect {|
+    L = 10
+    word delay = 3
+    floor(L/8), superseded = 1
+    8(Co-Ci)-h = 10
+    [eth-strip] frames=1 octets=46 latency=CONSTANT per front offset (1 class)
+      h=14 L=10 word_delay=3 <= ceiling 3 frames=1 octets=46
+    VERDICT ok
+    |}]
 ;;
 
 let%expect_test "a store-and-forward stage is caught: latency grows with the frame" =
@@ -451,7 +524,13 @@ let%expect_test "a store-and-forward stage is caught: latency grows with the fra
    | None -> failwith "a non-constant latency must name its first offender"
    | Some o -> Printf.printf "first offender: %s\n" o);
   verdict tagger ~expect_clean:false;
-  [%expect {| |}]
+  [%expect {|
+    first offender: frame 0 octet 8 has latency 40 octet times; every earlier octet at front offset 0 had 32 (REQ-005, requirements.md §0.5)
+    [store-and-forward] frames=1 octets=32 latency=NOT CONSTANT
+      h=0 L=NOT CONSTANT distinct=[32; 40] word_delay=(undefined) frames=1 octets=32
+      first offender: frame 0 octet 8 has latency 40 octet times; every earlier octet at front offset 0 had 32 (REQ-005, requirements.md §0.5)
+    VERDICT ok
+    |}]
 ;;
 
 let%expect_test "frames are matched in order, and a discarded frame is popped explicitly" =
@@ -475,7 +554,12 @@ let%expect_test "frames are matched in order, and a discarded frame is popped ex
   expect_int ~what:"L" ~expected:24
     (Option.value ~default:(-1) (Octet_time.Latency.constant tagger));
   verdict tagger ~expect_clean:true;
-  [%expect {| |}]
+  [%expect {|
+    L = 24
+    [ordered] frames=2 octets=32 latency=CONSTANT per front offset (1 class)
+      h=0 L=24 word_delay=3 frames=2 octets=32
+    VERDICT ok
+    |}]
 ;;
 
 let%expect_test "an output frame with no matching input is an error, not a latency" =
@@ -493,5 +577,9 @@ let%expect_test "an output frame with no matching input is an error, not a laten
   (match Octet_time.Latency.errors tagger with
    | [] -> failwith "a surplus output frame must be reported"
    | _ :: _ -> print_endline "VERDICT ok");
-  [%expect {| |}]
+  [%expect {|
+    [surplus] frames=1 octets=0 latency=(no octet compared)
+      ERROR: output frame 0 has no matching input frame (frames out exceed frames in)
+    VERDICT ok
+    |}]
 ;;

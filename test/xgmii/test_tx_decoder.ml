@@ -106,7 +106,21 @@ let%expect_test "SPEC-M04 §6.1: two minimum-length frames decode clean at 11 cy
     (List.length (List.nth decoded 0).Tx_decoder.octets);
   if not (Tx_decoder.is_clean d) then failwith "a conformant transmit wire was not clean";
   verdict ();
-  [%expect {| |}]
+  [%expect {|
+    [xgmii_tx_64 §6.1] frames=2 octets=128 underflowed=0 violations=0
+      start cycles: 1 12
+      start-to-start cycles: 11
+      gaps (octets, terminate inclusive): 16
+    frames decoded = 2
+    violations = 0
+    start-to-start cycles (REQ-209) = [11]
+    gaps, terminate inclusive (REQ-204) = [16]
+    octet times between start characters (REQ-204) = 88
+    terminate lane (REQ-205) = 0
+    terminate lane (REQ-205) = 0
+    octets in the first decoded frame (DA through FCS, §0.3) = 64
+    VERDICT ok
+    |}]
 ;;
 
 let%expect_test "REQ-201: a lane-4 start character is a transmit-side violation" =
@@ -125,7 +139,17 @@ let%expect_test "REQ-201: a lane-4 start character is a transmit-side violation"
   expect_int ~what:"REQ-201 violations (one per lane-4 start)" ~expected:2 (List.length req201);
   expect_int ~what:"frames still decoded" ~expected:4 (List.length (Tx_decoder.frames d));
   verdict ();
-  [%expect {| |}]
+  [%expect {|
+    [receive schedule on a transmit port] frames=4 octets=256 underflowed=0 violations=2
+      start cycles: 1 11 22 32
+      start-to-start cycles: 10 11 10
+      gaps (octets, terminate inclusive): 12 12 12
+      VIOLATION cycle 11 REQ-201: start character in lane 4; Phase 1 places every start character in lane 0 (SPEC-M04 §6.1, requirements.md §0.3)
+      VIOLATION cycle 32 REQ-201: start character in lane 4; Phase 1 places every start character in lane 0 (SPEC-M04 §6.1, requirements.md §0.3)
+    REQ-201 violations (one per lane-4 start) = 2
+    frames still decoded = 4
+    VERDICT ok
+    |}]
 ;;
 
 let%expect_test "REQ-202: one flipped FCS octet is caught against the REQ-305 oracle" =
@@ -156,7 +180,16 @@ let%expect_test "REQ-202: one flipped FCS octet is caught against the REQ-305 or
           (Tx_decoder.violations d)));
   if Tx_decoder.is_clean d then failwith "a wrong FCS was accepted";
   verdict ();
-  [%expect {| |}]
+  [%expect {|
+    [flipped FCS octet] frames=1 octets=64 underflowed=0 violations=1
+      start cycles: 1
+      start-to-start cycles:
+      gaps (octets, terminate inclusive):
+      VIOLATION cycle 10 REQ-202: FCS on the wire is [38 C4 DD 30]; the REQ-305 bit-serial reference over the 60 preceding octets gives [38 C4 DD CF], least significant octet first
+    violations = 1
+    the violation is REQ-202's = 1
+    VERDICT ok
+    |}]
 ;;
 
 let%expect_test "REQ-205 and REQ-204: a non-idle gap lane and a short gap are caught" =
@@ -194,7 +227,24 @@ let%expect_test "REQ-205 and REQ-204: a non-idle gap lane and a short gap are ca
           (Tx_decoder.violations d2)));
   expect_int ~what:"other violations" ~expected:0 (List.length (Tx_decoder.violations d2) - 1);
   verdict ();
-  [%expect {| |}]
+  [%expect {|
+    [data in a gap lane] frames=1 octets=64 underflowed=0 violations=1
+      start cycles: 1
+      start-to-start cycles:
+      gaps (octets, terminate inclusive):
+      VIOLATION cycle 10 REQ-205: lane 3 carries data 0xAA between frames; every remaining lane of the terminate word and every lane of every gap word carries an idle character
+    REQ-205 violations = 1
+    [gap below cfg_ifg] frames=2 octets=128 underflowed=0 violations=1
+      start cycles: 1 11
+      start-to-start cycles: 10
+      gaps (octets, terminate inclusive): 8
+      VIOLATION cycle 11 REQ-204: gap of 8 octets counted from the terminate character inclusive, below the 12 cfg_ifg requires; gaps are only ever rounded up (requirements.md §0.3, §11)
+    the emitted gap = [8]
+    start lanes are still legal = [0 0]
+    REQ-204 violations = 1
+    other violations = 0
+    VERDICT ok
+    |}]
 ;;
 
 let%expect_test "SPEC-M04 §9: the underflow word is /E/ in lane 0 then /T/ in lane 1" =
@@ -256,5 +306,16 @@ let%expect_test "SPEC-M04 §9: the underflow word is /E/ in lane 0 then /T/ in l
           (fun (v : Tx_decoder.violation) -> v.req = "REQ-206")
           (Tx_decoder.violations d2)));
   verdict ();
-  [%expect {| |}]
+  [%expect {|
+    [underflow] frames=1 octets=16 underflowed=1 violations=0
+      start cycles: 1
+      start-to-start cycles:
+      gaps (octets, terminate inclusive):
+    frames decoded = 1
+    octets transmitted before the error character = 16
+    terminate lane (§9) = 1
+    violations (a truncated frame is not itself a violation) = 0
+    REQ-206 violations for a misplaced error character = 1
+    VERDICT ok
+    |}]
 ;;

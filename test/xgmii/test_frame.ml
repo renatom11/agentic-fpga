@@ -59,7 +59,17 @@ let%expect_test "SPEC-M03 §8's stimulus frame, octet for octet" =
   expect_int ~what:"delivered octets (REQ-103)" ~expected:60 (List.length (Frame.delivered f));
   Printf.printf "frame 0: %s\n" (hex f);
   verdict ();
-  [%expect {| |}]
+  [%expect {|
+    frame octets, DA through FCS = 64
+    destination MAC, offsets 0-5 = 02 00 00 00 00 01
+    source MAC, offsets 6-11 = 02 00 00 00 00 02
+    ethertype, offsets 12-13 = 08 00
+    filler octets, offsets 18-59 = 42
+    the first three filler octets (the default pattern is the offset itself) = 12 13 14
+    delivered octets (REQ-103) = 60
+    frame 0: 02 00 00 00 00 01 02 00 00 00 00 02 08 00 00 00 00 00 12 13 14 15 16 17 18 19 1A 1B 1C 1D 1E 1F 20 21 22 23 24 25 26 27 28 29 2A 2B 2C 2D 2E 2F 30 31 32 33 34 35 36 37 38 39 3A 3B 38 C4 DD CF
+    VERDICT ok
+    |}]
 ;;
 
 let%expect_test "REQ-012: the sequence number's most significant octet is at offset 14" =
@@ -80,7 +90,11 @@ let%expect_test "REQ-012: the sequence number's most significant octet is at off
       if seq <> i then failwith "a stress frame's sequence number did not round-trip")
     [ 0; 1; 2; 255; 256; 65_535; 9_999 ];
   verdict ();
-  [%expect {| |}]
+  [%expect {|
+    sequence number, offsets 14-17 = 01 02 03 04
+    sequence read back from the delivered octets = 16909060
+    VERDICT ok
+    |}]
 ;;
 
 let%expect_test "REQ-304: every stimulus frame carries a valid FCS, and the wire order matters" =
@@ -114,7 +128,11 @@ let%expect_test "REQ-304: every stimulus frame carries a valid FCS, and the wire
   in
   if Frame.residue_ok corrupted then failwith "the residue check missed a flipped bit";
   verdict ();
-  [%expect {| |}]
+  [%expect {|
+    FCS of frame 0, wire order (REQ-202, least significant first): 38 C4 DD CF
+    FCS from the REQ-305 reference = 38 C4 DD CF
+    VERDICT ok
+    |}]
 ;;
 
 let%expect_test "REQ-203: padding takes a short frame to 60 octets before the FCS" =
@@ -133,5 +151,12 @@ let%expect_test "REQ-203: padding takes a short frame to 60 octets before the FC
     ~expected:1514
     (List.length (Frame.pad_to_60 (List.init 1514 (fun _ -> 0xA5))));
   verdict ();
-  [%expect {| |}]
+  [%expect {|
+    padded octets before the FCS = 60
+    the first pad octets, offsets 20-23 = 00 00 00 00
+    the payload is unchanged = 80 81 82 83 84 85 86 87 88 89 8A 8B 8C 8D 8E 8F 90 91 92 93
+    frame octets DA through FCS (§0.3's minimum) = 64
+    a 1514-octet frame is not shortened = 1514
+    VERDICT ok
+    |}]
 ;;

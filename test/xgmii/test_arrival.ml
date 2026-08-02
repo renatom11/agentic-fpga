@@ -69,7 +69,20 @@ let%expect_test "SPEC-M03 §8: the alternation and the 10/11 cadence are consequ
   if not (Arrival.is_clean s)
   then failwith "the model's own §0.3 contract check failed on its §8 schedule";
   verdict ();
-  [%expect {| |}]
+  [%expect {|
+    [xgmii link partner] frames=6 ifg=12 cycles=65 frame octets(DA..FCS)=64
+      start lanes: 0 4 0 4 0 4
+      start cycles: 1 11 22 32 43 53
+      start-to-start cycles: 10 11 10 11 10
+      gaps (octets, terminate inclusive): 12 12 12 12 12
+      contract: CLEAN (requirements.md §0.3, REQ-004, REQ-101)
+    start lanes (REQ-004, REQ-101) = [0 4 0 4 0 4]
+    start-to-start cycles (REQ-004: alternating 10 and 11) = [10 11 10 11 10]
+    gaps in octets, terminate inclusive (§0.3's minimum 12) = [12 12 12 12 12]
+    octet times between start characters (§0.3's 84-octet budget) = 84
+    cycles for five inter-arrival intervals (5 x 10.5 = 52.5, i.e. 52 or 53) = 52
+    VERDICT ok
+    |}]
 ;;
 
 let%expect_test "the emitted words are the schedule the model describes" =
@@ -138,7 +151,21 @@ let%expect_test "the emitted words are the schedule the model describes" =
   if not (Xgmii_word.equal (Xgmii_word.of_wire data control) (at 1))
   then failwith "the wire packing does not round-trip";
   verdict ();
-  [%expect {| |}]
+  [%expect {|
+    first start cycle = 1
+    first start lane = 0
+    cycle 0: I I I I I I I I
+    cycle 1: S 55 55 55 55 55 55 D5
+    cycle 2: 02 00 00 00 00 01 02 00
+    cycle 10: T I I I I I I I
+    cycle 11: I I I I S 55 55 55
+    frame octet 0 (destination MAC 02:..) at cycle 2 lane 0 = 2
+    terminate octet time = 80
+    second start lane (the alternation) = 4
+    cycle 1 on the wire: xgmii_rxd=0xD5555555555555FB xgmii_rxc=0x01
+    control bits of the preamble word (start character in lane 0 only) = 1
+    VERDICT ok
+    |}]
 ;;
 
 let%expect_test "the model's octet-time trace shows SPEC-M03 §7's front offsets, 8 and 12" =
@@ -196,7 +223,17 @@ let%expect_test "the model's octet-time trace shows SPEC-M03 §7's front offsets
   if not (Dv_monitors.Octet_time.Latency.is_clean tagger)
   then failwith "the model's own trace does not satisfy SPEC-M03 §7";
   verdict ();
-  [%expect {| |}]
+  [%expect {|
+    [conformant M03] frames=4 octets=240 latency=CONSTANT per front offset (2 classes)
+      h=8 L=16 word_delay=3 <= ceiling 4 frames=2 octets=120
+      h=12 L=12 word_delay=3 <= ceiling 4 frames=2 octets=120
+    word delay at front offset 8 = 3
+    L at front offset 8 = [16]
+    word delay at front offset 12 = 3
+    L at front offset 12 = [12]
+    front-offset classes over an alternating-lane run = 2
+    VERDICT ok
+    |}]
 ;;
 
 let%expect_test "§0.3's deficit idle count: rounding credit is banked and spent, never below 9" =
@@ -239,7 +276,19 @@ let%expect_test "§0.3's deficit idle count: rounding credit is banked and spent
     (List.fold_left ( + ) 0 (Arrival.gaps s));
   if not (Arrival.is_clean s) then failwith "the DIC schedule fails the model's own check";
   verdict ();
-  [%expect {| |}]
+  [%expect {|
+    frame octets DA through FCS = 65
+    [xgmii link partner] frames=6 ifg=12 cycles=67 frame octets(DA..FCS)=65
+      start lanes: 0 0 4 0 4 4
+      start cycles: 1 12 22 33 43 54
+      start-to-start cycles: 11 10 11 10 11
+      gaps (octets, terminate inclusive): 15 11 11 11 15
+      contract: CLEAN (requirements.md §0.3, REQ-004, REQ-101)
+    start lanes (only 0 and 4 are legal) = [0 0 4 0 4 4]
+    gaps: one rounded up to 15, then three shortened to 11 against the credit = [15 11 11 11 15]
+    total gap over five intervals (5 x 12 = 60 minimum on average) = 63
+    VERDICT ok
+    |}]
 ;;
 
 let%expect_test "the model checks its own frames: a bad FCS is reported, not emitted silently" =
@@ -261,5 +310,15 @@ let%expect_test "the model checks its own frames: a bad FCS is reported, not emi
     ~expected:0
     (List.length (Arrival.check injected));
   verdict ();
-  [%expect {| |}]
+  [%expect {|
+    [xgmii link partner] frames=2 ifg=12 cycles=23 frame octets(DA..FCS)=64
+      start lanes: 0 4
+      start cycles: 1 11
+      start-to-start cycles: 10
+      gaps (octets, terminate inclusive): 12
+      VIOLATION: frame 1 does not satisfy REQ-304's residue: this schedule declares every frame valid, and a frame the model believes valid must be provably valid before a design ever sees it
+    contract violations reported = 1
+    violations once the schedule declares its frames deliberately corrupt = 0
+    VERDICT ok
+    |}]
 ;;

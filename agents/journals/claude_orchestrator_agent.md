@@ -1763,3 +1763,33 @@ none
 - agents/handoffs/WO-0011_batch-c-specs.md
 - agents/handoffs/WO-0012_dv-wave2.md
 - tasks/BOARD.md
+
+## [J-orchestrator-0045] 2026-08-02T12:05:00Z | task:none | Wave-3 snapshots promoted (24 hunks); batch-C lifts elaborated
+### Trigger
+Build run 30732694095 (1c4aca0): the planned promotion red — four
+.corrected diffs, zero compile errors anywhere.
+### Inputs
+CI job log; the extracted-patch promotion method (as J-0041).
+### Reasoning
+Mechanical promotion again: four unified diffs, 24 hunks, applied with
+patch from the log — no snapshot content typed by hand. Zero compile
+errors means the four batch-C ifc_check lifts (eth_axis_rx/tx, demux,
+arb_mux) elaborated in the same run, so this run doubles as their first
+compile evidence; the green confirmation run on this commit is what the
+batch-C countersign will cite. The lane-4 regression table and the §8
+cadence assertions are now locked into snapshots that came from the
+runner, not from anyone's memory.
+### Actions
+Four test files: snapshots promoted.
+### Evidence
+Run 30732694095 (F5 rule); patch output 24/24 hunks clean.
+### Outcome
+Awaiting green; then batch-C countersign (WO-0013) + block-diagram
+artifact + chronicle/atlas refresh. Handoff: none.
+### Open-questions
+none
+### Files-in-this-commit
+- test/monitors/test_octet_time.ml
+- test/xgmii/test_arrival.ml
+- test/xgmii/test_frame.ml
+- test/xgmii/test_tx_decoder.ml
