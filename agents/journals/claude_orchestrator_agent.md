@@ -3657,3 +3657,57 @@ Record consistent: header, block, BOARD all ACCEPTED.
 
 ### Files-in-this-commit
 - agents/handoffs/WO-0035_spec-queue-2.md
+
+## [J-orchestrator-0086] 2026-08-03T11:40:00Z | task:none | The site rebuilt to the review panel's rulings — 28 accepted, 1 rejected, the honest version wins everywhere
+
+### Trigger
+The sponsor's four-agent review panel (three auditors + his
+representative with final call) completed: 29 findings, 28 accepted
+(11 modified), 1 rejected — D10's ledger-collapse, refused because
+"the uncurated, complete record IS the exhibit".
+
+### Inputs
+- The representative's 29 rulings (workflow wf_eb8d6fac-3f0); the
+  verbatim journal quote verified word-for-word against
+  J-dv_lead-0010 before shipping; fresh artifact rebuilds from snap
+  at de40740 (the atlas was genuinely stale — WO-0035 changed spec
+  text after its snapshot).
+
+### Reasoning
+The honesty cluster leads: the hero drops "verified adversarially"
+(nothing is benched yet), the 8.7M stat says "a check of the spec,
+not yet the chip", the RTL tile says "none benched yet", and the
+backlog subtitle scopes what is parsed vs derived vs summarized. The
+one rejection protects the same value from the other side: the full
+36-row ledger stays raw. The module matrix is now DERIVED from the
+spec/RTL trees, the ledger sorts by id, markdown degrades to text
+while the repo is private, and all five pages share head metadata,
+titles, nav, and a favicon; og.png ships for link previews.
+
+### Actions
+- site/build.py v2 (idempotent artifact-chrome pass included);
+  fresh block-diagram/spec-atlas/org-chart copies; og.png; this
+  commit.
+
+### Evidence
+- python3 site/build.py: "124 commits · 124 entries · 36 WOs · 136
+  attack rows · 5/20 RTL · matrix derived from trees"; zero
+  pageerrors on all pages under headless chromium.
+
+### Outcome / DoD
+Deploy unchanged: cd site && npx wrangler deploy. SITE_URL env
+documented for absolute og:image URLs.
+
+### Open questions
+- Whether a CI freshness gate for site/public is worth coupling to
+  the design pipeline (deferred deliberately — site drift should
+  not fail RTL CI).
+
+### Files-in-this-commit
+- site/build.py
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/index.html
+- site/public/og.png
+- site/public/org-chart.html
+- site/public/spec-atlas.html
