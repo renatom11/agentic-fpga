@@ -2990,3 +2990,49 @@ abort quantifier. Combined green closes WO-0026 and WO-0028 together.
 - rtl_snapshots/eth_mac_10g.v
 - rtl_snapshots/xgmii_rx_64.v
 - rtl_snapshots/xgmii_tx_64.v
+
+## [J-orchestrator-0070] 2026-08-03T00:20:00Z | task:WO-0026 | Combined green at 30753089901 — REQ-902 proven, X-9's first real verdict clean; WO-0026 + WO-0028 ACCEPTED
+
+### Trigger
+Run 30753089901 (head `ccd9e5d`) completed success — every step green.
+
+### Inputs
+- The four-run evidence chain recorded in the WO-0026 ACCEPTED block:
+  30750975120 (diagnostic red) → 30751985756 (window-stranded red) →
+  30752684889 (promotion-block red) → 30753089901 (green).
+
+### Reasoning
+Green at the determinism step means the emitted Verilog regenerated
+from unchanged sources byte-identically against the promoted commit —
+REQ-902's definition, witnessed by CI, not asserted by anyone.
+The same run is dv's repaired X-9 passing over real design text for
+the first time, which discharges its deferred M03/M04/M05 REQ-001
+verdict exactly as J-dv_lead-0014 framed it: the verdict is the
+tool's. Two work orders close on one run id; both packets carry it.
+
+### Actions
+- WO-0026 packet: State → ACCEPTED + acceptance block (4-run chain).
+- WO-0028 packet: State → ACCEPTED + acceptance block (first-pass
+  evidence, fixture coverage, §5 request queued to architect).
+- BOARD rows for both flipped to ACCEPTED with run ids.
+
+### Evidence
+- Run 30753089901: conclusion success on head `ccd9e5d`.
+- `bash tools/dv_checks.sh` at this tree: exit 0 (matches CI).
+
+### Outcome / DoD
+The WO-0026 arc that began as rtl_lead's returned question 1 is
+closed end-to-end: emission registered, deadlock found and fixed,
+checker falsified and repaired by its owner, promotion machinery
+hardened twice, byte-determinism proven. Next issuance: the
+consolidated architect packet (rtl questions 2–4, dv's four items
+incl. M14-K7, the REQ-001 wording row, C-41's columns, C-40's last
+site, M03-N2/N4 rulings).
+
+### Open questions
+- None on this arc.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0026_emission-registration.md
+- agents/handoffs/WO-0028_x9-alias-repair.md
+- tasks/BOARD.md

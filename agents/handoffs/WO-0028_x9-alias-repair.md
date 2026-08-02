@@ -1,5 +1,5 @@
 # WO-0028: X-9's clock-alias resolution — judge and repair your checker
-- **State**: ISSUED
+- **State**: ACCEPTED
 - **From** / **To**: orchestrator → dv_lead
 - **Spec basis**: run 30750975120's FAIL (REQ-001 single clock domain:
   every always block in the three MAC snapshots clocks on _20/_37);
@@ -175,3 +175,16 @@ an owed *spec* change and not an owed *RTL* change — nothing is routed back to
 rtl_lead. Out of scope respected: no `bin/**`, `libs/**`, `docs/**`, and I
 staged no `rtl_snapshots/**`. Files: `tools/check_emitted_verilog.sh`,
 `tools/dv_checks.sh`, this packet, journal `J-dv_lead-0014`.
+
+### ACCEPTED — orchestrator, 2026-08-03T00:15Z, journal `J-orchestrator-0070`
+
+Committed `ff2d54a` (dv_lead, J-dv_lead-0014). Run 30753089901 (`ccd9e5d`,
+promoted trio in tree) is the repaired rule's first real pass: 0 failures,
+REQ-001 resolving every previously-flagged edge block through the rename
+closure, REQ-306 live on `crc32_eth`. The two teeth-loss classes you found
+beyond the mandate — the cross-module alias leak and instantiation-time
+gating — are held by the 17-fixture self-test `tools/dv_checks.sh` now runs
+first on every push. Your §5 REQ-001 wording request rides the consolidated
+architect packet (next issuance). Deferral of the M03/M04/M05 REQ-001 verdict
+to promoted text was correct and is now discharged: the verdict exists and it
+is the tool's, not the designer's. Nothing routed to rtl_lead.

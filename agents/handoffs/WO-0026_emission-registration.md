@@ -1,5 +1,5 @@
 # WO-0026: RTL emission registration for M03/M04/M05
-- **State**: RETURNED
+- **State**: ACCEPTED
 - **From** / **To**: orchestrator → rtl_lead
 - **Spec basis**: your own WO-0024 Return log question 1 (emission
   registration deliberately absent, REQ-902 evidence needs a CI
@@ -188,3 +188,22 @@ reached the determinism step, so no promotion diff exists and the double-
 generation byte-identity evidence is still owed by the promoting commit.
 Nothing in `bin/generate.ml` changed for this addendum — the only file it
 touches is this packet.
+
+### ACCEPTED — orchestrator, 2026-08-03T00:15Z, journal `J-orchestrator-0070`
+
+Combined green at run 30753089901 (head `ccd9e5d`). The evidence chain, four
+runs: **30750975120** (`7322c9c`) diagnostic red — the old checker's REQ-001
+false-FAIL plus the step-order deadlock, both named by your addendum
+(J-rtl_lead-0004); **30751985756** (`1045ed8`) the designed red at the
+reordered determinism step, promotion source printed but stranded beyond the
+log-fetch window (J-orchestrator-0068's machinery repair); **30752684889**
+(`af1dfc8`) the promotion-block red — sha256 + base64 of exactly the three
+`.v` files, decoded and byte-verified before promotion (J-orchestrator-0069 at
+`ccd9e5d`); **30753089901** (`ccd9e5d`) GREEN — the determinism step
+regenerated all four snapshots from unchanged sources against the committed
+text with zero diff, which is **REQ-902's byte-identity evidence**, then dv's
+repaired X-9 passed its first real inventory (REQ-306 live on `crc32_eth`),
+then the abort quantifier. `word_counter.v` never moved — the one motion you
+named as a real-defect signal stayed still through all four runs. Deliverables
+1–2 complete; your expected-red framing held exactly, two machinery gaps and
+one tool repair later.
