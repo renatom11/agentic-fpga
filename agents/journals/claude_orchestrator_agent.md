@@ -3364,3 +3364,45 @@ first tb_writer WOs (M03 rows) become issuable.
 ### Files-in-this-commit
 - agents/handoffs/WO-0033_dv-machinery.md
 - tasks/BOARD.md
+
+## [J-orchestrator-0079] 2026-08-03T08:15:00Z | task:WO-0033 | The runtest step gets its own promotion block — the third machinery repair to the same loop, made before it bit
+
+### Trigger
+dv's WO-0033 return states the expected CI: 30 empty expect blocks →
+`dune runtest` red by design. That red dies at its own step, BEFORE
+the determinism step whose promotion block (J-orchestrator-0068)
+would have printed the corrected outputs — the same
+stranded-promotion-source class, one step earlier.
+
+### Inputs
+- build.yml's step order; dune's `.corrected` mechanics (the
+  promotion source lives under `_build`, gitignored, so the
+  determinism step never sees it even when reached).
+
+### Reasoning
+Repair it before the run rather than diagnose it after: on runtest
+failure, print sha256 + base64 of every `.corrected` under `_build`.
+Promotion = write each file's bytes over its source path
+(`_build/default/` prefix and `.corrected` suffix stripped) — dune
+promote's own mechanics, made byte-verifiable. Unlike the first two
+repairs (step order, log window) this one is preemptive; the loop
+has now taught its shape well enough to see the instance coming.
+
+### Actions
+- The runtest step wrapped; nothing else in the workflow touched.
+
+### Evidence
+- This commit's diff is one step's run block.
+
+### Outcome / DoD
+The run at this head goes Build-green (load-bearing) then
+runtest-red with a harvestable block; I promote the 30 outputs
+verbatim; the next run's runtest green is the machinery's
+self-check evidence (every verdict asserted in OCaml — dv's design
+means a wrong promotion stays red).
+
+### Open questions
+- None.
+
+### Files-in-this-commit
+- .github/workflows/build.yml

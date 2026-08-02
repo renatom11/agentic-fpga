@@ -28,7 +28,22 @@ jobs:
         run: opam exec -- dune build @default
 
       - name: Run tests (expect tests, waveform snapshots)
-        run: opam exec -- dune runtest
+        # An expect-test diff is a promotion source exactly like an RTL
+        # snapshot (ADR-0005 rule 2), and it dies at this step — before the
+        # determinism step's block can print it. So failure prints the same
+        # sha256+base64 block over every .corrected file dune produced.
+        run: |
+          opam exec -- dune runtest || {
+            echo '=== PROMOTION BLOCK (expect tests): sha256 + base64 -w 400 of every .corrected under _build ==='
+            find _build -name '*.corrected' | sort | while read -r f; do
+              echo "--- FILE $f"
+              sha256sum "$f"
+              base64 -w 400 "$f"
+              echo "--- END $f"
+            done
+            echo '=== END PROMOTION BLOCK ==='
+            exit 1
+          }
 
       - name: Generate RTL
         run: opam exec -- dune exec bin/generate.exe
