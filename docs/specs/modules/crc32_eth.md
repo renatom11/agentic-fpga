@@ -1,6 +1,8 @@
 # SPEC-M02 — `Crc32_eth`
 
-- **Status**: DRAFT
+- **Status**: DRAFT — §11 carries no open question and no deferred item under
+  the amended SPEC-TEMPLATE §11; the freeze flip awaits only the two evidence
+  rows of §12
 - **Inventory id**: M02 (architecture.md §4) · **Path**:
   `libs/hardcaml_ethernet/src/crc32_eth.ml`
 - **Datapath role**: shared/structural (combinational function, instantiated
@@ -13,6 +15,8 @@
   octet-position convention. M02 takes no *record* from M01 — it has no stream
   port (§4.1).
 - **Author**: architect_docs_lead, journal `J-architect_docs_lead-0003`
+  (WO-0006, original) and `J-architect_docs_lead-0004` (WO-0008: §11
+  reconciliation, ADR-0006/0007, the matrix update)
 
 ## 1. Purpose
 
@@ -46,7 +50,7 @@ frame.
 |---|---|
 | Seeding the running value at the start of a frame, and holding it between cycles | M03 (receive) and M04 (transmit), each in its own registers, on `clock` (REQ-001) |
 | Deciding which octets of a frame are covered — destination address through last payload octet, or through the FCS | M03 (REQ-104) and M04 (REQ-202, REQ-203: padding is covered) |
-| Comparing a computed value against a received FCS, or against REQ-304's residue, and raising `error_bad_fcs` | M03 (REQ-104). Whether M03 checks by comparison or by residue is SPEC-M03's choice to record |
+| Comparing a computed value against a received FCS, or against REQ-304's residue, and raising `error_bad_fcs` | M03 (REQ-104), which checks **by residue** — the choice §11.4 left to SPEC-M03 and SPEC-M03 §6.1 now makes |
 | Stripping the four FCS octets from the receive stream, or appending them to the transmit stream in wire order | M03 (REQ-103) and M04 (REQ-202) |
 | Deriving `octet_count` from `tkeep`, or from an XGMII terminate-character lane | M03 and M04, from REQ-011 and REQ-106 respectively |
 | Any strobe | no module: M02 detects no condition (§9) |
@@ -68,7 +72,7 @@ REQ-306 exists.
 | REQ-003 | M02 has no handshake of any kind: it cannot stall a caller, because there is nothing to stall. A caller's cycle in which it does not update is a cycle in which it ignores `crc_out`. |
 | REQ-005 | M02 is inside M03's and M04's pinned latency constants and contributes **zero** octet times of its own. This is what REQ-306 buys: a registered CRC stage would add a cycle to every octet passing M03, inside a 4-cycle ceiling (requirements.md §1.1). |
 | REQ-009 | M02 holds no state, so it has no reset behaviour and takes no `clear` port; REQ-009's obligations fall on the callers' registers. |
-| REQ-010 | M02's `data` port carries frame octets but is **not** a stream: it has no `tvalid`, no `tlast`, no `tkeep` and no `tuser`, and REQ-306 forbids it the state that would make those meaningful. REQ-010 prohibits ad-hoc per-module *stream records*; M02 declares none, and declaring an `Axi64.Source` here would put four fields on the port that no requirement gives a meaning at this boundary. §11.3 raises the wording of REQ-010 rather than assuming the reading. |
+| REQ-010 | M02's `data` port carries frame octets but is **not** a stream: it has no `tvalid`, no `tlast`, no `tkeep` and no `tuser`, and REQ-306 forbids it the state that would make those meaningful. REQ-010's subject is frame-carrying **stream** ports, and its text names this module's `data` input as the one frame-carrying port in the inventory that is not one (the narrowing applied under WO-0008, §11.3); declaring an `Axi64.Source` here would put four fields on the port that no requirement gives a meaning at this boundary. |
 | REQ-012 | Octet k of `data` is `data`[8k+7:8k], and octet 0 is the earlier octet on the wire — the same mapping SPEC-M01 §6.1 fixes for `tdata`. The CRC is defined over the octets in that order (§6.1). |
 | REQ-021 | Octets are always presented from position 0 upward, contiguously, exactly as a word-aligned stream presents them; a caller never offsets its octets inside `data`. |
 
@@ -284,9 +288,11 @@ rely on it.
    to 8 octets and this specification states nothing outside it. A caller driving
    such a value is a defect in the caller, detectable in the caller's own bench
    and not reportable here (§9). DV must assert nothing about these inputs, and a
-   `formal_dv` proof of REQ-302 or REQ-305 assumes 1 ≤ `octet_count` ≤ 8. §11.2
-   records the alternative — giving 0 the identity meaning — as a question for
-   the batch-B specs, since only M03 and M04 can say whether they need it.
+   `formal_dv` proof of REQ-302 or REQ-305 assumes 1 ≤ `octet_count` ≤ 8. The
+   alternative — giving 0 the identity meaning as a new REQ-307 — was decided
+   against in batch B and is closed at §11.2 and ADR-0007: M03 and M04 gate the
+   accumulator register instead, so no caller drives 0, and leaving it
+   unconstrained keeps an accidental 0 a caller defect a bench can catch.
 2. **The internal formulation.** Table-driven, matrix-unrolled, eight-way
    selected between per-count networks, or one network with masked octets: all
    are legal, none is observable, and REQ-302 plus REQ-305 constrain the result
@@ -377,7 +383,7 @@ Every REQ this module owns, plus every programme invariant from §3.
 | REQ-002 | `data` is exactly one 64-bit `Axi64` word | §4.2 | interface compile check |
 | REQ-005 | zero cycles of latency contributed to M03 and M04 | §7 | the per-octet latency measurement inside M03's and M04's benches; M02 has no measurement event of its own |
 | REQ-009 | no state to reset; no `clear` port | §6.2 | interface compile check (absence of `clear`), plus M03/M04's reset tests |
-| REQ-010 | no ad-hoc stream record is declared; the port is a function argument, not a stream | §3, §4.1 | interface compile check; the wording question is §11.3 |
+| REQ-010 | no ad-hoc stream record is declared; `data` is a function argument, not a stream, and REQ-010's narrowed subject names it as such | §3, §4.1 | interface compile check at every *other* module's stream ports; at M02 the check is the absence of a stream record, which the lift witnesses by declaring none |
 | REQ-012 | octet k at `data`[8k+7:8k], octet 0 earlier on the wire | §6.1 | REQ-303's known-answer test, whose octet packing (0x3837363534333231) is wrong under any other mapping |
 | REQ-021 | octets always presented from position 0 upward, contiguously | §6.1 | implied by every directed and randomised test; no separate case needed |
 | REQ-301 | implements exactly that parameterisation, exposed as finished values | §6.1 | REQ-303 and REQ-304 known-answer tests |
@@ -388,32 +394,38 @@ Every REQ this module owns, plus every programme invariant from §3.
 | REQ-306 | pure combinational function; no register, no `clock`, no `clear` | §4.1, §6.2 | interface compile check plus the mechanical check of the emitted `crc32_eth` module: no `clock` port, no `always @(posedge …)` block |
 | REQ-808, REQ-903 | `crc32_eth` is a distinct emitted module with `create`, `hierarchical` and an `.mli` | §4.1 | the `rtl_snapshots/` module-name comparison and the repository surface check |
 
-This table is the source of M02's rows in [`traceability.md`](../traceability.md).
-**The matrix is not updated in this commit**: WO-0006 fixes its file set to the
-two specs, the two lifts and the packet, so the rows for REQ-301 … REQ-306 still
-read `pending` in the Spec-section column. The update is owed before
-`P1-spec-freeze` and is recorded in SPEC-M01 §11.2 and in the WO-0006 Return log.
+This table is the source of M02's rows in [`traceability.md`](../traceability.md),
+whose Spec-section column names a section of this specification for REQ-301 …
+REQ-306 from this commit onward (WO-0008, closing SPEC-M01 §11.2).
 
-## 11. Open questions
+## 11. Deferred items
 
-| # | Question | Owner | Closed by |
-|---|---|---|---|
-| 11.1 | **ADR owed for two interface decisions this specification embodies.** (a) The ports carry finished CRC-32 values rather than the raw shift-register state (§6.1), which is the minority convention in prior art and is chosen so that REQ-303's and REQ-304's constants and the REQ-305 oracle need no conversion; the rejected alternative is the raw register with 0xFFFFFFFF seeding and an XOR at every comparison. (b) `octet_count` is a 4-bit count with domain 1 to 8; the rejected alternative is a 3-bit count-minus-one, which has no illegal encoding but puts an off-by-one at every call site and in every bench. Charter §3 makes both ADR material; WO-0006's file set excludes `docs/adr/`, so the ADR is requested from the orchestrator. | architect_docs_lead | `P1-spec-freeze` |
-| 11.2 | **Should `octet_count` = 0 be given the identity meaning** (`crc_out` = `crc_in`) as a new REQ-307, instead of being unconstrained (§6.3)? It would make the function total and remove an assumption from a `formal_dv` proof. It is not invented here because only M03 and M04 can say whether an update-by-zero cycle actually occurs in their sequencing; if it does, this becomes a requirement rather than a convenience. | architect_docs_lead, rtl_lead | SPEC-M03 and SPEC-M04 (batch B) |
-| 11.3 | **REQ-010's wording versus a frame-carrying port that is not a stream.** REQ-010 says all frame-carrying ports SHALL use `Axi64.Source`/`Axi64.Dest`; M02's `data` carries frame octets and is deliberately not a stream (§3). Read literally, M02 is the one Phase-1 module that cannot satisfy REQ-010, and its interface compile check has no `Axi64` port to witness. The proposed spec diff narrows REQ-010's subject to frame-carrying *stream* ports and names M02 explicitly, which changes no behaviour and removes a standing audit finding. requirements.md is read-only under WO-0006, so this is raised, not applied. | architect_docs_lead, dv_lead (countersignature) | `P1-spec-freeze` |
-| 11.4 | **Which FCS-check formulation M03 uses** — compute over destination address through last payload octet and compare against the received FCS, or continue over the FCS and compare against REQ-304's residue — is left to SPEC-M03. Both use this module unchanged; the residue form needs no comparison register but reports one cycle later. Recorded here so that the choice is made in M03's specification rather than discovered in its RTL. | architect_docs_lead | SPEC-M03 (batch B) |
+Under the amended SPEC-TEMPLATE §11: item numbers are permanent, closed items
+keep their row, and this specification now carries **no open question and no
+deferred item** — all four closed in WO-0008.
+
+| # | Item | Status · what a reader assumes meanwhile | Tracked as | Owner | Closes by |
+|---|---|---|---|---|---|
+| 11.1 | **ADR owed for two interface decisions this specification embodies**: (a) the ports carry finished CRC-32 values rather than the raw shift-register state (§6.1); (b) `octet_count` is a 4-bit count with domain 1 to 8 rather than a 3-bit count-minus-one. Charter §3 makes both ADR material; WO-0006's file set excluded `docs/adr/`. | **CLOSED (WO-0008).** [`ADR-0006`](../../adr/ADR-0006-crc32-finished-value-ports.md) records (a) and [`ADR-0007`](../../adr/ADR-0007-octet-count-encoding.md) records (b), each with its rejected alternative and its deciding argument. Neither changes a word of this specification: they record why it already says what it says. | WO-0008 | architect_docs_lead | closed |
+| 11.2 | **Should `octet_count` = 0 be given the identity meaning** (`crc_out` = `crc_in`) as a new REQ-307, instead of being unconstrained (§6.3)? Only M03 and M04 could say whether an update-by-zero cycle occurs in their sequencing. | **CLOSED (WO-0008): no, and no REQ-307.** SPEC-M03 §6.1 and SPEC-M04 §6.1 hold the running value in a register with an **enable**, so a cycle covering no frame octet is a cycle in which the accumulator holds and this module's result is ignored — an update-by-zero never reaches these ports. §6.3 item 1 stands unchanged, DV still asserts nothing outside 1 … 8, and a `formal_dv` proof still assumes it. ADR-0007 records the argument that decided it: leaving 0 unconstrained keeps an accidental zero a **detectable caller defect**, where an identity meaning would make it silently correct-looking. | WO-0008, ADR-0007 | architect_docs_lead, rtl_lead | closed |
+| 11.3 | **REQ-010's wording versus a frame-carrying port that is not a stream.** Read literally, M02 was the one Phase-1 module that could not satisfy an invariant it was bound by; the proposed diff narrowed REQ-010's subject to frame-carrying *stream* ports and named M02. requirements.md was read-only under WO-0006. | **CLOSED (WO-0008): the diff is applied.** requirements.md REQ-010 now quantifies over frame-carrying **stream** ports — ports carrying frame octets together with `tvalid`, `tkeep`, `tlast` and `tuser` — and names this module's `data` input as the one frame-carrying port in the inventory that is not one. The three claims dv_lead conditioned its batch-A signature on (§3's REQ-010 row, §4.1's `Source`-without-`Dest` bullet, §10's REQ-010 row) are now true under the committed text, not only under an agreed future one. | WO-0008 | architect_docs_lead, dv_lead (countersignature) | closed |
+| 11.4 | **Which FCS-check formulation M03 uses** — compute over destination address through the last payload octet and compare against the received FCS, or continue over the FCS and compare against REQ-304's residue. Recorded here so the choice is made in M03's specification rather than discovered in its RTL. | **CLOSED (WO-0008): the residue formulation.** SPEC-M03 §6.1 specifies the check as "seed `crc_in` = 0x00000000 at the frame's first octet, update over every received octet including the four FCS octets, and compare the value covering the octet before the terminate character against REQ-304's 0x2144DF1C". It needs no capture register for the received FCS and no octet-order reassembly of it — the endianness trap requirements.md §4's provenance note records this programme paying for once already. SPEC-M03 §6.3 records that the comparison form is the same function by REQ-304 and that no bench distinguishes the two. | WO-0008 | architect_docs_lead | closed |
 
 ## 12. Freeze record
 
-Filled in at `P1-spec-freeze`. All four rows are required (charter §5); this spec
-is DRAFT and none is filled.
+Filled in at `P1-spec-freeze`. All four rows are required (charter §5). Two are
+filled; the two that depend on evidence this revision cannot produce are not.
 
 | Item | Value |
 |---|---|
-| Interface compile check | pending — CI `build` run `<id>`, conclusion `<success>`, SHA `<sha>`; per ADR-0005 a local build is not acceptable evidence |
-| Architect signature | pending |
-| dv_lead testability countersignature | pending |
+| Interface compile check | **pending on this revision** — `crc32_eth_ifc.ml` is unchanged since 22145b5 and green there (CI `build` run 30727252770), but it opens `Axi64_ifc`, which gained the `Xgmii` record in this commit, so the evidence must be the run on the commit carrying this revision. Per ADR-0005 a local build is not acceptable evidence |
+| Architect signature | `J-architect_docs_lead-0004` — signed for freeze conditional on the row above reporting `success` |
+| dv_lead testability countersignature | `J-dv_lead-0003` (WO-0007, at 22145b5), whose one stated dependency — the REQ-010 narrowing — is discharged by the requirements.md diff in this commit (§11.3). This revision changes no section dv_lead judged; the batch-B countersignature confirms that |
 | Frozen at | pending — SHA `<sha>`, gate `docs/gates/P1-spec-freeze-checklist.md` |
+
+**Why this spec is still DRAFT.** Nothing is undecided: §11 is four closed rows.
+What remains is evidence — a green `ifc_check` run naming this commit, and the
+SHA it produces.
 
 ## 13. Change log
 

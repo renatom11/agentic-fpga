@@ -94,7 +94,7 @@ open Hardcaml
 
 (* ---- programme-wide types, defined once in Axi64 (M01) and repeated
    here only in M01's own specification; other specs write
-   [open Ifc_check_axi64] instead of restating them. ---- *)
+   [open! Axi64_ifc] instead of restating them. ---- *)
 
 module Axi64_config = struct
   let data_bits = 64
@@ -207,9 +207,13 @@ rely on it.
 
 - **Latency**: the module's constant L, stated as an exact number of **octet
   times** per `requirements.md` §0.5 — not a bound — for receive-path modules
-  (REQ-005, REQ-111), together with its cycle equivalent floor(L / 8) and the
-  §1.1 ceiling it must fit inside (REQ-019). Name the two measurement events
-  explicitly. Do not state latency as "word in to word out": at a realigning
+  (REQ-005, REQ-111), together with the module's **front offset h** and its
+  **word delay** ΔC = (L + h) / 8 in cycles, which is the figure
+  `requirements.md` §1.1's ceiling is stated in and the figure REQ-006's
+  end-to-end budget is the sum of (REQ-019). State h explicitly, per start lane
+  where the two differ, and show that (L + h) is a multiple of 8 — a pinned L
+  for which it is not describes a module that cannot exist. Name the two
+  measurement events explicitly. Do not state latency as "word in to word out": at a realigning
   module or a lane-4 start that names no single event and is not constant. A
   module seeing XGMII pins one constant per start lane and they differ by no
   more than one cycle.
@@ -285,10 +289,38 @@ Every REQ this module owns, plus every programme invariant from §3.
 This table is the source of the module's rows in
 [`traceability.md`](traceability.md); update the matrix in the same commit.
 
-## 11. Open questions
+## 11. Deferred items
 
-Numbered, each with an owner and the gate it must be closed by. "None" is a
-valid answer. A DRAFT spec may carry open questions; a FROZEN spec may not.
+Numbered, each with an owner and the gate or work order it closes by. "None" is
+a valid answer. Item numbers are **permanent**: a closed item keeps its number
+and its row, with the closure recorded in place, because countersignatures and
+work-order logs cite these numbers and a renumbered table makes those citations
+lie.
+
+**DRAFT versus FROZEN.** A DRAFT spec may carry an *open question* — an item
+whose answer is not yet known and which something downstream cannot be built
+without. **A FROZEN spec SHALL carry no open question.** It MAY carry a
+*deferred item*, which is a different thing: a decision this specification has
+already made and stated in its own normative sections, whose remaining work
+(a script, a compile run, a wording fix in another file) is tracked elsewhere.
+Every deferred item in a FROZEN spec SHALL state, in this order:
+
+1. **Where it is tracked** — a carry-forward ledger row (`C-n` in
+   `docs/gates/P1-spec-freeze-checklist.md`) or a work-order id — so the item
+   cannot be closed silently or forgotten;
+2. **What a reader assumes meanwhile** — one sentence an implementer or a test
+   writer can act on today, without waiting for the item and without asking
+   anyone. A frozen specification that leaves a reader blocked is not frozen;
+3. **Owner and closing gate**.
+
+An item that cannot state (2) is an open question, whatever it is called, and a
+spec carrying one may not be frozen. That is the whole force of this rule:
+freezing means nobody downstream is blocked — not that nothing is left to do.
+
+Recommended form (Status is `OPEN`, `DEFERRED` or `CLOSED`):
+
+| # | Item | Status · what a reader assumes meanwhile | Tracked as | Owner | Closes by |
+|---|---|---|---|---|---|
 
 ## 12. Freeze record
 

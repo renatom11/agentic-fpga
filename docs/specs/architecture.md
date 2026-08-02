@@ -230,7 +230,7 @@ enumerate the obligation without this document.
 
 | # | Module | Path | Role | verilog-ethernet counterpart | Primary REQs |
 |---|---|---|---|---|---|
-| M01 | `Axi64` | S | Programme stream types: `Hardcaml_axi.Stream.Make` at 64 bits, plus the `Eth_header`, `Ip_header`, `Udp_header` and `Config`/`Status` records. Types only, no circuit. | (none — Verilog uses flat ports) | 010, 011, 012, 013, 014, 802 |
+| M01 | `Axi64` | S | Programme stream types: `Hardcaml_axi.Stream.Make` at 64 bits, plus the `Xgmii` lane-pair record, the `Eth_header`, `Ip_header`, `Udp_header` records and `Config`/`Status`. Types only, no circuit. | (none — Verilog uses flat ports) | 010, 011, 012, 013, 014, 017, 802 |
 | M02 | `Crc32_eth` | S | Combinational CRC-32 update for 1 to 8 octets per cycle. | `lfsr.v`, `axis_eth_fcs_64.v` | 301–306 |
 | M03 | `Xgmii_rx_64` | R | XGMII lanes to frame stream: start-lane detection, preamble strip, terminate handling, FCS check, error marking. | `axis_xgmii_rx_64.v` | 101–113 |
 | M04 | `Xgmii_tx_64` | T | Frame stream to XGMII lanes: preamble, padding, FCS append, terminate, inter-frame gap, underflow. | `axis_xgmii_tx_64.v` | 201–210 |
@@ -252,24 +252,36 @@ enumerate the obligation without this document.
 | M20 | `Nic_top` | S | Phase-1 top: M05 plus M19, configuration and status aggregation, application streams. | (assembled from `eth_mac_10g` + `udp_complete_64` in the reference's examples) | 801–809, 006 |
 
 **Latency budget allocation** against REQ-006 (24 cycles). Each module spec
-pins its exact constant; these are the ceilings the specs must fit inside. This
-table is transcribed into `requirements.md` §1.1, where REQ-019 makes the
-ceilings normative and gives them a DV observable — a constant is compared as
-floor(L / 8) with L the per-octet latency of `requirements.md` §0.5. The two
+pins its exact per-octet constant L; these are the ceilings the specs must fit
+inside. This table is transcribed into `requirements.md` §1.1, where REQ-019
+makes the ceilings normative and gives them a DV observable — a module's
+constant is compared as its **word delay** ΔC = (L + h) / 8, with L the
+per-octet latency and h the front offset of `requirements.md` §0.5. The two
 copies must change together.
 
-| Stage | Ceiling (cycles) |
-|---|---|
-| `Xgmii_rx_64` | 4 |
-| `Eth_axis_rx` | 3 |
-| `Eth_demux` | 1 |
-| `Ip_eth_rx_64` | 5 |
-| `Udp_ip_rx_64` | 4 |
-| Allocated | 17 |
-| Slack held by the architect | 7 |
+| Stage | Front offset h (octets) | Ceiling on ΔC (cycles) |
+|---|---|---|
+| `Xgmii_rx_64` | 8 (lane-0 start) / 12 (lane-4 start) | 4 |
+| `Eth_axis_rx` | 14 | 3 |
+| `Eth_demux` | 0 | 1 |
+| `Ip_eth_rx_64` | 20 | 5 |
+| `Udp_ip_rx_64` | 8 | 4 |
+| Allocated | | 17 |
+| Slack held by the architect | | 7 |
 
 Slack is released only by a spec diff, so an over-budget module is a visible
 decision rather than an accumulation.
+
+The unit is ΔC and not floor(L / 8) because ΔC is the quantity that **adds up**:
+each stage's input measurement event is the previous stage's first output word,
+so 4 + 3 + 1 + 5 + 4 = 17 is a real cycle count on the wire and REQ-006's
+budget minus the slack. Under floor(L / 8) the same five numbers permitted a
+chain of 24 cycles at a lane-0 start and 25 at a lane-4 start — the whole
+budget or more — while every module individually passed REQ-019. That is
+carry-forward C-1, raised by dv_lead in the WO-0005 re-review and resolved
+under WO-0008 by changing the unit and keeping the allocation; the sponsor
+delegated the resolution to architect_docs_lead and dv_lead jointly on
+2026-08-02.
 
 ---
 

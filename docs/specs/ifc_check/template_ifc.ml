@@ -8,7 +8,7 @@ open Hardcaml
 
 (* ---- programme-wide types, defined once in Axi64 (M01) and repeated
    here only in M01's own specification; other specs write
-   [open Ifc_check_axi64] instead of restating them. ---- *)
+   [open! Axi64_ifc] instead of restating them. ---- *)
 
 module Axi64_config = struct
   let data_bits = 64

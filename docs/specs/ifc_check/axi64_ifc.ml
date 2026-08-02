@@ -28,6 +28,24 @@ end
 
 module Axi64 = Hardcaml_axi.Stream.Make (Axi64_config)
 
+(* ---- the XGMII lane pair (REQ-017, REQ-018) ----
+   One record for one direction. The field names are IEEE 802.3's
+   [RXD]/[RXC], lower-cased to [d] and [c], so that the instantiation
+   prefixes [@rtlprefix "xgmii_rx"] and [@rtlprefix "xgmii_tx"] emit
+   exactly [xgmii_rxd], [xgmii_rxc], [xgmii_txd], [xgmii_txc] — the four
+   port names REQ-017 fixes. Longer field names cannot produce them.
+   [c] bit k is the control indication for lane k, whose octet is
+   [d][8k+7:8k]: the same octet-position convention [tdata] uses
+   (REQ-012, §6.1). *)
+
+module Xgmii = struct
+  type 'a t =
+    { d : 'a [@bits 64]
+    ; c : 'a [@bits 8]
+    }
+  [@@deriving hardcaml]
+end
+
 (* ---- header records: numeric values, network byte order already
    decoded (REQ-012, REQ-409) ---- *)
 

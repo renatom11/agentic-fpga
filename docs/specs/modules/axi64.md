@@ -1,6 +1,7 @@
 # SPEC-M01 — `Axi64`
 
-- **Status**: DRAFT
+- **Status**: DRAFT — §11 carries no open question under the amended
+  SPEC-TEMPLATE §11; the freeze flip awaits only the two evidence rows of §12
 - **Inventory id**: M01 (architecture.md §4) · **Path**:
   `libs/hardcaml_ethernet/src/axi64.ml`
 - **Datapath role**: shared/structural (types only — no circuit)
@@ -13,11 +14,14 @@
 - **Depends on specs**: none. M01 is the root of the specification dependency
   order (architecture.md §8 batch A).
 - **Author**: architect_docs_lead, journal `J-architect_docs_lead-0003`
+  (WO-0006, original) and `J-architect_docs_lead-0004` (WO-0008: the `Xgmii`
+  record, C-8, C-9, C-10 and the §11 reconciliation)
 
 ## 1. Purpose
 
-M01 turns the four fabric-level agreements of this programme — how a frame's
-octets are carried, how a header's fields are presented, how the design is
+M01 turns the five fabric-level agreements of this programme — how a frame's
+octets are carried, how the XGMII lane pair is carried, how a header's fields
+are presented, how the design is
 configured and how its error events are reported — into OCaml types that every
 other module's port record is built from. It exists as a separate module because
 those agreements are shared by all nineteen other modules: written once they are
@@ -38,6 +42,10 @@ M02 through M20 and, through them, every bench dv_lead writes.
   ports take `Axi64.Source` alone (REQ-003).
 - The meaning of every field of that stream: `tdata` octet order (REQ-012),
   `tkeep` (REQ-011), `tlast` (REQ-015), `tuser`[0] (REQ-013), `tstrb` (REQ-014).
+- The `Xgmii` record — one lane pair, one direction — and its lane-to-bit
+  mapping (REQ-017, REQ-012), so that the four wire-side port names REQ-017
+  fixes are produced by a type rather than by four hand-written restatements
+  (§11.1).
 - The three header records `Eth_header`, `Ip_header`, `Udp_header`: which fields
   exist, at what width, and in what numeric encoding (REQ-012, REQ-409).
 - The `Config` record: exactly the twelve fields of requirements.md §9.1 at the
@@ -56,7 +64,7 @@ M02 through M20 and, through them, every bench dv_lead writes.
 | Driving `Config`, and holding it stable while a frame is in flight (REQ-803) | M20 `Nic_top` and the bench above it |
 | The reset values and permitted ranges of `Config` fields | requirements.md §9.1, which this record's widths follow; a record has no storage and therefore no reset value of its own (REQ-009) |
 | The application transmit **request** fields — destination address, ports, payload length (REQ-705) | SPEC-M18 and SPEC-M20, per requirements.md §0.1 |
-| The XGMII lane pair `xgmii_rxd`[63:0] / `xgmii_rxc`[7:0] and its transmit twin (REQ-017) | SPEC-M03, SPEC-M04, SPEC-M05 and SPEC-M20, which declare them as plain vectors; architecture.md §4 gives M01 no XGMII record (see §11.1) |
+| *Driving* the XGMII lane pair, decoding its control characters, or deciding what a start, terminate or error character means | SPEC-M03 (receive) and SPEC-M04 (transmit). M01 declares the `Xgmii` **record** that carries the pair (§4.1, decided at §11.1) and fixes nothing about its contents |
 | The maximum word count of any particular stream (REQ-015) | the specification of the module that produces that stream, per requirements.md §0.1 |
 | The `rtlprefix` used for a stream or header record at a given port | the specification that declares that port (§6.3) |
 
@@ -82,6 +90,7 @@ type declared here, the row below says so.
 | REQ-014 | **Owned.** `tstrb` exists in the type because `Hardcaml_axi.Stream.Make` puts it there; §6.1 states it is driven to 0 and ignored. |
 | REQ-015 | One `tlast` per frame is a producer obligation; M01 supplies the field and no counting. |
 | REQ-016 | Idle words are expressed as `tvalid` = 0 on a `Source`, which needs no separate type; M01 adds nothing further. |
+| REQ-017 | The `Xgmii` record (§4.1) is the type the four wire-side ports are declared from. Its field names `d` and `c` under the instantiation prefixes `xgmii_rx` and `xgmii_tx` emit exactly `xgmii_rxd`, `xgmii_rxc`, `xgmii_txd`, `xgmii_txc` — the four names REQ-017's port-list check compares against. M01 declares the type; the port list itself is SPEC-M20's. |
 | REQ-021 | Word alignment is a property of what a producer puts in `tdata`[7:0]; M01 supplies the octet-position convention (§6.1) that makes "aligned" mean one thing at every port. |
 | REQ-802 | **Owned.** The `Config` record is the record REQ-802 quantifies over; requirements.md §9.1 remains the normative source of widths, reset values and ranges. |
 | REQ-804 | The `Status` record is the field list REQ-804 requires. M01 names the twenty-one strobes; it raises none. |
@@ -121,6 +130,24 @@ module Axi64_config = struct
 end
 
 module Axi64 = Hardcaml_axi.Stream.Make (Axi64_config)
+
+(* ---- the XGMII lane pair (REQ-017, REQ-018) ----
+   One record for one direction. The field names are IEEE 802.3's
+   [RXD]/[RXC], lower-cased to [d] and [c], so that the instantiation
+   prefixes [@rtlprefix "xgmii_rx"] and [@rtlprefix "xgmii_tx"] emit
+   exactly [xgmii_rxd], [xgmii_rxc], [xgmii_txd], [xgmii_txc] — the four
+   port names REQ-017 fixes. Longer field names cannot produce them.
+   [c] bit k is the control indication for lane k, whose octet is
+   [d][8k+7:8k]: the same octet-position convention [tdata] uses
+   (REQ-012, §6.1). *)
+
+module Xgmii = struct
+  type 'a t =
+    { d : 'a [@bits 64]
+    ; c : 'a [@bits 8]
+    }
+  [@@deriving hardcaml]
+end
 
 (* ---- header records: numeric values, network byte order already
    decoded (REQ-012, REQ-409) ---- *)
@@ -224,10 +251,18 @@ Conformance of this block to the template's rules for §4.1:
 - Receive-path ports take `Axi64.Source` without `Axi64.Dest`: M01 makes that
   expressible by keeping the two records distinct; it declares no such port
   itself.
-- **`create` and `hierarchical` (REQ-903, REQ-808): not applicable.** M01 is
+- **`create` and `hierarchical`: not applicable. The `.mli` is not.** M01 is
   types-only and instantiates nothing, so there is no entry point to declare and
-  no `module type S`. REQ-808's own text excludes it from the emitted-Verilog
-  inventory for the same reason.
+  no `module type S`; REQ-903's amended text excludes types-only modules from
+  the `hierarchical` half by name, and REQ-808's text excludes M01 from the
+  emitted-Verilog inventory for the same reason. REQ-903's **`.mli` half is not
+  excluded and is not vacuous here**: `libs/hardcaml_ethernet/src/axi64.mli` is
+  the file that fixes which of these records are exported and at what widths,
+  which is the thing REQ-010 leans on at every other module, so it is required
+  and §10 carries the row. This is carry-forward **C-8**, raised by dv_lead
+  against the previous wording of this bullet (which cited REQ-808 for an
+  exclusion REQ-808 did not make) and closed by the REQ-903 diff in this
+  work order.
 
 ### 4.2 Port table
 
@@ -254,6 +289,16 @@ field of every record in §4.1 appears exactly once.
 | Field | Width | Meaning | REQ |
 |---|---|---|---|
 | `tready` | 1 | the consumer accepts a word this cycle. Present on transmit-path streams only; a receive-path port carries no `Dest`, and that absence is REQ-003 | REQ-003, REQ-207 |
+
+**`Xgmii`** (driven by the DV link-partner model into M03/M05/M20; driven by
+M04 outward. One record per direction; instantiated `[@rtlprefix "xgmii_rx"]`
+on a receive port and `[@rtlprefix "xgmii_tx"]` on a transmit port, which is
+what makes REQ-017's four port names exact.)
+
+| Field | Width | Meaning | REQ |
+|---|---|---|---|
+| `d` | 64 | eight XGMII lanes; lane k is `d`[8k+7:8k], and lane 0 is the earlier octet on the wire — the same octet-position convention `tdata` uses | REQ-012, REQ-017 |
+| `c` | 8 | bit k is 1 when lane k carries a **control** character rather than a data octet; the control characters this programme names are `/I/` 0x07, `/S/` 0xFB, `/T/` 0xFD, `/E/` 0xFE and `/Q/` 0x9C (requirements.md §2) | REQ-017, REQ-113 |
 
 **`Eth_header`** (emitted by M06, consumed by M08; built by M07)
 
@@ -290,6 +335,20 @@ field of every record in §4.1 appears exactly once.
 `ifg` emits port `cfg_ifg` (REQ-802, REQ-204). Reset values and permitted ranges
 are requirements.md §9.1 and are not restated here; the "Behaviour given by"
 column of §9.1 names the REQ that gives each field an observable effect.
+
+**Where the whole record travels and where single fields do (programme
+convention, established here so batches B–F do not each invent one).** Only
+M20 `Nic_top` declares the `Config` record itself: it is the module REQ-802
+quantifies over and the only one whose port list REQ-801 fixes. Every other
+module declares **exactly the fields it reads**, as scalar inputs named
+`cfg_<field>` — `cfg_rx_enable`, `cfg_ifg`, `cfg_tx_enable` and so on — at the
+width §9.1 gives that field. The reason is REQ-803: "configuration is static
+while a frame is in flight" is checked per module against the fields that
+module actually samples, and a module carrying ten fields it never reads makes
+that check unanswerable while adding a hundred tied-off port bits at every
+level of the hierarchy. The naming rule keeps REQ-802's `cfg_ifg` name true
+wherever the field appears, so a bench driving the top level and a bench
+driving M04 alone use the same port name.
 
 | Field | Width | Meaning | REQ |
 |---|---|---|---|
@@ -368,9 +427,19 @@ are the words of exactly one frame.
 
 **`tuser`[0] (REQ-013).** 1 means the frame was found invalid and the ultimate
 consumer must discard it. It is meaningful only on the word carrying `tlast` and
-is ignored elsewhere. No Phase-1 module drops or alters a frame because this bit
-is set on its input; it is advisory metadata carried to the application, and its
-propagation obligation is REQ-007's.
+is ignored elsewhere. No Phase-1 module drops or alters a frame **solely**
+because this bit is set on its input; it is advisory metadata carried to the
+application, and its propagation obligation is REQ-007's.
+
+*The word "solely" is load-bearing and is REQ-013's own* (carry-forward
+**C-10**). It does not say an aborted frame always reaches the application: a
+module that detects a discard condition **of its own** on the same frame
+discards it under requirements.md §0.6's local-discard rule and pulses its own
+strobe, and that is not a reaction to `tuser`[0]. A monitor built from this
+paragraph alone must therefore assert "a frame is not dropped *because of*
+`tuser`", never "an aborted frame is always delivered" — the second is false at
+every stage that owns a discard condition, and asserting it produces a false
+failure against a conformant design.
 
 **`tstrb` (REQ-014).** Present in the type because `Hardcaml_axi.Stream.Make`
 defines it; driven to 0 by every producer and ignored by every consumer. The
@@ -392,6 +461,17 @@ emitting module's pinned latency of the input `tlast` for a frame with no payloa
 words — is REQ-401, REQ-606 and REQ-701, owned by M06, M14 and M17 respectively.
 M01 fixes the meaning; it cannot fix the timing, because timing belongs to a
 circuit and M01 has none.
+
+**The XGMII lane pair (REQ-017, REQ-012).** `d` carries eight lanes with lane k
+at `d`[8k+7:8k] and lane 0 the earlier octet on the wire, so the octet-time
+definition of requirements.md §0.5 — 8 × cycle + lane — reads against `d`
+exactly as it reads against `tdata`. `c`[k] = 1 marks lane k as a control
+character. M01 fixes the mapping and nothing else: which control characters are
+legal where, which lanes may carry a start character, and what any of them mean
+are SPEC-M03's and SPEC-M04's (REQ-101 … REQ-113, REQ-201 … REQ-210). There is
+no `valid` on this record — an XGMII lane pair carries a value on every cycle
+of every clock, which is why it is not a stream and carries no `tvalid`,
+`tkeep` or `tready`.
 
 **`Config` (REQ-802, REQ-803).** Twelve fields, widths in §4.2, reset values and
 permitted ranges in requirements.md §9.1. A value outside a field's permitted
@@ -503,36 +583,47 @@ evidence) and the row says which module's bench carries the behavioural half.
 | REQ-015 | `tlast` declared with one-frame-between-`tlast`s meaning; per-stream maxima deferred to the producing spec | §6.1 | protocol monitor on every stream |
 | REQ-016 | idle expressed as `tvalid` = 0; no extra type needed | §6.1 | idle-injection wrapper at 0, 1 and 7 cycles, at each module boundary |
 | REQ-021 | octet-position convention makes "word-aligned" mean one thing at every port | §6.1 | directed realignment tests at M06, M14, M17 |
-| REQ-802 | `Config` carries exactly the twelve fields of requirements.md §9.1 at those widths, with the `cfg_` prefix | §4.1, §4.2 | interface compile check of the record against §9.1, field for field; each field's observable effect is verified by the REQ §9.1 names |
-| REQ-804 | `Status` carries one field per strobe of requirements.md §12, named as §12 names it | §4.1, §4.2 | field-set comparison against §12 in the compile check, plus REQ-804's twenty-one directed pulses at M20 |
+| REQ-017 | the `Xgmii` record's field names, under the two instantiation prefixes, emit exactly the four wire-side port names REQ-017 fixes | §4.1, §4.2, §6.1 | REQ-017's emitted-Verilog port-list check at `nic_top`, set-compared against SPEC-M20 §4.1; the compile check witnesses only the widths |
+| REQ-802 | `Config` carries exactly the twelve fields of requirements.md §9.1 at those widths, with the `cfg_` prefix | §4.1, §4.2 | **two mechanisms, because one cannot do it.** The interface compile check witnesses that the record exists and that each field has the width written here. The equality of the *field list and order* against requirements.md §9.1 is a text comparison an OCaml compile cannot perform — it is the dv-owned `tools/` record-versus-appendix script of carry-forward **C-9** (WO-0009), run in CI. Each field's observable effect is verified by the REQ §9.1's last column names |
+| REQ-804 | `Status` carries one field per strobe of requirements.md §12, named as §12 names it | §4.1, §4.2 | same two mechanisms as REQ-802: widths and existence by compile check, the twenty-one-name set-and-order equality against §12 by the C-9 script (WO-0009); plus REQ-804's twenty-one directed pulses at M20 |
 | REQ-808 | M01 is types-only and is excluded from the emitted-module list by REQ-808's own text | §3 | the `rtl_snapshots/` module-name comparison, with M01 absent |
+| REQ-903 | **`.mli` half only.** `axi64.mli` exports these records and their widths and is required; the `hierarchical` half does not apply, and REQ-903's amended text excludes types-only modules from it by name (C-8) | §4.1 | the repository-surface check at `P1-module-ready`, in its two parts: `.mli` present for every inventory module including M01; `hierarchical` exported by every module except M01 |
 
-This table is the source of M01's rows in [`traceability.md`](../traceability.md).
-**The matrix is not updated in this commit**: WO-0006 fixes its file set to the
-two specs, the two lifts and the packet, so the rows for REQ-010 … REQ-014 and
-REQ-802 still read `pending` in the Spec-section column. The update is owed
-before `P1-spec-freeze` and is recorded as §11.2 and in the WO-0006 Return log.
+This table is the source of M01's rows in [`traceability.md`](../traceability.md),
+whose Spec-section column is filled for every row above in the same commit as
+this revision (WO-0008, closing §11.2).
 
-## 11. Open questions
+## 11. Deferred items
 
-| # | Question | Owner | Closed by |
-|---|---|---|---|
-| 11.1 | **Should M01 also home the XGMII lane pair?** architecture.md §4 gives M01 no XGMII record, so `xgmii_rxd`[63:0]/`xgmii_rxc`[7:0] and their transmit twins will be declared field by field in SPEC-M03, SPEC-M04, SPEC-M05 and SPEC-M20 — four restatements of one pair of widths, which is the duplication REQ-010 rejects for streams. Batch B is where the cost becomes visible. Resolving it in favour of a record is a spec diff to this file and to architecture.md §4's M01 row. | architect_docs_lead | SPEC-M03 (batch B) |
-| 11.2 | **Traceability rows for REQ-010 … REQ-014 and REQ-802 still read `pending`.** SPEC-TEMPLATE §10 requires the matrix to be updated in the same commit as the spec; WO-0006's file set excludes `traceability.md`. Either the next spec work order carries the matrix update for batches A and B together, or a small architect work order does batch A alone. | orchestrator (work-order scope), architect_docs_lead (content) | `P1-spec-freeze` |
-| 11.3 | **The template's named open target `Ifc_check_axi64` does not exist.** SPEC-TEMPLATE §4.1's comment tells later specs to write `open Ifc_check_axi64`, but rule 6 names the file `<module>_ifc.ml` and `docs/specs/ifc_check/dune` wraps the library as `ifc_check`, so the module other lifts must open is `Axi64_ifc` — which is what this spec and SPEC-M02 use. The template needs a one-line editorial diff; it is not a spec diff to any module. | architect_docs_lead | `P1-spec-freeze` |
-| 11.4 | **`Axi64.Source`'s field names are `hardcaml_axi`'s and are so far unverified by compilation.** The names `tvalid`, `tdata`, `tkeep`, `tstrb`, `tlast`, `tuser`, `tready` are transcribed from `stream_intf.ml` as recorded in architecture.md §10; the CI run that proved the template block compiles used the type without naming a field, so a divergence in v0.17.0 would not have been caught. §4.2 and §6.1 quote those names normatively. The first lift that names a field — or rtl_lead's first construction of a `Source` — settles it; a divergence is an editorial diff to §4.2, not a change of meaning. | architect_docs_lead, rtl_lead | SPEC-M03 (batch B) |
+Under the amended SPEC-TEMPLATE §11: item numbers are permanent, closed items
+keep their row, and no item below is an open question — each states what a
+reader assumes today.
+
+| # | Item | Status · what a reader assumes meanwhile | Tracked as | Owner | Closes by |
+|---|---|---|---|---|---|
+| 11.1 | **Should M01 also home the XGMII lane pair?** The alternative was four field-by-field restatements of one pair of widths in SPEC-M03, SPEC-M04, SPEC-M05 and SPEC-M20 — the duplication REQ-010 rejects for streams. | **CLOSED (WO-0008), in favour of the record.** Batch B made the cost visible on schedule: M03, M04 and M05 all needed the pair, M20 would have been the fourth. The `Xgmii` record is declared in §4.1 with fields `d` and `c`, and the two instantiation prefixes `xgmii_rx` / `xgmii_tx` emit REQ-017's four port names exactly — a longer field name could not. architecture.md §4's M01 row is amended in the same commit. | WO-0008 | architect_docs_lead | closed |
+| 11.2 | **Traceability rows for the REQs this spec covers read `pending` in the Spec-section column**, against SPEC-TEMPLATE §10's same-commit rule, because WO-0006's file set excluded the matrix. | **CLOSED (WO-0008).** `traceability.md`'s Spec-section column now names a section of this specification for every row in §10. | WO-0008 | architect_docs_lead | closed |
+| 11.3 | **The template named an open target, `Ifc_check_axi64`, that cannot exist**: rule 6 names lifts `<module>_ifc.ml` and `docs/specs/ifc_check/dune` declares `(name ifc_check)`, so the module a sibling lift opens is `Axi64_ifc`. | **CLOSED (WO-0008).** SPEC-TEMPLATE §4.1 and its lift `template_ifc.ml` now both say `open! Axi64_ifc`, which is what every real lift already used. Editorial; no module's contract changed. | WO-0008 | architect_docs_lead | closed |
+| 11.4 | **`Axi64.Source`'s and `Axi64.Dest`'s field names are `hardcaml_axi`'s and were unverified by any compile.** `tvalid`, `tdata`, `tkeep`, `tstrb`, `tlast`, `tuser`, `tready` were transcribed from `stream_intf.ml` via architecture.md §10; run 30727252770 elaborated the functor application without naming a field, so a v0.17.0 divergence would not have been caught, and §4.2 and §6.1 quote the names normatively. | **DEFERRED — the witness is written and the run is pending.** The SPEC-M03 lift names all six `Source` fields and the SPEC-M04 lift names `Dest.tready`, in compile-time witnesses that fail the build if any name is wrong. **Meanwhile a reader assumes the names exactly as §4.2 writes them**: they are what every bench, monitor and RTL record uses today. A divergence surfaces as a red CI run on this commit and is repaired by an editorial diff to §4.2, the lifts and the failing spec — it changes no meaning and invalidates no test. | WO-0008; the `Interface compile check` row of §12 is the closure record | architect_docs_lead, rtl_lead | the batch-B `ifc_check` run (§12 row 1) |
+| 11.5 | **§10's REQ-802 and REQ-804 hooks named the interface compile check as the mechanism for comparing these records against requirements.md §9.1 and §12** — an OCaml compile cannot read a markdown table (dv_lead, WO-0007). | **DEFERRED — the architect's half is done, the script is dv_lead's.** §10 now names the two mechanisms separately and attributes the field-list-and-order comparison to a dv-owned `tools/` script. **Meanwhile a reader assumes the records in §4.1 are the authority and the appendices are the source**: the equality was checked by hand at 22145b5 (dv_lead, WO-0007: 21/21 strobes and 12/12 config fields, in order, character for character) and is re-checked by review at each revision until the script lands in CI. | ledger **C-9**, script under WO-0009 | dv_lead (script), architect_docs_lead (hook wording) | first `SO-` packet citing those hooks |
 
 ## 12. Freeze record
 
-Filled in at `P1-spec-freeze`. All four rows are required (charter §5); this spec
-is DRAFT and none is filled.
+Filled in at `P1-spec-freeze`. All four rows are required (charter §5). Two are
+filled; the two that depend on evidence this revision cannot produce are not.
 
 | Item | Value |
 |---|---|
-| Interface compile check | pending — CI `build` run `<id>`, conclusion `<success>`, SHA `<sha>`; per ADR-0005 a local build is not acceptable evidence |
-| Architect signature | pending |
-| dv_lead testability countersignature | pending |
+| Interface compile check | **pending on this revision** — the previous revision's lift is green (CI `build` run 30727252770 at 22145b5), but §4.1 gained the `Xgmii` record here, so the evidence must be the run on the commit carrying this revision. Per ADR-0005 a local build is not acceptable evidence. This row is also §11.4's closure record |
+| Architect signature | `J-architect_docs_lead-0004` — signed for freeze conditional on the row above reporting `success` |
+| dv_lead testability countersignature | `J-dv_lead-0003` (WO-0007, at 22145b5), extended by the batch-B countersignature over this revision's diffs — the `Xgmii` record (§4.1, §4.2, §6.1), the REQ-903 `.mli` row (§10), the C-9 hook rewording (§10), the C-10 `solely` restoration (§6.1) and this §11 |
 | Frozen at | pending — SHA `<sha>`, gate `docs/gates/P1-spec-freeze-checklist.md` |
+
+**Why this spec is still DRAFT.** The §11 blocker dv_lead raised at WO-0007 is
+cleared: under the amended SPEC-TEMPLATE §11 this spec carries no open
+question. What remains is evidence, not reconciliation — a green `ifc_check`
+run naming this commit, and the SHA it produces. Flipping the Status line is
+then a two-row edit with nothing left to decide.
 
 ## 13. Change log
 

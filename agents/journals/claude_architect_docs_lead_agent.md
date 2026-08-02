@@ -765,3 +765,308 @@ countersignature.
 - docs/specs/ifc_check/crc32_eth_ifc.ml
 - docs/specs/modules/axi64.md
 - docs/specs/modules/crc32_eth.md
+
+## [J-architect_docs_lead-0004] 2026-08-02T07:40:00Z | task:WO-0008 | Batch B (SPEC-M03/M04/M05), the §11 freeze reconciliation, four requirements diffs including the C-1 latency unit, and ADR-0006/0007
+
+### Trigger
+Orchestrator spawn for WO-0008 (`agents/handoffs/WO-0008_batch-b-specs.md`,
+ISSUED at 2665a04), spawn short-id WO-0008/2026-08-02T05:55Z. Fourth
+activation. The packet's ordering is load-bearing and I kept it: a batch that
+dv_lead has already countersigned is sitting un-frozen because SPEC-TEMPLATE
+§11 forbids open questions in a FROZEN spec and both batch-A specs carry four
+each, so the reconciliation had to land before anything else could.
+
+### Inputs
+Repo at HEAD 2665a04, branch claude/fpga-hardcaml-agent-orchestration-37ceyf.
+- `agents/charters/architect_docs_lead.md`; `agents/PROTOCOL.md` §4, §6, §7, §10
+- `agents/handoffs/WO-0008_batch-b-specs.md` (my packet)
+- `agents/handoffs/WO-0006_batch-a-specs.md` — my own Return log and the
+  orchestrator's ACCEPTED dispositions 1–6
+- `agents/handoffs/WO-0007_batch-a-countersign.md` — dv_lead's verdicts, the
+  finished-CRC verification table, the eleven "not applicable" judgements, and
+  C-8/C-9/C-10
+- `agents/handoffs/WO-0005_spec-diff-re-review.md` — the C-1 derivation
+  (ΔC = (L + h)/8, and the stage-by-stage 24/25-cycle result)
+- `docs/gates/P1-spec-freeze-checklist.md` — the ledger and the sponsor's
+  2026-08-02 delegation of the latency budget
+- `tasks/BOARD.md` — the same delegation, and WO-0009 running in parallel
+- `docs/specs/modules/axi64.md`, `crc32_eth.md` at 22145b5 (SIGNED);
+  `docs/specs/requirements.md` at b4b4cf4 (SIGNED); `architecture.md` §1, §2,
+  §4, §6.3, §8; `SPEC-TEMPLATE.md`; `traceability.md`;
+  `docs/specs/ifc_check/{dune,axi64_ifc.ml,crc32_eth_ifc.ml,template_ifc.ml}`
+- `docs/adr/ADR-0004` (for ADR form)
+- Not read: `libs/**`, `test/**`, `tools/**`, `rtl_snapshots/**`. No RTL exists
+  and dv_lead is writing under `test/` and `tools/` in parallel (WO-0009).
+
+### Reasoning
+
+**1. What "FROZEN carries no open question" should mean.** The naive
+reconciliations were both wrong. Forcing every §11 item closed before a freeze
+would mean batch A cannot freeze until a CI run and a dv-owned script exist,
+which makes the gate hostage to work that is not the spec's; deleting §11 at
+freeze would destroy the tracking. What actually makes a spec unfreezable is
+not that something is left — it is that a *reader is blocked*. So the amended
+SPEC-TEMPLATE §11 distinguishes an open question (answer unknown, someone
+downstream cannot proceed) from a deferred item (decision made and stated in
+the spec's own normative sections; remaining work tracked elsewhere), and it
+requires every deferred item in a FROZEN spec to state three things, of which
+the second is the whole test: **what a reader assumes meanwhile**, in one
+sentence they can act on today. An item that cannot state it is an open
+question whatever it is called. I also made item numbers permanent with closed
+rows kept in place, because dv_lead's countersignature and two Return logs cite
+"§11.3" and "§11.4" by number and a renumbered table would make those citations
+lie. Result: SPEC-M02 has four closed rows and nothing else; SPEC-M01 has three
+closed and two deferred (the pending compile witness, and C-9's script), and
+both now satisfy the amended rule.
+
+**2. C-1, and why I kept dv_lead's identity but not the obvious remedy.**
+dv_lead's finding is exact: for a stage stripping h octets, the word-cycle
+delay is ΔC = (L + h)/8, so comparing floor(L/8) against §1.1 understates a
+stripping stage by up to ⌈h/8⌉ cycles, and a chain sitting on every ceiling
+costs 24 cycles at a lane-0 start and 25 at a lane-4 start — the entire REQ-006
+budget or more — while every module passes REQ-019 individually. I recomputed
+that stage by stage before adopting it and reproduced both totals.
+
+The tempting remedy is to *lower the ceilings* until they fit under floor(L/8).
+I rejected it: it changes five numbers to preserve a unit that is wrong, and
+the unit is what is wrong. floor(L/8) is not additive; the quantity REQ-006
+measures is a sum of word delays. So the resolution keeps the allocation
+(4/3/1/5/4 = 17, slack 7, budget 24) and changes the unit the ceilings are
+compared in, which makes §1.1 arithmetic rather than aspiration: the per-module
+gate and the top-level gate now measure the same thing. I checked feasibility
+before committing to it — the five stages need roughly 3, 3, 1, 4 and 2 cycles
+of word delay to do their jobs, against ceilings of 4, 3, 1, 5 and 4, so the
+allocation is not merely coherent but comfortable, and I pinned M03 at 3 rather
+than at its ceiling of 4 so the hardest module keeps a cycle of its own.
+
+Two further things fell out and are now stated normatively because they are
+free checks: (L + h) must be a multiple of 8, so a spec pinning an impossible
+constant is caught by arithmetic at freeze; and the §0.5 bound on the two
+start-lane constants is exactly ΔC(lane 4) ∈ {ΔC(lane 0), ΔC(lane 0) + 1}.
+Both copies of the table (requirements.md §1.1, architecture.md §4) changed
+together, as architecture.md §4 itself requires.
+
+**3. The three deferred batch-B design questions.**
+
+*XGMII lane-pair home.* SPEC-M01 §11.1 said "batch B is where the cost becomes
+visible", and it was: M03, M04 and M05 all needed the pair and M20 would have
+been the fourth restatement of two widths. I homed an `Xgmii` record in M01.
+The field names are `d` and `c` — terse, and deliberately so: `[@rtlprefix
+"xgmii_rx"]` plus field `d` emits `xgmii_rxd`, which is REQ-017's exact port
+name, and no longer field name can produce it. The cost is that I edited a spec
+dv_lead has countersigned; it is an addition rather than a change to anything
+they judged, it lands before the FROZEN flip, and it is flagged for their
+batch-B countersignature rather than slipped in.
+
+*`octet_count` = 0.* SPEC-M02 §11.2 deferred this to whoever could say whether
+an update-by-zero actually occurs. Writing M03's and M04's sequencing answered
+it: neither needs one, because the running-CRC register has an enable and a
+cycle covering no frame octet is a cycle in which it holds. That left the
+question of whether to define 0 as the identity anyway, for totality. I decided
+against, and the deciding argument is not cost — an identity is free to build —
+but observability: with 0 unconstrained, a sequencer that accidentally drives 0
+produces a visibly wrong CRC in its own bench; with 0 defined as the identity,
+the same accident is indistinguishable from correct behaviour. The value of a
+total function is that no input is wrong, and that is exactly its cost here.
+
+*M03's FCS-check formulation.* I chose the residue form. Both forms use M02
+unchanged and neither is observable at the ports, so this is a specification
+choice made for the reader: the residue needs no capture register and, more
+importantly, no octet-order reassembly of the four received FCS octets — the
+precise operation whose convention error this programme has already paid for
+once (requirements.md §4's provenance note). It is one equality against one
+constant dv_lead has independently reproduced at five frame lengths. Because it
+is unobservable I recorded the alternative in §6.3 as admissible rather than
+pretending a bench could catch it, which is the honest form of "specified, not
+discovered in RTL".
+
+**4. Numbers I had to derive rather than transcribe.** M03's constants come
+from a pipeline argument I worked through rather than picked: to strip the FCS
+without varying latency the module needs exactly one word of lookahead, so
+output word 0 needs input through the second word after the start word at
+*both* start lanes — which is why ΔC = 3 at both, and why L is 16 octet times
+at a lane-0 start and 12 at a lane-4 start (the lane-4 frame's octets arrive
+four octet times later while its first output word leaves on the same cycle).
+The two differ by 4, inside §0.5's 8-octet-time bound. I checked the tightest
+case for the residue comparison (terminate in lane 4, where the final CRC
+update and the `tlast` word are formed on the same cycle) and it closes. M04's
+constant is 1 cycle because an inserted preamble word is exactly one output
+slot, which also fixes its storage at two words and makes `tready` bubble-free;
+its 11-cycle frame period then follows from REQ-204's lane-0 rounding rather
+than being asserted.
+
+**5. Two co-occurrence rulings in SPEC-M03 §9 that requirements.md does not
+make.** An error character *closes* a frame, so a start character after it
+begins a new frame and pulses no `error_start_without_terminate`; and a start
+character during REQ-108's post-truncation discard is the resynchronisation
+REQ-108 demands, not a second abort. Both are readings a bench would otherwise
+guess at, both are stated normatively, and both are flagged in the Return log
+for dv_lead — I would rather have them contested now than discovered in a
+sign-off packet.
+
+**6. What I did not touch.** `docs/gates/**`: PROTOCOL §7 says signers do not
+stage the gate checklist and the orchestrator transcribes, so the four ledger
+dispositions (C-1, C-4, C-8, C-10 closed; C-5 and C-9 restated) are in the
+Return log for transcription, not applied by me. `test/**` and `tools/**`:
+dv_lead is in them right now under WO-0009. `docs/specs/ifc_check/dune`: it has
+no `(modules)` field, so the three new lifts are picked up automatically and no
+orchestrator action is needed — I checked rather than assumed.
+
+### Actions
+- Amended `docs/specs/SPEC-TEMPLATE.md`: §11 rewritten (deferred items versus
+  open questions, the three required statements, permanent numbering, a
+  recommended table form); §7's latency bullet restated in front offset and
+  word delay; §4.1's `Ifc_check_axi64` → `Axi64_ifc`, with the same one-line
+  fix in `template_ifc.ml` so the lift stays verbatim.
+- SPEC-M01 `axi64.md`: added the `Xgmii` record (§2, §3, §4.1, §4.2, §6.1);
+  restored REQ-013's "solely" with a §0.6 clause (C-10); corrected the
+  `create`/`hierarchical` bullet and added a REQ-903 row (C-8); split the
+  REQ-802/REQ-804 verification hooks into compile check plus the dv-owned
+  script (C-9); added the `cfg_<field>` programme convention; §11 converted
+  (three closed, two deferred); §12 filled as far as evidence allows.
+- SPEC-M02 `crc32_eth.md`: §11 converted (four closed); §2, §3, §6.3, §10
+  updated for the REQ-010 narrowing, the residue choice and the closed
+  `octet_count` question; §12 filled as far as evidence allows.
+- `requirements.md`: REQ-010 narrowed to frame-carrying *stream* ports naming
+  M02; REQ-903 split into an `.mli` half and a `hierarchical` half with M01
+  excluded from the second only; REQ-105 and REQ-110 given their
+  zero-delivered-octet cases and §0.7 extended to match (C-4); §0.5 given the
+  front offset, the word delay and the start-lane corollary; REQ-019, REQ-006
+  and §1.1 restated in word delay with an h column (C-1).
+- `architecture.md`: §4's ceiling table restated in word delay with h, plus the
+  reason; M01's inventory row now names the `Xgmii` record and REQ-017.
+- New: `docs/adr/ADR-0006-crc32-finished-value-ports.md`,
+  `docs/adr/ADR-0007-octet-count-encoding.md`.
+- New: `docs/specs/modules/xgmii_rx_64.md` (SPEC-M03),
+  `xgmii_tx_64.md` (SPEC-M04), `eth_mac_10g.md` (SPEC-M05), all DRAFT and
+  template-complete, with lifts `xgmii_rx_64_ifc.ml`, `xgmii_tx_64_ifc.ml`,
+  `eth_mac_10g_ifc.ml`. The M03 lift names all six `Axi64.Source` fields and
+  the M04 lift names `Axi64.Dest.tready`, in compile-time witnesses.
+- `traceability.md`: Spec-section column filled for 53 rows (batch A and batch
+  B), plus the convention for invariant rows and a currency note.
+- Appended the RETURNED entry to `agents/handoffs/WO-0008_batch-b-specs.md`.
+
+### Evidence
+All commands run from a clean checkout of the working tree at this commit's
+content. Hardcaml is **not installed in this container**, so no lift was type
+checked or ppx-elaborated here; per ADR-0005 the CI `build` run on the
+orchestrator's commit is the only acceptable evidence for that, and every
+freeze record says `pending` accordingly.
+
+1. **Lifts are byte-identical to their §4.1 blocks** (extract the first
+   ```ocaml fence from each spec, compare to the lift):
+   `python3 -c` script comparing the five pairs — result `OK` for
+   axi64/crc32_eth/xgmii_rx_64/xgmii_tx_64/eth_mac_10g (4121, 1139, 1732, 1573
+   and 1493 bytes respectively, equal on both sides). The template's own lift
+   differs only in its pre-existing four-line header comment, as it did before
+   this work order; the body, including the corrected `open! Axi64_ifc` line,
+   is identical.
+2. **All six lifts parse**: `ocamlc -stop-after parsing docs/specs/ifc_check/*.ml`
+   → `parse OK` for all six. Parsing only — no typing, no ppx.
+3. **REQ set equality survives every requirements.md diff**: ids extracted from
+   requirements.md's tables and from traceability.md's rows → 110 and 110,
+   symmetric difference empty, `SET EQUAL`. The strobe appendix still
+   enumerates 21 strobes, matching SPEC-M01's `Status` record, which this work
+   order did not touch.
+4. **Template completeness**: sections 1–13 present in all five module specs
+   (`axi64`, `crc32_eth`, `xgmii_rx_64`, `xgmii_tx_64`, `eth_mac_10g`).
+5. **Strobe-name conformance**: every `error_*` name used in the three new
+   specs is in requirements.md §12 — 5 names in SPEC-M03, 2 in SPEC-M04, 6 in
+   SPEC-M05, none outside the appendix.
+6. **C-1 arithmetic, recomputed rather than transcribed.** Under floor(L/8) the
+   §1.1 ceilings admit L = 32, 26, 8, 44, 32 octet times (largest values with
+   (L + h) ≡ 0 mod 8), i.e. word delays 5, 5, 1, 8, 5 at a lane-0 start
+   (total 24) and 6, 5, 1, 8, 5 at a lane-4 start (total 25) — reproducing
+   dv_lead's WO-0005 figures exactly. Under the word-delay unit the same table
+   admits 4 + 3 + 1 + 5 + 4 = 17, leaving REQ-006's declared 7 cycles of slack.
+7. **M03's constants check against §0.5**: (L + h) = 16 + 8 = 24 and
+   12 + 12 = 24, both multiples of 8, both giving ΔC = 3 ≤ the ceiling of 4;
+   |16 − 12| = 4 ≤ 8 octet times, satisfying REQ-111 and §0.5's start-lane
+   bound. M04: 8 octet times = 1 cycle, and the §6.1 cycle table closes at 11
+   cycles per minimum-length frame with a 16-octet gap, which is REQ-209's and
+   REQ-204's figures.
+8. **No out-of-scope writes**: `git status --porcelain` shows my seventeen
+   paths plus dv_lead's concurrent `agents/handoffs/WO-0009_bench-machinery.md`,
+   `test/**` and `tools/**`, which I did not create, open for writing or
+   modify. `docs/gates/**` is unmodified.
+9. `git commit` and `git push` were never run.
+
+### Outcome
+DoD vs WO-0008: **met**, with one item that evidence rather than work
+completes.
+- Deliverable 1 (§11 reconciliation): done. Both batch-A specs carry zero OPEN
+  items under the amended wording; C-10 folded in; the template naming fix
+  applied in both the template and its lift.
+- Deliverable 2 (requirements diffs): done — REQ-010, REQ-903 (C-8), REQ-105 and
+  REQ-110 (C-4), with set equality re-verified.
+- Deliverable 3 (C-1): resolved by keeping the allocation and changing the unit
+  to the word delay, stated in one place (§0.5) and cross-referenced from
+  REQ-006, REQ-019, §1.1, architecture.md §4 and each module spec's §7.
+- Deliverable 4: ADR-0006 and ADR-0007 written, each with the rejected
+  alternative and the deciding argument.
+- Deliverable 5: traceability Spec-section column filled, 53 rows.
+- Deliverable 6: SPEC-M03, SPEC-M04, SPEC-M05 DRAFT and template-complete, with
+  byte-identical lifts; the M03 lift names the `Source` fields and the M04 lift
+  names `Dest.tready`; the three deferred design questions resolved and
+  recorded.
+- **Not completed here, and not completable here**: the batch-A DRAFT → FROZEN
+  flip. It needs a green `ifc_check` run naming this commit and the SHA that
+  run cites (ADR-0005), neither of which exists before the orchestrator
+  commits. Both specs' §12 carry everything else, and the flip is a two-row
+  edit with nothing left to decide.
+
+I sign SPEC-M01 and SPEC-M02 for `P1-spec-freeze` as architect, conditional on
+the `ifc_check` run for this commit reporting `success`; dv_lead's
+countersignature is `J-dv_lead-0003` plus the batch-B countersignature over
+this revision's diffs. Handoff:
+`agents/handoffs/WO-0008_batch-b-specs.md`, state RETURNED.
+
+### Open-questions
+1. **C-1's resolution needs dv_lead's explicit judgment**, which the sponsor's
+   delegation makes decisive: what the two of us converge on at the batch-B
+   countersignature is authorised without a further touchpoint. I adopted the
+   identity and rejected the alternative remedy of lowering the ceilings; if
+   dv_lead prefers the ceilings move instead, that is a §1.1 diff and my
+   pinned M03 constants survive either way.
+2. **SPEC-M01 §4.1 changed after dv_lead countersigned it** (the `Xgmii`
+   record). It is an addition, not a change to a judged section, and it lands
+   before the FROZEN flip — but it is a signed artifact and dv_lead should say
+   so explicitly rather than have it inferred from silence.
+3. **Two SPEC-M03 §9 co-occurrence rulings and one SPEC-M04 §9 ruling are
+   mine, not requirements.md's**: an error character closes a frame so a
+   following start character pulses nothing; a start character during REQ-108's
+   discard is resynchronisation, not a second abort; and on underflow the
+   already-accepted words are transmitted before the `/E/` because REQ-207
+   forbids dropping them. Each is a bench-visible decision.
+4. **`Axi64.Source`/`Dest` field names are still unverified by any compile at
+   the moment I hand this over.** The witnesses are written and will fail the
+   build if a name is wrong — which is the point — but a red run on this commit
+   is a possible and intended outcome, and the repair is editorial.
+5. **M06's §1.1 ceiling of 3 is exactly its feasible word delay** (h = 14 means
+   output word 0 spans two input words, so 2 cycles combinational and 3
+   registered). Batch C should know it has no headroom there before it pins a
+   constant; the architect's 7 cycles of slack are the release valve and
+   releasing them is a spec diff.
+6. **`error_underflow`'s §0.6 window is vacuous** (ledger C-5) because the
+   offending frame never receives its last octet. SPEC-M04 §9 pins the pulse
+   cycle exactly so nothing depends on the window, but the editorial repair to
+   §0.6 is still owed.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0008_batch-b-specs.md
+- docs/adr/ADR-0006-crc32-finished-value-ports.md
+- docs/adr/ADR-0007-octet-count-encoding.md
+- docs/specs/SPEC-TEMPLATE.md
+- docs/specs/architecture.md
+- docs/specs/ifc_check/axi64_ifc.ml
+- docs/specs/ifc_check/eth_mac_10g_ifc.ml
+- docs/specs/ifc_check/template_ifc.ml
+- docs/specs/ifc_check/xgmii_rx_64_ifc.ml
+- docs/specs/ifc_check/xgmii_tx_64_ifc.ml
+- docs/specs/modules/axi64.md
+- docs/specs/modules/crc32_eth.md
+- docs/specs/modules/eth_mac_10g.md
+- docs/specs/modules/xgmii_rx_64.md
+- docs/specs/modules/xgmii_tx_64.md
+- docs/specs/requirements.md
+- docs/specs/traceability.md
