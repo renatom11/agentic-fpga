@@ -13,7 +13,10 @@
 #                                        each spec §4.1 vs its ifc_check lift,
 #                                        the DV strobe list vs §12
 #   tools/check_emitted_verilog.sh       X-9: REQ-001, REQ-017, REQ-018,
-#                                        REQ-306, REQ-808 (REQ-903 pending C-8)
+#                                        REQ-306, REQ-808, REQ-903 (the last
+#                                        landed at WO-0012, once C-8's closure
+#                                        gave its M01 half a determinable
+#                                        answer)
 #
 # CI WIRING — the decision WO-0009 asked to be documented either way.
 #

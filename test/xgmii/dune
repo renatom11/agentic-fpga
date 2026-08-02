@@ -1,0 +1,32 @@
+; The XGMII link-partner model — REQ-018's "simulation model owned by DV under
+; test/", and the directory tools/check_emitted_verilog.sh looks for when it
+; verifies that the XGMII boundary is simulation-only.
+;
+; Two halves, both DUT-independent:
+;   Arrival    the receive-side emitter — SPEC-M03 §8's stress schedule and the
+;              requirements.md §0.3 gap arithmetic that produces it
+;   Tx_decoder the transmit-side observer — SPEC-M04 §6.1/§9, validating
+;              REQ-201 … REQ-206 on a decoded wire
+;
+; No Hardcaml dependency, on purpose and for the same reason dv_monitors has
+; none: the model is exercised on hand-built schedules and word lists, so its
+; unit tests fail when the MODEL is wrong rather than when a design is. The
+; seam to a live Xgmii port is Xgmii_word.to_wire / of_wire, which a probe
+; library will call exactly as test/axi64_probe/ calls Stream_word — that probe
+; lands with the first M03 bench, when there is an Xgmii port to attach to.
+;
+; dv_golden supplies the FCS: REQ-202's verification column requires the wire
+; octets to be compared against the independent bit-serial REQ-305 reference
+; and warns off a loopback through the design's own engine. dv_monitors is here
+; for the octet-time cross-check in test_arrival.ml — the model's own input
+; trace, fed to the WO-0012 latency tagger, must show SPEC-M03 §7's front
+; offsets of 8 and 12.
+;
+; libs/** is not depended on and was not opened (PROTOCOL §10).
+
+(library
+ (name dv_xgmii)
+ (inline_tests)
+ (libraries dv_golden dv_monitors)
+ (preprocess
+  (pps ppx_expect)))

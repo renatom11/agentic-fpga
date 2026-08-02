@@ -1,13 +1,14 @@
 (** Octet time and the per-octet latency tagger of requirements.md §0.5.
 
-    §0.5 (normative, at b4b4cf4) defines the octet time of an octet on an XGMII
-    lane pair as [8 × cycle + lane index], and on an [Axi64] stream as
+    §0.5 (normative, FROZEN at f78766e) defines the octet time of an octet on an
+    XGMII lane pair as [8 × cycle + lane index], and on an [Axi64] stream as
     [8 × cycle + byte position], where byte position [k] is
     [tdata\[8k+7 : 8k\]] (SPEC-M01 §6.1). The latency of octet [n] at a module
     is its octet time at the output minus its octet time at the input, and the
     module has constant latency iff that value is a single constant for every
     octet of every frame, at every length and content it accepts (REQ-005,
-    REQ-111).
+    REQ-111) — {e per start lane} at the XGMII boundary, see "Three quantities"
+    below.
 
     {2 Why this formulation and not word-in to word-out}
 
@@ -27,35 +28,96 @@
     REQ-005's constant-latency evidence is a by-product of the REQ-004 10 000
     frame run rather than a separate six-frame bench.
 
-    {2 Cycles: two conversions, deliberately both offered}
+    {2 Three quantities, deliberately separate (WO-0012 deliverable 1)}
 
-    §0.5 converts a latency constant to cycles as [floor (L / 8)], and
-    REQ-006's budget and REQ-019's §1.1 ceilings are compared against that
-    figure. [cycles_floor] is that conversion, exactly as written.
+    Until WO-0012 this module had one [~strip_octets] parameter and used it for
+    three different things. They coincide at a stream-to-stream stripping stage
+    and part company at exactly the module the machinery exists for, M03
+    [Xgmii_rx_64], so the conflation was invisible in the unit tests and would
+    have surfaced as a wrong number in M03's own sign-off packet. The three:
 
-    [word_cycles] is carry-forward C-1: §1.1's ceilings are word-cycle
-    allocations, but [floor (L / 8)] understates a stripping stage's word-cycle
-    delay by [ceil (h / 8)], since [L] has the stripped header subtracted out
-    of it. [word_cycles ~strip_octets:h L = (L + h) / 8] is [Co − Ci], the
-    figure the ceilings were actually allocated in — the quantity C-1 calls the
-    word delay ΔC. The difference is lenient, not false — no conformant design
-    fails the §0.5 comparison — but a sign-off packet should quote both, and
-    C-1 asks for the spec to say which one §1.1 means. Offering only one of
-    them here would decide that question by omission.
+    - [strip_octets] — {b octet correspondence}. Output octet [j] is input octet
+      [j + strip_octets] of the same frame. At M03 this is the 8 preamble
+      octets (REQ-102), at {b both} start lanes.
+    - [tail_octets] — {b octets removed from the back}, which change the frame's
+      length without shifting the correspondence. At M03 this is the 4 FCS
+      octets (REQ-103). Nothing else in Phase 1 has one; it exists because
+      without it M03's own frame cannot be handed to this tagger without lying
+      about its input trace.
+    - the {b front offset h} of §0.5, which is what the word delay
+      [ΔC = (L + h)/8] is computed from. §0.5 states it as "(the octets the
+      module removes from the front of the frame) + (the position, within the
+      input word named by the measurement event, of the frame's first octet)",
+      so at M03 it is {b 8} at a lane-0 start and {b 12} at a lane-4 start — a
+      property of the module {e and the start lane}, pinned in the module spec
+      §7 (SPEC-M03 §7: h = 8 / 12, L = 16 / 12, ΔC = 3 at both).
 
-    If requirements.md adopts ΔC as the normative conversion (C-1's requested
-    fix), nothing here changes: [word_cycles] becomes the figure a sign-off
-    packet quotes and [cycles_floor] the superseded one, and the tagger keeps
-    reporting both so a packet written against either wording is checkable. *)
+    The divergence, stated as the number it would have produced: for a
+    conformant M03 frame at a lane-4 start, L = 12 and h = 12, so ΔC = 3 — the
+    figure SPEC-M03 §7 pins and REQ-019 compares against §1.1's ceiling of 4.
+    Computing it from the correspondence term instead gives (12 + 8)/8 = {b 2},
+    understating the hardest receive module by a cycle in its own packet. The
+    regression test [WO-0010's divergent case] drives that exact trace and shows
+    both formulations on it.
+
+    h is {b not} taken on trust: the tagger computes the observed front offset
+    of every frame from its input trace — [in_times.(strip_octets) − 8 ×
+    (in_times.(0) / 8)], the §0.5 definition verbatim, with the measurement
+    event's octet-time base being the word carrying the frame's first octet at
+    the input — and reports one whose value is not in the spec-declared
+    [~front_offsets] set. That is REQ-019's second check ("the per-octet latency
+    measured by the REQ-004 stress run … with h taken from the spec") made
+    mechanical rather than clerical.
+
+    {2 Constancy is per front offset, because §0.5 says so}
+
+    §0.5's "Start lanes" paragraph: "At the XGMII boundary the two start lanes
+    yield two constants differing by the 4-octet-time difference in the start
+    character's position within its word; both are pinned in the module spec and
+    SHALL differ by no more than 8 octet times (one cycle). Everywhere else L is
+    a single value." SPEC-M03 §8's stress schedule alternates the start lanes,
+    so a conformant M03 produces L = 16 and L = 12 in the {e same} run, and
+    check 3 of §8 asks for "one value per start lane across all 10 000 frames,
+    not a mean". A tagger that demanded a single L over such a run would fail a
+    conformant design — the same defect class as D-4 — so constancy here is
+    evaluated {e within} each front-offset class, and the relation {e between}
+    classes is checked against §0.5's own bound: ordered by ascending h,
+    [ΔC(larger h) ∈ { ΔC(smaller h), ΔC(smaller h) + 1 }].
+
+    {2 Cycles: one normative conversion, one superseded}
+
+    C-1 is CLOSED and SEALED (dv_lead's batch-B countersignature at f78766e):
+    §0.5 now converts a latency constant to cycles as the word delay
+    [ΔC = (L + h)/8], and that is the unit of §1.1's ceilings and REQ-006's
+    budget. [word_cycles] is that conversion and takes [~front_offset], not the
+    correspondence term; it returns [None] rather than truncating when
+    [(L + h)] is not a multiple of 8, because §0.5 makes that closure normative
+    ("ΔC is a whole number … A specification pinning an L for which it is not
+    describes a module that cannot exist"). Silently rounding past a free check
+    is how a spec defect reaches a sign-off packet.
+
+    [cycles_floor] is §0.5's superseded conversion, [floor (L / 8)]. It is kept
+    — it is what the C-1 finding is {e about}, and the regression test needs to
+    show both — but nothing this module prints quotes it any more. *)
 
 val of_xgmii : cycle:int -> lane:int -> int
 val of_axi64 : cycle:int -> byte_position:int -> int
 
-(** §0.5 as written: [floor (L / 8)]. *)
+(** §0.5's superseded conversion [floor (L / 8)]. Retained for the C-1 record
+    only; not the unit of §1.1 or REQ-006. *)
 val cycles_floor : int -> int
 
-(** Carry-forward C-1: [(L + h) / 8], the word-cycle delay [Co − Ci]. *)
-val word_cycles : strip_octets:int -> int -> int
+(** §0.5's front offset, from its own equivalence: h = (octets removed from the
+    front of the frame) + (the position, within the input word named by the
+    measurement event, of the frame's first octet). At M03,
+    [front_offset ~strip_octets:8 ~start_lane:0 = 8] and
+    [~start_lane:4 = 12] — SPEC-M03 §7's two rows. *)
+val front_offset : strip_octets:int -> start_lane:int -> int
+
+(** The normative conversion: [word_cycles ~front_offset:h L = Some ((L + h)/8)]
+    when [(L + h)] is a non-negative multiple of 8, and [None] otherwise (§0.5:
+    ΔC is a whole number). *)
+val word_cycles : front_offset:int -> int -> int option
 
 (** Octet times of the octets a word carries, ascending; the empty list for a
     word with [tvalid] = 0. Reads only positions whose [tkeep] bit is set
@@ -70,17 +132,52 @@ val of_words : (int * Stream_word.t) list -> int array
 module Latency : sig
   type t
 
-  (** [create ~name ~strip_octets ()]. [strip_octets] is the number of leading
-      octets the module under test removes from each frame (0 where it
-      forwards the whole frame); output octet [j] is then input octet
-      [j + strip_octets] of the same frame. *)
-  val create : name:string -> strip_octets:int -> unit -> t
+  (** One front-offset class: every frame whose observed h was the same value.
+      A non-XGMII module has one class; M03 has two (SPEC-M03 §7). *)
+  type observed =
+    { front_offset : int
+    ; latencies : int list
+          (** distinct L values observed in this class, ascending; exactly one
+              on a conformant module *)
+    ; word_delay : int option
+          (** [ΔC = (L + h)/8] when the class has a single L and the pair closes
+              mod 8; [None] otherwise *)
+    ; frames : int
+    ; octets : int
+    }
+
+  (** [create ~name ~strip_octets ~tail_octets ~front_offsets ?ceiling ()].
+
+      - [strip_octets]: leading octets the module removes (output octet [j] is
+        input octet [j + strip_octets]). 8 at M03 (REQ-102), 14 at M06, 0 where
+        the whole frame is forwarded.
+      - [tail_octets]: trailing octets the module removes. 4 at M03 (the FCS,
+        REQ-103), 0 everywhere else in Phase 1.
+      - [front_offsets]: the h values the module's spec §7 pins, one per start
+        lane. [[8; 12]] at M03; [[14]] at M06; [[0]] at a non-stripping stage.
+        A frame whose observed h is outside this set is reported as an error,
+        not silently classified.
+      - [ceiling]: the §1.1 ceiling on ΔC, when the module has one (4 at M03).
+        Supplied, the tagger reports a ΔC above it as a REQ-019 failure; the
+        cost C-1's closure imposes on a sign-off packet is then paid by the
+        machinery rather than by hand. *)
+  val create
+    :  name:string
+    -> strip_octets:int
+    -> tail_octets:int
+    -> front_offsets:int list
+    -> ?ceiling:int
+    -> unit
+    -> t
 
   (** Octet times of every octet of one frame at the module's input, in wire
-      order. Frames are matched to outputs in order. *)
+      order — at M03 the eight preamble octets from the start character
+      inclusive, then the frame's octets DA through FCS. Frames are matched to
+      outputs in order. *)
   val frame_in : t -> int array -> unit
 
-  (** Octet times of every octet of the corresponding output frame. *)
+  (** Octet times of every octet of the corresponding output frame. Its length
+      must be (input length − [strip_octets] − [tail_octets]). *)
   val frame_out : t -> int array -> unit
 
   (** The oldest unmatched input frame produced no output frame (it was
@@ -89,30 +186,55 @@ module Latency : sig
   val frame_dropped : t -> unit
 
   val name : t -> string
+
+  (** Output frames offered to the tagger, whether or not they matched an input
+      frame — so that the frame index in an error message is stable when one
+      does not. *)
   val frames_compared : t -> int
+
   val octets_compared : t -> int
 
-  (** Distinct latency values observed, ascending. *)
+  (** One entry per front-offset class, ascending by h. *)
+  val observed : t -> observed list
+
+  (** Every distinct L observed, ascending, across all classes. At M03 over an
+      alternating-lane run this is [[12; 16]] and that is conformant — read
+      [observed] or [is_constant], not this, to judge REQ-005. *)
   val distinct : t -> int list
 
+  (** True iff at least one octet was compared and every front-offset class has
+      a single L (REQ-005, REQ-111, §0.5 "Start lanes"). *)
   val is_constant : t -> bool
 
-  (** The single latency value when constant. *)
+  (** The single L, when the run produced exactly one front-offset class and
+      that class has one value. [None] at M03 over a two-lane run — use
+      [observed] there. *)
   val constant : t -> int option
 
-  (** The first octet whose latency differed from the first one observed,
-      rendered as text, or [None]. *)
+  (** The single word delay ΔC, when every class has one and they all agree.
+      This is the figure REQ-019 compares against §1.1, and the one a sign-off
+      packet quotes. *)
+  val word_delay : t -> int option
+
+  (** The first octet whose latency differed from the first one observed {e in
+      its own front-offset class}, rendered as text, or [None]. *)
   val first_offender : t -> string option
 
-  (** Structural problems: an output frame with no matching input, a frame
-      whose octet count does not match [input length − strip_octets]. *)
+  (** Structural and derived problems: an output frame with no matching input;
+      a frame whose octet count does not match input − strip − tail; an output
+      frame that is not word-aligned (REQ-021); an observed front offset outside
+      the declared set (§0.5); an (L + h) that is not a multiple of 8 (§0.5); a
+      ΔC above the declared ceiling (REQ-019); two start-lane classes whose word
+      delays are further apart than §0.5's bound. *)
   val errors : t -> string list
 
+  (** [is_constant] and no errors. *)
   val is_clean : t -> bool
 
-  (** Deterministic summary for an expect block: constant-or-not, the value in
-      octet times and in both cycle conversions, the first offender when there
-      is one. Never prints a histogram longer than eight entries, so a
-      10 000-frame stress run stays reviewable (WO-0003 findings §13.2). *)
+  (** Deterministic summary for an expect block: one header line, then one line
+      per front-offset class carrying its L, its ΔC and the ceiling comparison,
+      then the first offender and any errors. Never prints more than eight
+      latency values per class, so a 10 000-frame stress run stays reviewable
+      (WO-0003 findings §13.2). *)
   val report : t -> string
 end

@@ -1698,3 +1698,400 @@ DV actions this review created for me.
 
 ### Files-in-this-commit
 - agents/handoffs/WO-0010_dual-batch-countersign.md
+
+## [J-dv_lead-0006] 2026-08-02T11:05:00Z | task:WO-0012 | Tagger fix landed with the regression that proves both formulations on one trace; XGMII link-partner model (emitter + transmit decoder) built from FROZEN text; REQ-903 check implemented — 24 snapshots left empty for CI promotion
+
+### Trigger
+Orchestrator spawn under work order WO-0012 (ISSUED at 482b03a), spawn short-id
+`WO-0012/2026-08-02T09:50Z`. Sixth activation. Three deliverables: the fix for
+the `Latency.create` defect I found against my own machinery at WO-0010, the
+XGMII link-partner model every Phase-1 receive bench will drive, and the REQ-903
+half of `tools/check_emitted_verilog.sh` that C-8's closure unblocked.
+
+### Inputs
+- `agents/charters/dv_lead.md` (§3 delegation and golden-model rules, §5 DoD,
+  §9 honest-enforcement note); `agents/PROTOCOL.md` §4 (entry grammar), §6
+  (write scopes), §10 (independence and evidence).
+- `agents/handoffs/WO-0012_dv-wave2.md` at 482b03a — my work order; and my own
+  `agents/handoffs/WO-0010_dual-batch-countersign.md` Return log, whose "DV
+  actions" items 1–4 are three of this commit's deliverables.
+- **FROZEN spec text at f78766e, which is byte-identical to HEAD (482b03a) for
+  every file I cite**: `docs/specs/requirements.md` §0.3 (the gap convention,
+  the DIC paragraph, the 84-octet budget), §0.4, §0.5 (octet time, front offset
+  h, word delay ΔC, the start-lane pair rule), §0.6, §0.7, §1.1, REQ-004,
+  REQ-005, REQ-011, REQ-012, REQ-016, REQ-018, REQ-019, REQ-020, REQ-021,
+  REQ-101 … REQ-113, REQ-201 … REQ-210, REQ-301 … REQ-305, REQ-903, §12;
+  `docs/specs/modules/xgmii_rx_64.md` §6.1, §6.2, §6.3, §7, §8, §9, §10;
+  `docs/specs/modules/xgmii_tx_64.md` §4.3, §6.1, §6.2, §6.3, §7, §9, §10;
+  `docs/specs/architecture.md` §4 (the inventory table and its "modules live
+  under `libs/hardcaml_ethernet/src/`" sentence).
+- My committed machinery, re-read before changing it:
+  `test/monitors/octet_time.{ml,mli}`, `stream_word.mli`,
+  `conservation_monitor.mli`, `protocol_monitor.mli`, `strobes.mli`,
+  `test/golden/crc32_ref.mli`, `test/axi64_probe/dune`, `tools/*.sh`, and the
+  four `dune` files whose conventions the new library follows.
+- `docs/adr/ADR-0005-build-environment.md` (CI is the authoritative build;
+  snapshots are promoted from CI's diff, never authored).
+- **`libs/**` was never opened**, in this or any previous activation. The one
+  new place any DV artefact touches that tree is the REQ-903 check, which tests
+  for the existence of `.mli` files and greps them for a single declaration;
+  the boundary and its justification are written into the script's header and
+  argued below.
+
+**Independence note on a shared working tree.** `git status` shows the
+architect's *uncommitted* WO-0011 edits to `docs/specs/**` in the same tree.
+Before deriving anything I diffed every specification I cite against HEAD. The
+in-flight edits are the C-11, C-12, C-13 and C-14 repairs I myself
+commissioned at WO-0010 plus the FROZEN status flips; **none of them touches a
+row this commit derives from** — SPEC-M03 §7's constants, §8's stimulus,
+§0.3, §0.5, §1.1, REQ-004, REQ-021, REQ-201 … REQ-206 and REQ-903 are all
+unchanged. Everything here is derived from committed FROZEN text, and where a
+comment mentions C-12 it says "as of this commit", because the ruling that
+closes it is drafted but not committed and I may not derive from uncountersigned
+draft text.
+
+### Reasoning
+
+**1. The tagger defect was a naming conflation, and naming it properly is most
+of the fix.** `Latency.create ~strip_octets` was one parameter doing three
+jobs: octet correspondence (output octet j is input octet j + 8 at M03), the
+front offset h that §0.5's word delay ΔC = (L + h)/8 is computed from, and — by
+omission — the frame's length change. They coincide at every stream-to-stream
+stripping stage in Phase 1, which is why the unit tests never saw it, and they
+part company at exactly the module the machinery exists for. So I split them
+into three named parameters rather than two: `~strip_octets`, `~tail_octets`
+and `~front_offsets`. The tail is not padding of the deliverable — without it
+M03's own frame **cannot be handed to the tagger without lying about its input
+trace**, because REQ-103 removes four octets from the back as well as eight from
+the front, and the old contract could only express a leading strip. A tagger
+that cannot express M03 is not a tagger for M03.
+
+**2. h cannot be a static parameter, and finding that out is what made this
+more than a one-line fix.** §0.5 states h as "(the octets the module removes
+from the front) + (the position, within the input word named by the measurement
+event, of the frame's first octet)" — so at M03 it is 8 at a lane-0 start and
+**12** at a lane-4 start. SPEC-M03 §8's stress schedule alternates the start
+lanes. Therefore h varies **per frame** inside a single run, and no create-time
+constant can be right for that run. The tagger now computes the observed h from
+each frame's own trace — `in_times.(strip) − 8 × (in_times.(0) / 8)`, the §0.5
+definition verbatim — and reports a value outside the spec-declared set as an
+error. That turns REQ-019's second check ("the measured latency converted the
+same way, **with h taken from the spec**") from a clerical step in a sign-off
+packet into a mechanical one, which is what C-1's closure said the cost would
+be.
+
+**3. Pulling that thread found a second defect of the D-4 class, and I fixed it
+rather than shipping the narrow repair.** If h varies per frame then L varies
+too — 16 at a lane-0 start, 12 at a lane-4 start, differing by 4 exactly as
+§0.5's "Start lanes" paragraph says. The old `is_constant` demanded a single L
+over the whole run, so **a conformant M03 would have failed REQ-005 on its
+second frame** of the §8 stress. That is precisely the defect class D-4 was
+(a monitor that fails a conformant design), and it was sitting behind the same
+parameter. Constancy is now evaluated within each front-offset class, and the
+relation between classes is checked against §0.5's own bound: ordered by
+ascending h, ΔC(larger) ∈ {ΔC(smaller), ΔC(smaller) + 1}. SPEC-M03 §8's check 3
+already asks for exactly this ("one value per start lane across all 10 000
+frames, not a mean"), so the specification was on the corrected side and only
+my code was not. The *definition* paragraph of §0.5 is not, and that is the one
+carry-forward this work created — see Open-questions.
+
+**4. `word_cycles` refuses instead of truncating, and the regression shows why
+that matters on the same trace.** §0.5 makes the closure normative: ΔC is a
+whole number, so (L + h) is a multiple of 8 for every conformant module and a
+spec pinning an L for which it is not "describes a module that cannot exist".
+The old helper divided and truncated, which is what let the wrong pairing print
+a plausible number rather than object: (12 + 8)/8 = 2 for a frame whose true
+word delay is 3. The new helper returns `None` for that pairing. I discovered,
+by running the regression, that this makes the obvious formulation of the test
+useless — calling the *fixed* helper with the *wrong* offset yields `None`, not
+2, so the test would have demonstrated nothing about what the old code did. The
+regression therefore restates the removed formula verbatim, truncation included,
+and prints both numbers off one trace: conflated = 2, fixed = 3, with the fixed
+helper's refusal shown as a third column. It also runs the same comparison at a
+lane-0 start, where conflated = fixed = 3 — the line that explains why nobody
+caught this: the defect was wrong for exactly one start lane of one module.
+
+**5. The link-partner emitter is a total function of octet time, and that is a
+design decision worth defending.** The alternative was a stateful generator
+walking a schedule cycle by cycle. I rejected it: a bench may sample a cycle
+more than once or out of order (a `hardcaml_step_testbench` coroutine does),
+and a stimulus generator with hidden state can then disagree with itself. Here
+`word_at ~cycle` maps each of the eight octet times through one binary search
+over the frame table and one classification — start character, preamble octet,
+frame octet, terminate character, idle. There is no FSM to get wrong, the model
+is re-entrant, and the same function serves a 10 000-frame run and a six-frame
+unit test.
+
+**6. The §8 schedule is arithmetic, so the tests assert REQ-004 against the
+requirement rather than against the generator.** Nothing in the scheduler is
+told to alternate start lanes. §0.3's convention — twelve octets counted from
+the terminate character **inclusive** — puts 8 + 64 + 12 = 84 octet times
+between start characters; 84 is not a multiple of 8, so the lane alternates
+0, 4, 0, 4, and it is not a whole number of cycles, so the spacing alternates
+10 and 11. Both are REQ-004's own figures and both come out of the gap
+arithmetic. A generator that was *instructed* to alternate would have made the
+alternation untestable — it would assert its own input back to itself.
+
+**7. Deficit idle count is implemented from §0.3's two sentences and nothing
+else.** §0.3 gives exactly two constraints: a start character may occupy only
+lane 0 or lane 4 so a gap is rounded **up** to a multiple of four octets, and
+the partner may shorten a later gap — **never below 9** — so the average stays
+12. I implemented that as a rounding credit banked and spent, and deliberately
+did **not** implement IEEE 802.3 clause 46's deficit counter, because clause 46
+is referenced by the specification but not stated in it, and a model carrying
+detail its spec does not state is a model that can be right in a way no
+requirement can check. The §8 schedule never exercises the path (84 is already
+a multiple of 4, so the credit never moves), which is exactly why the DIC case
+gets its own hand-built schedule with a 65-octet frame.
+
+**8. The generator checks itself, because a stimulus nobody verified is an
+unverified assertion about the design.** `Arrival.check` re-derives the model's
+contract from §0.3 and REQ-101 — start lanes in {0, 4}, no gap below the 9-octet
+floor, a running average never below `ifg`, no overlapping frames — and verifies
+**REQ-304's residue over every frame**, which is the check M03 itself performs.
+So a frame this model believes valid is provably one M03 must accept, before any
+design exists. `~fcs_valid:false` exists so an injection schedule narrows that
+check to the frames it deliberately corrupts instead of weakening it for
+everyone; the alternative (dropping the check) is how a bad stimulus becomes a
+false `BUG-` against rtl_lead.
+
+**9. The transmit decoder judges what a wire can carry and reports what it
+cannot.** REQ-201, REQ-202, REQ-203, REQ-204, REQ-205 and REQ-206 are decidable
+from the XGMII words alone and are judged, each violation naming its REQ.
+REQ-209 is not: "one frame per 11 cycles and no spacing differing from 11" is a
+property of a run of minimum-length frames, and only the bench that chose the
+lengths may assert it — so the decoder exposes `start_spacings` and judges
+nothing. REQ-207 needs the accepted source words, which are not on the wire.
+And on an underflowed frame I deliberately do **not** assert REQ-202 or
+REQ-203: §9 says no FCS is appended, and its own argument is that appending one
+would put a well-formed short frame on the wire; a bench asserting the FCS
+there would be demanding the defect the clause exists to prevent.
+
+**10. Two models derived from different sections have to agree on one wire, and
+that is the strongest check available without a DUT.** `Arrival` comes from
+§0.3 and SPEC-M03 §8; `Tx_decoder` comes from SPEC-M04 §6.1 and §9. Parameterised
+with the gap M04's REQ-204 rounding produces for a minimum frame terminating in
+lane 0 — 16 octets — the emitter reproduces §6.1's cycle table exactly: start
+characters in lane 0, 11 cycles and 88 octet times apart, terminate in lane 0,
+FCS matching the REQ-305 oracle, zero violations. And feeding the *receive*
+schedule to the transmit decoder produces exactly two REQ-201 violations for its
+two lane-4 starts, which is the cheapest available proof that the check is not
+vacuous — and documents why the link partner is two models rather than one
+loopback.
+
+**11. REQ-903 required deciding where the independence line actually is, and I
+would rather argue it than route around it.** REQ-903's subject is the module
+*surface*, and the artefact carrying it is the `.mli`. Its verification column
+asks for "a mechanical repository check … in two parts". No reading of
+`rtl_snapshots/` can answer part (b). So the check opens `.mli` files — never a
+`.ml` — greps one declaration, and prints verdicts and module names, never file
+contents. Nothing in `test/**` derives anything from those files. I judge that
+inside PROTOCOL §10 rather than beside it, because §10 forbids deriving *tests*
+from RTL and this derives a *process check* from requirements.md; but it is a
+line worth stating out loud in the script header rather than crossing quietly,
+and if the auditor reads it differently the remedy is to move this one check to
+rtl_lead's scope, which costs nothing already built.
+
+The one design choice inside it: a module with no `.mli` **fails** when its
+Verilog has been emitted and is **pending** when it has not. Using the emitted
+module set as the "is it built" oracle keeps the check honest before any RTL
+exists without letting it go silent afterwards — the same shape as the REQ-808
+row above it. M01 is the exception on both halves: it owes the `.mli` (it is
+what fixes which records are exported, and every other module's REQ-010 check
+binds to it) and not the entry point, and an M01 that *does* export
+`hierarchical` gets a note rather than a failure, because REQ-903 excuses M01
+from the entry point and does not forbid it.
+
+**12. What I did not do.** I did not write the error-injection catalogue REQ-018
+also names (REQ-104, REQ-105, REQ-107, REQ-108, REQ-110). My charter §3 requires
+the attack plan to be committed *before* testing of a module starts, and an
+injection catalogue written first is a catalogue whose adversarial coverage
+nobody has reviewed; one of its rows (an error character during REQ-108's
+`Discard`) is also C-12 and is NO-ASSERT until requirements.md settles it. The
+frame builder and the emitter are shaped so injection is additive — a corrupted
+frame and `~fcs_valid:false` already work today, and the unit test for the
+self-check uses them. I also did not build the Hardcaml probe that binds
+`Xgmii_word.to_wire` to a live `Xgmii` port: there is no port to bind to until
+M03 exists, and ADR-0005 makes an unbuildable probe pure compile risk for no
+coverage — the same reasoning that kept `hardcaml_step_testbench` out of
+WO-0009.
+
+### Actions
+- Rewrote `test/monitors/octet_time.{ml,mli}`: `word_cycles` now takes
+  `~front_offset` and returns `int option`; added `front_offset
+  ~strip_octets ~start_lane`; `Latency.create` takes `~strip_octets`,
+  `~tail_octets`, `~front_offsets` and an optional `?ceiling`; added the
+  per-front-offset `observed` record, `word_delay`, the REQ-021 word-alignment
+  check, the §0.5 closure and start-lane-pair checks, and the REQ-019 ceiling
+  comparison; `report` now prints one line per start-lane class and no longer
+  quotes the superseded `floor (L / 8)`.
+- Rewrote `test/monitors/test_octet_time.ml`: five new cases (the WO-0010
+  divergent case; the §8 alternating-lane run; the start-lane bound; a producer
+  that does not realign; an undeclared front offset) and every existing case
+  updated to the new contract, with numeric assertions in OCaml so no verdict
+  depends on a promoted snapshot.
+- Created `test/xgmii/` — `dune`, `xgmii_word.{ml,mli}`, `frame.{ml,mli}`,
+  `arrival.{ml,mli}`, `tx_decoder.{ml,mli}` and three test files
+  (`test_frame.ml`, `test_arrival.ml`, `test_tx_decoder.ml`), library
+  `dv_xgmii`, depending on `dv_golden` (the REQ-305 FCS oracle) and
+  `dv_monitors` (the octet-time cross-check) and on no Hardcaml.
+- Implemented REQ-903 in `tools/check_emitted_verilog.sh` (single inventory
+  parser now serving REQ-808, REQ-018 and REQ-903; the check itself in a
+  function so it also runs on the two paths where `rtl_snapshots/` is absent),
+  and updated the REQ-903 line in `tools/dv_checks.sh`.
+- Appended the RETURNED entry to `agents/handoffs/WO-0012_dv-wave2.md` and set
+  its header state to RETURNED.
+- Wrote nothing under `docs/`, `libs/`, `top/`, `bin/`, `rtl_snapshots/`,
+  `.github/`, `scripts/` or `tasks/`.
+
+### Evidence
+Form (a) commands are runnable from a checkout at this SHA. The OCaml
+correctness claim is **not** made here: ADR-0005 and REQ-906 put it in CI, and
+the authoritative evidence is the `build` run on the orchestrator's push of
+this commit.
+
+1. **`tools/dv_checks.sh` at this working tree** → exit `0`,
+   `dv_checks: all checks passed`. C-9 half: `12 check(s) run, 0 failure(s)`.
+   X-9 half: `4 check(s) run, 0 failure(s), 4 pending` — up from 3 checks and
+   5 pending at f44a296, because REQ-903 is now a real check and
+   `REQ-018: the XGMII link-partner model lives under test/ (test/xgmii/)`
+   flipped from PENDING to **PASS**. The REQ-903 line reads
+   `PENDING  REQ-903: 0 of 20 inventory module(s) have an .mli; not written
+   yet: axi64 crc32_eth …` — twenty names, M01 included, which is the census
+   REQ-903 quantifies over.
+2. **REQ-903 exercised against defects, because a check nobody has seen fail is
+   a check nobody has verified.** Reproduce by building a synthetic tree —
+   copy `tools/check_emitted_verilog.sh` and `docs/specs/architecture.md` into
+   an empty root, create `libs/hardcaml_ethernet/src/<name>.mli` per inventory
+   row and an `rtl_snapshots/*.v` declaring `module <name>` for the nineteen
+   non-M01 rows — and then:
+
+   | Case | Result |
+   |---|---|
+   | all 20 `.mli` present, `hierarchical` in the 19 non-M01 ones | `PASS REQ-903: .mli for all 20 inventory module(s), M01 included; hierarchical exported by all but M01` |
+   | `xgmii_rx_64.mli` deleted while `xgmii_rx_64` is emitted | `FAIL REQ-903(a): emitted module(s) with no .mli: xgmii_rx_64` |
+   | `udp_ip_rx_64.mli` without `val hierarchical` | `FAIL REQ-903(b): .mli(s) not exporting hierarchical: udp_ip_rx_64` |
+   | `axi64.mli` exporting `hierarchical` | PASS plus a note; not a failure |
+
+   Script exit is non-zero in the two FAIL cases. The synthetic tree itself is
+   **ephemeral** (an uncommitted scratch directory, ADR-0003/F5); the recipe
+   above is what reproduces it.
+3. **A local type-check and test-body run, offered as risk reduction and
+   explicitly NOT as evidence of correctness.** The container has `ocamlc`
+   **4.14.1**, which is not ADR-0004's pinned toolchain and cannot build
+   Hardcaml or run `ppx_expect`. Every module in `dv_monitors`, `dv_golden` and
+   `dv_xgmii` is plain stdlib OCaml, so in an ephemeral scratch directory I
+   compiled them under dune's dev-profile warning set as errors
+   (`-w '@1..3@5..28@30..39@43@46..47@49..57@61..62@67@69-40…-70'
+   -strict-sequence -strict-formats`) — clean — and executed the test bodies
+   with the `let%expect_test`/`[%expect]` extensions mechanically stripped. All
+   twenty-four cases printed `VERDICT ok`. This caught three real defects
+   before CI: a record-field ambiguity in `Tx_decoder.report`, the wrong
+   expected value in the divergent-case regression (see Reasoning 4), and a
+   start-lane sequence I had predicted wrongly by hand in the DIC case. It is
+   not evidence under REQ-906 — the pinned compiler is 5.1, the snapshots are
+   unpromoted, and no expect block was evaluated. **CI is the verdict.**
+4. **The numbers the fixed tagger reports for M03, from the specification's own
+   constants.** Lane 0: h = 8, L = 16, ΔC = 3 ≤ ceiling 4. Lane 4: h = 12,
+   L = 12, ΔC = 3 ≤ 4. (L + h) = 24 in both rows. The removed formulation gives
+   3 at lane 0 and **2** at lane 4. Over a six-frame alternating run the tagger
+   reports two classes, two distinct L values and one word delay — and
+   `constant` is `None`, which is correct and is why a sign-off packet must
+   quote `word_delay` and the per-class table.
+5. **The link partner's own figures, all asserted in code.** §8 schedule, six
+   frames: start lanes `0 4 0 4 0 4`; start-to-start cycles `10 11 10 11 10`;
+   gaps `12 12 12 12 12`; 84 octet times between start characters. DIC schedule,
+   six 65-octet frames: start octet times 8, 96, 180, 264, 348, 436 (every one a
+   legal lane-0/lane-4 position); gaps `15 11 11 11 15`, minimum 11 ≥ 9, total
+   63 ≥ 5 × 12. Transmit side, `ifg = 16`: two frames, zero violations, start
+   cycles 1 and 12, spacing 11, gap 16, 88 octet times — SPEC-M04 §6.1's table
+   and REQ-204's verification figure, reproduced by a model that was never told
+   them.
+6. **Snapshots left empty for CI promotion: 24.** `test/monitors/
+   test_octet_time.ml` 10 of 11 (the octet-time arithmetic case keeps its
+   promoted snapshot — nothing it prints changed); `test/xgmii/test_frame.ml`
+   4; `test_arrival.ml` 5; `test_tx_decoder.ml` 5. Count with
+   `grep -c '\[%expect {| |}\]' test/monitors/test_octet_time.ml
+   test/xgmii/test_*.ml`. The `build` workflow's
+   `git diff --cached --exit-code` step will fail on this push and its printed
+   diff **is** the promotion source (ADR-0005 rule 2).
+7. **Independence.** `libs/**` unopened. The `.mli` reads the REQ-903 check
+   performs are bounded and argued in Reasoning 11 and in the script header.
+   Every specification cited was diffed against HEAD first (`git diff HEAD --
+   docs/specs/...`) to confirm that the architect's in-flight WO-0011 edits
+   touch no row this commit derives from.
+
+### Outcome
+DoD of WO-0012 met on all three deliverables.
+
+1. **Tagger fixed with its regression.** The three quantities are separate and
+   named; ΔC reports 3 for a conformant M03 lane-4 frame; the regression drives
+   exactly the WO-0010 trace and shows the removed formulation giving 2 and the
+   new one giving 3 on it, plus the refusal that replaces the truncation. A
+   second defect of the same class — single-L constancy over an
+   alternating-lane run — was found and fixed with it.
+2. **Link-partner model committed, DUT-independent**, under `test/xgmii/`:
+   REQ-018's first clause (the arrival scheduler and emitter, SPEC-M03 §8's
+   schedule at the REQ-004 rate) and its third (the transmit decoder validating
+   REQ-201 … REQ-206). The second clause, error injection, is declared open and
+   tied to `AP-xgmii_rx_64.md`. Fourteen unit tests on hand-built schedules.
+3. **REQ-903 implemented**, both halves, with its M01 exclusion stated in
+   REQ-903's own terms; PENDING until rtl_lead writes the modules, FAIL the
+   moment an emitted module ships without a surface.
+
+Handoff: `agents/handoffs/WO-0012_dv-wave2.md`, state RETURNED, listing the
+snapshots awaiting promotion and one proposed carry-forward.
+
+### Open-questions
+1. **Twenty-four snapshots await CI promotion** (Evidence 6). No sign-off packet
+   may cite this test suite until they are promoted and `git diff --exit-code`
+   is clean at the promoting SHA.
+2. **Proposed carry-forward C-15 (editorial, non-blocking, requirements.md
+   §0.5).** The "Latency" paragraph defines constant latency as "a single
+   constant L for every octet of every frame", and the "Start lanes" paragraph
+   four paragraphs later carves out the XGMII boundary where there are two. The
+   two are consistent, but a tb_writer reading the definition first builds the
+   monitor I have just had to fix — which is not a hypothetical, since I built
+   it. Repair is one clause on the definition: "…a single constant L … (at the
+   XGMII boundary, one constant per start lane — see Start lanes below)". Owner
+   architect_docs_lead; must land before the first tb_writer `WO-` carrying a
+   §0.5 excerpt.
+3. **REQ-018's injection half is owed and is sequenced behind
+   `AP-xgmii_rx_64.md`**, which is itself behind C-12's ruling for the
+   error-character-during-`Discard` row (marked NO-ASSERT meanwhile). Next
+   cycle, with the attack plan.
+4. **The Hardcaml probe for the XGMII boundary is not written.**
+   `Xgmii_word.to_wire` / `of_wire` pin REQ-012's packing so the probe is
+   mechanical, but it lands with the first M03 bench, when there is a port to
+   attach to. `of_source` in `test/axi64_probe/` still imports
+   `Ifc_check.Axi64_ifc.Axi64` and must be retargeted when rtl_lead builds M01
+   — unchanged from `J-dv_lead-0004` and `J-dv_lead-0005`.
+5. **`Latency.frames_compared` changed meaning** from "frames compared" to
+   "output frames offered, matched or not", so that the frame index in an error
+   message stays stable when a frame does not match. Documented in the `.mli`;
+   the surplus-frame case's report line changes from `frames=0` to `frames=1`
+   and its snapshot is one of the 24.
+6. **Still open and unchanged**: C-2, C-3, C-5, C-6, C-7 on the gate ledger;
+   C-11, C-12, C-13, C-14 pending the architect's committed diffs (drafted in
+   the working tree, not yet countersigned); `hardcaml_verilator` plus a
+   `verilator` binary against REQ-901.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0012_dv-wave2.md
+- test/monitors/octet_time.ml
+- test/monitors/octet_time.mli
+- test/monitors/test_octet_time.ml
+- test/xgmii/dune
+- test/xgmii/xgmii_word.mli
+- test/xgmii/xgmii_word.ml
+- test/xgmii/frame.mli
+- test/xgmii/frame.ml
+- test/xgmii/arrival.mli
+- test/xgmii/arrival.ml
+- test/xgmii/tx_decoder.mli
+- test/xgmii/tx_decoder.ml
+- test/xgmii/test_frame.ml
+- test/xgmii/test_arrival.ml
+- test/xgmii/test_tx_decoder.ml
+- tools/check_emitted_verilog.sh
+- tools/dv_checks.sh

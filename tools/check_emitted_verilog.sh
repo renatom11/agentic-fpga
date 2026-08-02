@@ -10,14 +10,41 @@
 # this script reads rtl_snapshots/*.v and docs/specs/architecture.md, and
 # nothing under libs/.
 #
-# Checks implemented (WO-0009 deliverable 5):
+# Checks implemented (WO-0009 deliverable 5; REQ-903 added at WO-0012):
 #   REQ-001  every edge expression in the emitted Verilog names `clock`
 #   REQ-017  nic_top's only wire-side ports are the four XGMII ports
 #   REQ-018  no vendor primitive (whitelist), no device constraint file,
 #            the XGMII link partner lives under test/
 #   REQ-306  the emitted crc32_eth has no clock port and no posedge block
 #   REQ-808  emitted module names == architecture.md §4 inventory, M01 excluded
-#   REQ-903  NOT IMPLEMENTED — see the note at the end; blocked on C-8
+#   REQ-903  (a) an .mli for every inventory module, M01 INCLUDED
+#            (b) `hierarchical` exported by every inventory module EXCEPT M01
+#
+# THE ONE PLACE THIS SCRIPT LOOKS INSIDE libs/, AND WHY (REQ-903).
+#
+# Every other check here reads rtl_snapshots/ (a build product) and
+# docs/specs/. REQ-903's subject is neither: it is the module SURFACE, and the
+# artefact that carries it is the `.mli`. So part (a) is a file-existence test
+# under libs/hardcaml_ethernet/src/ — the directory architecture.md §4 names —
+# and part (b) greps each `.mli` for one declaration. Three limits keep that
+# inside PROTOCOL §10's independence rule rather than beside it:
+#
+#   * only `.mli` files are opened, never a `.ml`. An interface file is the
+#     declared surface, which is what the specification pins (SPEC-M03 §4.1's
+#     `module type S` is the same two declarations);
+#   * the check prints verdicts and module names only, never file contents, so
+#     no implementation detail can reach a journal, a packet or a snapshot;
+#   * no test in test/** derives anything from these files. This is a
+#     repository-surface check with a determinable answer, which is exactly the
+#     form REQ-903's own verification column asks for.
+#
+# C-8 is what unblocked it. REQ-903 used to quantify over the whole inventory
+# with no types-only exclusion while SPEC-M01 declared create/hierarchical not
+# applicable for M01, citing REQ-808 — whose exclusion is written for the
+# emitted-module list. requirements.md now states the split in REQ-903's own
+# words: M01 owes the .mli and not the entry point, "the same exclusion REQ-808
+# makes … now stated for this requirement in its own words rather than borrowed
+# from that one".
 #
 # The Verilog parsing is coupled to Hardcaml's emitter format, which is
 # regular by construction (one instantiation per three lines: module name,
@@ -37,6 +64,12 @@ set -uo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 SNAP="$ROOT/rtl_snapshots"
 ARCH="$ROOT/docs/specs/architecture.md"
+# architecture.md §4: "Modules live under `libs/hardcaml_ethernet/src/`". The
+# path is taken from the specification rather than from a directory listing, so
+# a module written somewhere else is a PENDING this script reports, not a hole
+# it silently steps around.
+SRC="$ROOT/libs/hardcaml_ethernet/src"
+EMITTED=""
 
 # Modules that legitimately exist in rtl_snapshots/ without being in the §4
 # inventory. This is the bootstrap skeleton from G0, not a design module. It
@@ -59,34 +92,100 @@ in_list() { # in_list needle "space separated haystack"
   return 1
 }
 
+# ------------------------------------------------------------------ inventory
+# architecture.md §4 rows look like:  | M03 | `Xgmii_rx_64` | R | ... |
+# One parser, two consumers: REQ-903 quantifies over the whole inventory
+# (M01 included, by its own text), REQ-808 and REQ-018's whitelist over the
+# inventory minus M01 (types-only, no circuit). Two parsers would be two places
+# for the same table to be read differently.
+inventory_rows() { # "M01 axi64" per line, in §4's order
+  [ -f "$ARCH" ] || return 0
+  sed -n '/^## 4\. Module inventory/,/^## 5\./p' "$ARCH" \
+    | grep -E '^\| M[0-9]+ \|' \
+    | awk -F'|' '{ id = $2; name = $3; gsub(/[ `]/, "", id); gsub(/[ `]/, "", name);
+                   print id " " tolower(name) }' \
+    | grep -E '^M[0-9]+ [a-z][a-z0-9_]*$'
+}
+
+inventory_modules() { inventory_rows | grep -v '^M01 ' | awk '{ print $2 }'; }
+
+INVENTORY_ROWS=$(inventory_rows)
+INVENTORY=$(inventory_modules | tr '\n' ' ')
+
+# ------------------------------------------------------------------- REQ-903
+# Part (a): an .mli for every inventory module, M01 included — "that file is
+# what fixes which of M01's records are exported and at what widths, which is
+# the surface every other module's REQ-010 compile check binds to".
+# Part (b): `hierarchical` exported by every inventory module except M01.
+#
+# A module with no .mli is a FAIL when its Verilog has been emitted (it is
+# built, and shipped without a surface) and a PENDING when it has not (rtl_lead
+# has not written it yet). That split is what keeps the check honest before any
+# RTL exists without letting it stay silent afterwards.
+check_req903() {
+  if [ -z "$INVENTORY_ROWS" ]; then
+    pend "REQ-903: architecture.md §4 inventory could not be read"
+    return
+  fi
+  if [ ! -d "$SRC" ]; then
+    pend "REQ-903: $SRC does not exist yet — no module surface to inspect"
+    note "architecture.md §4 names that directory; a module written elsewhere leaves this"
+    note "line PENDING, which is a visible gap rather than a silent pass"
+    return
+  fi
+  local id name mli
+  local missing_mli="" unbuilt="" no_hier="" m01_hier=""
+  local have=0 total=0
+  while read -r id name; do
+    [ -n "$id" ] || continue
+    total=$((total + 1))
+    mli="$SRC/$name.mli"
+    if [ -f "$mli" ]; then
+      have=$((have + 1))
+      if grep -qE '^[[:space:]]*val[[:space:]]+hierarchical\b' "$mli"; then
+        [ "$id" = "M01" ] && m01_hier="$m01_hier $name"
+      else
+        [ "$id" = "M01" ] || no_hier="$no_hier $name"
+      fi
+    elif printf '%s' "$EMITTED" | grep -qw "$name"; then
+      missing_mli="$missing_mli $name"
+    else
+      unbuilt="$unbuilt $name"
+    fi
+  done <<EOF
+$INVENTORY_ROWS
+EOF
+  [ -n "$missing_mli" ] && fail "REQ-903(a): emitted module(s) with no .mli:$missing_mli"
+  [ -n "$no_hier" ] &&
+    fail "REQ-903(b): .mli(s) not exporting hierarchical:$no_hier"
+  if [ -n "$unbuilt" ]; then
+    pend "REQ-903: $have of $total inventory module(s) have an .mli; not written yet:$unbuilt"
+    note "REQ-903 passes only when this list is empty; that is a P1-module-ready condition"
+  elif [ -z "$missing_mli" ] && [ -z "$no_hier" ]; then
+    pass "REQ-903: .mli for all $total inventory module(s), M01 included; hierarchical exported by all but M01"
+  fi
+  [ -n "$m01_hier" ] &&
+    note "REQ-903: M01 also exports hierarchical ($m01_hier). Not a failure — REQ-903 excuses M01 from the entry point, it does not forbid one — but M01 is types-only (architecture.md §6.3) and an entry point there would be worth a spec diff"
+  return 0
+}
+
 if [ ! -d "$SNAP" ]; then
   pend "rtl_snapshots/ does not exist — no emitted Verilog to inspect"
+  check_req903
   printf '\n%d check(s) run, %d failure(s), %d pending\n' "$checks" "$failures" "$pending"
-  exit 0
+  [ "$failures" -eq 0 ]
+  exit
 fi
 
 VFILES=$(find "$SNAP" -name '*.v' -type f | sort)
 if [ -z "$VFILES" ]; then
   pend "rtl_snapshots/ holds no .v file — no emitted Verilog to inspect"
+  check_req903
   printf '\n%d check(s) run, %d failure(s), %d pending\n' "$checks" "$failures" "$pending"
-  exit 0
+  [ "$failures" -eq 0 ]
+  exit
 fi
 
-# ------------------------------------------------------------------ inventory
-# architecture.md §4 rows look like:  | M03 | `Xgmii_rx_64` | R | ... |
-# REQ-808 excludes M01 by its own text (types-only, no circuit).
-inventory_modules() {
-  [ -f "$ARCH" ] || return 0
-  sed -n '/^## 4\. Module inventory/,/^## 5\./p' "$ARCH" \
-    | grep -E '^\| M[0-9]+ \|' \
-    | grep -vE '^\| M01 \|' \
-    | awk -F'|' '{ print $3 }' \
-    | tr -d ' `' \
-    | tr '[:upper:]' '[:lower:]' \
-    | grep -E '^[a-z][a-z0-9_]*$'
-}
-
-INVENTORY=$(inventory_modules | tr '\n' ' ')
 if [ -z "$INVENTORY" ]; then
   pend "architecture.md §4 inventory could not be read — REQ-808 and REQ-018 whitelist skipped"
 fi
@@ -250,12 +349,7 @@ else
 fi
 
 # ------------------------------------------------------------------- REQ-903
-pend "REQ-903 module surface (.mli + hierarchical per inventory module): NOT IMPLEMENTED"
-note "Blocked on carry-forward C-8: REQ-903 quantifies over the whole §4 inventory with no"
-note "types-only exclusion, while SPEC-M01 §4.1 declares create/hierarchical not applicable"
-note "for M01 citing REQ-808 — whose exclusion is written for the emitted-module list only."
-note "The check has no determinable answer for M01 until requirements.md says whether M01 is"
-note "exempt from both halves or only from hierarchical. Script lands when C-8 settles."
+check_req903
 
 printf '\n%d check(s) run, %d failure(s), %d pending\n' "$checks" "$failures" "$pending"
 [ "$failures" -eq 0 ]
