@@ -62,7 +62,9 @@ Corrections.
 
 | Packet | From → To | State | Note |
 |---|---|---|---|
-| [WO-0033](../agents/handoffs/WO-0033_dv-machinery.md) | orchestrator → dv_lead | ISSUED | The verification machinery X-1…X-11 (dv's own gap register) — oracles externally anchored, staged partition allowed; tb_writer WOs follow on it |
+| [WO-0035](../agents/handoffs/WO-0035_spec-queue-2.md) | orchestrator → architect_docs_lead | ISSUED | Second spec queue: rtl's sub-5-octet error_bad_fcs question (load-bearing), /S/-lane-2 confirmation, C-43's cell, C-46/C-47 optional |
+| [WO-0034](../agents/handoffs/WO-0034_compile-harness.md) | orchestrator → dv_lead | ISSUED | Real-compile harness into tools/ (auditor-re-executable) + RFC 1071 anchor closed from the runner's own egress |
+| [WO-0033](../agents/handoffs/WO-0033_dv-machinery.md) | orchestrator → dv_lead | ACCEPTED | bde57a4+d680945+promotions: **machinery 8/11 live, self-checks green at run 30761913001** — computed-not-tabulated outcomes; first real Build escape repaired + real-compile harness discovered (35/35); C-48 self-found; RFC anchor obligation open (403 ×5, incl. orchestrator) |
 | [WO-0032](../agents/handoffs/WO-0032_m03-req102-conformance.md) | orchestrator → rtl_lead | ACCEPTED | d57e028 + promotion 15e2458: **three-epoch M03 conformant to reading (i)**, run 30758091238 full green (REQ-902 re-proven); third first-try elaboration; 2nd REQ-102 gap self-found; L constants survive; 2 questions queued for architect |
 | [WO-0031](../agents/handoffs/WO-0031_m03-r1r2-repair.md) | orchestrator → architect_docs_lead | ACCEPTED | 06c1eba repair (three hunks, confined) + e22e3f0 countersign **GRANTED** — SPEC-M03 revisions in force; N2/N4 → ASSERT, plan 0 RULING; C-47; dv's prose-vs-table concession = C-44's pattern named twice |
 | [WO-0030](../agents/handoffs/WO-0030_revision-recountersign.md) | orchestrator → dv_lead | ACCEPTED | 0a5ce45: **split verdict** — M14 SIGNED (substituted ground judged better), REQ-810 SIGNED, M03 WITHHELD on M03-R1/R2 (two sentences, repair bounded); K7+B5 → ASSERT; C-43…C-46; C-40/41/42 CLOSED; REQ-001 deferral discharged |

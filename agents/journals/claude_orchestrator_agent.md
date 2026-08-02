@@ -3545,3 +3545,42 @@ Sponsor can deploy immediately; refresh = rerun build.py + redeploy.
 - site/public/org-chart.html
 - site/public/spec-atlas.html
 - site/wrangler.jsonc
+
+## [J-orchestrator-0083] 2026-08-03T09:55:00Z | task:WO-0033 | Machinery accepted on its self-check green; the harness ask granted; the second spec queue out
+
+### Trigger
+Run 30761913001 (head `61ee8fc`) full green — the 30 promoted expect
+outputs re-executed with every OCaml-asserted verdict passing.
+
+### Inputs
+- The seven-commit arc in the acceptance block; dv's §4 C-48 text
+  and §3 RFC obligation; its J-dv_lead-0018 tools/ ask; rtl's two
+  WO-0032 questions.
+
+### Reasoning
+Acceptance records BOTH escapes of the arc (dv's Build red, my two
+promotion-block gaps) — the record is the product. My three RFC
+fetch attempts 403'd like dv's two; recorded so the obligation's
+count is honest, and WO-0034 carries the runner-egress closure. Two
+parallel issuances (dv tools/, architect cells) — no file overlap.
+
+### Actions
+- WO-0033 ACCEPTED + C-48 to ledger; WO-0034 + WO-0035 authored,
+  BOARD rows; spawning both; this commit.
+
+### Evidence
+- Run 30761913001 success; grep C-48 on the checklist.
+
+### Outcome / DoD
+Machinery live; after WO-0034/0035: the first tb_writer WO (M03
+attack rows against real RTL) is the program's next new frontier.
+
+### Open questions
+- dv's judgement on where the harness wires in (dv_checks vs CI step).
+
+### Files-in-this-commit
+- agents/handoffs/WO-0033_dv-machinery.md
+- agents/handoffs/WO-0034_compile-harness.md
+- agents/handoffs/WO-0035_spec-queue-2.md
+- docs/gates/P1-spec-freeze-checklist.md
+- tasks/BOARD.md
