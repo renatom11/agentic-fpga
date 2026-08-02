@@ -376,8 +376,14 @@ let outcomes t =
               ~strobes:[ "error_oversize" ]
               ~note:"§9 row 7: more than 1518 octets between start and terminate"
               ~closing_ot:ot;
-            current := None;
-            discarding := true)
+            (* [current := None] IS the transition to §6.2's `Discard`: with no
+               frame open, a /T/ closes nothing, an /E/ is absorbed (C-12) and
+               only a /S/ starts a frame, which is that row exactly. This arm
+               once also set a separate [discarding] flag; the flag was removed
+               at WO-0033 when the two states were shown indistinguishable in
+               the report model, and this line's write to it was missed —
+               J-dv_lead-0018. *)
+            current := None)
         | Xgmii_word.Control c when c = Xgmii_word.terminate_char ->
           let r = received () in
           if r < 5

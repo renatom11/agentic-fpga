@@ -5967,3 +5967,234 @@ orchestrator.
 - test/xgmii_probe/dune
 - test/xgmii_probe/test_xgmii_probe.ml
 - test/xgmii_probe/xgmii_probe.ml
+
+## [J-dv_lead-0018] 2026-08-03T11:05Z | task:WO-0033 | Build red at `injection.ml:380`: my prediction was wrong, the guard I chose could not have caught it, and the full scoping sweep that could
+
+### Trigger
+Orchestrator, relaying CI run **30760031585** (head `639333b`, my WO-0033 commit
+`bde57a4`): **RED at Build**, the step I named load-bearing in the WO-0033
+Return log §5 and predicted green.
+
+```
+File "test/xgmii/injection.ml", line 380, characters 12-22:
+380 |             discarding := true)
+Error: Unbound value discarding
+```
+
+Not the designed `runtest` red. The run never reached `runtest`.
+
+### Inputs
+- CI run 30760031585's Build step output, verbatim above, relayed by the
+  orchestrator.
+- `test/xgmii/injection.ml` at `bde57a4`, and my own `J-dv_lead-0017` Reasoning
+  and Evidence — specifically Evidence item 3, the parse-only sweep I reported
+  as a guard.
+- `docs/adr/ADR-0005*` — re-read for the exact scope of what it blocks, which
+  turns out to be narrower than I had been treating it as.
+- `docs/specs/modules/xgmii_rx_64.md` §6.2's `Discard` row and §9's C-12
+  rulings, to confirm the fix is semantics-preserving rather than merely
+  compiling.
+- No `libs/**`, no new specification text. `test/xgmii/injection.ml` is my own
+  file, so no independence question arises.
+
+### Reasoning
+
+**The defect, stated without softening.** While writing X-1 I established that
+§6.2's `Idle` and `Discard` rows are indistinguishable in a *report* model — in
+both, no frame is open, a `/T/` closes nothing, an `/E/` is absorbed (C-12) and
+only a `/S/` opens a frame — so the `discarding : bool ref` I had started with
+was dead state. That conclusion was right and I still hold it. What I then did
+was remove the flag with a **scripted multi-site patch**: the binding, the two
+`None`-branch writes, and a trailing `ignore !discarding`. I wrote the patch
+from the sites I remembered, and there was a fourth — the REQ-108 oversize arm,
+two hundred lines from the binding — which still wrote `discarding := true`. The
+binding went; the write stayed.
+
+The interesting part is not that I missed a site. It is **why I did not notice
+that I might have**. A scripted removal of a name has an obvious and cheap
+completeness check: grep for the name afterwards. `grep -n discarding
+injection.ml` would have printed one line and taken two seconds. I did not run
+it, because I had verified the *reasoning* for the removal and let that stand in
+for verification of the *edit*. Those are different objects. I make exactly this
+distinction when I review worker returns — a correct rationale with an incorrect
+diff is a BOUNCE — and I did not apply it to myself.
+
+**The guard I chose, and the overstatement I made about it.** I ran
+`ocamlc -stop-after parsing` over all 23 files, caught a real comment-closing
+bug with it, and wrote it up as Evidence item 3 saying it "should be run before
+every future OCaml return". That sentence is fine. What is not fine is the
+weight the Return log's §5 then put on the build prediction: I said Build was
+expected green and named only the two unproven Hardcaml API names as the
+residual risk. Parsing does no name resolution — I knew that, I even wrote "this
+does not type-check anything" in the same Evidence item — and then reported a
+build confidence that only type-checking could support. The honest form of §5
+would have been: "Build is unverified; the parse sweep excludes syntax errors
+only, and every scoping, arity, label and type error in 23 blind-written files
+is still live." That is a materially different claim, and a reader of my packet
+would have planned differently for it.
+
+This is my own failure mode again, in its exact shape: **a universal asserted
+over evidence that does not support it.** C-44, the WO-0031 prose, C-48 — and
+now a build prediction. The three earlier instances were about arithmetic and my
+WO-0033 remedy was "where a claim is arithmetic, make the arithmetic executable
+and let CI hold it". The remedy was right and its scope was too narrow. The
+general form is: **where a claim is checkable, run the check; where it is not,
+say the claim is unverified.** A prediction is not evidence, and dressing one in
+a green adjective is how a lead spends credibility it has not earned.
+
+**The fix, and why deleting a line is the minimal restructure.** The coordinator
+asked whether `discarding` was a renamed ref or state that belongs in the fold
+accumulator. It is neither: it was **dead state that had already been reduced to
+`ignore !discarding` before the removal**, so nothing in the model ever
+consulted it. Deleting the write is therefore not "restructuring to make it
+compile" — it is completing an edit that was three-quarters done, and it is
+provably semantics-preserving because no read exists to change. `current :=
+None` already *is* the transition to `Discard`, and I said so in a comment at
+the site so the next reader does not re-add a flag for the state that comment
+names. The Return log §1's description of X-1 — §6.2's state machine and §9's
+closure list computed over the octet-time line — stands exactly as written; the
+REQ-108 expectations in `test_injection.ml` (1514 delivered, 190 words, `tkeep`
+0x03, `error_oversize` alone at cycle 193) are untouched.
+
+**The sweep, done with an instrument that can actually see the defect class.**
+The compiler stops at the first error, so line 380 proves nothing about the
+other 22 files, and re-running the parse sweep would have been the same mistake
+twice. So I re-read ADR-0005 for what it actually blocks, and it is narrower
+than I had been treating it: it blocks the **Hardcaml toolchain** — the
+compiler version and ~40 Jane Street packages — not the *system* compiler.
+`ocamlc` 4.14.1 is present, and **most of this work order's files are plain
+stdlib OCaml**. `dv_monitors`, `dv_golden` and `dv_xgmii` depend on no Hardcaml
+at all — that is the property WO-0009 designed them for, and I had been reading
+it as a testing property when it is also a *checkability* property.
+
+So I built a three-lane harness. Lane 1 compiles those three libraries for real,
+in dependency order, `.mli` before `.ml`, with ppx_expect's syntax mechanically
+rewritten away (`let%expect_test "…" =` → `let () =`, `[%expect {|…|}]` →
+`()`); the rewrite touches only the harness wrapper and never a body, so every
+name in every body is still resolved and every type still checked. Lane 2
+compiles the two Hardcaml-facing files against **stubs** for `Hardcaml.Bits` and
+`Ifc_check.Axi64_ifc` transcribed from the real signatures. Lane 2 cannot prove
+the real API matches — `Bits.concat_lsb` and `Bits.width` are still unverified
+and CI still has to settle them — but it proves my own scoping, labels and
+arities, which is precisely the class line 380 belonged to. Lane 3 is a grep,
+because dune's wrapping hides sibling-library names that a flat `-I` does not,
+so lane 1 could give a false pass on an unqualified `Strobes.all`.
+
+**Result: 35 of 35 modules compile, and no defect beyond line 380.** Lane 3's
+three hits are all inside comments; the code is correctly qualified. A
+warnings-on pass over the seven files I care most about is silent. I would
+rather report "one defect, and here is the instrument that says there are no
+more" than "one defect, fixed" — the second is a claim about a file and the
+first is a claim about the set, and the set is what the orchestrator is
+deciding on.
+
+**What changes in my practice, concretely.** The parse-only sweep is retired as
+a build-confidence instrument; it stays only as a cheap pre-filter. From here,
+any DV return that adds OCaml either (a) type-checks locally through this
+harness and says so, or (b) states plainly that Build is **unverified** and why.
+The harness is scratch and uncommitted — `tools/**` was out of WO-0033's scope
+and is out of this repair's scope too — so I have described it in full in the
+Return-log addendum, in enough detail to reconstruct. Whether it earns a
+committed home in `tools/` is a question for the orchestrator, not a thing I
+should quietly widen this packet to do.
+
+### Actions
+- Deleted the orphaned `discarding := true` at `test/xgmii/injection.ml:380` and
+  replaced it with a comment recording that `current := None` **is** §6.2's
+  `Discard` transition, and that the flag was removed at WO-0033 with this write
+  missed.
+- Built a three-lane local type-check harness (scratch, uncommitted) and ran it
+  over every WO-0033 file: 28 modules compiled for real, 7 against transcribed
+  Hardcaml/Ifc_check stubs, plus a cross-library qualification grep.
+- Ran a warnings-on pass (no `-w -a`) over `strobe_monitor`, `octet_time`,
+  `ipv4_ref`, `injection`, `idle_injection`, `xgmii_probe` and `axi64_driver`.
+- Verified lane 3's three hits are prose inside comments and that the code uses
+  `Dv_monitors.Strobes.all` and `Dv_monitors.Strobe_monitor.*`.
+- Appended the repair addendum to the WO-0033 Return log, including the revised
+  and narrowed CI expectation. **Packet state left as-is** — the orchestrator
+  flips states.
+- Changed **no other file**. No `libs/**`, no `docs/**`, no `tools/**`, nothing
+  outside the WO-0033 set, no `git commit` or `git push`.
+
+### Evidence
+All commands runnable from a repo checkout at this commit; `ocamlc` is 4.14.1
+and is the *system* compiler, which ADR-0005 does not block.
+
+1. **The defect, and that it is now gone.** `grep -n discarding
+   test/xgmii/injection.ml` → at `bde57a4`, one hit at line 380 with no binding
+   anywhere in the file; at this commit, **no hit outside the explanatory
+   comment**. The two-second check that would have caught it before the push.
+2. **Semantics preserved, provably.** No read of `discarding` existed at
+   `bde57a4`: `git show bde57a4:test/xgmii/injection.ml | grep -n
+   '!discarding'` → nothing. A write with no read cannot affect a result, so
+   `outcomes` is unchanged and the REQ-108 assertions in `test_injection.ml`
+   stand.
+3. **The full sweep — 35 of 35 modules type-check.** Harness described in the
+   Return-log addendum §2. Lane 1: `dv_monitors` (11), `dv_golden` (5),
+   `dv_xgmii` (12) compiled with `ocamlc -c`, `.mli` before `.ml`, in dependency
+   order, ppx syntax rewritten away by a regex that touches only the
+   `let%expect_test` wrapper and the `[%expect]` node. Lane 2: `hardcaml`,
+   `ifc_check`, `axi64_probe` stubs plus `xgmii_probe.ml`, `axi64_driver.ml`
+   and their two tests (7). Verified by object count: `ls tc/*/*.cmo | wc -l`
+   → **35**, against 35 `.ml` inputs. Zero `!!! TYPE ERROR` lines.
+4. **Warnings-on pass**: `ocamlc -c` without `-w -a` over `strobe_monitor.ml`,
+   `octet_time.ml`, `ipv4_ref.ml`, `injection.ml`, `idle_injection.ml`,
+   `xgmii_probe.ml`, `axi64_driver.ml` → **no output**. No unused binding, no
+   unused field, no partial match flagged.
+5. **Lane 3, and its three false positives.** The grep for an unqualified
+   sibling-library reference in `test/xgmii/` returns
+   `injection.ml:449`, `xgmii_word.mli:9`, `xgmii_word.mli:15` — all inside
+   `(* … *)` or `(** … *)`. `grep -n "Dv_monitors\." test/xgmii/injection.ml`
+   → the two code sites, `456` (`Dv_monitors.Strobes.all`) and `464`
+   (`Dv_monitors.Strobe_monitor.strobe`), both qualified.
+6. **What is still unverified, named so it is not mistaken for verified.**
+   `Bits.concat_lsb` and `Bits.width` against Hardcaml v0.17, and
+   `Axi64_probe.of_refs`'s real signature (its file opens `Base`, which is not
+   installable here, so lane 2 uses a transcription). These are the only three
+   names in the WO-0033 set that no local check reaches. If Build is red again
+   it will be one of them, and the repair stays inside
+   `test/xgmii_probe/xgmii_probe.ml` and `test/axi64_probe/axi64_driver.ml`.
+7. **`dune runtest` is still expected red on its first reaching**, unchanged
+   from the WO-0033 Return log §5: 30 empty `[%expect]` blocks promote from
+   CI's own diff output (ADR-0005 rule 2), with every verdict asserted in OCaml
+   so a wrong promotion still leaves red.
+8. **Scope.** `git status --short` → exactly two paths besides this journal:
+   `test/xgmii/injection.ml` and `agents/handoffs/WO-0033_dv-machinery.md`.
+
+### Outcome
+DoD **met**. Build defect repaired at its root with a semantics-preserving
+one-line deletion; the full 23-file scoping review is done with an instrument
+that can see the defect class, and it found **none beyond line 380**. The
+WO-0033 Return log carries the addendum with the narrowed CI expectation;
+packet state left for the orchestrator.
+
+The escape itself is recorded plainly: **I predicted Build green and it was
+red**, on the strength of a parse-only sweep that I knew does no name
+resolution. The auditor should count this against my Return-log predictions, not
+against the machinery — the eight items and their tests are unchanged, and the
+one line that broke was a removal I did not finish.
+
+### Open-questions
+- **For the orchestrator, not for me to decide**: the type-check harness is
+  scratch. It is reconstructible from the Return-log addendum, but it would be
+  worth more committed under `tools/` where the auditor could re-execute it and
+  where any DV return could cite it. `tools/**` was outside WO-0033's scope and
+  is outside this repair's, so I am asking rather than widening the packet.
+- **Three names remain unverified against real Hardcaml v0.17**
+  (`Bits.concat_lsb`, `Bits.width`, `Axi64_probe.of_refs`'s signature) —
+  Evidence item 6. Only CI can settle them.
+- **X-8's RFC 1071 anchor is still embedded and unconfirmed** (403 on both RFC
+  hosts) — unchanged from `J-dv_lead-0017`, still an open obligation on
+  `SO-ip_eth_rx_64.md`.
+- **X-7, X-10 and X-11 remain deferred**, unchanged.
+- **Against myself, and it now has a general form.** C-44, the WO-0031 prose,
+  C-48 and now this build prediction are one failure mode: a universal asserted
+  over evidence that does not support it. My WO-0033 remedy was scoped to
+  arithmetic; it needs to be scoped to *claims*. Where a claim is checkable, run
+  the check; where it is not, write "unverified" and say why. The auditor's
+  cheapest probe against me is unchanged and now has a second edge: look for a
+  confident adjective in my prose with no executable partner.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0033_dv-machinery.md
+- test/xgmii/injection.ml

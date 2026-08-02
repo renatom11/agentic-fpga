@@ -158,3 +158,89 @@ SPEC-M01 §4.1's lift under `docs/specs/ifc_check/` is its whole source, as the
 file records. No benches were written (out of scope); this is the machinery
 benches will be written against, and the tb_writer work orders that consume it
 are the next packet.
+
+---
+
+### ADDENDUM — build-red repair, dv_lead, `J-dv_lead-0018`
+
+Run **30760031585** (head `639333b`, commit `bde57a4`) went **RED at Build** —
+the step §5 above called load-bearing and predicted green. **The prediction was
+wrong and this is my defect**, not the designed `runtest` red; the run never
+reached `runtest`.
+
+#### 1. Root cause and fix — `test/xgmii/injection.ml:380`
+
+```
+Error: Unbound value discarding
+```
+
+The evaluator originally carried a `discarding : bool ref` modelling §6.2's
+`Discard` row. While writing X-1 I established that `Idle` and `Discard` are
+**indistinguishable in a report model** — in both, no frame is open, a `/T/`
+closes nothing, an `/E/` is absorbed (C-12) and only a `/S/` opens a frame — so
+the flag was dead state and I removed it with a scripted three-site patch: the
+binding, the `None`-branch writes, and a trailing `ignore !discarding`. **The
+patch's match strings did not cover a fourth site**, the REQ-108 oversize arm,
+which still wrote `discarding := true`. The binding went; the write stayed.
+
+**Fix: delete that one statement** (with a comment recording why `current :=
+None` *is* the `Discard` transition). This is **exactly semantics-preserving**,
+and provably so: the flag was never read at any point after the WO-0033 patch —
+it had already been reduced to `ignore !discarding` before that line was even
+reachable — so no branch of the model consulted it. `outcomes` behaves
+identically, and the REQ-108 expectations in `test_injection.ml` (1514
+delivered, 190 words, `tkeep` 0x03, `error_oversize` alone at cycle 193) are
+unchanged. The Return log §1 description stands as written: §6.2's state machine
+and §9's closure list computed over the octet-time line.
+
+#### 2. Full scoping self-review of all 23 files — **no further defects found**
+
+The compiler stops at the first error, so line 380 proves nothing about the
+rest. I did not re-run `-stop-after parsing`; it is the instrument that missed
+this and it does no name resolution. Instead I built a **local type-check
+harness** (`ocamlc` 4.14.1 is present — ADR-0005 blocks the Hardcaml toolchain,
+not the system compiler), in three lanes:
+
+1. **`dv_monitors`, `dv_golden`, `dv_xgmii` compiled for real**, in dependency
+   order, `.mli` before `.ml`, with ppx_expect's syntax mechanically rewritten
+   away (`let%expect_test "…" =` → `let () =`, `[%expect {|…|}]` → `()`). The
+   rewrite touches only the harness wrapper and never a body, so every name in
+   every body is still resolved. **28 modules compiled clean.**
+2. **`dv_xgmii_probe` and `dv_axi64_probe` compiled against stubs** for
+   `Hardcaml.Bits` and `Ifc_check.Axi64_ifc` whose signatures are transcribed
+   from the real ones, plus a stub `Axi64_probe.of_refs` (the real file opens
+   `Base`, which is not installable here). This **cannot** prove the real
+   Hardcaml API matches — `Bits.concat_lsb` and `Bits.width` remain unverified
+   against v0.17 and are still the two names CI must settle — but it **can**
+   prove my own scoping, labels and arities, which is the defect class at issue.
+   **7 modules compiled clean.**
+3. **A cross-library qualification grep**, because dune's wrapping hides names
+   that a flat `-I` does not: three hits in `test/xgmii`, all inside comments
+   (`injection.ml:449` and `xgmii_word.mli:9,15` are prose). The **code** uses
+   `Dv_monitors.Strobes.all` and `Dv_monitors.Strobe_monitor.*`, correctly
+   qualified.
+
+**35 of 35 modules compile**, including all 23 WO-0033 files. A warnings-on pass
+(no `-w -a`) over `strobe_monitor`, `octet_time`, `ipv4_ref`, `injection`,
+`idle_injection`, `xgmii_probe` and `axi64_driver` produced **no warnings**.
+
+**Result: none found beyond line 380.**
+
+#### 3. Revised CI expectation
+
+- **`dune build @default`: expected green**, now on evidence rather than on
+  care. Residual risk is confined to the two Hardcaml names lane 2 stubs
+  (`Bits.concat_lsb`, `Bits.width`) in `test/xgmii_probe/xgmii_probe.ml` and
+  `test/axi64_probe/axi64_driver.ml`, and to `Axi64_probe.of_refs`'s real
+  signature. If Build is red again it will be one of those three and the repair
+  stays inside those two files.
+- **`dune runtest`: still expected red on its first reaching**, by design —
+  30 empty `[%expect]` blocks promote from CI's own diff (ADR-0005 rule 2).
+- The harness is scratch and uncommitted; it is described here in full so it is
+  reconstructible, and the discipline it replaces — parse-only sweeps reported
+  as build confidence — is retired.
+
+#### 4. Scope
+
+Files changed by this addendum: `test/xgmii/injection.ml` and this packet. No
+other WO-0033 file was edited; nothing outside the WO-0033 set was touched.
