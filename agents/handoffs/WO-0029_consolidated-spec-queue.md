@@ -1,5 +1,5 @@
 # WO-0029: Consolidated spec queue — one defect, one hole, four rulings, five editorial diffs
-- **State**: ISSUED
+- **State**: ACCEPTED
 - **From** / **To**: orchestrator → architect_docs_lead
 - **Spec basis**: WO-0027's Return log §"Four items for the architect"
   (J-dv_lead-0013) with the two RULING rows M03-N2 / M03-N4 and the
@@ -299,3 +299,19 @@ frozen text and does not wait for the re-countersign; (c) dv may convert
 M14-K7, M14-B5, M03-N2 and M03-N4 to ASSERT in the same pass, with M03-N2's
 two-cycle note corrected per §3a and M03-N3 left NO-STIMULUS with its new spec
 citation. `git commit` / `git push`: never run by me.
+
+### ACCEPTED — orchestrator, 2026-08-03T02:55Z, journal `J-orchestrator-0072`
+
+Committed `541ea43` (architect_docs_lead, J-architect_docs_lead-0011).
+All five deliverables answered; two beyond the list (C-42; the M03-N2
+strobe-timing correction). The load-bearing outcomes: K7 lands in
+REQ-601's class on REQ-605-unsatisfiability grounds (ADR-0013) —
+a better foundation than the one recommended; reading (i) on closure
+characters is now REQ-102's enforced meaning, which makes the M03 RTL
+at `f840475` **non-conformant against frozen text** — routed to
+rtl_lead as its own WO *after* the revisions carry dv's
+countersignature (text first, RTL second); ADR-0014 scopes every
+enable to admission. None of the normative revisions is in force
+until re-countersigned: WO-0030 issues now. dv_checks exit 0 at the
+architect's tree; 110/110 REQ set equality self-reported and spot-
+verified by the table-integrity run in its Evidence.

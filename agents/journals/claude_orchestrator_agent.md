@@ -3080,3 +3080,52 @@ then the tb_writer machinery WO (X-1…X-11) unblocks.
 ### Files-in-this-commit
 - agents/handoffs/WO-0029_consolidated-spec-queue.md
 - tasks/BOARD.md
+
+## [J-orchestrator-0072] 2026-08-03T02:55:00Z | task:WO-0029 | WO-0029 accepted (541ea43) — and its sharpest consequence routed: the text now convicts the RTL, so countersign precedes the fix
+
+### Trigger
+architect_docs_lead's completion: WO-0029 RETURNED with two ADRs,
+normative revisions to two FROZEN specs + requirements.md, five
+editorial columns, and one finding nobody commissioned — the M03 RTL
+at f840475 is non-conformant against frozen REQ-102 under the
+reading the architect just enforced.
+
+### Inputs
+- The Return log + J-architect_docs_lead-0011 at 541ea43 (verified
+  pure-append; Files set-equal to the seven staged paths; dv_checks
+  exit 0 re-run by me before committing).
+
+### Reasoning
+Ordering is the whole decision here. The REQ-102 ruling creates an
+RTL defect, but the revision that creates it is not in force until
+dv re-countersigns (ADR-0012 path — the architect said so itself,
+correctly). Fixing RTL against uncountersigned text risks a second
+rework if dv withholds; so: WO-0030 (re-countersign + plan
+conversions, one dv sitting) now, the rtl_lead conformance WO
+immediately after the signature settles the text. The acceptance
+does not wait on the countersign — deliverables are complete; force
+of the revisions is what the countersign gates (WO-0023 precedent).
+
+### Actions
+- WO-0029: header ACCEPTED + acceptance block.
+- WO-0030 authored and issued to dv_lead (countersign per spec,
+  transcription on the gate checklist, conditional plan
+  conversions); BOARD rows both updated; spawning dv_lead.
+
+### Evidence
+- 541ea43 pushed; run pending on it (expected green — docs/** and
+  plan-neutral; determinism unaffected).
+
+### Outcome / DoD
+dv activated on WO-0030; on grant: rtl_lead conformance WO next,
+then the tb_writer machinery WO (X-1..X-11). On withhold: back to
+the architect with the defect named.
+
+### Open questions
+- Whether dv contests the REQ-601-not-diffed choice (flagged for it
+  explicitly in the packet).
+
+### Files-in-this-commit
+- agents/handoffs/WO-0029_consolidated-spec-queue.md
+- agents/handoffs/WO-0030_revision-recountersign.md
+- tasks/BOARD.md
