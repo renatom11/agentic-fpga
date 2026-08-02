@@ -2426,3 +2426,379 @@ DV actions this review created for me.
 
 ### Files-in-this-commit
 - agents/handoffs/WO-0013_batch-c-countersign.md
+
+## [J-dv_lead-0008] 2026-08-02T16:30:00Z | task:WO-0015 | Batch D countersignature WITHHELD at a9993ff: M10/M11/M12 SIGNED, SPEC-M13 CONTESTED on two behavioural items; four architect questions answered decisively plus a fifth; C-6/15/16/17/18 all reaffirmed; C-19 … C-23 raised
+
+### Trigger
+Orchestrator spawn under work order WO-0015 (ISSUED at 2f29888), spawn short-id
+`WO-0015/2026-08-02T06:45Z`. Eighth activation. Fourth countersign cycle, and
+the first protocol-logic batch: batch D is where the ARP family stops being
+octet plumbing and starts being a state machine with persistent memory, which is
+also where the failure modes stop being local.
+
+### Inputs
+- `agents/charters/dv_lead.md` (§3 spec-derived verification, §5 DoD, §6
+  evaluation criteria); `agents/PROTOCOL.md` §4 (entry grammar), §6 (write
+  scope), §7 (gates and the transcription rule), §10 (independence).
+- `agents/handoffs/WO-0015_batch-d-countersign.md` at 2f29888 — my work order.
+- **Review targets at a9993ff (= the tree at 2f29888, verified)**, all read in
+  full: `docs/specs/modules/arp_eth_rx.md` (SPEC-M10), `arp_eth_tx.md`
+  (SPEC-M11), `arp_cache.md` (SPEC-M12), `arp.md` (SPEC-M13), all DRAFT; the
+  four new `docs/specs/ifc_check/{arp_eth_rx,arp_eth_tx,arp_cache,arp}_ifc.ml`
+  lifts.
+- `agents/handoffs/WO-0014_batch-d-specs.md` Return log — the architect's
+  per-item C-17 judgements, the C-18 twin-sentence disclosure, the batch-C
+  freeze-flip disclosure, and the four open questions; and its ACCEPTED block.
+- `docs/gates/P1-spec-freeze-checklist.md` — the C-6/C-15/C-16/C-17/C-18
+  closures transcribed at 2f29888, and the full carry-forward ledger C-1 … C-18.
+- `docs/adr/ADR-0008-transmit-header-handshake.md`, including the new
+  Consequences bullet that is my own C-17(d).
+- **The five landing sites of the transcribed closures, read as text rather than
+  as descriptions of text**: SPEC-M06 §6.1 and §8 and §10 (C-17(a), C-17(e)),
+  SPEC-M07 §6.1/§6.2/§7/§8/§10 (C-17(b)), SPEC-M08 §6.1/§6.3 (C-17(c)),
+  SPEC-M04 §6.2/§7/§10 (C-16), SPEC-M03 §3/§6.1/§6.2 (C-18), requirements.md
+  §0.5 (C-15).
+- `docs/specs/requirements.md` at this tree: §0.1 … §0.7, §1.1, REQ-001 …
+  REQ-021 (REQ-013 in full), REQ-104, REQ-105, REQ-208, REQ-403, REQ-501 …
+  REQ-512, REQ-604, REQ-707, REQ-802, REQ-803, REQ-807, REQ-810, REQ-901, §9.1,
+  §12. `docs/specs/architecture.md` §6.4. `docs/specs/traceability.md`.
+  `docs/specs/SPEC-TEMPLATE.md` §11 (the DRAFT-versus-FROZEN rule, which is what
+  makes an unclosed §11 item block a freeze).
+- SPEC-M03 §7, SPEC-M04 §6.1, SPEC-M06 §7, SPEC-M07 §7, SPEC-M08 §7, SPEC-M09 §7
+  — re-read for their pinned ΔC values, because SPEC-M13 §6.1's REQ-502 chain is
+  built out of them and I would not check a derivation against a summary.
+- My own `J-dv_lead-0005` (the standard I set for signing a "fails a conformant
+  design" finding) and `J-dv_lead-0007` (the six batch-C findings and the C-17
+  text the architect implemented); `test/monitors/conservation_monitor.mli` and
+  `strobes.mli`, re-read because C-21 and C-23 are claims about my own machinery
+  as much as about the specs.
+- CI: run **30736107842**, fetched through the GitHub API rather than accepted
+  from the packet.
+- **`libs/**` was never opened**, in this or any previous activation. Nothing in
+  this verdict derives from RTL; `rtl_snapshots/**` was read only by
+  `tools/dv_checks.sh`.
+
+### Reasoning
+**The standard did not move, and this is the activation that proves it can bite.**
+A countersignature answers one question: can a tb_writer who never sees RTL
+build a correct bench from this text alone? At WO-0010 I found five sentences
+that would make a bench fail a conformant design and signed; at WO-0013 I found
+six and signed. Both times the ground was identical and I stated it explicitly:
+*a normative section of the same document stated the correct reading*, so the
+defect costs a careful reader nothing and a careless one a bounce. Holding that
+line meant signing when the count rose from five to six, because a threshold
+that moves with the count is a threshold that measures when a defect was found
+rather than what it costs. It also means the line has to hold in the other
+direction, and batch D is where it does. Two of the four findings that matter
+have the property the previous eleven did not: **no section anywhere states the
+correct reading**, and in one case the wrong reading is stated three times
+across two documents, one of them a requirement's own normative sentence.
+
+**D-1 is the finding I would defend hardest, and it came out of composition
+rather than out of any one document — the same place SPEC-M04's C+8 came from at
+WO-0013.** SPEC-M13's REQ-510 machinery is internally consistent and reads
+correctly. SPEC-M11's `Idle` row is internally consistent and reads correctly.
+Put them together and the module retains **two** replies: M11's `arp_ready` is 1
+in `Idle` *unconditionally* — it does not depend on `payload_tready`, so a
+blocked downstream does not stop M11 absorbing the first packet — and M13's
+machine (A) leaves `Pending` on M11's acceptance, so the resolver goes idle and
+the second reply is held rather than dropped. Only the third drops. REQ-510's
+normative sentence says one; SPEC-M13 §8 item 2, §10's REQ-810 row and
+requirements.md REQ-510's own verification column each say two requests give one
+strobe, and a conformant design pulses zero for all three. I checked the
+architect's model against its own words and found where it slips: SPEC-M11 §6.1
+says "`arp_ready` remains 0 throughout, so M13 cannot lose a packet by presenting
+it **while M11 is busy** — which is the mechanism REQ-510 then acts on at M13".
+That is right for the second and later replies and silently assumes the first has
+somewhere to be. It hasn't; it is in M11, free of charge.
+
+**Why I contested rather than carried it, when I have carried worse-sounding
+things.** The test I applied is not severity, it is *what freezing costs*. Every
+post-freeze diff this programme has taken — C-11, C-12, C-14, C-16, C-17, C-18 —
+carries a §13 row reading "no constant, state or record changes", and that is not
+an accident: they were all readings, not behaviours. D-1's repair adds a state to
+machine (A) and changes an observable (how many replies survive a blocked
+transmit path). D-2's changes when a cache write happens. Freezing first does not
+make either repair expensive in dollars; it makes them **the programme's first
+behavioural post-freeze diffs**, and a freeze gate whose signature does not
+distinguish those two classes is a signature that means nothing. I would rather
+spend one diff cycle now than be the agent who set the precedent that a frozen
+spec's behaviour is negotiable.
+
+**D-2 is where I had to be most careful not to overreach, because the honest
+finding is about a cost estimate rather than about a design.** SPEC-M10 §11.3
+asks me to accept that a bad-FCS ARP frame is learned from, and prices the
+alternative at "a requirements.md diff, a new `Arp_packet` field and a spec diff
+here and at SPEC-M13" — i.e. as a post-freeze **record addition**, which is
+breaking. That price is wrong, and it is wrong in the direction that would have
+forced the decision under gate pressure: the abort bit arrives on the payload
+`tlast`, two or more cycles after the record is emitted, so no field of that
+record could ever carry it — while M13, which relays `rx_payload` into M10,
+**already has the bit on a port it owns**. The real repair touches no interface
+at all. Having found that, I could not close the item in the affirmative on the
+strength of an argument that rests on a cost nobody actually has to pay. And the
+substance is not small: REQ-013's first clause says the bit means "the ultimate
+consumer must discard it", REQ-707 shows that pattern working on the UDP path,
+and the ARP branch is the one receive branch with no application — so the mark is
+generated at M03, relayed through four modules and consumed by nobody, while a
+single corrupt frame commits a wrong IP-to-MAC binding for twenty seconds with no
+strobe naming it. That is the shape of a defect that surfaces as a replay
+divergence three phases later with no way back to its origin, which is the class
+my charter's escape-rate criterion exists to keep me honest about.
+
+**On Q3 I was asked to be decisive and the packet was right to insist, so I
+resolved it on the requirement's own structure rather than on taste.** REQ-810's
+verification column tests the enable behaviour and says nothing about ARP
+replies; in a document where §0.2 makes one REQ state one testable fact and the
+verification column is where that fact's test lives, a clause with no test in its
+own column and an explicit pointer at another requirement ("is dropped **under
+REQ-510**") is an explanatory consequence, not an independent obligation. Reading
+it the other way buys a `cfg_tx_enable` port at M13 that cannot even do the job —
+it can't retract a reply already inside M11 — and spends a breaking interface
+change on a frame that carries our own MAC for our own IP and therefore cannot go
+stale the way a buffered datagram can. What made me comfortable saying so without
+hedging is that D-1's recommended repair closes most of the gap for nothing: with
+R-1, exactly one reply survives a transmit-disable and every later one is dropped
+with the strobe, which is REQ-810's plain reading minus a single frame. I stated
+that residual in the packet in the plainest words I could find, because "answered
+decisively" and "answered completely" are different, and only the second is worth
+anything at a freeze.
+
+**Q1 I answered by going back to the ADR's own problem statement rather than to
+its decisions.** ADR-0008 asks "what is a transmit-side header record's
+acceptance event, *given a record that cannot carry a `ready`*?" M11's `arp` port
+is not that case — `arp_ready` is a real output bit, not a field of a record M01
+froze — so the port never needed the ADR's device, and applying decisions 2 and 3
+against a native ready is the general valid/ready contract the ADR *specialises*,
+not a substitution for it. That is instantiation, and no amendment is owed. The
+part that costs me something is the part the architect correctly identified as
+mine: my header-record monitor takes its discipline from the port's direction,
+and batch D adds a third case direction alone cannot select. Machinery, not a
+spec diff, and I said so rather than converting my own work into someone else's
+finding.
+
+**Q4 I could have treated as a missing requirement and did not, because the
+programme already has the device for it.** Every §6.3 opens "anything not listed
+here is constrained by this specification, and a test may rely on it" — that
+sentence *is* the licence for a spec to decide an unconstrained corner, and it
+was accepted at three previous batches. What I did add is the consequence the
+document does not state and a bench writer cannot be left to discover: under
+replacement, an application alternating between two unresolved destinations
+issues one broadcast request per datagram, defeating REQ-505's suppression
+entirely. That is conformant in Phase 1 — one application client — but a test
+writer who sees it must be able to tell that it is conformant, and it names the
+exact trigger for revisiting the rejected per-slot table.
+
+**SPEC-M12 came out clean, and I want that recorded as a positive rather than as
+an absence.** I recomputed the index function from REQ-504 *and* REQ-012 rather
+than checking it, recomputed all five worked examples, walked the collision table
+row by row against the T+1 visibility rule, and checked both ageing boundaries
+against §8's L = 8 run. Everything reproduces. Two things earned it: stating the
+write/query ordering as **one rule about cycles** instead of a same-slot special
+case, which is what lets a bench drive both ports every cycle and still predict
+every answer; and stating the lifetime as an **observable** with the mechanism
+explicitly unconstrained, which is the only form of an ageing rule a bench can
+assert without reading the implementation. It is also the only batch-D spec I can
+write an attack plan against today.
+
+**Two of my five new carry-forwards are defects in the repair of my own
+findings, and I record them that way on purpose.** C-22 is my C-17(d) text: I
+wrote an unqualified "SHALL NOT assert that `valid` falls after acceptance", and
+SPEC-M11 §6.1 then committed M11 to dropping it, so a bench writer holding both
+documents is told not to assert the thing the module's own cycle table asserts.
+C-18 was the first instance of this at WO-0013 and I said then that a
+countersignature process which only ever finds defects in the original text and
+never in its own repairs is not being run honestly. The second instance is the
+test of whether that was a sentence or a practice.
+
+**What I did not do.** I did not touch `docs/specs/**`, `docs/adr/**` or
+`docs/gates/**`, though I can see the exact wording each of the two blocking
+diffs needs and wrote it out in the packet — they are the architect's text, and a
+countersigner who edits the thing it is countersigning has signed nothing. I did
+not add `test/**` or `tools/**` machinery, though C-22's monitor clause, Q1's
+third monitor case and C-23's counting convention are all mine and all ready to
+write: a withheld-signature commit that also carries code is harder to audit, and
+the machinery is worth more once I know which of R-1/R-2 and D-2a/D-2b lands. I
+did not withhold the whole batch where three specs earned a signature — the
+verdicts are per spec, and only the batch-level countersignature is withheld,
+because that is the unit the gate table records.
+
+### Actions
+- Read the four batch-D specifications, the four new lifts and ADR-0008 in full;
+  read the five transcribed C-item closures at their landing sites rather than at
+  the Return log's description of them.
+- Recomputed every number the work order named, and several it did not:
+  SPEC-M10's L/h/ΔC by both of §0.5's routes and its §1.1 exclusion verbatim;
+  the one-report XOR's decidability across all four closure cases; §8's stimulus
+  and idle-cycle arithmetic; SPEC-M11's L/h/ΔC, its five-cycle packet period and
+  its word layout as an octet-by-octet transpose of M10's; SPEC-M12's index
+  function from REQ-504 + REQ-012, all five worked examples, the seven-row
+  collision table and both ageing boundaries; SPEC-M13's Q+2 uniformity against
+  M12's one-cycle lookup, the eleven-step REQ-502 chain against six other specs'
+  pinned constants, the multicast bit arithmetic at both test addresses, the
+  class precedence and the retry counts.
+- Traced D-1 port by port through SPEC-M11 §6.2's `Idle` row and SPEC-M13 §6.2
+  machine (A), and checked the resulting count against all four places the
+  programme states it.
+- Verified R-1 costs nothing in the unblocked case (reply generations are ≥ 10
+  cycles apart under REQ-004's own spacing; R-1's pending window is 5).
+- Verified D-2a needs no port by confirming `rx_payload_tuser` is already an M13
+  input in §4.1's `I` record.
+- Recounted architecture.md §6.4 mechanically (117 = 26 + 40 + 29 + 22) and
+  re-verified traceability set equality (110 = 110, symmetric difference empty).
+- Confirmed CI run 30736107842 through the GitHub API; confirmed by diff that
+  the specifications have not moved between a9993ff and the run's SHA; ran
+  `tools/dv_checks.sh` and `tools/check_records_vs_appendix.sh`.
+- Appended the RETURNED verdict entry to
+  `agents/handoffs/WO-0015_batch-d-countersign.md` and set its header state to
+  RETURNED.
+- Wrote nothing under `docs/`, `libs/`, `test/`, `tools/`, `.github/`,
+  `scripts/` or `tasks/`.
+
+### Evidence
+All commands runnable from a repo checkout at this SHA (PROTOCOL §4.1 form (a))
+or externally verifiable references (form (b)).
+
+1. **Compile evidence, verified at source.** GitHub API,
+   `renatom11/agentic-fpga`: run **30736107842**, workflow `build`, `head_sha`
+   `2f2988862065af805d829c03c155a49c5bc28cb3`, status `completed`, conclusion
+   **`success`**.
+2. **That run witnesses the text I judged.** `git diff a9993ff 2f29888 --
+   docs/specs/` → **empty**; `git diff --stat a9993ff 2f29888 --
+   docs/specs/ifc_check/ docs/adr/` → **empty**. The countersign target and the
+   compiled tree are the same specifications.
+3. **`tools/check_records_vs_appendix.sh`** → `16 check(s) run, 0 failure(s)`,
+   including `modules/arp.md`, `modules/arp_cache.md`, `modules/arp_eth_rx.md`
+   and `modules/arp_eth_tx.md` §4.1 == their lifts, byte identical.
+   `tools/dv_checks.sh` → exit 0, `dv_checks: all checks passed`.
+4. **SPEC-M10's constants, reproduced.** Input event 8·Cp; output event
+   8·(Cp+4); L = **32**. h = 0 on both of §0.5's terms. (L + h) = 32 ≡ 0 (mod 8);
+   ΔC = 32/8 = **4** = (Cp+4) − Cp — the two routes agree. Cp+4 is forced: ARP
+   octet 27 is at position 3 of payload word 3, which arrives at Cp+3, and a
+   registered output emits at Cp+4. requirements.md §1.1's closing paragraph
+   names M10 and allocates it nothing, in its own words; §1.1's five allocated
+   stages still sum to 4+3+1+5+4 = 17 against REQ-006's 24.
+5. **SPEC-M11's constants, reproduced.** L = 8·(A+1) − 8·A = **8**; h = 0;
+   (L+h) = 8 ≡ 0 (mod 8); ΔC = **1** by both routes. Packet period from §6.2:
+   `Idle` at A, `Offer` A+1, `Body` A+2…A+4, `Idle` A+5 → **5 cycles**.
+6. **SPEC-M12's index function, derived not checked.** REQ-012 makes the first
+   wire octet most significant, so REQ-504's "least significant octet" is bits
+   [7:0] and its low four bits are [3:0]: index(a) = **a[3:0]**. 0xC0A8010A→10;
+   0xC0A8011A→10 (collision); 0xC0A8010B→11; 0x0A000001→1; 0x0A000010→**0**.
+   Collision table verified row by row: write@0, query@1, hit@2; evicting
+   write@3, query@4 → **miss**@5; query@5 → hit@6 with the new MAC. Ageing at
+   L = 8: hits for queries T+1…T+8, miss at T+9 = T+L+1; refresh at T+4 moves the
+   window to T+5…T+12.
+7. **SPEC-M13's Q+2, and the REQ-502 chain, term by term.** Q+2 = M12's one-cycle
+   lookup plus M13's output register, with classes 1–3 computed at Q and delayed
+   to match. Chain at a lane-0 start: M03 ΔC=3 → word 0 at 3; M06 ΔC=3 → header 5
+   / payload 6; M08 ΔC=1 → 6 / 7; M13 relay 0 → 6 / 7; terminate character at
+   **9** (8 preamble octets in cycle 0, frame octets 0–63 in cycles 1–8, `/T/` in
+   lane 0 of cycle 9 — SPEC-M03's own 64-octet table); M10 Cp+4 → **11**; M13
+   offer → 12; M11 ΔC=1 with M09 ΔC=0 → 13; M07 ΔC=1 → 14; SPEC-M04 §6.1 puts the
+   preamble word at C+1 → start character at **15**. 15 − 9 = **6** against
+   REQ-502's 64.
+8. **Multicast, both REQ-509 addresses.** 239.1.2.3 = 0xEF010203, d[22:0] =
+   0x010203 → 01:00:5E:01:02:03. 239.129.2.3 = 0xEF810203 has bit 23 set;
+   d[22:0] = 0x810203 & 0x7FFFFF = 0x010203 → the **same** MAC.
+9. **D-1, traced.** SPEC-M11 §6.2 `Idle`: "`arp_ready` = 1" with no dependence
+   on `payload_tready`; §7's reset clause makes `clear` the only thing that holds
+   it low in `Idle`. SPEC-M13 §6.2 (A) `Pending` → `Idle` "on the cycle M11
+   accepts the reply". Therefore with the transmit path blocked: reply 1 accepted
+   by M11 on its offer cycle (machine (A) returns to `Idle`), reply 2 held
+   `Pending` with no strobe, reply 3 the first dropped. Four places state
+   otherwise: SPEC-M13 §8 item 2 ("two … exactly one pulse"), §10's REQ-810 row
+   ("two … one"), requirements.md REQ-510's verification column ("two … exactly
+   one strobe pulse") and REQ-510's normative "at most one pending reply".
+10. **D-2, traced.** requirements.md REQ-013: "`tuser`[0] SHALL mean 'this frame
+    was found invalid; the ultimate consumer must discard it' … it is advisory
+    metadata carried to the application." REQ-707 carries it to the application
+    on the UDP path. The ARP branch terminates at M13 with no application, and
+    SPEC-M10 §2 assigns the bit to "nobody at this stage". SPEC-M10 §7 shows it
+    arriving on the payload `tlast`, ≥ 2 cycles after the record — which is why
+    §11.3's proposed "new `Arp_packet` field" cannot carry it — while SPEC-M13
+    §4.1's `I` record already contains `rx_payload` including `tuser`.
+11. **Architect bookkeeping, recomputed.** architecture.md §6.4 strict row count
+    = **117**; by class 26 rx / 40 tx / 29 control / 22 status (the 41st `tx`
+    occurrence is the amended row quoted inside §6.4's prose, not a table row).
+    traceability.md vs requirements.md REQ id sets: **110 = 110**, `comm -3`
+    empty, 110 row lines, no duplicates.
+12. **C-17(e) re-derived by enumeration.** Input frames 14…21 give payloads 0…7;
+    payload 0 emits no payload word and therefore no `tkeep`; `0xFF` needs a
+    positive multiple of 8, i.e. **N = 22**. C-17(a) re-derived: M = K−1 for
+    N ≡ 0 or 7 (mod 8) and K−2 otherwise, so M+2 ∈ {K, K+1} — `≥ K` for the abort
+    argument and `≤ K+1` for the back-to-back argument, both now in the text.
+13. **No new CI run is cited for this commit** — it carries one packet and my
+    journal, no code and no spec, so there is nothing for a build to verify
+    beyond the journal check itself.
+
+### Outcome
+DoD of WO-0015 met on all four deliverables, with the signature decision explicit
+and negative at the batch level.
+
+Verdicts: **SPEC-M10 SIGNED**, **SPEC-M11 SIGNED**, **SPEC-M12 SIGNED (clean —
+no findings of any class)**, **SPEC-M13 CONTESTED**. Therefore:
+
+> **I do NOT countersign batch D at a9993ff.** The countersignature sentence,
+> for transcription once the D-1 and D-2 diffs land, is: "I countersign batch D
+> (SPEC-M10, SPEC-M11, SPEC-M12, SPEC-M13) for P1-spec-freeze at `<SHA>`."
+
+Two blocking diffs owed: **D-1** (the ARP module retains two replies where
+REQ-510 says one; three verification hooks across two documents commission a
+strobe a conformant design does not pulse — R-1 recommended, R-2 acceptable) and
+**D-2** (REQ-013's "ultimate consumer" clause is discharged by nobody on the ARP
+branch, and SPEC-M10 §11.3 prices the repair as breaking when it needs no port at
+all — D-2a recommended, D-2b acceptable). Consequential edits owed regardless of
+verdict: the five §11 closure records and the four §12 compile rows.
+
+Questions: **Q1 INSTANTIATION** (no ADR amendment owed); **Q2 NOT ACCEPTED as
+final** (this is D-2); **Q3 CONSEQUENCE CLAUSE — no `cfg_tx_enable` at M13, not
+breaking**, answered decisively as the packet required; **Q4 SPECIFICATION
+DECISION** (no requirements diff, one consequence sentence added); and **Q5**,
+SPEC-M12 §11.3's REQ-506 split, which the packet did not name but whose closing
+gate is this countersignature — **AGREED, no requirements diff**.
+
+Ledger: **C-6, C-15, C-16, C-17 (all five items) and C-18 all REAFFIRMED**, each
+checked at its landing site; C-17(d)'s placement in ADR-0008 rather than SPEC-M07
+judged **correct against my own offer of either home**, and vindicated by batch D
+discharging it twice by reference. Five new carry-forwards, none blocking:
+**C-19** (SPEC-M11 §8's M10 loopback is a zero-lead producer and fails a
+conformant pair), **C-20** (SPEC-M10 §6.3 item 4's word-0 constant is wrong under
+both readings), **C-21** (SPEC-M10 §6.1's report XOR does not except the `clear`
+abandonment its own §7 mandates; C-2's exemption becomes load-bearing here),
+**C-22** (ADR-0008's C-17(d) bullet versus SPEC-M11 §6.1 — mine), **C-23**
+(M13 is the programme's first module whose strobe can be high on consecutive
+cycles, with REQ-502's measurement start folded in as an editorial note).
+
+Handoff: `agents/handoffs/WO-0015_batch-d-countersign.md`, state RETURNED,
+carrying the four verdicts, the recomputations, the two owed diffs with two
+acceptable forms each, the five answers, the ledger table, six sub-threshold
+readings and the five DV actions this review created for me.
+
+### Open-questions
+1. **D-1 and D-2 block the batch-D freeze and nothing else.** Batch E may be
+   drafted in parallel: neither repair moves a port, a record or a latency
+   constant, so SPEC-M15's dependencies on SPEC-M11 and SPEC-M13 are unaffected
+   whichever form lands.
+2. **`AP-arp.md`'s REQ-510 rows are blocked on D-1** and will say so rather than
+   choose a request count that happens to work. `AP-arp_eth_rx.md` is blocked on
+   C-20 and C-21; `AP-arp_eth_tx.md` on C-19. **`AP-arp_cache.md` is unblocked
+   today** — SPEC-M12 is the first batch-D spec whose attack plan I can write
+   from its own text alone.
+3. **C-2 is now my oldest unrepaired finding**, C-15 having closed. C-21 is the
+   first place it bites concretely: §0.6's conservation monitor is active in
+   every bench and SPEC-M10 §10 commissions a mid-packet `clear` test whose
+   packet is opened and never reported.
+4. **Three pieces of machinery are now owed by me**: the third header-record
+   monitor discipline (a record with a native `ready`, Q1); the strobe-counting
+   convention (high cycles, not rising edges, C-23); and the C-22 monitor clause
+   once the ADR text settles. I deferred all three so this commit carries no code
+   beside a withheld signature.
+5. **Still open and unchanged**: C-3, C-5, C-7, and C-9's REQ-903 half;
+   `of_source` still imports `Ifc_check.Axi64_ifc.Axi64` and must be retargeted
+   when rtl_lead builds M01; `hardcaml_verilator` plus a `verilator` binary
+   against REQ-901; the fifth REQ-901 divergence class C-7 asks for, which
+   batch D's REQ-510 discussion makes concrete for the first time.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0015_batch-d-countersign.md
