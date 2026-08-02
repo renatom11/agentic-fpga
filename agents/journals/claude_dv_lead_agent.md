@@ -2095,3 +2095,334 @@ snapshots awaiting promotion and one proposed carry-forward.
 - test/xgmii/test_tx_decoder.ml
 - tools/check_emitted_verilog.sh
 - tools/dv_checks.sh
+
+## [J-dv_lead-0007] 2026-08-02T13:40:00Z | task:WO-0013 | Batch C countersigned at 508eea2: M06/M07/M08/M09 SIGNED, M06's zero-reserve ceiling judged achievable from the octet mapping, all eight §13 amendments reaffirmed, ADR-0008 accepted; C-15 confirmed still owed and C-16/C-17/C-18 raised
+
+### Trigger
+Orchestrator spawn under work order WO-0013 (ISSUED at 9b43319), spawn short-id
+`WO-0013/2026-08-02T12:45Z`. Seventh activation. Third countersign cycle, and
+the first in which I am asked to judge my own findings after someone else has
+implemented them: the eight §13 amendments to the FROZEN SPEC-M03/M04 are
+C-11, C-12 and C-14 made into text, and reaffirming them is a different act
+from raising them.
+
+### Inputs
+- `agents/charters/dv_lead.md` (§5 DoD and §6 evaluation criteria refreshed);
+  `agents/PROTOCOL.md` §4 (entry grammar), §7 (gates, the transcription rule),
+  §10 (independence and evidence).
+- `agents/handoffs/WO-0013_batch-c-countersign.md` at 9b43319 — my work order.
+- **Review targets at 508eea2**, all read in full: `docs/specs/modules/
+  eth_axis_rx.md` (SPEC-M06), `eth_axis_tx.md` (SPEC-M07), `eth_demux.md`
+  (SPEC-M08), `eth_arb_mux.md` (SPEC-M09), all DRAFT; the four new
+  `docs/specs/ifc_check/*_ifc.ml` lifts.
+- **The eight §13 amendment records**, read both as committed text and as
+  `git diff f78766e 508eea2 -- docs/specs/modules/xgmii_rx_64.md
+  docs/specs/modules/xgmii_tx_64.md docs/specs/requirements.md`, so that I
+  judged what changed and not only what now stands.
+- `docs/adr/ADR-0008-transmit-header-handshake.md` — this work order is its
+  flagged contest window (SPEC-M07 §11.2, SPEC-M09 §11.3).
+- `docs/specs/requirements.md` at 508eea2: §0.1 … §0.7, §1.1, REQ-001 …
+  REQ-021, REQ-101 … REQ-113, REQ-201 … REQ-210, REQ-401 … REQ-410, REQ-802,
+  REQ-810, and the new §13 revision record.
+- `agents/handoffs/WO-0010_dual-batch-countersign.md` Return log (my C-11
+  replacement text, my C-12 proposed ruling, the C-14 table — the three things
+  I had to check the amendments against); `agents/handoffs/WO-0011_batch-c-
+  specs.md` Return log (per-deliverable dispositions, the C-15 routing);
+  `agents/handoffs/WO-0012_dv-wave2.md` Return log (my C-15 proposal);
+  `docs/gates/P1-spec-freeze-checklist.md` (the carry-forward ledger, C-1 …
+  C-14).
+- My own `J-dv_lead-0005` (the batch-B signature and the standard I set there)
+  and `J-dv_lead-0006`; `test/monitors/octet_time.mli`, re-read because (a)
+  required judging four latency contracts against my machinery's semantics and
+  because the WO-0012 fix is what makes M06's h and its correspondence term
+  safe to conflate.
+- CI: run **30733153172**, fetched through the GitHub API rather than accepted
+  from the packet.
+- **`libs/**` was never opened**, in this or any previous activation. Nothing
+  in this verdict derives from RTL; `rtl_snapshots/**` was read only by
+  `tools/dv_checks.sh`, as at WO-0009 and WO-0010.
+
+### Reasoning
+**The standard is unchanged, and saying so first matters more this time than
+last.** A countersignature answers one question: can a tb_writer who never sees
+RTL build a correct bench from this text alone? Inelegance is not my business;
+underivability is a contest; and a sentence that would make a bench **fail a
+conformant design** is the class I care most about, because it converts into a
+false `BUG-` against rtl_lead and costs the programme credibility in the
+direction hardest to recover. At WO-0010 I found five of that class across three
+specs and signed anyway, because in every case a normative section of the *same*
+document stated the correct reading. I found six this time — five readings and
+one coverage claim — and every one of them has the same property. Signing them
+and contesting nothing is therefore not leniency; it is the same bar applied
+twice. Moving the bar because the count rose from five to six would make my
+threshold a function of when a defect was found rather than of what it costs,
+which is exactly the failure I named at WO-0010 and declined to commit.
+
+**Reaffirming my own findings needed a different discipline from raising them,
+and I tried to make that visible.** The temptation with an amendment that
+implements your own words is to check that the words are present and stop. So I
+checked three things instead: that the replacement landed *faithfully* (C-11 —
+and it landed better than I wrote it, retaining a clause of the original my
+draft had dropped); that the ruling landed *as ruled* (C-12 — and it landed
+wider, generalised from the one `Discard` corner I raised to a defined notion of
+an open frame, which I then had to verify was complete rather than merely
+larger); and that the tight bounds are actually tight, which I re-derived rather
+than compared. C-14.3's drain window: N = 8q + r gives a `tlast` word one or two
+cycles after the terminate word at a lane-0 start and zero or one at a lane-4
+start, maximum 2 = ΔC − 1, and **attained** at N = 13 — so REQ-109's "from 3
+cycles after" is exact and not conservative. C-14.1's `tx_tready` at C+11: an
+acceptance one cycle earlier puts the start character at C+11 and leaves an
+8-octet gap against REQ-204's 12, so C+11 is the earliest legal acceptance and
+REQ-209's cadence is unachievable either side of it. Both bounds hold.
+
+**The sharpest finding came out of composition, not out of any one document, and
+it is the one I would defend hardest.** SPEC-M07 §8 and SPEC-M09 §8 item 5 both
+commission a run through M09 → M07 → M04 asserting REQ-209's 11-cycle frame
+period. That period is not a property of any one module: it depends on the exact
+cycle M04 asserts `tx_tready` after a frame's last source word has been accepted
+and before the FCS word — C+8 in SPEC-M04 §6.1's table. §6.1 says 1 there;
+SPEC-M07 §6.2 accepts its first payload word only when `tx_tready` = 1; and C+8
+is the only cycle at which M07 is back in `Idle` and still early enough to have
+output word 0 ready for M04's next acceptance. Were it 0, M07 would accept at
+C+11, emit at C+12, and the start characters would be **12** cycles apart —
+failing REQ-209 and failing the assertion two batch-C specs commission. So the
+table's value is right and load-bearing. What is missing is what M04 does with a
+word actually *presented* there: §6.2's only first-word acceptance transition
+leaves `Idle`, which is entered only once the gap is served, and §6.1's
+"accepted at C+m, transmitted at C+m+2" cannot hold for a word whose transmit
+slot is the terminate word. M04's own §8 REQ-209 bench, with a continuous
+source, drives that case directly. I raise it as C-16 rather than as a contest
+because §6.1's table already states the governing value and §7's REQ-210 bullet
+already permits a delayed start character — but I record that the C-14.1
+amendment's claim to state "exactly when `tx_tready` is 0" is not met, and that
+I am currently the only place the composed cadence's derivation is written down,
+which is not where it belongs.
+
+**On M06's zero-reserve ceiling I refused to treat the architect's flag as the
+judgement.** ΔC = 3 is not a target M06 must hit; it is what the octet mapping
+produces. Payload octet j is input octet j + 14, so payload word m needs input
+octets 8m+14 … 8m+21, straddling input words m+1 and m+2 at every m and every
+frame length — six octets from one and two from the other, which is REQ-021's
+realignment as arithmetic rather than as prose. Input word m+2 lands at Ci+m+2;
+a registered output emits at Ci+m+3. Three is forced. I then asked whether zero
+reserve is *safe*, which is a different question, and concluded it is safe
+because the reserve is held in the right place: §1.1 keeps 7 cycles centrally
+and releases them by a three-file spec diff, which is strictly better than
+scattering a spare cycle into each ceiling where it would be consumed silently
+and REQ-006 would fail at the top with nobody able to name the owner — the exact
+failure C-1 existed to prevent. A module pinned at its ceiling with central slack
+is a visible decision; a module with a private cycle is not. So the zero reserve
+is not a risk I am absorbing, it is a property I want, and SO-M06 will supply
+`?ceiling:3` to the tagger so a ΔC of 4 is a machine-reported REQ-019 failure
+rather than a judgement call in my own packet.
+
+**On ADR-0008 I judged a convention, not a fix, because it binds three
+unwritten specifications.** What makes it acceptable is that the acceptance
+event is a wire that already exists: a port learns it is granted when its first
+payload word is accepted, on `payload_tready`, so there is no second handshake
+for a monitor to watch and no way for two handshakes to disagree — the failure
+mode that makes header/payload protocols expensive to verify. Decision 1's
+simultaneity deletes the granted-but-nothing-to-send state outright, so M09
+never represents it and no bench drives it. Decision 4 I verified arithmetically
+rather than accepted: every Phase-1 transmit frame's Ethernet payload is at
+least 28 octets (ARP packet, or 20-octet IPv4 header plus 8-octet UDP header), so
+at least one payload word always exists and the header-without-payload case is
+unreachable rather than undefined. And rejected alternative (a) would have made
+REQ-003's structural check grow an exception — an invariant with an exception
+stops being structural, and that check is one of the few things here enforced by
+the type system rather than by a bench. The one thing I had to fix rather than
+accept is that decision 3 says the source **may** drop `valid` after acceptance;
+a monitor written from the text alone would assert that it falls, and fail a
+conformant source. So the reading I sign against is that a transmit-side header
+monitor keys on the acceptance event and never on a `valid` edge, and C-17(d)
+asks for the sentence that makes that the text's reading rather than only mine.
+
+**C-18 is the finding I least expected, because it is a defect introduced by the
+repair of a defect I raised.** C-14.4's *rule* — an input word covering no frame
+octet holds the frame, advances no m, is not a condition — is exactly what I
+asked for and is right. Its illustrative list is not: "the second word of a
+lane-4 start's preamble" covers four frame octets, as §6.1's own lane-4
+paragraph says, and read literally the §6.2 `Frame` row would hold the CRC
+register across them and fail the FCS check of **every** lane-4 frame. That is
+the single sharpest sentence in this review, and it sits inside a fix. I record
+it that way deliberately: a countersignature process that only ever finds defects
+in the original text and never in its own repairs is not being run honestly.
+
+**What I did not do.** I did not touch `docs/specs/**` or `docs/adr/**` to apply
+any of the eight one-line diffs, though I could see exactly what each should
+say: they are the architect's text and outside my write scope, and a
+countersigner who edits the thing it is countersigning has signed nothing. I did
+not extend `test/` or `tools/` in this activation, though C-17(d)'s monitor
+parameter and the inserting-stage latency convention are both mine and both
+ready to write — the packet fixes this commit's file set at one packet, and a
+signature commit that also carries a code change is harder to audit. I did not
+answer SPEC-M07 §11.3 by asking for a new REQ, because §8 already states the
+obligation and requirements.md §0.2's one-fact-per-REQ rule is what a
+"run the bench through M09 and M07" row would fail.
+
+### Actions
+- Read the four batch-C specifications and ADR-0008 in full; read the eight §13
+  records both as committed text and as diffs against the f78766e freeze SHA.
+- Recomputed all four batch-C latency contracts from §0.5's definitions
+  (M06 h = 14 / L = 10 / ΔC = 3; M08 h = 0 / L = 8 / ΔC = 1; M07 ΔC = 1 with
+  L = 22 under an insertion convention; M09 ΔC = 0), the M06 ΔC = 3
+  achievability argument from the octet mapping, C-14.3's drain bound at both
+  start lanes, C-14.1's C+11 bound against REQ-204's rounding, M06's
+  abort-in-time and back-to-back inequalities, M07's W/J word arithmetic and its
+  46-octet cycle table octet by octet, M08's H-relative pipeline and strobe
+  window, M09's grant deadline and its starvation argument, and the composed
+  M09 → M07 → M04 cadence at 11 cycles.
+- Verified the C-12 closure list for completeness against every SPEC-M03 §9 row
+  and every REQ-101 … REQ-113 path, and confirmed `cfg_rx_enable` is correctly
+  absent from it.
+- Recounted REQ-010's corrected seven-port census (C-13) and confirmed it.
+- Confirmed CI run 30733153172 through the GitHub API; confirmed by diff that
+  the four batch-C lifts are byte-identical between 508eea2 and the run's SHA
+  f457efc, and that the specifications and ADR have not moved since 508eea2;
+  ran `tools/dv_checks.sh` at 9b43319.
+- Appended the RETURNED verdict entry to
+  `agents/handoffs/WO-0013_batch-c-countersign.md` and set its header state to
+  RETURNED.
+- Wrote nothing under `docs/`, `libs/`, `test/`, `tools/`, `.github/`,
+  `scripts/` or `tasks/`.
+
+### Evidence
+All commands runnable from a repo checkout at this SHA (PROTOCOL §4.1 form (a))
+or externally verifiable references (form (b)).
+
+1. **Compile evidence, verified at source.** GitHub API,
+   `renatom11/agentic-fpga`: run **30733153172**, workflow `build`, `head_sha`
+   `f457efc85d367c7903bee32f4ba31f6e067db0fb`, status `completed`, conclusion
+   **`success`**.
+2. **That run witnesses the text I signed, checked rather than assumed.**
+   `git diff --stat 508eea2 f457efc -- docs/specs/ifc_check/` → **empty**, so
+   the four batch-C lifts CI elaborated are byte-identical to those at the
+   review SHA. `git diff --stat 508eea2 HEAD -- docs/specs/ docs/adr/` →
+   **empty**, so the four specifications and ADR-0008 have not moved since
+   508eea2.
+3. **`tools/dv_checks.sh` at 9b43319** → exit `0`, `dv_checks: all checks
+   passed`. Record half: `12 check(s) run, 0 failure(s)`, including all **nine**
+   `modules/<spec>.md §4.1 == ifc_check/<spec>_ifc.ml (byte identical,
+   SPEC-TEMPLATE rule 6)` rows — so the four batch-C §4.1 blocks I judged are
+   the four CI compiled. Emitted-Verilog half: `4 check(s) run, 0 failure(s),
+   4 pending`.
+4. **M06's ΔC = 3, reproduced from the octet mapping.** Payload octet j is
+   input octet j + 14, so payload word m needs input octets 8m+14 … 8m+21,
+   which lie in input words ⌊(8m+14)/8⌋ = m+1 (positions 6, 7) and
+   ⌊(8m+21)/8⌋ = m+2 (positions 0–5). Input word m+2 arrives at Ci+m+2; a
+   registered output emits at Ci+m+3. Hence Co = Ci+3, ΔC = 3,
+   L = 8·3 − 14 = **10**, (L + h) = 24 ≡ 0 (mod 8), ceiling 3, reserve 0.
+   M08: Co = Ci+1, h = 0, L = **8**, (L+h) = 8, ΔC = 1, ceiling 1. Chain to
+   date: 3 + 3 + 1 = **7 pinned against 8 allocated**, the single cycle of
+   module-level reserve being M03's; the architect's 7 cycles are untouched.
+5. **C-14.3's drain bound, re-derived and found attained.** N = 8q + r octets
+   between `/S/` and `/T/`; delivered N − 4. Lane-0 start: terminate word q+1,
+   output words ⌈(N−4)/8⌉ = q (r ≤ 4) or q+1 (r ≥ 5), `tlast` word at q+2 or
+   q+3 — **1 or 2** cycles after. Lane-4 start: terminate word q+1 (r ≤ 3) or
+   q+2 (r ≥ 4), difference **0 or 1**. Maximum **2 = ΔC − 1**, attained at
+   N = 13 lane 0 (terminate word cycle 2, `tlast` word cycle 4). REQ-109's
+   "from 3 cycles after" is exact.
+6. **C-14.1's C+11, re-derived.** Terminate character in lane 0 of C+10;
+   `cfg_ifg` = 12 gives g = ⌈(12+0)/8⌉ = 2 words, an actual gap of 16 octets,
+   and the next start character at C+12. An acceptance at C+10 would place the
+   start character at C+11 and leave 8 octets < 12, violating REQ-204; an
+   acceptance at C+12 would give a 12-cycle spacing, violating REQ-209. C+11 is
+   the unique legal cycle.
+7. **The composed cadence, and why C+8 is load-bearing.** M07 re-enters `Idle`
+   when frame k−1's last output word is accepted (M04's C+7). With
+   `tx_tready` = 1 at C+8, M07 accepts frame k's first payload word there,
+   emits output word 0 at C+9 and holds it (`tx_tready` = 0 at C+9, C+10) until
+   M04 accepts at C+11; M04's start characters land at C+1 and C+12 —
+   **11 cycles**, REQ-209. With `tx_tready` = 0 at C+8, M07 accepts at C+11,
+   emits at C+12, and the spacing is **12** — REQ-209 fails, and with it the
+   assertion SPEC-M07 §8 and SPEC-M09 §8 item 5 both commission. M04's §6.2
+   has no state that accepts a source word at C+8.
+8. **M07's drain, from its own arithmetic.** W = ⌈(14+P)/8⌉, J = ⌈P/8⌉ give
+   W − J = 1 for P ≡ 1, 2 (mod 8) and 2 otherwise. The last payload word is
+   accepted at C + J − 1 and the last output word leaves at C + W, so
+   `payload_tready` is 0 for **W − J + 1** cycles — three for the 46-octet
+   payload of §6.1's table (C+6, C+7, C+8), which the table shows and the prose
+   contradicts in three places.
+9. **M06's two inequalities, which cannot both hold.** K = ⌈N/8⌉,
+   M = ⌈(N−14)/8⌉; M = K − 1 for N ≡ 0 or 7 (mod 8) and K − 2 otherwise. The
+   abort paragraph's `Ci + M + 2 ≥ Ci + K` is true at every N; the back-to-back
+   paragraph's `Ci + M + 2 ≤ Ci + K` is false whenever M = K − 1 (a 64-octet
+   input frame is the first case). The conclusion survives on the adjacent
+   sentence's own argument (M06 emits fewer words than it consumes).
+10. **M06 §8's `tkeep` coverage claim, disproved by enumeration.** Input frames
+    of 14 … 21 octets give payloads 0 … 7. Payload 0 emits no payload word and
+    therefore no `tlast` and no `tkeep`; payloads 1 … 7 give `0x01` … `0x7F`.
+    The eighth pattern `0xFF` needs a payload length that is a positive multiple
+    of 8 — a 22-octet input frame — and neither the stress frame (payload 46,
+    `0x3F`) nor the 1514-octet case (payload 1500, `0x0F`) produces one.
+11. **C-18's example, disproved against the same section.** At a lane-4 start
+    the eight preamble octets occupy cycle 0 lanes 4–7 and cycle 1 lanes 0–3, so
+    frame octets 0–3 occupy cycle 1 lanes 4–7 — SPEC-M03 §6.1's own "The same
+    frame at a lane-4 start" paragraph says exactly this. The second preamble
+    word therefore covers four frame octets; holding the CRC register across it,
+    as §6.2's amended `Frame` row instructs by example, would fail REQ-104 on
+    every lane-4 frame.
+12. **No new CI run is cited for this commit** — it carries one packet and my
+    journal, no code and no spec, so there is nothing for a build to verify
+    beyond the journal check itself.
+
+### Outcome
+DoD of WO-0013 met on all four verdict groups, with the signature decision
+explicit.
+
+> **I countersign batch C (SPEC-M06, SPEC-M07, SPEC-M08, SPEC-M09) for P1-spec-freeze at 508eea2, and reaffirm SPEC-M03/M04 as amended.**
+
+Verdicts: SPEC-M06 SIGNED (its zero-reserve ceiling judged achievable and its
+reserve position judged correct), SPEC-M07 SIGNED, SPEC-M08 SIGNED, SPEC-M09
+SIGNED; all eight §13 amendments REAFFIRMED, with C-11's replacement confirmed
+faithful, C-12's closure-list rule confirmed to match my supplied ruling and
+verified complete, and C-14.3's and C-14.1's bounds re-derived and found tight;
+ADR-0008 ACCEPTED; C-15 CONFIRMED still owed and not withdrawn. Nothing is
+CONTESTED. Three new carry-forwards — C-16 (SPEC-M04 §7's amended `tx_tready`
+bullet is correct but not complete, and the uncovered cycle is the one the
+composed transmit cadence turns on), C-17 (five batch-C readings and coverage
+claims that do not hold as written), C-18 (the C-14.4 amendment's illustrative
+list and "gapless" definition in SPEC-M03) — none blocking, each tied to the
+moment it must close. SPEC-M07 §11.3's question to me is answered in the packet:
+declined, no new REQ.
+
+Handoff: `agents/handoffs/WO-0013_batch-c-countersign.md`, state RETURNED,
+carrying the verdict table, the recomputations, the readings this signature
+fixes, the ledger dispositions for the orchestrator to transcribe, and the five
+DV actions this review created for me.
+
+### Open-questions
+1. **C-16 must land before SPEC-M04's or SPEC-M07's tb_writer `WO-` leaves my
+   hands.** Until it does, the composed REQ-209 bench is derivable only by
+   reading SPEC-M04 §6.1's cycle table as governing over §7's enumeration, and
+   the only place that derivation is written down is this packet. If the diff
+   has not landed when I draft either `WO-`, the packet's `Context provided`
+   will say so rather than route around it with a careful excerpt.
+2. **C-18's example (i) must land before `AP-xgmii_rx_64.md` and SPEC-M03's
+   tb_writer `WO-`.** Read literally it would fail every lane-4 frame's FCS
+   check; it is the sharpest single sentence in this review and it sits inside
+   the repair of one of my own findings.
+3. **C-17(e) must land before SO-M06 quotes a coverage table**, or I extend the
+   directed set to 22 octets in my own `WO-` and say why. A coverage row no test
+   drives is the one defect class that would be mine rather than the architect's
+   once it reaches a sign-off packet.
+4. **`Latency` has no stated convention for an inserting stage.** §0.5 defines h
+   as octets removed from the front; M07 adds fourteen. h = −14 gives L = 22 and
+   ΔC = 1, closing mod 8 and matching §6.1's table octet by octet, but I will
+   not invent a sign convention silently in a sign-off packet. SPEC-M07 §7 pins
+   its two measurement events explicitly, so no specification change is owed;
+   this is machinery work plus a documentation line in `octet_time.mli`.
+5. **`AP-xgmii_rx_64.md`'s C-12 row is released from NO-ASSERT** and becomes a
+   positive assertion — one `error_oversize`, no `error_bad_frame`, the
+   following frame intact. That is the first attack-plan row this programme has
+   unblocked by ruling rather than by testing.
+6. **C-15 remains open and is now the oldest of my unrepaired findings.** Batch-D
+   routing confirmed; the repair is one clause and the evidence that it is not
+   hypothetical is still my own WO-0012 fix.
+7. **Still open and unchanged**: C-2, C-3, C-5, C-6, C-7 as recorded in the gate
+   ledger; `of_source` still imports `Ifc_check.Axi64_ifc.Axi64` and must be
+   retargeted when rtl_lead builds M01; `hardcaml_verilator` plus a `verilator`
+   binary against REQ-901.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0013_batch-c-countersign.md
