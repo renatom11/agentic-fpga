@@ -4199,3 +4199,64 @@ Sponsor redeploys for the site copy.
 - site/public/index.html
 - site/public/org-chart.html
 - site/public/spec-atlas.html
+
+## [J-orchestrator-0099] 2026-08-02T21:16:00Z | task:none | Four sponsor fixes: NIC title, trimmed eyebrow, phone-usable atlas tabs, capitalized verification heading
+
+### Trigger
+Sponsor, four items in one message: (1) the diagram h1 should read
+"The Network Interface Card (NIC)", not "The NIC, rendered from its
+own sources"; (2) the eyebrow should be "agentic-fpga / block
+diagram" without "· generated, not drawn"; (3) the atlas tabs
+(REQUIREMENTS / MODULES & DATAFLOW / TRACEABILITY) are unusable on a
+phone — no way to move between views; (4) "how it will be verified"
+should be capitalized "How it will be verified". All four in both
+the artifacts and the website.
+
+### Inputs
+- Timestamp correction, on the record: entries J-orchestrator-0093
+  through -0098 are stamped 2026-08-03 while the wall clock was
+  still 2026-08-02. Wrong dates, my error; the sequence numbers are
+  the authoritative order. This entry resumes real time.
+- The atlas tab bar was a fixed-width segmented control; at 390 px
+  the three labels overflowed and the control clipped instead of
+  wrapping — the sponsor's "no way to scroll" is exactly that.
+
+### Reasoning
+Items 1, 2, 4 are one-line copy edits in the generators. Item 3 is
+structural: the segmented control became a wrapping pill row
+(flex-wrap, each tab its own bordered 999px-radius pill, active tab
+filled with the accent) — the same pill grammar the site's unified
+tab bar already uses, so phones get one tap target per view and
+desktop reads unchanged. Verified with a 390x844 mobile screenshot
+(three full-width pills, active one filled) and a desktop header
+screenshot (new h1 + trimmed eyebrow) before publishing.
+
+### Actions
+- bd_front/bd_back generators: h1 + eyebrow copy edits; rebuilt.
+- build_atlas generator: pill tab bar CSS; both "how it will be
+  verified" strings capitalized (details summary + section h2);
+  rebuilt.
+- Republished both artifacts (block diagram, spec atlas) at their
+  standing URLs; copied both into site/public/ and reran
+  site/build.py; this commit ships the five refreshed pages.
+
+### Evidence
+- Mobile screenshot: three wrapped pills, REQUIREMENTS filled
+  active; header screenshot: "agentic-fpga / block diagram" over
+  "The Network Interface Card (NIC)".
+- site/build.py: "site built · 141 commits · 141 entries · 38 WOs".
+
+### Outcome / DoD
+Both artifacts live with all four fixes; site copies staged in this
+commit. Sponsor redeploys with: git pull && cd site && npx wrangler
+deploy.
+
+### Open questions
+- None.
+
+### Files-in-this-commit
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/index.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html

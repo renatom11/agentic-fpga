@@ -64,13 +64,14 @@ h1 { font-size: 1.6rem; font-weight: 600; margin: .3rem 0 .2rem; letter-spacing:
   color: var(--accent); font-variant-numeric: tabular-nums; }
 .stat .n .dim { color: var(--ink-2); font-size:.85em; }
 .stat .l { display:block; font-size:.7rem; color: var(--ink-2); line-height:1.3; margin-top:.1rem; }
-nav.tabs { display:flex; gap:0; margin: 1.2rem 0 1.4rem; border: 1px solid var(--line);
-  border-radius: 8px; overflow: hidden; width: fit-content; max-width: 100%; }
+nav.tabs { display:flex; flex-wrap:wrap; gap:.45rem; margin: 1.2rem 0 1.4rem; max-width:100%; }
 nav.tabs button { font-family:'Plex Mono',monospace; font-size:.84rem; letter-spacing:.1em; font-weight:600; cursor:pointer;
-  text-transform: uppercase; color: var(--ink-2); background: var(--panel); border: none;
-  padding: .7rem 1.4rem; }
-nav.tabs button + button { border-left: 1px solid var(--line); }
-nav.tabs button[aria-pressed="true"] { background: var(--accent-soft); color: var(--accent); }
+  text-transform: uppercase; color: var(--ink-2); background: var(--panel);
+  border: 1.5px solid var(--line); border-radius: 999px;
+  padding: .6rem 1.2rem; }
+nav.tabs button:hover { border-color: var(--accent); color: var(--accent); }
+
+nav.tabs button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--panel); }
 nav.tabs button:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
 .view { display: none; }
 .view.on { display: block; }
@@ -172,15 +173,6 @@ footer { margin-top:2.4rem; padding-top:1rem; border-top:1px solid var(--line);
 </style>
 <nav class="tabbar"><a href="index.html">OVERVIEW</a><a href="block-diagram.html">BLOCK DIAGRAM</a><a href="spec-atlas.html" class="here">SPEC ATLAS</a><a href="org-chart.html">ORG CHART</a><a href="backlog.html">BACKLOG</a><a href="https://github.com/renatom11/agentic-fpga" target="_blank" rel="noopener">GITHUB ↗</a></nav>
 <!-- site-chrome-end -->
-
-
-
-
-
-
-
-
-
 <div class="wrap">
 <header class="top">
   <span class="eyebrow">agentic-fpga / spec atlas</span>
@@ -417,668 +409,668 @@ footer { margin-top:2.4rem; padding-top:1rem; border-top:1px solid var(--line);
 </section>
 
 <section class="view on" id="v-req">
-<h2>Every requirement, with how it will be verified</h2>
+<h2>Every requirement, with How it will be verified</h2>
 <input class="gsearch" placeholder="search requirements…" aria-label="Search requirements" oninput="searchReq(this.value)">
 <div class="filters"><button class="fbtn on" data-b="all">all · 110</button><button class="fbtn" data-b="b0">Program invariants · 21</button><button class="fbtn" data-b="b1">XGMII receive · 13</button><button class="fbtn" data-b="b2">XGMII transmit · 10</button><button class="fbtn" data-b="b3">CRC-32 / FCS · 6</button><button class="fbtn" data-b="b4">Ethernet framing · 10</button><button class="fbtn" data-b="b5">ARP · 12</button><button class="fbtn" data-b="b6">IPv4 · 12</button><button class="fbtn" data-b="b7">UDP · 10</button><button class="fbtn" data-b="b8">Top level and configuration · 10</button><button class="fbtn" data-b="b9">Verification and process · 6</button></div>
 <article class="req" id="REQ-001" data-b="b0">
 <div class="rhead"><span class="rid mono">REQ-001</span><span class="rtype rt-inv">INV</span>
 <span class="rtitle">Single clock domain</span></div>
 <p class="rbody">All Phase-1 RTL SHALL be synchronous to one clock port named <code>clock</code>, nominally 156.25 MHz, with no gated clocks, no derived clocks and no clock-domain-crossing structures.</p>
-<details><summary>how it will be verified</summary><p class="rver">Mechanical check over the emitted Verilog snapshot: every <code>always @(posedge …)</code> edge expression <strong>resolves to the module&#x27;s <code>clock</code> input port through the emitter&#x27;s port-copy renames, following pure renames only</strong>; no other signal appears in an edge position; and every instantiated <code>.clock()</code> connection resolves the same way. Simulation runs on a single Cyclesim clock. <strong>Not &quot;names <code>clock</code>&quot;</strong>: no Hardcaml emission can literally satisfy that — <code>word_counter.v</code> has shown so since G0 — and a checker implementing the earlier wording word for word failed conformant RTL (dv_lead, WO-0028 §5). The column now describes the rule as implemented, which is strictly stronger than the literal one it replaces because the rename closure also catches a cross-module alias leak and instantiation-time gating.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Mechanical check over the emitted Verilog snapshot: every <code>always @(posedge …)</code> edge expression <strong>resolves to the module&#x27;s <code>clock</code> input port through the emitter&#x27;s port-copy renames, following pure renames only</strong>; no other signal appears in an edge position; and every instantiated <code>.clock()</code> connection resolves the same way. Simulation runs on a single Cyclesim clock. <strong>Not &quot;names <code>clock</code>&quot;</strong>: no Hardcaml emission can literally satisfy that — <code>word_counter.v</code> has shown so since G0 — and a checker implementing the earlier wording word for word failed conformant RTL (dv_lead, WO-0028 §5). The column now describes the rule as implemented, which is strictly stronger than the literal one it replaces because the rename closure also catches a cross-module alias leak and instantiation-time gating.</p></details>
 </article>
 <article class="req" id="REQ-002" data-b="b0">
 <div class="rhead"><span class="rid mono">REQ-002</span><span class="rtype rt-ifc">IFC</span>
 <span class="rtitle">Datapath width</span></div>
 <p class="rbody">Every frame-carrying interface SHALL be 64 bits wide; a stream carries at most one word per cycle, which the stream type makes structural.</p>
-<details><summary>how it will be verified</summary><p class="rver">Interface compile check that every frame-carrying port is an <code>Axi64.Source</code> or <code>Axi64.Dest</code> with <code>data_bits</code> = 64 (REQ-010). Throughput obligations belong to REQ-004 and REQ-209, not here.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Interface compile check that every frame-carrying port is an <code>Axi64.Source</code> or <code>Axi64.Dest</code> with <code>data_bits</code> = 64 (REQ-010). Throughput obligations belong to REQ-004 and REQ-209, not here.</p></details>
 </article>
 <article class="req" id="REQ-003" data-b="b0">
 <div class="rhead"><span class="rid mono">REQ-003</span><span class="rtype rt-inv">INV</span>
 <span class="rtitle">No receive-path backpressure</span></div>
 <p class="rbody">No receive-path stream (§0.4) SHALL carry a <code>tready</code> signal, and no receive-path module SHALL be able to stall its producer. A consumer SHALL accept every word presented with <code>tvalid</code> = 1.</p>
-<details><summary>how it will be verified</summary><p class="rver">Interface compile check: every receive-path port per §0.4 exposes an <code>Axi64.Source</code> record with no matching <code>Axi64.Dest</code>; a structural module&#x27;s transmit ports are excluded by §0.4. Behavioural half is the REQ-004 stress.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Interface compile check: every receive-path port per §0.4 exposes an <code>Axi64.Source</code> record with no matching <code>Axi64.Dest</code>; a structural module&#x27;s transmit ports are excluded by §0.4. Behavioural half is the REQ-004 stress.</p></details>
 </article>
 <article class="req" id="REQ-004" data-b="b0">
 <div class="rhead"><span class="rid mono">REQ-004</span><span class="rtype rt-perf">PERF</span>
 <span class="rtitle">Line-rate invariant</span></div>
 <p class="rbody">The receive path SHALL sustain minimum-length (64-octet) frames separated by the minimum 12-octet inter-frame gap counted from the terminate character inclusive (§0.3), with start characters alternating between lane 0 and lane 4 — start-to-start spacing alternating 10 and 11 cycles, one frame per 10.5 cycles average — for at least 10 000 consecutive frames, dropping no frame and losing no word.</p>
-<details><summary>how it will be verified</summary><p class="rver">Line-rate stress bench, mandatory for every module in §0.4&#x27;s stress-bench list and again at <code>nic_top</code>. At a module that does not see XGMII the stimulus is the stream this arrival pattern produces at that boundary, idle gaps preserved, derived by construction from the XGMII case and never re-invented per module. Every one of the 10 000 frames SHALL be one the module under test accepts and forwards, so that frames-out equals frames-in is well defined at a module that legitimately discards. Pass criterion: frame count out equals frame count in, payload octets compare equal, per-octet latency is constant (REQ-005), and frame conservation holds (§0.6). The module exposes no <code>tready</code> on the stream under test (REQ-003, structural).</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Line-rate stress bench, mandatory for every module in §0.4&#x27;s stress-bench list and again at <code>nic_top</code>. At a module that does not see XGMII the stimulus is the stream this arrival pattern produces at that boundary, idle gaps preserved, derived by construction from the XGMII case and never re-invented per module. Every one of the 10 000 frames SHALL be one the module under test accepts and forwards, so that frames-out equals frames-in is well defined at a module that legitimately discards. Pass criterion: frame count out equals frame count in, payload octets compare equal, per-octet latency is constant (REQ-005), and frame conservation holds (§0.6). The module exposes no <code>tready</code> on the stream under test (REQ-003, structural).</p></details>
 </article>
 <article class="req" id="REQ-005" data-b="b0">
 <div class="rhead"><span class="rid mono">REQ-005</span><span class="rtype rt-inv">INV</span>
 <span class="rtitle">Cut-through, not store-and-forward</span></div>
 <p class="rbody">No receive-path module SHALL withhold a payload word until the end of its frame. Each receive-path module SHALL have constant per-octet latency as defined in §0.5, independent of frame length and frame content.</p>
-<details><summary>how it will be verified</summary><p class="rver">Per-octet latency tagger inside the REQ-004 stress bench: tag every input octet with its octet time and every output octet with its octet time; the difference SHALL be identical for every octet. Directed lengths 64 through 71 inclusive (covering all eight <code>tlast</code> <code>tkeep</code> patterns) plus 1518, at both start lanes.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Per-octet latency tagger inside the REQ-004 stress bench: tag every input octet with its octet time and every output octet with its octet time; the difference SHALL be identical for every octet. Directed lengths 64 through 71 inclusive (covering all eight <code>tlast</code> <code>tkeep</code> patterns) plus 1518, at both start lanes.</p></details>
 </article>
 <article class="req" id="REQ-006" data-b="b0">
 <div class="rhead"><span class="rid mono">REQ-006</span><span class="rtype rt-perf">PERF</span>
 <span class="rtitle">Receive latency budget</span></div>
 <p class="rbody">The delay from the XGMII word containing the start character of a frame to the first word of that frame&#x27;s UDP payload on the application receive stream SHALL be at most 24 cycles (153.6 ns). This delay is the sum of the <strong>word delays</strong> ΔC (§0.5) of the modules on §0.4&#x27;s receive chain, which is what makes §1.1&#x27;s per-module ceilings an allocation of this budget rather than a separate quantity.</p>
-<details><summary>how it will be verified</summary><p class="rver">Cycle-tagged end-to-end bench at <code>nic_top</code>. Measurement events: the cycle of the XGMII word carrying the start character, and the cycle of the first application <code>tvalid</code> word of the same frame — the same two events §0.5&#x27;s word delay is defined between, at the two ends of the chain. The value is measured and reported separately for a lane-0 and a lane-4 start (they may legitimately differ by one cycle, §0.5); both are recorded in the module spec freeze record and in the Phase-1 latency report.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Cycle-tagged end-to-end bench at <code>nic_top</code>. Measurement events: the cycle of the XGMII word carrying the start character, and the cycle of the first application <code>tvalid</code> word of the same frame — the same two events §0.5&#x27;s word delay is defined between, at the two ends of the chain. The value is measured and reported separately for a lane-0 and a lane-4 start (they may legitimately differ by one cycle, §0.5); both are recorded in the module spec freeze record and in the Phase-1 latency report.</p></details>
 </article>
 <article class="req" id="REQ-007" data-b="b0">
 <div class="rhead"><span class="rid mono">REQ-007</span><span class="rtype rt-inv">INV</span>
 <span class="rtitle">Abort propagation</span></div>
 <p class="rbody">When a frame is found invalid after forwarding of that frame has begun, its final word SHALL be marked <code>tuser</code>[0] = 1, and every downstream module that emits an output frame for it SHALL mark the corresponding final word of its own output stream <code>tuser</code>[0] = 1. Precedence against discard conditions is §0.6.</p>
-<details><summary>how it will be verified</summary><p class="rver">Error injection at each stage (bad FCS, mid-frame error character, truncation); check the abort bit appears on the last word of every downstream stream that emits a frame <strong>for which that stage can still mark it</strong>, and that a stage which discards the frame under §0.6 emits no frame and pulses only its own strobe. <strong>The scope of &quot;can still mark it&quot;, because the unscoped universal is unpassable</strong> (ledger <strong>C-41</strong>): the exception is exactly the modules whose own output frame&#x27;s extent is fixed by a count declared *inside the data* — <strong>M14 and M17, and those two only</strong> — where the output <code>tlast</code> word can leave before the input <code>tlast</code> word carrying the mark is presented, so no implementation can copy it. On that class the commissioned assertion is the <strong>complementary</strong> one, <code>tuser</code>[0] = <strong>0</strong> on the output <code>tlast</code> word, and each module&#x27;s §10 hook names the directed boundary pair that fixes it (SPEC-M14 §10 and §11.5, total lengths 36 and 37; SPEC-M17 §10 and §11.4). This column states the scope; whether REQ-007&#x27;s <strong>normative sentence</strong> gains it is the deferred item those two rows carry, gated jointly at <code>SO-ip_eth_rx_64.md</code> and <code>SO-udp_ip_rx_64.md</code>.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Error injection at each stage (bad FCS, mid-frame error character, truncation); check the abort bit appears on the last word of every downstream stream that emits a frame <strong>for which that stage can still mark it</strong>, and that a stage which discards the frame under §0.6 emits no frame and pulses only its own strobe. <strong>The scope of &quot;can still mark it&quot;, because the unscoped universal is unpassable</strong> (ledger <strong>C-41</strong>): the exception is exactly the modules whose own output frame&#x27;s extent is fixed by a count declared *inside the data* — <strong>M14 and M17, and those two only</strong> — where the output <code>tlast</code> word can leave before the input <code>tlast</code> word carrying the mark is presented, so no implementation can copy it. On that class the commissioned assertion is the <strong>complementary</strong> one, <code>tuser</code>[0] = <strong>0</strong> on the output <code>tlast</code> word, and each module&#x27;s §10 hook names the directed boundary pair that fixes it (SPEC-M14 §10 and §11.5, total lengths 36 and 37; SPEC-M17 §10 and §11.4). This column states the scope; whether REQ-007&#x27;s <strong>normative sentence</strong> gains it is the deferred item those two rows carry, gated jointly at <code>SO-ip_eth_rx_64.md</code> and <code>SO-udp_ip_rx_64.md</code>.</p></details>
 </article>
 <article class="req" id="REQ-008" data-b="b0">
 <div class="rhead"><span class="rid mono">REQ-008</span><span class="rtype rt-fn">ERR</span>
 <span class="rtitle">Every discard is observable</span></div>
 <p class="rbody">Every condition under which a module discards or truncates a frame SHALL be reported by a dedicated one-cycle-high output strobe named for that condition (§12). Discarding silently is prohibited.</p>
-<details><summary>how it will be verified</summary><p class="rver">Two halves. (a) For each strobe in §12, a directed test drives the condition and checks that strobe pulses for exactly one cycle inside the §0.6 window, and that no strobe pulses other than those of the conditions the stimulus creates. (b) A frame-conservation monitor per §0.6 active in every bench: a discrepancy between frames presented and frames emitted plus zero-payload header pulses plus discard-strobe pulses is a silent discard and a failure.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Two halves. (a) For each strobe in §12, a directed test drives the condition and checks that strobe pulses for exactly one cycle inside the §0.6 window, and that no strobe pulses other than those of the conditions the stimulus creates. (b) A frame-conservation monitor per §0.6 active in every bench: a discrepancy between frames presented and frames emitted plus zero-payload header pulses plus discard-strobe pulses is a silent discard and a failure.</p></details>
 </article>
 <article class="req" id="REQ-009" data-b="b0">
 <div class="rhead"><span class="rid mono">REQ-009</span><span class="rtype rt-inv">INV</span>
 <span class="rtitle">Reset behaviour</span></div>
 <p class="rbody">All state SHALL be held in registers with a synchronous <code>clear</code>. On every cycle in which <code>clear</code> = 1 and on the first cycle in which it is 0, every <code>tvalid</code> output SHALL be 0, every header-record <code>valid</code> SHALL be 0 and every strobe SHALL be 0. <code>clear</code> asserted mid-frame truncates the in-flight output frame without a terminating word; no <code>tlast</code> and no strobe is emitted for it. A frame whose first word is presented on the first cycle after <code>clear</code> returns to 0 SHALL be received correctly.</p>
-<details><summary>how it will be verified</summary><p class="rver">Reset test: assert <code>clear</code> mid-frame, deassert, immediately drive a valid frame, check that frame is received correctly and that no output word or strobe appeared while <code>clear</code> was high or on the first cycle after. Protocol monitors reset their frame-in-progress state on <code>clear</code> (REQ-015).</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Reset test: assert <code>clear</code> mid-frame, deassert, immediately drive a valid frame, check that frame is received correctly and that no output word or strobe appeared while <code>clear</code> was high or on the first cycle after. Protocol monitors reset their frame-in-progress state on <code>clear</code> (REQ-015).</p></details>
 </article>
 <article class="req" id="REQ-010" data-b="b0">
 <div class="rhead"><span class="rid mono">REQ-010</span><span class="rtype rt-ifc">IFC</span>
 <span class="rtitle">Typed stream fabric</span></div>
 <p class="rbody">Every frame-carrying <strong>stream</strong> port SHALL use the program stream types <code>Axi64.Source</code> and <code>Axi64.Dest</code> (<code>Hardcaml_axi.Stream.Make</code> with <code>data_bits</code> = 64, <code>user_bits</code> = 1). A *frame-carrying stream port* is a port that carries frame octets <strong>together with the per-word framing signals</strong> — a valid indication, an octet mask, an end-of-frame indication and the abort bit (<code>tvalid</code>, <code>tkeep</code>, <code>tlast</code>, <code>tuser</code>). Ad-hoc per-module stream records are prohibited. <strong>Seven</strong> frame-carrying ports in the architecture.md §4 inventory are <strong>not</strong> stream ports and are outside this requirement&#x27;s subject, in two classes. <strong>(a)</strong> M02 <code>Crc32_eth</code>&#x27;s <code>data</code> input, whose 64 bits are a function argument accompanied by an octet count and by none of the framing signals, because REQ-306 forbids M02 the state that would give them meaning. <strong>(b)</strong> The six <strong>XGMII lane-pair</strong> ports — <code>xgmii_rx</code> at M03, M05 and M20, <code>xgmii_tx</code> at M04, M05 and M20 — each declared from SPEC-M01 §4.1&#x27;s <code>Xgmii</code> record: a lane pair carries a value on every cycle, so it has no valid indication, no octet mask, no end-of-frame indication and no abort bit to be a stream with, and it is governed by REQ-017 and REQ-012 instead. Any further non-stream frame-carrying port is a spec diff to this row, not a local reading — the clause class (b) was added without honouring, and which this revision honours (carry-forward <strong>C-13</strong>).</p>
-<details><summary>how it will be verified</summary><p class="rver">Interface compile check of every module spec&#x27;s <code>I</code> and <code>O</code> records against the pinned toolchain, including a type-identity witness per stream port — <code>let _check (x : Signal.t Axi64.Source.t) = x</code> applied to the record field — which fails to compile for a hand-written record with the same fields. At the seven excluded ports the check is the converse and is equally mechanical: M02&#x27;s lift declares no stream record at all, and each XGMII port&#x27;s lift declares an <code>Xgmii</code> record, so a port that silently became a stream (or stopped being one) fails to compile. The RTL-side binding is rtl_lead&#x27;s obligation, evidenced by each module&#x27;s <code>.mli</code>.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Interface compile check of every module spec&#x27;s <code>I</code> and <code>O</code> records against the pinned toolchain, including a type-identity witness per stream port — <code>let _check (x : Signal.t Axi64.Source.t) = x</code> applied to the record field — which fails to compile for a hand-written record with the same fields. At the seven excluded ports the check is the converse and is equally mechanical: M02&#x27;s lift declares no stream record at all, and each XGMII port&#x27;s lift declares an <code>Xgmii</code> record, so a port that silently became a stream (or stopped being one) fails to compile. The RTL-side binding is rtl_lead&#x27;s obligation, evidenced by each module&#x27;s <code>.mli</code>.</p></details>
 </article>
 <article class="req" id="REQ-011" data-b="b0">
 <div class="rhead"><span class="rid mono">REQ-011</span><span class="rtype rt-ifc">IFC</span>
 <span class="rtitle">tkeep semantics</span></div>
 <p class="rbody">On every word with <code>tvalid</code> = 1, <code>tkeep</code> SHALL be contiguous from bit 0; on every such word except the one carrying <code>tlast</code> it SHALL be <code>0xFF</code>; on the <code>tlast</code> word it SHALL be 1 to 8 contiguous ones. <code>tkeep</code> = 0 with <code>tvalid</code> = 1 SHALL never be produced, so a zero-octet frame is not representable and is encoded per §0.7.</p>
-<details><summary>how it will be verified</summary><p class="rver">Protocol monitor asserted on every stream in every bench, evaluated only on words with <code>tvalid</code> = 1; directed tests at frame lengths covering every payload residue modulo 8 (REQ-005&#x27;s 64 through 71 set).</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Protocol monitor asserted on every stream in every bench, evaluated only on words with <code>tvalid</code> = 1; directed tests at frame lengths covering every payload residue modulo 8 (REQ-005&#x27;s 64 through 71 set).</p></details>
 </article>
 <article class="req" id="REQ-012" data-b="b0">
 <div class="rhead"><span class="rid mono">REQ-012</span><span class="rtype rt-ifc">IFC</span>
 <span class="rtitle">Byte and field order</span></div>
 <p class="rbody">The first octet received from the wire SHALL appear in <code>tdata</code>[7:0] and the eighth in <code>tdata</code>[63:56]. Multi-octet protocol fields SHALL be presented in header records as numeric values with network byte order already decoded: the first wire octet of a field is the most significant octet of the value. Ethertype 0x0800 reads as 0x0800; MAC 00:11:22:33:44:55 reads as 0x001122334455; IPv4 192.0.2.1 reads as 0xC0000201.</p>
-<details><summary>how it will be verified</summary><p class="rver">Directed test with a known captured frame: compare every extracted header field against the hand-computed values, including a MAC field and an IPv4 field, which are the cases a single symmetric ethertype example does not pin.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Directed test with a known captured frame: compare every extracted header field against the hand-computed values, including a MAC field and an IPv4 field, which are the cases a single symmetric ethertype example does not pin.</p></details>
 </article>
 <article class="req" id="REQ-013" data-b="b0">
 <div class="rhead"><span class="rid mono">REQ-013</span><span class="rtype rt-ifc">IFC</span>
 <span class="rtitle">tuser semantics</span></div>
 <p class="rbody"><code>tuser</code>[0] SHALL mean &quot;this frame was found invalid; the ultimate consumer must discard it&quot;. It SHALL be meaningful only on the word carrying <code>tlast</code> and SHALL be ignored by consumers on all other words. No Phase-1 module SHALL drop or alter a frame solely because <code>tuser</code>[0] = 1 on its input (REQ-007, REQ-104, REQ-403, REQ-707); it is advisory metadata carried to the application. <strong>Who the ultimate consumer is, named per receive branch</strong> (ADR-0009). On the UDP path it is the application, which receives the bit unchanged on the application receive stream (REQ-707) and discards there. The ARP branch has <strong>no application</strong>, so its ultimate consumer is the module that acts on a received packet&#x27;s content instead of forwarding it — M13 <code>Arp</code> — and its discard obligation is stated as the qualifier in REQ-503. Declining, at an ultimate consumer, to act on the content of a frame marked invalid is <strong>not</strong> &quot;dropping or altering a frame&quot; within the prohibition above: that prohibition binds a module that *forwards*, and on a branch that forwards nothing there is nothing to drop. A receive branch whose ultimate consumer is not named in this row is a gap in this requirement, not a licence for the bit to be consumed by nobody.</p>
-<details><summary>how it will be verified</summary><p class="rver">Monitor plus a test driving <code>tuser</code> = 1 on a non-last word and checking the frame is still delivered intact, and a test driving <code>tuser</code>[0] = 1 on a <code>tlast</code> word and checking every downstream stage still forwards the frame <strong>with the bit set where that stage can still carry it, and with a derived 0 where it cannot</strong> — the same two-module scope REQ-007&#x27;s column states and for the same reason (ledger <strong>C-41</strong>); the frame itself is forwarded intact in both cases, which is this row&#x27;s actual subject. On the ARP branch, which forwards nothing, the discharge is REQ-503&#x27;s own bad-FCS case.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Monitor plus a test driving <code>tuser</code> = 1 on a non-last word and checking the frame is still delivered intact, and a test driving <code>tuser</code>[0] = 1 on a <code>tlast</code> word and checking every downstream stage still forwards the frame <strong>with the bit set where that stage can still carry it, and with a derived 0 where it cannot</strong> — the same two-module scope REQ-007&#x27;s column states and for the same reason (ledger <strong>C-41</strong>); the frame itself is forwarded intact in both cases, which is this row&#x27;s actual subject. On the ARP branch, which forwards nothing, the discharge is REQ-503&#x27;s own bad-FCS case.</p></details>
 </article>
 <article class="req" id="REQ-014" data-b="b0">
 <div class="rhead"><span class="rid mono">REQ-014</span><span class="rtype rt-ifc">IFC</span>
 <span class="rtitle">tstrb unused</span></div>
 <p class="rbody">Every producer SHALL drive <code>tstrb</code> to 0 and every consumer SHALL ignore it.</p>
-<details><summary>how it will be verified</summary><p class="rver">Monitor on every stream; a differential run of the same stimulus with <code>tstrb</code> = 0x00 and <code>tstrb</code> = 0xFF, asserting the two output traces are byte-identical.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Monitor on every stream; a differential run of the same stimulus with <code>tstrb</code> = 0x00 and <code>tstrb</code> = 0xFF, asserting the two output traces are byte-identical.</p></details>
 </article>
 <article class="req" id="REQ-015" data-b="b0">
 <div class="rhead"><span class="rid mono">REQ-015</span><span class="rtype rt-ifc">IFC</span>
 <span class="rtitle">One frame at a time</span></div>
 <p class="rbody">A stream SHALL carry the words of exactly one frame between successive <code>tlast</code> words. A frame comprises at least one word and at most the number of words its maximum payload requires, pinned in the owning module&#x27;s spec, <strong>the <code>tlast</code> word included in that count</strong> — for example 190 words on the <code>Xgmii_rx_64</code> output stream (1514 octets: 189 full words and a final two-octet word, REQ-108). A one-word frame, whose single word carries <code>tlast</code>, is legal and is the mandatory encoding of any payload of 1 to 8 octets (REQ-011, §0.7). Merge atomicity is REQ-406.</p>
-<details><summary>how it will be verified</summary><p class="rver">Protocol monitor over the residue above, on every stream in every bench. The monitor resets its frame-in-progress state on <code>clear</code> and makes no assertion across a clear (REQ-009).</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Protocol monitor over the residue above, on every stream in every bench. The monitor resets its frame-in-progress state on <code>clear</code> and makes no assertion across a clear (REQ-009).</p></details>
 </article>
 <article class="req" id="REQ-016" data-b="b0">
 <div class="rhead"><span class="rid mono">REQ-016</span><span class="rtype rt-ifc">IFC</span>
 <span class="rtitle">Idle words permitted</span></div>
 <p class="rbody">On every receive-path stream (§0.4) and every internal frame stream, a producer MAY deassert <code>tvalid</code> between words of a frame, and every consumer SHALL tolerate arbitrary idle gaps within a frame without corrupting it: k idle cycles before an input word delay every octet that word carries by exactly 8k octet times and change nothing else. This does not apply to <code>Xgmii_tx_64</code>&#x27;s source interface, where a missing word after transmission has begun is an underflow (REQ-206).</p>
-<details><summary>how it will be verified</summary><p class="rver">Idle-injection wrapper around any directed bench, parameterised at 0, 1 and 7 idle cycles between every pair of words at each module boundary, asserting the output word sequence is unchanged and per-octet latency shifts by exactly the injected amount.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Idle-injection wrapper around any directed bench, parameterised at 0, 1 and 7 idle cycles between every pair of words at each module boundary, asserting the output word sequence is unchanged and per-octet latency shifts by exactly the injected amount.</p></details>
 </article>
 <article class="req" id="REQ-017" data-b="b0">
 <div class="rhead"><span class="rid mono">REQ-017</span><span class="rtype rt-inv">INV</span>
 <span class="rtitle">XGMII closure</span></div>
 <p class="rbody">The only wire-side ports of the Phase-1 top level SHALL be <code>xgmii_rxd</code>[63:0], <code>xgmii_rxc</code>[7:0], <code>xgmii_txd</code>[63:0] and <code>xgmii_txc</code>[7:0]; all other top-level ports SHALL be clock, clear, configuration, application streams and status.</p>
-<details><summary>how it will be verified</summary><p class="rver">Port-list check parsing the emitted <code>nic_top</code> module in <code>rtl_snapshots/</code> and set-comparing against SPEC-M20 §4.1.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Port-list check parsing the emitted <code>nic_top</code> module in <code>rtl_snapshots/</code> and set-comparing against SPEC-M20 §4.1.</p></details>
 </article>
 <article class="req" id="REQ-018" data-b="b0">
 <div class="rhead"><span class="rid mono">REQ-018</span><span class="rtype rt-inv">INV</span>
 <span class="rtitle">XGMII boundary is simulation-only</span></div>
 <p class="rbody">Phase-1 RTL SHALL contain no PMA, serdes, PCS, 64b/66b, scrambler, auto-negotiation, link-training or PTP-timestamping logic, no vendor-specific primitive and no device constraint file. The link partner SHALL be a simulation model owned by DV under <code>test/</code> whose contract is: it emits start characters in lane 0 and lane 4 including the REQ-004 alternation; it injects each condition named in REQ-104, REQ-105, REQ-107, REQ-108 and REQ-110; and it decodes transmit-side XGMII well enough to validate REQ-201 through REQ-205.</p>
-<details><summary>how it will be verified</summary><p class="rver">Whitelist check, not a blacklist: the emitted Verilog SHALL instantiate no module outside the architecture.md §4 inventory, which catches every vendor primitive by construction. Plus repository inspection at the freeze SHA showing no <code>.xdc</code>, <code>.sdc</code>, <code>.qsf</code> or equivalent constraint file, and that the XGMII driver lives under <code>test/</code>.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Whitelist check, not a blacklist: the emitted Verilog SHALL instantiate no module outside the architecture.md §4 inventory, which catches every vendor primitive by construction. Plus repository inspection at the freeze SHA showing no <code>.xdc</code>, <code>.sdc</code>, <code>.qsf</code> or equivalent constraint file, and that the XGMII driver lives under <code>test/</code>.</p></details>
 </article>
 <article class="req" id="REQ-019" data-b="b0">
 <div class="rhead"><span class="rid mono">REQ-019</span><span class="rtype rt-inv">INV</span>
 <span class="rtitle">Bounded receive latency, no deep buffering</span></div>
 <p class="rbody">Each receive-path module&#x27;s <strong>word delay</strong> ΔC = (L + h)/8, computed per §0.5 from its pinned latency constant L and its stated front offset h, SHALL be no greater than its ceiling in §1.1 — at <strong>every</strong> start lane where the module&#x27;s constants differ by lane. No receive-path module SHALL contain payload storage deeper than two datapath words; header fields captured into registers are not payload storage and the ARP cache is not on the payload path — that second sentence is design guidance and is explicitly <strong>not</strong> a DV observable, so <code>traceability.md</code> claims no test coverage for it.</p>
-<details><summary>how it will be verified</summary><p class="rver">Two checks, both against ΔC. At spec freeze: the module spec&#x27;s pinned L and stated h are converted per §0.5 and compared against §1.1, which is arithmetic on the specification and needs no design. In each sign-off packet: the per-octet latency measured by the REQ-004 stress run (REQ-005) is converted the same way, with h taken from the spec, and compared against the same ceiling. The two must agree; a disagreement is a defect in whichever of the two the evidence contradicts, and the packet says which.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Two checks, both against ΔC. At spec freeze: the module spec&#x27;s pinned L and stated h are converted per §0.5 and compared against §1.1, which is arithmetic on the specification and needs no design. In each sign-off packet: the per-octet latency measured by the REQ-004 stress run (REQ-005) is converted the same way, with h taken from the spec, and compared against the same ceiling. The two must agree; a disagreement is a defect in whichever of the two the evidence contradicts, and the packet says which.</p></details>
 </article>
 <article class="req" id="REQ-020" data-b="b0">
 <div class="rhead"><span class="rid mono">REQ-020</span><span class="rtype rt-fn">FUNC</span>
 <span class="rtitle">Order preservation</span></div>
 <p class="rbody">Frames SHALL be delivered to the application in the order their start characters arrived, with no duplication and no reordering.</p>
-<details><summary>how it will be verified</summary><p class="rver">Stress run with a sequence number in the first four payload octets: the delivered sequence SHALL be a strictly increasing subsequence of the injected sequence, and every omitted value SHALL be accounted for by exactly one discard-strobe pulse (§0.6). Over an all-accepted stimulus this reduces to 0, 1, 2, … with no gaps or repeats.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Stress run with a sequence number in the first four payload octets: the delivered sequence SHALL be a strictly increasing subsequence of the injected sequence, and every omitted value SHALL be accounted for by exactly one discard-strobe pulse (§0.6). Over an all-accepted stimulus this reduces to 0, 1, 2, … with no gaps or repeats.</p></details>
 </article>
 <article class="req" id="REQ-021" data-b="b0">
 <div class="rhead"><span class="rid mono">REQ-021</span><span class="rtype rt-ifc">IFC</span>
 <span class="rtitle">Producer-side word alignment</span></div>
 <p class="rbody">Every stream SHALL be word-aligned at its producer: the first octet of the payload a module emits SHALL occupy <code>tdata</code>[7:0] of that stream&#x27;s first word. A module that strips a header whose length is not a multiple of 8 octets SHALL realign the remaining payload.</p>
-<details><summary>how it will be verified</summary><p class="rver">Directed tests at every stripping stage (Ethernet strips 14, IPv4 strips 20, UDP strips 8 octets) covering payload lengths of every residue modulo 8; assert the first payload octet lands in <code>tdata</code>[7:0] and the octet stream is preserved.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Directed tests at every stripping stage (Ethernet strips 14, IPv4 strips 20, UDP strips 8 octets) covering payload lengths of every residue modulo 8; assert the first payload octet lands in <code>tdata</code>[7:0] and the octet stream is preserved.</p></details>
 </article>
 <article class="req" id="REQ-101" data-b="b1">
 <div class="rhead"><span class="rid mono">REQ-101</span><span class="rtype rt-fn">FUNC</span>
 <span class="rtitle">Start lanes</span></div>
 <p class="rbody">The receiver SHALL detect a start character in lane 0 or lane 4 and SHALL produce identical output streams for the same frame received at either alignment.</p>
-<details><summary>how it will be verified</summary><p class="rver">Send the same frame with a lane-0 start and with a lane-4 start; compare the output as the ordered sequence of (<code>tdata</code>, <code>tkeep</code>, <code>tlast</code>, <code>tuser</code>) tuples over words with <code>tvalid</code> = 1. The absolute cycle of the first output word may differ by one cycle between the start lanes (§0.5); waveform equality is not required and SHALL NOT be asserted.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Send the same frame with a lane-0 start and with a lane-4 start; compare the output as the ordered sequence of (<code>tdata</code>, <code>tkeep</code>, <code>tlast</code>, <code>tuser</code>) tuples over words with <code>tvalid</code> = 1. The absolute cycle of the first output word may differ by one cycle between the start lanes (§0.5); waveform equality is not required and SHALL NOT be asserted.</p></details>
 </article>
 <article class="req" id="REQ-102" data-b="b1">
 <div class="rhead"><span class="rid mono">REQ-102</span><span class="rtype rt-fn">FUNC</span>
 <span class="rtitle">Preamble handling</span></div>
 <p class="rbody">The receiver SHALL treat the start character and the following seven octets as preamble and SFD and SHALL strip them. It SHALL NOT validate the *data values* of those seven octets. A lane marked <strong>control</strong> in a preamble position is not preamble: a terminate character there is handled by REQ-106 and REQ-107, a start character by REQ-110, and any other control character by REQ-105.</p>
-<details><summary>how it will be verified</summary><p class="rver">Drive a frame whose six preamble filler octets and SFD octet are arbitrary data values; the frame is still delivered unchanged. Plus one frame with <code>/E/</code> in a preamble lane, asserting REQ-105&#x27;s behaviour, and one with <code>/T/</code> in a preamble lane, asserting REQ-107&#x27;s sub-5-octet behaviour.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Drive a frame whose six preamble filler octets and SFD octet are arbitrary data values; the frame is still delivered unchanged. Plus one frame with <code>/E/</code> in a preamble lane, asserting REQ-105&#x27;s behaviour, and one with <code>/T/</code> in a preamble lane, asserting REQ-107&#x27;s sub-5-octet behaviour.</p></details>
 </article>
 <article class="req" id="REQ-103" data-b="b1">
 <div class="rhead"><span class="rid mono">REQ-103</span><span class="rtype rt-fn">FUNC</span>
 <span class="rtitle">Frame extraction</span></div>
 <p class="rbody">The output stream SHALL begin with the first destination-address octet and SHALL end with the last octet before the four FCS octets; the FCS SHALL be stripped and SHALL NOT appear in the output. <code>tkeep</code> on the <code>tlast</code> word SHALL mark exactly the valid octets. FCS stripping applies only to a frame that ends with a terminate character (REQ-106): a frame aborted under REQ-105, truncated under REQ-108 or cut short under REQ-110 delivers every octet decoded up to its abort point, with no FCS removal attempted.</p>
-<details><summary>how it will be verified</summary><p class="rver">Directed tests at lengths 64 through 71 inclusive (which covers all eight <code>tlast</code> <code>tkeep</code> patterns) and 1518 octets, DA through FCS per §0.3: compare the delivered octet string against the injected frame minus its four FCS octets, i.e. 60 through 67 and 1514 octets delivered.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Directed tests at lengths 64 through 71 inclusive (which covers all eight <code>tlast</code> <code>tkeep</code> patterns) and 1518 octets, DA through FCS per §0.3: compare the delivered octet string against the injected frame minus its four FCS octets, i.e. 60 through 67 and 1514 octets delivered.</p></details>
 </article>
 <article class="req" id="REQ-104" data-b="b1">
 <div class="rhead"><span class="rid mono">REQ-104</span><span class="rtype rt-fn">ERR</span>
 <span class="rtitle">FCS check</span></div>
 <p class="rbody">The receiver SHALL compute the CRC-32 FCS over the destination address through the last payload octet and compare it against the received FCS. On mismatch it SHALL set <code>tuser</code>[0] = 1 on the <code>tlast</code> word and pulse <code>error_bad_fcs</code>. The frame SHALL still be forwarded (cut-through, REQ-005).</p>
-<details><summary>how it will be verified</summary><p class="rver">Inject a frame with one payload bit flipped: the same octet count is delivered, <code>tuser</code>[0] = 1 on the last word, <code>error_bad_fcs</code> pulses once inside the §0.6 window, and no other strobe pulses unless the stimulus also creates that strobe&#x27;s condition.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Inject a frame with one payload bit flipped: the same octet count is delivered, <code>tuser</code>[0] = 1 on the last word, <code>error_bad_fcs</code> pulses once inside the §0.6 window, and no other strobe pulses unless the stimulus also creates that strobe&#x27;s condition.</p></details>
 </article>
 <article class="req" id="REQ-105" data-b="b1">
 <div class="rhead"><span class="rid mono">REQ-105</span><span class="rtype rt-fn">ERR</span>
 <span class="rtitle">Error character inside a frame</span></div>
 <p class="rbody">An <code>/E/</code> control character between the start character and the terminate character SHALL cause <code>tuser</code>[0] = 1 on the <code>tlast</code> word, a single <code>error_bad_frame</code> pulse, and termination of the output frame with the last delivered octet being the one immediately preceding the error character — the REQ-106 rule with the error character in place of the terminate character, so an error character in lane 0 means the previous word carried the last octet. No FCS is stripped (REQ-103). <strong>Where the error character leaves zero delivered octets</strong> — an <code>/E/</code> at or before the frame&#x27;s first octet, which includes an <code>/E/</code> in a preamble position (REQ-102) — no output word is emitted for that frame, there is <strong>no <code>tlast</code> word to mark</strong> and the clause above about <code>tuser</code>[0] does not apply; the <code>error_bad_frame</code> pulse is the frame&#x27;s only report, the pattern §0.7 fixes for a stage that emits no header record. Frame conservation counts that frame under its strobe (§0.6). <strong>&quot;Between the start character and the terminate character&quot; means while the frame is still open.</strong> A frame the receiver has already closed — by its terminate character (REQ-106), by REQ-108&#x27;s truncation, or by a new start character (REQ-110) — is not reopened by a later error character: that character belongs to no frame, produces no output word and pulses no strobe. The alternative would attribute a strobe to a frame that has already been counted, which breaks §0.6&#x27;s conservation equation — the same argument that makes REQ-108&#x27;s resynchronisation not a second abort (carry-forward <strong>C-12</strong>).</p>
-<details><summary>how it will be verified</summary><p class="rver">Inject <code>/E/</code> in each of the eight lanes of a mid-frame word; check the delivered octet count, <code>tkeep</code> and <code>tlast</code> placement, the abort bit and the strobe in all eight cases. Then inject <code>/E/</code> in a preamble lane and in the first frame-octet position: check that no output word appears, that <code>error_bad_frame</code> pulses exactly once, and that a monitor asserting &quot;every abort is marked on a <code>tlast</code> word&quot; is not driven — that assertion is false for these two cases by this row&#x27;s own text. Then inject <code>/E/</code> after a REQ-108 truncation point and after a terminate character: no output word, and <code>error_bad_frame</code> does <strong>not</strong> pulse in either case.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Inject <code>/E/</code> in each of the eight lanes of a mid-frame word; check the delivered octet count, <code>tkeep</code> and <code>tlast</code> placement, the abort bit and the strobe in all eight cases. Then inject <code>/E/</code> in a preamble lane and in the first frame-octet position: check that no output word appears, that <code>error_bad_frame</code> pulses exactly once, and that a monitor asserting &quot;every abort is marked on a <code>tlast</code> word&quot; is not driven — that assertion is false for these two cases by this row&#x27;s own text. Then inject <code>/E/</code> after a REQ-108 truncation point and after a terminate character: no output word, and <code>error_bad_frame</code> does <strong>not</strong> pulse in either case.</p></details>
 </article>
 <article class="req" id="REQ-106" data-b="b1">
 <div class="rhead"><span class="rid mono">REQ-106</span><span class="rtype rt-fn">FUNC</span>
 <span class="rtitle">Terminate in any lane</span></div>
 <p class="rbody">The receiver SHALL accept the terminate character in any lane 0 through 7. The frame&#x27;s last octet is the one immediately preceding the terminate character; a terminate in lane 0 means the previous word carried the last octet.</p>
-<details><summary>how it will be verified</summary><p class="rver">Frame lengths chosen so the terminate character lands in each of the eight lanes; check <code>tkeep</code> and <code>tlast</code> placement in all eight cases.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Frame lengths chosen so the terminate character lands in each of the eight lanes; check <code>tkeep</code> and <code>tlast</code> placement in all eight cases.</p></details>
 </article>
 <article class="req" id="REQ-107" data-b="b1">
 <div class="rhead"><span class="rid mono">REQ-107</span><span class="rtype rt-fn">ERR</span>
 <span class="rtitle">Runt frames</span></div>
 <p class="rbody">A frame carrying at least 5 and fewer than 64 octets between the start and terminate characters SHALL be forwarded with <code>tuser</code>[0] = 1 on the <code>tlast</code> word and a single <code>error_runt</code> pulse. A frame carrying fewer than 5 octets SHALL produce no output words at all and SHALL pulse <code>error_runt</code> once (§0.7); there is no <code>tlast</code> word for it to mark.</p>
-<details><summary>how it will be verified</summary><p class="rver">Inject 5-, 16-, 60- and 63-octet frames with valid FCS and check the abort bit, the delivered octet counts (1, 12, 56, 59 after FCS stripping) and the strobe; inject 0-, 1- and 4-octet frames and check no output word appears and <code>error_runt</code> pulses once. Lengths are DA through FCS per §0.3.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Inject 5-, 16-, 60- and 63-octet frames with valid FCS and check the abort bit, the delivered octet counts (1, 12, 56, 59 after FCS stripping) and the strobe; inject 0-, 1- and 4-octet frames and check no output word appears and <code>error_runt</code> pulses once. Lengths are DA through FCS per §0.3.</p></details>
 </article>
 <article class="req" id="REQ-108" data-b="b1">
 <div class="rhead"><span class="rid mono">REQ-108</span><span class="rtype rt-fn">ERR</span>
 <span class="rtitle">Oversize frames</span></div>
 <p class="rbody">A frame exceeding 1518 octets (DA through FCS) SHALL be truncated so that exactly <strong>1514</strong> octets are delivered — the payload length of a maximum legal frame — marked <code>tuser</code>[0] = 1 on its <code>tlast</code> word, and reported by a single <code>error_oversize</code> pulse. No FCS stripping is attempted on a truncated frame (REQ-103) and <code>error_bad_fcs</code> SHALL NOT pulse for it, since no FCS is present at the truncation point. The receiver SHALL resynchronise on the next start character. <strong>Between the truncation point and that start character the receiver SHALL emit no output word and SHALL pulse no strobe, whatever characters arrive</strong>: the frame is already closed and already reported, so neither a terminate character nor an error character reopens it (REQ-105, carry-forward <strong>C-12</strong>).</p>
-<details><summary>how it will be verified</summary><p class="rver">Inject a 1600-octet frame followed immediately by a valid frame; assert exactly 1514 octets delivered, <code>tuser</code>[0] = 1 on the last word, exactly one <code>error_oversize</code> pulse, no <code>error_bad_fcs</code> pulse, and correct reception of the following frame. Then repeat with an <code>/E/</code> injected 100 octets past the truncation point: the same single <code>error_oversize</code>, no <code>error_bad_frame</code>, and the following frame still received intact.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Inject a 1600-octet frame followed immediately by a valid frame; assert exactly 1514 octets delivered, <code>tuser</code>[0] = 1 on the last word, exactly one <code>error_oversize</code> pulse, no <code>error_bad_fcs</code> pulse, and correct reception of the following frame. Then repeat with an <code>/E/</code> injected 100 octets past the truncation point: the same single <code>error_oversize</code>, no <code>error_bad_frame</code>, and the following frame still received intact.</p></details>
 </article>
 <article class="req" id="REQ-109" data-b="b1">
 <div class="rhead"><span class="rid mono">REQ-109</span><span class="rtype rt-fn">FUNC</span>
 <span class="rtitle">Idle between frames</span></div>
 <p class="rbody">While idle characters are present <strong>and no frame remains in flight in the receiver</strong>, the receiver SHALL hold <code>tvalid</code> = 0 and SHALL assert no strobe. A frame still draining through the receiver&#x27;s pipeline may legitimately produce output words during the first idle cycles.</p>
-<details><summary>how it will be verified</summary><p class="rver">Drive 1000 idle cycles; assert no output activity of any kind from k cycles after the terminate character onward, where k is the module&#x27;s pinned latency in cycles (§0.5).</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Drive 1000 idle cycles; assert no output activity of any kind from k cycles after the terminate character onward, where k is the module&#x27;s pinned latency in cycles (§0.5).</p></details>
 </article>
 <article class="req" id="REQ-110" data-b="b1">
 <div class="rhead"><span class="rid mono">REQ-110</span><span class="rtype rt-fn">ERR</span>
 <span class="rtitle">Start without terminate</span></div>
 <p class="rbody">A start character appearing before the current frame&#x27;s terminate character SHALL abort the current frame with <code>tuser</code>[0] = 1 and a single <code>error_start_without_terminate</code> pulse, and SHALL begin a new frame at that start character. The aborted frame&#x27;s last delivered octet is the one immediately preceding the new start character (the REQ-106 rule), so a start character in lane 4 leaves lanes 0 to 3 of that word belonging to the aborted frame; no FCS is stripped from it (REQ-103). <strong>Where the new start character leaves the aborted frame zero delivered octets</strong> — a start character at or before that frame&#x27;s first octet, which includes a start character in a preamble position (REQ-102) — no output word is emitted for the aborted frame, there is <strong>no <code>tlast</code> word to mark</strong> and the clause above about <code>tuser</code>[0] does not apply; the single <code>error_start_without_terminate</code> pulse is that frame&#x27;s only report (§0.7), and the new frame is received normally. Frame conservation counts the aborted frame under its strobe (§0.6).</p>
-<details><summary>how it will be verified</summary><p class="rver">Inject a frame whose terminate character is replaced by a new start character, in lane 0 and in lane 4; check the first frame&#x27;s delivered octet count and abort bit, the single strobe, and that the second frame is received intact. Then inject a start character in lane 4 of a word whose lane 0 carried a start character: check that no output word appears for the first frame, that <code>error_start_without_terminate</code> pulses exactly once, and that the second frame is received intact.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Inject a frame whose terminate character is replaced by a new start character, in lane 0 and in lane 4; check the first frame&#x27;s delivered octet count and abort bit, the single strobe, and that the second frame is received intact. Then inject a start character in lane 4 of a word whose lane 0 carried a start character: check that no output word appears for the first frame, that <code>error_start_without_terminate</code> pulses exactly once, and that the second frame is received intact.</p></details>
 </article>
 <article class="req" id="REQ-111" data-b="b1">
 <div class="rhead"><span class="rid mono">REQ-111</span><span class="rtype rt-perf">PERF</span>
 <span class="rtitle">Constant receive latency</span></div>
 <p class="rbody">Measured per octet in octet times (§0.5), the receiver&#x27;s latency SHALL be a fixed constant pinned in the module spec, independent of frame length and frame content. The lane-0 and lane-4 constants are each pinned and SHALL differ by no more than 8 octet times (one cycle); the difference is the start character&#x27;s position within its word and is not a defect.</p>
-<details><summary>how it will be verified</summary><p class="rver">Per-octet latency measurement over the REQ-005 frame set at both start lanes; all values within a start lane equal the pinned constant for that lane.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Per-octet latency measurement over the REQ-005 frame set at both start lanes; all values within a start lane equal the pinned constant for that lane.</p></details>
 </article>
 <article class="req" id="REQ-112" data-b="b1">
 <div class="rhead"><span class="rid mono">REQ-112</span><span class="rtype rt-inv">INV</span>
 <span class="rtitle">No stall</span></div>
 <p class="rbody">The receiver SHALL have no <code>tready</code> input and SHALL accept an XGMII word on every cycle unconditionally.</p>
-<details><summary>how it will be verified</summary><p class="rver">Interface compile check that the <code>I</code> record contains no <code>tready</code> field, plus the REQ-004 stress as the behavioural half — word loss is the only observable failure mode and the stress bench catches it.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Interface compile check that the <code>I</code> record contains no <code>tready</code> field, plus the REQ-004 stress as the behavioural half — word loss is the only observable failure mode and the stress bench catches it.</p></details>
 </article>
 <article class="req" id="REQ-113" data-b="b1">
 <div class="rhead"><span class="rid mono">REQ-113</span><span class="rtype rt-fn">FUNC</span>
 <span class="rtitle">Ordered sets ignored</span></div>
 <p class="rbody">Sequence ordered sets and any control character other than the start character occurring <strong>outside</strong> a frame SHALL be ignored: no output word, no header effect and no strobe.</p>
-<details><summary>how it will be verified</summary><p class="rver">Drive a local-fault ordered-set sequence for 100 cycles, assert no <code>tvalid</code> and no strobe, then send a frame and compare it word for word against the same frame received after idles only.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Drive a local-fault ordered-set sequence for 100 cycles, assert no <code>tvalid</code> and no strobe, then send a frame and compare it word for word against the same frame received after idles only.</p></details>
 </article>
 <article class="req" id="REQ-201" data-b="b2">
 <div class="rhead"><span class="rid mono">REQ-201</span><span class="rtype rt-fn">FUNC</span>
 <span class="rtitle">Preamble and start lane</span></div>
 <p class="rbody">The transmitter SHALL emit a start character followed by six 0x55 octets and one 0xD5 SFD octet before the destination address, and in Phase 1 SHALL place the start character in lane 0 only.</p>
-<details><summary>how it will be verified</summary><p class="rver">Decode the XGMII output of 100 transmitted frames; every start character is in lane 0 and the eight preamble octets are exact.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Decode the XGMII output of 100 transmitted frames; every start character is in lane 0 and the eight preamble octets are exact.</p></details>
 </article>
 <article class="req" id="REQ-202" data-b="b2">
 <div class="rhead"><span class="rid mono">REQ-202</span><span class="rtype rt-fn">FUNC</span>
 <span class="rtitle">FCS generation</span></div>
 <p class="rbody">The transmitter SHALL append a four-octet CRC-32 FCS computed over the destination address through the final payload or pad octet, transmitted <strong>least significant octet first</strong> — the ordering for which REQ-304&#x27;s residue is constant.</p>
-<details><summary>how it will be verified</summary><p class="rver">Compare the four FCS octets, in wire order, octet for octet against a CRC-32 computed by the DV software reference (REQ-305) — an oracle independent of the design. Feeding the frame back through the receiver and through the REQ-304 residue check is a supplementary check only: both share the design&#x27;s own <code>Crc32_eth</code> engine, so a systematically wrong but self-consistent CRC would pass them.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Compare the four FCS octets, in wire order, octet for octet against a CRC-32 computed by the DV software reference (REQ-305) — an oracle independent of the design. Feeding the frame back through the receiver and through the REQ-304 residue check is a supplementary check only: both share the design&#x27;s own <code>Crc32_eth</code> engine, so a systematically wrong but self-consistent CRC would pass them.</p></details>
 </article>
 <article class="req" id="REQ-203" data-b="b2">
 <div class="rhead"><span class="rid mono">REQ-203</span><span class="rtype rt-fn">FUNC</span>
 <span class="rtitle">Padding</span></div>
 <p class="rbody">Frames whose destination-address-through-payload length is below 60 octets SHALL be padded with zero octets to 60 octets before the FCS is appended, producing a 64-octet frame (DA through FCS, §0.3).</p>
-<details><summary>how it will be verified</summary><p class="rver">Transmit a 20-octet payload frame; the XGMII output carries 60 octets before the FCS with zeros from octet 21 to 60, and 64 octets DA through FCS.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Transmit a 20-octet payload frame; the XGMII output carries 60 octets before the FCS with zeros from octet 21 to 60, and 64 octets DA through FCS.</p></details>
 </article>
 <article class="req" id="REQ-204" data-b="b2">
 <div class="rhead"><span class="rid mono">REQ-204</span><span class="rtype rt-fn">FUNC</span>
 <span class="rtitle">Inter-frame gap</span></div>
 <p class="rbody">Between successive frames the transmitter SHALL emit a gap of at least <code>cfg_ifg</code> octets <strong>counted from the terminate character inclusive</strong> (§0.3, default 12) and SHALL round the gap up so the next start character lands in lane 0. Deficit idle count is out of Phase-1 scope, so gaps are only ever rounded up, never shortened.</p>
-<details><summary>how it will be verified</summary><p class="rver">Transmit back-to-back minimum-length frames; measure the octet distance between successive start characters as exactly 88 octets (11 cycles) at the default gap, and the gap from the terminate character inclusive to the next start character as 16 octets, which satisfies the 12-octet minimum.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Transmit back-to-back minimum-length frames; measure the octet distance between successive start characters as exactly 88 octets (11 cycles) at the default gap, and the gap from the terminate character inclusive to the next start character as 16 octets, which satisfies the 12-octet minimum.</p></details>
 </article>
 <article class="req" id="REQ-205" data-b="b2">
 <div class="rhead"><span class="rid mono">REQ-205</span><span class="rtype rt-fn">FUNC</span>
 <span class="rtitle">Terminate and fill</span></div>
 <p class="rbody">The transmitter SHALL emit the terminate character in the lane immediately after the last FCS octet and SHALL fill all remaining lanes of that word and subsequent gap words with idle characters.</p>
-<details><summary>how it will be verified</summary><p class="rver">Frame lengths placing the terminate character in each of the eight lanes; check the control-lane encoding of the terminate word and that all subsequent lanes and gap words carry idle.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Frame lengths placing the terminate character in each of the eight lanes; check the control-lane encoding of the terminate word and that all subsequent lanes and gap words carry idle.</p></details>
 </article>
 <article class="req" id="REQ-206" data-b="b2">
 <div class="rhead"><span class="rid mono">REQ-206</span><span class="rtype rt-fn">ERR</span>
 <span class="rtitle">Underflow</span></div>
 <p class="rbody">If, on any cycle after the transmitter has emitted a frame&#x27;s start character and before it has accepted that frame&#x27;s <code>tlast</code> word, the transmitter asserts <code>tready</code>, requires a word, and no word is presented (<code>tvalid</code> = 0), the transmitter SHALL emit an error character followed by a terminate character and SHALL pulse <code>error_underflow</code> once. The threshold is that single cycle: there is no elastic buffer, and REQ-016&#x27;s idle tolerance does not extend to this interface.</p>
-<details><summary>how it will be verified</summary><p class="rver">Stall the source for exactly one required cycle mid-frame; check the error character, the terminate character and the strobe, and that the next frame transmits correctly.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Stall the source for exactly one required cycle mid-frame; check the error character, the terminate character and the strobe, and that the next frame transmits correctly.</p></details>
 </article>
 <article class="req" id="REQ-207" data-b="b2">
 <div class="rhead"><span class="rid mono">REQ-207</span><span class="rtype rt-ifc">IFC</span>
 <span class="rtitle">Transmit-side backpressure</span></div>
 <p class="rbody">The transmitter SHALL deassert <code>tready</code> whenever it cannot accept a word (during preamble, padding, FCS and inter-frame gap) and SHALL NOT drop a word it has accepted.</p>
-<details><summary>how it will be verified</summary><p class="rver">Drive a continuous source; record the sequence of words for which <code>tvalid</code> and <code>tready</code> both held; decode the wire and assert the payload octet sequence equals the accepted-word octet sequence exactly once, in order. The first clause describes an internal condition and carries no independent observable.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Drive a continuous source; record the sequence of words for which <code>tvalid</code> and <code>tready</code> both held; decode the wire and assert the payload octet sequence equals the accepted-word octet sequence exactly once, in order. The first clause describes an internal condition and carries no independent observable.</p></details>
 </article>
 <article class="req" id="REQ-208" data-b="b2">
 <div class="rhead"><span class="rid mono">REQ-208</span><span class="rtype rt-inv">INV</span>
 <span class="rtitle">Backpressure containment</span></div>
 <p class="rbody">No transmit-side condition SHALL propagate backpressure into the receive datapath. Receive-originated traffic that cannot be transmitted SHALL be discarded and reported by the strobe named in REQ-510, never queued against the receive path.</p>
-<details><summary>how it will be verified</summary><p class="rver">Hold the transmitter busy with a maximum-length frame while driving the receive path at the REQ-004 rate; check REQ-004 still holds and <code>error_arp_reply_dropped</code> fires. Reachability of the drop condition is guaranteed by REQ-510&#x27;s one-pending-reply rule.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Hold the transmitter busy with a maximum-length frame while driving the receive path at the REQ-004 rate; check REQ-004 still holds and <code>error_arp_reply_dropped</code> fires. Reachability of the drop condition is guaranteed by REQ-510&#x27;s one-pending-reply rule.</p></details>
 </article>
 <article class="req" id="REQ-209" data-b="b2">
 <div class="rhead"><span class="rid mono">REQ-209</span><span class="rtype rt-perf">PERF</span>
 <span class="rtitle">Transmit throughput</span></div>
 <p class="rbody">With the default gap the transmitter SHALL accept and transmit minimum-length frames at exactly one frame per 11 cycles, which REQ-204&#x27;s lane-0-only rounding fixes (§0.3).</p>
-<details><summary>how it will be verified</summary><p class="rver">Sustained transmit bench of 10 000 minimum-length frames; assert mean cycles per frame equals 11 and that no inter-frame spacing differs from 11.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Sustained transmit bench of 10 000 minimum-length frames; assert mean cycles per frame equals 11 and that no inter-frame spacing differs from 11.</p></details>
 </article>
 <article class="req" id="REQ-210" data-b="b2">
 <div class="rhead"><span class="rid mono">REQ-210</span><span class="rtype rt-perf">PERF</span>
 <span class="rtitle">Constant transmit latency</span></div>
 <p class="rbody">Measured per octet in octet times (§0.5), the delay from the first accepted source word to the XGMII word carrying that frame&#x27;s start character SHALL be a fixed constant pinned in the module spec, measured with the transmitter idle and REQ-204&#x27;s gap obligation already satisfied. Back-to-back transmission legitimately delays a start character until the gap is served and is out of this requirement&#x27;s domain.</p>
-<details><summary>how it will be verified</summary><p class="rver">Latency measurement over several frame lengths, each issued into an idle transmitter after the previous gap has elapsed; all values equal the pinned constant.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Latency measurement over several frame lengths, each issued into an idle transmitter after the previous gap has elapsed; all values equal the pinned constant.</p></details>
 </article>
 <article class="req" id="REQ-301" data-b="b3">
 <div class="rhead"><span class="rid mono">REQ-301</span><span class="rtype rt-fn">FUNC</span>
 <span class="rtitle">Algorithm</span></div>
 <p class="rbody">The FCS engine SHALL implement IEEE 802.3 CRC-32: polynomial 0x04C11DB7, initial value 0xFFFFFFFF, input and output reflected, final XOR 0xFFFFFFFF.</p>
-<details><summary>how it will be verified</summary><p class="rver">Known-answer tests, REQ-303 and REQ-304.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Known-answer tests, REQ-303 and REQ-304.</p></details>
 </article>
 <article class="req" id="REQ-302" data-b="b3">
 <div class="rhead"><span class="rid mono">REQ-302</span><span class="rtype rt-fn">FUNC</span>
 <span class="rtitle">Parallel update</span></div>
 <p class="rbody">The engine SHALL update the running CRC by 1 to 8 octets in a single cycle, selected by a valid-octet count, producing the same result as applying the octets one at a time.</p>
-<details><summary>how it will be verified</summary><p class="rver">Compare every octet-count variant against an octet-at-a-time software reference over 10 000 random inputs.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Compare every octet-count variant against an octet-at-a-time software reference over 10 000 random inputs.</p></details>
 </article>
 <article class="req" id="REQ-303" data-b="b3">
 <div class="rhead"><span class="rid mono">REQ-303</span><span class="rtype rt-fn">FUNC</span>
 <span class="rtitle">Check value</span></div>
 <p class="rbody">The CRC of the nine ASCII octets &quot;123456789&quot; SHALL be <strong>0xCBF43926</strong>.</p>
-<details><summary>how it will be verified</summary><p class="rver">Directed test. This is the canonical CRC-32/ISO-HDLC check value and the known-answer test that anchors the whole FCS chain; see the provenance note below.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Directed test. This is the canonical CRC-32/ISO-HDLC check value and the known-answer test that anchors the whole FCS chain; see the provenance note below.</p></details>
 </article>
 <article class="req" id="REQ-304" data-b="b3">
 <div class="rhead"><span class="rid mono">REQ-304</span><span class="rtype rt-fn">FUNC</span>
 <span class="rtitle">Residue property</span></div>
 <p class="rbody">The CRC computed over a frame concatenated with its own correct FCS, appended least significant octet first (REQ-202), SHALL equal the constant <strong>0x2144DF1C</strong> under REQ-301&#x27;s parameterisation.</p>
-<details><summary>how it will be verified</summary><p class="rver">Directed test over frames of several lengths; also used as the receiver&#x27;s FCS check oracle. See the provenance note below.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Directed test over frames of several lengths; also used as the receiver&#x27;s FCS check oracle. See the provenance note below.</p></details>
 </article>
 <article class="req" id="REQ-305" data-b="b3">
 <div class="rhead"><span class="rid mono">REQ-305</span><span class="rtype rt-fn">FUNC</span>
 <span class="rtitle">Reference equivalence</span></div>
 <p class="rbody">The parallel engine SHALL agree with a bit-serial CRC-32 reference for all octet counts over at least 10 000 randomised frames.</p>
-<details><summary>how it will be verified</summary><p class="rver">Randomised comparison test; candidate for a <code>formal_dv</code> exhaustive proof during Phase-1 hardening. This bit-serial reference is the independent oracle REQ-202 requires.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Randomised comparison test; candidate for a <code>formal_dv</code> exhaustive proof during Phase-1 hardening. This bit-serial reference is the independent oracle REQ-202 requires.</p></details>
 </article>
 <article class="req" id="REQ-306" data-b="b3">
 <div class="rhead"><span class="rid mono">REQ-306</span><span class="rtype rt-ifc">IFC</span>
 <span class="rtitle">Stateless function</span></div>
 <p class="rbody">The engine SHALL be a pure combinational function of (current CRC, data word, octet count) with no internal state; sequencing belongs to its callers.</p>
-<details><summary>how it will be verified</summary><p class="rver">Interface compile check plus a mechanical check of the emitted <code>crc32_eth</code> module: it has no <code>clock</code> port and contains no <code>always @(posedge …)</code> block.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Interface compile check plus a mechanical check of the emitted <code>crc32_eth</code> module: it has no <code>clock</code> port and contains no <code>always @(posedge …)</code> block.</p></details>
 </article>
 <article class="req" id="REQ-401" data-b="b4">
 <div class="rhead"><span class="rid mono">REQ-401</span><span class="rtype rt-fn">FUNC</span>
 <span class="rtitle">Header extraction</span></div>
 <p class="rbody">The Ethernet receiver SHALL extract destination address, source address and ethertype into a header record whose <code>valid</code> field is high for exactly one cycle per frame, on or before the cycle carrying the first payload word of that frame. For a frame of exactly 14 octets there are no payload words: <code>valid</code> SHALL assert within the module&#x27;s pinned latency of the input <code>tlast</code>, no payload frame is emitted, and downstream modules tolerate the header without a payload frame (§0.7).</p>
-<details><summary>how it will be verified</summary><p class="rver">Directed test with a known frame: fields compare equal and <code>valid</code> is high for exactly one cycle. Plus a 14-octet frame: header record valid, no payload word, no strobe, and the demux downstream still routes on the ethertype.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Directed test with a known frame: fields compare equal and <code>valid</code> is high for exactly one cycle. Plus a 14-octet frame: header record valid, no payload word, no strobe, and the demux downstream still routes on the ethertype.</p></details>
 </article>
 <article class="req" id="REQ-402" data-b="b4">
 <div class="rhead"><span class="rid mono">REQ-402</span><span class="rtype rt-fn">ERR</span>
 <span class="rtitle">Short frames</span></div>
 <p class="rbody">A frame carrying fewer than 14 octets SHALL produce no header <code>valid</code> and no payload words, and SHALL pulse <code>error_short_frame</code> once.</p>
-<details><summary>how it will be verified</summary><p class="rver">Inject 1-, 8- and 13-octet frames. One octet is the shortest frame presentable on an <code>Axi64</code> stream (REQ-011, §0.7); a 0-octet frame has no encoding and is not a test case.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Inject 1-, 8- and 13-octet frames. One octet is the shortest frame presentable on an <code>Axi64</code> stream (REQ-011, §0.7); a 0-octet frame has no encoding and is not a test case.</p></details>
 </article>
 <article class="req" id="REQ-403" data-b="b4">
 <div class="rhead"><span class="rid mono">REQ-403</span><span class="rtype rt-fn">ERR</span>
 <span class="rtitle">Abort passthrough</span></div>
 <p class="rbody">An input frame whose last word carries <code>tuser</code>[0] = 1 SHALL produce an output payload frame whose last word carries <code>tuser</code>[0] = 1, where an output payload frame is produced at all. A frame discarded under REQ-402, or one whose payload is zero octets under §0.7, produces no output frame and its strobe or header pulse is the only report (§0.6).</p>
-<details><summary>how it will be verified</summary><p class="rver">Error-injection test on a frame long enough to produce payload words, plus a 13-octet aborted frame asserting no output frame and exactly one <code>error_short_frame</code> pulse.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Error-injection test on a frame long enough to produce payload words, plus a 13-octet aborted frame asserting no output frame and exactly one <code>error_short_frame</code> pulse.</p></details>
 </article>
 <article class="req" id="REQ-404" data-b="b4">
 <div class="rhead"><span class="rid mono">REQ-404</span><span class="rtype rt-fn">FUNC</span>
 <span class="rtitle">Ethertype demultiplex</span></div>
 <p class="rbody">Ethertype 0x0800 SHALL be routed to the IPv4 port and 0x0806 to the ARP port. Any other ethertype, including 0x8100 (VLAN, unsupported in Phase 1), SHALL be discarded with a single <code>error_unknown_ethertype</code> pulse.</p>
-<details><summary>how it will be verified</summary><p class="rver">Directed frames with ethertypes 0x0800, 0x0806, 0x8100 and 0x86DD; check routing and the strobe. The demux decides from the header record before any payload word, so the discard is clean and needs no abort interaction.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Directed frames with ethertypes 0x0800, 0x0806, 0x8100 and 0x86DD; check routing and the strobe. The demux decides from the header record before any payload word, so the discard is clean and needs no abort interaction.</p></details>
 </article>
 <article class="req" id="REQ-405" data-b="b4">
 <div class="rhead"><span class="rid mono">REQ-405</span><span class="rtype rt-fn">FUNC</span>
 <span class="rtitle">Header insertion</span></div>
 <p class="rbody">The Ethernet transmitter SHALL emit the 14 header octets from the header record followed by the payload stream, preserving payload octet order.</p>
-<details><summary>how it will be verified</summary><p class="rver">Compare the built frame against a hand-assembled reference frame, octet for octet.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Compare the built frame against a hand-assembled reference frame, octet for octet.</p></details>
 </article>
 <article class="req" id="REQ-406" data-b="b4">
 <div class="rhead"><span class="rid mono">REQ-406</span><span class="rtype rt-fn">FUNC</span>
 <span class="rtitle">Frame-atomic arbitration</span></div>
 <p class="rbody">The transmit arbiter SHALL never interleave words of frames from different input ports, and a request waiting at one port SHALL be granted no later than one cycle after the <code>tlast</code> of the frame in progress.</p>
-<details><summary>how it will be verified</summary><p class="rver">Two-port bench issuing simultaneous frames with distinguishable payloads; check atomicity and measure grant delay. Which port wins a simultaneous tie is deliberately unconstrained and SHALL NOT be asserted; SPEC-M09 §6.3 records that.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Two-port bench issuing simultaneous frames with distinguishable payloads; check atomicity and measure grant delay. Which port wins a simultaneous tie is deliberately unconstrained and SHALL NOT be asserted; SPEC-M09 §6.3 records that.</p></details>
 </article>
 <article class="req" id="REQ-407" data-b="b4">
 <div class="rhead"><span class="rid mono">REQ-407</span><span class="rtype rt-fn">FUNC</span>
 <span class="rtitle">No Ethernet-layer address filtering</span></div>
 <p class="rbody">The Ethernet receive path SHALL NOT filter on destination MAC address; destination filtering is performed at the IPv4 and UDP layers (REQ-604, REQ-704).</p>
-<details><summary>how it will be verified</summary><p class="rver">Send a frame with a foreign destination MAC and a matching destination IP; it is delivered to the application.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Send a frame with a foreign destination MAC and a matching destination IP; it is delivered to the application.</p></details>
 </article>
 <article class="req" id="REQ-408" data-b="b4">
 <div class="rhead"><span class="rid mono">REQ-408</span><span class="rtype rt-fn">FUNC</span>
 <span class="rtitle">Payload extent</span></div>
 <p class="rbody">The payload stream SHALL carry every octet after the ethertype through the end of the frame, including any Ethernet padding; padding removal belongs to IPv4 (REQ-605).</p>
-<details><summary>how it will be verified</summary><p class="rver">64-octet frame (DA through FCS, §0.3) carrying a 20-octet IPv4 datagram: <code>Xgmii_rx_64</code> strips the four FCS octets, <code>Eth_axis_rx</code> sees 60 octets and strips the 14-octet header, so the Ethernet payload is <strong>46 octets</strong> — 26 of which are Ethernet padding.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">64-octet frame (DA through FCS, §0.3) carrying a 20-octet IPv4 datagram: <code>Xgmii_rx_64</code> strips the four FCS octets, <code>Eth_axis_rx</code> sees 60 octets and strips the 14-octet header, so the Ethernet payload is <strong>46 octets</strong> — 26 of which are Ethernet padding.</p></details>
 </article>
 <article class="req" id="REQ-409" data-b="b4">
 <div class="rhead"><span class="rid mono">REQ-409</span><span class="rtype rt-ifc">IFC</span>
 <span class="rtitle">Field decoding</span></div>
 <p class="rbody">Header record fields SHALL be presented as numeric values per REQ-012, including the 48-bit MAC fields, whose byte order is the case a test writer most often gets wrong.</p>
-<details><summary>how it will be verified</summary><p class="rver">Covered by REQ-401&#x27;s known-frame test, which compares a MAC field against the REQ-012 worked example.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Covered by REQ-401&#x27;s known-frame test, which compares a MAC field against the REQ-012 worked example.</p></details>
 </article>
 <article class="req" id="REQ-410" data-b="b4">
 <div class="rhead"><span class="rid mono">REQ-410</span><span class="rtype rt-perf">PERF</span>
 <span class="rtitle">Back-to-back frames</span></div>
 <p class="rbody">The Ethernet receiver SHALL accept a new frame whose first word arrives on the cycle immediately after the previous frame&#x27;s <code>tlast</code>.</p>
-<details><summary>how it will be verified</summary><p class="rver">Two frames with zero idle cycles between them; both delivered intact with correct header records.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Two frames with zero idle cycles between them; both delivered intact with correct header records.</p></details>
 </article>
 <article class="req" id="REQ-501" data-b="b5">
 <div class="rhead"><span class="rid mono">REQ-501</span><span class="rtype rt-fn">FUNC</span>
 <span class="rtitle">Packet acceptance</span></div>
 <p class="rbody">An ARP packet SHALL be accepted only when hardware type is 1, protocol type is 0x0800, hardware length is 6, protocol length is 4, the operation is 1 (request) or 2 (reply), and at least 28 octets follow the ethertype. Any other combination, including an unsupported operation and a truncated packet, SHALL be discarded with a single <code>error_arp_unsupported</code> pulse. A discarded packet SHALL NOT be learned from (REQ-503).</p>
-<details><summary>how it will be verified</summary><p class="rver">Directed packets varying each field in turn, including operations 0, 3 and 4 and a 27-octet packet; check the strobe and that no cache entry appears.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Directed packets varying each field in turn, including operations 0, 3 and 4 and a 27-octet packet; check the strobe and that no cache entry appears.</p></details>
 </article>
 <article class="req" id="REQ-502" data-b="b5">
 <div class="rhead"><span class="rid mono">REQ-502</span><span class="rtype rt-fn">FUNC</span>
 <span class="rtitle">Request response</span></div>
 <p class="rbody">An ARP request (operation 1) whose target protocol address equals the configured local IP SHALL produce an ARP reply (operation 2) whose sender hardware and protocol addresses are the configured local MAC and IP, whose <strong>target hardware address is the request&#x27;s sender hardware address</strong> and whose <strong>target protocol address is the request&#x27;s sender protocol address</strong> (RFC 826), unicast to the requester&#x27;s hardware address, transmitted within 64 cycles when the transmit path is idle.</p>
-<details><summary>how it will be verified</summary><p class="rver">Inject a request; decode the transmitted frame field by field against all six address fields; measure the response delay from the cycle carrying the request&#x27;s <strong>terminate character</strong> — its last XGMII word, the terminate character included — to the cycle carrying the reply&#x27;s start character. That is the reading SPEC-M13 §6.1&#x27;s derivation uses. The other reading of &quot;last XGMII word&quot; (the last word carrying frame octets, one cycle earlier) is one cycle longer and SHALL NOT be used interchangeably with it: a latency artifact quoting this figure states which cycle it started from (carry-forward <strong>C-23</strong>). <strong>The measured value is not single-valued and the artifact states the rule, not a number</strong>: SPEC-M13 §6.1 derives <strong>7 cycles for a request of N octets with N ≡ 0, 1, 2 (mod 8) and 8 cycles for N ≡ 3 … 7</strong>, N counted DA through FCS (§0.3), for every request length the design accepts (64 ≤ N ≤ 1518). Both values are far inside the 64-cycle bound this row asserts, so nothing here changes; what is forbidden is quoting one of them as &quot;the&quot; figure (carry-forward <strong>C-24</strong>).</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Inject a request; decode the transmitted frame field by field against all six address fields; measure the response delay from the cycle carrying the request&#x27;s <strong>terminate character</strong> — its last XGMII word, the terminate character included — to the cycle carrying the reply&#x27;s start character. That is the reading SPEC-M13 §6.1&#x27;s derivation uses. The other reading of &quot;last XGMII word&quot; (the last word carrying frame octets, one cycle earlier) is one cycle longer and SHALL NOT be used interchangeably with it: a latency artifact quoting this figure states which cycle it started from (carry-forward <strong>C-23</strong>). <strong>The measured value is not single-valued and the artifact states the rule, not a number</strong>: SPEC-M13 §6.1 derives <strong>7 cycles for a request of N octets with N ≡ 0, 1, 2 (mod 8) and 8 cycles for N ≡ 3 … 7</strong>, N counted DA through FCS (§0.3), for every request length the design accepts (64 ≤ N ≤ 1518). Both values are far inside the 64-cycle bound this row asserts, so nothing here changes; what is forbidden is quoting one of them as &quot;the&quot; figure (carry-forward <strong>C-24</strong>).</p></details>
 </article>
 <article class="req" id="REQ-503" data-b="b5">
 <div class="rhead"><span class="rid mono">REQ-503</span><span class="rtype rt-fn">FUNC</span>
 <span class="rtitle">Learning</span></div>
 <p class="rbody">The sender protocol address and sender hardware address of every ARP packet that is <strong>accepted</strong> (REQ-501) <strong>and not marked invalid</strong> (REQ-013 — <code>tuser</code>[0] = 0 on the payload <code>tlast</code> word of the frame that carried it) SHALL be written into the cache, whether or not the packet is addressed to us. A packet whose frame was marked invalid SHALL NOT be learned from and SHALL NOT be replied to (REQ-502); <strong>no strobe reports that</strong>, because the condition was detected and reported by the module that marked the frame — <code>error_bad_fcs</code> (REQ-104), <code>error_runt</code> (REQ-107), <code>error_bad_frame</code> (REQ-105), <code>error_oversize</code> (REQ-108) or <code>error_start_without_terminate</code> (REQ-110) — and §0.6 forbids re-reporting an inherited abort (ADR-0009).</p>
-<details><summary>how it will be verified</summary><p class="rver">Inject a request from a new host, then trigger a transmit to that host; no new ARP request is issued and the frame carries the learned MAC. Then inject the same request in a frame with a corrupted FCS — <code>error_bad_fcs</code> pulses at M03 and <code>tuser</code>[0] = 1 reaches the ARP branch&#x27;s payload <code>tlast</code> word — and assert that no cache entry appears, that no reply is transmitted, and that <strong>no</strong> ARP-side strobe pulses for it.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Inject a request from a new host, then trigger a transmit to that host; no new ARP request is issued and the frame carries the learned MAC. Then inject the same request in a frame with a corrupted FCS — <code>error_bad_fcs</code> pulses at M03 and <code>tuser</code>[0] = 1 reaches the ARP branch&#x27;s payload <code>tlast</code> word — and assert that no cache entry appears, that no reply is transmitted, and that <strong>no</strong> ARP-side strobe pulses for it.</p></details>
 </article>
 <article class="req" id="REQ-504" data-b="b5">
 <div class="rhead"><span class="rid mono">REQ-504</span><span class="rtype rt-fn">FUNC</span>
 <span class="rtitle">Cache organisation</span></div>
 <p class="rbody">The cache SHALL hold 16 entries, direct-mapped, indexed by the low four bits of the least significant octet of the IPv4 address; an insert into an occupied slot with a different address SHALL overwrite it.</p>
-<details><summary>how it will be verified</summary><p class="rver">Insert two addresses colliding in the index; check the first is evicted and the second resolves.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Insert two addresses colliding in the index; check the first is evicted and the second resolves.</p></details>
 </article>
 <article class="req" id="REQ-505" data-b="b5">
 <div class="rhead"><span class="rid mono">REQ-505</span><span class="rtype rt-fn">ERR</span>
 <span class="rtitle">Lookup miss</span></div>
 <p class="rbody">On a cache miss for an outgoing datagram the datagram SHALL be discarded without buffering, <code>error_arp_miss</code> SHALL pulse once, and an ARP request for the resolution target SHALL be broadcast. The transmit path SHALL continue to accept and discard the remaining payload words of that datagram, so a resolution failure never stalls the application. While a resolution for a given target address is outstanding — request sent, retry count not yet exhausted (REQ-506) — a further miss for that same address SHALL discard and pulse <code>error_arp_miss</code> without issuing an additional request.</p>
-<details><summary>how it will be verified</summary><p class="rver">Transmit to an unknown host; check the discard, the strobe, the broadcast request contents, and that every application word of the datagram is accepted rather than stalled. Then transmit 100 further datagrams to the same host within one retry interval and assert exactly one request appeared on the wire and 100 strobes pulsed.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Transmit to an unknown host; check the discard, the strobe, the broadcast request contents, and that every application word of the datagram is accepted rather than stalled. Then transmit 100 further datagrams to the same host within one retry interval and assert exactly one request appeared on the wire and 100 strobes pulsed.</p></details>
 </article>
 <article class="req" id="REQ-506" data-b="b5">
 <div class="rhead"><span class="rid mono">REQ-506</span><span class="rtype rt-fn">FUNC</span>
 <span class="rtitle">Retry and ageing</span></div>
 <p class="rbody">Unanswered requests SHALL be retried up to a configured retry count at a configured interval, and entries SHALL expire after a configured lifetime. Defaults: retry count 4 (range 0 to 15); retry interval 156 250 000 cycles, i.e. 1.0 s (range 1 to 2^32 − 1 cycles); entry lifetime 3 125 000 000 cycles, i.e. 20 s (same range). All three SHALL be compile-time parameters so tests can use short values. After the retry count is exhausted the resolution is abandoned and nothing is negatively cached: a later datagram to the same address starts a fresh request sequence.</p>
-<details><summary>how it will be verified</summary><p class="rver">Parameter-overridden test with a short interval and lifetime: count retries, check the sequence stops at the retry count, check a later datagram starts a fresh sequence, then check the entry expires after the lifetime.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Parameter-overridden test with a short interval and lifetime: count retries, check the sequence stops at the retry count, check a later datagram starts a fresh sequence, then check the entry expires after the lifetime.</p></details>
 </article>
 <article class="req" id="REQ-507" data-b="b5">
 <div class="rhead"><span class="rid mono">REQ-507</span><span class="rtype rt-fn">FUNC</span>
 <span class="rtitle">Destination class precedence and off-subnet routing</span></div>
 <p class="rbody">The resolution target for an outgoing datagram SHALL be selected by evaluating these classes in this order: limited broadcast 255.255.255.255 (REQ-508), the configured subnet broadcast address (REQ-508), multicast 224.0.0.0/4 (REQ-509), on-subnet — meaning (destination AND subnet mask) equals (local IP AND subnet mask) — which resolves through the cache, and finally off-subnet, which resolves the <strong>configured gateway address</strong> rather than the destination.</p>
-<details><summary>how it will be verified</summary><p class="rver">Transmit to one address of each class, including 255.255.255.255 and a multicast address that are both outside the configured subnet, and assert the class each is resolved under; for the off-subnet case assert the ARP request and the resulting frame&#x27;s destination MAC target the gateway.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Transmit to one address of each class, including 255.255.255.255 and a multicast address that are both outside the configured subnet, and assert the class each is resolved under; for the off-subnet case assert the ARP request and the resulting frame&#x27;s destination MAC target the gateway.</p></details>
 </article>
 <article class="req" id="REQ-508" data-b="b5">
 <div class="rhead"><span class="rid mono">REQ-508</span><span class="rtype rt-fn">FUNC</span>
 <span class="rtitle">Broadcast destinations</span></div>
 <p class="rbody">Destination 255.255.255.255 and the configured subnet broadcast address — the address formed from the local IP by setting every bit not covered by the subnet mask to 1 — SHALL resolve to MAC ff:ff:ff:ff:ff:ff without consulting the cache and without issuing a request.</p>
-<details><summary>how it will be verified</summary><p class="rver">Transmit to both; check the destination MAC and that no ARP request appears.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Transmit to both; check the destination MAC and that no ARP request appears.</p></details>
 </article>
 <article class="req" id="REQ-509" data-b="b5">
 <div class="rhead"><span class="rid mono">REQ-509</span><span class="rtype rt-fn">FUNC</span>
 <span class="rtitle">Multicast destinations</span></div>
 <p class="rbody">Destinations in 224.0.0.0/4 SHALL resolve to the MAC address formed as 01:00:5E followed by 0 and the low 23 bits of the IPv4 address, without consulting the cache and without issuing a request.</p>
-<details><summary>how it will be verified</summary><p class="rver">Transmit to 239.1.2.3 and check the destination MAC is 01:00:5E:01:02:03; transmit to 239.129.2.3, whose bit 23 is set, and check it maps to the same MAC, which is what actually exercises the 23-bit mask.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Transmit to 239.1.2.3 and check the destination MAC is 01:00:5E:01:02:03; transmit to 239.129.2.3, whose bit 23 is set, and check it maps to the same MAC, which is what actually exercises the 23-bit mask.</p></details>
 </article>
 <article class="req" id="REQ-510" data-b="b5">
 <div class="rhead"><span class="rid mono">REQ-510</span><span class="rtype rt-fn">ERR</span>
 <span class="rtitle">Reply drop over stall</span></div>
 <p class="rbody">The ARP module SHALL hold at most one pending reply. An accepted request arriving while a reply is still pending SHALL cause the newly generated reply to be discarded with a single <code>error_arp_reply_dropped</code> pulse, and SHALL NOT stall the receive path. This is the only condition under which a reply is dropped, and it is reachable by construction.</p>
-<details><summary>how it will be verified</summary><p class="rver">Hold the arbiter busy with a maximum-length frame while injecting two back-to-back ARP requests; check exactly one strobe pulse, that the first reply is transmitted once the arbiter frees, and that REQ-004 still holds throughout.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Hold the arbiter busy with a maximum-length frame while injecting two back-to-back ARP requests; check exactly one strobe pulse, that the first reply is transmitted once the arbiter frees, and that REQ-004 still holds throughout.</p></details>
 </article>
 <article class="req" id="REQ-511" data-b="b5">
 <div class="rhead"><span class="rid mono">REQ-511</span><span class="rtype rt-fn">FUNC</span>
 <span class="rtitle">Gratuitous ARP</span></div>
 <p class="rbody">A gratuitous ARP (operation 1 with target protocol address equal to sender protocol address) SHALL update the cache and SHALL produce a reply only if that address equals the configured local IP.</p>
-<details><summary>how it will be verified</summary><p class="rver">Inject gratuitous ARPs for a foreign address and for the configured local address; check cache update in both cases and a reply only in the second.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Inject gratuitous ARPs for a foreign address and for the configured local address; check cache update in both cases and a reply only in the second.</p></details>
 </article>
 <article class="req" id="REQ-512" data-b="b5">
 <div class="rhead"><span class="rid mono">REQ-512</span><span class="rtype rt-fn">FUNC</span>
 <span class="rtitle">No proxy ARP</span></div>
 <p class="rbody">Requests targeting any address other than the configured local IP SHALL NOT be answered.</p>
-<details><summary>how it will be verified</summary><p class="rver">Inject requests for three foreign addresses; no transmit activity results, though REQ-503 learning still occurs.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Inject requests for three foreign addresses; no transmit activity results, though REQ-503 learning still occurs.</p></details>
 </article>
 <article class="req" id="REQ-601" data-b="b6">
 <div class="rhead"><span class="rid mono">REQ-601</span><span class="rtype rt-fn">ERR</span>
 <span class="rtitle">Version and header length</span></div>
 <p class="rbody">Datagrams whose version is not 4 or whose header length is not 5 words (options present) SHALL be discarded with a single <code>error_ip_bad_header</code> pulse.</p>
-<details><summary>how it will be verified</summary><p class="rver">Inject version 6, header length 6 and header length 4 datagrams.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Inject version 6, header length 6 and header length 4 datagrams.</p></details>
 </article>
 <article class="req" id="REQ-602" data-b="b6">
 <div class="rhead"><span class="rid mono">REQ-602</span><span class="rtype rt-fn">ERR</span>
 <span class="rtitle">Header checksum</span></div>
 <p class="rbody">The receiver SHALL verify the IPv4 header checksum — the one&#x27;s-complement sum of the ten header halfwords per RFC 791 §3.1 — and SHALL discard a datagram whose checksum is wrong with a single <code>error_ip_bad_checksum</code> pulse.</p>
-<details><summary>how it will be verified</summary><p class="rver">Inject a datagram with one header bit flipped. This is declared divergence class (a) of REQ-901: the reference design does not verify this checksum, so the REQ is verified against the spec by directed test and co-simulation stimulus is restricted to datagrams with correct header checksums.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Inject a datagram with one header bit flipped. This is declared divergence class (a) of REQ-901: the reference design does not verify this checksum, so the REQ is verified against the spec by directed test and co-simulation stimulus is restricted to datagrams with correct header checksums.</p></details>
 </article>
 <article class="req" id="REQ-603" data-b="b6">
 <div class="rhead"><span class="rid mono">REQ-603</span><span class="rtype rt-fn">ERR</span>
 <span class="rtitle">Fragments</span></div>
 <p class="rbody">Datagrams with the more-fragments flag set or a non-zero fragment offset SHALL be discarded with a single <code>error_ip_fragment</code> pulse.</p>
-<details><summary>how it will be verified</summary><p class="rver">Inject both fragment forms. DF and the reserved bit are deliberately unconstrained.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Inject both fragment forms. DF and the reserved bit are deliberately unconstrained.</p></details>
 </article>
 <article class="req" id="REQ-604" data-b="b6">
 <div class="rhead"><span class="rid mono">REQ-604</span><span class="rtype rt-fn">FUNC</span>
 <span class="rtitle">Destination filter</span></div>
 <p class="rbody">The receiver SHALL accept datagrams whose destination is the configured local IP, the configured subnet broadcast address, 255.255.255.255, or the configured multicast group when multicast is enabled; all others SHALL be discarded with a single <code>error_ip_not_for_us</code> pulse.</p>
-<details><summary>how it will be verified</summary><p class="rver">One test per accepted case and three rejected cases, including the configured multicast group with multicast disabled.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">One test per accepted case and three rejected cases, including the configured multicast group with multicast disabled.</p></details>
 </article>
 <article class="req" id="REQ-605" data-b="b6">
 <div class="rhead"><span class="rid mono">REQ-605</span><span class="rtype rt-fn">FUNC</span>
 <span class="rtitle">Length handling</span></div>
 <p class="rbody">The receiver SHALL deliver exactly (total length − 20) payload octets, discarding any Ethernet padding beyond that. Where that count is zero (total length 20) no payload frame is emitted and the header record&#x27;s <code>valid</code> pulse is the only report (§0.7). If the frame ends before total length is satisfied, the payload&#x27;s last word SHALL carry <code>tuser</code>[0] = 1 and <code>error_ip_truncated</code> SHALL pulse once.</p>
-<details><summary>how it will be verified</summary><p class="rver">A 64-octet frame carrying a datagram of <strong>total length 28</strong>: the Ethernet payload is 46 octets (REQ-408), so 18 octets of Ethernet padding are removed and 8 payload octets are delivered — a case that actually exercises padding removal. Plus a datagram of total length 20 (header record, no payload frame) and a frame truncated 10 octets early.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">A 64-octet frame carrying a datagram of <strong>total length 28</strong>: the Ethernet payload is 46 octets (REQ-408), so 18 octets of Ethernet padding are removed and 8 payload octets are delivered — a case that actually exercises padding removal. Plus a datagram of total length 20 (header record, no payload frame) and a frame truncated 10 octets early.</p></details>
 </article>
 <article class="req" id="REQ-606" data-b="b6">
 <div class="rhead"><span class="rid mono">REQ-606</span><span class="rtype rt-fn">FUNC</span>
 <span class="rtitle">Header record</span></div>
 <p class="rbody">The receiver SHALL present source address, destination address, protocol, TTL, DSCP and total length in a header record valid for exactly one cycle, on or before the cycle carrying the first payload word.</p>
-<details><summary>how it will be verified</summary><p class="rver">Known-datagram test comparing every field and the <code>valid</code> timing.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Known-datagram test comparing every field and the <code>valid</code> timing.</p></details>
 </article>
 <article class="req" id="REQ-607" data-b="b6">
 <div class="rhead"><span class="rid mono">REQ-607</span><span class="rtype rt-fn">ERR</span>
 <span class="rtitle">Protocol filter</span></div>
 <p class="rbody">Datagrams whose protocol is not 17 (UDP) SHALL be discarded with a single <code>error_ip_bad_protocol</code> pulse. ICMP is out of Phase-1 scope.</p>
-<details><summary>how it will be verified</summary><p class="rver">Inject protocol 1 and protocol 6 datagrams. Where a datagram matches more than one discard condition, §0.6 governs which strobes pulse.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Inject protocol 1 and protocol 6 datagrams. Where a datagram matches more than one discard condition, §0.6 governs which strobes pulse.</p></details>
 </article>
 <article class="req" id="REQ-608" data-b="b6">
 <div class="rhead"><span class="rid mono">REQ-608</span><span class="rtype rt-fn">FUNC</span>
 <span class="rtitle">Header construction</span></div>
 <p class="rbody">Transmitted datagrams SHALL carry version 4, header length 5, DSCP and ECN 0, flags 0, fragment offset 0, protocol 17, TTL from configuration (default 64) and an identification field that starts at 0 after clear and increments by 1 per transmitted datagram.</p>
-<details><summary>how it will be verified</summary><p class="rver">Transmit three datagrams; decode and compare every header field, checking the identification sequence 0, 1, 2.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Transmit three datagrams; decode and compare every header field, checking the identification sequence 0, 1, 2.</p></details>
 </article>
 <article class="req" id="REQ-609" data-b="b6">
 <div class="rhead"><span class="rid mono">REQ-609</span><span class="rtype rt-fn">FUNC</span>
 <span class="rtitle">Transmit checksum</span></div>
 <p class="rbody">The transmitter SHALL compute and insert the IPv4 header checksum.</p>
-<details><summary>how it will be verified</summary><p class="rver">Verify the transmitted header against an independently computed one&#x27;s-complement checksum, and by loopback through REQ-602.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Verify the transmitted header against an independently computed one&#x27;s-complement checksum, and by loopback through REQ-602.</p></details>
 </article>
 <article class="req" id="REQ-610" data-b="b6">
 <div class="rhead"><span class="rid mono">REQ-610</span><span class="rtype rt-fn">FUNC</span>
 <span class="rtitle">Transmit length</span></div>
 <p class="rbody">Total length SHALL be the application&#x27;s <strong>payload length</strong> (REQ-705) plus 28 — 20 octets of IPv4 header plus the 8-octet UDP header plus the payload — and the UDP length field SHALL be payload length plus 8. The transmitter SHALL NOT buffer the payload to derive either.</p>
-<details><summary>how it will be verified</summary><p class="rver">Transmit datagrams of several payload lengths; check both fields against the arithmetic above, and check the no-buffering property by the invariance criterion of REQ-705.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Transmit datagrams of several payload lengths; check both fields against the arithmetic above, and check the no-buffering property by the invariance criterion of REQ-705.</p></details>
 </article>
 <article class="req" id="REQ-611" data-b="b6">
 <div class="rhead"><span class="rid mono">REQ-611</span><span class="rtype rt-perf">PERF</span>
 <span class="rtitle">Constant parse latency</span></div>
 <p class="rbody">The receiver&#x27;s header-parse latency SHALL be a fixed constant pinned in the module spec, measured from the input word carrying the first octet of the IPv4 header to the cycle on which the header record&#x27;s <code>valid</code> asserts, counted per §0.5 so that REQ-016&#x27;s permitted idle gaps do not break the constant.</p>
-<details><summary>how it will be verified</summary><p class="rver">Latency measurement over several payload lengths and both start lanes; all values equal the pinned constant.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Latency measurement over several payload lengths and both start lanes; all values equal the pinned constant.</p></details>
 </article>
 <article class="req" id="REQ-612" data-b="b6">
 <div class="rhead"><span class="rid mono">REQ-612</span><span class="rtype rt-fn">ERR</span>
 <span class="rtitle">Maximum size</span></div>
 <p class="rbody">Datagrams with total length above 1500 octets SHALL be discarded with a single <code>error_ip_oversize</code> pulse.</p>
-<details><summary>how it will be verified</summary><p class="rver">Inject a 1501-octet total-length datagram. 1500 is 1518 minus the 14-octet Ethernet header minus the 4 FCS octets (§0.3).</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Inject a 1501-octet total-length datagram. 1500 is 1518 minus the 14-octet Ethernet header minus the 4 FCS octets (§0.3).</p></details>
 </article>
 <article class="req" id="REQ-701" data-b="b7">
 <div class="rhead"><span class="rid mono">REQ-701</span><span class="rtype rt-fn">FUNC</span>
 <span class="rtitle">Header record</span></div>
 <p class="rbody">The receiver SHALL present source port, destination port, length and checksum in a header record valid for exactly one cycle, on or before the cycle carrying the first payload word.</p>
-<details><summary>how it will be verified</summary><p class="rver">Known-datagram test comparing every field and the <code>valid</code> timing.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Known-datagram test comparing every field and the <code>valid</code> timing.</p></details>
 </article>
 <article class="req" id="REQ-702" data-b="b7">
 <div class="rhead"><span class="rid mono">REQ-702</span><span class="rtype rt-fn">FUNC</span>
 <span class="rtitle">Checksum not verified</span></div>
 <p class="rbody">The receiver SHALL NOT verify the UDP checksum: a datagram with an incorrect non-zero checksum SHALL be delivered to the application unchanged. Frame integrity is covered by the Ethernet FCS (REQ-104).</p>
-<details><summary>how it will be verified</summary><p class="rver">Inject a datagram with a deliberately wrong UDP checksum; check it is delivered with no abort bit and no strobe.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Inject a datagram with a deliberately wrong UDP checksum; check it is delivered with no abort bit and no strobe.</p></details>
 </article>
 <article class="req" id="REQ-703" data-b="b7">
 <div class="rhead"><span class="rid mono">REQ-703</span><span class="rtype rt-fn">ERR</span>
 <span class="rtitle">Length checks</span></div>
 <p class="rbody">A UDP length below 8, or a length exceeding the octets the IPv4 layer delivers, SHALL cause a single <code>error_udp_bad_length</code> pulse. Where the module has already emitted a payload word for that datagram the payload frame is aborted with <code>tuser</code>[0] = 1 on its last word; where it has not — which is always the case for a length below 8 — no payload frame is emitted and the strobe is the only report (§0.6). Otherwise exactly (length − 8) payload octets SHALL be delivered, and where that count is zero (length exactly 8) no payload frame is emitted and the header record&#x27;s <code>valid</code> pulse is the only report (§0.7).</p>
-<details><summary>how it will be verified</summary><p class="rver">Inject length 0 and length 7 (no payload frame, one strobe each), length 8 (header record, no payload frame, no strobe), a length one octet longer than the IPv4 layer delivers (abort plus strobe), and three correct lengths.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Inject length 0 and length 7 (no payload frame, one strobe each), length 8 (header record, no payload frame, no strobe), a length one octet longer than the IPv4 layer delivers (abort plus strobe), and three correct lengths.</p></details>
 </article>
 <article class="req" id="REQ-704" data-b="b7">
 <div class="rhead"><span class="rid mono">REQ-704</span><span class="rtype rt-fn">FUNC</span>
 <span class="rtitle">Port filter</span></div>
 <p class="rbody">Datagrams SHALL be accepted when the destination port equals the configured listen port or when accept-all-ports is enabled; otherwise they SHALL be discarded with a single <code>error_udp_port</code> pulse.</p>
-<details><summary>how it will be verified</summary><p class="rver">Matching port, non-matching port, and non-matching port with accept-all enabled.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Matching port, non-matching port, and non-matching port with accept-all enabled.</p></details>
 </article>
 <article class="req" id="REQ-705" data-b="b7">
 <div class="rhead"><span class="rid mono">REQ-705</span><span class="rtype rt-ifc">IFC</span>
 <span class="rtitle">Transmit request form</span></div>
 <p class="rbody">The application SHALL supply destination address, destination port, source port and <strong>payload length</strong> before the first payload word, where payload length is the number of <strong>UDP payload octets</strong> it will supply, excluding the 8-octet UDP header and every lower-layer header (REQ-610). The transmit path SHALL NOT buffer the payload to derive any header field. The request handshake — how the fields are presented, how long they stay stable and how acceptance is signalled — is defined in SPEC-M18 and SPEC-M20 (§0.1).</p>
-<details><summary>how it will be verified</summary><p class="rver">Interface compile check, plus the no-buffering test stated as an <strong>invariance</strong>: the number of application words accepted before the first octet of that frame appears on the wire SHALL be the same for every payload length. That is testable at every length, including short ones, and is a strictly stronger detector of a store-and-forward FIFO than an ordering criterion, which a conformant design fails whenever the payload is short.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Interface compile check, plus the no-buffering test stated as an <strong>invariance</strong>: the number of application words accepted before the first octet of that frame appears on the wire SHALL be the same for every payload length. That is testable at every length, including short ones, and is a strictly stronger detector of a store-and-forward FIFO than an ordering criterion, which a conformant design fails whenever the payload is short.</p></details>
 </article>
 <article class="req" id="REQ-706" data-b="b7">
 <div class="rhead"><span class="rid mono">REQ-706</span><span class="rtype rt-fn">FUNC</span>
 <span class="rtitle">Transmit checksum zero</span></div>
 <p class="rbody">The transmitted UDP checksum field SHALL be 0x0000, which RFC 768 permits for IPv4.</p>
-<details><summary>how it will be verified</summary><p class="rver">Decode transmitted datagrams; the field is zero.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Decode transmitted datagrams; the field is zero.</p></details>
 </article>
 <article class="req" id="REQ-707" data-b="b7">
 <div class="rhead"><span class="rid mono">REQ-707</span><span class="rtype rt-ifc">IFC</span>
 <span class="rtitle">Application receive stream</span></div>
 <p class="rbody">The application receive stream SHALL carry UDP payload octets only, word-aligned per REQ-021, with <code>tuser</code>[0] propagated per REQ-007, and SHALL have no <code>tready</code>. A datagram with zero payload octets appears as a UDP header record with no payload frame (§0.7).</p>
-<details><summary>how it will be verified</summary><p class="rver">Interface compile check for the absence of <code>tready</code>, plus an end-to-end payload comparison at the application boundary with <code>tuser</code>[0] propagation checked against an injected bad-FCS frame <strong>whose datagram is carried by both marking stages</strong> — the bit reaches the application iff M14 and M17 can each carry it, so the propagation frame is one with <strong>no Ethernet padding and an exactly-declaring UDP length</strong>: SPEC-M14 §8&#x27;s own 64-octet frame, IPv4 total length 46 and UDP length 26, gives D = −1 at M14 and D = 0 at M17 and the mark survives. A padded or under-declaring datagram reaches the application with <code>tuser</code>[0] = <strong>0</strong> by ADR-0012 and SPEC-M17 §6.2, so a system bench asserting propagation on one of those fails a conformant NIC (ledger <strong>C-41</strong>); the complementary assertion — the bit read as 0, with the loss attributed at the module that could not carry it — is the one that class commissions. Plus one zero-payload datagram asserting header record and no payload word.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Interface compile check for the absence of <code>tready</code>, plus an end-to-end payload comparison at the application boundary with <code>tuser</code>[0] propagation checked against an injected bad-FCS frame <strong>whose datagram is carried by both marking stages</strong> — the bit reaches the application iff M14 and M17 can each carry it, so the propagation frame is one with <strong>no Ethernet padding and an exactly-declaring UDP length</strong>: SPEC-M14 §8&#x27;s own 64-octet frame, IPv4 total length 46 and UDP length 26, gives D = −1 at M14 and D = 0 at M17 and the mark survives. A padded or under-declaring datagram reaches the application with <code>tuser</code>[0] = <strong>0</strong> by ADR-0012 and SPEC-M17 §6.2, so a system bench asserting propagation on one of those fails a conformant NIC (ledger <strong>C-41</strong>); the complementary assertion — the bit read as 0, with the loss attributed at the module that could not carry it — is the one that class commissions. Plus one zero-payload datagram asserting header record and no payload word.</p></details>
 </article>
 <article class="req" id="REQ-708" data-b="b7">
 <div class="rhead"><span class="rid mono">REQ-708</span><span class="rtype rt-perf">PERF</span>
 <span class="rtitle">Application-boundary line rate</span></div>
 <p class="rbody">The application receive stream SHALL deliver, without loss, the datagrams produced by minimum-length (64-octet) Ethernet frames arriving at the REQ-004 rate: each frame carries an IPv4 datagram of total length 46 and a UDP datagram of length 26, i.e. <strong>18 octets of UDP payload</strong> — the largest UDP payload a minimum-length frame carries with no Ethernet padding, leaving room for REQ-020&#x27;s four-octet sequence number.</p>
-<details><summary>how it will be verified</summary><p class="rver">End-to-end line-rate stress at <code>nic_top</code> with that exact stimulus and sequence-numbered payloads; 10 000 frames, frame conservation and order preservation checked per §0.6 and REQ-020.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">End-to-end line-rate stress at <code>nic_top</code> with that exact stimulus and sequence-numbered payloads; 10 000 frames, frame conservation and order preservation checked per §0.6 and REQ-020.</p></details>
 </article>
 <article class="req" id="REQ-709" data-b="b7">
 <div class="rhead"><span class="rid mono">REQ-709</span><span class="rtype rt-fn">ERR</span>
 <span class="rtitle">Under-delivery of a declared length</span></div>
 <p class="rbody">If the application delivers <strong>fewer</strong> payload octets than it declared (REQ-705) — signalled by <code>tlast</code> before the declared count is reached — the transmit path SHALL terminate the frame per REQ-206, emitting an error character followed by a terminate character, and SHALL pulse both <code>error_underflow</code> (REQ-206) and <code>error_tx_length_mismatch</code> once.</p>
-<details><summary>how it will be verified</summary><p class="rver">Declare 100 octets and supply 90; check the wire encoding and both strobes — which pulse at <strong>different modules a few cycles apart</strong> and whose separation is not pinned, so a bench asserts one pulse of each and nothing about their relative timing (SPEC-M18 §9, SPEC-M04 §9). <strong>Then assert <code>clear</code></strong>, and only then check that the next frame transmits correctly: an under-delivered frame leaves the transmit path holding a frame that is never terminated, and <code>clear</code> is its specified recovery (REQ-009, <strong>ADR-0011</strong>, SPEC-M18 §6.2&#x27;s <code>Short</code> state). Without the <code>clear</code> this column would commission a test no conformant design passes.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Declare 100 octets and supply 90; check the wire encoding and both strobes — which pulse at <strong>different modules a few cycles apart</strong> and whose separation is not pinned, so a bench asserts one pulse of each and nothing about their relative timing (SPEC-M18 §9, SPEC-M04 §9). <strong>Then assert <code>clear</code></strong>, and only then check that the next frame transmits correctly: an under-delivered frame leaves the transmit path holding a frame that is never terminated, and <code>clear</code> is its specified recovery (REQ-009, <strong>ADR-0011</strong>, SPEC-M18 §6.2&#x27;s <code>Short</code> state). Without the <code>clear</code> this column would commission a test no conformant design passes.</p></details>
 </article>
 <article class="req" id="REQ-710" data-b="b7">
 <div class="rhead"><span class="rid mono">REQ-710</span><span class="rtype rt-fn">ERR</span>
 <span class="rtitle">Over-delivery of a declared length</span></div>
 <p class="rbody">If the application delivers <strong>more</strong> payload octets than it declared, the transmit path SHALL complete the frame normally with exactly the declared octet count — the frame on the wire is well formed, its FCS is valid and its terminate character has already been sent, so REQ-206&#x27;s remedy cannot apply — SHALL discard the excess words while continuing to accept them so the application is never stalled, and SHALL pulse <code>error_tx_length_mismatch</code> once. <code>error_underflow</code> SHALL NOT pulse.</p>
-<details><summary>how it will be verified</summary><p class="rver">Declare 100 octets and supply 110; check the wire frame carries exactly 100 payload octets with a valid FCS, that the ten excess <strong>octets — ten octets in two application words and not ten words</strong>, because the word carrying declared octets 97–100 also carries excess octets 101–104 (SPEC-M18 §8 item 4 derives it) — are accepted and discarded, that <code>error_tx_length_mismatch</code> pulses once and <code>error_underflow</code> does not, and that the next frame transmits correctly.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Declare 100 octets and supply 110; check the wire frame carries exactly 100 payload octets with a valid FCS, that the ten excess <strong>octets — ten octets in two application words and not ten words</strong>, because the word carrying declared octets 97–100 also carries excess octets 101–104 (SPEC-M18 §8 item 4 derives it) — are accepted and discarded, that <code>error_tx_length_mismatch</code> pulses once and <code>error_underflow</code> does not, and that the next frame transmits correctly.</p></details>
 </article>
 <article class="req" id="REQ-801" data-b="b8">
 <div class="rhead"><span class="rid mono">REQ-801</span><span class="rtype rt-ifc">IFC</span>
 <span class="rtitle">Top-level ports</span></div>
 <p class="rbody"><code>Nic_top</code> SHALL expose exactly: <code>clock</code>, <code>clear</code>, the four XGMII ports of REQ-017, a configuration record, an application receive stream (<code>Source</code> only), an application transmit stream (<code>Source</code> and <code>Dest</code>) with its request fields, and a status record.</p>
-<details><summary>how it will be verified</summary><p class="rver">Interface compile check plus the emitted-Verilog port-list check of REQ-017 against SPEC-M20 §4.1.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Interface compile check plus the emitted-Verilog port-list check of REQ-017 against SPEC-M20 §4.1.</p></details>
 </article>
 <article class="req" id="REQ-802" data-b="b8">
 <div class="rhead"><span class="rid mono">REQ-802</span><span class="rtype rt-ifc">IFC</span>
 <span class="rtitle">Configuration record</span></div>
 <p class="rbody">Configuration SHALL carry exactly the twelve fields of §9.1, at the widths, reset values and permitted ranges stated there. A value outside a field&#x27;s permitted range is a configuration error and its behaviour is unspecified; <code>cfg_ifg</code> below 12 SHALL NOT be driven.</p>
-<details><summary>how it will be verified</summary><p class="rver">Interface compile check of the record against §9.1. Each field&#x27;s observable effect is verified by the REQ named in §9.1&#x27;s last column, so this row commissions no test it cannot name.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Interface compile check of the record against §9.1. Each field&#x27;s observable effect is verified by the REQ named in §9.1&#x27;s last column, so this row commissions no test it cannot name.</p></details>
 </article>
 <article class="req" id="REQ-803" data-b="b8">
 <div class="rhead"><span class="rid mono">REQ-803</span><span class="rtype rt-ifc">IFC</span>
 <span class="rtitle">Configuration stability</span></div>
 <p class="rbody">Configuration inputs SHALL be treated as static while a frame is in flight. Receive and transmit are evaluated <strong>independently</strong>: a configuration change applies to every frame whose first word is accepted at least one cycle after the change, on each path separately, and never to a frame already in flight on that path.</p>
-<details><summary>how it will be verified</summary><p class="rver">Change the local IP mid-frame on the receive path and again mid-frame on the transmit path; each in-flight frame completes under the old value and the next frame on that path uses the new one.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Change the local IP mid-frame on the receive path and again mid-frame on the transmit path; each in-flight frame completes under the old value and the next frame on that path uses the new one.</p></details>
 </article>
 <article class="req" id="REQ-804" data-b="b8">
 <div class="rhead"><span class="rid mono">REQ-804</span><span class="rtype rt-fn">ERR</span>
 <span class="rtitle">Status aggregation</span></div>
 <p class="rbody">Every strobe in §12 SHALL appear in the top-level status record, one field per strobe, one cycle high per event.</p>
-<details><summary>how it will be verified</summary><p class="rver">For each of the twenty-one strobes in §12, drive its condition at the top level and observe exactly that field pulse for exactly one cycle. §12 is the field list.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">For each of the twenty-one strobes in §12, drive its condition at the top level and observe exactly that field pulse for exactly one cycle. §12 is the field list.</p></details>
 </article>
 <article class="req" id="REQ-805" data-b="b8">
 <div class="rhead"><span class="rid mono">REQ-805</span><span class="rtype rt-inv">INV</span>
 <span class="rtitle">Application must keep up</span></div>
 <p class="rbody">The application receive stream SHALL have no <code>tready</code>; the consumer is required to accept one word per cycle indefinitely.</p>
-<details><summary>how it will be verified</summary><p class="rver">Interface compile check. The second sentence is an obligation on the Phase-2 feed handler and has no Phase-1 observable, which is stated rather than pretended away.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Interface compile check. The second sentence is an obligation on the Phase-2 feed handler and has no Phase-1 observable, which is stated rather than pretended away.</p></details>
 </article>
 <article class="req" id="REQ-806" data-b="b8">
 <div class="rhead"><span class="rid mono">REQ-806</span><span class="rtype rt-perf">PERF</span>
 <span class="rtitle">End-to-end latency measurement</span></div>
 <p class="rbody">The measured latency of REQ-006 SHALL be reported in cycles and in nanoseconds, for each start lane, in the <code>nic_top</code> spec freeze record and in the Phase-1 report.</p>
-<details><summary>how it will be verified</summary><p class="rver">Process check: the numbers produced by the REQ-006 bench appear in both places. dv_lead produces and commits the numbers under <code>docs/reports/latency/</code>; the architect transcribes them into the freeze record.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Process check: the numbers produced by the REQ-006 bench appear in both places. dv_lead produces and commits the numbers under <code>docs/reports/latency/</code>; the architect transcribes them into the freeze record.</p></details>
 </article>
 <article class="req" id="REQ-807" data-b="b8">
 <div class="rhead"><span class="rid mono">REQ-807</span><span class="rtype rt-fn">FUNC</span>
 <span class="rtitle">ARP connectivity</span></div>
 <p class="rbody">An ARP request for the configured local IP arriving on XGMII SHALL result in a well-formed ARP reply on XGMII, with correct preamble, every ARP field per REQ-502, valid FCS and a conforming inter-frame gap (§0.3).</p>
-<details><summary>how it will be verified</summary><p class="rver">System-level test decoding the XGMII output and validating preamble, all six ARP address fields, FCS and gap.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">System-level test decoding the XGMII output and validating preamble, all six ARP address fields, FCS and gap.</p></details>
 </article>
 <article class="req" id="REQ-808" data-b="b8">
 <div class="rhead"><span class="rid mono">REQ-808</span><span class="rtype rt-proc">PROC</span>
 <span class="rtitle">Hierarchy and naming</span></div>
 <p class="rbody">Every module named in the architecture.md §4 inventory <strong>whose role is not types-only</strong> SHALL appear as a distinct module in the emitted Verilog, with the name given in the inventory table. M01 <code>Axi64</code> is types-only and appears in port records rather than in the instance hierarchy (architecture.md §6.3), so it is excluded.</p>
-<details><summary>how it will be verified</summary><p class="rver">Compare module names in <code>rtl_snapshots/</code> against the inventory table with M01 excluded.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Compare module names in <code>rtl_snapshots/</code> against the inventory table with M01 excluded.</p></details>
 </article>
 <article class="req" id="REQ-809" data-b="b8">
 <div class="rhead"><span class="rid mono">REQ-809</span><span class="rtype rt-fn">FUNC</span>
 <span class="rtitle">End-to-end datagram path</span></div>
 <p class="rbody">A UDP datagram addressed to the configured local IP and listen port SHALL appear on the application receive stream as its payload octets, and an application transmit request SHALL appear on XGMII as a well-formed Ethernet/IPv4/UDP frame with a valid FCS.</p>
-<details><summary>how it will be verified</summary><p class="rver">System-level test in both directions with payload comparison. The transmit direction primes the ARP cache first (REQ-503), or REQ-505 discards the datagram.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">System-level test in both directions with payload comparison. The transmit direction primes the ARP cache first (REQ-503), or REQ-505 discards the datagram.</p></details>
 </article>
 <article class="req" id="REQ-810" data-b="b8">
 <div class="rhead"><span class="rid mono">REQ-810</span><span class="rtype rt-fn">FUNC</span>
 <span class="rtitle">Enable controls</span></div>
 <p class="rbody">When <code>receive enable</code> is 0 the receive path SHALL accept no frame: <strong>for every frame it refuses</strong> it emits no output word on any receive-path stream, asserts no header-record <code>valid</code> and asserts no strobe — no frame is accepted, so this creates no silent-discard hole under REQ-008. <strong>An enable controls admission, not the wire</strong>: a frame already in flight when the enable goes to 0 was admitted under the old value, and REQ-803 governs it — it completes under <strong>every</strong> rule that ends it, including a new start character (REQ-110), so its remaining words and its own strobe are emitted while the enable is 0 and belong to it. Reading the three prohibitions above as unscoped would suppress that frame&#x27;s completion and create exactly the silent-discard hole this row disclaims (<strong>ADR-0014</strong>; SPEC-M03 §4.3 states the receive instance, and the transmit instance is ledger C-36&#x27;s). When <code>transmit enable</code> is 0 the transmitter SHALL begin no new frame on XGMII: it emits only idle characters and holds <code>tready</code> deasserted at the application transmit interface. An ARP reply generated meanwhile is governed by REQ-510 and not by this requirement: the <strong>first</strong> such reply is held pending and is transmitted, late, once transmit is re-enabled, and every reply generated while it is still pending is dropped with <code>error_arp_reply_dropped</code>. Both take effect at the next frame boundary on their own path (REQ-803).</p>
-<details><summary>how it will be verified</summary><p class="rver">Drive <code>receive enable</code> = 0 <strong>with no frame in flight</strong> and inject 100 frames: assert no output word, no header <code>valid</code> and no strobe anywhere; re-enable and check the next frame is received correctly. The no-frame-in-flight scope is the one this row&#x27;s own admission clause creates: a frame admitted before the change completes and emits its own strobe while the enable is 0, so &quot;no strobe anywhere&quot; is an assertion about the refused frames only. The mid-frame case is commissioned where it is already stated — SPEC-M03 §10&#x27;s REQ-802/REQ-810 hook, which enumerates both. Drive <code>transmit enable</code> = 0 and issue an application transmit request: assert no start character appears on XGMII and <code>tready</code> stays low; re-enable and check the frame transmits.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Drive <code>receive enable</code> = 0 <strong>with no frame in flight</strong> and inject 100 frames: assert no output word, no header <code>valid</code> and no strobe anywhere; re-enable and check the next frame is received correctly. The no-frame-in-flight scope is the one this row&#x27;s own admission clause creates: a frame admitted before the change completes and emits its own strobe while the enable is 0, so &quot;no strobe anywhere&quot; is an assertion about the refused frames only. The mid-frame case is commissioned where it is already stated — SPEC-M03 §10&#x27;s REQ-802/REQ-810 hook, which enumerates both. Drive <code>transmit enable</code> = 0 and issue an application transmit request: assert no start character appears on XGMII and <code>tready</code> stays low; re-enable and check the frame transmits.</p></details>
 </article>
 <article class="req" id="REQ-901" data-b="b9">
 <div class="rhead"><span class="rid mono">REQ-901</span><span class="rtype rt-proc">PROC</span>
 <span class="rtitle">Differential co-simulation</span></div>
 <p class="rbody">Phase-1 MAC, IPv4 and UDP paths SHALL be differentially co-simulated against alexforencich/verilog-ethernet (MIT) configured with deficit idle count disabled, padding enabled, minimum frame length 64, PTP disabled and transmit checksum generation disabled. The comparison SHALL be <strong>transactional, not cycle-by-cycle</strong>: for the same stimulus the two designs SHALL produce the same ordered sequence of output frames — payload octets, the <code>tkeep</code> extent of each word, and <code>tuser</code>[0] on each <code>tlast</code> — and the same accept-or-discard decision per input frame. Cycle alignment, internal pipelining and latency constants are deliberately not compared: ours are pinned by REQ-005 and REQ-111, the reference&#x27;s are its own. The comparison boundaries are the module pairs in architecture.md §4&#x27;s counterpart column; where §5 records a merged wrapper level the comparison is taken at the outer wrapper. Four divergence classes are declared in advance, are expected by design, and are excluded from the comparison rather than reported as failures: (a) IPv4 header checksum verification, which the reference does not perform (REQ-602), so co-simulation stimulus is restricted to datagrams with correct header checksums; (b) the direct-mapped ARP cache versus the reference&#x27;s LRU (REQ-504), so eviction order is not compared; (c) discard-on-miss versus the reference&#x27;s queued resolution (REQ-505), so transmit behaviour after a cache miss is not compared; (d) the zero UDP transmit checksum (REQ-706), so that field is not compared. Any divergence outside these four classes is a defect. A divergence class discovered later SHALL be added here by spec diff before any sign-off packet may cite it.</p>
-<details><summary>how it will be verified</summary><p class="rver">dv_lead co-simulation run cited in the module sign-off packets, reporting per boundary: frames compared, frames matching, and every divergence with the class it falls in or the defect it is.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">dv_lead co-simulation run cited in the module sign-off packets, reporting per boundary: frames compared, frames matching, and every divergence with the class it falls in or the defect it is.</p></details>
 </article>
 <article class="req" id="REQ-902" data-b="b9">
 <div class="rhead"><span class="rid mono">REQ-902</span><span class="rtype rt-proc">PROC</span>
 <span class="rtitle">Deterministic emission</span></div>
 <p class="rbody">Regenerating the RTL snapshots from unchanged sources SHALL produce byte-identical files.</p>
-<details><summary>how it will be verified</summary><p class="rver">The existing <code>build</code> workflow determinism step.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">The existing <code>build</code> workflow determinism step.</p></details>
 </article>
 <article class="req" id="REQ-903" data-b="b9">
 <div class="rhead"><span class="rid mono">REQ-903</span><span class="rtype rt-proc">PROC</span>
 <span class="rtitle">Module surface</span></div>
 <p class="rbody">Every module in the architecture.md §4 inventory SHALL have an <code>.mli</code>. Every such module <strong>whose role is not types-only</strong> SHALL additionally have a <code>hierarchical</code> entry point taking a <code>Scope.t</code>. M01 <code>Axi64</code> is the only types-only module: it instantiates nothing and appears in no instance hierarchy (architecture.md §6.3), so it owes the <code>.mli</code> and not the entry point — the same exclusion REQ-808 makes for the emitted-Verilog module list, now stated for this requirement in its own words rather than borrowed from that one. The <code>.mli</code> half is <strong>not</strong> waived for M01: that file is what fixes which of M01&#x27;s records are exported and at what widths, which is the surface every other module&#x27;s REQ-010 compile check binds to.</p>
-<details><summary>how it will be verified</summary><p class="rver">Mechanical repository check at each module-ready gate, in two parts: (a) an <code>.mli</code> exists for every inventory module, M01 included; (b) <code>hierarchical</code> is exported by every inventory module except M01. Part (b)&#x27;s exclusion list is one name and is stated here so the check has a determinable answer rather than an argument.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Mechanical repository check at each module-ready gate, in two parts: (a) an <code>.mli</code> exists for every inventory module, M01 included; (b) <code>hierarchical</code> is exported by every inventory module except M01. Part (b)&#x27;s exclusion list is one name and is stated here so the check has a determinable answer rather than an argument.</p></details>
 </article>
 <article class="req" id="REQ-904" data-b="b9">
 <div class="rhead"><span class="rid mono">REQ-904</span><span class="rtype rt-proc">PROC</span>
 <span class="rtitle">Traceability currency</span></div>
 <p class="rbody">Every REQ in this document SHALL have a row in <code>traceability.md</code> before its owning module&#x27;s <code>P1-module-ready</code> gate.</p>
-<details><summary>how it will be verified</summary><p class="rver">A script comparing the REQ id set extracted from this file against the row id set of <code>traceability.md</code> and asserting exact set equality, run in CI so currency is continuous rather than checked once per gate.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">A script comparing the REQ id set extracted from this file against the row id set of <code>traceability.md</code> and asserting exact set equality, run in CI so currency is continuous rather than checked once per gate.</p></details>
 </article>
 <article class="req" id="REQ-905" data-b="b9">
 <div class="rhead"><span class="rid mono">REQ-905</span><span class="rtype rt-proc">PROC</span>
 <span class="rtitle">Per-module stress</span></div>
 <p class="rbody">Every module in §0.4&#x27;s stress-bench list — M03, M06, M08, M10, M14, M17 and M20 — SHALL have its own line-rate stress bench satisfying REQ-004, not only the top level. Structural wrappers M05, M16 and M19 are covered by their children&#x27;s benches unless the wrapper introduces datapath logic of its own, which puts it on the list by spec diff.</p>
-<details><summary>how it will be verified</summary><p class="rver">Sign-off packets list the stress test per module against that enumeration, so the gate question has a checkable answer.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Sign-off packets list the stress test per module against that enumeration, so the gate question has a checkable answer.</p></details>
 </article>
 <article class="req" id="REQ-906" data-b="b9">
 <div class="rhead"><span class="rid mono">REQ-906</span><span class="rtype rt-proc">PROC</span>
 <span class="rtitle">Evidence form</span></div>
 <p class="rbody">All Phase-1 build and test evidence SHALL cite a CI run identifier and conclusion, per ADR-0005; a local build result is not acceptable evidence.</p>
-<details><summary>how it will be verified</summary><p class="rver">Auditor sampling of journal Evidence sections.</p></details>
+<details><summary>How it will be verified</summary><p class="rver">Auditor sampling of journal Evidence sections.</p></details>
 </article>
 </section>
 
