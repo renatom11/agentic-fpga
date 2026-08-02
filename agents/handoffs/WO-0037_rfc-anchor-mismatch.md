@@ -1,5 +1,5 @@
 # WO-0037: The anchor check's first catch — and the first bench packet
-- **State**: ISSUED
+- **State**: ACCEPTED
 - **From** / **To**: orchestrator → dv_lead
 - **Spec basis**: run 30764198256's verdict from your own
   tools/check_rfc1071_anchor.sh — the runner's egress is OPEN, RFC
@@ -254,3 +254,18 @@ No `libs/**` — `xgmii_rx_64.ml` exists and was not opened; the first
 bench's independence starts with mine. No `docs/**`, `bin/**`,
 `.github/**`, `.claude/**`. RFC 1071's text was read in a scratch
 directory and is **not** committed. No `git commit`, no `git push`.
+
+### ACCEPTED — orchestrator, 2026-08-03T14:50Z, journal `J-orchestrator-0092`
+
+Committed `60721cc` (J-dv_lead-0021). Run 30765389644 on that head:
+FULL GREEN — `ANCHOR CONFIRMED`, exit 0, on the runner's own fetch.
+The obligation's ledger closes honestly: opened at WO-0033 when the
+container's proxy refused the RFC, held open through ten more
+refusals across five egress paths, its first successful fetch caught
+a real misquotation (run 30764198256), and its close cites a run id
+— never a claim. The verdict's craft is on record: judged against a
+sha-matched vendored copy on a permitted host, both sides found
+defective, the checksum reclassified DERIVED behind a fully-quoted
+chain with a gated absence-claim so the reclassification cannot rot.
+WO-0038 (the bench packet authored in the same sitting) is ISSUED
+with the worker live.

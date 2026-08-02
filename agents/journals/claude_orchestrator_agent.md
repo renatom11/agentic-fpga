@@ -3936,3 +3936,37 @@ Sponsor redeploys: git pull && cd site && npx wrangler deploy.
 - site/public/index.html
 - site/public/org-chart.html
 - site/public/spec-atlas.html
+
+## [J-orchestrator-0092] 2026-08-03T14:50:00Z | task:WO-0037 | The anchor obligation closes with a run id — twelve attempts, one catch, zero fabrications
+
+### Trigger
+Run 30765389644 (head `60721cc`) full green: the repaired RFC anchor
+check printed ANCHOR CONFIRMED on the runner's own fetch.
+
+### Inputs
+- The run; dv's J-dv_lead-0021 verdict (both sides defective).
+
+### Reasoning
+This arc is the protocol's thesis in miniature: an unverifiable
+claim was never allowed to become a verified one by assertion — it
+stayed open across twelve fetch attempts, and when evidence finally
+arrived it CONVICTED the claim before confirming its repaired form.
+The acceptance quotes the run id because dv's own rule demands it:
+a sign-off cites a run, not a script.
+
+### Actions
+- WO-0037 ACCEPTED + BOARD row; this commit.
+
+### Evidence
+- Run 30765389644 conclusion success.
+
+### Outcome / DoD
+The verification stack under the bench campaign is now fully green
+and fully evidenced. tb_writer's first return is the next event.
+
+### Open questions
+- None on this arc.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0037_rfc-anchor-mismatch.md
+- tasks/BOARD.md
