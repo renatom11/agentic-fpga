@@ -6198,3 +6198,365 @@ one line that broke was a removal I did not finish.
 ### Files-in-this-commit
 - agents/handoffs/WO-0033_dv-machinery.md
 - test/xgmii/injection.ml
+
+## [J-dv_lead-0019] 2026-08-03T12:40Z | task:WO-0034 | The scratch harness committed and made stricter: testing it found two ways it was more permissive than dune; the RFC 1071 check ships with teeth it can prove and an obligation it refuses to close
+
+### Trigger
+Orchestrator, WO-0034 — my own `J-dv_lead-0018` Open-questions ask granted:
+commit the three-lane type-check harness under `tools/` where the auditor can
+re-execute it, wire it in, and close the RFC 1071 anchor obligation from CI.
+Spawn id `WO-0034/2026-08-03T10:05Z`.
+
+### Inputs
+- `agents/handoffs/WO-0034_compile-harness.md` (the work order).
+- `agents/handoffs/WO-0033_dv-machinery.md` — my own Return log §3 (the anchor,
+  named and not discharged) and the ADDENDUM §2 (the scratch harness's three
+  lanes, the description I was to reconstruct from), plus the orchestrator's
+  ACCEPTED block recording its own three 403s.
+- `agents/journals/claude_dv_lead_agent.md` tail — `J-dv_lead-0017` Evidence
+  item 7, `J-dv_lead-0018` Evidence items 3 and 6.
+- `agents/charters/dv_lead.md`, `agents/PROTOCOL.md` §3, §6, §10.
+- `tools/dv_checks.sh` (mine, edited), `tools/check_emitted_verilog.sh` (read
+  only, for its `--self-test` convention), `.github/workflows/build.yml` (read
+  only — not mine to stage; I needed to know whether `dv_checks.sh` is already
+  a step, and it is).
+- `test/**` — the DV tree the harness compiles: the five library `dune` files,
+  `test/xgmii_probe/xgmii_probe.ml`, `test/axi64_probe/{axi64_probe,axi64_driver}.ml`
+  and their tests, `test/golden/ipv4_ref.ml` (the three constants and the
+  §7(d) anchor paragraph). All my own files.
+- `docs/specs/ifc_check/axi64_ifc.ml` — SPEC-M01 §4.1's committed lift, the
+  source the `ifc_check` stub transcribes and lane 2b re-checks against.
+- **hardcaml v0.17.1's own sources**, unpacked in the opam switch at
+  `.opam-switch/sources/hardcaml/` — `src/comb_intf.ml`, `src/bits_intf.ml`,
+  `src/signal_intf.ml`, `src/interface_intf.ml`, `hardcaml.opam`, `ppx/src/dune`.
+  An external MIT library, not this programme's design.
+- **No `libs/**` at any point.** `libs/hardcaml_ethernet/src/xgmii_rx_64.ml` was
+  sitting modified in the working tree while I worked and I did not open it:
+  M03's benches are unwritten and PROTOCOL §10 governs. No RTL was read.
+
+### Reasoning
+
+**What I was asked to do, and the thing I decided not to do.** The work order
+said "reconstruct". The honest reading of that word, given `J-dv_lead-0018`, is
+not "retype the scratch script" — it is "produce the instrument that scratch
+script was trying to be, and this time find out whether it works instead of
+describing it". The scratch harness's whole claim was *35 of 35 modules
+compile, therefore there are no more defects of that class*. That is a
+universal, and I have now been caught asserting universals over evidence that
+does not support them four times (C-44, the WO-0031 prose, C-48, the WO-0033
+build prediction). So the first question I put to the reconstruction was not
+"does it compile the tree" but **"can I make it pass something dune would
+reject?"** — because that, not the module count, is what its claim rests on.
+
+I could. Twice.
+
+**Defect A — the flat include path.** The scratch harness compiled every
+library into one directory with `ocamlc -I`. dune does not do that: it compiles
+module `Foo` of library `L` as the unit `L__Foo`, generates an alias module
+`L__` and opens it into every unit, and exposes exactly one module `L` outward.
+Under a flat `-I`, `Strobes.all` resolves from *any* library; under dune it
+resolves only inside `dv_monitors`. `J-dv_lead-0018` knew this — it is why
+lane 3 was a grep — but a grep over comment-stripped text is an approximation
+of a rule the compiler can enforce exactly. The fix is to replicate dune:
+mangle the unit names, generate the alias module, compile with
+`-open Dv_monitors__ -no-alias-deps`. Now an unqualified sibling reference is
+`Unbound module` here for the same reason it is under dune, and lane 3b's grep
+becomes the independent second opinion rather than the only one.
+
+**Defect B — the one I did not predict, and the reason I keep testing
+instruments instead of reviewing them.** I wrote a two-line synthetic library
+whose `dune` declares *no* dependencies and whose single file says
+`Dv_monitors.Strobes.all`. dune rejects that: you may not use a library you did
+not list in `(libraries …)`. My harness compiled it clean, because everything
+still shared one build directory even after the mangling fix. So the harness
+would have blessed a `dune` file that CI reddens — and the failure mode is
+nasty, because it is *correct OCaml with a wrong dune file*, which is exactly
+the shape a new library lands in. The fix is per-library build directories with
+an include path of the library's own directory plus its **declared**
+dependencies and nothing else.
+
+I want to be precise about how I found B, because it is the transferable part.
+I did not find it by re-reading the script; I had already re-read it and
+thought it faithful. I found it by writing the smallest input that *should*
+fail and watching it not. That is the same move as the charter's spot-check
+rule for worker benches — hand-mutate the thing under test and confirm the
+bench fails — applied to my own tooling instead of someone else's. My standing
+failure mode is confident prose with no executable partner; the durable
+counter-move is not "be more careful", it is "make the instrument prove it can
+fail before reading anything green off it".
+
+So `--self-test` seeds three defects and requires all three: an unbound value
+(the `injection.ml:380` class this harness exists for), an unqualified
+reference to a **declared** sibling's module (the wrapping tooth), and a
+qualified reference to an **undeclared** library (the isolation tooth). Each
+one corresponds to a real property, and I split defects 2 and 3 apart on
+purpose — the original single case tested both at once through `dv_golden`,
+which declares nothing, so a pass could not tell me which property was doing
+the work.
+
+**Lane 2b, and the discovery that made the stubs worth committing.** A stub is
+a liability the moment it drifts: it produces a green here and a red in CI, and
+the reader who trusted the green is worse off than one who ran nothing. So the
+stubs had to be re-checkable, and I looked for what could check them. Two
+things turned up. First, `docs/specs/ifc_check/axi64_ifc.ml` is committed *in
+this repository* — so the `ifc_check` stub can be compared field-for-field
+against its source on every single run, and that comparison can never be
+skipped for want of a network or a package. Second, and I did not expect this:
+**the opam switch has hardcaml v0.17.1's sources unpacked** even though the
+package is not installed. ADR-0005 stopped the *build*; it did not delete the
+tarball. So `Bits.concat_lsb` and `Bits.width` — two of the three names
+`J-dv_lead-0018` Evidence item 6 listed as reachable by no local check — are
+now checked locally, verbatim, against `comb_intf.ml`. The pattern generalises
+and it is the substance of deliverable 4's answer.
+
+What lane 2b *cannot* check it prints as `UNVERIFIED-TRANSCRIPTION` and counts
+in the summary. That is deliberate asymmetry: a checkable claim gets checked, an
+uncheckable one gets named. Same rule as everywhere else in this programme, and
+the same rule the anchor obligation itself is an instance of.
+
+**One improvement on the scratch design worth recording.** The original stubbed
+`Axi64_probe` wholesale because the real file opens `Base`, which is not
+installable. The consequence, which the addendum did not notice, is that **the
+one DV file naming every `hardcaml_axi` `Source` field was the one file lane 2
+never type-checked** — the file with the highest transcription risk in the
+directory, excluded by the workaround meant to cope with it. Stubbing the
+single `Base` name it uses (`Array.init ~f`) compiles the real file instead.
+The residual is one signature rather than a whole module, and it is written
+into `base.ml`'s header: everything else `open! Base` would shadow resolves to
+Stdlib here, so lane 2 checks that file's scoping and arities and does not
+reproduce Base's shadowing semantics.
+
+**Wiring: why I am not asking for a workflow step.** WO-0034 offered
+`dv_checks.sh` or a CI-step request. `build.yml` already runs `dv_checks.sh`,
+which makes that script the DV line's own seam into CI — a check added there
+reaches the runner with no workflow edit and no round trip through the
+orchestrator, and the auditor still re-executes everything with one command.
+Asking for a step would have bought nothing and spent someone else's attention.
+
+But wiring it in raised a question the WO did not: *should the harness run on
+the runner at all?* No. On CI the real toolchain is installed and
+`dune build @default` strictly dominates every lane — lane 2's stubs are
+transcriptions, and a stub that drifts would redden CI for a reason the
+authoritative build does not share. A false alarm from the weaker instrument is
+worse than no instrument, because the programme learns to ignore it. So the
+harness stands down on a runner and prints why, and `dv_checks.sh` prints
+`SKIPPED — NOT coverage` rather than `OK` over that banner, because `OK` is
+what a reader scans a log for.
+
+**The anchor check, and the one decision in it I want on the record.** The
+easy version of this script greps RFC 1071 for `ddf2` and prints a tick. That
+version passes on a captive-portal error page, passes if `ddf2` appears in a
+footnote, and passes if the fetch silently returned an empty body — three ways
+to close an anchor obligation without having confirmed anything, which is worse
+than leaving it open because it *looks* closed. So: the body must identify
+itself before anything is grepped; §3 must slice, and there is deliberately **no
+fallback to the whole document**, because "the token appears somewhere in RFC
+1071" is not the claim `ipv4_ref.ml` makes; the constants must appear as
+delimited hex tokens; and a **negative control** must fail to appear, or the
+match is not discriminating and the run is not a pass. Exactly one line in the
+script sets CONFIRMED and it is inside that branch.
+
+The local lane exists for a different reason. It re-derives the arithmetic in
+awk — a second implementation, sharing no code with `Ipv4_ref.sum` — so that
+even with the network refused the script has a real verdict: the three
+constants are *self-consistent*. That is not the anchor and the script says so
+in those words, but it does catch a typo in one of the three, which a text
+comparison against a document I cannot fetch never would.
+
+And the script's own behaviour is tested rather than asserted. `--self-test`
+generates §3-shaped documents from the oracle's constants at run time — marked
+SYNTHETIC, never written into the repository, because a plausible-looking RFC
+excerpt sitting in `tools/` is precisely the fabricated evidence ADR-0005 rule 2
+exists to prevent — and requires five outcomes including two distinct refusals.
+This proves nothing about RFC 1071. It proves the machinery that will read it is
+not a rubber stamp, and that is the only claim I can honestly make from an
+environment that has now been refused ten times across four egress paths.
+
+**Strictness asymmetry, argued rather than assumed.** A blocked fetch means
+opposite things in the two places. Here it is the eleventh instance of a known
+condition; letting it redden every local run would train the reader to ignore
+the script, which costs more than it buys. On the runner — the open-egress path
+this check was *written for* — a 403 is news, and news must be loud. So the
+script always runs strict and `dv_checks.sh` interprets its exit 2 by
+environment, in the open, in the log. I have flagged in the Return log that the
+first CI run may therefore go red, and that the redness is the deliverable
+working; I have deliberately not pre-softened it, because softening an
+obligation before knowing whether it can be met is how an open obligation
+becomes an invisible one.
+
+### Actions
+- Wrote `tools/precompile_check.sh`: GATE 1 (no compiler → stand down), GATE 2
+  (real toolchain or CI runner → stand down, `--force` overrides), dune-file
+  discovery and disposition, lane 1, lane 2, lane 2b, lane 3a, lane 3b, an
+  advisory `--warnings` pass, and `--self-test` with three seeded defects.
+- Replicated dune's model rather than approximating it: mangled unit names
+  (`<lib>__<Mod>`), generated `<lib>__` alias modules compiled with
+  `-no-alias-deps`, `-open <Lib>__` on every unit, and per-library build
+  directories whose include path is the library's declared dependencies only.
+- Wrote `tools/precompile_stubs/{hardcaml,ifc_check,base}.ml` and a `README.md`
+  stating the SOURCE / VERIFIED / SCOPE contract every stub header follows.
+- Wrote `tools/check_rfc1071_anchor.sh`: constant parsing from the oracle,
+  local awk arithmetic lane, network lane with identity gate, §3 slice,
+  delimited-token matching, negative control, advisory §2 property location,
+  three exit codes, and `--self-test`.
+- Edited `tools/dv_checks.sh`: both new checks wired in, their self-tests run
+  first per the `check_emitted_verilog.sh` precedent, the RFC exit code
+  interpreted by environment, a `run_and_label` helper that refuses to print
+  `OK` over a `SKIPPED` banner, and a summary line that distinguishes "all
+  passed" from "all that could run passed and an obligation is open". Its
+  stale CI-WIRING paragraph (written when the step did not exist) rewritten to
+  match `build.yml` as it now stands.
+- Appended the RETURNED block to `agents/handoffs/WO-0034_compile-harness.md`.
+  Packet state left for the orchestrator.
+- Read hardcaml v0.17.1's sources to answer deliverable 4 and to anchor the
+  `hardcaml` stub. Opened no `libs/**`, wrote no `test/**`, `docs/**`,
+  `bin/**` or `.github/**`. No `git commit`, no `git push`.
+
+### Evidence
+All commands runnable from a repo checkout at this commit. `ocamlc` is the
+system 4.14.1; `dune` and `ocamlfind` are absent here, which is what makes
+GATE 2 let the lanes run.
+
+1. **The harness, green.** `tools/precompile_check.sh` → exit **0**.
+   Lane 1 `31 units compiled, 0 errors` (`dv_golden` deps none, `dv_monitors`
+   deps none, `dv_xgmii` deps `dv_golden dv_monitors`). Lane 2 `12 units
+   compiled, 0 errors`. Lane 3a `43 files in compiled directories, all 43
+   materialised and compiled`. Lane 3b `no unqualified sibling-library
+   reference`. Summary `ALL LANES PASSED`, `2 transcription(s) remain
+   UNVERIFIED`.
+2. **The harness has teeth — three seeded defects, all caught.**
+   `tools/precompile_check.sh --self-test` → exit **0**, printing
+   `CAUGHT — "Unbound value"`,
+   `CAUGHT — "Unbound module Crc32_ref"` (unqualified reference to a declared
+   sibling), and `CAUGHT — "Unbound module Dv_monitors"` (qualified reference
+   to an undeclared library).
+3. **Defect B, reproduced and then fixed.** With
+   `test/zz_probe_tmp/{dune,thing.ml}` where `dune` is `(library (name dv_zz))`
+   and `thing.ml` is `let x = Dv_monitors.Strobes.all`: before the per-library
+   include paths the harness printed `ALL LANES PASSED`; after, it prints
+   `!!! dv_zz/dv_zz__Thing  Error: Unbound module Dv_monitors` and exits **1**.
+   The directory was removed; `git status --short` shows no `zz` path.
+4. **Lane 3a's anti-rot property, both directions.** Adding a new library
+   directory with a `dune` file makes it appear automatically as
+   `LANE1 test/zz_probe_tmp (1 files)` with the file count rising 43 → 44;
+   a directory holding `.ml` with **no** `dune` file makes the lane print
+   `holds OCaml sources but no dune file` and the run exit **1**. (The second
+   case was a real bug found by this test: `ls a/*.ml a/*.mli` exits non-zero
+   when only one glob matches, so the check had never fired.)
+5. **Lane 2b catches stub drift.** Seeding `ethertype` → `ether_type` into
+   `tools/precompile_stubs/ifc_check.ml` prints
+   `!!! Eth_header: STUB DRIFT — field lists differ` with the diff and exits
+   **1**; restoring the file returns exit **0**.
+6. **Two of `J-dv_lead-0018` Evidence item 6's three unverified names are now
+   locally verified.** Lane 2b prints `found verbatim: val concat_lsb : t list
+   -> t` and `found verbatim: val width : t -> int` against
+   `$(opam var switch)/.opam-switch/sources/hardcaml/src/comb_intf.ml`
+   (hardcaml **v0.17.1**, per its `hardcaml.opam`). The third,
+   `Axi64_probe.of_refs`'s real signature, is subsumed: the real
+   `axi64_probe.ml` now compiles in lane 2 against the `Base` stub rather than
+   being replaced by one.
+7. **GATE 2 in all three environments.** Plain: lanes run, exit 0. With
+   `CI=true`: `SKIPPED — reason: this is a CI runner …`, exit **0**. With a
+   `hardcaml` directory created under `$(opam var lib)`: `SKIPPED — reason:
+   the real Hardcaml toolchain is installed here`, exit **0** (directory
+   removed afterwards). With `CI=true … --force`: lanes run, `ALL LANES
+   PASSED`.
+8. **The anchor check, local lane.** `tools/check_rfc1071_anchor.sh` prints the
+   three constants parsed **from `test/golden/ipv4_ref.ml`** (`00 01 f2 03 f4
+   f5 f6 f7`, `0xddf2`, `0x220d`) and four `[ok]` lines: sum, complement,
+   SPEC-M14 §6.1 residue `0xFFFF`, and RFC 1071 §2 byte-swap invariance
+   `sum(swap(octets)) = 0xf2dd = swap(sum)`.
+9. **The anchor check, network lane — OBLIGATION OPEN, exit 2.** Four sources
+   tried, all `CONNECT tunnel failed, response 403`:
+   `www.rfc-editor.org/rfc/rfc1071.txt`, `www.ietf.org/rfc/rfc1071.txt`,
+   `www.rfc-editor.org/rfc/rfc1071`, `datatracker.ietf.org/doc/html/rfc1071`.
+   A fifth path — the agent `WebFetch` tool, not curl through the proxy — also
+   returned `HTTP 403 Forbidden`. With ten refusals now on the programme's
+   record across four egress paths, **the anchor obligation on
+   `SO-ip_eth_rx_64.md` is still open at this commit.**
+10. **The anchor check's extractor is tested, on synthetic documents only.**
+    `tools/check_rfc1071_anchor.sh --self-test` → exit **0**, five cases:
+    well-formed §3 → exit 0; sum one bit off → exit 1; both right and wrong
+    values present (negative control) → exit 1; no sliceable §3 → exit 2;
+    unidentified document → exit 2. The fixtures are generated into a temp
+    directory and are banner-marked `SYNTHETIC LAYOUT FIXTURE - NOT RFC 1071`;
+    **none is committed, and none is evidence about RFC 1071.**
+11. **The suite, both strictness environments.** `tools/dv_checks.sh` → exit
+    **0**, ending `every check that COULD run passed, and 1 obligation is still
+    OPEN`, with `check_rfc1071_anchor.sh: OBLIGATION OPEN — NOT coverage, NOT a
+    pass`. `CI=true tools/dv_checks.sh` → exit **1**, with
+    `check_rfc1071_anchor.sh: FAILED — unreachable ON A CI RUNNER` and
+    `precompile_check.sh: SKIPPED — stood down at a gate, NOT coverage`.
+12. **Hygiene.** `bash -n` clean on all three scripts; both new scripts mode
+    755; `tools/precompile_check.sh` and `tools/check_rfc1071_anchor.sh` run
+    identically from `/` as from the repo root; temporary workspaces removed.
+    `git status --short` shows exactly the files listed below, plus this
+    journal.
+
+### Outcome
+DoD **met** on deliverables 1–3 and deliverable 4 answered in the Return log.
+
+Deliverable 1: `tools/precompile_check.sh` + `tools/precompile_stubs/`
+committed, auditor-re-executable, self-documenting, nonzero on any lane
+failure, and self-testing. It is **stricter than the scratch original in two
+respects that matter**, both found by testing rather than by review.
+
+Deliverable 2: wired into `tools/dv_checks.sh`; **no `build.yml` change
+requested**, because `build.yml` already runs that script and the DV line
+therefore already has a CI seam it owns.
+
+Deliverable 3: `tools/check_rfc1071_anchor.sh` built. On success it prints
+provenance and sha256 and says a sign-off must cite a *run*, not the script's
+existence. On unreachable it exits 2 and CI treats that as a hard failure. It
+**cannot** pass vacuously. Here it exits 2, so **the obligation is not closed
+by this commit** — only a CI run can close it.
+
+Deliverable 4: answered — the fidelity mechanism transfers to rtl_lead and is
+worth taking now; the compile lane does not, because `[@@deriving hardcaml]` is
+generative rather than removable and the API surface is 176 `val`s in one
+interface file against DV's six names.
+
+The self-assessment, plainly: the instrument I shipped last time was described
+confidently and never adversarially tested, and it had two holes. This one was
+tested first and the holes are closed and seeded. That is the practice change
+`J-dv_lead-0018` promised, made executable.
+
+### Open-questions
+- **The RFC 1071 anchor is still open**, now at ten refusals across four egress
+  paths. Closure rides the next CI run. If the runner is also blocked, the step
+  goes red by design and the next decision is the orchestrator's: either accept
+  the red while another route is found, or ask me for the one-line change in
+  `dv_checks.sh`'s `case "$rfc_rc"` block. I have not pre-softened it.
+- **`Axi64.Source`'s six field names remain unverifiable locally** —
+  hardcaml_axi is not in the sources cache, unlike hardcaml. SPEC-M01 §11.4's
+  gap, unchanged; lane 2b reports it every run rather than letting it fade.
+- **For rtl_lead, via the orchestrator, as a suggestion and not a request**: the
+  name-existence check described in Return log §4 is cheap and catches a real
+  red-build class. Whether to build it is rtl_lead's call.
+- **The unpacked hardcaml sources are an artifact of this container's opam
+  overlay pin.** Any future check that leans on them must degrade to a printed
+  UNVERIFIED, as lane 2b does. If the container is ever rebuilt without them,
+  lane 2b's hardcaml half goes quiet — loudly, but quiet — and that is the
+  intended behaviour, not a regression to chase.
+- **X-7, X-10, X-11 remain deferred**; `AP-ip_eth_rx_64.md`'s families A, B, E,
+  J remain blocked on X-10/X-11. Unchanged by this work order.
+- **Against myself, and it is a narrower point than last time.** My four
+  recorded misses are all the same shape, and the WO-0033 remedy ("make
+  arithmetic executable") and the WO-0034 practice ("test the instrument before
+  reading anything green off it") are both instances of one rule I should have
+  been applying to my own tooling from the start: *an instrument that has never
+  failed on purpose is not known to be able to*. The auditor's cheapest probe
+  against me is unchanged — look for a confident adjective with no executable
+  partner — and it now has a third edge: look for a tool in `tools/` with no
+  `--self-test` and ask what would happen if it silently stopped catching
+  things.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0034_compile-harness.md
+- tools/check_rfc1071_anchor.sh
+- tools/dv_checks.sh
+- tools/precompile_check.sh
+- tools/precompile_stubs/README.md
+- tools/precompile_stubs/base.ml
+- tools/precompile_stubs/hardcaml.ml
+- tools/precompile_stubs/ifc_check.ml

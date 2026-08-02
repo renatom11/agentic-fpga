@@ -2,12 +2,14 @@
 # dv_checks.sh — run every DV mechanical check in one command.
 #
 # These are the checks that are neither simulations nor expect tests: they
-# compare committed text against committed text (carry-forward C-9) and
-# committed text against the emitted-Verilog build product (finding X-9).
-# They are pure bash + awk + sed, they take well under a second, and — unlike
-# every other DV artefact in this programme — they are runnable in the
-# development container, because ADR-0005's blocker is the OCaml toolchain and
-# not the shell.
+# compare committed text against committed text (carry-forward C-9), committed
+# text against the emitted-Verilog build product (finding X-9), committed
+# OCaml against the system compiler (WO-0034), and a committed constant
+# against the published standard it claims to quote (WO-0034). They are pure
+# bash + awk + sed + ocamlc + curl, and — unlike every other DV artefact in
+# this programme — they are runnable in the development container, because
+# ADR-0005's blocker is the Hardcaml toolchain and not the shell, and not the
+# system compiler either (J-dv_lead-0018's discovery).
 #
 #   tools/check_records_vs_appendix.sh   C-9: Status vs §12, Config vs §9.1,
 #                                        each spec §4.1 vs its ifc_check lift,
@@ -20,69 +22,160 @@
 #                                        landed at WO-0012, once C-8's closure
 #                                        gave its M01 half a determinable
 #                                        answer)
+#   tools/precompile_check.sh            WO-0034: type-check the DV OCaml tree
+#                                        with the system ocamlc. Stands down
+#                                        automatically where the real
+#                                        toolchain is present, because
+#                                        `dune build @default` dominates it.
+#   tools/check_rfc1071_anchor.sh        WO-0034: confirm
+#                                        Ipv4_ref.rfc1071_example_{octets,sum,
+#                                        checksum} against RFC 1071 §3's own
+#                                        text — the anchor obligation
+#                                        SO-ip_eth_rx_64.md carries.
 #
-# CI WIRING — the decision WO-0009 asked to be documented either way.
+# CI WIRING — settled, and this is why the two WO-0034 checks live here.
 #
-# Recommendation: wire this script into .github/workflows/build.yml as one
-# step. It is trivially cheap (sub-second, no dependencies beyond coreutils),
-# it guards normative text that drifts silently, and REQ-904 already
-# establishes the precedent that a currency check belongs in CI rather than at
-# a gate. The step is:
+# build.yml runs `tools/dv_checks.sh` as a step (added by the orchestrator
+# after WO-0009 recommended it; .github/** is not dv_lead's to stage,
+# PROTOCOL §6). That makes this script the DV line's own seam into CI: a
+# check added here reaches the runner with no workflow edit and no
+# orchestrator round trip, and the auditor re-executes the whole set with one
+# command at any SHA. Both WO-0034 checks are therefore wired here rather
+# than requested as new workflow steps.
 #
-#     - name: DV mechanical checks (C-9 record-vs-appendix, X-9 emitted Verilog)
-#       run: tools/dv_checks.sh
+# STRICTNESS IS NOT UNIFORM, AND THE ASYMMETRY IS DELIBERATE.
 #
-# It is NOT wired here, for two reasons rather than one. First, .github/** is
-# the orchestrator's write scope (PROTOCOL §6) and dv_lead cannot stage it, so
-# the edit is the orchestrator's to make. Second, the alternative available
-# inside my own scope — a dune rule on the runtest alias under test/ — was
-# considered and rejected: a dune action runs inside _build, where only files
-# some rule depends on are present, so the script would need file-level deps on
-# docs/specs/** and rtl_snapshots/**, and a mistake there fails the whole build
-# in a way ADR-0005 leaves me unable to test locally. A one-line workflow step
-# has none of that risk.
+# The two environments differ in what a failure MEANS:
 #
-# Until the step lands, these checks run on demand and are cited by SHA in
-# sign-off packets and journal Evidence sections.
+#   precompile_check.sh   In the development container it is the only compiler
+#                         evidence available, so it runs and it gates. On the
+#                         runner the real toolchain is installed, so the script
+#                         itself stands down (its GATE 2) and prints why —
+#                         running a stub-based check beside the authoritative
+#                         build could only produce a weaker signal or a false
+#                         alarm the programme would learn to ignore.
+#
+#   check_rfc1071_anchor  A blocked fetch means opposite things in the two
+#                         places. Here, five 403s across two egress paths are
+#                         already on the record (J-dv_lead-0017, J-dv_lead-0018,
+#                         the WO-0033 acceptance block) — a sixth is not news,
+#                         and letting it redden every local run would train the
+#                         reader to ignore this script. On the runner, whose
+#                         egress is open, a 403 IS news: it means the one
+#                         cheap closure named for this obligation does not
+#                         work either, and that must be loud. So the script is
+#                         always invoked in its STRICT form and this file
+#                         interprets its exit 2 ("obligation open") by
+#                         environment — visibly, in the log, rather than by
+#                         passing a flag that would let a reader mistake
+#                         "could not check" for "checked and fine". Neither
+#                         path can pass vacuously: "confirmed" is printed only
+#                         after fetched text has been matched, and an
+#                         OBLIGATION-OPEN line is never coverage.
 #
 # Usage: tools/dv_checks.sh
-# Exit:  0 iff every check passes. PENDING lines never fail the run, and no
-#        sign-off packet may cite a PENDING line as coverage.
+# Exit:  0 iff every check passes. PENDING lines, and any check that
+#        announced SKIPPED or OBLIGATION OPEN, never count as coverage and no
+#        sign-off packet may cite one.
 
 set -uo pipefail
 
 HERE="$(cd "$(dirname "$0")" && pwd)"
 status=0
+open_obligation=0
 
-# The X-9 self-test runs FIRST and separately (WO-0028). The checks below judge
-# committed artefacts, and rtl_snapshots/ will — if the design is right — never
-# contain a gated clock, a second clock domain or a negedge. So nothing in this
-# repository can demonstrate that REQ-001 still CATCHES those; only fixtures
-# can, and a rule whose teeth are never exercised is a rule that can be blunted
-# by a well-meaning simplification without anything going red. Running it here
-# makes that a build failure. It needs no snapshot, so its verdict is
-# independent of what generate.exe produced this run.
-printf '=== check_emitted_verilog.sh --self-test ===\n'
-if bash "$HERE/check_emitted_verilog.sh" --self-test; then
-  printf '=== self-test: OK ===\n\n'
-else
-  printf '=== self-test: FAILED ===\n\n'
-  status=1
-fi
+# ---- self-tests first ------------------------------------------------
+#
+# Three instruments in this suite judge committed artefacts, and a rule whose
+# teeth are never exercised can be blunted by a well-meaning simplification
+# without anything going red. Each therefore proves it can still fail before
+# it is allowed to say anything passed.
+#
+#  * check_emitted_verilog --self-test (WO-0028): rtl_snapshots/ will — if the
+#    design is right — never contain a gated clock, a second clock domain or a
+#    negedge, so nothing in this repository can demonstrate that REQ-001 still
+#    CATCHES those; only fixtures can. It needs no snapshot, so its verdict is
+#    independent of what generate.exe produced this run.
+#  * precompile_check --self-test (WO-0034): seeds the exact WO-0033 escape
+#    class (an unbound value) and an unqualified sibling-library reference, and
+#    requires both to be caught.
+#  * check_rfc1071_anchor --self-test (WO-0034): generates §3-shaped documents
+#    and requires the extractor to confirm a good one, reject a corrupted one,
+#    and refuse an unidentified one.
 
-for script in check_records_vs_appendix.sh check_emitted_verilog.sh; do
-  printf '=== %s ===\n' "$script"
-  if bash "$HERE/$script"; then
-    printf '=== %s: OK ===\n\n' "$script"
-  else
-    printf '=== %s: FAILED ===\n\n' "$script"
+# A check that stood down at a gate has not passed; it has said nothing. The
+# helper below refuses to print OK over a SKIPPED banner, because "OK" is what
+# a reader scans the log for.
+run_and_label() { # $1 = human label, $2… = command
+  local label="$1"; shift
+  local out rc
+  out="$("$@" 2>&1)"; rc=$?
+  printf '%s\n' "$out"
+  if [ "$rc" -ne 0 ]; then
+    printf '=== %s: FAILED ===\n\n' "$label"
     status=1
+  elif printf '%s' "$out" | grep -q 'SKIPPED'; then
+    printf '=== %s: SKIPPED — stood down at a gate, NOT coverage ===\n\n' "$label"
+  else
+    printf '=== %s: OK ===\n\n' "$label"
   fi
+}
+
+for st in check_emitted_verilog precompile_check check_rfc1071_anchor; do
+  printf '=== %s.sh --self-test ===\n' "$st"
+  run_and_label "$st self-test" bash "$HERE/$st.sh" --self-test
 done
 
-if [ "$status" -eq 0 ]; then
-  printf 'dv_checks: all checks passed\n'
-else
+# ---- the checks ------------------------------------------------------
+
+for script in check_records_vs_appendix.sh check_emitted_verilog.sh precompile_check.sh; do
+  printf '=== %s ===\n' "$script"
+  run_and_label "$script" bash "$HERE/$script"
+done
+
+# The anchor check, with the environment-dependent strictness the header
+# argues for. GITHUB_ACTIONS is set on every GitHub-hosted runner; CI is set
+# by essentially every other provider. Anything else is treated as a
+# development container.
+#
+# The script is always run in its STRICT form and dv_checks interprets the
+# exit code here, in the open, rather than passing a flag that would let a
+# reader of the log below mistake "could not check" for "checked and fine".
+printf '=== check_rfc1071_anchor.sh ===\n'
+bash "$HERE/check_rfc1071_anchor.sh"
+rfc_rc=$?
+case "$rfc_rc" in
+  0)
+    printf '=== check_rfc1071_anchor.sh: OK — anchor CONFIRMED against fetched text ===\n\n'
+    ;;
+  2)
+    if [ -n "${GITHUB_ACTIONS:-}" ] || [ -n "${CI:-}" ]; then
+      printf '=== check_rfc1071_anchor.sh: FAILED — unreachable ON A CI RUNNER ===\n'
+      printf 'Egress is open here. A 403 at this point means the cheapest closure named\n'
+      printf 'for this obligation does not work either, and that is news, not noise.\n\n'
+      status=1
+    else
+      open_obligation=1
+      printf '=== check_rfc1071_anchor.sh: OBLIGATION OPEN — NOT coverage, NOT a pass ===\n'
+      printf 'Development container: this fetch has been blocked five times already\n'
+      printf '(J-dv_lead-0017, J-dv_lead-0018, the WO-0033 acceptance block), so a sixth\n'
+      printf 'does not redden the suite. Nothing was confirmed. No sign-off may cite\n'
+      printf 'this line. CI is where this obligation gets closed.\n\n'
+    fi
+    ;;
+  *)
+    printf '=== check_rfc1071_anchor.sh: FAILED (exit %s) ===\n\n' "$rfc_rc"
+    status=1
+    ;;
+esac
+
+if [ "$status" -ne 0 ]; then
   printf 'dv_checks: at least one check FAILED\n'
+elif [ "$open_obligation" -ne 0 ]; then
+  printf 'dv_checks: every check that COULD run passed, and %d obligation is still OPEN\n' "$open_obligation"
+  printf '           (see the OBLIGATION OPEN line above). This run is a green light for\n'
+  printf '           the checks it ran and for nothing else.\n'
+else
+  printf 'dv_checks: all checks passed\n'
 fi
 exit "$status"
