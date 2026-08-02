@@ -2519,3 +2519,41 @@ signature is the sole open item. M1's spec pipeline is done.
 - agents/handoffs/WO-0022_batch-f-rereview.md
 - docs/gates/P1-spec-freeze-checklist.md
 - tasks/BOARD.md
+
+## [J-orchestrator-0060] 2026-08-02T16:45:00Z | task:none | WO-0023 (C-37 repair) + WO-0024 (batch-B RTL) issued in parallel
+
+### Trigger
+The gate is agent-complete; the standing overnight plan's next two
+items are independent and have disjoint write scopes.
+
+### Inputs
+- WO-0022's C-37 statement and next-activation recommendation
+- ADR-0010 (unblocks batch-B RTL); rtl_lead's WO-0016 environment
+  finding (hardcaml sources path)
+
+### Reasoning
+WO-0023 (architect, docs/**): the programme's first post-freeze
+behavioural repair, with the ADR the freeze machinery requires; dv
+recommended it ahead of M14 RTL, which batch-B RTL does not touch.
+WO-0024 (rtl_lead, libs/**): M03/M04/M05 against the longest-frozen
+full-behaviour specs; the packet pins the §13 rows as part of the
+spec, ADR-0010's conventions, and the blind-write discipline that
+went green first try at WO-0016. Disjoint scopes, both fallback-armed.
+
+### Actions
+- Issued both packets; board rows; this entry; commit; push; both
+  spawns follow with fallbacks.
+
+### Evidence
+- `git show --stat HEAD`
+
+### Outcome / DoD
+Two lanes in flight; morning report next.
+
+### Open questions
+- rtl_lead's implement-vs-decompose call for M04/M05 is its own.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0023_c37-repair.md
+- agents/handoffs/WO-0024_batch-b-rtl.md
+- tasks/BOARD.md
