@@ -1,7 +1,9 @@
 # SPEC-M01 — `Axi64`
 
-- **Status**: DRAFT — §11 carries no open question under the amended
-  SPEC-TEMPLATE §11; the freeze flip awaits only the two evidence rows of §12
+- **Status**: **FROZEN** (`P1-spec-freeze`, SHA `f78766e`) — batch A, dv_lead
+  countersignature `J-dv_lead-0003` extended over the `Xgmii` addition by
+  `J-dv_lead-0005`. Changes to §4, §6 or §7 after this point are spec diffs
+  recorded in §13 (SPEC-TEMPLATE rule 7)
 - **Inventory id**: M01 (architecture.md §4) · **Path**:
   `libs/hardcaml_ethernet/src/axi64.ml`
 - **Datapath role**: shared/structural (types only — no circuit)
@@ -604,30 +606,34 @@ reader assumes today.
 | 11.1 | **Should M01 also home the XGMII lane pair?** The alternative was four field-by-field restatements of one pair of widths in SPEC-M03, SPEC-M04, SPEC-M05 and SPEC-M20 — the duplication REQ-010 rejects for streams. | **CLOSED (WO-0008), in favour of the record.** Batch B made the cost visible on schedule: M03, M04 and M05 all needed the pair, M20 would have been the fourth. The `Xgmii` record is declared in §4.1 with fields `d` and `c`, and the two instantiation prefixes `xgmii_rx` / `xgmii_tx` emit REQ-017's four port names exactly — a longer field name could not. architecture.md §4's M01 row is amended in the same commit. | WO-0008 | architect_docs_lead | closed |
 | 11.2 | **Traceability rows for the REQs this spec covers read `pending` in the Spec-section column**, against SPEC-TEMPLATE §10's same-commit rule, because WO-0006's file set excluded the matrix. | **CLOSED (WO-0008).** `traceability.md`'s Spec-section column now names a section of this specification for every row in §10. | WO-0008 | architect_docs_lead | closed |
 | 11.3 | **The template named an open target, `Ifc_check_axi64`, that cannot exist**: rule 6 names lifts `<module>_ifc.ml` and `docs/specs/ifc_check/dune` declares `(name ifc_check)`, so the module a sibling lift opens is `Axi64_ifc`. | **CLOSED (WO-0008).** SPEC-TEMPLATE §4.1 and its lift `template_ifc.ml` now both say `open! Axi64_ifc`, which is what every real lift already used. Editorial; no module's contract changed. | WO-0008 | architect_docs_lead | closed |
-| 11.4 | **`Axi64.Source`'s and `Axi64.Dest`'s field names are `hardcaml_axi`'s and were unverified by any compile.** `tvalid`, `tdata`, `tkeep`, `tstrb`, `tlast`, `tuser`, `tready` were transcribed from `stream_intf.ml` via architecture.md §10; run 30727252770 elaborated the functor application without naming a field, so a v0.17.0 divergence would not have been caught, and §4.2 and §6.1 quote the names normatively. | **DEFERRED — the witness is written and the run is pending.** The SPEC-M03 lift names all six `Source` fields and the SPEC-M04 lift names `Dest.tready`, in compile-time witnesses that fail the build if any name is wrong. **Meanwhile a reader assumes the names exactly as §4.2 writes them**: they are what every bench, monitor and RTL record uses today. A divergence surfaces as a red CI run on this commit and is repaired by an editorial diff to §4.2, the lifts and the failing spec — it changes no meaning and invalidates no test. | WO-0008; the `Interface compile check` row of §12 is the closure record | architect_docs_lead, rtl_lead | the batch-B `ifc_check` run (§12 row 1) |
-| 11.5 | **§10's REQ-802 and REQ-804 hooks named the interface compile check as the mechanism for comparing these records against requirements.md §9.1 and §12** — an OCaml compile cannot read a markdown table (dv_lead, WO-0007). | **DEFERRED — the architect's half is done, the script is dv_lead's.** §10 now names the two mechanisms separately and attributes the field-list-and-order comparison to a dv-owned `tools/` script. **Meanwhile a reader assumes the records in §4.1 are the authority and the appendices are the source**: the equality was checked by hand at 22145b5 (dv_lead, WO-0007: 21/21 strobes and 12/12 config fields, in order, character for character) and is re-checked by review at each revision until the script lands in CI. | ledger **C-9**, script under WO-0009 | dv_lead (script), architect_docs_lead (hook wording) | first `SO-` packet citing those hooks |
+| 11.4 | **`Axi64.Source`'s and `Axi64.Dest`'s field names are `hardcaml_axi`'s and were unverified by any compile.** `tvalid`, `tdata`, `tkeep`, `tstrb`, `tlast`, `tuser`, `tready` were transcribed from `stream_intf.ml` via architecture.md §10; run 30727252770 elaborated the functor application without naming a field, so a v0.17.0 divergence would not have been caught, and §4.2 and §6.1 quote the names normatively. | **CLOSED (WO-0010).** CI `build` run **30729342467** at **f78766e** reports `success`, and that build contains both witnesses — `xgmii_rx_64_ifc.ml` names all six `Source` fields, `xgmii_tx_64_ifc.ml` names `Dest.tready`. A v0.17.0 spelling divergence would have failed it. §4.2's names are now established by a run, not by transcription. | WO-0008; the `Interface compile check` row of §12 is the closure record | architect_docs_lead, rtl_lead | closed |
+| 11.5 | **§10's REQ-802 and REQ-804 hooks named the interface compile check as the mechanism for comparing these records against requirements.md §9.1 and §12** — an OCaml compile cannot read a markdown table (dv_lead, WO-0007). | **CLOSED (WO-0010) on both halves.** §10 names the two mechanisms separately; dv_lead's `tools/check_records_vs_appendix.sh` exists, is wired into the `build` workflow (00d7a7f) and runs green — `Status = §12 (21 strobes, same order)` and `Config = §9.1 (12 fields, widths in order)` — reported at f44a296 in the WO-0010 Return log and re-run in run 30730405776. The records in §4.1 remain the authority and the appendices the source; the equality is now machine-checked at every SHA rather than by review. | ledger **C-9**, script under WO-0009 | dv_lead (script), architect_docs_lead (hook wording) | closed |
 
 ## 12. Freeze record
 
-Filled in at `P1-spec-freeze`. All four rows are required (charter §5). Two are
-filled; the two that depend on evidence this revision cannot produce are not.
+Filled in at `P1-spec-freeze`. All four rows are required (charter §5).
 
 | Item | Value |
 |---|---|
-| Interface compile check | **pending on this revision** — the previous revision's lift is green (CI `build` run 30727252770 at 22145b5), but §4.1 gained the `Xgmii` record here, so the evidence must be the run on the commit carrying this revision. Per ADR-0005 a local build is not acceptable evidence. This row is also §11.4's closure record |
-| Architect signature | `J-architect_docs_lead-0004` — signed for freeze conditional on the row above reporting `success` |
-| dv_lead testability countersignature | `J-dv_lead-0003` (WO-0007, at 22145b5), extended by the batch-B countersignature over this revision's diffs — the `Xgmii` record (§4.1, §4.2, §6.1), the REQ-903 `.mli` row (§10), the C-9 hook rewording (§10), the C-10 `solely` restoration (§6.1) and this §11 |
-| Frozen at | pending — SHA `<sha>`, gate `docs/gates/P1-spec-freeze-checklist.md` |
+| Interface compile check | CI `build` run **30729342467**, conclusion **`success`**, SHA **f78766e** — this revision's §4.1, `Xgmii` record included, elaborated together with the four lifts that quote it. Per ADR-0005 a local build is not acceptable evidence. This row is also §11.4's closure record |
+| Architect signature | `J-architect_docs_lead-0004` — signed for freeze conditional on the row above reporting `success`, which it does |
+| dv_lead testability countersignature | `J-dv_lead-0003` (WO-0007, at 22145b5), **extended to the `Xgmii` addition and this revision's other diffs by `J-dv_lead-0005`** (WO-0010, verdict (b) ACCEPTED after diffing 22145b5..f78766e over both batch-A specs and both lifts) |
+| Frozen at | SHA **f78766e**, gate `docs/gates/P1-spec-freeze-checklist.md` |
 
-**Why this spec is still DRAFT.** The §11 blocker dv_lead raised at WO-0007 is
-cleared: under the amended SPEC-TEMPLATE §11 this spec carries no open
-question. What remains is evidence, not reconciliation — a green `ifc_check`
-run naming this commit, and the SHA it produces. Flipping the Status line is
-then a two-row edit with nothing left to decide.
+**How this spec reached FROZEN.** The §11 blocker dv_lead raised at WO-0007 was
+cleared under the amended SPEC-TEMPLATE §11 (WO-0008); the remaining two rows
+were evidence rather than reconciliation, and both arrived at WO-0010 — run
+30729342467 green at f78766e, and dv_lead's dual-batch countersignature over
+that same SHA. The Status line and this table are the transcription of those
+two facts; nothing was decided here.
 
 ## 13. Change log
 
-Post-freeze changes only. This spec is DRAFT and has none.
+Post-freeze changes only. Each row cites the ADR that authorised it; a breaking
+interface change is counted against post-freeze churn (charter §6). This spec
+has had none: the WO-0011 diff cycle touched requirements.md, SPEC-M03 and
+SPEC-M04 and left every record in §4.1 byte-for-byte unchanged, which is why
+the four batch-C lifts could open `Axi64_ifc` without a re-freeze.
 
 | Date | Change | Breaking? | ADR | Journal |
 |---|---|---|---|---|

@@ -415,6 +415,209 @@ flowchart TD
 `Axi64` (M01) is a types module and appears in every port record rather than in
 the instance hierarchy.
 
+### 6.4 Connection table
+
+The diagrams above are the topology in a form a person reads. This section is
+the **same topology in a form a program reads**: one row per edge, at port
+granularity, for every module in §4. The org's generated block diagram is
+rendered from this table plus the `Interface` records in
+`docs/specs/ifc_check/`, so its column syntax is fixed and is not to be
+prettified:
+
+```
+| source.port | sink.port | type | class |
+```
+
+- **`source.port` / `sink.port`** — `M<nn>.<port>` for an inventory module, or
+  one of three boundary pseudo-nodes: **`WIRE`** (the XGMII boundary, driven and
+  decoded in Phase 1 by the DV link-partner model, REQ-018), **`APP`** (the
+  application boundary, Phase 2's feed handler) and **`EXT`** (the configuration
+  and status boundary — the bench or platform that drives `Config` and observes
+  `Status`). Both cells are always backquoted and always contain exactly one dot.
+- **`type`** — the OCaml type the edge carries: a record name from SPEC-M01 §4.1
+  (`Axi64.Source`, `Axi64.Dest`, `Xgmii`, `Eth_header`, `Ip_header`,
+  `Udp_header`, `Config`, `Status`), a batch-D/E/F record not yet specified, or
+  `bit` / `bit[n]` for a scalar.
+- **`class`** — exactly one of **`rx`** (an edge on requirements.md §0.4's
+  receive datapath, carrying frame octets or a header record travelling with
+  them), **`tx`** (the same on the transmit datapath), **`control`**
+  (configuration fan-out, the ARP lookup and cache accesses, and the
+  combinational CRC calls — signalling that is not a stream), **`status`** (a
+  strobe).
+
+**M01 `Axi64` appears in no row.** It is types-only: it has no ports, so it has
+no edges (§6.3, REQ-808). Every other module appears, and the type column is
+where M01 is present in every row of the table.
+
+**M02 `Crc32_eth` appears twice**, once for its instance inside M03 and once for
+its instance inside M04. Its four rows per instance are the one place this table
+names an *internal signal* rather than a module port on one side: `M03.crc_*`
+and `M04.crc_*` are the running-CRC register and its update path (SPEC-M03 §6.1,
+SPEC-M04 §6.1), not ports of M03 or M04. They are tabulated because M02 is an
+inventory module and a table that omitted it would be missing a node; a renderer
+should draw one `M02` box with edges from both parents.
+
+**What is enumerated and what is summarised.** §6.4.1 and §6.4.2 contain **one
+row per port-level edge** of the receive and transmit datapaths — every edge of
+§6.1 and §6.2, expanded through the wrapper levels §6.3 implies, with no
+omissions. §6.4.3 enumerates every control edge the same way. §6.4.4 is the one
+place this table **summarises**: it carries one row per strobe at the module that
+*raises* it and one row for the top-level aggregation, and does **not** enumerate
+the wrapper hops between them, because every wrapper relays every strobe of its
+children unchanged and by name (SPEC-M05 §6.1 states it for M05; each wrapper
+spec states it for itself, and requirements.md §12 fixes the names). A renderer
+that wants the intermediate hops computes them from §4's containment and this
+rule. The summary is stated so that nobody mistakes it for the whole.
+
+**Provisional rows.** A row whose two endpoints are both specified modules —
+M01 through M09, plus the `WIRE` and `EXT` boundaries — names ports that exist
+in a written §4.1 today. A row naming a module from batches D–F (M10 … M20) is
+**provisional in its port names only**: the edge itself and its type are fixed by
+§6.1 and §6.2 and are not negotiable, while the port name is this document's
+proposal. Each later batch's specification confirms or amends its own rows **in
+the same commit** as the spec, exactly as SPEC-TEMPLATE §10 requires of the
+traceability matrix — a batch that renames a port here and nowhere else has
+broken the generated diagram, and a batch that renames it in §4.1 only has made
+this table lie.
+
+**116 edges: 26 `rx`, 39 `tx`, 29 `control`, 21 + 1 `status`.**
+
+### 6.4.1 Receive datapath — class `rx` (26 edges)
+
+| source.port | sink.port | type | class |
+|---|---|---|---|
+| `WIRE.xgmii_rx` | `M20.xgmii_rx` | `Xgmii` | rx |
+| `M20.xgmii_rx` | `M05.xgmii_rx` | `Xgmii` | rx |
+| `M05.xgmii_rx` | `M03.xgmii_rx` | `Xgmii` | rx |
+| `M03.rx` | `M05.rx` | `Axi64.Source` | rx |
+| `M05.rx` | `M19.rx` | `Axi64.Source` | rx |
+| `M19.rx` | `M16.rx` | `Axi64.Source` | rx |
+| `M16.rx` | `M06.rx` | `Axi64.Source` | rx |
+| `M06.hdr` | `M08.hdr` | `Eth_header` | rx |
+| `M06.payload` | `M08.payload` | `Axi64.Source` | rx |
+| `M08.arp_hdr` | `M13.rx_hdr` | `Eth_header` | rx |
+| `M08.arp_payload` | `M13.rx_payload` | `Axi64.Source` | rx |
+| `M13.rx_hdr` | `M10.hdr` | `Eth_header` | rx |
+| `M13.rx_payload` | `M10.payload` | `Axi64.Source` | rx |
+| `M10.arp` | `M13.arp_rx` | `Arp_packet` | rx |
+| `M08.ip_hdr` | `M14.hdr` | `Eth_header` | rx |
+| `M08.ip_payload` | `M14.payload` | `Axi64.Source` | rx |
+| `M14.hdr` | `M16.ip_rx_hdr` | `Ip_header` | rx |
+| `M14.payload` | `M16.ip_rx_payload` | `Axi64.Source` | rx |
+| `M16.ip_rx_hdr` | `M17.ip_hdr` | `Ip_header` | rx |
+| `M16.ip_rx_payload` | `M17.ip_payload` | `Axi64.Source` | rx |
+| `M17.hdr` | `M19.app_rx_hdr` | `Udp_header` | rx |
+| `M17.payload` | `M19.app_rx_payload` | `Axi64.Source` | rx |
+| `M19.app_rx_hdr` | `M20.app_rx_hdr` | `Udp_header` | rx |
+| `M19.app_rx_payload` | `M20.app_rx_payload` | `Axi64.Source` | rx |
+| `M20.app_rx_hdr` | `APP.hdr` | `Udp_header` | rx |
+| `M20.app_rx_payload` | `APP.payload` | `Axi64.Source` | rx |
+
+### 6.4.2 Transmit datapath — class `tx` (39 edges)
+
+| source.port | sink.port | type | class |
+|---|---|---|---|
+| `APP.tx_request` | `M20.app_tx_request` | `Udp_tx_request` | tx |
+| `APP.tx_payload` | `M20.app_tx_payload` | `Axi64.Source` | tx |
+| `M20.app_tx_payload_dest` | `APP.tx_payload_dest` | `Axi64.Dest` | tx |
+| `M20.app_tx_request` | `M19.app_tx_request` | `Udp_tx_request` | tx |
+| `M20.app_tx_payload` | `M19.app_tx_payload` | `Axi64.Source` | tx |
+| `M19.app_tx_payload_dest` | `M20.app_tx_payload_dest` | `Axi64.Dest` | tx |
+| `M19.app_tx_request` | `M18.request` | `Udp_tx_request` | tx |
+| `M19.app_tx_payload` | `M18.payload` | `Axi64.Source` | tx |
+| `M18.payload_dest` | `M19.app_tx_payload_dest` | `Axi64.Dest` | tx |
+| `M18.ip_hdr` | `M16.ip_tx_hdr` | `Ip_header` | tx |
+| `M18.ip_payload` | `M16.ip_tx_payload` | `Axi64.Source` | tx |
+| `M16.ip_tx_payload_dest` | `M18.ip_payload_dest` | `Axi64.Dest` | tx |
+| `M16.ip_tx_hdr` | `M15.hdr` | `Ip_header` | tx |
+| `M16.ip_tx_payload` | `M15.payload` | `Axi64.Source` | tx |
+| `M15.payload_dest` | `M16.ip_tx_payload_dest` | `Axi64.Dest` | tx |
+| `M15.eth_hdr` | `M09.ip_hdr` | `Eth_header` | tx |
+| `M15.eth_payload` | `M09.ip_payload` | `Axi64.Source` | tx |
+| `M09.ip_payload_dest` | `M15.eth_payload_dest` | `Axi64.Dest` | tx |
+| `M13.arp_tx` | `M11.arp` | `Arp_packet` | tx |
+| `M11.hdr` | `M13.tx_hdr` | `Eth_header` | tx |
+| `M11.payload` | `M13.tx_payload` | `Axi64.Source` | tx |
+| `M13.tx_payload_dest` | `M11.payload_dest` | `Axi64.Dest` | tx |
+| `M13.tx_hdr` | `M09.arp_hdr` | `Eth_header` | tx |
+| `M13.tx_payload` | `M09.arp_payload` | `Axi64.Source` | tx |
+| `M09.arp_payload_dest` | `M13.tx_payload_dest` | `Axi64.Dest` | tx |
+| `M09.hdr` | `M07.hdr` | `Eth_header` | tx |
+| `M09.payload` | `M07.payload` | `Axi64.Source` | tx |
+| `M07.payload_dest` | `M09.payload_dest` | `Axi64.Dest` | tx |
+| `M07.tx` | `M16.tx` | `Axi64.Source` | tx |
+| `M16.tx_dest` | `M07.tx_dest` | `Axi64.Dest` | tx |
+| `M16.tx` | `M19.tx` | `Axi64.Source` | tx |
+| `M19.tx_dest` | `M16.tx_dest` | `Axi64.Dest` | tx |
+| `M19.tx` | `M05.tx` | `Axi64.Source` | tx |
+| `M05.tx_dest` | `M19.tx_dest` | `Axi64.Dest` | tx |
+| `M05.tx` | `M04.tx` | `Axi64.Source` | tx |
+| `M04.tx_dest` | `M05.tx_dest` | `Axi64.Dest` | tx |
+| `M04.xgmii_tx` | `M05.xgmii_tx` | `Xgmii` | tx |
+| `M05.xgmii_tx` | `M20.xgmii_tx` | `Xgmii` | tx |
+| `M20.xgmii_tx` | `WIRE.xgmii_tx` | `Xgmii` | tx |
+
+### 6.4.3 Control — class `control` (29 edges)
+
+| source.port | sink.port | type | class |
+|---|---|---|---|
+| `EXT.cfg` | `M20.cfg` | `Config` | control |
+| `M20.cfg_rx_enable` | `M03.cfg_rx_enable` | `bit` | control |
+| `M20.cfg_tx_enable` | `M04.cfg_tx_enable` | `bit` | control |
+| `M20.cfg_ifg` | `M04.cfg_ifg` | `bit[8]` | control |
+| `M20.cfg_local_mac` | `M13.cfg_local_mac` | `bit[48]` | control |
+| `M20.cfg_local_mac` | `M15.cfg_local_mac` | `bit[48]` | control |
+| `M20.cfg_local_ip` | `M13.cfg_local_ip` | `bit[32]` | control |
+| `M20.cfg_local_ip` | `M14.cfg_local_ip` | `bit[32]` | control |
+| `M20.cfg_local_ip` | `M15.cfg_local_ip` | `bit[32]` | control |
+| `M20.cfg_subnet_mask` | `M13.cfg_subnet_mask` | `bit[32]` | control |
+| `M20.cfg_gateway_ip` | `M13.cfg_gateway_ip` | `bit[32]` | control |
+| `M20.cfg_multicast_group` | `M14.cfg_multicast_group` | `bit[32]` | control |
+| `M20.cfg_multicast_enable` | `M14.cfg_multicast_enable` | `bit` | control |
+| `M20.cfg_listen_port` | `M17.cfg_listen_port` | `bit[16]` | control |
+| `M20.cfg_accept_all_ports` | `M17.cfg_accept_all_ports` | `bit` | control |
+| `M20.cfg_ttl` | `M15.cfg_ttl` | `bit[8]` | control |
+| `M03.crc_state` | `M02.crc_in` | `bit[32]` | control |
+| `M03.crc_octets` | `M02.data` | `bit[64]` | control |
+| `M03.crc_count` | `M02.octet_count` | `bit[4]` | control |
+| `M02.crc_out` | `M03.crc_next` | `bit[32]` | control |
+| `M04.crc_state` | `M02.crc_in` | `bit[32]` | control |
+| `M04.crc_octets` | `M02.data` | `bit[64]` | control |
+| `M04.crc_count` | `M02.octet_count` | `bit[4]` | control |
+| `M02.crc_out` | `M04.crc_next` | `bit[32]` | control |
+| `M15.arp_query` | `M13.tx_query` | `Arp_query` | control |
+| `M13.tx_response` | `M15.arp_response` | `Arp_response` | control |
+| `M13.cache_query` | `M12.query` | `Arp_cache_query` | control |
+| `M12.result` | `M13.cache_result` | `Arp_cache_result` | control |
+| `M13.cache_write` | `M12.write` | `Arp_cache_write` | control |
+
+### 6.4.4 Status — class `status` (22 edges)
+
+| source.port | sink.port | type | class |
+|---|---|---|---|
+| `M03.error_bad_fcs` | `M20.status_error_bad_fcs` | `bit` | status |
+| `M03.error_bad_frame` | `M20.status_error_bad_frame` | `bit` | status |
+| `M03.error_runt` | `M20.status_error_runt` | `bit` | status |
+| `M03.error_oversize` | `M20.status_error_oversize` | `bit` | status |
+| `M03.error_start_without_terminate` | `M20.status_error_start_without_terminate` | `bit` | status |
+| `M04.error_underflow` | `M20.status_error_underflow` | `bit` | status |
+| `M06.error_short_frame` | `M20.status_error_short_frame` | `bit` | status |
+| `M08.error_unknown_ethertype` | `M20.status_error_unknown_ethertype` | `bit` | status |
+| `M10.error_arp_unsupported` | `M20.status_error_arp_unsupported` | `bit` | status |
+| `M13.error_arp_miss` | `M20.status_error_arp_miss` | `bit` | status |
+| `M13.error_arp_reply_dropped` | `M20.status_error_arp_reply_dropped` | `bit` | status |
+| `M14.error_ip_bad_header` | `M20.status_error_ip_bad_header` | `bit` | status |
+| `M14.error_ip_bad_checksum` | `M20.status_error_ip_bad_checksum` | `bit` | status |
+| `M14.error_ip_fragment` | `M20.status_error_ip_fragment` | `bit` | status |
+| `M14.error_ip_not_for_us` | `M20.status_error_ip_not_for_us` | `bit` | status |
+| `M14.error_ip_truncated` | `M20.status_error_ip_truncated` | `bit` | status |
+| `M14.error_ip_bad_protocol` | `M20.status_error_ip_bad_protocol` | `bit` | status |
+| `M14.error_ip_oversize` | `M20.status_error_ip_oversize` | `bit` | status |
+| `M17.error_udp_bad_length` | `M20.status_error_udp_bad_length` | `bit` | status |
+| `M17.error_udp_port` | `M20.status_error_udp_port` | `bit` | status |
+| `M18.error_tx_length_mismatch` | `M20.status_error_tx_length_mismatch` | `bit` | status |
+| `M20.status` | `EXT.status` | `Status` | status |
+
 ---
 
 ## 7. Prerequisites for `P1-spec-freeze`
@@ -458,6 +661,14 @@ are drafted, because the dependant reuses their interface records.
 
 Every spec follows [`SPEC-TEMPLATE.md`](SPEC-TEMPLATE.md) and is frozen only
 with a green `ifc_check` build and a dv_lead testability countersignature.
+
+**Currency (2026-08-02).** Batches **A** and **B** are **FROZEN at f78766e** —
+CI `build` run 30729342467 green, dv_lead countersignature `J-dv_lead-0005`,
+transcribed in `docs/gates/P1-spec-freeze-checklist.md`. Batch **C** is drafted
+(SPEC-M06 … SPEC-M09) and awaits its `ifc_check` run and dv_lead's
+countersignature. Batches **D**, **E** and **F** are unwritten, which is why
+§6.4's rows naming M10 … M20 are provisional in their port names and why each of
+those batches confirms or amends its own rows in the same commit as its specs.
 
 ---
 

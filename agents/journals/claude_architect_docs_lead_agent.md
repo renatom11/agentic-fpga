@@ -1070,3 +1070,319 @@ this revision's diffs. Handoff:
 - docs/specs/modules/xgmii_tx_64.md
 - docs/specs/requirements.md
 - docs/specs/traceability.md
+
+## [J-architect_docs_lead-0005] 2026-08-02T11:05:00Z | task:WO-0011 | Batch C (SPEC-M06/M07/M08/M09), the first post-freeze spec-diff cycle (C-11 to C-14), the 116-edge topology table and ADR-0008
+
+### Trigger
+Orchestrator spawn for WO-0011 (`agents/handoffs/WO-0011_batch-c-specs.md`,
+ISSUED at 482b03a), spawn short-id WO-0011/2026-08-02T09:50Z. Fifth activation.
+The packet's ordering is load-bearing and I kept it: the four WO-0010
+carry-forwards come first because they touch FROZEN specs and are the §13
+machinery's first real exercise, and a diff cycle that goes wrong is worse than
+a batch that lands late.
+
+### Inputs
+Repo at HEAD 482b03a, branch claude/fpga-hardcaml-agent-orchestration-37ceyf.
+- `agents/charters/architect_docs_lead.md`; `agents/PROTOCOL.md` §4, §6, §7, §10
+- `agents/handoffs/WO-0011_batch-c-specs.md` (my packet)
+- `agents/handoffs/WO-0010_dual-batch-countersign.md` — dv_lead's whole Return
+  log: the C-1 recomputation, the three batch-B verdicts, the §4.1 `Xgmii`
+  acceptance, the six §9 ruling confirmations, C-11's replacement text, C-12's
+  proposed ruling, C-13, and the five C-14 readings with the reading each
+  signature fixes
+- `docs/gates/P1-spec-freeze-checklist.md` — the ledger, the per-batch freeze
+  table (A and B FROZEN at f78766e), and both transcribed countersignatures
+- `docs/specs/modules/{axi64,crc32_eth,xgmii_rx_64,xgmii_tx_64,eth_mac_10g}.md`
+  — the FROZEN batch A+B text, read in full before editing any of it
+- `docs/specs/{requirements,architecture,traceability,SPEC-TEMPLATE}.md`
+- `docs/specs/ifc_check/{dune,axi64_ifc.ml,crc32_eth_ifc.ml,xgmii_rx_64_ifc.ml,eth_mac_10g_ifc.ml}`
+- `docs/adr/ADR-0007-octet-count-encoding.md` (for ADR form)
+- `tools/check_records_vs_appendix.sh` and `tools/dv_checks.sh` — **read and
+  run, never edited**: they are dv_lead's, and I needed to know exactly what
+  "byte identical" means mechanically before writing four new §4.1 blocks
+- Not read: `libs/**`, `rtl_snapshots/**`. No RTL exists. `test/**` was not
+  opened for writing; dv_lead is in it under WO-0012 right now.
+
+### Reasoning
+
+**1. The five frozen specs said DRAFT, and I fixed that before anything else.**
+The gate table has said FROZEN at f78766e since 482b03a; all five spec files
+still carried `Status: DRAFT` and `pending` freeze records. Nobody asked me to
+flip them. But SPEC-TEMPLATE §13 is defined as "post-freeze changes only", and I
+was about to write §13 rows into two specs whose own header denied they were
+frozen — a §13 row in a DRAFT spec is either meaningless or a lie about when the
+freeze happened. The flip is transcription, not decision: every value in the
+four §12 rows already existed in committed artefacts (run 30729342467 at
+f78766e; `J-architect_docs_lead-0004`; `J-dv_lead-0005`). I closed six deferred
+items in the same pass, each against evidence rather than by assertion — the two
+field-name witnesses that the green run settles, the two §9/§11 ruling items
+dv_lead confirmed, and C-9's script which is now live, CI-wired and green. I did
+**not** touch `docs/gates/**`: PROTOCOL §7 makes signature transcription the
+orchestrator's, and although `docs/gates` is technically inside my write scope,
+the whole point of that rule is that a signer does not edit the record of its
+own signature.
+
+**2. C-12 needed a requirements diff, and working out why is most of the value
+in this entry.** dv_lead's proposed ruling is right and I adopted it unmodified:
+an error character during REQ-108's `Discard` pulses nothing, because the frame
+is closed and a strobe attributable to an already-counted frame breaks §0.6's
+conservation equation. The tempting move was to land it only in SPEC-M03 §9,
+which is what the packet's literal words asked for. I rejected that: REQ-105's
+own text says "an `/E/` between the start character and the terminate
+character", and REQ-108 closes the frame **without a terminate character ever
+arriving**, so REQ-105 reads true during `Discard`. A tb_writer holding the REQ
+excerpt and not the spec — which is exactly the reader PROTOCOL §10 constructs —
+would derive the assertion the ruling forbids. So the ruling had to reach the
+requirement, and the general form of it is what I actually wrote down: SPEC-M03
+§9 now carries an explicit **closure list** (terminate, error-while-open, new
+start, REQ-108 truncation, `clear`) and states that every row of §9 is evaluated
+only while the frame is open. That converts a one-corner ruling into a rule with
+no remaining corners, which is the difference between answering C-12 and
+answering the class of question C-12 is an instance of.
+
+**3. C-14: I fixed all five and defended none, and the packet invited me to
+defend.** Judged one at a time, the reason to fix was different each time and
+worth separating. C-14.1 is not a loose sentence, it is a sentence that forbids
+what REQ-209 requires — no conformant design can have `tx_tready` = 0 across the
+whole gap and still emit a frame every 11 cycles — so there was nothing to
+defend. C-14.3 looked at first like harmless conservatism (a drain window one
+cycle wider than necessary), and I nearly defended it on that basis; what
+changed my mind is that REQ-109's own verification column already says "no
+output activity from 3 cycles after the terminate character onward", so §6.1
+permitted precisely the cycle REQ-109 forbids. That is a contradiction between
+two normative texts, not a margin. I re-derived the tight bound before adopting
+dv's figure — with N = 8q + r octets between start and terminate, the terminate
+word is cycle q + 1 and the `tlast` word is q + 2 for r ≤ 4 and q + 3 for r ≥ 5
+— and got 2 at both start lanes independently. C-14.4 is §0.5's own qualifier
+dropped, and defending it would have meant withdrawing the idle-injection hook
+§10 commissions against the same module. C-14.2 and C-14.5 are completeness
+defects in tables a bench reads directly; an implication is not a permission a
+test writer can rely on. **Every one of the eight §13 rows is non-breaking**,
+which is the part I care about for the churn count: §4.1 is byte-for-byte
+unchanged in both specs, and dv_lead's own record-versus-lift script confirms it
+at this commit.
+
+**4. The transmit-side header handshake — the one real design decision in batch
+C.** M01's header records carry `valid` and no `ready`, frozen at f78766e. On the
+receive path that is not just fine but forced: REQ-003 forbids backpressure on a
+receive-path port, and a header record travelling with a receive-path payload is
+one. Batch C put those records on the transmit path for the first time, where
+M07 must be able to refuse a frame (M04 stalls it every frame) and M09 must be
+able to grant one of two — and arbitration *is* refusal. The obvious repair is to
+add `ready` to the records, and I rejected it on two independent grounds: it puts
+a backpressure field on a record used at receive-path ports, so REQ-003's
+structural check would need an exception and an invariant with an exception stops
+being a guarantee; and it is a breaking change to a frozen spec for a problem
+with a non-breaking answer. The alternative I spent longest on was keeping
+`valid` a one-cycle pulse with mandatory capture — it looks workable until you
+write the arbiter, where two sources pulsing simultaneously means the loser's
+header is lost and its payload arrives orphaned. What I chose instead:
+**the header record and the frame's first payload word are offered on the same
+cycle and held together until that word is accepted, and the acceptance of the
+word is the acceptance of the header.** The grant becomes observable on
+`payload_tready`, a wire REQ-207 already requires, so there is no second
+handshake for a bench to monitor and no way for two handshakes to disagree. The
+cost is real and I wrote it down rather than hiding it: `valid` now has two
+disciplines, chosen by port direction, and every affected §7 says which one binds
+its own ports. This is ADR-0008, because it binds five modules across three
+future batches and no single spec can own it.
+
+**5. Numbers I derived rather than picked.** M06's ΔC = 3 is forced: payload
+octets 0–7 span input words 1 and 2 because the header is 14 octets, input word 2
+arrives at Ci + 2, and a registered output emits at Ci + 3. L = 8·ΔC − h =
+24 − 14 = **10** octet times, and §1.1's independently written "largest L the
+ceiling permits" column also says 10 — two numbers agreeing without being copied
+from each other, which is the check C-1 bought. M08 is the one module with h = 0,
+so ΔC = L/8 = 1 and L = 8, and it is the one module where the C-1 change of unit
+moves nothing at all; I said so in its §7 because a reader wondering why one row
+of §1.1 looks different deserves the answer in place. Two consequences of M06's
+arithmetic that I checked rather than assumed: stripping 14 octets removes one or
+two words, so M ∈ {K − 1, K − 2}, from which both the abort bit's availability
+(the input `tlast` always arrives at least one cycle before the output `tlast`
+word leaves) and REQ-410's back-to-back non-collision follow — neither needed a
+design choice, both needed the inequality. **M06 sits exactly on its ceiling with
+no cycle in reserve**, which is the position SPEC-M03 §7 deliberately avoided for
+M03. I chose to state that as a decision with its consequence attached — a fourth
+cycle is a slack release against the architect's 7, touching §7, §1.1 and
+architecture.md §4 in one diff — rather than quietly spending a slack cycle now.
+Slack spent "just in case" is slack gone; dv_lead named M06 as one of the two
+modules it would spend slack on, which is a reason to keep the seven cycles
+liquid, not a reason to spend one.
+
+**6. The connection table: what to enumerate, and where I refused to.** The
+packet asked for one row per edge for all twenty modules. Enumerated completely
+at port granularity — including every configuration field at every wrapper hop
+and every strobe at every wrapper hop — that is about 165 rows, of which ~90 are
+status and configuration relays through wrappers that relay everything unchanged
+by name. A block diagram with 150 status edges teaches nobody anything, and rows
+that restate a rule are rows that can drift from it. So the datapath is
+enumerated **completely** (26 rx + 39 tx, every edge of §6.1 and §6.2 expanded
+through the wrapper levels §6.3 implies), control is enumerated completely
+(29 rows), and status is the one summarised class: one row per strobe at the
+module that raises it, plus the top-level aggregation, with the relay rule stated
+so a renderer can compute the hops. I wrote down that this is a summary, in the
+section, because an unlabelled summary in a table called "connection table" is
+the kind of thing an auditor is right to find. Two other honesty items went in
+the prose rather than being left to inference: M01 appears in **no** row (it has
+no ports, so it has no edges — it is in the type column of nearly every row
+instead), and M02's eight rows name an internal signal of M03 and M04 on one
+side, because M02 is a combinational function instantiated inside them and a
+table that dropped it would be missing an inventory module. Rows naming M10–M20
+are provisional in their **port names only** — the edges and types are what the
+diagrams already commit to — and each later batch confirms or amends its own rows
+in the same commit as its specs, which is the same rule SPEC-TEMPLATE §10 already
+imposes on the traceability matrix. I put a fifth column for provisionality in a
+draft and took it out again: the orchestrator parses this table, and a variable
+column count is a worse defect than a rule stated in prose.
+
+**7. requirements.md gained a §13.** It is not a module spec and SPEC-TEMPLATE's
+§13 does not bind it, but dv_lead's testability countersignature at b4b4cf4 is
+what the entire test-derivation basis rests on, and REQ-level churn after it
+should be countable by the auditor without reading four journals. Seven rows,
+every diff since that signature, each with its class — all editorial so far —
+the ledger item that commissioned it, and the journal entry. It cost twelve lines
+and it makes "how much has moved since DV signed" a question with an answer.
+
+**8. What I did not touch.** `docs/gates/**` — reason in item 1. `test/**` and
+`tools/**` — dv_lead is in them under WO-0012 right now; I ran two of its scripts
+read-only and edited neither. `docs/specs/ifc_check/dune` — it has no `(modules)`
+field, so the four new lifts are picked up automatically; I re-checked rather
+than remembering. SPEC-M01 §6.1 — dv_lead analysed it under C-11 and found it
+already on the corrected side, and a frozen spec should not be opened for a
+sentence it does not contain.
+
+### Actions
+- **Freeze transcription**: `Status` → FROZEN at f78766e and §12's four rows
+  filled in `axi64.md`, `crc32_eth.md`, `xgmii_rx_64.md`, `xgmii_tx_64.md`,
+  `eth_mac_10g.md`; six deferred items closed (SPEC-M01 §11.4 and §11.5;
+  SPEC-M03 §11.1 and §11.3; SPEC-M04 §11.1 and §11.2); §13 statements added to
+  the three specs with no post-freeze change.
+- **C-11**: `requirements.md` REQ-015 — third sentence deleted, the count made
+  inclusive of the `tlast` word, the one-word frame stated legal and mandatory;
+  SPEC-M03 §7's handshake bullet moved in the same diff with a note recording
+  the deletion.
+- **C-12**: `requirements.md` REQ-105 (open-frame clause) and REQ-108 (nothing
+  emitted or pulsed between truncation and the next start character), both
+  verification columns extended; SPEC-M03 §9 gained a closure list, a third
+  table row and an `error_oversize`/`error_bad_frame` bullet; §6.2's `Discard`
+  row and §6.3 item 6 added; §11.4 opened and closed.
+- **C-13**: `requirements.md` REQ-010 — census corrected to seven ports in two
+  classes, the six XGMII lane pairs named, the converse compile check stated.
+- **C-14**: SPEC-M03 §6.1 (drain bound derived; gapless qualifier), §6.2
+  (`Frame` row), §6.3 item 7, §4.3, §10's REQ-016/REQ-109/REQ-802 rows, §11.5;
+  SPEC-M04 §7 (throughput and reset bullets rewritten), §6.2 `Idle` row, §6.3
+  item 5, §4.3, §10's REQ-009/REQ-209 rows, §11.4. Eight §13 rows in total,
+  all non-breaking.
+- **New specs**: `docs/specs/modules/{eth_axis_rx,eth_axis_tx,eth_demux,eth_arb_mux}.md`
+  (SPEC-M06 … SPEC-M09), DRAFT and template-complete, with lifts
+  `{eth_axis_rx,eth_axis_tx,eth_demux,eth_arb_mux}_ifc.ml` generated **from** the
+  §4.1 fences so byte-identity is mechanical rather than careful.
+- **New ADR**: `docs/adr/ADR-0008-transmit-header-handshake.md`.
+- **architecture.md**: new `### 6.4 Connection table` (116 rows in four
+  sub-tables plus its parsing contract, class definitions and completeness
+  rule); §8 gained a dated currency note on batch status.
+- **traceability.md**: ten rows filled (REQ-401 … REQ-410); currency bullet
+  extended; a bullet recording that the four REQ diffs preserve set equality.
+- **requirements.md**: new `## 13. Revision record`, seven rows.
+- Appended the RETURNED entry to `agents/handoffs/WO-0011_batch-c-specs.md`.
+
+### Evidence
+All commands run from the working tree at this commit's content. Hardcaml is
+**not installed in this container**, so no lift was type checked or
+ppx-elaborated here; per ADR-0005 the CI `build` run on the orchestrator's
+commit is the only acceptable evidence, and all four batch-C freeze records say
+`pending` accordingly.
+
+1. `tools/check_records_vs_appendix.sh` → `12 check(s) run, 0 failure(s)`, up
+   from 8 before this work order. The four new pairs report
+   `modules/<m>.md §4.1 == ifc_check/<m>_ifc.ml (byte identical)`; the five
+   pre-existing pairs still pass, so no frozen §4.1 moved; and
+   `Status record = requirements.md §12 (21 strobes, same order)` plus
+   `Config record = requirements.md §9.1 (12 fields, widths equal in order)`
+   still pass over the edited requirements.md — the new §13 does not disturb
+   §12's extraction, which was the one mechanical risk in appending to that
+   file.
+2. `tools/dv_checks.sh` → exit 0, `4 check(s) run, 0 failure(s), 4 pending`.
+3. `ocamlc -stop-after parsing` over `docs/specs/ifc_check/*.ml` → parse OK for
+   all ten. Parsing only — no typing, no ppx, no elaboration.
+4. REQ set equality, recomputed from the edited files: **110 ids in
+   requirements.md, 110 in traceability.md, symmetric difference empty**.
+5. Template completeness: sections 1–13 present in all nine module specs
+   (mechanical check for the nineteen required headings). Strobe-name
+   conformance: every `error_*` name used in the four new specs is in
+   requirements.md §12 — 1 in SPEC-M06, 3 in SPEC-M07 (all as cross-references
+   to other modules' strobes), 1 in SPEC-M08, 1 in SPEC-M09 — none outside the
+   appendix.
+6. Connection table re-parsed from the committed architecture.md with a
+   four-column reader: **116 rows, 0 syntax-irregular, 0 duplicate edges**,
+   class counts rx 26 / tx 39 / control 29 / status 22, nineteen inventory
+   modules present, M01 absent as the section documents, three pseudo-nodes
+   (`WIRE`, `APP`, `EXT`).
+7. Arithmetic derived rather than transcribed: M06 (L + h) = 10 + 14 = 24, a
+   multiple of 8, ΔC = 3 against a ceiling of 3, and §1.1's independently
+   written "largest L" column gives 10; M08 (8 + 0) = 8, ΔC = 1 against a
+   ceiling of 1, largest-L column 8. C-14.3's drain bound reproduced
+   independently: terminate word at cycle q + 1, `tlast` word at q + 2 (r ≤ 4)
+   or q + 3 (r ≥ 5) at a lane-0 start and one less at a lane-4 start, maximum
+   **2** = ΔC − 1. M06's M ∈ {K − 1, K − 2} checked at N = 14, 15 and 22.
+8. `git status --porcelain` shows my eighteen paths plus dv_lead's concurrent
+   `test/**` and `tools/**` under WO-0012, which I did not create, open for
+   writing or modify. `docs/gates/**`, `libs/**` and `rtl_snapshots/**` are
+   unmodified.
+9. `git commit` and `git push` were never run.
+
+### Outcome
+DoD vs WO-0011: **met**, with one item that evidence rather than work completes.
+- Deliverable 1 (the four diff sets, first): done. C-11 applied with one clause
+  retained and the reason stated; C-12 adopted and landed in three places
+  because the ruling contradicts REQ-105's literal text; C-13 applied; C-14 all
+  five fixed with a per-reading judgment table in the Return log. Eight §13
+  rows, all non-breaking; post-freeze interface churn after this cycle is zero.
+- Deliverable 2 (SPEC-M06 … M09): done. DRAFT, template-complete, lifts
+  byte-identical, `open! Axi64_ifc`, no record restated; realignment latency in
+  octet times (M06 L = 10 / h = 14 / ΔC = 3; M08 L = 8 / h = 0 / ΔC = 1) under
+  the sealed unit and inside §1.1's ceilings. **The `ifc_check` compile evidence
+  is pending** — the one item work cannot complete here (ADR-0005).
+- Deliverable 3 (connection table): done. 116 rows, re-parsed, with its parsing
+  contract, class definitions, provisionality rule and the one summarised class
+  labelled as such.
+- Deliverable 4 (traceability): done. Ten rows; set equality verified at 110.
+- Extra, not asked for: the five frozen specs' Status and §12 rows now agree
+  with the gate table; six deferred items closed; ADR-0008; requirements.md
+  §13.
+- Handoff: `agents/handoffs/WO-0011_batch-c-specs.md`, RETURNED, with the
+  ledger dispositions for the orchestrator to transcribe into `docs/gates/`.
+
+### Open-questions
+1. **Batch C needs an `ifc_check` run** on the commit carrying it — four
+   `pending` §12 rows are waiting for its id, and it is the only thing between
+   these specs and a countersignature request.
+2. **ADR-0008 binds three unwritten specs** (M11, M15, M18) through their
+   source-side obligation. If dv_lead reads the held-`valid` transmit discipline
+   differently, batch C's countersignature is the cheap moment to say so; it is
+   flagged in SPEC-M07 §11.2 and SPEC-M09 §11.3.
+3. **M06 is pinned exactly at its §1.1 ceiling** with no cycle in reserve. No
+   action today; recorded so that a later request for a fourth cycle arrives as
+   a slack release against the architect's seven and not as a surprise.
+4. **C-3 and C-5 remain open**, unchanged by this work order and both tracked
+   in specs (SPEC-M08 §11.2, SPEC-M04 §11.3).
+
+### Files-in-this-commit
+- agents/handoffs/WO-0011_batch-c-specs.md
+- docs/adr/ADR-0008-transmit-header-handshake.md
+- docs/specs/architecture.md
+- docs/specs/ifc_check/eth_arb_mux_ifc.ml
+- docs/specs/ifc_check/eth_axis_rx_ifc.ml
+- docs/specs/ifc_check/eth_axis_tx_ifc.ml
+- docs/specs/ifc_check/eth_demux_ifc.ml
+- docs/specs/modules/axi64.md
+- docs/specs/modules/crc32_eth.md
+- docs/specs/modules/eth_arb_mux.md
+- docs/specs/modules/eth_axis_rx.md
+- docs/specs/modules/eth_axis_tx.md
+- docs/specs/modules/eth_demux.md
+- docs/specs/modules/eth_mac_10g.md
+- docs/specs/modules/xgmii_rx_64.md
+- docs/specs/modules/xgmii_tx_64.md
+- docs/specs/requirements.md
+- docs/specs/traceability.md

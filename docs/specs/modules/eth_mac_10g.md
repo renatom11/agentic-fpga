@@ -1,6 +1,8 @@
 # SPEC-M05 — `Eth_mac_10g`
 
-- **Status**: DRAFT
+- **Status**: **FROZEN** (`P1-spec-freeze`, SHA `f78766e`) — batch B, dv_lead
+  countersignature `J-dv_lead-0005`. Changes to §4, §6 or §7 after this point
+  are spec diffs recorded in §13 (SPEC-TEMPLATE rule 7)
 - **Inventory id**: M05 (architecture.md §4) · **Path**:
   `libs/hardcaml_ethernet/src/eth_mac_10g.ml`
 - **Datapath role**: shared/structural (receive-path module **with respect to
@@ -329,19 +331,22 @@ updated in the same commit.
 
 ## 12. Freeze record
 
-Filled in at `P1-spec-freeze`. All four rows are required (charter §5); this
-spec is DRAFT.
+Filled in at `P1-spec-freeze`. All four rows are required (charter §5).
 
 | Item | Value |
 |---|---|
-| Interface compile check | pending — CI `build` run `<id>`, conclusion `<success>`, SHA `<sha>`; per ADR-0005 a local build is not acceptable evidence |
+| Interface compile check | CI `build` run **30729342467**, conclusion **`success`**, SHA **f78766e**; per ADR-0005 a local build is not acceptable evidence |
 | Architect signature | `J-architect_docs_lead-0004` |
-| dv_lead testability countersignature | pending — batch B (SPEC-M03, M04, M05) |
-| Frozen at | pending — SHA `<sha>`, gate `docs/gates/P1-spec-freeze-checklist.md` |
+| dv_lead testability countersignature | `J-dv_lead-0005` (WO-0010) — **SIGNED**, batch B |
+| Frozen at | SHA **f78766e**, gate `docs/gates/P1-spec-freeze-checklist.md` |
 
 ## 13. Change log
 
-Post-freeze changes only. This spec is DRAFT and has none.
+Post-freeze changes only. This spec has none. The WO-0011 diff cycle changed
+SPEC-M03 §6.1, §6.2, §6.3, §7 and §9 and SPEC-M04 §4.3, §6.2, §6.3 and §7;
+every one of those diffs is editorial and none moves a port, so §4.1's wiring,
+§6.1's connection table and §7's "zero octet times added" are unaffected. M05's
+receive-port constants remain M03's unchanged (L = 16 / 12, h = 8 / 12, ΔC = 3).
 
 | Date | Change | Breaking? | ADR | Journal |
 |---|---|---|---|---|

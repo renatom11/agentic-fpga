@@ -30,8 +30,15 @@
   reading `pending` is one no written specification pins yet.
 - **Currency**: batch A (SPEC-M01, SPEC-M02) and batch B (SPEC-M03, SPEC-M04,
   SPEC-M05) rows were filled under WO-0008, in the commit that wrote the batch-B
-  specs. Batches C–F follow the same rule — matrix and spec in one commit
-  (SPEC-TEMPLATE §10).
+  specs; batch C (SPEC-M06, SPEC-M07, SPEC-M08, SPEC-M09) under WO-0011, in the
+  commit that wrote them — ten rows, REQ-401 through REQ-410. Batches D–F follow
+  the same rule — matrix and spec in one commit (SPEC-TEMPLATE §10).
+- **REQ set equality survives spec diffs, and that is checked rather than
+  assumed.** WO-0011's carry-forward diffs changed the *text* of REQ-010,
+  REQ-015, REQ-105 and REQ-108 and added no requirement and retired none, so the
+  110-row set below is unchanged; requirements.md §13 records those four diffs
+  and their class. REQ-904's CI script is what makes this a continuous check
+  rather than a per-gate one.
 - **Test(s)** is filled by dv_lead with the test name and file, in the same
   commit as the test. Multiple tests per REQ are listed comma separated. A REQ
   covered only by a declared gap says `GAP: <reason>` and that gap must appear
@@ -122,16 +129,16 @@ or withdrawn; ids remain permanent.
 | REQ-304 | FUNC | Residue property | M02 `Crc32_eth` | SPEC-M02 §6.1 | | OPEN |
 | REQ-305 | FUNC | Reference equivalence | M02 `Crc32_eth` | SPEC-M02 §6.1 | | OPEN |
 | REQ-306 | IFC | Stateless function | M02 `Crc32_eth` | SPEC-M02 §4.1, §6.2 | | OPEN |
-| REQ-401 | FUNC | Header extraction | M06 `Eth_axis_rx` | pending | | OPEN |
-| REQ-402 | ERR | Short frames | M06 `Eth_axis_rx` | pending | | OPEN |
-| REQ-403 | ERR | Abort passthrough | M06 `Eth_axis_rx` | pending | | OPEN |
-| REQ-404 | FUNC | Ethertype demultiplex | M08 `Eth_demux` | pending | | OPEN |
-| REQ-405 | FUNC | Header insertion | M07 `Eth_axis_tx` | pending | | OPEN |
-| REQ-406 | FUNC | Frame-atomic arbitration | M09 `Eth_arb_mux` | pending | | OPEN |
-| REQ-407 | FUNC | No Ethernet-layer address filtering | M06 `Eth_axis_rx` | pending | | OPEN |
-| REQ-408 | FUNC | Payload extent | M06 `Eth_axis_rx` | pending | | OPEN |
-| REQ-409 | IFC | Field decoding | M06 `Eth_axis_rx`, M07 `Eth_axis_tx` | pending | | OPEN |
-| REQ-410 | PERF | Back-to-back frames | M06 `Eth_axis_rx` | pending | | OPEN |
+| REQ-401 | FUNC | Header extraction | M06 `Eth_axis_rx` | SPEC-M06 §6.1, §7 | | OPEN |
+| REQ-402 | ERR | Short frames | M06 `Eth_axis_rx` | SPEC-M06 §9 | | OPEN |
+| REQ-403 | ERR | Abort passthrough | M06 `Eth_axis_rx` | SPEC-M06 §9 | | OPEN |
+| REQ-404 | FUNC | Ethertype demultiplex | M08 `Eth_demux` | SPEC-M08 §6.1, §9 | | OPEN |
+| REQ-405 | FUNC | Header insertion | M07 `Eth_axis_tx` | SPEC-M07 §6.1 | | OPEN |
+| REQ-406 | FUNC | Frame-atomic arbitration | M09 `Eth_arb_mux` | SPEC-M09 §6.1, §6.2, §6.3 | | OPEN |
+| REQ-407 | FUNC | No Ethernet-layer address filtering | M06 `Eth_axis_rx` | SPEC-M06 §2, §4.3 | | OPEN |
+| REQ-408 | FUNC | Payload extent | M06 `Eth_axis_rx` | SPEC-M06 §6.1, §8 | | OPEN |
+| REQ-409 | IFC | Field decoding | M06 `Eth_axis_rx`, M07 `Eth_axis_tx` | SPEC-M06 §6.1; SPEC-M07 §6.1 | | OPEN |
+| REQ-410 | PERF | Back-to-back frames | M06 `Eth_axis_rx` | SPEC-M06 §6.1, §6.2 | | OPEN |
 | REQ-501 | FUNC | Packet acceptance | M10 `Arp_eth_rx` | pending | | OPEN |
 | REQ-502 | FUNC | Request response | M13 `Arp`, M11 `Arp_eth_tx` | pending | | OPEN |
 | REQ-503 | FUNC | Learning | M13 `Arp`, M12 `Arp_cache` | pending | | OPEN |

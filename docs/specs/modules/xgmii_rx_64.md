@@ -1,6 +1,8 @@
 # SPEC-M03 — `Xgmii_rx_64`
 
-- **Status**: DRAFT
+- **Status**: **FROZEN** (`P1-spec-freeze`, SHA `f78766e`) — batch B, dv_lead
+  countersignature `J-dv_lead-0005`. Changes to §4, §6 or §7 after this point
+  are spec diffs recorded in §13 (SPEC-TEMPLATE rule 7)
 - **Inventory id**: M03 (architecture.md §4) · **Path**:
   `libs/hardcaml_ethernet/src/xgmii_rx_64.ml`
 - **Datapath role**: receive
@@ -195,7 +197,10 @@ Effect: when `cfg_rx_enable` = 0, M03 accepts no frame — it treats every start
 character as absent, emits no output word, and pulses no strobe (REQ-810). It
 is sampled **at the start character**: a frame whose start character is
 accepted at least one cycle after the input changes is governed by the new
-value, and a frame already in flight completes under the old one (REQ-803).
+value, and a frame already in flight completes under the old one (REQ-803). A
+change landing on the **same** cycle as a start character is outside that
+sentence and is deliberately unconstrained — §6.3 item 7, carry-forward
+**C-14.5**.
 Gating here rather than downstream is deliberate: REQ-810 requires that *no*
 receive-path stream carries a word, and M03 is the only module from which that
 follows without every other module implementing the same control.
@@ -237,10 +242,22 @@ REQ-105.
 
 **Emitting the frame.** Frame octet j is emitted at `tdata` position j mod 8 of
 output word ⌊j / 8⌋, so the frame's first octet is at `tdata`[7:0] of the first
-output word at both start lanes (REQ-021). Output word m is emitted on the
-cycle **m + 3** counted from the word carrying the start character; that single
-sentence is the whole timing contract and §7 derives the latency constants from
-it.
+output word at both start lanes (REQ-021). **On a gapless stimulus** — every
+XGMII word from the start word onward carrying frame octets — output word m is
+emitted on the cycle **m + 3** counted from the word carrying the start
+character; that single sentence is the whole timing contract and §7 derives the
+latency constants from it.
+
+The qualifier is load-bearing and is §0.5's own (carry-forward **C-14.4**). An
+input word that covers **no** frame octet — the second word of a lane-4 start's
+preamble, a terminate character in a low lane, or an idle cycle injected by
+REQ-016's wrapper, which §10 commissions against this module at 0, 1 and 7
+cycles — carries the frame forward without advancing m: it is *not* a condition,
+it holds the CRC register by its enable (§6.2) and it delays every later octet
+by exactly 8 octet times per cycle, which is REQ-016's own arithmetic. The
+**per-octet** constant of §7 holds on every stimulus, gapped or not; the cycle
+formula above holds only on the gapless one, and a bench asserting the formula
+under idle injection would fail a conformant design.
 
 **Removing the FCS without varying the latency.** The last four octets before
 the terminate character are the FCS and are not delivered (REQ-103). They are
@@ -309,8 +326,21 @@ a bench SHALL NOT assert it as one for other modules).
 **Between frames (REQ-109, REQ-113).** With no frame in flight, idle characters
 and ordered sets produce no output word and no strobe. A frame still draining
 through the two-word pipeline legitimately produces output words during the
-first idle cycles after its terminate character — up to and including cycle
-ΔC after the terminate word, which is what a REQ-109 bench must allow for.
+first idle cycles after its terminate character — **up to and including two
+cycles after the terminate word, and no later**, which is what a REQ-109 bench
+must allow for and no more (carry-forward **C-14.3**).
+
+*Two, not three, and it is derivable rather than asserted.* Let N be the number
+of octets between the start and terminate characters, N = 8q + r. At a lane-0
+start the terminate character lies at octet offset N from the first frame octet,
+so its word is cycle q + 1; the frame delivers N − 4 octets, which is q words
+for r ≤ 4 and q + 1 words for r ≥ 5, so the `tlast` word is output word q − 1 or
+q and leaves at cycle q + 2 or q + 3 — **one or two cycles** after the terminate
+word. At a lane-4 start the same arithmetic gives zero or one. The maximum is
+therefore ΔC − 1 = **2**, which is exactly the bound REQ-109's verification
+column already uses ("no output activity from 3 cycles after the terminate
+character onward") and the bound §10's REQ-109 hook states. A drain window of
+ΔC = 3 would be one cycle loose and would let a real drain defect through.
 
 **When `cfg_rx_enable` is 0.** No start character is recognised, so no frame
 begins, nothing is emitted and no strobe pulses (REQ-810). Because no frame is
@@ -324,8 +354,8 @@ Reset state and `clear` state are both `Idle`.
 |---|---|---|---|
 | `Idle` | reset; `clear`; a frame ends normally or is aborted | ignores every lane; `tvalid` = 0; CRC register held | `Preamble` on `/S/` in lane 0 or lane 4 while `cfg_rx_enable` = 1 |
 | `Preamble` | a start character is accepted | discards the eight octets from the start character inclusive without checking their values (REQ-102); seeds the CRC register to 0x00000000 | `Frame` once those eight octets have passed; `Idle` on `/T/` (REQ-107, zero delivered octets), on `/E/` (REQ-105, zero delivered octets) or on `/S/` (REQ-110, zero delivered octets — re-entering `Preamble` for the new frame) |
-| `Frame` | the frame's first octet | forwards octets at the fixed delay of §7; enables the CRC update on every cycle covering ≥ 1 frame octet; counts received octets for REQ-107 and REQ-108 | `Idle` on `/T/` (REQ-106; runt check on the count, FCS check on the residue); `Idle` on `/E/` (REQ-105); `Preamble` on `/S/` (REQ-110); `Discard` when the received count passes 1518 (REQ-108) |
-| `Discard` | REQ-108 truncation | emits nothing further for this frame; keeps decoding lanes so the next frame is not lost | `Idle` on `/T/`; `Preamble` on `/S/` — this is REQ-108's "resynchronise on the next start character" |
+| `Frame` | the frame's first octet | forwards octets at the fixed delay of §7; enables the CRC update on every cycle covering ≥ 1 frame octet; counts received octets for REQ-107 and REQ-108. An input word covering **no** frame octet — a terminate character in a low lane, the second preamble word of a lane-4 start, an idle cycle injected under REQ-016 — **holds** the frame: the CRC register holds by its enable, the octet count holds, no output word is produced and no condition is raised (C-14.4) | `Idle` on `/T/` (REQ-106; runt check on the count, FCS check on the residue); `Idle` on `/E/` (REQ-105); `Preamble` on `/S/` (REQ-110); `Discard` when the received count passes 1518 (REQ-108) |
+| `Discard` | REQ-108 truncation | emits nothing further for this frame; keeps decoding lanes so the next frame is not lost. An `/E/` arriving here is **absorbed**: the frame is already closed and already reported by `error_oversize`, so no output word appears and no strobe pulses (REQ-105's open-frame clause, carry-forward **C-12**) | `Idle` on `/T/`; `Preamble` on `/S/` — this is REQ-108's "resynchronise on the next start character". `/E/` is not an exit: whether the implementation stays in `Discard` or falls to `Idle` on it is unobservable and is §6.3 item 6 |
 
 The CRC register's **enable** is the mechanism ADR-0007 records: it is asserted
 only in `Frame` and only on cycles covering at least one frame octet, so
@@ -357,6 +387,20 @@ rely on it.
 5. **Which strobe cycle is used within the §9 window** is *not* on this list:
    §9 pins it exactly, because a one-cycle pulse whose cycle is unconstrained
    is a pulse a bench must search for.
+6. **The state M03 occupies after absorbing an `/E/` in `Discard`** (§6.2,
+   C-12). The *observable* is pinned — no output word, no strobe, and the next
+   start character is received normally — and both candidate encodings
+   (`Discard` held, or a fall to `Idle`) produce it identically, because `Idle`
+   also ignores every lane and also begins a new frame on `/S/`. DV SHALL
+   assert nothing about the internal state.
+7. **The outcome of changing `cfg_rx_enable` on the exact cycle a start
+   character is accepted** (§4.3, carry-forward **C-14.5**). §4.3 governs the
+   frame whose start character is accepted *at least one cycle after* the
+   change; the same-cycle case is left open by that wording and is left open
+   deliberately here. A bench that changes the input on the start character's
+   own cycle and asserts either outcome is flaky by construction and SHALL NOT
+   be written; a bench that needs a determinate result changes the input at
+   least one cycle earlier or later, which every REQ-810 test can do.
 
 ## 7. Timing contract
 
@@ -395,12 +439,21 @@ rely on it.
 
 - **Handshake rules.** `tvalid` = 1 exactly on cycles carrying frame octets.
   `tkeep` is `0xFF` except on the `tlast` word. `tlast` = 1 on the word carrying
-  the frame's last delivered octet, and never without at least one preceding
-  word since the previous `tlast` (REQ-015). `tuser`[0] is meaningful only on the
-  `tlast` word. At most 190 words between successive `tlast` words. No header
-  record is emitted, so REQ-401's `valid` pattern has no instance here. Idle
-  gaps on the input (REQ-016) delay everything by exactly 8 octet times per
-  cycle and change nothing else.
+  the frame's last delivered octet, **and that word is counted in the frame's
+  word total** (REQ-015): a frame of **one** word, whose single word carries
+  `tlast`, is legal on this stream and is what a 5-octet runt produces (§9,
+  REQ-107, one delivered octet). `tuser`[0] is meaningful only on the `tlast`
+  word. At most 190 words between successive `tlast` words, the `tlast` word
+  included — 1514 octets is 189 full words and a final two-octet word (REQ-108).
+  No header record is emitted, so REQ-401's `valid` pattern has no instance
+  here. Idle gaps on the input (REQ-016) delay everything by exactly 8 octet
+  times per cycle and change nothing else.
+
+  *This bullet previously forbade a `tlast` word with no preceding word since
+  the previous `tlast`, restating a sentence of REQ-015 that contradicted the
+  same requirement's own 190-word figure and forbade the very frame REQ-107
+  requires. The sentence is deleted from REQ-015 and from here in one diff,
+  carry-forward **C-11**, on dv_lead's wording.*
 
 - **Reset.** While `clear` = 1 and on the first cycle after it returns to 0:
   `tvalid` = 0, all five strobes 0, state `Idle`, CRC register value irrelevant
@@ -468,17 +521,32 @@ Strobe names are normative (requirements.md §12).
 | Condition | Strobe (one cycle) | Stream effect | REQ |
 |---|---|---|---|
 | Received FCS does not match the computed residue | `error_bad_fcs` | frame forwarded in full, `tuser`[0] = 1 on `tlast` | REQ-104 |
-| `/E/` between the start and terminate characters, with ≥ 1 octet already delivered | `error_bad_frame` | frame truncated at the octet before the error character, `tuser`[0] = 1 on `tlast`, no FCS removed | REQ-105 |
-| `/E/` at or before the frame's first octet (including in a preamble position) | `error_bad_frame` | **no output word at all**; no `tlast` exists to mark | REQ-105, §0.7 |
+| `/E/` **while the frame is open** — after the start character and before the terminate character or any other event that closed the frame (§9's closure list below) — with ≥ 1 octet already delivered | `error_bad_frame` | frame truncated at the octet before the error character, `tuser`[0] = 1 on `tlast`, no FCS removed | REQ-105 |
+| `/E/` while the frame is open, at or before the frame's first octet (including in a preamble position) | `error_bad_frame` | **no output word at all**; no `tlast` exists to mark | REQ-105, §0.7 |
+| `/E/` while **no** frame is open — after a terminate character, after REQ-108's truncation, or between frames | *(none)* | nothing emitted, nothing pulsed; the next start character is received normally | REQ-105, REQ-108, REQ-113, **C-12** |
 | 5 to 63 octets between start and terminate | `error_runt` | frame forwarded (1 to 59 octets after FCS removal), `tuser`[0] = 1 on `tlast` | REQ-107 |
 | Fewer than 5 octets between start and terminate | `error_runt` | **no output word at all**; no FCS removal is attempted on a frame with nothing to remove it from | REQ-107, §0.7 |
 | More than 1518 octets between start and terminate | `error_oversize` | frame truncated to exactly 1514 delivered octets, `tuser`[0] = 1 on `tlast`; the remainder is discarded until `/T/` or `/S/` | REQ-108 |
 | `/S/` before the current frame's `/T/`, with ≥ 1 octet already delivered | `error_start_without_terminate` | current frame truncated at the octet before the new start character, `tuser`[0] = 1 on `tlast`, no FCS removed; the new frame begins normally | REQ-110 |
 | `/S/` while the current frame is still inside its own preamble | `error_start_without_terminate` | **no output word at all** for the aborted frame; the new frame begins normally | REQ-110, §0.7 |
 
-Silent discard is prohibited (REQ-008): every row has a strobe. The one
-exception in this specification is `clear` asserted mid-frame, which REQ-009
-governs (§7).
+Silent discard is prohibited (REQ-008): every row that discards or truncates a
+frame has a strobe. The last row discards nothing — there is no frame for it to
+discard, which is precisely why it pulses nothing — and it is tabulated because
+a reader who does not find it here has to guess (carry-forward **C-12**). The
+one real exception in this specification is `clear` asserted mid-frame, which
+REQ-009 governs (§7).
+
+**When a frame is open, and what closes it** (the list the first two rows above
+refer to). A frame is open from the cycle M03 accepts its start character until
+the earliest of: its terminate character (REQ-106); an error character arriving
+while it is open (REQ-105); a new start character (REQ-110); REQ-108's
+truncation, on the cycle the received count passes 1518; or `clear` (REQ-009).
+Every condition in the table is evaluated **only while the frame is open**. This
+is what makes each frame's report a function of the frame rather than of the
+characters that happen to follow it, and it is what §0.6's conservation equation
+needs: a strobe that pulsed after closure would be attributable to a frame
+already counted.
 
 **Strobe cycle, pinned.** Each strobe pulses for exactly one cycle, on the
 cycle M03 emits that frame's `tlast` word. For a frame that produces no output
@@ -512,6 +580,14 @@ inside requirements.md §0.6's window.
   frame. REQ-108's truncation has already closed the frame with `tlast` and
   `tuser`[0] = 1; a start character arriving during the `Discard` state is the
   resynchronisation REQ-108 requires, not a second abort, and it pulses nothing.
+- **`error_oversize` with `error_bad_frame`**: never on the same frame, for the
+  same reason and by the same ruling (carry-forward **C-12**, dv_lead's proposed
+  ruling adopted). REQ-108's truncation closes the frame; an `/E/` arriving in
+  `Discard` therefore finds no open frame, emits nothing and pulses nothing. A
+  bench that injects a 1600-octet frame with an error character after the
+  truncation point SHALL see exactly one `error_oversize`, no `error_bad_frame`,
+  and the following frame intact — the assertion `AP-xgmii_rx_64` was holding as
+  NO-ASSERT until this ruling landed.
 - **`error_runt` with `error_oversize`**: impossible — the octet ranges are
   disjoint.
 
@@ -538,7 +614,7 @@ M03 inherits no abort: it is the origin of `tuser`[0] on this chain, so
 | REQ-012 | lane k to `tdata` position, lane 0 earliest | §6.1 | known-frame directed test |
 | REQ-014 | `tstrb` driven 0 | §7 | protocol monitor; REQ-014's differential run |
 | REQ-015 | one `tlast` per frame, at most 190 words | §7 | protocol monitor |
-| REQ-016 | input idle cycles delay octets and change nothing else | §7 | idle-injection wrapper at 0, 1 and 7 cycles |
+| REQ-016 | input idle cycles delay octets and change nothing else; an input word covering no frame octet holds the frame and is not a condition | §6.1, §6.2, §7 | idle-injection wrapper at 0, 1 and 7 cycles, asserting the **per-octet** constant of §7 rather than §6.1's gapless cycle formula (C-14.4) |
 | REQ-017 | `xgmii_rxd` / `xgmii_rxc` from SPEC-M01's `Xgmii` record | §4.1, §4.2 | emitted-Verilog port check at M05 and M20 |
 | REQ-018 | no sub-XGMII logic; instantiates only M02 | §2, §3 | the emitted-module whitelist check |
 | REQ-019 | ΔC = 3 against a ceiling of 4; two words of payload storage | §7 | ΔC computed from the pinned L and h at freeze; measured ΔC from the stress run in the sign-off packet |
@@ -548,16 +624,16 @@ M03 inherits no abort: it is the origin of `tuser`[0] on this chain, so
 | REQ-102 | eight octets from the start character discarded, values unchecked; control characters in preamble positions routed to §9 | §6.1, §9 | frame with arbitrary preamble filler; frame with `/E/` in a preamble lane; frame with `/T/` in a preamble lane |
 | REQ-103 | delivers first DA octet through the octet before the FCS; no removal on aborted, truncated or cut-short frames | §6.1 | directed lengths 64–71 and 1518; the three no-removal cases from §9 |
 | REQ-104 | residue check against 0x2144DF1C; abort bit and strobe on mismatch | §6.1, §9 | one payload bit flipped; assert the octet count is unchanged, `tuser`[0] = 1, one `error_bad_fcs` |
-| REQ-105 | frame ends at the octet before `/E/`; zero-delivered case emits nothing | §9 | `/E/` in each of eight lanes of a mid-frame word; `/E/` in a preamble lane |
+| REQ-105 | frame ends at the octet before `/E/`; zero-delivered case emits nothing; an `/E/` arriving when no frame is open emits and pulses nothing | §9 | `/E/` in each of eight lanes of a mid-frame word; `/E/` in a preamble lane; `/E/` after a terminate character and after a REQ-108 truncation point, asserting no `error_bad_frame` (C-12) |
 | REQ-106 | terminate accepted in any lane; last octet is the one before it | §6.1 | lengths placing `/T/` in each of eight lanes |
 | REQ-107 | 5–63 octets forwarded and marked; < 5 emits nothing | §9 | 5-, 16-, 60-, 63-octet frames; 0-, 1-, 4-octet frames |
-| REQ-108 | truncation at exactly 1514 delivered octets; `Discard` then resynchronise; no `error_bad_fcs` | §6.2, §9 | 1600-octet frame followed immediately by a valid frame |
-| REQ-109 | silent while idle and no frame in flight; drain window is ΔC cycles | §6.1, §7 | 1000 idle cycles; assert no activity from 3 cycles after the terminate word |
+| REQ-108 | truncation at exactly 1514 delivered octets; `Discard` then resynchronise; no `error_bad_fcs`, and no strobe of any kind between the truncation point and the next start character | §6.2, §9 | 1600-octet frame followed immediately by a valid frame; the same frame again with an `/E/` 100 octets past the truncation point (C-12) |
+| REQ-109 | silent while idle and no frame in flight; the drain window is **two** cycles after the terminate word, not ΔC | §6.1, §7 | 1000 idle cycles; assert no activity from 3 cycles after the terminate word — the tight bound §6.1 derives (C-14.3) |
 | REQ-110 | abort at the octet before the new `/S/`; zero-delivered case emits nothing; new frame received | §9 | `/S/` replacing `/T/` in lane 0 and lane 4; `/S/` in lane 4 of a word whose lane 0 was `/S/` |
 | REQ-111 | L = 16 (lane 0) and 12 (lane 4), constant per lane | §7 | per-octet measurement over the REQ-005 frame set at both lanes |
 | REQ-112 | no `tready` input; an XGMII word accepted every cycle | §4.1 | interface compile check plus the stress bench |
 | REQ-113 | ordered sets and out-of-frame control characters ignored | §6.1 | 100 cycles of a local-fault ordered set, then a frame compared against the same frame after idles only |
-| REQ-802, REQ-810 | `cfg_rx_enable` sampled at the start character; when 0, nothing is accepted or emitted | §4.3 | drive `cfg_rx_enable` = 0 and inject 100 frames; assert no word and no strobe, then re-enable |
+| REQ-802, REQ-810 | `cfg_rx_enable` sampled at the start character; when 0, nothing is accepted or emitted; the same-cycle change is unconstrained (§6.3 item 7) | §4.3, §6.3 | drive `cfg_rx_enable` = 0 and inject 100 frames; assert no word and no strobe, then re-enable. The change SHALL be driven at least one cycle away from any start character — a same-cycle change has no determinate outcome and SHALL NOT be asserted on (C-14.5) |
 | REQ-903, REQ-808 | `xgmii_rx_64` is a distinct emitted module with `create`, `hierarchical` and an `.mli` | §4.1 | repository surface check and the `rtl_snapshots/` name comparison |
 
 This table is the source of M03's rows in [`traceability.md`](../traceability.md),
@@ -567,26 +643,35 @@ updated in the same commit.
 
 | # | Item | Status · what a reader assumes meanwhile | Tracked as | Owner | Closes by |
 |---|---|---|---|---|---|
-| 11.1 | **`Axi64.Source`'s field names are witnessed here for the first time.** §4.1's `_witness_source_field_names` names all six; if `hardcaml_axi` v0.17.0 spells one differently, this lift fails to compile. | **DEFERRED — the witness is written, the run is pending.** Meanwhile a reader assumes the names exactly as SPEC-M01 §4.2 writes them. A divergence is a red CI run on this commit, repaired by an editorial diff to SPEC-M01 §4.2 and to the lifts; it changes no behaviour and invalidates no test. | SPEC-M01 §11.4; the `Interface compile check` row of §12 | architect_docs_lead, rtl_lead | the batch-B `ifc_check` run |
+| 11.1 | **`Axi64.Source`'s field names are witnessed here for the first time.** §4.1's `_witness_source_field_names` names all six; if `hardcaml_axi` v0.17.0 spells one differently, this lift fails to compile. | **CLOSED (WO-0010).** CI `build` run 30729342467 at f78766e reports `success` with this lift in it, so all six names are as SPEC-M01 §4.2 writes them, established by a run rather than by transcription. SPEC-M01 §11.4 closes with the same run. | SPEC-M01 §11.4; the `Interface compile check` row of §12 | architect_docs_lead, rtl_lead | closed |
 | 11.2 | **REQ-810's receive half is implemented here, but `traceability.md` names M20 as REQ-810's owning module.** | **DEFERRED — the behaviour is specified, only the matrix attribution is split.** §4.3 states what M03 does with `cfg_rx_enable` and §10 carries the row, so a bench for the receive half is derivable today; SPEC-M20 will name M03 as its implementer and the matrix row will list both. | WO for batch F (SPEC-M20) | architect_docs_lead | SPEC-M20 |
-| 11.3 | **The §9 co-occurrence rulings are this specification's, not requirements.md's** — in particular that an error character closes a frame so a following start character pulses nothing, and that a start character during REQ-108's `Discard` is resynchronisation rather than a second abort. | **DEFERRED for confirmation, not for decision.** Both are stated normatively in §9 and a bench is written against them today. They are flagged in the WO-0008 Return log for dv_lead's batch-B countersignature; if dv_lead reads either differently the repair is a §9 diff plus, if it changes a REQ's meaning, a requirements.md diff. | WO-0008 Return log | architect_docs_lead, dv_lead | batch-B countersignature |
+| 11.3 | **The §9 co-occurrence rulings are this specification's, not requirements.md's** — in particular that an error character closes a frame so a following start character pulses nothing, and that a start character during REQ-108's `Discard` is resynchronisation rather than a second abort. | **CLOSED (WO-0010).** dv_lead confirmed all six rulings in the WO-0010 Return log §(d), and recorded two of them as *compelled* rather than chosen. No §9 text changed as a result. | WO-0008 Return log; WO-0010 Return log §(d) | architect_docs_lead, dv_lead | closed |
+| 11.4 | **An error character arriving after the frame has been closed** — specifically during REQ-108's `Discard` — was governed by two sections that disagreed: §9 row 2's condition text read true after closure while §6.2's `Discard` row listed only `/T/` and `/S/` as exits. | **CLOSED (WO-0011), adopting dv_lead's proposed ruling.** Nothing pulses and nothing is emitted; §9's closure list, §9's third row, §6.2's `Discard` row and REQ-105/REQ-108 all say so, and §6.3 item 6 records that the internal state response is unobservable. | ledger **C-12** | architect_docs_lead, dv_lead | closed |
+| 11.5 | **Two readings this specification carried that a bench would have failed a conformant design on**: §6.1's drain window was ΔC rather than the tight ΔC − 1, and §6.1's `m + 3` cycle formula was stated without §0.5's gapless qualifier while §10 commissions idle injection against it. | **CLOSED (WO-0011).** §6.1 now derives the two-cycle drain bound and carries the gapless qualifier; §6.2's `Frame` row states that an input word covering no frame octet holds the frame; §10's REQ-016 and REQ-109 hooks name the corrected figures. | ledger **C-14** (readings 3 and 4) | architect_docs_lead | closed |
 
 ## 12. Freeze record
 
-Filled in at `P1-spec-freeze`. All four rows are required (charter §5); this
-spec is DRAFT.
+Filled in at `P1-spec-freeze`. All four rows are required (charter §5).
 
 | Item | Value |
 |---|---|
-| Interface compile check | pending — CI `build` run `<id>`, conclusion `<success>`, SHA `<sha>`; per ADR-0005 a local build is not acceptable evidence. This run is also SPEC-M01 §11.4's closure record |
+| Interface compile check | CI `build` run **30729342467**, conclusion **`success`**, SHA **f78766e** — all five batch-A/B lifts elaborate, this one included; per ADR-0005 a local build is not acceptable evidence. This run is also SPEC-M01 §11.4's and §11.1's closure record |
 | Architect signature | `J-architect_docs_lead-0004` |
-| dv_lead testability countersignature | pending — batch B (SPEC-M03, M04, M05) |
-| Frozen at | pending — SHA `<sha>`, gate `docs/gates/P1-spec-freeze-checklist.md` |
+| dv_lead testability countersignature | `J-dv_lead-0005` (WO-0010) — **SIGNED**, batch B |
+| Frozen at | SHA **f78766e**, gate `docs/gates/P1-spec-freeze-checklist.md` |
 
 ## 13. Change log
 
-Post-freeze changes only. This spec is DRAFT and has none.
+Post-freeze changes only. Each row cites the ADR that authorised it; a breaking
+interface change is counted against post-freeze churn (charter §6). **No row
+below is breaking**: §4's records are byte-for-byte unchanged since the freeze
+SHA, so the `ifc_check` evidence of §12 still witnesses this revision's
+interface.
 
 | Date | Change | Breaking? | ADR | Journal |
 |---|---|---|---|---|
-| — | — | — | — | — |
+| 2026-08-02 | §7 handshake bullet: the deleted REQ-015 sentence removed, the `tlast`-inclusive count and the legal one-word frame stated (ledger **C-11**, dv_lead's wording; requirements.md REQ-015 moves in the same diff) | no | none — editorial, the corrected reading is REQ-015's own 190-word figure | `J-architect_docs_lead-0005` |
+| 2026-08-02 | §6.2 `Discard` row, §6.3 item 6, §9 third row and §9's closure list: an error character arriving after the frame is closed emits nothing and pulses nothing (ledger **C-12**, dv_lead's proposed ruling adopted; requirements.md REQ-105 and REQ-108 move in the same diff) | no | none — a corner no requirement had decided; the ruling follows from §0.6's conservation equation, not from a new design choice | `J-architect_docs_lead-0005` |
+| 2026-08-02 | §6.1 drain window tightened from ΔC to **two cycles** after the terminate word, with the derivation (ledger **C-14.3**) | no | none — §10's REQ-109 hook and REQ-109 itself already carried the tight figure; this removes the contradiction | `J-architect_docs_lead-0005` |
+| 2026-08-02 | §6.1 `m + 3` formula qualified "on a gapless stimulus"; §6.2 `Frame` row states that an input word covering no frame octet holds the frame (ledger **C-14.4**) | no | none — restores §0.5's own qualifier | `J-architect_docs_lead-0005` |
+| 2026-08-02 | §4.3 and §6.3 item 7: a `cfg_rx_enable` change landing on a start character's own cycle is deliberately unconstrained (ledger **C-14.5**) | no | none — makes an implication explicit so no bench asserts on it | `J-architect_docs_lead-0005` |

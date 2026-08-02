@@ -1,8 +1,9 @@
 # SPEC-M02 — `Crc32_eth`
 
-- **Status**: DRAFT — §11 carries no open question and no deferred item under
-  the amended SPEC-TEMPLATE §11; the freeze flip awaits only the two evidence
-  rows of §12
+- **Status**: **FROZEN** (`P1-spec-freeze`, SHA `f78766e`) — batch A, dv_lead
+  countersignature `J-dv_lead-0003`, its one condition discharged and confirmed
+  at `J-dv_lead-0005`. Changes to §4, §6 or §7 after this point are spec diffs
+  recorded in §13 (SPEC-TEMPLATE rule 7)
 - **Inventory id**: M02 (architecture.md §4) · **Path**:
   `libs/hardcaml_ethernet/src/crc32_eth.ml`
 - **Datapath role**: shared/structural (combinational function, instantiated
@@ -413,23 +414,21 @@ deferred item** — all four closed in WO-0008.
 
 ## 12. Freeze record
 
-Filled in at `P1-spec-freeze`. All four rows are required (charter §5). Two are
-filled; the two that depend on evidence this revision cannot produce are not.
+Filled in at `P1-spec-freeze`. All four rows are required (charter §5).
 
 | Item | Value |
 |---|---|
-| Interface compile check | **pending on this revision** — `crc32_eth_ifc.ml` is unchanged since 22145b5 and green there (CI `build` run 30727252770), but it opens `Axi64_ifc`, which gained the `Xgmii` record in this commit, so the evidence must be the run on the commit carrying this revision. Per ADR-0005 a local build is not acceptable evidence |
-| Architect signature | `J-architect_docs_lead-0004` — signed for freeze conditional on the row above reporting `success` |
-| dv_lead testability countersignature | `J-dv_lead-0003` (WO-0007, at 22145b5), whose one stated dependency — the REQ-010 narrowing — is discharged by the requirements.md diff in this commit (§11.3). This revision changes no section dv_lead judged; the batch-B countersignature confirms that |
-| Frozen at | pending — SHA `<sha>`, gate `docs/gates/P1-spec-freeze-checklist.md` |
-
-**Why this spec is still DRAFT.** Nothing is undecided: §11 is four closed rows.
-What remains is evidence — a green `ifc_check` run naming this commit, and the
-SHA it produces.
+| Interface compile check | CI `build` run **30729342467**, conclusion **`success`**, SHA **f78766e** — `crc32_eth_ifc.ml` elaborated at the SHA at which `Axi64_ifc` carries the `Xgmii` record. Per ADR-0005 a local build is not acceptable evidence |
+| Architect signature | `J-architect_docs_lead-0004` — signed for freeze conditional on the row above reporting `success`, which it does |
+| dv_lead testability countersignature | `J-dv_lead-0003` (WO-0007, at 22145b5), whose one stated dependency — the REQ-010 narrowing — was discharged by the WO-0008 requirements.md diff and **verified against committed text** at `J-dv_lead-0005` (WO-0010 verdict (b), which diffed 22145b5..f78766e over both batch-A specs) |
+| Frozen at | SHA **f78766e**, gate `docs/gates/P1-spec-freeze-checklist.md` |
 
 ## 13. Change log
 
-Post-freeze changes only. This spec is DRAFT and has none.
+Post-freeze changes only. This spec has none: the WO-0011 diff cycle
+(carry-forwards C-11 to C-14) touched requirements.md, SPEC-M03 and SPEC-M04
+only, and REQ-010's C-13 census correction names M02's `data` input in exactly
+the terms §4.1 and §10 already used here.
 
 | Date | Change | Breaking? | ADR | Journal |
 |---|---|---|---|---|
