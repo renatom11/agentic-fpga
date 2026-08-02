@@ -80,7 +80,23 @@ let%expect_test "X-2: drive and sample are inverse on every model word" =
         (Bits.width !d = 64 && Bits.width !c = 8))
     words;
   verdict ();
-  [%expect {| |}]
+  [%expect {|
+    round trip: idle: ok
+    widths: idle: ok
+    round trip: lane-0 start: ok
+    widths: lane-0 start: ok
+    round trip: lane-4 start: ok
+    widths: lane-4 start: ok
+    round trip: data, lane 7 = 0xFF: ok
+    widths: data, lane 7 = 0xFF: ok
+    round trip: terminate in lane 3: ok
+    widths: terminate in lane 3: ok
+    round trip: error in lane 6: ok
+    widths: error in lane 6: ok
+    round trip: ordered set in lane 0: ok
+    widths: ordered set in lane 0: ok
+    VERDICT ok
+    |}]
 ;;
 
 let%expect_test "X-2: REQ-012 puts lane k at bits [8k+7 : 8k], checked positionally" =
@@ -104,7 +120,15 @@ let%expect_test "X-2: REQ-012 puts lane k at bits [8k+7 : 8k], checked positiona
   check ~what:"lane 7 = 0xFF survives packing" (Bits.to_int (Bits.select !d 63 56) = 0xFF);
   check ~what:"no control bit set on a data word" (Bits.to_int !c = 0);
   verdict ();
-  [%expect {| |}]
+  [%expect {|
+    lane 0 is bits [7:0] and carries /S/: ok
+    lane 3 is bits [31:24]: ok
+    lane 7 is bits [63:56]: ok
+    control bit 0 marks lane 0: ok
+    lane 7 = 0xFF survives packing: ok
+    no control bit set on a data word: ok
+    VERDICT ok
+    |}]
 ;;
 
 let%expect_test "X-2: a whole schedule cycle walks through the probe unchanged" =
@@ -122,5 +146,9 @@ let%expect_test "X-2: a whole schedule cycle walks through the probe unchanged" 
   done;
   check ~what:"every cycle of a 3-frame schedule survives the seam" (!mismatches = 0);
   verdict ();
-  [%expect {| |}]
+  [%expect {|
+    schedule is contract-clean: ok
+    every cycle of a 3-frame schedule survives the seam: ok
+    VERDICT ok
+    |}]
 ;;

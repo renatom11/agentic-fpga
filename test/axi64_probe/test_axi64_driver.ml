@@ -82,7 +82,31 @@ let%expect_test "X-6: drive and sample are inverse on every SPEC-M01 §6.1 word"
         (Bits.width !tdata = 64 && Bits.width !tkeep = 8 && Bits.width !tuser = 1))
     words;
   verdict ();
-  [%expect {| |}]
+  [%expect {|
+    round trip: full word: ok
+    widths: full word: ok
+    round trip: full tlast, aborted: ok
+    widths: full tlast, aborted: ok
+    round trip: idle: ok
+    widths: idle: ok
+    round trip: garbage idle (§6.3 item 5): ok
+    widths: garbage idle (§6.3 item 5): ok
+    round trip: tlast, 1 octet(s): ok
+    widths: tlast, 1 octet(s): ok
+    round trip: tlast, 2 octet(s): ok
+    widths: tlast, 2 octet(s): ok
+    round trip: tlast, 3 octet(s): ok
+    widths: tlast, 3 octet(s): ok
+    round trip: tlast, 4 octet(s): ok
+    widths: tlast, 4 octet(s): ok
+    round trip: tlast, 5 octet(s): ok
+    widths: tlast, 5 octet(s): ok
+    round trip: tlast, 6 octet(s): ok
+    widths: tlast, 6 octet(s): ok
+    round trip: tlast, 7 octet(s): ok
+    widths: tlast, 7 octet(s): ok
+    VERDICT ok
+    |}]
 ;;
 
 let%expect_test "X-6: SPEC-M01 §6.1 puts octet position k at tdata[8k+7 : 8k]" =
@@ -98,7 +122,15 @@ let%expect_test "X-6: SPEC-M01 §6.1 puts octet position k at tdata[8k+7 : 8k]" 
   check ~what:"tvalid and tlast are 1" (Bits.to_int !tvalid = 1 && Bits.to_int !tlast = 1);
   check ~what:"REQ-014: tstrb driven 0" (Bits.to_int !tstrb = 0);
   verdict ();
-  [%expect {| |}]
+  [%expect {|
+    position 0 is bits [7:0]: ok
+    position 3 is bits [31:24]: ok
+    position 7 = 0xFF is bits [63:56]: ok
+    tkeep is a full word: ok
+    tvalid and tlast are 1: ok
+    REQ-014: tstrb driven 0: ok
+    VERDICT ok
+    |}]
 ;;
 
 let%expect_test "X-6: the header record is a one-cycle pulse, never a level" =
@@ -127,5 +159,12 @@ let%expect_test "X-6: the header record is a one-cycle pulse, never a level" =
   drive None;
   check ~what:"after the pulse: valid = 0" (Bits.to_int !valid = 0);
   verdict ();
-  [%expect {| |}]
+  [%expect {|
+    before the pulse: valid = 0: ok
+    on the pulse: valid = 1: ok
+    REQ-012: dst_mac 02:00:00:00:00:01 reads 0x020000000001: ok
+    ethertype 0x0800: ok
+    after the pulse: valid = 0: ok
+    VERDICT ok
+    |}]
 ;;

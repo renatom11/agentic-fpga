@@ -618,7 +618,13 @@ let%expect_test "X-5: an M03 frame aborted at octet 12 keeps its FCS octets" =
     ~expected:16
     (Option.value ~default:(-1) (Octet_time.Latency.constant tagger));
   verdict tagger ~expect_clean:true;
-  [%expect {| |}]
+  [%expect {|
+    octets compared = 12
+    L = 16
+    [m03-abort] frames=1 octets=12 latency=CONSTANT per front offset (1 class)
+      h=8 L=16 word_delay=3 <= ceiling 4 frames=1 octets=12
+    VERDICT ok
+    |}]
 ;;
 
 let%expect_test "X-5: a declared extent equal to the identity is the old behaviour" =
@@ -653,7 +659,15 @@ let%expect_test "X-5: a declared extent equal to the identity is the old behavio
   if identity = declared
   then print_endline "IDENTITY-EQUALITY ok"
   else failwith "X-5: a declared extent equal to the identity changed the verdict";
-  [%expect {| |}]
+  [%expect {|
+    [clean] frames=1 octets=60 latency=CONSTANT per front offset (1 class)
+      h=8 L=16 word_delay=3 <= ceiling 4 frames=1 octets=60
+    VERDICT ok
+    [clean] frames=1 octets=60 latency=CONSTANT per front offset (1 class)
+      h=8 L=16 word_delay=3 <= ceiling 4 frames=1 octets=60
+    VERDICT ok
+    IDENTITY-EQUALITY ok
+    |}]
 ;;
 
 let%expect_test "X-9: M14's padding varies per datagram, and an impossible extent is an error" =
@@ -686,5 +700,13 @@ let%expect_test "X-9: M14's padding varies per datagram, and an impossible exten
   else (
     failures := 0;
     failwith "X-9: the impossible extent was not reported");
-  [%expect {| |}]
+  [%expect {|
+    octets compared = 16
+    errors = 2
+    [m14-padding] frames=2 octets=16 latency=CONSTANT per front offset (1 class)
+      h=20 L=12 word_delay=4 frames=1 octets=16
+      ERROR: frame 1: a per-frame output extent of 40 octet(s) is outside 0 .. 26, the octets this frame's input trace can supply after the 20 stripped from the front (WO-0033 X-5/X-9)
+      ERROR: frame 1: 46 input octets less 20 stripped from the front and 0 from the back is 26, but 16 octets were emitted
+    VERDICT ok
+    |}]
 ;;

@@ -84,7 +84,16 @@ let%expect_test "X-3 (a): C-23 counts high cycles, so consecutive events are two
   check ~what:"clean" (Strobe_monitor.is_clean monitor);
   check ~what:"sampled every cycle" (Strobe_monitor.cycles_sampled monitor = 30);
   verdict monitor;
-  [%expect {| |}]
+  [%expect {|
+    two consecutive high cycles are two events: ok
+    clean: ok
+    sampled every cycle: ok
+    [M03 strobes] cycles=30 expected=2 high-cycles=2
+      high cycles per strobe (C-23, never edges): error_bad_fcs=0 error_bad_frame=0 error_runt=0 error_oversize=0 error_start_without_terminate=2
+      observed: error_start_without_terminate@20 error_start_without_terminate@21
+      strobes: CLEAN (requirements.md §0.6, §12, the module's §9)
+    VERDICT ok
+    |}]
 ;;
 
 let%expect_test "X-3 (b): the right strobe on the wrong cycle is a failure" =
@@ -104,7 +113,17 @@ let%expect_test "X-3 (b): the right strobe on the wrong cycle is a failure" =
   else (
     failures := 0;
     failwith "strobe monitor verdict mismatch");
-  [%expect {| |}]
+  [%expect {|
+    one high cycle was seen: ok
+    but the pin is missed: ok
+    reported as one missing event and one unclaimed pulse: ok
+    [M03 strobes] cycles=60 expected=1 high-cycles=1
+      high cycles per strobe (C-23, never edges): error_bad_fcs=0 error_bad_frame=0 error_runt=1 error_oversize=0 error_start_without_terminate=0
+      observed: error_runt@48
+      ERROR: frame 0: error_runt was expected on cycle 47 and was not high there (SPEC-M03 §9, strobe cycle pinned); high cycles for this strobe over the run: 48
+      ERROR: cycle 48: M03 pulsed "error_runt" and no expected event claims it — a strobe the stimulus did not create (requirements.md §0.6, REQ-008)
+    VERDICT ok
+    |}]
 ;;
 
 let%expect_test "X-3 (c): a pin outside §0.6's window is a SPECIFICATION defect" =
@@ -133,7 +152,16 @@ let%expect_test "X-3 (c): a pin outside §0.6's window is a SPECIFICATION defect
   else (
     failures := 0;
     failwith "strobe monitor verdict mismatch");
-  [%expect {| |}]
+  [%expect {|
+    the window violation is reported: ok
+    and it is reported before any sampling has happened: ok
+    [M03 strobes] cycles=0 expected=1 high-cycles=0
+      high cycles per strobe (C-23, never edges): error_bad_fcs=0 error_bad_frame=0 error_runt=0 error_oversize=0 error_start_without_terminate=0
+      observed: none
+      ERROR: frame 0: error_bad_frame is pinned at cycle 12, outside requirements.md §0.6's window [5, 9] — this is a defect in the module specification, not in a design (a pin deliberately built outside the window)
+      ERROR: frame 0: error_bad_frame was expected on cycle 12 and was not high there (a pin deliberately built outside the window); high cycles for this strobe over the run: none
+    VERDICT ok
+    |}]
 ;;
 
 let%expect_test "X-3 (d): a strobe the stimulus did not create" =
@@ -157,7 +185,21 @@ let%expect_test "X-3 (d): a strobe the stimulus did not create" =
   else (
     failures := 0;
     failwith "strobe monitor verdict mismatch");
-  [%expect {| |}]
+  [%expect {|
+    the expected report matched: ok
+    the six invented pulses are all reported: ok
+    and the run is not clean: ok
+    [M03 strobes] cycles=60 expected=1 high-cycles=7
+      high cycles per strobe (C-23, never edges): error_bad_fcs=6 error_bad_frame=0 error_runt=1 error_oversize=0 error_start_without_terminate=0
+      observed: error_bad_fcs@0 error_bad_fcs@11 error_bad_fcs@22 error_bad_fcs@33 error_bad_fcs@44 error_bad_fcs@55 error_runt@30
+      ERROR: cycle 0: M03 pulsed "error_bad_fcs" and no expected event claims it — a strobe the stimulus did not create (requirements.md §0.6, REQ-008)
+      ERROR: cycle 11: M03 pulsed "error_bad_fcs" and no expected event claims it — a strobe the stimulus did not create (requirements.md §0.6, REQ-008)
+      ERROR: cycle 22: M03 pulsed "error_bad_fcs" and no expected event claims it — a strobe the stimulus did not create (requirements.md §0.6, REQ-008)
+      ERROR: cycle 33: M03 pulsed "error_bad_fcs" and no expected event claims it — a strobe the stimulus did not create (requirements.md §0.6, REQ-008)
+      ERROR: cycle 44: M03 pulsed "error_bad_fcs" and no expected event claims it — a strobe the stimulus did not create (requirements.md §0.6, REQ-008)
+      ERROR: cycle 55: M03 pulsed "error_bad_fcs" and no expected event claims it — a strobe the stimulus did not create (requirements.md §0.6, REQ-008)
+    VERDICT ok
+    |}]
 ;;
 
 let%expect_test "X-3: a name outside §12, and a name outside this module's §9" =
@@ -174,5 +216,15 @@ let%expect_test "X-3: a name outside §12, and a name outside this module's §9"
   else (
     failures := 0;
     failwith "strobe monitor verdict mismatch");
-  [%expect {| |}]
+  [%expect {|
+    an invented roster name is rejected: ok
+    two errors: the roster name and the foreign strobe: ok
+    [M03 strobes] cycles=1 expected=0 high-cycles=1
+      high cycles per strobe (C-23, never edges): error_runt=0 error_oops=0
+      observed: error_ip_fragment@0
+      ERROR: roster names "error_oops", which requirements.md §12 does not define; a strobe outside §12 is an invisible way to satisfy a check
+      ERROR: cycle 0: M03 pulsed "error_ip_fragment", which its §9 does not own
+      ERROR: cycle 0: M03 pulsed "error_ip_fragment" and no expected event claims it — a strobe the stimulus did not create (requirements.md §0.6, REQ-008)
+    VERDICT ok
+    |}]
 ;;

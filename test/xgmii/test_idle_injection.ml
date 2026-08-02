@@ -84,7 +84,31 @@ let%expect_test "X-4: §10's three figures — 0, 1 and 7 injected cycles" =
     ~what:"7 injects exactly seven times what 1 injects"
     (Idle_injection.injected seven = 7 * Idle_injection.injected one);
   verdict seven;
-  [%expect {| |}]
+  [%expect {|
+    0 cycles injects nothing: ok
+    0 cycles is the source schedule unchanged: ok
+    idles=0: cycles = source + injected: ok
+    idles=0: cycle_of is strictly increasing: ok
+    idles=0: every source word survives: ok
+    idles=0: every injected cycle is an idle word: ok
+    0 cycles is constraint-clean: ok
+    idles=1: cycles = source + injected: ok
+    idles=1: cycle_of is strictly increasing: ok
+    idles=1: every source word survives: ok
+    idles=1: every injected cycle is an idle word: ok
+    1 cycle is constraint-clean: ok
+    idles=7: cycles = source + injected: ok
+    idles=7: cycle_of is strictly increasing: ok
+    idles=7: every source word survives: ok
+    idles=7: every injected cycle is an idle word: ok
+    7 cycles is constraint-clean: ok
+    7 injects exactly seven times what 1 injects: ok
+    [idle injection] sites=24 idles=168 source cycles=34 injected cycles=202 allow_c45=false
+      idles per site: 7
+      C-45 boundaries touched: none
+      M03-N3 constraint: SATISFIED (SPEC-M03 §6.1 at 06c1eba)
+    VERDICT ok
+    |}]
 ;;
 
 let%expect_test "X-4: REQ-016 delays every later octet by exactly 8 octet times" =
@@ -128,7 +152,17 @@ let%expect_test "X-4: REQ-016 delays every later octet by exactly 8 octet times"
     ~what:"the frame's first octet is still 8 octet times after its start character"
     !preamble_contiguous;
   verdict wrapper;
-  [%expect {| |}]
+  [%expect {|
+    every shift is a non-negative multiple of 8: ok
+    no octet changes lane within its word: ok
+    octet times stay strictly increasing: ok
+    the frame's first octet is still 8 octet times after its start character: ok
+    [idle injection] sites=24 idles=168 source cycles=34 injected cycles=202 allow_c45=false
+      idles per site: 7
+      C-45 boundaries touched: none
+      M03-N3 constraint: SATISFIED (SPEC-M03 §6.1 at 06c1eba)
+    VERDICT ok
+    |}]
 ;;
 
 let%expect_test "X-4: the M03-N3 constraint refuses one boundary per frame" =
@@ -174,7 +208,24 @@ let%expect_test "X-4: the M03-N3 constraint refuses one boundary per frame" =
   else (
     failures := 0;
     failwith "idle injection verdict mismatch");
-  [%expect {| |}]
+  [%expect {|
+    frame 0 starts in lane 0 and frame 1 in lane 4: ok
+    the lane-0 boundary is refused: ok
+    and it is named as a C-45 instance: ok
+    the lane-4 boundary is refused: ok
+    and it is NOT a C-45 instance — it really does occupy preamble positions: ok
+    ~allow_c45:true admits the lane-0 boundary: ok
+    ~allow_c45:true does NOT admit the lane-4 boundary: ok
+    [idle injection] sites=1 idles=1 source cycles=34 injected cycles=35 allow_c45=false
+      idles per site: 1
+      C-45 boundaries touched: 2
+      VIOLATION: site before cycle 2 lies between frame 0's start character (lane 0, cycle 1) and its first octet. SPEC-M03 §6.1 refuses it — 'injection begins at the frame's first octet' — and this wrapper implements the constraint AS WRITTEN. Ledger row C-45 records that the prohibition's stated ground does not hold here, since all eight preamble positions lie inside the start word and this boundary occupies none of them; the second ground (the first octet would no longer be 8 octet times after the start character) does hold. Pass ~allow_c45:true only once C-45 has landed as a spec diff
+    [idle injection] sites=1 idles=1 source cycles=34 injected cycles=35 allow_c45=false
+      idles per site: 1
+      C-45 boundaries touched: none
+      VIOLATION: site before cycle 12 lies inside frame 1's preamble (lane-4 start at cycle 11): an injected idle there occupies a preamble position, which REQ-102's third sentence routes to REQ-105, so the wrapper would be measuring an abort rather than REQ-016's tolerance (SPEC-M03 §6.1, M03-N3 at 06c1eba)
+    VERDICT ok
+    |}]
 ;;
 
 let%expect_test "X-4: an illegal site is applied as well as reported" =
@@ -203,5 +254,16 @@ let%expect_test "X-4: an illegal site is applied as well as reported" =
   check ~what:"an out-of-range site is reported" (not (Idle_injection.is_clean outside));
   check ~what:"and injects nothing" (Idle_injection.injected outside = 0);
   verdict wrapper;
-  [%expect {| |}]
+  [%expect {|
+    reported: ok
+    and applied: ok
+    the three injected cycles are where the site put them: ok
+    an out-of-range site is reported: ok
+    and injects nothing: ok
+    [idle injection] sites=1 idles=3 source cycles=34 injected cycles=37 allow_c45=false
+      idles per site: 3
+      C-45 boundaries touched: none
+      VIOLATION: site before cycle 12 lies inside frame 1's preamble (lane-4 start at cycle 11): an injected idle there occupies a preamble position, which REQ-102's third sentence routes to REQ-105, so the wrapper would be measuring an abort rather than REQ-016's tolerance (SPEC-M03 §6.1, M03-N3 at 06c1eba)
+    VERDICT ok
+    |}]
 ;;

@@ -59,7 +59,16 @@ let%expect_test "X-8 anchor: RFC 1071 §3's numerical example" =
     ~what:"the two internal implementations agree on the anchor"
     (Ipv4_ref.sum_folding os = Ipv4_ref.sum_accumulate os);
   verdict ();
-  [%expect {| |}]
+  [%expect {|
+    the vector is eight octets: ok
+    one's-complement sum = RFC 1071 §3's 0xddf2: ok
+    checksum = RFC 1071 §3's 0x220d: ok
+    sum and checksum are one's complements of each other: ok
+    SPEC-M14 §6.1's residue form holds on the anchor: ok
+    RFC 1071 §2: byte-swapped octets give the byte-swapped sum: ok
+    the two internal implementations agree on the anchor: ok
+    VERDICT ok
+    |}]
 ;;
 
 let%expect_test "X-8: the builder's headers verify, and its field layout is SPEC-M14 §6.1's" =
@@ -86,7 +95,22 @@ let%expect_test "X-8: the builder's headers verify, and its field layout is SPEC
   check ~what:"ECN is the bottom two, and no port carries it" (at 1 land 0x3 = 0b11);
   print_endline (Ipv4_ref.to_string h);
   verdict ();
-  [%expect {| |}]
+  [%expect {|
+    twenty octets, no options (IHL 5): ok
+    the built header verifies by the residue form: ok
+    octet 0 is version 4, IHL 5: ok
+    octet 1 is DSCP 0x2A with ECN 0b11: ok
+    octets 2-3 are total length 46 = 0x00 0x2E: ok
+    octet 6 has flags 0 and offset 0: ok
+    octet 8 is TTL 64: ok
+    octet 9 is protocol 17: ok
+    REQ-012: source 10.1.2.3 lands most-significant octet first: ok
+    REQ-012: destination 192.0.2.1 reads 0xC0000201 on the wire: ok
+    DSCP is the top six bits of octet 1: ok
+    ECN is the bottom two, and no port carries it: ok
+    45 ab 00 2e 12 34 00 00 40 11 99 db 0a 01 02 03 c0 00 02 01
+    VERDICT ok
+    |}]
 ;;
 
 let%expect_test "X-8: M14-B2 — one flipped bit breaks the residue and nothing else" =
@@ -103,7 +127,13 @@ let%expect_test "X-8: M14-B2 — one flipped bit breaks the residue and nothing 
            not in the field, which is what row M14-B2 requires"
     (Ipv4_ref.header_checksum_of good = Ipv4_ref.header_checksum_of broken);
   verdict ();
-  [%expect {| |}]
+  [%expect {|
+    the intact header verifies: ok
+    the flipped one does not: ok
+    exactly one octet differs: ok
+    and the checksum FIELD is untouched — the corruption is in the data, not in the field, which is what row M14-B2 requires: ok
+    VERDICT ok
+    |}]
 ;;
 
 let%expect_test "X-8: M14-B3 — (b) is constructible; (a) is not, and C-48 says why" =
@@ -146,7 +176,15 @@ let%expect_test "X-8: M14-B3 — (b) is constructible; (a) is not, and C-48 says
     (Ipv4_ref.fold_once carries_twice <> Ipv4_ref.sum carries_twice);
   check ~what:"and the correct answer there is 0x0002" (Ipv4_ref.sum carries_twice = 0x0002);
   verdict ();
-  [%expect {| |}]
+  [%expect {|
+    (b) exists and verifies: ok
+    (b) really does carry: the unfolded total exceeds 0xFFFF: ok
+    (b) kills a no-fold design: plain modulo-2^16 addition is not 0xFFFF: ok
+    C-48: no 20-octet header separates fold-once from the fixpoint fold: ok
+    fold_once really is a different function where the fold can carry twice: ok
+    and the correct answer there is 0x0002: ok
+    VERDICT ok
+    |}]
 ;;
 
 let%expect_test "X-8: the rejection classes of SPEC-M14 §9, built and checked" =
@@ -180,5 +218,18 @@ let%expect_test "X-8: the rejection classes of SPEC-M14 §9, built and checked" 
     (List.nth (Ipv4_ref.octets df) 6 <> List.nth (Ipv4_ref.octets base) 6
      && Ipv4_ref.header_checksum df <> Ipv4_ref.header_checksum base);
   verdict ();
-  [%expect {| |}]
+  [%expect {|
+    B1 version 6: checksum recomputed, so REQ-602 accepts it: ok
+    B1 IHL 6: checksum recomputed, so REQ-602 accepts it: ok
+    B4 more-fragments set: checksum recomputed, so REQ-602 accepts it: ok
+    B4 fragment offset 0x0100: checksum recomputed, so REQ-602 accepts it: ok
+    B5 DF set: checksum recomputed, so REQ-602 accepts it: ok
+    B5 reserved bit set: checksum recomputed, so REQ-602 accepts it: ok
+    B7 foreign destination: checksum recomputed, so REQ-602 accepts it: ok
+    B8 protocol 1: checksum recomputed, so REQ-602 accepts it: ok
+    B9 total length 1501: checksum recomputed, so REQ-602 accepts it: ok
+    K7/ADR-0013 total length 0: checksum recomputed, so REQ-602 accepts it: ok
+    B5: the DF datagram differs from the accepted one in octet 6 and the checksum: ok
+    VERDICT ok
+    |}]
 ;;

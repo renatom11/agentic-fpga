@@ -54,7 +54,19 @@ let%expect_test "X-1: a clean frame reports nothing (the anti-vacuity baseline)"
      check ~what:"no strobe, no abort" (o.Injection.reports = [] && not o.Injection.abort)
    | _ -> ());
   verdict t;
-  [%expect {| |}]
+  [%expect {|
+    construction clean: ok
+    one frame opened: ok
+    start cycle 1, lane 0: ok
+    64 received, 60 delivered (REQ-103): ok
+    8 words, tkeep 0x0F on tlast: ok
+    §6.1's cycle table: tlast on cycle 1+3+7 = 11: ok
+    no strobe, no abort: ok
+    [injection] frames opened=1 cycles=13
+      frame 0 lane 0 start@1: received=64 delivered=60 words=8 tkeep=0x0F tlast=11 abort=false [] §9 row 1: normal close, FCS by REQ-304 residue
+      construction: CLEAN
+    VERDICT ok
+    |}]
 ;;
 
 let%expect_test "X-1: REQ-104 — one flipped payload bit fails the REQ-304 residue" =
@@ -71,7 +83,16 @@ let%expect_test "X-1: REQ-104 — one flipped payload bit fails the REQ-304 resi
      check ~what:"one error_bad_fcs on the tlast cycle" (strobes o = [ "error_bad_fcs", 11 ])
    | _ -> check ~what:"exactly one frame opened" false);
   verdict t;
-  [%expect {| |}]
+  [%expect {|
+    construction clean: ok
+    forwarded in full: 60 delivered: ok
+    tuser[0] = 1: ok
+    one error_bad_fcs on the tlast cycle: ok
+    [injection] frames opened=1 cycles=13
+      frame 0 lane 0 start@1: received=64 delivered=60 words=8 tkeep=0x0F tlast=11 abort=true [error_bad_fcs@11] §9 row 1: normal close, FCS by REQ-304 residue
+      construction: CLEAN
+    VERDICT ok
+    |}]
 ;;
 
 let%expect_test "X-1: REQ-105 — /E/ with and without a delivered octet" =
@@ -109,7 +130,20 @@ let%expect_test "X-1: REQ-105 — /E/ with and without a delivered octet" =
        (strobes o = [ "error_bad_frame", 4 ])
    | _ -> check ~what:"E2: exactly one frame opened" false);
   verdict at_first;
-  [%expect {| |}]
+  [%expect {|
+    20 received, 20 delivered — no FCS removed: ok
+    3 words, tkeep 0x0F: ok
+    tlast on cycle 6: ok
+    error_bad_frame at the tlast cycle: ok
+    aborted: ok
+    no output word at all (§0.7): ok
+    no tkeep and no abort bit to carry: ok
+    error_bad_frame two cycles after the closing word (cycle 2 + 2): ok
+    [injection] frames opened=1 cycles=13
+      frame 0 lane 0 start@1: received=0 delivered=0 words=0 tkeep=0x00 tlast=none abort=false [error_bad_frame@4] §9 row 3: /E/ at or before the frame's first octet, no output word
+      construction: CLEAN
+    VERDICT ok
+    |}]
 ;;
 
 let%expect_test "X-1: REQ-107 — the runt band and the sub-five-octet frame" =
@@ -134,7 +168,19 @@ let%expect_test "X-1: REQ-107 — the runt band and the sub-five-octet frame" =
      check ~what:"error_runt two cycles after the terminate word" (strobes o = [ "error_runt", 4 ])
    | _ -> check ~what:"F2: exactly one frame opened" false);
   verdict tiny;
-  [%expect {| |}]
+  [%expect {|
+    63 received, 59 delivered: ok
+    8 words, tkeep 0x07: ok
+    error_runt alone — the FCS is correct: ok
+    aborted: ok
+    a sub-five-octet frame is an injection case, not a schedule error: ok
+    4 received, nothing delivered: ok
+    error_runt two cycles after the terminate word: ok
+    [injection] frames opened=1 cycles=5
+      frame 0 lane 0 start@1: received=4 delivered=0 words=0 tkeep=0x00 tlast=none abort=false [error_runt@4] §9 row 6: fewer than 5 octets between start and terminate, no output
+      construction: CLEAN
+    VERDICT ok
+    |}]
 ;;
 
 let%expect_test "X-1: REQ-108 — truncation to exactly 1514 delivered octets" =
@@ -150,7 +196,17 @@ let%expect_test "X-1: REQ-108 — truncation to exactly 1514 delivered octets" =
      check ~what:"error_oversize alone" (strobes o = [ "error_oversize", 193 ])
    | _ -> check ~what:"exactly one frame opened" false);
   verdict t;
-  [%expect {| |}]
+  [%expect {|
+    construction clean: ok
+    exactly 1514 delivered: ok
+    190 words, tkeep 0x03: ok
+    tlast on cycle 1+3+189 = 193: ok
+    error_oversize alone: ok
+    [injection] frames opened=1 cycles=205
+      frame 0 lane 0 start@1: received=1519 delivered=1514 words=190 tkeep=0x03 tlast=193 abort=true [error_oversize@193] §9 row 7: more than 1518 octets between start and terminate
+      construction: CLEAN
+    VERDICT ok
+    |}]
 ;;
 
 let%expect_test "X-1: REQ-102 — a control character in a preamble position" =
@@ -198,7 +254,19 @@ let%expect_test "X-1: REQ-102 — a control character in a preamble position" =
     ~what:"a /S/ outside lanes 0 and 4 is REFUSED, not modelled"
     (not (Injection.is_clean start_illegal));
   verdict terminate;
-  [%expect {| |}]
+  [%expect {|
+    B3: /T/ in a preamble position is REQ-107: ok
+    and delivers nothing: ok
+    B2: /E/ in a preamble position is REQ-105: ok
+    M03-N3: an /I/ in a preamble position is 'any other control character' and is REQ-105 too: ok
+    B4: a /S/ at a lane-4 preamble position is buildable: ok
+    and aborts with error_start_without_terminate, nothing delivered: ok
+    a /S/ outside lanes 0 and 4 is REFUSED, not modelled: ok
+    [injection] frames opened=1 cycles=13
+      frame 0 lane 0 start@1: received=0 delivered=0 words=0 tkeep=0x00 tlast=none abort=false [error_runt@3] §9 row 6: fewer than 5 octets between start and terminate, no output
+      construction: CLEAN
+    VERDICT ok
+    |}]
 ;;
 
 let%expect_test "X-1: §6.1's consequence-1 minimal witness, cycles and all" =
@@ -259,5 +327,21 @@ let%expect_test "X-1: §6.1's consequence-1 minimal witness, cycles and all" =
          && e.Dv_monitors.Strobe_monitor.cycle <= e.Dv_monitors.Strobe_monitor.not_after)
        events);
   verdict t;
-  [%expect {| |}]
+  [%expect {|
+    construction clean: ok
+    two frames opened by one word pair: ok
+    aborted frame: 4 received, 4 delivered, one word, tkeep 0x0F, aborted: ok
+    its tlast leaves on W + 2 = 4: ok
+    and its report is error_start_without_terminate at W + 2: ok
+    new frame: opened at lane 4 of W, delivers nothing: ok
+    and its error_runt is on W + 2 = 4 as well: ok
+    the two reports coincide and carry DIFFERENT names (§6.3 item 8 has no instance here): ok
+    two events handed to the strobe monitor: ok
+    every pin lies inside its own §0.6 window: ok
+    [injection] frames opened=2 cycles=13
+      frame 0 lane 0 start@1: received=4 delivered=4 words=1 tkeep=0x0F tlast=4 abort=true [error_start_without_terminate@4] §9 row 8: /S/ before the current frame's /T/ with ≥ 1 octet delivered — truncated at the octet before it, NO FCS removed (REQ-103)
+      frame 1 lane 4 start@2: received=0 delivered=0 words=0 tkeep=0x00 tlast=none abort=false [error_runt@4] §9 row 6: fewer than 5 octets between start and terminate, no output
+      construction: CLEAN
+    VERDICT ok
+    |}]
 ;;

@@ -3447,3 +3447,48 @@ self-check green.
 
 ### Files-in-this-commit
 - .github/workflows/build.yml
+
+## [J-orchestrator-0081] 2026-08-03T09:05:00Z | task:WO-0033 | Thirty expect blocks promoted from dune's own promotion output — the machinery's verdicts read ok before the green that proves them
+
+### Trigger
+Run 30761417191 (head `f76688c`): Build green, runtest red as
+designed, and the repaired block POPULATED — seven test files,
+sha256 each, from `dune promote`'s own path mapping.
+
+### Inputs
+- The block: all seven expect-test sources, decoded and
+  byte-verified (6,394…33,509 bytes). Spot-check before staging:
+  the promoted outputs carry per-check "ok" verdict lines and no
+  FAIL string anywhere — dv's design (verdicts asserted in OCaml)
+  means these outputs are claims the next run re-executes, not
+  descriptions.
+
+### Reasoning
+Byte transport as established; the promotion carries the machinery's
+own self-description into the tree, and the run after this commit
+re-executes every assertion against it — a wrong promotion cannot
+stay green.
+
+### Actions
+- Seven files written verbatim; this commit stages exactly them.
+
+### Evidence
+- sha256s in run 30761417191's block vs `sha256sum` of the staged
+  files; zero 'FAIL' hits across the promoted outputs.
+
+### Outcome / DoD
+Next run green at runtest = WO-0033's machinery self-checks proven
+in CI; acceptance follows with the partition, C-48, and the escape
+arc on the record.
+
+### Open questions
+- None; awaiting the run.
+
+### Files-in-this-commit
+- test/axi64_probe/test_axi64_driver.ml
+- test/golden/test_ipv4_ref.ml
+- test/monitors/test_octet_time.ml
+- test/monitors/test_strobe_monitor.ml
+- test/xgmii/test_idle_injection.ml
+- test/xgmii/test_injection.ml
+- test/xgmii_probe/test_xgmii_probe.ml
