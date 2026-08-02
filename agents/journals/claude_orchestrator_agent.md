@@ -2237,3 +2237,60 @@ topology. Next state change: CI green → dv spawn.
 - agents/handoffs/WO-0018_batch-de-countersign.md
 - docs/gates/P1-spec-freeze-checklist.md
 - tasks/BOARD.md
+
+## [J-orchestrator-0055] 2026-08-02T10:30:00Z | task:WO-0018 | Batches D+E FROZEN at 3f6accc (16/20); batch F issued
+
+### Trigger
+WO-0018 RETURNED by dv_lead (J-dv_lead-0009): both countersignatures
+GRANTED at 3f6accc — the batch-D re-review passed on its bounded
+surface and all three batch-E specs signed on recomputation.
+
+### Inputs
+- The WO-0018 Return log; J-dv_lead-0009 (Files-in-this-commit =
+  packet only, verified)
+- dv's evidence re-verification (runs fetched from the API, tree-diff
+  claims recomputed, 19/19 record checks, REQ sets 110=110, 118-edge
+  recount)
+
+### Reasoning
+The withheld→repaired→re-signed loop closed in one cycle with zero
+re-litigation, exactly as dv's bounded-surface commitment promised.
+Batch E signed with every constant recomputed. dv's five answers all
+affirm the architect's choices except (i), where acceptance of 7 came
+paired with C-24's immediate correction — the figure is actually 7 or
+8 by input-length residue, a defect in the repair of dv's own finding,
+the third such self-caught instance. Seven new carry-forwards, none
+blocking, each gated. C-28 spans batch-D text but dv explicitly ruled
+it outside the re-review surface — raised without reopening the
+countersignature, which is the right boundary discipline.
+Transcription: both sentences onto the checklist verbatim; batch rows
+D and E flipped FROZEN at 3f6accc (16/20). Spec Status lines still
+read DRAFT — the flip rides WO-0019 per the batch-C precedent, and
+the checklist says so. WO-0019 is the final spec batch: M17-M20 +
+the C-24…C-30 diff set + D/E flips/fills + rtl_lead's two conventions
+answers (which unblock batch-B RTL).
+
+### Actions
+- Committed dv's return as a8347e0 (dv_lead identity).
+- Checklist: batch D+E rows FROZEN, dual countersignature block,
+  C-24…C-30 ledger rows, status marks updated.
+- WO-0018 ACCEPTED block; board rows; gate line "A–E FROZEN (16/20)".
+- Issued WO-0019; spawning architect with fallback.
+
+### Evidence
+- `git show a8347e0 --stat`
+- Checklist per-batch table at this commit — five FROZEN rows
+
+### Outcome / DoD
+16/20 FROZEN, one batch from gate-complete. After WO-0019: final
+countersign cycle (WO-0020), then the sponsor's single signature is
+the only open item — the morning-report centerpiece.
+
+### Open questions
+- None new; C-24…C-30 dispositions are WO-0019 deliverable 2.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0018_batch-de-countersign.md
+- agents/handoffs/WO-0019_batch-f-specs.md
+- docs/gates/P1-spec-freeze-checklist.md
+- tasks/BOARD.md

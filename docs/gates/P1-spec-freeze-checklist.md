@@ -28,8 +28,8 @@ by the orchestrator from the signing agent's journal entry, per PROTOCOL
 | A | M01 `Axi64`, M02 `Crc32_eth` | 22145b5 (WO-0006), revised f78766e | run 30729342467 green | **SIGNED** (J-dv_lead-0003; §4.1 addition accepted J-dv_lead-0005) | **FROZEN at f78766e** |
 | B | M03, M04, M05 | f78766e (WO-0008) | run 30729342467 green | **SIGNED** (J-dv_lead-0005) | **FROZEN at f78766e** |
 | C | M06, M07, M08, M09 | 508eea2 (WO-0011) | run 30733153172 green | **SIGNED** (J-dv_lead-0007) | **FROZEN at 508eea2** |
-| D | M10, M11, M12, M13 | a9993ff (WO-0014); D-1/D-2 repaired 3f6accc (WO-0017: R-1 + D-2a/ADR-0009) | run 30736107842 green (2f29888) | **WITHHELD** (J-dv_lead-0008) — re-review in flight (WO-0018, bounded surface) | — |
-| E | M14 `Ip_eth_rx_64`, M15 `Ip_eth_tx_64`, M16 `Ip_complete_64` | 3f6accc (WO-0017) | pending | — | — |
+| D | M10, M11, M12, M13 | a9993ff (WO-0014); D-1/D-2 repaired 3f6accc (WO-0017: R-1 + D-2a/ADR-0009) | runs 30736107842 (2f29888) + 30739442056 (3f6accc) green | **SIGNED** (J-dv_lead-0009, WO-0018 re-review after J-dv_lead-0008 withheld) | **FROZEN at 3f6accc** |
+| E | M14 `Ip_eth_rx_64`, M15 `Ip_eth_tx_64`, M16 `Ip_complete_64` | 3f6accc (WO-0017) | run 30739442056 green (head SHA = spec commit; no witnessing owed) | **SIGNED** (J-dv_lead-0009) | **FROZEN at 3f6accc** |
 | F | M17, M18, M19, M20 | — | — | — | — |
 
 ## Batch-A countersignature (transcribed)
@@ -79,12 +79,20 @@ by the orchestrator from the signing agent's journal entry, per PROTOCOL
 | C-21 | SPEC-M10 §6.1's report XOR does not except the `clear` abandonment §7 mandates; C-2's conservation exemption becomes load-bearing for the first time here | C-2's gate (first SO- packet); the §6.1 clause before AP-arp_eth_rx.md |
 | C-22 | ADR-0008's C-17(d) bullet vs SPEC-M11 §6.1: monitor-prohibition precedence unstated (dv's own repair carried the defect, self-reported); one clause on the ADR bullet resolves | first transmit-side tb_writer WO (M07/M09/M11) |
 | C-23 | M13's strobes can be high on consecutive cycles; §0.6's one-cycle pulse rule needs the counting convention (high cycles, not edges); + editorial: REQ-502's measurement-start ambiguity (cycle 8 vs 9) | before AP-arp.md; REQ-502 half before any latency artifact quotes it |
+| C-24 | REQ-502's derived figure is 7 or 8 cycles by input-length residue (gap 3 for N ≡ 0,1,2 mod 8, else 4), while SPEC-M13 §6.1/§7 assert one constant — C-1's class (octet time divided without residue); no committed hook asserts 7, so carried not contested | AP-arp.md REQ-502 rows; before any docs/reports/latency/ artifact quotes it |
+| C-25 | SPEC-M13's "later of" branch stated for one payload length where it holds for five (28–32); frame priced at 42 octets vs §0.3's 46–50; no §6.2 (D) stage holds tuser[0] in branch (1) — observable well-defined, stage model not | AP-arp.md and the M13 tb_writer WO |
+| C-26 | SPEC-M14 §9 truncation row: temporal branch condition vs extensional case list disagree over 21–27 delivered octets; REQ-605 settles it (extensional reading); + the exactly-20-octets ip_hdr_valid undecided case | AP-ip_eth_rx_64.md and the M14 rtl_lead WO |
+| C-27 | SPEC-M14 §7's REQ-611 parse constant is gap-sensitive (idle inside the header moves only the output event) while REQ-611 claims gap-invariance; a REQ-611+REQ-016 bench fails a conformant M14 under idle injection | the M14 tb_writer WO and AP-ip_eth_rx_64.md |
+| C-28 | REQ-505's two-half split does not tile on M13's side (header claims REQ-505 unqualified; §10 row lacks half/disclaimer; §8 item 1 commissions an observable at M15's port) — double-claim at sign-off; batch-D text outside the re-review surface, does NOT reopen the countersignature | first SO- packet claiming REQ-505; AP-arp.md |
+| C-29 | SPEC-M16 §7's transmit anchor off by one event: tx is 1 cycle after M15 emits body word 0 (2 after acceptance), not 2 after emission — a §7-built monitor asserts 2, observes 1 | the M16 bench WO; any transmit-chain latency monitor |
+| C-30 | SPEC-M14 §8 criterion 1 lacks the clear conservation exemption C-21 just landed at M10 §8, while §10's REQ-009 hook commissions the mid-datagram clear test — C-2 load-bearing at its second module | C-2's gate (first SO- packet); the §8 sentence before AP-ip_eth_rx_64.md |
 
 Status marks: C-1 SEALED (WO-0010); C-4, C-8, C-10 CLOSED (WO-0008,
 confirmed WO-0010); C-9 partially closed (scripts live + CI-wired;
 REQ-903 half unblocks now that C-8 is closed); **C-19, C-20, C-21,
-C-22, C-23 CLOSED (WO-0017 at 3f6accc, pending dv reaffirmation at the
-WO-0018 re-review)** — C-23 homed in requirements.md §0.6 (generalises)
+C-22, C-23 CLOSED (WO-0017 at 3f6accc, all five REAFFIRMED at the
+WO-0018 re-review; C-22 additionally discharged at its first new
+instance)** — C-23 homed in requirements.md §0.6 (generalises)
 + REQ-502 disambiguation; note REQ-502's derivation moved 6→7 under
 D-2a, dv re-review question 1; **C-6, C-15, C-16, C-17
 (all five items), C-18 CLOSED (WO-0014 at a9993ff)** — dispositions
@@ -122,6 +130,30 @@ Each carries a §13 record; no frozen §4.1 lift changed, so runs
 > do not reopen. Batch E may be drafted in parallel (neither repair
 > moves a port, record, or latency constant).
 
+
+## Batch-D + batch-E countersignatures (transcribed)
+
+> "I countersign batch D (SPEC-M10, SPEC-M11, SPEC-M12, SPEC-M13) for
+> P1-spec-freeze at `3f6accc`." — dv_lead, journal `J-dv_lead-0009`
+> (WO-0018), transcribed by the orchestrator 2026-08-02. The bounded
+> re-review of the WO-0015 withholding: D-1/R-1 holds including at the
+> M11-frees/machine-(A)-exits boundary and the request-drains-first
+> case; D-2a holds at all landing sites with ADR-0009; no
+> requirements.md diff for D-1, verified byte-identical to a9993ff.
+
+> "I countersign batch E (SPEC-M14, SPEC-M15, SPEC-M16) for
+> P1-spec-freeze at `3f6accc`." — dv_lead, journal `J-dv_lead-0009`
+> (WO-0018), transcribed by the orchestrator 2026-08-02. All three
+> signed on recomputation (M14 L=12/h=20/ΔC=4 vs ceiling 5, abort
+> inequality proved per residue; M15's 0xF6B4 and stall counts over the
+> whole payload range; M16's wiring table orphan-free both directions).
+> The five architect questions answered: (i) REQ-502 = 7 accepted, gate
+> both halves; (ii) boundary cycle stays pinned (dropped); (iii)
+> truncated-alone endorsed, copy at M17 (C-26 scoping); (iv) two-owner
+> rows kept; (v) cfg_subnet_mask edge accepted, not E2. C-19…C-23 all
+> REAFFIRMED. Batch-E §12 rows dischargeable from run 30739442056 /
+> success / 3f6accc. Spec Status-line flips for batches D and E ride
+> the next architect packet (WO-0019), per the batch-C precedent.
 
 **Batch-C spec-status flip ratified (WO-0014).** The architect flipped
 SPEC-M06…M09 from "Status: DRAFT" to FROZEN-at-508eea2 and completed

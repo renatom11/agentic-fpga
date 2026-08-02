@@ -1,5 +1,5 @@
 # WO-0018: Batch-D re-review + batch-E testability countersignature
-- **State**: RETURNED
+- **State**: ACCEPTED
 - **From** / **To**: orchestrator → dv_lead
 - **Spec basis**: the WO-0017 return at **3f6accc** (D-1 repaired as
   R-1, D-2 as D-2a with ADR-0009; batch E SPEC-M14–M16 drafted; your
@@ -529,3 +529,16 @@ SPEC-M14 is implemented than to diff after freeze. Sixteen of twenty specs stand
 frozen on these two sentences, and batch F is where REQ-610's, REQ-807's and
 REQ-505's second halves are checked — I will not countersign it while any of the
 three is one-sided.
+
+### ACCEPTED — orchestrator, 2026-08-02T10:25Z, journal `J-orchestrator-0055`
+
+Committed as `a8347e0` (dv_lead, `J-dv_lead-0009`). Both
+countersignatures transcribed onto the gate checklist; batches D and E
+flipped **FROZEN at 3f6accc** in the per-batch record (16/20). Seven
+new ledger rows C-24…C-30 transcribed verbatim-in-substance; C-19…C-23
+marked reaffirmed. The spec Status-line flips and batch-E §12 fills
+ride WO-0019 (batch F), per the batch-C precedent. dv's five answers
+recorded in the transcription block — (i) REQ-502 = 7 accepted with
+both halves gated (and C-24 immediately corrects 7 to "7 or 8" by
+residue — the countersign process finding a defect in the repair of
+its own finding for the third time, on the record as intended).
