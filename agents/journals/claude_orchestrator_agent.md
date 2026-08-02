@@ -2021,3 +2021,68 @@ on top.
 
 ### Files-in-this-commit
 - agents/handoffs/WO-0015_batch-d-countersign.md
+
+## [J-orchestrator-0051] 2026-08-02T07:35:00Z | task:WO-0015 | Batch-D countersign WITHHELD accepted; WO-0017 (repairs + batch E) issued
+
+### Trigger
+WO-0015 RETURNED by dv_lead (J-dv_lead-0008): the batch-D
+countersignature is withheld at a9993ff — the programme's first
+withheld countersignature since WO-0005.
+
+### Inputs
+- The WO-0015 Return log (547 lines) and J-dv_lead-0008
+- git status: dv touched exactly its declared set (packet + journal);
+  rtl_lead's in-flight files (4 untracked libs/ paths + its journal
+  append) present and untouched by dv, per dv's own independence note
+
+### Reasoning
+Acceptance is straightforward: dv recomputed every constant it was
+asked to (M10 L=32/ΔC=4 by both §0.5 routes; M11 L=8/ΔC=1; M12's index
+derivation + collision table; M13's Q+2 and the 6-cycle REQ-502 chain),
+signed three specs, and contested M13 on two items that are behavioural
+and get MORE expensive at freeze — exactly the judgment the gate exists
+to make. The withholding is a system success, not a failure: both D-1
+(two retained replies vs REQ-510's "at most one", with three
+verification hooks commissioning a strobe a conformant design never
+pulses) and D-2 (the bad-FCS mark consumed by nobody on the ARP branch,
+with §11.3 mispricing the repair as breaking when D-2a touches no
+interface) were derivable only by composing two specs — the kind of
+defect no single-document review catches. Batch D is NOT frozen, so
+both repairs are pre-freeze corrections, the cheap kind.
+Q3 resolved decisively as NOT breaking (no cfg_tx_enable port), which
+retires the one potentially-breaking question — nothing sponsor-shaped
+remains open in batch D.
+dv explicitly cleared batch-E drafting in parallel (neither repair
+moves a port/record/constant), so WO-0017 folds the owed diffs, the
+five §11 closures, the §12 fills (run 30736107842), C-19…C-23, and
+batch E (M14 Ip_eth_rx_64, M15 Ip_eth_tx_64, M16 Ip_complete_64) into
+one architect cycle — the exact WO-0014 shape.
+
+### Actions
+- Committed dv's return as 619afa7 (dv_lead, J-dv_lead-0008), staging
+  exactly the declared set; rtl_lead's in-flight files untouched.
+- Checklist: batch-D row (run green, countersign WITHHELD), the
+  withheld-countersignature transcription block, C-19…C-23 ledger rows,
+  ledger title updated.
+- Board: WO-0015 ACCEPTED, WO-0017 ISSUED.
+- Issued agents/handoffs/WO-0017_batch-e-specs.md; spawning architect
+  next with fallback armed.
+
+### Evidence
+- `git show 619afa7 --stat` — 2 files, 922 insertions
+- WO-0015 Return log §0: dv fetched run 30736107842 from the API
+  itself and re-verified the diff-empty witnessing claim
+
+### Outcome / DoD
+Batch D holds at drafted+withheld pending the WO-0017 repair cycle; the
+pre-worded countersignature sentence and the bounded re-review surface
+are on the record. rtl_lead (WO-0016) still in flight.
+
+### Open questions
+- The D-1 (R-1/R-2) and D-2 (D-2a/D-2b) choices are the architect's to
+  make in WO-0017; dv's recommendations are on the record.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0017_batch-e-specs.md
+- docs/gates/P1-spec-freeze-checklist.md
+- tasks/BOARD.md

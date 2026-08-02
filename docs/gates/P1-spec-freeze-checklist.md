@@ -28,7 +28,7 @@ by the orchestrator from the signing agent's journal entry, per PROTOCOL
 | A | M01 `Axi64`, M02 `Crc32_eth` | 22145b5 (WO-0006), revised f78766e | run 30729342467 green | **SIGNED** (J-dv_lead-0003; §4.1 addition accepted J-dv_lead-0005) | **FROZEN at f78766e** |
 | B | M03, M04, M05 | f78766e (WO-0008) | run 30729342467 green | **SIGNED** (J-dv_lead-0005) | **FROZEN at f78766e** |
 | C | M06, M07, M08, M09 | 508eea2 (WO-0011) | run 30733153172 green | **SIGNED** (J-dv_lead-0007) | **FROZEN at 508eea2** |
-| D | M10, M11, M12, M13 | a9993ff (WO-0014) | pending | — | — |
+| D | M10, M11, M12, M13 | a9993ff (WO-0014) | run 30736107842 green (2f29888; `git diff a9993ff 2f29888 -- docs/specs/` empty) | **WITHHELD** (J-dv_lead-0008, WO-0015) — M10/M11/M12 SIGNED, M13 CONTESTED; D-1/D-2 owed | — |
 | E | M14, M15, M16 | — | — | — | — |
 | F | M17, M18, M19, M20 | — | — | — | — |
 
@@ -50,7 +50,7 @@ by the orchestrator from the signing agent's journal entry, per PROTOCOL
 > sponsor's delegated latency-budget decision (board, 2026-08-02) —
 > ΔC = (L + h)/8 normative, allocation 4/3/1/5/4 = 17 of 24, slack 7.
 
-## Carry-forward ledger (WO-0005 + WO-0007 + WO-0010)
+## Carry-forward ledger (WO-0005 + WO-0007 + WO-0010 + WO-0013 + WO-0015)
 
 | id | Item | Must land before |
 |---|---|---|
@@ -74,6 +74,11 @@ by the orchestrator from the signing agent's journal entry, per PROTOCOL
 | C-16 | SPEC-M04 §7 tx_tready bullet correct but incomplete — the omitted C+8 cycle is the one the composed 11-cycle cadence turns on | before M04/M07 tb_writer WO (batch-D return) |
 | C-17 | Five batch-C readings/coverage claims (M06 inequality inversion; M07 drain W−J+1; M08 §6.3 same-cycle-header; ADR-0008 valid-drop monitor rule; M06 §8 needs 22) | batch-D return |
 | C-18 | C-14.4 repair's example covers four frame octets — read literally, amended §6.2 Frame row fails every lane-4 FCS | before AP-xgmii_rx_64 (batch-D return) |
+| C-19 | SPEC-M11 §8 item 2's M10 loopback is a zero-lead producer as written — M10 would take word 1 as word 0 and pulse `error_arp_unsupported`; repair: loopback presents `hdr_valid` one cycle before payload word 0 | AP-arp_eth_tx.md and the M11 tb_writer WO |
+| C-20 | SPEC-M10 §6.3 item 4's word-0 constant wrong under both its own readings (correct value 0x0406_0008_0100; full word 0 = 0x0100_0406_0008_0100); M11 §6.1's table is right, M10 §6.1's governing table is right | AP-arp_eth_rx.md and the M10 tb_writer WO |
+| C-21 | SPEC-M10 §6.1's report XOR does not except the `clear` abandonment §7 mandates; C-2's conservation exemption becomes load-bearing for the first time here | C-2's gate (first SO- packet); the §6.1 clause before AP-arp_eth_rx.md |
+| C-22 | ADR-0008's C-17(d) bullet vs SPEC-M11 §6.1: monitor-prohibition precedence unstated (dv's own repair carried the defect, self-reported); one clause on the ADR bullet resolves | first transmit-side tb_writer WO (M07/M09/M11) |
+| C-23 | M13's strobes can be high on consecutive cycles; §0.6's one-cycle pulse rule needs the counting convention (high cycles, not edges); + editorial: REQ-502's measurement-start ambiguity (cycle 8 vs 9) | before AP-arp.md; REQ-502 half before any latency artifact quotes it |
 
 Status marks: C-1 SEALED (WO-0010); C-4, C-8, C-10 CLOSED (WO-0008,
 confirmed WO-0010); C-9 partially closed (scripts live + CI-wired;
@@ -86,6 +91,33 @@ C-17(b) landed in five places not three, C-17(d) in ADR-0008 not
 SPEC-M07; C-18's twin sentence in SPEC-M03 §3 moved in the same diff.
 Each carries a §13 record; no frozen §4.1 lift changed, so runs
 30729342467 and 30733153172 still witness every frozen interface.
+
+## Batch-D countersignature (WITHHELD — transcribed)
+
+> "The batch-D countersignature is WITHHELD at a9993ff." — dv_lead,
+> journal `J-dv_lead-0008` (WO-0015), transcribed by the orchestrator
+> 2026-08-02. SPEC-M10, SPEC-M11, SPEC-M12 **SIGNED** (M12 clean, no
+> findings of any class); SPEC-M13 **CONTESTED** on two blocking items:
+> **D-1** (the ARP module retains two replies where REQ-510's normative
+> sentence says one — three verification hooks across two documents
+> commission a strobe a conformant design does not pulse; repairs R-1
+> recommended / R-2) and **D-2** (REQ-013's "ultimate consumer must
+> discard" clause is discharged by nobody on the ARP branch, and
+> SPEC-M10 §11.3 prices the repair wrongly as a record addition when
+> D-2a touches no interface; repairs D-2a recommended / D-2b). First
+> withheld countersignature since WO-0005. The four architect questions
+> answered: Q1 instantiation (no ADR-0008 amendment), Q2 = D-2, Q3
+> **consequence clause — no `cfg_tx_enable` at M13, NOT breaking**, Q4
+> specification decision (one sentence owed), plus Q5 (M12 §11.3)
+> agreed. §12 `Interface compile check` rows for all four specs are
+> dischargeable now from run 30736107842 / success / 2f29888; the four
+> §11.1 items close. The countersignature sentence is pre-worded in the
+> Return log for the commit carrying the D-1/D-2 diffs; the re-review
+> re-checks only the landing sites, byte-identity/set-equality, and a
+> green run at the new SHA — the recomputed arithmetic and Q1/Q3/Q4/Q5
+> do not reopen. Batch E may be drafted in parallel (neither repair
+> moves a port, record, or latency constant).
+
 
 **Batch-C spec-status flip ratified (WO-0014).** The architect flipped
 SPEC-M06…M09 from "Status: DRAFT" to FROZEN-at-508eea2 and completed
