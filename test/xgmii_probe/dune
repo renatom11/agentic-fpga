@@ -1,0 +1,31 @@
+; WO-0033 item X-2 — the XGMII seam between the DUT-independent link-partner
+; model and a live Hardcaml simulation.
+;
+; A separate library, and not a module of dv_xgmii, for exactly the reasons
+; test/axi64_probe/dune gives for its own separation:
+;
+;  * dv_xgmii and dv_monitors then need no Hardcaml at all, so the link
+;    partner's own tests exercise the MODEL rather than an elaboration;
+;  * this is the first code in DV to name the Xgmii record's [d] and [c]
+;    fields on a driven or sampled port, so if that transcription is wrong the
+;    failure is confined to this directory.
+;
+; ifc_check is the lift of SPEC-M01 §4.1 under docs/specs/ — the signed public
+; interface, byte-identical to the specification and countersigned at 22145b5.
+; libs/** is not depended on and was not opened (PROTOCOL §10).
+;
+; hardcaml_axi is deliberately NOT a dependency: the XGMII boundary carries no
+; AXI stream, and a library that linked it would be claiming a coupling the
+; specification does not have.
+;
+; No .mli: the module is four functions whose contract is the docstring block
+; at the head of xgmii_probe.ml, and an interface file here would be a second
+; copy of the REQ-012 packing convention — which is precisely the drift
+; Strobes' comment warns about.
+
+(library
+ (name dv_xgmii_probe)
+ (inline_tests)
+ (libraries hardcaml ifc_check dv_xgmii)
+ (preprocess
+  (pps ppx_expect)))

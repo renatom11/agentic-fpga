@@ -119,7 +119,12 @@ module Latency = struct
                   r))
   ;;
 
-  let frame_out t out_times =
+  (* WO-0033 X-5/X-9. The clean-frame identity is one case of the per-frame
+     extent, not the rule: see octet_time.mli for why the aborted, truncated
+     and padded frames of AP-xgmii_rx_64 and AP-ip_eth_rx_64 need the other
+     case, and why the delivered octets are a prefix at both modules so the
+     correspondence [out.(j) = in.(j + strip_octets)] is untouched. *)
+  let frame_out t ?expected_octets out_times =
     (match Queue.take_opt t.pending with
      | None ->
        error
@@ -130,7 +135,29 @@ module Latency = struct
      | Some in_times ->
        let n_in = Array.length in_times in
        let got = Array.length out_times in
-       let expected = n_in - t.strip_octets - t.tail_octets in
+       let available = n_in - t.strip_octets in
+       let declared =
+         match expected_octets with
+         | None -> None
+         | Some e when e >= 0 && e <= available -> Some e
+         | Some e ->
+           error
+             t
+             (Printf.sprintf
+                "frame %d: a per-frame output extent of %d octet(s) is outside 0 .. %d, \
+                 the octets this frame's input trace can supply after the %d stripped \
+                 from the front (WO-0033 X-5/X-9)"
+                t.frames_compared
+                e
+                (max 0 available)
+                t.strip_octets);
+           None
+       in
+       let expected =
+         match declared with
+         | Some e -> e
+         | None -> n_in - t.strip_octets - t.tail_octets
+       in
        if n_in <= t.strip_octets || expected < 0
        then
          error
@@ -146,15 +173,24 @@ module Latency = struct
        then
          error
            t
-           (Printf.sprintf
-              "frame %d: %d input octets less %d stripped from the front and %d from the \
-               back is %d, but %d octets were emitted"
-              t.frames_compared
-              n_in
-              t.strip_octets
-              t.tail_octets
-              expected
-              got)
+           (match declared with
+            | Some e ->
+              Printf.sprintf
+                "frame %d: the specification's own extent for this frame is %d octet(s), \
+                 but %d were emitted (WO-0033 X-5/X-9)"
+                t.frames_compared
+                e
+                got
+            | None ->
+              Printf.sprintf
+                "frame %d: %d input octets less %d stripped from the front and %d from \
+                 the back is %d, but %d octets were emitted"
+                t.frames_compared
+                n_in
+                t.strip_octets
+                t.tail_octets
+                expected
+                got)
        else if got = 0
        then
          error

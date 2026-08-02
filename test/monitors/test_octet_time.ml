@@ -583,3 +583,108 @@ let%expect_test "an output frame with no matching input is an error, not a laten
     VERDICT ok
     |}]
 ;;
+
+(* ------------------------------------------------------------------ *)
+(* WO-0033 X-5 / X-9 — the per-frame output extent.                    *)
+(*                                                                     *)
+(* The clean-frame identity (input − strip − tail) is what the WO-0009  *)
+(* tagger could express and it is false for every frame either receive  *)
+(* module cuts short. These three tests pin the three behaviours the    *)
+(* repair has to have: the identity still governs when nothing is       *)
+(* declared, a declared extent replaces it without touching the         *)
+(* per-octet correspondence, and an impossible extent is an error       *)
+(* rather than a silent clamp.                                         *)
+
+let%expect_test "X-5: an M03 frame aborted at octet 12 keeps its FCS octets" =
+  (* SPEC-M03 §9 row 2: `/E/` while the frame is open with ≥ 1 octet
+     delivered truncates at the octet before the error character and removes
+     NO FCS. Twelve frame octets arrived, twelve are delivered — the identity
+     would demand 20 − 8 − 4 = 8 and fail a conformant design. Lane-0 start:
+     h = 8, L = 16, so output octet j leaves at octet time (8 + j) + 16. *)
+  let tagger =
+    Octet_time.Latency.create
+      ~name:"m03-abort"
+      ~strip_octets:8
+      ~tail_octets:4
+      ~front_offsets:[ 8; 12 ]
+      ~ceiling:4
+      ()
+  in
+  Octet_time.Latency.frame_in tagger (Array.init 20 (fun k -> k));
+  Octet_time.Latency.frame_out tagger ~expected_octets:12 (Array.init 12 (fun j -> 24 + j));
+  expect_int ~what:"octets compared" ~expected:12 (Octet_time.Latency.octets_compared tagger);
+  expect_int
+    ~what:"L"
+    ~expected:16
+    (Option.value ~default:(-1) (Octet_time.Latency.constant tagger));
+  verdict tagger ~expect_clean:true;
+  [%expect {| |}]
+;;
+
+let%expect_test "X-5: a declared extent equal to the identity is the old behaviour" =
+  (* The repair may not change a clean frame's verdict. Same 64-octet frame
+     twice: once with the identity, once with the extent stated. *)
+  (* The same name for both runs, so the two reports are comparable strings and
+     the equality below is the assertion rather than a pair of eyeballed
+     snapshots. *)
+  let run _label expected_octets =
+    let tagger =
+      Octet_time.Latency.create
+        ~name:"clean"
+        ~strip_octets:8
+        ~tail_octets:4
+        ~front_offsets:[ 8 ]
+        ~ceiling:4
+        ()
+    in
+    Octet_time.Latency.frame_in tagger (Array.init 72 (fun k -> k));
+    (match expected_octets with
+     | None -> Octet_time.Latency.frame_out tagger (Array.init 60 (fun j -> 24 + j))
+     | Some e ->
+       Octet_time.Latency.frame_out
+         tagger
+         ~expected_octets:e
+         (Array.init 60 (fun j -> 24 + j)));
+    verdict tagger ~expect_clean:true;
+    Octet_time.Latency.report tagger
+  in
+  let identity = run "identity" None in
+  let declared = run "declared" (Some 60) in
+  if identity = declared
+  then print_endline "IDENTITY-EQUALITY ok"
+  else failwith "X-5: a declared extent equal to the identity changed the verdict";
+  [%expect {| |}]
+;;
+
+let%expect_test "X-9: M14's padding varies per datagram, and an impossible extent is an error" =
+  (* N = 46 Ethernet payload octets, IPv4 total length N′ = 36: twenty header
+     octets stripped, sixteen payload octets delivered, ten octets of padding
+     consumed and dropped (SPEC-M14 §6.1). [tail_octets] is a run constant and
+     cannot express "ten here, nine at the next datagram". *)
+  let tagger =
+    Octet_time.Latency.create
+      ~name:"m14-padding"
+      ~strip_octets:20
+      ~tail_octets:0
+      ~front_offsets:[ 20 ]
+      ()
+  in
+  Octet_time.Latency.frame_in tagger (Array.init 46 (fun k -> k));
+  Octet_time.Latency.frame_out tagger ~expected_octets:16 (Array.init 16 (fun j -> 32 + j));
+  (* and the same datagram claiming more octets than its input trace holds *)
+  Octet_time.Latency.frame_in tagger (Array.init 46 (fun k -> 64 + k));
+  Octet_time.Latency.frame_out tagger ~expected_octets:40 (Array.init 16 (fun j -> 96 + j));
+  expect_int ~what:"octets compared" ~expected:16 (Octet_time.Latency.octets_compared tagger);
+  expect_int
+    ~what:"errors"
+    ~expected:2
+    (List.length (Octet_time.Latency.errors tagger));
+  print_string (Octet_time.Latency.report tagger);
+  print_newline ();
+  if !failures = 0
+  then print_endline "VERDICT ok"
+  else (
+    failures := 0;
+    failwith "X-9: the impossible extent was not reported");
+  [%expect {| |}]
+;;

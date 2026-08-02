@@ -176,9 +176,48 @@ module Latency : sig
       outputs in order. *)
   val frame_in : t -> int array -> unit
 
-  (** Octet times of every octet of the corresponding output frame. Its length
-      must be (input length − [strip_octets] − [tail_octets]). *)
-  val frame_out : t -> int array -> unit
+  (** Octet times of every octet of the corresponding output frame.
+
+      {2 The per-frame output extent (WO-0033 items X-5 and X-9 — one repair,
+      two customers)}
+
+      Without [?expected_octets] the extent is the {b clean-frame identity}
+      (input length − [strip_octets] − [tail_octets]), which is what a frame
+      that runs to completion satisfies and what every WO-0009 caller relies
+      on. That identity is {e false} for every frame a module cuts short, and
+      both receive modules with an attack plan have such frames:
+
+      - **M03** (`AP-xgmii_rx_64.md` rows E1, F1, G1, G2, H1, H2): a frame
+        aborted under REQ-105 or REQ-110 is truncated at the octet before the
+        closing character and {b no FCS is removed} (SPEC-M03 §9), so the
+        identity's [tail_octets] = 4 is wrong by four octets; REQ-108's
+        truncation delivers exactly 1514 octets whatever the frame's length.
+      - **M14** (`AP-ip_eth_rx_64.md` row I2, family E, every directed length):
+        the removed tail is the Ethernet padding N − N′, which varies {e per
+        datagram} while [tail_octets] is a run constant, and on REQ-605's
+        truncation rows the payload is shorter still.
+
+      [frame_dropped] covers only the frames that emit {e nothing}. A frame
+      that emits a {e short} output frame had no entry point at all, so the
+      alternative was to leave those rows untagged — which would exempt exactly
+      the frames whose latency is most likely to be wrong, since an abort path
+      that holds octets back is the defect REQ-005 exists to catch.
+
+      [?expected_octets] is the number of octets the {b specification} says
+      this frame delivers, computed by the bench from spec text (at M03,
+      `Dv_xgmii.Injection.outcome.delivered`; at M14, total length − 20). It
+      replaces the identity and nothing else: the delivered octets are always a
+      {b prefix} of the frame's octets at both modules — truncation and padding
+      removal both take from the back, and an abort forwards what arrived — so
+      output octet [j] is still input octet [j + strip_octets] and the
+      per-octet latency comparison is unchanged. Supplying an extent that is
+      negative, or longer than the input trace less [strip_octets], is
+      reported as an error rather than silently clamped.
+
+      A caller that passes [~expected_octets] equal to the identity gets
+      exactly the old behaviour; the regression test drives that equality so
+      the repair cannot change a clean frame's verdict. *)
+  val frame_out : t -> ?expected_octets:int -> int array -> unit
 
   (** The oldest unmatched input frame produced no output frame (it was
       discarded under §0.6, or is a §0.7 zero-payload frame). Pops it without

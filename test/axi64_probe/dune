@@ -27,6 +27,17 @@
 ; step_testbench cycle hook drives as readily as a Cyclesim loop, so nothing
 ; here has to change when that bench lands.
 
+; WO-0033 added (inline_tests) and ppx_expect, which this library did not have
+; at WO-0009. The reason is item X-6, the stream DRIVER: a sampler could only be
+; tested against a live design, so there was nothing here to run; a driver can
+; be tested against the sampler that already lives beside it, and
+; drive-then-sample is exactly the round trip in which a wrong octet position
+; is visible without any RTL. ppx_expect alone, not ppx_jane, matching
+; test/monitors/dune — [%expect] is the only extension used.
+
 (library
  (name dv_axi64_probe)
- (libraries hardcaml hardcaml_axi ifc_check dv_monitors))
+ (inline_tests)
+ (libraries hardcaml hardcaml_axi ifc_check dv_monitors)
+ (preprocess
+  (pps ppx_expect)))

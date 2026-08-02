@@ -5575,3 +5575,395 @@ RULING row at either module. Handoff:
 ### Files-in-this-commit
 - agents/handoffs/WO-0031_m03-r1r2-repair.md
 - test/attack_plans/AP-xgmii_rx_64.md
+
+## [J-dv_lead-0017] 2026-08-03T09:20Z | task:WO-0033 | The verification machinery: eight of eleven built, three partitioned off, and a defect found in my own attack plan
+
+### Trigger
+Orchestrator, spawn `WO-0033/2026-08-03T07:40Z`, on
+`agents/handoffs/WO-0033_dv-machinery.md` — the X-1 … X-11 machinery register I
+wrote myself at WO-0027 deliverable 4 and have cited as blocking in every
+activation since. The work order's own words: "You named these gaps; now close
+them."
+
+### Inputs
+Specification and process text only; `libs/**` was not opened at any point in
+this sitting, including for the Axi64 stream driver.
+
+- `agents/charters/dv_lead.md`, `agents/PROTOCOL.md`, my journal tail
+  (`J-dv_lead-0016`), `agents/handoffs/WO-0033_dv-machinery.md`.
+- `docs/specs/modules/xgmii_rx_64.md` at `06c1eba` — §6.1 (the
+  preamble-position paragraph and its REQ-016 constraint, consequence 1 and its
+  six-row cycle table with the WO-0031 scope note, the emission rule and its
+  C-14.4 gapless qualifier, the two C-18 non-instances, the FCS residue), §6.2
+  (all four states), §6.3, §7, §8, §9 (the nine-row table, the closure list,
+  the repaired "Strobe cycle, pinned" rule, the seven co-occurrence rulings),
+  §10.
+- `docs/specs/modules/ip_eth_rx_64.md` at `06c1eba` — §6.1 (the field table,
+  the ADR-0013 total-length partition, the checksum arithmetic, the D algebra),
+  §6.2, §9 (the seven rows and their pinned cycles).
+- `docs/specs/requirements.md` — §0.3, §0.5, §0.6 (the strobe window and C-23's
+  counting convention), §0.7, §12, REQ-012, REQ-016, REQ-101 … REQ-110,
+  REQ-601 … REQ-612.
+- `docs/specs/ifc_check/axi64_ifc.ml` and `ip_eth_rx_64_ifc.ml` — SPEC-M01
+  §4.1's compile-checked records (`Axi64.Source`, `Xgmii`, `Eth_header`), which
+  are the driver's and the probe's whole source.
+- `docs/adr/ADR-0005*` (the expect-snapshot rule, which changed how I wrote
+  every test in this sitting — see Reasoning).
+- My own `test/attack_plans/AP-xgmii_rx_64.md` and `AP-ip_eth_rx_64.md` §7 and
+  their rows; the existing DV libraries' interfaces (`arrival.mli`,
+  `frame.mli`, `xgmii_word.mli`, `octet_time.mli`, `stream_word.mli`,
+  `strobes.mli`, `conservation_monitor.mli`, `axi64_probe.ml`, `arrival.ml`,
+  and the `Latency` implementation I had to repair).
+- `tools/check_abort_availability.sh` — **read only**, as X-10's declared
+  neighbour, and not edited (`tools/**` is out of this WO's scope).
+- Attempted and **failed**: `https://www.rfc-editor.org/rfc/rfc1071.txt` and
+  `https://datatracker.ietf.org/doc/html/rfc1071`, both HTTP 403 through this
+  environment's proxy. That failure is load-bearing and is Evidence item 7.
+
+### Reasoning
+
+**The partition, decided before writing rather than discovered at the cap.**
+The work order gave me leave to stage and told me what the M03-critical core
+was (X-1 … X-6, X-9). I took the leave, and then took one item more than the
+core: **X-8**. The reason is that X-8 is the only item on the list carrying a
+*charter-level precondition* — anchor-before-judge — and an anchor has a lead
+time that nothing else here has. Deferring it would have deferred the
+discovery of whether an anchor is reachable at all from this environment, which
+turns out to be the most consequential thing I learned today. Everything else
+M14-side (X-7, X-10, X-11) is bench composition over machinery that now exists,
+and I say so item by item in the Return log rather than pleading budget.
+
+**X-1: I built a model, not a table, and the choice is the whole item.** The
+tempting shape for an error-injection catalogue is a list of cases each carrying
+its hand-written expected outcome. I rejected it, because a table of expected
+§9 outcomes is a *second copy of §9*, and this programme has now paid three
+times for a second copy drifting from its original. Instead `outcomes` runs
+§6.2's state machine and §9's closure list over the octet-time line the
+catalogue emits and reports what the specification says happens. Three things
+then fall out rather than being programmed, and each is a row I would otherwise
+have had to remember: §6.1's two-events-in-one-word cases are ordinary, because
+every character is evaluated at its own octet time against the frame open at
+that octet time; a frame the *stimulus* opens — an injected `/S/` opens one —
+gets an outcome even though no catalogue entry describes it, which is exactly
+the frame a hand-written table forgets; and the strobe cycles come from §7's
+per-octet constant and §9's no-output-word clause, both **gap-invariant**,
+rather than from §6.1's `m + 3`, which is qualified to a gapless stimulus. That
+last one is what lets X-1's outcomes be used *inside* X-4's wrapper, which is
+the only way M03-N2 can be driven gapped, which was the point of the WO-0031
+repair in the first place.
+
+I checked the model against the specification's own worked answer rather than
+against itself. SPEC-M03 §6.1's consequence 1 states a **minimal witness** —
+`/S/` in lane 0 of word W − 1, then a word W carrying four octets, a `/S/` in
+lane 4 and a `/T/` in lane 6 — and states its answer: the aborted frame's
+`tlast` (four octets, `tkeep` = 0x0F, `tuser`[0] = 1) on **W + 2**, and the new
+frame's `error_runt` on **W + 2** as well, two reports on one cycle carrying
+different names. `test_injection.ml` builds exactly that stimulus and asserts
+exactly those numbers. It is the strongest check available on this model,
+because it is the one row where the specification hands me the answer, and it
+is the row my own WO-0030 prose got wrong.
+
+**What X-1 is not, said in the file so no packet can blur it.** This is a golden
+model in the charter's sense and it has **not** met charter §3's external
+anchor. The Phase 1 anchor for MAC behaviour is the verilog-ethernet
+differential co-sim, and no `SO-xgmii_rx_64.md` PASS may rest on this model
+until that has run. What it *is* checked against is my attack plan's own
+hand-derived counts, `tkeep` values and cycles — derived earlier and by the
+other route. Two independent derivations agreeing is not an external anchor; it
+is what makes the model fit to *build benches with* while the anchor is
+pending. I wrote that distinction into `injection.mli` rather than into this
+journal alone, because the person who will be tempted to blur it is a future me
+writing a sign-off packet, and the file is what he will have open.
+
+**X-4: implementing a constraint I have argued is over-broad.** The M03-N3
+ruling as repaired at `06c1eba` forbids an injected idle cycle between a frame's
+start character and its first octet. My own ledger row C-45 says the
+prohibition's *stated ground* — "such a cycle occupies preamble positions" —
+does not hold at a lane-0 start, where all eight preamble positions lie inside
+the start word and a word inserted after it occupies none of them. The work
+order told me to carry both, and carrying both is not a contradiction once the
+two grounds are separated: the *second* ground the specification gives (the
+frame's first octet would no longer be 8 octet times after its start character)
+holds at **both** lanes, which is why C-45 is a one-phrase ledger row and not a
+defect. So the wrapper refuses that boundary at both lanes, as written, names
+the lane-0 instances separately in `c45_sites` so the residue is visible in a
+bench's output rather than buried in a comment, and exposes `~allow_c45` with a
+default of **false** and a docstring saying it may be set only once C-45 lands
+as a spec diff. If it lands, the diff to the wrapper is one default and M03-I4
+gains a case; if it does not, nothing was asserted against text that does not
+exist.
+
+I also worked out, rather than assumed, that exactly **one** inter-word boundary
+per frame is prohibited and that it is the same boundary at both start lanes —
+before source cycle `start_cycle + 1`. Nothing earlier can be prohibited,
+because a boundary before the start word lies in the gap. That is a small fact
+and it is the whole of the wrapper's legality check.
+
+**X-5/X-9: the smallest item and the one I should have built at WO-0012.** The
+tagger's `frame_out` required the output length to equal input − strip − tail.
+That identity is true of a frame that runs to completion and false of every
+frame either receive module cuts short, and the alternative to fixing it was to
+leave those frames untagged — which would have exempted precisely the frames
+whose latency is most likely to be wrong, since an abort path that holds octets
+back is the defect REQ-005 exists to catch. The repair is one optional argument
+because the delivered octets are a **prefix** at both modules: truncation and
+padding removal take from the back, an abort forwards what arrived, so the
+correspondence `out(j) = in(j + strip)` is untouched. I drove the
+identity-equality case deliberately (a declared extent equal to the identity
+must not change a clean frame's verdict) because a repair that quietly changes
+the conformant path is worse than the gap it closes.
+
+**The finding, and it is against me.** Building X-8 proved that my own attack
+plan row **M14-B3(a)** commissions a stimulus that does not exist. The row asked
+for a valid header whose ten-halfword sum needs *two* folds, to kill a 32-bit
+accumulator folded once. It cannot: with g(T) = (T mod 2^16) + ⌊T/2^16⌋ and f = g
+to a fixpoint, both preserve T mod 65535; ten halfwords bound ⌊T/2^16⌋ by 9, so
+g(T) ≤ 0xFFFF + 9; a header verifies iff f(T) = 0xFFFF, i.e. T ≡ 0 (mod 65535)
+with T > 0, whence g(T) ∈ {0, 0xFFFF}, and g(T) = 0 forces T = 0, which does not
+verify. So g(T) = 0xFFFF, and conversely g(T) = 0xFFFF stops the fixpoint at
+once. **The two arithmetics make the same accept/reject decision on every
+20-octet header.** Fold-once is unkillable at M14 because at M14 it is not a
+defect.
+
+I recorded it as **C-48** and corrected the row **in place**, because it is live
+guidance a tb_writer would build from, and left the WO-0027 creation row
+standing as a log — the same split I applied to myself at WO-0031. Sub-case (b)
+survives and now carries the row: a header whose folded sum reaches 0xFFFF by an
+end-around carry does separate the correct arithmetic from a design that adds
+modulo 2^16 with no fold at all, and that defect is real. And I made the claim
+*executable* rather than argumentative: `Ipv4_ref.fold_once_divergence` searches
+the whole identification field, on accepted and rejected headers alike, and the
+test asserts it returns `None`. A proof I can run is worth more than a proof I
+can write.
+
+**This is the third instance of the same failure mode and I am going to name it
+as a pattern rather than a coincidence.** C-44 was "the only stimulus that
+distinguishes it"; the WO-0031 correction was "three of the four sub-cases"; now
+C-48 is "this kills a fold-once accumulator". Each time the artefact around it
+was sound and the *universal about killability or count* was not. The mitigation
+I proposed at WO-0031 was textual and I said then it was weak. Today gives a
+better one, and it is the reason X-1 computes its outcomes and X-8 runs its
+search: **where a claim is arithmetic, make the arithmetic executable and let CI
+hold it.** Three of my five errors of this class would have been caught at
+construction by a running check. That is now a habit rather than a resolution,
+and the auditor can check it by looking for a claim in my prose that has no
+executable partner.
+
+**ADR-0005 rule 2 changed how I wrote every test here, and I nearly got it
+wrong.** My first pass hand-authored three `[%expect]` blocks with plausible
+report text. That is precisely the fabricated evidence rule 2 forbids
+("Writing a plausible-looking waveform into an expect block would be fabricated
+evidence — the one thing the journal protocol exists to prevent"). I caught it
+against `test_octet_time.ml`'s own header, which states the convention, and
+rewrote them: **every new `[%expect]` block is empty and will be promoted from
+CI's own diff output, and every verdict is asserted in OCaml** so a promotion
+that captured wrong output still leaves a red test. That is why the Return log
+says `dune runtest` is expected **red** on the first run and why that is the
+cadence rather than a failure. I would rather state that plainly than ship a
+green-looking run built on invented snapshots.
+
+**Blind-writing discipline, since this was the largest OCaml sitting the
+programme has had.** Two decisions were made purely to shrink the surface a
+wrong API name can damage. First, nothing in the new Hardcaml-facing code uses
+an integer constructor or a width argument to build a 64-bit value: everything
+goes through `Bits.vdd`/`gnd` and `Bits.concat_lsb`, so a 63-bit OCaml `int`
+can never wrap a lane-7 octet at 0x80 or above, and the count of names new to
+this repository's proven API surface is **two**. Second, X-2 went into its own
+library rather than into `dv_xgmii`, so a wrong field transcription cannot take
+the link-partner model's tests down with it — the same argument
+`test/axi64_probe/dune` already makes for itself.
+
+**One deliberate refusal.** X-1 accepts an `/I/` or `/Q/` only in a preamble
+position, where REQ-102's third sentence routes it to REQ-105. Inside an open
+frame, a single idle *lane* is outside this specification's space: §6.2's
+`Frame` row leaves to `Idle` only on `/T/`, `/E/` and `/S/`, and §6.1's hold
+clause is about a word covering no frame octet, not a lane. I refused it at
+construction with that citation rather than modelling a behaviour nobody has
+specified. Same reasoning refuses a `/S/` outside lanes 0 and 4 — §6.3 item 3
+leaves it unconstrained *because* the link-partner contract never produces it,
+so building it would commission a test for a stimulus this programme decided not
+to make.
+
+### Actions
+- Repaired `Octet_time.Latency.frame_out` with `?expected_octets` (**X-5/X-9**,
+  one repair, two customers) and added three regression cases including the
+  identity-equality case.
+- Built **X-3** `strobe_monitor.{ml,mli}` (C-23 high-cycle counting, §9 pinned
+  cycles, the §0.6 window checked against the pin, unclaimed-pulse detection)
+  with a test per check, each shaped so a naive monitor passes the others.
+- Built **X-2** `test/xgmii_probe/` as a new library (drive and sample), and
+  **X-6** `test/axi64_probe/axi64_driver.ml` (stream driver + `Eth_header`
+  pulse), adding `(inline_tests)` to that dune with the reason in the file.
+- Built **X-4** `idle_injection.{ml,mli}` carrying the M03-N3 constraint as
+  repaired at `06c1eba`, C-45's lane-0 scope in `c45_sites` behind a
+  default-false `~allow_c45`, and the WO-0031 injection scope note.
+- Built **X-1** `injection.{ml,mli}` — the catalogue and the computed §9 outcome
+  model — and joined it to X-3 through `expected_strobes`, which emits
+  `Strobe_monitor.event`s with §0.6's window computed beside each pin.
+- Built **X-8** `test/golden/ipv4_ref.ml`, anchored on **RFC 1071 §3**, with the
+  vector, the residue form and §2's byte-swap property all driven.
+- **Found and recorded C-48**; corrected `AP-ip_eth_rx_64.md` row M14-B3 in
+  place and added change-log rows to both attack plans.
+- Appended the RETURNED block to `agents/handoffs/WO-0033_dv-machinery.md` with
+  the built/deferred partition, the anchor's exact status and the expected CI
+  outcome.
+- Staged nothing outside `test/**` and `agents/handoffs/**`. No `libs/**`, no
+  `docs/**`, no `tools/**`, no `bin/**`.
+
+### Evidence
+ADR-0005 governs: no local OCaml build is possible in this container, so the
+compile and test claims below are **predictions to be settled by CI**, stated as
+such, and the file-level claims are checkable by hand at this SHA.
+
+1. **Nothing outside scope was staged.** `git status --short` → 22 entries: this
+   journal, `agents/handoffs/WO-0033_dv-machinery.md`, and 20 entries under
+   `test/**` — one of which is the untracked directory `test/xgmii_probe/`,
+   holding three files, so **23 non-journal paths** in total, matching
+   `Files-in-this-commit` below by set equality. No `libs/**`, `docs/**`,
+   `tools/**` or `bin/**` path appears.
+2. **Independence.** No `libs/**` file was opened in this sitting. The Axi64
+   driver and the XGMII probe name only records from
+   `docs/specs/ifc_check/axi64_ifc.ml`, which is the countersigned lift of
+   SPEC-M01 §4.1; `grep -rn "libs/" test/` returns only prose in comments
+   stating that libs was not read.
+3. **Parse-only syntax check, run locally and green — and it caught a real
+   bug.** ADR-0005 blocks the *toolchain*, not the system compiler: `ocamlc`
+   4.14.1 is present and `ocamlc -stop-after parsing` needs no Hardcaml, no
+   ppx and no dependency resolution. Run over all 23 touched `.ml`/`.mli`
+   files:
+   `for f in $(git status --short | sed 's/^...//' | grep -E '\.mli?$'; ls
+   test/xgmii_probe/*.ml); do ocamlc -stop-after parsing -o /dev/null "$f";
+   done` → **no output, exit 0, ALL PARSE CLEAN**. On its first run it failed
+   at `test/xgmii/injection.mli:25`, where I had written `row **M03-N2**)`
+   inside a doc comment: the `**)` sequence contains `*)` and **closes the
+   comment**, so the rest of the interface was being parsed as code. Fixed by
+   one space. `grep -rn '\*\*)' test/` now returns nothing. This does not
+   type-check anything and is not a substitute for CI; it is the cheapest
+   available guard against exactly the class of blind-writing error ADR-0005
+   makes expensive, and it should be run before every future OCaml return.
+4. **Expected CI, `dune build @default`: GREEN.** The two names new to this
+   repository's proven Hardcaml surface are `Bits.concat_lsb` and `Bits.width`,
+   both confined to `test/xgmii_probe/xgmii_probe.ml` and
+   `test/axi64_probe/axi64_driver.ml` (`grep -n "Bits\." test/xgmii_probe/*.ml
+   test/axi64_probe/axi64_driver.ml`). If the build is red, that is the
+   likeliest single cause and the repair is confined to those two files.
+5. **Expected CI, `dune runtest`: RED on the first run, then green after
+   promotion.** Every new `[%expect]` block is empty by ADR-0005 rule 2:
+   `grep -c "\[%expect {| |}\]"` over the new test files → 3 in
+   `test/monitors/test_octet_time.ml`, 5 in `test/monitors/test_strobe_monitor.ml`,
+   3 in `test/xgmii_probe/test_xgmii_probe.ml`, 3 in
+   `test/axi64_probe/test_axi64_driver.ml`, 4 in
+   `test/xgmii/test_idle_injection.ml`, **7** in `test/xgmii/test_injection.ml`,
+   **5** in `test/golden/test_ipv4_ref.ml` — 30 blocks in all, counted with
+   `grep -c` rather than from memory, after two of them were first written down
+   wrong. Every case additionally asserts its
+   verdict in OCaml (`check`/`expect_int` + `failwith`), so a wrong promotion
+   leaves a red test rather than a green lie.
+6. **The X-1 model against the specification's own worked answer.** SPEC-M03
+   §6.1's minimal witness is built in `test_injection.ml` and asserted at the
+   numbers §6.1 states: aborted frame 4 received / 4 delivered / 1 word /
+   `tkeep` 0x0F / aborted / `tlast` on **W + 2 = 4**; new frame 0 delivered with
+   `error_runt` on **W + 2 = 4**; two reports, one cycle, different names.
+   Re-derivable by hand at this SHA from §7's constants: L = 16 at a lane-0
+   start, first frame octet at `start_ot + 8`, so the `tlast` cycle is
+   `(start_ot + 8 + delivered − 1 + L) / 8` = (8 + 8 + 3 + 16)/8 = 4.
+7. **The anchor attempt, and its failure.** `curl` to
+   `https://www.rfc-editor.org/rfc/rfc1071.txt` → `curl: (56) CONNECT tunnel
+   failed, response 403`; `WebFetch` of the same URL and of
+   `https://datatracker.ietf.org/doc/html/rfc1071` → **HTTP 403 Forbidden**.
+   The RFC 1071 §3 vector is therefore embedded from my own knowledge with its
+   citation and **unconfirmed at this SHA**. `ipv4_ref.ml`, the WO-0033 Return
+   log and `AP-ip_eth_rx_64.md`'s change log all say so in those words. The
+   arithmetic is independently reproduced in the file by two implementations
+   that must agree, so what is unconfirmed is the *citation*, not the numbers'
+   internal consistency — and that distinction is exactly what a reader with
+   network access needs to close it.
+8. **C-48, checkable by hand.** The proof is four lines and is reproduced in
+   `ipv4_ref.ml`'s header, in the repaired M14-B3 row and in §4 of the Return
+   log. Its executable partner is `Ipv4_ref.fold_once_divergence`, asserted to
+   return `None` over the whole identification field on accepted and rejected
+   headers alike; `test_ipv4_ref.ml` also drives a four-halfword string on which
+   the two functions differ in *value* but not in *verdict*, so the claim's
+   exact shape is pinned rather than approximated.
+9. **Plan status counts, recomputed rather than asserted.**
+   `grep -oE '\| (ASSERT|NO-ASSERT|NO-STIMULUS|RULING|GAP|STRUCTURAL) \|$'` over
+   `AP-xgmii_rx_64.md` → 57 / 7 / 4 / 0 / 1 / 4 = 73 rows, unchanged; over
+   `AP-ip_eth_rx_64.md` → unchanged at 63 rows, since M14-B3 stays ASSERT with
+   one sub-case withdrawn.
+10. **Negative capability, restated.** No bench was run and no design was judged,
+   because no M03 or M14 elaboration is reachable from this container
+   (ADR-0005). Every claim above is either arithmetic over committed
+   specification text, a file-level fact checkable by `grep`, or an explicitly
+   labelled prediction about CI.
+
+### Outcome
+DoD **partially met, by the work order's own deliverable 3** — a stated
+partition, not a silent one. **Eight of eleven built**: X-1, X-2, X-3, X-4,
+X-5/X-9, X-6, X-8. **Three deferred with reasons**: X-7, X-10, X-11, all
+M14-side bench composition over machinery that now exists, each with a reason
+of its own recorded in the Return log beyond output budget. **No row of
+`AP-xgmii_rx_64.md` is now blocked on machinery** — the sentence that has
+appeared in my Open-questions at every activation since WO-0027 is discharged.
+`AP-ip_eth_rx_64.md` families A, B, E and J remain blocked on X-10/X-11 and its
+stress row on X-7.
+
+X-8's external anchor is **named and embedded, and NOT discharged**: the RFC
+1071 §3 quotation could not be re-fetched from this environment (403). That is
+an open obligation on `SO-ip_eth_rx_64.md`, stated in the file itself.
+
+New ledger row **C-48** against my own row M14-B3(a), corrected in place.
+Handoff: `agents/handoffs/WO-0033_dv-machinery.md` Return log, to the
+orchestrator.
+
+### Open-questions
+- **X-8's anchor, and it is the only thing here I would call blocking.** RFC
+  1071 §3's constants are embedded and unconfirmed because this environment's
+  proxy refuses both RFC hosts with 403. Cheapest closure is a single fetch by
+  the orchestrator, or one CI step comparing three constants — but a CI step
+  would be a `tools/**` diff, which this work order put out of scope, so I am
+  asking rather than writing it. Until it closes, no sign-off may describe this
+  oracle as anchored.
+- **The three deferred items** (X-7, X-10, X-11) are one short sitting and are
+  M14's. X-10 in particular is the least urgent thing on the whole register:
+  `tools/check_abort_availability.sh` already quantifies its formula over all
+  8.7 M admissible pairs at every CI run.
+- **CI round trip is owed before any of this can be cited.** The expect
+  snapshots must be promoted from CI's own diff output (ADR-0005 rule 2), and
+  `dune build` must be green, before a tb_writer work order is issued against
+  this machinery. Issuing one against unbuilt code would be handing a worker a
+  library that may not compile.
+- **Ledger, carried and unchanged**: C-43, C-44, C-45 (now *implemented around*
+  rather than merely recorded — `Idle_injection.c45_sites` and `~allow_c45`
+  make its landing a one-default diff), C-46, C-47, and now **C-48**.
+- **Against myself, and it now has a remedy rather than only a confession.**
+  C-48 is the third instance of a universal about killability or count asserted
+  over arithmetic that does not support it. The remedy this sitting adopts is
+  structural: where a claim is arithmetic, make the arithmetic executable and
+  let CI hold it. X-1's computed outcomes and X-8's `fold_once_divergence`
+  search are the first two instances. The auditor's cheapest probe against me
+  remains the same — look for a claim in my prose with no executable partner.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0033_dv-machinery.md
+- test/attack_plans/AP-ip_eth_rx_64.md
+- test/attack_plans/AP-xgmii_rx_64.md
+- test/axi64_probe/axi64_driver.ml
+- test/axi64_probe/dune
+- test/axi64_probe/test_axi64_driver.ml
+- test/golden/ipv4_ref.ml
+- test/golden/test_ipv4_ref.ml
+- test/monitors/octet_time.ml
+- test/monitors/octet_time.mli
+- test/monitors/strobe_monitor.ml
+- test/monitors/strobe_monitor.mli
+- test/monitors/test_octet_time.ml
+- test/monitors/test_strobe_monitor.ml
+- test/xgmii/idle_injection.ml
+- test/xgmii/idle_injection.mli
+- test/xgmii/injection.ml
+- test/xgmii/injection.mli
+- test/xgmii/test_idle_injection.ml
+- test/xgmii/test_injection.ml
+- test/xgmii_probe/dune
+- test/xgmii_probe/test_xgmii_probe.ml
+- test/xgmii_probe/xgmii_probe.ml
