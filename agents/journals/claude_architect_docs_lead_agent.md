@@ -3335,3 +3335,272 @@ a dv re-countersign WO over the §5 list.
 - docs/specs/modules/udp_ip_rx_64.md
 - docs/specs/modules/xgmii_rx_64.md
 - docs/specs/requirements.md
+
+## [J-architect_docs_lead-0012] 2026-08-03T06:35Z | task:WO-0031 | SPEC-M03 M03-R1/M03-R2: two contested sentences repaired, and nothing else
+
+### Trigger
+
+Orchestrator work order `agents/handoffs/WO-0031_m03-r1r2-repair.md`, spawn
+`WO-0031/2026-08-03T05:45Z`, issued out of dv_lead's **WITHHELD** SPEC-M03
+re-countersignature at WO-0030 (`J-dv_lead-0015`, `0a5ce45`). dv endorsed both
+M03 rulings on their merits, endorsed every other site in my `541ea43` commit,
+and named exactly two sentences as defective: **M03-R1** (§6.1's consequence 1
+final clause, a false universal) and **M03-R2** (§9's "Strobe cycle, pinned",
+which pins two different cycles in one sentence). dv bounded the re-review
+surface to those two and pre-worded the next signature on the condition that the
+repair stays inside them.
+
+### Inputs
+
+- `agents/charters/architect_docs_lead.md`; `agents/PROTOCOL.md`;
+  `agents/journals/claude_architect_docs_lead_agent.md` tail
+  (`J-architect_docs_lead-0011`).
+- `agents/handoffs/WO-0031_m03-r1r2-repair.md`;
+  `agents/handoffs/WO-0030_revision-recountersign.md` — the whole dv RETURNED
+  block, §2 (the two defects, dv's six-row report-cycle table, the minimal
+  witness) and §5 (the pre-worded re-countersignature) in particular.
+- `docs/specs/modules/xgmii_rx_64.md` as revised at `541ea43`: §6.1 (the
+  multi-event paragraph, the `m + 3` formula with its gapless qualifier, the two
+  C-18 non-instances, the lane-0 and lane-4 worked tables), §6.2 `Preamble` and
+  `Frame`, §6.3 items 5 and 8, **§7's latency table** (h = 8/12, **L = 16/12**,
+  ΔC = 3), §9 (the nine rows, the closure list, the pinned-cycle paragraph),
+  §10's REQ-016/REQ-102/REQ-109/REQ-110 hooks, §11.5, §11.6, §13.
+- `docs/specs/requirements.md` §0.6 (the strobe timing window and the C-23
+  counting convention), REQ-016, REQ-102, REQ-105, REQ-107, REQ-110.
+- **Not opened**: `libs/**`, `test/**` (including the attack plans),
+  `docs/gates/**`. `tools/dv_checks.sh` was executed unchanged, not read for
+  content.
+
+### Reasoning
+
+**dv's two defects are one defect and its shadow, and that decided the order of
+work.** R1 cannot be repaired without stating cycles; the only thing in the
+specification that appeared to *derive* a cycle for a frame with no output word
+was R2's gloss; so until R2's sentence stopped naming two cycles, any R1 text I
+wrote would inherit the contradiction. I therefore settled R2 first and let R1
+consume its result. dv reached the same conclusion from the other end ("the two
+defects are therefore one repair") and I record that we did not have to
+negotiate it.
+
+**R2: I kept the rule and withdrew the gloss, and the ground is not that I prefer
+the rule.** The sentence carried a normative clause ("two cycles after the input
+word carrying the character that ended the frame") and an appositive gloss ("the
+cycle on which that frame's `tlast` word would have been emitted"). A repair that
+simply picked one would be a choice, and a choice of that size is an ADR. It is
+not a choice, because **the gloss cannot be a rule at all**: (1) a frame that
+delivers no octet has no octet for §7's per-octet constant to delay, so the
+phrase has no referent for exactly the frames it governs; and (2) the only thing
+that made it look defined is §6.1's `m + 3` formula, which is **qualified to a
+gapless stimulus** — my own C-14.4 repair put that qualifier there — while §10's
+REQ-016 hook commissions idle injection at 0, 1 and 7 cycles. A report cycle
+defined through `m + 3` would be **unpinned on a stimulus this specification
+commissions**, and §6.3 item 5 exists to refuse precisely that ("a one-cycle
+pulse whose cycle is unconstrained is a pulse a bench must search for"). So the
+disposition is forced, the shape is C-18's (a rule never in doubt, glossed
+wrongly in one place), and **no ADR is owed** — which is also what keeps the
+commit inside the bound dv set. I put that ground in the §13 row rather than the
+disposition alone, because a change log that records what changed and not why is
+the vacuity finding I would file against someone else.
+
+**The alternative I priced and rejected was pinning the no-output-word report at
+start word + 3** (the gloss promoted to rule). It has one real attraction: it
+makes the report cycle continuous across the 4-octet/5-octet runt boundary at a
+lane-4 start, where the surviving rule reports a *shorter* frame one cycle
+*later*. It fails on three counts, in increasing order of force: it contradicts
+`AP-xgmii_rx_64.md`'s committed ASSERT rows M03-B2 and M03-B3 and REQ-110's own
+commissioned case, all of which rest on W + 2; it is undefined under commissioned
+idle injection, per above; and it would invert R1's answer — under it dv's
+minimal witness would *not* coincide, so the sentence dv proved false would
+become true again by moving a different sentence, which is repair by
+re-definition and the kind of move that makes a specification unreadable across
+revisions. The discontinuity is a real blemish and I record it as accepted, not
+overlooked: it is unobservable in every respect except the strobe cycle itself,
+and uniformity across both start lanes is worth more to a bench than continuity
+across a length boundary that no other observable crosses.
+
+**I stated one family of R2's disagreement that dv did not name, and I judge that
+inside the bound rather than beyond it.** dv proved the gloss too *late* by one
+cycle wherever the ending character lies in the frame's own start word. It is
+also too *early* by one, in exactly one case: a lane-4-started frame terminated
+in lane 0 of the second word after its start word (four octets received, none
+delivered, §9's sixth row), where the rule gives S + 4 and `m + 3` gives S + 3. I
+enumerated the no-output-word frames to be sure the pair is complete — the ending
+character lies in S (differ), S + 1 (agree), or, only for that lane-4 runt, S + 2
+(differ the other way), and nothing reaches S + 3. A repair that fixed only dv's
+direction would have left the same sentence false, in the same clause, on a case
+§9 tabulates; that is the F-1 shape I am here to remove, not a second surface.
+
+**R2's window claim was inherited and I re-derived it rather than re-typing it.**
+The sentence ends "both lie inside requirements.md §0.6's window". Under the
+surviving rule the latest report is that same four-octet lane-4 case at S + 4;
+§0.6's bound is the module's latency in cycles (ΔC = 3) after the input word
+carrying the frame's last octet, which is at lane 7 of S + 1 — so the bound is
+S + 4 and the rule sits **at the far edge, inside**. Had it fallen outside I would
+have had a requirements-level conflict and an E-class escalation instead of a
+two-sentence repair. The text now records the derivation so the next reader does
+not have to trust me.
+
+**R1: the derivation that matters is §7's per-octet constant, not `m + 3`, and
+that is why the aborted frame's own start lane is the discriminator.** An octet
+at lane k of input word U leaves in the output word emitted on cycle
+`U + ⌊(k + L)/8⌋`, with L = 16 at a lane-0 start and 12 at a lane-4 one (§7). A
+start character in lane 0 of W leaves the aborted frame's last octet at lane 7 of
+the word before W, and ⌊23/8⌋ = ⌊19/8⌋ = 2, so **both** L values give W + 1. A
+start character in lane 4 leaves it at lane 3 of W itself (REQ-110's lane rule),
+and ⌊19/8⌋ = 2 against ⌊15/8⌋ = 1, so L = 16 gives W + 2 and L = 12 gives W + 1.
+That single asymmetry is the whole of why dv's table needs a column for the
+aborted frame's start lane, and stating the constant rather than the six answers
+is what makes the table checkable instead of memorable.
+
+**Deriving through L rather than through `m + 3` also bought the property a bench
+most needs and neither of us had written down: the table holds on a gapped
+stimulus.** §6.1 warns twice that `m + 3` holds only on a gapless one and that a
+bench asserting it under idle injection fails a conformant design. A cycle table
+that silently inherited that qualifier would be the same trap in new text. The
+per-octet constant holds on every stimulus, and both cycles in the table are
+anchored to input words *adjacent* to the abort, so no injected idle can come
+between them — except in the two lane-0-`/S/` rows, where an idle word injected
+before W moves the aborted frame's report **earlier**, further from the new
+frame's report and never onto it. So the `yes`/`no` column is injection-proof
+even where the cycle numbers are not, and both facts are now in the text.
+
+**I checked the strobe names before letting the coincidence stand as
+observable**, because §6.3 item 8 — which I wrote in the same commit dv is
+withholding on — excludes same-name coincidences from the specified space, and a
+consequence "a bench may rely on" that collided with it would be a third defect.
+It cannot: the aborted frame is always reported under REQ-110
+(`error_start_without_terminate`) and the new frame under REQ-107 or REQ-105, so
+the names always differ and item 8 has **no instance** in this consequence. That
+sentence is now in §6.1, where before it was left to a reader to reconstruct.
+
+**On dv's prose against dv's table.** dv's six-row table is right and I followed
+it row for row, deliberately, so that the re-review is eye-checkable. dv's prose
+summary of it is one row looser — "three of the four sub-cases", and "one cycle
+apart only for a **lane-0** `/S/`", which generalises the bolded lane-4 row over
+the row beneath it, where a lane-4-started aborted frame does *not* coincide. Of
+six combinations, three coincide. I did not adopt the prose, I said so in the
+Return log, and I did not propose editing the transcribed gate block: that block
+is a verbatim record of dv's verdict, `docs/gates/**` is outside my write scope,
+and correcting another agent's quoted reasoning is not a thing I should be able
+to do. The place it costs nothing is `AP-xgmii_rx_64.md` §4.N, which is dv's.
+
+**Why C-43 … C-46 are not in this commit, when the work order offered them.**
+The offer was real and the cells are small; I declined all four. Every one of
+them sits in text dv **signed** — C-43 and C-46 in requirements.md, C-44 in
+SPEC-M14, C-45 in SPEC-M03 §6.1's idle-injection sentence and §10's REQ-016 hook
+— so taking any would put a signed surface back in front of dv and convert a
+clerical re-countersignature into a review. §11.4's own rule settles the rest: a
+flip-invariant diff buys nothing by being taken early, and all four are gated at
+`SO-` packets where they cost exactly the same. **C-45 is the interesting one**,
+because dv's ledger gates it *at this commit or later*; I took the later gate on
+purpose. The wrapper honours the constraint as written, the cost of the
+over-breadth is one injection point, and a bounded signature that closes the M03
+revision is worth more to the programme this activation than one cell landed an
+activation early.
+
+**One thing I found and deliberately did not fix.** §9's rows 8 and 9 leave a
+hairline gap: a `/S/` aborting a frame that is past its eighth preamble position
+with zero delivered octets satisfies neither row's condition text literally (row
+8 requires ≥ 1 delivered octet, row 9 says "still inside its own preamble"). It
+is pre-existing, dv did not raise it, it is neither R1 nor R2, and — the test I
+applied — **nothing in either repair rests on it**: such a frame emits no output
+word and its ending character is in S + 1, where the rule and the withdrawn gloss
+agreed anyway. Fixing it would have been a silent widening of exactly the kind
+the work order forbids. It is in the Return log for dv to price as a ledger row.
+
+### Actions
+
+- `docs/specs/modules/xgmii_rx_64.md` (**FROZEN**), three hunks and no more:
+  - **§6.1, consequence 1** — the first sentence left byte-identical; everything
+    from "Where that start character also **aborted** a frame" replaced by: the
+    statement that coincidence depends on both start lanes and on the delivered
+    count, the derivation from §7's per-octet constant and REQ-110's lane rule, a
+    **six-row cycle table** identical in shape to dv's, the one-sentence
+    condition for coincidence, the different-strobe-names finding with §6.3 item
+    8 declared to have no instance here, dv's minimal witness, and the two scope
+    notes (gapped stimuli; the idle-injection direction).
+  - **§9, "Strobe cycle, pinned"** — the gloss withdrawn with the reason it could
+    not have been the rule; the surviving rule stated as a pin in its own right
+    at both start lanes; both directions of its disagreement with `m + 3`
+    enumerated; the "computable from the input trace" and §0.6-window claims
+    re-derived and qualified.
+  - **§13** — one new row, appended last, citing this entry; ADR column "none"
+    with the forcing ground stated.
+- `agents/handoffs/WO-0031_m03-r1r2-repair.md`: RETURNED block appended, header
+  `State:` left at `ISSUED` for the orchestrator to flip. It carries the verdict,
+  both repairs with their grounds, the note on dv's prose against dv's table, the
+  four declined ledger items with reasons, the §9 rows 8/9 observation, and the
+  re-review surface for dv.
+- **Not touched**: §4.x (no record moved), §6.2, §6.3, §7, §10, §11, §12 (no
+  re-countersignature exists yet to record); `requirements.md`;
+  `traceability.md`; every other spec, ADR, gate file and report; `libs/`,
+  `test/`, `tools/`, `bin/`. No ADR written. No git command run.
+
+### Evidence
+
+Reproducible from a checkout at this commit's SHA:
+
+- `git diff 541ea43 -- docs/specs/modules/xgmii_rx_64.md` (equivalently
+  `git diff -U0` against HEAD before this commit) → **exactly three hunks**, at
+  §6.1's consequence 1, §9's pinned-cycle paragraph and one appended §13 row;
+  `git diff --stat` → 2 files, `docs/specs/modules/xgmii_rx_64.md` and
+  `agents/handoffs/WO-0031_m03-r1r2-repair.md`. No other specification, no
+  requirement and no matrix row differs from `541ea43`.
+- `bash tools/dv_checks.sh` → **exit 0**, "all checks passed".
+  `check_records_vs_appendix.sh`: **23 checks, 0 failures** — the twenty §4.1
+  blocks still byte-identical to their `docs/specs/ifc_check/*.ml` lifts, which
+  is the mechanical witness that this revision moved no interface and that §12's
+  `ifc_check` evidence still stands for it. `check_emitted_verilog.sh`: **OK**,
+  5 checks, 0 failures, 3 pending (unchanged from `541ea43`).
+- Markdown-table integrity re-checked by script over the edited file: every table
+  row's unescaped-pipe count equals its own separator's and every `**` span on a
+  table row balances — **0 failures** (the new six-row table included).
+- Arithmetic checkable from the documents alone, with §7's table (h = 8/12,
+  L = 16/12, ΔC = 3) as the only input: an octet at lane k of input word U leaves
+  on cycle `U + ⌊(k + L)/8⌋`, which reproduces §6.1's own worked examples
+  (lane-0 output word 0 at cycle 3, word 7 at cycle 10; lane-4 output word 0 at
+  cycle 3) and yields the six table rows — W + 1 for a lane-0 start character at
+  both L, and W + 2 (L = 16) against W + 1 (L = 12) for a lane-4 one. dv's
+  minimal witness recomputed independently: four octets delivered, `tkeep` =
+  0x0F, both strobes on **W + 2**, different names. §0.6's window for the
+  latest no-output-word report: rule gives S + 4, bound is (S + 1) + ΔC = S + 4 —
+  inside, at the edge.
+- **CI is owed and is not claimed here.** No `build` run exists at this commit as
+  this entry is written; §12 is untouched and no row in it was filled from one.
+
+### Outcome
+
+**DoD met, and met inside the bound.** Deliverable 1 (M03-R1) and deliverable 2
+(M03-R2) are repaired; deliverable 3 is satisfied — the repair is confined to the
+two sentences plus the §13 row that records them, so dv's WO-0030 §5 pre-worded
+re-countersignature applies as written and the re-review is clerical.
+Deliverable 4 declined in full, with reasons, C-43 … C-46 carrying unchanged.
+The repair needed no ADR and the §13 row states why. Handoff:
+`agents/handoffs/WO-0031_m03-r1r2-repair.md` Return log → orchestrator → dv_lead
+for the SPEC-M03 re-countersignature at the repair SHA.
+
+### Open-questions
+
+- **The SPEC-M03 re-countersignature is still owed**; the §4.3/§6.1/§6.2/§6.3
+  item 8/§9/§10 revisions of `541ea43` remain out of force until dv signs the
+  repair SHA. §12 stays untouched until it does.
+- **§9's rows 8/9 hairline gap** (a `/S/` aborting a past-preamble,
+  zero-delivered frame satisfies neither row's condition text): reported, not
+  fixed, and offered to dv as a ledger row.
+- **C-45's over-breadth is deliberately still open** and now has two gates
+  behind it rather than one; if dv would rather have it than the bounded
+  signature, it is one sentence in §6.1 and one clause in §10's REQ-016 hook.
+- **C-43, C-44, C-46 unchanged**, gated at their `SO-` packets.
+- **The M03 RTL conformance defect is still rtl_lead's** (WO-0032) and neither
+  repaired sentence touches REQ-102, REQ-110 or the §10 hooks it is measured
+  against.
+- Carried unchanged from `J-architect_docs_lead-0011`: C-36 with ADR-0014's
+  principle and its decision still gated at the transmit side; ADR-0012's
+  residual; REQ-007's scoping clause owed at two modules; C-38; requirements.md's
+  own `DRAFT` status header against its §13's frozen treatment; C-2, C-3, C-5,
+  C-7, C-9's REQ-903 half, C-32, C-33.
+
+### Files-in-this-commit
+
+- agents/handoffs/WO-0031_m03-r1r2-repair.md
+- docs/specs/modules/xgmii_rx_64.md

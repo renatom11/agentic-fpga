@@ -313,11 +313,53 @@ preamble filler. Two consequences a bench may rely on:
    closes the frame that start character opened, with zero delivered octets, and
    is reported under REQ-107 or REQ-105 respectively (§9's rows 3 and 6). Where
    that start character also **aborted** a frame, both frames are reported, each
-   on the cycle §9 pins for **it** — and those need not be the same cycle: the
-   aborted frame's strobe follows its `tlast` word where it emitted one (the
-   input word before a lane-0 start character, so one cycle earlier than the new
-   frame's report), and only where it delivered no octet do the two fall
-   together, on different strobe names.
+   on the cycle §9 pins for **it**, and whether those cycles are the same depends
+   on **both** frames' start lanes and on whether the aborted frame delivered an
+   octet: **three of the six combinations coincide**. The cycles are stated here
+   rather than left to be derived, because the clause this replaces made the
+   delivered-no-octet case the *only* coincidence and it is not (dv_lead,
+   **M03-R1**). Write W for the input word carrying both characters. The **new**
+   frame emits no output word and the character that ended it lies in W, so §9
+   pins its report at **W + 2**, always. The **aborted** frame's report is the
+   cycle its `tlast` word is emitted where it emitted one, and §7's per-octet
+   constant fixes that: an output word leaves **two** cycles after the input word
+   carrying its last octet when its frame began at lane 0 (L = 16), and two or
+   **one** cycle after it when its frame began at lane 4 (L = 12), according as
+   that octet lies in lanes 4 … 7 or in lanes 0 … 3. A start character in lane 0
+   leaves the aborted frame's last octet at lane 7 of the word before W; a start
+   character in lane 4 leaves it at lane 3 of W itself (REQ-110's lane rule).
+   Hence:
+
+   | start character in W | aborted frame began at | it delivered | its report | the new frame's report | same cycle? |
+   |---|---|---|---|---|---|
+   | lane 0 | lane 0 | ≥ 1 octet | W + 1 | W + 2 | no |
+   | lane 0 | lane 4 | ≥ 1 octet | W + 1 | W + 2 | no |
+   | lane 0 | either | no octet | W + 2 | W + 2 | **yes** |
+   | lane 4 | lane 0 | ≥ 1 octet | **W + 2** | W + 2 | **yes** |
+   | lane 4 | lane 4 | ≥ 1 octet | W + 1 | W + 2 | no |
+   | lane 4 | either | no octet | W + 2 | W + 2 | **yes** |
+
+   A frame that delivered no octet has no `tlast` word, so §9's other clause pins
+   it two cycles after W as well, which is why those two rows coincide at both
+   start lanes. **The two reports therefore fall on the same cycle unless the
+   aborted frame delivered at least one octet and either the start character is
+   in lane 0 or the aborted frame itself began at lane 4.** Where they coincide
+   the two strobes carry **different names** — the aborted frame's is always
+   `error_start_without_terminate` (REQ-110) and the new frame's is `error_runt`
+   or `error_bad_frame` — so both are observable and §6.3 item 8, which excludes
+   only a **same**-name coincidence, has no instance here. *Minimal witness for
+   the row a bench is likeliest to get wrong* (dv_lead's): `/S/` in lane 0 of word
+   W − 1; word W carries that frame's octets 0 … 3 in lanes 0 … 3, a `/S/` in lane
+   4 and a `/T/` in lane 6. The first frame delivers **four** octets, so its
+   `tlast` word (`tkeep` = 0x0F, `tuser`[0] = 1) is its output word 0 and leaves
+   on **W + 2** — its last octet is at lane 3 of W with L = 16, equivalently
+   `m + 3` from its start word W − 1 — while the second frame delivers none and
+   its `error_runt` is on **W + 2** too. Two scope notes for a bench: these cycles
+   hold on a **gapped** stimulus as well as a gapless one, because §7's per-octet
+   constant does and the `m + 3` formula is not what pins them; and the two rows
+   that depend on the word *before* W carrying the aborted frame's last octet —
+   the first two — move **earlier** if REQ-016's wrapper injects an idle word
+   there, which moves that report further from the new frame's and never onto it.
 2. A start character in **lane 4** is recognised whatever lane 0 carried,
    including another start character — REQ-110's own commissioned case, whose
    verification column pins the outcome at **one** `error_start_without_terminate`
@@ -712,11 +754,35 @@ strobe are that frame's, while the enable decides only whether a new frame
 begins (§4.3, §6.2, **ADR-0014**).
 
 **Strobe cycle, pinned.** Each strobe pulses for exactly one cycle, on the
-cycle M03 emits that frame's `tlast` word. For a frame that produces no output
-word, it pulses **two cycles after the input word carrying the character that
-ended the frame** — the cycle on which that frame's `tlast` word would have been
-emitted. Both cycles are computable from the input trace alone, and both lie
-inside requirements.md §0.6's window.
+cycle M03 emits that frame's `tlast` word. For a frame that produces **no**
+output word, it pulses **two cycles after the input word carrying the character
+that ended the frame**, at both start lanes — and that clause is the whole of
+the rule for such a frame. It is a pin in its own right, **not** a corollary of
+§6.1's `m + 3` formula. Until 2026-08-03 it was stated here with a gloss — "the
+cycle on which that frame's `tlast` word would have been emitted" — asserting an
+agreement that does not hold; the gloss is **withdrawn** (dv_lead, **M03-R2**),
+and it could not have been the rule. A frame that delivers no octet has **no**
+octet for §7's per-octet constant to delay, so it has no `tlast` cycle of its own
+to be named, and the only thing that made the phrase look defined — `m + 3`,
+which would put a would-be output word 0 three cycles after the frame's **start**
+word — is qualified to a **gapless** stimulus while §10 commissions idle
+injection against this module at 0, 1 and 7 cycles. Reading the gloss as the rule
+would therefore leave a strobe cycle unpinned on a stimulus this specification
+itself commissions, which is what §6.3 item 5 refuses. Where the two disagree the
+rule above governs, and they disagree in **both** directions: `m + 3` is one cycle
+**later** wherever the ending character lies in the frame's own start word —
+every closure in a preamble position, which at a lane-0 start is every closure
+before the frame's first octet, REQ-110's commissioned `/S/` in lane 4 of an
+`/S/` word among them — and one cycle **earlier** in the single case that reaches
+the second word after the start word, a lane-4-started frame whose terminate
+character is in lane 0 of that word with four octets received and none delivered
+(the sixth row of the table above). Both cycles are computable from the input
+trace alone —
+the first through §7's per-octet constant, the second from the closing
+character's own word — neither inherits §6.1's gapless qualifier, and both lie
+inside requirements.md §0.6's window, the second at its far edge in the
+four-octet case just named (last frame octet in the word before the terminate
+word, ΔC = 3).
 
 **Which conditions can co-occur on one frame, and what then pulses.**
 
@@ -844,3 +910,4 @@ interface.
 | 2026-08-03 | **An idle word inside a frame's own preamble** — rtl_lead's returned question 3, dv_lead's row **M03-N3**: the stimulus is **decided, not unconstrained**. §6.1 states where the preamble positions lie at each start lane and that an idle character in one of them is "any other control character" in REQ-102's sentence, hence REQ-105, hence one `error_bad_frame` and no output word; §6.2's `Preamble` row gains the matching exit, which it previously omitted while §6.1 routed the character — the two sections disagreed and §6.1 was right; §6.1 and §10's REQ-016 hook carry the consequence for DV, that the idle-**injection** wrapper SHALL NOT inject between a start character and the frame's first octet; §10's REQ-102 hook gains an idle-in-preamble frame | no | none — REQ-102's third sentence is the correcting text and §9's third row is its landing site; §6.2's `Preamble` row was the only site that disagreed, the same shape as C-18 (a rule that was never in doubt, illustrated wrongly in one place). The request was for a §6.3 sentence declaring the stimulus out of the specified space; it is **not** out of it, so §6.3 is the wrong home and the constraint that is owed — the wrapper's — is stated where the wrapper is commissioned | `J-architect_docs_lead-0011` |
 | 2026-08-03 | **`cfg_rx_enable` = 0 mid-frame with a REQ-110 start character** — rtl_lead's returned question 4, dv_lead's row **M03-N4**: the enable gates the **admission** of a frame and nothing else. §4.3 gains the three-clause statement and the rejected reading's price; §6.1's disabled-state paragraph gains the in-flight clause and the conservation reading; §6.2's `Frame`, `Preamble` and `Discard` rows take `Idle` rather than `Preamble` on `/S/` while the enable is 0, with the abort reported either way; §9's closure list restates it as clause (b); §10's REQ-110 and REQ-802/REQ-810 hooks gain the directed case | no — **behavioural in principle, and it confirms the reading rtl_lead implemented and declared**, so no delivered design changes | **ADR-0014** (requirements.md REQ-810 gains the matching scope in the same commit) | `J-architect_docs_lead-0011` |
 | 2026-08-03 | §10's REQ-014 hook: the producer half kept, and **REQ-014's differential run declared to have no instance at M03** — it varies `tstrb` on a module's input and M03's input is an XGMII lane pair with no `tstrb` (REQ-010 class (b)); worded as SPEC-M14 §10 words REQ-404 and REQ-810, so that no sign-off packet claims REQ-014 whole here (dv_lead, **M03-O2**; ledger **C-41**'s family) | no | none — **editorial**, a verification column naming an instrument that has no instance at this module; REQ-014's normative sentence and M03's producer obligation are untouched | `J-architect_docs_lead-0011` |
+| 2026-08-03 | **§6.1's consequence 1 and §9's pinned strobe cycle repaired** — dv_lead's **M03-R1** and **M03-R2**, the two sentences its WO-0030 withholding named, and the only sentences this revision moves. **R1**: the closing clause "only where it delivered no octet do the two fall together" made that the *only* coincidence and it is not — three of six combinations coincide. §6.1 now states the cycles in a table, derives them from §7's per-octet constant (L = 16 at a lane-0 start, 12 at a lane-4 one) and REQ-110's lane rule, carries dv_lead's minimal witness (four octets delivered, both strobes on W + 2), records that the coinciding strobes always have different names so §6.3 item 8 has no instance there, and states the two scope notes a bench needs (the cycles survive idle injection; the two rows resting on the word before W move earlier under it, never onto the other report). **R2**: §9's rule (two cycles after the input word carrying the closing character) and its gloss (the cycle the `tlast` word would have been emitted) named **different** cycles whenever the closing character lay in the frame's own start word — one pre-existing instance, REQ-110's commissioned `/S/`-in-lane-4-of-an-`/S/`-word, which the M03-N2 ruling turned into a family. The gloss is withdrawn, the rule governs at both start lanes, and both directions of the disagreement are stated | no | none — **the gloss could not have been the rule**: a frame delivering no octet has no octet for §7's per-octet constant to delay, and the `m + 3` formula that alone made the phrase look defined is qualified to a gapless stimulus while §10 commissions idle injection, so reading the gloss as the rule would leave a strobe cycle unpinned on a commissioned stimulus (§6.3 item 5). C-18's shape — a rule that was never in doubt, glossed wrongly in one place — and no requirement, port, record or other section moves | `J-architect_docs_lead-0012` |
