@@ -130,6 +130,7 @@ nav.top a.here { color:var(--rx); }
 <a href="spec-atlas.html">spec atlas</a>
 <a href="org-chart.html">org chart</a>
 <a href="backlog.html">backlog</a>
+<a href="https://github.com/renatom11/agentic-fpga" target="_blank" rel="noopener">github ↗</a>
 </nav>
 <div class="wrap">
   <span class="eyebrow">agentic-fpga</span>
@@ -150,18 +151,17 @@ nav.top a.here { color:var(--rx); }
   <a href="block-diagram.html">block diagram</a>.</p>
 
   <div class="numbers">
-    <div class="stat"><b>124</b><span>commits — every one paired with the agent’s written reasoning</span></div>
+    <div class="stat"><b>130</b><span>commits — every one paired with the agent’s written reasoning</span></div>
     <a class="stat" href="spec-atlas.html"><b>20/20</b><span>design specs frozen — each only after a second agent tried to break it; sponsor-signed</span></a>
     <a class="stat" href="spec-atlas.html"><b>110</b><span>numbered requirements, each traced to the module that satisfies it</span></a>
     <a class="stat" href="backlog.html"><b>5/20</b><span>modules built in hardware code (RTL) — each compiled clean on its first try; none benched yet</span></a>
-    <a class="stat" href="backlog.html"><b>136</b><span>planned attacks — each naming the wrong design it would catch</span></a>
+    <a class="stat" href="backlog.html"><b>137</b><span>planned attacks — each naming the wrong design it would catch</span></a>
     <div class="stat"><b>8.7M</b><span>length pairs — the spec’s abort math re-derived by CI on every push; a check of the spec, not yet the chip</span></div>
   </div>
 
   <h2>What this is</h2>
   <div class="twocol">
     <div class="col">
-      <h3>For everyone</h3>
       <p>When a stock exchange publishes prices, trading firms race to read them
       — and the racing happens in silicon, on network cards that decode
       messages in <b>billionths of a second</b>. This project builds the core of
@@ -188,7 +188,6 @@ nav.top a.here { color:var(--rx); }
       can watch a packet arrive, byte by byte.</p>
     </div>
     <div class="col">
-      <h3>For engineers</h3>
       <p><b>Hardcaml</b> (Jane Street’s OCaml hardware DSL), simulation-first,
       one 64-bit word per cycle at a 156.25&nbsp;MHz design clock with zero
       backpressure on the receive path. XGMII-attached 10G MAC with CRC-32,
@@ -219,8 +218,8 @@ nav.top a.here { color:var(--rx); }
   agent’s reasoning entering beside it</b>, appended to that agent’s
   journal in the same commit. Journals are append-only; mistakes are corrected
   forward, never rewritten. The history is the experiment’s data.</p>
-  <p class="cadcap">The 124 journal entries — one per commit — by author:</p>
-  <div class="chips"><span class="chip">85 · orchestrator</span> <span class="chip">18 · verification lead (dv_lead)</span> <span class="chip">13 · architect (architect_docs_lead)</span> <span class="chip">5 · hardware designer (rtl_lead)</span> <span class="chip">3 · auditor</span></div>
+  <p class="cadcap">The 130 journal entries — one per commit — by author:</p>
+  <div class="chips"><span class="chip">88 · orchestrator</span> <span class="chip">20 · verification lead (dv_lead)</span> <span class="chip">13 · architect (architect_docs_lead)</span> <span class="chip">6 · hardware designer (rtl_lead)</span> <span class="chip">3 · auditor</span></div>
 
   <h2>The tech stack</h2>
   <div class="chips">
@@ -241,7 +240,7 @@ nav.top a.here { color:var(--rx); }
     <a class="card" href="spec-atlas.html"><span class="ct">Spec atlas</span>
       <span class="cd">All 110 requirements, the 20-module inventory, dataflow diagrams,
       and the traceability matrix — regenerated from the spec text itself, pinned at
-      <span class="mono">de40740</span>.</span><span class="go">open →</span></a>
+      <span class="mono">52c22e0</span>.</span><span class="go">open →</span></a>
     <a class="card" href="org-chart.html"><span class="ct">Org chart</span>
       <span class="cd">Who does what, who may refuse whom, and the journal rule no agent
       can escape — the org’s constitution, explorable.</span><span class="go">open →</span></a>
@@ -251,7 +250,8 @@ nav.top a.here { color:var(--rx); }
   </div>
 
   <div class="foot">Generated from the repository at commit
-  <span class="mono">de40740</span> · 2026-08-02 · repository private during Phase 1 · built by
+  <a class="mono" href="https://github.com/renatom11/agentic-fpga/commit/52c22e0" target="_blank" rel="noopener">52c22e0</a>
+  · 2026-08-02 · <a href="https://github.com/renatom11/agentic-fpga" target="_blank" rel="noopener">source on GitHub</a> · built by
   the org’s orchestrator, like everything else here.</div>
 </div>
 </body></html>

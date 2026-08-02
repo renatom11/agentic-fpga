@@ -66,9 +66,9 @@ h1 { font-size: 1.6rem; font-weight: 600; margin: .3rem 0 .2rem; letter-spacing:
 .stat .l { display:block; font-size:.7rem; color: var(--ink-2); line-height:1.3; margin-top:.1rem; }
 nav.tabs { display:flex; gap:0; margin: 1.2rem 0 1.4rem; border: 1px solid var(--line);
   border-radius: 8px; overflow: hidden; width: fit-content; max-width: 100%; }
-nav.tabs button { font-family:'Plex Mono',monospace; font-size:.72rem; letter-spacing:.08em;
+nav.tabs button { font-family:'Plex Mono',monospace; font-size:.84rem; letter-spacing:.1em; font-weight:600; cursor:pointer;
   text-transform: uppercase; color: var(--ink-2); background: var(--panel); border: none;
-  padding: .55rem 1.1rem; cursor: pointer; }
+  padding: .7rem 1.4rem; }
 nav.tabs button + button { border-left: 1px solid var(--line); }
 nav.tabs button[aria-pressed="true"] { background: var(--accent-soft); color: var(--accent); }
 nav.tabs button:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
@@ -160,8 +160,8 @@ footer { margin-top:2.4rem; padding-top:1rem; border-top:1px solid var(--line);
 </style>
 <!-- site-chrome-start -->
 <style>
-.sitenav { position:fixed; top:10px; left:10px; z-index:99;
-  font:600 .74rem 'Plex Sans',system-ui,sans-serif; display:flex; gap:.4rem; flex-wrap:wrap; max-width:min(92vw, 40rem); }
+.sitenav { padding:12px 14px 2px;
+  font:600 .74rem 'Plex Sans',system-ui,sans-serif; display:flex; gap:.4rem; flex-wrap:wrap; }
 .sitenav a { display:inline-block; background:var(--panel,#fff); color:var(--ink,#1e2423);
   border:1.5px solid var(--line,#d3dad7); border-radius:999px; padding:.32rem .8rem;
   text-decoration:none; box-shadow:0 2px 6px rgba(0,0,0,.12); }
@@ -170,10 +170,12 @@ footer { margin-top:2.4rem; padding-top:1rem; border-top:1px solid var(--line);
 </style>
 <div class="sitenav"><a href="index.html">← overview</a><a href="block-diagram.html">block diagram</a><a href="org-chart.html">org chart</a><a href="backlog.html">backlog</a></div>
 <!-- site-chrome-end -->
+
+
 <div class="wrap">
 <header class="top">
   <span class="eyebrow">agentic-fpga / spec atlas</span>
-  <h1>110 requirements, 20 modules, one convention everywhere</h1>
+  <h1>110 requirements, 20 modules</h1>
   <p class="sub">The Phase-1 specification of the 10G Ethernet subsystem, as written by the architect agent
   and hardened by the verification lead’s 108-row testability review — sixteen spec diffs, two CRC constants
   caught by computation, one inter-frame-gap collision resolved. Pinned at commit <span class="mono">de40740</span>;
@@ -181,12 +183,12 @@ footer { margin-top:2.4rem; padding-top:1rem; border-top:1px solid var(--line);
   <div class="stats"><div class="stat"><span class="n">110</span><span class="l">numbered requirements</span></div><div class="stat"><span class="n">20</span><span class="l">modules · six spec batches</span></div><div class="stat"><span class="n">16<span class="dim">/16</span></span><span class="l">review diffs applied before this text</span></div><div class="stat"><span class="n">2</span><span class="l">wrong constants caught by computation</span></div><div class="stat"><span class="n">21</span><span class="l">named error strobes</span></div><div class="stat"><span class="n">110</span><span class="l">traceability rows awaiting tests</span></div></div>
 </header>
 <nav class="tabs" role="tablist">
-  <button aria-pressed="true" data-v="v-mod" onclick="setView('v-mod')">modules &amp; dataflow</button>
-  <button aria-pressed="false" data-v="v-req" onclick="setView('v-req')">requirements</button>
-  <button aria-pressed="false" data-v="v-tr" onclick="setView('v-tr')">traceability</button>
+  <button aria-pressed="true" data-v="v-req" onclick="setView('v-req')">REQUIREMENTS</button>
+  <button aria-pressed="false" data-v="v-mod" onclick="setView('v-mod')">MODULES &amp; DATAFLOW</button>
+  <button aria-pressed="false" data-v="v-tr" onclick="setView('v-tr')">TRACEABILITY</button>
 </nav>
 
-<section class="view on" id="v-mod">
+<section class="view" id="v-mod">
 <h2>Six batches in dependency order — every module names its verilog-ethernet counterpart</h2>
 <div class="batch"><div class="bhead"><span class="bkey">batch A</span><span class="bdep">depends on: —</span></div><p class="bnote">Establishes the fabric records every later spec quotes; the first <code>ifc_check</code> compile happens here. Prerequisite 7.1 must be resolved first.</p><div class="mgrid">
 <div class="mcard role-S">
@@ -405,7 +407,7 @@ footer { margin-top:2.4rem; padding-top:1rem; border-top:1px solid var(--line);
     ARP --&gt; M12</pre></div>
 </section>
 
-<section class="view" id="v-req">
+<section class="view on" id="v-req">
 <h2>Every requirement, with how it will be verified</h2>
 <input class="gsearch" placeholder="search requirements…" aria-label="Search requirements" oninput="searchReq(this.value)">
 <div class="filters"><button class="fbtn on" data-b="all">all · 110</button><button class="fbtn" data-b="b0">Program invariants · 21</button><button class="fbtn" data-b="b1">XGMII receive · 13</button><button class="fbtn" data-b="b2">XGMII transmit · 10</button><button class="fbtn" data-b="b3">CRC-32 / FCS · 6</button><button class="fbtn" data-b="b4">Ethernet framing · 10</button><button class="fbtn" data-b="b5">ARP · 12</button><button class="fbtn" data-b="b6">IPv4 · 12</button><button class="fbtn" data-b="b7">UDP · 10</button><button class="fbtn" data-b="b8">Top level and configuration · 10</button><button class="fbtn" data-b="b9">Verification and process · 6</button></div>

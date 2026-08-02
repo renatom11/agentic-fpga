@@ -21,6 +21,7 @@ PUB = os.path.join(ROOT, 'site', 'public')
 SITE_URL = os.environ.get('SITE_URL', '')
 # The repository is private during Phase 1: no external source links.
 REPO_PUBLIC = False
+REPO_URL = 'https://github.com/renatom11/agentic-fpga'
 
 def sh(*args):
     return subprocess.run(args, cwd=ROOT, capture_output=True, text=True).stdout
@@ -251,11 +252,12 @@ NAV = '''<nav class="top wrap">
 <a href="spec-atlas.html">spec atlas</a>
 <a href="org-chart.html">org chart</a>
 <a href="backlog.html"{b}>backlog</a>
+<a href="{repo}" target="_blank" rel="noopener">github ↗</a>
 </nav>'''
 
 def nav(here):
     return NAV.format(i=' class="here"' if here == 'i' else '',
-                      b=' class="here"' if here == 'b' else '')
+                      b=' class="here"' if here == 'b' else '', repo=REPO_URL)
 
 # D11/H4: one caption, two CSS-toggled variants.
 CAD_CAPTION = '''<p class="cadcap"><span class="cap-motion">The rhythm this chip
@@ -278,8 +280,7 @@ JOURNAL_QUOTE = '''<blockquote class="journal">“I withheld the last signature
   <footer>quoted verbatim from the verification lead’s journal
   (J-dv_lead-0010), the batch-F withholding</footer></blockquote>'''
 
-footer_repo = ('repository private during Phase 1' if not REPO_PUBLIC
-               else 'source on GitHub')
+footer_repo = f'<a href="{REPO_URL}" target="_blank" rel="noopener">source on GitHub</a>'
 
 # ---- index ------------------------------------------------------------------
 jchips = ' '.join(
@@ -313,7 +314,6 @@ index = head_block('agentic-fpga — a trading network card built by an AI org',
   <h2>What this is</h2>
   <div class="twocol">
     <div class="col">
-      <h3>For everyone</h3>
       <p>When a stock exchange publishes prices, trading firms race to read them
       — and the racing happens in silicon, on network cards that decode
       messages in <b>billionths of a second</b>. This project builds the core of
@@ -334,7 +334,6 @@ index = head_block('agentic-fpga — a trading network card built by an AI org',
       can watch a packet arrive, byte by byte.</p>
     </div>
     <div class="col">
-      <h3>For engineers</h3>
       <p><b>Hardcaml</b> (Jane Street’s OCaml hardware DSL), simulation-first,
       one 64-bit word per cycle at a 156.25&nbsp;MHz design clock with zero
       backpressure on the receive path. XGMII-attached 10G MAC with CRC-32,
@@ -397,7 +396,8 @@ index = head_block('agentic-fpga — a trading network card built by an AI org',
   </div>
 
   <div class="foot">Generated from the repository at commit
-  <span class="mono">{head_sha}</span> · {gen_date} · {footer_repo} · built by
+  <a class="mono" href="{REPO_URL}/commit/{head_sha}" target="_blank" rel="noopener">{head_sha}</a>
+  · {gen_date} · {footer_repo} · built by
   the org’s orchestrator, like everything else here.</div>
 </div>
 </body></html>
@@ -470,7 +470,8 @@ backlog = head_block('agentic-fpga — backlog & progress',
   </table></div>
 
   <div class="foot">Generated from the program board at commit
-  <span class="mono">{head_sha}</span> · {gen_date} · {footer_repo} · built by
+  <a class="mono" href="{REPO_URL}/commit/{head_sha}" target="_blank" rel="noopener">{head_sha}</a>
+  · {gen_date} · {footer_repo} · built by
   the org’s orchestrator, like everything else here.</div>
   <!-- regenerate: python3 site/build.py -->
 </div>
@@ -497,8 +498,8 @@ def art_nav(self_page):
     pills = ''.join(f'<a href="{h}">{t}</a>' for h, t in links)
     return f'''{CHROME_START}
 <style>
-.sitenav {{ position:fixed; top:10px; left:10px; z-index:99;
-  font:600 .74rem 'Plex Sans',system-ui,sans-serif; display:flex; gap:.4rem; flex-wrap:wrap; max-width:min(92vw, 40rem); }}
+.sitenav {{ padding:12px 14px 2px;
+  font:600 .74rem 'Plex Sans',system-ui,sans-serif; display:flex; gap:.4rem; flex-wrap:wrap; }}
 .sitenav a {{ display:inline-block; background:var(--panel,#fff); color:var(--ink,#1e2423);
   border:1.5px solid var(--line,#d3dad7); border-radius:999px; padding:.32rem .8rem;
   text-decoration:none; box-shadow:0 2px 6px rgba(0,0,0,.12); }}

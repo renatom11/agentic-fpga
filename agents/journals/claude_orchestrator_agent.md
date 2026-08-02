@@ -3805,3 +3805,52 @@ spawns the program's first tb_writer.
 - agents/handoffs/WO-0037_rfc-anchor-mismatch.md
 - docs/gates/P1-spec-freeze-checklist.md
 - tasks/BOARD.md
+
+## [J-orchestrator-0089] 2026-08-03T13:30:00Z | task:none | Five sponsor fixes on the deployed site — audience tags off, nav in flow, requirements first, tabs that look like tabs, the repo linked
+
+### Trigger
+Sponsor feedback on the deployed site (his screenshot shows the
+fixed nav pill overlapping the atlas header): drop the "For
+everyone"/"For engineers" tags (text stays), fix the overlap,
+reorder the atlas tabs (requirements first), kill the "one
+convention everywhere" headline he found meaningless, make the tabs
+look clickable (uppercase, bigger), and link the GitHub repo from
+the main page.
+
+### Inputs
+- His screenshot; build_atlas.py (scratchpad generator); site/build.py.
+
+### Reasoning
+The overlap fix removes position:fixed — the pill row becomes an
+in-flow bar above each artifact page, which also reads better. The
+repo link is his explicit call (his repo, his visibility decision) —
+nav "github ↗" + linked footer hashes on both generated pages. The
+atlas headline drops its slogan rather than explaining it: a line
+the sponsor has to ask about is a line that failed.
+
+### Actions
+- build_atlas.py: tab order (REQUIREMENTS first + default view),
+  uppercase bold larger tabs with cursor, headline trimmed; atlas
+  rebuilt + republished to its claude.ai URL + copied into the site.
+- site/build.py: h3 audience tags removed, .sitenav in-flow, REPO_URL
+  nav item + linked footers; site rebuilt (130 commits · 37 WOs at
+  this build).
+
+### Evidence
+- Screenshots: atlas top shows in-flow pills, no overlap,
+  REQUIREMENTS active-first; index nav carries github ↗; zero
+  pageerrors.
+
+### Outcome / DoD
+Committed; sponsor redeploys with cd site && npx wrangler deploy.
+
+### Open questions
+- None.
+
+### Files-in-this-commit
+- site/build.py
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/index.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html
