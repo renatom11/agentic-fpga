@@ -15,41 +15,66 @@
     included, sum to 0xFFFF; and (d) be {b anchored on a published worked
     example} before it judges anything.
 
-    {2 (d): the anchor, its authority, and exactly how far it is discharged}
+    {2 (d): the anchor, its authority, and which constant comes from where}
 
-    {b Authority: RFC 1071, "Computing the Internet Checksum", §3 "Numerical
-    Examples".} RFC 1071 is the normative definition of the arithmetic SPEC-M14
-    §6.1 restates ("add as unsigned 16-bit values and fold every carry out of
-    bit 15 back into bit 0"), and §3 works one explicit octet string through it.
-    That octet string and its results are embedded below as
-    [rfc1071_example_octets], [rfc1071_example_sum] and
-    [rfc1071_example_checksum], and [test_ipv4_ref.ml] drives them.
+    {b Authority: RFC 1071, "Computing the Internet Checksum"} (Braden, Borman,
+    Partridge, September 1988). RFC 1071 is the normative definition of the
+    arithmetic SPEC-M14 §6.1 restates ("add as unsigned 16-bit values and fold
+    every carry out of bit 15 back into bit 0"), and its §3 "Numerical
+    Examples" works one explicit octet string through it.
+
+    {b The three constants do not all have the same standing, and an earlier
+    version of this comment said they did.} Corrected at WO-0037:
+
+    - [rfc1071_example_octets] is {b QUOTED} from §3, which prints it twice —
+      once byte-by-byte ([Byte 0/1: 00 01] and so on, column-aligned) and once
+      as the "Normal" Order halfwords [0001 f203 f4f5 f6f7].
+    - [rfc1071_example_sum] is {b QUOTED} from §3, which reaches it at
+      [Sum2] and repeats it at [Final Swap].
+    - [rfc1071_example_checksum] is {b DERIVED, not quoted}. §3 stops at the
+      sum: it never prints a checksum for this example, and {b the token 220d
+      does not occur anywhere in RFC 1071}. The constant's authority is §1's
+      outline item (2) — "the 1's complement of this sum is placed in the
+      checksum field" — applied to §3's quoted sum. The value is right; the
+      earlier claim that §3 "prints" it was an overclaim, and it was caught by
+      this programme's own anchor check on the first run that could reach the
+      text (run 30764198256, WO-0037).
 
     Two further RFC 1071 claims are embedded as checks rather than as prose,
-    because each kills a different wrong implementation:
+    because each kills a different wrong implementation. Both citations are now
+    verified against the text rather than asserted:
 
     - {b the residue form} — the sum of the octets {e together with} their own
-      checksum is 0xFFFF. This is the form SPEC-M14 §6.1 makes normative and
-      the one M14 implements, so anchoring the {e residue} rather than only the
-      generated value anchors what the design actually does.
-    - {b byte-swap invariance} (RFC 1071 §2's second property): summing the
-      byte-swapped octet string yields the byte-swapped sum. An implementation
-      that has the halfword endianness backwards agrees with the correct one on
-      every palindromic vector and fails this one.
+      checksum is 0xFFFF. RFC 1071 §1 outline item (3) states it: the sum is
+      computed "including the checksum field", and the check succeeds if the
+      result is "all 1 bits (-0 in 1's complement arithmetic)". This is the
+      form SPEC-M14 §6.1 makes normative and the one M14 implements, so
+      anchoring the {e residue} rather than only the generated value anchors
+      what the design actually does.
+    - {b byte-swap invariance} (RFC 1071 §2's second property, (B) "Byte Order
+      Independence"): summing the byte-swapped octet string yields the
+      byte-swapped sum. §2 states it verbatim as "The sum of 16-bit integers
+      can be computed in either byte order." An implementation that has the
+      halfword endianness backwards agrees with the correct one on every
+      palindromic vector and fails this one. {b The §2 citation is confirmed} —
+      it was asserted from memory when written, and the text bears it out.
 
-    {b How far this is discharged, stated plainly.} The vector is embedded with
-    its citation, and the arithmetic below reproduces it. What has {b not}
-    happened at this SHA is a re-fetch of RFC 1071's text to confirm the
-    quotation character for character: this environment's proxy refuses
-    `rfc-editor.org` and `datatracker.ietf.org` with HTTP 403 (recorded in
-    J-dv_lead-0017's Evidence). The anchor is therefore **embedded and
-    unconfirmed**, and that is an open obligation on `SO-ip_eth_rx_64.md`, not
-    a discharged charter §3 anchor: no sign-off may cite this oracle as
-    anchored until a reader or a CI step with network access has confirmed the
-    three constants against RFC 1071 §3. Writing a confident citation and
-    calling the anchor closed would be exactly the fabricated evidence ADR-0005
-    rule 2 exists to prevent, so the gap is named here rather than in a
-    footnote.
+    {b How far this is discharged, stated plainly.} At WO-0033 this paragraph
+    read "embedded and unconfirmed", because five fetches across two egress
+    paths had returned HTTP 403 and nothing had compared these constants to the
+    RFC. That is no longer the state. `tools/check_rfc1071_anchor.sh` fetches
+    RFC 1071 on the CI runner and gates on five claims — the octet string and
+    the sum in §3, the checksum's defining sentence and the residue sentence in
+    §1, byte-order independence in §2 — with a negative control and with the
+    absence of [220d] asserted as its own gated claim, so the reclassification
+    above cannot silently revert.
+
+    {b The discharge rule has not been relaxed, only satisfied differently}: no
+    sign-off may cite this oracle as anchored on the strength of this comment.
+    It must cite a {e run} of that script — its CI run id — because a comment
+    is a claim and a run is evidence. Writing a confident citation and calling
+    the anchor closed is exactly the fabricated evidence ADR-0005 rule 2 exists
+    to prevent, and WO-0037 is what one looks like when it is caught.
 
     {2 (b): two implementations, and why the second one is not redundant}
 
@@ -172,16 +197,28 @@ let checksum octets = lnot (sum octets) land 0xffff
 let residue_ok octets = sum octets = 0xffff
 
 (* ------------------------------------------------------------------ *)
-(* RFC 1071 §3's numerical example — the anchor                        *)
+(* RFC 1071's numerical example — the anchor                           *)
+(*                                                                     *)
+(* Two of these three are quoted and one is derived. The distinction is *)
+(* not pedantry: it was wrong here until WO-0037, and the check that    *)
+(* found it now gates on each constant's actual provenance. Do not      *)
+(* re-flatten these comments into "§3 says so".                        *)
 (* ------------------------------------------------------------------ *)
 
-(** RFC 1071 §3's octet string. *)
+(** QUOTED from RFC 1071 §3, which prints these octets both byte-by-byte
+    ([Byte 0/1: 00 01], column-aligned) and as the "Normal" Order halfwords
+    [0001 f203 f4f5 f6f7]. *)
 let rfc1071_example_octets = [ 0x00; 0x01; 0xf2; 0x03; 0xf4; 0xf5; 0xf6; 0xf7 ]
 
-(** The one's-complement sum RFC 1071 §3 computes for it. *)
+(** QUOTED from RFC 1071 §3: the 1's complement sum it computes for those
+    octets, reached at [Sum2] and repeated at [Final Swap]. *)
 let rfc1071_example_sum = 0xddf2
 
-(** The checksum RFC 1071 §3 prints for it — the one's complement of the sum. *)
+(** DERIVED, not quoted. RFC 1071 §3 stops at the sum and never prints a
+    checksum for this example; the token [220d] does not occur anywhere in the
+    document. Its authority is §1 outline item (2) — "the 1's complement of
+    this sum is placed in the checksum field" — applied to the quoted sum
+    above. Corrected at WO-0037 after the anchor check caught the overclaim. *)
 let rfc1071_example_checksum = 0x220d
 
 (** Byte-swap an octet string pairwise: RFC 1071 §2's byte-order property says

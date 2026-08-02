@@ -4,53 +4,113 @@
 #
 # THE OBLIGATION, IN ITS OWN WORDS
 #
-# test/golden/ipv4_ref.ml embeds RFC 1071 §3's worked example as three
-# constants and says of itself:
+# test/golden/ipv4_ref.ml embeds RFC 1071's worked example and says of itself
+# that no sign-off may cite the oracle as anchored until a reader or a CI step
+# with network access has confirmed its constants against the RFC. Charter §3
+# makes anchor-before-judge non-negotiable and PROTOCOL §10 makes it a
+# programme rule. This script is the confirming step.
 #
-#     "no sign-off may cite this oracle as anchored until a reader or a CI
-#      step with network access has confirmed the three constants against
-#      RFC 1071 §3."
+# WHAT RUN 30764198256 ESTABLISHED, AND WHAT IT COST ME
 #
-# Charter §3 makes anchor-before-judge non-negotiable, and PROTOCOL §10 makes
-# it a programme rule. dv_lead's two fetches and the orchestrator's three
-# (a different egress path) all returned HTTP 403, so the anchor has been
-# EMBEDDED AND UNCONFIRMED since WO-0033. This script is the confirming step.
-# It is meant to run where egress is open — the CI runner — and to be
-# re-executable by the auditor at any SHA.
+# The first run on an open-egress runner FETCHED the RFC (53,524 bytes, sha256
+# e10dfd68…) and returned NOT CONFIRMED — correctly. It found TWO defects, and
+# both were mine (WO-0037, J-dv_lead-0021):
+#
+#   1. EXTRACTOR. §3 prints the byte-by-byte column as `Byte 0/1:    00   01`
+#      — column-aligned, THREE spaces. The old matcher looked for the literal
+#      "00 01" with one space and found nothing. Its three prose probes failed
+#      for the same family of reason: RFC 1071 line-WRAPS its sentences, so no
+#      phrase longer than a few words survives a line-oriented grep, and it
+#      writes "1's complement" (9 times) where my probe said "one's complement"
+#      (which it also uses, 5 times).
+#
+#   2. THE ORACLE'S QUOTED CLAIM. ipv4_ref.ml said §3 "prints" the checksum
+#      0x220d. It does not. **The token 220d does not appear anywhere in RFC
+#      1071 — zero occurrences in the whole document.** §3 computes and prints
+#      the SUM (ddf2) and stops there. The constant is CORRECT; the citation
+#      was an overclaim. 0x220d is DERIVED from the quoted sum by §1's own
+#      rule, not quoted.
+#
+# Both are repaired here. The repair is deliberately not "grep for less until
+# it passes": the checksum's confirmation moved from a weaker claim (a token
+# appears in §3) to a STRONGER one (an exact defining sentence is quoted from
+# §1, and the arithmetic is executed locally), and three fuzzy advisories
+# became three gating verbatim quotations.
 #
 # WHAT IT WILL NOT DO
 #
-# It will not pass without having matched real fetched text. There is exactly
-# one place below that sets the CONFIRMED flag, and it is inside the branch
-# that compared the constants against a document that (a) was fetched, (b)
-# identified itself as RFC 1071, and (c) yielded a §3 slice. A network failure
-# is exit 2, not exit 0. A "the grep found nothing" is exit 2, not exit 0.
-# Vacuous confirmation of an anchor is the exact failure ADR-0005 rule 2 and
-# this programme's evidence rules exist to prevent, and it would be worse than
-# leaving the obligation open, because it would look closed.
+# It will not pass without having matched real fetched text. Exactly one place
+# below sets CONFIRMED, inside the branch that compared against a document
+# which (a) was fetched, (b) identified itself as RFC 1071, and (c) yielded the
+# section slices the claims are scoped to. A network failure is exit 2, not 0.
+# "The grep found nothing" is exit 2 or 1, never 0. Vacuous confirmation of an
+# anchor is worse than an open obligation, because it looks closed.
 #
 # THE TWO LANES
 #
 #   LOCAL    No network. Re-derives RFC 1071's arithmetic over the embedded
-#            octets in awk — an implementation that shares no code with the
-#            OCaml oracle — and checks four things: the sum, the checksum as
-#            the one's complement of it, SPEC-M14 §6.1's residue form, and
-#            RFC 1071 §2's byte-swap invariance. This lane always runs and
-#            always has a verdict. It cannot confirm the QUOTATION (only the
-#            RFC's text can do that); it can and does prove the three
-#            constants are mutually consistent under the arithmetic they
-#            claim to come from, so a typo in one of them is caught here
-#            with no network at all.
+#            octets in awk — an implementation sharing no code with the OCaml
+#            oracle — and checks the sum, the checksum as the 1's complement
+#            of it, the residue form, and byte-swap invariance. Always runs,
+#            always has a verdict. It cannot confirm a QUOTATION; it proves
+#            the constants are mutually consistent, so a typo is caught with
+#            no network at all. Since 0x220d is now DERIVED rather than
+#            quoted, this lane is load-bearing for it: the chain is
+#            "§3's sum is quoted" (network) + "checksum = 1's complement of
+#            the sum" (§1, quoted) + "~0xddf2 = 0x220d" (here).
 #
-#   NETWORK  Fetches RFC 1071, verifies the document identifies itself,
-#            slices §3, and confirms the three constants appear in it — with
-#            a negative control, so "the token is somewhere in the document"
-#            cannot be mistaken for "the document says this". The two RFC
-#            1071 §2 properties ipv4_ref.ml also cites are located and their
-#            enclosing section number REPORTED (advisory: a keyword search
-#            over prose cannot tell "the RFC says it elsewhere" from "my
-#            keywords are wrong", so it may not gate a build; the three
-#            constants are exact hex tokens and may).
+#   NETWORK  Fetches the RFC, checks it identifies itself, slices the sections
+#            each claim is scoped to, and gates on FIVE claims — two hex-token
+#            claims in §3 and three verbatim sentences in §1 and §2 — plus a
+#            negative control and an absence claim. See "THE FIVE CLAIMS".
+#
+# THE FIVE CLAIMS, EACH WITH ITS OWN SCOPE AND ITS OWN FORM
+#
+#   C1  §3   the octet string, in BOTH forms §3 prints it: the byte-by-byte
+#            column (00 01 / f2 03 / f4 f5 / f6 f7, whitespace-tolerant) and
+#            the "Normal Order" halfword column (0001 f203 f4f5 f6f7, as
+#            delimited hex tokens). Both, because §3 carries both and a
+#            matcher that accepts either is a matcher that has stopped
+#            checking one of them.
+#   C2  §3   the sum, 0xddf2, as a delimited hex token.
+#   C3  §1   the checksum's DEFINITION, verbatim: "the 1's complement of this
+#            sum is placed in the checksum field". This is the authority for
+#            0x220d being derived, and it replaces the withdrawn "§3 prints
+#            it" claim.
+#   C4  §1   the residue form, verbatim: "all 1 bits (-0 in 1's complement
+#            arithmetic)" together with "including the checksum field" — the
+#            form SPEC-M14 §6.1 makes normative and M14 implements.
+#   C5  §2   byte-order independence, verbatim: "The sum of 16-bit integers
+#            can be computed in either byte order." — §2's property (B), the
+#            second of its three, which is exactly what ipv4_ref.ml cites.
+#
+#   plus  NEGATIVE CONTROL   the deliberately wrong sum token must be ABSENT
+#                            from §3, or a match on the right one does not
+#                            discriminate.
+#   plus  ABSENCE CLAIM      0x220d must appear NOWHERE in the document. This
+#                            is the load-bearing fact behind reclassifying the
+#                            checksum as derived, so it is gated rather than
+#                            noted: if it is ever false, the reclassification
+#                            was wrong and I want that loud.
+#
+# WHY PROSE MAY GATE HERE WHEN IT COULD NOT BEFORE
+#
+# The old rule — "a keyword search over prose cannot tell 'the RFC says it
+# elsewhere' from 'my keywords are wrong', so it may not gate" — was right
+# about KEYWORDS and is the reason those probes were advisory. C3/C4/C5 are
+# not keywords: they are verbatim sentences of 40+ characters, matched after
+# whitespace normalisation, scoped to a named section. A verbatim sentence
+# that is absent from its section is a fact about the document, not an
+# artefact of my vocabulary. That is what makes them gateable.
+#
+# WHITESPACE NORMALISATION, AND WHY IT IS THE WHOLE FIX
+#
+# RFC text is column-aligned and line-wrapped, with page furniture every 50
+# lines. Every one of run 30764198256's misses was a whitespace artefact. So
+# page furniture is stripped and each slice is collapsed to a single
+# space-separated line BEFORE matching. Delimited-hex-token matching is
+# unaffected (a space is still a delimiter); phrase matching stops caring
+# where the RFC broke its lines.
 #
 # USAGE
 #
@@ -61,31 +121,39 @@
 #       is known and expected. NEVER for CI: on a runner with open egress a
 #       403 is news and must be loud.
 #   tools/check_rfc1071_anchor.sh --print-body FILE
-#       skip the network and read the RFC text from FILE (for auditing this
-#       script's extraction against a locally held copy).
+#       read the RFC text from FILE instead of the network. A run this way
+#       DISCHARGES the obligation only if FILE's sha256 equals the digest
+#       recorded below, which a CI run observed from www.rfc-editor.org;
+#       otherwise it confirms against an unvouched copy and says so.
 #   tools/check_rfc1071_anchor.sh --self-test
 #       prove the EXTRACTOR has teeth without pretending to have seen the RFC.
-#       It generates §3-shaped documents at run time — from the oracle's own
-#       constants, banner-marked SYNTHETIC and never written into the repo —
-#       and requires: a well-formed one to CONFIRM, a corrupted one to be
-#       REJECTED, and one carrying both the right and the wrong value to trip
-#       the negative control. This says nothing whatever about RFC 1071's
-#       real text; it says the machinery that will read it is not a rubber
-#       stamp.
+#       It generates documents at run time — from the oracle's own constants,
+#       banner-marked SYNTHETIC and never written into the repo — and
+#       requires a well-formed one to CONFIRM and each of ten seeded
+#       corruptions to be REJECTED: one per gating claim, plus the negative
+#       control, the absence claim, an unsliceable document and an
+#       unidentified one.
 #
 # EXIT
-#   0  the three constants are confirmed against fetched RFC 1071 §3 text
-#      (or --tolerate-unreachable was given and the fetch failed)
-#   1  MISMATCH — a constant disagrees with the RFC, or the local arithmetic
-#      is inconsistent. Always a real failure, everywhere.
-#   2  OBLIGATION OPEN — the text could not be fetched or could not be
-#      sliced. Nothing was confirmed and nothing is claimed.
+#   0  every claim confirmed against fetched RFC 1071 text (or
+#      --tolerate-unreachable was given and the fetch failed)
+#   1  MISMATCH — a claim failed against a document that WAS fetched and
+#      sliced, or the local arithmetic is inconsistent. Always a real failure.
+#   2  OBLIGATION OPEN — the text could not be fetched, identified or sliced.
+#      Nothing was confirmed and nothing is claimed.
 
 set -uo pipefail
 
 HERE="$(cd "$(dirname "$0")" && pwd)"
 REPO="$(cd "$HERE/.." && pwd)"
 ORACLE="$REPO/test/golden/ipv4_ref.ml"
+
+# Observed by CI run 30764198256 fetching https://www.rfc-editor.org/rfc/rfc1071.txt
+# (53,524 bytes). Advisory when it matches — it is provenance, not content —
+# and it is what lets a --print-body run discharge the obligation.
+RFC1071_KNOWN_SHA256=e10dfd6816447843d47a7f1b990eba756a791a6308fd5b698a6276075a8e4f9b
+RFC1071_KNOWN_BYTES=53524
+RFC1071_KNOWN_RUN=30764198256
 
 TOLERATE=0
 BODY_FILE=""
@@ -109,6 +177,52 @@ https://datatracker.ietf.org/doc/html/rfc1071
 
 say() { printf '%s\n' "$*"; }
 hdr() { printf '\n%s\n' "$*"; }
+
+# ------------------------------------------------------------------ #
+# text machinery                                                      #
+# ------------------------------------------------------------------ #
+
+# Strip RFC page furniture: form feeds, "[Page N]" footers, and the running
+# header. Left in place, any of these can land in the middle of a wrapped
+# sentence and defeat a phrase match.
+strip_furniture() {
+  sed -e 's/\x0c//g' \
+      -e '/^.*\[Page [0-9][0-9]*\][ \t]*$/d' \
+      -e '/^RFC 1071  *Computing the Internet Checksum/d' "$1"
+}
+
+# Collapse a stream to one space-separated line.
+normalise() { tr '\n' ' ' | tr -s ' \t' ' ' | sed 's/^ //;s/ $//'; }
+
+# Slice a top-level section by number. A heading is a line whose WHOLE content
+# is a short numbered title — which excludes prose that merely happens to wrap
+# onto a line beginning "8." (RFC 1071 line 133 does exactly that, and a looser
+# regex reads it as a section heading). RFC 1071 indents its §2 heading by five
+# spaces where §1, §3 and §4 sit at column 0, so leading space is tolerated.
+slice_section() {
+  # $1 = furniture-stripped file, $2 = section number.
+  # A heading is tested by explicit conditions rather than one interval regex:
+  # mawk and gawk disagree about {n,m} passed through -v, and the conditions
+  # are easier to read than the regex that would replace them anyway.
+  awk -v want="$2" '
+    function is_heading(line,   n, f) {
+      if (length(line) > 60) return 0                       # a title, not prose
+      if (line !~ /^[ ]*[0-9]+(\.[0-9]+)?\.?[ ]+[A-Z]/) return 0
+      if (split(line, f, " ") > 7) return 0
+      match(line, /^[ ]*/)
+      if (RLENGTH > 5) return 0        # RFC 1071 indents §2 by five spaces
+      return 1
+    }
+    {
+      if (is_heading($0)) {
+        n = $1; sub(/\.$/, "", n)
+        if (n == want) { on = 1; print; next }
+        if (on) { exit }
+      }
+      if (on) print
+    }
+  ' "$1"
+}
 
 # ------------------------------------------------------------------ #
 # the constants under test — parsed from the oracle, never hard-coded #
@@ -140,50 +254,82 @@ NOCTETS="$(printf '%s\n' $OCTETS | grep -c .)"
 
 say "=== check_rfc1071_anchor ==="
 say "oracle:    ${ORACLE#"$REPO"/}"
-say "authority: RFC 1071, \"Computing the Internet Checksum\", §3 Numerical Examples"
+say "authority: RFC 1071, \"Computing the Internet Checksum\" (Braden, Borman,"
+say "           Partridge, September 1988) — §3 for the worked example, §1 for"
+say "           the checksum's definition and the residue form, §2 for"
+say "           byte-order independence."
 say ""
 say "constants under test, parsed from the oracle (never hard-coded here):"
-say "  rfc1071_example_octets   = $OCTETS  ($NOCTETS octets)"
-say "  rfc1071_example_sum      = 0x$SUM"
-say "  rfc1071_example_checksum = 0x$CKSUM"
+say "  rfc1071_example_octets   = $OCTETS  ($NOCTETS octets)   [QUOTED from §3]"
+say "  rfc1071_example_sum      = 0x$SUM                     [QUOTED from §3]"
+say "  rfc1071_example_checksum = 0x$CKSUM                     [DERIVED — see C3]"
 
 # ------------------------------------------------------------------ #
-# --self-test — does the extractor discriminate?                      #
+# --self-test                                                         #
 # ------------------------------------------------------------------ #
 
 if [ "$SELFTEST" -eq 1 ]; then
   hdr "SELF-TEST — the extractor, against documents generated here"
   say "  These fixtures are SYNTHETIC and are written to a temporary directory,"
-  say "  never into the repository. They prove that the machinery which will"
-  say "  read RFC 1071 confirms a well-formed §3, rejects a corrupted one, and"
-  say "  refuses one where the negative control fires. They prove NOTHING about"
-  say "  RFC 1071's real text — only a fetch can, and that is the network lane."
+  say "  never into the repository. They prove the machinery confirms a"
+  say "  well-formed document and rejects each way it can be wrong. They prove"
+  say "  NOTHING about RFC 1071's real text — only a fetch can, and that is the"
+  say "  network lane."
   ST="$(mktemp -d "${TMPDIR:-/tmp}/rfc1071-selftest.XXXXXX")" || exit 2
   trap 'rm -rf "$ST"' EXIT
 
   gen() {
-    # $1 = output file, $2 = sum token to print, $3 = extra line (may be empty)
-    local out_file="$1" sum_token="$2" extra="${3:-}"
+    # $1 out, $2 sum token, $3 drop-claim ("c1col"|"c1hw"|"c3"|"c4"|"c5"|""),
+    # $4 extra line
+    local out_file="$1" sum_token="$2" drop="${3:-}" extra="${4:-}"
     {
       printf '%s\n' "            SYNTHETIC LAYOUT FIXTURE - NOT RFC 1071"
       printf '%s\n' "   Generated by tools/check_rfc1071_anchor.sh --self-test to exercise"
       printf '%s\n' "   its own extractor. Not evidence of anything. Do not quote."
       printf '\n%s\n' "                  Computing the Internet Checksum"
       printf '\n%s\n' "1.  Introduction"
-      printf '%s\n' "   Prose."
-      printf '\n%s\n' "2.  Properties"
-      printf '%s\n' "   The sum is independent of the byte order of the data, and the"
-      printf '%s\n' "   checksum is the one's complement of the sum."
-      printf '\n%s\n' "3.  Numerical Examples"
+      printf '%s\n' "   This memo discusses methods for computing the Internet checksum."
+      printf '%s\n' "   In outline, the algorithm is very simple."
+      printf '%s\n' "   (1)  Adjacent octets are paired to form 16-bit integers."
+      printf '%s\n' "   (2)  To generate a checksum, the checksum field itself is cleared,"
+      if [ "$drop" != c3 ]; then
+        printf '%s\n' "        the 16-bit 1's complement sum is computed over the octets"
+        printf '%s\n' "        concerned, and the 1's complement of this sum is placed in the"
+        printf '%s\n' "        checksum field."
+      fi
+      printf '%s\n' "   (3)  To check a checksum, the 1's complement sum is computed over"
+      if [ "$drop" != c4 ]; then
+        printf '%s\n' "        the same set of octets, including the checksum field.  If the"
+        printf '%s\n' "        result is all 1 bits (-0 in 1's complement arithmetic), the"
+        printf '%s\n' "        check succeeds."
+      fi
+      printf '\n%s\n' "     2.  Calculating the Checksum"
+      printf '%s\n' "        This simple checksum has mathematical properties."
+      printf '%s\n' "   (A)  Commutative and Associative"
+      printf '%s\n' "        The sum can be done in any order."
+      printf '%s\n' "   (B)  Byte Order Independence"
+      if [ "$drop" != c5 ]; then
+        printf '%s\n' "        The sum of 16-bit integers can be computed in either byte order."
+      fi
+      printf '\n%s\n' "3. Numerical Examples"
+      printf '%s\n' "   We now present explicit examples of calculating a simple sum."
       printf '%s\n' "   All numbers are in hex."
+      printf '%s\n' "                  Byte-by-byte    \"Normal\"  Swapped"
       set -- $OCTETS
       i=0
       while [ "$#" -ge 2 ]; do
-        printf '   Byte %d/%d:  %s %s\n' "$i" "$((i + 1))" "$1" "$2"
+        # column-aligned, exactly as the RFC does it: multiple spaces
+        if [ "$drop" = c1col ]; then
+          printf '        Byte %d/%d:    XX   YY        %s%s      swap\n' "$i" "$((i + 1))" "$1" "$2"
+        elif [ "$drop" = c1hw ]; then
+          printf '        Byte %d/%d:    %s   %s        zzzz      swap\n' "$i" "$((i + 1))" "$1" "$2"
+        else
+          printf '        Byte %d/%d:    %s   %s        %s%s      swap\n' \
+            "$i" "$((i + 1))" "$1" "$2" "$1" "$2"
+        fi
         i=$((i + 2)); shift 2
       done
-      printf '   Sum:        %s\n' "$sum_token"
-      printf '   Checksum:   %s\n' "$CKSUM"
+      printf '        Sum2:        dd   f2        %s      swap\n' "$sum_token"
       [ -n "$extra" ] && printf '   %s\n' "$extra"
       printf '\n%s\n' "4.  Implementation Examples"
       printf '%s\n' "   More prose."
@@ -203,17 +349,35 @@ if [ "$SELFTEST" -eq 1 ]; then
     fi
   }
 
-  gen "$ST/good.txt" "$SUM" ""
-  st_case "well-formed §3 carrying the oracle's constants" 0 "$ST/good.txt"
+  gen "$ST/good.txt" "$SUM" "" ""
+  st_case "well-formed document carrying every claim" 0 "$ST/good.txt"
 
-  gen "$ST/wrong.txt" "$(printf '%04x' $((0x$SUM ^ 0x0001)))" ""
-  st_case "§3 whose sum is one bit off" 1 "$ST/wrong.txt"
+  gen "$ST/wrongsum.txt" "$(printf '%04x' $((0x$SUM ^ 0x0001)))" "" ""
+  st_case "C2: sum one bit off" 1 "$ST/wrongsum.txt"
 
-  gen "$ST/ambig.txt" "$SUM" "Also mentioned: $(printf '%04x' $((0x$SUM ^ 0x0001)))"
-  st_case "§3 carrying BOTH the right and the wrong sum (negative control)" 1 "$ST/ambig.txt"
+  gen "$ST/ambig.txt" "$SUM" "" "Also mentioned: $(printf '%04x' $((0x$SUM ^ 0x0001)))"
+  st_case "negative control: both the right and the wrong sum present" 1 "$ST/ambig.txt"
 
-  gen "$ST/nosec.txt" "$SUM" ""
-  sed -i 's/^3\.  Numerical Examples$/X.  Numerical Examples/' "$ST/nosec.txt"
+  gen "$ST/nocol.txt" "$SUM" c1col ""
+  st_case "C1: byte-by-byte column absent" 1 "$ST/nocol.txt"
+
+  gen "$ST/nohw.txt" "$SUM" c1hw ""
+  st_case "C1: Normal-Order halfword column absent" 1 "$ST/nohw.txt"
+
+  gen "$ST/noc3.txt" "$SUM" c3 ""
+  st_case "C3: the checksum's defining sentence absent from §1" 1 "$ST/noc3.txt"
+
+  gen "$ST/noc4.txt" "$SUM" c4 ""
+  st_case "C4: the residue sentence absent from §1" 1 "$ST/noc4.txt"
+
+  gen "$ST/noc5.txt" "$SUM" c5 ""
+  st_case "C5: the byte-order sentence absent from §2" 1 "$ST/noc5.txt"
+
+  gen "$ST/has220d.txt" "$SUM" "" "Checksum: $CKSUM"
+  st_case "absence claim: the derived checksum printed in the document" 1 "$ST/has220d.txt"
+
+  gen "$ST/nosec.txt" "$SUM" "" ""
+  sed -i 's/^3\. Numerical Examples$/X. Numerical Examples/' "$ST/nosec.txt"
   st_case "document with no sliceable §3" 2 "$ST/nosec.txt"
 
   printf 'not a document about checksums at all\n' > "$ST/junk.txt"
@@ -221,7 +385,8 @@ if [ "$SELFTEST" -eq 1 ]; then
 
   hdr "SELF-TEST VERDICT"
   if [ "$st_status" -eq 0 ]; then
-    say "  self-test: OK — the extractor confirms, rejects, and refuses as designed."
+    say "  self-test: OK — the extractor confirms a good document and rejects"
+    say "  every seeded corruption, including one per gating claim."
     say "  It has said nothing about RFC 1071."
   else
     say "  self-test: FAILED — the extractor is not trustworthy; do not read a"
@@ -231,15 +396,14 @@ if [ "$SELFTEST" -eq 1 ]; then
 fi
 
 # ------------------------------------------------------------------ #
-# LOCAL LANE — the arithmetic, in an implementation that is not the   #
-#              oracle's                                               #
+# LOCAL LANE                                                          #
 # ------------------------------------------------------------------ #
 
 hdr "LOCAL LANE — RFC 1071's arithmetic, re-derived here in awk (no network)"
-say "  This is a second implementation. It shares no code with"
-say "  Ipv4_ref.sum, so agreement is evidence and not a tautology. It"
-say "  confirms the constants are CONSISTENT; only the RFC's own text can"
-say "  confirm they are QUOTED correctly, and that is the network lane."
+say "  A second implementation, sharing no code with Ipv4_ref.sum. It confirms"
+say "  the constants are CONSISTENT. Since 0x$CKSUM is DERIVED rather than"
+say "  quoted, this lane is one of the three links that establish it: §3's sum"
+say "  (network C2) + §1's rule (network C3) + this arithmetic."
 
 LOCAL_OUT="$(printf '%s\n' "$OCTETS" | awk '
   function fold(v) { while (v > 65535) v = and16(v) + int(v / 65536); return v }
@@ -267,44 +431,44 @@ LOCAL_OUT="$(printf '%s\n' "$OCTETS" | awk '
     s = sum1(o, n)
     printf "sum=%04x\n", s
     printf "checksum=%04x\n", 65535 - s
-    printf "residue_input=%04x\n", s
-    # residue: append the checksum as a halfword and re-sum
     o[n + 1] = int((65535 - s) / 256); o[n + 2] = (65535 - s) % 256
     printf "residue=%04x\n", sum1(o, n + 2)
     delete o[n + 1]; delete o[n + 2]
-    # byte swap
     for (i = 1; i <= n; i += 2) { t = o[i]; o[i] = o[i + 1]; o[i + 1] = t }
-    ss = sum1(o, n)
-    printf "swapped=%04x\n", ss
+    printf "swapped=%04x\n", sum1(o, n)
     printf "swap_of_sum=%04x\n", (s % 256) * 256 + int(s / 256)
+    # the Normal-Order halfword column §3 also prints
+    line = ""
+    for (i = 1; i <= n; i += 2) line = line sprintf("%02x%02x ", o[i + 1], o[i])
+    printf "halfwords=%s\n", line
   }
 ')"
 
 lget() { printf '%s\n' "$LOCAL_OUT" | sed -n "s/^$1=//p"; }
 L_SUM="$(lget sum)"; L_CK="$(lget checksum)"; L_RES="$(lget residue)"
-L_SW="$(lget swapped)"; L_SWS="$(lget swap_of_sum)"
+L_SW="$(lget swapped)"; L_SWS="$(lget swap_of_sum)"; HALFWORDS="$(lget halfwords)"
 
 local_status=0
 if [ "$L_SUM" = "$SUM" ]; then
-  say "  [ok]   one's-complement sum of the octets = 0x$L_SUM, matches rfc1071_example_sum"
+  say "  [ok]   1's complement sum of the octets = 0x$L_SUM, matches rfc1071_example_sum"
 else
-  say "  [FAIL] one's-complement sum of the octets = 0x$L_SUM, but the oracle says 0x$SUM"
+  say "  [FAIL] 1's complement sum of the octets = 0x$L_SUM, but the oracle says 0x$SUM"
   local_status=1
 fi
 if [ "$L_CK" = "$CKSUM" ]; then
-  say "  [ok]   its one's complement = 0x$L_CK, matches rfc1071_example_checksum"
+  say "  [ok]   its 1's complement = 0x$L_CK, matches rfc1071_example_checksum"
 else
-  say "  [FAIL] its one's complement = 0x$L_CK, but the oracle says 0x$CKSUM"
+  say "  [FAIL] its 1's complement = 0x$L_CK, but the oracle says 0x$CKSUM"
   local_status=1
 fi
 if [ "$L_RES" = "ffff" ]; then
-  say "  [ok]   SPEC-M14 §6.1 residue form: octets + their checksum sum to 0xFFFF"
+  say "  [ok]   residue form: octets + their checksum sum to 0xFFFF (all 1 bits)"
 else
   say "  [FAIL] residue form: octets + their checksum sum to 0x$L_RES, not 0xFFFF"
   local_status=1
 fi
 if [ "$L_SW" = "$L_SWS" ]; then
-  say "  [ok]   RFC 1071 §2 byte-swap invariance: sum(swap(octets)) = 0x$L_SW = swap(sum)"
+  say "  [ok]   byte-swap invariance: sum(swap(octets)) = 0x$L_SW = swap(sum)"
 else
   say "  [FAIL] byte-swap invariance: sum(swap(octets)) = 0x$L_SW, swap(sum) = 0x$L_SWS"
   local_status=1
@@ -312,9 +476,8 @@ fi
 
 if [ "$local_status" -ne 0 ]; then
   hdr "VERDICT: MISMATCH (local)"
-  say "  The three constants are not even self-consistent under the arithmetic"
-  say "  they claim. This is a defect in the oracle and no fetch is needed to"
-  say "  say so."
+  say "  The constants are not even self-consistent under the arithmetic they"
+  say "  claim. That is a defect in the oracle and no fetch is needed to say so."
   exit 1
 fi
 
@@ -328,6 +491,7 @@ TMP="$(mktemp -d "${TMPDIR:-/tmp}/rfc1071.XXXXXX")" || exit 2
 trap 'rm -rf "$TMP"' EXIT
 BODY="$TMP/rfc1071.txt"
 SOURCE=""
+FETCHED=0
 
 identity_ok() {
   grep -qi 'Computing the Internet Checksum' "$1" && grep -qi 'Numerical Examples' "$1"
@@ -364,13 +528,13 @@ else
       continue
     fi
     if ! identity_ok "$TMP/candidate"; then
-      say "  $u -> HTTP 200 but the body does not identify itself as RFC 1071"
-      say "        (no 'Computing the Internet Checksum' + 'Numerical Examples')."
+      say "  $u -> HTTP 200 but the body does not identify itself as RFC 1071."
       say "        Refusing to grep an unidentified document."
       continue
     fi
     cp "$TMP/candidate" "$BODY"
     SOURCE="$u"
+    FETCHED=1
     say "  $u -> HTTP 200, identified as RFC 1071"
     break
   done
@@ -379,19 +543,17 @@ fi
 if [ -z "$SOURCE" ]; then
   hdr "VERDICT: OBLIGATION OPEN — RFC 1071 could not be fetched"
   say "  Every source above failed. NOTHING WAS CONFIRMED."
-  say "  test/golden/ipv4_ref.ml's anchor stays EMBEDDED AND UNCONFIRMED, and"
-  say "  SO-ip_eth_rx_64.md's open obligation stays open. The local lane's"
-  say "  four checks passed, which means the constants are self-consistent —"
-  say "  it does NOT mean they are RFC 1071's."
+  say "  test/golden/ipv4_ref.ml's anchor stays unconfirmed at this SHA. The"
+  say "  local lane's four checks passed, which means the constants are"
+  say "  self-consistent — it does NOT mean they are RFC 1071's."
   say ""
-  say "  If this ran on a CI runner, a 403/blocked egress here is NEWS: the"
-  say "  runner is the open-egress path this check was written for. Report it"
-  say "  rather than re-running until it goes away."
+  say "  If this ran on a CI runner, blocked egress here is NEWS: run"
+  say "  $RFC1071_KNOWN_RUN proved the runner CAN reach rfc-editor.org."
   if [ "$TOLERATE" -eq 1 ]; then
     say ""
-    say "  --tolerate-unreachable given: exiting 0 so a known-blocked"
-    say "  development container does not mask other checks. The obligation is"
-    say "  open, and this run is not coverage."
+    say "  --tolerate-unreachable given: exiting 0 so a known-blocked development"
+    say "  container does not mask other checks. The obligation is open, and this"
+    say "  run is not coverage."
     exit 0
   fi
   exit 2
@@ -401,151 +563,182 @@ BYTES="$(wc -c < "$BODY" | tr -d ' ')"
 DIGEST="$(sha256sum "$BODY" 2>/dev/null | cut -d' ' -f1)"
 say "  provenance: $SOURCE"
 say "  bytes: $BYTES   sha256: ${DIGEST:-<no sha256sum>}"
+if [ "$DIGEST" = "$RFC1071_KNOWN_SHA256" ]; then
+  DIGEST_KNOWN=1
+  say "  digest MATCHES the copy CI fetched from www.rfc-editor.org at run"
+  say "  $RFC1071_KNOWN_RUN ($RFC1071_KNOWN_BYTES bytes). Byte-identical document."
+else
+  DIGEST_KNOWN=0
+  say "  digest DIFFERS from run $RFC1071_KNOWN_RUN's copy (expected"
+  say "  $RFC1071_KNOWN_SHA256). Not fatal — the claims below are matched"
+  say "  against content, not against a digest — but it is recorded."
+fi
 
-# ---- slice §3
-awk '
-  /^[ \t]*3\.[ \t]+[Nn]umerical[ \t]+[Ee]xamples/ { on = 1 }
-  on && /^[ \t]*4\.[ \t]+[A-Za-z]/ && !/^[ \t]*3\./ { exit }
-  on { print }
-' "$BODY" > "$TMP/sec3"
-SEC3_LINES="$(grep -c . "$TMP/sec3" 2>/dev/null)"
-SEC3_LINES="${SEC3_LINES:-0}"
+STRIPPED="$TMP/stripped.txt"
+strip_furniture "$BODY" > "$STRIPPED"
 
-if [ "$SEC3_LINES" -lt 5 ]; then
-  hdr "VERDICT: OBLIGATION OPEN — §3 could not be sliced out of the fetched text"
-  say "  The document was fetched and identified, but the heading"
-  say "  '3.  Numerical Examples' was not found in a form this script can cut on"
-  say "  (got $SEC3_LINES lines). It deliberately does NOT fall back to grepping"
-  say "  the whole document: 'the token appears somewhere in RFC 1071' is not"
-  say "  the claim the oracle makes, and confirming the weaker claim would be"
-  say "  the vacuous pass this script exists to refuse."
-  say "  Fix the slice, or confirm by hand and record it in a journal entry."
+for n in 1 2 3; do
+  slice_section "$STRIPPED" "$n" > "$TMP/sec$n"
+done
+SEC3_LINES="$(grep -c . "$TMP/sec3" 2>/dev/null)"; SEC3_LINES="${SEC3_LINES:-0}"
+SEC1_LINES="$(grep -c . "$TMP/sec1" 2>/dev/null)"; SEC1_LINES="${SEC1_LINES:-0}"
+SEC2_LINES="$(grep -c . "$TMP/sec2" 2>/dev/null)"; SEC2_LINES="${SEC2_LINES:-0}"
+
+if [ "$SEC3_LINES" -lt 5 ] || [ "$SEC1_LINES" -lt 5 ] || [ "$SEC2_LINES" -lt 5 ]; then
+  hdr "VERDICT: OBLIGATION OPEN — the sections could not be sliced"
+  say "  Fetched and identified, but slicing gave §1=$SEC1_LINES §2=$SEC2_LINES"
+  say "  §3=$SEC3_LINES non-empty lines. It deliberately does NOT fall back to"
+  say "  grepping the whole document: 'the token appears somewhere in RFC 1071'"
+  say "  is not the claim the oracle makes, and confirming the weaker claim would"
+  say "  be the vacuous pass this script exists to refuse."
   [ "$TOLERATE" -eq 1 ] && exit 0
   exit 2
 fi
-say "  §3 sliced: $SEC3_LINES non-empty lines"
+say "  sliced: §1 = $SEC1_LINES lines, §2 = $SEC2_LINES lines, §3 = $SEC3_LINES lines"
 
-# ---- the octet string, as consecutive wire pairs
-missing=""
-prev_line=0
-order_ok=1
+N1="$(normalise < "$TMP/sec1")"
+N2="$(normalise < "$TMP/sec2")"
+N3="$(normalise < "$TMP/sec3")"
+NALL="$(normalise < "$STRIPPED")"
+
+status=0
+in_norm() { case "$2" in *"$1"*) return 0 ;; *) return 1 ;; esac; }
+tok_in() { printf '%s' "$2" | grep -Eqi "(^|[^0-9a-fA-F])$1([^0-9a-fA-F]|$)"; }
+
+# ---- C1: the octet string, in both of §3's forms
+hdr "  C1 — the octet string, in BOTH forms §3 prints it"
+missing_col=""
 set -- $OCTETS
 while [ "$#" -ge 2 ]; do
-  pair="$1 $2"
-  hit="$(grep -in -- "$pair" "$TMP/sec3" | head -1 | cut -d: -f1)"
-  if [ -z "$hit" ]; then
-    missing="$missing '$pair'"
-  else
-    [ "$hit" -lt "$prev_line" ] && order_ok=0
-    prev_line="$hit"
-  fi
+  in_norm "$1 $2" "$N3" || missing_col="$missing_col '$1 $2'"
   shift 2
 done
+if [ -z "$missing_col" ]; then
+  say "    [ok]   byte-by-byte column: all $((NOCTETS / 2)) pairs present"
+  say "           (matched after whitespace normalisation — §3 column-aligns them)"
+else
+  say "    [FAIL] byte-by-byte column: pairs not found:$missing_col"
+  status=1
+fi
+missing_hw=""
+for hw in $HALFWORDS; do
+  tok_in "$hw" "$N3" || missing_hw="$missing_hw $hw"
+done
+if [ -z "$missing_hw" ]; then
+  say "    [ok]   \"Normal\" Order halfword column: $HALFWORDS all present as tokens"
+else
+  say "    [FAIL] halfword column: not found as delimited tokens:$missing_hw"
+  status=1
+fi
 
-CONFIRMED=0
-status=0
-
-if [ -n "$missing" ]; then
-  say "  [FAIL] octet pairs not found in §3:$missing"
+# ---- C2: the sum
+hdr "  C2 — the sum, as a delimited hex token in §3"
+if tok_in "$SUM" "$N3"; then
+  say "    [ok]   0x$SUM present in §3"
+else
+  say "    [FAIL] 0x$SUM NOT present in §3"
+  status=1
+fi
+neg_sum="$(printf '%04x' $(( 0x$SUM ^ 0x0001 )))"
+if tok_in "$neg_sum" "$N3"; then
+  say "    [!!]   NEGATIVE CONTROL FAILED: the deliberately wrong 0x$neg_sum is"
+  say "           also in §3, so a match on the right value does not discriminate."
   status=1
 else
-  say "  [ok]   all $((NOCTETS / 2)) octet pairs of rfc1071_example_octets appear in §3"
-  if [ "$order_ok" -eq 1 ]; then
-    say "  [ok]   and they appear in wire order"
-  else
-    say "  [warn] they appear, but not in increasing line order — inspect §3 by hand"
-  fi
+  say "    [ok]   negative control: 0x$neg_sum absent, so the match discriminates"
 fi
 
-hex_token_in_sec3() {
-  grep -Eiqc "(^|[^0-9a-fA-F])$1([^0-9a-fA-F]|$)" "$TMP/sec3" >/dev/null 2>&1 &&
-    grep -Eiq "(^|[^0-9a-fA-F])$1([^0-9a-fA-F]|$)" "$TMP/sec3"
-}
+# ---- C3/C4/C5: verbatim sentences, each scoped to its section
+C3='the 1'"'"'s complement of this sum is placed in the checksum field'
+C4A='including the checksum field'
+C4B='all 1 bits (-0 in 1'"'"'s complement arithmetic)'
+C5='The sum of 16-bit integers can be computed in either byte order.'
 
-for pair in "sum:$SUM" "checksum:$CKSUM"; do
-  what="${pair%%:*}"; val="${pair#*:}"
-  if hex_token_in_sec3 "$val"; then
-    say "  [ok]   $what 0x$val appears in §3 as a delimited hex token"
-  else
-    say "  [FAIL] $what 0x$val does NOT appear in §3"
-    status=1
-  fi
-done
-
-# ---- negative control: the search must be able to say no
-neg_sum="$(printf '%04x' $(( 0x$SUM ^ 0x0001 )))"
-neg_ck="$(printf '%04x' $(( 0x$CKSUM ^ 0x0001 )))"
-neg_bad=0
-for pair in "sum:$neg_sum" "checksum:$neg_ck"; do
-  what="${pair%%:*}"; val="${pair#*:}"
-  if hex_token_in_sec3 "$val"; then
-    say "  [!!]   NEGATIVE CONTROL FAILED: the deliberately wrong $what 0x$val also"
-    say "         appears in §3, so a match on the real value is not discriminating."
-    neg_bad=1
-  fi
-done
-if [ "$neg_bad" -eq 0 ]; then
-  say "  [ok]   negative control: neither 0x$neg_sum nor 0x$neg_ck appears in §3,"
-  say "         so the matches above discriminate rather than merely occur"
+hdr "  C3 — §1: the checksum's DEFINITION (the authority for 0x$CKSUM)"
+if in_norm "$C3" "$N1"; then
+  say "    [ok]   §1 states verbatim: \"…$C3\""
+  say "           This, not §3, is where 0x$CKSUM comes from. §3 stops at the sum."
+else
+  say "    [FAIL] §1 does not carry that sentence."
+  status=1
 fi
 
-# ---- advisory: where does the RFC state the two §2 properties ipv4_ref cites?
-section_of() {
-  awk -v pat="$1" '
-    /^[ \t]*[0-9]+\.[ \t]+[A-Za-z]/ { sec = $1 }
-    tolower($0) ~ tolower(pat) { print (sec == "" ? "(before §1)" : sec); exit }
-  ' "$BODY"
-}
-say ""
-say "  ADVISORY — the two further RFC 1071 claims ipv4_ref.ml cites as §2's."
-say "  A keyword search over prose cannot distinguish 'the RFC says it"
-say "  elsewhere' from 'my keywords are wrong', so these are REPORTED and do"
-say "  not gate the verdict."
-for probe in "byte order:byte order" "one's complement of the sum:complement of the sum"; do
-  label="${probe%%:*}"; pat="${probe#*:}"
-  where="$(section_of "$pat")"
-  if [ -n "$where" ]; then
-    say "    \"$label\" first stated in section $where"
-    [ "$where" != "2." ] && say "      note: ipv4_ref.ml cites §2 for this. CITATION DRIFT — worth a"
-    [ "$where" != "2." ] && say "      one-line correction in a later packet; not a build failure."
-  else
-    say "    \"$label\" NOT located by keyword — inspect by hand."
-  fi
-done
+hdr "  C4 — §1: the residue form (what M14 actually implements)"
+if in_norm "$C4A" "$N1" && in_norm "$C4B" "$N1"; then
+  say "    [ok]   §1 states verbatim: \"…$C4A…\" and \"…$C4B\""
+else
+  say "    [FAIL] §1 does not carry both residue phrases."
+  status=1
+fi
+
+hdr "  C5 — §2: byte-order independence (property (B), §2's second)"
+if in_norm "$C5" "$N2"; then
+  say "    [ok]   §2 states verbatim: \"$C5\""
+  say "           ipv4_ref.ml's \"§2's second property\" citation is CORRECT."
+else
+  say "    [FAIL] §2 does not carry that sentence."
+  status=1
+fi
+
+# ---- the absence claim behind the reclassification
+hdr "  ABSENCE — 0x$CKSUM must appear NOWHERE in RFC 1071"
+ck_hits="$(printf '%s' "$NALL" | grep -Eoi "(^|[^0-9a-fA-F])$CKSUM([^0-9a-fA-F]|$)" | grep -c . || true)"
+ck_hits="${ck_hits:-0}"
+if [ "$ck_hits" -eq 0 ]; then
+  say "    [ok]   0 occurrences document-wide. This is the fact that forced the"
+  say "           checksum's reclassification from QUOTED to DERIVED at WO-0037."
+else
+  say "    [FAIL] $ck_hits occurrence(s) found. If RFC 1071 does print 0x$CKSUM,"
+  say "           the WO-0037 reclassification was wrong and ipv4_ref.ml's"
+  say "           provenance text must be revisited. This is deliberately loud."
+  status=1
+fi
+
+# ---- diagnostics: on failure, ship the evidence the NEXT run needs
+if [ "$status" -ne 0 ]; then
+  hdr "  §3 AS FETCHED (first 40 non-empty lines) — so the next repair needs no fetch"
+  grep . "$TMP/sec3" | head -40 | sed 's/^/    | /'
+fi
 
 # ---- the one place that may set CONFIRMED
-if [ "$status" -eq 0 ] && [ "$neg_bad" -eq 0 ]; then
-  CONFIRMED=1
-fi
+CONFIRMED=0
+[ "$status" -eq 0 ] && CONFIRMED=1
 
 hdr "VERDICT"
 if [ "$CONFIRMED" -eq 1 ]; then
-  say "  All three of Ipv4_ref.rfc1071_example_{octets,sum,checksum} were matched"
-  say "  against a §3 slice, with a negative control, and the local lane"
-  say "  re-derived the arithmetic independently."
+  say "  Five claims confirmed against the fetched text, with a negative control"
+  say "  and an absence claim:"
+  say "    C1 §3  the octet string, in both printed forms"
+  say "    C2 §3  the sum 0x$SUM"
+  say "    C3 §1  the checksum is the 1's complement of that sum  -> 0x$CKSUM"
+  say "    C4 §1  the residue form (all 1 bits, checksum field included)"
+  say "    C5 §2  byte-order independence"
   say "  source: $SOURCE"
   say "  sha256: ${DIGEST:-unknown}"
   say ""
-  case "$SOURCE" in
-    file://*)
-      say "  CONFIRMED AGAINST A LOCAL COPY — the obligation is NOT discharged by"
-      say "  this run. --print-body was used, so this script did not fetch the"
-      say "  document and cannot vouch for where it came from; the sha256 above is"
-      say "  all it can offer. Discharge needs either a run that fetched the text"
-      say "  itself, or a human confirmation journaled against that sha256."
-      ;;
-    *)
-      say "  ANCHOR CONFIRMED, from a document this script fetched and identified."
-      say "  This discharges the open obligation test/golden/ipv4_ref.ml records and"
-      say "  that SO-ip_eth_rx_64.md carries. A sign-off citing the anchor must cite"
-      say "  a RUN of this script — its CI run id — not this script's existence."
-      ;;
-  esac
+  if [ "$FETCHED" -eq 1 ]; then
+    say "  ANCHOR CONFIRMED, from a document this script fetched and identified."
+    say "  This discharges the obligation test/golden/ipv4_ref.ml records. A"
+    say "  sign-off citing the anchor must cite a RUN of this script — its CI run"
+    say "  id — not this script's existence."
+  elif [ "$DIGEST_KNOWN" -eq 1 ]; then
+    say "  ANCHOR CONFIRMED against a LOCAL COPY that is BYTE-IDENTICAL to the one"
+    say "  CI fetched from www.rfc-editor.org at run $RFC1071_KNOWN_RUN (sha256"
+    say "  matches). Provenance is therefore not this operator's word: it is a"
+    say "  digest a fetch already observed. This is a valid discharge, and it is"
+    say "  the form a journal entry may cite."
+  else
+    say "  CONFIRMED AGAINST AN UNVOUCHED LOCAL COPY — the obligation is NOT"
+    say "  discharged by this run. --print-body was used and the digest does not"
+    say "  match the one a fetch observed, so this script cannot say where the"
+    say "  document came from."
+  fi
   exit 0
 fi
 
-say "  NOT CONFIRMED — the fetched text does not carry the constants as quoted."
-say "  This is a MISMATCH, not a network problem: RFC 1071 was fetched and §3 was"
-say "  sliced. Either the oracle's constants are wrong or this script's"
-say "  extraction is. Both are defects and both belong in a packet."
+say "  NOT CONFIRMED — the fetched text does not carry the claims as stated."
+say "  This is a MISMATCH, not a network problem: RFC 1071 was fetched and its"
+say "  sections were sliced. Either the oracle's claims are wrong or this"
+say "  script's extraction is. Both are defects and both belong in a packet."
+say "  The §3 excerpt above is printed precisely so the repair needs no fetch."
 exit 1

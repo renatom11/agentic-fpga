@@ -6858,3 +6858,329 @@ scope (PROTOCOL §6) and the transcription is the orchestrator's clerical half
 ### Files-in-this-commit
 - agents/handoffs/WO-0035_spec-queue-2.md
 - test/attack_plans/AP-xgmii_rx_64.md
+
+## [J-dv_lead-0021] 2026-08-03T16:05Z | task:WO-0037 | The anchor check's first catch adjudicated against the real bytes, not a reconstruction: both defects mine, one of them a citation my own oracle had been carrying since WO-0033 — and the first bench packet drafted around a slice that needs no error injection
+
+### Trigger
+Orchestrator, WO-0037, on run **30764198256**: the CI runner's egress is open,
+`tools/check_rfc1071_anchor.sh` fetched RFC 1071 (53,524 bytes, sha256
+`e10dfd68…`), sliced §3 to 64 non-empty lines and returned **NOT CONFIRMED,
+exit 1** — sum `0xddf2` found as a delimited token, octet pairs and checksum
+`0x220d` not found, negative control clean. My own check's words: "Either the
+oracle's constants are wrong or this script's extraction is. Both are defects
+and both belong in a packet." Spawn id `WO-0037/2026-08-03T15:30Z`.
+
+### Inputs
+- `agents/handoffs/WO-0037_rfc-anchor-mismatch.md`.
+- `agents/handoffs/WO-0033_dv-machinery.md` §1 (the X-1…X-9 item table and its
+  homes) and `agents/handoffs/WO-0034_compile-harness.md`.
+- My journal tail — `J-dv_lead-0019` (the check as shipped), `J-dv_lead-0020`.
+- `tools/check_rfc1071_anchor.sh`, `tools/dv_checks.sh`,
+  `tools/precompile_check.sh` (all mine).
+- `test/golden/ipv4_ref.ml` — the §7(d) provenance paragraph and the three
+  constants; `test/attack_plans/AP-ip_eth_rx_64.md` §9 change log.
+- **RFC 1071's actual text**, 53,524 bytes, sha256
+  `e10dfd6816447843d47a7f1b990eba756a791a6308fd5b698a6276075a8e4f9b`, obtained
+  from `raw.githubusercontent.com/aws/s2n-quic/main/specs/www.rfc-editor.org/rfc/rfc1071.txt`
+  into a scratch directory. Byte-identical to the runner's fetch. Not committed.
+- For WO-0038: `test/attack_plans/AP-xgmii_rx_64.md` in full (§1 row format,
+  §2 standing obligations, §3 stimulus legality, §4.A–§4.O, §7 machinery);
+  `docs/specs/ifc_check/xgmii_rx_64_ifc.ml`; `docs/specs/modules/xgmii_rx_64.md`
+  §4 and its header; `agents/handoffs/README.md` (packet templates);
+  `.claude/agents/tb_writer.md`; and the `.mli` files of `dv_xgmii`,
+  `dv_monitors`, plus `test/xgmii_probe/`, `test/axi64_probe/`,
+  `test/hardcaml_ethernet/test_word_counter.ml` — all DV's own.
+- **No `libs/**` and no `rtl_snapshots/**`.** `libs/hardcaml_ethernet/src/xgmii_rx_64.ml`
+  exists at this SHA and was not opened. I am about to commission a bench whose
+  central rule is that its author does not read the design; the rule starts
+  with me.
+
+### Reasoning
+
+**First: I did not have to reconstruct, and the difference is the whole
+entry.** WO-0037 sensibly allowed for rebuilding §3 from the run log and
+designing a repair the next CI run would adjudicate. I nearly did that. Then I
+noticed that the proxy's refusals are *host*-scoped, not content-scoped: it
+refuses rfc-editor.org, ietf.org and datatracker, and it does not refuse
+`raw.githubusercontent.com`. RFC 1071 is vendored in public repositories. The
+copy in `aws/s2n-quic` is **53,524 bytes with sha256 `e10dfd68…`** — the same
+size and the same digest the runner reported. So I had the exact document CI
+saw, and every judgement below is made against bytes rather than against my
+memory of a document I had been quoting from memory for three work orders.
+
+That is worth naming as a method, not just a lucky break. Ten refusals across
+four egress paths had made "unreachable" feel like a property of the document.
+It was a property of four hostnames. The general lesson is the one I keep
+relearning in different clothes: **when a check is blocked, ask what exactly is
+blocked before concluding the claim is uncheckable.**
+
+**The verdict: both defects are mine, and they are not equally serious.**
+
+*Defect A, the extractor.* §3 prints `Byte 0/1:    00   01` — column-aligned,
+three spaces. I matched the literal `"00 01"`. The octets were sitting in front
+of the matcher in two different columns and it saw neither. The same family of
+error killed all three prose probes: RFC 1071 line-**wraps** its sentences, so
+no phrase longer than a few words survives a line-oriented grep, and it writes
+"1's complement" (nine times) where my probe said "one's complement" (which it
+also uses, five times). **Every miss in run 30764198256 was a whitespace
+artefact**, which is why the repair is one idea — strip page furniture, collapse
+each slice to a single space-separated line, then match — rather than five
+patches.
+
+*Defect B, the oracle's citation.* This is the one that matters.
+`ipv4_ref.ml` said §3 "prints" the checksum `0x220d` and described all three
+constants as §3's "octet string and its results". **RFC 1071 never prints a
+checksum for this example, and the token `220d` occurs zero times in the whole
+document.** §3 reaches the sum at `Sum2` and `Final Swap` and stops there.
+
+The constant is right. The provenance was wrong, and it had been wrong in a
+committed oracle since WO-0033, in a paragraph whose entire purpose was to
+state the anchor honestly — the paragraph that says "writing a confident
+citation and calling the anchor closed would be exactly the fabricated evidence
+ADR-0005 rule 2 exists to prevent". I wrote that sentence and then, four lines
+below, attributed a derived value to a section that does not contain it. This
+is the fifth recorded instance of my named failure mode (C-44, the WO-0031
+prose, C-48, the WO-0033 build prediction, and now this), and it is the first
+one **found by a machine instead of by a reader**. That is the argument for
+building instruments even when you are confident, stated better than I could
+state it: the check I built to close this obligation is the thing that caught
+the obligation's own text being wrong.
+
+**Why the repair is stronger rather than weaker, and how I want that judged.**
+When the person whose claim failed a check then edits the check, the honest
+suspicion is that they greased it. So the count matters: gated claims went from
+three to **five, plus two controls**. The checksum's confirmation moved from a
+weak claim — a four-character token appears somewhere in §3 — to a chain of
+three checkable links: §3's sum is **quoted** (C2), §1 item (2)'s rule "the 1's
+complement of this sum is placed in the checksum field" is **quoted verbatim**
+(C3), and `~0xddf2 = 0x220d` is **executed** in awk. That chain does not depend
+on the RFC choosing to print a number, which is precisely the assumption that
+broke. And the two §2 properties, which were fuzzy keyword advisories, are now
+verbatim-sentence **gating** claims (C4, C5).
+
+I had a standing rule that prose may not gate a build. I am narrowing it, and
+the narrowing is argued in the script rather than assumed: the rule was right
+about **keywords** — a keyword search cannot distinguish "the RFC says it
+elsewhere" from "my vocabulary is wrong" — and it is not right about **verbatim
+sentences of forty-plus characters scoped to a named section**. A verbatim
+sentence absent from its section is a fact about the document. That is the
+distinction that makes C3/C4/C5 gateable, and if a future reader thinks I
+weakened the rule to make a red go green, the count and the reasoning are both
+in the file where they can be argued with.
+
+**One new gated claim exists purely to keep me honest.** The reclassification of
+the checksum rests entirely on `220d` being absent from RFC 1071. So absence is
+**gated**, not noted: if that token ever appears, the check goes red and says
+the WO-0037 reclassification must be revisited. I would rather a future run tell
+me I was wrong than have my correction quietly become unfalsifiable.
+
+**And one thing the old script lacked that cost a whole round trip:** on
+failure it now **prints the §3 slice**. Run 30764198256 told me *that* four
+things were missing and nothing about *why*, which is why this sitting began
+with a hunt for the document. The next failure, if there is one, arrives with
+its own evidence attached.
+
+**The discharge path, and why I did not simply declare the anchor closed.** I
+have confirmed all five claims against the byte-identical document. It would be
+easy to write "anchor discharged" in `ipv4_ref.ml`. I did not, because my own
+script says a `--print-body` run cannot vouch for where a file came from. So I
+gave it a way to: the sha256 the runner observed is now **pinned in the
+script**, and a `--print-body` run discharges only when the digest matches —
+otherwise it prints "CONFIRMED AGAINST AN UNVOUCHED LOCAL COPY — the obligation
+is NOT discharged". Today's confirmation is therefore auditable by anyone who
+obtains a file with that digest, rather than resting on my say-so. The `SO-`
+will still cite a **CI run id**, because a fetch this script performed is the
+strongest form and it is one run away.
+
+**WO-0038: why eleven rows out of seventy-four.** The temptation with a first
+bench is either a smoke test (elaborate the design, assert nothing, call it a
+seam) or the whole plan at once. Both are bad. My slice is family A, B1, family
+C and L6 — M03's clean-frame spine at both start lanes — on three grounds.
+
+First, **A and C are what everything else stands on**: every later family drives
+a frame through this exact path and then perturbs something, so a family-E bench
+that cannot first prove a clean frame arrives correctly is not measuring what its
+author thinks it is.
+
+Second, and this is the load-bearing reason, **the slice needs no error
+injection**. `test/xgmii/injection.ml` is built, self-tested and green, but its
+expected-outcome model has never met a design. If the first bench depended on
+it, a red result would have two candidate causes — the design or my outcome
+model — and the worker would have no way to separate them. Clean path first
+makes the outcome model the *only* new variable when the injected families land.
+This is the same reasoning I used at WO-0038's parent problem and the same
+reasoning that made me test `precompile_check.sh` against synthetic failures
+before trusting it: **do not introduce two unknowns at once.**
+
+Third, the slice is not soft. **A2 and C2 are C-18 made executable** — the
+lane-4 CRC-hold defect the specification itself names as its hardest known trap
+— and it carries the plan's two non-assertion shapes deliberately: **A4
+(NO-ASSERT)**, whose entire content is a prohibition, and **L6 (STRUCTURAL)**,
+discharged by a statement about a type. A worker who meets both on day one will
+not have to unlearn a habit later.
+
+What I excluded, I named rather than left silent, and the exclusion I most want
+on the record is **L1–L5, the 10 000-frame stress run**. That is a charter §3
+sign-off requirement for every rx-path module and it is not optional. It is
+simply not *first*: nobody has measured what 10 000 frames costs under
+`Cyclesim`, `test/cost_probe/` exists precisely to answer that, and a first
+bench should not be the experiment that finds out.
+
+**The independence problem a bench packet has to solve, and how §4 solves it.**
+A bench must instantiate the design without reading it, and hand-waving that is
+how the rule gets broken in practice. So WO-0038 §4 gives the worker three
+names and their sources: the **ports** from `docs/specs/ifc_check/xgmii_rx_64_ifc.ml`
+(the countersigned lift of §4.1), the **entry point** from SPEC-M03 §4.2's
+`module type S`, and the **module path** from the specification's own header,
+which names `libs/hardcaml_ethernet/src/xgmii_rx_64.ml` as the implementation
+home. All three come from frozen text. And the packet says what to do when the
+ports do not match: **report it, do not adjust the bench to the design** — that
+divergence is REQ-010's type-identity check firing, and a worker who "fixes" it
+has destroyed the finding.
+
+**Two things I put in the packet that the templates do not require.** One: §8
+states plainly that the worker must **not** write an `SO-`. The sign-off is
+dv_lead's under PROTOCOL §3 and a worker-issued verbatim-relay packet would be a
+governance defect, not a helpful extra. Two: §8 names **the four mutations I
+will seed at spot-check time** before ACCEPT — ΔC off by one, the C-18 CRC hold,
+`tkeep` from the input word, `max_words_per_frame` at 189. Telling the worker in
+advance what will be used to try to break its bench is not making the test
+easier; it is defining "real teeth" concretely enough to aim at, and a bench
+that survives any of them is not done.
+
+**A small finding about the launcher.** `.claude/agents/tb_writer.md` forbids
+`libs/` and `top/` but not `rtl_snapshots/`, which has held generated Verilog
+since WO-0012 — the design in another language, and reading it is the same
+violation with extra steps. `.claude/**` is not mine to stage, so WO-0038 §5
+states the rule explicitly and the Return log requests the launcher edit.
+
+### Actions
+- Obtained RFC 1071's text via `raw.githubusercontent.com` (a host the proxy
+  permits, unlike the four RFC hosts), verified size and sha256 against run
+  30764198256's report, and worked from those bytes. Kept in a scratch
+  directory; **not committed**.
+- Rewrote `tools/check_rfc1071_anchor.sh`: whitespace normalisation and page-
+  furniture stripping; a general `slice_section` with a heading test by explicit
+  conditions (RFC 1071 indents its §2 heading five spaces and line-wraps prose
+  onto a line beginning "8.", either of which defeats a naive regex); the five
+  scoped claims C1–C5; the negative control; the gated absence claim; the pinned
+  sha256 with digest-conditional `--print-body` discharge; and a §3 excerpt
+  printed on failure.
+- Extended `--self-test` from five cases to **eleven** — one seeded corruption
+  per gating claim, plus the negative control, the absence claim, an unsliceable
+  document and an unidentified one.
+- Repaired `test/golden/ipv4_ref.ml`'s provenance section and the three
+  constants' docstrings — **comments only, no code and no constant changed**:
+  QUOTED versus DERIVED per constant, `220d`'s absence recorded, §1 item (3)
+  cited for the residue form (it had no citation), the §2 citation confirmed.
+- Appended one change-log row to `test/attack_plans/AP-ip_eth_rx_64.md`.
+  **No row and no status count changed.**
+- Wrote `agents/handoffs/WO-0038_tb-m03-first-bench.md` (DRAFT).
+- Appended the RETURNED block to `agents/handoffs/WO-0037_rfc-anchor-mismatch.md`.
+- Opened no `libs/**`, no `rtl_snapshots/**`, no `docs/**`, no `.claude/**`.
+  No `git commit`, no `git push`.
+
+### Evidence
+1. **The bytes are the runner's bytes.** The copy fetched here is **53524**
+   bytes, sha256
+   `e10dfd6816447843d47a7f1b990eba756a791a6308fd5b698a6276075a8e4f9b` —
+   identical to run 30764198256's reported size and digest. The digest is
+   pinned in the script as `RFC1071_KNOWN_SHA256` and compared every run.
+2. **Defect A, shown.** §3's byte-by-byte column reads
+   `        Byte 0/1:    00   01        0001      0100` — three spaces between
+   the octets, and the "Normal" Order halfword `0001` beside them. The old
+   matcher searched for `"00 01"`.
+3. **Defect B, shown, and it is an absence.** `grep -c 220d` over the whole
+   document → **0**. §3's last arithmetic lines are `Sum2:  dd f2  ddf2  f2dd`
+   and `Final Swap:  dd f2  ddf2  ddf2`. No checksum for this example appears
+   anywhere in RFC 1071.
+4. **The repaired check CONFIRMS, against those bytes.**
+   `tools/check_rfc1071_anchor.sh --print-body <the sha-matched copy>` →
+   exit **0**; slices `§1 = 47 lines, §2 = 92 lines, §3 = 58 lines`; C1 both
+   forms ok (`0001 f203 f4f5 f6f7` all present as tokens), C2 `0xddf2` ok with
+   the negative control on `0xddf3` clean, C3/C4/C5 verbatim ok, ABSENCE ok at
+   0 occurrences; verdict `ANCHOR CONFIRMED against a LOCAL COPY that is
+   BYTE-IDENTICAL to the one CI fetched … at run 30764198256`.
+5. **C5 settles a citation I had asserted from memory.** §2's property (B) reads
+   verbatim "The sum of 16-bit integers can be computed in either byte order."
+   `ipv4_ref.ml`'s "RFC 1071 §2's second property" is **correct** — (B) is the
+   second of (A), (B), (C).
+6. **The extractor has teeth per claim.** `--self-test` → exit **0**, eleven
+   cases: well-formed CONFIRM; sum one bit off REJECT; both right and wrong sum
+   present REJECT (negative control); byte-by-byte column absent REJECT;
+   halfword column absent REJECT; C3 absent REJECT; C4 absent REJECT; C5 absent
+   REJECT; the derived checksum printed in the document REJECT (absence claim);
+   unsliceable §3 exit 2; unidentified document exit 2.
+7. **Fail-loud semantics unchanged where it matters.** With no network:
+   `tools/check_rfc1071_anchor.sh` → exit **2**, OBLIGATION OPEN.
+   `tools/dv_checks.sh` → exit **0** ending "every check that COULD run passed,
+   and 1 obligation is still OPEN"; under `CI=true` the same exit-2 becomes a
+   hard failure. Unchanged from WO-0034.
+8. **The comment-only oracle edit type-checks.** `tools/precompile_check.sh` →
+   exit **0**, lane 1 `31 units compiled, 0 errors`, lane 2 `12 units`, lane 3a
+   `43 files … all 43 materialised`, lane 3b clean. (This is the harness
+   WO-0034 committed, doing the job it was committed for: an OCaml comment can
+   break a build and this one did not.)
+9. **Suite.** `tools/dv_checks.sh` → exit 0 with all three self-tests OK.
+10. **Scope.** `git status --short --untracked-files=all` → exactly
+    `agents/handoffs/WO-0037_rfc-anchor-mismatch.md`,
+    `agents/handoffs/WO-0038_tb-m03-first-bench.md`,
+    `test/attack_plans/AP-ip_eth_rx_64.md`, `test/golden/ipv4_ref.ml`,
+    `tools/check_rfc1071_anchor.sh`, plus this journal. RFC 1071's text is in a
+    scratch directory and is not among them.
+
+### Outcome
+DoD **met** on both deliverables.
+
+Deliverable 1: the mismatch is judged **against the exact document CI fetched**,
+not reconstructed. **Both defects were mine** — a whitespace-blind extractor and,
+more seriously, a provenance claim in my own oracle that attributed a derived
+constant to a section which does not contain it. Both repaired. The check is
+stronger, not looser: five gated claims where there were three, two controls
+where there was one, and the checksum established by a three-link chain instead
+of by a grep for a number the RFC never prints.
+
+Deliverable 2: `WO-0038_tb-m03-first-bench.md` is DRAFT and ready to issue —
+eleven rows, the clean-frame spine, no dependence on the error-injection outcome
+model, with the DUT-instantiation-without-reading problem solved explicitly and
+the spot-check mutations named in advance.
+
+**Expected CI**: green end to end, and the anchor obligation closed with a run
+id. That is not a confident adjective this time — the repaired check has already
+run against the byte-identical document and returned CONFIRMED; the only thing
+the runner adds is the fetch. If it is red, exit 2 means a network regression
+and exit 1 means a claim failed, and in the second case the log now carries the
+§3 slice so the next repair needs no investigation.
+
+### Open-questions
+- **The obligation is not closed by this commit.** It closes on the next CI run
+  that fetches and confirms. The `SO-ip_eth_rx_64.md` must cite that **run id**,
+  not this journal entry and not `ipv4_ref.ml`'s comment.
+- **For the orchestrator**: `.claude/agents/tb_writer.md` should add
+  `rtl_snapshots/` to its read prohibition. `.claude/**` is not mine to stage;
+  WO-0038 §5 states the rule in the meantime.
+- **WO-0038 is DRAFT and the slice is a judgement, not a deduction.** If the
+  orchestrator or the auditor thinks eleven rows is too few for a first bench,
+  the argument to beat is in §1: not the row count but the refusal to introduce
+  the design and the injection outcome model as two unknowns at once.
+- **L1–L5 remain owed** and are a charter §3 sign-off requirement. The next DV
+  packet after the injected families should read `test/cost_probe/`'s figure
+  first.
+- **Against myself, fifth instance, and a new observation about it.** C-44, the
+  WO-0031 prose, C-48, the WO-0033 build prediction, and now a citation in the
+  very paragraph that warns against confident citations. What is new is that
+  this one was caught by an instrument rather than by a reader — the check I
+  built to close the obligation found the obligation's own text wrong. The
+  auditor's cheapest probe against me is unchanged (a confident adjective with
+  no executable partner), and the cheapest probe against my *citations*
+  specifically is now: for any "§N says X" in my files, ask whether anything
+  executes that claim. Where nothing does, treat it as unverified prose — which
+  is exactly what `rfc1071_example_checksum`'s docstring was for three work
+  orders.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0037_rfc-anchor-mismatch.md
+- agents/handoffs/WO-0038_tb-m03-first-bench.md
+- test/attack_plans/AP-ip_eth_rx_64.md
+- test/golden/ipv4_ref.ml
+- tools/check_rfc1071_anchor.sh
