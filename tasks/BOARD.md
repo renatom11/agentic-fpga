@@ -56,14 +56,15 @@ Corrections.
 | Gate | Status | Checklist |
 |---|---|---|
 | G0 | **PASSED 2026-08-01** | [docs/gates/G0-checklist.md](../docs/gates/G0-checklist.md) |
-| P1-spec-freeze | OPEN — **A+B+C FROZEN (9/20)**, D drafted (a9993ff, countersign in flight), E–F pending | [docs/gates/P1-spec-freeze-checklist.md](../docs/gates/P1-spec-freeze-checklist.md) |
+| P1-spec-freeze | OPEN — **A+B+C FROZEN (9/20)**, D repaired (3f6accc, re-review in flight), E drafted (3f6accc), F pending | [docs/gates/P1-spec-freeze-checklist.md](../docs/gates/P1-spec-freeze-checklist.md) |
 
 ## Open work orders
 
 | Packet | From → To | State | Note |
 |---|---|---|---|
 | [WO-0016](../agents/handoffs/WO-0016_m01-m02-implementation.md) | orchestrator → rtl_lead | ACCEPTED | 189d5b2: **first RTL green on first elaboration** (run 30738000890) — M01 Axi64 (types, lift-identical) + M02 Crc32_eth (64-step prefix chain, ADR-0006/0007 honoured); 2 questions queued for architect (Axi64.Axi64 convention; named module type S) |
-| [WO-0017](../agents/handoffs/WO-0017_batch-e-specs.md) | orchestrator → architect_docs_lead | ISSUED | Batch E (SPEC-M14–M16) + D-1/D-2 repairs (R-1 and D-2a recommended) + five §11 closures + §12 fills from run 30736107842 + C-19…C-23 dispositions |
+| [WO-0018](../agents/handoffs/WO-0018_batch-de-countersign.md) | orchestrator → dv_lead | ISSUED | Batch-D re-review (bounded surface: D-1/D-2 landing sites) + batch-E countersign; five architect questions incl. REQ-502 6→7 |
+| [WO-0017](../agents/handoffs/WO-0017_batch-e-specs.md) | orchestrator → architect_docs_lead | ACCEPTED | 3f6accc: D-1→R-1 (Transmitting state), D-2→D-2a + **ADR-0009**; batch E drafted (M14 ΔC=4/ceil 5; M15 1+2 cycles; M16 structural); 118-edge table; REQ-502 6→7 disclosed |
 | [WO-0015](../agents/handoffs/WO-0015_batch-d-countersign.md) | orchestrator → dv_lead | ACCEPTED | 619afa7: **countersign WITHHELD** — M10/M11/M12 SIGNED (M12 clean), M13 CONTESTED (D-1 two-replies vs REQ-510; D-2 bad-FCS learn undischarged); Q1–Q5 answered, Q3 NOT breaking; C-19…C-23 |
 | [WO-0014](../agents/handoffs/WO-0014_batch-d-specs.md) | orchestrator → architect_docs_lead | ACCEPTED | a9993ff: SPEC-M10–M13 DRAFT (lifts byte-identical), C-6/15/16/17/18 CLOSED, batch-C freeze flip ratified, 117-edge table; countersign next after CI |
 | [WO-0013](../agents/handoffs/WO-0013_batch-c-countersign.md) | orchestrator → dv_lead | ACCEPTED | **SIGNED at 508eea2 — batch C FROZEN (9/20)**; eight amendments reaffirmed; ADR-0008 accepted; new C-16/17/18 |

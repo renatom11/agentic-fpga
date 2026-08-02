@@ -28,8 +28,8 @@ by the orchestrator from the signing agent's journal entry, per PROTOCOL
 | A | M01 `Axi64`, M02 `Crc32_eth` | 22145b5 (WO-0006), revised f78766e | run 30729342467 green | **SIGNED** (J-dv_lead-0003; §4.1 addition accepted J-dv_lead-0005) | **FROZEN at f78766e** |
 | B | M03, M04, M05 | f78766e (WO-0008) | run 30729342467 green | **SIGNED** (J-dv_lead-0005) | **FROZEN at f78766e** |
 | C | M06, M07, M08, M09 | 508eea2 (WO-0011) | run 30733153172 green | **SIGNED** (J-dv_lead-0007) | **FROZEN at 508eea2** |
-| D | M10, M11, M12, M13 | a9993ff (WO-0014) | run 30736107842 green (2f29888; `git diff a9993ff 2f29888 -- docs/specs/` empty) | **WITHHELD** (J-dv_lead-0008, WO-0015) — M10/M11/M12 SIGNED, M13 CONTESTED; D-1/D-2 owed | — |
-| E | M14, M15, M16 | — | — | — | — |
+| D | M10, M11, M12, M13 | a9993ff (WO-0014); D-1/D-2 repaired 3f6accc (WO-0017: R-1 + D-2a/ADR-0009) | run 30736107842 green (2f29888) | **WITHHELD** (J-dv_lead-0008) — re-review in flight (WO-0018, bounded surface) | — |
+| E | M14 `Ip_eth_rx_64`, M15 `Ip_eth_tx_64`, M16 `Ip_complete_64` | 3f6accc (WO-0017) | pending | — | — |
 | F | M17, M18, M19, M20 | — | — | — | — |
 
 ## Batch-A countersignature (transcribed)
@@ -82,7 +82,11 @@ by the orchestrator from the signing agent's journal entry, per PROTOCOL
 
 Status marks: C-1 SEALED (WO-0010); C-4, C-8, C-10 CLOSED (WO-0008,
 confirmed WO-0010); C-9 partially closed (scripts live + CI-wired;
-REQ-903 half unblocks now that C-8 is closed); **C-6, C-15, C-16, C-17
+REQ-903 half unblocks now that C-8 is closed); **C-19, C-20, C-21,
+C-22, C-23 CLOSED (WO-0017 at 3f6accc, pending dv reaffirmation at the
+WO-0018 re-review)** — C-23 homed in requirements.md §0.6 (generalises)
++ REQ-502 disambiguation; note REQ-502's derivation moved 6→7 under
+D-2a, dv re-review question 1; **C-6, C-15, C-16, C-17
 (all five items), C-18 CLOSED (WO-0014 at a9993ff)** — dispositions
 transcribed from the architect's Return log: C-6 closes in SPEC-M10 §8
 (parsed-fields form of REQ-004's four criteria); C-15 applies dv's

@@ -2172,3 +2172,68 @@ the architect answers the two conventions questions (batch-B RTL next).
 ### Files-in-this-commit
 - agents/handoffs/WO-0016_m01-m02-implementation.md
 - tasks/BOARD.md
+
+## [J-orchestrator-0054] 2026-08-02T08:40:00Z | task:WO-0017 | Batch E accepted at 3f6accc; WO-0018 (re-review + countersign) issued
+
+### Trigger
+WO-0017 RETURNED by architect_docs_lead (J-architect_docs_lead-0007,
+completion notification): both contested items repaired with dv's
+recommended repairs, batch E drafted, ADR-0009 written.
+
+### Inputs
+- The WO-0017 Return log; J-architect_docs_lead-0007's file list
+- Acceptance recomputation (this session): set equality 18 = 18; three
+  batch-E lifts byte-identical; SPEC-M07/M09 (FROZEN, touched for §11
+  closures) ocaml blocks unchanged vs HEAD; REQ sets 110 = 110;
+  dv_checks green
+
+### Reasoning
+Both repair choices follow dv's recommendations with the reasons
+restated (R-1: makes REQ-510 literally true at four counting sites for
+no port/record/requirements cost, R-2 preserved as §11.6 appeal
+record; D-2a: on-merit once the mispriced cost was corrected, ADR-0009
+because a behavioural requirements.md row needs an ADR). The one
+signed number that moves — REQ-502's derivation 6→7 under the D-2a
+gate — is disclosed at the top of the Return log and routed as dv
+re-review question (i), which is exactly how a change to countersigned
+arithmetic should travel. The architect also closed three §11 items
+the packet didn't name (M07 §11.2, M09 §11.3, M11 §11.2 — all "Closes
+by SPEC-M15") and disclosed them; §11 closures are not §4/§6/§7
+changes, so no §13 rows owed — verified by the unchanged ocaml blocks.
+Batch-E lane: M14's one-cycle reserve is stated as M14's own
+allocation (not architect slack), M16 copies SPEC-M05's structural
+§-shape, and the two architecture amendments (hdr rename; the added
+M20→M14 cfg_subnet_mask edge) ride as dv question (v).
+WO-0018 folds the bounded batch-D re-review and the batch-E
+countersign into one dv cycle — the WO-0010 dual-batch precedent.
+
+### Actions
+- Committed the return as 3f6accc (architect identity), pushed; CI on
+  it = batch-E lifts' first elaboration = WO-0018 evidence.
+- WO-0017 ACCEPTED block; board rows (WO-0017 ACCEPTED, WO-0018
+  ISSUED, gate line updated); checklist (batch D repaired/re-review in
+  flight, batch E drafted at 3f6accc, C-19…C-23 CLOSED pending dv
+  reaffirmation, REQ-502 6→7 noted).
+- Issued WO-0018; spawn follows CI green with fallback armed.
+
+### Evidence
+- `git show 3f6accc --stat` — 19 paths (18 + journal)
+- Lift byte-compares and frozen-block diffs: this session, method
+  identical to WO-0014 acceptance
+
+### Outcome / DoD
+13 specs drafted of which 9 frozen; batch D repaired awaiting bounded
+re-review; batch E awaiting first elaboration + countersign; 118-edge
+topology. Next state change: CI green → dv spawn.
+
+### Open questions
+- The five architect questions ride WO-0018 (dv's calls).
+- rtl_lead's two conventions questions (Axi64.Axi64; named module type
+  S) remain queued for the architect's next packet — batch F or a
+  dedicated follow-up, decided at WO-0018 return.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0017_batch-e-specs.md
+- agents/handoffs/WO-0018_batch-de-countersign.md
+- docs/gates/P1-spec-freeze-checklist.md
+- tasks/BOARD.md

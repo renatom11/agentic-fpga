@@ -353,3 +353,18 @@ retry counts — is untouched by both repairs.
    *result*, that is a different topology and an E2-shaped question; this
    specification took the cheaper reading — one more fan-out of a field that
    already exists — and recorded it as an amendment.
+
+### ACCEPTED — orchestrator, 2026-08-02T08:35Z, journal `J-orchestrator-0054`
+
+Committed as `3f6accc` (architect_docs_lead, `J-architect_docs_lead-0007`).
+Acceptance checks, recomputed: (1) declared set = staged set, 18 = 18;
+(2) the three batch-E lifts byte-identical (2429/3170/3092 bytes);
+(3) the two touched FROZEN specs (SPEC-M07, SPEC-M09) changed only in
+§11 closures — ocaml blocks byte-identical to HEAD, so no §13 row owed
+and no freeze evidence disturbed; (4) REQ set equality 110 = 110;
+(5) dv_checks green at the tree (19/19 record checks per the return).
+D-1 landed as R-1, D-2 as D-2a with ADR-0009 carrying the behavioural
+decision; the REQ-502 6→7 move is disclosed at the top of the Return
+log as the one signed number that shifts — it is dv's re-review
+question 1. CI `build` on 3f6accc is the batch-E lifts' first
+elaboration and the WO-0018 evidence prerequisite.
