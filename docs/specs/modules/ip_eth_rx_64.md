@@ -41,10 +41,12 @@ It instantiates nothing.
 
 **In scope.**
 
-- Validating a received datagram against REQ-601 (version and header length),
-  REQ-602 (header checksum), REQ-603 (fragments), REQ-604 (destination filter),
-  REQ-607 (protocol) and REQ-612 (maximum size), and discarding a failing
-  datagram with the strobe each REQ names (§9).
+- Validating a received datagram against REQ-601 (version, header length **and
+  the total-length lower bound: a declared total length below 20 is REQ-601's
+  discard class, ADR-0013**), REQ-602 (header checksum), REQ-603 (fragments),
+  REQ-604 (destination filter), REQ-607 (protocol) and REQ-612 (maximum size —
+  the upper bound of the same field), and discarding a failing datagram with the
+  strobe each REQ names (§9).
 - Presenting source address, destination address, protocol, TTL, DSCP and total
   length in an `Ip_header` record whose `valid` pulses for exactly one cycle per
   accepted datagram (REQ-606, REQ-012).
@@ -236,7 +238,7 @@ Every port in §4.1 appears exactly once. Direction is with respect to M14.
 | `ip_payload_tstrb` | out | 8 | reserved; driven to 0 | REQ-014 |
 | `ip_payload_tlast` | out | 1 | this word carries the payload's final octets | REQ-015 |
 | `ip_payload_tuser` | out | 1 | bit 0: the inherited abort, or REQ-605's truncation, on the `tlast` word — **inherited by copy only where §6.1's D ≤ 0; driven to 0 on the class whose payload `tlast` word leaves on or before the input `tlast` is presented, D ≥ 1 (§6.2, §11.5)**. REQ-605's truncation mark is M14's own and is unaffected | REQ-007, REQ-013, REQ-605 |
-| `error_ip_bad_header` | out | 1 | one-cycle strobe: version not 4, or header length not 5 words | REQ-601 |
+| `error_ip_bad_header` | out | 1 | one-cycle strobe: version not 4, header length not 5 words, **or a declared total length below 20** — the third condition is this specification's extension of REQ-601's class and is decided on the same input word (§6.1, §9, ADR-0013) | REQ-601 |
 | `error_ip_bad_checksum` | out | 1 | one-cycle strobe: the header checksum does not verify | REQ-602 |
 | `error_ip_fragment` | out | 1 | one-cycle strobe: more-fragments set, or a non-zero fragment offset | REQ-603 |
 | `error_ip_not_for_us` | out | 1 | one-cycle strobe: the destination is none of REQ-604's four accepted addresses | REQ-604 |
@@ -298,7 +300,7 @@ where M06 puts it (REQ-408) and where M08 leaves it (SPEC-M08 §6.1).
 | header length (IHL) | 0, bits 3:0 | 4 bits | — (checked, not carried) | **5** exactly — 20 octets, no options (REQ-601) |
 | DSCP | 1, bits 7:2 | 6 bits | `ip_hdr_dscp` | any |
 | ECN | 1, bits 1:0 | 2 bits | — (not carried; SPEC-M01's `Ip_header` has no field for it) | any |
-| total length | 2–3 | 16 bits | `ip_hdr_total_length` | ≤ **1500** (REQ-612); ≥ 20 by construction of REQ-601's IHL check |
+| total length | 2–3 | 16 bits | `ip_hdr_total_length` | **20 … 1500 inclusive**: above 1500 is REQ-612's discard class, below 20 is REQ-601's (§9, **ADR-0013**). Nothing constrains this field by construction — see the paragraph below |
 | identification | 4–5 | 16 bits | — (not carried; nothing receives on it in Phase 1) | any |
 | flags | 6, bits 7:5 | 3 bits | — (checked, not carried) | more-fragments (bit 5) **0** (REQ-603); DF (bit 6) and the reserved bit (bit 7) unconstrained |
 | fragment offset | 6 bits 4:0, 7 | 13 bits | — (checked, not carried) | **0** exactly (REQ-603) |
@@ -311,6 +313,42 @@ where M06 puts it (REQ-408) and where M08 leaves it (SPEC-M08 §6.1).
 Every multi-octet field is presented as a **numeric value with the first wire
 octet most significant** (REQ-012): destination 192.0.2.1 reads 0xC0000201, and
 total length 0x00 0x2E reads 46.
+
+**The total-length field is sixteen adversary-controlled bits, and its whole
+domain is decided here** (dv_lead, `AP-ip_eth_rx_64.md` row **M14-K7** and §8
+question 1; **ADR-0013**). The row above once read "≥ 20 by construction of
+REQ-601's IHL check". **That was false.** IHL fixes the *header* length — 5
+words, 20 octets — and constrains the total-length field not at all; the two are
+independent fields of the same header. A datagram declaring total length
+0 … 19 with version 4, IHL 5, a **correct** header checksum, protocol 17, an
+accepted destination, more-fragments clear and fragment offset 0 passed all six
+of §9's header conditions as they were written, reached §6.2's `Header` row and
+matched **neither** of its branches: its declared payload is not empty (which is
+total length 20) and it is not non-empty in any sense the emitting arithmetic can
+use, because M = ⌈(N′ − 20)/8⌉ is negative for it and this section's own D is
+undefined there. The class is **reachable and adversary-controlled** — the
+checksum is computed over whatever header the sender chooses, and a 64-octet
+Ethernet frame carries such a datagram with padding to spare.
+
+**The decision**: a declared total length below 20 is a malformed header and
+joins REQ-601's discard class — one `error_ip_bad_header` pulse, **no**
+`ip_hdr_valid`, no payload word, decided on **input word 0** alongside version
+and IHL (octets 2–3 lie in that word) and reported on cycle Ci + 3 with the other
+header conditions (§9). With it the field's whole domain is partitioned and every
+part names a rule:
+
+| Declared total length N′ | Outcome | Owner |
+|---|---|---|
+| 0 … 19 | discarded; `error_ip_bad_header`; nothing emitted | REQ-601, as extended here (**ADR-0013**) |
+| 20 | accepted; `ip_hdr_valid` pulses and **no payload frame follows** | REQ-605, requirements.md §0.7 |
+| 21 … 1500 | accepted; a payload frame of N′ − 20 octets | REQ-605, REQ-021 |
+| 1501 … 65 535 | discarded; `error_ip_oversize`; nothing emitted | REQ-612 |
+
+Every arithmetic statement later in this section — M, the cycle deficit D, the
+separation formula and the under-fill threshold — is stated on the **accepted**
+domain, N′ ≥ 20, and is well defined there **because** of that partition. That
+dependence was implicit while the false sentence stood; it is stated now so that
+a reader who changes one changes the other.
 
 **The header checksum (REQ-602), stated as arithmetic.** Take the twenty header
 octets as ten 16-bit halfwords, first wire octet most significant in each; sum
@@ -506,7 +544,7 @@ the input side**; the output is the fixed-delay pipeline of §7 running behind i
 | State | Entered when | Does | Leaves to |
 |---|---|---|---|
 | `Idle` | reset; `clear`; the input `tlast` of the previous datagram; a `hdr_valid` pulse that ends a payload-less frame | ignores the payload stream; `ip_hdr_valid` = 0, `ip_payload_tvalid` = 0, every strobe 0 | `Header` on a `hdr_valid` pulse (the datagram opens) |
-| `Header` | a `hdr_valid` pulse | captures IPv4 octets 0–19 into the field registers as they arrive across input words 0, 1 and 2; accumulates the one's-complement sum; evaluates REQ-601, REQ-603 and REQ-612 on word 0, REQ-607 on word 1, and REQ-602 and REQ-604 on word 2; makes the one report of §6.1 on cycle Ci + 3 | `Payload` on the report cycle if the datagram was accepted, its declared payload is non-empty and at least one payload octet was delivered; `Idle` on the report cycle if it was rejected, if its **declared** payload is empty (total length 20, requirements.md §0.7 — `ip_hdr_valid` pulses and no payload frame follows), if the frame closed before the header completed, or **if the frame closed before any payload octet was delivered** while the declared payload is non-empty. The last two both give one `error_ip_truncated` and **no** `ip_hdr_valid`, so a header record never promises a payload frame that cannot follow (§9, carry-forward **C-26**) |
+| `Header` | a `hdr_valid` pulse | captures IPv4 octets 0–19 into the field registers as they arrive across input words 0, 1 and 2; accumulates the one's-complement sum; evaluates REQ-601, REQ-603 and REQ-612 on word 0, REQ-607 on word 1, and REQ-602 and REQ-604 on word 2 — **REQ-601's evaluation includes the total-length lower bound and REQ-612 the upper, both from octets 2–3 of word 0, so the whole domain of that field is decided in one word (§6.1, ADR-0013)**; makes the one report of §6.1 on cycle Ci + 3 | `Payload` on the report cycle if the datagram was accepted, its declared payload is non-empty (**N′ ≥ 21; N′ ≤ 19 never reaches this branch — it is rejected on word 0**) and at least one payload octet was delivered; `Idle` on the report cycle if it was rejected, if its **declared** payload is empty (total length 20, requirements.md §0.7 — `ip_hdr_valid` pulses and no payload frame follows), if the frame closed before the header completed, or **if the frame closed before any payload octet was delivered** while the declared payload is non-empty. The last two both give one `error_ip_truncated` and **no** `ip_hdr_valid`, so a header record never promises a payload frame that cannot follow (§9, carry-forward **C-26**) |
 | `Payload` | the header was accepted, its declared payload is non-empty **and at least one payload octet was delivered** | forwards payload octets at the fixed delay of §7, realigned, counting them against total length − 20; marks `ip_payload_tlast` on the word carrying the last of them, with `tkeep` marking exactly the octets that exist and `tuser`[0] **copied from the input `tlast` word where that word has already been presented — §6.1's D ≤ 0 class, which includes every fully delivered datagram — and driven to 0 where the payload `tlast` word leaves on or before that cycle (D ≥ 1; §6.1, §11.5). The copy is conditional; the condition is D, and it is neither "the frame carries padding" nor the word deficit `Tail` keys on** — or, where the frame closed early, on the word carrying the last octet that arrived, with `tuser`[0] = 1 (§9, REQ-605); consumes and drops every input octet beyond the count | `Idle` on the input `tlast` — the state leaves immediately and the pipeline drains behind it; `Tail` if the payload count completes while the frame still runs |
 | `Tail` | the declared payload has been delivered and the frame has not ended | consumes the Ethernet padding: ignores every remaining input octet, emits nothing, pulses nothing. **`Tail` is entered on the *word* deficit and §6.1's D ≥ 1 class is a proper subset of it, which is where M14 differs from M17 and the difference is deliberate.** Input word ⌈N′/8⌉ − 1 carries the declared count's last octet, so `Tail` is entered exactly when that word precedes the input `tlast` word — ⌈N/8⌉ − ⌈N′/8⌉ ≥ 1 — while the copy is lost only where §6.1's cycle deficit D ≥ 1, and D is the word deficit less one at N′ mod 8 ∈ {0, 5, 6, 7}. So **D ≥ 1 implies `Tail`, and `Tail` does not imply D ≥ 1**: a padded datagram can enter this state and still carry the bit, IPv4 total length **37** in a 64-octet frame being the case §8 drives. SPEC-M17 §6.2 pins its own two names equal; this specification pins them **unequal**, for the reason §6.1 gives — twenty octets is not a whole datapath word and eight is | `Idle` on the input `tlast`; `Header` on a `hdr_valid` pulse |
 
@@ -534,10 +572,31 @@ rely on it.
    the word index together with `tkeep`.** Both compute the same predicate and
    neither is observable; §6.1 pins the payload extent and §9 pins the strobe
    cycles, which is what a bench needs.
-4. **The DF flag (octet 6 bit 6) and the reserved flag (bit 7).** REQ-603
-   constrains more-fragments and the fragment offset and deliberately says
-   nothing about these two; M14 neither checks them nor carries them, and DV
-   SHALL assert nothing about a datagram that sets either.
+4. **The DF flag (octet 6 bit 6) and the reserved flag (bit 7) — their
+   *representation*, and nothing else.** REQ-603 constrains more-fragments
+   (bit 5) and the fragment offset and deliberately says nothing about these
+   two: M14 neither checks them nor carries them, and no port and no
+   `Ip_header` field exists for either, so **no monitor may read them out of
+   M14** — that is the whole of what is unconstrained here.
+
+   **What is *not* unconstrained is the datagram's outcome, and stating it is
+   what makes a flag-bit-position defect killable** (dv_lead,
+   `AP-ip_eth_rx_64.md` row **M14-B5** and §8 question 2). Acceptance is a
+   function of the conditions §9 lists and of nothing else, so a datagram
+   meeting none of them is accepted whatever DF and the reserved bit carry: a
+   datagram with **DF set (or the reserved bit set), more-fragments clear and
+   fragment offset 0 meets no discard condition and is accepted** — the same
+   `ip_hdr_valid` cycle, the same six field values, the same payload frame and
+   the same strobes (none) as the otherwise identical datagram with both bits
+   clear, and in particular **no `error_ip_fragment`**. DV SHALL assert that.
+   The previous wording — "DV SHALL assert nothing about a datagram that sets
+   either" — forbade it, and the cost was precise: the only stimulus that
+   distinguishes a design reading octet 6 **bit 6** for more-fragments from one
+   reading bit 5 is a DF-set datagram, so that defect was **unkillable at M14**.
+   §8 drives the pair and §10's REQ-603 hook names it. *Note for the bench
+   writer*: setting either bit changes the header checksum, so the stimulus
+   recomputes it — otherwise the datagram is rejected by REQ-602 and the
+   comparison is vacuous.
 5. **M14's response to a payload stream that violates REQ-011 or REQ-015** — a
    word with `tvalid` = 1 and `tkeep` = 0, a `tlast` with no preceding
    `hdr_valid`, a non-contiguous `tkeep`. Its producer is M08, relaying M06,
@@ -754,7 +813,12 @@ that reason.
 **Directed datagrams alongside the stress run**, each inside a 64-octet Ethernet
 frame unless its own length forbids it:
 
-- **one per rejection class** (§9): version 6; IHL 6 and IHL 4; a datagram with
+- **one per rejection class** (§9): version 6; IHL 6 and IHL 4; **declared total
+  lengths 0, 5 and 19** — each otherwise fully acceptable (version 4, IHL 5, a
+  correct checksum, protocol 17, the configured local IP, more-fragments clear,
+  offset 0) inside a 64-octet frame, asserting exactly one
+  `error_ip_bad_header` at Ci + 3, **no** `ip_hdr_valid` and no payload word
+  (§6.1, **ADR-0013**); a datagram with
   one header bit flipped so the checksum fails; more-fragments set; a non-zero
   fragment offset; three rejected destinations — a foreign unicast address, the
   configured multicast group **with multicast disabled**, and an address on the
@@ -806,6 +870,16 @@ frame unless its own length forbids it:
   padding", or on being in `Tail`, or on SPEC-M17's **word** deficit
   ⌈N/8⌉ − ⌈N′/8⌉ — all three of which hold identically for both — drives 0 on
   both and fails 37. Only a design keyed on §6.1's cycle deficit passes both;
+- **the flag-bit pair (REQ-603, §6.3 item 4)**: two datagrams identical to the
+  stress run's accepted datagram except that one sets **DF** (octet 6 bit 6) and
+  the other sets the **reserved** bit (bit 7), each with the header checksum
+  recomputed, more-fragments clear and fragment offset 0. Assert each is
+  accepted exactly as the unmodified datagram is — same `ip_hdr_valid` cycle,
+  same six field values, the same 26 payload octets in the same words, **no
+  strobe of any kind** and in particular no `error_ip_fragment`. This is the
+  pair that kills a design reading the wrong bit of octet 6 for more-fragments;
+  no other stimulus distinguishes it, which is why §6.3 item 4 now permits the
+  assertion (dv_lead, **M14-B5**);
 - **a 14-octet Ethernet frame routed here** (requirements.md §0.7): no
   `ip_hdr_valid`, no payload word, exactly one `error_ip_truncated` pulse, and
   the next datagram parsed intact;
@@ -832,7 +906,7 @@ twenty-one.
 
 | Condition | Strobe (one cycle) | Stream effect | REQ |
 |---|---|---|---|
-| Version is not 4, or header length is not 5 | `error_ip_bad_header` | **no `ip_hdr_valid` and no payload word**; nothing is emitted for this datagram | REQ-601 |
+| Version is not 4, header length is not 5, **or the declared total length is below 20** — the third condition is REQ-601's class as this specification extends it (§6.1, **ADR-0013**): the datagram declares a length shorter than the header it declares, so no payload count exists and none of the delivery rules below can be applied to it | `error_ip_bad_header` | **no `ip_hdr_valid` and no payload word**; nothing is emitted for this datagram | REQ-601 |
 | The one's-complement sum of the ten header halfwords is not 0xFFFF | `error_ip_bad_checksum` | the same | REQ-602 |
 | More-fragments is set, or the fragment offset is non-zero | `error_ip_fragment` | the same | REQ-603 |
 | The destination is none of: `cfg_local_ip`, `cfg_local_ip \| ~cfg_subnet_mask`, 255.255.255.255, or `cfg_multicast_group` with `cfg_multicast_enable` = 1 | `error_ip_not_for_us` | the same | REQ-604 |
@@ -845,7 +919,9 @@ mid-datagram case of §7 is REQ-009's, not REQ-008's.
 
 **Strobe cycles, pinned.** The first six conditions are all decidable from the
 header alone, and the header is complete at input word 2, so each pulses for
-exactly one cycle on cycle **Ci + 3** — the cycle `ip_hdr_valid` would have
+exactly one cycle on cycle **Ci + 3** — including both bounds on the total-length
+field, whose octets 2–3 arrive in input word **0**, so the whole of that field's
+domain is decided two words before the report cycle (§6.1, ADR-0013) — the cycle `ip_hdr_valid` would have
 occupied, and one cycle before the first payload word would have left. **Every
 rejection at M14 is therefore a discard-before-emission**, cleanly, with no
 abort interaction: the datagram never reaches the output. `error_ip_truncated`
@@ -958,9 +1034,9 @@ monitor counts high cycles per strobe.
 | REQ-021 | payload octet 0 at `ip_payload_tdata`[7:0] at every datagram length | §6.1 | directed total lengths 20–28: 20–27 cover every residue modulo 8, and 28 is what covers the `0xFF` `tkeep` pattern (C-17(e)'s lesson) |
 | REQ-401 | consumer side: `hdr_valid` is treated as a one-cycle pulse opening a datagram, and a header with no payload frame is tolerated | §6.1, §7 | inject a 14-octet IPv4-ethertype frame: exactly one `error_ip_truncated`, no `ip_hdr_valid`, next datagram intact |
 | REQ-404 | consumer side: M14 does not re-check the ethertype and asserts nothing about a frame delivered here with another value | §4.2, §6.3 item 7 | none — stated so that no sign-off packet claims ethertype coverage here |
-| REQ-601 | version 4 and IHL 5 checked on input word 0; one strobe, no record, nothing emitted | §6.1, §9 | version 6, IHL 6 and IHL 4 datagrams |
+| REQ-601 | version 4 and IHL 5 checked on input word 0, **and with them the total-length lower bound** — a declared total length below 20 joins this class (§6.1's partition table, ADR-0013); one strobe, no record, nothing emitted | §6.1, §6.2, §9 | version 6, IHL 6 and IHL 4 datagrams; **declared total lengths 0, 5 and 19**, each otherwise acceptable, asserting one `error_ip_bad_header` at Ci + 3, no `ip_hdr_valid` and no payload word (§8) |
 | REQ-602 | the ten header halfwords sum to 0xFFFF in one's-complement arithmetic, checksum halfword included | §6.1, §9 | one header bit flipped. **Declared REQ-901 divergence class (a)**: the reference does not verify this checksum, so co-simulation stimulus is restricted to correct-checksum datagrams and this REQ is verified against the spec by directed test only |
-| REQ-603 | more-fragments and fragment offset checked on input word 0; DF and the reserved bit deliberately unconstrained | §6.1, §6.3 item 4, §9 | both fragment forms |
+| REQ-603 | more-fragments and fragment offset checked on input word 0; DF and the reserved bit are **not read and not carried**, so their representation is unconstrained while the **outcome** of a datagram that sets them is not (§6.3 item 4) | §6.1, §6.3 item 4, §9 | both fragment forms; plus §8's **flag-bit pair** — one DF-set and one reserved-set datagram, checksums recomputed, MF clear and offset 0, each asserted accepted exactly as the unmodified datagram with no `error_ip_fragment`. That pair is the only stimulus that kills a wrong-bit-position read of octet 6 (**M14-B5**) |
 | REQ-604 | four accepted destinations, the subnet broadcast computed as `cfg_local_ip \| ~cfg_subnet_mask`; multicast accepted only when enabled | §4.3, §6.1, §9 | one test per accepted case and three rejected cases, including the configured group with multicast disabled |
 | REQ-605 | exactly total length − 20 octets delivered; padding beyond consumed and dropped; a frame ending early aborts the payload **iff at least one payload octet was delivered** and pulses the strobe either way (the extensional branch, C-26); declared total length 20 emits a header record and no payload frame | §6.1, §6.2, §9 | a 64-octet frame carrying total length 28 (18 octets of padding removed, 8 delivered), total length 20, a frame truncated 10 octets early, **the 21-to-27-delivered band** (one payload word, `tuser`[0] = 1, one strobe) and **exactly 20 delivered with total length 46** (no record, no word, one strobe) |
 | REQ-606 | six fields in a record whose `valid` is one cycle high, one cycle before the first payload word | §6.1, §7 | known-datagram test comparing every field and the `valid` timing |
@@ -994,8 +1070,8 @@ Filled in at `P1-spec-freeze`. All four rows are required (charter §5).
 | Item | Value |
 |---|---|
 | Interface compile check | CI `build` run **30739442056**, conclusion **`success`**, SHA **3f6accc** — every lift in the single `ifc_check` library elaborates, the three batch-E lifts for the first time; per ADR-0005 a local build is not acceptable evidence. **The run's head SHA is the specification commit**, so no witnessing argument is owed: the text frozen here and the text that elaborated are the same tree. This run is also §11.1's closure record |
-| Architect signature | `J-architect_docs_lead-0007`; the C-26, C-27 and C-30 diffs of §13 `J-architect_docs_lead-0008` |
-| dv_lead testability countersignature | **`J-dv_lead-0009`** (WO-0018) — batch E **COUNTERSIGNED at 3f6accc**, this specification **SIGNED** on its own merits: L = 12 / h = 20 / ΔC = 4 re-derived by both of §0.5's routes against the §1.1 ceiling of 5, REQ-611's 3 cycles and the one-cycle header lead re-derived, the six-of-seven decidability verified field offset by field offset, and the abort-bit inequality M + 3 ≥ K proved for every residue |
+| Architect signature | `J-architect_docs_lead-0007`; the C-26, C-27 and C-30 diffs of §13 `J-architect_docs_lead-0008`; the **ADR-0012** revision `J-architect_docs_lead-0010`; the **ADR-0013** revision and the §6.3 item 4 diff `J-architect_docs_lead-0011` |
+| dv_lead testability countersignature | **`J-dv_lead-0009`** (WO-0018) — batch E **COUNTERSIGNED at 3f6accc**, this specification **SIGNED** on its own merits: L = 12 / h = 20 / ΔC = 4 re-derived by both of §0.5's routes against the §1.1 ceiling of 5, REQ-611's 3 cycles and the one-cycle header lead re-derived, the six-of-seven decidability verified field offset by field offset, and the abort-bit inequality **⌈(N − 20)/8⌉ + 3 ≥ K** proved for every residue — *that* is what was proved, and it is the second of the two inequalities §6.1 names; the first, M + 3 ≥ K, does **not** follow from it and is false on the D ≥ 1 class, which is why C-37 was reachable at all. The stronger claim was in this row until ledger **C-42** (dv_lead's own self-report, WO-0027) and is corrected here at the first diff to touch this section. Plus **`J-dv_lead-0012`** (WO-0025) — the ADR-0012 revision **RE-COUNTERSIGNED at `8641455`**, quantified rather than re-derived (`tools/check_abort_availability.sh`, 8 720 452 checks, 0 failures) |
 | Frozen at | SHA **3f6accc**, gate `docs/gates/P1-spec-freeze-checklist.md` |
 
 ## 13. Change log
@@ -1011,7 +1087,13 @@ table now carries one of each class.** The three rows of 2026-08-02 that cite no
 ADR are corrections in which no conformant design changes. The **ADR-0012** row
 is **behavioural** — a conformant design's output changes on a reachable class of
 datagrams — and it is the programme's first post-freeze behavioural spec diff.
-It is not breaking, because no record, port, width or pinned constant moves.
+It is not breaking, because no record, port, width or pinned constant moves. The
+**ADR-0013** row is behavioural in the same sense and breaking in none: it
+decides a class the frozen text left with no branch at all, so a design that
+implemented one of the three readings changes and no record, port, width or
+pinned constant moves. No RTL exists for this module at the date of that row
+(WO-0024 delivered M03, M04 and M05 only), so the change is priced against a
+specification and a bench, not against a build.
 
 | Date | Change | Breaking? | ADR | Journal |
 |---|---|---|---|---|
@@ -1019,3 +1101,6 @@ It is not breaking, because no record, port, width or pinned constant moves.
 | 2026-08-02 | §7's 3-cycle **parse latency** scoped to a header delivered without internal idle cycles, with the growth rule stated; §3's REQ-016 row and §6.1's gapless paragraph follow; §10's REQ-016 hook now names **L = 12** as the gap-invariant constant and REQ-611's hook names the scope (ledger **C-27**) | no | none — a scoping correction to a figure REQ-611's own gap clause is discharged by L, not by this figure; the pinned numbers 3, 12, 20 and 4 are all unchanged, and §6.1 already stated the scoping obliquely | `J-architect_docs_lead-0008` |
 | 2026-08-02 | §8 criterion 1 gains the **`clear` conservation exemption** (ledger **C-2** at its second module), worded on SPEC-M10 §8's model; §10's REQ-009 hook names it (ledger **C-30**) | no | none — an exemption owed to the *monitor*, not a change to the module: §7 already stated that `clear` abandons an open datagram with no `tlast` and no strobe, and §8's stress run never asserts `clear`, so criterion 1 stands as written for all 10 000 datagrams | `J-architect_docs_lead-0008` |
 | 2026-08-02 | **BEHAVIOURAL — the abort bit M14 cannot copy** (ledger **C-37**, dv_lead, WO-0022 Return log §3; F-1's twin at the IPv4 stage). §6.1's availability argument replaced by a **separation formula** — the payload `tlast` word leaves ⌈(N′−20)/8⌉ − ⌈N/8⌉ + 4 cycles after the input `tlast` is presented — keyed on the cycle deficit **D = ⌈N/8⌉ − ⌈(N′−20)/8⌉ − 3**, with the backwards inequality named as the error it was, the padding dependence corrected (padding *closes* the window; the old example carried none), the under-fill threshold **N′ ≥ 8⌈N/8⌉ − 11** derived, the 21 … 36 band inside a 64-octet frame named, and D distinguished from SPEC-M17's **word** deficit at the four residues where they differ. §6.2's `Payload` copy made **conditional on D ≤ 0**, with a derived 0 on D ≥ 1, and `Tail` pinned as a proper **superset** of that class rather than equal to it. §10's REQ-007/REQ-013 hook split so the excluded class carries a **positive assertion** instead of a silence — the previous hook commissioned an assertion no conformant design passes on §8's own directed frames. §8 gains the adjacent boundary pair, IPv4 total lengths **36** and **37** inside a 64-octet frame, each driven twice with opposite input bits, plus a band note on the existing 20 … 28 set. **New §11.5** carries SPEC-M17 §11.4's REQ-007 scoping clause as its **second customer**. §2's in-scope bullet and not-my-job row, §3's REQ-007 and REQ-013 rows and §4.2's two `tuser` rows are qualified in the same sweep, so no site states the copy unconditionally — the sweep C-40 makes at M17, landed here in the same commit so M14 never needs one of its own | no — **behavioural, not breaking**: a conformant design's `ip_payload_tuser`[0] changes on the D ≥ 1 class, and no record, port, width or pinned constant moves (L, h, ΔC, the parse latency and every strobe cycle are untouched) | **ADR-0012** | `J-architect_docs_lead-0010` |
+| 2026-08-03 | **BEHAVIOURAL — the declared total length below 20** (dv_lead, `AP-ip_eth_rx_64.md` row **M14-K7**, found by writing the attack plan). §6.1's field table asserted total length "≥ 20 by construction of REQ-601's IHL check", which is **false** — IHL fixes the header length and leaves the total-length field's sixteen bits to the sender — so a datagram declaring 0 … 19 with a correct checksum passed all six header conditions, reached §6.2's `Header` row and matched **neither** of its branches, with M = ⌈(N′ − 20)/8⌉ negative and D undefined. The class joins **REQ-601's** discard class: one `error_ip_bad_header`, no `ip_hdr_valid`, no payload word, decided on input word 0 and reported at Ci + 3. §6.1 gains the derivation and a **partition table** over the whole field domain, and states that every later use of M and D is scoped to N′ ≥ 20 *because* of it; §6.2's `Header` row names both bounds as word-0 decisions and its `Payload` entry condition is pinned at N′ ≥ 21; §9's first row and §4.2's strobe meaning carry the third condition; §2's in-scope bullet, §8's rejection-class set (total lengths 0, 5 and 19) and §10's REQ-601 hook follow | no — **behavioural, not breaking**: a design that implemented one of the three readings the class admitted changes; no record, port, width, strobe name or pinned constant moves, and no other module is affected (M14's producer M08 never reads the field and its consumer M17 sees no datagram for this class) | **ADR-0013** | `J-architect_docs_lead-0011` |
+| 2026-08-03 | §6.3 item 4 rewritten: the DF flag and the reserved bit are unconstrained in their **representation** only — M14 has no port and no record field for either, so no monitor may read them out — while the **outcome** of a datagram that sets one is now stated: DF (or reserved) set, more-fragments clear, offset 0 meets no §9 condition and **is accepted**, identically to the datagram with both bits clear and with no `error_ip_fragment`. §8 gains the flag-bit pair (checksums recomputed) and §10's REQ-603 hook names it (dv_lead, **M14-B5**) | no — **not behavioural either**: no conformant design changes, because acceptance was already a function of §9's conditions and those two bits are in none of them. What changes is what DV may assert: the previous blanket "DV SHALL assert nothing about a datagram that sets either" made a wrong-bit-position read of octet 6 **unkillable at M14**, since the only distinguishing stimulus was the one it forbade | none — REQ-603's own text ("DF and the reserved bit are deliberately unconstrained") and §9's condition list already said it between them; this row states it in the one place a bench reads | `J-architect_docs_lead-0011` |
+| 2026-08-03 | §12's dv countersignature row: the abort-bit inequality dv_lead proved at WO-0018 corrected from **M + 3 ≥ K** to **⌈(N − 20)/8⌉ + 3 ≥ K**, with the reason the two differ (ledger **C-42**, dv_lead's own self-report). §12's architect-signature row gains the ADR-0012 and ADR-0013 revisions and the row records dv's WO-0025 re-countersignature at `8641455` | no | none — editorial; a claim about what was proved, not about what is required. Landed here because C-42 is gated on "the next SPEC-M14 §12-touching diff" and this is one | `J-architect_docs_lead-0011` |

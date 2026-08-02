@@ -2990,3 +2990,348 @@ a bounded re-review surface named in §8 of that log.
 - docs/specs/modules/udp_ip_rx_64.md
 - docs/specs/modules/udp_ip_tx_64.md
 - docs/specs/requirements.md
+
+## [J-architect_docs_lead-0011] 2026-08-03T02:40:00Z | task:WO-0029 | The consolidated queue: M14-K7 folded into REQ-601 (ADR-0013), M14-B5's silence narrowed, three M03 readings ruled — one against rtl_lead's declaration — ADR-0014, and five editorial columns
+
+### Trigger
+
+WO-0029, `agents/handoffs/WO-0029_consolidated-spec-queue.md`, issued by the
+orchestrator to clear every spec question the last three work orders returned in
+one sitting: dv_lead's four architect items from the WO-0027 attack plans
+(`J-dv_lead-0013`), rtl_lead's returned questions 2–4 from WO-0024
+(`J-rtl_lead-0002`), dv_lead's WO-0028 §5 editorial request (`J-dv_lead-0014`),
+and the C-40/C-41 ledger rows. Spawn short-id WO-0029/2026-08-03T00:50Z,
+eleventh activation. Both attack plans stall on the M03 readings; the two M14
+rows stall on deliverables 1 and 2.
+
+### Inputs
+
+- `agents/charters/architect_docs_lead.md`, `agents/PROTOCOL.md` (§3, §4, §6,
+  §7, §10) — re-read at spawn; my own `J-architect_docs_lead-0010` for the
+  ADR-0012 revision path this activation follows twice.
+- `agents/handoffs/WO-0029_consolidated-spec-queue.md` in full;
+  `WO-0027_attack-plans.md` (Return log, "Four items for the architect");
+  `WO-0024_batch-b-rtl.md` §2 and §6 (rtl_lead's M03 microarchitecture and its
+  four returned questions); `WO-0028_x9-alias-repair.md` §5.
+- `test/attack_plans/AP-xgmii_rx_64.md` — §8's five requests and rows M03-N1,
+  N2, N3, N4, O2 **in full** (the ruling statements are my only authority for
+  what each row would assert); `test/attack_plans/AP-ip_eth_rx_64.md` — rows
+  M14-B5, M14-K7 and §8's two questions. Read as dv_lead's artefacts; I staged
+  neither and touched neither.
+- `docs/specs/modules/xgmii_rx_64.md` (SPEC-M03, FROZEN `f78766e`, all thirteen
+  sections) and `docs/specs/modules/ip_eth_rx_64.md` (SPEC-M14, FROZEN
+  `3f6accc` as revised at `8641455`, all thirteen sections);
+  `docs/specs/modules/udp_ip_rx_64.md` §3, §10, §11.4, §13 for C-40's residual.
+- `docs/specs/requirements.md`: **REQ-102 in full** (the row that decides two of
+  the three M03 questions), REQ-001, REQ-007, REQ-010, REQ-013, REQ-018,
+  REQ-105, REQ-107, REQ-110, REQ-113, REQ-601, REQ-603, REQ-605, REQ-612,
+  REQ-707, REQ-803, REQ-810, §0.3, §0.5, §0.6, §0.7, §12, §13.
+- `docs/specs/traceability.md` — the REQ-001, REQ-007, REQ-013, REQ-102,
+  REQ-105, REQ-601, REQ-603, REQ-707 and REQ-810 rows, to establish that no
+  owning-module or spec-section cell moves and no matrix diff is owed.
+- `docs/gates/P1-spec-freeze-checklist.md` rows C-36, C-40, C-41, C-42 and the
+  status-mark paragraph naming C-40's residual site as **§10**, which is what
+  sent me to SPEC-M17 §10 rather than to §3 as the work order's copy of the row
+  suggested.
+- `docs/adr/ADR-0012-...md` as the form and the precedent; `tools/dv_checks.sh`
+  and `tools/check_records_vs_appendix.sh` as the mechanical checks I must not
+  break. **`libs/**` was not opened**, at this commit or any earlier one — the
+  M03 conformance gap in §3a of the Return log is derived from rtl_lead's own
+  written description in the WO-0024 Return log, not from its source.
+
+### Reasoning
+
+**M14-K7 re-derives, and the recommendation survives it — but the ground under
+it moves.** IHL is octet 0 bits 3:0 and total length is octets 2–3; the frozen
+cell claimed the second followed from the first, which is not an error of degree
+but a claim about two independent fields. A datagram declaring 0…19 with a
+sender-computed correct checksum passes all six header conditions and reaches a
+`Header` branch whose two arms are "declared payload empty (total length 20)" and
+"non-empty" — and −15 octets is neither, with M negative and D undefined. dv_lead
+recommended folding it into REQ-601 and I accept, but I would not have accepted
+it on the ground offered ("malformed in the same way, same cycle, no new REQ"),
+because that ground would equally support alternative (a), accepting it as
+declared-empty, which is *also* one cycle and no new REQ. What actually decides
+it is one document up: **REQ-605's "deliver exactly (total length − 20) payload
+octets" is unsatisfiable on the class**, so the datagram cannot be accepted under
+the requirement that governs delivery, and REQ-008/§0.6 then forbid discarding it
+silently. requirements.md therefore forces "discarded under one of §12's seven
+names" and leaves open only *which*. That is the C-26 pattern run as far as it
+reaches — and unlike C-26 it does not reach all the way, which is why this one
+gets an ADR and C-26 did not.
+
+**The alternative I spent longest rejecting is (a), accept-as-declared-empty,
+because it is the cheapest edit in the file.** One comparison changes `= 20` to
+`≤ 20` and the branch is total. It fails on what it does downstream: the NIC's
+accepted-datagram count then includes a datagram no honest sender produced,
+REQ-606's record carries `ip_hdr_total_length` = 5 to M17 and thence to a Phase-2
+consumer with no rule for it, and — the part that decided it — it **normalises an
+adversary-controlled field into a legal value**, which is the single operation a
+header validator exists to refuse. A validator that silently rounds a hostile
+field up is worse than one that has no rule for it, because the second fails
+loudly at the first bench.
+
+**I did not diff REQ-601 and the reason is a test, not a preference.** REQ-601
+states a *sufficient* condition for `error_ip_bad_header` and §12 fixes the
+strobe's name rather than its condition set, so nothing in requirements.md is
+falsified by M14 reporting a third condition on that name — which is the ordinary
+relation between a requirement and a specification implementing it, and is
+exactly not the relation §6.1's false clause had to REQ-601. requirements.md is
+FROZEN, so the diff costs the same today and at `SO-ip_eth_rx_64.md`; §11.4's own
+rule (nothing is bought by taking a flip-invariant diff early) applies, and I
+recorded the trigger that would change it — dv judging that a strobe may not
+report a condition its requirement does not name — as a ledger question rather
+than pre-empting it inside the ADR.
+
+**M14-B5: I added more than the sentence requested and removed a different thing
+than the one dv aimed at.** dv's sentence states an acceptance. The defect is
+subtler: §6.3 item 4's blanket "DV SHALL assert nothing about a datagram that
+sets either" conflated two things that are not the same — the two bits'
+*representation* (genuinely unconstrained: M14 has no port and no record field
+for either, so there is nothing to read) and the datagram's *outcome* (never
+unconstrained: acceptance is a function of §9's conditions and those two bits are
+in none of them). Splitting them is what makes the wrong-bit-position read
+killable, and it does so without adding a single normative obligation to the
+module. The one thing dv's sentence omits and a bench would have hit within an
+hour: **setting either bit changes the header checksum**, so the stimulus must
+recompute it or REQ-602 rejects the datagram and the comparison is vacuous. That
+note is in §6.3 item 4 and in §8's pair.
+
+**M03 question 2 is the item I expected to concede and did not, and REQ-102 is
+why.** rtl_lead implemented one closure per input word (the lowest lane) and
+declared it; the cheap disposition was to bless the declaration in §6.3 and move
+on, and I began by pricing exactly that. It does not survive **REQ-102's third
+sentence** — "a lane marked control in a preamble position is not preamble: a
+terminate character there is handled by REQ-106 and REQ-107, a start character by
+REQ-110, and any other control character by REQ-105" — read together with one
+geometric fact nothing in the programme had written down: **at a lane-0 start all
+eight preamble positions lie inside the start word itself**. So every
+preamble-position control character at a lane-0 start shares its word with the
+`/S/`, and a module recognising one event per word leaves REQ-102's third
+sentence, REQ-102's own verification column ("one frame with `/E/` in a preamble
+lane … and one with `/T/` in a preamble lane") and SPEC-M03 §10's REQ-102 hook
+with **no instance at a lane-0 start at all** — the character is swallowed as
+preamble filler and the frame runs on. Frozen §9's third row ("`/E/` … including
+in a preamble position") is the same finding from the other side. The reading was
+therefore never open; the declaration was a defect against frozen text, and I say
+so in the Return log with the specific consequence — the M03 RTL at `f840475`
+also fails §10's REQ-110 `/S/`-then-`/S/` case for the same reason. Ruling against
+the agent that built it, in the same activation that confirms that agent's other
+declared reading (N4), is the shape I want this adjudication to have: the
+declaration is evidence of what exists, never of what is required.
+
+**The carve-out is the real work in that ruling, and it is a bound on the
+stimulus rather than on the module — the distinction that took the longest to
+get right.** Reading (i) taken generally is not representable at M03's ports.
+§9 pins each frame's report to a cycle that is a function of its ending event, so
+a word ending two frames can pin two reports to one cycle; two *different* strobe
+names on one cycle is ordinary and §0.6 permits it, but two reports of the *same*
+name is a single high cycle, which §0.6's C-23 counting convention reads as one
+event and which leaves the conservation equation short by one frame. A bench
+driving that stimulus reports a silent discard against a design that did
+everything the specification asks. I considered two repairs that keep it in the
+space — widening the strobe to consecutive cycles, which §0.6 already sanctions
+at M13, and a second report path, which rtl_lead priced at WO-0024 — and rejected
+both for the same reason: they buy a stimulus **nothing produces**. Two frames
+ending in one input word needs two injected conditions in that word; REQ-018's
+model injects one at a time, and a conformant partner produces none, because
+§0.3's twelve-octet IFG and REQ-102's eight-octet preamble keep any frame-ending
+character eight octet times clear of the next start. What made the carve-out
+safe to write was checking that **every commissioned case survives it**: each of
+REQ-102's two preamble frames and REQ-110's `/S/`-in-lane-4-of-an-`/S/`-word ends
+exactly one frame in its word — and REQ-110's own verification column pins
+**one** pulse, which is what tells a reader that no frame was open before that
+word. So the exclusion removes nothing anyone asked for, and M03-N2 itself stays
+**in** the space with two differently named strobes.
+
+**M03-N3: the request was for a §6.3 sentence and §6.3 is the wrong home, so I
+declined the form and gave the substance.** dv asked me to confirm the stimulus
+is *outside the specified space*. It is not: REQ-102 routes **any** control
+character in a preamble position that is not `/S/` or `/T/` to REQ-105, and an
+idle character is one, so an idle in a preamble position ends the frame with one
+`error_bad_frame` and no output word. §6.2's `Preamble` row was the single site
+that disagreed — it listed `/T/`, `/E/` and `/S/` exits and no other — which is
+C-18's shape exactly: a rule that was never in doubt, contradicted by one
+illustration. Writing "unconstrained" into §6.3 would have frozen a
+contradiction with the requirement instead of resolving it, and would have cost
+dv a row it can now assert. What *is* owed is the constraint on the wrapper, and
+it belongs where the wrapper is commissioned (§6.1 and §10's REQ-016 hook), with
+the reason stated: the wrapper would be measuring REQ-105's abort rather than
+REQ-016's tolerance, and the frame it claims to carry would no longer have its
+first octet eight octet times after its start character.
+
+**M03-N4 needed an ADR where the other two did not, and the test is where the
+conflict lives.** N2 and N3 are seams between a specification and its
+requirement, with the requirement right — no design choice is being made, so a
+§13 row citing REQ-102 is the whole record. N4 is a conflict between **two frozen
+requirements**: REQ-810's unscoped "emits no output word … asserts no strobe"
+against REQ-803's "never [applies] to a frame already in flight". The decisive
+argument is that the unscoped reading is **self-defeating**: it does not stop at
+the start character but suppresses the in-flight frame's own remaining words and
+its terminate-time report, so a frame that was admitted, valid and being
+forwarded vanishes with no `tlast` and no strobe — the silent-discard hole
+REQ-810's very next clause disclaims. Once REQ-810 is read as scoped to the
+frames it refuses, REQ-803 governs the frame in flight and REQ-110 is one of the
+rules it completes under, and reading (i) follows rather than being chosen. The
+second argument is what reading (ii) does on the wire: the open frame absorbs the
+refused frame's octets and reaches M06 with a CRC computed over two frames, or
+past 1518 octets as an oversize truncation — a valid admitted frame corrupted by
+the arrival of a frame the module refused. I took the requirements.md REQ-810
+diff rather than leaving the scope implicit because a specification that
+contradicts its requirement's literal text is the C-31 pathology, and here the
+literal text is what a later reader would quote.
+
+**What I deliberately did not decide.** ADR-0014's principle applies to
+`cfg_tx_enable` as plainly as to `cfg_rx_enable`, and ledger C-36 is exactly the
+transmit question. I gave that question the principle and left the decision where
+its evidence is (two readers, M04 and M18, must agree on which event admits a
+frame — an axis the receive side does not have), because deciding a two-module
+composition from a one-module activation is how the M14/M17 analogy nearly went
+wrong at C-37.
+
+**C-42 landed because this activation made the diff it was gated on, and that is
+the whole of my justification for taking an item nobody asked for.** The ledger
+gates it at "the next SPEC-M14 §12-touching diff"; adding my signature for the
+ADR-0013 revision is one. Leaving it would have meant adding a signature line to
+a table whose next row states, in my words, a stronger claim than dv proved.
+
+**One thing I checked and did not change**: `traceability.md`. Every REQ I
+touched keeps its owning module and its spec-section cell (REQ-601 already reads
+"SPEC-M14 §6.1, §9"; REQ-603 already names §6.3 item 4; REQ-810 already names
+SPEC-M03 §4.3), and the matrix carries no verification column, so the four
+editorial column diffs cannot reach it. A matrix diff would have been churn
+claiming to be currency.
+
+### Actions
+
+- **New `docs/adr/ADR-0013-the-total-length-below-twenty.md`**: Context (the two
+  independent fields, the reachability, and what requirements.md does and does
+  not settle), Decision (six clauses), six priced Alternatives
+  (accept-as-declared-empty; `error_ip_truncated`; `error_ip_oversize`; a new
+  strobe and REQ — E2; diffing REQ-601; §6.3), Consequences (the churn is
+  against a spec and a plan since no M14 RTL exists; the row's conversion; the
+  branch conditions now exhaustive on both axes with C-26; the escape's
+  ownership — mine, twice at §6.1 of this module, both times a justification
+  attached to a number rather than a number).
+- **New `docs/adr/ADR-0014-an-enable-gates-admission-not-the-wire.md`**: the
+  REQ-810/REQ-803 conflict, the five-clause decision, four alternatives (reading
+  (ii) with its two failure modes; latching the enable; suppressing the abort;
+  §6.3), Consequences (no delivered design changes — it confirms rtl_lead's
+  declared reading; no new conservation exemption, unlike `clear`; C-36 gets the
+  principle and keeps its decision).
+- `docs/specs/modules/ip_eth_rx_64.md` (**FROZEN**): §2's in-scope bullet;
+  §4.2's `error_ip_bad_header` meaning; §6.1's total-length cell, the falsity
+  named, the derivation and a **partition table** over the whole field domain
+  with the scoping of M and D stated; §6.2's `Header` row and `Payload` entry
+  condition; §6.3 item 4 rewritten (representation vs outcome, the acceptance,
+  the checksum note); §8's rejection-class set (0, 5, 19) and a new flag-bit
+  pair; §9's first row and the pinned-cycle paragraph; §10's REQ-601 and
+  REQ-603 hooks; §12's two signature rows (C-42 + this revision); **three §13
+  rows** — one BEHAVIOURAL citing ADR-0013, two editorial.
+- `docs/specs/modules/xgmii_rx_64.md` (**FROZEN**): §4.3's admission statement
+  and the rejected reading's price; §6.1's preamble-geometry paragraph, the
+  idle-injection constraint, the multi-event paragraph with its two consequences
+  and the report-cycle note, and the disabled-state paragraph; §6.2's
+  `Preamble`, `Frame` and `Discard` rows; **new §6.3 item 8**; §9's closure-list
+  clauses (a) and (b); §10's REQ-014, REQ-016, REQ-102, REQ-110 and
+  REQ-802/REQ-810 hooks; **four §13 rows** (N2, N3, N4 citing ADR-0014, O2).
+- `docs/specs/modules/udp_ip_rx_64.md`: C-40's residual site at §10, with the
+  §13 row recording that the earlier row's own completeness claim was false.
+- `docs/specs/requirements.md`: REQ-001's verification column (WO-0028 §5);
+  REQ-007, REQ-013 and REQ-707's verification columns scoped (C-41), with
+  REQ-707's propagation frame pinned to a datagram both marking stages carry;
+  **REQ-810's normative sentence scoped** (ADR-0014); three §13 rows, all
+  editorial.
+- `agents/handoffs/WO-0029_consolidated-spec-queue.md`: the **RETURNED block
+  appended**, with the header's `State:` line left at `ISSUED` for the
+  orchestrator to flip, as the work order directs. Return log carries the
+  verdict per deliverable, the attack-plan
+  conversions, the re-countersign list separated from the editorial list, the
+  M03 RTL conformance gap routed to the orchestrator, and the ledger
+  dispositions.
+- **No `§4.1` block was touched anywhere**; no existing ADR was edited; no
+  `traceability.md`, `architecture.md`, `docs/gates/`, `docs/reports/`,
+  `libs/`, `test/`, `tools/` or `bin/` file was touched. No git command was run.
+
+### Evidence
+
+Reproducible from a checkout at this commit's SHA:
+
+- `bash tools/dv_checks.sh` → **exit 0**, "all checks passed".
+  `check_records_vs_appendix.sh`: **23 checks, 0 failures** — all twenty §4.1
+  blocks still byte-identical to their `docs/specs/ifc_check/*.ml` lifts and the
+  `Status`/`Config` records still equal to requirements.md §12/§9.1, which is
+  the mechanical witness that no frozen interface moved in this commit.
+  `check_emitted_verilog.sh`: **OK**, 5 checks, 0 failures, 3 pending — and its
+  REQ-001 line now reads "all 65 edge expression(s) and 3 instantiated
+  `.clock()` connection(s) resolve to the clock port", which is the rule
+  requirements.md REQ-001's rewritten column describes.
+- REQ set equality recomputed by script rather than read:
+  `grep -oE '^\| \*\*REQ-[0-9]{3}\*\*' docs/specs/requirements.md` → **110**
+  rows, 110 distinct; the REQ row leaders of `docs/specs/traceability.md` →
+  **110** rows; `diff` of the two sorted sets → **empty**.
+- Markdown-table integrity re-checked by script over all six edited or new
+  documents: every table row's unescaped-pipe count equals its own separator's
+  and every `**` span on a table row balances — **0 mismatches** (the failure
+  mode a nested-bold edit produces silently).
+- Arithmetic and text claims checkable from the documents alone: at a lane-0
+  start the eight preamble positions are lanes 0…7 of the start word (§6.1's own
+  cycle table — `/S/` and seven filler at cycle 0, frame octets 0–7 at cycle 1);
+  M03's output word for input word *i* leaves at cycle *i* + 2 (the m + 3
+  formula), giving W + 1 for an aborted frame's `tlast` against W + 2 for a
+  zero-delivered frame ended in word W; M14's total-length partition
+  0…19 / 20 / 21…1500 / 1501…65535 exhausts sixteen bits; the REQ-707
+  propagation frame (64-octet, total length 46, UDP length 26) gives
+  K = 6, M = 4, D = −1 at M14 and D = 0 at M17, so the mark survives both
+  stages.
+- **CI is owed and is not claimed here.** No `build` run exists at this commit
+  as this entry is written, and no §12 row in any specification was filled from
+  one: the SPEC-M14 §12 edit corrects a proof statement and adds signature
+  references only, and the `Interface compile check` row is untouched.
+
+### Outcome
+
+**DoD met.** All five deliverables discharged: M14-K7 folded into REQ-601 under
+ADR-0013 with the recommendation judged on its merits and its justification
+replaced by a stronger one; M14-B5 closed with the representation/outcome split
+and the checksum note; the four M03 readings ruled — Q2/M03-N2 against
+rtl_lead's declaration on REQ-102's own text, M03-N3 declined in the form
+requested and decided in substance, M03-N4 for reading (i) under ADR-0014 with
+requirements.md REQ-810 scoped to match; five editorial column diffs landed
+(C-41 ×3, C-40's residual, M03-O2, WO-0028 §5) plus C-42 beyond the list and
+flagged. Attack-plan conversions stated for dv to apply: M14-K7, M14-B5, M03-N2
+and M03-N4 to ASSERT, M03-N3 unchanged with a spec citation, M03-N1 unaffected.
+One item is routed rather than fixed: the M03 RTL's single-closure reading is
+non-conformant against frozen REQ-102 and two §10 hooks, which is rtl_lead's to
+repair and the orchestrator's to route. Handoff:
+`agents/handoffs/WO-0029_consolidated-spec-queue.md` Return log → orchestrator →
+a dv re-countersign WO over the §5 list.
+
+### Open-questions
+
+- **The re-countersign is owed and the revisions are not in force until it
+  lands** (WO-0029's own constraint): SPEC-M14 §2/§4.2/§6.1/§6.2/§6.3/§8/§9/§10,
+  SPEC-M03 §4.3/§6.1/§6.2/§6.3/§9/§10, requirements.md REQ-810.
+- **The M03 conformance gap is not mine to close.** If rtl_lead disputes that
+  REQ-102 requires per-octet-time evaluation, that is a filed dispute and I will
+  take one round of written argument before declaring deadlock (charter §7, E5).
+- **REQ-601's condition set** — whether a strobe may report a condition its
+  requirement does not name — is the one question ADR-0013 leaves for
+  re-countersignature. If dv says no, the diff is one REQ row and one §10 hook.
+- **C-36 is unchanged** and now has a principle to cite (ADR-0014); the
+  transmit-side disable window is still undecided and still gated at
+  `AP-udp_ip_tx_64.md` and the M20 bench WO.
+- Carried unchanged from `J-architect_docs_lead-0010`: ADR-0012's residual;
+  REQ-007's scoping clause owed at two modules and gated at two `SO-` packets;
+  C-38; requirements.md's own `DRAFT` status header against its §13's frozen
+  treatment; C-2, C-3, C-5, C-7, C-9's REQ-903 half, C-32, C-33.
+
+### Files-in-this-commit
+
+- agents/handoffs/WO-0029_consolidated-spec-queue.md
+- docs/adr/ADR-0013-the-total-length-below-twenty.md
+- docs/adr/ADR-0014-an-enable-gates-admission-not-the-wire.md
+- docs/specs/modules/ip_eth_rx_64.md
+- docs/specs/modules/udp_ip_rx_64.md
+- docs/specs/modules/xgmii_rx_64.md
+- docs/specs/requirements.md

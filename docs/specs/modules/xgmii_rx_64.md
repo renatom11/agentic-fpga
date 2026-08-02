@@ -205,6 +205,39 @@ Gating here rather than downstream is deliberate: REQ-810 requires that *no*
 receive-path stream carries a word, and M03 is the only module from which that
 follows without every other module implementing the same control.
 
+**What the enable gates, stated because the two sentences above can be read
+against each other** (rtl_lead's returned question 4, WO-0024 Return log §6;
+dv_lead's `AP-xgmii_rx_64.md` row **M03-N4**; **ADR-0014**). `cfg_rx_enable`
+gates the **admission of a frame**, and nothing else.
+
+- While it is 0, **no start character is accepted**: no frame begins, no output
+  word is emitted for a frame that would have begun, and no strobe pulses for
+  one. That is REQ-810 and it is what "treats every start character as absent"
+  means — absent *as the beginning of a frame*.
+- It does **not** blind M03 to the lane pair, and it cannot: a change takes
+  effect at the next start character (REQ-803), so start characters are decoded
+  while the enable is 0 or the module could not know when the next frame
+  begins.
+- A frame **already in flight** is governed by the value in force when its own
+  start character was accepted (REQ-803) and completes under **every** rule that
+  ends it — its terminate character (REQ-106), an error character (REQ-105),
+  REQ-108's truncation, and a **new start character (REQ-110)**.
+
+**The case that forced the ruling.** A start character arriving while the enable
+is 0 with a frame open therefore **aborts that frame exactly as REQ-110 says**:
+the frame is truncated at the octet before it, `tuser`[0] = 1 on its `tlast` word
+where one exists, `error_start_without_terminate` pulses once (§9's last two
+rows decide which of the two cases applies), and the **new frame does not
+begin**. That strobe belongs to a frame admitted while the enable was 1, which is
+why REQ-810's "asserts no strobe" is not contradicted: that sentence governs the
+frames the disable **refuses**, and requirements.md REQ-810 now says so in its
+own words. The rejected reading — the start character is absent for every
+purpose, so the open frame runs on through it — is priced in **ADR-0014**: under
+it the in-flight frame absorbs the octets of a frame that was never admitted and
+reaches M06 with them appended, and the literal REQ-810 sentence that motivates
+it would also suppress the in-flight frame's own remaining words, creating the
+silent-discard hole REQ-810 disclaims in its own next clause.
+
 ## 5. Parameters
 
 **None.** M03 has no compile-time parameter. REQ-506's rule — timeouts and
@@ -239,6 +272,59 @@ the frame's first octet is always exactly 8 octet times after the start
 character. A lane marked control inside those eight positions is not preamble
 and is routed by §9: `/T/` to REQ-107, `/S/` to REQ-110, anything else to
 REQ-105.
+
+**Where the preamble positions lie, and what follows for idle injection**
+(rtl_lead's returned question 3; dv_lead's row **M03-N3**). At a **lane-0**
+start all eight preamble positions are lanes 0 … 7 of the start word itself, so
+*every* preamble-position control character at a lane-0 start arrives in the
+**same input word as the `/S/`**; at a **lane-4** start they are lanes 4 … 7 of
+the start word and lanes 0 … 3 of the next, and frame octets 0 … 3 follow in
+lanes 4 … 7 of that next word (C-18's second non-instance). An **idle**
+character in any of those positions is "any other control character" in
+REQ-102's own third sentence and is therefore routed to REQ-105: it ends the
+frame with one `error_bad_frame` pulse and, being at or before the frame's first
+octet, with **no output word at all** (§9's third row). The stimulus is
+**decided, not unconstrained** — which is why this paragraph is here and not in
+§6.3 — and one consequence is normative for DV: REQ-016's idle-**injection**
+wrapper, which §10 commissions at 0, 1 and 7 cycles, **SHALL NOT place an
+injected idle cycle between a frame's start character and its first octet**.
+Such a cycle occupies preamble positions, so the wrapper would be measuring
+REQ-105's abort rather than REQ-016's tolerance, and the frame it claims to
+carry would no longer have its first octet 8 octet times after its start
+character — the definition this paragraph opens with. Injection begins at the
+frame's first octet.
+
+**More than one event in one input word** (rtl_lead's returned question 2;
+dv_lead's rows **M03-N1** and **M03-N2**). Every start character (lane 0 or lane
+4) and every closure character is evaluated at **its own octet time**, against
+the frame open at that octet time: §9's closure list is a list of events in
+octet times and §0.5 makes lane order temporal, so one input word may abort a
+frame, open another and close that one too. This is not a new rule and was never
+a choice. REQ-102's third sentence routes a control character in a preamble
+position to REQ-106/REQ-107, REQ-110 or REQ-105 **in terms**, and REQ-102's own
+verification column commissions "one frame with `/E/` in a preamble lane … and
+one with `/T/` in a preamble lane"; at a lane-0 start those characters are in the
+start word, so a module recognising one event per input word would leave
+REQ-102's third sentence, its verification column and §10's REQ-102 hook with
+**no instance at a lane-0 start at all**, and would swallow the character as
+preamble filler. Two consequences a bench may rely on:
+
+1. A `/T/` or `/E/` in a lane above the start character of the **same** word
+   closes the frame that start character opened, with zero delivered octets, and
+   is reported under REQ-107 or REQ-105 respectively (§9's rows 3 and 6). Where
+   that start character also **aborted** a frame, both frames are reported, each
+   on the cycle §9 pins for **it** — and those need not be the same cycle: the
+   aborted frame's strobe follows its `tlast` word where it emitted one (the
+   input word before a lane-0 start character, so one cycle earlier than the new
+   frame's report), and only where it delivered no octet do the two fall
+   together, on different strobe names.
+2. A start character in **lane 4** is recognised whatever lane 0 carried,
+   including another start character — REQ-110's own commissioned case, whose
+   verification column pins the outcome at **one** `error_start_without_terminate`
+   pulse with the second frame received intact.
+
+§6.3 item 8 carves out the single case in which two such reports cannot both be
+observed, and nothing else about this paragraph is unconstrained.
 
 **Emitting the frame.** Frame octet j is emitted at `tdata` position j mod 8 of
 output word ⌊j / 8⌋, so the frame's first octet is at `tdata`[7:0] of the first
@@ -369,9 +455,15 @@ column already uses ("no output activity from 3 cycles after the terminate
 character onward") and the bound §10's REQ-109 hook states. A drain window of
 ΔC = 3 would be one cycle loose and would let a real drain defect through.
 
-**When `cfg_rx_enable` is 0.** No start character is recognised, so no frame
-begins, nothing is emitted and no strobe pulses (REQ-810). Because no frame is
-accepted, nothing is discarded and no silent-discard hole opens under REQ-008.
+**When `cfg_rx_enable` is 0.** No start character is **accepted**, so no frame
+begins, nothing is emitted for a frame that would have begun and no strobe
+pulses for one (REQ-810). Because no frame is accepted, nothing is discarded and
+no silent-discard hole opens under REQ-008 — and a bench's frame-conservation
+monitor (§0.6) counts no frame presented across the disabled window, which is
+the same clause read from the other side. **A frame already in flight is not
+affected by the change and completes under the old value** (REQ-803), including
+under REQ-110 if a start character arrives while the enable is 0: that frame is
+aborted and reported, and the new frame does not begin (§4.3, §6.2, **ADR-0014**).
 
 ### 6.2 State machine
 
@@ -380,9 +472,9 @@ Reset state and `clear` state are both `Idle`.
 | State | Entered when | Does | Leaves to |
 |---|---|---|---|
 | `Idle` | reset; `clear`; a frame ends normally or is aborted | ignores every lane; `tvalid` = 0; CRC register held | `Preamble` on `/S/` in lane 0 or lane 4 while `cfg_rx_enable` = 1 |
-| `Preamble` | a start character is accepted | discards the eight octets from the start character inclusive without checking their values (REQ-102); seeds the CRC register to 0x00000000 | `Frame` once those eight octets have passed; `Idle` on `/T/` (REQ-107, zero delivered octets), on `/E/` (REQ-105, zero delivered octets) or on `/S/` (REQ-110, zero delivered octets — re-entering `Preamble` for the new frame) |
-| `Frame` | the frame's first octet | forwards octets at the fixed delay of §7; enables the CRC update on every cycle covering ≥ 1 frame octet; counts received octets for REQ-107 and REQ-108. An input word covering **no** frame octet — a terminate character in **lane 0**, or an idle cycle injected under REQ-016 — **holds** the frame: the CRC register holds by its enable, the octet count holds, no output word is produced and no condition is raised (C-14.4). A word covering **one or more** frame octets is never held, whatever else it carries: a terminate character in lane k > 0 covers k of them, and the second preamble word of a lane-4 start covers four (§6.1's two non-instances, C-18) | `Idle` on `/T/` (REQ-106; runt check on the count, FCS check on the residue); `Idle` on `/E/` (REQ-105); `Preamble` on `/S/` (REQ-110); `Discard` when the received count passes 1518 (REQ-108) |
-| `Discard` | REQ-108 truncation | emits nothing further for this frame; keeps decoding lanes so the next frame is not lost. An `/E/` arriving here is **absorbed**: the frame is already closed and already reported by `error_oversize`, so no output word appears and no strobe pulses (REQ-105's open-frame clause, carry-forward **C-12**) | `Idle` on `/T/`; `Preamble` on `/S/` — this is REQ-108's "resynchronise on the next start character". `/E/` is not an exit: whether the implementation stays in `Discard` or falls to `Idle` on it is unobservable and is §6.3 item 6 |
+| `Preamble` | a start character is accepted | discards the eight octets from the start character inclusive without checking their values (REQ-102); seeds the CRC register to 0x00000000 | `Frame` once those eight octets have passed; `Idle` on `/T/` (REQ-107, zero delivered octets), on `/E/` (REQ-105, zero delivered octets), on **any other control character in a preamble position** — `/I/` and `/Q/` included, which REQ-102's third sentence routes to REQ-105 and which therefore ends the frame the same way (§6.1, §9's third row) — or on `/S/` (REQ-110, zero delivered octets — re-entering `Preamble` for the new frame **while `cfg_rx_enable` = 1**, and staying in `Idle` while it is 0: the abort is reported either way and no new frame begins, §4.3, ADR-0014). Every one of these exits may be taken on a lane of the **same input word** as the start character, which at a lane-0 start is the only word its preamble occupies (§6.1) |
+| `Frame` | the frame's first octet | forwards octets at the fixed delay of §7; enables the CRC update on every cycle covering ≥ 1 frame octet; counts received octets for REQ-107 and REQ-108. An input word covering **no** frame octet — a terminate character in **lane 0**, or an idle cycle injected under REQ-016 — **holds** the frame: the CRC register holds by its enable, the octet count holds, no output word is produced and no condition is raised (C-14.4). A word covering **one or more** frame octets is never held, whatever else it carries: a terminate character in lane k > 0 covers k of them, and the second preamble word of a lane-4 start covers four (§6.1's two non-instances, C-18) | `Idle` on `/T/` (REQ-106; runt check on the count, FCS check on the residue); `Idle` on `/E/` (REQ-105); on `/S/` (REQ-110) **`Preamble` while `cfg_rx_enable` = 1 and `Idle` while it is 0** — the frame is aborted and reported under REQ-110 in both cases, and only the beginning of the new frame is gated (§4.3, ADR-0014); `Discard` when the received count passes 1518 (REQ-108) |
+| `Discard` | REQ-108 truncation | emits nothing further for this frame; keeps decoding lanes so the next frame is not lost. An `/E/` arriving here is **absorbed**: the frame is already closed and already reported by `error_oversize`, so no output word appears and no strobe pulses (REQ-105's open-frame clause, carry-forward **C-12**) | `Idle` on `/T/`; `Preamble` on `/S/` while `cfg_rx_enable` = 1 (`Idle` while it is 0, since the frame here is already closed and reported and only the new frame is gated — §4.3) — this is REQ-108's "resynchronise on the next start character". `/E/` is not an exit: whether the implementation stays in `Discard` or falls to `Idle` on it is unobservable and is §6.3 item 6 |
 
 The CRC register's **enable** is the mechanism ADR-0007 records: it is asserted
 only in `Frame` and only on cycles covering at least one frame octet, so
@@ -428,6 +520,39 @@ rely on it.
    own cycle and asserts either outcome is flaky by construction and SHALL NOT
    be written; a bench that needs a determinate result changes the input at
    least one cycle earlier or later, which every REQ-810 test can do.
+8. **Two frames whose §9 reports fall on the same cycle under the same strobe
+   name** (rtl_lead's returned question 2; dv_lead's row **M03-N2**). §9 pins
+   each frame's report — the cycle its `tlast` word is emitted, or two cycles
+   after the input word carrying the character that ended it where it emits no
+   word — and both cycles are functions of the ending event, so one input word
+   carrying **two** frame-ending characters can pin two reports to one cycle.
+   Where the two conditions have **different** names that is ordinary and fully
+   observable: requirements.md §0.6 permits different strobes to be high
+   together, and §6.1's two consequences stand unqualified. Where they have the
+   **same** name the observable is a single high cycle; §0.6's counting
+   convention — *one high cycle per reported event, monitors count high cycles
+   and never rising edges* — reads one event there, and §0.6's conservation
+   equation is then short by one frame, so a bench driving such a stimulus
+   reports a silent discard against an M03 that has done everything this
+   specification asks. **M03's response to such a word is therefore deliberately
+   unconstrained and DV SHALL NOT produce one.** No conformant link partner can:
+   two frames ending in one input word requires **two injected conditions in
+   that word**, and REQ-018's link-partner contract injects one condition at a
+   time, while a conformant partner produces none at all — requirements.md
+   §0.3's twelve-octet minimum inter-frame gap and REQ-102's eight-octet
+   preamble put any frame-ending character at least eight octet times from the
+   next frame's start character. **The commissioned cases are all inside the
+   specified space and stay commissioned**, because each ends exactly one frame
+   in its word: REQ-110's "a start character in lane 4 of a word whose lane 0
+   carried a start character" (its own verification column pins **one**
+   `error_start_without_terminate` pulse, which is what fixes the reading — the
+   lane-0 start opens the frame the lane-4 start aborts, with no frame open
+   before that word) and REQ-102's `/T/`- and `/E/`-in-a-preamble-lane frames.
+   This item bounds the **stimulus**, not the module: it is the one place where
+   §9's one-report-per-condition-per-cycle encoding runs out, and the
+   alternatives — widening a strobe to consecutive cycles (§0.6's M13 device) or
+   adding a second report path — were rejected in favour of excluding a stimulus
+   that nothing produces. `J-architect_docs_lead-0011` records the pricing.
 
 ## 7. Timing contract
 
@@ -575,6 +700,17 @@ characters that happen to follow it, and it is what §0.6's conservation equatio
 needs: a strobe that pulsed after closure would be attributable to a frame
 already counted.
 
+**Two clauses of that list are worth stating twice, because both were read
+against this specification's own text and both are decided here.** (a) Each
+event is evaluated at **its own octet time**, so a character in a lane above the
+one that opened the frame in the same input word closes that frame (§6.1;
+§6.3 item 8 bounds the one stimulus whose two reports cannot both be seen).
+(b) A **new start character closes the open frame whether or not
+`cfg_rx_enable` permits a new frame to begin**: the open frame was admitted
+under the old value and completes under it (REQ-803), so REQ-110's abort and its
+strobe are that frame's, while the enable decides only whether a new frame
+begins (§4.3, §6.2, **ADR-0014**).
+
 **Strobe cycle, pinned.** Each strobe pulses for exactly one cycle, on the
 cycle M03 emits that frame's `tlast` word. For a frame that produces no output
 word, it pulses **two cycles after the input word carrying the character that
@@ -639,16 +775,16 @@ M03 inherits no abort: it is the origin of `tuser`[0] on this chain, so
 | REQ-009 | `clear` empties the pipeline; mid-frame `clear` truncates silently | §7 | reset test: assert mid-frame, deassert, drive a frame on the next cycle |
 | REQ-011 | `tkeep` `0xFF` except on `tlast`, contiguous from bit 0 | §7 | protocol monitor on the output stream, every bench |
 | REQ-012 | lane k to `tdata` position, lane 0 earliest | §6.1 | known-frame directed test |
-| REQ-014 | `tstrb` driven 0 | §7 | protocol monitor; REQ-014's differential run |
+| REQ-014 | `tstrb` driven 0 on every output word | §7 | protocol monitor on the output stream — the **producer** half, which is all of REQ-014 that has an instance here. **REQ-014's differential run has none**: it varies `tstrb` on a module's input, and M03's input is an XGMII lane pair, which has no `tstrb` to vary (REQ-010 class (b)). Stated so that no sign-off packet claims REQ-014 whole at M03; the consumer half is M06's (dv_lead, **M03-O2**) |
 | REQ-015 | one `tlast` per frame, at most 190 words | §7 | protocol monitor |
-| REQ-016 | input idle cycles delay octets and change nothing else; an input word covering no frame octet holds the frame and is not a condition | §6.1, §6.2, §7 | idle-injection wrapper at 0, 1 and 7 cycles, asserting the **per-octet** constant of §7 rather than §6.1's gapless cycle formula (C-14.4) |
+| REQ-016 | input idle cycles delay octets and change nothing else; an input word covering no frame octet holds the frame and is not a condition | §6.1, §6.2, §7 | idle-injection wrapper at 0, 1 and 7 cycles, asserting the **per-octet** constant of §7 rather than §6.1's gapless cycle formula (C-14.4). **The wrapper SHALL NOT inject between a frame's start character and its first octet**: those lanes are preamble positions, REQ-102 routes a control character there to REQ-105, and the wrapper would be measuring an abort (§6.1, **M03-N3**). Injection begins at the frame's first octet |
 | REQ-017 | `xgmii_rxd` / `xgmii_rxc` from SPEC-M01's `Xgmii` record | §4.1, §4.2 | emitted-Verilog port check at M05 and M20 |
 | REQ-018 | no sub-XGMII logic; instantiates only M02 | §2, §3 | the emitted-module whitelist check |
 | REQ-019 | ΔC = 3 against a ceiling of 4; two words of payload storage | §7 | ΔC computed from the pinned L and h at freeze; measured ΔC from the stress run in the sign-off packet |
 | REQ-020 | one frame at a time; order not expressible otherwise | §6.2 | sequence numbers in the stress run |
 | REQ-021 | frame octet 0 at `tdata`[7:0] at both start lanes | §6.1 | directed lane-0 and lane-4 comparison |
 | REQ-101 | start detected in lane 0 and lane 4; identical output streams | §6.1 | REQ-101's tuple-sequence comparison; the absolute-cycle equality this module happens to achieve is **not** asserted |
-| REQ-102 | eight octets from the start character discarded, values unchecked; control characters in preamble positions routed to §9 | §6.1, §9 | frame with arbitrary preamble filler; frame with `/E/` in a preamble lane; frame with `/T/` in a preamble lane |
+| REQ-102 | eight octets from the start character discarded, values unchecked; control characters in preamble positions routed to §9 — `/T/` to REQ-107, `/S/` to REQ-110, **anything else, `/I/` and `/Q/` included, to REQ-105** | §6.1, §6.2, §9 | frame with arbitrary preamble filler; frame with `/E/` in a preamble lane; frame with `/T/` in a preamble lane; **one of each at a lane-0 start, where the preamble lies entirely inside the start word, so the character shares its word with the `/S/`** (§6.1) — a lane-4 start additionally puts preamble positions in the following word and both placements are worth driving; plus one frame with an **idle** character in a preamble lane, asserting REQ-105's zero-delivered behaviour (**M03-N3**) |
 | REQ-103 | delivers first DA octet through the octet before the FCS; no removal on aborted, truncated or cut-short frames | §6.1 | directed lengths 64–71 and 1518; the three no-removal cases from §9 |
 | REQ-104 | residue check against 0x2144DF1C; abort bit and strobe on mismatch | §6.1, §9 | one payload bit flipped; assert the octet count is unchanged, `tuser`[0] = 1, one `error_bad_fcs` |
 | REQ-105 | frame ends at the octet before `/E/`; zero-delivered case emits nothing; an `/E/` arriving when no frame is open emits and pulses nothing | §9 | `/E/` in each of eight lanes of a mid-frame word; `/E/` in a preamble lane; `/E/` after a terminate character and after a REQ-108 truncation point, asserting no `error_bad_frame` (C-12) |
@@ -656,11 +792,11 @@ M03 inherits no abort: it is the origin of `tuser`[0] on this chain, so
 | REQ-107 | 5–63 octets forwarded and marked; < 5 emits nothing | §9 | 5-, 16-, 60-, 63-octet frames; 0-, 1-, 4-octet frames |
 | REQ-108 | truncation at exactly 1514 delivered octets; `Discard` then resynchronise; no `error_bad_fcs`, and no strobe of any kind between the truncation point and the next start character | §6.2, §9 | 1600-octet frame followed immediately by a valid frame; the same frame again with an `/E/` 100 octets past the truncation point (C-12) |
 | REQ-109 | silent while idle and no frame in flight; the drain window is **two** cycles after the terminate word, not ΔC | §6.1, §7 | 1000 idle cycles; assert no activity from 3 cycles after the terminate word — the tight bound §6.1 derives (C-14.3) |
-| REQ-110 | abort at the octet before the new `/S/`; zero-delivered case emits nothing; new frame received | §9 | `/S/` replacing `/T/` in lane 0 and lane 4; `/S/` in lane 4 of a word whose lane 0 was `/S/` |
+| REQ-110 | abort at the octet before the new `/S/`; zero-delivered case emits nothing; new frame received. A start character arriving while `cfg_rx_enable` = 0 still aborts and still reports; only the new frame is gated (§4.3, ADR-0014) | §4.3, §6.2, §9 | `/S/` replacing `/T/` in lane 0 and lane 4; `/S/` in lane 4 of a word whose lane 0 was `/S/`, **with no frame open before that word** — REQ-110's own verification column pins the outcome at one `error_start_without_terminate` pulse and the second frame intact, which is exactly one frame ending in that word (§6.3 item 8) |
 | REQ-111 | L = 16 (lane 0) and 12 (lane 4), constant per lane | §7 | per-octet measurement over the REQ-005 frame set at both lanes |
 | REQ-112 | no `tready` input; an XGMII word accepted every cycle | §4.1 | interface compile check plus the stress bench |
 | REQ-113 | ordered sets and out-of-frame control characters ignored | §6.1 | 100 cycles of a local-fault ordered set, then a frame compared against the same frame after idles only |
-| REQ-802, REQ-810 | `cfg_rx_enable` sampled at the start character; when 0, nothing is accepted or emitted; the same-cycle change is unconstrained (§6.3 item 7) | §4.3, §6.3 | drive `cfg_rx_enable` = 0 and inject 100 frames; assert no word and no strobe, then re-enable. The change SHALL be driven at least one cycle away from any start character — a same-cycle change has no determinate outcome and SHALL NOT be asserted on (C-14.5) |
+| REQ-802, REQ-810 | `cfg_rx_enable` sampled at the start character and gating **admission only**; when 0 no frame is accepted, so nothing is emitted and no strobe pulses **for a frame that would have begun**, while a frame already in flight completes under the old value including under REQ-110 (§4.3, ADR-0014); the same-cycle change is unconstrained (§6.3 item 7) | §4.3, §6.1, §6.2, §6.3 | drive `cfg_rx_enable` = 0 and inject 100 frames; assert no word and no strobe, then re-enable. The change SHALL be driven at least one cycle away from any start character — a same-cycle change has no determinate outcome and SHALL NOT be asserted on (C-14.5). **Then the mid-frame case**: open a frame with `cfg_rx_enable` = 1, drop it to 0 at least one cycle before a start character that arrives while the frame is still open, and assert the in-flight frame is aborted at the octet before it with `tuser`[0] = 1 on its `tlast` word (or no output word where it had delivered none), **exactly one** `error_start_without_terminate`, **no** output word for the frame that start character would have begun, and the next frame received normally after the enable returns to 1 (**M03-N4**) |
 | REQ-903, REQ-808 | `xgmii_rx_64` is a distinct emitted module with `create`, `hierarchical` and an `.mli` | §4.1 | repository surface check and the `rtl_snapshots/` name comparison |
 
 This table is the source of M03's rows in [`traceability.md`](../traceability.md),
@@ -704,3 +840,7 @@ interface.
 | 2026-08-02 | §6.1 `m + 3` formula qualified "on a gapless stimulus"; §6.2 `Frame` row states that an input word covering no frame octet holds the frame (ledger **C-14.4**) | no | none — restores §0.5's own qualifier | `J-architect_docs_lead-0005` |
 | 2026-08-02 | §4.3 and §6.3 item 7: a `cfg_rx_enable` change landing on a start character's own cycle is deliberately unconstrained (ledger **C-14.5**) | no | none — makes an implication explicit so no bench asserts on it | `J-architect_docs_lead-0005` |
 | 2026-08-02 | §3 REQ-016 row, §6.1 gapless definition and its illustrative list, §6.2 `Frame` row: "gapless" redefined in octet times; the lane-4 second preamble word and a terminate character in a lane above 0 stated as **non**-instances of the hold rule, with their `octet_count` values; §6.2 adds that a word covering ≥ 1 frame octet is never held (ledger **C-18**) | no | none — the C-14.4 **rule** is unchanged and reaffirmed (`J-dv_lead-0007`); only its illustrations and the definition of "gapless" were wrong, and §6.1's own worked examples already carried the governing reading | `J-architect_docs_lead-0006` |
+| 2026-08-03 | **Two closure characters in one input word** — rtl_lead's returned question 2 (WO-0024 Return log §6), dv_lead's row **M03-N2**, ruled on the text: every start character and every closure character is evaluated at **its own octet time** against the frame open at that octet time, so one input word may abort a frame, open another and close it. §6.1 gains the statement, its two consequences and the derivation that at a lane-0 start the whole preamble lies inside the start word; §6.2's `Preamble` row records that its exits may be taken on a lane of the start character's own word; §9's closure list restates clause (a); §10's REQ-102 and REQ-110 hooks name the placements. **New §6.3 item 8** carves out the one stimulus whose reports cannot both be observed — two frames whose §9 reports fall on the same cycle under the **same** strobe name, which §0.6's high-cycle counting reads as one event | no | none — **REQ-102 settles it one document up**: its third sentence routes a control character in a preamble position to REQ-106/REQ-107, REQ-110 or REQ-105 in terms, and its verification column commissions `/E/`- and `/T/`-in-a-preamble-lane frames, which at a lane-0 start are in the start word itself. The one-closure-per-word reading rtl_lead declared would leave that sentence, that column and §10's REQ-102 hook with no instance at a lane-0 start. §6.3 item 8 is a bound on the **stimulus**, not on the module, and no requirement or hook loses an instance to it | `J-architect_docs_lead-0011` |
+| 2026-08-03 | **An idle word inside a frame's own preamble** — rtl_lead's returned question 3, dv_lead's row **M03-N3**: the stimulus is **decided, not unconstrained**. §6.1 states where the preamble positions lie at each start lane and that an idle character in one of them is "any other control character" in REQ-102's sentence, hence REQ-105, hence one `error_bad_frame` and no output word; §6.2's `Preamble` row gains the matching exit, which it previously omitted while §6.1 routed the character — the two sections disagreed and §6.1 was right; §6.1 and §10's REQ-016 hook carry the consequence for DV, that the idle-**injection** wrapper SHALL NOT inject between a start character and the frame's first octet; §10's REQ-102 hook gains an idle-in-preamble frame | no | none — REQ-102's third sentence is the correcting text and §9's third row is its landing site; §6.2's `Preamble` row was the only site that disagreed, the same shape as C-18 (a rule that was never in doubt, illustrated wrongly in one place). The request was for a §6.3 sentence declaring the stimulus out of the specified space; it is **not** out of it, so §6.3 is the wrong home and the constraint that is owed — the wrapper's — is stated where the wrapper is commissioned | `J-architect_docs_lead-0011` |
+| 2026-08-03 | **`cfg_rx_enable` = 0 mid-frame with a REQ-110 start character** — rtl_lead's returned question 4, dv_lead's row **M03-N4**: the enable gates the **admission** of a frame and nothing else. §4.3 gains the three-clause statement and the rejected reading's price; §6.1's disabled-state paragraph gains the in-flight clause and the conservation reading; §6.2's `Frame`, `Preamble` and `Discard` rows take `Idle` rather than `Preamble` on `/S/` while the enable is 0, with the abort reported either way; §9's closure list restates it as clause (b); §10's REQ-110 and REQ-802/REQ-810 hooks gain the directed case | no — **behavioural in principle, and it confirms the reading rtl_lead implemented and declared**, so no delivered design changes | **ADR-0014** (requirements.md REQ-810 gains the matching scope in the same commit) | `J-architect_docs_lead-0011` |
+| 2026-08-03 | §10's REQ-014 hook: the producer half kept, and **REQ-014's differential run declared to have no instance at M03** — it varies `tstrb` on a module's input and M03's input is an XGMII lane pair with no `tstrb` (REQ-010 class (b)); worded as SPEC-M14 §10 words REQ-404 and REQ-810, so that no sign-off packet claims REQ-014 whole here (dv_lead, **M03-O2**; ledger **C-41**'s family) | no | none — **editorial**, a verification column naming an instrument that has no instance at this module; REQ-014's normative sentence and M03's producer obligation are untouched | `J-architect_docs_lead-0011` |
