@@ -709,3 +709,228 @@ RETURNED for the orchestrator's CI round-trip.
 - libs/hardcaml_ethernet/src/xgmii_rx_64.mli
 - libs/hardcaml_ethernet/src/xgmii_tx_64.ml
 - libs/hardcaml_ethernet/src/xgmii_tx_64.mli
+
+## [J-rtl_lead-0003] 2026-08-02T21:20:00Z | task:WO-0026 | RTL emission registered for M03/M04/M05: three tops named from §10's REQ-808/REQ-903 rows, built from `create` rather than `hierarchical` so no `_top` shell trips the X-9 whitelist, and no snapshot authored by hand
+
+### Trigger
+
+WO-0026 (`agents/handoffs/WO-0026_emission-registration.md`, ISSUED by the
+orchestrator; spawn short-id `WO-0026/2026-08-02T20:50Z`), which closes
+question 1 of my own WO-0024 Return log: emission registration was left out of
+the batch-B RTL commit deliberately, because REQ-902's evidence is a CI
+round-trip and cannot be manufactured locally. Third activation.
+
+### Inputs
+
+- `agents/charters/rtl_lead.md`, `agents/PROTOCOL.md` (§3 packet lifecycle, §4
+  entry grammar, §6 write scope).
+- `agents/handoffs/WO-0026_emission-registration.md`.
+- `bin/generate.ml`, `bin/dune` (the M0 word_counter precedent),
+  `libs/hardcaml_ethernet/src/word_counter.ml` / `.mli`.
+- `docs/specs/modules/xgmii_rx_64.md`, `xgmii_tx_64.md`, `eth_mac_10g.md` —
+  §12 (freeze record) and §10 (traceability), specifically M03 §10's and M04
+  §10's REQ-903/REQ-808 rows and SPEC-M05 §7's REQ-808 statement.
+- `docs/specs/requirements.md` REQ-902; `docs/adr/ADR-0005-build-environment.md`
+  (rules 1, 2, 4).
+- `libs/hardcaml_ethernet/src/{xgmii_rx_64,xgmii_tx_64,eth_mac_10g}.mli` and
+  the `hierarchical`/`create` definitions in the corresponding `.ml`;
+  `libs/hardcaml_ethernet/src/axi64.ml` `Xgmii` record and the `[@rtlprefix]`
+  attributes on the consumer fields; `libs/hardcaml_ethernet/src/dune`.
+- `.github/workflows/build.yml` (step order and the final `git add -A && git
+  diff --cached --exit-code`), `tools/dv_checks.sh` and
+  `tools/check_emitted_verilog.sh` (read only — dv_lead's scope), particularly
+  its `BOOTSTRAP` allowance and the REQ-808/REQ-018/REQ-306 checks.
+- `tasks/BOARD.md` (WO-0024 accepted at f840475, build run 30750089122).
+- No Essenceia material was consulted for this work.
+
+### Reasoning
+
+**1. What the emitted top should be called.** WO-0026 said to take the top
+names from each spec's §12 and to return the question rather than invent if a
+spec is silent. §12 of all three specs is the *freeze record* — compile run,
+architect signature, dv countersignature, freeze SHA — and says nothing about
+emission. It is silent, so I did not take a name from it. But the specs are
+not silent: M03 §10 and M04 §10 carry the row "REQ-903, REQ-808 |
+`xgmii_rx_64` is a distinct emitted module with `create`, `hierarchical` and an
+`.mli` | §4.1 | repository surface check and the `rtl_snapshots/` name
+comparison" (M04 identically for `xgmii_tx_64`), and SPEC-M05 states REQ-808
+as "`eth_mac_10g` SHALL appear as a distinct module in the emitted Verilog,
+with `xgmii_rx_64` and `xgmii_tx_64` instantiated inside it". Those are
+normative and they are exactly the names each module's own `hierarchical`
+already registers with the scope. Using anything else would have created a
+second name for a module that already has one, and would have broken the
+`rtl_snapshots/` name comparison the same rows name as their verification
+method. So: `xgmii_rx_64`, `xgmii_tx_64`, `eth_mac_10g`, one file each, file
+named after its top. Inference from §10 rather than invention — and I record
+in the Return log that an architect may want the name stated in §12 outright,
+which would be editorial, not a §4/§6/§7 diff.
+
+**2. Why the tops are built from `create`, diverging from the precedent.**
+This is the design decision of the commit. `word_counter` is emitted by
+passing `Word_counter.hierarchical` to `Circuit.create_exn` under the name
+`word_counter_top`, and its comment records why the rename was forced: with the
+top and a database module sharing a name, `Rtl.output` drops the inner module
+and emits a self-instantiating shell. Two ways to keep that property for a
+design module:
+
+- *(a) Copy the precedent exactly*: emit `Xgmii_rx_64.hierarchical` as
+  `xgmii_rx_64_top`. **Rejected**, and not on taste. `tools/check_emitted_verilog.sh`
+  computes the emitted-module set from `rtl_snapshots/*.v` and fails any name
+  that is neither in architecture.md §4 nor in
+  `BOOTSTRAP="word_counter word_counter_top"` — a list whose own comment says
+  it "MUST be empty at P1-module-ready: an allowance is how a vendor primitive
+  would hide from REQ-018's whitelist". `xgmii_rx_64_top` is in neither set, so
+  option (a) hands the DV mechanical-checks step a `FAIL REQ-808: emitted
+  module(s) not in the architecture.md §4 inventory` on the very commit whose
+  purpose is to make emission checkable. It would also have needed dv_lead to
+  widen a bootstrap allowance for my convenience, in a file I cannot stage.
+- *(b) Build the top from `create`*: `Circuit.create_exn ~name:"xgmii_rx_64"
+  (Xgmii_rx_64.create scope)`. **Chosen.** `create` is not registered in the
+  scope database — only `hierarchical` registers — so there is no name
+  collision to dodge and the module's own name is free for its own logic. The
+  children are untouched: `Xgmii_rx_64.create` instantiates
+  `Crc32_eth.hierarchical`, and `Eth_mac_10g.create` instantiates
+  `Xgmii_rx_64.hierarchical ~instance:"rx"` and `Xgmii_tx_64.hierarchical
+  ~instance:"tx"`, so `Scope.circuit_database scope` still yields them and
+  `Rtl.output ~database` still emits each as its own module. Nothing is
+  flattened (`~flatten_design:false` is kept), no shell is emitted, and every
+  emitted name is an inventory name. The emitted set becomes exactly what
+  REQ-808 asks to see.
+
+The cost of (b) is that the emitted top is one wrapper level shallower than
+the netlist a parent will build — the `eth_mac_10g` in `eth_mac_10g.v` is the
+same module a future M20 will instantiate, but the `xgmii_rx_64.v` top is M03
+*as a top*, not M03 as instantiated. That is the correct trade: the snapshot's
+job is to be the module's reviewable, diffable Verilog, and both readings emit
+identical module bodies. I left the `word_counter` emitter byte-unchanged
+rather than converting it for uniformity — it is the G0 bootstrap skeleton,
+its shell is the thing `BOOTSTRAP` was written for, and touching it would put
+a second, avoidable file into the first determinism diff where it would be
+indistinguishable from real drift.
+
+**3. Why no snapshot file is written here.** ADR-0005 rule 2: generated
+artefacts are promoted from CI's own diff, never authored by hand. I cannot
+build (no OCaml 5.1, no dune, no ocamlformat in this container), so any `.v` I
+produced would be fabricated evidence — the precise failure the journal
+protocol exists to prevent. The WO asked for the expected-red to be stated so
+nobody triages it; I stated it in the Return log with the step named, the
+expected diff contents named, and — the part that matters more — the reds that
+would *not* be expected: `word_counter.v` moving (shared-path drift), a `Build`
+failure (this is the first time `Circuit.create_exn` runs over these `I`/`O`
+records; f840475's green proved the modules compile, not that they elaborate
+into a circuit), and an X-9 failure (`crc32_eth` reaching `rtl_snapshots/` for
+the first time takes its REQ-306 combinational check from PENDING to live).
+
+**4. Structure of the change.** Four near-identical emitters and a list, rather
+than a functor over `Interface.S`. A functor is the idiomatic compression and I
+would normally write it, but `Circuit.With_interface`'s argument signature name
+differs across Hardcaml lines, and under ADR-0005 a wrong guess costs a full CI
+round trip to discover. The existing precedent applies `Circuit.With_interface`
+to concrete modules inline, where no signature name is ever written; four
+copies of a proven expression is worth more than one elegant untested one at
+this point in the toolchain's life. One `Scope.t` per emitter, so no file's
+contents can depend on another's emission.
+
+### Actions
+
+- Rewrote `bin/generate.ml`: kept `emit_word_counter` byte-identical; added
+  `emit_xgmii_rx_64`, `emit_xgmii_tx_64`, `emit_eth_mac_10g`, each creating its
+  own `Scope.create ~flatten_design:false ()`, building
+  `Circuit.With_interface (M.I) (M.O)` and `Circuit.create_exn ~name:"<module>"
+  (M.create scope)`, then `Rtl.output ~database:(Scope.circuit_database scope)
+  ~output_mode:(To_channel out_channel) Verilog`; replaced the single-path main
+  with a fixed-order list of four `(path, emitter)` pairs driven by
+  `List.iter`. Comments record the `create`-vs-`hierarchical` reasoning and the
+  §10 name basis at the point of use.
+- `bin/dune` unchanged: `hardcaml` and `hardcaml_ethernet` are already its
+  libraries, the library is wrapped so `open Hardcaml_ethernet` exposes the
+  three modules, and the existing file already resolves `Base`/`Stdio`
+  transitively.
+- Wrote no file under `rtl_snapshots/` (deliverable 2 is discharged by
+  omission).
+- Updated `agents/handoffs/WO-0026_emission-registration.md`: State
+  ISSUED → RETURNED, and a Return log giving the registered tops, the §12
+  silence answered from §10, the deliberate divergence from the `_top`
+  precedent with the X-9 reason, the expected-red with its step named, and the
+  per-file child-duplication property for DV's information.
+
+### Evidence
+
+No local build evidence exists or could exist for this commit — ADR-0005: the
+container has no OCaml 5.1 switch, no `dune`, and no `ocamlformat` (`which dune
+ocamlformat` returns nothing; `.ocamlformat` pins profile janestreet, version
+0.26.2, so formatting here is hand-matched to the precedent's layout and is not
+locally verifiable). Per ADR-0005 rules 1 and 4 the evidence for this work is
+the CI round trip the orchestrator runs on the commit that carries it.
+
+What was verified locally, by reading:
+
+- Emitted names come from committed normative text, reproducible with
+  `grep -n "REQ-903, REQ-808" docs/specs/modules/xgmii_rx_64.md
+  docs/specs/modules/xgmii_tx_64.md` and
+  `grep -n "REQ-808" docs/specs/modules/eth_mac_10g.md`.
+- §12 is the freeze record in all three specs:
+  `awk '/^## 12\./{p=1} /^## 13\./{p=0} p' docs/specs/modules/eth_mac_10g.md`
+  prints a four-row table of compile run / architect signature / dv
+  countersignature / freeze SHA and nothing about emission.
+- The `_top` hazard is real and reproducible:
+  `grep -n "BOOTSTRAP=" tools/check_emitted_verilog.sh` yields
+  `BOOTSTRAP="${DV_BOOTSTRAP_MODULES:-word_counter word_counter_top}"`, and the
+  REQ-808 block at that file's `extra` loop fails any emitted module in neither
+  the §4 inventory nor that list.
+- The children are registered by `hierarchical`, not by `create`:
+  `grep -n "hierarchical" libs/hardcaml_ethernet/src/eth_mac_10g.ml` shows the
+  `~instance:"rx"` / `~instance:"tx"` calls inside `create`, and
+  `grep -n "Crc32_eth.hierarchical" libs/hardcaml_ethernet/src/xgmii_rx_64.ml`
+  the M02 call inside M03's `create`.
+
+**Expected first-run result (stated in advance so it is falsifiable):** the
+`build` workflow on this commit fails at "Verify nothing was left unpromoted or
+non-deterministic" with exactly three added files —
+`rtl_snapshots/xgmii_rx_64.v`, `rtl_snapshots/xgmii_tx_64.v`,
+`rtl_snapshots/eth_mac_10g.v` — and no modification to
+`rtl_snapshots/word_counter.v`. Every earlier step green. That diff is the
+promotion source (ADR-0005 rule 2); the second run's green at the same step is
+REQ-902's evidence and belongs in the promoting commit's journal entry, not
+this one.
+
+### Outcome
+
+DoD **met for what this activation can close, pending the CI round trip that is
+the work order's design**. Deliverable 1 (register emission for M03/M04/M05 in
+`bin/`, tops per the specs) — done, names sourced from §10 rather than
+invented. Deliverable 2 (no hand-written snapshot, expected-red stated in the
+Return log) — done. The charter §5 DoD item "`bin/generate.exe` emits it into
+`rtl_snapshots/**` deterministically (two consecutive runs, byte-identical —
+command + diff result in journal Evidence)" is **not yet met and cannot be met
+by this entry**: it is discharged by the promoting commit, whose Evidence
+carries the two run IDs. No DV sign-off is claimed. Handoff:
+`agents/handoffs/WO-0026_emission-registration.md`, State RETURNED, to the
+orchestrator.
+
+### Open-questions
+
+1. **The promotion commit owes REQ-902's evidence.** Whoever authors it (the
+   orchestrator, promoting verbatim) should cite both run IDs — the red one
+   that produced the diff and the green one that proves byte-identity — since
+   this entry deliberately cites neither.
+2. **Editorial, for the architect**: each of SPEC-M03/M04/M05 §12 is silent on
+   the emitted top name; the name is derivable only from §10's REQ-808/REQ-903
+   rows. A single row per spec stating the emitted top and its snapshot path
+   would remove the inference. Not a §4/§6/§7 diff.
+3. **For dv_lead's information, no action requested**: `crc32_eth` is emitted
+   into three snapshot files and `xgmii_{rx,tx}_64` into two, because each
+   snapshot is self-contained; `eth_mac_10g.v` is the superset. Compiling the
+   whole directory as one simulation would hit duplicate module definitions.
+   X-9 already assumes per-file consumption (it `sort -u`s `^module` across
+   files), so nothing is broken today — but a future Verilator harness should
+   pick files, not globs.
+4. **Still open from WO-0024, unchanged by this commit**: returned questions
+   2–4 (two closure characters in one input word; an idle word inside a
+   frame's own preamble; `cfg_rx_enable` = 0 with a REQ-110 `/S/` arriving
+   mid-frame) remain with the architect.
+
+### Files-in-this-commit
+
+- agents/handoffs/WO-0026_emission-registration.md
+- bin/generate.ml
