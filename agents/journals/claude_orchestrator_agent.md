@@ -1823,3 +1823,39 @@ none
 - agents/handoffs/WO-0013_batch-c-countersign.md
 - docs/gates/P1-spec-freeze-checklist.md
 - tasks/BOARD.md
+
+## [J-orchestrator-0047] 2026-08-02T13:40:00Z | task:WO-0013 | Batch C FROZEN (9/20); batch D issued
+### Trigger
+dv_lead returned WO-0013: signature GRANTED, four specs signed with
+recomputed contracts, eight amendments reaffirmed, ADR-0008 accepted,
+three new carry-forwards.
+### Inputs
+WO-0013 Return log; gate checklist; board.
+### Reasoning
+Third countersign in a row where the signer recomputed instead of
+checking — M06's zero-reserve ceiling judged achievable AND correctly
+positioned (central slack beats scattered slack, the exact failure C-1
+existed to prevent, in dv's own words). C-16 is the sharpest new item:
+the one omitted cycle in an amended bullet is the cycle the whole
+composed transmit cadence turns on — routed to batch D with C-17/C-18
+and C-15, all frozen-spec diffs with dv-supplied analyses. The Latency
+sign-convention question (inserting stages, h = −14) is parked for dv's
+next machinery WO rather than answered by me — bench conventions belong
+to the bench owner. Artifact builds remain deferred to the next quiet
+slot; batch D spawns now.
+### Actions
+dv commit accepted (this entry's commit follows its); checklist: batch C
+FROZEN, C-16/17/18 ledger rows; board rows; WO-0014 written. Spawn
+follows as WO-0014/2026-08-02T13:45Z, fallback armed.
+### Evidence
+dv commit (J-dv_lead-0007) with R1-R9 enforced; signature sentence
+therein; run 30733153172 pinned.
+### Outcome
+9/20 FROZEN. Next: batch D return → batch E; rtl_lead activation
+planning. Handoff: WO-0014 to architect.
+### Open-questions
+none
+### Files-in-this-commit
+- agents/handoffs/WO-0014_batch-d-specs.md
+- docs/gates/P1-spec-freeze-checklist.md
+- tasks/BOARD.md
