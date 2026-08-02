@@ -1,5 +1,5 @@
 # WO-0023: The C-37 repair — F-1's twin at frozen SPEC-M14
-- **State**: RETURNED
+- **State**: ACCEPTED
 - **From** / **To**: orchestrator → architect_docs_lead
 - **Spec basis**: the WO-0022 Return log §3 at **0536819** (dv's full
   C-37 statement — your entire authority for the defect's shape);
@@ -214,3 +214,18 @@ and its §13 row, plus SPEC-M17 §11.4 and its two §13 rows, plus requirements.
 REQ-710's verification column and its §13 row. The §2/§3/§4.2 sweeps at both
 modules carry no hook and are byte-wise. ADR-0012 is the decision record and its
 Consequences section is where the residual argument lives.
+
+### ACCEPTED — orchestrator, 2026-08-02T17:20Z, journal `J-orchestrator-0061`
+
+Committed as `8641455` (architect_docs_lead, `J-architect_docs_lead-0010`).
+Acceptance recomputed: 8 = 8 set equality; all five touched FROZEN
+specs' ocaml blocks byte-identical to HEAD; REQ sets 110 = 110;
+dv_checks green. ADR-0012's decision is the same rule as M17's (copy
+iff D ≤ 0), not merely analogous — and the §8 boundary pair (total
+lengths 36/37) is chosen to kill the three most likely wrong keys.
+The disclosed batch-F Status flip (DRAFT → FROZEN at d8df28d, §12
+rows filled from run 30744579228) is RATIFIED — it matches the gate
+record exactly, per the batch-C/D/E precedent, and the post-freeze
+§13 rows presuppose it. C-38 declined with reasons accepted (later
+gate, flip-invariant). The moved M14 text owes dv a bounded
+re-countersign (WO-0025, after CI green on this commit).

@@ -2557,3 +2557,44 @@ Two lanes in flight; morning report next.
 - agents/handoffs/WO-0023_c37-repair.md
 - agents/handoffs/WO-0024_batch-b-rtl.md
 - tasks/BOARD.md
+
+## [J-orchestrator-0061] 2026-08-02T17:25:00Z | task:WO-0023 | C-37 repaired at 8641455; the first post-freeze behavioural cycle closes cleanly
+
+### Trigger
+WO-0023 RETURNED (J-architect_docs_lead-0010): C-37 re-derived,
+ADR-0012 written, the diff set landed, C-39/C-40 with it.
+
+### Inputs
+- The Return log; acceptance recomputation (8 = 8; five frozen specs'
+  ocaml blocks unchanged; REQ 110 = 110; dv_checks green)
+
+### Reasoning
+The repair transposes F-1's resolution as the SAME rule (D ≤ 0), with
+the M14-specific trap documented (Tail is a proper superset of the
+derived-0 class, unlike M17's equality) and the 183-vs-184
+discrepancy reconciled in-cell rather than silently overwritten. The
+residual (bad-FCS minimum frame unmarked at the application) is
+carried on four stated grounds with the E2-classed repair named for
+Phase 2 — a Phase-1 judgment properly recorded, not a buried default.
+The disclosed batch-F status flip is ratified (gate record match;
+precedent). The moved frozen text needs dv's bounded re-countersign —
+WO-0025 after CI green.
+
+### Actions
+- Committed as 8641455 (architect identity); pushed. ACCEPTED block;
+  board row; this entry; CI-check timer next; rtl_lead (WO-0024)
+  still mid-flight, untouched.
+
+### Evidence
+- `git show 8641455 --stat` — 9 paths (8 + journal)
+
+### Outcome / DoD
+C-37's repair on the record one activation after its discovery. Ledger:
+C-39/C-40 CLOSED pending dv reaffirmation; C-38 open at its gate.
+
+### Open questions
+- None new; dv judges the repair at WO-0025.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0023_c37-repair.md
+- tasks/BOARD.md
