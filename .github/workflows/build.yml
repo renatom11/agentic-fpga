@@ -36,6 +36,9 @@ jobs:
       - name: DV mechanical checks (C-9 record-vs-appendix, X-9 emitted Verilog)
         run: tools/dv_checks.sh
 
+      - name: Abort-bit availability quantifier (C-37/ADR-0012, 8.7M pairs)
+        run: tools/check_abort_availability.sh
+
       - name: Verify nothing was left unpromoted or non-deterministic
         # Catches three distinct failures with one check:
         #  * an expect test whose output changed but was never promoted

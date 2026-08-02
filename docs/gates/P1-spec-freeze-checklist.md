@@ -95,7 +95,10 @@ WO-0018 re-review; C-22 additionally discharged at its first new
 instance)**; **C-24…C-30 CLOSED (WO-0019 at aaa55b2; all seven REAFFIRMED at
 WO-0020 with two count corrections — seven §13 rows, twelve §11
 closures)**; **C-31, C-34, C-35 CLOSED (WO-0021 at d8df28d, verified
-at the WO-0022 re-review)** — C-23 homed in requirements.md §0.6 (generalises)
+at the WO-0022 re-review)**; **C-37 CLOSED (repaired 8641455 per
+ADR-0012, re-countersigned J-dv_lead-0012 with 8.7M-pair quantified
+verification); C-39 CLOSED; C-40 open with one named residual site
+(SPEC-M17 §10's "on or after"); C-38 deferral endorsed** — C-23 homed in requirements.md §0.6 (generalises)
 + REQ-502 disambiguation; note REQ-502's derivation moved 6→7 under
 D-2a, dv re-review question 1; **C-6, C-15, C-16, C-17
 (all five items), C-18 CLOSED (WO-0014 at a9993ff)** — dispositions
@@ -154,6 +157,26 @@ Each carries a §13 record; no frozen §4.1 lift changed, so runs
 **With this signature, ALL TWENTY Phase-1 module specifications are
 FROZEN: A+B at f78766e, C at 508eea2, D+E at 3f6accc, F at d8df28d.**
 
+## SPEC-M14 revision re-countersignature (C-37/ADR-0012 — transcribed)
+
+> "I re-countersign the SPEC-M14 text moved by ADR-0012 — §2, §3,
+> §4.2, §6.1, §6.2, §8, §10, the new §11.5 and the §13 row — for
+> `P1-spec-freeze` testability at `8641455`. SPEC-M14 remains FROZEN
+> and its testability countersignature stands: on `J-dv_lead-0009` for
+> the specification as frozen at `3f6accc`, and on `J-dv_lead-0012`
+> for this revision." — dv_lead (WO-0025), transcribed by the
+> orchestrator 2026-08-02. The verification quantified rather than
+> re-derived: tools/check_abort_availability.sh, **8,720,452 checks,
+> 0 failures** over every (N, N′) pair M14/M17 accept — confirming the
+> D = K−M−3 identity, the reachable D < 0 branch, the under-fill
+> threshold as an iff, the Tail proper-superset (5,820 witnesses,
+> first at §8's own 36/37 case), the split hook's passability (the old
+> hook was unsatisfiable on its own stimulus), and both the 183 and
+> 184 figures as measurements of different events. ADR-0012's residual
+> disposition ENDORSED with a sharpening: the application-visible loss
+> band is total lengths 29–36 at the minimum frame, and §8's probe
+> hits its largest member.
+
 ## Batch-F countersignature (WITHHELD — transcribed)
 
 > "Batch-F countersignature WITHHELD at `aaa55b2`." — dv_lead, journal
@@ -189,6 +212,8 @@ FROZEN: A+B at f78766e, C at 508eea2, D+E at 3f6accc, F at d8df28d.**
 | C-38 | SPEC-M18 §6.2 lets a word-aligned over-delivery escape REQ-710 (Drain with tlast pending, no strobe, stale word into next frame); REQ-710 (FROZEN) states the correct reading, so carried on the C-26 line | SO-udp_ip_tx_64.md; mandatory attack-plan row |
 | C-39 | requirements.md REQ-710's verification column carries C-34's units error ("ten excess words"); frozen, flip-invariant | with C-37's requirements-adjacent sweep or any REQ diff |
 | C-40 | SPEC-M17 §3's "on or after" (dv's own phrase) admits D = 1; four unqualified relay statements (§2 ×2, §3 REQ-013 row, §4.2 input row); one sweep | the M17 tb_writer WO |
+| C-41 | The unpassable-assertion class one level up: requirements.md REQ-007/REQ-013/REQ-707 verification columns commission the REQ-007 universal unscoped (satisfiable, so below C-37); REQ-707's is the system bench, gated at neither SO-; the verification-column half is EDITORIAL (C-39's diff proves the class) and closes cheap while the normative clause stays carried | the three editorial column diffs at the next architect activation; REQ-707's before the system bench |
+| C-42 | SPEC-M14 §12's countersignature row over-states dv's WO-0018 proof (M + 3 ≥ K vs the proved ⌈(N−20)/8⌉ + 3 ≥ K) — dv's own over-statement, self-reported | the next SPEC-M14 §12-touching diff |
 
 ## Batch-D + batch-E countersignatures (transcribed)
 

@@ -2686,3 +2686,56 @@ Both lanes live again; dv's commit follows its correction entry.
 
 ### Files-in-this-commit
 _None — journal-only entry._
+
+## [J-orchestrator-0064] 2026-08-02T19:20:00Z | task:WO-0025 | C-37 closed end-to-end; my false R4 flag refused by dv, on the record
+
+### Trigger
+WO-0025 completion: the moved SPEC-M14 text holds under an
+8,720,452-pair quantified verification; the re-countersignature is
+given. Also dv's refusal of my J-dv_lead-0013 correction request.
+
+### Inputs
+- The WO-0025 Return log and dv's final message
+- My own re-verification via the enforcement path's appended-region
+  extraction: the J-dv_lead-0012 files list is correct (two paths);
+  my earlier tail-read had caught J-dv_lead-0011's list mid-append
+
+### Reasoning
+The false-flag incident is mine and goes on the record: I read a
+journal being appended and mistook the previous entry's terminal
+section for the new one's. dv's response was the protocol working —
+verify against the enforcement path, refuse to write a false
+correction into an append-only record, explain with a reproduction.
+The quantifier tool is the methodological upgrade of the night: after
+the same algebra produced two defects, dv stopped hand-deriving and
+checked the whole admissible space. Wired into CI as a step (the
+header names that as the orchestrator's), so the D-algebra can never
+silently regress.
+
+### Actions
+- Committed dv's return as 68eb0cf; transcribed the sentence; C-37
+  CLOSED on the ledger; C-39 CLOSED; C-40's named residual site;
+  C-41/C-42 rows; build.yml gains the quantifier step; board;
+  ACCEPTED block; this entry; push. rtl_lead (WO-0024) still
+  mid-flight, untouched.
+
+### Evidence
+- The appended-region extraction reproduced this session
+- `git show 68eb0cf --stat` — 3 paths
+
+### Outcome / DoD
+The C-37 arc is complete: raised (WO-0022) → repaired (WO-0023) →
+quantified + re-countersigned (WO-0025), all inside one day, with the
+freeze machinery's §13/ADR trail intact. Remaining lanes: WO-0024 RTL
+(in flight); then dv's attack-plan pipeline (dv's own stated next:
+AP-M03 and AP-M14, the latter carrying the abort-availability row).
+
+### Open questions
+- C-41's three editorial column diffs fold into the next architect
+  activation.
+
+### Files-in-this-commit
+- .github/workflows/build.yml
+- agents/handoffs/WO-0025_m14-recountersign.md
+- docs/gates/P1-spec-freeze-checklist.md
+- tasks/BOARD.md

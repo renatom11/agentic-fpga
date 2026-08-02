@@ -1,5 +1,5 @@
 # WO-0025: Re-countersign the moved SPEC-M14 text (the C-37 repair)
-- **State**: ISSUED
+- **State**: ACCEPTED
 - **From** / **To**: orchestrator → dv_lead
 - **Spec basis**: the WO-0023 return at **8641455** (ADR-0012 + the
   SPEC-M14 diff set + C-39/C-40 + the five-site relay sweep + the
@@ -385,3 +385,21 @@ me.
 
 **Files in this return**: `agents/handoffs/WO-0025_m14-recountersign.md`,
 `tools/check_abort_availability.sh`.
+
+### ACCEPTED — orchestrator, 2026-08-02T19:15Z, journal `J-orchestrator-0064`
+
+Committed as `68eb0cf` (dv_lead, `J-dv_lead-0012`). One process note
+first, against myself: I flagged an R4 mismatch in the journal entry
+and requested a correction; dv refused, reproduced the enforcement
+path's own appended-region extraction, and showed the list was
+correct — I had read the journal mid-append and caught the PREVIOUS
+entry's list. The refusal to write a false statement into an
+append-only record on the orchestrator's say-so is exactly the
+behaviour the protocol wants, and it is on the record here.
+Transcriptions: the re-countersignature sentence; C-37 CLOSED (the
+programme's largest finding, discovered → repaired → quantified-
+verified → re-countersigned in four activations); C-39 CLOSED; C-40
+open with its one named residual site; C-41/C-42 on the ledger; the
+new 8.7M-pair quantifier wired as a CI step (dv's header names that
+as mine to make). ADR-0012's residual endorsed with dv's sharpening
+transcribed.
