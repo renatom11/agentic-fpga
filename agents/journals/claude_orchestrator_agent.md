@@ -3406,3 +3406,44 @@ means a wrong promotion stays red).
 
 ### Files-in-this-commit
 - .github/workflows/build.yml
+
+## [J-orchestrator-0080] 2026-08-03T08:50:00Z | task:WO-0033 | The expect-test block printed empty — dune stages corrections in its own database, so the block now ships what `dune promote` writes
+
+### Trigger
+Run 30760906636 (head `d680945`): Build GREEN — dv's real-compile
+verification held — then the designed runtest red, but the
+J-orchestrator-0079 block printed zero files: `find _build -name
+'*.corrected'` matches nothing because dune keeps corrections in its
+promotion staging area, not beside the build artifacts.
+
+### Inputs
+- The run's log tail: dune's own diff output shows the machinery
+  producing correct verdicts (the corrections are real and good);
+  the block markers open and close with nothing between.
+
+### Reasoning
+Guessing dune's staging path would couple the workflow to an
+internal layout. `dune promote` IS the path mapping, maintained by
+dune itself: run it on failure, then print the modified sources from
+the checkout — same sha256+base64 shape, bytes now sourced from
+dune's own promotion logic. Fourth repair to the promotion loop;
+this one bit exactly once before being fixed, which is the loop
+working as designed — every gap costs at most one round trip.
+
+### Actions
+- The runtest failure branch now promotes then prints the promoted
+  sources; nothing else touched.
+
+### Evidence
+- Run 30760906636's empty block vs this diff.
+
+### Outcome / DoD
+Next run: Build green, runtest red with a populated block; I write
+the corrected sources verbatim and the run after is the machinery's
+self-check green.
+
+### Open questions
+- None.
+
+### Files-in-this-commit
+- .github/workflows/build.yml

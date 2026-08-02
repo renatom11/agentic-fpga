@@ -32,10 +32,16 @@ jobs:
         # snapshot (ADR-0005 rule 2), and it dies at this step — before the
         # determinism step's block can print it. So failure prints the same
         # sha256+base64 block over every .corrected file dune produced.
+        # dune keeps corrections in its own promotion staging, not as
+        # .corrected files under _build/default (run 30760906636 printed an
+        # empty block). So: let `dune promote` apply them to the checkout,
+        # then print the promoted sources themselves — dune's own promotion
+        # logic does the path mapping, the block just ships the bytes.
         run: |
           opam exec -- dune runtest || {
-            echo '=== PROMOTION BLOCK (expect tests): sha256 + base64 -w 400 of every .corrected under _build ==='
-            find _build -name '*.corrected' | sort | while read -r f; do
+            opam exec -- dune promote || true
+            echo '=== PROMOTION BLOCK (expect tests): sha256 + base64 -w 400 of every promoted source ==='
+            git diff --name-only | while read -r f; do
               echo "--- FILE $f"
               sha256sum "$f"
               base64 -w 400 "$f"
