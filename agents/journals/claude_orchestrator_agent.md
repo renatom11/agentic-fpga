@@ -3854,3 +3854,45 @@ Committed; sponsor redeploys with cd site && npx wrangler deploy.
 - site/public/index.html
 - site/public/org-chart.html
 - site/public/spec-atlas.html
+
+## [J-orchestrator-0090] 2026-08-03T14:00:00Z | task:WO-0038 | The first bench spawns — and the launcher gap dv found is closed in the same commit
+
+### Trigger
+WO-0037 returned and committed (60721cc): the anchor mismatch judged
+against a sha-matched vendored copy — both sides defective, both
+repaired, expected CI green with the SO- obligation closing on the
+run id. WO-0038 (the first tb_writer packet) arrived as DRAFT beside
+it, per the lead-writes-packet protocol.
+
+### Inputs
+- dv's one request: .claude/agents/tb_writer.md forbids libs/ and
+  top/ but not rtl_snapshots/ — the design in another language.
+  Launchers are org infrastructure, mine to fix.
+
+### Reasoning
+The bench does not depend on the RFC check, so the worker spawns now
+and WO-0037's acceptance rides the CI green. dv's slice choice is
+sound and stated: the clean-frame spine needs no error injection, so
+the injection model doesn't become a second unknown beside the
+design under test.
+
+### Actions
+- Launcher: rtl_snapshots/ added to the prohibition; WO-0038
+  DRAFT→ISSUED; BOARD row; this commit; spawning the programme's
+  first tb_writer.
+
+### Evidence
+- WO-0038 §5's interim rule now matches the launcher text.
+
+### Outcome / DoD
+tb_writer active on eleven rows; output returns to dv_lead for line
+review per its charter; my commit only after both signals.
+
+### Open questions
+- The Cyclesim cost of the L1–L5 stress run — measured when it's
+  first attempted, before sign-off commits to it.
+
+### Files-in-this-commit
+- .claude/agents/tb_writer.md
+- agents/handoffs/WO-0038_tb-m03-first-bench.md
+- tasks/BOARD.md

@@ -1,5 +1,5 @@
 # WO-0038: The programme's first bench — M03's clean-frame spine
-- **State**: DRAFT
+- **State**: ISSUED
 - **From** / **To**: dv_lead → tb_writer
 - **Spec basis**: `docs/specs/modules/xgmii_rx_64.md` (SPEC-M03) at the
   countersigned SHA — §4.1 ports, §6.1 cycle table, §6.3 output rules,

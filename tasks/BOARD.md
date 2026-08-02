@@ -62,6 +62,7 @@ Corrections.
 
 | Packet | From → To | State | Note |
 |---|---|---|---|
+| [WO-0038](../agents/handoffs/WO-0038_tb-m03-first-bench.md) | dv_lead → tb_writer | ISSUED | **The programme's first bench**: M03's 11-row clean-frame spine (A1–A5, B1, C1–C4, L6) — no error injection by design; worker output returns to dv for line review |
 | [WO-0037](../agents/handoffs/WO-0037_rfc-anchor-mismatch.md) | orchestrator → dv_lead | ISSUED | The anchor check's first catch: §3 quotation mismatch (run 30764198256) — judge oracle-vs-extractor, repair; then author the first tb_writer packet (M03 rows) |
 | [WO-0036](../agents/handoffs/WO-0036_m03-sub5-conformance.md) | orchestrator → rtl_lead | ACCEPTED | 1434f27+681f0a9: **both producers fixed** (comparison gated + strobe structurally deleted); 2-of-3 prediction confirmed by trace + 4th red case; all-zero frame proven unique silent member; REQ-902 re-proven at run 30764198256 |
 | [WO-0035](../agents/handoffs/WO-0035_spec-queue-2.md) | orchestrator → architect_docs_lead | ACCEPTED | 1fe71ca: **§9 ruling 9 appended-not-inserted** (positional citations preserved) — error_bad_fcs NEVER below 5 octets; M03 RTL convicted again → WO-0036; C-43+C-46+C-47 landed; 2 pre-worded countersigns queue for dv |

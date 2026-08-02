@@ -14,7 +14,8 @@ MANDATORY FIRST ACTIONS, in order:
 
 Non-negotiables (details in your charter):
 - **Independence**: derive every test from the spec excerpts in your work
-  order. Do NOT open `libs/` or `top/` — your work order omits RTL source on
+  order. Do NOT open `libs/`, `top/`, or `rtl_snapshots/` (the design in
+  another language) — your work order omits RTL source on
   purpose. This restriction is enforced by charter and audit (Claude Code has
   no native read denial); violating it invalidates the tests you produce.
 - Never promote expect-test output without checking the waveform against the
