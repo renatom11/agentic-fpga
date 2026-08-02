@@ -11,7 +11,7 @@ by the orchestrator from the signing agent's journal entry, per PROTOCOL
 
 | # | Item | Evidence |
 |---|---|---|
-| 7.1 | `hardcaml_axi` in opam deps and the ethernet lib's dune | opam: build run 30724505231 (98e1607) green; lib dune entry added at this commit (CI on this push is the evidence) |
+| 7.1 | `hardcaml_axi` in opam deps and the ethernet lib's dune | opam: build run 30724505231 (98e1607) green; lib dune entry: build run 30726680676 (1f541a9) green |
 | 7.2 | `docs/specs/ifc_check/` dune wiring | Same run 30724505231 — template block compiles |
 | 7.3 | dv_lead testability review before this checklist opened | WO-0003 → 16 diffs → WO-0004 applied → WO-0005 re-review CLOSED 16/16 |
 

@@ -1351,3 +1351,29 @@ none
 - docs/gates/P1-spec-freeze-checklist.md
 - libs/hardcaml_ethernet/src/dune
 - tasks/BOARD.md
+
+## [J-orchestrator-0034] 2026-08-02T04:05:00Z | task:none | Evidence sweep: step_testbench solves; 7.1 run ID pinned
+### Trigger
+Scheduled evidence check on the runs following the WO-0003 acceptance
+and the gate-checklist opening.
+### Inputs
+build.yml run list.
+### Reasoning
+Eight consecutive green builds through 1f541a9. Two of them carry
+evidentiary weight promised earlier: run 30725399946 (9723207) is the
+install proof for hardcaml_step_testbench that the WO-0003 ACCEPTED
+ruling #2 said CI would supply, and run 30726680676 (1f541a9) is the
+completion evidence for prerequisite 7.1's library-dune half, which the
+checklist row cited only as "this push" — now pinned by ID so the row is
+re-executable without git archaeology.
+### Actions
+Gate checklist 7.1 row: run ID pinned.
+### Evidence
+Runs 30725399946 and 30726680676, both success (externally verifiable
+per the F5 rule).
+### Outcome
+Evidence trail closed for both rulings. Handoff: none.
+### Open-questions
+none
+### Files-in-this-commit
+- docs/gates/P1-spec-freeze-checklist.md
