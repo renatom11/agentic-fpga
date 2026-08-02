@@ -211,12 +211,6 @@ a { color:var(--rx); }
 .cap-motion { display:inline; } .cap-static { display:none; }
 @media (prefers-reduced-motion: reduce) {
   .cap-motion { display:none; } .cap-static { display:inline; } }
-.statline { display:flex; flex-wrap:wrap; gap:.35rem 1.4rem; margin:1.7rem 0 1.9rem;
-  padding:.9rem 0; border-top:1px solid var(--line); border-bottom:1px solid var(--line);
-  font-size:.88rem; color:var(--ink-2); align-items:baseline; }
-.statline b { font-family:'Plex Mono',monospace; font-weight:600; font-size:1.02rem;
-  color:var(--rx); font-variant-numeric:tabular-nums; margin-right:.35rem; }
-.statline .si { white-space:nowrap; }
 .twocol { display:grid; grid-template-columns:1fr; gap:1.2rem; }
 @media (min-width:840px) { .twocol { grid-template-columns:1fr 1fr; } }
 .col { border:1px solid var(--line); border-radius:14px; background:var(--panel); padding:1.1rem 1.3rem; }
@@ -312,14 +306,6 @@ index = head_block('agentic-fpga — a trading network card built by an AI org',
   <div class="cadence" title="A new minimum-size packet every 67.2 nanoseconds — slowed down exactly 20,000,000× so you can watch it"></div>
   {CAD_CAPTION}
 
-  <div class="statline">
-    <span class="si"><b>{n_commits}</b>commits, every one journaled</span>
-    <span class="si"><b>20/20</b>specs frozen &amp; sponsor-signed</span>
-    <span class="si"><b>110</b>requirements</span>
-    <span class="si"><b>{n_rtl}/20</b>modules in RTL</span>
-    <span class="si"><b>{n_attack}</b>planned attacks</span>
-    <span class="si" style="color:var(--ink-2)">benches: the current work</span>
-  </div>
 
   <h2>What this is</h2>
   <div class="twocol">

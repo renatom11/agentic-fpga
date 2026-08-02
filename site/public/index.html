@@ -63,12 +63,6 @@ a { color:var(--rx); }
 .cap-motion { display:inline; } .cap-static { display:none; }
 @media (prefers-reduced-motion: reduce) {
   .cap-motion { display:none; } .cap-static { display:inline; } }
-.statline { display:flex; flex-wrap:wrap; gap:.35rem 1.4rem; margin:1.7rem 0 1.9rem;
-  padding:.9rem 0; border-top:1px solid var(--line); border-bottom:1px solid var(--line);
-  font-size:.88rem; color:var(--ink-2); align-items:baseline; }
-.statline b { font-family:'Plex Mono',monospace; font-weight:600; font-size:1.02rem;
-  color:var(--rx); font-variant-numeric:tabular-nums; margin-right:.35rem; }
-.statline .si { white-space:nowrap; }
 .twocol { display:grid; grid-template-columns:1fr; gap:1.2rem; }
 @media (min-width:840px) { .twocol { grid-template-columns:1fr 1fr; } }
 .col { border:1px solid var(--line); border-radius:14px; background:var(--panel); padding:1.1rem 1.3rem; }
@@ -147,14 +141,6 @@ ul.next { padding-left:1.2rem; } ul.next li { margin:.35rem 0; font-size:.92rem;
   silence.</span> The full story is in the
   <a href="block-diagram.html">block diagram</a>.</p>
 
-  <div class="statline">
-    <span class="si"><b>137</b>commits, every one journaled</span>
-    <span class="si"><b>20/20</b>specs frozen &amp; sponsor-signed</span>
-    <span class="si"><b>110</b>requirements</span>
-    <span class="si"><b>5/20</b>modules in RTL</span>
-    <span class="si"><b>137</b>planned attacks</span>
-    <span class="si" style="color:var(--ink-2)">benches: the current work</span>
-  </div>
 
   <h2>What this is</h2>
   <div class="twocol">
@@ -218,8 +204,8 @@ ul.next { padding-left:1.2rem; } ul.next li { margin:.35rem 0; font-size:.92rem;
   agent’s reasoning entering beside it</b>, appended to that agent’s
   journal in the same commit. Journals are append-only; mistakes are corrected
   forward, never rewritten. The history is the experiment’s data.</p>
-  <p class="cadcap">The 137 journal entries — one per commit — by author:</p>
-  <div class="chips"><span class="chip">94 · orchestrator</span> <span class="chip">21 · verification lead (dv_lead)</span> <span class="chip">13 · architect (architect_docs_lead)</span> <span class="chip">6 · hardware designer (rtl_lead)</span> <span class="chip">3 · auditor</span></div>
+  <p class="cadcap">The 138 journal entries — one per commit — by author:</p>
+  <div class="chips"><span class="chip">95 · orchestrator</span> <span class="chip">21 · verification lead (dv_lead)</span> <span class="chip">13 · architect (architect_docs_lead)</span> <span class="chip">6 · hardware designer (rtl_lead)</span> <span class="chip">3 · auditor</span></div>
 
   <h2>The tech stack</h2>
   <div class="chips">
@@ -240,7 +226,7 @@ ul.next { padding-left:1.2rem; } ul.next li { margin:.35rem 0; font-size:.92rem;
     <a class="card" href="spec-atlas.html"><span class="ct">Spec atlas</span>
       <span class="cd">All 110 requirements, the 20-module inventory, dataflow diagrams,
       and the traceability matrix — regenerated from the spec text itself, pinned at
-      <span class="mono">61e9853</span>.</span><span class="go">open →</span></a>
+      <span class="mono">8d31241</span>.</span><span class="go">open →</span></a>
     <a class="card" href="org-chart.html"><span class="ct">Org chart</span>
       <span class="cd">Who does what, who may refuse whom, and the journal rule no agent
       can escape — the org’s constitution, explorable.</span><span class="go">open →</span></a>
@@ -254,7 +240,7 @@ ul.next { padding-left:1.2rem; } ul.next li { margin:.35rem 0; font-size:.92rem;
   </div>
 
   <div class="foot">Generated from the repository at commit
-  <a class="mono" href="https://github.com/renatom11/agentic-fpga/commit/61e9853" target="_blank" rel="noopener">61e9853</a>
+  <a class="mono" href="https://github.com/renatom11/agentic-fpga/commit/8d31241" target="_blank" rel="noopener">8d31241</a>
   · 2026-08-02 · <a href="https://github.com/renatom11/agentic-fpga" target="_blank" rel="noopener">source on GitHub</a> · built by
   the org’s orchestrator, like everything else here.</div>
 </div>

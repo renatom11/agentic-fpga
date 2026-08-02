@@ -4082,3 +4082,35 @@ Sponsor redeploys.
 - site/public/index.html
 - site/public/org-chart.html
 - site/public/spec-atlas.html
+
+## [J-orchestrator-0096] 2026-08-03T15:40:00Z | task:none | The dashboard is gone — the hero flows straight into the story
+
+### Trigger
+Sponsor: remove the dashboard entirely.
+
+### Inputs
+- The .statline strip and its CSS in site/build.py.
+
+### Reasoning
+Removed clean, no residue. The numbers all survive where they carry
+their context: the prose, the backlog page, the journal-count chips.
+
+### Actions
+- Strip + CSS deleted; rebuilt; this commit.
+
+### Evidence
+- index.html: cadence caption flows directly into "What this is".
+
+### Outcome / DoD
+Sponsor redeploys.
+
+### Open questions
+- None.
+
+### Files-in-this-commit
+- site/build.py
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/index.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html
