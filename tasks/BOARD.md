@@ -81,6 +81,10 @@ v0.17.x from opam (ADR-0004). Next sponsor touchpoint: P1-spec-freeze._
   (recorded in `docs/adr/ADR-0001-org-design.md`).
 - 2026-08-01 — E3: toolchain lane = released Hardcaml v0.17.x from opam
   (ADR-0004); master-pin and OxCaml rejected; API gaps trigger a new E3.
+- 2026-08-02 — Sponsor delegated the receive-latency budget resolution
+  (REQ-006/C-1) to architect_docs_lead + dv_lead jointly (seals at the
+  batch-B countersignature), and confirmed the UDP checksum posture
+  (tx zero, no rx verification) as a design call, not an E2.
 - 2026-08-01 — Sponsor ratified the org (G0 item 8) and set org-evolution
   policy: the current structure is the best first guess, not a commitment —
   roles may be added or reshaped as the program learns, via the existing

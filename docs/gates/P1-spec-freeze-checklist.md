@@ -44,13 +44,17 @@ by the orchestrator from the signing agent's journal entry, per PROTOCOL
 | C-6 | M10 pass criteria (parsed-fields module under the REQ-004 bench) | SPEC-M10 (batch D) |
 | C-7 | Fifth REQ-901 divergence class for REQ-510's reply drop | first co-sim run |
 
-## Sponsor items attached to this gate
+## Sponsor items attached to this gate — both decided 2026-08-02
 
-- Confirm the 24-cycle receive-latency budget (REQ-006) — note C-1's
-  finding that the per-stage ceilings currently consume it exactly.
-- UDP checksum posture (tx zero, no rx verification) — flagged by the
-  architect as in-role; sponsor may treat as scope reduction (E2) if read
-  differently.
+- **Receive-latency budget (REQ-006 / C-1): DELEGATED.** The sponsor
+  entrusts resolution to architect_docs_lead working with dv_lead. The
+  joint resolution lands with carry-forward C-1 (before SPEC-M03, batch
+  B): the architect adopts dv_lead's (L + h)/8 comparison or
+  counter-proposes, and dv_lead's batch-B countersignature seals the
+  agreed budget/accounting. Whatever number and method they converge on
+  is thereby sponsor-authorized without a further touchpoint.
+- **UDP checksum posture (tx zero, no rx verification): CONFIRMED** by
+  the sponsor as a design call, not a scope reduction. No E2.
 
 ## Sign-off
 

@@ -1377,3 +1377,40 @@ Evidence trail closed for both rulings. Handoff: none.
 none
 ### Files-in-this-commit
 - docs/gates/P1-spec-freeze-checklist.md
+
+## [J-orchestrator-0035] 2026-08-02T04:20:00Z | task:none | Sponsor decisions: latency budget delegated, UDP checksum confirmed
+### Trigger
+Sponsor message resolving both items parked on the P1-spec-freeze
+checklist: (1) "i trust the architect to work with dv_lead to resolve
+the receive-latency budget issue"; (2) UDP checksum posture "that's
+fine".
+### Inputs
+Sponsor message; gate checklist sponsor-items section; C-1 ledger row.
+### Reasoning
+Decision 1 is a delegation, not a number — so the record must say
+precisely when the delegated resolution becomes final, or a future gate
+review could claim the budget was never authorized. Binding chosen: the
+architect+dv_lead joint resolution lands with C-1 before SPEC-M03, and
+dv_lead's batch-B countersignature is the sealing event; the checklist
+now states that whatever they converge on is sponsor-authorized without
+another touchpoint. This will be written into the batch-B WO packet so
+neither agent has to rediscover the mandate. Decision 2 closes the
+architect's E2 question definitively: design call, no scope change.
+Neither decision requires re-opening b4b4cf4 text now — C-1 was already
+scheduled for batch B and REQ-702/705 already state the checksum
+posture.
+### Actions
+Gate checklist sponsor-items section rewritten as decided; board
+decisions log gains both entries.
+### Evidence
+Sponsor message in this session (2026-08-02); checklist and board diffs
+in this commit.
+### Outcome
+No sponsor items pending; next sponsor touchpoint is the P1-spec-freeze
+signature itself. Handoff: the delegation clause goes into the batch-B
+WO at issuance.
+### Open-questions
+none
+### Files-in-this-commit
+- docs/gates/P1-spec-freeze-checklist.md
+- tasks/BOARD.md
