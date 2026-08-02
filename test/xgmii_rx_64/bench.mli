@@ -47,7 +47,6 @@
     reading tkeep-masked or tvalid=0 fields (test/monitors/stream_word.mli). *)
 
 open! Base
-open Hardcaml
 
 type t
 

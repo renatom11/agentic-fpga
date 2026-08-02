@@ -20,6 +20,19 @@
     compile, whatever it is named. These bindings are never called from any
     [%expect_test] — they are witnessed by compiling at all. *)
 
+[@@@warning "@9"]
+
+(* RV-0038 addendum D2 (J-dv_lead-0023): warning 9 (missing-record-field-pattern)
+   sits inside CI's fatal `@5..28` range today, but that is a fact about
+   dune's default `dev` profile flags, not about this file — and M03-L6's
+   entire content is the claim that its witnesses cannot silently stop
+   witnessing. Making warning 9 fatal *in this file*, via the attribute
+   rather than the ambient flag set, means the three record-pattern
+   witnesses below keep their teeth even if the project's warning flags ever
+   drift; checked against the strongest possible suppression
+   (`ocamlc -w -a` with this attribute present still errors on a partial
+   pattern). *)
+
 open! Base
 open Hardcaml
 open Bench

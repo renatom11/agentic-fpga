@@ -3,12 +3,17 @@
 ;
 ; Depends on hardcaml_ethernet (the design under test — REQ-010's
 ; type-identity check does its job if the ports diverge from
-; docs/specs/ifc_check/xgmii_rx_64_ifc.ml) and hardcaml_waveterm (the
-; Cyclesim/Waveform shape test/hardcaml_ethernet/test_word_counter.ml
-; already shows). tools/precompile_check.sh's STUBBABLE set does not cover
-; either, so this directory is EXCLUDED from that harness by construction
-; (WO-0038 §6 rule 2) and CI's `dune build @default` is the only compiler
-; that reaches it (ADR-0005).
+; docs/specs/ifc_check/xgmii_rx_64_ifc.ml). tools/precompile_check.sh's
+; STUBBABLE set does not cover it, so this directory is EXCLUDED from that
+; harness by construction (WO-0038 §6 rule 2) and CI's `dune build @default`
+; is the only compiler that reaches it (ADR-0005).
+;
+; RV-0038 addendum D1 (J-dv_lead-0023): hardcaml_waveterm was dropped from
+; this stanza along with bench.ml's `waves` field — the field was written
+; (Waveform.create) and never read, costing a full per-cycle waveform
+; recording (~43 elaborations in this packet) for a capability no test here
+; uses. Add hardcaml_waveterm back in the packet that first needs a waveform
+; expectation.
 ;
 ; dv_xgmii, dv_xgmii_probe, dv_axi64_probe and dv_monitors are the
 ; DUT-independent machinery named in WO-0038 §3: the link-partner schedule
@@ -33,6 +38,6 @@
 (library
  (name test_xgmii_rx_64)
  (inline_tests)
- (libraries hardcaml hardcaml_waveterm hardcaml_ethernet dv_xgmii dv_xgmii_probe dv_axi64_probe dv_monitors)
+ (libraries hardcaml hardcaml_ethernet dv_xgmii dv_xgmii_probe dv_axi64_probe dv_monitors)
  (preprocess
   (pps ppx_hardcaml ppx_jane ppx_expect)))

@@ -26,7 +26,6 @@ let strobe_names =
 
 type t =
   { sim : Sim.t
-  ; waves : Hardcaml_waveterm.Waveform.t
   ; protocol : Protocol_monitor.t
   ; conservation : Conservation_monitor.t
   ; strobes : Strobe_monitor.t
@@ -41,17 +40,23 @@ let latency t = t.latency
 let create () =
   let scope = Scope.create ~flatten_design:true () in
   let sim = Sim.create (Hardcaml_ethernet.Xgmii_rx_64.create scope) in
-  let waves, sim = Hardcaml_waveterm.Waveform.create sim in
   let i = Cyclesim.inputs sim in
   (* REQ-009: clear for one cycle, then release. cfg_rx_enable held at 1 for
      the whole run — family J (the disable path) is out of this packet's
-     eleven rows (WO-0038 §1), so there is no reading to gate here. *)
+     eleven rows (WO-0038 §1), so there is no reading to gate here.
+     N2 (RV-0038 addendum): drive an idle XGMII word through the reset cycle
+     rather than leaving xgmii_rx at Cyclesim's zero default, which is eight
+     *data* octets of 0x00 — not idle, and not something REQ-018's link
+     partner ever emits. Harmless under clear (no /S/, so no frame opens),
+     but standing obligation 5 (Arrival.check) never reaches this cycle
+     because it is outside every schedule, so it is worth driving correctly
+     rather than relying on clear to paper over it. *)
+  Xgmii_probe.to_refs ~d:i.xgmii_rx.d ~c:i.xgmii_rx.c Xgmii_word.idle;
   i.clear := Bits.vdd;
   i.cfg_rx_enable := Bits.vdd;
   Cyclesim.cycle sim;
   i.clear := Bits.gnd;
   { sim
-  ; waves
   ; protocol = Protocol_monitor.create ~name:"M03 rx" ~max_words_per_frame:190 ()
   ; conservation = Conservation_monitor.create ~name:"M03 rx"
   ; strobes = Strobe_monitor.create ~name:"M03 rx" ~strobes:strobe_names

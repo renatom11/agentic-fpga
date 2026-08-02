@@ -913,3 +913,140 @@ and if it does that is the instrument working, not a review failure.
 - **Independence ruling**: unchanged — NO TAINT, conduct commended, not a
   precedent
 - **Signed**: J-dv_lead-0023
+
+---
+
+### REVISION-2 RETURNED — tb_writer, `J-tb_writer-0002` (WO-0038/2026-08-04T09:10Z)
+
+**Every item on the RV-0038 ADDENDUM (`J-dv_lead-0023`) list, fixed as that
+addendum's (not RV-0038's original) instructions specify.**
+
+| Item | File:line (pre-fix) | Fix | State |
+|---|---|---|---|
+| CI-1 (BLOCKING) | `bench.mli:50` | Deleted `open Hardcaml` — not softened to `open!`. Confirmed the file names no Hardcaml type anywhere else. | FIXED |
+| D1 (REQUIRED) | `bench.ml:29,44,54`; `dune:36` | Dropped the `waves` field, the `Hardcaml_waveterm.Waveform.create` call and its two record-literal sites; dropped `hardcaml_waveterm` from `dune`'s `(libraries …)`. Not the accessor RV-0038 originally asked for — the addendum withdrew that preference on the ~43-elaboration recording-cost argument. | FIXED |
+| D2 (REQUIRED, narrowed) | `test_m03_structural.ml:1` | Added `[@@@warning "@9"]` above the file's opens, with a comment recording that RV-0038's construct-the-records rewrite is no longer required. The three record-pattern witnesses are byte-for-byte unchanged. | FIXED |
+| D3 (REQUIRED) | `test_m03_c.ml:84` (old numbering) | `run_c1_c2` now collects `(observed_tkeep, terminate_lane)` per length in one pass and asserts the eight terminate lanes' set equals `{0,…,7}`, worded to name the stimulus, not the DUT, as the suspect on failure. | FIXED |
+| N1 (nit) | `test_m03_c.ml:71,83,96` (old numbering) | `check_directed_length_frame` now returns the tkeep it actually observed on `tlast_sample`, not the bench's computed `expected_tkeep`; the multiset comparison feeding `observed_tkeeps` is now true as its failure message states. | FIXED |
+| N2 (nit) | `bench.ml:41-52` (old numbering) | `create`'s reset cycle now drives `Xgmii_word.idle` through `Xgmii_probe.to_refs` before `clear` is asserted, replacing `Cyclesim`'s zero-default (eight data octets of 0x00). | FIXED |
+| N3 (advisory) | — | No fix requested by the addendum; not acted on. | NOT ACTED ON (per addendum) |
+
+No row's stimulus, oracle or assertion content from the eleven rows in §1 of
+round 1's Return log was rethought or removed — every fix above is confined
+to the six items the addendum named. `test_m03_a.ml` and `test_m03_b.ml`
+were re-read to confirm neither carries an addendum defect and neither
+references `waves`/`Hardcaml_waveterm`, and were not edited.
+
+#### Self-check results (verbatim)
+
+**`ocamlc -stop-after parsing`, system ocamlc 4.14.1, on every changed
+`.ml`/`.mli`:**
+```
+bench.mli: exit 0
+bench.ml: exit 0
+test_m03_structural.ml: exit 0
+test_m03_c.ml: exit 0
+```
+
+**`bash tools/precompile_check.sh`:**
+```
+--- LANE 1 — Hardcaml-free DV libraries, compiled for real
+  RESULT: 31 units compiled, 0 errors
+--- LANE 2 — Hardcaml-facing DV libraries, against tools/precompile_stubs/
+  RESULT: 12 units compiled, 0 errors
+--- LANE 3a — coverage sweep
+  EXCLUDED hardcaml_ethernet — depends on hardcaml_waveterm hardcaml_ethernet, which this harness cannot transcribe
+  EXCLUDED xgmii_rx_64 — depends on hardcaml_ethernet, which this harness cannot transcribe
+  RESULT: 43 files in compiled directories, all 43 materialised and compiled.
+--- LANE 3b — qualification sweep
+  RESULT: no unqualified sibling-library reference.
+--- SUMMARY
+  precompile_check: ALL LANES PASSED
+  2 transcription(s) remain UNVERIFIED here and are settled only by CI
+```
+Note: `xgmii_rx_64`'s own EXCLUDED reason changed from round 1's `depends on
+hardcaml_waveterm hardcaml_ethernet` to this run's `depends on
+hardcaml_ethernet` — the harness's own coverage sweep confirming D1's
+dependency removal took effect, not something asserted from the `dune` diff
+alone.
+
+**`bash tools/dv_checks.sh`:**
+```
+check_records_vs_appendix.sh: 23/23 check(s) passed, 0 failures
+check_emitted_verilog.sh: 5/5 check(s) passed, 0 failures, 3 PENDING
+  (pre-existing: REQ-808/REQ-017/REQ-903 on unbuilt modules, not M03)
+precompile_check.sh: ALL LANES PASSED (as above)
+check_rfc1071_anchor.sh: VERDICT: OBLIGATION OPEN — RFC 1071 could not be
+  fetched (blocked network egress; pre-existing, J-dv_lead-0017/0018,
+  concerns M02/M14's checksum oracle, unrelated to M03 and to this revision)
+dv_checks: every check that COULD run passed, and 1 obligation is still OPEN
+```
+
+**`git status --porcelain` (repo root), before this Return log edit and the
+journal entry were staged:**
+```
+ M test/xgmii_rx_64/bench.ml
+ M test/xgmii_rx_64/bench.mli
+ M test/xgmii_rx_64/dune
+ M test/xgmii_rx_64/test_m03_c.ml
+ M test/xgmii_rx_64/test_m03_structural.ml
+```
+Five paths, all under `test/xgmii_rx_64/`, all named in the addendum's
+defect list. `test_m03_a.ml`/`test_m03_b.ml` do not appear — read, not
+touched.
+
+**`dune build @default` / `dune runtest`:** not run — same absent toolchain
+as round 1, unchanged this spawn. Both remain CI's to run and judge. Per
+WO-0038 §7, `dune runtest` is still expected red on first reaching regardless
+of this revision, since D1-D3/N1-N2 touched no `[%expect]` block in any test
+— all eleven rows' blocks are still empty, per ADR-0005 rule 2.
+
+**Two ephemeral, non-committed checks**, run in this session's scratchpad
+directory (never inside the repo, deleted after use — not reproducible from
+a repo checkout, named as such per PROTOCOL §4.1's Evidence rule), to verify
+this Return log's own claims about CI-1 and D2 rather than take the
+addendum's reproductions on faith:
+- CI-1 mechanics: a minimal `.mli` with an unused `open` under CI's exact
+  flag string (`@1..3@5..28@30..39@43@46..47@49..57@61..62-40`) —
+  `Error (warning 33 [unused-open])`, rc=2 with the open present, rc=0 with
+  it removed.
+- D2 mechanics: a record pattern missing a field, with `[@@@warning "@9"]`
+  at the file head, compiled with `ocamlc -c -w -a` (every other warning
+  class disabled) — still `Error (warning 9 [missing-record-field-pattern])`,
+  rc=2, confirming the fix survives the strongest suppression the addendum
+  names.
+
+#### Open questions for dv_lead
+
+1. `test_m03_c.ml`'s D3 fix collects `observed_tkeeps`/`terminate_lanes` via
+   `List.map results ~f:fst` / `~f:snd` (OCaml-standard tuple accessors)
+   rather than `Base.List.unzip`, chosen because this container's system
+   `ocamlc` has no `Base` installed (ADR-0005) and `fst`/`snd`'s presence
+   under `open! Base` could not be checked here any more than `List.unzip`'s
+   could — I judged `fst`/`snd` the lower-risk name to depend on and
+   avoided introducing a second unverified name where one is enough, but
+   this is unverified-by-compiler either way and I am flagging it exactly
+   as WO-0038 §7(d) asks, not asserting it safe.
+2. None of round 1's three open questions are reopened: #1 (the disclosed
+   accidental `libs/hardcaml_ethernet/src/dune` read) and #3 (an optional
+   `Arrival.create` preamble-filler parameter) were closed by RV-0038's NO
+   TAINT ruling and its unchanged restatement in the addendum; #2 (M03-C1's
+   terminate-lane coverage, wire-level vs. stimulus-property) is answered by
+   this revision's D3 fix, which asserts the stimulus-property framing the
+   addendum accepted.
+
+#### Scope statement
+
+Files staged this revision: `test/xgmii_rx_64/bench.ml`,
+`test/xgmii_rx_64/bench.mli`, `test/xgmii_rx_64/dune`,
+`test/xgmii_rx_64/test_m03_c.ml`, `test/xgmii_rx_64/test_m03_structural.ml`,
+plus this Return log entry and the `J-tb_writer-0002` journal entry.
+`test/xgmii_rx_64/test_m03_a.ml` and `test/xgmii_rx_64/test_m03_b.ml` were
+read and confirmed unaffected but not staged. No path under `libs/**`,
+`top/**`, `bin/**` or `rtl_snapshots/**` — including build manifests — was
+opened this spawn, targeted or swept. My journal's `Inputs` section lists
+exactly what was read.
+
+State left at **BOUNCED** — dv_lead's `RV-` and the orchestrator's
+transcription flip it, not this Return log.
+

@@ -36,6 +36,14 @@ let expected_tkeep_for ~delivered =
    lands its terminate in lane 0 and is excluded (64 at lane 0, 68 at lane
    4), so the FCS-good re-check below runs on 7 of every lane's 8 frames. *)
 
+(* N1 (RV-0038 addendum): returns the OBSERVED tkeep (what the DUT actually
+   produced on the tlast word), not the bench's own expected_tkeep_for
+   computation — the caller's eight-pattern multiset check compares this
+   against expected_tkeeps, and that comparison is only true as its failure
+   message claims ("were not each observed exactly once") if what is
+   collected really was observed on the wire. The DUT-vs-expected comparison
+   below is unchanged and still uses expected_tkeep; only the return value
+   changes. *)
 let check_directed_length_frame ~row ~length bench (frame : Dv_xgmii.Arrival.frame) samples =
   let expected_delivered = length - 4 in
   let got_octets = delivered_octets samples in
@@ -50,30 +58,37 @@ let check_directed_length_frame ~row ~length bench (frame : Dv_xgmii.Arrival.fra
          ; Int.to_string (List.length got_octets)
          ]);
   let expected_tkeep = expected_tkeep_for ~delivered:expected_delivered in
-  (match tlast_sample samples with
-   | None -> fail row "no tlast word observed"
-   | Some s ->
-     if s.out.Dv_monitors.Stream_word.tkeep <> expected_tkeep
-     then
-       fail
-         row
-         (String.concat
-            [ "tlast word tkeep = "
-            ; Int.to_string s.out.Dv_monitors.Stream_word.tkeep
-            ; ", expected "
-            ; Int.to_string expected_tkeep
-            ]);
-     if s.out.Dv_monitors.Stream_word.tuser <> 0
-     then fail row "tuser[0] set on a legal, standard-FCS frame");
+  let observed_tkeep =
+    match tlast_sample samples with
+    | None -> fail row "no tlast word observed"
+    | Some s ->
+      if s.out.Dv_monitors.Stream_word.tkeep <> expected_tkeep
+      then
+        fail
+          row
+          (String.concat
+             [ "tlast word tkeep = "
+             ; Int.to_string s.out.Dv_monitors.Stream_word.tkeep
+             ; ", expected "
+             ; Int.to_string expected_tkeep
+             ]);
+      if s.out.Dv_monitors.Stream_word.tuser <> 0
+      then fail row "tuser[0] set on a legal, standard-FCS frame";
+      s.out.Dv_monitors.Stream_word.tkeep
+  in
   if not (List.is_empty (error_pulses samples)) then fail row "an error strobe pulsed";
   account_clean_frame bench frame samples ~aborted:false;
   assert_monitors_clean bench ~row;
-  expected_tkeep
+  observed_tkeep
 ;;
 
 let run_c1_c2 ~lane =
   let runs = run_directed_lengths ~lane in
-  let observed_tkeeps =
+  (* [results] pairs each length's observed tkeep with its terminate lane —
+     computed once per length, in one pass, rather than re-running
+     check_directed_length_frame (which itself drives the standing-monitor
+     assertions) a second time to recover the second component. *)
+  let results =
     List.map runs ~f:(fun (length, sched, bench, samples) ->
       let row1 =
         String.concat
@@ -93,10 +108,12 @@ let run_c1_c2 ~lane =
         | Some s ->
           if s.out.Dv_monitors.Stream_word.tuser <> 0
           then fail row2 "FCS verdict bad on a terminate-lane-k>0 frame (the C-18 twin)");
-      tkeep)
+      tkeep, terminate_lane)
   in
-  let expected_tkeeps = [ 0x0F; 0x1F; 0x3F; 0x7F; 0xFF; 0x01; 0x03; 0x07 ] in
+  let observed_tkeeps = List.map results ~f:fst in
+  let terminate_lanes = List.map results ~f:snd in
   let sorted xs = List.sort xs ~compare:Int.compare in
+  let expected_tkeeps = [ 0x0F; 0x1F; 0x3F; 0x7F; 0xFF; 0x01; 0x03; 0x07 ] in
   if not (List.equal Int.equal (sorted observed_tkeeps) (sorted expected_tkeeps))
   then
     failwith
@@ -104,6 +121,25 @@ let run_c1_c2 ~lane =
          [ "M03-C1 (lane "
          ; Int.to_string lane
          ; "): the eight tkeep patterns were not each observed exactly once"
+         ]);
+  (* D3 (RV-0038 addendum): "covering all eight lanes" (AP-xgmii_rx_64.md's
+     own words for this row) is a property of the STIMULUS, not a DUT
+     observable — Arrival lays consecutive directed lengths at consecutive
+     terminate lanes, and until this assertion nothing noticed if
+     directed_lengths or Arrival's gap arithmetic drifted so that fewer than
+     eight distinct terminate lanes were actually driven. Worded to name the
+     stimulus as the suspect, not the design, since that is what a failure
+     here would mean. *)
+  let expected_lanes = List.init 8 ~f:(fun i -> i) in
+  if not (List.equal Int.equal (sorted terminate_lanes) (sorted expected_lanes))
+  then
+    failwith
+      (String.concat
+         [ "M03-C1 (lane "
+         ; Int.to_string lane
+         ; "): STIMULUS bug, not a DUT finding — directed_lengths' terminate lanes were {"
+         ; String.concat ~sep:"," (List.map (sorted terminate_lanes) ~f:Int.to_string)
+         ; "}, expected each of 0..7 exactly once"
          ])
 ;;
 
