@@ -8,6 +8,7 @@ depends: [
   "ocaml"              {>= "4.14"}
   "dune"               {>= "3.0"}
   "hardcaml"           {>= "v0.17" & < "v0.18"}
+  "hardcaml_axi"       {>= "v0.17" & < "v0.18"}
   "ppx_hardcaml"       {>= "v0.17" & < "v0.18"}
   "hardcaml_waveterm"  {>= "v0.17" & < "v0.18"}
   "ppx_expect"         {>= "v0.17" & < "v0.18"}

@@ -1,0 +1,9 @@
+; Interface compile-check lane (SPEC-TEMPLATE.md "How to use" rule 6).
+; Every frozen module spec's §4.1 block is lifted verbatim into
+; <module>_ifc.ml here; a green CI build (ADR-0005) at the freeze SHA is
+; the compile evidence the freeze record cites. Records and signatures
+; only — no logic ever lives in this library.
+(library
+ (name ifc_check)
+ (libraries hardcaml hardcaml_axi)
+ (preprocess (pps ppx_hardcaml ppx_jane)))

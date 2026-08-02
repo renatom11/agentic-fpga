@@ -1086,3 +1086,39 @@ Board consistent with the Return log and J-0025's intent. Handoff: none.
 none
 ### Files-in-this-commit
 - tasks/BOARD.md
+
+## [J-orchestrator-0027] 2026-08-02T00:15:00Z | task:none | hardcaml_axi dependency + ifc_check compile lane (batch-A blockers)
+### Trigger
+WO-0002 acceptance opened two orchestrator-owned blockers ahead of spec
+batch A (architect open questions 1 and 2).
+### Inputs
+docs/specs/SPEC-TEMPLATE.md rule 6 and §4.1; agentic_fpga.opam;
+libs/hardcaml_ethernet/src/dune (convention source).
+### Reasoning
+The fabric type the architecture commits to is Hardcaml_axi.Stream.Make,
+so hardcaml_axi joins the opam depends with the same v0.17.x bounds as
+every other Jane Street package (ADR-0004). The compile-check lane is a
+private dune library at docs/specs/ifc_check — the location the template
+names — seeded with the template's own §4.1 example block lifted
+verbatim, so this push proves the whole mechanism (dependency solves in
+CI, Stream.Make functor applies, [@@deriving hardcaml] elaborates on
+nested interfaces with rtlprefix) rather than proving it later under a
+freeze deadline. Local verification is impossible per ADR-0005; the CI
+run on this commit is the test, and per the architect's fallback, if the
+solver rejects hardcaml_axi the recorded plan is a local stream record +
+ADR. dune build @default builds private libraries, so no workflow change
+is needed.
+### Actions
+agentic_fpga.opam: + hardcaml_axi {>= v0.17 & < v0.18}.
+docs/specs/ifc_check/{dune,template_ifc.ml}: new compile-check library.
+### Evidence
+The build run on this commit (cited by ID in the next entry once
+concluded) — form (b) under the ADR-0003/F5 Evidence rule.
+### Outcome
+Awaiting CI verdict; on green, batch-A blockers are closed. Handoff: none.
+### Open-questions
+none
+### Files-in-this-commit
+- agentic_fpga.opam
+- docs/specs/ifc_check/dune
+- docs/specs/ifc_check/template_ifc.ml
