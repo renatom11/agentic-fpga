@@ -4587,3 +4587,49 @@ round remains ahead.
 
 ### Files-in-this-commit
 _None — journal-only entry._
+
+## [J-orchestrator-0106] 2026-08-02T23:05:00Z | task:WO-0038 | Build green, and the DUT speaks for the first time - four promoted sources harvested byte-exact, held for dv review
+
+### Trigger
+Scheduled CI check-in for the round-3 push.
+
+### Inputs
+- Run 30771064764 (2c434cd): Build GREEN - all seven bench files
+  compiled, including test_m03_a.ml and test_m03_b.ml which had
+  never been compiled by anything (dv's State-line caveat
+  resolved favorably). dune runtest reached for the first time,
+  red by design on the never-promoted expect blocks; the
+  workflow ran dune promote and printed the promotion block.
+
+### Reasoning
+Harvested per ADR-0005: decoded base64 between the FILE/END
+markers, verified sha256 on each - four for four byte-exact -
+and wrote the promoted sources to the working tree. The diffs
+are the expect blocks filling with Cyclesim's actual recording
+of M03: +63/-2 (a), +13/-1 (b), +40/-3 (c), +25/-2
+(structural). NOT committed: promotion guarantees the recording
+is faithful, not that the recorded behavior is spec-conformant.
+If M03 is wrong, committing these would freeze the wrong
+behavior in as truth - so the recordings went to dv_lead for
+line review against SPEC-M03's normative tables before any
+commit, with the framing that a nonconformance is an M03
+conviction, not a bench defect.
+
+### Actions
+- Promotion block harvested and verified; working tree updated;
+  review dispatched to dv_lead; this journal-only commit.
+
+### Evidence
+- sha256 OK on all four paths, byte counts 14299/4806/15496/6362.
+
+### Outcome / DoD
+First end-to-end elaboration of an RTL module by a spec-derived
+bench in this programme. Await dv's conformance verdict; commit
+follows its direction.
+
+### Open questions
+- Whether the recorded behavior is conformant - exactly the
+  question now with dv.
+
+### Files-in-this-commit
+_None — journal-only entry._
