@@ -282,3 +282,26 @@ ephemeral artifact outside the repository (ADR-0003/F5), carrying no DoD weight
 (charter §3), which never touched the Hardcaml source. `SO-M02` is dv_lead's to
 issue against dv_lead's own REQ-305 reference, and `P1-module-ready` is not
 approached by this packet.
+
+#### 9. Freeze-text verification (added after HEAD advanced mid-task)
+
+This packet asserts both specs are "byte-unchanged since `f78766e`". They are
+not byte-unchanged — `508eea2` (WO-0011) touched both — so I checked what
+changed rather than taking the sentence at face value:
+
+    $ git diff -U0 f78766e..HEAD -- docs/specs/modules/axi64.md
+    @@ -3,2 +3,4 @@      (Status: DRAFT → FROZEN)
+    @@ -607..632 @@       (§11.4/§11.5 closure rows, §12 freeze record, §13 note)
+    $ git diff f78766e..HEAD -- docs/specs/modules/crc32_eth.md
+                          (Status line, §12 freeze record, §13 note)
+
+Both diffs are the freeze-flip transcription and nothing else: **§4, §6 and §7
+of both specifications are byte-unchanged**, which is the substance of the
+packet's claim and is what my transcription is against. The lifts
+`docs/specs/ifc_check/{axi64,crc32_eth}_ifc.ml` have not changed since the
+freeze at all.
+
+`HEAD` moved from `cdad57e` to `dce8a8f` (WO-0015 batch-D countersign) while I
+worked; that commit touched `docs/gates/` only and nothing this packet depends
+on. My working set is the four `libs/` files plus this packet — no other
+agent's in-flight work is mixed into it.

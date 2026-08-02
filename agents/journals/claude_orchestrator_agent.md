@@ -2086,3 +2086,42 @@ are on the record. rtl_lead (WO-0016) still in flight.
 - agents/handoffs/WO-0017_batch-e-specs.md
 - docs/gates/P1-spec-freeze-checklist.md
 - tasks/BOARD.md
+
+## [J-orchestrator-0052] 2026-08-02T07:45:00Z | task:WO-0016 | Late Return-log fragment committed (staging race)
+
+### Trigger
+Stop-hook flagged the WO-0016 packet modified after 189d5b2. Diff shows
+rtl_lead's final act — a "#### 9. Freeze-text verification" appendix to
+its own Return log — landed after my staging snapshot but before the
+agent's completion notification.
+
+### Inputs
+- `git diff agents/handoffs/WO-0016_m01-m02-implementation.md` — one
+  hunk, 23 added lines, all inside rtl_lead's RETURNED section
+
+### Reasoning
+The fragment is rtl_lead's authored content (it verifies the packet's
+"byte-unchanged since f78766e" premise against the batch-C freeze flip:
+§4/§6/§7 of both specs byte-unchanged, lifts untouched, and discloses
+that HEAD moved cdad57e→dce8a8f mid-task without affecting its inputs).
+It cannot ride a new rtl_lead commit — there is no second journal entry
+to pair with it — so I commit it as orchestrator transcription, the
+J-orchestrator-0050 shape: the words are attributed inline to the
+RETURNED section they extend; the commit act is mine. Lesson recorded:
+stage an agent's return only after its completion NOTIFICATION, not on
+the packet's RETURNED stamp — the stamp can precede a final append.
+
+### Actions
+- Staged the packet, this entry, commit as orchestrator, push.
+
+### Evidence
+- `git diff --cached --stat` — 1 file, +23 lines, all in Return log §9
+
+### Outcome / DoD
+Tree clean; WO-0016's Return log complete on the record.
+
+### Open questions
+- None.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0016_m01-m02-implementation.md
