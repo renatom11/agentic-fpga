@@ -31,14 +31,24 @@
 - **Currency**: batch A (SPEC-M01, SPEC-M02) and batch B (SPEC-M03, SPEC-M04,
   SPEC-M05) rows were filled under WO-0008, in the commit that wrote the batch-B
   specs; batch C (SPEC-M06, SPEC-M07, SPEC-M08, SPEC-M09) under WO-0011, in the
-  commit that wrote them — ten rows, REQ-401 through REQ-410. Batches D–F follow
-  the same rule — matrix and spec in one commit (SPEC-TEMPLATE §10).
+  commit that wrote them — ten rows, REQ-401 through REQ-410; batch D (SPEC-M10,
+  SPEC-M11, SPEC-M12, SPEC-M13) under **WO-0014**, in the commit that wrote them
+  — twelve rows, REQ-501 through REQ-512. Batches E–F follow the same rule —
+  matrix and spec in one commit (SPEC-TEMPLATE §10).
 - **REQ set equality survives spec diffs, and that is checked rather than
   assumed.** WO-0011's carry-forward diffs changed the *text* of REQ-010,
-  REQ-015, REQ-105 and REQ-108 and added no requirement and retired none, so the
-  110-row set below is unchanged; requirements.md §13 records those four diffs
-  and their class. REQ-904's CI script is what makes this a continuous check
-  rather than a per-gate one.
+  REQ-015, REQ-105 and REQ-108, and WO-0014's changed requirements.md §0.5's
+  constant-latency definition (carry-forward C-15); all of them added no
+  requirement and retired none, so the 110-row set below is unchanged.
+  requirements.md §13 records every one of those diffs and its class. REQ-904's
+  CI script is what makes this a continuous check rather than a per-gate one.
+- **Two rows name two owning modules for one requirement, deliberately.**
+  REQ-503 is split between the module that decides to learn (M13) and the module
+  that stores (M12), and REQ-506 between the *retry* half (M13) and the *ageing*
+  half (M12) — the split is stated in both specifications' §5 and §10 and in
+  SPEC-M12 §11.3, so a sign-off packet can show the whole requirement covered
+  without either module claiming the other's part. REQ-502 and REQ-409 are
+  two-module rows for the same reason.
 - **Test(s)** is filled by dv_lead with the test name and file, in the same
   commit as the test. Multiple tests per REQ are listed comma separated. A REQ
   covered only by a declared gap says `GAP: <reason>` and that gap must appear
@@ -139,18 +149,18 @@ or withdrawn; ids remain permanent.
 | REQ-408 | FUNC | Payload extent | M06 `Eth_axis_rx` | SPEC-M06 §6.1, §8 | | OPEN |
 | REQ-409 | IFC | Field decoding | M06 `Eth_axis_rx`, M07 `Eth_axis_tx` | SPEC-M06 §6.1; SPEC-M07 §6.1 | | OPEN |
 | REQ-410 | PERF | Back-to-back frames | M06 `Eth_axis_rx` | SPEC-M06 §6.1, §6.2 | | OPEN |
-| REQ-501 | FUNC | Packet acceptance | M10 `Arp_eth_rx` | pending | | OPEN |
-| REQ-502 | FUNC | Request response | M13 `Arp`, M11 `Arp_eth_tx` | pending | | OPEN |
-| REQ-503 | FUNC | Learning | M13 `Arp`, M12 `Arp_cache` | pending | | OPEN |
-| REQ-504 | FUNC | Cache organisation | M12 `Arp_cache` | pending | | OPEN |
-| REQ-505 | ERR | Lookup miss | M13 `Arp` | pending | | OPEN |
-| REQ-506 | FUNC | Retry and ageing | M12 `Arp_cache`, M13 `Arp` | pending | | OPEN |
-| REQ-507 | FUNC | Off-subnet routing | M13 `Arp` | pending | | OPEN |
-| REQ-508 | FUNC | Broadcast destinations | M13 `Arp` | pending | | OPEN |
-| REQ-509 | FUNC | Multicast destinations | M13 `Arp` | pending | | OPEN |
-| REQ-510 | ERR | Reply drop over stall | M13 `Arp` | pending | | OPEN |
-| REQ-511 | FUNC | Gratuitous ARP | M13 `Arp` | pending | | OPEN |
-| REQ-512 | FUNC | No proxy ARP | M13 `Arp` | pending | | OPEN |
+| REQ-501 | FUNC | Packet acceptance | M10 `Arp_eth_rx` | SPEC-M10 §6.1, §9 | | OPEN |
+| REQ-502 | FUNC | Request response | M13 `Arp`, M11 `Arp_eth_tx` | SPEC-M13 §6.1, §7; SPEC-M11 §6.1 | | OPEN |
+| REQ-503 | FUNC | Learning | M13 `Arp`, M12 `Arp_cache` | SPEC-M13 §6.1; SPEC-M12 §6.1 | | OPEN |
+| REQ-504 | FUNC | Cache organisation | M12 `Arp_cache` | SPEC-M12 §6.1 | | OPEN |
+| REQ-505 | ERR | Lookup miss | M13 `Arp` | SPEC-M13 §6.1, §9 | | OPEN |
+| REQ-506 | FUNC | Retry and ageing | M12 `Arp_cache`, M13 `Arp` | SPEC-M12 §5, §6.1 (ageing); SPEC-M13 §5, §6.2 (retry) | | OPEN |
+| REQ-507 | FUNC | Destination class precedence and off-subnet routing | M13 `Arp` | SPEC-M13 §6.1 | | OPEN |
+| REQ-508 | FUNC | Broadcast destinations | M13 `Arp` | SPEC-M13 §6.1 | | OPEN |
+| REQ-509 | FUNC | Multicast destinations | M13 `Arp` | SPEC-M13 §6.1 | | OPEN |
+| REQ-510 | ERR | Reply drop over stall | M13 `Arp` | SPEC-M13 §6.1, §9 | | OPEN |
+| REQ-511 | FUNC | Gratuitous ARP | M13 `Arp` | SPEC-M13 §6.1 | | OPEN |
+| REQ-512 | FUNC | No proxy ARP | M13 `Arp` | SPEC-M13 §6.1 | | OPEN |
 | REQ-601 | ERR | Version and header length | M14 `Ip_eth_rx_64` | pending | | OPEN |
 | REQ-602 | ERR | Header checksum | M14 `Ip_eth_rx_64` | pending | | OPEN |
 | REQ-603 | ERR | Fragments | M14 `Ip_eth_rx_64` | pending | | OPEN |

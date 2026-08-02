@@ -152,7 +152,17 @@ observable at every port this document constrains.
 **Latency.** The latency of octet n at a module is
 (octet time of n at the module's output) − (octet time of n at its input). A
 module has **constant latency** iff that value is a single constant L for every
-octet of every frame, at every frame length and content the module accepts.
+octet of every frame, at every frame length and content the module accepts —
+**at the XGMII boundary, one constant per start lane** (see **Start lanes**
+below, which is the only place in this document where "a single constant"
+means two, and which bounds the pair). Everywhere else L is one value.
+
+*Why the qualifier is in this sentence and not only seventy lines below it*
+(carry-forward **C-15**, dv_lead's finding). A monitor built from the
+unqualified sentence asserts one L per module and fails a conformant M03 on the
+second frame of a run whose start characters alternate between lane 0 and lane
+4 — which is REQ-004's own stimulus, so the failure is not hypothetical and was
+observed. The definition and its exception now travel together.
 
 *Why per octet in octet times, and not word-in to word-out.* At a module that
 strips a header whose length is not a multiple of 8 (REQ-021: Ethernet strips
@@ -651,3 +661,4 @@ commissioned it. A behavioural row additionally names its ADR.
 | 2026-08-02 | REQ-015 | third sentence deleted; the count made inclusive of the `tlast` word; the one-word frame stated legal and mandatory for a 1-to-8-octet payload | editorial | ledger **C-11** (dv_lead's own wording, WO-0010) | `J-architect_docs_lead-0005` |
 | 2026-08-02 | REQ-010 | census corrected from one non-stream frame-carrying port to seven, in two classes; the six `Xgmii` lane-pair ports named | editorial | ledger **C-13** | `J-architect_docs_lead-0005` |
 | 2026-08-02 | REQ-105, REQ-108 | "between the start and terminate characters" scoped to an **open** frame; a closed frame is not reopened, so a post-closure error character pulses nothing | editorial (settles an undecided corner; no conformant design changes) | ledger **C-12** (dv_lead's proposed ruling, adopted) | `J-architect_docs_lead-0005` |
+| 2026-08-02 | §0.5 "Latency" | the constant-latency definition carries the start-lane exception in its own sentence instead of only in the **Start lanes** paragraph seventy lines below; no constant, bound or module changes | editorial | ledger **C-15** (dv_lead's supplied clause, WO-0012 Return log) | `J-architect_docs_lead-0006` |

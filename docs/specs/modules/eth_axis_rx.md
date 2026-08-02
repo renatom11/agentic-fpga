@@ -1,7 +1,8 @@
 # SPEC-M06 — `Eth_axis_rx`
 
-- **Status**: DRAFT — batch C. Template-complete; the two evidence rows of §12
-  are what the freeze flip waits on
+- **Status**: **FROZEN** (`P1-spec-freeze`, SHA `508eea2`) — batch C, dv_lead
+  countersignature `J-dv_lead-0007`. Changes to §4, §6 or §7 after this point
+  are spec diffs recorded in §13 (SPEC-TEMPLATE rule 7)
 - **Inventory id**: M06 (architecture.md §4) · **Path**:
   `libs/hardcaml_ethernet/src/eth_axis_rx.ml`
 - **Datapath role**: receive
@@ -291,9 +292,23 @@ to guess the abort bit, at any frame length.
 **Back-to-back frames (REQ-410).** The next frame's first input word may arrive
 on cycle Ci + K, the cycle immediately after the previous frame's `tlast`, and
 is received correctly: its payload word 0 leaves at Ci + K + 3, while the
-previous frame's last payload word left at Ci + M + 2 ≤ Ci + K. The output is
-never asked to carry two words on one cycle — which is structural rather than
-lucky, because M06 emits **fewer** words than it consumes for every frame.
+previous frame's last payload word left at Ci + M + 2, and M + 2 ≤ K + 1 < K + 3
+at every frame length. The output is never asked to carry two words on one cycle
+— which is structural rather than lucky, because M06 emits **fewer** words than
+it consumes for every frame.
+
+*The inequality that matters here is the one just used, and it is not the one
+the abort paragraph uses* (carry-forward **C-17(a)**, dv_lead). From M = K − 1
+for N ≡ 0 or 7 (mod 8) and M = K − 2 otherwise, M + 2 is K + 1 or K: so
+M + 2 **≥** K always — which is what the abort argument above needs — and
+M + 2 ≤ K + 1, which is what this argument needs. An earlier revision of this
+paragraph wrote "M + 2 ≤ K", which is true only at the equality case and false
+for every input frame whose length is a multiple of 8, the 64-octet stress frame
+included; a REQ-410 bench asserting that the previous frame's payload completes
+before the next frame's first input word arrives would fail a conformant design
+on the very stimulus §8 drives. The conclusion is unaffected: the previous
+frame's last payload word leaves at least two cycles before the next frame's
+first payload word.
 
 **When the frame is shorter than the header (REQ-402).** A frame of 1 to 13
 octets — one input word, or two where `tkeep` on the `tlast` word marks fewer
@@ -470,12 +485,22 @@ makes the sequence check readable.
    that could fail.
 
 **Directed lengths alongside the stress run** (REQ-005, REQ-021, REQ-408): input
-frames of **14 through 21 octets inclusive**, which cover the zero-payload case
-and all eight payload residues modulo 8 and therefore all eight `tkeep` patterns
-on the payload `tlast` word, plus 1514 octets (the maximum M03 delivers, giving
-a 1500-octet payload in 188 words). Each is checked for the payload octet
-string, the `tkeep` extent, `hdr_valid`'s single cycle and the per-octet
-constant.
+frames of **14 through 22 octets inclusive**, which cover the zero-payload case,
+all eight payload residues modulo 8 **and** all eight `tkeep` patterns on the
+payload `tlast` word, plus 1514 octets (the maximum M03 delivers, giving a
+1500-octet payload in 188 words). Each is checked for the payload octet string,
+the `tkeep` extent, `hdr_valid`'s single cycle and the per-octet constant.
+
+*Twenty-two and not twenty-one, and the extra octet buys the one pattern nothing
+else drives* (carry-forward **C-17(e)**, dv_lead). The residues 0 to 7 are
+covered by 14 … 21, which is what REQ-021 asks for; the `tkeep` **patterns** are
+not. Residue 0 in that range is the 14-octet frame, whose payload is zero octets
+and which emits no payload word at all (requirements.md §0.7) and therefore no
+`tlast` and no `tkeep`. The full-word pattern `0xFF` needs a payload length that
+is a positive multiple of 8, which is a **22**-octet input frame; neither the
+60-octet stress frame (payload 46, `tkeep` = 0x3F) nor the 1514-octet case
+(payload 1500, `tkeep` = 0x0F) produces one. A coverage table quoting the
+`0xFF` row without this length would name a row no test drives.
 
 ## 9. Errors and discards
 
@@ -525,7 +550,7 @@ clears it.
 |---|---|---|---|
 | REQ-003 | both streams are `Axi64.Source` with no `Dest`; no `tready` in either record | §4.1 | interface compile check |
 | REQ-004 | sustains M03's output pattern — 8 words then 2 or 3 idle cycles, alternating — for 10 000 frames | §8 | line-rate stress bench |
-| REQ-005 | fixed-delay pipeline; no payload word withheld to the frame's end; a short frame's word is not emitted early | §6.1, §7 | per-octet latency tagger inside the stress bench; directed lengths 14–21 and 1514 |
+| REQ-005 | fixed-delay pipeline; no payload word withheld to the frame's end; a short frame's word is not emitted early | §6.1, §7 | per-octet latency tagger inside the stress bench; directed lengths 14–22 and 1514 |
 | REQ-007, REQ-403 | inherited `tuser`[0] copied to the payload `tlast` word; a discarded frame emits none | §9 | error injection on a frame long enough to produce payload words, plus a 13-octet aborted frame |
 | REQ-008 | one condition, one strobe, pulse cycle pinned | §9 | directed test plus the frame-conservation monitor |
 | REQ-009 | `clear` empties the pipeline; mid-frame `clear` truncates silently | §7 | reset test: assert mid-frame, deassert, drive a frame on the next cycle |
@@ -536,12 +561,12 @@ clears it.
 | REQ-016 | input idle cycles delay octets and change nothing else; §6.1's cycle formulas are gapless-only | §6.1, §7 | idle-injection wrapper at 0, 1 and 7 cycles, asserting the **per-octet** constant rather than the cycle formula |
 | REQ-019 | ΔC = 3 against a ceiling of 3; two words of payload storage | §7 | ΔC computed from the pinned L and h at freeze; measured ΔC from the stress run in the sign-off packet |
 | REQ-020 | one frame at a time; order not expressible otherwise | §6.2 | sequence numbers in the stress run |
-| REQ-021 | payload octet 0 at `payload_tdata`[7:0] at every frame length | §6.1 | directed lengths 14–21 covering every residue modulo 8 |
+| REQ-021 | payload octet 0 at `payload_tdata`[7:0] at every frame length | §6.1 | directed lengths 14–22: 14–21 cover every residue modulo 8, and 22 is what covers the `0xFF` `tkeep` pattern (C-17(e)) |
 | REQ-401 | header record with `valid` one cycle high, one cycle before the first payload word; a 14-octet frame pulses `valid` with no payload frame | §6.1, §7 | known-frame test: fields compare equal, `valid` high exactly one cycle; plus the 14-octet frame, asserting header, no payload word, no strobe |
 | REQ-402 | frames of 1–13 octets produce no header, no payload and one strobe | §9 | 1-, 8- and 13-octet frames |
 | REQ-407 | `dst_mac` is captured and compared against nothing; no filtering exists to disable | §2, §4.3 | frame with a foreign destination MAC delivered unchanged (checked end to end at M20) |
 | REQ-408 | every octet after the ethertype is forwarded, padding included; 46 octets from a 64-octet frame | §6.1, §8 | the 64-octet frame of §8, asserting 46 payload octets |
-| REQ-410 | a frame whose first word arrives on the cycle after the previous `tlast` is received correctly | §6.1, §6.2 | two frames with zero idle cycles between them; both delivered intact with correct header records |
+| REQ-410 | a frame whose first word arrives on the cycle after the previous `tlast` is received correctly | §6.1, §6.2 | two frames with zero idle cycles between them; both delivered intact with correct header records. A bench SHALL NOT assert that the previous frame's payload `tlast` word has already left when the next frame's first input word arrives: M + 2 ≥ K, so it has not, at any length that is a multiple of 8 (C-17(a)) |
 | REQ-802, REQ-810 | no instance: M06 reads no configuration, and REQ-810's receive half is M03's | §4.3 | none — stated so that no sign-off packet claims coverage here |
 | REQ-903, REQ-808 | `eth_axis_rx` is a distinct emitted module with `create`, `hierarchical` and an `.mli` | §4.1 | repository surface check and the `rtl_snapshots/` name comparison |
 
@@ -554,26 +579,31 @@ Item numbers are permanent; a closed item keeps its row (SPEC-TEMPLATE §11).
 
 | # | Item | Status · what a reader assumes meanwhile | Tracked as | Owner | Closes by |
 |---|---|---|---|---|---|
-| 11.1 | **The `ifc_check` compile evidence for this lift is pending**: `eth_axis_rx_ifc.ml` is new in this commit and carries the first compile-time witness of `Eth_header`'s four field names. | **DEFERRED — the witness is written, the run is pending.** Meanwhile a reader assumes the record exactly as §4.1 writes it: it uses only types SPEC-M01 froze at f78766e and the same `[@@deriving hardcaml]` form five green lifts already use. A divergence surfaces as a red CI run on this commit and is repaired by an editorial diff to SPEC-M01 §4.2 and to the lifts. | the `Interface compile check` row of §12 | architect_docs_lead, rtl_lead | the batch-C `ifc_check` run |
+| 11.1 | **The `ifc_check` compile evidence for this lift is pending**: `eth_axis_rx_ifc.ml` is new in this commit and carries the first compile-time witness of `Eth_header`'s four field names. | **CLOSED (WO-0014).** CI `build` run **30733153172** at f457efc reports `success` with this lift in it, and `git diff 508eea2 f457efc -- docs/specs/ifc_check/` is empty, so the record the run elaborated is byte-identical to the one frozen here. `Eth_header`'s four field names are as SPEC-M01 §4.2 writes them, established by a run. | the `Interface compile check` row of §12 | architect_docs_lead, rtl_lead | closed |
 | 11.2 | **M06 is pinned exactly at its §1.1 ceiling** (ΔC = 3 of 3), with no cycle of its own in reserve — the position SPEC-M03 §7 deliberately avoided for M03. | **DEFERRED — the number is decided and buildable, only its reserve is absent.** A reader implements to ΔC = 3 today, and §7 gives the argument that three is reachable with a registered output. If implementation shows otherwise, the repair is a **slack release** from the seven cycles requirements.md §1.1 reserves: a spec diff to §7, to §1.1 and to architecture.md §4 together, never a local decision and never a silent one. | this item; requirements.md §1.1 | architect_docs_lead | M06's `P1-module-ready` |
-| 11.3 | **`Eth_header`'s `valid` has two disciplines** — a one-cycle pulse here (REQ-401) and a level held until acceptance on the transmit side (SPEC-M07 §6.1, ADR-0008) — and the record itself cannot say which applies. | **DEFERRED — both are stated where they bind, and a reader is never in doubt.** The receive-side discipline is REQ-401's and this specification's §7; the transmit-side one is ADR-0008's and SPEC-M07 §6.1's. The direction of a port decides which, and every port declares its direction. If batch F finds a third consumer that needs the record to carry the distinction in its type, that is a spec diff to SPEC-M01 §4.1 plus an ADR. | ADR-0008 | architect_docs_lead | SPEC-M20 (batch F) |
+| 11.3 | **`Eth_header`'s `valid` has two disciplines** — a one-cycle pulse here (REQ-401) and a level held until acceptance on the transmit side (SPEC-M07 §6.1, ADR-0008) — and the record itself cannot say which applies. | **DEFERRED — both are stated where they bind, and a reader is never in doubt.** The receive-side discipline is REQ-401's and this specification's §7; the transmit-side one is ADR-0008's and SPEC-M07 §6.1's. The direction of a port decides which, and every port declares its direction. Batch D adds a second record with the same two-discipline shape (`Arp_packet`, SPEC-M10 §4.1) and resolves it the same way, which is evidence that the rule generalises rather than that it needs replacing. If batch F finds a consumer that needs the distinction carried in the type, that is a spec diff to SPEC-M01 §4.1 plus an ADR. | ADR-0008 | architect_docs_lead | SPEC-M20 (batch F) |
+| 11.4 | **Two readings this specification carried that a bench would have failed a conformant design on, or claimed coverage for without a test**: §6.1's back-to-back paragraph asserted M + 2 ≤ Ci + K, the inverse of the inequality its own abort paragraph proves; and §8's directed set 14–21 claimed all eight `tkeep` patterns while omitting the only length that produces `0xFF`. | **CLOSED (WO-0014).** §6.1 now states M + 2 ≤ K + 1 with both inequalities derived side by side and names the stimulus the old wording failed on; §8 extends the directed set to **14 through 22** and separates the residue claim from the pattern claim; §10's REQ-005, REQ-021 and REQ-410 hooks carry the corrected figures. No constant, state or record changes. | ledger **C-17** (items (a) and (e)) | architect_docs_lead | closed |
 
 ## 12. Freeze record
 
-Filled in at `P1-spec-freeze`. All four rows are required (charter §5); this
-spec is DRAFT.
+Filled in at `P1-spec-freeze`. All four rows are required (charter §5).
 
 | Item | Value |
 |---|---|
-| Interface compile check | pending — CI `build` run `<id>`, conclusion `<success>`, SHA `<sha>`; per ADR-0005 a local build is not acceptable evidence. This run is also §11.1's closure record |
+| Interface compile check | CI `build` run **30733153172**, conclusion **`success`**, SHA **f457efc** — all nine batch-A/B/C lifts elaborate, this one included; per ADR-0005 a local build is not acceptable evidence. `git diff 508eea2 f457efc -- docs/specs/ifc_check/` is empty, so the run witnesses the record frozen at 508eea2. This run is also §11.1's closure record |
 | Architect signature | `J-architect_docs_lead-0005` |
-| dv_lead testability countersignature | pending — batch C (SPEC-M06, M07, M08, M09) |
-| Frozen at | pending — SHA `<sha>`, gate `docs/gates/P1-spec-freeze-checklist.md` |
+| dv_lead testability countersignature | `J-dv_lead-0007` (WO-0013) — **SIGNED**, batch C; the zero-reserve ceiling of §7 judged achievable and signed at zero reserve, with C-17(a) and C-17(e) raised and now closed in §13 |
+| Frozen at | SHA **508eea2**, gate `docs/gates/P1-spec-freeze-checklist.md` |
 
 ## 13. Change log
 
-Post-freeze changes only. This spec is DRAFT and has none.
+Post-freeze changes only. Each row cites the ADR that authorised it; a breaking
+interface change is counted against post-freeze churn (charter §6). **No row
+below is breaking**: §4.1's record is byte-for-byte unchanged since the freeze
+SHA, so the `ifc_check` evidence of §12 still witnesses this revision's
+interface.
 
 | Date | Change | Breaking? | ADR | Journal |
 |---|---|---|---|---|
-| — | — | — | — | — |
+| 2026-08-02 | §6.1 back-to-back paragraph: the inverted inequality `M + 2 ≤ Ci + K` replaced by `M + 2 ≤ K + 1`, with both directions derived and the failing stimulus named; §10's REQ-410 hook gains the matching prohibition (ledger **C-17(a)**) | no | none — the abort paragraph two paragraphs earlier already proved the governing inequality; this removes the contradiction | `J-architect_docs_lead-0006` |
+| 2026-08-02 | §8 directed set extended from 14–21 to **14–22** octets and its residue claim separated from its `tkeep`-pattern claim; §10's REQ-005 and REQ-021 hooks follow (ledger **C-17(e)**) | no | none — a coverage claim short by one length, not a behavioural statement; §6.1's payload mapping is unchanged | `J-architect_docs_lead-0006` |

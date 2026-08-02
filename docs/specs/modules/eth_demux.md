@@ -1,7 +1,8 @@
 # SPEC-M08 — `Eth_demux`
 
-- **Status**: DRAFT — batch C. Template-complete; the two evidence rows of §12
-  are what the freeze flip waits on
+- **Status**: **FROZEN** (`P1-spec-freeze`, SHA `508eea2`) — batch C, dv_lead
+  countersignature `J-dv_lead-0007`. Changes to §4, §6 or §7 after this point
+  are spec diffs recorded in §13 (SPEC-TEMPLATE rule 7)
 - **Inventory id**: M08 (architecture.md §4) · **Path**:
   `libs/hardcaml_ethernet/src/eth_demux.ml`
 - **Datapath role**: receive
@@ -209,11 +210,19 @@ the decision exists, no word has to be held back while it is made, and a
 discarded frame's first word is never emitted anywhere. That is the property
 REQ-404's verification column names when it says the discard "is clean and needs
 no abort interaction", and it is a property of M06's contract rather than of
-M08's cleverness: a producer that pulsed `valid` on the same cycle as the first
-payload word would still satisfy REQ-401 and would force M08 to a combinational
-decision. M08 tolerates that too — the decision is a function of the current
-`hdr_ethertype` — but the pipeline stated below assumes M06's actual one-cycle
-lead.
+M08's cleverness.
+
+*What this specification does **not** say about a producer that pulsed `valid`
+on the same cycle as the first payload word* (carry-forward **C-17(c)**,
+dv_lead). Such a producer would satisfy REQ-401's "on or before" and would force
+M08 to a combinational decision. An earlier revision of this paragraph said
+"M08 tolerates that too" without saying what M08's output timing would then be,
+while §6.3 opens by declaring that anything not on its list is constrained here —
+so the sentence claimed a behaviour and specified none. The case is
+**unreachable**: M06 is M08's only producer and always leads by exactly one
+cycle (SPEC-M06 §7). It is therefore recorded as unreachable in §6.3 item 5,
+in the form SPEC-M07 §6.3 item 3 and SPEC-M09 §6.3 item 4 use, and every cycle
+formula below assumes M06's one-cycle lead without qualification.
 
 **On a gapless stimulus**, with H the cycle of the input `hdr_valid` pulse:
 
@@ -297,6 +306,13 @@ rely on it.
 4. **Whether the strobe is derived from the ethertype comparison directly or
    from the `Drop` state.** Both compute the same predicate; §9 pins the pulse
    cycle, which is what a bench needs.
+5. **M08's behaviour when `hdr_valid` is pulsed on the same cycle as the frame's
+   first payload word**, rather than one cycle before it. No conformant producer
+   does it: M06 is M08's only producer and SPEC-M06 §7 pins `hdr_valid` exactly
+   one cycle before that frame's first payload word, at every frame length. The
+   case is unreachable rather than undefined, no requirement names it, and DV
+   SHALL assert nothing about M08's output timing for it (carry-forward
+   **C-17(c)**).
 
 ## 7. Timing contract
 
@@ -493,25 +509,29 @@ Item numbers are permanent; a closed item keeps its row (SPEC-TEMPLATE §11).
 
 | # | Item | Status · what a reader assumes meanwhile | Tracked as | Owner | Closes by |
 |---|---|---|---|---|---|
-| 11.1 | **The `ifc_check` compile evidence for this lift is pending**: `eth_demux_ifc.ml` is new in this commit. | **DEFERRED — the record is written, the run is pending.** Meanwhile a reader assumes the record exactly as §4.1 writes it: it uses only types SPEC-M01 froze at f78766e. A divergence is a red CI run on this commit and an editorial diff. | the `Interface compile check` row of §12 | architect_docs_lead, rtl_lead | the batch-C `ifc_check` run |
+| 11.1 | **The `ifc_check` compile evidence for this lift is pending**: `eth_demux_ifc.ml` is new in this commit. | **CLOSED (WO-0014).** CI `build` run **30733153172** at f457efc reports `success` with this lift in it, and `git diff 508eea2 f457efc -- docs/specs/ifc_check/` is empty, so the run witnesses the record frozen here. | the `Interface compile check` row of §12 | architect_docs_lead, rtl_lead | closed |
 | 11.2 | **M08's discard has no downstream observable other than its strobe.** A frame dropped here never reaches M14 or M10, so the only evidence it existed is `error_unknown_ethertype` and the §0.6 conservation equation — and at `nic_top` the equation's input term is an XGMII frame count, not a stream count. | **DEFERRED — the module-level bench is sufficient and is specified.** A reader runs §8's directed tests at M08's own ports, where both terms of the equation are observable. The top-level form of the same question is carry-forward **C-3** (zero-payload datagrams have no accounting observable at `nic_top`), which SPEC-M20 answers for every discard on the chain at once; nothing at M08 waits on it. | ledger **C-3** | architect_docs_lead, dv_lead | SPEC-M20 (batch F) |
+| 11.3 | **§6.1 claimed M08 tolerates a producer whose `hdr_valid` pulses on the same cycle as the first payload word, and stated no output timing for that case**, while §6.3's opening sentence declares everything not on its list constrained by this specification. | **CLOSED (WO-0014).** The claim is withdrawn from §6.1 and the case is recorded as unreachable in §6.3 item 5, worded as SPEC-M07 §6.3 item 3 and SPEC-M09 §6.3 item 4 word theirs: M06 is M08's only producer, its one-cycle lead is pinned at every frame length, and DV asserts nothing about M08's output timing for a lead of zero. | ledger **C-17** (item (c)) | architect_docs_lead | closed |
 
 ## 12. Freeze record
 
-Filled in at `P1-spec-freeze`. All four rows are required (charter §5); this
-spec is DRAFT.
+Filled in at `P1-spec-freeze`. All four rows are required (charter §5).
 
 | Item | Value |
 |---|---|
-| Interface compile check | pending — CI `build` run `<id>`, conclusion `<success>`, SHA `<sha>`; per ADR-0005 a local build is not acceptable evidence. This run is also §11.1's closure record |
+| Interface compile check | CI `build` run **30733153172**, conclusion **`success`**, SHA **f457efc** — all nine batch-A/B/C lifts elaborate, this one included; per ADR-0005 a local build is not acceptable evidence. `git diff 508eea2 f457efc -- docs/specs/ifc_check/` is empty, so the run witnesses the record frozen at 508eea2 |
 | Architect signature | `J-architect_docs_lead-0005` |
-| dv_lead testability countersignature | pending — batch C (SPEC-M06, M07, M08, M09) |
-| Frozen at | pending — SHA `<sha>`, gate `docs/gates/P1-spec-freeze-checklist.md` |
+| dv_lead testability countersignature | `J-dv_lead-0007` (WO-0013) — **SIGNED**, batch C, "the cleanest of the four", with C-17(c) raised and now closed in §13 |
+| Frozen at | SHA **508eea2**, gate `docs/gates/P1-spec-freeze-checklist.md` |
 
 ## 13. Change log
 
-Post-freeze changes only. This spec is DRAFT and has none.
+Post-freeze changes only. Each row cites the ADR that authorised it; a breaking
+interface change is counted against post-freeze churn (charter §6). **No row
+below is breaking**: §4.1's record is byte-for-byte unchanged since the freeze
+SHA, so the `ifc_check` evidence of §12 still witnesses this revision's
+interface.
 
 | Date | Change | Breaking? | ADR | Journal |
 |---|---|---|---|---|
-| — | — | — | — | — |
+| 2026-08-02 | §6.1's "M08 tolerates that too" claim about a zero-lead producer withdrawn and restated as an unreachable case in §6.3 item 5 (ledger **C-17(c)**) | no | none — the case was never reachable; the sentence claimed a behaviour and specified none, which §6.3's opening sentence made into a constraint by default | `J-architect_docs_lead-0006` |

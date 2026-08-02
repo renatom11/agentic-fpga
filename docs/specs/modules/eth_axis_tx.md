@@ -1,7 +1,8 @@
 # SPEC-M07 — `Eth_axis_tx`
 
-- **Status**: DRAFT — batch C. Template-complete; the two evidence rows of §12
-  are what the freeze flip waits on
+- **Status**: **FROZEN** (`P1-spec-freeze`, SHA `508eea2`) — batch C, dv_lead
+  countersignature `J-dv_lead-0007`. Changes to §4, §6 or §7 after this point
+  are spec diffs recorded in §13 (SPEC-TEMPLATE rule 7)
 - **Inventory id**: M07 (architecture.md §4) · **Path**:
   `libs/hardcaml_ethernet/src/eth_axis_tx.ml`
 - **Datapath role**: transmit
@@ -255,12 +256,26 @@ figure. Payload words: 6 (five full, one carrying 6 octets). Output words:
 | C+8 | 0 | — | output word 7: frame octets 56–59, `tkeep` = 0x0F, `tlast` = 1, `tuser`[0] copied from the payload's `tlast` word |
 | C+9 | 1 if a frame is offered | next frame's payload word 0 | `tx_tvalid` = 0 |
 
-`payload_tready` falls for the last two cycles because M07 emits **more** words
-than it consumes: it adds fourteen octets, so W = ⌈(14 + P)/8⌉ output words come
-from J = ⌈P/8⌉ payload words with W − J equal to 1 or 2 at every payload length.
-Those one or two cycles are the whole of M07's backpressure on an unstalled
-frame, and they are the reason M07 is a transmit-path module and could not be a
-receive-path one.
+`payload_tready` falls for the last **three** cycles of this frame because M07
+emits **more** words than it consumes: it adds fourteen octets, so
+W = ⌈(14 + P)/8⌉ output words come from J = ⌈P/8⌉ payload words, with W − J
+equal to 1 for P ≡ 1 or 2 (mod 8) and 2 at every other payload length. The
+count of zero cycles is **W − J + 1**, so it is **two or three** and not one or
+two: the frame's last payload word is accepted on cycle C + J − 1 and its last
+output word leaves on cycle C + W, and `payload_tready` is 0 on every cycle
+between, inclusive — C+6, C+7 and C+8 in the table above, where J = 6 and
+W = 8. Those two or three cycles are the whole of M07's backpressure on an
+unstalled frame, and they are the reason M07 is a transmit-path module and could
+not be a receive-path one.
+
+*The `+ 1` is carry-forward **C-17(b)*** (dv_lead), and it was wrong in three
+places at once — here, in §6.2's `Drain` row and in §7's throughput bullet. It
+matters because a throughput assertion built from "one or two" fails **every**
+conformant design, at every payload length, including the 46-octet frame this
+table shows. W − J is the number of *extra words* M07 emits and is correctly 1
+or 2; the number of *stalled cycles* is one more than that, because the cycle
+on which the last payload word is accepted is not itself a stalled cycle and the
+cycle on which the last output word leaves is.
 
 **When the consumer stalls.** `payload_tready` is 1 only when `tx_tready` is 1
 and the frame still needs payload words, so a cycle on which M04 cannot accept a
@@ -284,7 +299,7 @@ Reset state and `clear` state are both `Idle`.
 | `Idle` | reset; `clear`; the frame's `tlast` output word is accepted | `tx_tvalid` = 0; `payload_tready` = 1 when `hdr_valid` = 1 and `tx_tready` = 1, and 0 otherwise | `Header` on the cycle the frame's first payload word is accepted, capturing the four header fields |
 | `Header` | the first payload word is accepted | emits output word 0 (header only) on the next cycle, then output word 1 (header tail plus payload octets 0–1); keeps accepting payload words while `tx_tready` = 1 | `Body`, always, after output word 1 |
 | `Body` | output word 1 has been emitted | emits output word n from payload words n − 2 and n − 1; accepts a payload word on every cycle `tx_tready` = 1 until the payload's `tlast` word has been accepted | `Drain` on accepting the payload `tlast` word |
-| `Drain` | the payload `tlast` word has been accepted | emits the remaining one or two output words, the last carrying `tx_tlast` = 1, the `tkeep` the payload length implies and the inherited `tuser`[0]; holds `payload_tready` = 0 | `Idle` when that word is accepted |
+| `Drain` | the payload `tlast` word has been accepted | emits the remaining **two or three** output words — W − J + 1 of them, §6.1 — the last carrying `tx_tlast` = 1, the `tkeep` the payload length implies and the inherited `tuser`[0]; holds `payload_tready` = 0 throughout (C-17(b)) | `Idle` when that word is accepted |
 
 A cycle on which `tx_tready` = 0, or on which the source presents no payload
 word, holds every state and every register: it is not a condition and it
@@ -339,11 +354,14 @@ rely on it.
 
 - **Throughput.** One payload word accepted per cycle while `payload_tready` is
   1; one output word emitted per cycle while `tx_tready` is 1. Over a frame M07
-  emits **one or two more** words than it consumes, which is the fourteen header
-  octets, so `payload_tready` is 0 for the frame's last one or two cycles (§6.1)
-  and M07 costs the transmit path one or two cycles per frame that M04's
-  inter-frame gap absorbs. It never emits two words in one cycle and never
-  accepts two.
+  emits **one or two more** words than it consumes — W − J, which is the
+  fourteen header octets — so it costs the transmit path one or two cycles per
+  frame that M04's inter-frame gap absorbs. `payload_tready` is 0 for the
+  frame's last **W − J + 1 = two or three** cycles, one more than the word
+  surplus (§6.1, carry-forward **C-17(b)**): the last payload word is accepted
+  at C + J − 1 and the last output word leaves at C + W, and every cycle
+  strictly after the first and up to and including the second is a stalled one.
+  M07 never emits two words in one cycle and never accepts two.
 
 - **Handshake rules.** A payload word is accepted on a cycle with
   `payload_tvalid` = 1 and `payload_tready` = 1; an accepted word is always
@@ -382,8 +400,8 @@ rely on it.
 **Not applicable.** M07 is not in requirements.md §0.4's stress-bench list (M03,
 M06, M08, M10, M14, M17, M20), which enumerates *receive-path* modules —
 REQ-004's invariant is about surviving an arrival rate the module cannot slow
-down, and M07 can slow its source down, by one or two cycles per frame, exactly
-as §7 states.
+down, and M07 can slow its source down, by two or three cycles per frame,
+exactly as §7 states.
 
 Its equivalent obligation is the transmit chain's sustained bench: M04's
 REQ-209 run of 10 000 minimum-length frames, driven **through** M09 and M07 from
@@ -394,6 +412,14 @@ frame period; a bench that drives M04 directly proves nothing about M07. The
 stimulus is a 46-octet payload with the header record fields of SPEC-M03 §8's
 frame (destination `02:00:00:00:00:01`, source `02:00:00:00:00:02`, ethertype
 0x0800), which is what makes a 64-octet frame on the wire.
+
+**Two figures this run must be asserted against, and one it must not.** M07's
+drain is **three** cycles for this payload — `payload_tready` = 0 at C+6, C+7
+and C+8 of §6.1's table (C-17(b)) — and M07 returns to `Idle` at C+9, which in
+M04's timebase is the cycle SPEC-M04 §7 pins `tx_tready` = 1 on and which the
+11-cycle cadence turns on (SPEC-M04's carry-forward **C-16**). A bench asserting
+a drain of two cycles fails a conformant design; a bench asserting that M04's
+`tx_tready` is 0 on that cycle fails the whole composition.
 
 ## 9. Errors and discards
 
@@ -434,7 +460,7 @@ requirements.md §0.6, and M07 has no strobe to re-report it with.
 | REQ-015 | one `tlast` per frame; at most 190 output words, the `tlast` word included | §3, §7 | protocol monitor |
 | REQ-016 | payload idle cycles tolerated; M07 does not advance and emits nothing | §6.1, §7 | idle-injection wrapper at 0, 1 and 7 cycles on the payload stream, asserting the output octet sequence is unchanged |
 | REQ-021 | frame octet 0 at `tx_tdata`[7:0]; the payload realignment is the inverse of M06's | §6.1 | payload lengths covering every residue modulo 8, asserting the octet string on the wire |
-| REQ-207 | an accepted payload word is always transmitted; `payload_tready` is 0 when M07 cannot accept | §6.1, §7 | drive a continuous source; assert the transmitted octet sequence equals the accepted-word octet sequence exactly once, in order |
+| REQ-207 | an accepted payload word is always transmitted; `payload_tready` is 0 when M07 cannot accept | §6.1, §7 | drive a continuous source; assert the transmitted octet sequence equals the accepted-word octet sequence exactly once, in order, and that the run of 0 cycles at each frame's end is **W − J + 1** — two or three, never one (C-17(b)) |
 | REQ-208 | M07 has no receive-side port, so no path from here into the receive datapath exists | §3 | inspection of the emitted netlist; REQ-208's top-level test |
 | REQ-405 | fourteen header octets then the payload, octet order preserved | §6.1 | compare the built frame against a hand-assembled reference frame, octet for octet |
 | REQ-406 | no instance: M07 has one input port and cannot interleave | §2 | none — stated so that no sign-off packet claims arbitration coverage here |
@@ -449,26 +475,30 @@ Item numbers are permanent; a closed item keeps its row (SPEC-TEMPLATE §11).
 
 | # | Item | Status · what a reader assumes meanwhile | Tracked as | Owner | Closes by |
 |---|---|---|---|---|---|
-| 11.1 | **The `ifc_check` compile evidence for this lift is pending**: `eth_axis_tx_ifc.ml` is new in this commit. | **DEFERRED — the record is written, the run is pending.** Meanwhile a reader assumes the record exactly as §4.1 writes it: it uses only types SPEC-M01 froze at f78766e, in the `Source`-plus-`Dest` pattern SPEC-M04's green lift already witnesses. A divergence is a red CI run on this commit and an editorial diff. | the `Interface compile check` row of §12 | architect_docs_lead, rtl_lead | the batch-C `ifc_check` run |
+| 11.1 | **The `ifc_check` compile evidence for this lift is pending**: `eth_axis_tx_ifc.ml` is new in this commit. | **CLOSED (WO-0014).** CI `build` run **30733153172** at f457efc reports `success` with this lift in it, and `git diff 508eea2 f457efc -- docs/specs/ifc_check/` is empty, so the run witnesses the record frozen here. | the `Interface compile check` row of §12 | architect_docs_lead, rtl_lead | closed |
 | 11.2 | **The transmit-side header handshake is a programme convention, not this module's invention** (ADR-0008): header and first payload word offered together, held until that word is accepted. M09, M11, M15 and M18 all rely on it, and only M07 and M09 are specified so far. | **DEFERRED for confirmation, not for decision.** ADR-0008 states it normatively and §6.1 states it operationally, so a bench for M07 and M09 is derivable today. Batches D–F restate the source-side obligation in SPEC-M11, SPEC-M15 and SPEC-M18; if any of them cannot meet it, the repair is an ADR-0008 supersession plus a spec diff here, not a local exception. | ADR-0008 | architect_docs_lead | SPEC-M15 (batch E) |
-| 11.3 | **M07 has no bench of its own in requirements.md's process REQs**: §0.4's stress list is receive-path only, and REQ-209's sustained transmit bench is written against M04. | **DEFERRED — §8 states the obligation and the stimulus.** A reader runs REQ-209's bench *through* M09 and M07 rather than into M04 directly, which is what §8 requires and what makes M07's one-or-two-cycle backpressure observable. If dv_lead would rather see that written as a REQ, it is a requirements.md diff at batch C's countersignature; nothing downstream waits on it. | this item; SPEC-M04 §8 | architect_docs_lead, dv_lead | batch-C countersignature |
+| 11.3 | **M07 has no bench of its own in requirements.md's process REQs**: §0.4's stress list is receive-path only, and REQ-209's sustained transmit bench is written against M04. | **CLOSED (WO-0013), answered in the negative.** dv_lead declined to make it a REQ: §8 already states both the obligation and the stimulus, SPEC-M09 §8 item 5 commissions the same run independently, and a REQ reading "run REQ-209's bench through M09 and M07" would add no testable fact either specification does not already carry — requirements.md §0.2's "one REQ states one testable fact" is the test it would fail. No requirements.md diff is owed. | this item; SPEC-M04 §8; WO-0013 Return log | architect_docs_lead, dv_lead | closed |
+| 11.4 | **The drain count was stated as W − J in three places** — §6.1's prose, §6.2's `Drain` row and §7's throughput bullet — while §6.1's own cycle table shows W − J + 1. A throughput assertion built from the prose fails every conformant design at every payload length. | **CLOSED (WO-0014).** All three now read **W − J + 1 = two or three**, with the derivation stated once in §6.1 and the distinction between the word surplus (W − J) and the stall count (W − J + 1) made explicit; §8 names the figure the composed run must assert and ties it to SPEC-M04's C+8 cycle; §10's REQ-207 hook carries the prohibition. No constant, state or record changes. | ledger **C-17** (item (b)) | architect_docs_lead | closed |
 
 ## 12. Freeze record
 
-Filled in at `P1-spec-freeze`. All four rows are required (charter §5); this
-spec is DRAFT.
+Filled in at `P1-spec-freeze`. All four rows are required (charter §5).
 
 | Item | Value |
 |---|---|
-| Interface compile check | pending — CI `build` run `<id>`, conclusion `<success>`, SHA `<sha>`; per ADR-0005 a local build is not acceptable evidence. This run is also §11.1's closure record |
+| Interface compile check | CI `build` run **30733153172**, conclusion **`success`**, SHA **f457efc** — all nine batch-A/B/C lifts elaborate, this one included; per ADR-0005 a local build is not acceptable evidence. `git diff 508eea2 f457efc -- docs/specs/ifc_check/` is empty, so the run witnesses the record frozen at 508eea2 |
 | Architect signature | `J-architect_docs_lead-0005` |
-| dv_lead testability countersignature | pending — batch C (SPEC-M06, M07, M08, M09) |
-| Frozen at | pending — SHA `<sha>`, gate `docs/gates/P1-spec-freeze-checklist.md` |
+| dv_lead testability countersignature | `J-dv_lead-0007` (WO-0013) — **SIGNED**, batch C, with C-17(b) raised and now closed in §13 |
+| Frozen at | SHA **508eea2**, gate `docs/gates/P1-spec-freeze-checklist.md` |
 
 ## 13. Change log
 
-Post-freeze changes only. This spec is DRAFT and has none.
+Post-freeze changes only. Each row cites the ADR that authorised it; a breaking
+interface change is counted against post-freeze churn (charter §6). **No row
+below is breaking**: §4.1's record is byte-for-byte unchanged since the freeze
+SHA, so the `ifc_check` evidence of §12 still witnesses this revision's
+interface.
 
 | Date | Change | Breaking? | ADR | Journal |
 |---|---|---|---|---|
-| — | — | — | — | — |
+| 2026-08-02 | Drain count corrected from W − J to **W − J + 1** (two or three cycles) in §6.1, §6.2's `Drain` row and §7's throughput bullet; §8 gains the composed figure and its tie to SPEC-M04's C+8 cycle; §10's REQ-207 hook gains the prohibition (ledger **C-17(b)**) | no | none — §6.1's cycle table already showed three zero cycles for the 46-octet frame; the prose contradicted it | `J-architect_docs_lead-0006` |

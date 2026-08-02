@@ -1386,3 +1386,386 @@ DoD vs WO-0011: **met**, with one item that evidence rather than work completes.
 - docs/specs/modules/xgmii_tx_64.md
 - docs/specs/requirements.md
 - docs/specs/traceability.md
+
+## [J-architect_docs_lead-0006] 2026-08-02T14:55:00Z | task:WO-0014 | Batch D (SPEC-M10/M11/M12/M13), the third post-freeze diff cycle (C-15 to C-18), the batch-C freeze flip and the 117-edge topology
+
+### Trigger
+
+Orchestrator work order `agents/handoffs/WO-0014_batch-d-specs.md` (ISSUED at
+55e78f2), my sixth activation. Three numbered deliverables in a stated order:
+the WO-0013 diff set first, then the four ARP-family specifications, then the
+traceability rows. The ordering is not decoration — C-16 and C-18 are corrections
+to text SPEC-M10 and SPEC-M13 quote and rely on, and writing batch D first would
+have meant citing sentences I already knew were wrong.
+
+### Inputs
+
+- `agents/charters/architect_docs_lead.md`; `agents/PROTOCOL.md` (§3, §4, §6, §7,
+  §10).
+- `agents/handoffs/WO-0014_batch-d-specs.md` — the work order.
+- `agents/handoffs/WO-0013_batch-c-countersign.md` Return log at 76906e6 —
+  dv_lead's `J-dv_lead-0007` verdict, read in full: the four batch-C
+  signatures, the eight §13 reaffirmations, ADR-0008's acceptance, and the exact
+  analyses for C-16, C-17(a)…(e) and C-18. This is the document the diff set is
+  derived from and I re-derived every arithmetic claim in it rather than
+  transcribing.
+- `agents/handoffs/WO-0012_dv-wave2.md` Return log — dv's C-15 clause.
+- `docs/specs/requirements.md` §0.3 … §0.7, §1.1, §6 (REQ-501 … REQ-512), §9,
+  §9.1, §10, §12, §13.
+- `docs/specs/architecture.md` §2.5, §4, §5, §6.3, §6.4, §8.
+- `docs/specs/SPEC-TEMPLATE.md`; `docs/specs/traceability.md`.
+- FROZEN `docs/specs/modules/{xgmii_rx_64,xgmii_tx_64,eth_mac_10g}.md`
+  (batches A/B) and `{eth_axis_rx,eth_axis_tx,eth_demux,eth_arb_mux}.md`
+  (batch C, at 508eea2 — verified unmoved: `git diff --stat 508eea2 HEAD --
+  docs/specs/ docs/adr/` is empty).
+- `docs/adr/ADR-0008-transmit-header-handshake.md`;
+  `docs/gates/P1-spec-freeze-checklist.md`.
+- `docs/specs/ifc_check/{dune,axi64_ifc.ml,eth_demux_ifc.ml,eth_arb_mux_ifc.ml}`
+  for the lift conventions; `tools/check_records_vs_appendix.sh` (read only, to
+  match its extraction rule exactly).
+- GitHub API, `renatom11/agentic-fpga`, run **30733153172**: `name` `build`,
+  `head_sha` `f457efc85d367c7903bee32f4ba31f6e067db0fb`, `status` `completed`,
+  `conclusion` `success` — fetched myself rather than relayed from dv's packet.
+- `libs/**`, `test/**` and `top/**` were **not** opened. Nothing here derives
+  from RTL or from a bench.
+
+### Reasoning
+
+**Why the diff set came first, and what it cost to do it honestly.**
+
+*C-16* was the item I had to think hardest about, because dv's finding is not
+"this sentence is wrong" but "this sentence is incomplete, and the cycle it omits
+is the one the whole transmit cadence turns on". SPEC-M04 §6.1's table has
+asserted `tx_tready` = 1 at C+8 since the specification was written; §6.2 has no
+state that accepts a first source word there; and §6.1's "accepted at C+m,
+transmitted at C+m+2" cannot hold for a word accepted there, because C+10 is the
+terminate word. Three sections, each individually defensible, jointly silent.
+
+I considered making C+8 a 0 cycle, which would have made §6.2 and the C+m+2 rule
+true as written. I rejected it after composing the chain: M07 re-enters `Idle` at
+its own C+9 — one cycle after M04 accepts its `tlast` output word — and M07 §6.2's
+`Idle` row asserts `payload_tready` only on a cycle with `tx_tready` = 1. With
+`tx_tready` = 0 at C+8 the next chance is C+11, M07 emits its output word 0 at
+C+12, M04 accepts at C+12 and starts at C+13: twelve cycles between start
+characters, REQ-209 failed, and the composed assertion SPEC-M07 §8 and SPEC-M09
+§8 item 5 both commission failed with it. dv's derivation and mine agree.
+
+So the value is 1 and the question is what a word presented there *does*. The
+answer that survives every other frozen sentence is: it is the **next** frame's
+first word, it takes the storage slot the current frame's word 6 vacates on that
+same cycle (so the two-word depth is untouched — at the end of C+8 M04 holds the
+`tlast` word and the new word 0), and it is transmitted at C+13, because back to
+back it is REQ-204's rounded gap and not M04's depth that fixes the start
+character — which §7's REQ-210 bullet already said and which I had not connected
+to this cycle. The start character is at C+12 whether the first word arrived at
+C+8 or at C+11, so REQ-209 holds either way; and the two cannot both fill both
+slots, which is what the existing "may also be 1 during the preamble word"
+sentence is now carrying explicitly. I also checked that C+8 is *not* an
+underflow cycle: §9's condition and §7's handshake bullet both end at the
+acceptance of the `tlast` word, which happened at C+7. That was the piece that
+made the whole thing consistent rather than a new freedom — the specification had
+already excluded the cycle from REQ-206 and simply never said what it had
+included it in. §6.2's `Idle` row needed one clause and the table one paragraph;
+no constant, no strobe, no gap arithmetic and no record moved.
+
+*C-17* I judged item by item rather than applying, because the packet asked for
+"fix or defend each explicitly" and because two of the five were larger than
+stated.
+
+(a) I re-derived M and K from scratch: M = K − 1 for N ≡ 0 or 7 (mod 8) and
+K − 2 otherwise, so M + 2 ∈ {K, K + 1}. dv is right that `M + 2 ≤ Ci + K` is the
+inversion of the inequality the abort paragraph two paragraphs earlier proves,
+and right that it fails on any 64-octet input — which is §8's own stress frame,
+the worst possible place for it. I wrote **both** directions into the repaired
+paragraph rather than only the one this argument needs, because the two
+paragraphs drifting apart is exactly how the defect arose.
+
+(b) dv named three places. I found five: §8's "one-or-two-cycle backpressure" and
+§10's REQ-207 hook carry the same figure. The underlying confusion is worth
+naming and the repair now names it: W − J is the *word surplus* and is correctly
+1 or 2; the *stall count* is W − J + 1 and is 2 or 3, because the cycle the last
+payload word is accepted on is not stalled and the cycle the last output word
+leaves on is. I also tied §8's figure to SPEC-M04's C+8, so C-16 and C-17(b) read
+as one composed statement about the same handover instead of two local ones —
+they are, and a tb_writer holding only one excerpt should still be able to see it.
+
+(c) dv asked for the case to be moved to §6.3 as unreachable. I went slightly
+further and **withdrew** the §6.1 claim rather than completing it: specifying
+M08's output timing for a producer M06 cannot be would commission a test for a
+stimulus the programme has decided not to produce, which is the objection §6.3's
+existing items make elsewhere in the same document.
+
+(d) dv offered ADR-0008's Consequences or SPEC-M07 §7. I chose the ADR, because
+the rule binds M11, M15 and M18 as well as M07 and a sentence in one module's §7
+would have to be copied into three more specs to bind them — and M11, written in
+this same commit, is the first module that needed it. I added what a monitor
+**may** assert (the source's side of decisions 1 and 2) alongside the four SHALL
+NOTs, so the bullet does not read as a blanket exemption from checking the
+handshake at all.
+
+(e) Verified independently: N = 14 gives a zero-octet payload and no payload word,
+so residue 0 in 14–21 produces no `tkeep` at all; `0xFF` needs a payload that is a
+positive multiple of 8, hence N = 22. Fixed as stated, and I separated the
+residue claim from the pattern claim in the text, because merging two claims over
+two different ranges is what hid the gap.
+
+*C-18* is the sharpest finding of the three and the repair is the smallest.
+"Gapless" was defined as "every XGMII word from the start word onward carrying
+frame octets", which no stimulus satisfies — the start word carries preamble, and
+§6.1's own 64-octet table has `/T/` in lane 0 of cycle 9 carrying no frame octet
+while the m + 3 formula is applied to it. Defining it in **octet times** (the
+frame's octets occupy consecutive octet times from the start character onward)
+makes both words fall outside the span and makes the table qualify, which is what
+a definition of a term used by a worked example has to do. The two wrong
+illustrations I stated as explicit **non**-instances with their `octet_count`
+values, because that is the form that cannot be misread: the second preamble word
+of a lane-4 start covers four frame octets and the CRC enable is asserted for it
+with `octet_count` = 4; a terminate character in lane k > 0 leaves k frame octets
+below it. dv's point that the literal reading fails every lane-4 frame's FCS check
+is correct and I did not want a repair that merely removed the wrong example
+without saying why it was wrong. I also found the same wrong example in §3's
+REQ-016 row, which dv did not cite; fixing one and leaving the other would have
+been indefensible, so both moved and §13's row says so.
+
+*C-15* is dv's own clause and I applied it as supplied, adding two sentences of
+provenance: the failure was **observed** (a conformant M03 failed dv's single-L
+monitor on frame 2 of an alternating-lane run), and the observation belongs next
+to the definition so the next reader does not have to find WO-0012 to know why
+the qualifier is there.
+
+**The batch-C freeze flip, which the work order did not ask for.**
+
+The gate checklist has recorded batch C as FROZEN at 508eea2 since 55e78f2, with
+run 30733153172 and `J-dv_lead-0007` transcribed. The four specs still said
+"Status: DRAFT" with `pending` in all four §12 rows. The work order calls them
+"frozen text" and asks for §13 records against them, and a §13 change log on a
+document that declares itself DRAFT is incoherent — §13's own preamble says
+"post-freeze changes only". §12 is the architect's section under charter §5, not
+a gate signature under PROTOCOL §7, so the flip is mine to make and the gate file
+is not: I completed all four §12 blocks, flipped the status lines, and closed
+each §11.1 with evidence I checked rather than accepted —
+`git diff --stat 508eea2 f457efc -- docs/specs/ifc_check/` is empty, so the run
+that went green elaborated byte-identical records to the ones frozen at 508eea2.
+SPEC-M07 §11.3 closed at the same time, in the negative, recording dv's declined
+answer. I did not touch `docs/gates/`.
+
+**Batch D: the four decisions worth an appeal record.**
+
+*Where the new records live.* SPEC-M01 is FROZEN at f78766e and five freeze
+records cite its compile evidence, so adding `Arp_packet` or the cache records to
+its §4.1 would be a breaking post-freeze interface change — the exact churn
+charter §6 counts and the exact thing ADR-0008 was written to avoid doing to the
+header records. I considered it anyway, because a single types home is the
+cleaner end state; I rejected it because the cost is paid now and the benefit is
+cosmetic, and because the alternative is reversible. The rule batch D adopts —
+declare each record once at the module that **produces or owns** it, open it
+everywhere else — gives a cycle-free dependency chain (M10 declares `Arp_packet`;
+M12 declares the three cache records; M13 opens both and declares
+`Arp_query`/`Arp_response`; M11 opens M10's) and mirrors the connection table's
+own direction. SPEC-M10 §11.2 tracks promoting them into M01 if batch F reopens
+it, which would be a rename.
+
+*`Arp_packet` carries five fields, not nine.* Hardware type, protocol type and
+the two lengths are REQ-501 *acceptance criteria*, each fixed to one value.
+Carrying them would create a second place a wrong constant could enter and would
+oblige every bench to assert that M13 relayed four constants unchanged. Dropping
+them buys a much stronger invariant instead: an `Arp_packet` with `valid` = 1 is
+REQ-501-accepted **by construction**, and nothing downstream re-checks. M11
+writes the same four from the requirement, so an M11 packet is acceptable to M10
+by construction too — which is why §8's cheapest test is the M10 loopback.
+
+*The ADR-0008 substitution at M11's input, and the one connection-table
+amendment.* ADR-0008's acceptance event is the acceptance of the frame's first
+payload word. At M11's `arp` port there is no payload stream: M11 *generates* the
+payload. I considered three ways out. Adding a `ready` to `Arp_packet` fails for
+ADR-0008's own reason — the record also travels a receive-path port at M10, where
+REQ-003 forbids one and where the structural check would have to grow an
+exception. Letting M11 accept unconditionally is ADR-0008's rejected alternative
+(c) and fails at exactly the place that ADR predicted, since M13 can have a reply
+and a request wanting the same port. So M11 exposes an explicit `arp_ready`
+output and §7 states the substitution: the acceptance event is
+`arp_valid` & `arp_ready`, decisions 2 and 3 bind against it verbatim, decision 1
+has no instance and is not claimed. That costs architecture.md §6.4 exactly one
+new edge, which §6.4's own "provisional rows" rule obliges this batch to make in
+the same commit; I recounted the whole table mechanically afterwards (26 + 40 +
+29 + 22 = 117). I flagged the substitution in SPEC-M11 §11.3 rather than
+absorbing it, because a monitor written to ADR-0008's literal wording will look
+for a payload word that is not there, and that is dv's call as much as mine.
+
+*Constants where a constant is real, and honesty where it is not.* M10's parse
+latency I expressed the way §0.5 would if it could: two named measurement events
+(the octet time of ARP octet 0 on the payload stream; the octet time of the
+`arp_valid` pulse), L = 32, h = 0, ΔC = 4, closing mod 8. M11's is the same shape
+with L = 8, h = 0, ΔC = 1 — and I stated explicitly that the fourteen Ethernet
+header octets M11 causes to exist are **not** an insertion at its port, because
+they leave on the `hdr` record and become frame octets at M07, whose §7 owns that
+arithmetic. But M12's one-cycle lookup and M13's two-cycle response carry **no**
+octet, so I stated in both places that §0.5's octet times have no instance there
+and did not claim ΔC = (L + h)/8 for them. dv's own open item about an
+*inserting* stage (its WO-0013 note 3: "the convention is nowhere written and I
+will not invent one silently") is the reason I would rather say "no instance"
+than produce arithmetic without a referent.
+
+*Two places where a rule was tempting and none was needed.* REQ-511 and REQ-512
+do not get rules in SPEC-M13. A gratuitous ARP is operation 1 with target
+protocol address equal to sender protocol address, and the single reply predicate
+(`operation` = 1 and `target_ip` = `cfg_local_ip`) fires exactly on REQ-511's
+condition; REQ-512 is the same predicate read in the negative. Writing a
+`gratuitous` predicate would have created a signal a bench could look for and a
+second place the behaviour could diverge. The spec says so in as many words, so
+that a tb_writer does not go looking.
+
+*What I had to decide with no REQ behind it.* REQ-505 constrains duplicate
+suppression only for the *same* target. A miss for a different target while one
+is outstanding is undecided, and it cannot be left unconstrained — a bench must
+know whether a second request appears. I chose replacement (abandon the old,
+start the new at retry 0) because REQ-506 already states that nothing is
+negatively cached and a later datagram starts a fresh sequence, which makes
+abandonment costless; the alternative, a per-slot table of outstanding
+resolutions, buys suppression for interleaved destinations at the price of
+sixteen retry timers and a second eviction policy, in a phase with one
+application client. Stated normatively in §6.1 with the rejected alternative, and
+raised in §11.3 for dv, because the template's rule is that a behaviour with no
+REQ is either a missing requirement or explicitly unconstrained and this is
+neither until dv says which.
+
+*C-6, closed where the DoD asked.* dv's original observation was that two of
+REQ-004's four criteria have no observable at a module whose output is a record.
+The parsed-fields forms are: conservation becomes *reports = packets opened*
+(and SPEC-M10 §6.1's one-report rule is what makes that a theorem rather than a
+hope); octet comparison becomes **field equality**, which is strictly stronger
+because it also tests REQ-012's decode and the sender-IP field's word-boundary
+crossing; per-octet constancy becomes REQ-611-shaped constant parse latency, one
+value over 10 000 packets and not a mean. The no-`tready` criterion is unchanged
+and structural. I put a per-frame sequence number in the sender protocol address
+for the same reason SPEC-M06 §8 puts one at payload octets 0–3: a field that
+crosses a word boundary and changes every frame is the one a stuck register
+cannot survive.
+
+### Actions
+
+- **Diff set (7 files).** SPEC-M04: §6.2 `Idle` row + new paragraph, §7 new
+  sub-bullet (four numbered consequences + the composed derivation), §10 REQ-209
+  hook, §11.5, §13 row (C-16). SPEC-M06: §6.1 back-to-back paragraph, §8 directed
+  set 14→22, §10 REQ-005/REQ-021/REQ-410 hooks, §11.4, two §13 rows (C-17 a, e).
+  SPEC-M07: §6.1 prose + derivation, §6.2 `Drain` row, §7 throughput, §8 new
+  paragraph, §10 REQ-207 hook, §11.4, §13 row (C-17 b). SPEC-M08: §6.1 claim
+  withdrawn + replacement paragraph, §6.3 item 5, §11.3, §13 row (C-17 c).
+  ADR-0008: one Consequences bullet (C-17 d). SPEC-M03: §3 REQ-016 row, §6.1
+  gapless definition + two non-instances, §6.2 `Frame` row, §11.6, §13 row
+  (C-18). requirements.md: §0.5 "Latency" paragraph + §13 revision row (C-15).
+- **Batch-C freeze flip (4 files, same as above plus SPEC-M09).** Status lines,
+  §12 blocks and §11.1 closures in SPEC-M06 … SPEC-M09; SPEC-M07 §11.3 closed.
+  SPEC-M09 takes no C-17 item and its §13 stays empty, stated in place.
+- **Batch D (8 new files).** `docs/specs/modules/{arp_eth_rx,arp_eth_tx,
+  arp_cache,arp}.md`, each §1 … §13 with no section deleted, and their four
+  lifts under `docs/specs/ifc_check/`, generated from the specs' first fenced
+  `ocaml` block by the same `awk` rule `tools/check_records_vs_appendix.sh`
+  uses, so byte-identity is produced rather than hoped for.
+- **architecture.md.** §6.4 type-column note (batch-D record homes), the M13
+  internal-signal note, the batch-D confirmation paragraph, one new §6.4.2 row,
+  the edge counts (116 → 117, tx 39 → 40), §6.4.2 heading, §8 currency.
+- **traceability.md.** Twelve ARP rows' owning-module and spec-section columns;
+  REQ-507's short title; the currency bullet; the set-equality bullet (C-15
+  added); a new bullet explaining the two two-module rows.
+- **`agents/handoffs/WO-0014_batch-d-specs.md`.** State ISSUED → RETURNED and the
+  Return log, with the per-item table, the C-17 judge-each table, the four open
+  questions and the ledger dispositions for transcription.
+- Nothing under `test/**`, `tools/**`, `libs/**`, `scripts/**`, `.github/**`,
+  `tasks/**` or `docs/gates/**` was written. `git` was not run except to read.
+
+### Evidence
+
+All commands runnable from a checkout at this commit.
+
+1. **Lift byte-identity, the four new pairs and the nine existing ones**:
+   `bash tools/dv_checks.sh` → exit `0`, `dv_checks: all checks passed`;
+   record half **`16 check(s) run, 0 failure(s)`**, including
+   `PASS  modules/arp.md §4.1 == ifc_check/arp_ifc.ml (byte identical …)`,
+   `PASS  modules/arp_cache.md §4.1 == ifc_check/arp_cache_ifc.ml …`,
+   `PASS  modules/arp_eth_rx.md §4.1 == ifc_check/arp_eth_rx_ifc.ml …`,
+   `PASS  modules/arp_eth_tx.md §4.1 == ifc_check/arp_eth_tx_ifc.ml …`.
+   Emitted-Verilog half: `4 check(s) run, 0 failure(s), 4 pending`.
+2. **REQ set equality after the traceability edit**: the REQ id set of
+   `docs/specs/requirements.md` (ids in `**REQ-nnn**` form) and the row id set of
+   `docs/specs/traceability.md` are both **110** with an empty symmetric
+   difference, checked by comparison rather than by counting rows.
+3. **Connection-table arithmetic**: rows counted per subsection —
+   rx **26**, tx **40**, control **29**, status **22** = **117**, matching §6.4's
+   restated header and §6.4.2's heading.
+4. **Batch-C freeze evidence, fetched at source**: GitHub API
+   `/repos/renatom11/agentic-fpga/actions/runs/30733153172` → `"name": "build"`,
+   `"head_sha": "f457efc85d367c7903bee32f4ba31f6e067db0fb"`,
+   `"status": "completed"`, `"conclusion": "success"`. And
+   `git diff --stat 508eea2 f457efc -- docs/specs/ifc_check/` → **empty**, so
+   that run elaborated records byte-identical to the ones frozen at 508eea2.
+   `git diff --stat 508eea2 HEAD -- docs/specs/ docs/adr/` was **empty** before
+   this commit's edits, confirming the review text had not moved.
+5. **No frozen `§4.1` block changed**: `git diff` on this working tree touches no
+   line inside the first fenced `ocaml` block of SPEC-M01 … SPEC-M09, which is
+   also what check 1's nine pre-existing PASS rows re-assert. The batch-A/B
+   evidence (run 30729342467 at f78766e) and the batch-C evidence (run
+   30733153172) therefore still witness every frozen interface, and post-freeze
+   interface churn stays at **zero**.
+6. **Not yet available, and stated as such**: no CI run exists for the four new
+   lifts. `arp_eth_tx_ifc.ml` and `arp_ifc.ml` are the first lifts to `open!`
+   another lift in the same library, and `arp_cache_ifc.ml` is the first
+   `module type S` with an optional parameter on both entry points — none of
+   which I can compile locally (ADR-0005). Each batch-D §12 row reads `pending`
+   and each §11.1 says exactly what a reader assumes meanwhile.
+
+### Outcome
+
+**DoD met.** All four C-items dispositioned (C-15, C-16, C-17 in five judged
+parts, C-18) with a §13 record on every frozen-spec edit and a §13 revision row
+on requirements.md; four specs template-complete with byte-identical lifts and
+`open! Axi64_ifc` where a programme type is used; C-6 closed in SPEC-M10 §8; set
+equality holds at 110 = 110. Two things beyond the stated deliverables, both
+disclosed in the Return log rather than folded in: the batch-C freeze flip
+(charter §5's §12 rows, the gate file untouched) and C-18's twin sentence in
+SPEC-M03 §3. Handoff: `agents/handoffs/WO-0014_batch-d-specs.md`, RETURNED,
+with the per-item dispositions, the C-17 judge-each table, the ledger
+dispositions for orchestrator transcription and four named open questions.
+
+### Open-questions
+
+1. **SPEC-M11 §11.3 — the ADR-0008 substitution at a record-only port.** I read
+   `arp_valid` & `arp_ready` as an instantiation of ADR-0008, not a supersession.
+   dv_lead's call at the batch-D countersignature; a monitor built for the ADR's
+   literal wording would hunt for a payload word that does not exist there.
+2. **SPEC-M10 §11.3 — a bad-FCS frame is parsed, accepted and learned from.**
+   `payload_tuser`[0] arrives after M10's pinned report, so acting on it costs
+   REQ-005's constant. If the programme wants it excluded, the cheapest gate is
+   M13 and it needs a requirements.md diff plus an `Arp_packet` field.
+3. **SPEC-M13 §11.2 — REQ-810's ARP clause.** The first reply waits in M11 and
+   later ones are dropped; dropping the first needs a `cfg_tx_enable` port at
+   M13, which would be a breaking change after freeze — hence raised now.
+4. **SPEC-M13 §11.3 — replacement on a miss for a different target.** Decided
+   here with no REQ behind it; dv_lead judges whether it is a missing
+   requirement.
+5. Unchanged by this work order and still tracked in specs: **C-3**
+   (SPEC-M08 §11.2), **C-5** (SPEC-M04 §11.3), SPEC-M06 §11.2's zero-reserve
+   ceiling, and SPEC-M12 §11.2's lifetime-counter cost.
+6. **A CI `build` run is owed** before any batch-D §12 row can stop reading
+   `pending` and before a dv_lead countersignature work order should issue.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0014_batch-d-specs.md
+- docs/adr/ADR-0008-transmit-header-handshake.md
+- docs/specs/architecture.md
+- docs/specs/ifc_check/arp_cache_ifc.ml
+- docs/specs/ifc_check/arp_eth_rx_ifc.ml
+- docs/specs/ifc_check/arp_eth_tx_ifc.ml
+- docs/specs/ifc_check/arp_ifc.ml
+- docs/specs/modules/arp.md
+- docs/specs/modules/arp_cache.md
+- docs/specs/modules/arp_eth_rx.md
+- docs/specs/modules/arp_eth_tx.md
+- docs/specs/modules/eth_arb_mux.md
+- docs/specs/modules/eth_axis_rx.md
+- docs/specs/modules/eth_axis_tx.md
+- docs/specs/modules/eth_demux.md
+- docs/specs/modules/xgmii_rx_64.md
+- docs/specs/modules/xgmii_tx_64.md
+- docs/specs/requirements.md
+- docs/specs/traceability.md

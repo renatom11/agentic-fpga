@@ -296,7 +296,7 @@ which is equivalent to idle and needs no separate state.
 
 | State | Entered when | Does | Leaves to |
 |---|---|---|---|
-| `Idle` | reset; `clear`; the gap has been served | emits `/I/` in every lane; `tx_tready` = `cfg_tx_enable`, **except on the cycles §7's reset clause covers** — while `clear` = 1 and on the first cycle after it returns to 0, `tx_tready` is 0 whatever `cfg_tx_enable` is (carry-forward **C-14.2**) | `Preamble` on the cycle a first source word is accepted |
+| `Idle` | reset; `clear`; the gap has been served | emits `/I/` in every lane; `tx_tready` = `cfg_tx_enable`, **except on the cycles §7's reset clause covers** — while `clear` = 1 and on the first cycle after it returns to 0, `tx_tready` is 0 whatever `cfg_tx_enable` is (carry-forward **C-14.2**) | `Preamble` on the cycle a first source word is accepted; or, if that word was already accepted on §7's early-acceptance cycle before the gap was served, on the cycle after `Idle` is entered (carry-forward **C-16**) |
 | `Preamble` | a first source word is accepted | emits the REQ-201 word; seeds the CRC register to 0x00000000; keeps `tx_tready` = 1 | `Frame`, always, after exactly one cycle |
 | `Frame` | the cycle after `Preamble` | transmits source words; enables the CRC update on every cycle covering ≥ 1 octet; counts transmitted frame octets; requires a source word on every cycle `tx_tready` = 1 | `Pad` if `tlast` arrived below 60 octets; `Fcs` if the count has reached 60 at `tlast`; `Abort` on underflow |
 | `Pad` | `tlast` below 60 octets | transmits zero octets, covered by the CRC, until 60 | `Fcs` |
@@ -307,6 +307,17 @@ which is equivalent to idle and needs no separate state.
 The CRC register's **enable** is the mechanism ADR-0007 records: asserted only
 in `Frame` and `Pad`, and only on cycles covering at least one octet, so
 `octet_count` is always inside M02's 1-to-8 domain.
+
+**Accepting the next frame's first word before `Idle` is entered** (carry-forward
+**C-16**). §7 pins `tx_tready` = 1 on the cycle after the frame's `tlast` word
+is accepted — C+8 in §6.1's table — and that cycle is in `Frame`, `Pad` or `Fcs`
+depending on the frame's length, none of which is `Idle`. A source word
+presented there is the **next** frame's first word: M04 accepts it into the
+storage slot the current frame vacates on the same cycle and holds it. The
+acceptance changes no state of the frame in progress and starts no frame — it is
+`Idle`, entered when the gap has been served, that releases it, which is the
+second half of the `Idle` row's "Leaves to" cell above. No other state accepts a
+first source word, and no cycle other than that one is an early acceptance.
 
 ### 6.3 Deliberately unconstrained
 
@@ -380,6 +391,54 @@ rely on it.
   terminate word and the gap", which contradicted §6.1's table, §6.3 item 3 and
   REQ-209 at once. A bench built from it alone would assert `tx_tready` = 0 at
   C+11 and fail every conformant design.*
+
+  **The cycle after the frame's `tlast` word is accepted — C+8 in §6.1's table —
+  and what M04 does with a word presented there** (carry-forward **C-16**,
+  dv_lead). The bullet above says when `tx_tready` is 0 and pins the gap's last
+  cycle at 1; it did not state this cycle, and the composed transmit cadence
+  turns on it. `tx_tready` is **1** there, as §6.1's table has asserted since
+  this specification was written, and four things follow that a bench needs:
+
+  1. **Nothing of the current frame may be presented on that cycle, so
+     `tx_tvalid` = 0 there is not an underflow.** REQ-206's condition, stated in
+     §9 and in the handshake bullet below, ends at the acceptance of the frame's
+     `tlast` word — which happened at C+7. C+8 is therefore a legal offer with
+     no obligation behind it, and this is the one cycle in a frame's life where
+     `tx_tready` = 1 with `tx_tvalid` = 0 means nothing at all.
+  2. **A word presented there is the next frame's first word and M04 accepts
+     it.** It takes the storage slot the current frame's word 6 vacates on that
+     same cycle, so §6.1's two-word depth is unchanged: at the end of C+8 M04
+     holds the `tlast` word and the new frame's word 0. REQ-207 then binds as it
+     always does — the accepted word **is** transmitted, at C+13, the cycle after
+     the next frame's start character.
+  3. **The acceptance does not move the start character.** §6.1's "a source word
+     accepted on cycle C + m is transmitted on C + m + 2" is stated for a frame
+     whose first word is accepted into an idle transmitter with the gap already
+     served; back to back it is REQ-204's rounded gap, and not M04's depth, that
+     fixes the start character — the REQ-210 bullet above already says so. The
+     terminate character is at C+10, so the next start character is at **C+12**
+     whether that frame's first word was accepted at C+8 or at C+11, and
+     REQ-209's eleven cycles hold either way.
+  4. **The two cycles cannot both fill both slots.** If a word was accepted at
+     C+8, the word accepted at C+11 is that frame's *second* word and
+     `tx_tready` is 0 on the preamble cycle C+12; if none was, the word accepted
+     at C+11 is its first and `tx_tready` **may** be 1 at C+12 — which is what
+     the "may also be 1 during the preamble word" sentence above is carrying.
+     Either way M04 holds at most two accepted, untransmitted words.
+
+  *Why this value is load-bearing rather than tidy.* SPEC-M07 §6.2's `Idle` row
+  asserts `payload_tready` only on a cycle with `tx_tready` = 1, and M07
+  re-enters `Idle` at C+8 — the cycle after M04 accepted its `tlast` output word
+  at C+7. C+8 is therefore the only cycle in the window at which M07 can accept
+  the next frame's first payload word and still present its output word 0 by
+  M04's next acceptance at C+11. Were `tx_tready` 0 there, M07 would accept at
+  C+11, emit output word 0 at C+12, M04 would accept it at C+12 and emit the
+  start character at C+13: **twelve** cycles between start characters, failing
+  REQ-209 and failing the composed assertion SPEC-M07 §8 and SPEC-M09 §8 item 5
+  commission. In the composed chain M07 presents nothing at C+8 — its output
+  word 0 leaves at C+9 and is accepted at C+11, exactly as §6.1's table shows —
+  so case 2 above is reached only by a bench driving M04 directly from a
+  continuous source, which is what §8's REQ-209 run does.
 
 - **Handshake rules.** A word is accepted on a cycle with `tx_tvalid` = 1 and
   `tx_tready` = 1, and an accepted word is always transmitted (REQ-207). Field
@@ -483,7 +542,7 @@ the other end of a loopback.
 | REQ-206 | underflow detected on the required cycle; `/E/` then `/T/`; no FCS | §9 | stall the source for exactly one required cycle mid-frame; check the characters, the strobe, and the next frame |
 | REQ-207 | an accepted word is always transmitted; `tready` low when it cannot accept | §6.1, §7 | drive a continuous source; assert the transmitted octet sequence equals the accepted-word octet sequence exactly once, in order |
 | REQ-208 | M04's `tready` reaches only the transmit chain; no path from here into the receive datapath exists | §3 | hold M04 busy with a maximum-length frame while driving the receive path at the REQ-004 rate; REQ-004 still holds |
-| REQ-209 | one minimum-length frame per 11 cycles at the default gap, which requires `tx_tready` = 1 on the gap's last cycle | §6.1, §7 | 10 000-frame sustained bench; mean 11 **and** no spacing differing from 11. A bench SHALL NOT assert `tx_tready` = 0 across the whole gap — §6.1's table asserts it at C+11 and REQ-209 needs it there (C-14.1) |
+| REQ-209 | one minimum-length frame per 11 cycles at the default gap, which requires `tx_tready` = 1 on the gap's last cycle **and** on the cycle after the `tlast` word is accepted | §6.1, §7 | 10 000-frame sustained bench; mean 11 **and** no spacing differing from 11. A bench SHALL NOT assert `tx_tready` = 0 across the whole gap — §6.1's table asserts it at C+11 and REQ-209 needs it there (C-14.1) — and SHALL NOT assert it 0 at C+8, which §6.1's table also asserts and on which SPEC-M07's composed cadence turns (C-16). Driven from a continuous source, this bench accepts the next frame's first word at C+8 and its second at C+11; the start characters are 11 cycles apart either way (§7) |
 | REQ-210 | constant 8 octet times (1 cycle) from first accepted word to start character | §7 | latency measurement over several frame lengths, each into an idle transmitter after the gap has elapsed |
 | REQ-802, REQ-810 | `cfg_ifg` and `cfg_tx_enable` sampled per §4.3 | §4.3 | `cfg_tx_enable` = 0 with a request pending: no start character, `tready` low; re-enable and check the frame goes out |
 | REQ-903, REQ-808 | `xgmii_tx_64` is a distinct emitted module with `create`, `hierarchical` and an `.mli` | §4.1 | repository surface check and the `rtl_snapshots/` name comparison |
@@ -499,6 +558,7 @@ updated in the same commit.
 | 11.2 | **REQ-206's underflow remedy interacts with REQ-207's no-drop rule**, and this specification resolves it by transmitting the already-accepted words before the `/E/`. Nothing in requirements.md says which wins. | **CLOSED (WO-0010) as *confirmed*.** dv_lead confirmed the resolution and recorded it as **compelled** rather than chosen — REQ-207's "SHALL NOT drop a word it has accepted" is unconditional and REQ-206 nowhere requires the accepted words to be dropped — so no requirements.md diff is owed under either reading. | WO-0008 Return log; WO-0010 Return log §(d) ruling 4 | architect_docs_lead, dv_lead | closed |
 | 11.3 | **Carry-forward C-5**: requirements.md §0.6's strobe window bound is vacuous for `error_underflow`, because its "latency in cycles after the input word carrying the last octet of the offending frame" is not defined for a frame that never receives that octet. | **DEFERRED — this specification does not depend on the window.** §9 pins the pulse to one exact cycle, computable from the source trace alone, so a bench needs nothing from §0.6 here. The editorial repair to §0.6 is ledger item C-5 and lands at any convenient work order. | ledger **C-5** | architect_docs_lead | any |
 | 11.4 | **Three readings this specification carried that a bench would have failed a conformant design on**: §7 said `tx_tready` = 0 "during the gap" while §6.1's table asserts it at C+11 and REQ-209 requires it there; §6.2's `Idle` row said `tx_tready` = `cfg_tx_enable` without §7's reset exception; and §4.3 left the same-cycle configuration change unconstrained only by implication. | **CLOSED (WO-0011).** §7's throughput bullet now states exactly when `tx_tready` is 0 and why the gap's last cycle is 1; §6.2's `Idle` row carries the reset exception and §7's reset bullet says it wins; §6.3 item 5 makes the same-cycle case explicit. `error_underflow`, the FCS, the gap arithmetic and the interface record are untouched. | ledger **C-14** (readings 1, 2 and 5) | architect_docs_lead | closed |
+| 11.5 | **§7's amended `tx_tready` bullet was correct but not complete**, and the cycle it left uncovered — C+8 in §6.1's table, the cycle after the frame's `tlast` word is accepted — is the one the composed 11-cycle transmit cadence turns on. §6.2 had no state that accepted a source word there and §6.1's C + m + 2 transmit rule could not hold for one, so a reader had only §6.1's table asserting the value and nothing saying what it meant. | **CLOSED (WO-0014).** §7 pins the value and states four consequences: it is not an underflow cycle, a word presented there is the next frame's first, the acceptance does not move the start character, and the C+8 and C+11 acceptances cannot both fill both storage slots. §6.2's `Idle` row and the paragraph below its table carry the acceptance; §10's REQ-209 hook forbids the assertion that would fail a conformant design. | ledger **C-16** | architect_docs_lead | closed |
 
 ## 12. Freeze record
 
@@ -524,3 +584,4 @@ interface.
 | 2026-08-02 | §7 throughput bullet: "`tx_tready` is 0 during … the gap" replaced by the exact rule, with the gap's last cycle asserted and the two obligations bounding the earlier gap cycles named (ledger **C-14.1**) | no | none — §6.1's cycle table and REQ-209 already carried the governing reading; this removes the contradiction | `J-architect_docs_lead-0005` |
 | 2026-08-02 | §6.2 `Idle` row and §7 reset bullet: the reset clause is stated as the exception to `tx_tready` = `cfg_tx_enable` and as the winner, and the first-cycle-after-`clear` frame is explained (ledger **C-14.2**) | no | none — §7 already governed; the `Idle` row was incomplete | `J-architect_docs_lead-0005` |
 | 2026-08-02 | §4.3 and §6.3 item 5: a configuration change landing on its own sampling cycle is deliberately unconstrained (ledger **C-14.5**) | no | none — makes an implication explicit so no bench asserts on it | `J-architect_docs_lead-0005` |
+| 2026-08-02 | §7 throughput bullet completed for the cycle after the `tlast` word is accepted (C+8): the value is 1, a word presented there is the next frame's first and is accepted into the vacated slot, the start character stays at C+12 under REQ-204, and the C+8/C+11 pair cannot exceed the two-word depth. §6.2's `Idle` row gains the second entry condition and the table gains a paragraph; §10's REQ-209 hook gains the corresponding prohibition (ledger **C-16**) | no | none — §6.1's cycle table already asserted the governing value and §7's REQ-210 bullet already permitted a delayed start character; this states what a word presented there does, which nothing said. No §4 record, no strobe, no gap arithmetic and no latency constant moves | `J-architect_docs_lead-0006` |

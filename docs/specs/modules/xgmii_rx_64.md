@@ -81,7 +81,7 @@ of the chain — and its output stream is a receive-path stream.
 | REQ-013 | `tuser`[0] means "found invalid, discard at the end". M03 sets it and never reads it. |
 | REQ-014 | `tstrb` is driven to 0 on every output word. |
 | REQ-015 | One `tlast` per frame; at most **190** words between two `tlast` words on this stream (1514 octets, REQ-108), at least one. |
-| REQ-016 | The output may carry idle cycles inside a frame only where the input did — an XGMII word carrying no frame octet, which happens at a lane-4 start and at a terminate in a low lane. Downstream must tolerate them; M03 never inserts one for its own reasons. |
+| REQ-016 | The output may carry idle cycles inside a frame only where the input did — an XGMII word carrying no frame octet, which inside an open frame is an idle cycle the stimulus injected (§10 commissions injection at 0, 1 and 7 cycles) and **not** a lane-4 start, whose second preamble word carries frame octets 0–3 (§6.1, carry-forward **C-18**). Downstream must tolerate them; M03 never inserts one for its own reasons. |
 | REQ-017 | M03's wire-side ports are the receive half of the four REQ-017 names, declared from SPEC-M01's `Xgmii` record with `[@rtlprefix "xgmii_rx"]`, which emits `xgmii_rxd` and `xgmii_rxc` exactly. |
 | REQ-018 | M03 contains no PMA, PCS, 64b/66b, scrambler, link-training or PTP logic, and instantiates no primitive outside the architecture.md §4 inventory (it instantiates M02 and nothing else). |
 | REQ-019 | Word delay ΔC = 3 cycles against a ceiling of 4 (requirements.md §1.1), at both start lanes. Payload storage is **two** datapath words — the pipeline of §7 — and no more, which is the depth REQ-019 permits and not a coincidence: the FCS-removal lookahead is exactly one word. |
@@ -242,22 +242,49 @@ REQ-105.
 
 **Emitting the frame.** Frame octet j is emitted at `tdata` position j mod 8 of
 output word ⌊j / 8⌋, so the frame's first octet is at `tdata`[7:0] of the first
-output word at both start lanes (REQ-021). **On a gapless stimulus** — every
-XGMII word from the start word onward carrying frame octets — output word m is
-emitted on the cycle **m + 3** counted from the word carrying the start
-character; that single sentence is the whole timing contract and §7 derives the
-latency constants from it.
+output word at both start lanes (REQ-021). **On a gapless stimulus** — one in
+which the frame's octets occupy **consecutive octet times** from the start
+character onward, so that no XGMII word between the start word and the word
+carrying the terminate character is an idle word — output word m is emitted on
+the cycle **m + 3** counted from the word carrying the start character; that
+single sentence is the whole timing contract and §7 derives the latency
+constants from it.
+
+*The definition is stated in octet times and not in words, and that is
+carry-forward **C-18*** (dv_lead). "Every XGMII word from the start word onward
+carrying frame octets" — the wording this replaces — is satisfied by no
+stimulus at all: the start word carries the start character and preamble and
+never a frame octet, and the terminate word of the 64-octet table below (`/T/`
+in lane 0 of cycle 9) carries none either, yet that table is the gapless case
+the m + 3 formula is derived from. In octet times the definition is exact and
+both words fall outside the span it constrains.
 
 The qualifier is load-bearing and is §0.5's own (carry-forward **C-14.4**). An
-input word that covers **no** frame octet — the second word of a lane-4 start's
-preamble, a terminate character in a low lane, or an idle cycle injected by
-REQ-016's wrapper, which §10 commissions against this module at 0, 1 and 7
-cycles — carries the frame forward without advancing m: it is *not* a condition,
-it holds the CRC register by its enable (§6.2) and it delays every later octet
-by exactly 8 octet times per cycle, which is REQ-016's own arithmetic. The
-**per-octet** constant of §7 holds on every stimulus, gapped or not; the cycle
-formula above holds only on the gapless one, and a bench asserting the formula
-under idle injection would fail a conformant design.
+input word that covers **no** frame octet — *inside an open frame*, a terminate
+character in **lane 0**, or an idle cycle injected by REQ-016's wrapper, which
+§10 commissions against this module at 0, 1 and 7 cycles — carries the frame
+forward without advancing m: it is *not* a condition, it holds the CRC register
+by its enable (§6.2) and it delays every later octet by exactly 8 octet times
+per cycle, which is REQ-016's own arithmetic. The **per-octet** constant of §7
+holds on every stimulus, gapped or not; the cycle formula above holds only on
+the gapless one, and a bench asserting the formula under idle injection would
+fail a conformant design.
+
+**Two words that are not instances of that rule, stated because reading them as
+instances breaks the FCS check of every frame that has one** (carry-forward
+**C-18**):
+
+1. **The second preamble word of a lane-4 start covers four frame octets, not
+   none.** At a lane-4 start the preamble runs from lane 4 of cycle 0 through
+   lane 3 of cycle 1, and frame octets 0–3 occupy lanes 4–7 of cycle 1 — which
+   is what the "same frame at a lane-4 start" paragraph below states. That word
+   is therefore in `Frame`, the CRC enable is **asserted** for it with
+   `octet_count` = 4, and a design that held the CRC register across it would
+   fail the FCS check of every lane-4 frame.
+2. **A terminate character in a lane other than 0 leaves frame octets in the
+   lanes below it.** With `/T/` in lane k, lanes 0 … k−1 carry frame octets and
+   the CRC enable is asserted with `octet_count` = k. Only k = 0 gives a word
+   covering no frame octet.
 
 **Removing the FCS without varying the latency.** The last four octets before
 the terminate character are the FCS and are not delivered (REQ-103). They are
@@ -354,7 +381,7 @@ Reset state and `clear` state are both `Idle`.
 |---|---|---|---|
 | `Idle` | reset; `clear`; a frame ends normally or is aborted | ignores every lane; `tvalid` = 0; CRC register held | `Preamble` on `/S/` in lane 0 or lane 4 while `cfg_rx_enable` = 1 |
 | `Preamble` | a start character is accepted | discards the eight octets from the start character inclusive without checking their values (REQ-102); seeds the CRC register to 0x00000000 | `Frame` once those eight octets have passed; `Idle` on `/T/` (REQ-107, zero delivered octets), on `/E/` (REQ-105, zero delivered octets) or on `/S/` (REQ-110, zero delivered octets — re-entering `Preamble` for the new frame) |
-| `Frame` | the frame's first octet | forwards octets at the fixed delay of §7; enables the CRC update on every cycle covering ≥ 1 frame octet; counts received octets for REQ-107 and REQ-108. An input word covering **no** frame octet — a terminate character in a low lane, the second preamble word of a lane-4 start, an idle cycle injected under REQ-016 — **holds** the frame: the CRC register holds by its enable, the octet count holds, no output word is produced and no condition is raised (C-14.4) | `Idle` on `/T/` (REQ-106; runt check on the count, FCS check on the residue); `Idle` on `/E/` (REQ-105); `Preamble` on `/S/` (REQ-110); `Discard` when the received count passes 1518 (REQ-108) |
+| `Frame` | the frame's first octet | forwards octets at the fixed delay of §7; enables the CRC update on every cycle covering ≥ 1 frame octet; counts received octets for REQ-107 and REQ-108. An input word covering **no** frame octet — a terminate character in **lane 0**, or an idle cycle injected under REQ-016 — **holds** the frame: the CRC register holds by its enable, the octet count holds, no output word is produced and no condition is raised (C-14.4). A word covering **one or more** frame octets is never held, whatever else it carries: a terminate character in lane k > 0 covers k of them, and the second preamble word of a lane-4 start covers four (§6.1's two non-instances, C-18) | `Idle` on `/T/` (REQ-106; runt check on the count, FCS check on the residue); `Idle` on `/E/` (REQ-105); `Preamble` on `/S/` (REQ-110); `Discard` when the received count passes 1518 (REQ-108) |
 | `Discard` | REQ-108 truncation | emits nothing further for this frame; keeps decoding lanes so the next frame is not lost. An `/E/` arriving here is **absorbed**: the frame is already closed and already reported by `error_oversize`, so no output word appears and no strobe pulses (REQ-105's open-frame clause, carry-forward **C-12**) | `Idle` on `/T/`; `Preamble` on `/S/` — this is REQ-108's "resynchronise on the next start character". `/E/` is not an exit: whether the implementation stays in `Discard` or falls to `Idle` on it is unobservable and is §6.3 item 6 |
 
 The CRC register's **enable** is the mechanism ADR-0007 records: it is asserted
@@ -648,6 +675,7 @@ updated in the same commit.
 | 11.3 | **The §9 co-occurrence rulings are this specification's, not requirements.md's** — in particular that an error character closes a frame so a following start character pulses nothing, and that a start character during REQ-108's `Discard` is resynchronisation rather than a second abort. | **CLOSED (WO-0010).** dv_lead confirmed all six rulings in the WO-0010 Return log §(d), and recorded two of them as *compelled* rather than chosen. No §9 text changed as a result. | WO-0008 Return log; WO-0010 Return log §(d) | architect_docs_lead, dv_lead | closed |
 | 11.4 | **An error character arriving after the frame has been closed** — specifically during REQ-108's `Discard` — was governed by two sections that disagreed: §9 row 2's condition text read true after closure while §6.2's `Discard` row listed only `/T/` and `/S/` as exits. | **CLOSED (WO-0011), adopting dv_lead's proposed ruling.** Nothing pulses and nothing is emitted; §9's closure list, §9's third row, §6.2's `Discard` row and REQ-105/REQ-108 all say so, and §6.3 item 6 records that the internal state response is unobservable. | ledger **C-12** | architect_docs_lead, dv_lead | closed |
 | 11.5 | **Two readings this specification carried that a bench would have failed a conformant design on**: §6.1's drain window was ΔC rather than the tight ΔC − 1, and §6.1's `m + 3` cycle formula was stated without §0.5's gapless qualifier while §10 commissions idle injection against it. | **CLOSED (WO-0011).** §6.1 now derives the two-cycle drain bound and carries the gapless qualifier; §6.2's `Frame` row states that an input word covering no frame octet holds the frame; §10's REQ-016 and REQ-109 hooks name the corrected figures. | ledger **C-14** (readings 3 and 4) | architect_docs_lead | closed |
+| 11.6 | **The C-14.4 repair's illustrations contradicted §6.1's own worked examples**: one wrong instance (the second preamble word of a lane-4 start, which covers four frame octets), one loose one (a terminate character "in a low lane", when only lane 0 qualifies) and a definition of "gapless" that no stimulus satisfies. Read literally, §6.2's `Frame` row held the CRC register across four frame octets and failed the FCS check of **every** lane-4 frame. | **CLOSED (WO-0014).** The rule is unchanged and was never in doubt — dv_lead reaffirmed it at WO-0013. "Gapless" is now defined in **octet times**, the two non-instances are stated with their `octet_count` values, and §6.2's `Frame` row says that a word covering one or more frame octets is never held. §3's REQ-016 row carried the same wrong example and moves in the same diff. | ledger **C-18** | architect_docs_lead | closed |
 
 ## 12. Freeze record
 
@@ -675,3 +703,4 @@ interface.
 | 2026-08-02 | §6.1 drain window tightened from ΔC to **two cycles** after the terminate word, with the derivation (ledger **C-14.3**) | no | none — §10's REQ-109 hook and REQ-109 itself already carried the tight figure; this removes the contradiction | `J-architect_docs_lead-0005` |
 | 2026-08-02 | §6.1 `m + 3` formula qualified "on a gapless stimulus"; §6.2 `Frame` row states that an input word covering no frame octet holds the frame (ledger **C-14.4**) | no | none — restores §0.5's own qualifier | `J-architect_docs_lead-0005` |
 | 2026-08-02 | §4.3 and §6.3 item 7: a `cfg_rx_enable` change landing on a start character's own cycle is deliberately unconstrained (ledger **C-14.5**) | no | none — makes an implication explicit so no bench asserts on it | `J-architect_docs_lead-0005` |
+| 2026-08-02 | §3 REQ-016 row, §6.1 gapless definition and its illustrative list, §6.2 `Frame` row: "gapless" redefined in octet times; the lane-4 second preamble word and a terminate character in a lane above 0 stated as **non**-instances of the hold rule, with their `octet_count` values; §6.2 adds that a word covering ≥ 1 frame octet is never held (ledger **C-18**) | no | none — the C-14.4 **rule** is unchanged and reaffirmed (`J-dv_lead-0007`); only its illustrations and the definition of "gapless" were wrong, and §6.1's own worked examples already carried the governing reading | `J-architect_docs_lead-0006` |

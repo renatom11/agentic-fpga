@@ -436,8 +436,19 @@ prettified:
   `Status`). Both cells are always backquoted and always contain exactly one dot.
 - **`type`** — the OCaml type the edge carries: a record name from SPEC-M01 §4.1
   (`Axi64.Source`, `Axi64.Dest`, `Xgmii`, `Eth_header`, `Ip_header`,
-  `Udp_header`, `Config`, `Status`), a batch-D/E/F record not yet specified, or
-  `bit` / `bit[n]` for a scalar.
+  `Udp_header`, `Config`, `Status`), a batch-D/E/F record, or `bit` / `bit[n]`
+  for a scalar.
+
+  **Where the batch-D records live** (settled by WO-0014). SPEC-M01 is FROZEN at
+  f78766e, so a record added to its §4.1 would be a breaking post-freeze
+  interface change and would invalidate the compile evidence five freeze records
+  cite (SPEC-TEMPLATE rule 7). Batch D therefore declares each new record
+  **once, in the specification of the module that owns it**, and every
+  counterpart opens that module: `Arp_packet` in SPEC-M10 §4.1;
+  `Arp_cache_query`, `Arp_cache_result` and `Arp_cache_write` in SPEC-M12 §4.1;
+  `Arp_query` and `Arp_response` in SPEC-M13 §4.1. Batches E and F follow the
+  same rule for their own records. SPEC-M10 §11.2 tracks promoting them into
+  M01 if a later phase reopens it — a rename, not a behavioural change.
 - **`class`** — exactly one of **`rx`** (an edge on requirements.md §0.4's
   receive datapath, carrying frame octets or a header record travelling with
   them), **`tx`** (the same on the transmit datapath), **`control`**
@@ -456,6 +467,17 @@ and `M04.crc_*` are the running-CRC register and its update path (SPEC-M03 §6.1
 SPEC-M04 §6.1), not ports of M03 or M04. They are tabulated because M02 is an
 inventory module and a table that omitted it would be missing a node; a renderer
 should draw one `M02` box with edges from both parents.
+
+**M13 `Arp` does the same for its three children**, and batch D confirms it
+rather than leaving a reader to infer it. M13 contains M10, M11 and M12 (§6.3),
+so the M13 endpoints of the edges to and from them — `M13.arp_rx`,
+`M13.arp_tx`, `M13.arp_tx_ready`, `M13.cache_query`, `M13.cache_result`,
+`M13.cache_write` — are **internal signals of M13's hierarchy and not ports of
+M13**: they appear in neither `I` nor `O` of SPEC-M13 §4.1, which says so in the
+lift's own comment. The M13 endpoints that *are* ports — `rx_hdr`,
+`rx_payload`, `tx_hdr`, `tx_payload`, `tx_payload_dest`, `tx_query`,
+`tx_response`, the four `cfg_` scalars and the three strobes — appear there. The
+same distinction will apply to M16 and M19 when batches E and F write them.
 
 **What is enumerated and what is summarised.** §6.4.1 and §6.4.2 contain **one
 row per port-level edge** of the receive and transmit datapaths — every edge of
@@ -480,7 +502,22 @@ traceability matrix — a batch that renames a port here and nowhere else has
 broken the generated diagram, and a batch that renames it in §4.1 only has made
 this table lie.
 
-**116 edges: 26 `rx`, 39 `tx`, 29 `control`, 21 + 1 `status`.**
+**Batch D's confirmation (WO-0014).** SPEC-M10 … SPEC-M13 confirm every row
+naming M10, M11, M12 or M13 **unchanged in its port names**, with exactly one
+amendment: the transmit table gains
+
+> `| `M11.arp_ready` | `M13.arp_tx_ready` | `bit` | tx |`
+
+because the `Arp_packet` M13 offers M11 has **no payload stream travelling with
+it** — M11 generates the payload — so ADR-0008's acceptance event (the
+acceptance of the frame's first payload word) has no instance at that port and
+M11 exposes an explicit `arp_ready` instead. SPEC-M11 §7 states the substitution
+and SPEC-M11 §11.3 flags it for dv_lead's countersignature. No other batch-D
+port name moves, and the four `cfg_` scalars, the three ARP strobes and every
+stream edge stand exactly as §6.4.1 … §6.4.4 wrote them before the specs
+existed.
+
+**117 edges: 26 `rx`, 40 `tx`, 29 `control`, 21 + 1 `status`.**
 
 ### 6.4.1 Receive datapath — class `rx` (26 edges)
 
@@ -513,7 +550,7 @@ this table lie.
 | `M20.app_rx_hdr` | `APP.hdr` | `Udp_header` | rx |
 | `M20.app_rx_payload` | `APP.payload` | `Axi64.Source` | rx |
 
-### 6.4.2 Transmit datapath — class `tx` (39 edges)
+### 6.4.2 Transmit datapath — class `tx` (40 edges)
 
 | source.port | sink.port | type | class |
 |---|---|---|---|
@@ -536,6 +573,7 @@ this table lie.
 | `M15.eth_payload` | `M09.ip_payload` | `Axi64.Source` | tx |
 | `M09.ip_payload_dest` | `M15.eth_payload_dest` | `Axi64.Dest` | tx |
 | `M13.arp_tx` | `M11.arp` | `Arp_packet` | tx |
+| `M11.arp_ready` | `M13.arp_tx_ready` | `bit` | tx |
 | `M11.hdr` | `M13.tx_hdr` | `Eth_header` | tx |
 | `M11.payload` | `M13.tx_payload` | `Axi64.Source` | tx |
 | `M13.tx_payload_dest` | `M11.payload_dest` | `Axi64.Dest` | tx |
@@ -662,13 +700,18 @@ are drafted, because the dependant reuses their interface records.
 Every spec follows [`SPEC-TEMPLATE.md`](SPEC-TEMPLATE.md) and is frozen only
 with a green `ifc_check` build and a dv_lead testability countersignature.
 
-**Currency (2026-08-02).** Batches **A** and **B** are **FROZEN at f78766e** —
-CI `build` run 30729342467 green, dv_lead countersignature `J-dv_lead-0005`,
-transcribed in `docs/gates/P1-spec-freeze-checklist.md`. Batch **C** is drafted
-(SPEC-M06 … SPEC-M09) and awaits its `ifc_check` run and dv_lead's
-countersignature. Batches **D**, **E** and **F** are unwritten, which is why
-§6.4's rows naming M10 … M20 are provisional in their port names and why each of
-those batches confirms or amends its own rows in the same commit as its specs.
+**Currency (2026-08-02, WO-0014).** Batches **A** and **B** are **FROZEN at
+f78766e** — CI `build` run 30729342467 green, dv_lead countersignature
+`J-dv_lead-0005`. Batch **C** is **FROZEN at 508eea2** — CI `build` run
+30733153172 green at f457efc, whose `docs/specs/ifc_check/` tree is
+byte-identical to 508eea2's, dv_lead countersignature `J-dv_lead-0007`. Both are
+transcribed in `docs/gates/P1-spec-freeze-checklist.md`. Batch **D** is drafted
+(SPEC-M10 … SPEC-M13) and awaits its `ifc_check` run and dv_lead's
+countersignature; it has confirmed its own §6.4 rows in the same commit, with
+the one amendment §6.4 records. Batches **E** and **F** are unwritten, which is
+why §6.4's rows naming M14 … M20 remain provisional in their port names and why
+each of those batches confirms or amends its own rows in the same commit as its
+specs.
 
 ---
 

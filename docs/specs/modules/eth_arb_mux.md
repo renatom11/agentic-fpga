@@ -1,7 +1,8 @@
 # SPEC-M09 — `Eth_arb_mux`
 
-- **Status**: DRAFT — batch C. Template-complete; the two evidence rows of §12
-  are what the freeze flip waits on
+- **Status**: **FROZEN** (`P1-spec-freeze`, SHA `508eea2`) — batch C, dv_lead
+  countersignature `J-dv_lead-0007`. Changes to §4, §6 or §7 after this point
+  are spec diffs recorded in §13 (SPEC-TEMPLATE rule 7)
 - **Inventory id**: M09 (architecture.md §4) · **Path**:
   `libs/hardcaml_ethernet/src/eth_arb_mux.ml`
 - **Datapath role**: transmit
@@ -452,25 +453,27 @@ Item numbers are permanent; a closed item keeps its row (SPEC-TEMPLATE §11).
 
 | # | Item | Status · what a reader assumes meanwhile | Tracked as | Owner | Closes by |
 |---|---|---|---|---|---|
-| 11.1 | **The `ifc_check` compile evidence for this lift is pending**: `eth_arb_mux_ifc.ml` is new in this commit and is the widest record batch C adds (three streams, two directions each). | **DEFERRED — the record is written, the run is pending.** Meanwhile a reader assumes the record exactly as §4.1 writes it: it uses only types SPEC-M01 froze at f78766e, in the pattern SPEC-M04's green lift already witnesses. A divergence is a red CI run on this commit and an editorial diff. | the `Interface compile check` row of §12 | architect_docs_lead, rtl_lead | the batch-C `ifc_check` run |
+| 11.1 | **The `ifc_check` compile evidence for this lift is pending**: `eth_arb_mux_ifc.ml` is new in this commit and is the widest record batch C adds (three streams, two directions each). | **CLOSED (WO-0014).** CI `build` run **30733153172** at f457efc reports `success` with this lift in it, and `git diff 508eea2 f457efc -- docs/specs/ifc_check/` is empty, so the run witnesses the record frozen here. | the `Interface compile check` row of §12 | architect_docs_lead, rtl_lead | closed |
 | 11.2 | **M09's datapath is combinational** (§7), so the M15 → M09 → M07 path and the `payload_tready` path back through it are the longest combinational runs in the transmit chain. | **DEFERRED — nothing in Phase 1 depends on closing them.** REQ-018 keeps the XGMII boundary simulation-only and no static timing closure at 6.4 ns is required, so a reader builds the combinational mux today. If a later phase cannot close the path, §7's timing-closure bullet states the remedy — a spec diff plus an ADR restating the cadence — and forbids the quiet register that would otherwise change REQ-406's measured grant delay. | this item; SPEC-M04 §7's equivalent note | architect_docs_lead, rtl_lead | Phase-3 attach, or the first synthesis attempt |
 | 11.3 | **The transmit-side header handshake is a programme convention, not this module's invention** (ADR-0008), and M09 is the module that consumes it most sharply: the *request* signal is `hdr_valid`. | **DEFERRED for confirmation, not for decision.** ADR-0008 states it normatively and §6.1 states it operationally, so M09's bench is derivable today. SPEC-M11 and SPEC-M15 restate the source-side obligation in batches D and E; if either cannot meet it, the repair is an ADR-0008 supersession plus a spec diff here, not a local exception. | ADR-0008 | architect_docs_lead | SPEC-M15 (batch E) |
 
 ## 12. Freeze record
 
-Filled in at `P1-spec-freeze`. All four rows are required (charter §5); this
-spec is DRAFT.
+Filled in at `P1-spec-freeze`. All four rows are required (charter §5).
 
 | Item | Value |
 |---|---|
-| Interface compile check | pending — CI `build` run `<id>`, conclusion `<success>`, SHA `<sha>`; per ADR-0005 a local build is not acceptable evidence. This run is also §11.1's closure record |
+| Interface compile check | CI `build` run **30733153172**, conclusion **`success`**, SHA **f457efc** — all nine batch-A/B/C lifts elaborate, this one included; per ADR-0005 a local build is not acceptable evidence. `git diff 508eea2 f457efc -- docs/specs/ifc_check/` is empty, so the run witnesses the record frozen at 508eea2 |
 | Architect signature | `J-architect_docs_lead-0005` |
-| dv_lead testability countersignature | pending — batch C (SPEC-M06, M07, M08, M09) |
-| Frozen at | pending — SHA `<sha>`, gate `docs/gates/P1-spec-freeze-checklist.md` |
+| dv_lead testability countersignature | `J-dv_lead-0007` (WO-0013) — **SIGNED**, batch C; REQ-406's grant deadline re-derived at the bound and starvation checked under rule 3. No C-17 item is raised against this specification |
+| Frozen at | SHA **508eea2**, gate `docs/gates/P1-spec-freeze-checklist.md` |
 
 ## 13. Change log
 
-Post-freeze changes only. This spec is DRAFT and has none.
+Post-freeze changes only. Each row cites the ADR that authorised it; a breaking
+interface change is counted against post-freeze churn (charter §6). §4.1's
+record is byte-for-byte unchanged since the freeze SHA. **No post-freeze change
+has been made to this specification.**
 
 | Date | Change | Breaking? | ADR | Journal |
 |---|---|---|---|---|

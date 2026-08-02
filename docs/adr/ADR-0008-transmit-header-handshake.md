@@ -119,3 +119,20 @@ packet from a cache lookup that has already completed.
 - **The DV cost is one monitor parameter, not two monitors.** A header-record
   monitor takes the discipline (pulse or level) from the port's direction, which
   the bench already knows.
+- **A transmit-side header monitor keys on the acceptance event and on nothing
+  else** (carry-forward **C-17(d)**, added 2026-08-02 under WO-0014, journal
+  `J-architect_docs_lead-0006`). Decision 3 is *permissive*: the source **may**
+  drop `valid` on the cycle after acceptance, and may equally hold it, re-assert
+  it for the next frame on that same cycle, or leave it high between frames. A
+  monitor therefore **SHALL NOT** assert that `valid` falls after acceptance,
+  **SHALL NOT** assert that it is low between frames, **SHALL NOT** treat a
+  `valid` edge as a frame boundary, and **SHALL NOT** read the header fields on
+  any cycle outside the offer window (from the cycle `valid` is asserted to the
+  cycle the first payload word is accepted, inclusive). The one event a monitor
+  keys on is the acceptance of the frame's first payload word — `tvalid` = 1 and
+  `tready` = 1 — which is decision 3's own definition of the header's
+  acceptance. What a monitor **may** assert is the source's side of decisions 1
+  and 2: that `valid` and the first payload word's `tvalid` rose together, and
+  that every header field and that word's contents were stable from then until
+  acceptance. This bullet is a rule about tests, not a change to the decision;
+  no conformant source or consumer is affected.
