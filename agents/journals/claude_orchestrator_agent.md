@@ -1924,3 +1924,62 @@ or tracked); WO-0015 issued pending CI green on a9993ff.
 - agents/handoffs/WO-0015_batch-d-countersign.md
 - docs/gates/P1-spec-freeze-checklist.md
 - tasks/BOARD.md
+
+## [J-orchestrator-0049] 2026-08-02T06:50:00Z | task:WO-0015 | Batch-D evidence green; WO-0015 spawned; WO-0016 first RTL activation issued
+
+### Trigger
+CI build run 30736107842 on 2f29888 completed green — the batch-D lifts'
+first elaboration (arp_eth_tx_ifc.ml and arp_ifc.ml are the first lifts
+to `open!` another lift). The evidence prerequisite for the batch-D
+countersign is met.
+
+### Inputs
+- Run 30736107842 job log (all steps success, dv_checks green)
+- `git diff a9993ff 2f29888 -- docs/specs/` — empty (verified), so the
+  run witnesses the batch-D text exactly as drafted
+- The overnight standing plan (sponsor directive, on the record)
+
+### Reasoning
+Two lanes open in parallel, disjoint write scopes, per the wave-3
+precedent: dv_lead countersigns batch D (writes only the WO-0015 packet
++ its journal); rtl_lead makes the programme's first RTL activation on
+M01/M02 (writes libs/** + its journal + the WO-0016 packet). M01/M02
+have been FROZEN since f78766e — two full countersign cycles with zero
+interface drift — and every later module opens their types, so
+implementation risk is lowest and unblocking value highest exactly
+there. WO-0016 forbids tests (charter red line), forbids docs edits,
+and pins ADR-0005 discipline: the container cannot run dune, so the
+code must compile from careful reading + my CI round-trip, the same
+blind-write protocol dv's bench machinery proved twice.
+Housekeeping: chronicle + atlas rebuilt from the 2f29888 snapshot
+(64 commits / 64 entries, re-extraction matched the old data with zero
+drift on shared commits) and republished to their original URLs; the
+block-diagram artifact published (117 edges, per-module port panels
+from the compile-checked lifts). Two stray duplicate artifact URLs were
+minted while re-linking post-compaction — queued for the morning report.
+
+### Actions
+- Appended run 30736107842 evidence to WO-0015 (edit rides dv's commit,
+  as the packet's files list already declares).
+- Spawned dv_lead on WO-0015 (short-id WO-0015/2026-08-02T06:45Z);
+  fallback armed at 07:47Z.
+- Issued agents/handoffs/WO-0016_m01-m02-implementation.md; board rows
+  for WO-0015/WO-0016; this entry; spawning rtl_lead next with its own
+  fallback.
+
+### Evidence
+- `gh`-equivalent: actions job 91465086813 (run 30736107842) — all
+  steps `success`, completed 06:38:33Z
+- `git diff a9993ff 2f29888 -- docs/specs/ | wc -l` → 0
+
+### Outcome / DoD
+Both overnight lanes in flight. Next state changes: dv return (batch-D
+freeze or owed diffs) and rtl return (first libs/ commit), each
+committed under its own identity after acceptance.
+
+### Open questions
+- None new. The four batch-D questions ride WO-0015.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0016_m01-m02-implementation.md
+- tasks/BOARD.md

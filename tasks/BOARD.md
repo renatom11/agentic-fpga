@@ -62,6 +62,7 @@ Corrections.
 
 | Packet | From → To | State | Note |
 |---|---|---|---|
+| [WO-0016](../agents/handoffs/WO-0016_m01-m02-implementation.md) | orchestrator → rtl_lead | ISSUED | **First RTL activation**: M01 Axi64 + M02 Crc32_eth from frozen f78766e specs; no tests (dv-owned); parallel with WO-0015 (disjoint scopes) |
 | [WO-0015](../agents/handoffs/WO-0015_batch-d-countersign.md) | orchestrator → dv_lead | ISSUED | Batch D countersign at a9993ff; four architect questions (M11 ADR-0008 substitution; M10 bad-FCS learn; M13 REQ-810 — potentially breaking; M13 miss-replacement) |
 | [WO-0014](../agents/handoffs/WO-0014_batch-d-specs.md) | orchestrator → architect_docs_lead | ACCEPTED | a9993ff: SPEC-M10–M13 DRAFT (lifts byte-identical), C-6/15/16/17/18 CLOSED, batch-C freeze flip ratified, 117-edge table; countersign next after CI |
 | [WO-0013](../agents/handoffs/WO-0013_batch-c-countersign.md) | orchestrator → dv_lead | ACCEPTED | **SIGNED at 508eea2 — batch C FROZEN (9/20)**; eight amendments reaffirmed; ADR-0008 accepted; new C-16/17/18 |
