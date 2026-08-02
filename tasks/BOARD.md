@@ -22,10 +22,10 @@ the old `git diff --exit-code` determinism check (now stages first), and a
 top-level/hierarchical name collision made Rtl.output emit a
 self-instantiating shell (wrapper renamed `word_counter_top`).
 
-Open M1 work (post WO-0002 acceptance): add `hardcaml_axi` to the opam
-deps + dune wiring and prove it installs in CI (blocking spec batch A);
-`docs/specs/ifc_check/` dune wiring for Interface compile evidence
-(blocking batch A freeze); spec batching DECIDED 2026-08-02: the
+Open M1 work (post WO-0002 acceptance): batch-A blockers CLOSED
+2026-08-02 — `hardcaml_axi` solves in CI and the `docs/specs/ifc_check/`
+compile lane builds the template Interface block (build run 30724505231
+on 98e1607, green); spec batching DECIDED 2026-08-02: the
 architect's six ordered batches stand as six WOs (sizing accepted as
 proposed); dv_lead testability review in flight
 (WO-0003); README phase-table pointer follow-up; sponsor confirmation of the

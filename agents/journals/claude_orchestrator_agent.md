@@ -1160,3 +1160,33 @@ none
 ### Files-in-this-commit
 - agents/handoffs/WO-0003_requirements-testability-review.md
 - tasks/BOARD.md
+
+## [J-orchestrator-0029] 2026-08-02T01:05:00Z | task:none | Batch-A blockers closed: hardcaml_axi solves, ifc_check lane compiles
+### Trigger
+Build runs concluded for 98e1607 (hardcaml_axi dep + ifc_check lane) and
+02e38e7 (WO-0003 issuance).
+### Inputs
+GitHub Actions run list for build.yml.
+### Reasoning
+Run 30724505231 on 98e1607 is green, which proves the two things the
+spec-freeze machinery needed in one shot: the opam solver accepts
+hardcaml_axi within the ADR-0004 v0.17.x bounds alongside the existing
+stack, and the SPEC-TEMPLATE §4.1 example block — Stream.Make functor
+application, nested interfaces, rtlprefix attributes — elaborates under
+ppx_hardcaml in the authoritative environment. The architect's fallback
+(local stream record + ADR) is therefore moot and stays unused. Run
+30724531871 on 02e38e7 green confirms the WO-0003 issuance commit
+disturbed nothing. Both batch-A blockers from WO-0002 open questions 1–2
+are closed; batch-A spec WOs are now unblocked pending the dv_lead
+testability review in flight.
+### Actions
+Board open-work list: blockers marked CLOSED with the run ID.
+### Evidence
+CI runs 30724505231 (98e1607) and 30724531871 (02e38e7), both success
+(externally verifiable per the F5 rule).
+### Outcome
+Spec batch A can issue once WO-0003 returns. Handoff: none.
+### Open-questions
+none
+### Files-in-this-commit
+- tasks/BOARD.md
