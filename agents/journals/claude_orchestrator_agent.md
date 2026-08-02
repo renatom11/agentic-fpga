@@ -1572,3 +1572,37 @@ none
 - agents/handoffs/WO-0009_bench-machinery.md
 - docs/gates/P1-spec-freeze-checklist.md
 - tasks/BOARD.md
+
+## [J-orchestrator-0040] 2026-08-02T07:40:00Z | task:none | Promotion run pre-empted by one operator typo; mechanical fix applied
+### Trigger
+Build runs on the parallel-lane commits: f78766e GREEN (all five
+ifc_check lifts elaborate — fresh batch-A evidence, and the batch-B
+lifts' first proof), but 576abe6/c7f8374 RED with a single compile
+error, not the expected thirty snapshot diffs: cost_probe line 74 uses
+`<<:`, which is not a Hardcaml operator.
+### Inputs
+CI job log for run 30729376267; test/cost_probe/cyclesim_cost_probe.ml.
+### Reasoning
+Triage per the standing rule: mechanical transcription-class errors are
+mine to fix, design defects route back. This is the former — Hardcaml
+spells shift-left as the `sll` function, and the probe is a synthetic
+throwaway whose semantics are deliberately meaningless (its only job is
+per-cycle work), so `sll w 1` preserves intent exactly. Notable: dv_lead
+could not compile anything locally (ADR-0005) and wrote ~1,500 lines of
+OCaml of which this is, so far, the sole compile error. The thirty
+snapshot diffs and the COST-PROBE figure never ran — the promotion run
+is re-armed on this push. §11.4's witness (axi64_probe) also did not
+reach compile; this run answers it.
+### Actions
+cost_probe line 74: `(w <<: 1)` → `sll w 1`.
+### Evidence
+Run 30729376267 log, single Error line at cyclesim_cost_probe.ml:74
+(externally verifiable per the F5 rule); run 30729342467 (f78766e)
+success — supersedes 30727252770 as batch-A lift evidence per the
+WO-0008 ACCEPTED entry.
+### Outcome
+Awaiting the true promotion run. Handoff: none.
+### Open-questions
+none
+### Files-in-this-commit
+- test/cost_probe/cyclesim_cost_probe.ml

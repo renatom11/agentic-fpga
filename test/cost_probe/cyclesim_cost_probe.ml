@@ -71,7 +71,7 @@ let create ~stages (i : Signal.t I.t) =
     then acc
     else (
       let w = wire 64 in
-      w <== reg spec ~enable:i.enable ((w <<: 1) ^: (acc +:. n));
+      w <== reg spec ~enable:i.enable (sll w 1 ^: (acc +:. n));
       build (n - 1) (acc ^: w))
   in
   { O.result = build stages seed }
