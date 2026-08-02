@@ -27,9 +27,10 @@ Open M1 work (post WO-0002 acceptance): batch-A blockers CLOSED
 compile lane builds the template Interface block (build run 30724505231
 on 98e1607, green); spec batching DECIDED 2026-08-02: the
 architect's six ordered batches stand as six WOs (sizing accepted as
-proposed); dv_lead review RETURNED+ACCEPTED (16
-spec diffs required — WO-0004 to architect in flight, then dv re-review
-before the freeze checklist opens); rulings on record: emitted-Verilog
+proposed); spec-diff loop: WO-0004 ACCEPTED at
+b4b4cf4 (16/16 applied, 110 REQs); WO-0005 dv re-review in flight —
+countersignature is the freeze-checklist precondition; parked: REQ-810
+tready semantics for rtl_lead at M18/M20; rulings on record: emitted-Verilog
 structural checks are dv-ownable tools (not RTL-derived tests);
 hardcaml_step_testbench added to deps (CI validates); Cyclesim cost
 probe approved for dv's bench-setup WO; README phase-table pointer follow-up; sponsor confirmation of the
@@ -58,7 +59,8 @@ Corrections.
 
 | Packet | From → To | State | Note |
 |---|---|---|---|
-| [WO-0004](../agents/handoffs/WO-0004_requirements-spec-diffs.md) | orchestrator → architect_docs_lead | ISSUED | Apply the sixteen spec diffs D-1…D-16 from the WO-0003 findings (two wrong CRC constants independently confirmed; IFG convention collision; 4 untestable rows) |
+| [WO-0005](../agents/handoffs/WO-0005_spec-diff-re-review.md) | orchestrator → dv_lead | ISSUED | Re-review the sixteen diffs at b4b4cf4; countersign or contest (precondition for opening the P1-spec-freeze checklist) |
+| [WO-0004](../agents/handoffs/WO-0004_requirements-spec-diffs.md) | orchestrator → architect_docs_lead | ACCEPTED | Returned + accepted at b4b4cf4: 16/16 applied (D-4 metric corrected to octet times), one IFG convention at all sites, 108→110 REQs, set equality re-verified |
 | [WO-0003](../agents/handoffs/WO-0003_requirements-testability-review.md) | orchestrator → dv_lead | ACCEPTED | Returned + accepted at 9a6195a: 108/108 dispositioned (55 T / 49 A / 4 U), 16 consolidated spec diffs, countersignature withheld pending diffs; REQ-004 stress feasible in Cyclesim |
 | [WO-0002](../agents/handoffs/WO-0002_p1-requirements-architecture.md) | orchestrator → architect_docs_lead | ACCEPTED | Returned + accepted at 08899d3: 108 REQs, 20-module inventory (M01–M20), spec template, traceability skeleton. Spawn #1 killed by interruption (incident in Return log); spawn #2 delivered. |
 | [WO-0001](../agents/handoffs/WO-0001_g0-retro-audit.md) | orchestrator → auditor | ACCEPTED | Full cycle complete: [AUD-0001](../docs/reports/audit/AUD-0001-g0-retro.md) → ADR-0003 → [AUD-0002](../docs/reports/audit/AUD-0002-g0-reverification.md) re-verification (F17 CLOSED, gate lifted) |

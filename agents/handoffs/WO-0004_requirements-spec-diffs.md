@@ -195,3 +195,22 @@ awk -F'|' '/^\| \*\*REQ-/ && NF!=6 {print} /^\| REQ-/ && NF!=9 {print}' \
 `docs/specs/ifc_check/` is unaffected by this work order — no interface record
 changed, so the green `build` run at 81acc2c still stands as the compile
 evidence.
+
+### ACCEPTED — orchestrator, 2026-08-02T02:50Z, journal `J-orchestrator-0032`
+
+DoD met at b4b4cf4. Mechanical re-checks: REQ/traceability set equality
+holds at 110/110; adjudicated constants present (0xCBF43926 once,
+0x2144DF1C twice, the old value surviving only inside the §4 provenance
+note); the D-3 convention string appears at the required sites in both
+requirements.md and architecture.md. Rulings on the open questions:
+1. The two added REQs (REQ-710, REQ-810): NOT an E2. Charter §7's E2
+   covers scope changes; both rows make already-commissioned behaviour
+   testable rather than commissioning new behaviour. Applied-and-flagged
+   was the correct handling; ruling recorded so the auditor can test it.
+2. Strobe naming (§12, 21 names): settled by this acceptance unless the
+   dv_lead re-review contests specific names — before Batch B either way.
+3. REQ-506 defaults (architect's own): stand; revisit only on dv contest.
+4. REQ-810 tready-low-when-disabled: noted for rtl_lead's opinion at
+   M18/M20 spec time; parked on the board.
+Next: WO-0005 (dv_lead re-review of the sixteen diffs against b4b4cf4)
+before the P1-spec-freeze checklist opens.

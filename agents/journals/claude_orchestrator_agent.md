@@ -1264,3 +1264,46 @@ architect_docs_lead.
 none
 ### Files-in-this-commit
 - agents/handoffs/WO-0004_requirements-spec-diffs.md
+
+## [J-orchestrator-0032] 2026-08-02T02:50:00Z | task:WO-0004 | Accept WO-0004; issue WO-0005 re-review
+### Trigger
+Architect returned WO-0004: 16/16 applied, D-4 applied with a corrected
+metric, 108→110 REQs.
+### Inputs
+docs/specs/* at b4b4cf4; WO-0004 Return log disposition table; my
+mechanical re-checks.
+### Reasoning
+Acceptance rested on re-running the checks that failed last time around,
+not on the summary: set equality 110/110; the corrected constants live
+in the REQs with the stale value surviving only inside the provenance
+note (which is exactly where it should survive — the correction is
+itself part of the record); the D-3 convention sentence present at the
+required sites in both documents, closing the both-sites-or-nothing
+requirement the packet made explicit. The D-4 deviation (octet times,
+not cycles) is the kind of contest the loop exists for: the architect
+showed the cycle formulation is unsatisfiable under a lane-4 start, and
+rather than arbitrate it myself I routed it to the finder — WO-0005 asks
+dv_lead to judge both deviations explicitly, plus its own D-3 lane walk
+against the chosen convention. Ruled the two added REQs non-E2 (they
+make commissioned behaviour testable; they do not commission behaviour)
+and recorded the ruling where the auditor can attack it. WO-0005 is
+deliberately narrow — sixteen verdicts and a signature decision — so the
+countersignature arrives against a pinned SHA, not a moving target.
+### Actions
+WO-0004 Return log: ACCEPTED + rulings. WO-0005 packet written (ISSUED).
+Board updated. dv_lead spawn follows as WO-0005/2026-08-02T02:55Z,
+fallback armed at spawn time.
+### Evidence
+Commit b4b4cf4 (architect's); re-check commands reproducible at that
+SHA: REQ-set diff empty at 110, grep counts for the constants and the
+convention string as recorded in the ACCEPTED entry.
+### Outcome
+On SIGNED return: transcribe the signature to a P1-spec-freeze checklist
+and open the gate to the sponsor; batch-A spec WOs unblock. Handoff:
+WO-0005 to dv_lead.
+### Open-questions
+none
+### Files-in-this-commit
+- agents/handoffs/WO-0004_requirements-spec-diffs.md
+- agents/handoffs/WO-0005_spec-diff-re-review.md
+- tasks/BOARD.md
