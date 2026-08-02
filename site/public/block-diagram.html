@@ -287,14 +287,6 @@ code { font-family:'Plex Mono',monospace; font-size:.9em; background:var(--chip)
 </style>
 <nav class="tabbar"><a href="index.html">OVERVIEW</a><a href="block-diagram.html" class="here">BLOCK DIAGRAM</a><a href="spec-atlas.html">SPEC ATLAS</a><a href="org-chart.html">ORG CHART</a><a href="backlog.html">BACKLOG</a><a href="https://github.com/renatom11/agentic-fpga" target="_blank" rel="noopener">GITHUB ↗</a></nav>
 <!-- site-chrome-end -->
-
-
-
-
-
-
-
-
 <div class="top">
   <span class="eyebrow">agentic-fpga / block diagram · generated, not drawn</span>
   <h1>The NIC, rendered from its own sources</h1>
@@ -502,15 +494,21 @@ function draw() {
     return { l:r.left-dg.left, r:r.right-dg.left, t:r.top-dg.top, b:r.bottom-dg.top };
   });
   function labelPos(x, y, hw) {
+    const clear = (cx, cy) => {
+      for (const q of blkRects)
+        if (cx + hw > q.l - 3 && cx - hw < q.r + 3 && cy + 4 > q.t - 3 && cy - 9 < q.b + 3) return false;
+      return true;
+    };
+    if (clear(x, y)) return [x, y];
+    const cands = [];
     for (const r of blkRects) {
       if (x + hw > r.l && x - hw < r.r && y > r.t - 2 && y < r.b + 2) {
-        const yUp = r.t - 6;
-        let clear = true;
-        for (const q of blkRects) if (x + hw > q.l && x - hw < q.r && yUp > q.t - 2 && yUp < q.b + 2) { clear = false; break; }
-        if (clear) return [x, yUp];
-        return [(x - r.l < r.r - x) ? r.l - hw - 6 : r.r + hw + 6, y];
+        cands.push([x, r.t - 8], [x, r.b + 15], [r.l - hw - 8, y], [r.r + hw + 8, y]);
       }
     }
+    cands.push([x, y - 14], [x, y + 17], [x - hw - 20, y], [x + hw + 20, y],
+               [x, y - 27], [x, y + 30]);
+    for (const c of cands) if (clear(c[0], c[1])) return c;
     return [x, y];
   }
   const pairSeen = {};
@@ -541,7 +539,12 @@ function draw() {
       deferred.push(`<text x="${lx}" y="${ly}" text-anchor="middle">${esc(e.label)}</text>`);
     }
     if (e.n) {
-      const scx = short ? s.mx : s.mx - 28;
+      let scx = short ? s.mx : s.mx - 28;
+      const circClear = cx => blkRects.every(q =>
+        cx + 13 <= q.l || cx - 13 >= q.r || s.my + 13 <= q.t || s.my - 13 >= q.b);
+      for (const cand of [scx, scx + 16, s.mx, s.mx + 16]) {
+        if (circClear(cand)) { scx = cand; break; }
+      }
       deferred.push(`<circle class="stepc" cx="${scx}" cy="${s.my}" r="12.5"/>
         <text class="stepn" x="${scx}" y="${s.my + 4.8}" text-anchor="middle">${e.n}</text>`);
     }
@@ -583,7 +586,9 @@ function draw() {
     out += `<path class="c-cache" data-a="${e.a}" data-b="${e.b}" d="${s.d}"
       marker-end="url(#arr-control)" pointer-events="stroke"><title>${esc(e.via)}</title></path>`;
     if (!cacheLabeled && state.labels) {
-      deferred.push(`<text x="${s.mx - 12}" y="${s.my - 11}" text-anchor="end">cache lookup</text>`);
+      const chw = 'cache lookup'.length * 3.3;
+      const cl = labelPos(s.mx, s.my - 11, chw);
+      deferred.push(`<text x="${cl[0]}" y="${cl[1]}" text-anchor="middle">cache lookup</text>`);
       cacheLabeled = true;
     }
   }

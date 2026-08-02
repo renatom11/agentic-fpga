@@ -4114,3 +4114,45 @@ Sponsor redeploys.
 - site/public/index.html
 - site/public/org-chart.html
 - site/public/spec-atlas.html
+
+## [J-orchestrator-0097] 2026-08-03T16:10:00Z | task:none | Two circled label collisions fixed — and the fix is a detector, not a nudge
+
+### Trigger
+Sponsor's annotated screenshot: "cache lookup" passing under
+Arp_cache, and the Axi64.Source label clipped under blocks at ②.
+
+### Inputs
+- A programmatic overlap detector (bbox intersection of every wire
+  label vs every block) run headless: three hits — the two circled
+  plus a cosmetic step-circle graze.
+
+### Reasoning
+The old labelPos tried one escape position and gave up; the cache
+label bypassed it entirely. New labelPos: strict clearance test,
+candidate ladder (above/below the intersecting block, nudges in four
+directions), first-clear wins; the cache label now routes through
+it. The detector re-run confirms zero label overlaps; the remaining
+step-circle corner graze is the badge riding its wire, as every
+other step does — left by design.
+
+### Actions
+- bd_back.py labelPos rewrite + cache-label routing + a circle
+  clearance ladder; rebuilt; artifact republished; site copy
+  refreshed and site rebuilt; this commit.
+
+### Evidence
+- Detector: before "Axi64.Source OVER n-M03, cache lookup OVER
+  n-M12"; after "no label overlaps".
+
+### Outcome / DoD
+Sponsor redeploys for the website copy.
+
+### Open questions
+- None.
+
+### Files-in-this-commit
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/index.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html
