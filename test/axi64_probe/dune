@@ -1,0 +1,32 @@
+; The one seam between the DUT-independent monitors and a live Hardcaml
+; simulation (WO-0009's single sanctioned Axi64 import).
+;
+; It is a separate library, and not a module of dv_monitors, on purpose:
+;
+;  * dv_monitors and dv_golden then need no Hardcaml at all, so their tests
+;    exercise monitor logic rather than an elaboration;
+;  * SPEC-M01 §11.4 records that hardcaml_axi v0.17.0's Source field names are
+;    unverified by any compile. This library is the first code to name them
+;    (see axi64_probe.ml). If CI proves the transcription wrong, the failure is
+;    confined to this directory and every other WO-0009 deliverable still
+;    builds and runs.
+;
+; ifc_check is the lift of SPEC-M01 §4.1 under docs/specs/ — the signed public
+; interface, byte-identical to the specification and countersigned at 22145b5.
+; libs/** is not depended on and was not opened (PROTOCOL §10);
+; libs/hardcaml_ethernet/src/axi64.ml does not exist at this SHA.
+
+; hardcaml_step_testbench is deliberately NOT depended on here. It is in
+; agentic_fpga.opam, so CI's `opam install --deps-only` already proves it
+; resolves and installs — which was the request in WO-0003 findings §13.4. It
+; is the framework for packet-level directed benches (charter §9) and the
+; first of those arrives with M03, which has no frozen spec yet. Writing a
+; step_testbench coroutine now, against an API no local build can check
+; (ADR-0005), would put compile risk on this work order for no coverage. The
+; monitors attach through a per-cycle closure (Protocol_monitor.sink), which a
+; step_testbench cycle hook drives as readily as a Cyclesim loop, so nothing
+; here has to change when that bench lands.
+
+(library
+ (name dv_axi64_probe)
+ (libraries hardcaml hardcaml_axi ifc_check dv_monitors))

@@ -1,0 +1,14 @@
+; The DV golden-model home (charter §3: canonical, and deliberately outside
+; data_wrangler's tools/** so the stimulus generator can never stage edits to
+; the oracle). WO-0009 deliverable 2 lands the REQ-305 bit-serial CRC-32
+; reference here; the Phase-2 ITCH and order-book models follow.
+;
+; No (libraries) field: the reference is standard-library OCaml, so it runs
+; anywhere and shares no structure with the Hardcaml design it will judge —
+; which is the point of REQ-305 naming a bit-serial reference.
+
+(library
+ (name dv_golden)
+ (inline_tests)
+ (preprocess
+  (pps ppx_expect)))

@@ -899,3 +899,489 @@ carrying both verdicts, the three judgments and carry-forwards C-8 … C-10.
 
 ### Files-in-this-commit
 - agents/handoffs/WO-0007_batch-a-countersign.md
+
+## [J-dv_lead-0004] 2026-08-02T07:40:00Z | task:WO-0009 | DUT-independent bench machinery built: REQ-305 CRC reference anchored on 0xCBF43926, SPEC-M01 §6.1 protocol monitor, §0.6 conservation monitor, §0.5 octet-time tagger, C-9/X-9 scripts; thirty expect snapshots left empty for CI promotion
+
+### Trigger
+Orchestrator spawn under work order WO-0009 (ISSUED at 2665a04), spawn short-id
+`WO-0009/2026-08-02T05:55Z`. Fourth activation, and the first that produces work
+product rather than a verdict: the three before this one reviewed other agents'
+documents, and this one builds the machinery every Phase-1 bench will stand on.
+It is the work order I asked for in `J-dv_lead-0002` open question 3 and again,
+"restated because it is now overdue", in `J-dv_lead-0003` open question 7.
+
+### Inputs
+- `agents/charters/dv_lead.md` (refreshed, §3 golden-model home and
+  external-anchor rule, §5 DoD, §9 test stack); `agents/PROTOCOL.md` §4 (entry
+  grammar), §6 (write scopes), §10 (independence and evidence).
+- `agents/handoffs/WO-0009_bench-machinery.md` at 2665a04 — my work order.
+- **Spec basis, committed text only**: `docs/specs/requirements.md` at
+  **b4b4cf4** — §0.4, §0.5 (octet time, latency, cycles, start lanes), §0.6
+  (aborts, discards, strobe multiplicity, frame conservation), §0.7
+  (zero-length payloads), REQ-001 … REQ-021, §1.1, §4 (REQ-301 … REQ-306 and
+  the provenance note), §9.1, REQ-802/804/808/810, REQ-901 … REQ-906, §12.
+  `docs/specs/modules/axi64.md` (SPEC-M01) and `docs/specs/modules/crc32_eth.md`
+  (SPEC-M02) at **22145b5** — §4.1, §4.2, §6.1, §6.3 of each.
+  `docs/specs/architecture.md` §4 inventory (for the X-9 module-name list).
+- My own `agents/handoffs/WO-0003_testability-findings.md` §13.2 and §13.3 (the
+  bench architecture this implements), and the carry-forward ledger C-1 … C-10
+  as recorded in `WO-0005_spec-diff-re-review.md`, `WO-0007_batch-a-countersign.md`
+  and `docs/gates/P1-spec-freeze-checklist.md`.
+- `docs/adr/ADR-0004-toolchain-lane.md`, `docs/adr/ADR-0005-build-environment.md`;
+  `agentic_fpga.opam`, `dune-project`, `test/hardcaml_ethernet/dune` and
+  `test/hardcaml_ethernet/test_word_counter.ml` (dune conventions and the
+  proven-compiling `open! Base` / `open Hardcaml` pattern);
+  `.github/workflows/build.yml`; `scripts/check_journals.sh` and
+  `scripts/policy.sh` for shell-script house style.
+- `docs/specs/ifc_check/axi64_ifc.ml` — the lift of SPEC-M01 §4.1, read as the
+  signed public interface my one sanctioned import targets.
+- **`rtl_snapshots/word_counter.v`, read deliberately and for the first time.**
+  The WO-0003/WO-0007 ACCEPTED rulings settled X-9 by permitting `tools/` to
+  parse `rtl_snapshots/**` — a build product — while never opening `libs/**`
+  sources. I could not write a Verilog structural checker that actually parses
+  Hardcaml's emitter format without looking at one file it emitted. Recording
+  it explicitly because my three previous entries all said `rtl_snapshots/` was
+  not opened, and a silent change of practice is exactly what the auditor
+  samples Inputs sections for.
+- **`libs/**` was never opened**, in this or any previous activation. Nothing in
+  this commit derives from RTL.
+
+### Reasoning
+**The layering decision, which everything else follows from.** The obvious build
+is monitors that take a `Cyclesim` handle and an `Axi64.Source` and check it. I
+rejected that and made every monitor a pure function over a plain OCaml
+`Stream_word.t`, with attachment expressed as a per-cycle closure
+(`Protocol_monitor.sink`) over a caller-supplied sampler. Four reasons, in the
+order they mattered.
+
+First, *what the tests then prove*. A monitor whose unit tests need a DUT is
+tested against a design, so a bug in the monitor and a bug in the design are the
+same red. Hand-built traces are OCaml values, so these tests fail when the
+monitor is wrong and at no other time — which is the whole reason the WO asked
+for legal and illegal traces. Second, *ADR-0005*. No Hardcaml runs in this
+container, so anything touching Hardcaml is unverifiable by me and lands on CI
+faith. Anything that is standard-library OCaml I can type-check and **execute**
+with the system 4.14.1 compiler. Making the layer pure moved roughly nine
+hundred lines from "CI will tell us" to "I ran it, here is the output", which on
+a work order whose deliverables are the foundation of every later bench is worth
+more than any elegance argument. Third, *the driver question stays open*. The
+same closure is driven by a `Cyclesim` loop after `Cyclesim.cycle` and by a
+`hardcaml_step_testbench` cycle hook, so choosing between them is a bench-level
+decision made later rather than baked into the monitors now. Fourth, *the
+sanctioned import shrinks to one file*.
+
+**The blast-radius argument for putting `Axi64` in its own library.** SPEC-M01
+§11.4 — which I wrote up in `J-dv_lead-0003` after checking rather than assuming
+that run 30727252770 did not discharge it — records that the `Source` field
+names are transcribed from `hardcaml_axi`'s `stream_intf.ml` and unverified by
+any compile, because no lift names a field outside a comment. `axi64_probe.ml`
+is the first code in the repository to name them, so it either discharges §11.4
+or answers it. I weighed omitting it: it is the one file that can fail to
+compile, and if the whole DV layer sat in one library its failure would take the
+cost-probe figure, the CRC anchors and every monitor test down with it, turning
+a two-line editorial fix into a wasted CI round trip on a work order with five
+deliverables. Isolating it in its own dune library makes the failure mode
+"delete one directory and re-push", and I added `of_refs` — which names no
+stream type at all — so that every bench can attach without depending on the
+answer. That is the shape I want: take the risk that produces information, but
+pay for it in one file rather than in five deliverables.
+
+Targeting `Ifc_check.Axi64_ifc.Axi64` rather than `Hardcaml_ethernet.Axi64` was
+not a preference. The latter does not exist: SPEC-M01 specifies
+`libs/hardcaml_ethernet/src/axi64.ml` and rtl_lead has not built it, and
+`libs/**` is outside my scope and unopened besides. The lift is the signed
+interface, byte-identical to §4.1 and countersigned at 22145b5, which is
+precisely what the packet's exception names. When M01 lands, `of_source`
+retargets in one line — and I have put that obligation in Open-questions rather
+than letting a future agent discover it as a type error.
+
+**Where I chose to disagree with the specification, and why each is a
+carry-forward rather than a silent fix.** Three of the four monitors implement
+something the frozen text does not literally say, and in each case writing the
+literal text would have produced a monitor that fails a conformant design — the
+exact defect class I spent WO-0003 objecting to in other people's rows, so I am
+not entitled to introduce it in my own code.
+
+*C-2, in the conservation monitor.* §0.6's equation adds "discard-strobe
+pulses", but §0.6's own strobe-multiplicity paragraph says two locally detected
+conditions on one frame produce two pulses. A frame discarded for two reasons is
+then counted twice and a conformant run reports a surplus. The monitor balances
+on discarded **frames** and keeps the pulse histogram separately, because
+REQ-008(a) and REQ-804 genuinely need per-strobe pulse counts and the two
+questions are different. The unit test prints both figures side by side (−1
+against 0) so the argument is visible rather than asserted. Its second half is
+the exemption: REQ-810 says in terms that a frame refused while receive-enable
+is 0 "creates no silent-discard hole under REQ-008", so counting those hundred
+injected frames as presented would make every enable and reset test report a
+false silent discard.
+
+*C-1, in the tagger.* §0.5 converts to cycles as `floor (L / 8)` and §1.1's
+ceilings are word-cycle allocations, which differ by `ceil (h / 8)` at a
+stripping stage. I offer both conversions and print both. I specifically
+rejected picking one: choosing `floor (L / 8)` silently would make a sign-off
+packet quote a figure that understates the stage, and choosing ΔC silently would
+have me enforcing a requirement the signed text does not state. Reporting both
+is the only option that leaves the question where it belongs — with the
+architect — while keeping every packet checkable against whichever wording
+lands.
+
+*C-11, new, in the protocol monitor, and the wording is mine.* REQ-015's two
+sentences cannot both hold. The 190-word figure it quotes for the
+`Xgmii_rx_64` output stream only comes out if words are counted inclusive of the
+`tlast` word (1514 octets is 189 full words plus a 2-octet remainder), and under
+that convention its second sentence — "SHALL NOT assert `tlast` without at least
+one preceding word since the previous `tlast`" — forbids the single-word frame
+that REQ-011 and SPEC-M01 §6.1 make mandatory for any payload of 1 to 8 octets.
+That sentence is the restatement I proposed in WO-0003 §"REQ-015", so the defect
+is mine and I am raising it against myself. It is unenforceable in any case: the
+only shape it could forbid is `tlast` on a cycle carrying no word, and §6.3
+item 5 forbids a monitor from looking at `tlast` when `tvalid` = 0. The monitor
+enforces the inclusive count, enforces nothing from the second sentence, records
+the reading at the top of the file, and has a unit test asserting the
+single-word frame is legal.
+
+**Making the §6.3-item-5 guard structural instead of conventional.** "No monitor
+may assert on an unconstrained value" is a rule that is easy to state and easy to
+break by a later edit. I built it into the types and the control flow rather than
+into a comment: every rule sits inside one `tvalid` test at the top of `observe`,
+so a rule added below it inherits the guard; `Stream_word.octets` returns only
+positions whose `tkeep` bit is set and is the only read of `tdata` anywhere; and
+`to_string` renders an invalid cycle as the word `idle` and nothing else, so an
+unconstrained value cannot reach an expect snapshot and freeze into an accidental
+requirement — which would be a worse outcome than a missed check, because it
+would be an unwritten requirement enforced by a promoted file. Two unit tests
+falsify the guard directly, one driving a trace of deliberately toxic idle cycles
+and one a legal word with nonsense above `tkeep`.
+
+**The expect-block discipline, and what I did so that it costs nothing.**
+ADR-0005 rule 2 makes hand-authoring a snapshot fabricated evidence, so all
+thirty are empty and the first CI run is expected to fail with thirty diffs.
+That leaves a real hazard: if the judgement lives in the snapshot, then whoever
+promotes a red snapshot promotes a broken check into green. So no judgement
+lives in the snapshots. Every case states its expected constants in OCaml,
+compares there, prints `ok` or `MISMATCH` / `VERDICT WRONG`, and **raises** on
+failure. A promoted red snapshot still fails the run. The same reasoning made
+the cost probe an executable on the `runtest` alias rather than an expect test:
+a wall-clock figure can never be promoted, because the workflow's
+`git diff --cached --exit-code` step would fail on every run forever.
+
+**Determinism, in two places it would have bitten later.** The random cases use
+an LCG written out in the test file rather than `Random`, whose algorithm is
+neither guaranteed across OCaml versions nor ours; and `random_octets` uses an
+explicit loop rather than `List.init`, because the standard library does not
+promise the order in which `List.init` applies its function and a stateful
+generator inside it would make the snapshot depend on that. Both are cheap now
+and unfindable later.
+
+**The CRC reference: I rejected the cheaper constructions twice.** REQ-305 names
+a bit-serial reference so the oracle shares no structure with the design, so a
+table-driven implementation is a cross-check *of* it and never a substitute *for*
+it — a rule I wrote into `J-dv_lead-0003` as a written obligation on myself and
+am now bound by. The module is `step_register` stated verbatim from REQ-301: a
+non-reflected register, the octet reflected in at bits 31:24, eight shifts. I
+added a second, structurally different bit-serial arrangement (reflected
+register, reversed polynomial) as a cross-check of my own arithmetic, and I am
+careful to say in the code that it is not the external anchor: the anchor is
+REQ-303's published 0xCBF43926, and it is asserted before the reference judges
+anything, per PROTOCOL §10 and charter §3. The negative case — the residue is
+*not* constant when the FCS is appended most-significant-octet-first — is there
+because that is what pins REQ-202's wire order, and a bench that packs it the
+wrong way should fail in the oracle's own tests rather than as a false BUG-
+against rtl_lead.
+
+**The tools scripts got the treatment I demand of tb_writer.** They are the only
+deliverables here that run in this container, so I spot-checked them the way my
+charter §3 says I must spot-check a worker's bench: I seeded mutations and
+confirmed each one fails. Renaming one strobe in the `Status` record, narrowing
+one `Config` width, deleting one name from the DV strobe list, a `negedge`, a
+gated clock derived from `clock`, a `crc32_eth` with a clock port and a posedge
+block, an instantiated `RAMB36E1`, an `.xdc` file, and a `nic_top` with
+`xgmii_spare` in place of `xgmii_txc`, a lift drifted away from its spec, and a
+deleted lift — eleven seeded defects, eleven kills. Writing
+the checker was also where I found and fixed a real defect in my own first
+version: the instantiation extractor matched `module word_counter (` and
+reported `module` as an instantiated module, which would have been a permanent
+false failure once REQ-018's whitelist mattered.
+
+I made the scripts print `PENDING` rather than pass for a check whose subject
+does not exist yet (`crc32_eth`, `nic_top`, `test/xgmii/`, and the whole §4
+inventory). The alternative — passing vacuously — is the failure mode I called
+out in WO-0003 as a method that cannot detect its own violation. `PENDING` lines
+are counted, printed and explicitly disqualified from being cited as coverage in
+a sign-off packet. The `word_counter` bootstrap allowance is the one place a
+real module could hide from REQ-018's whitelist, so it is printed on every run
+with "must be empty at P1-module-ready" attached.
+
+**What I did not build, deliberately.** No `hardcaml_step_testbench` code: CI's
+dependency install already proves it resolves, which was WO-0003 §13.4's actual
+request, and writing a coroutine against an API no local build can check would
+put compile risk on this work order for no coverage. No REQ-903 script: C-8
+leaves it with no determinable answer for M01, and a check that cannot say
+pass or fail is worse than an absent one, so the script's place in
+`check_emitted_verilog.sh` is held by a `PENDING` line stating exactly what has
+to be decided. No XGMII link-partner model: the WO puts it out of scope while
+M03's spec is in flight, and its arrival scheduler depends on §0.3's alternation
+which is settled but whose module-level consequences are not. No CI workflow
+edit: `.github/**` is the orchestrator's scope, and the dune-rule alternative
+inside my own scope was rejected because a dune action runs inside `_build`
+where only declared dependencies exist, and a mistake there fails the whole
+build in a way ADR-0005 leaves me unable to test.
+
+### Actions
+- Built `test/monitors/` (library `dv_monitors`): `stream_word`, `strobes`,
+  `protocol_monitor`, `conservation_monitor`, `octet_time`, each with an `.mli`,
+  plus thirty-two unit tests across three test modules.
+- Built `test/golden/` (library `dv_golden`): the REQ-305 bit-serial CRC-32
+  reference with its `.mli` and six anchor/property expect tests.
+- Built `test/axi64_probe/` (library `dv_axi64_probe`): the single sanctioned
+  `Axi64` import, `of_refs` and `of_source`.
+- Built `test/cost_probe/`: the THROWAWAY Cyclesim cost probe, an executable on
+  the `runtest` alias with `(deps (universe))`.
+- Wrote `tools/check_records_vs_appendix.sh` (C-9: three fixed checks plus one
+  discovered §4.1-versus-lift check per module spec),
+  `tools/check_emitted_verilog.sh` (X-9, REQ-001/017/018/306/808) and
+  `tools/dv_checks.sh` (runner and the documented CI-wiring recommendation).
+- Verified the CRC algorithm by transliterating my OCaml into Python and
+  reproducing every constant, then type-checked and ran the OCaml itself.
+- Seeded eleven mutations across three scratch trees and confirmed the `tools/`
+  scripts kill all eleven; fixed one real defect the exercise exposed.
+- Left all thirty expect snapshots empty (ADR-0005 rule 2).
+- Appended the RETURNED entry to `agents/handoffs/WO-0009_bench-machinery.md`
+  and set its header state to RETURNED.
+- Wrote nothing under `docs/`, `libs/`, `.github/`, `scripts/` or `tasks/`.
+
+### Evidence
+All commands runnable from a repo checkout at this SHA (PROTOCOL §4.1 form (a)),
+from the repository root. The authoritative build/test verdict is CI's
+(ADR-0005, REQ-906) and is **not** claimed here; what follows is what this
+container can honestly establish.
+
+1. **Both `tools/` scripts pass at this SHA** —
+   `tools/dv_checks.sh; echo $?` → exit `0`, ending
+   `dv_checks: all checks passed`. The C-9 half runs three fixed checks
+   (`Status record = requirements.md §12 (21 strobes, same order, REQ-804)`;
+   `Config record = requirements.md §9.1 (12 fields, widths equal in order,
+   REQ-802)`; `test/monitors/strobes.ml = requirements.md §12`) plus one
+   *discovered* §4.1-versus-lift check per `docs/specs/modules/*.md`, so its
+   total moves with the spec set by design — a hardcoded batch-A pair list
+   would stop checking the moment batch B landed. Against the two committed
+   batch-A specs that is `5 check(s) run, 0 failure(s)`; the working tree I ran
+   in also carried the architect's three uncommitted batch-B specs, giving
+   `8 check(s) run, 0 failure(s)` with all five lifts byte identical. The X-9
+   half reports `3 check(s) run, 0 failure(s), 5 pending`: PASS on REQ-001
+   (`all 1 edge expression(s) resolve to clock`), on the REQ-018 whitelist and
+   on the constraint-file sweep; PENDING on REQ-306, REQ-808, REQ-017, the
+   `test/xgmii/` link partner and REQ-903.
+
+2. **Mutation spot-check of the scripts, eleven seeded defects, eleven kills.**
+   Reproduce by copying `tools docs test rtl_snapshots` to a scratch tree and
+   applying: (a) `sed -i 's/error_start_without_terminate/error_start_without_terminator/' docs/specs/modules/axi64.md`;
+   (b) `sed -i "s/; ttl : 'a \[@bits 8\]/; ttl : 'a [@bits 7]/" docs/specs/modules/axi64.md`;
+   (c) `sed -i '/"error_udp_port"/d' test/monitors/strobes.ml`; (d)–(i) a
+   `rtl_snapshots/seeded.v` containing a `crc32_eth` with a `clock` port and an
+   `always @(posedge …)`, a `nic_top` whose XGMII ports are
+   `xgmii_rxd/rxc/txd/spare` with an `always @(negedge …)` and a `RAMB36E1`
+   instantiation, plus a top-level `nic.xdc`, and separately a
+   `xilinx_clock_helper` module clocked off `assign _3 = _2 & 1'b1`.
+   Observed: (a) `FAIL Status record != requirements.md §12` with the diff;
+   (b) `FAIL Config record widths differ` (`8` vs `7`); (c) `FAIL
+   test/monitors/strobes.ml differs from requirements.md §12`; (d) `FAIL
+   REQ-306: emitted crc32_eth declares a clock port`; (e) `FAIL REQ-306: …
+   contains an always @(posedge …) block`; (f) `FAIL REQ-001 … (negedge)`;
+   (g) `FAIL REQ-018 whitelist: instantiation(s) outside the §4 inventory:
+   RAMB36E1`; (h) `FAIL REQ-018: device constraint file(s) present`; (i) `FAIL
+   REQ-017: nic_top's xgmii_* ports are [xgmii_rxc xgmii_rxd xgmii_spare
+   xgmii_txd], expected [xgmii_rxc xgmii_rxd xgmii_txc xgmii_txd]`. The
+   gated-clock tree additionally gave `FAIL REQ-001 … (edge signal _3 is not
+   clock)` and `FAIL REQ-808: emitted module(s) not in the architecture.md §4
+   inventory: xilinx_clock_helper`. Mutations (a) and (b) were also caught a
+   second time by the §4.1-versus-lift check, which is the redundancy working.
+   Two further mutations exercised the discovered lift check by itself:
+   drifting one width inside `docs/specs/ifc_check/axi64_ifc.ml` gave `FAIL
+   modules/axi64.md §4.1 == ifc_check/axi64_ifc.ml differs`, and deleting
+   `ifc_check/crc32_eth_ifc.ml` gave `FAIL … the lift does not exist
+   (SPEC-TEMPLATE rule 6)` rather than a silent skip. Eleven seeded defects in
+   total, eleven kills.
+
+3. **The six standard-library modules type-check clean and all thirty expect
+   test bodies run green**, using the system OCaml 4.14.1 in this container.
+   This is not a substitute for CI — the Hardcaml files are not covered and the
+   ppx is stripped mechanically — but it is what makes the claim "these tests
+   pass" mine rather than borrowed:
+   ```
+   T=$(mktemp -d)
+   cp test/monitors/*.ml test/monitors/*.mli test/golden/*.ml test/golden/*.mli "$T"/
+   ( cd "$T"
+     W="-w +a-4-9-40-41-42-44-45-48-67-70"
+     for m in stream_word strobes protocol_monitor conservation_monitor octet_time crc32_ref; do
+       ocamlc $W -c "$m.mli" && ocamlc $W -c "$m.ml" || echo "MODULE FAILED: $m"; done
+     for t in test_protocol_monitor test_conservation_monitor test_octet_time test_crc32_ref; do
+       awk '/^let%expect_test /{n++; printf "let _t%d () =\n", n; next}
+            {gsub(/\[%expect \{\| \|\}\]/, "()"); print}
+            END{printf "let () = "; for (i=1;i<=n;i++) printf "_t%d (); ", i; printf "()\n"}' \
+         "$t.ml" > "d_$t.ml"; done
+     ocamlc $W -o a1 stream_word.cmo protocol_monitor.cmo d_test_protocol_monitor.ml && ./a1 | grep -c 'VERDICT ok'
+     ocamlc $W -o a2 strobes.cmo conservation_monitor.cmo d_test_conservation_monitor.ml && ./a2 | grep -c 'VERDICT ok'
+     ocamlc $W -o a3 stream_word.cmo octet_time.cmo d_test_octet_time.ml && ./a3 | grep -c 'VERDICT ok'
+     ocamlc $W -o a4 crc32_ref.cmo d_test_crc32_ref.ml && ./a4 | grep -cE ' ok$|as REQ-202 requires$' )
+   rm -rf "$T"
+   ```
+   → `modules type-checked` with **no warning from any of the twelve
+   compilations**, then `10`, `7`, `5`, `27`. Every one of the four programs
+   exited 0, which is the load-bearing part: each test raises on a wrong
+   verdict, so a zero exit means every assertion held. (The counts are of
+   printed verdict lines, not of tests: two of the twenty tests in the second
+   and third suites print figures rather than a verdict.)
+
+4. **CRC anchors, observed.** From the run above, `./a4` prints in order:
+   `REQ-303 CRC32("123456789") 0xCBF43926 ok`; `CRC32(empty) … 0x00000000 ok`;
+   `register_of_running 0 — REQ-301's initial value 0xFFFFFFFF ok`;
+   `update 1: crc_in=0, 8 octets "12345678" 0x9AE0DAAF ok`;
+   `update 2: … 0xCBF43926 ok`; `tdata packing of "12345678" (REQ-012)
+   0x3837363534333231 ok`; `REQ-304 residue over {1,9,26,46,60,64,100,1500}-octet
+   frame + its FCS 0x2144DF1C ok` (eight lines);
+   `FCS appended most-significant-octet-first differs from the residue, as
+   REQ-202 requires`; `serial-decomposition mismatches over 3000 cases 0 ok`;
+   `cross-formulation mismatches over 3000 cases 0 ok`;
+   `M04: 7x8 + 1x4 equals the whole-frame CRC … ok`;
+   `M03: 8x8 over frame+FCS reaches REQ-304's residue 0x2144DF1C ok`;
+   `REQ-303 in the raw-register convention 0x340BC6D9 ok`;
+   `REQ-304 in the raw-register convention 0xDEBB20E3 ok`;
+   `§4 provenance: register_of_running(residue) 0xC704DD7B ok`;
+   `round trip running -> register -> running 0x2144DF1C ok`.
+   The algorithm was independently transliterated into Python and cross-checked
+   against `zlib.crc32` (which is exactly REQ-301's parameterisation) before the
+   OCaml was written; that cross-check is a second opinion on my arithmetic and
+   not the anchor, which is REQ-303's published constant.
+
+5. **The D-4 regression, observed.** `./a3` prints
+   `start lane 0: octet-time latencies 16; cycle-metric values 2` and
+   `start lane 4: octet-time latencies 20; cycle-metric values 2;3` —
+   reproducing `J-dv_lead-0002` Evidence item 1 exactly, now as a test that
+   raises if the cycle metric ever stops taking two values inside a lane-4
+   frame. Also `lane-0 L = 16, lane-4 L = 20, difference 4 octet times` (§0.5
+   permits at most 8), and for the 14-octet stripping stage
+   `L = 10 octet times; cycles_floor = 1; word_cycles = 3; 8(Co-Ci)-h = 10`,
+   which is C-1's gap shown as a number.
+
+6. **C-2 shown as a number.** `./a2` prints
+   `pulses would give residual -1; frames give 0` on the co-occurring-strobe
+   case: §0.6's equation read literally reports a surplus on a conformant
+   design.
+
+7. **All thirty snapshots are empty and none is hand-authored** —
+   `grep -c '\[%expect {| |}\]' test/golden/test_crc32_ref.ml test/monitors/test_*.ml`
+   → `6`, `8`, `6`, `10`; and
+   `grep -h '%expect' test/golden/test_crc32_ref.ml test/monitors/test_*.ml | grep -v '\[%expect {| |}\]' | grep -c '\[%expect'`
+   → `0`.
+
+8. **The two Hardcaml-dependent files parse** —
+   `ocamlc -stop-after parsing -c test/axi64_probe/axi64_probe.ml` and the same
+   for `test/cost_probe/cyclesim_cost_probe.ml` → both silent. Type-checking
+   them needs Hardcaml, which ADR-0005 makes impossible here; **no compile,
+   elaboration or simulation claim is made for them**, and CI is the verdict.
+
+9. **No CI run id is cited by me**, because this commit has not been pushed. The
+   orchestrator's push produces it; per ADR-0005 and REQ-906 the DoD clause
+   "everything compiles and its tests pass in CI" is discharged there and not
+   here, and I say so rather than implying my local runs stand in for it.
+
+### Outcome
+DoD of WO-0009 met on every deliverable I can complete without a build
+environment; the one clause I cannot discharge — CI green — is stated as such
+rather than claimed. Twenty-five files created under `test/**` and `tools/**`,
+nothing outside my write scope, `libs/**` unopened.
+
+Deliverable status: (1) cost probe **done**, THROWAWAY-marked in four places,
+figure to be read from the CI log with `grep COST-PROBE` and journalled with its
+run id; (2) REQ-305 reference **done and anchored** on REQ-303's 0xCBF43926 and
+REQ-304's 0x2144DF1C at eight lengths, in the charter §3 golden-model home;
+(3) SPEC-M01 §6.1 protocol monitor **done**, Cyclesim-attachable through a
+per-cycle closure, ten unit tests, §6.3-item-5 guards structural and falsified
+by two of them; (4) conservation monitor and octet-time tagger **done** per
+findings §13.3, with C-1, C-2 and C-3 landed inside the machinery as the WO
+intended and the D-4 walk turned into a regression test; (5) C-9 and X-9 scripts
+**done and mutation-checked**, REQ-903's script deliberately withheld behind a
+`PENDING` line pending C-8.
+
+Handoff: `agents/handoffs/WO-0009_bench-machinery.md`, state RETURNED, carrying
+the per-deliverable detail, the empty-snapshot notice, the Axi64 import
+justification, the CI-wiring recommendation and carry-forward C-11.
+
+### Open-questions
+1. **Thirty empty expect snapshots await CI promotion.** The first run after
+   this commit is expected to fail `dune runtest` with thirty diffs; that diff
+   is the promotion source (ADR-0005 rule 2). Nothing needs deciding — it needs
+   doing, in a follow-up commit whose only content is the promoted blocks. Note
+   the ordering risk: if dune stops scheduling at the first failure, the
+   `COST-PROBE` lines may not appear until the run *after* promotion.
+2. **`test/axi64_probe/` is the SPEC-M01 §11.4 experiment.** A green build
+   discharges §11.4 and I will record it against the run id; a red one is
+   §11.4's answer, the fix is editorial and confined to `axi64_probe.ml`, and
+   dropping that one directory leaves every other deliverable green.
+3. **`of_source` must be retargeted when rtl_lead builds M01.** It imports
+   `Ifc_check.Axi64_ifc.Axi64` because `libs/hardcaml_ethernet/src/axi64.ml`
+   does not exist at this SHA. Two applications of `Hardcaml_axi.Stream.Make`
+   in one tree are incompatible types, so a bench mixing them will not compile;
+   `of_refs` names no stream type and covers the interval. One line, but it
+   must be scheduled, not discovered.
+4. **New carry-forward C-11 — REQ-015 contradicts itself at the one-word
+   frame**, and the wording is mine from WO-0003. Delete the second sentence or
+   restate it as "a frame comprises at least one word, the `tlast` word
+   included". Owner architect_docs_lead; must land before the first `SO-` cites
+   the protocol monitor. Full argument in the WO-0009 Return log and at the top
+   of `protocol_monitor.ml`.
+5. **CI wiring for `tools/dv_checks.sh` is an orchestrator action.** One step in
+   `.github/workflows/build.yml`, quoted verbatim in the script header. Until it
+   lands, C-9 and X-9 are on-demand checks cited by SHA rather than continuous
+   ones, which is weaker than REQ-904's precedent for exactly this class.
+6. **Shared working tree.** `docs/specs/**` carries uncommitted modifications
+   from the architect's parallel WO-0008. Everything here derives from the
+   committed text (requirements.md at b4b4cf4, SPEC-M01/M02 at 22145b5); the
+   orchestrator should stage only the paths listed below. One observation from
+   running the scripts against the working tree: those edits appear to adopt C-1
+   (ΔC = (L + h)/8 becoming normative). If so, `Octet_time.word_cycles` is
+   already the normative conversion and no code changes — but C-1's ledger entry
+   should be closed against that commit, by whoever owns the ledger, not
+   silently by me.
+7. **Unchanged and still open**: C-3 (top-level accounting of a zero-payload
+   datagram — the monitor supports it, the arithmetic is still owed at the
+   `nic_top` bench), C-4 … C-10 as recorded in the gate ledger, `hardcaml_verilator`
+   plus a `verilator` binary against REQ-901, and the SPEC-TEMPLATE §11 versus
+   FROZEN-flip conflict raised in `J-dv_lead-0003`.
+8. **What this machinery still lacks before the first module bench.** The XGMII
+   link-partner encoder/decoder and its arrival scheduler (findings §13.3 layer
+   1, out of scope here pending SPEC-M03), the frame factory that turns a
+   declarative frame description into the triple of wire octets, expected
+   payload and expected strobe set (layer 2), and the scoreboard that binds the
+   three monitors together at a module boundary (layer 3). Those are the next
+   work order, and they are cheap now precisely because the layer under them is
+   DUT-independent.
+
+### Files-in-this-commit
+- test/axi64_probe/axi64_probe.ml
+- test/axi64_probe/dune
+- test/cost_probe/cyclesim_cost_probe.ml
+- test/cost_probe/dune
+- test/golden/crc32_ref.ml
+- test/golden/crc32_ref.mli
+- test/golden/dune
+- test/golden/test_crc32_ref.ml
+- test/monitors/conservation_monitor.ml
+- test/monitors/conservation_monitor.mli
+- test/monitors/dune
+- test/monitors/octet_time.ml
+- test/monitors/octet_time.mli
+- test/monitors/protocol_monitor.ml
+- test/monitors/protocol_monitor.mli
+- test/monitors/stream_word.ml
+- test/monitors/stream_word.mli
+- test/monitors/strobes.ml
+- test/monitors/strobes.mli
+- test/monitors/test_conservation_monitor.ml
+- test/monitors/test_octet_time.ml
+- test/monitors/test_protocol_monitor.ml
+- tools/check_emitted_verilog.sh
+- tools/check_records_vs_appendix.sh
+- tools/dv_checks.sh
+- agents/handoffs/WO-0009_bench-machinery.md

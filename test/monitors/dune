@@ -1,0 +1,21 @@
+; DUT-independent bench machinery: the SPEC-M01 §6.1 protocol monitor, the
+; requirements.md §0.6 conservation monitor and the §0.5 octet-time latency
+; tagger, with their unit tests on hand-built traces (WO-0009 deliverables 3
+; and 4).
+;
+; No (libraries) field on purpose. Everything here is plain OCaml over the
+; standard library and over Stream_word.t, so the monitors need no simulator,
+; no Hardcaml and no DUT to be exercised — which is what lets their own tests
+; fail when a monitor is wrong instead of when a design is. The one adapter
+; that touches a live Axi64 stream lives in test/axi64_probe/ and depends on
+; this library, never the other way round.
+;
+; (pps ppx_expect) alone rather than the ppx_jane set used by
+; test/hardcaml_ethernet/dune: [%expect] is the only extension used here, and
+; ppx_jane's Base-flavoured operators are deliberately not in scope.
+
+(library
+ (name dv_monitors)
+ (inline_tests)
+ (preprocess
+  (pps ppx_expect)))
