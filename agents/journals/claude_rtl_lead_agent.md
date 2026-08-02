@@ -373,3 +373,339 @@ appended, state RETURNED for the orchestrator's CI round-trip.
 - libs/hardcaml_ethernet/src/axi64.mli
 - libs/hardcaml_ethernet/src/crc32_eth.ml
 - libs/hardcaml_ethernet/src/crc32_eth.mli
+
+## [J-rtl_lead-0002] 2026-08-02T18:40:00Z | task:WO-0024 | The MAC layer written from the frozen batch-B specs: M03 as one shared rotation window with a three-age closure record, M04 as one signed position sequence, M05 as wiring
+
+### Trigger
+
+Orchestrator work order `agents/handoffs/WO-0024_batch-b-rtl.md` (spawn
+short-id `WO-0024/2026-08-02T16:50Z`) — the second RTL activation and the
+first to carry full behavioural specifications rather than a types module and
+a combinational function. Mid-activation the orchestrator relayed an API
+hard-limit termination of my first attempt (nothing had reached disk) with a
+mandatory incremental-write discipline; this entry covers the completed unit
+of work, written M03 → M04 → M05 so an interruption could lose at most one
+module.
+
+### Inputs
+
+Governance: `agents/charters/rtl_lead.md`, `agents/PROTOCOL.md` (§4 grammar,
+§6 scopes, §10 independence), the work order above.
+
+Frozen specifications, read in full including **every §13 row**:
+`docs/specs/modules/xgmii_rx_64.md` (SPEC-M03, FROZEN at `f78766e`, six §13
+rows through **C-18**), `docs/specs/modules/xgmii_tx_64.md` (SPEC-M04, five
+§13 rows through **C-16** and **C-31**), `docs/specs/modules/eth_mac_10g.md`
+(SPEC-M05, §13 empty). Their lifts `docs/specs/ifc_check/{xgmii_rx_64_ifc.ml,
+xgmii_tx_64_ifc.ml,eth_mac_10g_ifc.ml}`. `docs/specs/requirements.md` §0.3
+(frame lengths and the inter-frame-gap convention), §0.4 (the receive path and
+the stress list), §0.5 (octet time, front offset h, word delay ΔC), §0.6
+(aborts, strobes, conservation), §0.7 (zero-length payloads), §1 (REQ-001 …
+REQ-021), §1.1 (the ΔC ceilings), §2 (REQ-101 … REQ-113 and the five control
+characters), §3 (REQ-201 … REQ-210), §9 (REQ-802, REQ-803, REQ-808, REQ-810),
+§9.1, §10 (REQ-902, REQ-903), §12 (the strobe appendix).
+`docs/specs/architecture.md` §2.3, §4, §6.3. ADRs: **ADR-0010** (consumer
+conventions — `open! Axi64` normative, no named `module type S`), ADR-0006
+(finished-value CRC ports), ADR-0007 (`octet_count` domain 1–8 and the
+caller-side enable), ADR-0008 and ADR-0011 read for the M04-adjacent context
+the work order named.
+
+My own delivered M01/M02 at `189d5b2`:
+`libs/hardcaml_ethernet/src/{axi64.ml,axi64.mli,crc32_eth.ml,crc32_eth.mli,
+word_counter.ml,word_counter.mli,dune}`. `bin/generate.ml`, `bin/dune`,
+`dune-project` read to decide the emission question. DV-owned material read,
+never modified: `tools/check_emitted_verilog.sh` (its REQ-903 and REQ-808
+checks are what my file set has to satisfy).
+
+Toolchain sources, read to bind every construct to a real signature rather
+than to memory (ADR-0005 leaves no other way), under
+`/root/.opam/fpga/.opam-switch/sources/`: hardcaml v0.17.1
+`src/always.mli` (the `Variable`/`State_machine` surface),
+`src/comb_intf.ml` and `src/comb.ml` (`popcount`'s
+`ceil_log2 (width+1)` result width, `onehot_to_binary`'s
+`num_bits_to_represent`, the signed comparison operators),
+`src/signal_intf.ml` (`reg`, `reg_fb`, `wire`, `( <== )`),
+`src/reg_spec.mli`, `src/hierarchy.mli`; and
+`dune.3.24.1/src/dune_rules/ocaml_flags.ml`, re-read to confirm the dev
+profile's fatal-warning set **excludes 40, 41 and 42** (so type-directed
+constructor and label disambiguation is safe) while **including 26, 27 and
+32** (so every unused binding is an error — which is why several
+documentation-only constants were deleted rather than left).
+
+**Licensing honesty (charter §8)**: `Essenceia/Nasdaq-HFT-FPGA` was **not**
+consulted for any part of this unit of work. `alexforencich/verilog-ethernet`
+was **not** opened either; each spec's prior-art row records that its
+decomposition influence is already spent in the specification, and every
+structure below is derived from the frozen text.
+
+### Reasoning
+
+**The implement-versus-decompose call, and why it went the way it did.** The
+work order left M04 and M05 to my judgement. I implemented all three. The
+argument is that M04's specification is *harder* than M03's, not easier:
+C-16's C+8 rule, C-14.1's `tx_tready` rule, C-14.2's reset precedence and
+C-31's ordered-and-unpinned §9 are four carry-forwards whose whole purpose is
+that a *plausible* reading of the older text fails a conformant design. A
+worker packet must restate them exactly; a packet that restates them
+imperfectly yields RTL that compiles, reads correctly and misses REQ-209's
+eleven-cycle cadence by one cycle — which is the precise failure C-16 was
+written to prevent. Writing a packet faithful enough to avoid that is writing
+M04's timing contract out longhand, and costs more than implementing it. M05
+is eighty lines of wiring, below the threshold where a spawn round-trip pays.
+The cost I accept and record: none of the three has independent review, and
+self-review is not review. The compensating controls are dv_lead's suites and
+the auditor's mutation campaign, and I say so in the packet rather than
+letting §4's self-review section stand in for them.
+
+**M03's one real design decision: a shared rotation window.** REQ-021 makes
+frame octet 0 land in `tdata[7:0]` at both start lanes, and §7 pins ΔC = 3 at
+both — so a lane-4 frame's octets arrive four octet times later while its
+first output word leaves on the same cycle. Three shapes were available.
+
+- *(a) Two datapaths, one per start lane, selected per frame.* Rejected: it
+  doubles the payload registers, which REQ-019 caps at two datapath words, and
+  it makes every later reader check that the two agree.
+- *(b) An octet accumulator with a fill level — the general realignment
+  shifter.* Rejected for this module: it is the Phase-2 hard block's
+  structure, it is elastic by nature, and elasticity is the one property a
+  module under the line-rate invariant must not have. It would also make ΔC a
+  function of the fill level rather than a constant.
+- **(c) One rotation over the two-word window {this word, the previous word},
+  applied identically to the octets and to their per-lane coverage vector —
+  chosen.** At offset 0 the aligned word *is* the previous input word; at
+  offset 4 it is the previous word's upper four octets followed by this word's
+  lower four. Aligned word *m* is then the frame's output word *m* − 2 **at
+  both start lanes**, so ΔC = 3 falls out of the structure rather than being
+  arranged, and the payload storage is the input register plus the output
+  register — two words, REQ-019's ceiling, not a coincidence but the
+  lookahead §6.1 describes.
+
+**The consequence that makes the FCS strip free.** Because the coverage
+vector is rotated by the same window as the octets, the emitted word's
+`tkeep` and `tlast` are a function of exactly two numbers: the octet count of
+the word being emitted (registered) and of the word behind it (combinational,
+this cycle — the one word of lookahead). A frame's octets are contiguous from
+aligned position 0, so a word with fewer than eight octets is *necessarily*
+the frame's last; "fewer than eight behind me" is therefore the end-of-frame
+signal, and the four FCS octets are unmarked wherever they straddle the two
+words. No counter of delivered octets exists, which matters because such a
+counter needs the frame's total before the first word leaves — the definition
+of store-and-forward, which REQ-005 forbids. The same two numbers with a
+strip of 0 instead of 4 give REQ-103's "no FCS removal is attempted" for
+aborted, truncated and cut-short frames, so those cost nothing.
+
+**REQ-108 without a second coverage rule.** Coverage is capped at 1518
+received octets and the four-octet tail removal then runs, delivering exactly
+1514. The alternative — capping coverage at 1514 — was rejected because
+coverage also feeds the CRC, and stopping at 1514 would leave the FCS octets
+of a *legal* 1518-octet frame uncovered and fail every maximum-length frame.
+The arithmetic coincidence is documented in the source so no later reader
+"fixes" it: nothing identifies an FCS on a truncated frame, and
+`error_bad_fcs` is never evaluated there (§9).
+
+**Reporting: a three-age closure record rather than a latch.** §9 pins each
+strobe to the cycle the frame's `tlast` word is emitted, and to *two cycles
+after the closing input word* for a frame that emits none — and §6.1's own
+derivation puts the `tlast` at zero, one or two cycles after closure
+depending on start lane and length. A single latched record loses a frame's
+report when the next frame closes on the drain's last cycle, which is
+reachable with a normal frame followed by a sub-5-octet runt: closures are at
+least two cycles apart, so two records can be live at once. The record
+therefore travels as three ages — age 0 combinational, ages 1 and 2
+registered — consumed oldest-first, with age 2 forced. That bound is derived,
+not assumed: a closure sends the machine to `Idle` or `Discard` for at least
+one cycle and a new frame spends its start word there.
+
+**M04: one signed position sequence.** Every octet of a transmitted frame has
+a position counted from the first destination-address octet, and payload, pad
+(REQ-203), FCS (REQ-202) and terminate (REQ-205) are four boundaries on that
+one axis. Taking them relative to the composed word's position as **signed**
+offsets means a boundary already passed is negative — which is exactly how an
+FCS split across two words is expressed without a second counter, and how a
+word carrying payload, pad, FCS and the terminate character at once needs no
+special case. The rejected alternative was §6.2's seven states implemented as
+seven behaviours: `Frame`, `Pad` and `Fcs` are three regions of one sequence,
+and making them three behaviours puts every straddle in the transitions
+between them, which is where this kind of module goes wrong.
+
+**Why that shape settles C-16 without a rule for it.** `tx_tready` is
+asserted exactly when the composer consumes a payload word this cycle. At C+8
+it consumes the `tlast` word's remaining four octets, so `tx_tready` = 1
+there with no clause of its own; at C+9 it consumes nothing, so `tx_tready` =
+0. §7's four consequences then hold by construction: C+8 carries no
+obligation (the underflow window closed when the `tlast` word was accepted),
+a word presented there is the next frame's first and is accepted into the
+two-entry holding structure, the start character stays where REQ-204's
+rounded gap puts it because the gap counter and not the depth fixes it, and
+the C+8/C+11 pair cannot exceed two accepted-untransmitted words because that
+bound *is* the `tx_tready` full condition. C-14.1's "1 again on the gap's last
+cycle" is the same mechanism seen from the other side: the gap's last cycle is
+the cycle on which a frame may begin.
+
+**REQ-206's two-cycle wire consequence is structural.** A word accepted on
+cycle *a* is composed on *a*+1 and reaches the wire on *a*+2. So the strobe
+pulses on the acceptance cycle where the word was required and absent, the
+composer finds the holding structure empty on the next cycle and composes the
+abort word, and that word reaches the wire on the cycle after — §9's "the wire
+consequence follows two cycles later", with no delay line to get wrong.
+`tx_tready` is suppressed while starved, which is what keeps the strobe one
+cycle wide rather than high until the frame ends.
+
+**M05.** Two `hierarchical` calls and a record of pass-throughs; no register,
+no mux, no logic, so §7's "zero octet times added" and §8's structural-wrapper
+exemption hold by construction and §6.1's total table is checkable by reading
+the file against it. §6.3 item 2 left the `.mli` re-exports to me: it
+re-exports nothing, because a consumer already has M01's records through
+`Axi64` and a re-export is a second place for the same names to drift.
+
+**What I did not do.** No emission registration and no `rtl_snapshots/`
+change: SPEC-M05 §12 names no entry point, the work order says to return the
+question in that case, and the determinism evidence my charter §8 requires of
+any such change is evidence I cannot produce without a build (ADR-0005). No
+`dune` edit — the library declares no `(modules)` field, so the correct diff
+is empty, which is worth stating so it is not read as an omission. No test of
+any kind, anywhere, and no smoke sim: charter red line, PROTOCOL §10.
+
+### Actions
+
+Written, all under `libs/hardcaml_ethernet/src/`:
+
+- `xgmii_rx_64.ml` / `.mli` — M03. `I` (`clock`, `clear`, `xgmii_rx` with
+  `[@rtlprefix "xgmii_rx"]`, `cfg_rx_enable`), `O` (`rx` with
+  `[@rtlprefix "rx_"]` plus the five strobes), a four-state `Always`
+  machine (`Idle`, `Preamble`, `Frame`, `Discard`), the shared rotation
+  window, the three-age closure record, one `Crc32_eth.hierarchical`
+  instance, `create` and `hierarchical ?instance`.
+- `xgmii_tx_64.ml` / `.mli` — M04. `I` (`clock`, `clear`, `tx`, `cfg_ifg`,
+  `cfg_tx_enable`), `O` (`tx_dest`, `xgmii_tx`, `error_underflow`), a
+  four-phase `Always` machine (`Idle`, `Body`, `Abort`, `Gap`) with §6.2's
+  seven states mapped onto it in the source, the two-entry holding
+  structure, the signed position sequence, one `Crc32_eth.hierarchical`
+  instance, `create` and `hierarchical ?instance`.
+- `eth_mac_10g.ml` / `.mli` — M05. `I`/`O` per SPEC-M05 §4.1, two child
+  instantiations, ten pass-throughs, no logic.
+
+Appended the Return log to `agents/handoffs/WO-0024_batch-b-rtl.md` with the
+implement-vs-decompose call, the per-module rationale, the line-by-line
+self-review, the compile-risk register and four returned questions. No `git`
+command of any kind was run (PROTOCOL §2). No file outside my write scope was
+modified.
+
+### Evidence
+
+**No local build exists and no local-build claim is made (ADR-0005,
+REQ-906).** This container has no `dune` binary and no installed Hardcaml —
+hardcaml appears only as unbuilt sources under `.opam-switch/sources/`. Every
+OCaml correctness claim here is a reading claim; CI is the adjudicator and
+the orchestrator round-trips it.
+
+API bindings verified by reading v0.17.1 sources (paths relative to
+`/root/.opam/fpga/.opam-switch/sources/hardcaml/`):
+
+- `src/always.mli` — `Always.State_machine.create : ?encoding -> ?auto_wave_format
+  -> ?enable -> (module State with type t = 'a) -> Reg_spec.t -> 'a t`, whose
+  `State` requires `[@@deriving compare, enumerate, sexp_of]`; the record
+  fields `is`, `set_next`, `switch`; `if_`, `when_`, `compile`.
+- `src/comb.ml:889` — `popcount` result width is `Int.ceil_log2 (width + 1)`,
+  so 4 bits for an 8-bit input; `src/comb.ml:963` — `onehot_to_binary` returns
+  `num_bits_to_represent (width - 1)` bits, 3 for 8. Both are `uresize`d at
+  the use sites rather than assumed.
+- `src/comb_intf.ml` — `( <+ )`, `( >=+ )`, `( <=+. )`, `( >=+. )` (signed),
+  `binary_to_onehot`, `sel_bottom`, `repeat`, `concat_lsb`, `concat_msb`,
+  `select`, `mux`, `mux2`, `srl`.
+- `src/signal_intf.ml:79` — `reg : Reg_spec.t -> ?enable:t -> t -> t` and
+  `reg_fb : ?enable -> Reg_spec.t -> width:int -> f:(t -> t) -> t`; `wire`
+  and `( <== )` for the declared-early signals.
+- `src/hierarchy.mli` — `In_scope (I) (O)`'s
+  `hierarchical : ?config -> ?instance:string -> ?attributes -> scope:Scope.t
+  -> name:string -> create -> …`, matching each spec §4.1's `module type S`.
+- `dune.3.24.1/src/dune_rules/ocaml_flags.ml:9-17` — the dev-mode fatal
+  warning set excludes 40/41/42 and includes 26/27/32, which is the basis for
+  both the constructor-disambiguation and the no-unused-binding claims above.
+
+**Mechanical check, re-runnable at this commit's SHA:**
+
+    $ tools/dv_checks.sh
+
+expected to move REQ-903's line from `2 of 20` to `5 of 20` inventory modules
+with an `.mli`, with no `REQ-903(b)` failure, since all three new `.mli` files
+export `val hierarchical`. REQ-808 and REQ-306 stay PENDING: nothing new is
+emitted this packet (see Open-questions 1).
+
+**Self-review, and what it found** — four defects fixed before return, each
+recorded in the packet's §4: a combinational loop in M04's `need_payload`
+chain (an elaboration failure, not a wrong waveform); an unsaturated
+`cap_end` in M03 producing spurious coverage in the states that cover
+nothing; idle words inside an open frame decoded as eight data octets, which
+would corrupt the CRC of every frame §10's REQ-016 wrapper touches; and a
+lookahead that read the next frame's first aligned word as a continuation,
+losing a REQ-110-aborted frame's `tlast`. A review section reporting nothing
+is a review that was not done, so these are in the packet in full.
+
+**Not claimed**: that any file compiles; that any module elaborates; that any
+REQ is verified; that ΔC = 3 or L = 16/12 has been *measured*. Those are CI's
+and dv_lead's to say, in that order. No `SO-` sign-off is claimed or implied.
+
+### Outcome
+
+WO-0024 deliverables: (1) M03 — done, personally, with the line-rate
+invariant structural (no `tready` in the record, one XGMII word accepted per
+cycle unconditionally) and ΔC = 3 by construction at both start lanes;
+(2) M04 — done, personally, including C-16's C+8 rule and C-31's §9 reading;
+(3) M05 — done, personally, wiring only; (4) emission registration — **not
+done, question returned**, because SPEC-M05 §12 names no entry point and the
+determinism evidence such a change owes cannot be produced blind. `dune`
+untouched by design.
+
+DoD status against charter §5: implements its frozen spec with no silent
+deviation — **met, pending compile**, with the two readings I had to make
+(single closure per input word; idle inside a frame's own preamble out of
+scope) **declared as questions rather than resolved silently**; compiles and
+elaborates hierarchically — **cannot be claimed here** (ADR-0005), CI
+round-trip owed; deterministic emission — **not applicable this packet**;
+house style — met (`[@@deriving hardcaml]` records, `Always` FSMs,
+`Hierarchy.In_scope`, library primitives over hand-rolled equivalents,
+`open! Axi64` per ADR-0010, no named `module type S`); line-rate invariant —
+designed to it on M03 (zero backpressure structurally, two datapath words of
+payload storage, no elastic buffer, no store-and-forward path), with DV's
+back-to-back stress the proof I do not own; worker review — none, all three
+modules are mine and the self-review is recorded as not being a substitute;
+journal appended — this entry.
+
+Handoff: `agents/handoffs/WO-0024_batch-b-rtl.md`, Return log appended, state
+RETURNED for the orchestrator's CI round-trip.
+
+### Open-questions
+
+1. **Emission registration is owed and is deliberately not in this packet.**
+   `bin/generate.exe` still emits only `word_counter`. Registering M05 (and
+   with it M03, M04 and M02) is small, but the commit that does it must carry
+   the REQ-902 double-generation byte-identity evidence, which needs a build.
+   **Request: a follow-up WO after this one is CI-green.**
+2. **Two closure characters in one input word**, beyond §10's
+   `/S/`-then-`/S/` case, is unspecified and I implemented the
+   single-closure-per-word reading. Declared, not discovered. Architect to
+   confirm as §6.3 (unconstrained) or specify in §9 (a second report path).
+3. **An idle word inside a frame's own preamble** contradicts §6.1's "exactly
+   8 octet times after the start character"; M03 treats it as outside the
+   specified stimulus space. Confirming that in §6.3 closes the last place
+   REQ-016 and §6.1 can be read against each other.
+4. **`cfg_rx_enable` = 0 with a REQ-110 `/S/` arriving mid-frame**: I abort
+   and report the in-flight frame (it was accepted under the old value,
+   REQ-803) and do not begin the new one (REQ-810). Raised so the reading is
+   visible.
+5. **Compile-risk register** is in the packet's §5, highest-risk first: the
+   `Always.State_machine` deriver set (no precedent in this repository),
+   constructor disambiguation, `popcount`/`onehot_to_binary` widths, the
+   signed comparison operators, top-level `Signal.t` constants, and
+   `open! Axi64` inside an `.mli`.
+
+### Files-in-this-commit
+
+- agents/handoffs/WO-0024_batch-b-rtl.md
+- libs/hardcaml_ethernet/src/eth_mac_10g.ml
+- libs/hardcaml_ethernet/src/eth_mac_10g.mli
+- libs/hardcaml_ethernet/src/xgmii_rx_64.ml
+- libs/hardcaml_ethernet/src/xgmii_rx_64.mli
+- libs/hardcaml_ethernet/src/xgmii_tx_64.ml
+- libs/hardcaml_ethernet/src/xgmii_tx_64.mli
