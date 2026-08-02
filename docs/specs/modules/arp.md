@@ -1,7 +1,11 @@
 # SPEC-M13 — `Arp`
 
-- **Status**: DRAFT — batch D. Template-complete; the two evidence rows of §12
-  are what the freeze flip waits on
+- **Status**: DRAFT — batch D. Template-complete; the `ifc_check` evidence row of
+  §12 is **filled** (run 30736107842, `success`, 2f29888). This specification was
+  **CONTESTED** at the batch-D countersignature on two behavioural items
+  (`J-dv_lead-0008`, WO-0015): **D-1**, repaired here by **R-1** (§6.1, §6.2 (A)),
+  and **D-2**, repaired here by **D-2a** (§6.1's validity gate, §6.2 (D),
+  ADR-0009). The freeze flip waits on the re-review of those two landing sites
 - **Inventory id**: M13 (architecture.md §4) · **Path**:
   `libs/hardcaml_ethernet/src/arp.ml`
 - **Datapath role**: shared/structural — a wrapper over M10, M11 and M12 that
@@ -47,10 +51,15 @@ else.
   (§7), and relaying M11's frame out on `tx_hdr` and `tx_payload` with
   `tx_payload_dest` back, likewise.
 - **Learning** (REQ-503): writing the sender protocol and hardware addresses of
-  every accepted packet into M12, addressed to us or not.
+  every accepted **and unmarked** packet into M12, addressed to us or not.
+- **Consuming REQ-013's validity mark on behalf of the whole ARP branch**
+  (REQ-013, ADR-0009): M13 is the branch's ultimate consumer — it is the last
+  module that acts on a received packet's content and it forwards nothing — so it
+  reads `rx_payload_tuser`[0] at the packet's payload `tlast` and gates both
+  actions above on it (§6.1).
 - **Replying** (REQ-502, REQ-511, REQ-512): generating exactly one reply for an
-  accepted request whose target protocol address equals `cfg_local_ip`, and none
-  otherwise.
+  accepted, unmarked request whose target protocol address equals `cfg_local_ip`,
+  and none otherwise.
 - **Resolving** (REQ-507 … REQ-509): evaluating a transmit-side query's
   destination class in the fixed order REQ-507 states, answering broadcast,
   subnet-broadcast and multicast arithmetically without consulting the cache,
@@ -88,7 +97,7 @@ port and its cache edges are not receive-path ports.
 | REQ-003 | The receive relay carries **no** `tready` in either direction — `rx_payload` is `Axi64.Source` with no matching `Dest` anywhere in §4.1 — so nothing M13 does can stall M08, and M10 cannot stall M13. This is the structural fact REQ-510 rests on: when a reply cannot be sent, the only thing M13 can drop is the reply. |
 | REQ-004 | M13 is not on §0.4's stress-bench list; M10 is, and M13's relay is what makes M10's bench a bench of this branch (§8). The relay adds no logic and no cycle, so M10's stimulus at M13's ports **is** M10's stimulus. |
 | REQ-005 | Binds the relay, trivially and exactly: a combinational relay has L = 0 and h = 0 at every octet, so M10's constants are the same measured at M13's ports as at M10's own (§7). |
-| REQ-007, REQ-013 | `rx_payload`'s `tuser`[0] is relayed to M10 unchanged and acted on by neither (SPEC-M10 §7, §11.3). `tx_payload`'s `tuser` is M11's, driven to 0 (SPEC-M11 §4.2). M13 originates and re-reports no abort. |
+| REQ-007, REQ-013 | `rx_payload`'s `tuser`[0] is relayed to M10 unchanged and ignored **by M10** (SPEC-M10 §7); **M13 consumes it** as the ARP branch's ultimate consumer, gating learning and the reply on it at the packet's payload `tlast` (§6.1, ADR-0009). No frame is dropped or altered by that — nothing is forwarded on this branch — and no strobe re-reports the inherited abort. `tx_payload`'s `tuser` is M11's, driven to 0 (SPEC-M11 §4.2). M13 originates no abort. |
 | REQ-008 | M13 owns two strobes (`error_arp_miss`, `error_arp_reply_dropped`) and relays a third (`error_arp_unsupported`, M10's). §9 states which discards each reports and pins both pulse cycles. |
 | REQ-009 | Synchronous `clear`: every child is cleared, the cache is emptied (SPEC-M12 §7), any pending reply and any outstanding resolution are abandoned, and all three strobe outputs are 0 while `clear` = 1 and on the first cycle after (§7). |
 | REQ-010 | Both streams are the programme `Axi64` types; both header records are SPEC-M01's `Eth_header`. `Arp_query` and `Arp_response` are declared here (§4.1); `Arp_packet` is SPEC-M10's and the three cache records are SPEC-M12's, opened and not restated. |
@@ -327,16 +336,57 @@ significant.
 unchanged**: no register, no cycle, no re-encoding (§7). M10's constants
 therefore hold measured at M13's ports.
 
-**Learning (REQ-503).** On every cycle M10 pulses `arp_valid`, M13 presents a
-cache write on the **next** cycle, with `write_ip` = `arp_sender_ip` and
-`write_mac` = `arp_sender_mac`. This is unconditional — "whether or not the
-packet is addressed to us" is REQ-503's own clause — and it applies to a reply
-exactly as to a request, and to a gratuitous ARP exactly as to either. Nothing
-about the Ethernet header is learned; the ARP fields are the source of truth,
-which is why M10 does not read `rx_hdr_src_mac` (SPEC-M10 §4.2).
+**The validity gate (REQ-013, REQ-503, ADR-0009) — both receive-side actions
+pass through it.** M10 reports a packet at Cp + 4 and takes no notice of
+`rx_payload_tuser`[0]: SPEC-M10 §7 shows that bit arriving on the payload
+`tlast` word, two or more cycles later, so M10 could not act on it without
+making its parse latency a function of the frame length (REQ-005). **M13 can**,
+because it relays `rx_payload` into M10 and therefore already has the bit at its
+own ports. M13 holds M10's report and acts on the cycle after the **later** of
 
-**Replying (REQ-502).** On the same cycle as the learning write, M13 generates a
-reply **iff**
+1. M10's `arp_valid` pulse, and
+2. that packet's payload `tlast` word on `rx_payload`,
+
+reading `rx_payload_tuser`[0] of that `tlast` word. Call that the **gating
+cycle**. If the bit is **0**, the learning write is presented and the reply
+predicate is evaluated, both below. If it is **1**, neither happens — the packet
+is not learned from and no reply is generated — **and no strobe pulses here**,
+because the condition was detected and reported upstream by the module that
+marked the frame (`error_bad_fcs` REQ-104, `error_runt` REQ-107,
+`error_bad_frame` REQ-105, `error_oversize` REQ-108 or
+`error_start_without_terminate` REQ-110) and requirements.md §0.6 forbids
+re-reporting an inherited abort. requirements.md REQ-013 names M13 as the ARP
+branch's ultimate consumer and REQ-503 carries the qualifier; **ADR-0009**
+records why this owner and not another, and why the alternative of recording the
+un-gated behaviour as a programme decision was rejected on merit.
+
+**In the composed chain the rule reduces to `tlast` + 1**, and the "later of"
+exists for determinacy rather than for a case that arrives. A legal
+minimum-length frame delivers a 46-octet ARP payload in six words, so the payload
+`tlast` is at Cp + 5 and M10's report at Cp + 4: (2) is the later event, always.
+(1) can be later only for a packet whose payload ends at exactly 28 octets —
+four words, `tlast` at Cp + 3 — which is a 42-octet Ethernet frame, that is a
+**runt**, which REQ-107 marks; so that packet is excluded by the gate in any
+case.
+
+**What the gate costs, itemised.** The five captured `Arp_packet` fields — 176
+bits — are held from Cp + 4 to the gating cycle, which REQ-019 explicitly does
+not count as payload storage ("header fields captured into registers are not
+payload storage") and which is bounded by REQ-015's 188-word frame. **No port,
+no `Arp_packet` field, and nothing at M10 changes** — not its ports, not §7's
+L = 32 / h = 0 / ΔC = 4, not §9's pulse cycle. What it does cost is one cycle of
+REQ-502's derived response, which the cycle table at the end of this section
+recomputes as **7** against the 64-cycle bound.
+
+**Learning (REQ-503).** On the gating cycle of an accepted, unmarked packet, M13
+presents a cache write with `write_ip` = `arp_sender_ip` and
+`write_mac` = `arp_sender_mac`. It is otherwise unconditional — "whether or not
+the packet is addressed to us" is REQ-503's own clause — and it applies to a
+reply exactly as to a request, and to a gratuitous ARP exactly as to either.
+Nothing about the Ethernet header is learned; the ARP fields are the source of
+truth, which is why M10 does not read `rx_hdr_src_mac` (SPEC-M10 §4.2).
+
+**Replying (REQ-502).** On that same gating cycle, M13 generates a reply **iff**
 
 > `arp_operation` = 1 **and** `arp_target_ip` = `cfg_local_ip`,
 
@@ -367,11 +417,20 @@ columns already say.
 
 **An accepted reply ends a matching resolution.** If the accepted packet's
 `sender_ip` equals the outstanding resolution's target (below), the resolution
-**ends** on the same cycle as the learning write: the outstanding register is
-cleared and no further retry is issued. This is what "unanswered requests SHALL
-be retried" means read forwards, and it holds whether the answer arrived as a
-reply (operation 2) or as any other accepted packet from that address — the
-cache entry is what the resolution wanted, and REQ-503 has just created it.
+**ends** on the same cycle as the learning write — the gating cycle: the
+outstanding register is cleared and no further retry is issued. This is what
+"unanswered requests SHALL be retried" means read forwards, and it holds whether
+the answer arrived as a reply (operation 2) or as any other accepted packet from
+that address — the cache entry is what the resolution wanted, and REQ-503 has
+just created it.
+
+**A marked packet ends nothing** (ADR-0009). A packet the gate rejected produces
+no cache write, so the entry the resolution wanted does not exist; ending the
+resolution on it would abandon a retry sequence on the strength of a frame the
+programme has already declared invalid, and the next datagram to that address
+would miss with no request outstanding. The resolution therefore stays
+outstanding and its retry sequence continues, which is the same rule read
+consistently: a resolution ends when the cache can answer it.
 
 ---
 
@@ -390,9 +449,19 @@ cache entry is what the resolution wanted, and REQ-503 has just created it.
 | 5 | off-subnet | anything else | resolution target **`g`**, resolved through M12 | yes | yes |
 
 The order is normative and is REQ-507's own. It is what makes 255.255.255.255
-class 1 rather than class 5 when the mask is 0, and a multicast address class 3
-rather than class 4 or 5 whether or not it happens to lie inside the configured
-subnet — the two cases REQ-507's verification column names.
+class 1 rather than a cache lookup, and a multicast address class 3 rather than
+class 4 or 5 whether or not it happens to lie inside the configured subnet — the
+two cases REQ-507's verification column names.
+
+*The competitor for 255.255.255.255 is class 4, not class 5, and which one it is
+depends on the mask* (dv_lead, WO-0015 Return log §6 item 4). With `m` = 0 every
+destination satisfies class 4's test — (`d` & 0) = (`l` & 0) is 0 = 0 — so an
+implementation that evaluated the classes out of order would resolve
+255.255.255.255 **through the cache** as an on-subnet address. With an ordinary
+mask the same address fails class 4 and would fall to class 5, the gateway. Both
+readings are wrong and the order is what forbids both; the earlier wording of
+this paragraph named class 5 as the competitor *when the mask is 0*, which is the
+one combination that does not arise.
 
 **The multicast MAC (REQ-509), stated as bits.** For a class-3 destination `d`:
 
@@ -506,13 +575,56 @@ M11. The rules are three:
    a *request* offer is outstanding therefore waits for that acceptance rather
    than preempting it, which costs at most the few cycles §7 accounts for.
 
-**At most one reply is pending (REQ-510).** A reply is **pending** from the
-cycle it is generated until the cycle M11 accepts it. If a second reply is
-generated while one is pending — which happens exactly when a second accepted
-request for `cfg_local_ip` arrives inside that window — then
+**At most one reply is pending (REQ-510), and "pending" ends when the reply's
+frame does.** A reply is **pending** from the cycle it is generated until — and
+including — the cycle **M11's payload `tlast` word is accepted**, which is the
+cycle the reply's frame leaves the ARP family for M09. M13 observes that event
+with no new port: it relays M11's `payload` out on `tx_payload` and M09's
+`tready` back on `tx_payload_tready` (§7), so the event is
+`tx_payload_tvalid` = 1 **and** `tx_payload_tlast` = 1 **and**
+`tx_payload_tready` = 1 at M13's own ports. M11 holds one packet at a time
+(SPEC-M11 §6.2), so the first such acceptance after the reply's record was taken
+is that reply's frame and no other's.
+
+If a second reply is generated while one is pending — which happens exactly when
+a second accepted, unmarked request for `cfg_local_ip` reaches its gating cycle
+inside that window — then
 
 > the **newly generated** reply is discarded, `error_arp_reply_dropped` pulses
 > for exactly one cycle, and the pending reply is untouched.
+
+**Why the window is the frame and not the record** (dv_lead's owed diff **D-1**,
+repair **R-1**, WO-0017). SPEC-M11 §6.2's `Idle` row asserts `arp_ready` = 1
+**unconditionally** — it does not depend on `payload_tready`, and only `clear`
+or M11 already holding a packet lowers it. So with the transmit path blocked and
+M11 idle, M11 accepts reply 1's *record* on the cycle it is offered and then
+holds the frame it cannot send. A pending window ending at the record's
+acceptance would return machine (A) to `Idle` there, leaving reply 2 to enter
+`Pending` and **stay** there with no strobe, and reply 3 the first one dropped:
+the ARP family would hold **two** replies where REQ-510's normative sentence says
+one, and the four sites that count on it — §8 item 2, §10's REQ-510 and REQ-810
+rows and REQ-510's own verification column in requirements.md — would each
+commission a strobe a conformant design does not pulse. With the window as
+stated, **exactly one reply exists anywhere in the family at a time** and all
+four counts are correct as written, with no requirements diff, no port and no
+record field. The rejected alternative was to weaken REQ-510's normative sentence
+to "one pending at the resolver and one further already accepted for
+transmission" and move the four counts from two to three; §11.6 records why that
+was not taken.
+
+**The window costs nothing when the transmit path is running.** An unblocked
+reply's frame completes five cycles after its record is accepted (SPEC-M11 §6.1:
+acceptance at A, payload word 3 at A + 4), while two accepted requests for
+`cfg_local_ip` are at least ten cycles apart at REQ-004's own arrival rate. No
+reply that would be transmitted today is dropped under this rule.
+
+**The boundary cycle is inside the window.** A reply generated on the very cycle
+the pending reply's `tlast` word is accepted is **dropped**: machine (A) is in
+`Transmitting` for the whole of that cycle and leaves it at the end of it
+(§6.2 (A)). The coincidence is arithmetically unreachable from the composed
+chain — the ten-cycle spacing above forbids it — and is pinned here so that a
+directed bench which drives it has one predictable answer instead of two
+defensible ones.
 
 Nothing on the receive path is stalled, and nothing could be: `rx_payload`
 carries no `tready` at all (§3, §4.1). REQ-510's "this is the only condition
@@ -525,7 +637,10 @@ ARP requests.
 request waits for the port; if the resolution is abandoned or replaced while it
 waits, the waiting request is superseded by the new one rather than sent. No
 strobe reports either, because REQ-505 has already reported the miss that caused
-it and REQ-008's discard is about frames, not about intentions.
+it and REQ-008's discard is about frames, not about intentions. **REQ-510's
+window is a rule about replies only**: a request waiting for the M11 port is not
+"pending" in REQ-510's sense, is not counted against machine (A), and is never
+dropped by it.
 
 ---
 
@@ -542,15 +657,41 @@ with its gap obligation served.
 | 6 / 7 | M08 `arp_hdr_valid` / `arp_payload` word 0 | SPEC-M08 §7, ΔC = 1 |
 | 6 / 7 | the same at M10's ports | M13's relay, 0 cycles (§7) |
 | **9** | the request's terminate character on XGMII — REQ-502's measurement start | stimulus |
-| 11 | M10 `arp_valid` | SPEC-M10 §7, Cp + 4 |
-| 12 | M13 offers the reply to M11; M11 accepts (idle) | §6.1 rule 1, SPEC-M11 §6.2 |
-| 13 | M11 offers `hdr_valid` + payload word 0; M09 grants; M07 accepts | SPEC-M11 §7, SPEC-M09 §6.2 |
-| 14 | M07 output word 0; M04 accepts | SPEC-M07 §7 |
-| **15** | the reply's start character on XGMII — REQ-502's measurement end | SPEC-M04 §7 |
+| 11 | M10 `arp_valid` | SPEC-M10 §7, Cp + 4 with Cp = 7 |
+| 12 | the request's payload `tlast` word at M13's `rx_payload` — payload word 5, Cp + 5 | SPEC-M10 §6.1's six-word frame |
+| 13 | **the gating cycle**: `rx_payload_tuser`[0] = 0 is read, the cache write is presented, and M13 offers the reply to M11; M11 accepts (idle) | §6.1's validity gate (ADR-0009), rule 1, SPEC-M11 §6.2 |
+| 14 | M11 offers `hdr_valid` + payload word 0; M09 grants; M07 accepts | SPEC-M11 §7, SPEC-M09 §6.2 |
+| 15 | M07 output word 0; M04 accepts | SPEC-M07 §7 |
+| **16** | the reply's start character on XGMII — REQ-502's measurement end | SPEC-M04 §7, §6.1 |
 
-**Six cycles**, against REQ-502's bound of 64. Every term is a constant another
-specification pins, which is why this table is a derivation and not a
+**Seven cycles**, against REQ-502's bound of 64. Every term is a constant
+another specification pins, which is why this table is a derivation and not a
 measurement; §8's system run measures it and asserts the bound.
+
+**Six of those seven were derived at WO-0014 and are unchanged; the seventh is
+the validity gate** (ADR-0009). Cycles 0 through 11 and 14 through 16 are exactly
+dv_lead's recomputation at the batch-D countersignature, term by term against the
+specification that pins each (`J-dv_lead-0008`, WO-0015 Return log §2). What
+D-2a adds is the wait from `arp_valid` at 11 to the payload `tlast` at 12 and the
+gating cycle at 13, where the old text acted at 12.
+
+**Measurement start, pinned** (carry-forward **C-23**). Cycle 9 is the word
+carrying the request's **terminate character**: eight preamble octets occupy
+cycle 0, frame octets 0–63 occupy cycles 1–8, and `/T/` lands in lane 0 of cycle
+9 (SPEC-M03's 64-octet table). The other reading of REQ-502's "the request's last
+XGMII word" — the last word carrying *frame octets*, cycle 8 — gives **eight**
+cycles for the same conformant design. requirements.md REQ-502's verification
+column now names the terminate reading, and a latency artifact quoting this
+figure states which cycle it started from.
+
+**The figure is constant at every accepted request length, and that is what
+makes it a derivation rather than an example.** The payload `tlast` word sits a
+fixed number of cycles after the frame's terminate character — three, at a lane-0
+terminate — because every stage between XGMII and M13's `rx_payload` has constant
+per-octet latency (requirements.md §0.5): the last delivered octet's octet time is
+the terminate character's minus five (the four FCS octets are stripped, REQ-103),
+plus M03's 16 and M06's 10 and M08's 8. A longer request moves cycle 9 and cycle
+12 together and the difference of seven does not move.
 
 ### 6.2 State machine
 
@@ -558,12 +699,15 @@ Reset state and `clear` state are `Idle` in all three machines below. M13 holds
 **three** small machines and no other sequencing; they interact only where §6.1
 rule 2 says they do, at the M11 port.
 
-**(A) Reply**
+**(A) Reply** — two states before WO-0017, three after it: repair **R-1** for
+dv_lead's owed diff **D-1** ends the pending window at the reply's *frame*
+completing rather than at its *record* being accepted (§6.1).
 
 | State | Entered when | Does | Leaves to |
 |---|---|---|---|
-| `Idle` | reset; `clear`; M11 accepts the pending reply | nothing; no reply is pending | `Pending` on the cycle after an `arp_rx` pulse satisfying §6.1's reply predicate, capturing the five reply fields |
-| `Pending` | a reply is generated | keeps the reply available for the M11 port; a second reply generated here is **discarded** with one `error_arp_reply_dropped` pulse (REQ-510) and this state does not change | `Idle` on the cycle M11 accepts the reply |
+| `Idle` | reset; `clear`; the cycle M11's payload `tlast` word for the pending reply is accepted | nothing; no reply is pending | `Pending` on the **gating cycle** of an accepted, unmarked packet satisfying §6.1's reply predicate, capturing the five reply fields |
+| `Pending` | a reply is generated | offers the reply to M11 and holds it with every field stable until `arp_ready` = 1 (§7); a second reply generated here is **discarded** with one `error_arp_reply_dropped` pulse (REQ-510) and this state does not change | `Transmitting` on the cycle M11 accepts the reply record (`arp_valid` = 1 and `arp_ready` = 1) |
+| `Transmitting` | M11 accepted the reply record | nothing of its own — M11 is emitting the frame and M13 is relaying it — except that **the reply is still pending**: a reply generated here is discarded with one `error_arp_reply_dropped` pulse (REQ-510) | `Idle` on the cycle `tx_payload_tvalid` = 1, `tx_payload_tlast` = 1 and `tx_payload_tready` = 1 — the reply frame's last word accepted by M09 |
 
 **(B) Resolve**
 
@@ -585,6 +729,19 @@ because §7's constant is what it exists to guarantee.
 A cycle with `tx_query_valid` = 0 puts nothing into stage 0 and produces no
 response two cycles later. Back-to-back queries are pipelined and produce
 back-to-back responses, in order (REQ-020).
+
+**(D) Validate** — the receive-side gate of §6.1 (ADR-0009), a holding stage
+rather than a machine, tabulated here because machines (A) and (B) are both fed
+by its output and a bench needs its cycles.
+
+| Stage | On cycle | Does |
+|---|---|---|
+| 0 | M10's `arp_valid` pulse | captures the five `Arp_packet` fields; marks a report outstanding |
+| 1 | every cycle from there until the packet's payload `tlast` word on `rx_payload` | holds them; changes nothing else. Empty when the `tlast` word has already passed (an exactly-28-octet ARP payload, §6.1) |
+| 2 | the **gating cycle** — one cycle after the later of the `arp_valid` pulse and the payload `tlast` word | reads `rx_payload_tuser`[0] of that `tlast` word. On 0: presents the cache write, evaluates the reply predicate and feeds machine (A), and ends a matching outstanding resolution in machine (B). On 1: does none of those and pulses nothing |
+
+`clear` in any stage abandons the held fields with no write, no reply and no
+strobe (REQ-009, §7).
 
 ### 6.3 Deliberately unconstrained
 
@@ -623,6 +780,17 @@ rely on it.
    there is nothing to violate: `tx_query_valid` is a one-cycle pulse with no
    acceptance event, because M13 can never refuse a query (§7). Listed so that
    no bench looks for a handshake that does not exist.
+7. **M13's behaviour when an accepted packet's payload `tlast` word never
+   arrives**, so that §6.1's gating cycle never occurs and the captured fields
+   are held indefinitely. No conformant producer does it: M06 ends every payload
+   frame with `tlast` (SPEC-M06 §7), M08 relays it (SPEC-M08 §7), and a frame
+   with no payload frame at all carries zero ARP octets and is rejected by M10
+   before anything reaches this stage (SPEC-M10 §9). The case is **unreachable
+   rather than undefined**, no requirement names it, and DV SHALL assert nothing
+   about the held fields or about a later packet's report. This is the wording
+   SPEC-M07 §6.3 item 3 and SPEC-M11 §6.3 item 3 use, and carry-forward C-17(c)
+   is the precedent for not specifying output behaviour for a stimulus the
+   programme has decided not to produce.
 
 ## 7. Timing contract
 
@@ -654,13 +822,24 @@ rely on it.
   to its own one-cycle lookup.
 
 - **Latency, the reply.** Not a constant of this module alone: REQ-502's bound
-  is a property of the whole chain, and §6.1's cycle table derives **6 cycles**
+  is a property of the whole chain, and §6.1's cycle table derives **7 cycles**
   from six other specifications' constants against REQ-502's 64. M13's own
-  contribution is **1 cycle** — the offer to M11 is asserted on the cycle after
-  M10's `arp_valid` pulse — plus however long M11 takes to be free, which is 0
-  when nothing else is in flight and is bounded by REQ-510 when something is:
-  a reply cannot queue behind another reply, because a second reply is dropped
-  rather than held.
+  contribution is **two cycles** for the minimum-length request of that table —
+  the offer to M11 is asserted on the **gating cycle**, one cycle after the
+  packet's payload `tlast` word at Cp + 5 and therefore two cycles after M10's
+  `arp_valid` at Cp + 4 (§6.1's validity gate, ADR-0009) — plus however long M11
+  takes to be free, which is 0 when nothing else is in flight and is bounded by
+  REQ-510 when something is: a reply cannot queue behind another reply, because a
+  second reply is dropped rather than held.
+
+  **Measured from `arp_valid` the contribution is frame-length dependent;
+  measured from REQ-502's own start it is not.** The gating cycle follows the
+  packet's payload `tlast`, so a longer request holds the fields longer — but
+  REQ-502 measures from the request's terminate character, and the payload
+  `tlast` sits a fixed number of cycles after that character (three, at a lane-0
+  terminate) because every stage between has constant per-octet latency
+  (requirements.md §0.5). The seven-cycle figure is therefore constant at every
+  accepted request length, which is what keeps §6.1's table a derivation.
 
 - **Throughput.** One query accepted per cycle, unconditionally and
   indefinitely: M13 can never refuse a query, because `tx_query` carries no
@@ -686,14 +865,26 @@ rely on it.
     C-17(d)).
   - Towards M11, M13 is the source of an `Arp_packet` and carries SPEC-M11 §7's
     substituted obligation: `arp_valid` and all five fields held stable until
-    `arp_ready` = 1.
+    `arp_ready` = 1. That acceptance ends the *offer*; it does not end the
+    reply's **pending window**, which runs to the frame's `tlast` acceptance
+    (§6.1, R-1).
+  - **The three events a REQ-510 monitor keys on**, all visible at M13's own
+    ports and all computable from the trace: the gating cycle (a reply is
+    generated), `arp_valid` & `arp_ready` towards M11 (the record is accepted),
+    and `tx_payload_tvalid` & `tx_payload_tlast` & `tx_payload_tready` (the frame
+    completes, and the window closes). No `valid` edge is one of them, which is
+    ADR-0008's C-17(d) rule and its C-22 precedence clause read together.
 
 - **Reset.** While `clear` = 1 and on the first cycle after it returns to 0:
   `tx_hdr_valid` = 0, `tx_payload_tvalid` = 0, `tx_response_valid` = 0 and all
-  three strobes are 0; machines (A) and (B) are in `Idle`, so no reply is
-  pending and no resolution is outstanding; and the cache is empty, because M12
-  is in the same reset (SPEC-M12 §7). A frame in flight out of M11 is abandoned
-  with no `tlast` (SPEC-M11 §7); a query in flight loses its response. A query
+  three strobes are 0; machines (A) and (B) are in `Idle` — machine (A) from
+  `Transmitting` as readily as from `Pending` — so no reply is pending and no
+  resolution is outstanding; stage (D) holds nothing, so a packet reported by M10
+  but not yet gated is abandoned with no cache write, no reply and no strobe; and
+  the cache is empty, because M12 is in the same reset (SPEC-M12 §7). A frame in
+  flight out of M11 is abandoned with no `tlast` (SPEC-M11 §7) — its pending
+  window ends with the reset rather than with an acceptance, and no strobe
+  reports that (REQ-009, not REQ-008); a query in flight loses its response. A query
   presented on the first cycle after `clear` returns to 0 is answered normally
   two cycles later, and it misses, because the cache is empty — which pulses
   `error_arp_miss` and issues a request, and is exactly right.
@@ -723,16 +914,41 @@ Its equivalent obligations, specified here so no sign-off packet has to invent
 them:
 
 1. **REQ-505's burst**, which is the closest thing M13 has to a rate test:
-   transmit to an unknown host, then present **100** further queries for the
-   same destination inside one retry interval, and assert **exactly one** request
-   on the wire, **100** `error_arp_miss` pulses, 100 responses with `found` = 0
-   at Q + 2, and every application word accepted rather than stalled.
+   transmit to an unknown host, then present **100 further** queries for the same
+   destination inside one retry interval, and assert **exactly one** request on
+   the wire, every application word accepted rather than stalled, and — counted
+   over the whole run — **101** responses with `found` = 0 at Q + 2 and **101**
+   `error_arp_miss` high cycles: one for the datagram that started the
+   resolution plus one for each of the 100 further ones. REQ-505's verification
+   column says "100 strobes" counting only the *further* datagrams; both texts
+   are consistent under the word "further", and a bench counting over the whole
+   run must assert **101 and not 100** (dv_lead, WO-0015 Return log §6 item 5).
+
+   **Count high cycles, not rising edges** (requirements.md §0.6's counting
+   convention, carry-forward **C-23**). `tx_query` accepts one query per cycle
+   (§7) and back-to-back queries produce back-to-back responses (§6.2 (C)), so
+   this run can legitimately drive `error_arp_miss` high for 100 consecutive
+   cycles. An edge counter sees **1** and fails a conformant design; a high-cycle
+   counter sees 100. M13 is the first module in this programme whose strobe can
+   legitimately be high on consecutive cycles, which is why the convention is
+   stated in §0.6 rather than here.
 2. **REQ-510's collision**, which is the reply-drop case and is reachable by
    construction: hold M09 busy with a maximum-length IPv4 frame while injecting
    two back-to-back ARP requests for `cfg_local_ip`; assert exactly one
    `error_arp_reply_dropped` pulse, that the **first** reply is transmitted once
    M09 frees, and that REQ-004 still holds on the receive path throughout —
    which it must, because `rx_payload` has no `tready` to assert (§3).
+
+   **Two requests is the right number, and it is right because of R-1** (§6.1).
+   M11's `arp_ready` is 1 while it is idle, so reply 1's *record* is accepted at
+   once and reply 1 then sits inside M11 waiting for M09; the pending window runs
+   to the frame's `tlast` acceptance, which never comes while M09 is held, so
+   reply 2 is the first drop and there is exactly one strobe. A bench built
+   against the pre-R-1 text would have had to inject **three** requests to see
+   one pulse, which is precisely the divergence dv_lead raised as D-1. The run
+   also fixes the residual REQ-810 case: with `cfg_tx_enable` = 0 instead of a
+   busy M09 the same three assertions hold, and the first reply transmits late,
+   on re-enable (§11.2).
 3. **REQ-506's retry sequence**, with `retry_interval_cycles` overridden to 16
    and `retry_count` to its default 4: count the requests on the wire (expect
    **5** — one initial plus four retries), assert the interval between
@@ -754,7 +970,7 @@ Strobe names are normative (requirements.md §12).
 | Condition | Strobe (one cycle) | Effect | REQ |
 |---|---|---|---|
 | A class-4 or class-5 resolution whose target has no live cache entry | `error_arp_miss` | `tx_response_valid` = 1 with `found` = 0 on the same cycle; M15 discards the datagram without buffering and keeps accepting its payload words; a request is broadcast unless a resolution for the same target is outstanding | REQ-505 |
-| A reply is generated while a reply is already pending | `error_arp_reply_dropped` | the **newly generated** reply is discarded and never reaches M11; the pending reply is untouched and is transmitted; nothing on the receive path is stalled | REQ-510 |
+| A reply is generated while a reply is already pending — **pending** meaning generated and not yet completely transmitted, the window ending on the cycle M11's payload `tlast` word is accepted (§6.1, repair R-1) | `error_arp_reply_dropped` | the **newly generated** reply is discarded and never reaches M11; the pending reply is untouched and is transmitted; nothing on the receive path is stalled | REQ-510 |
 
 Silent discard is prohibited (REQ-008): both rows have a strobe. The `clear`
 cases of §7 are REQ-009's, not REQ-008's.
@@ -774,6 +990,25 @@ not count them.**
 - **A resolution being abandoned or replaced** (REQ-506, §6.1): the datagram
   that caused it was discarded and reported at the time, and an unsent *request*
   is an intention rather than a frame. No strobe, and REQ-008 is not weakened.
+- **A packet whose frame was marked invalid** (REQ-013, REQ-503, ADR-0009): the
+  validity gate of §6.1 declines to learn from it and declines to reply to it,
+  and **no strobe pulses**. The condition was detected and reported upstream by
+  the module that marked the frame — `error_bad_fcs`, `error_runt`,
+  `error_bad_frame`, `error_oversize` or `error_start_without_terminate` — and
+  requirements.md §0.6 forbids a module from re-reporting an abort it merely
+  inherited. Nor is anything discarded here in §0.6's sense: no frame is
+  forwarded on this branch, and M10 still reported that packet exactly once
+  (SPEC-M10 §6.1), which is where the branch's conservation equation is computed.
+  A conservation monitor that counted a gated packet as a discard at M13 would
+  find a discrepancy that does not exist.
+
+**Counting these strobes** (requirements.md §0.6, carry-forward **C-23**). Both
+of M13's strobes are one **high cycle** per event, and `error_arp_miss` may be
+high on consecutive cycles because back-to-back queries produce back-to-back
+responses (§6.2 (C), §8 item 1). A monitor counts high cycles and never rising
+edges. `error_arp_reply_dropped` cannot be high on consecutive cycles in the
+composed chain — two accepted requests are at least ten cycles apart at REQ-004's
+arrival rate — but the same convention governs it, so one rule covers this module.
 
 **Which conditions can co-occur on one cycle, and what then pulses.**
 
@@ -804,25 +1039,25 @@ abort rule has no instance at M13 and no `tuser`[0] is ever set here.
 | REQ-003 | `rx_payload` is `Axi64.Source` with no `Dest`; nothing M13 does can stall M08 | §4.1 | interface compile check |
 | REQ-004 | no instance of its own: the relay is combinational, so M10's §8 bench measured at M13's `rx_` ports covers this branch | §8 | SPEC-M10 §8's bench attached at M13's ports rather than M10's, asserting the same four criteria |
 | REQ-005 | relay latency 0 at every octet; response latency a single constant across all five classes | §7 | the class walk of §8 item 4, asserting Q + 2 for every class |
-| REQ-007, REQ-013 | relays `tuser`[0] unchanged; originates and re-reports no abort | §3, §9 | protocol monitor across the relay |
+| REQ-007, REQ-013 | relays `tuser`[0] unchanged into M10 **and consumes it**: M13 is the ARP branch's ultimate consumer (REQ-013, ADR-0009) and gates the learning write and the reply on it at the packet's payload `tlast`. It originates no abort and re-reports none — the gate pulses nothing | §6.1, §6.2 (D), §9 | protocol monitor across the relay, plus the directed pair: an accepted request whose frame carries `tuser`[0] = 0 learns and replies; the same request with `tuser`[0] = 1 on its payload `tlast` does neither and pulses **no** M13 strobe |
 | REQ-008 | two strobes, both pulse cycles pinned; the two non-discards named so a monitor does not count them | §9 | directed miss and reply-drop tests plus the conservation monitor |
 | REQ-009 | `clear` empties the cache, abandons the pending reply and the outstanding resolution, and zeroes all three strobes | §7 | assert `clear` with a reply pending and a resolution outstanding; deassert; assert no reply is transmitted, no retry appears, and the next query misses |
 | REQ-010 | programme stream and header types; `Arp_query` / `Arp_response` declared here; `Arp_packet` and the cache records opened from M10 and M12 | §4.1 | interface compile check |
 | REQ-020 | responses in query order; packets learned in arrival order; the one deliberate overtake (reply before waiting request) stated | §3, §6.1 | back-to-back queries in §8 item 1, asserting response order |
 | REQ-501 | **not** M13's: it consumes a record whose `valid` already means accepted, and re-checks nothing | §2 | none — stated so that no sign-off packet claims REQ-501 coverage here |
-| REQ-502 | decision half: reply iff operation 1 and `target_ip` = `cfg_local_ip`; five fields filled per §6.1; the 6-cycle derivation against the 64-cycle bound | §6.1, §7 | inject a request; decode the transmitted frame field by field against all six address fields; measure from the request's last XGMII word to the reply's start character |
-| REQ-503 | every `arp_valid` pulse produces a cache write on the next cycle, addressed to us or not | §6.1 | inject a request from a new host, then transmit to that host: no new request appears and the frame carries the learned MAC |
+| REQ-502 | decision half: reply iff operation 1 and `target_ip` = `cfg_local_ip`, evaluated at the validity gate; five fields filled per §6.1; the **7**-cycle derivation against the 64-cycle bound | §6.1, §7 | inject a request; decode the transmitted frame field by field against all six address fields; measure from the request's **terminate character** (requirements.md REQ-502, C-23) to the reply's start character |
+| REQ-503 | every accepted **and unmarked** packet produces a cache write on its gating cycle — one cycle after the later of `arp_valid` and the packet's payload `tlast` — addressed to us or not; a marked packet produces none (REQ-013, ADR-0009) | §6.1, §6.2 (D) | inject a request from a new host, then transmit to that host: no new request appears and the frame carries the learned MAC. Then inject the same request with a corrupted FCS: assert no cache entry, no reply, and no ARP-side strobe |
 | REQ-505 | miss → `found` = 0, one strobe, one broadcast request, suppressed while the same target is outstanding; no buffering anywhere | §6.1, §9 | §8 item 1: one request, 100 strobes, 100 responses, every application word accepted |
 | REQ-506 (retry half) | one initial request plus up to `retry_count` retries at `retry_interval_cycles`, measured from acceptance; then abandonment with nothing negatively cached | §5, §6.1, §6.2 (B) | §8 item 3: five requests at interval 16, sequence stops, a later query starts a fresh five |
 | REQ-506 (ageing half) | **not** M13's: forwarded to M12 as a parameter and read for nothing here | §5 | none — stated so that no sign-off packet claims ageing coverage here |
 | REQ-507 | five classes in the stated order, first match wins; off-subnet resolves the gateway, not the destination | §6.1 | §8 item 4's class walk, including the off-subnet case asserting both the request's and the frame's target |
 | REQ-508 | 255.255.255.255 and `cfg_local_ip \| ~cfg_subnet_mask` both answer `ff:ff:ff:ff:ff:ff` with no cache query and no request | §6.1 | both destinations driven; destination MAC checked and `cache_query_valid` = 0 asserted at M12's port |
 | REQ-509 | 224.0.0.0/4 answers 01:00:5E, bit 23 forced 0, low 23 bits from the address; no cache query, no request | §6.1 | 239.1.2.3 → 01:00:5E:01:02:03 and 239.129.2.3 → the same MAC, which is what exercises the 23-bit mask |
-| REQ-510 | at most one pending reply; a second is discarded with one strobe; the receive path cannot be stalled because it has no `tready` | §6.1, §9 | §8 item 2's collision run |
+| REQ-510 | at most one pending reply **anywhere in the ARP family**: the window runs from generation to the acceptance of the reply frame's `tlast` word, so a reply held inside M11 is still pending here (repair R-1). A second is discarded with one strobe; the receive path cannot be stalled because it has no `tready` | §6.1, §6.2 (A), §9 | §8 item 2's collision run — **two** requests, exactly one `error_arp_reply_dropped` high cycle, the first reply transmitted when M09 frees. A bench SHALL NOT assert that a third request is needed to produce the first drop: that is the pre-R-1 mechanism and no conformant design has it |
 | REQ-511 | no separate rule: the reply predicate fires for a gratuitous ARP exactly when its address is `cfg_local_ip`, and REQ-503 learns from it either way | §6.1 | gratuitous ARPs for a foreign address and for the local address: cache updated in both, reply only in the second |
 | REQ-512 | the same predicate in the negative: a request for any other address gets no reply, while learning still happens | §6.1 | three foreign-address requests: no transmit activity, cache entries present |
 | REQ-802, REQ-803 | four configuration inputs, each with its sampling event named; receive and transmit sampled independently | §4.3 | change `cfg_local_ip` between two requests and assert the reply predicate follows it at the next packet, not the one in flight |
-| REQ-810 | no instance at M13's ports — `cfg_tx_enable` is M04's — and REQ-810's ARP clause is realised through the backpressure chain: with transmit disabled M04 holds `tx_tready` low, M09 never grants, M11 never has its first payload word accepted, so `arp_ready` stays 0 and a **second** reply is dropped under REQ-510 | §11.2 | drive `cfg_tx_enable` = 0, inject two requests, assert one `error_arp_reply_dropped`; re-enable and assert the first reply transmits |
+| REQ-810 | no instance at M13's ports — `cfg_tx_enable` is M04's — and REQ-810's ARP clause is a **consequence clause**, not an independent obligation (§11.2, dv_lead's Q3 answer). It is realised through the backpressure chain: with transmit disabled M04 holds `tx_tready` low, M09 never grants, M11's first payload word is never accepted, so under R-1 the first reply stays pending inside M11 and **every later reply** is dropped under REQ-510 | §11.2 | drive `cfg_tx_enable` = 0, inject **two** requests, assert exactly one `error_arp_reply_dropped` high cycle; re-enable and assert the first reply transmits, late. The residual is disclosed rather than hidden: that first reply **is** transmitted after re-enable, which is REQ-810's plain reading minus a single frame |
 | REQ-901 | declared divergence classes **(b)** and **(c)** live here: direct-mapped versus LRU (eviction order not compared) and discard-on-miss versus queued resolution (post-miss transmit behaviour not compared) | header, §2 | the co-simulation report names both classes against this module |
 | REQ-903, REQ-808 | `arp` is a distinct emitted module with `create`, `hierarchical` and an `.mli`, and it instantiates `arp_eth_rx`, `arp_eth_tx` and `arp_cache` as distinct hierarchical modules | §4.1 | repository surface check and the `rtl_snapshots/` name comparison |
 
@@ -835,11 +1070,12 @@ Item numbers are permanent; a closed item keeps its row (SPEC-TEMPLATE §11).
 
 | # | Item | Status · what a reader assumes meanwhile | Tracked as | Owner | Closes by |
 |---|---|---|---|---|---|
-| 11.1 | **The `ifc_check` compile evidence for this lift is pending**: `arp_ifc.ml` is new in this commit, declares two records, opens three other lifts and is the widest record batch D adds. | **DEFERRED — the record is written, the run is pending.** Meanwhile a reader assumes it exactly as §4.1 writes it. The three `open!`s are ordinary intra-library references within the single `ifc_check` library and there is no cycle: M10's and M12's lifts reference nothing of M13's. A divergence is a red CI run on this commit and an editorial diff. | the `Interface compile check` row of §12 | architect_docs_lead, rtl_lead | the batch-D `ifc_check` run |
-| 11.2 | **REQ-810's ARP clause reads as though every reply generated while transmit is disabled is dropped**, and the mechanism this specification states drops the **second and later** ones while the first waits inside M11 until transmit is re-enabled. Dropping the first would need a `cfg_tx_enable` input at M13 that architecture.md §6.4.3 does not route here. | **DEFERRED — the behaviour is decided and benchable, and nothing waits.** Meanwhile a reader assumes: the first reply waits, later ones are dropped with `error_arp_reply_dropped` (§10's REQ-810 row is written against exactly that). If the programme wants the first dropped too, the repair is a requirements.md diff to REQ-810 plus a new `cfg_tx_enable` input here and a new row in architecture.md §6.4.3 — a port addition, so a **breaking** interface change if it lands after this spec freezes. Raised for dv_lead at the batch-D countersignature for that reason. | this item; requirements.md REQ-810 | architect_docs_lead, dv_lead | batch-D countersignature |
-| 11.3 | **A miss for a target different from the outstanding one replaces the resolution**, and no REQ decides that case: REQ-505 constrains only the same-target case. §6.1 states the rule and its rejected alternative (a per-slot table of outstanding resolutions). | **DEFERRED — the rule is stated normatively and a bench is derivable today.** Meanwhile a reader assumes replacement: the previous target is abandoned, the new one starts at retry 0, and a request for it is issued. This is safe under REQ-506's own "nothing is negatively cached", which makes an abandoned resolution costless. If dv_lead judges it a missing requirement rather than a specification decision, the repair is a requirements.md diff to REQ-505 plus a spec diff here; no port changes either way. | this item; requirements.md REQ-505 | architect_docs_lead, dv_lead | batch-D countersignature |
+| 11.1 | **The `ifc_check` compile evidence for this lift is pending**: `arp_ifc.ml` is new in this commit, declares two records, opens three other lifts and is the widest record batch D adds. | **CLOSED (WO-0017).** CI `build` run **30736107842** at 2f29888 reports `success` with all four batch-D lifts in it, and `git diff a9993ff 2f29888 -- docs/specs/` is **empty**, so the run elaborated byte-identically the text drafted at a9993ff. The three-deep `open!` chain and the two-record declaration are established by a run, and SPEC-M15's lift now opens this one for `Arp_query` and `Arp_response` (batch E). | the `Interface compile check` row of §12 | architect_docs_lead, rtl_lead | closed |
+| 11.2 | **REQ-810's ARP clause reads as though every reply generated while transmit is disabled is dropped**, and the mechanism this specification states drops the **second and later** ones while the first waits inside M11 until transmit is re-enabled. Dropping the first would need a `cfg_tx_enable` input at M13 that architecture.md §6.4.3 does not route here. | **CLOSED (WO-0017), affirmatively: CONSEQUENCE CLAUSE, NOT AN INDEPENDENT OBLIGATION. No `cfg_tx_enable` at M13. NOT breaking.** dv_lead answered it decisively at the batch-D countersignature (`J-dv_lead-0008`, WO-0015 Return log §4/Q3) on three grounds. (i) **REQ-810's own verification column does not test it** — it drives `transmit enable` = 0, issues an *application* transmit request and checks the wire and `tready`, with not one word about ARP replies or `error_arp_reply_dropped`; under requirements.md §0.2 the verification column is where a REQ's testable fact lives, so a clause with no test in its own column, in a document where every other clause has one, is an explanatory pointer — and this one points, by naming REQ-510 as the governing requirement. (ii) **The alternative does not work as a port addition**: `cfg_tx_enable` at M13 cannot retract a reply already inside M11, so the drop-all reading would need a second port at M11 or a rule that M13 refuses to *generate* while disabled — a larger change than "one input", and one that would have to be re-derived for M15 and M18. (iii) **The residual hazard is nil**: a late ARP reply carries our own MAC for our own IP and cannot go stale the way a buffered *datagram* can, which is what architecture.md §2.5 and REQ-505 exist to prevent. **The residual is stated so nobody can later say it was hidden**: with transmit disabled, exactly one reply survives — held inside M11 — and it **is transmitted, late, when transmit is re-enabled**; every reply generated meanwhile is dropped with `error_arp_reply_dropped` under R-1's window, which is REQ-810's plain reading minus a single frame, obtained with no port. requirements.md REQ-810's clause is reworded to say that rather than "is dropped under REQ-510", which was false of the first reply. | this item; requirements.md REQ-810 | architect_docs_lead, dv_lead | closed |
+| 11.3 | **A miss for a target different from the outstanding one replaces the resolution**, and no REQ decides that case: REQ-505 constrains only the same-target case. §6.1 states the rule and its rejected alternative (a per-slot table of outstanding resolutions). | **CLOSED (WO-0017), affirmatively: SPECIFICATION DECISION, correctly made and correctly placed. No requirements.md diff is owed.** dv_lead's answer (`J-dv_lead-0008`, WO-0015 Return log §4/Q4): REQ-505's testable fact is duplicate suppression for the **same** target, a different-target rule is a second fact that would need its own REQ, so REQ-505's silence is correct scope rather than omission (requirements.md §0.2); the programme already has the device for an unconstrained corner in every spec's §6.3 opening sentence; and the decision is fully derivable here — §6.2 machine (B)'s three rows are complete for it and §6.3 item 4 states explicitly that which target ends up outstanding is *constrained*, not free. **The one sentence dv_lead requires added, because a bench writer needs it and it was not in the document:** replacement means an application alternating between two unresolved destinations defeats REQ-505's suppression entirely — every miss replaces the outstanding target, so **every miss issues a request**, bounded only by M11's five-cycle packet period. That is **not** a defect in Phase 1: architecture.md §5 has one application client and REQ-505's and REQ-809's stimuli each use one destination. But a test writer who sees one broadcast request per datagram must be able to tell that it is **conformant**, which is what this sentence is for. It is also the precise trigger for revisiting the per-slot table rejected in §6.1: **more than one concurrent application destination**, which is a Phase-2/3 condition and not a Phase-1 one. | this item; requirements.md REQ-505 | architect_docs_lead, dv_lead | closed |
 | 11.4 | **Both transmit relays are combinational** (§7), so the M11 → M13 → M09 → M07 path and the `payload_tready` path back through it are longer than SPEC-M09 §11.2's estimate, which counted M09's mux alone. | **DEFERRED — nothing in Phase 1 depends on closing them.** REQ-018 keeps the XGMII boundary simulation-only and no static timing closure at 6.4 ns is required, so a reader builds the combinational relay today. If a later phase cannot close the path, the remedy is SPEC-M09 §11.2's: a spec diff plus an ADR restating the cadence, never a quiet register — a register here would change REQ-406's measured grant delay and REQ-502's derivation in §6.1 at the same time. | this item; SPEC-M09 §11.2 | architect_docs_lead, rtl_lead | Phase-3 attach, or the first synthesis attempt |
-| 11.5 | **`Arp_query` and `Arp_response` are declared here rather than in M01**, for the reason SPEC-M10 §11.2 states, and M15 (batch E) will open this module for them. | **DEFERRED — the placement is decided and buildable.** A reader implements exactly that; SPEC-M15 opens `Arp_ifc` in its lift and the RTL references `Arp.Arp_query`. If a later phase reopens M01, the batch-D records may be promoted there by one spec diff plus an ADR, which is a rename and not a behavioural change. | SPEC-M10 §11.2; SPEC-M01 §4.1 | architect_docs_lead, rtl_lead | SPEC-M20 (batch F) |
+| 11.5 | **`Arp_query` and `Arp_response` are declared here rather than in M01**, for the reason SPEC-M10 §11.2 states, and M15 (batch E) will open this module for them. | **DEFERRED — the placement is decided, buildable and now exercised.** A reader implements exactly that. SPEC-M15 §4.1 (batch E, WO-0017) writes `open! Arp_ifc` and restates neither record, and the RTL references `Arp.Arp_query`; the declare-once rule therefore has its first cross-batch instance and it needed no change. If a later phase reopens M01, the batch-D records may be promoted there by one spec diff plus an ADR, which is a rename and not a behavioural change. | SPEC-M10 §11.2; SPEC-M01 §4.1 | architect_docs_lead, rtl_lead | SPEC-M20 (batch F) |
+| 11.6 | **R-2 was the rejected repair for D-1**, and the appeal record belongs in the specification rather than only in a journal: keep the drop-second-hold-first mechanism and move the four counts from two to three, weakening REQ-510's normative sentence to "at most one reply pending at the resolver **and** at most one further reply already accepted for transmission". | **CLOSED at the moment it was opened (WO-0017) — recorded, not deferred.** R-2 was rejected on dv_lead's ground and on one of the architect's. dv's: it weakens a normative **ERR** requirement to match a decomposition, and leaves the module holding a stale reply two deep. The architect's: R-2 costs a requirements.md **behavioural** diff to REQ-510 (normative sentence and verification column) plus four spec-side count changes, where R-1 costs one state and one clause and makes all four counting sites correct **as written** — so the cheaper repair is also the one that leaves fewer documents to keep in step. R-1 was verified free in the unblocked case by dv_lead before recommending it (an unblocked reply's frame completes five cycles after acceptance; two accepted requests are ≥ 10 cycles apart at REQ-004's rate) and re-derived here in §6.1. Recorded permanently because a countersignature and a work-order log both cite D-1 by name, and a reader who finds only the winner cannot check the choice. | this item; WO-0015 Return log §3 | architect_docs_lead | closed |
 
 ## 12. Freeze record
 
@@ -848,14 +1084,21 @@ spec is DRAFT.
 
 | Item | Value |
 |---|---|
-| Interface compile check | pending — CI `build` run `<id>`, conclusion `<success>`, SHA `<sha>`; per ADR-0005 a local build is not acceptable evidence. This run is also §11.1's closure record |
-| Architect signature | `J-architect_docs_lead-0006` |
-| dv_lead testability countersignature | pending — batch D (SPEC-M10, M11, M12, M13) |
+| Interface compile check | CI `build` run **30736107842**, conclusion **`success`**, SHA **2f29888** — all thirteen lifts elaborate, the four batch-D lifts for the first time; per ADR-0005 a local build is not acceptable evidence. `git diff a9993ff 2f29888 -- docs/specs/` is empty, so the run witnesses the text drafted at a9993ff, and **§4.1 is byte-for-byte unchanged by the D-1 and D-2 repairs**, so it still witnesses this revision's interface. This run is also §11.1's closure record |
+| Architect signature | `J-architect_docs_lead-0006`; the D-1 (R-1) and D-2 (D-2a) repairs `J-architect_docs_lead-0007` |
+| dv_lead testability countersignature | pending — **CONTESTED at a9993ff** (`J-dv_lead-0008`, WO-0015 Return log §1, §3) on D-1 and D-2, both repaired in the commit carrying this row. dv_lead's re-review surface, stated in advance: the D-1 and D-2 landing sites, the byte-identity and set-equality checks, and a green `ifc_check` run at the new SHA. It will **not** re-derive §2's arithmetic — Q + 2, the REQ-502 chain, the multicast masking, the class precedence and the retry counts are recomputed, correct and signed off there, and only the chain's total moves, by the one cycle §6.1 derives |
 | Frozen at | pending — SHA `<sha>`, gate `docs/gates/P1-spec-freeze-checklist.md` |
 
 ## 13. Change log
 
-Post-freeze changes only. This spec is DRAFT and has none.
+Post-freeze changes only. This spec is DRAFT and has none — which is the whole
+point of the cycle that produced this revision. **D-1 and D-2 both change state
+and both change an observable**, so freezing batch D first and repairing after
+would have converted two pre-freeze corrections into the programme's first
+behavioural post-freeze diffs, which is precisely what the countersignature gate
+exists to prevent (`J-dv_lead-0008`). The repairs are recorded in §11.2, §11.3
+and §11.6 and in requirements.md §13's revision rows; ADR-0009 carries D-2's
+decision and its rejected alternative.
 
 | Date | Change | Breaking? | ADR | Journal |
 |---|---|---|---|---|

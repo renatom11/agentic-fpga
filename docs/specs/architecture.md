@@ -479,6 +479,16 @@ lift's own comment. The M13 endpoints that *are* ports — `rx_hdr`,
 `tx_response`, the four `cfg_` scalars and the three strobes — appear there. The
 same distinction will apply to M16 and M19 when batches E and F write them.
 
+**M16 `Ip_complete_64` applies it, and batch E confirms it rather than leaving a
+reader to infer it.** M16 contains M06, M07, M08, M09, M13, M14 and M15 (§6.3),
+so every edge *between* two of those children — `M08.ip_hdr → M14.hdr`,
+`M15.arp_query → M13.tx_query`, `M09.hdr → M07.hdr` and the rest — is an internal
+signal of M16's hierarchy and appears in neither `I` nor `O` of SPEC-M16 §4.1.
+The M16 endpoints that *are* ports are `rx`, `ip_rx_hdr`, `ip_rx_payload`,
+`ip_tx_hdr`, `ip_tx_payload`, `ip_tx_payload_dest`, `tx`, `tx_dest`, seven `cfg_`
+scalars and twelve strobes (SPEC-M16 §4.2); SPEC-M16 §6.1's wiring table is where
+the internal edges are enumerated in one place.
+
 **What is enumerated and what is summarised.** §6.4.1 and §6.4.2 contain **one
 row per port-level edge** of the receive and transmit datapaths — every edge of
 §6.1 and §6.2, expanded through the wrapper levels §6.3 implies, with no
@@ -517,7 +527,46 @@ port name moves, and the four `cfg_` scalars, the three ARP strobes and every
 stream edge stand exactly as §6.4.1 … §6.4.4 wrote them before the specs
 existed.
 
-**117 edges: 26 `rx`, 40 `tx`, 29 `control`, 21 + 1 `status`.**
+**Batch E's confirmation (WO-0017).** SPEC-M14, SPEC-M15 and SPEC-M16 confirm
+every row naming M14, M15 or M16 unchanged in its port names, with exactly two
+amendments, both above:
+
+1. **M14's two output rows are renamed** to `M14.ip_hdr` and `M14.ip_payload`.
+   The provisional table gave M14's input pair and its output pair the *same*
+   names — `M08.ip_hdr → M14.hdr` beside `M14.hdr → M16.ip_rx_hdr` — and a module
+   whose `I` and `O` both carry a record prefixed `hdr_` emits `hdr_valid` twice
+   in one Verilog module. The inputs keep their names, so M14 and M10 consume
+   M08's routed pair under identical port names and are written against the same
+   producer contract (SPEC-M08 §7); the outputs take the `ip_` prefix their type
+   already implies (SPEC-M14 §4.1).
+2. **One control row is added**: `M20.cfg_subnet_mask → M14.cfg_subnet_mask`.
+   REQ-604 accepts "the configured subnet broadcast address", which is
+   `cfg_local_ip | ~cfg_subnet_mask` — the same arithmetic SPEC-M13 §6.1 uses for
+   REQ-508 — and it cannot be evaluated without the mask. This is an added edge
+   rather than a renamed port, so it is an amendment of the kind §6.4's
+   provisional-row rule anticipates and it is made in the same commit as the
+   specification that needs it (SPEC-M14 §4.3, §11.4).
+
+Batch E adds **no record**: M14's and M16's ports carry SPEC-M01's `Ip_header`
+and `Axi64` types, and M15's resolution ports carry SPEC-M13's `Arp_query` and
+`Arp_response`, which SPEC-M15 §4.1 **opens** rather than restating — the
+declare-once rule's first cross-batch instance (SPEC-M10 §11.2, SPEC-M13 §11.5).
+No frozen §4.1 is touched by this batch.
+
+**Configuration fan-out is summarised, not enumerated — stated here rather than
+left as a silent inconsistency.** §6.4.3's `cfg_` rows name the **top-level
+source and the reading module**, as in `M20.cfg_local_ip → M14.cfg_local_ip`, and
+do **not** enumerate the wrapper hops that carry them (M20 → M19 → M16 → M14).
+This is the same summary §6.4.4 applies to strobes and for the same reason: every
+wrapper relays every configuration field its children read, unchanged and by name
+(SPEC-M05 §4.3 states it for M05, SPEC-M16 §4.3 for M16, and each later wrapper
+spec for itself), so a renderer computes the intermediate hops from §4's
+containment. The rule was implicit while every `cfg_` reader was M03, M04 or M13;
+batch E makes it load-bearing, because `cfg_local_ip` now reaches three modules
+through two wrapper levels. SPEC-M16 §11.3 tracks expanding the rows if a
+renderer ever needs them enumerated.
+
+**118 edges: 26 `rx`, 40 `tx`, 30 `control`, 21 + 1 `status`.**
 
 ### 6.4.1 Receive datapath — class `rx` (26 edges)
 
@@ -539,8 +588,8 @@ existed.
 | `M10.arp` | `M13.arp_rx` | `Arp_packet` | rx |
 | `M08.ip_hdr` | `M14.hdr` | `Eth_header` | rx |
 | `M08.ip_payload` | `M14.payload` | `Axi64.Source` | rx |
-| `M14.hdr` | `M16.ip_rx_hdr` | `Ip_header` | rx |
-| `M14.payload` | `M16.ip_rx_payload` | `Axi64.Source` | rx |
+| `M14.ip_hdr` | `M16.ip_rx_hdr` | `Ip_header` | rx |
+| `M14.ip_payload` | `M16.ip_rx_payload` | `Axi64.Source` | rx |
 | `M16.ip_rx_hdr` | `M17.ip_hdr` | `Ip_header` | rx |
 | `M16.ip_rx_payload` | `M17.ip_payload` | `Axi64.Source` | rx |
 | `M17.hdr` | `M19.app_rx_hdr` | `Udp_header` | rx |
@@ -595,7 +644,7 @@ existed.
 | `M05.xgmii_tx` | `M20.xgmii_tx` | `Xgmii` | tx |
 | `M20.xgmii_tx` | `WIRE.xgmii_tx` | `Xgmii` | tx |
 
-### 6.4.3 Control — class `control` (29 edges)
+### 6.4.3 Control — class `control` (30 edges)
 
 | source.port | sink.port | type | class |
 |---|---|---|---|
@@ -609,6 +658,7 @@ existed.
 | `M20.cfg_local_ip` | `M14.cfg_local_ip` | `bit[32]` | control |
 | `M20.cfg_local_ip` | `M15.cfg_local_ip` | `bit[32]` | control |
 | `M20.cfg_subnet_mask` | `M13.cfg_subnet_mask` | `bit[32]` | control |
+| `M20.cfg_subnet_mask` | `M14.cfg_subnet_mask` | `bit[32]` | control |
 | `M20.cfg_gateway_ip` | `M13.cfg_gateway_ip` | `bit[32]` | control |
 | `M20.cfg_multicast_group` | `M14.cfg_multicast_group` | `bit[32]` | control |
 | `M20.cfg_multicast_enable` | `M14.cfg_multicast_enable` | `bit` | control |
@@ -700,18 +750,26 @@ are drafted, because the dependant reuses their interface records.
 Every spec follows [`SPEC-TEMPLATE.md`](SPEC-TEMPLATE.md) and is frozen only
 with a green `ifc_check` build and a dv_lead testability countersignature.
 
-**Currency (2026-08-02, WO-0014).** Batches **A** and **B** are **FROZEN at
+**Currency (2026-08-02, WO-0017).** Batches **A** and **B** are **FROZEN at
 f78766e** — CI `build` run 30729342467 green, dv_lead countersignature
 `J-dv_lead-0005`. Batch **C** is **FROZEN at 508eea2** — CI `build` run
 30733153172 green at f457efc, whose `docs/specs/ifc_check/` tree is
 byte-identical to 508eea2's, dv_lead countersignature `J-dv_lead-0007`. Both are
 transcribed in `docs/gates/P1-spec-freeze-checklist.md`. Batch **D** is drafted
-(SPEC-M10 … SPEC-M13) and awaits its `ifc_check` run and dv_lead's
-countersignature; it has confirmed its own §6.4 rows in the same commit, with
-the one amendment §6.4 records. Batches **E** and **F** are unwritten, which is
-why §6.4's rows naming M14 … M20 remain provisional in their port names and why
-each of those batches confirms or amends its own rows in the same commit as its
-specs.
+(SPEC-M10 … SPEC-M13) with its `ifc_check` run green — run 30736107842 at
+2f29888, whose `docs/specs/` tree is identical to a9993ff's — and its
+countersignature **WITHHELD** at that SHA on two behavioural items,
+`J-dv_lead-0008`: M10, M11 and M12 SIGNED, M13 CONTESTED on **D-1** (the reply
+pending window) and **D-2** (REQ-013's ultimate consumer on the ARP branch).
+Both are repaired under WO-0017 — R-1 and D-2a, the latter carrying **ADR-0009**
+— and the countersignature is granted at the commit carrying them. Batch **E** is
+drafted (SPEC-M14, SPEC-M15, SPEC-M16) and awaits its own `ifc_check` run and
+countersignature; it has confirmed its own §6.4 rows in the same commit, with the
+two amendments §6.4 records. Batch **F** is unwritten, which is why §6.4's rows
+naming M17 … M20 remain provisional in their port names and why that batch
+confirms or amends its own rows in the same commit as its specs — M17's pair is
+worth checking against M14's rename before it is written, since it has the same
+input-and-output-header shape.
 
 ---
 

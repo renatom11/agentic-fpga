@@ -1,7 +1,9 @@
 # SPEC-M10 — `Arp_eth_rx`
 
-- **Status**: DRAFT — batch D. Template-complete; the two evidence rows of §12
-  are what the freeze flip waits on
+- **Status**: DRAFT — batch D. Template-complete; the `ifc_check` evidence row of
+  §12 is **filled** (run 30736107842, `success`, 2f29888) and the freeze flip now
+  waits on the dv_lead countersignature alone, re-reviewed at the commit carrying
+  the D-1 and D-2 repairs (WO-0015 Return log §8, WO-0017)
 - **Inventory id**: M10 (architecture.md §4) · **Path**:
   `libs/hardcaml_ethernet/src/arp_eth_rx.ml`
 - **Datapath role**: receive
@@ -56,7 +58,7 @@ nothing.
 | Building an ARP packet for transmission | M11 `Arp_eth_tx` (REQ-502). M10 and M11 share the `Arp_packet` record and nothing else, and the record's `valid` has a **different discipline** in the two directions (§7, ADR-0008) |
 | Routing on the ethertype, or knowing that 0x0806 means ARP | M08 `Eth_demux` (REQ-404). By the time a payload reaches M10 the routing decision is made; M10 never reads `hdr_ethertype` |
 | The Ethernet padding after the 28th ARP octet | nobody removes it — M10 counts it, ignores it and reports nothing about it (§6.1) |
-| Acting on the inherited abort bit `payload_tuser`[0] | nobody at this stage: REQ-013 forbids dropping a frame solely for it, REQ-501's acceptance list does not mention it, and §7 shows it arrives after M10's decision. §11.3 records the consequence |
+| Acting on the inherited abort bit `payload_tuser`[0] | M13 `Arp` (REQ-013's ultimate-consumer clause, REQ-503, **ADR-0009**). M10 does not read the bit and could not usefully: §7 shows it arriving two or more cycles after M10's pinned report, so acting on it here would make the parse latency a function of the frame length and fail REQ-005. M13 gates the learning write and the reply on it at the packet's payload `tlast` (SPEC-M13 §6.1); §11.3 records how that owner was settled |
 
 ## 3. Programme invariants that bind this module
 
@@ -313,6 +315,18 @@ record. Never both, and never neither. That sentence is the whole of §9's
 timing and the whole of §8's conservation criterion, and it is computable from
 the input trace alone.
 
+**One exception, and it is the one §3, §6.2 and §7 already mandate**
+(carry-forward **C-21**, dv_lead). A packet closed by **`clear`** is reported by
+**neither**: no record and no strobe, straight to `Idle` (REQ-009, §6.2's
+`Parse` and `Tail` rows, §7's reset bullet, which also forecloses the pulse
+mechanically). Read without this clause the sentence above commissions a report
+at `clear` + 1, which every conformant design fails to produce. The XOR
+therefore holds over the three closures that are *events on the input stream* —
+the payload `tlast` word, the next `hdr_valid` pulse, and the packet completing
+at ARP octet 27 — and not over the fourth, which is a reset. `clear` is the one
+place in this specification where a packet vanishes without a report; REQ-009
+permits it and REQ-008 does not reach it.
+
 **On a gapless stimulus**, for a packet of at least 28 octets:
 
 - payload word m is presented on cycle **Cp + m**;
@@ -341,6 +355,14 @@ or 1514. Equally, a packet whose *fields* are wrong at word 0 is not reported at
 Cp+1 — it is reported at Cp+4, the cycle its record would have occupied — so
 the report cycle is a function of the packet's length alone and a bench computes
 it without decoding the fields.
+
+*Exactly, for a packet closed by its own `tlast`; and the load-bearing half holds
+in every case* (dv_lead, WO-0015 Return log §6 item 2). A packet closed instead
+by the **next** `hdr_valid` — the payload-less frame of the paragraph below — has
+a report cycle that is a function of the *next* frame's arrival rather than of
+its own length. What is true without qualification, and what a bench actually
+relies on, is that the report cycle is computable from the input trace **without
+decoding any field**: §6.1's rule names only word counts and closure events.
 
 **Gapped stimulus.** A cycle carrying no payload word holds every state and
 every register: it is not a condition, it advances no word index, and it delays
@@ -389,9 +411,28 @@ rely on it.
    §6.1 pins the report cycle, which is what a bench needs.
 4. **Whether the four constant checks are evaluated as one comparison against a
    64-bit pattern or as four.** Payload word 0 carries hardware type, protocol
-   type and both lengths in positions 0–5, so `payload_tdata`[47:0] = 
-   0x000406000800\_0001 read in wire order is the whole check; an implementation
-   may do it either way and no bench can tell.
+   type and both lengths in positions 0–5, so the whole check is
+
+   > `payload_tdata`[47:0] = **0x0406_0008_0100**
+
+   — position 0 is `[7:0]` = 0x00 and position 5 is `[47:40]` = 0x04, giving the
+   wire octet string `00 01 08 00 06 04` of §6.1's field table read through
+   REQ-012. Written as the full 64-bit word of an accepted **request**, whose
+   operation octets 6–7 are `00 01`, that is
+   **`payload_tdata` = 0x0100_0406_0008_0100**. An implementation may do it as
+   one comparison or as four and no bench can tell.
+
+   *This item carried a wrong constant and it is corrected here* (carry-forward
+   **C-20**, dv_lead). It read `payload_tdata`[47:0] = 0x000406000800_0001 —
+   a 64-bit literal assigned to a 48-bit slice, and not a permutation of the
+   correct octets under either reading its own sentence supports (as a numeric
+   value the pattern is 0x0406_0008_0100; as a wire octet string ARP octets 0–5
+   are `00 01 08 00 06 04`, i.e. 0x000108000604 read most-significant-first).
+   SPEC-M11 §6.1's word-0 row states the same pattern **correctly** and always
+   did, so the two batch-D tables disagreed and M11's was right. The governing
+   statement here is §6.1's field table, which is also right; this section is the
+   *unconstrained* list, from which a careful reader takes no stimulus, which is
+   why the defect was a carry-forward rather than a contest.
 5. **M10's response to a payload stream that violates REQ-011 or REQ-015** — a
    word with `tvalid` = 1 and `tkeep` = 0, a `tlast` with no preceding
    `hdr_valid`, a non-contiguous `tkeep`. Its producer is M08, relaying M06,
@@ -511,8 +552,12 @@ is driven by SPEC-M03 §8's stress run with the ethertype set to 0x0806:
   payload word (SPEC-M06 §7, preserved by SPEC-M08 §6.1);
 - the six words of a frame occupy **consecutive cycles**, and **between frames 4
   and 5 idle cycles alternately**: M03's start characters alternate lane 0 and
-  lane 4 at 10 and 11 cycles apart (REQ-004, requirements.md §0.3), six of those
-  cycles carry payload words and one carries the header pulse. Idle gaps are
+  lane 4 at 10 and 11 cycles apart (REQ-004, requirements.md §0.3) and six of
+  those cycles carry payload words, leaving 4 and 5. The idle figure is counted
+  **on the payload stream**, and the header pulse falls inside that idle run, one
+  cycle before payload word 0 — it does not occupy a seventh cycle of the payload
+  stream, and reading it as one would give 3 and 4 (dv_lead, WO-0015 Return log
+  §6 item 1). **4 and 5 is the operative figure.** Idle gaps are
   preserved rather than closed up — that alternation is the stimulus, and a
   bench that packs the words back to back is testing a rate the receive path
   never sees;
@@ -544,6 +589,18 @@ sequence number placed there fails loudly if the crossing is wrong.
    §6.1 states — reports = packets opened, and no packet produces two reports or
    none — which is requirements.md §0.6's conservation equation computed at a
    port that carries no frames.
+
+   **The one exemption that monitor needs, and where it bites** (carry-forward
+   **C-21**'s sharper half, dv_lead). requirements.md §0.6 says the conservation
+   monitor is active in **every** bench, and §10 commissions a mid-packet `clear`
+   test at this module — in which a packet is opened and, correctly, never
+   reported (§6.1, §7). A monitor asserting "reports = packets opened" without a
+   `clear` exemption counts that as a silent discard and fails a conformant M10.
+   This is ledger **C-2**'s exemption becoming load-bearing for the first time,
+   at M10; SPEC-M12 §7 states the analogous exemption for a query lost to `clear`
+   and is the model for its wording. In the stress run itself the exemption never
+   fires — `clear` is not asserted — so criterion 1 stands exactly as written for
+   all 10 000 packets.
 2. **Field equality, which replaces "payload octets compare equal".** For every
    `arp_valid` pulse, all five fields compare equal to the injected packet's
    fields, and the sender protocol addresses arrive as `10.0.0.0 + 0`,
@@ -637,7 +694,7 @@ output stream on which a `tuser`[0] could be set.
 | REQ-003 | payload input is `Axi64.Source` with no `Dest`; the `arp` record carries no `ready` | §4.1 | interface compile check |
 | REQ-004 | sustains M08's ARP-port output pattern — 1 header pulse, 6 words, 4 or 5 idle cycles, alternating — for 10 000 packets | §8 | line-rate stress bench |
 | REQ-005 | constant parse latency: the report cycle is a function of the packet's length alone, never of its field values or its padding | §6.1, §7 | criterion 3 of §8: interval equals 4 for all 10 000, one value not a mean |
-| REQ-007, REQ-013 | `payload_tuser`[0] is read by nothing; no packet is dropped because it is set; M10 originates and re-reports no abort | §7, §9 | drive `tuser`[0] = 1 on an otherwise-valid packet's `tlast`; assert `arp_valid` pulsed normally with correct fields and no strobe |
+| REQ-007, REQ-013 | `payload_tuser`[0] is read by nothing **here**; no packet is dropped at M10 because it is set; M10 originates and re-reports no abort. REQ-013's ultimate-consumer clause is discharged one module up, at M13 (ADR-0009) | §2, §7, §9 | drive `tuser`[0] = 1 on an otherwise-valid packet's `tlast`; assert `arp_valid` pulsed normally at Cp + 4 with correct fields and no strobe **at M10**, and — the other half of the same stimulus, asserted at M13 — that nothing was learned and no reply was generated (SPEC-M13 §10's REQ-503 row) |
 | REQ-008 | one strobe; both discard rows carry it; the pulse cycle is pinned | §9 | directed rejection tests plus the conservation monitor of §8 criterion 1 |
 | REQ-009 | `clear` empties the pipeline; mid-packet `clear` abandons it silently | §7 | reset test: assert mid-packet, deassert, open a packet on the next cycle and assert it parses intact |
 | REQ-010 | payload is the programme `Axi64.Source`; `Arp_packet` is declared once, here, and opened by M11 and M13 | §4.1 | interface compile check; the `ifc_check` lift of SPEC-M11 and SPEC-M13 opening this module is the cross-check |
@@ -665,9 +722,9 @@ Item numbers are permanent; a closed item keeps its row (SPEC-TEMPLATE §11).
 
 | # | Item | Status · what a reader assumes meanwhile | Tracked as | Owner | Closes by |
 |---|---|---|---|---|---|
-| 11.1 | **The `ifc_check` compile evidence for this lift is pending**: `arp_eth_rx_ifc.ml` is new in this commit and carries the first compile-time witness of `Arp_packet`'s six field names. | **DEFERRED — the witness is written, the run is pending.** Meanwhile a reader assumes the record exactly as §4.1 writes it: it uses only types SPEC-M01 froze at f78766e plus one new record in the same `[@@deriving hardcaml]` form nine green lifts already use. A divergence surfaces as a red CI run on this commit and is repaired by an editorial diff to this §4.1 and its lift. | the `Interface compile check` row of §12 | architect_docs_lead, rtl_lead | the batch-D `ifc_check` run |
+| 11.1 | **The `ifc_check` compile evidence for this lift is pending**: `arp_eth_rx_ifc.ml` is new in this commit and carries the first compile-time witness of `Arp_packet`'s six field names. | **CLOSED (WO-0017).** CI `build` run **30736107842** at 2f29888 reports `success` with all four batch-D lifts in it, this one included, and `git diff a9993ff 2f29888 -- docs/specs/` is **empty**, so the run elaborated byte-identically the text drafted at a9993ff. dv_lead re-fetched the run from the GitHub API rather than taking it from the packet and re-ran `tools/check_records_vs_appendix.sh` at that tree — 16 checks, 0 failures, including this spec's §4.1-versus-lift row (`J-dv_lead-0008`, WO-0015 Return log §0). `Arp_packet`'s six field names are established by a run. | the `Interface compile check` row of §12 | architect_docs_lead, rtl_lead | closed |
 | 11.2 | **`Arp_packet` lives in M10's specification rather than in M01's**, because M01 is FROZEN at f78766e and a field addition there would be a breaking post-freeze interface change (SPEC-TEMPLATE rule 7, charter §6). SPEC-M11 and SPEC-M13 therefore open `Arp_eth_rx_ifc`, and the RTL follows the same shape: the record is defined in `arp_eth_rx.ml` and referenced as `Arp_eth_rx.Arp_packet`. | **DEFERRED — the placement is decided and buildable, only its permanence is open.** A reader implements exactly that today; nothing waits. If a later phase reopens M01 — batch F's SPEC-M20 is the natural moment, since it aggregates every record — the batch-D records may be promoted there by a spec diff plus an ADR, which is a rename and not a behavioural change. | this item; SPEC-M01 §4.1 | architect_docs_lead, rtl_lead | SPEC-M20 (batch F) |
-| 11.3 | **A frame whose FCS was wrong is parsed, accepted and learned from.** M03 marks it (REQ-104), REQ-013 forbids dropping a frame solely for the mark, REQ-501's acceptance list does not mention it, and §7 shows `payload_tuser`[0] arriving two or more cycles after M10's pinned report — so acting on it would cost REQ-005's constant. | **DEFERRED — the behaviour is decided and stated, and a reader is not blocked.** Meanwhile: M10 accepts such a packet exactly as it accepts any other, and M13 learns from it (REQ-503). If the programme wants a corrupt packet excluded from learning, the cheapest place is **M13**, which can gate the cache write on a bit M10 would then have to carry — a requirements.md diff to REQ-501 or REQ-503, a new `Arp_packet` field and a spec diff here and at SPEC-M13, and it costs this module its constant unless the gate is done downstream. Raised for dv_lead at the batch-D countersignature. | this item; requirements.md REQ-501, REQ-503 | architect_docs_lead, dv_lead | batch-D countersignature |
+| 11.3 | **A frame whose FCS was wrong is parsed, accepted and learned from.** M03 marks it (REQ-104), REQ-013 forbids dropping a frame solely for the mark, REQ-501's acceptance list does not mention it, and §7 shows `payload_tuser`[0] arriving two or more cycles after M10's pinned report — so acting on it would cost REQ-005's constant. | **CLOSED (WO-0017), in the negative, by repair: the behaviour is changed rather than accepted.** dv_lead declined to close this item in the affirmative at the batch-D countersignature (owed diff **D-2**, `J-dv_lead-0008`): REQ-013's "the ultimate consumer must discard it" was discharged by nobody on the one receive branch with no application, so a corrupt frame committed a wrong IP → MAC binding for `entry_lifetime_cycles` with no strobe naming the cause. **ADR-0009** settles it: M13 is that ultimate consumer and gates the REQ-503 learning write and the REQ-502 reply on `rx_payload_tuser`[0] read at the packet's payload `tlast` (SPEC-M13 §6.1, §6.2 (D)); requirements.md REQ-503 gains the "and not marked invalid" qualifier and REQ-013 names the consumer per branch. **This item's own cost estimate was wrong and is corrected here rather than deleted**, because a wrong price in a deferred item is how a decision gets made for the wrong reason later: the repair needs **no** new `Arp_packet` field — the bit arrives on the payload `tlast` word, two or more cycles *after* the record is emitted, so no field of that record could carry it — and M13 already owns `rx_payload`, which it relays into M10. **Nothing at M10 changes**: not a port, not §6, not §7's L = 32 / h = 0 / ΔC = 4, not §9's pulse cycle. Only §2's abort row moves, to name M13 as the owner. | this item; requirements.md REQ-013, REQ-503; ADR-0009 | architect_docs_lead, dv_lead | closed |
 | 11.4 | **`Arp_packet`'s `valid` has two disciplines** — a one-cycle pulse here (§7) and a level held until acceptance on the M13 → M11 edge (SPEC-M11 §7) — and the record itself cannot say which applies. | **DEFERRED — both are stated where they bind, and a reader is never in doubt.** The direction of a port decides which, and every port declares its direction; this is the same resolution SPEC-M06 §11.3 records for `Eth_header` under ADR-0008, and batch D is the second instance rather than a new problem. | ADR-0008; SPEC-M06 §11.3 | architect_docs_lead | SPEC-M20 (batch F) |
 
 ## 12. Freeze record
@@ -677,14 +734,19 @@ spec is DRAFT.
 
 | Item | Value |
 |---|---|
-| Interface compile check | pending — CI `build` run `<id>`, conclusion `<success>`, SHA `<sha>`; per ADR-0005 a local build is not acceptable evidence. This run is also §11.1's closure record |
-| Architect signature | `J-architect_docs_lead-0006` |
-| dv_lead testability countersignature | pending — batch D (SPEC-M10, M11, M12, M13) |
+| Interface compile check | CI `build` run **30736107842**, conclusion **`success`**, SHA **2f29888** — all thirteen lifts elaborate, the four batch-D lifts for the first time; per ADR-0005 a local build is not acceptable evidence. `git diff a9993ff 2f29888 -- docs/specs/` is empty, so the run witnesses the text drafted at a9993ff. This run is also §11.1's closure record |
+| Architect signature | `J-architect_docs_lead-0006`; D-2 repair and the C-20/C-21 diffs `J-architect_docs_lead-0007` |
+| dv_lead testability countersignature | **SIGNED for this spec** at a9993ff (`J-dv_lead-0008`, WO-0015 Return log §1); the batch-D countersignature is granted at the commit carrying the D-1 and D-2 repairs, whose re-review surface is those two landing sites plus byte-identity, set equality and a green run at the new SHA |
 | Frozen at | pending — SHA `<sha>`, gate `docs/gates/P1-spec-freeze-checklist.md` |
 
 ## 13. Change log
 
-Post-freeze changes only. This spec is DRAFT and has none.
+Post-freeze changes only. This spec is DRAFT and has none: every diff made under
+WO-0017 — §2's abort row, §6.1's `clear` exception and its report-cycle
+qualifier, §6.3 item 4's constant, §8's idle-count and conservation notes,
+§10's REQ-007/REQ-013 hook, §11.1 and §11.3's closures and §12's evidence row —
+is a **pre-freeze correction on DRAFT text**, which is the cheap kind and is why
+dv_lead withheld the countersignature rather than freezing first.
 
 | Date | Change | Breaking? | ADR | Journal |
 |---|---|---|---|---|

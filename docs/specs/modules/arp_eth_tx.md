@@ -1,7 +1,10 @@
 # SPEC-M11 — `Arp_eth_tx`
 
-- **Status**: DRAFT — batch D. Template-complete; the two evidence rows of §12
-  are what the freeze flip waits on
+- **Status**: DRAFT — batch D. Template-complete; the `ifc_check` evidence row of
+  §12 is **filled** (run 30736107842, `success`, 2f29888) and the freeze flip now
+  waits on the batch-D countersignature, re-reviewed at the commit carrying the
+  D-1 and D-2 repairs. This specification is **SIGNED** on its own merits
+  (`J-dv_lead-0008`, WO-0015 Return log §1)
 - **Inventory id**: M11 (architecture.md §4) · **Path**:
   `libs/hardcaml_ethernet/src/arp_eth_tx.ml`
 - **Datapath role**: transmit
@@ -77,7 +80,7 @@ no latency ceiling.
 | REQ-011 | `payload_tkeep` is `0xFF` on words 0 to 2 and **`0x0F`** on word 3, which carries ARP octets 24–27 — four contiguous ones from bit 0. Never 0 with `tvalid` = 1. |
 | REQ-012 | Every field is emitted first wire octet first: `sender_mac`[47:40] is ARP octet 8, `sender_ip`[31:24] is ARP octet 14. The four constants are emitted in the same order (§6.1). |
 | REQ-014 | `payload_tstrb` is driven to 0. |
-| REQ-015 | One `tlast` per frame, on payload word 3. Exactly **four** words between two `tlast` words on this stream, at every packet — an ARP payload has no variable length. |
+| REQ-015 | One `tlast` per frame, on payload word 3. Exactly **four words per packet**, the `tlast` word included in that count (REQ-015's own counting convention, carry-forward C-11) — an ARP payload has no variable length. Not four *intervening* words between two `tlast` words, which is what the earlier wording read as and which §6.1's table and §10's REQ-015 hook have always contradicted (dv_lead, WO-0015 Return log §6 item 3). |
 | REQ-016 | M11 **never** deasserts `payload_tvalid` inside a frame: all 28 octets are in registers before the offer is asserted (§6.1), so there is nothing to wait for. REQ-016's tolerance is therefore never exercised on this port, which is a property a bench may assert rather than a promise it must allow for. |
 | REQ-019 | No instance: M11 is not on the chain REQ-006 measures and §1.1 allocates it nothing. Its storage is the 28 octets of one packet, which is the packet itself and not a buffer of frames. |
 | REQ-020 | Packets leave in the order M13 offered them; M11 holds one at a time (§6.2), so reordering is not expressible. |
@@ -300,8 +303,17 @@ losing its header. A cycle with `payload_tready` = 0 holds every word index and
 every register: nothing is dropped and nothing is duplicated, and every cycle
 formula above shifts by exactly the number of stalled cycles. `arp_ready`
 remains 0 throughout, so M13 cannot lose a packet by presenting it while M11 is
-busy — it simply is not accepted, which is the mechanism REQ-510 then acts on
-at M13.
+busy — it simply is not accepted, and M13 holds the offer (§7's substitution).
+
+**What `arp_ready` is not.** It is **not** the event REQ-510 keys on. M13's
+pending window runs from the cycle a reply is generated to the cycle **this
+module's payload `tlast` word is accepted** — the reply's frame completing, not
+its record being taken (SPEC-M13 §6.1, repair **R-1** under WO-0017). A reader
+who inferred the drop rule from `arp_ready` alone would count one reply pending
+where in fact M13 holds one and M11 holds another, which is the two-deep reading
+dv_lead raised as owed diff **D-1**. M11's own behaviour is untouched by that
+repair: it accepts a packet when it is free, refuses while it is busy, and
+decides nothing about a reply.
 
 ### 6.2 State machine
 
@@ -444,6 +456,23 @@ to invent them:
    reproduces all five carried fields exactly. A transposition error in either
    table fails this in one cycle, and it needs no XGMII and no reference model.
 
+   **The loopback SHALL present `hdr_valid` one cycle before payload word 0**,
+   as M08 does — the harness delays M11's `hdr_valid` by one cycle, or holds
+   payload word 0 for one cycle, and drives M10 with the pair so separated
+   (carry-forward **C-19**, dv_lead). Wired naively the run fails a conformant
+   pair: with `payload_tready` held 1, M11 asserts `hdr_valid` and payload word 0
+   on the **same** cycle (ADR-0008 decision 1, §6.1's offer) and drops
+   `hdr_valid` the next, which is a **zero-lead** producer; SPEC-M10 §6.1 defines
+   Cp as "the first cycle **after** the opening `hdr_valid` pulse with
+   `payload_tvalid` = 1", so M10 would take M11's word **1** as its word 0, count
+   20 delivered ARP octets and pulse `error_arp_unsupported` — the exact opposite
+   of what this item asserts. The repair belongs in the harness and **not** in
+   M10: widening M10's Cp to admit a zero-lead producer would commission
+   behaviour for a stimulus no producer in this programme emits, which is what
+   carry-forward C-17(c) withdrew at M08 for the same reason. The one-cycle lead
+   is the receive-side discipline every M10 producer has (SPEC-M06 §7, preserved
+   by SPEC-M08 §6.1), and the loopback's job is to look like that producer.
+
 ## 9. Errors and discards
 
 **Not applicable as a detection table.** M11 detects no abnormal condition and
@@ -502,9 +531,9 @@ Item numbers are permanent; a closed item keeps its row (SPEC-TEMPLATE §11).
 
 | # | Item | Status · what a reader assumes meanwhile | Tracked as | Owner | Closes by |
 |---|---|---|---|---|---|
-| 11.1 | **The `ifc_check` compile evidence for this lift is pending**: `arp_eth_tx_ifc.ml` is new in this commit and is the first lift to `open!` another module's lift (`Arp_eth_rx_ifc`, SPEC-M10 §4.1). | **DEFERRED — the record is written, the run is pending.** Meanwhile a reader assumes the record exactly as §4.1 writes it. The `open!` is an ordinary intra-library reference: both files are modules of the single `ifc_check` library (`docs/specs/ifc_check/dune`) and there is no cycle, because M10's lift references nothing of M11's. A divergence is a red CI run on this commit and an editorial diff. | the `Interface compile check` row of §12 | architect_docs_lead, rtl_lead | the batch-D `ifc_check` run |
-| 11.2 | **The transmit-side header handshake is a programme convention, not this module's invention** (ADR-0008): header and first payload word offered together, held until that word is accepted. M09 consumes it, and M15 and M18 must restate it in batches E and F. | **DEFERRED for confirmation, not for decision.** ADR-0008 states it normatively, §6.1 states it operationally and §7 restates decisions 1, 2 and 4 as this ADR's Consequences require, so a bench for M11 is derivable today. If M15 or M18 cannot meet the obligation, the repair is an ADR-0008 supersession plus a spec diff here, not a local exception. | ADR-0008; SPEC-M07 §11.2; SPEC-M09 §11.3 | architect_docs_lead | SPEC-M15 (batch E) |
-| 11.3 | **The `arp_ready` substitution of §7 is this specification's reading of ADR-0008, not a sentence the ADR contains.** ADR-0008 names the acceptance of the first payload word as the acceptance event; at M11's `arp` port there is no payload stream to accept, because M11 generates the payload. | **DEFERRED — the port is fully specified and nothing waits.** Meanwhile a reader implements exactly §7: the acceptance event is `arp_valid` = 1 with `arp_ready` = 1, decisions 2 and 3 bind against it, decision 1 has no instance. Raised explicitly for dv_lead at the batch-D countersignature, because a monitor built for ADR-0008's literal wording would look for a payload word that does not exist here. If dv_lead reads the substitution as a supersession rather than an instantiation, the repair is an ADR-0008 amendment naming the record-only case; no port and no cycle changes either way. | this item; ADR-0008 | architect_docs_lead, dv_lead | batch-D countersignature |
+| 11.1 | **The `ifc_check` compile evidence for this lift is pending**: `arp_eth_tx_ifc.ml` is new in this commit and is the first lift to `open!` another module's lift (`Arp_eth_rx_ifc`, SPEC-M10 §4.1). | **CLOSED (WO-0017).** CI `build` run **30736107842** at 2f29888 reports `success` with all four batch-D lifts in it, and `git diff a9993ff 2f29888 -- docs/specs/` is **empty**, so the run elaborated byte-identically the text drafted at a9993ff. The cross-lift `open!` is proven by a run rather than by argument, which is what mattered: it is what batches E and F now build on (SPEC-M15's lift opens `Arp_ifc`). | the `Interface compile check` row of §12 | architect_docs_lead, rtl_lead | closed |
+| 11.2 | **The transmit-side header handshake is a programme convention, not this module's invention** (ADR-0008): header and first payload word offered together, held until that word is accepted. M09 consumes it, and M15 and M18 must restate it in batches E and F. | **CLOSED (WO-0017), affirmatively.** SPEC-M15 §7 (batch E) restates decisions 1, 2 and 4 as its own obligation towards M09, with decision 4 satisfied structurally exactly as it is here — an IPv4 transmit frame always carries at least 28 body octets, an ARP frame always exactly 28 payload octets — so the convention holds at both of M09's request ports and needed no exception at either. ADR-0008 gained one clause under this work order, C-22's precedence rule, which permits a monitor attached to **this** module to assert the `hdr_valid` fall §6.1 commits to; that is a rule about tests and changes nothing M11 does. SPEC-M18 (batch F) is the last source and restates it in its own §7. | ADR-0008; SPEC-M07 §11.2; SPEC-M09 §11.3 | architect_docs_lead | closed |
+| 11.3 | **The `arp_ready` substitution of §7 is this specification's reading of ADR-0008, not a sentence the ADR contains.** ADR-0008 names the acceptance of the first payload word as the acceptance event; at M11's `arp` port there is no payload stream to accept, because M11 generates the payload. | **CLOSED (WO-0017), affirmatively: INSTANTIATION, not supersession. No ADR-0008 amendment is owed.** dv_lead's answer (`J-dv_lead-0008`, WO-0015 Return log §4/Q1): ADR-0008's Context states its own problem as "what is a transmit-side header record's acceptance event, **given a record that cannot carry a `ready`**", and that problem does not arise here — `arp_ready` is a real output bit in §4.1's `O`, not a field of a record M01 froze, so this port has a native acceptance event and is a case the ADR never governed rather than one it governs and departs from. What the ADR contributes is decisions 2 and 3's discipline, which is the ordinary valid/ready contract it *specialises* for records lacking a `ready`; applying it against a native `ready` is the general case. Two confirmations dv ran rather than assumed: the substitution is **two-sided** (SPEC-M13 §7 states M13's half, so a bench has both sides without inventing either), and it is consistent with §6.2's `Idle` → `Offer` transition, which captures on the acceptance cycle — decision 3 against the substituted event, exactly. The residue is a **DV action and not a spec gap**: batch D adds a third header-record monitor case — a record with a native `ready`, selected by neither of ADR-0008's two direction-chosen disciplines — which is machinery in `test/monitors/`, dv_lead's, derivable from this §7 plus SPEC-M13 §7. | this item; ADR-0008 | architect_docs_lead, dv_lead | closed |
 
 ## 12. Freeze record
 
@@ -513,14 +542,19 @@ spec is DRAFT.
 
 | Item | Value |
 |---|---|
-| Interface compile check | pending — CI `build` run `<id>`, conclusion `<success>`, SHA `<sha>`; per ADR-0005 a local build is not acceptable evidence. This run is also §11.1's closure record |
-| Architect signature | `J-architect_docs_lead-0006` |
-| dv_lead testability countersignature | pending — batch D (SPEC-M10, M11, M12, M13) |
+| Interface compile check | CI `build` run **30736107842**, conclusion **`success`**, SHA **2f29888** — all thirteen lifts elaborate, the four batch-D lifts for the first time; per ADR-0005 a local build is not acceptable evidence. `git diff a9993ff 2f29888 -- docs/specs/` is empty, so the run witnesses the text drafted at a9993ff. This run is also §11.1's closure record |
+| Architect signature | `J-architect_docs_lead-0006`; the C-19 and REQ-015 diffs `J-architect_docs_lead-0007` |
+| dv_lead testability countersignature | **SIGNED for this spec** at a9993ff (`J-dv_lead-0008`, WO-0015 Return log §1) — L = 8 / h = 0 / ΔC = 1 re-derived, the five-cycle packet period confirmed, ADR-0008 decisions 1, 2 and 4 discharged at the output and decision 1 correctly not claimed at the input, Q1 answered affirmatively. The batch-D countersignature is granted at the commit carrying the D-1 and D-2 repairs |
 | Frozen at | pending — SHA `<sha>`, gate `docs/gates/P1-spec-freeze-checklist.md` |
 
 ## 13. Change log
 
-Post-freeze changes only. This spec is DRAFT and has none.
+Post-freeze changes only. This spec is DRAFT and has none: the WO-0017 diffs —
+§3's REQ-015 counting wording, §6.1's `arp_ready` clarification, §8 item 2's
+one-cycle lead (**C-19**), §11.1 and §11.3's closures and §12's evidence row —
+are pre-freeze corrections on DRAFT text. **No port, no cycle and no constant
+moves**: §7's L = 8 / h = 0 / ΔC = 1 and the five-cycle packet period are exactly
+what dv_lead re-derived and signed.
 
 | Date | Change | Breaking? | ADR | Journal |
 |---|---|---|---|---|

@@ -1,7 +1,10 @@
 # SPEC-M12 — `Arp_cache`
 
-- **Status**: DRAFT — batch D. Template-complete; the two evidence rows of §12
-  are what the freeze flip waits on
+- **Status**: DRAFT — batch D. Template-complete; the `ifc_check` evidence row of
+  §12 is **filled** (run 30736107842, `success`, 2f29888) and the freeze flip now
+  waits on the batch-D countersignature, re-reviewed at the commit carrying the
+  D-1 and D-2 repairs. This specification is **SIGNED — clean** on its own merits:
+  no findings of any class (`J-dv_lead-0008`, WO-0015 Return log §1)
 - **Inventory id**: M12 (architecture.md §4) · **Path**:
   `libs/hardcaml_ethernet/src/arp_cache.ml`
 - **Datapath role**: shared/structural — no frame octet passes through this
@@ -334,7 +337,7 @@ to interfere:
 | 2 | — | — | **`valid` = 1, `hit` = 1, `mac` = `02:00:00:00:00:0A`** |
 | 3 | — | 192.168.1.26 → `02:00:00:00:00:1A` (slot 10, evicting) | `result_valid` = 0 |
 | 4 | 192.168.1.10 | — | `result_valid` = 0 |
-| 5 | 192.168.1.26 | — | **`valid` = 1, `hit` = **0** — 192.168.1.10 was evicted** |
+| 5 | 192.168.1.26 | — | `valid` = 1, **`hit` = 0** — 192.168.1.10 was evicted |
 | 6 | — | — | **`valid` = 1, `hit` = 1, `mac` = `02:00:00:00:00:1A`** |
 
 ### 6.2 State machine
@@ -504,9 +507,9 @@ Item numbers are permanent; a closed item keeps its row (SPEC-TEMPLATE §11).
 
 | # | Item | Status · what a reader assumes meanwhile | Tracked as | Owner | Closes by |
 |---|---|---|---|---|---|
-| 11.1 | **The `ifc_check` compile evidence for this lift is pending**: `arp_cache_ifc.ml` is new in this commit, declares three records and is the first lift whose `module type S` carries an optional parameter on both entry points. | **DEFERRED — the record is written, the run is pending.** Meanwhile a reader assumes the block exactly as §4.1 writes it: three `[@@deriving hardcaml]` records in the form nine green lifts already use, and two `val`s whose only novelty is a labelled optional `int`. A divergence surfaces as a red CI run on this commit and is repaired by an editorial diff to this §4.1 and its lift. | the `Interface compile check` row of §12 | architect_docs_lead, rtl_lead | the batch-D `ifc_check` run |
+| 11.1 | **The `ifc_check` compile evidence for this lift is pending**: `arp_cache_ifc.ml` is new in this commit, declares three records and is the first lift whose `module type S` carries an optional parameter on both entry points. | **CLOSED (WO-0017).** CI `build` run **30736107842** at 2f29888 reports `success` with all four batch-D lifts in it, and `git diff a9993ff 2f29888 -- docs/specs/` is **empty**, so the run elaborated byte-identically the text drafted at a9993ff. The labelled-optional-`int` entry points compile, which is what SPEC-M13's three-parameter form and SPEC-M15's `?ttl`-free form both stand on. | the `Interface compile check` row of §12 | architect_docs_lead, rtl_lead | closed |
 | 11.2 | **Sixteen 32-bit lifetime counters is the specification's worst case**, if an implementation reads §6.1's observable literally and builds one down-counter per slot at the default L. | **DEFERRED — nothing depends on the choice and §6.3 item 3 leaves it open.** A reader builds whatever meets §6.1's two boundary cycles; the obvious cheap form is a shared prescaler plus a small per-slot count, and §8's L = 8 run tests either. Phase 1 is simulation-only (REQ-018) so no area or timing budget binds; if a later phase synthesises this design and the counters matter, the remedy is an implementation change with no spec diff at all, because the observable is what this specification fixes. | this item | architect_docs_lead, rtl_lead | Phase-3 attach, or the first synthesis attempt |
-| 11.3 | **REQ-506 is owned in two halves by two modules** — ageing here, retry at M13 — and requirements.md states it as one requirement. | **DEFERRED — the split is stated in both specifications and in the matrix.** §5 and §10 here name the ageing half, SPEC-M13 §5 and §10 name the retry half, and `traceability.md`'s REQ-506 row lists both modules, so a sign-off packet can show the whole requirement covered without either module claiming the other's part. No requirements.md diff is owed: REQ-506 states one testable fact per clause and the clauses are separable. | `traceability.md` REQ-506 | architect_docs_lead, dv_lead | batch-D countersignature |
+| 11.3 | **REQ-506 is owned in two halves by two modules** — ageing here, retry at M13 — and requirements.md states it as one requirement. | **CLOSED (WO-0017), affirmatively: AGREED, and no requirements.md diff is owed.** dv_lead's answer (`J-dv_lead-0008`, WO-0015 Return log §4/Q5 — the fifth §11 item, whose closing gate was this countersignature and which the packet did not name): REQ-506 states its clauses separably — retry count and interval govern unanswered requests, entry lifetime governs entries — and the split falls on that seam. Verified mechanically rather than read: `traceability.md`'s REQ-506 row lists `M12 Arp_cache, M13 Arp` with `SPEC-M12 §5, §6.1 (ageing); SPEC-M13 §5, §6.2 (retry)`, and both specs name their own half **and disclaim the other's** in §5 and in their §10 tables, so a sign-off packet can show the whole requirement covered with neither module claiming the other's part and neither leaving a hole. **This is the pattern dv_lead asks batches E and F to copy** wherever a REQ spans modules; SPEC-M15 §5 and §10 apply it first, to REQ-610's IPv4 and UDP halves. | `traceability.md` REQ-506 | architect_docs_lead, dv_lead | closed |
 
 ## 12. Freeze record
 
@@ -515,14 +518,18 @@ spec is DRAFT.
 
 | Item | Value |
 |---|---|
-| Interface compile check | pending — CI `build` run `<id>`, conclusion `<success>`, SHA `<sha>`; per ADR-0005 a local build is not acceptable evidence. This run is also §11.1's closure record |
-| Architect signature | `J-architect_docs_lead-0006` |
-| dv_lead testability countersignature | pending — batch D (SPEC-M10, M11, M12, M13) |
+| Interface compile check | CI `build` run **30736107842**, conclusion **`success`**, SHA **2f29888** — all thirteen lifts elaborate, the four batch-D lifts for the first time; per ADR-0005 a local build is not acceptable evidence. `git diff a9993ff 2f29888 -- docs/specs/` is empty, so the run witnesses the text drafted at a9993ff. This run is also §11.1's closure record |
+| Architect signature | `J-architect_docs_lead-0006`; §11.3's closure and the §6.1 table repair `J-architect_docs_lead-0007` |
+| dv_lead testability countersignature | **SIGNED — clean** for this spec at a9993ff (`J-dv_lead-0008`, WO-0015 Return log §1): index(a) = a[3:0] re-derived from REQ-504 **and** REQ-012, all five worked examples recomputed, the collision cycle table verified row by row against the T+1 visibility rule, the ageing windows verified against §8's L = 8 run — **no findings of any class**. The batch-D countersignature is granted at the commit carrying the D-1 and D-2 repairs |
 | Frozen at | pending — SHA `<sha>`, gate `docs/gates/P1-spec-freeze-checklist.md` |
 
 ## 13. Change log
 
-Post-freeze changes only. This spec is DRAFT and has none.
+Post-freeze changes only. This spec is DRAFT and has none: the WO-0017 diffs —
+§11.3's closure, §12's evidence row and one cosmetic table cell in §6.1 — are
+pre-freeze corrections on DRAFT text and touch no constant, no record and no
+cycle. This is the one batch-D specification that returned from countersignature
+with nothing to repair.
 
 | Date | Change | Breaking? | ADR | Journal |
 |---|---|---|---|---|

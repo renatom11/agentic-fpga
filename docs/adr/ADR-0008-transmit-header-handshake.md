@@ -136,3 +136,21 @@ packet from a cache lookup that has already completed.
   that every header field and that word's contents were stable from then until
   acceptance. This bullet is a rule about tests, not a change to the decision;
   no conformant source or consumer is affected.
+
+  **Precedence, when a source specifies more than this ADR requires**
+  (carry-forward **C-22**, dv_lead's finding against this bullet's own wording,
+  added 2026-08-02 under WO-0017, journal `J-architect_docs_lead-0007`). The
+  prohibitions above bind a monitor built **from this ADR alone** — that is,
+  attached to a port whose source this ADR is the only statement about. Where the
+  source's own specification commits to a **stronger** discipline, that
+  specification's cycle table governs a monitor attached to *that* source, and
+  the monitor may assert what the table states. SPEC-M11 §6.1 is the first
+  instance and the reason this clause exists: it says "M11 may drop `hdr_valid`
+  on the next cycle **and does**", and SPEC-M11 §6.2's `Body` row makes it
+  normative, so a monitor attached to M11 **may** assert the fall that a monitor
+  built from this bullet alone SHALL NOT assert. The two are not in conflict once
+  the order is stated: this ADR fixes the floor every transmit-side source meets,
+  and a source may stand above its own floor and be tested there. What no
+  specification may do is assert the *converse* — that a source which has not
+  committed to dropping `valid` does so — which is the failure this bullet was
+  written to prevent and which the clause does not reopen.

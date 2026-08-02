@@ -33,8 +33,11 @@
   specs; batch C (SPEC-M06, SPEC-M07, SPEC-M08, SPEC-M09) under WO-0011, in the
   commit that wrote them — ten rows, REQ-401 through REQ-410; batch D (SPEC-M10,
   SPEC-M11, SPEC-M12, SPEC-M13) under **WO-0014**, in the commit that wrote them
-  — twelve rows, REQ-501 through REQ-512. Batches E–F follow the same rule —
-  matrix and spec in one commit (SPEC-TEMPLATE §10).
+  — twelve rows, REQ-501 through REQ-512; batch E (SPEC-M14, SPEC-M15,
+  SPEC-M16) under **WO-0017**, in the commit that wrote them — twelve rows,
+  REQ-601 through REQ-612, plus three rows that gained a **second** owning module
+  in the same commit (REQ-505, REQ-610, REQ-807; see below). Batch F follows the
+  same rule — matrix and spec in one commit (SPEC-TEMPLATE §10).
 - **REQ set equality survives spec diffs, and that is checked rather than
   assumed.** WO-0011's carry-forward diffs changed the *text* of REQ-010,
   REQ-015, REQ-105 and REQ-108, and WO-0014's changed requirements.md §0.5's
@@ -42,13 +45,25 @@
   requirement and retired none, so the 110-row set below is unchanged.
   requirements.md §13 records every one of those diffs and its class. REQ-904's
   CI script is what makes this a continuous check rather than a per-gate one.
-- **Two rows name two owning modules for one requirement, deliberately.**
+- **Some rows name two owning modules for one requirement, deliberately.**
   REQ-503 is split between the module that decides to learn (M13) and the module
   that stores (M12), and REQ-506 between the *retry* half (M13) and the *ageing*
   half (M12) — the split is stated in both specifications' §5 and §10 and in
   SPEC-M12 §11.3, so a sign-off packet can show the whole requirement covered
   without either module claiming the other's part. REQ-502 and REQ-409 are
-  two-module rows for the same reason.
+  two-module rows for the same reason. **dv_lead asked batch E to copy that
+  pattern wherever a REQ spans modules** (WO-0015 Return log §4/Q5), and batch E
+  adds three instances: **REQ-505** (M13 raises the strobe and issues the
+  request; M15 performs the discard and drains the datagram — SPEC-M13 §9,
+  SPEC-M15 §6.1 and §11.4), **REQ-610** (M15 emits the IPv4 total length without
+  buffering; M18 computes it and owns the UDP length field — SPEC-M15 §5 and
+  §11.3) and **REQ-807** (M16 closes the ARP loop structurally; M20 owns the
+  XGMII-level observable — SPEC-M16 §10 and §11.4). In each, both specifications
+  name their own half **and disclaim the other's**, which is the property that
+  lets a sign-off packet show whole coverage with no module claiming another's
+  part and no hole between them. Where the second module's specification is
+  unwritten — M18 today — its half reads `pending` and the row is what makes the
+  debt visible.
 - **Test(s)** is filled by dv_lead with the test name and file, in the same
   commit as the test. Multiple tests per REQ are listed comma separated. A REQ
   covered only by a declared gap says `GAP: <reason>` and that gap must appear
@@ -151,28 +166,28 @@ or withdrawn; ids remain permanent.
 | REQ-410 | PERF | Back-to-back frames | M06 `Eth_axis_rx` | SPEC-M06 §6.1, §6.2 | | OPEN |
 | REQ-501 | FUNC | Packet acceptance | M10 `Arp_eth_rx` | SPEC-M10 §6.1, §9 | | OPEN |
 | REQ-502 | FUNC | Request response | M13 `Arp`, M11 `Arp_eth_tx` | SPEC-M13 §6.1, §7; SPEC-M11 §6.1 | | OPEN |
-| REQ-503 | FUNC | Learning | M13 `Arp`, M12 `Arp_cache` | SPEC-M13 §6.1; SPEC-M12 §6.1 | | OPEN |
+| REQ-503 | FUNC | Learning | M13 `Arp`, M12 `Arp_cache` | SPEC-M13 §6.1, §6.2 (D) (the validity gate, ADR-0009); SPEC-M12 §6.1 | | OPEN |
 | REQ-504 | FUNC | Cache organisation | M12 `Arp_cache` | SPEC-M12 §6.1 | | OPEN |
-| REQ-505 | ERR | Lookup miss | M13 `Arp` | SPEC-M13 §6.1, §9 | | OPEN |
+| REQ-505 | ERR | Lookup miss | M13 `Arp`, M15 `Ip_eth_tx_64` | SPEC-M13 §6.1, §9 (the strobe and the request); SPEC-M15 §6.1, §6.2 (the discard and the drain) | | OPEN |
 | REQ-506 | FUNC | Retry and ageing | M12 `Arp_cache`, M13 `Arp` | SPEC-M12 §5, §6.1 (ageing); SPEC-M13 §5, §6.2 (retry) | | OPEN |
 | REQ-507 | FUNC | Destination class precedence and off-subnet routing | M13 `Arp` | SPEC-M13 §6.1 | | OPEN |
 | REQ-508 | FUNC | Broadcast destinations | M13 `Arp` | SPEC-M13 §6.1 | | OPEN |
 | REQ-509 | FUNC | Multicast destinations | M13 `Arp` | SPEC-M13 §6.1 | | OPEN |
-| REQ-510 | ERR | Reply drop over stall | M13 `Arp` | SPEC-M13 §6.1, §9 | | OPEN |
+| REQ-510 | ERR | Reply drop over stall | M13 `Arp` | SPEC-M13 §6.1, §6.2 (A), §9 | | OPEN |
 | REQ-511 | FUNC | Gratuitous ARP | M13 `Arp` | SPEC-M13 §6.1 | | OPEN |
 | REQ-512 | FUNC | No proxy ARP | M13 `Arp` | SPEC-M13 §6.1 | | OPEN |
-| REQ-601 | ERR | Version and header length | M14 `Ip_eth_rx_64` | pending | | OPEN |
-| REQ-602 | ERR | Header checksum | M14 `Ip_eth_rx_64` | pending | | OPEN |
-| REQ-603 | ERR | Fragments | M14 `Ip_eth_rx_64` | pending | | OPEN |
-| REQ-604 | FUNC | Destination filter | M14 `Ip_eth_rx_64` | pending | | OPEN |
-| REQ-605 | FUNC | Length handling | M14 `Ip_eth_rx_64` | pending | | OPEN |
-| REQ-606 | FUNC | Header record | M14 `Ip_eth_rx_64` | pending | | OPEN |
-| REQ-607 | ERR | Protocol filter | M14 `Ip_eth_rx_64` | pending | | OPEN |
-| REQ-608 | FUNC | Header construction | M15 `Ip_eth_tx_64` | pending | | OPEN |
-| REQ-609 | FUNC | Transmit checksum | M15 `Ip_eth_tx_64` | pending | | OPEN |
-| REQ-610 | FUNC | Transmit length | M15 `Ip_eth_tx_64` | pending | | OPEN |
-| REQ-611 | PERF | Constant parse latency | M14 `Ip_eth_rx_64` | pending | | OPEN |
-| REQ-612 | ERR | Maximum size | M14 `Ip_eth_rx_64` | pending | | OPEN |
+| REQ-601 | ERR | Version and header length | M14 `Ip_eth_rx_64` | SPEC-M14 §6.1, §9 | | OPEN |
+| REQ-602 | ERR | Header checksum | M14 `Ip_eth_rx_64` | SPEC-M14 §6.1, §9 | | OPEN |
+| REQ-603 | ERR | Fragments | M14 `Ip_eth_rx_64` | SPEC-M14 §6.1, §6.3 item 4, §9 | | OPEN |
+| REQ-604 | FUNC | Destination filter | M14 `Ip_eth_rx_64` | SPEC-M14 §4.3, §6.1, §9 | | OPEN |
+| REQ-605 | FUNC | Length handling | M14 `Ip_eth_rx_64` | SPEC-M14 §6.1, §6.2, §9 | | OPEN |
+| REQ-606 | FUNC | Header record | M14 `Ip_eth_rx_64` | SPEC-M14 §6.1, §7 | | OPEN |
+| REQ-607 | ERR | Protocol filter | M14 `Ip_eth_rx_64` | SPEC-M14 §6.1, §9 | | OPEN |
+| REQ-608 | FUNC | Header construction | M15 `Ip_eth_tx_64` | SPEC-M15 §6.1 | | OPEN |
+| REQ-609 | FUNC | Transmit checksum | M15 `Ip_eth_tx_64` | SPEC-M15 §6.1 | | OPEN |
+| REQ-610 | FUNC | Transmit length | M15 `Ip_eth_tx_64`, M18 `Udp_ip_tx_64` | SPEC-M15 §5, §6.1, §7 (the IPv4 total length, no buffering); SPEC-M18 pending (the payload length, the "+ 28" and "+ 8" arithmetic, the UDP length field) | | OPEN |
+| REQ-611 | PERF | Constant parse latency | M14 `Ip_eth_rx_64` | SPEC-M14 §7 | | OPEN |
+| REQ-612 | ERR | Maximum size | M14 `Ip_eth_rx_64` | SPEC-M14 §6.1, §9 | | OPEN |
 | REQ-701 | FUNC | Header record | M17 `Udp_ip_rx_64` | pending | | OPEN |
 | REQ-702 | FUNC | Checksum not verified | M17 `Udp_ip_rx_64` | pending | | OPEN |
 | REQ-703 | ERR | Length checks | M17 `Udp_ip_rx_64` | pending | | OPEN |
@@ -189,7 +204,7 @@ or withdrawn; ids remain permanent.
 | REQ-804 | ERR | Status aggregation | M20 `Nic_top` | SPEC-M01 §4.1, §4.2 | | OPEN |
 | REQ-805 | INV | Application must keep up | M20 `Nic_top` | pending | | OPEN |
 | REQ-806 | PERF | End-to-end latency measurement | M20 `Nic_top` | pending | | OPEN |
-| REQ-807 | FUNC | ARP connectivity | M20 `Nic_top` | pending | | OPEN |
+| REQ-807 | FUNC | ARP connectivity | M20 `Nic_top`, M16 `Ip_complete_64` | SPEC-M16 §6.1, §8, §10 (the loop, closed structurally); SPEC-M20 pending (the XGMII-level observable: preamble, FCS, gap) | | OPEN |
 | REQ-808 | PROC | Hierarchy and naming | M20 `Nic_top` | SPEC-M05 §4.1, §6.1 | | OPEN |
 | REQ-809 | FUNC | End-to-end datagram path | M20 `Nic_top` | pending | | OPEN |
 | REQ-810 | FUNC | Enable controls | M20 `Nic_top` | SPEC-M03 §4.3; SPEC-M04 §4.3 | | OPEN |

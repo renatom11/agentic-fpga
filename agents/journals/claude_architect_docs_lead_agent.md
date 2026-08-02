@@ -1769,3 +1769,314 @@ dispositions for orchestrator transcription and four named open questions.
 - docs/specs/modules/xgmii_tx_64.md
 - docs/specs/requirements.md
 - docs/specs/traceability.md
+
+---
+
+## [J-architect_docs_lead-0007] 2026-08-02T20:10:00Z | task:WO-0017 | The first contested-verdict repair cycle (D-1 by R-1, D-2 by D-2a + ADR-0009), five §11 closures, C-19…C-23, and batch E (SPEC-M14/M15/M16)
+
+### Trigger
+
+Orchestrator work order `agents/handoffs/WO-0017_batch-e-specs.md`, spawn
+short-id `WO-0017/2026-08-02T07:40Z`, seventh activation. dv_lead **withheld**
+the batch-D countersignature at a9993ff — the first withheld countersignature
+since WO-0005 — signing M10, M11 and M12 but contesting M13 on two behavioural
+items, and pre-wording the signature for the commit that carries the repairs.
+This work order is that commit's content: the two repairs, the diff set owed
+regardless of the verdicts, five carry-forwards, and batch E drafted in parallel
+because dv explicitly cleared it (neither owed diff moves a port, a record or a
+latency constant).
+
+### Inputs
+
+- `agents/charters/architect_docs_lead.md`; `agents/PROTOCOL.md` (§4 grammar, §6
+  scope, §7 gates, §10 independence).
+- `agents/handoffs/WO-0017_batch-e-specs.md` (the work order) and
+  **`agents/handoffs/WO-0015_batch-d-countersign.md` at 619afa7 read in full** —
+  the primary input: §0 (what witnesses the specs), §1 (four verdicts), §2 (the
+  arithmetic recomputed), §3 (owed diffs D-1 and D-2 with two repairs each), §4
+  (Q1–Q5 answered by name), §5 (ledger: C-6/15/16/17/18 reaffirmed, C-19…C-23
+  raised), §6 (six below-threshold readings), §7 (dv's own actions), §8 (the
+  pre-worded countersignature and the bounded re-review surface).
+- `docs/specs/SPEC-TEMPLATE.md` (§11's DRAFT-versus-FROZEN rule, rule 6's lift
+  obligation, rule 7's post-freeze rule); `docs/specs/requirements.md` in full;
+  `docs/specs/architecture.md` in full; `docs/specs/traceability.md`.
+- All four batch-D specs in full (`modules/arp_eth_rx.md`, `arp_eth_tx.md`,
+  `arp_cache.md`, `arp.md`); `modules/eth_axis_rx.md`, `eth_axis_tx.md`,
+  `eth_mac_10g.md` and `eth_demux.md` §6–§7 and `eth_arb_mux.md` §4.1/§7/§11 as
+  the models batch E copies; `docs/adr/ADR-0008-transmit-header-handshake.md`;
+  `docs/specs/ifc_check/axi64_ifc.ml` and `dune`.
+- `docs/gates/P1-spec-freeze-checklist.md` (read only — the ledger's C-item
+  wording and the batch table); `tools/check_records_vs_appendix.sh` and
+  `tools/dv_checks.sh` (read, then run read-only).
+- **`libs/**` was not opened**, in this or any previous activation of mine.
+
+### Reasoning
+
+**D-1: R-1, because the cheaper repair is also the one that leaves fewer
+documents to keep in step.** dv traced the mechanism port by port and it
+reproduces: SPEC-M11 §6.2's `Idle` row asserts `arp_ready` unconditionally, so a
+blocked transmit path leaves reply 1 inside M11 with M13 back in `Idle`, reply 2
+merely `Pending` with no strobe, and reply 3 the first drop — the family holds
+**two** replies where REQ-510 says one, and four counting sites across two
+documents commission a strobe a conformant design does not pulse. R-2 (keep the
+mechanism, move the counts from two to three) would have cost a **behavioural**
+requirements.md diff to a normative ERR requirement plus four spec-side count
+changes, and would have left the module two deep in stale replies; R-1 costs one
+state in machine (A), one clause in §6.1, and makes all four sites correct **as
+written**. I recorded R-2 permanently as SPEC-M13 §11.6 rather than only in this
+entry, because a countersignature and a work-order log both cite D-1 by name and
+a reader who finds only the winner cannot check the choice — that is the
+adjudication-record obligation in my charter §8 applied to a repair rather than
+to a dispute.
+
+R-1 needed one thing dv's recommendation did not state: the **boundary cycle**.
+A reply generated on the exact cycle the pending reply's `tlast` is accepted sits
+inside a window that is closing. I pinned it as *dropped*, matching the register
+semantics of machine (A)'s state (it is in `Transmitting` for the whole of that
+cycle), and stated that the coincidence is arithmetically unreachable from the
+composed chain. The alternative — leaving it open — would have handed a bench
+writer two defensible answers, which is precisely the class of ambiguity the
+whole batch-D return was about.
+
+**D-2: D-2a, decided on merit once the cost estimate was corrected — and the
+correction is half the decision.** SPEC-M10 §11.3 priced the repair as "a new
+`Arp_packet` field", i.e. as a post-freeze record addition, i.e. as breaking. It
+cannot be one: the bit arrives on the payload `tlast` word, two or more cycles
+*after* the record is emitted, so no field of that record could carry it. Read
+literally the item priced the repair as unaffordable, and that wrong price is
+what would have made this decision get made under gate pressure for the wrong
+reason. With the price corrected the two repairs cost the same in interface terms
+— nothing — so the choice is on merit, and D-2b writes into the requirements that
+one receive branch may commit twenty seconds of persistent state from a frame the
+programme has already declared invalid, with no observable naming it. The failure
+mode is not a dropped frame; it is every datagram to that IP leaving with a wrong
+destination MAC, which is the kind of thing that surfaces as a replay divergence
+three phases later with nobody able to name its origin. An exemption that has to
+be written down in order to be legitimate is usually the wrong side of the
+choice. I wrote **ADR-0009** because requirements.md §13 requires a behavioural
+row to name an ADR, and because D-2's rejected alternative is exactly the
+material my charter says an ADR exists to preserve.
+
+Three things the repair needed that the recommendation did not supply, each
+decided here. **(i) The gating cycle is one after the *later* of `arp_valid` and
+the payload `tlast`**, not simply `tlast` + 1: for an exactly-28-octet ARP
+payload the `tlast` precedes M10's report, and a rule that only said `tlast` + 1
+would act before the record existed. In the composed chain the rule reduces to
+`tlast` + 1 (a legal minimum frame delivers six payload words), and the other
+branch exists for determinacy — its only instance is inside a runt, which is
+marked anyway. **(ii) A marked packet ends no outstanding resolution**: it
+produces no cache write, so ending the retry sequence on it would abandon a
+resolution on the strength of an invalid frame and the next datagram would miss
+with nothing outstanding. **(iii) REQ-502's derivation moves from 6 to 7
+cycles**, and I disclosed that at the top of the Return log rather than letting
+the re-review find it, because it is the one number dv signed in §2 that both
+repairs were expected not to move. It is still a derivation and still constant at
+every accepted request length: the payload `tlast` sits a fixed three cycles
+after a lane-0 terminate character, because every stage between has constant
+per-octet latency, so a longer request moves the measurement start and the gate
+together.
+
+**Whether D-2a violates REQ-013's own "solely" clause.** It does not, and I made
+requirements.md say why rather than relying on the reading being obvious: the
+prohibition binds a module that *forwards* — it exists so no stage drops a frame
+from a stream it is relaying — and the ARP branch forwards nothing. REQ-013's
+*first* clause, the one that names an ultimate consumer, is the clause D-2a
+discharges. So REQ-013 gained one sentence naming the consumer per branch
+(application on the UDP path, M13 on the ARP branch) and declaring an unnamed
+branch a gap in that row. That sentence is worth more than the repair itself: it
+is what stops the same hole reopening at a branch nobody has written yet.
+
+**C-23's home: requirements.md §0.6, not SPEC-M13 §9.** dv offered either. The
+convention — one high cycle per event, consecutive events give consecutive high
+cycles, count high cycles and never rising edges — is a statement about every
+strobe and every monitor in the programme; M13 is merely the first module where a
+strobe can legitimately be high on consecutive cycles. Putting it in §0.6 also
+puts it where §0.6's existing "a strobe SHALL pulse for exactly one cycle"
+sentence lives, which is the sentence a bench writer would otherwise read as a
+promise that the signal falls — so the two now travel together, which is the same
+argument C-15 made for the start-lane exception.
+
+**Batch E's design decisions, briefly, with what each rejected.** M14's ΔC = 4
+against a ceiling of 5 is the minimum a registered output reaches (payload octets
+0–7 span input words 2 and 3), and I stated the spare cycle as **M14's own
+allocation** rather than as architect slack, so that a future revision to 5 is an
+ordinary spec diff and only a move past 5 is a slack release — the distinction
+SPEC-M06 §11.2 needed and did not have. M14's seven strobes forced a decision
+§0.6 does not make for us: whether a bad checksum suppresses the other checks. I
+chose **independent evaluation, every applicable strobe pulses**, because a
+precedence order is unobservable at the port (one strobe looks the same whichever
+rule suppressed the others), so a bench could not tell a conformant design from a
+broken one and every implementer would have to guess the order. The single
+exception — a frame not delivering a complete header pulses `error_ip_truncated`
+alone — exists because otherwise the pulse set would be a function of *where* the
+frame ended rather than of the datagram.
+
+M15's structure follows from one thing: it must not buffer (REQ-610) and it must
+not stall the application on a miss (REQ-505). So the resolution query goes out
+on the offer cycle, `payload_tready` stays 0 for exactly two cycles, and the
+first payload word is accepted on the response cycle **whichever answer arrives**
+— which makes the head-of-frame behaviour independent of the outcome and makes
+REQ-705's invariance criterion hold at this port too (one word accepted before
+the first body word leaves, at every length). I applied C-17(b)'s lesson before
+the fact: the word surplus (2 or 3) and the stall count (3 or 4) are named
+separately, because conflating them is what produced the M07 defect and a
+throughput assertion built from the surplus fails every conformant design.
+
+M16 copies SPEC-M05's shape deliberately, including the total wiring table and
+the "nothing else is unconstrained" clause — with seven children rather than two,
+the temptation to slip in one register is larger, so the table being total is
+what makes such a register a visible diff. Two things are M16's own rather than
+M05's: REQ-807's loop is *closed* inside it, so I gave it one bench obligation of
+its own and was explicit that it is not a substitute for M20's XGMII-level test;
+and its receive path **forks**, so §9 states the conservation fact a monitor
+needs (an ARP frame is not emitted at `ip_rx_payload` and looks like a silent
+discard unless the branch is counted separately).
+
+**Two architecture.md amendments, and I resisted making a third.** M14's output
+rows had to be renamed because the provisional table gave its input and output
+header pairs the same names, which emits `hdr_valid` twice in one Verilog module
+— a real defect in the table, found by writing the record. The `cfg_subnet_mask`
+row had to be *added* because REQ-604 accepts the subnet-broadcast address and
+that arithmetic needs the mask; this is the one place batch E adds an edge rather
+than confirming one, and I recorded it as an amendment with its reason rather
+than letting the count drift. The third change I did **not** make: expanding
+§6.4.3's configuration rows into per-wrapper hops. That inconsistency pre-dates
+batch E, thirty-odd rows is a lot of table for no reader's benefit, and the
+honest fix was to state the summary rule explicitly — as §6.4.4 already does for
+strobes — and track the expansion in SPEC-M16 §11.3.
+
+**Scope discipline.** Three §11 items closed that this packet did not name
+(SPEC-M07 §11.2, SPEC-M09 §11.3, SPEC-M11 §11.2) because all three read "Closes
+by: SPEC-M15 (batch E)" and SPEC-M15 §7 discharges them; two of those files are
+FROZEN, and a §11 closure is not a §4/§6/§7 change, so no §13 row is owed — the
+disposition SPEC-M06 §11.1 took at WO-0014. I disclosed it in the Return log
+rather than folding it in silently.
+
+### Actions
+
+- **requirements.md**: REQ-503 (behavioural — the "and not marked invalid"
+  qualifier, the no-strobe consequence, the bad-FCS verification case); REQ-013
+  (the ultimate consumer named per branch, the "solely" clause scoped to
+  forwarding modules); REQ-810 (the ARP clause reworded — first reply held, later
+  ones dropped); REQ-502 (measurement start pinned to the terminate character);
+  §0.6 (the strobe counting convention); six §13 revision rows.
+- **ADR-0009** written (D-2's decision, four rejected alternatives, the corrected
+  cost estimate, six consequences). **ADR-0008** gained C-22's precedence clause
+  on the C-17(d) bullet.
+- **SPEC-M13**: R-1 (§6.1's REQ-510 block, §6.2 machine (A)'s third state, §7,
+  §9, §10, §8 item 2, §11.6 new); D-2a (§6.1's validity gate, §6.2 (D) new stage
+  table, §2, §3, §7, §9, §10); REQ-502's table recomputed to 7 cycles; §11.1,
+  §11.2 and §11.3 closed; §12 filled; §8 item 1's 101 pulses and §6.1's
+  class-4 competitor corrected.
+- **SPEC-M10**: §2's abort row (owner M13), §6.1's `clear` exception (C-21) and
+  report-cycle qualifier, §6.3 item 4's constant (C-20), §8's idle count and
+  conservation exemption (C-21), §10's hook, §11.1 and §11.3 closed, §12 filled.
+- **SPEC-M11**: §3's REQ-015 wording, §6.1's `arp_ready` clarification, §8 item
+  2's one-cycle lead (C-19), §11.1/§11.2/§11.3 closed, §12 filled.
+- **SPEC-M12**: §11.1 and §11.3 closed, §12 filled, §6.1's table cell repaired.
+- **SPEC-M07 §11.2** and **SPEC-M09 §11.3** closed (ADR-0008 restatement).
+- **Batch E written**: `docs/specs/modules/ip_eth_rx_64.md`, `ip_eth_tx_64.md`,
+  `ip_complete_64.md`, each template-complete, with the three §4.1 blocks lifted
+  byte-identically into `docs/specs/ifc_check/*_ifc.ml`.
+- **architecture.md**: batch-E confirmation paragraph, two amendments, the
+  configuration-fan-out summary rule, M16's internal-signal note, edge count
+  117 → 118 (26/40/30/22), §8 currency rewritten.
+- **traceability.md**: twelve batch-E rows filled, three rows given a second
+  owning module (REQ-505, REQ-610, REQ-807), the currency and two-module notes
+  extended.
+- **WO-0017 Return log** written with per-item dispositions and five open
+  questions; packet State flipped to RETURNED.
+
+### Evidence
+
+Runnable from a checkout at this commit's SHA:
+
+- `bash tools/check_records_vs_appendix.sh` → **19 check(s) run, 0 failure(s)**.
+  Sixteen as at a9993ff plus three new rows — `modules/ip_complete_64.md §4.1 ==
+  ifc_check/ip_complete_64_ifc.ml`, and the same for `ip_eth_rx_64` and
+  `ip_eth_tx_64` — all "byte identical". The four batch-D rows still PASS, which
+  is the mechanical evidence that the D-1 and D-2 repairs touched no §4.1 block
+  and that run 30736107842's compile evidence still witnesses those records.
+- `bash tools/dv_checks.sh` → exit 0, `dv_checks: all checks passed` (the
+  emitted-Verilog half reports 4 pending items, all of them unbuilt-module
+  conditions unrelated to this work order).
+- REQ set equality, run mechanically:
+  `grep -oE '\*\*REQ-[0-9]{3}\*\*' docs/specs/requirements.md | tr -d '*' | sort -u`
+  → **110**; `grep -oE '^\| REQ-[0-9]{3} \|' docs/specs/traceability.md | grep -oE 'REQ-[0-9]{3}' | sort -u`
+  → **110**; `diff` of the two → **empty**; 110 row lines, no duplicate.
+- architecture.md §6.4 recount by strict row shape:
+  `awk '/^\| `(M[0-9]+|WIRE|APP|EXT)\./ {…}' docs/specs/architecture.md` →
+  **118 rows: 26 rx, 40 tx, 30 control, 22 status**, matching §6.4's summary line.
+- **Externally verifiable**: CI `build` run **30736107842**, conclusion
+  **`success`**, head SHA **2f29888** — the run the four batch-D §12 rows now
+  cite, fetched and re-verified by dv_lead from the GitHub API at WO-0015 (§0 of
+  its Return log), with `git diff a9993ff 2f29888 -- docs/specs/` empty.
+- **No `ifc_check` run exists yet for the three batch-E lifts**, and each spec's
+  §11.1 and §12 says so in those words. Per ADR-0005 a local build is not
+  acceptable evidence and I ran none; the batch-E freeze flip waits on that run.
+
+### Outcome
+
+**DoD met.** D-1 landed as R-1 and D-2 as D-2a, each with a §13-recorded
+requirements diff where it touches DRAFT requirement text and an ADR where it is
+behavioural; the five §11 closures are recorded in place with their numbers and
+rows kept; the four §12 `Interface compile check` rows are filled from run
+30736107842 / success / 2f29888 and the four §11.1 items closed on it;
+C-19 … C-23 all landed, C-23 in requirements.md §0.6 by my choice of home; both
+non-blocking editorial items and all six below-threshold readings taken; batch E
+is template-complete with byte-identical lifts and no new record; set equality
+holds at 110 = 110. Handoff: `agents/handoffs/WO-0017_batch-e-specs.md`,
+RETURNED, with per-item dispositions, the two repair choices argued, the two
+architecture.md amendments disclosed as amendments, and the re-review surface
+restated. dv_lead's pre-worded countersignature sentence applies to the commit
+carrying this entry.
+
+### Open-questions
+
+1. **REQ-502's derivation is now 7 cycles, not 6.** The one signed number that
+   moves under either repair, and it moves by exactly D-2a's gate. If dv_lead
+   judges the gate should delay only the learning write and not the reply, the
+   derivation returns to 6 at the cost of replying to a frame the programme has
+   declared invalid; dv's own D-2a wording gates both and this is written to it.
+2. **D-1's boundary cycle** — a reply generated on the cycle the pending reply's
+   `tlast` is accepted is dropped. Unreachable from the composed chain, pinned
+   for determinacy; one word in §6.1 and one row in §6.2 (A) reverse it.
+3. **M14's `error_ip_truncated`-alone rule** for a frame not delivering a
+   complete 20-octet header — the only precedence rule in batch E, argued from
+   §0.6's word "applicable".
+4. **Two matrix rows now name a module whose specification is unwritten**
+   (REQ-610 → M18, REQ-807 → M20), with the second half reading `pending` so the
+   debt is visible. A single-owner row until batch F lands is a matrix edit and
+   no spec change, if dv prefers it.
+5. **`cfg_subnet_mask` at M14 is an added edge**, not a rename: REQ-604's
+   subnet-broadcast clause cannot be evaluated without the mask. The alternative
+   topology — M20 computing the address once and routing the result — is
+   E2-shaped and was not taken.
+6. **A CI `build` run is owed** before any batch-E §12 row can stop reading
+   `pending`, and before a batch-E countersignature work order should issue. The
+   three new lifts are the first to be elaborated across a batch boundary
+   (`ip_eth_tx_64_ifc.ml` opens `Arp_ifc`).
+7. Unchanged and still tracked in specs: **C-2** (now load-bearing at SPEC-M10
+   §8), **C-3**, **C-5**, **C-7**, **C-9's REQ-903 half**, SPEC-M06 §11.2's
+   zero-reserve ceiling, SPEC-M12 §11.2's lifetime-counter cost, SPEC-M13 §11.4's
+   combinational relay.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0017_batch-e-specs.md
+- docs/adr/ADR-0008-transmit-header-handshake.md
+- docs/adr/ADR-0009-arp-branch-is-the-ultimate-consumer.md
+- docs/specs/architecture.md
+- docs/specs/ifc_check/ip_complete_64_ifc.ml
+- docs/specs/ifc_check/ip_eth_rx_64_ifc.ml
+- docs/specs/ifc_check/ip_eth_tx_64_ifc.ml
+- docs/specs/modules/arp.md
+- docs/specs/modules/arp_cache.md
+- docs/specs/modules/arp_eth_rx.md
+- docs/specs/modules/arp_eth_tx.md
+- docs/specs/modules/eth_arb_mux.md
+- docs/specs/modules/eth_axis_tx.md
+- docs/specs/modules/ip_complete_64.md
+- docs/specs/modules/ip_eth_rx_64.md
+- docs/specs/modules/ip_eth_tx_64.md
+- docs/specs/requirements.md
+- docs/specs/traceability.md
