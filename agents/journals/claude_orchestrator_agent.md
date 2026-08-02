@@ -1231,3 +1231,36 @@ none
 - agentic_fpga.opam
 - agents/handoffs/WO-0003_requirements-testability-review.md
 - tasks/BOARD.md
+
+## [J-orchestrator-0031] 2026-08-02T01:38:00Z | task:WO-0004 | Issue WO-0004 — architect applies the sixteen diffs
+### Trigger
+WO-0003 accepted; its verdict makes the sixteen diffs the critical path
+to P1-spec-freeze.
+### Inputs
+WO-0003 findings §14.3 (D-1…D-16) at 9a6195a; WO-0003 ACCEPTED rulings.
+### Reasoning
+The packet pins the two constants as adjudicated (my independent zlib
+confirmation travels with the WO so the architect cites rather than
+re-derives), demands the D-3 IFG collision resolve to ONE convention
+stated identically in §0 and the REQs (the dangerous outcome would be
+fixing REQ-204 while leaving the §0 derivation stale — the same class of
+inconsistency dv_lead just caught), and requires explicit per-diff
+disposition in the Return log so silent partial application is
+structurally impossible. Contests are allowed but routed: back to
+dv_lead with me arbitrating, mirroring how a real spec change board
+works. The WO-0002 board row's ACCEPTED status is unaffected — this is a
+revision WO, not a reopening.
+### Actions
+agents/handoffs/WO-0004_requirements-spec-diffs.md written (ISSUED);
+board row added in J-0030's commit. Spawn follows this commit as
+WO-0004/2026-08-02T01:40Z with fallback armed at spawn time.
+### Evidence
+Packet in this commit; diff list pinned by SHA 9a6195a.
+### Outcome
+Architect spawning next. After RETURN: my acceptance re-checks set
+equality + constants, then the dv_lead re-review WO. Handoff: WO-0004 to
+architect_docs_lead.
+### Open-questions
+none
+### Files-in-this-commit
+- agents/handoffs/WO-0004_requirements-spec-diffs.md
