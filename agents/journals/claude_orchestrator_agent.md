@@ -4377,3 +4377,50 @@ Sponsor redeploys for the site copy.
 - site/public/index.html
 - site/public/org-chart.html
 - site/public/spec-atlas.html
+
+## [J-orchestrator-0102] 2026-08-02T22:05:00Z | task:none | The road becomes the roadmap - six steps an outsider can follow
+
+### Trigger
+Sponsor: "The road" should be "The roadmap"; M0/G0/P1 mean
+nothing to an outside reader; the section should be a detailed,
+sensible roadmap of the whole project.
+
+### Inputs
+- The PHASES rows still carried the org's internal gate codenames
+  and one-line summaries written for people who already knew them.
+
+### Reasoning
+Renamed every step by what it is, not what we call it: Step 1 -
+build the organization; Step 2 - prove the governance works;
+Phase 1a - specify the network card; Phase 1b - build and verify
+it (NOW); Phase 2 - read live market data; Phase 3 - reach the
+physical wire (stretch). Each description rewritten to say
+concretely what was produced or will be: charters/journals/
+script-enforced commit rules, the auditor's end-to-end loop, 110
+requirements + 20 frozen contracts + the refusals, live counts
+for built modules and attack rows, NASDAQ parser/order book/
+replayed trading day, 64b/66b PCS. DONE/NOW/NEXT/LATER badges
+unchanged.
+
+### Actions
+- site/build.py PHASES + heading rewrite; site rebuilt; verified
+  with a full-section screenshot; this commit.
+
+### Evidence
+- Screenshot: six rows, no codenames, NOW on Phase 1b with live
+  counts (5 of 20 modules, 137 attack rows).
+
+### Outcome / DoD
+Sponsor redeploys: git pull && cd site && npx wrangler deploy.
+
+### Open questions
+- The matrix legend's "none yet" for benches goes stale the day
+  the M03 bench passes CI — update it with the revision-2 landing.
+
+### Files-in-this-commit
+- site/build.py
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/index.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html

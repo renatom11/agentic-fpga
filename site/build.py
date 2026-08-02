@@ -83,12 +83,12 @@ n_spec = sum(1 for m in MODS if m[2])
 assert n_spec == 20, n_spec
 
 PHASES = [
-    ('M0 — the org itself', 'done', 'Charters, protocol, mechanical enforcement, adversarial review of the rules before any work ran under them.'),
-    ('G0 — governance proven', 'done', 'The audit loop ran end-to-end once: findings, disposition, adversarial re-check, gate signed.'),
-    ('P1 spec-freeze', 'done', 'All 20 module specs frozen behind adversarial countersignatures; sponsor-signed 2026-08-02. Batches were refused first more than once — the refusals are part of the record.'),
-    ('P1 build & verify', 'now', f'{n_rtl} of 20 modules in hardware code (compile-green, not yet benched), {n_attack} attack rows planned, the verification machinery live. Next: benches against the attack rows, module-ready sign-offs with mutation kills.'),
-    ('Phase 2 — market data', 'next', 'MoldUDP64 + NASDAQ ITCH 5.0 parser, single-symbol order book, a recorded real trading day replayed packet-for-packet, wire-to-book latency histograms.'),
-    ('Phase 3 — stretch', 'later', '10GBASE-R soft PCS (64b/66b), wire-to-wire latency report.'),
+    ('Step 1 — build the organization', 'done', 'Before any engineering: an org of AI agents with written charters, an append-only work journal per agent, and one-agent-per-commit rules enforced by scripts rather than promises. The rules themselves went through adversarial review before anything ran under them.'),
+    ('Step 2 — prove the governance works', 'done', 'The independent auditor ran the full loop once on real commits — findings filed, dispositions argued back, adversarially re-checked, first gate countersigned — before the org was trusted with hardware work.'),
+    ('Phase 1a — specify the network card', 'done', 'The 10G Ethernet subsystem written down before it was built: 110 numbered requirements and 20 frozen module contracts, hardened by the verification lead’s 108-row testability review and signed by the sponsor 2026-08-02. Spec batches were refused more than once before signing — the refusals are part of the record.'),
+    ('Phase 1b — build and verify it', 'now', f'{n_rtl} of 20 modules exist as hardware code (compiling, not yet tested against attacks); {n_attack} planned attack rows describe exactly how each module will be assaulted; the verification machinery that runs them is live. Happening now: the first benches that execute those attacks, then per-module sign-offs where seeded sabotage must be caught to count.'),
+    ('Phase 2 — read live market data', 'next', 'The card learns NASDAQ’s language: a MoldUDP64 + ITCH 5.0 message parser, a single-symbol order book, and a recorded real trading day replayed packet-for-packet with wire-to-book latency histograms.'),
+    ('Phase 3 — reach the physical wire (stretch)', 'later', 'A 10GBASE-R soft PCS — the 64b/66b encoding layer that puts bits on actual fiber — closing the loop with a wire-to-wire latency report for the whole card.'),
 ]
 
 # D4: plain-first, insider reference in parentheses — the standing style.
@@ -450,7 +450,7 @@ backlog = head_block('agentic-fpga — backlog & progress',
   the spec and RTL trees; the next-steps list is the orchestrator’s summary,
   refreshed at each regeneration. Commit <span class="mono">{head_sha}</span>.</p>
 
-  <h2>The road</h2>
+  <h2>The roadmap</h2>
   {phases_html}
 
   <h2>Module status — {n_rtl} of 20 built, all specs frozen</h2>
