@@ -3255,3 +3255,43 @@ packets + mutation kills per module).
 ### Files-in-this-commit
 - docs/gates/P1-spec-freeze-checklist.md
 - tasks/BOARD.md
+
+## [J-orchestrator-0076] 2026-08-03T07:05:00Z | task:WO-0032 | The three-epoch M03 promoted — two files, sha256-verified, the promotion machinery's second outing flawless
+
+### Trigger
+Run 30757589286 (head `d57e028`): Build + tests green — the rewritten
+M03's first elaboration passed, rtl_lead's third first-try green —
+then the designed determinism red with the promotion block.
+
+### Inputs
+- The block: exactly two `--- FILE` entries, `eth_mac_10g.v` and
+  `xgmii_rx_64.v`, with CI's sha256 each. `xgmii_tx_64.v` and
+  `word_counter.v` absent — the two motions rtl_lead named as
+  real-defect signals stayed still.
+
+### Reasoning
+Byte transport as at J-orchestrator-0069: decode, recompute, write
+only on match (110,493 / 65,564 bytes, both VERIFIED). Local
+pre-check: dv's X-9 over the new text passes — the three-epoch
+report path introduced no second clock alias class.
+
+### Actions
+- Both files written verbatim; this commit stages them and nothing
+  else.
+
+### Evidence
+- sha256 prefixes: eth_mac_10g `cd429e851ea0…`, xgmii_rx_64
+  `6313a239680e…` vs run 30757589286's block.
+- `bash tools/dv_checks.sh` exit 0 at this tree.
+
+### Outcome / DoD
+Next run's determinism green re-proves REQ-902 over the conformant
+M03; then WO-0032 ACCEPTED with the full run chain and the dv
+machinery WO issues.
+
+### Open questions
+- None; awaiting the run on this head.
+
+### Files-in-this-commit
+- rtl_snapshots/eth_mac_10g.v
+- rtl_snapshots/xgmii_rx_64.v
