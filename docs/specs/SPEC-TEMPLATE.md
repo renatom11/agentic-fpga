@@ -73,10 +73,13 @@ its immediate upstream and downstream modules.
 
 List the REQ-001 … REQ-021 invariants that apply, one line each, with the
 module-specific consequence. Do not paraphrase the requirement text — cite the
-id and state what it forces here. At minimum every receive-path module cites
-REQ-003 (no backpressure), REQ-004 (line rate), REQ-005 (cut-through),
-REQ-007 (abort propagation), REQ-019 (no deep buffering) and REQ-021
-(word alignment).
+id and state what it forces here. Whether this module is a receive-path module,
+and for which of its ports, is decided by `requirements.md` §0.4, not by
+judgement: a structural module is on the receive path only with respect to the
+ports that lie on that chain. At minimum every receive-path module cites
+REQ-003 (no backpressure), REQ-004 (line rate), REQ-005 (cut-through, per-octet
+constant latency), REQ-007 (abort propagation), REQ-019 (latency ceiling and no
+deep buffering) and REQ-021 (word alignment).
 
 ## 4. Interface
 
@@ -202,9 +205,14 @@ rely on it.
 
 ## 7. Timing contract
 
-- **Latency**: the constant number of cycles from a defining input event to the
-  corresponding output event, stated as an exact number, not a bound, for
-  receive-path modules (REQ-005, REQ-111). State the measurement points.
+- **Latency**: the module's constant L, stated as an exact number of **octet
+  times** per `requirements.md` §0.5 — not a bound — for receive-path modules
+  (REQ-005, REQ-111), together with its cycle equivalent floor(L / 8) and the
+  §1.1 ceiling it must fit inside (REQ-019). Name the two measurement events
+  explicitly. Do not state latency as "word in to word out": at a realigning
+  module or a lane-4 start that names no single event and is not constant. A
+  module seeing XGMII pins one constant per start lane and they differ by no
+  more than one cycle.
 - **Throughput**: words accepted per cycle, and any cycle in which the module
   cannot accept a word (transmit path only — receive path must always accept,
   REQ-003).
@@ -218,20 +226,30 @@ rely on it.
 
 ## 8. Line-rate stress obligation
 
-**Mandatory for every receive-path module. Structural and transmit modules
-state "not applicable" with one sentence of why.**
+**Mandatory for every module in `requirements.md` §0.4's stress-bench list
+(M03, M06, M08, M10, M14, M17, M20). Every other module states "not applicable"
+with one sentence of why — for a structural wrapper, that its children's benches
+cover it and it adds no datapath logic of its own.**
 
 The module SHALL be exercised by a bench that:
 
-1. drives minimum-length (64-octet) frames separated by the minimum 12-octet
-   inter-frame gap, with start characters alternating between lane 0 and lane 4
-   where this module sees XGMII, or at the equivalent one-frame-per-10.5-cycles
-   arrival rate where it sees a stream (REQ-004);
-2. runs for at least 10 000 consecutive frames;
+1. drives minimum-length (64-octet, destination address through FCS) frames
+   separated by the minimum 12-octet inter-frame gap **counted from the
+   terminate character inclusive** (`requirements.md` §0.3), with start
+   characters alternating between lane 0 and lane 4 where this module sees
+   XGMII — start-to-start spacing alternating 10 and 11 cycles. Where the module
+   sees a stream rather than XGMII, the stimulus is whatever that same arrival
+   pattern produces at this module's boundary, idle gaps preserved, derived by
+   construction from the XGMII case and never re-invented here (REQ-004);
+2. runs for at least 10 000 consecutive frames, every one of which this module
+   accepts and forwards, so that frames-out equals frames-in is well defined
+   even for a module that legitimately discards;
 3. checks that the number of frames out equals the number in, that payload
-   octets compare equal, and that no word is dropped;
-4. checks that the module asserts no backpressure — for receive modules this is
-   structural (no `tready` exists) and the bench asserts it by construction.
+   octets compare equal, that no word is dropped, that per-octet latency is
+   constant (REQ-005), and that frame conservation holds (§0.6);
+4. records that the module exposes no `tready` on the stream under test — this
+   is structural (REQ-003) and is a statement about the type, not a bench
+   assertion that could fail.
 
 State here the exact stimulus this module needs (frame contents, header field
 values, error injection rate) so the bench can be written from this section
@@ -240,7 +258,15 @@ alone.
 ## 9. Errors and discards
 
 Every abnormal condition, its strobe, and its effect on the output stream. The
-strobe names are normative and come from `requirements.md`.
+strobe names are normative and come from `requirements.md` §12.
+
+State also, below the table, **which of these conditions can co-occur on one
+frame and which strobes then pulse**, and for each condition whether the frame
+is aborted-and-forwarded or discarded before any word is emitted. The general
+precedence and multiplicity rules are `requirements.md` §0.6 (local discard beats
+an inherited abort; an inherited abort is never re-reported with a strobe; every
+locally detected applicable condition pulses once); this section says how they
+land for this module, because that is what a bench asserts.
 
 | Condition | Strobe (one cycle) | Stream effect | REQ |
 |---|---|---|---|

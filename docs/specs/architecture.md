@@ -31,13 +31,29 @@ restatement, under an ADR.
 | Out of scope | PMA/PCS/serdes (Phase 3), MoldUDP64/ITCH/order book (Phase 2) |
 
 **Datapath arithmetic, stated once.** A minimum-length frame occupies 8 octets
-of preamble and SFD, 64 octets of frame, and at least 12 octets of inter-frame
-gap: 84 octets, or 10.5 cycles. XGMII start characters may occupy lane 0 or
-lane 4, so 84 octets is exactly realisable by alternating the start lane, and a
-compliant link partner can therefore deliver minimum-length frames every 10 and
-11 cycles alternately. **The receive path is designed for that arrival rate**
-(REQ-004). The Phase-1 transmitter is simpler: it starts frames on lane 0 only,
-so it emits at most one minimum-length frame per 11 cycles (REQ-204, REQ-209).
+of preamble and SFD, 64 octets of frame (destination address through FCS), and
+at least 12 octets of inter-frame gap: 84 octets, or 10.5 cycles.
+
+The inter-frame gap is measured **from the terminate character inclusive** to
+the next start character exclusive, minimum 12 octets — one convention, stated
+normatively in `requirements.md` §0.3 and used identically there, in REQ-004 and
+in REQ-204. This is the convention that reproduces IEEE 802.3's 84-octet
+minimum-frame budget (14.88 Mpps) unchanged from 1 Gb/s, where there is no
+terminate character and all 12 gap octets are idle. Counting twelve *idle*
+octets *after* the terminate character instead would make the minimum spacing
+88 octets and would under-drive every line-rate stress bench by 4.5 %.
+
+XGMII start characters may occupy lane 0 or lane 4, so 84 octets is exactly
+realisable by alternating the start lane, and a compliant link partner — one
+using the deficit idle count of IEEE 802.3 clause 46 to hold its *average* gap
+at 12 octets — can therefore deliver minimum-length frames every 10 and 11
+cycles alternately. **The receive path is designed for that arrival rate**
+(REQ-004). The Phase-1 transmitter is deliberately simpler: deficit idle count
+is out of scope and it starts frames on lane 0 only, so it rounds every gap up
+to the next lane-0 boundary (16 octets from the terminate character inclusive)
+and emits one minimum-length frame per 11 cycles (REQ-204, REQ-209). That
+under-uses the link; it does not violate the standard, because a gap is never
+shortened below 12.
 
 ---
 
@@ -189,6 +205,9 @@ document fixes only its contract:
 - It SHALL decode transmit-side XGMII well enough to validate preamble, FCS,
   terminate placement and inter-frame gap (REQ-201 … REQ-205).
 
+These three clauses are restated inside REQ-018 so the stub's contract is
+citable from `requirements.md` alone; the two statements must change together.
+
 Because the RTL side is closed at XGMII, no RTL deliverable in §4 depends on
 the stub's internals, and the stub can be replaced by the verilog-ethernet
 reference driver for co-simulation (REQ-901).
@@ -201,6 +220,13 @@ Every Phase-1 RTL deliverable appears here. Modules live under
 `libs/hardcaml_ethernet/src/` (rtl_lead's write scope); the emitted Verilog
 module name is the snake-case module name (REQ-808). "Path" is R for the
 receive datapath, T for transmit, S for shared or structural.
+
+The Path column is descriptive. The **normative** definition of "receive path" —
+the module chain, the streams it covers, how a structural module's receive ports
+are separated from its transmit ports, and the by-name list of modules owing a
+line-rate stress bench (M03, M06, M08, M10, M14, M17, M20) — is
+`requirements.md` §0.4, so that a tb_writer holding only a REQ excerpt can
+enumerate the obligation without this document.
 
 | # | Module | Path | Role | verilog-ethernet counterpart | Primary REQs |
 |---|---|---|---|---|---|
@@ -226,7 +252,11 @@ receive datapath, T for transmit, S for shared or structural.
 | M20 | `Nic_top` | S | Phase-1 top: M05 plus M19, configuration and status aggregation, application streams. | (assembled from `eth_mac_10g` + `udp_complete_64` in the reference's examples) | 801–809, 006 |
 
 **Latency budget allocation** against REQ-006 (24 cycles). Each module spec
-pins its exact constant; these are the ceilings the specs must fit inside.
+pins its exact constant; these are the ceilings the specs must fit inside. This
+table is transcribed into `requirements.md` §1.1, where REQ-019 makes the
+ceilings normative and gives them a DV observable — a constant is compared as
+floor(L / 8) with L the per-octet latency of `requirements.md` §0.5. The two
+copies must change together.
 
 | Stage | Ceiling (cycles) |
 |---|---|

@@ -1,7 +1,8 @@
 # Phase-1 traceability matrix — REQ to specification to test
 
 - **Status**: DRAFT skeleton — test column pending dv_lead
-- **Owner**: architect_docs_lead (matrix file) · **Work order**: WO-0002
+- **Owner**: architect_docs_lead (matrix file) · **Work orders**: WO-0002
+  (original), WO-0004 (rows added and retitled for the D-1 … D-16 spec diffs)
 - **Test column owner**: dv_lead (charter §4: DV supplies the test-side rows)
 - **Sources**: [`requirements.md`](requirements.md) (REQ text — normative),
   [`architecture.md`](architecture.md) §4 (module inventory)
@@ -41,10 +42,17 @@
 | Ethernet framing | 10 | REQ-401 … REQ-410 |
 | ARP | 12 | REQ-501 … REQ-512 |
 | IPv4 | 12 | REQ-601 … REQ-612 |
-| UDP | 9 | REQ-701 … REQ-709 |
-| Top level and configuration | 9 | REQ-801 … REQ-809 |
+| UDP | 10 | REQ-701 … REQ-710 |
+| Top level and configuration | 10 | REQ-801 … REQ-810 |
 | Verification and process | 6 | REQ-901 … REQ-906 |
-| **Total** | **108** | |
+| **Total** | **110** | |
+
+Two requirements were added at WO-0004: **REQ-710** (over-delivery of a declared
+transmit length, split out of REQ-709 per diff D-15, because a frame already
+terminated on the wire cannot take REQ-206's remedy) and **REQ-810** (behaviour
+of `receive enable` and `transmit enable`, per diff D-12, which required the two
+fields to gain a behavioural requirement or be deleted). No REQ was renumbered
+or withdrawn; ids remain permanent.
 
 ---
 
@@ -53,7 +61,7 @@
 | REQ | Kind | Requirement (short) | Owning module(s) | Spec section | Test(s) | Status |
 |---|---|---|---|---|---|---|
 | REQ-001 | INV | Single clock domain | all modules (programme invariant) | pending | | OPEN |
-| REQ-002 | INV | Datapath width | all modules (programme invariant) | pending | | OPEN |
+| REQ-002 | IFC | Datapath width | all modules (programme invariant) | pending | | OPEN |
 | REQ-003 | INV | No receive-path backpressure | all modules (programme invariant) | pending | | OPEN |
 | REQ-004 | PERF | Line-rate invariant | all modules (programme invariant) | pending | | OPEN |
 | REQ-005 | INV | Cut-through, not store-and-forward | all modules (programme invariant) | pending | | OPEN |
@@ -70,7 +78,7 @@
 | REQ-016 | IFC | Idle words permitted | all modules (programme invariant) | pending | | OPEN |
 | REQ-017 | INV | XGMII closure | all modules (programme invariant) | pending | | OPEN |
 | REQ-018 | INV | XGMII boundary is simulation-only | all modules (programme invariant) | pending | | OPEN |
-| REQ-019 | INV | No deep receive buffering | all modules (programme invariant) | pending | | OPEN |
+| REQ-019 | INV | Bounded receive latency, no deep buffering | all modules (programme invariant) | pending | | OPEN |
 | REQ-020 | FUNC | Order preservation | all modules (programme invariant) | pending | | OPEN |
 | REQ-021 | IFC | Producer-side word alignment | all modules (programme invariant) | pending | | OPEN |
 | REQ-101 | FUNC | Start lanes | M03 `Xgmii_rx_64` | pending | | OPEN |
@@ -144,7 +152,8 @@
 | REQ-706 | FUNC | Transmit checksum zero | M18 `Udp_ip_tx_64` | pending | | OPEN |
 | REQ-707 | IFC | Application receive stream | M17 `Udp_ip_rx_64` | pending | | OPEN |
 | REQ-708 | PERF | Application-boundary line rate | M19 `Udp_complete_64`, M20 `Nic_top` | pending | | OPEN |
-| REQ-709 | ERR | Declared-length mismatch | M18 `Udp_ip_tx_64` | pending | | OPEN |
+| REQ-709 | ERR | Under-delivery of a declared length | M18 `Udp_ip_tx_64`, M04 `Xgmii_tx_64` | pending | | OPEN |
+| REQ-710 | ERR | Over-delivery of a declared length | M18 `Udp_ip_tx_64` | pending | | OPEN |
 | REQ-801 | IFC | Top-level ports | M20 `Nic_top` | pending | | OPEN |
 | REQ-802 | IFC | Configuration record | M20 `Nic_top` | pending | | OPEN |
 | REQ-803 | IFC | Configuration stability | M20 `Nic_top` | pending | | OPEN |
@@ -154,6 +163,7 @@
 | REQ-807 | FUNC | ARP connectivity | M20 `Nic_top` | pending | | OPEN |
 | REQ-808 | PROC | Hierarchy and naming | M20 `Nic_top` | pending | | OPEN |
 | REQ-809 | FUNC | End-to-end datagram path | M20 `Nic_top` | pending | | OPEN |
+| REQ-810 | FUNC | Enable controls | M20 `Nic_top` | pending | | OPEN |
 | REQ-901 | PROC | Differential co-simulation | programme (process) | pending | | OPEN |
 | REQ-902 | PROC | Deterministic emission | programme (process) | pending | | OPEN |
 | REQ-903 | PROC | Module surface | programme (process) | pending | | OPEN |
@@ -170,6 +180,13 @@
    (dv_lead charter §3).
 2. **Spec section**: filled batch by batch as the twenty module specifications
    land (architecture.md §8).
-3. **System-level rows**: REQ-001 … REQ-021 and REQ-801 … REQ-809 are expected
+3. **System-level rows**: REQ-001 … REQ-021 and REQ-801 … REQ-810 are expected
    to be covered by `nic_top` system tests plus per-module restatements; the
    architect and dv_lead agree the split at the first module-ready gate.
+4. **Partial coverage declared in advance (REQ-019)**: REQ-019's first sentence
+   — the per-module latency ceiling of requirements.md §1.1 — is DV-verifiable
+   and is what the row's test column must eventually name. Its second sentence
+   ("no payload storage deeper than two datapath words") is explicitly design
+   guidance with no port-visible symptom, and requirements.md says so; this row
+   therefore reaches `COVERED` on the ceiling alone, and no sign-off packet may
+   read it as evidence about buffer depth.
