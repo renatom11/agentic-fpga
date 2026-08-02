@@ -26,7 +26,7 @@ by the orchestrator from the signing agent's journal entry, per PROTOCOL
 | Batch | Specs | Drafted | ifc_check run | dv countersign | FROZEN at |
 |---|---|---|---|---|---|
 | A | M01 `Axi64`, M02 `Crc32_eth` | 22145b5 (WO-0006) | run 30727252770 superseded by f78766e edit — fresh run pending | **SIGNED** (J-dv_lead-0003); §4.1 addition awaits WO-0010 judgment | flips with batch B at WO-0010 |
-| B | M03, M04, M05 | f78766e (WO-0008) | pending | WO-0010 next | — |
+| B | M03, M04, M05 | f78766e (WO-0008) | run 30729342467 green | WO-0010 in flight | — |
 | C | M06, M07, M08, M09 | — | — | — | — |
 | D | M10, M11, M12, M13 | — | — | — | — |
 | E | M14, M15, M16 | — | — | — | — |
