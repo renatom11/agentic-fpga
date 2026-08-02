@@ -27,7 +27,7 @@ by the orchestrator from the signing agent's journal entry, per PROTOCOL
 |---|---|---|---|---|---|
 | A | M01 `Axi64`, M02 `Crc32_eth` | 22145b5 (WO-0006), revised f78766e | run 30729342467 green | **SIGNED** (J-dv_lead-0003; §4.1 addition accepted J-dv_lead-0005) | **FROZEN at f78766e** |
 | B | M03, M04, M05 | f78766e (WO-0008) | run 30729342467 green | **SIGNED** (J-dv_lead-0005) | **FROZEN at f78766e** |
-| C | M06, M07, M08, M09 | — | — | — | — |
+| C | M06, M07, M08, M09 | 508eea2 (WO-0011) | run 30733153172 green (lifts + bench layer) | WO-0013 in flight | — |
 | D | M10, M11, M12, M13 | — | — | — | — |
 | E | M14, M15, M16 | — | — | — | — |
 | F | M17, M18, M19, M20 | — | — | — | — |

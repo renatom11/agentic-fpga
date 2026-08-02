@@ -1793,3 +1793,33 @@ none
 - test/xgmii/test_arrival.ml
 - test/xgmii/test_frame.ml
 - test/xgmii/test_tx_decoder.ml
+
+## [J-orchestrator-0046] 2026-08-02T12:40:00Z | task:WO-0013 | Green confirmed; batch-C countersign issued
+### Trigger
+Run 30733153172 (f457efc) success: promoted snapshots hold, batch-C
+lifts elaborate, dv_checks and determinism clean.
+### Inputs
+Run list; WO-0011/0012 ACCEPTED entries.
+### Reasoning
+One run carries all the evidence the countersign needs, pinned in the
+batch-C row. WO-0013 adds a reaffirmation clause for the §13-amended
+frozen specs — the amendments implemented dv's own findings, but the
+signer must still verify faithfulness, closing the loop the batch-A
+supersession taught us. ADR-0008's contest window is this WO, as the
+architect flagged. Artifact builds (block diagram, chronicle, atlas)
+deferred to the next quiet slot by context economy; the standing
+overnight plan continues.
+### Actions
+Checklist row pinned; WO-0013 written; board row. Spawn follows as
+WO-0013/2026-08-02T12:45Z, fallback armed.
+### Evidence
+Run 30733153172 (F5 rule).
+### Outcome
+On SIGNED: batch C freezes (9/20); batch D issues; rtl_lead planning.
+Handoff: WO-0013 to dv_lead.
+### Open-questions
+none
+### Files-in-this-commit
+- agents/handoffs/WO-0013_batch-c-countersign.md
+- docs/gates/P1-spec-freeze-checklist.md
+- tasks/BOARD.md
