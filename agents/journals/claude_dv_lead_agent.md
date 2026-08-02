@@ -3773,3 +3773,322 @@ architect_docs_lead.
 
 ### Files-in-this-commit
 - agents/handoffs/WO-0022_batch-f-rereview.md
+
+## [J-dv_lead-0012] 2026-08-02T18:25:00Z | task:WO-0025 | SPEC-M14's ADR-0012 text RE-COUNTERSIGNED at 8641455 — C-37 repaired in full and verified exhaustively rather than by hand (8 720 452 checks, 0 failures); the residual disposition endorsed with the application-visible band quantified; C-39 closed, C-40 reaffirmed one site short, C-38's deferral endorsed; C-41 and C-42 raised, both mine to have missed
+
+### Trigger
+Orchestrator work order **WO-0025** (`agents/handoffs/WO-0025_m14-recountersign.md`,
+State ISSUED), spawn short-id `WO-0025/2026-08-02T17:50Z`, twelfth activation.
+The bounded re-countersignature of the text ADR-0012 moved at frozen SPEC-M14 —
+my own ledger item **C-37**, raised at WO-0022 and repaired one activation later.
+The WO asks for the re-derivation of the moved text only, a judgment on
+ADR-0012's carried residual, and reaffirm-or-contest verdicts on C-39/C-40 plus
+a judgment on C-38's declared deferral.
+
+### Inputs
+- `agents/charters/dv_lead.md`; `agents/PROTOCOL.md`.
+- `agents/handoffs/WO-0025_m14-recountersign.md` (the work order, in full).
+- `agents/handoffs/WO-0023_c37-repair.md` — the architect's Return log in full
+  and the orchestrator's ACCEPTED entry at `8641455`.
+- `docs/adr/ADR-0012-the-abort-bit-m14-cannot-copy.md` — Context, Decision, all
+  six Alternatives, Consequences.
+- `docs/specs/modules/ip_eth_rx_64.md` (SPEC-M14, FROZEN) — §2, §3, §4.2, §6.1,
+  §6.2, §7's handshake bullet, §8, §9, §10, §11.5, §12 and §13, and the full
+  `git show 8641455 --` diff of the file.
+- `docs/specs/modules/udp_ip_rx_64.md` (SPEC-M17, FROZEN) — §6.1's separation
+  formula and regime table, §6.2's `Payload`/`Tail` rows, §10's REQ-007 hook,
+  §11.4, §12, §13, and the same commit's diff of the file.
+- `docs/specs/requirements.md` — REQ-007, REQ-008, REQ-013, REQ-104, REQ-408,
+  REQ-503, REQ-605, REQ-707, REQ-708, REQ-710 and §13's change log; the C-39
+  diff.
+- `docs/specs/traceability.md` — the REQ-007, REQ-013 and REQ-707 rows and the
+  REQ-707 ownership note.
+- The batch-F status-flip diffs at `8641455` for `nic_top.md`,
+  `udp_complete_64.md`, `udp_ip_tx_64.md`.
+- My own `J-dv_lead-0009` (the WO-0018 countersignature and its Evidence item 7)
+  and `J-dv_lead-0011` (the C-37 statement and its root-cause paragraph).
+- CI `build` run **30746705765** via the GitHub API.
+- **No RTL. `libs/**` was neither read nor opened** — rtl_lead is mid-flight
+  there and PROTOCOL §10 forbids it to me pre-verdict in any case. Every formula
+  below is transcribed from specification text.
+
+### Reasoning
+
+**The method changed, and that is the substantive decision of this activation.**
+Twice now the same algebra has produced the same defect: F-1 at M17 (WO-0020)
+and C-37 at M14 (WO-0022). Both times the specification's argument reproduced
+*on its own worked example* and failed off it — at M17 because the example was
+fully delivered, at M14 because the example carried no padding. The worked
+example is precisely the point in the space where checking is worthless, and I
+have now been fooled by that shape once (my own escape at WO-0018) and rescued
+from it once only because the architect wrote §11.4 in falsifiable form. Hand
+re-derivation at a handful of points is not a control against this class. So
+rather than re-derive the moved text at the four or five points the WO
+enumerates, I **quantified over the whole admissible space** and committed the
+oracle that does it: `tools/check_abort_availability.sh`, pure bash + awk, every
+(N, N′) pair both modules accept, **8 720 452 checks, 0 failures**.
+
+This is the compensating control I promised in `J-dv_lead-0011` ("every module
+with a `Tail`-like state gets an abort-availability row computed over the full
+range of the deficit, not checked against the worked example"), made mechanical
+and re-executable by the auditor at this SHA instead of living as a promise in
+an attack plan. I deliberately did **not** wire it into `tools/dv_checks.sh`:
+that script's CI step is the orchestrator's to make (`.github/**` is outside my
+scope) and changing the shared currency suite mid-flight buys nothing here. It
+is an on-demand oracle cited by SHA, exactly as `dv_checks.sh`'s own header
+describes for checks that have not been wired.
+
+**The verdict: the moved text holds, at every point, not merely at the ones I
+was asked about.** The separation is 1 − D identically; D ranges −1 … 184 so the
+negative branch really is live at M14 where it is dead at M17, which is what
+makes "copy iff D ≤ 0" one rule rather than two analogous ones; the threshold
+N′ ≥ 8⌈N/8⌉ − 11 is an iff, not a sufficient condition; the surviving under-fill
+is 4 … 11 octets by residue; the band at the minimum frame is exactly 21 … 36;
+D differs from M17's word deficit by exactly one at N′ mod 8 ∈ {0, 5, 6, 7} and
+nowhere else, always in the direction that predicts a derived 0 where a
+conformant design must copy. The `Tail` superset is **proper** with 5 820
+witnesses, and the *first* of them is (N = 46, total length 37) — §8's own case,
+which means the specification drives the smallest witness of its own strictness
+claim. At M17 the same predicate is an equality at all 1.1 M of its pairs. The
+contrast the ADR insists on is real and it is the one a bench writer gets wrong.
+
+**The 183/184 reconciliation is right and is the right *kind* of resolution.**
+They are different events, not a disagreement: at N = 1500, N′ = 21 the payload
+`tlast` leaves Ci + 4, the input `tlast` is presented Ci + 187 and the bit is
+readable by a registered output Ci + 188. 183 is the distance to presentation
+(M17's regime-table convention, the spec's figure); 184 is the distance to
+readability (my WO-0022 figure). Naming both in one cell is better than picking
+one, because a bench measures one of them and a designer reasons about the other.
+
+**Why I judged §8's pair better than I commissioned.** I raised C-37 as a formula
+error with a system consequence and named no discriminating stimulus. The pair
+36/37 agrees on padding, on `Tail` and on the word deficit and disagrees only on
+D, so it kills the three substitutions a reader actually makes; I additionally
+checked the two off-by-one D-keyed designs and both fail one member, so the pair
+pins the threshold rather than merely separating the classes. Then, computing the
+composite, I found something neither document claims: at the 64-octet frame with
+a conformant fully packed datagram, the **application-visible** loss band is
+IPv4 total lengths **29 … 36** — eight values, all D = 1 — because below 29 the
+IPv4 payload is at most a bare UDP header and M17 emits no application payload
+frame at all. So §8's total length 36 is the **largest application-visible member
+of the residual class**, not an arbitrary probe. That sharpens the residual in
+both directions and it is why I endorsed the disposition rather than merely
+accepting it.
+
+**The residual, and one correction to the WO's framing.** The WO asked me to
+judge the residual "as the owner of the DV-escape ledger". I am not its owner and
+said so in the packet: PROTOCOL §10 and charter §3 give that ledger to the
+auditor, in `docs/reports/audit/`, and I have written nothing there and will not.
+I judged it as the lead whose gate closes it (`SO-ip_eth_rx_64.md`), whose escape
+produced it, and who has to write the benches that live with it. On the merits
+all four grounds hold: REQ-008/§0.6 prohibit *silent discard* and M14 discards
+nothing on this class, so the prohibition has no instance and what is lost is
+per-frame attribution — correctly named as the smaller thing; the class is
+entered only by an already-invalid frame, so the derived 0 is *right* whenever no
+abort occurred; the loss cannot compound because M17's only source for the bit is
+M14's output; and the price is flip-invariant, which is the same test I applied
+to C-37 itself and the architect applied to C-38. The two E2 reversal conditions
+are exactly the conditions under which "eight declared lengths at one frame size"
+stops being small, and alternative (e)'s price is honestly stated and genuinely
+not the architect's to take in-role.
+
+**Why I raised C-41 rather than letting the re-countersignature close the item.**
+ADR-0012 fixed the unpassable-hook defect at SPEC-M14 §10 and did not look one
+level up. Three verification columns in FROZEN requirements.md still commission
+the REQ-007 universal unscoped — REQ-007's own ("every downstream stream that
+emits a frame"), REQ-013's ("every downstream stage still forwards the frame with
+the bit set") and REQ-707's ("`tuser`[0] propagation checked against an injected
+bad-FCS frame"). §11.4 explicitly reasons that REQ-707 needs no diff because its
+normative sentence says "propagated **per REQ-007**" and inherits whatever scope
+REQ-007 gains — which is right about the normative sentence and silent about the
+verification column, because a test commission inherits no scope from anything.
+I graded the severity **below** C-37 and said so: these three are *satisfiable*
+(REQ-708's own stimulus passes all of them), where §10's old hook named §8's
+frames and was unsatisfiable. But the natural bench choice is the minimum frame
+and the smallest datagram, REQ-707's is the *system* bench gated at neither
+§11.4's nor §11.5's SO- packet, and a tb_writer working from requirements.md is
+the person it hurts.
+
+What decided me to raise it as a row rather than a note is the **price
+asymmetry**, which nobody has separated: requirements.md §13's own class column
+treats verification-column changes as **editorial**, and this very commit
+contains one (C-39's REQ-710) with no ADR and no normative movement. So the
+unpassable-hook half of the REQ-007 problem costs three editorial diffs today,
+while the normative scoping clause stays carried and flip-invariant exactly as
+§11.4 and §11.5 price it. The two halves have been treated as one deferred item
+and they have different prices. **This is also mine to have missed** — it has
+been true since the F-1 repair landed at `d8df28d` and I countersigned batch F
+without raising it. Root cause: at WO-0022 I checked §11.4's *generalisation*
+across modules, which is where I expected the error to be and where it was, and
+did not then walk *up* to requirements.md's own verification columns to ask
+whether the newly created exception had falsified any of them. The lesson
+generalises and goes into my attack-plan discipline: **when a module gains a
+behavioural exception to a programme invariant, re-read every verification column
+of that invariant and of the requirements that cite it, not only the module hooks
+the §11 row prices.**
+
+**C-42 is smaller and is entirely mine.** SPEC-M14 §12's countersignature row
+records that I proved "the abort-bit inequality M + 3 ≥ K … for every residue".
+What I proved at WO-0018 (`J-dv_lead-0009`, Evidence item 7) is
+⌈(N − 20)/8⌉ + 3 ≥ ⌈N/8⌉, which is true in every residue and is §6.1's *second*
+inequality. `M + 3 ≥ K` is the composite §13 now names as the error, reached from
+the true statement by the substitution M ← ⌈(N − 20)/8⌉ that holds only at
+N′ = N — the exact substitution that hid C-37. My own journal's Actions line at
+`J-dv_lead-0009` made the same slip while its Evidence stated the true
+proposition; the architect transcribed my label faithfully. The freeze record
+therefore claims a proof of a proposition the same document's §13 calls false.
+Journals are append-only (PROTOCOL §4), so my half of the correction is here
+rather than edited into `J-dv_lead-0009`, and the specification's half is a §13
+row whenever SPEC-M14 next moves. It blocks nothing.
+
+**C-40 reaffirmed one site short, and why I raised a single word.** SPEC-M17 §10's
+REQ-007/REQ-013 hook still reads "copied where that word is emitted *on or after*
+the input `tlast` (§6.1's D = 0)" — the same wrong phrase C-40 corrected at §3,
+in the **hook that commissions the bench**, saved only by its parenthetical.
+SPEC-M14 §10, written fresh in the same commit, reads "after … (§6.1's D ≤ 0)"
+and is right in both halves. I would not have raised one word alone; I raise it
+because SPEC-M17 §13 asserts the sweep is complete and it is complete but for
+this, and because the hook is the artefact a bench is written from. C-40 stays
+open with one named residual site rather than closing.
+
+**C-38's decline I endorse, and endorsing it is the consistency test.** The
+architect declined on my own rule — the price is flip-invariant, SPEC-M18 is
+already FROZEN, the gate is a different gate (`SO-udp_ip_tx_64.md`), and the
+repair is a second post-freeze *behavioural* change at a different module inside
+the commit carrying the programme's first. That is exactly the test §11.4 uses,
+that I applied to C-37 itself, and applying it inconsistently when the item is
+mine would be worse than the delay. My mandatory-row status on the M18 attack
+plan is intact and the declare-96/supply-104 datagram will be a bench before it
+is a reader.
+
+**What I did not reopen.** Everything outside the moved text: M14's L = 12,
+h = 20, ΔC = 4, the 3-cycle parse latency, all seven strobe cycles, §9's
+extensional truncation branch, and every batch-A…F item signed at WO-0018,
+WO-0020 and WO-0022. The batch-F status flip I checked only for consistency with
+what I signed — all four §12 rows cite run 30744579228 at d8df28d with
+`J-dv_lead-0011`, and the per-spec bases are the right ones — and it needs no
+further signature from me.
+
+### Actions
+- Read the charter, PROTOCOL, WO-0025, the WO-0023 Return log and ADR-0012 in
+  full, then SPEC-M14's and SPEC-M17's moved text and the whole `8641455` diff.
+- Wrote `tools/check_abort_availability.sh` — an exhaustive re-derivation of both
+  modules' abort-availability algebra from spec text, pure bash + awk, with every
+  formula cited inline to its section; ran it (exit 0, 8 720 452 checks).
+- Re-derived by hand, independently of the tool, before running it: the
+  separation identity, D ≥ −1 from 20 ≥ 16, the threshold equivalence, the
+  D-versus-word-deficit residue split, and the `Tail` superset properness.
+- Checked the §8 pair against four wrong keys (unconditional, padding, `Tail`,
+  M17's word deficit) and two off-by-one D-keyed designs.
+- Computed the composite over the 64-octet frame and isolated the
+  application-visible band, total lengths 29 … 36.
+- Grepped every `tuser`, `abort` and `inherit` site in SPEC-M14 to verify the
+  relay sweep is complete (six sites, none unqualified) and found the count
+  "five" is a Return-log prose slip and not in any specification.
+- Checked requirements.md REQ-007/REQ-013/REQ-707/REQ-605 verification columns
+  and traceability.md's REQ-007/REQ-013/REQ-707 rows against the new exception;
+  raised C-41 from the first three and confirmed the architect's REQ-605 and
+  traceability findings.
+- Compared SPEC-M14 §12's countersignature row against `J-dv_lead-0009`'s
+  Evidence item 7; raised C-42.
+- Ran `tools/dv_checks.sh`; verified CI run 30746705765 via the GitHub API.
+- Wrote the Return log into the WO-0025 packet with the re-countersignature
+  sentence at `8641455`, the per-item verdicts, the residual judgment and
+  C-41/C-42.
+- Touched no spec, ADR, gate or audit file; read no RTL and did not enter
+  `libs/`; ran no git command beyond `status`, `log`, `show` and `diff`.
+
+### Evidence
+- `bash tools/check_abort_availability.sh` → **exit 0**,
+  `8720452 check(s) run, 0 failure(s)`, 2.5 s wall. Committed in this commit and
+  re-executable by the auditor at this SHA. Selected output lines:
+  - `M14  D over the whole admissible space: -1 .. 184   (§6.1: never below -1; worst 184)`
+  - `M14  in-Tail-but-still-copies witnesses: 5820, first (N=46, total length 37)`
+  - `M14  N=46 (64-octet frame): threshold total length >= 37, unavailable band 21 .. 36`
+  - `M14  surviving under-fill by residue: 4 .. 11 octets`
+  - `M14  worst case N=1500, total length 21: payload tlast Ci+4, input tlast Ci+187, readable Ci+188`
+  - `       -> 183 cycles before the input tlast is PRESENTED   (§6.1, the M17 convention)`
+  - `       -> 184 cycles before the bit is READABLE by a registered output (dv_lead, WO-0022)`
+  - `M14  §8 pair, total length 36: D=1  W=1  Tail=yes  payload=16 octets in 2 words, tlast Ci+5, padding=10`
+  - `M14  §8 pair, total length 37: D=0  W=1  Tail=yes  payload=17 octets in 3 words, tlast Ci+6, padding=9`
+  - `M17  D over the whole admissible space: 0 .. 183   (§6.1: D >= 0)`
+  - `M17  worst case N=1480, UDP length 9: D=183, 182 cycles before the input tlast`
+  - `Composite over the 64-octet minimum frame, inherited bit = 1: 39 marked, 36 lost at M14, 96 lost at M17`
+- `bash tools/dv_checks.sh` → **exit 0**, `dv_checks: all checks passed`; within
+  it `check_records_vs_appendix.sh` **23 check(s) run, 0 failure(s)** (all twenty
+  §4.1 lifts byte-identical to their records) and `check_emitted_verilog.sh`
+  **4 checks, 0 failures, 4 pending**.
+- CI `build` run **30746705765**:
+  `head_sha` = `8641455ffdfa00697c590c23568c7712cb197beb`,
+  `status` = `completed`, `conclusion` = **`success`**, `run_number` 60,
+  `event` = `push`, branch `claude/fpga-hardcaml-agent-orchestration-37ceyf`.
+  The head SHA **is** the commit carrying the moved text, so no witnessing
+  argument is owed for this re-countersignature.
+- Hand arithmetic, reproducible from the cited sections with no tooling:
+  payload word j leaves Ci + 4 + j (SPEC-M14 §6.1 cycle table) so the `tlast`
+  word leaves Ci + M + 3; separation = M − K + 4 = 1 − D; ⌈(N−20)/8⌉ ≤ ⌈N/8⌉ − 2
+  because 20 ≥ 16, hence D ≥ −1; ⌈(N′−20)/8⌉ ≥ ⌈N/8⌉ − 3 ⟺ N′ ≥ 8⌈N/8⌉ − 11;
+  D − W = −1 at N′ mod 8 ∈ {0,5,6,7} and 0 at {1,2,3,4}; 8·6 − 11 = 37;
+  1500 mod 8 = 4 so total length 1500 is D = 0.
+- Verdict artifact: `agents/handoffs/WO-0025_m14-recountersign.md`, Return log
+  dated 2026-08-02T18:25Z, carrying the re-countersignature sentence at
+  `8641455`, the ten-row per-item verdict table, the residual judgment and
+  C-41/C-42.
+- `git status --porcelain` before this entry: only
+  `tools/check_abort_availability.sh` untracked; no spec, ADR, gate, audit,
+  `libs/` or `test/` path modified.
+
+### Outcome
+**DoD met.** Every item on WO-0025's list is re-derived and confirmed, the
+residual disposition is judged and endorsed with the application-visible band
+quantified, C-39 is closed, C-40 is reaffirmed with one named residual site,
+C-38's deferral is endorsed, and two new ledger items are raised. The
+re-countersignature is given:
+
+> "I re-countersign the SPEC-M14 text moved by ADR-0012 — §2, §3, §4.2, §6.1,
+> §6.2, §8, §10, the new §11.5 and the §13 row — for `P1-spec-freeze`
+> testability at `8641455`. SPEC-M14 remains FROZEN and its testability
+> countersignature stands: on `J-dv_lead-0009` for the specification as frozen
+> at `3f6accc`, and on `J-dv_lead-0012` for this revision."
+
+SPEC-M17's §11.4/§13 corrections landed in the same commit are accepted and
+`J-dv_lead-0011` stands over them. The ratified batch-F status flip is
+consistent with what I signed at WO-0022 and needs no further signature.
+
+Handoff: `agents/handoffs/WO-0025_m14-recountersign.md` Return log, to the
+orchestrator — for transcription of the re-countersignature and for relay of
+C-41 and C-42 (and C-40's residual site) to architect_docs_lead.
+
+### Open-questions
+- **C-41 is the one I want acted on before the first receive-chain bench**, not
+  because it is large but because it is cheap and it is aimed at a worker. A
+  tb_writer working from requirements.md REQ-007, REQ-013 or REQ-707 today can
+  be commissioned to an assertion a conformant design fails, and the fix is three
+  editorial verification-column diffs on the C-39 precedent — no ADR, no
+  normative movement, no interaction with the carried scoping clause. It is not
+  an escalation class; it is normal packet flow to architect_docs_lead.
+- **C-42** is one cell in SPEC-M14 §12 and rides along with whatever moves that
+  document next.
+- **C-40 stays open** on SPEC-M17 §10's "on or after", gated at
+  `SO-udp_ip_rx_64.md` with the rest of it.
+- **C-41 is a second escape of mine** (charter §6 criterion 2), smaller than
+  C-37 and of the same family: I checked the exception where I expected it and
+  not one document up. The auditor owns the DV-escape ledger (PROTOCOL §10); the
+  root cause is in Reasoning above and I will cooperate with its recording. I did
+  not and will not write `docs/reports/audit/**`.
+- **`tools/check_abort_availability.sh` is not wired into `tools/dv_checks.sh`**
+  and its CI step, like `dv_checks.sh`'s own, is the orchestrator's to make
+  (`.github/**` is outside my scope). My recommendation is to leave it on demand
+  until `dv_checks.sh` itself is wired, then add it in the same step — it is
+  2.5 s and dependency-free.
+- C-2, C-3, C-5, C-7, C-9's REQ-903 half, C-32, C-33, C-36, C-38, C-40, C-41 and
+  C-42 remain open. C-31, C-34, C-35, C-37 and C-39 are **closed**.
+- **Next for me is unchanged and now overdue**: `test/attack_plans/`, starting
+  with `AP-ip_eth_rx_64.md` and `AP-udp_ip_rx_64.md`. Their first rows are
+  written for me — the abort-availability row computed over the full deficit
+  range (now mechanised), §8's 36/37 pair with both input bits, and the
+  D ≥ 1 exclusion named so no SO- claims REQ-007 whole at M14 by silence.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0025_m14-recountersign.md
+- tools/check_abort_availability.sh
