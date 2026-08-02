@@ -6560,3 +6560,301 @@ tested first and the holes are closed and seeded. That is the practice change
 - tools/precompile_stubs/base.ml
 - tools/precompile_stubs/hardcaml.ml
 - tools/precompile_stubs/ifc_check.ml
+
+## [J-dv_lead-0020] 2026-08-03T14:15Z | task:WO-0035 | SPEC-M03's ninth ruling and requirements.md's two cells SIGNED at 1fe71ca — the ruling right, its decisive ground reproduced and extended, and its *derivation* found unsound: §6.1 read alone commissions the very pulse the ruling forbids, so the offered clause is accepted and upgraded from courtesy to owed; the new row is M03-M10 because M03-M9 was already taken
+
+### Trigger
+Orchestrator, the queued countersignature sitting: WO-0035's revisions
+(`1fe71ca`, `J-architect_docs_lead-0013`) are the third ADR-0012-path revision
+of SPEC-M03 and the third of requirements.md, and none is in force until I sign.
+Four things were put to me by name: the §9 ruling and its two sites, C-43's cell
+*and the architect's classification of it*, C-46/C-47, and a one-clause offer
+the architect deliberately did not take and asked me to decide in the
+countersignature rather than as a ledger row.
+
+### Inputs
+- `agents/handoffs/WO-0035_spec-queue-2.md` in full — deliverables and the
+  architect's Return log §§1–5, including both pre-worded signature drafts and
+  the §4 offer.
+- `git show --stat 1fe71ca`; `git show 1fe71ca -- docs/ | grep -c '^@@'` and the
+  eight hunk headers; `git show 1fe71ca -- docs/specs/modules/xgmii_rx_64.md
+  docs/specs/requirements.md` read line by line.
+- `docs/specs/modules/xgmii_rx_64.md` at HEAD: **§6.1's four-item residue recipe
+  (lines 428–452)**, §6.2's `Frame` and `Preamble` rows, §6.3 items 1 and 3,
+  §9's nine condition rows, its closure list and all nine co-occurrence rulings,
+  §10's REQ-102/REQ-104/REQ-107 hooks, §13.
+- `docs/specs/requirements.md` at HEAD: **REQ-104**, REQ-103, REQ-107, REQ-110,
+  REQ-113, REQ-301, REQ-304, REQ-810, §0.6, §0.7, §12, §13.
+- `test/attack_plans/AP-xgmii_rx_64.md` at HEAD — mine; §4.B (M03-B3), §4.F
+  (M03-F2), §4.M in full (M03-M1 … **M03-M9**), §4.N (M03-N2), §5, §6, §9.
+- `agents/handoffs/WO-0036_m03-sub5-conformance.md` — rtl_lead's RETURNED block,
+  read as **corroboration about the clarity of §6.1's text only** and cited as
+  such; no verdict here rests on it, and I reached the §6.1 finding from the
+  committed specification before reading it.
+- My own `J-dv_lead-0016` (the `06c1eba` countersignature, whose surface C-50
+  falls in) and `J-dv_lead-0019`.
+- **No `libs/**` at any point.** M03's benches are unwritten; PROTOCOL §10
+  governs and there was no reason to open RTL.
+
+### Reasoning
+
+**Three questions per item, again, because they keep coming apart.** Is the
+*decision* right; is the *ground* right; is the *text* right. On the §9 ruling
+the answers are yes, yes, and — for one sentence of it — no, in a way that
+matters more than it looks.
+
+**The ruling itself.** `error_bad_fcs` cannot pulse for a frame of fewer than
+five octets between start and terminate. REQ-104 defines the strobe as the
+disagreement between a **received FCS** and a CRC over the octets preceding it;
+a frame with nothing to remove an FCS from supplies neither operand, so this is
+not `error_runt` taking precedence — `error_bad_fcs`'s condition never obtains.
+That is the right shape of argument for a co-occurrence question, because a
+precedence answer would have been unobservable at the port and every implementer
+would have had to guess the order. Ruling 1 bounds itself in its own words at
+5 octets, so the partition 0–4 / 5–63 is clean; I checked the 4/5 boundary
+specifically, which is where a partition of this shape usually leaks, and it
+does not.
+
+**The decisive ground I reproduced rather than read, and then extended.** The
+architect's fourth ground is that the refused reading is content-dependent in a
+class §9 has just declared content-free, and it offers a command. Running it
+gives `0x0 0x2144df1c` — the FCS of an empty message is zero, and CRC over four
+zero octets is exactly REQ-304's residue. But the argument needs two more facts
+the Return log did not state, so I got them: among 4-octet frames that member is
+**unique** (`00 00 00 01` → `0x5643EF8A`, `FF FF FF FF` → `0xFFFFFFFF`,
+`12 34 56 78` → `0x4A090E98`), and at 0/1/2/3 octets the register holds
+`0x00000000`, `0xD202EF8D`, `0x41D912FF`, `0xFF41D912`, none of them the
+residue. So the refused reading fires on **every member of the class except
+one**, and that one passes silently. That is ADR-0013 alternative (f)'s test met
+exactly — reachable, observable, two conformant implementations differing — and
+it is why the class had to be decided rather than left to §6.3.
+
+It is also, and this is mine rather than either packet's, **a hole in the bench
+that tests the ruling**. A bench writer reaching for "a 4-octet frame" naturally
+writes zeros. That single stimulus passes a design with the defect. So the
+ruling's own ground implies an anti-vacuity constraint on the stimulus, and I
+put it in the plan: M03-F2's 4-octet frame must not use an all-zero filler, or
+must drive both. Neither packet said so, and a quiet vacuous row is exactly the
+failure mode attack plans exist to prevent.
+
+**Where I stopped agreeing.** The Return log §4 declines to touch §6.1's
+four-item residue recipe, resting on ruling 9's own derivation that §6.1 "has
+**no instance** in this class", and offers one clause if I judge that derivation
+too thin. "Thin" was the wrong word to hand me. I tested the derivation leg by
+leg against the committed text, and two of its three legs do not hold:
+
+*Leg (a)* — item 3 covers "every received octet of the frame, the four FCS
+octets included", which the ruling says no frame below 5 octets has. Item 3 is
+defining the *extent* of the coverage; "every received octet" is a set that
+exists at every length, and the appositive tells the reader the FCS is not
+excluded from it. It is satisfiable at 0, 1, 2, 3 and 4 octets. Even granting
+the most charitable reading available — that the appositive *presupposes* four
+FCS octets, so the sentence has no referent below four — the leg still fails at
+exactly **4 octets**, a frame whose four octets are naturally read as the FCS
+with no data. Four is a length REQ-107's own verification column drives and
+§10's REQ-102 hook reaches; it is a commissioned length, not a corner.
+
+*Leg (b)* — at zero octets item 2 never updates, so item 4's "that final value"
+is the seed rather than a CRC over anything. True, and not load-bearing: item 4
+does not ask what the value means, it tests equality against one constant. The
+seed is a perfectly good value to compare, it is not the residue, and item 4
+then says "Any other value … pulses `error_bad_fcs` once".
+
+*Leg (c)* — item 4's consequent names a `tlast` word this frame does not have.
+True, and the only leg that bites — but item 4's consequent is a **conjunction**
+of two effects, and finding the first inapplicable does not stop a reader
+applying the second. Splitting there is the obvious reading, not a perverse one.
+
+So §6.1, read as the paragraph an implementer reads, says: seed to zero, update
+over whatever arrives, compare against `0x2144DF1C`, pulse on anything else —
+which across this class is every frame but one. That is not an absence of
+instance. It is an instance, and it is the wrong one.
+
+**Why that is a signature and not a withholding, stated as a line rather than a
+feeling.** The specification's *outcome* is decided correctly and unambiguously
+by three normative sites: §9's sixth row (the antecedent, frozen), ruling 9 (the
+inference, new), and §6.2's `Frame`-row gate (the sequencing, new). Under the
+layered reading — §6.2 sequences the check, §6.1 supplies its arithmetic — there
+is no contradiction, only a paragraph that misleads in isolation. Nothing a
+bench asserts is unpassable; no conformant design fails anything; the strobe set
+I am about to commission is right. That is the F-1/M03-R1 test and it is **not**
+met, so I sign. What *is* wrong is one sentence of the ruling's rationale, and
+the programme's own precedent for a false justification attached to a correct
+row is a ledger row (C-44, mine).
+
+But the offer changes class. It was made as a courtesy contingent on my judging
+the derivation thin; I judge it **unsound**, which makes the clause owed rather
+than optional, on three grounds: ruling 9's "no instance" sentence is false as
+written, in new normative text, about another section of the same document;
+§6.1 is the defect's origin site and the two derived sites were repaired while
+it was not; and the right ground for the whole disposition — §6.2's gate — is
+already in the commit, true, and in the place the architect itself identified as
+"the site an implementation codes". The repair is one clause in item 4 and one
+corrected sentence in ruling 9. I wrote C-49 so it can ride any later SPEC-M03
+diff rather than forcing an activation, because nothing is blocked.
+
+**On rtl_lead's traces, and the discipline about them.** The coordinator flagged
+WO-0036's confirmation of the predicted reds as evidence for the ruling's
+sharpness, and told me to judge the text. I did the §6.1 analysis from the
+committed specification first, then read the Return log, and it reports the
+delivered module computing `crc_final` = the `0x00000000` seed at zero octets
+and pulsing — which is leg (b) and leg (c) taken exactly as I said a reader
+would take them. I use that as **corroboration about how clear §6.1 is**, which
+is a fact about the text, and for nothing else. A design agreeing with my reading
+of a paragraph is evidence about the paragraph; it is not evidence about the
+design's conformance, and its verdict belongs to a bench that does not exist yet.
+
+**C-43's classification, which I was asked to judge and not merely to accept.**
+The architect separates *class* (editorial, by §13's test: no conformant design
+and no existing test changes meaning) from *countersignature* (owed), and states
+the discriminator it will keep applying: normative text takes a signature, a
+verification column takes concurrence. That matches every precedent — C-39's and
+C-41's columns closed on concurrence, ADR-0014's REQ-810 sentence took a
+transcribed signature while being classed editorial — and it is right, so I
+endorse it. But the stated form is a **proxy**, and this very cell is where the
+proxy nearly breaks: §12 is normative text that REQ-008's *verification column*
+quantifies over, so it is both things at once. The refinement I adopt and will
+apply from here: **does the change move text a test *derives from*, or text that
+*commissions* a test?** My strobe monitor derives its expected condition set from
+§12, so a test derives from it, so it takes a signature. Same answer as the
+proxy, but for a reason that does not run out.
+
+**The row-id collision, which is small and would not have stayed small.** The
+Return log proposes the ruling's attack-plan row be `M03-M9`. `M03-M9` has been
+taken since WO-0027 by the §0.6 abort-inheritance row, which this plan's own §5
+cites by id. The irony is exact: the same Return log appended ruling 9 *last*,
+against semantic order, precisely to protect the M-family's positional citations
+of §9's rulings — and then proposed a row index that collides with a committed
+one in the same artefact. Adopting it would have produced two `M03-M9`s or a
+silent renumber, which is the failure the append was guarding against. The new
+row is **M03-M10**, and because that ends the ruling↔row correspondence at 8 I
+put a row-index warning at the head of §4.M: the obvious inference from "ruling
+9" to "M03-M9" is now the wrong one, and a convention that has quietly stopped
+holding is worse than one that never held.
+
+**Two ledger rows, one of them against text I signed.** C-49 is above. C-50: §9's
+rows 8 and 9 both end "the new frame begins normally", unqualified, which
+ADR-0014 made conditional — while `cfg_rx_enable` = 0 the abort is reported and
+the new frame does **not** begin. §9's own closure-list clause (b) says so in the
+same section, so nothing is ambiguous and no bench derives from those cells
+(M03-N4 derives from §10's hook), but the rows state a universal their own
+section contradicts. It is C-41's family at its mildest, and it is **my miss**:
+those rows were in the surface I countersigned at `06c1eba`, and C-47 — which I
+accepted and rewidened — touched row 9's *condition* cell without my noticing its
+*stream-effect* cell had the same shape of defect one column over. One
+parenthetical each.
+
+**What I did not do.** I did not touch `AP-ip_eth_rx_64.md`: C-43's cell changes
+no M14 row, because `M14-K7` has been ASSERT with its observable pinned since
+WO-0030 — which is, incidentally, the architect's own argument for classing the
+cell editorial, and it holds. I did not ask for a repair activation for C-49 or
+C-50. I did not re-verify rtl_lead's fix.
+
+### Actions
+- Verified confinement: 8 hunks, 2 `docs/specs/**` files, nothing else.
+- Endorsed §9 ruling 9 on all three grounds; reproduced the decisive one and
+  extended it with the uniqueness check and the 0/1/2/3-octet register values.
+- Tested ruling 9's §6.1 derivation leg by leg and found two of three legs
+  unsound; **ACCEPTED the §6.1 one-clause offer and upgraded it to owed**, with
+  the correction of ruling 9's own "no instance" sentence attached.
+- **SIGNED** SPEC-M03's additions and requirements.md's §12 cell and REQ-110
+  gloss; **CONCURRED** in REQ-810's verification-column scope with no signature
+  sought; endorsed the architect's normative/verification discriminator and
+  adopted a refinement for the case where the proxy is ambiguous.
+- Detected the `M03-M9` row-id collision and created **M03-M10** instead; added
+  a row-index warning to §4.M.
+- Added the anti-vacuity filler constraint to M03-F2 that the ruling's own
+  ground implies; strengthened M03-F2, M03-B3 and M03-N2 from lower-bound to
+  exact strobe sets; updated §6's REQ-104 and REQ-107 coverage rows; added the
+  §9 change-log row.
+- Wrote the WO-0035 Return log verdict with three gate blocks (drafts adopted
+  **with amendments**) and ledger rows C-49 and C-50.
+- Staged nothing outside `test/**` and `agents/handoffs/**`.
+
+### Evidence
+All commands from a repo checkout at this commit.
+
+1. **Confinement.** `git show --stat 1fe71ca` → 4 paths;
+   `git show 1fe71ca -- docs/ | grep -c '^@@'` → **8**, at SPEC-M03 `-515`,
+   `-722`, `-819`, `-911` and requirements.md `-425`, `-574`, `-666`, `-713`.
+2. **The decisive ground, reproduced.**
+   `python3 -c "import zlib; print(hex(zlib.crc32(b'')), hex(zlib.crc32(bytes(4))))"`
+   → `0x0 0x2144df1c`, matching REQ-304's residue under REQ-301's
+   parameterisation.
+3. **Uniqueness and the shorter lengths, which the ground needs and did not
+   state.** Over 4-octet fillers: `00000000` → `0x2144df1c` (**match**),
+   `00000001` → `0x5643ef8a`, `ffffffff` → `0xffffffff`, `12345678` →
+   `0x4a090e98`. Over lengths 0…4 of zeros: `0x0`, `0xd202ef8d`, `0x41d912ff`,
+   `0xff41d912`, `0x2144df1c`. So exactly one member of the class passes the
+   refused reading, and it is the one a bench writes by default — which is what
+   M03-F2's new filler constraint exists for.
+4. **The §6.1 finding, checkable against committed text.**
+   `docs/specs/modules/xgmii_rx_64.md` lines 428–452, item 3: "the coverage runs
+   over **every received octet of the frame, the four FCS octets included**, and
+   ends with the octet immediately preceding the terminate character"; item 4:
+   "the frame's FCS is correct iff that final value equals REQ-304's residue
+   **0x2144DF1C**. Any other value sets `tuser`[0] = 1 on the `tlast` word and
+   pulses `error_bad_fcs` once." Item 3's extent exists at every length in the
+   class; item 4's consequent is a conjunction whose second conjunct survives the
+   first's inapplicability. Against ruling 9's claim (line ~833) that §6.1 "does
+   not say otherwise, because it has **no instance** in this class".
+5. **REQ-104's operands, quoted**: "compute the CRC-32 FCS over the destination
+   address through the last payload octet and compare it against **the received
+   FCS**" — neither operand exists below 5 octets.
+6. **The row-id collision**: `grep -n "M03-M9" test/attack_plans/AP-xgmii_rx_64.md`
+   → the §4.M STRUCTURAL row (§0.6 inheritance) **and** its citation in §5, both
+   committed at WO-0027, `J-dv_lead-0013`.
+7. **Plan status counts after the additions**, recomputed rather than asserted:
+   `grep -oE '\| (ASSERT|NO-ASSERT|NO-STIMULUS|RULING|GAP|STRUCTURAL) \|$'
+   test/attack_plans/AP-xgmii_rx_64.md | sort | uniq -c` → 58 ASSERT,
+   7 NO-ASSERT, 4 NO-STIMULUS, 1 GAP, 4 STRUCTURAL, **no RULING** = **74 rows**,
+   matching the §9 change-log row.
+8. `git status --short` → exactly the two files listed below.
+9. **Negative capability**: no bench was run and none exists for M03; the
+   machinery of `J-dv_lead-0017` is built but unanchored (the verilog-ethernet
+   differential co-sim has not run), so nothing here is simulation evidence.
+   Every claim above is arithmetic, a quotation of committed text, or a
+   reproducible one-line command.
+
+### Outcome
+DoD **met**. SPEC-M03's additions at `1fe71ca` **SIGNED**; requirements.md's §12
+cell and REQ-110 gloss **SIGNED**; REQ-810's verification column **CONCURRED**
+(no signature sought or owed, and that classification is right). The §6.1
+one-clause offer **ACCEPTED and upgraded from courtesy to owed** — C-49 — on the
+finding that ruling 9's derivation is unsound rather than thin. The architect's
+normative-vs-column discriminator **endorsed** with a refinement I will apply
+from here. C-43, C-46 and C-47 (both sites) all **close**; C-49 and C-50 open,
+both non-blocking, C-50 against a surface I signed myself.
+
+Attack plan: **M03-M10 created** (not M03-M9 — collision with a committed row
+id, recorded rather than renumbered), three rows strengthened to exact strobe
+sets, one anti-vacuity constraint added that neither packet stated. Three gate
+blocks supplied verbatim for transcription — `docs/gates/**` is outside my write
+scope (PROTOCOL §6) and the transcription is the orchestrator's clerical half
+(§7). Handoff: `agents/handoffs/WO-0035_spec-queue-2.md` Return log.
+
+### Open-questions
+- **Owed, non-blocking, no activation requested**: **C-49** (§6.1 item 4's
+  missing scope + ruling 9's false "no instance" sentence) and **C-50** (§9 rows
+  8/9's unqualified "the new frame begins normally"). Both should ride the next
+  SPEC-M03 diff. C-44, C-45 and C-48 carry unchanged.
+- **A class now confirmed three times over**: a correct rule carrying a
+  justification narrower or wider than itself — M03-R2's withdrawn gloss,
+  REQ-110's gloss, and now ruling 9's "no instance". Each was found by testing
+  the justification against the text it describes rather than against the
+  disposition it supports, and I expect the fourth in the same place: a sentence
+  explaining why a section did *not* need to move.
+- **A hazard for the bench, not the spec**: the content-dependence ruling 9
+  names makes the all-zero 4-octet frame a silent pass, so the row that tests
+  the ruling can be written vacuously. M03-F2 now forbids it. Any future row
+  whose kill depends on a CRC value should be checked the same way — the
+  question is not "does the stimulus drive the condition" but "does the
+  stimulus distinguish the designs".
+- **Unchanged**: no `SO-xgmii_rx_64.md` may rest on X-1's outcome model until
+  the verilog-ethernet differential co-sim has run (charter §3's external
+  anchor). rtl_lead's WO-0036 repair is unverified by me and nothing here
+  depends on it.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0035_spec-queue-2.md
+- test/attack_plans/AP-xgmii_rx_64.md
