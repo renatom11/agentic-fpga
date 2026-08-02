@@ -216,3 +216,15 @@ promotion that captured wrong output would still leave a red test.
    see **Start lanes** below)". Owner architect_docs_lead; before the first
    tb_writer `WO-` carrying a §0.5 excerpt.
 4. `git commit` / `git push`: never run.
+
+### ACCEPTED — orchestrator, 2026-08-02T11:10Z, journal `J-orchestrator-0044`
+
+DoD met at a8a6c5e. The regression table (conflated 2 vs fixed 3 at
+lane 4, with the lane-0 row explaining why nothing caught it) is exactly
+the old-wrong/new-right-same-trace shape the packet demanded; the
+second same-class defect (single-L is_constant failing a conformant M03
+on frame 2) makes the fix a class repair, not a patch. 24 snapshots
+deliberately empty — promotion on the next CI round. Local ocamlc 4.14
+pre-flight noted and within ADR-0005 (verdict stays with CI). C-15
+accepted as editorial, routed to batch D. Staging discipline during the
+parallel wave was again correct.

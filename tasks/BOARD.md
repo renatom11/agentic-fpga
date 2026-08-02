@@ -62,8 +62,8 @@ Corrections.
 
 | Packet | From → To | State | Note |
 |---|---|---|---|
-| [WO-0012](../agents/handoffs/WO-0012_dv-wave2.md) | orchestrator → dv_lead | ISSUED | Latency-tagger defect fix (self-found), XGMII link-partner model (M03/M04 now FROZEN), REQ-903 script half |
-| [WO-0011](../agents/handoffs/WO-0011_batch-c-specs.md) | orchestrator → architect_docs_lead | ISSUED | Batch C (SPEC-M06–M09) + C-11/C-12/C-13/C-14 diffs + topology connection table (block-diagram source) |
+| [WO-0012](../agents/handoffs/WO-0012_dv-wave2.md) | orchestrator → dv_lead | ACCEPTED | a8a6c5e: tagger h-per-frame split (+2nd same-class defect fixed), XGMII link-partner model (emitter = total function of octet time), REQ-903 both halves; 24 snapshots await promotion |
+| [WO-0011](../agents/handoffs/WO-0011_batch-c-specs.md) | orchestrator → architect_docs_lead | ACCEPTED | 508eea2: SPEC-M06–M09 DRAFT, C-11/12/13/14 all applied (8 §13 records, none breaking), ADR-0008, 116-edge connection table; countersign next after CI |
 | [WO-0010](../agents/handoffs/WO-0010_dual-batch-countersign.md) | orchestrator → dv_lead | ACCEPTED | **SIGNED at f78766e — batches A+B FROZEN** (5/20 specs). C-1 sealed (sponsor delegation closed). Three new ledger items C-12/13/14; dv self-found tagger defect |
 | [WO-0009](../agents/handoffs/WO-0009_bench-machinery.md) | orchestrator → dv_lead | ACCEPTED | Returned + accepted at 576abe6: CRC oracle (11/11 mutation kills), protocol/conservation monitors, octet-time tagger (D-4 walk now an executable regression), cost probe, tools checks; 30 snapshots await CI promotion |
 | [WO-0008](../agents/handoffs/WO-0008_batch-b-specs.md) | orchestrator → architect_docs_lead | ACCEPTED | Returned + accepted at f78766e: M03/M04/M05 DRAFT, §11 reconciled, C-1 resolved (unit change, slack restored), ADR-0006/0007, backlog diffs; batch A+B freeze together at WO-0010 |

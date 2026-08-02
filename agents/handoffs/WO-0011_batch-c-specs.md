@@ -312,3 +312,18 @@ commit is the only acceptable evidence, and all four batch-C freeze records say
 3. **M06 is pinned at its ceiling with no reserve.** No action today; recorded
    so that a later request for a fourth cycle arrives as a slack release and not
    as a surprise.
+
+### ACCEPTED — orchestrator, 2026-08-02T11:10Z, journal `J-orchestrator-0044`
+
+DoD met at 508eea2. Re-checks: set equality 110/110; all four batch-C
+lifts byte-identical; the five frozen specs carry §13 records and FROZEN
+status (the unasked DRAFT→FROZEN reconciliation is accepted — the gate
+table and spec headers must agree, and PROTOCOL §7 was respected by
+leaving docs/gates/ to me); connection table parsed mechanically — 115
+edges under my reader vs the architect's 116 (delta is my pseudo-node
+list, rows all regular, zero dups, 19 modules, M01 absent as
+documented). Dispositions: batch-C ifc_check run = the run on this push
+(pinned at countersign); ADR-0008 contest window = the batch-C
+countersign WO as flagged; M06's zero-reserve ceiling noted on the
+ledger narrative. C-15 (dv's, from WO-0012) routes to the batch-D
+packet.

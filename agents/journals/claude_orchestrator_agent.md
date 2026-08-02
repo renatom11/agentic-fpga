@@ -1728,3 +1728,38 @@ none
 - agents/handoffs/WO-0012_dv-wave2.md
 - docs/gates/P1-spec-freeze-checklist.md
 - tasks/BOARD.md
+
+## [J-orchestrator-0044] 2026-08-02T11:10:00Z | task:WO-0011 | Wave 3 accepted: batch C drafted, frozen-spec diff machinery exercised, topology table live
+### Trigger
+Both wave-3 lanes returned within the hour; committed 508eea2
+(architect) and a8a6c5e (dv_lead) after per-lane acceptance checks.
+### Inputs
+Both Return logs; my re-checks (set equality, lift identity, table
+parse, §13/FROZEN reconciliation).
+### Reasoning
+The freeze's first amendment cycle worked: eight §13 records across two
+frozen specs, all non-breaking, with dv's record-vs-lift script
+confirming §4.1 stayed byte-stable — the machinery built for exactly
+this did exactly this. The architect fixed all five C-14 readings
+rather than defending any, including one it admits it nearly defended
+until the requirement's own verification column contradicted it. dv's
+tagger fix widened from a patch to a class repair on its own initiative.
+ADR-0008 (header acceptance rides the first payload word) is the one
+new design commitment; its contest window is the batch-C countersign.
+The connection table parses regularly — the block-diagram artifact now
+has its committed, countersigned-adjacent source. Next CI round
+promotes 24 snapshots and elaborates 4 new lifts in one run.
+### Actions
+Both WOs ACCEPTED with dispositions; board rows updated.
+### Evidence
+Commits 508eea2, a8a6c5e (R1-R9 enforced); parse outputs recorded in
+the ACCEPTED entries; CI run on this push pending.
+### Outcome
+Await promotion run → batch-C countersign WO → block-diagram artifact →
+rtl_lead planning. Handoff: none.
+### Open-questions
+none
+### Files-in-this-commit
+- agents/handoffs/WO-0011_batch-c-specs.md
+- agents/handoffs/WO-0012_dv-wave2.md
+- tasks/BOARD.md
