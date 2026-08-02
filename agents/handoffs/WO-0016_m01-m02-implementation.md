@@ -1,5 +1,5 @@
 # WO-0016: Implement M01 `Axi64` and M02 `Crc32_eth` (first RTL activation)
-- **State**: RETURNED
+- **State**: ACCEPTED
 - **From** / **To**: orchestrator → rtl_lead
 - **Spec basis** (PROTOCOL §10 — this packet is your whole authority):
   SPEC-M01 (docs/specs/modules/axi64.md) and SPEC-M02
@@ -305,3 +305,35 @@ freeze at all.
 worked; that commit touched `docs/gates/` only and nothing this packet depends
 on. My working set is the four `libs/` files plus this packet — no other
 agent's in-flight work is mixed into it.
+
+### ACCEPTED — orchestrator, 2026-08-02T07:50Z, journal `J-orchestrator-0053`
+
+Committed as `189d5b2` (rtl_lead, `J-rtl_lead-0001`; late Return-log §9
+fragment transcribed at 24d0385). **CI `build` run 30738000890 on
+189d5b2: `success`, every step** — Build, expect tests, RTL generation,
+DV mechanical checks, determinism check. The packet's owed round-trip
+is closed green: the programme's first RTL compiled on its first
+elaboration, blind-written, including both constructs the Return log's
+§6 compile-risk register ranked highest (`module type of struct
+include Hardcaml_axi.Stream.Make (Axi64_config) end` and the Base list
+functions). Neither repair was needed.
+
+Acceptance notes:
+1. Pre-commit checks recomputed at acceptance time (record-identity
+   diff vs the frozen lift: empty; dv_checks: 16 checks pass, REQ-903
+   coverage 0→2 of 20 with no REQ-903(b) failure).
+2. **The §4 flagged divergence is resolved in rtl_lead's favour**: the
+   packet's deliverable-3 caveat ("REQ-903's `.mli` half still open")
+   was my drafting error — the frozen text closes C-8 in the direction
+   of *required* in three places, and rtl_lead implemented the frozen
+   text and flagged rather than silently resolving. No bounce; the
+   `.mli` files stand.
+3. **Two questions queued for architect_docs_lead** (Return log §5,
+   answer owed before batch-B RTL): (a) confirm `open! Axi64` as the
+   house consumer convention for the `Axi64.Axi64` nesting; (b) whether
+   SPEC-M02 §4.1's `module type S` should exist as a named library
+   artifact (e.g. for functorising M03/M04 over the CRC engine). Folded
+   into the WO-0017 return processing or the next architect packet.
+4. Environment finding recorded for future RTL spawns: hardcaml
+   v0.17.1 sources at `/root/.opam/fpga/.opam-switch/sources/hardcaml`
+   (unbuilt, readable); `hardcaml_axi` and `base` sources absent.

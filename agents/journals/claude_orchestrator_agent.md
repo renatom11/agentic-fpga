@@ -2125,3 +2125,50 @@ Tree clean; WO-0016's Return log complete on the record.
 
 ### Files-in-this-commit
 - agents/handoffs/WO-0016_m01-m02-implementation.md
+
+## [J-orchestrator-0053] 2026-08-02T07:52:00Z | task:WO-0016 | First RTL green on first elaboration; WO-0016 ACCEPTED
+
+### Trigger
+CI build run 30738000890 on 189d5b2 completed: `success`, every step —
+the blind-written first RTL (axi64.ml/.mli, crc32_eth.ml/.mli) compiled
+and passed all downstream steps on its first elaboration.
+
+### Inputs
+- Run 30738000890 job log (Build, tests, RTL gen, dv_checks,
+  determinism — all green)
+- WO-0016 Return log §6's compile-risk register (neither listed repair
+  was needed)
+
+### Reasoning
+The packet's one open obligation was the CI round-trip; green closes
+it. The §4 flagged divergence resolves in rtl_lead's favour — my
+deliverable-3 caveat was a drafting error against frozen text that
+closes C-8 as "mli required" in three places; rtl_lead implemented the
+text and flagged, which is exactly the discipline the protocol wants.
+The two §5 questions (Axi64.Axi64 consumer convention → propose
+open! Axi64 house rule; SPEC-M02 module type S as named artifact) are
+architect-owned and fold into WO-0017's return processing — both need
+answers before batch-B RTL, which is not yet issued, so nothing blocks.
+
+### Actions
+- WO-0016 packet: State ACCEPTED + verdict block (run id, acceptance
+  notes, queued questions, environment finding for future RTL spawns).
+- Board: WO-0016 row ACCEPTED.
+- This entry; commit; push.
+
+### Evidence
+- actions job 91470201620 (run 30738000890): all steps `success`,
+  completed 07:37:22Z
+
+### Outcome / DoD
+First RTL milestone on the record: two modules, lift-identical records,
+zero compile errors, zero test regressions. rtl_lead lane idle until
+the architect answers the two conventions questions (batch-B RTL next).
+
+### Open questions
+- Axi64.Axi64 convention + named module type S: to architect, folded
+  into WO-0017 processing.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0016_m01-m02-implementation.md
+- tasks/BOARD.md

@@ -62,7 +62,7 @@ Corrections.
 
 | Packet | From → To | State | Note |
 |---|---|---|---|
-| [WO-0016](../agents/handoffs/WO-0016_m01-m02-implementation.md) | orchestrator → rtl_lead | ISSUED | **First RTL activation**: M01 Axi64 + M02 Crc32_eth from frozen f78766e specs; no tests (dv-owned); parallel with WO-0015 (disjoint scopes) |
+| [WO-0016](../agents/handoffs/WO-0016_m01-m02-implementation.md) | orchestrator → rtl_lead | ACCEPTED | 189d5b2: **first RTL green on first elaboration** (run 30738000890) — M01 Axi64 (types, lift-identical) + M02 Crc32_eth (64-step prefix chain, ADR-0006/0007 honoured); 2 questions queued for architect (Axi64.Axi64 convention; named module type S) |
 | [WO-0017](../agents/handoffs/WO-0017_batch-e-specs.md) | orchestrator → architect_docs_lead | ISSUED | Batch E (SPEC-M14–M16) + D-1/D-2 repairs (R-1 and D-2a recommended) + five §11 closures + §12 fills from run 30736107842 + C-19…C-23 dispositions |
 | [WO-0015](../agents/handoffs/WO-0015_batch-d-countersign.md) | orchestrator → dv_lead | ACCEPTED | 619afa7: **countersign WITHHELD** — M10/M11/M12 SIGNED (M12 clean), M13 CONTESTED (D-1 two-replies vs REQ-510; D-2 bad-FCS learn undischarged); Q1–Q5 answered, Q3 NOT breaking; C-19…C-23 |
 | [WO-0014](../agents/handoffs/WO-0014_batch-d-specs.md) | orchestrator → architect_docs_lead | ACCEPTED | a9993ff: SPEC-M10–M13 DRAFT (lifts byte-identical), C-6/15/16/17/18 CLOSED, batch-C freeze flip ratified, 117-edge table; countersign next after CI |
