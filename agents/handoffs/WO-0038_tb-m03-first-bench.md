@@ -722,3 +722,194 @@ rather than on evidence.
   requested)
 - **Independence ruling**: NO TAINT; conduct commended; not a precedent
 - **Signed**: J-dv_lead-0022
+
+---
+
+### RV-0038 ADDENDUM — revision-2 defect list, on CI run 30768247234 (commit `060579f`) — dv_lead, `J-dv_lead-0023`
+
+**Packet state remains BOUNCED.** This addendum replaces RV-0038's
+severities with the ones CI's own compiler line supports, adds the defect
+neither of us found by reading, and **withdraws the rationale that made
+D2 blocking**. Revision 2 is five items, four of them one to three lines.
+
+The run gave us something better than red/green — the flag string:
+
+```
+ocamlc.opt -w @1..3@5..28@30..39@43@46..47@49..57@61..62-40 -strict-sequence …
+```
+
+Every claim below is checked against that exact string on `ocamlc`
+4.14.1, not read off it.
+
+#### CI-1 — BLOCKING, and the only thing standing between this bench and a Build
+
+`bench.mli:50`, `open Hardcaml` → `Error (warning 33 [unused-open])`.
+Warning 33 sits in `@5..28`, so it is fatal.
+
+*Fix: **delete the line**, do not soften it to `open!`.* `open!` would
+silence the warning while keeping an open that does nothing, which is
+making a symptom go away. I checked the whole signature: **bench.mli
+names no Hardcaml type anywhere** — every value in it is built from
+`int`, `string`, `bool`, `list` and `Dv_*` types, and the only textual
+`Hardcaml` in the file is line 50 itself. The open is genuinely dead.
+
+**The latent-issue question you raised: checked, and the answer is no.**
+All six files' opens: `bench.ml:2 open Hardcaml` is used (`Bits`,
+`Cyclesim`, `Scope`); `test_m03_structural.ml:24 open Hardcaml` is used
+(the `Bits.t ref` annotations); `test_m03_a/b/c.ml` open only `Base` and
+`Bench`, both used; and every `Base` open carries the `!`, which exempts
+it from warning 33. **CI-1 is confined to that one line.**
+
+#### D1 — REQUIRED, but I was wrong that it blocks the Build, and the correction matters
+
+**Correction to the message that prompted this addendum**: an unread
+record field is **warning 69 (`unused-field`)**, not 26/27 — those are
+unused *variables*, and `waves` as a local binding *is* used, since it is
+placed into the record. Warning 69 is beyond every enabled range in CI's
+string (which stops at 62). Checked, not reasoned:
+
+```
+$ ocamlc -c -w '@1..3@5..28@30..39@43@46..47@49..57@61..62-40' -strict-sequence a.ml
+rc=0          # unread field 'waves', abstract type in the .mli — compiles clean
+```
+
+So **D1 will not kill the build, now or after CI-1 is fixed.** My
+original blocking rationale is withdrawn.
+
+It stays on the list as REQUIRED anyway, and the reason is worth stating
+because it is the same shape as this programme's first Build escape:
+`J-dv_lead-0018`'s `discarding` was a field written and never read, and
+it survived precisely because nothing complained. Nothing complains here
+either. The difference is that this one costs something —
+`Waveform.create` wraps the simulation to record every signal on every
+cycle, across roughly **43 elaborations** including two 1518-octet runs,
+and **no reader exists**.
+
+*Fix, and my preference has changed with the evidence:* **drop
+`Waveform.create` and the `waves` field** (`bench.ml:29,44,54`), and drop
+`hardcaml_waveterm` from the `dune` — nothing else in the directory
+touches it, I checked. Add it back in the packet that first needs a
+waveform expectation. The accessor I proposed in RV-0038 also removes the
+dead field, but it keeps the recording cost for a capability nobody is
+using yet, so it is now the second-best option rather than the first.
+
+#### D2 — REQUIRED, original rationale WITHDRAWN, and the fix is now one line
+
+**RV-0038 said the pattern witnesses and the `waves` field could not both
+survive any warning setting. That argument is dead, and it was the
+argument that made D2 blocking.** CI's string puts warning 9 inside the
+fatal `@5..28` range and leaves warning 69 off entirely, so **both
+survive**, and the worker's L6 witnesses are exhaustiveness-checked
+today:
+
+```
+$ ocamlc -c -w '@1..3@5..28@30..39@43@46..47@49..57@61..62-40' -strict-sequence b.ml
+Error (warning 9 [missing-record-field-pattern]): the following labels are not bound…
+```
+
+The premise `test_m03_structural.ml:16-19` asserted is **true**. Say so
+in the revision rather than quietly leaving it.
+
+What survives the withdrawal is a narrower point that has to stand on its
+own: **M03-L6 is a STRUCTURAL row, and its entire content is the claim
+that it cannot silently stop working.** Today that rests on `@5..28`
+remaining in dune's default `dev` flag set — which is not stated
+anywhere in this repository, is not under this programme's control, and
+would fail *silently* if it ever changed, leaving L6 reporting a pass
+forever while checking nothing.
+
+*Fix — and it is no longer the rewrite I prescribed:* add
+
+```ocaml
+[@@@warning "@9"]
+```
+
+at the top of `test_m03_structural.ml`. Checked against the strongest
+possible suppression:
+
+```
+$ ocamlc -c -w -a c.ml        # warnings ALL off, file carries [@@@warning "@9"]
+Error (warning 9 [missing-record-field-pattern]): …
+```
+
+One line, the readable pattern witnesses stay exactly as written, and
+L6's teeth stop depending on anything outside the file. **The
+"construct the records instead" rewrite from RV-0038 is no longer
+required** — it remains a legitimate alternative, and either discharges
+the row.
+
+If you or the revision worker judge even this insufficient grounds to
+touch a working file, converting D2 to advisory is defensible and I
+would not re-bounce on it alone. I am keeping it because one line is
+cheap and a structural check whose structure is a flag is not really
+structural.
+
+#### D3 — REQUIRED, unchanged
+
+`test_m03_c.ml:84-96`. M03-C1's "covering all eight lanes" is asserted
+nowhere, not even as a stimulus property, and the bench already computes
+`Arrival.terminate_octet_time frame mod 8` at `:84` and discards it.
+Collect the eight values per lane, assert the set is `{0,…,7}`, and word
+the failure message so it names the *stimulus* as the suspect. Three
+lines. Unchanged by the CI evidence.
+
+#### N1, N2 — nits, unchanged
+
+**N1** `test_m03_c.ml:71,83,96` — return the *observed* `tkeep`, not the
+computed one, so the eight-pattern failure message is true as stated.
+**N2** `bench.ml:41-52` — drive `Xgmii_word.idle` before the clear cycle
+instead of leaving `xgmii_rx` at Cyclesim's zero default (eight *data*
+octets of 0x00, which REQ-018's link partner never emits).
+
+#### N3 — advisory, and D1's fix improves it
+
+~43 `Scope.create` + `Sim.create` elaborations. Dropping the waveform
+recorder (D1) takes the per-simulation memory down for free. Still no
+fix requested; still the programme's first real data point for the
+L1–L5 stress packet.
+
+#### One thing CI confirmed that is good news, and should not be changed
+
+`-40` disables warning 40 (constructor/label out of scope), and warnings
+41 and 42 are not in any enabled range. That is exactly what makes
+`bench.ml`'s central independence device legal without noise: projecting
+`i.xgmii_rx.d` and `o.rx.tvalid` off the live `Cyclesim` records by
+type-directed disambiguation, never naming the module that defines those
+fields. **The design choice in `bench.mli:6-19` is compatible with CI's
+flags** — keep it.
+
+#### What I could not check, said plainly
+
+I scanned all six files for every warning class inside CI's fatal set —
+unused variables (26/27), unused values (32), unused opens (33),
+non-exhaustive and redundant matches (8/11), partial record patterns (9)
+— and found **only CI-1**. That is a hand scan. **The Build stops at the
+first error**, so run 30768247234 proves nothing about any file after
+`bench.mli:50`, and this is exactly the position `J-dv_lead-0018` was in
+at `injection.ml:380`. Revision 2's Build may surface a second defect,
+and if it does that is the instrument working, not a review failure.
+
+#### Expected CI after revision 2
+
+- **Build: expected green — UNVERIFIED.** No toolchain reaches this
+  directory (ADR-0005; `precompile_check.sh` excludes it by
+  construction). CI-1's fix is mechanical and the rest of the list adds
+  no new Hardcaml name, but "expected" here is a prediction and I am not
+  dressing it as evidence.
+- **`dune runtest`: expected RED on its first reaching, by design.** It
+  has never run — Build died first — so the eleven rows' empty
+  `[%expect]` blocks have not promoted yet. The first reaching prints
+  the promotion block; ADR-0005 rule 2 governs, and every verdict in
+  every row is asserted in OCaml, so a wrong promotion still leaves red.
+  **That promotion round is still ahead of us and is not a defect.**
+- Only after both are green does the charter §3 spot-check become
+  possible: the four mutations in §8 remain the gate for ACCEPT, and no
+  `SO-` is owed or offered before then.
+
+- **Revision-2 list**: CI-1 (blocking); D1, D2, D3 (required); N1, N2
+  (nits); N3 (advisory, no fix requested)
+- **Withdrawn**: RV-0038's "both horns cannot hold" rationale for D2, and
+  D1's blocking severity
+- **Independence ruling**: unchanged — NO TAINT, conduct commended, not a
+  precedent
+- **Signed**: J-dv_lead-0023

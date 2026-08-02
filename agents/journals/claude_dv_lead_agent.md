@@ -7470,3 +7470,226 @@ WO-0038 §8 remain the gate for ACCEPT.
 
 ### Files-in-this-commit
 - agents/handoffs/WO-0038_tb-m03-first-bench.md
+
+## [J-dv_lead-0023] 2026-08-03T19:25Z | task:WO-0038 | Revision-2 list on CI's own compiler line: the flag string refutes my D1 severity AND the reading handed to me, confirms the worker's L6 premise, and collapses D2's fix from a rewrite to one line — the bounce was right, one of its three reasons was not
+
+### Trigger
+Orchestrator, relaying CI run **30768247234** (commit `060579f`, the push
+carrying the bench and my RV-0038 bounce): **Build RED** at
+`test/xgmii_rx_64/bench.mli:50` — `Error (warning 33 [unused-open]): unused open
+Hardcaml` — a defect neither the worker nor I found by reading. Request: issue
+the revision-2 defect list as a packet addendum, with a stated choice on
+whether D2 survives.
+
+### Inputs
+- Run 30768247234's Build output as relayed, and — the load-bearing part — the
+  compiler invocation it printed:
+  `ocamlc.opt -w @1..3@5..28@30..39@43@46..47@49..57@61..62-40 -strict-sequence …`
+- My own `RV-0038` verdict and `J-dv_lead-0022`, to see which of its claims the
+  evidence keeps and which it kills.
+- The orchestrator's reading of that flag string (three numbered points), which
+  I checked rather than adopted.
+- `test/xgmii_rx_64/{bench.mli,bench.ml,test_m03_a.ml,test_m03_b.ml,
+  test_m03_c.ml,test_m03_structural.ml}` — re-read for opens, for every warning
+  class inside CI's fatal set, and for whether `bench.mli` names any Hardcaml
+  type at all.
+- `ocamlc` 4.14.1, used as the instrument for three reductions (below).
+- No `libs/**`, no `rtl_snapshots/**`.
+
+### Reasoning
+
+**The flag string is worth more than the red, and the first thing to do with it
+was to stop reading it and start running it.** A warning-range spec is exactly
+the kind of artefact that looks obvious and is easy to misread: `@5..28` and
+`@61..62` are not hard, but the mapping from *symptom* to *warning number* is
+where the mistake hides. So I reduced each disputed claim to a two-line OCaml
+file and compiled it with the exact string. Three results, and one of them
+contradicted the reading I had been handed.
+
+**Result 1 — D1 does not block the Build, and the reason given for saying it
+does was wrong.** I was told the unread `waves` field is "warning 26/27, inside
+the fatal set". It is not. Warnings 26 and 27 are unused *variables*, and
+`waves` as a local binding **is** used — it is placed into the record on the
+next line. An unread record *field* is warning **69**, and 69 lies beyond every
+enabled range in CI's string, which stops at 62. Compiled with the exact flags,
+the reduction returns **rc=0, no output**. So my own RV-0038 severity for D1 was
+wrong too — I had made it BLOCKING on the premise that warning 69 would be
+fatal, and CI's own line says it is not even *enabled*.
+
+I want to be precise about who was wrong about what, because the correction
+cuts both ways and I would rather record that than smooth it. My *dilemma* was
+sound in structure — I said the two claims could not both hold under a single
+warning setting, and that was a real argument from real experiments. It was
+unsound in its premise set: I tested `@…@69`, a flag set I invented as
+"dune-dev-like", and CI's actual set has no `@69` in it. **I generalised from a
+flag string I made up.** That is the same failure mode as C-44, the WO-0031
+prose, C-48 and the WO-0033 build prediction, wearing yet another costume: a
+universal ("no warning setting satisfies both") asserted over evidence that
+covered one setting. The instrument was right and the sample was one.
+
+**Result 2 — the worker's L6 premise is true, and I should say so loudly.**
+Warning 9 sits in `@5..28`. Compiled with the exact flags, a partial record
+pattern is `Error (warning 9 …)`. So `test_m03_structural.ml:16-19`'s claim —
+that record-pattern exhaustiveness is fatal under dune's default `dev` profile —
+is **correct**, and the witnesses are doing real work today. RV-0038 treated
+that premise as an unverifiable assumption; it was verifiable, just not by me,
+and the worker was right.
+
+**Result 3 — and this is the one that changed the verdict rather than merely
+correcting it — D2's fix collapses from a rewrite to one line.** I tried
+`[@@@warning "@9"]` as a floating attribute with warnings otherwise fully
+disabled (`-w -a`, the strongest suppression that exists), and it still errors.
+So the sturdiness I wanted can be had **inside the file**, with the worker's
+readable pattern witnesses left exactly as written, instead of the
+construct-the-records rewrite I prescribed. That is strictly better on every
+axis I care about: smaller diff, same guarantee, and the guarantee becomes
+*visible at the point of use* rather than inherited from a build system nobody
+reads.
+
+**So: does D2 survive at all?** The rationale that made it *blocking* is dead
+and I withdrew it in the addendum in those words. What survives is narrower and
+has to stand alone: M03-L6 is a STRUCTURAL row whose entire content is "this
+cannot silently stop working", and today that property is on loan from dune's
+default flag set — not stated in this repository, not ours to control, and
+failing *silently* if it ever changes, leaving the row reporting a pass while
+checking nothing. Against a one-line fix, that argument is enough. Against a
+rewrite it would not have been, which is why the change in fix changed my
+answer. I said in the addendum that converting D2 to advisory is defensible and
+that I would not re-bounce on it alone — because the honest strength of the
+argument is "cheap insurance", not "this is broken", and dressing it as the
+latter would be exactly the confident-adjective habit I keep getting caught by.
+
+**The defect neither of us saw is the most instructive item on the list.**
+`bench.mli:50`'s `open Hardcaml` is dead: I checked the whole signature and
+**not one value in `bench.mli` names a Hardcaml type** — everything is `int`,
+`string`, `bool`, `list` and `Dv_*`. The worker and I both read that file
+closely; we both read the `open` as furniture. It took a compiler. The fix is
+to *delete* the line, not soften it to `open!` — `open!` would silence the
+warning and keep a line that does nothing, which is treating the symptom.
+
+The orchestrator's follow-up question — whether `bench.ml` has the same latent
+issue — was a good one and the answer is no: `bench.ml:2` uses `Bits`,
+`Cyclesim` and `Scope`; `test_m03_structural.ml:24` uses `Bits.t ref` in the
+witness annotations; the test files open only `Base` and `Bench`, both used; and
+every `Base` open carries the `!` that exempts it from warning 33. CI-1 is one
+line. Checking that took two minutes and converts "probably fine" into "fine".
+
+**On D1's fix I changed my recommendation, and the evidence is why.** RV-0038
+preferred exposing a `waveform` accessor. Now that I know CI will never
+complain about the dead field, the only argument for keeping the recorder is
+future convenience — and `Waveform.create` wraps the simulation to record every
+signal on every cycle across ~43 elaborations including two 1518-octet runs,
+for zero readers. So: drop it, drop `hardcaml_waveterm` from the `dune` (nothing
+else in the directory touches it — checked), and reintroduce it in the packet
+that first needs a waveform expectation. It also improves N3, which is now a
+live concern because the L1–L5 stress packet has to budget `Cyclesim` cost.
+
+I kept D1 on the list despite it being invisible to CI, and the reason is worth
+recording: `J-dv_lead-0018`'s `discarding` was a field written and never read
+that survived *because nothing complained*. Nothing complains here either. A
+review that only lists what CI would have caught is a review that adds nothing
+to CI.
+
+**Finally, one thing the flag string confirms that nobody asked about.** `-40`
+disables warning 40 and warnings 41/42 are not enabled — which is precisely
+what makes `bench.ml`'s central independence device legal without noise:
+projecting `i.xgmii_rx.d` and `o.rx.tvalid` off the live `Cyclesim` records by
+type-directed disambiguation, never naming the module that defines those
+fields. The worker's most inventive design decision is compatible with CI's
+flags, and I put that in the addendum as a *keep this* rather than leaving it
+unremarked. A review that only names faults teaches a worker to make the diff
+smaller, not better.
+
+### Actions
+- Reduced three disputed claims to minimal OCaml files and compiled them with
+  CI's exact `-w` string and with `-w -a`, rather than reading the ranges.
+- Corrected the D1 severity (BLOCKING → REQUIRED, not build-blocking) and the
+  warning-number attribution handed to me (69, not 26/27).
+- Confirmed the worker's L6 premise true and said so in the addendum.
+- Replaced D2's prescribed fix (construct the records) with a one-line
+  `[@@@warning "@9"]`, verified against `-w -a`, and withdrew D2's blocking
+  rationale explicitly.
+- Checked all six files' opens and every warning class inside CI's fatal set;
+  confirmed CI-1 is confined to `bench.mli:50` and that `bench.ml` has no
+  latent twin.
+- Confirmed nothing but `bench.ml` uses `hardcaml_waveterm`, making the
+  dependency droppable with the field.
+- Appended **RV-0038 ADDENDUM** to
+  `agents/handoffs/WO-0038_tb-m03-first-bench.md`, anchored on title + state,
+  **State left BOUNCED** (single `**State**` line verified).
+- Modified none of the worker's files. No `git commit`, no `git push`.
+
+### Evidence
+All three reductions run at this commit; the flag string is CI's own, copied
+from run 30768247234's Build step.
+
+1. **D1 does not break the Build.** With
+   `-w '@1..3@5..28@30..39@43@46..47@49..57@61..62-40' -strict-sequence`, a
+   module whose `.mli` makes the type abstract and whose record carries an
+   unread field compiles with **rc=0 and no output**. Warning 69 is neither
+   enabled nor fatal in CI.
+2. **Warning 9 is fatal in CI — the worker's premise holds.** Same flags, a
+   partial record pattern →
+   `Error (warning 9 [missing-record-field-pattern])`.
+3. **The one-line D2 fix works against the strongest suppression.**
+   `[@@@warning "@9"]` at the head of a file compiled with `-w -a` →
+   `Error (warning 9 [missing-record-field-pattern])`. The attribute beats a
+   blanket disable, so L6's teeth stop depending on dune's defaults.
+4. **CI-1 is one line.** `grep -n '^open' test/xgmii_rx_64/*.ml*` returns
+   thirteen opens; `bench.ml:2` and `test_m03_structural.ml:24` open
+   `Hardcaml` and both use it (`Bits`/`Cyclesim`/`Scope`, and `Bits.t ref`
+   annotations respectively); the four `open Bench` are used; all six `Base`
+   opens carry `!`. **`bench.mli` contains no Hardcaml type in any signature** —
+   the only textual `Hardcaml` in the file is line 50 itself.
+5. **`hardcaml_waveterm` is droppable with the field.** The only two references
+   in the directory are `bench.ml:29` (the field) and `bench.ml:44` (the
+   `Waveform.create` call).
+6. **The independence device survives CI's flags.** `-40` disables warning 40
+   and 41/42 are outside every enabled range, so `bench.ml`'s type-directed
+   field projection compiles without noise.
+7. **What is NOT proven.** The Build stops at the first error, so run
+   30768247234 says nothing about any file after `bench.mli:50`. My scan of the
+   remaining fatal-warning classes (8, 9, 11, 26, 27, 32, 33) across all six
+   files is a **hand scan**, recorded as such in the addendum.
+
+### Outcome
+Revision-2 list issued: **CI-1** (blocking, confirmed by CI), **D1, D2, D3**
+(required), **N1, N2** (nits), **N3** (advisory). Packet state **BOUNCED**,
+unchanged. Independence ruling unchanged — NO TAINT, conduct commended, not a
+precedent.
+
+The bounce was the right call and one of its three reasons was not. D1's
+severity was wrong, D2's blocking rationale was wrong, and both errors came
+from the same place: I ran the experiment on a flag set I invented rather than
+on the one that would judge the code. CI-1 — the item neither of us found — is
+the item that actually blocked the Build, which is a fair summary of how much a
+careful reading is worth against a compiler.
+
+Nothing here is a sign-off. `dune runtest` has still never run, so the eleven
+rows' empty `[%expect]` blocks have not promoted; that round is ahead, is
+expected red on its first reaching by ADR-0005 rule 2, and is not a defect. The
+charter §3 spot-check — the four mutations in WO-0038 §8 — remains the gate for
+ACCEPT.
+
+### Open-questions
+- **Revision 2's Build may surface a second defect.** The compiler stopped at
+  `bench.mli:50`; everything after it is unproven, and my hand scan is not a
+  compile. If it goes red again on a class I scanned for, that is a finding
+  against my scan and I want it recorded as one.
+- **D2 is the one item on the list I would accept losing.** Its fix is one line
+  and its rationale is cheap insurance, not "this is broken". If the revision
+  worker or the orchestrator prefers advisory, I concur in advance.
+- **For the auditor**: this entry contains two self-corrections against
+  `J-dv_lead-0022`, both from running CI's real flags instead of my invented
+  ones. The cheapest probe against me is unchanged — a confident universal with
+  a sample of one — and it now has a fourth instance to weigh.
+- **The `[@@@warning "@9"]` idiom generalises** beyond L6: any future STRUCTURAL
+  row discharged by a compile-time property should pin its own warning locally
+  rather than inherit it. Worth a line in the next attack plan's row-format
+  section; not filed as a change request yet.
+- **Unchanged**: the RFC 1071 anchor closes on the next CI run that fetches and
+  confirms; X-7, X-10, X-11 remain deferred; L1–L5's runtime budget still wants
+  `test/cost_probe/`'s figure read against this suite's ~43 elaborations.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0038_tb-m03-first-bench.md
