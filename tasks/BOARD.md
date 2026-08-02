@@ -56,13 +56,15 @@ Corrections.
 | Gate | Status | Checklist |
 |---|---|---|
 | G0 | **PASSED 2026-08-01** | [docs/gates/G0-checklist.md](../docs/gates/G0-checklist.md) |
-| P1-spec-freeze | OPEN — prerequisites done, batches A–F pending | [docs/gates/P1-spec-freeze-checklist.md](../docs/gates/P1-spec-freeze-checklist.md) |
+| P1-spec-freeze | OPEN — **A+B FROZEN at f78766e (5/20)**, C–F pending | [docs/gates/P1-spec-freeze-checklist.md](../docs/gates/P1-spec-freeze-checklist.md) |
 
 ## Open work orders
 
 | Packet | From → To | State | Note |
 |---|---|---|---|
-| [WO-0010](../agents/handoffs/WO-0010_dual-batch-countersign.md) | orchestrator → dv_lead | ISSUED | Dual-batch countersign at f78766e: batch-B specs + SPEC-M01 §4.1 addition + C-1 seal (sponsor delegation) + six §9 rulings + C-11; batches A+B flip FROZEN on signature |
+| [WO-0012](../agents/handoffs/WO-0012_dv-wave2.md) | orchestrator → dv_lead | ISSUED | Latency-tagger defect fix (self-found), XGMII link-partner model (M03/M04 now FROZEN), REQ-903 script half |
+| [WO-0011](../agents/handoffs/WO-0011_batch-c-specs.md) | orchestrator → architect_docs_lead | ISSUED | Batch C (SPEC-M06–M09) + C-11/C-12/C-13/C-14 diffs + topology connection table (block-diagram source) |
+| [WO-0010](../agents/handoffs/WO-0010_dual-batch-countersign.md) | orchestrator → dv_lead | ACCEPTED | **SIGNED at f78766e — batches A+B FROZEN** (5/20 specs). C-1 sealed (sponsor delegation closed). Three new ledger items C-12/13/14; dv self-found tagger defect |
 | [WO-0009](../agents/handoffs/WO-0009_bench-machinery.md) | orchestrator → dv_lead | ACCEPTED | Returned + accepted at 576abe6: CRC oracle (11/11 mutation kills), protocol/conservation monitors, octet-time tagger (D-4 walk now an executable regression), cost probe, tools checks; 30 snapshots await CI promotion |
 | [WO-0008](../agents/handoffs/WO-0008_batch-b-specs.md) | orchestrator → architect_docs_lead | ACCEPTED | Returned + accepted at f78766e: M03/M04/M05 DRAFT, §11 reconciled, C-1 resolved (unit change, slack restored), ADR-0006/0007, backlog diffs; batch A+B freeze together at WO-0010 |
 | [WO-0007](../agents/handoffs/WO-0007_batch-a-countersign.md) | orchestrator → dv_lead | ACCEPTED | **SIGNED at 22145b5** (CRC verified via independent bit-serial implementation; 21/21 strobes exact). FROZEN flip pending §11 reconciliation; new ledger items C-8/C-9/C-10 |

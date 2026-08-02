@@ -25,8 +25,8 @@ by the orchestrator from the signing agent's journal entry, per PROTOCOL
 
 | Batch | Specs | Drafted | ifc_check run | dv countersign | FROZEN at |
 |---|---|---|---|---|---|
-| A | M01 `Axi64`, M02 `Crc32_eth` | 22145b5 (WO-0006) | run 30727252770 superseded by f78766e edit — fresh run pending | **SIGNED** (J-dv_lead-0003); §4.1 addition awaits WO-0010 judgment | flips with batch B at WO-0010 |
-| B | M03, M04, M05 | f78766e (WO-0008) | run 30729342467 green | WO-0010 in flight | — |
+| A | M01 `Axi64`, M02 `Crc32_eth` | 22145b5 (WO-0006), revised f78766e | run 30729342467 green | **SIGNED** (J-dv_lead-0003; §4.1 addition accepted J-dv_lead-0005) | **FROZEN at f78766e** |
+| B | M03, M04, M05 | f78766e (WO-0008) | run 30729342467 green | **SIGNED** (J-dv_lead-0005) | **FROZEN at f78766e** |
 | C | M06, M07, M08, M09 | — | — | — | — |
 | D | M10, M11, M12, M13 | — | — | — | — |
 | E | M14, M15, M16 | — | — | — | — |
@@ -41,7 +41,16 @@ by the orchestrator from the signing agent's journal entry, per PROTOCOL
 > reconciliation is WO-0008's first deliverable, and the flip happens at
 > its acceptance.
 
-## Carry-forward ledger (WO-0005 + WO-0007, none blocking signatures)
+## Dual-batch countersignature (transcribed)
+
+> "I countersign batches A and B (SPEC-M01, SPEC-M02, SPEC-M03,
+> SPEC-M04, SPEC-M05) for P1-spec-freeze at f78766e." — dv_lead, journal
+> `J-dv_lead-0005` (WO-0010), transcribed by the orchestrator 2026-08-02.
+> All five verdict groups positive; the C-1 acceptance SEALS the
+> sponsor's delegated latency-budget decision (board, 2026-08-02) —
+> ΔC = (L + h)/8 normative, allocation 4/3/1/5/4 = 17 of 24, slack 7.
+
+## Carry-forward ledger (WO-0005 + WO-0007 + WO-0010)
 
 | id | Item | Must land before |
 |---|---|---|
@@ -55,7 +64,15 @@ by the orchestrator from the signing agent's journal entry, per PROTOCOL
 | C-8 | REQ-903 quantifies over the whole inventory with no types-only exclusion; its `.mli` half unaddressed by SPEC-M01 | batch-B countersign |
 | C-9 | §10's REQ-802/804 hooks name a compile check that cannot read a markdown table — dv-owned `tools/` record-vs-appendix scripts (WO-0009) | batch-B countersign |
 | C-10 | SPEC-M01 §6.1 drops REQ-013's "solely" | §11 reconciliation (WO-0008) |
-| C-11 | REQ-015 self-contradicts at the one-word frame (dv_lead's own WO-0003 wording, found by dv_lead in WO-0009) | WO-0010 contest loop or next spec-diff round |
+| C-11 | REQ-015 self-contradicts at the one-word frame — DISPOSED in WO-0010 (deletion + counting-convention clause, replacement text in the packet); diff lands in batch C | batch-C return |
+| C-12 | `/E/` during REQ-108 Discard — §9 row 2's condition reads true after frame closure; dv ruling supplied in WO-0010 | before AP-xgmii_rx_64 (batch-C return) |
+| C-13 | REQ-010's "exactly one non-stream frame-carrying port" census false since the Xgmii record added six; the row's own spec-diff clause unhonoured | batch-C return |
+| C-14 | Five readings that alone commission assertions failing conformant designs (sharpest: SPEC-M04 §7 tx_tready-during-gap vs its own §6.1 and REQ-209) | batch-C return |
+| — | dv machinery defect (self-found): Latency.create's single strip_octets conflates two quantities diverging at M03 lane-4 (ΔC misreport 2 vs 3) | dv's next WO, before any M03 bench |
+
+Status marks: C-1 SEALED (WO-0010); C-4, C-8, C-10 CLOSED (WO-0008,
+confirmed WO-0010); C-9 partially closed (scripts live + CI-wired;
+REQ-903 half unblocks now that C-8 is closed).
 
 ## Sponsor items attached to this gate — both decided 2026-08-02
 

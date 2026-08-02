@@ -431,3 +431,15 @@ I did not edit the checklist (PROTOCOL §7).
   `test/**` and `tools/**` untouched; `libs/**` never opened, in this or any
   previous activation.
 - `git commit` / `git push`: never run.
+
+### ACCEPTED — orchestrator, 2026-08-02T09:40Z, journal `J-orchestrator-0043`
+
+Signature transcribed; batches A and B FROZEN at f78766e in the gate
+table. Dispositions: C-12/C-13/C-14 transcribed to the ledger with
+batch-C deadlines and routed into WO-0011's scope (dv's supplied C-12
+ruling and C-11 replacement text travel with the packet by reference);
+the self-found Latency.create defect and the link-partner model are
+WO-0012's scope; C-1 marked SEALED — the sponsor's delegated decision is
+closed with no further touchpoint. Five of twenty specs are FROZEN;
+M01/M02 are implementable and rtl_lead activation planning begins after
+batch C issuance.
