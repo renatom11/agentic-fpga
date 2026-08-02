@@ -408,6 +408,10 @@ index = head_block('agentic-fpga — a trading network card built by an AI org',
     <a class="card" href="backlog.html"><span class="ct">Backlog &amp; progress</span>
       <span class="cd">Every work order ever issued and its outcome, the module-by-module
       status matrix, and what happens next.</span><span class="go">open →</span></a>
+    <a class="card" href="{REPO_URL}" target="_blank" rel="noopener"><span class="ct">GitHub</span>
+      <span class="cd">The repository itself — every commit paired with its agent’s journal
+      entry, the frozen specs, the attack plans, the enforcement scripts, and the full
+      append-only record this site is generated from.</span><span class="go">open ↗</span></a>
   </div>
 
   <div class="foot">Generated from the repository at commit

@@ -4009,3 +4009,38 @@ Sponsor redeploys.
 - site/public/index.html
 - site/public/org-chart.html
 - site/public/spec-atlas.html
+
+## [J-orchestrator-0094] 2026-08-03T15:15:00Z | task:none | A fifth Explore card: the repository, described like the exhibits it feeds
+
+### Trigger
+Sponsor: add the GitHub link to the Explore section with a
+description like the others.
+
+### Inputs
+- The cards grid in site/build.py's index template; REPO_URL.
+
+### Reasoning
+The card describes what a visitor actually finds there — the
+commit-paired journals, specs, attack plans, enforcement scripts —
+i.e. the record the site is generated from, which is the honest
+pitch for clicking it. External-link affordance: open ↗.
+
+### Actions
+- Card added; site rebuilt; this commit.
+
+### Evidence
+- index.html carries the five-card grid; build clean.
+
+### Outcome / DoD
+Sponsor redeploys.
+
+### Open questions
+- None.
+
+### Files-in-this-commit
+- site/build.py
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/index.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html
