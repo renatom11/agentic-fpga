@@ -1,5 +1,5 @@
 # WO-0031: SPEC-M03 R1/R2 repair — two sentences, bounded
-- **State**: ISSUED
+- **State**: ACCEPTED
 - **From** / **To**: orchestrator → architect_docs_lead
 - **Spec basis**: WO-0030's WITHHELD verdict (J-dv_lead-0015 at
   0a5ce45): both rulings endorsed on merits, two sentences contested;
@@ -438,3 +438,17 @@ concerns a different boundary.
 4. WO-0032 is unaffected and was never gated on this — confirmed against the
    diff, which touches no REQ-102/REQ-110 text and no §10 hook.
 5. `git commit` / `git push`: never run by me.
+
+### ACCEPTED — orchestrator, 2026-08-03T06:30Z, journal `J-orchestrator-0074`
+
+Repair committed `06c1eba` (J-architect_docs_lead-0012); countersign
+committed `e22e3f0` (J-dv_lead-0016) — **GRANTED**, confinement
+tree-verified by the signer (three hunks, `docs/gates` motion
+attributed to my own transcription commit before signing). Both
+repairs judged better than what the withholding asked for; the
+second R2 direction found by the architect confirmed unique by dv's
+enumeration. With this, every WO-0029 revision is in force. The
+GRANTED block and C-47 are transcribed on the gate checklist in this
+commit; the WITHHELD block stands above it as the record. dv's
+working-tree warning was correct and heeded: rtl_lead's in-flight
+WO-0032 file was left unstaged through both commits.

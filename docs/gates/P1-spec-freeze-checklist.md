@@ -218,6 +218,7 @@ FROZEN: A+B at f78766e, C at 508eea2, D+E at 3f6accc, F at d8df28d.**
 | C-44 | SPEC-M14 §6.3 item 4 and §10's REQ-603 hook carry dv's own overclaim — the flag-bit pair is not "the only stimulus" killing a wrong-bit read of octet 6 (M14-B4 already kills the wrong-single-bit design); the pair's real unique kill is the over-broad read. Justification only; row and stimulus stand. dv self-report | `SO-ip_eth_rx_64.md` |
 | C-45 | SPEC-M03 §6.1 and §10's REQ-016 hook forbid idle injection "between a frame's start character and its first octet" on the "occupies preamble positions" ground — true at a lane-4 start, false at lane-0 where the same paragraph derives all eight preamble positions inside the start word. Over-broad by one injection point, the very point where a preamble/frame boundary defect would show. dv's own wording first (M03-N3, X-4) | the SPEC-M03 R1/R2 repair commit, or `SO-xgmii_rx_64.md` |
 | C-46 | requirements.md REQ-810's verification column still commissions "no strobe anywhere" without the no-frame-in-flight scope its own new sentence creates. Passable as written; C-41's family; one cell (may point at SPEC-M03 §10's REQ-802/REQ-810 hook, which already enumerates both cases) | `SO-xgmii_rx_64.md` |
+| C-47 | SPEC-M03 §9's rows 8 and 9 classify a REQ-110 abort by "≥ 1 octet delivered" / "still inside its own preamble", leaving a frame past its preamble with zero delivered octets (the `/S/` on the frame's own first octet) in neither row. §9's row 3 is the in-document model (states the REQ-105 sibling extensionally); requirements.md REQ-110's zero-delivered gloss is a second site, though its governing extensional clause forces the outcome. Non-blocking: nothing ambiguous, no plan row at risk; what is missing is the row that says so. Offered by architect_docs_lead at WO-0031, accepted and rewidened by dv_lead | `SO-xgmii_rx_64.md`, or the next SPEC-M03 §9 diff |
 
 ## Batch-D + batch-E countersignatures (transcribed)
 
@@ -302,6 +303,39 @@ ratifies the transcription here.
 > conversion is pre-committed unchanged at the repair SHA. Residue **C-45** (the
 > idle-injection prohibition is over-broad at a lane-0 start — dv's own wording
 > first).
+
+## SPEC-M03 revision re-countersignature (ADR-0014 + the M03 rulings — GRANTED at the repair)
+>
+> "I re-countersign the SPEC-M03 text moved at `541ea43` as repaired at
+> `06c1eba` — §4.3, §6.1, §6.2, §6.3 item 8, §9, §10 and the four §13 rows — for
+> `P1-spec-freeze` testability. SPEC-M03 remains FROZEN and its testability
+> countersignature stands: on `J-dv_lead-0005` for the specification as frozen at
+> `f78766e`, and on `J-dv_lead-0016` for this revision." — dv_lead (WO-0031),
+> transcribed by the orchestrator 2026-08-03. The bounded re-review: confinement
+> verified against the tree — `docs/specs/**` moves in one file and three hunks,
+> and `docs/gates/**` only under the orchestrator's own trailer. **M03-R1**
+> repaired with dv's own six-row table, and derived by the **better** route —
+> §7's per-octet constant `U + ⌊(k + L)/8⌋`, which is gap-invariant where
+> §6.1's `m + 3` is not, and which is what makes the aborted frame's **own**
+> start lane the discriminator; both routes re-checked to agree on all six rows.
+> Two additions adopted: the coinciding strobes always carry different names, so
+> §6.3 item 8 has no instance here, and the coincidence column is injection-proof
+> in both directions. **M03-R2** repaired on a **forcing** ground rather than a
+> preference — the withdrawn gloss could not have been a rule, since a frame
+> delivering no octet has no octet for §7's constant to delay and `m + 3` is
+> gapless-qualified against §10's commissioned injection — which also establishes
+> that no conformant design changes and that M03-B2/B3 are vindicated, not moved.
+> The architect found a **second direction** of the R2 disagreement that dv's
+> statement of it missed (the lane-4 four-octet runt, rule S + 4 against `m + 3`
+> S + 3); dv enumerated the no-output-word frames and confirms it is the only
+> one, and re-derived §0.6's bound for it as S + 4 — at the far edge and inside.
+> Attack plan: **M03-N2 and M03-N4 both converted to ASSERT**. Two items answered:
+> dv **CONCURS** that its own WO-0030 *prose* ("three of the four sub-cases")
+> collapsed an axis its own table carries — the table is right, the specification
+> follows the table, no ledger row is owed because nothing is owed, and the
+> forward correction is in `J-dv_lead-0016` and the plan; and dv **ACCEPTS** the
+> §9 rows 8/9 gap as **C-47**, rewidened to name §9 row 3 as the in-document model
+> and requirements.md REQ-110's gloss as a second site.
 
 ## requirements.md REQ-810 re-countersignature (ADR-0014 — transcribed)
 >

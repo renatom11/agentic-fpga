@@ -3174,3 +3174,44 @@ promotion loop, then dv's M03 plan rows unblock.
 - agents/handoffs/WO-0032_m03-req102-conformance.md
 - docs/gates/P1-spec-freeze-checklist.md
 - tasks/BOARD.md
+
+## [J-orchestrator-0074] 2026-08-03T06:30:00Z | task:WO-0031 | The M03 arc closes: repair confined, signature granted on tree-verified confinement, every WO-0029 revision in force
+
+### Trigger
+dv_lead's resumed-sitting completion: SPEC-M03 GRANTED at 06c1eba.
+
+### Inputs
+- J-dv_lead-0016 at e22e3f0 (verified pure append before commit);
+  the §6 gate block + §7's C-47 row, verbatim.
+
+### Reasoning
+The countersigner verified confinement against the tree, not the
+claim, and attributed the docs/gates motion in the range to my own
+transcription before signing — the adversarial habit surviving even
+a clerical sitting. Checklist keeps BOTH blocks (WITHHELD above
+GRANTED, batch-F precedent): the record of the withholding is part
+of the signature's meaning. dv's foreign-write warning (rtl_lead's
+WO-0032 edit landing mid-sitting) was handled by exact staging on
+its commit and this one.
+
+### Actions
+- e22e3f0 committed under dv identity (exact three paths).
+- GRANTED block + C-47 transcribed; WO-0031 ACCEPTED; BOARD row.
+
+### Evidence
+- git show e22e3f0 --stat: 3 files + journal; libs/** absent.
+- grep 'GRANTED at the repair' docs/gates/P1-spec-freeze-checklist.md
+
+### Outcome / DoD
+SPEC-M03's revision chain: frozen f78766e → revised 541ea43 →
+repaired 06c1eba, countersignatures J-dv_lead-0005/0016. AP-M03
+carries 0 RULING rows. Remaining M03 item: WO-0032 (rtl conformance,
+in flight). Next issuance after it: the dv machinery WO (X-1…X-11).
+
+### Open questions
+- None on this arc.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0031_m03-r1r2-repair.md
+- docs/gates/P1-spec-freeze-checklist.md
+- tasks/BOARD.md
