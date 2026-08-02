@@ -1393,3 +1393,285 @@ RETURNED block, to the orchestrator.
 
 - agents/handoffs/WO-0032_m03-req102-conformance.md
 - libs/hardcaml_ethernet/src/xgmii_rx_64.ml
+
+## [J-rtl_lead-0006] 2026-08-03T11:40:00Z | task:WO-0036 | M03's sub-5-octet class made conformant to §9's ninth ruling: the residue comparison gated at its source on the record path, the `error_bad_fcs` bit deleted from the in-word path — one defect, two report paths, two different repairs
+
+### Trigger
+
+WO-0036 from the orchestrator (spawn `WO-0036/2026-08-03T10:55Z`), which is the
+consequence of my own returned question. `J-rtl_lead-0005` closed WO-0032 with
+three questions, the first being whether `error_bad_fcs` may pulse for a frame of
+fewer than five octets; I left the behaviour delivered at `f840475` unchanged and
+said so rather than deciding it myself. The architect ruled it at `1fe71ca`
+(`J-architect_docs_lead-0013`), **against** the shipped behaviour: the strobe SHALL
+NOT pulse for that class. This unit of work is the repair, plus the sub-case audit
+the ruling asked for by name.
+
+### Inputs
+
+- `agents/handoffs/WO-0036_m03-sub5-conformance.md` (the work order).
+- `agents/handoffs/WO-0035_spec-queue-2.md`, RETURNED block §1 — the ruling in full,
+  including its four grounds and its attack-plan consequences.
+- `docs/specs/modules/xgmii_rx_64.md` at `1fe71ca` (FROZEN): §9's error table rows 5
+  and 6, §9's closure list, §9's "Strobe cycle, pinned", §9's co-occurrence list
+  **including the appended ninth ruling**, §6.2's `Frame` row (the `/T/` exit now
+  carrying "where the frame has an FCS to check"), §6.1, §6.3, §10's REQ-102 hook,
+  §13's three 2026-08-03 rows.
+- `docs/specs/requirements.md` — REQ-104's definition of the strobe, REQ-107,
+  REQ-301/REQ-304, §12's condition column.
+- `libs/hardcaml_ethernet/src/xgmii_rx_64.ml` at `d57e028` (my own WO-0032 delivery)
+  and `libs/hardcaml_ethernet/src/crc32_eth.ml` (ADR-0006's finished-value
+  convention, which is what makes the residue arithmetic below checkable with
+  `zlib`).
+- `test/attack_plans/AP-xgmii_rx_64.md` rows M03-B3, M03-F2, M03-M3/M4, M03-N2 —
+  read to know which stimuli the ruling strengthens, not to derive design.
+- `test/xgmii/injection.ml` around its terminate-character arm — read once, to
+  answer a routing question (does dv's outcome model already implement the ruling?
+  it does), not to author or influence a test.
+- `.github/workflows/build.yml` (the promotion loop), `tools/precompile_check.sh`
+  and `tools/precompile_stubs/README.md` (dv's WO-0034 harness, present but
+  uncommitted at my sitting).
+- `agents/charters/rtl_lead.md`, `agents/PROTOCOL.md`, my own journal tail.
+- **Licensing**: no Essenceia material consulted, for this or any prior unit of
+  work on this module. verilog-ethernet was not opened either — this repair is
+  read off SPEC-M03 §9 and REQ-104 alone.
+
+### Root-cause
+
+**The design error.** `bad_fcs` was computed as `crc_final <>: fcs_residue` and
+consumed as `a_close_terminate &: bad_fcs` — the residue comparison ran at **every**
+terminate character, scoped by nothing but "a terminate character closed this
+frame". The corresponding in-word path drove its `error_bad_fcs` bit straight from
+its `terminate` term. Both encode the same false premise: that a terminate
+character is sufficient for the check to have operands. REQ-104 makes the strobe a
+disagreement between a **received FCS** and a **CRC over the octets preceding it**;
+a frame of fewer than five received octets has neither, so there is no comparison to
+make, let alone a result to report. §9's sixth row supplied the antecedent ("no FCS
+removal is attempted on a frame with nothing to remove it from") the whole time.
+
+**Why my review and my hand traces missed it — three reasons, and the third is the
+one that generalises.**
+
+1. I reasoned *forwards from the implementation*: "a zero-octet frame's running CRC
+   is still the 0x00000000 seed, and the seed is never the residue, so the strobe is
+   harmless and truthful". That is a valid inference from a false premise, and I
+   wrote it into the source as a justification comment at WO-0024 and left it
+   standing at WO-0032. A justification comment that argues from the register's value
+   rather than from the requirement's operands is exactly the artefact review should
+   catch, and I wrote it.
+2. I did notice the question — `J-rtl_lead-0005`'s open question 1 is this defect,
+   stated precisely, at the right two sites. What I did not do is notice that
+   "unchanged from `f840475`" is not a neutral act when the ruling that made the
+   frame reachable had already landed. Preserving behaviour is a choice with the same
+   standing as changing it, and it needs the same argument. The escalation was right;
+   the accompanying decision to ship the old behaviour meanwhile was the error.
+3. **The defect was content-dependent and my traces used the content that hides it.**
+   Every hand trace in `J-rtl_lead-0005` that reached this class was a *zero*-octet
+   frame, where the strobe is unambiguously wrong; I never traced a 4-octet frame at
+   all. Had I traced the four-octet all-zero frame §10 commissions, I would have
+   found the module silent and, reasoning forwards again, taken the silence for
+   correctness. The architect's fourth ground — that the refused reading is
+   content-dependent in a class §9 declares content-free — is the general form of
+   this: **when an observable depends on octet values in a class the specification
+   says is value-independent, the design is wrong even where it looks right.** That
+   is the review question I did not ask and now will.
+
+### Reasoning
+
+**Where the fix goes: two sites, not one, and finding the second is most of the
+work.** `error_bad_fcs` has two producers in this module, ~150 lines apart. Path 1
+is epoch A's three-age closure record, which reports a frame closed in a word
+*later* than the one that opened it — every 1-to-4-octet frame, and a 0-octet frame
+whose `/T/` falls in the word after the start word. Path 2 is `q2`, the fixed
+two-stage channel for a frame opened *and* closed inside one input word — M03-B3's
+`/T/` in a preamble position, and the frame §10's REQ-102 hook commissions, which is
+what made the question load-bearing in the first place. A repair confined to path 1
+would have turned M03-F2 green and left M03-B3 and M03-N2's zero-delivered `/T/`
+sub-cases red, which is a worse outcome than the original defect because it looks
+like a fix.
+
+**Path 1 — gate the comparison, not the strobe.** Options considered:
+
+- *(a) gate the record's `fcs` field*: `~fcs:(a_close_terminate &: has_fcs &: bad_fcs)`.
+  Minimal diff, correct observable.
+- *(b) gate `bad_fcs` at its definition* — chosen — so the comparison's result is
+  unavailable to anything downstream.
+- *(c) gate `strobe sel_bad_fcs` at the output*: rejected outright; it would report
+  the wrong thing through `abort` into `tuser`[0] on any future frame class that
+  emits a word, and it puts the scope furthest from the requirement it implements.
+
+(b) beat (a) on the ruling's own argument. §6.2's `Frame` row says the check is
+"not **sequenced**" for this class, which is a statement about the check, not about
+the report. Under (a) the comparison still runs and its result still exists as a
+named signal; the module would be *not reporting* a content-dependent value rather
+than *not computing* one, and the next person to need an FCS bit would find it
+sitting there with its scope one hop away in the consumer. The cost of (b) over (a)
+is zero — one `&:` in a different place — and the gain is that the class's
+content-dependence has no representation in the design at all. The threshold gets a
+named constant, `fcs_min_octets = 5`, in the same block as `runt_threshold`, and the
+comment that argued the threshold "needs no constant here" is rewritten rather than
+deleted: it was true of the output word and false of the strobe, and that distinction
+is the defect in one sentence.
+
+`count_next` is the right count and this needed checking rather than assuming. It is
+the frame's received-octet total *through the closing character's own octet time* —
+`count` carried in from previous words plus this word's covered octets, where
+coverage stops at the closing character — so it is literally §9's "octets between
+start and terminate" on the cycle the closure is decided. It is also correct in the
+case where the closing word covers nothing (a `/T/` in lane 0, where `cov_nonempty`
+is false and `count_next` degenerates to the carried count) — that is §9's far-edge
+ΔC = 3 frame, four octets received and none delivered, and the gate reads 4 there.
+
+**Path 2 — delete the bit rather than drive it low.** Every frame on this path
+receives **zero** octets by construction: the eight preamble octets from the start
+character inclusive fill the rest of the word, so a closure anywhere above the start
+lane is in a preamble position and no octet was ever covered. There is therefore no
+count to test, and a gate would be a compile-time constant. I removed the
+`error_bad_fcs` bit from `inword_strobes`'s vector (4 bits → 3), narrowed `q2` to 3
+bits, shifted the three `q_strobe` indices down by one, and dropped the
+`|: q_strobe 0` term from the output. A constant-zero wire and an absent wire emit
+the same Verilog after folding; they do not read the same, and the absent wire is
+the one that says "this path cannot raise this condition" to the next reader. This
+also makes ruling 9's commissioned kill — "a design that runs the residue comparison
+at every terminate character regardless of whether the frame had an FCS to check" —
+dead by *construction* here and by *gate* on path 1, which is the strongest pair of
+answers available to the same kill.
+
+**What I deliberately did not touch.** `a_close_runt` keeps the whole 0-to-63 range:
+the ruling removes `error_bad_fcs` from the class, it does not touch `error_runt`,
+and §9 row 6 still names it. `abort`/`tuser` is untouched — it has no instance in
+this class (§0.7: no output word) and for the 5-to-63 runt it was already set by
+`sel_runt` independently of `sel_bad_fcs`, so no forwarded frame's marking moves.
+§9 ruling 1's admitted `error_runt` + `error_bad_fcs` pairing above five octets is
+intact, and the 5-octet boundary still checks its FCS and still emits its one
+delivered octet. No datapath signal moves, which is why the pinned constants do not.
+
+**One pre-existing edge I inherit and do not widen.** Where an other-control lane
+sits below a terminate character in the same word inside an open frame, coverage
+stops at the hold lane (REQ-016, C-14.4), so `count_next` can be lower than the
+octet index of the `/T/`, and in principle a frame could fall from "≥ 5" to "< 5" on
+that stimulus. It is not a stimulus §10 commissions — REQ-016's wrapper injects
+whole idle cycles, where the hold lane is lane 0 and no octet is at stake — and the
+behaviour is unchanged from `d57e028`. Recorded because the gate now reads that
+count, not because anything moved.
+
+### Actions
+
+- `libs/hardcaml_ethernet/src/xgmii_rx_64.ml`, 8 hunks, one file:
+  added `fcs_min_octets = 5` beside `runt_threshold` and rewrote the comment block
+  that argued the threshold needed no constant; added `has_fcs` and folded it into
+  `bad_fcs` at the comparison, with the §6.2/REQ-104 derivation as its comment;
+  rewrote the "Four bits, not five" paragraph of the in-word block, which contained
+  the falsified WO-0024 justification and the WO-0032 returned question, into "Three
+  bits, not five" with both absences grounded; changed `inword_strobes` to
+  `concat_lsb [ error; terminate; start ]` and re-lettered its bit legend; re-indexed
+  the three `q_strobe` uses and removed `error_bad_fcs`'s in-word term; extended the
+  strobe-union comment to say which two strobes have one path and why.
+- `.mli`, `bin/generate.ml`, `rtl_snapshots/**`, `top/**`, `test/**`, `tools/**` and
+  `docs/**` untouched. No port, width or name changes, so no interface moves.
+- Appended the RETURNED block to `agents/handoffs/WO-0036_m03-sub5-conformance.md`
+  (mechanism, the sub-case table with the fourth case, expected CI, the constants
+  statement, the harness result, two routing observations, no returned questions) and
+  set the packet header to RETURNED.
+
+### Evidence
+
+- **Not a build, and not claimed as one (ADR-0005).** `cp` of the module to a scratch
+  path and `ocamlc -stop-after parsing -c` (OCaml 4.14.1) → exit 0. A *parse*: no
+  name resolution, no types, no ppx, no elaboration, no simulation.
+- **The one API name this change relies on, checked against the library rather than
+  remembered**: `grep -rn "( >=:\. )" /root/.opam/fpga/.opam-switch/sources/hardcaml/src/`
+  → `comb.ml:546` (definition) and `comb_intf.ml:409`
+  (`val ( >=:. ) : t -> int -> t`, in the exported signature). **Environment-local
+  evidence**: those sources are this machine's unpacked opam switch, not the repo, so
+  the command is not reproducible from a checkout — dv's WO-0034 Lane 2b surfaced the
+  path. The same operator is already used at `d57e028` in this file, which CI built.
+- **dv's WO-0034 harness, run because it was there**: `bash tools/precompile_check.sh`
+  → `precompile_check: ALL LANES PASSED`, exit 0 (Lane 1: 31 units / 0 errors; Lane 2:
+  12 units / 0 errors against the stubs; Lane 2b: `ifc_check.ml` fields agree, 2
+  UNVERIFIED-TRANSCRIPTIONs named; Lane 3a: 43 files, all materialised; Lane 3b:
+  clean). **It says nothing about this change**: it compiles `test/` only, `libs/` is
+  in no lane, and its own Lane 3a prints `EXCLUDED hardcaml_ethernet`. **The script
+  was an uncommitted working-tree file at my sitting** (`??` in `git status`), so this
+  run is not reproducible at this commit unless dv's push carries it.
+- **The residue arithmetic, exhaustively** (`python3`, `zlib`, runnable anywhere;
+  ADR-0006 makes `zlib.crc32` this module's convention exactly): the seed
+  `zlib.crc32(b'') = 0x0` is not the residue; **zero** frames of 1, 2 or 3 octets hit
+  `0x2144DF1C` across all 256 + 65 536 + 16 777 216 of them; `zlib.crc32(bytes(4)) =
+  0x2144df1c` hits it exactly; and CRC-32 restricted to four-octet messages is a
+  bijection — the 32×32 GF(2) linear part built from the single-bit basis has rank 32
+  by elimination — so `00 00 00 00` is its unique preimage. One frame in the entire
+  sub-5 class was silent at `d57e028`, and it is the one M03-F2 drives.
+- **Sub-case verdicts at `d57e028`, by hand trace against SPEC-M03 at `1fe71ca`**,
+  tabulated in the packet: 0-octet **RED** (seed ≠ residue, `error_bad_fcs` with
+  `error_runt` at W + 3); 1-octet **RED** (no octet value can hit the residue);
+  4-octet all-zero **GREEN by accident** (residue hit exactly); and M03-B3's
+  preamble-`/T/` frame **RED on the other path** at W + 2. Two of three red as the
+  architect predicted, plus the fourth case that proves the second repair was needed.
+  Post-repair each trace yields `error_runt` alone at the same cycle.
+- `git diff --stat` at this tree → `libs/hardcaml_ethernet/src/xgmii_rx_64.ml | 111
+  ++++--`, and `git diff -U0 -- libs/ | grep "^@@"` → **8 hunks, one file**.
+  `awk 'length>90'` over the module → 2 lines, **both byte-identical to `d57e028`**
+  (`git show d57e028:… | awk 'length>90'` prints the same two).
+- **Not mine, flagged rather than touched.** My first `git status --porcelain` this
+  sitting showed three untracked `tools/` paths and nothing modified. My last shows
+  `tools/dv_checks.sh` modified, `site/build.py` and five `site/public/*.html`
+  modified, and `site/public/og.png`, `test/zz_probe_tmp/` untracked — all of which
+  appeared while I worked, none of which I touched, and every one of which is outside
+  my write scope (R7 would refuse them under `Agent: rtl_lead`). At least two other
+  agents are live in this checkout. **Only these three paths are mine**:
+  `libs/hardcaml_ethernet/src/xgmii_rx_64.ml`,
+  `agents/handoffs/WO-0036_m03-sub5-conformance.md` and this journal — every
+  confinement claim above is scoped to `git diff -- libs/` for that reason, and none
+  of it rests on the whole-tree status being quiet, because it is not.
+- **Elaboration and determinism evidence is owed by the promoting commit and does not
+  exist yet.** Expected: `dune build @default` green; `dune runtest` green and
+  unaffected (no committed test elaborates M03 — `test/hardcaml_ethernet/` holds
+  `test_word_counter.ml` only); the determinism step **red** with exactly
+  `rtl_snapshots/xgmii_rx_64.v` and `rtl_snapshots/eth_mac_10g.v` in the promotion
+  block, `rtl_snapshots/xgmii_tx_64.v` and `rtl_snapshots/word_counter.v`
+  **unchanged** (movement in either is a determinism defect, not this change); second
+  run green for REQ-902.
+
+### Outcome
+
+WO-0036 deliverables **1–4 met**. (1) The repair is in, at both producers, with the
+three named sub-cases traced and reported and a fourth found. (2) Expected CI stated,
+including which two snapshots may move and which two may not. (3) Constants: **none
+move** — M03-L2/L3's L = 16/12 and ΔC = 3 are untouched, structurally, because no
+datapath or state-machine signal changed and the only registers that moved are `q2`'s
+two stages narrowing from 4 bits to 3, a width and not a depth. (4) The harness
+existed, was run, passed, and covers none of this file; ADR-0005 discipline unchanged.
+
+Charter §5 DoD: frozen spec implemented with no silent deviation (the one inherited
+REQ-016 edge is recorded, not exploited); house style held — no new primitive, the
+`Always` FSM untouched, one `Reg_spec`, no interface change; the line-rate invariant
+is structural here and did not move (no `tready`, no new stage, one word per cycle
+unconditionally). **Not met and owed by the promoting commit**: "compiles and
+elaborates hierarchically; two consecutive runs byte-identical" — I cannot build
+(ADR-0005) and no run exists at this tree. No DV sign-off claimed; `SO-` is dv_lead's.
+Handoff: `agents/handoffs/WO-0036_m03-sub5-conformance.md`, RETURNED block, to the
+orchestrator.
+
+### Open-questions
+
+1. **REQ-902, still owed** (carried from `J-rtl_lead-0003`, `J-rtl_lead-0004` and
+   `J-rtl_lead-0005`): the promoting commit cites the red determinism run that
+   produced the diff and the green run that proves byte-identity.
+2. **For the orchestrator, sequencing**: `tools/dv_checks.sh`, `site/build.py`, five
+   `site/public/*.html`, `site/public/og.png` and `test/zz_probe_tmp/` all changed in
+   this shared working tree while I was in it — dv_lead's scope and the orchestrator's,
+   not mine, and I touched none of them. Flagged for one mechanical reason: R1's
+   one-agent-per-commit and R4's files-list equality are checked against **staged**
+   paths, so a `git add -A` before my commit would sweep three other agents' work into
+   it and R7 would (correctly) refuse the result. My commit is exactly
+   `libs/hardcaml_ethernet/src/xgmii_rx_64.ml`,
+   `agents/handoffs/WO-0036_m03-sub5-conformance.md` and this journal.
+3. **Carried, unchanged from `J-rtl_lead-0005`**: the latent `first_v` gating on a
+   stimulus §10 forbids (idle injected inside a frame's own preamble) — still
+   unreachable, still recorded.
+
+### Files-in-this-commit
+
+- agents/handoffs/WO-0036_m03-sub5-conformance.md
+- libs/hardcaml_ethernet/src/xgmii_rx_64.ml

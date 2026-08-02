@@ -88,12 +88,27 @@ let error_char = 0xfe
    different requirement. *)
 
 (* REQ-107: a frame with fewer than 64 octets between start and terminate is a
-   runt. Fewer than 5 additionally produces no output word at all (§0.7) —
-   that second threshold needs no constant here, because it falls out of the
-   FCS removal: a frame with four or fewer received octets has nothing left
-   after the four FCS octets are unmarked, and the output decision below
-   emits no word for it. *)
+   runt. Fewer than 5 is a second threshold (§9's sixth row, §0.7), and it is
+   a named constant here rather than an emergent property — which is the whole
+   of what WO-0036 repairs.
+
+   Until this repair the argument for having no constant was that the
+   threshold "falls out of the FCS removal": a frame with four or fewer
+   received octets has nothing left once the four FCS octets are unmarked, so
+   the output decision below emits no word for it. That is true of the
+   **output word** and false of the **strobe**, and the strobe is observable.
+   §9's ninth co-occurrence ruling (1fe71ca) decides it: `error_bad_fcs` SHALL
+   NOT pulse for this class, `error_runt` pulses alone, and a bench asserts
+   that as an exact strobe set rather than a lower bound. REQ-104 is the
+   ground one document up — the strobe reports a disagreement between a
+   *received FCS* and a CRC over the octets preceding it, and a frame with
+   nothing to remove an FCS from supplies **neither** operand — so the
+   comparison here is not redundant, it has no operands to make. §6.2's
+   `Frame` row carries the same scope on the `/T/` exit that sequences the
+   check, which is the site an implementation codes and is where the gate
+   below sits. *)
 let runt_threshold = 64
+let fcs_min_octets = 5
 
 (* REQ-108: more than 1518 octets received is oversize; exactly 1514 are then
    delivered, which this design obtains by capping coverage at 1518 and
@@ -409,7 +424,26 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
      update, because §6.1 item 3 runs the coverage through the octet
      immediately preceding the terminate character — which is in this word. *)
   let crc_final = mux2 crc_update crc_out crc_reg in
-  let bad_fcs = crc_final <>: of_int ~width:32 fcs_residue in
+  (* Whether this frame has an FCS at all (§9 row 6 and §9's ninth ruling,
+     §6.2's `Frame` row, REQ-104). [count_next] is the frame's received-octet
+     total through the closing character's own octet time, so it is exactly
+     §9's "octets between start and terminate" on the cycle the closure is
+     decided — including the cases where this word covers none of them (a
+     terminate character in lane 0, where [count_next] is the count carried in
+     from the previous word).
+
+     The gate sits **on the residue comparison** rather than on the strobe
+     that reports it, so that for this class no value derived from the
+     comparison exists anywhere downstream: the check is not sequenced, which
+     is §6.2's word for it. Gating only the strobe would have left the same
+     bit computed and merely unread, one edit away from re-exposing the
+     property the ruling names — the class is *content-dependent* under the
+     refused reading, since the single four-octet frame `00 00 00 00` yields
+     exactly REQ-304's residue while every other frame in the class yields
+     something else, so a design that compares here reports "this frame's FCS
+     is wrong" as a function of octets §9 says nothing is removed from. *)
+  let has_fcs = count_next >=:. fcs_min_octets in
+  let bad_fcs = has_fcs &: (crc_final <>: of_int ~width:32 fcs_residue) in
   (* One reload condition for both state registers, and it is [begins]: the
      word that hands a new frame forward is the word before that frame's first
      octet at both start lanes, whether the frame was admitted from [Idle] /
@@ -483,15 +517,25 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
      aborted frame's report and the new frame's report are pinned to *different*
      cycles and both must be produced.
 
-     Four bits, not five: REQ-108 has no instance in an epoch that delivers no
-     octet, so `error_oversize` cannot be raised here. `error_bad_fcs` can:
-     a zero-octet frame's running CRC is still the 0x00000000 seed, which is
-     never REQ-304's residue, so it accompanies `error_runt` exactly as it
-     already does for a zero-delivered frame closed in epoch A. That is the
-     behaviour delivered at WO-0024 and this repair does not change it; whether
-     §9's row 6 ("no FCS removal is attempted on a frame with nothing to remove
-     it from") means no `error_bad_fcs` either is returned as a question rather
-     than reinterpreted here.
+     Three bits, not five, and the two absences rest on different grounds.
+     `error_oversize` cannot be raised here because REQ-108 has no instance in
+     an epoch that delivers no octet — the count never advances. `error_bad_fcs`
+     cannot be raised here because **every** frame on this path is a zero-octet
+     frame, its eight preamble octets filling the rest of the word, so every one
+     of them is in the class §9's ninth ruling (1fe71ca) puts outside the FCS
+     check. The bit is *removed from the vector* rather than driven low: this
+     path has no octet count to test, so a gate would be a constant, and a
+     constant is better written as an absent wire than as a wire that is always
+     zero.
+
+     This is the second half of the WO-0036 repair and it was the returned
+     question of WO-0032. What the module did until now was pulse
+     `error_bad_fcs` alongside `error_runt` here, on the argument that a
+     zero-octet frame's running CRC is still the 0x00000000 seed and the seed is
+     never REQ-304's residue. The inference was valid and its premise was wrong:
+     REQ-104 makes this strobe a *comparison* between a received FCS and a CRC
+     over the octets it follows, and such a frame has neither operand, so no
+     comparison is made and there is no result to report.
 
      Epoch B's and epoch C's reports fall on the same cycle, so their strobe
      vectors are ORed. Where the two names differ, both pulse — which is what
@@ -504,11 +548,12 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
     let terminate = closed &: any (lanes.is_terminate &: oh) in
     let error = closed &: any ((lanes.is_error |: other_ctl) &: oh) in
     let start = closed &: any (lanes.is_start &: oh) in
-    (* bit 0 `error_bad_fcs`, 1 `error_bad_frame`, 2 `error_runt`,
-       3 `error_start_without_terminate`. A zero-octet frame is under REQ-107's
-       five-octet threshold, so a terminate character raises both bit 0 and
-       bit 2. *)
-    concat_lsb [ terminate; error; terminate; start ]
+    (* bit 0 `error_bad_frame`, 1 `error_runt`, 2
+       `error_start_without_terminate`. A terminate character raises the runt
+       bit alone: the frame is under REQ-107's 64-octet threshold and under
+       [fcs_min_octets], and it is the second of those that keeps
+       `error_bad_fcs` out of this vector entirely (above). *)
+    concat_lsb [ error; terminate; start ]
   in
   let q2 =
     reg
@@ -635,12 +680,18 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
   let abort = sel_bad_fcs |: sel_error |: sel_start |: sel_oversize |: sel_runt in
   let tvalid = (emit_full |: emit_tlast) &: ~:(i.clear) in
   consume <== (sel_valid &: (emit_tlast |: sel_is_r2));
-  (* Each strobe is the union of the two report paths: epoch A's, consumed from
-     the aged record on its `tlast` cycle or at age 2, and the in-word epochs',
-     fixed two cycles after their word. §0.6 counts high cycles, so where the
-     two coincide under one name the observable is a single high cycle — the
-     §6.3 item 8 stimulus DV SHALL NOT produce — and where they differ each name
-     is high on its own cycle. *)
+  (* Three of the five strobes are the union of the two report paths: epoch A's,
+     consumed from the aged record on its `tlast` cycle or at age 2, and the
+     in-word epochs', fixed two cycles after their word. §0.6 counts high
+     cycles, so where the two coincide under one name the observable is a single
+     high cycle — the §6.3 item 8 stimulus DV SHALL NOT produce — and where they
+     differ each name is high on its own cycle.
+
+     `error_oversize` and `error_bad_fcs` are the other two, and each has epoch
+     A's path only: neither condition has an instance in a frame that delivers
+     no octet (REQ-108's count never advances there, and §9's ninth ruling
+     leaves such a frame with no FCS to check). Their union is therefore a
+     one-term union and is written as one. *)
   let strobe s = consume &: s &: ~:(i.clear) in
   let q_strobe k = bit q2 k &: ~:(i.clear) in
   { O.rx =
@@ -651,11 +702,11 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
       ; tlast = emit_tlast &: ~:(i.clear)
       ; tuser = emit_tlast &: abort
       }
-  ; error_bad_fcs = strobe sel_bad_fcs |: q_strobe 0
-  ; error_bad_frame = strobe sel_error |: q_strobe 1
-  ; error_runt = strobe sel_runt |: q_strobe 2
+  ; error_bad_fcs = strobe sel_bad_fcs
+  ; error_bad_frame = strobe sel_error |: q_strobe 0
+  ; error_runt = strobe sel_runt |: q_strobe 1
   ; error_oversize = strobe sel_oversize
-  ; error_start_without_terminate = strobe sel_start |: q_strobe 3
+  ; error_start_without_terminate = strobe sel_start |: q_strobe 2
   }
 ;;
 
