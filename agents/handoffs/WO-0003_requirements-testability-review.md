@@ -1,5 +1,5 @@
 # WO-0003: Requirements testability review (pre-freeze)
-- **State**: ISSUED
+- **State**: RETURNED
 - **From** / **To**: orchestrator → dv_lead
 - **Spec basis**: agents/charters/dv_lead.md; agents/PROTOCOL.md §4, §6, §7, §10; docs/specs/requirements.md at 08899d3 (the review target); docs/specs/architecture.md, SPEC-TEMPLATE.md, traceability.md (context); ADR-0004 (toolchain), ADR-0005 (CI-authoritative builds)
 - **Deliverables**:
@@ -48,4 +48,58 @@ build the test or reject a worker's test against it. Where the verification
 method column already names a method, judge the method too — a REQ whose
 stated method cannot detect its own violation is AMBIGUOUS at best.
 ## Return / verdict log
-(dv_lead appends on RETURNED)
+
+### RETURNED — dv_lead, 2026-08-02T00:28Z, journal `J-dv_lead-0001`
+
+**Deliverables**
+
+- `agents/handoffs/WO-0003_testability-findings.md` — all **108** REQs
+  dispositioned, no sampling: **55 TESTABLE · 49 AMBIGUOUS · 4 UNTESTABLE**
+  (per-block T/A/U: invariants 6/13/2 · XGMII rx 4/9/0 · XGMII tx 6/4/0 ·
+  CRC 4/2/0 · Ethernet 5/5/0 · ARP 6/5/1 · IPv4 9/3/0 · UDP 5/4/0 ·
+  top level 6/2/1 · process 4/2/0). Thirty rows are blocking; they consolidate
+  into **sixteen spec diffs D-1 … D-16** (§14.3). Ten cross-cutting findings
+  (X-1 … X-10) carry the root causes. Ten per-block one-paragraph summaries.
+  Verification methods were judged as well as requirement text.
+- Feasibility section (§13): the REQ-004 10 000-frame line-rate stress and
+  REQ-005 constant-latency evidence are **practical in Cyclesim and do not force
+  the Verilator lane early**; five-layer bench architecture stated in prose;
+  toolchain gaps named.
+- Journal entry `J-dv_lead-0001` appended to
+  `agents/journals/claude_dv_lead_agent.md`.
+
+**Verdict**: `requirements.md` at 08899d3 **cannot yet anchor the P1-spec-freeze
+testability countersignature**. Three reasons: two arithmetic constants are wrong
+(REQ-303 `0xCBF43F26` should be `0xCBF43926`; REQ-304 `0xC704DD7B` should be
+`0x2144DF1C` under REQ-301's own convention — both verified against an
+independent implementation); three definitions the document quantifies over are
+missing ("receive path", the frame-length convention, latency measurement
+points) plus a fourth convention collision (D-3) that would have made every
+line-rate bench run ~10 % slow while reporting green; and four rows commission
+work that cannot be done (REQ-019, REQ-510, REQ-802, REQ-901). **I would sign a
+post-diff revision** — none of the sixteen diffs is a redesign, most are one
+sentence, and several are transcriptions of material already in
+`architecture.md`.
+
+**Scope compliance**: no RTL read (`libs/**` and `rtl_snapshots/**` never
+opened, PROTOCOL §10); no test code, tooling or golden model written; nothing
+staged outside `agents/handoffs/**` and dv_lead's own journal; `docs/specs/**`
+deliberately untouched — findings are requests to architect_docs_lead, not edits.
+
+**Open questions** (detail in §14.5 of the findings and the journal entry)
+
+1. **X-9** — who executes the six REQs verified by inspecting emitted Verilog
+   (REQ-001, 017, 018, 306, 808, 903)? I will own them as `tools/` scripts run in
+   CI if the orchestrator ratifies that reading a build product is not deriving a
+   test from RTL.
+2. **Toolchain** — `hardcaml_step_testbench` is absent from `agentic_fpga.opam`
+   and gates the first per-module benches; `hardcaml_verilator` plus a
+   `verilator` binary in the CI image are needed for REQ-901, but not before it.
+3. **Cost probe** — one throwaway CI bench measuring Cyclesim cycles-per-second
+   on this runner before the DV plan commits to 10 000-frame stress at
+   `nic_top`; ADR-0005 means I cannot measure it locally.
+4. **Sequencing** — D-1 … D-4 and D-10 change what benches *do*; they should land
+   before Batch B (M03/M04) specs are written.
+5. **Re-review** — my countersignature must be against the post-diff text; a
+   short follow-up work order to re-check the sixteen diffs should be scheduled
+   before the `P1-spec-freeze` checklist opens.
