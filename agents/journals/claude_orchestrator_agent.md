@@ -1530,3 +1530,45 @@ none
 - agents/handoffs/WO-0009_bench-machinery.md
 - docs/gates/P1-spec-freeze-checklist.md
 - tasks/BOARD.md
+
+## [J-orchestrator-0039] 2026-08-02T07:05:00Z | task:WO-0008 | Both parallel lanes accepted; freeze consolidated at WO-0010
+### Trigger
+WO-0008 (architect) and WO-0009 (dv_lead) returned within the same hour
+— the org's first concurrent execution, completed without a scope
+collision.
+### Inputs
+Both Return logs; my re-checks at f78766e and 576abe6; git status
+isolation between the two staged sets.
+### Reasoning
+The architect's honest flag drives the big sequencing call: it edited
+axi64_ifc.ml (XGMII record home) after dv_lead countersigned SPEC-M01,
+which supersedes the batch-A compile evidence and puts a post-signature
+delta in front of the signer. Flipping batch A FROZEN on the old run
+would be evidence laundering; instead batches A and B freeze together at
+WO-0010, where dv_lead judges the §4.1 addition, the C-1 resolution
+(sealing the sponsor's delegation), the six §9 rulings, and C-11 — its
+own REQ-015 wording, which it found defective while implementing the
+monitor against it. That last item is the process working exactly as
+designed: the review's author caught the review. dv_lead's isolation
+discipline (deriving only from committed signed text while the
+architect's uncommitted edits sat in the same tree) is noted because it
+is the behaviour that makes parallel lanes safe to run again. The next
+build run is EXPECTED red with ~30 expect diffs — the promotion source
+for the bench-machinery snapshots — and axi64_probe's compile is SPEC-M01
+§11.4's field-name witness either way.
+### Actions
+Both WOs ACCEPTED with dispositions; checklist rows (A superseded-
+evidence note, B drafted, C-11); board rows. WO-0010 issues after
+snapshot promotion, when dv_lead's plate is clear and CI is green.
+### Evidence
+Commits f78766e (architect) and 576abe6 (dv_lead), both R1-R9 enforced;
+re-check commands reproducible at those SHAs.
+### Outcome
+Awaiting the promotion run. Handoff: none until WO-0010.
+### Open-questions
+none
+### Files-in-this-commit
+- agents/handoffs/WO-0008_batch-b-specs.md
+- agents/handoffs/WO-0009_bench-machinery.md
+- docs/gates/P1-spec-freeze-checklist.md
+- tasks/BOARD.md

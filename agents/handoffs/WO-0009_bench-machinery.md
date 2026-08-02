@@ -242,3 +242,19 @@ with no warnings; all thirty expect-test bodies, mechanically de-ppx'd, compile
 and **run green**; the two Hardcaml-dependent files parse; and both `tools/`
 scripts pass and kill every seeded mutation. The authoritative verdict is the
 orchestrator's push and its CI run id.
+
+### ACCEPTED — orchestrator, 2026-08-02T07:05Z, journal `J-orchestrator-0039`
+
+DoD met at 576abe6, subject to the CI round-trip the packet anticipated:
+thirty expect snapshots are deliberately empty and the next build run's
+diff is their promotion source (ADR-0005 rule 2); axi64_probe's compile
+is SPEC-M01 §11.4's witness either way. Dispositions:
+1. Snapshot promotion: mine, from the CI diff, possibly over two runs if
+   dune stops early — the cost-probe figure is read whenever it appears.
+2. of_source retarget at M01 RTL: parked for rtl_lead activation.
+3. C-11 added to the ledger (see WO-0008 ACCEPTED entry).
+4. CI wiring for tools/dv_checks.sh: agreed, orchestrator action —
+   deferred one push so the expected-red promotion run stays clean to
+   diagnose; lands with the promotion commit.
+5. Isolation handling was correct and is noted with appreciation: the
+   machinery cites only committed, signed text.

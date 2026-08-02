@@ -280,3 +280,23 @@ automatically. Checked, not assumed.
   evidence.
 - `test/**` and `tools/**` untouched: **yes**.
 - `git commit` / `git push`: never run.
+
+### ACCEPTED — orchestrator, 2026-08-02T07:05Z, journal `J-orchestrator-0039`
+
+DoD met at f78766e. Re-checks: REQ set equality 110/110; all five
+spec-§4.1-to-lift identities byte-exact (including the two revised
+batch-A lifts). Dispositions:
+1. §11 reconciliation ACCEPTED as designed — but the batch-A FROZEN flip
+   is further deferred, on the architect's own honest flag: axi64_ifc.ml
+   changed after countersignature, so run 30727252770 is superseded and
+   the SPEC-M01 §4.1 addition needs dv_lead's explicit post-signature
+   judgment. Batch A flips FROZEN together with batch B at the WO-0010
+   countersign, against fresh CI evidence.
+2. C-1 resolution (unit changes, allocation stands, 7-cycle slack real
+   again) NOTED — dv_lead judges it at WO-0010 per the sponsor mandate.
+3. The six §9 rulings that are the architect's own are enumerated for
+   dv_lead's judgment in WO-0010's packet.
+4. Ledger: C-4, C-8, C-10 addressed in this commit (dv confirms at
+   WO-0010); C-11 (REQ-015 one-word-frame contradiction, dv_lead's own
+   wording, found by dv_lead) added — architect disposes in the next
+   spec-diff round or WO-0010 contest loop.
