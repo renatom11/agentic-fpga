@@ -7920,3 +7920,245 @@ the M04 consequence accepted rather than argued away.
 
 ### Files-in-this-commit
 - agents/handoffs/WO-0038_tb-m03-first-bench.md
+
+## [J-dv_lead-0025] 2026-08-04T12:15Z | task:WO-0038 | Round 3 on run 30769770945: my ACCEPT survived a red Build and the state goes back with it; the "field names are wrong" reading refuted by reproduction; and the construction witness I prescribed then withdrew turns out to have been load-bearing for a reason I never noticed
+
+### Trigger
+Orchestrator, relaying CI run **30769770945** (commit `5c37b22`, the revision-2
+tree I accepted at `RV-0038-R2`): **Build RED with three errors** — two
+`Base.mod` deprecation alerts in `test_m03_c.ml` and
+`Error: Unbound record field tvalid` at `test_m03_structural.ml:75`. Request:
+issue the round-3 fix list, rule whether it is fully mechanical, and decide the
+packet state.
+
+### Inputs
+- Run 30769770945's three verbatim errors as relayed, and the orchestrator's
+  reading of them (three lettered notes), which I checked rather than adopted.
+- My own `RV-0038`, its ADDENDUM and `RV-0038-R2`, to see which of my rulings
+  the run falsifies.
+- `test/xgmii_rx_64/test_m03_c.ml` and `test_m03_structural.ml` at the failing
+  lines; a full `grep` for `mod`/`land`/`lor`/`lxor`/`lsl`/`lsr`/`asr`/`!=`/`==`
+  across the whole bench directory.
+- `docs/specs/ifc_check/axi64_ifc.ml` (§4.1's lift — the `Source` field list at
+  its line 19) and `docs/specs/ifc_check/xgmii_rx_64_ifc.ml` (the `I`/`O` field
+  lists). Both `docs/specs/**`, both DV-readable.
+- `test/monitors/`, `test/xgmii/`, `test/golden/` — grepped for in-tree
+  `mod`/`Int.rem` precedent, **scoped to `test/` only**, which is the practice
+  change I committed to at `J-dv_lead-0024` after breaching it there.
+- `ocamlc` 4.14.1 for a four-part reduction of error 3.
+- **No `libs/**`, no `rtl_snapshots/**`.**
+
+### Reasoning
+
+**The state goes back to BOUNCED, and I want the reason stated without
+softening.** I issued `RV-0038-R2` as ACCEPT. In that same verdict I wrote that
+Build was "expected green, UNVERIFIED", that run 30768247234 "proved nothing
+about the five files behind `bench.mli:50`", and that "a second defect
+surfacing is the instrument working". All of that was true and all of it was
+also a hedge attached to a verdict that said ACCEPT at the top. The packet
+lifecycle is not a record of whether dv_lead's caveats were well-drafted; it is
+a statement about whether the work is ready. It is not. So: BOUNCED, and the
+state line says the ACCEPT rested on a hand scan I had labelled as not-proof.
+
+The alternative — keeping ACCEPTED with a "repairs in flight" note — would have
+preserved my verdict at the cost of the packet meaning something. That trade is
+never worth making.
+
+**On the `mod` alerts, the interesting question was not the fix but the
+choice.** The alert offers two replacements and they are not equivalent to each
+other: `Int.rem` is certified by the message as equivalent to `mod`, `(%)` is
+described as "slightly different" without saying how. Base is not installed
+here, so I cannot check what `(%)` does on a negative dividend.
+
+My first instinct was to reason it out: both operands are provably non-negative
+(`delivered = length - 4 ≥ 1` for every length this bench drives; octet times
+start at 8), so the two agree and either is fine. That reasoning is correct and
+I have deliberately **not** rested the ruling on it. The reason is the shape of
+my own record: I have been caught four times asserting a universal over a
+sample, most recently by inventing a warning-flag string and concluding "no
+setting satisfies both". A non-negativity argument over "every length this
+bench drives" is another such universal — smaller, better-grounded, and still a
+universal I would be introducing where none is needed. **`Int.rem` makes the
+edit behaviour-preserving by the compiler's own certification, so the fix is
+correct even if my argument about the operands is wrong somewhere I have not
+looked.** That is a better reason than being right about the operands, and it
+costs nothing.
+
+**On completeness I did the thing that has bitten this packet twice.** CI stops
+early, so a fix list built from the errors reported is a list of the errors
+that happened to be reachable. I grepped every candidate operator across the
+directory. Two findings. First, only **two** `mod` uses are code — the other
+four are prose inside comments, and I said explicitly not to touch them, because
+rewriting English to match OCaml is churn and `mod` is the right word in a
+mathematical sentence. Second, and better: `land` at `bench.ml:167` **compiled**
+(bench.ml is a dependency of every failing file), and the compiler reported
+*both* `mod` sites in `test_m03_c.ml` — fatal alerts accumulate per unit rather
+than stopping at the first — while saying nothing about `lsl` at `:17`. So
+`land` and `lsl` are cleared by evidence rather than by assumption, and R3-1 is
+the complete operator list. That is the first time in this packet I have been
+able to say "complete" about a fix list and mean it.
+
+**Error 3 is where the relayed reading was wrong, and it mattered.** The note
+said the real `Axi64.Source` record "evidently doesn't expose those field names
+at that path", and pointed me at the lift to derive the correct set. Had I
+acted on that I would have gone looking for a different field list, found none
+(the lift's line 19 states exactly `{ tvalid; tdata; tkeep; tstrb; tlast;
+tuser }`), and either escalated a phantom spec defect or started reading
+`libs/**` to resolve it. Instead I reproduced the error on a functor-produced
+record with no Hardcaml involved:
+
+    let { tvalid = _; tdata = _ } = o.rx in ()   ->  Unbound record field tvalid
+    ignore o.rx.tvalid                            ->  rc=0
+
+An unannotated record **pattern** gets no type-directed label resolution from
+its scrutinee; a **projection** does. That is the entire failure, and it is a
+property of OCaml, not of the design. The decisive corroboration was already in
+the run: `bench.ml` projects all six field names off a live port and it
+compiled — the Build reached `test_m03_c.ml`, which depends on it.
+
+The general lesson is one I keep paying for from the other side: **an error
+message tells you what the compiler could not do, not why.** "Unbound record
+field" reads like "this field does not exist" and means "this label could not
+be resolved here". Reproducing it cost four minutes and turned a suspected
+specification defect into a two-line scoping fact.
+
+**And then the part that is mine.** RV-0038 originally prescribed exactly the
+construction form as D2's fix. The ADDENDUM withdrew it in favour of the
+one-line `[@@@warning "@9"]`, and I wrote that the attribute was "strictly
+better on every axis I care about" — smaller diff, same guarantee. It was not
+the same guarantee. The construction form carries a second property I never
+enumerated: **it induces the expected type, so the labels resolve without any
+module path being named.** The attribute does nothing for that. Error 3 is
+exactly the gap between the two, and it existed in the file the whole time —
+the pattern witness would have failed under any warning regime.
+
+So the honest account is not "CI found a new defect"; it is that my addendum
+replaced a fix that solved two problems with one that solved one, while
+asserting the two were equivalent, and the second problem then surfaced. That
+is the fourth-and-a-half instance of the same failure mode, and its specific
+form here is worth naming because it is subtler than the previous ones: not a
+universal over a small sample, but **an equivalence claimed between two
+solutions on the axis I happened to be thinking about**. The counter-move is
+the same shape as always — when replacing a fix, enumerate what the original
+did, not what it was for.
+
+The round-3 fix converts all three witnesses, not just the failing one, and
+deletes the attribute. With no record pattern left in the file the attribute
+protects nothing, and one claiming a job it no longer has is worse than none —
+it would read to the next person as a live guarantee. Deleting it also retires
+the ppx/warning-9 interaction I pre-authorised a repair for at `RV-0038-R2`, so
+I withdrew that pre-authorisation as moot rather than leaving a standing
+permission nobody needs.
+
+**One good thing fell out of the run.** SPEC-M01 §11.4 has carried
+`Axi64.Source`'s six field names as "transcribed and unverified by compilation"
+since M01, and my own `tools/precompile_stubs/ifc_check.ml` records the same gap
+because hardcaml_axi's sources are absent here. `bench.ml` is the first code in
+the repository to name all six on a real port and it compiled. **§11.4 is
+discharged by run 30769770945.** I routed it to architect_docs_lead and noted
+that my own stub's UNVERIFIED comment is now stale and mine to update — as an
+owed follow-up rather than folded into this packet, because widening a fix-list
+commit to touch `tools/` would blur what this commit is.
+
+**A regime datum nobody had.** Deprecation alerts are errors in this build. The
+`-w` string recovered at run 30768247234 says nothing about alerts, and neither
+did my addendum's expected-CI section. Under `open! Base` any Base-deprecated
+stdlib element is now a Build failure — that belongs in the next bench packet's
+§7 as a named class, not rediscovered by a third red run.
+
+### Actions
+- Flipped the packet State to **BOUNCED** on a title + state anchor (single
+  `**State**` line verified) and appended `RV-0038-R3`.
+- Reproduced error 3 in four parts: the failing pattern, the working
+  projection, the construction fix, and the construction fix against a record
+  that has *gained* a `tready` field.
+- Grepped every alert-prone operator across the bench directory; established
+  `land` clean via `bench.ml`'s successful compile and `lsl` clean via the
+  per-unit alert accumulation in `test_m03_c.ml`.
+- Confirmed the `I`, `O` and `Source` field lists against
+  `docs/specs/ifc_check/{xgmii_rx_64_ifc,axi64_ifc}.ml` and wrote the three
+  replacement witnesses out verbatim in the packet.
+- Ruled `Int.rem` over `(%)` on certified-equivalence rather than on an
+  operand-range argument, and said why the weaker-looking reason is the better
+  one.
+- Corrected the relayed reading of error 3 in the packet, with the reproduction.
+- Withdrew the `RV-0038-R2` pre-authorisation as moot.
+- Recorded SPEC-M01 §11.4's discharge and the alerts-are-errors datum.
+- Edited none of the worker's files. No `git commit`, no `git push`.
+
+### Evidence
+1. **Error 3 reproduced with no Hardcaml.** A functor-produced record
+   `Source = { tvalid; tdata }`, a wrapper record with an `rx` field of that
+   type, and a consumer in a third module:
+   `let { tvalid = _; tdata = _ } = o.rx in ()` → `Error: Unbound record field
+   tvalid`, rc=2. `ignore o.rx.tvalid` → rc=0. Pattern fails, projection works.
+2. **The fix, verified with warnings fully off (`-w -a`).**
+   `{ o with rx = { tvalid = b; tdata = b } }` → rc=0;
+   with a field omitted → `Error: Some record fields are undefined: tdata`;
+   against a record that has gained `tready` →
+   `Error: Some record fields are undefined: tready`, rc=2. The last is the
+   case M03-L6 exists for, caught as a **type** error under no warnings at all.
+3. **The field names are right.** `docs/specs/ifc_check/axi64_ifc.ml:19` states
+   `Axi64.Source = { tvalid; tdata; tkeep; tstrb; tlast; tuser }`, and
+   `bench.ml` projects all six off a live port and compiled at run
+   30769770945 — the Build reached `test_m03_c.ml`, which depends on it.
+4. **R3-1 is the complete operator list.** `grep -n "\bmod\b"` over
+   `test/xgmii_rx_64/` returns six hits: two code sites
+   (`test_m03_c.ml:15`, `:99`) and four inside comments
+   (`test_m03_c.ml:11`, `:34`, `test_m03_a.ml:157`, `bench.mli:155`).
+5. **`land` and `lsl` are cleared by evidence.** `bench.ml:167` uses
+   `land 0xFF` and `bench.ml` compiled. The compiler reported **both** `mod`
+   sites in `test_m03_c.ml` — so it accumulated alerts across the unit rather
+   than stopping at the first — and did not flag `lsl` at `:17`.
+6. **No in-tree precedent settles `mod` under Base.** Every `mod` in
+   `test/xgmii/`, `test/golden/` and `test/monitors/` sits in a library whose
+   `dune` has no `(libraries)` field, so those files never `open! Base` and
+   their `mod` is Stdlib's. The apparent precedent does not transfer, which is
+   why the ruling rests on the alert's own text.
+7. **Scope.** `git status --short` shows my two paths —
+   `agents/handoffs/WO-0038_tb-m03-first-bench.md` and this journal — plus the
+   worker's revision-2 files, which I did not touch.
+
+### Outcome
+**Round-3 list issued; packet State BOUNCED.** Two items:
+
+- **R3-1**, two `mod` → `Int.rem` substitutions, exact text given, **fully
+  mechanical and behaviour-preserving by the compiler's own certification** —
+  the worker can execute them verbatim.
+- **R3-2**, the three L6 witnesses to construction form plus deletion of
+  `[@@@warning "@9"]`, exact text given, verified end to end on a reduction
+  that reproduces both the failure and the fix.
+
+Both are mechanical in the sense the orchestrator asked about: the text is in
+the packet and requires no derivation by the worker.
+
+Corrected in the packet: the reading that `Axi64.Source`'s field names are
+wrong. They are right, and this run proves them — which also **discharges
+SPEC-M01 §11.4**.
+
+Recorded against myself: the ADDENDUM's withdrawal of the construction fix was
+not the neutral simplification I called it. The attribute solved one of the two
+problems the construction form solved, and error 3 is the other one.
+
+### Open-questions
+- **`test_m03_a.ml` and `test_m03_b.ml` remain unproven.** No errors were
+  reported for them, but the log does not say whether they were compiled or not
+  reached. The two known alert classes are closed for them by grep; anything
+  else is still ahead.
+- **Owed by me, not folded into this commit**:
+  `tools/precompile_stubs/ifc_check.ml`'s `UNVERIFIED-TRANSCRIPTION —
+  Axi64.Source / Axi64.Dest` note is stale now that run 30769770945 has
+  compiled all six names, and should cite the run id instead.
+- **For architect_docs_lead, via the orchestrator**: SPEC-M01 §11.4's
+  "unverified by compilation" caveat can be retired against run 30769770945.
+- **For the next bench packet's §7**: deprecation alerts are errors in this
+  build. Name the class rather than let a third packet rediscover it.
+- **My M04 contamination from `J-dv_lead-0024` stands** and is unaffected by
+  this sitting.
+- **Unchanged**: `dune runtest` has still never run, so the promotion round is
+  ahead and expected red by ADR-0005 rule 2; the §8 mutation spot-check remains
+  the gate for any `SO-`; the RFC 1071 anchor closes on the next CI run that
+  fetches; X-7, X-10, X-11 remain deferred.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0038_tb-m03-first-bench.md

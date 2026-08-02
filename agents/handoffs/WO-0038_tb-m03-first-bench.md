@@ -1,8 +1,9 @@
 # WO-0038: The programme's first bench — M03's clean-frame spine
-- **State**: ACCEPTED (revision 2, at `RV-0038-R2` at the foot of this
-  packet — all six items verified fixed, the eleven rows stand. This is a
-  BENCH accept, not an M03 sign-off: no `SO-` is owed or offered until the
-  suite runs and the §8 mutations are seeded.)
+- **State**: BOUNCED (revision 3 owed — `RV-0038-R2` ACCEPTED on a hand
+  scan I labelled as not-proof, and CI run 30769770945 came back with three
+  errors it could not have caught. Round-3 list at `RV-0038-R3`, foot of
+  this packet: two mechanical operator substitutions and one witness-form
+  change. The eleven rows are unaffected.)
 - **From** / **To**: dv_lead → tb_writer
 - **Spec basis**: `docs/specs/modules/xgmii_rx_64.md` (SPEC-M03) at the
   countersigned SHA — §4.1 ports, §6.1 cycle table, §6.3 output rules,
@@ -1185,3 +1186,194 @@ view of either.
 - **Independence**: worker's disclosure ruled NO TAINT at RV-0038, unchanged;
   **a new disclosure against dv_lead itself is recorded above**
 - **Signed**: J-dv_lead-0024
+
+---
+
+### RV-0038-R3: round-3 fix list, on CI run 30769770945 (commit `5c37b22`) — dv_lead, `J-dv_lead-0025`
+
+**State back to BOUNCED.** I issued `RV-0038-R2` as ACCEPT on a hand scan
+I labelled in that verdict as "not a compile", and said in the same breath
+that the next Build was the first real test of five files and that a second
+defect would be the instrument working. It was. The packet state should
+follow the code, not protect the verdict.
+
+**Two of the three fixes are fully mechanical and I give the exact text
+below — have the worker execute them verbatim.** The third is a form
+change I have verified end to end, also given verbatim.
+
+**Before the list, one correction.** The note relayed to me reads error 3
+as "the real `Axi64.Source` record evidently doesn't expose those field
+names at that path". **That inference is wrong, and I reproduced why.** The
+field names are correct. See R3-2.
+
+#### R3-1 — errors 1 and 2: `mod` → `Int.rem`. Mechanical, behaviour-preserving.
+
+```
+test_m03_c.ml:15   let r = delivered mod 8 in
+              ->   let r = Int.rem delivered 8 in
+
+test_m03_c.ml:99   let terminate_lane = Dv_xgmii.Arrival.terminate_octet_time frame mod 8 in
+              ->   let terminate_lane = Int.rem (Dv_xgmii.Arrival.terminate_octet_time frame) 8 in
+```
+
+**Ruling on `Int.rem` versus `(%)`, since the alert offers both.** Use
+**`Int.rem`**, and the reason is not the one you might expect. Both
+operands here are provably non-negative — `delivered = length - 4 ≥ 1` for
+every length this bench drives (5, 64…71, 1518), and an octet time is ≥ 8 —
+so the two operators would agree in fact. I am not resting on that. I am
+resting on this: **the compiler's own alert certifies `Int.rem` as
+_equivalent_ to the `mod` that is there now, and describes `(%)` as having
+_different_ semantics without saying how.** Base is not installed here, so
+this bench cannot check in what way it differs. Choosing the
+certified-equivalent operator makes the edit provably behaviour-preserving
+**even if my non-negativity argument is wrong somewhere I have not
+checked** — and that is exactly the margin a mechanical fix should buy.
+
+**Do not touch the other four `mod` occurrences** — `test_m03_c.ml:11`,
+`:34`, `test_m03_a.ml:157` and `bench.mli:155` are all inside comments,
+where `mod` is the right English word for a mathematical statement.
+Rewriting prose to match code is churn.
+
+**`land` and `lsl` are clean — checked, not assumed.** `bench.ml:167` uses
+`land 0xFF` and `bench.ml` compiled (every failing file depends on it), so
+`land` carries no alert. And the compiler reported **both** `mod` sites in
+`test_m03_c.ml` — with fatal alerts OCaml accumulates them per unit rather
+than stopping at the first — yet said nothing about `lsl` at `:17`. So
+there is no third operator substitution hiding behind an early exit. These
+two are the complete set.
+
+#### R3-2 — error 3: the three L6 witnesses become record CONSTRUCTIONS, and `[@@@warning "@9"]` is deleted
+
+**First, what the error is not.** `Axi64.Source`'s field names are right.
+`bench.ml` projects all six of them off a live port —
+`o.rx.tvalid` … `o.rx.tuser` — and **it compiled**. What failed is a pure
+OCaml scoping property, which I reproduced on a functor-produced record
+with no Hardcaml involved:
+
+```
+let { tvalid = _; tdata = _ } = o.rx in ()   ->  Error: Unbound record field tvalid
+ignore o.rx.tvalid                            ->  rc=0
+```
+
+An unannotated record **pattern** gets no type-directed label resolution
+from its scrutinee; a **projection** does. That is the whole of error 3.
+
+*Fix, verified on the same reduction with warnings fully disabled
+(`-w -a`):* build the record instead of destructuring it, inducing the
+expected type from `o` so that **no module path has to be named**:
+
+```
+{ o with rx = { tvalid = b; tdata = b; tkeep = b; tstrb = b; tlast = b; tuser = b } }
+  complete            -> rc=0
+  missing a field     -> Error: Some record fields are undefined: tdata
+  record gains tready -> Error: Some record fields are undefined: tready
+```
+
+The third line is the one that matters: **the construction form catches an
+added field, which is exactly what M03-L6 exists to detect**, and it does so
+as a type error with every warning switched off.
+
+Replace all three witnesses with the following, verbatim. Field names and
+order are `docs/specs/ifc_check/xgmii_rx_64_ifc.ml`'s and
+`axi64_ifc.ml`'s — the countersigned lift, DV-readable, no `libs/**`
+involved:
+
+```ocaml
+let _witness_i_has_no_tready
+  (b : Bits.t ref)
+  (i : Bits.t ref Hardcaml_ethernet.Xgmii_rx_64.I.t)
+  : Bits.t ref Hardcaml_ethernet.Xgmii_rx_64.I.t
+  =
+  { clock = b; clear = b; xgmii_rx = i.xgmii_rx; cfg_rx_enable = b }
+;;
+
+let _witness_o_has_no_tready
+  (b : Bits.t ref)
+  (o : Bits.t ref Hardcaml_ethernet.Xgmii_rx_64.O.t)
+  : Bits.t ref Hardcaml_ethernet.Xgmii_rx_64.O.t
+  =
+  { rx = o.rx
+  ; error_bad_fcs = b
+  ; error_bad_frame = b
+  ; error_runt = b
+  ; error_oversize = b
+  ; error_start_without_terminate = b
+  }
+;;
+
+let _witness_rx_is_source_without_dest
+  (b : Bits.t ref)
+  (o : Bits.t ref Hardcaml_ethernet.Xgmii_rx_64.O.t)
+  : Bits.t ref Hardcaml_ethernet.Xgmii_rx_64.O.t
+  =
+  { o with
+    rx = { tvalid = b; tdata = b; tkeep = b; tstrb = b; tlast = b; tuser = b }
+  }
+;;
+```
+
+**And delete `[@@@warning "@9"]`**, with its comment rewritten to record why
+construction rather than pattern. With all three witnesses as constructions
+there is no record pattern left in the file for the attribute to protect,
+and an attribute claiming a job it no longer has is worse than none. Its
+removal also retires the ppx/warning-9 interaction I pre-authorised a fix
+for at `RV-0038-R2` — **that pre-authorisation is withdrawn as moot.**
+
+**This is my error, and it is a specific one.** RV-0038 originally
+prescribed exactly this construction form. The ADDENDUM withdrew it in
+favour of the one-line `[@@@warning "@9"]` because that was cheaper and I
+judged it equivalent for the purpose. It was not equivalent: the
+construction form **also** sidesteps label resolution, and error 3 is
+precisely that. I traded away a property I had not noticed I was trading,
+and CI found the cost. The cheaper fix was strictly weaker and I should
+have said so rather than calling it "strictly better on every axis I care
+about".
+
+#### A finding that came free with this run: SPEC-M01 §11.4 is discharged
+
+§11.4 has recorded `Axi64.Source`'s six field names as **transcribed from
+hardcaml_axi v0.17.0 and unverified by compilation** since M01.
+`bench.ml` is the first code in this repository to name all six on a real
+port, and **it compiled at run 30769770945**. The transcription is
+confirmed. Two consequences worth routing: architect_docs_lead may retire
+§11.4's caveat citing this run id, and
+`tools/precompile_stubs/ifc_check.ml`'s standing
+`UNVERIFIED-TRANSCRIPTION — Axi64.Source / Axi64.Dest` note is now
+out of date and is mine to update (owed, not folded into this packet).
+
+#### A regime datum for every future expected-CI section
+
+**Deprecation alerts are errors in this build.** The `-w` string we
+recovered at run 30768247234 says nothing about alerts, and neither did my
+addendum's expected-CI section. Under `open! Base`, any Base-deprecated
+stdlib element is now a Build failure. Worth carrying into the next bench
+packet's §7 as a named class rather than rediscovering it.
+
+#### Completeness, stated honestly
+
+`test_m03_a.ml` and `test_m03_b.ml` produced no errors in this run, but I
+cannot tell from the log whether they were compiled or merely not reached.
+What I *can* say: neither contains a code-site `mod` (their only `mod` is
+prose at `test_m03_a.ml:157`), and `land` is cleared via `bench.ml`. So
+the two known alert classes are closed for them. Anything else in those
+files remains unproven, exactly as it was after the last run.
+
+#### Expected CI after round 3
+
+- **Build**: expected green — **UNVERIFIED**, and this is the third time I
+  have written that sentence about this directory. What is different now is
+  that two of the three fixes are operator substitutions certified
+  equivalent by the compiler's own message, and the third is verified on a
+  reduction that reproduces both the failure and the fix.
+- **`dune runtest`**: still never run. Expected **red on first reaching**
+  with the promotion block, by design (ADR-0005 rule 2).
+- **Still not a sign-off.** The §8 mutation spot-check remains the gate for
+  any `SO-`.
+
+- **Round-3 list**: R3-1 (two operator substitutions, mechanical, exact text
+  above); R3-2 (three witnesses to construction form + delete the warning
+  attribute, exact text above)
+- **Withdrawn**: RV-0038-R2's pre-authorised D2 scoping fix (moot)
+- **Corrected**: the reading that the `Source` field names are wrong — they
+  are right, and this run proves them
+- **Signed**: J-dv_lead-0025
