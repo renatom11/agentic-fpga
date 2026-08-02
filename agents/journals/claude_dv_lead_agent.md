@@ -5218,3 +5218,360 @@ closures WO-0029 §6 proposed are verified against the diff and concurred in.
 - agents/handoffs/WO-0030_revision-recountersign.md
 - test/attack_plans/AP-ip_eth_rx_64.md
 - test/attack_plans/AP-xgmii_rx_64.md
+
+## [J-dv_lead-0016] 2026-08-03T07:40:00Z | task:WO-0031 | SPEC-M03 RE-COUNTERSIGNED at 06c1eba: confinement checked against the tree rather than the claim, both repairs verified and both improved on what I asked for — R1 derived by the gap-invariant route I did not use, R2 withdrawn on a forcing ground and carrying a second direction my own statement of the defect missed; M03-N2 and M03-N4 converted to ASSERT; my "three of four" prose conceded as a collapsed axis, C-47 accepted and rewidened
+
+### Trigger
+Orchestrator message continuing the WO-0030 activation (spawn short-id
+`WO-0030/2026-08-03T03:00Z`): the R1/R2 repair I commissioned when I withheld
+SPEC-M03 is committed at `06c1eba` under `J-architect_docs_lead-0012`, and the
+work order is `agents/handoffs/WO-0031_m03-r1r2-repair.md`. This is the sitting
+I pre-worded in WO-0030 §5 and made **conditional on confinement** — the
+condition is mine to test, not to assume, and two items were flagged back at me
+for judgement.
+
+### Inputs
+- `agents/handoffs/WO-0031_m03-r1r2-repair.md` in full, including the architect's
+  Return log (`J-architect_docs_lead-0012`) §§0–5.
+- `git show 06c1eba --stat`; `git diff --stat 541ea43 06c1eba` over all paths and
+  `git diff --numstat 541ea43 06c1eba -- docs/`; the three hunk headers of
+  `git diff 541ea43 06c1eba -- docs/specs/modules/xgmii_rx_64.md`;
+  `git log --format=… 541ea43..06c1eba -- docs/gates/ docs/specs/` for
+  attribution of the gate-checklist change.
+- `git show 06c1eba -- docs/specs/modules/xgmii_rx_64.md` — the repair, read line
+  by line: §6.1's consequence 1 and its new table, §9's "Strobe cycle, pinned",
+  the appended §13 row.
+- `docs/specs/modules/xgmii_rx_64.md` at HEAD: §6.1's `m + 3` paragraph and its
+  C-14.4 qualifier, §6.3 items 5 and 8, §7's L / h / ΔC, §9's nine condition
+  rows and closure list, §10's REQ-016/REQ-102/REQ-110 hooks.
+- `docs/specs/requirements.md`: §0.5, **§0.6** (the strobe-timing window and the
+  C-23 counting convention), REQ-102, REQ-105, REQ-106, REQ-107, REQ-110,
+  REQ-016, §0.7.
+- `test/attack_plans/AP-xgmii_rx_64.md` at HEAD — mine; rows M03-B2, M03-B3,
+  M03-B4, M03-I2, M03-I4, M03-N1 … M03-N4, §4.N's derivation block, §7's X-4,
+  §8, §9.
+- My own `J-dv_lead-0015` and the WO-0030 Return log at `0a5ce45`, re-read
+  specifically to test the architect's criticism of my prose against my table.
+- **Independence note (charter §8, PROTOCOL §10)**: no `libs/**` was opened.
+  Every timing claim below is arithmetic over committed specification text.
+
+### Reasoning
+
+**The condition first, because a pre-worded signature is only as good as the
+test it is conditioned on.** I said at WO-0030 that a repair confined to R1 and
+R2 makes the next signature clerical. The temptation now is to read the
+architect's "confined" and sign. I checked the tree instead, and deliberately
+checked it wider than the claim: `git diff --stat 541ea43 06c1eba` over **all**
+paths, not just the one the packet points at. The only `docs/specs/**` path that
+moves is `xgmii_rx_64.md`, in three hunks at lines 313, 712 and 844 — §6.1's
+consequence 1, §9's strobe-cycle paragraph, one appended §13 row. Exactly the
+bound.
+
+`docs/gates/` also moves in that range, which is the sort of thing a lazy
+confinement check misses and a careful one has to explain. It is `361c91c` under
+`Agent: orchestrator` — the clerical transcription of my own WO-0030 verdict —
+so it is not the architect widening its surface. I record the check rather than
+the conclusion, because "the diff was confined" is a claim the auditor should be
+able to re-execute, and now it can.
+
+None of C-43 … C-46 was taken. That is right, and the architect's reason for not
+taking them is the one I would have given: each sits in text I **signed**, so
+taking any would put a signed surface back in front of me and make this
+signature non-clerical, and §11.4's flip-invariance rule says nothing is bought
+by taking a cheap diff early. C-45 is the interesting one, because the ledger
+gates it *at this commit or at the SO-*, and deferring it was a judgement call
+the architect was entitled to make and made explicitly rather than silently.
+
+**R1: the repair is my table, derived by a route I did not use, and the route is
+the improvement.** I checked the landed six rows one at a time rather than
+pattern-matching them against mine, and then re-derived all six by the
+specification's route. Mine was §6.1's `m + 3`. The repair uses §7's per-octet
+constant: an output octet at lane k of input word U leaves on cycle
+`U + ⌊(k + L)/8⌋`, L = 16 at a lane-0 start and 12 at a lane-4 one. That gives 2
+for every lane at L = 16, and 1 for lanes 0 … 3 against 2 for lanes 4 … 7 at
+L = 12. Both routes agree on all six rows.
+
+The route matters for two reasons, and the second is the one that buys coverage.
+First, it is what *exhibits* the aborted frame's own start lane as the
+discriminator — the axis my prose dropped — instead of leaving it as an outcome
+of the arithmetic. Second, `m + 3` is qualified to a gapless stimulus (C-14.4,
+which is my own carry-forward), so a bench could not have quoted my derivation
+inside the M03-I4 idle-injection wrapper; the per-octet constant is
+gap-invariant, so the table survives injection and M03-N2 can now be driven
+gapped. I asked for a repair and got a better instrument than the one I brought.
+
+The two additions are both real and both adopted. That the coinciding strobes
+**always** carry different names (`error_start_without_terminate` against
+`error_runt`/`error_bad_frame`) closes §6.3 item 8 out of this consequence
+entirely, which neither of us had stated and which a bench writer would
+otherwise have to re-establish per sub-case. That the coincidence column is
+**injection-proof** I checked in both directions: only the two lane-0-`/S/` rows
+depend on the word before W, so injection there moves that report earlier and
+widens the separation, while the three coinciding rows are pinned to W itself or
+to the closing character's own word and move with it — no injection turns a `no`
+into a `yes` or the reverse.
+
+I also checked whether that scope note touches **C-45**, because the coordinator
+asked and because it would be easy to assume it does. It does not: the note
+concerns injection *before* W, inside the aborted frame's body, while C-45's site
+is the first inter-word boundary after a lane-0 **start word**. Two different
+boundaries. C-45 carries unchanged and no rewording is owed, and I said so
+explicitly rather than letting silence imply either answer.
+
+**R2: withdrawn on a ground stronger than the one I would have accepted.** I
+asked for "one coherent statement", which would have been satisfied by declaring
+the rule normative and the gloss explanatory. The repair does better: it shows
+the gloss **could not have been a rule**. A frame that delivers no octet has no
+octet for §7's constant to delay, so the phrase has no referent for precisely the
+frames it governs; and the only thing that made it look defined — `m + 3` —
+is gapless-qualified while §10 commissions injection at 0, 1 and 7 cycles, so
+reading it as the rule would leave a strobe cycle unpinned on a stimulus this
+specification itself commissions, which §6.3 item 5 exists to refuse. That
+argument does two further things without announcing them: it establishes that no
+conformant design changes, and it **vindicates M03-B2 and M03-B3** rather than
+moving them — W + 2 is now the only reading of §9 for a frame ended inside its
+own start word, which is what M03-B2 already asserted. My WO-0030 open question
+against myself ("if the repair pins W + 3 instead, both rows change and I will
+have shipped an attack plan asserting the wrong cycle") is answered in my favour,
+and by an argument that did not need to know which way I wanted it to go.
+
+**And the part where the recipient's check beat my packet again.** My statement
+of R2 named one direction: `m + 3` later, wherever the ending character lies in
+the frame's own start word. The disagreement also runs the other way, in exactly
+one case — a lane-4-started frame whose `/T/` is in lane 0 of the *second* word
+after its start word, four octets received and none delivered, §9's sixth row,
+where the rule gives S + 4 and `m + 3` gives S + 3. A repair built to my
+statement alone would still have been false. I did not take the "exactly one" on
+trust: enumerating the no-output-word frames, the ending character lies in S
+(differ, `m + 3` later), in S + 1 (agree), or — only for that lane-4 runt — in
+S + 2 (differ, `m + 3` earlier), and nothing reaches S + 3, because fewer than
+five delivered octets puts every terminate character at or before lane 0 of
+S + 2 while REQ-105's and REQ-110's zero-delivered clauses reach only S + 1.
+Confirmed.
+
+I also re-derived §0.6's window, because the new text claims it and a claim about
+a normative window is exactly the sort of supporting sentence that goes unchecked.
+The latest cycle the repaired rule produces is that same S + 4; §0.6 bounds a
+strobe at the module's latency in cycles after the input word carrying the last
+octet of the offending frame; that octet is at lane 7 of S + 1 and ΔC = 3, so the
+bound is S + 4. At the far edge and **inside**. It holds.
+
+**Flagged item (a): my prose against my own table.** The criticism is exact and I
+concede it without qualification. My table has six rows and three axes — the
+aborting start character's lane, the **aborted frame's own** start lane, and
+whether it delivered an octet. My prose summary collapsed the second axis away
+and then quantified over the collapse: "three of the four sub-cases" reads row 4
+(lane-4 `/S/`, lane-0-started A, coincides) as the whole of the
+lane-4-with-delivery cell and absorbs row 5 (lane-4 `/S/`, **lane-4**-started A,
+W + 1 against W + 2, does not coincide); "one cycle apart only for a lane-0
+`/S/`" is the same error stated the other way round. Of the six combinations,
+three coincide. The table was right, the specification follows the table, and the
+sentence about the table was wrong.
+
+I decided against a ledger row, and the reasoning is what a ledger row is *for*.
+The ledger tracks owed changes to committed artefacts. After this commit nothing
+is owed: the specification is correct; the bad prose lives in `J-dv_lead-0015`,
+which is append-only and is corrected forward by this entry; in the WO-0030
+Return log and the gate block transcribed from it, which are the verbatim record
+of a verdict and must not be rewritten after the fact — rewriting them would
+falsify the record to flatter me; and in `AP-xgmii_rx_64.md`, which I have
+corrected **in place** where it is live guidance (the M03-N2 row now says six,
+with the axes named before the count) and left **standing** where it is a log
+(the WO-0030 change-log row), on this programme's own rule that a miss is
+recorded rather than tidied — the rule the architect applied to itself at C-40's
+residual site.
+
+What I do take from it is the pattern, and it is worth more than the row would
+have been. This is the **same failure mode as C-44**: a universal asserted over a
+table that did not support it. Twice in two activations — once about killability
+("the only stimulus"), once about my own arithmetic ("three of four") — and both
+times the underlying table was correct and the sentence generalising it was not.
+A verification lead whose summaries are less reliable than his tables is a
+specific, nameable hazard, because summaries are what other agents quote. The
+structural fix available inside an artefact is to state the axes before the
+count, which the plan now does.
+
+**Flagged item (b): §9's rows 8/9 — accepted, and it is sharper than offered.**
+The gap is real: a frame past its eighth preamble position with zero delivered
+octets — the `/S/` landing exactly on the frame's first octet, lane 0 of S + 1 at
+a lane-0 start, lane 4 of S + 1 at a lane-4 one — satisfies neither row 8's
+"≥ 1 octet already delivered" nor row 9's "still inside its own preamble". I
+accept it as a ledger row and widen it twice. It has a **model in the same
+table**: §9's row 3 states the REQ-105 sibling extensionally — "at or before the
+frame's first octet (including in a preamble position)" — which is the phrase
+rows 8 and 9 want, and the two phrasings differ by exactly one octet time at each
+start lane. And there is a **second site** the offer did not name:
+requirements.md REQ-110 carries the same narrow gloss, though its governing words
+("Where the new start character leaves the aborted frame zero delivered octets")
+are extensional and are what decide the outcome.
+
+Non-blocking, and I state the reason rather than the verdict: because REQ-110's
+governing clause is extensional, the outcome is forced — no output word, one
+strobe, §0.7 — so nothing is ambiguous and no row of my plan is at risk; M03-N2's
+rows 3 and 6 and M03-B4 assert exactly that. What is missing is the row that says
+so. It is also, notably, **R2's shape a third time**: a correct rule carrying a
+gloss narrower than itself. Three instances in one specification is a class, and
+I named it as one so the next reader looks for the fourth rather than being
+surprised by it. C-47.
+
+**Conversions, and why they are safe now.** Both held rows release. M03-N4 goes
+to ASSERT unchanged, exactly as I pre-committed — and I verified the
+pre-commitment rather than honouring it blind: the three hunks touch neither
+§4.3, §6.2, §9's clause (b) nor §10's hooks, which is the whole of what N4
+derives from. M03-N2 goes to ASSERT with the cycles stated in the row, the six
+sub-cases and their three axes named, and the two adopted facts recorded so a
+bench writer does not re-derive them. Its *Kills* cell now names the pair the
+row exists for: (lane-4 `/S/`, lane-0-started A) against (lane-4 `/S/`,
+lane-4-started A) differ by one cycle on otherwise identical stimulus, and no
+other row in the plan separates them — which is, precisely, the discrimination my
+own prose erased.
+
+### Actions
+- Verified confinement against the tree over the full `541ea43..06c1eba` range,
+  including attribution of the `docs/gates/` change to the orchestrator's own
+  commit; confirmed three hunks in one `docs/specs/**` file and no other spec,
+  requirement, ADR or ledger item moved.
+- Re-checked the landed six-row table row by row and re-derived all six by the
+  specification's per-octet route, confirming both routes agree.
+- Verified the two adopted additions (different strobe names on every
+  coincidence; the coincidence column injection-proof in both directions) and
+  determined that the new injection scope note does **not** touch C-45.
+- Verified R2's forcing ground, its second (lane-4 four-octet runt) direction by
+  enumerating the no-output-word frames, and §0.6's S + 4 bound for it.
+- **SIGNED** the SPEC-M03 revisions at `06c1eba`; wrote the replacement gate
+  block for transcription.
+- Conceded flagged item (a) in full, with no ledger row and the reason stated;
+  corrected `AP-xgmii_rx_64.md`'s live guidance in place and left its change-log
+  row standing.
+- Accepted flagged item (b) as **C-47**, rewidened with §9 row 3 as the
+  in-document model and requirements.md REQ-110's gloss as a second site.
+- Converted `AP-xgmii_rx_64.md` **M03-N2** and **M03-N4** to **ASSERT**; rewrote
+  §4.N's derivation block as the verification record; updated §8's answer block;
+  added the §9 change-log row.
+- Appended the countersignature verdict to the WO-0031 Return log.
+- Staged nothing outside `test/**` and `agents/handoffs/**`. No `docs/**`, no
+  `libs/**`, no `tools/**`, and `AP-ip_eth_rx_64.md` untouched — nothing in this
+  repair reaches M14.
+
+### Evidence
+All commands from a repo checkout at this commit.
+
+1. **Confinement.** `git diff --stat 541ea43 06c1eba` → 12 paths; `git diff
+   --numstat 541ea43 06c1eba -- docs/` → exactly two:
+   `docs/gates/P1-spec-freeze-checklist.md` (85/3) and
+   `docs/specs/modules/xgmii_rx_64.md` (77/10).
+   `git diff 541ea43 06c1eba -- docs/specs/modules/xgmii_rx_64.md | grep -c '^@@'`
+   → **3**, at `@@ -313`, `@@ -712`, `@@ -844`.
+   `git log --format='%h %s … %(trailers:key=Agent,valueonly)' 541ea43..06c1eba
+   -- docs/gates/ docs/specs/` → `06c1eba … architect_docs_lead` and
+   `361c91c … orchestrator`, so the gate file moved only under the
+   orchestrator's own trailer.
+2. **R1's six rows, re-derived by the per-octet route** (SPEC-M03 §7's L = 16 at
+   a lane-0 start, 12 at a lane-4 one; an octet at lane k of input word U leaves
+   on `U + ⌊(k + L)/8⌋`; REQ-110 puts the aborted frame's last octet at lane 7 of
+   W − 1 for a lane-0 `/S/` and lane 3 of W for a lane-4 one):
+   L = 16 → ⌊(k+16)/8⌋ = 2 for every k ∈ 0…7; L = 12 → 1 for k ∈ 0…3 and 2 for
+   k ∈ 4…7. Hence lane-0 `/S/`: (W−1)+2 = **W + 1** at both L. Lane-4 `/S/`:
+   L = 16 → W + 2, L = 12 → W + 1. Zero-delivered: **W + 2** by §9's rule at both
+   lanes. New frame: **W + 2** always. Three of six coincide. Agrees with
+   §6.1's landed table row for row and with the WO-0030 `m + 3` derivation.
+3. **R2's second direction, enumerated.** No-output-word frames are REQ-107's
+   fewer-than-five-octet runts and the REQ-105/REQ-110 at-or-before-first-octet
+   cases. Lane-0 start at S: a runt's `/T/` is at or before lane 4 of S + 1; the
+   `/E/`//`/S/` cases reach lane 0 of S + 1. Lane-4 start at S: the runt's `/T/`
+   reaches lane 0 of **S + 2** in the four-octet case only; the `/E/`//`/S/`
+   cases reach lane 4 of S + 1. So the ending character lies in S, S + 1, or —
+   in exactly one case — S + 2, and never S + 3. Rule vs `m + 3`: differ (later)
+   in S, agree in S + 1, differ (earlier) in S + 2. Confirms "exactly one".
+4. **§0.6's window for that case.** requirements.md §0.6: a strobe pulses "not
+   later than the module's latency in cycles (§0.5) after the input word carrying
+   the last octet of the offending frame". Last octet at lane 7 of S + 1, ΔC = 3
+   → bound S + 4; the repaired rule gives (S + 2) + 2 = S + 4. At the edge,
+   inside.
+5. **Injection-proofness, checked both ways.** Rows 1–2 (lane-0 `/S/`) key on
+   W − 1, so an injected idle between W − 1 and W leaves the aborted report at
+   its absolute cycle while W and the new frame's W + 2 move later — separation
+   grows from 1, never to 0. Rows 3, 4, 6 key on W itself or on the closing
+   character's word and move with it — a coincidence cannot be broken. Row 5
+   keys on W — separation stays 1.
+6. **C-47's gap, quoted.** SPEC-M03 §9 row 8: "`/S/` before the current frame's
+   `/T/`, with ≥ 1 octet already delivered"; row 9: "`/S/` while the current
+   frame is still inside its own preamble"; row 3, the model: "`/E/` while the
+   frame is open, **at or before the frame's first octet** (including in a
+   preamble position)". requirements.md REQ-110's gloss: "a start character
+   arriving while the aborted frame is still inside its own eight preamble
+   octets", against its governing "Where the new start character leaves the
+   aborted frame zero delivered octets".
+7. **Plan status counts after the conversions**, recomputed rather than asserted:
+   `grep -oE '\| (ASSERT|NO-ASSERT|NO-STIMULUS|RULING|GAP|STRUCTURAL) \|$'
+   test/attack_plans/AP-xgmii_rx_64.md | sort | uniq -c` → 57 ASSERT,
+   7 NO-ASSERT, 4 NO-STIMULUS, 1 GAP, 4 STRUCTURAL, **no RULING** = 73 rows,
+   matching the §9 change-log row.
+8. `git status --short` → the two files listed below **plus a third I did not
+   touch and must not**: `M libs/hardcaml_ethernet/src/xgmii_rx_64.ml`
+   (107/83 by `git diff --numstat`), mtime **16:40:03**, later than both of my
+   own edits (16:36:01 and 16:37:20) — so it appeared in the shared working tree
+   while I was writing this entry, and it is almost certainly rtl_lead executing
+   WO-0032 concurrently. I did not create it, I have not reverted it (`libs/**`
+   is outside my write scope, PROTOCOL §6, and reverting another agent's work
+   would be worse than leaving it), and **I have not read its contents** — only
+   its line counts and mtime, which are not RTL text. Reading it would
+   contaminate my `Inputs` for the next M03 verdict for no benefit, and charter
+   §8's independence discipline is worth more than my curiosity. My
+   `Files-in-this-commit` below is unchanged and correct; the orchestrator must
+   stage **only** those two paths, or R7 refuses the commit and R1's one-agent
+   rule is broken. Recorded here rather than mentioned only in chat, because a
+   second agent writing into this tree while I sign a spec is an operational
+   hazard the programme should see in the diff.
+9. **Negative capability, restated**: no bench was run, because none exists —
+   X-1, X-3, X-4 and X-5 are unclosed and ADR-0005 still blocks a local Hardcaml
+   build. Every claim above is arithmetic over committed specification text and
+   is checkable by hand at this SHA.
+
+### Outcome
+DoD **met**. The condition attached to my pre-worded signature was tested, not
+assumed, and it holds: the repair is confined to R1 + R2 and the two statements
+are correct. **SPEC-M03 re-countersignature GRANTED at `06c1eba`**, so every
+WO-0029 revision is now in force — SPEC-M14 and requirements.md REQ-810 at
+`541ea43` under `J-dv_lead-0015`, SPEC-M03 at `06c1eba` under this entry. The
+replacement gate block is supplied verbatim in the WO-0031 Return log §6;
+`docs/gates/**` is outside my write scope (PROTOCOL §6) and the transcription is
+the orchestrator's clerical half (§7).
+
+Flagged item (a): **CONCUR**, no ledger row owed, corrected forward here and in
+the plan's live guidance. Flagged item (b): **ACCEPTED and rewidened** as
+**C-47**. Conversions: **M03-N2 and M03-N4 both ASSERT**; the plan carries no
+RULING row at either module. Handoff:
+`agents/handoffs/WO-0031_m03-r1r2-repair.md` Return log, to the orchestrator.
+
+### Open-questions
+- **Ledger, all non-blocking and none taken at this commit**: C-43
+  (requirements.md §12's `error_ip_bad_header` condition cell), C-44 (SPEC-M14
+  §6.3 item 4 and §10's REQ-603 hook carry my overclaim), C-45 (SPEC-M03's
+  idle-injection prohibition is over-broad at a lane-0 start — **confirmed
+  untouched** by the new injection scope note, which concerns a different
+  boundary), C-46 (REQ-810's verification column), and now **C-47** (§9's rows
+  8/9, plus requirements.md REQ-110's gloss). Each is one cell or one phrase.
+- **A class, not three accidents**: R2's withdrawn gloss, REQ-110's
+  zero-delivered gloss and §9's rows 8/9 are all a correct rule carrying a gloss
+  narrower than itself. Worth a sweep at the next SPEC-M03 diff rather than three
+  separate rows discovered one at a time.
+- **Against myself, and it outlives this work order**: C-44 and flagged item (a)
+  are the same failure mode — a universal asserted over a table that did not
+  support it, twice in two activations. My tables have been right both times and
+  my sentences about them have not. Until a bench exists to catch this
+  mechanically, the mitigation is textual (state the axes before the count) and
+  therefore weak; the auditor should treat my summary sentences as the least
+  reliable thing I produce.
+- **Unchanged and still blocking the first real benches**: the machinery gaps
+  X-1, X-3, X-4 and X-5. M03-N2 is now assertable and needs X-1's
+  error-injection catalogue to place two conditions in one word, which X-1 does
+  not yet do — the row is ASSERT on the specification and unbuildable on the
+  machinery, and the plan's §7 says so.
+- **Not mine to route**: WO-0032, the M03 REQ-102 conformance packet to rtl_lead.
+  Confirmed once more against this diff — neither repaired sentence touches
+  REQ-102, REQ-110 or §10's hooks — so it was never gated on this signature.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0031_m03-r1r2-repair.md
+- test/attack_plans/AP-xgmii_rx_64.md
