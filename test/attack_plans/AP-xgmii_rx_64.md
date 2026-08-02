@@ -270,16 +270,72 @@ reading.
 | Row | Attacks | Stimulus | Observable | Kills | Status |
 |---|---|---|---|---|---|
 | **M03-N1** | §9's closure list, REQ-113, REQ-105 | Two closure characters in one input word where the **second arrives after the frame is already closed** and no frame is open: `/T/` in lane 0 and `/E/` in lane 5 | The `/T/` closes the frame normally (REQ-106, FCS checked); the `/E/` finds **no open frame** and produces nothing and pulses nothing (§9's third row, C-12) | A design evaluating every control lane of a word against the state the word *started* in | ASSERT |
-| **M03-N2** | §6.1's preamble-routing sentence, §9, REQ-102, REQ-107, REQ-110 | Two closure characters in one input word where the second falls **inside the new frame's preamble**: `/S/` in lane 0 (or lane 4) and `/T/` in a higher lane of the same word — e.g. `/S/` lane 0, `/T/` lane 3 | **Two readings, both written out.** (i) *Text-strict*: §9's closure list closes the open frame at the earliest event, which in octet times (§0.5) is the lower lane, so the `/S/` aborts the open frame (`error_start_without_terminate`, zero or more delivered octets per §9); the new frame is then open and the `/T/` at lane 3 is a **control character in a preamble position**, which §6.1 routes explicitly — "`/T/` to REQ-107" — giving a second, zero-delivered frame with one `error_runt`. Two different strobes, both pinned two cycles after this input word, high on the same cycle (§0.6 permits different strobes to coincide). (ii) *One-closure-per-word*: the `/T/` is not seen at all and only `error_start_without_terminate` pulses. **The readings differ in one observable — whether `error_runt` pulses — so the case is cheaply decidable and cheaply testable, and it is a hole in §0.6's conservation equation while it is open**: under (ii) a frame is opened and never reported | The row kills whichever reading the ruling rejects. It is written now because rtl_lead has **declared** reading (ii) in a returned question, so the moment to settle it is before a bench asserts either | RULING |
-| **M03-N3** | REQ-016, §6.1's "exactly 8 octet times", §10's REQ-016 hook | An idle word placed **inside a frame's own eight preamble octets** | §6.1 fixes the frame's first octet at exactly 8 octet times after the start character, so such a stimulus contradicts the definition of the frame it claims to carry; §10 commissions idle injection **inside the frame**, which begins after those eight octets. **The idle-injection wrapper of M03-I4 SHALL NOT place an idle cycle between the start word and the frame's first octet.** A one-sentence §6.3 addition would close the last place REQ-016 and §6.1 can be read against each other, and is requested in §8 | A wrapper that injects uniformly across the whole frame including the preamble, producing a stimulus outside the specified space and a failure that is the bench's, not the design's | NO-STIMULUS |
-| **M03-N4** | REQ-810, REQ-803, REQ-110, §4.3 | `cfg_rx_enable` goes 0 **mid-frame**, and a new `/S/` (REQ-110's condition) arrives while it is 0, at least one cycle away from the change | **Two readings.** (i) *Enable gates only the beginning of a frame*: the `/S/` still closes the open frame — the abort belongs to a frame accepted under the old value — so `error_start_without_terminate` pulses and `tuser`[0] = 1 on the aborted frame's `tlast`; the new frame does not begin. (ii) *§4.3 literally*: with the enable at 0 "M03 … treats every start character as absent", so the `/S/` neither begins nor aborts and the open frame runs on through that word. The two differ in the delivered octet count of the in-flight frame, in one strobe and in one abort bit. §4.3's two sentences — "treats every start character as absent … pulses no strobe" and "a frame already in flight completes under the old one" — point opposite ways here, and REQ-810's "no frame is accepted, so this creates no silent-discard hole" is an argument only for reading (i), under which the in-flight frame *is* reported | Under reading (ii) the open frame is carried across a character §6.1 routes to REQ-110, and the frame's octet count includes lanes the specification calls a start character. The row is `RULING` because asserting either today would commission a bench that fails a conformant design under the other | RULING |
+| **M03-N2** | §6.1's "more than one event in one input word" paragraph and §9's closure-list clause (a), both revised at `541ea43`; REQ-102, REQ-107, REQ-110, REQ-101 | Two closure characters in one input word **W** where the second falls **inside the new frame's preamble**: `/S/` in lane 0 or lane 4 of W, and `/T/` in a higher lane of the same W. The row is **four** sub-cases, not one, because the report cycles differ across them: {`/S/` in lane 0, `/S/` in lane 4} × {the aborted frame delivered 0 octets, ≥ 1 octet} — see the derivation below this table | **Reading (i) RULED (WO-0029 §3a) and ENDORSED here on a second, independent ground** (below). Every start and every closure character is evaluated at its own octet time, so the `/S/` aborts the open frame (`error_start_without_terminate`) and the `/T/` closes the frame that same `/S/` opened, with zero delivered octets, under REQ-107 (`error_runt`). Two **different** strobe names, so §6.3 item 8 does **not** exclude this stimulus. **Still RULING, and the reason has moved**: the reading is settled, the **cycles are not**. The revised text states a cycle relation this row would have to assert and that relation is false on one of the four sub-cases, and §9 pins the second strobe to two different cycles depending on which half of one sentence is read. Both are named below and both are why the SPEC-M03 revisions are **WITHHELD** at WO-0030 | Reading (ii) — which rtl_lead declared and the ruling rejected — is killed by the presence of `error_runt` at all. Once the cycles are pinned, the four sub-cases additionally kill a design that reports both frames on one fixed cycle regardless of the aborted frame's delivered count | RULING |
+| **M03-N3** | REQ-016, REQ-102's third sentence, REQ-105, §6.1's preamble-position paragraph and §10's REQ-016 hook (both `541ea43`) | An idle word placed **between a frame's start character and its first octet** | **The stimulus is decided, not out of the specified space** — the architect declined dv's requested §6.3 sentence and gave something stronger (WO-0029 §3b), and the correction is accepted: an idle character in a preamble position is "any other control character" in REQ-102's third sentence, so it is routed to **REQ-105** and ends the frame with one `error_bad_frame` and no output word (§9's third row). The constraint that is actually owed binds the **wrapper**, and §6.1 and §10's REQ-016 hook now carry it: **the idle-injection wrapper of M03-I4 SHALL NOT inject between a start character and the frame's first octet.** The row therefore stays **NO-STIMULUS for the REQ-016 family**, now with a spec citation instead of an inference; the assertable case it makes available is REQ-105's, commissioned by §10's REQ-102 hook and carried at **M03-B2**. **Caveat carried as C-45**: at a **lane-0** start the whole preamble lies inside the start word (§6.1 says so in the same paragraph), so an injected idle word at the first inter-word boundary occupies **no preamble position** and is §6.2's ordinary C-14.4 hold — the prohibition is over-broad there and its stated ground does not hold at that lane. The constraint is honoured as written until the scope lands | A wrapper that injects uniformly across the whole frame including the preamble: at a **lane-4** start it puts idle characters in preamble positions 4 … 7 and measures REQ-105's abort while claiming to measure REQ-016's tolerance — a failure that is the bench's, not the design's | NO-STIMULUS |
+| **M03-N4** | REQ-810 (revised `541ea43`), REQ-803, REQ-110, §4.3, §6.2's three rows, §9's closure-list clause (b), §10's REQ-110 and REQ-802/REQ-810 hooks, **ADR-0014** | `cfg_rx_enable` goes 0 **mid-frame**, and a new `/S/` (REQ-110's condition) arrives while it is 0, at least one cycle away from the change (§6.3 item 7, C-14.5) | **Reading (i) RULED (ADR-0014) and ENDORSED** — an enable gates the *admission* of a frame and nothing else. The commissioned observable, taken from §10's REQ-802/REQ-810 hook and not from the row's own prose: the in-flight frame is **aborted at the octet before the `/S/`** with `tuser`[0] = 1 on its `tlast` word (or **no output word at all** where it had delivered none), **exactly one** `error_start_without_terminate`, **no** output word for the frame that `/S/` would have begun, and the next frame received normally after the enable returns to 1. The ruling is decided **against the two requirements**, not against the implementation — and it is worth recording that the same activation rejected the same agent's declared reading on M03-N2. **Held at RULING for one reason only, and it is not this row's**: SPEC-M03's revisions are WITHHELD at WO-0030 on the M03-N2 defects, so the §4.3/§6.2/§9 text this row derives from is not yet in force. **Pre-committed: this row converts to ASSERT, unchanged, at the re-countersignature** — nothing in the N2 repair touches it | Reading (ii): the open frame is carried across a character §6.1 routes to REQ-110 and its octet count absorbs a refused frame's octets, reaching M06 with a bad FCS or (past 1518) an oversize truncation. Also a design that gates the datapath rather than admission, which suppresses the in-flight frame's own remaining words and its report — the silent-discard hole REQ-810's next clause disclaims | RULING |
+
+**M03-N2's report cycles, derived — and the two defects that hold the row at
+RULING.** Both come out of the specification's own arithmetic, not out of a
+preference. Let **W** be the input word carrying the aborting `/S/`, **S** the
+aborted frame **A**'s own start word, and let the stimulus be gapless so §6.1's
+formula applies: *output word m is emitted on cycle m + 3 counted from the word
+carrying the start character*. A's last delivered octet is the octet immediately
+before the `/S/` (REQ-110): octet time 8W − 1 for a lane-0 `/S/`, 8W + 3 for a
+lane-4 one, since a lane-4 start leaves lanes 0 … 3 of its word to the aborted
+frame. Frame **B** — opened by that `/S/` and closed by the `/T/` in a higher
+lane of the same W — delivers nothing, so §9 pins its `error_runt` **two cycles
+after W**.
+
+| `/S/` lane | A's start lane | A delivered | A's `error_start_without_terminate` | B's `error_runt` | Same cycle? |
+|---|---|---|---|---|---|
+| 0 | 0 | ≥ 1 octet | W + 1 | W + 2 | no |
+| 0 | 4 | ≥ 1 octet | W + 1 | W + 2 | no |
+| 0 | either | 0 octets | W + 2 | W + 2 | **yes** |
+| **4** | **0** | **≥ 1 octet** | **W + 2** | **W + 2** | **yes** |
+| 4 | 4 | ≥ 1 octet | W + 1 | W + 2 | no |
+| 4 | either | 0 octets | W + 2 | W + 2 | **yes** |
+
+1. **Defect M03-R1 — a false universal in text a bench is told it may rely on.**
+   §6.1's new consequence 1 ends "…and **only where it delivered no octet** do
+   the two fall together, on different strobe names", under the heading "Two
+   consequences a bench may rely on". Row 4 of the table above falsifies it.
+   **Minimal witness**: A opens with `/S/` in lane 0 of word W − 1; word W
+   carries A's octets 0 … 3 in lanes 0 … 3, a `/S/` in lane 4 and a `/T/` in
+   lane 6. A delivers **four** octets, so its `tlast` word (`tkeep` = 0x0F,
+   `tuser`[0] = 1) is output word 0 and leaves on (W − 1) + 3 = **W + 2**, and
+   B's `error_runt` is also on **W + 2**. A bench following the sentence asserts
+   the two are one cycle apart and fails a conformant M03. The parenthetical
+   that precedes it — "the input word before a lane-0 start character" — is
+   correct and is exactly the scope the closing clause drops.
+2. **Defect M03-R2 — §9 pins B's strobe to two different cycles in one
+   sentence.** §9's "Strobe cycle, pinned" reads: "For a frame that produces no
+   output word, it pulses **two cycles after the input word carrying the
+   character that ended the frame** — *the cycle on which that frame's `tlast`
+   word would have been emitted*." For any frame whose ending character lies in
+   its **own start word**, the two halves disagree by one cycle: the rule gives
+   W + 2, while §6.1's m + 3 puts that frame's output word 0 at start word + 3 =
+   **W + 3**. That class was a single instance before this ruling — REQ-110's
+   own commissioned "`/S/` in lane 4 of a word whose lane 0 carried a `/S/`",
+   frozen since batch A and **missed by me at `J-dv_lead-0005`** — and the
+   ruling makes it a family. It is **already load-bearing on committed ASSERT
+   rows**: M03-B2 drives `/E/` in lane 3 of a lane-0 start word *and* in lane 7
+   of a lane-4 start word — both inside the frame's own start word — and pins
+   the strobe "on the cycle two after the input word carrying the `/E/`", i.e.
+   it has already chosen W + 2, resting on the half of §9's sentence that the
+   other half contradicts; M03-B3 is the same shape and says only "at the
+   pinned cycle", which §9 does not uniquely supply for it. B here is the third
+   instance. The repair of R1 has to state cycles, and no cycle can be stated
+   for B — or defended for B2 — while §9 says both.
+
+Neither defect touches M03-N1, M03-N3 or M03-N4, and neither touches the
+ADR-0014 material; the repair surface is two sentences.
 
 ### 4.O Structural and declared no-instance
 
 | Row | Attacks | Stimulus | Observable | Kills | Status |
 |---|---|---|---|---|---|
 | **M03-O1** | REQ-003, REQ-010, REQ-112, §4.1 | — | Interface compile check: `O` carries `Axi64.Source` with no `Dest`, `I` carries no `tready`; the six `Source` field names witness (SPEC-M01 §11.4) | A hand-rolled stream record with the same fields | STRUCTURAL |
-| **M03-O2** | REQ-014 | — | **No instance at M03 for REQ-014's differential run.** REQ-014's verification column commissions "the same stimulus with `tstrb` = 0x00 and `tstrb` = 0xFF"; M03's input is an XGMII lane pair, which has no `tstrb` to vary (REQ-010 class (b)). The **producer** half — `tstrb` driven 0 on every output word — is asserted by the standing protocol monitor. The consumer half belongs to M06. Raised in §8 as a one-cell hook correction | — (stated so no `SO-` claims REQ-014 whole at M03) | GAP |
+| **M03-O2** | REQ-014, §10's REQ-014 hook (repaired `541ea43`) | — | **No instance at M03 for REQ-014's differential run**, and SPEC-M03 §10 now says so in the form SPEC-M14 §10 uses for REQ-404/REQ-810 — the request is **landed and editorial**, so no re-countersignature was owed for it and the row's citation is now the specification rather than this plan's inference. REQ-014's verification column commissions "the same stimulus with `tstrb` = 0x00 and `tstrb` = 0xFF"; M03's input is an XGMII lane pair, which has no `tstrb` to vary (REQ-010 class (b)). The **producer** half — `tstrb` driven 0 on every output word — is asserted by the standing protocol monitor. The consumer half belongs to M06 | — (stated so no `SO-` claims REQ-014 whole at M03) | GAP |
 | **M03-O3** | REQ-017, REQ-018, REQ-903, REQ-808 | — | Emitted-Verilog port names `xgmii_rxd`/`xgmii_rxc`; the module whitelist (`tools/check_emitted_verilog.sh`); `.mli`, `create` and `hierarchical` present; the module name appears in `rtl_snapshots/` | A record whose `[@rtlprefix]` drifted; an instantiated primitive outside the §4 inventory | STRUCTURAL |
 | **M03-O4** | §6.3 item 3 | — | A start character in a lane other than 0 or 4 is **never driven** and nothing is asserted about it | — | NO-STIMULUS |
 | **M03-O5** | §6.3 items 2, 4, 5 | — | Nothing is asserted about register placement, FSM encoding, counter direction, `tdata` where `tkeep` is 0, or any field on a `tvalid` = 0 cycle. §9's strobe **cycle**, by contrast, is pinned and **is** asserted (§6.3 item 5 says so explicitly) | A snapshot that freezes an unconstrained value into an accidental requirement | NO-ASSERT |
@@ -358,19 +414,19 @@ row carries the reason.
 | REQ-020 | M03-L4 |
 | REQ-021 | M03-A2, M03-A5, M03-H2 |
 | REQ-101 | M03-A1, M03-A2, M03-A3, M03-A4 |
-| REQ-102 | M03-B1, M03-B2, M03-B3, M03-B4 |
+| REQ-102 | M03-B1, M03-B2, M03-B3, M03-B4, **M03-N2** (the lane-0-start placement, where the whole preamble lies inside the start word — the instance the WO-0029 ruling turns on), M03-N3 (the idle-in-preamble routing) |
 | REQ-103 | M03-C1, M03-C3, M03-E1, M03-F1, M03-G1, M03-H1 |
 | REQ-104 | M03-D1, M03-D2, M03-D3, M03-D4, M03-M2, M03-M3, M03-M4 |
-| REQ-105 | M03-B2, M03-E1, M03-E2, M03-E3, M03-E4, M03-G4, M03-M5, M03-M7 |
+| REQ-105 | M03-B2, M03-E1, M03-E2, M03-E3, M03-E4, M03-G4, M03-M5, M03-M7, M03-N1 |
 | REQ-106 | M03-C1, M03-C2 |
 | REQ-107 | M03-B3, M03-F1 … M03-F5, M03-M1 |
 | REQ-108 | M03-G1 … M03-G6, M03-M2, M03-M6, M03-M7 |
 | REQ-109 | M03-I1, M03-I2 |
-| REQ-110 | M03-B4, M03-H1 … M03-H4, M03-M4, M03-M5, M03-M6 |
+| REQ-110 | M03-B4, M03-H1 … M03-H4, M03-M4, M03-M5, M03-M6, **M03-N2** (the abort half), **M03-N4** (the abort under a disabled receive path, ADR-0014) |
 | REQ-111 | M03-L2, M03-L5 |
 | REQ-112 | M03-L1, M03-L6 |
 | REQ-113 | M03-E4, M03-I3 |
-| REQ-802, REQ-810 | M03-J1 … M03-J4 |
+| REQ-802, REQ-810 | M03-J1 … M03-J4, **M03-N4** |
 | REQ-803 | M03-J2, M03-J3, M03-N4 |
 | REQ-903, REQ-808 | M03-O3 |
 
@@ -384,7 +440,7 @@ for the next DV work order; the numbering is local to this plan.
 | **X-1** | **The link partner's error-injection catalogue** — REQ-018's second contract clause, deliberately deferred by `test/xgmii/arrival.mli` until this plan existed. Needs: per-frame corruption of one payload bit (bad FCS); replacement of the terminate character by `/S/` or `/E/` at a chosen octet time; placement of `/E/`, `/T/` or `/S/` at a chosen **preamble** position; over-length and under-length frames; and, per injected frame, the **expected §9 outcome** (delivered octet count, `tkeep`, abort bit, strobe name and pinned cycle) so a bench compares against the model rather than against hand-copied constants | B2–B4, D1, D3, E1–E4, F1–F5, G1–G6, H1–H4, M1–M7, N1 | The largest single item. Its expected-outcome side is what makes the fuzz campaign of §5 item 1 possible later |
 | **X-2** | **An XGMII probe** — the `Xgmii_word`-to-live-port sampler, the counterpart of `test/axi64_probe/` on the wire side. `test/xgmii/dune` already records that it "lands with the first M03 bench" | every row | One function, same shape as `Axi64_probe.of_refs` |
 | **X-3** | **A strobe monitor.** No monitor today counts strobes: `Conservation_monitor.strobe_pulse` is a call a bench makes by hand. Needed: (a) **high-cycle** counting per §0.6 as revised by **C-23** — never rising edges; (b) an **expected-cycle** check against §9's pinned cycles (the `tlast` cycle, or two cycles after the closing input word for a frame with no output); (c) the §0.6 window check; (d) "no strobe other than those the stimulus creates" | every strobe row; **M03-H4** is the row that makes (a) load-bearing at this module | C-23's convention was homed in requirements.md §0.6 on M13's evidence and stated there as generalising. M03-H4 is the second instance and the first on the receive chain |
-| **X-4** | **An idle-injection wrapper** at 0, 1 and 7 cycles (§10's figures), with the **M03-N3 constraint** built in: injection never lands between the start word and the frame's first octet | I4, I5, I6 | The constraint is the deliverable as much as the wrapper is |
+| **X-4** | **An idle-injection wrapper** at 0, 1 and 7 cycles (§10's figures), with the **M03-N3 constraint** built in: injection never lands between a frame's start character and its first octet. The constraint now has a spec citation — SPEC-M03 §6.1 and §10's REQ-016 hook at `541ea43` — rather than this plan's inference, and the wrapper SHALL implement it as written even where **C-45** shows it over-broad (a lane-0 start's first inter-word boundary occupies no preamble position); if the scope lands, the wrapper gains that boundary back and M03-I4 gains a case | I4, I5, I6 | The constraint is the deliverable as much as the wrapper is |
 | **X-5** | **A truncated-frame entry point on the latency tagger.** `Latency.frame_out` requires the output length to equal (input − `strip_octets` − `tail_octets`), which holds for a clean frame and is false for **every** aborted or truncated frame — families E, F, G and H all deliver a short frame. `frame_dropped` covers only the no-output case. Needed: a per-frame expected output extent | E1, F1, G1, G2, H1, H2 | Same repair serves M14 (see AP-M14 X-9), where the tail varies per datagram rather than per frame class |
 
 Not gaps: `Conservation_monitor`'s exemption machinery (C-2) exists and is used
@@ -397,6 +453,43 @@ themselves against §0.3.
 
 Routed through the orchestrator to architect_docs_lead. None blocks a bench
 other than its own row.
+
+> **All four ANSWERED at `541ea43` (WO-0029); dv's countersignature WITHHELD at
+> WO-0030** (`J-dv_lead-0015`). Item by item:
+>
+> - **1 (M03-N2)** — ruled for reading (i), **against rtl_lead's declared
+>   reading**, on REQ-102 one document up rather than on a preference, and dv's
+>   own §9-versus-§6.3 recommendation is superseded by a better instrument: the
+>   ruling costs no new text at all, and the one stimulus it cannot report
+>   (**two frames reported on one cycle under the same strobe name**) is carved
+>   out at new §6.3 item 8 as a bound on DV, not on the module. **Endorsed, with
+>   a second and independent ground the ruling did not use**: REQ-101 requires
+>   *identical output streams for the same frame received at either alignment*,
+>   and the one-closure-per-word reading breaks it — a `/T/` or `/E/` at
+>   preamble position 4 … 7 shares the start word at a **lane-0** start (so it
+>   is swallowed) and lies in the **following** word at a lane-4 start (so it is
+>   recognised), giving two different output streams for one frame. **The row
+>   does not convert**: the reading is settled, the report **cycles** are not —
+>   defects **M03-R1** and **M03-R2**, derived under §4.N, are the withholding
+>   ground.
+> - **2 (M03-N3)** — the requested §6.3 sentence **declined and bettered**: the
+>   stimulus is *decided*, not unconstrained, so §6.3 was the wrong home and the
+>   constraint that is owed binds the wrapper. Accepted. Residue **C-45**: the
+>   prohibition is over-broad at a lane-0 start and its stated ground ("such a
+>   cycle occupies preamble positions") does not hold there.
+> - **3 (M03-N4)** — ruled for reading (i), **ADR-0014**; the enable gates
+>   admission and nothing else. Endorsed on its merits, and the argument that
+>   carries it is the right one: the unscoped reading of REQ-810 is
+>   self-defeating, because it would suppress the in-flight frame's own words
+>   and its own report and open the silent-discard hole REQ-810's next clause
+>   disclaims. The row converts to ASSERT at the re-countersignature.
+> - **4 (M03-O2)** — landed, editorial, no re-countersignature owed.
+>
+> **Consequence outside this plan, and it is not dv's to route**: the M03 RTL at
+> `f840475` recognises one closure per input word, so it is non-conformant
+> against **frozen** REQ-102 and §10's REQ-102 and REQ-110 hooks. That is an RTL
+> defect against text frozen since batch A, not a change this ruling makes, and
+> it is rtl_lead's under its own packet.
 
 1. **M03-N2 (RULING, from rtl_lead's returned question 2)** — two closure
    characters in one input word where the second falls inside the new frame's
@@ -438,3 +531,4 @@ other than its own row.
 | Date | Change | Author |
 |---|---|---|
 | 2026-08-02 | Created (WO-0027). **73 rows** across 15 families (A 5, B 4, C 4, D 4, E 4, F 5, G 6, H 4, I 6, J 4, K 3, L 6, M 9, N 4, O 5) — 55 ASSERT, 7 NO-ASSERT, 4 NO-STIMULUS, 2 RULING, 1 GAP, 4 STRUCTURAL; the format defined in §0–§1 becomes the template for every later `AP-`. | dv_lead, `J-dv_lead-0013` |
+| 2026-08-03 | **WO-0030, on the SPEC-M03 revisions WITHHELD at `541ea43`.** **No row converts**, and the reason is recorded rather than the conversion: both rulings are endorsed, but the text they land in carries two defects — a false universal in §6.1's consequence 1 (**M03-R1**) and §9's strobe-cycle sentence pinning a no-output-word frame to two different cycles when its ending character lies in its own start word (**M03-R2**, which already reaches the committed ASSERT rows M03-B2 and M03-B3). **M03-N2** stays RULING with the ruling recorded, the four sub-cases enumerated and the report cycles derived from §6.1's own m + 3 formula — including the correction of the architect's own correction of dv's original claim: the two strobes coincide in **three** of the four sub-cases and are one cycle apart only for a lane-0 `/S/` aborting a frame that delivered at least one octet. **M03-N4** stays RULING with the ADR-0014 reading endorsed and its conversion **pre-committed, unchanged**, at the re-countersignature. **M03-N3** stays NO-STIMULUS, now citing SPEC-M03 §6.1 and §10's REQ-016 hook instead of an inference, with **C-45** on the constraint's over-breadth at a lane-0 start; X-4 carries the same. **M03-O2** cites its landed §10 repair. §6's REQ-102, REQ-105, REQ-110 and REQ-802/REQ-810 rows gain the N-family entries they were missing. Status counts unchanged. | dv_lead, `J-dv_lead-0015` |

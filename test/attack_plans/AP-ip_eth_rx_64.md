@@ -156,7 +156,7 @@ emission).
 | **M14-B2** | REQ-602, §6.1's checksum arithmetic | A datagram with **one header bit flipped** after the checksum was computed | One `error_ip_bad_checksum` at Ci + 3; nothing emitted | A design that does not verify the checksum at all (this is REQ-901 divergence class (a) — the reference does not verify it, so this REQ is verified against the **spec** by directed test only, §11.3) | ASSERT |
 | **M14-B3** | REQ-602's "fold **every** carry" | Two hand-built headers, both otherwise valid: **(a)** one whose ten-halfword sum needs **two** folds (the once-folded value still carries out of bit 15), **(b)** one whose folded sum is exactly 0xFFFF by way of an end-around carry | (a) verifies and is **accepted**; (b) verifies and is **accepted** | The classic one's-complement defect: a 32-bit accumulator folded **once**. It agrees with the correct arithmetic on the overwhelming majority of headers and rejects (a) — a valid datagram — which is a silent connectivity failure reported as `error_ip_bad_checksum`. §6.1 says "fold **every** carry out of bit 15 back into bit 0", i.e. to a fixpoint, and this row is that word made executable | ASSERT |
 | **M14-B4** | REQ-603 | More-fragments set (octet 6 bit 5); fragment offset **0x0001** (octet 7 only); fragment offset **0x0100** (octet 6 bits 4:0 only, octet 7 zero) | One `error_ip_fragment` each, at Ci + 3; nothing emitted | The third stimulus kills a design reading the fragment offset from **octet 7 alone** — it accepts and mis-delivers every fragment whose offset is a multiple of 256, which is most of them | ASSERT |
-| **M14-B5** | REQ-603, §6.3 item 4 | A datagram with **DF** set, or the reserved flag set, MF clear and offset 0 | **Nothing is asserted** — not the acceptance, not the rejection. §6.3 item 4: "M14 neither checks them nor carries them, and DV SHALL assert nothing about a datagram that sets either" | — (see §8 open question 2: this silence is what makes the flag-bit-position defect unkillable) | NO-ASSERT |
+| **M14-B5** | REQ-603, §6.3 item 4 **as revised at `541ea43`**, §8's flag-bit pair, §10's REQ-603 hook | Two datagrams identical to the stress run's accepted datagram except that one sets **DF** (octet 6 bit 6) and the other sets the **reserved** bit (bit 7); MF clear, fragment offset 0, and **the header checksum recomputed for each** — without the recompute REQ-602 rejects the stimulus and the comparison is vacuous (the architect's addition to dv's proposed sentence, WO-0029 Return §2) | Each is **accepted exactly as the unmodified datagram**: the same `ip_hdr_valid` cycle, the same six field values, the same 26 payload octets in the same words, **no strobe of any kind**, and in particular **no `error_ip_fragment`**. The two bits themselves are never read out — M14 has no port and no `Ip_header` field for either, which is the whole of what §6.3 item 4 still leaves unconstrained | A design that discards on *any* non-zero flag bit (`flags != 0`), or that tests bit 6 or bit 7 **in addition to** bit 5 for more-fragments. That class is exactly the one **M14-B4 cannot reach**, because B4's MF-set datagram is discarded by the over-broad design and by the correct one alike. A design reading bit 6 **instead of** bit 5 is already killed by M14-B4 (it *accepts* B4's MF-set datagram); the original claim that this pair was the *only* stimulus for a wrong-bit read was dv's own and is **false** — carried as **C-44** | ASSERT |
 | **M14-B6** | REQ-604, §4.3's subnet-broadcast formula | **Four accepted**: `cfg_local_ip`; the subnet broadcast `cfg_local_ip` \| ~`cfg_subnet_mask`; 255.255.255.255; `cfg_multicast_group` with `cfg_multicast_enable` = 1 | Each accepted: `ip_hdr_valid` pulses at Ci + 3 with `ip_hdr_dst_ip` equal to the injected address, payload delivered, **no strobe** | A filter that accepts only the local IP (the three others then fail silently as `error_ip_not_for_us`) | ASSERT |
 | **M14-B7** | REQ-604 | **Three rejected**: a foreign unicast address; `cfg_multicast_group` with `cfg_multicast_enable` = **0**; an address **on the local subnet** that is neither `cfg_local_ip` nor the subnet broadcast — the subnet's own network address `cfg_local_ip` & `cfg_subnet_mask` is the sharpest choice | One `error_ip_not_for_us` each, at Ci + 3; nothing emitted | A design that accepts any address matching the subnet prefix (a masked comparison instead of the four exact tests); and a design ignoring `cfg_multicast_enable` | ASSERT |
 | **M14-B8** | REQ-607 | Protocol **1** (ICMP) and protocol **6** (TCP) | One `error_ip_bad_protocol` each, at Ci + 3; nothing emitted; **no reply of any kind** for the ICMP datagram (requirements.md §11) | A design that forwards non-UDP datagrams to M17 with the protocol number in the record and lets M17 decide — REQ-607 places the check here | ASSERT |
@@ -251,7 +251,7 @@ emission).
 | **M14-K4** | §6.3 item 5 | — | A payload stream violating REQ-011 or REQ-015 is **never driven**: its producer cannot emit one, so no requirement names the case and DV asserts nothing about it | — | NO-STIMULUS |
 | **M14-K5** | REQ-901 class (a), §11.3 | — | Co-simulation stimulus at this boundary is **restricted to correct-checksum datagrams**: the reference performs no header-checksum verification, so a bad-checksum datagram would diverge by design. REQ-602's rejection path is verified against the **spec** by directed test only (M14-B2, M14-B3), and the co-simulation report must name class (a) | A co-simulation run that reports a divergence at this boundary as a design defect | STRUCTURAL |
 | **M14-K6** | REQ-903, REQ-808 | — | `ip_eth_rx_64` is a distinct emitted module with `create`, `hierarchical` and an `.mli`; the name appears in `rtl_snapshots/` | — | STRUCTURAL |
-| **M14-K7** | REQ-601, REQ-612, §6.1's field table | A datagram with version 4, IHL 5, a **correct** checksum, protocol 17, an accepted destination, MF = 0, offset = 0 and a declared **total length below 20** — 0, 5 and 19 | **Undecided by the frozen text.** §6.1's field table asserts total length "≥ 20 by construction of REQ-601's IHL check", which is false: IHL fixes the *header* length and does not constrain the total-length *field*, and the stimulus above passes all six header conditions. §6.2's `Header` row then routes on "declared payload empty (total length 20)" versus "non-empty", and this datagram is neither; M = ⌈(N′ − 20)/8⌉ is negative, so §6.1's own D is undefined for it. Three readings exist — reject as `error_ip_bad_header`, treat as declared-empty (record, no payload frame), or treat as truncated — and they differ in which of two strobes pulses and whether a record is emitted | A reachable, adversary-controlled class on which conformant designs may disagree. See §8 open question 1: this is the C-26 family — a band the branch conditions do not cover — found by writing the attack plan rather than by a bench going red | RULING |
+| **M14-K7** | REQ-601, REQ-605, §6.1's partition table, §6.2's `Payload` entry condition, §9's first row, **ADR-0013** | A datagram with version 4, IHL 5, a **correct** checksum, protocol 17, an accepted destination, MF = 0, offset = 0 and a declared **total length 0, 5 and 19**, each inside a 64-octet Ethernet frame (SPEC-M14 §8's rejection-class set). **Anti-vacuity partner in the same run: total length 20** on the same frame | The three short-declared datagrams: **one `error_ip_bad_header` at Ci + 3, no `ip_hdr_valid`, no payload word** — REQ-601's discard class as SPEC-M14 §6.1 extends it (**ADR-0013**), decided on input word 0 and reported with the other header conditions. Total length **20**: **accepted** — `ip_hdr_valid` pulses at Ci + 3, no payload frame follows, no strobe (§0.7). The pair pins the partition's boundary and not merely the rejection | A design comparing total length only against REQ-612's 1500 and leaving the field's lower end unchecked; a design folding 0 … 19 into §6.2's declared-empty branch, which emits a header record for a datagram declaring a length shorter than the header it declares; a design evaluating M = ⌈(N′ − 20)/8⌉ without the guard, which enters `Payload` with a negative count. **Boundary discipline**: the 19/20 pair is the one that separates all three | ASSERT |
 
 ---
 
@@ -272,8 +272,13 @@ Charter §8's rejected list. Each entry says why it is not a row.
    reaches this question" — the frame is closed on the last octet that arrived
    and marked by M14's own rule (M14-A8), not by inheritance.
 3. **Asserting anything about a DF-set or reserved-flag datagram** (M14-B5) —
-   §6.3 item 4 forbids it. The cost is recorded honestly in §8 open question 2:
-   it makes one class of defect unkillable at this module.
+   **withdrawn at WO-0030.** §6.3 item 4 as revised at `541ea43` narrows the
+   silence to the two bits' *representation* and states the datagram's
+   **outcome**, so the entry is no longer a rejection: M14-B5 is an ASSERT row.
+   What survives of it is narrower and still binding — **no monitor may read DF
+   or the reserved bit out of M14**, because no port and no `Ip_header` field
+   carries either, so the row asserts the datagram's acceptance and never the
+   bits themselves.
 4. **Asserting the internal realisation** — register placement inside the
    four-cycle pipeline, the FSM encoding, how the 20-octet shift is built,
    whether the checksum accumulator is a two-halfword adder tree, whether the
@@ -330,7 +335,7 @@ Every REQ SPEC-M14 §10 lists appears exactly once.
 | REQ-021 | M14-D1, M14-D3, M14-D5 |
 | REQ-401 | M14-E5 |
 | REQ-404 | M14-K3 (declared no instance) |
-| REQ-601 | M14-B1, M14-E4, **M14-K7 (RULING)** |
+| REQ-601 | M14-B1, M14-E4, **M14-K7** (the total-length lower bound, REQ-601's class as SPEC-M14 §6.1 extends it — ADR-0013) |
 | REQ-602 | M14-B2, M14-B3, M14-J2, M14-K5 |
 | REQ-603 | M14-B4, M14-B5 |
 | REQ-604 | M14-B6, M14-B7, M14-G1, M14-G2, M14-G3 |
@@ -338,7 +343,7 @@ Every REQ SPEC-M14 §10 lists appears exactly once.
 | REQ-606 | M14-C1, M14-C2, M14-C3, M14-C4 |
 | REQ-607 | M14-B8, M14-B10, M14-J1, M14-J3 |
 | REQ-611 | M14-C2, M14-F2, M14-I3 |
-| REQ-612 | M14-B9, **M14-K7 (RULING)** |
+| REQ-612 | M14-B9, **M14-K7** (the upper end of the same partition; K7 drives its lower end and its 20 boundary) |
 | REQ-802, REQ-803 | M14-G1 … M14-G4 |
 | REQ-810 | M14-K3 (declared no instance) |
 | REQ-901 | M14-K5 |
@@ -366,6 +371,24 @@ them; `Protocol_monitor`'s `max_words_per_frame` covers REQ-015's 185.
 
 Routed through the orchestrator to architect_docs_lead. Neither blocks the other
 rows.
+
+> **Both ANSWERED at `541ea43` (WO-0029) and countersigned at WO-0030**
+> (`J-dv_lead-0015`). Question 1 → **ADR-0013**, dv's recommendation accepted
+> with a **better ground** than the one recommended: requirements.md decides the
+> disposition one document up, because REQ-605's "deliver exactly
+> (total length − 20) payload octets" has no satisfying behaviour on the class,
+> so the datagram cannot be *delivered*, and REQ-008/§0.6 then forbid discarding
+> it silently — leaving only *which* of §12's seven names, which is the whole of
+> what the ADR chooses. That scoping of REQ-605 to *accepted* datagrams is not
+> an assumption: REQ-612 is its internal precedent, since a 1501-octet
+> declaration is discarded without REQ-605 demanding 1481 delivered octets.
+> M14-K7 **RULING → ASSERT**. Question 2 → §6.3 item 4 rewritten, M14-B5
+> **NO-ASSERT → ASSERT**; the architect added the checksum recompute, without
+> which dv's proposed stimulus is rejected by REQ-602 and the comparison is
+> vacuous. **Two residues, both carried, neither blocking**: **C-43** (the diff
+> that *is* owed, and it is not REQ-601's normative sentence) and **C-44**
+> (dv's own "only stimulus" overclaim in question 2 below, false as written).
+> §5 item 3 is withdrawn accordingly.
 
 1. **M14-K7 (RULING) — a declared IPv4 total length below 20.** SPEC-M14 §6.1's
    field table justifies "total length ≥ 20" as holding "by construction of
@@ -400,8 +423,23 @@ rows.
    row here. Not blocking: the plan carries the hole as a declared gap either
    way.
 
+   **Correction to this question, made against myself (C-44).** The sentence
+   "the only stimulus that distinguishes it is a DF-set or reserved-set
+   datagram" is **false** for the defect it names. A design reading octet 6 bit
+   6 *instead of* bit 5 for more-fragments **accepts** M14-B4's MF-set datagram,
+   which §8's rejection-class set already drives and which the plan already
+   asserts is discarded with one `error_ip_fragment` and nothing emitted — so
+   that defect was never unkillable at M14. What the flag-bit pair uniquely
+   kills is the **over-broad** read: a design testing `flags != 0`, or bit 6 or
+   bit 7 *in addition to* bit 5. That class really is invisible to every other
+   row, so the pair earns its place; the justification, not the row, was wrong.
+   The overclaim travelled into SPEC-M14 §6.3 item 4 and §10's REQ-603 hook at
+   `541ea43`, which is why it is carried as a ledger row rather than corrected
+   only here.
+
 ## 9. Change log
 
 | Date | Change | Author |
 |---|---|---|
 | 2026-08-02 | Created (WO-0027). **63 rows** across 11 families (A 8, B 10, C 4, D 5, E 7, F 4, G 4, H 3, I 5, J 6, K 7) — 49 ASSERT, 5 NO-ASSERT, 2 NO-STIMULUS, 1 RULING, 6 STRUCTURAL. Family A is C-37/ADR-0012 and comes first (§0). | dv_lead, `J-dv_lead-0013` |
+| 2026-08-03 | **WO-0030, on the SPEC-M14 revisions COUNTERSIGNED at `541ea43`.** **M14-K7 RULING → ASSERT** (ADR-0013): stimulus unchanged — total lengths 0, 5, 19 — with the observable now pinned (one `error_ip_bad_header` at Ci + 3, no `ip_hdr_valid`, no payload word) and a **total-length-20 anti-vacuity partner** added so the row pins the partition boundary rather than only the rejection. **M14-B5 NO-ASSERT → ASSERT** (§6.3 item 4 as revised), with the architect's **checksum recompute** carried into the stimulus and the *Kills* cell narrowed to the over-broad-read class. §5 item 3 **withdrawn**; §6's REQ-601 and REQ-612 rows lose their `(RULING)` marks; §8 gains the answer block and the C-44 self-correction. Row count and family structure unchanged; the plan is now **51 ASSERT, 4 NO-ASSERT, 2 NO-STIMULUS, 0 RULING, 6 STRUCTURAL**. | dv_lead, `J-dv_lead-0015` |
