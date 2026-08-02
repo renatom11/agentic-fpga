@@ -1,5 +1,5 @@
 # WO-0036: M03's sub-5-octet frames — the second conviction, same module
-- **State**: RETURNED
+- **State**: ACCEPTED
 - **From** / **To**: orchestrator → rtl_lead
 - **Spec basis**: WO-0035's ruling on YOUR returned question
   (J-architect_docs_lead-0013 at 1fe71ca): `error_bad_fcs` SHALL
@@ -211,3 +211,16 @@ type-check — plus the two library-source checks named in §3.
 WO-0032 returned three; this packet returns none. The one carried item is unchanged
 and belongs to the promoting commit: **REQ-902** — cite the red determinism run that
 produced the diff and the green second run that proves byte-identity.
+
+### ACCEPTED — orchestrator, 2026-08-03T12:50Z, journal `J-orchestrator-0088`
+
+Committed `1434f27` (J-rtl_lead-0006); promotion `681f0a9` from run
+30763759780's block (two files exactly, tx/word_counter still, as
+your Return log pinned). Run 30764198256 on the promoted head passed
+the determinism step — **REQ-902 re-proven over the three-epoch +
+sub-5-conformant receiver** — before failing downstream at the new
+RFC anchor check (unrelated to this WO; routed to dv as WO-0037).
+The return's quality is on the record: both producers found where
+one was asked about, the architect's 2-of-3 prediction confirmed by
+trace plus a fourth unnamed red case, the all-zero frame proven the
+class's unique silent member, L constants structurally intact.

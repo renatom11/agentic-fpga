@@ -220,6 +220,8 @@ FROZEN: A+B at f78766e, C at 508eea2, D+E at 3f6accc, F at d8df28d.**
 | C-46 | requirements.md REQ-810's verification column still commissions "no strobe anywhere" without the no-frame-in-flight scope its own new sentence creates. Passable as written; C-41's family; one cell (may point at SPEC-M03 §10's REQ-802/REQ-810 hook, which already enumerates both cases) | `SO-xgmii_rx_64.md` |
 | C-47 | SPEC-M03 §9's rows 8 and 9 classify a REQ-110 abort by "≥ 1 octet delivered" / "still inside its own preamble", leaving a frame past its preamble with zero delivered octets (the `/S/` on the frame's own first octet) in neither row. §9's row 3 is the in-document model (states the REQ-105 sibling extensionally); requirements.md REQ-110's zero-delivered gloss is a second site, though its governing extensional clause forces the outcome. Non-blocking: nothing ambiguous, no plan row at risk; what is missing is the row that says so. Offered by architect_docs_lead at WO-0031, accepted and rewidened by dv_lead | `SO-xgmii_rx_64.md`, or the next SPEC-M03 §9 diff |
 | C-48 | `AP-ip_eth_rx_64.md` row M14-B3(a) commissioned a stimulus that cannot exist: fold-once and the fixpoint fold make the same accept/reject decision on every 20-octet header (proved while building X-8; `Ipv4_ref.fold_once_divergence` now searches for a counterexample every CI run and expects `None`). Sub-case (a) withdrawn in place; (b) carries the row. dv self-report — third instance of its named failure mode | closed at the d680945 arc; the CI search keeps it closed |
+| C-49 | SPEC-M03 §6.1's residue recipe is **unscoped** for the sub-5-octet class and reads, alone, as commissioning the pulse ruling 9 forbids: item 3's coverage is "every received octet" (satisfiable at 0–4, and at 4 on any reading of "the four FCS octets included"), and item 4's two-part consequent splits so that the `tlast` half's inapplicability does not stop the strobe half. §9 ruling 9's derivation that §6.1 "has **no instance** in this class" is therefore **false as written** and should rest on §6.2's `Frame`-row gate, which is true and is where the decision lives. **Repair: one clause in §6.1 item 4 + one corrected sentence in ruling 9.** The architect's own one-clause offer (WO-0035 Return §4), **accepted and upgraded from courtesy to owed**. Non-blocking — the outcome is decided correctly by §9 row 6, ruling 9 and §6.2 | any later SPEC-M03 diff, or `SO-xgmii_rx_64.md` |
+| C-50 | SPEC-M03 §9's rows 8 and 9 both end "**the new frame begins normally**", unqualified, which ADR-0014 made conditional — while `cfg_rx_enable` = 0 the abort is reported and the new frame does **not** begin. §9's own closure-list clause (b) states the qualification in the same section, so nothing is ambiguous and no bench derives from the rows (M03-N4 derives from §10's hook), but the rows state a universal their own section contradicts. One parenthetical each. **dv's miss as much as anyone's**: the rows were in the surface I signed at `06c1eba`, and C-47 touched row 9's condition cell without reaching its stream-effect cell | the C-49 repair commit, or `SO-xgmii_rx_64.md` |
 
 ## Batch-D + batch-E countersignatures (transcribed)
 
@@ -363,6 +365,63 @@ sentence is the whole of the next signature):
 > `P1-spec-freeze` testability. SPEC-M03 remains FROZEN and its testability
 > countersignature stands: on `J-dv_lead-0005` for the specification as frozen
 > at `f78766e`, and on `J-dv_lead-00NN` for this revision."
+
+## SPEC-M03 revision re-countersignature (§9 ruling 9 + C-47 — transcribed)
+>
+> "I re-countersign the SPEC-M03 text moved at `1fe71ca` — §6.2's `Frame` row,
+> §9's row 9 and its ninth co-occurrence ruling, and the two §13 rows — for
+> `P1-spec-freeze` testability. SPEC-M03 remains FROZEN and its testability
+> countersignature stands: on `J-dv_lead-0005` for the specification as frozen
+> at `f78766e`, on `J-dv_lead-0016` for the `06c1eba` revision, and on
+> `J-dv_lead-0020` for this one." — dv_lead (WO-0035), transcribed by the
+> orchestrator 2026-08-03. Ruling 9 endorsed on all three grounds, the decisive
+> one **reproduced independently and extended**: `zlib.crc32(bytes(4))` =
+> `0x2144DF1C` = REQ-304's residue, unique among 4-octet frames, with 0/1/2/3
+> octets giving `0x00000000`/`0xD202EF8D`/`0x41D912FF`/`0xFF41D912` — so the
+> refused reading fires on every member of the class but one, and that one
+> passes silently. The 4/5 partition against ruling 1 checked and clean.
+> **Signed with one owed diff named, C-49**: ruling 9's derivation that §6.1
+> "has no instance in this class" is **unsound** — item 3's coverage is "every
+> received octet", satisfiable at every length in the class (and at 4 octets on
+> any reading), and item 4's two-part consequent splits, so §6.1 read alone
+> commissions the refused pulse. The outcome is nonetheless decided correctly and
+> unambiguously by §9's sixth row, ruling 9 and §6.2's gate, so nothing is
+> unpassable and this is a signature; the **§6.1 one-clause offer is ACCEPTED and
+> upgraded from courtesy to owed**, together with the correction of ruling 9's own
+> sentence to rest on §6.2's gate — which is where the architect actually put the
+> decision, and which is true. C-47 verified to partition §9's rows 8/9 disjointly
+> and exhaustively on rows 2/3's model. Attack plan: **M03-M10** created (**not**
+> M03-M9, which has been taken since WO-0027 — the Return log's proposed row id
+> collided with a committed one), three rows strengthened to exact strobe sets,
+> and an anti-vacuity filler constraint added that the ruling's own ground
+> implies.
+
+## requirements.md revision re-countersignature (C-43 + C-47's second site — transcribed)
+>
+> "I re-countersign requirements.md **§12's `error_ip_bad_header` condition cell
+> and REQ-110's zero-delivered gloss** as revised at `1fe71ca`, and their §13
+> rows, for `P1-spec-freeze` testability. requirements.md remains FROZEN and its
+> testability countersignature stands: on `J-dv_lead-0002` at `b4b4cf4`, on
+> `J-dv_lead-0015` for REQ-810, and on `J-dv_lead-0020` for this one." — dv_lead
+> (WO-0035), transcribed by the orchestrator 2026-08-03. §12's cell is exactly
+> what C-43 asked for and REQ-601's normative sentence is untouched, which is
+> what dv asked *not* to move; REQ-008's quantification over §12 is discharged
+> for ADR-0013's discard. The architect's **normative-vs-verification-column
+> discriminator is ENDORSED**, with one refinement adopted for future use: the
+> operative test is *does the change move text a test derives from, or text that
+> commissions a test?* — which decides this cell without hesitation (a strobe
+> monitor derives its expected condition set from §12) where the stated proxy
+> makes it ambiguous, since §12 is normative text that REQ-008's verification
+> column quantifies over.
+
+## requirements.md REQ-810 verification column (C-46 — concurrence, transcribed)
+>
+> "I concur in the REQ-810 verification-column scope at `1fe71ca`; no
+> countersignature is sought or owed on a verification column." — dv_lead
+> (WO-0035), `J-dv_lead-0020`, transcribed by the orchestrator 2026-08-03. The
+> scope is the one the row's own admission clause creates, and pointing the
+> mid-frame case at SPEC-M03 §10's REQ-802/REQ-810 hook rather than restating it
+> is the right instrument — a restatement is a second site that can drift.
 
 ## Sponsor items attached to this gate — both decided 2026-08-02
 

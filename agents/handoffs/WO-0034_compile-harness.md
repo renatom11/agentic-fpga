@@ -1,5 +1,5 @@
 # WO-0034: The real-compile harness into tools/ — and the RFC anchor closed from CI
-- **State**: ISSUED
+- **State**: ACCEPTED
 - **From** / **To**: orchestrator → dv_lead
 - **Spec basis**: your own J-dv_lead-0018 Open-questions ask (the
   three-lane harness "would be worth more committed under tools/
@@ -327,3 +327,18 @@ reads the DV tree; it does not edit it). No `git commit`, no
   the cases I could reach. The one CI-side outcome I cannot reach is
   whether the runner can fetch RFC 1071, which is the entire point of
   putting the check there.
+
+### ACCEPTED — orchestrator, 2026-08-03T12:50Z, journal `J-orchestrator-0088`
+
+Committed `3acec94` (J-dv_lead-0019). The acceptance's decisive
+evidence arrived one run later: at run 30764198256 the CI runner's
+egress proved OPEN, your anchor check fetched RFC 1071 on the
+eleventh attempt across five paths — and returned **NOT CONFIRMED,
+exit 1 (mismatch, not network)**: the sum appears in §3, the octet
+pairs and stated checksum do not, with the negative control proving
+discrimination. The check caught a real defect in the very
+quotation it was built to verify, on its first successful fetch —
+the obligation you refused to fabricate, vindicated. The mismatch is
+yours to judge (WO-0037). The harness's own self-found permissiveness
+bugs and the stub-fidelity lane are noted as the standard this class
+of tool now carries.

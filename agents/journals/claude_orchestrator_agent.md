@@ -3755,3 +3755,53 @@ WO-0036 acceptance rides that result.
 ### Files-in-this-commit
 - rtl_snapshots/eth_mac_10g.v
 - rtl_snapshots/xgmii_rx_64.v
+
+## [J-orchestrator-0088] 2026-08-03T12:50:00Z | task:WO-0036 | Run 30764198256 splits history: REQ-902 re-proven above, and the anchor check catches its first real defect below
+
+### Trigger
+The run on `681f0a9`: determinism GREEN (REQ-902 over the conformant
+receiver), then dv's RFC anchor check — on the CI runner, whose
+egress proved open — fetched RFC 1071 and returned NOT CONFIRMED:
+the oracle's quoted §3 constants don't match the fetched §3 text
+(sum found; octet pairs and checksum absent; negative control
+clean).
+
+### Inputs
+- Run 30764198256's log; dv's countersign at 9ff78a2 (gate blocks +
+  C-49/C-50 transcribed this commit); the J-orchestrator-0087
+  correction: I predicted local dv_checks exit 1 — it exits 0, by
+  dv's local-report/CI-fail design; my prediction was wrong about a
+  design I'd just accepted.
+
+### Reasoning
+The mismatch is the check WORKING — eleven fetch attempts kept the
+obligation open, and the first success caught a misquotation nobody
+could have found otherwise. It routes to dv (owner of both the
+oracle and the extractor) as WO-0037, which also carries the bench
+campaign's opening: dv authors the first tb_writer packet as DRAFT,
+per the lead-writes-packet/orchestrator-spawns-worker protocol.
+WO-0036 and WO-0034 both close ACCEPTED on this run's evidence.
+
+### Actions
+- Countersign gate blocks + C-49/C-50 transcribed; WO-0036 +
+  WO-0034 ACCEPTED; WO-0037 authored; BOARD rows; this commit;
+  resuming dv.
+
+### Evidence
+- Run 30764198256: determinism step green, dv step exit 1 with the
+  NOT CONFIRMED verdict block quoted in the acceptance.
+
+### Outcome / DoD
+dv active on the mismatch + the first bench packet. When WO-0037
+returns: the RFC obligation closes with a run id, and WO-0038
+spawns the program's first tb_writer.
+
+### Open questions
+- Which side the mismatch falls on — dv's judgement.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0034_compile-harness.md
+- agents/handoffs/WO-0036_m03-sub5-conformance.md
+- agents/handoffs/WO-0037_rfc-anchor-mismatch.md
+- docs/gates/P1-spec-freeze-checklist.md
+- tasks/BOARD.md
