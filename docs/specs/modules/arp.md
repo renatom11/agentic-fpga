@@ -1,19 +1,21 @@
 # SPEC-M13 — `Arp`
 
-- **Status**: DRAFT — batch D. Template-complete; the `ifc_check` evidence row of
-  §12 is **filled** (run 30736107842, `success`, 2f29888). This specification was
+- **Status**: **FROZEN** (`P1-spec-freeze`, SHA `3f6accc`) — batch D, dv_lead
+  countersignature `J-dv_lead-0009` (WO-0018). This specification was
   **CONTESTED** at the batch-D countersignature on two behavioural items
-  (`J-dv_lead-0008`, WO-0015): **D-1**, repaired here by **R-1** (§6.1, §6.2 (A)),
-  and **D-2**, repaired here by **D-2a** (§6.1's validity gate, §6.2 (D),
-  ADR-0009). The freeze flip waits on the re-review of those two landing sites
+  (`J-dv_lead-0008`, WO-0015): **D-1**, repaired by **R-1** (§6.1, §6.2 (A)), and
+  **D-2**, repaired by **D-2a** (§6.1's validity gate, §6.2 (D), ADR-0009); both
+  repairs were re-reviewed at their landing sites and held. Changes to §4, §6 or
+  §7 after this point are spec diffs recorded in §13 (SPEC-TEMPLATE rule 7)
 - **Inventory id**: M13 (architecture.md §4) · **Path**:
   `libs/hardcaml_ethernet/src/arp.ml`
 - **Datapath role**: shared/structural — a wrapper over M10, M11 and M12 that
   also carries logic of its own. Receive-path module **with respect to its
   `rx_hdr` and `rx_payload` ports only** (requirements.md §0.4), which are pure
   relays into M10
-- **Owns REQs**: REQ-502 (the decision half), REQ-503, REQ-505, REQ-506 (the
-  retry half), REQ-507, REQ-508, REQ-509, REQ-510, REQ-511, REQ-512
+- **Owns REQs**: REQ-502 (the decision half), REQ-503, REQ-505 (the strobe and
+  request half), REQ-506 (the retry half), REQ-507, REQ-508, REQ-509, REQ-510,
+  REQ-511, REQ-512
 - **Prior-art counterpart**: `arp.v` (MIT) — consulted for decomposition and
   port naming only; behaviour below is stated independently and no source was
   copied. Two declared REQ-901 divergence classes live here: **(b)**
@@ -364,10 +366,20 @@ un-gated behaviour as a programme decision was rejected on merit.
 exists for determinacy rather than for a case that arrives. A legal
 minimum-length frame delivers a 46-octet ARP payload in six words, so the payload
 `tlast` is at Cp + 5 and M10's report at Cp + 4: (2) is the later event, always.
-(1) can be later only for a packet whose payload ends at exactly 28 octets —
-four words, `tlast` at Cp + 3 — which is a 42-octet Ethernet frame, that is a
-**runt**, which REQ-107 marks; so that packet is excluded by the gate in any
-case.
+
+**Branch (1) is later for every four-word ARP payload, which is five lengths and
+not one** (carry-forward **C-25**, dv_lead; the text this replaces named a single
+length and priced its frame on the wrong convention). A payload of **28 to 32
+octets inclusive** occupies four words, so its `tlast` is at Cp + 3 while M10's
+report is at Cp + 4, and (1) is the later event in all five cases. Counted DA
+through FCS as requirements.md §0.3 requires — 14 Ethernet header octets, the
+payload, 4 FCS octets — those are frames of **46 to 50 octets**, not the 42 the
+previous text quoted by counting DA through payload. Every one of the five is
+below 64 and is therefore a **runt**, which REQ-107 marks with `tuser`[0] = 1, so
+every one is excluded by this gate: the conclusion is unchanged and no observable
+moves. What changes is that a bench writer aiming stimulus at branch (1) now has
+the right five lengths and the right frame sizes to build them from, and
+`AP-arp.md`'s mandatory runt-ARP row is one of them.
 
 **What the gate costs, itemised.** The five captured `Arp_packet` fields — 176
 bits — are held from Cp + 4 to the gating cycle, which REQ-019 explicitly does
@@ -376,7 +388,9 @@ payload storage") and which is bounded by REQ-015's 188-word frame. **No port,
 no `Arp_packet` field, and nothing at M10 changes** — not its ports, not §7's
 L = 32 / h = 0 / ΔC = 4, not §9's pulse cycle. What it does cost is one cycle of
 REQ-502's derived response, which the cycle table at the end of this section
-recomputes as **7** against the 64-cycle bound.
+recomputes as **7** for the 64-octet request it declares — **7 or 8 by the
+request's length residue**, C-24's rule below the table — against the 64-cycle
+bound.
 
 **Learning (REQ-503).** On the gating cycle of an accepted, unmarked packet, M13
 presents a cache write with `write_ip` = `arp_sender_ip` and
@@ -664,9 +678,13 @@ with its gap obligation served.
 | 15 | M07 output word 0; M04 accepts | SPEC-M07 §7 |
 | **16** | the reply's start character on XGMII — REQ-502's measurement end | SPEC-M04 §7, §6.1 |
 
-**Seven cycles**, against REQ-502's bound of 64. Every term is a constant
-another specification pins, which is why this table is a derivation and not a
-measurement; §8's system run measures it and asserts the bound.
+**Seven cycles for the 64-octet request this table declares**, against REQ-502's
+bound of 64. Every term is a constant another specification pins, which is why
+this table is a derivation and not a measurement; §8's system run measures it and
+asserts the bound. **The figure is 7 or 8 by the request's length residue** and
+the paragraph below the measurement-start note derives which, so a bench or a
+latency artifact quotes the residue rule and never a single number
+(carry-forward **C-24**).
 
 **Six of those seven were derived at WO-0014 and are unchanged; the seventh is
 the validity gate** (ADR-0009). Cycles 0 through 11 and 14 through 16 are exactly
@@ -684,14 +702,54 @@ cycles for the same conformant design. requirements.md REQ-502's verification
 column now names the terminate reading, and a latency artifact quoting this
 figure states which cycle it started from.
 
-**The figure is constant at every accepted request length, and that is what
-makes it a derivation rather than an example.** The payload `tlast` word sits a
-fixed number of cycles after the frame's terminate character — three, at a lane-0
-terminate — because every stage between XGMII and M13's `rx_payload` has constant
-per-octet latency (requirements.md §0.5): the last delivered octet's octet time is
-the terminate character's minus five (the four FCS octets are stripped, REQ-103),
-plus M03's 16 and M06's 10 and M08's 8. A longer request moves cycle 9 and cycle
-12 together and the difference of seven does not move.
+**The figure is 7 or 8 cycles, decided by the request's length residue modulo 8,
+and this is the derivation** (carry-forward **C-24**, dv_lead's finding at the
+WO-0018 re-review; the text this replaces asserted one constant). Let the request
+be N octets, DA through FCS (requirements.md §0.3), at a lane-0 start. Two events,
+each in cycles:
+
+- **The terminate character.** Preamble and SFD occupy octet times 0 … 7, frame
+  octets 0 … N − 1 occupy 8 … N + 7, so `/T/` sits at octet time **8 + N** and
+  therefore in cycle **1 + ⌊N / 8⌋**. For N = 64 that is cycle 9, the table's own
+  measurement start.
+- **The payload `tlast` word at M13's `rx_payload`.** The ARP payload is N − 18
+  octets (N less the 14-octet Ethernet header less the 4 FCS octets, REQ-103,
+  REQ-408), delivered in ⌈(N − 18)/8⌉ words with word 0 at Cp = 7, so the last
+  word is at cycle **6 + ⌈(N − 18)/8⌉**. For N = 64 that is cycle 12, the table's
+  own row.
+
+Their difference, with N = 8q + r: ⌈(N − 18)/8⌉ is q − 2 for r ∈ {0, 1, 2} and
+q − 1 for r ∈ {3 … 7}, so the gap is **3 octets-worth of cycles for
+N ≡ 0, 1, 2 (mod 8) and 4 for N ≡ 3 … 7 (mod 8)**. REQ-502's derived response is
+that gap plus 4 — the gating cycle, M11's offer, M07's output word and the start
+character, one cycle each, as the table's rows 13 to 16 show — so it is
+
+> **7 cycles for N ≡ 0, 1, 2 (mod 8) and 8 cycles for N ≡ 3 … 7 (mod 8)**,
+
+for every request length M13 accepts, which is 64 ≤ N ≤ 1518 (a shorter frame is
+a runt, is marked, and is excluded by the validity gate above). N = 64 gives 7 —
+the table's own stimulus, correct as written; N = 67 gives 8; the 1518-octet
+maximum gives 8.
+
+**Why the old sentence was wrong, stated because the mechanism recurs.** Every
+stage between XGMII and `rx_payload` does have constant per-octet latency
+(requirements.md §0.5) — the last delivered octet's octet time is the terminate
+character's minus five plus M03's 16, M06's 10 and M08's 8, and that arithmetic
+is right. What §0.5's machinery makes residue-invariant is a **per-octet**
+latency; REQ-502 measures a **cycle difference between two events at different
+octet positions**, and converting an octet time to a cycle by division discards
+the residue that difference depends on. That is carry-forward **C-1**'s class of
+error, one level up, and it is why the parenthetical "(three, at a lane-0
+terminate)" was correctly qualified — a lane-0 terminate is exactly
+N ≡ 0 (mod 8) — while the unqualified conclusion drawn from it was not.
+
+**Nothing this specification commits to a bench moves.** §8's system run measures
+the interval and asserts REQ-502's 64-cycle bound; §10's REQ-502 hook says
+"measure"; requirements.md REQ-502 asserts only the bound. 7 and 8 are both far
+inside 64, so no conformant design, no test and no requirement changes — what
+changes is that a latency artifact or an `AP-arp.md` row now quotes **7 or 8 with
+the residue rule** instead of a single number it could not reproduce at every
+length.
 
 ### 6.2 State machine
 
@@ -734,11 +792,22 @@ back-to-back responses, in order (REQ-020).
 rather than a machine, tabulated here because machines (A) and (B) are both fed
 by its output and a bench needs its cycles.
 
+**Two capture events, in either order, then one gating cycle** (carry-forward
+**C-25**, dv_lead: the previous three-row table named no stage that held
+`rx_payload_tuser`[0] in branch (1), where the `tlast` word has already passed
+when the gating cycle arrives — the observable was well defined and the
+stage-level model a bench writer builds from was not).
+
 | Stage | On cycle | Does |
 |---|---|---|
-| 0 | M10's `arp_valid` pulse | captures the five `Arp_packet` fields; marks a report outstanding |
-| 1 | every cycle from there until the packet's payload `tlast` word on `rx_payload` | holds them; changes nothing else. Empty when the `tlast` word has already passed (an exactly-28-octet ARP payload, §6.1) |
-| 2 | the **gating cycle** — one cycle after the later of the `arp_valid` pulse and the payload `tlast` word | reads `rx_payload_tuser`[0] of that `tlast` word. On 0: presents the cache write, evaluates the reply predicate and feeds machine (A), and ends a matching outstanding resolution in machine (B). On 1: does none of those and pulses nothing |
+| 0a | M10's `arp_valid` pulse | captures the five `Arp_packet` fields; marks a report outstanding |
+| 0b | the packet's payload `tlast` word on `rx_payload` (`rx_payload_tvalid` = 1 and `rx_payload_tlast` = 1) | captures **`rx_payload_tuser`[0] of that word** into a one-bit register and marks the packet closed. This event is independent of 0a and may **precede** it: for a four-word ARP payload — 28 to 32 octets, §6.1's branch (1) — it does |
+| 1 | every cycle from the earlier of 0a and 0b until the later | holds whatever has been captured and changes nothing else. Empty when the two coincide |
+| 2 | the **gating cycle** — one cycle after the **later** of 0a and 0b | reads the **captured** bit of stage 0b, never the port, which by then may be carrying another frame's word. On 0: presents the cache write, evaluates the reply predicate and feeds machine (A), and ends a matching outstanding resolution in machine (B). On 1: does none of those and pulses nothing |
+
+Stage 0b is one bit and one flag, not payload storage (REQ-019's own exclusion for
+header fields captured into registers), and it is what makes the gate implementable
+in both branch orders rather than only in the one the composed chain produces.
 
 `clear` in any stage abandons the held fields with no write, no reply and no
 strobe (REQ-009, §7).
@@ -823,7 +892,9 @@ rely on it.
 
 - **Latency, the reply.** Not a constant of this module alone: REQ-502's bound
   is a property of the whole chain, and §6.1's cycle table derives **7 cycles**
-  from six other specifications' constants against REQ-502's 64. M13's own
+  for its 64-octet request — **7 or 8 in general, by the request's length residue
+  modulo 8** (§6.1's C-24 rule: 7 for N ≡ 0, 1, 2, else 8) — from six other
+  specifications' constants against REQ-502's 64. M13's own
   contribution is **two cycles** for the minimum-length request of that table —
   the offer to M11 is asserted on the **gating cycle**, one cycle after the
   packet's payload `tlast` word at Cp + 5 and therefore two cycles after M10's
@@ -833,13 +904,17 @@ rely on it.
   second reply is dropped rather than held.
 
   **Measured from `arp_valid` the contribution is frame-length dependent;
-  measured from REQ-502's own start it is not.** The gating cycle follows the
-  packet's payload `tlast`, so a longer request holds the fields longer — but
-  REQ-502 measures from the request's terminate character, and the payload
-  `tlast` sits a fixed number of cycles after that character (three, at a lane-0
-  terminate) because every stage between has constant per-octet latency
-  (requirements.md §0.5). The seven-cycle figure is therefore constant at every
-  accepted request length, which is what keeps §6.1's table a derivation.
+  measured from REQ-502's own start it takes one of two values.** The gating
+  cycle follows the packet's payload `tlast`, so a longer request holds the
+  fields longer — but REQ-502 measures from the request's terminate character,
+  and the payload `tlast` sits **three or four** cycles after that character
+  according to the request's length residue modulo 8 (§6.1's derivation,
+  carry-forward **C-24**). The derived response is therefore **7 cycles for
+  N ≡ 0, 1, 2 (mod 8) and 8 for N ≡ 3 … 7**, N being the request's length DA
+  through FCS — two values, each constant over its residue class, both far inside
+  REQ-502's bound of 64. That is what keeps §6.1's table a derivation; what it is
+  not is a single number, and a monitor or a latency artifact that quotes one
+  fails at the lengths in the other class.
 
 - **Throughput.** One query accepted per cycle, unconditionally and
   indefinitely: M13 can never refuse a query, because `tx_query` carries no
@@ -916,13 +991,26 @@ them:
 1. **REQ-505's burst**, which is the closest thing M13 has to a rate test:
    transmit to an unknown host, then present **100 further** queries for the same
    destination inside one retry interval, and assert **exactly one** request on
-   the wire, every application word accepted rather than stalled, and — counted
-   over the whole run — **101** responses with `found` = 0 at Q + 2 and **101**
-   `error_arp_miss` high cycles: one for the datagram that started the
-   resolution plus one for each of the 100 further ones. REQ-505's verification
-   column says "100 strobes" counting only the *further* datagrams; both texts
-   are consistent under the word "further", and a bench counting over the whole
-   run must assert **101 and not 100** (dv_lead, WO-0015 Return log §6 item 5).
+   the wire and — counted over the whole run — **101** responses with `found` = 0
+   at Q + 2 and **101** `error_arp_miss` high cycles: one for the datagram that
+   started the resolution plus one for each of the 100 further ones. REQ-505's
+   verification column says "100 strobes" counting only the *further* datagrams;
+   both texts are consistent under the word "further", and a bench counting over
+   the whole run must assert **101 and not 100** (dv_lead, WO-0015 Return log §6
+   item 5).
+
+   **REQ-505's remaining clause — "every application word accepted rather than
+   stalled" — is not assertable at M13's ports and is not asserted here**
+   (carry-forward **C-28**, dv_lead). The observable is `payload_tready` at
+   **M15**, which M13 does not have: M13 answers a query and raises the strobe,
+   and M15 performs the discard and drains the datagram (SPEC-M15 §6.1, §6.2's
+   `Discard` state, §8 item 4). A bench run at M13's ports asserts the request
+   count, the response count and the strobe count and **stops there**; the drain
+   clause is asserted at M15's ports, or at M16 or above, where both modules are
+   in one scope and SPEC-M16 §9 fact 2 states the pairing. A sign-off packet for
+   this module therefore claims REQ-505's **strobe and request half only**, which
+   is what §10's row now says, so that `SO-arp.md` and `SO-ip_eth_tx_64.md`
+   between them claim the requirement once and whole.
 
    **Count high cycles, not rising edges** (requirements.md §0.6's counting
    convention, carry-forward **C-23**). `tx_query` accepts one query per cycle
@@ -1047,7 +1135,7 @@ abort rule has no instance at M13 and no `tuser`[0] is ever set here.
 | REQ-501 | **not** M13's: it consumes a record whose `valid` already means accepted, and re-checks nothing | §2 | none — stated so that no sign-off packet claims REQ-501 coverage here |
 | REQ-502 | decision half: reply iff operation 1 and `target_ip` = `cfg_local_ip`, evaluated at the validity gate; five fields filled per §6.1; the **7**-cycle derivation against the 64-cycle bound | §6.1, §7 | inject a request; decode the transmitted frame field by field against all six address fields; measure from the request's **terminate character** (requirements.md REQ-502, C-23) to the reply's start character |
 | REQ-503 | every accepted **and unmarked** packet produces a cache write on its gating cycle — one cycle after the later of `arp_valid` and the packet's payload `tlast` — addressed to us or not; a marked packet produces none (REQ-013, ADR-0009) | §6.1, §6.2 (D) | inject a request from a new host, then transmit to that host: no new request appears and the frame carries the learned MAC. Then inject the same request with a corrupted FCS: assert no cache entry, no reply, and no ARP-side strobe |
-| REQ-505 | miss → `found` = 0, one strobe, one broadcast request, suppressed while the same target is outstanding; no buffering anywhere | §6.1, §9 | §8 item 1: one request, 100 strobes, 100 responses, every application word accepted |
+| REQ-505 (the strobe and request half) | miss → `found` = 0, one `error_arp_miss` high cycle, one broadcast request, suppressed while the same target is outstanding; no buffering anywhere | §6.1, §9 | §8 item 1: one request, 101 `error_arp_miss` high cycles over the whole run, 101 responses with `found` = 0. **The discard and the drain are M15's** (SPEC-M15 §6.1, §6.2's `Discard` state, §11.4) and are claimed there, not here: `payload_tready` is a port M13 does not have, so the "every application word accepted rather than stalled" clause of REQ-505 is asserted at **M15's** ports, or at M16 or above where both modules are in one scope — never at M13's (carry-forward **C-28**) |
 | REQ-506 (retry half) | one initial request plus up to `retry_count` retries at `retry_interval_cycles`, measured from acceptance; then abandonment with nothing negatively cached | §5, §6.1, §6.2 (B) | §8 item 3: five requests at interval 16, sequence stops, a later query starts a fresh five |
 | REQ-506 (ageing half) | **not** M13's: forwarded to M12 as a parameter and read for nothing here | §5 | none — stated so that no sign-off packet claims ageing coverage here |
 | REQ-507 | five classes in the stated order, first match wins; off-subnet resolves the gateway, not the destination | §6.1 | §8 item 4's class walk, including the off-subnet case asserting both the request's and the frame's target |
@@ -1074,7 +1162,7 @@ Item numbers are permanent; a closed item keeps its row (SPEC-TEMPLATE §11).
 | 11.2 | **REQ-810's ARP clause reads as though every reply generated while transmit is disabled is dropped**, and the mechanism this specification states drops the **second and later** ones while the first waits inside M11 until transmit is re-enabled. Dropping the first would need a `cfg_tx_enable` input at M13 that architecture.md §6.4.3 does not route here. | **CLOSED (WO-0017), affirmatively: CONSEQUENCE CLAUSE, NOT AN INDEPENDENT OBLIGATION. No `cfg_tx_enable` at M13. NOT breaking.** dv_lead answered it decisively at the batch-D countersignature (`J-dv_lead-0008`, WO-0015 Return log §4/Q3) on three grounds. (i) **REQ-810's own verification column does not test it** — it drives `transmit enable` = 0, issues an *application* transmit request and checks the wire and `tready`, with not one word about ARP replies or `error_arp_reply_dropped`; under requirements.md §0.2 the verification column is where a REQ's testable fact lives, so a clause with no test in its own column, in a document where every other clause has one, is an explanatory pointer — and this one points, by naming REQ-510 as the governing requirement. (ii) **The alternative does not work as a port addition**: `cfg_tx_enable` at M13 cannot retract a reply already inside M11, so the drop-all reading would need a second port at M11 or a rule that M13 refuses to *generate* while disabled — a larger change than "one input", and one that would have to be re-derived for M15 and M18. (iii) **The residual hazard is nil**: a late ARP reply carries our own MAC for our own IP and cannot go stale the way a buffered *datagram* can, which is what architecture.md §2.5 and REQ-505 exist to prevent. **The residual is stated so nobody can later say it was hidden**: with transmit disabled, exactly one reply survives — held inside M11 — and it **is transmitted, late, when transmit is re-enabled**; every reply generated meanwhile is dropped with `error_arp_reply_dropped` under R-1's window, which is REQ-810's plain reading minus a single frame, obtained with no port. requirements.md REQ-810's clause is reworded to say that rather than "is dropped under REQ-510", which was false of the first reply. | this item; requirements.md REQ-810 | architect_docs_lead, dv_lead | closed |
 | 11.3 | **A miss for a target different from the outstanding one replaces the resolution**, and no REQ decides that case: REQ-505 constrains only the same-target case. §6.1 states the rule and its rejected alternative (a per-slot table of outstanding resolutions). | **CLOSED (WO-0017), affirmatively: SPECIFICATION DECISION, correctly made and correctly placed. No requirements.md diff is owed.** dv_lead's answer (`J-dv_lead-0008`, WO-0015 Return log §4/Q4): REQ-505's testable fact is duplicate suppression for the **same** target, a different-target rule is a second fact that would need its own REQ, so REQ-505's silence is correct scope rather than omission (requirements.md §0.2); the programme already has the device for an unconstrained corner in every spec's §6.3 opening sentence; and the decision is fully derivable here — §6.2 machine (B)'s three rows are complete for it and §6.3 item 4 states explicitly that which target ends up outstanding is *constrained*, not free. **The one sentence dv_lead requires added, because a bench writer needs it and it was not in the document:** replacement means an application alternating between two unresolved destinations defeats REQ-505's suppression entirely — every miss replaces the outstanding target, so **every miss issues a request**, bounded only by M11's five-cycle packet period. That is **not** a defect in Phase 1: architecture.md §5 has one application client and REQ-505's and REQ-809's stimuli each use one destination. But a test writer who sees one broadcast request per datagram must be able to tell that it is **conformant**, which is what this sentence is for. It is also the precise trigger for revisiting the per-slot table rejected in §6.1: **more than one concurrent application destination**, which is a Phase-2/3 condition and not a Phase-1 one. | this item; requirements.md REQ-505 | architect_docs_lead, dv_lead | closed |
 | 11.4 | **Both transmit relays are combinational** (§7), so the M11 → M13 → M09 → M07 path and the `payload_tready` path back through it are longer than SPEC-M09 §11.2's estimate, which counted M09's mux alone. | **DEFERRED — nothing in Phase 1 depends on closing them.** REQ-018 keeps the XGMII boundary simulation-only and no static timing closure at 6.4 ns is required, so a reader builds the combinational relay today. If a later phase cannot close the path, the remedy is SPEC-M09 §11.2's: a spec diff plus an ADR restating the cadence, never a quiet register — a register here would change REQ-406's measured grant delay and REQ-502's derivation in §6.1 at the same time. | this item; SPEC-M09 §11.2 | architect_docs_lead, rtl_lead | Phase-3 attach, or the first synthesis attempt |
-| 11.5 | **`Arp_query` and `Arp_response` are declared here rather than in M01**, for the reason SPEC-M10 §11.2 states, and M15 (batch E) will open this module for them. | **DEFERRED — the placement is decided, buildable and now exercised.** A reader implements exactly that. SPEC-M15 §4.1 (batch E, WO-0017) writes `open! Arp_ifc` and restates neither record, and the RTL references `Arp.Arp_query`; the declare-once rule therefore has its first cross-batch instance and it needed no change. If a later phase reopens M01, the batch-D records may be promoted there by one spec diff plus an ADR, which is a rename and not a behavioural change. | SPEC-M10 §11.2; SPEC-M01 §4.1 | architect_docs_lead, rtl_lead | SPEC-M20 (batch F) |
+| 11.5 | **`Arp_query` and `Arp_response` are declared here rather than in M01**, for the reason SPEC-M10 §11.2 states, and M15 (batch E) will open this module for them. | **CLOSED (WO-0019), affirmatively: the placement stands and M01 is not reopened.** SPEC-M15 §4.1 (batch E) wrote `open! Arp_ifc` and restated neither record — the rule's first cross-batch instance, green at run 30739442056 — and batch F does the same one level further out: SPEC-M18 §4.1 declares `Udp_tx_request` at the module that owns it (REQ-705) and SPEC-M19 and SPEC-M20 open `Udp_ip_tx_64_ifc` for it. Five records now live outside M01 under one rule, with three lifts opening them across batch boundaries and none restating a field. SPEC-M20 was the natural moment to promote them into M01 and this specification declines it: promoting them would be a post-freeze §4.1 diff to the spec five freeze records cite, for a rename that changes no behaviour and no port name in the emitted Verilog. If a later phase reopens M01 the promotion is still available at the same price — one spec diff plus an ADR. | SPEC-M10 §11.2; SPEC-M01 §4.1; SPEC-M18 §4.1 | architect_docs_lead, rtl_lead | closed |
 | 11.6 | **R-2 was the rejected repair for D-1**, and the appeal record belongs in the specification rather than only in a journal: keep the drop-second-hold-first mechanism and move the four counts from two to three, weakening REQ-510's normative sentence to "at most one reply pending at the resolver **and** at most one further reply already accepted for transmission". | **CLOSED at the moment it was opened (WO-0017) — recorded, not deferred.** R-2 was rejected on dv_lead's ground and on one of the architect's. dv's: it weakens a normative **ERR** requirement to match a decomposition, and leaves the module holding a stale reply two deep. The architect's: R-2 costs a requirements.md **behavioural** diff to REQ-510 (normative sentence and verification column) plus four spec-side count changes, where R-1 costs one state and one clause and makes all four counting sites correct **as written** — so the cheaper repair is also the one that leaves fewer documents to keep in step. R-1 was verified free in the unblocked case by dv_lead before recommending it (an unblocked reply's frame completes five cycles after acceptance; two accepted requests are ≥ 10 cycles apart at REQ-004's rate) and re-derived here in §6.1. Recorded permanently because a countersignature and a work-order log both cite D-1 by name, and a reader who finds only the winner cannot check the choice. | this item; WO-0015 Return log §3 | architect_docs_lead | closed |
 
 ## 12. Freeze record
@@ -1084,22 +1172,30 @@ spec is DRAFT.
 
 | Item | Value |
 |---|---|
-| Interface compile check | CI `build` run **30736107842**, conclusion **`success`**, SHA **2f29888** — all thirteen lifts elaborate, the four batch-D lifts for the first time; per ADR-0005 a local build is not acceptable evidence. `git diff a9993ff 2f29888 -- docs/specs/` is empty, so the run witnesses the text drafted at a9993ff, and **§4.1 is byte-for-byte unchanged by the D-1 and D-2 repairs**, so it still witnesses this revision's interface. This run is also §11.1's closure record |
+| Interface compile check | CI `build` run **30736107842**, conclusion **`success`**, SHA **2f29888** — all thirteen lifts elaborate, the four batch-D lifts for the first time; per ADR-0005 a local build is not acceptable evidence. `git diff a9993ff 2f29888 -- docs/specs/` is empty, so the run witnesses the text drafted at a9993ff. CI `build` run **30739442056** at the freeze SHA **3f6accc** is likewise **`success`** with every lift in it (dv_lead fetched it through the GitHub API rather than taking it from the packet, `J-dv_lead-0009` §0), so the **frozen** text carries compile evidence at its own SHA and no witnessing argument is owed for this row either, and **§4.1 is byte-for-byte unchanged by the D-1 and D-2 repairs**, so it still witnesses this revision's interface. This run is also §11.1's closure record |
 | Architect signature | `J-architect_docs_lead-0006`; the D-1 (R-1) and D-2 (D-2a) repairs `J-architect_docs_lead-0007` |
-| dv_lead testability countersignature | pending — **CONTESTED at a9993ff** (`J-dv_lead-0008`, WO-0015 Return log §1, §3) on D-1 and D-2, both repaired in the commit carrying this row. dv_lead's re-review surface, stated in advance: the D-1 and D-2 landing sites, the byte-identity and set-equality checks, and a green `ifc_check` run at the new SHA. It will **not** re-derive §2's arithmetic — Q + 2, the REQ-502 chain, the multicast masking, the class precedence and the retry counts are recomputed, correct and signed off there, and only the chain's total moves, by the one cycle §6.1 derives |
-| Frozen at | pending — SHA `<sha>`, gate `docs/gates/P1-spec-freeze-checklist.md` |
+| dv_lead testability countersignature | **`J-dv_lead-0009`** (WO-0018) — batch D **COUNTERSIGNED at 3f6accc** after **CONTESTED at a9993ff** (`J-dv_lead-0008`, WO-0015 Return log §1, §3). The re-review re-traced R-1's mechanism at the M11-frees / machine-(A)-exits boundary and confirmed exactly one reply exists anywhere in the ARP family at a time, checked all four counting sites, and confirmed D-2a at §6.1's validity gate, §6.2 **(D)**, §2, §3, §7, §9, §10 and ADR-0009. It did **not** re-derive §2's arithmetic, as it said in advance it would not; the one number that moved is REQ-502's derived response, and **C-24 corrects it further in §13 below** |
+| Frozen at | SHA **3f6accc**, gate `docs/gates/P1-spec-freeze-checklist.md` |
 
 ## 13. Change log
 
-Post-freeze changes only. This spec is DRAFT and has none — which is the whole
-point of the cycle that produced this revision. **D-1 and D-2 both change state
-and both change an observable**, so freezing batch D first and repairing after
-would have converted two pre-freeze corrections into the programme's first
-behavioural post-freeze diffs, which is precisely what the countersignature gate
-exists to prevent (`J-dv_lead-0008`). The repairs are recorded in §11.2, §11.3
-and §11.6 and in requirements.md §13's revision rows; ADR-0009 carries D-2's
-decision and its rejected alternative.
+Post-freeze changes only. **D-1 and D-2 both change state and both change an
+observable**, so freezing batch D first and repairing after would have converted
+two pre-freeze corrections into the programme's first behavioural post-freeze
+diffs, which is precisely what the countersignature gate exists to prevent
+(`J-dv_lead-0008`). They are therefore **not** rows here: they landed at
+3f6accc, which is this specification's freeze SHA, and are recorded in §11.2,
+§11.3 and §11.6 and in requirements.md §13's revision rows, with ADR-0009
+carrying D-2's decision and its rejected alternative.
+
+The rows below are the post-freeze diffs of the WO-0019 closeout, all three
+dv_lead's carry-forwards from the WO-0018 re-review. **No row below is
+breaking**: §4.1's record is byte-for-byte unchanged since 3f6accc, so the
+`ifc_check` evidence of §12 still witnesses this revision's interface, and
+`tools/check_records_vs_appendix.sh` re-passes on this commit.
 
 | Date | Change | Breaking? | ADR | Journal |
 |---|---|---|---|---|
-| — | — | — | — | — |
+| 2026-08-02 | §6.1: REQ-502's derived response restated as **7 or 8 cycles by the request's length residue modulo 8**, with both event cycles derived from N and the mechanism of the previous error named (an octet time converted to a cycle by division, C-1's class); §6.1's cost paragraph and §7's reply-latency bullet follow (ledger **C-24**) | no | none — the claim of *constancy* was the defect, not any committed number: §8 measures and asserts REQ-502's 64-cycle bound, §10's hook says "measure", and requirements.md REQ-502 asserts only the bound. 7 and 8 are both inside 64, so no conformant design and no test changes | `J-architect_docs_lead-0008` |
+| 2026-08-02 | §6.1: the "later of" branch (1) restated for **all five four-word ARP payloads** (28–32 octets) instead of one, and its frames priced **46–50 octets** on requirements.md §0.3's DA-through-FCS convention instead of 42; §6.2 **(D)** restructured into two independent capture events (0a, 0b) plus the gating cycle, so `rx_payload_tuser`[0] has a named holder in **both** branch orders (ledger **C-25**) | no | none — all five lengths are runts, all are marked and all are excluded by the gate, so the observable is exactly what it was; what moves is the stimulus a bench writer derives and the stage model an implementer builds | `J-architect_docs_lead-0008` |
+| 2026-08-02 | Header, §8 item 1 and §10: **REQ-505 named as the strobe-and-request half**, M15's discard-and-drain half disclaimed, and §8 item 1's "every application word accepted rather than stalled" clause moved to the level at which it is observable (M15's `payload_tready`, or M16 and above) — a port M13 does not have (ledger **C-28**) | no | none — the split is SPEC-M15 §5's and `traceability.md`'s existing two-owner row, tiled on this side at last; the defect was a double claim at sign-off, not a behaviour | `J-architect_docs_lead-0008` |

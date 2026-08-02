@@ -1,7 +1,9 @@
 # SPEC-M14 — `Ip_eth_rx_64`
 
-- **Status**: DRAFT — batch E. Template-complete; the two evidence rows of §12
-  are what the freeze flip waits on
+- **Status**: **FROZEN** (`P1-spec-freeze`, SHA `3f6accc`) — batch E, dv_lead
+  countersignature `J-dv_lead-0009` (WO-0018), **SIGNED** on this specification's
+  own merits with every number re-derived. Changes to §4, §6 or §7 after this
+  point are spec diffs recorded in §13 (SPEC-TEMPLATE rule 7)
 - **Inventory id**: M14 (architecture.md §4) · **Path**:
   `libs/hardcaml_ethernet/src/ip_eth_rx_64.ml`
 - **Datapath role**: receive
@@ -91,7 +93,7 @@ bench (§0.4, REQ-905).
 | REQ-013 | `payload_tuser`[0] is read on the input `tlast` word and written on the payload `tlast` word. M14 never drops a datagram because it is set, which is REQ-013's own sentence, and it is not the ultimate consumer on this branch — the application is (REQ-707). |
 | REQ-014 | `payload_tstrb` is ignored on the input and driven to 0 on the payload output. |
 | REQ-015 | One `tlast` per payload frame, the `tlast` word included in the count; at most **185** words between two `tlast` words on the payload stream (1480 octets — the 1500-octet maximum total length less the 20-octet header — is 185 words, 184 full and a final eight-octet word), at least one. |
-| REQ-016 | The input may carry idle cycles inside a datagram and M14 tolerates them: k idle cycles before an input word delay every octet that word carries by exactly 8k octet times and change nothing else (§7). §6.1's cycle formulas are stated on a gapless stimulus; §7's constant holds on every stimulus. |
+| REQ-016 | The input may carry idle cycles inside a datagram and M14 tolerates them: k idle cycles before an input word delay every octet that word carries by exactly 8k octet times and change nothing else (§7). §6.1's cycle formulas are stated on a gapless stimulus; §7's **per-octet constant L = 12** holds on every stimulus, while §7's 3-cycle **parse latency** is scoped to a header delivered on consecutive cycles and grows by the injected count when idle lands inside it (carry-forward **C-27**). |
 | REQ-017, REQ-018 | No instance: M14 sees no lane, no control character and nothing below XGMII. |
 | REQ-019 | Word delay ΔC = (L + h)/8 = (12 + 20)/8 = **4** cycles against a ceiling of **5** (requirements.md §1.1) — M14 holds **one cycle of reserve inside its own allocation**, which §7 and §11.2 state as a decision rather than leave to be discovered. Payload storage is **two** datapath words: payload octets 0–7 span input words 2 and 3, which is the whole reason the depth is two rather than one (REQ-019 permits two). |
 | REQ-020 | Datagrams leave in the order they arrived; M14 holds one datagram's header at a time (§6.2), so reordering is not expressible. |
@@ -405,9 +407,13 @@ payload `tlast` leaves two cycles after the input's.
 **Gapped stimulus.** A cycle carrying no payload word holds every state and every
 register: it is not a condition, it advances no word index, and it delays every
 later octet by exactly 8 octet times per cycle (REQ-016). The cycle formulas
-above hold on a gapless stimulus; the **constant** of §7 holds on every stimulus,
-and that is what a bench asserts — the same distinction carry-forward C-14.4
-fixed in SPEC-M03 §6.1.
+above hold on a gapless stimulus; the **per-octet constant L = 12** of §7 holds
+on every stimulus, and that is what a bench asserts — the same distinction
+carry-forward C-14.4 fixed in SPEC-M03 §6.1. **§7's *parse-latency* figure of 3
+cycles is not in that class**: its two events are an input word and an output
+pulse rather than one octet at two ports, so an idle cycle injected inside the
+header moves the pulse and not the word and the figure grows by exactly the
+injected count (§7, carry-forward **C-27**).
 
 **When `hdr_valid` opens a datagram with no payload frame.** M06 emits a header
 record with no payload frame for a 14-octet Ethernet frame (requirements.md
@@ -426,8 +432,8 @@ the input side**; the output is the fixed-delay pipeline of §7 running behind i
 | State | Entered when | Does | Leaves to |
 |---|---|---|---|
 | `Idle` | reset; `clear`; the input `tlast` of the previous datagram; a `hdr_valid` pulse that ends a payload-less frame | ignores the payload stream; `ip_hdr_valid` = 0, `ip_payload_tvalid` = 0, every strobe 0 | `Header` on a `hdr_valid` pulse (the datagram opens) |
-| `Header` | a `hdr_valid` pulse | captures IPv4 octets 0–19 into the field registers as they arrive across input words 0, 1 and 2; accumulates the one's-complement sum; evaluates REQ-601, REQ-603 and REQ-612 on word 0, REQ-607 on word 1, and REQ-602 and REQ-604 on word 2; makes the one report of §6.1 on cycle Ci + 3 | `Payload` on the report cycle if the datagram was accepted and its payload is non-empty; `Idle` on the report cycle if it was rejected, if its payload is empty (total length 20, requirements.md §0.7), or if the frame closed before the header completed (one `error_ip_truncated`) |
-| `Payload` | the header was accepted with a non-empty payload | forwards payload octets at the fixed delay of §7, realigned, counting them against total length − 20; marks `ip_payload_tlast` on the word carrying the last of them, with `tkeep` marking exactly the octets that exist and `tuser`[0] copied from the input `tlast` word; consumes and drops every input octet beyond the count | `Idle` on the input `tlast` — the state leaves immediately and the pipeline drains behind it; `Tail` if the payload count completes while the frame still runs |
+| `Header` | a `hdr_valid` pulse | captures IPv4 octets 0–19 into the field registers as they arrive across input words 0, 1 and 2; accumulates the one's-complement sum; evaluates REQ-601, REQ-603 and REQ-612 on word 0, REQ-607 on word 1, and REQ-602 and REQ-604 on word 2; makes the one report of §6.1 on cycle Ci + 3 | `Payload` on the report cycle if the datagram was accepted, its declared payload is non-empty and at least one payload octet was delivered; `Idle` on the report cycle if it was rejected, if its **declared** payload is empty (total length 20, requirements.md §0.7 — `ip_hdr_valid` pulses and no payload frame follows), if the frame closed before the header completed, or **if the frame closed before any payload octet was delivered** while the declared payload is non-empty. The last two both give one `error_ip_truncated` and **no** `ip_hdr_valid`, so a header record never promises a payload frame that cannot follow (§9, carry-forward **C-26**) |
+| `Payload` | the header was accepted, its declared payload is non-empty **and at least one payload octet was delivered** | forwards payload octets at the fixed delay of §7, realigned, counting them against total length − 20; marks `ip_payload_tlast` on the word carrying the last of them, with `tkeep` marking exactly the octets that exist and `tuser`[0] copied from the input `tlast` word — or, where the frame closed early, on the word carrying the last octet that arrived, with `tuser`[0] = 1 (§9, REQ-605); consumes and drops every input octet beyond the count | `Idle` on the input `tlast` — the state leaves immediately and the pipeline drains behind it; `Tail` if the payload count completes while the frame still runs |
 | `Tail` | the declared payload has been delivered and the frame has not ended | consumes the Ethernet padding: ignores every remaining input octet, emits nothing, pulses nothing | `Idle` on the input `tlast`; `Header` on a `hdr_valid` pulse |
 
 An input cycle carrying no payload word holds every state and every register: it
@@ -522,9 +528,30 @@ rely on it.
   input word 0 (Ci) and the cycle of the `ip_hdr_valid` pulse (Ci + 3). Both sit
   at octet position 0 of their words, so in requirements.md §0.5's octet times
   the figure is exactly 24 and not a rounding. It is one constant for every
-  datagram length and every field content M14 accepts, which is REQ-611's whole
-  demand, and it is one cycle less than the payload's word delay — which is what
-  puts `ip_hdr_valid` one cycle before payload word 0 (§6.1).
+  datagram length and every field content M14 accepts, and it is one cycle less
+  than the payload's word delay — which is what puts `ip_hdr_valid` one cycle
+  before payload word 0 (§6.1).
+
+  **The parse-latency constant is scoped to a header delivered without internal
+  idle cycles, and REQ-611's gap clause is satisfied by L and not by this figure**
+  (carry-forward **C-27**, dv_lead). REQ-611 asks for the constant "counted per
+  §0.5 so that REQ-016's permitted idle gaps do not break the constant". §0.5's
+  device does that for a **per-octet** latency, where an injected idle cycle moves
+  the input event and the output event together: that is **L = 12**, and it is
+  gap-invariant. This figure's two events are the *input word* carrying IPv4
+  octet 0 and the `ip_hdr_valid` *pulse*, and an idle cycle **inside the header** —
+  between input words 0 and 2 — moves only the second: one such cycle puts input
+  word 2 at Ci + 3 and the pulse at Ci + 4, a parse latency of 4. So:
+
+  > **3 cycles, on a header whose three input words are delivered on consecutive
+  > cycles.** Under REQ-016's permitted idle injection inside the header the
+  > figure grows by exactly the number of injected cycles, and **L = 12 is the
+  > constant that does not move**.
+
+  There are therefore two constants in this section and only one of them is
+  gap-invariant; §10's REQ-016 hook names **L** explicitly for that reason, and a
+  bench that injects idle inside the header and asserts 3 fails a conformant M14.
+  §6.1 states the same scoping from the other side.
 
 - **Throughput.** One input word accepted every cycle, unconditionally and with
   no handshake (REQ-003). At most one payload word emitted per cycle, and never
@@ -621,6 +648,21 @@ that reason.
 1. 10 000 payload frames out for 10 000 frames in, 10 000 `ip_hdr_valid` pulses,
    each exactly one cycle; no word dropped; frame conservation holds
    (requirements.md §0.6), with no strobe pulsing anywhere in the run.
+
+   **The one exemption that monitor needs, and where it bites** (carry-forward
+   **C-30**, dv_lead; the wording model is SPEC-M10 §8 criterion 1, which
+   carries the same exemption one branch over, and SPEC-M12 §7 before it).
+   requirements.md §0.6 says the conservation monitor is active in **every**
+   bench, and §10 commissions a mid-datagram `clear` test at this module — in
+   which a datagram is opened and, correctly, never reported: §7 states that
+   `clear` inside an open datagram abandons it with **no `tlast` and no
+   strobe**, the one place in this specification where a datagram vanishes
+   without a report, permitted by REQ-009 and not by REQ-008. A monitor
+   asserting conservation without a `clear` exemption counts that datagram as a
+   silent discard and fails a conformant M14. This is ledger **C-2**'s exemption
+   becoming load-bearing at its **second** module. In the stress run itself the
+   exemption never fires — `clear` is not asserted — so criterion 1 stands
+   exactly as written for all 10 000 datagrams.
 2. The 26 delivered payload octets of every datagram compare equal to input
    octets 20–45, and the sequence numbers arrive as 0, 1, 2, … with no gap and
    no repeat (REQ-020).
@@ -661,6 +703,18 @@ frame unless its own length forbids it:
 - **a 14-octet Ethernet frame routed here** (requirements.md §0.7): no
   `ip_hdr_valid`, no payload word, exactly one `error_ip_truncated` pulse, and
   the next datagram parsed intact;
+- **the truncation band, 21 to 27 delivered IPv4 octets** against a declared
+  total length of 46, one frame per delivered count — seven frames covering every
+  residue in the band (carry-forward **C-26**). Each emits **one** payload word
+  at Ci + 4 carrying the 1 to 7 octets that arrived, with `tkeep` marking exactly
+  them, `tlast` = 1, `tuser`[0] = 1, and exactly one `error_ip_truncated` pulse
+  at Ci + 3. This is the band the previous branch condition and case list
+  disagreed over, and it is where a bench distinguishes the two readings;
+- **exactly 20 delivered IPv4 octets with a declared total length of 46**: the
+  header is complete and no payload octet exists, so **no** `ip_hdr_valid`, no
+  payload word and exactly one `error_ip_truncated` pulse — the boundary case
+  §9 decides, and the one a bench most easily confuses with the accepted
+  total-length-20 datagram above it, which pulses the record and no strobe;
 - **one datagram failing two conditions at once** — protocol 1 *and* a foreign
   destination — asserting that **both** strobes pulse on cycle Ci + 3, which is
   the multiplicity rule §9 states and the one place M14 differs sharply from M10.
@@ -678,7 +732,7 @@ twenty-one.
 | The destination is none of: `cfg_local_ip`, `cfg_local_ip \| ~cfg_subnet_mask`, 255.255.255.255, or `cfg_multicast_group` with `cfg_multicast_enable` = 1 | `error_ip_not_for_us` | the same | REQ-604 |
 | The protocol is not 17 | `error_ip_bad_protocol` | the same | REQ-607 |
 | Total length is above 1500 | `error_ip_oversize` | the same | REQ-612 |
-| The frame ends before total length is satisfied | `error_ip_truncated` | if payload words have already been emitted, the payload frame is **aborted**: its last word carries `tuser`[0] = 1 and the `tkeep` the delivered octets imply. If none has been emitted — which includes a frame ending inside the 20-octet header, and a frame with no payload frame at all — **no payload frame is emitted** and the strobe is the only report (requirements.md §0.6, §0.7) | REQ-605 |
+| The frame ends before total length is satisfied | `error_ip_truncated` | **if the datagram declared payload octets and at least one of them was delivered**, a payload frame is emitted and **aborted**: its last word carries `tuser`[0] = 1 and the `tkeep` the delivered octets imply, and it leaves at its ordinary cycle whether or not it had already left when the frame closed. **If the frame closed before any payload octet was delivered** — a frame ending inside the 20-octet header, a frame ending exactly at its end while the declared payload is non-empty, and a frame with no payload frame at all — **no payload frame is emitted**, `ip_hdr_valid` does not pulse, and the strobe is the only report (requirements.md §0.6, §0.7) | REQ-605 |
 
 Silent discard is prohibited (REQ-008): every row has a strobe. The `clear`
 mid-datagram case of §7 is REQ-009's, not REQ-008's.
@@ -733,6 +787,36 @@ each applicable condition's strobe pulses once for that frame."* So:
   pulse, and M14 pulses **nothing** extra for the inherited abort — it did not
   detect it, and re-reporting an inherited abort is forbidden.
 
+**The truncation row's branch condition is extensional, not temporal, and the
+reason is REQ-605** (carry-forward **C-26**, dv_lead). The text this replaced
+selected the branch on whether "payload words have already been emitted" — a
+statement about the *detection cycle* — while enumerating the negative branch by
+*cases*, and the two disagree over a band that is reachable and eight octets
+wide. A frame delivering **21 to 27** IPv4 octets against a larger declared total
+length has 1 to 7 payload octets in hand, but no payload word has **left** at the
+detection cycle: the input `tlast` is at Ci + 2, the strobe at Ci + 3, and payload
+word 0 is not due until Ci + 4 (§6.1). The temporal reading emits nothing for
+that frame; requirements.md **REQ-605** says "the payload's last word SHALL carry
+`tuser`[0] = 1", which presupposes a word. The extensional reading emits exactly
+one payload word at Ci + 4, with `tkeep` marking the 1 to 7 octets that arrived,
+`tlast` = 1 and `tuser`[0] = 1, and satisfies REQ-605 literally. **REQ-605 is
+what settles it**, one document up, so this is the specification agreeing with
+its requirement rather than a choice between two designs.
+
+**And the boundary case the same row left undecided is decided here.** At exactly
+**20** delivered IPv4 octets with a declared total length above 20, the header is
+complete and zero payload octets exist. §6.2's `Header` row used to route that
+datagram to `Payload` — header accepted, declared payload non-empty — while this
+section said the strobe was the only report, so whether `ip_hdr_valid` pulsed was
+undecided. It does **not** pulse: `Header` goes to `Idle`, one
+`error_ip_truncated` is the whole report, and the rule behind it is worth naming
+because it generalises — **a header record is never emitted for a datagram whose
+payload frame cannot follow**. The accepted zero-payload case is the *other* one
+and is unaffected: a datagram of total length exactly 20 declares no payload
+octets, is accepted, pulses `ip_hdr_valid` and emits no payload frame
+(requirements.md §0.7). Declared-empty pulses the record; declared-non-empty and
+delivered-empty pulses the strobe.
+
 **Aborted-and-forwarded versus discarded-before-emission.** Six of the seven rows
 are the second kind. `error_ip_truncated` is the only condition M14 can detect
 *after* it has begun emitting, and it is then the first kind: the payload frame
@@ -756,13 +840,13 @@ monitor counts high cycles per strobe.
 | REQ-005 | fixed-delay pipeline; no payload word withheld to the datagram's end; the last word is not emitted early | §6.1, §7 | per-octet latency tagger inside the stress bench; directed total lengths 20–28 and 1500 |
 | REQ-007, REQ-013 | inherited `tuser`[0] copied to the payload `tlast` word and never acted on; the ultimate consumer is the application (REQ-707), not this module | §3, §9 | drive `tuser`[0] = 1 on an accepted datagram's `tlast`; assert the payload frame is delivered intact with the bit set on its last word and no strobe pulses |
 | REQ-008 | seven conditions, seven strobes, every pulse cycle pinned, co-occurrence stated | §9 | one directed test per rejection class plus the two-condition datagram; frame-conservation monitor |
-| REQ-009 | `clear` empties the pipeline; mid-datagram `clear` abandons it silently | §7 | reset test: assert mid-datagram, deassert, open a datagram on the next cycle and assert it parses intact |
+| REQ-009 | `clear` empties the pipeline; mid-datagram `clear` abandons it silently | §7 | reset test: assert mid-datagram, deassert, open a datagram on the next cycle and assert it parses intact. **The conservation monitor of §0.6 runs with the `clear` exemption of §8 criterion 1 in this test** — without it the abandoned datagram reads as a silent discard and a conformant M14 fails (carry-forward **C-30**) |
 | REQ-010 | both streams are the programme `Axi64.Source`; both header records are SPEC-M01's, unchanged; M14 declares no record | §4.1 | interface compile check, including the first witness of `Ip_header`'s seven field names |
 | REQ-011 | `ip_payload_tkeep` `0xFF` except on `tlast`, contiguous from bit 0 | §7 | protocol monitor on the payload stream, every bench |
 | REQ-012 | every header field decoded to a numeric value, first wire octet most significant | §6.1 | known-datagram directed test comparing all six fields against hand-computed values, including both addresses |
 | REQ-014 | `tstrb` ignored in, driven 0 out | §4.2 | protocol monitor; REQ-014's differential run |
 | REQ-015 | one `tlast` per payload frame, the `tlast` word included; at most 185 words | §3, §7 | protocol monitor |
-| REQ-016 | input idle cycles delay octets and change nothing else; §6.1's cycle formulas are gapless-only | §6.1, §7 | idle-injection wrapper at 0, 1 and 7 cycles, asserting the **constant** of §7 rather than §6.1's cycle formula |
+| REQ-016 | input idle cycles delay octets and change nothing else; §6.1's cycle formulas are gapless-only | §6.1, §7 | idle-injection wrapper at 0, 1 and 7 cycles, asserting the per-octet constant **L = 12** of §7 — **not** §6.1's cycle formulas and **not** §7's 3-cycle parse latency, which grows by the injected count when the idle lands inside the header (carry-forward **C-27**) |
 | REQ-019 | ΔC = 4 against a ceiling of 5, one cycle of reserve inside M14's own allocation; two words of payload storage | §7, §11.2 | ΔC computed from the pinned L and h at freeze; measured ΔC from the stress run in the sign-off packet, quoted against the ceiling of 5 |
 | REQ-020 | one datagram at a time; order not expressible otherwise | §6.2 | the sequence numbers in the stress run |
 | REQ-021 | payload octet 0 at `ip_payload_tdata`[7:0] at every datagram length | §6.1 | directed total lengths 20–28: 20–27 cover every residue modulo 8, and 28 is what covers the `0xFF` `tkeep` pattern (C-17(e)'s lesson) |
@@ -772,10 +856,10 @@ monitor counts high cycles per strobe.
 | REQ-602 | the ten header halfwords sum to 0xFFFF in one's-complement arithmetic, checksum halfword included | §6.1, §9 | one header bit flipped. **Declared REQ-901 divergence class (a)**: the reference does not verify this checksum, so co-simulation stimulus is restricted to correct-checksum datagrams and this REQ is verified against the spec by directed test only |
 | REQ-603 | more-fragments and fragment offset checked on input word 0; DF and the reserved bit deliberately unconstrained | §6.1, §6.3 item 4, §9 | both fragment forms |
 | REQ-604 | four accepted destinations, the subnet broadcast computed as `cfg_local_ip \| ~cfg_subnet_mask`; multicast accepted only when enabled | §4.3, §6.1, §9 | one test per accepted case and three rejected cases, including the configured group with multicast disabled |
-| REQ-605 | exactly total length − 20 octets delivered; padding beyond consumed and dropped; a frame ending early aborts the payload and pulses the strobe; total length 20 emits a header record and no payload frame | §6.1, §6.2, §9 | a 64-octet frame carrying total length 28 (18 octets of padding removed, 8 delivered), total length 20, and a frame truncated 10 octets early |
+| REQ-605 | exactly total length − 20 octets delivered; padding beyond consumed and dropped; a frame ending early aborts the payload **iff at least one payload octet was delivered** and pulses the strobe either way (the extensional branch, C-26); declared total length 20 emits a header record and no payload frame | §6.1, §6.2, §9 | a 64-octet frame carrying total length 28 (18 octets of padding removed, 8 delivered), total length 20, a frame truncated 10 octets early, **the 21-to-27-delivered band** (one payload word, `tuser`[0] = 1, one strobe) and **exactly 20 delivered with total length 46** (no record, no word, one strobe) |
 | REQ-606 | six fields in a record whose `valid` is one cycle high, one cycle before the first payload word | §6.1, §7 | known-datagram test comparing every field and the `valid` timing |
 | REQ-607 | protocol checked against 17 on input word 1; ICMP is out of scope and gets no reply | §6.1, §9 | protocol 1 and protocol 6 datagrams; plus the two-condition datagram of §8, which is where §0.6's multiplicity rule is asserted |
-| REQ-611 | parse latency pinned at 3 cycles from input word 0 to the `ip_hdr_valid` pulse, one constant for every length and content | §7 | §8 check 4: the interval equals 3 for all 10 000, one value not a mean |
+| REQ-611 | parse latency pinned at 3 cycles from input word 0 to the `ip_hdr_valid` pulse, one constant for every datagram length and every field content, **on a header delivered without internal idle cycles**; REQ-611's gap clause is discharged by the per-octet constant L = 12, which is the gap-invariant one (C-27) | §7 | §8 check 4: the interval equals 3 for all 10 000, one value not a mean — the stress stimulus delivers each header on three consecutive cycles (§8), so the scope condition holds by construction there. Under idle injection the hook is L, not this figure |
 | REQ-612 | total length above 1500 rejected on input word 0 | §6.1, §9 | a total-length-1501 datagram |
 | REQ-802, REQ-803 | four configuration inputs, each sampled on input word 2; the same-cycle change unconstrained | §4.3, §6.3 item 6 | change `cfg_local_ip` between two datagrams and assert the destination filter follows it at the next datagram, not the one in flight |
 | REQ-810 | no instance: REQ-810's receive half is M03's (SPEC-M03 §4.3), and M14 reads no enable | §4.3 | none — stated so that no sign-off packet claims coverage here |
@@ -791,27 +875,32 @@ Item numbers are permanent; a closed item keeps its row (SPEC-TEMPLATE §11).
 
 | # | Item | Status · what a reader assumes meanwhile | Tracked as | Owner | Closes by |
 |---|---|---|---|---|---|
-| 11.1 | **The `ifc_check` compile evidence for this lift is pending**: `ip_eth_rx_64_ifc.ml` is new in this commit and carries the first compile-time witness of `Ip_header`'s seven field names — the record was frozen at f78766e with no user until batch E. | **DEFERRED — the witness is written, the run is pending.** Meanwhile a reader assumes the record exactly as §4.1 writes it: it declares nothing new and uses only types SPEC-M01 froze, in the `[@@deriving hardcaml]` form thirteen green lifts already use. A divergence surfaces as a red CI run on this commit and is repaired by an editorial diff to this §4.1 and its lift. | the `Interface compile check` row of §12 | architect_docs_lead, rtl_lead | the batch-E `ifc_check` run |
+| 11.1 | **The `ifc_check` compile evidence for this lift is pending**: `ip_eth_rx_64_ifc.ml` is new in this commit and carries the first compile-time witness of `Ip_header`'s seven field names — the record was frozen at f78766e with no user until batch E. | **CLOSED (WO-0018/WO-0019).** CI `build` run **30739442056** at **3f6accc** reports `success` with all sixteen lifts in it, this one included, and the run's head SHA **is** this specification's commit — so the record froze and elaborated in the same tree and no witnessing argument is owed. The witness of `Ip_header`'s seven field names compiled on its first run. `tools/check_records_vs_appendix.sh` re-passes the byte-identity check on every later commit, this one included. | the `Interface compile check` row of §12 | architect_docs_lead, rtl_lead | closed |
 | 11.2 | **M14 pins ΔC = 4 against a §1.1 ceiling of 5**, so it holds one cycle of reserve — the opposite position to SPEC-M06 §11.2, which is pinned exactly at its ceiling with none. | **DEFERRED — the number is decided and buildable, and the reserve is deliberate.** A reader implements ΔC = 4 today, and §7 gives the argument that four is the minimum with a registered output. The reserve is **M14's own allocation** and not the architect's seven cycles of programme slack: a later revision to ΔC = 5 is an ordinary spec diff to §7 with §1.1 and architecture.md §4 untouched, whereas going beyond 5 would be a slack release and would change both copies of the allocation table. Stating which of the two a future cycle would be is the whole point of this row. | this item; requirements.md §1.1 | architect_docs_lead | M14's `P1-module-ready` |
 | 11.3 | **REQ-901's divergence class (a) is a restriction on co-simulation stimulus, not only a note**: the reference design does not verify the IPv4 header checksum, so a co-simulation run that injected a bad-checksum datagram would diverge by design at this boundary. | **DEFERRED — the restriction is stated in REQ-602, in REQ-901's class list and in §10, and a reader is not blocked.** Meanwhile: directed tests carry bad checksums, co-simulation stimulus does not. The item closes when the first co-simulation run reports against this boundary and its report names the class, which is what REQ-901's verification column already requires of it. | REQ-901 class (a); this item | dv_lead, architect_docs_lead | the first co-simulation run at this boundary |
-| 11.4 | **`cfg_subnet_mask` reaches M14 by a control edge batch E adds** (§4.3), and architecture.md §6.4.3 records the fan-out as one row from the top-level source to the reading module, not as a hop per wrapper. The wrapper hops through M16, M19 and M20 are computed from §4's containment, the same way §6.4.4 treats strobes. | **DEFERRED — the edge and its type are fixed, and SPEC-M16 §6.1's wiring table carries M16's hop explicitly.** Meanwhile a reader wires `cfg_subnet_mask` into M14 exactly as `cfg_local_ip` is wired, and M16 relays both. Batch F's SPEC-M19 and SPEC-M20 write the two hops above M16 and confirm the row; if M20's `Config` fan-out is restructured into a partial record (SPEC-M05 §11.1 raises the same question for strobes), that is a §4 spec diff here and an ADR, and it renames no configuration field. | architecture.md §6.4.3; SPEC-M05 §11.1 | architect_docs_lead | SPEC-M20 (batch F) |
+| 11.4 | **`cfg_subnet_mask` reaches M14 by a control edge batch E adds** (§4.3), and architecture.md §6.4.3 records the fan-out as one row from the top-level source to the reading module, not as a hop per wrapper. The wrapper hops through M16, M19 and M20 are computed from §4's containment, the same way §6.4.4 treats strobes. | **CLOSED (WO-0019).** SPEC-M19 §6.1 and SPEC-M20 §6.1 write the two hops above M16 — M20 decomposes the twelve-field `Config` record into scalars and fans them to M05 and M19, and M19 fans them on to M16, M17 and M18 — and both confirm architecture.md §6.4.3's rows as source-and-reader pairs with the wrapper hops computed from §4's containment. The `Config` **record** appears at exactly one port in the programme, M20's `cfg`, and every module below it reads scalars; no configuration field is renamed anywhere and no partial record was adopted. | architecture.md §6.4.3; SPEC-M19 §6.1; SPEC-M20 §4.3, §6.1 | architect_docs_lead | closed |
 
 ## 12. Freeze record
 
-Filled in at `P1-spec-freeze`. All four rows are required (charter §5); this
-spec is DRAFT.
+Filled in at `P1-spec-freeze`. All four rows are required (charter §5).
 
 | Item | Value |
 |---|---|
-| Interface compile check | pending — CI `build` run `<id>`, conclusion `<success>`, SHA `<sha>`; per ADR-0005 a local build is not acceptable evidence. This run is also §11.1's closure record |
-| Architect signature | `J-architect_docs_lead-0007` |
-| dv_lead testability countersignature | pending — batch E (SPEC-M14, M15, M16) |
-| Frozen at | pending — SHA `<sha>`, gate `docs/gates/P1-spec-freeze-checklist.md` |
+| Interface compile check | CI `build` run **30739442056**, conclusion **`success`**, SHA **3f6accc** — every lift in the single `ifc_check` library elaborates, the three batch-E lifts for the first time; per ADR-0005 a local build is not acceptable evidence. **The run's head SHA is the specification commit**, so no witnessing argument is owed: the text frozen here and the text that elaborated are the same tree. This run is also §11.1's closure record |
+| Architect signature | `J-architect_docs_lead-0007`; the C-26, C-27 and C-30 diffs of §13 `J-architect_docs_lead-0008` |
+| dv_lead testability countersignature | **`J-dv_lead-0009`** (WO-0018) — batch E **COUNTERSIGNED at 3f6accc**, this specification **SIGNED** on its own merits: L = 12 / h = 20 / ΔC = 4 re-derived by both of §0.5's routes against the §1.1 ceiling of 5, REQ-611's 3 cycles and the one-cycle header lead re-derived, the six-of-seven decidability verified field offset by field offset, and the abort-bit inequality M + 3 ≥ K proved for every residue |
+| Frozen at | SHA **3f6accc**, gate `docs/gates/P1-spec-freeze-checklist.md` |
 
 ## 13. Change log
 
-Post-freeze changes only. This spec is DRAFT and has none.
+Post-freeze changes only. Each row cites the ADR that authorised it; a breaking
+interface change is counted against post-freeze churn (charter §6). **No row
+below is breaking**: §4.1's record is byte-for-byte unchanged since the freeze
+SHA, so the `ifc_check` evidence of §12 still witnesses this revision's
+interface, and `tools/check_records_vs_appendix.sh` re-passes on this commit.
 
 | Date | Change | Breaking? | ADR | Journal |
 |---|---|---|---|---|
-| — | — | — | — | — |
+| 2026-08-02 | §9's truncation row made **extensional** — a payload frame is emitted and aborted iff the datagram declared payload octets and at least one was delivered — with the 21-to-27-delivered band derived; §6.2's `Payload` entry condition and `Header` `Idle` list follow; the exactly-20-delivered boundary decided (no `ip_hdr_valid`, one strobe); §8 gains both directed sets and §10's REQ-605 hook names them (ledger **C-26**) | no | none — **requirements.md REQ-605 settles it one document up** ("the payload's last word SHALL carry `tuser`[0] = 1" presupposes a word), so this is the specification agreeing with its requirement rather than choosing between two designs; no REQ text moves and no other module is affected | `J-architect_docs_lead-0008` |
+| 2026-08-02 | §7's 3-cycle **parse latency** scoped to a header delivered without internal idle cycles, with the growth rule stated; §3's REQ-016 row and §6.1's gapless paragraph follow; §10's REQ-016 hook now names **L = 12** as the gap-invariant constant and REQ-611's hook names the scope (ledger **C-27**) | no | none — a scoping correction to a figure REQ-611's own gap clause is discharged by L, not by this figure; the pinned numbers 3, 12, 20 and 4 are all unchanged, and §6.1 already stated the scoping obliquely | `J-architect_docs_lead-0008` |
+| 2026-08-02 | §8 criterion 1 gains the **`clear` conservation exemption** (ledger **C-2** at its second module), worded on SPEC-M10 §8's model; §10's REQ-009 hook names it (ledger **C-30**) | no | none — an exemption owed to the *monitor*, not a change to the module: §7 already stated that `clear` abandons an open datagram with no `tlast` and no strobe, and §8's stress run never asserts `clear`, so criterion 1 stands as written for all 10 000 datagrams | `J-architect_docs_lead-0008` |

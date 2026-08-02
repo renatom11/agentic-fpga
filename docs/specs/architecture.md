@@ -116,6 +116,23 @@ saving is cosmetic. **Prerequisite**: `hardcaml_axi` (which pulls
 installed in CI, the fallback is the local record and that reversal needs an
 ADR, not a quiet edit.
 
+**House consumer convention (normative statement: `docs/adr/ADR-0010`).** The
+`Hardcaml_axi.Stream.Make` result is bound as a module named `Axi64` **inside**
+the compilation unit `Axi64` (SPEC-M01 §4.1), so a consumer writes
+`Signal.t Axi64.Axi64.Source.t` unless it first writes `open! Axi64`. Every
+module under `libs/hardcaml_ethernet/src/` **opens `Axi64`** — with the bang, and
+only the record modules its own ports use — and then writes `Axi64.Source.t`,
+`Eth_header.t`, `Ip_header.t`, `Udp_header.t`, `Xgmii.t`, `Config.t` and
+`Status.t` unqualified, which is the same shape every lift in
+`docs/specs/ifc_check/` already uses with `open! Axi64_ifc`. ADR-0010 is the
+normative statement and carries the alternatives, including the rename of the
+inner module that would remove the nesting and which is queued behind any future
+reopening of SPEC-M01 §4.1 rather than taken now. The same ADR settles the second
+half of the question: `module type S` is a SPEC-TEMPLATE rule 6 device that lets a
+§4.1 block compile standalone and **does not** become a named library artifact —
+the `.mli` is the module surface, and M03 and M04 are not functorised over the
+CRC engine. This paragraph and ADR-0010 change together.
+
 ### 2.4 Module decomposition mirrors verilog-ethernet
 
 The inventory in §4 is aligned name-for-name with the 64-bit modules of
@@ -566,7 +583,47 @@ batch E makes it load-bearing, because `cfg_local_ip` now reaches three modules
 through two wrapper levels. SPEC-M16 §11.3 tracks expanding the rows if a
 renderer ever needs them enumerated.
 
-**118 edges: 26 `rx`, 40 `tx`, 30 `control`, 21 + 1 `status`.**
+**Batch F's confirmation (WO-0019).** SPEC-M17, SPEC-M18, SPEC-M19 and SPEC-M20
+confirm every row naming M17, M18, M19 or M20 **unchanged in its port names**,
+with exactly one amendment:
+
+1. **One control row is added**: `M20.cfg_tx_enable → M18.cfg_tx_enable`.
+   REQ-810's transmit clause has two observables — "emits only idle characters",
+   which is M04's and which already has the enable, and "holds `tready`
+   deasserted at the application transmit interface", which is a statement about
+   **M18's** `payload_tready` three modules away. Without an enable at M18 that
+   second clause is satisfied only by backpressure propagation, and propagation
+   is inexact: M15 accepts a frame's first payload word unconditionally on its
+   resolution cycle (SPEC-M15 §6.1), so exactly one application word would be
+   accepted while transmit is disabled and a bench written from REQ-810's own
+   verification column would fail a conformant design by one cycle. This is an
+   added edge rather than a renamed port, so it is an amendment of the kind
+   §6.4's provisional-row rule anticipates and it is made in the same commit as
+   the specification that needs it (SPEC-M18 §4.3).
+
+**M17's port pair needed no rename**, which is the check §8's currency note asked
+batch F to make before writing it: M14's outputs had to take an `ip_` prefix
+because its input and output header records would otherwise both emit
+`hdr_valid` in one Verilog module, and M17 has the opposite arrangement already —
+its inputs carry the `ip_` prefix and its outputs are bare — so the emitted names
+are distinct as the provisional table wrote them (SPEC-M17 §4.1).
+
+Batch F adds **one** record, `Udp_tx_request`, declared at **SPEC-M18 §4.1** —
+the module REQ-705 makes its owner — and opened by SPEC-M19 and SPEC-M20 rather
+than restated. That is the declare-once rule's third and fourth instances and its
+first *intra*-batch one; no frozen §4.1 is touched by this batch, and SPEC-M20 is
+where M01's `Config` and `Status` records finally acquire their only user.
+
+**M19 and M20 apply the internal-signal rule their siblings do.** M19 contains
+M16, M17 and M18 and M20 contains M05 and M19 (§6.3), so every edge *between* two
+children of the same wrapper — `M16.ip_rx_hdr → M17.ip_hdr`,
+`M18.ip_payload → M16.ip_tx_payload`, `M05.rx → M19.rx` and the rest — is an
+internal signal of that wrapper's hierarchy and appears in neither `I` nor `O` of
+its §4.1. SPEC-M19 §6.1 and SPEC-M20 §6.1 are where those internal edges are
+enumerated in one place each, exactly as SPEC-M13 §6.4 and SPEC-M16 §6.1 do for
+their own.
+
+**119 edges: 26 `rx`, 40 `tx`, 31 `control`, 21 + 1 `status`.**
 
 ### 6.4.1 Receive datapath — class `rx` (26 edges)
 
@@ -644,13 +701,14 @@ renderer ever needs them enumerated.
 | `M05.xgmii_tx` | `M20.xgmii_tx` | `Xgmii` | tx |
 | `M20.xgmii_tx` | `WIRE.xgmii_tx` | `Xgmii` | tx |
 
-### 6.4.3 Control — class `control` (30 edges)
+### 6.4.3 Control — class `control` (31 edges)
 
 | source.port | sink.port | type | class |
 |---|---|---|---|
 | `EXT.cfg` | `M20.cfg` | `Config` | control |
 | `M20.cfg_rx_enable` | `M03.cfg_rx_enable` | `bit` | control |
 | `M20.cfg_tx_enable` | `M04.cfg_tx_enable` | `bit` | control |
+| `M20.cfg_tx_enable` | `M18.cfg_tx_enable` | `bit` | control |
 | `M20.cfg_ifg` | `M04.cfg_ifg` | `bit[8]` | control |
 | `M20.cfg_local_mac` | `M13.cfg_local_mac` | `bit[48]` | control |
 | `M20.cfg_local_mac` | `M15.cfg_local_mac` | `bit[48]` | control |
@@ -750,26 +808,29 @@ are drafted, because the dependant reuses their interface records.
 Every spec follows [`SPEC-TEMPLATE.md`](SPEC-TEMPLATE.md) and is frozen only
 with a green `ifc_check` build and a dv_lead testability countersignature.
 
-**Currency (2026-08-02, WO-0017).** Batches **A** and **B** are **FROZEN at
+**Currency (2026-08-02, WO-0019).** Batches **A** and **B** are **FROZEN at
 f78766e** — CI `build` run 30729342467 green, dv_lead countersignature
 `J-dv_lead-0005`. Batch **C** is **FROZEN at 508eea2** — CI `build` run
 30733153172 green at f457efc, whose `docs/specs/ifc_check/` tree is
-byte-identical to 508eea2's, dv_lead countersignature `J-dv_lead-0007`. Both are
-transcribed in `docs/gates/P1-spec-freeze-checklist.md`. Batch **D** is drafted
-(SPEC-M10 … SPEC-M13) with its `ifc_check` run green — run 30736107842 at
-2f29888, whose `docs/specs/` tree is identical to a9993ff's — and its
-countersignature **WITHHELD** at that SHA on two behavioural items,
-`J-dv_lead-0008`: M10, M11 and M12 SIGNED, M13 CONTESTED on **D-1** (the reply
-pending window) and **D-2** (REQ-013's ultimate consumer on the ARP branch).
-Both are repaired under WO-0017 — R-1 and D-2a, the latter carrying **ADR-0009**
-— and the countersignature is granted at the commit carrying them. Batch **E** is
-drafted (SPEC-M14, SPEC-M15, SPEC-M16) and awaits its own `ifc_check` run and
-countersignature; it has confirmed its own §6.4 rows in the same commit, with the
-two amendments §6.4 records. Batch **F** is unwritten, which is why §6.4's rows
-naming M17 … M20 remain provisional in their port names and why that batch
-confirms or amends its own rows in the same commit as its specs — M17's pair is
-worth checking against M14's rename before it is written, since it has the same
-input-and-output-header shape.
+byte-identical to 508eea2's, dv_lead countersignature `J-dv_lead-0007`. Batches
+**D** (SPEC-M10 … SPEC-M13) and **E** (SPEC-M14 … SPEC-M16) are **FROZEN at
+3f6accc** — CI `build` run 30739442056 green **at that same SHA**, so batch E
+needs no witnessing argument at all, and dv_lead countersignature
+`J-dv_lead-0009` (WO-0018) for both. Batch D reached it the hard way: its
+countersignature was **WITHHELD** at a9993ff on two behavioural items
+(`J-dv_lead-0008`) — M10, M11 and M12 SIGNED, M13 CONTESTED on **D-1** (the reply
+pending window) and **D-2** (REQ-013's ultimate consumer on the ARP branch) —
+repaired under WO-0017 as R-1 and D-2a, the latter carrying **ADR-0009**, and
+granted at the commit carrying the repairs. All four flips are transcribed in
+`docs/gates/P1-spec-freeze-checklist.md`.
+
+Batch **F** (SPEC-M17 … SPEC-M20) is **drafted** under WO-0019 and awaits its own
+`ifc_check` run and countersignature. It has confirmed its own §6.4 rows in the
+same commit, with the one amendment §6.4 records, and it needed **no** rename at
+M17 — the check the previous revision of this paragraph asked for. **All twenty
+Phase-1 specifications now exist**, sixteen of them FROZEN; what stands between
+the programme and `P1-spec-freeze` is dv_lead's batch-F countersignature, a green
+run at the batch-F SHA, and the sponsor's signature.
 
 ---
 

@@ -36,8 +36,21 @@
   — twelve rows, REQ-501 through REQ-512; batch E (SPEC-M14, SPEC-M15,
   SPEC-M16) under **WO-0017**, in the commit that wrote them — twelve rows,
   REQ-601 through REQ-612, plus three rows that gained a **second** owning module
-  in the same commit (REQ-505, REQ-610, REQ-807; see below). Batch F follows the
-  same rule — matrix and spec in one commit (SPEC-TEMPLATE §10).
+  in the same commit (REQ-505, REQ-610, REQ-807; see below); batch F (SPEC-M17,
+  SPEC-M18, SPEC-M19, SPEC-M20) under **WO-0019**, in the commit that wrote them
+  — twenty rows, REQ-701 through REQ-710 and REQ-801 through REQ-810, plus the
+  three invariant rows only a top-level specification can pin (REQ-001, REQ-006,
+  REQ-020), plus the two `pending` halves batch E left visible (REQ-610 at M18
+  and REQ-807 at M20), plus REQ-805 and REQ-810, which gained further owning
+  modules. Matrix and spec in one commit, every time (SPEC-TEMPLATE §10).
+- **After batch F, no row's Spec-section cell reads `pending`.** Twenty
+  specifications exist and every requirement they own names one. Four rows
+  deliberately name a *process* document instead of a module spec — REQ-902
+  (the CI determinism step), REQ-904 (this file and its script), REQ-906
+  (ADR-0005) and REQ-901 (requirements.md's own class list, with the four
+  classes' module homes named) — because no module specification fixes them and
+  none should: they are obligations on the programme, and pointing a
+  process requirement at a module spec would be a false claim of coverage.
 - **REQ set equality survives spec diffs, and that is checked rather than
   assumed.** WO-0011's carry-forward diffs changed the *text* of REQ-010,
   REQ-015, REQ-105 and REQ-108, and WO-0014's changed requirements.md §0.5's
@@ -61,9 +74,24 @@
   XGMII-level observable — SPEC-M16 §10 and §11.4). In each, both specifications
   name their own half **and disclaim the other's**, which is the property that
   lets a sign-off packet show whole coverage with no module claiming another's
-  part and no hole between them. Where the second module's specification is
-  unwritten — M18 today — its half reads `pending` and the row is what makes the
-  debt visible.
+  part and no hole between them. **Batch F discharged all three debts and added
+  two more rows of the same shape.** REQ-610's second half is now SPEC-M18 §5,
+  §6.1 and §10; REQ-807's is SPEC-M20 §8 and §10; REQ-505's M13 side was retiled
+  by carry-forward **C-28**, which found that M13's header claimed the
+  requirement unqualified and its §10 row disclaimed nothing — the double-claim
+  direction of the same defect the pattern exists to prevent. The two new rows
+  are **REQ-708** (M19 owns the application-boundary half, M20 the end-to-end
+  half) and **REQ-709** (M18 owns the detection and its strobe, M04 the wire
+  remedy and `error_underflow`). **No cell in this file now reads `pending`**,
+  which was dv_lead's stated condition for the batch-F countersignature
+  (WO-0018 Return log §3, answer (iv)).
+- **One row is deliberately *not* split, and the distinction is worth keeping.**
+  REQ-707 is owned **whole** by M17: M19 and M20 relay the application receive
+  stream and change no field of it, so neither claims any part of the
+  requirement and both say so in their own §10. A relay is not a half. The test
+  of the difference is whether a sign-off packet could show whole coverage
+  without the other module's packet — for REQ-610 and REQ-807 it could not, and
+  for REQ-707 `SO-udp_ip_rx_64.md` alone can.
 - **Test(s)** is filled by dv_lead with the test name and file, in the same
   commit as the test. Multiple tests per REQ are listed comma separated. A REQ
   covered only by a declared gap says `GAP: <reason>` and that gap must appear
@@ -104,12 +132,12 @@ or withdrawn; ids remain permanent.
 
 | REQ | Kind | Requirement (short) | Owning module(s) | Spec section | Test(s) | Status |
 |---|---|---|---|---|---|---|
-| REQ-001 | INV | Single clock domain | all modules (programme invariant) | pending | | OPEN |
+| REQ-001 | INV | Single clock domain | all modules (programme invariant) | SPEC-M20 §3, §6.1 | | OPEN |
 | REQ-002 | IFC | Datapath width | all modules (programme invariant) | SPEC-M01 §4.1, §5 | | OPEN |
 | REQ-003 | INV | No receive-path backpressure | all modules (programme invariant) | SPEC-M01 §4.2; SPEC-M03 §4.1 | | OPEN |
 | REQ-004 | PERF | Line-rate invariant | all modules (programme invariant) | SPEC-M03 §8 | | OPEN |
 | REQ-005 | INV | Cut-through, not store-and-forward | all modules (programme invariant) | SPEC-M03 §7 | | OPEN |
-| REQ-006 | PERF | Receive latency budget | all modules (programme invariant) | pending | | OPEN |
+| REQ-006 | PERF | Receive latency budget | all modules (programme invariant) | SPEC-M20 §7 (the derivation: 13 cycles at both start lanes), §8 check 4 | | OPEN |
 | REQ-007 | INV | Abort propagation | all modules (programme invariant) | SPEC-M03 §9 | | OPEN |
 | REQ-008 | ERR | Every discard is observable | all modules (programme invariant) | SPEC-M03 §9; SPEC-M04 §9 | | OPEN |
 | REQ-009 | INV | Reset behaviour | all modules (programme invariant) | SPEC-M03 §7; SPEC-M04 §7 | | OPEN |
@@ -123,7 +151,7 @@ or withdrawn; ids remain permanent.
 | REQ-017 | INV | XGMII closure | all modules (programme invariant) | SPEC-M01 §4.1, §4.2; SPEC-M05 §4.2 | | OPEN |
 | REQ-018 | INV | XGMII boundary is simulation-only | all modules (programme invariant) | SPEC-M03 §2; SPEC-M05 §3 | | OPEN |
 | REQ-019 | INV | Bounded receive latency, no deep buffering | all modules (programme invariant) | SPEC-M03 §7; SPEC-M05 §7 | | OPEN |
-| REQ-020 | FUNC | Order preservation | all modules (programme invariant) | pending | | OPEN |
+| REQ-020 | FUNC | Order preservation | all modules (programme invariant) | SPEC-M20 §3, §8 check 2 | | OPEN |
 | REQ-021 | IFC | Producer-side word alignment | all modules (programme invariant) | SPEC-M01 §6.1; SPEC-M03 §6.1 | | OPEN |
 | REQ-101 | FUNC | Start lanes | M03 `Xgmii_rx_64` | SPEC-M03 §6.1 | | OPEN |
 | REQ-102 | FUNC | Preamble handling | M03 `Xgmii_rx_64` | SPEC-M03 §6.1 | | OPEN |
@@ -185,35 +213,35 @@ or withdrawn; ids remain permanent.
 | REQ-607 | ERR | Protocol filter | M14 `Ip_eth_rx_64` | SPEC-M14 §6.1, §9 | | OPEN |
 | REQ-608 | FUNC | Header construction | M15 `Ip_eth_tx_64` | SPEC-M15 §6.1 | | OPEN |
 | REQ-609 | FUNC | Transmit checksum | M15 `Ip_eth_tx_64` | SPEC-M15 §6.1 | | OPEN |
-| REQ-610 | FUNC | Transmit length | M15 `Ip_eth_tx_64`, M18 `Udp_ip_tx_64` | SPEC-M15 §5, §6.1, §7 (the IPv4 total length, no buffering); SPEC-M18 pending (the payload length, the "+ 28" and "+ 8" arithmetic, the UDP length field) | | OPEN |
+| REQ-610 | FUNC | Transmit length | M15 `Ip_eth_tx_64`, M18 `Udp_ip_tx_64` | SPEC-M15 §5, §6.1, §7 (the IPv4 total length emitted into octets 2–3, no buffering at that port); SPEC-M18 §5, §6.1, §10 (the application payload length, the "+ 28" and "+ 8" arithmetic, the UDP length field) | | OPEN |
 | REQ-611 | PERF | Constant parse latency | M14 `Ip_eth_rx_64` | SPEC-M14 §7 | | OPEN |
 | REQ-612 | ERR | Maximum size | M14 `Ip_eth_rx_64` | SPEC-M14 §6.1, §9 | | OPEN |
-| REQ-701 | FUNC | Header record | M17 `Udp_ip_rx_64` | pending | | OPEN |
-| REQ-702 | FUNC | Checksum not verified | M17 `Udp_ip_rx_64` | pending | | OPEN |
-| REQ-703 | ERR | Length checks | M17 `Udp_ip_rx_64` | pending | | OPEN |
-| REQ-704 | FUNC | Port filter | M17 `Udp_ip_rx_64` | pending | | OPEN |
-| REQ-705 | IFC | Transmit request form | M18 `Udp_ip_tx_64` | pending | | OPEN |
-| REQ-706 | FUNC | Transmit checksum zero | M18 `Udp_ip_tx_64` | pending | | OPEN |
-| REQ-707 | IFC | Application receive stream | M17 `Udp_ip_rx_64` | pending | | OPEN |
-| REQ-708 | PERF | Application-boundary line rate | M19 `Udp_complete_64`, M20 `Nic_top` | pending | | OPEN |
-| REQ-709 | ERR | Under-delivery of a declared length | M18 `Udp_ip_tx_64`, M04 `Xgmii_tx_64` | pending | | OPEN |
-| REQ-710 | ERR | Over-delivery of a declared length | M18 `Udp_ip_tx_64` | pending | | OPEN |
-| REQ-801 | IFC | Top-level ports | M20 `Nic_top` | pending | | OPEN |
-| REQ-802 | IFC | Configuration record | M20 `Nic_top` | SPEC-M01 §4.1, §4.2 | | OPEN |
-| REQ-803 | IFC | Configuration stability | M20 `Nic_top` | pending | | OPEN |
-| REQ-804 | ERR | Status aggregation | M20 `Nic_top` | SPEC-M01 §4.1, §4.2 | | OPEN |
-| REQ-805 | INV | Application must keep up | M20 `Nic_top` | pending | | OPEN |
-| REQ-806 | PERF | End-to-end latency measurement | M20 `Nic_top` | pending | | OPEN |
-| REQ-807 | FUNC | ARP connectivity | M20 `Nic_top`, M16 `Ip_complete_64` | SPEC-M16 §6.1, §8, §10 (the loop, closed structurally); SPEC-M20 pending (the XGMII-level observable: preamble, FCS, gap) | | OPEN |
-| REQ-808 | PROC | Hierarchy and naming | M20 `Nic_top` | SPEC-M05 §4.1, §6.1 | | OPEN |
-| REQ-809 | FUNC | End-to-end datagram path | M20 `Nic_top` | pending | | OPEN |
-| REQ-810 | FUNC | Enable controls | M20 `Nic_top` | SPEC-M03 §4.3; SPEC-M04 §4.3 | | OPEN |
-| REQ-901 | PROC | Differential co-simulation | programme (process) | pending | | OPEN |
-| REQ-902 | PROC | Deterministic emission | programme (process) | pending | | OPEN |
+| REQ-701 | FUNC | Header record | M17 `Udp_ip_rx_64` | SPEC-M17 §6.1, §7 | | OPEN |
+| REQ-702 | FUNC | Checksum not verified | M17 `Udp_ip_rx_64` | SPEC-M17 §6.1, §6.3 item 3 | | OPEN |
+| REQ-703 | ERR | Length checks | M17 `Udp_ip_rx_64` | SPEC-M17 §6.1, §6.2, §9 | | OPEN |
+| REQ-704 | FUNC | Port filter | M17 `Udp_ip_rx_64` | SPEC-M17 §4.3, §6.1, §9 | | OPEN |
+| REQ-705 | IFC | Transmit request form | M18 `Udp_ip_tx_64` | SPEC-M18 §4.1, §6.1, §7 | | OPEN |
+| REQ-706 | FUNC | Transmit checksum zero | M18 `Udp_ip_tx_64` | SPEC-M18 §6.1 | | OPEN |
+| REQ-707 | IFC | Application receive stream | M17 `Udp_ip_rx_64` | SPEC-M17 §4.1, §5, §6.1 — owned **whole** by M17; M19 and M20 relay the stream and claim no part of it (SPEC-M19 §10, SPEC-M20 §4.2), which is why this is a one-owner row and not a two-half one | | OPEN |
+| REQ-708 | PERF | Application-boundary line rate | M19 `Udp_complete_64`, M20 `Nic_top` | SPEC-M19 §8 item 1, §10 (the application-boundary half: 10 000 datagrams measured at `app_rx_*`); SPEC-M20 §8, §10 (the end-to-end half: the same payloads driven at XGMII at REQ-004's alternating 10-and-11-cycle spacing) | | OPEN |
+| REQ-709 | ERR | Under-delivery of a declared length | M18 `Udp_ip_tx_64`, M04 `Xgmii_tx_64` | SPEC-M18 §6.2 (`Short`), §9 (the detection and `error_tx_length_mismatch`); SPEC-M04 §9 (the `/E/` + `/T/` remedy and `error_underflow`); **ADR-0011** (what the transmit path is left holding, and that `clear` recovers it) | | OPEN |
+| REQ-710 | ERR | Over-delivery of a declared length | M18 `Udp_ip_tx_64` | SPEC-M18 §6.2 (`Excess`), §9 | | OPEN |
+| REQ-801 | IFC | Top-level ports | M20 `Nic_top` | SPEC-M20 §4.1, §4.2 | | OPEN |
+| REQ-802 | IFC | Configuration record | M20 `Nic_top` | SPEC-M01 §4.1, §4.2 (the record); SPEC-M20 §4.1, §4.3 (its only port, and the decomposition) | | OPEN |
+| REQ-803 | IFC | Configuration stability | M20 `Nic_top` | SPEC-M20 §4.3 (M20 holds no configuration register, so every reader sees a change on the same cycle); the per-reader sampling rules are SPEC-M03 §4.3, SPEC-M04 §4.3, SPEC-M13 §4.3, SPEC-M14 §4.3, SPEC-M15 §4.3, SPEC-M17 §4.3, SPEC-M18 §4.3 | | OPEN |
+| REQ-804 | ERR | Status aggregation | M20 `Nic_top` | SPEC-M01 §4.1, §4.2 (the record); SPEC-M20 §6.1, §9 (six from M05 plus fifteen from M19 = twenty-one, a rename and not a reduction) | | OPEN |
+| REQ-805 | INV | Application must keep up | M20 `Nic_top`, M17 `Udp_ip_rx_64` | SPEC-M17 §4.1 (the producer's type, where the absence of `tready` originates); SPEC-M20 §4.1, §11.4 (the top-level port; the second sentence binds Phase 2 and has no Phase-1 observable) | | OPEN |
+| REQ-806 | PERF | End-to-end latency measurement | M20 `Nic_top` | SPEC-M20 §7, §8 check 5, §12's fifth row, §11.2 | | OPEN |
+| REQ-807 | FUNC | ARP connectivity | M20 `Nic_top`, M16 `Ip_complete_64` | SPEC-M16 §6.1, §8, §10 (the loop, closed structurally); SPEC-M20 §8, §10 (the XGMII-level observable: preamble, every ARP field, FCS, gap, and the REQ-502 interval measured from the terminate character) | | OPEN |
+| REQ-808 | PROC | Hierarchy and naming | M20 `Nic_top` | SPEC-M05 §4.1, §6.1; SPEC-M20 §4.1, §6.1, §10 (the root the module-name comparison walks) | | OPEN |
+| REQ-809 | FUNC | End-to-end datagram path | M20 `Nic_top` | SPEC-M20 §8, §10 | | OPEN |
+| REQ-810 | FUNC | Enable controls | M20 `Nic_top`, M03 `Xgmii_rx_64`, M04 `Xgmii_tx_64`, M18 `Udp_ip_tx_64` | SPEC-M20 §4.3, §6.1 (the configuration source, and the one field with two readers); SPEC-M03 §4.3 (the receive half); SPEC-M04 §4.3 (the XGMII transmit half); SPEC-M18 §4.3, §6.1 (the application-interface `tready` half); SPEC-M13 §11.2 (the ARP clause, which needs no enable) | | OPEN |
+| REQ-901 | PROC | Differential co-simulation | programme (process) | requirements.md REQ-901 (the four declared divergence classes); their module homes are SPEC-M14 header/§11.3 (a), SPEC-M12 §5 with SPEC-M13 §6.1 (b), SPEC-M15 header/§10 (c) and SPEC-M18 header/§10 (d) | | OPEN |
+| REQ-902 | PROC | Deterministic emission | programme (process) | **no module spec pins it, by design** — it is a property of the build, fixed by the CI `build` workflow's determinism step and ADR-0005 | | OPEN |
 | REQ-903 | PROC | Module surface | programme (process) | SPEC-M01 §10; SPEC-M02 §4.1; SPEC-M03 §4.1 | | OPEN |
-| REQ-904 | PROC | Traceability currency | programme (process) | pending | | OPEN |
+| REQ-904 | PROC | Traceability currency | programme (process) | **this file**, plus the CI set-equality script requirements.md REQ-904's verification column commissions | | OPEN |
 | REQ-905 | PROC | Per-module stress | programme (process) | SPEC-M03 §8 | | OPEN |
-| REQ-906 | PROC | Evidence form | programme (process) | pending | | OPEN |
+| REQ-906 | PROC | Evidence form | programme (process) | **no module spec pins it, by design** — ADR-0005 fixes it and every module spec's §12 `Interface compile check` row is an instance of it | | OPEN |
 
 ---
 

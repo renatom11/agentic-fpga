@@ -1,10 +1,10 @@
 # SPEC-M11 — `Arp_eth_tx`
 
-- **Status**: DRAFT — batch D. Template-complete; the `ifc_check` evidence row of
-  §12 is **filled** (run 30736107842, `success`, 2f29888) and the freeze flip now
-  waits on the batch-D countersignature, re-reviewed at the commit carrying the
-  D-1 and D-2 repairs. This specification is **SIGNED** on its own merits
-  (`J-dv_lead-0008`, WO-0015 Return log §1)
+- **Status**: **FROZEN** (`P1-spec-freeze`, SHA `3f6accc`) — batch D, dv_lead
+  countersignature `J-dv_lead-0009` (WO-0018); this specification was already
+  **SIGNED** on its own merits at a9993ff (`J-dv_lead-0008`, WO-0015 Return log
+  §1). Changes to §4, §6 or §7 after this point are spec diffs recorded in §13
+  (SPEC-TEMPLATE rule 7)
 - **Inventory id**: M11 (architecture.md §4) · **Path**:
   `libs/hardcaml_ethernet/src/arp_eth_tx.ml`
 - **Datapath role**: transmit
@@ -542,10 +542,10 @@ spec is DRAFT.
 
 | Item | Value |
 |---|---|
-| Interface compile check | CI `build` run **30736107842**, conclusion **`success`**, SHA **2f29888** — all thirteen lifts elaborate, the four batch-D lifts for the first time; per ADR-0005 a local build is not acceptable evidence. `git diff a9993ff 2f29888 -- docs/specs/` is empty, so the run witnesses the text drafted at a9993ff. This run is also §11.1's closure record |
+| Interface compile check | CI `build` run **30736107842**, conclusion **`success`**, SHA **2f29888** — all thirteen lifts elaborate, the four batch-D lifts for the first time; per ADR-0005 a local build is not acceptable evidence. `git diff a9993ff 2f29888 -- docs/specs/` is empty, so the run witnesses the text drafted at a9993ff. CI `build` run **30739442056** at the freeze SHA **3f6accc** is likewise **`success`** with every lift in it (dv_lead fetched it through the GitHub API rather than taking it from the packet, `J-dv_lead-0009` §0), so the **frozen** text carries compile evidence at its own SHA and no witnessing argument is owed for this row either. This run is also §11.1's closure record |
 | Architect signature | `J-architect_docs_lead-0006`; the C-19 and REQ-015 diffs `J-architect_docs_lead-0007` |
-| dv_lead testability countersignature | **SIGNED for this spec** at a9993ff (`J-dv_lead-0008`, WO-0015 Return log §1) — L = 8 / h = 0 / ΔC = 1 re-derived, the five-cycle packet period confirmed, ADR-0008 decisions 1, 2 and 4 discharged at the output and decision 1 correctly not claimed at the input, Q1 answered affirmatively. The batch-D countersignature is granted at the commit carrying the D-1 and D-2 repairs |
-| Frozen at | pending — SHA `<sha>`, gate `docs/gates/P1-spec-freeze-checklist.md` |
+| dv_lead testability countersignature | **`J-dv_lead-0009`** (WO-0018) — batch D **COUNTERSIGNED at 3f6accc**. This spec was SIGNED on its own merits at a9993ff (`J-dv_lead-0008`, WO-0015 Return log §1) — L = 8 / h = 0 / ΔC = 1 re-derived, the five-cycle packet period confirmed, ADR-0008 decisions 1, 2 and 4 discharged at the output and decision 1 correctly not claimed at the input, Q1 answered affirmatively |
+| Frozen at | SHA **3f6accc**, gate `docs/gates/P1-spec-freeze-checklist.md` |
 
 ## 13. Change log
 

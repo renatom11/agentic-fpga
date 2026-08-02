@@ -1,7 +1,9 @@
 # SPEC-M15 — `Ip_eth_tx_64`
 
-- **Status**: DRAFT — batch E. Template-complete; the two evidence rows of §12
-  are what the freeze flip waits on
+- **Status**: **FROZEN** (`P1-spec-freeze`, SHA `3f6accc`) — batch E, dv_lead
+  countersignature `J-dv_lead-0009` (WO-0018), **SIGNED** on this specification's
+  own merits with every number recomputed and reproducing. Changes to §4, §6 or
+  §7 after this point are spec diffs recorded in §13 (SPEC-TEMPLATE rule 7)
 - **Inventory id**: M15 (architecture.md §4) · **Path**:
   `libs/hardcaml_ethernet/src/ip_eth_tx_64.ml`
 - **Datapath role**: transmit
@@ -767,22 +769,21 @@ Item numbers are permanent; a closed item keeps its row (SPEC-TEMPLATE §11).
 
 | # | Item | Status · what a reader assumes meanwhile | Tracked as | Owner | Closes by |
 |---|---|---|---|---|---|
-| 11.1 | **The `ifc_check` compile evidence for this lift is pending**: `ip_eth_tx_64_ifc.ml` is new in this commit and is the first lift to `open!` a lift from a **different batch** (`Arp_ifc`, SPEC-M13 §4.1). | **DEFERRED — the record is written, the run is pending.** Meanwhile a reader assumes it exactly as §4.1 writes it. The cross-batch `open!` is an ordinary intra-library reference — every lift is a module of the single `ifc_check` library — and there is no cycle, because M13's lift references nothing of M15's; the same shape compiled green for batch D's three intra-batch `open!`s at run 30736107842. A divergence is a red CI run on this commit and an editorial diff. | the `Interface compile check` row of §12 | architect_docs_lead, rtl_lead | the batch-E `ifc_check` run |
+| 11.1 | **The `ifc_check` compile evidence for this lift is pending**: `ip_eth_tx_64_ifc.ml` is new in this commit and is the first lift to `open!` a lift from a **different batch** (`Arp_ifc`, SPEC-M13 §4.1). | **CLOSED (WO-0018/WO-0019).** CI `build` run **30739442056** at **3f6accc** reports `success` with this lift in it, and the run's head SHA **is** this specification's commit. The cross-batch `open!` compiled on its first attempt, which settles the declare-once rule's scalability question as well as this row: batch F then did it twice more (`Udp_ip_tx_64_ifc` opened by SPEC-M19 and SPEC-M20). | the `Interface compile check` row of §12 | architect_docs_lead, rtl_lead | closed |
 | 11.2 | **The two-cycle resolution wait is charged to every datagram, including one whose destination is a broadcast address that needs no cache at all.** SPEC-M13 §7 answers every class at Q + 2 by design, so M15 pays two cycles even for the classes REQ-508 and REQ-509 resolve arithmetically. | **DEFERRED — the cost is decided, stated and benchable, and it is deliberately uniform.** A reader implements the two cycles unconditionally. The uniformity is what keeps M15's timing independent of the network configuration (SPEC-M13 §6.1's own argument), and the cost is absorbed by M04's inter-frame gap — §8 item 5's composed run is what demonstrates that rather than assuming it. If a later phase needs the cycles back, the repair is a spec diff to SPEC-M13 §7 and to this §7 **together**, because a class-dependent response would change both, and it would need an ADR for the same reason. | this item; SPEC-M13 §7 | architect_docs_lead | M15's `P1-module-ready` |
-| 11.3 | **REQ-610 is owned in two halves by two modules** — the IPv4 total length here, the "+ 28" arithmetic and the UDP length field at M18 — and requirements.md states it as one requirement. | **DEFERRED — the split is stated in §5 and §10 here, and `traceability.md`'s REQ-610 row lists both modules.** Meanwhile a reader takes `hdr_total_length` as given and asserts only what this specification claims. The item closes when SPEC-M18 (batch F) names its half and disclaims this one, which is the second side the pattern needs; until then the matrix carries a module whose specification is unwritten, which is exactly what the REQ-506 split looked like between batches D and this one. | `traceability.md` REQ-610; SPEC-M12 §11.3's pattern | architect_docs_lead, dv_lead | SPEC-M18 (batch F) |
+| 11.3 | **REQ-610 is owned in two halves by two modules** — the IPv4 total length here, the "+ 28" arithmetic and the UDP length field at M18 — and requirements.md states it as one requirement. | **CLOSED (WO-0019): the second side exists and the two halves tile.** SPEC-M18 §5 names its half — the application's payload length, the "+ 28" and "+ 8" arithmetic and the UDP length field — and disclaims this one in the same words this specification uses for it ("the IPv4 total length and the no-buffering property at this port are M15's and are claimed there, not here"), SPEC-M18 §10's REQ-610 row carries the disclaimer, and `traceability.md`'s REQ-610 row now names a written specification and a section on both sides with no `pending` cell. The check dv_lead set at WO-0018 answer (iv) — that it would not countersign batch F while REQ-610, REQ-807 or REQ-505 stayed one-sided — is what this closure is written against. | `traceability.md` REQ-610; SPEC-M18 §5, §10; SPEC-M12 §11.3's pattern | architect_docs_lead, dv_lead | closed |
 | 11.4 | **M15 discards a datagram that M13 reports**, so REQ-008's "every discard is observable" is satisfied across a module boundary rather than inside one, and §9's conservation equation needs both modules in scope. | **DEFERRED — the pairing is stated, cycle-exact and assertable today.** Meanwhile a bench monitors `error_arp_miss` at M13's port and the absence of a frame at M15's, on the same cycle, and §8 item 4 commissions exactly that. This is the first place in Phase 1 where the two halves of REQ-008 sit in different modules; if the auditor's DV-escape ledger or a sign-off packet needs the equation stated once for the programme rather than per module, the repair is a clause in requirements.md §0.6 and not a strobe here — a second strobe would report one event twice. | this item; requirements.md §0.6 | architect_docs_lead, dv_lead | M15's first `SO-` packet |
 
 ## 12. Freeze record
 
-Filled in at `P1-spec-freeze`. All four rows are required (charter §5); this
-spec is DRAFT.
+Filled in at `P1-spec-freeze`. All four rows are required (charter §5).
 
 | Item | Value |
 |---|---|
-| Interface compile check | pending — CI `build` run `<id>`, conclusion `<success>`, SHA `<sha>`; per ADR-0005 a local build is not acceptable evidence. This run is also §11.1's closure record |
+| Interface compile check | CI `build` run **30739442056**, conclusion **`success`**, SHA **3f6accc** — every lift in the single `ifc_check` library elaborates, this one being the first to `open!` a lift from a different batch (`Arp_ifc`); per ADR-0005 a local build is not acceptable evidence. **The run's head SHA is the specification commit**, so no witnessing argument is owed. This run is also §11.1's closure record |
 | Architect signature | `J-architect_docs_lead-0007` |
-| dv_lead testability countersignature | pending — batch E (SPEC-M14, M15, M16) |
-| Frozen at | pending — SHA `<sha>`, gate `docs/gates/P1-spec-freeze-checklist.md` |
+| dv_lead testability countersignature | **`J-dv_lead-0009`** (WO-0018) — batch E **COUNTERSIGNED at 3f6accc**, this specification **SIGNED**: the 0xF6B4 checksum recomputed halfword by halfword, the 0xFFFF loopback residue confirmed, W − J evaluated for every payload length 1 … 39 against its stated mod-8 classes with no exception, the stall count W − J + 1 = 3 or 4 confirmed term by term, and the 1-cycle latency and 2-cycle resolution wait each checked against their two named events |
+| Frozen at | SHA **3f6accc**, gate `docs/gates/P1-spec-freeze-checklist.md` |
 
 ## 13. Change log
 

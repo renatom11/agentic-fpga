@@ -1,7 +1,10 @@
 # SPEC-M16 — `Ip_complete_64`
 
-- **Status**: DRAFT — batch E. Template-complete; the two evidence rows of §12
-  are what the freeze flip waits on
+- **Status**: **FROZEN** (`P1-spec-freeze`, SHA `3f6accc`) — batch E, dv_lead
+  countersignature `J-dv_lead-0009` (WO-0018), **SIGNED** on this specification's
+  own merits with §6.1's wiring table checked total in both directions. Changes
+  to §4, §6 or §7 after this point are spec diffs recorded in §13
+  (SPEC-TEMPLATE rule 7)
 - **Inventory id**: M16 (architecture.md §4) · **Path**:
   `libs/hardcaml_ethernet/src/ip_complete_64.ml`
 - **Datapath role**: shared/structural (receive-path module **with respect to its
@@ -381,10 +384,28 @@ Anything not listed here is constrained by this specification.
   constants are its children's exactly: from `rx` to `ip_rx_payload` the chain is
   M06 (L = 10, h = 14, ΔC = 3), M08 (L = 8, h = 0, ΔC = 1) and M14 (L = 12,
   h = 20, ΔC = 4), so the word delay across M16's receive ports is **8 cycles**
-  and the front offset is 34 octets. On the transmit side the chain is M15
-  (1 cycle), M09 (0) and M07 (1), so a datagram's first body word reaches `tx`
-  two cycles after M15 emits it. The measurement events are the children's; M16
-  introduces none of its own, because a wire is not a measurement event.
+  and the front offset is 34 octets.
+
+  On the transmit side the chain is M15 (1 cycle), M09 (0) and M07 (1), and the
+  three constants sum to **two cycles from the cycle M15 accepts the frame's
+  first payload word** — not from the cycle M15 emits body word 0 (carry-forward
+  **C-29**, dv_lead; the text this replaces anchored the figure to the wrong
+  event). Written out, with C the cycle M15 accepts the frame's first payload
+  word: M15 emits body word 0 at **C + 1** (SPEC-M15 §7's pinned 1 cycle), M09
+  relays it combinationally so M07 accepts it on that same cycle (SPEC-M09 §7,
+  ΔC = 0), and M07 emits its first output word at **C + 2** (SPEC-M07 §7's
+  1 cycle from the acceptance of its own first payload word). So a datagram's
+  first body word reaches `tx`
+
+  > **one cycle after M15 emits it, and two cycles after M15 accepts the frame's
+  > first payload word.**
+
+  Both readings are stated because a monitor is built from one of them: a monitor
+  measuring M15's `eth_payload` against M16's `tx` asserts **1**, and one
+  measuring from the payload acceptance asserts **2**. The same convention is
+  visible in SPEC-M13 §6.1's REQ-502 table, where M11 offers at cycle 14 and M07
+  outputs at cycle 15. The measurement events are the children's; M16 introduces
+  none of its own, because a wire is not a measurement event.
 
   Consequently M16 consumes **none** of requirements.md §1.1's allocation: the
   3 + 1 + 5 = 9 cycles allocated to `Eth_axis_rx`, `Eth_demux` and
@@ -512,27 +533,30 @@ Item numbers are permanent; a closed item keeps its row (SPEC-TEMPLATE §11).
 
 | # | Item | Status · what a reader assumes meanwhile | Tracked as | Owner | Closes by |
 |---|---|---|---|---|---|
-| 11.1 | **The `ifc_check` compile evidence for this lift is pending**: `ip_complete_64_ifc.ml` is new in this commit and is the widest port record in the programme so far — twelve strobes and seven configuration scalars. | **DEFERRED — the record is written, the run is pending.** Meanwhile a reader assumes it exactly as §4.1 writes it: it declares nothing new, opens only M01's types home, and uses the `[@@deriving hardcaml]` form thirteen green lifts already use, with the three-optional-parameter entry points batch D proved at run 30736107842. A divergence is a red CI run on this commit and an editorial diff. | the `Interface compile check` row of §12 | architect_docs_lead, rtl_lead | the batch-E `ifc_check` run |
-| 11.2 | **Twelve strobes as twelve scalars**, which SPEC-M05 §11.1 raised at six and which recurs here at twice the width; M19 and M20 will carry more still. | **DEFERRED — this specification commits to twelve scalars and nothing downstream is blocked.** A reader wiring M16 today connects twelve named outputs, and every name is normative (requirements.md §12) whichever container later carries it. If batch F adopts a partial-`Status`-record convention at M19 or M20, changing M16 to match is a §4 spec diff plus an ADR, and it renames no strobe. The answer given here is deliberately the same as SPEC-M05's, so that the convention is uniform across wrappers until something forces a change. | SPEC-M05 §11.1; WO for batch F | architect_docs_lead | SPEC-M20 |
-| 11.3 | **The configuration fan-out crosses three wrapper levels and architecture.md §6.4.3 enumerates only the top-level source and the reading module**, not the hop through M19 and M16. §6.4's summary rule now says so explicitly, but the rows themselves still read `M20.cfg_* → M13.cfg_*`. | **DEFERRED — the convention is stated and the hops are computable.** Meanwhile a reader takes §6.4.3's rows as source-and-reader pairs and computes the intermediate hops from architecture.md §4's containment, exactly as §6.4.4 requires for strobes; this specification's §6.1 states M16's own hop explicitly, and SPEC-M19 and SPEC-M20 will state theirs. If a renderer needs the hops enumerated, the repair is a §6.4.3 expansion in architecture.md — about thirty rows — and no port, type or module changes. | architecture.md §6.4; SPEC-M14 §11.4 | architect_docs_lead | SPEC-M20 (batch F) |
-| 11.4 | **REQ-807 is covered in two halves by two modules** — the structural loop here, the XGMII-level observable at M20 — and requirements.md states it as one requirement whose verification column is a system-level test. | **DEFERRED — the split is stated in §10 and in `traceability.md`'s REQ-807 row, which now lists both modules.** Meanwhile a reader runs §8's loop at M16's ports and does **not** claim REQ-807 coverage from it: the preamble, the FCS and the gap are M04's. The item closes when SPEC-M20 (batch F) names its half, which is the second side the two-half pattern needs — the same shape SPEC-M12 §11.3 closed for REQ-506 and SPEC-M15 §11.3 carries for REQ-610. | `traceability.md` REQ-807; SPEC-M12 §11.3's pattern | architect_docs_lead, dv_lead | SPEC-M20 (batch F) |
+| 11.1 | **The `ifc_check` compile evidence for this lift is pending**: `ip_complete_64_ifc.ml` is new in this commit and is the widest port record in the programme so far — twelve strobes and seven configuration scalars. | **CLOSED (WO-0018/WO-0019).** CI `build` run **30739442056** at **3f6accc** reports `success` with this lift in it, and the run's head SHA **is** this specification's commit. The widest record in the batch elaborated on its first attempt, three optional parameters and all. | the `Interface compile check` row of §12 | architect_docs_lead, rtl_lead | closed |
+| 11.2 | **Twelve strobes as twelve scalars**, which SPEC-M05 §11.1 raised at six and which recurs here at twice the width; M19 and M20 will carry more still. | **CLOSED (WO-0019): batch F kept the convention and no partial record was adopted.** SPEC-M19 §4.1 carries **fifteen** strobe scalars (this module's twelve plus M17's two and M18's one) and SPEC-M20 §4.1 is where the twenty-one become a record — one `status` port carrying SPEC-M01's `Status`, assembled once, at the only level at which the enumeration is complete (REQ-804). So the rule across the programme is: **strobes travel as named scalars and are aggregated exactly once, at M20**, which is the answer SPEC-M05 §11.1 gave at six and this row gave at twelve. No strobe is renamed anywhere, and `tools/check_records_vs_appendix.sh` already checks `Status`'s field list against requirements.md §12 in both name and order. | SPEC-M05 §11.1; SPEC-M19 §4.1; SPEC-M20 §4.1 | architect_docs_lead | closed |
+| 11.3 | **The configuration fan-out crosses three wrapper levels and architecture.md §6.4.3 enumerates only the top-level source and the reading module**, not the hop through M19 and M16. §6.4's summary rule now says so explicitly, but the rows themselves still read `M20.cfg_* → M13.cfg_*`. | **CLOSED (WO-0019).** SPEC-M19 §6.1 and SPEC-M20 §6.1 state their own hops in their own wiring tables, exactly as this specification's §6.1 does, so every hop of every configuration field is now written down at the module that performs it even though architecture.md §6.4.3 still tabulates source-and-reader pairs. The convention is stated in §6.4 and the hops are computable from §4's containment; a renderer that wants them enumerated gets a §6.4.3 expansion of about thirty rows and no port, type or module changes. Batch F added exactly one `cfg_` row to §6.4.3 — `M20.cfg_tx_enable → M18.cfg_tx_enable`, SPEC-M18 §4.3 — and renamed none. | architecture.md §6.4; SPEC-M14 §11.4; SPEC-M19 §6.1; SPEC-M20 §6.1 | architect_docs_lead | closed |
+| 11.4 | **REQ-807 is covered in two halves by two modules** — the structural loop here, the XGMII-level observable at M20 — and requirements.md states it as one requirement whose verification column is a system-level test. | **CLOSED (WO-0019): the second side exists and the two halves tile.** SPEC-M20 §8 owns REQ-807's **XGMII-level observable** — the preamble, every ARP field per REQ-502, a valid FCS and a conforming inter-frame gap, decoded at `xgmii_tx` — and SPEC-M20 §10's REQ-807 row disclaims the structural half in the same words this specification uses to disclaim the observable one ("the loop is closed inside M16 and is claimed there, not here"). `traceability.md`'s REQ-807 row names a written specification and a section on both sides with no `pending` cell. A reader still runs §8's loop at M16's ports and still does not claim REQ-807 coverage from it. | `traceability.md` REQ-807; SPEC-M20 §8, §10; SPEC-M12 §11.3's pattern | architect_docs_lead, dv_lead | closed |
 
 ## 12. Freeze record
 
-Filled in at `P1-spec-freeze`. All four rows are required (charter §5); this
-spec is DRAFT.
+Filled in at `P1-spec-freeze`. All four rows are required (charter §5).
 
 | Item | Value |
 |---|---|
-| Interface compile check | pending — CI `build` run `<id>`, conclusion `<success>`, SHA `<sha>`; per ADR-0005 a local build is not acceptable evidence. This run is also §11.1's closure record |
-| Architect signature | `J-architect_docs_lead-0007` |
-| dv_lead testability countersignature | pending — batch E (SPEC-M14, M15, M16) |
-| Frozen at | pending — SHA `<sha>`, gate `docs/gates/P1-spec-freeze-checklist.md` |
+| Interface compile check | CI `build` run **30739442056**, conclusion **`success`**, SHA **3f6accc** — every lift in the single `ifc_check` library elaborates, this one the widest record of the batch (twelve strobes, seven configuration scalars, three optional parameters on both entry points); per ADR-0005 a local build is not acceptable evidence. **The run's head SHA is the specification commit**, so no witnessing argument is owed. This run is also §11.1's closure record |
+| Architect signature | `J-architect_docs_lead-0007`; the C-29 diff of §13 `J-architect_docs_lead-0008` |
+| dv_lead testability countersignature | **`J-dv_lead-0009`** (WO-0018) — batch E **COUNTERSIGNED at 3f6accc**, this specification **SIGNED**: §6.1's wiring table checked total in both directions with no orphan either way, the twelve relayed strobes verified against requirements.md §12's owner column, the receive chain 3 + 1 + 4 = 8 confirmed against 3 + 1 + 5 = 9 allocated, and REQ-807's loop confirmed closed inside this module. Carry-forward **C-29** was raised against §7's transmit anchor and is repaired in §13 below |
+| Frozen at | SHA **3f6accc**, gate `docs/gates/P1-spec-freeze-checklist.md` |
 
 ## 13. Change log
 
-Post-freeze changes only. This spec is DRAFT and has none.
+Post-freeze changes only. Each row cites the ADR that authorised it; a breaking
+interface change is counted against post-freeze churn (charter §6). **No row
+below is breaking**: §4.1's record is byte-for-byte unchanged since the freeze
+SHA, so the `ifc_check` evidence of §12 still witnesses this revision's
+interface, and `tools/check_records_vs_appendix.sh` re-passes on this commit.
 
 | Date | Change | Breaking? | ADR | Journal |
 |---|---|---|---|---|
-| — | — | — | — | — |
+| 2026-08-02 | §7's transmit-chain figure re-anchored: `tx` carries a datagram's first body word **one** cycle after M15 emits it and **two** cycles after M15 accepts the frame's first payload word, with the three children's constants written out cycle by cycle and both readings named so a monitor can be built from either (ledger **C-29**) | no | none — the three constants (M15's 1, M09's 0, M07's 1) are unchanged and correct; only the event they were summed from was wrong, and a §7-built monitor would have asserted 2 where it observes 1 | `J-architect_docs_lead-0008` |

@@ -55,9 +55,16 @@ Run the enforcement self-test: `bash scripts/test_protocol.sh`.
 
 ## Status
 
-**M0 — Org & charter.** The agent org, operating protocol, and enforcement
-machinery are being stood up; no RTL exists yet. Toolchain and first specs
-arrive in M1. Milestone↔phase map: M0 org, M1 toolchain+specs, **M2 = Phase 1,
+**M1 — Toolchain & specifications.** The agent org, operating protocol and
+enforcement machinery are in place (M0, gate `G0`). All **twenty** Phase-1
+module specifications are now written under `docs/specs/modules/`, sixteen of
+them **FROZEN** — batches A and B at `f78766e`, C at `508eea2`, D and E at
+`3f6accc`, each with a green interface-compile CI run and dv_lead's testability
+countersignature; batch F (M17–M20) is drafted and awaiting its own. The first
+RTL exists — `Axi64` and `Crc32_eth`, written from frozen specs — and the rest
+follows the same rule: no module is implemented against a DRAFT specification.
+Gate status and open work orders live in [`tasks/BOARD.md`](tasks/BOARD.md) and
+[`docs/gates/`](docs/gates/). Milestone↔phase map: M0 org, M1 toolchain+specs, **M2 = Phase 1,
 M3 = Phase 2, M4 = Phase 3 (stretch)** — see [`tasks/BOARD.md`](tasks/BOARD.md)
 for the roadmap and open gates. Sponsoring this project? Your duties live in
 [`docs/SPONSOR.md`](docs/SPONSOR.md).
@@ -74,7 +81,9 @@ agents/
 docs/
   adr/                architecture decision records
   gates/              committed gate checklists (signatures = journal refs)
-  specs/              (M1+) frozen module specs, REQ-### requirements
+  specs/              module specs (20/20 written, 16 frozen), REQ-### requirements,
+                      the REQ→spec→test matrix, and ifc_check/ — the scratch
+                      library every spec's §4.1 record is lifted into and compiled
   reports/audit/      auditor findings, DV-escape ledger
   reports/latency/    (M3+) latency characterization
 scripts/              protocol enforcement + self-test
