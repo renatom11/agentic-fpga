@@ -4470,3 +4470,300 @@ for relay of the four architect items.
 - agents/handoffs/WO-0027_attack-plans.md
 - test/attack_plans/AP-ip_eth_rx_64.md
 - test/attack_plans/AP-xgmii_rx_64.md
+
+## [J-dv_lead-0014] 2026-08-02T23:15:00Z | task:WO-0028 | X-9's REQ-001 rule judged as its owner and repaired: CONCUR on the false-FAIL, but the rule was blunt in the other direction too — file-global alias scope and instantiation-time gating both went undetected; per-module transitive rename closure + `.clock()` port maps, 17 fixtures now run in CI; the M03/M04/M05 REQ-001 verdict DEFERRED, not granted
+
+### Trigger
+Orchestrator work order `agents/handoffs/WO-0028_x9-alias-repair.md`, spawn
+short-id `WO-0028/2026-08-02T23:15Z`, fourteenth activation. The programme's
+first tool-vs-RTL dispute: my `tools/check_emitted_verilog.sh` failed all 27
+`always` blocks of the three MAC snapshots at run 30750975120 on REQ-001;
+rtl_lead returned verdict (b) — the emission is correct, the rule is wrong —
+with a refutation built from `word_counter.v` and a recommended two-pass
+closure repair. The protocol's answer is that the tool's owner judges, with
+the disputant's evidence on the record. That is this entry.
+
+### Inputs
+- `agents/charters/dv_lead.md`; `agents/PROTOCOL.md` (§3 packet classes, §4
+  entry grammar, §6 write scopes, §10 independence and evidence rules).
+- `agents/handoffs/WO-0028_x9-alias-repair.md` (the work order).
+- `agents/handoffs/WO-0026_emission-registration.md` at ad3a042, read in full,
+  including rtl_lead's addendum (J-rtl_lead-0004).
+- `tools/check_emitted_verilog.sh` and `tools/dv_checks.sh` at 1045ed8 — mine.
+- `rtl_snapshots/word_counter.v` at 1045ed8 — emitted Verilog, a build
+  product, and the artefact this script exists to parse.
+- `docs/specs/requirements.md` §1, REQ-001 row (requirement text AND
+  verification column — the rule's derivation basis).
+- `.github/workflows/build.yml` at 1045ed8 (read only; the orchestrator's
+  scope) to confirm the determinism step now precedes `DV mechanical checks`.
+- GitHub Actions run **30750975120**, job 91504843378, failed-job log —
+  X-9's own printed output, cited as an externally verifiable reference per
+  §4.1(b).
+- **Independence note (charter §8, PROTOCOL §10)**: I read no `libs/**` source
+  for this unit of work and needed none. rtl_lead's `grep Reg_spec` citations
+  over `libs/hardcaml_ethernet/src/*.ml` are recorded in its addendum; I read
+  the addendum, I did not open the files, and §3 of the packet states why I
+  decline to rest a verdict on them. No test is derived from anything here —
+  AP-M03 was written from spec and committed earlier, at df3e474.
+
+### Reasoning
+**Framing first.** The temptation in a tool-vs-RTL dispute is to pick a side.
+Both opening positions were incomplete. rtl_lead said the rule was too strict.
+It was also, simultaneously, too weak — and the second fact is the one that
+should worry a verification lead, because a false FAIL announces itself in red
+and a false PASS does not.
+
+**Judging the diagnosis (deliverable 1).** I refused to settle this on
+rtl_lead's source citations, and I did not have to. Two committed/verifiable
+records were enough.
+
+From `word_counter.v`, in the tree since G0: the emitter wire-copies the input
+port — `input clock; wire _6; assign _6 = clock; always @(posedge _6)`. So
+`always @(posedge clock)` is text this emitter does not produce, on any module,
+ever. A REQ-001 check must therefore resolve the copy or it cannot witness the
+requirement at all. That means the old rule's PASS on `word_counter` rested
+entirely on two properties of that one 13-signal module — the copy is one hop,
+and the `assign` sits above its use — and **neither is a property of
+anything**. Verilog continuous assignments are order-independent, so the
+emitter owes the reader no such ordering; nothing bounds the copy depth to one.
+A rule whose verdict depends on unspecified emitter statement order is not a
+sound witness for an invariant, whichever way it lands on a given day. That
+argument is complete without knowing which of rtl_lead's two hypotheses
+(DEPTH, ORDER) actually bit — which is fortunate, because ADR-0005 still blocks
+a local build (I checked: the `fpga` switch holds `dune` and no `hardcaml`), so
+the emitted text was unavailable to me and the three `.v` files were still
+unpromoted at 1045ed8. I resolved not to guess: the repair is mode-agnostic by
+construction and both hypotheses are pinned as passing fixtures, so the
+question never has to be answered.
+
+From the run-30750975120 log — X-9's own output, not rtl_lead's account of it —
+four things I verified myself: every finding is a single-term `posedge` (no
+negedge, no multi-term list anywhere, so the two halves of REQ-001 that need no
+alias resolution are clean); `xgmii_rx_64` has exactly one distinct edge signal
+`_20` across all 9 blocks and `xgmii_tx_64` exactly one `_37` across all 18,
+which is the signature of one `Reg_spec` per module and not of two domains;
+`eth_mac_10g.v` reports the union and no third edge signal of its own; and
+**the alias identities are preserved across files** — `_20` in the standalone
+`xgmii_rx_64.v` is `_20` in `eth_mac_10g.v`, `_37` likewise. That last one is
+the interesting one: had the parent transformed the clock on the way in, or
+had `create`-built and `hierarchical`-built bodies differed, the numbering
+would have diverged. It did not. That is independent textual support for
+rtl_lead's "the construction path is irrelevant" claim, arrived at without
+taking its word for anything.
+
+**Where I went beyond the recommendation.** rtl_lead's two-pass closure is
+correct and I adopted it. But I do not accept a repair to my own rule on the
+strength of the disputant's design, so I attacked the rule myself, and found
+two holes that the recommendation as stated would have left open — both of
+them teeth-losses, both live on the very file under dispute:
+
+1. **File-global alias scope.** The old table was built per FILE. `_20` in one
+   module laundered `_20` in the next. `eth_mac_10g.v` carries four modules.
+   Scoping the closure per module is strictly stricter, and it is the single
+   change that converts the repair from a loosening into a tightening.
+2. **Instantiation-time gating.** A child's body reads perfectly clean against
+   its own `clock` port even when the parent feeds it `clock & en`. A
+   body-only rule cannot see clock gating at all when the gate sits at the
+   instance boundary — which is precisely where a real design would put it.
+   The repaired rule resolves `.clock(<expr>)` in the parent by the same
+   closure. X-9 never had this check class.
+
+I confirmed both empirically rather than by inspection: I reconstructed the
+resolver as it stood at 1045ed8 and ran it against fixtures for both. It
+reported CLEAN on both gated-clock files. That is the finding I would have had
+to record against myself sooner or later; better now, in the open, than at a
+`P1-module-ready` signature.
+
+**Design choices inside the repair, and what was rejected.**
+- *Pure renames only*, `assign <wire> = <wire>;`. A gate, a concatenation, a
+  bit-select, a multi-line RHS and a register output are all non-renames and
+  never enter the relation. Rejected the looser alternative of "follow any
+  single-identifier occurrence in the RHS", which would have let
+  `assign _20 = clock & en;` resolve through `clock` — the exact thing REQ-001
+  exists to catch. The bit-select exclusion is deliberately conservative: a
+  clock reaching a register through a select is strange enough that a FAIL
+  naming the expression is the right default.
+- *Rooted at the module's own `clock` INPUT PORT*, never at the bare name. A
+  module with no `clock` port resolves nothing; so does one where `clock` is
+  itself assigned. Both guards are pinned by fixtures.
+- *Chain-cycle and depth-128 guards*, so a pathological emission terminates
+  with a stated reason instead of hanging.
+- *Findings now print the module, the resolution chain and the offending
+  driver expression.* This is not cosmetic. The original red was 27 identical
+  lines saying `_20 is not clock` against a file that had never been promoted,
+  and that opacity — not the false positive itself — is what turned a one-line
+  fix into a two-agent dispute costing two work orders. The next red on this
+  rule will be diagnosable from the log alone.
+- Rejected: making the rule advisory, or bootstrap-allowing the MAC modules
+  while the dispute settled. Both would have shipped a REQ-001 that polices
+  twenty modules for the rest of Phase 1 while proving nothing. The work order
+  said make it right, not lenient, and a temporarily-blind invariant check is
+  the worst of both.
+
+**Why a self-test, and why it runs in CI.** `rtl_snapshots/` will — if the
+design is right — never contain a gated clock, a second domain or a negedge.
+So nothing in this repository can ever demonstrate that REQ-001 still CATCHES
+one; only fixtures can. A rule whose teeth are never exercised is a rule that
+can be blunted by a well-meaning simplification with nothing going red — which
+is, structurally, exactly how this rule came to be trusted on a sample of one
+module in the first place. Eleven of the seventeen fixtures are negative and
+each asserts the *reason* for the finding, not merely a non-zero exit, so a
+case cannot pass by failing for the wrong cause (one of them caught me: my
+"clock is a local wire" fixture fired the no-port guard rather than the
+re-driven-clock guard, so I split it into two cases and now both guards are
+pinned). It needs no snapshot and no OCaml toolchain, so it is one of the very
+few DV artefacts that runs in the dev container under ADR-0005 — and its
+verdict is independent of what `generate.exe` produced on any given run.
+
+**Why the module verdict is DEFERRED (deliverable 3's shape, without a
+dissent).** I concur the checker was broken; I decline to ratify "the netlist
+is REQ-001-clean" on `grep Reg_spec` over `libs/**`. That is the designer
+reading the designer's source, and it is not the artefact REQ-001 nominates —
+its own verification column says "the emitted Verilog snapshot". What the
+emission has witnessed is listed above and is strongly consistent with one
+clock domain. What remains unwitnessed is the one thing the broken rule could
+never report: whether `_20` and `_37` are pure renames of `clock` or something
+derived. The repaired rule decides that mechanically on the next run over the
+promoted text. Until it is green, nothing cites it — no SO-, no gate
+signature. This is not obstinacy: it costs one CI run, and it keeps the
+programme's rule that a verdict is a machine's output on a committed artefact
+rather than an agreement between two agents.
+
+**One spec-text finding, routed as an editorial request.** REQ-001's
+verification column asks that each edge expression "names `clock`". No
+Hardcaml emission can literally satisfy that, as `word_counter.v` has shown
+since G0. A checker implementing the column word-for-word is exactly how a
+conformant design came to be failed. The column should describe resolution
+through the emitter's port copies, following pure renames only, plus the
+`.clock()` port-map clause. That goes to architect_docs_lead via the
+orchestrator; `docs/**` is not mine and REQ-001's obligation does not change.
+
+### Actions
+- Judged rtl_lead's WO-0026 addendum as the tool's owner: CONCUR on the tool
+  defect, with independent verification and two additions of my own.
+- Rewrote the REQ-001 check in `tools/check_emitted_verilog.sh` as
+  `req001_scan()`: per module, two passes (collect then judge), transitive
+  closure over pure renames only, rooted at the module's `clock` input port,
+  extended to instantiated `.clock()` port maps; cycle and depth guards;
+  findings report module, chain and driver expression.
+- Added `--self-test` to the same script: 17 inline fixtures (6 must be clean,
+  11 must be flagged with a named reason), needing no snapshot and no
+  toolchain.
+- Wired the self-test into `tools/dv_checks.sh` as its first step, ahead of the
+  two artefact checks, with the reasoning recorded in the file.
+- Updated both scripts' header commentary: what the old rule assumed, why
+  neither assumption is a property of anything, and what the six-clause
+  replacement is.
+- Wrote the WO-0028 Return log with the verdict, the old-vs-new teeth table,
+  the deferral and the editorial request.
+- Ran the reconstructed 1045ed8 resolver against the new fixtures to
+  demonstrate the teeth increase empirically.
+- Staged nothing outside `tools/**` and `agents/handoffs/**`. No `bin/**`,
+  `libs/**`, `docs/**`, `rtl_snapshots/**`. `git status` shows exactly the
+  three files listed below. No local RTL was generated (impossible; see
+  Evidence).
+
+### Evidence
+All commands from a repo checkout at this commit. Local `awk` is **mawk
+1.3.4**, which is also `ubuntu-latest`'s default `awk`, so these results are
+representative of CI rather than of a gawk-only dialect.
+
+1. `bash tools/check_emitted_verilog.sh --self-test` →
+   `17 self-test case(s) run, 0 failure(s)`, exit 0. The 17 named cases:
+   one-hop copy above use (the `word_counter` shape); two-hop chain (DEPTH);
+   copy below its use (ORDER); three-hop chain out of order below its use;
+   hierarchical parent fanning the port unmodified; combinational module with
+   no clock port and no edge (the `crc32_eth` shape) — all six clean. Flagged:
+   `assign _20 = clock & en;`; a gate reached through a rename chain; an alias
+   renaming a second input port; an edge on a register output (a divider);
+   `negedge`; two edge terms in one list; a cross-module `_20` alias leak; a
+   clock gated at the instantiation with a clean child body; an edge in a
+   module with no clock port; a local wire named `clock`; a clock port that is
+   also assigned inside the module.
+2. `bash tools/check_emitted_verilog.sh` →
+   `4 check(s) run, 0 failure(s), 4 pending`, exit 0, with
+   `PASS REQ-001 single clock domain: all 1 edge expression(s) and 1
+   instantiated .clock() connection(s) resolve to the clock port`. The
+   `.clock()` count is `word_counter_top`'s connection — checked here for the
+   first time in the programme.
+3. `bash tools/dv_checks.sh` → self-test 17/0, then
+   `23 check(s) run, 0 failure(s)` (C-9) and
+   `4 check(s) run, 0 failure(s), 4 pending` (X-9);
+   `dv_checks: all checks passed`, exit 0.
+4. **Teeth comparison, reproducible.** The 1045ed8 resolver, reconstructed
+   verbatim from `git show 1045ed8:tools/check_emitted_verilog.sh` and run
+   against four fixtures (the fixtures are cases 2, 3, 13 and 14 of the
+   committed self-test; the scratch harness is not committed and its files are
+   ephemeral):
+   - DEPTH (`assign _19 = clock; assign _20 = _19;`) → old: FAIL (false
+     positive). New: clean.
+   - ORDER (`always @(posedge _20)` above `assign _20 = clock;`) → old: FAIL
+     (false positive). New: clean.
+   - Cross-module leak (module `a` renames `_20 = clock`, module `b` gates
+     `_20 = clock & en`) → old: **CLEAN, no finding** — a gated clock passed.
+     New: FAIL, "`_20` is driven by `clock & en`, which is not a rename of
+     clock".
+   - Instantiation gating (parent `assign _6 = clock & en;` … `.clock(_6)`,
+     child body clean) → old: **CLEAN, no finding**. New: FAIL, "instantiated
+     .clock() signal `_6` does not resolve to clock".
+5. Run **30750975120** (job 91504843378), conclusion `failure`: the log's X-9
+   section lists 27 findings, all single-term `posedge`, 9 on `_20` and 18 on
+   `_37` in `eth_mac_10g.v`, 9 on `_20` in `xgmii_rx_64.v`, 18 on `_37` in
+   `xgmii_tx_64.v`. Externally verifiable per §4.1(b). The emitted `.v` files
+   of that run are ephemeral CI-workspace state and were never promoted.
+6. **Negative capability, stated rather than implied**: I could NOT regenerate
+   the MAC snapshots locally. `ls /root/.opam/fpga/lib` returns `dune`,
+   `stublibs`, `toplevel` — no `hardcaml` — so ADR-0005's blocker holds and
+   the emitted MAC text remains unread by me. Nothing in this entry rests on
+   it.
+7. `git status --short` → exactly `M tools/check_emitted_verilog.sh` and
+   `M tools/dv_checks.sh` before the packet and journal edits; no untracked
+   file anywhere, in particular none under `rtl_snapshots/`.
+
+### Outcome
+DoD **met**. Deliverable 1 (judge): CONCUR on the tool defect, with my own
+verification from the CI log and `word_counter.v` rather than from rtl_lead's
+source citations, plus the stronger ground that a rule contingent on
+unspecified statement order cannot witness an invariant in either direction.
+Deliverable 2 (repair): delivered with teeth demonstrated *increased* — two
+gated-clock classes that the old rule passed silently now FAIL, and eleven
+negative fixtures run in CI on every push. Deliverable 3 (dissent): not
+exercised against rtl_lead; nothing is owed back to it. One editorial change
+request is owed by architect_docs_lead (REQ-001's verification column), routed
+via the orchestrator, non-blocking.
+
+**Carried forward, and it is the point of the deferral**: the REQ-001 verdict
+on M03/M04/M05 is not granted here. It is granted by the repaired check
+running green on the promoted `.v` files. Handoff:
+`agents/handoffs/WO-0028_x9-alias-repair.md` Return log (this packet), to the
+orchestrator.
+
+### Open-questions
+- **The next run decides M03/M04/M05's REQ-001.** If X-9 goes red again, the
+  finding will name the module, the chain and the driver expression. A driver
+  that is a gate or a derived signal is a genuine violation and becomes a
+  `BUG-` against the module; a driver shape I have not modelled (a bit-select
+  copy, say) is a second tool iteration and mine. Either outcome is one run
+  away and self-explaining, which the first red was not.
+- **Editorial, architect_docs_lead**: REQ-001's verification column asks for
+  text no Hardcaml emission can produce ("edge expression names `clock`").
+  Suggested replacement wording is in §5 of the WO-0028 Return log. One row;
+  no change to REQ-001's normative obligation.
+- **X-9 remains uncovered by any anchor for its Verilog parsing.** The whole
+  script is coupled to Hardcaml's emitter format by design, and the self-test
+  now pins the REQ-001 clause against *my model* of that format — not against
+  the emitter. The 17 fixtures are hand-written Verilog, so if my model of the
+  emission is wrong in a way `word_counter.v` does not reveal, the self-test
+  will happily agree with me. The real anchor is a green run over promoted
+  snapshots from a module with hundreds of signals; that is what the next run
+  supplies, and until then this rule's evidential status is "internally
+  consistent", not "anchored". Recorded so it is not mistaken for the latter.
+- Bootstrap allowance `word_counter word_counter_top` is still ACTIVE and must
+  be empty at `P1-module-ready` (unchanged by this work order).
+- The machinery gaps X-1, X-3 and X-5/X-9 named at J-dv_lead-0013 remain the
+  blocking work for the first real benches; nothing here touched them.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0028_x9-alias-repair.md
+- tools/check_emitted_verilog.sh
+- tools/dv_checks.sh

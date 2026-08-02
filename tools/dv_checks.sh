@@ -12,7 +12,10 @@
 #   tools/check_records_vs_appendix.sh   C-9: Status vs §12, Config vs §9.1,
 #                                        each spec §4.1 vs its ifc_check lift,
 #                                        the DV strobe list vs §12
-#   tools/check_emitted_verilog.sh       X-9: REQ-001, REQ-017, REQ-018,
+#   tools/check_emitted_verilog.sh       X-9 self-test first (REQ-001 fixtures,
+#                                        WO-0028: the negative cases a clean
+#                                        snapshot can never exercise), then
+#                                        X-9: REQ-001, REQ-017, REQ-018,
 #                                        REQ-306, REQ-808, REQ-903 (the last
 #                                        landed at WO-0012, once C-8's closure
 #                                        gave its M01 half a determinable
@@ -50,6 +53,22 @@ set -uo pipefail
 
 HERE="$(cd "$(dirname "$0")" && pwd)"
 status=0
+
+# The X-9 self-test runs FIRST and separately (WO-0028). The checks below judge
+# committed artefacts, and rtl_snapshots/ will — if the design is right — never
+# contain a gated clock, a second clock domain or a negedge. So nothing in this
+# repository can demonstrate that REQ-001 still CATCHES those; only fixtures
+# can, and a rule whose teeth are never exercised is a rule that can be blunted
+# by a well-meaning simplification without anything going red. Running it here
+# makes that a build failure. It needs no snapshot, so its verdict is
+# independent of what generate.exe produced this run.
+printf '=== check_emitted_verilog.sh --self-test ===\n'
+if bash "$HERE/check_emitted_verilog.sh" --self-test; then
+  printf '=== self-test: OK ===\n\n'
+else
+  printf '=== self-test: FAILED ===\n\n'
+  status=1
+fi
 
 for script in check_records_vs_appendix.sh check_emitted_verilog.sh; do
   printf '=== %s ===\n' "$script"

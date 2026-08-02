@@ -11,7 +11,11 @@
 # nothing under libs/.
 #
 # Checks implemented (WO-0009 deliverable 5; REQ-903 added at WO-0012):
-#   REQ-001  every edge expression in the emitted Verilog names `clock`
+#   REQ-001  every edge expression resolves to the module's own clock input
+#            port through the emitter's port-copy renames, and every
+#            instantiated `.clock()` connection does too (repaired at WO-0028;
+#            see req001_scan below for why the original rule was unsound in
+#            both directions, and `--self-test` for the cases that pin it)
 #   REQ-017  nic_top's only wire-side ports are the four XGMII ports
 #   REQ-018  no vendor primitive (whitelist), no device constraint file,
 #            the XGMII link partner lives under test/
@@ -53,7 +57,16 @@
 # Verilog, and if the emitter's format changes the script must be updated with
 # it. REQ-902's determinism step is what keeps that format stable.
 #
-# Usage: tools/check_emitted_verilog.sh
+# Usage: tools/check_emitted_verilog.sh              inspect rtl_snapshots/
+#        tools/check_emitted_verilog.sh --self-test  run the REQ-001 fixtures
+#
+# The self-test needs no snapshot and no toolchain: it drives req001_scan over
+# synthetic modules, six that must come back clean and eleven that must be
+# flagged. It exists because a checker's NEGATIVE cases are otherwise
+# unobservable — rtl_snapshots/ will (correctly) never contain a gated clock,
+# so nothing in this repository would ever demonstrate that the rule still
+# catches one. dv_checks.sh runs it on every push for exactly that reason.
+#
 # Exit:  0 all applicable checks pass, 1 otherwise. Checks whose subject does
 #        not exist yet print PENDING and do not fail — but they are counted and
 #        listed, because a check that silently disappears is worse than one
@@ -91,6 +104,594 @@ in_list() { # in_list needle "space separated haystack"
   for item in $2; do [ "$item" = "$1" ] && return 0; done
   return 1
 }
+
+# --------------------------------------------------------- REQ-001 edge scanner
+# req001_scan <file>... — prints one line per finding, nothing when clean.
+#
+# WHY THIS IS NOT A ONE-LINE GREP (WO-0028; supersedes the WO-0009 resolver).
+#
+# REQ-001's verification column asks that "every `always @(posedge …)` edge
+# expression names `clock`". Hardcaml's Verilog backend never emits that text:
+# it wire-copies EVERY input port and drives the logic from the copy, so the
+# literal emission is `assign _6 = clock;` … `always @(posedge _6)`. The
+# committed `rtl_snapshots/word_counter.v` has shown exactly that since G0.
+# The check therefore has to resolve the copy before it can witness the
+# requirement at all.
+#
+# The original resolver did that in a single awk pass with a one-level table,
+# and passed on word_counter. Run 30750975120 failed all 27 always blocks of
+# the three MAC snapshots. Two of the original resolver's assumptions are not
+# properties of anything:
+#
+#   * DEPTH — one hop. Nothing bounds the emitter to a single copy.
+#   * ORDER — the `assign` precedes its use. Verilog continuous assignments are
+#     order-independent, so the emitter owes the reader no such ordering; on
+#     word_counter it happened to hold, which is a coincidence of that module,
+#     not a rule the check may lean on.
+#
+# A rule whose verdict depends on unspecified statement order is not a sound
+# witness for an invariant, whichever way it lands. So the scan is now:
+#
+#   1. per MODULE, not per file — `_20` in one module is not `_20` in the next,
+#      and the old file-global table let a rename in module A whitewash an edge
+#      in module B (self-test case "cross-module alias leak" is that regression);
+#   2. two passes — every rename in the module is collected before any edge is
+#      judged, so order cannot matter;
+#   3. transitive — the rename relation is followed to its root, so depth
+#      cannot matter;
+#   4. renames ONLY — `assign <wire> = <wire>;` and nothing else. A gate, a
+#      concatenation, a bit-select, a multi-line RHS or a register output is not
+#      a rename and never enters the relation, so `assign _20 = clock & en;`
+#      still FAILs. This is where REQ-001's "no gated clocks, no derived clocks"
+#      is actually enforced, and the self-test pins it;
+#   5. rooted at the module's own `clock` INPUT PORT — a module with no `clock`
+#      port, or one where `clock` is itself assigned inside the module, resolves
+#      nothing and FAILs;
+#   6. extended to instantiation port maps — `.clock(<expr>)` must resolve in
+#      the PARENT the same way. A parent that gates the clock on the way into a
+#      child would otherwise be invisible: the child body reads clean against
+#      its own port. The old rule could not see this class at all.
+#
+# Findings name the module and print the resolution chain and the offending
+# driver expression, because the diagnosis cost of the original FAIL — a bare
+# "_20 is not clock", 27 times, with the emitted file unpromoted — is what made
+# this a two-agent dispute instead of a one-line fix.
+req001_scan() {
+  awk '
+    function trim(s) { sub(/^[ \t]+/, "", s); sub(/[ \t]+$/, "", s); return s }
+
+    function reset_module() {
+      split("", body); split("", drv); split("", expr)
+      nbody = 0; has_clock_port = 0; clock_driven = 0
+      modname = "(outside any module)"
+    }
+
+    # Follow the rename relation from sig to its root. Sets the globals
+    # `chain` (the resolution path, for the report) and `why` (the reason it
+    # did not resolve). Returns 1 only when the root is the module clock port.
+    function resolve(sig,   cur, hops, seen) {
+      chain = sig; why = ""
+      if (!has_clock_port) {
+        why = "module " modname " declares no clock input port"; return 0
+      }
+      if (clock_driven) {
+        why = "clock is assigned inside module " modname ", so it is not the input port"
+        return 0
+      }
+      cur = sig
+      for (hops = 0; hops < 128; hops++) {
+        if (cur == "clock") return 1
+        if (cur in seen) { why = "rename cycle at " cur; return 0 }
+        seen[cur] = 1
+        if (cur in drv) { cur = drv[cur]; chain = chain " -> " cur; continue }
+        if (cur in expr) {
+          why = cur " is driven by `" expr[cur] "`, which is not a rename of clock"
+        } else {
+          why = cur " has no driver in module " modname
+        }
+        return 0
+      }
+      why = "rename chain deeper than 128 hops"
+      return 0
+    }
+
+    function report(line, msg) {
+      printf "%s [%s]: %s   (%s)\n", FILENAME, modname, line, msg
+    }
+
+    # Pass 2 over one module: judge every edge expression and clock port map
+    # against the rename closure collected in pass 1.
+    function flush_module(   i, line, tmp, n, sig, rest, q, arg) {
+      for (i = 1; i <= nbody; i++) {
+        line = body[i]
+        if (line ~ /posedge|negedge/) {
+          if (line ~ /negedge/) { report(line, "negedge in an edge position"); continue }
+          tmp = line
+          n = gsub(/posedge|negedge/, "&", tmp)
+          if (n > 1) { report(line, "more than one edge term"); continue }
+          if (match(line, /posedge[ \t]+[A-Za-z_][A-Za-z0-9_]*/)) {
+            sig = substr(line, RSTART, RLENGTH)
+            sub(/posedge[ \t]+/, "", sig)
+            if (!resolve(sig))
+              report(line, "edge signal " sig " does not resolve to clock: " why \
+                           "  [chain: " chain "]")
+          } else {
+            report(line, "unparsed edge expression")
+          }
+        } else if (match(line, /\.clock[ \t]*\(/)) {
+          rest = substr(line, RSTART + RLENGTH)
+          q = index(rest, ")")
+          if (q == 0) { report(line, "unparsed .clock() port connection"); continue }
+          arg = trim(substr(rest, 1, q - 1))
+          if (arg !~ /^[A-Za-z_][A-Za-z0-9_]*$/) {
+            report(line, "instantiated .clock() is driven by `" arg "`, not a plain signal")
+          } else if (!resolve(arg)) {
+            report(line, "instantiated .clock() signal " arg " does not resolve to clock: " \
+                         why "  [chain: " chain "]")
+          }
+        }
+      }
+    }
+
+    BEGIN { reset_module() }
+
+    FNR == 1 && NR > 1 { if (nbody > 0) flush_module(); reset_module() }
+
+    /^module[ \t]+[A-Za-z_][A-Za-z0-9_]*/ {
+      if (nbody > 0) flush_module()
+      reset_module()
+      modname = $2
+      sub(/\(.*$/, "", modname)
+      next
+    }
+
+    /^endmodule/ { if (nbody > 0) flush_module(); reset_module(); next }
+
+    # Pass 1: buffer the module body and collect its rename relation.
+    {
+      nbody++; body[nbody] = $0
+
+      if ($0 ~ /^[ \t]*input[ \t]/) {
+        d = $0
+        sub(/^[ \t]*input[ \t]+/, "", d)
+        sub(/\[[^]]*\][ \t]*/, "", d)
+        sub(/[ \t]*;.*$/, "", d)
+        if (trim(d) == "clock") has_clock_port = 1
+      } else if ($0 ~ /^[ \t]*assign[ \t]+[A-Za-z_][A-Za-z0-9_]*[ \t]*=/) {
+        lhs = $0
+        sub(/^[ \t]*assign[ \t]+/, "", lhs)
+        sub(/[ \t]*=.*$/, "", lhs)
+        lhs = trim(lhs)
+        rhs = substr($0, index($0, "=") + 1)
+        if (lhs == "clock") clock_driven = 1
+        if (rhs ~ /;[ \t]*$/) {
+          sub(/;[ \t]*$/, "", rhs)
+          rhs = trim(rhs)
+          expr[lhs] = rhs
+          # THE teeth: only a bare identifier is a rename. Anything else — a
+          # gate, a concatenation, a bit-select — stays out of the relation.
+          if (rhs ~ /^[A-Za-z_][A-Za-z0-9_]*$/) drv[lhs] = rhs
+        } else {
+          expr[lhs] = trim(rhs) " …"   # continued below; never a rename
+        }
+      }
+    }
+
+    END { if (nbody > 0) flush_module() }
+  ' "$@"
+}
+
+# ------------------------------------------------------------ REQ-001 self-test
+# `tools/check_emitted_verilog.sh --self-test` — fixtures, not snapshots, so the
+# NEGATIVE cases are executable. Every fixture below is a claim about what
+# REQ-001 must and must not accept; dv_checks.sh runs them on every push, so a
+# future "simplification" of the resolver that re-admits a gated clock is a red
+# build rather than a silent loss of teeth.
+st_dir=""
+st_total=0
+
+st_case() { # st_case pass|fail <name> <substring the finding must contain>; fixture on stdin
+  local expect="$1" name="$2" want="$3" f out
+  st_total=$((st_total + 1))
+  f="$st_dir/case_$st_total.v"
+  cat > "$f"
+  out=$(req001_scan "$f")
+  if [ "$expect" = pass ]; then
+    if [ -z "$out" ]; then pass "self-test: $name — clean, as required"; return 0; fi
+    fail "self-test: $name — expected NO finding, got one (false positive):"
+    printf '%s\n' "$out" | sed 's/^/         /'
+    return 1
+  fi
+  if [ -z "$out" ]; then
+    fail "self-test: $name — expected a REQ-001 finding, got none (the rule lost its teeth)"
+    return 1
+  fi
+  if [ -n "$want" ] && ! printf '%s' "$out" | grep -qF -- "$want"; then
+    fail "self-test: $name — flagged, but not for the expected reason ('$want'):"
+    printf '%s\n' "$out" | sed 's/^/         /'
+    return 1
+  fi
+  pass "self-test: $name — flagged, as required"
+}
+
+selftest() {
+  st_dir=$(mktemp -d) || { fail "self-test: mktemp failed"; return 1; }
+
+  # ---------------------------------------------------------------- positives
+  st_case pass "one-hop port copy, assign above its use (the word_counter shape)" '' <<'FIXTURE'
+module m (
+    clock,
+    q
+);
+    input clock;
+    output q;
+    wire _6;
+    reg _11;
+    assign _6 = clock;
+    always @(posedge _6) begin
+        _11 <= 1'b1;
+    end
+    assign q = _11;
+endmodule
+FIXTURE
+
+  st_case pass "two-hop rename chain (the DEPTH case the old resolver missed)" '' <<'FIXTURE'
+module m (
+    clock,
+    q
+);
+    input clock;
+    output q;
+    wire _19;
+    wire _20;
+    reg _11;
+    assign _19 = clock;
+    assign _20 = _19;
+    always @(posedge _20) begin
+        _11 <= 1'b1;
+    end
+    assign q = _11;
+endmodule
+FIXTURE
+
+  st_case pass "port copy BELOW its use (the ORDER case the old resolver missed)" '' <<'FIXTURE'
+module m (
+    clock,
+    q
+);
+    input clock;
+    output q;
+    wire _20;
+    reg _11;
+    always @(posedge _20) begin
+        _11 <= 1'b1;
+    end
+    assign _20 = clock;
+    assign q = _11;
+endmodule
+FIXTURE
+
+  st_case pass "three-hop chain declared out of order, below its use" '' <<'FIXTURE'
+module m (
+    clock,
+    q
+);
+    input clock;
+    output q;
+    reg _11;
+    always @(posedge _22) begin
+        _11 <= 1'b1;
+    end
+    assign _22 = _21;
+    assign _20 = clock;
+    assign _21 = _20;
+    assign q = _11;
+endmodule
+FIXTURE
+
+  st_case pass "hierarchical parent fans the clock port unmodified into a child" '' <<'FIXTURE'
+module child (
+    clock,
+    q
+);
+    input clock;
+    output q;
+    wire _6;
+    reg _11;
+    assign _6 = clock;
+    always @(posedge _6) begin
+        _11 <= 1'b1;
+    end
+    assign q = _11;
+endmodule
+module parent (
+    clock,
+    q
+);
+    input clock;
+    output q;
+    wire _6;
+    wire _10;
+    assign _6 = clock;
+    child
+        the_child
+        ( .clock(_6),
+          .q(_10) );
+    assign q = _10;
+endmodule
+FIXTURE
+
+  st_case pass "combinational module: no clock port, no edge (the crc32_eth shape)" '' <<'FIXTURE'
+module comb (
+    d,
+    q
+);
+    input [7:0] d;
+    output [7:0] q;
+    wire [7:0] _3;
+    assign _3 = d ^ 8'b10101010;
+    assign q = _3;
+endmodule
+FIXTURE
+
+  # ---------------------------------------------------------------- negatives
+  st_case fail "GATED clock: assign _20 = clock & en;" "not a rename of clock" <<'FIXTURE'
+module m (
+    clock,
+    en,
+    q
+);
+    input clock;
+    input en;
+    output q;
+    wire _20;
+    reg _11;
+    assign _20 = clock & en;
+    always @(posedge _20) begin
+        _11 <= 1'b1;
+    end
+    assign q = _11;
+endmodule
+FIXTURE
+
+  st_case fail "gated clock reached through a rename chain" "not a rename of clock" <<'FIXTURE'
+module m (
+    clock,
+    en,
+    q
+);
+    input clock;
+    input en;
+    output q;
+    reg _11;
+    assign _19 = clock & en;
+    assign _20 = _19;
+    always @(posedge _20) begin
+        _11 <= 1'b1;
+    end
+    assign q = _11;
+endmodule
+FIXTURE
+
+  st_case fail "SECOND clock domain: alias renames a different input port" "does not resolve to clock" <<'FIXTURE'
+module m (
+    clock,
+    clock2,
+    q
+);
+    input clock;
+    input clock2;
+    output q;
+    wire _20;
+    reg _11;
+    assign _20 = clock2;
+    always @(posedge _20) begin
+        _11 <= 1'b1;
+    end
+    assign q = _11;
+endmodule
+FIXTURE
+
+  st_case fail "DERIVED clock: edge on a register output (a divider)" "has no driver" <<'FIXTURE'
+module m (
+    clock,
+    q
+);
+    input clock;
+    output q;
+    wire _6;
+    reg _20;
+    reg _11;
+    assign _6 = clock;
+    always @(posedge _6) begin
+        _20 <= ~_20;
+    end
+    always @(posedge _20) begin
+        _11 <= 1'b1;
+    end
+    assign q = _11;
+endmodule
+FIXTURE
+
+  st_case fail "negedge on an otherwise well-resolved alias" "negedge" <<'FIXTURE'
+module m (
+    clock,
+    q
+);
+    input clock;
+    output q;
+    wire _6;
+    reg _11;
+    assign _6 = clock;
+    always @(negedge _6) begin
+        _11 <= 1'b1;
+    end
+    assign q = _11;
+endmodule
+FIXTURE
+
+  st_case fail "two edge terms in one sensitivity list" "more than one edge term" <<'FIXTURE'
+module m (
+    clock,
+    rst,
+    q
+);
+    input clock;
+    input rst;
+    output q;
+    wire _6;
+    wire _7;
+    reg _11;
+    assign _6 = clock;
+    assign _7 = rst;
+    always @(posedge _6 or posedge _7) begin
+        _11 <= 1'b1;
+    end
+    assign q = _11;
+endmodule
+FIXTURE
+
+  st_case fail "CROSS-MODULE alias leak: _20 renames clock in a, is gated in b" "not a rename of clock" <<'FIXTURE'
+module a (
+    clock,
+    q
+);
+    input clock;
+    output q;
+    wire _20;
+    reg _11;
+    assign _20 = clock;
+    always @(posedge _20) begin
+        _11 <= 1'b1;
+    end
+    assign q = _11;
+endmodule
+module b (
+    clock,
+    en,
+    q
+);
+    input clock;
+    input en;
+    output q;
+    wire _20;
+    reg _11;
+    assign _20 = clock & en;
+    always @(posedge _20) begin
+        _11 <= 1'b1;
+    end
+    assign q = _11;
+endmodule
+FIXTURE
+
+  st_case fail "clock GATED AT THE INSTANTIATION, child body clean" "instantiated .clock()" <<'FIXTURE'
+module child (
+    clock,
+    q
+);
+    input clock;
+    output q;
+    wire _6;
+    reg _11;
+    assign _6 = clock;
+    always @(posedge _6) begin
+        _11 <= 1'b1;
+    end
+    assign q = _11;
+endmodule
+module parent (
+    clock,
+    en,
+    q
+);
+    input clock;
+    input en;
+    output q;
+    wire _6;
+    wire _10;
+    assign _6 = clock & en;
+    child
+        the_child
+        ( .clock(_6),
+          .q(_10) );
+    assign q = _10;
+endmodule
+FIXTURE
+
+  st_case fail "edge in a module that declares no clock input port" "no clock input port" <<'FIXTURE'
+module m (
+    tick,
+    q
+);
+    input tick;
+    output q;
+    wire _6;
+    reg _11;
+    assign _6 = tick;
+    always @(posedge _6) begin
+        _11 <= 1'b1;
+    end
+    assign q = _11;
+endmodule
+FIXTURE
+
+  # The realistic form of "clock is not the port": an internally generated wire
+  # that merely carries the name. The no-port guard is what catches it — the
+  # name `clock` is never a root on its own, only the declared input port is.
+  st_case fail "a local wire named clock, generated inside the module" "no clock input port" <<'FIXTURE'
+module m (
+    osc,
+    en,
+    q
+);
+    input osc;
+    input en;
+    output q;
+    wire clock;
+    wire _6;
+    reg _11;
+    assign clock = osc & en;
+    assign _6 = clock;
+    always @(posedge _6) begin
+        _11 <= 1'b1;
+    end
+    assign q = _11;
+endmodule
+FIXTURE
+
+  # Belt and braces for the second guard: the port exists AND is re-driven.
+  # Malformed Verilog, which is the point — the resolver must not root on the
+  # name when the name is being assigned to.
+  st_case fail "clock port present but also assigned inside the module" "assigned inside module" <<'FIXTURE'
+module m (
+    clock,
+    en,
+    q
+);
+    input clock;
+    input en;
+    output q;
+    wire _6;
+    reg _11;
+    assign clock = clock & en;
+    assign _6 = clock;
+    always @(posedge _6) begin
+        _11 <= 1'b1;
+    end
+    assign q = _11;
+endmodule
+FIXTURE
+
+  rm -rf "$st_dir"
+}
+
+if [ "${1:-}" = "--self-test" ]; then
+  printf 'REQ-001 edge-resolution self-test (WO-0028)\n'
+  selftest
+  printf '\n%d self-test case(s) run, %d failure(s)\n' "$checks" "$failures"
+  [ "$failures" -eq 0 ]
+  exit
+fi
 
 # ------------------------------------------------------------------ inventory
 # architecture.md §4 rows look like:  | M03 | `Xgmii_rx_64` | R | ... |
@@ -198,39 +799,21 @@ note "inventory (M01 excluded): ${INVENTORY:-(unreadable)}"
 [ -n "$BOOTSTRAP" ] && note "bootstrap allowance ACTIVE: $BOOTSTRAP  (must be empty at P1-module-ready)"
 
 # ------------------------------------------------------------------- REQ-001
-# Hardcaml emits `always @(posedge _6)` with `assign _6 = clock;` above it, so
-# the check resolves one level of aliasing rather than pattern-matching the
-# literal name.
-req001_bad=""
-for f in $VFILES; do
-  bad=$(awk '
-    /^[ \t]*assign [_a-zA-Z0-9]+ = clock;[ \t]*$/ {
-      split($2, a, " "); alias[$2] = 1; next
-    }
-    /posedge|negedge/ {
-      line = $0
-      n = gsub(/posedge|negedge/, "&", line)
-      if (line ~ /negedge/) { print FILENAME ": " $0 "   (negedge)"; next }
-      if (n > 1)            { print FILENAME ": " $0 "   (multiple edge terms)"; next }
-      if (match($0, /posedge[ \t]+[_a-zA-Z0-9]+/)) {
-        sig = substr($0, RSTART, RLENGTH)
-        sub(/posedge[ \t]+/, "", sig)
-        if (sig != "clock" && !(sig in alias)) {
-          print FILENAME ": " $0 "   (edge signal " sig " is not clock)"
-        }
-      } else {
-        print FILENAME ": " $0 "   (unparsed edge expression)"
-      }
-    }
-  ' "$f")
-  [ -n "$bad" ] && req001_bad="$req001_bad$bad"$'\n'
-done
+# The scan itself is req001_scan() above — shared verbatim with --self-test, so
+# the cases the self-test pins are the cases that run here. It reports both
+# halves of REQ-001's verification column: an edge expression that does not
+# resolve to that module's own clock port, and any other signal in an edge
+# position (negedge, or more than one edge term).
+req001_bad=$(req001_scan $VFILES)
 edge_count=$(grep -hcE 'posedge|negedge' $VFILES | awk '{ s += $1 } END { print s + 0 }')
+clock_conn=$(grep -hcE '\.clock[ \t]*\(' $VFILES | awk '{ s += $1 } END { print s + 0 }')
 if [ -n "$req001_bad" ]; then
-  fail "REQ-001 single clock domain: an edge expression does not name clock"
-  printf '%s' "$req001_bad" | sed 's/^/      /'
+  fail "REQ-001 single clock domain: an edge expression does not resolve to clock"
+  printf '%s\n' "$req001_bad" | sed 's/^/      /'
+  note "resolution follows pure renames (assign <wire> = <wire>;) only, per module, transitively"
+  note "from that module's own clock input port — a gate or a derived signal cannot resolve"
 else
-  pass "REQ-001 single clock domain: all $edge_count edge expression(s) resolve to clock"
+  pass "REQ-001 single clock domain: all $edge_count edge expression(s) and $clock_conn instantiated .clock() connection(s) resolve to the clock port"
 fi
 
 # ------------------------------------------------------------------- REQ-306
