@@ -3896,3 +3896,43 @@ review per its charter; my commit only after both signals.
 - .claude/agents/tb_writer.md
 - agents/handoffs/WO-0038_tb-m03-first-bench.md
 - tasks/BOARD.md
+
+## [J-orchestrator-0091] 2026-08-03T14:30:00Z | task:none | One nav paradigm: the tab bar is the same component on every page, and the page you're on is the filled bubble
+
+### Trigger
+Sponsor: the top links still don't read as clickable, and the two
+paradigms (text links on generated pages, white pills on artifact
+pages) split the site. His design: uppercase bubbles on every page,
+current page highlighted, switching only — no "back to home".
+
+### Inputs
+- site/build.py's two nav generators, now unified.
+
+### Reasoning
+One PAGES list, one TABBAR_CSS, one nav(active) builder emitted into
+the generated pages and injected by the chrome pass into the
+artifact pages — six pills everywhere (five pages + GITHUB ↗),
+active pill solid teal with panel-colored text. The var(--x,#fallback)
+pattern keeps it correct on artifact pages' own token sets.
+
+### Actions
+- build.py nav rewrite (one definition-order fix en route); rebuilt;
+  verified on index + atlas + block-diagram; this commit.
+
+### Evidence
+- Screenshots: OVERVIEW filled on index, SPEC ATLAS filled on the
+  atlas, identical bars; zero pageerrors.
+
+### Outcome / DoD
+Sponsor redeploys: git pull && cd site && npx wrangler deploy.
+
+### Open questions
+- None.
+
+### Files-in-this-commit
+- site/build.py
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/index.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html

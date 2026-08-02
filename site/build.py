@@ -136,6 +136,33 @@ def head_block(title, og_title):
 </head>
 <body>'''
 
+PAGES = [
+    ('index.html', 'OVERVIEW'),
+    ('block-diagram.html', 'BLOCK DIAGRAM'),
+    ('spec-atlas.html', 'SPEC ATLAS'),
+    ('org-chart.html', 'ORG CHART'),
+    ('backlog.html', 'BACKLOG'),
+]
+
+TABBAR_CSS = """
+.tabbar { display:flex; flex-wrap:wrap; gap:.45rem; padding:14px 16px 4px;
+  font-family:'Plex Mono',monospace; }
+.tabbar a { display:inline-block; font-size:.78rem; font-weight:600;
+  letter-spacing:.08em; text-decoration:none; color:var(--ink-2,#5c6663);
+  background:var(--panel,#ffffff); border:1.5px solid var(--line,#d3dad7);
+  border-radius:999px; padding:.45rem 1rem; }
+.tabbar a:hover { border-color:var(--rx,#0f766e); color:var(--rx,#0f766e); }
+.tabbar a.here { background:var(--rx,#0f766e); border-color:var(--rx,#0f766e);
+  color:var(--panel,#ffffff); }
+"""
+
+def nav(active_page):
+    pills = ''.join(
+        f'<a href="{p}"{" class=" + chr(34) + "here" + chr(34) if p == active_page else ""}>{t}</a>'
+        for p, t in PAGES)
+    pills += f'<a href="{REPO_URL}" target="_blank" rel="noopener">GITHUB ↗</a>'
+    return f'<nav class="tabbar">{pills}</nav>'
+
 STYLE = FONTS + """
 :root {
   --bg:#eef1f0; --panel:#ffffff; --ink:#1e2423; --ink-2:#5c6663; --line:#d3dad7;
@@ -240,24 +267,9 @@ td.n { color:var(--ink-2); opacity:.5; }
 .wost.ISSUED { background:color-mix(in srgb, var(--tx) 16%, var(--panel)); color:var(--tx); }
 .wost.RETURNED { background:var(--chip); color:var(--ink-2); }
 ul.next { padding-left:1.2rem; } ul.next li { margin:.35rem 0; font-size:.92rem; }
-nav.top { display:flex; gap:1rem; flex-wrap:wrap; padding:1.1rem 0; font-size:.85rem; }
-nav.top a { color:var(--ink-2); text-decoration:none; font-family:'Plex Mono',monospace; font-size:.78rem; }
-nav.top a:hover { color:var(--rx); }
-nav.top a.here { color:var(--rx); }
-"""
+""" + TABBAR_CSS
 
-NAV = '''<nav class="top wrap">
-<a href="index.html"{i}>overview</a>
-<a href="block-diagram.html">block diagram</a>
-<a href="spec-atlas.html">spec atlas</a>
-<a href="org-chart.html">org chart</a>
-<a href="backlog.html"{b}>backlog</a>
-<a href="{repo}" target="_blank" rel="noopener">github ↗</a>
-</nav>'''
 
-def nav(here):
-    return NAV.format(i=' class="here"' if here == 'i' else '',
-                      b=' class="here"' if here == 'b' else '', repo=REPO_URL)
 
 # D11/H4: one caption, two CSS-toggled variants.
 CAD_CAPTION = '''<p class="cadcap"><span class="cap-motion">The rhythm this chip
@@ -291,7 +303,7 @@ jchips = ' '.join(
 index = head_block('agentic-fpga — a trading network card built by an AI org',
                    'agentic-fpga') + f'''
 <style>{STYLE}</style>
-{nav('i')}
+{nav('index.html')}
 <div class="wrap">
   <span class="eyebrow">agentic-fpga</span>
   <h1>A trading network card, engineered end-to-end by an organization of AI agents</h1>
@@ -433,7 +445,7 @@ next_html = ''.join(f'<li>{html.escape(x)}</li>' for x in NEXT)
 backlog = head_block('agentic-fpga — backlog & progress',
                      'agentic-fpga — backlog & progress') + f'''
 <style>{STYLE}</style>
-{nav('b')}
+{nav('backlog.html')}
 <div class="wrap">
   <span class="eyebrow">agentic-fpga / backlog</span>
   <h1>Where the program stands</h1>
@@ -492,21 +504,9 @@ ART = [
 ]
 
 def art_nav(self_page):
-    links = [('index.html', '← overview')] + [
-        (p, p.replace('.html', '').replace('-', ' '))
-        for p, _ in ART if p != self_page] + [('backlog.html', 'backlog')]
-    pills = ''.join(f'<a href="{h}">{t}</a>' for h, t in links)
     return f'''{CHROME_START}
-<style>
-.sitenav {{ padding:12px 14px 2px;
-  font:600 .74rem 'Plex Sans',system-ui,sans-serif; display:flex; gap:.4rem; flex-wrap:wrap; }}
-.sitenav a {{ display:inline-block; background:var(--panel,#fff); color:var(--ink,#1e2423);
-  border:1.5px solid var(--line,#d3dad7); border-radius:999px; padding:.32rem .8rem;
-  text-decoration:none; box-shadow:0 2px 6px rgba(0,0,0,.12); }}
-.sitenav a:hover {{ border-color:var(--rx,#0f766e); color:var(--rx,#0f766e); }}
-@media (max-width:640px) {{ .sitenav a {{ display:none; }} .sitenav a:first-child {{ display:inline-block; }} }}
-</style>
-<div class="sitenav">{pills}</div>
+<style>{TABBAR_CSS}</style>
+{nav(self_page)}
 {CHROME_END}'''
 
 for page, title in ART:

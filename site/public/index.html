@@ -119,19 +119,18 @@ td.n { color:var(--ink-2); opacity:.5; }
 .wost.ISSUED { background:color-mix(in srgb, var(--tx) 16%, var(--panel)); color:var(--tx); }
 .wost.RETURNED { background:var(--chip); color:var(--ink-2); }
 ul.next { padding-left:1.2rem; } ul.next li { margin:.35rem 0; font-size:.92rem; }
-nav.top { display:flex; gap:1rem; flex-wrap:wrap; padding:1.1rem 0; font-size:.85rem; }
-nav.top a { color:var(--ink-2); text-decoration:none; font-family:'Plex Mono',monospace; font-size:.78rem; }
-nav.top a:hover { color:var(--rx); }
-nav.top a.here { color:var(--rx); }
+
+.tabbar { display:flex; flex-wrap:wrap; gap:.45rem; padding:14px 16px 4px;
+  font-family:'Plex Mono',monospace; }
+.tabbar a { display:inline-block; font-size:.78rem; font-weight:600;
+  letter-spacing:.08em; text-decoration:none; color:var(--ink-2,#5c6663);
+  background:var(--panel,#ffffff); border:1.5px solid var(--line,#d3dad7);
+  border-radius:999px; padding:.45rem 1rem; }
+.tabbar a:hover { border-color:var(--rx,#0f766e); color:var(--rx,#0f766e); }
+.tabbar a.here { background:var(--rx,#0f766e); border-color:var(--rx,#0f766e);
+  color:var(--panel,#ffffff); }
 </style>
-<nav class="top wrap">
-<a href="index.html" class="here">overview</a>
-<a href="block-diagram.html">block diagram</a>
-<a href="spec-atlas.html">spec atlas</a>
-<a href="org-chart.html">org chart</a>
-<a href="backlog.html">backlog</a>
-<a href="https://github.com/renatom11/agentic-fpga" target="_blank" rel="noopener">github ↗</a>
-</nav>
+<nav class="tabbar"><a href="index.html" class="here">OVERVIEW</a><a href="block-diagram.html">BLOCK DIAGRAM</a><a href="spec-atlas.html">SPEC ATLAS</a><a href="org-chart.html">ORG CHART</a><a href="backlog.html">BACKLOG</a><a href="https://github.com/renatom11/agentic-fpga" target="_blank" rel="noopener">GITHUB ↗</a></nav>
 <div class="wrap">
   <span class="eyebrow">agentic-fpga</span>
   <h1>A trading network card, engineered end-to-end by an organization of AI agents</h1>
@@ -151,7 +150,7 @@ nav.top a.here { color:var(--rx); }
   <a href="block-diagram.html">block diagram</a>.</p>
 
   <div class="numbers">
-    <div class="stat"><b>130</b><span>commits — every one paired with the agent’s written reasoning</span></div>
+    <div class="stat"><b>133</b><span>commits — every one paired with the agent’s written reasoning</span></div>
     <a class="stat" href="spec-atlas.html"><b>20/20</b><span>design specs frozen — each only after a second agent tried to break it; sponsor-signed</span></a>
     <a class="stat" href="spec-atlas.html"><b>110</b><span>numbered requirements, each traced to the module that satisfies it</span></a>
     <a class="stat" href="backlog.html"><b>5/20</b><span>modules built in hardware code (RTL) — each compiled clean on its first try; none benched yet</span></a>
@@ -218,8 +217,8 @@ nav.top a.here { color:var(--rx); }
   agent’s reasoning entering beside it</b>, appended to that agent’s
   journal in the same commit. Journals are append-only; mistakes are corrected
   forward, never rewritten. The history is the experiment’s data.</p>
-  <p class="cadcap">The 130 journal entries — one per commit — by author:</p>
-  <div class="chips"><span class="chip">88 · orchestrator</span> <span class="chip">20 · verification lead (dv_lead)</span> <span class="chip">13 · architect (architect_docs_lead)</span> <span class="chip">6 · hardware designer (rtl_lead)</span> <span class="chip">3 · auditor</span></div>
+  <p class="cadcap">The 133 journal entries — one per commit — by author:</p>
+  <div class="chips"><span class="chip">90 · orchestrator</span> <span class="chip">21 · verification lead (dv_lead)</span> <span class="chip">13 · architect (architect_docs_lead)</span> <span class="chip">6 · hardware designer (rtl_lead)</span> <span class="chip">3 · auditor</span></div>
 
   <h2>The tech stack</h2>
   <div class="chips">
@@ -240,7 +239,7 @@ nav.top a.here { color:var(--rx); }
     <a class="card" href="spec-atlas.html"><span class="ct">Spec atlas</span>
       <span class="cd">All 110 requirements, the 20-module inventory, dataflow diagrams,
       and the traceability matrix — regenerated from the spec text itself, pinned at
-      <span class="mono">52c22e0</span>.</span><span class="go">open →</span></a>
+      <span class="mono">073ac36</span>.</span><span class="go">open →</span></a>
     <a class="card" href="org-chart.html"><span class="ct">Org chart</span>
       <span class="cd">Who does what, who may refuse whom, and the journal rule no agent
       can escape — the org’s constitution, explorable.</span><span class="go">open →</span></a>
@@ -250,7 +249,7 @@ nav.top a.here { color:var(--rx); }
   </div>
 
   <div class="foot">Generated from the repository at commit
-  <a class="mono" href="https://github.com/renatom11/agentic-fpga/commit/52c22e0" target="_blank" rel="noopener">52c22e0</a>
+  <a class="mono" href="https://github.com/renatom11/agentic-fpga/commit/073ac36" target="_blank" rel="noopener">073ac36</a>
   · 2026-08-02 · <a href="https://github.com/renatom11/agentic-fpga" target="_blank" rel="noopener">source on GitHub</a> · built by
   the org’s orchestrator, like everything else here.</div>
 </div>

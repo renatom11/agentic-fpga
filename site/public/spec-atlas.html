@@ -160,16 +160,19 @@ footer { margin-top:2.4rem; padding-top:1rem; border-top:1px solid var(--line);
 </style>
 <!-- site-chrome-start -->
 <style>
-.sitenav { padding:12px 14px 2px;
-  font:600 .74rem 'Plex Sans',system-ui,sans-serif; display:flex; gap:.4rem; flex-wrap:wrap; }
-.sitenav a { display:inline-block; background:var(--panel,#fff); color:var(--ink,#1e2423);
-  border:1.5px solid var(--line,#d3dad7); border-radius:999px; padding:.32rem .8rem;
-  text-decoration:none; box-shadow:0 2px 6px rgba(0,0,0,.12); }
-.sitenav a:hover { border-color:var(--rx,#0f766e); color:var(--rx,#0f766e); }
-@media (max-width:640px) { .sitenav a { display:none; } .sitenav a:first-child { display:inline-block; } }
+.tabbar { display:flex; flex-wrap:wrap; gap:.45rem; padding:14px 16px 4px;
+  font-family:'Plex Mono',monospace; }
+.tabbar a { display:inline-block; font-size:.78rem; font-weight:600;
+  letter-spacing:.08em; text-decoration:none; color:var(--ink-2,#5c6663);
+  background:var(--panel,#ffffff); border:1.5px solid var(--line,#d3dad7);
+  border-radius:999px; padding:.45rem 1rem; }
+.tabbar a:hover { border-color:var(--rx,#0f766e); color:var(--rx,#0f766e); }
+.tabbar a.here { background:var(--rx,#0f766e); border-color:var(--rx,#0f766e);
+  color:var(--panel,#ffffff); }
 </style>
-<div class="sitenav"><a href="index.html">← overview</a><a href="block-diagram.html">block diagram</a><a href="org-chart.html">org chart</a><a href="backlog.html">backlog</a></div>
+<nav class="tabbar"><a href="index.html">OVERVIEW</a><a href="block-diagram.html">BLOCK DIAGRAM</a><a href="spec-atlas.html" class="here">SPEC ATLAS</a><a href="org-chart.html">ORG CHART</a><a href="backlog.html">BACKLOG</a><a href="https://github.com/renatom11/agentic-fpga" target="_blank" rel="noopener">GITHUB ↗</a></nav>
 <!-- site-chrome-end -->
+
 
 
 <div class="wrap">
