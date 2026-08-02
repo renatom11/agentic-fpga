@@ -4335,3 +4335,45 @@ empty expect blocks), then the revision-2 worker round for D1–D3.
 - site/public/org-chart.html
 - site/public/spec-atlas.html
 - tasks/BOARD.md
+
+## [J-orchestrator-0101] 2026-08-02T21:50:00Z | task:none | Labels now take the nearest clear spot, not the first one generated
+
+### Trigger
+Sponsor: "axi4 source is not colliding with anything but its way
+off to the side" — the rx Axi64.Source label had been flung left
+toward WIRE, far from the M03→M06 wire it names.
+
+### Inputs
+- The candidate list was tried in generation order; a side-escape
+  computed from a wide obstacle's edge could win over a clear spot
+  30px from the anchor.
+
+### Reasoning
+One sort: all candidates ordered by squared distance from the
+label's anchor before the two clear passes. Nearest clear spot
+wins by construction, so no future candidate-generation change can
+reintroduce teleporting. Every label now hugs its wire (the rx
+Axi64.Source sits at M03's output corner); text-on-wire stays
+readable because the labels already carry a background-color halo.
+Audit re-run: 6 badges + 13 labels, zero overlaps, 1500/1100/800px.
+
+### Actions
+- bd_back.py labelPos: distance sort; rebuilt; artifact
+  republished; site copy refreshed + site rebuilt; this commit.
+
+### Evidence
+- Screenshot: rx Axi64.Source at M03's corner on its wire; tx one
+  at M04's bend; Ip_header/Udp_header tight to their runs.
+
+### Outcome / DoD
+Sponsor redeploys for the site copy.
+
+### Open questions
+- None.
+
+### Files-in-this-commit
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/index.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html

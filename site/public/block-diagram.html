@@ -516,6 +516,9 @@ function draw() {
     }
     for (const dy of [0, -14, 17, -27, 30, -40, 43, -52, 55]) for (const dx of [0, -30, 30, -55, 55, -85, 85, -115, 115])
       cands.push([x + dx, y + dy]);
+    // nearest clear spot wins — untried, the side-escapes of a wide obstacle
+    // can fling a label far from its wire even though a spot 30px away clears.
+    cands.sort((a, b) => (a[0]-x)*(a[0]-x) + (a[1]-y)*(a[1]-y) - (b[0]-x)*(b[0]-x) - (b[1]-y)*(b[1]-y));
     // two passes: comfortable (3px margins), then exact-fit — the corridors
     // between rows are exactly one label tall, so the margined pass can never
     // use them even though the text genuinely fits.
