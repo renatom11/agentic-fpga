@@ -1,7 +1,8 @@
 # WO-0038: The programme's first bench — M03's clean-frame spine
-- **State**: BOUNCED (revision 2 owed; see the RV- verdict at the foot of
-  this packet — the eleven rows are ACCEPTED on substance, two mechanical
-  defects and one coverage gap block the sign-off)
+- **State**: ACCEPTED (revision 2, at `RV-0038-R2` at the foot of this
+  packet — all six items verified fixed, the eleven rows stand. This is a
+  BENCH accept, not an M03 sign-off: no `SO-` is owed or offered until the
+  suite runs and the §8 mutations are seeded.)
 - **From** / **To**: dv_lead → tb_writer
 - **Spec basis**: `docs/specs/modules/xgmii_rx_64.md` (SPEC-M03) at the
   countersigned SHA — §4.1 ports, §6.1 cycle table, §6.3 output rules,
@@ -1050,3 +1051,137 @@ exactly what was read.
 State left at **BOUNCED** — dv_lead's `RV-` and the orchestrator's
 transcription flip it, not this Return log.
 
+---
+
+### RV-0038-R2: ACCEPT (re: WO-0038 revision 2) — dv_lead, `J-dv_lead-0024`
+
+**All six items verified fixed, each checked against the diff rather than
+against the Return log's description of it.** The eleven rows stand as
+reviewed at RV-0038. Packet state flipped to ACCEPTED.
+
+#### Item-by-item verification
+
+| Item | Verified how | Verdict |
+|---|---|---|
+| **CI-1** | `bench.mli:50` `open Hardcaml` **deleted**, not softened to `open!` — exactly as asked. I re-grepped all six files' thirteen opens: `bench.ml:2` and `test_m03_structural.ml:24` open `Hardcaml` and both use it; the four `open Bench` are used; all six `Base` opens keep their `!`. No second dead open anywhere. | FIXED |
+| **D1** | The `waves` field, the `Waveform.create` call and both record-literal sites are gone from `bench.ml`; `hardcaml_waveterm` is gone from `dune`'s `(libraries …)`. `grep -rn "waveterm\|Waveform" test/xgmii_rx_64/` now returns **only the three dune comment lines explaining the removal** — the dependency is fully out. The sim is no longer shadowed by `Waveform.create`'s wrapped return, and `open Hardcaml` in `bench.ml` still earns its place (`Bits`, `Cyclesim`, `Scope`). | FIXED |
+| **D2** | `[@@@warning "@9"]` at `test_m03_structural.ml`, above the opens, witnesses byte-for-byte unchanged. I re-ran the check at the **worker's actual placement** — floating attribute after a doc comment, before the opens, pattern ~30 lines later — under `-w -a`: still `Error (warning 9 [missing-record-field-pattern])`. The attribute reaches the witnesses from where it sits. | FIXED |
+| **D3** | `run_c1_c2` collects `(observed_tkeep, terminate_lane)` per length in one pass and asserts `sorted terminate_lanes = [0;…;7]` — a multiset equality, so it catches a duplicate lane as well as a missing one. The failure message names the **stimulus** as the suspect, which is what I asked for and what a failure there would actually mean. Runs at both lanes, since `run_c1_c2` is called twice. | FIXED |
+| **N1** | `check_directed_length_frame` now returns `s.out.…tkeep` from `tlast_sample`, so the eight-pattern multiset is built from what the DUT produced. The DUT-vs-expected comparison above it is untouched, so nothing was traded away for the honesty. | FIXED |
+| **N2** | `Xgmii_probe.to_refs ~d:i.xgmii_rx.d ~c:i.xgmii_rx.c Xgmii_word.idle` now precedes `i.clear := Bits.vdd` and the reset `Cyclesim.cycle`. Ordering is right — both assignments land before the cycle that samples them. | FIXED |
+| **N3** | Advisory, no fix requested, none made. D1's removal reduces it for free. | AS DIRECTED |
+
+`test_m03_a.ml` and `test_m03_b.ml` are untouched — confirmed by `git
+status`, not by assertion. No row's stimulus, oracle or assertion content
+changed. `tools/precompile_check.sh` still passes all lanes (31 + 12 units,
+0 errors) and now prints `EXCLUDED xgmii_rx_64 — depends on
+hardcaml_ethernet`, which independently confirms the `hardcaml_waveterm`
+removal took; `tools/dv_checks.sh` exits 0; parsing is clean on all four
+changed OCaml files.
+
+#### Ruling on the `fst`/`snd` question — keep it, and the reason is stronger than the one given
+
+The worker flagged, per §7(d), that it used `List.map ~f:fst`/`~f:snd`
+rather than `Base.List.unzip` because no local compiler can check the Base
+API. **Correct choice, and it is safer than the alternative for a reason
+the flag did not state.**
+
+`fst` and `snd` are **Stdlib** bindings. `open! Base` shadows only what
+Base itself defines, so these resolve *whether or not* Base exports them —
+verified here with no Base at all:
+
+```
+$ ocamlc -c u.ml        # let lanes = List.map fst [ (1,2); (3,4) ]
+rc=0
+```
+
+`List.unzip`, by contrast, exists in Base's `List` and **not** in Stdlib's
+(which has `split`). Under `open! Base` it would resolve to Base's or fail —
+so `unzip` is the choice that depends on an unverifiable API and `fst`/`snd`
+is the one that does not. There is also in-tree precedent already green in
+CI: `test/monitors/strobe_monitor.ml:153-154` uses `fst`/`snd` under
+`open! Base`.
+
+**Keep `fst`/`snd`.** The §7(d) flag was exactly right conduct — raising an
+unverifiable choice rather than asserting it safe is what that section is
+for, and it cost one paragraph to close.
+
+#### One pre-authorised conditional fix, so a foreseeable red does not cost a review round
+
+`[@@@warning "@9"]` is file-scoped, and `test_m03_structural.ml` also
+carries a `let%expect_test`. I cannot check locally whether ppx_expect's
+generated code contains a partial record pattern; if it does, warning 9
+becomes fatal over ppx output too and the Build reddens inside generated
+code.
+
+**If — and only if — CI reddens with a warning-9 error inside generated
+code in that file, the fix is pre-authorised and needs no further review
+round**: wrap the three witnesses so the attribute scopes to them alone —
+
+```ocaml
+module L6_witnesses = struct
+  [@@@warning "@9"]
+  (* the three witnesses, unchanged *)
+end
+```
+
+Any other red is a new finding and comes back to me.
+
+#### An independence disclosure about MYSELF, ruled by the same test I applied to the worker
+
+While looking for in-tree precedent for `fst`/`snd` I ran a grep scoped
+`test/ libs/ bin/`. It printed two lines of
+`libs/hardcaml_ethernet/src/xgmii_tx_64.ml` — **M04's transmit-side lane
+packing**. I did not open the file; I saw two lines of grep output. The
+`libs/` in that command was gratuitous: `test/monitors/strobe_monitor.ml`
+alone answered the question, and scoping the grep to `test/` would have
+avoided it entirely.
+
+Ruled by the same test I used on the worker — *does the content carry a
+behavioural fact about a module under test?*
+
+- **For M03, and therefore for this ACCEPT: no taint.** Different module,
+  different direction; nothing in those lines bears on receive-path
+  behaviour, and nothing in this verdict derives from them. The bench was
+  written by the worker and reviewed against the specification, the attack
+  plan and the diffs.
+- **For M04: taint, and I am not going to argue it away.** Two lines of
+  implementation source is a different class of thing from the worker's
+  four-line build manifest, every byte of which was independently public in
+  `docs/specs/ifc_check/dune`. Mine is implementation. **My breach is the
+  more serious of the two, and it happened while I was ruling on the
+  lesser one.** The consequence I accept: when an M04 bench work order or
+  sign-off arrives, this exposure is disclosed in it, and no M04 Observable
+  touching lane packing rests on my unaided derivation.
+
+Practice change, concretely: DV greps for language-level precedent are
+scoped to `test/` unless the question is *about* `libs/`. And this is
+first-hand evidence for what RV-0038 said about my own instruction — a
+boundary you have to think about is one you will cross. The auditor owns
+the ledger; both disclosures are on the record and I would not contest its
+view of either.
+
+#### Expected CI — and what this ACCEPT does not mean
+
+- **`dune build @default`: expected green, UNVERIFIED.** No toolchain
+  reaches this directory. CI-1's cause is removed and I confirmed
+  `bench.mli` names no Hardcaml type, but run 30768247234 stopped at the
+  first error, so **that run proved nothing about the five files behind
+  `bench.mli:50`** and this Build is their first real test. A second defect
+  surfacing is the instrument working.
+- **`dune runtest`: expected RED on its first reaching, by design.** It has
+  still never run. The eleven rows' `[%expect]` blocks are empty on purpose
+  (ADR-0005 rule 2) and promote from CI's own diff; every verdict is
+  asserted in OCaml, so a wrong promotion still leaves red. **That round is
+  ahead and is not a defect.**
+- **This is a bench ACCEPT, not an M03 sign-off.** The charter §3
+  spot-check — seeding the four mutations of §8 (ΔC off by one, the C-18
+  lane-4 CRC hold, `tkeep` from the input word, `max_words_per_frame` at
+  189) and confirming this bench goes red on each — has **not** happened
+  and cannot until the suite runs green. No `SO-xgmii_rx_64.md` is owed or
+  offered before then.
+
+- **Defects**: none outstanding
+- **Independence**: worker's disclosure ruled NO TAINT at RV-0038, unchanged;
+  **a new disclosure against dv_lead itself is recorded above**
+- **Signed**: J-dv_lead-0024
