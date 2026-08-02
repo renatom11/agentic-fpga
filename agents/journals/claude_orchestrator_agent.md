@@ -1446,3 +1446,39 @@ none
 ### Files-in-this-commit
 - agents/handoffs/WO-0006_batch-a-specs.md
 - tasks/BOARD.md
+
+## [J-orchestrator-0037] 2026-08-02T05:15:00Z | task:WO-0007 | ifc_check green for batch A; countersign WO issued
+### Trigger
+Build run 30727252770 (22145b5) green — first ppx elaboration of
+axi64_ifc.ml and crc32_eth_ifc.ml in the authoritative environment.
+### Inputs
+build.yml run list; gate checklist batch-A row; WO-0006 ACCEPTED entry.
+### Reasoning
+The run proves the two things acceptance could not: ppx_hardcaml
+elaborates the Status/Config/header records (including the 21-strobe
+record and the functor-applied stream type), and the open! Axi64_ifc
+factoring compiles. That completes the mechanical half of the batch-A
+freeze; the judgment half is dv_lead's countersignature, issued now as
+WO-0007 with the three named judgments that matter: the finished-CRC
+port convention (the batch's load-bearing choice), the Status/§12
+correspondence I count-checked but did not name-by-name verify, and the
+honesty of every "not applicable". The packet pins the REQ-010/M02
+narrowing as already-agreed batch-B context so the countersign is not
+blocked on a diff both sides have accepted.
+### Actions
+Checklist batch-A row: ifc_check run pinned, countersign in flight.
+Board row added. WO-0007 packet written. dv_lead spawn follows as
+WO-0007/2026-08-02T05:20Z, fallback armed.
+### Evidence
+Run 30727252770 success (externally verifiable per the F5 rule).
+### Outcome
+On SIGNED return: transcribe, mark batch A FROZEN, issue batch B (with
+the C-1/C-4 carry-forwards, the six disposed questions, and the
+sponsor's latency-budget delegation clause). Handoff: WO-0007 to
+dv_lead.
+### Open-questions
+none
+### Files-in-this-commit
+- agents/handoffs/WO-0007_batch-a-countersign.md
+- docs/gates/P1-spec-freeze-checklist.md
+- tasks/BOARD.md

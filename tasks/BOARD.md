@@ -62,6 +62,7 @@ Corrections.
 
 | Packet | From → To | State | Note |
 |---|---|---|---|
+| [WO-0007](../agents/handoffs/WO-0007_batch-a-countersign.md) | orchestrator → dv_lead | ISSUED | Countersign SPEC-M01/M02 at 22145b5 (ifc_check green: run 30727252770) — freezes batch A |
 | [WO-0006](../agents/handoffs/WO-0006_batch-a-specs.md) | orchestrator → architect_docs_lead | ACCEPTED | Returned + accepted at 22145b5: SPEC-M01/M02 DRAFT, lifts byte-identical, 21 strobes; ifc_check CI run pending → then dv countersign (WO-0007) freezes batch A |
 | [WO-0005](../agents/handoffs/WO-0005_spec-diff-re-review.md) | orchestrator → dv_lead | ACCEPTED | 16/16 CLOSED; testability precondition **SIGNED at b4b4cf4** (J-dv_lead-0002); 7 carry-forwards C-1…C-7 tracked on the gate checklist |
 | [WO-0004](../agents/handoffs/WO-0004_requirements-spec-diffs.md) | orchestrator → architect_docs_lead | ACCEPTED | Returned + accepted at b4b4cf4: 16/16 applied (D-4 metric corrected to octet times), one IFG convention at all sites, 108→110 REQs, set equality re-verified |

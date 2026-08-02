@@ -25,7 +25,7 @@ by the orchestrator from the signing agent's journal entry, per PROTOCOL
 
 | Batch | Specs | Drafted | ifc_check run | dv countersign | FROZEN at |
 |---|---|---|---|---|---|
-| A | M01 `Axi64`, M02 `Crc32_eth` | WO-0006 in flight | — | — | — |
+| A | M01 `Axi64`, M02 `Crc32_eth` | 22145b5 (WO-0006) | run 30727252770 green | WO-0007 in flight | — |
 | B | M03, M04, M05 | — | — | — | — |
 | C | M06, M07, M08, M09 | — | — | — | — |
 | D | M10, M11, M12, M13 | — | — | — | — |
