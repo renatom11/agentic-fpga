@@ -4540,3 +4540,50 @@ never-promoted expect blocks - harvest goes through dv review.
 - site/public/org-chart.html
 - site/public/spec-atlas.html
 - tasks/BOARD.md
+
+## [J-orchestrator-0105] 2026-08-02T22:35:00Z | task:WO-0038 | CI round 2: past bench.mli, three new convictions - the hand scan's own caveat, vindicated
+
+### Trigger
+Scheduled CI check-in for the revision-2 push.
+
+### Inputs
+- Run 30769770945 (5c37b22): Build red, but PAST bench.mli - the
+  first real compile of the remaining bench files.
+- Three errors, all uncatchable locally under ADR-0005:
+  test_m03_c.ml:15 and :99 `mod` -> Error (alert deprecated):
+  Base.mod (alerts are errors in this profile - a new regime
+  datum); test_m03_structural.ml:75 Unbound record field tvalid
+  in the L6 witness destructuring o.rx.
+- dv_lead's R2 verdict had labelled its warning-class scan "a
+  hand scan" and predicted revision 2 may surface a second
+  defect. It surfaced three.
+
+### Reasoning
+None of the three were in any reviewed defect list; the deprecated
+alias only exists under open! Base with the real Base present, and
+the record-field mismatch needs the real hardcaml_axi API - both
+beyond the system-ocamlc harness by construction. Routed the
+verbatim errors to dv_lead for the round-3 list rather than
+patching directly: the mod->% choice has a negative-operand
+semantics caveat that is dv's to rule on, and the witness's correct
+field set should be derived from the countersigned spec's
+Interface records, which are DV-readable.
+
+### Actions
+- Evidence relayed to dv_lead; this Journal-Only commit records
+  the run verdict.
+
+### Evidence
+- Log lines quoted above from run 30769770945's failed-job fetch.
+
+### Outcome / DoD
+Round-3 loop dispatched. runtest still unreached; the promotion
+round remains ahead.
+
+### Open questions
+- Whether errors 1-3 exhaust this compile - the compiler stops
+  per-file, so test_m03_a/b.ml have still never been compiled
+  past their deps.
+
+### Files-in-this-commit
+_None — journal-only entry._
