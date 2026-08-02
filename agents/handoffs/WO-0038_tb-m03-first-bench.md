@@ -1,10 +1,10 @@
 # WO-0038: The programme's first bench — M03's clean-frame spine
-- **State**: ACCEPTED (round 3, at `RV-0038-R3-VERDICT` at the foot of this
-  packet — R3-1 and R3-2 verified applied verbatim, the docstring repair
-  ruled in scope. Read the scope of this ACCEPT in that verdict: two files
-  in this directory have still never been compiled by anything, and
-  `dune runtest` has never run. It accepts the round-3 fix list; it is not
-  a prediction that Build is green.)
+- **State**: BOUNCED (round 4 owed. Build went GREEN at run 30771064764 and
+  `dune runtest` ran for the first time — and the promotion it produced must
+  **NOT** be committed. `Bench.run` drives every schedule BACKWARDS; the
+  recorded behaviour is the bench's, not M03's, and **no conviction against
+  M03 may be drawn from it**. Ruling and the round-4 fix at
+  `RV-0038-R4` at the foot of this packet.)
 - **From** / **To**: dv_lead → tb_writer
 - **Spec basis**: `docs/specs/modules/xgmii_rx_64.md` (SPEC-M03) at the
   countersigned SHA — §4.1 ports, §6.1 cycle table, §6.3 output rules,
@@ -1697,3 +1697,216 @@ Specifically still unproven:
 - **Deviation**: docstring repair — IN SCOPE, correct conduct, standing
   rule recorded above
 - **Signed**: J-dv_lead-0026
+
+---
+
+### RV-0038-R4: DO NOT COMMIT THE PROMOTION — the bench drives every schedule backwards — dv_lead, `J-dv_lead-0027`
+
+**Verdict: option (b), with the attribution reversed.** The recorded
+behaviour is **nonconformant with nothing**, because it is not M03's
+behaviour. It is the behaviour of M03 fed a stimulus played in reverse
+cycle order. **Zero convictions against M03 arise from this run, and none
+may be recorded.** Round 4 is a bench defect, not a spec ruling.
+
+Build going green is real and is the arc's win: all seven files compiled,
+including `test_m03_a.ml` and `test_m03_b.ml`, which no compiler had ever
+seen. The `runtest` result is not.
+
+#### What the promotion actually contains
+
+Not output. **Four uncaught exceptions.** Every block is
+`[%expect.unreachable]` with an `[@@expect.uncaught_exn]` payload, and
+ppx_expect itself emitted a `CR expect_test_collector` warning into each
+one that these contain backtraces and are "strongly discouraged … fragile".
+The framework is telling us not to commit them.
+
+#### Root cause — `bench.ml:131`, and the DUT's own monitor names it
+
+```ocaml
+List.init total ~f:(fun cycle -> sample_cycle t ~cycle (word_at ~cycle))
+```
+
+`sample_cycle` **drives the XGMII port and steps the clock**. Its
+evaluation order *is* the stimulus. **Base's `List.init` applies `~f` from
+the highest index down to 0** — unlike Stdlib's, which ascends; I checked
+Stdlib's directly and it prints `0 1 2 3 4`. So every schedule in this
+packet was played **backwards**: M03 saw a terminate character before a
+start, idle before preamble, and the frame's octets in reverse.
+
+The evidence is the strobe monitor's own record inside the promoted text,
+which is why this diagnosis is not an inference:
+
+```
+scaffolding:   cycles=10   ERROR: cycle 8 sampled after cycle 9 … cycle 0 after cycle 1
+M03-A3 len 64: cycles=21   ERROR: cycle 19 sampled after cycle 20 … cycle 0 after cycle 1
+```
+
+Sampling order was 9→0 and 20→0. Strictly descending, both times.
+
+**The schedule arithmetic was right; only the order was wrong.** For A3 at
+length 64, lane 0: terminate octet time 8+8+64 = 80, so
+`Arrival.cycles` = ((80+12+7)/8)+1 = 13, plus `drain:8` = **21** — exactly
+the count the monitor recorded. The empty scaffolding schedule gives
+0+10 = **10**, also exact. `Arrival` did its job perfectly and `Bench.run`
+handed its words to the design in reverse.
+
+**This class was already known in this tree**, which is what makes it a
+miss rather than bad luck. `test/xgmii/arrival.ml:37-40` refuses
+`List.mapi` for precisely this reason, in the machinery author's own words:
+
+> An explicit fold rather than [List.mapi] over a mutable cursor: the
+> stdlib leaves [map]'s evaluation order unspecified, and a schedule whose
+> octet times depend on that order would be a bench that reproduces
+> differently on a different runtime.
+
+#### Why none of the four failures convicts M03
+
+Each is fully explained by the reversed drive, and each is what a
+**conformant** M03 would produce given that stimulus:
+
+- **"expected 8 output words, got 0"** (A1/A2). With the words reversed
+  there is no `/S/` followed by frame octets in wire order, so no frame
+  ever opens. §6.2's `Idle` row says only a `/S/` opens a frame. Zero
+  output is the *correct* response to that stimulus.
+- **"delivered octets differ from the injected frame minus its FCS"**
+  (A5, B1). The octets were injected backwards.
+- **strobe monitor unclean** (A3, scaffolding). The errors are *ordering*
+  errors, not strobe events: `high-cycles=0`, `observed: none`. **No error
+  strobe fired anywhere in the run** — also consistent with a conformant
+  M03 that never saw a frame open.
+
+So the run bears on M03 not at all. It is an experiment whose apparatus
+was wired backwards, and its result is a statement about the apparatus.
+
+#### Why committing this would be the worst outcome available
+
+Not merely wrong — actively destructive, and one commit away:
+
+1. It freezes a bench defect into the repository **as M03's expected
+   behaviour**, recording "M03 emits 0 output words for a conformant
+   64-octet frame" as truth.
+2. The very next run would then be **GREEN**, because the expectations
+   would match the failures exactly.
+3. The programme would hold a green eleven-row suite that **exercises
+   nothing**, and the `SO-` would be issued against it.
+
+A green suite with zero coverage is strictly worse than a red one, because
+it is believed. ADR-0005 rule 2's promotion discipline exists to make CI's
+output authoritative; it does not make CI's output *correct*, and this is
+the case that shows the difference. **Promotion guarantees fidelity of
+recording, not validity of what was recorded** — the reviewer is the only
+thing standing between the two, which is precisely why this review step
+exists.
+
+#### Round-4 fix list
+
+**R4-1 — BLOCKING. `bench.ml:131`: drive cycles in ascending order by
+explicit recursion.** Replace the `List.init` line with:
+
+```ocaml
+  (* Cycles are driven in ASCENDING order by an explicit recursion, never by
+     a [List.*] combinator. [sample_cycle] drives the port and steps the
+     clock, so its evaluation order IS the stimulus: Base's [List.init]
+     applies [~f] from the highest index DOWN to 0 (Stdlib's ascends), and
+     under it run 30771064764 played every schedule BACKWARDS — the strobe
+     monitor recorded cycles 20, 19, … 0 and M03 saw a terminate before a
+     start. This is the hazard test/xgmii/arrival.ml:37-40 already refuses
+     [List.mapi] for. The [let] below sequences the sample before the
+     recursive call, so the order cannot depend on argument-evaluation order
+     either. *)
+  let rec drive cycle acc =
+    if cycle >= total
+    then List.rev acc
+    else (
+      let s = sample_cycle t ~cycle (word_at ~cycle) in
+      drive (cycle + 1) (s :: acc))
+  in
+  drive 0 []
+```
+
+**R4-2 — REQUIRED. Make `run`'s contract checked rather than promised.**
+`bench.mli` states that `run` "drives cycles `[0 .. Arrival.cycles sched - 1]`".
+That promise was false for three rounds and was caught only as a *side
+effect* of `Strobe_monitor` happening to track sample order. Assert it
+directly, immediately before returning:
+
+```ocaml
+  let samples = drive 0 [] in
+  (* [run]'s own contract, checked rather than promised (RV-0038-R4). *)
+  List.iteri samples ~f:(fun i s ->
+    if s.cycle <> i
+    then
+      failwith
+        (String.concat
+           [ "Bench.run: cycle "
+           ; Int.to_string s.cycle
+           ; " was driven at position "
+           ; Int.to_string i
+           ; " — the stimulus is not in ascending cycle order, so nothing "
+           ; "downstream of this is a statement about the design"
+           ]));
+  samples
+```
+
+This is standing obligation 5's principle — *a stimulus generator nobody
+has checked is an unverified assertion about the design* — applied to the
+driver itself, which is the one component obligation 5 never covered.
+
+**R4-3 — REQUIRED. `bench.ml:178`, `run_directed_lengths`' `List.map`.**
+That combinator also has side effects (each iteration elaborates and runs a
+simulation). It is **order-independent by argument** — every iteration
+builds a fresh `t`, so nothing is shared — and therefore correct today. Add
+one comment saying exactly that, so the next reader knows it was considered
+rather than missed, and so a future edit that introduces shared state has
+somewhere to trip over.
+
+**R4-4 — BLOCKING. Discard the promotion.** All four promoted files revert
+to HEAD; the eleven `[%expect]` blocks go back to empty so that the next
+`runtest` records M03's actual behaviour. **Nothing from run 30771064764's
+`runtest` step enters the repository.**
+
+Nothing else changes. The eleven rows, their stimuli, their oracles and
+their assertions are untouched and remain as accepted — none of them was
+ever reached.
+
+#### This is my miss, and it is the most serious one in this packet
+
+`bench.ml:131` was in the first file I read, at `RV-0038`, and I reviewed it
+line by line three times. In that same sitting I read `test/xgmii/arrival.ml`
+— the file whose comment warns about exactly this hazard — and quoted its
+`create`/`cycles` behaviour back into my verdict.
+
+The reason I missed it is worth more than the apology: **every review I have
+run on this bench asked whether the code says what it means** — names,
+arities, scopes, labels, field sets, claims against evidence. Evaluation
+order is a property of the *runtime*, invisible to reading, and I never put
+a runtime question to the scaffolding. I built `--self-test` for my own
+tools on exactly that principle — *an instrument that has never failed on
+purpose is not known to be able to* — and did not apply it to the
+instrument that drives the design.
+
+The sharper form: **WO-0038 §8's mutation spot-check would have caught
+this at round 1.** Seeding the ΔC-off-by-one mutation into M03 would have
+produced the *same* "0 output words" failure as the unmutated design — a
+bench that fails identically with and without a seeded defect is a bench
+that distinguishes nothing. That is what a mutation trial is for, and it is
+why the §8 spot-check is not a formality to be run after the suite is
+green. It is the check that would have made three rounds unnecessary.
+
+#### Consequences for the sign-off path
+
+- **The §8 mutation spot-check is now a hard precondition, not a
+  closing formality.** After round 4 goes green I will seed all four
+  mutations and confirm the bench dies on each *and* passes without them.
+  A green suite is no longer sufficient evidence that this bench measures
+  anything.
+- **`runtest`'s next first reaching is still expected red by design**
+  (ADR-0005 rule 2) with empty blocks promoting real output — and that
+  output will need this same conformance review, which is when the
+  question the orchestrator asked me today becomes answerable for real.
+- **No `SO-` is owed or offered.** M03 has still never been tested.
+
+- **Fix list**: R4-1 (blocking), R4-2 (required), R4-3 (required),
+  R4-4 (blocking — discard the promotion)
+- **M03 convictions**: **none**, and none may be inferred from this run
+- **Signed**: J-dv_lead-0027

@@ -8355,3 +8355,235 @@ mutations have been seeded and killed.
 
 ### Files-in-this-commit
 - agents/handoffs/WO-0038_tb-m03-first-bench.md
+
+## [J-dv_lead-0027] 2026-08-04T16:20Z | task:WO-0038 | Build green, and the first thing M03 ever said must not be committed: `Bench.run` played every schedule backwards, so the promotion records the apparatus and not the design — zero M03 convictions, round 4 owed, and the line was in the first file I reviewed three times
+
+### Trigger
+Orchestrator, relaying CI run **30771064764** (commit `2c434cd`): **Build
+GREEN — all seven bench files compiled**, including `test_m03_a.ml` and
+`test_m03_b.ml`, which no compiler had ever seen. Then `dune runtest` ran for
+the first time, red by design, and four promoted sources were harvested per
+ADR-0005, sha256-verified byte-exact and written to the working tree
+uncommitted. My review: **not** whether the bench recorded faithfully
+(promotion guarantees that) but whether **the recorded behaviour is
+spec-conformant** — with the standing instruction that any nonconformance is an
+M03 conviction to be routed as a spec ruling.
+
+### Inputs
+- `git diff HEAD -- test/xgmii_rx_64/` — the four promoted files in full.
+- `test/xgmii_rx_64/bench.ml` at `:126-131` (the drive loop), `:178`
+  (`run_directed_lengths`), and `bench.mli`'s stated contract for `run`.
+- `test/xgmii/arrival.ml:36-42` — the `lay_out` fold and, decisively, the
+  comment at `:37-40`.
+- `test/monitors/strobe_monitor.mli`'s `sample` docstring (why out-of-order
+  sampling is an error at all).
+- `docs/specs/modules/xgmii_rx_64.md` §6.1's cycle table and §6.2's `Idle` row,
+  to judge whether "0 output words" is a conviction or a correct response.
+- `ocamlc` 4.14.1 for one reduction: Stdlib `List.init`'s application order.
+- Greps over `test/xgmii_rx_64/`, `test/hardcaml_ethernet/`, `test/cost_probe/`
+  for side-effecting `List.*` combinators.
+- **No `libs/**`, no `rtl_snapshots/**`.**
+
+### Reasoning
+
+**The question I was asked has a presupposition, and the presupposition is
+false.** I was asked whether the recorded behaviour is spec-conformant, and
+told that any nonconformance is an M03 conviction. Both halves assume the
+recording is *of M03*. It is not. The four promoted blocks are not output at
+all — they are `[%expect.unreachable]` with `[@@expect.uncaught_exn]`
+payloads, i.e. four tests that raised. And the exceptions name their own cause:
+
+    scaffolding:   cycles=10   ERROR: cycle 8 sampled after cycle 9 … cycle 0 after 1
+    M03-A3 len 64: cycles=21   ERROR: cycle 19 sampled after cycle 20 … cycle 0 after 1
+
+Sampling order was strictly **descending**, both times. `Bench.run` drove every
+schedule **backwards**.
+
+**Root cause, and it is one line.** `bench.ml:131` is
+`List.init total ~f:(fun cycle -> sample_cycle t ~cycle (word_at ~cycle))`, and
+`sample_cycle` drives the XGMII port and steps the clock. Its evaluation order
+*is* the stimulus. Base's `List.init` applies `~f` from the highest index down
+to 0; Stdlib's ascends, which I checked directly rather than assuming (`0 1 2 3
+4`). So the difference between the two libraries' evaluation order is the
+difference between a bench and a random-word generator.
+
+**What convinced me this diagnosis is complete rather than plausible** is that
+the *counts* are exactly right. A3 at length 64, lane 0: terminate octet time
+80, `Arrival.cycles` = ((80+12+7)/8)+1 = 13, plus `drain:8` = 21 — the monitor
+recorded 21. The empty scaffolding schedule gives 0+10 = 10 — recorded 10.
+`Arrival` produced precisely the right schedule and `Bench.run` handed it over
+in reverse. Nothing else is wrong.
+
+**And the tree already knew.** `arrival.ml:37-40` refuses `List.mapi` in the
+schedule layout because "the stdlib leaves [map]'s evaluation order
+unspecified, and a schedule whose octet times depend on that order would be a
+bench that reproduces differently on a different runtime". The machinery author
+identified this hazard, defended against it, and wrote down why — and the file
+that consumes that machinery walked into it.
+
+**Whether any of this convicts M03: no, and the reasoning matters more than the
+answer.** The temptation is to read "expected 8 output words, got 0" as a
+finding. It is not, and the specification says why: §6.2's `Idle` row makes a
+`/S/` the only thing that opens a frame, and a reversed word sequence never
+presents one followed by frame octets in wire order. **Zero output is the
+correct response of a conformant M03 to that stimulus.** Likewise the octet
+mismatches (the octets were injected backwards) and the monitor errors, which
+are *ordering* complaints, not strobe events — `high-cycles=0`, `observed:
+none`, no error strobe fired anywhere in the run.
+
+So the run bears on M03 not at all. It is an experiment with the apparatus
+wired backwards, and its result is a statement about the apparatus. I put that
+in the verdict in those words, because the standing instruction was to route
+nonconformance as a spec ruling and doing so here would have opened a spec
+proceeding against a design that has never been exercised. **The most valuable
+thing a reviewer does with a red result is sometimes to refuse to convict.**
+
+**Why committing would be the worst outcome available, not merely a wrong
+one.** Promote these and the expectations *match the failures*, so the very
+next run is **green** — a green eleven-row suite that exercises nothing, with
+"M03 emits 0 output words for a conformant 64-octet frame" recorded as truth,
+and an `SO-` issued against it. A green suite with zero coverage is strictly
+worse than a red one because it is believed. This is the sharpest illustration
+I have met of a distinction I have been circling all programme:
+**promotion guarantees fidelity of recording, not validity of what was
+recorded.** ADR-0005 rule 2 makes CI's output authoritative over hand-authored
+snapshots; it cannot make CI's output correct. The reviewer is the only thing
+between the two, which is exactly why this review step exists — and it earned
+its place on its first use.
+
+ppx_expect agreed, incidentally: each block carries the framework's own
+`CR expect_test_collector` warning that these contain backtraces and are
+"strongly discouraged … fragile". Three independent signals — the exception
+type, the monitor's ordering record, and the framework's own CR — all say the
+same thing.
+
+**The fix and its guard.** R4-1 replaces the combinator with an explicit
+ascending recursion, sequencing the sample in a `let` so the order cannot
+depend on argument-evaluation order either — the same shape, for the same
+reason, that `arrival.ml` uses. R4-2 is the part I care most about: `bench.mli`
+*promises* that `run` "drives cycles [0 .. cycles-1]", and that promise was
+false for three rounds and surfaced only as a side effect of `Strobe_monitor`
+happening to track sample order. So I required the promise be asserted
+directly. That is standing obligation 5 — *a stimulus generator nobody has
+checked is an unverified assertion about the design* — applied to the one
+component obligation 5 never reached: the driver itself. R4-3 documents the
+second side-effecting combinator as order-independent *by argument* rather than
+by accident, so a future edit has something to trip over.
+
+**My miss, and the reason for it, which is the useful part.** `bench.ml:131`
+was in the first file I read at `RV-0038` and I reviewed it line by line three
+times. In that same sitting I read `arrival.ml` and quoted it. I missed it
+because **every review I have run on this bench asked whether the code says
+what it means** — names, arities, scopes, labels, field sets, claims against
+evidence. Evaluation order is a property of the runtime, invisible to reading,
+and I never put a runtime question to the scaffolding. I built `--self-test`
+for my own tools on precisely the opposite principle — *an instrument that has
+never failed on purpose is not known to be able to* — and did not apply it to
+the instrument that drives the design.
+
+The sharper form, and the one that changes what I do next: **WO-0038 §8's
+mutation spot-check would have caught this at round 1.** Seeding the
+ΔC-off-by-one mutation would have produced the *same* "0 output words" failure
+as the unmutated design. A bench that fails identically with and without a
+seeded defect distinguishes nothing, and only a mutation trial reveals that. I
+have been treating §8 as the closing formality before an `SO-`; it is the check
+that would have made three rounds unnecessary, and I have said so in the
+verdict and made it a hard precondition rather than a final step.
+
+### Actions
+- Read all four promoted diffs in full and identified them as uncaught
+  exceptions rather than recorded output.
+- Diagnosed the root cause to `bench.ml:131` from the strobe monitor's own
+  ordering record inside the promoted text.
+- Corroborated the mechanism: Stdlib `List.init` applies `~f` ascending
+  (`0 1 2 3 4`), so the descending order recorded by CI is Base's.
+- Cross-checked the cycle counts (21 and 10) against `Arrival`'s own
+  arithmetic to establish that only the ORDER was wrong.
+- Checked §6.2's `Idle` row to establish that zero output is the conformant
+  response to a reversed stimulus, and therefore not a conviction.
+- Swept the directory and the other two Cyclesim-driving test directories for
+  sibling side-effecting combinators: exactly one fatal site; `bench.ml:178`'s
+  `List.map` is order-independent by argument.
+- Flipped the packet State to **BOUNCED** on a title + state anchor and
+  appended `RV-0038-R4` with the four-item fix list, including exact
+  replacement text for R4-1 and R4-2.
+- Ruled **zero M03 convictions** and said explicitly that none may be inferred.
+- Edited none of the worker's files and **did not revert the promotion
+  myself** — R4-4 is the worker's to execute, and the promoted tree stays
+  uncommitted meanwhile. No `git commit`, no `git push`.
+
+### Evidence
+1. **The promotion is four exceptions, not output.** Every block is
+   `[%expect.unreachable]` with `[@@expect.uncaught_exn]`, each carrying
+   ppx_expect's own `CR expect_test_collector` warning about backtraces.
+2. **The drive order, from the monitor's own record.** Scaffolding:
+   `cycles=10`, errors from "cycle 8 sampled after cycle 9" down to "cycle 0
+   sampled after cycle 1". M03-A3 length 64: `cycles=21`, errors from "cycle 19
+   sampled after cycle 20" down to "cycle 0 sampled after cycle 1". Order 9→0
+   and 20→0.
+3. **Stdlib ascends; the recorded order is Base's.** A five-element
+   `List.init` with a side effect prints `0 1 2 3 4` under Stdlib.
+4. **Only the order was wrong.** A3 len 64 lane 0: terminate = 8+8+64 = 80;
+   `Arrival.cycles` = ((80+12+7)/8)+1 = 13; +`drain:8` = **21** = recorded.
+   Empty schedule: 0+10 = **10** = recorded.
+5. **No strobe fired.** Both reports show
+   `error_bad_fcs=0 error_bad_frame=0 error_runt=0 error_oversize=0
+   error_start_without_terminate=0` and `observed: none` — the monitor
+   failures are ordering errors only.
+6. **In-tree precedent.** `test/xgmii/arrival.ml:37-40` refuses `List.mapi`
+   for this exact hazard, in the machinery's own words.
+7. **Blast radius.** `grep -nE "List\.(init|map|mapi|filter_map)"` over
+   `test/xgmii_rx_64/` returns fourteen sites; thirteen are pure or operate on
+   already-collected data; `bench.ml:131` is the only one whose function drives
+   the simulation. `test/hardcaml_ethernet/` and `test/cost_probe/` contain no
+   such combinator.
+8. **Scope.** `git status --short` shows the four promoted test files (worker's,
+   untouched by me) plus my two paths.
+
+### Outcome
+**RV-0038-R4 issued; packet State BOUNCED; the promotion is held
+uncommitted.**
+
+Build going green is the arc's real win and I said so: seven files compiled,
+including two that had never been compiled by anything. The `runtest` result is
+not a result about M03.
+
+**Zero M03 convictions.** Every failure is the conformant response to a
+reversed stimulus. Routing any of this as a spec ruling would have opened a
+proceeding against a design that has never been exercised.
+
+Round-4 list: **R4-1** (blocking — ascending explicit recursion, exact text
+given), **R4-2** (required — assert `run`'s own ascending-order contract rather
+than promise it), **R4-3** (required — document the second combinator as
+order-independent by argument), **R4-4** (blocking — discard the promotion
+entirely; nothing from this `runtest` enters the repository).
+
+Recorded against myself: this was in the first file I reviewed, three times
+over, in the same sitting I read the file that warns about it. Every review I
+ran asked whether the code says what it means; none asked what the runtime
+does with it.
+
+### Open-questions
+- **The §8 mutation spot-check is promoted from closing formality to hard
+  precondition.** It would have caught this at round 1: a bench that fails
+  identically with and without a seeded ΔC defect distinguishes nothing. After
+  round 4 goes green I seed all four and confirm the bench dies on each *and*
+  survives without them, before any `SO-`.
+- **Owed by me**: a `precompile_check.sh` lane that greps `test/**` for a
+  side-effecting call inside a `List.*` combinator. This defect class is
+  mechanically detectable, my harness already has a grep lane (3b), and the
+  lane would have caught it without any toolchain. Not folded into this
+  commit; it is a `tools/` change and this commit is a verdict.
+- **`runtest`'s next first reaching is still expected red by design**, and its
+  promotion will need this same conformance review — which is when the question
+  I was asked today becomes answerable for real.
+- **Still owed**: `tools/precompile_stubs/ifc_check.ml`'s stale
+  `UNVERIFIED-TRANSCRIPTION` note; SPEC-M01 §11.4's caveat retirement for
+  architect_docs_lead; the alerts-are-errors datum and the prose-repair
+  standing rule for the next packet's §7.
+- **My M04 contamination from `J-dv_lead-0024` stands.**
+- **Unchanged**: the RFC 1071 anchor closes on the next CI run that fetches;
+  X-7, X-10, X-11 remain deferred; L1–L5 still owed.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0038_tb-m03-first-bench.md
