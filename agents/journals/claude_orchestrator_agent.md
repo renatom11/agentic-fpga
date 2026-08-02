@@ -3327,3 +3327,40 @@ check-in. rtl_lead's two questions queue for the architect packet.
 ### Files-in-this-commit
 - agents/handoffs/WO-0032_m03-req102-conformance.md
 - tasks/BOARD.md
+
+## [J-orchestrator-0078] 2026-08-03T07:35:00Z | task:WO-0033 | The machinery WO issued — the programme's centre of gravity moves to verification
+
+### Trigger
+WO-0032 accepted at 279c2c3; the armed check-in's remaining item.
+
+### Inputs
+- dv's X-1…X-11 register (J-dv_lead-0013); the post-e22e3f0 plan
+  state (0 RULING); C-45 and the WO-0031 injection scope note, which
+  X-4 must carry as repaired, not as first drafted.
+
+### Reasoning
+One WO for the eleven with an explicit staged-partition escape
+valve: the pieces interlock (X-7 composes X-1; X-5/X-9 one repair
+two customers), so a forced split would cut dependencies blind —
+dv partitions best mid-build if the output cap threatens (the
+WO-0024 kill taught the discipline; the WO stipulates incremental
+writes). rtl's two returned questions kept OUT of dv's packet:
+architect-bound, next packet.
+
+### Actions
+- WO-0033 authored, BOARD row, this commit; spawning dv_lead.
+
+### Evidence
+- test/attack_plans/*.md §7 sections vs the WO's X list: verbatim
+  coverage, plus the two post-freeze scope corrections.
+
+### Outcome / DoD
+dv activated on its largest build. On return: commit, CI, then the
+first tb_writer WOs (M03 rows) become issuable.
+
+### Open questions
+- Whether dv stages or lands all eleven — its call, reasoned.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0033_dv-machinery.md
+- tasks/BOARD.md
