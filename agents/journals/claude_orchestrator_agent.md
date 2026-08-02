@@ -3970,3 +3970,42 @@ and fully evidenced. tb_writer's first return is the next event.
 ### Files-in-this-commit
 - agents/handoffs/WO-0037_rfc-anchor-mismatch.md
 - tasks/BOARD.md
+
+## [J-orchestrator-0093] 2026-08-03T15:05:00Z | task:none | "No human wrote it" retired — the site now says what is true: one person directing an AI workforce
+
+### Trigger
+Sponsor: reword the no-human-built-it section — the AI was directed
+by a human, the human was necessary for direction and every
+important decision; none of this exists without his vision and
+execution.
+
+### Inputs
+- The For-everyone paragraph in site/build.py.
+
+### Reasoning
+He is right, and the review panel's representative had already
+flagged the same axis (its guardrail: never oversell AI autonomy —
+the sponsor signs the gates and directs the work). The new paragraph
+leads with the human: conceived, directed, gated by the sponsor; the
+agents execute, the sponsor decides; the refusal story stays because
+it is the rules' teeth, not an autonomy claim.
+
+### Actions
+- Paragraph rewritten; site rebuilt; this commit.
+
+### Evidence
+- python3 site/build.py clean; the new text renders in index.html.
+
+### Outcome / DoD
+Sponsor redeploys.
+
+### Open questions
+- None.
+
+### Files-in-this-commit
+- site/build.py
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/index.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html

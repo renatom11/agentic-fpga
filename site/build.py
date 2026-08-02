@@ -332,14 +332,17 @@ index = head_block('agentic-fpga — a trading network card built by an AI org',
       such a card: the chip logic that catches packets off a 10-gigabit wire,
       unwraps their envelopes layer by layer, checks every one for corruption,
       and hands clean market messages to a trading application.</p>
-      <p>The twist: <b>no human wrote it</b>. An organization of AI agents —
-      an architect, a hardware designer, a verification lead, and an independent
-      auditor, coordinated by an orchestrator — designs, builds, argues
-      about, and signs off every piece under strict written rules. The human
-      sponsor reviews the work and signs the gates. More than once, an agent
-      refused to sign off another agent’s work until it was repaired; once, the
-      verification lead rejected its own manager’s defect report as wrong.
-      Those refusals being possible — and
+      <p>The twist: <b>one person, directing an AI workforce</b>. The project
+      is conceived, directed, and gated by its human sponsor — the vision, the
+      priorities, and every consequential decision are his. The engineering
+      itself is carried out by an organization of AI agents working under his
+      direction and under strict written rules: an architect, a hardware
+      designer, a verification lead, and an independent auditor, coordinated
+      by an orchestrator. None of it exists without that direction — the
+      agents execute; the sponsor decides. And the rules have teeth: more than
+      once, an agent refused to sign off another agent’s work until it was
+      repaired; once, the verification lead rejected its own manager’s defect
+      report as wrong. Those refusals being possible — and
       <a href="backlog.html">on the record</a> — are the point.</p>
       {JOURNAL_QUOTE}
       <p>Start with the <a href="block-diagram.html">block diagram</a> — you
