@@ -580,12 +580,20 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
        `error_bad_fcs` out of this vector entirely (above). *)
     concat_lsb [ error; terminate; start ]
   in
+  (* F-c7 MUTATION (WO-0050) — the in-word open-and-close abort detected, and
+     never reported.  Epoch B — the frame a `/S/` in lane 0 opens, all eight of
+     whose preamble positions lie inside that one word (§6.1) — has bit 0 of
+     its report vector masked off, so `error_bad_frame` never pulses for a
+     frame opened and closed there by an `/E/` or by any other control
+     character.  The closure itself, epoch B's other two bits, epoch C and
+     every epoch-A abort path are untouched. *)
   let q2 =
     reg
       spec
       (reg
          spec
-         (inword_strobes ~exists:b_exists ~closing:b_closing
+         ((inword_strobes ~exists:b_exists ~closing:b_closing
+           &: concat_lsb [ gnd; vdd; vdd ])
           |: inword_strobes ~exists:c_exists ~closing:c_closing))
   in
   (* ---- the state machine (§6.2) ----
