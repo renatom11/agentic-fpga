@@ -1887,3 +1887,331 @@ be added silently, and I want dv_lead's own eyes on the boundary I drew.
 - test/xgmii_rx_64/bench.mli
 - test/xgmii_rx_64/test_m03_d.ml
 - agents/handoffs/WO-0040_tb-m03-family-d-fcs.md
+
+## [J-tb_writer-0008] 2026-08-12T17:30Z | task:WO-0043 | Family E — the first error path in M03, hand-derived against Injection's model rather than from it, and the three trap answers WO-0043 sealed as a deliverable
+
+### Trigger
+
+WO-0043/2026-08-12T17:30Z (dv_lead, via the orchestrator; no explicit spawn
+short-id token was included verbatim in my launch prompt — reconstructed
+from `J-dv_lead-0048`'s own timestamp, the journal entry that authored this
+packet, per the same convention `J-tb_writer-0007` used for WO-0040). A
+fresh work order, extending the WO-0038/WO-0039/WO-0040/WO-0041/WO-0042
+qualified bench directory: four rows of `AP-xgmii_rx_64.md` §4.E
+(M03-E1…E4), the first bench in this tree to abort a frame mid-flight
+rather than drive one to completion — REQ-105's error-character path,
+unverified in both directions before this round exactly as REQ-104's was
+before WO-0040.
+
+### Inputs
+
+`agents/charters/tb_writer.md`; `agents/PROTOCOL.md` §2-6 and §10 (read in
+full); `agents/handoffs/WO-0043_tb-m03-family-e-error-character.md` (full,
+before my Return log append).
+
+`test/attack_plans/AP-xgmii_rx_64.md`: §4.D (context) and §4.E in full
+(M03-E1…E4's Row/Attacks/Stimulus/Observable/Kills/Status cells).
+
+Spec text, read directly: `docs/specs/modules/xgmii_rx_64.md` §6.1 (the
+preamble-position routing, the "more than one event in one input word"
+consequence, the emission rule, the drain paragraph), §6.2 (all four state
+rows), §6.3 (items 1, 3-8), §7 (the timing contract), §9 in full (the
+nine-row table, the closure list, "Strobe cycle, pinned", the co-occurrence
+rulings); `docs/specs/requirements.md` §0.6 (aborts/discards/strobes,
+frame conservation), §0.7 (zero-length payloads), REQ-105, REQ-103,
+REQ-113, REQ-007, REQ-013, REQ-008, REQ-106 (for the "REQ-106 rule with
+`/E/` in place of `/T/`" cross-reference).
+
+Existing bench machinery, read in full: `test/xgmii_rx_64/bench.mli`,
+`test/xgmii_rx_64/bench.ml`, `test/xgmii_rx_64/test_m03_a.ml`,
+`test/xgmii_rx_64/test_m03_b.ml`, `test/xgmii_rx_64/test_m03_c.ml`,
+`test/xgmii_rx_64/test_m03_d.ml`, `test/xgmii_rx_64/test_m03_structural.ml`,
+`test/xgmii_rx_64/dune`.
+
+DV-side (non-RTL) machinery, read in full for WO-0043 §4's three trap
+questions: `test/xgmii/injection.mli`, `test/xgmii/injection.ml` (the
+implementation — `create`'s unconditional `~fcs_valid:false`, the
+`overrides` table and `lane_at`/`word_at`, the `outcomes` reference
+evaluation and its `tlast_cycle_of`/`no_output_cycle`/`tkeep_of`/`window`
+helpers), `test/xgmii/arrival.mli`, `test/xgmii/arrival.ml` (`terminate_octet_time`,
+`check`'s gap/DIC/overlap arithmetic, confirming it never reads
+`Injection`'s overrides), `test/xgmii/frame.mli`, `test/xgmii/xgmii_word.mli`,
+`test/xgmii/xgmii_word.ml` (`idle`, `error_char`, `of_lanes`, `is_control`).
+`test/xgmii/test_injection.ml` was skimmed for its idiom (plain-OCaml,
+promoted `%expect` blocks) to confirm it is NOT the idiom this file follows
+— `test/xgmii_rx_64/`'s own empty-block discipline governs `test_m03_e.ml`,
+not X-1's own unit-test file.
+
+Monitor contracts, read in full: `test/monitors/protocol_monitor.mli`
+(confirming it asserts nothing about `tuser` — the "monitor asserting every
+abort is marked on a tlast word" M03-E3 forbids is not this one),
+`test/monitors/conservation_monitor.mli` (`discarded`, `frame_dropped`'s
+sibling on the latency side, `strobe_pulse`'s independence from
+`discarded`/`frame_out`), `test/monitors/strobe_monitor.mli`,
+`test/monitors/octet_time.mli` (`Latency.frame_out`'s `?expected_octets`
+and `Latency.frame_dropped`, both named in `bench.mli`'s own docstring as
+"what family E/F/G/H need").
+
+Tooling: `tools/precompile_check.sh`, `tools/dv_checks.sh` (re-read to
+confirm which lanes reach `test/xgmii_rx_64/` before running them — none
+do, per WO-0040's own prior finding, re-confirmed this round).
+
+No `libs/**`, `top/**`, `bin/**` or `rtl_snapshots/**` path was opened.
+
+### Reasoning
+
+**Why family E was gated on nothing, once the two halves of X-1 are told
+apart.** WO-0043 §1's correction is the reason I could start at all:
+`Injection`'s placement/corruption machinery (choosing WHERE an `/E/`
+lands) is stimulus generation and using it is fine; `Injection`'s computed
+`outcome`/`report` (what §9 says happens, and when) is the model WO-0033's
+standing co-sim limit binds. I read `injection.ml`'s `outcomes` function in
+full specifically to be able to draw that line myself rather than take the
+packet's word for it — `outcomes` is a from-scratch re-implementation of
+§6.2's state machine and §9's closure list over the catalogue's own octet-time
+line (`injection.ml:284-446`), sharing no code path with `create`'s
+placement/override machinery (`injection.ml:81-207`) beyond reading the same
+`overrides` table. The two are genuinely separable, which is what let me
+treat one as usable stimulus and the other as a reported cross-check only,
+never adopted.
+
+**The four rows and what each is for.** M03-E1 is the first row in this
+tree to assert REQ-103's "no FCS removal on the abort path" against a
+design that might apply it anyway — sixteen cases (eight `/E/` lanes ×
+two start lanes) so every lane's REQ-106-with-`/E/` last-octet rule is
+exercised, not sampled. M03-E2 is the §0.7 zero-delivered case and the row
+WO-0043 §2 calls "the most likely place in this packet to write something
+wrong" — I read that warning as directed specifically at the temptation to
+assert `tuser`[0] = 0 on the (nonexistent) tlast word, which would read as
+"the frame checks out" when in fact there is no word for the bit to live
+on; the fix was not a clever check but a `None` match with nothing inside
+it. M03-E3 is not a test function at all — it is a discipline enforced by
+which `Conservation_monitor`/`Octet_time.Latency` calls M03-E2's own
+accounting makes, argued in Actions below. M03-E4 is the negative-assertion
+row WO-0043 §2 warns is vacuity-prone without its positive partner, and is
+the only row in this file that does not use `Injection` at all (trap
+answer 3).
+
+**The `~fcs_valid:false` trap (trap question 1), and why it bites family E
+even though NOTHING is bit-flipped.** WO-0040's family D already discovered
+that `Arrival.create ?fcs_valid` defaults to `true` and that `Arrival.check`
+verifies REQ-304's residue when it is set. I expected `Injection.create` to
+condition `~fcs_valid` on whether a case's corruptions were `Flip_bit` (residue
+should legitimately fail) versus `Place`-only (residue is untouched) —
+reading `injection.ml:135` showed it does not: `~fcs_valid:false` is passed
+unconditionally, for every case, so the residue check is switched off for
+family E's frames too even though their underlying `octets` arrays
+(`apply_bit_flips` never touches `Place`, confirmed at `injection.ml:68-79`)
+genuinely carry a correct FCS. WO-0040 §3.2's "assert `Frame.residue_ok` by
+hand in both directions" therefore applies to family E as well, even though
+no bit is ever flipped here — I assert it in one direction only (the base
+frame IS good), since there is no corruption to verify "changed" the
+residue in the M03-D1 sense; the negative-direction analogue for family E
+is instead the `/E/`-actually-landed check described below.
+
+**Trap question 2, the one the packet calls likeliest, and why I concluded
+it does NOT bite here.** My working hypothesis going in was that
+`Arrival.check`'s gap arithmetic, anchored on `terminate_octet_time`, would
+somehow be confused by a frame that never reaches its terminate character
+from the DUT's point of view. Reading `arrival.ml` end to end settled it the
+other way: `terminate_octet_time` is a pure function of `start_octet_time`
+and `Array.length octets` (`arrival.ml:22`) — it has no dependency on
+control-character CONTENT at all, and `Injection`'s `overrides` table
+(`injection.ml:56`, `Injection.t`-private) never reaches `Arrival.t`. For a
+`Place`-only corruption the `octets` array is unmodified (same fact as trap
+1), so the schedule's own idea of "where this frame ends" is untouched by
+where an `/E/` was placed inside it, and a genuine `/T/` character is still
+emitted at the frame's ordinary nominal end — ignored by the DUT once the
+frame has closed early, but present on the wire and present in `Arrival`'s
+own geometry, which is all `Arrival.check` ever looks at. I traced this by
+hand for the specific octet offsets family E uses (E1's `/E/` at frame
+octets 24-31, thirty-two octets short of the 64-octet frame's real end;
+E2's `/E/` at frame octet 0, sixty-four octets short) rather than asserting
+it as a general theorem — the general case (an `Injection` extension that
+also shortened the `octets` array to match an abort point) would be a
+different, untested situation, and I say so explicitly in the Return log
+rather than claim more than I checked.
+
+**Trap question 3, and the two-line resolution.** `Injection.placement`'s
+three constructors are each relative to one frame's own `start_octet_time`
+(`injection.ml:161-163`); none can name a gap octet time between two
+frames. Rather than propose an `Injection` addition (a fourth `placement`
+constructor, or a schedule-relative variant), I re-read `bench.mli`'s own
+`run` docstring and found the tool already there: `?word_at` is a total
+function of cycle, not a single-cycle patch despite its docstring's framing
+("overrides the word driven on a single cycle") — `test_m03_b.ml`'s
+`preamble_override` already generalises it to two cycles. `run_e4` builds
+two ordinary clean frames via the already-public `frames_at`, computes the
+gap's octet-time span from `terminate_octet_time`/`start_octet_time`
+directly, and writes a `word_at` that delegates to `Arrival.word_at sched`
+everywhere except the one gap cycle it overrides. No `Injection` addition,
+no `bench.ml` addition — WO-0043 §4's own closing instruction ("return the
+question before adding anything") is why I looked this hard for a
+no-addition path before concluding one existed.
+
+**Why the cross-check against `Injection.outcomes` is embedded in the test
+file rather than left as a write-time-only argument.** WO-0043 §1 says the
+model may be used "only as a cross-check that you report." I read
+"reported" as compatible with either a prose argument in this journal/the
+Return log, or a runtime assertion that fires (and is clearly labelled) on
+disagreement — and chose the runtime version, because a prose argument
+written once and never re-checked is exactly the kind of claim that goes
+stale the moment `Injection.ml` changes under a later WO, while an embedded
+check re-verifies itself on every CI run. I hand-derived the ALGEBRAIC
+argument for why it should agree (both M03-E1's `tlast_cycle` formula and
+M03-E2's `no_output_cycle` formula reduce to the identical expression as
+`Injection`'s own `tlast_cycle_of`/`no_output_cycle`, not merely at the
+specific numbers this file happens to drive) before writing the assertion,
+specifically so that if it DOES fire in CI, the fault is legible as "my
+algebra was wrong somewhere" rather than a surprise. This is flagged as
+open question 3 in the Return log because a hard `failwith` inside a
+family-E `%expect_test` on a MODEL disagreement, rather than a DUT one, is
+a new shape for this suite and I would rather dv_lead confirm it than have
+a later reader assume every failure here is about M03.
+
+**M03-E3, made mechanical rather than merely declared.** The packet's own
+words — "a monitor asserting 'every abort is marked on a tlast word' must
+not be driven for E2's frame" — describe a PROPERTY of a call I could make,
+not a named function I could avoid calling directly. I resolved this by
+tracing which `Bench`/`Dv_monitors` calls WOULD constitute that assertion:
+`Bench.account_clean_frame` (used by every other row in this suite)
+unconditionally calls `Conservation_monitor.frame_out ~aborted`, which
+records the frame as EMITTED — a claim E2's frame cannot support, since it
+has no tlast word — and reading `tlast_sample`'s `.tuser` field is the
+other way the forbidden assertion could sneak in, both closed off by
+`tlast_sample` returning `None` and `run_e2` never pattern-matching past
+that `None`. `account_dropped_frame`'s two calls
+(`Conservation_monitor.discarded`, `Octet_time.Latency.frame_dropped`) are
+therefore not merely "an alternative accounting path" but the SPECIFIC
+discharge of M03-E3's own text: the frame is counted through its strobe,
+never through the frame_out/tlast path.
+
+**Why no `bench.ml` edit, unlike WO-0040's one authorised addition.**
+`bench.mli`'s own docstring already anticipates family E's shape ("the
+truncated/aborted classes `Latency.frame_out`'s `?expected_octets` exists
+for are family E/F/G/H … so `account_clean_frame` never supplies it") — I
+read this as telling me the LOWER-LEVEL primitives (`Conservation_monitor.*`,
+`Octet_time.Latency.*`, already public via `Bench.conservation`/
+`Bench.latency`) are sufficient, not as inviting a new parameterised
+`Bench` function. `account_aborted_frame`/`account_dropped_frame` are
+therefore ordinary `test_m03_e.ml`-local code built from `Bench`'s existing
+public surface, the same category `test_m03_c.ml`'s `length_outcome` or
+`test_m03_d.ml`'s `run_mixed_pair` already are.
+
+### Actions
+
+Wrote `test/xgmii_rx_64/test_m03_e.ml` (new file, 619 lines): `run_e1`
+(sixteen cases via `Dv_xgmii.Injection`, `?word_at` delegating to
+`Injection.word_at`, `cross_check_e1` against `Injection.outcomes`),
+`run_e2` (two cases, same `Injection` pattern, `cross_check_e2`, the
+`tuser`-nothing assertion, `account_dropped_frame`), the M03-E3 NO-ASSERT
+declaration as a trailing comment (no test function), `run_e4` (two cases,
+plain `frames_at` + a hand-written `?word_at` closure, no `Injection`,
+double stimulus-verification before the negative assertion), three
+`%expect_test`s (E1, E2, E4), all empty blocks. Two small file-local
+accounting helpers (`account_aborted_frame`, `account_dropped_frame`) and
+one duplicated file-local helper (`split_at_first_tlast`, deliberately not
+imported from `test_m03_d.ml` — no cross-test-file dependency beyond
+`Bench`). No other file touched.
+
+Appended a RETURNED block to
+`agents/handoffs/WO-0043_tb-m03-family-e-error-character.md`'s Return log
+(row disposition table, what changed, the three trap answers with file:line
+evidence, the hand-derivation-vs-model cross-check finding, every
+derivation with its section cited, an UNVERIFIED section, expected-CI
+output verbatim, five open questions, and a scope statement covering three
+files a concurrent session touched that are not mine). State left ISSUED.
+
+### Evidence
+
+```
+$ ocamlc -stop-after parsing -dsource test/xgmii_rx_64/test_m03_e.ml
+```
+exit 0 (desugared source printed, no error — the whole file parses as
+valid OCaml structure).
+
+```
+$ bash tools/precompile_check.sh          (also re-run with --force: identical)
+LANE 1 — RESULT: 31 units compiled, 0 errors
+LANE 2 — RESULT: 12 units compiled, 0 errors
+LANE 2b — ifc_check.ml 6/6 fields agree; hardcaml.ml 6/6 found verbatim
+  against /root/.opam/fpga/.opam-switch/sources/hardcaml/src; two
+  pre-existing UNVERIFIED-TRANSCRIPTION lines (Axi64.Source/Dest, base.ml)
+LANE 3a — EXCLUDED xgmii_rx_64 — depends on hardcaml_ethernet, which this
+  harness cannot transcribe (test_m03_e.ml is inside this excluded
+  directory and received NO type-check from this run); RESULT: 43 files in
+  compiled directories, all 43 materialised and compiled
+LANE 3b — RESULT: no unqualified sibling-library reference
+SUMMARY: precompile_check: ALL LANES PASSED, 2 transcriptions UNVERIFIED
+  here (settled only by CI)
+```
+
+```
+$ bash tools/dv_checks.sh
+```
+all three self-tests OK; `check_records_vs_appendix.sh` OK;
+`check_emitted_verilog.sh` OK; `precompile_check.sh` OK (as above);
+`check_rfc1071_anchor.sh` OBLIGATION OPEN (blocked egress, pre-existing,
+documented `J-dv_lead-0017`/`0018`, unrelated to this WO); bench inventory
+report: `test_m03_e.ml` 3, total `test/xgmii_rx_64/` 15 (12 pre-existing +
+3 new), 95 repo-wide. Overall: "every check that COULD run passed, and 1
+obligation is still OPEN."
+
+**Predicted, not checked** (ADR-0005, no toolchain reaches
+`test/xgmii_rx_64/`): `dune build @default` and `dune runtest` succeed; all
+fifteen `%expect_test`s (twelve pre-existing plus my three) pass with empty
+output; the two embedded `Injection`-model cross-checks agree (argued
+algebraically in Reasoning, never executed); `git diff --exit-code` stays
+clean after `dune runtest`.
+
+`git status --porcelain` and `git diff --exit-code` against every existing
+bench file, `test/xgmii/`, `test/monitors/`, `test/attack_plans/AP-xgmii_rx_64.md`
+and `docs/specs/`: clean (exit 0) except the one new file and the packet's
+own Return log append, both mine; three other paths
+(`agents/journals/claude_architect_docs_lead_agent.md`,
+`docs/adr/ADR-0015-the-cosim-lane-dependency-reference-and-determinism.md`,
+`tools/precompile_stubs/ifc_check.ml`, plus an untracked
+`test/attack_plans/CD-xgmii_rx_64_cosim.md`) show as modified/untracked in
+this shared working tree from a concurrent session — I made no
+`Write`/`Edit`/mutating-`Bash` call against any of them and read none of
+them; full detail in the Return log's Scope statement.
+
+### Outcome
+
+All four §1 rows disposed: M03-E1, M03-E2 and M03-E4 written as ASSERT with
+named tests (sixteen, two and two cases respectively); M03-E3 declared
+NO-ASSERT, discharged by M03-E2's own accounting call rather than a
+separate test function, per the packet's own row 3 text. All three §4 trap
+questions answered with file:line evidence rather than asserted from
+memory, and none required a bench or `Injection` addition, so none was
+made. Every promoted... — there is no promotion this round: no simulation
+ran, so no expect-test output exists to eyeball, and every `[%expect]`
+block is empty by construction (WO-0043 §6 rule 5). Handoff: Return log
+appended to `agents/handoffs/WO-0043_tb-m03-family-e-error-character.md`
+as a RETURNED block; state left ISSUED. No `SO-` claimed or offered, per
+WO-0043 §7's explicit instruction ("Do not write an `SO-`").
+
+### Open-questions
+
+Five, all disclosed in Reasoning above and repeated in the Return log
+rather than held back: (1) M03-E1's mid-frame word choice (octets 24-31)
+is mine, not pinned by the packet; (2) M03-E4's gap octet-time offset
+(`terminate0 + 5`) is likewise mine; (3) whether the embedded
+`Injection`-model cross-check belongs inside the committed `%expect_test`s
+at all, versus staying a write-time-only argument in this journal/the
+Return log — my own judgement is that the executable form is strictly
+stronger, but it is a new shape for this suite and I want dv_lead's eyes
+on it before it becomes the pattern later families copy; (4) whether two
+DIFFERENT-length clean frames (64/68 octets) is the right anti-confusion
+device for M03-E4 versus same-length-different-content or the §8
+sequence-number convention M03-D3 uses; (5) the three files a concurrent
+session left modified in this working tree
+(`claude_architect_docs_lead_agent.md`, `ADR-0015-…`,
+`precompile_stubs/ifc_check.ml`) and one untracked
+(`CD-xgmii_rx_64_cosim.md`) are not mine, were not read or touched by me,
+and are flagged here only so the orchestrator's per-agent commit split does
+not attribute them to this WO.
+
+### Files-in-this-commit
+- test/xgmii_rx_64/test_m03_e.ml
+- agents/handoffs/WO-0043_tb-m03-family-e-error-character.md
