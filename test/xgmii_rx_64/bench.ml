@@ -30,6 +30,15 @@ type t =
   ; conservation : Conservation_monitor.t
   ; strobes : Strobe_monitor.t
   ; latency : Octet_time.Latency.t
+  ; mutable cycles_driven : int
+        (* RV-0038-R5 / R5-1 (carried from RV-0038-R4-VERDICT): the choke-point
+           ordering guard. [sample_cycle] is the one function that touches the
+           design, so this is the one place a reversed or skipped drive can be
+           caught — unlike R4-2's guard, which only checked the order [run]
+           RETURNED its samples in and did not fire on run 30771064764's actual
+           reversed drive (Base's [List.init] returns ascending however it
+           evaluates [~f]). Starts at 0 in {!create}; incremented on every
+           conforming call. *)
   }
 
 let protocol t = t.protocol
@@ -68,11 +77,13 @@ let create () =
         ~front_offsets:[ 8; 12 ]
         ~ceiling:4
         ()
+  ; cycles_driven = 0
   }
 ;;
 
 type sample =
-  { cycle : int
+  { cycle : int (* schedule cycle whose INPUT word was driven *)
+  ; out_cycle : int (* cycle the sampled OUTPUT belongs to = cycle + 1 *)
   ; in_word : Xgmii_word.t
   ; out : Stream_word.t
   ; errors_high : string list
@@ -81,12 +92,48 @@ type sample =
 (* Drives [in_word] onto xgmii_rx, steps one clock, samples rx and the five
    error strobes, and feeds the standing Protocol_monitor and Strobe_monitor
    (obligations 1 and 4). The Conservation_monitor is deliberately not fed
-   here — see bench.mli. *)
+   here — see bench.mli.
+
+   RV-0038-R5 / R5-1: the choke-point ordering guard. [sample_cycle] is the
+   one function that touches the design — drives a register-backed input and
+   advances [Cyclesim]'s clock — so it is the one place a stimulus out of
+   order can be caught before anything downstream treats its result as a
+   statement about M03. Fires on the FIRST out-of-order call, unlike R4-2's
+   guard (bench.mli history, withdrawn), which checked the order [run]
+   RETURNED its samples in rather than the order the design was actually
+   driven in and would not have fired on run 30771064764's reversed drive. *)
 let sample_cycle t ~cycle (in_word : Xgmii_word.t) : sample =
+  if cycle <> t.cycles_driven
+  then
+    failwith
+      (String.concat
+         [ "Bench.sample_cycle: driving cycle "
+         ; Int.to_string cycle
+         ; " after "
+         ; Int.to_string t.cycles_driven
+         ; " cycles have been driven — the STIMULUS is out of order at the "
+         ; "one point that touches the design, so nothing downstream of this "
+         ; "is a statement about it"
+         ]);
+  t.cycles_driven <- t.cycles_driven + 1;
   let i = Cyclesim.inputs t.sim in
   let o = Cyclesim.outputs t.sim in
   Xgmii_probe.to_refs ~d:i.xgmii_rx.d ~c:i.xgmii_rx.c in_word;
   Cyclesim.cycle t.sim;
+  (* RV-0038-R5: [Cyclesim.cycle] returns having recomputed the outputs from
+     post-edge register state, so every value read below (rx and the five
+     error strobes alike — all of them outputs) belongs to the cycle AFTER
+     the one whose input was just driven. This is not read off Hardcaml's
+     documentation: it is settled by this repository's own CI-promoted
+     waveform, test/hardcaml_ethernet/test_word_counter.ml, whose snapshot
+     shows [valid] high during cycle 1 producing [count] = 1 during cycle 2 —
+     the ordinary hardware relation, input at cycle N, registered output at
+     N + 1. A [drive -> Cyclesim.cycle -> sample] reader that labels what it
+     just read with [cycle] is therefore one cycle early; [out_cycle] is the
+     corrected label and every OUTPUT observation in this bench uses it.
+     [cycle] keeps its meaning as the schedule cycle whose INPUT word was
+     driven (and is what the guard above checks). *)
+  let out_cycle = cycle + 1 in
   let out =
     Axi64_probe.of_refs
       ~tvalid:o.rx.tvalid
@@ -108,9 +155,9 @@ let sample_cycle t ~cycle (in_word : Xgmii_word.t) : sample =
       ]
       ~f:high
   in
-  Protocol_monitor.observe t.protocol ~cycle out;
-  Strobe_monitor.sample t.strobes ~cycle ~high:errors_high;
-  { cycle; in_word; out; errors_high }
+  Protocol_monitor.observe t.protocol ~cycle:out_cycle out;
+  Strobe_monitor.sample t.strobes ~cycle:out_cycle ~high:errors_high;
+  { cycle; out_cycle; in_word; out; errors_high }
 ;;
 
 let run t sched ~drain ?word_at () =
@@ -145,21 +192,18 @@ let run t sched ~drain ?word_at () =
       let s = sample_cycle t ~cycle (word_at ~cycle) in
       drive (cycle + 1) (s :: acc))
   in
-  let samples = drive 0 [] in
-  (* [run]'s own contract, checked rather than promised (RV-0038-R4). *)
-  List.iteri samples ~f:(fun i s ->
-    if s.cycle <> i
-    then
-      failwith
-        (String.concat
-           [ "Bench.run: cycle "
-           ; Int.to_string s.cycle
-           ; " was driven at position "
-           ; Int.to_string i
-           ; " — the stimulus is not in ascending cycle order, so nothing "
-           ; "downstream of this is a statement about the design"
-           ]));
-  samples
+  (* [run]'s ascending-cycle contract is checked at the choke point inside
+     [sample_cycle] (RV-0038-R5 / R5-1), not here. RV-0038-R4-VERDICT's
+     original R4-2 guard lived at this call site instead and checked the
+     order of the RETURNED list — a different object from the order of the
+     side effects that actually drove the design, and one that would not
+     have fired on run 30771064764's reversed drive (Base's [List.init]
+     returns its list in ascending index order however it evaluates [~f], so
+     that guard's own check would have passed even under the original bug).
+     Withdrawn in favour of the choke-point guard rather than kept alongside
+     it, so there is exactly one true statement about ordering in this file
+     rather than one true guard and one guard whose message overreached. *)
+  drive 0 []
 ;;
 
 let delivered_samples samples = List.filter samples ~f:(fun s -> s.out.tvalid)
@@ -170,17 +214,26 @@ let delivered_octets samples =
 
 let tlast_sample samples = List.find (delivered_samples samples) ~f:(fun s -> s.out.tlast)
 
+(* RV-0038-R5 / R5-2: [errors_high] is read off the DUT's error OUTPUTS, so
+   the pulse it reports belongs to [s.out_cycle], not [s.cycle] (the INPUT
+   cycle that was driven to produce it). *)
 let error_pulses samples =
   List.concat_map samples ~f:(fun s ->
-    List.map s.errors_high ~f:(fun name -> s.cycle, name))
+    List.map s.errors_high ~f:(fun name -> s.out_cycle, name))
 ;;
 
 let account_clean_frame t (frame : Arrival.frame) samples ~aborted =
   Conservation_monitor.frame_in t.conservation;
   Conservation_monitor.frame_out t.conservation ~aborted;
   Octet_time.Latency.frame_in t.latency (Arrival.in_times frame);
+  (* RV-0038-R5 / R5-2: this is the call site the ruling names as mattering
+     most. The latency tagger derives its output octet times from these
+     (cycle, word) pairs (Octet_time.of_words), so pairing a delivered word
+     with [s.cycle] rather than [s.out_cycle] would have understated every
+     measured word delay by one cycle — exactly the ΔC = 2 vs ΔC = 3
+     discrepancy items 1, 2 and 4 of run 30772333717 turned out to be. *)
   let delivered_pairs =
-    List.map (delivered_samples samples) ~f:(fun s -> s.cycle, s.out)
+    List.map (delivered_samples samples) ~f:(fun s -> s.out_cycle, s.out)
   in
   Octet_time.Latency.frame_out t.latency (Octet_time.of_words delivered_pairs)
 ;;
@@ -241,7 +294,24 @@ let assert_monitors_clean t ~row =
   then
     failwith
       (String.concat [ row; ": strobe monitor unclean:\n"; Strobe_monitor.report t.strobes ]);
-  if not (Octet_time.Latency.is_clean t.latency)
+  (* RV-0038-R5 / R5-3: the tagger's ERRORS are always meaningful; its
+     CONSTANCY is a claim it can only make once it has compared a frame, and
+     it correctly declines to make it over an empty set ([is_constant] is
+     false with zero comparisons, by [Octet_time.mli]'s own definition — "at
+     least one octet was compared and every front-offset class has a single
+     L"). Demanding [is_clean] of a tagger nobody fed anything is the item-5
+     bench defect from run 30772333717: the scaffolding smoke test drives no
+     frames and then asks a frameless monitor to certify itself clean, and
+     [is_clean]'s honest "no" was mistaken for a finding. dv_monitors is not
+     changed by this fix — its behaviour was already right. *)
+  (match Octet_time.Latency.errors t.latency with
+   | [] -> ()
+   | errs ->
+     failwith
+       (String.concat
+          [ row; ": latency tagger errors:\n"; String.concat ~sep:"\n" errs ]));
+  if Octet_time.Latency.frames_compared t.latency > 0
+     && not (Octet_time.Latency.is_clean t.latency)
   then
     failwith
       (String.concat

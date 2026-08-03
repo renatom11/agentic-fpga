@@ -66,13 +66,33 @@ val latency : t -> Dv_monitors.Octet_time.Latency.t
     built with. *)
 val strobe_names : string list
 
-(** One driven-and-sampled cycle: the XGMII word presented to [xgmii_rx] that
-    cycle, the [rx] word the standing {!Axi64_probe} sampled the same cycle,
-    and the names of every error strobe high that same cycle (a subset of
-    {!strobe_names}, read directly off the DUT's error outputs — never
-    inferred). *)
+(** One driven-and-sampled cycle: the XGMII word presented to [xgmii_rx] on
+    [cycle], and — one cycle later, [out_cycle] — the [rx] word the standing
+    {!Axi64_probe} sampled and the names of every error strobe high that
+    cycle (a subset of {!strobe_names}, read directly off the DUT's error
+    outputs — never inferred).
+
+    {2 [cycle] vs [out_cycle] (RV-0038-R5)}
+
+    [Cyclesim.cycle] returns having recomputed the design's outputs from
+    post-edge register state, so a [drive -> Cyclesim.cycle -> sample] reader
+    is reading the OUTPUT of the cycle AFTER the one whose INPUT it just
+    drove. This is not a documentation reading: it is settled by this
+    repository's own CI-promoted waveform,
+    [test/hardcaml_ethernet/test_word_counter.ml], whose snapshot shows
+    [valid] high during cycle 1 producing [count] = 1 during cycle 2 — input
+    at cycle N, registered output at N + 1, the ordinary hardware relation.
+    [cycle] is the schedule cycle whose INPUT word was driven (and is what
+    {!run}'s internal choke-point ordering guard checks — RV-0038-R5 / R5-1);
+    [out_cycle] (= [cycle] + 1) is the cycle every OUTPUT field of this
+    record — [out] and [errors_high] alike —
+    actually belongs to. Every consumer of an output value in this library
+    ({!error_pulses}, {!account_clean_frame}) reports [out_cycle]; a row
+    checking an output's timing against the spec's cycle table must compare
+    against [out_cycle], never [cycle]. *)
 type sample =
   { cycle : int
+  ; out_cycle : int
   ; in_word : Dv_xgmii.Xgmii_word.t
   ; out : Dv_monitors.Stream_word.t
   ; errors_high : string list
@@ -87,12 +107,18 @@ type sample =
     a frame still draining through the two-word pipeline is fully observed
     (§6.1's drain window is at most 2 cycles after the terminate word;
     [drain] should comfortably exceed that — every row in this packet uses
-    8). Every cycle, in schedule order and including the [drain] tail, is (a)
-    sampled into a {!sample}, (b) fed to the standing {!Protocol_monitor} and
-    (c) fed to the standing {!Strobe_monitor} via
-    [sample ~cycle ~high:errors_high] — C-23's counting convention requires
-    every cycle, including ones where nothing is high, so [run] is the only
-    place that call is allowed to happen.
+    8). Every cycle, in schedule order and including the [drain] tail, is
+    driven and sampled through an internal choke-point ordering guard
+    (RV-0038-R5 / R5-1: [failwith]s naming the out-of-order cycle the instant
+    one is driven, since that one function is the only place a reversed or
+    skipped drive can be caught before anything downstream treats the result
+    as a statement about the design), then (a) turned into a {!sample}, (b)
+    fed to the standing {!Protocol_monitor} and (c) fed to the standing
+    {!Strobe_monitor} via [sample ~cycle:out_cycle ~high:errors_high] — both
+    at the sample's [out_cycle], never its [cycle] (RV-0038-R5 / R5-2: they
+    read the DUT's outputs, not its inputs). C-23's counting convention
+    requires every cycle, including ones where nothing is high, so [run] is
+    the only place that call is allowed to happen.
 
     [?word_at] overrides the word driven on a single cycle (identity is
     [Arrival.word_at sched]): M03-B1 uses it to substitute a non-standard
@@ -128,8 +154,10 @@ val delivered_octets : sample list -> int list
     [run]'s [drain] always exceeds §6.1's 2-cycle window. *)
 val tlast_sample : sample list -> sample option
 
-(** Every (cycle, strobe name) pair that was high anywhere in the run, in
-    cycle order. *)
+(** Every (out_cycle, strobe name) pair that was high anywhere in the run, in
+    out_cycle order — an error strobe is a DUT output, so it is reported at
+    the cycle it belongs to ([out_cycle]), never the cycle whose input
+    produced it (RV-0038-R5 / R5-2). *)
 val error_pulses : sample list -> (int * string) list
 
 (** Standing obligations 2 and 3 for the common case in this packet: one
@@ -137,10 +165,13 @@ val error_pulses : sample list -> (int * string) list
     Calls [Conservation_monitor.frame_in], [.frame_out ~aborted], then feeds
     the standing {!Octet_time.Latency} tagger [frame.Arrival.octets]'s
     preamble-inclusive input octet times ([Arrival.in_times frame]) against
-    the delivered samples' octet times ([Octet_time.of_words], no
-    [?expected_octets] override — see the module docstring for why every
-    frame in this packet satisfies the clean-frame identity extent). A row
-    driving more than one frame calls this once per frame. *)
+    the delivered samples' octet times ([Octet_time.of_words] over each
+    sample's [out_cycle], never its [cycle] — RV-0038-R5 / R5-2 names this as
+    the call site that matters most, since the tagger derives every measured
+    word delay from exactly this pairing; no [?expected_octets] override —
+    see the module docstring for why every frame in this packet satisfies the
+    clean-frame identity extent). A row driving more than one frame calls
+    this once per frame. *)
 val account_clean_frame : t -> Dv_xgmii.Arrival.frame -> sample list -> aborted:bool -> unit
 
 (** A single-frame link-partner schedule: [octets] (DA through FCS) preceded
@@ -178,9 +209,18 @@ val directed_frame_octets : length:int -> int list
 val run_directed_lengths : lane:int -> (int * Dv_xgmii.Arrival.t * t * sample list) list
 
 (** Fails with [failwith] naming [row] and the mismatch when the standing
-    {!Protocol_monitor}, {!Conservation_monitor}, {!Octet_time.Latency} or
-    {!Strobe_monitor} attached to [t] is not clean. Every row calls this; it
-    checks nothing about frame content (delivered octets, tkeep, tlast,
-    tuser), which stays each row's own assertion because the expected values
-    differ row by row. *)
+    {!Protocol_monitor}, {!Conservation_monitor} or {!Strobe_monitor}
+    attached to [t] is not clean. Every row calls this; it checks nothing
+    about frame content (delivered octets, tkeep, tlast, tuser), which stays
+    each row's own assertion because the expected values differ row by row.
+
+    The {!Octet_time.Latency} tagger is checked in two parts (RV-0038-R5 /
+    R5-3): its [errors] are always meaningful and fail this call the moment
+    any exist, but its [is_constant]/[is_clean] verdict is only demanded once
+    [frames_compared] is positive — a tagger nobody has fed a frame correctly
+    declines to claim constancy over zero comparisons, and a frameless run
+    (the scaffolding smoke test; family I's idle-only rows later) must not be
+    asked to prove a claim it was never given the means to make.
+    [Dv_monitors] is unchanged by this rule; the rule is in how this bench
+    reads it. *)
 val assert_monitors_clean : t -> row:string -> unit

@@ -952,3 +952,298 @@ stimulus, oracle or assertion.
 ### Files-in-this-commit
 - test/xgmii_rx_64/bench.ml
 - agents/handoffs/WO-0038_tb-m03-first-bench.md
+
+---
+
+## [J-tb_writer-0005] 2026-08-03T10:45Z | task:WO-0038 | Round 5 — choke-point ordering guard, out_cycle relabelling, latency-check split, C1's batched per-length signature
+
+### Trigger
+
+WO-0038/2026-08-03T10:00Z (dv_lead, via the orchestrator): `RV-0038-R5`
+(`J-dv_lead-0029`) adjudicates run 30772333717 — the first run in this
+packet's history to drive every schedule forward (round 4's fix) and reach
+real, substantive assertion content in all eleven rows. Four of the five
+failures it produced are ruled the bench's own oracle, not M03's: the
+`drive -> Cyclesim.cycle -> sample` convention this bench uses labels every
+OUTPUT observation one cycle early, proven from this repository's one
+CI-promoted waveform, `test/hardcaml_ethernet/test_word_counter.ml` (input
+at cycle N produces a registered output read at cycle N+1). Items 1, 2 and
+4 (the ΔC/word-0-arrival-cycle failures) are shown to be exactly this
+off-by-one and, corrected, satisfy §6.1's cycle table and REQ-019's ΔC=3
+constant — **M03 is vindicated on all three, not convicted.** Item 5 (the
+scaffolding test's "latency tagger unclean" failure) is a second, distinct
+bench defect: the smoke test drives zero frames and then demands
+`is_clean`/constancy of a tagger that correctly declines to claim
+constancy over zero comparisons — the monitor is right, the bench's
+question to it is wrong. Item 3 (M03-C1 lane 0 length 65: 62 delivered
+octets observed against 61 expected) is **not** explained by either bug and
+survives as provisional finding **F-M03-1**, with a falsifiable
+lane-dependent prediction (an FCS-straddle mis-accounting mechanism would
+fail lengths 65-67 at lane 0 and 69-71 at lane 4, and no others; a uniform
+strip/count error would fail all eight at both lanes; nothing failing after
+the oracle fix withdraws it). **F-M03-1 is explicitly not mine to fix or
+explain** — the packet states this and I did not touch it. Packet state
+BOUNCED. Four items: R5-1 (REQUIRED, carried from `RV-0038-R4-VERDICT`/
+`J-dv_lead-0028` — dv_lead's own finding against its own round-4 R4-2
+guard, which checked the RETURNED sample list's order rather than the
+order `sample_cycle` actually drove the design in, and — demonstrated by
+dv_lead running it against a recorder — would NOT have fired on the
+original reversed-drive bug; exact replacement text given: a choke-point
+guard inside `sample_cycle` itself, keyed on a new `mutable cycles_driven`
+field on `t`), R5-2 (BLOCKING, exact type/field text given: add `out_cycle`
+to `sample`, relabel every enumerated OUTPUT-observation call site), R5-3
+(BLOCKING, exact code given: split `assert_monitors_clean`'s latency check
+into an unconditional `errors` half and a constancy half gated on
+`Latency.frames_compared t.latency > 0`; `dv_monitors` explicitly untouched
+— "its behaviour is right"), R5-4 (REQUIRED, no verbatim text — "In
+`run_c1_c2`, collect each length's outcome … into a list, and raise once at
+the end with every length's line" — rework M03-C1/M03-C2's per-length check
+so a single CI run returns the complete sixteen-entry (lane, length)
+signature instead of aborting at the first failing length, since a
+fail-fast loop cannot settle F-M03-1's lane signature).
+
+### Inputs
+
+`agents/charters/tb_writer.md`; `agents/PROTOCOL.md` §2-6 and §10 (re-read
+in full); `agents/handoffs/WO-0038_tb-m03-first-bench.md` in full —
+every prior round's Return log and every dv_lead verdict from `RV-0038`
+through `RV-0038-R5` (`J-dv_lead-0022` through `J-dv_lead-0029`), read start
+to foot, with particular attention to `RV-0038-R4-VERDICT`
+(`J-dv_lead-0028`, the source of R5-1's exact guard text — re-read
+specifically for the "guard on the ORIGINAL BUG: DID NOT FIRE" experiment
+that motivates replacing rather than keeping R4-2) and `RV-0038-R5`
+(`J-dv_lead-0029`, this round's authoritative ruling and fix list, read
+multiple times to copy R5-1's and R5-2's given text character-for-character
+and to confirm R5-3's code and R5-4's direction-only instruction).
+`test/hardcaml_ethernet/test_word_counter.ml` — the one CI-promoted
+waveform the whole cycle-labelling argument rests on, read in full to
+independently confirm the snapshot RV-0038-R5 cites (`valid` high during
+cycle 1 producing `count` = 1 during cycle 2, changing at cycle 2, reaching
+`0003` at cycle 4) rather than take the ruling's reading of it on faith —
+it is the one file this packet's own §4 exempts from the RTL-read
+prohibition, and it is a DV bench, not RTL. `test/monitors/octet_time.mli`
+— re-read `Latency.errors`, `Latency.frames_compared`, `Latency.is_clean`,
+`Latency.is_constant`'s docstring ("True iff at least one octet was
+compared and every front-offset class has a single L") to confirm R5-3's
+given code names exist in the contract exactly as used, and that item 5's
+diagnosis (constancy false over zero comparisons is the monitor's honest
+answer, not a bug) is the contract's own stated behaviour, not an inference.
+`test/monitors/strobe_monitor.mli` — re-read `sample`'s "out of order" /
+"sampled the same cycle twice" rejection to confirm `out_cycle = cycle + 1`
+preserves strict per-cycle monotonicity (every input cycle maps to a
+distinct, ascending output cycle). `test/monitors/protocol_monitor.mli` —
+re-read `observe`'s contract ("present one cycle of the stream … safe to
+call on every cycle") to confirm relabelling which cycle number is passed
+is a relabelling, not a new obligation on the monitor. This journal's own
+header and my `J-tb_writer-0001`-`0004` entries, to confirm the next
+strictly-monotonic id (0005) and to avoid re-deriving what prior rounds
+already established (M03-A4's NO-ASSERT discipline, M03-B1's `?word_at`
+composition, M03-C2's subset derivation, M03-C4's REQ-107 additions — none
+of which this round's changes touch). `test/xgmii_rx_64/bench.ml`,
+`bench.mli`, `test_m03_a.ml`, `test_m03_b.ml`, `test_m03_c.ml`,
+`test_m03_structural.ml` — all six re-read in full before editing, to
+locate every call site R5-2 enumerates precisely and to confirm by grep
+(not assumption) which files actually reference `.cycle` for OUTPUT timing:
+`test_m03_a.ml` (`run_a1_a2`'s per-word cycle check, `assert_own_deltac`)
+and `test_m03_c.ml` (`run_c4`'s single-word cycle check) do;
+`test_m03_b.ml` and `test_m03_structural.ml` do not, confirmed by
+`grep -n "\.cycle\b"` returning nothing in either before I left them
+unedited. `git status --porcelain` and `git diff --exit-code`, before
+editing (to confirm the working tree was clean at RV-0038-R5's baseline)
+and after (to confirm exactly the four intended files changed and the two
+untouched ones remain byte-identical to HEAD). No path under `libs/**`,
+`top/**`, `bin/**` or `rtl_snapshots/**` — any path, manifests included —
+was opened this spawn, targeted or swept. No path under `test/monitors/**`
+was opened for writing (R5-3 forbids it); the three `.mli` files above were
+read only, to confirm names before calling them.
+
+### Reasoning
+
+**R5-1: applying dv_lead's own corrective text to dv_lead's own prior
+prescription, understanding why the ORIGINAL guard was wrong before
+splicing in the replacement.** `RV-0038-R4-VERDICT` demonstrated, by
+running the applied R4-2 guard against a recorder set to the ORIGINAL
+reversed-drive bug, that the guard would not have fired: `List.init`
+*returns* its list in ascending index order regardless of how it evaluates
+`~f`, so `s.cycle = i` held even when the underlying drive was reversed.
+The guard was checking a fact about the wrong object — the returned list's
+order, not the side-effect order that actually reaches the design. The
+replacement fixes this by moving the check into `sample_cycle` itself, the
+one function through which every drive must pass, with a `mutable
+cycles_driven` counter that only advances on an in-order call. I applied
+this text unchanged, adding only the record-field placement (`t.
+cycles_driven`) the guard's home function requires, and removed the old
+`run`-level guard entirely rather than keeping both — R5-1's own wording
+("replace") and the fact that a superseded check left in place invites a
+future reader to trust it again.
+
+**R5-2: out_cycle as a pure relabelling, verified against each call site's
+actual role (input vs output) rather than applied mechanically everywhere.**
+Before editing, I re-classified every `.cycle` reference in the six files
+into "reads/produces an INPUT fact" (unaffected: `start_cycle`,
+`terminate_cycle`, the schedule's own cycle arithmetic in `Arrival`) versus
+"reads an OUTPUT fact sampled off `Cyclesim.outputs`" (affected:
+`Protocol_monitor.observe`'s `out` argument, `Strobe_monitor.sample`'s
+`errors_high` argument — both read off `o`, the live outputs record, inside
+`sample_cycle`, hence RV-0038-R5's ruling that error strobes are outputs
+too and belong to `out_cycle` just as much as `rx` does; `error_pulses`;
+`account_clean_frame`'s `Octet_time.of_words` pairing; `test_m03_a.ml`'s
+per-word arrival-cycle check and ΔC measurement; `test_m03_c.ml`'s
+single-word arrival-cycle check in `run_c4`). This classification is what
+let me confirm, rather than assume, that `test_m03_b.ml` and
+`test_m03_structural.ml` need no edit: neither compares an output sample's
+cycle against an expected value anywhere (`test_m03_b.ml`'s only cycle
+arithmetic is in `preamble_override`, which computes which INPUT word to
+substitute, not a check on an output; `test_m03_structural.ml`'s
+scaffolding test never reads `.cycle`/`.out_cycle` at all). I also confirmed
+`run_c4`'s `Strobe_monitor.expect` window needed no edit by tracing the
+data flow rather than trusting the packet's own claim about it: `cycle` in
+the `(int * string)` pairs `error_pulses` returns is the ONLY place that
+value reaches `run_c4`'s pulse-cycle comparison, and since `error_pulses`
+itself now emits `out_cycle`, the comparison downstream is corrected for
+free — exactly as RV-0038-R5 says, and I re-derived why rather than take it
+on faith.
+
+**R5-3: applying the given code verbatim, and confirming its two API calls
+(`errors`, `frames_compared`) exist before writing them.** No independent
+design choice here beyond what the packet's code already specifies; the
+only thing I added was the comment explaining item 5's diagnosis in my own
+words (a tagger given zero frames correctly declines to claim constancy,
+per its own documented contract) so a future reader does not need to
+re-derive why the split is correct from RV-0038-R5 alone.
+
+**R5-4: no exact text supplied, so the design is mine — built around
+"collect, decide once, report the full table" and argued against the
+mutation-kill and coverage obligations it must not weaken.** I chose a pure
+record (`length_outcome`) over an exception-catching approach specifically
+because this codebase has no precedent anywhere for catching a `failwith`
+inside a test file (checked by grep across `test/`), and a pure
+never-raising builder is both simpler to verify by reading and avoids
+depending on `Base`'s exact `Failure`/`Exn` behaviour, which I cannot check
+against a real toolchain here. Two decisions beyond the four named columns
+(delivered count, tlast tkeep, tuser, terminate lane) are mine and are
+recorded in the Return log rather than left implicit: folding
+`error_pulses` non-emptiness into `outcome_ok` (dropping it would have been
+a silent coverage regression against the row as accepted at `RV-0038`), and
+running `account_clean_frame`/`assert_monitors_clean` per length AFTER the
+batched content decision rather than folding them into it (they check a
+different property, and folding them in would either require
+exception-catching I would not commit unverified, or reintroduce fail-fast
+at one call further down). I also merged M03-C2's separate FCS-good
+recheck into C1's existing universal `tuser = 0` requirement, since the
+pre-R5 code already asked the identical question of the same sample twice
+under two different messages — verified by reading both checks side by
+side, not assumed — so no row's assertion content is weaker, only a
+redundant second message is gone. Before finishing, I re-derived that the
+WO-0038 §8 mutation kill named for C1 ("tkeep computed from the input word
+rather than the frame") still fires: `length_outcome`'s `observed_tkeep`
+still reads the live DUT sample and `outcome_ok` still compares it against
+a `frame`-derived `expected_tkeep`, independent of the mutation, so an
+affected length still shows as a `FAIL` line — now a strictly more legible
+one, naming every affected length, not fewer.
+
+**One syntax risk avoided rather than discovered by CI**: I initially drafted
+`lane0 @ lane4` to concatenate the two lanes' results and, lacking a
+toolchain to check operator availability under this file's `open! Base`,
+grepped the tree for existing `@`-under-Base precedent and found none in any
+file that opens Base (the two hits that exist are in plain-OCaml
+`strobe_monitor.ml`, which opens nothing). Replaced with `List.append`,
+which is unambiguously a `Base.List` function already relied on by this
+exact style of code elsewhere in the file (`List.filter_map`,
+`List.concat_map`), rather than gamble a whole round on an operator I could
+not verify.
+
+### Actions
+
+`test/xgmii_rx_64/bench.ml`: added `mutable cycles_driven : int` to `type
+t` and its initialisation in `create`; added `out_cycle : int` to `type
+sample`; moved the ascending-order guard from `run`'s tail into the head of
+`sample_cycle`, keyed on `t.cycles_driven`; computed `out_cycle = cycle + 1`
+in `sample_cycle` and used it for `Protocol_monitor.observe`,
+`Strobe_monitor.sample`, and the returned `sample` record; updated
+`error_pulses` to emit `s.out_cycle`; updated `account_clean_frame`'s
+`delivered_pairs` to pair `s.out_cycle` with `s.out`; split
+`assert_monitors_clean`'s latency check per R5-3's given code. Removed the
+`run`-level R4-2 guard, replacing it with a comment pointing to the new
+choke-point guard's location and reasoning.
+`test/xgmii_rx_64/bench.mli`: updated the `sample` type and its docstring
+to document `cycle` vs `out_cycle` and cite `test_word_counter.ml`; updated
+`run`'s, `error_pulses`'s, `account_clean_frame`'s and
+`assert_monitors_clean`'s docstrings to match the corrected mechanics.
+`test/xgmii_rx_64/test_m03_a.ml`: `run_a1_a2`'s per-word cycle comparison
+and `assert_own_deltac`'s ΔC measurement now read `s.out_cycle`/
+`first.out_cycle`.
+`test/xgmii_rx_64/test_m03_c.ml`: `run_c4`'s single-word cycle comparison
+now reads `s.out_cycle`; the entire M03-C1/M03-C2 section
+(`check_directed_length_frame` and `run_c1_c2`) rewritten around
+`length_outcome`/`outcome_ok`/`outcome_line`/`length_outcome` and a
+two-lane, collect-then-decide `run_c1_c2 ()` (no `~lane` argument any
+more — it now always drives both), preserving the D3 batched-coverage
+checks and the standing-monitor accounting, both moved to run after the
+content-signature decision. The `%expect_test` body changed from
+`run_c1_c2 ~lane:0; run_c1_c2 ~lane:4;` to `run_c1_c2 ();`; its
+`[%expect {||}]` block was not touched.
+`test/xgmii_rx_64/test_m03_b.ml`, `test/xgmii_rx_64/test_m03_structural.ml`:
+re-read in full, confirmed to need no change, not staged.
+`agents/handoffs/WO-0038_tb-m03-first-bench.md`: appended a ROUND-5
+RETURNED block per §8's established per-round shape (not the original
+issue-time §8 template, which this round does not restart); state left
+BOUNCED.
+
+### Evidence
+
+`ocamlc -stop-after parsing`, system `ocamlc` 4.14.1, on all six files in
+`test/xgmii_rx_64/` (the four touched plus the two re-confirmed untouched):
+exit 0 on every file. `bash tools/precompile_check.sh`: ALL LANES PASSED —
+Lane 1 31 units/0 errors, Lane 2 12 units/0 errors, Lane 3a 43/43 files
+materialised and compiled with `xgmii_rx_64` correctly EXCLUDED (depends on
+`hardcaml_ethernet`), Lane 3b no unqualified sibling-library reference.
+`bash tools/dv_checks.sh`: `check_records_vs_appendix.sh` 23/23,
+`check_emitted_verilog.sh` 5/5 with 3 pre-existing PENDING rows unrelated to
+M03, `precompile_check.sh` as above, `check_rfc1071_anchor.sh` OBLIGATION
+OPEN (pre-existing, blocked egress, unrelated to M03). `git status
+--porcelain` (repo root): exactly `test/xgmii_rx_64/bench.ml`, `bench.mli`,
+`test_m03_a.ml`, `test_m03_c.ml` — four paths, matching the four files this
+round's items touch. `git diff --exit-code -- test/xgmii_rx_64/
+test_m03_b.ml test/xgmii_rx_64/test_m03_structural.ml`: exit 0, confirming
+byte-identity to HEAD independently of the status listing. `eval $(opam
+env) && dune build @default`: fails at `Library "ppx_hardcaml" not found` —
+the same absent toolchain every round has confirmed (ADR-0005); `dune
+runtest` not reached, same reason. Full verbatim output for all of the
+above is in the Return log's §4.
+
+### Outcome
+
+R5-1, R5-2 and R5-3 met to the packet's own given text/shape, verified by
+re-derivation (§Reasoning) rather than copied blind. R5-4 met by an
+original design, argued against the mutation-kill obligation and the row's
+existing coverage, with its two non-packet-specified judgement calls
+disclosed in the Return log §2 rather than left for dv_lead to find. No
+row's stimulus, oracle or accepted content from `RV-0038`/`RV-0038-R2`/
+`RV-0038-R3-VERDICT`/`RV-0038-R4-VERDICT` was touched. F-M03-1 (item 3) was
+read, understood as out of scope, and not touched anywhere in this round's
+diff. Handoff: Return log appended to
+`agents/handoffs/WO-0038_tb-m03-first-bench.md` as a ROUND-5 RETURNED
+block; packet state left BOUNCED, since only dv_lead's `RV-` and the
+orchestrator's transcription may flip it. No `SO-` claimed or offered.
+**Prediction, not a claim**: ten of the eleven rows (everything but
+M03-C1/M03-C2) are expected to run clean against their empty `[%expect]`
+blocks for the first time; M03-C1/M03-C2 is expected to still raise, via
+R5-4's single batched `failwith`, if F-M03-1 is real — that is the correct
+outcome of this round's fix, not a defect in it, and any resulting
+promotion must stay unharvested per the packet's standing instruction.
+
+### Open-questions
+
+None. R5-1, R5-2 and R5-3 were exact-text-or-exact-shape splices with no
+ambiguity to resolve. R5-4 had no verbatim text; the design choices it
+required are disclosed in full in the Return log §2-3 and above, not held
+back as an implicit question. F-M03-1 / item 3 is understood as explicitly
+out of scope for this round and is not reopened here.
+
+### Files-in-this-commit
+- test/xgmii_rx_64/bench.ml
+- test/xgmii_rx_64/bench.mli
+- test/xgmii_rx_64/test_m03_a.ml
+- test/xgmii_rx_64/test_m03_c.ml
+- agents/handoffs/WO-0038_tb-m03-first-bench.md

@@ -2419,3 +2419,213 @@ wrong about something interesting.
 - **Promotion**: stays unharvested; these payloads must never become
   expectations
 - **Signed**: J-dv_lead-0029
+
+---
+
+### ROUND-5 RETURNED — tb_writer, `J-tb_writer-0005` (WO-0038/2026-08-03T10:00Z)
+
+All four items on `RV-0038-R5` (`J-dv_lead-0029`) addressed. R5-1 and R5-2
+applied to the exact text/shape the packet gives, adapted only to this
+file's existing local module aliases (`Xgmii_word`, `Stream_word`, … for
+`Dv_xgmii.Xgmii_word`, `Dv_monitors.Stream_word`, …) the way every prior
+round's verbatim splices have been. R5-3 applied verbatim. R5-4 had no given
+text (the packet says so explicitly) and is my own design, argued below.
+Item 3 / F-M03-1 was not touched anywhere — no oracle, no threshold, no
+frame content in any row was altered to accommodate or explain it.
+
+#### 1. Row disposition — every R5 item, no silence
+
+| Item | File:line | Fix | State |
+|---|---|---|---|
+| R5-1 (REQUIRED, carried) | `bench.ml:27-42` (`type t`), `:79-81` (`create`), `:105-118` (`sample_cycle`), `:195-206` (`run`) | Added `mutable cycles_driven : int` to `t`, initialised to 0 in `create`. The choke-point guard (`if cycle <> t.cycles_driven then failwith …; t.cycles_driven <- t.cycles_driven + 1`) now sits at the head of `sample_cycle`, verbatim per `RV-0038-R4-VERDICT`'s text, adapted only in the field being named `t.cycles_driven` (unqualified) rather than a bare local, which is required since it lives on the record. **R4-2's returned-list guard, previously the tail of `run`, is REMOVED** — RV-0038-R5's own item names this as "replace", not "add alongside", and `RV-0038-R4-VERDICT` had already shown R4-2's check would not have fired on the original bug. | FIXED |
+| R5-2 (BLOCKING) | `bench.ml:84-90` (`type sample`), `:105-160` (`sample_cycle`), `:217-223` (`error_pulses`), `:225-239` (`account_clean_frame`); `bench.mli:69-98`, `:100-131`, `:157-161`, `:163-175`; `test_m03_a.ml:30-46`, `:110-119`; `test_m03_c.ml:295-300` | `sample` gained `out_cycle : int` (= `cycle + 1`), with a comment at `sample_cycle` naming `test/hardcaml_ethernet/test_word_counter.ml` as the evidence. Every OUTPUT observation now uses it: `Protocol_monitor.observe ~cycle:out_cycle`, `Strobe_monitor.sample ~cycle:out_cycle`, `error_pulses`' `(s.out_cycle, name)` pairs, and `account_clean_frame`'s `Octet_time.of_words` pairing (`s.out_cycle, s.out`) — the site RV-0038-R5 names as mattering most. `test_m03_a.ml`'s `run_a1_a2` cycle check and `assert_own_deltac`'s ΔC measurement now compare against `s.out_cycle`/`first.out_cycle`. `test_m03_c.ml`'s `run_c4` output-word cycle check now compares `s.out_cycle`. `run_c4`'s `Strobe_monitor.expect` window and `error_pulses`-based pulse-cycle check needed **no edit** — exactly as the packet predicted, since they were already comparing against a value (`expected_pulse_cycle = start_cycle + 3`) that is now met by `error_pulses`' corrected `out_cycle` output. `test_m03_b.ml` and `test_m03_structural.ml` were re-read in full and confirmed to contain **no** `.cycle` output-timing comparison (grepped, not assumed) — untouched, confirmed by `git status`/`git diff --exit-code` below. | FIXED |
+| R5-3 (BLOCKING) | `bench.ml:279-319` (`assert_monitors_clean`) | The latency check is now two parts, verbatim per the packet's given code: `Octet_time.Latency.errors t.latency` checked unconditionally (`failwith` naming `row` and every error line if non-empty); `is_clean`/constancy only demanded when `Octet_time.Latency.frames_compared t.latency > 0`. `dv_monitors` (`test/monitors/**`) was not opened for writing and is untouched — confirmed by `git status` below showing no path under `test/monitors/`. | FIXED |
+| R5-4 (REQUIRED, no verbatim text given) | `test_m03_c.ml:20-203` (the whole M03-C1/M03-C2 section, replacing `check_directed_length_frame`/`run_c1_c2`) | Rewritten around a `length_outcome` record (delivered count expected/observed, tkeep expected/observed, tuser observed, terminate lane, error-pulse count) built by a pure function that never raises. `run_c1_c2 ()` now drives **both** lanes' eight lengths before deciding anything, filters for the outcomes that are not `outcome_ok`, and — only if that list is non-empty — raises **once** with all sixteen lines (`outcome_line`), each marked PASS/FAIL with every field printed. The D3 batched tkeep-multiset/terminate-lane-coverage checks (`RV-0038` addendum) are preserved, reading from the same outcomes rather than re-deriving them. `account_clean_frame`/`assert_monitors_clean` still run per (lane, length) but **after** the content-signature and D3 checks, on the reasoning that by that point every length's count/tkeep/tuser/terminate-lane is already known good, so a failure there is a different, unambiguous defect class that need not be folded into the R5-4 table. | FIXED |
+
+#### 2. A design choice inside R5-4, disclosed rather than left implicit
+
+Two things beyond the four named columns (delivered count, tlast tkeep,
+tuser, terminate lane) went into whether a length counts as `outcome_ok`,
+and both are mine, not the packet's:
+
+1. **`error_pulses` non-emptiness folded into the outcome.** The pre-R5
+   `check_directed_length_frame` already failed a length if any error strobe
+   pulsed; dropping that check to preserve only the four named columns would
+   have been a coverage regression against the accepted row, not a
+   simplification, so it is now `error_pulse_count` in the record and part
+   of `outcome_ok`.
+2. **`account_clean_frame`/`assert_monitors_clean` deliberately moved to
+   AFTER the batched table decision, not folded into it.** These check a
+   different thing (protocol/conservation/strobe/latency-monitor
+   cleanliness) than the four-column content signature R5-4 exists to make
+   legible across all sixteen entries. Running them per-length inside the
+   same never-raises accumulation would have meant either swallowing
+   `assert_monitors_clean`'s own `failwith` (via a `try...with`, which nothing
+   else in this codebase's test files does, and which I could not verify
+   compiles cleanly against a real toolchain) or accepting that a
+   monitor-cleanliness failure at, say, length 65 would still abort before
+   length 71 is reached — reintroducing exactly the fail-fast problem R5-4
+   exists to close, just moved one call later. Running them only once the
+   content table is already fully known-good sidesteps both: if content is
+   dirty, the table already tells the complete story and monitor state is
+   moot; if content is clean, a monitor failure is a new, distinct signal
+   worth its own fail-fast `failwith`.
+
+Additionally, **M03-C2's separate "FCS good on the terminate-lane-k>0
+subset" check is not a separate code path any more.** The pre-R5 code had
+two checks that were, in substance, the same fact: C1's per-length
+`tuser[0] = 0` requirement already ran on every length including the
+terminate-lane-k>0 subset, and C2's own check re-asked the identical
+question of the same `tlast_sample` with a subset-specific failure message.
+`outcome_ok`'s single `tuser = 0` requirement covers both; the merged
+`outcome_line` reports `terminate_lane`, so a reader can still see which
+failing lines are also C2 instances. No row's assertion content is
+*weaker* than before — the C-18-twin fact is still checked on exactly the
+same set of frames — only the duplicate check and its separate message are
+gone.
+
+Both are disclosed here per charter §3's "declared gap/deviation, never a
+silent one" standard; neither weakens any of the eleven rows' accepted
+content, and both are reversible in one review round if dv_lead wants the
+original two-message split back.
+
+#### 3. Why this preserves the WO-0038 §8 mutation kill for C1
+
+`tkeep computed from the input word rather than the frame` (§8's named C1
+mutation) still fails under the rewrite: `length_outcome`'s
+`observed_tkeep` still reads `s.out.Dv_monitors.Stream_word.tkeep` off the
+real DUT sample, `outcome_ok` still requires it equal `expected_tkeep`
+(computed from the frame's delivered-octet count, independent of the
+mutation), and any length where the mutation bites now shows up as a `FAIL`
+line in the table rather than aborting the run — a strictly *more* legible
+kill than before, not a weaker one, since the table would show which
+lengths are affected rather than only the first.
+
+#### 4. Self-check output, verbatim
+
+**`ocamlc -stop-after parsing`, system `ocamlc` 4.14.1, on every file
+touched this round:**
+```
+bench.mli: exit: 0
+bench.ml: exit: 0
+test_m03_a.ml: exit: 0
+test_m03_b.ml: exit: 0
+test_m03_c.ml: exit: 0
+test_m03_structural.ml: exit: 0
+```
+(`test_m03_b.ml`/`test_m03_structural.ml` re-parsed too, even though
+untouched, as a final confirmation before this Return log was written.)
+
+**`bash tools/precompile_check.sh`:**
+```
+--- LANE 1 — Hardcaml-free DV libraries, compiled for real
+  RESULT: 31 units compiled, 0 errors
+--- LANE 2 — Hardcaml-facing DV libraries, against tools/precompile_stubs/
+  RESULT: 12 units compiled, 0 errors
+--- LANE 3a — coverage sweep
+  EXCLUDED hardcaml_ethernet — depends on hardcaml_waveterm hardcaml_ethernet, which this harness cannot transcribe
+  EXCLUDED xgmii_rx_64 — depends on hardcaml_ethernet, which this harness cannot transcribe
+  RESULT: 43 files in compiled directories, all 43 materialised and compiled.
+--- LANE 3b — qualification sweep
+  RESULT: no unqualified sibling-library reference.
+--- SUMMARY
+  precompile_check: ALL LANES PASSED
+  2 transcription(s) remain UNVERIFIED here and are settled only by CI
+```
+
+**`bash tools/dv_checks.sh`:**
+```
+check_records_vs_appendix.sh: 23 check(s) run, 0 failure(s)
+check_emitted_verilog.sh: 5 check(s) run, 0 failure(s), 3 pending
+  (pre-existing: REQ-808/REQ-017/REQ-903 on unbuilt modules, not M03)
+precompile_check.sh: ALL LANES PASSED (as above)
+check_rfc1071_anchor.sh: VERDICT: OBLIGATION OPEN — RFC 1071 could not be
+  fetched (blocked network egress; pre-existing, J-dv_lead-0017/0018,
+  concerns M02/M14's checksum oracle, unrelated to M03 and to this round)
+dv_checks: every check that COULD run passed, and 1 obligation is still OPEN
+```
+
+**`git status --porcelain` (repo root), before this Return log edit and the
+journal entry were staged:**
+```
+ M test/xgmii_rx_64/bench.ml
+ M test/xgmii_rx_64/bench.mli
+ M test/xgmii_rx_64/test_m03_a.ml
+ M test/xgmii_rx_64/test_m03_c.ml
+```
+Exactly the four files this round's items touch. `test_m03_b.ml` and
+`test_m03_structural.ml` do not appear.
+
+**`git diff --exit-code` confirming the two untouched files, independent of
+the `git status` listing above:**
+```
+$ git diff --exit-code -- test/xgmii_rx_64/test_m03_b.ml test/xgmii_rx_64/test_m03_structural.ml
+exit: 0
+```
+
+**`eval $(opam env) && dune build @default`:** fails at `Library
+"ppx_hardcaml" not found` — the same absent Hardcaml toolchain every prior
+round has confirmed (ADR-0005). Checked again this round rather than carried
+over on faith.
+
+**`dune build @default` / `dune runtest`:** not run beyond the failure
+above — same absent toolchain. Both remain CI's to run and judge.
+
+#### 5. Expected CI, and why round 5's prediction has a shape none of the
+prior rounds' did
+
+Round 4's ACCEPT (`RV-0038-R4-VERDICT`) means Build is already known green
+at HEAD, and run 30772333717 means `dune runtest` has already reached and
+exercised all eleven rows for real once. That changes what "expected" means
+here: this is no longer "first reaching, expected red by design" — it is a
+prediction about which of the eleven rows should now pass silently and
+which should not.
+
+- **A1/A2, A3/A4 (including A4's NO-ASSERT), A5, B1, C3, C4, and the
+  scaffolding/L6 structural test**: predicted to run to completion with no
+  exception, hence match their empty `[%expect {||}]` blocks with no diff
+  and no promotion needed — **if** R5-1/R5-2/R5-3 correctly account for
+  items 1, 2, 4 and 5 of run 30772333717 as RV-0038-R5 argues. This is a
+  prediction, not a checked fact: no toolchain here reaches this directory.
+- **M03-C1/M03-C2**: predicted to still raise, via R5-4's single batched
+  `failwith`, if F-M03-1 is real — and that is the CORRECT, INTENDED
+  outcome of this round's fix, not a defect in it. R5-4 exists to make that
+  failure's full sixteen-entry signature legible in one run, not to make it
+  disappear; item 3 is explicitly not mine to explain away. If CI produces
+  a promoted exception payload from this test, it must stay unharvested —
+  the packet's own standing instruction — pending dv_lead's reading of the
+  table against F-M03-1's falsifiable prediction (65-67 at lane 0, 69-71 at
+  lane 4, or a different pattern, or none).
+- **No `[%expect]` block in any of the four touched files was edited.**
+  Per the round's own instruction, all eleven rows' blocks remain exactly
+  as they are at HEAD (empty).
+
+#### 6. Open questions
+
+None. R5-1, R5-2 and R5-3 were exact-text/exact-shape splices with no
+ambiguity to resolve; R5-4 had no verbatim text and my design choices are
+disclosed in full in §2-3 above rather than left for dv_lead to discover.
+Item 3 / F-M03-1 was read, understood to be explicitly not mine to touch,
+and not touched — no threshold, oracle, or row content anywhere in this
+round's diff bears on it.
+
+#### 7. Scope statement
+
+Files staged this round: `test/xgmii_rx_64/bench.ml`,
+`test/xgmii_rx_64/bench.mli`, `test/xgmii_rx_64/test_m03_a.ml`,
+`test/xgmii_rx_64/test_m03_c.ml`, plus this Return log entry and the
+`J-tb_writer-0005` journal entry. `test/xgmii_rx_64/test_m03_b.ml` and
+`test/xgmii_rx_64/test_m03_structural.ml` were read and reconfirmed
+unaffected but not staged — `git status --porcelain` and `git diff
+--exit-code` above both confirm this independently. No path under
+`libs/**`, `top/**`, `bin/**` or `rtl_snapshots/**` — any path, manifests
+included — was opened this spawn, targeted or swept. No path under
+`test/monitors/**` (`dv_monitors`) was opened for writing, per R5-3's
+explicit instruction; it was read (`octet_time.mli`, `strobe_monitor.mli`,
+`protocol_monitor.mli`) to confirm the names R5-2/R5-3 call actually exist
+in the contract before writing calls against them. My journal's `Inputs`
+section lists exactly what was read.
+
+State left at **BOUNCED** — dv_lead's `RV-` and the orchestrator's
+transcription flip it, not this Return log.
+

@@ -29,7 +29,10 @@ let run_a1_a2 ~lane =
   then fail row (String.concat [ "expected 8 output words, got "; Int.to_string (List.length words) ]);
   List.iteri words ~f:(fun m s ->
     let expected_cycle = start_cycle + 3 + m in
-    if s.cycle <> expected_cycle
+    (* RV-0038-R5 / R5-2: word m's arrival cycle is an OUTPUT timing fact, so
+       it is [s.out_cycle], not [s.cycle] (the input cycle that produced it
+       one cycle earlier). *)
+    if s.out_cycle <> expected_cycle
     then
       fail
         row
@@ -39,7 +42,7 @@ let run_a1_a2 ~lane =
            ; " expected on cycle "
            ; Int.to_string expected_cycle
            ; ", observed on cycle "
-           ; Int.to_string s.cycle
+           ; Int.to_string s.out_cycle
            ]);
     let expected_tkeep = if m = 7 then 0x0F else 0xFF in
     if s.out.Dv_monitors.Stream_word.tkeep <> expected_tkeep
@@ -110,7 +113,10 @@ let assert_own_deltac ~row (sched : Dv_xgmii.Arrival.t) samples =
   match delivered_samples samples with
   | [] -> fail row "no output word to check ΔC against"
   | first :: _ ->
-    let observed = first.cycle - start_cycle in
+    (* RV-0038-R5 / R5-2: ΔC is measured against the OUTPUT word's true
+       arrival cycle, [out_cycle], not [cycle] (which is one cycle early —
+       the input cycle that produced it). *)
+    let observed = first.out_cycle - start_cycle in
     if observed <> 3
     then
       fail
