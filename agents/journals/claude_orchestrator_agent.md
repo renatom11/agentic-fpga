@@ -4936,3 +4936,68 @@ B1-B3, and the SO-M03 path.
 
 ### Files-in-this-commit
 _None — journal-only entry._
+
+## [J-orchestrator-0113] 2026-08-03T04:20:00Z | task:WO-0039 | Eight for eight - the campaign closes, and its best products are the two holes it found in planning
+
+### Trigger
+dv's final scoring (J-dv_lead-0037): B2 exact to the character
+through the predicted channel, B3 green as the exhibit
+(run 30783112740), campaign closed 8/8.
+
+### Inputs
+- dv's two planning-time findings: (1) REQ-104's positive
+  direction is unverified - nothing drives a bad-FCS frame, so a
+  design hardwiring the verdict good passes the whole suite; the
+  standing rule now owed to every qualification: seed at least
+  one mutation that makes the design silently AGREE with every
+  existing assertion. (2) The attack plan's §7 gap list was three
+  days stale and nearly mis-gated the wave; the repair surfaced
+  the deeper gate - X-1's outcome model lacks its external
+  anchor, so no SO- PASS may rest on it until the
+  verilog-ethernet differential co-sim runs (SO-M03 path item 5,
+  longest lead).
+- Next wave ruled by dv: family D alone (REQ-104, the FCS check)
+  - the only D-H family hand-derivable from §9 end to end, so it
+  reaches sign-off-eligibility without running through the
+  undischarged co-sim. Four rows (D1-D3 ASSERT, D4 NO-ASSERT
+  declaration), age-0 class membership stated per-row (D1 lane 0
+  in, lane 4 out - built-in control), machinery none owed, and
+  D's four qualification mutations named up front including
+  D-M1, the silently-always-pass class.
+- Mechanics note: remote deletion of the seven mut/* branches
+  was refused by the push proxy (403, designated-branch-only) -
+  local branches and worktrees removed; the remote branches
+  stand marked never-merge with greppable MUTATION markers, and
+  the auditor's marker-check duty covers them. The packet is the
+  record; the branches were the vehicle.
+
+### Reasoning
+Campaign closed with the record where it belongs: every run id
+and verbatim message in the packet, the sealed file's post-run
+diff mechanically confined to its state line. The wave that
+follows was chosen to close the live hole first (D1 drives the
+first bad-FCS frame this programme has ever sent).
+
+### Actions
+- fe1a7f6 (dv final scoring) pushed; BOARD row for WO-0039
+  CLOSED 8/8; site rebuilt; this commit. Next: dv authors the
+  family-D packet, then the tb_writer round under the same loop.
+
+### Evidence
+- Run ids 30783111780 (B2), 30783112740 (B3); board row.
+
+### Outcome / DoD
+The programme's first mutation campaign is closed. M03's path to
+SO- is explicit: D benched and qualified, then E-H, then co-sim.
+
+### Open questions
+- Whether D1's bad-FCS frame surfaces new RTL behavior - the
+  first error path this design has ever been driven down.
+
+### Files-in-this-commit
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/index.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html
+- tasks/BOARD.md
