@@ -6433,3 +6433,51 @@ None.
 - site/public/index.html
 - site/public/org-chart.html
 - site/public/spec-atlas.html
+
+## [J-orchestrator-0145] 2026-08-03T21:10:00Z | task:WO-0055 | The G campaign closed - the survival was the round
+
+### Trigger
+RV-0055-VERDICT committed at cb38685: 4/5 killed exact (17/18
+REQUIRED, 107/107 MUST-STAY-GREEN, every fired message sealed
+verbatim, the cross-family kill predicted); G-c4 SURVIVED and
+the survival produced the round's two findings, both dv's own —
+G-1 (two sealed branches wrong for the same reason: a DUT state
+asserted, not derived) and G-2 (a forty-entry-old verification
+error: two benched rows test the idle path while citing the
+Discard-window rulings; dv's own 100-octet figure overshoots the
+82-octet window).
+
+### Inputs
+The verdict; the board row pending its outcome flip.
+
+### Reasoning
+Board row flipped ADJUDICATING → CLOSED · 4/5 + G-2 with the
+verdict's facts and the standing consequence (family G does not
+verify REQ-108's Discard window for /E/ or /S/; repair is a
+follow-up packet, never a scoring-commit edit). Site rebuilt from
+a HEAD worktree with the board edit only. Queue next: dv's
+repair packet for G3/G4's offsets (WO-0056), family H design,
+WO-0053 step 2.
+
+### Actions
+Board flip; clean rebuild; this commit; push; verdict relayed
+verbatim to the sponsor.
+
+### Evidence
+cb38685; the rebuilt backlog row.
+
+### Outcome / DoD
+The campaign is on the record with its coverage claim honestly
+narrowed: 30 rows benched, 26 of 60 ASSERT discharged, two
+benched rows' claims corrected.
+
+### Open questions
+- WO-0056 (G3/G4 repair) and family H — next dv dispatches.
+
+### Files-in-this-commit
+- tasks/BOARD.md
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/index.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html
