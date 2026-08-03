@@ -725,13 +725,18 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
   let fcs_tail_pending = wire 1 in
   let fcs_tail_now = reg spec fcs_tail_pending in
   let have_word = (pc <>:. 0) &: ~:fcs_tail_now in
-  let emit_last_a = have_word &: (nc ==:. 0) &: (pc >: strip) in
+  (* F-c3 MUTATION (WO-0050) — an output word emitted for a sub-five frame
+     that must produce none.  The [pc >: strip] guard §9's sixth row rests on is
+     dropped, so a frame of 1 to 4 received octets emits a `tlast` word; the
+     count is clamped at zero in [keep_count] below, so that word carries
+     `tkeep` = 0 rather than an underflowed extent. *)
+  let emit_last_a = have_word &: (nc ==:. 0) in
   let emit_last_b = have_word &: (nc <>:. 0) &: (nc <=: strip) in
   fcs_tail_pending <== emit_last_b;
   let emit_full = have_word &: (nc >: strip) in
   let emit_tlast = emit_last_a |: emit_last_b in
   let keep_count =
-    mux2 emit_last_a (pc -: strip) (mux2 emit_last_b (pc -: strip +: nc) pc)
+    mux2 emit_last_a (pc -: min2 pc strip) (mux2 emit_last_b (pc -: strip +: nc) pc)
   in
   let abort = sel_bad_fcs |: sel_error |: sel_start |: sel_oversize |: sel_runt in
   let tvalid = (emit_full |: emit_tlast) &: ~:(i.clear) in
