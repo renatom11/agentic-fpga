@@ -6481,3 +6481,71 @@ benched rows' claims corrected.
 - site/public/index.html
 - site/public/org-chart.html
 - site/public/spec-atlas.html
+
+## [J-orchestrator-0146] 2026-08-03T22:05:00Z | task:WO-0053 | ADR-0017 step 2 landed - the journal is a chain, mechanically
+
+### Trigger
+The accepted ADR's step-2 implementation drafted, self-tested by
+its author, then re-verified by this session before staging.
+
+### Inputs
+ADR-0017 §4-§6, §9 (the governing text); the generic shell's
+proven chain code as reference where the ADR left mechanics open;
+the draft's seven documented interpretation points.
+
+### Reasoning
+- Implemented per the ADR: chain helpers with the <lister>
+  parameter (index for the commit path, ls-tree for CI — never
+  the filesystem); R10 rotation validation (gapless predecessor,
+  frozen at rotation, Volume/Previous-volume/sha256 header checks,
+  Continues-from as entry-id equality per §6.3); R5 across the
+  chain; R8 tightened to volume-01-of-chainless-only; H=512 KiB
+  refusal with the rotation remedy in the message; S warning
+  kept; check_journals per-commit partition checks + the R10 tree
+  check; verify_journal_chain.sh with dv's accepted active-volume
+  caveat printed on every green run; §6.6 ADOPTED - R11 minted
+  (CI re-checks the blob gate with the journal carve-out; full
+  history scanned clean first, so R11 cannot go red
+  retroactively).
+- Interpretation points accepted as drafted, two worth naming:
+  volume-01 headers predate the ADR and are append-only, so the
+  Volume field is checked on volume 01 only if declared (strict
+  for k>=2) - without this the mandated green run on the real
+  repo is impossible; no rotation grace mechanism exists because
+  none is needed - H binds the staged active volume, and a
+  rotation's staged volume is the new small one (S37 proves both
+  directions).
+- Verified by this session directly: test_protocol.sh 50 passed
+  0 failed (30 existing + S29-S38); check_journals --all green
+  over full history; verify_journal_chain.sh green on all nine
+  chains, worktree and --at HEAD.
+- Sequencing consequence, on the record: from this commit, dv's
+  journal (1.12 MB) exceeds H - its next append will be refused
+  until it rotates. Its rotation dispatches immediately after
+  the push; §5.2's prediction (exactly one forced rotation)
+  holds at landing.
+
+### Actions
+Five script files staged; this commit; push; dv rotation spawn;
+architect and orchestrator rotations at the next natural pause
+(both under H, warned only).
+
+### Evidence
+The three verification runs above, executed by this session;
+S37's transition proof; the §5.2 re-measurement in the draft.
+
+### Outcome / DoD
+R10 and R11 are script-refused reality; the chain is verifiable
+from a bare checkout; the WARN-JOURNAL era ends as rotations
+land. H is in force well before the next phase-accept (§7.3).
+
+### Open questions
+- architect (423 KiB) and orchestrator (277 KiB) rotations:
+  voluntary, queued at the next pause.
+
+### Files-in-this-commit
+- scripts/agent_commit.sh
+- scripts/check_journals.sh
+- scripts/policy.sh
+- scripts/test_protocol.sh
+- scripts/verify_journal_chain.sh

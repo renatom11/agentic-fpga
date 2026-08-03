@@ -40,7 +40,8 @@ git config user.email test@example.invalid
 git config user.name protocol-test
 mkdir -p scripts
 cp "$REPO_ROOT"/scripts/policy.sh "$REPO_ROOT"/scripts/agent_commit.sh \
-   "$REPO_ROOT"/scripts/check_journals.sh scripts/
+   "$REPO_ROOT"/scripts/check_journals.sh \
+   "$REPO_ROOT"/scripts/verify_journal_chain.sh scripts/
 chmod +x scripts/*.sh
 mkdir -p agents/journals/workers agents/handoffs libs docs/reports/audit test
 
@@ -50,6 +51,26 @@ seed_journal() { # path agent
 # Journal: claude_$2_agent
 Charter: agents/charters/$2.md
 Format: v1 (agents/PROTOCOL.md §4). Append-only below the --- line.
+---
+EOF
+}
+
+# Continuation-volume seed with the ADR-0017 §4.3 frozen header block.
+seed_volume() { # path agent volnum continues_from prev_path prev_sha prev_bytes
+  mkdir -p "$(dirname "$1")"
+  cat > "$1" <<EOF
+# Journal: claude_$2_agent — volume $3
+
+- **Agent**: $2 (test)
+- **Charter**: agents/charters/$2.md
+- **Format**: v1 — entry grammar in agents/PROTOCOL.md §4
+- **Volume**: $3
+- **Continues-from**: $4
+- **Previous-volume**: $5
+- **Previous-volume-sha256**: $6
+- **Previous-volume-bytes**: $7
+
+This file is APPEND-ONLY. Volume $3 of a chain (ADR-0017 §4.3).
 ---
 EOF
 }
@@ -94,6 +115,7 @@ seed_journal "$J_AUD" auditor
 echo hello > README.md
 entry orchestrator 0001 "bootstrap" README.md \
   scripts/agent_commit.sh scripts/check_journals.sh scripts/policy.sh \
+  scripts/verify_journal_chain.sh \
   "$J_RTL" "$J_AUD" >> "$J_ORCH"
 git add -A
 expect_ok "bootstrap commit accepted" \
@@ -414,6 +436,9 @@ git reset -q; git checkout -q HEAD -- "$J_ORCH"; rm -f libs/big.bin
 # ---- S28: journal carve-out from the blob gate (ADR-0017 D1) -----------------
 # A journal past BLOB_MAX commits WITHOUT an override, with WARN-JOURNAL on
 # stderr; the gate still refuses non-journal blobs (S27 holds that side).
+# JOURNAL_HARD_MAX is raised for this one commit so the property under test
+# stays the BLOB-GATE carve-out; the R10 hard threshold has its own scenario
+# (S37), which reuses the oversized journal this fixture leaves behind.
 say "S28: oversized journal passes the gate with a warning"
 OR_LAST=$(grep -oE "^## \\[J-orchestrator-[0-9]{4}\\]" "$J_ORCH" | grep -oE "[0-9]{4}" | tail -1)
 OR_NEXT=$(printf "%04d" $((10#$OR_LAST + 1)))
@@ -421,10 +446,173 @@ OR_NEXT=$(printf "%04d" $((10#$OR_LAST + 1)))
 { printf '%s\n' "### Padding (S28 fixture)"; head -c 1100000 /dev/zero | tr '\0' 'x'; printf '\n'; } >> "$J_ORCH"
 entry orchestrator "$OR_NEXT" "oversized journal entry" >> "$J_ORCH"
 git add "$J_ORCH"
-S28_OUT=$(scripts/agent_commit.sh --agent orchestrator --entry "J-orchestrator-$OR_NEXT" --work-order none --journal-only -m "S28 oversized journal" 2>&1) \
+S28_OUT=$(JOURNAL_HARD_MAX=2000000 scripts/agent_commit.sh --agent orchestrator --entry "J-orchestrator-$OR_NEXT" --work-order none --journal-only -m "S28 oversized journal" 2>&1) \
   && printf '%s\n' "$S28_OUT" | grep -q "WARN-JOURNAL" \
   && ok "oversized journal accepted with WARN-JOURNAL (ADR-0017 D1)" \
   || bad "oversized journal handling (out: $(printf '%s\n' "$S28_OUT" | tail -1))"
+
+# ---- S29: valid rotation commit (ADR-0017 §9a) -------------------------------
+# New volume with a well-formed §4.3 header, one entry = predecessor's last
+# + 1, predecessor untouched. No rotation mode: an ordinary commit.
+say "S29: valid rotation to volume 02"
+J_RTL2=agents/journals/claude_rtl_lead_agent.v02.md
+RL_LAST=$(grep -oE "^## \[J-rtl_lead-[0-9]{4}\]" "$J_RTL" | grep -oE "[0-9]{4}" | tail -1)
+RL_NEXT=$(printf "%04d" $((10#$RL_LAST + 1)))
+PREV_SHA=$(git show "HEAD:$J_RTL" | sha256sum | awk '{print $1}')
+PREV_BYTES=$(git show "HEAD:$J_RTL" | wc -c)
+seed_volume "$J_RTL2" rtl_lead 02 "J-rtl_lead-$RL_LAST" "$J_RTL" "$PREV_SHA" "$PREV_BYTES"
+echo r > libs/roll.ml
+entry rtl_lead "$RL_NEXT" "rotation to volume 02" libs/roll.ml >> "$J_RTL2"
+git add libs/roll.ml "$J_RTL2"
+expect_ok "rotation commit accepted (R10, ADR-0017 §4.4)" \
+  scripts/agent_commit.sh --agent rtl_lead --entry "J-rtl_lead-$RL_NEXT" --work-order none -m "rotation"
+expect_ok "check_journals green over history containing a rotation (R10)" \
+  scripts/check_journals.sh --all
+
+# ---- S30: new volume restarting entry ids at 0001 (ADR-0017 §9b) -------------
+say "S30: per-volume renumbering"
+J_RTL3=agents/journals/claude_rtl_lead_agent.v03.md
+RL2_LAST=$(grep -oE "^## \[J-rtl_lead-[0-9]{4}\]" "$J_RTL2" | grep -oE "[0-9]{4}" | tail -1)
+SHA2=$(git show "HEAD:$J_RTL2" | sha256sum | awk '{print $1}')
+BYTES2=$(git show "HEAD:$J_RTL2" | wc -c)
+seed_volume "$J_RTL3" rtl_lead 03 "J-rtl_lead-$RL2_LAST" "$J_RTL2" "$SHA2" "$BYTES2"
+entry rtl_lead 0001 "renumbered volume" >> "$J_RTL3"
+git add "$J_RTL3"
+expect_fail "entry restart at 0001 rejected (R5)" "R5" \
+  scripts/agent_commit.sh --agent rtl_lead --entry J-rtl_lead-0001 --work-order none -m "renumber" --journal-only
+git reset -q; rm -f "$J_RTL3"
+
+# ---- S31: rotation with a wrong back-link hash (ADR-0017 §9c) ----------------
+say "S31: rotation with wrong Previous-volume-sha256"
+BOGUS_SHA=0000000000000000000000000000000000000000000000000000000000000000
+RL2_NEXT=$(printf "%04d" $((10#$RL2_LAST + 1)))
+seed_volume "$J_RTL3" rtl_lead 03 "J-rtl_lead-$RL2_LAST" "$J_RTL2" "$BOGUS_SHA" "$BYTES2"
+entry rtl_lead "$RL2_NEXT" "forged back-link" >> "$J_RTL3"
+git add "$J_RTL3"
+expect_fail "wrong back-link hash rejected (R10)" "Previous-volume-sha256" \
+  scripts/agent_commit.sh --agent rtl_lead --entry "J-rtl_lead-$RL2_NEXT" --work-order none -m "bad link" --journal-only
+git reset -q; rm -f "$J_RTL3"
+
+# ---- S32: append to a frozen volume (ADR-0017 §9d) ---------------------------
+# The regression test for a future "simplification" of volume resolution —
+# under the pre-ADR R3 this would pass silently as an ordinary EOF-append.
+say "S32: append to a frozen volume"
+entry rtl_lead "$RL2_NEXT" "write into frozen volume 01" >> "$J_RTL"
+git add "$J_RTL"
+expect_fail "append to frozen volume rejected (R3)" "frozen" \
+  scripts/agent_commit.sh --agent rtl_lead --entry "J-rtl_lead-$RL2_NEXT" --work-order none -m "frozen" --journal-only
+git reset -q; git checkout -q HEAD -- "$J_RTL"
+
+# ---- S33: two own-chain volumes staged (ADR-0017 §9e) ------------------------
+say "S33: two volumes of the committing agent's chain staged"
+entry rtl_lead "$RL2_NEXT" "active append" >> "$J_RTL2"
+echo "late line into frozen volume" >> "$J_RTL"
+git add "$J_RTL" "$J_RTL2"
+expect_fail "two staged volumes rejected with the R10 message, not R8's" "one journal append per commit" \
+  scripts/agent_commit.sh --agent rtl_lead --entry "J-rtl_lead-$RL2_NEXT" --work-order none -m "two vols" --journal-only
+git reset -q; git checkout -q HEAD -- "$J_RTL" "$J_RTL2"
+
+# ---- S34: foreign .v02.md seed (ADR-0017 §9f) --------------------------------
+say "S34: foreign volume seed"
+J_DV2=agents/journals/claude_dv_lead_agent.v02.md
+AUD_NEXT=$( { grep -oE "^## \\[J-auditor-[0-9]{4}\\]" "$J_AUD" || true; } | { grep -oE "[0-9]{4}" || true; } | tail -1 )
+AUD_NEXT=$(printf "%04d" $((10#${AUD_NEXT:-0} + 1)))
+seed_volume "$J_DV2" dv_lead 02 "J-dv_lead-0000" "agents/journals/claude_dv_lead_agent.md" "$BOGUS_SHA" 0
+entry auditor "$AUD_NEXT" "pre-empting dv_lead's next volume" "$J_DV2" >> "$J_AUD"
+git add "$J_DV2" "$J_AUD"
+expect_fail "foreign volume seed rejected (R8 tightened)" "only volume 01 of a chainless agent" \
+  scripts/agent_commit.sh --agent auditor --entry "J-auditor-$AUD_NEXT" --work-order none -m "foreign v02"
+git reset -q; git checkout -q HEAD -- "$J_AUD"; rm -f "$J_DV2"
+
+# ---- S35: 1.5 MB journal accepted, 1.5 MB blob refused (ADR-0017 §9g) --------
+# The carve-out and its boundary in one pair (S27 must also keep passing
+# unchanged). H is parameterised out on the journal side so the property
+# under test stays the BLOB gate; H itself is S37's subject.
+say "S35: the carve-out boundary pair"
+RL2_NEXT=$(printf "%04d" $((10#$RL2_LAST + 1)))
+head -c 1500000 /dev/zero > libs/big2.bin
+entry rtl_lead "$RL2_NEXT" "pair blob" libs/big2.bin >> "$J_RTL2"
+git add libs/big2.bin "$J_RTL2"
+expect_fail "1.5 MB non-journal blob still refused (blob gate)" "blob threshold" \
+  scripts/agent_commit.sh --agent rtl_lead --entry "J-rtl_lead-$RL2_NEXT" --work-order none -m "pair blob"
+git reset -q; git checkout -q HEAD -- "$J_RTL2"; rm -f libs/big2.bin
+OR_LAST=$(grep -oE "^## \\[J-orchestrator-[0-9]{4}\\]" "$J_ORCH" | grep -oE "[0-9]{4}" | tail -1)
+OR_NEXT=$(printf "%04d" $((10#$OR_LAST + 1)))
+{ printf '%s\n' "### Padding (S35 fixture)"; head -c 400000 /dev/zero | tr '\0' 'y'; printf '\n'; } >> "$J_ORCH"
+entry orchestrator "$OR_NEXT" "1.5 MB journal" >> "$J_ORCH"
+git add "$J_ORCH"
+S35_OUT=$(JOURNAL_HARD_MAX=2000000 scripts/agent_commit.sh --agent orchestrator --entry "J-orchestrator-$OR_NEXT" --work-order none --journal-only -m "S35 1.5MB journal" 2>&1) \
+  && printf '%s\n' "$S35_OUT" | grep -q "WARN-JOURNAL" \
+  && ok "1.5 MB journal accepted by the commit gate (D1 carve-out)" \
+  || bad "1.5 MB journal handling (out: $(printf '%s\n' "$S35_OUT" | tail -1))"
+expect_ok "CI green with 1.5 MB journals in history (R11 journal carve-out, ADR-0017 §6.6)" \
+  scripts/check_journals.sh --all
+
+# ---- S36: chain verification, and one flipped byte turning it red (§9h) ------
+say "S36: verify_journal_chain green; a flipped frozen byte turns both checks red"
+expect_ok "verify_journal_chain green on a tree containing a rotation" \
+  scripts/verify_journal_chain.sh
+expect_ok "verify_journal_chain --at HEAD green" \
+  scripts/verify_journal_chain.sh --at HEAD
+sed -i '0,/test reasoning/s//test reasoninh/' "$J_RTL"
+expect_fail "flipped byte in a frozen volume caught by the auditor" "Previous-volume-sha256" \
+  scripts/verify_journal_chain.sh
+git checkout -q HEAD -- "$J_RTL"
+sed -i '0,/test reasoning/s//test reasoninh/' "$J_RTL"
+git add "$J_RTL"
+git commit -q -F - <<MSG
+flip a frozen byte with valid trailers
+
+Agent: rtl_lead
+Work-Order: none
+Journal-Entry: J-rtl_lead-$RL2_NEXT
+Journal-Only: true
+MSG
+expect_fail "the same flip landed as a commit caught by CI (R3)" "frozen" \
+  scripts/check_journals.sh --all
+git reset -q --hard HEAD~1
+
+# ---- S37: H binds the staged active volume; rotation is the way out ----------
+# ADR-0017 §5.2/§6.2 transition semantics: a further append to an over-H
+# active volume is refused, naming the rotation procedure; the rotation
+# commit of that same oversized journal passes under the DEFAULT H, because
+# its staged active volume is the new, small one.
+say "S37: hard threshold refuses appends, passes the rotation"
+J_ORCH2=agents/journals/claude_orchestrator_agent.v02.md
+OR_LAST=$(grep -oE "^## \\[J-orchestrator-[0-9]{4}\\]" "$J_ORCH" | grep -oE "[0-9]{4}" | tail -1)
+OR_NEXT=$(printf "%04d" $((10#$OR_LAST + 1)))
+entry orchestrator "$OR_NEXT" "append past H" >> "$J_ORCH"
+git add "$J_ORCH"
+expect_fail "append to over-H journal refused with the rotation message (R10)" \
+  "rotate to volume 02 \(R10, ADR-0017 §4.4\)" \
+  scripts/agent_commit.sh --agent orchestrator --entry "J-orchestrator-$OR_NEXT" --work-order none -m "past H" --journal-only
+git reset -q; git checkout -q HEAD -- "$J_ORCH"
+OR_SHA=$(git show "HEAD:$J_ORCH" | sha256sum | awk '{print $1}')
+OR_BYTES=$(git show "HEAD:$J_ORCH" | wc -c)
+seed_volume "$J_ORCH2" orchestrator 02 "J-orchestrator-$OR_LAST" "$J_ORCH" "$OR_SHA" "$OR_BYTES"
+entry orchestrator "$OR_NEXT" "rotation of the oversized journal" >> "$J_ORCH2"
+git add "$J_ORCH2"
+expect_ok "rotation of the oversized journal accepted under default H (R10)" \
+  scripts/agent_commit.sh --agent orchestrator --entry "J-orchestrator-$OR_NEXT" --work-order none -m "rotate orch" --journal-only
+expect_ok "check_journals green after the forced rotation" \
+  scripts/check_journals.sh --all
+expect_ok "verify_journal_chain green with two rotated chains" \
+  scripts/verify_journal_chain.sh
+
+# ---- S38: CI blob gate with the journal carve-out (R11, ADR-0017 §6.6) -------
+# The §1.2 hole closed: a commit that evades the local gate via its own
+# parameterisation no longer lands an oversized blob past CI.
+say "S38: CI re-checks the blob gate (R11)"
+RL2_LAST=$(grep -oE "^## \[J-rtl_lead-[0-9]{4}\]" "$J_RTL2" | grep -oE "[0-9]{4}" | tail -1)
+RL2_NEXT=$(printf "%04d" $((10#$RL2_LAST + 1)))
+head -c 1500000 /dev/zero > libs/huge.bin
+entry rtl_lead "$RL2_NEXT" "blob past the local gate" libs/huge.bin >> "$J_RTL2"
+git add libs/huge.bin "$J_RTL2"
+expect_ok "fixture: local gate evaded via its own parameter" \
+  env AGENT_COMMIT_BLOB_MAX=2000000 scripts/agent_commit.sh --agent rtl_lead --entry "J-rtl_lead-$RL2_NEXT" --work-order none -m "huge"
+expect_fail "CI refuses the oversized blob (R11)" "R11" \
+  scripts/check_journals.sh --all
+git reset -q --hard HEAD~1
 
 # ---- summary ----------------------------------------------------------------
 say ""
