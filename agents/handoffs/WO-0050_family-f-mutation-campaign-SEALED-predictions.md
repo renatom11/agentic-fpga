@@ -4,7 +4,14 @@
 > committed — and under `WO-0050` §1's allowlist, **all of `agents/**` is out of
 > bounds for the campaign's duration**, this file included.
 
-- **State**: FROZEN
+- **State**: **UNSEALED 2026-08-03**, on the orchestrator's word that all eight
+  mutation branches had run (`mut/wo-0050-f-c1` … `f-c8`, diffs committed at
+  `4ef6628`). Scored at `RV-0050-VERDICT` in the companion packet,
+  `J-dv_lead-0064`. **This state line is the only line of this file that has been
+  altered since the freeze** — no prediction, matrix cell, message string, bound
+  or weighting below has been touched, and `git diff 6f385d9 HEAD --` on this
+  path is the check. A freeze edited after its result is worthless; the scoring
+  lives in the companion, not here.
 - **Frozen against**: **`616686f`** — the SHA the green control run actually
   executed (CI run **30826473824**, workflow `build`, conclusion **success**).
   No byte-identity inference is needed. For the record,

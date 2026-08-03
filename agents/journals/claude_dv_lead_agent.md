@@ -16034,3 +16034,231 @@ architect's and the acceptance is the orchestrator's.
 
 ### Files-in-this-commit
 - (none)
+
+## [J-dv_lead-0064] 2026-08-03T23:55Z | task:WO-0050 | Family F's campaign passes 8/8 with three findings — and the two that matter are a MUST-STAY-GREEN cell I never worked and an F-c8 that killed one unit of three, which puts WO-0047 §1.2's own folding argument in doubt
+
+### Trigger
+Orchestrator: all eight WO-0050 branches (`mut/wo-0050-f-c1` … `f-c8`, diffs at
+`4ef6628`, each `616686f` + one) ran `build.yml`; all eight red at `runtest`, no
+compile failure anywhere. Verbatim per-mutation `runtest` output supplied as
+throwaway harvest files. Open the sealed file, adjudicate all eight against it,
+unseal by state-line flip, write `RV-0050-VERDICT`.
+
+### Inputs
+- The eight verbatim harvest files
+  `…/scratchpad/wo50_harvest/f-c{1..8}_runtest_verbatim.txt` — **read in full,
+  all eight**, and treated as governing over the dispatch's headline summary.
+- `agents/handoffs/WO-0050_family-f-mutation-campaign-SEALED-predictions.md` —
+  my own frozen §1 unit table, §2 matrix, §3 messages, §4 reasoning, §5 bounds,
+  §7 criteria.
+- `agents/handoffs/WO-0050_family-f-mutation-campaign.md` §2 (the eight intents,
+  incl. F-c6's pass-criterion exemption and pre-committed disposition), §4.1, §5.
+- `agents/handoffs/WO-0047_tb-m03-family-f-runts.md` §1.1, §1.2, §3.2;
+  `RV-0047-VERDICT` §5(3).
+- `test/xgmii_rx_64/test_m03_e.ml` `run_e4` (to establish *why* T-E4 fired) and
+  `test_m03_f.ml` `run_f2`/`run_f3` (the `k` iteration and the cycle arithmetic).
+- `AP-xgmii_rx_64.md` §8's M03-A3 standing fact; `J-dv_lead-0037`.
+- **No `libs/**`, no `rtl_snapshots/**`, and deliberately NOT the mutation diffs
+  at `4ef6628`** — see the F-4 ruling. No `docs/reports/audit/**`, no
+  `docs/adr/**` (ADR-0017 is in flight).
+
+### Reasoning
+
+**Green had to be measured, not inferred, and the mechanism is worth stating
+once.** `ppx_expect` promotes per test block, so each run's `.corrected` diff
+carries exactly one hunk per failing unit and every unit whose block is absent
+**ran and passed**. Hunk counts 4, 10, 1, 1, 1, 1, 1, 1 — twenty red cells across
+eight runs, against 21 REQUIRED and 139 MUST-STAY-GREEN. That is the green
+evidence and it is mechanical rather than an argument from silence.
+
+**Every class killed and every message landed.** All twenty observed messages are
+either the sealed string character-for-character or a shape I sealed as
+admissible. **The deviations are in which cells fired, never in what they said** —
+third campaign running where the sealed messages do all the discriminating and
+the row sets do none.
+
+**The F-c1 column is the one place I want to record a success, because it is the
+E-c1 lesson paying off.** I sealed `tkeep` rather than the word count at all four
+units, having worked the counts (1→1, 1→1, 8→8, 8→8) instead of reasoning from
+the defect's description. All four landed verbatim. Last campaign I replaced a
+correct seal with a wrong post-hoc correction by reasoning from a reported
+mechanism; this time the arithmetic came first.
+
+**FINDING F-1, and it is mine.** T-E4 reddened under F-c2 where I sealed
+MUST-STAY-GREEN. The unit is **right** to redden: M03-E4 drives 64-octet frames
+and asserts no strobe pulses anywhere, and F-c2 makes a 64-octet frame a runt, so
+`error_runt` fires and E4's emptiness check catches it. Ten units drive a
+64-octet frame, not nine.
+
+**The root cause is exact and it is the same one four rounds running.** Every
+other cell in the F-c2 column carries a worked ground in the seal's §4. **T-E4 is
+the one cell I wrote `G` for with no working at all** — I reasoned from its
+*family* ("E4 is family E; F-c2 is a runt-threshold class; therefore green")
+rather than from *what it drives*. I have now been convicted by: a relayed
+comment (WO-0047 §4.1), a relayed implementation detail (E-c1), a relayed claim
+about my own work (the WO-0049 seal), and here a conclusion reached from a
+category instead of from the stimulus. The instrument caught it this time, which
+is the point of the instrument.
+
+**FINDING F-2, and the contrast inside the same unit is what makes it
+informative.** F-c3 convicts T-F2 at `k = 1`; I sealed `k = 0`. The message text
+is the sealed primary character-for-character — only the row prefix differs. The
+mechanism: **a frame that receives zero octets gives an emitting defect nothing
+to emit.** F-c5, a strobe-*suppressing* defect, needs no octets and duly convicts
+at `k = 0` exactly as sealed. The two together prove the account rather than
+assert it, and they create a real bound — **F-c3's reach inside T-F2 is
+`k ∈ {1, 4}`.**
+
+**RESULT R-1, which is provable rather than argued.** F-c3 and F-c6 produced
+**byte-identical corrected files** — `index e7a9f8d..eafc324` in both runs. Same
+unit, same iteration, same assertion, same message. The two classes are
+indistinguishable at this bench.
+
+**So F-c6's pre-commitment settles cleanly and in the direction the row
+claimed.** `WO-0050` §2 pre-committed that a *green* F-c6 would withdraw M03-F2's
+second declared kill by spec diff, on the M03-D3 precedent. **It went red.** The
+kill — "attempts FCS removal on a frame with nothing to remove it from and
+underflows its counter" — is **confirmed achievable and is not withdrawn**; no
+spec diff is owed; `RV-0047` §5(3) is discharged. **With R-1's bound attached:
+the row convicts the underflow but cannot diagnose it**, because the underflow
+reaches the ports through the same channel as a spurious emission. That is the
+opposite disposition from D-M3 — killable but not separable, rather than
+unkillable.
+
+**On F-c6's message I was wrong in my ranking and it cost nothing because I
+sealed both.** I made the `tvalid`-without-`tlast` shape primary on the reasoning
+that an underflowed count drives words with no `tlast` among them; the `tlast`
+shape fired. Both were sealed admissible, so no finding — but the ordering rested
+on a mechanism I could not observe, which is E-c1's error in miniature.
+
+**FINDING F-4 is the campaign's most consequential result and I am not going to
+resolve it from here.** F-c8 was specified to displace the no-output-word pin
+*"at every such frame, whatever the strobe's name and whatever character closed
+it."* I sealed three REQUIRED units — T-E2, T-E5, T-F2. **Only T-E5 fired**, with
+the sealed message shape and `Y − X = 1` exactly, so the displacement is faithful
+*where it landed*. Two readings: the diff is narrower than its intent (claim
+untested, re-seed owed), or the three frames do not share a pin computation
+(claim refuted).
+
+**The discriminator is in the diff at `4ef6628` and I deliberately did not look.**
+It is `libs/**`, and reading a mutation diff to settle an adjudication would
+contaminate every round after it — the independence this whole apparatus exists
+to protect. Routed to the auditor and the orchestrator instead.
+
+**Either way the consequence lands, and it lands on my own packet.** `WO-0047`
+§1.2 folded M03-E5 into family F on an explicit *verification* ground: that E5
+and F2 are the two no-output-word classes and a defect in the **shared** path
+"would have to be scored against both to be understood". **F-c8 was the diff
+written to cash that argument and it did not cash it.** The shared-path claim is
+not established and may be false. I wrote that argument; the campaign is the
+first thing that could test it; it did not survive its first test.
+
+**And one standing open item is discharged, in the direction I predicted.** T-A34
+reddened **through the strobe monitor**, not through M03-A3's own comparison —
+the cross-lane tuple equality **passed**, because `tuser` sits inside the compared
+tuple and F-c2 moves it identically at both lanes. `AP` §8 has carried "M03-A3's
+blindness to lane-symmetric errors is UNTESTED" since `J-dv_lead-0037`, when
+WO-0039's M3 took the other branch. **It is now measured: M03-A3 is blind to
+lane-symmetric content errors**, and no packet may credit it as a content check.
+
+**Scope discipline.** Three artefacts owe an update that I am **not** making in
+this commit — `AP` §8's M03-A3 fact, §4.F's M03-F2 row (R-1's diagnosis bound),
+and §7's X-1/anchor table. The dispatch scopes this commit to the brief and the
+seal, and a row or fact edited in an adjudication commit is the denominator
+problem in a new dress. They go in a follow-up packet.
+
+### Actions
+- Read all eight verbatim harvest files in full and adjudicated **160 matrix
+  cells** against the sealed §2.
+- **Measured green mechanically** from the per-block `.corrected` hunks rather
+  than inferring it; confirmed the blast radius (no `FAILING` file outside
+  `test/xgmii_rx_64/`) and that **`fail_cross` never fired**.
+- **Verified R-1 by blob hash**: f-c3 and f-c6 both `e7a9f8d..eafc324`.
+- **Verified F-c4's `N` by derivation** (63 octets → 59 delivered → 8 words →
+  `start_cycle` 1 + 3 + 7 = 11) rather than accepting the printed number.
+- **Established F-1's cause** by reading `run_e4`'s stimulus and its
+  strobe-emptiness assertion — the unit is correct and the seal was wrong.
+- **Ruled F-c6's pre-committed disposition**: red, so the kill is confirmed
+  achievable, not withdrawn; `RV-0047` §5(3) discharged, with R-1's bound.
+- **Declined to read the mutation diffs** at `4ef6628` and routed F-4's
+  discriminator to the auditor.
+- **Unsealed** the WO-0050 seal by **state-line flip only**, in the WO-0039 form,
+  stating that it is the only altered line and naming `git diff 6f385d9` as the
+  check.
+- Appended **`RV-0050-VERDICT`** to the campaign brief.
+- Opened no `libs/**`, no `docs/reports/audit/**`, no `docs/adr/**`. No `git`.
+
+### Evidence
+1. Red-unit counts per run, from `grep -c '^@@'` on each verbatim file:
+   **4, 10, 1, 1, 1, 1, 1, 1** = twenty red cells.
+2. `grep -h '^File "'` across all eight → only
+   `test/xgmii_rx_64/test_m03_{a,b,c,d,e,f}.ml`. **No unit outside the twenty.**
+3. No `cross-check disagrees` string in any of the eight — `fail_cross` silent.
+4. F-c1 messages, verbatim: `M03-F1 (lane 0, length 5, delivered 1, final word
+   fill 1): tlast tkeep = 31, expected 1`; `M03-F3 (lane 0): tlast tkeep = 127,
+   expected 7`; `M03-F4 (lane 0): frame 1: tkeep does not match its own 59
+   delivered octets`; `M03-C4 (lane 0): tkeep is not 0x01 on the one-word frame`.
+   All four sealed.
+5. F-c2: ten hunks — T-F4, **T-E4**, T-D1, T-D2, T-D3, T-C12, T-B1, T-A12,
+   T-A34, T-A5. Nine sealed verbatim; T-C12's batched table carries **exactly two
+   FAILING entries, length 64 at each lane, `tuser=1`**, fourteen PASS. T-A34's is
+   `strobe monitor unclean:` with `error_runt=1`, the tuple check having passed.
+6. F-c3 `M03-F2 (lane 0, **1** octets received): a tlast word was observed …`;
+   F-c5 `M03-F2 (lane 0, **0** octets received): expected exactly one strobe pulse
+   (error_runt only -- F-c5's own kill), observed 0`; F-c6 identical to F-c3.
+7. Blob hashes: f-c3 `index e7a9f8d..eafc324`, f-c6 `index e7a9f8d..eafc324`.
+8. F-c4 `… both on cycle 11 … observed 1 pulse(s)`; F-c7 `M03-E5 (preamble
+   position 1, lane 0): expected exactly one strobe pulse (error_bad_frame only),
+   observed 0`; F-c8 `M03-E5 (preamble position 1, lane 0): error_bad_frame
+   pulsed on cycle 2, expected 3` — `Y − X = 1`.
+9. **Ephemeral** (ADR-0003/F5): the harvest files are throwaway scratchpad
+   artefacts outside the repository. Their content is reproducible from CI runs
+   30831751819, 30831753190, 30831754811, 30831757587, 30831759516, 30831766262,
+   30831762104, 30831763240.
+
+### Outcome
+**Family F's campaign PASSES on the instrument: 8 of 8 classes killed, 19 of 21
+REQUIRED cells, 138 of 139 MUST-STAY-GREEN, every message sealed verbatim or a
+sealed admissible alternative, no `fail_cross`, no build-level finding.** No
+discount applies — three classes carried full blinding including intents, five
+carried the family-E blinding.
+
+**Three findings, three of them against my own seal**: F-1 (T-E4, a cell I never
+worked), F-2 (F-c3's iteration index), F-4 (F-c8's row set, target undetermined).
+**One result**: R-1, F-c3 and F-c6 byte-identical, which confirms M03-F2's second
+declared kill and simultaneously bounds it.
+
+**REQ-107 is verified in both directions by a mutation-qualified instrument**,
+and **REQ-105's in-word route is closed by F-c7**. Six bounds are named in the
+verdict rather than left to be discovered.
+
+`SO-M03` does not issue: **25 rows benched, 21 of 60 ASSERT rows discharged, 39
+outstanding.**
+
+### Open-questions
+- **F-4 is routed and unresolved.** Whether F-c8's single kill means the diff was
+  narrower than its intent or my matrix was wrong is settled by one look at
+  `4ef6628`, which is the auditor's and the orchestrator's to make, not mine.
+  **Until it is settled, `WO-0047` §1.2's shared-no-output-path claim is not
+  established and no packet may cite it.**
+- **Three attack-plan edits are owed and deliberately not in this commit**: §8's
+  M03-A3 fact converts from UNTESTED to **measured-and-confirmed blind**; §4.F's
+  M03-F2 row gains R-1's diagnosis bound and F-2's `k ∈ {1,4}` reach; §7's table
+  rewrite still stands from `J-dv_lead-0060`. A follow-up packet, not an
+  adjudication commit.
+- **The discharge-by-citation is still unqualified** — M03-F5's own declared kill
+  was not seeded, as the seal said in advance.
+- **My seal was wrong in three places and the pattern is now nameable**: every
+  miss was a cell or an ordering I asserted without working it, while every cell I
+  worked landed exactly. The procedural answer is not "be careful" — it is that
+  **a matrix cell with no written ground is the cell that will be wrong**, and I
+  should mark unworked cells as such in the seal itself so the freeze exposes them.
+- Unchanged and still owed by me: **AP-M14's §6 invariant**; the
+  `precompile_check.sh` side-effect-in-combinator lane; the §4.1 correction to
+  WO-0047 if ever cited as guidance; the strobe-window convention; the RFC 1071
+  anchor on the next fetching run; X-7, X-10, X-11 deferred; L1–L5 as a separate
+  packet.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0050_family-f-mutation-campaign-SEALED-predictions.md
+- agents/handoffs/WO-0050_family-f-mutation-campaign.md
