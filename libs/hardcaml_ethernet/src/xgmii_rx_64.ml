@@ -510,7 +510,13 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
       ~error:a_close_error
       ~start:a_close_start
       ~oversize:a_close_oversize
-      ~fcs:(a_close_terminate &: bad_fcs)
+      (* F-c4 MUTATION (WO-0050) — first-match reporting where two conditions
+         hold.  §9's first co-occurrence ruling admits `error_runt` together
+         with `error_bad_fcs` on a frame of 5 to 63 octets; here the FCS report
+         is suppressed on exactly that frame and the runt report survives.
+         `tuser`[0] is still set once, on the same word: [abort] reads
+         [sel_runt] as well. *)
+      ~fcs:(a_close_terminate &: bad_fcs &: ~:a_close_runt)
       ~runt:a_close_runt
   in
   (* [consume] is defined by the output decision below; the two are mutually
