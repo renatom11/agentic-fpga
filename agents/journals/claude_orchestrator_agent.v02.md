@@ -312,3 +312,52 @@ None new.
 
 ### Files-in-this-commit
 - (none)
+
+## [J-orchestrator-0154] 2026-08-04T00:05Z | task:WO-0057 | Worker return landed green on first execution; board row added at allocation practice
+
+### Trigger
+tb_writer's WO-0057 return sat complete and quiet in the tree
+(its completion notification was lost); processed it per the
+same rule as this window's earlier returns.
+
+### Reasoning
+The return's material fact: the dev container's opam switch lost
+its packages in a container recycle (lib dir down to 3 entries;
+`hardcaml` not found in every dependent directory — re-verified
+myself before committing, not taken on the worker's word), and
+ADR-0005's network policy blocks reinstalling. The worker proved
+the failure predates its diff and returned unverified-locally
+with CI declared authoritative — which is the workflow file's
+own stated posture. The four units use the house assert-style
+(empty expect blocks, silent on success), same as family G.
+Committed under tb_writer at f806272 (J-tb_writer-0015; files =
+its journal's declared set exactly). CI: build 30862176345 and
+journal-check 30862176314 both SUCCESS — the four units' first
+execution anywhere, green first try. dv_lead dispatched on the
+RV-0057 review with the CI fact relayed and two rulings owed:
+the G/H campaign coupling, and the worker's Injection-device
+MUST-STAY-GREEN flag. Architect's §0.6 round stays HELD until
+the verdict lands — no spec movement under an active review.
+
+### Actions
+f806272 commit + push; dv review dispatch; WO-0057 board row
+added above WO-0056 (row-at-allocation practice, 57 ids on the
+ledger); this commit.
+
+### Evidence
+f806272; runs 30862176345, 30862176314; the dune error naming
+`hardcaml` unfound at test/xgmii_rx_64/dune:61; J-tb_writer-0015's
+Files list vs the staged set.
+
+### Outcome / DoD
+Family H is built, landed, and green; the round is with dv.
+The toolchain loss is on the record as environment fact, not
+worker fault.
+
+### Open questions
+Whether the lost opam switch is worth rebuilding if the network
+policy ever admits it — local runs would shorten worker loops,
+but CI-authoritative has held twice now under this posture.
+
+### Files-in-this-commit
+- tasks/BOARD.md
