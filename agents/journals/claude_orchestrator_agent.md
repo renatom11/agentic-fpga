@@ -5918,3 +5918,36 @@ None.
 - site/public/index.html
 - site/public/org-chart.html
 - site/public/spec-atlas.html
+
+## [J-orchestrator-0134] 2026-08-03T17:15:00Z | task:none | Section heading per sponsor: "What this is" becomes "Project details"
+
+### Trigger
+Sponsor: the "what this is" text should be replaced — "maybe
+'Project details'".
+
+### Inputs
+site/build.py:328.
+
+### Reasoning
+One heading swap, his suggested wording. Clean-worktree rebuild
+again (auditor mid-seed, two other agents in flight).
+
+### Actions
+Edit; rebuild; this commit; push.
+
+### Evidence
+Heading present in regenerated index.html.
+
+### Outcome / DoD
+Heading reads "Project details".
+
+### Open questions
+None.
+
+### Files-in-this-commit
+- site/build.py
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/index.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html

@@ -325,7 +325,7 @@ index = head_block('agentic-fpga — a trading network card built by an AI org',
   {CAD_CAPTION}
 
 
-  <h2>What this is</h2>
+  <h2>Project details</h2>
   <div class="twocol">
     <div class="col">
       <p>When a stock exchange publishes prices, trading firms race to read them
