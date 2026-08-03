@@ -499,7 +499,12 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
      word at W + 3, while the record born at W is consumed at W + 2 at the
      latest. Consumptions therefore never contend, and each record is at age 2
      exactly when its turn comes. *)
-  let a_close_runt = a_close_terminate &: (count_next <:. runt_threshold) in
+  (* F-c5 MUTATION (WO-0050) — a sub-five-octet frame silently dropped.  The
+     runt report is qualified by [has_fcs], i.e. by the frame having five or
+     more received octets, so §9's sixth row loses its strobe: the frame
+     produces no output word, as it should, and pulses nothing at all.  Frames
+     of 5 to 63 octets keep their report. *)
+  let a_close_runt = a_close_terminate &: (count_next <:. runt_threshold) &: has_fcs in
   let record_fields ~valid ~terminate ~error ~start ~oversize ~fcs ~runt =
     concat_lsb [ valid; terminate; error; start; oversize; fcs; runt ]
   in
