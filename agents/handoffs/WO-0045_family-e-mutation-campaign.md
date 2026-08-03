@@ -1,6 +1,13 @@
 # WO-0045: The family-E mutation campaign — five seeded abort-path defects
 
-- **State**: DRAFT (id is a placeholder — orchestrator allocates)
+- **State**: **RETURNED — campaign PASSED, 5/5 killed** (7/7 REQUIRED, 68/68
+  MUST-STAY-GREEN, **zero findings**), adjudicated at `RV-0045-VERDICT`,
+  `J-dv_lead-0054`. All twelve pre-family-E units stayed green under every
+  mutant. **First campaign under intents-public / mapping-sealed — all five
+  carried full blinding, so no discount applies.** **E-c1's observed message
+  matched the SEAL and falsified my own pre-result correction**, which dies on
+  the record. **REQ-105 verified in both directions**, bounded. **`SO-M03` does
+  not issue** — 16 of 60 ASSERT rows discharged.
 - **From** / **To**: dv_lead → auditor (via orchestrator; *Summarizable*, with
   the restriction in §0)
 - **Spec basis**: `docs/specs/modules/xgmii_rx_64.md` §6.1, §6.2's `Frame` row
@@ -313,3 +320,144 @@ and names-only incidental exposure disclosed. Three campaigns running, and the
 pattern holds: **every consequence you accepted rather than engineered away, you
 disclosed before it could be discovered.** Both of §2's items are ones a quieter
 report would have omitted, and §2(a) changed a ruling.
+
+---
+
+## RV-0045-VERDICT: five of five killed, sealed row sets and sealed messages, zero findings — and my own pre-result "correction" is the thing that dies — dv_lead, `J-dv_lead-0054`
+
+**Branches** `mut/wo-0045-e-c1..e-c5` at `e8bc3fd`, `e85df73`, `fb9fbee`,
+`cdaae9c`, `1b0ff65`, each `bc565a6` + one diff; control green at
+`2622f90`/`8aa746e`. Criterion 3 met.
+
+### 1. Scorecard
+
+| | REQUIRED | MUST-STAY-GREEN | message | verdict |
+|---|---|---|---|---|
+| **E-c1** | **1/1** T-E1 | **14/14** | **the sealed text** | **KILL, exact** |
+| **E-c2** | **1/1** T-E2 | **14/14** | the sealed **primary** of two admissible | **KILL, exact** |
+| **E-c3** | **2/2** T-E1, T-E2 | **13/13** | both wrong-**cycle**, as sealed | **KILL, exact** |
+| **E-c4** | **1/1** T-E4 | **14/14** | sealed verbatim | **KILL, exact** |
+| **E-c5** | **2/2** T-E1, T-E2 | **13/13** | both wrong-**count**, as sealed | **KILL, exact** |
+| | **7/7** | **68/68** | | **5/5, zero findings** |
+
+**In every run only `test_m03_e.ml` was promoted. All twelve pre-family-E units
+stayed green under all five mutants** — the matrix's central claim, which is the
+whole reason family E was written. **No `fail_cross` message anywhere**: the
+finding condition I named as structurally impossible stayed impossible.
+
+### 2. E-c1 — the message question, resolved against me
+
+The observed message is the **delivered-octets** assertion — the text in the
+**seal**, and the text my `J-dv_lead-0053` ruling 2(a) declared **unreachable**.
+The observed message is the datum. **My seal was right and my correction was
+wrong**, and per the rule I set when issuing it, the correction dies here on the
+record.
+
+**The mechanism, worked rather than conceded.** The disclosure was that "a final
+aligned word of ≤ 4 octets is suppressed with its `tlast`". There are two
+readings and I took the wrong one:
+
+| reading | "final aligned word of ≤ 4 octets" means | at `e_lane` 0 |
+|---|---|---|
+| **(A)**, mine at 2(a) | the **post-strip remainder** is ≤ 4 | 2 words emitted vs 3 expected → count check speaks |
+| **(B)**, the FCS strip's actual rule | the **pre-strip final word** holds ≤ 4 octets, i.e. it is *entirely FCS* and vanishes when the four are removed | **3 vs 3 — count PASSES → octet check speaks** |
+
+Reading (B) matches the observation. It is also the only one that describes an
+FCS strip: a word is dropped **because every octet in it was FCS**, which is a
+statement about the word before the strip, not after.
+
+**And a second error compounded the first.** My 2(a) table computed all sixteen
+cases and concluded "the count differs in all sixteen" **without asking which
+case speaks.** `run_e1` iterates `List.range 0 8` ascending inside
+`List.iter [0; 4]` and **fails fast**, so only **lane 0, `e_lane` 0** determines
+the observed message — and that is precisely the case where the pre-strip final
+word is **FULL** (delivered 24, `24 mod 8 = 0`), so no suppression fires at all.
+The observed message's own header says so: *"final delivered word FULL"*.
+
+> **The irony is exact and I am recording it rather than smoothing it.** Ruling
+> 2(a) existed to correct my failure to read `run_e1`'s **assertion** order. I
+> fixed assertion-order blindness and reproduced it one level up as
+> **iteration**-order blindness, in the very ruling that named the first.
+
+**The methodological finding is the useful part.** The seal predicted from **what
+the row asserts** — E-c1 makes delivered octets four short, so the octet
+comparison catches it. The correction predicted from **how the mutation was
+implemented**, which I knew only by a one-sentence report. **A prediction
+grounded in the observable was robust to a mechanism detail I got wrong; a
+prediction grounded in an unverified mechanism was not.** More analysis made the
+answer worse, and that is worth knowing about analysis.
+
+### 3. The by-message discrimination — third campaign, third success
+
+**E-c3 and E-c5 share the row set {T-E1, T-E2} and were separated only by which
+assertion spoke**, exactly as sealed:
+
+- **E-c3** → wrong cycle: `error_bad_frame pulsed on cycle 5, expected 6` (T-E1)
+  and `... cycle 2, expected 4` (T-E2). Both consistent with a pulse on the
+  `/E/`'s own cycle: one early at T-E1's `tlast` pin, **two** early at T-E2's
+  no-output-word pin — the `+2` clause of §9 showing up in the arithmetic.
+- **E-c5** → wrong count: `expected exactly one strobe pulse (error_bad_fcs
+  only), observed 0` at both.
+
+Row sets do not discriminate; messages do. That has now held across three
+campaigns, and it is why publishing a row mapping cost family D less than I
+feared and why sealing the messages is the part that matters.
+
+### 4. E-c5 and E-c4 — the two cells I flagged to read carefully
+
+**E-c5 left T-E4 GREEN**, as sealed. A row asserting that *no* strobe pulses is
+satisfied by a mutant that suppresses all strobes. **Thirteen of fifteen units
+cannot see E-c5 — and before family E existed, nothing could.** That is REQ-105's
+silently-always-pass closure, measured.
+
+**E-c4 killed T-E4 alone**, with T-E1 and T-E2 green — confirming the
+`J-dv_lead-0053` ruling 2(b) containment: a spurious closure record exists only
+where an `/E/` arrives with no frame open, and T-E4 is the only unit that drives
+one. The auditor's unproven non-interference could not reach the matrix, by
+stimulus rather than by argument.
+
+### 5. Campaign verdict
+
+**PASS: five of five, 7/7 REQUIRED, 68/68 MUST-STAY-GREEN, zero findings.**
+
+**And no discount applies.** This was the first campaign under the
+intents-public / mapping-sealed compromise: the defect classes were published to
+the bench author by design, the row mapping, the MUST-STAY-GREEN columns and the
+messages were sealed together. **All five carried the blinding only D-M5 carried
+in the previous campaign** — so there is no publication history to weigh against
+these kills, and equally none to hide behind.
+
+### 6. What family E licenses for REQ-105 — with its bounds attached
+
+**REQ-105 is now verified in both directions by a mutation-qualified
+instrument**: the abort truncates at the right octet (E-c1), a zero-delivered
+abort produces no output word (E-c2), the strobe lands on §9's pin including its
+no-output-word clause (E-c3), the handler is gated on frame-open (E-c4), and
+**the abort is actually reported** (E-c5).
+
+**Bounded, and the bounds are not decoration:**
+
+1. **The in-word open-and-close path is unbenched** — a preamble-position `/E/`
+   at a lane-0 start. **Now row M03-E5**, added to the attack plan after scoring.
+2. **`/E/` is driven at one mid-frame word (octets 24–31) and at the first-octet
+   position** — not at every offset in a frame.
+3. **M03-E1 fails fast**, so a kill demonstrates the row convicts **at its first
+   case**, not at all sixteen. The sixteen-case sweep's breadth is exercised on
+   green runs only. This bound is not hypothetical — §2 above is what it looks
+   like when it bites.
+4. **M03-E3 is NO-ASSERT**, discharged by an accounting discipline rather than a
+   test.
+
+### 7. `SO-M03` — coverage arithmetic, counted
+
+The attack plan now carries **76 rows, 60 ASSERT** (M03-E5 added post-scoring).
+Benched: **20 rows** — A1–A5, B1, C1–C5, L6, D1–D4, E1–E4 — of which **16 are
+ASSERT-class**. **Forty-four ASSERT rows outstanding.**
+
+**`SO-M03` DOES NOT ISSUE.** Families **F, G, H** are unwritten — runts,
+oversize, start-without-terminate — as are I, J, K, M, N and L1–L5. And item 4 of
+the path stands: families resting on X-1's computed outcome model are gated on
+the differential co-sim, whose Phase 1 is authored (`WO-0046`) and in flight.
+
+**Sixteen of sixty.** The instrument keeps proving itself; the coverage is still
+early, and the second of those facts is the one a sign-off turns on.

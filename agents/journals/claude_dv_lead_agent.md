@@ -13942,3 +13942,182 @@ is scored.
 
 ### Files-in-this-commit
 - agents/handoffs/WO-0045_family-e-mutation-campaign.md
+
+## [J-dv_lead-0054] 2026-08-15T16:50Z | task:WO-0045 | Family E's campaign passes 5/5 with zero findings — and the one thing that dies is my own pre-result correction, which replaced a right prediction with a wrong one by taking an unverified mechanism over the observable
+
+### Trigger
+Orchestrator: the five family-E runs are in, all RED, only `test_m03_e.ml`
+promoted in every one, no `fail_cross` anywhere, with every failing unit and
+message verbatim. Adjudicate against the seal; resolve the E-c1 message question
+with the mechanism named, since the observed message is the one the **seal**
+predicted and the one my `J-dv_lead-0053` ruling 2(a) declared unreachable;
+score the E-c3/E-c5 by-message discrimination; give the campaign verdict, what
+REQ-105's qualification licenses with its bound, and the updated `SO-M03`
+arithmetic; schedule the M03-E5 row.
+
+### Inputs
+- The five run reports as relayed, with messages verbatim.
+- `agents/handoffs/WO-0045_…-SEALED-predictions.md` §2–§4 — my own freeze.
+- The `J-dv_lead-0053` addendum, ruling 2(a) — **the thing now under test**.
+- `test/xgmii_rx_64/test_m03_e.ml` — `run_e1`'s assertion order **and its
+  iteration order** (`List.iter (List.range 0 8)` inside `List.iter [0;4]`).
+- A worked two-reading table of the disclosed word-drop against all sixteen E1
+  cases.
+- `test/attack_plans/AP-xgmii_rx_64.md` §4.E and its status counts.
+- `tools/dv_checks.sh`, `tools/precompile_check.sh` — run after my edit, to
+  establish whose breakage the red tree is.
+- **No `libs/**`, no `rtl_snapshots/**`, no auditor diffs.**
+
+### Reasoning
+
+**The campaign is clean and I will be short about it, because the interesting
+result is against me.** Five of five killed, each in its sealed row set with its
+sealed message, 7/7 REQUIRED and 68/68 MUST-STAY-GREEN. **All twelve
+pre-family-E units stayed green under every mutant** — the claim family E exists
+to make. No `fail_cross` fired, so the finding condition I called structurally
+impossible stayed impossible. And this was the first campaign under
+intents-public / mapping-sealed, so **all five carried the blinding only D-M5
+carried last time**: no discount to apply, and none to hide behind.
+
+**E-c1 is where I was wrong, and the coordinator was right to make me work it
+rather than wave it through.** The observed message is the delivered-octets
+assertion — the seal's text, and the text my ruling 2(a) declared unreachable.
+
+The disclosure was that "a final aligned word of ≤ 4 octets is suppressed with
+its `tlast`", and it admits two readings. I took **(A)**: the *post-strip
+remainder* is ≤ 4. The FCS strip's actual rule is **(B)**: the *pre-strip final
+word* holds ≤ 4 octets — i.e. **it is entirely FCS**, so it vanishes when the four
+are removed. Reading (B) is the only one that describes an FCS strip at all: a
+word is dropped *because every octet in it was FCS*, which is a fact about the
+word before the strip.
+
+At `e_lane` 0 — delivered 24, `24 mod 8 = 0`, **pre-strip final word FULL** —
+(A) predicts 2 words against 3 expected and the count check speaking; (B)
+predicts 3 against 3, the count passing, and the octet comparison speaking.
+**The observation is (B)**, and the message's own header says *"final delivered
+word FULL"*.
+
+**A second error compounded the first, and it is the one worth keeping.** My
+2(a) table computed all sixteen cases and concluded "the count differs in all
+sixteen" **without asking which case speaks.** `run_e1` iterates ascending and
+**fails fast**, so only lane 0 / `e_lane` 0 determines the observed message — and
+that is exactly the one case where no suppression fires. **Ruling 2(a) existed to
+correct my failure to read `run_e1`'s assertion order; I fixed assertion-order
+blindness and reproduced it one level up as iteration-order blindness, inside the
+ruling that named the first.**
+
+**The methodological lesson is the real output of this adjudication.** The seal
+predicted from **what the row asserts** — E-c1 makes delivered octets four short,
+so the octet comparison catches it — and was robust to a mechanism detail I got
+wrong. The correction predicted from **how the mutation was implemented**, known
+to me only by one sentence of report, and was not. **More analysis made the
+answer worse.** I have been treating "check the mechanism" as strictly better
+than "reason from the observable"; it is not, when the mechanism is second-hand
+and the observable is in front of you. The seal's discipline — predict what the
+assertion will say, from the assertion — is the more robust of the two, and I
+should weight it accordingly next time rather than "improving" it.
+
+**The by-message discrimination held for the third campaign running.** E-c3 and
+E-c5 share {T-E1, T-E2} and were separated only by which assertion spoke, with
+E-c3's numbers carrying §9's own arithmetic: one cycle early at T-E1's `tlast`
+pin, **two** early at T-E2's no-output-word pin. Row sets do not discriminate;
+messages do.
+
+**E-c5 left T-E4 green as sealed** — a row asserting no strobe pulses is
+satisfied by a mutant that suppresses all strobes. Thirteen of fifteen units
+blind, and before family E, everything. **E-c4 killed T-E4 alone**, confirming
+2(b)'s containment by stimulus rather than by argument.
+
+**On the M03-E5 row I honoured my own denominator rule and then acted
+immediately.** It was found *during* the campaign by the seeder reading the
+design, and adding it then would have moved the denominator the freeze was
+scored against. Scored first, added second — in the same sitting, because a
+found gap deferred is a found gap lost.
+
+**And the red tree is not mine, which I established rather than assumed.**
+`dv_checks` went red after my attack-plan edit, which looks damning until you
+run it: `precompile_check` lane 3a reports *"test/cosim holds OCaml sources but
+no dune file — no disposition"*. That is **tb_writer's in-flight WO-0046 work**
+in an intermediate state, and the harness is refusing to bless a directory whose
+sources would be silently uncompiled — the exact file-scale vacuity hazard I
+flagged at `RV-0040-VERDICT` when I checked family D's `dune` before anything
+else. **My own harness catching my own packet's §2.2 constraint being not-yet-met
+is the harness working.** Not my breakage, not a defect, not mine to fix.
+
+### Actions
+- **Scored all five against the seal**: 7/7 REQUIRED, 68/68 MUST-STAY-GREEN,
+  every message as sealed, zero findings.
+- **Resolved E-c1 by working both readings of the disclosed word-drop against
+  all sixteen cases and against `run_e1`'s iteration order**; ruled the **seal
+  correct** and **withdrew ruling 2(a)** on the record.
+- Named the compounding error — iteration-order blindness inside the ruling that
+  named assertion-order blindness — and the methodological finding that a
+  prediction from the observable beat one from a second-hand mechanism.
+- Scored the E-c3/E-c5 by-message discrimination and E-c5's T-E4-green cell.
+- **Added row M03-E5** to the attack plan after scoring, crediting the seeder,
+  and recorded why it was not added during the campaign.
+- Closed family E's qualification in the plan's change log; **counts now 76 rows
+  / 60 ASSERT; 20 benched, 16 ASSERT discharged, 44 outstanding**.
+- Stated **REQ-105 verified in both directions with four bounds attached**.
+- **Established that the red `dv_checks` is `test/cosim`'s missing dune file** —
+  tb_writer's in-flight work — and did not touch it.
+- Flipped WO-0045 to **RETURNED — campaign PASSED**; appended `RV-0045-VERDICT`.
+- Opened no `libs/**`. No `git commit`, no `git push`.
+
+### Evidence
+1. Observed E-c1 message is the delivered-octets assertion, header *"final
+   delivered word FULL"* — the seal's text.
+2. Two-reading table: at `e_lane` 0, (A) gives 2 words vs 3 expected, (B) gives
+   3 vs 3. Observation matches (B).
+3. `run_e1` iterates `List.range 0 8` ascending inside `List.iter [0;4]` and
+   fails fast — only lane 0 / `e_lane` 0 speaks.
+4. E-c3: `cycle 5, expected 6` (T-E1, one early) and `cycle 2, expected 4`
+   (T-E2, two early) — §9's `tlast` pin and its no-output-word `+2` clause.
+5. E-c5: `observed 0` at both T-E1 and T-E2; **T-E4 green**.
+6. Only `test_m03_e.ml` promoted in all five runs; twelve pre-E units green
+   throughout; no `fail_cross`.
+7. `precompile_check` lane 3a: *"test/cosim holds OCaml sources but no dune file
+   — no disposition"* — the red tree's cause, and not my edit.
+
+### Outcome
+**Family E's campaign PASSES: 5/5 killed, 7/7 REQUIRED, 68/68 MUST-STAY-GREEN,
+zero findings**, with full blinding on all five and no discount available.
+
+**My pre-result ruling 2(a) is WITHDRAWN.** The seal was right; the correction
+was wrong; it dies on the record as the rule requires.
+
+**REQ-105 is verified in both directions by a mutation-qualified instrument**,
+bounded by the unbenched in-word path (now M03-E5), the two `/E/` offsets
+driven, M03-E1's fail-fast, and M03-E3's NO-ASSERT status.
+
+**`SO-M03` does not issue: 16 of 60 ASSERT rows.**
+
+### Open-questions
+- **A weighting rule, earned the hard way**: when a sealed prediction rests on
+  *what an assertion says* and a later "correction" rests on *a reported
+  mechanism*, the seal is the more robust of the two. Do not improve a
+  prediction using second-hand implementation detail; verify the detail first or
+  leave the prediction alone.
+- **M03-E5 is now a row and is unbenched** — schedule it with family F's packet
+  or its own, and note it needs the arming-reading declaration since it is a
+  no-output-word class.
+- **`test/cosim` needs its `dune` file** — `WO-0046` §2.1/§2.2 specify it as
+  `(executables)`; the harness is correctly red until it lands. tb_writer's, not
+  mine.
+- **Family F is next** and owes: both defect-shape re-reads, §9 ruling 9's
+  sub-5-octet class and the bound it puts on REQ-104, the arming-reading
+  declaration, and the freeze-checklist items from `J-dv_lead-0053` — read every
+  unit's assertion **and iteration** order before sealing a message.
+- **The next campaign template** gains `dune-project` on the allowlist and the
+  `@fmt`-is-Build-state ruling.
+- **Owed by me, unchanged**: the `precompile_check.sh`
+  side-effect-in-combinator lane; `AP` §7's fuller rewrite; the packet-authoring
+  rules from `RV-0043-VERDICT` and `J-dv_lead-0052`.
+- **M03-A3's blindness to lane-symmetric errors remains untested**; my M04
+  contamination from `J-dv_lead-0024` still stands.
+- **Unchanged**: the RFC 1071 anchor closes on the next CI run that fetches;
+  X-7, X-10, X-11 deferred; L1–L5 owed as a separate packet.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0045_family-e-mutation-campaign.md
+- test/attack_plans/AP-xgmii_rx_64.md
