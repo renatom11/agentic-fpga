@@ -523,3 +523,89 @@ F5 by citation. `SO-M03` does not issue.
 ### Files-in-this-commit
 - agents/handoffs/WO-0056_m03-g-discard-window-repair.md
 - test/attack_plans/AP-xgmii_rx_64.md
+
+## [J-dv_lead-0076] 2026-08-06T13:10Z | task:WO-0056 | AP-M14's §6 invariant HOLDS, and establishing WHY is the useful half: it was never disturbed, where AP-M03's broke because a row was added to its spec after the plan was written
+
+### Trigger
+Orchestrator, item 2 of two: the AP-M14 §6-invariant check I flagged at
+`J-dv_lead-0060` and have carried as owed since. SPEC-M14 is REQ-901 class (a)'s
+home and `AP-ip_eth_rx_64.md` carries the same invariant AP-M03 had — check it,
+repair if stale, or record that it holds.
+
+### Inputs
+- `test/attack_plans/AP-ip_eth_rx_64.md` §6 — its invariant sentence and its full
+  coverage-map REQ column.
+- `docs/specs/modules/ip_eth_rx_64.md` §10 — its full REQ column.
+- The same two at **`df3e474`**, the commit that authored AP-M14.
+- `J-dv_lead-0060` (where I raised it) and the AP-M03 §6 repair it came from.
+- **No `libs/**`, no `docs/reports/audit/**`, no `/workspace/**`.**
+
+### Reasoning
+
+**It holds, and I checked both halves of it rather than the obvious one.** The
+invariant is *"every REQ SPEC-M14 §10 lists appears exactly once"*, which is two
+claims: **every** (set inclusion) and **exactly once** (no duplicates). A sorted
+set comparison proves the first and **hides** the second, so I ran them
+separately: `diff` on the two sorted lists is empty in both directions — 31
+entries each, REQ-901 among them — and `uniq -d` is empty on each side. **No
+repair is owed.**
+
+**The useful half is why it held, because "it holds" alone tells nobody whether
+to look again.** AP-M03's invariant broke because SPEC-M03 §10 **gained** a
+REQ-901 row at `62c39a7` — the cascade — while AP-M03 had been written long
+before. I checked the analogous history at M14: **SPEC-M14 §10's REQ list is
+byte-identical to what it was at `df3e474`**, the commit that authored AP-M14,
+and **REQ-901 was already in it then**. So M14's plan was written against the
+list it still faces.
+
+> **The invariant is not more robust at M14; it was simply never disturbed.** That
+> distinction is the whole content of the answer, and it yields a standing
+> re-check condition rather than a one-off result: **the M14 invariant becomes
+> at-risk the moment SPEC-M14 §10 gains a row**, and the check is owed again then
+> — by whoever adds it, not by whoever remembers.
+
+**And that generalises to a rule the programme can use.** The failure mode is not
+"attack plans drift"; it is **a class-home specification gaining a §10 row after
+its attack plan was authored**. Every plan carrying this invariant is exposed to
+exactly that event and to nothing else. Worth stating once here rather than
+re-deriving at each plan.
+
+### Actions
+- Extracted both REQ columns mechanically and compared as **sets** (`diff`,
+  empty both directions) and for **duplicates** (`uniq -d`, empty both sides).
+- Extracted SPEC-M14 §10's REQ column **at `df3e474`** and compared against today:
+  unchanged.
+- **Recorded that the invariant HOLDS. No repair made, none owed.**
+- Derived the standing re-check condition and the general failure mode.
+- Touched **no file**. No `git`.
+
+### Evidence
+1. `diff` of AP-M14 §6's REQ column against SPEC-M14 §10's → **empty both
+   directions**, 31 entries each, REQ-901 present in both.
+2. `uniq -d` on each column → **empty**; the "exactly once" half holds on both
+   sides.
+3. SPEC-M14 §10's REQ column at `df3e474` vs today → **identical**; REQ-901
+   present at authoring time (`grep -c` → 1).
+4. `git log --diff-filter=A -- test/attack_plans/AP-ip_eth_rx_64.md` → `df3e474`
+   ("WO-0027: first attack plans — AP-M03 … + AP-M14 …").
+
+### Outcome
+**AP-M14's §6 invariant HOLDS** — set-identical and duplicate-free on both sides
+— and **no repair is owed**. The debt raised at `J-dv_lead-0060` is discharged.
+
+**Why it held**: SPEC-M14 §10 has not moved since AP-M14 was authored, and
+REQ-901 was already there. AP-M03 broke because its spec gained a row afterwards.
+**The standing re-check condition is therefore an event, not a date: any addition
+to a class-home spec's §10 re-opens its plan's §6 invariant.**
+
+### Open-questions
+- **The re-check is owed on the event, not on a schedule.** If SPEC-M14 §10 ever
+  gains a row, AP-M14's §6 must be re-checked in the same round — the mistake at
+  M03 was that nobody looked, not that anyone looked late.
+- **Two other plans may carry the same invariant** if more attack plans exist or
+  are written; I checked only M14 because it is the one I flagged. Worth a sweep
+  when the next plan is authored rather than a separate packet now.
+- Unchanged from `J-dv_lead-0075` and not repeated here.
+
+### Files-in-this-commit
+- (none)
