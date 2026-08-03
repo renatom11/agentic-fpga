@@ -5055,3 +5055,46 @@ ruled.
 - site/public/org-chart.html
 - site/public/spec-atlas.html
 - tasks/BOARD.md
+
+## [J-orchestrator-0115] 2026-08-03T05:45:00Z | task:WO-0041 | The unit count tied to a measurement - and the drifting labels were mine
+
+### Trigger
+dv's WO-0041 freeze flagged that "eighteen units" (my freeze
+order) and CI's circulating "fifteen" were labels nobody had
+tied to a measurement, and asked that the number be resolved.
+
+### Inputs
+- Measured at the SHAs: bench %expect_test units = 12 at 447d11c
+  and at 7fac574 (3 a + 1 b + 4 c + 1 structural + 3 d), 9 at
+  6bd7e5a (the WO-0039 campaign base - dv's sealed "nine" was
+  the one counted number in the chain), 92 repo-wide.
+
+### Reasoning
+Provenance, owned: "fifteen" first appears in MY relay to dv
+after the first green run ("fifteen tests, fifteen empty
+blocks") - I wrote it without counting; dv repeated it in
+RV-0040-VERDICT §7 and predicted "eighteen" (fifteen + family
+D's three); I then ordered a freeze "across all eighteen units."
+No CI output ever printed either number - dune runtest is silent
+on success. The same mechanism dv named at F-1: a label
+circulating without a measurement, twice signed by people who
+each thought the other had counted. The freeze's 5x12 matrix is
+built on the counted 12.
+
+### Actions
+- Measurement recorded above and relayed to dv; auditor spawned
+  on WO-0041 under the eight-bar blinding regime with dv's bar
+  list relayed verbatim; this journal-only commit.
+
+### Evidence
+- grep -c 'let%expect_test' per file at 447d11c/7fac574/6bd7e5a,
+  quoted in the entry.
+
+### Outcome / DoD
+The denominator is measured. D-campaign seeding in flight.
+
+### Open questions
+- None on the count. The campaign's own outcomes are ahead.
+
+### Files-in-this-commit
+_None — journal-only entry._
