@@ -196,3 +196,95 @@ nothing**, and `SO-M03` does not issue.
 Freely tellable, and told: every intent in the brief's §2, the bars, the
 mechanics, the return format, and the plain statement that D-M1 will look
 quiet on purpose.
+
+---
+
+## SEALED ADDENDUM — D-M6's frozen prediction (WO-0042's mini-round)
+
+> **RE-SEALED for the D-M6 round.** Everything above is scored and unsealed;
+> **this section is not.** The auditor must not open this file until the D-M6
+> diff is committed — bar 6 of `WO-0042` §1.
+
+- **Frozen against**: bench SHA **`447d11c`**, verified byte-identical to HEAD
+  under `test/xgmii_rx_64/` (`git diff 447d11c HEAD -- test/xgmii_rx_64/` is
+  empty), so the previous five and this one share one base and one control.
+- **Frozen by**: dv_lead, `J-dv_lead-0045`, **before the diff existed**.
+- **Second copy**: `J-dv_lead-0045`.
+
+### D-M6 — the latched abort bit
+
+**Observability argument, stated first because it determines the whole matrix.**
+The defect is visible only where a *single simulation* drives **two or more
+frames** and a **later** frame is asserted to carry `tuser`[0] = 0 after an
+**earlier** one set it. Every other unit in the suite builds a **fresh bench per
+frame** — `one_frame`, `run_length` and `run_directed_lengths` each call
+`create ()` per entry — so no latch can survive into an assertion. Only
+`run_mixed_pair`'s two-frame schedules qualify.
+
+### The matrix
+
+| unit | D-M6 |
+|---|---|
+| T-A12 | G |
+| T-A34 | G |
+| T-A5 | G |
+| T-B1 | G |
+| T-C12 | G |
+| T-C3 | G |
+| T-C4 | G |
+| T-C5 | G |
+| T-ST | G |
+| T-D1 | G |
+| **T-D2** | **R** |
+| **T-D3** | **R** |
+
+**REQUIRED red: 2. MUST-STAY-GREEN: 10.**
+
+### Expected messages — both on the **second** frame of a **pair B** schedule
+
+**T-D3** — `run_d3` passes lane 0 / pair A (frame 1 has no predecessor; frame 2
+is genuinely bad and expects the set bit), then fails at lane 0 / pair B, whose
+second frame is good:
+
+```
+M03-D3 pair B (bad-then-good), lane 0: frame 2: tuser[0] does not match its own FCS status
+```
+
+**T-D2** — its four calls run in order; the first three pass (two single-frame
+partners, then pair A whose asserted member is frame 1). The fourth fails:
+
+```
+M03-D2 (D3's good member, pair B (bad-then-good), lane 0): frame 2: tuser[0] does not match its own FCS status
+```
+
+**Both speak through `assert_frame`'s `tuser` check**, which runs *after* the
+octet-sequence comparison and *before* the strobe-set comparison — so a strobe
+message here would be a **finding**, and would mean the seeder latched the
+reporting path along with the marking bit, contrary to the intent's §2
+precision.
+
+### PERMITTED
+
+**None.** Every cell above is REQUIRED or MUST-STAY-GREEN. There is no
+genuinely two-way case in this round.
+
+### Why this round matters, and one thing it accidentally proves
+
+M03-D3's *headline* kill was withdrawn as unachievable at `RV-0041-VERDICT` §3.
+This is the row's **surviving** declared kill and the only one still unevidenced
+— so this single diff decides whether the row earns its ASSERT status or is a
+two-frame stimulus asserting nothing that any mutation can reach.
+
+**And the row set is the same {T-D2, T-D3} I wrongly predicted for D-M3.** That
+is worth recording rather than hiding: my D-M3 prediction was not wrong about
+*which units can see a cross-frame defect* — it was wrong about whether D-M3
+*was* one. The instrument was correctly identified; the target was not. If D-M6
+lands on exactly those two units, it vindicates M03-D3's two-frame structure
+while confirming that the thing it was originally built to catch never existed.
+
+### Not to be told
+
+The matrix, both message strings, the observability argument, and the
+`assert_frame` ordering that makes a strobe message a finding. **Freely told and
+told**: the intent, the strobes-do-not-move precision, the nine bars, and the
+plain warning that this defect will look quiet.

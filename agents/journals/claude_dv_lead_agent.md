@@ -12258,3 +12258,166 @@ anchor ungated.
 - agents/handoffs/WO-0041_family-d-mutation-campaign-SEALED-predictions.md
 - agents/handoffs/WO-0041_family-d-mutation-campaign.md
 - test/attack_plans/AP-xgmii_rx_64.md
+
+## [J-dv_lead-0045] 2026-08-11T10:05Z | task:WO-0042 | D-M6 frozen before the diff exists — and the bar sweep caught me leaking this round's predicted kill into the auditor's own brief, one commit after I wrote the rule that says verdicts are a side channel
+
+### Trigger
+Orchestrator: my adjudication is committed (`68aa112`); execute the D-M6
+obligation under the same discipline. Freeze first — auditor-facing intent,
+sealed prediction as an addendum to the WO-0041 sealed companion, and the same
+frozen copy here. Sweep and rule on whether the eight bars stand, given the only
+new committed texts are `J-dv_lead-0043`/`0044` and the adjudication sections
+appended to the WO-0041 packet. Rule on the base SHA given nothing in `libs/`
+moved.
+
+### Inputs
+- `agents/handoffs/WO-0041_family-d-mutation-campaign.md` — **swept as a
+  disclosure surface, not read as a verdict**; `grep -n "D-M6"` returns three
+  hits including its predicted kill.
+- `git diff --stat 447d11c HEAD -- test/xgmii_rx_64/` — **empty**.
+- `test/xgmii_rx_64/test_m03_d.ml` — `run_mixed_pair`, `assert_frame`'s
+  assertion order, `run_d3`'s and M03-D2's call order, `d3_ordering_label`'s
+  exact strings; and `one_frame` / `run_length` / `run_directed_lengths`'
+  per-entry `create ()`, which is what bounds the observability argument.
+- `agents/handoffs/WO-0041_family-d-mutation-campaign-SEALED-predictions.md`
+  §1's unit table.
+- `docs/specs/requirements.md` REQ-013's `tuser`[0] semantics and REQ-007;
+  `docs/specs/modules/xgmii_rx_64.md` §9's per-frame strobe structure.
+- **No `libs/**`, no `rtl_snapshots/**`, no auditor diffs.**
+
+### Reasoning
+
+**The bar sweep found a leak and it was mine, made one commit after I wrote the
+rule that predicts it.** At `J-dv_lead-0040` I ruled that a review verdict
+describing bench internals is part of the sealed surface for the next campaign,
+because proving I checked requires quoting what is protected. Then I wrote
+`RV-0041-VERDICT` into the auditor-facing WO-0041 packet, and §3(c) of it states
+**D-M6's predicted kill in plain words** — "predicted to kill T-D3 (pair B,
+frame 2) and to leave every single-frame unit green". The auditor's brief for
+this round would have contained this round's answer.
+
+So the packet the previous five were briefed from is **barred**, and this round
+needs a document the seeder *can* read: `WO-0042`, self-contained. **Nine bars,
+not eight.** The rule caught a leak the rule's author created, which is the
+strongest thing I can say for keeping the sweep as a step rather than a habit —
+and it is exactly why I made it a checklist item at `J-dv_lead-0041` rather than
+something I remember.
+
+One nuance the disclosure clause has to carry: **the auditor has already read
+item 9** — it was last round's brief. That read was before the adjudication was
+appended, so it saw no verdict. The bar is on reading it *now*, in its current
+state, and the brief says so rather than leaving a seeder to wonder whether its
+own history disqualifies it.
+
+**The base SHA I verified rather than assumed.** `git diff 447d11c HEAD --
+test/xgmii_rx_64/` is empty: the bench is byte-identical. So `447d11c` is right
+and HEAD would be worse — same base means one control for all six diffs, and
+that control is already proven green twice. Using HEAD would re-open criterion 3
+for no gain.
+
+**The prediction turns entirely on one structural fact, so I checked it rather
+than reasoned about it.** A latched bit is observable only where a *single
+simulation* drives two or more frames and a later frame is asserted clean after
+an earlier one was invalid. Every other unit builds a **fresh bench per frame** —
+`one_frame`, `run_length` and `run_directed_lengths` each call `create ()` per
+entry — so no latch can survive into any assertion. Only `run_mixed_pair`'s
+two-frame schedules qualify, which puts the whole defect inside T-D2 and T-D3.
+That gives ten MUST-STAY-GREEN, and it is the same shape as D-M1: a defect most
+of the suite is structurally incapable of seeing.
+
+**Both messages land on the second frame of a pair B schedule**, and I worked the
+call order to get the *first* failure right rather than just the row: `run_d3`
+clears lane 0 / pair A (frame 1 has no predecessor; frame 2 is genuinely bad and
+expects the set bit) and fails at lane 0 / pair B. M03-D2's four calls clear two
+single-frame partners and pair A — whose asserted member is frame 1 — and fail on
+the fourth.
+
+**And I pinned a finding condition that the intent's precision creates.** Both
+messages must come from `assert_frame`'s `tuser` check, which runs *after* the
+octet comparison and *before* the strobe-set comparison. **A strobe message here
+would be a finding**, and would mean the seeder latched the reporting path along
+with the marking bit — which §2 explicitly forbids, because §9 makes each strobe
+a per-frame report and REQ-008's structure depends on that. This is my standing
+"a mutation intent is never a licence to break a second spec rule" clause getting
+its first deliberate use at authoring time rather than after a seeder raises it.
+
+**One observation I nearly kept to myself, and should not have.** D-M6's row set
+is **the same {T-D2, T-D3} I wrongly predicted for D-M3**. That is not a
+coincidence and it is not embarrassing in the way it first looks: my D-M3
+prediction was **not wrong about which units can see a cross-frame defect** — it
+was wrong about whether D-M3 *was* one. The instrument was correctly identified;
+the target was not. If D-M6 lands on exactly those two units, it vindicates
+M03-D3's two-frame structure at the same moment as confirming that the thing the
+row was originally built to catch never existed. That is a more interesting
+result than either half alone, and recording it before the run is the only way
+it can count.
+
+### Actions
+- **Swept the bars** and found `RV-0041-VERDICT` states D-M6's predicted kill in
+  the auditor-facing packet; **added it as bar 9**.
+- Authored **`agents/handoffs/WO-0042_family-d-m6-mini-round.md`** — a
+  self-contained brief the seeder can read: the intent, the
+  `tuser`-is-a-disjunction precision, the **strobes-do-not-move** precision, the
+  nine bars with an explicit note that item 9's prior read is expected and not
+  disqualifying, mechanics, return format and the three pass criteria.
+- Included the **"will look quiet, do not strengthen it"** warning, as D-M1's
+  round proved necessary.
+- **Froze the prediction** as a sealed addendum to the WO-0041 companion:
+  2 REQUIRED, 10 MUST-STAY-GREEN, **no PERMITTED**, both message strings, the
+  observability argument, and the strobe-message-is-a-finding condition.
+- **Verified the base**: `git diff 447d11c HEAD -- test/xgmii_rx_64/` empty;
+  ruled `447d11c`, one base and one control for all six diffs.
+- Recorded the D-M3/D-M6 row-set coincidence **before** the run.
+- Opened no `libs/**`. No `git commit`, no `git push`.
+
+### Evidence
+1. `grep -n "D-M6" agents/handoffs/WO-0041_family-d-mutation-campaign.md` →
+   three hits, one of them the predicted kill set. The basis for bar 9.
+2. `git diff --stat 447d11c HEAD -- test/xgmii_rx_64/` → empty.
+3. `one_frame`, `run_length` and `run_directed_lengths` each `create ()` per
+   entry — so ten of twelve units are structurally blind to a cross-frame latch.
+4. `d3_ordering_label Bad_then_good = "pair B (bad-then-good)"`, and `fail`
+   prepends `row: ` — giving the two frozen message strings exactly.
+5. `assert_frame`'s order is octets → `tuser` → strobe set, which is what makes
+   a strobe message a finding rather than a variant.
+6. D-M6's row set {T-D2, T-D3} equals my falsified D-M3 prediction.
+
+### Outcome
+**D-M6 is frozen against `447d11c` before the diff exists**, in the sealed
+companion and here. **Two REQUIRED, ten MUST-STAY-GREEN, no PERMITTED**, both
+messages pinned to the second frame of a pair B schedule, and a named finding
+condition if a strobe speaks instead.
+
+**The bars are NINE, not eight** — `WO-0041`'s own packet is now barred because
+my adjudication put this round's answer in the auditor's former brief. The new
+brief is `WO-0042`.
+
+**Base ruled `447d11c`**, verified byte-identical under `test/xgmii_rx_64/`.
+
+### Open-questions
+- **This single diff decides whether M03-D3 keeps its ASSERT status.** Its
+  headline kill was withdrawn as unachievable; if D-M6 does not land on T-D2 and
+  T-D3, the row is a two-frame stimulus asserting nothing any mutation can
+  reach, and it should be reclassified rather than defended.
+- **A strobe-shaped message on either unit is a finding**, not a variant — the
+  seeder would have latched the reporting path, which §2 forbids.
+- **The side-channel rule now has three instances** and its author is one of
+  them. The bar sweep must stay a step in brief authoring; it caught this only
+  because it was a step.
+- **Families E–H owe a re-read for two defect shapes** — vacuous stimulus and
+  unachievable kill — before any is benched.
+- **Owed into family F's packet**: the sub-5-octet class is asserted by nothing.
+- **The verilog-ethernet differential co-sim remains the longest-lead item on
+  the `SO-M03` path.**
+- **Owed by me, unchanged**: the `precompile_check.sh`
+  side-effect-in-combinator lane; `tools/precompile_stubs/ifc_check.ml`'s stale
+  UNVERIFIED note; SPEC-M01 §11.4's caveat retirement (architect_docs_lead);
+  `AP` §7's fuller rewrite behind its banner.
+- **M03-A3's blindness to lane-symmetric errors remains untested**; my M04
+  contamination from `J-dv_lead-0024` still stands.
+- **Unchanged**: the RFC 1071 anchor closes on the next CI run that fetches;
+  X-7, X-10, X-11 deferred; L1–L5 owed as a separate packet.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0041_family-d-mutation-campaign-SEALED-predictions.md
+- agents/handoffs/WO-0042_family-d-m6-mini-round.md
