@@ -580,14 +580,14 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
        `error_bad_fcs` out of this vector entirely (above). *)
     concat_lsb [ error; terminate; start ]
   in
-  let q2 =
-    reg
-      spec
-      (reg
-         spec
-         (inword_strobes ~exists:b_exists ~closing:b_closing
-          |: inword_strobes ~exists:c_exists ~closing:c_closing))
+  (* E-c3 MUTATION (WO-0045) — the abort strobe pulsed on the wrong cycle: the
+     in-word report vector is named here so the un-delayed value is available to
+     `error_bad_frame` below.  [q2] itself is unchanged. *)
+  let inword_now =
+    inword_strobes ~exists:b_exists ~closing:b_closing
+    |: inword_strobes ~exists:c_exists ~closing:c_closing
   in
+  let q2 = reg spec (reg spec inword_now) in
   (* ---- the state machine (§6.2) ----
      One [Always] switch, and every transition is a function of the closure
      signals decided above, so the table below reads against §6.2 row for row.
@@ -759,7 +759,9 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
       ; tuser = emit_tlast &: abort
       }
   ; error_bad_fcs = strobe sel_bad_fcs
-  ; error_bad_frame = strobe sel_error |: q_strobe 0
+    (* E-c3 MUTATION (WO-0045) — `error_bad_frame` fires on the cycle carrying
+       the `/E/` itself rather than on §9's pin, on both report paths. *)
+  ; error_bad_frame = (a_close_error |: bit inword_now 0) &: ~:(i.clear)
   ; error_runt = strobe sel_runt |: q_strobe 1
   ; error_oversize = strobe sel_oversize
   ; error_start_without_terminate = strobe sel_start |: q_strobe 2
