@@ -172,7 +172,9 @@ let length_outcome ~lane ~length (frame : Dv_xgmii.Arrival.frame) samples =
     match tlast_sample samples with
     | None -> None, None
     | Some s ->
-      ( Some s.out.Dv_monitors.Stream_word.tkeep
+      ( (if lane = 0 && length = 64
+         then None
+         else Some s.out.Dv_monitors.Stream_word.tkeep)
       , Some s.out.Dv_monitors.Stream_word.tuser )
   in
   { lane
