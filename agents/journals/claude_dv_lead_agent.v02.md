@@ -354,3 +354,172 @@ the harvest adjudicates against my own words.
 
 ### Files-in-this-commit
 - agents/handoffs/WO-0056_m03-g-discard-window-repair.md
+
+## [J-dv_lead-0075] 2026-08-06T09:40Z | task:WO-0056 | The bar is LIFTED — G8 alone of twenty-seven units died under the unmodified diff that survived all twenty-five — and the one clause I got wrong is the cosim job, which went green for a reason better than my prediction
+
+### Trigger
+Orchestrator: the `g-c4` replay ran — branch `mut/wo-0056-gc4-replay`
+(`c95c9f4` = `e7657e3` + the unmodified `g-c4.diff`), CI run **30852220315**,
+Build success, `runtest` RED. Adjudicate against my `RV-0056-VERDICT` §7
+published prediction, rule on the lift, execute the owed one-character AP
+boundary fix, and state the resulting coverage count.
+
+### Inputs
+- The verbatim harvest
+  `…/scratchpad/gc4replay_runtest_verbatim.txt` — read in full: the failing-file
+  list, the hunk count, and the single message.
+- `agents/handoffs/WO-0056_…` §6's four published clauses and §7's restatement in
+  `RV-0056-VERDICT`; `RV-0055-VERDICT` §4 and §8; `RV-0054-VERDICT`.
+- `test/attack_plans/AP-xgmii_rx_64.md` §4.G rows M03-G7 and M03-G8 and §9's
+  change-log row — **my own text, as the thing being corrected**.
+- `tools/dv_checks.sh`'s inventory block at this tree (27 units), and the bench
+  files' own row-to-unit mapping for the coverage recount.
+- **No `libs/**`, no `docs/reports/audit/**`, no `scripts/**`, no
+  `/workspace/**`.**
+
+### Reasoning
+
+**All four of §6's clauses landed, and the first landed in the sharpest form
+available.** I predicted "M03-G8 SHALL redden" as the whole lift condition. What
+came back is **one failing file, one hunk, one message** — G8 alone out of
+**twenty-seven** units, on the exact assertion the row was written to make, with
+`observed 2`: the spurious `error_bad_frame` beside the frame's own
+`error_oversize`, the second report §9's seventh ruling and C-12 forbid. G7 green
+as predicted, the five pre-existing G rows green as at WO-0055.
+
+**So the bar lifts, and it lifts on the measurement rather than on the landing.**
+That distinction is the whole reason I wrote the instrument into the packet
+before the rows existed: M03-G3 and M03-G4 were green from the day they landed
+and were green **for the wrong reason**, so a green M03-G8 would have proved
+exactly as much as they did. **What proves the repair is that the mutation which
+survived all twenty-five units at WO-0055 now dies — on an unmodified diff,
+against a bench that has never seen it.**
+
+**The clause I got wrong is the cosim job, and what replaced my prediction is
+worth more than the prediction was.** I said red-by-design, reasoning from
+WO-0055 that a mutated M03 must diverge from the reference. It went **green** —
+because **g-c4's defect fires only after REQ-108's truncation, and the anchor's
+single clean frame never gets there.** The lane compared what it covers, agreed,
+and passed, while the defect sat in a region REQ-901 class (f) excludes entirely.
+
+**That is a confirmation of the exclusion's scope, not a hole in it**, and it
+converts an argument into a demonstration: **a green co-simulation is not evidence
+about REQ-108**, which I have asserted since `J-dv_lead-0060` and can now point at
+a run for. A prediction of mine died and the programme is better informed for it —
+the same shape as E-c1, and I would rather record it that way than quietly note
+the clause was "not scored".
+
+**The bound I am most careful about is the one the lift does not carry.**
+**M03-G7 is benched but NOT mutation-qualified.** It did not exist at WO-0055 and
+the replay's diff is error-character-gated, so **no mutation has ever reddened
+it** — a start character in the first epoch is driven and asserted, and nothing
+has proved the row would notice a defect there. I put that in the ruling as a
+numbered bound rather than in a closing aside, because "family G verifies the
+first epoch" is exactly the over-reading this whole repair exists to prevent, and
+the `/S/`-gated class the WO-0055 seeder rejected is now seedable against a row
+that can see it.
+
+**The boundary fix I executed at all three sites, and I rewrote the derivation
+rather than the number.** Changing 1518 to 1519 and leaving the reasoning alone
+would have left the cell asserting an endpoint without its boundary case — the
+exact habit that produced both this error and the "100 octets" one. So each cell
+now works it: a character at content `k` **replaces** that octet, so `k` octets
+precede it, REQ-108 needs **more than** 1518, hence `k ≥ 1519`; at 1518 the frame
+is not oversize at all and the character is REQ-110's or REQ-105's. **The figure
+was right for where truncation triggers and wrong for where a character may be
+placed after it**, and the correction says so in the cell.
+
+**The consequential figure went with it**: the interval is **81 octets wide**, not
+82. `RV-0055-VERDICT` §4 and `WO-0056` §1 both carry the 82 and both are closed
+adjudications — **not edited**. The attack plan governs, which `WO-0056` §7
+already directs, and I said so in the ruling rather than leaving two figures in
+circulation with no stated authority between them.
+
+**I folded the fix into this commit deliberately.** It is a boundary correction,
+not a row change: no status moves, no count moves, and the delivered rows use
+1588 and 1560, both far inside either reading — so nothing needs re-running and
+the replay above stands unaffected. Separating it would have put the ruling's own
+cited correction in a different commit from the ruling.
+
+**And counting rather than recalling turned up a third arithmetic inconsistency
+of mine.** `RV-0055-VERDICT` §8 said "30 rows benched" and its enumeration
+omitted **M03-G5** while counting **M03-D4** and **M03-E3** — all three declared
+NO-ASSERT rows carrying a codeless disposition. So I stated the rule that stops
+it drifting: **a row is benched when the bench carries a committed disposition
+for it — code for an ASSERT row, a declared statement for a NO-ASSERT one.**
+Under it the figure was 31 then and is **33** now. **The ASSERT tally is
+unaffected** (G5 is NO-ASSERT), so no coverage claim in any prior packet moves,
+which is why this is a correction and not a finding.
+
+### Actions
+- **Adjudicated all four of §6's clauses** against the harvest, verbatim, and
+  **RULED the standing consequence LIFTED**.
+- Recorded the cosim clause as **predicted wrongly**, with the better fact that
+  replaced it: class (f)'s exclusion demonstrated rather than argued.
+- **Executed the AP boundary fix at all three sites** (M03-G7's Stimulus,
+  M03-G8's Stimulus, §9's restatement), rewriting the derivation to work both
+  boundary cases and correcting 82 → **81 octets**.
+- **Verified counts unmoved**: 78 rows, 62 ASSERT, 7 NO-ASSERT, 4 NO-STIMULUS, 4
+  STRUCTURAL, 1 GAP.
+- **Recounted coverage by rule rather than by memory** and corrected
+  `RV-0055`'s benched figure on the record.
+- Named four bounds the lift does **not** carry, **M03-G7's lack of
+  qualification** first among them.
+- Appended the **LIFT RULING** to the WO-0056 packet. No `git`.
+
+### Evidence
+1. Harvest: `grep '^File "'` → **one** file, `test/xgmii_rx_64/test_m03_g.ml`;
+   `grep -c '^@@'` → **1**. One failing unit in a twenty-seven-unit suite.
+2. The message: `M03-G8 (lane 0): expected exactly one strobe (error_oversize
+   alone -- NO error_bad_frame, §9's seventh ruling, C-12, in the epoch M03-G4's
+   character never reaches), observed 2`, raised from `run_g8`.
+3. Boundary derivation: a character at content `k` leaves `k` octets before it;
+   REQ-108 needs `> 1518`; so `k ≥ 1519`. At `k = 1518` the frame is not oversize
+   and the row's premise fails. Interval **1519 … 1599 = 81 octets**.
+4. Post-fix: `grep -c '1518 … 1599'` → **0**; row and status tallies unchanged at
+   78 / 62 / 7 / 4 / 4 / 1.
+5. Coverage recount by the stated rule: A1–A5 (5), B1 (1), C1–C5 (5), L6 (1),
+   D1–D4 (4), E1–E5 (5), F1–F4 (4), G1–G8 (8) = **33** benched; minus A4, D4, E3,
+   G5 (NO-ASSERT) and L6 (STRUCTURAL) = **28 ASSERT-class**; 62 − 28 = **34
+   outstanding**.
+
+### Outcome
+**The `RV-0055-VERDICT` standing consequence is LIFTED.** Family G verifies
+REQ-108's window in both epochs — the second by M03-G1/G3/G4, the first by
+**M03-G8** for an error character and by M03-G6 for the no-terminate case. A
+packet may now cite family G for first-epoch behaviour **under an error
+character**, and for nothing wider.
+
+**The instrument worked exactly as specified**: the same unmodified diff that
+survived twenty-five units killed one of twenty-seven, and it killed the row
+written for it and nothing else.
+
+**The owed boundary fix is executed** — 1519 … 1599, 81 octets, with both
+boundary cases worked in the cells rather than merely computed. Counts unmoved.
+
+**Coverage: 33 rows benched, 28 of 62 ASSERT discharged, 34 outstanding**, plus
+F5 by citation. `SO-M03` does not issue.
+
+### Open-questions
+- **M03-G7 is unqualified** and that is the first thing family G's next campaign
+  owes: the `/S/`-gated first-epoch class the WO-0055 seeder rejected is now
+  seedable against a row that can see it.
+- **The `/T/`-in-the-first-epoch case remains uncommissioned** — M03-G1's and
+  M03-G2's own terminates already sit there, and the auditor's stated reason for
+  rejecting a `/T/`-gated mutation (it re-plants G-c3's defect through the closure
+  record) still applies.
+- **`test/xgmii_rx_64/dune`'s WO-0056 line** is still owed under my `RV-0056` §8
+  ruling — comment-only, rides with the next `test/**` touch.
+- **My arithmetic-in-prose habit has a third instance** (the benched-row count),
+  after "nineteen" at `RV-0047` and the interval endpoint at `J-dv_lead-0072`.
+  Each was caught by counting rather than by recalling, and the rule is now stated
+  in the ruling so the next count has a definition to follow.
+- **Still owed**: the epoch-A no-output-word class (`J-dv_lead-0065`, rides with
+  family H); AP-M14's §6 invariant; the `precompile_check.sh`
+  side-effect-in-combinator lane; M03-F5's discharge-by-citation qualification;
+  the RFC 1071 anchor on the next fetching run; X-7, X-10, X-11 deferred; L1–L5
+  as a separate packet.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0056_m03-g-discard-window-repair.md
+- test/attack_plans/AP-xgmii_rx_64.md
