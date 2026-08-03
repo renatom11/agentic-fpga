@@ -9029,3 +9029,195 @@ F-M03-1 is settleable in one run).
 
 ### Files-in-this-commit
 - agents/handoffs/WO-0038_tb-m03-first-bench.md
+
+## [J-dv_lead-0030] 2026-08-04T23:40Z | task:WO-0038 | Round 5 ACCEPT: R5-1/2/3 verbatim, and on the one design choice I had pre-judged the worker is right and I was wrong — deferring the monitor check is not merely acceptable, it is what keeps R5-3 from aborting the F-M03-1 experiment at its first data point
+
+### Trigger
+Orchestrator: tb_writer's **round 5** returned — four changed files,
+`J-tb_writer-0005` appended, State left BOUNCED, with **three disclosed design
+choices** in R5-4 for my ruling and a specific instruction to look sharpest at
+(b), deferring `account_clean_frame`/`assert_monitors_clean` until after the
+batched decision.
+
+### Inputs
+- `git diff HEAD -- test/xgmii_rx_64/` for `bench.ml`, `bench.mli`,
+  `test_m03_a.ml`, `test_m03_c.ml`; `git diff --exit-code` on the two files
+  claimed untouched; a grep of the whole diff for `%expect`.
+- My own `RV-0038-R5` text (R5-1 carried from `RV-0038-R4-VERDICT`, R5-2's
+  enumerated call sites, R5-3's verbatim block, R5-4's intent).
+- `test/xgmii_rx_64/test_m03_c.ml` in full at its new shape —
+  `length_outcome`, `outcome_ok`, `outcome_line`, `run_c1_c2`.
+- `test/monitors/octet_time.mli`'s `Latency.errors` list — specifically "a
+  frame whose octet count does not match input − strip − tail", which is what
+  settled choice (b).
+- The AP-M03 rows M03-C1 and M03-C2's Observables, for the (c) merge.
+- `ocamlc -stop-after parsing`, `tools/precompile_check.sh`,
+  `tools/dv_checks.sh`.
+- **No `libs/**`, no `rtl_snapshots/**`.**
+
+### Reasoning
+
+**R5-1, R5-2 and R5-3 are verbatim and I will not spend words on them beyond
+one point.** The worker *removed* R4-2's returned-list guard rather than
+keeping it alongside the new choke-point one, and gave the reason: "so there is
+exactly one true statement about ordering in this file rather than one true
+guard and one guard whose message overreached." That is the right instinct and
+better stated than I stated it. A retired guard left in place is a claim nobody
+withdrew, and the next reader has no way to know which of two overlapping
+checks is the one that means something.
+
+I verified R5-2's residue independently rather than trusting the call-site
+list: the only surviving `.cycle` mentions in either row file are inside
+comments, and no output-timing comparison uses `cycle`. `run_c4`'s strobe
+window needed no edit because it consumes `error_pulses`' corrected output —
+which my list predicted, and predictions I make about someone else's code are
+exactly the kind I should check.
+
+**Choice (a) and choice (c) are straightforward and both make the row
+stronger.** Folding the error-pulse count into `outcome_ok` converts a
+fail-fast check into a column evaluated at all sixteen entries. Merging C1's
+and C2's `tuser` checks is subsumption, not loss: M03-C2's Observable is
+"the k octets are delivered" (now the `delivered=` column) and "FCS is good"
+(the `tuser=` column), both checked everywhere. And traceability *improves* —
+because `terminate_lane` is a printed column, the C2 subset is now identifiable
+from the evidence itself, where before a reader had to reconstruct it from a
+conditional. I noted, non-gating, that the banner could name which column
+selects the subset, and said not to open a round for it.
+
+**Choice (b) is the entry.** I had formed my objection before reading the diff
+— I wrote it down at `J-dv_lead-0029` as the thing I expected to find wrong:
+deferring loses the conservation and latency evidence in exactly the runs where
+you most want it, so *feed* per length and *check* after. Working it through
+against R5-3, that is wrong, and the ordering the worker chose is load-bearing.
+
+R5-3 — my own text, from the previous round — makes `assert_monitors_clean`
+raise **unconditionally** on `Latency.errors`. And `Latency.errors` includes
+"a frame whose octet count does not match input − strip − tail". So if F-M03-1
+is real, a straddle length delivers 62 where 61 was expected,
+`account_clean_frame` records exactly that error, and a per-length
+`assert_monitors_clean` **raises at the first straddle length and aborts the
+row** — reintroducing precisely the fail-fast R5-4 exists to eliminate and
+returning F-M03-1 to a single data point for the second time.
+
+**Had I required check-before-decide, I would have broken the experiment I
+wrote R5-4 to enable, using a rule I wrote one round earlier.** That is worth
+stating plainly. The two items interact, I authored both, and I did not see the
+interaction until I traced it against the monitor's error list.
+
+And the coverage worry — the thing that made the objection feel obvious —
+dissolves once the question is put correctly. **The standing obligations exist
+so that a PASS means something.** A row that raises has claimed nothing and no
+`SO-` may cite it. In the only state where this row is citable, the monitors are
+fed and checked at every one of the sixteen entries, exactly as before. Nothing
+the bench *claims* is weakened by the deferral; only work whose result would be
+discarded is skipped.
+
+The worker's own justification stopped short of this: it argued that content is
+known good by that point so a later failure is a different, unambiguous class
+and may fail fast. True, and not the strongest reason available. I recorded the
+R5-3 interaction in the verdict so the next reader has the reason that makes
+the choice necessary rather than merely defensible.
+
+**A note on how I got this wrong and what would have caught it earlier.** I
+pre-judged (b) from the shape of the change rather than from its interaction
+with the rest of the file — the same move as reading ΔC = 2 as a conviction
+without asking where the number came from, and the same move as testing a guard
+against a flag set I invented. The counter is the one I keep arriving at from
+different directions: **trace the change against the code it will actually run
+beside, not against the description of what it does.** Three rounds ago that
+meant re-running a reduction in the applied shape; here it meant reading
+`Latency.errors`' list before ruling on an ordering.
+
+**R5-4's design exceeded the ask in the way that matters.** I asked for all
+eight lengths in one run; the worker delivered all sixteen (lane, length) pairs
+in one test, which is what F-M03-1's *lane-dependent* prediction actually
+requires — the prediction distinguishes lane 0's straddle set {65,66,67} from
+lane 4's {69,70,71}, and eight entries from one lane could not settle it. That
+is a correct reading of intent over letter. `length_outcome` being a pure
+builder that cannot raise is load-bearing for the same reason and the worker
+said so.
+
+### Actions
+- Read all four diffs; confirmed R5-1, R5-2 and R5-3 applied verbatim,
+  including R4-2's guard removed rather than retained.
+- Verified R5-2's residue independently: every surviving `.cycle` in the row
+  files is inside a comment; `run_c1_c2` has no leftover `~lane` call site;
+  C4's assertion uses `out_cycle`; C3 has no arrival-cycle assertion to
+  convert.
+- Confirmed by `git diff --exit-code` that `test_m03_b.ml` and
+  `test_m03_structural.ml` are untouched, and by grep that **no `[%expect]`
+  line was added, removed or edited anywhere in the diff**.
+- Ruled the three disclosed choices: (a) sound and strengthening, (c) sound
+  with traceability improved, **(b) sound and necessary** — tracing it against
+  `Latency.errors` and withdrawing the objection I had recorded in advance.
+- Ran parse checks, `precompile_check.sh` and `dv_checks.sh`.
+- Flipped the packet State to **ACCEPTED** on a title + state anchor, with the
+  round's limits and the two standing instructions for the next run in the
+  State line, and appended `RV-0038-R5-VERDICT`.
+- Restated F-M03-1's prediction adjacent to the run that will settle it, with
+  "must not be retrofitted" in the packet.
+- Edited no worker file. No `git commit`, no `git push`.
+
+### Evidence
+1. **R5-1 verbatim**, `mutable cycles_driven` + head-of-`sample_cycle` guard,
+   and R4-2's returned-list guard **removed** with its reason recorded.
+2. **R5-2 at all five call sites**: `Protocol_monitor.observe`,
+   `Strobe_monitor.sample`, `error_pulses`, `account_clean_frame`'s
+   `Octet_time.of_words` pairing, and the row assertions in `test_m03_a.ml`
+   (×2) and `test_m03_c.ml` (C4, line 299).
+3. **Residue check.** `grep -n "\.cycle"` over both row files returns two hits,
+   both inside comments. `grep -n "run_c1_c2"` shows one definition taking
+   `()` and one call site.
+4. **R5-3 verbatim**; `dv_monitors` unmodified.
+5. **Choice (b)'s necessity.** `octet_time.mli`'s `Latency.errors` includes
+   "a frame whose octet count does not match input − strip − tail"; R5-3 makes
+   `assert_monitors_clean` raise unconditionally on a non-empty `errors`. A
+   per-length check before the batch would therefore abort at the first
+   straddle length if F-M03-1 is real.
+6. **Scope.** `git diff --exit-code` clean on `test_m03_b.ml` and
+   `test_m03_structural.ml`; the whole diff contains no `[%expect]` line
+   change; `git status --short` shows my two paths plus the worker's four files
+   and its journal.
+7. **Instruments.** Parse clean on all four changed files;
+   `precompile_check.sh` ALL LANES PASSED; `dv_checks.sh` exit 0.
+
+### Outcome
+**RV-0038-R5-VERDICT: ACCEPT.** R5-1/2/3 verbatim, R5-4's design accepted and
+in one respect better than specified, all three disclosed choices ruled sound.
+No defects outstanding.
+
+**On choice (b) I was wrong and the worker was right**, and the sharper reason
+than either of us gave is that R5-3 — my own text from the previous round —
+would have aborted the F-M03-1 experiment at its first failing length had the
+monitor check not been deferred. Two items I authored interact, and I did not
+see it until I traced one against the other.
+
+**The next CI run is the F-M03-1 experiment.** Its prediction is on the record
+in advance and the packet says it must not be retrofitted. The promotion must
+not be committed whatever it says.
+
+### Open-questions
+- **F-M03-1 is settled or withdrawn next run.** 65/66/67 at lane 0 and
+  69/70/71 at lane 4 and no others → straddle mis-accounting, and the `BUG-`
+  carries a mechanism. All sixteen → a uniform strip error. None → the finding
+  is withdrawn and I will say so in those words.
+- **A green suite still does not license an `SO-`.** §8's four mutations are
+  the hard precondition. This packet has now produced two demonstrations of
+  why: a bench that drove backwards, and a bench that cited a REQ id in a
+  failure message while being the party in error.
+- **The `cycle` / `out_cycle` distinction is machinery-wide**, not M03's. Once
+  this lands it belongs somewhere shared — `dv_monitors` or the next bench
+  packet's §3 — rather than being rediscovered per module. M04's transmit
+  decoder meets it next, and my M04 contamination from `J-dv_lead-0024` makes
+  that packet one I must write with extra care.
+- **Owed by me, unchanged**: the `precompile_check.sh`
+  side-effect-in-combinator lane; `tools/precompile_stubs/ifc_check.ml`'s stale
+  UNVERIFIED note; SPEC-M01 §11.4's caveat retirement; and for the next bench
+  packet's §7 the alerts-are-errors datum, the prose-repair standing rule,
+  "run a guard against the defect it names", and now **"trace a change against
+  the code it will run beside, not against the description of what it does"**.
+- **Unchanged**: the RFC 1071 anchor closes on the next CI run that fetches;
+  X-7, X-10, X-11 remain deferred; L1–L5 still owed.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0038_tb-m03-first-bench.md

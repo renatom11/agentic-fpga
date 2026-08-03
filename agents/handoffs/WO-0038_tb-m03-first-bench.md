@@ -1,12 +1,11 @@
 # WO-0038: The programme's first bench — M03's clean-frame spine
-- **State**: BOUNCED (round 5 owed. Run 30772333717 drove FORWARD and the row
-  assertions fired with substance — but four of the five failures are the
-  bench's oracle, not M03's behaviour: the sampling convention labels every
-  OUTPUT one cycle early, proven against this repository's own committed
-  waveform. **No M03 conviction is issued.** One observation — an extra
-  delivered octet at length 65 — survives as provisional finding **F-M03-1**
-  with a falsifiable lane-dependent prediction, to be settled by the clean
-  run. Ruling at `RV-0038-R5`, foot of this packet.)
+- **State**: ACCEPTED (round 5, at `RV-0038-R5-VERDICT` at the foot of this
+  packet — R5-1/2/3 verbatim, R5-4's design and all three disclosed choices
+  ruled sound, and choice (b) shown to be **necessary** rather than merely
+  acceptable. The next CI run is the **F-M03-1 experiment**: its prediction
+  is recorded in advance at `RV-0038-R5` and must not be retrofitted. The
+  promotion must NOT be committed whatever it says — it will be an
+  `uncaught_exn` payload either way.)
 - **From** / **To**: dv_lead → tb_writer
 - **Spec basis**: `docs/specs/modules/xgmii_rx_64.md` (SPEC-M03) at the
   countersigned SHA — §4.1 ports, §6.1 cycle table, §6.3 output rules,
@@ -2629,3 +2628,139 @@ section lists exactly what was read.
 State left at **BOUNCED** — dv_lead's `RV-` and the orchestrator's
 transcription flip it, not this Return log.
 
+---
+
+### RV-0038-R5-VERDICT: ACCEPT (re: WO-0038 round 5) — dv_lead, `J-dv_lead-0030`
+
+**All four items applied; the three disclosed design choices are sound; and
+on choice (b) the worker's reasoning defeats the objection I had formed
+before reading the diff.** State flipped to ACCEPTED.
+
+#### Verification
+
+**R5-1 — verbatim, and correctly *replacing* rather than joining.** The
+`mutable cycles_driven` field, the guard at the head of `sample_cycle`, and
+the removal of R4-2's returned-list guard. The worker's stated reason for
+removing rather than keeping — "so there is exactly one true statement
+about ordering in this file rather than one true guard and one guard whose
+message overreached" — is the right instinct. A retired guard left in place
+is a claim nobody has withdrawn.
+
+**R5-2 — verbatim, all five call sites.** `out_cycle = cycle + 1` on
+`sample`; converted at `Protocol_monitor.observe`, `Strobe_monitor.sample`,
+`error_pulses`, `account_clean_frame`'s `Octet_time.of_words` pairing, and
+the two rows' timing assertions (`test_m03_a.ml` ×2, `test_m03_c.ml`'s C4).
+I checked the residue independently: the only remaining `.cycle` mentions in
+either row file are **inside comments**; no output-timing comparison uses
+`cycle`. `run_c4`'s strobe window needed no edit, as the list predicted,
+because it consumes `error_pulses`' now-corrected output. The `bench.mli`
+docstring carries the reasoning and cites the promoted waveform as the
+evidence rather than asserting a Hardcaml behaviour — which is the standard
+this packet has been trying to reach all along.
+
+**R5-3 — verbatim**, `dv_monitors` untouched.
+
+**R5-4 — design accepted, and better than what I asked for.** I asked for
+all eight lengths in one run; the worker delivered all **sixteen (lane,
+length)** pairs in one test, which is what F-M03-1's lane-dependent
+prediction actually needs. `length_outcome` is a pure record builder that
+cannot raise — load-bearing, since a builder that raised would reintroduce
+the fail-fast it exists to remove — and `outcome_line` prints
+`delivered=obs/exp tkeep=obs/exp tuser= terminate_lane= error_pulses=` for
+every entry, PASS or FAIL. That is exactly the signature the next run has
+to yield.
+
+Instruments: parse clean on all four changed files;
+`tools/precompile_check.sh` ALL LANES PASSED; `tools/dv_checks.sh` exit 0.
+`test_m03_b.ml` and `test_m03_structural.ml` confirmed untouched by
+`git diff --exit-code`. **No `[%expect]` block was added, removed or
+edited** — I grepped the whole diff for it.
+
+#### Ruling on the three disclosed choices
+
+**(a) Error-pulse count folded into `outcome_ok` — SOUND, and it
+strengthens the row.** An unexpected strobe on a clean frame is a
+per-length failure and belongs in the table. Previously it was a separate
+fail-fast check that would abort before the other lengths ran; now it is a
+column, evaluated for all sixteen and legible in the evidence.
+
+**(c) C1's and C2's `tuser` checks merged — SOUND, and traceability
+improves.** M03-C2's Observable has two parts: "the k octets are delivered"
+(now the `delivered=` column) and "FCS is good" (the `tuser=` column), both
+checked at every one of the sixteen entries. Nothing C2 asks of the wire is
+unasked. And because `terminate_lane` is a **column**, the C2 subset —
+terminate lane > 0 — is now identifiable directly from the printed
+evidence, where before it was implicit in a conditional a reader had to
+reconstruct. The test name and the failure banner both name M03-C2, so the
+`SO-`'s row-to-test mapping still greps.
+
+*Non-gating note, do not open a round*: the banner could say which column
+selects the C2 subset, so the mapping is self-evident to a reader who does
+not know the row. Fold it in only if the file is touched again.
+
+**(b) Monitor accounting deferred until after the batched decision —
+SOUND, and NECESSARY. I had this one wrong before I read the diff.**
+
+My objection, formed in advance, was that deferring loses the conservation
+and latency evidence in exactly the runs where you most want it, and that
+the fix was to *feed* the monitors per length while *checking* them after.
+Working it through against R5-3, that is wrong, and the worker's ordering is
+not merely defensible but load-bearing:
+
+**R5-3 makes `assert_monitors_clean` raise unconditionally on
+`Latency.errors`, and `Latency.errors` includes "a frame whose octet count
+does not match input − strip − tail".** If F-M03-1 is real, a straddle
+length delivers 62 where 61 was expected, `account_clean_frame` records
+exactly that error, and a per-length `assert_monitors_clean` **would raise
+at the first straddle length and abort the row** — reintroducing precisely
+the fail-fast that R5-4 exists to eliminate, and returning F-M03-1 to one
+data point for the second time. Had I required check-before-decide, I would
+have broken the experiment I wrote R5-4 to enable.
+
+Feeding-without-checking before the decision would have been harmless but
+pointless: the batch raises first either way, so the work is discarded.
+
+And the coverage worry dissolves once the question is put correctly.
+**The standing obligations exist so that a PASS means something.** A row
+that raises has claimed nothing, and no `SO-` may cite it. In the only state
+where this row can be cited — passing — the monitors are fed and checked
+exactly as before, at every one of the sixteen entries. No claim the bench
+makes is weakened by the deferral.
+
+The worker's own justification (content is known good by that point, so a
+later failure is a different and already-unambiguous class, and may fail
+fast) is correct as far as it goes; the sharper reason is the R5-3
+interaction above, which it did not state and which is what makes the
+choice necessary rather than optional. Recorded here so the next reader has
+it.
+
+#### The next run is the F-M03-1 experiment
+
+Its prediction is already on the record at `RV-0038-R5` and **must not be
+retrofitted to whatever comes back**:
+
+> 65, 66, 67 fail at lane 0 and 69, 70, 71 fail at lane 4, and no others →
+> FCS mis-accounting across a 64-bit word straddle, and the `BUG-` writes
+> itself with a named mechanism.
+> Every length failing at both lanes → a uniform strip/count error, a
+> different and simpler conviction.
+> Nothing failing → item 3 was an artefact and **F-M03-1 is withdrawn**,
+> and I will say so in those words.
+
+Two standing instructions for that run:
+
+1. **The promotion must NOT be committed, whatever it says.** If any entry
+   fails, the payload is an `uncaught_exn` carrying the sixteen-line table —
+   evidence to read, never an expectation to freeze. If everything passes,
+   the blocks stay empty and match empty, and there is nothing to promote
+   for these rows anyway.
+2. **A green suite still does not license an `SO-`.** WO-0038 §8's four
+   mutations remain the hard precondition, and this packet has now produced
+   two separate demonstrations of why: a bench can drive backwards and a
+   bench can cite a REQ id in a failure message while being the party in
+   error.
+
+- **Defects**: none outstanding
+- **Disclosed choices**: (a) sound, (b) sound and necessary — my prior
+  objection withdrawn, (c) sound
+- **Signed**: J-dv_lead-0030
