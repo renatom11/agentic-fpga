@@ -609,3 +609,180 @@ to a class-home spec's §10 re-opens its plan's §6 invariant.**
 
 ### Files-in-this-commit
 - (none)
+
+## [J-dv_lead-0077] 2026-08-06T15:45Z | task:WO-0057 | Family H authored — and the design's two real findings are that M03-H4 drives both no-output-word shapes in one stimulus, and that §0.6's window has no referent for a frame that delivered nothing
+
+### Trigger
+Orchestrator, item 1 of two: family H is next on the sponsor-approved queue.
+Author the WO-0057 packet for tb_writer against `AP-xgmii_rx_64.md` §4.H under
+the plan as it stands at `6dd229c` (78 rows, 62 ASSERT, corrected first-epoch
+boundary), with everything accreted binding, and say in the packet where family
+H's design interacts with family G's next campaign rather than leaving it to be
+discovered.
+
+### Inputs
+- `test/attack_plans/AP-xgmii_rx_64.md` §4.H's four rows **in full**, §4.B's
+  M03-B4 (REQ-110's only currently-driven row), §4.M's M03-M5, §7's X-1 and X-5
+  entries, §8 item 5 (the uncitable claim).
+- `docs/specs/requirements.md` REQ-110 (its zero-delivered clause), REQ-101,
+  REQ-103, REQ-105, REQ-021, REQ-008, **§0.6 and its C-23 counting convention**,
+  §0.7.
+- `docs/specs/modules/xgmii_rx_64.md` §6.1's two-events-in-one-word paragraph and
+  its six-row table, §6.3 items 3 and 8, §9's fifth ruling, rows 8 and 9, and the
+  strobe pin's no-output-word clause.
+- `test/xgmii_rx_64/test_m03_f.ml`'s `run_f2` **`k = 0` window branch** — the
+  precedent that settles §3.2.
+- `RV-0055-VERDICT` §4 (M03-G7 unqualified, the `/S/` class seedable);
+  `RV-0056-VERDICT` §1 and §8; `J-dv_lead-0065`, `J-dv_lead-0070`,
+  `J-dv_lead-0075`.
+- **No `libs/**`, no `docs/reports/audit/**`, no `/workspace/**`.**
+
+### Reasoning
+
+**The first thing I checked is what REQ-110 is actually verified by today, and
+the answer is narrower than the family's size suggests.** Exactly one committed
+row drives it — **M03-B4**, a `/S/` in lane 4 of a word whose lane 0 carried a
+`/S/`, **with no frame open before it**. So **nothing anywhere aborts a frame that
+has already delivered octets**, and REQ-110's central sentence — the aborted
+frame's last delivered octet is the one immediately preceding the new start
+character — is unverified in both directions. That is the packet's §1, and it is
+the same check I ran at `WO-0047` §1.1 for REQ-107, where it turned the packet's
+premise inside out. Here it confirmed it.
+
+**Two silently-always-pass classes live here and they are not the same shape**,
+which is why the packet ranks the rows rather than listing them. A design that
+**strips the FCS on the abort path** delivers four octets too few and pulses
+everything correctly — M03-H1 closes it. A design that **switches its alignment
+offset on the same cycle it accepts the new start character** loses four octets
+**with no strobe at all** — M03-H2 closes it, and only if the row asserts the
+aborted frame's octet-by-octet **content**. I said that explicitly, because a
+version of H2 that asserts the strobe and the second frame and stops **does not
+kill the defect the row exists for**, and that version is the natural one to
+write.
+
+**M03-H4 is the risky row and I told the worker to build it last.** It is the
+C-23 row: two aborts, both zero-delivered, both closed strictly inside their own
+preambles, with `error_start_without_terminate` high on **consecutive** cycles
+`c + 2` and `c + 3`. §0.6 as revised counts **high cycles, never rising edges**,
+so a rising-edge counter sees one event where a conformant M03 reported two — and
+**passes**. The instruction is to register two expected events with
+`Strobe_monitor`, whose `sample` is total over the run, and **not to hand-roll a
+count**, because a hand-rolled count is exactly the thing C-23 exists to forbid.
+
+**And working H4's geometry produced the design's first real finding.** Frame A's
+start and its closure lie in the **same input word** (`8c` and `8c + 4`); frame
+B's lie in **different** words (`8c + 4` in word `c`, closed at `8c + 8` in word
+`c + 1`). **So M03-H4 drives both no-output-word shapes in one stimulus, which no
+other row in this programme does** — and the epoch-A zero-delivered class owed
+since `J-dv_lead-0065` is supplied here, which is why I routed it to family H
+three entries ago and can now say *why* rather than *that*.
+
+**That derivation is pure §6.1 word geometry and I was careful to keep it there.**
+The temptation was to reach for the auditor's WO-0055 disclosure, which describes
+the design's two implementations of the no-output-word report. That would be
+reasoning from RTL into a test design. The distinction I held to: **a frame whose
+start and closure lie in different input words** is a statement about the
+stimulus, derivable from §6.1 alone, and it is the only form of the fact the
+packet carries.
+
+**The second finding is a genuine specification gap, and it is the G6 question
+again in a different family.** §0.6's window upper bound is ΔC = 3 after the input
+word carrying the frame's **last received octet** — and **M03-H4's frames received
+none**. No referent. I ruled it the same way I ruled G6 and on stronger ground
+than I had then, because two supports now exist: the **principle** the architect's
+truncation-closure ruling derives from (a frame's report is a function of the
+frame, and the closure event is the last thing belonging to it), and an
+**existing precedent in this bench** — `run_f2`'s `k = 0` branch already uses the
+closing word for a frame that received nothing. So the instruction is grounded in
+practice rather than invented, the exact pin carries the assertion either way
+(`RV-0047` ruling 2), and the generalisation question goes to the architect
+**blocking no row**.
+
+**I also stated what has no instance here**, because absence read as oversight is
+how the last two rounds' findings started: family H has **no oversize frame**, so
+the truncation-closure ruling itself does not apply; and **§6.3 item 8's carve-out
+is not violated** by H4 — its two reports share a strobe *name* but land on
+**consecutive** cycles, not the same one. I checked that rather than assume it,
+and recorded it so a campaign does not have to rediscover it.
+
+**On the interaction the dispatch asked me to name, there are three and the first
+is mutual.** M03-G7 is benched but **unqualified**, and the `/S/`-gated class is
+now seedable against it — while family H is full of start characters. **So the
+next G campaign's MUST-STAY-GREEN column must account for every unit in
+`test_m03_h.ml`, and family H's own campaign must account for M03-G7. Neither can
+be sealed without the other's unit list.** That is the kind of thing that, unsaid,
+becomes an unnamed-unit finding at adjudication — which is precisely what happened
+to me at WO-0050 with T-E4.
+
+**And I barred the one claim that would make this family's reasoning easy and
+wrong.** `WO-0047` §1.2's shared-no-output-path claim is still uncitable; H4 is
+exactly where someone would reach for it. The packet says so at the point of
+temptation rather than in a preamble.
+
+### Actions
+- Checked REQ-110's existing coverage (**M03-B4 alone**) before writing the
+  packet's premise.
+- Authored **`agents/handoffs/WO-0057_tb-m03-family-h-start-without-terminate.md`**:
+  four rows **ranked by risk** with H4 last; §3.1's `Frame.delivered` trap on the
+  abort path with a per-member governance deliverable; §3.2's zero-delivered
+  window ruling with both its supports; §4's constant/guard/boundary discipline
+  carrying the `k = 1518` lesson explicitly; §5's assertion-order contract; §6's
+  three named interactions with family G's next campaign; §7's two upward items;
+  §8's `dune` line including WO-0056's still-missing one; §9's bars; §10's eight
+  deliverables.
+- **Derived and recorded** that M03-H4 drives both no-output-word shapes, keeping
+  the derivation inside §6.1's geometry.
+- **Verified** §6.3 item 8 has no instance at H4 (consecutive, not coincident).
+- Touched no attack-plan row and no test file. No `git`.
+
+### Evidence
+1. REQ-110's committed coverage today: **M03-B4 only** — a `/S/` in lane 4 of an
+   `/S/` word with no frame open before it. No row aborts a frame that has
+   delivered octets.
+2. H4 geometry from §6.1: frame A opens `8c`, closes `8c + 4` → **same word `c`**;
+   frame B opens `8c + 4`, closes `8c + 8` → **words `c` and `c + 1`**. Both
+   shapes, one stimulus.
+3. §9's no-output-word pin (two cycles after the closing input word) gives
+   **`c + 2`** and **`c + 3`** — consecutive, so §6.3 item 8 (two frames reported
+   on **one** cycle under **one** name) has no instance.
+4. §0.6 as revised: "one high cycle per reported event … a monitor counts high
+   cycles, never rising edges" — the basis for H4's two-event registration.
+5. `test_m03_f.ml`'s `run_f2`: `expected_not_after = if k = 0 then closing_cycle +
+   3 else ((closing_ot - 1) / 8) + 3` — the zero-received precedent §3.2 rests on.
+6. `AP` §7's X-5 entry names **H1 and H2** among its intended customers, which is
+   why §6 item 3 asks for its second confirmation.
+
+### Outcome
+**WO-0057 authored and ready to issue.** Four rows commissioned, **ranked by
+risk** with M03-H4 named as the one to build last; two derivation traps stated
+before the rows; the zero-delivered window ruled with its precedent cited and its
+generalisation routed up; three interactions with family G's next campaign named
+in the packet; and the uncitable claim barred at the point where it would be
+reached for.
+
+**Two findings came out of the design rather than out of a run**: M03-H4 supplies
+**both** no-output-word shapes in one stimulus — discharging *why* the epoch-A
+class rides with family H — and **§0.6 has no reference word for a frame that
+delivered nothing**, which is the M03-G6 question recurring in a family with no
+oversize frame in it.
+
+`SO-M03` does not issue; after family H, **32 of 62 ASSERT rows** would be
+discharged.
+
+### Open-questions
+- **§0.6's reference word for a zero-delivered frame** — routed to
+  architect_docs_lead. Blocks no row; the bench already has a precedent and the
+  exact pin carries every assertion.
+- **The next G campaign and family H's campaign are coupled.** Neither's seal can
+  be written without the other's unit list, and I would rather that were decided
+  before either freeze than discovered at an adjudication.
+- **M03-G7 remains unqualified** until a `/S/`-gated class is seeded against it.
+- **`test/xgmii_rx_64/dune` carries neither a WO-0056 nor a WO-0057 line** — both
+  are in this packet's §8, comment-only.
+- **Still owed**: AP-M14's sweep companion if more plans are written
+  (`J-dv_lead-0076`); the `precompile_check.sh` side-effect-in-combinator lane;
+  M03-F5's discharge-by-citation qualification; the RFC 1071 anchor on the next
+  fetching run; X-7, X-10, X-11 deferred; L1–L5 as a separate packet.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0057_tb-m03-family-h-start-without-terminate.md
