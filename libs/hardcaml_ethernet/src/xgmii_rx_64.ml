@@ -468,7 +468,12 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
      something else, so a design that compares here reports "this frame's FCS
      is wrong" as a function of octets §9 says nothing is removed from. *)
   let has_fcs = count_next >=:. fcs_min_octets in
-  let bad_fcs = has_fcs &: (crc_final <>: of_int ~width:32 fcs_residue) in
+  (* D-M3 MUTATION (WO-0041): the closure record no longer carries this
+     frame's own verdict. What travels with the frame is only whether it had
+     an FCS to check at all (§9's ninth ruling); the residue comparison
+     itself moves to the consumption site below. The alias keeps [bad_fcs]'s
+     single use — the record's [~fcs] field — textually unchanged. *)
+  let bad_fcs = has_fcs in
   (* One reload condition for both state registers, and it is [begins]: the
      word that hands a new frame forward is the word before that frame's first
      octet at both start lanes, whether the frame was admitted from [Idle] /
@@ -530,7 +535,13 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
   let sel_error = bit sel 2 in
   let sel_start = bit sel 3 in
   let sel_oversize = bit sel 4 in
-  let sel_bad_fcs = bit sel 5 in
+  (* D-M3 MUTATION (WO-0041): the verdict is formed here rather than
+     carried. Bit 5 is now only "this frame had an FCS to check", and the
+     residue equality is evaluated against [crc_reg] as it stands on *this*
+     cycle — the cycle this frame's `tlast` word is emitted — instead of
+     against the value that frame's own octets left in the register at its
+     terminate character. §6.1 re-seeds the register in [Preamble]. *)
+  let sel_bad_fcs = bit sel 5 &: (crc_reg <>: of_int ~width:32 fcs_residue) in
   let sel_runt = bit sel 6 in
   (* ---- the second report path: an epoch opened *and* closed in one word ----
      Such a frame delivers no octet — its eight preamble octets fill the rest of
