@@ -1,0 +1,17 @@
+diff --git a/libs/hardcaml_ethernet/src/xgmii_rx_64.ml b/libs/hardcaml_ethernet/src/xgmii_rx_64.ml
+index 81cd9ed7fc64e6265c53117f251ef948f24e3b00..a1236bd56c684564ed6fd790c7092b7582717192 100644
+--- a/libs/hardcaml_ethernet/src/xgmii_rx_64.ml
++++ b/libs/hardcaml_ethernet/src/xgmii_rx_64.ml
+@@ -369,8 +369,11 @@
+      epoch A's preamble positions — `/I/` and `/Q/` included (§6.2's [Preamble]
+      row as revised at 541ea43). Outside a preamble position the same character
+      is the hold above and closes nothing. *)
++  (* E-c4 MUTATION (WO-0045) — the `/E/` handler not gated on frame-open: the
++     [a_open] conjunct of [a_char_acts] is dropped from this closure only, so an
++     `/E/` arriving with no frame open raises a closure record and is reported. *)
+   let a_close_error =
+-    a_closes_with (lanes.is_error |: (other_ctl &: a_pre_mask))
++    ~:a_close_oversize &: any ((lanes.is_error |: (other_ctl &: a_pre_mask)) &: a_close_oh)
+   in
+   let a_close_start = a_closes_with lanes.is_start in
+   let a_close_char = a_close_terminate |: a_close_error |: a_close_start in

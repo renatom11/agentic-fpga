@@ -1350,3 +1350,296 @@ the round is adjudicated.
 ### Files-in-this-commit
 - docs/reports/audit/WO-0042-mutations/D-M6.diff
 - docs/reports/audit/WO-0042-mutations/README.md
+
+## [J-auditor-0007] 2026-08-03T13:43:18Z | task:WO-0045 | Family-E campaign seeded: five abort-path mutations authored blind against bc565a6 under an allowlist, with E-c2's uncovered half and the absent toolchain both disclosed rather than papered over
+
+### Trigger
+Orchestrator spawn on WO-0045
+(`agents/handoffs/WO-0045_family-e-mutation-campaign.md`, read at `520ab9b`) —
+dv_lead's auditor-facing brief. Same chartered duty and same no-stake standing
+as WO-0039, WO-0041 and WO-0042: I authored neither M03's RTL nor any part of
+its bench, and the subject under test is **not M03** but whether family E of
+`test/xgmii_rx_64/**` has teeth against the five abort-path defect classes §2
+names. Chartered work under charter §3's systematic-mutation clause, at the
+PROTOCOL §10 sequencing point. Seeding only: I did not run any diff and I have
+seen no result.
+
+### Inputs
+The committed long form, with extents, is §1 of
+`docs/reports/audit/WO-0045-mutations/README.md`; this is the same list.
+
+**The read rule this round is an allowlist, not a bar list.** WO-0045 §1
+replaces the previous campaigns' growing deny-list with five permitted path
+sets — this packet, `docs/specs/**`, `docs/adr/**`, `libs/**`,
+`docs/reports/audit/**` — and declares everything else out of bounds by
+construction. My spawn brief adds that `agents/PROTOCOL.md` is off-list for this
+campaign and that the brief plus my charter supply the process in its place.
+
+Read in full: `agents/charters/auditor.md`;
+`agents/handoffs/WO-0045_family-e-mutation-campaign.md` at `520ab9b`;
+`docs/specs/modules/xgmii_rx_64.md` at `bc565a6` (949 lines);
+`libs/hardcaml_ethernet/src/xgmii_rx_64.ml` at `bc565a6` (772 lines, blob
+`81cd9ed7fc64e6265c53117f251ef948f24e3b00`, sha256 `3d87515a…`, extracted with
+`git show` / `git archive` into a private scratch subdirectory — the working
+tree's copy was never opened and never modified);
+`docs/reports/audit/WO-0041-mutations/README.md` (my own prior artifact, for the
+section structure and the index-line and hunk-marker conventions).
+
+Partial: `docs/specs/requirements.md` at `bc565a6` — §0.6 and §0.7 (lines
+240–324), §2's REQ-101 … REQ-113 table (lines 410–435), and one grep for the REQ
+ids the packet's spec basis names.
+
+**Deliberate abstention inside the allowlist**: `docs/adr/**` was permitted and
+**not opened**. ADR-0006, ADR-0007, ADR-0013 and ADR-0014 are quoted at the
+points that matter inside SPEC-M03 itself, and no family-E intent turned on a
+decision record I had not already got from the spec. Recorded because Inputs is
+meant to be what I read, not what I was allowed to read.
+
+Git metadata only, no file content: `git rev-parse` on the base blob at
+`bc565a6` and at `447d11c` (equal — the file has not moved across four
+campaigns); `git diff --stat bc565a6 1e77706 -- libs/` (empty, which re-derives
+the packet header's criterion-3 claim rather than taking it on trust);
+`git ls-tree -r --name-only bc565a6 -- libs` and `-- docs/reports/audit`;
+`git hash-object` on the five mutants. **No unscoped `git log` was run at all**,
+and no git subcommand of any kind was aimed at a path outside the allowlist
+(bar 10) — I ran no `--format=%s` this round, so no commit subject reached me.
+
+My own journal: the orchestrator's minimal exception for the append. Extent
+exactly — one `grep -n 'J-auditor-[0-9]' | tail -1`, whose output as it reached
+me was the single line number `1082`, and one `sed -n '1080,$p'`, which
+displayed the last entry (`J-auditor-0006`) and two lines above its header.
+Lines 1–1079 were not displayed.
+
+Directory listings only: `libs/hardcaml_ethernet/src/`, `docs/reports/audit/`,
+the scratch tree's own top level, and the opam switch's `bin` / `lib`.
+
+**Not read, positively**: all of `test/**` — no file, no name, no SHA, in this
+session; the sealed companion
+`WO-0045_family-e-mutation-campaign-SEALED-predictions.md`; the WO-0043 packet,
+whose verdict §1 warns describes `test_m03_e.ml` line by line; every other
+agent's journal; `agents/PROTOCOL.md` this round; and — a change from WO-0042,
+where I did read them — `.ocamlformat`, `dune-project` and
+`libs/hardcaml_ethernet/src/dune`, all three of which are outside this
+campaign's allowlist or, in the dune file's case, unnecessary once the build's
+own error text named the missing libraries.
+
+**Prior-spawn exposure**, which §1's last paragraph says is expected and not a
+disqualification: the WO-0039/0041/0042 packets, PROTOCOL, and my own journal in
+full. The material question is narrower and I answer it directly — **I have
+never read `test_m03_e.ml` or any part of family E, at any SHA, in any spawn**,
+nor `AP-xgmii_rx_64.md`. What I carry about M03's bench is family D's published
+mutation → row table (WO-0040 §9, the leak this packet exists to correct) and
+the D-family verdicts: all of it about the FCS path, none about the abort path.
+
+**One incidental exposure, disclosed rather than glossed.** My first
+`git archive | tar -x` copy excluded only the trees I had reasoned about in
+advance; a `find -maxdepth 1 -type d` over that copy printed the names
+`.claude .github bin libs scripts site tasks`. I read no content from any of
+them, rebuilt the copy immediately restricted to `libs/` plus root-level files,
+and the second listing additionally showed the root file names. Names only
+reached me; bar 9's `tar --exclude` was the mechanism in both passes, and a
+probe loop over `test agents docs tools rtl_snapshots` printed `absent:` for all
+five before any build was attempted.
+
+### Reasoning
+**Sampling frame.** This is a seeding work order, not a sampling audit: the
+frame is fixed by §2, which names five defect classes and leaves me no
+discretion over which to seed. What discretion I had was *where in the module to
+inject each*, and that is what the reasoning below records. I deliberately did
+not go looking for a sixth class, did not red-team beyond §2, and formed no view
+about which bench row should die — the campaign's blinding is the point of the
+round and the sealed predictions are dv_lead's.
+
+**Where each defect lives, and why there.** M03 concentrates the abort path in
+four places, and each intent has exactly one natural site. (1) `strip` is the
+module's single FCS-removal control, read by `keep_count`, by `emit_last_a`'s
+guard and by the straddle logic; adding `sel_error` to the disjunction that
+raises it recruits the *whole* removal mechanism onto the REQ-105 path, which is
+what "as though the abort path had an FCS to strip" means, rather than
+subtracting four octets by hand. (2) The "no output word" property of a
+zero-delivered abort is enforced twice over — `have_word` needs `pc <> 0` and
+`emit_last_a` needs `pc >: strip` — so no existing conjunct can be weakened
+without also moving §9's sixth row, which belongs to a different intent; I added
+a disjunct instead, gated on `sel_is_r2`, which is the module's own name for
+§9's no-output-word report cycle. (3) `error_bad_frame` has two source paths and
+the intent is a statement about the strobe, so both move: `strobe sel_error` to
+the combinational `a_close_error`, and `q_strobe 0` to the un-delayed
+`inword_now`. (4) The frame-open test is one conjunct, `a_open`, inside
+`a_char_acts`; E-c4 deletes it from that one closure and nothing else. (5) E-c5
+is one identifier.
+
+**What I refused to do, in each case, and why.** For E-c3 I refused to move only
+the epoch-A path: the in-word `q2` path is §9's second pin for the frames that
+use it, and leaving it in place would make the strobe half-defective and the
+mutation partly a no-op. For E-c4 I refused to bolt a pulse onto the output
+field — a bare `|: (any lanes.is_error &: ~:a_open)` would report on the
+character's own cycle and thereby import E-c3's defect, making two of the five
+partly indistinguishable; injecting at the closure keeps the report on §9's own
+no-output-word pin, which is what "reported as though it had aborted something"
+means. Also for E-c4 I **kept** the `~:a_close_oversize` conjunct: dropping it
+would break REQ-108 and C-12 on the way to a REQ-105 defect, which the packet's
+standing clause forbids. For E-c5 I refused to strengthen it, as §2 asks in
+terms.
+
+**The one intent I could not seed whole.** E-c2's class has two structurally
+different halves. A frame opened and closed inside one input word — at a lane-0
+start, where the whole preamble lies in the start word, that is where every
+preamble-position `/E/` falls — is reported through `q2`, three bits through two
+registers, with **no payload datapath at all**: nothing there decides to emit a
+word, because it never had coverage, alignment or a `tkeep`. Seeding it means
+constructing an output-word path that does not exist, which is neither minimal
+nor the natural implementation. I seeded the epoch-A half — an `/E/` in a
+preamble position of the word after a lane-4 start, and an `/E/` at the frame's
+own first-octet position at both start lanes — and said so plainly rather than
+substituting a different defect, which §2 asks for in terms.
+
+**Fidelity checks I ran in my head and then wrote down.** For each mutation I
+enumerated the frame classes the intent says are unaffected and traced the
+mutated expression through them: for E-c1, that terminate, runt and oversize
+dispositions are untouched because the three closure bits are mutually exclusive
+and `a_close_runt` implies `a_close_terminate`; for E-c2, that a frame reaching
+`r2` with `pc <> 0` already satisfies the original conjunction so the disjunct
+is a no-op there, and that `consume` — and therefore the strobe cycle — is
+unchanged; for E-c3, that the pulse count is preserved and only the cycle moves,
+never by zero; for E-c4, that `Preamble` and `Frame` are bit-identical to the
+base and that neither the `Idle` nor the `Discard` arm of the FSM reads
+`a_close_char`; for E-c5, that `sel_error` stays live in `abort` so `tuser`[0]
+still marks. §3 of the README carries each argument in full.
+
+**Consequences I accepted rather than engineered away.** E-c1 recruits the
+word-drop behaviour of a genuine FCS strip: a final aligned word of ≤ 4 octets
+is suppressed with its `tlast`, and a straddling case moves the `tlast` back a
+word. Both follow from the single injected token and I did not add guards to
+prevent them — that would be a second, non-minimal edit and would make the
+mutant behave like no implementation anyone would write.
+
+### Actions
+1. Read the charter, the packet at `520ab9b`, SPEC-M03 and the requirements
+   sections its spec basis names, and the design file at `bc565a6`.
+2. Created a mode-0700 private scratch subdirectory (bar 8) and extracted the
+   base tree into it with `git archive | tar --exclude` (bar 9), twice — the
+   second pass restricted to `libs/` plus root-level files.
+3. Authored **all five** diffs in one generator pass, before any was run (bar
+   6), each as anchor-asserted literal replacements against the `bc565a6` text
+   so a silent mis-apply is impossible.
+4. Ran the self-check battery of §4 of the README: tree-copy guard, generation
+   anchors, `git apply --check` plus real application and byte-comparison,
+   single-file and index-line pinning, minimality counts, parse check with four
+   negative controls, orphaned-bindings check, identifier census and scope
+   order, width and whitespace, marker presence.
+5. Wrote `docs/reports/audit/WO-0045-mutations/{E-c1..E-c5}.diff` and
+   `README.md`, the latter generated with the diffs spliced from the artifacts
+   and verified byte-identical to them.
+6. Revised no diff after any result, there being none (bar 7); made no
+   compile-only repair, because no diff has been compiled — see Evidence.
+7. Wrote nothing outside `docs/reports/audit/WO-0045-mutations/` and this
+   journal append. Ran no `git commit` and no `git push`.
+
+### Evidence
+Base, re-derived rather than assumed:
+`git rev-parse bc565a6:libs/hardcaml_ethernet/src/xgmii_rx_64.ml` →
+`81cd9ed7fc64e6265c53117f251ef948f24e3b00`; the same command at `447d11c`
+returns the same blob, so this file is byte-identical across WO-0039, WO-0041,
+WO-0042 and WO-0045. `git show bc565a6:… | sha256sum` →
+`3d87515a843d98d7d5bd6692a9d19cdbe2b0dee4e430c88f871a2d4887f5be92`, 772 lines.
+`git diff --stat bc565a6 1e77706 -- libs/` → **empty**.
+
+Tree-copy guard: the probe loop over `test agents docs tools rtl_snapshots`
+printed `absent:` for all five; final retained content of the scratch tree was
+`libs/`, `.gitignore`, `.ocamlformat`, `ORG_CHART.md`, `README.md`,
+`agentic_fpga.opam`, `dune-project`, of which only `libs/**` was ever opened.
+
+Generation: `python3 gen.py` →
+`E-c1: base=81cd9ed7fc64 new=afefecb886a4 edits=1`,
+`E-c2: … new=d01674a40b9d edits=1`, `E-c3: … new=df865207e2a4 edits=2`,
+`E-c4: … new=a1236bd56c68 edits=1`, `E-c5: … new=a8d301f13d36 edits=1`.
+
+`git apply --check --verbose` from a pristine `bc565a6` copy: all five print
+`Checking patch libs/hardcaml_ethernet/src/xgmii_rx_64.ml...` and nothing else.
+Each patch was then applied for real to a fresh pristine copy and `cmp`-ed
+against the generated file: **byte-identical in all five cases**. Each diff has
+exactly one `diff --git` header and one `index 81cd9ed7fc64…..<post> 100644`
+line.
+
+Minimality: hunks/±lines — E-c1 1/−1+6, E-c2 1/−1+7, E-c3 2/−8+10, E-c4 1/−1+4,
+E-c5 1/−1+4, of which 3, 4, 4, 3 and 3 added lines respectively are the marker
+comment. E-c4's and E-c5's entire code delta is one line replaced by one line.
+
+Parse check, **with negative controls**: `ocamlc -stop-after parsing -c` (OCaml
+4.14.1) accepts the pristine file and all five mutants. Four deliberately broken
+variants — a dropped paren in E-c2's disjunct, a dropped `in` in E-c1's
+rewrapped `let`, a stray `;;` in E-c5's field, a dropped paren in E-c3's `q2` —
+were all **rejected** (`Syntax error: ')' expected` ×2, `Syntax error` ×2), so
+the check has teeth.
+
+Orphaned bindings, over comment-stripped text: 135 base bindings; E-c1/2/4/5 add
+none, remove none, and leave **none unused**; E-c3 adds `inword_now`, removes
+none, leaves none unused. `strobe`, `q_strobe`, `q2` and `sel_error` all remain
+referenced in E-c3 and E-c5, which is where an unused-variable warning was the
+likely failure.
+
+Identifier census and scope order: every added code token is either `let`-bound
+in the base file, or a library/record name the base file already uses (`mux2`
+21×, `of_int` 14×, `zero` 14×, `bit` 39×, `reg` 34×, `any` 24×, `gnd` 2×,
+`i.clear` 8×, `error_bad_frame` 3×, `is_error` 7×, `~exists`/`~closing` 3× each),
+or `inword_now`. Binding line < use line for all of them: `sel_is_r2` 522,
+`sel_valid` 528, `sel_terminate` 529, `sel_error` 530, `sel_oversize` 532;
+`a_close_oh` 315, `a_pre_mask` 308, `a_close_oversize` 361 (all < E-c4's 372);
+`inword_strobes` 570 < 583; `a_close_error` 372 < 762. No shadowing, no forward
+reference.
+
+Width and whitespace: base max line length 97; every mutant 97; zero
+trailing-whitespace lines, zero tabs, zero CR in base and mutants alike. Marker
+check: E-c3 two hunks two markers, the other four one each.
+
+**Negative evidence, stated as a result rather than omitted.** No mutant has
+been type-checked and none could be: this container's opam switch (`fpga`,
+`ocaml-system.4.14.1`) has **no Hardcaml packages installed**, and
+`dune build libs/` in the scratch tree fails at `Library "ppx_hardcaml" not
+found` and `Library "hardcaml_axi" not found` before reaching a line of
+`xgmii_rx_64.ml`. `ocamlformat` is likewise absent, and `.ocamlformat` is
+outside the allowlist, so formatting is **unverified** — unlike WO-0042, where I
+read the margin. Compile-confidence is therefore HIGH on syntax, scope and
+unused bindings (all machine-checked above) and ASSERTED on types and widths,
+with the argument written out per mutation in README §5.1.
+
+### Outcome
+Five diffs and a README committed under
+`docs/reports/audit/WO-0045-mutations/`, seeding the family-E campaign against
+`bc565a6`. All ten of the packet's rules — five allowlist items, five process
+bars — were honoured, with three things disclosed rather than smoothed: the
+`find`-listing of top-level directory names during the first tree copy, the
+abstention from `docs/adr/**`, and the absent toolchain. Four of the five
+intents were seeded whole and minimally. **E-c2 was seeded for one of its two
+structural halves only** and the other is named, argued and left undone rather
+than substituted for. No diff was run, no result was seen, no revision was made,
+and no prediction about which bench unit should redden appears anywhere in this
+work order or in my head. `SO-M03` does not issue on family E regardless, per
+the packet's own §5.
+
+### Open-questions
+1. **E-c2's uncovered half.** Does dv_lead want a sixth diff attacking the
+   in-word (`q2`) half of §9 row 3 — necessarily larger, since it must construct
+   an output-word path that does not exist — or is the epoch-A half the intended
+   target? Routed through the orchestrator; I neither substituted nor widened.
+2. **Is `dune build @fmt` inside the campaign's "Build state"?** If so and a
+   mutant fails it, the failure belongs to packet §7's compile-only repair
+   class, not to the intent. I could not pre-empt it: `ocamlformat` is absent
+   and `.ocamlformat` is off-allowlist.
+3. **Build-configuration files and the allowlist.** A build needs
+   `dune-project` and `libs/**/dune` as tool inputs; the former is off-list. I
+   resolved it conservatively (read neither; took the missing-library names from
+   the build's own error text), but a future packet saying so explicitly would
+   remove the ambiguity.
+4. **Compile-confidence is argued, not demonstrated**, for the second campaign
+   running, because the toolchain is absent from this container. If any diff
+   fails to compile, bar 7's compile-only repair applies: I will change nothing
+   else and will disclose it.
+
+### Files-in-this-commit
+- docs/reports/audit/WO-0045-mutations/E-c1.diff
+- docs/reports/audit/WO-0045-mutations/E-c2.diff
+- docs/reports/audit/WO-0045-mutations/E-c3.diff
+- docs/reports/audit/WO-0045-mutations/E-c4.diff
+- docs/reports/audit/WO-0045-mutations/E-c5.diff
+- docs/reports/audit/WO-0045-mutations/README.md
