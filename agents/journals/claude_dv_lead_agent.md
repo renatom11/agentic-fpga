@@ -14121,3 +14121,191 @@ driven, M03-E1's fail-fast, and M03-E3's NO-ASSERT status.
 ### Files-in-this-commit
 - agents/handoffs/WO-0045_family-e-mutation-campaign.md
 - test/attack_plans/AP-xgmii_rx_64.md
+
+## [J-dv_lead-0055] 2026-08-16T11:05Z | task:WO-0047 | Family F authored — and checking rather than assuming turned the packet's premise inside out: REQ-107's report path is ALREADY verified by C4, so the only silently-always-pass class left is the sub-five-octet frame, and the re-read killed one row outright and flagged two declared kills
+
+### Trigger
+Orchestrator: the family-E adjudication is landed (`fdde916`) and the campaign
+closed (`116d626`). Author family F — the sub-five-octet obligation I recorded
+at `J-dv_lead-0043` — carrying the freeze-checklist rules earned since, both
+defect-shape re-reads done by me rather than delegated, the no-output-word
+discipline stated per row, a decision on where M03-E5 goes, X-1 dependencies and
+the sub-five stimulus trap, and five qualification classes with the mapping
+sealed. Explicitly: **check whether REQ-107's positive direction is unverified,
+do not assume it — C4 exists.**
+
+### Inputs
+- `test/attack_plans/AP-xgmii_rx_64.md` §4.F rows M03-F1…F5 in full, and §4.E's
+  M03-E5 as I added it at `J-dv_lead-0054`.
+- **`test/xgmii_rx_64/test_m03_c.ml`'s `run_c4`** — read assertion by assertion,
+  because the packet's premise depended on what it actually covers.
+- **`test/xgmii/injection.ml`** at the `Arrival.create` call — the sub-five
+  complaint and which complaints are filtered.
+- `test/xgmii_rx_64/test_m03_e.ml` — `run_e2`'s no-output-word discipline,
+  `account_dropped_frame`, `fail_cross`, and `run_e4`'s two-site stimulus check.
+- `docs/specs/modules/xgmii_rx_64.md` §9's sixth row, the strobe pin and its
+  no-output-word clause, co-occurrence rulings 1 and 9; §4.1's `rx_tuser` line.
+- `docs/specs/requirements.md` REQ-107, REQ-103, REQ-008, REQ-013, §0.7.
+- `RV-0041-VERDICT` (the two re-read orders), `RV-0043-VERDICT` §5/§7 (the
+  tripwire idiom and the budget precedent), `J-dv_lead-0053`/`0054` (the
+  freeze-checklist rules).
+- **No `libs/**`, no `rtl_snapshots/**`, no `test/third_party/**`.**
+
+### Reasoning
+
+**The instruction to check rather than assume was the right one, and the answer
+inverted the packet I was about to write.** I would have opened with "REQ-107 is
+unverified in its positive direction, as REQ-104 and REQ-105 were" — the third
+instance of a satisfying pattern. **It is false.** `run_c4` drives a five-octet
+runt at both start lanes and asserts one output word, `tkeep` = 0x01, `tlast`,
+**`tuser`[0] = 1**, the delivered octet, and **exactly one `error_runt` on the
+pinned cycle**. A design that detected a runt and never reported it **already
+dies at C4**.
+
+**So the genuine gap is narrower and sharper than the pattern predicted: the
+sub-five-octet class.** No unit drives a frame of fewer than five octets between
+start and terminate — C4's is *exactly* five, and M03-E2's zero-delivered frame
+is closed by `/E/`, so it takes REQ-105's disposition and §9's second row rather
+than REQ-107's sixth. A sub-five frame silently dropped with no strobe violates
+REQ-008 and §9's sixth row, and **nothing today would notice.** That is F-c5, and
+it is the only silently-always-pass class family F can still close.
+
+Writing the false version would have been worse than a wasted paragraph: it
+would have made the campaign's headline class one that C4 already kills, and a
+class that dies twice teaches nothing about the new rows.
+
+**The re-reads I did myself, and they produced three findings — one of which
+deletes a row.**
+
+*M03-F5 is redundant with M03-C4.* It drives the same five-octet frame and
+asserts a strict subset of what C4 asserts, and its declared kill — "fewer than
+5" implemented as "≤ 5", emitting nothing — **would die at C4**, which asserts a
+word exists. So F5 is discharged by citation, the worker does not build it, and
+F1's own five-octet member re-drives the frame anyway. Finding a row that costs
+work and discharges nothing is worth more than adding one.
+
+*F2's second declared kill is at risk of the unachievable-kill shape.* "Attempts
+FCS removal on a frame with nothing to remove it from and underflows its
+counter" — an underflow that **clamps** produces exactly the correct observable,
+no output word. **And I could not settle it**, because whether this M03 clamps is
+a question about `libs/**`. That is the honest difference from M03-D3, where a
+margin computation proved unachievability outright: here I can only **flag** it,
+bar the row from resting on it, and name what settles it — the campaign, and a
+spec diff if a faithful underflow mutation kills nothing.
+
+*F3's second declared kill is not clearly an observable.* "Sets the abort bit
+twice" — `tuser`[0] is one bit on one word; "twice" has no distinct manifestation
+unless it means two `tlast` words, which is a different defect. The row's teeth
+are the precedence kill and the widened-pulse kill.
+
+Two of the three findings are against rows I inherited rather than wrote, but the
+plan is mine, so they are mine.
+
+**On M03-E5 I folded it in, and the convenience argument is not the one I
+used.** Shared machinery and a disproportionate one-row round are both true and
+neither is sufficient. **The verification argument is that E5 and F2 are the
+programme's two no-output-word classes**, and a defect in the shared no-output
+path must be scored against both to be understood. Separate packets mean separate
+freezes and separate denominators, and **a mutation seeded against one cannot be
+scored against the other** — my own never-move-the-denominator rule, biting in
+the other direction. Folded, with the row staying in `test_m03_e.ml` beside its
+requirement and the sign-off accounting tracking REQ-105 and REQ-107 separately.
+
+**The sub-five stimulus trap I could state rather than pose**, which is a first:
+`Arrival.check` complains about sub-five frames and `Injection` filters **exactly
+that one complaint**, documented in `injection.ml`'s own comment. So F2 must be
+built through `Injection`. Third family, third trap of the `fcs_valid` class —
+and worth naming as a pattern, because a stimulus generator with a conformance
+self-check will always have one for the class that is deliberately
+non-conformant.
+
+I still left one question open there, because the comment names rows "F2 **and
+F5**" and F5's frame is five octets, which should not trip a *sub*-five
+complaint. Either the predicate is looser than the comment implies or the comment
+is loose; the worker establishes which.
+
+**And I turned a freeze-checklist rule into a packet instruction rather than
+keeping it to myself.** I seal expected messages, and those messages are
+determined by assertion order and — where a row loops and fails fast — by which
+iteration runs first. So **assertion order is part of a row's contract**, and a
+reorder must be announced. I got a sealed message wrong once by not reading an
+iteration order; making the worker aware that order is load-bearing is cheaper
+than my reading it correctly every time.
+
+### Actions
+- **Checked `run_c4`'s coverage before writing the premise** and inverted it:
+  REQ-107's report path is verified at five octets; **the sub-five class is the
+  gap**, and F-c5 is scoped to it.
+- **Did both defect-shape re-reads myself** and recorded three findings: F5
+  redundant (discharged by citation, not built), F2's underflow kill flagged as
+  at-risk-and-unsettleable, F3's "abort bit twice" kill not an observable.
+- **Folded M03-E5 in on a verification argument**, with the file staying in
+  `test_m03_e.ml` and the accounting kept per-requirement.
+- **Stated the sub-five stimulus trap definitively** from `injection.ml`, with
+  one open predicate question.
+- Generalised **M03-E2's no-output-word discipline** per row: assert nothing
+  about `tuser`[0], assert the structural facts, account through the strobe path
+  and never through `frame_out ~aborted:true`.
+- Ruled every row **hand-derivable, not co-sim-gated**, and carried the
+  model-vs-hand tripwire idiom as standing practice.
+- Made **assertion order part of the row contract** in §4.2.
+- Named **five qualification classes with the row mapping sealed**, per the
+  family-E template.
+- Opened no `libs/**`. No `git commit`, no `git push`.
+
+### Evidence
+1. `run_c4` asserts `tuser[0] = 1` ("REQ-107 forwards it marked invalid"),
+   `tkeep` 0x01, `tlast`, one output word, the delivered octet, and exactly one
+   `error_runt` at `start_cycle + 3` — at both lanes.
+2. No unit drives a frame of fewer than five octets closed by `/T/`; C4's is
+   exactly five and E2's is `/E/`-closed.
+3. `injection.ml`'s comment at its `Arrival.create` call: `Arrival.check`'s
+   sub-five complaint "is an injection case, not a schedule case", filtered
+   there "and nowhere else; every other contract violation is propagated".
+4. M03-F5's observable is a strict subset of M03-C4's, and its declared kill
+   dies at C4's word-existence assertion.
+5. F2's underflow kill is indistinguishable from correct behaviour under a
+   clamping implementation — unsettleable without `libs/**`.
+6. F1's four lengths give final-word fills 1, 4, 8 and 3 — so 56 delivered is
+   the full-word case and belongs to R-1's disagreement class.
+7. §9 ruling 1 admits the runt/bad-FCS pairing at ≥ 5 octets, confirmed
+   empirically by WO-0039's M2 result at C4 (`observed 2` strobes).
+
+### Outcome
+**`WO-0047` is authored**: six rows — F1–F4 built, **F5 discharged by
+citation**, **E5 folded in** — all hand-derivable and none co-sim-gated, with
+the sub-five stimulus trap stated, the no-output-word discipline generalised,
+assertion order made contractual, and five sealed-mapping qualification classes.
+
+**The packet's premise is the opposite of the one I expected to write**:
+REQ-107's report path is already verified by M03-C4, and **the sub-five-octet
+class is the only silently-always-pass gap left** — which is what F-c5 is scoped
+to and what the family exists to close.
+
+### Open-questions
+- **F2's underflow kill may be unachievable** and I could not settle it from
+  outside `libs/**`. **The campaign settles it**: a faithful underflow mutation
+  that kills nothing withdraws the kill by spec diff, as M03-D3's headline kill
+  was withdrawn.
+- **The `Injection` filter's exact predicate** — the comment names F2 and F5,
+  and F5's five-octet frame should not trip a sub-five complaint. A WO-0047
+  deliverable.
+- **A pattern worth naming for families G and H**: a stimulus generator carrying
+  a conformance self-check will always have a trap for the class that is
+  deliberately non-conformant. Three families, three traps. **Look for it first
+  in G (oversize) and H (start-without-terminate) rather than discovering it.**
+- **Families G and H still owe both defect-shape re-reads**, and G's oversize
+  rows are where hand-derivation may finally stop scaling — the first real test
+  of whether the co-sim gate binds.
+- **`WO-0046` Phase 1 is in flight**; `test/cosim`'s missing `dune` stanza is the
+  current `dv_checks` red and is that worker's to land.
+- **Owed by me, unchanged**: the `precompile_check.sh`
+  side-effect-in-combinator lane; `AP` §7's fuller rewrite distinguishing X-1's
+  placement machinery from its outcome model.
+- **M03-A3's blindness to lane-symmetric errors remains untested**; my M04
+  contamination from `J-dv_lead-0024` still stands.
+- **Unchanged**: the RFC 1071 anchor closes on the next CI run that fetches;
+  X-7, X-10, X-11 deferred; L1–L5 owed as a separate packet.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0047_tb-m03-family-f-runts.md
