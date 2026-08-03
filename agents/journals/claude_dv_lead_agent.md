@@ -10357,3 +10357,253 @@ the auditor must not be told. **`SO-M03` does not issue until all five kill.**
 - agents/handoffs/WO-0038_tb-m03-first-bench.md
 - agents/handoffs/WO-0039_m03-mutation-campaign.md
 - agents/handoffs/WO-0039_m03-mutation-campaign-SEALED-predictions.md
+
+## [J-dv_lead-0036] 2026-08-06T16:40Z | task:WO-0039 | Campaign adjudicated: 5/5 killed and 21/21 REQUIRED through the predicted channel, but the two results that taught me anything are the two where I was wrong — C12 and C5 are not content-only units, and "C5 red implies the bound moved to 188" was a bad inference; both withdrawn, neither a bench defect, and SO-M03 still does not issue because the campaign qualified the instrument and not the module
+
+### Trigger
+Orchestrator: all five mutation branches ran and went RED at `runtest` —
+m1@`193f387`, m2@`ddac42e`, m3@`3625218`, m4@`00ccc5c`, m5@`ad7f35c`, each
+`6bd7e5a` + one auditor diff, with the control green at `0556f23`/`0d231ee` in
+the same window. Sealed file released. Asked for: per-mutant
+REQUIRED/MUST-STAY-GREEN/PERMITTED scoring; rulings on the two
+`check_disagreement_matches_r1` firings under my round-6 binding qualification;
+whether any finding voids a mutation; the B1–B3 bench-side round; and the
+`SO-M03` decision or what remains before it.
+
+### Inputs
+- The relayed kill table for all five runs (30782093810, ...443, ...5622,
+  ...6544, ...8016), unit by unit with failure messages.
+- The auditor's three pre-run disclosures from `J-auditor-0004`.
+- `agents/handoffs/WO-0039_m03-mutation-campaign-SEALED-predictions.md` — my
+  own freeze, opened for the first time since writing it.
+- `test/xgmii_rx_64/test_m03_c.ml` — `length_outcome`, `outcome_ok`,
+  `expected_disagree`, `m03_c5_lengths`, `run_c1_c2`, `run_c5` (exact text, for
+  authoring the B2/B3 diffs).
+- `agents/handoffs/WO-0038_tb-m03-first-bench.md` `RV-0038-R7-VERDICT` §4 — the
+  binding qualification I wrote before any of this could happen.
+- `agents/handoffs/BUG-0001_m03-final-word-over-delivery.md` — fix-verdict
+  condition 2 and its reliance on `outcome_ok`'s `None -> false` branch.
+- `test/attack_plans/AP-xgmii_rx_64.md` row inventory (75 rows, 59 ASSERT).
+- **No `libs/**`, no `rtl_snapshots/**`, no `docs/reports/audit/**` mutation
+  diffs** — I scored against messages and my own arithmetic, never against the
+  seeder's code.
+
+### Reasoning
+
+**The scorecard is strong and I want to state the strong part precisely, because
+the precise version is a smaller claim than the headline.** 21/21 REQUIRED is
+not the interesting number. The interesting number is that **every REQUIRED unit
+died through the predicted channel** — M1's A34 speaking through **A4** and not
+A3, M2's A34 speaking through **A3** and not A4, M5's A34 speaking through the
+**latency tagger** and not the tuple comparison. Naming the row is cheap;
+naming which of three assertions inside a unit will speak is the part that could
+have been wrong, and it was right three times for three different reasons.
+
+Two message predictions landed numerically exact — M3's `word 189 tkeep = 63,
+expected 3`, and `word 7 tkeep = 0, expected 15`, the degenerate
+`terminate_lane = 0` case I flagged in the freeze precisely because I expected
+it to look like a mistake if it appeared unannotated.
+
+**Now the two places I was wrong, which is where the campaign earned its cost.**
+
+**F-1.** M1 reddened C12 and C5, both frozen MUST-STAY-GREEN. My freeze named
+the only way that could happen — "the mutation moved content as well as timing"
+— and that is **falsified**: every content column PASSes at every entry. The
+real cause is an error in my model of my own suite. §3 of the freeze opens
+"Everything else asserts content only," and that is **false of C12 and C5**,
+which since round 6 carry `check_disagreement_matches_r1`, a timing- and
+pipeline-coupled assertion. I classified those units by their row semantics and
+forgot the round-6 addition **I myself commissioned four days earlier**. So the
+"five of nine units are blind to a one-cycle latency error" datum I recorded at
+`J-dv_lead-0035` — headed for the D–H standing rules — is **wrong, and
+withdrawn. It is three.**
+
+That is the kind of error a mutation campaign exists to find, and it is
+slightly humbling that the thing it found was in the predictions rather than in
+the bench.
+
+**F-2.** M4's C5 reddened through neither of the two branches I enumerated,
+because both of my branches were about the *delivered count* and the delivered
+counts came back exact. **"C5 red ⟹ the bound landed at 188" is withdrawn** —
+left standing it would have sent a future reader to a wrong conclusion about a
+faithful diff.
+
+What the firing actually did is better than what I predicted. M4 moved the
+threshold to *exactly* C5's second length; `lane4/68` in C12 kept its
+disagreement while `lane4/1516` lost it. **The check localised a second
+observable effect of the mutation at the one entry adjacent to the mutated
+constant and nowhere else — in a place where every content assertion in the
+suite is blind.**
+
+**Ruling on both firings, and the part where I had to hold my own line.** My
+round-6 qualification bound me in advance: a firing is a finding about the
+model of the instrument, and *widening or narrowing `expected_disagree` to fit
+observation is prohibited*. Both firings are **true positives** — in each case
+the design changed and the relationship `expected_disagree` encodes genuinely
+broke (M1: a fully-registered output means the After-labelled reading no longer
+misses the `tlast`, so R-1's artefact does not exist in that design; M4: the
+closure record's birth moved at the threshold length). The temptation is
+obvious and it is exactly the substitution this programme refuses: a green M1
+and M4 were one predicate edit away. **No change to the predicate, no change to
+the bench for the campaign's sake.** What I owe instead is prose — a docstring
+saying the check is a **design-coupling tripwire**, whose firing routes to
+re-deriving the sampling model and never to adjusting the oracle — and it lands
+*after* the B-round, so the B-round is scored against `6bd7e5a` exactly as
+M1–M5 were.
+
+**On voiding: none, and M1's disclosure deserves saying out loud.** The auditor
+delayed the strobes **with** the stream on §9's pin and offered a re-seed if
+stream-only was meant. Stream-only would have built a design that *violates*
+§9 — a second, unrequested defect whose kills I could not have attributed. The
+spec-faithful choice was the intent-faithful choice. **My intent text was
+ambiguous** between "same strobe values" and "same strobe cycles", and that is
+mine to fix: future intents must state whether spec-pinned dependents move with
+the mutated quantity, rather than leaving a seeder to infer it — even when, as
+here, it infers correctly and says so first.
+
+All three disclosures were written before any run and all three were
+load-bearing: disclosure 2 explained M3's C5 extent (which I then re-derived
+myself — 1513 at a lane-4 start terminates in lane 5, so input-derived and
+frame-derived `tkeep` both give 0x1F and the mutant is genuinely unobservable
+there), and disclosure 3 is what let me separate F-2 from a fidelity failure.
+That is precisely the conduct the blinding was designed to make possible.
+
+**B1 is retired on evidence, not skipped.** Its job was to show the R-1 check
+reachable and legible. M1 and M4 did both **on real design changes**, which is
+strictly stronger than a self-inflicted predicate edit, and the dumped tables
+named entries and their `views_disagree` column. Running the weaker test for a
+property the stronger one established is ceremony.
+
+**B2 stays, and the reason is uncomfortable enough that I want it in the
+record.** `outcome_ok`'s `None -> false` branch carries **fix-verdict condition
+2** — it is what let me read `lane 4 length 68`'s silence as a positive
+`Some 255`. **No mutation in this campaign produced a `tkeep = none` entry**:
+M3 gave `Some 0`, M2 failed on `tuser`, M5 on counts. So that branch has not
+been observed to fire since the fix, and yesterday's CONFIRMED leans on it. B2
+closes that hole and is a hard `SO-` precondition.
+
+**And I will not score B2/B3 by reasoning.** The entire argument of this
+campaign is that a green run is an absence and that reasoning is not evidence.
+Scoring my own mutations by reasoning, in the same session, would be
+incoherent. They go to CI on throwaway branches on the same mechanics, with
+their predictions frozen in the packet first — B2's predicted line computed
+field by field (`delivered=60/60 tkeep=none/15 tuser=0 terminate_lane=0
+error_pulses=0 views_disagree=false`), so that every field but `tkeep` is
+correct and the `None` branch is the only thing that can make it FAIL.
+
+**B3's framing gets downgraded, honestly.** I wrote it as "the exhibit of why
+this campaign is necessary." The campaign succeeded, so it no longer argues for
+anything. What survives is narrower and still worth one branch: a standing
+structural caution that a row whose stimulus list empties passes silently and
+identically to a row that ran.
+
+**The `SO-M03` decision, which the campaign's success makes harder rather than
+easier.** Five kills, twenty-one required, every channel predicted — the pull
+toward signing off is real, and it is exactly why the answer needs stating
+plainly. **The campaign qualified the instrument, not the module.** It shows
+this bench can convict; it shows nothing about the rows the bench does not
+contain. The plan carries **75 rows, 59 ASSERT**; WO-0038 delivered **twelve**.
+**Families D through H are entirely unwritten** — REQ-105's error character
+mid-frame, REQ-108's oversize truncation, REQ-110's start-without-terminate,
+REQ-107's runt classes beyond C4's one case, REQ-009's `clear` mid-frame, the
+family-J disable path. An `SO-` is a merge precondition, and a PASS would read
+as "M03 is verified" while every abort and error-reporting requirement in the
+module stands untested by anything at all. **That would be the most dangerous
+act available to me here**, and the campaign's success is not a reason to take
+it.
+
+### Actions
+- Scored all five mutations against the sealed freeze:
+  **21/21 REQUIRED, 16/18 MUST-STAY-GREEN, 5/5 killed.**
+- Recorded M2, M3, M5 as clean sweeps; noted M3's C5 extent (3 of 4) as a
+  correction to my prediction, re-derived independently rather than taken from
+  the disclosure.
+- Ruled **C4 under M2 resolved to Branch A**, which answers the §9
+  ninth-co-occurrence question — the pairing is admitted **at** 5 octets —
+  **so nothing routes to architect_docs_lead**.
+- Recorded **A3's lane-symmetric blindness as an untested property**, since M3's
+  A34 took the reddening branch and the demonstration did not happen.
+- Issued **FINDING F-1** and **FINDING F-2**, and **withdrew two of my own
+  claims**: "five of nine units are timing-blind" (it is three) and "C5 red ⟹
+  bound at 188".
+- **Ruled both R-1 firings TRUE POSITIVES**, upheld the prohibition on adjusting
+  `expected_disagree`, and deferred the owed docstring until after the B-round.
+- Ruled **no mutation voided, no re-seed**; recorded the auditor's conduct as
+  exemplary and issued a standing correction for my own future intent-writing.
+- **Retired B1** as discharged by M1/M4; authored the **B2 and B3 diffs** with
+  frozen predictions and requested CI runs on throwaway branches.
+- **Ruled `SO-M03` DOES NOT ISSUE**, with the five-step verdict path.
+- Flipped WO-0039 to **RETURNED — ACCEPTED, campaign PASSED** on a title+state
+  anchor; marked the sealed file **UNSEALED** with a state line only, stating
+  that no other line was altered and that `git diff` is the check.
+- Opened no `libs/**`, no `rtl_snapshots/**`, no auditor diffs. No `git commit`,
+  no `git push`.
+
+### Evidence
+1. Every REQUIRED unit reddened through the frozen **channel**: A4 not A3 under
+   M1 (proving lane-uniformity), A3 not A4 under M2, the latency tagger not the
+   tuple compare under M5.
+2. **T-C5 red under M5** at `lane0/1513 1510/1509`, `lane0/1516 1516/1512` and
+   the same at lane 4 — **P-1's +1 and +4 at both lanes**, the campaign's most
+   important cell, on the row that had never been red.
+3. M5's green set — A12, A5, B1, C3, C4 — is exactly the `k` ≤ 4 set worked out
+   before the diff existed.
+4. M3's `word 189 tkeep = 63, expected 3` and `word 7 tkeep = 0, expected 15`
+   are numerically the frozen `0x3F` and the flagged `terminate_lane = 0`
+   degenerate case.
+5. M1's C12/C5 tables: **all content columns PASS**, `views_disagree` false
+   everywhere — falsifying the freeze's stated diagnostic that a
+   MUST-STAY-GREEN violation implies content movement.
+6. M4's C5: delivered `1509/1509` and `1512/1512`, `tuser` 0 — neither
+   enumerated branch, and the red confined to `lane4/1516`, the entry adjacent
+   to the moved constant, while C12's `lane4/68` kept its disagreement.
+7. My own re-derivation of M3's `lane4/1513` PASS: terminate lane 5 ⟹
+   input-derived `tkeep` 0x1F; `D` = 1509, `k` = 5 ⟹ frame-derived 0x1F. The
+   two coincide; not a bench blind spot.
+8. No campaign entry produced `tkeep = none`, so `outcome_ok`'s `None` branch —
+   fix-verdict condition 2's carrier — remains unexercised. B2's warrant.
+
+### Outcome
+**Campaign PASSED: five of five mutations killed, 21/21 REQUIRED units red
+through the predicted channel, control green.** Two findings, **both
+corrections to my own predictions**, neither a bench defect; two claims of mine
+withdrawn. No mutation voided, no re-seed.
+
+**The bench is qualified — its green now means something.** B1 retired on
+evidence; **B2 and B3 owed as CI runs**, B2 a hard precondition because it
+closes the one branch fix-verdict condition 2 rests on and that nothing has yet
+exercised.
+
+**`SO-M03` DOES NOT ISSUE.** The campaign qualified the **instrument**, not the
+**module**: twelve of the plan's 75 rows are benched, families D–H are entirely
+unwritten, and every error path in M03 remains untested by anything.
+
+### Open-questions
+- **Owed in `test/**`, after the B-round scores** (so the B-round is judged
+  against `6bd7e5a` as M1–M5 were): the design-coupling docstring on
+  `check_disagreement_matches_r1`, and the corrected "three of nine units are
+  timing-blind" datum replacing the withdrawn five.
+- **A3's blindness to lane-symmetric errors is untested**, and D–H must not
+  assume it either way.
+- **A standing D–H rule**: a `check_disagreement_matches_r1` firing routes to
+  re-deriving the sampling model, never to adjusting the oracle. This is the
+  second time the round-6 qualification has done real work and it should
+  outlive M03.
+- **Standing correction to my own intent-writing**: state whether spec-pinned
+  dependents move with a mutated quantity.
+- **Every future bench needs its own mutation qualification** before its rows
+  can carry an `SO-`. D–H is several work orders, not one.
+- **Owed by me, unchanged**: the `precompile_check.sh`
+  side-effect-in-combinator lane; `tools/precompile_stubs/ifc_check.ml`'s stale
+  UNVERIFIED note; SPEC-M01 §11.4's caveat retirement (architect_docs_lead);
+  the standing-rules list for the next bench packet's §5/§7 — now including the
+  opam-switch read boundary, the design-coupling rule above, and the corrected
+  timing-blindness count.
+- **My M04 contamination from `J-dv_lead-0024` still stands** and must be
+  disclosed in M04's packet.
+- **Unchanged**: the RFC 1071 anchor closes on the next CI run that fetches;
+  X-7, X-10, X-11 deferred; L1–L5 owed as a separate packet.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0039_m03-mutation-campaign-SEALED-predictions.md
+- agents/handoffs/WO-0039_m03-mutation-campaign.md

@@ -7,7 +7,13 @@
 > knows the predicted kill set can choose a mutation site that satisfies it.
 > See `WO-0039_m03-mutation-campaign.md` §0.
 
-- **State**: FROZEN
+- **State**: **UNSEALED 2026-08-06**, on the orchestrator's word that all five
+  branches had run. Scored at `RV-0039-VERDICT` in the companion packet,
+  `J-dv_lead-0036`. **This state line is the only line of this file that has
+  been altered since the freeze** — no prediction, table, message string or
+  classification below has been touched, and `git diff` against the freeze
+  commit is the check. A freeze edited after its result is worthless; the
+  scoring lives in the companion, not here.
 - **Frozen against**: bench SHA `6bd7e5a`, green end-to-end twice
 - **Frozen by**: dv_lead, `J-dv_lead-0035`, **before any mutation diff existed**
 - **Companion**: `agents/handoffs/WO-0039_m03-mutation-campaign.md` (the
