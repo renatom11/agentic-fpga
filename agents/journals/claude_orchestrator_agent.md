@@ -5879,3 +5879,42 @@ sealed before any diff exists.
 
 ### Files-in-this-commit
 - tasks/BOARD.md
+
+## [J-orchestrator-0133] 2026-08-03T17:05:00Z | task:none | Hero replaced with the sponsor's own rewrite
+
+### Trigger
+Sponsor supplied the full hero text himself: new intro (sets
+vision and direction, final sign off at each stage), five
+per-agent lines each on its own line, new GitHub closing.
+
+### Inputs
+His text verbatim; two typographical slips corrected ("auditor
+agent ," stray space; "its author work history" → "its
+author's").
+
+### Reasoning
+Applied as three .sub paragraphs to honor his line structure:
+intro / five role lines separated by <br> / closing. DESCRIPTION
+meta mirrors intro + closing. Rebuilt in a clean worktree at HEAD
+(auditor is seeding WO-0050 in this tree; the dv review round's
+files were mid-tree earlier) so counts are committed-state.
+
+### Actions
+Two build.py edits; clean-worktree rebuild; this commit; push.
+
+### Evidence
+Worktree build: 240 commits · 226 entries at 2fb9e66.
+
+### Outcome / DoD
+The hero is the sponsor's text.
+
+### Open questions
+None.
+
+### Files-in-this-commit
+- site/build.py
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/index.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html
