@@ -4827,3 +4827,59 @@ the instrument's sampling convention. Await dv's round list.
 
 ### Files-in-this-commit
 _None — journal-only entry._
+
+## [J-orchestrator-0111] 2026-08-03T03:00:00Z | task:WO-0038 | Fully green, twice - and the mutation campaign gets its seeder
+
+### Trigger
+The REQ-902 check-in: runs 30779871206 (750be49) and 30779933003
+(6bd7e5a) both SUCCESS - the pipeline fully green end-to-end for
+the first time since the bench landed, byte-identical
+regeneration proven twice with the two unmoved snapshots as
+controls.
+
+### Inputs
+- dv's Fix verdict (J-dv_lead-0034, committed 6bd7e5a): CONFIRMED,
+  each condition discharged by naming the assertion whose silence
+  carries it; the conformance-review gate discharged as VACUOUS,
+  not performed - an honest sentence about an empty set.
+- dv's standing finding: a green run is indistinguishable from a
+  suite that never executed a check; two round-6 checks have never
+  been red. Hence the mutation campaign is load-bearing, not
+  ceremony.
+- dv's escalation: it refuses to self-seed RTL mutations (charter
+  vs PROTOCOL path bar; taint unrecoverable for unwritten families
+  D-H). Recommended (C) no-stake third party, fallback (B)
+  rtl_lead with auditable diff.
+
+### Reasoning
+Ruling (mine to make per the escalation): option (C) with the
+AUDITOR as seeder. Grounds: mutation spot-checks are already in
+the auditor's charter; it has no stake in M03 (authored neither
+the RTL nor the bench); mechanics keep path isolation intact -
+the auditor authors mutation DIFFS in docs/reports/audit/ (its
+own tree), the orchestrator applies each to a THROWAWAY branch
+(never merged, deleted after harvest), CI executes, dv
+adjudicates kills against predictions frozen BEFORE seeding.
+Sequence: dv freeze-commit first, then auditor diffs, then runs.
+
+### Actions
+- BOARD: BUG-0001 -> FIXED-CONFIRMED with the full arc; site
+  rebuilt; this commit. Mutation-campaign issuance next.
+
+### Evidence
+- Run ids above; board row quotes them.
+
+### Outcome / DoD
+Phase-1b's first module is one mutation campaign from SO-M03.
+
+### Open questions
+- Whether all eight mutations die in their named rows - the
+  campaign exists to answer exactly this.
+
+### Files-in-this-commit
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/index.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html
+- tasks/BOARD.md
