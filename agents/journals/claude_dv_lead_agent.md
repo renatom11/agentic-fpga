@@ -15109,3 +15109,171 @@ it; the gate decision is the orchestrator's.
 
 ### Files-in-this-commit
 - agents/handoffs/WO-0049_cosim-canon-format-fix.md
+
+## [J-dv_lead-0060] 2026-08-21T10:30Z | task:WO-0048 | The architect's REQ-901 notification ruled: NO row changes, and the reason the answer is still not "no edit" is that the plan's own anchor sentence would have commissioned exactly the claim §10's new SHALL NOT forbids
+
+### Trigger
+Orchestrator: SPEC-M03 gained the REQ-901 divergence-class cascade at `62c39a7`
+(header prior-art bullet naming classes (e)/(f), §10 verification-hook pointers
+on REQ-107 and REQ-108, a new §10 REQ-901 row carrying each exclusion's scope, a
+§13 row). The architect asks whether `AP-xgmii_rx_64.md` needs a matching edit to
+its family F/G rows. Rule, and land any edit I rule necessary **before** family
+F's qualification freeze, since the campaign seals against the plan.
+
+### Inputs
+- `git show 62c39a7 -- docs/specs/modules/xgmii_rx_64.md` — the whole diff, read
+  as a diff rather than as a summary: header bullet, the REQ-107 and REQ-108
+  hook additions, the new REQ-901 row, the §13 row.
+- `docs/specs/requirements.md` REQ-107, REQ-108 (the class (e)/(f) text landed at
+  `ebb3f49`/`9d1982f`), REQ-901, REQ-602 (class (a), the form the M03 hooks
+  copy).
+- `docs/specs/modules/xgmii_rx_64.md` §10's full REQ list, extracted mechanically
+  (`awk` over §10, `grep -o '^| REQ-...'`) rather than read by eye.
+- `test/attack_plans/AP-xgmii_rx_64.md` §4.F, §4.G, §6, §7's staleness banner,
+  §9; a repository-wide grep of the plan for `co-sim|cosim|anchor|REQ-901|
+  divergence`, which returned **four** hits and no others.
+- `agents/handoffs/WO-0046_cosim-phase-1.md` §1 (REQ-901's comparison domain) and
+  my own §2 confirmation of class (e)'s narrowness; `J-dv_lead-0049`, `0057`.
+- **No `libs/**`, no `rtl_snapshots/**`.**
+
+### Reasoning
+
+**The question as asked has a one-word answer and the one-word answer is
+misleading, so I am giving both halves.**
+
+**Do the family F and G ROWS need an edit? No — and I checked rather than took
+it.** SPEC-M03's own §13 row classes the cascade as *verification columns only,
+no normative text moves*. I verified the classification against the diff: §6.1,
+§6.2, §7 and §9 are untouched, REQ-107 and REQ-108's normative sentences are
+untouched, and every directed frame those columns commission was already
+commissioned. A row's Attacks, Stimulus, Observable and Kills cells are derived
+from that normative text. Nothing under them moved, so nothing in them moves —
+no row, no status, no count.
+
+**Does the PLAN need an edit? Yes, in three places, and one of them is not
+staleness but a live contradiction with a SHALL NOT.**
+
+**§7's anchor paragraph is the one that matters.** It said families E, F, G and
+H "lean on X-1's computed outcomes and are therefore gated on it for sign-off
+purposes". SPEC-M03 §10 now says, of REQ-107 and REQ-108, that **a
+co-simulation result is not an admissible external anchor and a sign-off packet
+SHALL NOT offer one**. Those are not two compatible statements about the same
+lane. Read literally, the plan's sentence holds families F and G's sign-off
+hostage to a run that **cannot discharge them** — and a packet that *satisfied*
+the sentence would be offering precisely the anchor the specification now
+forbids. A plan that commissions a forbidden claim is not stale; it is wrong in
+the direction that costs something.
+
+**So the sentence is withdrawn and replaced by two bars that are explicitly not
+the same bar**, which is the distinction the old sentence collapsed:
+
+1. **The X-1 bar, per row** — a row is gated iff *its expected values come from
+   X-1's computed outcome model*, never because of its family. This is
+   `J-dv_lead-0048`'s correction (placement machinery and outcome model are two
+   different things; only the second is unanchored), which I have owed to §7
+   across six entries and am paying here because I was editing the paragraph
+   anyway and leaving family E wrong while fixing F and G would be indefensible.
+   No row benched to date is gated by it.
+2. **The REQ-901 bar, per requirement** — and it points the other way. It does
+   not delay F and G; it says the lane can never discharge them, so their
+   directed rows are the whole of their verification.
+
+**§6's coverage map needed a REQ-901 entry, and this one is mechanical rather
+than interpretive.** §6 states its own rule — "Every REQ SPEC-M03 §10 lists
+appears exactly once" — and §10 gained a REQ-901 row. I extracted §10's REQ list
+mechanically instead of eyeballing it, and the rule was false. This is the
+stale-by-omission shape the architect's own §13 row names for the specification
+side; the plan had the same instance and nobody had looked.
+
+**§4.F and §4.G get family notes, for the reason the architect's own repair
+gives.** The cascade did not stop at the REQ-901 row — it put pointers on §10's
+REQ-107 and REQ-108 hooks as well, because a reader working from a requirement
+reads the requirement. The same argument transfers exactly: a reader working from
+a family reads the family. The notes add no row and change no count.
+
+**The notes are worth more than a pointer, because the exclusions are scoped per
+requirement and per frame class, not per row, and family F straddles that.**
+M03-F1 attacks REQ-107 *and* REQ-103. Class (e) excludes `tuser`[0] alone at
+5-to-63 octets, so **F1's REQ-103 half — the FCS removed and checked at 1, 12, 56
+and 59 delivered octets — stays co-simulation-anchorable while its REQ-107 half
+does not.** That is not a detail I am inferring now: it is exactly what I checked
+at `J-dv_lead-0057` before countersigning the narrow form, by reading the
+reference's FCS check and finding a lane-indexed residue array with no length
+gate. The narrowness bought that, and the plan should say so where F1 lives.
+
+**And family G has a sharper instance I had not noticed until I wrote the note.**
+(f) excludes nothing in the 64-to-1518 band, so **the exclusion's boundary falls
+exactly between M03-G2's adjacent pair**. G2 is built so that only the strobe,
+the abort bit and the FCS verdict separate a 1518-octet frame from a 1519-octet
+one — and for the 1519 member **all three are outside the lane's reach**, the
+strobes campaign-wide and the other two by (f). The row was always a directed
+test end to end; now the plan says why.
+
+**One thing I deliberately did NOT do.** I did not add a row, convert a row, or
+move a count — because the family-F freeze is the next thing I write, and a row
+added between a freeze and its scoring moves the denominator the freeze is
+scored against. That rule cost me a row's delay at WO-0045 and it applies to
+myself here with more force, not less.
+
+**And I am landing this in its own commit, before the freeze.** The campaign
+seals against the plan; if both went in one commit the ordering would be a claim
+in a packet instead of a fact in history.
+
+### Actions
+- Ruled the F/G **rows** unchanged, with the ground checked against the diff
+  rather than taken from the §13 classification.
+- `AP-xgmii_rx_64.md` §7: withdrew the per-family anchor sentence; replaced it
+  with the X-1 bar (per row) and the REQ-901 bar (per requirement), and stated
+  the consequence the old sentence would have had.
+- §6: added the **REQ-901** entry, restoring the table's own stated invariant.
+- §4.F and §4.G: added family notes carrying each class's exclusion scope, what
+  it leaves anchorable, and the campaign-wide strobe fact that is *not* an effect
+  of (e) or (f).
+- §9: appended the change-log row; counts restated unchanged (**76 rows, 60
+  ASSERT**, 7 NO-ASSERT, 4 NO-STIMULUS, 4 STRUCTURAL, 1 GAP).
+- Opened no `libs/**`. Touched nothing under `tools/**`, `test/xgmii_rx_64/**` or
+  `test/cosim/**` — tb_writer is concurrently executing WO-0049 in the last of
+  those. No `git commit`, no `git push`.
+
+### Evidence
+1. `git show 62c39a7 --stat` → 5 files; `docs/specs/modules/xgmii_rx_64.md`
+   +13/−8, confined to the header bullet, §10 and §13.
+2. §10's REQ list, extracted mechanically: 32 rows, **REQ-901 present**,
+   positioned after REQ-802/REQ-810 and before REQ-903/REQ-808 — the placement
+   §6's new entry now mirrors.
+3. `grep -n -i 'co-sim\|cosim\|anchor\|REQ-901\|divergence'` over
+   `test/attack_plans/AP-xgmii_rx_64.md` before the edit → **4 hits**: §7's
+   banner and three §9 change-log rows. The banner was the only live statement;
+   REQ-901 appeared **nowhere**.
+4. `git status --porcelain` clean at the start of this unit of work.
+
+### Outcome
+**RULED and edited.** The F and G **rows** need no edit and that is on the record
+with its ground. The **plan** needed three edits — §7's anchor paragraph (a live
+contradiction with §10's SHALL NOT, not a staleness), §6's coverage map (its own
+invariant falsified by §10's new row), and family notes at §4.F and §4.G (the
+form the architect's own hook pointers use). Counts unchanged at 76 rows / 60
+ASSERT. One long-standing debt paid in passing: `J-dv_lead-0048`'s correction
+that a *family* is not the unit of co-sim gating is now written where a planner
+reads it.
+
+Handoff: the edited plan, landing **before** WO-0050's freeze in its own commit.
+
+### Open-questions
+- **`AP` §7's fuller rewrite is now PARTLY paid, not fully.** The anchor
+  paragraph is right; the §7 table below it still reads as a gap list under a
+  staleness banner, and distinguishing X-1's placement machinery from its outcome
+  model *inside that table* is still owed.
+- **The cascade may have siblings.** `AP-xgmii_rx_64.md`'s §6 invariant broke
+  because a class-home spec gained a §10 row; **AP-M14 has the same invariant and
+  SPEC-M14 is the home of class (a)**. I have not checked it and it is not this
+  packet's scope — flagging it rather than assuming M14's plan is clean.
+- Unchanged and still owed by me: the `precompile_check.sh`
+  side-effect-in-combinator lane; the §4.1 correction to WO-0047 if it is ever
+  cited as guidance; the strobe-window convention; M03-A3's lane-symmetric
+  blindness (**and see `J-dv_lead-0061` — the F campaign is predicted to settle
+  it**); the RFC 1071 anchor on the next fetching run; X-7, X-10, X-11 deferred;
+  L1–L5 as a separate packet.
+
+### Files-in-this-commit
+- test/attack_plans/AP-xgmii_rx_64.md

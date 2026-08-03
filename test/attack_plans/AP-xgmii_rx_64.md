@@ -175,6 +175,39 @@ transmit-side XGMII. Three consequences bind every row below.
 
 ### 4.F Runt frames — REQ-107, §0.7
 
+> **Family note — REQ-901 declared divergence class (e)** (SPEC-M03 §10's
+> REQ-107 hook and its new REQ-901 row, `62c39a7`; requirements.md REQ-107).
+> **It changes no row below** — no stimulus, no observable, no kill, no status —
+> and it bars exactly one thing: **no sign-off packet may offer a co-simulation
+> result as the external anchor for REQ-107**, and an exclusion is never a
+> licence to take an expected value from the reference (ADR-0015 D2). The
+> exclusion is scoped **per requirement and per frame class, not per row**, and
+> this family straddles it:
+>
+> - **M03-F1, M03-F3, and M03-F4's 63-octet member** lie inside (e)'s
+>   **5-to-63-octet** band, where the exclusion is **`tuser`[0] alone**. The
+>   delivered octets and the `tkeep` extent stay inside the comparison domain, so
+>   **M03-F1's REQ-103 half — the FCS removed and checked at 1, 12, 56 and 59
+>   delivered octets — remains co-simulation-anchorable**; its REQ-107 half, the
+>   marking, is not. That narrowness was checked, not assumed: the reference's
+>   FCS check is a lane-indexed residue array with no length gate, so it strips
+>   unconditionally and the two designs deliver identical octets here
+>   (`J-dv_lead-0057`).
+> - **M03-F2 and M03-F5's frames** — **below five octets**, where (e) excludes
+>   the frame **entirely, its accept-or-discard decision included**. The lane
+>   anchors nothing at all here, and the reference's own sub-five disposition is
+>   **data recorded on first drive, never adjudicated and never an expected
+>   value**.
+> - **M03-F4's 64-octet member** is **outside every exclusion** — (e) excludes
+>   nothing in the 64-to-1518-octet range — so this row's anti-vacuity partner
+>   stays fully anchorable, and the exclusion's boundary is the same boundary the
+>   row attacks.
+>
+> The five strobes are outside the comparison domain **campaign-wide**, because
+> the reference has no counterpart to §9's taxonomy at all (`J-dv_lead-0049`).
+> That is a fact about the lane, not an effect of (e), and no row below may be
+> read as excluded on that account.
+
 | Row | Attacks | Stimulus | Observable | Kills | Status |
 |---|---|---|---|---|---|
 | **M03-F1** | REQ-107, REQ-103 | Frames of **5, 16, 60 and 63** octets DA through FCS, correct FCS, both start lanes | 1, 12, 56 and 59 delivered octets; `tuser`[0] = 1 on each `tlast` word; exactly one `error_runt` per frame on the `tlast` cycle; **the FCS is removed and checked** — these frames end with `/T/`, so REQ-103 applies to them | A design that suppresses FCS removal on a runt (delivering four octets too many), and a design that suppresses the output entirely | ASSERT |
@@ -184,6 +217,28 @@ transmit-side XGMII. Three consequences bind every row below.
 | **M03-F5** | REQ-107, §0.7 | The 5-octet frame of M03-F1 | Exactly **one** delivered octet in one word (`tkeep` = 0x01, `tlast` = 1) | A design that treats "fewer than 5" as "fewer than or equal to 5" and emits nothing for the boundary frame REQ-107 requires to be forwarded | ASSERT |
 
 ### 4.G Oversize frames — REQ-108, §6.2's `Discard`, §9
+
+> **Family note — REQ-901 declared divergence class (f)** (SPEC-M03 §10's
+> REQ-108 hook and its REQ-901 row, `62c39a7`; requirements.md REQ-108). As with
+> (e) it **changes no row below** and bars one thing: **no sign-off packet may
+> offer a co-simulation result as the external anchor for REQ-108.**
+>
+> **(f) is the wider of the two exclusions.** A frame exceeding 1518 octets is
+> excluded **entirely, including the octets between the truncation point and the
+> next start character** — which is precisely the interval **M03-G3**, **M03-G4**
+> and **M03-G6** exist to assert about. **The lane anchors nothing in it**, and
+> that is not a gap in the rows: those three rows are and always were directed
+> tests against §9's own rulings.
+>
+> **M03-G2's 1518-octet member is not excluded, and that is the sharp point.**
+> (f) excludes nothing in the 64-to-1518-octet range, so the exclusion's boundary
+> falls **exactly between M03-G2's adjacent pair**: the legal member stays fully
+> anchorable, the 1519-octet member is anchorable in nothing. Note what that does
+> to the row's own construction — the three observables G2 uses to separate the
+> pair are the strobe, the abort bit and the FCS verdict, and **all three are
+> outside the lane's reach for the oversize member** (the strobes campaign-wide,
+> the other two by (f)). The row is a directed test end to end and was never
+> going to be anything else.
 
 | Row | Attacks | Stimulus | Observable | Kills | Status |
 |---|---|---|---|---|---|
@@ -521,6 +576,7 @@ row carries the reason.
 | REQ-113 | M03-E4, M03-I3 |
 | REQ-802, REQ-810 | M03-J1 … M03-J4, **M03-N4** |
 | REQ-803 | M03-J2, M03-J3, M03-N4 |
+| **REQ-901** | **No behavioural row, and none is owed.** REQ-901 is a process obligation on the differential co-simulation lane, not a property of M03's ports, so it has no stimulus and no observable at this module's boundary. It appears here because SPEC-M03 §10 **gained a REQ-901 row at `62c39a7`** and this table's own rule is that every REQ §10 lists appears exactly once — without this entry that rule was false. Its two declared divergence classes are **homed at this module**: **(e)** runt marking (REQ-107) and **(f)** oversize truncate-and-mark (REQ-108). Their scope, and what it does and does not cost the rows, is carried at **§4.F's and §4.G's family notes**; the standing consequence for a sign-off packet is at **§7** |
 | REQ-903, REQ-808 | M03-O3 |
 
 ## 7. Machinery this plan requires and does not have
@@ -538,10 +594,42 @@ row carries the reason.
 > **The one live constraint is not a gap but an anchor**: WO-0033's own standing
 > limit records that **X-1's outcome model is not the charter §3 external
 > anchor** — that is the verilog-ethernet differential co-sim — and **no
-> `SO-xgmii_rx_64.md` PASS may rest on the model until it has run.** Families E,
+> `SO-xgmii_rx_64.md` PASS may rest on the model until it has run.**
+>
+> **The per-family sentence that used to stand here is WITHDRAWN** — "families E,
 > F, G and H lean on X-1's computed outcomes and are therefore gated on it for
-> sign-off purposes, though not for being written or run. **Family D is not**:
-> its rows are hand-derivable from §9 end to end.
+> sign-off purposes; family D is not". It was wrong in its **unit** (a family is
+> not the thing that is gated) and it is now also wrong in its **conclusion** for
+> two of the families it named. **Two independent bars replace it, and the whole
+> point is that they are not the same bar:**
+>
+> 1. **The X-1 bar — per row.** A row is gated on the differential co-sim **iff
+>    its expected values are taken from X-1's computed outcome model**, never
+>    merely because of the family it sits in. X-1's *placement machinery* and
+>    X-1's *computed outcome model* are two different things and only the second
+>    is unanchored — the correction made at `J-dv_lead-0048` and owed to this
+>    section ever since. **No row benched to date is gated by this bar**: A, B and
+>    C predate X-1; family D is hand-derivable from §9 end to end; families E and
+>    F were commissioned hand-derived with the model used only as a *reported*
+>    cross-check (`WO-0043` §1, `WO-0047` §1.3, the `cross_check_*` /
+>    `fail_cross` idiom). A future row that takes an expected value from the
+>    model is gated, and must say so in its own text.
+> 2. **The REQ-901 bar — per requirement, and it points the other way.** For
+>    **REQ-107** and **REQ-108** — declared divergence classes **(e)** and **(f)**,
+>    homed at this module by spec diff and restated in SPEC-M03 §10 at
+>    `62c39a7` — **a co-simulation result is not an admissible external anchor at
+>    all, and a sign-off packet SHALL NOT offer one.** Families **F** and **G**
+>    are therefore not *waiting* on the lane: the lane can never discharge those
+>    two requirements, and their directed rows are the whole of their
+>    verification. Per-class scope is at **§4.F's and §4.G's family notes**.
+>
+> **The consequence worth stating plainly, because it is the reason this
+> paragraph had to move**: read literally, the withdrawn sentence would have held
+> families F and G's sign-off hostage to a run that cannot discharge them — and a
+> packet that *satisfied* it would be offering exactly the anchor §10 now
+> forbids. The lane still matters to family F, but through the **other** half of
+> M03-F1's own row: REQ-103's FCS removal on a 5-to-63-octet runt, which (e)
+> deliberately leaves inside the comparison domain.
 
 Deliverable 4 of WO-0027: named here, **not built here**. Each is a candidate
 for the next DV work order; the numbering is local to this plan.
@@ -707,3 +795,4 @@ other than its own row.
 | 2026-08-10 | **WO-0041's family-D campaign adjudicated; M03-D3 corrected a second time.** 4 of 4 killable mutations killed, each with the exact message frozen before the run; **D-M3 ruled an EQUIVALENT MUTANT** — proven, not conceded — so this row's headline kill ("a design that reads the CRC register at the `tlast` cycle") is **withdrawn as unachievable** and the carried-verdict property is reclassified into **M03-D4's NO-ASSERT realisation class** (§6.3 item 1). The proof is a margin computation over every legal (terminate lane, start lane, gap ≥ 9) combination: the next frame's start cycle is never strictly before this frame's `tlast` cycle, tightest margin exactly 0. **dv_lead's own WO-0040 §4 correction to this row rested on the same falsified premise** (that the seed is visible on the cycle it is triggered) and is corrected here, as is the sealed prediction that T-D2 and T-D3 would redden under D-M3 — **falsified, left standing in the freeze**. Row retained as ASSERT on its surviving observables (no abort-bit leakage between frames; per-frame verdict and strobe attribution across the minimum gap) with its qualification recorded INCOMPLETE pending **D-M6**. Row and status counts unchanged: 75 rows, 59 ASSERT. | dv_lead, `J-dv_lead-0044` |
 | 2026-08-11 | **Family D's qualification CLOSED (`RV-0042-VERDICT`).** Six seeded RTL defects across WO-0041/WO-0042: **five killed, every one in its frozen row set with its frozen message; one (D-M3) proven an equivalent mutant over the whole legal stimulus space; zero findings** — no unnamed unit reddened and no named unit spoke through an unexpected assertion, in six diffs. **D-M6 (latch `tuser`[0] once set) killed M03-D2 and M03-D3**, discharging M03-D3's surviving declared kill and settling its ASSERT status on evidence, per dv_lead's pre-commitment that the single diff would decide it. Family D's four rows are the **first in this plan to be discharged by a mutation-qualified instrument**, which makes **REQ-104 the first requirement in the programme verified in both directions** — a bad FCS marked and reported, a good FCS left clean — **bounded to frames of 5 or more received octets**, since §9 ruling 9's sub-5 class remains asserted by nothing and is owed to family F. Row and status counts unchanged: 75 rows, 59 ASSERT; **16 rows now benched, 13 of the 59 ASSERT rows discharged**. | dv_lead, `J-dv_lead-0047` |
 | 2026-08-15 | **Family E's qualification CLOSED, and one row ADDED (`RV-0045-VERDICT`).** Five seeded RTL defects, **all five killed, each in its sealed row set with its sealed message, 7/7 REQUIRED and 68/68 MUST-STAY-GREEN, zero findings** — and the twelve pre-family-E units stayed green under every mutant, which is the claim family E was written to make. First campaign under the **intents-public / mapping-sealed** compromise, so all five carried full blinding and no discount applies. **E-c5** — the abort detected and never reported — was invisible to thirteen of fifteen units and, before family E existed, to the entire suite: **REQ-105's silently-always-pass closure**. **NEW ROW M03-E5**, the preamble-position `/E/` at a lane-0 start, found by the blinded seeder reading the design and recorded during the campaign but added only after scoring. **REQ-105 is now verified in both directions by a mutation-qualified instrument**, bounded to: the mid-frame word at octets 24–31 and the first-octet position (not every offset); frames whose abort is reached on the epoch-A path (M03-E5 covers the in-word path and is unbenched); and M03-E1's fail-fast, which means a kill demonstrates the row convicts at its first case rather than at all sixteen. Counts: **76 rows, 60 ASSERT** (was 75/59); **20 rows benched, 16 ASSERT rows discharged, 44 outstanding**. | dv_lead, `J-dv_lead-0054` |
+| 2026-08-21 | **The REQ-901 cascade ruled, on the architect's notification of `62c39a7`. NO ROW CHANGES — not a stimulus, not an observable, not a kill, not a status, and not a count** — and that answer is defended rather than asserted: SPEC-M03's own §13 row classes the edit as *verification-column only, no normative text moves*, and I checked the classification rather than take it (§6.1, §6.2, §7 and §9 byte-unchanged; REQ-107 and REQ-108 mean what they meant; every directed frame already commissioned stays commissioned). **What the cascade does move is what a sign-off packet may CLAIM, and three things in this plan said the wrong thing about that.** **(1) §7's anchor paragraph** — its per-family sentence is **WITHDRAWN** and replaced by two explicitly separate bars: the **X-1 bar** (per *row*, and satisfied by every row benched to date, which is `J-dv_lead-0048`'s correction finally written where a planner reads it) and the new **REQ-901 bar** (per *requirement*: for REQ-107 and REQ-108 a co-simulation result is not an admissible anchor **at all**). Read literally the old sentence held families F and G's sign-off hostage to a run that cannot discharge them, and a packet satisfying it would have offered precisely the anchor §10 now forbids — so this was a live contradiction with a SHALL NOT, not a staleness. **(2) §6's coverage map** gains a **REQ-901** entry: §10 gained a REQ-901 row, and without the entry §6's own stated rule ("every REQ SPEC-M03 §10 lists appears exactly once") was false. **(3) §4.F and §4.G gain family notes** carrying each class's exclusion scope, in the same form and for the same reason the architect put pointers on §10's REQ-107/REQ-108 hooks rather than resting on the REQ-901 row alone — a reader working from a family reads the family. The notes record what the narrow scope **buys**: (e) leaves payload and `tkeep` compared at 5-to-63 octets, so **M03-F1's REQ-103 half stays co-simulation-anchorable** while its REQ-107 half does not; and (f)'s boundary falls **exactly between M03-G2's adjacent pair**, leaving the legal member anchorable and the oversize member anchorable in nothing. Also stated once, in both notes: the five strobes are outside the comparison domain **campaign-wide** because the reference has no counterpart to §9's taxonomy (`J-dv_lead-0049`) — a fact about the lane, not an effect of (e) or (f), and not a licence to read any row as excluded on that account. Counts unchanged: **76 rows, 60 ASSERT**, 7 NO-ASSERT, 4 NO-STIMULUS, 4 STRUCTURAL, 1 GAP. **Deliberately landed BEFORE family F's qualification freeze**, in its own commit, so the ordering is a fact in history rather than a claim in a packet: the campaign seals against the plan, and the plan must already be right. | dv_lead, `J-dv_lead-0060` |
