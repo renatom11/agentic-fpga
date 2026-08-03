@@ -13388,3 +13388,190 @@ sealed-mapping qualification per WO-0043 §8.
 
 ### Files-in-this-commit
 - agents/handoffs/WO-0043_tb-m03-family-e-error-character.md
+
+## [J-dv_lead-0051] 2026-08-14T10:40Z | task:WO-0045 | Family E's campaign frozen — and the bar list is replaced by an ALLOWLIST, because a deny list that grows with every packet I write is one I must sweep correctly forever and already failed once
+
+### Trigger
+Orchestrator: run **30815436045** (`1e77706`) fully green, my prediction exact
+on every axis; family E landed on the board at `bc565a6`. Freeze family E's
+qualification campaign: two files plus the journal copy, exhaustive
+MUST-STAY-GREEN across all fifteen units **measured not labelled**, a bar sweep
+including my own new verdicts, and the auditor's now-standing practice rules.
+
+### Inputs
+- `tools/dv_checks.sh`'s **bench inventory block** — the count with its
+  provenance, which is the tool I built for exactly this after "fifteen" and
+  "eighteen" circulated uncounted.
+- `git diff --stat bc565a6 1e77706 -- test/ libs/` — **empty**.
+- `test/xgmii_rx_64/test_m03_e.ml` — the three `%expect_test` names, `run_e1`'s
+  and `run_e2`'s `error_pulses` match arms and their exact message strings,
+  `run_e2`'s `tlast_sample`-then-`delivered_samples` ordering, `run_e4`'s
+  negative assertion, and `cross_check_e1`/`cross_check_e2`.
+- `agents/handoffs/WO-0043_tb-m03-family-e-error-character.md` §8's five defect
+  classes as published, and `RV-0043-VERDICT` — re-read **as a disclosure
+  surface**.
+- `docs/specs/modules/xgmii_rx_64.md` §9 row 2, the strobe pin and its
+  no-output-word clause, §6.2's `Frame` row; `docs/specs/requirements.md`
+  REQ-103, REQ-105, REQ-107, REQ-113, §0.6, §0.7.
+- **No `libs/**`, no `rtl_snapshots/**`.**
+
+### Reasoning
+
+**The bar sweep is what produced this freeze's one structural change, and it
+came from noticing the sweep was becoming unmanageable rather than from doing it
+well.** Barred documents now include every campaign packet and sealed companion
+(WO-0039, WO-0040, WO-0041, WO-0042, WO-0043 and two sealed files), the attack
+plan, both journals, and `test/xgmii_rx_64/**`. Eleven items, growing by two or
+three per campaign, **and every one of them must be enumerated correctly each
+time or the blinding leaks.** It leaked once already, when my own adjudication
+put a round's predicted kill into the brief the seeder was reading.
+
+**A deny list that grows monotonically and must be swept by hand is the wrong
+shape.** So it is inverted: the auditor reads **this packet, `docs/specs/**`,
+`docs/adr/**`, `libs/**` and its own `docs/reports/audit/**`, and nothing else
+in the repository.** All of `test/**` and all of `agents/**` are out of bounds
+**by construction**. An allowlist cannot be defeated by a document I forgot to
+enumerate, which is the failure mode that actually occurred rather than a
+hypothetical one.
+
+It is also *stronger* than the deny list it replaces, and I should say why
+rather than assume it is obvious: the twelve pre-family-E units are all
+MUST-STAY-GREEN in this campaign, so **a seeder that knows `test_m03_c.ml`'s or
+`test_m03_d.ml`'s internals knows what would not redden them** — which is
+MUST-STAY-GREEN information, and the old list barred those files only
+incidentally, as bench-describing documents, rather than for that reason.
+
+**The denominator I measured rather than recalled**, through the tool built for
+it: fifteen units, 3+1+4+3+3+1. Ninety-five repository-wide. This is the second
+freeze to use it and the first where the number changed under me — twelve to
+fifteen — which is exactly when a remembered figure would have gone wrong again.
+
+**The base I verified rather than accepted.** `git diff bc565a6 1e77706 --
+test/ libs/` is empty, so the compiled surface is byte-identical and **run
+1e77706's green result is `bc565a6`'s control**. Criterion 3 is satisfied before
+the campaign starts rather than by a re-run, and I take `bc565a6` because it is
+the commit on the board.
+
+**The matrix's shape is the claim.** All twelve pre-family-E units are
+MUST-STAY-GREEN under all five classes, without exception, because **none of
+them drives an `/E/` at all**. Family E was written for precisely that gap, and
+this column is what says so in a form that can fail.
+
+**Three cells needed working rather than assuming.**
+
+*E-c1 kills T-E1 alone.* T-E2's frame delivers zero octets, and removing four
+from zero still yields no output word, so E2 is blind to it. And M03-C4's runt
+stays green because REQ-107's disposition legitimately removes the FCS — the
+abort path is a different path, and conflating them would have produced a false
+MUST-STAY-GREEN violation in adjudication.
+
+*E-c5 leaves T-E4 GREEN, and that is the cell to read carefully.* E4 asserts
+that **no** strobe pulses; a mutation suppressing all strobes satisfies it. So
+E-c5 is invisible to E4 — and before family E existed it was invisible to the
+**entire suite**. **Thirteen of fifteen units cannot see it.** That is REQ-105's
+silently-always-pass closure and the campaign's central claim, and it is the
+same shape as D-M1's ten-of-twelve.
+
+*E-c3 and E-c5 share the row set {T-E1, T-E2}* and are separated **only** by
+which assertion speaks — the wrong-cycle message versus the wrong-count message.
+That is D-M1/D-M4/D-M5's structure again, and last time it was the result that
+retired my worry about publishing row mappings: the rows do not discriminate,
+the messages do.
+
+**E-c2 I froze with two admissible messages rather than one**, because
+`run_e2` matches `tlast_sample` before `delivered_samples`. The intent's natural
+implementation emits a word **carrying `tlast`** — the stated motive is
+"somewhere to put the abort bit" — so the `tlast` message is primary; a
+`tvalid`-without-`tlast` word makes the next assertion speak instead. Both are
+admissible; a third shape is a finding. Guessing one and scoring the other as a
+message miss would have been a false finding against a faithful diff.
+
+**And I named a finding condition the campaign structurally cannot produce, so
+that it means something if it appears.** `cross_check_e1`/`cross_check_e2`
+compare hand-derived values against `Injection`'s model — **both in `test/`** —
+and no RTL mutation can move either. **A `fail_cross` message anywhere in this
+campaign is therefore a finding**, and would mean something other than the
+seeded defect moved.
+
+**This campaign is stronger than family D's and I would rather say so before the
+results than claim it after.** D's was discounted because `WO-0040` §9 published
+the mutation → row table. Family E's packet published only the defect classes,
+so for all five the row mapping, the MUST-STAY-GREEN columns and the messages
+are sealed together. **Every one of these five carries the blinding that only
+D-M5 carried last time** — which also means there is no discount available in
+adjudication, and no excuse: a class that fails to land is a bench finding, full
+stop.
+
+### Actions
+- **Measured the denominator** — fifteen units — via `dv_checks.sh`'s inventory
+  block, with its output quoted into the sealed file as provenance.
+- **Verified the base**: `bc565a6`, with `1e77706`'s green as its control by
+  byte-identity of `test/` and `libs/`.
+- **Replaced the deny list with an ALLOWLIST** — five readable paths, all of
+  `test/**` and `agents/**` out of bounds by construction — and stated why it is
+  both simpler and stronger.
+- Carried the auditor's four now-standing practice rules into §1 as bars 8–10
+  plus the diff-authoring bars.
+- Authored **`WO-0045`** (auditor-facing) and its **sealed companion**: the
+  fifteen units, the full **5 × 15 matrix**, the expected messages including
+  E-c2's two admissible shapes, the reasoning for the non-obvious cells, the
+  cross-check finding condition, the weighting, and the three pass criteria.
+- Recorded the campaign's **stronger** weighting **before** any result.
+- Opened no `libs/**`. No `git commit`, no `git push`.
+
+### Evidence
+1. Inventory block: 3+1+4+3+3+1 = **15** bench units; **95** repository-wide.
+2. `git diff --stat bc565a6 1e77706 -- test/ libs/` → empty.
+3. `run_e1` and `run_e2` both match `error_pulses` as
+   `[ (cycle, name) ]` → name check → cycle check, with a `| pulses ->` arity
+   arm — giving E-c3's and E-c5's distinct messages.
+4. `run_e2` matches `tlast_sample` **before** `delivered_samples` — the basis
+   for E-c2's two admissible messages.
+5. `run_e4`'s negative assertion is `error_pulses` emptiness — so a
+   strobe-suppressing mutation (E-c5) satisfies it and E4 stays green.
+6. M03-C4's runt takes REQ-107's disposition, where the FCS is legitimately
+   removed — so it is green under E-c1, not a violation.
+7. `cross_check_e1`/`cross_check_e2` compare `test/`-side values only; no RTL
+   mutation can move them.
+
+### Outcome
+**Family E's campaign is FROZEN against `bc565a6`**, before any diff exists, in
+two files plus this entry. Five classes, a complete **5 × 15 matrix**, expected
+messages, and a named finding condition the campaign should be structurally
+unable to trigger.
+
+**The blinding is an allowlist now**, not a deny list — five readable paths,
+everything else out of bounds by construction.
+
+**E-c5 is the class this family was written for**: thirteen of fifteen units
+cannot see it, and before family E existed nothing could.
+
+### Open-questions
+- **The allowlist should become the default for every future campaign**, and the
+  deny list retired rather than maintained in parallel. If a future seeder needs
+  something outside it, the answer is an explicit addition to the allowlist in
+  that campaign's brief, not a judgement call at the edge of a bar.
+- **A `fail_cross` message anywhere in this campaign is a finding** — the
+  campaign cannot structurally produce one.
+- **No discount is available in adjudication.** All five carry full blinding, so
+  a class that fails to land is a bench finding with no mitigating publication
+  history.
+- **Family F is next after this campaign**, and owes: both defect-shape
+  re-reads, §9 ruling 9's sub-5-octet class (asserted by nothing today, and the
+  bound it puts on REQ-104's verification), and the arming-reading declaration
+  for its no-output-word rows.
+- **`WO-0044` Phase 1 remains blocked** on ADR-0015's E3 answers; Phase 0 is
+  frozen and V7 still decides how much of REQ-104 the lane can ever touch.
+- **Owed by me, unchanged**: the `precompile_check.sh`
+  side-effect-in-combinator lane; `AP` §7's fuller rewrite distinguishing X-1's
+  placement machinery from its outcome model; and the two packet-authoring rules
+  earned at `RV-0043-VERDICT` — verify a stimulus at **both** its failure sites,
+  and cite a tracked item's **field and SHA**, not the item.
+- **M03-A3's blindness to lane-symmetric errors remains untested**; my M04
+  contamination from `J-dv_lead-0024` still stands.
+- **Unchanged**: the RFC 1071 anchor closes on the next CI run that fetches;
+  X-7, X-10, X-11 deferred; L1–L5 owed as a separate packet.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0045_family-e-mutation-campaign-SEALED-predictions.md
+- agents/handoffs/WO-0045_family-e-mutation-campaign.md
