@@ -411,6 +411,21 @@ expect_fail "1.5MB staged file rejected (blob gate)" "blob threshold" \
   scripts/agent_commit.sh --agent orchestrator --entry "J-orchestrator-$OR_NEXT" --work-order none -m "big"
 git reset -q; git checkout -q HEAD -- "$J_ORCH"; rm -f libs/big.bin
 
+# ---- S28: journal carve-out from the blob gate (ADR-0017 D1) -----------------
+# A journal past BLOB_MAX commits WITHOUT an override, with WARN-JOURNAL on
+# stderr; the gate still refuses non-journal blobs (S27 holds that side).
+say "S28: oversized journal passes the gate with a warning"
+OR_LAST=$(grep -oE "^## \\[J-orchestrator-[0-9]{4}\\]" "$J_ORCH" | grep -oE "[0-9]{4}" | tail -1)
+OR_NEXT=$(printf "%04d" $((10#$OR_LAST + 1)))
+# grow the journal itself past BLOB_MAX with entry padding, then a valid entry
+{ printf '%s\n' "### Padding (S28 fixture)"; head -c 1100000 /dev/zero | tr '\0' 'x'; printf '\n'; } >> "$J_ORCH"
+entry orchestrator "$OR_NEXT" "oversized journal entry" >> "$J_ORCH"
+git add "$J_ORCH"
+S28_OUT=$(scripts/agent_commit.sh --agent orchestrator --entry "J-orchestrator-$OR_NEXT" --work-order none --journal-only -m "S28 oversized journal" 2>&1) \
+  && printf '%s\n' "$S28_OUT" | grep -q "WARN-JOURNAL" \
+  && ok "oversized journal accepted with WARN-JOURNAL (ADR-0017 D1)" \
+  || bad "oversized journal handling (out: $(printf '%s\n' "$S28_OUT" | tail -1))"
+
 # ---- summary ----------------------------------------------------------------
 say ""
 say "protocol self-test: $PASS passed, $FAIL failed"

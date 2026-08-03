@@ -6186,3 +6186,70 @@ ADR-0017 countersign) dispatches next.
 - site/public/index.html
 - site/public/org-chart.html
 - site/public/spec-atlas.html
+
+## [J-orchestrator-0140] 2026-08-03T18:55:00Z | task:WO-0052 | ADR-0017 accepted; step 1 landed - the journal carve-out ends the override regime
+
+### Trigger
+dv's countersignature (J-dv_lead-0066, b9a08ff) with one contest;
+the architect applied the contested §6.5 sentence verbatim and
+flipped ACCEPTED at acc8145 recording this entry as the
+acceptance of record.
+
+### Inputs
+ADR-0017 §6.2 (D1 carve-out + soft warning), §7.1 (step 1 scope:
+carve-out + warning only; the hard ceiling H arrives with chain
+support so no agent is refused before rotation exists), §7.2 (the
+end condition verbatim), §7.3 (step 1 never lands unaccompanied).
+
+### Reasoning
+- Acceptance is mine (enforcement semantics; §11): the design is
+  forced by the no-delete/no-rename rules, R3 needs no exception,
+  and the chain check strengthens append-only from a property of
+  history to a property of the tree. dv verified the forcing
+  facts against the scripts; the one overclaim died by dv's
+  contest and the architect's own admission.
+- Step 1 implemented exactly as scoped: is_journal_path paths
+  skip the blob gate inside the same loop (if-form, per the
+  ADR-0016 set-e trap note); soft warning at
+  JOURNAL_SOFT_MAX=262144 on every commit so the gap before step
+  2 is observable, never silent. DEVIATION from §6.2's message
+  text, named: the ADR's message says "rotate to volume NN at
+  your next entry", but rotation support does not exist until
+  step 2 — the shipped message names the coming support
+  (WO-0053) instead of instructing an impossible action.
+- Proving scenario S28 per §11: an over-threshold journal commits
+  WITHOUT an override and the warning appears; S27 still refuses
+  non-journal blobs. Self-test 30 passed, 0 failed.
+- Sequencing note on the record: the edited script was live in
+  the working tree for acc8145's commit (the architect's flip),
+  which printed the first WARN-JOURNAL (architect journal 407073
+  bytes) and needed no carve-out. The commit recording the change
+  is this one; the change's semantics were proven by the suite
+  before any commit ran under it.
+
+### Actions
+- scripts/agent_commit.sh carve-out + warning; test_protocol.sh
+  S28; this commit; push.
+- **Per §7.2: AGENT_COMMIT_BLOB_MAX=1100000 is RETIRED by this
+  commit.** Final tally of recorded uses: four (ad1e124, c3e877a,
+  a2a3342, b9a08ff). Any future use is a new incident requiring
+  its own record.
+- **Per §7.3: WO-0053 is allocated** for step 2 — the volume
+  chain (D2/D3), H, verify_journal_chain.sh, and the §9 scenario
+  set. H must be in force before the next P<n>-phase-accept.
+
+### Evidence
+bash scripts/test_protocol.sh: 30 passed, 0 failed, S28 included;
+the WARN-JOURNAL line in acc8145's commit output.
+
+### Outcome / DoD
+dv_lead commits unblocked permanently; the override regime is
+closed with its counted record intact.
+
+### Open questions
+- WO-0053 (step 2) — scheduling is mine; before the next
+  phase-accept gate per §7.3(2).
+
+### Files-in-this-commit
+- scripts/agent_commit.sh
+- scripts/test_protocol.sh

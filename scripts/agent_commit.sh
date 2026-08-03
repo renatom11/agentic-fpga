@@ -132,11 +132,23 @@ if ! diff -u "$TMPDIR_P/claimed" "$TMPDIR_P/staged_list" > "$TMPDIR_P/files_diff
 fi
 
 # ---- Blob gate (ADR-0002 accepted debt, closed in M1) ------------------------
+# Journals are carved out per ADR-0017 D1: the gate's remedy (fetch script +
+# checksum manifest) cannot apply to a file R2 requires in every commit and R3
+# requires to continue its own bytes. The journal-size remedy is a volume
+# rotation (ADR-0017 step 2, WO-0053); until it lands, growth past the soft
+# threshold is warned on every commit so the gap is observable, never silent.
 BLOB_MAX="${AGENT_COMMIT_BLOB_MAX:-1000000}"
+JOURNAL_SOFT_MAX="${JOURNAL_SOFT_MAX:-262144}"
 while IFS=$'\t' read -r status path; do
   [ -n "$path" ] || continue
   [ "$status" = "D" ] && continue
   sz=$(git cat-file -s ":$path" 2>/dev/null || echo 0)
+  if is_journal_path "$path"; then
+    if [ "$sz" -gt "$JOURNAL_SOFT_MAX" ]; then
+      echo "WARN-JOURNAL: $path is ${sz} bytes (> ${JOURNAL_SOFT_MAX}); volume rotation arrives with ADR-0017 step 2 (WO-0053)" >&2
+    fi
+    continue
+  fi
   [ "$sz" -le "$BLOB_MAX" ] \
     || fail "staged file exceeds blob threshold: $path (${sz} > ${BLOB_MAX} bytes; large data ships as fetch script + checksum manifest — blob gate, ADR-0002)"
 done <<< "$STATUS_LIST"
