@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <title>agentic-fpga — a trading network card built by an AI org</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="A 10-gigabit Ethernet network card for market data, written in Hardcaml by a hierarchy of AI agents under a human sponsor. Every commit carries its author agent&#x27;s reasoning, enforced in CI.">
+<meta name="description" content="A 10-gigabit Ethernet network card that receives a stock exchange&#x27;s live data feed and tracks the order book in hardware, written in Hardcaml by a hierarchy of AI agents under a human sponsor. Every commit carries its author agent&#x27;s reasoning, enforced in CI.">
 <meta property="og:title" content="agentic-fpga">
-<meta property="og:description" content="A 10-gigabit Ethernet network card for market data, written in Hardcaml by a hierarchy of AI agents under a human sponsor. Every commit carries its author agent&#x27;s reasoning, enforced in CI.">
+<meta property="og:description" content="A 10-gigabit Ethernet network card that receives a stock exchange&#x27;s live data feed and tracks the order book in hardware, written in Hardcaml by a hierarchy of AI agents under a human sponsor. Every commit carries its author agent&#x27;s reasoning, enforced in CI.">
 <meta property="og:type" content="website">
 <meta property="og:image" content="/og.png">
 <meta name="twitter:card" content="summary_large_image">
@@ -131,11 +131,12 @@ ul.next { padding-left:1.2rem; } ul.next li { margin:.35rem 0; font-size:.92rem;
 <div class="wrap">
   <span class="eyebrow">agentic-fpga</span>
   <h1>A trading network card, engineered end-to-end by an organization of AI agents</h1>
-  <p class="sub">A 10-gigabit Ethernet network card for market data, written in
+  <p class="sub">A 10-gigabit Ethernet network card that receives a stock
+  exchange&rsquo;s live data feed and tracks the order book in hardware, written in
   Hardcaml by a hierarchy of AI agents under a human sponsor who sets direction
   and signs the gates. The architect wrote the specification — 110 requirements,
   20 module contracts. The hardware designer wrote the modules and repairs
-  what verification convicts. The verification lead wrote the attack plans and
+  what verification convicts. The verification lead wrote the test plans and
   reviews every test line by line. The auditor, blinded to the
   tests, seeds defects into the design; the tests must catch them, with expected
   results sealed before the defects exist. The orchestrator routes the work and
@@ -191,10 +192,12 @@ ul.next { padding-left:1.2rem; } ul.next li { margin:.35rem 0; font-size:.92rem;
       then ARP / IPv4 / UDP — 20 modules, every interface a compile-checked
       record, every spec frozen only after a verification countersignature that
       recomputed its contracts. Emitted Verilog is proven <b>byte-deterministic
-      in CI</b> on every push; attack plans precede benches; golden models must
-      be anchored to an external authority. Nothing is synthesized or benched
-      yet — by rule, attack plans land before testbenches, and benches are the
-      current work. One of the five built modules was later repaired to conform
+      in CI</b> on every push; test plans precede benches; golden models must
+      be anchored to an external authority. Nothing is synthesized —
+      everything runs in simulation by design. The first module is under test
+      now: its benches run green in CI, and each family of tests is qualified
+      by a campaign of seeded defects it must catch before its results
+      count. One of the five built modules was later repaired to conform
       to a freeze-time spec ruling — the process catching its own product.
       After the same arithmetic defect escaped review twice at the spec’s own
       worked example, the org replaced example-checking with exhaustive
@@ -215,8 +218,8 @@ ul.next { padding-left:1.2rem; } ul.next li { margin:.35rem 0; font-size:.92rem;
   agent’s reasoning entering beside it</b>, appended to that agent’s
   journal in the same commit. Journals are append-only; mistakes are corrected
   forward, never rewritten. The history is the experiment’s data.</p>
-  <p class="cadcap">The 215 journal entries — one per commit — by author:</p>
-  <div class="chips"><span class="chip">126 · orchestrator</span> <span class="chip">58 · verification lead (dv_lead)</span> <span class="chip">16 · architect (architect_docs_lead)</span> <span class="chip">8 · hardware designer (rtl_lead)</span> <span class="chip">7 · auditor</span></div>
+  <p class="cadcap">The 216 journal entries — one per commit — by author:</p>
+  <div class="chips"><span class="chip">127 · orchestrator</span> <span class="chip">58 · verification lead (dv_lead)</span> <span class="chip">16 · architect (architect_docs_lead)</span> <span class="chip">8 · hardware designer (rtl_lead)</span> <span class="chip">7 · auditor</span></div>
 
   <h2>The tech stack</h2>
   <div class="chips">
@@ -237,7 +240,7 @@ ul.next { padding-left:1.2rem; } ul.next li { margin:.35rem 0; font-size:.92rem;
     <a class="card" href="spec-atlas.html"><span class="ct">Spec atlas</span>
       <span class="cd">All 110 requirements, the 20-module inventory, dataflow diagrams,
       and the traceability matrix — regenerated from the spec text itself, pinned at
-      <span class="mono">616686f</span>.</span><span class="go">open →</span></a>
+      <span class="mono">1848a73</span>.</span><span class="go">open →</span></a>
     <a class="card" href="org-chart.html"><span class="ct">Org chart</span>
       <span class="cd">Who does what, who may refuse whom, and the journal rule no agent
       can escape — the org’s constitution, explorable.</span><span class="go">open →</span></a>
@@ -246,12 +249,12 @@ ul.next { padding-left:1.2rem; } ul.next li { margin:.35rem 0; font-size:.92rem;
       status matrix, and what happens next.</span><span class="go">open →</span></a>
     <a class="card" href="https://github.com/renatom11/agentic-fpga" target="_blank" rel="noopener"><span class="ct">GitHub</span>
       <span class="cd">The repository itself — every commit paired with its agent’s journal
-      entry, the frozen specs, the attack plans, the enforcement scripts, and the full
+      entry, the frozen specs, the test plans, the enforcement scripts, and the full
       append-only record this site is generated from.</span><span class="go">open ↗</span></a>
   </div>
 
   <div class="foot">Generated from the repository at commit
-  <a class="mono" href="https://github.com/renatom11/agentic-fpga/commit/616686f" target="_blank" rel="noopener">616686f</a>
+  <a class="mono" href="https://github.com/renatom11/agentic-fpga/commit/1848a73" target="_blank" rel="noopener">1848a73</a>
   · 2026-08-03 · <a href="https://github.com/renatom11/agentic-fpga" target="_blank" rel="noopener">source on GitHub</a> · built by
   the org’s orchestrator, like everything else here.</div>
 </div>

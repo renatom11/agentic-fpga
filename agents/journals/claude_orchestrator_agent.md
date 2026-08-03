@@ -5671,3 +5671,52 @@ WO-0049 fix. Two lead agents in flight.
 - site/public/index.html
 - site/public/org-chart.html
 - site/public/spec-atlas.html
+
+## [J-orchestrator-0128] 2026-08-03T15:32:00Z | task:none | Site voice pass: market-data clarified, attack language generalized
+
+### Trigger
+Sponsor message on the hero: "for market data" unclear — add
+clarity; "attack" is jargon — use more general language without
+explaining the term on the page.
+
+### Inputs
+Sponsor's message verbatim; site/build.py hero, DESCRIPTION,
+roadmap, NEXT list, module-status legend and table header.
+
+### Reasoning
+- First sentence now states what the card does: "receives a stock
+  exchange's live data feed and tracks the order book in
+  hardware". Same fact set as the roadmap's Phase-2 text.
+- "attack plan(s)" → "test plan(s)" at every sponsor-facing site
+  occurrence (hero, GitHub card, legend, table header, roadmap,
+  NEXT). The repo path test/attack_plans/ and quoted historical
+  BOARD rows are the committed record and stay verbatim.
+- Two adjacent statements had gone stale and false ("Nothing is
+  ... benched yet", "benches — none yet"): corrected to the
+  current fact (first module under test, benches green in CI,
+  families qualified by seeded-defect campaigns). Flat voice kept.
+- Rebuild verified clean against the J-orchestrator-0125 class:
+  page entry count 216 equals committed state; the architect's
+  concurrent uncommitted journal append is not baked in.
+
+### Actions
+Edits in site/build.py; rebuild; this commit; push follows.
+
+### Evidence
+- grep "attack" over site/public/index.html: 0 remaining;
+  backlog.html: 1, inside the quoted WO-0027 BOARD row (record).
+
+### Outcome / DoD
+Site copy matches sponsor's two directions; sponsor redeploys via
+git pull && cd site && npx wrangler deploy.
+
+### Open questions
+None.
+
+### Files-in-this-commit
+- site/build.py
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/index.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html

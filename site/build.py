@@ -86,14 +86,14 @@ PHASES = [
     ('Build the agent organization', 'done', 'Before any engineering: an org of AI agents with written charters, an append-only work journal per agent, and one-agent-per-commit rules enforced by scripts rather than promises. The rules themselves went through adversarial review before anything ran under them.'),
     ('Prove the org governance works', 'done', 'The independent auditor ran the full loop once on real commits — findings filed, dispositions argued back, adversarially re-checked, first gate countersigned — before the org was trusted with hardware work.'),
     ('Create the specification for the Network Interface Card', 'done', 'The 10G Ethernet subsystem written down before it was built: 110 numbered requirements and 20 frozen module contracts, hardened by the verification lead’s 108-row testability review and signed by the sponsor 2026-08-02. Spec batches were refused more than once before signing — the refusals are part of the record.'),
-    ('Build and verify', 'now', f'{n_rtl} of 20 modules exist as hardware code (compiling, not yet tested against attacks); {n_attack} planned attack rows describe exactly how each module will be assaulted; the verification machinery that runs them is live. Happening now: the first benches that execute those attacks, then per-module sign-offs where seeded sabotage must be caught to count.'),
+    ('Build and verify', 'now', f'{n_rtl} of 20 modules exist as hardware code; {n_attack} planned test rows describe exactly how each module will be exercised and what must hold; the verification machinery that runs them is live. Happening now: the benches that execute those tests module by module, then per-module sign-offs where seeded defects must be caught to count.'),
     ('Feed in real market data and test in simulation', 'next', 'Everything runs in simulation — the whole program is simulation-first by design, no physical board required. The card learns NASDAQ’s language: a MoldUDP64 + ITCH 5.0 message parser and a single-symbol order book, then a recorded real trading day is replayed into it packet-for-packet, with wire-to-book latency histograms as the scorecard.'),
     ('Add the fiber-encoding layer (stretch)', 'later', 'The last translation layer between the card’s logic and the light pulses on a real fiber-optic cable (the 64b/66b encoder, in hardware terms). Building it means every layer a physical deployment would need exists in the design — still in simulation — and it closes with a wire-to-wire latency report for the whole card.'),
 ]
 
 # D4: plain-first, insider reference in parentheses — the standing style.
 NEXT = [
-    'Run the first real testbenches — M03’s 75 planned attacks against the actual hardware code (the tb_writer work orders)',
+    'Finish the first module’s benches — its test rows land family by family, each after line-by-line review and a seeded-defect campaign (the tb_writer work orders)',
     'Land the pre-flight compile check so build errors are caught before CI — the verification lead’s own proposal after its first escape (WO-0034)',
     'Fix the receiver’s handling of frames shorter than 5 bytes — its own returned question, ruled against the shipped behaviour (WO-0036)',
     'The verification lead re-signs the latest spec clarifications (two pre-worded countersignatures)',
@@ -114,9 +114,11 @@ FAVICON = ('data:image/svg+xml,' +
            '%3Crect x=%2215%22 y=%2211%22 width=%228%22 height=%2210%22 fill=%22%2334c3b5%22/%3E'
            '%3Crect x=%2224%22 y=%2211%22 width=%222%22 height=%2210%22 fill=%22%23e0a050%22/%3E%3C/svg%3E')
 
-DESCRIPTION = ('A 10-gigabit Ethernet network card for market data, written in '
-               'Hardcaml by a hierarchy of AI agents under a human sponsor. Every '
-               'commit carries its author agent\'s reasoning, enforced in CI.')
+DESCRIPTION = ('A 10-gigabit Ethernet network card that receives a stock '
+               'exchange\'s live data feed and tracks the order book in hardware, '
+               'written in Hardcaml by a hierarchy of AI agents under a human '
+               'sponsor. Every commit carries its author agent\'s reasoning, '
+               'enforced in CI.')
 
 def head_block(title, og_title):
     og_img = (SITE_URL.rstrip('/') + '/og.png') if SITE_URL else '/og.png'
@@ -304,11 +306,12 @@ index = head_block('agentic-fpga — a trading network card built by an AI org',
 <div class="wrap">
   <span class="eyebrow">agentic-fpga</span>
   <h1>A trading network card, engineered end-to-end by an organization of AI agents</h1>
-  <p class="sub">A 10-gigabit Ethernet network card for market data, written in
+  <p class="sub">A 10-gigabit Ethernet network card that receives a stock
+  exchange&rsquo;s live data feed and tracks the order book in hardware, written in
   Hardcaml by a hierarchy of AI agents under a human sponsor who sets direction
   and signs the gates. The architect wrote the specification — 110 requirements,
   20 module contracts. The hardware designer wrote the modules and repairs
-  what verification convicts. The verification lead wrote the attack plans and
+  what verification convicts. The verification lead wrote the test plans and
   reviews every test line by line. The auditor, blinded to the
   tests, seeds defects into the design; the tests must catch them, with expected
   results sealed before the defects exist. The orchestrator routes the work and
@@ -350,10 +353,12 @@ index = head_block('agentic-fpga — a trading network card built by an AI org',
       then ARP / IPv4 / UDP — 20 modules, every interface a compile-checked
       record, every spec frozen only after a verification countersignature that
       recomputed its contracts. Emitted Verilog is proven <b>byte-deterministic
-      in CI</b> on every push; attack plans precede benches; golden models must
-      be anchored to an external authority. Nothing is synthesized or benched
-      yet — by rule, attack plans land before testbenches, and benches are the
-      current work. One of the five built modules was later repaired to conform
+      in CI</b> on every push; test plans precede benches; golden models must
+      be anchored to an external authority. Nothing is synthesized —
+      everything runs in simulation by design. The first module is under test
+      now: its benches run green in CI, and each family of tests is qualified
+      by a campaign of seeded defects it must catch before its results
+      count. One of the five built modules was later repaired to conform
       to a freeze-time spec ruling — the process catching its own product.
       After the same arithmetic defect escaped review twice at the spec’s own
       worked example, the org replaced example-checking with exhaustive
@@ -405,7 +410,7 @@ index = head_block('agentic-fpga — a trading network card built by an AI org',
       status matrix, and what happens next.</span><span class="go">open →</span></a>
     <a class="card" href="{REPO_URL}" target="_blank" rel="noopener"><span class="ct">GitHub</span>
       <span class="cd">The repository itself — every commit paired with its agent’s journal
-      entry, the frozen specs, the attack plans, the enforcement scripts, and the full
+      entry, the frozen specs, the test plans, the enforcement scripts, and the full
       append-only record this site is generated from.</span><span class="go">open ↗</span></a>
   </div>
 
@@ -463,11 +468,11 @@ backlog = head_block('agentic-fpga — backlog & progress',
   <dl class="mlegend">
     <dt>spec frozen</dt><dd>the design contract is locked</dd>
     <dt>rtl built</dt><dd>the hardware code is written and compiling</dd>
-    <dt>attack plan</dt><dd>the catalogue of ways testers will try to break it</dd>
-    <dt>benches</dt><dd>those attacks actually running as tests — none yet; that is the current work</dd>
+    <dt>test plan</dt><dd>the catalogue of ways testers will try to break it</dd>
+    <dt>benches</dt><dd>those tests actually running against the hardware code</dd>
   </dl>
   <div class="mtable"><table>
-    <tr><th>id</th><th>module</th><th>spec frozen</th><th>rtl built</th><th>attack plan</th><th>benches</th></tr>
+    <tr><th>id</th><th>module</th><th>spec frozen</th><th>rtl built</th><th>test plan</th><th>benches</th></tr>
     {mrows}
   </table></div>
 
