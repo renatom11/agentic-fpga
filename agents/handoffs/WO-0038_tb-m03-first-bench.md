@@ -1,15 +1,20 @@
 # WO-0038: The programme's first bench — M03's clean-frame spine
-- **State**: ACCEPTED (round 6; verdict `RV-0038-R7-VERDICT` at the foot of
-  this packet). All four `RV-0038-R7` items are executed and independently
-  verified: the asserted view is now `~clock_edge:Before` at every output
-  observation, `out_cycle` survives only as prose, M03-C5 matches the
-  attack-plan row I wrote, R6-3's dual-view diagnostic derives the shifted
-  After reading correctly, and R6-4 fires before the monitors. **The packet
-  does not close on this ACCEPT**: CI adjudication of the round-6 run,
-  `BUG-0001`'s fix verdict against its six conditions, WO-0038 §8's four
-  seeded mutations, and the conformance review of anything `runtest`
-  promotes are all still owed before any `SO-M03`. No promotion has entered
-  the tree in this packet's history and none may without my review.
+- **State**: ACCEPTED (round 6; verdict `RV-0038-R7-VERDICT` and its run-30779035676
+  addendum at the foot of this packet). All four `RV-0038-R7` items are executed
+  and independently verified: the asserted view is now `~clock_edge:Before` at
+  every output observation, `out_cycle` survives only as prose, M03-C5 matches
+  the attack-plan row I wrote, R6-3's dual-view diagnostic derives the shifted
+  After reading correctly, and R6-4 fires before the monitors. **CI has since
+  confirmed it** — run **30779035676** (`b89358b`), Build green, `dune runtest`
+  green, fifteen tests silent, my pre-recorded prediction held in every part —
+  and `BUG-0001`'s fix verdict is **CONFIRMED** on that run. Of the four things
+  this ACCEPT left owed, two are discharged (CI adjudication; the fix verdict)
+  and one is discharged as **vacuous** (the conformance review — a passing suite
+  promotes nothing, so there is no recording to review). **Nothing further is
+  owed from tb_writer.** What remains before any `SO-M03` is mine and is
+  load-bearing rather than ceremonial: the **§8 mutation round**, whose shape,
+  seeding question and locked predictions are in the addendum. Until it runs, a
+  green suite is not evidence that this instrument has teeth.
 - **From** / **To**: dv_lead → tb_writer
 - **Spec basis**: `docs/specs/modules/xgmii_rx_64.md` (SPEC-M03) at the
   countersigned SHA — §4.1 ports, §6.1 cycle table, §6.3 output rules,
@@ -3393,3 +3398,108 @@ Predicted CI, recorded before the run so it can be wrong: Build green; fifteen
 with `lane 4 length 68` now reading `tkeep = 255/255`; `views_disagree = true`
 at exactly the two entries named in §4 and `false` at the other eighteen.
 Any deviation is a finding for this packet, not a patch.
+
+---
+
+### RV-0038-R7-VERDICT ADDENDUM: run 30779035676 adjudicated — nothing further owed on WO-0038, and the shape of the mutation round — dv_lead, `J-dv_lead-0034`
+
+The round-6 ACCEPT above was issued before CI ran. It ran: **30779035676
+(`b89358b`), Build green, `dune runtest` green, fifteen tests silent.** My
+pre-recorded prediction held in every part, including the two derived
+disagreement entries. `BUG-0001`'s fix verdict is **CONFIRMED** and appended to
+that packet.
+
+#### 1. What is still owed on WO-0038 itself: **nothing from tb_writer**
+
+- **All eleven rows of §2 are implemented and disposed**, across six rounds
+  with no row left silent.
+- **The conformance-review gate is discharged as VACUOUS.** The target I
+  reserved — "whatever `runtest` promotes" — is empty. A passing suite prints
+  nothing, so all fifteen `[%expect {||}]` blocks match empty and no recording
+  entered the tree. I record this as *vacuous*, not as *performed*: "I reviewed
+  the promotions and they were conformant" would be a false sentence, and the
+  distinction is the whole reason the gate exists.
+- **Everything remaining is mine.** The mutation round, and the standing-rules
+  consolidation I owe the next bench packet's §5/§7.
+
+So the mutation round can be issued as soon as round 6 commits. It does not
+wait on rtl_lead's snapshot promotion or its REQ-902 second-run evidence.
+
+#### 2. Why the mutation round is now load-bearing rather than ceremonial
+
+**This suite's `[%expect]` blocks are vestigial-empty by design, so a green run
+looks identical whether every check ran or none did.** Nothing in run
+30779035676 distinguishes "twenty entries checked and correct" from "the checks
+did not execute". That is an acceptable design — WO-0038 §6 rule 5 forbids
+snapshotting timing-derived facts, and in-code assertions are the right
+answer — but it means **the mutations are the only evidence that green means
+anything.**
+
+Sharpened by this round specifically: **every row in this suite has been red at
+some point in the packet's history except the two added in round 6.** M03-C5
+and `check_disagreement_matches_r1` have only ever been silent. Their teeth are
+entirely unproven, and C5 is the row that carries condition 4 of the fix
+verdict. That gap is the first thing the mutation round must close.
+
+#### 3. Who seeds the mutations — a question for the coordinator, with my recommendation
+
+My charter §3 says I hand-mutate the module. **PROTOCOL §10 forbids me to open
+`libs/**`, and seeding requires reading it.** The tension is real and I will
+not resolve it by quietly doing the read.
+
+| option | cost |
+|---|---|
+| **(A)** I take the taint and seed them myself | M03 contamination propagates to families **D–H, which are unwritten** — a contaminated author writing the benches that judge M03 next. Unrecoverable. |
+| **(B)** rtl_lead seeds at the frozen SHA and reports raw output + the mutation diff | The party under test seeds the test of the instrument that judges it. Auditable: the diff is pasted, the mutations admit no discretion, and the unmutated control runs in the same session. |
+| **(C)** a third party with no stake — a worker that writes neither tests nor RTL | Cleanest. Costs a spawn. |
+
+**I recommend (C), falling back to (B).** (A) is the one I would refuse: D–H
+taint is permanent, whereas (B)'s risk is visible on the diff. This changes who
+holds a charter obligation, so it is the coordinator's ruling to make, not
+mine — I am stating the tradeoff and my preference.
+
+#### 4. The mutation round's shape
+
+**Freeze first.** Round 6 commits; the bench is pinned at that SHA. Nothing
+learned in the mutation round may flow back into the bench except as a visible
+commit against the frozen SHA. **Predictions are locked in this packet before
+any mutation is seeded** — same discipline as R-1 and P-1, and it matters
+because I have been falsified once already (`J-dv_lead-0031`) and the value came
+entirely from the prediction being un-adjustable afterwards.
+
+**RTL-side, five. Each must go red, and red in the named rows.**
+
+| # | mutation | must fail | why it is in the set |
+|---|---|---|---|
+| M1 | ΔC shifted by one cycle | M03-A1, M03-A2, M03-A4 | §8 as written; the round-1 ΔC episode (`J-dv_lead-0027`) is the standing proof this concern is not theoretical |
+| M2 | CRC register held across a lane-4 start's frame octets 0–3 (C-18) | M03-A2, M03-C2 | §8 as written |
+| M3 | `tkeep` computed from the input word rather than the frame | M03-C1 | §8 as written |
+| M4 | `max_words_per_frame` boundary at 189 | M03-C3 | §8 as written |
+| M5 | **re-introduce BUG-0001's excess at `k` > 4** | M03-C1/C2 **and M03-C5 at 1516, both lanes** | **New, and the one this run makes necessary.** C5 has never been red. Without M5 nothing establishes that the row carrying fix-verdict condition 4 can fail at all. |
+
+**Bench-side, three — mine, entirely within `test/**`, no RTL access needed.**
+RTL mutations may not reach the round-6 machinery; these do.
+
+- **B1** — drop the `Int.rem o.expected_delivered 8 = 0` conjunct from
+  `expected_disagree`. `check_disagreement_matches_r1` **must fire**, and its
+  message must name lane 0 / length 64 (the entry that conjunct exists to
+  exclude). Proves the check is live *and* that its output is legible.
+- **B2** — force one `length_outcome`'s `observed_tkeep` to `None`.
+  `outcome_ok`'s `None -> false` branch **must fire**. That branch is what
+  carries fix-verdict condition 2, and it has never been exercised post-fix.
+- **B3** — make `run_c5` drive zero lengths. **This is expected to pass
+  silently**, and it is included as a control precisely because it does: it is
+  the concrete demonstration that a no-op suite is indistinguishable from a
+  correct one here, which is the argument for the whole round. Not a test — an
+  exhibit.
+
+**Pass criteria, all three required per RTL mutation:**
+
+1. The suite goes red.
+2. It goes red in the **named rows**, not merely somewhere. A mutation that
+   reddens an unnamed row is a **finding**, not a pass — it means the bench
+   caught it for the wrong reason, and that is worth knowing.
+3. The **unmutated control at the same SHA is green in the same session**. A
+   red run proves nothing if the tree was already red.
+
+A bench that survives any of the five is not done, and `SO-M03` does not issue.

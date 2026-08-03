@@ -1,5 +1,6 @@
 # BUG-0001: M03 emits `k − 4` extra octets whenever a frame's final output word carries more than four delivered octets
 - **Module / severity**: `libs/hardcaml_ethernet/src/xgmii_rx_64.ml` (M03, `Xgmii_rx_64`) | **CRITICAL**
+- **Resolution**: **FIX CONFIRMED** at CI run **30779035676** (`b89358b`) — dv_lead, `J-dv_lead-0034`, verdict at the foot of this packet. All six conditions of the deferred verdict are met, the three-way falsifier resolved to row 1, and P-1 is paid by M03-C5 against the design rather than against a transcription. **This closes BUG-0001 and asks nothing further of rtl_lead. It is not an `SO-M03`** — the mutation round is still owed, and until it runs, a green suite is not evidence that the instrument has teeth.
 - **From** / **To**: dv_lead → rtl_lead (via orchestrator, verbatim relay class, PROTOCOL §3)
 - **Found by**: `test/xgmii_rx_64/test_m03_c.ml`, rows **M03-C1 / M03-C2**; corroborated independently by `test/xgmii_rx_64/test_m03_a.ml` row **M03-A3**'s latency tagger
 - **Evidence**: CI run **30774152441**, commit `b190a9e`, Build green
@@ -556,3 +557,171 @@ change without my review), and WO-0038 §8's four seeded mutations.
   observation position, and its repair is dv_lead's, in `test/**`.
 - The fix verdict is **deferred**, not withheld — there is nothing further
   asked of rtl_lead, and round 6 is entirely mine.
+
+---
+
+## Fix verdict — dv_lead, `J-dv_lead-0034`: **CONFIRMED.** Six conditions met, falsifier resolved to row 1, P-1 paid against the design.
+
+**Evidence: CI run 30779035676, commit `b89358b`. Build green;
+`dune runtest` green — fifteen `%expect_test`s, all silent.**
+
+### How I am reading "green", before I read any condition off it
+
+A passing suite is an **absence**, and an absence evidences a proposition only
+if some assertion would have *fired* had that proposition been false. This
+bench was built so that it does: every check is an in-code assertion that
+raises, and the `[%expect]` blocks are empty on purpose (WO-0038 §6 rule 5 —
+nothing timing-derived is snapshotted). So each condition below is discharged
+by naming **the specific assertion whose silence carries it**, not by pointing
+at the green tick. Where silence carries less than the condition's wording, I
+say so rather than round up.
+
+### Condition 1 — build green, `runtest` reaching a verdict at the round-6 SHA
+
+**MET, and reported directly.** `dune build @default` green at `b89358b`;
+`dune runtest` ran to completion and returned a verdict rather than erroring
+out. The workflow then proceeded past `runtest` to Generate RTL and stopped at
+the determinism step on the snapshot drift of rtl_lead's own fix — which is
+downstream of this verdict, is rtl_lead's artefact, and carries its own REQ-902
+second-run obligation. It does not qualify anything below: `runtest` had
+already returned.
+
+### Condition 2 — all sixteen M03-C1/C2 entries PASS, including lane 4 / 68 at `tkeep = 255/255`
+
+**MET.** Carried by `batched_failure_with_protocol` in `run_c1_c2`, which
+raises unless **every** outcome satisfies `outcome_ok`, and `outcome_ok`
+requires `observed_delivered = expected_delivered`, `observed_tkeep =
+Some tk` with `tk = expected_tkeep`, `observed_tuser = Some 0`, and
+`error_pulse_count = 0`.
+
+The load-bearing detail is `outcome_ok`'s `None -> false` branch on `tkeep`.
+The FAIL that survived run 30776456107 was `tkeep = none/255` — *no sampled
+word carried `tlast` at all* — and `None -> false` means that outcome can
+never be `ok`. So silence at lane 4 / length 68 is not merely "no mismatch";
+it positively establishes `observed_tkeep = Some 255` against
+`expected_tkeep = 0xFF`. That is the exact line condition 2 named, and it is
+now observed.
+
+Silence additionally carries the two D3 stimulus checks in the same test: the
+eight `tkeep` patterns each observed exactly once per lane, and terminate
+lanes 0..7 each exactly once per lane. The invariant this packet convicted on
+— `excess = max(0, k − 4)` — is therefore zero across the full `k` = 1..8
+sweep at both start lanes, with the coverage of that sweep itself asserted
+rather than assumed.
+
+### Condition 3 — M03-A3 clean
+
+**MET.** Carried by `run_a3_a4`'s `List.equal tuple_equal seq0 seq4`, comparing
+lane 0's and lane 4's `delivered_samples` as ordered `(octets, tkeep, tlast,
+tuser)` sequences at every directed length. `tlast` is a member of the compared
+tuple, so the round-5 artefact — a lane-4 `tlast` placement differing from lane
+0's at length 68 — is exactly what this assertion is sensitive to. Its silence
+means the two lanes' output streams are now identical as sequences at all eight
+lengths, which is REQ-101's own claim.
+
+I note without complaint that A3's silence also depends on nothing having gone
+wrong in `assert_own_deltac`'s per-lane ΔC = 3, `account_clean_frame` or
+`assert_monitors_clean`, which run in the same iteration. That is a *stronger*
+condition than 3 required, not a weaker one.
+
+### Condition 4 — M03-C5 exact at 1513 and 1516, both lanes
+
+**MET, and this is the condition that makes the fix a rule rather than a
+neighbourhood repair.** `run_c5` drives both lengths at both start lanes and
+routes all four outcomes through the same `batched_failure_with_protocol` /
+`outcome_ok` machinery. `length_outcome` computes `expected_delivered =
+length − 4` and `expected_tkeep = expected_tkeep_for ~delivered`, whose
+`if r = 0 then 8 else r` gives `0x1F` at 1509 (`1509 mod 8 = 5`) and `0xFF` at
+1512 (`1512 mod 8 = 0`). Silence therefore establishes delivered = 1509 and
+1512 exactly, `tkeep` = 0x1F and 0xFF, `tuser` = 0 and no strobe, at both
+lanes — the four values condition 4 named, three orders of magnitude from
+where the defect was found.
+
+**P-1 is paid here.** P-1 was a prediction about the design, and at
+`J-dv_lead-0032` I refused to accept a Python transcription in its place. It is
+now settled by the design itself, inverted in sense as that entry said it would
+be: where the pre-fix logic would have over-delivered by +1 at `k` = 5 and +4
+at `k` = 8, the fixed design delivers both lengths exactly. The transcription
+was corroboration of the characterisation; this is confirmation of the
+prediction. The distinction was worth holding.
+
+### Condition 5 — R6-3's dual-view diagnostic demonstrates the artefact rather than assuming it
+
+**MET, and it is a positive demonstration, not an absence.** This is the
+condition where "green" could most easily have meant nothing, so it is worth
+being explicit about why it does not.
+
+`check_disagreement_matches_r1` raises unless `views_disagree_on_tlast` equals
+`expected_disagree` at **every** entry, and `expected_disagree o =
+o.terminate_lane = 0 && Int.rem o.expected_delivered 8 = 0` is **true at
+exactly two of the twenty driven entries** — lane 4 / length 68 and lane 4 /
+1516 — by my own enumeration at `RV-0038-R7-VERDICT` §4. A predicate that were
+false everywhere would make this check vacuous; this one is not. Silence
+therefore requires **two genuine observed disagreements** and **eighteen
+genuine agreements**. The artefact is exhibited where R-1 says it lives and
+bounded everywhere else, in one run, from one stimulus set. That is the
+demonstration condition 5 asked for.
+
+### Condition 6 — the three-way falsifier resolved and recorded
+
+**RESOLVED: row 1 — `tkeep = none/255`. R-1's mechanism confirmed at a second,
+distant length.** Recorded here as the run produced it, per the pre-run
+commitment to report it whichever way it fell.
+
+Both other rows are excluded, and by two independent assertions rather than
+one:
+
+- **Row 2 (`tkeep = 255/255` under the After-labelled reading)** would mean the
+  After reading at that label *does* carry a valid `tlast` word, making
+  `views_disagree_on_final_word` return `false` at lane 4 / 1516 where
+  `expected_disagree` is `true` — `check_disagreement_matches_r1` fires. It
+  did not. This was rtl_lead's own falsifier of R-1, and R-1 survived it.
+- **Row 3 (`tkeep = 15/255` — "something else is producing an extra word")** is
+  excluded **twice over**. An extra `tlast`-bearing word is a hardware object,
+  so the `Before` view — the truthful one — would see it: `observed_delivered`
+  would exceed 1512 or `observed_tkeep` would be `Some 15`, and `outcome_ok`
+  fails either way, raising in `batched_failure_with_protocol` *before*
+  `check_disagreement_matches_r1` is reached. Separately, an After-labelled
+  reading carrying that word would collapse the disagreement and fire the R-1
+  check. Row 3 has to survive both to be true; it survived neither.
+
+**One scoping caveat, stated so nobody over-reads this.**
+`views_disagree_on_final_word` asks a *local* question: does the After-labelled
+reading of the `Before` view's `tlast` word — i.e. `samples[T − 1].after_out` —
+miss it? It does not sweep the whole run for some other After sample bearing
+`tlast`. What is established is therefore precisely the proposition the
+falsifier table's row 1 was about at this entry: **the reading round 5's
+convention would have labelled with the final word carries no valid `tlast`,
+so that convention's `observed_tkeep` there is `None` — "none".** I claim
+that and not more.
+
+### Verdict
+
+**BUG-0001 is CONFIRMED FIXED and CLOSED.** The delivered-count defect is
+repaired across the full `k` = 1..8 sweep at both start lanes and at two
+lengths three orders of magnitude away; the surviving artefact was correctly
+reattributed to my instrument, and repairing the instrument made it disappear
+exactly where and only where R-1 predicted. Nothing further is asked of
+rtl_lead on this packet. The snapshot promotion rides rtl_lead's commit with
+its own REQ-902 second-run evidence owed; this verdict did not wait on it and
+is not qualified by it.
+
+### What this verdict deliberately does not do
+
+**It is not an `SO-M03`, and the gap is not a formality.** The two sign-off
+gates named at `J-dv_lead-0032` are in different states now:
+
+- **The conformance review of "whatever `runtest` promotes" is discharged as
+  VACUOUS, not as performed.** The target is empty: a passing suite prints
+  nothing, so all fifteen `[%expect {||}]` blocks match empty and no recording
+  was promoted. There is nothing to review because this bench asserts in code
+  by design. I record it as vacuous rather than as satisfied, because "I
+  reviewed the promotions and they were conformant" would be a false sentence.
+- **The mutation round is now the load-bearing gate, and this run is exactly
+  why.** An in-code-assertion bench with empty expectations passes *identically*
+  whether it asserted everything or nothing — silence is the same shape either
+  way. Nothing in run 30779035676 distinguishes "twenty entries checked and
+  correct" from "the checks did not run". The four seeded mutations of
+  WO-0038 §8 are the only evidence that green means anything here, and they
+  are a hard precondition on `SO-M03` per my charter. Round 1's ΔC episode
+  (`J-dv_lead-0027`) is the standing proof that this concern is not theoretical.

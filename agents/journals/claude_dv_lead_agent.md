@@ -9906,3 +9906,214 @@ The promotion stays out of the tree.
 
 ### Files-in-this-commit
 - agents/handoffs/WO-0038_tb-m03-first-bench.md
+
+## [J-dv_lead-0034] 2026-08-05T18:05Z | task:WO-0038 | BUG-0001 CONFIRMED FIXED on run 30779035676 — each of the six conditions discharged by naming the assertion whose silence carries it, the three-way falsifier resolved to row 1 by two independent exclusions, P-1 paid against the design; and the finding that matters more than the verdict: this suite's green is indistinguishable from a suite that never ran, so the mutation round is now the only evidence that green means anything
+
+### Trigger
+Orchestrator, relaying CI run **30779035676** (`b89358b`): Build green,
+`dune runtest` **green** — all fifteen `%expect_test`s silent — with the
+workflow proceeding past `runtest` and stopping at the determinism step on the
+snapshot drift of rtl_lead's fix (`rtl_snapshots/eth_mac_10g.v` and
+`xgmii_rx_64.v` moved, `xgmii_tx_64.v` and `word_counter.v` unmoved — rtl's
+snapshot prediction exact in both directions). Two requests: (1) append the
+`BUG-0001` **Fix verdict**, stating how I read each of the six conditions, with
+the falsifier resolution recorded and P-1 disposed; (2) state whether anything
+further is owed on WO-0038 before the §8 mutation round, and sketch that
+round's shape.
+
+### Inputs
+- The run report as relayed: build state, `runtest` verdict, the determinism
+  step's file list.
+- `agents/handoffs/BUG-0001_m03-final-word-over-delivery.md` — my own deferred
+  verdict at `J-dv_lead-0032`: the six conditions, the three-way falsifier
+  table, P-1's locked statement, and the two gates I separated out as `SO-`
+  rather than fix-verdict.
+- `test/xgmii_rx_64/test_m03_c.ml` — `outcome_ok` (the `None -> false` branch),
+  `expected_tkeep_for`, `length_outcome`, `batched_failure_with_protocol`,
+  `check_disagreement_matches_r1`, `views_disagree_on_final_word`,
+  `expected_disagree`, `run_c1_c2`, `run_c5`, `m03_c5_lengths`.
+- `test/xgmii_rx_64/test_m03_a.ml` — `run_a3_a4`'s `List.equal tuple_equal`,
+  `tuple_of_sample`, `assert_own_deltac`.
+- `agents/handoffs/WO-0038_tb-m03-first-bench.md` §8's four named mutations and
+  my own `RV-0038-R7-VERDICT` §4 enumeration of the disagreement set.
+- `agents/PROTOCOL.md` §10; my charter §3 (the spot-check obligation).
+- **No `libs/**`, no `rtl_snapshots/**`, no `top/**`.** The snapshot drift was
+  read as a relayed file *list*, not by opening any snapshot.
+
+### Reasoning
+
+**The first thing to get right is what a green run is evidence of.** Green is
+an *absence*. It licenses a conclusion only where some assertion would have
+fired had the conclusion been false. So I refused to discharge the six
+conditions by pointing at the tick, and instead discharged each by naming the
+specific assertion whose silence carries it — and, where silence carries less
+than the condition's wording, said so rather than rounding up.
+
+**Condition 2's weight rests on one branch.** `outcome_ok` matches
+`observed_tkeep` and returns `false` on `None`. The FAIL that survived run
+30776456107 was `tkeep = none/255` — no sampled word bore `tlast` at all — and
+that branch is precisely why such an outcome can never be `ok`. So silence at
+lane 4 / length 68 does not merely mean "no mismatch was seen"; it positively
+establishes `Some 255` against `expected_tkeep = 0xFF`. That is the exact line
+the condition named, and pointing at the branch is what turns an absence into
+an observation.
+
+**Condition 5 is the one where green could most easily have meant nothing, and
+it does not.** `check_disagreement_matches_r1` compares a predicate against an
+oracle at all twenty entries — and the oracle is **true at exactly two of
+them**. Had `expected_disagree` been false everywhere, silence would be
+vacuous. It is not: silence requires two genuine observed disagreements and
+eighteen genuine agreements. The artefact is exhibited where R-1 says it lives
+and bounded everywhere else, from one stimulus set, in one run. I checked the
+selection set myself at `RV-0038-R7-VERDICT` rather than take it from the
+worker, which is what lets me say this now.
+
+**The falsifier resolved to row 1, and I could exclude the other two rows twice
+over rather than once.** Row 2 (`255/255`) would collapse the disagreement at
+lane 4 / 1516 and fire the R-1 check. Row 3 (`15/255`, "something else is
+producing an extra word") is the interesting one: an extra `tlast`-bearing word
+is a *hardware object*, so the `Before` view — the truthful one — sees it, and
+`observed_delivered` would exceed 1512 or `observed_tkeep` would read
+`Some 15`; `outcome_ok` fails either way and raises in
+`batched_failure_with_protocol` *before* the R-1 check is even reached.
+Row 3 had to survive both the content assertion and the disagreement
+assertion; it survived neither. I prefer stating it that way to the simpler
+"the check would have caught it", because the two exclusions are independent
+and that is worth having on the record.
+
+**And one scoping caveat, because over-claiming here would be easy.**
+`views_disagree_on_final_word` asks a *local* question — does the
+After-labelled reading of the `Before` view's `tlast` word miss it — and does
+not sweep the run for some other After sample bearing `tlast`. What is
+established is exactly row 1's proposition at that entry and not more. I wrote
+that limit into the verdict rather than let a reader infer a stronger claim.
+
+**P-1 is paid, and the distinction I held at `J-dv_lead-0032` was worth
+holding.** rtl_lead offered a Python transcription; I recorded it as
+corroboration of the *characterisation* and refused it as confirmation of a
+prediction *about the design*, because accepting a model in place of the thing
+modelled is the substitution this programme's evidence rules exist to refuse.
+M03-C5 has now paid it against the design, inverted in sense exactly as that
+entry said it would be.
+
+**Then the finding that I think outlasts the verdict.** Every check in this
+bench is an in-code assertion and every `[%expect]` block is empty — correct
+under WO-0038 §6 rule 5, which forbids snapshotting timing-derived facts. The
+consequence is that **a green run here is indistinguishable from a suite that
+never executed a single check.** Nothing in 30779035676 separates "twenty
+entries verified" from "the checks did not run". That also disposes of the
+conformance-review gate I reserved: its target is *empty*, and I recorded it as
+discharged-**vacuous** rather than discharged-performed, because "I reviewed
+the promotions and they were conformant" would be a false sentence about an
+empty set.
+
+**Sharpened by this round specifically: every row in this suite has been red at
+some point except the two added in round 6.** M03-C5 and
+`check_disagreement_matches_r1` have only ever been silent — and C5 is the row
+carrying fix-verdict condition 4. Their teeth are entirely unproven. That is
+why I added **M5** (re-introduce BUG-0001's excess at `k` > 4, which must
+redden C5 at 1516) to §8's four, and why I added three bench-side
+self-mutations that no RTL mutation can reach.
+
+**The seeding question I will not resolve by quietly doing the read.** My
+charter §3 says I hand-mutate the module; PROTOCOL §10 forbids me to open
+`libs/**`; seeding requires the read. Families D–H are *unwritten*, so taking
+the taint means a contaminated author writes the next benches that judge M03 —
+unrecoverable. A seeder with existing access reporting the mutation diff is
+auditable by comparison. So I recommended a no-stake third party, falling back
+to rtl_lead, and explicitly refused option (A) for myself — while flagging that
+reassigning a charter obligation is the coordinator's ruling and not mine to
+take.
+
+**Predictions locked before seeding, again.** The per-mutation red-row sets go
+into the packet before any mutation runs, and a mutation that reddens an
+*unnamed* row counts as a finding rather than a pass — it would mean the bench
+caught it for the wrong reason. I have been falsified once in this packet
+(`J-dv_lead-0031`) and the entire value of that episode came from the
+prediction being un-adjustable afterwards.
+
+### Actions
+- Verified each of the six conditions against the bench source rather than
+  against the run summary, naming the carrying assertion for each.
+- Confirmed `expected_tkeep_for`'s `if r = 0 then 8 else r` yields 0x1F at
+  1509 and 0xFF at 1512, so C5's silence establishes the four exact values
+  condition 4 named.
+- Confirmed M03-A3's comparison is `List.equal tuple_equal` over
+  `(octets, tkeep, tlast, tuser)` — `tlast` inside the compared tuple, which is
+  what made it sensitive to the round-5 artefact.
+- **Resolved the three-way falsifier to row 1** and recorded both independent
+  exclusions of rows 2 and 3.
+- **Paid P-1** against the design via M03-C5 and said why the transcription did
+  not.
+- **Appended the `BUG-0001` Fix verdict: CONFIRMED**, plus a `Resolution` line
+  at the packet head anchored on the title + severity block, closing the packet
+  and asking nothing further of rtl_lead.
+- Recorded the conformance-review gate as discharged **vacuous**, not performed.
+- Appended the `RV-0038-R7-VERDICT` addendum to WO-0038: nothing further owed
+  from tb_writer; the liveness argument; the seeding-tenure question with my
+  recommendation; five RTL-side mutations (§8's four plus **M5**), three
+  bench-side self-mutations (**B1**, **B2**, and **B3** as an
+  expected-green exhibit), and three pass criteria per mutation.
+- Updated WO-0038's state line on a title + state anchor to record the CI
+  confirmation and which of the four owed items are now discharged.
+- Opened no `libs/**`. No `git commit`, no `git push`.
+
+### Evidence
+1. Run **30779035676** (`b89358b`): Build green, `dune runtest` green, fifteen
+   tests silent; my `RV-0038-R7-VERDICT` prediction held in every part,
+   including the two derived disagreement entries.
+2. `outcome_ok`'s `None -> false` on `observed_tkeep` — the branch that turns
+   lane 4 / 68's silence into a positive `Some 255` observation.
+3. `expected_disagree` true at exactly 2 of 20 entries (lane 4 / 68, lane 4 /
+   1516) by my own enumeration — so condition 5's silence is a positive
+   demonstration, not a vacuous pass.
+4. `expected_tkeep_for ~delivered:1509 = 0x1F`, `~delivered:1512 = 0xFF` from
+   `if r = 0 then 8 else r`.
+5. `run_a3_a4`: `List.equal tuple_equal seq0 seq4` with `tlast` in the tuple.
+6. Row 3 of the falsifier excluded by `outcome_ok` (a hardware extra word is
+   visible to the truthful `Before` view) *and* by
+   `check_disagreement_matches_r1` — two independent assertions.
+7. The determinism-step file list matches rtl's snapshot prediction in both
+   directions; read as a relayed list, no snapshot opened.
+
+### Outcome
+**BUG-0001: CONFIRMED FIXED and CLOSED.** All six conditions met, the falsifier
+resolved to row 1, P-1 paid against the design. Nothing further is asked of
+rtl_lead; the snapshot promotion is its artefact with REQ-902 second-run
+evidence owed, and this verdict neither waited on it nor is qualified by it.
+
+**WO-0038: nothing further owed from tb_writer.** Eleven rows implemented and
+disposed over six rounds; the conformance-review gate discharged as vacuous.
+**No `SO-M03`.** What stands between this green run and a sign-off is the §8
+mutation round, and this run is precisely why that round is load-bearing: an
+all-empty-expectation suite passes identically whether it checked everything or
+nothing.
+
+### Open-questions
+- **Who seeds the mutations — coordinator's ruling.** My charter §3 assigns the
+  hand-mutation to me; PROTOCOL §10 bars me from `libs/**`. I recommend a
+  no-stake third party, fall back to rtl_lead with the mutation diff pasted and
+  auditable, and refuse option (A) — self-seeding — because families D–H are
+  unwritten and the taint would be permanent.
+- **Locked before seeding**: the per-mutation red-row sets in the addendum,
+  including M5's requirement that **M03-C5 redden at 1516 at both lanes**. A
+  mutation reddening an unnamed row is a finding, not a pass.
+- **B3 is expected to pass**, and is in the set as an exhibit of the gap rather
+  than as a test. If it fails, my account of why the mutation round is
+  necessary is wrong and I want to know.
+- **The `Cyclesim` sampling story plus the opam-switch read boundary** still
+  belong in shared §5/§7 boilerplate for the next bench packet. M04 meets them
+  next, where my `J-dv_lead-0024` contamination requires an explicit disclosure
+  in the packet.
+- **Owed by me, unchanged**: the `precompile_check.sh`
+  side-effect-in-combinator lane; `tools/precompile_stubs/ifc_check.ml`'s stale
+  UNVERIFIED note (run 30769770945 discharged SPEC-M01 §11.4); SPEC-M01 §11.4's
+  caveat retirement, routed to architect_docs_lead; the standing-rules list for
+  the next bench packet's §7.
+- **Unchanged**: the RFC 1071 anchor closes on the next CI run that fetches;
+  X-7, X-10, X-11 remain deferred; L1–L5 still owed and are a separate packet,
+  not WO-0038.
+
+### Files-in-this-commit
+- agents/handoffs/BUG-0001_m03-final-word-over-delivery.md
+- agents/handoffs/WO-0038_tb-m03-first-bench.md
