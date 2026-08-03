@@ -4780,3 +4780,50 @@ public. Fix cycle under way.
 - site/public/org-chart.html
 - site/public/spec-atlas.html
 - tasks/BOARD.md
+
+## [J-orchestrator-0110] 2026-08-03T01:30:00Z | task:none | The fix run: all sixteen counts repaired, and R-1 survives contact character-for-character
+
+### Trigger
+Scheduled CI check-in for rtl_lead's BUG-0001 fix push.
+
+### Inputs
+- Run 30776456107 (0b64b68): Build green; runtest red with a
+  promotion block (a, c), harvested and sha256-verified, NOT
+  written to the tree.
+- The C1/C2 table: fifteen PASS; every delivered count matches at
+  all sixteen entries - BUG-0001's observable is gone. The single
+  FAIL is character-for-character rtl_lead's locked R-1
+  prediction: lane 4 length 68, delivered=64/64,
+  tkeep=none/255, tuser=none - the count right, the tlast
+  unobservable at the bench's After-edge sampling.
+- A3 now fails as "lane-0 and lane-4 sequences differ" at exactly
+  length 68 - the same artifact in a second observer, consistent
+  with rtl's account.
+
+### Reasoning
+Both locked predictions in this arc have now met their data: dv's
+P-1 remains to be run, and rtl's R-1 was confirmed exactly. The
+adjudication (fix verification from the packet, R-1 ruling, the
+sampling-convention bench round, the P-1 probe, the Fix-verdict
+path) is dv's; dispatched with the full table and rtl's
+open-question 2 (the age-0-record blind spot matters more in
+error families D-H than it did here).
+
+### Actions
+- Harvest + sanity scan; verbatim dispatch to dv_lead; this
+  journal-only commit.
+
+### Evidence
+- Table quoted in the dispatch; run log holds the full sixteen
+  lines.
+
+### Outcome / DoD
+BUG-0001's fix is behaviorally confirmed on fifteen of sixteen
+entries with the sixteenth attributed - pending dv's ruling - to
+the instrument's sampling convention. Await dv's round list.
+
+### Open questions
+- dv's R-1 ruling; the P-1 probe's result when it runs.
+
+### Files-in-this-commit
+_None — journal-only entry._
