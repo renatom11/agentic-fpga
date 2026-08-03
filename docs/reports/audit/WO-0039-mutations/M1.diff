@@ -1,0 +1,35 @@
+diff --git a/libs/hardcaml_ethernet/src/xgmii_rx_64.ml b/libs/hardcaml_ethernet/src/xgmii_rx_64.ml
+--- a/libs/hardcaml_ethernet/src/xgmii_rx_64.ml
++++ b/libs/hardcaml_ethernet/src/xgmii_rx_64.ml
+@@ -750,19 +750,21 @@
+      one-term union and is written as one. *)
+   let strobe s = consume &: s &: ~:(i.clear) in
+   let q_strobe k = bit q2 k &: ~:(i.clear) in
++  (* M1 MUTATION (WO-0039): one extra register level on every output port. *)
++  let d1 s = reg spec s in
+   { O.rx =
+-      { Axi64.Source.tvalid
+-      ; tdata = al_data_d
+-      ; tkeep = keep_of_count keep_count
++      { Axi64.Source.tvalid = d1 tvalid
++      ; tdata = d1 al_data_d
++      ; tkeep = d1 (keep_of_count keep_count)
+       ; tstrb = zero 8 (* REQ-014 *)
+-      ; tlast = emit_tlast &: ~:(i.clear)
+-      ; tuser = emit_tlast &: abort
++      ; tlast = d1 (emit_tlast &: ~:(i.clear))
++      ; tuser = d1 (emit_tlast &: abort)
+       }
+-  ; error_bad_fcs = strobe sel_bad_fcs
+-  ; error_bad_frame = strobe sel_error |: q_strobe 0
+-  ; error_runt = strobe sel_runt |: q_strobe 1
+-  ; error_oversize = strobe sel_oversize
+-  ; error_start_without_terminate = strobe sel_start |: q_strobe 2
++  ; error_bad_fcs = d1 (strobe sel_bad_fcs)
++  ; error_bad_frame = d1 (strobe sel_error |: q_strobe 0)
++  ; error_runt = d1 (strobe sel_runt |: q_strobe 1)
++  ; error_oversize = d1 (strobe sel_oversize)
++  ; error_start_without_terminate = d1 (strobe sel_start |: q_strobe 2)
+   }
+ ;;
+ 

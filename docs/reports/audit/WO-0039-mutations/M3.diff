@@ -1,0 +1,64 @@
+diff --git a/libs/hardcaml_ethernet/src/xgmii_rx_64.ml b/libs/hardcaml_ethernet/src/xgmii_rx_64.ml
+--- a/libs/hardcaml_ethernet/src/xgmii_rx_64.ml
++++ b/libs/hardcaml_ethernet/src/xgmii_rx_64.ml
+@@ -500,8 +500,11 @@
+      latest. Consumptions therefore never contend, and each record is at age 2
+      exactly when its turn comes. *)
+   let a_close_runt = a_close_terminate &: (count_next <:. runt_threshold) in
+-  let record_fields ~valid ~terminate ~error ~start ~oversize ~fcs ~runt =
+-    concat_lsb [ valid; terminate; error; start; oversize; fcs; runt ]
++  (* M3 MUTATION (WO-0039): the closure record additionally carries [cov_count]
++     of the closing word — how many lanes of the terminating input word carry
++     frame octets — in bits 10:7. *)
++  let record_fields ~valid ~terminate ~error ~start ~oversize ~fcs ~runt ~cov =
++    concat_lsb [ valid; terminate; error; start; oversize; fcs; runt; cov ]
+   in
+   let r0 =
+     record_fields
+@@ -512,19 +515,20 @@
+       ~oversize:a_close_oversize
+       ~fcs:(a_close_terminate &: bad_fcs)
+       ~runt:a_close_runt
++      ~cov:cov_count
+   in
+   (* [consume] is defined by the output decision below; the two are mutually
+      recursive through one cycle of register, so the wire is declared here. *)
+   let consume = wire 1 in
+-  let r1 = wire 7 in
+-  let r2 = wire 7 in
++  let r1 = wire 11 in
++  let r2 = wire 11 in
+   let valid_of r = bit r 0 in
+   let sel_is_r2 = valid_of r2 in
+   let sel_is_r1 = valid_of r1 &: ~:sel_is_r2 in
+   let sel_is_r0 = ~:sel_is_r2 &: ~:sel_is_r1 in
+   let sel = mux2 sel_is_r2 r2 (mux2 sel_is_r1 r1 r0) in
+-  r1 <== reg spec (r0 &: ~:(repeat (consume &: sel_is_r0) 7));
+-  r2 <== reg spec (r1 &: ~:(repeat (consume &: sel_is_r1) 7));
++  r1 <== reg spec (r0 &: ~:(repeat (consume &: sel_is_r0) 11));
++  r2 <== reg spec (r1 &: ~:(repeat (consume &: sel_is_r1) 11));
+   let sel_valid = valid_of sel in
+   let sel_terminate = bit sel 1 in
+   let sel_error = bit sel 2 in
+@@ -532,6 +536,7 @@
+   let sel_oversize = bit sel 4 in
+   let sel_bad_fcs = bit sel 5 in
+   let sel_runt = bit sel 6 in
++  let sel_cov = select sel 10 7 in
+   (* ---- the second report path: an epoch opened *and* closed in one word ----
+      Such a frame delivers no octet — its eight preamble octets fill the rest of
+      the word — so §9 pins its report to exactly two cycles after this one, with
+@@ -730,9 +735,10 @@
+   fcs_tail_pending <== emit_last_b;
+   let emit_full = have_word &: (nc >: strip) in
+   let emit_tlast = emit_last_a |: emit_last_b in
+-  let keep_count =
+-    mux2 emit_last_a (pc -: strip) (mux2 emit_last_b (pc -: strip +: nc) pc)
+-  in
++  (* M3 MUTATION (WO-0039): the frame's final word takes its [tkeep] from the
++     terminating input word's own covered-lane count, carried in the closure
++     record, instead of from how many frame octets remain to be delivered. *)
++  let keep_count = mux2 (emit_tlast &: sel_valid) sel_cov pc in
+   let abort = sel_bad_fcs |: sel_error |: sel_start |: sel_oversize |: sel_runt in
+   let tvalid = (emit_full |: emit_tlast) &: ~:(i.clear) in
+   consume <== (sel_valid &: (emit_tlast |: sel_is_r2));

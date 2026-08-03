@@ -1,0 +1,14 @@
+diff --git a/libs/hardcaml_ethernet/src/xgmii_rx_64.ml b/libs/hardcaml_ethernet/src/xgmii_rx_64.ml
+--- a/libs/hardcaml_ethernet/src/xgmii_rx_64.ml
++++ b/libs/hardcaml_ethernet/src/xgmii_rx_64.ml
+@@ -139,7 +139,9 @@
+    delivered, which this design obtains by capping coverage at 1518 and
+    letting the four-octet tail removal run — see the truncation comment in
+    {!create}. *)
+-let oversize_threshold = 1518
++(* M4 MUTATION (WO-0039): 1518 -> 1516, which moves the per-frame output-word
++   bound from 190 words (1514 delivered octets) to 189 (1512). *)
++let oversize_threshold = 1516
+ 
+ (* The received-octet counter must hold [oversize_threshold] + 8 without
+    wrapping — the count is advanced by up to eight octets per cycle and is

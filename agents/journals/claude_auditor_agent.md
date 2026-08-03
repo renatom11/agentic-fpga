@@ -599,3 +599,222 @@ N2 concern the relaying party; per charter §7 this report is relayed unedited.
    design. I found none and say so.
 ### Files-in-this-commit
 - docs/reports/audit/AUD-0002-g0-reverification.md
+
+## [J-auditor-0004] 2026-08-03T03:29:17Z | task:WO-0039 | Five M03 mutations seeded blind: diffs, fidelity arguments, and three disclosures where a stated intent and its only faithful implementation diverge
+### Trigger
+Orchestrator spawn on WO-0039 (`agents/handoffs/WO-0039_m03-mutation-campaign.md`,
+committed at 0d231ee) — dv_lead's packet to me, relayed §§1-5 only. I am ruled in
+as the campaign's no-stake third party after dv_lead declined to self-seed on
+taint grounds: I authored neither M03's RTL nor its bench. This is chartered work
+(charter §3, systematic mutation testing) at the PROTOCOL §10 sequencing point —
+after rtl_lead's `RV-` ACCEPT, before dv_lead may issue `SO-M03`. My duty is
+seeding only: I do not run the diffs and do not see their results (packet §3).
+### Inputs
+This section is the campaign's enforcement mechanism, not a formality — packet §0
+states that the blinding has no script behind it and that my disclosure is the
+whole of it. Read, in full unless noted: `agents/charters/auditor.md`;
+`agents/PROTOCOL.md`; `agents/handoffs/WO-0039_m03-mutation-campaign.md` (at
+0d231ee); `docs/specs/modules/xgmii_rx_64.md` (SPEC-M03, all 949 lines);
+`libs/hardcaml_ethernet/src/xgmii_rx_64.ml` (at 6bd7e5a, sha256
+3d87515a843d98d7d5bd6692a9d19cdbe2b0dee4e430c88f871a2d4887f5be92);
+`libs/hardcaml_ethernet/src/xgmii_rx_64.mli`;
+`libs/hardcaml_ethernet/src/crc32_eth.ml` (M02's finished-value convention, which
+M2's fidelity argument turns on); `libs/hardcaml_ethernet/src/dune` and
+`dune-project`; `docs/adr/ADR-0005-build-environment.md`;
+`agents/journals/claude_auditor_agent.md` (header and the head of my 0003 entry,
+for the next id and the grammar — read only, never modified above EOF). Partial:
+`libs/hardcaml_ethernet/src/xgmii_tx_64.ml` and `axi64.ml`, grep hits only (lines
+119-120, 211, 236, 240 and 7-9), from one grep for the Hardcaml idioms this
+library already uses. Git objects: `git log --oneline -16`; `git show 0b64b68` in
+full, including its RTL diff, which is M5's reverted hunk;
+`git show 0b64b68^:libs/hardcaml_ethernet/src/xgmii_rx_64.ml`;
+`git diff --stat 6bd7e5a HEAD` and the same restricted to `-- libs/`. Directory
+listings only: `ls -R libs/`, `ls docs/adr/`, `ls -R docs/reports/audit/`,
+`ls /root/.opam/fpga/{bin,lib}`.
+
+NOT read, and the list is the point. Packet §1's three read bars, all honoured:
+nothing under `test/xgmii_rx_64/**` — in fact no file under `test/` at all, of
+any name, at any SHA; not `test/attack_plans/AP-xgmii_rx_64.md` nor anything else
+under `test/attack_plans/`; not
+`agents/handoffs/WO-0039_m03-mutation-campaign-SEALED-predictions.md`, of which I
+know only that a path with that name and a line count appears in a `--stat`
+output I ran for a different purpose. Beyond the bars, by my own choice:
+`agents/handoffs/BUG-0001_m03-final-word-over-delivery.md` (the packet points at
+it for M5's invariant, so opening it was sanctioned — I did not, because a
+dv_lead bug packet will name the bench rows that caught the defect, and M5's
+implementation is dictated by the packet anyway); `claude_dv_lead_agent.md` and
+`claude_rtl_lead_agent.md` (dv_lead's journal grew 240 lines in the commit that
+sealed the predictions — reading it inside the blind window is the sealed file by
+another route). No `test/`, no `site/`, no `tasks/BOARD.md`.
+### Reasoning
+FRAME. There is no sample here: the packet names five intents and all five were
+implemented, so this is a census of the assignment and the reconstructible thing
+is not *what I looked at* but *what I refused to look at* — recorded above. One
+structural check came first: `git diff 6bd7e5a HEAD -- libs/` is empty, so the
+working tree's copy of the module is the frozen blob and every diff could be
+authored against the file in front of me rather than against a checkout.
+
+The defect classes were not mine to choose — dv_lead specified all five
+behaviourally (charter §8 asks a mutation entry to record the class choice and
+the rejects; here the choosing was done one packet up, and what was mine was
+site, mechanism and the reading of each intent where the module's structure did
+not match the intent's picture of it). That mismatch is the substance of this
+entry, because three of the five have one, and each forced a decision that a
+result cannot later be reinterpreted around.
+
+M1 (latency ±1). I chose *later*, by one extra register level on every output
+leaf. Earlier is not reachable minimally: the two payload levels are REQ-019's
+permitted depth and the third cycle is the lane-4 assembly register, so removing
+one changes content, not merely timing. Lane-uniformity is then structural — the
+added register sits downstream of all lane, alignment and coverage logic and
+cannot tell a lane-0 frame from a lane-4 one. The decision that matters is the
+strobes: the intent's content list says "the same error strobes", which can be
+read as *leave them where they are*. I rejected that reading and delayed them
+with the stream, because SPEC-M03 §9 pins every strobe to the cycle its frame's
+`tlast` word is emitted; moving the stream and pinning the strobes would break
+that relation and seed a second defect on top of the first, which is exactly the
+ambiguity packet §2's minimality bar exists to prevent. Disclosed as open
+question 1: if dv_lead meant stream-only, M1 is the wrong mutation and must be
+re-seeded rather than reinterpreted after its result.
+
+M2 (CRC held across a lane-4 start's octets 0-3). The accumulator's enable is one
+binding, `crc_update`, with exactly one consumer, and `cov_first ==:. 4` is true
+on exactly the word the intent names — the second preamble word of a lane-4
+start, C-18's first non-instance. So the diff is one line and touches nothing
+that computes coverage, counts, `tkeep`, `tlast` or timing. I rejected gating on
+`in_preamble &: frame_start4` (identical in effect, but a fresh expression where
+the file already contains the exact one, one line above, for M02's data shift).
+The reason the verdict provably flips rather than probably flips is M02's
+convention: `crc_in` carries *finished* values, so the 0x00000000 seed starts the
+internal register at 0xFFFFFFFF, and dropping four leading octets changes the
+value even when those octets are zero — the case a zero-initialised CRC would
+have absorbed silently.
+
+M3 (`tkeep` from the terminating input word). The intent names a quantity the
+module does compute — `cov_count` on the closing cycle, which in `Frame` is the
+terminate lane index — but computes two cycles before the `tkeep` decision needs
+it. I considered deriving it at the emit cycle from `pc`, `nc` and `off4`: it
+reproduces the quantity exactly on terminated frames at both lanes, and I
+rejected it because `off4` can already have been reloaded by a following frame at
+a REQ-110 restart, which would turn a `tkeep` defect into an intermittent one on
+abort stimuli. The faithful mechanism is the one the design already uses for the
+same class of fact: widen the ageing closure record by four bits and read the
+count back through the same `sel` that `strip` reads, so the mutant inherits the
+unmutated record-to-word association instead of inventing one. Two consequences
+had to be disclosed rather than smoothed: the delivered octet sequence changes
+(unavoidable — on this stream `tkeep` is what delivery means, and packet §2
+anticipates it), and the mutant is *silent* on lane-4-start frames terminating in
+lanes 1-7, because at a lane-4 start the frame's four-octet realignment offset
+cancels the four FCS octets exactly and the two derivations genuinely agree
+there. A one-sentence intent hid a probe that speaks at one start lane and at one
+terminate lane of the other; adjudicating it as five-of-five without that fact
+would over-credit the campaign.
+
+M4 (word bound reduced by one). M03 has no word counter and no word constant: the
+190-word figure is a consequence of the 1518-octet cap. 1514 delivered octets is
+189 full words plus two, and 1512 is 189 exactly, so both 1513 and 1514 need the
+190th word and the *word* bound falls by one iff the *octet* cap falls by two. I
+rejected the literal "constant minus one" (1517), which leaves 1513 delivered and
+does not move the bound the intent names at all. Where the new boundary lands is
+stated exactly in the report, because the packet says the position matters to
+adjudication.
+
+M5 (BUG-0001 restored). Reverted rather than re-derived, as the packet prefers,
+and the reverted hunk is quoted from `git show 0b64b68`. I re-derived the
+`max(0, k - 4)` invariant from the RTL first and only then compared it with the
+packet's statement — four reachable shapes at the two start lanes, all four
+giving exactly that excess — so the revert is justified by the mechanism and not
+merely by provenance.
+
+ON MY OWN BLINDING. The symmetry packet §1 names (I am to M03's bench what
+dv_lead is to M03's RTL) is not enforceable by any tool in this environment, so
+the only thing I can offer is a complete `Inputs` section and a deliberately
+over-wide abstention: I stayed out of BUG-0001 and out of dv_lead's journal even
+though nothing barred either, because each would have told me what the bench
+looks at. I also did not compile, because I cannot (ADR-0005 — the `fpga` switch
+holds dune and nothing else), and I did not simulate, because seeing a result
+before all five diffs existed is the one thing that voids the campaign.
+### Actions
+Authored five mutation diffs against `libs/hardcaml_ethernet/src/xgmii_rx_64.ml`
+at 6bd7e5a and wrote six files under `docs/reports/audit/WO-0039-mutations/`
+(M1-M5.diff plus README.md carrying, per mutation, the intent as understood, the
+site, the diff, the fidelity argument, the compile-confidence reasoning and the
+disclosures). Mutants were produced by an exact-string substitution script in my
+scratchpad that aborts unless each pattern matches exactly once in the pristine
+source; the diffs were generated from the results, not hand-written, and the
+README's inlined copies were injected from the `.diff` files and then verified
+byte-equal to them. Nothing outside `docs/reports/audit/` was written: `libs/`
+and `test/` are untouched (`git diff --stat -- libs/ test/` is empty) and I ran
+no `git commit` or `git push` (PROTOCOL §2). I applied no diff to the repository
+working tree — the apply checks ran against a scratch copy of the frozen blob.
+### Evidence
+All commands below are runnable from a checkout at 0d231ee; none of them is a
+build, and per ADR-0005 none is offered as gate evidence.
+
+1. Base identity. `git show 6bd7e5a:libs/hardcaml_ethernet/src/xgmii_rx_64.ml | sha256sum`
+   → `3d87515a843d98d7d5bd6692a9d19cdbe2b0dee4e430c88f871a2d4887f5be92`, 772
+   lines, byte-identical to the working tree copy; `git diff --stat 6bd7e5a HEAD -- libs/`
+   → empty output.
+2. Apply-clean. For each of M1-M5, against a fresh copy of that blob:
+   `git apply --check --verbose <M>.diff` → `Checking patch
+   libs/hardcaml_ethernet/src/xgmii_rx_64.ml...` and exit 0 for all five; each was
+   then applied and the result compared with the mutant source it was generated
+   from (`diff -q` silent, all five). Each patch names exactly one `+++` path.
+   Changed lines (± , marker comments included): M1 22, M2 5, M3 24, M4 4, M5 7.
+3. Syntax, with a proof the instrument is not vacuous.
+   `ocamlc -stop-after parsing -c <file>` (system OCaml 4.14.1) → exit 0 for the
+   pristine control and for all five mutants. Two negative controls — an
+   unbalanced parenthesis in M5's `have_word`, a dropped `in` after M3's
+   `sel_cov` — both exit 2 with a located error. This checks syntax only: it does
+   no type checking, and it needs no `ppx_hardcaml` because `[@@deriving
+   hardcaml]` is a well-formed attribute at parse time. It is not a build.
+4. M5's provenance. With comments and blank lines stripped, the M5 mutant source
+   is line-for-line identical to
+   `git show 0b64b68^:libs/hardcaml_ethernet/src/xgmii_rx_64.ml` (0b64b68^ =
+   47fcfda) — the tree BUG-0001 was raised against, whose defect was found by
+   test results and therefore by a successful build.
+5. Write-scope. `git status --porcelain` at the end of this work shows exactly
+   one line, `?? docs/reports/audit/WO-0039-mutations/`.
+### Outcome
+DoD met against packet §3 for all five mutations: diff in full, file and function
+touched, a fidelity argument in terms of mechanism, and — where a faithful
+minimal diff was not achievable — the divergence said plainly rather than
+substituted. Three such statements exist (M1's strobe reading, M3's unavoidable
+delivered-octet change and its silence at most lane-4 starts, M4's two-octet move
+of a constant to obtain a one-word move of a bound). Packet §3 also asks for a
+scope statement and an explicit line confirming the five bars: both are §1 of the
+README, and all five bars were honoured. No compile-only repair was needed under
+bar 5, none having been possible to detect without a build. Handoff: the six
+files to the orchestrator for commit, and then for transient application per
+packet §4 — one throwaway branch per mutation, parent 6bd7e5a, exactly one diff,
+never merged, deleted after its run. Mutated RTL must not enter history
+(PROTOCOL §10); every hunk carries an `MN MUTATION (WO-0039)` marker comment so
+that a leak is greppable, and checking mutation-window commits for those markers
+is my own follow-up duty (charter §9).
+### Open-questions
+1. M1's strobes. I delayed them with the stream on §9's pin. If dv_lead intended
+   the rx stream alone to move, M1 is a different defect and must be re-seeded,
+   not reinterpreted after its result — bar 5 cuts both ways and I will hold to
+   it.
+2. M3 is narrower than its one-sentence intent suggests (silent at lane-4 starts
+   terminating in lanes 1-7, for a reason intrinsic to the described defect). A
+   PASS on M3 should be read as covering the lane-0 case and one lane-4 case, not
+   the class.
+3. M4 moves the octet constant by two to move the word bound by one. If the
+   intent was the octet constant minus one, the bound does not move and the
+   mutation is a different one.
+4. A campaign-level point I owe the record even though it is dv_lead's call: this
+   packet's pass criterion 2 (red in the rows named in advance) makes a mutation
+   that reddens an unnamed row a finding rather than a pass. Two of my
+   disclosures above bear directly on that adjudication, and both were written
+   before any run, which is the only time they can be worth anything.
+5. Whether any of the five compiles is unknown to me and unknowable here
+   (ADR-0005). A build failure returns to me under bar 5 for a compile-only
+   repair; I will change nothing else if that happens.
+### Files-in-this-commit
+- docs/reports/audit/WO-0039-mutations/README.md
+- docs/reports/audit/WO-0039-mutations/M1.diff
+- docs/reports/audit/WO-0039-mutations/M2.diff
+- docs/reports/audit/WO-0039-mutations/M3.diff
+- docs/reports/audit/WO-0039-mutations/M4.diff
+- docs/reports/audit/WO-0039-mutations/M5.diff
