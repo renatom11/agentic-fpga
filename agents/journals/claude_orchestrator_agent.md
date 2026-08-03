@@ -5593,3 +5593,81 @@ and G is unblocked on the spec side.
 
 ### Files-in-this-commit
 - docs/specs/requirements.md
+
+## [J-orchestrator-0127] 2026-08-03T15:24:00Z | task:WO-0047 | Family F landed green; the co-sim lane's first execution adjudicated as a format defect
+
+### Trigger
+dv's RV-0047-VERDICT (ACCEPT, round 1) cleared family F for landing;
+the cosim job had produced its first-ever execution result on 9d1982f.
+
+### Inputs
+- The WO-0047 packet carrying two uncommitted layers (worker RETURNED
+  region, dv verdict region) on one file.
+- CI runs 30825741565 (9d1982f) and 30826473824 (616686f), fetched
+  job-level (continue-on-error masks the cosim job at run level).
+
+### Reasoning
+- Split-commit procedure as at WO-0043/WO-0046: worker-era
+  intermediate = HEAD (342 lines, State DRAFT retained) + worker
+  append region (current lines 350–639); verified pure insertion
+  vs HEAD before committing. dv's layer = state flip (1 deletion,
+  8 insertions) + lines 640–792.
+- The cosim failure is exit 4 (DIFFERENTIAL) by the script's map,
+  but the evidence is a canonical-format rejection, not a compared
+  divergence: theirs.canon octets printed as 16 zero-padded hex
+  digits against the grammar's exactly-2; Canonical.read refused
+  line 2 (compare exit 2). Position-by-position the octet values
+  agree across the whole first frame. Adjudication is dv's, not
+  mine — dispatched with the evidence verbatim; WO-0049 allocated
+  for the fix packet. R-CI-4's removal condition NOT met (check
+  4.2 never executed) — continue-on-error stays.
+- Site rebuilt only after verifying journal entry counts worktree
+  == HEAD for both active agents (the J-orchestrator-0125 class:
+  build.py reads the working tree; a mid-work journal append
+  would bake an uncommitted count into sponsor-facing pages). The
+  architect's in-progress spec edits touch nothing build.py reads
+  beyond FROZEN status lines, which they do not alter.
+
+### Actions
+- Split commits executed and pushed: 8e040f0 (tb_writer,
+  J-tb_writer-0011), 616686f (dv_lead, J-dv_lead-0058).
+- dv_lead dispatched: cosim run-1 adjudication + fix route
+  (WO-0049 allocated). architect_docs_lead dispatched: WO-0048
+  REQ-901 cascade (nic_top.md, traceability.md, the missing M03
+  row; repo-wide sweep). Parallel is safe: disjoint paths,
+  disjoint journals; dv's second task (family-F campaign freeze)
+  deliberately NOT double-dispatched — serialized behind the
+  adjudication return on the one-agent-one-journal rule.
+- BOARD rows added: WO-0047 (ACCEPTED · CI GREEN), WO-0046
+  (LANE LIVE · RUN 1 RED). Site rebuilt.
+
+### Evidence
+- Run 30826473824 build job: success, all 10 steps green
+  (dv's expected CI held: Build the only unknown, runtest green,
+  no promotion). Cosim job: failure, exit 4, same defect as
+  30825741565 — no new information.
+- Intermediate verification: `git diff HEAD -- <packet>` after
+  splice showed zero non-header deletions; 632 = 342 + 290 lines.
+
+### Outcome / DoD
+Family F is on the branch and green: 21 of 60 ASSERT rows benched.
+The co-sim lane is live end-to-end up to its comparator's input
+grammar; first differential verdict still owed, blocked on the
+WO-0049 fix. Two lead agents in flight.
+
+### Open questions
+- Recorded-timestamp defect, self-flagged: J-orchestrator-0126's
+  header says 16:45:00Z; the commit carrying it (9d1982f) was
+  pushed before 15:04Z. Entry stands (append-only); the time
+  field is wrong, the content unaffected.
+- Whether compare's parse-failure exit deserves its own lane exit
+  class distinct from DIFFERENTIAL(4) — put to dv with the
+  adjudication.
+
+### Files-in-this-commit
+- tasks/BOARD.md
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/index.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html
