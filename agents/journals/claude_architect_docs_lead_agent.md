@@ -3896,3 +3896,348 @@ rtl_lead for the M03 conformance defect the ruling exposes.
 - agents/handoffs/WO-0035_spec-queue-2.md
 - docs/specs/modules/xgmii_rx_64.md
 - docs/specs/requirements.md
+
+## [J-architect_docs_lead-0014] 2026-08-03T13:30Z | task:WO-0044 | ADR-0015 drafted for the co-sim lane's three questions — Icarus over Verilator on a 2-state argument, two vendored files under `test/` because a top-level `third_party/` is a constitutional amendment, and REQ-902 ruled NOT to extend; plus a §11.4 discharge that turns out to be a corroboration
+
+### Trigger
+
+Orchestrator, relaying `agents/handoffs/WO-0044_cosim-lane-opening.md` (dv_lead,
+committed at `e42edaa`), whose §7 declares the packet **BLOCKED on an ADR that
+is mine** and states three questions it must settle. Second, carried item: the
+spec-note discharge `J-dv_lead-0025` routed to me — SPEC-M01 §11.4 against CI
+`build` run 30769770945.
+
+### Inputs
+
+- `agents/charters/architect_docs_lead.md` (§3 ADR duty, §5 DoD, §7 E3, §9
+  licensing) and `agents/PROTOCOL.md` (§6 write scopes, §8 escalation classes,
+  §10 independence and licensing, §11 amendment).
+- `agents/handoffs/WO-0044_cosim-lane-opening.md` — the whole packet; §3
+  (requirements, not edits), §4 (Phase 1 is one frame + a deliberate mismatch),
+  §5 (our rows govern), §6 (dv's own independence boundary), §7 (the three
+  questions).
+- `docs/adr/ADR-0005-build-environment.md` — the pattern §7.1 points at, and its
+  empirical endpoint table.
+- `docs/adr/ADR-0004`, `ADR-0012`, `ADR-0014` — header conventions and the
+  precedent that an E3 ADR is *drafted* by me and *decided* by the sponsor.
+- `docs/specs/requirements.md` §10 — **REQ-901** verbatim (the transactional
+  comparison and its four declared divergence classes), **REQ-902**, **REQ-906**.
+- `docs/specs/architecture.md` §4 (M03's counterpart column) and its Provenance
+  and licensing paragraph; `docs/specs/SPEC-TEMPLATE.md` §11 (permanent item
+  numbers, closure recorded in place).
+- `docs/specs/modules/axi64.md` §11.4, §12, §13; `docs/specs/ifc_check/axi64_ifc.ml`
+  and `xgmii_rx_64_ifc.ml` (the WO-0010 witness at its line 51–54);
+  `git show f78766e:docs/specs/ifc_check/xgmii_rx_64_ifc.ml`.
+- `agents/journals/claude_dv_lead_agent.md` entry `J-dv_lead-0025` in full
+  (Reasoning, Evidence 3, Open-questions).
+- `scripts/policy.sh` `agent_may_write` (the decisive fact for D2's placement)
+  and `scripts/agent_commit.sh`'s blob gate; `.github/workflows/build.yml`
+  (the determinism step's `git add -A`); `tools/check_emitted_verilog.sh`
+  header (the "XGMII link partner lives under test/" precedent);
+  `tools/precompile_stubs/ifc_check.ml` (the stale UNVERIFIED note).
+- **Third-party, read under PROTOCOL §10's MIT permission**, fetched from
+  `raw.githubusercontent.com` on 2026-08-03 into the scratchpad and **not**
+  copied into the repository by me: `rtl/axis_xgmii_rx_64.v`, `rtl/lfsr.v`,
+  `COPYING`, `README.md` of `alexforencich/verilog-ethernet`.
+- The container's apt state (`apt-cache policy`, `apt-get download`,
+  `apt-get install -s`) — see Evidence.
+- **Not read**: `libs/**`, `rtl_snapshots/**` sources beyond what
+  `tools/dv_checks.sh` prints; `Essenceia/Nasdaq-HFT-FPGA` — no Phase-1
+  relevance and consult-only.
+
+### Reasoning
+
+**How the ADR came to be asked, since restating it is vacuity.** dv_lead did
+not ask for an ADR because a process rule demanded one. It stopped its own
+packet — the packet is `DRAFT`, `BLOCKED`, "do not spawn a worker against this"
+— because it identified three decisions that are **not verification-scope
+decisions** and declined to make them by default. Question 2 is the sharpest:
+dv states its own reading (vendored third-party source is outside its `libs/**`
+read bar), says it believes it, and then says it is "not for me to settle
+unilaterally". That is an agent declining to widen its own read permission by
+its own reasoning, and it deserved a ruling rather than a rubber stamp. So the
+first thing I did was try to make the ruling come out the *other* way, and the
+reason it does not is in D2's ground 1: the bar exists so tests cannot be
+back-fitted to the implementation under test, and a third-party implementation
+contains none of our implementation's choices to back-fit to. The bar has no
+purchase on it. What the exercise did produce is the clause I care about more
+than the ruling — the converse obligation, that the reference may never become
+a source of expected values — because *that* is the way this permission would
+actually go wrong, and it goes wrong silently, one convenient row at a time.
+
+**D1: I set out to choose Verilator and did not.** Verilator is the faster
+simulator and the charter already names it for Phase-2 full-day replay, so
+picking it would have meant one dependency instead of two — a real and
+countable saving. Three things beat it, and only one is about speed:
+
+1. **2-state versus 4-state.** Verilator resolves unknowns to a definite value.
+   On our own emitted RTL that is a modelling choice with a known cost. On a
+   *reference being used to corroborate us* it is the wrong failure mode in the
+   wrong direction: it can make the reference agree because the simulator
+   supplied a value. `WO-0044` §4 already names the failure mode to design
+   against — "a green Phase 1 that compared nothing" — and a 2-state simulator
+   is a mechanism for producing exactly that, at a level no deliberate-mismatch
+   check reaches, because the mismatch check perturbs the *expected* value and
+   this defect lives in the *observed* one.
+2. **Component count.** Phase 1's deliverable is that the lane exists. A C++
+   harness is one more thing between the stimulus and the comparison that can
+   be wrong while everything stays green.
+3. **Lint on someone else's file.** Verilator's warnings on third-party source
+   become either `-Wno-fatal` (discarding the value) or a waiver list we
+   maintain against an upstream we do not control — and `WO-0044` §3 says a new
+   dependency that reddens the suite on day one gets reverted, not fixed.
+
+**The part of D1 I think is actually the decision**: the bridge is **file-based**,
+so the simulator choice is a *reversible* door. I would not have been
+comfortable ruling against the charter's named simulator on a
+one-frame deliverable if the ruling were expensive to undo. It is not: the
+transaction file is the interface, so swapping `iverilog`/`vvp` for
+`verilator` changes one invocation script and no test and no expected value.
+That converts a decision made with almost no data into a decision that can be
+remade with data, which is the honest shape for it at Phase 1.
+
+**D2: the deciding fact is mechanical and I did not expect it.** dv's packet
+floats "a new top-level `third_party/`?" as the obvious home. It cannot be:
+`scripts/policy.sh`'s `agent_may_write` has no case arm matching `third_party/*`
+for any agent but the orchestrator, so vendoring there either forces the sole
+committer to do work the packet assigns to `data_wrangler`/`tb_writer`, or
+requires a PROTOCOL §6 amendment plus a `policy.sh` change plus a
+`test_protocol.sh` case (PROTOCOL §11) — a constitutional amendment to house
+two files. Once that is seen, `test/third_party/` is not a compromise but the
+right answer for a second reason: it keeps the *path* bar and the *semantic*
+bar naming the same set, which is what makes the `libs/**` bar enforceable at
+all. Ground 2 of the ruling is therefore not decoration; it is why placement
+and the boundary question are the same question.
+
+**The submodule rejection is the one I want on the record.** A submodule is the
+textbook answer to "pin third-party source" and I rejected it on a
+programme-specific ground: PROTOCOL §1's first non-negotiable property is that
+`git diff A..B` shows the change and the reasoning adjacent. A submodule bump
+shows a **SHA, not content**. The entire enforcement apparatus — R2 coupling,
+R4 files-list equality, the auditor's re-execution of Evidence — is built on
+the diff being the record, and a submodule is a hole in it that no rule
+catches. That is a better reason than the `.gitmodules` scope problem, which is
+merely inconvenient.
+
+**Licensing came out more specific than I assumed, which is the whole reason to
+check.** I had planned to write "copy `LICENSE` alongside". Upstream has no
+`LICENSE` — the file is `COPYING`, and its copyright line (2014-2018) matches
+**neither** vendored source header (2015-2017 and 2016-2023). So a single
+licence file is not sufficient attribution, and "tidying" a header would
+produce an attribution *narrower than the one the author wrote*. That turns the
+no-edit rule from a provenance preference into a licensing rule, and it is
+exactly the kind of thing the auditor's licensing check would have found later.
+
+**D3 is a scoping ruling, and the temptation was to make it a bigger one.**
+`WO-0044` §3 says a floating reference "makes REQ-902's determinism obligation
+meaningless", which invites extending REQ-902 to the lane. I ruled the opposite:
+REQ-902's subject is `rtl_snapshots/**` regenerated by `bin/generate.exe`, the
+simulator is not in that path, and adding a tool to the repository does not
+enlarge what a requirement about our emitter's output *means*. Stretching it
+would have felt like rigour and would in fact have made REQ-902 cite an
+artifact class no `build` step produces. The useful output of reading REQ-902
+closely was not a widened requirement but a **hazard**: the determinism step
+runs `git add -A`, so any simulator artifact left in the checkout fails the
+main suite — the single most likely way this lane gets reverted on day one,
+and the reason R-CI-1 and R-CI-5 are stated as requirements rather than left to
+implementation taste. In place of REQ-902 the lane gets a named, weaker,
+**conditional** guarantee whose four conditions are all recorded, and — the
+part that matters — one that is *exercised* in Phase 1 by running the sim twice
+and diffing, on the same principle as dv's deliberate-mismatch check. An
+unexercised determinism claim is worth what an unexercised comparator is worth.
+
+**Authority: I cannot accept this ADR and did not.** Charter §7 puts toolchain
+lanes and the verilog-ethernet licensing boundary at **E3**. This ADR is both.
+So the status is PROPOSED with per-decision authority lines, and the E3 surface
+is deliberately narrowed to two *permission* questions (may a second toolchain
+be added; may third-party source enter the repository) so that everything
+in-role — placement, pinning, the read-bar ruling, the REQ-902 scoping — is in
+force on commit and the comparison domain, bridge design and file format
+proceed in parallel. A blocked packet whose blocking surface is smaller than it
+looks is worth saying out loud.
+
+**Task 2, and this is the part I got wrong on the way in.** I was told §11.4
+was open and owed a discharge. It is not open: its *Status* cell has read
+`CLOSED (WO-0010)` since **f78766e** — the freeze SHA — citing run 30729342467,
+and `git show f78766e:docs/specs/ifc_check/xgmii_rx_64_ifc.ml` confirms the
+six-field witness was in that build. What `J-dv_lead-0025` quotes is the row's
+permanent *Item* cell, which states the original problem in the past tense
+("were unverified by any compile") because SPEC-TEMPLATE §11 makes item text
+permanent and records closure in the Status column beside it. dv's own
+`tools/precompile_stubs/ifc_check.ml` propagates the same misreading.
+
+So: recording run 30769770945 as "the first compile of all six names" would
+have written a **false** first-discharge claim into a frozen spec, on my
+signature, to satisfy a routing instruction. The instruction was right about
+what to do (annotate, don't erase) and wrong about what was there. I recorded
+the run — it is real and it is not nothing — as **corroboration at an
+independent site**, and I was careful not to inflate the increment either:
+as *name checks* the two witnesses are equal in force, since both resolve the
+labels against the real `Hardcaml_axi.Stream.Make (…) .Source` and either would
+fail on a v0.17.0 spelling divergence. The genuine increment is site
+independence — `bench.ml` is DV-side code in a different library with different
+opens and the `ppx_jane` path, projecting off an **instantiated** M03 port,
+where the WO-0010 witness lives in the same file family that transcribed the
+names. That is a smaller claim than "first discharge" and it is the one the
+evidence supports.
+
+**One consequence I chose to take rather than defer.** §13's preamble said
+"This spec has had none". Adding a row makes that false, and a frozen spec
+asserting a count its own change log contradicts is precisely the
+doc-truthfulness failure I am graded on. I corrected the sentence and said in
+the sentence itself that it was true when written — the correction is visible
+rather than laundered.
+
+### Actions
+
+- Wrote `docs/adr/ADR-0015-the-cosim-lane-dependency-reference-and-determinism.md`
+  (new): status/authority block splitting three in-role rulings from two E3
+  items; **D1** Icarus with the Verilator rejection and its three grounds, the
+  file-based-bridge reversibility argument, the measured availability story, the
+  never-a-PASS-when-skipped rule, and **eight numbered `build.yml` REQUIREMENTS
+  (R-CI-1 … R-CI-8)** for the orchestrator to implement; **D2** the
+  `test/third_party/verilog-ethernet/` layout, the measured two-file closure,
+  the three-notice licensing rule, the no-edit/parameters-not-patches rule, the
+  pin-bump-is-its-own-commit rule, five rejected alternatives with the
+  `policy.sh` and PROTOCOL §1 grounds, and the **`libs/**` boundary ruling with
+  its converse expected-value obligation**; **D3** the REQ-902 non-extension
+  ruling, the `git add -A` hazard, and *pinned-input reproducibility* with its
+  four conditions and its Phase-1 double-run exercise; plus Consequences and an
+  explicit "what this ADR does not decide".
+- `docs/specs/modules/axi64.md`, **two hunks, both append-shaped except one
+  corrected sentence**: §11.4's Status cell gains the corroboration annotation,
+  the correction of the routed premise, and the pointer to the stale
+  `tools/precompile_stubs/ifc_check.ml` note; its Tracked-as cell names the
+  routing entry. §13 gains its **first row** (record-only, non-breaking, ADR
+  `none`) and its preamble's "has had none" sentence is corrected in place with
+  the correction stated.
+- **Not touched**: §4.1's record blocks, §4.2, §6.1, §10, §12 of SPEC-M01; every
+  other spec; `requirements.md` (REQ-901/902/906 cited, none amended); every
+  gate file; `.github/`, `scripts/`, `tools/`, `test/`, `libs/`. **No file was
+  vendored** — the reference was read in the scratchpad and left there. No
+  `git commit`, no `git push`, no worker spawned.
+
+### Evidence
+
+Reproducible from a checkout at this commit's SHA except where marked as an
+external or environment observation:
+
+1. **Scope.** `git status --short` → `M docs/specs/modules/axi64.md` and
+   `?? docs/adr/ADR-0015-…md`, nothing else. `git diff --stat` → **1 file
+   changed, 11 insertions, 5 deletions**.
+2. **No record moved.** `bash tools/dv_checks.sh` →
+   `check_records_vs_appendix.sh`: **23 checks, 0 failures**, which is the
+   mechanical witness that SPEC-M01 §4.1's record blocks are still
+   byte-identical to `docs/specs/ifc_check/*.ml` — so §12's `ifc_check`
+   evidence still stands for this revision. `check_emitted_verilog.sh`: **5
+   checks, 0 failures, 3 pending**; self-test 17 cases, 0 failures. (The one
+   OPEN obligation the script reports is dv's, pre-existing, not mine.)
+3. **Table integrity.** Script over both edited/created files: **121 table rows
+   scanned in `axi64.md`, 0 failures**; **23 table rows in ADR-0015, 0
+   failures** — every row's unescaped-pipe count equals its block separator's
+   and every `**` span on a table row balanced.
+4. **§11.4 was already closed, and the witness was in the cited build.**
+   `git show f78766e:docs/specs/ifc_check/xgmii_rx_64_ifc.ml` ends with
+   `_witness_source_field_names` listing `x.tvalid; x.tdata; x.tkeep; x.tstrb;
+   x.tlast; x.tuser` off a `Signal.t Axi64.Source.t`. `f78766e` is the SHA
+   SPEC-M01 §12 records as the freeze SHA and §11.4 records as its closure SHA
+   (run 30729342467). `docs/specs/ifc_check/dune` declares
+   `(libraries hardcaml hardcaml_axi)`, and there is no `(dirs …)` stanza
+   anywhere in the tree, so that library is inside `dune build @default`.
+5. **The reference's instance closure is two files** (external observation,
+   fetched 2026-08-03, files left in the scratchpad):
+   `curl raw.githubusercontent.com/alexforencich/verilog-ethernet/master/rtl/axis_xgmii_rx_64.v`
+   → HTTP 200, 449 lines, 13,496 bytes; its only instantiation is `lfsr` at
+   line 177, instance `eth_crc`; no `` `include ``. `rtl/lfsr.v` → HTTP 200,
+   447 lines, 16,327 bytes, instantiates nothing.
+6. **The licence file is `COPYING`** (external observation): `LICENSE`,
+   `LICENSE.md`, `LICENSE.txt`, `license` → **404**; `COPYING` → **200**, 1,062
+   bytes, `Copyright (c) 2014-2018 Alex Forencich`. Header copyrights differ
+   from it and from each other: `axis_xgmii_rx_64.v` **2015-2017**, `lfsr.v`
+   **2016-2023**.
+7. **Simulator availability** (environment observation, dev container, Ubuntu
+   24.04 noble, 2026-08-03 — **not** gate evidence under ADR-0005 rule 1 and
+   REQ-906): `apt-cache policy iverilog` → candidate `12.0-2build2` from
+   `archive.ubuntu.com/ubuntu noble/universe`, `Installed: (none)`;
+   `apt-get download iverilog` → **fetched 2126 kB**, i.e. the Ubuntu archive is
+   reachable here where ADR-0005's opam and GitHub-`/archive/` endpoints are
+   not; `apt-get install -s -y iverilog` → `0 upgraded, 1 newly installed, 0 to
+   remove`, zero additional packages. **Limits stated in the ADR**: I simulated
+   the install and did not perform it, so `vvp` has not been run here. The
+   downloaded `.deb` was deleted; nothing was installed.
+8. **The `third_party/` blocker is in the script, not in my reading.**
+   `scripts/policy.sh` lines 40-89: `agent_may_write`'s `architect_docs_lead`,
+   `dv_lead`, `tb_writer`, `data_wrangler` and `formal_dv` arms have no pattern
+   matching `third_party/*`; only `orchestrator` returns 0 unconditionally.
+   `scripts/agent_commit.sh`'s blob gate is `AGENT_COMMIT_BLOB_MAX` defaulting
+   to **1000000** bytes — both reference files are far under it.
+9. **CI is owed and is not claimed.** No `build` run exists at this commit as
+   this entry is written. This commit changes no OCaml source and no workflow,
+   so no run is required by it; the R-CI-* requirements are for a future
+   orchestrator commit and their first green run is that commit's evidence,
+   not this one's.
+
+### Outcome
+
+**DoD met for both tasks, with one deliberate deviation on task 2.**
+
+(1) `ADR-0015` answers all three of `WO-0044` §7's questions and is scoped to
+Phase 1. Its status is **PROPOSED**: two E3 permission items go to the sponsor
+via the orchestrator (options + recommendation + cost are in the ADR body), and
+three in-role rulings are in force on commit. **WO-0044 stays BLOCKED, but only
+on the two E3 answers** — Phase 0's comparison domain, the bridge design and
+the harness file format are unblocked now, and dv_lead's stated reading of the
+`libs/**` boundary is confirmed with grounds and with a new standing obligation
+attached to it. `build.yml` requirements are stated as R-CI-1 … R-CI-8 for the
+orchestrator; I wrote no workflow edit.
+
+(2) The §11.4 discharge is recorded — **as a corroboration, not a first
+discharge**, which is the deviation. The routing premise ("unverified by
+compilation since M01") was stale: the row closed at `f78766e` under run
+30729342467. Recording run 30769770945 as the first compile would have put a
+false claim in a frozen spec. Both facts are now in the row, annotated, with
+nothing erased.
+
+**Handoff**: to the orchestrator — (a) an **E3 escalation** carrying ADR-0015's
+two permission items; (b) the R-CI-* requirements when the sponsor answers;
+(c) relay to dv_lead that the §11.4 premise was stale, its
+`tools/precompile_stubs/ifc_check.ml` note has been stale since `f78766e`
+rather than since 30769770945, and the `libs/**` boundary is ruled as it read
+it — with the expected-value clause attached. No countersignature is owed on
+this commit: no normative text moved.
+
+### Open-questions
+
+- **The two E3 items are the whole block.** If the sponsor declines vendoring,
+  the fallback is fetch-at-build with a checksum-verified pinned raw URL, and
+  D3's hazard analysis (`git add -A`) becomes load-bearing rather than
+  precautionary. I did not draft that fallback in full because drafting a
+  rejected option's design before it is rejected is how ADRs become unreadable.
+- **`tools/precompile_stubs/ifc_check.ml` is stale and is not mine.** dv_lead
+  named it as owed at `J-dv_lead-0025`; the correction it needs is one line
+  larger than dv thinks, because the note has been stale since `f78766e`.
+- **R-CI-4's gate removal has a condition but no owner.** I stated that
+  `continue-on-error` comes off in its own commit once the deliberate-mismatch
+  check has fired. Who executes that is the orchestrator's to assign; if nobody
+  is named it will not happen, and a permanently non-blocking lane is
+  decoration.
+- **The `lfsr.v` dependency is measured at `master`, not at a pin.** The
+  vendoring worker must re-derive the closure at the SHA it actually pins; the
+  ADR states the check (the simulator resolving every instance with no
+  missing-module diagnostic) rather than asserting the file list is eternal.
+- **Two simulators is a real cost I have only bounded, not paid.** If Phase 3's
+  error-path volume makes Icarus too slow, the swap is one script by
+  construction — but that claim is untested until a bridge exists.
+- Carried unchanged from `J-architect_docs_lead-0013`: the M03 RTL
+  non-conformance against §9 ruling 9; §6.1 item 4 left unscoped; §9's
+  "Aborted-and-forwarded" paragraph indexing {1,2,4,6,7}/{3,5,8} one step out
+  of the table's literal order; **C-45**, C-36, ADR-0012's residual, REQ-007's
+  scoping clause at two modules, C-38, requirements.md's `DRAFT` header against
+  its §13's frozen treatment, C-2, C-3, C-5, C-7, C-9's REQ-903 half, C-32,
+  C-33, C-44. The two re-countersignatures and one concurrence owed at
+  `J-architect_docs_lead-0013`'s SHA remain owed.
+
+### Files-in-this-commit
+
+- docs/adr/ADR-0015-the-cosim-lane-dependency-reference-and-determinism.md
+- docs/specs/modules/axi64.md
