@@ -17,6 +17,32 @@
 # directly — see "THE PINNED ENTRY POINTS" below, which replaces round 1's
 # speculative section of the same name.
 #
+# ROUND 3 (`WO-0049` §8, dv_lead's request, routed by the orchestrator as its
+# own packet — see `WO-0049`'s own §8 header: "tb_writer: do not act on this,
+# and do not open tools/**"; and `RV-0049-VERDICT` §4's measured addendum on
+# that same packet): `test/cosim/compare.ml` gained a new exit code this
+# round, `3` = "could not read a canonical file" (a `tb_writer`-scoped fix,
+# `WO-0049` §5, ACCEPTED). Two changes here as a result:
+#   (1) Check 4.1's mapping of `compare`'s exit code now separates a REAL
+#       divergence (compare's own `1` -> `EXIT_DIFFERENTIAL(4)`) from NO
+#       VERDICT REACHED AT ALL (compare's own `3` -> the new
+#       `EXIT_NO_VERDICT(8)`). Before this round both collapsed onto `4` —
+#       exactly the mis-classification `WO-0049` was written about: run
+#       `30825741565`'s malformed `theirs.canon` was reported as if it were a
+#       differential finding, when nothing had actually been compared.
+#   (2) `compare`'s own exit `2` is measured, not assumed, to be AMBIGUOUS —
+#       it is `compare.ml`'s usage-error code AND the code OCaml's runtime
+#       assigns an uncaught exception (dv_lead, `RV-0049-VERDICT` §4,
+#       measured: a bare `failwith` alone exits 2 under the system OCaml
+#       toolchain). This script always invokes `compare` with exactly the
+#       two required arguments at check 4.1's call site, so its usage branch
+#       can never legitimately fire there — an observed `2` is therefore
+#       never read as "usage" here. It maps to `EXIT_INTERNAL(9)`, the same
+#       code any other code `compare`'s documented contract does not name
+#       also gets.
+# See "EXIT CODES" below for the full, current table, and "THE PINNED ENTRY
+# POINTS" for the compare.exe entry's updated note.
+#
 # THE THREE CHECKS (WO-0046 §4, order followed exactly)
 #
 #   4.1  DIFFERENTIAL COMPARISON  — one 64-octet good-FCS frame, lane-0 start,
@@ -163,6 +189,15 @@
 #                      would have made check 4.1 exit 2 on every run,
 #                      never actually comparing anything. Fixed this round
 #                      by reading the real source before landing it.
+#                      ROUND 3: `compare.ml` also now documents exit `3`
+#                      ("could not read a canonical file", `WO-0049` §5) --
+#                      still 0 clean / 1 divergence / 2 usage / 3 no-verdict.
+#                      This script's check-4.1 call site always passes
+#                      exactly the required two arguments, so `compare`'s own
+#                      usage branch (exit 2) can never legitimately fire from
+#                      THIS call — see EXIT CODES 9 below for what an
+#                      observed 2 here actually means (`WO-0049` §8,
+#                      `RV-0049-VERDICT` §4).
 #   compare.exe --self-test
 #                      exactly one argument, the literal `--self-test`.
 #                      Unchanged from round 1's assumption; confirmed.
@@ -189,7 +224,18 @@
 #
 # EXIT CODES — the failing check named on stdout AND encoded in the exit
 # code, so CI, a human, and a re-run script can all tell which outcome
-# occurred without re-reading the log:
+# occurred without re-reading the log.
+#
+# WO-0049 §8 (dv_lead's request; routed here by the orchestrator, ACCEPTED at
+# `RV-0049-VERDICT`): the codes below are partitioned along one axis — DID
+# THE LANE REACH A VERDICT? `2` (PREREQ), `3` (BUILD) and `8` (NO-VERDICT,
+# added this round) mean it did NOT; `4` (DIFFERENTIAL), `5` (SELFTEST) and
+# `6` (DETERMINISM) mean it ran to completion and the verdict it reached was
+# negative. Conflating the two is the concrete hazard §8 names: "a reader, or
+# a future automated gate, sees EXIT_DIFFERENTIAL and reads 'our RTL diverged
+# from the MIT reference' — a far more consequential claim than 'our own
+# testbench wrote a malformed file'." A broken harness must never be
+# reportable as an anchor finding.
 #
 #   0  PASS         — all three checks (4.1, 4.2, 4.3) passed.
 #   2  PREREQ       — iverilog, vvp or dune is not on PATH. The lane DID NOT
@@ -209,10 +255,21 @@
 #                     error, a driver crash) is the story — the failing
 #                     command's own output is printed immediately above the
 #                     "FAILED CHECK: BUILD" line.
-#   4  DIFFERENTIAL — check 4.1: `compare` reported a divergence, or could
-#                     not be run to a verdict.
+#   4  DIFFERENTIAL — check 4.1: `compare` REACHED a verdict (its own exit 1)
+#                     and it was negative — a real disagreement between the
+#                     reference and our implementation. As of WO-0049 §8
+#                     (ACCEPTED): a run that did NOT reach a verdict is never
+#                     reported under this code, however it failed — see
+#                     NO-VERDICT(8) below. (Before this round this code's own
+#                     description read "reported a divergence, OR could not
+#                     be run to a verdict" — precisely the conflation §8
+#                     identifies; that wording is gone.)
 #   5  SELFTEST     — check 4.2: `compare --self-test` did not confirm the
-#                     production comparator has teeth.
+#                     production comparator has teeth. `compare`'s own
+#                     contract (WO-0049 §5.5, ACCEPTED) guarantees
+#                     `--self-test`'s aggregate exit is 0 or 1 only — it must
+#                     not return 3 (or 2) as its own result, so this code
+#                     carries none of check 4.1's ambiguity.
 #   6  DETERMINISM  — check 4.3: the two-run byte-for-byte diff of the
 #                     canonical files found a difference.
 #   7  PROVENANCE   — a sidecar field the reproducibility guarantee's
@@ -226,9 +283,40 @@
 #                     INTERNAL because the three checks' own machinery may
 #                     be perfectly fine — only the provenance record is not
 #                     attestable, and that is reason enough on its own.
+#   8  NO-VERDICT   — check 4.1's `compare` invocation could not reach a
+#                     verdict AT ALL: it exited 3, its own documented "could
+#                     not read a canonical file" code (WO-0049 §5, ACCEPTED)
+#                     — a grammar violation (`Canonical.read`'s `Failure`) or
+#                     an I/O failure (`Sys_error`) on either producer's
+#                     canonical file. NOT a claim that the reference and our
+#                     implementation agree OR disagree — neither was
+#                     established. This is precisely the class of failure
+#                     WO-0049 itself was written about (run `30825741565`: a
+#                     malformed `theirs.canon` was reported as
+#                     EXIT_DIFFERENTIAL; this code exists so that never
+#                     happens again). Distinct from BUILD(3): BUILD is a
+#                     failure BEFORE `compare` is even invoked (dune,
+#                     iverilog, or a producer's own nonzero exit or missing
+#                     output file); NO-VERDICT is specifically `compare`
+#                     having run and declared, in its own words, that it
+#                     could not read what it was given.
 #   9  INTERNAL     — a machinery problem unrelated to the above (bad
 #                     invocation, mktemp failure, a build reported success
-#                     but the expected binary is missing).
+#                     but the expected binary is missing) — OR check 4.1's
+#                     `compare` exiting an AMBIGUOUS or unrecognized code,
+#                     most notably its own `2`. `compare.ml` assigns `2` to a
+#                     usage error, but this script always invokes it with
+#                     exactly the two required positional arguments at that
+#                     call site, so that branch can never legitimately fire
+#                     here; an observed `2` is therefore the OCaml runtime's
+#                     OWN uncaught-exception exit code, which happens to
+#                     collide with the usage code `compare.ml` chose
+#                     (dv_lead, `RV-0049-VERDICT` §4, measured: a bare
+#                     `failwith` alone exits 2 under the system OCaml
+#                     toolchain). A bare `2` cannot distinguish "usage" from
+#                     "compare crashed internally", so this script never
+#                     guesses which — it reports INTERNAL, never
+#                     DIFFERENTIAL and never "usage" (WO-0049 §8).
 #
 # USAGE
 #   tools/cosim/run_cosim.sh        run all three checks, no arguments
@@ -257,6 +345,7 @@ EXIT_DIFFERENTIAL=4
 EXIT_SELFTEST=5
 EXIT_DETERMINISM=6
 EXIT_PROVENANCE=7
+EXIT_NO_VERDICT=8
 EXIT_INTERNAL=9
 
 say() { printf '%s\n' "$*"; }
@@ -564,15 +653,57 @@ run_pipeline "$WORK/run1" "run1"
 # ours_run (confirmed against the landed source; see header). Round 1 called
 # this with zero arguments under the assumption it defaulted like ours_run
 # does; it does not, and that call would always have hit compare's own
-# usage branch (exit 2) without comparing anything. Fixed here.
+# usage branch (exit 2) without comparing anything. Fixed in round 2.
 DIFF_OUT="$("$COMPARE_BIN" "$WORK/run1/ours.canon" "$WORK/run1/theirs.canon" 2>&1)"
 DIFF_RC=$?
 say "$DIFF_OUT"
-if [ "$DIFF_RC" -ne 0 ]; then
-  dump_run "$WORK/run1" "run1"
-  die "$EXIT_DIFFERENTIAL" "DIFFERENTIAL COMPARISON (compare exited $DIFF_RC)"
-fi
-say "  CHECK 1/3: PASSED"
+
+# ROUND 3 (WO-0049 §8, ACCEPTED at RV-0049-VERDICT): classify compare's exit
+# code along the "did the lane reach a verdict?" axis instead of collapsing
+# every nonzero onto EXIT_DIFFERENTIAL(4). compare's own contract
+# (test/cosim/compare.ml, WO-0049 §5): 0 clean, 1 divergence, 2 usage error,
+# 3 could not read a canonical file (no verdict reached at all). This call
+# site always passes exactly the two required positional arguments above, so
+# compare's own usage branch can NEVER legitimately fire here -- an observed
+# 2 is therefore never "usage"; it is the OCaml runtime's OWN
+# uncaught-exception exit code, which happens to collide with the usage code
+# compare.ml chose (dv_lead, RV-0049-VERDICT §4, measured: a bare `failwith`
+# alone exits 2 under the system OCaml toolchain). A bare 2 cannot
+# distinguish "usage" from "compare crashed internally", so this script
+# never guesses which -- an unrecognized/ambiguous code (2, or anything else
+# outside {0,1,3}) is fail-closed as INTERNAL(9), never as DIFFERENTIAL(4)
+# and never read as "usage".
+case "$DIFF_RC" in
+  0)
+    say "  CHECK 1/3: PASSED"
+    ;;
+  1)
+    # A verdict WAS reached, and it was negative: compare actually read and
+    # compared both canonical files and found a real divergence.
+    dump_run "$WORK/run1" "run1"
+    die "$EXIT_DIFFERENTIAL" "DIFFERENTIAL COMPARISON (compare reported a divergence, exit 1)"
+    ;;
+  3)
+    # NO VERDICT: compare could not even read one of the two canonical
+    # files (a grammar violation or an I/O failure -- WO-0049 §5). This is
+    # NOT a claim that the reference and our implementation agree or
+    # disagree -- neither was established. WO-0049 §8: "a broken harness
+    # must never be reportable as an anchor finding" -- this is the class
+    # that keeps that claim from ever being made under DIFFERENTIAL's name
+    # again (run 30825741565 is the case this exists for).
+    dump_run "$WORK/run1" "run1"
+    die "$EXIT_NO_VERDICT" "NO-VERDICT (compare could not read a canonical file, exit 3)"
+    ;;
+  *)
+    # Ambiguous or unrecognized -- most notably compare's own 2, which this
+    # call site's fixed, always-correct two-argument invocation can never
+    # legitimately produce via compare's usage branch (see the comment
+    # above). Fails closed as INTERNAL rather than guessing which of
+    # "usage" or "compare crashed internally" occurred.
+    dump_run "$WORK/run1" "run1"
+    die "$EXIT_INTERNAL" "INTERNAL (compare exited ambiguous/unrecognized code $DIFF_RC)"
+    ;;
+esac
 
 # ------------------------------------------------------------------ #
 # CHECK 2/3 — DELIBERATE-MISMATCH SELF-TEST (§4.2)                    #

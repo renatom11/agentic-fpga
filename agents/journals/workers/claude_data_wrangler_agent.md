@@ -460,3 +460,292 @@ rather than assumed resolved by silence.
 
 - tools/cosim/run_cosim.sh
 - agents/handoffs/WO-0046_cosim-phase-1.md
+
+## [J-data_wrangler-0003] 2026-08-03T16:11:06Z | task:WO-0049 | run_cosim.sh round 3 — the NO-VERDICT class, and never reading compare's ambiguous 2 as "usage"
+
+### Trigger
+
+A fresh spawn. No "work-order id + spawn UTC timestamp" short-id token
+(PROTOCOL §4.1's described form) was present in the orchestrator's dispatch
+prompt this session received — recording that honestly again, as
+`J-data_wrangler-0001` did, rather than inventing one. The dispatch's
+identifying content: implement `WO-0049` §8 (dv_lead's request, ACCEPTED and
+committed inside `WO-0049_cosim-canon-format-fix.md`, which routes it as "for
+the orchestrator to route as its own packet" and explicitly bars tb_writer
+from acting on it or opening `tools/**`) — add a NO-VERDICT exit class to
+`tools/cosim/run_cosim.sh` distinguishing "compare could not read a
+canonical file" (its new exit 3, landed by tb_writer at `6d1b994`) from a
+real differential finding, and separately map compare's exit 2 to
+`EXIT_INTERNAL(9)`, never "usage", per `RV-0049-VERDICT` §4's measurement
+that exit 2 is ambiguous (compare's own usage code collides with OCaml's
+uncaught-exception runtime exit).
+
+### Inputs
+
+- `agents/charters/data_wrangler.md` (full read, this spawn).
+- `agents/PROTOCOL.md` (full read, this spawn).
+- `agents/journals/workers/claude_data_wrangler_agent.md` up to
+  `J-data_wrangler-0002` (full read, this spawn) — my own prior two rounds on
+  this same file.
+- `agents/handoffs/WO-0049_cosim-canon-format-fix.md` at HEAD (commit
+  `2fb9e66`, "WO-0049: review verdict recorded") — full read: the DRAFT header
+  and §§1-7 (dv_lead's adjudication, the fix, the sweep, the new exit-3
+  contract, the "what must not change" ruling), §8 (the data_wrangler
+  follow-up this spawn implements, verbatim, including its own recommended
+  numbering "e.g., 8 = NO-VERDICT / harness" and its three other bullet
+  points), the tb_writer Return log (which implementation of the fix was
+  chosen and why, the full directive-width sweep table), and
+  `RV-0049-VERDICT` in full (the seal-that-never-existed finding in §1, which
+  does not bear on this task; §4's ACCEPT of the exit-3 work and its own
+  measured "Residual 2" — exit 2 still double-duties, confirmed by dv_lead's
+  own probe of an injected internal bug, which is the exact citation this
+  round's comments carry).
+- `test/cosim/compare.ml` at `6d1b994` (`git show`, read in full) — READ
+  ONLY, to confirm the landed exit-code contract (0 clean / 1 divergence / 2
+  usage / 3 could-not-read) before writing any mapping against it; this is a
+  `test/**` read, not a write — my write scope is unchanged.
+- `tools/cosim/run_cosim.sh` at HEAD (round 2's committed version) — re-read
+  via the `Read` tool before editing, per the tool's own
+  read-before-write requirement.
+- `libs/**`, `top/**`, `bin/**`, `rtl_snapshots/**`, `.github/**` — NOT read,
+  per the dispatch's explicit constraint and my charter's forever-scope
+  exclusion.
+
+### Reasoning
+
+**§8 fixes the axis, leaves two things to me: the number and the "other
+nonzero" behavior.** §8's own recommendation names the mapping precisely
+("a distinct class, e.g., 8 = NO-VERDICT / harness, mapped from compare's new
+exit 3"; "1 continues to map to EXIT_DIFFERENTIAL(4)"; "an unrecognised
+nonzero from compare maps to EXIT_INTERNAL(9), not to 4"; drop "or could not
+be run to a verdict" from the class-4 wording) — so this was implementation
+of a settled design, not a fresh one, and I followed §8's own suggested
+number (8) rather than picking a different unused one, since it was offered
+and nothing argued against it (7 and 9 were already taken by PROVENANCE and
+INTERNAL; 1 was the only other unused single digit and §8 did not suggest
+it).
+
+**Where a decision was still mine: scoping "unrecognized nonzero" to include
+compare's own 2, deliberately, rather than treating 2 as a fourth case.** The
+dispatch's item 2 and `RV-0049-VERDICT` §4's residual both single out 2 by
+name ("exit 2 still double-duties... an ambiguous or unrecognized code
+belongs in EXIT_INTERNAL(9)"). I implemented this as one `case` arm (`*`)
+covering 2 and any other code compare's documented contract does not name
+(0/1/3), rather than a dedicated `2)` arm with special wording, because the
+whole point of dv_lead's finding is that 2 carries NO information this
+script can act on differently from any other unrecognized code — both mean
+"compare did something this contract doesn't describe," and giving 2 its own
+arm would tempt a future reader into writing 2-specific handling that
+implies more certainty than the ambiguity actually allows. The comment at the
+call site names 2 explicitly (as both dv_lead's citation and the dispatch
+ask for), but the code treats it exactly like 7, 42, or anything else
+outside `{0,1,3}`.
+
+**Why the mapping had to live in a case statement, not an extended `if`, and
+why `dump_run` needed to move.** Round 2's code called `dump_run` only on
+the single existing failure path (any nonzero). Preserving evidence-before-
+cleanup (§7.2/§7.3, and this dispatch's own "every failure path still fails
+the run... and evidence still prints before cleanup on every new path")
+across three distinct failure destinations (1, 3, and the ambiguous default)
+meant either three copies of the `dump_run "$WORK/run1" "run1"` call or one
+shared before a dispatch — I chose three explicit calls, one per `case` arm,
+over a shared pre-branch call, because a `case` arm's own `die` still needs
+to run afterward with a different exit code and message per arm, and keeping
+`dump_run` textually next to its own `die` in each arm makes it obvious by
+inspection that no arm was left silently without it (the failure mode this
+round exists to prevent — WO-0049 §8's own example, where a defect in
+diagnostics production, not RTL, was what actually happened — is exactly the
+kind of thing a shared, easy-to-miss "oh I forgot to call dump_run in the new
+branch" bug would recreate one level down).
+
+**Nothing here reopens `RV-0049-VERDICT` §1's finding (the missing WO-0049
+seal).** That finding is about a sealed sweep of `tb_xgmii_rx_64.v`'s format
+directives — `test/**`, tb_writer's territory, already ACCEPTED and outside
+my scope entirely. It is read and understood, not re-litigated, and nothing
+in this round's work touches it.
+
+**Check 4.2 (`compare --self-test`) was deliberately left alone.** I
+considered whether the same "2 is ambiguous, don't call it usage" principle
+should also guard the self-test call site (`SELFTEST_RC -ne 0` currently maps
+any nonzero to `EXIT_SELFTEST(5)`). I did not extend it there, for a reason
+grounded in the landed contract rather than a guess: `compare.ml`'s
+`self_test` function only ever returns 0 or 1 to `main`, and its own
+docstring plus `WO-0049` §5.5 (ACCEPTED at `RV-0049-VERDICT` §4, "confirmed")
+guarantee `--self-test`'s aggregate exit is 0 or 1 ONLY — it is not
+constructed to propagate 2 or 3 the way the two-argument comparison path
+can. Extending the ambiguity-guard to a call site whose own committed
+contract already rules the ambiguity out would be solving a problem that
+does not exist there, and neither the dispatch nor `WO-0049` §8 asked for
+it — §8's text is scoped to "check 4.1" and "compare's new exit 3" from the
+real comparison call throughout. Left unflagged as an open question rather
+than silently extended, because the reasoning is load-bearing enough to
+state, not because I am unsure of it.
+
+### Actions
+
+Modified `tools/cosim/run_cosim.sh` in place (round 2's version at HEAD):
+added `EXIT_NO_VERDICT=8` next to the other exit constants; added a "ROUND 3"
+header note (mirroring round 1/round 2's own pattern) summarizing the two
+changes and citing `WO-0049` §8 and `RV-0049-VERDICT` §4; rewrote the "EXIT
+CODES" header comment block to (a) open with the "did the lane reach a
+verdict?" partition in dv_lead's own words, (b) reword class 4
+(DIFFERENTIAL) to drop "or could not be run to a verdict" and state plainly
+that a verdict was reached and it was negative, (c) add class 8 (NO-VERDICT)
+with its distinction from BUILD(3) spelled out, (d) extend class 9
+(INTERNAL) to name compare's ambiguous 2 explicitly with dv_lead's measured
+citation, (e) add one sentence to class 5 (SELFTEST) noting `--self-test`'s
+own contract already rules this ambiguity out there; added one sentence to
+the "PINNED ENTRY POINTS" section's `compare.exe` entry, cross-referencing
+the new EXIT CODES 9 text; replaced check 4.1's `if [ "$DIFF_RC" -ne 0 ]`
+block with a `case "$DIFF_RC" in 0|1|3|*)` dispatch, each non-zero arm
+calling `dump_run "$WORK/run1" "run1"` before its own `die` with a
+class-specific exit code and message (1 -> `EXIT_DIFFERENTIAL`, 3 ->
+`EXIT_NO_VERDICT`, everything else including 2 -> `EXIT_INTERNAL`). No file
+outside `tools/cosim/run_cosim.sh` was touched. Did not append anything to
+`agents/handoffs/WO-0049_cosim-canon-format-fix.md` — its own §8, read in
+full, directs the orchestrator to route this as a separate packet and
+instructs tb_writer, not me, on what not to do; nothing in §8 or the rest of
+the packet asks data_wrangler to append a Return-log note to that file, and
+the packet's own Return/verdict log is already closed out at
+`RV-0049-VERDICT`'s ACCEPT. Confirmed via `git status --porcelain` before
+finishing that only `tools/cosim/run_cosim.sh` is touched by this spawn (a
+pre-existing, unrelated, uncommitted modification to `site/build.py` is
+present in the working tree from other work — not read beyond its `git diff`
+header, not touched, and not part of this entry's `Files-in-this-commit`).
+
+### Evidence
+
+```
+$ bash -n tools/cosim/run_cosim.sh && echo "SYNTAX OK"
+SYNTAX OK
+
+$ shellcheck tools/cosim/run_cosim.sh; echo "exit: $?"
+exit: 0        # zero findings
+
+$ ./tools/cosim/run_cosim.sh; echo "EXIT CODE: $?"
+=== PREREQUISITES ===
+  [FAIL] iverilog not found on PATH
+  [FAIL] vvp not found on PATH
+  [FAIL] dune not found on PATH
+  ...
+run_cosim: FAILED CHECK: PREREQUISITES (missing: iverilog vvp dune)
+EXIT CODE: 2                          # unchanged from rounds 1-2, confirming
+                                       # this round's edits (header + check
+                                       # 4.1 only) did not disturb the
+                                       # PREREQUISITES gate ahead of it.
+
+$ ls -d /tmp/run_cosim.* 2>&1 || echo "none left (cleanup via trap worked)"
+none left (cleanup via trap worked)
+
+$ ./tools/cosim/run_cosim.sh --help >/dev/null; echo "help exit: $?"
+help exit: 0                          # the expanded header comment still
+                                       # extracts and renders via --help's
+                                       # own sed range without error.
+```
+
+**The dry-exercise of the new exit mapping, as the dispatch asked for**
+(no `iverilog`/`vvp`/`dune` in this container, so check 4.1 itself cannot run
+end-to-end here; the mapping logic is exercised in isolation instead, against
+the EXACT committed code, not a re-implementation of it):
+
+```
+$ sed -n '657,706p' tools/cosim/run_cosim.sh > /tmp/.../wo0049_8_stub/check41_block.sh
+    # verbatim extraction of check 4.1's block (DIFF_OUT=... through esac)
+    # out of the committed working tree via a line-range sed, exactly the
+    # technique J-data_wrangler-0002 used for the PROVENANCE-section harness
+    # -- never hand-retyped, never written back into the repository.
+```
+
+A stub `compare` (`stub_compare.sh`, ignores its argv, exits
+`${STUB_EXIT:-0}`) stands in for the real binary. A harness
+(`harness.sh`) sources the extracted block in a subshell per scenario, with
+stub `say`/`hdr`/`dump_run`/`die` functions that record their own calls
+(`die`'s stub still calls the real `exit`, so the subshell's exit code is the
+real one the production `die` would have produced):
+
+```
+$ bash harness.sh
+=== scenario: 0 = clean (PASS, no die) (stub compare exit = 0) ===
+  [say] (stub compare invoked with: .../fake_work/run1/ours.canon .../fake_work/run1/theirs.canon)
+  [say]   CHECK 1/3: PASSED
+  [fell through -- no die called, script would continue]
+  ==> subshell exit code: 0
+
+=== scenario: 1 = real divergence (WO-0049 section 5's exit 1) (stub compare exit = 1) ===
+  [dump_run CALLED] dir=.../fake_work/run1 label=run1
+  [die CALLED] exit_code=4 check_name="DIFFERENTIAL COMPARISON (compare reported a divergence, exit 1)"
+  ==> subshell exit code: 4
+
+=== scenario: 3 = could not read a canonical file (WO-0049 section 5's new exit 3) (stub compare exit = 3) ===
+  [dump_run CALLED] dir=.../fake_work/run1 label=run1
+  [die CALLED] exit_code=8 check_name="NO-VERDICT (compare could not read a canonical file, exit 3)"
+  ==> subshell exit code: 8
+
+=== scenario: 2 = ambiguous (usage-vs-uncaught-exception collision, RV-0049-VERDICT section 4) (stub compare exit = 2) ===
+  [dump_run CALLED] dir=.../fake_work/run1 label=run1
+  [die CALLED] exit_code=9 check_name="INTERNAL (compare exited ambiguous/unrecognized code 2)"
+  ==> subshell exit code: 9
+
+=== scenario: 7 = unrecognized/other nonzero (stub compare exit = 7) ===
+  [dump_run CALLED] dir=.../fake_work/run1 label=run1
+  [die CALLED] exit_code=9 check_name="INTERNAL (compare exited ambiguous/unrecognized code 7)"
+  ==> subshell exit code: 9
+
+=== assertions ===
+  [PASS] compare exit 0 -> script continues (EXIT_OK=0) (got 0)
+  [PASS] compare exit 1 -> EXIT_DIFFERENTIAL (got 4)
+  [PASS] compare exit 3 -> EXIT_NO_VERDICT (NOT EXIT_DIFFERENTIAL) (got 8)
+  [PASS] compare exit 2 -> EXIT_INTERNAL (NEVER read as usage, NEVER EXIT_DIFFERENTIAL) (got 9)
+  [PASS] compare exit 7 (unrecognized) -> EXIT_INTERNAL (got 9)
+
+ALL ASSERTIONS PASSED
+HARNESS EXIT: 0
+```
+
+(Paths above truncated with `...` for readability in this journal; the full
+paths are under this spawn's scratchpad,
+`/tmp/claude-0/-home-user-agentic-fpga/681e6e34-cd2f-5f3e-a4c3-42391e4d282b/scratchpad/wo0049_8_stub/`
+— ephemeral, never written into the repository, per ADR-0003/F5's
+ephemeral-artifact disclosure rule.) All commands above were run in this
+container at this tree. The end-to-end path (a real `compare.exe` built and
+actually returning 1 from a genuine divergence, or 3 from a genuine
+`Canonical.read` failure against a real `theirs.canon`) remains traceable by
+review only, same absence as every prior round — no `iverilog`/`vvp`/`dune`
+in this container, and `test/**` is outside my write scope regardless.
+
+### Outcome
+
+DoD vs the dispatch: NO-VERDICT class added (`EXIT_NO_VERDICT=8`, per §8's
+own suggested number) and wired to compare's exit 3 only; compare's exit 2
+mapped to `EXIT_INTERNAL(9)` and never read as "usage," per dv_lead's
+measurement (`RV-0049-VERDICT` §4) and cited as such in both the header and
+the call-site comment; header exit-map comment and the class-4 wording
+updated so a log reader can tell a verdict-reached failure (DIFFERENTIAL/
+SELFTEST/DETERMINISM) from a no-verdict failure (PREREQ/BUILD/NO-VERDICT) at
+a glance, per the dispatch's item 3; sole-sidecar-writer rule, fail-closed
+provenance, `trap … EXIT` cleanup, and the single no-argument entry point are
+all untouched (nothing outside check 4.1's block and the header comment was
+edited); every new failure path (1, 3, ambiguous-default) calls `dump_run`
+before `die`, so evidence-before-cleanup holds on all three, and every path
+still exits nonzero, so fail-closed holds on all three. `shellcheck` clean,
+`bash -n` clean, `--help` renders clean, the degraded (no-toolchain)
+PREREQUISITES path unchanged from rounds 1-2. The exit-mapping logic itself
+verified by dry-exercise against the exact committed code (five scenarios,
+all asserted, all passing) since no `iverilog`/`vvp`/`dune` exists in this
+container to run check 4.1 for real. No `agents/handoffs/WO-0049_*.md` note
+appended — §8 does not direct one from me, and the packet's Return/verdict
+log is already closed at ACCEPT.
+
+### Open-questions
+
+One: whether the same "an ambiguous/ruled-out-by-contract code should not be
+misread" guard is worth adding defensively to check 4.2's `SELFTEST_RC`
+handling even though `compare --self-test`'s own committed contract
+(`WO-0049` §5.5, ACCEPTED) already guarantees it never returns 2 or 3 — I
+judged no (Reasoning), but flagging the judgment call rather than silently
+deciding it, since dv_lead or the orchestrator may weigh the defensive-
+programming case differently than I did.
+
+### Files-in-this-commit
+
+- tools/cosim/run_cosim.sh
