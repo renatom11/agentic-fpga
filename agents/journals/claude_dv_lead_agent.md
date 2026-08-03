@@ -17459,3 +17459,200 @@ what they claim until repaired.
 ### Files-in-this-commit
 - agents/handoffs/WO-0055_family-g-mutation-campaign-SEALED-predictions.md
 - agents/handoffs/WO-0055_family-g-mutation-campaign.md
+
+## [J-dv_lead-0071] 2026-08-05T14:05Z | task:WO-0056 | The G-2 repair authored — and authoring it corrected my own verdict: REQ-108's window ENDS at the next start character, so G3 and G4 were never outside it, and that turns the repair from a fix into an addition
+
+### Trigger
+Orchestrator, WO-0056: author the G-2 repair packet for tb_writer — fix M03-G3's
+and M03-G4's offsets into the real window, or new rows if I rule the old rows'
+identities unsalvageable; state the re-qualification instrument that lifts the
+standing consequence; model my own new seal rule in the row instructions.
+
+### Inputs
+- **`docs/specs/requirements.md` REQ-108's window sentence, re-read in full** —
+  the read that produced this entry's correction.
+- `docs/specs/modules/xgmii_rx_64.md` **§6.3 item 6** (via `AP` M03-G5), §6.2's
+  `Discard` row, §9's sixth and seventh rulings and the closure list, the
+  truncation-closure paragraphs at `1004384`.
+- `test/attack_plans/AP-xgmii_rx_64.md` §4.G rows M03-G1, G3, G4, G5, G6 and the
+  family note; §7's X-1 row.
+- `RV-0055-VERDICT` §2 and §4 (my own text, re-read as the thing under
+  correction); `J-dv_lead-0070`; `RV-0054-VERDICT` §3 (the capability/construction
+  separation); `J-dv_lead-0065` (the specify-the-observable rule);
+  `RV-0045-VERDICT` §2 and `J-dv_lead-0044` (a seal is never retro-fitted).
+- `test/xgmii_rx_64/test_m03_g.ml` `run_g4`'s guard and `run_g3`'s scheduling —
+  re-read to confirm what the second epoch actually is.
+- **No `libs/**`, no `docs/reports/audit/**`, no `scripts/**`, no
+  `/workspace/**`.**
+
+### Reasoning
+
+**The packet's first act is a correction against my own verdict, and I found it
+by re-reading the requirement instead of my own summary of it.** `RV-0055` §4
+said M03-G3 and M03-G4 place their characters *"in the inter-frame gap"* and
+called them **outside** REQ-108's window. REQ-108's own sentence says the window
+runs **"between the truncation point and that start character"** — the *next
+start character* — and adds that **"neither a terminate character nor an error
+character reopens it"**. So the oversize frame's own terminate is **inside** the
+window, the gap after it is **inside** the window, and content index 1618 is
+**inside** the window.
+
+**What I did was conflate REQ-108's window — a stimulus interval fixed by the
+specification — with the `Discard` state, an implementation state that §6.3 item
+6 and M03-G5 make explicitly unobservable.** Those are different objects. It is
+the same error in kind as the two sealed branches that convicted me last round:
+reasoning about a **state** where the specification gives a **position**.
+
+**The finding survives, sharper and differently shaped**: REQ-108's window has
+**two epochs** — truncation point to the frame's own terminate, and that terminate
+to the next start character — and family G drives only the second. No row in this
+programme has ever driven a character into the first. That is what G-c4 measured,
+and it is a real gap.
+
+**And the correction changes the answer to the packet's central question.**
+Repairing G3's and G4's offsets in place would move them from the second epoch to
+the first — **buying the first by giving up the second**, both being real coverage
+of the same REQ-108 sentence. **Net zero is not a repair.** So the packet
+commissions **two new rows, M03-G7 and M03-G8**, appended inside family G, and
+leaves G3 and G4 standing with a **scoping amendment to their `Kills` cells**,
+which claimed the whole window and should have claimed half. Ids are permanent
+and their observables were never wrong.
+
+Had I not re-read the requirement I would have commissioned an offset change,
+landed it green, lifted the standing consequence, and **silently traded one blind
+epoch for the other** — a repair that measures as a success and leaves the
+programme no better covered. That is worth more than the packet.
+
+**The rows are written to need no state claim at all**, which is the strongest
+form of the rule I adopted at `J-dv_lead-0070` (a state claim must cite the
+stimulus fact that establishes it). §6.3 item 6 forbids asserting the
+`Discard`-versus-`Idle` distinction anyway, so specifying an **octet-time
+interval** — content 1518 … 1599 for the 1600-octet frame, each end derived in
+the packet rather than given — is both the compliant framing and the checkable
+one. I told the worker to replace any "the receiver is still discarding" comment
+with the octet-time fact.
+
+**I ranked the two rows by risk rather than commissioning them as equals.**
+M03-G8, the error character, is clean: nothing reopens on an `/E/` and nothing
+resynchronises. M03-G7, the start character, is harder — REQ-108 **resynchronises**
+on it, so the remainder of the original frame and its terminate belong to the
+frame that character opens, and that frame's own disposition becomes part of the
+observable. I commissioned it with the derivation named as the deliverable and an
+explicit escape: if the disposition will not derive from the specification,
+**return the question** and G7 lands as RULING while G8 proceeds alone. **The
+standing consequence lifts on G8's evidence**, so the harder row cannot hold the
+repair hostage.
+
+**On the re-qualification instrument I took the orchestrator's suggestion and
+sharpened its ground.** Green rows cannot lift the bar: M03-G3 and M03-G4 have
+been green since they landed and were green *for the wrong reason*. The only
+proof is that a defect confined to the first epoch now dies. So: **replay the
+existing `g-c4` diff** — committed at `762ae49`, no new seeding round, no auditor
+spawn — against a throwaway branch off the repair's landed SHA. **M03-G8 SHALL
+redden**; if it does not, the repair failed and the bar stands, with no
+re-interpretation and no second attempt at the same offset.
+
+**And I ruled that this prediction is published, not sealed, with the reason
+stated so nobody reads it as a skipped seal.** R-SEAL-1 binds a claim that a
+result exists and is being **withheld**. Nothing is withheld: the diff is
+committed, its predicate is disclosed in the auditor's own README, and the check
+is arithmetic rather than adversarial. **A seal here would be theatre** — and
+ADR-0016 §2.2's own class definition is what says so.
+
+**One blinding constraint I had to impose and nearly did not.** The instrument is
+a diff tb_writer must not see, so `docs/reports/audit/**` is barred for this
+packet — a bar no previous bench packet needed, because no previous bench packet
+was written to catch a mutation that already exists. **A row written against a
+mutation is worth nothing**, and the rows are commissioned from REQ-108's sentence
+and §9's rulings alone.
+
+**Sequencing, and the one thing this commit does not contain.** ADR-0001 and
+charter §3 require the attack-plan row before the bench. The dispatch scoped this
+commit to the packet, so the AP rows are **owed and flagged** rather than
+included: they must land before tb_writer is spawned, and the packet tells the
+worker to cite the plan rather than the packet for canonical row text. **The
+denominator moves at the next campaign's freeze and nowhere else**; WO-0055 is
+closed, adjudicated and unsealed, and nothing here reopens it.
+
+**And the WO-0055 seal stays as it is.** Its falsified `/E/` and `/S/` branches
+stand unedited; a mapping is re-derived fresh at the next freeze against the bench
+as it then is. That is `J-dv_lead-0044`'s rule and `RV-0045-VERDICT` §2's
+precedent, and the fact that the bench is about to change is exactly when it
+matters.
+
+### Actions
+- **Re-read REQ-108's window sentence** and **corrected `RV-0055-VERDICT` §4's
+  characterisation on the record**, in the packet's §1 and here: the characters
+  were inside the window, in its second epoch, not outside it.
+- **Ruled the repair an ADDITION, not an in-place offset change**, on the ground
+  that moving them trades one epoch for the other.
+- Authored **`agents/handoffs/WO-0056_m03-g-discard-window-repair.md`**: M03-G7
+  and M03-G8 specified as octet-time intervals with both ends derived; the
+  state-claim prohibition; G7's risk ranking and its return-the-question escape;
+  the mechanism left to the worker; `docs/reports/audit/**` barred; §6's
+  re-qualification instrument with its published prediction and the reason no
+  seal is owed; §7's sequencing and denominator discipline.
+- **Scoped M03-G3's and M03-G4's `Kills` claims** as an AP edit owed before the
+  worker is spawned, flagged rather than made here.
+- Opened no `libs/**`, no `docs/reports/audit/**`, nothing under `scripts/**`.
+  No `git`.
+
+### Evidence
+1. REQ-108, verbatim: *"Between the truncation point and that start character the
+   receiver SHALL emit no output word and SHALL pulse no strobe, whatever
+   characters arrive: the frame is already closed and already reported, so
+   neither a terminate character nor an error character reopens it (REQ-105,
+   carry-forward C-12)."* The window's far end is the **next start character**.
+2. Interval derivation for the family's 1600-octet frame: content **1518** is the
+   1519th received octet, the first that makes the frame exceed 1518 (REQ-108);
+   content **1599** is the last octet before the frame's terminate. First epoch =
+   content 1518 … 1599 inclusive, **82 octets**.
+3. `run_g4`'s guard — `inject_ot > terminate1 && inject_ot < start_ot2`, with
+   `inject_ot = start_ot1 + 8 + 1518 + 100` (content 1618) — places its character
+   in the **second** epoch, which is inside the window and after the terminate.
+4. §6.3 item 6 / M03-G5: the `Discard`-versus-`Idle` distinction is
+   **unobservable**, which is why the rows are specified positionally.
+5. `AP` §4.G is unchanged by this commit: **76 rows, 60 ASSERT**.
+
+### Outcome
+**WO-0056 authored and ready to issue.** Two new rows commissioned — **M03-G8**
+carrying the lift condition, **M03-G7** ranked harder with a named escape — the
+mechanism left to the worker, the audit tree barred, and the re-qualification
+instrument fixed as a replay of the existing `g-c4` diff with a **published**
+prediction and the reason no seal is owed.
+
+**The packet's most useful output is the correction to my own verdict.** REQ-108's
+window ends at the next start character, so M03-G3 and M03-G4 were never outside
+it; they drive its second epoch and nothing drives its first. That turns the
+sponsor-approved "fix the offsets" into "add the rows", and it is the difference
+between closing the gap and moving it.
+
+`SO-M03` does not issue; nothing here changes the count, which moves at the next
+freeze.
+
+### Open-questions
+- **The AP edit is owed and is not in this commit** — M03-G7 and M03-G8's six
+  cells, and the M03-G3/G4 `Kills` scoping. ADR-0001 requires them before the
+  bench. **They must land before tb_writer is spawned**; whether that is a second
+  commit now or folded into this packet's landing is the orchestrator's call and
+  I would take it now.
+- **M03-G7 may not derive.** If REQ-108's resynchronisation makes the second
+  frame's disposition underivable from the specification, G7 becomes a RULING row
+  and an architect question. **M03-G8 is unaffected and carries the lift.**
+- **Whether the first epoch has a `/T/` case** — a second terminate character
+  inside it — is not commissioned here. REQ-108 names terminate characters
+  explicitly in the sentence quoted above, and M03-G1's and M03-G2's own
+  terminates already sit in that epoch, which is why the WO-0055 `/T/` branch was
+  the one I got right. Recorded as considered and not owed.
+- **Two candidate mutation classes remain from WO-0055** — a `/T/`-gated and an
+  `/S/`-gated defect in the first epoch, which the auditor rejected with reasons.
+  With M03-G7 and M03-G8 landed the `/S/` one becomes seedable against a row that
+  can see it; the `/T/` one still overlaps G-c3 through the closure record.
+- **Still owed**: the epoch-A no-output-word class (`J-dv_lead-0065`, rides with
+  family H); AP-M14's §6 invariant; the `precompile_check.sh`
+  side-effect-in-combinator lane; M03-F5's discharge-by-citation qualification;
+  the RFC 1071 anchor on the next fetching run; X-7, X-10, X-11 deferred; L1–L5
+  as a separate packet.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0056_m03-g-discard-window-repair.md
