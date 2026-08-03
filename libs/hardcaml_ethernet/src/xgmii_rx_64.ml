@@ -722,12 +722,11 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
      still reports on its pinned cycle whether or not a word goes out. Frames
      ended by REQ-105, REQ-110 or `clear` never set it, because [strip] is 0
      for them and [emit_last_b] needs [nc] <= [strip] with [nc] >= 1. *)
-  let fcs_tail_pending = wire 1 in
-  let fcs_tail_now = reg spec fcs_tail_pending in
-  let have_word = (pc <>:. 0) &: ~:fcs_tail_now in
+  (* M5 MUTATION (WO-0039): BUG-0001 restored — the fix hunk of 0b64b68 is
+     reverted, so nothing suppresses the residual all-FCS word. *)
+  let have_word = pc <>:. 0 in
   let emit_last_a = have_word &: (nc ==:. 0) &: (pc >: strip) in
   let emit_last_b = have_word &: (nc <>:. 0) &: (nc <=: strip) in
-  fcs_tail_pending <== emit_last_b;
   let emit_full = have_word &: (nc >: strip) in
   let emit_tlast = emit_last_a |: emit_last_b in
   let keep_count =
