@@ -196,3 +196,32 @@ None.
 - site/public/index.html
 - site/public/org-chart.html
 - site/public/spec-atlas.html
+
+## [J-orchestrator-0151] 2026-08-04T00:10:00Z | task:none | Caption wrap fixed - the second sentence breaks as a unit
+
+### Trigger
+Sponsor: the caption breaks after "Check".
+
+### Inputs
+CAD_CAPTION; the second sentence now wrapped in a nowrap span so
+the break falls before it, never inside it.
+
+### Actions
+Edit; clean rebuild; this commit; push.
+
+### Evidence
+Regenerated index.html.
+
+### Outcome / DoD
+Sponsor redeploys.
+
+### Open questions
+None.
+
+### Files-in-this-commit
+- site/build.py
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/index.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html
