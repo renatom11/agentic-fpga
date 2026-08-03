@@ -725,7 +725,13 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
   let fcs_tail_pending = wire 1 in
   let fcs_tail_now = reg spec fcs_tail_pending in
   let have_word = (pc <>:. 0) &: ~:fcs_tail_now in
-  let emit_last_a = have_word &: (nc ==:. 0) &: (pc >: strip) in
+  (* F-c6 MUTATION (WO-0050) — the FCS-strip underflow, faithful.  The
+     [pc >: strip] guard is this design's only clamp on the four-octet removal,
+     so removing it attempts the removal unconditionally at the terminate
+     character and lets [pc -: strip] underflow, in four-bit arithmetic, on a
+     frame with fewer than four octets to remove it from.  The consequence is
+     left to [keep_count] and [keep_of_count] as they stand. *)
+  let emit_last_a = have_word &: (nc ==:. 0) in
   let emit_last_b = have_word &: (nc <>:. 0) &: (nc <=: strip) in
   fcs_tail_pending <== emit_last_b;
   let emit_full = have_word &: (nc >: strip) in
