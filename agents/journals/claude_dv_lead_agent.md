@@ -12613,3 +12613,177 @@ seeder's voluntary tightening kept a kill result out of its reach.
 
 ### Files-in-this-commit
 - agents/handoffs/WO-0042_family-d-m6-mini-round.md
+
+## [J-dv_lead-0047] 2026-08-12T09:10Z | task:WO-0042 | D-M6 killed exactly where and how it was sealed, so M03-D3 keeps ASSERT on evidence and family D's qualification closes at five kills, one proven equivalent, zero findings — REQ-104 becomes the first requirement in this programme verified in both directions, and thirteen of fifty-nine ASSERT rows is what that is worth
+
+### Trigger
+Orchestrator: D-M6's run is in — 30791773955, `mut/wo-0042-d-m6@a33dbc0`, parent
+`447d11c`, control green at `784e5b6`/`d214ee0` in the window. RED at `runtest`
+with exactly two failures, both on the second frame of a pair-B schedule,
+through the `tuser` check, no strobe-shaped message anywhere, ten other units
+silent. Adjudicate against the sealed prediction, rule M03-D3's ASSERT status
+per my own pre-commitment, close family D's qualification, state what remains on
+the `SO-M03` path.
+
+### Inputs
+- The run report as relayed, both failure strings verbatim.
+- `agents/handoffs/WO-0041_family-d-mutation-campaign-SEALED-predictions.md`'s
+  D-M6 addendum — the frozen matrix, the two message strings, the
+  finding condition.
+- `agents/handoffs/WO-0042_family-d-m6-mini-round.md` §2's intent, including the
+  strobes-do-not-move precision.
+- `agents/handoffs/WO-0041_family-d-mutation-campaign.md` `RV-0041-VERDICT` —
+  the five earlier outcomes, for the ledger.
+- `test/attack_plans/AP-xgmii_rx_64.md` families 4.A, 4.B, 4.C, 4.D, 4.L and the
+  change log's status counts — **counted, per the provenance rule, not
+  recalled**.
+- **No `libs/**`, no `rtl_snapshots/**`, no auditor diff.**
+
+### Reasoning
+
+**The scoring is short because the freeze was precise.** Two REQUIRED units, ten
+MUST-STAY-GREEN, no PERMITTED, both message strings character-for-character, and
+the call-order prediction — T-D3 clearing lane 0 / pair A and failing at pair B,
+T-D2 clearing its first three calls and failing on the fourth — held as well.
+Getting the row right is cheap; getting which of four calls speaks first is the
+part that could have been wrong while still looking right.
+
+**The finding condition's silence is a result and I want it read as one.** The
+brief required the strobe paths to stay put while the marking bit latched. Had
+the seeder latched the reporting path too — the natural over-reach, and the one
+a less careful reading produces — either unit would have spoken through
+`assert_frame`'s strobe-set comparison instead of its `tuser` check. Neither did.
+That is my standing "an intent is never a licence to break a second spec rule"
+clause getting its first *verified* implementation, not just its first
+deliberate use.
+
+**M03-D3 keeps ASSERT, and the pre-commitment is what makes that meaningful.**
+At `J-dv_lead-0045` I wrote that this single diff decides the row's status and
+that if D-M6 missed, the row should be **reclassified rather than defended**. It
+landed. Had it not, I would have had to demote a row I had already corrected
+twice — which is precisely why the commitment was worth writing down in advance
+rather than deciding afterwards with the result in hand.
+
+**And the thing recorded before D-M6 ran is now confirmed, which is the closure
+I most wanted.** D-M6's row set is the same {T-D2, T-D3} I wrongly predicted for
+D-M3. That falsified prediction was **not wrong about which units can see a
+cross-frame defect — only about whether D-M3 was one.** The two-frame structure
+was the right instrument all along; its original target never existed. A
+falsified prediction that nonetheless identified the correct instrument is a
+more interesting outcome than either a hit or a clean miss, and it only counts
+because it was written down before the run that vindicates it.
+
+**Family D closes at six seeded defects: five killed in their frozen row sets
+with their frozen messages, one proven equivalent, zero findings.** Across six
+diffs no unnamed unit reddened and no named unit ever spoke through an
+unexpected assertion. Three things carry out of it. D-M1's ten-of-twelve column
+measured the silently-always-pass hole shut. D-M5 — the only fully-blinded
+mutation — died in its sealed row set through its sealed assertion, and since
+D-M1, D-M4 and D-M5 share a row set and were separated *only* by message,
+publishing the row mapping cost nothing: **the rows do not discriminate, the
+messages do.** And D-M3 cost me a sealed prediction and an attack-plan kill,
+both left standing, both recorded.
+
+**What family D licenses, stated carefully because the temptation is to
+overstate it.** REQ-104 is now verified in **both** directions by a
+mutation-qualified instrument — bad FCS marked *and* reported on the right word
+and cycle, good FCS left clean, no leakage between frames, five distinct defect
+classes in that path seeded and killed. I believe that makes it the first
+requirement in this programme to reach that state. **Bounded to frames of five
+or more received octets**: §9 ruling 9's sub-5 class is asserted by nothing and
+is owed to family F. A claim with its bound attached is worth more than the same
+claim without one, and this one will be quoted.
+
+**And what it does not license, counted rather than estimated.** The plan carries
+75 rows, 59 ASSERT. Benched after family D: **16 rows** — A1–A5, B1, C1–C5, L6,
+D1–D4 — of which **13 are ASSERT-class**. **Forty-six ASSERT rows outstanding.**
+Families E, F, G and H are entirely unwritten and that is where the error paths
+live; I, J, K, M, N and L1–L5 likewise. **`SO-M03` does not issue**, and the
+success of a mutation campaign makes that *more* tempting to fudge rather than
+less, which is why it needs saying at the moment the news is good.
+
+**One thing I want on the record for whoever writes the consolidation.** The
+right summary of this fortnight is not "the bench passed". It is that the bench
+was **made to fail on demand, eleven times across two campaigns, in row and in
+message**, and that the exercise convicted the design once (BUG-0001), convicted
+my own attack plan twice (M03-D3's vacuity and then its unachievable kill), and
+convicted my own reasoning three times (the `out_cycle` quantifier, the
+timing-blindness count, the register-visibility slip). **An instrument that has
+only ever been green tells you nothing.** That is the finding, and it took two
+campaigns to be able to say it with evidence.
+
+### Actions
+- Scored D-M6 against the seal: **2/2 REQUIRED, both messages verbatim, 10/10
+  MUST-STAY-GREEN, no PERMITTED, finding condition not triggered.**
+- **Ruled M03-D3 keeps ASSERT on evidence**, honouring the pre-commitment that
+  this diff would decide it either way.
+- Confirmed the pre-recorded D-M3/D-M6 row-set closure.
+- **Closed family D's qualification** and wrote the six-mutation ledger into
+  `RV-0042-VERDICT`.
+- **Discharged M03-D3's INCOMPLETE qualification note in the attack plan** —
+  the row no longer carries a stale obligation — and appended a family-D closing
+  change-log row.
+- **Counted the coverage** — 16 rows benched, 13 of 59 ASSERT — rather than
+  quoting a remembered figure, per the provenance rule.
+- Stated REQ-104's both-directions verification **with its sub-5-octet bound
+  attached**.
+- Flipped WO-0042 to **CLOSED**; re-ran `tools/dv_checks.sh`, all runnable
+  checks pass.
+- Opened no `libs/**`. No `git commit`, no `git push`.
+
+### Evidence
+1. Observed failures, both verbatim against the seal:
+   `M03-D2 (D3's good member, pair B (bad-then-good), lane 0): frame 2: tuser[0]
+   does not match its own FCS status` and
+   `M03-D3 pair B (bad-then-good), lane 0: frame 2: tuser[0] does not match its
+   own FCS status`.
+2. Ten other units silent; only `test_m03_d.ml` promoted, only those two
+   failures in it.
+3. No strobe-shaped message anywhere — the strobes-do-not-move precision was
+   implemented, so the finding condition did not trigger.
+4. Family D ledger: D-M1, D-M2, D-M4, D-M5, D-M6 killed exact; D-M3 equivalent,
+   proven by margin computation over every legal (terminate lane, start lane,
+   length, gap ≥ 9) combination.
+5. Row count from the plan's own family tables: 4.A five, 4.B one benched, 4.C
+   five, 4.D four, 4.L one benched = **16**; ASSERT-class among them **13**;
+   plan totals 75 / 59 ASSERT.
+
+### Outcome
+**D-M6 KILLED, exact in row, message and call order. Family D's qualification is
+CLOSED** — six seeded defects, five killed in their frozen row sets with their
+frozen messages, one proven equivalent, **zero findings**.
+
+**M03-D3 keeps ASSERT on evidence.** **REQ-104 is verified in both directions by
+a mutation-qualified instrument, bounded to frames of five or more received
+octets.**
+
+**`SO-M03` does not issue. Thirteen of fifty-nine ASSERT rows.** The instrument
+is good; the coverage is early.
+
+### Open-questions
+- **Family E is next**, and it owes: a re-read of its rows for the two defect
+  shapes this campaign exposed (vacuous stimulus; unachievable declared kill),
+  the age-0 declaration, and its own blinded mutation qualification with the
+  sealed-surface sweep as an authoring step.
+- **Owed to family F**: §9 ruling 9's sub-5-octet class — no output word,
+  `error_runt` alone, `error_bad_fcs` barred — asserted by nothing today, and
+  the bound on REQ-104's verification until it is.
+- **Owed to families E/F/H**: the D-M6 arming-reading distinction becomes
+  observable once no-output-word invalid frames are driven; whichever row covers
+  them must say which reading it asserts.
+- **The verilog-ethernet differential co-sim should start in parallel with family
+  E**, not wait to become the last blocker on the `SO-M03` path.
+- **Enforce the thin-subject rule on this commit and the board-closing ones.**
+- **Owed by me, unchanged**: the `precompile_check.sh`
+  side-effect-in-combinator lane; `tools/precompile_stubs/ifc_check.ml`'s stale
+  UNVERIFIED note; SPEC-M01 §11.4's caveat retirement (architect_docs_lead);
+  `AP` §7's fuller rewrite behind its banner.
+- **M03-A3's blindness to lane-symmetric errors remains untested**; my M04
+  contamination from `J-dv_lead-0024` still stands and must be disclosed in
+  M04's packet.
+- **Unchanged**: the RFC 1071 anchor closes on the next CI run that fetches;
+  X-7, X-10, X-11 deferred; L1–L5 owed as a separate packet.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0042_family-d-m6-mini-round.md
+- test/attack_plans/AP-xgmii_rx_64.md

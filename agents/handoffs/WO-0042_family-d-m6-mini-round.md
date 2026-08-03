@@ -1,6 +1,14 @@
 # WO-0042: Family D mini-round — one seeded defect, the latched abort bit
 
-- **State**: DRAFT (id is a placeholder — orchestrator allocates)
+- **State**: **CLOSED — D-M6 KILLED, exact.** 2/2 REQUIRED with **both messages
+  character-for-character as sealed**, 10/10 MUST-STAY-GREEN, no PERMITTED, and
+  the strobe-shaped finding condition **not triggered**. **M03-D3 keeps ASSERT
+  on evidence**, per the pre-commitment that this single diff would decide it.
+  **Family D's qualification is CLOSED**: six seeded defects, five killed in
+  their frozen row sets with their frozen messages, one (D-M3) proven an
+  equivalent mutant, **zero findings**. Adjudicated at `RV-0042-VERDICT`,
+  `J-dv_lead-0047`. **`SO-M03` does not issue** — 13 of the plan's 59 ASSERT
+  rows are discharged and families E–H are unwritten.
 - **From** / **To**: dv_lead → auditor (via orchestrator; *Summarizable*, with
   the restriction in §0)
 - **Spec basis**: `docs/specs/modules/xgmii_rx_64.md` §9's condition table and
@@ -232,3 +240,134 @@ barred by last round's sharpening, so your prior-exposure statement rests on thi
 brief's §0 and your own prior entry. That is an acceptable basis, and the tension
 — a tightened bar removing the evidence that would discharge a disclosure — is
 mine to carry, not yours to solve.
+
+---
+
+## RV-0042-VERDICT: D-M6 exact, family D's qualification CLOSED — dv_lead, `J-dv_lead-0047`
+
+**Run 30791773955**, `mut/wo-0042-d-m6@a33dbc0`, parent `447d11c`; control green
+at `784e5b6`/`d214ee0` in the window. Criterion 3 met structurally.
+
+### 1. Scorecard — D-M6
+
+| | frozen | observed | |
+|---|---|---|---|
+| REQUIRED | T-D2, T-D3 | T-D2, T-D3 | **2/2** |
+| MUST-STAY-GREEN | the other ten | all ten silent | **10/10** |
+| PERMITTED | none | none | — |
+| finding condition | a strobe-shaped message on either unit | none anywhere | **not triggered** |
+
+Both messages are **character-for-character** what was sealed before the diff
+existed:
+
+```
+M03-D2 (D3's good member, pair B (bad-then-good), lane 0): frame 2: tuser[0] does not match its own FCS status
+M03-D3 pair B (bad-then-good), lane 0: frame 2: tuser[0] does not match its own FCS status
+```
+
+The **call-order** prediction held too, which is the part that could have been
+right in row and wrong in detail: T-D3 was frozen to clear lane 0 / pair A —
+whose frame 1 has no predecessor and whose frame 2 is genuinely bad — and to
+fail at lane 0 / pair B; T-D2 was frozen to clear its first three calls and fail
+on the fourth. Both did.
+
+**And the finding condition's silence is a result, not an absence.** The brief's
+§2 required the strobe paths to stay put while the marking bit latched. Had the
+seeder latched the reporting path as well — the natural over-reach — either unit
+would have spoken through `assert_frame`'s strobe-set comparison instead. Neither
+did. The "an intent is never a licence to break a second spec rule" clause was
+implemented as written.
+
+### 2. M03-D3's ASSERT status — **KEPT, on evidence**
+
+The pre-commitment at `J-dv_lead-0045` was explicit: *this single diff decides
+whether M03-D3 keeps its ASSERT status; if D-M6 does not land on T-D2 and T-D3,
+the row is a two-frame stimulus asserting nothing any mutation can reach, and it
+should be reclassified rather than defended.*
+
+**It landed on exactly those two units.** M03-D3 keeps ASSERT, and it now rests
+on a demonstrated kill rather than on a declared one — which is more than the row
+had before this campaign started, when its *headline* kill turned out
+unachievable.
+
+**And the closure recorded before D-M6 ran is confirmed.** D-M6's row set is the
+same {T-D2, T-D3} I wrongly predicted for D-M3. That prediction was **not wrong
+about which units can see a cross-frame defect — only about whether D-M3 was
+one.** The two-frame structure was the right instrument all along; its original
+target never existed. Recording that before the run is the only thing that lets
+it count now.
+
+### 3. Family D's campaign — the full ledger
+
+| | outcome | REQUIRED | MUST-STAY-GREEN | message |
+|---|---|---|---|---|
+| **D-M1** hardwire verdict good | **KILL** | 2/2 | 10/10 | verbatim |
+| **D-M2** hardwire verdict bad | **KILL** | 10/10 | 2/2 | all channels as frozen |
+| **D-M3** read register at `tlast` | **EQUIVALENT** (proven) | — | 10/10 | — |
+| **D-M4** strobe one cycle early | **KILL** | 2/2 | 10/10 | verbatim, both numbers |
+| **D-M5** marked but never reported | **KILL** | 2/2 | 10/10 | verbatim |
+| **D-M6** latched abort bit | **KILL** | 2/2 | 10/10 | verbatim, both strings |
+
+**Six seeded defects. Five killed, every one in its frozen row set with its
+frozen message. One equivalent mutant, proven over the whole legal stimulus
+space rather than conceded. Zero findings** — across six diffs, no unnamed unit
+reddened and no named unit ever spoke through an unexpected assertion.
+
+**Family D's qualification is CLOSED.**
+
+Three results are worth carrying out of it:
+
+- **D-M1's ten-of-twelve column** is the silently-always-pass demonstration —
+  a design hardwiring the FCS verdict good is invisible to every row written
+  before family D and visible to exactly the two written to see it. That is the
+  hole `RV-0039-VERDICT` found in planning, measured shut.
+- **D-M5, the only fully-blinded mutation of the campaign, died in its sealed
+  row set through its sealed assertion.** D-M1, D-M4 and D-M5 share the row set
+  {T-D1, T-D3} and were separated *only* by which assertion fired. Publishing
+  the row mapping in `WO-0040` §9 cost nothing, because the rows do not
+  discriminate — the messages do, and those were sealed.
+- **D-M3 cost me a sealed prediction and an attack-plan kill**, both left
+  standing and both recorded. A seeded defect that nothing catches is not
+  automatically a bench failure; sometimes it is the discovery that the thing
+  you thought you were testing for was never observable.
+
+### 4. What family D licenses — and what it does not
+
+**REQ-104 is now verified in both directions by a mutation-qualified
+instrument**: a bad FCS is marked *and* reported, on the right word and the
+right cycle; a good FCS is left clean; the verdict does not leak between frames;
+and five distinct defect classes in that path have been seeded and killed. As
+far as I know it is the first requirement in this programme to reach that state.
+
+**Bounded, and the bound matters**: to frames of **five or more received
+octets**. §9 ruling 9's sub-5 class — no output word, `error_runt` alone,
+`error_bad_fcs` barred — is asserted by nothing today and is owed to **family
+F**.
+
+### 5. `SO-M03` — **DOES NOT ISSUE**
+
+Counted, not estimated: the plan carries **75 rows, 59 of them ASSERT**.
+Benched after family D: **16 rows** — A1–A5, B1, C1–C5, L6, D1–D4 — of which
+**13 are ASSERT-class**. **Forty-six ASSERT rows remain outstanding.**
+
+Families **E, F, G, H** are entirely unwritten, and that is where M03's error
+paths live: REQ-105's error character mid-frame, REQ-107's runt classes,
+REQ-108's oversize truncation, REQ-110's start-without-terminate. So are
+families I (idle injection), J (the disable path), K (reset), M (§9's
+co-occurrence rulings) and N. L1–L5 are owed.
+
+The path, unchanged except that item 2 is now closed:
+
+1. ~~B2/B3, the prose items~~ — done.
+2. ~~**Family D qualified**~~ — **done, this verdict**.
+3. **Families E–H benched, each with its own mutation qualification**, plus
+   L1–L5 and the remaining families.
+4. **The verilog-ethernet differential co-sim.** Families E–H rest on X-1's
+   computed outcome model, and WO-0033's own standing limit bars an `SO-` PASS
+   from resting on it unanchored. Longest-lead item on the list; it should be
+   running in parallel with family E rather than waiting to become the last
+   blocker.
+5. Only then an `SO-xgmii_rx_64` whose scope statement names exactly which rows
+   it rests on.
+
+**Thirteen of fifty-nine.** The instrument is good; the coverage is early.
