@@ -5201,3 +5201,45 @@ instrument.
 - site/public/org-chart.html
 - site/public/spec-atlas.html
 - tasks/BOARD.md
+
+## [J-orchestrator-0118] 2026-08-03T13:40:00Z | task:none | Roadmap titles in the sponsor's words; phases 2 and 3 answer his two questions in place
+
+### Trigger
+Sponsor: plainer step titles proposed verbatim; "assuming we are
+doing this" on the market-data phase; "not sure what 'reach the
+physical wire' means".
+
+### Inputs
+- His titles adopted with two accuracy adjustments: "live market
+  data" became "real market data ... in simulation" (the phase
+  replays a RECORDED real trading day; nothing in this programme
+  is a live feed), and phase 3 retitled "Add the fiber-encoding
+  layer (stretch)" with a lay description of what 64b/66b is -
+  the last translation layer between logic and light pulses.
+
+### Reasoning
+Both his questions get answered in the page itself rather than
+only in chat: phase 2's description now opens "Everything runs
+in simulation - the whole programme is simulation-first by
+design, no physical board required." Phase 3 explains the layer
+without the jargon title.
+
+### Actions
+- site/build.py PHASES rewrite; site rebuilt; this commit.
+
+### Evidence
+- Rebuild banner: 202 commits, 195 entries picked up.
+
+### Outcome / DoD
+Sponsor redeploys: git pull && cd site && npx wrangler deploy.
+
+### Open questions
+- None.
+
+### Files-in-this-commit
+- site/build.py
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/index.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html
