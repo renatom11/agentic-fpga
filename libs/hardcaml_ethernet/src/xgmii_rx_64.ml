@@ -506,7 +506,12 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
   let r0 =
     record_fields
       ~valid:a_close_now
-      ~terminate:a_close_terminate
+      (* F-c1 MUTATION (WO-0050) — FCS removal suppressed on a runt closed by
+         `/T/`.  The record's terminate flag, whose only consumer is [strip]
+         below, is cleared for a frame of 5 to 63 received octets, so REQ-103's
+         removal is not attempted and four octets too many are delivered.  The
+         closure itself, the runt report and the FCS verdict are untouched. *)
+      ~terminate:(a_close_terminate &: ~:(a_close_runt &: has_fcs))
       ~error:a_close_error
       ~start:a_close_start
       ~oversize:a_close_oversize
