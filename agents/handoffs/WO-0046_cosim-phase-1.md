@@ -829,3 +829,229 @@ hazard. A strong negative about the reference was reported as a **reading**
 rather than a result, correctly hedged, and it turned out to be both true and
 more consequential than reported. And the out-of-scope REQ-110 case fails loudly
 instead of guessing.
+
+## Return log — round 2
+
+### data_wrangler — `tools/cosim/run_cosim.sh` (RETURNED, round 2)
+
+**Journal**: `J-data_wrangler-0002`. **Trigger**: `RV-0046-VERDICT`'s ruling on
+the sidecar (§5, ACCEPTED) plus `test/cosim/**` having landed, both requiring a
+second pass over `run_cosim.sh`. **Write scope used**: `tools/cosim/run_cosim.sh`
+only (modified in place); nothing under `test/**` was written — the still-
+placeholder-writing Verilog code noted below is flagged, not fixed.
+
+#### 1. The sidecar ruling, implemented
+
+dv_lead's ruling is now the script's design, not an open question: `run_cosim.sh`
+is the sidecar's **sole writer**. `write_sidecar` runs **after** both producers
+for a run finish and **fully overwrites** `<name>.canon.meta` (truncate + write,
+never append) — so the placeholder text `tb_xgmii_rx_64.v` **still writes** into
+`theirs.canon.meta` today (`simulator: unknown (fill in: …)`,
+`runner-image: unknown (fill in: …)` — read in full this round, lines 263–276 of
+the landed file) is replaced before anything downstream — the comparison, the
+determinism diff, an on-failure dump — ever reads it. **`test/cosim/tb_xgmii_rx_64.v`
+was NOT edited** to remove that code — `test/**` is outside this agent's write
+scope — so it is flagged here for tb_writer's next round: per dv_lead's ruling
+("the producers write no sidecar at all"), that six-line block (the `$fwrite`
+calls building `theirs.canon.meta`, plus the `meta_fd` open/close around them) is
+now dead weight the testbench doesn't need, since this script's overwrite makes
+its output moot regardless. Removing it is tb_writer's to do, not blocking Phase 1.
+
+#### 2. The four REQUIRED fields, fail-closed, no placeholders anywhere
+
+`require_field` gates all four before any sidecar is written: **reference pin
+SHA** (parsed from `PROVENANCE.md`, as round 1), **simulator version** — now
+**both** `iverilog -V` and `vvp -V`, captured separately (round 1 only captured
+`iverilog -V`; the coordinator's round-2 instructions named both explicitly and
+the reproducibility guarantee's antecedent is about the simulator that actually
+ran the design, which is `vvp`, at least as much as the compiler that built it)
+— **stimulus sha256** (unchanged), and **runner image** (new construction, next
+item). Any of the four empty fails the whole run with the new **`EXIT_PROVENANCE`
+= 7**, distinct from `EXIT_INTERNAL` because the three checks' own machinery may
+be fine — only the provenance record is not attestable, which the script treats
+as reason enough on its own. The `dpkg-query` package version stays exactly as
+round 1 left it in spirit but is now explicitly **advisory, not gated** (R-CI-3's
+extra forensic detail, not part of the antecedent) — and, applying dv_lead's own
+"no marker that reads as a recorded value" principle to this one non-required
+field too, an unavailable `dpkg-query` result now **omits the key from the
+sidecar entirely** rather than writing any "unknown"/"not available" text for it.
+
+#### 3. The runner-image field outside CI — decided, not left as a gap
+
+In CI, `$ImageOS` (+ `$RUNNER_NAME` if present) is used, prefixed `ci:`. Outside
+CI — a developer running the full pipeline locally with a real toolchain on
+PATH — the field is built from `hostname` + `uname -srm` + (if readable)
+`/etc/os-release`'s `PRETTY_NAME`, prefixed `local:`. This is a **real,
+determinable value**, not a placeholder: every token is a fact this shell can
+read about the machine it is actually on. **A genuine bug found and fixed while
+writing this**: the first version of this composition used
+`"${host:-unknown-host}"`/`"${unamestr:-unknown-kernel}"` to paper over a
+*partial* failure (e.g. `hostname` unavailable but `uname` fine) — which would
+have embedded a literal `unknown-host`-shaped token into a field this same
+script then treats as real, exactly the marker-that-reads-as-a-recorded-value
+dv_lead's ruling bars, self-inflicted one level down. Caught by re-reading my
+own diff before returning it, not by an external review. Fixed: the field is now
+composed **only** from whichever of `hostname`/`uname`/`os-release` actually
+succeeded, with no filler for the others; only if **all three** are empty does
+`runner_image` return failure and the run stop at `EXIT_PROVENANCE`. This keeps
+a genuinely runnable local lane genuinely able to pass — ADR-0015 D1's own
+finding that "the local lane is genuinely usable" would otherwise be defeated by
+a rule aimed at fabricated values, not real local ones.
+
+#### 4. The pinned entry points — assumption replaced by confirmed fact, one bug fixed
+
+`test/cosim/**` landed this round (`stimulus_gen.ml`, `ours_run.ml`,
+`compare.ml`, `tb_xgmii_rx_64.v`, all read in full). Round 1's zero-argument
+assumption was **half right**: `stimulus_gen`/`ours_run` do default to
+cwd-relative filenames when given fewer args than paths, but this script now
+passes each of them its path(s) **explicitly and absolute**, needing no `cd` for
+either. **`compare` does not default at all** — it requires exactly two
+positional arguments (`<ours.canon> <theirs.canon>`) or the literal
+`--self-test`, and prints usage + exits 2 for anything else, including zero
+arguments. **Round 1's script called `compare` with zero arguments for the real
+comparison (check 4.1)** — this would have hit `compare`'s usage branch on every
+real run, exiting 2 and comparing nothing, while still being misreported by this
+script as `EXIT_DIFFERENTIAL` on any nonzero exit. **Found and fixed this
+round**, before it ran once in CI: `compare` is now called with both canonical
+files' explicit absolute paths. `tb_xgmii_rx_64.v` has no argv support at all
+(confirmed: no `$test$plusargs`) and hardcodes `stimulus.txt`/`theirs.canon`/
+`theirs.canon.meta` relative to `vvp`'s cwd, exactly as round 1 assumed and as
+the file's own "WORKING DIRECTORY CONTRACT" comment states — this script still
+`cd`s into the run directory only for that one invocation. Round 1's open
+questions 1 and 2 are closed by this reading, independent of the sidecar ruling:
+the calling convention is confirmed, and the bare `iverilog -o <bin> <sources>`
+invocation needed no change — `tb_xgmii_rx_64.v` is plain Verilog-2001, per its
+own header comment.
+
+#### 5. Local testing, round 2
+
+- `bash -n tools/cosim/run_cosim.sh` — clean syntax.
+- `shellcheck tools/cosim/run_cosim.sh` — zero findings, exit 0 (same
+  shellcheck 0.9.0 installed in round 1, still present).
+- **Degraded path, re-run for real**: `iverilog`/`vvp`/`dune` are still absent
+  from this container. Output is byte-for-byte the same shape as round 1 (see
+  Evidence) — exits `2` (`EXIT_PREREQ`), never `0`.
+- **New this round**: since the four-required-field / `runner_image` /
+  `require_field` logic sits entirely inside bash and does not need
+  `iverilog`/`vvp`/`dune` to exercise, I extracted those functions into an
+  isolated harness and ran nine scenarios against them for real (all verbatim
+  in `J-data_wrangler-0002`'s Evidence): a normal local machine; CI-style
+  `$ImageOS` with and without `$RUNNER_NAME`; `require_field` on a real value
+  (does not die) and an empty one (dies, exit 7, quotes dv_lead's ruling);
+  `hostname` failing alone; `uname` failing alone (these last two are what
+  caught the bug in item 3 above); both failing with no `/etc/os-release`
+  fallback (returns failure, as designed); and `write_sidecar`'s conditional
+  omission of the advisory `dpkg-query` field, both present and absent. This is
+  the same "traceable by review" instruction as round 1, extended with actual
+  execution everywhere execution was possible without the missing simulator.
+- The `iverilog`/`vvp`/`dune`-dependent path (BUILD, both `run_pipeline` calls,
+  the real `compare` invocations) remains traceable by review only, as round 1
+  stated and as remains true here — no simulator exists in this container.
+
+#### 6. Open questions (round 2)
+
+1. **The `dpkg-query` advisory-vs-gated line.** I read "simulator version" in
+   the reproducibility guarantee's antecedent as `iverilog -V` + `vvp -V` only
+   (matching the coordinator's round-2 instruction, which named exactly those
+   two), and the distro package version as R-CI-3's separate, non-gated
+   forensic extra. If dv_lead intends the package version to be part of the
+   gated antecedent too, `require_field` needs one more call — a one-line
+   change, flagged rather than assumed.
+2. **`test/cosim/tb_xgmii_rx_64.v`'s still-placeholder-writing sidecar code**
+   (item 1 above) is now dead weight under dv_lead's ruling. Not fixed here
+   (outside this agent's write scope); noted for tb_writer's next round.
+3. Round 1's open question 3 (`dune build`'s `_build/` cache landing inside the
+   checkout, gitignored) was not addressed by `RV-0046-VERDICT` and remains
+   open; repeated here rather than assumed resolved by silence.
+
+---
+
+## COUNTERSIGNATURE — REQ-901 classes (e) and (f) at `ebb3f49` — dv_lead, `J-dv_lead-0057`
+
+**SIGNED. The diff is countersigned and in force on transcription.**
+`docs/specs/**` is outside my write scope, so this is the signature of record and
+the orchestrator transcribes it, per the clerical-transcription rule.
+
+### 1. Verified against the diff, not the summary
+
+- **Class (e)** present and grounded in the verified fact — no frame-length
+  logic in the vendored reference, length sweep over 449 lines at pin `77320a9`,
+  zero matches. **It pre-empts the obvious objection in its own text**: the
+  `MIN_FRAME_LENGTH` parameter named in REQ-901's configuration clause is
+  `axis_xgmii_tx_64.v`'s, driving transmit padding, so that clause confers no
+  receive-side length check. I had not spotted that and would have had to answer
+  it later.
+- **Class (f)** present, whole-frame exclusion including the resynchronisation
+  window.
+- **Bounded**: "(e) and (f) exclude **nothing in the 64-to-1518-octet range**".
+- **The cost rule** is stated once for all classes: inside an exclusion the
+  co-simulation anchors nothing, the excluded requirement is verified by
+  directed test, and **a sign-off packet SHALL NOT offer a co-simulation result
+  as its external anchor**.
+- **ADR-0015's converse is restated inside the requirement**: an exclusion is
+  never a licence to take an expected value from the reference.
+- **The numeral "four" is retired** and — better than I asked — the **append-only
+  lettering rule is written into REQ-901's own text**, so no cited letter can
+  ever move.
+
+**And the claim I would not sign on assertion, checked directly**: the change-log
+row classes the REQ-107/REQ-108 edits as *concurrence, verification columns
+only, both normative sentences untouched*. I extracted each row's normative
+column at `ebb3f49^` and at `ebb3f49` and compared: **both are byte-identical.**
+The classification is correct, and the two axes are kept on separate §13 rows so
+the countersignature-owed answer and the concurrence answer are not blurred.
+
+### 2. The (e) confirmation the architect asked for — **CONFIRMED**, and I checked the load-bearing fact
+
+The question is whether leaving payload and `tkeep` compared on 5-to-63-octet
+frames matches what my comparison domain needs. **It does, and it is better than
+the whole-frame exclusion my finding would have supported.**
+
+That turns entirely on one thing: **does the reference strip the FCS on a runt?**
+If it did not, payload would diverge too and (e) would be too narrow — I would be
+signing a class that produces a false defect on every runt the lane ever drives.
+So I read it rather than reason about it. The reference's FCS check is an
+**eight-entry lane-indexed residue array** (`crc_valid[7..0]`, one precomputed
+residue per possible terminate lane) with **no length gate anywhere on it**. It
+strips unconditionally and delivers `length − 4`.
+
+**So on a 5-to-63-octet frame the two designs deliver identical octets with
+identical `tkeep`, and `tuser`[0] is the only divergence.** (e) excludes exactly
+that and nothing more.
+
+**What the narrowness buys is concrete and I want it on the record**: M03-F1's
+core observable — REQ-103's FCS removal on a runt, delivered counts 1, 12, 56 and
+59 with their `tkeep` extents — **remains co-simulation-anchorable.** A
+whole-frame exclusion would have thrown that away for a divergence confined to
+one bit. **Narrower was right.**
+
+**And the sub-5 disposition is right too, for a reason the same reading gives.**
+Below five octets there are not four octets to strip, so the reference's
+behaviour is undefined rather than merely different — which is precisely why (e)
+excludes such a frame entirely, accept-or-discard included, and records the
+reference's actual disposition as **data, never adjudicated**.
+
+> **One cross-link worth flagging, and it is not an objection.** `WO-0047` §3.2
+> flags M03-F2's declared kill — an FCS-strip counter underflowing on a frame
+> with nothing to strip — as possibly unachievable, and says the campaign settles
+> it. The reference is a design with no sub-5 handling at all, so the data (e)
+> mandates collecting will show what a real implementation does there. **That is
+> evidence about whether the defect class is natural, not about our RTL**, and it
+> must never be used as an expected value — which is the clause (e) itself
+> restates.
+
+### 3. What this changes downstream
+
+`CD-xgmii_rx_64_cosim.md` §2-bis is updated: it predicted a whole-frame runt
+exclusion, and the narrower class governs. The paragraph stands as a recorded
+miss with the correction above it.
+
+**The `SO-M03` consequence is unchanged in kind and smaller in size**: REQ-107
+and REQ-108 rest on their own directed tests and **no sign-off may offer a
+co-simulation result as their anchor** — but family F's FCS-removal observable
+keeps an anchor it would otherwise have lost.
+
+**The cascade** — three stale restatements in module specs and traceability,
+enumerated in the §13 row and deliberately not folded in — is correctly deferred
+to a follow-on WO. Folding it here would have mixed a countersignature-owed diff
+with editorial repairs and made this signature harder to give, not easier.

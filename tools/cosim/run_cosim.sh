@@ -9,6 +9,14 @@
 # failure, with the failing check named on stdout. No arguments, no
 # environment beyond PATH reaching iverilog/vvp and a built dune tree."
 #
+# ROUND 2 (dv_lead's `RV-0046-VERDICT`, `aa51971`, ACCEPTED): tb_writer's
+# `test/cosim/**` landed and was reviewed. Two changes here as a result: (1)
+# the sidecar's ownership is now RULED, not assumed — §5 below quotes it in
+# full; (2) round 1's calling-convention ASSUMPTION for the four pinned entry
+# points is now CONFIRMED (and one bug fixed) by reading the landed sources
+# directly — see "THE PINNED ENTRY POINTS" below, which replaces round 1's
+# speculative section of the same name.
+#
 # THE THREE CHECKS (WO-0046 §4, order followed exactly)
 #
 #   4.1  DIFFERENTIAL COMPARISON  — one 64-octet good-FCS frame, lane-0 start,
@@ -52,48 +60,124 @@
 #      to stdout (§7.3), because a divergence nobody can see is a divergence
 #      nobody can adjudicate.
 #
-# THE CANONICAL FORM AND THE SIDECAR (WO-0046 §2.3) — this script does not
-# interpret either. It treats `ours.canon`/`theirs.canon` as opaque byte
-# streams for the determinism diff, and defers ALL comparison semantics to
-# `compare` (tb_writer's deliverable, reviewed under REQ-901). The one thing
-# this script DOES own is the sidecar: `<name>.canon.meta`, written here,
-# never inside a compared file, carrying exactly what R-CI-3/ADR-0015 D3 name
-# — the vendored reference's pinned SHA, the simulator's version (banner +
-# distro package version), a best-effort runner-image identifier, and the
-# stimulus's sha256 — so the reproducibility guarantee's antecedent is
-# checkable rather than asserted.
+# THE CANONICAL FORM — this script does not interpret it. It treats
+# `ours.canon`/`theirs.canon` as opaque byte streams for the determinism diff,
+# and defers ALL comparison semantics to `compare` (tb_writer's deliverable,
+# reviewed and ACCEPTED under REQ-901 at RV-0046-VERDICT).
 #
-# WHAT THIS SCRIPT ASSUMES ABOUT THE PINNED ENTRY POINTS — NOT PINNED BY THE
-# PACKET, SO IT IS DOCUMENTED HERE AND IN THE RETURN LOG, NOT GUESSED SILENTLY
+# THE SIDECAR — SINGLE WRITER, PLACEHOLDERS BARRED
+# (dv_lead's ruling, `RV-0046-VERDICT` §5, ACCEPTED — quoted, not paraphrased,
+# where it matters)
 #
-# WO-0046 §2.1 pins the FILE NAMES (`stimulus_gen.ml`, `ours_run.ml`,
-# `compare.ml`, `tb_xgmii_rx_64.v`) and §2 pins the FILE-BASED SHAPE of the
-# bridge (a stimulus file in, canonical files out), but it does not pin an
-# argv/CLI contract for the three OCaml executables or a filename contract for
-# the Verilog testbench's I/O. This script commits to the SMALLEST such
-# contract, matching this repository's existing zero-argument idiom
-# (`bin/generate.exe` takes no arguments and writes fixed, relative paths):
+# `run_cosim.sh` is the sidecar's ONLY writer. Neither OCaml producer
+# (`stimulus_gen`, `ours_run`) writes one at all. `tb_xgmii_rx_64.v` (read in
+# full before this round) DOES still write its own best-effort
+# `theirs.canon.meta` as part of the `vvp` run, with the two fields it
+# cannot determine from inside Verilog — simulator version, runner image —
+# left as literal `unknown (fill in: …)` text; that is what tb_writer's
+# landed code does today, predating dv_lead's ruling. This script does not
+# edit that file (`test/**` is outside this agent's write scope) — it
+# defeats the placeholder mechanically instead: `write_sidecar` always runs
+# AFTER `vvp` and always fully OVERWRITES `<name>.canon.meta` (truncate +
+# write, never append or merge), so whatever `tb_xgmii_rx_64.v` wrote there
+# is replaced before anything downstream — a comparison, a determinism diff,
+# an on-failure dump — ever reads it. The still-placeholder-writing Verilog
+# code is flagged in this round's Return log for tb_writer's next round, not
+# fixed here.
 #
-#   stimulus_gen.exe   no arguments. Writes `./stimulus.txt` (cwd-relative).
-#   ours_run.exe       no arguments. Reads `./stimulus.txt`, writes
-#                      `./ours.canon` (both cwd-relative).
-#   compare.exe        no arguments. Reads `./ours.canon` and `./theirs.canon`
-#                      (cwd-relative), prints REQ-901's report to stdout, exit
-#                      0 = no divergence, nonzero = a divergence (or a
-#                      malformed input — both are failures of check 4.1).
+# Placeholders are barred, full stop. dv_lead, verbatim: "An 'unknown (fill
+# in:)' marker in an evidence artifact is worse than an absent file — it
+# reads as a recorded value, and the reproducibility guarantee's entire
+# antecedent is those fields being real." So every REQUIRED field below is
+# validated non-empty by `require_field` before ANY sidecar is written, for
+# BOTH canonical files, on BOTH runs — a field this script cannot determine
+# fails the WHOLE RUN (`EXIT_PROVENANCE`), not a sidecar with a hole in it.
+#
+# The four REQUIRED fields (the reproducibility guarantee's antecedent,
+# ADR-0015 D3 / CD §4), and how each is determined here:
+#   reference pin SHA   parsed from test/third_party/verilog-ethernet/
+#                        PROVENANCE.md at run time (a repository fact).
+#   simulator version    `iverilog -V` AND `vvp -V`, each captured at run
+#                        time — only the invoker knows which binaries it
+#                        actually invoked.
+#   runner image         `$ImageOS`/`$RUNNER_NAME` in CI; a well-defined
+#                        LOCAL descriptor otherwise — see next section.
+#   stimulus identifier  sha256 of the one `stimulus.txt` both runs share.
+# Additionally recorded, best-effort and explicitly NOT gated — advisory
+# only, R-CI-3's extra forensic detail, not part of the antecedent above —
+# the distro package version via `dpkg-query`. Applying the same "no marker
+# that reads as a recorded value" principle to this one non-required field
+# too: when `dpkg-query` cannot answer, the key is OMITTED from the sidecar
+# entirely, never written with placeholder text.
+#
+# THE RUNNER-IMAGE FIELD OUTSIDE CI — A DECISION, NOT A GAP
+#
+# In GitHub Actions, `$ImageOS` (and `$RUNNER_NAME` where present) already
+# name the runner image losslessly. Outside CI — a developer running the
+# full pipeline locally with a real `iverilog`/`vvp`/`dune` on PATH — there
+# is no `$ImageOS`, and the fail-if-undeterminable rule, taken naively, would
+# make a local full run permanently unable to pass. That is the wrong
+# failure mode: ADR-0015 D1 itself measured that "the local lane is
+# genuinely usable" (unlike the OCaml lane, which ADR-0005 blocks), and a
+# rule that turns a genuinely runnable local lane into one that can never
+# succeed would throw away a finding the programme already paid to
+# establish, in the name of a rule aimed at fabricated values, not real
+# local ones.
+#
+# So a local run gets a DIFFERENT, but equally REAL, value:
+# `local:<hostname> <uname -srm> [<os-release PRETTY_NAME>]`. This is not a
+# placeholder and not a guess — every token is a fact this shell can read
+# about the machine it is actually running on, exactly as much a genuine
+# runner-image identifier as `$ImageOS` is for a GitHub-hosted one. It is
+# composed ONLY from the parts that actually succeed: if `hostname` fails but
+# `uname` does not (or vice versa), the field is built from whichever
+# succeeded, never padded with an "unknown-host"-shaped filler for the one
+# that did not — that would smuggle back exactly the kind of marker this
+# whole rule exists to bar, just at one remove. It is `require_field`-checked
+# exactly like the CI value: only if EVERY part — `hostname`, `uname` AND
+# `/etc/os-release` — comes back empty (a machine broken enough that none of
+# them works) is that the genuine "cannot determine" case, and the run fails
+# rather than record nothing.
+#
+# THE PINNED ENTRY POINTS' CALLING CONVENTION — CONFIRMED AGAINST THE LANDED
+# `test/cosim/` SOURCES (round 2; round 1 built this section from an
+# assumption, flagged as such, before these files existed)
+#
+#   stimulus_gen.exe   ONE optional positional arg: the output path (default
+#                      "stimulus.txt", cwd-relative, if omitted) —
+#                      `test/cosim/stimulus_gen.ml`'s own `Sys.argv` match.
+#                      This script always passes an explicit absolute path.
+#   ours_run.exe       TWO optional positional args, filled left to right:
+#                      stimulus path (default "stimulus.txt"), output path
+#                      (default "ours.canon") — `ours_run.ml`'s own
+#                      `Sys.argv` match; more than two args is a usage error,
+#                      exit 2. This script always passes both explicitly.
+#   compare.exe        REQUIRES exactly two positional args, `<ours.canon>
+#                      <theirs.canon>` — NO default, unlike the other two;
+#                      any other argument count (including zero) prints
+#                      usage and exits 2 without comparing anything —
+#                      `compare.ml`'s own `Sys.argv` match. Round 1 called
+#                      this binary with ZERO arguments under the since-
+#                      corrected assumption that it would default to
+#                      cwd-relative filenames like `ours_run` does; that
+#                      would have made check 4.1 exit 2 on every run,
+#                      never actually comparing anything. Fixed this round
+#                      by reading the real source before landing it.
 #   compare.exe --self-test
-#                      no other arguments. Exit 0 = the production comparison
-#                      path was confirmed to have teeth; nonzero = it was not.
-#   tb_xgmii_rx_64.v   reads `./stimulus.txt`, writes `./theirs.canon` (both
-#                      cwd-relative), mirroring the OCaml side exactly so the
-#                      harness controls every path by controlling cwd alone.
-#
-# This script places each invocation's cwd itself — never a CLI flag — so
-# every one of the four programs lands its I/O inside the current `mktemp -d`
-# run directory with no path ever named on their command line. If tb_writer's
-# actual executables want a different contract, only the four invocation
-# sites below (marked INTERFACE) need to change; the sequencing, hygiene and
-# exit-code logic around them do not.
+#                      exactly one argument, the literal `--self-test`.
+#                      Unchanged from round 1's assumption; confirmed.
+#   tb_xgmii_rx_64.v   NO argv support at all (Verilog, no `$test$plusargs`
+#                      parsing) — it hardcodes `$fopen("stimulus.txt","r")`,
+#                      `$fopen("theirs.canon","w")` and
+#                      `$fopen("theirs.canon.meta","w")`, all relative to
+#                      `vvp`'s cwd at invocation time (the file's own
+#                      "WORKING DIRECTORY CONTRACT" comment says exactly
+#                      this and names this script as the one responsible
+#                      for arranging it). This is the one entry point where
+#                      cwd, not an argument, IS the interface, so this
+#                      script still `cd`s into the run directory — with a
+#                      `stimulus.txt` copied there first — only for the
+#                      `vvp` invocation.
 #
 # THE iverilog INVOCATION (ADR-0015 D1, quoted: "iverilog -o sim … && vvp
 # sim") — this script adds no flags beyond `-o` and the source list, on
@@ -104,33 +188,47 @@
 # through the RV- loop, not a silent addition now.
 #
 # EXIT CODES — the failing check named on stdout AND encoded in the exit
-# code, so CI, a human, and a re-run script can all tell which of the four
-# possible outcomes occurred without re-reading the log:
+# code, so CI, a human, and a re-run script can all tell which outcome
+# occurred without re-reading the log:
 #
-#   0  PASS        — all three checks (4.1, 4.2, 4.3) passed.
-#   2  PREREQ      — iverilog, vvp or dune is not on PATH. The lane DID NOT
-#                    RUN. Per ADR-0015 D1's standing rule: "A skipped, absent
-#                    or failed-to-install simulator is never a PASS." This
-#                    code exists so nothing can read exit-nonzero-therefore-
-#                    ran-and-found-a-defect from a run that never started.
-#   3  BUILD       — `dune build` of the three pinned executables, or the
-#                    `iverilog` compile of the testbench + vendored reference,
-#                    failed; or one of the pinned executables (stimulus_gen,
-#                    ours_run, vvp against the compiled reference) ran but did
-#                    not exit 0 / did not produce its named output file. Also
-#                    DID NOT RUN a comparison, but distinguished from PREREQ
-#                    because the tools were present and something else (a
-#                    missing file, a syntax error, a driver crash) is the
-#                    story — the failing command's own output is printed
-#                    immediately above the "FAILED CHECK: BUILD" line.
-#   4  DIFFERENTIAL — check 4.1: `compare` reported a divergence, or could not
-#                    be run to a verdict.
-#   5  SELFTEST    — check 4.2: `compare --self-test` did not confirm the
-#                    production comparator has teeth.
-#   6  DETERMINISM — check 4.3: the two-run byte-for-byte diff of the
-#                    canonical files found a difference.
-#   9  INTERNAL    — a machinery problem unrelated to the three checks (bad
-#                    invocation, unparseable PROVENANCE.md, mktemp failure).
+#   0  PASS         — all three checks (4.1, 4.2, 4.3) passed.
+#   2  PREREQ       — iverilog, vvp or dune is not on PATH. The lane DID NOT
+#                     RUN. Per ADR-0015 D1's standing rule: "A skipped,
+#                     absent or failed-to-install simulator is never a
+#                     PASS." This code exists so nothing can read exit-
+#                     nonzero-therefore-ran-and-found-a-defect from a run
+#                     that never started.
+#   3  BUILD        — `dune build` of the three pinned executables, or the
+#                     `iverilog` compile of the testbench + vendored
+#                     reference, failed; or one of the pinned executables
+#                     (stimulus_gen, ours_run, vvp against the compiled
+#                     reference) ran but did not exit 0 / did not produce
+#                     its named output file. Also DID NOT RUN a comparison,
+#                     but distinguished from PREREQ because the tools were
+#                     present and something else (a missing file, a syntax
+#                     error, a driver crash) is the story — the failing
+#                     command's own output is printed immediately above the
+#                     "FAILED CHECK: BUILD" line.
+#   4  DIFFERENTIAL — check 4.1: `compare` reported a divergence, or could
+#                     not be run to a verdict.
+#   5  SELFTEST     — check 4.2: `compare --self-test` did not confirm the
+#                     production comparator has teeth.
+#   6  DETERMINISM  — check 4.3: the two-run byte-for-byte diff of the
+#                     canonical files found a difference.
+#   7  PROVENANCE   — a sidecar field the reproducibility guarantee's
+#                     antecedent depends on (the reference pin, either
+#                     simulator's version, the runner image, or the
+#                     stimulus's sha256) could not be determined. dv_lead's
+#                     ruling (`RV-0046-VERDICT` §5, ACCEPTED): placeholders
+#                     are barred, so an undeterminable REQUIRED field fails
+#                     the whole run rather than ship an "unknown (fill
+#                     in:)" marker in an evidence artifact. Distinct from
+#                     INTERNAL because the three checks' own machinery may
+#                     be perfectly fine — only the provenance record is not
+#                     attestable, and that is reason enough on its own.
+#   9  INTERNAL     — a machinery problem unrelated to the above (bad
+#                     invocation, mktemp failure, a build reported success
+#                     but the expected binary is missing).
 #
 # USAGE
 #   tools/cosim/run_cosim.sh        run all three checks, no arguments
@@ -158,6 +256,7 @@ EXIT_BUILD=3
 EXIT_DIFFERENTIAL=4
 EXIT_SELFTEST=5
 EXIT_DETERMINISM=6
+EXIT_PROVENANCE=7
 EXIT_INTERNAL=9
 
 say() { printf '%s\n' "$*"; }
@@ -210,6 +309,67 @@ die() {
   exit "$1"
 }
 
+require_field() {
+  # $1 = human field name, $2 = value. dv_lead's ruling (`RV-0046-VERDICT`
+  # §5, ACCEPTED): placeholders are barred. A REQUIRED field this script
+  # cannot determine fails the run outright rather than ship an "unknown
+  # (fill in:)" marker in an evidence artifact.
+  local name="$1" value="$2"
+  if [ -z "$value" ]; then
+    say "run_cosim: PROVENANCE — required sidecar field could not be determined: $name"
+    say "  dv_lead, RV-0046-VERDICT §5: \"An 'unknown (fill in:)' marker in an"
+    say "  evidence artifact is worse than an absent file — it reads as a"
+    say "  recorded value, and the reproducibility guarantee's entire"
+    say "  antecedent is those fields being real.\" This run fails rather than"
+    say "  record one."
+    die "$EXIT_PROVENANCE" "PROVENANCE (undeterminable field: $name)"
+  fi
+}
+
+runner_image() {
+  # Prints a runner-image identifier and returns 0; prints nothing and
+  # returns 1 only if truly nothing is determinable (header note: "THE
+  # RUNNER-IMAGE FIELD OUTSIDE CI"). CI is detected by `$ImageOS` (GitHub
+  # Actions' own runner-image variable); outside CI, a well-defined LOCAL
+  # descriptor is built instead — a real fact about this machine, not a
+  # placeholder.
+  if [ -n "${ImageOS:-}" ]; then
+    if [ -n "${RUNNER_NAME:-}" ]; then
+      printf 'ci:%s (%s)' "$ImageOS" "$RUNNER_NAME"
+    else
+      printf 'ci:%s' "$ImageOS"
+    fi
+    return 0
+  fi
+  # Composed ONLY from parts that actually succeeded -- never a placeholder
+  # standing in for one that did not. A partial failure (e.g. `hostname`
+  # unavailable but `uname` fine) must not embed an "unknown-host"-shaped
+  # token into a field this same function's caller then treats as real; that
+  # would be exactly the marker-that-reads-as-a-recorded-value dv_lead's
+  # ruling bars, self-inflicted. Only if EVERY part is unavailable is the
+  # field genuinely undeterminable (returns 1, caller fails via
+  # require_field) -- there is no in-between "half-known" value.
+  local host unamestr osline parts=""
+  host="$(hostname 2>/dev/null)"
+  unamestr="$(uname -srm 2>/dev/null)"
+  osline=""
+  if [ -r /etc/os-release ]; then
+    osline="$(sed -n 's/^PRETTY_NAME="\{0,1\}\([^"]*\)"\{0,1\}$/\1/p' /etc/os-release | head -1)"
+  fi
+  [ -n "$host" ] && parts="$host"
+  if [ -n "$unamestr" ]; then
+    [ -n "$parts" ] && parts="$parts $unamestr" || parts="$unamestr"
+  fi
+  if [ -n "$osline" ]; then
+    [ -n "$parts" ] && parts="$parts ($osline)" || parts="($osline)"
+  fi
+  if [ -z "$parts" ]; then
+    return 1
+  fi
+  printf 'local:%s' "$parts"
+  return 0
+}
+
 # ------------------------------------------------------------------ #
 # PREREQUISITES — iverilog, vvp, dune. Absence is never a PASS.        #
 # ------------------------------------------------------------------ #
@@ -235,44 +395,67 @@ if [ -n "$PREREQ_MISSING" ]; then
 fi
 
 # ------------------------------------------------------------------ #
-# provenance inputs — read once, used by every sidecar below           #
+# PROVENANCE — the four REQUIRED sidecar fields, determined once,      #
+# validated non-empty once, reused by every sidecar write below.       #
+# Placeholders are barred (dv_lead, RV-0046-VERDICT §5): any of these   #
+# missing fails the run here, before a single check runs.              #
 # ------------------------------------------------------------------ #
 
+hdr "PROVENANCE"
+
 if [ ! -e "$PROVENANCE" ]; then
-  say "run_cosim: INTERNAL — $PROVENANCE does not exist."
-  say "  Cannot record the vendored reference's pin in the sidecar without it."
-  die "$EXIT_INTERNAL" "INTERNAL (missing PROVENANCE.md)"
+  say "run_cosim: PROVENANCE — $PROVENANCE does not exist."
+  say "  Cannot determine the vendored reference's pinned SHA without it, and"
+  say "  a run that cannot determine it must not claim the reproducibility"
+  say "  guarantee (dv_lead, RV-0046-VERDICT §5)."
+  die "$EXIT_PROVENANCE" "PROVENANCE (missing PROVENANCE.md)"
 fi
 REF_SHA="$(grep -m1 'Pinned commit SHA' "$PROVENANCE" 2>/dev/null | grep -oE '[0-9a-fA-F]{40}' | head -1)"
-if [ -z "$REF_SHA" ]; then
-  say "run_cosim: INTERNAL — could not extract a 40-hex pinned commit SHA from"
-  say "  $PROVENANCE."
-  die "$EXIT_INTERNAL" "INTERNAL (unparseable PROVENANCE.md)"
-fi
-say "  reference pin (from PROVENANCE.md): $REF_SHA"
+require_field "reference_pin_sha" "$REF_SHA"
+say "  [ok]   reference pin (from PROVENANCE.md): $REF_SHA"
 
 IVERILOG_VERSION_BANNER="$(iverilog -V 2>&1 | head -1)"
+require_field "simulator_iverilog_version" "$IVERILOG_VERSION_BANNER"
+say "  [ok]   iverilog: $IVERILOG_VERSION_BANNER"
+
+VVP_VERSION_BANNER="$(vvp -V 2>&1 | head -1)"
+require_field "simulator_vvp_version" "$VVP_VERSION_BANNER"
+say "  [ok]   vvp: $VVP_VERSION_BANNER"
+
+# Advisory only — NOT gated, NOT part of the reproducibility guarantee's
+# antecedent (R-CI-3's extra forensic detail). Left empty, never given
+# placeholder text, if dpkg-query cannot answer (e.g. iverilog was not
+# apt-installed, or this is not a Debian-derived system); write_sidecar
+# omits the key entirely in that case rather than write one.
 IVERILOG_PKG_VERSION="$(dpkg-query -W -f='${Version}' iverilog 2>/dev/null)"
-if [ -z "$IVERILOG_PKG_VERSION" ]; then
-  IVERILOG_PKG_VERSION="unknown (dpkg-query unavailable, or iverilog was not apt-installed)"
-fi
-RUNNER_IMAGE="${ImageOS:-${RUNNER_NAME:-unidentified}} ($(uname -srm 2>/dev/null))"
-say "  simulator: $IVERILOG_VERSION_BANNER"
-say "  simulator package version: $IVERILOG_PKG_VERSION"
-say "  runner image (best effort): $RUNNER_IMAGE"
+say "  [--]   iverilog package version (advisory, not gated): ${IVERILOG_PKG_VERSION:-not available}"
+
+RUNNER_IMAGE="$(runner_image)" || RUNNER_IMAGE=""
+require_field "runner_image" "$RUNNER_IMAGE"
+say "  [ok]   runner image: $RUNNER_IMAGE"
 
 write_sidecar() {
-  # $1 = path to write, $2 = canon_role (ours|theirs), $3 = run_label
+  # $1 = path to write, $2 = canon_role (ours|theirs), $3 = run_label.
+  # SINGLE WRITER (RV-0046-VERDICT §5, ACCEPTED): always called AFTER both
+  # producers for a run have finished, and always FULLY OVERWRITES $1
+  # (truncate + write via `>`, never append) — see the header note on
+  # tb_xgmii_rx_64.v's own still-present placeholder-writing code, which
+  # this defeats mechanically rather than by editing test/**. Every
+  # REQUIRED field below was validated non-empty by require_field before
+  # this function was ever reachable; none is a placeholder.
   {
-    printf '# provenance sidecar — NEVER compared (WO-0046 §2.3 / ADR-0015 D3)\n'
+    printf '# provenance sidecar — NEVER compared (WO-0046 §2.3). Sole writer:\n'
+    printf '# tools/cosim/run_cosim.sh (dv_lead ruling, RV-0046-VERDICT §5, ACCEPTED).\n'
     printf 'canon_role=%s\n' "$2"
     printf 'run_label=%s\n' "$3"
     printf 'reference_repo=https://github.com/alexforencich/verilog-ethernet\n'
     printf 'reference_pin_sha=%s\n' "$REF_SHA"
     printf 'reference_files=axis_xgmii_rx_64.v,lfsr.v (test/third_party/verilog-ethernet/, verbatim, ADR-0015 D2)\n'
-    printf 'simulator=iverilog\n'
-    printf 'simulator_version_banner=%s\n' "$IVERILOG_VERSION_BANNER"
-    printf 'simulator_package_version=%s\n' "$IVERILOG_PKG_VERSION"
+    printf 'simulator_iverilog_version=%s\n' "$IVERILOG_VERSION_BANNER"
+    printf 'simulator_vvp_version=%s\n' "$VVP_VERSION_BANNER"
+    if [ -n "$IVERILOG_PKG_VERSION" ]; then
+      printf 'simulator_package_version_advisory=%s\n' "$IVERILOG_PKG_VERSION"
+    fi
     printf 'runner_image=%s\n' "$RUNNER_IMAGE"
     printf 'stimulus_sha256=%s\n' "$STIMULUS_SHA"
   } >"$1"
@@ -294,7 +477,7 @@ fi
 for bin in "$STIMULUS_GEN_BIN" "$OURS_RUN_BIN" "$COMPARE_BIN"; do
   if [ ! -x "$bin" ]; then
     say "run_cosim: INTERNAL — dune build reported success but $bin is not executable."
-    die "$EXIT_BUILD" "BUILD (expected executable missing: $bin)"
+    die "$EXIT_INTERNAL" "INTERNAL (expected executable missing: $bin)"
   fi
 done
 say "  dune build: ok — stimulus_gen.exe, ours_run.exe, compare.exe"
@@ -323,7 +506,10 @@ say "  iverilog compile: ok -> $SIMBIN"
 
 hdr "STIMULUS (recorded once, WO-0046 §3: one 64-octet good-FCS frame, lane-0 start)"
 mkdir -p "$WORK/stim"
-STIM_OUT="$(cd "$WORK/stim" && "$STIMULUS_GEN_BIN" 2>&1)"   # INTERFACE: no-arg, writes ./stimulus.txt
+# stimulus_gen.ml: one optional positional arg, the output path (confirmed
+# against the landed source — see header). Passed explicitly, absolute, so
+# no cwd juggling is needed for this call at all.
+STIM_OUT="$("$STIMULUS_GEN_BIN" "$WORK/stim/stimulus.txt" 2>&1)"
 STIM_RC=$?
 if [ "$STIM_RC" -ne 0 ] || [ ! -e "$WORK/stim/stimulus.txt" ]; then
   say "$STIM_OUT"
@@ -331,18 +517,21 @@ if [ "$STIM_RC" -ne 0 ] || [ ! -e "$WORK/stim/stimulus.txt" ]; then
 fi
 [ -n "$STIM_OUT" ] && say "$STIM_OUT"
 STIMULUS_SHA="$(sha256sum "$WORK/stim/stimulus.txt" | cut -d' ' -f1)"
-say "  stimulus.txt sha256: $STIMULUS_SHA"
+require_field "stimulus_sha256" "$STIMULUS_SHA"
+say "  [ok]   stimulus.txt sha256: $STIMULUS_SHA"
 
 run_pipeline() {
-  # $1 = run directory (created by the caller). Copies in the recorded
-  # stimulus, drives our side and the reference side from that same cwd
-  # (INTERFACE: both sides read ./stimulus.txt and write their own
-  # ./{ours,theirs}.canon), and writes both sidecars. Does not compare —
-  # that is the caller's job, per which check is running.
+  # $1 = run directory (created by the caller). Drives our side with
+  # explicit absolute paths (ours_run.ml takes two optional positional
+  # args, confirmed against the landed source), then drives the reference
+  # side via vvp, which has NO argv support at all and hardcodes
+  # "stimulus.txt"/"theirs.canon"/"theirs.canon.meta" relative to its own
+  # cwd (tb_xgmii_rx_64.v's own "WORKING DIRECTORY CONTRACT" comment) — so
+  # only that invocation needs a cwd change and a copied-in stimulus file.
+  # Writes both sidecars last, overwriting whatever tb_xgmii_rx_64.v wrote.
   local dir="$1" label="$2" out rc
-  cp "$WORK/stim/stimulus.txt" "$dir/stimulus.txt"
 
-  out="$(cd "$dir" && "$OURS_RUN_BIN" 2>&1)"
+  out="$("$OURS_RUN_BIN" "$WORK/stim/stimulus.txt" "$dir/ours.canon" 2>&1)"
   rc=$?
   if [ "$rc" -ne 0 ] || [ ! -e "$dir/ours.canon" ]; then
     say "$out"
@@ -350,6 +539,7 @@ run_pipeline() {
   fi
   [ -n "$out" ] && say "  [$label] ours_run: $out"
 
+  cp "$WORK/stim/stimulus.txt" "$dir/stimulus.txt"
   out="$(cd "$dir" && vvp "$SIMBIN" 2>&1)"
   rc=$?
   if [ "$rc" -ne 0 ] || [ ! -e "$dir/theirs.canon" ]; then
@@ -370,7 +560,12 @@ hdr "CHECK 1/3 — DIFFERENTIAL COMPARISON (WO-0046 §4.1)"
 mkdir -p "$WORK/run1"
 run_pipeline "$WORK/run1" "run1"
 
-DIFF_OUT="$(cd "$WORK/run1" && "$COMPARE_BIN" 2>&1)"   # INTERFACE: no-arg, reads ./{ours,theirs}.canon
+# compare.ml REQUIRES exactly two positional args -- no cwd-default, unlike
+# ours_run (confirmed against the landed source; see header). Round 1 called
+# this with zero arguments under the assumption it defaulted like ours_run
+# does; it does not, and that call would always have hit compare's own
+# usage branch (exit 2) without comparing anything. Fixed here.
+DIFF_OUT="$("$COMPARE_BIN" "$WORK/run1/ours.canon" "$WORK/run1/theirs.canon" 2>&1)"
 DIFF_RC=$?
 say "$DIFF_OUT"
 if [ "$DIFF_RC" -ne 0 ]; then
@@ -384,8 +579,7 @@ say "  CHECK 1/3: PASSED"
 # ------------------------------------------------------------------ #
 
 hdr "CHECK 2/3 — DELIBERATE-MISMATCH SELF-TEST (WO-0046 §4.2)"
-mkdir -p "$WORK/selftest"
-SELFTEST_OUT="$(cd "$WORK/selftest" && "$COMPARE_BIN" --self-test 2>&1)"
+SELFTEST_OUT="$("$COMPARE_BIN" --self-test 2>&1)"
 SELFTEST_RC=$?
 say "$SELFTEST_OUT"
 if [ "$SELFTEST_RC" -ne 0 ]; then
@@ -426,6 +620,7 @@ say "  CHECK 3/3: PASSED"
 hdr "SUMMARY"
 say "  run_cosim: ALL THREE CHECKS PASSED"
 say "  reference pin: $REF_SHA"
-say "  simulator: $IVERILOG_VERSION_BANNER ($IVERILOG_PKG_VERSION)"
+say "  simulator: $IVERILOG_VERSION_BANNER / $VVP_VERSION_BANNER"
+say "  runner image: $RUNNER_IMAGE"
 say "  stimulus sha256: $STIMULUS_SHA"
 exit "$EXIT_OK"
