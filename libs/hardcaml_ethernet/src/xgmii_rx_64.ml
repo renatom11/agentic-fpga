@@ -759,7 +759,10 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
       ; tuser = emit_tlast &: abort
       }
   ; error_bad_fcs = strobe sel_bad_fcs
-  ; error_bad_frame = strobe sel_error |: q_strobe 0
+    (* E-c5 MUTATION (WO-0045) — the abort detected, and never reported:
+       the frame is closed, truncated and marked correctly, but
+       `error_bad_frame` never pulses. *)
+  ; error_bad_frame = gnd
   ; error_runt = strobe sel_runt |: q_strobe 1
   ; error_oversize = strobe sel_oversize
   ; error_start_without_terminate = strobe sel_start |: q_strobe 2
