@@ -82,10 +82,15 @@ let create () =
 ;;
 
 type sample =
-  { cycle : int (* schedule cycle whose INPUT word was driven *)
-  ; out_cycle : int (* cycle the sampled OUTPUT belongs to = cycle + 1 *)
+  { cycle : int (* schedule cycle whose input word was driven AND whose
+                   [Before]-view outputs [out]/[errors_high] belong to —
+                   RV-0038-R6 / R6-1, one label for both directions *)
   ; in_word : Xgmii_word.t
   ; out : Stream_word.t
+  ; after_out : Stream_word.t (* RV-0038-R6 / R6-3: the SAME cycle read from
+                                  the default [After] view instead — round
+                                  5's own reading, kept as a diagnostic only;
+                                  nothing here asserts against it *)
   ; errors_high : string list
   }
 
@@ -117,47 +122,55 @@ let sample_cycle t ~cycle (in_word : Xgmii_word.t) : sample =
          ]);
   t.cycles_driven <- t.cycles_driven + 1;
   let i = Cyclesim.inputs t.sim in
-  let o = Cyclesim.outputs t.sim in
+  (* RV-0038-R6 / R6-1: [~clock_edge:Side.Before] is [f(regs(cycle),
+     word(cycle))] — the design's actual hardware value DURING this cycle,
+     for a registered output and one combinational in the current word
+     alike (bench.mli's [sample] docstring; BUG-0001/R-1 is why the default
+     [After] view — [f(regs(cycle + 1), word(cycle))] — is wrong for M03's
+     [rx] stream and its five error strobes, which are combinational in the
+     current XGMII word per SPEC-M03 §6.1's one-word lookahead). [Before] is
+     this bench's ASSERTED view from this round on. [o_after] is the SAME
+     cycle read from the default (After) view instead — round 5's own
+     reading — kept only to populate [after_out]'s diagnostic
+     (RV-0038-R6 / R6-3); nothing below asserts against it. *)
+  let o_before = Cyclesim.outputs ~clock_edge:Side.Before t.sim in
+  let o_after = Cyclesim.outputs t.sim in
   Xgmii_probe.to_refs ~d:i.xgmii_rx.d ~c:i.xgmii_rx.c in_word;
   Cyclesim.cycle t.sim;
-  (* RV-0038-R5: [Cyclesim.cycle] returns having recomputed the outputs from
-     post-edge register state, so every value read below (rx and the five
-     error strobes alike — all of them outputs) belongs to the cycle AFTER
-     the one whose input was just driven. This is not read off Hardcaml's
-     documentation: it is settled by this repository's own CI-promoted
-     waveform, test/hardcaml_ethernet/test_word_counter.ml, whose snapshot
-     shows [valid] high during cycle 1 producing [count] = 1 during cycle 2 —
-     the ordinary hardware relation, input at cycle N, registered output at
-     N + 1. A [drive -> Cyclesim.cycle -> sample] reader that labels what it
-     just read with [cycle] is therefore one cycle early; [out_cycle] is the
-     corrected label and every OUTPUT observation in this bench uses it.
-     [cycle] keeps its meaning as the schedule cycle whose INPUT word was
-     driven (and is what the guard above checks). *)
-  let out_cycle = cycle + 1 in
   let out =
     Axi64_probe.of_refs
-      ~tvalid:o.rx.tvalid
-      ~tdata:o.rx.tdata
-      ~tkeep:o.rx.tkeep
-      ~tstrb:o.rx.tstrb
-      ~tlast:o.rx.tlast
-      ~tuser:o.rx.tuser
+      ~tvalid:o_before.rx.tvalid
+      ~tdata:o_before.rx.tdata
+      ~tkeep:o_before.rx.tkeep
+      ~tstrb:o_before.rx.tstrb
+      ~tlast:o_before.rx.tlast
+      ~tuser:o_before.rx.tuser
+      ()
+  in
+  let after_out =
+    Axi64_probe.of_refs
+      ~tvalid:o_after.rx.tvalid
+      ~tdata:o_after.rx.tdata
+      ~tkeep:o_after.rx.tkeep
+      ~tstrb:o_after.rx.tstrb
+      ~tlast:o_after.rx.tlast
+      ~tuser:o_after.rx.tuser
       ()
   in
   let high (name, r) = if Bits.to_int !r <> 0 then Some name else None in
   let errors_high =
     List.filter_map
-      [ "error_bad_fcs", o.error_bad_fcs
-      ; "error_bad_frame", o.error_bad_frame
-      ; "error_runt", o.error_runt
-      ; "error_oversize", o.error_oversize
-      ; "error_start_without_terminate", o.error_start_without_terminate
+      [ "error_bad_fcs", o_before.error_bad_fcs
+      ; "error_bad_frame", o_before.error_bad_frame
+      ; "error_runt", o_before.error_runt
+      ; "error_oversize", o_before.error_oversize
+      ; "error_start_without_terminate", o_before.error_start_without_terminate
       ]
       ~f:high
   in
-  Protocol_monitor.observe t.protocol ~cycle:out_cycle out;
-  Strobe_monitor.sample t.strobes ~cycle:out_cycle ~high:errors_high;
-  { cycle; out_cycle; in_word; out; errors_high }
+  Protocol_monitor.observe t.protocol ~cycle out;
+  Strobe_monitor.sample t.strobes ~cycle ~high:errors_high;
+  { cycle; in_word; out; after_out; errors_high }
 ;;
 
 let run t sched ~drain ?word_at () =
@@ -214,26 +227,25 @@ let delivered_octets samples =
 
 let tlast_sample samples = List.find (delivered_samples samples) ~f:(fun s -> s.out.tlast)
 
-(* RV-0038-R5 / R5-2: [errors_high] is read off the DUT's error OUTPUTS, so
-   the pulse it reports belongs to [s.out_cycle], not [s.cycle] (the INPUT
-   cycle that was driven to produce it). *)
+(* RV-0038-R6 / R6-1: [errors_high] is read off the DUT's error OUTPUTS via
+   the [Before] view, so the pulse it reports already belongs to [s.cycle] —
+   the same cycle whose input word was driven, not a cycle later. *)
 let error_pulses samples =
   List.concat_map samples ~f:(fun s ->
-    List.map s.errors_high ~f:(fun name -> s.out_cycle, name))
+    List.map s.errors_high ~f:(fun name -> s.cycle, name))
 ;;
 
 let account_clean_frame t (frame : Arrival.frame) samples ~aborted =
   Conservation_monitor.frame_in t.conservation;
   Conservation_monitor.frame_out t.conservation ~aborted;
   Octet_time.Latency.frame_in t.latency (Arrival.in_times frame);
-  (* RV-0038-R5 / R5-2: this is the call site the ruling names as mattering
-     most. The latency tagger derives its output octet times from these
-     (cycle, word) pairs (Octet_time.of_words), so pairing a delivered word
-     with [s.cycle] rather than [s.out_cycle] would have understated every
-     measured word delay by one cycle — exactly the ΔC = 2 vs ΔC = 3
-     discrepancy items 1, 2 and 4 of run 30772333717 turned out to be. *)
+  (* RV-0038-R6 / R6-1: this is the call site RV-0038-R5 once named as
+     mattering most, and it needs no relabelling any more — [s.cycle] under
+     the [Before] view already IS the cycle each delivered word belongs to,
+     so pairing it with [s.out] here is exact by construction, not a repair
+     of a one-cycle understatement the way round 5's [out_cycle] swap was. *)
   let delivered_pairs =
-    List.map (delivered_samples samples) ~f:(fun s -> s.out_cycle, s.out)
+    List.map (delivered_samples samples) ~f:(fun s -> s.cycle, s.out)
   in
   Octet_time.Latency.frame_out t.latency (Octet_time.of_words delivered_pairs)
 ;;

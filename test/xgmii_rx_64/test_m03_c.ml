@@ -51,7 +51,23 @@ let expected_tkeep_for ~delivered =
    then decides whether to raise — once, with every line — so the complete
    sixteen-entry signature F-M03-1's falsifiable lane-dependent prediction
    needs (65-67 at lane 0, 69-71 at lane 4, or a different pattern, or none)
-   is legible from a single CI run regardless of how many entries fail. *)
+   is legible from a single CI run regardless of how many entries fail.
+
+   RV-0038-R7 round 6 adds two more columns to this same machinery, reused
+   unchanged by M03-C5 below (R6-2):
+   - [views_disagree_on_tlast] (R6-3) — does round 5's After-view reading,
+     kept purely as a diagnostic on [sample.after_out], disagree with the
+     asserted Before-view oracle about which word carries the frame's
+     [tlast]? [expected_disagree] states R-1's own locked prediction
+     (RV-0038-R7 / [J-dv_lead-0032]) as a STIMULUS-only fact, and
+     [check_disagreement_matches_r1] asserts the two match — a mismatch is
+     itself the finding the round asks to surface, not a bench defect to
+     paper over.
+   - the protocol monitor's report, appended to a FAILING entry's line by
+     [batched_failure_with_protocol] (R6-4, carried from RV-0038-R6): R5-4's
+     table alone cannot say whether an excess arrives as a word after
+     [tlast] or as a short word mid-frame; the monitor (fed every cycle
+     already, per obligation 1) can. *)
 
 type length_outcome =
   { lane : int
@@ -63,6 +79,7 @@ type length_outcome =
   ; observed_tuser : int option
   ; terminate_lane : int
   ; error_pulse_count : int
+  ; views_disagree_on_tlast : bool (* RV-0038-R6 / R6-3 *)
   }
 
 let outcome_ok (o : length_outcome) =
@@ -101,7 +118,49 @@ let outcome_line (o : length_outcome) =
     ; Int.to_string o.terminate_lane
     ; " error_pulses="
     ; Int.to_string o.error_pulse_count
+    ; " views_disagree="
+    ; (if o.views_disagree_on_tlast then "true" else "false")
     ]
+;;
+
+(* RV-0038-R6 / R6-3: does round 5's After-view convention — kept purely as
+   a diagnostic on [sample.after_out], never behind any assertion above —
+   disagree with the Before-view oracle about which word carries [tlast]?
+   [samples]'s entry at [cycle = c] carries the SAME [after_out] round 5
+   would have labelled [out_cycle = c + 1], so "what round 5 would have
+   reported for hardware cycle T" is [after_out] of the sample at
+   [cycle = T - 1], not of the sample at [cycle = T] itself — this is
+   exactly the comparison BUG-0001's own trace makes (its "BENCH SAMPLE at
+   label t" row is this bench's [(T - 1).after_out]). Obligation 6: [tlast]
+   is read only when [tvalid] is true (short-circuiting [||] below), since
+   an idle cycle's fields are unconstrained. [false] (no [tlast] word
+   observed under [Before], or no sample exists at [T - 1]) means "no
+   disagreement": neither shape is what R-1 describes, which is specifically
+   about a word Before SEES and After's same-labelled reading MISSES. *)
+let views_disagree_on_final_word samples =
+  match tlast_sample samples with
+  | None -> false
+  | Some final ->
+    (match List.find samples ~f:(fun s -> s.cycle = final.cycle - 1) with
+     | None -> false
+     | Some prior ->
+       (not prior.after_out.Dv_monitors.Stream_word.tvalid)
+       || not prior.after_out.Dv_monitors.Stream_word.tlast)
+;;
+
+(* RV-0038-R6 / R6-3: R-1's own locked prediction (RV-0038-R7 /
+   [J-dv_lead-0032]), stated purely from the STIMULUS so this check never
+   reads the DUT twice: disagreement exactly where the frame's terminate
+   character lands alone in lane 0 of its own word (terminate_lane = 0) AND
+   that leaves the frame's final delivered word full (expected_delivered
+   mod 8 = 0, i.e. expected_tkeep = 0xFF) — the case where the closure
+   record producing [tlast] is born on the very cycle Before's oracle reads
+   it, so After's same-labelled reading (one word's worth of information
+   short) misses it. terminate_lane = 0 alone is not sufficient: lane 0's
+   own length-64 entry has terminate_lane = 0 with a NON-full final word
+   (excess = 0) and is not part of R-1's singleton. *)
+let expected_disagree (o : length_outcome) =
+  o.terminate_lane = 0 && Int.rem o.expected_delivered 8 = 0
 ;;
 
 let length_outcome ~lane ~length (frame : Dv_xgmii.Arrival.frame) samples =
@@ -125,7 +184,57 @@ let length_outcome ~lane ~length (frame : Dv_xgmii.Arrival.frame) samples =
   ; observed_tuser
   ; terminate_lane
   ; error_pulse_count = List.length (error_pulses samples)
+  ; views_disagree_on_tlast = views_disagree_on_final_word samples
   }
+;;
+
+(* RV-0038-R6 / R6-4 (carried from RV-0038-R6, "surface the protocol monitor
+   in the batched R5-4 failure output"): for every entry whose CONTENT is
+   wrong, append its bench's protocol monitor report (fed every cycle by
+   [run], obligation 1) after the table — a failure that merely counts
+   octets cannot say whether the excess arrives as a word after [tlast] or
+   as a short word mid-frame; the monitor's own violation list can. Shared
+   by M03-C1/C2 and M03-C5 (R6-2's "same outcome-table machinery"). *)
+let batched_failure_with_protocol ~header ~outcomes all =
+  match List.filter all ~f:(fun (o, _, _, _) -> not (outcome_ok o)) with
+  | [] -> ()
+  | failing ->
+    failwith
+      (String.concat
+         ~sep:"\n"
+         (header
+          :: List.map outcomes ~f:outcome_line
+          @ List.concat_map failing ~f:(fun (o, bench, _, _) ->
+              [ String.concat [ "  -- protocol monitor, "; outcome_line o; " --" ]
+              ; Dv_monitors.Protocol_monitor.report (protocol bench)
+              ])))
+;;
+
+(* RV-0038-R6 / R6-3: asserts R-1's locked prediction against every entry's
+   OBSERVED [views_disagree_on_tlast], dumping the full table (this time
+   keyed on the disagreement column, not the content columns) on any
+   mismatch — "expected exactly at terminate_lane = 0 with a full final
+   word, and nowhere else" is the whole content of R-1's falsifier, and a
+   silent report nobody reads would not demonstrate it. Shared by M03-C1/C2
+   and M03-C5. *)
+let check_disagreement_matches_r1 ~row_prefix outcomes =
+  match
+    List.filter outcomes ~f:(fun o ->
+      not (Bool.equal o.views_disagree_on_tlast (expected_disagree o)))
+  with
+  | [] -> ()
+  | _ ->
+    failwith
+      (String.concat
+         ~sep:"\n"
+         (String.concat
+            [ row_prefix
+            ; ": Before/After sampling-view disagreement on tlast did not \
+               match R-1's locked prediction (RV-0038-R7 / R6-3) — expected \
+               exactly at terminate_lane = 0 with a full (8-octet) final \
+               word, nowhere else:"
+            ]
+          :: List.map outcomes ~f:outcome_line))
 ;;
 
 let run_c1_c2 () =
@@ -138,14 +247,13 @@ let run_c1_c2 () =
   let lane4 = per_lane 4 in
   let all = List.append lane0 lane4 in
   let outcomes = List.map all ~f:(fun (o, _, _, _) -> o) in
-  (match List.filter outcomes ~f:(fun o -> not (outcome_ok o)) with
-   | [] -> ()
-   | _ ->
-     failwith
-       (String.concat
-          ~sep:"\n"
-          ("M03-C1/M03-C2: per-length signature, both lanes, one run (RV-0038-R5 R5-4):"
-           :: List.map outcomes ~f:outcome_line)));
+  batched_failure_with_protocol
+    ~header:
+      "M03-C1/M03-C2: per-length signature, both lanes, one run (RV-0038-R5 \
+       R5-4); each FAILING entry's protocol monitor report follows \
+       (RV-0038-R7 R6-4):"
+    ~outcomes
+    all;
   (* Content is clean at every one of the sixteen (lane, length) pairs.
      D3 (RV-0038 addendum): "covering all eight lanes" (AP-xgmii_rx_64.md's
      own words for this row) is a property of the STIMULUS, not a DUT
@@ -179,6 +287,9 @@ let run_c1_c2 () =
            ; String.concat ~sep:"," (List.map (sorted terminate_lanes) ~f:Int.to_string)
            ; "}, expected each of 0..7 exactly once"
            ]));
+  (* RV-0038-R6 / R6-3: demonstrate BUG-0001/R-1's sampling artefact in this
+     same run rather than assume it. *)
+  check_disagreement_matches_r1 ~row_prefix:"M03-C1/M03-C2" outcomes;
   (* Standing-obligation accounting per (lane, length) — deliberately AFTER
      the content-signature and stimulus-coverage checks above: by this point
      every length's delivered-octet count, tkeep, tuser and terminate lane is
@@ -199,6 +310,76 @@ let%expect_test
    patterns once each, FCS good where terminate lands past lane 0"
   =
   run_c1_c2 ();
+  [%expect {||}]
+;;
+
+(* ---- M03-C5 --------------------------------------------------------------- *)
+(* "Frames of 1513 and 1516 octets DA through FCS, at both start lanes (4
+   frames), driven through the same outcome-table machinery as M03-C1 |
+   Delivered octets = length - 4 exactly (1509, 1512); the tlast word's
+   tkeep = 0x1F and 0xFF; tuser[0] = 0; no strobe." RV-0038-R7 / R6-2 — the
+   P-1 probe BUG-0001 was owed: the two lengths give final-word fills
+   k = 5 and k = 8, the exact values BUG-0001's invariant said over-delivered
+   by +1 and +4, three orders of magnitude from the 64-octet region the
+   defect was found in, so a fix confined to that neighbourhood rather than
+   the rule fails here. Lane 4's 1516-octet frame additionally has
+   terminate_lane = 0 with a full final word — the second instance of R-1's
+   observation class, reported through the same [views_disagree_on_tlast]
+   column M03-C1/C2 uses (R6-2, R6-3).
+
+   Driven through [length_outcome]/[outcome_line] (R6-2's own instruction),
+   but NOT through {!run_directed_lengths}: that function is pinned to
+   {!directed_lengths} (64..71) and takes no length parameter, so [run_length]
+   below is the one-length equivalent of its per-length closure, built from
+   the same three exposed primitives ({!directed_frame_octets}, {!one_frame},
+   {!create}, {!run}). *)
+
+let m03_c5_lengths = [ 1513; 1516 ]
+
+let run_length ~lane ~length =
+  let octets = directed_frame_octets ~length in
+  let sched = one_frame ~lane octets in
+  let bench = create () in
+  let samples = run bench sched ~drain:8 () in
+  sched, bench, samples
+;;
+
+let run_c5 () =
+  let per_lane lane =
+    List.map m03_c5_lengths ~f:(fun length ->
+      let sched, bench, samples = run_length ~lane ~length in
+      let frame = (Dv_xgmii.Arrival.frames sched).(0) in
+      length_outcome ~lane ~length frame samples, bench, frame, samples)
+  in
+  let lane0 = per_lane 0 in
+  let lane4 = per_lane 4 in
+  let all = List.append lane0 lane4 in
+  let outcomes = List.map all ~f:(fun (o, _, _, _) -> o) in
+  batched_failure_with_protocol
+    ~header:
+      "M03-C5: 1513/1516-octet frames, both lanes, per-length signature \
+       (RV-0038-R7 R6-2, the P-1 probe); each FAILING entry's protocol \
+       monitor report follows (R6-4):"
+    ~outcomes
+    all;
+  (* RV-0038-R6 / R6-3, same predicate as M03-C1/C2 — this is the second,
+     three-orders-of-magnitude-distant instance of R-1's observation class
+     (lane 4, length 1516), not a fresh one. *)
+  check_disagreement_matches_r1 ~row_prefix:"M03-C5" outcomes;
+  List.iter all ~f:(fun (o, bench, frame, samples) ->
+    let row =
+      String.concat
+        [ "M03-C5 (lane "; Int.to_string o.lane; ", length "; Int.to_string o.length; ")" ]
+    in
+    account_clean_frame bench frame samples ~aborted:false;
+    assert_monitors_clean bench ~row)
+;;
+
+let%expect_test
+  "M03-C5: 1513 and 1516-octet frames at both lanes — the P-1 probe \
+   (RV-0038-R7 R6-2)"
+  =
+  run_c5 ();
   [%expect {||}]
 ;;
 
@@ -294,9 +475,10 @@ let run_c4 ~lane =
   let words = delivered_samples samples in
   (match words with
    | [ s ] ->
-     (* RV-0038-R5 / R5-2: the output word's arrival cycle is [s.out_cycle],
-        not [s.cycle] (one cycle early — the input cycle that produced it). *)
-     if s.out_cycle <> start_cycle + 3
+     (* RV-0038-R6 / R6-1: the output word's arrival cycle is [s.cycle],
+        read from the [Before] view — no relabelling, since [Before]'s
+        [cycle] already is that arrival cycle. *)
+     if s.cycle <> start_cycle + 3
      then fail row "the single output word did not arrive on start_cycle + 3 (REQ-019)";
      if s.out.Dv_monitors.Stream_word.tkeep <> 0x01
      then fail row "tkeep is not 0x01 on the one-word frame";

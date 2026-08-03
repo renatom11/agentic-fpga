@@ -67,34 +67,62 @@ val latency : t -> Dv_monitors.Octet_time.Latency.t
 val strobe_names : string list
 
 (** One driven-and-sampled cycle: the XGMII word presented to [xgmii_rx] on
-    [cycle], and — one cycle later, [out_cycle] — the [rx] word the standing
-    {!Axi64_probe} sampled and the names of every error strobe high that
-    cycle (a subset of {!strobe_names}, read directly off the DUT's error
-    outputs — never inferred).
+    [cycle], and the [rx] word the standing {!Axi64_probe} sampled from
+    [cycle]'s own outputs, plus the names of every error strobe high that
+    same cycle (a subset of {!strobe_names}, read directly off the DUT's
+    error outputs — never inferred). [after_out] is a second, diagnostic-only
+    reading of that same cycle, described below.
 
-    {2 [cycle] vs [out_cycle] (RV-0038-R5)}
+    {2 [Before], not the default [After] (RV-0038-R6 / R6-1)}
 
-    [Cyclesim.cycle] returns having recomputed the design's outputs from
-    post-edge register state, so a [drive -> Cyclesim.cycle -> sample] reader
-    is reading the OUTPUT of the cycle AFTER the one whose INPUT it just
-    drove. This is not a documentation reading: it is settled by this
-    repository's own CI-promoted waveform,
-    [test/hardcaml_ethernet/test_word_counter.ml], whose snapshot shows
-    [valid] high during cycle 1 producing [count] = 1 during cycle 2 — input
-    at cycle N, registered output at N + 1, the ordinary hardware relation.
-    [cycle] is the schedule cycle whose INPUT word was driven (and is what
-    {!run}'s internal choke-point ordering guard checks — RV-0038-R5 / R5-1);
-    [out_cycle] (= [cycle] + 1) is the cycle every OUTPUT field of this
-    record — [out] and [errors_high] alike —
-    actually belongs to. Every consumer of an output value in this library
-    ({!error_pulses}, {!account_clean_frame}) reports [out_cycle]; a row
-    checking an output's timing against the spec's cycle table must compare
-    against [out_cycle], never [cycle]. *)
+    [Cyclesim.cycle] runs check -> comb -> seq -> comb, and [Cyclesim.outputs]
+    can read either side of the seq step. The default, [~clock_edge:After],
+    returns [f(regs(cycle + 1), word(cycle))] — the design's combinational
+    logic evaluated against the NEW, post-edge register state, still paired
+    with the word just driven. [~clock_edge:Before] returns
+    [f(regs(cycle), word(cycle))] — the design's actual hardware value
+    DURING [cycle], for a registered output and one combinational in the
+    current word alike.
+
+    Round 5 (RV-0038-R5) read the default [After] view and labelled it
+    [out_cycle = cycle + 1]. {b That relation is still exactly right for a
+    REGISTERED output, and the evidence for it has not changed}:
+    [test/hardcaml_ethernet/test_word_counter.ml]'s promoted waveform shows
+    [valid] high during cycle 1 producing [count] = 1 during cycle 2, and
+    every ΔC = 3 / [start_cycle + 3] figure this bench asserts is exactly
+    what that relation predicts — under [Before] those same figures read at
+    [cycle], not [cycle + 1], because there is no relabelling left to do.
+    What round 5 got wrong was generalising a fact about one registered
+    signal ([word_counter]'s [count]) to every M03 output. [BUG-0001]'s R-1
+    finding (`agents/handoffs/BUG-0001_m03-final-word-over-delivery.md`,
+    accepted at `RV-0038-R7` / [J-dv_lead-0032]) is the counter-example it
+    missed: M03's [rx] stream and its five error strobes are combinational
+    in the CURRENT XGMII word (SPEC-M03 §6.1's one-word lookahead), and at a
+    lane-4 start whose terminate character lands alone in lane 0 of its own
+    word, the age-0 closure record that produces [tlast] is gone by the
+    time [After]'s post-edge state is read — a state that exists in no
+    hardware cycle at all for that signal. [Before] has no such gap: it is
+    the SAME cycle's state the design actually held on the wire, for every
+    field of [O.t], registered or not, so it needs one label ([cycle])
+    rather than two. {b Every timing NUMBER this bench asserts is unchanged
+    by the switch} — [Before]'s [cycle] reads exactly the value [After]'s
+    retired [out_cycle] used to — which is what makes this a bench repair,
+    not a spec revision.
+
+    {2 [after_out] (RV-0038-R6 / R6-3)}
+
+    [after_out] is [cycle]'s [rx] stream read from the default [After] view
+    instead of [Before] — the exact reading round 5 used, kept solely to
+    demonstrate the sampling artefact in a run rather than assume it. No
+    behavioural assertion in this bench reads it: every content, monitor and
+    timing check uses [out]. A row comparing [after_out] against [out] is
+    comparing this bench's own two conventions against each other, never
+    asserting a fact about M03. *)
 type sample =
   { cycle : int
-  ; out_cycle : int
   ; in_word : Dv_xgmii.Xgmii_word.t
   ; out : Dv_monitors.Stream_word.t
+  ; after_out : Dv_monitors.Stream_word.t
   ; errors_high : string list
   }
 
@@ -114,11 +142,12 @@ type sample =
     skipped drive can be caught before anything downstream treats the result
     as a statement about the design), then (a) turned into a {!sample}, (b)
     fed to the standing {!Protocol_monitor} and (c) fed to the standing
-    {!Strobe_monitor} via [sample ~cycle:out_cycle ~high:errors_high] — both
-    at the sample's [out_cycle], never its [cycle] (RV-0038-R5 / R5-2: they
-    read the DUT's outputs, not its inputs). C-23's counting convention
-    requires every cycle, including ones where nothing is high, so [run] is
-    the only place that call is allowed to happen.
+    {!Strobe_monitor} via [sample ~cycle ~high:errors_high] — [cycle] is the
+    sample's only cycle label (RV-0038-R6 / R6-1: the [Before] view read into
+    {!sample}'s [out] already belongs to this same cycle, so there is no
+    second, later cycle for a monitor call to name). C-23's counting
+    convention requires every cycle, including ones where nothing is high,
+    so [run] is the only place that call is allowed to happen.
 
     [?word_at] overrides the word driven on a single cycle (identity is
     [Arrival.word_at sched]): M03-B1 uses it to substitute a non-standard
@@ -154,10 +183,11 @@ val delivered_octets : sample list -> int list
     [run]'s [drain] always exceeds §6.1's 2-cycle window. *)
 val tlast_sample : sample list -> sample option
 
-(** Every (out_cycle, strobe name) pair that was high anywhere in the run, in
-    out_cycle order — an error strobe is a DUT output, so it is reported at
-    the cycle it belongs to ([out_cycle]), never the cycle whose input
-    produced it (RV-0038-R5 / R5-2). *)
+(** Every (cycle, strobe name) pair that was high anywhere in the run, in
+    cycle order — an error strobe is a DUT output, read from the [Before]
+    view at the cycle whose input word produced it (RV-0038-R6 / R6-1: under
+    [Before] that is the same cycle the strobe belongs to, so no relabelling
+    is needed). *)
 val error_pulses : sample list -> (int * string) list
 
 (** Standing obligations 2 and 3 for the common case in this packet: one
@@ -166,12 +196,12 @@ val error_pulses : sample list -> (int * string) list
     the standing {!Octet_time.Latency} tagger [frame.Arrival.octets]'s
     preamble-inclusive input octet times ([Arrival.in_times frame]) against
     the delivered samples' octet times ([Octet_time.of_words] over each
-    sample's [out_cycle], never its [cycle] — RV-0038-R5 / R5-2 names this as
-    the call site that matters most, since the tagger derives every measured
-    word delay from exactly this pairing; no [?expected_octets] override —
-    see the module docstring for why every frame in this packet satisfies the
-    clean-frame identity extent). A row driving more than one frame calls
-    this once per frame. *)
+    sample's [cycle] — RV-0038-R6 / R6-1: the [Before] view already reads
+    [cycle]'s own output, so this is the call site RV-0038-R5 once named as
+    mattering most and it needs no relabelling any more; no
+    [?expected_octets] override — see the module docstring for why every
+    frame in this packet satisfies the clean-frame identity extent). A row
+    driving more than one frame calls this once per frame. *)
 val account_clean_frame : t -> Dv_xgmii.Arrival.frame -> sample list -> aborted:bool -> unit
 
 (** A single-frame link-partner schedule: [octets] (DA through FCS) preceded

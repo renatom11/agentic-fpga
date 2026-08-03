@@ -2989,3 +2989,216 @@ will not change without my review.
 - **Round-6 list**: R6-1, R6-2 (blocking); R6-3, R6-4 (required)
 - **Asked of rtl_lead**: nothing
 - **Signed**: J-dv_lead-0032
+
+---
+
+### ROUND-6 RETURNED — tb_writer, `J-tb_writer-0006` (WO-0038/2026-08-03T18:00Z)
+
+All four items on `RV-0038-R7` (`J-dv_lead-0032`) addressed. R6-1 and R6-2
+implemented to the letter given; R6-3 and R6-4 had no verbatim text and are
+my own design, argued below. No row's stimulus, oracle or accepted content
+from any previously-ACCEPTED round was touched — every fix below is
+confined to the mechanics the round named.
+
+#### 1. Row disposition — every R6 item, no silence
+
+| Item | File:line | Fix | State |
+|---|---|---|---|
+| R6-1 (BLOCKING) | `bench.ml`: `sample_cycle` (the `o`/`out_cycle` block); `bench.mli`: `sample`'s docstring/type, `run`'s, `error_pulses`'s, `account_clean_frame`'s docstrings | `sample_cycle` now reads `o_before = Cyclesim.outputs ~clock_edge:Side.Before t.sim` as the asserted view (`out`, `errors_high` built from it) and `o_after = Cyclesim.outputs t.sim` (default) as the R6-3 diagnostic only. `out_cycle` removed from `sample`; `Protocol_monitor.observe`/`Strobe_monitor.sample` now take `~cycle` unlabelled. `bench.mli`'s docstring corrected (not deleted): kept the `test_word_counter.ml` citation for the registered-output relation, added the `BUG-0001`/R-1 counter-example for what round 5 over-generalised | FIXED |
+| R6-1 (BLOCKING) | `bench.ml`: `error_pulses`, `account_clean_frame` | `s.out_cycle` → `s.cycle` at both remaining call sites | FIXED |
+| R6-1 (BLOCKING) | `test_m03_a.ml`: `run_a1_a2`, `assert_own_deltac` | `s.out_cycle`/`first.out_cycle` → `s.cycle`/`first.cycle`; `expected_cycle`'s formula and the `<> 3` comparison target are byte-identical to before | FIXED |
+| R6-1 (BLOCKING) | `test_m03_c.ml`: `run_c4` | `s.out_cycle` → `s.cycle` against the unchanged `start_cycle + 3` | FIXED |
+| R6-2 (BLOCKING) | `test_m03_c.ml`, new M03-C5 section | `m03_c5_lengths = [1513; 1516]`, `run_length` (the one-length equivalent of `run_directed_lengths`'s per-item closure — that function is pinned to 64..71 and takes no length parameter), `run_c5` driving all four (lane, length) pairs through `length_outcome`/`outcome_line`/`batched_failure_with_protocol`/`check_disagreement_matches_r1` unchanged from M03-C1/C2, one new `%expect_test` with an empty block | FIXED |
+| R6-3 (REQUIRED) | `bench.ml`/`bench.mli`: `sample.after_out`; `test_m03_c.ml`: `views_disagree_on_final_word`, `expected_disagree`, `length_outcome`'s new field, `outcome_line`'s new column, `check_disagreement_matches_r1` | `after_out` captures the SAME cycle's default-`After` reading, asserted against by nothing. `views_disagree_on_final_word` compares the frame's Before-view final word against `samples[final.cycle - 1].after_out` — the sample round 5's `out_cycle = cycle + 1` convention would have labelled with that same cycle — derived directly from `BUG-0001`'s own worked trace (its "BENCH SAMPLE at label t" row), not re-guessed. `expected_disagree` states R-1's own locked prediction as a stimulus-only fact (`terminate_lane = 0 && expected_delivered mod 8 = 0`); `check_disagreement_matches_r1` asserts the two match and dumps the full table (now carrying the disagreement column) on any mismatch. Called from both `run_c1_c2` and `run_c5` | FIXED, with one disclosed design choice — see §2 |
+| R6-4 (REQUIRED) | `test_m03_c.ml`: `batched_failure_with_protocol`, replacing `run_c1_c2`'s original bare `failwith` and used by `run_c5` too | For every entry whose content is wrong, appends a divider line and `Protocol_monitor.report` (via `Bench.protocol`) after the existing outcome table — clean entries' reports are not printed, since they carry no diagnostic content | FIXED |
+
+Zero declared gaps; zero silent skips.
+
+#### 2. A design choice inside R6-3, disclosed rather than left implicit
+
+R6-3's own text reads "capture the After view as well … (a second
+Stream_word.t, used by nothing that asserts)". I read that sentence as
+scoped to the raw `after_out` field/capture itself — no *existing*
+behavioural check (content, monitors, timing) reads it, and none does —
+not as a prohibition on a *new* check whose entire purpose is this
+demonstration. `check_disagreement_matches_r1` is therefore a real
+assertion against R-1's own locked prediction, not a passive report.
+
+I chose the assertion over a passive report for a mechanical reason as
+much as a textual one: every `[%expect]` block in this packet must stay
+empty (ADR-0005 rule 2, and no waveform/timing figure may ever live in one
+per WO-0038 §6 rule 5), so an unconditional `print` on a passing run would
+either force a permanent non-empty promotion (forbidden) or never surface
+anything for dv_lead to read on the run this round is actually waiting
+for — content is expected to PASS at all twenty entries post-fix, so a
+report gated behind a content failure (the shape a literal reading might
+suggest) would stay silent forever in the case that matters. An assertion
+against R-1's own prediction is the only shape I found that both (a)
+prints the full table — with its new disagreement column — through this
+bench's one established mechanism for surfacing diagnostic text (a
+`failwith` whose payload is read from CI and never harvested) and (b)
+still leaves the row green and silent when R-1 holds, matching every other
+row's convention.
+
+This is disclosed, not settled by me. If dv_lead reads R6-3 as forbidding
+any new assertion here, reverting `check_disagreement_matches_r1` to a
+report gated behind the content check (or dropped from the fail path
+entirely, in favour of some other surfacing mechanism dv_lead specifies) is
+a small, isolated change confined to that one function.
+
+#### 3. Self-check output, verbatim
+
+**`ocamlc -stop-after parsing`, system `ocamlc` 4.14.1, on every file
+touched this round, plus the two re-confirmed untouched:**
+```
+bench.mli: exit 0
+bench.ml: exit 0
+test_m03_a.ml: exit 0
+test_m03_c.ml: exit 0
+test_m03_b.ml: exit 0
+test_m03_structural.ml: exit 0
+```
+
+**`bash tools/precompile_check.sh`:**
+```
+--- LANE 1 — Hardcaml-free DV libraries, compiled for real
+  RESULT: 31 units compiled, 0 errors
+--- LANE 2 — Hardcaml-facing DV libraries, against tools/precompile_stubs/
+  RESULT: 12 units compiled, 0 errors
+--- LANE 2b — stub fidelity
+  Axi64.Source / Axi64.Dest: UNVERIFIED-TRANSCRIPTION (pre-existing, not in
+  the lift; CI settles it)
+  hardcaml.ml vs the hardcaml package sources: 6/6 signatures found verbatim
+--- LANE 3a — coverage sweep
+  EXCLUDED hardcaml_ethernet — depends on hardcaml_waveterm hardcaml_ethernet, which this harness cannot transcribe
+  EXCLUDED xgmii_rx_64 — depends on hardcaml_ethernet, which this harness cannot transcribe
+  RESULT: 43 files in compiled directories, all 43 materialised and compiled.
+--- LANE 3b — qualification sweep
+  RESULT: no unqualified sibling-library reference.
+--- SUMMARY
+  precompile_check: ALL LANES PASSED
+  2 transcription(s) remain UNVERIFIED here and are settled only by CI
+```
+
+**`bash tools/dv_checks.sh`:**
+```
+check_records_vs_appendix.sh: 23/23 check(s) passed, 0 failures
+check_emitted_verilog.sh: 5/5 check(s) passed, 0 failures, 3 PENDING
+  (pre-existing: REQ-808/REQ-017/REQ-903 on unbuilt modules, not M03)
+precompile_check.sh: ALL LANES PASSED (as above)
+check_rfc1071_anchor.sh: VERDICT: OBLIGATION OPEN — RFC 1071 could not be
+  fetched (blocked network egress; pre-existing, J-dv_lead-0017/0018,
+  unrelated to M03 and to this round)
+dv_checks: every check that COULD run passed, and 1 obligation is still OPEN
+```
+
+**`git status --porcelain` (repo root), before this Return log edit and the
+journal entry were staged:**
+```
+ M test/xgmii_rx_64/bench.ml
+ M test/xgmii_rx_64/bench.mli
+ M test/xgmii_rx_64/test_m03_a.ml
+ M test/xgmii_rx_64/test_m03_c.ml
+```
+Exactly the four files this round's items touch. `test_m03_b.ml`,
+`test_m03_structural.ml` and `dune` do not appear — confirmed additionally
+by `git diff --exit-code` against all three, exit 0.
+
+**`eval $(opam env --switch=fpga) && dune build @default`:** fails at
+`Library "ppx_hardcaml" not found` — the same absent Hardcaml toolchain
+every prior round has confirmed (ADR-0005). Checked again this round rather
+than carried over on faith. `dune runtest`: not reached, same reason. Both
+remain CI's to run and judge.
+
+**One check run this round that no prior round could**: the packet names
+`Cyclesim.outputs ~clock_edge:Before` as "the single new Hardcaml name in
+this round" and "cannot be checked in this container (ADR-0005)". It turned
+out to be checkable — `/root/.opam/fpga/.opam-switch/sources/hardcaml/src/`
+holds the real Hardcaml package sources (not `libs/**`, not
+`rtl_snapshots/**`, not the design under test — the third-party simulation
+library the design is elaborated *through*, the same class of read
+`tools/precompile_check.sh` itself performs under "hardcaml.ml vs the
+hardcaml package sources" every run). `cyclesim_intf.ml:45-55`'s doc
+comment and `side.mli` confirm `val outputs : ?clock_edge:Side.t -> (_,
+'o) t -> 'o` with `type t = Before | After` and default `After`,
+character for character against what the round's own text assumes. Not a
+substitute for `dune build @default` — CI is still the only authority that
+this elaborates against the real `hardcaml_ethernet`-linked build — but it
+is evidence the call shape is not a guess.
+
+#### 4. Timing numbers — the STOP condition named in the round, and why it did not fire
+
+R6-1's own text: "Every timing number must be unchanged; if any
+assertion's number needs adjusting to pass, STOP and report it rather than
+adjust — that would be evidence against the adjudication, not a fix." I
+did not need to adjust one. Every site R6-1 touches was a relabelling only
+— `s.out_cycle` → `s.cycle`, `first.out_cycle` → `first.cycle` — and every
+comparison target (`start_cycle + 3 + m`, the `<> 3` in
+`assert_own_deltac`, `start_cycle + 3` in `run_c4`) is byte-identical to
+its pre-round-6 text, confirmed by re-grepping the two touched row files
+for those three literals before and after editing. **No STOP condition
+fired.** If CI shows a timing assertion failing anywhere in this round's
+diff, that is new information against the adjudication and belongs back on
+this packet as a finding, not something I would locally patch to green.
+
+#### 5. Expected CI, checked vs predicted
+
+- **`dune build @default`: expected green — UNVERIFIED.** No toolchain
+  reaches this directory. The one new Hardcaml name
+  (`Cyclesim.outputs ~clock_edge:Side.Before`) is confirmed against the
+  real package source (§3 above) but that is reading, not compiling.
+- **`dune runtest`: predicted green (silent, matching every empty
+  `[%expect {||}]` block) at all fifteen `%expect_test`s — eleven from
+  rounds 1-5 plus the new M03-C5 test — IF the fix verdict's conditions 2-5
+  all hold exactly as `BUG-0001`'s Fix-verdict section states them.** This
+  is the correct, intended outcome of this round, not an assumption I am
+  asserting as fact: `check_disagreement_matches_r1` is a real assertion
+  against R-1's own falsifiable prediction (§2 above), so **if R-1 does
+  not hold everywhere it is predicted to, or holds somewhere it should
+  not, that specific check will raise and dump the full table** — which is
+  the round's own instruction ("report it, don't hide it") working exactly
+  as designed, not a defect in this bench. Any promotion this produces
+  must stay unharvested per the packet's standing instruction from round 5
+  onward.
+- **No `SO-` is owed or offered.** WO-0038 §8's four seeded mutations and
+  the conformance review of whatever `runtest` promotes both remain owed on
+  top of a green run, exactly as every prior round has stated.
+
+#### 6. Open questions
+
+One, already disclosed in §2: whether `check_disagreement_matches_r1`
+should be a hard assertion (as implemented) or a passive, report-only
+check. I judged the assertion the reading that actually demonstrates R-1 on
+a run where content is expected to pass cleanly at every entry, but it is
+dv_lead's call, and reverting it is a small, isolated change confined to
+one function if the answer is no.
+
+No round-1 through round-5 open question is reopened. F-M03-1 / item 3's
+subject matter (an FCS-straddle mis-accounting mechanism) was withdrawn at
+`RV-0038-R6` and superseded by the sharper `k`-fill invariant `BUG-0001`
+confirmed; this round's diff does not touch it, re-derive it, or restate
+it.
+
+#### 7. Scope statement
+
+Files staged this round: `test/xgmii_rx_64/bench.ml`,
+`test/xgmii_rx_64/bench.mli`, `test/xgmii_rx_64/test_m03_a.ml`,
+`test/xgmii_rx_64/test_m03_c.ml`, plus this Return log entry and the
+`J-tb_writer-0006` journal entry. `test/xgmii_rx_64/test_m03_b.ml`,
+`test/xgmii_rx_64/test_m03_structural.ml` and `test/xgmii_rx_64/dune` were
+read and reconfirmed unaffected but not staged — `git status --porcelain`
+and `git diff --exit-code` above both confirm this independently. No path
+under `libs/**`, `top/**`, `bin/**` or `rtl_snapshots/**` — any path,
+manifests included — was opened this spawn, targeted or swept. The one
+non-repository read this round adds beyond prior rounds' pattern —
+`/root/.opam/fpga/.opam-switch/sources/hardcaml/src/{cyclesim_intf.ml,
+side.mli}`, the opam-cached third-party Hardcaml package sources, not the
+design under test — is listed in full in `J-tb_writer-0006`'s Inputs
+section, alongside the reasoning for why it is not an independence
+concern (the same class of read `tools/precompile_check.sh` performs
+itself, every run, under its own "hardcaml.ml vs the hardcaml package
+sources" section).
+
+State left at **BOUNCED** — dv_lead's `RV-` and the orchestrator's
+transcription flip it, not this Return log.
+
