@@ -12787,3 +12787,211 @@ is good; the coverage is early.
 ### Files-in-this-commit
 - agents/handoffs/WO-0042_family-d-m6-mini-round.md
 - test/attack_plans/AP-xgmii_rx_64.md
+
+## [J-dv_lead-0048] 2026-08-12T16:45Z | task:WO-0043,WO-0044 | Family E authored and the co-sim lane scoped — and the packet's most useful output is a correction to my own J-0037 blanket claim: E is NOT co-sim-gated, because X-1's placement machinery and X-1's computed outcome model are two different things and only the second is unanchored
+
+### Trigger
+Orchestrator: resume after family D's closure with two authorings — the family-E
+packet (WO-0043), carrying the intents-public/mapping-sealed compromise, the two
+defect-shape re-reads, per-row sampling declarations, per-row X-1 dependency
+flags and the `fcs_valid`-class trap question; and the co-sim lane scoped as
+WO-0044, with ADR needs flagged and workers named. Both in flight today; my call
+which lands first.
+
+### Inputs
+- `test/attack_plans/AP-xgmii_rx_64.md` **§4.E** (rows M03-E1–E4, verified as
+  the error-character family — the letter the orchestrator asked me to confirm),
+  §7's X-1 entry and its stale-list banner, §9's WO-0033 change-log row carrying
+  the standing limit.
+- **`test/xgmii/injection.mli`** — the surface I had never actually read:
+  `placement`, `corruption` (including `Place_control`), `clean`/`corrupt`/
+  `frame_of_length`, `create ?ifg ?first_start ?first_lane`, `schedule : t ->
+  Arrival.t`, and the computed **`outcome`** and **`report`** types.
+- `test/xgmii/arrival.mli` — `check`'s obligations and the `fcs_valid`
+  precedent.
+- `docs/specs/modules/xgmii_rx_64.md` §9 row 2 and its closure list, the
+  strobe-cycle pin's **no-output-word clause**, §6.2's `Frame` row and `/E/`
+  exit, §4.1's `rx_tuser` port line; `docs/specs/requirements.md` REQ-105,
+  REQ-103, REQ-113, §0.6, §0.7.
+- My own `J-dv_lead-0037` (the blanket E–H claim), `J-dv_lead-0040` (the
+  intents-public compromise), `J-dv_lead-0046` (the arming-reading ruling),
+  `RV-0041-VERDICT` (the two defect-shape re-read orders).
+- **No `libs/**`, no `rtl_snapshots/**`.**
+
+### Reasoning
+
+**Reading `injection.mli` produced the packet's most consequential line, and it
+is a correction to me.** At `J-dv_lead-0037` I wrote that families E–H "lean on
+X-1's computed outcomes and are therefore gated on the co-sim for sign-off
+purposes", and I have repeated that in three documents since. **X-1 has two
+halves and I had been treating them as one.** Its `placement`/`corruption`
+machinery generates *stimulus* — putting an `/E/` at a chosen octet time — and
+using it anchors nothing. Its `outcome` and `report` types compute *what §9 says
+becomes of the frame*, and that is the golden model WO-0033's limit is about.
+
+**Family E's four rows are all hand-derivable from §9 and §6.1**, so if the
+bench derives its expectations by hand and uses `Injection`'s computed values
+only as a reported cross-check, **family E is not co-sim-gated at all**. That
+unblocks the next wave from a dependency I had put on it myself. It also gives
+the packet a genuinely useful binding instruction: where the hand derivation and
+the model disagree, that is a finding — **possibly against the model** — and
+never something to settle by adopting the model's answer.
+
+Left uncorrected, my J-0037 sentence would have held family E behind an ADR and
+a simulator lane for no reason. Third time a stale claim of mine has been caught
+by going back to the primary artefact rather than the summary of it.
+
+**The two defect-shape re-reads I ordered, I did rather than delegated**, because
+ordering a re-read and then handing the rows to a worker unread is how the
+D3 defect got written in the first place. E1's kill (FCS removal on the abort
+path) shows as four octets too few at all sixteen cases; E2's (an output word
+where none should exist) shows as a word existing; E4's (an ungated `/E/`
+handler) shows as a strobe existing. All three are **directly observable
+differences**, not claims about internal realisation, so none is a D-M3 shape;
+and all three discriminate, so none is a D3-vacuity shape. Family E is clear on
+both counts — which I say with the caveat that I have been wrong about a row
+twice and told the worker so.
+
+**E2 is where my own `J-dv_lead-0046` arming ruling becomes a live instruction
+rather than a principle.** It is a no-output-word frame: §4.1 makes `rx_tuser`[0]
+meaningful only on a `tlast` word, and this frame has none. So the packet says,
+in bold, that **E2 must assert nothing whatever about `tuser`[0]** — an
+assertion there would be reading a field on a `tvalid` = 0 cycle, which standing
+obligation 6 forbids outright, and it is exactly the natural thing to write. The
+frame's whole report is its strobe, on §9's no-output-word pin, which is *not* a
+corollary of `m + 3`.
+
+**And E4 is a negative assertion, which is the vacuity-prone kind**, so the
+packet requires the stimulus be verified rather than assumed: assert the `/E/` is
+present in the emitted word at the intended cycle **before** asserting nothing
+was reported. Otherwise a silently-failed injection passes the row against every
+design. That is the `residue_ok`-both-directions lesson from WO-0040 §3.2,
+generalised.
+
+**The trap question I could not answer for the worker, and posed precisely
+instead.** `Injection.schedule` yields an `Arrival.t`, and `Arrival.check`'s gap
+arithmetic is measured **from the terminate character** — which a frame aborted
+mid-flight never emits. Whether `check` accepts such a schedule at all decides
+how E1's sixteen cases can be scheduled, and I could not settle it without
+reading `injection.ml`'s body, which is work the packet's owner should do. Posed
+as three numbered questions that are **a deliverable, not background**.
+
+**On the mutation qualification I took the compromise I left myself.** WO-0040
+§9 published the mutation → row table; that was right for the bench and it made
+"which row dies" public for four of five mutations. So WO-0043 §8 names five
+**defect classes** and no rows — the worker learns what must be caught, not what
+will catch it. **E-c5 is named last and deliberately**: a silently-always-pass
+class, the analogue of D-M1, and REQ-105's positive direction is unverified today
+exactly as REQ-104's was before family D.
+
+**For the co-sim, the thing most likely to be skipped is the thing I made Phase
+0.** Two conformant 10G receivers differ legally and often — §9's co-occurrence
+rulings, the strobe pins, REQ-107's forward-the-runt, REQ-108's truncate-to-1514
+are ours and not the reference's. A harness that compares everything will
+produce a wall of differences on its first run and the lane will be written off
+when what actually failed was that nobody defined the question. So the first
+deliverable is a **comparison domain**: what must agree, and an enumerated list
+of permitted divergences each with its clause. **Frozen before each run, on the
+same discipline as a sealed prediction, and nothing moves out of the domain
+after a run has shown a difference inside it.** Without that clause "we agreed
+to disagree about that one" becomes the answer to every finding.
+
+**Phase 1 is one frame and a deliberate mismatch check.** The failure mode to
+design against is a green Phase 1 that compared nothing — the same shape as B3's
+exhibit, and I would rather spend one perturbation proving the comparator can
+disagree than discover later that it never could.
+
+**I kept Phase 0 for myself** because freezing a comparison domain is a
+verification-scope judgement of the same class as a sealed prediction, and
+because it is the part that needs no dependency and can proceed while the ADR is
+in flight. I also wrote my own independence boundary into it explicitly: reading
+the *reference* is permitted — third-party, not the design under test, the same
+boundary as the opam switch — while `libs/**` stays barred. "dv_lead read an
+Ethernet receiver's source" should never be a sentence that leaves *whose*
+ambiguous.
+
+**Sequencing.** Family E's worker spawns first: WO-0043 is executable today, its
+machinery exists and — per the correction above — it is not gated on the lane.
+WO-0044 goes to architect_docs_lead for the ADR in parallel, and it is **BLOCKED
+until that lands**, with Phase 0 the stated exception. The lane is on the
+critical path for families F–H, not for E, which is exactly the urgency it has.
+
+### Actions
+- **Confirmed the family letter**: §4.E is the error character (REQ-105); §4.D
+  was the FCS check. The orchestrator's mapping was right this time.
+- Authored **`WO-0043`** — four rows with per-row sampling declarations, per-row
+  X-1 dependency flags, both defect-shape re-reads **done and shown**, the
+  three-question stimulus trap as a deliverable, the read prohibitions, the nine
+  regime facts including the provenance rule, and **§8's defect classes with the
+  row mapping sealed**.
+- **Corrected `J-dv_lead-0037`'s blanket claim** inside the packet: X-1's
+  placement machinery is not X-1's outcome model, and **family E is not
+  co-sim-gated**, with a binding instruction to hand-derive and treat the model
+  as a reported cross-check only.
+- Wrote **E2's "assert nothing about `tuser`[0]"** instruction from the
+  `J-dv_lead-0046` ruling, and **E4's stimulus-presence requirement** from the
+  WO-0040 §3.2 lesson.
+- Authored **`WO-0044`** — the anchoring rationale, the **comparison domain as
+  Phase 0** with its freeze discipline, the reference and pinning, CI
+  requirements stated as requirements, the M03/`axis_xgmii_rx_64` pairing, four
+  phases with **only Phase 1 authorised**, the worker table, my own
+  independence boundary, and **three ADR questions**.
+- Marked WO-0044 **BLOCKED on the ADR**, with Phase 0 as the stated exception I
+  will execute meanwhile.
+- Opened no `libs/**`. No `git commit`, no `git push`.
+
+### Evidence
+1. `AP-xgmii_rx_64.md` §4.E header: "Error character inside a frame — REQ-105,
+   §9". Family letter confirmed.
+2. `injection.mli` exposes both `placement`/`corruption` (stimulus) **and**
+   `outcome`/`report` (the computed model) — the distinction my J-0037 claim
+   collapsed.
+3. All four E rows' expected values appear in §9's table and the plan's own
+   Observable column, so they are hand-derivable without the model.
+4. §4.1: `rx_tuser` bit 0 is "meaningful only on the `tlast` word" — E2 has no
+   `tlast` word, hence the assert-nothing instruction.
+5. §9's strobe pin has a distinct **no-output-word clause** (two cycles after
+   the closing input word), which is E2's pin and not `m + 3`.
+6. `Arrival.check`'s gap arithmetic is measured from the terminate character,
+   which an `/E/`-aborted frame never emits — the packet's likeliest trap.
+7. E1/E2/E4's kills are octet-count, word-existence and strobe-existence
+   differences respectively: observable, so none is a D-M3 unachievable shape.
+
+### Outcome
+**Two packets authored.** `WO-0043` is executable today and **not co-sim-gated**,
+which is a correction to my own standing claim and the reason family E can start
+now. `WO-0044` is scoped, phased and **BLOCKED on an ADR**, with Phase 0 — the
+comparison domain — kept by me and startable immediately.
+
+**Sequencing: spawn family E's worker first; route WO-0044 to
+architect_docs_lead in parallel.**
+
+### Open-questions
+- **Phase 0 is mine and I should not let it slip.** It is the deliverable most
+  likely to be skipped under schedule pressure and the one that decides whether
+  the lane's first run is interpretable.
+- **The §4 trap answers are a WO-0043 deliverable**, especially whether
+  `Arrival.check` accepts a schedule whose frame is aborted before its terminate.
+  If it does not, family E needs a machinery answer before it needs a bench.
+- **`AP` §7's X-1 entry should distinguish the placement machinery from the
+  outcome model** when I do its owed rewrite — the conflation was mine and it
+  lives in that table.
+- **Family F still owes** §9 ruling 9's sub-5-octet class, and the bound it puts
+  on REQ-104's verification until then.
+- **Families F, G, H owe the two defect-shape re-reads** before they are
+  benched; E's is done.
+- **The arming-reading distinction** becomes observable once no-output-word
+  invalid frames are driven — E2 is the first such row, and its packet states
+  which reading it asserts.
+- **Owed by me, unchanged**: the `precompile_check.sh`
+  side-effect-in-combinator lane; `tools/precompile_stubs/ifc_check.ml`'s stale
+  UNVERIFIED note; SPEC-M01 §11.4's caveat retirement (architect_docs_lead);
+  `AP` §7's fuller rewrite.
+- **M03-A3's blindness to lane-symmetric errors remains untested**; my M04
+  contamination from `J-dv_lead-0024` still stands.
+- **Unchanged**: the RFC 1071 anchor closes on the next CI run that fetches;
+  X-7, X-10, X-11 deferred; L1–L5 owed as a separate packet.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0043_tb-m03-family-e-error-character.md
+- agents/handoffs/WO-0044_cosim-lane-opening.md
