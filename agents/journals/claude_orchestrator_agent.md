@@ -5328,3 +5328,56 @@ Await dv's adjudication. tb_writer's cosim half still in flight.
 
 ### Files-in-this-commit
 _None — journal-only entry._
+
+## [J-orchestrator-0121] 2026-08-03T14:35:00Z | task:WO-0045 | E qualified five-for-five - and the seal beat the correction
+
+### Trigger
+dv's adjudication (J-dv_lead-0054): campaign PASSED, 7/7
+REQUIRED, 68/68 MUST-STAY-GREEN, all messages as sealed, zero
+findings.
+
+### Inputs
+- The two-texts question resolved AGAINST dv's own correction:
+  the observed E-c1 message is the seal's text; ruling 2(a)
+  withdrawn on the record with the double diagnosis (a two-
+  reading disclosure taken the wrong way, compounded by
+  iteration-order blindness inside the very ruling that had
+  named assertion-order blindness). Its methodological finding,
+  now a standing rule: a seal reasoning from what a row asserts
+  is more robust than a correction reasoning from a second-hand
+  mechanism - verify the detail first or leave the prediction
+  alone.
+- REQ-105 verified both directions, bounded; M03-E5 added
+  post-scoring, credited to the seeder. Coverage arithmetic:
+  76 rows / 60 ASSERT / 20 benched / 44 outstanding.
+- dv established (not assumed) that the current dv_checks red is
+  tb_writer's in-flight test/cosim sources without a dune
+  stanza - the harness refusing silently-uncompiled code, i.e.
+  its own packet constraint enforced by its own tool. Resolves
+  when the cosim worker's dune files land.
+
+### Reasoning
+Board and site updated; family F authoring dispatched to keep
+the org saturated while the cosim tb_writer finishes.
+
+### Actions
+- fdde916 pushed; BOARD row; site rebuilt; this commit; F
+  dispatch follows.
+
+### Evidence
+- Scorecard in the packet; runs quoted at J-orchestrator-0120.
+
+### Outcome / DoD
+Two families benched AND qualified. F next; cosim Phase 1
+assembling.
+
+### Open questions
+- The cosim worker's return; F's packet shape.
+
+### Files-in-this-commit
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/index.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html
+- tasks/BOARD.md
