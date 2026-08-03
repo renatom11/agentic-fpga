@@ -4883,3 +4883,56 @@ Phase-1b's first module is one mutation campaign from SO-M03.
 - site/public/org-chart.html
 - site/public/spec-atlas.html
 - tasks/BOARD.md
+
+## [J-orchestrator-0112] 2026-08-03T03:50:00Z | task:WO-0039 | Five mutants, five kills - and the campaign's most important cell went red with the exact predicted excess
+
+### Trigger
+The mutation-harvest check-in: all five throwaway-branch runs
+completed.
+
+### Inputs
+- All five RED at runtest; protocol branch green at 0556f23 and
+  0d231ee in the same window (criterion 3's control, structural
+  via stated parent 6bd7e5a on every branch).
+- Kill fingerprints, summarized (full messages relayed to dv):
+  M1 killed by the three absolute-cycle units (A12, A34-via-A4,
+  C4); M2 by the lane-4 file (C-18 kill message verbatim in A12);
+  M3 broadly with the auditor's disclosed lane-4 silence
+  confirmed at C5 (lane4/1513 PASS, intrinsic to the defect);
+  M4 by C3 alone on content ("expected 190 output words, got
+  189"); M5 by A34's latency tagger speaking the original bug's
+  exact message, C12's historic 65-68 signature, and C5 at
+  +1/+4 - P-1's numbers, at both lanes. T-C5, the only unit
+  never red in its life, has now been red.
+- Two instrument-model findings: M1 and M4 fired
+  check_disagreement_matches_r1 with all content columns green -
+  the channel dv's round-6 binding qualification reserved for
+  exactly this (M1's added register makes every output
+  registered, so the expected After-view misses vanish).
+
+### Reasoning
+Harvest was mechanical (base64+sha256 per run, throwaway results
+never written to the main tree); adjudication is dv's against
+its own sealed file, which it may now open. The auditor's three
+pre-run disclosures were relayed alongside - they bear directly
+on whether the two R-1 firings are findings or voids.
+
+### Actions
+- Five runs harvested; scorecard relayed verbatim to dv_lead;
+  this journal-only commit. Branch/worktree deletion deferred
+  until dv confirms no re-seed is needed.
+
+### Evidence
+- Run ids 30782093810/4443/5622/6544/8016; branch SHAs in the
+  Trigger of the relay.
+
+### Outcome / DoD
+Campaign executed clean end-to-end. Await dv's scorecard,
+B1-B3, and the SO-M03 path.
+
+### Open questions
+- dv's ruling on the two R-1-check firings; whether any
+  mutation is voided for re-seed.
+
+### Files-in-this-commit
+_None — journal-only entry._
