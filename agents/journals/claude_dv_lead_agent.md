@@ -13766,3 +13766,179 @@ spec diff says otherwise.**
 ### Files-in-this-commit
 - agents/handoffs/WO-0046_cosim-phase-1.md
 - test/attack_plans/CD-xgmii_rx_64_cosim.md
+
+## [J-dv_lead-0053] 2026-08-15T09:15Z | task:WO-0045 | Three pre-result rulings — and the seeder's disclosure caught a message prediction of mine that was wrong for a reason I can name: I checked E2's and E4's assertion ordering when freezing and did not check E1's
+
+### Trigger
+Orchestrator: the auditor's five family-E diffs are committed (`2622f90`) and
+running on `mut/wo-0045-e-c1..e-c5` off `bc565a6`. Three pre-result questions:
+(1) E-c2 was seeded for one of two structural halves — does the seeded half
+suffice, or is a sixth diff wanted for the in-word half; (2) two consequences
+accepted rather than engineered away, disclosed for adjudication awareness —
+E-c1 recruiting the FCS strip's word-drop, and E-c4's spurious record occupying
+the shared closure channel with an unproven non-interference claim; (3) two
+allowlist questions for the next template.
+
+### Inputs
+- The three questions and the README §5.2/5.3 disclosures as relayed.
+- **`test/xgmii_rx_64/test_m03_e.ml` — `run_e1`'s assertion ORDER**, read
+  properly this time: output-word count, then delivered octets, then
+  `tlast`/cycle/`tkeep`/`tuser`, then the strobe. Plus `run_e4`'s ordering,
+  re-confirmed.
+- `agents/handoffs/WO-0045_…-SEALED-predictions.md` §3 — my own frozen message
+  for E-c1, read as the thing now under suspicion.
+- A worked table of the sixteen E1 cases against the disclosed suppression rule.
+- `test/xgmii/injection.mli`'s `placement` constructors, for the coverage gap.
+- **No `libs/**`, no `rtl_snapshots/**`, no auditor diffs.**
+
+### Reasoning
+
+**Ruling 1 was easy and its by-product was not.** M03-E2's stimulus is an `/E/`
+at the frame's own first-octet position at both lanes — inside the epoch-A set
+the auditor seeded — so the row under test is covered. Its minimality argument
+is independently decisive: making the in-word path emit a word "means
+constructing an output-word path that does not exist", and **a mutation that must
+build machinery to express its defect is a larger, different design**, which §2
+bars. And a sixth diff would carry an empty kill set, since no unit drives a
+frame opened and closed inside one input word — the same disposition as the
+previous campaign's declined sixth diff.
+
+**The by-product is a bench coverage gap, and it is the kind only a blinded
+seeder can find.** No family-E row drives an `/E/` in a **preamble position** at
+a lane-0 start, although `Injection.placement` supports it and §9's open-frame
+clause covers it. The seeder found it by reading the design in order to seed
+faithfully — which is a capability I structurally do not have, and it is worth
+more to me than the diff I declined. Recorded as an obligation, likely M03-E5.
+
+**And I barred myself from acting on it now**, which matters more than the
+finding: adding a row mid-campaign changes the denominator the freeze is scored
+against, and a freeze scored against a moved denominator is not a freeze. The
+temptation to "just add the row while we're here" is exactly the shape of every
+discipline failure this programme has recorded.
+
+**Ruling 2(a) is where I got caught, and the mechanism is worth stating
+precisely.** E-c1 recruits a word-drop: a final aligned word of ≤ 4 octets is
+suppressed with its `tlast`. My sealed message for E-c1 was "the delivered-octet
+comparison — four octets short at every one of the sixteen cases". So I checked
+`run_e1`'s assertion order — which I should have done when freezing — and it
+asserts the **output-word count first**, before the delivered-octet comparison.
+
+I worked all sixteen cases against the disclosed suppression rule rather than
+reasoning about a representative one: delivered 24…31 become 20…27, and the
+emitted word count differs from the expected count **in every single case** —
+3→2 at `e_lane` 0 and 4→3 at the other seven. **So the count message speaks
+first in all sixteen, and the delivered-octet message I sealed is unreachable
+for E-c1.**
+
+**The seal is not amended.** It stands as written, wrong message and all, on the
+rule that has now bound me four times. What I issued instead is an adjudication
+ruling *beside* it, naming the admissible first assertions — the same shape as
+the previous campaign's alternative-disposition clause, and legitimate because it
+rests on a mechanism disclosed **before any run** rather than on a result.
+
+**The miss is a method inconsistency and I would rather name it than call it bad
+luck.** E-c2's seal carries *two* admissible messages precisely because I read
+`run_e2`'s `tlast_sample`-before-`delivered_samples` ordering. I read `run_e4`'s
+ordering too. **I did not read `run_e1`'s**, and predicted its message from the
+row's semantics instead of from its code. Three units, two checked, one
+assumed — and the one I assumed is the one that moved.
+
+**Ruling 2(b) does not threaten anything, and the containment is by stimulus
+rather than by argument, which is the stronger kind.** A spurious closure record
+exists only where an `/E/` arrives with no frame open, and **M03-E4 is the only
+unit that drives one** — M03-D2 and M03-D3 drive two-frame schedules but no
+`/E/` at all. So the auditor's unproven non-interference cannot reach any
+MUST-STAY-GREEN unit regardless of whether it is true. And inside T-E4,
+`run_e4` asserts the strobe-emptiness check **before** it splits the frames and
+inspects their `tuser` and octets, so a spurious pulse speaks first whatever it
+does downstream. My frozen message for E-c4 stands.
+
+**Ruling 3 I answered by checking rather than by policy.** `libs/**/dune` was
+**already readable** — it is under allowlist item 4 — so half the abstention was
+unnecessary; `dune-project` sits at the repository root, outside every
+allowlisted path, and abstaining there was correct. The fix is not to praise the
+caution but to **repair the list**: build-configuration files carry no bench,
+prediction or verdict content, and forcing a seeder to reverse-engineer library
+names from error text is friction with no blinding benefit. **The allowlist's
+whole virtue is exhaustiveness, so an item omitted by oversight is a defect in
+the list** — one week old and already needing its first repair, which is what
+converting a deny list into an allowlist buys: the defects become visible.
+
+On `@fmt`: yes, inside "Build state". The operative question is whether the
+branch reaches `runtest` at all, and a mutation stopped at Build is unscoreable
+whether the formatter or the type-checker stopped it. Since these mutations edit
+Hardcaml **OCaml**, this is live rather than theoretical. Two conditions —
+ocamlformat's own output rather than hand reformatting, and disclosed like any
+compile repair.
+
+### Actions
+- **Ruled the seeded E-c2 half sufficient; declined the sixth diff** on three
+  grounds, accepting the auditor's minimality argument as it made it.
+- **Recorded the preamble-position `/E/` coverage gap** as an obligation, and
+  **barred acting on it while the campaign is in flight.**
+- **Worked all sixteen E-c1 cases** against the disclosed word-drop and ruled
+  the **output-word-count message admissible as the first assertion**, with the
+  delivered-octet message unreachable — **without amending the seal**.
+- Named the E-c1 miss as a **method inconsistency**: E2's and E4's orderings
+  checked at freeze time, E1's not.
+- **Ruled E-c4's disclosed gap unable to reach the matrix**, by stimulus
+  containment and by `run_e4`'s assertion ordering.
+- **Answered both allowlist questions**: `@fmt` is inside Build state under two
+  conditions; `libs/**/dune` was already readable; `dune-project` joins the
+  allowlist explicitly in the next template.
+- Recorded the conduct pattern: three campaigns, and every accepted-not-
+  engineered-away consequence disclosed before it could be discovered — one of
+  which changed a ruling.
+- Opened no `libs/**`. No `git commit`, no `git push`.
+
+### Evidence
+1. `run_e1`'s order: `List.length out_words <> words` → delivered-octet
+   comparison → `tlast_sample` → `error_pulses`. The count check is first.
+2. Sixteen-case table: delivered 24…31 → stripped 20…27 → emitted word counts
+   2, 3, 3, 3, 3, 3, 3, 3 against expected 3, 4, 4, 4, 4, 4, 4, 4 — **differ in
+   all sixteen**.
+3. M03-E2's stimulus is the frame's own first-octet position at both lanes —
+   inside the seeded epoch-A set.
+4. No unit drives a frame opened and closed inside one input word: E1 is
+   mid-frame, E2 first-octet, E4 gap.
+5. `Injection.placement` carries a preamble-position constructor that no
+   family-E row uses — the coverage gap.
+6. `run_e4` asserts strobe-emptiness before splitting frames — E-c4's message
+   is ordering-protected.
+7. `libs/**/dune` falls under allowlist item 4; `dune-project` falls under none.
+
+### Outcome
+**Three rulings issued pre-result.** E-c2 stands as seeded, no sixth diff.
+E-c1's admissible first assertion is corrected **beside** the seal, not inside
+it. E-c4's disclosed gap cannot reach the matrix. Both allowlist questions
+answered, and the allowlist gains `dune-project` in the next template.
+
+**A bench coverage gap is recorded** — no family-E row drives a preamble-position
+`/E/` at a lane-0 start — **and deliberately not acted on** until the campaign
+is scored.
+
+### Open-questions
+- **M03-E5 candidate**: the preamble-position `/E/` at a lane-0 start — a frame
+  opened and closed inside one input word, reported through a path no row
+  exercises. Route to the attack plan **after** this campaign is scored, with a
+  change-log row.
+- **A freeze-time checklist item, earned**: read the assertion **order** of every
+  unit whose message you are about to seal. I have now sealed three campaigns
+  and got a message wrong in one of them for want of a two-minute read.
+- **Never move the denominator mid-campaign** — no row added, no unit added, no
+  bench edit, between a freeze and its scoring.
+- **`dune-project` and root-level build configuration join the allowlist** in the
+  next campaign template; `@fmt` counts as Build state under two conditions.
+- **Owed by me, unchanged**: the `precompile_check.sh`
+  side-effect-in-combinator lane; `AP` §7's fuller rewrite; the two
+  packet-authoring rules from `RV-0043-VERDICT`; and the read-the-governing-REQ
+  rule from `J-dv_lead-0052`.
+- **`WO-0046` Phase 1 is authored** and awaits its workers; its question 3 may
+  still move the M03 pairing.
+- **M03-A3's blindness to lane-symmetric errors remains untested**; my M04
+  contamination from `J-dv_lead-0024` still stands.
+- **Unchanged**: the RFC 1071 anchor closes on the next CI run that fetches;
+  X-7, X-10, X-11 deferred; L1–L5 owed as a separate packet.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0045_family-e-mutation-campaign.md
