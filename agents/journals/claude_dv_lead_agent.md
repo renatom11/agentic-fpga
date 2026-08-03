@@ -14309,3 +14309,202 @@ to and what the family exists to close.
 
 ### Files-in-this-commit
 - agents/handoffs/WO-0047_tb-m03-family-f-runts.md
+
+## [J-dv_lead-0056] 2026-08-17T14:30Z | task:WO-0046 | The cosim bench half accepted — and verifying the worker's one-line finding produced the largest result of the sitting: the reference has no length logic at all, so the lane cannot anchor families F or G until a fifth REQ-901 divergence class lands by spec diff
+
+### Trigger
+Orchestrator: tb_writer's WO-0046 half returned — `test/cosim/` with the pinned
+canonical grammar, an `(executables)` stanza, a comparator whose `--self-test`
+**already ran and passed in-container on the production path**, four question
+answers, and four open questions including the `.canon.meta` sidecar's ownership
+(which data_wrangler asks from the other side) and a flagged reading that the
+reference contains no length check. Review; rule on the sidecar with one ruling
+settling both halves; weigh the no-length-check finding for CD revision now vs at
+Phase 2.
+
+### Inputs
+- `test/cosim/dune`, `canonical.mli`, `canonical.ml` (writer format strings and
+  parser rejections), and the returned summary for the rest.
+- **`test/third_party/verilog-ethernet/axis_xgmii_rx_64.v`** — read under the
+  WO-0044 §6 boundary (third-party reference, not the design under test): a
+  length-identifier sweep over all 449 lines, its error outputs, and its
+  parameter block.
+- `docs/specs/requirements.md` **REQ-901** — its comparison content and its
+  divergence-class rule, again.
+- `test/attack_plans/CD-xgmii_rx_64_cosim.md` §0, §2, §6 — my own Phase 0
+  document, revised here.
+- `agents/handoffs/WO-0046_cosim-phase-1.md` §2.1–§2.3, §4.2, §6 — my own pins.
+- **No `libs/**`, no `rtl_snapshots/**`.**
+
+### Reasoning
+
+**The deliverables are clean and two of them are better than what I pinned.** The
+canonical writer's format strings are character-for-character §2.3's grammar. The
+parser rejects six malformation classes including one I did not think to
+require — **a `W` line whose octet count disagrees with its `tkeep`** — and a
+lenient parser is exactly how two malformed files come to compare equal. And
+`canonical.mli` fixes something my pin left implicit: a frame with no output
+words **still owns an index and a `D` line**. Without that, a discarded frame is
+invisible in the file and REQ-901's accept-or-discard comparison cannot be keyed
+by index at all.
+
+**On the `dune` stanza the worker checked the thing that matters rather than the
+obvious thing.** Absence of `(inline_tests)` would not have been sufficient; a
+`(rule (alias runtest) …)` would drag the lane into the main suite just as
+effectively. It verified there is no such rule **and cited
+`test/cost_probe/dune` as the repository's contrast case that has one** — which
+only someone who went looking would know exists.
+
+**And the self-test had already fired.** §4.2 required the mismatch check to
+exercise the production path; it does, and it has run in-container: clean at exit
+0 on a known-good pair, exit 1 with the exact octets named on a one-octet
+perturbation. **What made that possible was a deliberate dependency choice** —
+`compare` depends on nothing beyond `canonical.ml` and stdlib, no Hardcaml — so
+the comparator is **proven able to fail before CI has run once.** I asked for the
+check to exist; it exists and has already spoken.
+
+**Then the finding, which I verified rather than accepted because a strong
+negative about a 449-line module on one line of report is exactly what should be
+checked.** A length-identifier sweep over the whole file returns **nothing** —
+no runt logic, no oversize logic, no length register. The claim is true and
+stronger than reported. And the same reading turned up something the report did
+not: **the reference has `error_bad_frame` and `error_bad_fcs` as output ports,
+by our own names.**
+
+**Which means my CD §2 was wrong in its ground and right in its conclusion.** I
+wrote that the reference "is not expected to have counterparts" for our five
+strobes; two it has. The conclusion survives on a better and more authoritative
+ground: **REQ-901's comparison content does not include strobes at all** — it is
+payload octets, `tkeep` extent, `tuser`[0] and the accept/discard decision. So
+the lane cannot anchor the strobe half because REQ-901 does not compare strobes.
+**Third time REQ-901 has superseded my own reasoning in that document**, which is
+now a pattern rather than an accident and traces to the same root: I wrote Phase 0
+before reading the requirement that governs it.
+
+**The consequence of the no-length-check finding is larger than the correction,
+and it is the sitting's real output.** For a runt, ours marks `tuser`[0] = 1
+under REQ-107 and the reference does not, because it has no notion anything is
+wrong. For oversize, ours truncates to 1514 and marks; the reference forwards it
+whole. **Both divergences land in `tuser`[0] on the `tlast` — inside REQ-901's
+comparison domain**, where any divergence outside its four declared classes "is a
+defect".
+
+**It is not a defect.** It is a deliberate specification difference, and REQ-901's
+only legitimate resolution is a **fifth divergence class added by spec diff** —
+which my comparison domain cannot grant, per its own §0-bis. And REQ-901 requires
+such a class "before any sign-off packet may cite it", so **the co-simulation
+cannot anchor families F or G at all until that spec diff lands.** Raised and
+routed.
+
+That sharpens CD §2 considerably. The lane anchors clean frames and the FCS and
+`/E/` paths, where counterparts exist. **It cannot anchor the length-derived
+error paths in either half — data or strobe.** Phase 3 was scoped as "where the
+anchoring finally happens"; a meaningful part of it is now blocked on a document
+change, and knowing that before the bridge is finished is the whole point of
+having written Phase 0 first.
+
+**On revising now rather than at Phase 2, my own discipline gave the answer
+rather than my preference.** CD §0 bars moving an entry outward only *after a run
+has probed it*. **Phase 1 drives one 64-octet good frame and probes none of
+V1–V3.** And this is a source reading I verified myself, not a result being
+fitted to. Deferring would have left a mechanism I know to be wrong standing in a
+frozen document — the stale-inference defect this programme has now corrected six
+times, and the one I would be least entitled to repeat.
+
+**The sidecar ruling settles both halves with one decision, and the deciding
+consideration is what a placeholder does to evidence.** The four fields have
+naturally split knowledge — the reference pin is a repository fact, but only the
+invoker knows the simulator version and only CI knows the runner image, and no
+OCaml producer can know either. So **the producers write no sidecar at all and
+`run_cosim.sh` creates it**, being the only actor that knows all four at the
+moment of the run. **Placeholders are barred outright: if a field cannot be
+determined the run fails.** A `"unknown (fill in:)"` marker in an evidence
+artifact is worse than an absent file, because it can be read as a recorded
+value — and **the reproducibility guarantee's entire antecedent is those fields
+being real.** A run that cannot record them cannot claim the guarantee and must
+not appear to. The overwrite-or-append question then dissolves: there is nothing
+to overwrite.
+
+**And Q3 closes something of mine.** I had been writing "M03 pairs with
+`axis_xgmii_rx_64`" from inference since WO-0044 and flagged at `J-dv_lead-0052`
+that `architecture.md` §4's counterpart column might move it. The row is quoted
+and it does not.
+
+### Actions
+- **ACCEPTED the bench half**: grammar exact to the pin, parser stricter than
+  specified, `dune` free of `runtest` wiring on the check that matters,
+  comparator self-test already fired on the production path, four questions
+  answered.
+- **Verified the no-length-check claim independently** over all 449 lines, and
+  found additionally that the reference carries `error_bad_frame` and
+  `error_bad_fcs` by our own names.
+- **Revised CD**: added §2-bis correcting §2's ground and recording the new
+  finding; corrected V1–V3's mechanism in place with the reason the freeze
+  discipline permits it now.
+- **Raised a REQ-901 spec diff** for a fifth divergence class, and recorded that
+  **families F and G cannot be co-sim-anchored until it lands.**
+- **Ruled the sidecar**: one writer (`run_cosim.sh`), producers write none,
+  **placeholders barred and a missing field fails the run** — settling both
+  workers' open question 1 from both sides.
+- Recorded that Q3 closes my own inferred pairing from `J-dv_lead-0052`.
+- Predicted CI: `ours_run` the Build unknown, `runtest` unchanged and green.
+- Opened no `libs/**`. No `git commit`, no `git push`.
+
+### Evidence
+1. `canonical.ml`: `"F %d\n"`, `"W %02x %d %d"` + `" %02x"`, `"D %d %s\n"` —
+   character-for-character WO-0046 §2.3.
+2. `canonical.mli`: the parser rejects six malformation classes, including a `W`
+   whose octet count disagrees with its `tkeep`.
+3. `canonical.mli`: a frame with no output words still owns an index and a `D`
+   line — the case my pin left implicit.
+4. `test/cosim/dune`: `(executables (names stimulus_gen ours_run compare))`, no
+   `(inline_tests)`, no `runtest`-aliased rule, with `test/cost_probe/dune`
+   cited as the contrast.
+5. Length sweep over `axis_xgmii_rx_64.v`: **no matches** for
+   `length|runt|oversize|too_short|too_long|min_|max_|frame_len`.
+6. The same file's ports include `error_bad_frame` and `error_bad_fcs`;
+   `error_bad_frame_next` is set at :248 and :265.
+7. REQ-901's comparison content omits strobes entirely — the better ground for
+   CD §2's conclusion.
+8. Phase 1 drives one 64-octet good frame, so V1–V3 are unprobed and CD §0's bar
+   does not bite.
+
+### Outcome
+**WO-0046's bench half is ACCEPTED**, with two deliverables better than the pins
+that specified them and a mismatch check already proven able to fail.
+
+**The sidecar has one writer and no placeholders**, settling both halves.
+
+**The largest result is a blocker I did not have yesterday**: the reference has
+no length logic, so runt and oversize frames diverge inside REQ-901's comparison
+domain as a deliberate specification difference — and **the co-simulation cannot
+anchor families F or G until a fifth REQ-901 divergence class lands by spec
+diff.** CD is revised and the diff is routed.
+
+### Open-questions
+- **The REQ-901 spec diff is now on the `SO-M03` path.** Families F and G cannot
+  cite the co-sim without it, and family F's bench is already authored
+  (`WO-0047`).
+- **What else does the reference not implement?** The length sweep found one gap
+  by asking one question. Before Phase 3 is scoped, the same sweep should run for
+  every error class families E–H assert — a scoped reading, not a run.
+- **`run_cosim.sh` is still owed** by data_wrangler, now with the sidecar ruling
+  fixed.
+- **`ours_run.ml`'s elaboration is unverified** until CI; a Build failure is
+  almost certainly there rather than in `canonical`/`compare`.
+- **The 24-cycle drain margin is generous-not-measured**, deliberately, and
+  should be measured before Phase 2 widens the stimulus.
+- **A root cause worth naming**: three of my Phase 0 sections have now been
+  superseded by REQ-901, because I wrote the document before reading the
+  requirement that governs it. The rule from `J-dv_lead-0052` stands and I have
+  not yet had a chance to apply it prospectively.
+- **Owed by me, unchanged**: the `precompile_check.sh`
+  side-effect-in-combinator lane; `AP` §7's fuller rewrite.
+- **M03-A3's blindness to lane-symmetric errors remains untested**; my M04
+  contamination from `J-dv_lead-0024` still stands.
+- **Unchanged**: the RFC 1071 anchor closes on the next CI run that fetches;
+  X-7, X-10, X-11 deferred; L1–L5 owed as a separate packet.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0046_cosim-phase-1.md
+- test/attack_plans/CD-xgmii_rx_64_cosim.md

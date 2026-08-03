@@ -122,6 +122,51 @@ half anchored, it needs a *different* anchor and this lane is not it.
 
 This prediction is **frozen** and Phase 1 confirms or falsifies it (§6).
 
+## 2-bis. CORRECTION to §2, and a NEW FINDING that is larger (J-dv_lead-0056)
+
+**§2's conclusion stands; its ground was wrong, and the reference turns out to
+be both more and less like ours than I predicted.** Verified by me directly
+against `test/third_party/verilog-ethernet/axis_xgmii_rx_64.v` at the pin,
+prompted by the WO-0046 worker's Q1 finding.
+
+**§2 said the reference "is not expected to have counterparts" for our five
+strobes. Two of them it has, by the same names**: `error_bad_frame` and
+`error_bad_fcs` are output ports of the reference. So the ground was wrong.
+
+**The conclusion survives on a better ground, and it is REQ-901's.** REQ-901's
+comparison content is "payload octets, the `tkeep` extent of each word, and
+`tuser`[0] on each `tlast` — and the same accept-or-discard decision per input
+frame". **Strobes are not in it at all.** So the lane cannot anchor the strobe
+half of X-1's model because **REQ-901 does not compare strobes**, not because no
+counterpart exists. Third time REQ-901 has superseded my own reasoning here.
+
+### THE NEW FINDING — the reference has NO LENGTH LOGIC WHATSOEVER
+
+`grep -niE "length|runt|oversize|too_short|too_long|min_|max_|frame_len"` over
+all 449 lines of `axis_xgmii_rx_64.v` returns **nothing**. Not a runt check, not
+an oversize check, not a length register. REQ-901's "minimum frame length 64"
+setting has no counterpart because **the concept is absent**.
+
+**Consequence, and it is not small.** For a runt, ours forwards with
+`tuser`[0] = 1 (REQ-107); the reference forwards with `tuser`[0] = 0, because it
+has no notion that anything is wrong. For an oversize frame, ours truncates to
+1514 and marks (REQ-108); the reference forwards it whole and unmarked. **In both
+cases the divergence is in `tuser`[0] on the `tlast` — squarely INSIDE REQ-901's
+comparison domain**, where "any divergence outside these four classes is a
+defect".
+
+**It is not a defect. It is a deliberate specification difference**, and by
+REQ-901's own rule the only legitimate resolution is **a fifth divergence class,
+added to REQ-901 by spec diff** — which this document cannot grant (§0-bis).
+
+> **RAISED, and it gates part of the lane's value**: REQ-901 says a later class
+> "SHALL be added here by spec diff **before any sign-off packet may cite it**".
+> **So the co-simulation cannot anchor families F (runts) or G (oversize) at all
+> until that spec diff lands.** Routed to architect_docs_lead. This sharpens §2
+> considerably: the lane anchors clean frames and the FCS and `/E/` paths, where
+> counterparts exist — **and cannot anchor the length-derived error paths in
+> either half, data or strobe.**
+
 ## 3. The canonical transaction form — what is actually compared
 
 **Transaction-level, never cycle-stamped.** ΔC = 3 is SPEC-M03's constant
@@ -209,6 +254,14 @@ finding against a sealed mutation matrix.
 
 | | class | SPEC-M03's behaviour | prediction | confirmed by |
 |---|---|---|---|---|
+> **V1–V3's MECHANISM IS CORRECTED (§2-bis).** I predicted the reference would
+> **drop** short and long frames. It does no such thing: it has **no length
+> logic at all** and forwards them unmarked. The predictions were right that a
+> divergence appears and wrong about why, and the resolution is not a CD entry
+> but **a fifth REQ-901 class by spec diff**. Corrected on a source reading, not
+> a run result — Phase 1 drives one 64-octet good frame and probes none of
+> V1–V3, so §0's bar on moving an entry after a run has probed it does not bite.
+
 | **V1** | **runt, 5–63 octets** | forwarded, 1–59 octets delivered, marked invalid (REQ-107) | reference **drops** it — no output at all | driving a 5-octet frame; Phase 3 |
 | **V2** | **below 5 octets** | **no output word**, `error_runt` alone, `error_bad_fcs` barred (§9 ruling 9) | reference drops; agreement on "no output" is likely but for a different reason | Phase 3 |
 | **V3** | **oversize > 1518** | truncated to **exactly 1514** delivered octets and marked (REQ-108) | reference drops or truncates at a different bound | Phase 3 |
