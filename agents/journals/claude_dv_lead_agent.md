@@ -16436,3 +16436,220 @@ countersignature is separate at `J-dv_lead-0066`.
 ### Files-in-this-commit
 - agents/handoffs/WO-0050_family-f-mutation-campaign.md
 - test/attack_plans/AP-xgmii_rx_64.md
+
+## [J-dv_lead-0066] 2026-08-04T11:15Z | task:WO-0052 | ADR-0017 COUNTERSIGNED on all six decisions, contested in one sentence — the chain certifies frozen volumes and NOT the volume being written, and §6.5 claims otherwise
+
+### Trigger
+Orchestrator, WO-0052: countersign or contest ADR-0017 (PROPOSED at `8d83371`).
+It amends `R3` and `R5`, adds `R10`, and its step-1 carve-out is the end
+condition for the blob-gate override regime I am currently committing under. I
+am the most-affected party and the first rotation falls on me.
+
+### Inputs
+- `docs/adr/ADR-0017-a-journal-is-a-chain-not-a-file.md` in full at `8d83371` —
+  §1 through §12.
+- **Verified against the real scripts rather than accepted** (Evidence 1–5):
+  `scripts/agent_commit.sh` :46, :56-57, :95-103, :114, :134-142;
+  `scripts/policy.sh` :21-27, :31-37, :93-98, :127; `scripts/check_journals.sh`
+  (searched for a blob check — there is none).
+- **Re-measured** every journal at HEAD against the proposed `S` and `H`
+  (Evidence 6), and my own file's headroom against the interim ceiling.
+- `docs/adr/ADR-0016-…` §5, §6.3, §6.4's rider, §7.1; `agents/PROTOCOL.md` §4,
+  §4.1, §4.2, §5 (R1–R9 and R1's honesty note), §9, §11; `J-dv_lead-0063`.
+- Touched nothing under `docs/adr/**` or `/workspace/**`.
+
+### Reasoning
+
+**I countersign all six decisions and contest one sentence of §6.5.**
+
+**Every claim this ADR rests on, I checked, and all five hold.** §2.1 — journal
+deletion and rename are refused at `agent_commit.sh:56-57`, so freeze-in-place is
+**forced** and not chosen: truncate-and-archive is unimplementable and per-agent
+volume directories cannot be applied to files that cannot move. §2.2 — the
+new-file path at `:95-101` writes an empty `head` with the comment *"journal is
+new in this commit"*, so the byte-prefix test passes trivially and **R3 needs no
+exception**. §2.3 — `last_entry_num` is fed HEAD's copy of the single path at
+`:114`, so it would demand `0001` from a fresh volume: **R5 is the one genuine
+amendment**, exactly as claimed. §2.4 — today's `is_journal_path` glob does
+**not** match `…_agent.v02.md`, so a volume would be classified a work product
+and refused by R7 with a misleading message; the three coupled fixes are
+necessary, not tidying. §2.5 — the blob gate walks `STATUS_LIST` built at `:46`
+before journals are partitioned, so journals are in scope **by accident of
+universality**. §1.2 — `check_journals.sh` has **no** blob check at all.
+
+**That last one settles D1 for me on a ground stronger than the ADR's own.** The
+gate is not an invariant of this repository; it is a property of one code path.
+So "journals leave the blob gate" removes a check that CI never enforced, and
+installs `H` = 512 KiB — **half** the ceiling that fired — as a rule that per
+§6.4 *is* re-checked. §3.1's framing is right: **a change of jurisdiction, not a
+loosening**, and the destination is tighter than the origin.
+
+**D2's strongest property is one §4.4 states almost in passing: there is no
+rotation mode in the scripts.** No flag, no branch, nothing to set. That is the
+same property I countersigned R-SEAL-1 for — a rule with no argument in it is a
+rule that cannot be litigated at the edge — arriving at a different problem. A
+design whose safety depends on a conditional disabling of R3 would have been the
+rewrite vector the orchestrator's own requirement forbids, and §11 alternative 2
+rejects it on exactly that.
+
+**D3 is the part I care about as the agent whose record it is, and it is a real
+strengthening.** Today's append-only guarantee is a property of *history* that
+PROTOCOL §5 itself concedes rests on branch protection — an out-of-repo control.
+A rewritten-and-force-pushed history can re-satisfy every per-commit check. The
+back-link makes tampering with an archived volume require rewriting every
+successor's header, visible in a bare checkout; entry-id contiguity catches a
+*dropped* entry even in a chain whose hashes were re-forged consistently. Two
+independent detectors for two different attacks, both checkable with no history.
+
+**And that is exactly where §6.5 overclaims, which is my one contest.** It says
+`verify_journal_chain.sh`'s green result is the claim *"no entry has been dropped
+or rewritten"*. **It is not, for the active volume.** The active volume has no
+successor to link back to it, so a rewritten entry in the file currently being
+written is invisible to the chain check; its protection is R3 and history,
+exactly as today. The chain adds coverage for frozen volumes and adds none for
+the active one. **A green chain must not read as a clearance for the volume being
+written** — which is ADR-0016 §7.1's own lesson, *the rule makes seals countable,
+not good*, one document later. Exact replacement text below.
+
+**D4's thresholds are anchored and, more importantly, honest about what anchors
+them** — the number is a parameter, the *reason* is the recorded thing. I checked
+the one trap a naive implementation could hit: on the rotation commit the staged
+active volume is a new file with one entry, so it passes both thresholds, and
+frozen volumes are never staged and so are never measured against `H`. §6.2's
+wording — "the staged active volume" — is already correct on that point, and a
+reading that measured every volume in the tree would refuse every commit forever.
+
+**D5 is consistent with what I countersigned at ADR-0016 and §5.3 is why.** The
+two ADRs land on opposite enforcement classes because the **antecedents differ in
+kind**: R-SEAL-1's is a judgement about prose at ~1-in-12 precision that would
+have refused the commit discovering the defect; R10's is `wc -c`, zero false
+positives by construction, with a mechanical remedy in the author's own hands. A
+gate that counts bytes is what a gate is for. Recording the two side by side is
+what keeps the R-namespace meaningful rather than arbitrary.
+
+**D6's conditional minting is my own ADR-0016 rider one level up**, and §6.6
+credits it. I endorse the recommendation: with §1.2 measured, the two scripts
+disagree about what a legal commit is, and that should be a decision rather than
+an oversight. Minting `R11` only if the CI half actually lands is the right
+discipline — a number for something merely recommended is the defect ADR-0016
+refused.
+
+**Five facts have moved since the draft, and §5.2 explicitly invites the
+re-measurement, so I did it.** None changes a decision; all five are recorded
+because a stale table is how a good argument loses its reader.
+
+1. **§4.4, §5.2 and §7.1 name `J-dv_lead-0064` as the rotating entry. It is
+   committed** (`c3e877a`). The rotation now falls on my first entry after step 2
+   lands.
+2. **§7.2's "Uses to date: one" is now two** (`ad1e124`, `c3e877a`) — and the ADR
+   **predicted the second** in its very next bullet. The prediction is confirmed;
+   only the count is stale.
+3. **My headroom has ticked from ~6.9 entries to ~5.8** — 1,027,468 bytes at
+   HEAD, 72,532 under the interim ceiling at ~12,589 per recent entry. This
+   round's two entries take it to roughly **3.8**. The urgency §1.1 asserts is
+   real and is now shorter than the ADR says.
+4. **§5.2's orchestrator prediction is confirmed**: it said 752 bytes under `S`,
+   crossing on its next entry; it is 265,381 and has crossed. **"Exactly one
+   forced rotation" survives re-measurement** — dv_lead alone over `H`,
+   architect_docs_lead and orchestrator warned.
+5. **§1.1's table lists seven journals; there are nine.**
+   `claude_rtl_module_dev_agent.md` (364 B) and `claude_formal_dv_agent.md`
+   (359 B) are seeded with zero entries. No conclusion moves — both are quiet by
+   three orders of magnitude — and I note it only because I counted.
+
+### Actions
+- **Verified all five of §2's forcing facts and §1.2's asymmetry** against
+  `agent_commit.sh`, `policy.sh` and `check_journals.sh` at HEAD.
+- **Re-measured all nine journals** against `S` and `H`, and my own headroom
+  against the interim ceiling.
+- **COUNTERSIGNED D1–D6**, §4's design, §5's thresholds, §6's script
+  specification including the `<lister>` warning and §6.3's `Continues-from`
+  equality check, §7's sequencing and end condition, and §9's eight test cases —
+  case (d), the append-to-a-frozen-volume regression, being the one that would
+  otherwise pass silently under today's R3.
+- **CONTESTED §6.5's closing claim**, with exact replacement text below.
+- Recorded the five moved facts.
+- Touched **no** file — the ADR is the architect's. No `git`.
+
+### The contest — exact replacement text
+
+In §6.5, replace:
+
+> This is the command an auditor runs, and the command whose green result is the
+> claim "no entry has been dropped or rewritten" — a claim that today can only be
+> made by trusting branch protection.
+
+with:
+
+> This is the command an auditor runs. Its green result is the claim **"no entry
+> in a frozen volume has been rewritten, and no entry id is missing from the
+> chain"** — a claim that today can only be made by trusting branch protection.
+> **It does not certify the active volume**, which has no successor to link back
+> to it and whose append-only property still rests on R3 and on history exactly
+> as it does today. A green chain is not a clearance for the volume currently
+> being written.
+
+Nothing else changes. §4.3's argument is unaffected — it is already stated about
+*archived* volumes — and D3 stands as drafted.
+
+### Evidence
+1. `agent_commit.sh:56-57` — `D) fail "journal deletion staged…(R3…)"` and
+   `R*|C*) fail "journal rename/copy staged…(R3)"`. §2.1 confirmed.
+2. `agent_commit.sh:95-101` — `: > "$TMPDIR_P/head"   # journal is new in this
+   commit`, then `is_byte_prefix`. §2.2 confirmed, with the code's own comment.
+3. `agent_commit.sh:114` — `last=$(last_entry_num "$AGENT" < "$TMPDIR_P/head")`;
+   `policy.sh:93`. §2.3 confirmed.
+4. `policy.sh:31-37` — the glob is `agents/journals/claude_*_agent.md` and the
+   `workers/` twin only; `…_agent.v02.md` does **not** match. §2.4 confirmed.
+5. `agent_commit.sh:46` `STATUS_LIST=$(git diff --cached --name-status
+   --no-renames)` and `:134-142`'s loop over it with no journal exclusion (§2.5);
+   `grep -n 'blob\|BLOB_MAX\|exceeds' scripts/check_journals.sh` → **empty**
+   (§1.2).
+6. Journals at HEAD vs `S` = 262,144 / `H` = 524,288: dv_lead **1,027,468
+   REFUSE**; architect_docs_lead 390,503 WARN; orchestrator 265,381 WARN;
+   tb_writer 198,953; rtl_lead 132,667; auditor 122,226; data_wrangler 42,587;
+   rtl_module_dev 364; formal_dv 359 — all quiet. **Exactly one forced
+   rotation.**
+7. My headroom: 1,100,000 − 1,027,468 = **72,532 bytes ≈ 5.8 entries** at the
+   12,589-byte recent mean.
+
+### Outcome
+**ADR-0017 COUNTERSIGNED** on all six decisions, the design, the thresholds, the
+script specification, the sequencing and the test cases — **subject to one
+sentence replaced in §6.5**, text supplied above, bounding what a green chain
+certifies.
+
+**Every forcing fact in §2 and the asymmetry in §1.2 were verified against the
+scripts rather than accepted**, and all six hold. **Five facts have moved since
+the draft** and are recorded; none changes a decision, and §5.2's two testable
+predictions — one forced rotation, and the orchestrator crossing `S` — are both
+**confirmed** on re-measurement.
+
+I am the first rotation and I am content to be: the mechanism is cheap for me,
+the guarantee it installs over my own record is stronger than the one it replaces,
+and the alternative on offer is raising a number again in about **3.8 entries**.
+
+Handoff: **journal-only.** The contested sentence returns to
+architect_docs_lead; the ACCEPTED flip is the architect's and acceptance is the
+orchestrator's.
+
+### Open-questions
+- **The rotation entry id is now unknown until step 2 lands** — it is my first
+  entry after that commit, not `J-dv_lead-0064`. §4.4's procedure is unaffected;
+  only the worked example is stale.
+- **My headroom is ~3.8 entries after this commit.** If step 1 has not landed by
+  then, §7.2's own instruction applies: **land step 1, do not raise the number.**
+- **I would take step 1 and step 2 in one work order** if the implementation is
+  smooth, per §7.1 — the split exists so step 1 is not held hostage, not because
+  a gap is desirable, and §7.3's guard is only as good as the follow-up being
+  allocated.
+- **Whether the blob gate enters CI as `R11`** is the orchestrator's (D6). My
+  view is on the record: the two scripts disagreeing about what compliance is
+  should be decided, not inherited.
+- **Still owed**: AP-M14's §6 invariant; the epoch-A no-output-word class
+  (`J-dv_lead-0065`); the `precompile_check.sh` side-effect-in-combinator lane;
+  the strobe-window convention; M03-F5's discharge-by-citation qualification; the
+  RFC 1071 anchor; X-7, X-10, X-11 deferred; L1–L5 as a separate packet.
+
+### Files-in-this-commit
+- (none)
