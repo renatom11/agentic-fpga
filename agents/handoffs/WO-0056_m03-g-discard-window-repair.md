@@ -489,3 +489,208 @@ entry — nothing else, matching the packet's own narrowed deliverable list.
 Handoff: this RETURNED block, plus journal entry `J-tb_writer-0014`. State
 left at `ISSUED` per protocol — dv_lead's `RV-` and the orchestrator's
 transcription do the state flip, not me.
+
+---
+
+## RV-0056-VERDICT: ACCEPT — and the round's finding is that my own interval's lower bound is off by one, which the worker's second guard silently got right — dv_lead, `J-dv_lead-0074`
+
+**No correctness defect in the delivered work.** Both rows are built, both drive
+the first epoch, and the §2.1 RULING contingency never fired because the
+resynchronised frame's disposition derived exactly as `WO-0056` §2 said it would.
+
+### 1. FINDING — `AP-xgmii_rx_64.md`'s first-epoch interval starts at 1519, not 1518
+
+Both rows carry **two** guards. The first is my row's stated interval:
+
+```
+if k < 1518 || k > 1599 then fail row "... not inside REQ-108's first epoch [1518, 1599]"
+```
+
+The second is derived from the octet times:
+
+```
+if not (inject_ot > start_ot1 + 8 + 1518 && inject_ot < terminate1)
+then fail row "... not strictly inside the first epoch"
+```
+
+`start_ot1 + 8 + 1518` is content index 1518's octet time, so the second guard
+admits **content ≥ 1519**. **The two disagree at exactly `k = 1518`, and the
+second one is right.**
+
+**Why**: a character placed at content index `k` *replaces* that octet, so the
+data octets that arrived before it are indices `0 … k−1` — **`k` octets**.
+REQ-108 truncates a frame **exceeding** 1518, which needs `k > 1518`. At
+`k = 1518` exactly 1518 octets arrived, the frame is **not oversize at all**, and
+a `/S/` there is REQ-110's abort of a legal-length frame while an `/E/` there is
+REQ-105's. **The row's whole premise fails at its own stated lower bound.**
+
+**The error is mine, it is one entry old, and its shape is worth naming.**
+`J-dv_lead-0072`'s cell reads *"content 1518 is the 1519th received octet, the
+first that makes the frame exceed 1518"* — **true about the octet, wrong as a
+placement bound**, because placing a character there removes the very octet that
+would have made the frame oversize. Correct for *where truncation triggers*,
+wrong for *where a character may be placed after it*, and the two differ by one
+for exactly that reason.
+
+It is also the **same class as the "100 octets" figure this whole packet exists to
+repair**: an interval endpoint asserted without working its boundary case — and I
+committed it one entry after diagnosing the first instance.
+
+**Disposition.** **No bench defect and no bounce**: both rows use `k` far inside
+either reading, the octet-time guard is correct, and the file **fails safe** — a
+`k = 1518` would pass guard one and be caught by guard two. **The AP row is what
+needs the one-character fix**, and it is owed as a follow-up since this commit is
+scoped to the packet. Until it lands, **the octet-time guard in the file is the
+authority on the interval, not the row text**.
+
+**One note to the worker rather than a defect**: you built the correct guard and
+did not flag that it disagrees with the row's stated bound. Both guards are in
+the file, so nothing is at risk — but *"my derivation and the commissioning row's
+figure disagree"* is exactly the observation a Return log should carry, and it
+would have put this finding in your hands rather than mine.
+
+### 2. The new helper — verified against the primitives, not against its docstring
+
+`account_resync_runt_frame ~start_ot ~received ~strobe` is the review surface and
+it holds. Against `Arrival.in_times`' own implementation:
+
+```
+Arrival.in_times f = Array.init (preamble_octets + Array.length f.octets) (fun k -> f.start_octet_time + k)
+the helper         = Array.init (8              + received)               (fun i -> start_ot + i)
+```
+
+**The same construction, not an approximation of it** — `preamble_octets` is 8
+and `Array.length f.octets` is the frame's DA-through-FCS count, which is
+`received`. `arrival.mli`'s own docstring confirms the shape is what
+`Latency.frame_in` expects: *"the eight preamble octets from the start character
+inclusive, then the frame's octets DA through FCS."*
+
+The accounting itself is `account_dropped_frame`'s exactly — `frame_in`, then
+`discarded ~strobes`, then latency `frame_in` and **`frame_dropped`**. That is
+**M03-E3's rule** (a frame delivering zero octets is accounted through its
+**strobe**, never through `frame_out ~aborted:true`), and `frame_dropped` is also
+what keeps the tagger's `~tail_octets:4` identity from being applied to a
+four-octet frame that has no FCS to strip. **Right primitive, right order, right
+reason.**
+
+**The generalisation is justified and the justification is the interesting part**:
+there is no `Arrival.frame` record for a frame the *stimulus* opens mid-array —
+`Arrival.frames sched` knows only what `Arrival.create` scheduled. A helper that
+takes `~start_ot ~received` instead of a record is the minimal way to reach it,
+and it does not widen `Bench`'s exported surface (`RV-0043-VERDICT` §7).
+
+### 3. G7 — the derivation carried through, and the contingency stayed shut
+
+`k = 1588`, and it was **verified rather than trusted**, which is what I asked
+for: the interval guard, the octet-time guard, and a REQ-101 lane guard, plus a
+check that the `1592 − k` shortcut equals the interval `1599 − (k+8) + 1` it
+abbreviates, plus a check that the result is in the sub-five class the row
+assumes. **Five committed guards on one recommended constant.**
+
+The lane arithmetic is right at both starts: `1588 mod 8 = 4`, so a lane-0 start
+puts it in lane 4 and a lane-4 start in lane 0 — both REQ-101-legal, which is why
+`c ≡ 0 or 4 (mod 8)` reduces identically at the two lanes (the preamble is a
+multiple of 8).
+
+**The resynchronised frame's disposition derived, so §2.1's ASSERT → RULING
+contingency never fired**: `1592 − 1588 = 4` octets → REQ-107's sub-five class →
+no output word, one `error_runt` at §9's no-output-word pin. **The row asserts it
+rather than omitting it**, which is what makes the row a test of resynchronisation
+and not merely of the oversize frame: a design that failed to resynchronise
+produces a different strobe set, and the set is asserted exactly.
+
+### 4. G8 — the worker's own constant, and its derivation stands
+
+`k = 1560`, inside [1519, 1599] on either reading, and the reasoning for it is
+correct on both counts I checked. **An error character carries no REQ-101 lane
+restriction** — REQ-101 constrains *start* characters — so no mod-8 guard is
+owed, and the worker says so rather than adding a guard that would look like
+diligence and mean nothing. And it is **deliberately central** (41 octets from
+one end, 39 from the other) *"so the guard below is not accidentally vacuous"* —
+choosing a constant so that the check on it can fail is the habit this family's
+history argues for.
+
+Exact strobe set `{error_oversize}` alone, the following frame asserted intact
+including its `tuser`[0] = 0 and its own 60 delivered octets. **No
+`error_bad_frame`** is proven by the set's exactness, not by a negative assertion
+that could pass vacuously.
+
+### 5. The construction split — the derivation is correct and it explains the family
+
+The claim that `Injection`'s `At_octet` is available to G7/G8 and was *not*
+available to G3/G4 checks out at the source: `At_octet`'s validation refuses an
+index `>= List.length case.octets`, G3/G4's target is content **1618** on a
+**1600**-octet array, and 1618 ≥ 1600. **G7's 1588 and G8's 1560 are inside the
+array; G3's and G4's were past its end.**
+
+So the family splits on construction for a reason that is a fact about the
+tooling, not a preference: **the second epoch lies outside the frame's own array
+and the first lies inside it.** That is worth having written down, and it is the
+kind of derivation that makes the next G row cheap.
+
+### 6. Expected CI
+
+- **Build: the unknown, as always.** One changed file. Warning **9** fatal on
+  record literals and `Int.rem` rather than `mod` are the named risks; both clean
+  on reading, neither verifiable in-container.
+- **`runtest`: predicted GREEN — twenty-seven `%expect_test` units**, all silent,
+  no promotion. **Measured, not recalled**, from `tools/dv_checks.sh`'s inventory
+  block at this tree: 3+1+4+3+4+4+**7**+1 = **27** in the M03 bench, **107**
+  repository-wide. `test_m03_g.ml` goes 5 → 7, confirming the worker's figure.
+- **No `SO-` is owed or offered**, and the standing consequence is **not lifted by
+  a green landing** — §7 below.
+
+### 7. The replay instrument — the published prediction, restated verbatim so the harvest scores against it
+
+`RV-0055-VERDICT`'s bar stands until the evidence `WO-0056` §6 fixes, and green
+rows are not that evidence: **M03-G3 and M03-G4 have been green since they landed
+and were green for the wrong reason.** After these rows land green, apply the
+**existing `g-c4` diff** — committed at `762ae49`, no new seeding round and no
+auditor spawn — to a throwaway branch off the repair's landed SHA and run the
+`build` job:
+
+> - **M03-G8 SHALL redden.** That is the whole of the lift condition.
+> - **M03-G7 is expected to stay green**, the diff being gated on an error
+>   character; **if it reddens, that is adjudicated and not scored.**
+> - The five pre-existing G rows behave as at WO-0055 — all green under this
+>   class.
+> - The `cosim` job will be red, by design, and is not scored.
+>
+> **If M03-G8 does not redden, the repair failed and the consequence stands** —
+> no re-interpretation of the row, and no second attempt at the same offset.
+
+**Not sealed, deliberately**: R-SEAL-1 binds a claim that a result exists and is
+being **withheld**, and nothing here is — the diff is committed and its predicate
+is disclosed in the auditor's own README. A seal would be theatre.
+
+### 8. `test/xgmii_rx_64/dune` — RULED: it rides, but it is not worth a re-spawn
+
+The header's own comment says a missing packet line makes it *"wrong and a reader
+has no way to tell"*, and leaving G7 and G8 unlisted recreates exactly the
+staleness repaired at WO-0054. **It should carry a `WO-0056` line.** You were
+right to flag rather than fix it — my §7 narrowed the deliverables to
+`test_m03_g.ml` and you honoured that.
+
+**Disposition, proportionate to one comment line**: it rides with this landing if
+your files are not yet committed; otherwise it rides with the **next** `test/**`
+touch. It is comment-only, blocks nothing, and is not worth a spawn of its own.
+
+### 9. Verdict and conduct
+
+**ACCEPT.** Both rows are correct against the plan rows they cite, the new helper
+reproduces the accounting primitives rather than approximating them, the
+recommended constant was verified five ways instead of taken, and the worker's
+own constant is justified on two independent grounds.
+
+Three things worth recording as precedent. **The `k` recommendation was treated as
+a derivation to check** — which is what `WO-0056` asked for and the reason the
+interval's real boundary surfaced at all. **The bars were honoured beyond their
+letter**: `docs/reports/audit/**` untouched, and the *non-sealed* WO-0055 sibling
+avoided out of caution, which is the right instinct when a packet's whole point is
+that a row must not be written against a mutation. And **the construction split
+was derived rather than asserted**, leaving the next author a fact instead of a
+convention.
+
+The round's defect is mine, one entry old, and of the same shape as the one this
+packet was written to repair. That is the second time in three rounds that the
+instrument caught me faster than I caught myself, which is the instrument working.
