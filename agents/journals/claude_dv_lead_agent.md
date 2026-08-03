@@ -13575,3 +13575,194 @@ cannot see it, and before family E existed nothing could.
 ### Files-in-this-commit
 - agents/handoffs/WO-0045_family-e-mutation-campaign-SEALED-predictions.md
 - agents/handoffs/WO-0045_family-e-mutation-campaign.md
+
+## [J-dv_lead-0052] 2026-08-14T18:20Z | task:WO-0046 | Phase 1 authored — and authoring it found that REQ-901 already governs the comparison I designed from scratch in Phase 0, including a rule my document broke: this file may not permit a divergence, and for M03 the permitted set is empty
+
+### Trigger
+Orchestrator: the reference is vendored and landed (`f4f074b`) at pin
+`77320a9471d19c7dd383914bc049e02d9f4f1ffb`, two `.v` files byte-verbatim,
+closure re-derived, three-notice licensing per ADR-0015 D2; the worker did not
+add a WO-0044 Return log, reading its scope as narrowed. **Author WO-0044 Phase
+1** — one 64-octet frame through both implementations, canonical files per my
+Phase 0 document, the deliberate mismatch check, the two-run determinism check,
+artifact hygiene as hard constraints, workers named, and the CI entry point and
+file layout fixed so `build.yml` can be implemented.
+
+### Inputs
+- `test/third_party/verilog-ethernet/` — directory listing, both `.v` files'
+  `sha256sum`, and `PROVENANCE.md`'s recorded hashes and pin. **Verified, not
+  accepted.**
+- **`docs/specs/requirements.md` §10, REQ-901 in full** — the find of this
+  sitting — plus REQ-902, REQ-906 and the §11 non-requirements table.
+- `test/attack_plans/CD-xgmii_rx_64_cosim.md` — my own Phase 0 document,
+  re-read against REQ-901.
+- `agents/handoffs/WO-0044_cosim-lane-opening.md` §2–§6 — my own phasing.
+- `docs/adr/ADR-0015…` as landed, and its R-CI-1/R-CI-5 hazard.
+- **No `libs/**`, no `rtl_snapshots/**`.** `test/third_party/**` is read under
+  the WO-0044 §6 boundary — third-party reference, not the design under test.
+
+### Reasoning
+
+**I verified the vendoring rather than accepting the return's summary**, and it
+holds: both `sha256sum` prefixes match `PROVENANCE.md`'s recorded digests
+exactly, and the pin matches. Cheap, and the alternative is a lane anchored to
+files nobody checked.
+
+**Then REQ-901, which I should have read before writing Phase 0 and did not.**
+It is a *requirement*, in §10, and it already fixes almost everything I derived
+independently: the reference's configuration (DIC disabled, padding enabled,
+minimum frame length 64, PTP disabled, transmit checksum disabled — **which are
+the testbench's parameters**, and I had queued them as a question for the
+worker); that the comparison is **transactional, not cycle-by-cycle**, with
+cycle alignment and latency deliberately excluded; the exact comparison content;
+and the report format, from its Verification column.
+
+Some of that is corroboration — my CD §3 reached "transaction-level, never
+cycle-stamped" by its own route and REQ-901 says the same. **The rest is
+correction, and one piece of it is serious.**
+
+**First, my §5.1 list is wrong in two ways.** REQ-901 requires the `tkeep`
+extent of **each** word; mine said the *final* word. And REQ-901 requires **the
+accept-or-discard decision per input frame**, which mine omitted entirely — a
+whole observable missing from a document whose only job is to say what is
+compared. Annotated in place rather than rewritten, per the recorded-miss rule,
+with REQ-901 named as operative.
+
+**Second, and this is the one that matters: my §6 could not exist.** I wrote
+seven "predicted documented divergences" for M03. REQ-901 declares **four**
+divergence classes — IPv4 header checksum, ARP cache LRU, discard-on-miss, zero
+UDP transmit checksum — **none of which touches M03** — and then says: *"Any
+divergence outside these four classes is a defect. A divergence class discovered
+later SHALL be added here by spec diff before any sign-off packet may cite it."*
+
+**So the permitted-divergence set for the M03 pairing is EMPTY, and my document
+has no authority to add to it.** Worse, I can see exactly how I got there:
+ADR-0015's governing clause offers three resolutions — a defect against our RTL,
+**a documented-divergence entry**, or a spec diff with an ADR — and I read
+"documented-divergence entry" as meaning an entry *in my comparison domain*. It
+means an entry in **REQ-901**, added by spec diff. **I built a parallel,
+self-authored permission list, which is the same error the clause forbids, one
+level up.** A document written to stop expectations being amended to agree was
+itself an amendment.
+
+The reclassification is therefore total: V1–V7 are **predicted defects or
+spec-diff candidates**, not permissions. If the reference forwards a runt where
+we drop it, that is a defect packet or a spec diff to REQ-901 — never a line I
+add to my own file.
+
+**Catching this in a document rather than in Phase 3 is the entire argument for
+Phase 0 existing**, and I would rather record that the document needed
+correcting than that it was right.
+
+**On the architecture, the load-bearing decision is `(executables)` and not
+`(inline_tests)`.** `compare` consumes a file produced by `vvp`, which runs
+outside dune and exists nowhere the lane has not run. An inline test would
+**fail the main suite in every environment without iverilog** — the dev
+container, and every existing CI job. So `test/cosim/` produces binaries the
+cosim job invokes, the fifteen `%expect_test` units are untouched, and "`dune
+runtest` is byte-identically green before and after" is a review check rather
+than a hope. That is also exactly ADR-0015's concern about a new lane reddening
+the main suite on day one, met structurally instead of by `continue-on-error`.
+
+**The canonical form is pinned in the packet because it is the interface between
+two workers' artifacts**, and an interface left to convention is one that
+diverges silently. Three record kinds, ASCII, no version string anywhere inside
+— provenance in a sidecar that is never compared, so the two-run check measures
+determinism rather than toolchain noise.
+
+**The mismatch check must use the production path**, and I said so explicitly
+because the natural implementation is a separate harness that proves a
+*different* comparator can fail. `compare --self-test` in the same binary,
+following `precompile_check.sh`'s and `check_rfc1071_anchor.sh`'s own pattern.
+
+**On workers I put the Verilog testbench with the verification content rather
+than the plumbing.** It encodes REQ-901's parameters and decides what is
+captured — verification judgements, which belong under the review loop. And I
+noted data_wrangler is not blocked: `run_cosim.sh` sequences named entry points
+and can be written against the layout before the binaries exist.
+
+**Four questions go back as deliverables**, including one I would otherwise have
+assumed: REQ-901 takes comparison boundaries from `architecture.md` §4's
+counterpart column, and I have been writing "M03 pairs with
+`axis_xgmii_rx_64`" from inference. **Confirm it from the column and quote the
+row.** I have now been caught twice this sitting reasoning past a document that
+already had the answer.
+
+### Actions
+- **Verified and ACCEPTED the vendoring** in the packet — both sha256s and the
+  pin checked against the files on disk — and ruled no Return log owed.
+- **Corrected `CD-xgmii_rx_64_cosim.md`**: added §0-bis; annotated §5.1 as
+  superseded by REQ-901's list; **reclassified §6 from "permitted divergences"
+  to "predicted defects or spec-diff candidates"**, with the empty permitted set
+  for M03 stated and my misreading of "documented-divergence entry" recorded.
+- Authored **`WO-0046`**: REQ-901 as the governing source with its five settled
+  points quoted; the three-artifact architecture; **the file layout and the
+  single CI entry point `tools/cosim/run_cosim.sh`**; the `(executables)`
+  constraint and its reasoning; the canonical form pinned to the record; the
+  three checks with the mismatch check bound to the production path; the worker
+  split with the testbench placed under verification; four evidence questions;
+  the artifact-hygiene constraints including cleanup on the failure path; and
+  the Phase-2 bar.
+- Carried CD §2's finding forward: **the lane anchors the data-path half of
+  X-1's model and not the strobe half.**
+- Opened no `libs/**`. No `git commit`, no `git push`.
+
+### Evidence
+1. `sha256sum` on disk: `99d2b9578a440f03…` (`axis_xgmii_rx_64.v`) and
+   `5502c8203b0dfc72…` (`lfsr.v`) — both match `PROVENANCE.md`; pin matches.
+2. REQ-901: "deficit idle count disabled, padding enabled, minimum frame length
+   64, PTP disabled and transmit checksum generation disabled".
+3. REQ-901: "payload octets, the `tkeep` extent of each word, and `tuser`[0] on
+   each `tlast` — and the same accept-or-discard decision per input frame".
+4. REQ-901: "Any divergence outside these four classes is a defect. A divergence
+   class discovered later SHALL be added here by spec diff before any sign-off
+   packet may cite it." The four classes are REQ-602, REQ-504, REQ-505 and
+   REQ-706 — **none is an M03 class**.
+5. REQ-901's Verification column fixes the report: "frames compared, frames
+   matching, and every divergence with the class it falls in or the defect it
+   is".
+6. REQ-901: comparison boundaries come from `architecture.md` §4's counterpart
+   column — the basis for question 3.
+
+### Outcome
+**WO-0046 is authored**, with the CI entry point and file layout fixed so
+`build.yml` can be implemented: one command, `tools/cosim/run_cosim.sh`, exit
+0/nonzero, no arguments.
+
+**Phase 0 is corrected before Phase 1 is built on it.** My comparison domain had
+supersedable content in §5.1 and an unauthorised permission list in §6; **for
+M03 the permitted-divergence set is empty and any difference is a defect until a
+spec diff says otherwise.**
+
+**The vendoring is accepted on verification** of both digests and the pin.
+
+### Open-questions
+- **A rule I keep needing and keep relearning**: before designing a verification
+  artifact, read the REQ that governs it. Phase 0 was written without REQ-901
+  and reinvented four of its clauses while breaking a fifth. This is the second
+  time this sitting I reasoned past a document that already had the answer — the
+  first being the M03/`axis_xgmii_rx_64` pairing, which REQ-901 sources from
+  `architecture.md` §4 and I had been inferring.
+- **CD §6's seven entries are now predicted defects.** If one materialises the
+  resolution is a defect packet or a spec diff to REQ-901 — and **V7 (a
+  reference that drops bad-FCS frames) would be the first test of that
+  discipline**, since it is the likeliest and the most tempting to wave through.
+- **The strobe half of X-1's model still has no anchor** and this lane cannot
+  supply one; the eventual `SO-` must say so in its own words.
+- **Question 3 may move the pairing.** If `architecture.md` §4's counterpart
+  column names something other than `axis_xgmii_rx_64`, this packet's §3 changes
+  and the vendoring may be incomplete.
+- **Family E's campaign harvest queues behind this**; its five classes are frozen
+  under the allowlist.
+- **Owed by me, unchanged**: the `precompile_check.sh`
+  side-effect-in-combinator lane; `AP` §7's fuller rewrite; the two
+  packet-authoring rules from `RV-0043-VERDICT` (verify a stimulus at both its
+  failure sites; cite a tracked item's field and SHA).
+- **M03-A3's blindness to lane-symmetric errors remains untested**; my M04
+  contamination from `J-dv_lead-0024` still stands.
+- **Unchanged**: the RFC 1071 anchor closes on the next CI run that fetches;
+  X-7, X-10, X-11 deferred; L1–L5 owed as a separate packet.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0046_cosim-phase-1.md
+- test/attack_plans/CD-xgmii_rx_64_cosim.md

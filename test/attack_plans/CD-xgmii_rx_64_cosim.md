@@ -18,6 +18,38 @@ decides whether the lane's first result is interpretable at all.
   this line and §4's simulator-agnostic phrasing get a recorded update, and the
   freeze discipline of §0 applies to that update like any other.
 
+## 0-bis. CORRECTION, before Phase 1 is built on this (J-dv_lead-0052)
+
+**I wrote §5 and §6 without consulting REQ-901, and REQ-901 already governs
+both.** It was found while authoring Phase 1. Two corrections, in force:
+
+1. **§5.1's list is superseded by REQ-901's own**, which requires "the same
+   ordered sequence of output frames — payload octets, the `tkeep` extent of
+   **each** word, and `tuser`[0] on each `tlast` — and **the same
+   accept-or-discard decision per input frame**". Mine said *final*-word
+   `tkeep` and omitted the accept/discard decision entirely. **REQ-901
+   governs**; §5.1 is annotated in place rather than rewritten, per the
+   recorded-miss rule.
+2. **§6 is reclassified in full.** REQ-901 declares **four** divergence classes
+   — (a) IPv4 header checksum, (b) ARP cache LRU, (c) discard-on-miss, (d) zero
+   UDP transmit checksum — **none of which applies to the M03 pairing** — and
+   then states: *"Any divergence outside these four classes is a defect. A
+   divergence class discovered later SHALL be added here by spec diff before
+   any sign-off packet may cite it."*
+
+> **So this document may not permit a divergence, and §6 never could.** ADR-0015's
+> governing clause offers three resolutions — a defect against our RTL, **a
+> documented-divergence entry**, or a spec diff with an ADR — and I read
+> "documented-divergence entry" as meaning an entry *here*. It means an entry in
+> **REQ-901**, added by spec diff. My §6 created a parallel, self-authored
+> permission list, which is the same error the clause forbids, one level up.
+>
+> **§6's V1–V7 are therefore NOT permitted divergences. They are predicted
+> DEFECTS-or-spec-diff-candidates**, and if one materialises the resolution is a
+> defect raised against our RTL, or a spec diff adding a class to REQ-901 —
+> never a quiet entry in this file. **For the M03 pairing the permitted-divergence
+> set is EMPTY.**
+
 ## 0. What this document is, and the discipline it runs under
 
 Two conformant implementations of "10G Ethernet receive" differ **legally and
@@ -135,6 +167,11 @@ empty `[%expect]` blocks were worth before the mutation campaigns.
 
 ### 5.1 INSIDE — differences here are findings
 
+> **SUPERSEDED IN PART by REQ-901 (see §0-bis).** REQ-901 requires the `tkeep`
+> extent of **each** word (not only the final one) and adds **the accept-or-discard
+> decision per input frame**, which this table omits. The table stands as a
+> recorded miss; **REQ-901's list is the operative one.**
+
 For a frame in a stimulus class both implementations are expected to forward:
 
 | | observable |
@@ -155,7 +192,14 @@ For a frame in a stimulus class both implementations are expected to forward:
 | **X4** | **preamble and SFD octet values** | REQ-102 forbids M03 from validating them; the reference may. Family B's stimulus is expected to diverge |
 | **X5** | internal state, port names, parameterisation, reset conventions | absorbed by the bridge, explicitly (WO-0044 §3) |
 
-## 6. Predicted documented divergences — a FROZEN PREDICTION, not a settled list
+## 6. Predicted DEFECTS or spec-diff candidates — a FROZEN PREDICTION
+
+> **RECLASSIFIED (§0-bis).** These were written as "permitted divergences".
+> They are not, and this document cannot make them so: REQ-901 reserves that
+> declaration to itself by spec diff, and for M03 its permitted set is **empty**.
+> Each entry below is a **predicted defect** whose resolution, if it
+> materialises, is a defect packet against our RTL **or** a spec diff adding a
+> class to REQ-901.
 
 **These entries are predictions.** I have not read the reference — it is not
 vendored yet — so each names what would confirm it. **Phase 1 and Phase 2 test
