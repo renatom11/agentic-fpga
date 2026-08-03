@@ -3013,3 +3013,249 @@ UNVERIFIED (ADR-0005); CI settles it. No sign-off claimed.
 - test/xgmii_rx_64/test_m03_f.ml
 - test/xgmii_rx_64/test_m03_e.ml
 - agents/handoffs/WO-0047_tb-m03-family-f-runts.md
+
+---
+
+## [J-tb_writer-0012] 2026-08-03T15:50Z | task:WO-0049 | The co-sim lane's first CI death — one 64-bit `$fwrite` argument, an independent sweep, and `compare`'s third exit code
+
+### Trigger
+
+WO-0049/2026-08-03T15:50Z (dv_lead, via the orchestrator): the co-simulation
+lane's first execution (CI run `30825741565`) died at check 4.1 because
+`theirs.canon` violated the pinned canonical grammar — dv_lead's adjudication
+root-caused it to `test/cosim/tb_xgmii_rx_64.v:155`, a 64-bit `$fwrite`
+argument printing sixteen hex digits through a `%02x` directive meant for
+two. Three bounded items: §3 the width fix (with a comment at the fix site
+naming the width rule), §4 an independent sweep of every format directive in
+the file (sealed against dv_lead's own, read only after mine landed), §5 a
+new `compare` exit code 3 ("could not read a canonical file") implemented
+inside `run_comparison` with a third `--self-test` assertion using the exact
+16-hex-digit defect shape, run locally before landing.
+
+### Inputs
+
+`agents/charters/tb_writer.md`; `agents/PROTOCOL.md` §2-6 and §10 (full
+re-read); `agents/handoffs/WO-0049_cosim-canon-format-fix.md` (the work
+order, full, including its own derivation of the defect in §1-§2 and its
+required items in §3-§8) — this packet's own quoted text is the only source
+I used for the defect's location and shape; I did not separately re-derive
+which line was broken from first principles, since the packet already proves
+it (the `sed`-narrowing reproduction in its §2). `test/cosim/tb_xgmii_rx_64.v`,
+`test/cosim/compare.ml`, `test/cosim/canonical.mli`, `test/cosim/canonical.ml`
+— all four read in full before editing (the latter two are read-only context;
+neither was touched, per §6's bar). `test/cosim/dune`, read in full, to
+confirm the `(executables)` stanza and the absence of any `runtest` alias
+before and after my edit. This journal's own header and my own
+`J-tb_writer-0001` through `J-tb_writer-0011` entries, to confirm the next
+entry id (0012).
+
+**Explicitly not read, per this spawn's own instruction**: `agents/journals/
+claude_dv_lead_agent.md` or any dv_lead material beyond the WO-0049 packet
+itself — the packet states dv_lead is withholding its own sealed sweep result
+until mine lands, and instructs me not to read it. I did not. **Also not
+read, per standing charter**: any path under `libs/**`, `top/**`, `bin/**`,
+`rtl_snapshots/**` — none was opened, targeted or swept, at any point in this
+spawn; nothing in this packet required them (no RTL is implicated in a
+harness-producer defect, per the packet's own §1 adjudication).
+
+### Reasoning
+
+**§3 — why the indexed part-select over the local `reg` alternative.**
+Both of the packet's two named implementations are correct; I chose (b),
+`m_axis_tdata[8*k +: 8]`, over (a), a task-local `reg [7:0]` assigned from
+the old shift-and-mask expression, because (b) removes the operand-width
+question from the expression entirely rather than fixing it one assignment
+later. (a) still *computes* the value via the same 64-bit
+`(m_axis_tdata >> (8*k)) & 8'hff` construction the defect came from, relying
+on Verilog's truncate-on-narrower-assignment rule to fix the width at the
+`reg`; that 64-bit intermediate stays present in the file for a future edit
+to reference by mistake (e.g. someone "simplifying" by hoisting the shift
+out before the assignment). (b)'s width is the literal `8` after `+:` — a
+syntactic fact, not a derived one — so there is no operand-width computation
+left in the expression for a later edit to get wrong. The file already
+declares itself Verilog-2001 (`` `default_nettype none`` plus the file's own
+language comment), so the indexed-part-select form is already in the dialect
+this file commits to; I did not need to introduce anything new to the file's
+own conventions. The required comment at the fix site names the rule (a `%x`
+field's digit count is set by the argument's bit width; a numeric field width
+is a minimum, not a truncation) and the measured fact (sixteen digits printed
+in run 30825741565), per the packet's exact requirement.
+
+**§4 — the sweep, and why I trust the `%0d` conclusion enough to write it
+down as a rule rather than hedge it.** The packet's fourth and fifth table
+columns are "argument bit width" and "the rule that gives that width" — I
+worked every directive in the file from the Verilog self-determined/
+context-determined width rules (system-task arguments are a self-determined
+context; identifiers referenced whole carry their declared width; shifts
+preserve their left operand's width; bitwise binary operators are
+context-determined to the max of their operand widths) rather than guessing
+from the observed output alone. The one nontrivial judgment call: whether
+`%0d`'s bare "0" field-width digit means the same thing as `%02x`'s "0" (a
+zero-pad *flag* before a nonzero width) — it does not. A bare `0` size with
+no following digit is the LRM's special case for "minimum digits needed for
+the VALUE, no padding," independent of the argument's declared bit width;
+`%02x`'s "0" is a flag, and "2" is the actual minimum width, which the LRM's
+ordinary (non-special-cased) rule still lets the argument's full natural
+digit count exceed. I did not merely assert this distinction — I checked it
+against the failing run's own measured output the packet already quotes:
+`frame_index` (a 32-bit `integer`) prints as `"F 0"`, not `"F 0000000000"`
+and not `"F          0"`; only the "minimum digits for the value, not for the
+declared width" reading of `%0d` explains that shape. This is the same
+discipline WO-0047's own `J-tb_writer-0011` entry used for the strobe-window
+formula: derive first, then cross-check against a real, cited measurement,
+rather than trust either alone. Net finding: nine directive instances across
+seven statements, exactly one nonconformance (the one the packet's §3
+already names and this packet fixes) — no second defect hiding behind the
+first, and nothing turned up outside §3's authorised fix class (§4 item 5 of
+the packet's own ask).
+
+**§5 — why the two `Canonical.read_file` calls, and not `compare_transactions`,
+get the wrapper.** The packet's own reasons are the ones I followed rather
+than inventing my own: `--self-test` calls `run_comparison`, the same
+function `main` calls for a real run, so wrapping inside it (not around a
+second, parallel check) means the self-test's new third assertion exercises
+the actual production path; and a bug inside `compare_transactions` itself
+(the domain logic, not the file I/O) must keep crashing loudly rather than
+being silently relabelled "could not read a canonical file," which would
+hide a real comparator bug behind the wrong diagnostic. I used `Failure msg
+| Sys_error msg -> ...` as one match arm (both constructors carry a single
+string and the same handling applies to each) rather than two separate arms
+with duplicated bodies, since the two failure modes are handled identically
+here (name the side, name the path, name the message, raise a marker
+exception `run_comparison` catches to select exit 3) and the packet does not
+ask that they be distinguished in the diagnostic text.
+
+**Why the third self-test file is written as raw text, not through
+`Canonical.write`.** `Canonical.write`'s octets are OCaml `int`s and its
+writer always prints exactly as many hex digits as the *value* needs (via
+OCaml's own `Printf "%02x"`, which behaves the same minimum-not-truncation
+way Verilog's does) — there is no `int` value whose correct hex
+representation is naturally sixteen digits while also being a valid single
+octet (0-255) under this grammar's own popcount check, so the API cannot be
+made to produce the malformed shape at all. Writing the literal string
+`"F 0\nW 0f 1 0 0000000000000002\nD 0 accept\n"` directly is the only way to
+construct the exact defect shape (an independent, ungoverned producer
+writing the wrong thing) that the self-test needs to exercise — which is
+honest to what actually happened in run 30825741565, a second producer
+speaking the grammar wrong, not a data value this module's own writer could
+ever emit by accident.
+
+### Actions
+
+Two files edited, both already in tb_writer's own committed scope, per the
+packet's file list:
+
+- `test/cosim/tb_xgmii_rx_64.v`: replaced the one shift-and-mask `$fwrite`
+  argument at (pre-fix) line 155 with `m_axis_tdata[8*k +: 8]`, preceded by
+  an eleven-line comment naming the width rule and the measured defect.
+  Nothing else in the file was touched — confirmed by `git diff --stat`
+  showing 13 lines changed in this file (the replaced line plus the added
+  comment), not a rewrite.
+- `test/cosim/compare.ml`: added `exception Read_failed`, a new
+  `read_canonical_side` helper wrapping `Canonical.read_file` in a
+  `try...with Failure msg | Sys_error msg -> ...`, rewrote `run_comparison`
+  to call it twice and return `3` on either failure; added
+  `defect_shape_canon_text` and a third assertion block inside `self_test`
+  (a `malformed_path` temp file, written as raw text, cleaned up alongside
+  the existing two); updated the top-of-file usage comment and the `usage ()`
+  function to document exit code `3`. `canonical.ml`/`canonical.mli` were
+  read for context (to confirm exactly what `Canonical.read`/`read_file` can
+  raise) but not edited, per §6's bar.
+- Built both edited files (plus unmodified `canonical.{ml,mli}`) with the
+  system `ocamlc 4.14.1` in a scratch directory outside the checkout
+  (`/tmp/claude-0/.../scratchpad/wo0049_build/`, never `_build`), and ran the
+  resulting `compare` binary's `--self-test` and several additional exit-code
+  checks locally before returning the packet.
+- Appended the RETURNED block to `agents/handoffs/WO-0049_cosim-canon-format-fix.md`'s
+  Return / verdict log (§1-§5 of the packet's item 7 list, the sweep table,
+  the self-test transcript, the `dune runtest`/main-suite statement, and item
+  5's "nothing further to report" statement).
+
+### Evidence
+
+All commands run from a repo checkout at this SHA unless marked otherwise.
+
+- `mkdir -p /tmp/claude-0/.../scratchpad/wo0049_build && cp test/cosim/{canonical.mli,canonical.ml,compare.ml} <scratch>/ && cd <scratch> && ocamlc -c canonical.mli && ocamlc -c canonical.ml && ocamlc -c compare.ml && ocamlc -o compare canonical.cmo compare.cmo`:
+  all exit 0, `ocamlc -version` reports `4.14.1`. **Ephemeral, scratch-only**
+  build — the compiled `.cmi`/`.cmo`/binary artifacts live under
+  `/tmp/claude-0/.../scratchpad/wo0049_build/` and are not staged anywhere
+  under `test/`, per the packet's own instruction to build outside the
+  checkout, not under `_build`.
+- `./compare --self-test`, run against that scratch build, stdout and stderr
+  captured to separate files: all three assertions PASS (agree_exit=0,
+  differ_exit=1, noverdict_exit=3), aggregate exit 0. Full transcript quoted
+  verbatim in the Return log.
+- Additional local checks against the same scratch build (not required by
+  the packet, run to convince myself before returning it): no-args invocation
+  exits 2 with the updated usage text; a malformed `ours` file (not `theirs`)
+  is correctly named as `ours` and exits 3; a nonexistent path exits 3 via
+  the `Sys_error` branch, correctly named; a well-formed identical pair via
+  the real two-argument CLI path exits 0. All four transcribed in the Return
+  log.
+- `ocamlc -stop-after parsing test/cosim/compare.ml` (in the real checkout,
+  post-edit): exit 0. `tb_xgmii_rx_64.v` has no local syntax checker in this
+  container (no iverilog) — stated as such, not claimed otherwise.
+- `bash tools/precompile_check.sh`: `ALL LANES PASSED`; `test/cosim` still
+  correctly `EXCLUDED — executable stanza; this harness compiles libraries
+  only`, unaffected by either edit.
+- `bash tools/dv_checks.sh`: `check_records_vs_appendix.sh` 23/23 PASS;
+  `check_emitted_verilog.sh` PASS with the same pre-existing PENDING rows
+  (unbuilt modules, unrelated); `check_rfc1071_anchor.sh` OBLIGATION OPEN on
+  blocked network egress (pre-existing, `J-dv_lead-0017`/`0018`, unrelated);
+  bench-inventory block (report-only) counted **100** `let%expect_test`
+  occurrences repository-wide at this SHA, **0** of them in `test/cosim/`
+  (`grep -rn 'let%expect_test' test/cosim/` returns nothing) — confirming
+  this packet's two-file diff adds or removes no unit from the count the
+  script itself says to quote as provenance.
+- `grep -n 'executables\|inline_tests\|runtest' test/cosim/dune`: confirms
+  `(executables ...)` with no `runtest` alias, before and after this
+  packet's edits — the structural reason this packet cannot touch the main
+  suite at all.
+- `git status --porcelain` / `git diff --stat` (repo root): exactly
+  `test/cosim/compare.ml` and `test/cosim/tb_xgmii_rx_64.v` — matching the
+  packet's deliverable list exactly, nothing else touched.
+- `dune build @default` / `dune runtest`: **not run** — confirmed-absent
+  Hardcaml toolchain in this container (same absence every prior entry in
+  this journal records); CI is authoritative for both. This packet's central
+  bet is narrower than most prior ones: the fix and the sweep are both
+  Verilog-width-rule derivations checkable without a simulator, and the
+  `compare.ml` change is fully exercised locally by a real build and a real
+  run, which the earlier `test/xgmii_rx_64/` rounds could never do for
+  Hardcaml-dependent code.
+
+### Outcome
+
+DoD against WO-0049: §3's fix landed with the width justified in a
+comment at the fix site (implementation (b) chosen and reasoned in the
+Return log); §4's sweep table is complete or the Return log (nine directive
+instances, one nonconformance, matching §3's own fix, nothing else found);
+§5's exit code implemented inside `run_comparison` and **fired** by
+`--self-test` before leaving my hands (verbatim transcript in the Return
+log, all three assertions PASS); the main `dune runtest` suite's unit count
+(100, repository-wide, per `tools/dv_checks.sh`'s own bench-inventory
+provenance command) is unchanged by this packet's diff, and `test/cosim/dune`
+is confirmed still `(executables)` with no `runtest` wiring; Return log
+appended; journal entry appended. No sign-off claimed — PASS/FAIL and
+whether my sweep agrees with dv_lead's sealed one are dv_lead's `RV-` to
+make, not mine.
+
+Handoff: RETURNED block appended to
+`agents/handoffs/WO-0049_cosim-canon-format-fix.md`'s Return / verdict log.
+Packet state left at `RETURNED` per this spawn's own instruction — dv_lead's
+`RV-` and the orchestrator's transcription do any further state flip.
+
+### Open-questions
+
+None new from me — the packet's own item 5 ("anything §4 turned up that §3
+did not authorise you to fix — report, do not fix") is answered "nothing" in
+the Return log, not raised here as an open question, since it is a negative
+finding, not an ambiguity. Whether my independent sweep agrees with
+dv_lead's sealed one is, by the packet's own design, a comparison only
+dv_lead can make (I have not seen dv_lead's result and could not check
+agreement myself even if I wanted to) — noted here only so it is visible
+that this is an intentional gap in my own account, not an oversight.
+
+### Files-in-this-commit
+- test/cosim/tb_xgmii_rx_64.v
+- test/cosim/compare.ml
+- agents/handoffs/WO-0049_cosim-canon-format-fix.md

@@ -152,7 +152,18 @@ module tb_xgmii_rx_64;
       $fwrite(out_fd, "W %02x %0d %0d", m_axis_tkeep, m_axis_tlast, m_axis_tuser & 1'b1);
       for (k = 0; k < 8; k = k + 1) begin
         if (m_axis_tkeep[k])
-          $fwrite(out_fd, " %02x", (m_axis_tdata >> (8*k)) & 8'hff);
+          // WO-0049 §3: a `%x` field's printed digit count is set by its
+          // ARGUMENT's bit width, not by the directive -- a numeric field
+          // width (the "02" here) is a MINIMUM, not a truncation. The old
+          // `(m_axis_tdata >> (8*k)) & 8'hff` was 64 bits wide (a shift's
+          // result keeps its left operand's width; `&` against an 8-bit
+          // mask is context-determined to the WIDER operand, so the mask
+          // does not narrow it) and printed sixteen hex digits in run
+          // 30825741565, not two. The Verilog-2001 indexed part-select
+          // below is exactly 8 bits wide BY CONSTRUCTION (its width is the
+          // literal after `+:`, not derived from any operand), which is
+          // what pins the printed field at two digits regardless of value.
+          $fwrite(out_fd, " %02x", m_axis_tdata[8*k +: 8]);
       end
       $fwrite(out_fd, "\n");
     end

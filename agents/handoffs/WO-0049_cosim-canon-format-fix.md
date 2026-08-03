@@ -355,3 +355,237 @@ I do not edit `tools/**` and have not. This section is a request, not a change.
 ## Return / verdict log
 
 *(appended by tb_writer on RETURNED, and by dv_lead on ACCEPT/BOUNCE)*
+
+### tb_writer RETURNED — 2026-08-03T15:50Z (spawn WO-0049/2026-08-03T15:50Z)
+
+**State: RETURNED. No `SO-` claimed, per §7's own ruling — none is owed.**
+
+Independence note on this round: §4's sweep below was produced by reading
+only `test/cosim/tb_xgmii_rx_64.v` itself (this packet's own quoted defect
+plus the file read in full) and applying the Verilog width rules from first
+principles — I did not read `agents/journals/claude_dv_lead_agent.md` or any
+dv_lead material beyond this packet, per the packet's own instruction that
+the two sweeps be independent.
+
+---
+
+#### 1. §3 — the fix, and which implementation
+
+Chose **(b), the Verilog-2001 indexed part-select**: `test/cosim/tb_xgmii_rx_64.v:166`
+(post-fix line numbering — the fix added 10 comment lines above it) now reads:
+
+```verilog
+$fwrite(out_fd, " %02x", m_axis_tdata[8*k +: 8]);
+```
+
+replacing `(m_axis_tdata >> (8*k)) & 8'hff`. Reasoning for (b) over (a): (a)'s
+`reg [7:0]` intermediate still *computes* the value via the same 64-bit
+shift-then-mask the defect came from and only fixes the width one step later,
+at the assignment into the narrower `reg`; it works (Verilog truncates on
+assignment to a narrower target), but it keeps the original expression's
+64-bit intermediate alive as something a future edit could reference by
+mistake (e.g. hoisting the shift out of the `reg` assignment "for clarity").
+(b) removes the shift-and-mask construction entirely: `base +: width` is
+8 bits **by construction** — the width is the literal `8` after `+:`, not
+derived from any operand's own width, so there is no operand-width question
+left for a future edit to get wrong. The file already declares itself
+Verilog-2001 at its language comment (`tb_xgmii_rx_64.v:45`), so the form is
+in the dialect this file already commits to.
+
+The required comment at the fix site (lines 155-165) names the rule (`%x`'s
+printed digit count is set by the argument's bit width; a numeric field width
+is a minimum, not a truncation) and states the measured fact: the old 64-bit
+argument printed sixteen digits in run `30825741565`.
+
+I could not execute this file (no iverilog in this container, stated in the
+file's own header and unchanged by this packet) — the fix is derived from the
+Verilog width rules and cross-checked against the failing run's own measured
+output (`theirs.canon` showing `0000000000000002`, sixteen digits, for the
+identical construction this fix replaces), never from a local run of my own.
+
+---
+
+#### 2. §4 — the sweep (independent; sealed against dv_lead's own)
+
+Every `$fwrite`/`$display` in `test/cosim/tb_xgmii_rx_64.v`, at the delivered
+(post-fix) line numbers. System-task arguments are a **self-determined**
+context in Verilog (a `$display`/`$fwrite` argument's width is fixed by the
+expression itself, never inflated by the surrounding call) — that single rule
+underlies every "argument bit width" cell below; the fourth column names what
+*additionally* fixes each expression's own width.
+
+| line | directive | argument expression | argument bit width | the rule that gives that width | field as printed | conforms? |
+|---|---|---|---|---|---|---|
+| 152 | `%02x` | `m_axis_tkeep` | 8 bits | Identifier referenced whole; a net's self-determined width is its declared width (`wire [7:0] m_axis_tkeep`) | 2 lowercase hex digits — measured directly in the failing run's own `theirs.canon` line ("ff") | yes |
+| 152 | `%0d` | `m_axis_tlast` | 1 bit | Identifier referenced whole; declared width of a scalar net (`wire m_axis_tlast`) is 1 bit | a bare `0` field-width digit (not a `0` flag before a nonzero width, e.g. not "02") is special-cased by the LRM to mean "minimum decimal digits for the VALUE, no padding" — **independent of the argument's bit width**, so this directive is immune to the whole defect class regardless of what width the argument is; measured "0" | yes |
+| 152 | `%0d` | `m_axis_tuser & 1'b1` | 1 bit | Bitwise `&` is context-determined: result width = max(operand widths); `m_axis_tuser` (`wire`, 1 bit) and `1'b1` (an explicitly 1-bit-sized literal) are already equal, so max(1,1) = 1, no widening occurs | same `%0d` minimum-digits rule as above; measured "0" | yes |
+| 166 (post-fix) | `%02x` | `m_axis_tdata[8*k +: 8]` | 8 bits | Indexed part-select `base +: width`: width is the literal constant after `+:`, **by construction**, independent of any operand's own width — this is the fix, chosen for exactly this property | 2 lowercase hex digits for every value, including a zero high nibble | yes (post-fix) |
+| 166 (PRE-FIX, historical — the defect) | `%02x` | `(m_axis_tdata >> (8*k)) & 8'hff` | 64 bits | Two composed rules: (1) a shift's result width equals its LEFT operand's width — `m_axis_tdata` is `wire [63:0]`, 64 bits, and the shift amount `8*k` does not narrow it; (2) bitwise `&` is context-determined, result width = max(operand widths) = max(64, 8) = 64 — the 8-bit mask `8'hff` is zero-extended UP to 64 to match, it does not narrow the 64-bit shift result down to 8 | 16 hex digits — measured directly: `theirs.canon` showed `0000000000000002` | **NO — the defect** |
+| 177 | `%0d` | `frame_index` | 32 bits | `frame_index` is declared `integer` — a predefined signed atom type, at least 32 bits (IEEE 1364/1800); referenced whole | `%0d`'s minimum-digits-for-the-value rule, independent of the 32-bit declared width; measured "0" in the failing run's `F 0` line | yes |
+| 189 | `%0d` | `frame_index` | 32 bits | same as above (`integer`) | same rule; this exact directive produced the failing run's own `D 0 accept` line (§1's citation) | yes |
+| 196 | `%0d` | `frame_index` | 32 bits | same as above | same rule; this line was never exercised in the failing run (the captured frame was accepted, not discarded) — conformance follows from the rule, not from a measurement of this run | yes (by rule; not exercised this run) |
+| 211, 216, 221, 260 | (none) | plain string literals — no `%` directive | n/a | n/a | n/a | n/a — nothing to size |
+| 245-247 | `%0d` | `frame_index` | 32 bits | same as above (`integer`) | same rule; never exercised in the failing run (no second start character occurred) | yes (by rule; not exercised this run) |
+| 283, 284, 286, 287 | (none) | plain string literals — no `%` directive (the `theirs.canon.meta` sidecar's fixed lines) | n/a | n/a | n/a | n/a |
+| 285 | `%0d` | `stimulus_lines` | 32 bits | `stimulus_lines` is declared `integer`; referenced whole | same rule; this line is in the sidecar, which canonical.mli's own grammar says is never compared — swept anyway since §4 asks for every directive in the file, not only the compared ones | yes |
+
+**Nine directive instances across seven statements; one nonconformance (the
+one this packet's §3 already names and fixes).** No new defect turned up —
+see §5 of this Return log below (item 5 of what dv_lead asked for): nothing
+here needs a ruling I haven't already acted on.
+
+The one deliberate judgment call in this sweep, stated so it can be checked
+rather than just trusted: `%0d`'s special "bare-zero-size means minimum
+digits for the value, not for the declared bit width" rule is why the three
+`integer`-typed arguments (32 bits each) and the two 1-bit arguments print
+correctly despite never having anything close to their full declared width's
+worth of digits — I did not assume this, I derived it from the LRM's
+zero-field-width special case and then checked it against the failing run's
+own measured output (`F 0`, not `F 0000000000` and not `F          0`), which
+only the "minimum digits for the value" behaviour explains.
+
+---
+
+#### 3. §5 — `compare`'s new exit code 3, and the third self-test assertion
+
+Implemented as specified: exit `3` = "could not read a canonical file",
+handling added **only inside `run_comparison`**, wrapped around the two
+`Canonical.read_file` calls (via a new `read_canonical_side` helper) and
+nowhere near `compare_transactions`; catches `Failure` (the grammar-violation
+class `Canonical.read` raises) and `Sys_error` (an unopenable/unreadable
+file); prints one line to stderr naming the side (`"ours"`/`"theirs"`) and
+the path, no `Fatal error:` prefix; `usage()` and the header comment updated
+to document `0`/`1`/`2`/`3`. `--self-test`'s aggregate exit is unchanged in
+shape (`0` on all three assertions passing, `1` otherwise) and never returns
+`3` itself.
+
+**Local build**, per the packet's instruction — a scratch dir outside the
+checkout, not `_build`:
+
+```
+$ mkdir -p /tmp/claude-0/.../scratchpad/wo0049_build
+$ cp test/cosim/canonical.mli test/cosim/canonical.ml test/cosim/compare.ml /tmp/claude-0/.../scratchpad/wo0049_build/
+$ cd /tmp/claude-0/.../scratchpad/wo0049_build
+$ ocamlc -version
+4.14.1
+$ ocamlc -c canonical.mli && ocamlc -c canonical.ml && ocamlc -c compare.ml && ocamlc -o compare canonical.cmo compare.cmo
+$ echo BUILD_OK
+BUILD_OK
+```
+
+**`compare --self-test`, run locally against that build — verbatim, stdout
+and stderr captured separately so the exit-3 diagnostic's own line is not
+lost inside stdout's buffering:**
+
+stdout:
+```
+compare --self-test: known-good pair (identical canonical files)
+frames compared: 1
+frames matching: 1
+divergences: none
+  PASS: identical canonical files compare clean (exit 0)
+compare --self-test: perturbed pair (exactly one octet changed, real files, real production path)
+frames compared: 1
+frames matching: 0
+divergences: 1
+  DEFECT: frame 0 word 1: octets mismatch (ours=08 09 0a 0b, theirs=09 09 0a 0b)
+  PASS: a one-octet perturbation is reported and exits nonzero (exit 1)
+compare --self-test: malformed canonical file (16-hex-digit octet token, the exact defect shape of run 30825741565)
+  PASS: a malformed canonical file reports "could not read" (exit 3), not a divergence (exit 3)
+compare --self-test: OK
+```
+stderr:
+```
+compare: could not read theirs canonical file /tmp/cosim_compare_selftest_malformede7169e.canon: Canonical.read: line 2: an octet must be exactly 2 hex digits (line was "W 0f 1 0 0000000000000002")
+```
+`$ echo $?` → `0` (the aggregate exit — all three PASS, and it is not `3`
+itself, per §5.5).
+
+(A merged `2>&1` run shows the stderr line printed after `compare --self-test:
+OK` rather than interleaved where the assertion fires — that is OCaml's
+stdout/stderr buffer-flush ordering at process exit, not a sequencing defect;
+the separated capture above and the `noverdict_exit = 3` check inside
+`self_test` itself are what actually prove the diagnostic fired at the right
+call, not the interleaving.)
+
+**Additional exit-code checks run locally, beyond the required self-test**,
+to convince myself the new path composes correctly with the existing ones
+before calling it done:
+
+```
+$ ./compare                      # no args
+... usage text, now naming exit 3 ...
+EXIT: 2
+$ ./compare bad_ours.canon good_theirs.canon   # OURS side malformed
+compare: could not read ours canonical file bad_ours.canon: Canonical.read: line 2: an octet must be exactly 2 hex digits (line was "W 0f 1 0 0000000000000002")
+EXIT: 3
+$ ./compare /no/such/path.canon good_theirs.canon   # Sys_error path
+compare: could not read ours canonical file /no/such/path.canon: /no/such/path.canon: No such file or directory
+EXIT: 3
+$ ./compare good2.canon good2.canon   # well-formed identical pair, real two-arg path
+frames compared: 1
+frames matching: 1
+divergences: none
+EXIT: 0
+```
+These confirm side-naming works for the `ours` side too (the self-test's
+built-in third assertion only exercises a malformed `theirs`), that the
+`Sys_error` branch (not just `Failure`) fires exit 3 and is named correctly,
+and that a genuinely well-formed pair is untouched by any of this and still
+exits 0.
+
+---
+
+#### 4. `dune runtest` / main suite — unchanged, and what I can and cannot say locally
+
+- `test/cosim/dune` is still `(executables (names stimulus_gen ours_run
+  compare) ...)` — confirmed by re-reading the file after my edits; no
+  `(rule (alias runtest) ...)` and no `(inline_tests)` stanza, so this
+  directory remains structurally unreachable from `dune runtest`, exactly as
+  `WO-0046` §2.2 and `RV-0046-VERDICT` §2 state. `grep -rn 'let%expect_test'
+  test/cosim/` returns nothing, before or after this packet's edits — zero
+  `%expect_test` units live here to add or remove.
+- **The unit count I actually observed**, not a repeated figure: `bash
+  tools/dv_checks.sh`'s bench-inventory block (its own stated purpose —
+  "Quote these figures with this command as their provenance, or measure your
+  own") reports **100** `let%expect_test` occurrences repository-wide at this
+  SHA, of which 20 are `test/xgmii_rx_64/`'s own count. This is a static
+  `grep -c` count of source occurrences, not an executed-test confirmation —
+  I could not run `dune runtest` itself (no Hardcaml toolchain in this
+  container, same absence every prior tb_writer entry in this journal
+  records) so I cannot independently confirm all 100 pass; I can and do
+  confirm the count did not change as a result of this packet's two-file diff
+  (`test/cosim/` contributes 0 to it, unchanged).
+- `bash tools/precompile_check.sh`: `ALL LANES PASSED` — `test/cosim` reported
+  `EXCLUDED cosim — executable stanza; this harness compiles libraries only`,
+  unaffected by this packet's edits; the 43-library LANE 1/2 count this
+  harness independently checks is unchanged.
+- `bash tools/dv_checks.sh`: `check_records_vs_appendix.sh` 23/23 PASS;
+  `check_emitted_verilog.sh` PASS with the same pre-existing PENDING rows
+  (unbuilt modules, unrelated to this packet); `check_rfc1071_anchor.sh`
+  OBLIGATION OPEN on blocked network egress (pre-existing, on record since
+  `J-dv_lead-0017`/`0018`, unrelated to M03 or this packet).
+- `git status --porcelain` / `git diff --stat`: exactly two files touched —
+  `test/cosim/compare.ml`, `test/cosim/tb_xgmii_rx_64.v` — matching this
+  packet's deliverable list exactly.
+
+---
+
+#### 5. Anything §4 turned up that §3 did not authorise
+
+Nothing. The sweep (table above) found exactly one nonconformance — the line
+§3 already named and this packet already fixes. No other directive in the
+file needs a ruling.
+
+---
+
+#### Files touched this spawn
+
+- `test/cosim/tb_xgmii_rx_64.v` (§3's fix)
+- `test/cosim/compare.ml` (§5's exit code + self-test assertion)
+- This Return log entry
+- `agents/journals/workers/claude_tb_writer_agent.md` (`J-tb_writer-0012`)
+
+No RTL was read. No path under `libs/**`, `top/**`, `bin/**`, `rtl_snapshots/**`
+was opened. `tools/**`, `canonical.ml`, `canonical.mli`, `ours_run.ml`,
+`stimulus_gen.ml` and the vendored reference were not touched, per §6.
