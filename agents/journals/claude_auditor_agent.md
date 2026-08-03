@@ -1643,3 +1643,242 @@ the packet's own §5.
 - docs/reports/audit/WO-0045-mutations/E-c4.diff
 - docs/reports/audit/WO-0045-mutations/E-c5.diff
 - docs/reports/audit/WO-0045-mutations/README.md
+
+## [J-auditor-0008] 2026-08-03T16:18:13Z | task:WO-0050 | Family-F campaign seeded: eight runt-path mutations authored blind against 616686f, with F-c6's underflow question answered both ways and F-c8's epoch-A half left undone rather than substituted
+
+### Trigger
+Orchestrator spawn on WO-0050
+(`agents/handoffs/WO-0050_family-f-mutation-campaign.md`, read at `6f385d9`,
+blob `aea384a32a32abf96e5cfe0b54576c146cc21064`) — dv_lead's auditor-facing
+brief, the fifth seeding work order and the third under an allowlist regime.
+Same chartered duty and same no-stake standing as WO-0039, WO-0041, WO-0042 and
+WO-0045: I authored neither M03's RTL nor any part of its bench, and the subject
+under test is **not M03** but whether family F of `test/xgmii_rx_64/**` and row
+M03-E5 have teeth against the eight runt-path defect classes §2 names. Chartered
+work under charter §3's systematic-mutation clause, at the PROTOCOL §10
+sequencing point. Seeding only: I ran no diff and I have seen no result.
+
+### Inputs
+The committed long form, with extents, is §1 of
+`docs/reports/audit/WO-0050-mutations/README.md`; this is the same list.
+
+**The read rule is WO-0045's allowlist, standing and now six items.** WO-0050 §1
+permits this packet, `docs/specs/**`, `docs/adr/**`, `libs/**`,
+`docs/reports/audit/**`, and — item 6, promoted from the WO-0045 addendum —
+root-level build configuration. Everything else is out of bounds by
+construction, `test/**` and `agents/**` explicitly.
+
+Read in full: `agents/handoffs/WO-0050_family-f-mutation-campaign.md` at
+`6f385d9`; `libs/hardcaml_ethernet/src/xgmii_rx_64.ml` at `616686f` (772 lines,
+blob `81cd9ed7fc64e6265c53117f251ef948f24e3b00`, sha256 `3d87515a…`, extracted
+with `git show` / `git archive` into a private scratch subdirectory — the
+working tree's copy was never opened and never modified); `xgmii_rx_64.mli` (45
+lines); `libs/hardcaml_ethernet/src/dune`; SPEC-M03 §9 at `616686f` (lines
+711–864).
+
+Partial: `docs/specs/modules/xgmii_rx_64.md` §6.1, §6.2 and the head of §6.3
+(256–535) and a grep over §10's REQ rows; `docs/specs/requirements.md` §0.3,
+§0.6, §0.7 and the REQ-008, REQ-011, REQ-103, REQ-104, REQ-105, REQ-107,
+REQ-108 and REQ-901 rows. `dune-project` and `.ocamlformat` at `616686f` under
+item 6. My own prior artifacts under `docs/reports/audit/WO-0045-mutations/`
+for the diff conventions.
+
+**Deliberate abstention inside the allowlist**: `docs/adr/**` was permitted and
+**not opened**, for the second campaign running — ADR-0006, ADR-0007, ADR-0010,
+ADR-0013 and ADR-0014 are quoted at the points that matter inside SPEC-M03 and
+inside the module's own comments, and no family-F intent turned on a decision
+record I had not already got there.
+
+**Two reads outside the allowlist, both directed and both disclosed**:
+`agents/charters/auditor.md` in full, and the tail of this journal (final 120
+lines, a header grep, and lines 1354–1400 — parts of `J-auditor-0007` only),
+both ordered by my spawn message and my charter's mandatory first actions,
+both performed **before** the packet was opened. `agents/PROTOCOL.md` was not
+read, the same abstention as WO-0045. No other agent's journal, no other
+packet, no verdict.
+
+Git metadata only, no content: `rev-parse` on the base blob at `616686f` and
+`bc565a6` (equal — the file has not moved across five campaigns), `hash-object`
+on the packet at `6f385d9` against the copy I read (equal), `rev-parse HEAD`,
+`git status --porcelain`, and a top-level `git ls-tree`. **The last two leaked
+path names and are disclosed rather than smoothed**: `status` printed four
+modified paths, two under `agents/` and two under `test/cosim/`, none of which I
+opened; `ls-tree` printed the repository's top-level entry names, which is how I
+identified item 6's build-config siblings. **The sealed predictions file was
+never opened, listed, hashed, diffed, grepped or shown at any revision**, and no
+`git log` was ever run unscoped.
+
+### Reasoning
+Eight intents, eight sites, and the work was mostly in finding the site at which
+each intent is one edit and no second rule breaks on the way.
+
+1. **Read the design before the intents could be sited.** Three signals decided
+   most of it, and each was checked by census rather than assumed: `sel_terminate`
+   has exactly one consumer in the module (`strip`, line 696), `a_close_runt` has
+   exactly one (the closure record's `~runt` field), and the `pc >: strip` guard
+   is — by the module's own comment — the thing that stops a word made only of FCS
+   octets from going out. Those three facts are why **F-c1**, **F-c2/F-c5** and
+   **F-c3/F-c6** are each a single-line edit with a bounded blast radius.
+2. **F-c1 needed a qualifier the record does not carry, and I found the site
+   where it does.** Gating `strip` on the runt bit alone would have emitted a word
+   for a sub-five frame — F-c3's defect, seeded twice, confounding the campaign.
+   The record's terminate flag is the site where the qualifier is expressible in
+   one term because that flag's only consumer *is* the FCS removal.
+3. **F-c3 and F-c6 share a site and are separated by one edit — the clamp.** The
+   packet's own contrast ("allowed to underflow *rather than being clamped at
+   zero*") is what told me they should be, and I chose F-c3's fuller class
+   coverage (1 to 4 octets, `tkeep` = 0) over the one-character `>=:` variant that
+   reaches only the 4-octet member. Both readings are recorded in README §6.2.
+4. **F-c4's pick was made on design grounds and stated**: `error_bad_fcs` is
+   suppressed, `error_runt` survives, because the FCS field is already a
+   conjunction and the record lists it first. The alternative was equally minimal
+   and was not seeded.
+5. **F-c6 was a question, and I answered both readings of it** rather than the
+   convenient one. The delivered-octet count can underflow and that is seeded;
+   the received counter **cannot**, because nothing in this design subtracts from
+   it. Saying so is the better answer, per the packet's own instruction.
+6. **F-c8 collided with the spec and I preserved the spec.** The no-output-word
+   pin has two implementations here; the in-word one is two fixed register stages
+   and I removed one, whole. The epoch-A one shares `consume` with the `tlast`
+   pin of frames that *do* produce an output word, so displacing it would have
+   fired the strobe before the `tlast` of every frame of length 5, 6 or 7 modulo
+   8 and taken `tuser`[0] and `strip` with it — a second broken rule on the way
+   to the first. Named, argued, left undone.
+7. **Verified before delivering, with negative controls at the two checks that
+   could be blind**: anchor-uniqueness assertions in the generator, `git apply
+   --check` plus real application and byte-comparison, single-file and index-line
+   pinning, minimality counts, a comment-stripped code-delta inspection of every
+   mutant, a parse check with five deliberately broken variants, a binding census
+   for orphans, width and whitespace, marker presence.
+8. **Revised no diff after any result**, there being none (bar 8); made no
+   compile-only repair, because no diff has been compiled — see Evidence.
+9. Wrote nothing outside `docs/reports/audit/WO-0050-mutations/` and this journal
+   append. Ran no `git commit` and no `git push`.
+
+**Sampling frame.** The frame was fixed by the packet: eight intents, one module,
+one file. I skipped nothing that was in it. Inside the allowlist I skipped
+`docs/adr/**` deliberately (above) and read only the spec sections the packet's
+own spec basis names, plus §9 in full because five of the eight intents turn on
+it.
+
+### Evidence
+Base, re-derived rather than assumed:
+`git rev-parse 616686f:libs/hardcaml_ethernet/src/xgmii_rx_64.ml` →
+`81cd9ed7fc64e6265c53117f251ef948f24e3b00`; the same command at `bc565a6`
+returns the same blob, so the file is byte-identical across the family-E and
+family-F campaigns. `sha256sum` of the extraction →
+`3d87515a843d98d7d5bd6692a9d19cdbe2b0dee4e430c88f871a2d4887f5be92`, 772 lines.
+Packet identity: `git hash-object` of the copy I read equals
+`git rev-parse 6f385d9:agents/handoffs/WO-0050_family-f-mutation-campaign.md` =
+`aea384a32a32abf96e5cfe0b54576c146cc21064`.
+
+Tree-copy guard (bar 10): I did not copy-and-filter. `git archive 616686f libs/`
+names the one allowlisted path set, so no barred path was ever materialised;
+the scratch tree holds `libs/**`, two extracted spec files, and my own generated
+artifacts, and nothing else.
+
+Generation: `python3 gen.py` →
+`f-c1: base=81cd9ed7fc64 new=a03ca16cb3bd hunks=1 -1/+6`,
+`f-c2: … new=2300f74b57a0 … -1/+6`, `f-c3: … new=7e6ab6d09793 … -2/+7`,
+`f-c4: … new=053814486172 … -1/+7`, `f-c5: … new=9f317f2d0570 … -1/+6`,
+`f-c6: … new=3da9c0b3dce9 … -1/+7`, `f-c7: … new=0f0d643764d6 … -1/+9`,
+`f-c8: … new=0e2f44d0503d … -4/+9`. The generator asserts each anchor occurs
+**exactly once** and aborts otherwise, so a silent no-op edit is impossible.
+
+`git apply --check --verbose` from a pristine `616686f` extraction: all eight
+print `Checking patch libs/hardcaml_ethernet/src/xgmii_rx_64.ml...` and nothing
+else. Each patch was then applied for real to a **fresh** pristine extraction
+and `cmp`-ed against the generated file: **byte-identical in all eight cases**.
+Each diff has exactly one `diff --git` header and one
+`index 81cd9ed7fc64…..<post> 100644` line.
+
+Minimality, with comments stripped: **six of the eight are one line replaced by
+one line** (f-c1, f-c2, f-c4, f-c5, f-c6, and f-c7's operand rewrite); f-c3 is
+two such lines; f-c8 deletes the inner `reg`/`spec` pair and re-indents the two
+lines beneath. Added lines that are marker comment: 5, 5, 5, 6, 5, 6, 7, 7. The
+comment-stripped delta of every mutant was computed and inspected and is exactly
+the intended edit.
+
+Parse check, **with negative controls**: `ocamlc -stop-after parsing -c` (OCaml
+4.14.1) accepts the pristine file and all eight mutants. Five deliberately
+broken variants — a dropped paren in f-c1's `~:` argument, a dropped `in` in
+f-c5's binding, a dropped paren in f-c7's mask, a stray `;;` after f-c8's `in`,
+a dropped paren in f-c3's `min2` application — were all **rejected**
+(`This '(' might be unmatched` ×3, `Syntax error` ×2), so the check has teeth.
+
+Binding census over comment-stripped text: 135 base bindings, none unused; every
+mutant adds none, removes none and leaves **none unreferenced** — the check that
+matters for f-c3 and f-c6, which delete a use of `strip` and of `pc`, both of
+which remain referenced at 729/731/734 and 734.
+
+Width and whitespace: every mutant's longest line is 97, which is the **base's
+own maximum** from two pre-existing lines (622, 696) that no diff touches; the
+longest line any diff adds is 87. Zero trailing-whitespace lines, zero tabs,
+zero CR throughout. Exactly one `MUTATION` marker per mutant. The eight diffs
+embedded in README §3 were spliced by script and verified byte-identical to the
+`.diff` files.
+
+**Negative evidence, stated as a result rather than omitted.** No mutant has been
+type-checked and none could be: this container's opam switch (`fpga`,
+`ocaml-system.4.14.1`) has **no Hardcaml packages**, and there is no `dune` and
+no `ocamlformat` binary at all. Compile-confidence is therefore HIGH on syntax,
+scope and unused bindings (machine-checked above) and ASSERTED on types and
+widths, with the per-mutation argument written out in README §5.1. Formatting is
+**unverified** — and I record the sharper fact that `.ocamlformat` selects a
+90-column margin while **the base file already carries two 97-column code
+lines**, so I could not establish that `dune build @fmt` is clean at `616686f`
+in the first place.
+
+### Outcome
+Eight diffs and a README committed under
+`docs/reports/audit/WO-0050-mutations/`, seeding the family-F campaign against
+`616686f`. All eleven of the packet's rules — six allowlist items, five process
+bars — were honoured, with five things disclosed rather than smoothed: the two
+directed `agents/**` pre-reads, the two path-name leaks from `git status` and
+the top-level `ls-tree`, the reading of `.ocamlformat` as item-6 build
+configuration, the absent toolchain, and the base's own unclean margin. Six of
+the eight intents were seeded whole and minimally. **F-c3 is seeded for received
+lengths 1 to 4 rather than 0 to 4**, the zero-octet frame being unreachable from
+that site, and **F-c8 is seeded for the in-word half of §9's no-output-word pin
+only**, the epoch-A half being named, argued and left undone rather than
+substituted for. The packet's two direct questions are answered in the report:
+**F-c4 suppresses `error_bad_fcs`**, and **a faithful underflow is expressible —
+on the FCS removal's delivered-octet count, and not on the received counter,
+which no path in this design subtracts from**. No diff was run, no result was
+seen, no revision was made, and no prediction about which bench unit should
+redden appears anywhere in this work order or in my head. `SO-M03` does not
+issue on family F regardless, per the packet's own §5.
+
+### Open-questions
+1. **F-c8's uncovered half.** Does dv_lead want a ninth diff attacking the
+   record-ageing half of the no-output-word pin? It cannot be done without
+   disturbing frames that *do* produce an output word — README §3.8 carries the
+   argument — so it needs either a wider diff than a mutation should be or a
+   redrawn intent. Routed through the orchestrator; I neither substituted nor
+   widened.
+2. **F-c3 and F-c6 share a site**, separated by one edit (the clamp). If the
+   intended F-c3 was the one-character `>:` → `>=:` variant instead, it reaches
+   only the 4-octet member of the class; I judged that less faithful and state
+   the choice so it can be reversed cheaply.
+3. **Is `dune build @fmt` clean at `616686f` at all?** The base carries two
+   97-column code lines against a 90-column margin. If it is not clean, a `@fmt`
+   failure under any mutation is pre-existing rather than mine, and bar 8's
+   compile-only repair clause should not be spent on it.
+4. **Compile-confidence is argued, not demonstrated**, for the third campaign
+   running, because the toolchain is absent from this container. If any diff
+   fails to build, bar 8 applies: I will change nothing else and will disclose
+   the repair.
+5. **`.ocamlformat` under item 6.** I read it as root-level build configuration,
+   since bar 8 puts `dune build @fmt` inside "Build state". Recorded so the
+   reading can be overruled rather than discovered.
+
+### Files-in-this-commit
+- docs/reports/audit/WO-0050-mutations/f-c1.diff
+- docs/reports/audit/WO-0050-mutations/f-c2.diff
+- docs/reports/audit/WO-0050-mutations/f-c3.diff
+- docs/reports/audit/WO-0050-mutations/f-c4.diff
+- docs/reports/audit/WO-0050-mutations/f-c5.diff
+- docs/reports/audit/WO-0050-mutations/f-c6.diff
+- docs/reports/audit/WO-0050-mutations/f-c7.diff
+- docs/reports/audit/WO-0050-mutations/f-c8.diff
+- docs/reports/audit/WO-0050-mutations/README.md
