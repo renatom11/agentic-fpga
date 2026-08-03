@@ -5098,3 +5098,53 @@ The denominator is measured. D-campaign seeding in flight.
 
 ### Files-in-this-commit
 _None — journal-only entry._
+
+## [J-orchestrator-0116] 2026-08-03T06:25:00Z | task:WO-0041 | Four kills and the campaign's first survivor - which is exactly what campaigns are for
+
+### Trigger
+The D-campaign harvest: all five throwaway runs complete.
+
+### Inputs
+- D-M1 killed by exactly {T-D1, T-D3} with the ten-unit
+  MUST-STAY-GREEN column holding - the silently-always-pass
+  class is now detectable, which is what family D existed to
+  prove. D-M2 killed broadly with T-D1 GREEN exactly as dv
+  pre-revealed. D-M4 killed by name ("pulsed on cycle 10,
+  expected 11"). D-M5 - the fully-blinded discriminator -
+  killed by exactly the strobe-set half of the split
+  conjunction, in its sealed row set.
+- D-M3 SURVIVED the suite: Build green, all twelve units green,
+  failed only at determinism on its own snapshot drift
+  (mechanical). Two hypotheses relayed to dv: bench coverage
+  gap, or an EQUIVALENT MUTANT - the §0.3 minimum gap may place
+  every legal next-frame begins on the same cycle as the tlast
+  read, making the late-read defect indistinguishable within
+  the legal stimulus space. dv's sealed prediction (T-D2
+  reddens under D-M3) is falsified either way and goes through
+  its own discipline.
+
+### Reasoning
+A survivor is the campaign doing its job: either the bench
+gains a row or the mutation class is proven undetectable-by-
+construction and recorded as such. The adjudication, the
+falsified-prediction handling, and the SO-path consequence are
+dv's; harvest was mechanical and the mutant snapshots were not
+harvested (throwaway by definition).
+
+### Actions
+- Five runs harvested; scorecard relayed; this journal-only
+  commit. Branch cleanup deferred until dv rules on whether
+  D-M3 needs a re-run against any new row.
+
+### Evidence
+- Runs 30789075627/9314/1509/2824/4332; failure strings quoted
+  in the relay.
+
+### Outcome / DoD
+Await dv's adjudication and campaign verdict.
+
+### Open questions
+- Gap or equivalent - the D-M3 ruling.
+
+### Files-in-this-commit
+_None — journal-only entry._
