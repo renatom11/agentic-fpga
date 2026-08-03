@@ -818,3 +818,263 @@ is my own follow-up duty (charter §9).
 - docs/reports/audit/WO-0039-mutations/M3.diff
 - docs/reports/audit/WO-0039-mutations/M4.diff
 - docs/reports/audit/WO-0039-mutations/M5.diff
+
+## [J-auditor-0005] 2026-08-03T06:02:03Z | task:WO-0041 | Family-D seeding: five FCS-path mutations authored blind against 447d11c, with the compile-safety form disclosed and D-M3's floor decided against the literal reading
+
+### Trigger
+Orchestrator spawn on WO-0041 (`agents/handoffs/WO-0041_family-d-mutation-campaign.md`,
+committed at 06007a3) — dv_lead's packet to me, relayed §§1-6 only, its sealed
+companion withheld. Same standing as WO-0039: I am the campaign's no-stake third
+party because I authored neither M03's RTL nor any part of its bench, and the
+subject under test is **not M03** but family D of `test/xgmii_rx_64/**` and
+whether it has teeth. Chartered work (charter §3, systematic mutation testing) at
+the PROTOCOL §10 sequencing point. My duty is seeding only: I do not run the
+diffs and I do not see their results (packet §3, bar 10 made structural).
+
+### Inputs
+This section is the campaign's enforcement mechanism and not a formality —
+packet §0 says the blinding has no script behind it and that my disclosure is the
+whole of it. The committed long form, with extents, is §1.5 of
+`docs/reports/audit/WO-0041-mutations/README.md`; this is the same list.
+
+Read in full: `agents/charters/auditor.md`; `agents/PROTOCOL.md`;
+`agents/handoffs/WO-0041_family-d-mutation-campaign.md` (at 06007a3);
+`docs/specs/modules/xgmii_rx_64.md` (SPEC-M03, all 949 lines, in three reads);
+`libs/hardcaml_ethernet/src/xgmii_rx_64.ml` at 447d11c (blob
+81cd9ed7fc64e6265c53117f251ef948f24e3b00, sha256
+3d87515a843d98d7d5bd6692a9d19cdbe2b0dee4e430c88f871a2d4887f5be92, extracted with
+`git show` into the scratchpad — the working tree's copy was never touched);
+`libs/hardcaml_ethernet/src/xgmii_rx_64.mli`;
+`libs/hardcaml_ethernet/src/dune`, `dune-project`, `.ocamlformat`;
+`docs/reports/audit/WO-0039-mutations/M3.diff` (my own prior artifact).
+Partial: `docs/adr/ADR-0005-build-environment.md` lines 1-60;
+`docs/reports/audit/WO-0039-mutations/README.md` lines 1-91 (my own committed
+report, read for the diff format and for the prior-exposure record below);
+`.github/workflows/build.yml` grep hits only, lines 28 and 41, from one grep for
+`fmt|dune build|runtest` establishing that no format check gates CI;
+`agents/journals/claude_auditor_agent.md` tail and entry-header grep, for the
+next id and the grammar — read only, never modified above EOF. Git metadata only
+(subjects, names, counts, hashes — no `git show` of any commit's content):
+`git log --oneline -12`; `git log --oneline --name-only -1 06007a3`; three
+path-scoped `git log --oneline` calls; `git show 447d11c --stat`;
+`git diff --stat 447d11c HEAD -- libs/`; `git diff --stat 6bd7e5a 447d11c --
+libs/`; `git rev-parse` and `sha256sum` on the base blob. Directory listings
+only: `libs/hardcaml_ethernet/src/`, `docs/reports/audit/` and its
+`WO-0039-mutations/`, `.github/workflows/`, the repository root, and the shared
+scratchpad.
+
+NOT read, and the list is the point. Packet §1's eight read bars, all honoured:
+nothing under `test/xgmii_rx_64/**`, in fact no file under `test/` at all, of any
+name, at any SHA; not `test/attack_plans/AP-xgmii_rx_64.md` nor anything else
+under `test/attack_plans/`; not `agents/handoffs/WO-0040_tb-m03-family-d-fcs.md`,
+so I have not seen the published D-M1..D-M4 row table that §0 warns me of and did
+not go looking for it; not `agents/handoffs/WO-0039_m03-mutation-campaign.md` in
+this session; neither sealed-predictions file, of which I know only that the
+WO-0041 one exists and its path, from a `--name-only` log that prints names and
+no content; not `agents/journals/claude_dv_lead_agent.md`, whole file, and I
+asked for no extraction because nothing here needed one; not
+`agents/journals/workers/claude_tb_writer_agent.md`. Beyond the bars I also
+stayed out of `crc32_eth.ml` (WO-0039 needed M02's value convention; no family-D
+intent touches how the CRC is computed, only what is done with its result), every
+`BUG-`/`SO-`/`RV-` packet, `tasks/BOARD.md`, and every other agent's journal.
+
+**Prior exposure, items 3-8, stated precisely because the packet asks.** I recall
+nothing: PROTOCOL §2 makes agents stateless between spawns and my context for
+this task begins with this brief, so "what I recall reading" is, exactly,
+nothing. What exists instead is the WO-0039 spawn's own committed disclosure,
+§1 of `docs/reports/audit/WO-0039-mutations/README.md` — a file with exactly one
+commit, 0556f23, therefore never amended with anything learned later. I read it
+in this session deliberately, so that this disclosure is checkable rather than
+remembered. It records: `test/**` not read, the attack plan not read, the
+WO-0039 sealed file not opened, dv_lead's journal deliberately not read, and a
+*complete* read list that contains neither the tb_writer journal nor any WO-0040
+artifact. Item 4 is the one real exposure and it is narrower than the brief
+allows for: that spawn read the WO-0039 packet **in full at 0d231ee**, and
+`RV-0039-VERDICT` was appended to that file at c3a3ffa with its addendum at
+fe1a7f6, both **after** 0556f23 — so the text read was the brief and the verdict
+was not yet in the file to read. Items 3 and 6 could not have been read because
+their files did not exist; and every commit in `git log --oneline -12` whose
+subject announces family D (0b90227, 7651ddd, cf77631) is newer than 0556f23, so
+no prior spawn of mine could have seen the bench under test even in principle.
+
+**Ambient exposure I disclose because a bar list is a floor**, all three recorded
+in README §1.4 for dv_lead to judge rather than me: commit *subject lines* from
+`git log` that summarise WO-0039's and WO-0040's outcomes (c3a3ffa, 7fac574,
+cf77631, 06007a3) reached me and name no bench unit, no expected value and no
+D-M-to-row mapping; one of my three path-scoped logs was on a barred path (the
+WO-0039 packet, to date the verdict's arrival for the table above) and printed
+subjects and SHAs, not one byte of the file; and the scratchpad this environment
+gives me is shared, its listing showing other agents' copies of barred artifacts
+(`HEAD_test_m03_a/b/c.ml`, `HEAD_test_m03_structural.ml`, `rv40.md`,
+`wo40_final.md`, `wo40_inter.md`), every one of which I left unopened while
+working in freshly named files of my own.
+
+### Reasoning
+**Sampling frame.** The frame is not mine to choose this time and that is worth
+recording, because charter §8 asks a mutation entry why *these* defect classes.
+Packet §2 fixes all five intents behaviourally; my discretion is confined to
+**site**, **form** and the readings §5 discloses. So the classes I would
+otherwise have argued for or rejected are not the question — the question is
+whether each intent has a faithful minimal realisation, and the answer for all
+five is yes, at one site each.
+
+**Site selection.** The FCS path in this module has exactly three joints, and the
+five intents partition across them cleanly, which is itself evidence the packet
+was written against the design rather than at it. Joint 1 is `bad_fcs` (base line
+471), where the verdict is *formed*: D-M1 and D-M2 force it, D-M3 empties it.
+Joint 2 is the closure record's bit 5 and its consumption `sel_bad_fcs` (513,
+533), where the verdict *travels*: D-M3's second half rewrites what arrives
+there. Joint 3 is the `error_bad_fcs` output field (761), where the verdict is
+*reported*: D-M4 moves its cycle, D-M5 severs it. Nothing else in the module
+reads or writes an FCS verdict, which is what lets every diff be one or two code
+lines and is why I could satisfy the packet's tuser-is-a-disjunction precision by
+construction: `abort`'s other four disjuncts are textually untouched in all five,
+and no diff forces `tuser`[0] itself to a constant.
+
+**The form of the two forced constants, and why it is not the obvious one.**
+D-M1 is written `gnd &: has_fcs &: (crc_final <>: ...)` and D-M2
+`has_fcs &: (vdd |: (crc_final <>: ...))`, rather than the bare `gnd` and
+`has_fcs`. The circuits are identical; the reason is the build. This repository
+has no `env` stanza, so dune's dev-profile defaults apply and warnings 26 and 32
+are errors, and `xgmii_rx_64.mli` exports only `I`, `O`, `create` and
+`hierarchical`, so `fcs_residue` is orphaned the instant its last use goes and
+the library stops compiling. The same reasoning keeps D-M3's `let bad_fcs =
+has_fcs in` as an alias instead of deleting the binding. I judged that authoring
+a mutation that cannot build — and then spending bar 10's compile-only repair on
+it — is worse than three inert tokens a reader might blink at, so I wrote them in
+and disclosed them (README §5.1). This is the one place where compile-safety, not
+fidelity, chose the text.
+
+**D-M3's floor: where I read the intent rather than transcribing it.** "Form the
+verdict by comparing the CRC register at the `tlast` cycle" taken with no
+qualification also drops `has_fcs`, and then a **lone** sub-5-octet frame reports
+`error_bad_fcs`, breaking §9's ninth ruling. I did not do that, because the
+intent's very next sentence — "on a lone frame this is indistinguishable from
+correct" — is false under that reading, and a mutation that contradicts its own
+stated observable is broken nearby rather than faithful. So the comparison's
+*timing* moved and the floor stayed. I record the alternative and offer a sixth
+diff on request rather than guess, and I record it **before any run**, which is
+the only time such a note is worth anything.
+
+**D-M4: the body over the title.** "One cycle early" is the title; "pulses on the
+cycle carrying the frame's terminate character" is the body. §6.1's own drain
+derivation makes that gap 1 or 2 cycles at a lane-0 start and 0 or 1 at a lane-4
+start, so the two cannot both be the rule. I implemented the body, which means
+the move is sometimes two cycles and is **zero** for a lane-4-started frame whose
+terminate character lies in lane 0 — a class on which this mutation is invisible
+to any bench. That is inherent to the defect as described, not a weakness of the
+diff, and it is disclosed now so it cannot be read as an excuse later.
+
+**D-M1's quietness, left alone.** The packet instructs me to expect D-M1 to look
+too quiet and not to improve it, and I did not: the only frames whose behaviour
+changes are terminate-closed frames of at least 5 received octets whose FCS is
+wrong. Its whole point is agreeing with what the suite already asserts, and a
+version that reddened more would be a different mutation.
+
+**Why D-M1 and D-M5 are worth having as a pair**, which is the one design remark
+I can make without knowing a row: D-M1 removes the mark *and* the report by
+killing the verdict; D-M5 keeps the mark and removes only the report. A unit
+asserting `tuser`[0] on the `tlast` word and a unit asserting one `error_bad_fcs`
+pulse fail in different combinations under the two, and a bench that checks only
+one of the two cannot tell them apart. Whether family D separates them is exactly
+what the campaign is for and exactly what I must not look up.
+
+**What I did not attempt.** Nothing was unachievable; no intent was substituted,
+weakened or widened beyond the two readings above. I ran no test, elaborated no
+circuit, and authored all five before any was run — bars 9 and 10 hold with the
+compile-only exception unused.
+
+### Actions
+Authored five single-file unified diffs against
+`libs/hardcaml_ethernet/src/xgmii_rx_64.ml` at 447d11c, one per intent, each hunk
+carrying a `D-MN MUTATION (WO-0041)` marker for greppability, and wrote them plus
+a README to `docs/reports/audit/WO-0041-mutations/`. The diffs were generated
+mechanically — the mutated files were produced by an anchored string-replacement
+script that fails hard on a missing or duplicated anchor, and the patches by `git
+diff` in a scratch repository — so no context line is transcribed by hand. Staged
+nothing outside `docs/reports/audit/**` and this journal (charter §5, PROTOCOL
+§6); ran no git command that writes; never modified the working tree's `libs/`.
+
+### Evidence
+All checks below run in the scratchpad against `git show
+447d11c:libs/hardcaml_ethernet/src/xgmii_rx_64.ml`, whose sha256 is
+3d87515a843d98d7d5bd6692a9d19cdbe2b0dee4e430c88f871a2d4887f5be92; the base blob
+is 81cd9ed7fc64e6265c53117f251ef948f24e3b00 and each diff's own `index 81cd9ed..`
+line names it, so `git apply --3way` verifies the base and not merely the
+context. `git diff --stat 6bd7e5a 447d11c -- libs/` is **empty**, so this file is
+byte-identical to WO-0039's base.
+
+1. `git apply --check` from a pristine scratch copy: **5/5 exit 0**, run twice —
+   once on the working copies and once on the delivered files under
+   `docs/reports/audit/WO-0041-mutations/`. `grep -c '^diff --git'` is 1 for each,
+   so every diff touches exactly one file and it is the RTL file the packet
+   names.
+2. Apply / reverse-apply round trip for all five; the scratch base file's sha256
+   is unchanged afterwards, so each diff is exactly invertible against this base
+   — which is what makes the orchestrator's apply-transiently-revert-fully
+   procedure safe (PROTOCOL §10).
+3. Parse-only syntax check with the system compiler (ocamlc 4.14.1, no Hardcaml
+   in this container): `ocamlc -stop-after parsing -c` returns **rc=0** for the
+   base and all five mutated files, and **rc=2** for a deliberately broken
+   negative control (`let bad_fcs = = has_fcs ...`) included because a check that
+   cannot fail is not a check. This lexes and parses only — no typecheck, no ppx,
+   no elaboration. **It does not establish that any mutant compiles**, and per
+   ADR-0005 nothing local could: CI is the authoritative build environment.
+4. Orphaned-binding count, comments stripped, definition + uses per identifier:
+   `fcs_residue` 2/2/2/2/2, `has_fcs` 2, `crc_final` 3 (2 in D-M3), `bad_fcs` 2
+   (3 in D-M4), `sel_bad_fcs` 3 (2 in D-M4 and D-M5, its `abort` use retained),
+   `strobe` 6 (5 in D-M4 and D-M5). No entry anywhere is 1, so no mutant orphans
+   a binding — the one compile risk I can actually rule out from here.
+5. Minimality: code lines changed 1 / 1 / 2 / 1 / 1 for D-M1..D-M5, in 1 / 1 / 2
+   / 2 / 2 hunks, with 7 / 6 / 11 / 8 / 6 marker-comment lines added. The widest
+   added line is 93 bytes against the file's own existing maximum of 97.
+6. The working tree's `libs/` was never modified: `git status --porcelain` in the
+   repository reports only the new untracked `docs/reports/audit/WO-0041-mutations/`.
+
+The full command outputs are quoted in §4 of the committed README, which is the
+falsifiable form of every claim above.
+
+### Outcome
+DoD met against packet §3: five diffs applying cleanly to 447d11c, one file and
+one function-site each, a fidelity argument per mutation, no compile-only repair
+made or needed, a scope statement with an explicit line on every one of §1's ten
+bars, and the prior-exposure disclosure §1's closing paragraph requires. Handoff:
+`docs/reports/audit/WO-0041-mutations/` to the orchestrator, which applies each
+diff to a throwaway branch parented at 447d11c (packet §4) and relays results to
+dv_lead, not to me. `SO-M03` does not issue on family D until all five are
+dispositioned; a green run on any of the five is a campaign failure and dv_lead's
+finding to write, not mine.
+
+### Open-questions
+1. **D-M3's floor.** I kept §9 ruling 9's sub-5-octet gate because the intent's
+   own "indistinguishable on a lone frame" sentence is false without it. If
+   dv_lead meant the floorless variant, that is a **sixth** diff on request, not
+   a revision of D-M3: bar 10 lets me revise nothing after a run, and the request
+   is cheapest now, before the first one.
+2. **D-M4's invisible class.** A lane-4-started frame whose terminate character
+   is in lane 0 has its terminate cycle and its `tlast` cycle on the same cycle,
+   so D-M4 is unobservable on it. Inherent to the defect as described; recorded,
+   no action requested.
+3. **The ambient exposure of README §1.4** — `git log` subject lines summarising
+   WO-0039's and WO-0040's outcomes, one path-scoped log on a barred path
+   (subjects only), and a shared scratchpad whose listing shows other agents'
+   copies of barred artifacts, unopened. If dv_lead judges any of the three to
+   compromise the blind, voiding the affected mutations is its call and not mine.
+4. **A standing exposure this campaign has surfaced and the next one will
+   inherit**: the scratchpad is shared across agents, so barred artifacts are one
+   `cat` away from any blinded seeder, and nothing but the seeder's own restraint
+   and this paragraph stands between them. That is the honest-enforcement model
+   my charter §9 describes working as designed, but it is worth an orchestrator
+   decision whether blinded work should get a private scratch directory rather
+   than a disclosed one.
+5. Whether any of the five compiles is unknown to me and unknowable here
+   (ADR-0005). A build failure returns to me under bar 10 for a compile-only
+   repair; I will change nothing else if that happens, and I will disclose it.
+
+### Files-in-this-commit
+- docs/reports/audit/WO-0041-mutations/D-M1.diff
+- docs/reports/audit/WO-0041-mutations/D-M2.diff
+- docs/reports/audit/WO-0041-mutations/D-M3.diff
+- docs/reports/audit/WO-0041-mutations/D-M4.diff
+- docs/reports/audit/WO-0041-mutations/D-M5.diff
+- docs/reports/audit/WO-0041-mutations/README.md

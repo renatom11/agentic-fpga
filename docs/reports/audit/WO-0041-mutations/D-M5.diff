@@ -1,0 +1,26 @@
+diff --git a/libs/hardcaml_ethernet/src/xgmii_rx_64.ml b/libs/hardcaml_ethernet/src/xgmii_rx_64.ml
+index 81cd9ed..088140e 100644
+--- a/libs/hardcaml_ethernet/src/xgmii_rx_64.ml
++++ b/libs/hardcaml_ethernet/src/xgmii_rx_64.ml
+@@ -750,6 +750,12 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
+      one-term union and is written as one. *)
+   let strobe s = consume &: s &: ~:(i.clear) in
+   let q_strobe k = bit q2 k &: ~:(i.clear) in
++  (* D-M5 MUTATION (WO-0041): the REQ-104 verdict is computed and carried
++     exactly as it is today — [abort] still reads [sel_bad_fcs], so a
++     bad-FCS frame is still marked [tuser][0] = 1 on its `tlast` word — but
++     it is never reported: [error_bad_fcs] is driven low for every frame.
++     The other four strobes keep their own paths and [strobe] stays their
++     helper, so no strobe but this one changes. *)
+   { O.rx =
+       { Axi64.Source.tvalid
+       ; tdata = al_data_d
+@@ -758,7 +764,7 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
+       ; tlast = emit_tlast &: ~:(i.clear)
+       ; tuser = emit_tlast &: abort
+       }
+-  ; error_bad_fcs = strobe sel_bad_fcs
++  ; error_bad_fcs = gnd (* D-M5 MUTATION (WO-0041) *)
+   ; error_bad_frame = strobe sel_error |: q_strobe 0
+   ; error_runt = strobe sel_runt |: q_strobe 1
+   ; error_oversize = strobe sel_oversize

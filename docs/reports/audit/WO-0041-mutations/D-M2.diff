@@ -1,0 +1,19 @@
+diff --git a/libs/hardcaml_ethernet/src/xgmii_rx_64.ml b/libs/hardcaml_ethernet/src/xgmii_rx_64.ml
+index 81cd9ed..2a7f3ef 100644
+--- a/libs/hardcaml_ethernet/src/xgmii_rx_64.ml
++++ b/libs/hardcaml_ethernet/src/xgmii_rx_64.ml
+@@ -468,7 +468,13 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
+      something else, so a design that compares here reports "this frame's FCS
+      is wrong" as a function of octets §9 says nothing is removed from. *)
+   let has_fcs = count_next >=:. fcs_min_octets in
+-  let bad_fcs = has_fcs &: (crc_final <>: of_int ~width:32 fcs_residue) in
++  (* D-M2 MUTATION (WO-0041): REQ-104's residue comparison is forced to
++     "the received FCS does not match" — for every frame that has one. The
++     [vdd |:] disjunct is the whole of the mutation, and [has_fcs] is
++     deliberately left outside it: §9's ninth ruling still holds, so a frame
++     of fewer than five received octets has no FCS to check and still
++     reports nothing from this path. *)
++  let bad_fcs = has_fcs &: (vdd |: (crc_final <>: of_int ~width:32 fcs_residue)) in
+   (* One reload condition for both state registers, and it is [begins]: the
+      word that hands a new frame forward is the word before that frame's first
+      octet at both start lanes, whether the frame was admitted from [Idle] /
