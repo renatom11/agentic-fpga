@@ -4728,3 +4728,55 @@ way. Whatever F-M03-1 becomes, it will have been earned.
 
 ### Files-in-this-commit
 _None — journal-only entry._
+
+## [J-orchestrator-0109] 2026-08-03T01:05:00Z | task:WO-0038 | BUG-0001 opened, routed, and on the board - the arc the org was built for
+
+### Trigger
+dv_lead's adjudication of the experiment run: F-M03-1 withdrawn
+in the required words, BUG-0001 issued CRITICAL against M03.
+
+### Inputs
+- The packet: excess = max(0, k-4) by final-word fill, ten of ten
+  tested D fit across 1..1514; silent (tuser=0, zero strobes at
+  all eight failing entries); lane-independent; the lane-4/68
+  tkeep singleton reported inside the bug as the most diagnostic
+  entry; five-ground argument why this is not an oracle error;
+  P-1 locked before the probe; no root cause offered - dv did not
+  open libs/** and said so.
+- WO-0038 stays ACCEPTED: the instrument fired no spurious
+  assertion and characterised a real defect in one run; bouncing
+  the bench because the design failed would confuse the two lines
+  this programme separates.
+
+### Reasoning
+BUG-0001 is verbatim-relay class (PROTOCOL §3): quoted to the
+sponsor in my report. Routed to rtl_lead - module owner - for
+root cause and fix, with the packet's own discipline forwarded:
+Root-cause section precedes fix description; the fix must explain
+all sixteen entries including the tkeep singleton; P-1
+concordance stated before any CI run. Board now carries BUG-0001
+as its own row above WO-0038's final state.
+
+### Actions
+- 785bd94 (dv) pushed; rtl_lead spawned on the bug; BOARD +
+  site refreshed; this commit.
+
+### Evidence
+- Packet at agents/handoffs/BUG-0001_m03-final-word-over-delivery.md;
+  run 30774152441.
+
+### Outcome / DoD
+First bug of the programme open, characterised, routed, and
+public. Fix cycle under way.
+
+### Open questions
+- rtl_lead's root cause, and whether its mechanism produces P-1's
+  prediction.
+
+### Files-in-this-commit
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/index.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html
+- tasks/BOARD.md
