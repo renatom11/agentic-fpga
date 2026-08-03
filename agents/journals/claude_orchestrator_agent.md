@@ -5720,3 +5720,37 @@ None.
 - site/public/index.html
 - site/public/org-chart.html
 - site/public/spec-atlas.html
+
+## [J-orchestrator-0129] 2026-08-03T15:45:00Z | task:WO-0048 | C-7 ordinal retired - clerical transcription per the architect's WO-0048 report
+
+### Trigger
+The architect's WO-0048 return flagged, without editing it, that
+docs/gates/P1-spec-freeze-checklist.md:63 (ledger C-7) reads
+"Fifth REQ-901 divergence class" — wrong since (e)/(f) landed; a
+REQ-510 class would now be the seventh. PROTOCOL §7 makes the
+gates ledger clerical-transcription work in my lane.
+
+### Inputs
+The architect's exact suggested repair: drop the ordinal — "A
+further REQ-901 divergence class…" — same hazard class it retired
+at nic_top.md and traceability.md, same fix.
+
+### Reasoning
+Transcription of a named repair from the document owner; no
+normative content moves; the count hazard dies the same way it
+died at the other sites (enumerate or say nothing, never count).
+
+### Actions
+One word swapped at line 63; this commit; push.
+
+### Evidence
+grep "Fifth" docs/gates/ → no matches after the edit.
+
+### Outcome / DoD
+The ledger row no longer asserts a stale ordinal.
+
+### Open questions
+None.
+
+### Files-in-this-commit
+- docs/gates/P1-spec-freeze-checklist.md

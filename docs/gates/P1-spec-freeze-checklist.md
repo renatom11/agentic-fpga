@@ -60,7 +60,7 @@ by the orchestrator from the signing agent's journal entry, per PROTOCOL
 | C-4 | REQ-105/110 wording: `tuser`[0]-on-`tlast` cases with zero delivered octets | SPEC-M03 (batch B) |
 | C-5 | `error_underflow` window bound vacuous (editorial) | any |
 | C-6 | M10 pass criteria (parsed-fields module under the REQ-004 bench) | SPEC-M10 (batch D) |
-| C-7 | Fifth REQ-901 divergence class for REQ-510's reply drop | first co-sim run |
+| C-7 | A further REQ-901 divergence class for REQ-510's reply drop | first co-sim run |
 | C-8 | REQ-903 quantifies over the whole inventory with no types-only exclusion; its `.mli` half unaddressed by SPEC-M01 | batch-B countersign |
 | C-9 | §10's REQ-802/804 hooks name a compile check that cannot read a markdown table — dv-owned `tools/` record-vs-appendix scripts (WO-0009) | batch-B countersign |
 | C-10 | SPEC-M01 §6.1 drops REQ-013's "solely" | §11 reconciliation (WO-0008) |
