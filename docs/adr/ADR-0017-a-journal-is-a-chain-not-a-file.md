@@ -1,13 +1,24 @@
 # ADR-0017: a journal is a chain, not a file
 
-- **Status**: **PROPOSED** at `J-architect_docs_lead-0019`. **Not accepted.**
-  Two things are owed before acceptance: **dv_lead countersigns** — this amends
-  `R3` and `R5`, which are the rules that protect dv_lead's own record, and
-  dv_lead is the agent the first rotation falls on — and the **orchestrator
-  accepts**. Nothing here is in force until then. The PROTOCOL diffs in §8 are
-  **written, not applied**, and the script behaviour in §6 is a **specification,
-  not a change**: `scripts/**` is orchestrator-owned and implementation follows
-  acceptance.
+- **Status**: **ACCEPTED**. Proposed at `J-architect_docs_lead-0019`;
+  **countersigned by dv_lead at `J-dv_lead-0066`**; **accepted by the
+  orchestrator at `J-orchestrator-0140`**, the entry accompanying the step-1
+  implementation commit; amended and flipped at `J-architect_docs_lead-0020`.
+
+  dv_lead countersigned **D1–D6**, §4's design, §5's thresholds, §6's script
+  specification (including the `<lister>` warning of §6.1 and §6.3's
+  `Continues-from` equality check), §7's sequencing and end condition, and §9's
+  eight test cases — having **verified the five forcing facts of §2 and §1.2's
+  asymmetry against the scripts rather than accepting them**, and re-measured
+  every journal against `S` and `H`. It **contested one sentence** of §6.5,
+  bounding what a green chain certifies; the replacement is applied verbatim
+  there and is the only change to the text as drafted.
+
+  Still true after acceptance: the PROTOCOL diffs of §8 are **written, not
+  applied** — the constitution is orchestrator-scope and, per ADR-0016 §8, the
+  ADR authors the diff and the orchestrator transcribes it. The script behaviour
+  of §6 remains a **specification**: step 1 lands under `J-orchestrator-0140`,
+  step 2 is allocated as **WO-0053**.
 - **Deciders**: **orchestrator**, on a process rule that amends the commit
   protocol. Not an escalation class: no requirement, phase or role changes
   (not E2), no toolchain or licence (not E3), no lead dispute (not E5).
@@ -65,6 +76,16 @@ bless it.
 | `claude_auditor_agent.md` | 122,226 | 8 | 15,278 |
 | `workers/claude_data_wrangler_agent.md` | 42,587 | 3 | 14,195 |
 | all journals | **2,131,151** | 249 | — |
+
+**The table lists seven journals; there are nine** (dv_lead, at countersignature,
+counted rather than assumed). The two omitted are
+`workers/claude_rtl_module_dev_agent.md` (364 bytes) and
+`workers/claude_formal_dv_agent.md` (359 bytes) — seeded headers with zero
+entries, quiet by three orders of magnitude, and no conclusion below moves. The
+correction is recorded because the argument is an argument about *counting*
+journals, and a table that silently omits two of them invites the reader to check
+nothing else. §5.2's disposition table is complete as drafted for the agents that
+have entries; both seeds are quiet under `S` and remain so.
 
 Measured at the **parent** commit — i.e. before this ADR's own journal append.
 This commit adds `J-architect_docs_lead-0019`, taking
@@ -494,9 +515,13 @@ For each agent: walk `01..N`; assert each volume's declared `Volume` matches its
 path; recompute `sha256` of volume k and compare against volume k+1's
 `Previous-volume-sha256`; assert `Continues-from` equals volume k's last entry
 id; concatenate and assert entry-id contiguity from `0001`. Exit nonzero naming
-the first break and *which* property broke. This is the command an auditor runs,
-and the command whose green result is the claim "no entry has been dropped or
-rewritten" — a claim that today can only be made by trusting branch protection.
+the first break and *which* property broke. This is the command an auditor runs.
+Its green result is the claim **"no entry in a frozen volume has been rewritten,
+and no entry id is missing from the chain"** — a claim that today can only be
+made by trusting branch protection. **It does not certify the active volume**,
+which has no successor to link back to it and whose append-only property still
+rests on R3 and on history exactly as it does today. A green chain is not a
+clearance for the volume currently being written.
 
 ### 6.6 The CI asymmetry (recommended, D6)
 
@@ -543,6 +568,30 @@ Supporting facts, so the condition cannot drift:
 - The override **expires by arithmetic after about six more dv entries** (§1.1).
   If step 1 has not landed by then, the correct response is to land step 1, not
   to raise the number again.
+
+**Facts at acceptance — the arithmetic above playing out, and no decision moves.**
+The four bullets were written at drafting and are left standing as the record of
+what was predicted; this note is what actually happened between draft and
+acceptance:
+
+- **Uses to date: four**, not one — `ad1e124`, `c3e877a`, `a2a3342`, `b9a08ff`,
+  each recorded under `J-orchestrator-0137`'s regime. The draft predicted the
+  second explicitly ("dv_lead's next commit … needs a second use"); the third and
+  fourth are the same round continuing.
+- **dv_lead's headroom is now ≈ 3.9 entries**, not ~6.9: 1,100,000 − 1,050,915 =
+  **49,085 bytes** at the 12,589-byte recent mean. dv_lead measured ≈ 5.8 at
+  countersignature (`J-dv_lead-0066`) and predicted ≈ 3.8 after that round's two
+  entries; the measured 3.9 confirms it.
+- **This is the ADR's own §1.1 argument arriving on schedule, not a surprise**,
+  and it is the reason the end condition is pinned to step 1 rather than to the
+  chain: at four uses and under four entries of headroom, the alternative to
+  landing five lines is raising the ceiling a second time with the same argument
+  and less credibility.
+- **The `J-dv_lead-0064` worked example at §4.4, §5.2 and §7.1 is stale**: that
+  entry is committed (`c3e877a`), so the rotation falls on dv_lead's first entry
+  after step 2 lands, which is not knowable until it does. The *procedure* is
+  unaffected — only the illustrative id is. Noted rather than rewritten, because
+  the example's job is to show the shape and a live id would go stale again.
 
 ### 7.3 The guard against step 1 landing and step 2 never arriving
 
@@ -725,10 +774,13 @@ mechanics, and it is the one I would write first.
 
 ## 12. What this ADR does not decide
 
-- **Whether it is adopted.** dv_lead countersigns; the orchestrator accepts.
-  PROPOSED; nothing here is in force.
+- ~~**Whether it is adopted.**~~ **SETTLED.** dv_lead countersigned at
+  `J-dv_lead-0066` (one sentence contested, applied at §6.5); the orchestrator
+  accepted at `J-orchestrator-0140`. Struck rather than deleted, per this
+  programme's no-silent-rewrite practice.
 - **Whether and when the scripts change.** `scripts/**` is orchestrator-owned;
-  §6 is a specification.
+  §6 is a specification. Step 1 lands under `J-orchestrator-0140`; **step 2 is
+  allocated as WO-0053** and remains unwritten until it does.
 - **Whether the blob gate becomes `R11` and enters CI** (§6.6, D6) — recommended,
   conditional, and explicitly the orchestrator's call.
 - **Whether `INDEX.md` and the charters are updated in the same commit** as the
