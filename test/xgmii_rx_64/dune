@@ -6,11 +6,18 @@
 ; finding at RV-0039-VERDICT F-2 and put a banner on AP-xgmii_rx_64.md §7).
 ;
 ; AP-xgmii_rx_64.md rows live here, by packet:
-;   WO-0038  A1-A5, B1, C1-C4, L6      (eleven)
-;   WO-0038 round 6 / BUG-0001  C5     (one)
-;   WO-0040  D1-D3 ASSERT, D4 declared (four)
+;   WO-0038  A1-A5, B1, C1-C4, L6           (eleven)
+;   WO-0038 round 6 / BUG-0001  C5          (one)
+;   WO-0040  D1-D3 ASSERT, D4 declared      (four)
+;   WO-0043  E1, E2, E4 ASSERT, E3 declared (three ASSERT + one declared)
+;   WO-0047  F1-F4 ASSERT, F5 by citation to test_m03_c.ml's C4;
+;            E5 ASSERT, folded in but living beside its own family in
+;            test_m03_e.ml, not here (four ASSERT + one citation + one ASSERT)
+;   WO-0054  G1-G4, G6 ASSERT, G5 declared  (five ASSERT + one declared)
 ; When a packet adds rows, add its line. When one does not, this comment
-; is wrong and a reader has no way to tell.
+; is wrong and a reader has no way to tell — this file's own header found
+; that exact staleness (E and F both missing) before WO-0054's own line was
+; added, and both are repaired in the same edit rather than left standing.
 ;
 ; Depends on hardcaml_ethernet (the design under test — REQ-010's
 ; type-identity check does its job if the ports diverge from

@@ -3259,3 +3259,251 @@ that this is an intentional gap in my own account, not an oversight.
 - test/cosim/tb_xgmii_rx_64.v
 - test/cosim/compare.ml
 - agents/handoffs/WO-0049_cosim-canon-format-fix.md
+
+---
+
+## [J-tb_writer-0013] 2026-08-03T17:55Z | task:WO-0054 | Family G — oversize frames, the trap avoided by construction, a wrong tkeep caught by re-derivation not by a compiler
+
+### Trigger
+
+WO-0054/2026-08-03T17:55Z (dv_lead, via the orchestrator): the sixth family
+of `AP-xgmii_rx_64.md` — REQ-108's oversize/truncation behaviour, five ASSERT
+rows (M03-G1, G2, G3, G4, G6) and one NO-ASSERT (M03-G5, declared, not
+built), against `docs/specs/modules/xgmii_rx_64.md` §6.1, §6.2's `Discard`
+row, §6.3 item 6, §7, §9 and its REQ-108/REQ-901 hooks, and
+`docs/specs/requirements.md` REQ-108, REQ-103, REQ-104, REQ-105, REQ-110,
+REQ-008, REQ-011, REQ-015, §0.3, §0.6, §0.7. The packet's own headline trap:
+`Dv_xgmii.Frame.delivered` implements REQ-103's FCS-removal identity and
+returns the wrong delivered count (one octet too many) for every member here
+that genuinely exceeds 1518 octets, while being numerically right by
+coincidence at exactly 1518. Two questions the packet returned to me rather
+than answering: whether `Dv_xgmii.Injection` can express an unterminated
+frame (for M03-G6), and whether X-5 (`Latency.frame_out`'s `?expected_octets`,
+built at WO-0033, never yet exercised by a G-family row) accepts a
+1514-octet extent from a much longer input.
+
+### Inputs
+
+`agents/charters/tb_writer.md`; `agents/PROTOCOL.md` §2–6 and §10 (read in
+full); `agents/handoffs/WO-0054_tb-m03-family-g-oversize.md` in full (all ten
+sections, committed at `33d3893`); `docs/specs/modules/xgmii_rx_64.md` in
+full (all 13 sections including §13's revision log — this is where I found
+`J-architect_docs_lead-0021`'s 2026-08-04 entry, captioned as answering
+WO-0054's own §9.1 open question 1 before this spawn began);
+`docs/specs/requirements.md` §0.3, §0.6, §0.7, §1 (REQ-001…021), §2 (REQ-101…
+113), all cited inline. `test/attack_plans/AP-xgmii_rx_64.md` §2 (standing
+obligations), §3 (stimulus legality), §4.G (the six rows, verbatim), §7
+(machinery X-1 through X-5, the REQ-901-bar/X-1-bar distinction), §8 (open
+questions, confirming M03-G6's is the one `J-architect_docs_lead-0021`
+closed). Machinery, all under `test/`, never `libs/`: `test/xgmii/
+injection.ml`/`.mli` (read in full — this is where the §3.5 capability
+answer and the M03-G3/G4 lane-legality trap for `At_octet`'s `start_char`
+check came from), `test/xgmii/arrival.ml`/`.mli` (read in full — this is
+where I hand-traced `create`'s `lay_out`/`round_up_4`/`shorten` arithmetic to
+verify M03-G3's ifg computation before trusting it), `test/xgmii/
+xgmii_word.mli`, `test/xgmii_rx_64/bench.mli` and `bench.ml` (read in full —
+`bench.ml`'s own `account_clean_frame`/`frames_at`/`directed_frame_octets`
+implementations, not just the `.mli`, to confirm exact behaviour before
+composing against it), `test/monitors/conservation_monitor.mli`, `test/
+monitors/strobe_monitor.mli`, `test/monitors/stream_word.mli`, `test/
+monitors/octet_time.mli` (the X-5 confirmation's own source). Prior WO
+packets read for precedent and ruling history: `agents/handoffs/
+WO-0047_tb-m03-family-f-runts.md` (in full, including its own RV-VERDICT —
+the "literal §0.6 formula is the standing convention" ruling and the
+assertion-order-as-contract instruction both come from here), `test_m03_c.ml`
+(`run_c3`, for the M03-G2 cross-check), `test_m03_e.ml` (in full — `run_e1`'s
+`account_aborted_frame`, `run_e4`'s stray-character-via-`?word_at` technique,
+both reused/generalised here), `test_m03_f.ml` (in full — `run_f4`'s
+two-frame split/account pattern and its own correctly-derived 64-octet-frame
+tkeep, which is what caught my own bug, below), `test_m03_d.ml` (the M03-D4
+NO-ASSERT declaration shape, reused for M03-G5). This journal's own header
+and my prior entries (confirmed next id 0013). No path under `libs/**`,
+`top/**`, `bin/**` or `rtl_snapshots/**` was opened, targeted or swept, at
+any point in this spawn.
+
+### Reasoning
+
+**The governance trap (§2), discharged by construction, not by a late
+check.** Every truncated member in this file computes its expected delivered
+content as `List.take octets 1514` — the frame's own first 1514 octets — and
+never calls `Frame.delivered` on an array that exceeds 1518 octets.
+`truncated_delivered`/`truncated_words`/`truncated_tkeep` are derived once at
+file top so no row can independently get the arithmetic wrong. M03-G2 is the
+row built to make the trap *visible*: its 1518 member genuinely uses
+`Frame.delivered` (REQ-103 governs it, and the number happens to equal 1514),
+while its 1519 member uses the literal constant (REQ-108 governs it, and
+`Frame.delivered` would silently return 1515). Both are asserted, and the
+governance is stated per member in the file's own docstring and repeated at
+each row, per the packet's own deliverable 1.
+
+**§3.5 — establishing whether `Injection` can express an unterminated
+frame, without inventing anything.** Reading `injection.ml`'s own `create`
+function rather than reasoning about it from its `.mli` alone: the
+`Place`-corruption validation match has three arms (`At_preamble`,
+`At_octet`, `At_terminate`), and only `At_terminate`'s is a bare `()` — no
+restriction beyond the shared `is_control_char` check every `Place` already
+passes through. `Xgmii_word.idle_char` is one of the five control
+characters, so `Place{placement=At_terminate; character=idle_char}` is
+accepted, and it replaces the frame's own natural terminate position with an
+idle character rather than removing it — meaning no `/T/` ever appears on
+the wire for that frame. This is exactly M03-G6's stimulus, and it is
+established by reading already-committed source, not invented per the
+charter's own escalation rule. Having established the *capability*
+question, I then found a *simpler* route for the actual bench: `Dv_xgmii.
+Arrival.terminate_octet_time` already computes the same octet time with no
+`Injection` object, so `Bench.run`'s own `?word_at` hook (already used at
+`test_m03_e.ml`'s `run_e4`) reaches the identical wire trace with less
+machinery. I kept the two answers separate in the file's own header, on
+purpose — a "the simpler thing I actually used" fact must not be read as "the
+richer thing cannot do it", because those are different claims and only one
+of them is what §3.5 asked.
+
+**M03-G3/G4's construction — the lane-legality trap I did NOT walk into.**
+The row text says "100 octets past the truncation point" for both rows. For
+M03-G3's `/S/`, that literal offset (content-index 1618) is `1618 mod 8 = 2`
+— a lane REQ-101 forbids a start character from occupying, and
+`injection.ml`'s own `create` function independently enforces exactly this
+(the `character = start_char && octet_time mod 8 <> 0 && <> 4` check at the
+override-building loop), so a naive `Place{At_octet 1618; start_char}`
+construction would have been *refused by the machinery itself* before a
+single cycle was driven — reading exactly like a stimulus-construction
+mistake rather than the intended trap. I found this by reading the
+validation code, not by hitting the refusal at runtime (this container has
+no way to execute `Injection.create` against real Hardcaml, so "reading the
+predicate" was the only way to find it before it would have surfaced in
+CI). M03-G3 therefore lands its `/S/` at the nearest legal offset
+(content-index 1620, 102 past truncation) via an ordinary, separately
+custom-`ifg`-scheduled second `Arrival` frame — no `Injection`, no `Place`,
+no lane trap to walk into at all, since a genuinely separate frame's own
+start character is validated the ordinary way. M03-G4's `/E/` has no such
+lane restriction, so it lands at the literal 100-octets-past offset, via a
+single `?word_at` override at a generously widened gap (`run_e4`'s technique
+again). Both constructions, and the two rejected alternatives (a
+splice-inside-one-array route, and an `Injection`-with-extended-array route
+for G4), are recorded in the file's own header and in the Return log,
+per the packet's own instruction to report stimulus choices considered and
+rejected — not just the one taken.
+
+**The tkeep bug, and why it matters that a compiler did not catch it.** My
+first draft of every two-frame row (G1, G3, G4, G6) hardcoded the following
+frame's own `tlast` tkeep as `0xFF` — a full word. The following frame is 64
+octets DA-through-FCS, delivering 60, and 60 mod 8 = 4, so the correct value
+is `(1 lsl 4) - 1 = 0x0F`. I had pattern-matched the WRONG row's own tkeep
+shape (G1/G2's *truncated* member, a different, coincidentally-differently-
+aligned delivery) instead of re-deriving the 64-octet frame's own figure from
+`expected_tkeep_for` — the very helper I had already written at file top for
+exactly this purpose, and which `test_m03_f.ml`'s own `run_f4` already
+computes correctly for the identical 64-octet frame. I caught this by
+re-reading my own draft's numeric claims against the formula rather than
+against a sibling row's already-accepted number, the same discipline WO-0047
+Round 3 and 4's own postmortems named as the gap a review-by-eye can miss
+and a query-by-formula cannot. `ocamlc -stop-after parsing` — the only local
+check this container has — is syntax-only and passed on both the wrong and
+the corrected version identically; nothing short of re-deriving the number
+by hand, or an eventual CI `runtest` promotion, would have caught it. Fixed
+at all four sites before this Return, and flagged prominently in the Return
+log precisely because it is the class of defect this container's tooling
+cannot see, which is also the class that would either certify a real M03
+defect as a pass or fail a conformant design, depending on which way the
+number was wrong against the RTL.
+
+**Why the `dune` header got two lines instead of one.** Adding my own
+required per-packet line surfaced that the standing list was already missing
+WO-0043 (family E) and WO-0047 (family F)'s own lines — the exact
+staleness-goes-unnoticed defect the header's own comment names as
+`RV-0039-VERDICT` F-2's cause. I fixed both in the same edit rather than
+leave a known-stale list standing next to my own freshly-added line, and
+disclosed this as a beyond-my-own-WO addition in the Return log rather than
+folding it in silently — dv_lead's call whether it should have waited for a
+separate packet.
+
+### Actions
+
+Wrote one new file, `test/xgmii_rx_64/test_m03_g.ml`, in full (docstring,
+five row-builder functions, one `%expect_test` per built row, the M03-G5
+NO-ASSERT comment carrying no code), then corrected the tkeep bug above with
+four targeted `Edit` calls (one per affected row function) rather than a
+rewrite. Edited `test/xgmii_rx_64/dune`'s header comment (the standing
+per-packet row list) to add my own line and repair the pre-existing E/F
+staleness. Appended the Return log to `agents/handoffs/
+WO-0054_tb-m03-family-g-oversize.md`. No file under `libs/**`/`rtl_snapshots/
+**`/`top/**`/`bin/**` was opened to write any of this.
+
+### Evidence
+
+All commands run from a repo checkout at this SHA.
+
+- `ocamlc -stop-after parsing test/xgmii_rx_64/test_m03_g.ml`: exit 0, run
+  after the initial draft, after the `dune`-header edit, and again after the
+  tkeep fix — unchanged (syntax only, ADR-0005; this check cannot see the
+  tkeep bug, which is exactly why it is flagged as caught by re-derivation
+  and not by tooling).
+- `bash tools/precompile_check.sh`: `precompile_check: ALL LANES PASSED`
+  both before and after the `dune`-header edit; `test/xgmii_rx_64` still
+  correctly `EXCLUDED — depends on hardcaml_ethernet, which this harness
+  cannot transcribe`, unaffected by either edit. `dv_golden`/`dv_monitors`/
+  `dv_xgmii` (31 units) and `dv_axi64_probe`/`dv_xgmii_probe` (12 units) all
+  still compile with 0 errors.
+- `bash tools/dv_checks.sh`: `check_records_vs_appendix.sh` 23/23 PASS
+  (unaffected — no record or strobe name changed this packet);
+  `check_emitted_verilog.sh` 5/5 PASS, 3 PENDING rows, all pre-existing and
+  about unbuilt modules, not M03; the bench-inventory report shows
+  `test_m03_g.ml` at 5 units, matching the five built rows;
+  `check_rfc1071_anchor.sh` OBLIGATION OPEN on blocked network egress —
+  pre-existing (`J-dv_lead-0017`, `J-dv_lead-0018`), about M02/M14's checksum
+  oracle, unrelated to M03 or this packet.
+- `git status --porcelain`: exactly `test/xgmii_rx_64/test_m03_g.ml`
+  (untracked, new), `test/xgmii_rx_64/dune` (modified) and `agents/handoffs/
+  WO-0054_tb-m03-family-g-oversize.md` (modified, the Return log) before this
+  journal entry was staged. `git diff --exit-code -- . ':!test/xgmii_rx_64/
+  dune' ':!test/xgmii_rx_64/test_m03_g.ml'`: exit 0 — nothing else in the
+  tree differs from HEAD.
+- `(eval $(opam env); dune build @default)`: **FAILED**, `Library
+  "ppx_hardcaml"`/`"hardcaml"` not found across every directory that needs
+  them, `test/xgmii_rx_64` included — run to confirm the absent toolchain is
+  a checked fact for this container and this spawn, not an assumed one.
+- `dune runtest`: not run — same absent toolchain; CI's to run and to judge.
+  Every `[%expect]` block in the new file is `{||}`, empty, per ADR-0005
+  rule 2 — no snapshot was hand-authored or promoted.
+
+### Outcome
+
+DoD against WO-0054: all five ASSERT rows (G1, G2, G3, G4, G6) map to a
+named test; M03-G5 declared NO-ASSERT with no code, per the packet's own
+instruction. All six of §8's named deliverables are answered in the Return
+log (the governance table; the `Injection` capability answer; the §0.6
+window choice, superseded by a newer spec citation than the packet's own
+fallback; the X-5 confirmation; assertion/iteration order per row; which
+check speaks first between the protocol monitor and this file's own count
+assertion). `dune build`/`dune runtest`: unverified locally, confirmed-absent
+toolchain, CI is authoritative. Journal Inputs lists no `libs/**`/`top/**`/
+`bin/**`/`rtl_snapshots/**` path, targeted or swept, and no `*SEALED*` file
+was opened (`WO-0041`/`WO-0045`/`WO-0050`'s own `-SEALED-predictions.md`
+siblings were not read). Diff scope: `test/xgmii_rx_64/test_m03_g.ml` (new),
+`test/xgmii_rx_64/dune` (header comment only) plus this journal entry and the
+WO-0054 Return log — nothing else.
+
+Handoff: a RETURNED block appended to `agents/handoffs/
+WO-0054_tb-m03-family-g-oversize.md`'s Return log. State left at `ISSUED`
+per the packet's own instruction — dv_lead's `RV-` and the orchestrator's
+transcription do the state flip, not me.
+
+### Open-questions
+
+None new. WO-0054's own §9.1 open questions were both already closed before
+this spawn: item 1 (the §0.6 window's reference word for M03-G6) by
+`J-architect_docs_lead-0021`, whose citation this file uses throughout
+rather than the packet's own fallback instruction (stated prominently in the
+Return log so the divergence from §3.6's own framing is not mistaken for an
+oversight); item 2 (the `Protocol_monitor`/REQ-108 numerical coincidence) was
+explicitly routed to the campaign, not to me, and is untouched here. One item
+for dv_lead's own judgment, not a question needing an answer before this
+round can be judged: whether the `dune`-header staleness repair (WO-0043/
+WO-0047's own missing lines) was within this packet's scope or should have
+been left for a separate one — disclosed in the Return log as a
+beyond-my-own-WO addition, not a silent scope change.
+
+### Files-in-this-commit
+- test/xgmii_rx_64/test_m03_g.ml
+- test/xgmii_rx_64/dune
+- agents/handoffs/WO-0054_tb-m03-family-g-oversize.md

@@ -312,3 +312,306 @@ would be discharged — G1, G2, G3, G4 and G6 newly, G5 being NO-ASSERT. Familie
 families F and G are **not** gated on the differential co-sim: REQ-901's classes
 (e) and (f) mean the lane can never anchor REQ-107 or REQ-108, and these directed
 rows are the whole of their verification.
+
+---
+
+## RETURNED — tb_writer (spawn `WO-0054/2026-08-03T17:55Z`)
+
+**State**: RETURNED — no `SO-` claimed, no sign-off asserted. One deliverable
+written (`test/xgmii_rx_64/test_m03_g.ml`, new), one file-header comment fixed
+in the same directory (`test/xgmii_rx_64/dune`, §"scope statement" below),
+plus this Return log and my journal entry `J-tb_writer-0013`. State left for
+dv_lead: review and RV-.
+
+### Row disposition (no silence)
+
+| Row | Req | Disposition |
+|---|---|---|
+| M03-G1 | REQ-108, REQ-103 | ASSERT, built (`run_g1`), both lanes |
+| M03-G2 | REQ-108, REQ-103, §0.3 | ASSERT, built (`run_g2_legal`/`run_g2_oversize`), 1518 then 1519, both lanes |
+| M03-G3 | REQ-108, REQ-110, §9 ruling 6, C-12 | ASSERT, built (`run_g3`), both lanes |
+| M03-G4 | REQ-108, REQ-105, §9 ruling 7, C-12 | ASSERT, built (`run_g4`), both lanes |
+| M03-G5 | §6.3 item 6, C-12 | NO-ASSERT, declared (file footer, no code) — reuses M03-G4's stimulus, asserts nothing about the `Discard`/`Idle` encoding choice |
+| M03-G6 | REQ-108 | ASSERT, built (`run_g6`), both lanes |
+
+### §2's deliverable — the governance declaration, per member
+
+The trap the packet names is real and is guarded against explicitly in code:
+every truncated member below asserts delivered content as `List.take octets
+1514` (the frame's own first 1514 octets), **never** `Frame.delivered octets`
+(which implements REQ-103's identity and is wrong by one octet on every
+member here that actually exceeds 1518).
+
+| Row / member | Governs | Delivered | Oracle used |
+|---|---|---|---|
+| G1 — 1600-octet frame | REQ-108 truncation | 1514 | literal constant |
+| G1 — following 64-octet frame | REQ-103 removal | 60 | `Frame.delivered` |
+| G2 — 1518-octet member | REQ-103 removal | 1514 | `Frame.delivered` (coincides numerically with the truncation constant — the row's own sharp point) |
+| G2 — 1519-octet member | REQ-108 truncation | 1514 | literal constant, **never** `Frame.delivered` (which returns 1515) |
+| G3 — 1600-octet frame | REQ-108 truncation | 1514 | literal constant |
+| G3 — resynchronised new frame | REQ-103 removal | 60 | `Frame.delivered` |
+| G4 — 1600-octet frame | REQ-108 truncation | 1514 | literal constant |
+| G4 — following frame | REQ-103 removal | 60 | `Frame.delivered` |
+| G6 — 1600-octet frame | REQ-108 truncation | 1514 | literal constant |
+| G6 — following frame | REQ-103 removal | 60 | `Frame.delivered` |
+
+`truncated_delivered`/`truncated_words`/`truncated_tkeep` (1514/190/0x03) are
+derived once, at file top, so every truncated member cites the same
+computation. G2's 1518 member deliberately uses a *separately* derived
+`expected_tkeep_for ~delivered:1514` rather than reusing `truncated_tkeep`,
+even though the two numbers are identical, so the governance distinction
+(REQ-103 vs REQ-108) stays visible in the code and not only in prose.
+
+### §3.5's deliverable — can `Dv_xgmii.Injection` express an unterminated frame?
+
+**Yes.** `test/xgmii/injection.ml`'s `create` function places no restriction
+on `Place{placement=At_terminate; character}` beyond `is_control_char
+character` — the `At_terminate` arm of the placement-validation match is a
+bare `()` (lines 102–124), unlike `At_octet`'s lane-legality check and
+`At_preamble`'s range check. `Xgmii_word.idle_char` is one of requirements.md
+§2's five control characters, so `Place{placement=At_terminate;
+character=Xgmii_word.idle_char}` is accepted without complaint: it replaces
+the wire octet at exactly the frame's own natural terminate position with an
+idle character, so no `/T/` ever appears on the wire for that frame — exactly
+"a frame exceeding 1518 octets that is not closed by a terminate character
+before the next start character arrives" (§3.5's own specification-terms
+restatement). This was established by reading `injection.ml`'s own committed
+source (already-sanctioned `test/` reading, never `libs/`), not invented, and
+no bench addition or new `Injection` constructor was needed to answer it.
+
+**`run_g6` does not build with it**, and the reason is stated in the file's
+own header rather than left implicit: `Dv_xgmii.Arrival.terminate_octet_time`
+already computes the exact same octet time with no `Injection` object at all,
+so overriding it via `Bench.run`'s own `?word_at` hook (`test_m03_e.ml`'s
+`run_e4` precedent, generalised) needs no `Injection.create` call, no
+validation pass and no cross-check idiom for a fact the schedule already
+hands the bench directly. This is a "simpler machinery already suffices"
+finding — the same shape M03-E4's own trap answer 3 recorded — not a finding
+that `Injection` cannot do it; §3.5's capability question and this file's own
+construction choice are answered separately and are not conflated.
+
+### §3.6's deliverable — the §0.6 window's upper bound for G6
+
+**Superseded before this spawn began, and I used the newer citation rather
+than the packet's own fallback.** `docs/specs/modules/xgmii_rx_64.md` §9
+gained three paragraphs on 2026-08-04 (`J-architect_docs_lead-0021`),
+explicitly captioned as answering *"dv_lead's row M03-G6, raised as
+`WO-0054` §9.1 open question 1"*: the §0.6 window's reference word for a
+frame no terminate character closes is the input word on which REQ-108's own
+truncation closed it, fixed at the truncation cycle, independent of whatever
+follows (and explicitly *not* an instance of carry-forward C-5's genuine
+vacuity). This is **tighter** than §3.6's own instructed fallback ("use the
+widest defensible upper bound") — every row in this file uses the tighter,
+now-normative reference word: `not_before` = the cycle of the input word
+carrying the 1519th received octet (array index 1518, zero-based);
+`not_after` = that same cycle + ΔC (3). This is the identical shape at every
+row (G1, G2's oversize member, G3, G4, G6), since every one of them truncates
+via the same REQ-108 mechanism regardless of what follows. I did not need to
+invent a "widest defensible bound" because the spec had already closed the
+gap by the time I read it — flagged prominently in the file's own header so
+a reviewer does not read my citations against the packet's own §3.6
+framing and wonder why they diverge.
+
+### §5's deliverable — X-5 confirmed
+
+`Dv_monitors.Octet_time.Latency.frame_out`'s `?expected_octets` parameter
+already names M03's own rows E1, F1, G1, G2, H1, H2 as its intended customers
+in its own committed docstring (`test/monitors/octet_time.mli`), and
+`test_m03_e.ml`'s `account_aborted_frame` already exercises it for a
+partially-delivered extent (M03-E1). `account_truncated_frame` in this
+file is the same primitive, called with the literal constant 1514 rather
+than a per-row-computed one — confirming it accepts a 1514-octet extent from
+an input trace many hundreds of octets longer (1519 up to 1700, across this
+file's rows) exactly as its own docstring predicts. Nothing needed building
+or changing; this is a confirmation, not a discovery, per §5's own framing.
+
+### §4's deliverable — assertion order and iteration order, per row
+
+All five built rows follow the same shape: **structural first, specific
+after, the exact strobe set last** (word-count → the truncated frame's own
+`tlast` cycle → `tkeep` → `tuser` → delivered content → the same five facts
+for the row's second frame, where one exists → the exact strobe set across
+the whole run). No row here reorders anything from an already-committed
+sibling file. Iteration is lane 0 then lane 4 at every row, with M03-G2's own
+inner order (1518 then 1519 ascending, the row's own "adjacent pair" wording)
+the only row carrying a second axis.
+
+### §3.1's deliverable — which speaks first, the protocol monitor or the row's own count assertion
+
+**This file's own explicit word-count check speaks first**, at every row.
+Each row function asserts `List.length words1 <> truncated_words` (or the
+per-row equivalent) directly in its own body, well before
+`assert_monitors_clean` — which is the only call that reaches
+`Protocol_monitor`'s `~max_words_per_frame:190` — is invoked at the very end
+of the function. A `fail` raise inside the row's own check therefore stops
+the function before the protocol monitor is ever consulted. This falls out
+of "structural checks first" (§4 item 3) applied literally, not from a
+deliberate choice to race the two checks.
+
+### M03-G3/G4's construction — stimulus choices considered and rejected
+
+Neither row builds through `Dv_xgmii.Injection`, and the reasoning (with the
+alternatives considered) is in the file's own header docstring in full;
+summarised here. Both rows need a character to land some distance past the
+truncation point (100 octets, per the row text). Three routes were weighed:
+
+1. **Splice a self-contained second frame inside one longer array** (an
+   `At_terminate`-shaped construction with a fake preamble and a genuine
+   `Frame.with_fcs` tail spliced in). Workable in principle for M03-G3, but
+   makes the "new frame"'s own FCS correctness a fact about exactly where
+   the splice lands rather than about an independently-schedulable frame —
+   rejected as more moving parts than the row needs.
+2. **`Place` an injected character at `At_octet k` on a longer array, via
+   `Injection.create`.** For M03-G3's `/S/` this is actually **impossible at
+   the literal offset**: `At_octet`'s own validation additionally requires a
+   placed `start_char` to land in lane 0 or lane 4, and content-index 1618
+   ("100 octets past truncation" literally) is `1618 mod 8 = 2` at **either**
+   start lane — REQ-101 forbids a start character there regardless of
+   mechanism, so some rounding is unavoidable whichever route is taken. For
+   M03-G4's `/E/` (no lane restriction) this route would work, at the cost of
+   extending the base array well past 1600 octets purely to make index 1618
+   addressable (`At_octet` requires the index to be in-bounds).
+3. **An ordinary, separately-scheduled second `Arrival` frame, with a custom
+   `ifg`, plus (for M03-G4 only) a single `?word_at` override for the stray
+   `/E/` — no `Injection` at all.** This is what both rows use. It needs no
+   array extension (M03-G4's array stays literally 1600 octets, matching the
+   row's own words) and, for M03-G3, the "new frame" is a genuinely
+   independent, ordinarily-scheduled `Arrival` frame — its FCS correctness is
+   a structural fact about `Frame.with_fcs`, not about where a splice landed.
+
+M03-G3's own `/S/` therefore lands at the **nearest REQ-101-legal offset** to
+"100 octets past truncation" — content-index 1620 (102 octets past; 1618 and
+1616 are equidistant, and 1620 mod 8 = 4 is the one this file picked),
+verified at runtime against the schedule's own numbers rather than assumed.
+M03-G4's `/E/` lands at the **literal** 100-octets-past-truncation octet
+time, since `/E/` carries no lane restriction at all.
+
+### A bug I found and fixed against my own first pass, worth recording
+
+My first draft of every two-frame row (G1, G3, G4, G6) asserted the
+following/new frame's `tkeep` as `0xFF`. That is wrong: the following frame
+is 64 octets DA-through-FCS, delivering 60 octets, and 60 mod 8 = 4, so its
+own `tlast` word's `tkeep` is `(1 lsl 4) - 1 = 0x0F`, not a full word.
+`test_m03_f.ml`'s own `run_f4` computes this correctly for the identical
+64-octet frame (`expected_tkeep1` via the same `if Int.rem delivered 8 = 0
+then 0xFF else …` formula) — I had not re-derived it independently for this
+file and instead pattern-matched the WRONG constant from a different row's
+own tkeep (G1/G2's truncated member, whose 1514-octet delivery genuinely
+happens to be a non-full word coincidentally shaped differently). Caught by
+re-reading my own draft against `expected_tkeep_for`'s own formula (already
+defined at file top for exactly this purpose) rather than by any compiler —
+this container has no Hardcaml toolchain to catch a wrong constant that
+still type-checks. Fixed at all four sites (`run_g1`, `run_g3`, `run_g4`,
+`run_g6`) by introducing `expected_tkeep2 = expected_tkeep_for
+~delivered:delivered2` and comparing against that instead of the literal
+`0xFF`. Flagged here rather than silently corrected because it is exactly
+the class of defect this container's own tooling (`ocamlc -stop-after
+parsing`, syntax only) cannot catch, and because a wrong oracle here would
+have certified a real M03 defect as a pass, or failed a conformant design,
+depending on which way the RTL actually rounds.
+
+### Cross-check taken, not imported — M03-G2's 1518 member vs `test_m03_c.ml`'s `run_c3`
+
+Derived independently in `run_g2_legal`: `delivered = 1518 - 4 = 1514`,
+`words = (1514 + 7) / 8 = 190`, `expected_tkeep = expected_tkeep_for
+~delivered:1514 = 0x03`, `expected_tlast_cycle = start_cycle + 3 + 189`.
+`test_m03_c.ml`'s `run_c3` (already-committed, already-accepted) drives the
+identical 1518-octet frame and asserts 190 output words, `tkeep = 0x03` on
+the last word, `tuser = 0`, no strobe — the same four facts, by a
+byte-identical derivation path (§6.1's per-octet constant, §7's ΔC = 3). The
+two agree. This file calls nothing in `test_m03_c.ml`; the comparison is
+reported here, not executed as shared code, per WO-0054 §3.2's own
+instruction ("do not import them").
+
+### UNVERIFIED, and why
+
+- **`dune build @default` / `dune runtest` for `test_m03_g.ml`**: UNVERIFIED
+  locally. `test/xgmii_rx_64/` depends on `hardcaml_ethernet` (the DUT),
+  which ADR-0005 keeps out of this container; `tools/precompile_check.sh`'s
+  own LANE 3a still EXCLUDES this directory by name after this packet's own
+  edit (confirmed by re-running it post-edit, Evidence below). CI's `dune
+  build @default` / `dune runtest` is authoritative here, as at every prior
+  round.
+- **`ocamlc -stop-after parsing test/xgmii_rx_64/test_m03_g.ml`**: run
+  repeatedly through the drafting process (after the initial draft, after
+  the dune-header edit, and after the tkeep fix above) — exit 0 every time,
+  syntax only, no name resolution (ADR-0005).
+- Every arithmetic claim in the file (the 1514/190/0x03 constants, M03-G3's
+  ifg-to-content-offset derivation, M03-G2's 1518-member cross-check figures)
+  was hand-traced against `test/xgmii/arrival.ml`'s own committed `create`/
+  `round_up_4`/`terminate_octet_time` source before being written into the
+  bench, not merely pattern-matched from a sibling row — the tkeep bug above
+  is exactly the kind of error that survives pattern-matching and does not
+  survive re-deriving from the formula.
+
+### Expected CI (labelled prediction)
+
+- `dune build @default`: **predicted green**. Every call site was checked
+  field-by-field against `bench.mli`'s and `Dv_xgmii`'s/`Dv_monitors`' own
+  committed `.mli` signatures, not pattern-matched against a sibling file
+  without checking the signature — see the tkeep-bug note above for the one
+  place pattern-matching alone would have shipped a wrong oracle.
+- `dune runtest`: **predicted green with empty `[%expect]` blocks** — no
+  promotion performed or owed (every block is `{||}`). If CI prints
+  non-empty output at any of the five new blocks, that is either (a) a
+  genuine M03 finding, most legibly at G-c5 or G-c1's own class (§7's own
+  warning that these look quiet is heeded), or (b) an arithmetic error in
+  this packet's hand-derivation despite the re-derivation discipline above —
+  either way a finding to report, not something to fix by promoting.
+
+### Open questions
+
+None new. WO-0054's own two open questions (§9.1) were both already resolved
+by the time of this spawn: item 1 (the §0.6 window's reference word for
+M03-G6) by `J-architect_docs_lead-0021`, used throughout this file rather
+than the packet's own fallback (§3.6's deliverable, above); item 2 (the
+`Protocol_monitor`/REQ-108 numerical coincidence) was explicitly "not for
+you" in the packet's own text and is untouched here.
+
+### Scope statement
+
+```
+$ git status --porcelain
+ M test/xgmii_rx_64/dune
+?? test/xgmii_rx_64/test_m03_g.ml
+$ git diff --stat -- test/xgmii_rx_64/dune
+ test/xgmii_rx_64/dune | 15 +++++++++++----
+ 1 file changed, 11 insertions(+), 4 deletions(-)
+$ git diff --exit-code -- . ':!test/xgmii_rx_64/dune' ':!test/xgmii_rx_64/test_m03_g.ml'
+(exit 0 — nothing else in the tree differs from HEAD)
+```
+
+The `dune` edit is two things in one hunk: my own required line (`WO-0054
+G1-G4, G6 ASSERT, G5 declared`), and a repair of a **pre-existing**
+staleness this file's own header found before I added mine — the standing
+per-packet list was already missing WO-0043 (family E) and WO-0047 (family
+F)'s own lines, the exact defect class the header's own comment warns
+against ("this comment is wrong and a reader has no way to tell"). I did not
+introduce that staleness (confirmed: `git diff` on `dune` shows only the
+list additions, nothing removed that I did not add back correctly), and
+fixing it in the same edit rather than adding G's line beside a
+known-stale list seemed the less-wrong choice; flagged here as a
+beyond-my-own-WO addition per this programme's own disclosure convention,
+not a silent scope creep — dv_lead's call whether it should have been left
+for a separate packet.
+
+No path under `libs/**`, `top/**`, `bin/**` or `rtl_snapshots/**` was opened,
+read or staged at any point in this spawn — confirmed by reviewing every
+Read/Grep/Glob/Bash invocation of this session; none named those paths.
+`/root/.opam/**` reads: none directly (the same `tools/precompile_check.sh`
+internal LANE 2b consultation as every prior round, not a read I performed
+myself).
+
+Self-checks run (all clean except the pre-existing, unrelated network
+obligation):
+```
+$ ocamlc -stop-after parsing test/xgmii_rx_64/test_m03_g.ml   # exit 0
+$ bash tools/precompile_check.sh   # ALL LANES PASSED; xgmii_rx_64 still EXCLUDED, unchanged
+$ bash tools/dv_checks.sh          # every check that could run passed;
+                                   # check_rfc1071_anchor.sh: OBLIGATION OPEN
+                                   # (pre-existing, on record since J-dv_lead-0017/0018,
+                                   #  unrelated to M03/family G)
+$ (eval $(opam env); dune build @default)   # FAILS: ppx_hardcaml/hardcaml not found
+                                             # (ADR-0005, confirmed absent, not merely assumed)
+```
+
