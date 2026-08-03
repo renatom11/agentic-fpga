@@ -114,9 +114,9 @@ FAVICON = ('data:image/svg+xml,' +
            '%3Crect x=%2215%22 y=%2211%22 width=%228%22 height=%2210%22 fill=%22%2334c3b5%22/%3E'
            '%3Crect x=%2224%22 y=%2211%22 width=%222%22 height=%2210%22 fill=%22%23e0a050%22/%3E%3C/svg%3E')
 
-DESCRIPTION = ('A 10-gigabit trading network card, engineered end-to-end by an '
-               'organization of AI agents — every commit paired with its reasoning, '
-               'every spec frozen only after another agent tried to break it.')
+DESCRIPTION = ('A 10-gigabit Ethernet network card for market data, written in '
+               'Hardcaml by a hierarchy of AI agents under a human sponsor. Every '
+               'commit carries its author agent\'s reasoning, enforced in CI.')
 
 def head_block(title, og_title):
     og_img = (SITE_URL.rstrip('/') + '/og.png') if SITE_URL else '/og.png'
@@ -304,10 +304,16 @@ index = head_block('agentic-fpga — a trading network card built by an AI org',
 <div class="wrap">
   <span class="eyebrow">agentic-fpga</span>
   <h1>A trading network card, engineered end-to-end by an organization of AI agents</h1>
-  <p class="sub">A 10-gigabit Ethernet card for market data — specified before
-  it was built, every spec frozen only after another agent tried to break it —
-  engineered by a hierarchy of AI agents whose every commit carries its own
-  reasoning, with a human sponsor directing the work and signing the gates.</p>
+  <p class="sub">A 10-gigabit Ethernet network card for market data, written in
+  Hardcaml by a hierarchy of AI agents under a human sponsor who sets direction
+  and signs the gates. The architect wrote the specification — 110 requirements,
+  20 module contracts. The hardware designer wrote the modules and the fix for
+  the design&rsquo;s first bug. The verification lead wrote the attack plans, reviews
+  every test line by line, and found that bug. The auditor, blinded to the
+  tests, seeds defects into the design; the tests must catch them, with expected
+  results sealed before the defects exist. The orchestrator routes the work and
+  makes every commit. Every commit carries its author agent&rsquo;s reasoning,
+  enforced in CI.</p>
   <div class="cadence" title="A new minimum-size packet every 67.2 nanoseconds — slowed down exactly 20,000,000× so you can watch it"></div>
   {CAD_CAPTION}
 

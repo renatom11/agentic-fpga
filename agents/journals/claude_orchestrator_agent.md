@@ -5381,3 +5381,44 @@ assembling.
 - site/public/org-chart.html
 - site/public/spec-atlas.html
 - tasks/BOARD.md
+
+## [J-orchestrator-0122] 2026-08-03T15:05:00Z | task:none | Hero text reset to the sponsor's voice: facts, flat, per-agent
+
+### Trigger
+Sponsor workshop: rejected three drafted heroes as AI-sounding;
+chose the flat medium variant, cut the spec-frozen sentence,
+asked for one factual line per agent on what each did.
+
+### Inputs
+- The final text: card + Hardcaml + hierarchy under a human
+  sponsor; architect wrote the spec (110 requirements, 20
+  contracts); hardware designer wrote the modules and the first
+  bug's fix; verification lead wrote the attack plans, reviews
+  line by line, found that bug; auditor blinded to the tests
+  seeds defects the tests must catch, results sealed first;
+  orchestrator routes work and makes every commit; every commit
+  carries its author agent's reasoning, enforced in CI.
+
+### Reasoning
+og:description meta shortened to the same register. Body copy
+elsewhere untouched - the ruling was about the hero.
+
+### Actions
+- site/build.py hero + DESCRIPTION; site rebuilt; this commit.
+
+### Evidence
+- Rebuild banner 218 commits/207 entries.
+
+### Outcome / DoD
+Sponsor redeploys when ready.
+
+### Open questions
+- None.
+
+### Files-in-this-commit
+- site/build.py
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/index.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html
