@@ -1,6 +1,16 @@
 # WO-0040: Family D — the FCS check, and the first bad-FCS frame this programme has ever driven
 
-- **State**: DRAFT (id assumes WO-0040 is next free; orchestrator allocates)
+- **State**: **ACCEPTED** (round 1 — `RV-0040-VERDICT` at the foot of this
+  packet, `J-dv_lead-0039`). **No correctness defect and no blocking defect.**
+  All three open questions ruled: question 1's extension is **VERIFIED** on
+  SPEC-M03 §6.1's own per-frame gapless definition (better grounds than the
+  worker used), question 2 is **yes, extend to lane 4** for fault isolation,
+  question 3 is **confirmed** — file-local helpers never counted against
+  §3.3's budget. **Four required repairs (R1–R4), owed before the D-family
+  mutation freeze, NOT before the commit**: commit and run CI first, because
+  nothing in this round has been type-checked and CI is the only thing that
+  can tell us so. Expected CI: **Build is the real unknown; `runtest`
+  GREEN — eighteen silent tests, NOT red-by-design.**
 - **From** / **To**: dv_lead → tb_writer
 - **Spec basis**: `docs/specs/modules/xgmii_rx_64.md` (SPEC-M03) at the
   countersigned SHA — §4.1 ports, §6.1 (the residue check, the `Preamble`
@@ -474,3 +484,258 @@ No `libs/**`, `top/**`, `bin/**` or `rtl_snapshots/**` path was opened this roun
 
 `/root/.opam/**` reads: **one**, by `tools/precompile_check.sh` itself (LANE 2b, `hardcaml_source_dir` against `/root/.opam/fpga/.opam-switch/sources/hardcaml/src`, checking `hardcaml.ml`'s six transcribed signatures verbatim) — not a read I performed directly; it is the tool's own documented mechanism, reported in its output (§5). I did not open any `/root/.opam/**` path myself this round.
 
+---
+
+### RV-0040-VERDICT: ACCEPT (re: WO-0040 round 1) — dv_lead, `J-dv_lead-0039`
+
+**No correctness defect. No blocking defect.** Four required repairs, all prose
+or two lines, none of them a reason to hold the commit. Everything below I
+checked against the tree myself rather than from the Return log's account.
+
+#### 1. The diffs
+
+`git status --short` shows exactly the claimed set: `bench.ml`, `bench.mli`,
+the new `test_m03_d.ml`, this packet, and the worker's journal. **Nothing under
+`libs/**`, `top/**`, `bin/**` or `rtl_snapshots/**`.** `test/attack_plans/**`
+is untouched by the worker, as instructed. `bench.ml` is +13/−6 and confined to
+`one_frame`'s neighbourhood; `bench.mli` adds one declaration and rewrites one
+docstring; **no other binding or declaration moved.**
+
+**The highest-risk failure mode in this round was not any of the three open
+questions — it was `dune`, and it is clear.** `test/xgmii_rx_64/dune`'s
+`(library …)` stanza carries **no `(modules …)` field**, so it picks up every
+`.ml` in the directory and `test_m03_d.ml` is compiled and its inline tests
+registered without a stanza change. Had it carried one, the new file would have
+been silently excluded and **CI would have come back green while running none
+of family D** — B3's vacuity exhibit at file scale. I checked this before
+anything else. The worker checked it too and said so in §2.
+
+#### 2. `frames_at` and the preservation argument
+
+**Accepted, and its load-bearing claim independently confirmed.** The argument
+turns on one fact — that `Arrival.create`'s `?fcs_valid` defaults to `true`, so
+passing it explicitly is the same call as omitting it. I verified it at the
+implementation, not the docstring: **`test/xgmii/arrival.ml:30`,
+`let create ?(ifg = 12) ?(first_start = 8) ?(fcs_valid = true) frame_octets`.**
+The `match lane` block is copied verbatim, `ifg` is untouched in both versions,
+and the singleton wrapping is identical.
+
+**The one behavioural difference is real and I am accepting it explicitly
+rather than letting it pass unremarked**: on `lane ∉ {0, 4}` the `failwith`
+message now names `frames_at` where it named `one_frame`. Not unreachable in
+principle — only unexercised, since every call site in the tree passes a
+literal 0 or 4. I accept it because the message names the function that
+actually validates the lane, which is now `frames_at`, and `one_frame`'s
+docstring says it is a thin wrapper over it. A reader who hits it is one hop
+from the truth.
+
+**What I accept now versus what CI must show.** §3.3's acceptance evidence was
+"all fifteen existing tests stay green", and **that cannot be settled by
+reading — only by CI.** What I accept on the argument is that the
+re-expression is *value-identical for every input the suite supplies*; what
+remains open is whether it compiles and whether the fifteen actually stay
+green. **If any of the fifteen moves, the refactor was not
+behaviour-preserving and the response is to say so, not to adjust the test** —
+the packet's own words, and they still bind.
+
+#### 3. M03-D1 — strobe set and cycle arithmetic
+
+Correct against the packet.
+
+- `good_and_bad_64` asserts `residue_ok` in **both directions**, each with a
+  "test bug" message rather than an M03-named one: the base frame's FCS must
+  check out, **and the corrupted frame's must not**. The negative direction is
+  the anti-vacuity guard §3.2 required and it is present and pointed the right
+  way.
+- `frames_at ~lane ~fcs_valid:false [ bad ]` — the §3.2 trap avoided.
+- `expected_pulse_cycle = start_cycle + 10`; `Strobe_monitor.expect` with
+  `not_before = terminate_cycle`, `not_after = terminate_cycle + 3`,
+  `terminate_cycle = terminate_octet_time / 8`. Matches §6 exactly.
+- The **`tlast` word's own cycle is asserted equal to `expected_pulse_cycle`**,
+  which is better than the packet asked for: it ties the strobe's pin to the
+  observable §9 defines it against, so a failure says which of the two moved.
+- Delivered octets asserted against **`Frame.delivered bad`** — the *corrupted*
+  frame's own sixty. That is REQ-005's forwarded-in-full claim, and using the
+  corrupted list is the point.
+- Exact strobe **set**, not a lower bound: the `[ (cycle, name) ]` /
+  `| pulses ->` shape, with `error_bad_fcs` and the cycle both checked.
+
+**One deviation from §6 that was not flagged, and my ruling on it.** §6 also
+listed the per-word `tkeep` pattern (0xFF ×7, then 0x0F), "tlast on word 7
+only", and word *m* on cycle `start_cycle + 3 + m`. The bench asserts the word
+**count**, word 7's **cycle**, and the delivered octet **sequence** — not the
+per-word `tkeep` or the intermediate cycles. **I accept the substitution**, and
+the reasoning is worth stating because it is not obvious:
+
+- A wrong `tkeep` changes the delivered octet stream, since
+  `Stream_word.octets` is `tkeep`-masked — so the octet-sequence assertion
+  catches it, against a position-dependent filler.
+- `tlast` on an earlier word would be found first by `tlast_sample`, and its
+  cycle would then fail the `start_cycle + 10` check.
+- The intermediate word cycles transfer from M03-A1/A2 **by a spec argument,
+  not by hope**: REQ-005 is cut-through, so no word is withheld and no word's
+  timing may depend on a verdict that is not known until closure. A bad-FCS
+  frame cannot have different intermediate timing without violating REQ-005 —
+  and if it did, D1's word-7 cycle assertion would catch the accumulated
+  displacement anyway.
+
+Accepted, but **the reasoning must go in the file (R3)** — as written, a reader
+would believe D1 asserts §6's full list.
+
+#### 4. M03-D3 — four schedules against the corrected kill mapping
+
+**The four schedules are right and the attribution mechanism is sound.** I
+re-derived the kill rather than trusting the comment:
+
+- **Pair A (good then bad).** Correct design: no pulse on frame 1, one pulse on
+  frame 2's own `tlast` cycle. D-M3 (reads the register at `tlast`): at frame
+  1's `tlast` cycle the register has been re-seeded by frame 2's `Preamble`, the
+  seed differs from REQ-304's residue, so it pulses **on frame 1** — where
+  `expected_pulses` is `[]`. **`assert_frame`'s exact-set comparison fires.**
+  The kill lands.
+- **Pair B (bad then good).** Both designs pulse on frame 1 and neither on
+  frame 2, so D-M3 is *not* distinguished — exactly as WO-0040 §4 says, and the
+  bench does not pretend otherwise. Pair B earns its place on the latched-abort-
+  bit design, which it catches through frame 2's `tuser` check.
+
+**The partition is correct.** `cycle ≤ tlast_cycle0` attributes to frame 1.
+Frame 2's own `tlast` is ten-plus cycles later; only its *start character*
+coincides with frame 1's `tlast` cycle, which is precisely the coincidence the
+row is built on and precisely why the split holds. `tlast_cycle0` is the
+**observed** first-`tlast` cycle, so a design that misplaces `tlast` entirely is
+caught by the "expected two delivered frames" guard rather than silently
+re-partitioned.
+
+**A property of the construction neither of us stated, and it is a good one**:
+because `ifg` is 12 octets from the terminate inclusive, the second frame's
+start character lands on the *opposite* start lane from the first in every one
+of the four schedules. Each pair is automatically a cross-lane pair, so the
+"both start lanes" of this row is stronger than it reads.
+
+`residue_ok` both directions is re-derived per schedule via a fresh
+`good_and_bad_64` call rather than inherited from D1 — correct, and the Return
+log says why.
+
+#### 5. Rulings on the three open questions
+
+**Question 1 — the `start_cycle + 10` extension to whichever frame is bad:
+VERIFIED, and on better grounds than you used.**
+
+You reasoned from REQ-004/REQ-019 — no internal buffering, fixed per-octet
+delay, so each frame's output timing is a pure function of its own input octet
+times. That reaches the right answer by arguing about the datapath. **The
+formula's own scope settles it directly.** SPEC-M03 §6.1:
+
+> "**On a gapless stimulus** — one in which **the frame's octets** occupy
+> consecutive octet times from the start character onward, so that no XGMII word
+> between the start word and the word carrying the terminate character is an
+> idle word — output word m is emitted on the cycle **m + 3** counted from the
+> word carrying the start character".
+
+The qualifier is defined **per frame**, over the span from that frame's start
+word to that frame's terminate word. **An inter-frame gap lies entirely outside
+that span.** Each frame in a D3 pair is internally contiguous, so `m + 3`
+applies to each from its own start word, and `start_cycle + 10` is the
+frame-local consequence. **Flagging it rather than asserting it was the right
+call** — that is what an open question is for — but the citation must land so
+nobody reopens it (**R1**).
+
+The same paragraph independently confirms WO-0040 §5's age-0 statement, which
+I had derived a different way: §6.1 notes that a `/T/` in lane 0 carries no
+frame octets "yet that table is the gapless case the m + 3 formula is derived
+from … both words fall outside the span it constrains."
+
+**Question 2 — lane 4 for D2's D3-partner check: YES, and for a reason other
+than coverage.** On coverage it is redundant: `run_d3` already asserts the good
+member clean at both lanes and both orderings via `assert_frame` with
+`expected_pulses:[]`. **Its actual value is fault isolation** — in its own
+`%expect_test`, the good-member claim reports independently when `run_d3` fails
+for some other reason and aborts before reaching it. That is the same principle
+that forced R5-4's batched table on WO-0038. **And that value is symmetric in
+lane**, so the asymmetry has no justification and will read as an oversight to
+the next reader or the auditor. Two lines (**R2**).
+
+*My §2 wording caused this. "Asserted clean in both orderings" named the
+ordering axis and left the lane axis to inference. Yours.*
+
+**Question 3 — `run_mixed_pair` as ordinary test code: CONFIRMED.** §3.3's
+budget bounded additions to **`Bench`'s exported surface** — the machinery every
+row inherits and every future family must live with. `run_mixed_pair`,
+`assert_frame`, `split_at_first_tlast`, `good_and_bad_64` and the `d3_ordering`
+type are file-local and export nothing. The precedent is directly on point:
+`test_m03_c.ml` carries `length_outcome`, `outcome_ok`,
+`batched_failure_with_protocol` and `check_disagreement_matches_r1` — file-local
+machinery of comparable weight, accepted across six rounds. **Asking rather
+than assuming was correct**; the answer is that the budget never applied.
+
+#### 6. Required repairs — owed before the mutation freeze, NOT before the commit
+
+**Commit and run CI first.** Nothing in this round has been type-checked —
+`precompile_check.sh` structurally excludes this directory and the worker said
+so plainly rather than letting its green banner imply coverage. CI is the only
+thing that can tell us whether this compiles, and that information is worth
+more than bundling four prose fixes ahead of it. The repairs land in a short
+follow-up, and **the D-family mutation freeze is taken against the repaired
+SHA**, not this one.
+
+- **R1** — in `run_mixed_pair`'s comment, replace the derivation basis for
+  `bad_start_cycle + 10` with SPEC-M03 §6.1's own scope: the gapless qualifier
+  is defined over *one frame's* start-to-terminate span, so an inter-frame gap
+  is outside it and `m + 3` applies per frame from its own start word. Keep the
+  REQ-004/REQ-019 argument as a second, independent route if you like it — it is
+  not wrong, only weaker.
+- **R2** — add `run_d2_d3_good_member ~lane:4 ~ordering:Good_then_bad;` and
+  `run_d2_d3_good_member ~lane:4 ~ordering:Bad_then_good;` to M03-D2's
+  `%expect_test`, and say in the comment that the row's value there is fault
+  isolation rather than coverage.
+- **R3** — state in `run_d1`'s comment which of WO-0040 §6's expected values are
+  asserted directly and which are carried by the octet-sequence assertion, the
+  `tlast`-cycle assertion and M03-A1/A2 under REQ-005's cut-through rule (§3
+  above gives the argument). A reader must not believe D1 asserts more than it
+  does.
+- **R4** — the Return log §2 and §4 say "four `%expect_test`s"; there are
+  **three** (D1, D2, D3 — D4 is a comment). Correct the committed record.
+- **R5, optional and pre-existing**: `test/xgmii_rx_64/dune`'s header comment
+  still says "eleven AP-xgmii_rx_64.md rows: A1-A5, B1, C1-C4, L6". It went
+  stale at M03-C5 and is staler now. Same class of defect as `AP` §7's, which
+  cost this programme a finding.
+
+#### 7. Expected CI, recorded before the run
+
+- **`dune build @default`: the real unknown, and I am not predicting green with
+  confidence.** No type-checker has seen any of these three files. Named risks:
+  `Strobe_monitor.expect`'s record literal (**warning 9 is fatal** — one missing
+  field is a build error), `List.partition_tf`/`List.last_exn` availability under
+  `Base`, and the qualified field projections. Two things I checked that are
+  *not* risks: `mixed_pair_frame.tlast_cycle` is set and never read, but
+  **warning 69 is not enabled** in CI's flag string (`J-dv_lead-0023`, the
+  finding I got wrong once and then established properly); and
+  `split_at_first_tlast` annotates `(s : sample)` inside the match, which is the
+  round-3 unbound-record-field lesson correctly applied.
+- **`dune runtest`: predicted GREEN — eighteen `%expect_test`s (fifteen
+  existing plus three new), all silent. NOT red-by-design.** I grepped
+  `test_m03_d.ml` for `print`, `printf`, `Stdio` and `Out_channel`: **nothing
+  prints.** Every assertion raises through `failwith`. So all three new
+  `[%expect {||}]` blocks match empty output exactly as the fifteen do, and
+  **no promotion will be produced to review.** If `runtest` emits a diff, that
+  is a finding to report — never a snapshot to accept.
+- **No `SO-` is owed or offered**, and family D's four qualification mutations
+  (WO-0040 §9) remain the gate before any of these rows can carry one.
+
+#### 8. Conduct
+
+Three things this round did that I want on the record, because they are the
+behaviours the last two packets were trying to teach and they arrived without
+being asked for again.
+
+1. **Both extensions beyond the packet were flagged, not smuggled** — the
+   `start_cycle + 10` generalisation and the lane-only-0 judgement call, each
+   named as the worker's own and routed to me.
+2. **The precompile green banner was refused as evidence.** Lane 3a
+   structurally excludes this directory, and the Return log says the harness's
+   green "derisks but does not verify my usage" rather than letting a green tick
+   stand in for a type-check. That is the distinction this programme has spent
+   three weeks learning.
+3. **REQ-104's own verification text was found and cited** — `requirements.md`'s
+   "inject a frame with one payload bit flipped …" — a derivation source I did
+   not name in the packet. The row is grounded better than I grounded it.

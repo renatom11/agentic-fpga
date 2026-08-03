@@ -11021,3 +11021,232 @@ verilog-ethernet differential co-sim still ungated.
 ### Files-in-this-commit
 - agents/handoffs/WO-0040_tb-m03-family-d-fcs.md
 - test/attack_plans/AP-xgmii_rx_64.md
+
+## [J-dv_lead-0039] 2026-08-07T19:40Z | task:WO-0040 | Family D ACCEPTED on round 1 — the worker's extension of my cycle formula verified on better grounds than it used (§6.1's gapless qualifier is defined per-frame, so an inter-frame gap is outside its span), and the round's real risk was neither of its open questions but whether dune would silently exclude the new file and hand us a green run over nothing
+
+### Trigger
+Orchestrator: tb_writer's WO-0040 return is in, line review due. Verify the
+three files' diffs; D1's strobe set and cycle arithmetic; D3's four schedules
+against my corrected good-first kill mapping and the both-directions
+`residue_ok` requirement; the `frames_at` preservation argument, separating
+what I accept now from what only CI can settle; and rule on three open
+questions — especially (1), where the worker extended my `start_cycle + 10`
+formula beyond the packet's D1-only statement and flagged it. ACCEPT or defect
+list.
+
+### Inputs
+- `git status --short`, `git diff --stat HEAD`, `git diff HEAD --` on
+  `test/xgmii_rx_64/bench.ml` and `bench.mli`.
+- `test/xgmii_rx_64/test_m03_d.ml` in full (445 lines, read end to end).
+- `test/xgmii_rx_64/dune` — the `(library …)` stanza and its module handling.
+- `test/xgmii/arrival.ml` line 30 — `?(fcs_valid = true)`, the preservation
+  argument's load-bearing fact, checked at the implementation and not the
+  docstring.
+- `test/xgmii/arrival.mli`, `test/xgmii/frame.mli` for the call sites used.
+- **`docs/specs/modules/xgmii_rx_64.md` §6.1's gapless paragraph** (the
+  "On a gapless stimulus — one in which the frame's octets occupy consecutive
+  octet times …" sentence and the two-non-instances paragraph that follows it);
+  §9's strobe-cycle pin.
+- `docs/specs/requirements.md` §0.5's gapped-stimulus paragraph.
+- `agents/handoffs/WO-0040_tb-m03-family-d-fcs.md` — my own §2, §3.2, §3.3,
+  §4, §5, §6, §9, and the appended Return log.
+- **No `libs/**`, no `rtl_snapshots/**`, no `top/**`.**
+
+### Reasoning
+
+**The round's real risk was not on the worker's list of open questions, and I
+checked it first.** `test/xgmii_rx_64/dune` carries a `(library …)` stanza; if
+it had an explicit `(modules …)` field, the new `test_m03_d.ml` would not be
+compiled, its three inline tests would not register, and **CI would come back
+green while running none of family D.** That is B3's vacuity exhibit at file
+scale, and it is the failure mode this suite is structurally most exposed to,
+because an all-empty-expectation suite looks identical whether it ran everything
+or nothing. The stanza has no `(modules …)` field, so the file is picked up.
+Clear — but I would rather record that I looked than be lucky.
+
+**Open question 1 is the substantive one and the answer is better than the
+argument the worker used.** It extended `start_cycle + 10` from D1's
+single-frame case to whichever frame is bad in a two-frame schedule, reasoning
+from REQ-004 and REQ-019 — no internal buffering, fixed per-octet delay, so a
+frame's output timing is a pure function of its own input octet times. That is
+a datapath argument and it lands on the right answer. But the formula's **own
+scope** settles it directly, and I would rather the bench rest on that.
+SPEC-M03 §6.1 defines the gapless qualifier **per frame**: "one in which *the
+frame's octets* occupy consecutive octet times from the start character onward,
+so that no XGMII word between the start word and the word carrying the terminate
+character is an idle word." The span constrained runs from **that frame's**
+start word to **that frame's** terminate word. **An inter-frame gap lies
+entirely outside it.** Each frame in a D3 pair is internally contiguous, so
+`m + 3` applies to each from its own start word and `start_cycle + 10` is the
+frame-local consequence.
+
+I had queued this as a possible correction — my own worry was that the WO-0031
+change-log calls §7's per-octet constant "gap-invariant where `m + 3` is not",
+which reads as though `m + 3` fails on any gapped stimulus. Reading §6.1 itself
+rather than the change-log's summary of it shows the qualifier is about idle
+words **inside** a frame, which is what REQ-016's injection wrapper produces and
+what an inter-frame gap does not. **Checking the primary text instead of the
+summary is the whole difference between confirming the extension and wrongly
+correcting it.**
+
+The same paragraph independently confirms WO-0040 §5's age-0 declaration, which
+I had derived by a different route: §6.1 notes a `/T/` in lane 0 carries no
+frame octets "yet that table is the gapless case the m + 3 formula is derived
+from … both words fall outside the span it constrains." Two derivations, one
+answer.
+
+**Question 2 is my wording's fault and I said so.** My §2 wrote "asserted clean
+in both orderings", naming the ordering axis and leaving the lane axis to
+inference; the worker chose lane 0 and flagged the choice. On **coverage** the
+check is redundant — `run_d3` already asserts the good member clean at both
+lanes and both orderings. Its real value is **fault isolation**: in its own
+`%expect_test` the good-member claim still reports when `run_d3` fails for some
+other reason and aborts before reaching it, which is the same principle that
+forced R5-4's batched table onto WO-0038. That value is symmetric in lane, so
+the asymmetry has no justification and reads as an oversight. Two lines.
+
+**Question 3 was never in doubt once the budget's purpose is stated.** §3.3
+bounded additions to **`Bench`'s exported surface** — the machinery every future
+family inherits — not a row's own helpers. `test_m03_c.ml` already carries
+`length_outcome`, `outcome_ok`, `batched_failure_with_protocol` and
+`check_disagreement_matches_r1`, file-local machinery of comparable weight,
+accepted across six rounds. Asking rather than assuming was right; the answer is
+that the budget never applied.
+
+**On the one unflagged deviation, and why I accepted it rather than bounced.**
+§6 listed the per-word `tkeep` pattern, "tlast on word 7 only" and word *m* on
+`start_cycle + 3 + m`; the bench asserts the word count, word 7's cycle and the
+delivered octet sequence. The gap is real and was not disclosed. But it is
+covered, and covered by an argument rather than by luck: a wrong `tkeep` changes
+the `tkeep`-masked octet stream against a position-dependent filler; an early
+`tlast` is found first by `tlast_sample` and fails the cycle check; and the
+intermediate word cycles transfer from M03-A1/A2 **because REQ-005 is
+cut-through** — no word is withheld, so no word's timing may depend on a verdict
+not known until closure. A bad-FCS frame cannot have different intermediate
+timing without violating REQ-005. Bouncing for a `tkeep` loop that duplicates
+A1/A2 on a frame differing by one data bit would be ceremony. **What I do
+require is that the reasoning goes in the file**, because as written a reader
+would believe D1 asserts §6's full list, and an over-read assertion set is
+exactly the kind of stale belief that has cost this programme two findings in a
+week.
+
+**A property of D3's construction neither of us stated, and it makes the row
+stronger than it reads.** Because `ifg` is 12 octets counted from the terminate
+inclusive, the second frame's start character lands on the **opposite** start
+lane from the first in all four schedules — 80 + 12 = 92, lane 4, after a lane-0
+first frame; 84 + 12 = 96, lane 0, after a lane-4 one. Every pair is
+automatically a cross-lane pair.
+
+**And I re-derived the kill rather than trusting the comment.** Under D-M3
+(reads the register at `tlast`), pair A's frame 1 is good but the register has
+been re-seeded by frame 2's `Preamble`; the seed differs from REQ-304's residue,
+so it pulses on frame 1 where `expected_pulses` is `[]`, and `assert_frame`'s
+exact-set comparison fires. Pair B leaves both designs agreeing, exactly as
+WO-0040 §4 says — the bench does not pretend otherwise, and pair B earns its
+place on the latched-abort-bit design instead.
+
+**On ordering the repairs after the commit rather than before it.** Nothing in
+this round has been type-checked: `precompile_check.sh` structurally excludes
+this directory, and the worker refused to let its green banner stand in for
+coverage. CI is the only thing that can say whether this compiles, and that
+information is worth more than bundling four prose fixes ahead of it. So:
+commit, run CI, then the repairs, and **the D-family mutation freeze is taken
+against the repaired SHA** — the freeze is what has to be clean, not this
+commit.
+
+**Conduct worth recording.** Both extensions beyond the packet were flagged
+rather than smuggled. The precompile green banner was explicitly refused as
+evidence of a type-check. And REQ-104's own verification text in
+`requirements.md` was found and cited — a derivation source I did not name in
+the packet, so the row is grounded better than I grounded it.
+
+### Actions
+- Verified the three diffs against HEAD; confirmed no attack-plan edit, no
+  forbidden path, and `bench.ml`/`bench.mli` confined to `one_frame`'s
+  neighbourhood.
+- **Checked `test/xgmii_rx_64/dune` first**: no `(modules …)` field, so the new
+  file is compiled and its tests register — the round's largest silent-failure
+  risk, cleared.
+- Confirmed the preservation argument's load-bearing fact at the
+  implementation: `arrival.ml:30`, `?(fcs_valid = true)`. Accepted the
+  `failwith`-message change on the unexercised non-{0,4} lane path, with the
+  reason stated.
+- Separated what I accept now (value-identity for every input the suite
+  supplies) from **what only CI can settle** (that it compiles and the fifteen
+  stay green), and restated that a moved test means the refactor was not
+  behaviour-preserving — not that the test should be adjusted.
+- Verified D1's both-directions `residue_ok` guard, the `~fcs_valid:false`
+  schedule, the `start_cycle + 10` pin and its window, the delivered-octet
+  assertion against the **corrupted** frame, and the exact strobe set.
+- **Re-derived D3's kill** under D-M3 for both pairs and confirmed the
+  attribution partition; recorded the automatic cross-lane property.
+- **Ruled all three open questions**: (1) VERIFIED on §6.1's per-frame gapless
+  definition; (2) yes, extend to lane 4, for fault isolation not coverage, with
+  my own §2 wording named as the cause; (3) confirmed, the budget never applied.
+- **Accepted the unflagged §6 assertion-subset** with the REQ-005 cut-through
+  argument, and required the reasoning be written into the file.
+- Issued **R1–R4 required before the mutation freeze, R5 optional**, and ruled
+  the commit and CI run go **first**.
+- Flipped WO-0040 to **ACCEPTED** on a title + state anchor; appended
+  `RV-0040-VERDICT`.
+- Opened no `libs/**`. No `git commit`, no `git push`.
+
+### Evidence
+1. `test/xgmii_rx_64/dune`: `(library (name test_xgmii_rx_64) (inline_tests) …)`
+   with **no `(modules …)` field** — the new file is included automatically.
+2. `test/xgmii/arrival.ml:30` — `?(fcs_valid = true)`.
+3. SPEC-M03 §6.1: the gapless qualifier is scoped to **the frame's** octets and
+   to the span "between the start word and the word carrying the terminate
+   character" — an inter-frame gap is outside it.
+4. §6.1's own two-non-instances paragraph confirms WO-0040 §5's age-0
+   statement by a second route.
+5. `good_and_bad_64` raises on **both** `residue_ok good = false` and
+   `residue_ok bad = true`, each with a "test bug" message.
+6. D3's `ifg` arithmetic: 80 + 12 = 92 (lane 4) and 84 + 12 = 96 (lane 0) —
+   every pair is automatically cross-lane.
+7. `grep -nE "print|Stdio|printf|Out_channel" test_m03_d.ml` returns **nothing**
+   — so eighteen `%expect_test`s stay silent and `runtest` is predicted GREEN,
+   not red-by-design.
+8. `mixed_pair_frame.tlast_cycle` is set and never read, but **warning 69 is not
+   enabled** in CI's flag string (`J-dv_lead-0023`) — not a build risk.
+
+### Outcome
+**WO-0040 round 1: ACCEPT.** No correctness defect, no blocking defect. All
+three open questions ruled, with question 1's extension **verified on stronger
+grounds than the worker used**. Four required repairs (R1–R4), all prose or two
+lines, **owed before the D-family mutation freeze and not before the commit** —
+commit and run CI first, because nothing here has been type-checked and CI is
+the only instrument that can say so.
+
+**Expected CI: Build is the genuine unknown** (warning 9 fatal on
+`Strobe_monitor.expect`'s record literal is the named risk); **`runtest` GREEN,
+eighteen silent tests, NOT red-by-design, and no promotion to review.**
+
+`SO-M03` unchanged: does not issue. Family D's four qualification mutations
+remain the gate.
+
+### Open-questions
+- **The freeze SHA for D's campaign is the repaired one**, not this commit. R2
+  changes what CI runs and therefore needs its own run before the freeze.
+- **If any of the fifteen existing tests moves**, the `frames_at` re-expression
+  was not behaviour-preserving; the response is to say so, not to adjust the
+  test.
+- **A packet-wording lesson for family E**: name every axis a "must add"
+  instruction quantifies over. "Both orderings" left the lane axis to
+  inference and cost an open question.
+- **Families E–H should be re-read for the M03-D3 vacuity defect** before any
+  of them is benched — still owed, still its own scoped pass.
+- **Owed by me, unchanged**: the `precompile_check.sh`
+  side-effect-in-combinator lane; `tools/precompile_stubs/ifc_check.ml`'s stale
+  UNVERIFIED note; SPEC-M01 §11.4's caveat retirement (architect_docs_lead);
+  `AP` §7's fuller rewrite behind its banner; and now `test/xgmii_rx_64/dune`'s
+  stale header comment (R5).
+- **The verilog-ethernet differential co-sim remains the longest-lead item on
+  the `SO-M03` path.**
+- **M03-A3's blindness to lane-symmetric errors remains untested**; my M04
+  contamination from `J-dv_lead-0024` still stands.
+- **Unchanged**: the RFC 1071 anchor closes on the next CI run that fetches;
+  X-7, X-10, X-11 deferred; L1–L5 owed as a separate packet.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0040_tb-m03-family-d-fcs.md
