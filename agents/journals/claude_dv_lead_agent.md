@@ -17253,3 +17253,209 @@ twenty-five** were — the widest such gap any family in this programme has clos
 ### Files-in-this-commit
 - agents/handoffs/WO-0055_family-g-mutation-campaign-SEALED-predictions.md
 - agents/handoffs/WO-0055_family-g-mutation-campaign.md
+
+## [J-dv_lead-0070] 2026-08-05T10:15Z | task:WO-0055 | G-c4 survived, and the survival is worth more than the four kills — two of my own §4.G rows place their character in the inter-frame gap while citing the clauses that govern the Discard window, and the number that does it is one I wrote at WO-0027
+
+### Trigger
+Orchestrator: all five WO-0055 branches ran (`mut/wo-0055-g-c1` … `g-c5`, diffs
+at `762ae49`). Four red, **G-c4 GREEN — the mutation survived the suite**, its
+build job failing only at the determinism step. The auditor's disclosed choices
+ride with the harvest as my seal required: G-c4 seeded for **`/E/` only**. Open
+the seal, adjudicate all five including the four-branch G-c4 mapping keyed on
+that disclosure, unseal, write `RV-0055-VERDICT`.
+
+### Inputs
+- The four verbatim harvest files `…/wo55_harvest/g-c{1,2,3,5}_runtest_verbatim.txt`
+  — read in full — and the dispatch's account of g-c4's green run.
+- `agents/handoffs/WO-0055_…-SEALED-predictions.md` — my own §1 unit table, §2
+  matrix, §3 messages **and §3's G-c4 mapping**, §4 reasoning, §5 bounds.
+- **`test/xgmii_rx_64/test_m03_g.ml` `run_g4`'s injection block and its own
+  guard** — the whole of §2's derivation; `run_g3`'s scheduling of its second
+  frame.
+- `docs/specs/modules/xgmii_rx_64.md` §6.2's `Discard` row and §9's sixth and
+  seventh rulings; `docs/specs/requirements.md` REQ-108's C-12 clause.
+- `test/attack_plans/AP-xgmii_rx_64.md` §4.G rows M03-G3, M03-G4, M03-G6.
+- The auditor's disclosed seeding choices **as relayed in the dispatch** — used
+  only after the derivation below and only for what is owed next (see Reasoning).
+- **No `libs/**`, no `docs/reports/audit/**`, no `/workspace/**`.**
+
+### Reasoning
+
+**Four classes landed exactly and I will not dwell on them: 17 of 18 REQUIRED
+cells, 107 of 107 MUST-STAY-GREEN, every one of the seventeen messages sealed
+character for character**, including G-c2's cross-family kill of T-C3 and the
+three-way split of G-c1 (`tkeep`) from G-c3 (`observed 2`) from G-c5
+(`observed 0`) over an identical five-unit row set. Fourth campaign running where
+the row sets do not discriminate and the messages do.
+
+**G-c4 is the round, and the first thing I did was derive rather than read.** The
+disclosure arrived inside the dispatch so I had already seen it; that makes the
+discipline harder, not optional. So I worked the answer from `test_m03_g.ml`
+alone and it is complete without the disclosure:
+
+> `run_g4` computes `inject_ot = start_ot1 + 8 + 1518 + 100` and then **asserts in
+> its own guard** that `inject_ot > terminate1 && inject_ot < start_ot2`, failing
+> with *"the chosen /E/ octet time is not strictly inside the inter-frame gap"*.
+> **The row states, in code, that its `/E/` lands after frame 1's terminate.**
+> §6.2's `Discard` row exits on the frame's own terminate. So the receiver is
+> **not discarding** when the `/E/` arrives, and a defect gated on that state is
+> invisible to this row **by construction**. T-G4 green is correct.
+
+The disclosure then confirms it — the seeded predicate is the discarding state
+conjoined with an error character — and I used it only for §5's assessment of the
+auditor's rejected variants, not to reach the verdict. Recorded that way in the
+packet so the order of reasoning is on the record and not merely claimed.
+
+**FINDING G-1, against my seal, and worse than one wrong branch.** The `/E/`
+branch predicted T-G4 red. It stayed green. Re-deriving all four branches, **two
+of the four were wrong**: `/S/` should have been T-G6 alone, not T-G3 and T-G6;
+`/E/` should have been empty; generic should have been three units, not five. Only
+`/T/` was right.
+
+**The pattern in my own errors is now exact enough to name.** I got right the two
+branches where the character **is** the frame's own terminate or where there is
+none — the cases in which "still in `Discard`" holds by construction and needs no
+check. I got wrong **both** branches where a character is *injected*, because I
+never asked where the frame's own terminate falls relative to it. My seal's own
+words were *"T-G4 injects an `/E/` 100 octets past truncation, **in `Discard`**"*
+— a state asserted, not derived. That is the third consecutive campaign whose
+miss is a cell reasoned from a category: T-E4 from its family, F-c8's row set
+from an intent I had over-pinned, and now this.
+
+**FINDING G-2 is the one that matters, and it is not a seal error but a
+verification error forty entries old.** M03-G3 cites §9's sixth ruling and C-12;
+M03-G4 cites the seventh and C-12. **Those clauses govern REQ-108's own window —
+between the truncation point and the next start character — which is the
+`Discard` window.** Both rows put their character in the **inter-frame gap**
+instead. So G4's `/E/` tests M03-E4's class (an `/E/` with no frame open) and G3's
+`/S/` tests a start character arriving into an idle receiver, which passes
+trivially because there is nothing open to abort. **M03-G6 is the only row in the
+family that exercises the `Discard` window at all**, and only because it has no
+terminate.
+
+**One number causes it.** For a 1600-octet frame the `Discard` window is content
+1518 … 1599 — **82 octets**. Both rows place their character at *"100 octets past
+the truncation point"*, content index **1618**, overshooting by nineteen. An
+offset of 81 or less lands inside.
+
+**And the figure is mine, from `AP-xgmii_rx_64.md` §4.G at WO-0027**, republished
+in `WO-0054` §3.3 without re-checking it against the window the same rows cite.
+tb_writer implemented the row exactly as written **and made the consequence
+visible in a guard** — which is the only reason this took one read instead of a
+re-run. Nothing is owed against the worker; the guard is what saved the
+diagnosis.
+
+**What makes this the round's real output is that nothing could have found it
+sooner.** A row that tests the idle path while claiming the discard path is
+**green on every correct design**, indistinguishable from a row that works. It
+took a blinded seeder aiming a faithful diff at exactly that window, and the diff
+**surviving**, to expose it. That is WO-0045's M03-E5 discovery one better: there
+the gap was found by a seeder *reading*, here by a mutation *measuring*.
+
+**So G-c4's survival is a campaign failure against criterion 1 and a success of
+the campaign**, and both halves are true simultaneously. §5's own words are that
+a class which fails to land is a bench finding, full stop — and it is. I scored
+it that way rather than reaching for the softer reading that the class was
+mis-seeded, because the seeding was faithful and disclosed and the row is what
+missed.
+
+**No finding lies against the auditor, and its rejected variants are worth
+keeping as classes.** It disclosed *why* `/T/` and `/S/` were refused — a `/T/`
+in the discarding state would also set the closure record's terminate flag and
+plant G-c3's defect a second time through the FCS field; a `/S/` sits on the next
+frame's admission path — both being the standing collision clause, and both being
+arguments I could not have constructed from the specification alone. Its G-c1
+reading is also better than my intent's: there is no delivered-count constant to
+corrupt, so suppressing the tail removal on the oversize closure is the faithful
+minimal rendering, and it landed on all five rows as sealed.
+
+**Scope discipline, again and for the same reason.** The repair — an offset fix to
+M03-G3 and M03-G4, or a new row for the `Discard` window — is **not** in this
+commit. A row changed in the commit that scores a campaign is the denominator
+problem in its third costume. It goes to a follow-up packet with the standing
+consequence recorded in the verdict meanwhile: **no packet may claim family G
+verifies REQ-108's `Discard` window for an `/E/` or a `/S/`.**
+
+### Actions
+- Read all four verbatim harvest files and adjudicated **125 matrix cells**
+  against the seal.
+- **Derived G-c4's survival from `run_g4`'s own guard and §6.2's exit rule before
+  using the disclosure**, and recorded that ordering in the verdict.
+- **Re-derived all four branches of the G-c4 mapping** and found two wrong;
+  recorded the corrected table beside the frozen one.
+- **Diagnosed FINDING G-2** — the 82-octet `Discard` window against the
+  100-octet offset — and attributed it to my own WO-0027 row text.
+- Assessed the auditor's disclosure: no finding; two rejected variants recorded
+  as candidate classes.
+- **Unsealed** by state-line flip only, in the WO-0039 form, stating explicitly
+  that §3's mapping stands **including the two falsified branches**.
+- Appended **`RV-0055-VERDICT`** with the scorecard, both findings, the bounds
+  and the coverage arithmetic.
+- Touched no row of the attack plan. Opened no `libs/**`. No `git`.
+
+### Evidence
+1. Red-unit counts from the `.corrected` hunks: **5, 2, 5, 0, 5**. Files touched:
+   g-c2 in two (`test_m03_g.ml` and `test_m03_c.ml`), the rest in one. No unit
+   outside `test/xgmii_rx_64/`.
+2. G-c1 — five `tkeep does not match the 1514-octet truncation constant`
+   messages, G1's naming `(0x03)`, all sealed verbatim.
+3. G-c2 — `M03-G2 (lane 0, 1518 legal maximum): tuser[0] set on a legal,
+   maximum-length frame` **and** `M03-C3 (lane 0): tuser[0] set unexpectedly`.
+   Both sealed verbatim; the cross-family kill was predicted.
+4. G-c3 / G-c5 — the same five exact-strobe-set arms, `observed 2` and
+   `observed 0` respectively, all sealed verbatim.
+5. **`run_g4`'s guard**: `if not (inject_ot > terminate1 && inject_ot <
+   start_ot2) then fail row "test bug -- the chosen /E/ octet time is not
+   strictly inside the inter-frame gap"`, with `inject_ot = start_ot1 + 8 + 1518
+   + 100`.
+6. Window arithmetic: a 1600-octet frame's `Discard` window is content
+   **1518 … 1599**, 82 octets; the injected character sits at content **1618**.
+7. **Ephemeral** (ADR-0003/F5): the harvest files are throwaway scratchpad
+   artefacts outside the repository, reproducible from CI runs 30843766594,
+   30843769574, 30843772319, 30843772037 and 30843774829.
+
+### Outcome
+**Family G's campaign: four of five killed exactly — 17/18 REQUIRED, 107/107
+MUST-STAY-GREEN, every fired message sealed character for character — and one
+class SURVIVED.**
+
+**G-c4's survival is adjudicated as a bench finding, and it is the most valuable
+result this programme's campaign mechanism has produced.** It measured a gap that
+is invisible to every green run: **M03-G3 and M03-G4 place their injected
+character in the inter-frame gap while citing the clauses that govern the
+`Discard` window**, so family G verifies that window for the no-terminate case
+(M03-G6) and for nothing else.
+
+**Both findings are mine** — a seal branch derived from a category, and a row
+figure written at WO-0027 and republished without re-checking. **The bench
+behaved correctly in all 125 cells.**
+
+`SO-M03` does not issue: **30 rows benched, 26 of 60 ASSERT discharged, 34
+outstanding** — and now with a second reason, that two benched rows do not cover
+what they claim until repaired.
+
+### Open-questions
+- **Owed, and deliberately not in this commit**: repair M03-G3's and M03-G4's
+  offset to land inside the `Discard` window (≤ 81 octets past truncation on a
+  1600-octet frame), or add a row that does. Until then **no packet may claim
+  family G verifies REQ-108's `Discard` window for an `/E/` or a `/S/`.**
+- **Two candidate classes the auditor rejected and disclosed** — a `/T/` and a
+  `/S/` acting in the discarding state — are unexercised. The `/T/` variant needs
+  care: the auditor's own reason for rejecting it is that it re-plants G-c3's
+  defect through the closure record's FCS field, so a future intent must scope
+  around that or accept the overlap knowingly.
+- **My error pattern is now three-for-three and specific**: every miss has been a
+  cell asserted from a category rather than derived from the stimulus geometry.
+  The repair I am adopting is procedural — **in a seal, any cell whose ground is a
+  claim about the DUT's *state* must cite the stimulus fact that establishes that
+  state**, or be marked unworked. Both wrong branches would have failed that test.
+- **The epoch-A no-output-word class** (`J-dv_lead-0065`) is still owed and rides
+  with family H.
+- **Still owed**: AP-M14's §6 invariant; the `precompile_check.sh`
+  side-effect-in-combinator lane; M03-F5's discharge-by-citation qualification;
+  the RFC 1071 anchor on the next fetching run; X-7, X-10, X-11 deferred; L1–L5
+  as a separate packet.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0055_family-g-mutation-campaign-SEALED-predictions.md
+- agents/handoffs/WO-0055_family-g-mutation-campaign.md
