@@ -2215,3 +2215,245 @@ not attribute them to this WO.
 ### Files-in-this-commit
 - test/xgmii_rx_64/test_m03_e.ml
 - agents/handoffs/WO-0043_tb-m03-family-e-error-character.md
+
+## [J-tb_writer-0009] 2026-08-03T13:28Z | task:WO-0044 | Vendoring the co-sim reference — pinning `verilog-ethernet` by SHA, re-deriving closure at that pin rather than at the ADR's unpinned `master`, and the three-notice licensing record
+
+### Trigger
+
+WO-0044/2026-08-03T13:28Z (no explicit spawn short-id token was included
+verbatim in my launch prompt — reconstructed from the current UTC time at
+first tool call, same convention `J-tb_writer-0007` and `J-tb_writer-0008`
+used when a token was likewise absent). This is a file-import task, not a
+bench task: the orchestrator spawned me to execute WO-0044 §6's
+"Reference vendoring + pinning" row — fetch, pin and place
+`alexforencich/verilog-ethernet`'s `axis_xgmii_rx_64`/`lfsr` closure and its
+licence file under `test/third_party/verilog-ethernet/`, per
+`docs/adr/ADR-0015-the-cosim-lane-dependency-reference-and-determinism.md`
+§D2 (ACCEPTED 2026-08-03, `d3a5a1d`), now that E3-2 (third-party source in
+the repository) was granted by the sponsor. My own instructions were explicit
+that ADR-0015 D2's own closure finding was measured against an **unpinned**
+`master` and had to be re-derived independently at whatever SHA I actually
+pinned — not copied from the ADR's prose — and that I must STOP without
+fetching further files if closure failed at that pin.
+
+### Inputs
+
+`agents/charters/tb_writer.md` (full); `agents/PROTOCOL.md` §2-6 and §10
+(full); `agents/handoffs/WO-0044_cosim-lane-opening.md` (full — the packet
+that names this deliverable at §6's table and its independence note at
+§6's closing paragraph); `docs/adr/ADR-0015-the-cosim-lane-dependency-reference-and-determinism.md`
+(full — D2 in particular: placement, the closure measurement I was told to
+re-derive rather than trust, the three-notice licensing reasoning, the
+no-edit/pin-bump rules, the `libs/**` boundary ruling and its converse
+expected-value obligation).
+
+Directory reconnaissance only (no content read as spec/RTL): `ls test/`,
+`ls test/third_party` (absent before this task), and the tail of this
+journal to find the last entry ID (`J-tb_writer-0008`, so this entry is
+`0009`, monotonic per PROTOCOL §4.1/R5).
+
+Third-party reference material fetched from the network at the pinned SHA
+(explicitly authorised by this task and by ADR-0015 D2's ruling that vendored
+`verilog-ethernet` source sits **outside** the `libs/**` read bar — it is a
+third-party implementation, not the design under test): `rtl/axis_xgmii_rx_64.v`,
+`rtl/lfsr.v` and `COPYING`, each via
+`raw.githubusercontent.com/alexforencich/verilog-ethernet/<SHA>/<path>`; and
+`git ls-remote https://github.com/alexforencich/verilog-ethernet.git` for the
+`master`/`HEAD` ref resolution. I read the fetched `.v` files' text only to
+perform the mechanical closure check (instantiation count, `` `include ``
+search) and to transcribe header copyright lines into `PROVENANCE.md` — not
+as a source of expected values for any bench, per the converse obligation.
+
+**Not read, this spawn**: `libs/**`, `top/**`, `bin/**`, `rtl_snapshots/**` —
+no path under any of these four was opened, globbed into context, or
+otherwise consulted.
+
+### Reasoning
+
+**Resolving the API-vs-git-protocol obstacle.** The task named
+`api.github.com/repos/.../commits/master` as the expected resolution path.
+It returned a proxy-level refusal ("GitHub access to this repository is not
+enabled for this session... use add_repo"), not a GitHub error — the session's
+GitHub MCP tooling is scoped to repos already attached to this account and
+`add_repo` itself refused with "cross-tier adds are not supported... session
+already has repos from owner(s) [renatom11]." Both are session-plumbing
+limits, not evidence the SHA is unreachable, so I did not treat the refusal
+as a dead end (the ADR's own §7's "if RTL leaked / if a dependency is
+unreachable" escalation rule is about instructions and paths, not about
+finding a second reachable channel for the same public ref). `git ls-remote
+https://github.com/alexforencich/verilog-ethernet.git master` resolves the
+same ref over the git smart-HTTP protocol, which is unauthenticated,
+read-only, and orthogonal to the REST API path the proxy gated — it returned
+promptly. I cross-checked it against `git ls-remote .../HEAD`, which returned
+the identical 40-hex SHA, corroborating that `master` is upstream's default
+branch and that I pinned the branch tip the task asked for, not a stale ref.
+This is consistent with the ADR's own methodology (D1's "measured rather
+than assumed" availability story) — I did not assume raw fetches would work
+because the ADR said so elsewhere; I exercised the fetch and recorded the
+HTTP status for each of the three files (all 200).
+
+**Why re-derive closure at the pin instead of citing the ADR's numbers.**
+The task was explicit and I agree with its reasoning independently: the ADR's
+D2 closure measurement (449/447 lines, 13,496/16,327 bytes, one `lfsr`
+instantiation, no `` `include ``) was taken against `master` on 2026-08-03
+with no SHA recorded — i.e. against whatever commit happened to be at the
+tip *when the architect looked*, which is not necessarily the same commit as
+whatever tip I resolve now or a future re-run resolves later. Two conformant
+runs of "fetch master and check closure" can legitimately observe different
+commits if upstream pushed in between; citing the ADR's byte counts as if
+they were my own check would be exactly the "expected output copied instead
+of verified" failure my charter's promotion-discipline rule targets in the
+bench context, applied here to a closure claim instead of a waveform. So I
+ran the same three checks (`grep -n '`include'`, an instantiation-shaped
+line search across the *whole* file rather than only near the known instance,
+and a `module` declaration count) against the bytes I actually fetched at my
+own resolved SHA, before writing anything to `PROVENANCE.md`. Result: closure
+holds at my pin too, and my byte counts and copyright-year triple (2015-2017 /
+2016-2023 / 2014-2018) match the ADR's numbers exactly — which is evidence
+`master` had not moved between the ADR's measurement and mine, not evidence I
+was entitled to skip the check.
+
+**Why `cp -p` for the three vendored files, not `Write`.** `Write` composes a
+string I author, which risks a trailing-newline or encoding normalization
+that would silently violate "byte-verbatim, no edits of any kind, not even
+whitespace" — the ADR's own stated rationale (per-file copyright-year headers
+would be narrowed by any tidying). I fetched each file once via `curl` to a
+scratch directory, then used `cp -p` (a byte-for-byte filesystem copy, not a
+tool that re-serializes text) into `test/third_party/verilog-ethernet/`, then
+`diff`'d the copy against the fetched original and re-ran `sha256sum` on the
+final on-disk files to confirm no transcription step altered them. `PROVENANCE.md`
+itself is my own prose and was written with `Write`, which is correct — it is
+not a vendored file and carries no verbatim obligation.
+
+**Why this is the right amount of PROVENANCE content.** ADR-0015 D2 states
+what the manifest must record (repo URL, 40-hex SHA, per-file upstream path,
+sha256) and the three-notice licensing reasoning as a standing rule the
+manifest should make legible without forcing a reader back to the ADR. I
+included both, plus the independence-boundary/converse-obligation paragraph
+verbatim in spirit (not copy-pasted) from D2's ruling, because a reader of
+this directory in isolation — an auditor sampling licensing surfaces, per
+ADR-0015's "Consequences" section — should not need the ADR open beside it to
+know the one rule that matters most: this reference may never become a
+source of expected values.
+
+### Actions
+
+1. Resolved the pin: `git ls-remote https://github.com/alexforencich/verilog-ethernet.git master`
+   and `.../HEAD`, both returning `77320a9471d19c7dd383914bc049e02d9f4f1ffb`.
+2. Fetched, to a scratch directory, `rtl/axis_xgmii_rx_64.v`, `rtl/lfsr.v` and
+   `COPYING` from `raw.githubusercontent.com/alexforencich/verilog-ethernet/77320a9471d19c7dd383914bc049e02d9f4f1ffb/<path>`
+   — three separate `curl` calls, HTTP 200 / sizes 13,496 / 16,327 / 1,062
+   bytes respectively.
+3. Re-derived closure at the pin: confirmed exactly one instantiation
+   (`lfsr #( ... ) eth_crc ( ... )`, line 177) in `axis_xgmii_rx_64.v`, no
+   other instantiation-shaped line in the file, and no `` `include `` in
+   either `.v` file; confirmed `lfsr.v` instantiates nothing.
+4. Computed sha256 of each fetched file.
+5. `mkdir -p test/third_party/verilog-ethernet`; `cp -p` the three fetched
+   files in; `diff`'d each on-disk copy against its scratch original (clean);
+   re-ran `sha256sum` on the on-disk copies (identical to step 4).
+6. Wrote `test/third_party/verilog-ethernet/PROVENANCE.md`: upstream URL,
+   the pinned 40-hex SHA and how it was resolved, fetch date and method, the
+   per-file upstream-path/byte-count/sha256 table, the closure re-derivation
+   result, the no-edit/pin-bump rules, the three-notice licensing table with
+   all three distinct copyright-year ranges, and the `libs/**`
+   independence-boundary ruling with its converse expected-value obligation.
+7. Verified the 1,000,000-byte blob gate (all four files 1,062-16,327 bytes,
+   three orders of magnitude under it), re-cross-checked sha256 against
+   `PROVENANCE.md`'s table, and confirmed `git status --porcelain` shows only
+   the new `test/third_party/` directory as untracked (no other path touched).
+8. Did not run `git add`, `git commit`, or any git-history-mutating command —
+   orchestrator's exclusively, per PROTOCOL §2/§5.
+
+### Evidence
+
+```
+$ git ls-remote https://github.com/alexforencich/verilog-ethernet.git master
+77320a9471d19c7dd383914bc049e02d9f4f1ffb	refs/heads/master
+$ git ls-remote https://github.com/alexforencich/verilog-ethernet.git HEAD
+77320a9471d19c7dd383914bc049e02d9f4f1ffb	HEAD
+```
+
+```
+$ curl -sS -w "HTTP_STATUS:%{http_code} SIZE:%{size_download}" \
+    https://raw.githubusercontent.com/alexforencich/verilog-ethernet/77320a9471d19c7dd383914bc049e02d9f4f1ffb/rtl/axis_xgmii_rx_64.v -o axis_xgmii_rx_64.v
+HTTP_STATUS:200 SIZE:13496
+(lfsr.v: HTTP_STATUS:200 SIZE:16327; COPYING: HTTP_STATUS:200 SIZE:1062)
+```
+
+```
+$ sha256sum test/third_party/verilog-ethernet/*.v test/third_party/verilog-ethernet/COPYING
+99d2b9578a440f03232030ae3da72eeb26b1cc8321d8eb24aa34b98fc46b8ccb  axis_xgmii_rx_64.v
+5502c8203b0dfc7246c1a2de93e60c199ded3c1d7840b106350d714f72a9a079  lfsr.v
+8ea57f95365e9b16a5b516f422b71269183a1ae53bab5878ae6d69039e58fe77  COPYING
+```
+
+```
+$ grep -n '`include' test/third_party/verilog-ethernet/axis_xgmii_rx_64.v test/third_party/verilog-ethernet/lfsr.v
+(no output — no `include in either file)
+$ grep -nE '^\s*[a-zA-Z_][a-zA-Z0-9_]*\s*(#\s*\()?\s*[a-zA-Z_][a-zA-Z0-9_]*\s*\($' test/third_party/verilog-ethernet/axis_xgmii_rx_64.v test/third_party/verilog-ethernet/lfsr.v
+axis_xgmii_rx_64.v:186:eth_crc (
+(the only instantiation-shaped line in either file)
+```
+
+```
+$ wc -c test/third_party/verilog-ethernet/*
+1062 COPYING / 6706 PROVENANCE.md / 13496 axis_xgmii_rx_64.v / 16327 lfsr.v
+```
+
+```
+$ git status --porcelain
+?? test/third_party/
+```
+(only line, before this journal append; after the append the journal itself
+also shows modified, which is this commit's own coupling per PROTOCOL R2.)
+
+### Outcome
+
+DoD met for this deliverable: pin resolved to a full 40-hex SHA
+(`77320a9471d19c7dd383914bc049e02d9f4f1ffb`) by a channel that actually
+works from this session (`git ls-remote`, after the REST API path the task
+anticipated proved session-gated); all three files fetched byte-verbatim at
+that SHA with matching HTTP 200s and sizes; closure independently re-derived
+at the pin (not cited from the ADR) and confirmed — exactly one `lfsr`
+instantiation in `axis_xgmii_rx_64.v`, no `` `include `` in either file,
+`lfsr.v` a leaf — so no STOP condition was hit and no further files were
+fetched; `PROVENANCE.md` written with every field ADR-0015 D2 requires;
+blob-gate and sha256 cross-checks both pass; `git status` shows only the new
+`test/third_party/` directory untracked. No git commit was run — the
+orchestrator commits via `agent_commit.sh`, per PROTOCOL §5. No `SO-` or
+sign-off claimed; this is a vendoring/file-import deliverable under WO-0044
+§6's table, not a bench acceptance, and its review path is dv_lead per that
+table's own "review" column. I did not append a Return log block to
+`agents/handoffs/WO-0044_cosim-lane-opening.md` this spawn — this task's own
+instructions scoped the git-status check to "your new directory + journal"
+only (step 5), which I read as a deliberate narrowing of this spawn's write
+footprint to exactly those two things; flagged under Open-questions below so
+it is a visible choice rather than a silent omission.
+
+### Open-questions
+
+1. Whether this vendoring deliverable should also get a Return log entry
+   under `agents/handoffs/WO-0044_cosim-lane-opening.md` (as other WO-'s
+   Return logs record completed sub-deliverables) is left to the orchestrator
+   / dv_lead: this spawn's instructions explicitly scoped verification to
+   "git status shows only your new directory + journal," which I took as
+   authoritative for this narrower file-import spawn over my charter's
+   general Return-log practice, rather than silently editing a packet header
+   I wasn't asked to touch this round.
+2. No explicit spawn short-id token was included verbatim in my launch
+   prompt (as in `J-tb_writer-0007`/`0008`); I used the current UTC timestamp
+   at first tool call. If the orchestrator minted one that did not reach me,
+   it should be reconciled against this entry's Trigger line.
+3. `master` is a moving ref by definition; nothing here fixes what happens if
+   upstream force-pushes over `77320a9471d19c7dd383914bc049e02d9f4f1ffb`
+   before this pin is committed. That risk is inherent to pinning-by-branch-tip
+   rather than pinning-by-tag and is unchanged from what ADR-0015 D2 itself
+   accepted; recorded here only so a future reader knows it was considered,
+   not assumed away.
+
+### Files-in-this-commit
+- test/third_party/verilog-ethernet/axis_xgmii_rx_64.v
+- test/third_party/verilog-ethernet/lfsr.v
+- test/third_party/verilog-ethernet/COPYING
+- test/third_party/verilog-ethernet/PROVENANCE.md
