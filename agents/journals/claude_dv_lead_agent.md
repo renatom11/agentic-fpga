@@ -15277,3 +15277,248 @@ Handoff: the edited plan, landing **before** WO-0050's freeze in its own commit.
 
 ### Files-in-this-commit
 - test/attack_plans/AP-xgmii_rx_64.md
+
+## [J-dv_lead-0061] 2026-08-21T15:45Z | task:WO-0050 | Family F's campaign frozen against a MEASURED denominator of twenty — and the figure it corrects is my own "nineteen" from RV-0047, quoted one packet after I used the tool built to stop exactly that
+
+### Trigger
+Orchestrator: WO-0047 landed and is CI green (`8e040f0` + `616686f`, run
+30826473824); WO-0050 is allocated for family F's qualification campaign. Freeze
+it — sealed predictions first, before any diff exists — naming the mutation
+classes, the row/unit denominator, the base SHA and the adjudication artefacts.
+My own RV-0047 rulings are inputs: F2's underflow disposition is settled by
+campaign, and F2's both-lanes stimulus superset is to be named for adjudication.
+
+### Inputs
+- `tools/dv_checks.sh`'s **bench inventory block**, run at the working tree; and
+  an **independent** count straight out of git at the base
+  (`git ls-tree -r --name-only 616686f -- test/` piped through
+  `git show 616686f:<f> | grep -c 'let%expect_test'`).
+- CI run **30826473824** via the GitHub API: `head_sha` `616686f`, workflow
+  `build`, `conclusion: success`.
+- `git diff --stat 8e040f0 616686f -- test/ libs/` → **empty**;
+  `git diff --stat 616686f 06ea822 -- test/ libs/` → **empty**.
+- `test/xgmii_rx_64/test_m03_f.ml` in full — `run_f1`…`run_f4`'s assertion
+  order, their `fail` message strings, `f1_lengths`, `f2_received_counts`,
+  `strobe_pair_compare`, `split_at_first_tlast`, and the two `%expect_test`
+  iteration orders.
+- `test/xgmii_rx_64/test_m03_e.ml` `run_e2` and `run_e5` (the appended row) —
+  match-arm order and message strings; `test_m03_a.ml` `run_a1_a2`, `run_a3_a4`
+  (incl. `tuple_of_sample`), `run_a5`; `test_m03_b.ml` `run_b1`;
+  `test_m03_c.ml` `run_c4`, `run_c1_c2`, `batched_failure_with_protocol`, the
+  `outcome` record's `observed_tuser` field; `test_m03_d.ml` `run_d1`,
+  `run_d2_d1_partner`, `assert_frame`, `d3_ordering_label`, and the D2/D3
+  `%expect_test` bodies.
+- `test/xgmii_rx_64/bench.ml` — `assert_monitors_clean`'s check order,
+  `account_clean_frame`, `directed_lengths`, `run_directed_lengths`;
+  `test/monitors/strobe_monitor.mli` §(a)–(c) and the unclaimed-pulse error.
+- `agents/handoffs/WO-0047_tb-m03-family-f-runts.md` §3.2, §8, the Return log's
+  assertion-order deliverable, and `RV-0047-VERDICT` §3 and §5.
+- `docs/specs/modules/xgmii_rx_64.md` §9 (sixth row, ruling 1, ruling 9, the
+  strobe pin and its no-output-word clause), §6.2's `Frame` row;
+  `docs/specs/requirements.md` REQ-103, REQ-104, REQ-107, REQ-008, §0.3, §0.6,
+  §0.7.
+- **No `libs/**`, no `rtl_snapshots/**`.**
+
+### Reasoning
+
+**The denominator is twenty and my last packet said nineteen.** `RV-0047` §6
+wrote "nineteen `%expect_test` units (fifteen existing, plus M03-E5 in
+`test_m03_e.ml` and F1–F4 in `test_m03_f.ml`)" — a sentence that enumerates five
+additions to fifteen and then reports nineteen. `tasks/BOARD.md` transcribed it.
+The measurement says **20**, twice, by two independent routes.
+
+> This is the **third** M03 unit-count error on record. "Fifteen" and "eighteen"
+> circulated through four packets uncounted (`J-dv_lead-0042`), which is why I
+> built the inventory block whose banner reads *"Do not quote a unit count nobody
+> has counted"*. **I then quoted one, one packet after using the tool
+> correctly.** The tool worked; I did arithmetic in prose instead of running it.
+> The freeze that matters is measured, but the correction goes in the sealed file
+> **above the matrix**, because a denominator quietly repaired is the same defect
+> in a nicer suit.
+
+**The base is `616686f` and not the landing commit, which is a small
+strengthening worth naming.** WO-0045 took the landing commit and argued
+byte-identity to the SHA CI actually ran. Here I take the SHA CI actually ran, so
+criterion 3 needs no inference at all. `git diff 8e040f0 616686f -- test/ libs/`
+is empty, so the choice is immaterial to the compiled surface and I say so rather
+than leave the reader to wonder why I moved.
+
+**The plan edit had to land first, and it creates one thing I must state rather
+than let someone discover**: `J-dv_lead-0060` touches `test/attack_plans/`, which
+is inside `test/**`, so a future reader diffing `test/` from the base will not
+see an empty result. The compiled surface is untouched — the plan adds no row and
+changes no count — and both facts are in the packet header: **the tree the
+mutations build from is `616686f`; the plan the campaign is scored against is the
+edited one.**
+
+**Eight classes, and I want the arithmetic of that number on the record because
+it is the largest campaign yet.** Five are `WO-0047` §8's published classes,
+which the bench author wrote against; retiring one silently would be worse than
+running it. Three are new and were never shown to the bench author:
+
+- **F-c6, the faithful underflow**, is not optional — `RV-0047` §5(3) ruled that
+  the campaign settles M03-F2's second declared kill, and a campaign that omits
+  it leaves a ruling undischarged.
+- **F-c7, the in-word abort never reported**, is M03-E5's own
+  silently-always-pass class. E5 exists because the WO-0045 seeder found the
+  route by reading the design; a campaign that adds the row and never attacks it
+  has cashed nothing.
+- **F-c8, the no-output-word pin displaced**, is the one class whose claim spans
+  two families. `WO-0047` §1.2 folded M03-E5 into family F's packet on an
+  explicitly verification ground — that a defect in the shared no-output path
+  "would have to be scored against both to be understood". **F-c8 is that defect.
+  Without it the folding argument is never tested, only asserted.**
+
+**Three cells I worked rather than assumed, and one of them changes what the
+campaign is worth.**
+
+*F-c1 speaks through `tkeep`, not through the word count, at all four of its
+units.* Suppressing a four-octet strip changes the delivered count by four — and
+every one of these rows checks the **word count first**. I computed all four:
+1 → 1 at C4, 1 → 1 at F1's first iteration, 8 → 8 at F3, 8 → 8 at F4's frame 1.
+The count is unchanged in every case and so is the `tlast` cycle, so the third
+assertion is the first to differ. **This is the E-c1 lesson applied before the
+run instead of after it**: last campaign my seal was right and my post-hoc
+"correction" was wrong because it reasoned from a reported mechanism and skipped
+the iteration order. Here I read the code and the iteration order first.
+
+*T-A34 is the most interesting cell in the matrix and it answers a standing open
+item.* Under F-c2 a 64-octet frame gains `tuser`[0] = 1 — and `tuser` **is inside
+the tuple M03-A3 compares across start lanes**. Both lanes move identically, so
+**A3's own assertion passes**; the unit reddens one line later through the strobe
+monitor, on an `error_runt` pulse no expected event claims. `AP` §8 has carried
+"M03-A3's blindness to lane-symmetric errors is UNTESTED" since `J-dv_lead-0037`,
+because WO-0039's M3 was predicted to demonstrate it and took the other branch.
+**F-c2 is a lane-symmetric content error, and this seal predicts the blindness
+outright.** If T-A34 reddens on the tuple-equality message instead, my model of
+that row is wrong and it is a finding against me.
+
+*T-C4 reddens under F-c1, and that is not a design flaw in the campaign.* A
+pre-existing unit catching a family-F class looks wrong until `WO-0047` §1.1 is
+read: C4 already verifies REQ-107's report path at five octets. **F-c1 was never
+a silently-always-pass class.** The two that are, are F-c5 (nineteen of twenty
+blind) and F-c7 (nineteen of twenty blind; twenty of twenty before M03-E5
+existed).
+
+**F-c6 is exempt from pass criterion 1 and I am pre-committing its disposition
+rather than deciding it after.** A green run on F-c6 is the answer, not a
+failure, and it withdraws M03-F2's second declared kill by spec diff on the
+M03-D3 precedent. So is a report that a faithful minimal underflow is not
+expressible — that statement is a better answer than a run. The rule I have
+already broken once by editing nothing and ruling late is that a disposition
+decided after a result is not a prediction; this one is decided now.
+
+**F-c3, F-c5 and F-c6 all kill T-F2 alone and are separated only by which
+assertion speaks.** That is the fourth campaign with this structure and the first
+with a **three-way** discrimination. Row sets do not discriminate; messages do —
+which has now held across D-M1/D-M4/D-M5 and E-c3/E-c5, and is why the messages
+are the sealed part.
+
+**Two bounds I am naming before the result rather than after.** M03-F5's own
+declared kill is **not seeded** — F5 was discharged by citation to M03-C4, and
+F-c1 killing C4 is evidence C4 has teeth on the runt path, not proof the citation
+holds. The **discharge-by-citation remains unqualified** and no sign-off may read
+this campaign as having qualified it. And F-c2 is seeded on the received-count
+reading only; the delivered-count reading of the same threshold is the same
+boundary from the other side with a wider blast radius, and is deliberately out.
+
+**F2's stimulus superset is named in the auditor-facing packet, per my own
+RV-0047 ruling**: `Injection` does not truncate for a placed terminate, so ~59
+octets of the base frame follow the placed `/T/` into the gap. It is inert
+(M03-E4 establishes that a closed frame reports nothing) and F2's exact-strobe-set
+assertion would catch it if it were not — but an unexpected strobe under an
+F-class mutation could be the artefact rather than the mutation, and would
+present as an unnamed-unit finding. Named in §4.1 so adjudication is not confused
+by it.
+
+**The allowlist stands, with one item promoted.** `dune-project` and root-level
+build configuration join it explicitly — the WO-0045 addendum §3(ii) ruling,
+which said an item omitted by oversight rather than intent is a defect in the
+list. Fixing it in the next template was the promise; this is the next template.
+
+### Actions
+- **Measured the denominator twice** — 20 bench units, 100 repository-wide — and
+  put the correction of my own "nineteen" **above** the matrix in the sealed file.
+- **Verified the base and its control**: `616686f`, CI run 30826473824,
+  conclusion success, read from the API rather than relayed.
+- Authored **`WO-0050`** (auditor-facing): the allowlist with `dune-project`
+  promoted, the process bars including the thin-subject/`git log` bar, the eight
+  intents, F-c6's pass-criterion exemption with its disposition pre-committed,
+  §4.1's stimulus-superset warning, and the three pass criteria.
+- Authored the **SEALED companion**: the twenty units, the full **8 × 20 matrix**
+  (21 REQUIRED, 139 MUST-STAY-GREEN), expected messages including F-c3's and
+  F-c6's admissible pairs and F-c8's `Y − X = 1`, the reasoning for the eight
+  non-obvious cells, four named bounds, the weighting, and the `fail_cross`
+  finding condition.
+- Opened no `libs/**`. Touched nothing under `tools/**`,
+  `test/xgmii_rx_64/**` or `test/cosim/**` (tb_writer holds the last of those for
+  WO-0049). No `git commit`, no `git push`.
+
+### Evidence
+1. Inventory block: `3+1+4+3+4+4+1 = 20` bench units; **100** repository-wide.
+   Reproduced from git at `616686f` by an independent path: same two figures.
+2. CI run 30826473824 → `head_sha 616686f7c0677eb23f703e027638e19336d2fe5d`,
+   `"conclusion":"success"`, workflow `build`.
+3. `git diff --stat 8e040f0 616686f -- test/ libs/` → empty.
+4. `run_f1` asserts word count → `tlast` cycle → `tkeep` → `tuser` → delivered
+   content → exact strobe set; iteration `[0;4]` outer, `[5;16;60;63]` inner via
+   `List.iter` over literal lists. `run_f2` and `run_e5` assert `is_clean` →
+   cross-check → pre-run placement → `run` → post-run placement →
+   `tlast_sample = None` → `delivered_samples = []` → exact strobe set.
+5. `run_f3` compares the strobe pairs **sorted by name** — so F-c4's message is
+   the count, independent of which strobe the mutant suppresses.
+6. `run_f4` checks frame 1 fully before frame 2, and `tuser` before the strobe
+   set on each — so F-c1 speaks at frame 1's `tkeep` and F-c2 at frame 2's
+   `tuser`.
+7. `tuple_of_sample` in `test_m03_a.ml` includes `tuser` in the compared tuple,
+   and `run_a3_a4` registers no `Strobe_monitor.expect` — the two facts T-A34's
+   F-c2 cell turns on.
+8. `assert_monitors_clean` checks protocol → conservation → strobe, and
+   `Strobe_monitor` treats "a pulse no expected event claims" as an error.
+9. `test_m03_c.ml`'s `outcome` record carries `observed_tuser` and `outcome_ok`
+   tests it — so T-C12's F-c2 failure is the batched signature table with exactly
+   the two length-64 entries failing.
+
+### Outcome
+**Family F's qualification campaign is FROZEN against `616686f`**, before any
+diff exists, in two files plus this entry: **eight classes, twenty units, a
+complete 8 × 20 matrix**, expected messages, four named bounds and a finding
+condition the campaign should be structurally unable to trigger.
+
+**The denominator is 20, measured twice, and the "nineteen" in `RV-0047` §6 and
+on the board is corrected here rather than quietly superseded.**
+
+**F-c5 and F-c7 are the classes this round was written for** — nineteen of
+twenty units blind to each, and twenty of twenty before `test_m03_f.ml` and
+M03-E5 respectively existed. **F-c8 is the folding argument of `WO-0047` §1.2
+made testable**: three units across two families predicted to die together, with
+T-E1 green as the discriminator.
+
+`SO-M03` does not issue on family F regardless — 21 of 60 ASSERT rows after it,
+with G, H, I, J, K, M, N and L1–L5 unwritten.
+
+### Open-questions
+- **`tasks/BOARD.md` carries "nineteen silent units" on the WO-0047 row.** It is
+  the orchestrator's file, not mine; flagged for correction to **twenty**, with
+  this entry as the authority.
+- **The discharge-by-citation is unqualified.** M03-F5's own declared kill
+  (`< 5` read as `<= 5`) is not seeded this round. A later round may want it, and
+  it is the first instrument this programme would have for testing a *citation*
+  rather than a test.
+- **F-c6 may return green, and that is pre-disposed** — M03-F2's second declared
+  kill withdrawn by spec diff. It must not be re-argued after the result.
+- **A `fail_cross` message anywhere in this campaign is a finding**; the campaign
+  cannot structurally produce one.
+- **M03-A3's lane-symmetric blindness is predicted, not yet measured** — T-A34's
+  F-c2 cell is the first instrument that can settle it either way.
+- **`AP` §7's table rewrite remains owed** (the anchor paragraph is paid at
+  `J-dv_lead-0060`, the table is not); and **AP-M14's §6 invariant is unchecked**
+  against SPEC-M14's own class-(a) row.
+- Unchanged and still owed by me: the `precompile_check.sh`
+  side-effect-in-combinator lane; the §4.1 correction to WO-0047 if it is ever
+  cited as guidance; the strobe-window convention; the RFC 1071 anchor on the
+  next fetching run; X-7, X-10, X-11 deferred; L1–L5 as a separate packet.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0050_family-f-mutation-campaign-SEALED-predictions.md
+- agents/handoffs/WO-0050_family-f-mutation-campaign.md
