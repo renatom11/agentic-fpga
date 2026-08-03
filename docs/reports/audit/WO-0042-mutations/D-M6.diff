@@ -1,0 +1,40 @@
+diff --git a/libs/hardcaml_ethernet/src/xgmii_rx_64.ml b/libs/hardcaml_ethernet/src/xgmii_rx_64.ml
+index 81cd9ed..2f9c3a1 100644
+--- a/libs/hardcaml_ethernet/src/xgmii_rx_64.ml
++++ b/libs/hardcaml_ethernet/src/xgmii_rx_64.ml
+@@ -734,6 +734,26 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
+     mux2 emit_last_a (pc -: strip) (mux2 emit_last_b (pc -: strip +: nc) pc)
+   in
+   let abort = sel_bad_fcs |: sel_error |: sel_start |: sel_oversize |: sel_runt in
++  (* D-M6 MUTATION (WO-0042): [tuser][0] latches. The value driven on a frame's
++     `tlast` word is captured here and never cleared between frames, so from the
++     first frame found invalid onward every later frame's `tlast` word carries
++     [tuser][0] = 1 as well — REQ-007's "a frame found invalid" reads as "a frame
++     at or after the first invalid one".
++
++     What *decides* the bit is untouched. [abort] above still ORs REQ-104's FCS
++     verdict, REQ-105's error character, REQ-110's start-without-terminate,
++     REQ-108's oversize and REQ-107's runt exactly as before, and this register
++     is fed from the emitted value rather than from any one of them, so no
++     disjunct's own contribution is altered or dropped.
++
++     The reporting path does not move with it. Nothing below reads
++     [abort_sticky] except [tuser]: the closure record, its ageing, [consume],
++     [strobe] and [q_strobe] are untouched, so §9's five strobes stay per-frame
++     reports of that frame's own condition on their own pinned cycles. Octet
++     coverage, [tkeep], [tlast] placement and every register level of the
++     payload path are likewise untouched. The latch is reset by [spec]'s clear
++     (REQ-009), which §9 leaves free. *)
++  let abort_sticky = reg_fb spec ~width:1 ~f:(fun d -> d |: (emit_tlast &: abort)) in
+   let tvalid = (emit_full |: emit_tlast) &: ~:(i.clear) in
+   consume <== (sel_valid &: (emit_tlast |: sel_is_r2));
+   (* Three of the five strobes are the union of the two report paths: epoch A's,
+@@ -756,7 +776,7 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
+       ; tkeep = keep_of_count keep_count
+       ; tstrb = zero 8 (* REQ-014 *)
+       ; tlast = emit_tlast &: ~:(i.clear)
+-      ; tuser = emit_tlast &: abort
++      ; tuser = emit_tlast &: (abort |: abort_sticky) (* D-M6 MUTATION (WO-0042) *)
+       }
+   ; error_bad_fcs = strobe sel_bad_fcs
+   ; error_bad_frame = strobe sel_error |: q_strobe 0

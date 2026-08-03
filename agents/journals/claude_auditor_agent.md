@@ -1078,3 +1078,275 @@ finding to write, not mine.
 - docs/reports/audit/WO-0041-mutations/D-M4.diff
 - docs/reports/audit/WO-0041-mutations/D-M5.diff
 - docs/reports/audit/WO-0041-mutations/README.md
+
+## [J-auditor-0006] 2026-08-03T06:51:40Z | task:WO-0042 | Family-D mini-round: D-M6 authored blind against 447d11c — the abort bit latched at the one site that produces it, with the arming reading disclosed in advance
+
+### Trigger
+Orchestrator spawn on WO-0042
+(`agents/handoffs/WO-0042_family-d-m6-mini-round.md`, committed at `fbd4ce3`) —
+dv_lead's self-contained auditor-facing brief, written as a separate packet
+precisely because last round's brief is now barred: the adjudication appended to
+`agents/handoffs/WO-0041_family-d-mutation-campaign.md` states this round's
+predicted kill in plain words, so a seeder briefed from it would read the answer.
+Same standing as WO-0039 and WO-0041: I am the campaign's no-stake third party
+because I authored neither M03's RTL nor any part of its bench, and the subject
+under test is **not M03** but whether family D's two-frame row has teeth against
+the one defect class it still declares and nothing has yet exercised. Chartered
+work (charter §3, systematic mutation testing) at the PROTOCOL §10 sequencing
+point. Seeding only: I did not run the diff and I have seen no result.
+
+### Inputs
+The committed long form, with extents, is §1 of
+`docs/reports/audit/WO-0042-mutations/README.md`; this is the same list.
+
+Read in full: `agents/charters/auditor.md`; `agents/PROTOCOL.md`;
+`agents/handoffs/WO-0042_family-d-m6-mini-round.md` (at `fbd4ce3`);
+`libs/hardcaml_ethernet/src/xgmii_rx_64.ml` at `447d11c` (blob
+`81cd9ed7fc64e6265c53117f251ef948f24e3b00`, all 772 lines, extracted with
+`git show` into a private scratch subdirectory — the working tree's copy was
+never opened and never touched); `docs/reports/audit/WO-0041-mutations/D-M1.diff`
+(my own prior artifact, for the index-line and hunk-marker convention); my own
+journal — the entry-header grep, the file tail, and the whole of the WO-0041
+entry (lines 822–955), which is the documentary basis of the prior-exposure
+statement below.
+
+Partial: `docs/specs/modules/xgmii_rx_64.md` — one grep for `tuser` and two
+`sed` ranges, lines 705–740 (§9's condition table and closure list) and 780–815
+(§9's co-occurrence rulings); `libs/hardcaml_ethernet/src/axi64.ml` lines 1–80
+(to establish `user_bits = 1`, i.e. that `tuser`[0] is the whole field);
+`libs/hardcaml_ethernet/src/dune`, `dune-project`, `.ocamlformat`. Library
+sources outside this repository, read for compile-confidence:
+`/root/.opam/fpga/.opam-switch/sources/hardcaml/src/signal_intf.ml:80` (the
+`reg_fb` signature) and `.../fifo.ml:313–318` (the library's own 1-bit set/hold
+idiom).
+
+Git metadata only, no file content: `git rev-parse HEAD`;
+`git log -1 --format='%H %s' 447d11c`; `git rev-parse` on the base blob;
+`git diff 447d11c HEAD --stat` on the one RTL path (empty);
+`git log --oneline` scoped to `docs/reports/audit/WO-0041-mutations/` (one
+commit, `fb49b80`, my own); `git status --porcelain -- docs/reports/audit/`
+(empty). Directory listings only: `libs/hardcaml_ethernet/src/`,
+`docs/reports/audit/` and its `WO-0041-mutations/`, `rtl_snapshots/`, the
+repository root, `_build/default`, and the opam switch's `bin`/`lib`/`sources`.
+
+**Deliberate abstention, a tightening on last round.** WO-0042 sharpens the bar
+to *every* git subcommand on a barred path, `log` and `show` included. I ran no
+unscoped `git log` at all this round — not even `--oneline -12`, which the
+WO-0041 spawn did run and disclosed as ambient exposure — because the WO-0041
+adjudication's own commit *subject* could carry a kill result. The only commit
+subjects that reached me are `447d11c`'s (the base) and `fb49b80`'s (my own
+seeding commit).
+
+NOT read, and the list is the point. All nine bars honoured: nothing under
+`test/xgmii_rx_64/**`, in fact no file under `test/` at all, of any name, at any
+SHA; not `test/attack_plans/AP-xgmii_rx_64.md` nor anything else under
+`test/attack_plans/`; not `agents/handoffs/WO-0040_tb-m03-family-d-fcs.md`; not
+`agents/handoffs/WO-0039_m03-mutation-campaign.md`; neither sealed-predictions
+file; not `agents/journals/claude_dv_lead_agent.md`, whole file, and I asked for
+no extraction through the orchestrator because nothing here needed one; not
+`agents/journals/workers/claude_tb_writer_agent.md`; and **not**
+`agents/handoffs/WO-0041_family-d-mutation-campaign.md`, which was opened by no
+tool and touched by no git subcommand this round. Beyond the bars I also stayed
+out of every `BUG-`/`SO-`/`RV-` packet, `tasks/BOARD.md`, `docs/gates/**`, every
+other agent's journal, and `crc32_eth.ml` (this intent touches what is done with
+a verdict, never how any verdict is computed).
+
+**Prior exposure, items 3–9, on commit-ordering evidence rather than memory.**
+PROTOCOL §2 makes agents stateless between spawns and my context for this task
+begins with this brief, so "what I recall reading" is exactly nothing and a
+memory-based answer would be worthless. What exists instead is committed: the
+WO-0041 entry in this journal records its own complete read list — item 9 read in
+full at `06007a3`, items 1–8 not read — and its long form is §1.5 of
+`docs/reports/audit/WO-0041-mutations/README.md`, a file with **exactly one**
+commit (`fb49b80`, by the path-scoped log above) and therefore never amended with
+anything learned later; the WO-0039 entry is the corresponding record one round
+back. Item 9's exposure is therefore exactly what the brief itself states and
+rules acceptable: the WO-0041-era spawn read that packet **before** the
+adjudication was appended. I did not verify that ordering with a path-scoped log,
+because doing so is now itself barred; it rests on the brief's §0 taken with my
+own prior entry. I make no claim about item 9's current content and have no basis
+for one.
+
+**Ambient exposure I disclose because a bar list is a floor.** To test whether a
+real compile was possible I copied the repository tree (excluding `_build` and
+`.git`) into my scratch subdirectory with `tar`, ran
+`dune build libs/hardcaml_ethernet` against it, and deleted the copy. **The copy
+contained `test/**` and no byte of it entered my context** — `tar` piped to
+`tar`, and dune's output names only `libs/hardcaml_ethernet/src/dune` and two
+missing libraries. I judged the copy worth making and, having made it, worth
+disclosing rather than rationalising; if dv_lead judges the copy itself to breach
+bar 1, that finding is dv_lead's to make and I will not argue it down. Second,
+`_build/default`'s directory listing shows a `test` entry among its subdirectory
+names — a name, no content. Third and by contrast with last round: I worked only
+in a freshly created private subdirectory and did **not** list the shared
+scratchpad root, which is the practice my own WO-0041 process finding proposed
+and the orchestrator accepted, so nothing another agent left there could reach me
+even by accident.
+
+### Reasoning
+**Sampling frame.** Charter §8 asks a mutation entry why *these* defect classes
+and which were rejected. As in WO-0041 the frame is not mine: the packet fixes
+the single intent behaviourally, and my discretion is confined to **site**,
+**form**, and the one reading §5.1 of the report discloses. So the classes I
+would otherwise have argued for are not the question; the question is whether
+this intent has a faithful minimal realisation, and the answer is yes, at one
+site.
+
+**Site selection, and why it is forced.** I searched the module for every
+producer and consumer of `tuser`[0]. There are exactly two: base line 736, where
+`abort` is formed as the disjunction of the aged closure record's five condition
+bits, and base line 759, the sole assignment of the `tuser` field. Nothing else
+in 772 lines reads or writes it — the module is, by its own docstring, the origin
+of that bit and inherits none. A latch therefore has one honest home: a register
+sitting beside `abort`, feeding line 759 and nothing else. That is why the code
+delta is two lines.
+
+**Form: latch the emitted value, not the condition.** The register is
+`reg_fb spec ~width:1 ~f:(fun d -> d |: (emit_tlast &: abort))` and the field
+becomes `emit_tlast &: (abort |: abort_sticky)`. Latching the *emitted* `tuser`
+rather than `abort` is not a choice with two circuits —
+`d | (emit_tlast & (abort | d))` reduces to `d | (emit_tlast & abort)` — so the
+formulation is free; what is not free is what arms it, below. Two rejected forms,
+recorded because a reader will think of them. (a) Latching `abort` itself and
+using the latched value *inside* `abort` would have contaminated the disjunction
+the packet says must keep contributing exactly as today, and would have leaked
+into the strobes through `sel_*`. (b) Registering the `tuser` field and ORing the
+register's own output would have moved the bit a cycle, which is a timing change
+the packet forbids. The form chosen keeps `abort` textually untouched, adds no
+level to any existing path, and is a leaf: one driver, one consumer.
+
+**The precision the packet said mattered most: the strobes.** I treated "a
+mutation intent is never a licence to break a second spec rule" as the binding
+constraint and verified it mechanically rather than by inspection. `abort_sticky`
+occurs exactly twice in comment-stripped code — its definition and its single use
+in the `tuser` field — so no strobe, no closure-record bit, no ageing register
+and no consumption decision can see it. `strobe`, `q_strobe`, `consume`, `q2` and
+all five output strobe expressions are byte-identical to the base. §9's "each
+strobe is a per-frame report of that frame's own condition" survives intact, on
+the same pinned cycles, and so does REQ-008's no-silent-discard structure. The
+payload path is likewise untouched: `tvalid`, `tdata`, `tkeep`, `tstrb`, `tlast`,
+`keep_count`, `strip`, the alignment window and the BUG-0001 tail-suppression bit
+are all unedited, so delivered octet counts, `tkeep` patterns, `tlast` placement
+and ΔC = 3 are as specified.
+
+**The one reading I had to choose, and I chose the quieter one.** The intent says
+"once M03 sets it on **some frame's `tlast` word**". I armed the latch from
+exactly that event, which means the §0.7 classes that emit no output word at all
+— a sub-5-octet runt, `/E/` or `/S/` at or before the first octet, and the
+in-word `q2` path — do **not** arm it, though every one of them is an invalid
+frame. The wider reading ("the abort *condition* latches") is a strict superset.
+I rejected it on two grounds: textually, the intent names `tuser`[0]'s value on a
+`tlast` word as both the sticky thing and the setting event, and a frame with no
+`tlast` word has no such value; and the packet's own instruction not to
+strengthen the defect to make it louder makes a superset reading the wrong side
+of the line. This is the disclosure that matters for pass criterion 2, and I made
+it **before** any result exists: if dv_lead's sealed prediction arms the latch
+with a frame that emits no output word, D-M6 is silent where the wider reading
+would speak and the round would go green for a reason that is mine rather than
+the bench's. I cannot check which reading the prediction assumes — the bench and
+every prediction file are barred — so I flagged it in advance and offered the
+one-line alternative as a separate diff, authorable before any result reaches me.
+
+**Compile-confidence had to be argued, not built.** The dependencies are absent
+from this container's opam switch and the *unmutated* base fails identically, so
+"it compiles" is a claim I cannot demonstrate here. I made it falsifiable instead:
+the `reg_fb` signature quoted from the pinned Hardcaml source, the same call shape
+already present at base line 665 and in Hardcaml's own `fifo.ml`, a parse check
+with two negative controls one of which targets the added line specifically, and
+a mechanical orphaned-bindings scan — which matters because last round's WO-0041
+diffs had to be written around dune's dev-profile warnings 26/32 being errors.
+That hazard does not arise here: nothing loses its last use and the one new
+binding is used.
+
+### Actions
+Authored one mutation diff, `D-M6.diff`, against
+`libs/hardcaml_ethernet/src/xgmii_rx_64.ml` at `447d11c` — one file, one added
+binding, one edited expression, 21 insertions / 1 deletion, hunk marker comment
+`D-M6 MUTATION (WO-0042)` present at both change sites. Wrote
+`docs/reports/audit/WO-0042-mutations/README.md` carrying the intent as
+understood, the mechanism, the fidelity argument (explicitly: the strobe paths
+were left alone), the arming-reading disclosure, the compile-confidence argument
+and the raw self-check output. All working files were created in a private
+subdirectory of the scratchpad, never in the shared root; the repository working
+tree was modified only under `docs/reports/audit/WO-0042-mutations/`. No git
+commit and no git push was run, and no simulation of any kind was run against the
+mutated source. Bar 11's compile-only repair was not used: the committed diff is
+the diff as first authored.
+
+### Evidence
+All commands below were run at `HEAD` = `fbd4ce3` with the base extracted from
+`447d11c`; the raw transcripts are §7 of the report.
+
+1. Base pinned and reproduced independently — the base file committed into a
+   throwaway scratch repository re-hashes to
+   `git rev-parse HEAD:libs/hardcaml_ethernet/src/xgmii_rx_64.ml` =
+   `81cd9ed7fc64e6265c53117f251ef948f24e3b00`, the blob the diff's index line
+   names; and `git diff 447d11c HEAD -- <that path>` is empty.
+2. Applies cleanly to a pristine `447d11c` (`git archive` + `tar -x`):
+   `git apply --check -v ../D-M6.diff` → `Checking patch
+   libs/hardcaml_ethernet/src/xgmii_rx_64.ml...`, exit 0; `git apply --stat` →
+   `1 file changed, 21 insertions(+), 1 deletion(-)`.
+3. Round-trip identity: after `git apply`, `git hash-object` on the patched file
+   is `2f9c3a199f63c5d65ca606d85905272d0fc66deb` — the diff's post-image index —
+   and `sha1sum` equals the file I authored
+   (`214f1eb2780e970950f9ab35aff891646dbd7320`, both copies). `git apply -R`
+   restores blob `81cd9ed7fc64e6265c53117f251ef948f24e3b00` exactly.
+4. Single file: `grep -c '^diff --git' D-M6.diff` → `1`.
+5. Parse check: `ocamlc -stop-after parsing -c` (OCaml 4.14.1) exits 0 on both
+   base and mutated sources. Negative control 1 (unterminated comment appended to
+   the mutated file) → `Error: Comment not terminated`, exit 2. Negative control
+   2 (one `)` dropped from the added `abort_sticky` line) → `line 756 … Error:
+   Syntax error: ')' expected`, exit 2 — which is what proves the check reads the
+   mutated line rather than merely the file.
+6. Orphaned-bindings scan (comments stripped, so a name surviving only in
+   documentation still counts as an orphan): base `135 distinct let/and
+   bindings; orphans: 0`; mutated `136 … orphans: 0`. Targeted census in
+   comment-stripped mutated code: `abort_sticky` 2 (one definition, one use),
+   `abort` 3, `emit_tlast` 6, `consume` 5, `strobe` 6, `q_strobe` 4,
+   `sel_bad_fcs` 3, `sel_runt` 3, `sel_error` 3, `sel_start` 3, `sel_oversize` 4.
+   `abort_sticky` occurs 0 times in the base file.
+7. Minimality: with comments and blank lines stripped from both files the delta
+   is exactly two lines — the added `abort_sticky` binding and the changed
+   `tuser` field. Every strobe expression, `consume`, `tvalid`, `tkeep`, `tlast`
+   and `tdata` are unchanged.
+8. Compile-check unavailable, and it is the environment: `dune build
+   libs/hardcaml_ethernet` on an **unmutated** scratch copy fails with `Error:
+   Library "ppx_hardcaml" not found.` and `Error: Library "hardcaml_axi" not
+   found.`; `~/.opam/fpga/lib/` holds only `dune`, `stublibs`, `toplevel`. The
+   `reg_fb` signature relied on is
+   `val reg_fb : ?enable:t -> Reg_spec.t -> width:int -> f:(t -> t) -> t`
+   (`/root/.opam/fpga/.opam-switch/sources/hardcaml/src/signal_intf.ml:80`).
+
+### Outcome
+DoD met against WO-0042 §3 and the spawn's five items: one diff authored before
+any run, in unified format with the index line pinning blob `81cd9ed`; the diff
+and a README committed to `docs/reports/audit/WO-0042-mutations/` and nowhere
+else; the WO-0041 self-check set re-run and recorded raw; this journal entry
+appended; no git commit, no git push. Handoff: the two files under
+`docs/reports/audit/WO-0042-mutations/`, to the orchestrator for commit and for
+relay to dv_lead. I remain blind to the result and ask to stay that way until
+the round is adjudicated.
+
+### Open-questions
+1. **The arming reading (report §5.1).** D-M6 arms the latch only on a frame that
+   emits a `tlast` word. If dv_lead's sealed prediction arms it with an invalid
+   frame that emits **no** output word — a sub-5-octet runt, or `/E/`/`/S/` at or
+   before the first octet — this diff is silent where the wider reading would
+   speak, and a green run would be attributable to my reading rather than to the
+   bench. The alternative is one line; I will author it as a separate diff on
+   request, before any result is disclosed to me.
+2. **Snapshot collateral.** `rtl_snapshots/xgmii_rx_64.v` exists and any RTL
+   change alters generated Verilog, so a byte-comparison unit — if one exists —
+   would redden under every mutation in every round for structural reasons.
+   `test/**` is barred, so I cannot check. Flagged so it is not mistaken for an
+   unnamed unit reddening under pass criterion 2.
+3. **The scratch tree copy.** Disclosed in Inputs. It placed barred paths in my
+   scratch directory without any of their content entering my context. Whether
+   that breaches bar 1 is dv_lead's judgement, not mine.
+4. **Compile-confidence is argued, not demonstrated**, because the toolchain is
+   absent from this container. If the diff fails to compile, bar 11's
+   compile-only repair applies: I will change nothing else and will disclose it.
+
+### Files-in-this-commit
+- docs/reports/audit/WO-0042-mutations/D-M6.diff
+- docs/reports/audit/WO-0042-mutations/README.md
