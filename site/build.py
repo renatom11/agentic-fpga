@@ -114,11 +114,11 @@ FAVICON = ('data:image/svg+xml,' +
            '%3Crect x=%2215%22 y=%2211%22 width=%228%22 height=%2210%22 fill=%22%2334c3b5%22/%3E'
            '%3Crect x=%2224%22 y=%2211%22 width=%222%22 height=%2210%22 fill=%22%23e0a050%22/%3E%3C/svg%3E')
 
-DESCRIPTION = ('A 10-gigabit Ethernet network card that parses a stock '
-               'exchange\'s data feed and tracks the order book in hardware — '
-               'entirely in simulation, no live connection — written in Hardcaml '
-               'by a hierarchy of AI agents under a human sponsor. Every commit '
-               'carries its author agent\'s reasoning, enforced in CI.')
+DESCRIPTION = ('A 10-gigabit Ethernet network card that in simulation parses '
+               'a stock exchange\'s data feed and tracks the order book in '
+               'hardware, written in Hardcaml by a hierarchy of AI agents under '
+               'a human sponsor. Every commit carries its author agent\'s '
+               'reasoning, enforced in CI.')
 
 def head_block(title, og_title):
     og_img = (SITE_URL.rstrip('/') + '/og.png') if SITE_URL else '/og.png'
@@ -306,10 +306,8 @@ index = head_block('agentic-fpga — a trading network card built by an AI org',
 <div class="wrap">
   <span class="eyebrow">agentic-fpga</span>
   <h1>A trading network card, engineered end-to-end by an organization of AI agents</h1>
-  <p class="sub">A 10-gigabit Ethernet network card that parses a stock
-  exchange&rsquo;s data feed and tracks the order book in hardware — run entirely
-  in simulation, its market input a recorded trading day rather than a live
-  connection — written in
+  <p class="sub">A 10-gigabit Ethernet network card that in simulation parses
+  a stock exchange&rsquo;s data feed and tracks the order book in hardware, written in
   Hardcaml by a hierarchy of AI agents under a human sponsor who sets direction
   and signs the gates. The architect wrote the specification — 110 requirements,
   20 module contracts. The hardware designer wrote the modules and repairs

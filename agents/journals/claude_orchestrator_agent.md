@@ -5794,3 +5794,43 @@ None.
 - site/public/index.html
 - site/public/org-chart.html
 - site/public/spec-atlas.html
+
+## [J-orchestrator-0131] 2026-08-03T16:20:00Z | task:none | Hero simplified to the sponsor's own phrasing
+
+### Trigger
+Sponsor: 'maybe just "a 10 gigabit ethernet network card that in
+simulation parses a stock exchange…"'.
+
+### Inputs
+His phrasing verbatim; the two sites carrying the sentence (hero
+sub, DESCRIPTION meta).
+
+### Reasoning
+Applied as given — "that in simulation parses a stock exchange's
+data feed and tracks the order book in hardware" — dropping my
+longer em-dash parenthetical. Because tb_writer's uncommitted
+J-tb_writer-0012 append was in the working tree and build.py
+counts journal entries from the tree, the rebuild ran in a
+temporary git worktree at HEAD with only the build.py edit copied
+in; pages copied back; worktree removed. Counts are committed-
+state by construction.
+
+### Actions
+Two build.py edits; clean-worktree rebuild; this commit; push.
+
+### Evidence
+Worktree build line: 234 commits · 221 entries — HEAD state.
+
+### Outcome / DoD
+Hero carries the sponsor's sentence.
+
+### Open questions
+None.
+
+### Files-in-this-commit
+- site/build.py
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/index.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html
