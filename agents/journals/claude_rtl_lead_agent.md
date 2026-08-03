@@ -1919,3 +1919,183 @@ above the `Fix verdict` placeholder, to dv_lead via the orchestrator.
 
 - agents/handoffs/BUG-0001_m03-final-word-over-delivery.md
 - libs/hardcaml_ethernet/src/xgmii_rx_64.ml
+
+## [J-rtl_lead-0008] 2026-08-03T16:35:00Z | task:BUG-0001 | The BUG-0001 fix's emitted form inspected and the two promoted snapshots taken into the tree: one 1-bit register, one clocked process, three wires, three assigns, both files, nothing else — both predictions exact, and this commit's success criterion is REQ-902's byte-identical re-run
+
+### Trigger
+
+The orchestrator, relaying CI run **30779035676** at **b89358b**: Build green,
+`dune runtest` **green** (fifteen bench tests; every delivered count exact at all
+twenty entries, lane-4/68 reading `tkeep=255/255`; M03-C5 exact at 1513 → 1509 and
+1516 → 1512 at both start lanes; M03-A3 clean), and the determinism step's promotion
+block carrying exactly the two snapshots my fix predicted. dv_lead accepted **R-1** on
+its own re-derivation at `J-dv_lead-0032` and is writing the BUG-0001 Fix verdict. The
+orchestrator harvested both promoted snapshots per ADR-0005 and wrote them to this
+tree; my task is to inspect them and journal the promotion.
+
+### Inputs
+
+- The orchestrator's relay of run **30779035676** (SHA `b89358b`): build, runtest and
+  determinism results, the dual-view assertion's falsifier value `none`, and the
+  harvest provenance (base64 from the run log, sha256-verified byte-exact).
+- `rtl_snapshots/xgmii_rx_64.v` and `rtl_snapshots/eth_mac_10g.v` as written by the
+  harvest — read whole in the sense that matters here: their structural delta against
+  HEAD, computed rather than eyeballed.
+- `libs/hardcaml_ethernet/src/xgmii_rx_64.ml` at HEAD — the source whose emitted form
+  I am checking, and `J-rtl_lead-0007`'s predictions, which are what I am checking it
+  against.
+- `agents/handoffs/BUG-0001_m03-final-word-over-delivery.md` (my four appended
+  sections, in particular **R-1** and the P-1 sub-prediction).
+- ADR-0005 (CI is the authority; a harvested artefact is CI's output, not mine).
+
+### Reasoning
+
+**What an honest inspection of an emitted netlist is.** The raw diff is 1442/1429 and
+1447/1434 lines — near-total textual churn — because Hardcaml names unnamed nodes by a
+sequential uid and inserting one node renumbers everything after it. A line-count diff
+therefore proves nothing in either direction, and "it looks like only my change" is not
+a finding. The check that discriminates is a **multiset delta of the emitted lines
+with the uid names normalised**: it is invariant under renumbering and under
+declaration-block reordering, so anything structural survives it and nothing else
+does. That delta is identical in both files and is exactly six line classes:
+
+| line class | delta | what in the fix it is |
+|---|---|---|
+| `reg _N;` | **+1** | `fcs_tail_now` |
+| `always @(posedge _N) begin` (+ `if`, `else`, `end`, 2 × `_N <= _N;`) | **+1 process** | its clocked process, synchronous clear |
+| `wire _N;` (1 bit) | **+3** | the `fcs_tail_pending` wire, the NOT, the AND |
+| `assign _N = _N;` | **+1** | `fcs_tail_pending <== emit_last_b` |
+| `assign _N = ~ _N;` | **+1** | `~:fcs_tail_now` |
+| `assign _N = _N & _N;` | **+1** | `(pc <>:. 0) &: ~:fcs_tail_now` |
+
+Every other line class is unchanged in count, in both files. No port line, no module
+header, no operator class, no width, and nothing **removed** — so the interface
+(§4.1, REQ-017) and every other node in M03 are the same netlist they were.
+
+**The register is the one I wrote, not merely a register.** Traced by name in
+`xgmii_rx_64.v`: `_617` is clocked by `_21 = clock`, cleared by `_23 = clear` to
+`_616 = 1'b0`, and takes `_16` — a forward-declared wire whose driver is
+`assign _16 = _723` — as its D input. `_723 = _720 & _722` is `emit_last_b`
+(`_720 = _619 & _719` with `_719 = ~(nc == 0)`, `_722 = ~(nc > strip)`), which is the
+`fcs_tail_pending <== emit_last_b` line. Downstream, `_618 = ~ _617` and
+`_619 = _614 & _618` with `_614 = ~(pc == 4'b0)` — that is `have_word` — and `_619`
+has **exactly three** consumers: `_707` (`emit_last_a`), `_720` (`emit_last_b`),
+`_843` (`emit_full`). That is the fix's shape in the netlist, node for node, and it is
+also the proof that the gate landed on all three branches rather than one.
+
+`eth_mac_10g.v` carries the same M03 body under the same local names (`_617`, `_618`,
+`_619`, same three consumers), which is what hierarchical emission of the same child
+should produce, and its multiset delta is the same six classes and nothing else — so
+M04's and M05's portions of that file did not move.
+
+**Both predictions, and what each was risking.** The snapshot prediction was
+two-sided and both sides held: `rtl_snapshots/xgmii_rx_64.v` and
+`rtl_snapshots/eth_mac_10g.v` moved, `rtl_snapshots/xgmii_tx_64.v` and
+`rtl_snapshots/word_counter.v` are **byte-unchanged** — the negative half is the one
+that would have exposed a determinism defect, and it is clean. **R-1** was a
+conditional with a falsifier attached: fifteen PASS and one unobservable `tlast` at
+the then-current sampling position, all sixteen PASS once the observation moved to the
+pre-edge view. It resolved on the second branch — dv re-derived the reattribution
+independently (`J-dv_lead-0032`), the dual-view assertion passed and the three-way
+falsifier returned **`none`**, and lane-4/68 now reads `tkeep=255/255`. I record two
+things about that: the run is dv's evidence and not mine to claim, and R-1's value was
+that it was **wrong-able in one line** before the run — had lane-4/68 come back with a
+repaired count and a wrong `tkeep`, the sampling account in the packet would have been
+the thing to discard, not the fix.
+
+**Why these two files are staged as a commit of their own.** They are CI's output,
+byte-verified from the run log, and they are staged under my identity because
+`rtl_snapshots/**` is my write scope (PROTOCOL §6) and REQ-902 is my obligation, not
+because I authored a line of them. I hand-edited neither, and the check that this is
+true is the next run: **the success criterion of this commit is that the following CI
+run is fully green with regeneration byte-identical to what is staged here.** If it is
+not, this commit is the thing to revert — a snapshot that does not reproduce is a
+determinism defect regardless of how it got into the tree.
+
+### Actions
+
+1. Computed the structural delta of both harvested snapshots against HEAD (multiset of
+   uid-normalised lines) and confirmed it is the six line classes above and nothing
+   else, in each file.
+2. Traced `fcs_tail_now` by name through both files: clock, clear, clear value, D
+   input, the NOT, the AND, and the three consumers of `have_word`.
+3. Confirmed `rtl_snapshots/xgmii_tx_64.v` and `rtl_snapshots/word_counter.v` are
+   unchanged, and that no port or module-header line moved in either changed file.
+4. Recorded the harvested files' sizes and sha256 as they now sit in the tree.
+5. Wrote this entry. Staged nothing else; ran no `git commit`; edited no snapshot, no
+   test and no source in this unit of work.
+
+### Evidence
+
+Run **30779035676** at **b89358b** (externally verifiable, ADR-0005): Build green;
+`dune runtest` green — fifteen bench tests, twenty directed entries with every
+delivered count exact including lane-4/68 at `tkeep=255/255`, M03-C5's P-1 probe exact
+at 1513 → 1509 and 1516 → 1512 at both lanes, M03-A3 clean, dual-view falsifier
+`none`; determinism step red with a promotion block of exactly two files. dv's reading
+of that run is dv's (`J-dv_lead-0032`), not restated here as mine.
+
+Harvest provenance, as relayed: base64-decoded from that run's log and sha256-verified
+byte-exact before being written to this tree. As they sit here now:
+
+```
+110717  rtl_snapshots/eth_mac_10g.v   sha256 3ae651a858e190d9ba828f4b4f1bf84e921028d9cfa3a20e00e2cbb076c202d3
+ 65788  rtl_snapshots/xgmii_rx_64.v   sha256 43b405643c9676c319da3d4feaae09c633d76a144693a697881105749f75a280
+ 66186  rtl_snapshots/xgmii_tx_64.v   sha256 6f4cc64a194b90cf5e3be2f173b9dd8c52d6075382524425b13749249cd744f3  (unchanged)
+  1147  rtl_snapshots/word_counter.v  sha256 86a0c031674da4b0049e50e224e14c2d71e4a10cc7c99bb8d3beedd447610f55  (unchanged)
+```
+
+Reproducible from a checkout (run in the working tree before this commit; after it,
+read `HEAD~1` where `HEAD` appears — the promoting commit is the boundary these
+comparisons are stated across):
+
+```sh
+git diff --numstat -- rtl_snapshots/            # 1447/1434 and 1442/1429, two files only
+for f in xgmii_rx_64 eth_mac_10g; do
+  diff <(git show HEAD:rtl_snapshots/$f.v | sed -E 's/_[0-9]+/_N/g' | sort | uniq -c) \
+       <(sed -E 's/_[0-9]+/_N/g' rtl_snapshots/$f.v | sort | uniq -c)
+done                                            # the six line classes above, nothing else
+git diff --stat -- rtl_snapshots/xgmii_tx_64.v rtl_snapshots/word_counter.v   # empty
+grep -nE 'assign _61[89] = |assign _16 = |_617 <= ' rtl_snapshots/xgmii_rx_64.v
+grep -nE 'assign _[0-9]+ = .*_619' rtl_snapshots/xgmii_rx_64.v                 # exactly 3
+```
+
+Counted deltas, both files: `always @` +1, `reg` +1, `wire` +3, `assign` +3; ports and
+module headers 0.
+
+**Owed by the next run and not claimed here (REQ-902):** `bin/generate.exe` at this
+tree must reproduce both staged files **byte-identically**, twice, on a CI machine.
+Nothing in this entry is evidence of that; it is the criterion this commit is to be
+judged by.
+
+### Outcome
+
+BUG-0001 is closed on my side: root cause established (`J-rtl_lead-0007`), fix green
+at run 30779035676, and the emitted form of that fix inspected and taken into the tree
+as the two promoted snapshots. Charter §5 DoD for M03 now reads: frozen spec
+implemented, no silent deviation, house style held, line-rate invariant structural and
+unmoved — **and** "compiles and elaborates hierarchically" satisfied by a CI run
+rather than owed, which is the clause `J-rtl_lead-0007` had to leave open. The
+remaining clause is the double-generation byte-identity check, which this commit
+carries as its success criterion rather than as evidence. No DV sign-off claimed:
+`SO-xgmii_rx_64.md` is dv_lead's, and the BUG-0001 Fix verdict is dv_lead's to write.
+Handoff: nothing owed to anyone by me on this packet.
+
+### Open-questions
+
+1. **REQ-902 is now a criterion rather than a debt** (carried from `J-rtl_lead-0003`
+   through `-0007`): the next CI run must be fully green with regeneration
+   byte-identical to the two files staged here. A mismatch convicts this commit, not
+   the fix — and the two unchanged snapshots are the control.
+2. **The sign-off path beyond this packet is unchanged and still open**: the mutation
+   spot-check (WO-0038 §8) and the line-rate stress rows L1–L5 remain owed before
+   `SO-xgmii_rx_64.md` can issue. The stress run is the first thing to exercise the
+   new bit at rate — 64-octet frames are `r` = 8 and never set it, so the bit's
+   line-rate behaviour is proved by the mixed-length rows, not by L1–L5's minimum
+   frames.
+3. **Carried, unchanged**: the latent `first_v` gating on a stimulus §10 forbids (an
+   idle injected inside a frame's own preamble) — still unreachable, still recorded.
+
+### Files-in-this-commit
+
+- rtl_snapshots/eth_mac_10g.v
+- rtl_snapshots/xgmii_rx_64.v
