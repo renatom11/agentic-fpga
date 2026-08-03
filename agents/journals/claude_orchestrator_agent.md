@@ -6309,3 +6309,42 @@ No sponsor-facing surface carries the firm's name.
 - site/public/index.html
 - site/public/org-chart.html
 - site/public/spec-atlas.html
+
+## [J-orchestrator-0142] 2026-08-03T19:55:00Z | task:WO-0054 | Family G landed green - board and site refreshed
+
+### Trigger
+Run 30841171667 on 2e8994f: build success AND cosim success (the
+lane blocking post-R-CI-4 and staying green). dv's measured
+expectation held: twenty-five silent units, no promotion.
+
+### Inputs
+The run's job conclusions (fetched job-level); RV-0054-VERDICT.
+
+### Reasoning
+Natural landing: WO-0054 board row (the trap-defused-in-code
+note, the ruling-supersedes-work-order precedent, 26 of 60
+ASSERT), site rebuilt on a verified-clean tree.
+
+### Actions
+Board row; site rebuild; this commit; push; dv dispatched to
+freeze WO-0055 (family G qualification) against the landed green
+SHA with the §9.2 monitor-coincidence and truncated_tkeep
+fragility notes riding with the design.
+
+### Evidence
+Run 30841171667 both jobs success; git status clean before the
+rebuild.
+
+### Outcome / DoD
+Family G is on the record; the campaign freeze is in flight.
+
+### Open questions
+None new.
+
+### Files-in-this-commit
+- tasks/BOARD.md
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/index.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html
