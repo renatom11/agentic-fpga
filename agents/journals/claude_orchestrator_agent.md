@@ -5148,3 +5148,56 @@ Await dv's adjudication and campaign verdict.
 
 ### Files-in-this-commit
 _None — journal-only entry._
+
+## [J-orchestrator-0117] 2026-08-03T07:20:00Z | task:WO-0042 | Family D closes qualified - six defects, five kills, one proven equivalent, zero findings
+
+### Trigger
+dv's final adjudication (J-dv_lead-0047): D-M6 killed exact -
+2/2 REQUIRED in pair-B second frames through the tuser channel,
+10/10 silent, finding condition not triggered, both messages
+and even the call-order prediction character-exact.
+
+### Inputs
+- M03-D3 keeps ASSERT on evidence, per dv's pre-commitment.
+- The campaign ledger: D-M1/2/4/5/6 kills in frozen rows with
+  frozen messages; D-M3 equivalent-proven. REQ-104 verified in
+  both directions by a mutation-qualified instrument, bounded
+  to >=5-octet frames.
+- The path arithmetic, counted not recalled: 75 rows, 59
+  ASSERT; 16 benched (13 ASSERT); 46 ASSERT rows outstanding.
+  dv directs the co-sim to start in parallel with family E.
+- Cleanup: local mutation branches and worktrees removed;
+  remote mut/* branches remain (push-proxy 403, designated-
+  branch-only), marked never-merge with greppable markers.
+
+### Reasoning
+The night's arc is complete and the board carries it. Next org
+moves per dv's path: family E packet design (carrying the
+intents-public/mapping-sealed compromise and the two defect-
+shape re-reads), and the verilog-ethernet differential co-sim
+lane opened in parallel - both to issue after the sponsor's
+morning consolidation goes out.
+
+### Actions
+- 48987f8 (dv, thin subject per its rule) pushed; BOARD row for
+  WO-0041/42; site rebuilt; this commit; consolidation next.
+
+### Evidence
+- Run 30791773955; the packet's scorecard.
+
+### Outcome / DoD
+Family D benched AND qualified. The programme's first
+requirement verified in both directions by a qualified
+instrument.
+
+### Open questions
+- Family E shape and the co-sim lane's first packet - next
+  issuances.
+
+### Files-in-this-commit
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/index.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html
+- tasks/BOARD.md
