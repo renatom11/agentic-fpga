@@ -16262,3 +16262,177 @@ outstanding.**
 ### Files-in-this-commit
 - agents/handoffs/WO-0050_family-f-mutation-campaign-SEALED-predictions.md
 - agents/handoffs/WO-0050_family-f-mutation-campaign.md
+
+## [J-dv_lead-0065] 2026-08-04T09:30Z | task:WO-0050 | F-4 disposed UNTESTED on the seeder's own disclosure — and the half that went unseeded went unseeded because I pinned a direction to buy an exact sealed message, which is coverage paid for exactness
+
+### Trigger
+Orchestrator, post-adjudication (`c3e877a`), three items: rule on F-4 now that
+the auditor's seeding disclosure is a clean read; author the attack-plan
+follow-up I withheld from the adjudication commit; countersign ADR-0017. This
+entry carries items 1 and 2; the countersignature is separate at
+`J-dv_lead-0066`.
+
+### Inputs
+- `docs/reports/audit/WO-0050-mutations/README.md` — the header table, §1's
+  scope statement, §3.1 (as a fidelity sample) and **§3.8 in full**, including
+  its "the half this diff does not reach" paragraph. **First read of this
+  directory, post-verdict and on the orchestrator's clearance**; it was barred
+  during adjudication by my own ruling.
+- `agents/handoffs/WO-0050_family-f-mutation-campaign.md` §2's F-c8 intent and
+  the standing spec-collision clause; `RV-0050-VERDICT` §6.
+- `agents/handoffs/WO-0047_tb-m03-family-f-runts.md` §1.2 and §4.1;
+  `RV-0047-VERDICT` §5(3).
+- `test/attack_plans/AP-xgmii_rx_64.md` §4.E's M03-E5 row, §4.F's M03-F2 row,
+  §7's X-1 row and banner, §8 items 1–4, §9.
+- `J-dv_lead-0048` (the X-1 placement-vs-oracle correction), `J-dv_lead-0060`,
+  `J-dv_lead-0064`.
+- **`f-c8.diff` itself: NOT opened.** §3.8 quotes the hunk in full and argues it;
+  the disclosure was sufficient and opening the raw diff would have added RTL
+  reading I did not need. Recorded because my charter §8 requires it either way.
+- **No `libs/**` opened**, no `docs/adr/**` beyond ADR-0017 (separate entry), no
+  `/workspace/**`.
+
+### Reasoning
+
+**F-4's discriminator was never in the diff's code; it was in the seeder's own
+disclosure, written before any run.** §3.8 seeds the in-word half of §9's pin
+whole and then states, under its own heading, the half it does not reach and
+why: the no-output-word class has a **second** implementation, and one
+expression serves both pins, so displacing the epoch-A half **earlier** would
+also fire the consume before the `tlast` of every frame whose received length is
+5, 6 or 7 mod 8 — clearing the record before its own `tlast` word and taking
+`tuser`[0] and the FCS strip with it. That breaks §9's `tlast` pin and REQ-103's
+removal on the exact class the intent protects.
+
+**So the ruling is UNTESTED, and the orchestrator's reading is right.** M03-E2
+and M03-F2 stayed green **because their pin was never displaced**. A green cell
+under a stimulus that was never applied is not evidence about the cell. My
+verdict's hypothesis (a) is confirmed; (b) is neither confirmed nor excluded, and
+`WO-0047` §1.2's shared-path claim stays unestablished with its citation bar
+intact.
+
+**No finding lies against the auditor and I want that said plainly.** The
+narrowing was argued from the spec rules it would have broken, disclosed before
+any run, and confined to the half it names — the standing clause operating
+exactly as written, and the same disposition WO-0045's declined E-c2 in-word half
+received. A seeder that discloses what it could not do faithfully is worth more
+than one that substitutes.
+
+**The finding is mine, and it is sharper than "the class was hard to seed".** The
+collision is a collision with displacing the pin **earlier**. My own §2 intent
+said, in bold, *"Displace it earlier by one, not later, and not by two"* — and I
+pinned that direction for one reason: so the seal could carry an exact
+`Y − X = 1`. **The over-specification is what made half the class unseedable.**
+
+> **Message exactness and class coverage were in tension and I paid coverage for
+> exactness without noticing I was paying.** That is the trade named, and it is
+> the first time in five campaigns I can point at a specific sentence of my own
+> that cost measurable coverage.
+
+**And it is `WO-0047` §4.1 one packet later in a different costume.** There I told
+a worker *how* to build a stimulus and was wrong about the machinery; here I told
+a seeder *which way* to break a pin and was wrong about the design. The rule that
+covers both, and the one I am writing down rather than restating a fourth
+version of "derive, don't relay": **a packet specifies the observable and leaves
+the mechanism to the party that can see it.** The next class names the
+observable — the epoch-A no-output-word report moves by one cycle — and lets the
+seeder choose the sign, disclosed.
+
+**On the attack-plan edits, the one that mattered most is a supersession rather
+than an addition.** §8 item 3 has carried *"M03-A3's blindness to lane-symmetric
+errors is UNTESTED"* since `J-dv_lead-0037`. F-c2 settled it: `tuser` is inside
+the tuple `tuple_of_sample` compares across start lanes, F-c2 moves it
+identically at both, the sequences stayed equal and **M03-A3's own assertion
+PASSED**; T-A34 reddened through `assert_monitors_clean` on an unclaimed
+`error_runt`. **A3 is blind to lane-symmetric content errors.** I rewrote the item
+as superseded-with-the-original-quoted rather than replacing it, which is this
+plan's own rule for a recorded miss, and I added the consequence that matters for
+a sign-off: **the unit's survival under a content error is its monitor's work,
+not the row's**, and an `SO-` must not conflate them.
+
+**M03-F2's row gains two bounds and one confirmation.** The confirmation is that
+`RV-0047` §5(3)'s pre-commitment fired **in the row's favour** — F-c6 seeded the
+underflow faithfully, the row killed it, so the second declared kill is
+achievable and no spec diff is owed. The bounds are that the row **convicts
+without diagnosing** (F-c3 and F-c6 byte-identical) and that its reach against
+the emitting classes is **k ∈ {1,4}**. Both are the campaign telling me something
+the row's own text did not know.
+
+**§7's X-1 row is split, and that is the `J-dv_lead-0048` correction finally
+landing where a planner reads it.** X-1 has always been two things — the
+placement machinery, which is stimulus construction and is anchored by nothing
+and needs to be, and the computed outcome model, which is an oracle and is the
+only half the co-sim gate was ever about. The row conflated them for eight
+entries. §7's banner was repaired at `J-dv_lead-0060`; the table row is repaired
+now, and the debt I have carried since `J-dv_lead-0051` is discharged.
+
+**Scope discipline, deliberately.** No row added, no row converted, no status
+count changed — 76 rows, 60 ASSERT. A campaign that qualifies existing rows must
+not grow the plan in the same breath, and the denominator rule cuts the same way
+after a campaign as during one.
+
+### Actions
+- **Read the seeder's disclosure** (post-verdict, cleared) and ruled **F-4
+  UNTESTED, not refuted**; recorded that no finding lies against the auditor and
+  that the finding is against my own intent-writing.
+- **Declined to open `f-c8.diff`** — §3.8 quotes and argues the hunk in full.
+- Appended the **F-4 ADDENDUM** to `WO-0050_family-f-mutation-campaign.md`,
+  carrying the ruling, the three consequences and the instruction for the next
+  class.
+- `AP-xgmii_rx_64.md`: **§8 item 3 SUPERSEDED** (M03-A3 measured blind, original
+  quoted); **§8 item 5 ADDED** (the shared-path claim's status, its citation bar
+  and the owed class); **M03-F2's Kills cell** gains the F-c6 confirmation and
+  the two bounds; **M03-E5's Kills cell** gains the F-c7 closure and F-c8's
+  negative; **§7's X-1 row split** into placement machinery and outcome model;
+  **§9** change-log row appended.
+- Opened no `libs/**`, nothing under `docs/adr/**` or `/workspace/**`. No `git`.
+
+### Evidence
+1. `docs/reports/audit/WO-0050-mutations/README.md` §3.8, "The half this diff
+   does not reach": names the epoch-A record consumed at age 2, names the shared
+   expression, and states the consequence — the consume would fire before the
+   `tlast` of frames of received length 5, 6 or 7 mod 8, taking `tuser`[0] and
+   `strip` with it.
+2. Same section, fidelity half: the in-word displacement moves "for every frame
+   on the path, whatever character closed it and whatever the strobe's name",
+   bits 0/1/2 shifting together — consistent with the single observed kill and
+   with `Y − X = 1` at T-E5.
+3. `WO-0050` §2's F-c8 intent, my own words: *"Displace it **earlier by one**,
+   not later, and not by two."*
+4. AP counts after the edits: **76 rows** (`grep -c '^| \*\*M03-'`), unchanged
+   from `J-dv_lead-0060`; no status word altered in any row.
+
+### Outcome
+**F-4 disposed: UNTESTED.** The diff was narrower than the campaign intent by a
+disclosed spec-collision ruling; the two green cells were never stimulated;
+`WO-0047` §1.2's shared-no-output-path claim stays unestablished and uncitable;
+the untested half is **owed a class**, specified by observable with the direction
+left to the seeder.
+
+**The attack plan now carries what the campaign taught**: M03-A3 measured blind
+(superseded, not overwritten), M03-F2's confirmation and its two bounds, M03-E5's
+closure and its negative, X-1's two halves separated, and §8's new item 5. Counts
+unchanged at 76 rows / 60 ASSERT, 25 benched, 21 ASSERT discharged.
+
+Handoff: the AP and the WO-0050 brief, in one commit; the ADR-0017
+countersignature is separate at `J-dv_lead-0066`.
+
+### Open-questions
+- **The owed class has no packet yet.** It belongs with families G/H's campaign
+  rather than in a round of its own — one diff whose predicted kill set is two
+  rows is not worth a campaign's overhead, and G and H are the next benches.
+- **`f-c8.diff` is unread by me** and I would rather it stayed that way; if the
+  owed class ever needs the epoch-A site named, that naming is the seeder's, not
+  mine.
+- **My packet-authoring rule is now written**: specify the observable, leave the
+  mechanism to the party that can see it. Third packet in a row where the defect
+  was mine and mechanism-shaped, and the first where the repair is a rule about
+  *what a packet may specify* rather than about how carefully I should think.
+- **Still owed**: AP-M14's §6 invariant; the `precompile_check.sh`
+  side-effect-in-combinator lane; the strobe-window convention; the discharge-by-
+  citation qualification for M03-F5; the RFC 1071 anchor on the next fetching
+  run; X-7, X-10, X-11 deferred; L1–L5 as a separate packet.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0050_family-f-mutation-campaign.md
+- test/attack_plans/AP-xgmii_rx_64.md

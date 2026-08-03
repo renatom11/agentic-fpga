@@ -576,3 +576,84 @@ directed rows are the whole of their verification.
 
 **Twenty-one of sixty.** The instrument keeps proving itself; the coverage is
 still early, and the second of those facts is the one a sign-off turns on.
+
+---
+
+## ADDENDUM — FINDING F-4 disposed: UNTESTED, not refuted; and the untested half is owed a class because I over-pinned my own intent — dv_lead, `J-dv_lead-0065`
+
+`RV-0050-VERDICT` §6 named two hypotheses for F-c8 killing one REQUIRED unit of
+three, said the discriminator was in the diff at `4ef6628`, and **declined to
+read it** — reading a mutation diff to settle an adjudication contaminates every
+round after it. Post-verdict (the adjudication is committed at `c3e877a`) the
+orchestrator cleared the read, and the discriminator is not in the diff's code at
+all: **it is in the seeder's own disclosure**, written before any run.
+
+### 1. What the disclosure says
+
+`docs/reports/audit/WO-0050-mutations/README.md` §3.8 seeds the in-word half of
+§9's pin whole — the two fixed register stages become one — and then, under a
+heading of its own, states what the diff does **not** reach and why. The
+no-output-word class has a **second** implementation: an epoch-A record consumed
+at age 2 because no `tlast` ever came. The auditor did not displace it, on the
+ground that one expression serves **both** pins, so moving the no-output-word
+half one cycle earlier would also fire the consume before the `tlast` of every
+frame whose received length is 5, 6 or 7 modulo 8 — clearing the record before
+its own `tlast` word and taking `tuser`[0] and the FCS strip with it. That breaks
+§9's `tlast` pin and REQ-103's removal **on the very class this intent
+protects** ("Frames that do produce an output word are unaffected").
+
+That is `WO-0050` §2's standing clause operating exactly as written — *preserve
+the spec rule and disclose the collision* — and it is the same disposition
+WO-0045's declined E-c2 in-word half received, for the same reason.
+
+### 2. Ruling
+
+**F-4 is UNTESTED, not refuted. The orchestrator's reading is correct and I adopt
+it.**
+
+The diff was **narrower than the campaign intent by a disclosed spec-collision
+ruling**, so M03-E2 and M03-F2 stayed green **because their pin was never
+displaced**. A green cell under a stimulus that was never applied is not
+evidence about the cell. Nothing in this campaign bears either way on whether
+the two no-output-word classes share a report path.
+
+**Three things follow, and the third is the one that costs me something.**
+
+1. **The seeding is not a fidelity failure and no finding lies against the
+   auditor.** The narrowing was argued from the spec rules it would have broken,
+   disclosed before any run, and confined to the half it names. It is the clause
+   working. My verdict's hypothesis (a) is confirmed; hypothesis (b) is neither
+   confirmed nor excluded.
+2. **`WO-0047` §1.2's shared-no-output-path claim remains unestablished**, and
+   `RV-0050-VERDICT` §6's bar stands unchanged: **no packet may cite it.** It was
+   a claim I made about the design's structure, from a DV packet, without an
+   instrument — and the first instrument that could have tested it did not run
+   against it.
+3. **The untested half is OWED a class, and it is not structurally unseedable.**
+   The collision the auditor names is a collision with *displacing that pin
+   **earlier***. My `WO-0050` §2 intent said, in bold, "Displace it **earlier by
+   one**, not later, and not by two" — a direction I pinned so that the sealed
+   message could carry an exact `Y − X = 1`. **That over-specification is what
+   made half the class unseedable, and it is mine.**
+
+> **The instruction for the next class, stated so it is not repeated**: name the
+> **observable** — the epoch-A no-output-word report moves by one cycle — and
+> **leave the direction to the seeder**, disclosed in the return. The seal then
+> admits both signs and loses a little exactness. That is the right trade and I
+> made the wrong one: **message exactness and class coverage were in tension here
+> and I paid coverage for exactness without noticing I was paying.**
+>
+> This is the same defect as `WO-0047` §4.1 — over-specifying a mechanism I had
+> not traced — arriving one packet later in a different costume. There I told a
+> worker *how* to build a stimulus and was wrong about the machinery; here I told
+> a seeder *which way* to break a pin and was wrong about the design. **The rule
+> that covers both: a packet specifies the observable and leaves the mechanism to
+> the party that can see it.**
+
+### 3. Where this is recorded
+
+The standing consequences live in the attack plan, not only here:
+`AP-xgmii_rx_64.md` §8 gains **item 5** (the claim, its status, and the owed
+class), M03-E5's row records that F-c8 killed it alone, and §9's change log
+carries the round. This addendum is the ruling; the plan is where a future
+packet will look.
