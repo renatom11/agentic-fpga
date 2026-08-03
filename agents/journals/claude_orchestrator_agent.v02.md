@@ -108,3 +108,54 @@ None.
 - site/public/index.html
 - site/public/org-chart.html
 - site/public/spec-atlas.html
+
+## [J-orchestrator-0149] 2026-08-03T23:30:00Z | task:none | Every work order now has a board row - the ledger is the full record
+
+### Trigger
+Sponsor: the heading said 51 while the true count is higher.
+
+### Inputs
+Board sweep vs the allocated id space WO-0001..WO-0056: six ids
+had no row — WO-0042 (folded into a shared WO-0041/42 row),
+WO-0044 (a real packet round never rowed), and WO-0048/0052/0053
+(dispatch-only rounds whose records lived in journals alone),
+plus the in-flight WO-0056.
+
+### Reasoning
+- Every allocated id now has its own row, each written from its
+  round's actual record: WO-0042 split out of the shared row
+  (retitled WO-0041); WO-0044 (the co-sim lane's opening
+  questions); WO-0048 (the REQ-901 cascade, dispatch-only, noted
+  as such); WO-0052 (the ADR-0017 acceptance + override
+  retirement); WO-0053 (the chain landing + rotations + case h);
+  WO-0056 (ACCEPTED · LANDING, with the replay condition).
+- The heading now counts DISTINCT ids (56), not raw rows (57 —
+  the WO-0046 run-1 record row is a deliberate duplicate id and
+  stays).
+- Standing practice adopted: a work-order id gets its board row
+  at ALLOCATION (dispatch-only rounds included), not only at a
+  packet landing — the gap existed because dispatch-only rounds
+  had no landing moment to trigger a row.
+
+### Actions
+Six rows inserted in id order; heading fix; clean-worktree
+rebuild; this commit; push.
+
+### Evidence
+Rebuilt page: heading 56, rows 57, distinct 56, newest WO-0056;
+board sweep shows zero missing ids.
+
+### Outcome / DoD
+"Every work order ever issued" is now literally true on the page.
+
+### Open questions
+None.
+
+### Files-in-this-commit
+- site/build.py
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/index.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html
+- tasks/BOARD.md

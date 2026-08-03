@@ -494,7 +494,7 @@ backlog = head_block('agentic-fpga — backlog & progress',
   <h2>What happens next</h2>
   <ul class="next">{next_html}</ul>
 
-  <h2>Every work order ever issued ({len(wo_rows)})</h2>
+  <h2>Every work order ever issued ({len(set(r[0] for r in wo_rows))})</h2>
   <p class="sub" style="font-size:.88rem">A work order is how the orchestrator hands
   an agent a job: scope, deliverables, and what it may not touch. The agent returns;
   the orchestrator accepts or routes the dispute. Newest first. Outcomes are quoted
