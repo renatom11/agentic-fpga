@@ -1,6 +1,13 @@
 # WO-0047: Family F — runt frames (REQ-107), and the in-word abort row E5
 
-- **State**: DRAFT (id assumes WO-0047 is next free; orchestrator allocates)
+- **State**: **ACCEPTED** (round 1 — `RV-0047-VERDICT`, `J-dv_lead-0058`). **No
+  correctness defect in the delivered work; the one defect found is in THIS
+  PACKET's §4.1**, which asserted that building through `Injection` avoids the
+  sub-five trap — it does not, because `Bench.run` checks the schedule itself
+  (`bench.ml:177`) and `Injection`'s filter is local to its own errors. Found by
+  execution, worked around correctly. All three open questions ruled, including
+  a **standing cross-file convention** on strobe windows (§5(2)). Expected CI:
+  Build the unknown; **`runtest` GREEN, nineteen silent units.**
 - **From** / **To**: dv_lead → tb_writer
 - **Spec basis**: `docs/specs/modules/xgmii_rx_64.md` §6.1, §6.2's `Frame` row,
   §9 (the sixth row, the strobe pin **and its no-output-word clause**, the
@@ -630,3 +637,156 @@ $ bash tools/dv_checks.sh                                     # every check that
                                                                # unrelated to this packet)
 ```
 
+---
+
+## RV-0047-VERDICT: ACCEPT (re: WO-0047 round 1) — dv_lead, `J-dv_lead-0058`
+
+**No correctness defect in the delivered work.** The one defect this round found
+is **in my own packet**, and the worker found it by executing rather than
+reasoning.
+
+### 1. §4.1 was WRONG, and it was mine
+
+I wrote, in bold, that **"M03-F2 must be built through `Injection`, not through
+`Bench.frames_at`/`Arrival.create` directly"** — asserting that routing through
+`Injection` avoids the sub-five stimulus trap. **It does not, and I verified the
+worker's finding at both ends:**
+
+- **`bench.ml:177`** — `Bench.run` calls `Arrival.check sched` **directly on the
+  schedule**, and raises on any complaint. It does not consult `Injection`.
+- **`injection.ml:136-149`** — the filter maps over `(Arrival.check schedule)`
+  and adds only non-matching lines to **`Injection`'s own** `errors` list. **It
+  never touches the schedule.** The complaint is suppressed in `Injection`'s
+  reporting and survives everywhere else.
+
+So a sub-five frame handed to `Injection.create` is **not drivable through this
+bench at all** — `Bench.run`'s independent check reproduces the complaint
+unfiltered. My instruction would have sent you into a wall, and the honest
+description is that I reasoned from a comment in `injection.ml` instead of
+following the call graph to `Bench.run`.
+
+**This is the third round in which a worker's execution has corrected my
+packet** — after `run_e4`'s two-site stimulus check and E-c1's sealed message.
+The pattern is consistent and it is mine: my errors cluster where I reason about
+machinery I did not trace.
+
+### 2. The §4.1 predicate answer — ANSWERED BY EXECUTION, and it settles the loose comment
+
+`arrival.ml:162`: **`if Array.length f.octets < 5`** — exactly REQ-107's
+boundary, **not looser**, confirmed by compiling and running `test/xgmii`'s
+Hardcaml-free sources under the system compiler. A bare five-octet frame raises
+zero complaints.
+
+**So `injection.ml:136-139`'s comment naming "rows F2 and F5" is the loose
+side**, exactly as I suspected when I asked. F5's frame is five octets and does
+not trip a `< 5` predicate. The machinery is right; its comment overreaches.
+
+### 3. The workaround is correct, and it is the right shape
+
+`Place { At_octet k; terminate_char }` on a normal 64-octet base. The
+**scheduled** frame stays 64 octets, so `Array.length f.octets < 5` never fires
+and both checks pass — while the **DUT** sees `k` octets between start and
+terminate, which is precisely what M03-F2's row specifies. Confirmed clean at
+construction and under the second check, both lanes, all three `k`.
+
+It is also the same shape M03-E2 already uses: an early control character placed
+on a normal frame. Consistent, and it needed no machinery addition.
+
+> **One property of it to carry into the campaign, and it is a note rather than
+> a defect.** `Injection` has no truncation for a placed terminate, so the ~59
+> octets after the placed `/T/` follow it **into the inter-frame gap**. F2's
+> stimulus is therefore a **superset** of its row text: `k` octets between start
+> and terminate, *plus* data in the gap. That data is inert — M03-E4 establishes
+> that nothing open means nothing reported — and the exact-strobe-set assertion
+> would catch it if it were not.
+>
+> **Why it matters at campaign time**: an unexpected strobe under an F-class
+> mutation could be the trailing-octet artifact rather than the mutation, and
+> would present as an unnamed-unit finding. Named here so the adjudication is
+> not confused by it.
+
+### 4. The rest of the checklist
+
+**F5's citation verified at the named lines.** `test_m03_c.ml:483` is
+`let run_c4 ~lane =` and 559-560 closes its `%expect_test`. C4 asserts strictly
+more than F5's text, as §3.3 required, and the citation is exact rather than
+gestural.
+
+**M03-E5's append discipline verified mechanically.** `git diff` on
+`test_m03_e.ml` shows **seven deletions, all inside the header docstring**
+(rewriting "Four rows" and its list). **No `[%expect]` block is touched**, and
+the file goes from three `%expect_test` units to four. `test_m03_f.ml` carries
+four (F1–F4). Pure EOF append plus a docstring update, as claimed.
+
+**Assertion order as contract (§4.2) — honoured**, with each row's order stated
+in the Return log. That was a new instruction this round and it landed without
+needing a second pass.
+
+**Both vacuity shapes** were re-read by me at §3 before the packet issued, and
+the delivered rows match what that re-read licensed: F5 not built, F2 not resting
+on its underflow kill, F3 not attempting to assert "not twice".
+
+### 5. The three open questions
+
+**(1) F2 at both start lanes — APPROVED, and the extension is better than my
+text.** My row text left the lane axis unscoped, as it did for family D's M03-D2
+and cost an open question there too. **Both lanes is right on a verification
+ground, not a symmetry one**: the start lane changes where the terminate falls,
+and therefore the arithmetic of §9's **no-output-word pin** — two cycles after
+the input word carrying the closing character. A single-lane F2 would leave half
+that pin's geometry untested. *My wording caused the question; the answer is the
+one I should have specified.*
+
+**(2) The `terminate_cycle + 3` convention versus the literal §0.6 formula —
+RULING, and it outlives this round.**
+
+**The literal §0.6 formula is the convention going forward. The existing
+windows in `test_m03_c.ml` and `test_m03_d.ml` are NOT defects and are NOT to be
+retrofitted now.** Three grounds:
+
+1. **No assertion is weakened where it matters.** Every row asserts its pinned
+   cycle *exactly*, in its own `error_pulses` check, independently of the
+   `Strobe_monitor` window. The window is a secondary bound; a looser one admits
+   nothing the exact check would let through.
+2. **Retrofitting touches three mutation-qualified files** for a consistency gain
+   with **no verification gain**. Each would need its qualification re-argued or
+   at minimum re-run, which is real cost for zero coverage.
+3. **But an undocumented inconsistency is the stale-divergence defect** this
+   programme has corrected repeatedly. So it is documented here rather than left
+   to be rediscovered.
+
+> **Standing convention**: new rows use the literal §0.6 formula. Any retrofit of
+> the existing `+ 3` windows **must be paired with a re-run and stated as a
+> change**, never done quietly inside another packet's diff.
+
+**(3) F2's underflow kill — disposition unchanged, and the campaign still settles
+it.** §3.2 flagged it as at risk of the unachievable-kill shape and said so; that
+stands. The F campaign must seed a **faithful** underflow mutation, and if it
+kills nothing the kill is withdrawn by spec diff, as M03-D3's headline kill was.
+
+**One new datum is now available and must not be misused.** REQ-901 class (e), in
+force at `9d1982f`, mandates recording the reference's sub-five disposition as
+**data on first drive, never adjudicated** — and the reference is a design with
+no sub-five handling at all. That data may show whether an FCS-strip underflow is
+a natural implementation outcome. **It is evidence about the defect class, never
+about our RTL, and never an expected value** — the clause (e) itself restates.
+
+### 6. Expected CI
+
+- **Build: the unknown, as always** — two changed test files, `test_m03_f.ml`
+  new. Warning **9** fatal on any record literal is the named risk;
+  `precompile_check` structurally excludes this directory and its green is not a
+  type-check.
+- **`runtest`: predicted GREEN — nineteen `%expect_test` units** (fifteen
+  existing, plus M03-E5 in `test_m03_e.ml` and F1–F4 in `test_m03_f.ml`), all
+  silent, **no promotion produced**.
+- **No `SO-` is owed or offered.** Family F's five-class sealed-mapping
+  qualification is the gate.
+
+### 7. Conduct
+
+The predicate question was answered **by compiling and running** rather than by
+reading — and that same execution turned up the second finding, which is the one
+that mattered. The finding was reported as load-bearing rather than buried in a
+workaround. The shared-tree state was disclosed as seen-not-touched with a scoped
+diff. And the extension in (1) was flagged rather than taken.

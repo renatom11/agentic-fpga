@@ -14697,3 +14697,172 @@ anchor.
 > carried it, and an auditor reconstructs the pair from `J-dv_lead-0057` and
 > `J-orchestrator-0125`.
 - test/attack_plans/CD-xgmii_rx_64_cosim.md
+
+## [J-dv_lead-0058] 2026-08-19T15:40Z | task:WO-0047 | Family F accepted — and the round's only defect is in my own packet: §4.1 told the worker to route around a trap in a way that does not work, because I reasoned from a comment instead of following the call graph
+
+### Trigger
+Orchestrator: tb_writer's WO-0047 return — F1–F4 built, F5 discharged by
+citation, M03-E5 appended to `test_m03_e.ml`, my §4.1 filter-predicate question
+answered **by execution**, and a second finding reported as load-bearing: a
+sub-five frame handed to `Injection.create` is not drivable through this bench
+at all. Three open questions, of which (2) is a cross-file convention ruling
+that outlives the round.
+
+### Inputs
+- `test/xgmii_rx_64/test_m03_f.ml` and the `test_m03_e.ml` diff (deletion count
+  and their location).
+- **`test/xgmii_rx_64/bench.ml:177`** — `Arrival.check sched` inside `run`.
+- **`test/xgmii/injection.ml:136-149`** — what the filter operates on and what
+  it writes to.
+- **`test/xgmii/arrival.ml:162`** — the `< 5` predicate.
+- `test/xgmii_rx_64/test_m03_c.ml:483,559-560` — the F5 citation target.
+- `agents/handoffs/WO-0047_…md` §3.2, §3.3, §4.1, §4.2 — my own packet, re-read
+  as the thing being conformed to and, in §4.1's case, as the thing that was
+  wrong.
+- `docs/specs/requirements.md` REQ-901 class (e), in force at `9d1982f`.
+- **No `libs/**`, no `rtl_snapshots/**`.**
+
+### Reasoning
+
+**The delivered work is clean and the defect is mine, so I will lead with mine.**
+§4.1 said, in bold, that M03-F2 **must** be built through `Injection` rather than
+through `Bench.frames_at`/`Arrival.create`, on the theory that `Injection`
+filters `Arrival.check`'s sub-five complaint. I verified the worker's finding at
+both ends rather than accept it: **`bench.ml:177` calls `Arrival.check sched`
+directly** and raises on any complaint, consulting nothing of `Injection`'s; and
+**`injection.ml`'s filter maps over `(Arrival.check schedule)` and writes only to
+`Injection`'s own `errors` list**, never touching the schedule. The suppression
+is local to `Injection`'s reporting and survives everywhere else.
+
+**So my instruction would have sent the worker into a wall**, and the honest
+description of how I got there is that I read a comment in `injection.ml` and
+inferred the behaviour instead of following the call graph one hop to
+`Bench.run`. I even wrote in that section that the trap "is already documented in
+the machinery" — which was true of the trap and false of the escape.
+
+**Third round running, a worker's execution has corrected my packet** — after
+`run_e4`'s two-site stimulus check and E-c1's sealed message. The pattern is
+consistent enough to name: **my errors cluster where I reason about machinery I
+have not traced.** The provenance rule I wrote for quantities needs a sibling for
+mechanisms — a claim about what code does is measured (by running it), derived
+(by following the call graph), or relayed (by citing a comment) — **and a comment
+is a relay, not a derivation.**
+
+**The predicate answer settles the loose comment in the other direction.**
+`arrival.ml:162` is `Array.length f.octets < 5`, exactly REQ-107's boundary,
+established by compiling and running `test/xgmii`'s Hardcaml-free sources. So
+`injection.ml`'s comment naming "rows F2 **and F5**" overreaches: F5's frame is
+five octets and does not trip a `< 5` predicate. I asked the question because the
+comment looked loose; it was, and the machinery underneath is right.
+
+**The workaround is the right shape and needed no addition.**
+`Place { At_octet k; terminate_char }` on a 64-octet base keeps the *scheduled*
+length at 64 so the predicate never fires, while the DUT sees `k` octets between
+start and terminate — which is exactly M03-F2's stimulus. It is also the shape
+M03-E2 already uses.
+
+**And it has a property worth carrying to the campaign rather than filing away.**
+`Injection` has no truncation for a placed terminate, so ~59 octets follow the
+placed `/T/` into the inter-frame gap. F2's stimulus is a **superset** of its row
+text. The trailing data is inert — M03-E4 establishes that nothing open means
+nothing reported, and the exact-strobe-set assertion would catch it otherwise —
+but at campaign time **an unexpected strobe under an F-class mutation could be
+that artefact rather than the mutation**, and would present as an unnamed-unit
+finding. Named in the verdict so the adjudication is not confused by it.
+
+**Ruling (2) is the one that outlives the round, and I decided it against
+tidiness.** The `terminate_cycle + 3` windows in `test_m03_c.ml`/`test_m03_d.ml`
+and the literal §0.6 formula this packet's rows use are both valid. The
+consistency instinct says retrofit. **I ruled not to**, on three grounds: every
+row asserts its pinned cycle *exactly* in its own `error_pulses` check, so the
+`Strobe_monitor` window is a secondary bound and a looser one admits nothing the
+exact check would let through — **no assertion is weakened where it matters**;
+retrofitting touches **three mutation-qualified files** for a consistency gain
+with **no coverage gain**, and each would need re-running; and an undocumented
+divergence is the stale-inconsistency defect, so it is documented rather than
+left to be rediscovered. New rows use the literal formula; any retrofit must be
+**paired with a re-run and stated as a change**, never folded quietly into
+another packet's diff.
+
+**Ruling (1) is my wording's fault again.** F2's row text left the lane axis
+unscoped, exactly as M03-D2's did, and cost an open question for the same reason.
+Both lanes is right on a **verification** ground rather than a symmetry one: the
+start lane moves where the terminate falls and therefore the arithmetic of §9's
+no-output-word pin, so a single-lane F2 leaves half that geometry untested.
+
+**Ruling (3) stands unchanged, with one datum newly available and fenced.**
+REQ-901 class (e) — in force since `9d1982f`, which I countersigned — mandates
+recording the reference's sub-five disposition as **data, never adjudicated**.
+The reference has no sub-five handling at all, so that data may show whether an
+FCS-strip underflow is a natural implementation outcome. **Evidence about the
+defect class; never about our RTL; never an expected value.** Fencing the misuse
+in the same sentence as the observation is the whole job.
+
+### Actions
+- **Verified the second finding at both ends** (`bench.ml:177` and
+  `injection.ml`'s filter target) and **recorded §4.1 as MY defect** in the
+  verdict, with how I came to make it.
+- Confirmed the predicate answer and that `injection.ml`'s comment is the loose
+  side.
+- Accepted the `Place { At_octet k; terminate_char }` workaround and **flagged
+  its superset stimulus** for campaign adjudication.
+- **Verified F5's citation at the named lines** (`run_c4` at 483, closing at
+  559-560) and **M03-E5's append mechanically** — seven deletions, all in the
+  header docstring, no `[%expect]` block touched, three units to four.
+- **Ruled all three open questions**, including a **standing cross-file
+  convention** on strobe windows with an explicit bar on quiet retrofits.
+- Predicted CI: Build the unknown; **`runtest` GREEN, nineteen silent units.**
+- Flipped WO-0047 to **ACCEPTED**; appended `RV-0047-VERDICT`.
+- Opened no `libs/**`. No `git commit`, no `git push`.
+
+### Evidence
+1. `bench.ml:177`: `match Arrival.check sched with` — `run` checks the schedule
+   itself, independent of `Injection`.
+2. `injection.ml:136-149`: the filter iterates `(Arrival.check schedule)` and
+   `add`s to `Injection`'s own errors; the schedule is untouched.
+3. `arrival.ml:162`: `if Array.length f.octets < 5` — REQ-107's exact boundary.
+4. `test_m03_c.ml:483` is `let run_c4 ~lane =`; 559-560 closes its
+   `%expect_test` — the F5 citation is exact.
+5. `git diff test/xgmii_rx_64/test_m03_e.ml`: seven deletions, all header
+   docstring; `%expect_test` count 3 → 4.
+6. `test_m03_f.ml` carries four `%expect_test` units (F1–F4).
+7. `Injection` has no truncation for a placed terminate — the basis for the
+   superset-stimulus note.
+
+### Outcome
+**WO-0047 round 1: ACCEPT.** No correctness defect in the delivered work; F5
+discharged by an exact citation; M03-E5 appended without touching an expectation;
+assertion order honoured as contract on its first outing as one.
+
+**The round's defect is in my own packet's §4.1**, which prescribed an escape
+from a trap that does not escape it. Recorded, with the reasoning failure named.
+
+**Three rulings issued**, one of them a standing cross-file convention on strobe
+windows that outlives this round.
+
+### Open-questions
+- **A sibling to the provenance rule, earned three times over**: a claim about
+  what code *does* is **measured** (by running it), **derived** (by following the
+  call graph), or **relayed** (by citing a comment) — and **a comment is a relay,
+  not a derivation.** My last three packet defects all sit exactly there.
+- **F2's superset stimulus** — trailing octets into the gap — must be remembered
+  at campaign adjudication so an artefact strobe is not scored as an unnamed-unit
+  finding.
+- **The strobe-window convention** is now standing: literal §0.6 formula for new
+  rows; retrofits paired with a re-run and stated, never quiet.
+- **F2's underflow kill remains at-risk**; the campaign settles it, and class
+  (e)'s sub-five data may inform whether the class is natural — never an expected
+  value.
+- **Family F's qualification freeze is next**, five classes, mapping sealed, with
+  the freeze-checklist rules: read each unit's assertion **and iteration** order
+  before sealing a message; never move the denominator mid-campaign.
+- **Owed by me, unchanged**: the `precompile_check.sh`
+  side-effect-in-combinator lane; `AP` §7's fuller rewrite; and now a §4.1
+  correction to WO-0047 itself if it is ever cited as guidance.
+- **M03-A3's blindness to lane-symmetric errors remains untested**; my M04
+  contamination from `J-dv_lead-0024` still stands.
+- **Unchanged**: the RFC 1071 anchor closes on the next CI run that fetches;
+  X-7, X-10, X-11 deferred; L1–L5 owed as a separate packet.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0047_tb-m03-family-f-runts.md
