@@ -5754,3 +5754,43 @@ None.
 
 ### Files-in-this-commit
 - docs/gates/P1-spec-freeze-checklist.md
+
+## [J-orchestrator-0130] 2026-08-03T16:02:00Z | task:none | Hero accuracy fix: no live market connection, and the page now says so
+
+### Trigger
+Sponsor challenged the hero sentence: "Is that even accurate
+though? I'm not plugging into the market." He is right — nothing
+in this program ever touches an exchange; "receives a stock
+exchange's live data feed" overstated.
+
+### Inputs
+The roadmap's own Phase-2 text (recorded trading day replayed in
+simulation) — already the accurate statement of method.
+
+### Reasoning
+"receives ... live data feed" → "parses a stock exchange's data
+feed", with the method stated inline: run entirely in simulation,
+market input a recorded trading day rather than a live
+connection. DESCRIPTION meta matched. Rebuild verified clean
+(journal counts worktree == HEAD for both in-flight agents before
+regenerating — the J-orchestrator-0125 content-sweep check).
+
+### Actions
+Two edits in site/build.py; rebuild; this commit; push.
+
+### Evidence
+Site build line reports committed-state counts only.
+
+### Outcome / DoD
+The hero claims only what the program does.
+
+### Open questions
+None.
+
+### Files-in-this-commit
+- site/build.py
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/index.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html

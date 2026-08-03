@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <title>agentic-fpga — a trading network card built by an AI org</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="A 10-gigabit Ethernet network card that receives a stock exchange&#x27;s live data feed and tracks the order book in hardware, written in Hardcaml by a hierarchy of AI agents under a human sponsor. Every commit carries its author agent&#x27;s reasoning, enforced in CI.">
+<meta name="description" content="A 10-gigabit Ethernet network card that parses a stock exchange&#x27;s data feed and tracks the order book in hardware — entirely in simulation, no live connection — written in Hardcaml by a hierarchy of AI agents under a human sponsor. Every commit carries its author agent&#x27;s reasoning, enforced in CI.">
 <meta property="og:title" content="agentic-fpga">
-<meta property="og:description" content="A 10-gigabit Ethernet network card that receives a stock exchange&#x27;s live data feed and tracks the order book in hardware, written in Hardcaml by a hierarchy of AI agents under a human sponsor. Every commit carries its author agent&#x27;s reasoning, enforced in CI.">
+<meta property="og:description" content="A 10-gigabit Ethernet network card that parses a stock exchange&#x27;s data feed and tracks the order book in hardware — entirely in simulation, no live connection — written in Hardcaml by a hierarchy of AI agents under a human sponsor. Every commit carries its author agent&#x27;s reasoning, enforced in CI.">
 <meta property="og:type" content="website">
 <meta property="og:image" content="/og.png">
 <meta name="twitter:card" content="summary_large_image">
@@ -131,8 +131,10 @@ ul.next { padding-left:1.2rem; } ul.next li { margin:.35rem 0; font-size:.92rem;
 <div class="wrap">
   <span class="eyebrow">agentic-fpga</span>
   <h1>A trading network card, engineered end-to-end by an organization of AI agents</h1>
-  <p class="sub">A 10-gigabit Ethernet network card that receives a stock
-  exchange&rsquo;s live data feed and tracks the order book in hardware, written in
+  <p class="sub">A 10-gigabit Ethernet network card that parses a stock
+  exchange&rsquo;s data feed and tracks the order book in hardware — run entirely
+  in simulation, its market input a recorded trading day rather than a live
+  connection — written in
   Hardcaml by a hierarchy of AI agents under a human sponsor who sets direction
   and signs the gates. The architect wrote the specification — 110 requirements,
   20 module contracts. The hardware designer wrote the modules and repairs
@@ -218,8 +220,8 @@ ul.next { padding-left:1.2rem; } ul.next li { margin:.35rem 0; font-size:.92rem;
   agent’s reasoning entering beside it</b>, appended to that agent’s
   journal in the same commit. Journals are append-only; mistakes are corrected
   forward, never rewritten. The history is the experiment’s data.</p>
-  <p class="cadcap">The 216 journal entries — one per commit — by author:</p>
-  <div class="chips"><span class="chip">127 · orchestrator</span> <span class="chip">58 · verification lead (dv_lead)</span> <span class="chip">16 · architect (architect_docs_lead)</span> <span class="chip">8 · hardware designer (rtl_lead)</span> <span class="chip">7 · auditor</span></div>
+  <p class="cadcap">The 220 journal entries — one per commit — by author:</p>
+  <div class="chips"><span class="chip">129 · orchestrator</span> <span class="chip">59 · verification lead (dv_lead)</span> <span class="chip">17 · architect (architect_docs_lead)</span> <span class="chip">8 · hardware designer (rtl_lead)</span> <span class="chip">7 · auditor</span></div>
 
   <h2>The tech stack</h2>
   <div class="chips">
@@ -240,7 +242,7 @@ ul.next { padding-left:1.2rem; } ul.next li { margin:.35rem 0; font-size:.92rem;
     <a class="card" href="spec-atlas.html"><span class="ct">Spec atlas</span>
       <span class="cd">All 110 requirements, the 20-module inventory, dataflow diagrams,
       and the traceability matrix — regenerated from the spec text itself, pinned at
-      <span class="mono">1848a73</span>.</span><span class="go">open →</span></a>
+      <span class="mono">06ea822</span>.</span><span class="go">open →</span></a>
     <a class="card" href="org-chart.html"><span class="ct">Org chart</span>
       <span class="cd">Who does what, who may refuse whom, and the journal rule no agent
       can escape — the org’s constitution, explorable.</span><span class="go">open →</span></a>
@@ -254,7 +256,7 @@ ul.next { padding-left:1.2rem; } ul.next li { margin:.35rem 0; font-size:.92rem;
   </div>
 
   <div class="foot">Generated from the repository at commit
-  <a class="mono" href="https://github.com/renatom11/agentic-fpga/commit/1848a73" target="_blank" rel="noopener">1848a73</a>
+  <a class="mono" href="https://github.com/renatom11/agentic-fpga/commit/06ea822" target="_blank" rel="noopener">06ea822</a>
   · 2026-08-03 · <a href="https://github.com/renatom11/agentic-fpga" target="_blank" rel="noopener">source on GitHub</a> · built by
   the org’s orchestrator, like everything else here.</div>
 </div>
