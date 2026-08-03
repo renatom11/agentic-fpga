@@ -5285,3 +5285,46 @@ proceeding in parallel.
 - site/public/org-chart.html
 - site/public/spec-atlas.html
 - tasks/BOARD.md
+
+## [J-orchestrator-0120] 2026-08-03T14:10:00Z | task:WO-0045 | Five for five red in the E campaign - and the harvest carries a question about dv's own correction
+
+### Trigger
+The WO-0045 harvest: all five throwaway runs complete, all red,
+protocol branch green in the window.
+
+### Inputs
+- Only test_m03_e.ml promoted in every run: all twelve pre-E
+  units green under all five mutants - the sealed matrix's
+  MUST-STAY-GREEN backbone held 60/60. No fail_cross anywhere.
+- Kill fingerprints: E-c1 T-E1 alone; E-c2 T-E2 alone; E-c3
+  {T-E1,T-E2} via wrong-cycle messages; E-c4 T-E4 alone; E-c5
+  {T-E1,T-E2} via wrong-count with T-E4 green as sealed. The
+  E-c3/E-c5 same-rows-different-messages discrimination worked.
+- The wrinkle, relayed verbatim with a named hypothesis: E-c1
+  died through the DELIVERED-OCTETS assertion - the message dv's
+  pre-result ruling 2(a) declared unreachable. Either the seal
+  was right and the correction wrong, or neither: dv adjudicates
+  with the observed message as the datum.
+
+### Reasoning
+The harvest stays mechanical; the 2(a) question is dv's own
+two-texts problem and its falsification discipline exists for
+exactly this. Relayed with the full message text and a checkable
+hypothesis (the /E/ at octets 24-31 leaves the final delivered
+word FULL, so the word-drop that 2(a)'s sixteen-case table
+assumed may never trigger for this row's stimulus).
+
+### Actions
+- Five runs harvested; verbatim relay; this journal-only commit.
+
+### Evidence
+- Runs 30819556907/9039/1840/3911/6561.
+
+### Outcome / DoD
+Await dv's adjudication. tb_writer's cosim half still in flight.
+
+### Open questions
+- Which of dv's two E-c1 texts survives the observed message.
+
+### Files-in-this-commit
+_None — journal-only entry._
