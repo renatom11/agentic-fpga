@@ -499,7 +499,12 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
      word at W + 3, while the record born at W is consumed at W + 2 at the
      latest. Consumptions therefore never contend, and each record is at age 2
      exactly when its turn comes. *)
-  let a_close_runt = a_close_terminate &: (count_next <:. runt_threshold) in
+  (* F-c2 MUTATION (WO-0050) — REQ-107's runt threshold off by one at its
+     upper boundary: "fewer than 64 octets between the start and terminate
+     characters" is implemented as "64 or fewer", on the received count, so a
+     64-octet frame — the legal minimum, §0.3 — is marked and reported exactly
+     as a 63-octet frame is. *)
+  let a_close_runt = a_close_terminate &: (count_next <:. (runt_threshold + 1)) in
   let record_fields ~valid ~terminate ~error ~start ~oversize ~fcs ~runt =
     concat_lsb [ valid; terminate; error; start; oversize; fcs; runt ]
   in
