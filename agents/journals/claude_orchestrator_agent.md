@@ -5502,3 +5502,54 @@ Lane live pending its first run's verdict.
 
 ### Files-in-this-commit
 - .github/workflows/build.yml
+
+## [J-orchestrator-0125] 2026-08-03T16:20:00Z | task:WO-0046 | R1 violation, mine: 6181781 carried dv's in-flight countersignature block
+
+### Trigger
+agent_commit.sh rejected dv's countersignature commit (R4:
+claimed set ≠ staged set) — because the packet had no diff left
+to stage. Investigation: my 6181781 (data_wrangler's round 2)
+staged agents/handoffs/WO-0046_cosim-phase-1.md while dv_lead
+was concurrently appending its COUNTERSIGNATURE block (now at
+HEAD line 969), sweeping another agent's content into a commit
+attributed to data_wrangler.
+
+### Inputs
+- The enforcement caught the DOWNSTREAM symptom; the violation
+  itself (mixed authorship at 6181781) passed R4 because the
+  file path was legitimately in data_wrangler's claimed list -
+  content-level authorship is not mechanically checked, as the
+  protocol has always said.
+- My pre-staging check was tail -2 of the packet - insufficient
+  against a concurrent appender. Multiple agents had flagged the
+  shared-tree hazard; it has now bitten the enforcer.
+
+### Reasoning
+Correction by append per the da0a767 precedent: 6181781 stands;
+this entry is the record. Practice change, effective now: before
+staging any shared handoff packet, diff it against HEAD and
+verify every hunk belongs to the committing agent (not a tail
+glance) - and where two agents are known to be concurrently
+active on one packet, serialize: commit the earlier return
+before dispatching the later task.
+
+### Actions
+- This journal-only commit; dv asked to amend its uncommitted
+  J-dv_lead-0057 draft's Files list (its own edit, its own
+  journal); dv's commit then lands; the countersignature
+  transcription into requirements.md follows under my identity.
+
+### Evidence
+- git show HEAD:<packet> line 969; the R4 rejection quoted above.
+
+### Outcome / DoD
+Violation on the record with its practice change. The signature
+of record is intact and dated; only its commit attribution was
+disturbed.
+
+### Open questions
+- Whether the auditor's next process audit wants a scenario for
+  content-level sweep detection.
+
+### Files-in-this-commit
+_None — journal-only entry._
