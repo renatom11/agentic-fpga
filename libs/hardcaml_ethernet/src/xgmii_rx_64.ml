@@ -761,7 +761,13 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
   ; error_bad_fcs = strobe sel_bad_fcs
   ; error_bad_frame = strobe sel_error |: q_strobe 0
   ; error_runt = strobe sel_runt |: q_strobe 1
-  ; error_oversize = strobe sel_oversize
+  (* MUTATION g-c5 (WO-0055 family G) — NEVER MERGE. Seeded defect: the
+     oversize condition is detected and acted on in full — truncation at 1514
+     delivered octets, [tuser][0] = 1 on the [tlast] word, the [Discard] state
+     and its resynchronisation — but it is never reported. [error_oversize] is
+     driven low for every frame. REQ-008 forbids the silent discard and §9
+     requires the strobe; every other strobe is untouched. *)
+  ; error_oversize = gnd
   ; error_start_without_terminate = strobe sel_start |: q_strobe 2
   }
 ;;
