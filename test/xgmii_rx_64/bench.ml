@@ -250,15 +250,22 @@ let account_clean_frame t (frame : Arrival.frame) samples ~aborted =
   Octet_time.Latency.frame_out t.latency (Octet_time.of_words delivered_pairs)
 ;;
 
-let one_frame ~lane octets =
+(* WO-0040 §3.3: the one authorised bench addition. [one_frame] is
+   re-expressed through it immediately below so the §0.3 lane mapping
+   (lane 0 -> first_start 8, lane 4 -> first_start 12) has exactly one home
+   — see the Return log for the line-by-line behaviour-preservation
+   argument for that re-expression. *)
+let frames_at ~lane ~fcs_valid octets_lists =
   let first_start =
     match lane with
     | 0 -> 8
     | 4 -> 12
-    | _ -> failwith "Bench.one_frame: lane must be 0 or 4 (REQ-101, §6.3 item 3)"
+    | _ -> failwith "Bench.frames_at: lane must be 0 or 4 (REQ-101, §6.3 item 3)"
   in
-  Arrival.create ~first_start [ octets ]
+  Arrival.create ~first_start ~fcs_valid octets_lists
 ;;
+
+let one_frame ~lane octets = frames_at ~lane ~fcs_valid:true [ octets ]
 
 let directed_lengths = List.init 8 ~f:(fun i -> 64 + i)
 

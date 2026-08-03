@@ -204,11 +204,25 @@ val error_pulses : sample list -> (int * string) list
     driving more than one frame calls this once per frame. *)
 val account_clean_frame : t -> Dv_xgmii.Arrival.frame -> sample list -> aborted:bool -> unit
 
+(** [frames_at ~lane ~fcs_valid octets_lists] — {!Dv_xgmii.Arrival.create} at
+    the §0.3 lane mapping (lane 0 -> [first_start:8], lane 4 ->
+    [first_start:12]), passing [octets_lists] straight through as the frame
+    list and [fcs_valid] straight through as [Arrival.create]'s
+    [?fcs_valid] ([ifg] is left at [Arrival.create]'s own default, §0.3's
+    minimum 12 octets). WO-0040 §3.3: the one bench addition that packet
+    authorises, added so M03-D3's two-frame, mixed-FCS schedule needs no new
+    scheduling primitive. {!one_frame} is re-expressed through this
+    function so the lane mapping has exactly one home. *)
+val frames_at : lane:int -> fcs_valid:bool -> int list list -> Dv_xgmii.Arrival.t
+
 (** A single-frame link-partner schedule: [octets] (DA through FCS) preceded
     by the standard preamble, at start lane 0 ([first_start:8]) or lane 4
-    ([first_start:12]). Thin wrapper over [Dv_xgmii.Arrival.create] fixing
-    the one-frame, one-schedule shape every row but M03-C1/M03-C2/M03-A3
-    (which each build several) needs directly. *)
+    ([first_start:12]), with a correct FCS assumed ([fcs_valid:true] — every
+    row before WO-0040 only ever scheduled good-FCS frames). Thin wrapper
+    over {!frames_at} (WO-0040 §3.3: [one_frame ~lane octets] is now exactly
+    [frames_at ~lane ~fcs_valid:true [ octets ]]) fixing the one-frame,
+    one-schedule shape every row but M03-C1/M03-C2/M03-A3 (which each build
+    several) needs directly. *)
 val one_frame : lane:int -> int list -> Dv_xgmii.Arrival.t
 
 (** The directed length set M03-C1 and M03-A3 share: one entry per length in

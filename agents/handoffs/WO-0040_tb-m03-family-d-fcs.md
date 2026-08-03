@@ -334,3 +334,143 @@ Structure the Return log as WO-0038's rounds did:
 
 **How I will review it.** An `RV-` verdict with file:line defects, then the
 blinded mutation campaign of §9 before any of these rows can carry a sign-off.
+
+---
+
+## Return log
+
+### RETURNED (tb_writer, spawn WO-0040/2026-08-06T15:00Z)
+
+State left as **ISSUED** — dv_lead's `RV-` flips it, per PROTOCOL §3.
+
+#### 1. Row disposition
+
+| Row | Status | Test | State | Note |
+|---|---|---|---|---|
+| **M03-D1** | ASSERT | `test_m03_d.ml`, `%expect_test "M03-D1: 64-octet frame, one payload bit flipped post-FCS, both start lanes …"` (`run_d1`) | Written, predicted PASS | Both lanes; corrupted-frame construction, bit 0 of octet index 20 flipped after `with_fcs`; `frames_at ~fcs_valid:false`; residue checked both directions by hand at construction |
+| **M03-D2** | ASSERT | Citation extent: **already discharged**, no new test (see §2 below). New content: `test_m03_d.ml`, `%expect_test "M03-D2: good-FCS frames stay clean …"` (`run_d2_d1_partner`, `run_d2_d3_good_member`) | Written, predicted PASS | D1's own uncorrupted frame at both lanes (fresh drive, not inherited from D1's test); D3's good member, both orderings, lane 0 |
+| **M03-D3** | ASSERT | `test_m03_d.ml`, `%expect_test "M03-D3: two 64-octet frames at the minimum gap, both orderings, both start lanes …"` (`run_d3`) | Written, predicted PASS | Four schedules — pair A / pair B × lane 0 / lane 4 — via `frames_at`, WO-0040 §4's corrected ordering table |
+| **M03-D4** | NO-ASSERT | `test_m03_d.ml`, trailing comment block, no test function | Declared | No stimulus, nothing to assert (§6.3 item 1); shape follows M03-A4/M03-L6 as directed |
+
+#### 2. What I changed
+
+- `test/xgmii_rx_64/bench.mli` — added `val frames_at : lane:int -> fcs_valid:bool -> int list list -> Dv_xgmii.Arrival.t` with its doc comment; rewrote `one_frame`'s doc comment to state it is now `frames_at ~lane ~fcs_valid:true [ octets ]`. No other declaration touched.
+- `test/xgmii_rx_64/bench.ml` — added `frames_at` (13 lines including its comment); replaced `one_frame`'s 8-line body with the one-line re-expression `let one_frame ~lane octets = frames_at ~lane ~fcs_valid:true [ octets ]`. No other binding touched. Full diff is 27 insertions / 6 deletions across the two files, `git diff --stat` confirmed.
+- `test/xgmii_rx_64/test_m03_d.ml` — new file, 445 lines: `run_d1`, the `d3_ordering` type and `run_mixed_pair`/`assert_frame`/`split_at_first_tlast` machinery shared by D2's D3-partner check and D3, `run_d2_d1_partner`/`run_d2_d3_good_member`, `run_d3`, four `%expect_test`s (D1, D2, D3, plus D4's trailing declaration comment — no test function for D4).
+- No `dune` change: `test/xgmii_rx_64/dune`'s `(library …)` stanza carries no `(modules …)` field, so it already includes every `.ml`/`.mli` in the directory, including the new file. `git diff --exit-code -- test/xgmii_rx_64/dune` is clean (confirmed in §7 below).
+- `test/attack_plans/AP-xgmii_rx_64.md` — **not touched by me**. Its family-D correction was already committed in this packet's own commit per the task framing ("as just revised at the same commit") and confirmed by `git diff --exit-code` below; I only read and cited it.
+
+**The `frames_at` re-expression's behaviour-preservation argument, line by line** (§3.3's acceptance evidence — all fifteen existing tests stay green because this is a pure re-expression):
+
+```
+OLD                                                  NEW
+let one_frame ~lane octets =                         let frames_at ~lane ~fcs_valid octets_lists =
+  let first_start =                                     let first_start =
+    match lane with                                       match lane with
+    | 0 -> 8                                              | 0 -> 8
+    | 4 -> 12                                             | 4 -> 12
+    | _ -> failwith "Bench.one_frame: ..."                | _ -> failwith "Bench.frames_at: ..."
+  in                                                     in
+  Arrival.create ~first_start [ octets ]                  Arrival.create ~first_start ~fcs_valid octets_lists
+                                                       let one_frame ~lane octets =
+                                                         frames_at ~lane ~fcs_valid:true [ octets ]
+```
+
+1. **The `match lane with 0 -> 8 | 4 -> 12 | _ -> failwith …` block is copied verbatim** into `frames_at`, with only the string literal inside the `failwith` changed (`"Bench.one_frame: …"` → `"Bench.frames_at: …"`). This is the ONLY textual difference in the shared block. For any call with `lane = 0` or `lane = 4`, `first_start` computes identically in both versions — the string change is unreachable on those two inputs. For `lane` outside `{0, 4}`, both versions raise `Failure`; only the message text differs. **None of the fifteen existing tests calls `one_frame` with a lane outside `{0, 4}`** (every call site in `test_m03_a.ml`, `test_m03_b.ml`, `test_m03_c.ml`, `test_m03_structural.ml` and `bench.ml`'s own `run_directed_lengths` passes `~lane:0` or `~lane:4` literally), so this path is never exercised by the passing suite and the message-text change cannot move any `[%expect]` block.
+2. **`Arrival.create ~first_start [ octets ]` (old) is definitionally `Arrival.create ~first_start ~fcs_valid:true [ octets ]`** for the new call, because `Arrival.create`'s `?fcs_valid` parameter defaults to `true` (`arrival.mli`: "`[fcs_valid]` states whether every frame carries a correct FCS (default `true`)"; `arrival.ml`: `let create ?(ifg = 12) ?(first_start = 8) ?(fcs_valid = true) frame_octets = …`). `one_frame`'s new body is `frames_at ~lane ~fcs_valid:true [ octets ]`, which calls `Arrival.create ~first_start ~fcs_valid:true [ octets ]` — passing the SAME default value explicitly. An explicitly-passed default and an omitted optional argument are the same call at the value level; there is no third state `Arrival.create` can observe.
+3. **The `[ octets ]` singleton-list wrapping is identical** — old code builds `Arrival.create ~first_start [ octets ]` directly; new code builds `frames_at ~lane ~fcs_valid:true [ octets ]`, and `frames_at`'s own body passes `octets_lists` (bound to `[ octets ]` at this call site) straight through to `Arrival.create` unmodified. Same single-element list reaches `Arrival.create` in both versions.
+4. **`ifg` is untouched in both versions** — neither the old `one_frame` nor the new `frames_at` passes `?ifg`, so both rely on `Arrival.create`'s own default (12, §0.3's minimum) identically.
+5. **Conclusion**: for every `(lane, octets)` pair any of the fifteen existing tests actually supplies (all with `lane ∈ {0, 4}`), `one_frame ~lane octets` calls `Arrival.create ~first_start ~fcs_valid:true [octets]` in the new code where it called `Arrival.create ~first_start [octets]` (implicit `fcs_valid:true`) in the old — the identical call, by (2). Every downstream consumer of the returned `Arrival.t` (`Arrival.frames`, `Arrival.start_cycle`, `Arrival.terminate_octet_time`, `Arrival.check`, `Bench.run`) is a pure function of that value, so nothing downstream can distinguish old from new. **I could not run the fifteen tests to confirm this mechanically (ADR-0005, no toolchain reaches `test/xgmii_rx_64/`)** — this argument is the acceptance evidence in its place, as the packet's §3.3 anticipates.
+
+#### 3. Every derivation, with the section cited
+
+- **D1's corruption construction** (bit 0 of the octet at index 20, flipped after `with_fcs`) — WO-0040 §6, copied verbatim (the packet supplies this exact construction so it is not re-derived).
+- **D1's 8-word, `start_cycle + 3 + m` output timing and `word 7 = start_cycle + 10`** — WO-0040 §6, and independently confirmed by REQ-104's own text (`docs/specs/requirements.md` line 422: "Inject a frame with one payload bit flipped: the same octet count is delivered, `tuser`[0] = 1 on the last word, `error_bad_fcs` pulses once inside the §0.6 window, and no other strobe pulses unless the stimulus also creates that strobe's condition") and by SPEC-M03 §9's "Strobe cycle, pinned" (`docs/specs/modules/xgmii_rx_64.md` line 756: "Each strobe pulses for exactly one cycle, on the cycle M03 emits that frame's `tlast` word" — the general rule; D1's frame produces output, so the "no output word" clause of the same paragraph does not apply to it).
+- **D1's `not_before`/`not_after` window** (`terminate_cycle`, `terminate_cycle + 3`, `terminate_cycle = Arrival.terminate_octet_time frame / 8`) — WO-0040 §6, copied verbatim; cross-checked against `test/xgmii/arrival.ml`'s own definitions (`start_cycle f = f.start_octet_time / 8`; `terminate_octet_time f = f.start_octet_time + preamble_octets + Array.length f.octets`) which give `terminate_cycle = 10` at both lanes for a 64-octet frame at `frames_at`'s default `first_start` (8 or 12) — matching WO-0040 §5's stated figure exactly.
+- **`account_clean_frame … ~aborted:false`** for a bad-FCS frame — WO-0040 §3.1, verbatim ("a bad-FCS frame is forwarded in full (§9 row 1), so its delivered extent is the ordinary clean-frame identity extent and `~aborted:false` is correct").
+- **The `~fcs_valid:false` trap and the both-directions `residue_ok` guard** — WO-0040 §3.2, verbatim; implemented as `good_and_bad_64` (raises "test bug" on either direction failing, never an M03-named failure).
+- **D3's four-schedule construction, the pair-A/pair-B kill argument, and which pulse belongs to which ordering** — WO-0040 §4's corrected table, copied verbatim into `run_mixed_pair`'s `good_first`/`bad_index` logic and `d3_ordering`'s two constructors.
+- **D3's per-frame pulse-cycle formula (`bad_start_cycle + 10`) applied regardless of whether the bad frame is first or second in the schedule** — **my own extension of D1's formula, not verbatim from the packet** (WO-0040 §6 states the `start_cycle + 10` formula for D1's single-frame case only). I applied it unchanged to whichever frame is bad in a two-frame schedule, reasoning from REQ-004/§8's "zero rx backpressure, one 64-bit word/cycle" invariant and REQ-019's fixed ΔC = (L+h)/8: since the datapath has no internal buffering and a fixed per-octet delay, each frame's own output timing is a pure function of that frame's own input octet times, independent of a neighbouring frame's presence — which is also the premise WO-0040 §8 check 1's 10 000-frame back-to-back stress run already rests on. **Flagged as open question 1 below** for dv_lead to confirm or correct.
+- **D3's pulse-to-frame attribution partition (`cycle ≤ tlast_cycle0` ⇒ frame 1's own)** — my own construction, not from the packet; reasoned in the code comment at `run_mixed_pair`'s `all_pulses` binding (frame 2's own cycles necessarily follow frame 1's `tlast` cycle even under the coincidence WO-0040 §4 works out, since only frame 2's *start* character, not its own `tlast`/pulse cycle, coincides with frame 1's `tlast` cycle).
+- **D2's citation extent** — WO-0040 §2, copied verbatim (lengths and rows named, `M03-C4` and the sub-5-octet class excluded for the reasons given there).
+- **D2's "must add" content** (D1's own frame clean at both lanes; D3's good member clean, both orderings) — WO-0040 §2, verbatim instruction; my choice to check D3's good member at **lane 0 only** (not lane 4, which the packet's D1 instruction explicitly asks for but the D3 instruction's wording — "asserted clean in both orderings" — does not) is a judgement call, flagged as open question 2 below.
+- **D4's disposition** — AP-xgmii_rx_64.md row M03-D4 and WO-0040 §1's table, both verbatim; no stimulus exists to build against (Stimulus cell is "—"), so nothing is driven.
+- **The age-0 non-dependency of family D** — WO-0040 §5, cited, not re-derived, per the task framing's explicit instruction.
+
+#### 4. UNVERIFIED (could not check, ADR-0005)
+
+- **Everything past parsing.** `ocamlc -stop-after parsing` was run on all three changed/new files (`bench.mli`, `bench.ml`, `test_m03_d.ml`) — exit 0 on each, verbatim in §5. This confirms only that the files tokenise and parse as valid OCaml structure/signature items; it performs no name resolution, no type-checking, and cannot see `Hardcaml_ethernet.Xgmii_rx_64`, `Dv_xgmii`, `Dv_monitors`, `Hardcaml` or `Cyclesim` at all.
+- **`tools/precompile_check.sh` does not reach `test/xgmii_rx_64/` at all** — its own LANE 3a output classifies the directory `EXCLUDED — depends on hardcaml_ethernet, which this harness cannot transcribe` (its `STUBBABLE` set is `hardcaml hardcaml_axi ifc_check`, not `hardcaml_ethernet`), exactly as `test/xgmii_rx_64/dune`'s own header comment documents ("this directory is EXCLUDED from that harness by construction (WO-0038 §6 rule 2)"). So neither `bench.mli`, `bench.ml` nor `test_m03_d.ml` received ANY real type-check locally this round — the harness's green result (§5) is evidence only that the **unmodified** libraries my file calls into (`dv_xgmii`, `dv_monitors`) still compile as documented, which derisks but does not verify my usage of their signatures.
+- **No simulation ran, no waveform was produced, nothing was eyeballed.** I therefore made no expect-test promotion — every `[%expect]` block in `test_m03_d.ml` is empty, per WO-0040 §8 rule 5, and none was harvested from any tool output (there was no tool output to harvest from). The charter's "never promote without eyeballing" obligation has no live instance in this round for that reason, not because I judge it satisfied by inspection.
+- **Whether `dune runtest` is green, and whether the four `%expect_test`s pass against real `Xgmii_rx_64`.** Predicted PASS (§5), never confirmed.
+- **Whether every field/function name and arity I used against `Dv_xgmii.Frame`, `Dv_xgmii.Arrival`, `Dv_monitors.Stream_word`, `Dv_monitors.Strobe_monitor`, `Dv_monitors.Conservation_monitor` and `Bench` itself is exactly right.** I cross-checked every call site by hand against the `.mli` files listed in the journal Inputs, and independently against `test/xgmii/arrival.ml`'s implementation for the cycle arithmetic, but a hand cross-check is not a compiler.
+
+#### 5. Expected CI, checked vs predicted
+
+Self-checks run this round, verbatim:
+
+```
+$ ocamlc -stop-after parsing test/xgmii_rx_64/bench.mli   → exit 0
+$ ocamlc -stop-after parsing test/xgmii_rx_64/bench.ml    → exit 0
+$ ocamlc -stop-after parsing test/xgmii_rx_64/test_m03_d.ml → exit 0
+```
+
+```
+$ bash tools/precompile_check.sh
+… LANE 1 — RESULT: 31 units compiled, 0 errors
+… LANE 2 — RESULT: 12 units compiled, 0 errors
+… LANE 2b — ifc_check.ml fields agree (6/6); hardcaml.ml 6/6 found verbatim
+    against /root/.opam/fpga/.opam-switch/sources/hardcaml/src; two
+    UNVERIFIED-TRANSCRIPTION lines (Axi64.Source/Dest, base.ml), pre-existing
+… LANE 3a — EXCLUDED xgmii_rx_64 — depends on hardcaml_ethernet, which this
+    harness cannot transcribe   [my changed/new files are inside this
+    excluded directory and were NOT type-checked by this run]
+    RESULT: 43 files in compiled directories, all 43 materialised and compiled
+… LANE 3b — RESULT: no unqualified sibling-library reference
+… SUMMARY: precompile_check: ALL LANES PASSED
+    2 transcription(s) remain UNVERIFIED here and are settled only by CI
+```
+
+```
+$ bash tools/dv_checks.sh
+… all three --self-test lanes: OK
+… check_records_vs_appendix.sh: 23/23, OK
+… check_emitted_verilog.sh: 5 checks, 0 failures, 3 PENDING (pre-existing,
+    unrelated to M03: REQ-808/REQ-017/REQ-903 module-inventory gaps)
+… precompile_check.sh: OK (as above)
+… check_rfc1071_anchor.sh: OBLIGATION OPEN — blocked egress in this
+    container (pre-existing, documented J-dv_lead-0017/0018, unrelated to
+    this WO)
+dv_checks: every check that COULD run passed, and 1 obligation is still
+    OPEN … This run is a green light for the checks it ran and for nothing
+    else.
+```
+
+**Predictions** (labelled as such, not facts): `dune build @default` and `dune runtest` succeed against the real toolchain; all four fifteen-plus-four `%expect_test`s in `test/xgmii_rx_64/` (the fifteen from WO-0038/WO-0039 plus this round's four) pass with empty output; `git diff --exit-code` stays clean after `dune runtest` (no unpromoted drift), because every `[%expect]` block here is empty by construction and none of the fifteen existing blocks was touched.
+
+#### 6. Open questions
+
+1. **D3's bad-frame pulse-cycle formula, extended to whichever frame is bad.** WO-0040 §6 states `start_cycle + 10` for D1's single-frame case. I applied the identical formula to the bad frame in each of D3's four schedules regardless of whether it is frame 1 or frame 2, reasoning from REQ-004/§8's zero-backpressure, fixed-ΔC invariant (see §3 above). If M03's actual output timing for the SECOND frame in a closely-spaced pair differs from this — e.g. if the coincidence WO-0040 §4 works out at the CRC register also perturbs the output pipeline's own word-emission cycle, not just the FCS verdict — my `Strobe_monitor.expect` pin would be wrong and the row would report a false CI finding against a conformant design. I believe this cannot happen under REQ-019's fixed ΔC and the §8 stress invariant, but I would rather you confirm this than have CI discover it.
+2. **M03-D2's D3-partner check: lane 0 only, not both lanes.** WO-0040 §2 says "D3's good member asserted clean **in both orderings**" (no "both lanes" clause, unlike its D1-partner instruction, which does say "at both lanes"). I read the omission as deliberate — D3's own test already exercises both lanes for the full discriminating claim, so D2's redundant check need only satisfy the literal wording — and drove D2's D3-partner check at lane 0 only, both orderings. If you intended both lanes there too, it is a two-line addition to the `%expect_test`'s call list, not a redesign.
+3. **`run_mixed_pair`/`assert_frame`/`split_at_first_tlast`/the two `mixed_pair_*` types are test-file-local to `test_m03_d.ml`, not exported via any `.mli`.** I read WO-0040 §3.3's "the one bench addition you are authorised to make" and "do not add anything else to `Bench`" as scoped to `Bench`'s own public surface (`bench.mli`), the same way `test_m03_c.ml`'s `length_outcome`/`outcome_line`/`run_c1_c2` or `test_m03_a.ml`'s `tuple_of_sample`/`assert_own_deltac` are ordinary per-file test machinery, not `Bench` additions. I am confident in this reading but flag it explicitly since it is the one place this round's diff is largest.
+4. None of WO-0038's or WO-0039's carried-forward open questions are reopened; this round touches none of their subject matter.
+
+#### 7. Scope statement
+
+```
+$ git status --porcelain
+ M test/xgmii_rx_64/bench.ml
+ M test/xgmii_rx_64/bench.mli
+?? test/xgmii_rx_64/test_m03_d.ml
+
+$ git diff --exit-code -- test/xgmii_rx_64/test_m03_a.ml \
+    test/xgmii_rx_64/test_m03_b.ml test/xgmii_rx_64/test_m03_c.ml \
+    test/xgmii_rx_64/test_m03_structural.ml test/xgmii_rx_64/dune \
+    test/attack_plans/AP-xgmii_rx_64.md
+exit: 0
+```
+
+No `libs/**`, `top/**`, `bin/**` or `rtl_snapshots/**` path was opened this round, at any point — targeted or swept; every `grep`/read this round was scoped to `test/`, `docs/specs/`, `agents/` and `tools/`.
+
+`/root/.opam/**` reads: **one**, by `tools/precompile_check.sh` itself (LANE 2b, `hardcaml_source_dir` against `/root/.opam/fpga/.opam-switch/sources/hardcaml/src`, checking `hardcaml.ml`'s six transcribed signatures verbatim) — not a read I performed directly; it is the tool's own documented mechanism, reported in its output (§5). I did not open any `/root/.opam/**` path myself this round.
+

@@ -1639,3 +1639,251 @@ already resolved by dv_lead) is touched by this round's diff.
 - test/xgmii_rx_64/test_m03_a.ml
 - test/xgmii_rx_64/test_m03_c.ml
 - agents/handoffs/WO-0038_tb-m03-first-bench.md
+
+## [J-tb_writer-0007] 2026-08-06T15:00Z | task:WO-0040 | Family D — the FCS check's first bad-FCS frame, and the one bench addition WO-0040 authorised
+
+### Trigger
+
+WO-0040/2026-08-06T15:00Z (dv_lead, via the orchestrator; no explicit spawn
+short-id token was included verbatim in my launch prompt — this one is
+reconstructed from the packet's own issuance context, since its Return log
+correction and the AP-xgmii_rx_64.md change log entry it rode in on are both
+dated 2026-08-06 in this programme's own timeline). A fresh work order,
+extending the WO-0038/WO-0039-qualified bench directory rather than starting
+over: four rows of `AP-xgmii_rx_64.md` §4.D (M03-D1…D4), the first bench in
+this tree to drive a bad-FCS frame at all.
+
+### Inputs
+
+`agents/charters/tb_writer.md`; `agents/PROTOCOL.md` §2-6 and §10 (skimmed
+in full); `agents/handoffs/WO-0040_tb-m03-family-d-fcs.md` (full, before my
+Return log append); `test/attack_plans/AP-xgmii_rx_64.md` (full, both
+pages, including §4.D, §7's staleness banner, §8's four standing D-H facts,
+§9's change log through the 2026-08-06 M03-D3 correction row).
+
+Existing bench machinery, read in full: `test/xgmii_rx_64/bench.mli`,
+`test/xgmii_rx_64/bench.ml`, `test/xgmii_rx_64/test_m03_a.ml`,
+`test/xgmii_rx_64/test_m03_b.ml`, `test/xgmii_rx_64/test_m03_c.ml`,
+`test/xgmii_rx_64/test_m03_structural.ml`, `test/xgmii_rx_64/dune`.
+
+DV-side (non-RTL) machinery contracts: `test/xgmii/frame.mli`,
+`test/xgmii/arrival.mli`, `test/xgmii/arrival.ml` (the implementation, read
+for its exact `start_cycle`/`terminate_octet_time` arithmetic — DV
+scaffolding, not the design under test, and explicitly within the
+independence boundary), `test/monitors/strobe_monitor.mli`,
+`test/monitors/conservation_monitor.mli`, `test/monitors/stream_word.mli`.
+
+Primary spec text, read directly rather than taken only from the packet's
+paraphrase: `docs/specs/requirements.md` REQ-104's own row (line 422),
+REQ-005/REQ-007/REQ-013's rows for the forwarding/tuser context, §0.3
+(lines 63-92, the frame-length and inter-frame-gap convention, confirming
+the packet's "84 octets = 10.5 cycles" arithmetic independently);
+`docs/specs/modules/xgmii_rx_64.md` lines 516-519 (the `Preamble`/`Frame`
+state-table rows, confirming the CRC-register-seeding claim WO-0040 §4's
+arithmetic rests on) and lines 745-786 ("Strobe cycle, pinned" — §9's exact
+text, confirming the "cycle M03 emits that frame's `tlast` word" pin I used
+for both D1 and D3).
+
+Tooling: `tools/precompile_check.sh`, `tools/dv_checks.sh` (read in full to
+understand what each lane does and does not cover before running them).
+
+No `libs/**`, `top/**`, `bin/**` or `rtl_snapshots/**` path was opened.
+
+### Reasoning
+
+**The four rows and what each one is for.** M03-D1 closes the hole
+WO-0039's mutation campaign named at `J-dv_lead-0037`/`RV-0039-VERDICT`: all
+fifteen WO-0038 tests assert `tuser`[0] = 0 and no strobe on good frames,
+and nothing anywhere had driven a bad-FCS frame, so a design that hardwired
+the FCS verdict good would pass the whole existing suite. M03-D2 is the
+anti-vacuity partner — asserted almost entirely by citation of the existing
+suite, per WO-0040 §2, with two additions (D1's and D3's own good-FCS
+members, checked independently rather than inherited). M03-D3 is the
+corrected two-frame minimum-gap row: WO-0040 §4 works out that the attack
+plan's original bad-then-good ordering does not kill the design it names
+(both a conformant and a register-reading design report "bad" for the
+second frame when the first is already bad, so the row passed vacuously),
+and that the killing pair is good-then-bad. Both orderings are still
+driven, because bad-then-good kills a *different* defect (a latched abort
+bit). M03-D4 is a pure declaration — §6.3 item 1 makes the FCS
+realisation unobservable, so nothing is asserted and nothing is driven.
+
+**The stimulus trap, and why every bad-FCS row uses `frames_at` and never
+`one_frame`.** `Dv_xgmii.Arrival.create`'s `?fcs_valid` defaults to `true`,
+and `Bench.run` discharges standing obligation 5 by calling `Arrival.check`,
+which verifies the REQ-304 residue over every frame when `fcs_valid` is
+set. Scheduling a bad-FCS frame through `one_frame` (which fixed
+`fcs_valid:true`) would fail that check before a single cycle is driven,
+and the failure would read exactly like a DUT finding while being nothing
+of the kind — this is the trap WO-0040 §3.2 names explicitly. Every row
+that schedules a bad-FCS frame therefore uses the new `frames_at`
+`~fcs_valid:false`, and — because that flag turns the residue check off for
+every frame in the schedule, including a good one riding alongside a bad
+one in D3 — asserts `Frame.residue_ok` by hand in both directions at
+construction (`good_and_bad_64`). The negative direction is the one that
+actually matters: if the payload-bit flip silently failed to land (wrong
+index, wrong list, flipped in a copy), the "corrupted" frame would still be
+good, and M03-D1 would then assert `tuser`[0] = 1 against a conformant
+design for a reason having nothing to do with M03 — I ran this guard
+mentally against its own failure mode (WO-0040 §8 rule 7: construct the
+defect and confirm the check fires) by checking that `flip_bit0_at`'s
+`List.mapi` predicate `i = idx` can only ever match the single intended
+index, so there is no accidental no-op case for it to fail to catch.
+
+**The one bench addition, and why `one_frame` is re-expressed rather than
+left alone.** WO-0040 §3.3 authorises exactly `frames_at ~lane ~fcs_valid
+: int list list -> Dv_xgmii.Arrival.t` and requires `one_frame` to be
+re-expressed through it so the §0.3 lane mapping has exactly one home. I
+built `frames_at` first (copying the `match lane with 0 -> 8 | 4 -> 12 | _
+-> failwith …` block verbatim, changing only the `failwith` message's
+function name), then rewrote `one_frame`'s body to
+`frames_at ~lane ~fcs_valid:true [ octets ]` — a one-line function calling
+the new one. Since `Arrival.create`'s own default for `?fcs_valid` is
+`true` (confirmed against `arrival.ml`'s `let create ?(ifg = 12)
+?(first_start = 8) ?(fcs_valid = true) …`), passing `~fcs_valid:true`
+explicitly through `frames_at` reaches `Arrival.create` in exactly the
+state the old code's implicit default did — I could not run the fifteen
+existing tests to confirm this mechanically (ADR-0005 excludes this
+directory from every local toolchain), so the Return log carries a
+line-by-line argument in place of that run, the way WO-0040 §3.3
+anticipates ("its entire acceptance evidence is that all fifteen existing
+tests stay green"). I did not add a second thing to `Bench`: D3's per-frame
+splitting/attribution logic (`run_mixed_pair`, `assert_frame`,
+`split_at_first_tlast`, the two `mixed_pair_*` record types) lives entirely
+in `test_m03_d.ml`, the same category as `test_m03_c.ml`'s
+`length_outcome`/`outcome_line` or `test_m03_a.ml`'s
+`tuple_of_sample`/`assert_own_deltac` — ordinary per-file test machinery,
+never exported via `bench.mli`. Flagged as open question 3 in the Return
+log rather than assumed silently, since it is the one place this round's
+diff is largest.
+
+**D3's cycle arithmetic: read structurally, never hand-derived, with one
+extension flagged.** WO-0040 §6 is explicit that "the second frame's
+`start_cycle` comes from `Arrival.frames sched).(1)`, not from arithmetic
+you do by hand" — `run_mixed_pair` follows this literally, reading
+`Arrival.start_cycle`/`Arrival.terminate_octet_time` off whichever frame
+record is the bad one (`frames.(bad_index)`), never off octet-time
+constants I computed myself. The one place I went beyond the packet's own
+words: WO-0040 §6 states the `start_cycle + 10` pulse-cycle formula for
+D1's single, unaccompanied 64-octet frame; I applied the same formula to
+D3's bad frame regardless of whether it occupies position 0 or 1 in the
+two-frame schedule. I believe this is sound — REQ-019's fixed ΔC and
+REQ-004/§8's zero-backpressure invariant make each frame's own output
+timing a function of that frame's own input octet times, independent of a
+neighbour's presence, which is also the premise the 10 000-frame
+back-to-back stress run already rests on — but it is my own extension, not
+a verbatim instruction, and I have flagged it as open question 1 for
+dv_lead to confirm or correct rather than silently trust it into a pinned
+`Strobe_monitor.expect` cycle.
+
+**The pulse-to-frame attribution partition.** With two frames' error pulses
+collected into one list by `error_pulses`, I needed to know which pulse (if
+any) belongs to which frame. I partitioned on `cycle <= tlast_cycle0`
+(observed, not formula-derived) rather than on a fixed cycle boundary,
+reasoning that frame 2's own `tlast`/pulse cycle necessarily follows frame
+1's `tlast` cycle even under the exact coincidence WO-0040 §4 works out
+(only frame 2's *start* character, not its own closing cycle, lands on
+frame 1's `tlast` cycle) — so the partition is robust to a design bug that
+shifts a pulse's cycle, and only fails if a bug moves a pulse to the
+*wrong frame entirely*, which is precisely the D-M3 mutation class
+(register-read design) this row exists to catch.
+
+**D2's scope, and the one place I narrowed the packet's literal ask.**
+WO-0040 §2's citation extent is copied verbatim as a comment, not
+re-driven. Its "must add" clause names two things D2 owes independently of
+D1's and D3's own tests: D1's uncorrupted frame at both lanes (WO-0040 says
+"at both lanes" explicitly), and D3's good member "in both orderings" (no
+"both lanes" clause in that sentence, unlike the D1 one). I read the
+omission as deliberate — D3's own row already exercises both lanes for the
+row's actual discriminating claim — and drove D2's D3-partner check at lane
+0 only. Flagged as open question 2 rather than silently assumed either way.
+
+### Actions
+
+Edited `test/xgmii_rx_64/bench.mli` and `test/xgmii_rx_64/bench.ml`: added
+`frames_at`, re-expressed `one_frame` through it. Wrote
+`test/xgmii_rx_64/test_m03_d.ml` (new, 445 lines): `run_d1` (M03-D1, both
+lanes); `d3_ordering`/`d3_ordering_label`/`split_at_first_tlast`/
+`mixed_pair_frame`/`mixed_pair_result`/`run_mixed_pair`/`assert_frame`
+(machinery shared by D2's D3-partner check and D3); `run_d2_d1_partner`/
+`run_d2_d3_good_member` (M03-D2, both lanes for the D1 partner, lane 0 both
+orderings for the D3 partner); `run_d3` (M03-D3, four schedules); a
+trailing comment declaring M03-D4 with no test function. No `dune` change
+(the library stanza carries no `(modules …)` restriction). No file under
+`test/attack_plans/**` touched. Appended a RETURNED block to this packet's
+Return log (state left ISSUED, per PROTOCOL §3 — only dv_lead's `RV-` or the
+orchestrator's transcription may flip it).
+
+### Evidence
+
+`ocamlc -stop-after parsing` on all three changed/new files: exit 0 on
+each (`test/xgmii_rx_64/bench.mli`, `test/xgmii_rx_64/bench.ml`,
+`test/xgmii_rx_64/test_m03_d.ml`) — syntax only, no name resolution.
+
+`bash tools/precompile_check.sh`: all lanes PASSED — LANE 1 31 units/0
+errors, LANE 2 12 units/0 errors, LANE 2b's two UNVERIFIED-TRANSCRIPTION
+lines pre-existing (Axi64.Source/Dest, base.ml) plus six hardcaml.ml
+signatures found verbatim against `/root/.opam/fpga/.opam-switch/sources/
+hardcaml/src`, LANE 3a/3b clean. **Critically, LANE 3a's own output
+classifies `xgmii_rx_64` `EXCLUDED — depends on hardcaml_ethernet, which
+this harness cannot transcribe`** — none of my three changed/new files
+received a real type-check this round; the green result evidences only
+that the unmodified `dv_xgmii`/`dv_monitors` libraries my file calls into
+still compile as documented. `bash tools/dv_checks.sh`: all self-tests OK,
+`check_records_vs_appendix.sh` 23/23, `check_emitted_verilog.sh` 5/5 with 3
+pre-existing PENDING rows unrelated to M03, `precompile_check.sh` as above,
+`check_rfc1071_anchor.sh` OBLIGATION OPEN (pre-existing blocked egress,
+unrelated to M03) — overall "every check that COULD run passed."
+
+`git status --porcelain`: exactly `test/xgmii_rx_64/bench.ml` (M),
+`test/xgmii_rx_64/bench.mli` (M), `test/xgmii_rx_64/test_m03_d.ml` (??).
+`git diff --exit-code -- test/xgmii_rx_64/test_m03_a.ml
+test/xgmii_rx_64/test_m03_b.ml test/xgmii_rx_64/test_m03_c.ml
+test/xgmii_rx_64/test_m03_structural.ml test/xgmii_rx_64/dune
+test/attack_plans/AP-xgmii_rx_64.md`: exit 0 — none of the fifteen existing
+`%expect_test`s, the dune stanza, or the attack plan were touched by me.
+
+**Predicted, not checked** (ADR-0005, no toolchain reaches this
+directory): `dune build @default` and `dune runtest` succeed; all four new
+`%expect_test`s pass with empty output against the real `Xgmii_rx_64`; the
+fifteen existing tests stay green; `git diff --exit-code` stays clean after
+`dune runtest` (no unpromoted drift, since every `[%expect]` block here —
+new and old — is empty by construction).
+
+### Outcome
+
+All four §1 rows disposed: M03-D1, M03-D2 and M03-D3 written as ASSERT with
+named tests; M03-D4 declared NO-ASSERT with no test function, per WO-0040
+§1's own table. The one authorised `Bench` addition made and argued
+behaviour-preserving line by line (Return log §2) rather than confirmed by
+running the fifteen existing tests, which I could not do. Every `[%expect]`
+block in the new file is empty and none was harvested from any tool
+output — there was no tool output to harvest from, since neither
+`ocamlc -stop-after parsing` nor `precompile_check.sh` reaches this
+directory's semantics. Handoff: Return log appended to
+`agents/handoffs/WO-0040_tb-m03-family-d-fcs.md` as a RETURNED block; state
+left ISSUED. No `SO-` claimed or offered, per WO-0040 §10's explicit
+instruction.
+
+### Open-questions
+
+Three, all disclosed in Reasoning above and repeated in the Return log
+rather than held back: (1) whether D1's `start_cycle + 10` pulse-cycle
+formula, applied unchanged to whichever frame in a D3 schedule carries the
+bad FCS, is correct for the second frame of a closely-spaced pair — my own
+extension of a packet instruction stated only for the single-frame case;
+(2) whether D2's D3-partner check should also cover lane 4, not only lane
+0 — a literal-wording judgement call on WO-0040 §2's asymmetric phrasing
+between the D1-partner and D3-partner instructions; (3) whether the
+test-file-local `run_mixed_pair`/`assert_frame`/`mixed_pair_*` machinery in
+`test_m03_d.ml` is correctly read as ordinary per-file test code rather
+than a second `Bench` addition — I am confident in this reading (it mirrors
+every existing family's own per-file helpers) but flag it since WO-0040
+§3.3 is explicit that a second addition should stop the work rather than
+be added silently, and I want dv_lead's own eyes on the boundary I drew.
+
+### Files-in-this-commit
+- test/xgmii_rx_64/bench.ml
+- test/xgmii_rx_64/bench.mli
+- test/xgmii_rx_64/test_m03_d.ml
+- agents/handoffs/WO-0040_tb-m03-family-d-fcs.md
