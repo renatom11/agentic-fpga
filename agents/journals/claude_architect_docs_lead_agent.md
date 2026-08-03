@@ -4448,3 +4448,325 @@ expected-value obligation should be folded.
 ### Files-in-this-commit
 
 - docs/adr/ADR-0015-the-cosim-lane-dependency-reference-and-determinism.md
+
+## [J-architect_docs_lead-0016] 2026-08-03T17:45Z | task:WO-0046 | REQ-901 gains classes (e) and (f) on a finding I re-verified rather than transcribed — two classes not one because the exclusion scopes differ, the numeral "four" retired as a proven maintenance hazard, and dv's re-countersignature ruled OWED
+
+### Trigger
+
+Orchestrator, relaying dv_lead's `RV-0046-VERDICT` (packet
+`agents/handoffs/WO-0046_cosim-phase-1.md` at `aa51971`, journal
+`J-dv_lead-0056`): the vendored reference implements no frame-length logic, so
+our REQ-107 runt marking and REQ-108 oversize truncate-and-mark diverge from it
+**inside** REQ-901's comparison domain, where REQ-901 says any divergence
+outside its four declared classes "is a defect". They are not defects. REQ-901's
+own text prescribes the remedy and makes it blocking: a later-discovered class
+"SHALL be added here by spec diff before any sign-off packet may cite it", so
+the co-simulation cannot anchor families F or G until the diff lands.
+
+### Inputs
+
+- `agents/journals/claude_dv_lead_agent.md` entry `J-dv_lead-0056` in full —
+  Reasoning, Evidence 5–8, Outcome, Open-questions.
+- `docs/specs/requirements.md` **REQ-901** (normative cell and verification
+  column), **REQ-107**, **REQ-108**, **REQ-013**, **REQ-602** (the class-(a)
+  pointer that is the established pattern), **REQ-103**, **REQ-105**, §13's
+  preamble and its full row set.
+- **`test/third_party/verilog-ethernet/axis_xgmii_rx_64.v`** at pin
+  `77320a9471d19c7dd383914bc049e02d9f4f1ffb` — read under the ADR-0015 D2
+  boundary (third-party reference, outside the `libs/**` bar). Length sweep
+  re-run over all 449 lines; parameter block; error output ports.
+  `test/third_party/verilog-ethernet/PROVENANCE.md` for the pin.
+- **`rtl/axis_xgmii_tx_64.v` at the same pin**, fetched to the scratchpad and
+  **not** vendored — read for one question only: where `MIN_FRAME_LENGTH` lives.
+- `docs/adr/ADR-0015-…md` D2 (the converse expected-value obligation) and its
+  E3 grants.
+- Positional-citation survey across `docs/specs/modules/*.md`,
+  `docs/specs/traceability.md`, `docs/specs/architecture.md` — see Evidence 6.
+- `agents/PROTOCOL.md` §7, §11; `agents/charters/architect_docs_lead.md` §3, §6.
+- **Not read**: `libs/**`, `rtl_snapshots/**`, `test/cosim/**` sources beyond
+  what dv's entry quotes.
+
+### Reasoning
+
+**I re-ran dv's sweep instead of transcribing it, and I want the reason on the
+record because it is not distrust.** What I was about to write into a frozen
+requirement is a **universal negative about a 449-line file** — "contains no
+frame-length logic of any kind". dv had already verified it once, correcting the
+worker's one-line report in the process. But a universal negative that three
+people have each taken from the person before them is the exact failure shape
+this programme keeps recording, and the cost of checking was one command. It
+holds: **zero matches over 449 lines.** The parameter block holds too. Having
+checked, I could then write the claim in the requirement **as a claim with its
+own evidence attached** — sweep, line count, pin — rather than as an assertion a
+reader has to trust. A frozen requirement asserting something about a
+third-party file should carry the means to re-check it.
+
+**Two classes, not one, and the reason is the only genuinely load-bearing
+judgement in this diff.** Runt and oversize share a root cause — the reference
+has no length notion — and it is tempting to declare one class for "length
+divergences". That would be wrong, and quietly so, because **the two divergences
+have different observable extents**:
+
+- For a 5-to-63-octet frame, ours and the reference deliver **the same octets
+  with the same `tkeep`**; only `tuser`[0] differs. So the correct exclusion is
+  `tuser`[0] and nothing else, and the payload comparison **still runs**.
+- For an over-1518-octet frame, ours truncates at 1514 and the reference
+  forwards the frame whole, so payload, `tkeep`, `tlast` placement and
+  `tuser`[0] all differ. Nothing at that frame is comparable.
+
+A single merged class would have to take the wider exclusion to be sound, and it
+would then **switch off payload comparison on every runt** — silently retiring a
+real, working comparison over a range the lane can actually anchor. That is the
+worst kind of specification error: one that makes the document more permissive
+while looking tidier. So: one class per requirement, each with the **narrowest
+exclusion that covers its own divergence**, and the shared root cause stated
+inside both so nobody reads the pair as a coincidence.
+
+**Sub-cases inside (e), for the same reason at one level down.** REQ-107 has two
+dispositions, not one: 5-to-63 octets is forwarded-and-marked, below 5 octets
+emits **no output word at all**. The second has no counterpart rule in the
+reference, so its divergence is not in `tuser`[0] — it is in the accept-or-
+discard decision itself, which REQ-901 compares. Excluding only `tuser`[0] there
+would leave a real divergence inside the domain and therefore, by REQ-901's own
+sentence, classified as a defect. So the sub-5-octet frame is excluded entirely.
+I kept both sub-cases inside class **(e)** rather than opening a **(g)**:
+REQ-107 is one requirement and one mechanism, and fragmenting it across two
+letters would force every module-spec citation of it to name two.
+
+**What I refused to write.** I do not know, and did not derive, what the
+reference actually *does* with a sub-5-octet frame. It has no length rule, so its
+disposition is whatever its FCS and terminate handling produce, and I could have
+guessed plausibly. Instead the class says the reference "has no rule that
+produces that disposition" — which is what I verified — and that its actual
+behaviour is **recorded as data on the first run that drives one, never
+adjudicated**. That is REQ-901's own posture toward excluded material and it
+costs nothing to be honest about the boundary of what I checked.
+
+**The numeral was the trap, and this diff sprang it.** REQ-901 said "Four
+divergence classes are declared" and "Any divergence outside **these four
+classes** is a defect". The second sentence had to change — there are no longer
+four — and the choice was "six" or a form with no count in it. I removed the
+count: the rule's force never depended on it, and the letters are the referent.
+Six words of edit now means that the **next** class needs no count edit here and
+none in the two other documents that also say "four". Retiring a numeral that
+has to be maintained in three places is worth doing the once you are already
+editing the sentence.
+
+**Appending is not a style preference here, it is a citation-integrity
+requirement.** The letters (a) to (d) are cited **positionally** in six frozen
+module specs, in `traceability.md` and in REQ-602's own verification column —
+"declared divergence class **(a)**", "classes **(b)** and **(c)**". Inserting
+anywhere but the end would silently re-point every one of them. So (e) and (f)
+are appended, the four existing letters are byte-identical, and I put the rule
+**into REQ-901's own text** ("the list is lettered and grows only by appending,
+so no letter already cited elsewhere ever moves") so that the next person
+extending it does not have to re-derive the constraint from a grep.
+
+**One disambiguation I added unprompted, because the diff would otherwise invite
+its own refutation.** REQ-901's configuration clause says the reference is
+configured with "minimum frame length 64". A reader meeting class (e) could
+reasonably object: *the reference is configured with a minimum frame length, so
+surely it checks length?* It does not. `MIN_FRAME_LENGTH` is not a parameter of
+the receive module at all — it is `axis_xgmii_tx_64.v`'s, where it drives
+transmit **padding**. I checked that rather than asserting it. The class says so
+in one clause, and the configuration clause itself is left untouched: it is not
+wrong, since REQ-901 spans the transmit path too.
+
+**The countersignature question, answered rather than deferred.** Two axes, per
+the C-43 precedent already in this table:
+
+- **Class**: **editorial** by §13's own test. No conformant design changes —
+  REQ-107, REQ-108 and REQ-013 are untouched and our behaviour is exactly what
+  it was. No existing test changes meaning — the co-simulation has probed none
+  of this (Phase 1 drives one 64-octet good frame, `J-dv_lead-0056` Evidence 8)
+  and family F's rows derive from REQ-107 by directed test.
+- **Countersignature**: **OWED, and the diff is not in force until it is
+  transcribed.** Three grounds, and the first is the real one. (1) REQ-901 is a
+  PROC requirement whose subject is **DV's own instrument** — it changes a
+  verdict rule from *defect* to *excluded*. The testability countersignature is
+  not a formality on a row like this; it is the affected party signing. (2) It
+  moves **normative text**, not a verification column, which is precisely the
+  discriminator C-43 established. (3) REQ-901 conditions sign-off citation on
+  the class existing, so a class in the tree but not in force would let an `SO-`
+  cite text that has not been signed — the failure the condition exists to
+  prevent, reintroduced one step earlier.
+
+  That dv_lead **raised** this diff makes the signature likely immediate. It does
+  not make it not owed, and I would rather write that sentence than rely on the
+  asymmetry that nobody objects when the answer is convenient.
+
+**No ADR, and I state that in the row so its absence is not read as a gap.**
+REQ-901 authorises its own amendment in terms — "SHALL be added here by spec
+diff" — so the authority question is answered by the requirement itself. And
+there is no design choice to record: the divergence was **discovered, not
+chosen**, REQ-107 and REQ-108 already decided our side, and ADR-0015 already
+covers the lane. §13's "a behavioural row additionally names its ADR" does not
+bite on an editorial row.
+
+**The verification-column half is deliberately a separate row at a lower
+ceremony.** REQ-107's and REQ-108's columns gain the class pointer, worded on
+REQ-602's existing class-(a) pointer, so that a bench writer reading the runt
+requirement learns there that the co-simulation cannot anchor it. Those are
+verification-column-only edits, which is the **concurrence** class C-39 and C-41
+closed under. Folding them into the REQ-901 row would have blurred two different
+countersignature answers into one, so §13 gets two rows.
+
+**And the cascade I did not fix.** Adding classes falsifies three restatements
+elsewhere; PROTOCOL §11's sweep discipline says find them all, and I did, but I
+did not edit them here. `SPEC-M03` has **no REQ-901 hook at all** — that is a new
+§10 row, not a count fix, and it belongs in the same commit as M03's own
+countersignature cycle. `nic_top.md` and `traceability.md` each state the count
+and enumerate the class homes, and M03 is in neither enumeration. Landing four
+frozen-document diffs in a commit whose journal is about the M03 length paths
+would blur what is **blocking** (REQ-901, which the `SO-` gate reads) with what
+is consequential. So: enumerated exactly, in the row and in Open-questions, as a
+follow-on nobody has to re-derive. The cost — three stale restatements standing
+in the tree meanwhile — is real and is stated rather than absorbed.
+
+### Actions
+
+- `docs/specs/requirements.md`, **four hunks, one file**:
+  - **REQ-901's normative cell**: classes **(e)** and **(f)** appended with the
+    reference finding, its evidence (449-line sweep, pin, absent parameter), the
+    per-class exclusion scope and its bound ("(e) and (f) exclude nothing in the
+    64-to-1518-octet range"); the numeral **four** retired in favour of "the
+    declared classes"; the append-only lettering rule stated in the text; and a
+    closing pair of general sentences — what an excluded class costs (directed
+    test instead; no `SO-` may offer a co-simulation result as the anchor) and
+    that an exclusion is never a licence to take an expected value from the
+    reference (ADR-0015 D2).
+  - **REQ-107's and REQ-108's verification columns**: the class-(e) and class-(f)
+    pointers, on REQ-602's pattern.
+  - **§13**: **two rows appended last** — the REQ-901 row (editorial class,
+    countersignature owed, no-ADR reasoned) and the REQ-107/REQ-108 row
+    (editorial, concurrence class), each naming what it does not decide.
+- **Independently re-verified** dv's finding over the vendored bytes before
+  writing it into a frozen requirement, and separately located
+  `MIN_FRAME_LENGTH` on the transmit module.
+- **Not touched**: REQ-107's, REQ-108's and REQ-013's normative sentences;
+  REQ-901's configuration clause, comparison content and verification column;
+  classes (a) to (d), byte-identical; every module spec; `traceability.md`;
+  `architecture.md`; every ADR and gate file. No packet edited — this is
+  dv_lead's packet and its Return log is its own. No `git commit`, no
+  `git push`.
+- **Foreign in-flight paths in the working tree, not mine, must not be staged
+  with this commit** (R1/R7): `agents/handoffs/WO-0047_tb-m03-family-f-runts.md`,
+  `test/xgmii_rx_64/test_m03_e.ml`, `tools/cosim/run_cosim.sh`.
+
+### Evidence
+
+Reproducible from a checkout at this commit's SHA:
+
+1. **Scope.** `git diff --stat -- docs/` → **1 file changed, 5 insertions, 3
+   deletions** — `docs/specs/requirements.md` only, i.e. three long lines
+   rewritten (REQ-107, REQ-108, REQ-901) and two §13 rows added.
+2. **The finding, re-verified over the vendored bytes.** In
+   `test/third_party/verilog-ethernet/`:
+   `grep -ciE "length|runt|oversize|too_short|too_long|min_|max_|frame_len" axis_xgmii_rx_64.v`
+   → **0**; `wc -l < axis_xgmii_rx_64.v` → **449**;
+   `grep -c "MIN_FRAME_LENGTH\|ENABLE_PADDING\|ENABLE_DIC" axis_xgmii_rx_64.v`
+   → **0**. The module's parameter block is `DATA_WIDTH, KEEP_WIDTH,
+   CTRL_WIDTH, PTP_TS_ENABLE, PTP_TS_FMT_TOD, PTP_TS_WIDTH, USER_WIDTH` and
+   nothing else. Pin per `PROVENANCE.md`:
+   `77320a9471d19c7dd383914bc049e02d9f4f1ffb`.
+3. **`MIN_FRAME_LENGTH` is the transmit module's** (external observation,
+   `rtl/axis_xgmii_tx_64.v` fetched at the same pin, HTTP 200, scratchpad only,
+   **not vendored**): `ENABLE_PADDING` at :39, `ENABLE_DIC` at :40,
+   `MIN_FRAME_LENGTH` at :41, feeding `frame_min_count_next` at :333 under
+   `ENABLE_PADDING` at :380 — transmit padding, not a receive-side check.
+4. **The reference's error ports exist by our names**, confirming dv's
+   correction to its own CD §2: `error_bad_frame` at :77 and `error_bad_fcs` at
+   :78, set at :248, :265–266 and :293. Neither carries length semantics — that
+   is what item 2 establishes — which is why the classes are stated in terms of
+   `tuser`[0] and not of strobes.
+5. **No letter moved, and the count is gone.**
+   `grep -o "(a) IPv4\|(b) the direct-mapped\|(c) discard-on-miss\|(d) the zero UDP\|(e) \*\*runt\|(f) \*\*oversize"`
+   → the six in order, (a) to (d) byte-identical to their previous text.
+   `grep -c "these four classes\|Four divergence classes"` → **0**.
+6. **The positional-citation survey behind the append-only decision**, and the
+   exact cascade left owed: class letters are cited in
+   `docs/specs/modules/ip_eth_rx_64.md` (header, :1038, :1048, §11.3),
+   `ip_eth_tx_64.md` (header, :760), `arp.md` (:21, :1149),
+   `arp_cache.md` (:18, :498), `udp_ip_tx_64.md` (:15, :790),
+   `udp_ip_rx_64.md` (:15, :872 — "no divergence class lives here"),
+   `nic_top.md` (:797), `traceability.md` (:239) and `requirements.md`'s own
+   REQ-602. Every one of those citations still resolves. **Three state the count
+   or the homes and are now stale**: `nic_top.md:797` ("the four declared
+   classes live at M14, M12/M13, M15/M13 and M18 … inherits all four"),
+   `traceability.md:239` ("the four declared divergence classes" plus homes),
+   and `docs/specs/modules/xgmii_rx_64.md`, which has **no REQ-901 row at all**
+   (`grep -n "REQ-901"` → no match) and now needs one.
+7. **Table integrity.** Script over the whole file: **234 table rows scanned, 0
+   failures** — every row's unescaped-pipe count equals its block separator's
+   and every `**` span on a table row balanced.
+8. **CI is neither owed nor claimed.** This commit changes one markdown file and
+   no OCaml source, no workflow and no script.
+
+### Outcome
+
+**DoD met.** REQ-901 carries two new declared divergence classes, appended as
+**(e)** runt marking (REQ-107, REQ-013) and **(f)** oversize truncate-and-mark
+(REQ-108, REQ-013), each citing the verified reference behaviour, each stating
+the narrowest exclusion that covers its divergence, and both bounded so the
+64-to-1518-octet range still anchors. REQ-901's own resolution rule is made
+explicit for all classes: inside an exclusion the co-simulation anchors nothing,
+the excluded requirement is verified by directed test, no sign-off packet may
+offer a co-simulation result as its external anchor, and an exclusion is never a
+licence to take an expected value from the reference.
+
+**Countersignature: dv_lead's re-countersignature is OWED, and the REQ-901 diff
+is NOT in force until it is transcribed.** The REQ-107/REQ-108 verification-
+column pointers are the concurrence class and close with dv's concurrence, not a
+signature. Class of both: **editorial**. **No ADR is owed**, and the row says why
+so the absence is not read as a gap.
+
+**Handoff**: orchestrator → dv_lead, for (a) the re-countersignature on the
+REQ-901 row and concurrence on the REQ-107/REQ-108 row, and (b) confirmation
+that the exclusion scopes match what its comparison domain needs — in particular
+that (e) leaves payload and `tkeep` **compared** on 5-to-63-octet frames, which
+is the one place I chose a narrower exclusion than the finding strictly forced.
+Families F and G remain un-anchorable by co-simulation, which is now stated in
+the document rather than only in dv's journal.
+
+### Open-questions
+
+- **The re-countersignature is owed on this commit's SHA.** Until it is
+  transcribed, REQ-901's class list has six entries in the tree and four in
+  force, and no `SO-` may cite (e) or (f).
+- **Three stale restatements, enumerated and deliberately not fixed here**:
+  `docs/specs/modules/xgmii_rx_64.md` needs a REQ-901 §10 row (it has none, and
+  M03 is now the home of two classes); `nic_top.md:797` states four and
+  enumerates homes that omit M03; `traceability.md:239` the same. A follow-on
+  WO; I did not fold four frozen-document diffs into a commit about the M03
+  length paths.
+- **A fourth site that reads differently rather than falsely**:
+  `architecture.md:179` rejects a MAC-layer address filter partly because "it
+  would introduce a co-simulation divergence class on the very first stage". The
+  argument still stands — it would introduce a *further* one — but its rhetorical
+  force assumed the first stage had none. Worth a clause when the sweep runs.
+- **dv's own open question is the right one and I endorse it**: the sweep found
+  one gap by asking one question. **Before Phase 3 is scoped, the same reading
+  should run for every error class families E–H assert.** This diff is evidence
+  that the cost of finding out late is a blocked sign-off path, not a document
+  edit.
+- **REQ-901's configuration clause names three parameters that exist only on the
+  transmit module** (`ENABLE_DIC`, `ENABLE_PADDING`, `MIN_FRAME_LENGTH`). Not
+  false — REQ-901 spans the transmit path — but a reader can take "minimum frame
+  length 64" for a receive-side check. I disambiguated inside class (e) rather
+  than editing the clause; if dv prefers the clause scoped explicitly to the
+  transmit boundary, that is one sentence and I will take it.
+- **I did not derive what the reference does with a sub-5-octet frame**, by
+  choice; the class says its disposition is recorded as data on the first run
+  that drives one.
+- Carried unchanged from `J-architect_docs_lead-0015` and earlier: R-CI-4's
+  gate-removal owner; the M03 RTL non-conformance against §9 ruling 9; §6.1 item
+  4 unscoped; §9's "Aborted-and-forwarded" paragraph one step out of the table's
+  literal order; `tools/precompile_stubs/ifc_check.ml`'s stale note; **C-45**,
+  C-36, ADR-0012's residual, REQ-007's scoping clause at two modules, C-38,
+  requirements.md's `DRAFT` header against its §13's frozen treatment, C-2, C-3,
+  C-5, C-7, C-9's REQ-903 half, C-32, C-33, C-44; and the two re-counter-
+  signatures and one concurrence owed at `J-architect_docs_lead-0013`'s SHA.
+
+### Files-in-this-commit
+
+- docs/specs/requirements.md
