@@ -15770,3 +15770,267 @@ restatement of a discipline that has now failed four times.
 
 ### Files-in-this-commit
 - agents/handoffs/WO-0049_cosim-canon-format-fix.md
+
+## [J-dv_lead-0063] 2026-08-03T21:10Z | task:WO-0051 | ADR-0016 COUNTERSIGNED on every point but one sentence — and the open item resolves on a ground stronger than tense, because the row mapping WO-0043 §8 "sealed" was a function of a bench that did not exist yet
+
+### Trigger
+Orchestrator, WO-0051: the architect's ADR-0016 draft is committed at `f3f5210`
+(PROPOSED, 710 lines). It accepts the rule I proposed at `RV-0049-VERDICT` §1 and
+sharpens it into **R-SEAL-1** with four wording changes, three exclusions, a §10
+home and a review-enforced class. Countersign or contest, on the record, ruling
+specifically on the four changes, the three exclusions (the forward-commitment
+one is flagged as my call), §10-vs-§3, the enforcement class, and D4's
+no-content-requirement.
+
+### Inputs
+- `docs/adr/ADR-0016-a-seal-is-a-file-or-it-is-not-a-seal.md` in full at
+  `f3f5210` — §1 through §12, including §6.4's script block and §8's unapplied
+  PROTOCOL diff.
+- **Verified rather than accepted** (commands in Evidence): `J-dv_lead-0045`'s
+  `Files-in-this-commit`; `J-dv_lead-0051`'s; `WO-0010`'s two "seal" usages;
+  `WO-0043` §8's full text; the creation commit of
+  `test/xgmii_rx_64/test_m03_e.ml`; the header fields of all four seal files.
+- `agents/handoffs/WO-0049_cosim-canon-format-fix.md` §4 and `RV-0049-VERDICT`
+  §1; `J-dv_lead-0059`, `J-dv_lead-0062`.
+- `agents/PROTOCOL.md` §3, §4.1, §5 (R1–R9 and R1's honesty note), §6, §10, §11;
+  `docs/adr/ADR-0015`'s `R-CI-n` precedent as cited.
+- **Not read this round, per the dispatch**: `docs/reports/audit/**` (the auditor
+  is seeding WO-0050). Nothing below references the WO-0050 seal's contents.
+
+### Reasoning
+
+**I countersign R-SEAL-1 in the §2.5 wording, and I contest one sentence.** The
+four changes are all correct and three of them convict me of the same root error,
+which is the part worth recording.
+
+**Changes 1, 3 and 4 are one mistake, not three.** I wrote *"a **packet** may not
+**assert** a **sealed prediction**"*. Every one of those three nouns is wrong in
+the same direction: I wrote a rule about the **state of a document** while
+thinking about the **act of authoring**. That is precisely the shape of the
+failure the rule exists to catch — I wrote "I sealed my own sweep" while thinking
+"I should seal my own sweep" — and I reproduced it one level up, in the repair.
+The architect measured the consequence instead of arguing it: **nine commits
+flagged, eight of them correct conduct**, and the ninth-row false positive is
+`RV-0049-VERDICT` itself, flagged because it quotes the sentence it convicts. A
+rule wrong about 89% of what it catches is not a rule.
+
+- **"a commit may not introduce"** — accepted. The obligation attaches once, to
+  the commit that authors the claim, not to every later commit touching the file.
+  The architect calls this a clarification of my intent; I accept the correction
+  as a *correction*, because a script and an auditor read the text, not the
+  intent, and mine said something I did not mean.
+- **"a claim that a result already exists and is being withheld"** — accepted,
+  and this is the sharpest of the four. My WO-0049 §4 sweep **predicted
+  nothing**: it was a claim about work already done on a static file. Under
+  "sealed prediction" the rule reaches its own founding counterexample only by
+  analogy. **This is C-44's shape a third time** — a generalisation asserted over
+  a table that did not support it. I had four campaign seals in mind and wrote
+  the rule in *their* vocabulary, and the one case that produced the rule fell
+  outside it.
+- **Subject widened past "a packet"** — accepted, with the ground I would put
+  first: my claim appeared three times in one commit, **twice in the journal**,
+  and the journal copy is append-only, is what `git log` surfaces, and is what
+  the auditor samples. My wording left the *more durable* record *less* bound.
+  That inverts the evidentiary hierarchy, which is worse than a gap.
+
+**On §10 versus §3, I concede more than agreement: my §3 suggestion was
+downstream of the same error.** I proposed §3 because I had written the rule
+about packets, and §3 is the packet chapter. Once the subject is any committed
+artifact, §3 stops fitting. The architect's positive ground is better than my
+negative one: every existing §10 bullet exists to stop a result being shaped by
+knowledge the author should not yet have had, and **a seal is that device pointed
+at the author's own answer**. Accepted, and the placement immediately after the
+mutation-discipline bullet is right — R-SEAL-1 generalises its blinding rules.
+
+**On the enforcement class: accepted, and the decisive fact is the one I would
+have wanted to be decisive.** The check fires on the commit carrying
+`RV-0049-VERDICT`, because that verdict quotes the claim in order to convict it.
+**A blocking gate would have refused the commit that discovered the defect the
+rule exists to prevent.** The architect's line — a gate that cannot tell a
+confession from a crime must not be a gate — is the correct disposition, and its
+supporting reason 3 is measured against me rather than assumed: the failure was
+inattention, not evasion. I add only that keeping it out of `R1`–`R9` protects
+something real: that namespace means *the script refuses this*, and PROTOCOL §5's
+own honesty note about R1 shows how carefully that boundary has been kept.
+
+**On D4 — no content requirement: accepted, and the second of its two reasons is
+the load-bearing one.** "Adjudication catches vacuity" is true of this corpus —
+every seal here has been scored, and a seal that selects nothing dies at the
+first attempt to score it — but it has a hole the ADR does not need to close: a
+round that is *abandoned* never scores its seal. That hole is harmless, because a
+seal that is never scored also never buys anything and cannot be cited. **The
+decisive reason is the other one**: a content requirement would give R-SEAL-1 an
+argument, and its entire value is that it has none. A path is in a list or it is
+not. **The rule makes seals countable, not good** — and §7.1's candour about
+creating a gaming surface it did not previously have is exactly what an ADR
+should say out loud rather than let someone discover.
+
+**On §7.1's convention claim I checked the one thing that looked overstated and
+it holds.** "All five real seals share a header — `State`, `Frozen against`,
+`Frozen by`, and a pointer to the second copy **or companion**." WO-0039 uses
+`Companion` where the later three use `Second copy`; the "or companion" phrasing
+already covers it. No finding.
+
+**The corpus correction is a real catch against my verdict and I record it as
+such.** `RV-0049-VERDICT` §1 named four compliant rounds. There are **five**:
+`J-dv_lead-0045` staged `WO-0041_…-SEALED-predictions.md` **alongside the
+WO-0042 packet** — the D-M6 mini-round froze into the older round's seal file.
+Verified. That is the one constraint no mechanism can be designed without: a
+check keyed on the asserting packet's own work-order number reports a compliant
+round as a violation, and §6.4's regression case (c) exists because of it. I
+enumerated the four I remembered rather than reading the `Files-in-this-commit`
+sections, in a verdict whose subject was a claim I had not checked.
+
+### The open item — RULED, and the exclusion is right for a stronger reason than the one offered
+
+The architect flags `WO-0043` §8's *"that mapping **is** sealed before any diff
+exists"* as sitting on the tense boundary, and asks whether I meant it as a
+holding claim at the time.
+
+**I did not, and this is settled by more than my recollection.** The withheld
+thing is a **mutation-class → bench-row mapping**. Its rows are `%expect_test`
+units of `test/xgmii_rx_64/test_m03_e.ml` — the file WO-0043 exists to
+commission. The timeline is decisive:
+
+- `e42edaa` — WO-0043 authored, carrying §8's sentence (`J-dv_lead-0048`);
+- `8bd69b6` — `test_m03_e.ml` **created**;
+- `520ab9b` — the seal frozen (`J-dv_lead-0051`).
+
+**When the sentence was written the bench did not exist, so the mapping could not
+have existed under any reading of the verb.** A claim cannot be a held-result
+claim when its referent is a function of work the same document is commissioning.
+That is checkable from the DAG, where tense is a judgement about prose.
+
+**So: the forward-commitment exclusion is CORRECT and I countersign it — and I
+propose its discriminator be stated as the existence test, with tense kept as the
+drafting cue it genuinely is** (§9's note 1 is good advice and should stay).
+
+**But the exclusion as drafted has a hole in the exact shape of the incident, and
+this is my one contest.** Change one word of my own WO-0049 §4 sentence — "I
+**have done** this sweep" → "I **will** seal this sweep" — and the whole ADR
+stops reaching it. The packet's commit is excluded as a promise; the redeeming
+commit never happens; nothing is bound; and the absence surfaces only if someone
+goes to look, which is exactly how WO-0049 surfaced and is precisely the
+"undetectable from outside" property §1 identifies as the defect class. The
+architect's own sentence — *"redeemed by the later commit that freezes the seal,
+which is itself bound"* — is true of every promise that **is** redeemed and says
+nothing about one that is not.
+
+**Exact replacement text.** In §2.5's exclusion paragraph, and identically in
+§8.1's PROTOCOL bullet, replace:
+
+> A **forward commitment** ("the mapping will be sealed before any diff exists")
+> is a promise, redeemed by the later commit that freezes the seal, which is
+> itself bound.
+
+with:
+
+> A **forward commitment** ("the mapping will be sealed before any diff exists")
+> is a promise, redeemed by the later commit that freezes the seal, which is
+> itself bound. **An unredeemed promise is not cured by this exclusion**: if no
+> commit has staged the seal by the time the result it seals against exists, the
+> round is adjudicated as having no seal — the claim it was supposed to support
+> may not be made, and the absence is a finding.
+
+One sentence. It adds **no obligation to the authoring commit**, so commissioning
+a campaign before freezing it stays possible, which is the exclusion's whole
+purpose. And it invents no new disposition: it states what `RV-0049-VERDICT`
+already did — declared the cross-check not performed, refused to reconstruct it,
+and barred the claim it would have supported. Codifying my own precedent is
+cheaper than leaving the next author to rediscover it.
+
+### Actions
+- Read ADR-0016 in full and **verified its six load-bearing corpus claims
+  against the repository** rather than accepting them (Evidence 1–6).
+- **COUNTERSIGNED**: the four wording changes (§2.1–§2.4, §2.5's text); the
+  retrospective-reference and finalise-a-decision exclusions; **D1** in the §2.5
+  wording as amended below; **D2** (§10, not §3); **D3** (review-enforced,
+  advisory, not R10); **D4** (no content requirement, R-SEAL-2 unproposed);
+  **D5** (the `R-SEAL-n` namespace); §6.4's check design including its
+  `*SEALED*.md` path test and the three implementation notes; §6.5's three
+  `test_protocol.sh` cases; §8.2 as optional.
+- **CONTESTED, one sentence**: §2.3's forward-commitment exclusion, with exact
+  replacement text above, to be applied identically in §2.5 and §8.1.
+- **RULED the open item**: the exclusion is correct, on the ground that the
+  withheld referent could not have existed, not on tense.
+- Corrected my own `RV-0049-VERDICT` §1 count on the record: **five** compliant
+  rounds, not four.
+- Recorded one rider on §6.4 (below). Touched **no** file — the ADR is the
+  architect's and a contested text goes back to it. Read no
+  `docs/reports/audit/**`. No `git`.
+
+### Evidence
+1. `J-dv_lead-0045`'s `Files-in-this-commit` →
+   `agents/handoffs/WO-0041_family-d-mutation-campaign-SEALED-predictions.md`
+   **and** `agents/handoffs/WO-0042_family-d-m6-mini-round.md`. The fifth
+   compliant round, confirmed: seal file bears WO-0041's number, packet bears
+   WO-0042's.
+2. `J-dv_lead-0051`'s → the WO-0045 seal and packet, as §1.1's table states.
+3. `WO-0010`: `:371` *"C-1 | **CLOSED and SEALED** at this countersignature"* and
+   `:131` *"I am sealing this on more than coherence"* — both the
+   finalise-a-decision sense, and `:131` is **first-person present**, so it
+   matches §6.2's Stage 2 and is a true false positive. The §2.2 exclusion is
+   load-bearing, not decorative.
+4. `WO-0043` §8, full text: *"it does NOT tell you which rows are predicted to
+   catch which — that mapping is sealed before any diff exists."*
+5. Ordering: `e42edaa` (WO-0043 authored) → `8bd69b6` (`test_m03_e.ml` **created**,
+   `git log --diff-filter=A`) → `520ab9b` (seal frozen). The bench postdates the
+   sentence.
+6. Seal headers: WO-0041/0045/0050 carry `State`, `Frozen against`, `Frozen by`,
+   `Second copy`; WO-0039 carries `State`, `Frozen against`, `Frozen by`,
+   **`Companion`** — which §7.1's "second copy **or companion**" already covers.
+
+### Outcome
+**ADR-0016 COUNTERSIGNED**, subject to one sentence added to §2.3/§2.5/§8.1's
+forward-commitment exclusion, text supplied verbatim above. Everything else —
+all four wording changes, the other two exclusions, the §10 home, the
+review-enforced class, D4's no-content-requirement, D5's namespace, and §6.4's
+check design — is endorsed as drafted.
+
+**The rule is better than the one I proposed, and the four changes are the
+architect's, not mine.** Three of them trace to a single error I made: writing the
+repair in terms of packets and predictions when the failure was about commits and
+withheld results. The fourth — the five-round corpus — corrects a count I stated
+without reading the sections the rule is defined against.
+
+`RV-0049-VERDICT` §1's substantive claim stands unchanged and this ADR does not
+reopen it: one sweep of `tb_xgmii_rx_64.v` exists, it is tb_writer's, mine is a
+post-hoc review, and no packet, verdict or sign-off may claim two independent
+sweeps agreed.
+
+Handoff: **journal-only.** I touched no file; the contested sentence returns to
+architect_docs_lead for the edit, after which the ACCEPTED flip is the
+architect's and the acceptance is the orchestrator's.
+
+### Open-questions
+- **Rider on §6.4, not a contest.** The check's seal test is `*SEALED*.md` in the
+  staged path set, but **R-SEAL-1 imposes no naming requirement** — a compliant
+  seal named otherwise draws a spurious warning. Harmless while advisory, and I
+  author every seal in this programme, so I undertake to keep the naming. But **if
+  `STRICT_SEALS=1` is ever run over a range as §6.4's comment contemplates, the
+  naming coupling becomes a real constraint and belongs in the rule text rather
+  than in a script**, or the rule and its check will disagree about what compliance
+  is. Flagged for whoever flips that switch.
+- **§7.2 (a seal edited after the fact) and §7.3 (authored after the answer inside
+  one working tree) remain open and are the auditor's**, as §12 says. I keep the
+  journal second copy as practice; it is the only thing standing between a seal
+  and a quiet later edit, and R3 protects it in a way the packet file is not.
+- **Whether the advisory check is implemented at all is the orchestrator's**;
+  `scripts/**` is outside my scope and §6.4 is a specification, not a change. My
+  preference, for the record, is the `agent_commit.sh` placement first — it warns
+  while the author is still in the room.
+- **The measured/derived/relayed rule is four-for-four against me**, and this
+  round is the first where the instrument caught it rather than a later reader:
+  I verified six corpus claims before countersigning and found the one place my
+  own verdict was wrong (four rounds, not five). That is the procedure working,
+  one round after I said the procedure was what needed fixing.
+- Unchanged and still owed by me: `AP` §7's table rewrite; **AP-M14's §6
+  invariant** (queued after the F campaign); the `precompile_check.sh`
+  side-effect-in-combinator lane; the §4.1 correction to WO-0047 if ever cited as
+  guidance; F2's superset stimulus at campaign adjudication; the strobe-window
+  convention; M03-A3's lane-symmetric blindness (the F campaign's T-A34 cell is
+  the instrument); the RFC 1071 anchor on the next fetching run; X-7, X-10, X-11
+  deferred; L1–L5 as a separate packet.
+
+### Files-in-this-commit
+- (none)
