@@ -225,3 +225,47 @@ None.
 - site/public/index.html
 - site/public/org-chart.html
 - site/public/spec-atlas.html
+
+## [J-orchestrator-0152] 2026-08-04T00:35:00Z | task:WO-0056 | The lift landed - the arc from survival to proof is closed
+
+### Trigger
+dv's lift ruling committed at 6dd229c: the consequence LIFTED on
+the replay's evidence — the surviving g-c4 diff, unmodified,
+died against the repaired bench; G8 alone out of twenty-seven
+units, on the exact assertion the row was written to make.
+
+### Inputs
+Run 30852220315's harvest; the ruling's four bounds (G7 benched
+but not mutation-qualified — the next G campaign's first owed
+item); the folded boundary fix (k >= 1519, interval 81 octets);
+the benched-row rule stated to stop count drift.
+
+### Reasoning
+Board row flipped to CLOSED · LIFTED with the full arc; the
+cosim-stayed-green observation carried as dv ruled it (the
+class-(f) exclusion converted from argument to measured fact).
+Coverage per dv's measurement: 33 rows benched, 28 of 62 ASSERT,
+34 outstanding. Site rebuilt clean.
+
+### Actions
+Board flip; rebuild; this commit; push. Next dispatches: family
+H design (dv), the architect's voluntary rotation + AP-M14 check
+queued behind it.
+
+### Evidence
+6dd229c; run 30852220315; the rebuilt row.
+
+### Outcome / DoD
+WO-0056 closed. The G-2 arc — survival, diagnosis, correction of
+the diagnosis, repair, replay, lift — is complete on the record.
+
+### Open questions
+None new.
+
+### Files-in-this-commit
+- tasks/BOARD.md
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/index.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html
