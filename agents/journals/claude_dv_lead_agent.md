@@ -12421,3 +12421,195 @@ brief is `WO-0042`.
 ### Files-in-this-commit
 - agents/handoffs/WO-0041_family-d-mutation-campaign-SEALED-predictions.md
 - agents/handoffs/WO-0042_family-d-m6-mini-round.md
+
+## [J-dv_lead-0046] 2026-08-11T17:30Z | task:WO-0042 | D-M6's arming reading ruled on the spec rather than on my own sentence — tuser[0] is meaningful only on a tlast word, so a no-output frame has no bit to latch and the wider reading invents a coupling the spec lacks; and the seeder's self-tightening covered a leak my own thin-subject rule should have closed and didn't
+
+### Trigger
+Orchestrator: D-M6 seeded (`784e5b6`), running on `mut/wo-0042-d-m6` (parent
+`447d11c`). One substantive pre-result question from the auditor — it armed the
+latch from the **emitted `tuser` word**, so invalid frames that emit no output
+word do not arm it; it rejected the wider "abort condition latches" reading as
+textually unsupported and as the forbidden strengthening, and offers the wider
+variant as a separate diff before any result flows. Plus two disclosures for
+judgment: a tar-copy of the tree (including `test/**`) into private scratch for a
+compile-feasibility `dune build` on the **unmutated** copy, and a
+snapshot-collateral flag. Plus conduct notes: census-verified fidelity,
+blob-exact round-trip, and a self-imposed tightening — no unscoped `git log` at
+all.
+
+### Inputs
+- The question and the two disclosures as relayed.
+- `agents/handoffs/WO-0041_family-d-mutation-campaign-SEALED-predictions.md`'s
+  D-M6 addendum — **my own freeze, to check what its arming stimulus is**.
+- `docs/specs/modules/xgmii_rx_64.md` §4.1's port table (`rx_tuser` bit 0,
+  "meaningful only on the `tlast` word") and §9's condition table, especially
+  the "no output word at all" rows and their strobe names.
+- `docs/specs/requirements.md` REQ-013 and REQ-007.
+- `git log --oneline -3 68aa112` — to check whether my own thin-subject rule
+  held.
+- `grep -n "rtl_snapshots\|Verilog\|Rtl\.print" test/xgmii_rx_64/bench.mli
+  test/xgmii_rx_64/dune` — to settle the snapshot-collateral question by
+  inspection.
+- **No `libs/**`, no `rtl_snapshots/**`, no auditor diff.**
+
+### Reasoning
+
+**I could have answered the arming question from my own sentence and it would
+have been the weaker answer.** "Once M03 sets it on some frame's `tlast` word"
+plainly requires a `tlast` word, so the auditor's narrow reading is textually
+right. But a mutation intent that rests only on how I phrased it is fragile —
+the next seeder phrases it differently and we are back here. **The
+specification settles it independently and more strongly.**
+
+§4.1's port table makes `rx_tuser`[0] *"meaningful only on the `tlast` word"*,
+and REQ-013 says the same. A frame that emits no output word therefore has **no
+`tuser`[0] at all** — not a zero, not an unread one; there is no word for the bit
+to live on. §9 reports those frames through their **strobe** instead, which is
+exactly why every "no output word at all" row in that table carries a strobe
+name. So the wider reading does not latch a bit that exists: **it invents a
+coupling between the strobe path and the `tuser` path that the specification
+does not have.** That is a different and larger defect, which is what the "do
+not strengthen it" instruction bars. The narrow reading is not merely supported
+— it is the only well-defined one.
+
+**And the auditor's actual worry is discharged by fact.** It feared its reading
+could be what makes the run green. The sealed arming stimulus is a **bad-FCS
+frame**, which §9 row 1 forwards *in full* with `tuser`[0] = 1 on its `tlast`
+word — squarely in the emitting class. The reading is immaterial to the frozen
+prediction.
+
+**Wider still: no unit in this bench drives an invalid frame that emits no output
+word.** C4's runt is exactly five octets and emits one word; the sub-5 class and
+the `/E/` and `/S/` abort classes are families F, E and H, all unbenched. So the
+two readings are indistinguishable by *everything that exists*, and the second
+diff would carry an empty predicted kill set.
+
+**But I made myself state the precision, because I spent the last round
+establishing it and it would be cheap to blur here.** This is **not** an
+equivalence claim of D-M3's kind. D-M3 was proven indistinguishable across the
+*entire legal stimulus space*, by a margin computation over every legal
+combination. This is the weaker statement — indistinguishable **by the current
+bench** — and a family E/F/H bench *would* separate the two readings. Declining
+the second diff is therefore "it tests nothing we can see", not "the two designs
+are the same". The difference matters enough to be an obligation on those
+families rather than a parenthesis here.
+
+**The tar-copy is not a breach and the reasoning is the same shape as last
+round's git ruling**, which is what gives me confidence in it rather than
+suspicion: no content entered context, and the mechanism makes that checkable
+rather than asserted — `tar` piped to `tar` moves bytes without rendering them,
+and `dune`'s output named only the library `dune` file and missing libraries.
+The bar protects information reaching a seeder's reasoning, not byte movement on
+a filesystem, and incidental inclusion in a whole-tree copy is not a targeted
+read.
+
+**What I will not do is call it safe by design.** A `dune build` over a tree
+containing the barred bench could have printed source lines from a barred file on
+any type error. It did not only because the build failed earlier on missing
+libraries. **That is luck.** So the practice is sharpened exactly as the git bar
+was: a blinded seeder that needs to compile excludes the barred paths from the
+copy. Cheap, and it removes the dependence on failure ordering. Two rounds
+running, the pattern is the same — the *outcome* was clean and the *method*
+depended on something that could have gone the other way.
+
+**Then the finding that is against me.** The auditor declined to run any
+unscoped `git log`, reasoning that the WO-0041 adjudication's subject could carry
+a kill result. I checked: it does — `68aa112`'s subject names the campaign's
+score and the obligation this round discharges. **My own thin-subject practice,
+adopted at `J-dv_lead-0043` precisely to prevent this, was not applied to the
+very next adjudication commit.** The seeder's self-imposed tightening covered a
+gap I left open. That is the third time this campaign that its conduct has been
+better than my instructions, and the honest reading is not "good auditor" but
+"my rules keep arriving one commit late".
+
+**A tension I created and should name rather than leave for someone to trip
+over**: last round I sharpened the bar so that a barred path is barred to *every*
+git subcommand. That removed the auditor's ability to verify its own
+prior-exposure claim by path-scoped log, so the claim now rests on this brief's
+§0 and its own prior entry. **Tightening a bar can remove the evidence that would
+discharge a disclosure.** Acceptable here — the basis is adequate and the claim
+is low-stakes — but it is a real cost of bar-tightening and the next sharpening
+should be weighed against it.
+
+**Snapshot collateral I settled by inspection rather than agreement.** The only
+occurrences of `rtl_snapshots` under `test/xgmii_rx_64/` are a docstring line in
+`bench.mli` and a comment in `dune` — prose, not executable. **No unit in the
+twelve compares snapshots**; all are Cyclesim behavioural tests. Drift belongs to
+the determinism step, which runs after `runtest` and is not a unit, exactly where
+it manifested on D-M3's run. Recorded as a standing campaign rule so it is never
+scored as an unnamed-unit finding and never harvested.
+
+### Actions
+- **Ruled the arming reading AS AUTHORED; D-M6 stands; second diff declined
+  rather than deferred** — on §4.1/REQ-013's "meaningful only on the `tlast`
+  word" as the primary ground, with the arming stimulus's emitting class and the
+  bench-wide indistinguishability as secondary.
+- **Recorded the precision** that this is indistinguishability *by the current
+  bench*, not equivalence over the legal stimulus space, and made it an
+  obligation on families E, F and H.
+- **Ruled the tar-copy no breach, no void**, and sharpened the practice:
+  exclude barred paths from a compile copy rather than relying on the build
+  failing first.
+- **Confirmed the snapshot-collateral flag by inspection** and made it a standing
+  campaign rule.
+- **Checked `68aa112`'s subject** and recorded that my own thin-subject rule was
+  not applied to it, so the seeder's self-tightening covered my gap.
+- Named the bar-tightening-versus-disclosure-evidence tension as mine.
+- Opened no `libs/**`. No `git commit`, no `git push`.
+
+### Evidence
+1. SPEC-M03 §4.1: `rx_tuser` bit 0 is "meaningful only on the `tlast` word";
+   REQ-013 concurs — so a no-output frame has no `tuser`[0] to latch.
+2. §9's "no output word at all" rows each carry a **strobe** name — the report
+   path for those frames, which the wider reading would have to couple to
+   `tuser`.
+3. §9 row 1: a bad-FCS frame is **forwarded in full** with `tuser`[0] = 1 on its
+   `tlast` — the sealed arming stimulus is in the emitting class.
+4. C4's runt is exactly 5 octets and emits one word; the sub-5, `/E/` and `/S/`
+   classes are families F, E and H, all unbenched.
+5. `68aa112`'s subject carries the campaign score and the D-M6 obligation.
+6. `rtl_snapshots` under `test/xgmii_rx_64/` appears only at `bench.mli:18` (a
+   docstring) and `dune:33` (a comment) — no unit compares snapshots.
+
+### Outcome
+**D-M6 stands as authored; no second diff.** The arming reading is settled on
+the specification rather than on my phrasing, so it does not depend on how the
+next intent is worded.
+
+**Neither disclosure voids anything.** The tar-copy is no breach; the snapshot
+flag is correct and is now a standing rule. Both practices are sharpened for the
+next campaign.
+
+**One finding against my own practice**: the thin-subject rule I adopted at
+`J-dv_lead-0043` was not applied to the adjudication commit, and only the
+seeder's voluntary tightening kept a kill result out of its reach.
+
+### Open-questions
+- **Owed to families E, F and H**: the arming-reading distinction is a real
+  behavioural difference that today's bench cannot see. When those families are
+  benched, a latched-abort-bit design's arming semantics become observable and
+  the row that covers them must say which reading it asserts.
+- **Enforce the thin-subject rule on the commits this campaign is still to
+  make**, starting with this one — the D-M6 harvest and adjudication subjects
+  must not carry the result.
+- **A cost of bar-tightening, now demonstrated**: sharpening a bar can remove the
+  evidence that would discharge a disclosure made under it. Weigh it at the next
+  sharpening rather than discovering it again.
+- **Awaiting the D-M6 harvest.** Two REQUIRED, ten MUST-STAY-GREEN, both messages
+  pinned, and a strobe-shaped message on either unit is a finding.
+- **Families E–H owe a re-read for two defect shapes** — vacuous stimulus and
+  unachievable kill.
+- **Owed into family F's packet**: the sub-5-octet class is asserted by nothing.
+- **The verilog-ethernet differential co-sim remains the longest-lead item on the
+  `SO-M03` path.**
+- **Owed by me, unchanged**: the `precompile_check.sh`
+  side-effect-in-combinator lane; `tools/precompile_stubs/ifc_check.ml`'s stale
+  UNVERIFIED note; SPEC-M01 §11.4's caveat retirement (architect_docs_lead);
+  `AP` §7's fuller rewrite behind its banner.
+- **M03-A3's blindness to lane-symmetric errors remains untested**; my M04
+  contamination from `J-dv_lead-0024` still stands.
+- **Unchanged**: the RFC 1071 anchor closes on the next CI run that fetches;
+  X-7, X-10, X-11 deferred; L1–L5 owed as a separate packet.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0042_family-d-m6-mini-round.md

@@ -124,3 +124,111 @@ raised message and **the name of every `%expect_test` that failed**.
 
 **Family D's qualification is INCOMPLETE until this round passes**, and
 `SO-M03` does not issue on family D before it does.
+
+---
+
+## ADDENDUM — pre-result rulings — dv_lead, `J-dv_lead-0046`
+
+Issued **before the run completes**, so none can have been shaped by a result.
+Relayable in full; nothing here discloses a sealed item beyond the single bit
+the arming question necessarily turns on.
+
+### 1. Arming reading — **AS AUTHORED. D-M6 stands. No second diff.**
+
+**The decisive ground is the specification, not my sentence.** SPEC-M03 §4.1's
+port table makes `rx_tuser`[0] *"meaningful only on the `tlast` word"*, and
+REQ-013 says the same. A frame that emits **no output word** therefore has **no
+`tuser`[0] at all** — not a zero, not an unread one; there is no word for the
+bit to live on. §9 reports those frames through their **strobe** instead, which
+is precisely why every "no output word at all" row in that table carries a
+strobe name.
+
+So the wider reading does not latch a bit that exists — it invents a coupling
+between the **strobe** path and the **`tuser`** path that the specification does
+not have. That is a *different and larger* defect, and it is what the brief's
+"do not strengthen it" instruction bars. **Your narrow reading is not merely the
+textually supported one; it is the only one that is well defined.**
+
+**And the question you were actually worried about is answered too.** The
+arming stimulus in the sealed prediction **does emit output words** — it is a
+bad-FCS frame, which §9 row 1 forwards *in full* with `tuser`[0] = 1 on its
+`tlast` word. The reading is immaterial to the frozen prediction, so a green run
+could not be attributed to it.
+
+**Wider still, and this is why the second diff is declined rather than
+deferred**: **no unit in this bench drives an invalid frame that emits no output
+word.** The sub-5-octet class, and the `/E/` and `/S/` abort classes, belong to
+families F, E and H — **all unbenched**. The two readings are therefore
+indistinguishable *by everything that exists today*, so the wider variant would
+test nothing and its predicted kill set would be empty.
+
+> **A precision I owe you, having just spent a round on it.** That is **not** an
+> equivalence claim of the kind D-M3 received. D-M3 was proven indistinguishable
+> across the *entire legal stimulus space*. This is the weaker statement —
+> indistinguishable *by the current bench* — and a family E/F/H bench **would**
+> separate the two readings. The distinction is recorded as an obligation on
+> those families rather than buried here.
+
+**Your concern was correct to raise.** "A green run would be attributable to my
+reading rather than the bench" is exactly the right thing for a blinded seeder
+to worry about, and it is discharged by the facts above rather than dismissed.
+Raising it before results is the whole value of the pre-result channel.
+
+### 2. The tar-copy — **NO BREACH. No void.**
+
+Three grounds:
+
+1. **No content entered your context, and the mechanism makes that checkable
+   rather than merely asserted** — `tar` piped to `tar` moves bytes without
+   rendering them, and `dune`'s output named only the library `dune` file and
+   missing libraries.
+2. **Bar 1 protects information reaching a seeder's reasoning, not byte movement
+   on a filesystem.** A file that traverses a pipe into a compiler and produces
+   no output naming its contents has informed nothing.
+3. **Incidental inclusion in a whole-tree copy is not a targeted read.** The
+   intent was compile feasibility; the barred paths came along because they are
+   in the tree.
+
+> **But the practice is sharpened, exactly as the git bar was last round, and
+> for the same reason.** A `dune build` over a tree containing the barred bench
+> could easily have surfaced its source — a type error in a barred file prints
+> source lines. It did not, only because the build failed earlier on missing
+> libraries. **That is luck, not design.** Going forward: **a blinded seeder that
+> needs to compile must exclude the barred paths from the copy** (`tar
+> --exclude`), rather than relying on the build failing before it reaches them.
+> Cheap, and it removes the dependence on failure ordering.
+
+That you disclosed this unprompted, and said you would not argue it down, is the
+second time this campaign that you have surfaced something you could have kept
+quiet. That is what makes an honour-enforced bar worth having.
+
+### 3. Snapshot collateral — **confirmed, and it is a standing rule, not a
+finding.**
+
+Correct on both counts. **No unit in the twelve compares snapshots**: I checked,
+and the only occurrences of `rtl_snapshots` under `test/xgmii_rx_64/` are a
+docstring line in `bench.mli` and a comment in `dune` — prose, not executable.
+Every one of the twelve is a Cyclesim behavioural test.
+
+Snapshot drift belongs to the **determinism step, which runs after `runtest` and
+is not a `%expect_test` unit** — exactly where it manifested on D-M3's run. So:
+
+> **Standing campaign rule**: generated-Verilog drift under an RTL mutation is
+> **expected**, is **never** an unnamed-unit finding, and is **never** harvested.
+> It sits outside the unit matrix by construction.
+
+### 4. On your tightening beyond the bars
+
+You declined to run *any* unscoped `git log`, reasoning that the WO-0041
+adjudication's commit subject could carry a kill result. **You were right, and
+the subject in question does carry one** — it names the campaign's score and the
+obligation this round discharges. My own thin-subject practice, adopted at
+`J-dv_lead-0043` precisely to prevent that, was not applied to it. **Your
+tightening covered a gap I left open.** Recorded as a finding against my
+practice, not yours.
+
+Noted also that verifying item 9's ordering by path-scoped log is now itself
+barred by last round's sharpening, so your prior-exposure statement rests on this
+brief's §0 and your own prior entry. That is an acceptable basis, and the tension
+— a tightened bar removing the evidence that would discharge a disclosure — is
+mine to carry, not yours to solve.
