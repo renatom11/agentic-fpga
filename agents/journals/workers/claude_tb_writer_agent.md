@@ -2723,3 +2723,293 @@ what WO-0044's own vendoring already recorded (unchanged this spawn).
 - test/cosim/compare.ml
 - test/cosim/tb_xgmii_rx_64.v
 - agents/handoffs/WO-0046_cosim-phase-1.md
+
+## [J-tb_writer-0011] 2026-08-03T19:00Z | task:WO-0047 | Family F's runt frames (F1-F4 ASSERT, F5 by citation), M03-E5 folded in, and two infrastructure findings about test/xgmii/injection.ml's sub-five filter
+
+### Trigger
+
+WO-0047/2026-08-03T19:00Z (dv_lead, via the orchestrator): the family-F runt
+bench (REQ-107, `AP-xgmii_rx_64.md` §4.F rows F1-F4 ASSERT, F5 by citation)
+extending `test/xgmii_rx_64/`, folding in M03-E5 (REQ-105, §4.E) into
+`test_m03_e.ml` per the packet's own argument that E5 and F2 are the
+programme's two no-output-word classes and belong in one matrix. Two deliverable
+questions: §4.1's filter-predicate answer (does the comment naming "F2 and F5"
+in `test/xgmii/injection.ml` reflect the actual predicate, or is one of them
+loose) and §3.3's exact citation for discharging F5.
+
+### Inputs
+
+- `agents/charters/tb_writer.md`; `agents/PROTOCOL.md` §2-6, §10 (full read).
+- `agents/handoffs/WO-0047_tb-m03-family-f-runts.md` (the work order, full).
+- `test/attack_plans/AP-xgmii_rx_64.md` — read in full through line 385
+  (§0-§4.N's M03-R1/R2 repair table); did not need lines 386-710 (§4.N3
+  onward) for this packet's rows.
+- `docs/specs/modules/xgmii_rx_64.md` — full file (both halves, lines 1-619
+  and 620-949): §6.1, §6.2, §6.3, §7's timing contract, §9's error table,
+  closure list and pinned-strobe-cycle paragraph, §13's change log.
+- `docs/specs/requirements.md` — §0.1-§1 (lines 1-318, via offset read) and
+  targeted reads of REQ-008, REQ-013, REQ-102 through REQ-110, REQ-810 (via
+  grep at the printed line numbers).
+- `test/xgmii_rx_64/bench.mli`, `bench.ml`, `dune` (full).
+- `test/xgmii_rx_64/test_m03_e.ml` (before my edit, full — idiom reference
+  and the file M03-E5 is appended to), `test_m03_c.ml` (full — `run_c4`'s
+  exact assertions for the F5 citation), `test_m03_d.ml` (full — the
+  `good_and_bad_64`/`run_mixed_pair` FCS-corruption and two-frame-split
+  idioms reused for F3/F4), `test_m03_b.ml` (full — the `?word_at` override
+  idiom).
+- `test/xgmii/injection.ml`, `injection.mli`, `arrival.ml`, `arrival.mli`,
+  `xgmii_word.mli`, `frame.mli`, `dune` — full reads (test/, not libs/).
+- `test/xgmii/test_injection.ml` — targeted read (grep for `frame_of_length`,
+  lines 36-300ish) to confirm how the existing X-1 unit test exercises
+  `frame_of_length 4`/`64` and that it never runs through `Bench.run`.
+- `test/monitors/stream_word.mli`, `conservation_monitor.mli`,
+  `strobe_monitor.mli`, `octet_time.mli` (`Latency` submodule) — full/
+  targeted reads to pin exact field names and signatures I could not
+  otherwise compile-check (`test/xgmii_rx_64/` is excluded from
+  `precompile_check.sh`'s type-check lanes).
+- `test/golden/dune`, `test/monitors/dune`, `test/xgmii/dune` — read to
+  confirm `dv_golden`/`dv_monitors`/`dv_xgmii` carry no Hardcaml dependency,
+  which is what let me build the empirical harness below.
+- `tools/precompile_check.sh` (full header + relevant body), `tools/
+  dv_checks.sh` (header) — read to understand what each self-check proves
+  and does not, before running them.
+- **Not read**: `libs/**`, `top/**`, `bin/**`, `rtl_snapshots/**` — any path,
+  at any point in this spawn. Confirmed by reviewing every tool invocation
+  of this session; none named those paths.
+- **`/root/.opam/**`**: none read directly by me. `tools/precompile_check.sh`
+  internally consults `/root/.opam/fpga/.opam-switch/sources/hardcaml/src`
+  for its own, already-committed LANE 2b stub-fidelity check; I did not open
+  any file under `/root/.opam/**` with a read tool myself.
+
+### Reasoning
+
+**The central infrastructure question (§4.1), and why I did not answer it by
+reading alone.** The packet asks whether `Arrival.check`'s sub-five
+complaint's filter in `Injection.create` (`test/xgmii/injection.ml:136-149`)
+is exactly REQ-107's boundary or looser than it, given the comment there
+names "rows F2 and F5" while F5's frame is five octets. Reading
+`arrival.ml:160-166` shows the predicate is `Array.length f.octets < 5` —
+textually exactly REQ-107's "fewer than 5" — but I did not trust that
+reading alone for a claim this load-bearing (WO-0047 §6 item 9: "a relay is
+not a measurement"). `dv_xgmii` (Arrival, Injection, Frame, Xgmii_word)
+depends only on `dv_golden`/`dv_monitors`, neither of which touches
+Hardcaml (`test/xgmii/dune`, `test/golden/dune`, `test/monitors/dune`), so I
+compiled these library's own committed sources with the system `ocamlc` (no
+RTL, no `libs/`, using `tools/precompile_check.sh --keep`'s own LANE 1 build
+workspace as the object-file source, which is the same machinery
+`precompile_check.sh` already runs) and linked a small standalone driver
+against them, run in my scratchpad (never staged under `test/`). Three
+measurements settled the question outright:
+
+1. A bare 5-octet `Arrival.t` (built exactly as `Bench.one_frame` builds
+   one) produces **zero** complaints from `Arrival.check` — so F5's frame
+   never trips the sub-five complaint at all, confirming the predicate is
+   exactly REQ-107's line and the comment's "F2 **and** F5" over-states what
+   needs filtering (F5 needs none).
+2. `Injection.create [ Injection.clean (Injection.frame_of_length n) ]` for
+   n = 0, 1, 4 reports `Injection.is_clean = true` (the filter works, as
+   documented) — **but** a second, independent call to `Arrival.check` on
+   the very schedule `Injection.schedule` returns reproduces the identical
+   "is an injection case, not a schedule case" complaint, unfiltered. This
+   matters because `bench.ml`'s own `run` function makes exactly that second
+   call as its standing-obligation-5 gate (`bench.ml`: `match Arrival.check
+   sched with | [] -> () | problems -> failwith (...)`), which does **not**
+   consult `Injection`'s own filtered view. So a schedule built the "obvious"
+   way (`frame_of_length n<5` straight into `Injection.create`, exactly what
+   `test/xgmii/test_injection.ml`'s own X-1 unit test already does at n = 4,
+   but that test only inspects the **model** — `Injection.outcomes`/
+   `is_clean` — and never drives it through `Bench.run`) would make
+   `Bench.run` itself raise, reading exactly like a DUT finding while being
+   nothing of the kind. This is a genuine, previously undemonstrated gap
+   between `test/xgmii`'s own unit tests and `test/xgmii_rx_64/bench.ml`'s
+   consumption of the same library — nobody had combined the two before this
+   packet, because F2 is the first row commissioned that needs a genuinely
+   sub-five schedule driven through a DUT bench at all.
+3. Building the SAME stimulus instead via `Place { placement = At_octet k;
+   character = Xgmii_word.terminate_char }` on a normal, 64-octet base frame
+   (leaving the schedule's own recorded frame length untouched at 64, so
+   `Arrival.check` has nothing to examine) reports **zero** problems on both
+   the construction-site check and the independent re-check, at every k in
+   {0, 1, 4} and both start lanes — confirmed via the same harness, printing
+   `Injection.outcomes`' own `received`/`delivered`/`reports` fields, which
+   match my hand-derivation exactly (received = k, delivered = 0, pulse two
+   cycles after the closing word). `run_f2` in `test_m03_f.ml` is built this
+   way.
+
+I verified this rather than asserting it because it is exactly the shape of
+trap WO-0040 §3.2 and WO-0043's own three trap questions already established
+as recurring in this bench (a stimulus generator's own self-check passing is
+not the same fact as the generator being drivable through the harness that
+consumes it), and the packet's own rule 7 ("verify a stimulus at BOTH its
+failure sites") pointed at exactly this kind of two-site check.
+
+**A subtlety the same empirical pass surfaced, worth recording because it
+changed a formula.** `requirements.md` §0.6's strobe window upper bound is
+"not later than ΔC = 3 cycles after the input word carrying the **last
+octet of the offending frame**" — not after the word carrying the *closing*
+character. These coincide only when the terminate lane is non-zero. My first
+hand-derivation pass (before building the harness) used the `test_m03_c.ml`/
+`test_m03_d.ml` convention of `terminate_cycle + 3` uniformly; running F1's
+own length-16 member through the harness (`Injection.outcomes`' own `report.
+not_after` field) showed a one-cycle disagreement at both lanes (terminate
+lands in lane 0 for length 16 at both start lanes: `(8+16) mod 8 = 0` at lane
+0, `(12+16) mod 8 = 0` at lane 4 — the very "C-18 twin" shape M03-C1/C2
+already carry rows for). I re-derived the window from the literal §0.6 text
+(`last_received_octet_cycle + 3`, using `closing_ot - 1` as the last-octet
+octet time for the fully-received 5-63-octet class) rather than adopt the
+looser convention, confirmed the corrected formula against every one of F1's
+eight (lane, length) combinations and F2/F3/F4's own members via the same
+harness, and used the tighter, literal formula throughout `test_m03_f.ml`/
+`run_e5`. I did **not** retrofit C4/D1's own already-accepted rows to match
+— their looser bound is still a valid `Strobe_monitor` window (a range
+containment check, not a minimality claim) and retouching an already-
+qualified file is outside this packet's authorised diff; I raised it as an
+open question instead (see the Return log).
+
+**F1** (5, 16, 60, 63 octets, both lanes): hand-derived word count, `tlast`
+cycle (`start_cycle + 3 + (words-1)`, the gapless `m+3` formula, valid since
+every one of these schedules is a single, gapless frame), `tkeep`, and the
+exact strobe set (`error_runt` alone — the FCS check ran, per §9's first
+ruling admitting the pairing at 5-63 octets, and found the frame's own
+correct FCS good). Stated, not re-asserted, that length 60 at lane 4
+specifically (terminate lane 0, full 56-octet final word) is a second
+instance of BUG-0001/R-1's Before/After sampling-view disagreement class
+`test_m03_c.ml` already carries a check for — harmless here because every
+assertion in this bench (and in `test_m03_f.ml`) reads the `Before` view
+exclusively, which is precisely the view R-1's disagreement is not about.
+
+**F2**: see the infrastructure finding above for construction. `tuser` is
+asserted on nothing (WO-0047 §2, generalising M03-E2's own discipline); the
+frame is accounted through `account_dropped_frame`, duplicated verbatim in
+shape from `test_m03_e.ml`'s own file-local helper (not shared — WO-0047
+§4.3: the budget bounds `Bench`'s exported surface, not a row's own
+helpers). Both start lanes, though neither the AP row nor the packet's own
+F2 section names one (flagged in the Return log as a considered extension).
+
+**F3** (63-octet, bad FCS): built the packet's own re-read verdict directly —
+"sets the bit twice" is not asserted (no distinct manifestation short of a
+second `tlast` word, already caught elsewhere); the row's teeth are the
+precedence kill (both strobes must appear, not just the runt) and the
+widened-pulse kill (via `Strobe_monitor`'s C-23 high-cycle counting on the
+exact `(cycle, name)` pair set). Compared the observed/expected strobe pairs
+sorted by name rather than as a fixed-order list, because which physical
+port `bench.ml`'s own sampling loop happens to read first (`strobe_names`'
+declared field order) is a bench-probe artefact, not a §9 fact, and I did
+not want to encode it as one.
+
+**F4** (adjacent 63/64, both lanes): built as one two-frame schedule at the
+§0.3 minimum gap (reusing `test_m03_d.ml`'s split-at-first-`tlast`/
+partition-pulses-by-cycle idiom, duplicated locally per the same
+no-shared-private-code convention `test_m03_e.ml` already established), so
+the adjacency itself — not two independent single-frame runs — is the
+stimulus. Both the off-by-one kill (`< 64` vs `<= 64`) and the
+delivered-vs-received-count kill (both frames deliver different counts: 59
+vs 60, so a threshold on the wrong quantity would show up as a wrong strobe
+on one of the two, not as an ambiguous boundary) are carried by asserting
+`tuser`/strobe-presence as the LAST check on each frame.
+
+**F5**: discharged by citation, not built — see the Return log for the
+line-by-line citation to `test_m03_c.ml`'s `run_c4`.
+
+**M03-E5**: folded into `test_m03_e.ml` per WO-0047 §1.2's own argument
+(shared no-output-word path with F2). Built at lane 0 only, positions 1-7,
+because the packet names lane 0 explicitly and a lane-4 preamble spans two
+input words (a different, already-two-word shape M03-N2's own rows are
+about, not this one). Hand-derived that every one of the seven preamble
+positions falls in the SAME cycle as the start character (the whole lane-0
+preamble is one word, §6.1), so the pin (`start_cycle + 2`) and window are
+identical across all seven — asserted as a guard (`closing_cycle <>
+start_cycle` fails the row as a test bug) rather than merely assumed, and
+cross-checked against `Injection.outcomes` (`cross_check_e5`, reusing
+`test_m03_e.ml`'s own `fail_cross` wording per WO-0047 §1.3).
+
+### Actions
+
+- Wrote `test/xgmii_rx_64/test_m03_f.ml` (new): `run_f1`/`run_f2`/`run_f3`/
+  `run_f4`, four `%expect_test` blocks (empty), plus a closing comment
+  discharging F5 by citation. No `dune` change needed — the directory's
+  `library` stanza has no `(modules ...)` restriction, so a new `.ml` file
+  is picked up automatically (confirmed against `test/xgmii_rx_64/dune`'s own
+  text, which has no such field).
+- Edited `test/xgmii_rx_64/test_m03_e.ml`: updated the top-of-file docstring
+  to record M03-E5's addition and its rationale, then appended `run_e5` and
+  its `%expect_test` at EOF. Every one of the four existing `%expect_test`
+  blocks (E1, E2, E4) is byte-for-byte unchanged — confirmed by `git diff`
+  showing exactly one header hunk and one EOF-append hunk, nothing else.
+- Wrote two scratch harness files (`wo0047_probe.ml`, `wo0047_probe2.ml`) to
+  my own scratchpad directory, compiled and linked against
+  `tools/precompile_check.sh --keep`'s LANE 1 build workspace with the
+  system `ocamlc`, and ran them to settle the §4.1 question and cross-check
+  every numeric claim in `test_m03_f.ml`/`run_e5` before writing it. These
+  are not staged anywhere under `test/` and are not a deliverable.
+- Appended a RETURNED block to `agents/handoffs/WO-0047_tb-m03-family-f-runts.md`.
+- Ran `ocamlc -stop-after parsing` on both changed files, `tools/
+  precompile_check.sh` (fresh, no `--force`), and `tools/dv_checks.sh`.
+
+### Evidence
+
+```
+$ ocamlc -stop-after parsing test/xgmii_rx_64/test_m03_f.ml; echo $?
+0
+$ ocamlc -stop-after parsing test/xgmii_rx_64/test_m03_e.ml; echo $?
+0
+$ bash tools/precompile_check.sh
+... RESULT: 31 units compiled, 0 errors (LANE 1) ... RESULT: 12 units compiled, 0 errors (LANE 2)
+... EXCLUDED xgmii_rx_64 — depends on hardcaml_ethernet, which this harness cannot transcribe
+precompile_check: ALL LANES PASSED
+$ bash tools/dv_checks.sh
+check_records_vs_appendix.sh: OK
+check_emitted_verilog.sh: OK
+precompile_check.sh: OK
+check_rfc1071_anchor.sh: OBLIGATION OPEN — NOT coverage, NOT a pass (pre-existing, network egress blocked;
+  five prior occurrences on record per the script's own header, unrelated to this packet)
+bench inventory (report only): test_m03_e.ml 4 units (was 3), test_m03_f.ml 4 units (new),
+  test/xgmii_rx_64/ total 20 units
+```
+
+Empirical probe transcripts (the §4.1 measurements quoted in Reasoning above)
+are reproducible from the exact commands recorded in the Return log; the
+probe source files themselves are ephemeral scratch artefacts, not committed
+evidence, so the Return log quotes their output verbatim rather than citing
+the files by path.
+
+`dune build @default` / `dune runtest` for these two files: **UNVERIFIED**
+per ADR-0005 — `test/xgmii_rx_64/` depends on `hardcaml_ethernet` and is
+excluded from every local type-check lane this container has; CI is
+authoritative.
+
+### Outcome
+
+DoD status: every REQ-### and AP-row assigned by WO-0047 maps to a named
+test (F1-F4, E5) or a declared, exact citation (F5) — no silent skip.
+This working tree is shared with at least one other concurrently-active
+agent session (repeated `git status --porcelain` calls returned a changing
+set of dirty paths I never wrote to — `docs/specs/requirements.md`,
+`tools/cosim/run_cosim.sh`, `agents/handoffs/WO-0046_cosim-phase-1.md`,
+`agents/journals/claude_architect_docs_lead_agent.md` — visibly dv_lead's
+and architect_docs_lead's own in-flight work; see the Return log's Scope
+statement for the full account). `git diff --stat`, scoped to the four
+paths I actually wrote to, is clean and exactly as claimed. Every promoted `[%expect]`
+block — none were promoted; all five new blocks stay empty per rule 6.5, so
+the "waveform-eyeball reasoning per promotion" DoD item is vacuously
+satisfied (nothing was promoted this spawn). Diff touches only the two named
+bench files plus this journal and the WO-0047 packet's own Return log — R4/
+R7 satisfied. `dune runtest`/`git diff --exit-code` as a green-suite claim is
+UNVERIFIED (ADR-0005); CI settles it. No sign-off claimed.
+
+### Open-questions
+
+1. M03-F2's lane scope — built at both lanes as an extension beyond what the
+   packet's own F2 text states (see Return log).
+2. Whether `test_m03_c.ml`/`test_m03_d.ml`'s existing rows should be
+   tightened from `terminate_cycle + 3` to the literal, tighter §0.6 formula
+   this packet's rows use, or left as a valid-but-looser bound — not a
+   defect claim, a question for dv_lead.
+3. F2's underflow kill remains at risk of the unachievable-kill shape per
+   WO-0047 §3.2's own finding; unresolved here, per the packet's own
+   instruction.
+
+### Files-in-this-commit
+- test/xgmii_rx_64/test_m03_f.ml
+- test/xgmii_rx_64/test_m03_e.ml
+- agents/handoffs/WO-0047_tb-m03-family-f-runts.md

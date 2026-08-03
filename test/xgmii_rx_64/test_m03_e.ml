@@ -1,9 +1,17 @@
-(** Family E — the error character inside a frame (REQ-105, §9). WO-0043.
+(** Family E — the error character inside a frame (REQ-105, §9). WO-0043,
+    plus M03-E5 folded in by WO-0047 §1.2.
 
-    Four rows (`AP-xgmii_rx_64.md` §4.E): M03-E1 (ASSERT, [run_e1]), M03-E2
-    (ASSERT, [run_e2]), M03-E3 (NO-ASSERT, discharged by [run_e2]'s own
-    accounting discipline — see the declaration below [run_e2]), M03-E4
-    (ASSERT, [run_e4]).
+    Four rows from WO-0043 (`AP-xgmii_rx_64.md` §4.E): M03-E1 (ASSERT,
+    [run_e1]), M03-E2 (ASSERT, [run_e2]), M03-E3 (NO-ASSERT, discharged by
+    [run_e2]'s own accounting discipline — see the declaration below
+    [run_e2]), M03-E4 (ASSERT, [run_e4]). A fifth, [run_e5], is appended at
+    the end of this file by WO-0047: M03-E5 is REQ-105's own row (not
+    REQ-107's), folded into the family-F work order rather than given its own
+    packet because E5 and F2 are the programme's two no-output-word classes
+    and a shared-path defect would have to be scored against both to be
+    understood (WO-0047 §1.2) — accounting stays separate, and this row
+    discharges M03-E5/REQ-105 exactly as the other four discharge their own
+    rows.
 
     {2 WO-0043 §1's binding instruction, and how this file honours it}
 
@@ -615,5 +623,195 @@ let%expect_test
   =
   run_e4 ~lane:0;
   run_e4 ~lane:4;
+  [%expect {||}]
+;;
+
+(* ---- M03-E5 (folded in by WO-0047 section1.2) ---------------------------- *)
+(* "An /E/ in a preamble position (1..7) at a lane-0 start -- a frame opened
+   and closed inside ONE input word, zero delivered octets | No output word
+   at all; exactly one error_bad_frame, on section9's no-output-word pin (two
+   cycles after the input word carrying the /E/); nothing else asserted
+   about tuser[0], which has no tlast word to live on (section4.1, and the
+   M03-E2 prohibition applies unchanged)." REQ-105, section9's closure list,
+   section6.2's Frame row.
+
+   At a LANE-0 start every preamble position 1..7 lies inside the frame's
+   OWN start word (section6.1: "at a lane-0 start all eight preamble
+   positions are lanes 0...7 of the start word itself"), so an /E/ at any of
+   them is exactly "a frame opened and closed inside one input word" -- the
+   WO-0045 seeder's finding (`J-dv_lead-0054`): this stimulus takes an
+   in-word path with no payload datapath at all, structurally distinct from
+   the epoch-A path M03-E1/E2 exercise, and no family-E row before this one
+   drove it. M03-B2 drives a SINGLE preamble-position /E/ at each lane
+   (position 3 -- "lane 3 of a lane-0 start word") as part of a different
+   argument (REQ-102's routing); this row sweeps every position 1..7 at lane
+   0 specifically because that in-word path is what is at issue here, not
+   the routing decision B2 makes. Positions 1..7, LANE 0 ONLY -- WO-0047
+   section2 names lane 0 explicitly and no other; a lane-4 start's preamble
+   spans TWO input words (positions 1-3 in the start word, 4-7 in the next),
+   a different, already-two-word shape this row is not about.
+
+   Hand-derived (WO-0047 section1.3): every preamble position 1..7 places the
+   /E/ inside octet times [start_ot + 1 .. start_ot + 7], all seven of which
+   lie in the SAME cycle as the start character itself (the whole of a
+   lane-0 preamble occupies one word, section6.1) -- so section9's
+   no-output-word pin and requirements.md section0.6's window are IDENTICAL
+   across all seven positions: pulse at start_cycle + 2, window
+   [start_cycle, start_cycle + 3]. Cross-checked against
+   [Dv_xgmii.Injection]'s own [outcomes] ([cross_check_e5], reusing this
+   file's own [fail_cross] wording per WO-0047 section1.3) rather than
+   trusted from a single hand computation alone.
+
+   Verified at BOTH failure sites (WO-0047 section6 item7, this file's own
+   [run_e4] precedent): the /E/'s presence is checked in the pre-run schedule
+   word (construction) and again in the cycle {!run} ACTUALLY drove
+   (post-run). Assertion order: is_clean, the model cross-check, the
+   pre-run placement check, [run], the post-run placement check, the two
+   structural no-output facts ([tlast_sample] = [None], [delivered_samples]
+   = []), then the exact strobe set (error_bad_frame alone) --
+   construction/landing facts first, structural facts next, the strobe fact
+   last. Iteration order: positions 1, 2, ..., 7 ascending, via [List.range]
+   (a concrete list, iterated by [List.iter] in order -- WO-0047 section6
+   item4). *)
+
+let cross_check_e5
+  ~row
+  (o : Dv_xgmii.Injection.outcome)
+  ~expected_pulse_cycle
+  ~expected_not_before
+  ~expected_not_after
+  =
+  if o.Dv_xgmii.Injection.delivered <> 0 then fail_cross row "delivered (expected 0)";
+  (match o.Dv_xgmii.Injection.tlast_cycle with
+   | None -> ()
+   | Some _ -> fail_cross row "tlast_cycle (expected None -- section0.7, no tlast word)");
+  (match o.Dv_xgmii.Injection.reports with
+   | [ r ]
+     when String.equal r.Dv_xgmii.Injection.strobe "error_bad_frame"
+          && r.Dv_xgmii.Injection.cycle = expected_pulse_cycle
+          && r.Dv_xgmii.Injection.not_before = expected_not_before
+          && r.Dv_xgmii.Injection.not_after = expected_not_after -> ()
+   | _ -> fail_cross row "reports")
+;;
+
+let run_e5 ~position =
+  let row =
+    String.concat [ "M03-E5 (preamble position "; Int.to_string position; ", lane 0)" ]
+  in
+  let base = directed_frame_octets ~length:64 in
+  if not (Dv_xgmii.Frame.residue_ok base)
+  then fail row "test bug -- the base 64-octet frame's own FCS does not check out";
+  let case =
+    Dv_xgmii.Injection.corrupt
+      base
+      [ Dv_xgmii.Injection.Place
+          { placement = Dv_xgmii.Injection.At_preamble position
+          ; character = Dv_xgmii.Xgmii_word.error_char
+          }
+      ]
+  in
+  let inj = Dv_xgmii.Injection.create ~first_lane:0 [ case ] in
+  if not (Dv_xgmii.Injection.is_clean inj)
+  then
+    fail
+      row
+      (String.concat
+         ~sep:"; "
+         ("Injection construction errors:" :: Dv_xgmii.Injection.errors inj));
+  let sched = Dv_xgmii.Injection.schedule inj in
+  let frame = (Dv_xgmii.Arrival.frames sched).(0) in
+  let start_cycle = Dv_xgmii.Arrival.start_cycle frame in
+  let start_ot = frame.Dv_xgmii.Arrival.start_octet_time in
+  let closing_ot = start_ot + position in
+  let closing_cycle = closing_ot / 8 in
+  if closing_cycle <> start_cycle
+  then
+    fail
+      row
+      "test bug -- the preamble position does not land in the start word's own cycle \
+       (section6.1: every lane-0 preamble position lies in the start word)";
+  let expected_pulse_cycle = closing_cycle + 2 in
+  let expected_not_before = closing_cycle in
+  let expected_not_after = closing_cycle + 3 in
+  let outcome = List.hd_exn (Dv_xgmii.Injection.outcomes inj) in
+  cross_check_e5 ~row outcome ~expected_pulse_cycle ~expected_not_before ~expected_not_after;
+  let e_lane_in_word = Int.rem closing_ot 8 in
+  let pre_run_word = Dv_xgmii.Injection.word_at inj ~cycle:closing_cycle in
+  if (not (Dv_xgmii.Xgmii_word.is_control pre_run_word e_lane_in_word))
+     || not
+          (Int.equal
+             (pre_run_word.Dv_xgmii.Xgmii_word.data).(e_lane_in_word)
+             Dv_xgmii.Xgmii_word.error_char)
+  then fail row "test bug -- the /E/ does not land at the intended preamble position before driving";
+  let bench = create () in
+  Dv_monitors.Strobe_monitor.expect
+    (strobes bench)
+    { Dv_monitors.Strobe_monitor.strobe = "error_bad_frame"
+    ; frame = 0
+    ; cycle = expected_pulse_cycle
+    ; not_before = expected_not_before
+    ; not_after = expected_not_after
+    ; why =
+        "REQ-105 (error character at or before the frame's first octet, including a \
+         preamble position); SPEC-M03 section9 row 3 and the no-output-word pin \
+         (section9 'Strobe cycle, pinned'): two cycles after the input word carrying \
+         the /E/, which for every preamble position 1..7 at a lane-0 start is the \
+         start word itself"
+    };
+  let samples =
+    run bench sched ~drain:8 ~word_at:(fun ~cycle -> Dv_xgmii.Injection.word_at inj ~cycle) ()
+  in
+  (match List.find samples ~f:(fun s -> s.cycle = closing_cycle) with
+   | None -> fail row "test bug -- the intended closing cycle was never driven"
+   | Some s ->
+     if (not (Dv_xgmii.Xgmii_word.is_control s.in_word e_lane_in_word))
+        || not
+             (Int.equal
+                (s.in_word.Dv_xgmii.Xgmii_word.data).(e_lane_in_word)
+                Dv_xgmii.Xgmii_word.error_char)
+     then
+       fail
+         row
+         "the driven word at the intended cycle does not carry the /E/ this row means \
+          to test -- the no-output-word assertion below would be vacuous");
+  (match tlast_sample samples with
+   | Some _ ->
+     fail row "a tlast word was observed for a frame that must deliver nothing (section0.7, E5)"
+   | None -> ());
+  if not (List.is_empty (delivered_samples samples))
+  then fail row "a tvalid word was observed for a frame that must deliver nothing";
+  (match error_pulses samples with
+   | [ (cycle, name) ] ->
+     if not (String.equal name "error_bad_frame")
+     then fail row (String.concat [ "expected error_bad_frame, observed "; name ])
+     else if cycle <> expected_pulse_cycle
+     then
+       fail
+         row
+         (String.concat
+            [ "error_bad_frame pulsed on cycle "
+            ; Int.to_string cycle
+            ; ", expected "
+            ; Int.to_string expected_pulse_cycle
+            ])
+   | pulses ->
+     fail
+       row
+       (String.concat
+          [ "expected exactly one strobe pulse (error_bad_frame only), observed "
+          ; Int.to_string (List.length pulses)
+          ]));
+  account_dropped_frame bench frame ~strobe:"error_bad_frame";
+  Dv_monitors.Conservation_monitor.strobe_pulse (conservation bench) ~name:"error_bad_frame";
+  assert_monitors_clean bench ~row
+;;
+
+let%expect_test
+  "M03-E5: /E/ at preamble positions 1..7, lane-0 start -- a frame opened \
+   and closed inside one input word, no output word at all, exactly one \
+   error_bad_frame at section9's no-output-word pin (REQ-105, WO-0047 \
+   section1.2)"
+  =
+  List.iter (List.range 1 8) ~f:(fun position -> run_e5 ~position);
   [%expect {||}]
 ;;
