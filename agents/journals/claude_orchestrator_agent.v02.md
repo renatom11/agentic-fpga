@@ -269,3 +269,46 @@ None new.
 - site/public/index.html
 - site/public/org-chart.html
 - site/public/spec-atlas.html
+
+## [J-orchestrator-0153] 2026-08-03T21:55Z | task:WO-0057 | Two returns processed and family H goes to the worker
+
+### Trigger
+dv_lead and architect_docs_lead both returned from the dispatches
+issued after the WO-0056 lift landed at 1ff8562.
+
+### Reasoning
+dv's return declared a two-entry split and it was honored exactly:
+J-dv_lead-0076 (AP-M14 §6 invariant re-checked — HOLDS, no file
+changed, journal-only) at 55010e3, then J-dv_lead-0077 (the
+WO-0057 family-H packet, four rows ranked by risk, M03-H4 last)
+at 0e96728. The architect's rotation was committed per ADR-0017
+§4.3 mechanics — the new volume staged alone, journal-only — at
+a378612; its header fields re-verified against HEAD bytes before
+the commit (sha256 253e92c8…, 423543 bytes, Continues-from
+J-architect_docs_lead-0021). verify_journal_chain.sh: 9 chains
+green, all three rotations now on the record. All three commits
+pushed.
+
+### Actions
+The three commits above; push; tb_writer dispatched on WO-0057
+with the packet issued as authored (DRAFT-state convention
+unchanged from WO-0054), the risk ordering made binding, RTL
+source barred, and the return addressed to dv's line review.
+
+### Evidence
+55010e3, 0e96728, a378612; verify_journal_chain.sh output
+(9 chains, frozen volumes certified); the WO-0057 packet at
+0e96728.
+
+### Outcome / DoD
+Both in-flight returns are on the record under their own
+identities. Family H is with the worker. dv's two carried
+open questions stand: §0.6's referent for a zero-delivered frame
+(routed to architect) and the G/H campaign coupling (to be
+decided before either seal is written).
+
+### Open questions
+None new.
+
+### Files-in-this-commit
+- (none)
