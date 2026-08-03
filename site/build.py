@@ -279,15 +279,12 @@ ul.next { padding-left:1.2rem; } ul.next li { margin:.35rem 0; font-size:.92rem;
 
 
 # D11/H4: one caption, two CSS-toggled variants.
-CAD_CAPTION = '''<p class="cadcap"><span class="cap-motion">The rhythm this chip
-  lives at: a new packet every 67.2 nanoseconds — slowed down exactly
-  20,000,000× here so you can watch it. Each pulse is one minimum-size packet:
-  grey preamble, teal frame, an orange flash of checksum, then the mandatory
-  gap of silence before the next.</span><span class="cap-static">Shown frozen —
-  your system asked for reduced motion. Each band is one minimum-size packet:
-  grey preamble, teal frame, orange checksum, then the mandatory gap of
-  silence.</span> The full story is in the
-  <a href="block-diagram.html">block diagram</a>.</p>'''
+CAD_CAPTION = '''<p class="cadcap"><span class="cap-motion">One Ethernet packet
+  comes in every 67.2 nanoseconds, slowed down exactly
+  20,000,000× here.</span><span class="cap-static">One Ethernet packet every
+  67.2 nanoseconds — shown frozen; your system asked for reduced
+  motion.</span> Check it out in more detail
+  <a href="block-diagram.html">here</a>.</p>'''
 
 # T11(b): verbatim, verified against agents/journals/claude_dv_lead_agent.md
 # (J-dv_lead-0010) — do not edit this text.

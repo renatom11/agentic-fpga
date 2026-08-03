@@ -159,3 +159,40 @@ None.
 - site/public/org-chart.html
 - site/public/spec-atlas.html
 - tasks/BOARD.md
+
+## [J-orchestrator-0150] 2026-08-03T23:55:00Z | task:none | Cadence caption simplified to the sponsor's wording
+
+### Trigger
+Sponsor: not a fan of the current cadence caption; supplied the
+replacement wording with "here" as the link.
+
+### Inputs
+CAD_CAPTION in site/build.py (motion + reduced-motion variants).
+
+### Reasoning
+Applied his sentence near-verbatim: "One Ethernet packet comes in
+every 67.2 nanoseconds, slowed down exactly 20,000,000× here.
+Check it out in more detail [here → block diagram]." The
+reduced-motion variant carries the same fact frozen. Clean
+worktree rebuild (WO-0056's landing is the tree's HEAD; nothing
+uncommitted but the habit stands).
+
+### Actions
+Caption swap; rebuild; this commit; push.
+
+### Evidence
+Regenerated index.html carries the new caption.
+
+### Outcome / DoD
+Sponsor redeploys at will.
+
+### Open questions
+None.
+
+### Files-in-this-commit
+- site/build.py
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/index.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html
