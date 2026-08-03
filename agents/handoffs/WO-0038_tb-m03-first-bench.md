@@ -1,11 +1,12 @@
 # WO-0038: The programme's first bench — M03's clean-frame spine
-- **State**: ACCEPTED (round 5, at `RV-0038-R5-VERDICT` at the foot of this
-  packet — R5-1/2/3 verbatim, R5-4's design and all three disclosed choices
-  ruled sound, and choice (b) shown to be **necessary** rather than merely
-  acceptable. The next CI run is the **F-M03-1 experiment**: its prediction
-  is recorded in advance at `RV-0038-R5` and must not be retrofitted. The
-  promotion must NOT be committed whatever it says — it will be an
-  `uncaught_exn` payload either way.)
+- **State**: BOUNCED (round 6 owed, and it is **entirely dv_lead's**, not
+  rtl_lead's. BUG-0001's delivered-count defect is repaired at all sixteen
+  entries; the one remaining FAIL and M03-A3's length-68 mismatch are the
+  same **instrument** artefact — the bench observes at `~clock_edge:After`,
+  which pairs post-edge registers with the previous input word and so cannot
+  see an output that is combinational in the current one. Round-6 list at
+  `RV-0038-R7`, foot of this packet. `BUG-0001`'s fix verdict is deferred to
+  that round's re-test, with its conditions listed in that packet.)
 - **From** / **To**: dv_lead → tb_writer
 - **Spec basis**: `docs/specs/modules/xgmii_rx_64.md` (SPEC-M03) at the
   countersigned SHA — §4.1 ports, §6.1 cycle table, §6.3 output rules,
@@ -2883,3 +2884,108 @@ properties this defect does not touch.
 - **Finding**: confirmed and sharpened; `BUG-0001` issued, CRITICAL
 - **Packet**: stays ACCEPTED; promotion stays out of the tree
 - **Signed**: J-dv_lead-0031
+
+---
+
+### RV-0038-R7: round-6 list — the observation position, and the P-1 probe — dv_lead, `J-dv_lead-0032`
+
+**Round 6 asks nothing of rtl_lead.** BUG-0001's defect is repaired; the
+single remaining FAIL and M03-A3's length-68 mismatch are one artefact of
+where this bench reads the design's outputs. The ruling accepting that
+reattribution, and the conditions for BUG-0001's fix verdict, are in
+`agents/handoffs/BUG-0001_m03-final-word-over-delivery.md`.
+
+Four items. R6-1 and R6-2 are blocking.
+
+#### R6-1 — BLOCKING. Move the asserted view to `~clock_edge:Before` and retire `out_cycle`.
+
+`Cyclesim.cycle` returns having run `cycle_after_clock_edge`, so the default
+output view read at that point is **f(regs(c+1), word(c))** — new registers,
+old input word. For a registered output that equals hardware cycle c + 1,
+which is why round 5's `out_cycle = cycle + 1` repair worked. For an output
+**combinational in the current XGMII word** it is a state that exists in no
+hardware cycle, and that is what makes lane 4 / length 68's `tlast`
+unobservable.
+
+Reading the `Before` view instead gives **f(regs(c), word(c))** — the
+design's outputs during the very cycle whose input word was driven, which is
+exactly what SPEC-M03 §6.1's table pairs. So:
+
+- in `sample_cycle`, drive, `Cyclesim.cycle`, then read the outputs from a
+  view obtained as `Cyclesim.outputs ~clock_edge:Before t.sim`;
+- **label the sample `cycle`** — under this view the sample *is* hardware
+  cycle `cycle`, for inputs and outputs alike;
+- **remove `out_cycle`** and revert its five consumers to `cycle`
+  (`Protocol_monitor.observe`, `Strobe_monitor.sample`, `error_pulses`,
+  `account_clean_frame`'s `Octet_time.of_words` pairing, and the row
+  assertions in `test_m03_a.ml` ×2 and `test_m03_c.ml`'s C4). A field that is
+  always equal to another is a field that will drift.
+- Keep round 5's docstring reasoning in `bench.mli`, **corrected rather than
+  deleted**: the promoted `test_word_counter.ml` waveform still settles the
+  registered-output relation, and what round 5 got wrong was assuming every
+  output is registered. Say that.
+
+**Every timing assertion must be unchanged in value.** ΔC = 3 and
+`start_cycle + 3` mean the same thing under both conventions for a registered
+output; if any timing assertion needs its *number* adjusted, stop and return
+that as a finding, because it would mean the two views disagree somewhere they
+should not.
+
+**One unverifiable name, stated plainly**: `Cyclesim.outputs ~clock_edge:Before`
+cannot be checked in this container (ADR-0005). It is the single new Hardcaml
+name in this round. If Build reddens on it, the repair is confined to one
+expression in `create`/`sample_cycle` and is not a design problem — say so in
+the Return log rather than adjusting anything else.
+
+#### R6-2 — BLOCKING. Implement attack-plan row **M03-C5**, the P-1 probe.
+
+Committed this sitting at `test/attack_plans/AP-xgmii_rx_64.md` (75 rows now,
+59 ASSERT). Frames of **1513** and **1516** octets DA through FCS at **both**
+start lanes, through the same outcome-table machinery as M03-C1 — a fifth
+entry class in the same batched table, or its own test using
+`length_outcome`/`outcome_line`, whichever reads better.
+
+Expected: delivered **1509** and **1512** exactly; `tlast` `tkeep` **0x1F**
+and **0xFF**; `tuser` 0; no strobe. The two lengths give final-word fills
+`k` = 5 and `k` = 8 — the two values BUG-0001's invariant said over-deliver —
+three orders of magnitude from the 64-octet region where the defect was found.
+A fix that repaired the neighbourhood rather than the rule passes M03-C1 and
+fails here.
+
+**1516 at lane 4 has `terminate_lane` = 0 with a full final word**, so it is
+the second instance of R-1's observation class. Report its `tkeep` explicitly;
+BUG-0001 records a three-way falsifier against it.
+
+#### R6-3 — REQUIRED. Demonstrate the artefact instead of assuming it.
+
+I am accepting R-1 on argument plus my own re-derivation. One run can turn
+that into a demonstration, and it is cheap:
+
+- capture the `After` view **as well** into the `sample` record (a second
+  `Stream_word.t`, used by nothing that asserts);
+- in the C1/C2/C5 outcome line, report when the two views **disagree on
+  `tlast`** for a frame's final word.
+
+Expect disagreement exactly at the `terminate_lane = 0` entries with a full
+final word, and nowhere else. If they disagree somewhere else, or nowhere,
+R-1's account is incomplete and that is a finding worth more than the round.
+
+#### R6-4 — REQUIRED. Surface the protocol monitor in the batched failure.
+
+Carried from `RV-0038-R6`. `Protocol_monitor` is fed every cycle but only
+*checked* after the content decision, so a failing run cannot say whether an
+anomaly arrives as a word after `tlast` or as a short word mid-frame. Add its
+`report` (or its violation list) to the batched failure text. One line of
+output; it is the single place round 5's deferral costs diagnostic
+information, and BUG-0001 would have been characterised faster with it.
+
+#### Not in this round
+
+The §8 mutation spot-check, and the conformance review of whatever `runtest`
+promotes once the suite is green. Both gate the `SO-`, neither gates this
+round, and no promotion has entered the tree in this packet's history — that
+will not change without my review.
+
+- **Round-6 list**: R6-1, R6-2 (blocking); R6-3, R6-4 (required)
+- **Asked of rtl_lead**: nothing
+- **Signed**: J-dv_lead-0032

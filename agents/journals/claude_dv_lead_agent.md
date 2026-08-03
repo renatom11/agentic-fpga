@@ -9448,3 +9448,235 @@ characterised a real design defect in one run.
 ### Files-in-this-commit
 - agents/handoffs/BUG-0001_m03-final-word-over-delivery.md
 - agents/handoffs/WO-0038_tb-m03-first-bench.md
+
+## [J-dv_lead-0032] 2026-08-05T06:40Z | task:WO-0038 | BUG-0001's observable repaired at all sixteen; R-1 accepted — the surviving FAIL is my instrument, not the design — on rtl's character-exact locked prediction plus my own re-derivation; P-1 still owed because a Python transcription is not the design; round 6 is entirely mine
+
+### Trigger
+Orchestrator, relaying CI run **30776456107** (commit `0b64b68`): rtl_lead's
+BUG-0001 fix. Build green, **all sixteen delivered counts repaired**, one FAIL
+surviving — `lane 4 length 68: delivered=64/64 tkeep=none/255 tuser=none
+terminate_lane=0` — which is rtl_lead's locked **R-1** prediction character for
+character, together with its claim that the singleton was never hardware and
+its proposed remedy in `test/**`.
+
+### Inputs
+- The sixteen-entry table and the M03-A3 failure text as relayed.
+- `agents/handoffs/BUG-0001_m03-final-word-over-delivery.md` at `0b64b68` —
+  rtl_lead's fix entry: the `Root-cause` section's presence and position
+  (charter §8's precondition), the P-1 concordance section, and **R-1
+  verbatim**, read as argument rather than as authority.
+- My own BUG-0001 text: the `excess = max(0, k − 4)` invariant, P-1's locked
+  statement.
+- `test/xgmii_rx_64/bench.ml`'s `sample_cycle` and `run`; `bench.mli`'s
+  `cycle`/`out_cycle` docstring from round 5.
+- `docs/specs/modules/xgmii_rx_64.md` §6.1's cycle table and its REQ-106
+  sentence on a terminate character in lane 0; §7's pinned L = 16 / 12.
+- `test/attack_plans/AP-xgmii_rx_64.md` family C and §8.
+- A python computation of `D`, `k`, terminate lane and expected `tkeep` for the
+  probe lengths 1513 and 1516 at both start lanes.
+- **No `libs/**`, no `rtl_snapshots/**`.** I read rtl_lead's prose account of
+  its own design; I did not read the design.
+
+### Reasoning
+
+**The fix worked, and the first thing to say is the plain thing.** Every one of
+the sixteen delivered counts is exact, at both start lanes, including both
+length-68 entries. `excess = max(0, k − 4)` — the invariant this packet
+convicted on — is zero at every `k` the row drives, where it was +1, +2, +3, +4
+at `k` = 5, 6, 7, 8. BUG-0001's observable is gone.
+
+**R-1 is the interesting part, and it is a reattribution from the party under
+test.** That is the move an adversary should scrutinise hardest: rtl_lead says
+the surviving FAIL is not its design but my instrument, and if I accept it on
+rtl_lead's say-so I have let the designer grade the verification. So I set two
+conditions before reading its argument — the claim must be checkable by me
+without opening `libs/**`, and it must be falsifiable — and both are met.
+
+*Checkable.* `Cyclesim.cycle` returns having run `cycle_after_clock_edge`, so
+the default output view read at that point is **f(regs(c+1), word(c))**: the
+new register state paired with the *old* input word. For a registered output
+that equals the hardware value during cycle c + 1 — which is exactly why round
+5's `out_cycle = cycle + 1` repair worked, and why the promoted
+`test_word_counter.ml` waveform settled it. **What round 5 got wrong is the
+quantifier**: I established the relation for a registered output and then
+applied it to every output. For an output that is combinational in the
+*current* XGMII word, f(regs(c+1), word(c)) is a state that exists in no
+hardware cycle at all.
+
+*Re-derived.* I did not take rtl's conclusion; I worked the case. At lane 4,
+length 68, `tvalid` for the final delivered word is registered and so is read
+at call 10. The `tlast` closing that word is decided by the terminate character
+in word 11 — the `terminate_lane = 0` case, where the terminate arrives in a
+word carrying no frame octets — so it can only appear in a read that includes
+word 11, i.e. at call 11, where `tvalid` has already gone to 0.
+`delivered_samples` filters on `tvalid`, so that sample is dropped and the
+call-10 sample carries `tlast` = 0. **The prediction of that reasoning is
+`delivered = 64/64`, `tkeep = none`, `tuser = none`** — no sampled word carries
+`tlast`. That is the observed line, and it is a *different* observable from the
+pre-fix singleton (`tkeep = 15`), which is what makes rtl's advance statement
+of it non-trivial. Naming which fields go `none` is not something you get right
+by guessing.
+
+And it explains the confinement: `terminate_lane = 0` is the only case where
+the closing character arrives in a word carrying no frame octets, so the last
+data word and the closure are not sampled together. Item 3 — M03-A3's cross-lane
+mismatch at length 68 and nowhere else — is the same artefact through a second
+row, not a second finding, and REQ-101 is not in question.
+
+So **R-1 accepted**. Recorded as accepted on *my* re-derivation, with rtl's
+prediction as the strong corroboration it is, rather than the other way round.
+
+**But I did not accept the sub-prediction, and catching why is the review's
+contribution.** The relayed sub-prediction says 1516 at lane 4 reproduces the
+singleton as `tkeep = 15/255` under the current sampling. That does not follow
+from R-1's own mechanism applied to the *fixed* design: `15` (0x0F) was the
+**pre-fix** form, produced by four excess octets arriving as a separate
+`tlast`-bearing word. Post-fix there is no extra word, and 1516 at lane 4 has
+`D` = 1512, `k` = 8, `terminate_lane` = 0 — structurally identical to length 68
+at lane 4, which post-fix read `none`.
+
+Either it was written against the pre-fix design and mis-scoped in relay, or it
+is a transcription slip. **I am not going to guess, and I am not going to
+quietly correct it either** — a falsifier that predicts the wrong value fails
+for the wrong reason and would discredit a sound account. So I recorded a
+**three-way** falsifier in the bug packet: `none` confirms R-1 at a second
+distant length; `255` refutes the sampling account, which is rtl's own stated
+falsifier; `15` means both R-1 as I read it and my reading of it are wrong and
+something else is producing an extra word. Three outcomes, all named before the
+run.
+
+**P-1 is not confirmed and I want to be exact about why.** rtl_lead reports
+concordance (+4 at `k` = 8, +1 at `k` = 5, both lanes) from a **Python
+transcription** of the pre-fix logic. That is real evidence and I said so: it
+reproduces my invariant independently, from the other side of the wall, and it
+corroborates the *characterisation* this packet convicted on. It is not
+confirmation of P-1, because P-1 was a prediction about the design and **a
+model of the design is not the design**. Accepting the second in place of the
+first is the exact substitution this programme's evidence rules exist to refuse,
+and it would be a strange thing for me to do here of all places, having spent
+five rounds insisting on it against myself. P-1 is paid by M03-C5, now inverted
+in sense: the fixed design must deliver those lengths exactly.
+
+**The round is mine, and I made that the headline.** Nothing in round 6 is
+asked of rtl_lead. The state line says so, because a BOUNCED packet with a
+CRITICAL bug in flight invites the reading that the design is still wrong, and
+it is not — the delivered-count defect is repaired and what remains is where my
+bench looks.
+
+**On the round's design, two judgements worth recording.**
+
+*Retire `out_cycle` rather than keep it.* Under `Before` sampling the sample
+*is* hardware cycle `cycle` for inputs and outputs alike, so `out_cycle` would
+be permanently equal to `cycle` — and a field always equal to another is a field
+that will drift. This is round 5's fix being superseded by a better one, not
+reversed: what round 5 established (the registered-output relation, from the
+promoted waveform) stays true and stays in the docstring; what it assumed (that
+every output is registered) is corrected. I told the worker to correct that
+paragraph rather than delete it, because the record of *why* the convention
+moved twice is worth more than a clean file.
+
+*Demonstrate the artefact rather than assume it.* I am accepting R-1 on
+argument plus re-derivation, and one run can make it a demonstration: capture
+the `After` view alongside `Before` and report where the two disagree on
+`tlast`. Expected: exactly the `terminate_lane = 0` entries with a full final
+word, nowhere else. If they disagree elsewhere or nowhere, R-1 is incomplete
+and that finding is worth more than the round. This is the same instinct as
+`--self-test` and as running a guard against the defect it names — an
+explanation I can only argue for is weaker than one the instrument exhibits.
+
+**And I carried rtl's open question 2 into the attack plan rather than the
+packet**, because it is a planning fact, not a bug fact: a strobe consumed from
+an age-0 closure record is invisible at the old sampling position, and in the
+error-injection families that coincidence is common rather than 1-in-16. It now
+sits in AP-M03 §8 with an instruction that **no family D–H row may be written
+against the old position**, and that the first D–H bench must state which of its
+rows depend on an age-0 record. A silently-missed strobe is a NO-ASSERT row
+wearing a PASS, which is the failure mode this whole packet has been about.
+
+### Actions
+- Verified the `Root-cause` section is present and precedes the fix
+  description (charter §8) and read rtl's account as argument, not authority.
+- Re-derived the lane-4/length-68 observable independently from Hardcaml's
+  cycle semantics, `bench.ml`'s sampling order and §6.1's REQ-106 case, and
+  confirmed it predicts `tkeep = none`, `tuser = none`, `delivered = 64/64`.
+- **Accepted R-1**; ruled M03-A3's length-68 mismatch the same artefact.
+- **Flagged the sub-prediction's inconsistency** and replaced it with a
+  three-way falsifier recorded before the probe.
+- **Refused P-1 as confirmed** by transcription; kept it owed, inverted, on
+  M03-C5.
+- Added attack-plan row **M03-C5** (1513 and 1516 at both lanes), a change-log
+  row (75 rows, 59 ASSERT), and rtl's open question 2 into §8 with a bar on
+  writing D–H rows against the old sampling position.
+- Appended the fix-verdict ruling to `BUG-0001` with six numbered conditions,
+  and separated the two that gate the `SO-` rather than the verdict.
+- Flipped WO-0038 to **BOUNCED** on a title + state anchor, saying in the state
+  line that round 6 is dv_lead's and asks nothing of rtl_lead, and appended
+  `RV-0038-R7` with four items and exact guidance.
+- Opened no `libs/**`. No `git commit`, no `git push`.
+
+### Evidence
+1. **Repair.** All sixteen `delivered=X/X`, both lanes, both length-68 entries.
+   `excess = max(0, k − 4)` now 0 at `k` = 5, 6, 7, 8 where it was +1…+4.
+2. **`Root-cause` present and first**, per charter §8, in the fix entry.
+3. **R-1 survived character for character**, including `tkeep = none` and
+   `tuser = none` — a different observable from the pre-fix `tkeep = 15`.
+4. **My independent derivation.** Read point is f(regs(c+1), word(c)); `tvalid`
+   registered → call 10; `tlast` combinational in the terminate word → call 11
+   where `tvalid` = 0; `delivered_samples` drops it ⟹ `tlast_sample = None`.
+5. **Confinement explained**: `terminate_lane = 0` is the only case where the
+   closing character arrives in a word carrying no frame octets.
+6. **Probe parameters, computed not assumed.** 1513: `D` = 1509, `k` = 5,
+   terminate lanes 1 (lane 0) and 5 (lane 4), expected `tkeep` 0x1F. 1516:
+   `D` = 1512, `k` = 8, terminate lanes 4 and **0**, expected `tkeep` 0xFF —
+   so 1516 at lane 4 is the second instance of R-1's class.
+7. **Attack plan.** 75 rows, 59 ASSERT after M03-C5; `tools/dv_checks.sh`
+   exit 0 after the edit.
+8. **Scope.** `git status --short` shows my four paths and nothing under
+   `libs/**`; no promotion is in the tree.
+
+### Outcome
+**BUG-0001 fix verdict: DEFERRED, not withheld** — nothing further is asked of
+rtl_lead. The delivered-count defect is repaired at all sixteen entries;
+**R-1 is accepted** and the surviving FAIL is reattributed from the design to
+the bench's observation position; the verdict lands after round 6's re-test
+against six named conditions, of which the load-bearing ones are all sixteen
+PASS with `tkeep = 255/255` at lane 4 length 68, M03-A3 clean, and M03-C5
+exact at 1513 and 1516.
+
+**P-1 remains owed.** A Python transcription corroborates the invariant and
+does not confirm a prediction about the design.
+
+**WO-0038 BOUNCED for round 6, which asks nothing of rtl_lead**: move the
+asserted view to `~clock_edge:Before` and retire `out_cycle` (R6-1), implement
+M03-C5 (R6-2), demonstrate the artefact with a dual-view diagnostic (R6-3),
+surface the protocol monitor in the batched failure (R6-4).
+
+### Open-questions
+- **The three-way falsifier at 1516 lane 4** is recorded in BUG-0001 before the
+  run and will be reported whichever way it falls.
+- **`Cyclesim.outputs ~clock_edge:Before` is the round's single unverifiable
+  name** (ADR-0005). If Build reddens on it the repair is one expression, and
+  the Return log must say so rather than adjust anything else.
+- **Families D–H are now gated** on the new sampling position, and the first
+  D–H bench must declare which rows depend on an age-0 closure record. Recorded
+  in AP-M03 §8.
+- **Two things gate the `SO-` and not the fix verdict**: the conformance review
+  of whatever `runtest` promotes once green — no promotion has entered the tree
+  in this packet's history and that will not change without my review — and
+  WO-0038 §8's four seeded mutations.
+- **A machinery question I keep deferring**: the `cycle`/`out_cycle`/`Before`
+  story is not M03's, it is every Cyclesim bench's. After round 6 it belongs
+  somewhere shared, and M04's transmit decoder meets it next — where my M04
+  contamination from `J-dv_lead-0024` makes the packet one I must write with
+  extra care.
+- **Owed by me, unchanged**: the `precompile_check.sh`
+  side-effect-in-combinator lane; `tools/precompile_stubs/ifc_check.ml`'s stale
+  UNVERIFIED note; SPEC-M01 §11.4's caveat retirement; the accumulated standing
+  rules for the next bench packet's §7.
+- **Unchanged**: the RFC 1071 anchor closes on the next CI run that fetches;
+  X-7, X-10, X-11 remain deferred; L1–L5 still owed.
+
+### Files-in-this-commit
+- agents/handoffs/BUG-0001_m03-final-word-over-delivery.md
+- agents/handoffs/WO-0038_tb-m03-first-bench.md
+- test/attack_plans/AP-xgmii_rx_64.md

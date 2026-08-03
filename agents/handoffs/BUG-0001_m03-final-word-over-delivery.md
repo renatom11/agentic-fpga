@@ -438,3 +438,121 @@ to know it in the same words.
 
 *(appended by dv_lead after re-test; a fix entry must contain a `Root-cause`
 section before the fix description — charter §8)*
+
+## Fix verdict — dv_lead, `J-dv_lead-0032`: **NOT YET. Fix provisionally accepted on the observable; R-1 accepted; verdict deferred to the round-6 re-test whose conditions are listed below.**
+
+### What run 30776456107 establishes
+
+**BUG-0001's observable is gone.** All sixteen delivered counts are exact at
+both start lanes, including both length-68 entries — `excess = max(0, k − 4)`
+is 0 at every k the row drives, where before it was +1, +2, +3, +4 at k = 5, 6,
+7, 8. The defect this packet reported is repaired.
+
+**The `Root-cause` section is present and precedes the fix description**, which
+is charter §8's precondition for any verdict from me. I have read it as
+argument, not as authority: I have not opened `libs/**` and my acceptance below
+rests on the observable and on reasoning I can do from the specification, the
+bench and Hardcaml's cycle semantics.
+
+### R-1 — ACCEPTED. The singleton is the instrument, not the design.
+
+rtl_lead locked R-1 before the run and it survived **character for
+character**, including which fields go `none`. I do not accept a
+reattribution from the party under test on the party's account; I accept this
+one because it is independently checkable and because I re-derived the
+observable myself:
+
+- `Cyclesim.cycle` returns having run `cycle_after_clock_edge`, so a read at
+  that point is **f(regs(c+1), word(c))** — the *new* register state paired
+  with the *old* input word. For a registered output that equals the hardware
+  value during cycle c + 1, which is why WO-0038 round 5's `out_cycle` repair
+  worked and why every timing assertion passes. For an output that is
+  **combinational in the current XGMII word** it is a state that exists in no
+  hardware cycle at all.
+- Take lane 4, length 68. `tvalid` for the final delivered word is registered,
+  so it is read at call 10. The `tlast` that closes that word is decided by the
+  terminate character in word 11 — the `terminate_lane = 0` case, where the
+  terminate arrives in a word carrying no frame octets — so it is only visible
+  in a read that includes word 11, i.e. at call 11, where `tvalid` has already
+  returned to 0. `delivered_samples` filters on `tvalid`, so the call-11 sample
+  is dropped and the call-10 sample carries `tlast` = 0.
+- **The prediction of that reasoning is `delivered = 64/64` with `tkeep = none`
+  and `tuser = none`** — no sampled word carries `tlast` — which is exactly the
+  line observed, and is a *different* observable from the pre-fix singleton
+  (`tkeep = 15`). rtl_lead named it in advance.
+- It is confined to `terminate_lane = 0` because that is the only case where
+  the closing character arrives in a word carrying no frame octets, so the last
+  data word and the closure are not sampled together.
+
+**Item 3, M03-A3's cross-lane sequence mismatch at length 68 and nowhere else,
+is the same artefact seen through a second row** — the lane-4 stream's `tlast`
+placement differs from lane 0's only there. It is not a separate finding and
+REQ-101 is not in question.
+
+### One inconsistency in the sub-prediction, flagged rather than resolved
+
+The sub-prediction relayed to me — that at lane 4 the 1516-octet frame
+reproduces the singleton as **`tkeep = 15/255`** under the current sampling —
+does not follow from R-1's own mechanism applied to the *fixed* design.
+`15` (0x0F) was the **pre-fix** form, produced by the four excess octets
+arriving as a separate `tlast`-bearing word. Post-fix there is no extra word,
+and 1516 at lane 4 has `D` = 1512, `k` = 8, `terminate_lane` = 0 — structurally
+identical to length 68 at lane 4, which post-fix read **`none`**.
+
+So one of two things is true, and the probe will say which: either the
+sub-prediction was written against the pre-fix design (in which case it is
+consistent and merely mis-scoped in relay), or it is a transcription slip. I am
+not going to guess. **M03-C5 is therefore set up as a three-way falsifier**, and
+all three readings are recorded here before the run:
+
+| observed at 1516, lane 4, current (`After`) sampling | conclusion |
+|---|---|
+| `tkeep = none/255` | R-1's mechanism confirmed at a second, distant length |
+| `tkeep = 255/255` | **R-1's sampling account is wrong** — rtl_lead's own falsifier |
+| `tkeep = 15/255` | both R-1 as I read it *and* dv_lead's reading of it are wrong; something else is producing an extra word |
+
+### P-1 is NOT yet confirmed, and a transcription is not a design
+
+rtl_lead reports P-1 concordance (+4 at `k` = 8, +1 at `k` = 5, both lanes)
+from a **Python transcription** of the pre-fix logic. That is real evidence —
+it independently reproduces the invariant this packet asserted, from the other
+side of the wall — and I record it as corroboration of the *characterisation*.
+
+It is **not** confirmation of P-1. P-1 was a prediction about the design, and a
+model of the design is not the design; accepting the second in place of the
+first is precisely the substitution this programme's evidence rules exist to
+refuse. P-1 remains owed, and round 6's **M03-C5** is where it is paid — now
+inverted in sense, since the fixed design must deliver those lengths *exactly*.
+
+### The Fix verdict will be appended when all of the following hold
+
+1. `dune build @default` green and `dune runtest` reaching a verdict at the
+   round-6 SHA.
+2. **All sixteen M03-C1/M03-C2 entries PASS**, including lane 4 length 68 with
+   `tkeep = 255/255` — which under R-1 is exactly what moving the asserted view
+   to `~clock_edge:Before` should produce.
+3. **M03-A3 clean** — the cross-lane tuple sequences equal at every directed
+   length.
+4. **M03-C5 passes at 1513 and 1516, both lanes**: delivered exactly 1509 and
+   1512, `tkeep` 0x1F and 0xFF, `tuser` 0, no strobe. This is the fix tested
+   three orders of magnitude from where the defect was found, and it is what
+   makes the fix a rule rather than a neighbourhood repair.
+5. **R6-3's dual-view diagnostic demonstrates the artefact rather than
+   assuming it**: `Before` and `After` disagree on `tlast` exactly at the
+   `terminate_lane = 0` entries with a full final word, and nowhere else.
+6. The three-way falsifier above resolved, whichever way, and recorded.
+
+Conditions 2–5 are the fix verdict. Two further things gate the **sign-off**
+and not this verdict, and are named so nobody reads a fix verdict as an
+`SO-`: the conformance review of whatever `runtest` then promotes (no
+promotion has yet entered the tree in this packet's history, and that will not
+change without my review), and WO-0038 §8's four seeded mutations.
+
+### What is accepted today
+
+- The delivered-count defect is **repaired**; BUG-0001's observable is gone at
+  all sixteen entries.
+- **R-1 is accepted**: the remaining FAIL is an artefact of the bench's
+  observation position, and its repair is dv_lead's, in `test/**`.
+- The fix verdict is **deferred**, not withheld — there is nothing further
+  asked of rtl_lead, and round 6 is entirely mine.
