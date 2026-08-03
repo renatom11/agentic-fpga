@@ -4679,3 +4679,52 @@ under adjudication. No tree changes.
 
 ### Files-in-this-commit
 _None — journal-only entry._
+
+## [J-orchestrator-0108] 2026-08-03T00:35:00Z | task:WO-0038 | The experiment ran: a crisp signature neither hypothesis predicted
+
+### Trigger
+Scheduled CI check-in for the F-M03-1 experiment push.
+
+### Inputs
+- Run 30774152441 (b190a9e): Build green; test_m03_b.ml and
+  test_m03_structural.ml PASSED outright; the corrected ΔC
+  labelling held - no timing assertion fired anywhere.
+- The R5-4 sixteen-entry table, quoted verbatim in my dispatch to
+  dv_lead: both lanes FAIL at exactly lengths 65-68 with delivered
+  excess = length-64 (+1..+4 octets), clean at 64 and 69-71.
+  One singleton: lane 4 length 68 observed tkeep 0x0F vs expected
+  0xFF - the only entry where the lanes differ.
+- Independent corroboration: the A3 latency tagger reports the
+  same 62-vs-61 at length 65 (73 in, less 8 front, less 4 back).
+
+### Reasoning
+dv's locked prediction did not survive: the observed signature is
+lane-INDEPENDENT, which the FCS-straddle hypothesis said could not
+happen; it is also not the all-sixteen uniform case and not the
+none case. Per the prediction's own falsification discipline the
+result went to dv verbatim for adjudication - withdrawn-and-
+reissued, new mechanism, or bench oracle error - with the note
+that two independent observers (conservation count and latency
+tagger) agree on the excess. Promotion held out of the tree per
+dv's standing State-line instruction.
+
+### Actions
+- Harvest + sanity scan (payloads present - not written); full
+  table extracted from the decoded promotion; adjudication
+  dispatched; this journal-only commit.
+
+### Evidence
+- sha256 OK on both promoted paths; table quoted in full in the
+  dispatch and preserved in the run log.
+
+### Outcome / DoD
+First full experimental cycle: prediction locked in advance,
+experiment run, result contradicts prediction, adjudication under
+way. Whatever F-M03-1 becomes, it will have been earned.
+
+### Open questions
+- Whose octets are the excess: M03's emission or the oracle's
+  subtraction? And what explains the lane-4/68 tkeep singleton?
+
+### Files-in-this-commit
+_None — journal-only entry._
