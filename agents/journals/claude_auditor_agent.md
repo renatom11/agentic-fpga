@@ -1882,3 +1882,253 @@ issue on family F regardless, per the packet's own §5.
 - docs/reports/audit/WO-0050-mutations/f-c7.diff
 - docs/reports/audit/WO-0050-mutations/f-c8.diff
 - docs/reports/audit/WO-0050-mutations/README.md
+
+## [J-auditor-0009] 2026-08-03T18:56:13Z | task:WO-0055 | Family-G campaign seeded: five oversize-path mutations authored blind against 2e8994f, with G-c4 seeded for `/E/` alone and G-c1's absent delivered-count constant disclosed rather than substituted
+
+### Trigger
+Orchestrator dispatch relaying dv_lead's `WO-0055`
+(`agents/handoffs/WO-0055_family-g-mutation-campaign.md`, committed at
+`b94aa1e`): seed the family-G qualification campaign — five mutation diffs
+against M03, authored blind under the standing allowlist regime, all five
+written before any of them is built or run. The packet governs over the
+dispatch where they differ, and one of its five classes (G-c4) deliberately
+leaves a choice to me and **requires** me to state it, because dv_lead's seal
+is written as a function of that choice.
+
+### Inputs
+**Item 1 — the packet**: `agents/handoffs/WO-0055_family-g-mutation-campaign.md`,
+read in full. **Item 2 — `docs/specs/**`**, extracted at `2e8994f`:
+`docs/specs/modules/xgmii_rx_64.md` §6.1, §6.2 (all four rows), §6.3, §7, §8,
+§9 in full and §10 in full; `docs/specs/requirements.md` §0.3, §0.6, §0.7 and
+rows REQ-008, REQ-011, REQ-015, REQ-103, REQ-104, REQ-105, REQ-108, REQ-110.
+**Item 3 — `docs/adr/**`**: nothing, deliberately (Reasoning 9). **Item 4 —
+`libs/**`**: `libs/hardcaml_ethernet/src/xgmii_rx_64.ml` in full, 772 lines,
+blob `81cd9ed7fc64e6265c53117f251ef948f24e3b00`; no other file in the extracted
+library tree was opened. **Item 5 — my own tree**: `ls docs/reports/audit/` and
+the heading list of `docs/reports/audit/WO-0050-mutations/README.md`. **Item 6 —
+root build configuration**: `.ocamlformat` and `dune-project` at `2e8994f`.
+
+**Outside the packet's allowlist, three directed reads, disclosed rather than
+smoothed**: `agents/charters/auditor.md` and `agents/PROTOCOL.md` (my launcher's
+two mandatory first actions) and the **tail only** of
+`agents/journals/claude_auditor_agent.md` from line 1700 to EOF plus a grep of
+my own entry headers (named in the spawn message, and structurally required —
+R5 monotonicity and R3 append-only are not checkable without it). None carries
+family-G bench content. **The void call is dv_lead's.**
+
+**Ambient exposure beyond the enumerated bars**, reported because the bar list
+is a floor: `git ls-tree --name-only 2e8994f` printed the repository's 17
+top-level entry names, which is how item 6's siblings were identified — the
+same judgement as WO-0050, no content read. `git status --porcelain` was run
+**scoped to three allowlisted path prefixes** this round, so unlike last round
+it leaked nothing. **The sealed predictions file was never opened, listed,
+hashed, diffed, grepped or shown at any revision**, no file under `test/**` was
+touched at any revision, and no `git log` was run at all, scoped or unscoped.
+
+### Reasoning
+Five intents, five sites. The work was in finding, for each intent, the site at
+which it is one edit and no *second* rule breaks on the way — the packet's
+standing clause, now earning its place a fifth time.
+
+1. **Two of the five had to be kept apart by construction, and that decided
+   G-c4.** G-c3 is "`error_bad_fcs` pulses alongside `error_oversize`". The
+   record's FCS field is `a_close_terminate &: bad_fcs` and `bad_fcs` is live at
+   a received count of 1518, so **any** mutation that lets a `/T/` act after the
+   truncation point plants G-c3's defect a second time. That eliminated `/T/`
+   for G-c4, and with it the generic "any control character" reading, which
+   contains the `/T/` case whole. Seeding one class twice is the confound my
+   last round names (`J-auditor-0008`, reasoning item 2) and I refused it again.
+2. **Between the two survivors I chose `/E/` over `/S/` on blast radius.** `/S/`
+   in `Discard` is clean — §9 says `error_oversize` never co-occurs with
+   `error_start_without_terminate` — but `/S/` is also the character that opens
+   the next frame, so the edit sits one wire from `b_exists`/`c_exists`/`begins`
+   and the count and CRC reloads. `/E/` has **no other job in `Discard`**: it
+   opens nothing, closes nothing, covers no octet, and five separate places in
+   the spec pin its behaviour there (§6.2's `Discard` row, §9's third table row,
+   §9's `error_oversize`-with-`error_bad_frame` ruling, REQ-105's row, REQ-108's
+   row). It is the narrowest edit that breaks exactly one rule. Stated plainly
+   in the report because the packet's seal is a function of it.
+3. **G-c1's class named a constant this design does not have.** The intent is
+   "the received-count constant used as the delivered-count constant", but 1514
+   appears nowhere in the module — the file's own comment says 1514 is obtained
+   by "capping coverage at 1518 and letting the four-octet tail removal run". So
+   I read the class as an **observable** (delivered extent = 1518) and seeded it
+   at the one site where that observable is a single-term edit: `sel_oversize`
+   leaves the `strip` selector. The alternative — `oversize_threshold` 1518 →
+   1522 — changes *which* frames are detected, contradicting the class line's own
+   "still marked, still reported, and still resynchronises", and collides head-on
+   with G-c2, which owns the threshold. Both readings are in README §3.1 and §6.1
+   so the call can be reversed cheaply.
+4. **G-c2 is one character and I proved its reach algebraically rather than
+   asserting it.** `new ∧ ¬old` reduces to `cap_end = a_char_end` with the cap
+   binding inside the word, which is exactly a closure character at octet time
+   1518 — a frame of 1518 octets DA through FCS and nothing else. I checked the
+   boundary by hand at **both** start lanes (6 vs 6 and 2 vs 2 at 1518; 6 vs 5
+   and 2 vs 1 at 1517; base fires already at 1519) rather than trusting the
+   algebra alone. The disclosure the packet's §3 asks for is that the comparison
+   is character-agnostic, so an `/E/` or `/S/` at that exact octet time is also
+   converted — one comparison, one defect, wider stimulus surface than the class
+   line names.
+5. **G-c3 admits the comparison rather than forcing the strobe.** "The residue
+   comparison *runs* at the truncation point … and reports a mismatch" describes
+   a check that is sequenced where it has no operands, not a hard-wired bit. So
+   the gate becomes `(a_close_terminate |: a_close_oversize) &: bad_fcs` and the
+   diff reports what the check finds. The price is a 2⁻³² frame that would not
+   raise it, and I stated that as a property of the diff rather than hiding it
+   behind a stronger, less faithful edit.
+6. **G-c5 was left quiet, as instructed.** The packet warns not to strengthen it.
+   `strobe sel_oversize` → `gnd` and nothing else: `tuser`[0] still set, extent
+   still 1514, `Discard` still entered, resynchronisation still correct. The
+   module's own comment — `error_oversize` "has epoch A's path only … written as
+   one" — is what makes the whole strobe removable in one term.
+7. **Verified before delivering, with negative controls at the two checks that
+   could be blind.** Anchor-uniqueness assertions in the generator (a silent
+   no-op edit is impossible, not merely unlikely); `git apply --check` plus real
+   application to a **fresh** pristine extraction per diff and byte comparison;
+   single-file and single-hunk and full-length index-line pinning; a
+   comment-stripped code-delta inspection of every mutant; a parse check with
+   five deliberately broken variants; a binding census for orphans; width,
+   whitespace and marker checks.
+8. **Revised no diff after any result**, there being none (bar 8); made no
+   compile-only repair, because no diff has been compiled — see Evidence.
+9. **Sampling frame.** Fixed by the packet: five intents, one module, one file.
+   I skipped nothing inside it. Inside the allowlist I deliberately skipped
+   `docs/adr/**` — the design file quotes the ADRs it depends on at the sites
+   that depend on them, and none of the five intents turns on an ADR's text —
+   and I read the spec sections the packet's own spec basis names, plus §9 and
+   §10 in full because four of the five intents turn on §9.
+10. Wrote nothing outside `docs/reports/audit/WO-0055-mutations/` and this
+    journal append. Ran no `git commit` and no `git push`.
+
+### Actions
+Extracted `libs/` and `docs/specs/` at `2e8994f` with `git archive` (bar 10 — the
+allowlisted sets are *named*, so no barred path was ever materialised and there
+was nothing to filter). Read the design and the spec basis. Authored all five
+mutations as anchored single-site substitutions in a generator, generated the
+five mutants, and produced the diffs through a private one-file scratch git
+repository containing only `libs/hardcaml_ethernet/src/xgmii_rx_64.ml`. Ran the
+verification suite in Evidence. Wrote the six deliverables. Built nothing and
+ran nothing.
+
+### Evidence
+Base, re-derived rather than assumed:
+`git rev-parse 2e8994f:libs/hardcaml_ethernet/src/xgmii_rx_64.ml` →
+`81cd9ed7fc64e6265c53117f251ef948f24e3b00`; `sha256sum` of the extraction →
+`3d87515a843d98d7d5bd6692a9d19cdbe2b0dee4e430c88f871a2d4887f5be92`, 772 lines.
+This equals the blob the family-E and family-F campaigns mutated, so the design
+is byte-identical across six campaigns.
+
+Generation: `python3 gen.py` reported `anchor unique` for all five and the
+line-count change per site — `g-c1` 1→8, `g-c2` 1→9, `g-c3` 1→9, `g-c4` 3→13,
+`g-c5` 1→7 (raw lines, comments included). The generator **asserts each anchor
+occurs exactly once and aborts otherwise**, so a silent no-op edit is
+impossible.
+
+Post-image blobs, from full-length `index` lines: `g-c1`
+`9ba8c88ea4407b4c3488e8650a886f8bbd53e06c`, `g-c2`
+`9ebaca5ac347ae5836e1613ea49f6099532d2642`, `g-c3`
+`b97e558388af52e096736a3d664777df4621e00a`, `g-c4`
+`f5ea9d6b10f33be122adcc065c7f11730c573fdb`, `g-c5`
+`e0a8b1eb2e0a93532139ab319d5e9853551b21fc`.
+
+`git apply --check --verbose` from a **fresh** pristine `2e8994f` extraction per
+diff: all five print `Checking patch libs/hardcaml_ethernet/src/xgmii_rx_64.ml...`
+and nothing else. Each was then applied for real to that pristine tree and
+`cmp`-ed against the generated mutant: **byte-identical in all five cases**. The
+same check was repeated at the end against the **delivered** `.diff` files under
+`docs/reports/audit/WO-0055-mutations/`, with the same result. Each diff has
+exactly one `diff --git` header and one `@@` hunk.
+
+Minimality, with comments stripped by a nesting-aware stripper against the
+base's 299 code lines: **four of the five are one line replaced by one line**
+(g-c1, g-c2, g-c3, g-c5); **g-c4 adds one line and removes none**. Every
+mutant's comment-stripped delta was printed and inspected and is exactly the
+intended edit.
+
+Parse check, **with negative controls**: `ocamlc -stop-after parsing -c` (OCaml
+4.14.1) accepts the pristine file and all five mutants. Five deliberately broken
+variants — dropped parens in g-c1's `mux2` argument, g-c2's comparison and
+g-c3's `~fcs` argument, a dropped `in` after g-c4's binding, and an unterminated
+comment in g-c5 — were **all rejected** (`This '(' might be unmatched` ×3,
+`Syntax error`, `Comment not terminated`), so the check has teeth.
+
+Binding census over comment-stripped text: 135 base bindings; every mutant has
+the same 135, adds none, removes none, and leaves none newly unreferenced — the
+check that matters for g-c1 and g-c5, which each remove one use of
+`sel_oversize`, leaving it used twice and once respectively. The base's two
+apparent orphans (`hierarchical`, exported through the `.mli`; `tvalid`,
+consumed through a qualified record pun) are census-regex artefacts, pre-existing
+and identical in all five mutants.
+
+Width and whitespace: every mutant's longest line is **97**, the base's own
+maximum from lines 622 and 696, neither of which any diff lengthens (g-c1
+shortens 696 below it). The longest line any diff **adds** is 84. Zero
+trailing-whitespace lines, zero tabs, zero CR, final newline present, throughout.
+Exactly one `MUTATION` marker per mutant, at its own site. The five diffs
+embedded in README §3 were spliced by script and verified byte-identical to the
+`.diff` files.
+
+**Negative evidence, stated as a result rather than omitted.** No mutant has been
+type-checked and none could be: this container's opam switch (`fpga`,
+`ocaml-system.4.14.1`) has **no Hardcaml packages**, and there is no `dune` and
+no `ocamlformat` binary at all. Compile-confidence is therefore HIGH on syntax,
+scope and unused bindings (machine-checked above) and ASSERTED on types and
+widths, with the per-mutation argument written out in README §5.1. Formatting is
+**unverified**, and the sharper fact stands from last round: `.ocamlformat`
+selects a 90-column margin while **the base already carries two 97-column code
+lines**, so I could not establish that `dune build @fmt` is clean at `2e8994f`
+in the first place.
+
+### Outcome
+Five diffs and a README committed under
+`docs/reports/audit/WO-0055-mutations/`, seeding the family-G campaign against
+`2e8994f`. All eleven of the packet's rules — six allowlist items, five process
+bars — were honoured, with four things disclosed rather than smoothed: the three
+directed `agents/**` pre-reads, the top-level `ls-tree` path-name leak, the
+absent toolchain, and the base's own unclean margin. **All five intents were
+seeded whole**; nothing was substituted and nothing was narrowed, so there is no
+family-G analogue of last round's F-c8. The packet's one required disclosure is
+answered: **G-c4 is seeded for `/E/` alone**, with `/T/` and the generic reading
+rejected because both drag G-c3's defect into the diff through the closure
+record's FCS field, and `/S/` rejected as clean but wider. Two further choices
+are disclosed and reversible: **G-c1 is seeded at `strip`** because the design
+has no delivered-count constant to corrupt, and **G-c3 admits the residue
+comparison rather than forcing the strobe**, at the price of a 2⁻³²
+coincidence. No diff was run, no result was seen, no revision was made, and no
+prediction about which bench unit should redden appears anywhere in this work
+order or in my head. `SO-M03` does not issue on family G regardless, per the
+packet's own §5.
+
+### Open-questions
+1. **Was G-c1's observable the intended one?** The class names a
+   delivered-count constant this design does not have. I read it as *delivered
+   extent = 1518* and seeded it at `strip`; the constant-substitution reading
+   (`oversize_threshold` → 1522) changes which frames are detected, contradicts
+   the class line's own "still marked, still reported, and still
+   resynchronises", and collides with G-c2. Routed for dv_lead's call; one line
+   to reverse.
+2. **G-c2's wider reach.** The weakened comparison is character-agnostic at the
+   cap lane, so an `/E/` or `/S/` at exactly octet time 1518 is also converted
+   into a truncation. One comparison, one defect, wider stimulus surface than
+   the class line names — a disclosure under packet §3, not a failure.
+3. **G-c4's rejected characters.** If dv_lead wants the `/T/` or `/S/` variant
+   as well, it is a **separate** diff and a separate class, not a revision of
+   this one — and the `/T/` variant cannot be seeded without also planting
+   G-c3's defect.
+4. **Is `dune build @fmt` clean at `2e8994f` at all?** The base carries two
+   97-column code lines against a 90-column margin. If it is not clean, a `@fmt`
+   failure under any mutation is pre-existing rather than mine and bar 8's
+   compile-only repair clause should not be spent on it. Unchanged from
+   `WO-0050` and still open.
+5. **Compile-confidence is argued, not demonstrated**, for the fourth campaign
+   running, because Hardcaml, `dune` and `ocamlformat` are all absent from this
+   container. If any diff fails to build, bar 8 applies: I will change nothing
+   else and will disclose the repair.
+
+### Files-in-this-commit
+- docs/reports/audit/WO-0055-mutations/g-c1.diff
+- docs/reports/audit/WO-0055-mutations/g-c2.diff
+- docs/reports/audit/WO-0055-mutations/g-c3.diff
+- docs/reports/audit/WO-0055-mutations/g-c4.diff
+- docs/reports/audit/WO-0055-mutations/g-c5.diff
+- docs/reports/audit/WO-0055-mutations/README.md

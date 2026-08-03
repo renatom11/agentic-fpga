@@ -1,0 +1,21 @@
+diff --git a/libs/hardcaml_ethernet/src/xgmii_rx_64.ml b/libs/hardcaml_ethernet/src/xgmii_rx_64.ml
+index 81cd9ed7fc64e6265c53117f251ef948f24e3b00..9ebaca5ac347ae5836e1613ea49f6099532d2642 100644
+--- a/libs/hardcaml_ethernet/src/xgmii_rx_64.ml
++++ b/libs/hardcaml_ethernet/src/xgmii_rx_64.ml
+@@ -359,7 +359,15 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
+      (REQ-108, C-12). A character *at* the cap lane still acts, because the
+      count has not passed 1518 at that octet time. *)
+   let a_close_oversize =
+-    a_open &: (cap_end <: a_char_end) &: (cap_end <: a_hold_end) &: (cap_end <:. 8)
++    (* MUTATION g-c2 (WO-0055 family G) — NEVER MERGE. Seeded defect: REQ-108's
++       "a frame exceeding 1518 octets" is implemented as "1518 or more". The
++       character comparison is weakened from [<:] to [<=:], so a closure
++       character standing exactly at the cap lane no longer acts and the
++       truncation takes the frame instead: a legal maximum-length frame is
++       truncated, marked [tuser][0] = 1 and reported by one [error_oversize].
++       The hold term and the saturation term are unchanged, so no frame whose
++       count stays clear of the cap can reach this. *)
++    a_open &: (cap_end <=: a_char_end) &: (cap_end <: a_hold_end) &: (cap_end <:. 8)
+   in
+   let a_char_acts = a_open &: ~:a_close_oversize in
+   let a_closes_with v = a_char_acts &: any (v &: a_close_oh) in

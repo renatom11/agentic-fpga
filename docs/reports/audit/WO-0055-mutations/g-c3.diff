@@ -1,0 +1,21 @@
+diff --git a/libs/hardcaml_ethernet/src/xgmii_rx_64.ml b/libs/hardcaml_ethernet/src/xgmii_rx_64.ml
+index 81cd9ed7fc64e6265c53117f251ef948f24e3b00..b97e558388af52e096736a3d664777df4621e00a 100644
+--- a/libs/hardcaml_ethernet/src/xgmii_rx_64.ml
++++ b/libs/hardcaml_ethernet/src/xgmii_rx_64.ml
+@@ -510,7 +510,15 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
+       ~error:a_close_error
+       ~start:a_close_start
+       ~oversize:a_close_oversize
+-      ~fcs:(a_close_terminate &: bad_fcs)
++      (* MUTATION g-c3 (WO-0055 family G) — NEVER MERGE. Seeded defect: the
++         residue comparison is admitted at REQ-108's truncation point, where no
++         FCS is present, so [error_bad_fcs] pulses alongside [error_oversize] —
++         the pairing §9's second co-occurrence ruling forbids. The comparison is
++         reported as it stands rather than forced, which is the defect §9 names:
++         a check is sequenced for a frame that has no operands to give it. The
++         truncation, its extent, its marking and [error_oversize] itself are
++         unchanged. *)
++      ~fcs:((a_close_terminate |: a_close_oversize) &: bad_fcs)
+       ~runt:a_close_runt
+   in
+   (* [consume] is defined by the output decision below; the two are mutually
