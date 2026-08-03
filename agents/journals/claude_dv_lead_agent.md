@@ -16853,3 +16853,207 @@ discharged.
 
 ### Files-in-this-commit
 - agents/handoffs/WO-0054_tb-m03-family-g-oversize.md
+
+## [J-dv_lead-0068] 2026-08-04T18:40Z | task:WO-0054 | Family G accepted in one round — and the round's best act was the worker taking a specification ruling over my own packet, which is the first time this programme's authority order has been exercised in that direction
+
+### Trigger
+Orchestrator: tb_writer's WO-0054 return is in the working tree —
+`test_m03_g.ml` (new, G1–G4 and G6 built, G5 declared codeless), a comment-only
+`dune` header repair, and the Return log. Line-review it, rule on six named
+claims including the §3.5 mechanism choice and the self-found tkeep bug, and
+issue `RV-0054-VERDICT`. Measure the runtest unit count rather than recall it.
+
+### Inputs
+- `test/xgmii_rx_64/test_m03_g.ml` — the module docstring's governance section,
+  the constants block (`truncated_delivered`/`truncated_words`/`truncated_tkeep`
+  and `expected_tkeep_for`), `account_truncated_frame`, all five row functions'
+  assertion bodies, `run_g6`'s `word_at` closure and its two placement checks,
+  the M03-G5 declaration, and all five `%expect_test` bodies.
+- `git diff test/xgmii_rx_64/dune` — the whole hunk, checked line by line for a
+  non-comment change.
+- `docs/specs/modules/xgmii_rx_64.md` **§9's three new paragraphs at `1004384`**
+  and the §13 row recording them; `git log` on that SHA.
+- `test/xgmii/injection.ml`'s placement-validation match, lines ~100–126.
+- `tools/dv_checks.sh`'s bench inventory block, **run at this tree**.
+- `agents/handoffs/WO-0054_…` (my own §2, §3.1, §3.2, §3.5, §3.6, §4, §5, §8) and
+  the full Return log; `WO-0047` §6 item 7; `RV-0047` ruling 2.
+- **No `libs/**`, no `docs/reports/audit/**`, no `/workspace/**`.**
+
+### Reasoning
+
+**The claim I checked first is the one that could have been wrong in the most
+expensive way, and it is right.** The worker used a §0.6 window bound **tighter**
+than my packet's instructed fallback, on the authority of a SPEC-M03 §9 change
+that landed after I wrote the packet. So I verified the ruling exists and says
+what the Return log says: `1004384`, `J-architect_docs_lead-0021`, three
+paragraphs captioned as answering my own §9.1 open question — **the reference
+word is the input word on which REQ-108's truncation *closed* the frame**, fixed
+at that cycle, computable from the frame alone, derived from §9's closure list
+and C-12 and the principle that a frame's report is a function of the frame and
+not of what follows it.
+
+**Ruling: keep the ruled bound; my §3.6 fallback is superseded.** And the general
+form is worth stating because it has not come up before in this direction: **a
+work order is not authority against a specification that has since decided the
+question.** My §3.6 existed *because* the spec had not decided; it did; the
+instruction expired. A worker that notices that, uses the newer normative text
+and **flags the divergence prominently so a reviewer does not read its citations
+against the packet's framing and wonder** is doing something better than
+compliance.
+
+**I re-derived the window rather than accept that the pin sits in it.** Lane-0,
+1600-octet frame: truncation closes at received octet 1519 (index 1518, octet
+time 1534, **cycle 191**); window [191, 194]; the `tlast` octet (index 1513, lane
+1, word 191) leaves on 191 + ⌊(1+16)/8⌋ = **193**. Inside. The arithmetic is
+coherent and the bound is usable at every row, which is what the §13 row claims
+and I would rather confirm than relay.
+
+**§2's trap was defused better than I asked.** I asked for a per-member
+*declaration* of which clause governs. The file carries **two separately derived
+constants** — `truncated_tkeep` from REQ-108's 1514 and `expected_tkeep_for` as
+REQ-103's general formula — deliberately kept distinct with the reason in the
+code: *"even though the two numbers coincide at 1518, so the governance
+distinction stays visible in the code and not just in prose."* **That makes the
+trap unreachable by a future edit rather than documented against**, which is the
+difference between a guard and a comment. I verified the ten call sites
+individually rather than reading the table: five `List.take … 1514`, all
+truncated members and only those; five `Frame.delivered`, all REQ-103 members and
+only those.
+
+**The guard question on the self-found bug came back clean, and cleanly.** The
+wrong route was pattern-matching a constant from a neighbouring row rather than
+re-deriving it. Every other magnitude in the file is derived — `truncated_words`
+is `(1514 + 7) / 8`, not 190; `truncated_tkeep` is a formula, not 0x03 — and the
+sole literal is 1514, which my §2 asked for by name because it is REQ-108's own
+constant. **One residual I am naming rather than bouncing**: `truncated_tkeep`
+lacks the `if rem = 0 then 0xFF` guard its sibling carries, so it is correct
+*because of its input's value* rather than by construction. REQ-108 fixes 1514
+and it will not move — fragility, not a defect, and one edit away from the exact
+failure this round already caught once.
+
+**§3.5 is my own F-4 rule's first exercise on the worker side, and the scoping is
+the part with consequences.** I specified the observable and refused to name a
+mechanism. The worker answered the capability question at the source —
+`injection.ml`'s `At_terminate -> ()` is a bare unit where `At_octet` both
+bounds-checks and refuses `/I/` and `/Q/` — and then **did not use it**, because
+`Arrival.terminate_octet_time` yields the same octet time with no `Injection`
+object, no validation pass and no cross-check idiom. **Capability and
+construction answered separately and not conflated.** Had they been merged, a
+future packet would have inherited "this stimulus needs new machinery", which is
+false — and it matters for the G campaign, whose seedable space is not bounded
+by it.
+
+**I checked the mechanism's soundness by its property, not its shape**: the
+schedule still records a terminate, so `Arrival.check` and `Bench.run`'s gate
+pass, while **the wire the DUT sees has none**. That is M03-F2's accepted
+construction one family on. Both failure sites are checked. And the row is
+coherent with the *same* ruling the window rests on — the idle standing where
+`/T/` would be pulses nothing precisely because REQ-108's truncation already
+closed the frame.
+
+**One thing I noticed that the packet did not ask for and that is better than
+what I would have written.** M03-G2's two members assert 1514 **independently**,
+each by its own governing clause, rather than being compared against each other.
+A cross-assertion would have passed on two wrong-but-equal values. The weaker-
+looking construction is the stronger one.
+
+**Two precision slips in the Return log's prose, neither in the code**: "1618 mod
+8 = 2 at either start lane" — the lane is 2 at a lane-0 start and 6 at a lane-4
+one, and it is the *conclusion* (illegal at both, REQ-101) that carries the
+rounding; and "1618 and 1616 are equidistant" should be 1616 and 1620. I checked
+both by deriving the lanes myself and the offset the file actually uses (1620 →
+lane 4 and lane 0) is legal at both starts. Noted in the verdict at the weight
+they deserve, which is small.
+
+**On the `dune` repair: comment-only, verified line by line, and the right
+call.** The header's own comment says *"when one does not, this comment is wrong
+and a reader has no way to tell"* — repairing a staleness that comment predicts
+is discharging its instruction, not scope creep, and adding family G's line
+beside a knowingly stale list would have been the worse choice. The repaired
+content is more precise than the list it replaces: E5 is correctly recorded as
+living in `test_m03_e.ml` and **not** in this directory.
+
+**And I measured the unit count rather than recall it**, which is the discipline I
+broke two campaigns ago and have now used correctly twice running: **25** in the
+M03 bench, **105** repository-wide, from the tool built for exactly this.
+
+### Actions
+- Verified the SPEC-M03 §9 ruling exists at `1004384` and says what the Return
+  log says; **ruled the tighter bound kept and my own §3.6 fallback superseded**;
+  re-derived the window and the pin at a lane-0 1600-octet frame.
+- Verified §2's governance at **ten call sites individually**, not from the table.
+- Verified the tkeep fix at all four sites and **ran the guard question** over
+  every other magnitude in the file; recorded one residual.
+- Verified `injection.ml`'s `At_terminate` arm at source; **ruled the capability
+  finding correct and correctly scoped**, and recorded the consequence for the G
+  campaign's seedable space.
+- Verified `run_g6`'s mechanism by its property and both of its placement checks.
+- Verified the `dune` diff is comment-only and ruled the repair in scope.
+- Verified M03-G5 is codeless and that the file carries five `%expect_test`
+  blocks and no sixth.
+- **Measured** the inventory: 25 / 105.
+- Appended **`RV-0054-VERDICT`** (ACCEPT) with expected CI.
+- Touched nothing in `test/**`. No `git`.
+
+### Evidence
+1. `git log --oneline 1004384` → *"WO-0054: G6 window bound ruled - the reference
+   word is the truncation closure"*; SPEC-M03 §9's paragraphs and the §13 row
+   read in full. The §13 row states the bound is **tighter** than my fallback and
+   that **no commissioned row changes**.
+2. Window re-derivation, lane 0, 1600 octets: close at index 1518 → ot 1534 →
+   **cycle 191**; window [191, 194]; `tlast` octet index 1513 → ot 1529 → word
+   191, lane 1 → leaves on 191 + ⌊(1 + 16)/8⌋ = **193** ∈ [191, 194].
+3. `List.take … truncated_delivered` at 348, 520, 659, 830, 1007 — the five
+   truncated members. `Frame.delivered` at 376, 465, 674, 843, 1020 — the five
+   REQ-103 members. No crossover.
+4. `truncated_words = (truncated_delivered + 7) / 8`;
+   `truncated_tkeep = (1 lsl Int.rem truncated_delivered 8) - 1` — derived, not
+   written. `expected_tkeep_for` used at 359, 444, 665, 834, 1011.
+5. `test/xgmii/injection.ml` — the placement match: `At_preamble` range-checks,
+   `At_octet` bounds-checks **and** refuses `/I/`//`/Q/` with a spec-grounded
+   message, `At_terminate -> ()`. The capability claim holds.
+6. `run_g6`: pre-run check on the overridden word, `run … ~word_at`, post-run
+   check on the cycle actually driven — `WO-0047` §6 item 7 honoured.
+7. `git diff test/xgmii_rx_64/dune` — every changed line begins with `;`.
+8. **Inventory, measured at this tree**: 3+1+4+3+4+4+5+1 = **25**
+   (`test/xgmii_rx_64/`), **105** repository-wide. Was 20/100 before family G.
+
+### Outcome
+**WO-0054 ACCEPTED in one round, with no correctness defect in the delivered work
+and — for the first time in this sequence — no defect in my own packet found by
+it either.** Five rows built and correct against the rows they cite, M03-G5
+declared codeless, the family's trap guarded in code rather than in prose, both
+returned questions answered by establishing rather than assuming, and the round's
+one bug found, fixed and disclosed by its own author.
+
+**Standing ruling recorded**: a work order is not authority against a
+specification that has since decided the question. My §3.6 fallback is
+superseded by SPEC-M03 §9's ruled bound, which every G row uses.
+
+**Standing fact for the G campaign**: an unterminated oversize frame is
+constructible with today's machinery — `Injection` can express it and `Arrival`
+can too — so the seedable stimulus space is not bounded there.
+
+`SO-M03` does not issue. After family G lands, **26 of 60 ASSERT rows** are
+discharged.
+
+### Open-questions
+- **`truncated_tkeep`'s missing zero-remainder guard** — correct at 1514, fragile
+  by construction. Not owed a fix; recorded so that whoever ever changes that
+  constant reads this first.
+- **Family G's qualification campaign is next**, five published classes with the
+  mapping sealed (`WO-0054` §7). **G-c5 — truncated correctly, never reported —
+  is the silently-always-pass class**, and the campaign must carry my own §9.2
+  note: `Protocol_monitor`'s 190 and REQ-108's 1514 coincide **by construction**,
+  so the monitor is not an independent detector of G-c1 until that is checked.
+- **The epoch-A no-output-word class** (`J-dv_lead-0065`) rides with the G/H
+  campaign, as I intended.
+- **Two Return-log prose slips** recorded at their weight: the 1618 lane figure
+  and the equidistant pair. Neither reaches the code.
+- **Still owed**: AP-M14's §6 invariant; the `precompile_check.sh`
+  side-effect-in-combinator lane; M03-F5's discharge-by-citation qualification;
+  the RFC 1071 anchor on the next fetching run; X-7, X-10, X-11 deferred; L1–L5
+  as a separate packet.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0054_tb-m03-family-g-oversize.md

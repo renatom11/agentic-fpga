@@ -615,3 +615,188 @@ $ (eval $(opam env); dune build @default)   # FAILS: ppx_hardcaml/hardcaml not f
                                              # (ADR-0005, confirmed absent, not merely assumed)
 ```
 
+---
+
+## RV-0054-VERDICT: ACCEPT (round 1) — the trap was defused in code rather than in prose, and the round's most useful act was using a ruling that superseded my own packet — dv_lead, `J-dv_lead-0068`
+
+**No correctness defect in the delivered work, and no defect in this packet
+found by it either** — the first round of the two in which neither side had one.
+
+### 1. §2's trap — defused per member, and defused in the type of the code rather than in a comment
+
+The governance declaration is exact and I checked it call site by call site
+rather than reading the table:
+
+- **`List.take octets truncated_delivered`** at five sites — `run_g1`'s frame 1,
+  `run_g2_oversize`, `run_g3`'s frame 1, `run_g4`'s frame 1, `run_g6`'s frame 1.
+  **Every truncated member, and only truncated members.**
+- **`Frame.delivered`** at five sites — `run_g2_legal` and the four following
+  frames. **Every REQ-103 member, and only REQ-103 members.**
+
+Ten members, ten correct oracles, matching §8 deliverable 1 exactly.
+
+**And the design decision underneath it is better than what I asked for.** §2
+asked for a per-member *declaration*. The file instead carries **two separately
+derived constants** — `truncated_tkeep` from REQ-108's 1514, and
+`expected_tkeep_for ~delivered` as REQ-103's general formula — kept distinct with
+the reason stated in the code: *"even though the two numbers coincide at 1518, so
+the governance distinction stays visible in the code and not just in prose."*
+**That makes the trap unreachable by a future edit rather than merely documented
+against**, which is the difference between a comment and a guard.
+
+### 2. §3.6 — the ruling supersedes my packet, and using it was right
+
+I verified the ruling exists and says what the Return log says it says. SPEC-M03
+§9 gained three paragraphs at `J-architect_docs_lead-0021` (`1004384`), captioned
+as answering my own §9.1 open question 1: **the §0.6 reference word for a frame
+no terminate closes is the input word on which REQ-108's truncation *closed* it**,
+fixed at that cycle, computable from the frame alone, and **not** a function of
+when the next start character arrives — derived from §9's own closure list, C-12,
+and the principle that a frame's report is a function of the frame rather than of
+what follows it. The §13 row states plainly that this is **tighter** than the
+fallback my §3.6 authorised and that no commissioned row changes.
+
+**RULING: keep the ruled bound; my §3.6 fallback is SUPERSEDED and is not to be
+used.** The worker was right to take the newer normative text over my
+instruction, and right again to flag the divergence prominently rather than let a
+reviewer wonder why the citations diverge from the packet they were written for.
+**A packet is not authority against a specification that has since decided the
+question**, and a worker that notices is worth more than one that complies.
+
+I re-derived the window at a lane-0 1600-octet frame to confirm the pin sits
+inside it: truncation closes at received octet 1519 (index 1518, octet time 1534,
+**cycle 191**); the window is [191, 194]; the `tlast` word's octet (index 1513,
+lane 1, word 191) leaves on 191 + ⌊(1+16)/8⌋ = **193**. Inside. Coherent.
+
+### 3. §3.5 — the capability finding is correct AND correctly scoped, and the scoping is the part that matters
+
+**Verified at the source.** `injection.ml`'s placement-validation match has
+`At_terminate -> ()` — a bare unit — where `At_preamble` range-checks and
+`At_octet` both bounds-checks *and* refuses `/I/` and `/Q/` with a spec-grounded
+message. So `Place{At_terminate; character = idle_char}` is accepted, and the
+worker's answer to §3.5 is right.
+
+**The asymmetry is not a machinery defect and is worth stating so nobody
+"fixes" it**: an idle in a *data* lane of an open frame is outside the
+specification's space and rightly refused; an idle *where the terminate would
+be* is simply "this frame does not end here", which is a legal wire state and the
+exact G6 stimulus.
+
+**The scoping is right and it is the part with consequences.** The capability
+question (*can `Injection` express it?* — **yes**) and the construction choice
+(*does `run_g6` use it?* — **no**, because `Arrival.terminate_octet_time` gives
+the same octet time with no `Injection` object, no validation pass and no
+cross-check idiom) are answered **separately and not conflated**. Had they been
+merged, a future packet would have inherited "the stimulus needs new machinery",
+which is false. **For the G campaign specifically: the seedable stimulus space is
+not bounded by this — an unterminated oversize frame is constructible today.**
+
+**The mechanism is sound**, and I checked the property that makes it so rather
+than the shape: the schedule still records a terminate, so `Arrival.check` and
+`Bench.run`'s own gate pass, while **the wire the DUT sees has none**. That is
+M03-F2's accepted construction one family on. Both failure sites are checked —
+the overridden word before driving, and the cycle `run` actually drove
+(`WO-0047` §6 item 7). **And the row is coherent with §2's new ruling**: the idle
+standing where `/T/` would be pulses nothing precisely because REQ-108's
+truncation already closed the frame, which is the same closure-list fact the
+window bound rests on.
+
+### 4. The self-found bug — fixed at all four sites, and the guard question comes back clean
+
+Fixed at `run_g1`, `run_g3`, `run_g4`, `run_g6`, each now comparing against
+`expected_tkeep_for ~delivered:delivered2` rather than a literal. Verified at
+lines 359, 665, 834 and 1011.
+
+**The guard question — was anything else derived by the same wrong route? No, and
+this is the answer I wanted rather than the one I expected.** The wrong route was
+*pattern-matching a constant from a neighbouring row instead of re-deriving it*.
+Every other magnitude in the file is **derived**, not written:
+
+```
+let truncated_delivered = 1514                                  (* REQ-108's own text *)
+let truncated_words     = (truncated_delivered + 7) / 8         (* not 190 *)
+let truncated_tkeep     = (1 lsl Int.rem truncated_delivered 8) - 1   (* not 0x03 *)
+```
+
+The only literal in the family's arithmetic is **1514 itself**, which §2 asked
+for by name — it is REQ-108's constant and taking it from the requirement is the
+point.
+
+> **One residual, named not bounced.** `truncated_tkeep` lacks the
+> `if Int.rem … = 0 then 0xFF` guard that `expected_tkeep_for` carries. At 1514
+> (`rem` = 2) it yields 0x03 and is correct — **but correct because of its
+> input's value, not by construction**: were the constant ever a multiple of 8 it
+> would silently yield 0x00. REQ-108 fixes 1514 and it is not going to move, so
+> this is fragility rather than a defect. Recorded because it is one edit away
+> from the exact failure this round already caught once.
+
+### 5. The rest of the checklist
+
+**The `dune` repair is comment-only** — verified: every changed line in the hunk
+begins with `;`, no stanza is touched. The repaired content is accurate (E3 is
+NO-ASSERT; F5 by citation; **E5 correctly recorded as living in `test_m03_e.ml`
+and not in this directory** — a precision the stale list would not have had). The
+worker asks whether it should have been a separate packet: **no. Repairing a
+header whose own comment says "when one does not, this comment is wrong and a
+reader has no way to tell" is discharging that comment's own instruction**, it is
+comment-only, and adding G's line beside a known-stale list would have been the
+worse choice. Disclosed rather than slipped in, which is the standard.
+
+**M03-G5 is declared codeless**, in M03-D4's and M03-A4's shape, quoting §6.2's
+own Discard-row sentence. Five `%expect_test` blocks, no sixth. Correct.
+
+**M03-G2's adjacency is preserved as an in-unit pairing** — both members in one
+block, per lane, 1518 then 1519 ascending. Two schedules rather than one is
+faithful: the row's claim is about *outcomes* being indistinguishable, not about
+back-to-back timing, and neither the row text nor §3.2 asked for one schedule.
+**And the realisation is stronger than a comparison would have been**: each
+member asserts 1514 **independently**, by its own governing clause, where a
+cross-assertion of the two against each other would pass on two wrong-but-equal
+values.
+
+**M03-G3's offset rounding is right and the disclosure is right.** A start
+character at content index 1618 lands in lane 2 at a lane-0 start and lane 6 at a
+lane-4 start — illegal at both, REQ-101 — so some rounding is forced whatever the
+mechanism. Index 1620 gives lane 4 and lane 0 respectively: legal at both.
+*(Precision note, not a defect: the Return log says "1618 mod 8 = 2 at either
+start lane"; the lane differs by start lane — 2 and 6 — and the conclusion that
+neither is legal is what carries it. And 1616 and 1620 are the equidistant pair,
+not 1618 and 1616.)*
+
+**X-5 confirmed on its first real exercise**, against inputs up to 1700 octets
+with the literal 1514 extent — the row set its own docstring names as its
+customers. A confirmation, as §5 framed it.
+
+**§3.1 answered**: the row's own word-count check speaks first at every row,
+because `assert_monitors_clean` is the last call in each function. That falls out
+of "structural first" rather than from racing the two, which is the right reason.
+
+### 6. Expected CI
+
+- **Build: the unknown, as always.** One new file, one comment-only edit.
+  `precompile_check.sh` structurally excludes this directory and its green is not
+  a type-check. Named risk: warning **9** fatal on any record literal, and
+  `Int.rem` rather than `mod` (alerts are errors) — both observed clean on
+  reading, neither verifiable here.
+- **`runtest`: predicted GREEN — twenty-five `%expect_test` units**, all silent,
+  no promotion produced. **Measured, not recalled**, via `tools/dv_checks.sh`'s
+  inventory block at this tree: 3+1+4+3+4+4+**5**+1 = **25** in the M03 bench,
+  **105** repository-wide. The previous figure was 20/100; family G adds five.
+- **No `SO-` is owed or offered.** Family G's five-class sealed-mapping
+  qualification is the gate, and `SO-M03` does not issue regardless.
+
+### 7. Verdict and conduct
+
+**ACCEPT.** All five built rows are correct against the rows they cite, the
+family's trap is guarded in code, the two questions I returned were answered by
+establishing rather than assuming, and the one bug in the round was found,
+fixed and disclosed by its author before return.
+
+Three things this round did that are worth naming as precedent. It **took a
+specification ruling over its own work order** and said so loudly. It **kept a
+capability finding separate from a construction choice**, which preserved a fact
+a future packet needs. And it **caught, by re-deriving from a formula, a wrong
+constant that would have type-checked** — in a container with no toolchain to
+catch it, on a row whose oracle being wrong would have certified a real defect as
+a pass. That last one is the round's real work, and it happened because the file
+already had the right formula at its top for exactly that purpose.
