@@ -3785,3 +3785,237 @@ its own narrower "Deliverables" scope.
 - test/xgmii_rx_64/test_m03_g.ml
 - test/xgmii_rx_64/dune
 - agents/handoffs/WO-0056_m03-g-discard-window-repair.md
+
+---
+
+## [J-tb_writer-0015] 2026-08-03T23:15Z | task:WO-0057 | Family H — start without terminate, and the splice construction that makes M03-B4's "begins AT that start character" literal
+
+### Trigger
+
+`WO-0057/2026-08-03T23:15Z` (dv_lead, via the orchestrator): the family that
+closes REQ-110's central sentence — the aborted frame's last delivered octet
+is the one immediately preceding the new start character — in both
+directions, plus M03-H4, the row that makes §0.6's C-23 high-cycle counting
+convention testable at M03 for the first time. Four rows, all ASSERT, built
+in the packet's own risk-ranked order (§2) with M03-H4 explicitly named as
+the one to build last.
+
+### Inputs
+
+`agents/charters/tb_writer.md`; `agents/PROTOCOL.md` §2-6 and §10 (read in
+full); `agents/handoffs/WO-0057_tb-m03-family-h-start-without-terminate.md`
+in full (all 11 sections, plus my own Return log appended this spawn). This
+journal's own header and my prior entries through `J-tb_writer-0014`
+(confirmed next id 0015). `docs/specs/modules/xgmii_rx_64.md` in full (all
+13 sections, re-read rather than assumed unchanged since `J-tb_writer-0014`
+— §6.1's preamble/lane-geometry paragraphs, §6.2's `Preamble`/`Frame` rows,
+§6.3 items 3/6/8, §7's timing contract, §9's full table, its fifth
+co-occurrence ruling, rows 8/9, the "Strobe cycle, pinned" section including
+its 2026-08-04 zero-referent paragraphs, §10's REQ-110 hook). `docs/specs/
+requirements.md` §0.3, §0.5 (front offset/word-delay identity, re-read for
+the lane arithmetic REQ-101's own rule reduces to), §0.6 (full text,
+including the C-23 counting-convention paragraph, quoted rather than
+paraphrased where it matters), §0.7, §1.1, REQ-101, REQ-102, REQ-103,
+REQ-105, REQ-110 (full text). `test/attack_plans/AP-xgmii_rx_64.md` §0-3 and
+§4.H in full, rows M03-H1 through M03-H4 verbatim (the packet's own citation
+rule: the rows govern jointly with the packet on any difference). `test/
+xgmii/injection.ml` read in FULL, not just `.mli` — specifically
+`create`'s own `Place` legality arithmetic (`At_preamble`'s range check,
+`At_octet`'s bounds/idle-refusal, the universal `/S/`-lane check applied to
+EVERY placement type, lines 95-178) and `outcomes`'s own per-octet-time
+walker (lines 284-446), both hand-traced against every row's own splice
+construction before trusting `fail_cross` on any of them — this is new
+territory (no prior row spliced a THIRD character or corrupted a preamble
+position with `start_char`) and the WO-0043 rule ("checked the mechanics,
+not merely the interface") applied in full. `test/xgmii/injection.mli`,
+`test/xgmii/arrival.mli`, `test/xgmii/xgmii_word.mli`, `test/xgmii_rx_64/
+bench.mli`, `test/monitors/strobe_monitor.mli` (full text — [sample]'s own
+C-23 documentation, [expect]'s per-event registration), `test/monitors/
+octet_time.mli` (the `Latency` module, `frame_out`'s `~expected_octets`
+docstring naming M03-H1/H2 as customers), `test/monitors/
+conservation_monitor.mli`. `test/xgmii_rx_64/test_m03_e.ml`, `test_m03_f.ml`
+(`run_f2`'s `k = 0` window form) and `test_m03_g.ml` (in full — M03-G7's own
+splice precedent and its `account_resync_runt_frame` helper, generalised
+here) read as idiom reference, named throughout the Return log where a
+pattern is reused rather than reinvented. No path under `libs/**`, `top/**`,
+`bin/**` or `rtl_snapshots/**` was opened, targeted or swept, at any point in
+this spawn. No path under `docs/reports/audit/**` was opened.
+
+### Reasoning
+
+**The construction problem this whole family shares, and why the obvious
+two-`frame_case` `Injection.create` shape fails every row here.** REQ-110's
+own sentence — a new start character "SHALL begin a new frame AT THAT START
+CHARACTER" — means the second frame's preamble starts immediately, no idle
+gap. `Injection.create [case1; case2]`'s ordinary layout schedules `case2`
+independently (`case1`'s own declared terminate octet time plus `ifg`),
+which is the M03-B4 shape (a genuinely separate frame after a genuine gap)
+and not what M03-H1/H2/H3/H4 ask for. I worked this out by hand-deriving
+what the wire would look like under a naive two-case attempt before writing
+any code — an idle gap of `ifg`-minus-one octets between the injected `/S/`
+and the SECOND frame's own real `/S/`, which the receiver would decode as
+idle characters IN THE FIRST FRAME'S OWN PREAMBLE, itself routing to REQ-105
+and aborting the very frame the row means to open — rather than discovering
+it as a test failure against a container that cannot run one. Every row
+instead builds ONE `Injection` `frame_case` whose declared array is a
+splice (delivered filler, a placeholder a `Place` corruption turns into the
+closing/opening character, 7 more octets serving as the new frame's own
+preamble tail with no gap, then that frame's real content), closing on the
+array's OWN natural terminate character, which `Arrival` places
+automatically right after the array ends. This is `test_m03_g.ml`'s M03-G7
+device — "a frame the STIMULUS itself opens mid-array has no `Arrival.frame`
+record" — generalised from a runt-sized leftover to a full, independently-
+chosen following frame, by making the array long enough to hold one.
+
+**M03-H1's own lane derivation, and why it drives REQ-110's own verification
+column even though the AP row's text names only lane 0.** The `/S/` sits at
+`At_octet 64` (frame 1's own declared length). Since 72 = 8 + 64 is a
+multiple of 8, `start_ot + 72` always shares `start_ot`'s own lane — so
+driving M03-H1 at both start lanes (which I did, reading REQ-101's own
+verification column, "in lane 0 and in lane 4," as binding here even though
+the row's own AP text says only "lane 0") reproduces exactly that column's
+two cases for free, not by accident.
+
+**M03-H2's `k`, chosen per lane rather than shared, because the character's
+lane is absolute.** REQ-101 binds the injected `/S/`'s own lane (4), not a
+property of the frame it interrupts. At a lane-0 start that forces `k mod 8
+= 4`; at a lane-4 start it forces `k mod 8 = 0` — two DIFFERENT residues,
+so I derived and guarded `k = 12`/`k = 16` independently rather than reusing
+one constant across both driven instances and trusting symmetry that does
+not hold.
+
+**M03-H2's content assertion is this row's whole reason to exist, and I put
+it exactly where the packet's own §5 says it goes.** WO-0057 §2.3's own
+warning — a design that switches its alignment offset on the SAME cycle it
+accepts the new `/S/` produces a plausible `tkeep` and loses the four
+octets silently — is why `run_h2` asserts `got1` against `filler k` (the
+exact octet VALUES delivered before the splice), not merely the count or
+`tkeep`, in its usual assertion-order slot (after structural facts, before
+the strobe set) rather than promoted early for emphasis it does not need
+structurally.
+
+**M03-H3's simplification, once the construction technique above was
+settled.** Since the `/E/` closes frame 1 outright (§9's closure list;
+REQ-105's own text: a frame already closed "is not reopened by a later
+error character"), the `/S/` two cycles later is an ORDINARY new frame's own
+start — not a REQ-110 event at all. I chose `e_idx` so the `/E/`'s own octet
+time lands at lane 0 at BOTH start lanes (`24` at lane 0, `20` at lane 4,
+both landing on octet time 40 relative to cycle 0 of the run, confirmed by
+hand before writing the guard), which makes "two cycles later" (16 octet
+times) an EXACT, checked equality (`s_cycle = e_cycle + 2`) rather than an
+approximate placement that happens to be close.
+
+**M03-H4's single, fixed geometry — read from the row's own notation, not
+chosen by me.** The row states frame A opens "at 8c" and is aborted "at
+8c + 4." `8c` is a lane-0 octet time by §0.5's own definition (octet time =
+8 x cycle + lane); the row's own notation already commits to frame A
+starting at lane 0, and starting it at lane 4 instead would put the abort in
+the NEXT cycle (a different stimulus REQ-110's own verification column
+already covers as the lane-4-of-an-S-word case, M03-B4). I read this as
+what the row asks for, not as a scope-narrowing choice, and guarded it in
+code (`Int.rem start_ot_a 8 <> 0` fails loud) rather than silently assuming
+it. Both spliced characters (`At_preamble 4`, `At_octet 0`) land at legal
+lanes at EVERY start lane by §0.5's own arithmetic (an 8-octet preamble is a
+multiple of 8), which is a fact about the CONSTRUCTION's robustness, not a
+license to drive the row at a lane-4 geometry it does not describe.
+
+**M03-H4's cycles and windows, cross-checked two ways before trusting
+either.** I derived `expected_cycle_a = c + 2`/`expected_cycle_b = c + 3`
+and their windows (`received = 0` form, `run_f2`'s own precedent, grounded
+in the M03-G6 architect ruling per WO-0057 §3.2) from §9's own no-output-
+word pin applied to each frame's own closing character independently, THEN
+symbolically re-derived `injection.ml`'s own `window`/`no_output_cycle`
+functions by hand against the SAME two closing octet times, confirming both
+routes give the identical four numbers before writing either the
+`Strobe_monitor.expect` calls or the `fail_cross` match arms. This is the
+same "checked, not trusted" discipline `test_m03_g.ml`'s `k = 1588`
+derivation used, applied here to a construction with no single prior
+instance to check against (three closing characters across two consecutive
+words, not one).
+
+**Why the two `error_start_without_terminate` events are asserted as an
+exact two-element list with a consecutiveness guard, not as "the strobe
+pulsed twice."** `error_pulses samples` is matched against exactly
+`[(c1, n1); (c2, n2)]` with `c1 = expected_cycle_a`, `c2 = expected_cycle_b`
+AND `c2 = c1 + 1` asserted explicitly — the C-23 instrument this row exists
+to be is that the cycles are CONSECUTIVE, not merely that two exist, so I
+did not let "two pulses observed" stand in for "two ADJACENT high cycles
+observed."
+
+### Actions
+
+Wrote `test/xgmii_rx_64/test_m03_h.ml` in full (four row functions, four
+`%expect_test` blocks, all `[%expect {||}]` empty per ADR-0005 rule 2, plus
+`filler`/`preamble_tail`/`account_spliced_forwarded`/
+`account_spliced_dropped`/`split_at_first_tlast`/`fail`/`fail_cross` shared
+helpers, file-local per this packet's own convention). Edited `test/
+xgmii_rx_64/dune`'s header comment: one new line naming this packet's four
+rows, matching the existing per-packet list's format exactly, no stanza
+touched. Appended the Return log to `agents/handoffs/
+WO-0057_tb-m03-family-h-start-without-terminate.md`. No file under
+`libs/**`/`rtl_snapshots/**`/`top/**`/`bin/**` was opened to write any of
+this.
+
+### Evidence
+
+All commands run from a repo checkout at this SHA.
+
+- `ocamlc -stop-after parsing test/xgmii_rx_64/test_m03_h.ml`: exit 0,
+  syntax only (ADR-0005).
+- `bash tools/precompile_check.sh`: `precompile_check: ALL LANES PASSED`;
+  `test/xgmii_rx_64` still correctly `EXCLUDED — depends on
+  hardcaml_ethernet`; `dv_golden`/`dv_monitors`/`dv_xgmii` (31 units) and
+  `dv_axi64_probe`/`dv_xgmii_probe` (12 units) unchanged, 0 errors.
+- `bash tools/dv_checks.sh`: `check_records_vs_appendix.sh` 23/23 PASS;
+  `check_emitted_verilog.sh` 5/5 PASS, 3 PENDING (pre-existing, not M03);
+  bench inventory shows `test_m03_h.ml` at **4** units, M03 total **31**
+  (was 27); `check_rfc1071_anchor.sh` OBLIGATION OPEN on blocked network
+  egress — pre-existing (`J-dv_lead-0017/0018`), unrelated to M03.
+- `(eval $(opam env); dune build @test/xgmii_rx_64/runtest)`: FAILED,
+  `Library "hardcaml" not found` / `Library "ppx_hardcaml" not found` —
+  confirmed-absent toolchain, reproduced fresh this spawn. `(eval $(opam
+  env); dune build @default)`: FAILED the same way, container-wide (every
+  `hardcaml`/`ppx_hardcaml`/`ppx_expect`/`hardcaml_axi`/`hardcaml_waveterm`-
+  dependent directory, `libs/hardcaml_ethernet` and `docs/specs/ifc_check`
+  included) — run to confirm this packet's diff is not the cause, not
+  assumed. `dune runtest`: not run, same reason; all four `[%expect]`
+  blocks are `{||}`, empty.
+- `git status --porcelain`: exactly `test/xgmii_rx_64/dune` (modified, one
+  line) and `test/xgmii_rx_64/test_m03_h.ml` (new) before this journal entry
+  and the WO-0057 Return log were staged.
+
+### Outcome
+
+DoD against WO-0057: all four rows (M03-H1, H3, H2, H4) map to named tests,
+built in the packet's own risk-ranked order with H4 last, zero declared
+gaps, zero silent skips. All eight of §10's deliverables answered in the
+Return log. `dune build`/`dune runtest`: unverified locally, confirmed-
+absent toolchain (now shown container-wide), CI is authoritative. Journal
+Inputs lists no `libs/**`/`top/**`/`bin/**`/`rtl_snapshots/**` path and no
+`docs/reports/audit/**` path, targeted or opened, at any point. Diff scope:
+`test/xgmii_rx_64/test_m03_h.ml` (new) and `test/xgmii_rx_64/dune` (one
+line) only, plus this journal entry and the WO-0057 Return log — matching
+the packet's own narrowed "Deliverables" line exactly.
+
+Handoff: a RETURNED block appended to `agents/handoffs/
+WO-0057_tb-m03-family-h-start-without-terminate.md`'s Return log. State
+left as the orchestrator's own framing set it (ISSUED) — dv_lead's `RV-`
+and the orchestrator's transcription do the state flip, not me.
+
+### Open-questions
+
+None new from me. WO-0057 §7's own open question (whether the M03-G6
+architect ruling's principle generalises to any zero-delivered closure) is
+the architect's, already routed by the packet itself and blocking no row
+here — not reopened. One item for dv_lead's own judgment, not a question
+needing an answer before this round can be judged: whether the "merged/
+spliced array via `Injection`" construction, now exercised at five sites
+total across `test_m03_g.ml` and this file, is worth naming explicitly as a
+shared device in a future MUST-STAY-GREEN list for either family's next
+mutation campaign — flagged in the Return log's own §6 answer, not asked as
+a blocking question.
+
+### Files-in-this-commit
+- test/xgmii_rx_64/test_m03_h.ml
+- test/xgmii_rx_64/dune
+- agents/handoffs/WO-0057_tb-m03-family-h-start-without-terminate.md
