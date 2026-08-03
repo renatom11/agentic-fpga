@@ -307,9 +307,9 @@ index = head_block('agentic-fpga — a trading network card built by an AI org',
   <p class="sub">A 10-gigabit Ethernet network card for market data, written in
   Hardcaml by a hierarchy of AI agents under a human sponsor who sets direction
   and signs the gates. The architect wrote the specification — 110 requirements,
-  20 module contracts. The hardware designer wrote the modules and the fix for
-  the design&rsquo;s first bug. The verification lead wrote the attack plans, reviews
-  every test line by line, and found that bug. The auditor, blinded to the
+  20 module contracts. The hardware designer wrote the modules and repairs
+  what verification convicts. The verification lead wrote the attack plans and
+  reviews every test line by line. The auditor, blinded to the
   tests, seeds defects into the design; the tests must catch them, with expected
   results sealed before the defects exist. The orchestrator routes the work and
   makes every commit. Every commit carries its author agent&rsquo;s reasoning,

@@ -5422,3 +5422,35 @@ Sponsor redeploys when ready.
 - site/public/index.html
 - site/public/org-chart.html
 - site/public/spec-atlas.html
+
+## [J-orchestrator-0123] 2026-08-03T15:30:00Z | task:none | Hero: the single-bug references replaced with project-level statements
+
+### Trigger
+Sponsor: don't talk about one specific bug in the hero; keep it
+meta about the project as a whole.
+
+### Inputs
+- Two lines revised: hardware designer "wrote the modules and
+  repairs what verification convicts"; verification lead "wrote
+  the attack plans and reviews every test line by line". All
+  else unchanged.
+
+### Actions
+- site/build.py hero edit; site rebuilt; this commit.
+
+### Evidence
+- Rebuild banner unchanged counts.
+
+### Outcome / DoD
+Sponsor redeploys when ready.
+
+### Open questions
+- None.
+
+### Files-in-this-commit
+- site/build.py
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/index.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html
