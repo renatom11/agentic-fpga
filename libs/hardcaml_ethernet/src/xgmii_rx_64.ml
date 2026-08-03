@@ -693,7 +693,14 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
      begins a new frame tells the word before it nothing except that it was the
      last of its own. *)
   let nc = mux2 al_new (zero 4) (popcount al_keep) in
-  let strip = mux2 (sel_valid &: (sel_terminate |: sel_oversize)) (of_int ~width:4 4) (zero 4) in
+  (* MUTATION g-c1 (WO-0055 family G) — NEVER MERGE. Seeded defect: a frame
+     REQ-108 truncates delivers 1518 octets instead of 1514. This design has no
+     delivered-count constant — 1514 is [oversize_threshold] minus the four-octet
+     tail removal — so the received-count cap is made the delivered count by
+     suppressing that removal on the oversize closure alone. The terminate
+     closure still strips four octets; detection, [tuser][0], [error_oversize]
+     and the resynchronisation are untouched. *)
+  let strip = mux2 (sel_valid &: sel_terminate) (of_int ~width:4 4) (zero 4) in
   (* ---- the all-FCS tail word (REQ-103, REQ-015; BUG-0001) ----
      [emit_last_a] is the case where the FCS lies wholly inside the emitted
      word, and its [pc >: strip] guard is what stops a word made *only* of FCS
