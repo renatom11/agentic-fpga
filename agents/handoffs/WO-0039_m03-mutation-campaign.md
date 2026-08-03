@@ -1,14 +1,19 @@
 # WO-0039: The M03 mutation campaign — five seeded RTL defects the bench must die on
 
-- **State**: **RETURNED — ACCEPTED, campaign PASSED (5/5 killed, 21/21
-  REQUIRED)**, adjudicated at `RV-0039-VERDICT` at the foot of this packet,
-  `J-dv_lead-0036`. Two findings, **F-1** and **F-2**, both corrections to
-  dv_lead's own predictions rather than bench defects; no mutation voided, no
-  re-seed, the auditor's conduct recorded as exemplary. **The bench-side round
-  is not finished**: B1 is retired as discharged by M1/M4, and **B2 and B3 are
-  owed as CI runs on throwaway branches**, diffs and frozen predictions in
-  `RV-0039-VERDICT` §6. **`SO-M03` DOES NOT ISSUE** — the campaign qualified
-  the *instrument*, not the *module*; families D–H are unwritten (§7).
+- **State**: **CLOSED — campaign PASSED and COMPLETE.** Eight seeded defects,
+  eight predictions frozen before any diff existed, eight outcomes as
+  predicted: **M1–M5 5/5 killed at 21/21 REQUIRED through the predicted
+  channel**, B1 retired on M1/M4's stronger evidence, **B2 exact** (run
+  30783111780 — the FAIL line character-for-character, closing fix-verdict
+  condition 2's evidence hole), **B3 confirmed** (run 30783112740 — the
+  green-run exhibit, now a run id rather than an argument). Adjudicated at
+  `RV-0039-VERDICT` and its addendum; `J-dv_lead-0036`, `J-dv_lead-0037`.
+  Findings **F-1** and **F-2** are both corrections to dv_lead's own
+  predictions, not bench defects; **no mutation voided, no re-seed, all seven
+  `mut/*` branches cleared for deletion**; the auditor's conduct recorded as
+  exemplary. **`SO-M03` DOES NOT ISSUE** — the campaign qualified the
+  *instrument*, not the *module*. Next wave and the updated sign-off path in
+  the addendum: **family D (the FCS check, REQ-104) first and alone**.
 - **From** / **To**: dv_lead → auditor (via orchestrator; relay class
   *Summarizable*, **with a restriction — see §0**)
 - **Spec basis**: `docs/specs/modules/xgmii_rx_64.md` (SPEC-M03) at the
@@ -582,3 +587,195 @@ needs saying plainly.
 **What issues now instead:** this adjudication. The bench is qualified; the
 module is not signed off; nothing about M03's error paths is claimed in either
 direction.
+
+---
+
+### RV-0039-VERDICT ADDENDUM: the B-round scored, the campaign closed, and the shape of the next wave — dv_lead, `J-dv_lead-0037`
+
+#### 1. B2 and B3 — both frozen predictions confirmed exactly
+
+**B2 (run 30783111780, `mut/wo-0039-b2@a47fe76`).** T-C12 red **via
+`batched_failure_with_protocol`, not via the R-1 check** — the ordering claim in
+the freeze, confirmed. Sixteen lines, exactly one FAIL, and the FAIL line is
+**character-for-character** the text I computed field by field before the run:
+
+```
+FAIL  lane 0 length 64: delivered=60/60 tkeep=none/15 tuser=0 terminate_lane=0 error_pulses=0 views_disagree=false
+```
+
+Every field on that line except `tkeep` is correct, so **`outcome_ok`'s
+`None -> false` branch is the only thing that could have made it FAIL** — which
+was the entire point. The fifteen other entries PASS, including `lane4/68` with
+`views_disagree=true` matching the predicate, which is a second confirmation
+that the R-1 oracle still holds on the unmutated design.
+
+**The hole in my own fix verdict is closed.** `BUG-0001` fix-verdict condition 2
+rested on that branch — it is what let me read `lane 4 length 68`'s silence as a
+positive `Some 255` observation — and **no mutation in the RTL campaign had
+exercised it**. It has now fired, on demand, at a predicted entry, with a
+predicted message. Condition 2's discharge is no longer leaning on an
+unobserved branch.
+
+**B3 (run 30783112740, `mut/wo-0039-b3@0630f2e`).** Entire suite **GREEN**,
+conclusion "success", zero failures, T-C5 silent. **The exhibit stands, and it
+is now a run id rather than an argument** — which is the only form of it I was
+ever willing to rely on. A row whose stimulus list empties passes silently and
+identically to a row that ran, and no `[%expect]` block in this suite can tell
+the difference. That is the standing structural caution families D–H inherit,
+and it is recorded in `AP-xgmii_rx_64.md` §8.
+
+#### 2. Final campaign tally
+
+| | seeded | killed | REQUIRED | notes |
+|---|---|---|---|---|
+| **M1–M5** (RTL, auditor-seeded, blinded) | 5 | **5** | **21/21** through the predicted channel | findings F-1, F-2 — both corrections to dv_lead's predictions |
+| **B1** (bench) | — | retired | — | discharged by M1/M4, which proved the R-1 check *discriminating*, not merely reachable |
+| **B2** (bench) | 1 | **1** | exact | character-for-character; closes fix-verdict condition 2's evidence hole |
+| **B3** (bench) | 1 | n/a | exact | expected-green exhibit, confirmed |
+| **control** | — | — | green at `0556f23`/`0d231ee` | plus parent-SHA-structural on all seven branches |
+
+**Eight seeded defects, eight predictions frozen before any diff existed, eight
+outcomes as predicted at the unit level.** Two predictions were wrong in their
+*reasoning* (F-1's stated diagnostic, F-2's enumerated branches) and both were
+withdrawn rather than reinterpreted.
+
+#### 3. Branch cleanup — CONFIRMED, delete all seven
+
+`mut/wo-0039-m1..m5`, `mut/wo-0039-b2`, `mut/wo-0039-b3`: **delete them all.
+No re-seed is owed anywhere**, B-round included. M1's strobe-coupling question
+was resolved in the auditor's favour (§5 of the verdict), M3's and M4's
+disclosures explained their results without impugning fidelity, and B2/B3 hit
+their frozen predictions exactly.
+
+**The evidence survives the deletion**, which is why deleting is safe: every run
+id, every failing unit and every verbatim message is in this packet, and the
+frozen predictions they were scored against are in the sealed companion with a
+`git diff` of seven insertions and one deletion proving only its state line
+moved. Branches were the vehicle; the packet is the record.
+
+#### 4. Next wave — **family D first, alone**, and a correction to the mapping
+
+**The relayed mapping is off by one.** In `AP-xgmii_rx_64.md` §4, **D is the
+FCS check (REQ-104)**; the error character mid-frame is **E** (REQ-105). The
+rest: F runts (REQ-107), G oversize (REQ-108), H start-without-terminate
+(REQ-110).
+
+**Shape: one work order for family D now. Not D+E, not all five up front.**
+
+*Why not all five up front.* Each new bench needs its own mutation
+qualification before its rows can carry an `SO-`, so five packets issued
+together is five campaigns queued behind five review loops. The loop just
+proved itself over six rounds on twelve rows; run it once more on a small
+family before committing the wave's shape.
+
+*Why family D and not E.* Two reasons, and the second is the decisive one.
+
+1. **D closes a hole that is live today, and that this campaign did not
+   catch.** All fifteen tests assert `tuser`[0] = 0 and *no* strobe on good
+   frames. **Nothing anywhere drives a bad-FCS frame.** A design that hardwired
+   the verdict to good and never pulsed `error_bad_fcs` would pass the entire
+   suite. M2 was caught by seven units precisely because it made the verdict go
+   **bad** — none of my five mutations was a *silently-always-pass* mutation,
+   and one exists. **REQ-104's positive direction is unverified.**
+2. **D is the only family in D–H that does not rest on an un-anchored model.**
+   `AP` §7's WO-0033 standing limit — which I have now promoted into a banner,
+   because §7 still reads as a gap list although X-1..X-5 were all built — says
+   **X-1's outcome model is not the charter §3 external anchor**, and that **no
+   `SO-xgmii_rx_64.md` PASS may rest on it until the verilog-ethernet
+   differential co-sim has run.** Families E, F, G and H lean on X-1's computed
+   §9 outcomes. **Family D's rows are hand-derivable from §9 end to end.** So D
+   can reach a sign-off-eligible state on a path that does not run through an
+   obligation nobody has discharged yet.
+
+#### 5. The first packet's spine
+
+**Rows: M03-D1, M03-D2, M03-D3 (ASSERT) and M03-D4 (NO-ASSERT declaration).**
+Four rows. Small on purpose.
+
+- **M03-D1** — a 64-octet frame with **one payload bit flipped after the FCS
+  was computed**, both start lanes. Sixty octets still delivered (forwarded in
+  full, REQ-005), `tuser`[0] = 1 on the `tlast` word, **exactly one
+  `error_bad_fcs` high cycle on the `tlast` cycle** per §9's pin, no other
+  strobe. Kills a store-and-forward-by-the-back-door design, and a design
+  reporting on the terminate cycle instead of the `tlast` cycle.
+- **M03-D2** — the anti-vacuity partner. Largely **dischargeable by citation**:
+  the existing fifteen tests already assert `tuser`[0] = 0 and no strobe across
+  eight lengths, two start lanes, 1513/1516 and 1518. The packet must **state
+  the extent it is citing rather than re-drive it**, and must extend it to the
+  good-FCS partners of D1's and D3's own frames.
+- **M03-D3** — a bad-FCS 64-octet frame followed at the **§0.3 minimum gap** by
+  a good-FCS frame. The bad verdict lands on the first frame's `tlast` word and
+  the second frame is clean. Kills a design that reads the CRC register at the
+  `tlast` cycle rather than carrying the verdict with the frame — which is a
+  real hazard, because §6.1 seeds the register in `Preamble` and §6.1's drain
+  paragraph puts the first frame's `tlast` word up to two cycles after its
+  terminate word.
+- **M03-D4** — NO-ASSERT. Residue-versus-capture is unobservable (§6.3 item 1).
+  The packet **declares** it and asserts nothing, exactly as A4 and L6 were
+  handled.
+
+**Machinery: none owed.** X-1 through X-5 are built (`AP` §9, WO-0033). D1's
+strobe assertion reuses the `Strobe_monitor.expect` pattern M03-C4 already
+exercises — pinned cycle, `not_before`/`not_after` window, `why` string. The
+one open question is a **bench-side** one, not a library gap: whether
+`test/xgmii/arrival.mli` lets a caller pin the inter-frame gap to §0.3's
+minimum, or whether `Bench` needs a `two_frames ~lane ~gap` beside `one_frame`.
+The packet's §4 answers it by reading `arrival.mli`, which is not a
+prohibited path.
+
+**The age-0 sampling declaration, made concrete rather than left as a bar.**
+`AP` §8 requires the first D–H bench to state which of its rows depend on an
+age-0 closure record. For this packet the answer is computable in advance and
+the packet will say so: **D1's lane-0 case is in the class.** A 64-octet frame
+at a lane-0 start has `terminate_lane = 0` — the very entry R-1 is about — so
+its `tlast` cycle, and therefore §9's pinned `error_bad_fcs` cycle, is decided
+combinationally in the terminating word. **D1 at lane 0 must be asserted from
+the `Before` view and may not be written against the old position**, and the
+packet states this as a row property rather than leaving tb_writer to discover
+it. D1 at lane 4 (`terminate_lane = 4`) is not in the class, which makes the
+two lanes a built-in control on each other.
+
+**Mutation qualification, named up front as WO-0038 §8 did** — one per row's
+declared Kill, so the qualification campaign is derivable from the plan rather
+than invented later:
+
+| | mutation | must die |
+|---|---|---|
+| D-M1 | hardwire the FCS verdict good; never pulse `error_bad_fcs` | **M03-D1** — the mutation the current suite cannot catch |
+| D-M2 | hardwire the verdict bad | **M03-D2**, and much of the WO-0038 suite |
+| D-M3 | report the verdict from the CRC register at the `tlast` cycle rather than carrying it with the frame | **M03-D3** |
+| D-M4 | pulse `error_bad_fcs` on the terminate cycle instead of the `tlast` cycle | **M03-D1** on the pinned-cycle check |
+
+Same protocol as WO-0039: intents behavioural, seeder blinded to the
+predictions, predictions frozen and sealed before any diff exists, throwaway
+branches parented on the frozen bench SHA.
+
+**Then, in order:** **E** (REQ-105, and the natural second because its rows
+exercise the truncated-frame accounting path that F, G and H all reuse), then
+**F**, **G**, **H**. Each with its own qualification. **And in parallel, the
+verilog-ethernet differential co-sim** — E through H cannot carry an `SO-` PASS
+until X-1's outcome model is anchored, and that is a long-lead item that should
+start now rather than when it becomes the last blocker.
+
+#### 6. `SO-M03` path, updated
+
+`RV-0039-VERDICT` §7's path stands, with **one gate added that I had not
+previously named on this packet**:
+
+1. ~~B2~~ **done** — condition 2's evidence hole closed.
+2. ~~B3~~ **done** — exhibit recorded as run 30783112740.
+3. ~~The two prose items~~ **done** — the design-coupling docstring beside
+   `check_disagreement_matches_r1`, and `AP` §7's staleness banner plus §8's
+   four standing facts.
+4. **Families D–H benched**, each with its own mutation qualification. D is
+   specified above; E–H follow.
+5. **NEW — the verilog-ethernet differential co-sim must run**, because
+   families E–H rest on X-1's outcome model and WO-0033's own standing limit
+   bars an `SO-` PASS from resting on it unanchored. This is charter §3's
+   external-anchor rule reaching M03, and it is the longest-lead item on the
+   list.
+6. Only then, an `SO-xgmii_rx_64` whose scope statement names exactly which
+   rows it rests on.
+
+**The bench is qualified. The module is not signed off, and item 5 means it is
+further from sign-off than the campaign's success makes it feel.**

@@ -524,6 +524,24 @@ row carries the reason.
 
 ## 7. Machinery this plan requires and does not have
 
+> **STALE AS A GAP LIST — read §9's WO-0033 row before acting on this table
+> (dv_lead, `J-dv_lead-0037`).** All five items **X-1 through X-5 were built at
+> WO-0033** and **no row of this plan is blocked on machinery**. The table below
+> is kept as the requirements statement each item was built against — it is
+> useful for *what X-n must do*, and misleading for *whether X-n exists*. The
+> banner is here because a reader who consults §7 alone would plan around gaps
+> that closed three days after it was written, and this plan has already cost
+> one campaign finding to exactly that failure mode (a stale inference left
+> standing, `RV-0039-VERDICT` F-2).
+>
+> **The one live constraint is not a gap but an anchor**: WO-0033's own standing
+> limit records that **X-1's outcome model is not the charter §3 external
+> anchor** — that is the verilog-ethernet differential co-sim — and **no
+> `SO-xgmii_rx_64.md` PASS may rest on the model until it has run.** Families E,
+> F, G and H lean on X-1's computed outcomes and are therefore gated on it for
+> sign-off purposes, though not for being written or run. **Family D is not**:
+> its rows are hand-derivable from §9 end to end.
+
 Deliverable 4 of WO-0027: named here, **not built here**. Each is a candidate
 for the next DV work order; the numbering is local to this plan.
 
@@ -639,6 +657,40 @@ other than its own row.
 > rows depend on an age-0 record, because a silently-missed strobe is a
 > NO-ASSERT row that looks like a PASS.
 
+> **Carried in from the WO-0039 mutation campaign — four standing facts for
+> families D–H, dv_lead, `J-dv_lead-0037`.** Five seeded RTL defects and two
+> seeded bench defects, all eight scored against predictions frozen before any
+> diff existed (`RV-0039-VERDICT`). What the campaign established about *this
+> bench*, as distinct from about M03:
+>
+> 1. **Three of the nine test units are blind to a one-cycle latency error, not
+>    five.** M03-A5, M03-B1 and M03-C3 are. M03-C1/C2 and M03-C5 are **not**,
+>    because since WO-0038 round 6 they also carry
+>    `check_disagreement_matches_r1`, which is pipeline-coupled. The figure
+>    "five of nine", recorded at `J-dv_lead-0035` and headed for this section,
+>    is **WITHDRAWN** — M1 falsified it. Timing in this suite is asserted by
+>    M03-A1/A2, M03-A3/A4 and M03-C4 directly, and by C1/C2 and C5 indirectly.
+> 2. **A `check_disagreement_matches_r1` firing routes to re-deriving the
+>    sampling model, never to adjusting the oracle.** It is a design-coupling
+>    tripwire; a firing shows every content column PASSing. The full statement
+>    lives beside the function in `test/xgmii_rx_64/test_m03_c.ml`. Any D–H
+>    bench that inherits a two-view diagnostic inherits this rule with it.
+> 3. **M03-A3's blindness to *lane-symmetric* errors is UNTESTED.** M3 was
+>    predicted to possibly demonstrate it and instead took the reddening branch,
+>    so the demonstration did not happen. A3 is a cross-lane equality row; D–H
+>    may not assume it catches content errors that affect both start lanes
+>    identically, and may not assume it misses them either.
+> 4. **REQ-104's positive direction is entirely unverified by the WO-0038
+>    suite, and this is a live hole rather than a planning note.** All fifteen
+>    tests assert `tuser`[0] = 0 and *no* strobe on good frames — the M03-D2
+>    direction. **Nothing anywhere drives a bad-FCS frame.** A design that
+>    hardwired the FCS verdict to good and never pulsed `error_bad_fcs` would
+>    pass every test in the suite today. The mutation campaign did not catch
+>    this because none of its five mutations was a *silently-always-pass*
+>    mutation — M2 broke the CRC and was caught by seven units precisely
+>    because it made the verdict go **bad**. **M03-D1 is the closure**, and it
+>    is why family D leads the next wave.
+
 ## 9. Change log
 
 | Date | Change | Author |
@@ -649,3 +701,4 @@ other than its own row.
 | 2026-08-03 | **WO-0033, the machinery.** All five of §7's items are **built** and no row of this plan is now blocked on machinery. **X-1** `test/xgmii/injection.ml` — the error-injection catalogue, whose expected §9 outcome is **computed** by running §6.2's state machine and §9's closure list over the emitted octet-time line rather than tabulated, so §6.1's two-events-in-one-word cases are ordinary and a frame the *stimulus* opens gets an outcome too; its strobe cycles come from §7's per-octet constant and §9's no-output-word clause, both gap-invariant, so the outcomes survive idle injection under `Idle_injection.cycle_of` and the WO-0031 scope note applies unchanged. `test_injection.ml` drives §6.1's consequence-1 **minimal witness** and confirms both reports on **W + 2** with different names — the row M03-N2 exists for and the one dv's own WO-0030 prose got wrong. **X-2** `test/xgmii_probe/` (drive and sample, both directions of the boundary). **X-3** `test/monitors/strobe_monitor.ml` — C-23 high-cycle counting, the §9 pinned-cycle comparison, the §0.6 window checked **against the pin itself** (a pin outside its window is a *specification* defect, the M03-R2 class), and "no strobe the stimulus created". **X-4** `test/xgmii/idle_injection.ml` — §10's 0, 1 and 7 cycles, carrying the **M03-N3 constraint as repaired at `06c1eba`**, refusing exactly one boundary per frame at both start lanes, with **C-45**'s lane-0 instances named in `c45_sites` and released only by `~allow_c45:true`, which defaults false and may be set only if C-45 lands. **X-5** the per-frame output extent on `Octet_time.Latency.frame_out` (one repair, shared with M14's X-9). **Standing limit, stated so no packet blurs it**: X-1's outcome model is cross-checked against this plan's hand-derived rows and is **not** the charter §3 external anchor — that is the verilog-ethernet differential co-sim, and no `SO-xgmii_rx_64.md` PASS may rest on the model until it has run. Status counts unchanged: 57 ASSERT, 7 NO-ASSERT, 4 NO-STIMULUS, 0 RULING, 1 GAP, 4 STRUCTURAL. | dv_lead, `J-dv_lead-0017` |
 | 2026-08-03 | **WO-0035, on the SPEC-M03 additions COUNTERSIGNED at `1fe71ca`.** Confinement verified against the tree: 8 hunks, 2 files, nothing outside `docs/**` and `agents/handoffs/**`. §9's **ruling 9** — `error_bad_fcs` NEVER below 5 received octets — endorsed; the architect's content-free-class ground reproduced independently (`zlib.crc32(bytes(4))` = `0x2144df1c` = REQ-304's residue, and it is the **unique** 4-octet member; at 0 octets §6.1 item 1's seed `0x00000000` is what item 4 would compare). **CREATES one row, and NOT the one the Return log named**: the ruling's row is **M03-M10**, because **M03-M9 is already taken** by the §0.6 inheritance row this plan cites in its own §5 — the architect protected §9's *ruling* indices by appending last and then proposed a colliding *row* index; the M-family index/ruling correspondence therefore ends at 8 and §4.M now warns of it. **STRENGTHENS three rows from a lower bound to an exact strobe set**: **M03-F2** and **M03-B3** ("exactly one `error_runt`" → *and no other strobe of any kind*), and **M03-N2**, whose zero-delivered sub-cases now assert exactly {`error_start_without_terminate`, `error_runt`} and nothing else. **One anti-vacuity constraint added that the ruling's own ground implies and neither packet stated**: M03-F2's 4-octet frame SHALL NOT use an all-zero filler, since that single frame passes a wrong design by accident — the content-dependence the ruling names is also a hole in the bench that tests it. Converts nothing; kills nothing; 0 RULING remain. New counts: **58 ASSERT**, 7 NO-ASSERT, 4 NO-STIMULUS, 0 RULING, 1 GAP, 4 STRUCTURAL (**74 rows**). Ledger **C-49** and **C-50** raised, both non-blocking, C-50 against text I signed myself at `06c1eba`. | dv_lead, `J-dv_lead-0020` |
 | 2026-08-05 | **BUG-0001's fix round: one row added, no row changed.** New row **M03-C5** — 1513- and 1516-octet frames at both start lanes, commissioned by dv_lead's locked prediction **P-1** in `BUG-0001` and by rtl_lead's **R-1**. It exists because BUG-0001's invariant (`excess = max(0, k − 4)`, k = the final output word's fill) is a rule about the *last word*, not about frame length, and every length that found it lay in 64…71: a fix that repairs the neighbourhood rather than the rule passes M03-C1 and fails M03-C5. **1516 at lane 4 carries terminate_lane = 0 with a full final word** — the second instance of the class in which R-1 says the closure is unobservable at `~clock_edge:After`, so the same row tests the sampling-position account away from length 68. **Also recorded, for families D–H's planning** (§8): rtl_lead's open question 2 — a strobe consumed from an age-0 closure record is invisible at the current sampling position, and in the error-injection families that coincidence is common rather than 1-in-16. Row and status counts: **75 rows**, 59 ASSERT, 7 NO-ASSERT, 4 NO-STIMULUS, 4 STRUCTURAL, 1 RULING→ASSERT. | dv_lead, `J-dv_lead-0032` |
+| 2026-08-06 | **WO-0039's mutation campaign, adjudicated (`RV-0039-VERDICT`). No row added, no row converted, no status count changed** — the campaign qualified the *instrument*, and this plan records only what it taught about the bench. §7 gains a **staleness banner**: its five items were built at WO-0033 and it reads as a gap list, which is the same failure mode (a stale inference left standing) that cost the campaign finding F-2. The banner also promotes WO-0033's standing limit to where a planner will see it — **X-1's outcome model is not the charter §3 external anchor, so families E–H are gated on the verilog-ethernet differential co-sim for sign-off, and family D is not**, being hand-derivable from §9. §8 gains four standing facts for D–H: the corrected **three-of-nine** timing-blindness count (the "five of nine" figure from `J-dv_lead-0035` is **withdrawn**, falsified by mutation M1); the rule that a `check_disagreement_matches_r1` firing routes to re-deriving the sampling model and never to adjusting the oracle; **M03-A3's blindness to lane-symmetric errors recorded as UNTESTED** (mutation M3 took the other branch); and the live hole that **REQ-104's positive direction is unverified — a design hardwiring the FCS verdict good passes all fifteen WO-0038 tests**, which is why **M03-D1** leads the next wave. Counts unchanged: 75 rows, 59 ASSERT, 7 NO-ASSERT, 4 NO-STIMULUS, 4 STRUCTURAL. | dv_lead, `J-dv_lead-0037` |

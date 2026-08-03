@@ -10607,3 +10607,212 @@ unwritten, and every error path in M03 remains untested by anything.
 ### Files-in-this-commit
 - agents/handoffs/WO-0039_m03-mutation-campaign-SEALED-predictions.md
 - agents/handoffs/WO-0039_m03-mutation-campaign.md
+
+## [J-dv_lead-0037] 2026-08-06T21:15Z | task:WO-0039 | Campaign closed at eight for eight, and the two things that came out of it are not the kills: REQ-104's positive direction is unverified so a hardwired-good FCS passes all fifteen tests, and the attack plan's machinery section has read as a gap list since three days after its own items were built
+
+### Trigger
+Orchestrator: the B-round ran and both frozen predictions confirmed exactly.
+**B2** (30783111780, `mut/wo-0039-b2@a47fe76`) red via T-C12's
+`batched_failure_with_protocol` — not the R-1 check — with the FAIL line
+character-for-character my frozen text. **B3** (30783112740) the entire suite
+green. Requested: final campaign scoring appended and journalled; the two prose
+items I owe by my own verdict; the **shape of the next bench wave** with the
+first packet's spine named; and confirmation that all seven `mut/*` branches
+may be deleted.
+
+### Inputs
+- The two B-round run reports as relayed, verbatim.
+- `agents/handoffs/WO-0039_m03-mutation-campaign-SEALED-predictions.md` §8 —
+  my own frozen B2/B3 predictions, for scoring.
+- `test/xgmii_rx_64/test_m03_c.ml` — `check_disagreement_matches_r1` and the
+  comment block above it (the docstring site).
+- `test/attack_plans/AP-xgmii_rx_64.md` — **§4.D, §4.E** (the family mapping),
+  §7's machinery table, **§9's WO-0033 change-log row**, §8's carried-in
+  age-0 bar.
+- `agents/handoffs/BUG-0001_m03-final-word-over-delivery.md` — fix-verdict
+  condition 2, for scoring what B2 closes.
+- `tools/dv_checks.sh` (re-run after the attack-plan edits).
+- **No `libs/**`, no `rtl_snapshots/**`, no auditor diffs.**
+
+### Reasoning
+
+**The B-round scored cleanly and I will not dwell on it, because the two things
+worth writing down came out of preparing the next wave, not out of the runs.**
+
+B2 landed character-for-character, including the ordering claim — red via the
+batched content check and **not** via the R-1 check, because the batched check
+raises first. Every field on the FAIL line except `tkeep` is correct, so
+`outcome_ok`'s `None -> false` branch is the only thing that could have
+produced it. **That closes the hole I named against my own fix verdict**:
+condition 2 rested on a branch that no RTL mutation had exercised, and it has
+now fired on demand at a predicted entry. B3 came back green, which converts my
+exhibit from an argument into run 30783112740 — the only form of it I was
+willing to rely on, having spent the whole campaign insisting that reasoning is
+not evidence.
+
+**Then the first real finding, which arrived while I was choosing the next
+family.** All fifteen tests assert `tuser`[0] = 0 and no strobe **on good
+frames**. Nothing anywhere drives a bad-FCS frame. **A design that hardwired
+the FCS verdict to good and never pulsed `error_bad_fcs` would pass the entire
+WO-0038 suite.** REQ-104's positive direction is unverified.
+
+The uncomfortable part is that the campaign did not catch this, and could not
+have: **none of my five mutations was a *silently-always-pass* mutation.** M2
+broke the CRC and was caught by seven units precisely because it made the
+verdict go *bad* — every one of those seven was asserting `tuser` = 0 and saw a
+1. Mutating in the direction the suite already asserts against proves nothing
+about the direction it does not assert at all. That is a lesson about mutation
+selection, not about M03, and it belongs in every future qualification: **seed
+at least one mutation that makes the design silently agree with every existing
+assertion.** The plan had already anticipated the row — M03-D1's Kills column
+names it — which is a point in favour of writing attack plans before benches.
+
+**The second finding is a documentation failure of exactly the shape F-2
+punished me for.** `AP` §7 is headed "Machinery this plan requires and does not
+have" and opens "named here, **not built here**". §9's WO-0033 row records that
+**all five items were built** three days later. A planner consulting §7 alone —
+which is what §7 is for — would plan around gaps that closed long ago. I nearly
+did: my first pass at this wave's shape had family E gated on building X-5,
+and the whole ordering argument would have been wrong. **A stale inference left
+standing is exactly what F-2 cost me**, and finding the same failure mode in my
+own attack plan an hour later is the sort of coincidence worth recording rather
+than tidying away.
+
+Fixing it also promoted something more important into view. WO-0033's standing
+limit — buried in a change-log cell — says **X-1's outcome model is not the
+charter §3 external anchor**, and that **no `SO-xgmii_rx_64.md` PASS may rest
+on it until the verilog-ethernet differential co-sim has run.** That is a gate
+on `SO-M03` I had not named on this packet, and it is the longest-lead item on
+the list. It also decides the wave's order.
+
+**Hence: family D first, alone.** Not D+E, not five up front. Each new bench
+needs its own mutation qualification, so five packets issued together is five
+campaigns queued behind five review loops; run the loop once more on a small
+family first. And **D is the only family in D–H whose rows are hand-derivable
+from §9 end to end** — E, F, G and H lean on X-1's computed outcomes and are
+therefore gated on the co-sim for sign-off purposes. D can reach a
+sign-off-eligible state on a path that does not run through an obligation
+nobody has discharged.
+
+**The relayed family mapping was off by one and I said so rather than build to
+it.** In `AP` §4, **D is the FCS check (REQ-104)**; the error character
+mid-frame is **E** (REQ-105). It happens not to change the answer — D is still
+the right first packet — but building the packet against a wrong index would
+have produced rows that cite the wrong requirement.
+
+**On the age-0 bar, I made it concrete instead of passing it along.** `AP` §8
+requires the first D–H bench to declare which rows depend on an age-0 closure
+record. For this packet the answer is computable now: **a 64-octet frame at a
+lane-0 start has `terminate_lane` = 0**, the very entry R-1 is about, so D1's
+`tlast` cycle — and therefore §9's pinned `error_bad_fcs` cycle — is decided
+combinationally in the terminating word. D1 at lane 0 is in the class; D1 at
+lane 4 (`terminate_lane` = 4) is not. The two lanes are a built-in control on
+each other, and the packet states this as a row property rather than leaving
+tb_writer to rediscover it over three rounds.
+
+**And I named D's four mutations up front**, one per row's declared Kill, so the
+qualification campaign is derivable from the attack plan rather than invented
+after the bench exists. D-M1 — hardwire the verdict good — is the
+silently-always-pass mutation whose absence from this campaign is the finding
+above.
+
+**Branch deletion is safe, and it is worth saying why rather than just
+agreeing.** Every run id, failing unit and verbatim message is in the packet;
+the frozen predictions are in the sealed companion with a `git diff` of seven
+insertions and one deletion proving only its state line moved. **The branches
+were the vehicle; the packet is the record.** That is what the verbatim relay
+class is for.
+
+### Actions
+- Scored **B2** and **B3** against the sealed freeze: both exact, B2
+  character-for-character including the ordering claim. Appended the
+  `RV-0039-VERDICT` addendum with the final tally (**eight seeded, eight
+  frozen predictions, eight outcomes as predicted**).
+- Flipped WO-0039 to **CLOSED — campaign PASSED and COMPLETE** on a
+  title + state anchor.
+- **Confirmed all seven `mut/*` branches for deletion**; no re-seed owed
+  anywhere.
+- **Prose item 1** — added the design-coupling docstring beside
+  `check_disagreement_matches_r1` in `test/xgmii_rx_64/test_m03_c.ml`: what the
+  check is, that a firing routes to re-deriving the sampling model and **never**
+  to adjusting the oracle, and both campaign firings as calibration.
+  Comment-only; no behaviour touched.
+- **Prose item 2** — `AP` §7 gains a **staleness banner** (X-1..X-5 built at
+  WO-0033; no row blocked on machinery) which also promotes WO-0033's
+  external-anchor limit into view; `AP` §8 gains **four standing facts** for
+  D–H, including the **withdrawal** of the "five of nine units are timing-blind"
+  figure (it is three), A3's lane-symmetric blindness recorded as **untested**,
+  and REQ-104's unverified positive direction; `AP` §9 gains a change-log row.
+  **Status counts unchanged: 75 rows, 59 ASSERT.**
+- Corrected the family mapping (**D = FCS check**, E = error character) and
+  specified the next wave: **family D first and alone**, with its four-row
+  spine, its concrete age-0 declaration, its one bench-side open question
+  (`arrival.mli`'s gap control), and its four named qualification mutations.
+- **Added a fifth gate to the `SO-M03` path**: the verilog-ethernet
+  differential co-sim, without which families E–H cannot carry a PASS.
+- Re-ran `tools/dv_checks.sh` after the attack-plan edits — all checks that can
+  run pass; the RFC anchor obligation remains open in the container as always.
+- Opened no `libs/**`. No `git commit`, no `git push`.
+
+### Evidence
+1. B2's FAIL line matches my frozen text character-for-character, and the
+   fifteen other entries PASS including `lane4/68` at `views_disagree=true` —
+   a second confirmation that the R-1 oracle holds on the unmutated design.
+2. B2 fired via `batched_failure_with_protocol`, **not** the R-1 check, which
+   is the call-ordering claim from the freeze.
+3. B3: entire suite green, T-C5 silent — the vacuity exhibit as run 30783112740.
+4. `AP` §9's WO-0033 row: X-1 `test/xgmii/injection.ml`, X-2
+   `test/xgmii_probe/`, X-3 `test/monitors/strobe_monitor.ml`, X-4
+   `test/xgmii/idle_injection.ml`, X-5 the `Latency.frame_out` extent — **all
+   built**, against a §7 that still reads "not built here".
+5. WO-0033's standing limit: X-1's outcome model is **not** the charter §3
+   external anchor; no `SO-` PASS may rest on it until the co-sim runs.
+6. `AP` §4.D is the FCS check (REQ-104); §4.E is the error character (REQ-105).
+7. A 64-octet frame at a lane-0 start has `terminate_lane` = 0 — so M03-D1's
+   lane-0 case is in the age-0 class and its lane-4 case is not.
+8. `tools/dv_checks.sh` after the edits: every check that could run passed.
+
+### Outcome
+**WO-0039 CLOSED. Campaign PASSED and COMPLETE at eight for eight.** The bench
+is qualified: its green now means something, and the one branch my own fix
+verdict leaned on has been made to fire.
+
+**`SO-M03` DOES NOT ISSUE**, and it is further away than the campaign's success
+makes it feel — a fifth gate (the external anchor for X-1's outcome model) is
+now named on the path alongside families D–H.
+
+**Next wave: family D (REQ-104, the FCS check) first and alone**, four rows,
+no machinery owed, hand-derivable from §9, closing the live hole that a
+hardwired-good FCS verdict passes all fifteen tests today. Ready for me to
+author as the next dv commit.
+
+### Open-questions
+- **A mutation-selection rule, earned the hard way and owed to every future
+  qualification**: seed at least one mutation that makes the design **silently
+  agree with every existing assertion**. Five mutations that all push against
+  what the suite already asserts cannot find a direction the suite does not
+  assert at all.
+- **The verilog-ethernet differential co-sim is now the longest-lead item on
+  the `SO-M03` path** and should start in parallel with family D rather than
+  when it becomes the last blocker. Not my packet to issue.
+- **One bench-side question for family D's packet**: whether
+  `test/xgmii/arrival.mli` lets a caller pin the inter-frame gap to §0.3's
+  minimum, or whether `Bench` needs a `two_frames ~lane ~gap` beside
+  `one_frame`. M03-D3 needs it; `arrival.mli` is not a prohibited path.
+- **`AP` §7's table is now banner-corrected but still reads as a requirements
+  statement in gap-list clothing.** A fuller rewrite is owed; I chose the banner
+  over the rewrite so the correction lands in this commit rather than the next.
+- **M03-A3's blindness to lane-symmetric errors remains untested**, and D–H may
+  assume it in neither direction.
+- **Owed by me, unchanged**: the `precompile_check.sh`
+  side-effect-in-combinator lane; `tools/precompile_stubs/ifc_check.ml`'s stale
+  UNVERIFIED note; SPEC-M01 §11.4's caveat retirement (architect_docs_lead).
+- **My M04 contamination from `J-dv_lead-0024` still stands** and must be
+  disclosed in M04's packet.
+- **Unchanged**: the RFC 1071 anchor closes on the next CI run that fetches;
+  X-7, X-10, X-11 deferred; L1–L5 owed as a separate packet.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0039_m03-mutation-campaign.md
+- test/attack_plans/AP-xgmii_rx_64.md
+- test/xgmii_rx_64/test_m03_c.ml

@@ -216,7 +216,37 @@ let batched_failure_with_protocol ~header ~outcomes all =
    mismatch — "expected exactly at terminate_lane = 0 with a full final
    word, and nowhere else" is the whole content of R-1's falsifier, and a
    silent report nobody reads would not demonstrate it. Shared by M03-C1/C2
-   and M03-C5. *)
+   and M03-C5.
+
+   WHAT THIS CHECK IS, AND HOW TO READ IT WHEN IT FIRES (RV-0039-VERDICT,
+   [J-dv_lead-0036] — written after the mutation campaign fired it twice).
+
+   This is a DESIGN-COUPLING ASSERTION — a sampling-model tripwire — and NOT
+   a content check. [expected_disagree] encodes a relationship between M03's
+   output pipeline and the bench's two sampling views, and it is a statement
+   about the design as of the SHA this bench was qualified at. A firing means
+   the relationship broke, which is a finding about the MODEL OF THE
+   INSTRUMENT, not an M03 row failure: [outcome_ok] does not consult
+   [views_disagree_on_tlast], so the table dumped alongside a firing will
+   show every content column PASSing.
+
+   {b The prohibited response is to widen or narrow [expected_disagree] until
+   it fits what was observed.} That is fitting the oracle to the data, and it
+   destroys the only property this check has — that its prediction was
+   written down before the run. A firing routes to RE-DERIVING THE SAMPLING
+   MODEL against the changed design, and then to a dv_lead ruling. It never
+   routes to editing the predicate to get green.
+
+   Both mutation-campaign firings were TRUE POSITIVES and are worth knowing
+   as calibration. Under M1 (one extra output register) every output became
+   registered, so the [After]-labelled reading no longer misses the [tlast]
+   and R-1's artefact does not exist in that design at all — disagreement
+   vanished everywhere. Under M4 (the frame-length bound moved onto M03-C5's
+   own 1516) the closure record's birth moved at exactly that length, and the
+   check localised it to [lane 4, 1516] while [lane 4, 68] kept its
+   disagreement — in a place where EVERY content assertion in this suite is
+   blind, since M4 left C5's delivered counts exact. That second case is the
+   argument for keeping this check hard rather than passive. *)
 let check_disagreement_matches_r1 ~row_prefix outcomes =
   match
     List.filter outcomes ~f:(fun o ->
