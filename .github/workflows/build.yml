@@ -88,4 +88,43 @@ jobs:
       - name: Abort-bit availability quantifier (C-37/ADR-0012, 8.7M pairs)
         run: tools/check_abort_availability.sh
 
+  # The differential co-simulation lane (ADR-0015, WO-0046 Phase 1).
+  # Its own job, not a step in `build` (R-CI-1): a cosim failure must be
+  # attributable to the lane, and the main suite must not wait on iverilog.
+  cosim:
+    runs-on: ubuntu-latest
+    # R-CI-4: non-blocking on FIRST landing only. Removal condition, owned by
+    # the orchestrator: this line comes off in its own commit once a run of
+    # this job has executed the deliberate-mismatch check (run_cosim.sh
+    # check 4.2) — proving the comparator can fail — and gone green.
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up OCaml
+        uses: ocaml/setup-ocaml@v3
+        with:
+          ocaml-compiler: "5.1"
+          dune-cache: true
+
+      - name: Install dependencies
+        run: opam install . --deps-only --with-test --yes
+
+      # ADR-0015 D1: Icarus from the Ubuntu archive, no PPA, no source build
+      # (R-CI-2). A failed install fails the job — never a silent skip.
+      - name: Install Icarus Verilog
+        run: sudo apt-get update && sudo apt-get install -y iverilog
+
+      # One entry point (WO-0046 §4): exit 0 = differential compare +
+      # mismatch self-test + two-run determinism all passed; nonzero names
+      # the failing check. Simulator versions go into the .canon.meta
+      # sidecars (R-CI-3) written by the script itself; all simulation
+      # artifacts live in mktemp space outside the checkout (R-CI-5) and are
+      # removed on every exit path — failure evidence is cat to the log
+      # before cleanup (script §7.3), which is where R-CI-6's diagnostic
+      # burden is discharged: an upload step would race the script's own
+      # hygiene rule, and the log copy is the promotion-block precedent.
+      - name: Run the co-simulation lane (WO-0046 Phase 1)
+        run: opam exec -- tools/cosim/run_cosim.sh
+
 

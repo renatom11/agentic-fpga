@@ -5454,3 +5454,51 @@ Sponsor redeploys when ready.
 - site/public/index.html
 - site/public/org-chart.html
 - site/public/spec-atlas.html
+
+## [J-orchestrator-0124] 2026-08-03T16:05:00Z | task:WO-0046 | The cosim job lands - first differential run on this push
+
+### Trigger
+data_wrangler's round 2 landed (6181781): the sidecar contract
+final, the compare-argv bug fixed. The lane's last dependency
+before my build.yml job was gone.
+
+### Inputs
+- ADR-0015 R-CI-1..8. Implemented: separate cosim job; apt
+  iverilog with install failure = job failure; entry point
+  tools/cosim/run_cosim.sh; continue-on-error:true on first
+  landing with the removal condition WRITTEN INTO THE WORKFLOW
+  and owned by me (comes off in its own commit once a run has
+  executed check 4.2 and gone green); artifacts in mktemp space
+  per the script (R-CI-5).
+- One deviation, reasoned in the workflow comment: R-CI-6's
+  upload-on-failure conflicts with dv's §7.1 cleanup-on-every-
+  path ruling - the script cats failure evidence to the log
+  before cleanup (its §7.3), so the diagnostic burden is
+  discharged in the log, promotion-block precedent. An upload
+  step would race the hygiene rule. Flagged here for dv/architect
+  to contest rather than silently resolved.
+
+### Reasoning
+The job runs the same OCaml setup as build (the lane compiles
+dune executables), then Icarus from the archive per D1. Its
+first run on this push is the programme's first differential
+run: our M03 and the vendored reference driven with the same
+frame, canonical outputs compared, the comparator's mismatch
+check exercised, determinism diffed twice.
+
+### Actions
+- build.yml cosim job appended; this commit; push triggers the
+  run.
+
+### Evidence
+- Workflow diff in this commit; the run id lands in the next
+  check-in.
+
+### Outcome / DoD
+Lane live pending its first run's verdict.
+
+### Open questions
+- The first run's outcome; the R-CI-6 disposition's acceptance.
+
+### Files-in-this-commit
+- .github/workflows/build.yml
