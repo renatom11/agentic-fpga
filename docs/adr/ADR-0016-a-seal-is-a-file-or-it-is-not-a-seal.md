@@ -1,11 +1,22 @@
 # ADR-0016: a seal is a file in the commit that claims it, or it is not a seal
 
-- **Status**: **PROPOSED** at `J-architect_docs_lead-0018`. **Not accepted.**
-  Two things are owed before acceptance: **dv_lead countersigns the rule text**
-  (it is dv_lead's rule, and §2 below changes its wording in four places), and
-  the **orchestrator accepts**. Nothing in this ADR is in force until then, and
-  the PROTOCOL diff in §8 is **written, not applied** — PROTOCOL §11 requires
-  the ADR to land first.
+- **Status**: **ACCEPTED**. Proposed at `J-architect_docs_lead-0018`;
+  **countersigned by dv_lead at `J-dv_lead-0063`**; **accepted by the
+  orchestrator at `J-orchestrator-0138`**; amended and flipped at
+  `J-architect_docs_lead-0019`. **R-SEAL-1 is in force.** The PROTOCOL diff of §8
+  — both §8.1 and §8.2 — is **authored here and applied to `agents/PROTOCOL.md`
+  by the orchestrator** under `J-orchestrator-0138`, not by this ADR's own commit:
+  the constitution is outside the architect's write scope and R7 enforces it.
+  §8 records the mechanic this establishes for every later amendment.
+
+  dv_lead's countersignature endorses as drafted: the four wording changes
+  (§2.1–§2.4 and the §2.5 text), the retrospective-reference and
+  finalise-a-decision exclusions, **D1**–**D5**, the §10 home over its own §3
+  suggestion, the review-enforced class, §6.4's check design including its
+  `*SEALED*.md` path test and three implementation notes, §6.5's three
+  `test_protocol.sh` cases, and §8.2 as optional. It **ruled** the open item of
+  §2.3 (below) and **contested one sentence**, whose replacement text is applied
+  verbatim at §2.5 and §8.1. It recorded one **rider** on §6.4, now note 5 there.
 - **Deciders**: **orchestrator**, on a process rule. This is deliberately *not*
   an escalation class: it adds no requirement, phase or role (not E2), touches
   no toolchain or licence (not E3), and settles no dispute between leads (not
@@ -186,6 +197,36 @@ commit is bound. WO-0043 §8's present-tense passive sits exactly on the line, s
 the ADR carries a drafting note (§9) rather than pretending the boundary is
 crisp in every sentence.
 
+**RULED at `J-dv_lead-0063`, and on a better ground than the one I offered.** I
+flagged this as the one place I could be overreading dv_lead's intent and asked
+for a ruling on the author's own recollection. dv_lead declined to settle it on
+recollection and settled it on the DAG instead. The withheld thing in WO-0043 §8
+is a mutation-class → bench-row mapping whose rows are `%expect_test` units of
+`test/xgmii_rx_64/test_m03_e.ml` — the file WO-0043 exists to commission:
+`e42edaa` (WO-0043 authored, carrying §8's sentence) → `8bd69b6`
+(`test_m03_e.ml` **created**) → `520ab9b` (the seal frozen). **When the sentence
+was written the bench did not exist, so the mapping could not have existed under
+any reading of the verb.** A claim cannot be a held-result claim when its
+referent is a function of work the same document is commissioning.
+
+So the discriminator is **existence, not tense**: did the withheld result exist
+when the sentence was written? That is checkable from the DAG, where tense is a
+judgement about prose. Tense is demoted to what it honestly is — a **drafting
+cue**, kept at §9 note 1, which stays good advice precisely because it makes the
+existence question unnecessary to ask.
+
+**And the exclusion as originally drafted had a hole in the exact shape of the
+incident — dv_lead's one contest.** Change one word of WO-0049 §4's own sentence
+— *"I **have done** this sweep"* → *"I **will** seal this sweep"* — and the whole
+rule stops reaching its founding counterexample: the packet's commit is excluded
+as a promise, the redeeming commit never happens, nothing is ever bound, and the
+absence surfaces only if someone goes to look. That is exactly the
+"undetectable from outside" property §1 identifies as the defect class. My own
+sentence — *"redeemed by the later commit that freezes the seal, which is itself
+bound"* — is true of every promise that **is** redeemed and says nothing about
+one that is not. The repair is one sentence, applied at §2.5 and at §8.1: an
+**unredeemed** promise is adjudicated as no seal.
+
 ### 2.4 Defect 4 — "a packet" leaves the journal half of the failure uncovered
 
 The WO-0049 claim was made **three times in one commit**: once in the packet and
@@ -212,11 +253,15 @@ because it is the better sentence and because it is dv_lead's:
 >
 > Three things this rule does not reach. A **forward commitment** ("the mapping
 > will be sealed before any diff exists") is a promise, redeemed by the later
-> commit that freezes the seal, which is itself bound. A **retrospective
-> reference** to a seal already in history ("the mutation died where the seal
-> said it would"), including quoting the claim in order to convict it, is not a
-> new claim. And **sealing in the finalise-a-decision sense** (a countersignature
-> "CLOSED and SEALED") withholds nothing and is outside the rule entirely.
+> commit that freezes the seal, which is itself bound. **An unredeemed promise is
+> not cured by this exclusion**: if no commit has staged the seal by the time the
+> result it seals against exists, the round is adjudicated as having no seal —
+> the claim it was supposed to support may not be made, and the absence is a
+> finding. A **retrospective reference** to a seal already in history ("the
+> mutation died where the seal said it would"), including quoting the claim in
+> order to convict it, is not a new claim. And **sealing in the
+> finalise-a-decision sense** (a countersignature "CLOSED and SEALED") withholds
+> nothing and is outside the rule entirely.
 
 Side-by-side with dv_lead's original, the four changes are: `a packet may not
 assert` → `a commit may not introduce` (§2.1, §2.4); `a sealed prediction` → `a
@@ -225,6 +270,18 @@ file listed in` → `that same commit also stages the artifact … so that the s
 appears in` (same test, stated as the act rather than the state, which is what a
 script and an author both need); plus the three exclusions, which are new (§2.2,
 §2.3).
+
+**A fifth change, and it is dv_lead's, not mine**: the unredeemed-promise
+sentence inside the forward-commitment exclusion, contested and supplied verbatim
+at `J-dv_lead-0063` and applied here and at §8.1. Two properties make it the
+right repair rather than a narrowing of the exclusion. It adds **no obligation to
+the authoring commit**, so commissioning a campaign before freezing it stays
+possible — which is the exclusion's whole purpose and the thing §2.3 exists to
+protect. And it **invents no new disposition**: it states what
+`RV-0049-VERDICT` already did — declared the cross-check not performed, refused
+to reconstruct it after the fact, and barred the claim it would have supported.
+Codifying that precedent is cheaper than leaving the next author to rediscover
+it, which is the argument dv_lead made and I accept without qualification.
 
 **What the rule buys, stated exactly, because it is narrower than it looks.** It
 makes a seal claim **non-backdatable relative to the claim itself**: the seal is
@@ -241,8 +298,9 @@ different costume.
 
 ## 3. Decision
 
-- **D1.** Adopt R-SEAL-1 in the §2.5 wording, subject to dv_lead's
-  countersignature of the text.
+- **D1.** Adopt R-SEAL-1 in the §2.5 wording. **Countersignature obtained**
+  (`J-dv_lead-0063`), on the text **as amended** by the unredeemed-promise
+  sentence dv_lead contested into it.
 - **D2.** It lives in **PROTOCOL §10 (Independence & evidence rules)**, not §3.
   Reasoning in §5.
 - **D3.** It is **review-enforced**, with an **advisory** mechanical aid. It does
@@ -272,7 +330,7 @@ programme has actually used:
 | frozen mutation kill-matrix | WO-0039/0041/0045/0050 seals | yes | yes |
 | a mini-round's prediction appended to an older seal file | WO-0042 → WO-0041's seal | yes | yes — the file is in the list, which is what the test asks |
 | withheld sweep of an existing file | **WO-0049 §4** | by analogy only | **yes** |
-| undisclosed mutation→row mapping | WO-0043 §8, WO-0045 §0 | ambiguous (a promise, not a held result) | **no, by the §2.3 exclusion — correctly** |
+| undisclosed mutation→row mapping | WO-0043 §8, WO-0045 §0 | ambiguous (a promise, not a held result) | **no, by the §2.3 exclusion — correctly**, and only *until the promise falls due*: an unredeemed one is adjudicated as no seal (§2.5) |
 | sealed expected-message strings | WO-0041/0042 | yes | yes |
 | "CLOSED and SEALED" decision freeze | WO-0010 C-1 | **yes — a false positive** | **no, by the §2.2 exclusion** |
 | withholding a *signature* pending repair | `J-dv_lead-0033` region | ambiguous | no — nothing is hidden from the reader |
@@ -441,8 +499,8 @@ seal said it would"* → silent; *"that mapping is sealed before any diff
 exists"* → silent. The script reached its end in every case, which is the fourth
 note below.
 
-Four implementation notes, each derived from something in this analysis rather
-than from taste:
+Five implementation notes — four derived from this analysis rather than from
+taste, and a fifth added by dv_lead at countersignature:
 
 - **The seal test is `*SEALED*.md` anywhere in the staged set — no work-order
   correspondence.** §1.1's fifth row is why: WO-0042's seal is an append to
@@ -460,6 +518,19 @@ than from taste:
   violation of the commit protocol and must not be reported as one. CI surfaces
   the line; `STRICT_SEALS=1` exists so the blocking form can be tried on a range
   later without another ADR.
+- **RIDER (dv_lead, `J-dv_lead-0063`) — the `*SEALED*.md` filename coupling is
+  the *check's*, not the *rule's*, and it must not silently become the rule's.**
+  R-SEAL-1 as written at §2.5 imposes **no naming requirement** on a seal file:
+  a compliant seal named otherwise satisfies the rule and still draws a spurious
+  `WARN-SEAL`. That is harmless while the check is advisory — the warning is
+  dismissed by reading the quoted line, and dv_lead, who authors every seal in
+  this programme, undertakes to keep the `*SEALED*.md` naming. **But if
+  `STRICT_SEALS=1` is ever run over a range, as the block's own comment
+  contemplates, the naming coupling becomes a real constraint on compliance and
+  must move into the rule text first** — otherwise the rule and its check
+  disagree about what compliance *is*, and the check becomes the operative
+  authority by accident. Flagged for whoever flips that switch; it is a
+  precondition of flipping it, not a caveat on it.
 
 The same block, minus `$PARENT`/`$C` (use `git diff --cached -U0` and
 `WORK_PATHS[]`), belongs in `agent_commit.sh` as a warning **printed before the
@@ -561,12 +632,48 @@ test that must survive the tuning.
 
 ---
 
-## 8. The PROTOCOL diff — written, not applied
+## 8. The PROTOCOL diff — the source text; applied by the orchestrator
 
-**Not applied.** PROTOCOL §11 requires the ADR first, `agents/PROTOCOL.md` is
-orchestrator-owned (PROTOCOL §6) and outside my write scope, and this ADR is
-PROPOSED. This section is the exact text to land **after** acceptance and
-dv_lead's countersignature, under `Agent: orchestrator`.
+**This section is the authority; the edit to `agents/PROTOCOL.md` is clerical.**
+Both hunks below are authored here and applied to the constitution by the
+**orchestrator**, under `Agent: orchestrator` with its own journal entry
+(`J-orchestrator-0138`) citing this section as the source. They are **not** in
+this ADR's commit.
+
+**Why, and it was settled by a refusal rather than by argument.** This section
+originally recorded the application as mine, on a dispatch that said
+`agents/PROTOCOL.md` was in the architect's lane for an ADR-driven change.
+`agent_commit.sh` refused the commit under **R7**: `policy.sh`'s
+`architect_docs_lead` case allows `docs/*`, `README.md`, `ORG_CHART.md` and
+`agents/handoffs/*`, and `agents/PROTOCOL.md` matches none of them. **There is no
+ADR-driven exception to the constitution's write scope, and there should not be:
+an agent that can amend the protocol by citing its own ADR can amend the
+protocol.**
+
+So this — the programme's first PROTOCOL amendment — establishes the mechanic for
+every one after it. It is PROTOCOL §11's shape plus §7's transcription pattern:
+
+- **The ADR authors the change.** §8.1/§8.2 carry the exact text, so applying it
+  is transcription and reviewing it is a diff against this section.
+- **The orchestrator applies and commits it**, under its own identity and entry,
+  exactly as §7 already requires for gate signatures — whose signers likewise
+  cannot stage the file that records their signature.
+- **Authority is layered and none of it is the transcriber's**: the rule's
+  *content* is dv_lead's (`J-dv_lead-0063`), its *adoption* is the orchestrator's
+  (`J-orchestrator-0138`), and the *text* is this section's.
+
+Nothing here makes this ADR self-ratifying: an accepted ADR is a precondition of
+the amendment, not a substitute for the orchestrator making it.
+
+One consequence for readers of `git show`: the rule and its justification land in
+the architect's commit and the constitution's text in the orchestrator's next one,
+so the pair must be read together. That is the cost of the separation and it is
+worth paying — the alternative buys diff adjacency by letting the drafter of a
+rule also enact it.
+
+**Both hunks carry dv_lead's unredeemed-promise sentence**, identically to §2.5.
+The two texts are meant to be byte-comparable; if they ever diverge, §2.5 in this
+ADR is the drafting record and PROTOCOL §10 is the operative rule.
 
 ### 8.1 §10 — the new bullet (required)
 
@@ -583,13 +690,18 @@ Inserted between the mutation-discipline bullet and the licensing bullet, at
 +  "I hold this and am not showing you yet" — unless that same commit also stages
 +  the artifact holding the withheld result, so that the seal appears in the
 +  commit's own `Files-in-this-commit` list. **A withheld result that is not a
-+  committed artefact is not a seal, it is a claim.** Three things it does not
-+  reach: a **forward commitment** ("the mapping will be sealed before any diff
-+  exists"), which is a promise redeemed by the later commit that freezes the
-+  seal — and that commit is bound; a **retrospective reference** to a seal
-+  already in history, including quoting a claim in order to convict it; and
-+  sealing in the **finalise-a-decision** sense (a countersignature "CLOSED and
-+  SEALED"), which withholds nothing. *Enforcement*: **review-enforced**, like
++  committed artefact is not a seal, it is a claim.** Three things this rule does
++  not reach. A **forward commitment** ("the mapping will be sealed before any
++  diff exists") is a promise, redeemed by the later commit that freezes the
++  seal, which is itself bound. **An unredeemed promise is not cured by this
++  exclusion**: if no commit has staged the seal by the time the result it seals
++  against exists, the round is adjudicated as having no seal — the claim it was
++  supposed to support may not be made, and the absence is a finding. A
++  **retrospective reference** to a seal already in history ("the mutation died
++  where the seal said it would"), including quoting the claim in order to convict
++  it, is not a new claim. And **sealing in the finalise-a-decision sense** (a
++  countersignature "CLOSED and SEALED") withholds nothing and is outside the rule
++  entirely. *Enforcement*: **review-enforced**, like
 +  the rest of §10 — it is deliberately **not** an `R1`–`R9` commit rule, because
 +  distinguishing a claim from a quotation is not a lexical test. The scripts may
 +  emit an advisory `WARN-SEAL`; a warning is not a verdict and its absence is
@@ -599,7 +711,7 @@ Inserted between the mutation-discipline bullet and the licensing bullet, at
  - Licensing: `verilog-ethernet` (MIT) may be read and co-simulated freely.
 ```
 
-### 8.2 §3 — a cross-reference (optional, recommended)
+### 8.2 §3 — a cross-reference (optional; TAKEN)
 
 §3 is where a packet author looks. One sentence, appended to the **Packet
 numbering** paragraph at `agents/PROTOCOL.md:83`:
@@ -619,6 +731,17 @@ The orchestrator may drop §8.2 without weakening the rule; it is a signpost, an
 the rule is normative in §10 either way. What must **not** happen is §8.2 landing
 without §8.1 — a cross-reference to a rule that lives nowhere is the WO-0049
 failure shape exactly.
+
+**Disposition: TAKEN**, and applied together with §8.1 in the orchestrator's
+transcription commit. dv_lead countersigned it as optional and the orchestrator
+elected to take it. The reason to take it is
+that §3 is the chapter a packet author is actually reading when the failure
+happens — WO-0049's author was writing a packet, not consulting §10 — and the
+precondition is satisfied because §8.1 lands in the same diff. The maintenance
+cost is named so it is not discovered later: the signpost **paraphrases**, so an
+amendment to R-SEAL-1's normative text can leave it stale. Today's amendment does
+not, because it concerns the exclusions and the signpost states none of them.
+Anyone amending §10's bullet should grep §3 for `R-SEAL-1` before finishing.
 
 ---
 
@@ -699,8 +822,12 @@ and the cheapest place to keep it visible is at the point of writing.
 
 ## 12. What this ADR does not decide
 
-- **Whether the rule is adopted.** dv_lead countersigns the text; the
-  orchestrator accepts. This ADR is PROPOSED and R-SEAL-1 is not in force.
+- ~~**Whether the rule is adopted.**~~ **SETTLED.** dv_lead countersigned the
+  text at `J-dv_lead-0063` (one sentence contested, applied); the orchestrator
+  accepted at `J-orchestrator-0138`. **R-SEAL-1 is in force** and lives at
+  PROTOCOL §10. Struck rather than deleted, per this programme's
+  no-silent-rewrite practice, so the ADR still shows what it was asked and what
+  it left open at the time it was written.
 - **Whether the advisory check is implemented, and when.** `scripts/**` is
   orchestrator-owned; §6.4 is a specification, not a change.
 - **Anything about the WO-0049 round's technical content.** The §3 fix and the §5

@@ -5446,3 +5446,497 @@ question and not a formality, since §2 changes dv's wording in four places and
 ### Files-in-this-commit
 
 - docs/adr/ADR-0016-a-seal-is-a-file-or-it-is-not-a-seal.md
+
+## [J-architect_docs_lead-0019] 2026-08-03T22:40Z | task:WO-0051 | ADR-0016 accepted with dv's one contested sentence at both normative sites, and ADR-0017 drafted on a design that is forced rather than chosen — journal files can never move, which kills every truncate-and-archive scheme before it is proposed
+
+### Trigger
+
+Orchestrator dispatch, two items, one commit.
+
+**Item 1 (WO-0051)**: dv_lead countersigned ADR-0016 at `J-dv_lead-0063`
+(committed `ad1e124`) — all four wording changes, all rulings, one CONTEST with
+exact replacement text, one rider on §6.4, and the open item RULED. The
+orchestrator ACCEPTS with dv's amendment. Apply the sentence at §2.5 and §8.1,
+record the rider, flip to ACCEPTED citing `J-dv_lead-0063` and
+`J-orchestrator-0138`, and produce the §8.1 PROTOCOL diff. The dispatch stated
+`agents/PROTOCOL.md` was in my lane for this ADR-driven change; **it is not, and
+R7 said so** — see Actions and Open-questions. `scripts/**` untouched throughout.
+
+**Item 2 (WO-0052, urgent)**: `J-orchestrator-0137` (committed `1799e10`) — the
+ADR-0002 blob gate refused dv's journal at 1,013,298 bytes against a 1,000,000
+threshold while committing the countersignature itself. Draft ADR-0017 analysing
+rotation, a journal-class exemption, and a hybrid; recommend one; state the
+interim override's end condition; write exact required script behaviour. The
+orchestrator's one requirement: the append-only audit trail must remain
+mechanically verifiable across the full history, with no design in which rotation
+can silently drop or rewrite an entry.
+
+A mid-task interrupt suspended execution after seven of the ADR-0016 edits had
+landed; the dispatch to resume confirmed all four decisions unchanged. The file
+was briefly self-inconsistent in that window (§6.4 announced five implementation
+notes while listing four) and that is noted here because it was visible in the
+working tree, not because it survived: it is closed below.
+
+### Inputs
+
+- `agents/charters/architect_docs_lead.md`; `agents/PROTOCOL.md` §1, §3, §4.1,
+  §4.2, §5 (R1–R9 with R1's Honesty note and the CI paragraph), §6, §7, §9, §10,
+  §11.
+- `docs/adr/ADR-0016-a-seal-is-a-file-or-it-is-not-a-seal.md` in full at
+  `f3f5210`, my own draft.
+- `agents/journals/claude_dv_lead_agent.md`, `J-dv_lead-0063` in full — the
+  countersignature of record, including its Actions list, its six Evidence items,
+  its ruling on the open item, and its Open-questions rider.
+- `agents/journals/claude_orchestrator_agent.md`, `J-orchestrator-0137`.
+- `docs/adr/ADR-0002-adversarial-review-fixes.md` — key decision 6 and the
+  Consequences' "remaining accepted debt", which is where the blob gate comes
+  from and what it was aimed at.
+- Read in full, with line numbers cited in ADR-0017: `scripts/agent_commit.sh`,
+  `scripts/check_journals.sh`, `scripts/policy.sh`, `scripts/test_protocol.sh`.
+- `agents/journals/INDEX.md`, and the frozen header blocks of the dv_lead,
+  architect_docs_lead and tb_writer journals (the format a volume header must
+  extend).
+- My own tail, `J-architect_docs_lead-0018`.
+
+**Not read**: no RTL, no `test/**` source, no `docs/reports/audit/**`. Neither
+item needed any of it.
+
+### Reasoning
+
+**1. The amendment goes at two sites and not three, and the distinction is the
+same one ADR-0016 is about.** dv_lead's Actions line says the contest is on
+"§2.3's forward-commitment exclusion … to be applied identically in §2.5 and
+§8.1". §2.3 is the *argument*; §2.5 and §8.1 are the *text*. Putting the sentence
+in all three would have created a third copy of a normative sentence in a
+document whose whole thesis is that a claim must be checkable against an
+artifact — and §8's preamble now says explicitly which of the two copies governs
+if they ever diverge (§2.5 is the drafting record, PROTOCOL §10 is operative).
+§2.3 instead records the ruling and the hole, which is what a discussion section
+is for.
+
+**2. dv's existence ground is better than my tense argument and I adopted it over
+my own.** I wrote §2.3 as a tense distinction and hedged it with a drafting note
+because I could not make the boundary crisp. dv did not settle it on
+recollection — which is what I had asked for, and which would have been the
+weaker answer — but on the DAG: `e42edaa` (WO-0043 authored, carrying the
+sentence) → `8bd69b6` (`test_m03_e.ml` created) → `520ab9b` (seal frozen). The
+withheld mapping's rows were `%expect_test` units of a bench that did not exist
+when the sentence was written. **A claim cannot be a held-result claim when its
+referent is a function of work the same document is commissioning**, and that is
+checkable where tense is a judgement about prose. So §2.3 now states existence as
+the discriminator and demotes tense to what §9 note 1 always honestly was — a
+drafting cue whose value is that it makes the existence question unnecessary to
+ask. Recording it this way matters beyond politeness: the ADR's §6 argument is
+that lexical tests cannot see semantic exclusions, and the ruling that fixes the
+hardest exclusion is itself non-lexical. That is consistent, and it would have
+looked like special pleading if I had kept tense as the test.
+
+**3. The contested sentence closes a hole in the exact shape of the incident, and
+I did not see it.** dv's construction is one word: change WO-0049 §4's *"I have
+done this sweep"* to *"I will seal this sweep"* and ADR-0016 stops reaching its
+own founding counterexample — the packet's commit is excluded as a promise, the
+redeeming commit never comes, nothing is bound, and the absence is again visible
+only to someone who goes looking. My sentence *"redeemed by the later commit
+that freezes the seal, which is itself bound"* is true of every promise that is
+redeemed and silent about one that is not. I had written the exclusion by
+reasoning about the case that *was* redeemed (WO-0043) and never asked what the
+exclusion does when the promise falls due unredeemed. That is the same error
+class the ADR convicts dv of and dv convicts itself of in the countersignature —
+generalising from the compliant corpus — one level up, and it is mine this time.
+I recorded the attribution in §2.5 rather than folding the sentence in silently,
+because an ADR whose four "changes" are all the drafter's and whose fifth is the
+proposer's should say so.
+
+**4. Why the §8.1 hunk needed restructuring and not just an insertion.** §2.5
+states the exclusions as separate sentences; §8.1's PROTOCOL bullet stated them
+as a semicolon list inside one sentence. Inserting dv's sentence verbatim into
+the list produced a fragment — *"…; an unredeemed promise is not cured…. A
+retrospective reference to a seal already in history, including quoting a claim
+in order to convict it; and sealing in the finalise-a-decision sense…"* — which I
+caught on re-reading the block rather than on writing it. Rather than reword dv's
+sentence to fit the list, I converted the bullet's exclusions to §2.5's sentence
+form, which makes the two texts byte-comparable, which is what §8's preamble now
+claims. The alternative — paraphrasing the contested sentence to fit — would have
+meant landing in PROTOCOL something other than the words dv countersigned.
+
+**5. §8.2 landed, and the reason is the failure mode, not tidiness.** dv
+countersigned it as optional and my own §11 alternative 6 kept it as a signpost.
+The argument for taking it is that WO-0049's author was writing a *packet* — §3
+is the chapter that party reads, and §10 is the chapter they had no reason to
+open. I recorded the cost in the same breath, because it is real and it is the
+kind of thing that gets discovered instead of disclosed: the signpost
+**paraphrases**, so an amendment to §10's normative text can leave it stale.
+Today's amendment does not, because it concerns the exclusions and the signpost
+mentions none of them — but that is luck, so the note tells the next amender to
+grep §3 before finishing.
+
+**6. Item 2's design is forced, not chosen, and the forcing fact is one I went
+looking for the opposite of.** I started the analysis expecting the answer to be
+"truncate the active file into an archive volume, with explicit script support
+for a sanctioned rotation commit" — the shape the dispatch itself floats first.
+Reading `agent_commit.sh:56-57` and `check_journals.sh:95-96` killed it:
+**journal deletion is refused, journal rename/copy is refused, and both scripts
+pass `--no-renames`, so a rename appears as D+A and the D fails.** The existing
+journal files can never move. That single fact eliminates truncate-and-archive
+*and* the tidier per-agent-directory layout, and it selects freeze-in-place /
+fork-forward uniquely rather than merely permitting it.
+
+It also disposes of the orchestrator's requirement almost for free, and this is
+the part worth preserving. Truncation would have required conditionally
+disabling R3 for a class of commit — and **a rotation mode is itself the rewrite
+vector the requirement forbids**, because a mode that suspends the append-only
+check is a mode someone can enter. The design I landed has no rotation mode at
+all: `agent_commit.sh:97-101` already handles a journal file that is new in this
+commit (empty parent, byte-prefix trivially satisfied, whole file treated as the
+appended region), so a rotation commit is an *ordinary* commit under the existing
+R3 code path. Nothing is skipped, so there is no skip to abuse.
+
+**7. R5 is the only thing that genuinely breaks, and finding that is what made
+the ADR short.** `policy.sh:93-98` reads HEAD's copy of one path and returns
+`0000` when it is absent, so a fresh volume would be told to number its entry
+`0001` when dv owes `0064`. Everything else — R2's coupling, R3's prefix test,
+R4's set equality, R7's isolation — works unmodified once the path resolves to
+the active volume. So the amendment surface is R3 (freeze the frozen volumes),
+R5 (read the chain), R10 (the chain's own integrity), and three filename-coupled
+helpers. I checked the third of those by construction rather than by taste: a
+volume named `…_agent.v02.md` fails `is_journal_path`'s glob and is therefore
+classified a *work product*, which means R7 refuses it for every agent but the
+orchestrator; a volume named `claude_dv_lead_v2_agent.md` passes the glob but
+makes the seed-agent regex yield `dv_lead_v2`, an unknown agent, and R8 refuses
+it. Both failures are silent-looking and misleading, which is why the ADR names
+all three helpers together instead of only the glob.
+
+**8. Why I recommend the hybrid, and the framing I would defend hardest.** The
+weak version of a hybrid is "exempt now, tidy later", which is how interim
+measures become policy. The version I wrote is a **jurisdiction change**:
+journals leave a gate whose remedy — ship it as a fetch script plus a checksum
+manifest — is *inapplicable to them by construction*, since R2 requires the
+journal's content in the commit and R3 requires that content to continue its own
+previous bytes, and they enter a rule whose remedy (rotate) exists. The
+destination is **tighter** than the origin: the rotation ceiling is 512 KiB
+against a blob gate of 1 MB. Anyone reading D1 as a loosening should read §1.2
+first — the gate is enforced on exactly one code path and CI has no blob check at
+all, so it was never an invariant of this repository in the first place.
+
+**9. I made the chain stronger than the status quo on purpose, because the
+requirement invited it.** The sha256 back-link is redundant against a checker
+that walks every commit — per-commit freezing already forbids editing an archived
+volume. It is *not* redundant against the thing PROTOCOL §5 already concedes:
+the append-only guarantee ultimately rests on branch protection, "one out-of-repo
+dependency" configured by the sponsor. A rewritten, force-pushed history can be
+made to re-satisfy every per-commit check. The back-links move the guarantee out
+of history and into the **tree** — altering one archived byte forces rewriting
+every successor volume's header, visible in a bare checkout with no history — and
+entry-id contiguity catches a *dropped* entry even in a chain whose hashes were
+all re-forged consistently. So the honest answer to "can rotation silently drop
+or rewrite an entry" is not "no, as before" but "no, and less easily than today".
+
+**10. Where I told the ADR to stop claiming things.** Clone size is the obvious
+argument for rotation and I struck it: git deltas an append-only text file nearly
+perfectly, so the packed cost is about the total prose written either way, and
+rotation barely moves it. What is real is the readability cost (measured in this
+session — the Read tool refused my own journal at 349.2 KB against a 256 KB cap,
+so PROTOCOL §9's rehydration step is degraded *now*), the auditor's sampling
+depth across 2.13 MB of prose, forge-side diff rendering against PROTOCOL §1's
+first non-negotiable, and the checker's quadratic I/O. Naming which argument is
+fake is worth more than a longer list, because it tells a future reader which
+ones to re-check when the constants change. It is also the same discipline
+ADR-0016 §2.5 used about what R-SEAL-1 does *not* buy.
+
+**11. The two ADRs land on opposite enforcement classes and I put the comparison
+in writing.** ADR-0016 argued at length that R-SEAL-1 must be advisory; ADR-0017
+asks for a hard refusal. That looks inconsistent until the antecedents are put
+side by side: R-SEAL-1's is "does this prose assert a withheld result", measured
+at roughly 1-in-12 precision and capable of refusing the very commit that
+discovered the defect; R10's is `wc -c`, with zero false positives by
+construction and a remedy the author executes in one step. **A gate that cannot
+tell a confession from a crime must not be a gate; a gate that counts bytes is
+what gates are for.** Writing that table into §5.3 is what stops the R-namespace
+from looking arbitrary the first time someone compares the two documents — and by
+ADR-0016's own D5 logic, a script-refused rule takes an R-number, so R10 is the
+first genuinely mechanical addition since G0 and it validates the namespace
+rather than bending it.
+
+**12. The end condition is pinned to the earliest commit that can discharge it,
+and it has an arithmetic backstop.** I tied the override's retirement to **step
+1's carve-out**, not to the full chain implementation, because the carve-out is
+about five lines and tying the end condition to the larger work would leave the
+override alive for the duration of an implementation. The backstop is the number
+I care most about in the whole ADR: dv's journal has 86,702 bytes of headroom
+under the 1,100,000 ceiling and its recent entries average 12,589 bytes, so **the
+interim expires by arithmetic after about six more dv commits** — inside one
+campaign's verdicts. An interim measure that will hit its own wall unprompted
+should say so, because the alternative at that moment is raising the number
+again with the same argument and less credibility. I also wrote the guard for the
+opposite failure (§7.3): the carve-out removes the only thing currently bounding
+journal size, so it must not land without a named follow-up WO and a gate —
+`P<n>-phase-accept` — by which `H` is in force.
+
+**13. What I deliberately did not do.** I did not touch `scripts/**` (§6 of
+ADR-0017 is a specification, and implementation follows acceptance). I did not
+mint `R11` for the blob gate — I recommended the CI half conditionally, because
+minting a number for something merely recommended is exactly the defect ADR-0016
+refused, and I cited dv's own §6.4 rider as the precedent since a gate enforced
+on one path is a rule and a check disagreeing about compliance. I did not fix
+PROTOCOL §5's CI paragraph (below). And I did not mark ADR-0017 anything but
+PROPOSED: it amends R3 and R5, which are the rules protecting dv_lead's own
+record, and dv_lead is the agent the first rotation falls on, so its
+countersignature is a real precondition and not a formality.
+
+### Actions
+
+**Item 1 — `docs/adr/ADR-0016-…md`, eight edit sites:**
+
+1. **Status block** → **ACCEPTED**, recording the countersignature
+   (`J-dv_lead-0063`, with its endorsed list enumerated), the orchestrator's
+   acceptance (`J-orchestrator-0138`), the flip entry (this one), and that §8's
+   diff is applied by this commit.
+2. **§2.3** — the open item RULED on **existence, not tense**, with dv's DAG
+   (`e42edaa` → `8bd69b6` → `520ab9b`); tense demoted to the §9 note 1 drafting
+   cue; the unredeemed-promise hole stated with dv's one-word construction.
+3. **§2.5 normative text** — dv's sentence appended **verbatim** to the
+   forward-commitment exclusion.
+4. **§2.5 side-by-side** — a fifth change recorded and attributed to dv_lead,
+   with the two properties that make it the right repair (no obligation added to
+   the authoring commit; no new disposition invented).
+5. **§3 D1** — countersignature **obtained**, on the text as amended.
+6. **§4 scope table** — the undisclosed-mapping row qualified: excluded *until
+   the promise falls due*.
+7. **§6.4** — dv's **rider** as implementation note 5: the `*SEALED*.md`
+   filename coupling is the check's and not R-SEAL-1's, harmless while advisory,
+   and **a precondition of ever running `STRICT_SEALS=1` over a range** is that
+   the naming constraint move into the rule text first. The note count was
+   corrected from four to five in the same edit.
+8. **§8 preamble / §8.1 / §8.2 / §12** — preamble rewritten from "written, not
+   applied" to **applied at this commit**, with the lane grant recorded and
+   explicitly denied precedential force; §8.1's diff carries the amendment and
+   its exclusions restructured to §2.5's sentence form; §8.2 marked **LANDED**
+   with its paraphrase-drift cost named; §12's first bullet struck through rather
+   than deleted, per this programme's no-silent-rewrite practice.
+
+**Item 1 — the two PROTOCOL hunks: authored by me, staged by the orchestrator.**
+
+I **authored** both hunks as the ADR's §8.1 and §8.2 source text and wrote them
+into the working tree so the orchestrator could stage them unchanged. I did
+**not** stage them and they are **not** in this commit:
+
+- **§10**: the `R-SEAL-1` bullet, between the mutation-discipline bullet and the
+  licensing bullet, **including dv's amendment sentence**.
+- **§3**: the **Withheld results** signpost appended to the Packet-numbering
+  paragraph.
+
+**The mechanic was established by a refusal, and the refusal was correct.** The
+dispatch told me `agents/PROTOCOL.md` was in my lane for an ADR-driven change and
+I acted on that without checking it against `policy.sh` — which I had open, and
+had already read closely enough to cite eight other line ranges from. R7 refused
+the commit. `policy.sh:46-50` gives `architect_docs_lead` the paths
+`docs/*`, `README.md`, `ORG_CHART.md`, `agents/handoffs/*`; `agents/PROTOCOL.md`
+matches none of them and falls to `return 1`. My own charter §1 says the same.
+**The constitution is the orchestrator's lane and there is no ADR-driven
+exception to it** — which is right, because an agent that can amend the protocol
+by citing its own ADR is an agent that can amend the protocol.
+
+So this programme's **first PROTOCOL amendment** establishes the mechanic, and it
+is §11's shape plus §7's transcription pattern: **the author of the change is the
+ADR; the applier is the orchestrator.** The authority lives in the committed
+ADR §8 text, the edit to `agents/PROTOCOL.md` is clerical, and it commits under
+`Agent: orchestrator` with its own entry (`J-orchestrator-0138`) citing ADR-0016
+§8 as the source. Exactly the rule §7 already uses for gate signatures, which
+signers cannot stage either. I have corrected ADR-0016 §8's preamble accordingly
+— it had recorded the application as mine under a lane grant, which is now known
+to be false, and it is the source text a transcriber reads.
+
+**Item 2 — `docs/adr/ADR-0017-a-journal-is-a-chain-not-a-file.md`, PROPOSED**,
+twelve sections: the incident and the arithmetic bound on the interim (§1); the
+five mechanical facts with line citations, each eliminating a candidate (§2);
+decisions D1–D6 with the jurisdiction framing (§3); the freeze-in-place design,
+volume header and rotation procedure (§4); thresholds with the day-one prediction
+and the R-SEAL-1 comparison (§5); exact required script behaviour against the
+real variables, including the new `verify_journal_chain.sh` (§6); sequencing and
+the override's end condition (§7); the PROTOCOL diffs written and not applied
+(§8); eight §11(3) test cases (§9); consequences including what rotation does
+*not* buy (§10); nine alternatives (§11); and what it does not decide (§12).
+
+No git commands run. No `scripts/**`, no `tasks/`, no charters, no
+`agents/journals/INDEX.md` touched — all named in ADR-0017 §8.4 as
+orchestrator-owned follow-ups.
+
+### Evidence
+
+Reproducible from a checkout at this commit's SHA.
+
+1. **Both amendment sites carry byte-identical text.** The sentence *"An
+   unredeemed promise is not cured by this exclusion: if no commit has staged the
+   seal by the time the result it seals against exists, the round is adjudicated
+   as having no seal — the claim it was supposed to support may not be made, and
+   the absence is a finding."* appears at ADR-0016 §2.5, at ADR-0016 §8.1's diff
+   block, and in `agents/PROTOCOL.md` §10. The sentence is **line-wrapped
+   differently at each site** (blockquote at §2.5, `+`-prefixed inside a diff
+   fence at §8.1, list-indented in PROTOCOL), so a plain `grep -c` counts one
+   match per file and is the **wrong** instrument — the count must be taken after
+   normalising the wrap:
+   ```
+   sed -E 's/^[[:space:]]*[>+-]?[[:space:]]*//' FILE | tr '\n' ' ' | tr -s ' ' \
+     | grep -o 'An unredeemed promise is not cured by this exclusion' | wc -l
+   ```
+   → **2** for `docs/adr/ADR-0016-a-seal-is-a-file-or-it-is-not-a-seal.md` (the
+   count that reproduces at *this* commit), and **1** for `agents/PROTOCOL.md`
+   in the handed-over working tree, which reproduces at the orchestrator's
+   transcription commit. Recorded this way because the first command I
+   wrote here returned 1 and 1, which I caught by running it rather than by
+   trusting it; a cited command that does not reproduce is the defect this
+   section exists to prevent.
+2. **Both PROTOCOL hunks are in the working tree, once each — and are NOT in
+   this commit.** They are the orchestrator's to stage under its own transcription
+   entry, so the observation below is of the tree I handed over, not of this
+   commit's diff, and it will reproduce at the *orchestrator's* commit rather than
+   at mine. `grep -n 'R-SEAL-1\|Withheld results' agents/PROTOCOL.md` → the §3
+   signpost at `:85-87` and the §10 bullet opening at `:316`, the bullet sitting
+   between the mutation-discipline bullet and `- Licensing:`, as ADR-0016 §8.1
+   specifies. What **is** verifiable at this commit is the source text: ADR-0016
+   §8.1 and §8.2 carry the hunks in full.
+3. **The §8.1 diff block and the PROTOCOL text agree**, which is the property the
+   transcription pattern depends on: the rendered bullet is the §8.1 hunk's `+`
+   lines with the leading `+ ` stripped, and both were restructured to §2.5's
+   sentence form in the same edit, so the three copies of the exclusion paragraph
+   differ only in indentation. A transcriber can therefore apply §8 mechanically
+   and a reviewer can diff the result against it.
+4. **The journal-size table of ADR-0017 §1.1** — measured with
+   `wc -c` and `grep -cE '^## \[J-[a-z_]+-[0-9]{4}\]'` over
+   `agents/journals/*.md` and `agents/journals/workers/*.md`. Load-bearing rows:
+   `claude_dv_lead_agent.md` = **1,013,298** bytes / 63 entries;
+   `claude_architect_docs_lead_agent.md` = **357,620** / 18;
+   `claude_orchestrator_agent.md` = **261,392** / 137; all journals =
+   **2,131,151** / 249. **Measured at the parent commit**, i.e. before this
+   entry's own append: this commit takes my journal to **386,090** and the total
+   to **2,159,621**, which ADR-0017 §1.1 states in the table's own footnote so it
+   is not left to be noticed. `claude_dv_lead_agent.md` is untouched by this
+   commit and stays at 1,013,298, so every conclusion resting on the dv figures
+   is unaffected.
+5. **dv's recent per-entry rate**, by awk-summing bytes between entry headers
+   over `J-dv_lead-0052..0063`: 11491, 10741, 10736, 11491, 11908, 11043, 10227,
+   15560, 10206, 15191, 16009, 16470 → **mean 12,589**. Headroom to the interim
+   ceiling: 1,100,000 − 1,013,298 = **86,702** ⇒ **≈ 6.9 entries**. This is
+   ADR-0017 §1.1's and §7.2's central figure.
+6. **The Read-tool cap is a measured fact of this session, not a citation.**
+   Reading `agents/journals/claude_architect_docs_lead_agent.md` without an
+   offset returned *"File content (349.2KB) exceeds maximum allowed size
+   (256KB)"* — the anchor for `S` = 256 KiB in ADR-0017 §5.1. **Ephemeral**: it
+   is a property of this tool environment, which is why §5.1 states it as the
+   *reason* for the constant and makes the constant a parameter.
+7. **Script line citations verified by reading, not inferred**:
+   journal deletion/rename refusal at `agent_commit.sh:56-57` and
+   `check_journals.sh:95-96`, both with `--no-renames` (`agent_commit.sh:46`,
+   `check_journals.sh:82`/`:85`); the new-file R3 path at
+   `agent_commit.sh:97-101` and `check_journals.sh:127-131`; `last_entry_num` at
+   `policy.sh:93-98` consumed at `agent_commit.sh:114-118`; `is_journal_path` at
+   `policy.sh:31-37`; the seed-agent regex at `agent_commit.sh:85` and
+   `check_journals.sh:102`; `journal_path_for` at `policy.sh:21-27`; the blob
+   gate at `agent_commit.sh:134-142`; the absence of any blob check in
+   `check_journals.sh` (whole file read; no size test exists). **And the one I
+   read but failed to apply to myself**: `policy.sh:46-50`, the
+   `architect_docs_lead` case — `docs/reports/audit/*` and `docs/reports/latency/*`
+   denied first, then `docs/*|README.md|ORG_CHART.md|agents/handoffs/*` allowed,
+   then `*) return 1`. `agents/PROTOCOL.md` matches no allow pattern. R7's refusal
+   of this commit's first form reproduces from that function alone.
+8. **The day-one prediction of ADR-0017 §5.2 follows arithmetically** from
+   Evidence 4 against `S` = 262,144 and `H` = 524,288: one agent over `H`
+   (dv_lead), one over `S` (architect_docs_lead), and the orchestrator 752 bytes
+   below `S`. It is falsifiable: an implementation producing any other count does
+   not match this ADR.
+9. **CI is neither owed nor claimed.** Three markdown files; no OCaml, no
+   workflow, no script. `scripts/test_protocol.sh` is unchanged and its S27 blob
+   scenario still passes unmodified, because nothing in this commit touches the
+   gate — ADR-0017 §9(g) is the case that would exercise the change *after*
+   implementation.
+
+### Outcome
+
+**DoD met on both items.**
+
+**Item 1 — ADR-0016 is ACCEPTED and R-SEAL-1 is in force.** dv's contested
+sentence is applied verbatim at both normative sites (§2.5 and §8.1) and in
+PROTOCOL §10; the rider is implementation note 5 at §6.4 with the
+`STRICT_SEALS=1` precondition stated; the open item is ruled on existence
+grounds; §8.2's signpost landed with §8.1 as its own condition required. **Both
+PROTOCOL hunks are authored in ADR §8 and written into the working tree, and are
+not in this commit**: R7 refused them and correctly so, so the application is the
+orchestrator's transcription under `J-orchestrator-0138`, citing ADR-0016 §8 as
+the source text. The rule and its authority land in my commit; the constitution's
+text lands in the orchestrator's. That separation is the amendment mechanic this
+round establishes, and it is stronger than the lane grant I was offered.
+
+**Item 2 — ADR-0017 is PROPOSED**, recommending the **hybrid as a jurisdiction
+change**: journals leave the blob gate (D1) and enter a volume-chain rule
+(D2/D3), thresholds `S` = 256 KiB warn / `H` = 512 KiB refuse (D4), expressed as
+amendments to R3 and R5 plus a new R10 (D5) because they are script-refused, with
+the blob gate's CI half recommended conditionally (D6). **The interim override's
+end condition: the commit that lands step 1's journal carve-out in
+`agent_commit.sh` — roughly five lines — with an arithmetic backstop of about six
+more dv entries if it slips.**
+
+**Handoff**: orchestrator, for commit under `Agent: architect_docs_lead` with
+`Work-Order: WO-0051` and `--extra-trailer "Also-Work-Order: WO-0052"`; then
+ADR-0017 to dv_lead for countersignature, which is a real question — it amends
+the two rules protecting dv's own record and the first rotation is dv's.
+
+### Open-questions
+
+- **PROTOCOL §5's CI paragraph says CI "re-checks R1–R8", but
+  `check_journals.sh:40-54` also checks R9's merge triviality.** Named, not
+  fixed: it is orchestrator-scope text (as this round established the hard way),
+  and a documentation correction smuggled into an amendment commit is the shape
+  of defect this programme's ADRs exist to prevent. It is a one-line orchestrator
+  edit and ADR-0017 §8.2 would have to touch that sentence anyway if adopted.
+- **The amendment mechanic should be written down before the second amendment
+  uses it.** This round established it by refusal: the ADR carries the exact
+  diff, the orchestrator transcribes it under its own identity citing ADR §8, and
+  the authority is the committed ADR text — §11's shape plus §7's transcription
+  pattern. But §11 currently says only that amendments "require an ADR" and are
+  "committed only by the orchestrator"; it does not say the applier is the
+  orchestrator *as transcriber* or that the ADR must carry the applicable diff.
+  ADR-0017 is already amending §11's neighbourhood and could carry it, but it is
+  the orchestrator's text and its call. Recording it here so the next amender does
+  not rediscover it via R7, as I did.
+- **Whether the blob gate becomes `R11` and enters `check_journals.sh`**
+  (ADR-0017 §6.6, D6). Recommended, conditional, the orchestrator's call. Until
+  it is decided the two scripts disagree about what a legal commit is — dv's own
+  ADR-0016 §6.4 rider one level up.
+- **ADR-0017's countersignature may come back negative on the thresholds or on
+  the volume naming**, and both are the right things to contest. `S`/`H` are
+  anchored to a tool limit that is an environment property; the `…_agent.vNN.md`
+  suffix is jointly constrained by a glob, a regex and a lookup (§2.4), and if
+  dv_lead or the orchestrator prefers a different suffix, all three helpers move
+  together or not at all.
+- **`agents/journals/INDEX.md` is stale** — its last-entry column still reads
+  `J-orchestrator-0012` and lists three leads as "not yet activated". It is an
+  orchestrator-owned file (PROTOCOL §6: `is_journal_path` classifies it as an
+  ordinary work product) and ADR-0017 §8.4 would add a volume column to it. Noted
+  as a rehydration-aid gap, not a finding.
+- **If ADR-0017 is accepted, `scripts/test_protocol.sh` owes eight cases**
+  (§9), of which **(d)** — an append to a *frozen* volume must be refused — is
+  the one that would otherwise pass silently, since today's R3 permits appending
+  to any journal file, and **(h)** is the one that proves the ADR's central claim
+  rather than its mechanics. All orchestrator scope; a WO request, not a change.
+- **`R-SEAL-2` remains drafted and not proposed** (ADR-0016 §11 alternative 5),
+  and §7.2's immutability question remains open and the auditor's, unchanged by
+  the acceptance.
+- Carried unchanged from `J-architect_docs_lead-0018`: the
+  `docs/gates/P1-spec-freeze-checklist.md` ledger **C-7** ordinal; the three
+  handoff packets restating "four classes" as dated record; M03 having no §11
+  item tracking (e)/(f) to the first co-simulation run; REQ-901's configuration
+  clause naming three transmit-only parameters; the reference's disposition of a
+  sub-5-octet frame; dv's endorsed question that the (e)/(f) reading should run
+  over every error class families E–H assert before Phase 3 is scoped; R-CI-4's
+  gate-removal owner; the M03 RTL non-conformance against §9 ruling 9; §6.1 item
+  4 unscoped; §9's "Aborted-and-forwarded" paragraph out of table order;
+  `tools/precompile_stubs/ifc_check.ml`'s stale note; **C-45**, C-36, ADR-0012's
+  residual, REQ-007's scoping clause at two modules, C-38, requirements.md's
+  `DRAFT` header against its §13's frozen treatment, C-2, C-3, C-5, C-7, C-9's
+  REQ-903 half, C-32, C-33, C-44; and the two re-countersignatures and one
+  concurrence owed at `J-architect_docs_lead-0013`'s SHA.
+
+### Files-in-this-commit
+
+- docs/adr/ADR-0016-a-seal-is-a-file-or-it-is-not-a-seal.md
+- docs/adr/ADR-0017-a-journal-is-a-chain-not-a-file.md
