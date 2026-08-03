@@ -713,7 +713,15 @@ SHA**, not this one.
   `split_at_first_tlast` annotates `(s : sample)` inside the match, which is the
   round-3 unbound-record-field lesson correctly applied.
 - **`dune runtest`: predicted GREEN — eighteen `%expect_test`s (fifteen
-  existing plus three new), all silent. NOT red-by-design.** I grepped
+  existing plus three new), all silent. NOT red-by-design.**
+  > **The count in this bullet is WRONG and is left standing as a recorded
+  > miss** (`J-dv_lead-0042`; measured at `J-orchestrator-0115`). The M03
+  > bench holds **twelve** `%expect_test` units — nine before family D, three
+  > after — and the repository holds 92; "fifteen" and "eighteen" match
+  > neither. The prediction this bullet makes is unaffected (green, silent,
+  > no promotion) and it held; only the denominator was never measured by
+  > anyone. The counted figure governs, and
+  > `WO-0041_…-SEALED-predictions.md` §0 carries it. I grepped
   `test_m03_d.ml` for `print`, `printf`, `Stdio` and `Out_channel`: **nothing
   prints.** Every assertion raises through `failwith`. So all three new
   `[%expect {||}]` blocks match empty output exactly as the fifteen do, and

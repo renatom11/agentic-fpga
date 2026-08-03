@@ -169,6 +169,40 @@ case "$rfc_rc" in
     ;;
 esac
 
+# ---- bench inventory: a REPORT, never a check --------------------------
+# Why this exists (J-dv_lead-0042). The M03 bench's unit count circulated
+# through four packets as "fifteen", then "eighteen", with no party having
+# counted it: `dune runtest` is silent on success, so CI never printed it,
+# and each signer assumed the other had measured. It reached a mutation
+# campaign's freeze instruction before anyone checked. The fix is not a
+# check — an asserted count would go stale every packet and redden the
+# suite for doing its job — but a PROVENANCE: a committed tool that prints
+# the number, so any packet quoting it can say where it came from.
+#
+# Deliberately no pass/fail semantics and no effect on $status: this block
+# cannot manufacture a green and cannot redden one.
+printf '=== bench inventory (REPORT only — no check, no verdict) ===\n'
+inv_total=0
+for inv_f in test/xgmii_rx_64/*.ml; do
+  [ -e "$inv_f" ] || continue
+  # NOT `grep -c ... || printf '0'`: grep -c already prints 0 on no match and
+  # then exits 1, so the `||` appends a SECOND zero and the arithmetic below
+  # dies on "0\n0". This exact bug was fixed once in this file at WO-0034 and
+  # reintroduced here (J-dv_lead-0042) — left commented so it is not a third
+  # time.
+  inv_n=$(grep -c 'let%expect_test' "$inv_f" 2>/dev/null)
+  inv_n="${inv_n:-0}"
+  [ "$inv_n" -eq 0 ] && continue
+  printf '  %3s  %s\n' "$inv_n" "$inv_f"
+  inv_total=$((inv_total + inv_n))
+done
+inv_repo=$(grep -rh 'let%expect_test' test/ 2>/dev/null | grep -c . || printf '0')
+printf '  ---\n  %3s  test/xgmii_rx_64/ (the M03 bench)\n' "$inv_total"
+printf '  %3s  test/ (repository-wide)\n' "${inv_repo:-0}"
+printf 'Quote these figures with this command as their provenance, or measure\n'
+printf 'your own. Do not quote a unit count nobody has counted.\n\n'
+
+
 if [ "$status" -ne 0 ]; then
   printf 'dv_checks: at least one check FAILED\n'
 elif [ "$open_obligation" -ne 0 ]; then

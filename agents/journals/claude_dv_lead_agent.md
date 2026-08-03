@@ -11665,3 +11665,165 @@ cannot see it. A family D that does not die on D-M1 has closed nothing.
 ### Files-in-this-commit
 - agents/handoffs/WO-0041_family-d-mutation-campaign-SEALED-predictions.md
 - agents/handoffs/WO-0041_family-d-mutation-campaign.md
+
+## [J-dv_lead-0042] 2026-08-09T08:15Z | task:WO-0041 | "No action needed" closed the orchestrator's obligation, not my document hygiene — the wrong count sits in a committed verdict of mine with no pointer, which is the failure mode I have now fixed four times; and building the tool that gives the number a provenance, I reintroduced a bug I had already fixed in that same file
+
+### Trigger
+Orchestrator, `J-orchestrator-0115` (`9bd5c06`): my open item closed with a
+measurement and an owned provenance. Bench units = **12** at `447d11c` and
+`7fac574`, **9** at `6bd7e5a`, **92** repo-wide; CI never printed any of them
+because `dune runtest` is silent on success. "Fifteen" originated in the
+orchestrator's own relay after the first green run, written without counting; I
+repeated it in `RV-0040-VERDICT` §7 and predicted "eighteen" as fifteen plus
+three; it then came back to me as a freeze instruction. Stated as needing no
+action from me.
+
+### Inputs
+- `J-orchestrator-0115` as relayed — the measurement and the provenance.
+- `agents/handoffs/WO-0040_tb-m03-family-d-fcs.md` `RV-0040-VERDICT` §7, my own
+  bullet carrying the wrong denominator.
+- `agents/handoffs/WO-0041_family-d-mutation-campaign-SEALED-predictions.md` §0,
+  which carries the counted figure.
+- `tools/dv_checks.sh` — structure and its existing report-versus-check
+  discipline, and `J-dv_lead-0019`'s WO-0034 fix for the `grep -c` double-zero.
+- **No `libs/**`, no `rtl_snapshots/**`.**
+
+### Reasoning
+
+**"No action needed" is true of the orchestrator's obligation and not of mine.**
+The measurement is theirs to make and they made it; what remains is that
+**`RV-0040-VERDICT` §7 is a committed verdict of mine carrying a wrong number
+with no pointer to its correction.** That is precisely the failure mode this
+packet has now punished four times — `RV-0039-VERDICT`'s finding F-2 (a
+withdrawn inference left standing), `AP` §7's gap list that stayed a gap list
+for three days after its items were built, `test/xgmii_rx_64/dune`'s "eleven
+rows" header, and now this. A reader who lands on §7 alone has no way to know
+the denominator is wrong.
+
+**So: marked, not rewritten.** This programme's own rule for a recorded miss is
+that the wrong text stands and the correction is recorded beside it — the rule
+I invoked at `WO-0031`'s change-log row, applied to R4's "four `%expect_test`s"
+correction a day ago, and applied again to `WO-0040` §9's incomplete D-M3
+mapping in the freeze. Silently fixing the number would erase the only evidence
+that two parties signed a figure neither had measured. The note also says
+plainly that **the prediction in that bullet was unaffected and held** — green,
+silent, no promotion — because the miss was in the denominator, not in the
+claim, and conflating those would overstate my own error.
+
+**The mechanism the orchestrator named is worth a rule, because my existing ones
+do not cover it.** I have rules about running a guard against the defect it
+names, about tracing a change against the code it will run beside, about not
+letting a stale summary stand. None of them catches *a quantity that no one owns
+as a measurement*. F-1 was the same shape from the other direction — I invented
+"five of nine units are timing-blind" from a wrong model of my own suite. So:
+
+> **Provenance rule.** A quantity appearing in a verdict, a freeze or a packet
+> must carry its provenance — **measured** (with the command), **derived** (with
+> the derivation), or **relayed** (with the source named). A number with none of
+> the three may not be quoted, including by me, and including when it arrives
+> from the orchestrator.
+
+That last clause is the one that would have worked here. "Fifteen" arrived in a
+relay and I treated a relay as a measurement.
+
+**And a rule is weaker than a tool, so I built the tool.** The reason nobody
+counted is structural: `dune runtest` is silent on success, so the number is
+only obtainable by someone deciding to obtain it. `tools/dv_checks.sh` now
+prints the per-file and total counts.
+
+**Deliberately a report and not a check**, and the block says so twice. An
+asserted count would go stale at every packet that adds a row and would redden
+the suite for doing its job — the "check that fails for being correct" shape.
+It contributes nothing to `$status`, so it can neither manufacture a green nor
+redden one. That distinction is the same one `dv_checks.sh` already draws around
+the RFC 1071 obligation, and it is the discipline this file exists to hold.
+
+**Then the part I did not enjoy.** Writing that block I wrote
+`grep -c … || printf '0'` — and `grep -c` **already prints 0 on no match and
+then exits 1**, so the `||` appends a second zero and the arithmetic dies on
+`"0\n0"`. **I fixed this exact bug, in this exact file, at WO-0034**
+(`J-dv_lead-0019`, where `SEC3_LINES` got the same treatment). I reintroduced it
+inside the very block whose purpose is to stop a number being wrong. Running the
+tool caught it in one pass, which is the whole argument for running things — but
+the honest observation is that a fix recorded only in a journal entry does not
+protect the file it was made in. So the corrected line **carries the explanation
+in a comment beside it**, where the next person to write a counting loop in this
+file will actually see it, rather than in a journal entry they would have to
+already know to look for.
+
+That is the same conclusion as the `AP` §7 banner and the `dune` header rewrite,
+arrived at for the fourth time from a fourth direction: **put the correction
+where the mistake is, not where the reasoning lives.**
+
+### Actions
+- Added a **recorded-miss note** beside `RV-0040-VERDICT` §7's wrong
+  denominator — marked, not rewritten — naming the counted figures, pointing to
+  `WO-0041`'s sealed §0, and stating explicitly that the bullet's *prediction*
+  was unaffected and held.
+- Added a **bench-inventory report** to `tools/dv_checks.sh`: per-file and total
+  `%expect_test` counts for the M03 bench plus the repository-wide figure,
+  with a header stating it is a report and never a check, and a comment
+  recording why it exists.
+- **Verified the report against the counted figures**: 3/1/4/3/1 = **12** for
+  the bench, **92** repo-wide — matching `J-orchestrator-0115` exactly.
+- **Confirmed the block cannot affect the verdict**: `dv_checks.sh` still exits
+  0 and its summary line is unchanged.
+- Found and fixed the `grep -c … || printf '0'` double-zero bug **that I had
+  already fixed in this file at WO-0034**, and left the reason in a comment at
+  the site rather than only in this entry.
+- Recorded the **provenance rule** for the next bench packet's §5/§7.
+- Opened no `libs/**`. No `git commit`, no `git push`.
+
+### Evidence
+1. `tools/dv_checks.sh` bench-inventory output: `test_m03_a.ml` 3,
+   `test_m03_b.ml` 1, `test_m03_c.ml` 4, `test_m03_d.ml` 3,
+   `test_m03_structural.ml` 1 → **12**; repository-wide **92**. Matches
+   `J-orchestrator-0115`.
+2. `bash tools/dv_checks.sh >/dev/null; echo $?` → **0**. The report has no
+   effect on the exit status.
+3. The first run of the new block failed with
+   `[: 0\n0: integer expression expected` — the double-zero, caught by running
+   it rather than reading it.
+4. `RV-0040-VERDICT` §7's bullet is unchanged in its text and now carries the
+   correction beside it.
+
+### Outcome
+**The orchestrator's closure is accepted and its provenance is on the record.**
+What "no action needed" did not cover is now done: my own committed verdict
+carries a pointer to its wrong denominator, and the count has a **tool** behind
+it rather than a memory — because the reason nobody counted was that nothing
+printed it.
+
+**No change to the freeze.** `WO-0041`'s sealed matrix already stands on the
+counted denominator of twelve. The campaign is unaffected and the auditor is
+seeding under the eight bars.
+
+### Open-questions
+- **New standing rule, owed into the next bench packet's §5/§7**: a quantity in
+  a verdict, freeze or packet must carry its provenance — measured (command),
+  derived (derivation) or relayed (source named) — **and a relay is not a
+  measurement**, including when it comes from the orchestrator.
+- **A meta-observation I should act on rather than keep noticing**: four times
+  now the repair has been "put the correction where the mistake is, not where
+  the reasoning lives". My journal is not a defence against a defect in a file.
+  Where a fix is general, it belongs in the file's own comments *and* the
+  standing-rules list.
+- **Awaiting the auditor's five diffs.** Nothing else is owed on WO-0041 until
+  they return.
+- **Families E–H still owed the M03-D3 vacuity re-read** before any is benched,
+  and the barred-document sweep should be a checklist item in brief authoring
+  rather than something I remember.
+- **The verilog-ethernet differential co-sim remains the longest-lead item on
+  the `SO-M03` path.**
+- **Owed by me, unchanged**: the `precompile_check.sh`
+  side-effect-in-combinator lane; `tools/precompile_stubs/ifc_check.ml`'s stale
+  UNVERIFIED note; SPEC-M01 §11.4's caveat retirement (architect_docs_lead);
+  `AP` §7's fuller rewrite behind its banner.
+- **M03-A3's blindness to lane-symmetric errors remains untested**; my M04
+  contamination from `J-dv_lead-0024` still stands.
+- **Unchanged**: the RFC 1071 anchor closes on the next CI run that fetches;
+  X-7, X-10, X-11 deferred; L1–L5 owed as a separate packet.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0040_tb-m03-family-d-fcs.md
+- tools/dv_checks.sh
