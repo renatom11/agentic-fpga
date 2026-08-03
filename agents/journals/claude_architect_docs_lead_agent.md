@@ -4241,3 +4241,210 @@ this commit: no normative text moved.
 
 - docs/adr/ADR-0015-the-cosim-lane-dependency-reference-and-determinism.md
 - docs/specs/modules/axi64.md
+
+## [J-architect_docs_lead-0015] 2026-08-03T15:10Z | task:WO-0044 | ADR-0015 flipped PROPOSED → ACCEPTED: both E3 grants transcribed with the relay limit stated, and the three in-role rulings explicitly NOT re-derived from the sponsor's permission
+
+### Trigger
+
+Orchestrator, relaying the sponsor's answers to the two E3 questions
+`ADR-0015` raised at `J-architect_docs_lead-0014` (committed `9d357e6`). Task:
+flip the ADR to ACCEPTED, transcribe both question-and-answer pairs on the
+P1-spec-freeze gate's transcription convention with me named as transcriber,
+date 2026-08-03, state what the acceptance unblocks, and state that the in-role
+rulings were already in force and are unchanged.
+
+### Inputs
+
+- The orchestrator's relay: both questions as put to the sponsor and both
+  answers as received — "Approve Icarus in CI (Recommended)" and "Approve
+  vendoring (Recommended)".
+- `docs/adr/ADR-0015-…md` at `9d357e6` — my own draft, re-read in full to find
+  every sentence the acceptance falsifies rather than only the status block.
+- `docs/gates/P1-spec-freeze-checklist.md` — the transcription convention this
+  entry was told to follow: a blockquote of the signer's own words, then
+  "— <signer>, journal `J-…` (WO-…), transcribed by the orchestrator <date>".
+- `agents/PROTOCOL.md` §3 (relay classes and the auditor's relay-fidelity
+  spot-check), §7 (signature transcription: authority lives in the referenced
+  artifact, the checklist edit is clerical), §8 (E3).
+- `docs/SPONSOR.md` — the E3 row and the "decision-ready: options,
+  recommendation, cost" standard the escalation had to meet.
+- `agents/charters/architect_docs_lead.md` §7 (E3: "You draft the ADR; the
+  decision is E3").
+- `git status --short` and `git log --oneline -3` — to establish that `9d357e6`
+  landed and to identify the two in-flight foreign paths named in Actions.
+
+### Reasoning
+
+**The whole risk in this unit of work is one sentence long: a grant of
+permission is not a ratification of a design.** The sponsor answered two
+questions — may a second simulator be added, may third-party source be
+vendored. Neither question mentions Icarus-over-Verilator, `test/third_party/`
+over a top-level directory, the three-notice licensing rule, the `libs/**`
+boundary, or REQ-902's scope. If I had flipped the status line and stopped, the
+ADR would read — to an auditor, to a future agent, and to me in three weeks —
+as though the sponsor had blessed all of it. That is the failure mode this flip
+actually has, and it is a documentation failure of exactly the class I am
+graded on.
+
+So the status block does two things a bare flip would not. It says what the
+grants **are** ("whether the dependency and the vendored source are permitted")
+and, in the same breath, what they **are not** ("settle nothing about which
+simulator, where the source lives, or what REQ-902 covers, which were never the
+sponsor's to decide"). And it carries a "**What the grants do not touch**"
+paragraph naming each in-role ruling, with the read-bar one called out
+specifically: **the sponsor did not rule on the `libs/**` bar.** That one
+matters most because it is the ruling most likely to be cited later by someone
+who wants the answer to have more authority behind it than it has. It has mine,
+under charter §3, and the converse expected-value obligation rides with it.
+
+**On the transcription convention, I adapted it and said so rather than
+pretending it fit.** PROTOCOL §7's rule exists for a mechanical reason — signers
+cannot stage `docs/gates/**`, so the orchestrator transcribes. That reason is
+absent here: `docs/adr/**` is my own write scope, so I am both author and
+transcriber. Rather than borrow the form and quietly drop its rationale, the
+block states the adaptation, states that the transcription is **clerical**, and
+locates authority in the sponsor's answer as relayed — not in my restatement.
+
+**And the limit I insisted on recording**: I did not observe the decision UI.
+Both the question text and the answer reached me through the orchestrator. That
+is not a complaint — it is the only channel PROTOCOL §8 provides, and charter §4
+says my sponsor contact is "nothing directly". But a transcription that reads as
+first-hand when it is second-hand is a small lie that compounds, and the
+programme has a mechanism for exactly this: §3's relay-fidelity spot-check. So
+the block says the record inherits any alteration in relay and names the check
+that would surface it. That sentence costs nothing if the relay is faithful and
+is the only thing that helps if it is not.
+
+**Why I swept the body instead of editing only the status line.** Three
+sentences elsewhere had gone stale the moment the answers arrived: D1's and D2's
+authority lines ("is E3 and is the sponsor's" — now past tense, and each needed
+the grant named and its reach bounded), and Consequences' "WO-0044 remains
+BLOCKED **only** on the two E3 answers", which was now simply false. A frozen
+record with a corrected header and an uncorrected body is worse than one with
+neither, because the header teaches the reader to trust the body. This is the
+same sweep discipline I applied to SPEC-M01 §13's "has had none" sentence in
+the previous entry, and it is becoming a habit on purpose.
+
+**One boundary I declined to cross.** `WO-0044`'s header still says `DRAFT —
+BLOCKED on an ADR`. `agents/handoffs/**` is inside my write scope, so I *could*
+flip it. I did not: it is dv_lead's packet, its `State:` line is the packet
+lifecycle's own field (PROTOCOL §3), and the previous unit of work in this
+programme where a lead's state line was moved by someone other than its owner
+is not a precedent I want to create for a two-word convenience. The Consequences
+bullet says so in the ADR itself, so the next reader knows the packet's state is
+stale-by-design rather than overlooked.
+
+### Actions
+
+- `docs/adr/ADR-0015-…md`, **four hunks, one file**:
+  - **Status** flipped `PROPOSED` → **`ACCEPTED 2026-08-03`**, with the
+    grant/design distinction stated and `J-architect_docs_lead-0014` named as
+    the PROPOSED record; **Deciders** re-cut to name the sponsor on the two E3
+    items and me on the three in-role rulings; **Journal** now cites both
+    entries; **Affects** loses its now-moot "if the sponsor rejects either item"
+    closing sentence.
+  - **New `### E3 grants — transcribed` section**: the transcription-convention
+    note and its adaptation, the stated relay limit, then **E3-1** and **E3-2**
+    as blockquoted Q-and-A in the sponsor's words with the
+    "— Renato (sponsor), … transcribed by architect_docs_lead in
+    `J-architect_docs_lead-0015`" attribution line each; then **What the grants
+    unblock** (the vendoring work under D2's rules; the `cosim` job against
+    R-CI-1 … R-CI-8; Phase 1 executable once both land) and **What the grants do
+    not touch** (D1's choice and bridge form, D2's placement/licensing/closure
+    and the `libs/**` ruling with its converse obligation, D3's REQ-902
+    scoping — plus the unchanged "does not decide" scope).
+  - **D1's and D2's Authority lines** re-cut to past tense with the grant named
+    (`E3-1`, `E3-2`) and its reach bounded — the grant permits, the grounds
+    below select.
+  - **Consequences' BLOCKED bullet** replaced: `WO-0044` is no longer blocked,
+    its state line is dv_lead's and the orchestrator's to flip, and the in-role
+    rulings did not wait for the grants.
+- **Not touched**: D1's, D2's and D3's Decision text, the eight R-CI-*
+  requirements, every rejected-alternative table, the measured evidence
+  (closure, licence, apt), and "What this ADR does not decide". **No other
+  file.** No spec, no requirement, no gate file, no packet header. No
+  `git commit`, no `git push`.
+- **Foreign in-flight paths in the working tree, not mine, must not be staged
+  with this commit** (R1/R7): `tools/precompile_stubs/ifc_check.ml` (modified —
+  dv_lead, presumably the stale-note fix `J-dv_lead-0025` owed itself) and
+  `test/xgmii_rx_64/test_m03_e.ml` (untracked — the family-E worker).
+
+### Evidence
+
+Reproducible from a checkout at this commit's SHA:
+
+1. **Scope.** `git diff --stat -- docs/` → **1 file changed, 91 insertions, 26
+   deletions**, the ADR only. `git status --short` additionally shows
+   `M tools/precompile_stubs/ifc_check.ml` and `?? test/xgmii_rx_64/test_m03_e.ml`,
+   **both foreign** and both excluded from the files list below.
+2. **The PROPOSED record exists and is what this supersedes.**
+   `git log --oneline -3` → `9d357e6 ADR-0015 PROPOSED: …`, the commit carrying
+   `J-architect_docs_lead-0014`. `git ls-files docs/adr/` lists the ADR, so this
+   is a modification of a committed file, not a re-creation.
+3. **Structural integrity.** Script over the ADR: **23 table rows scanned, 0
+   pipe failures**; `**` spans outside code spans **balanced** (172, even). The
+   status line reads `- **Status**: **ACCEPTED 2026-08-03.** …`.
+4. **No stale PROPOSED-era claim survives.**
+   `grep -n "BLOCKED\|is E3\|sponsor" ADR-0015…md` returns hits only inside the
+   new status block, the two re-cut authority lines and the rewritten
+   Consequences bullet; the string "remains BLOCKED" no longer occurs.
+5. **The transcription convention is the one cited.**
+   `docs/gates/P1-spec-freeze-checklist.md` lines 21, 38, 48 and 144 carry the
+   blockquote-then-attribution form this entry copies, e.g.
+   "— dv_lead, journal `J-dv_lead-0002` (WO-0005), transcribed by the
+   orchestrator".
+6. **CI is neither owed nor claimed.** This commit changes one markdown file
+   and no OCaml source, no workflow and no script; no `build` run is required
+   by it and none is cited.
+
+### Outcome
+
+**DoD met.** `ADR-0015` is **ACCEPTED 2026-08-03**. Both E3 grants are
+transcribed verbatim in question-and-answer form with attribution and a stated
+relay limit; the acceptance's reach is bounded in the document itself so that
+the three in-role rulings cannot later be read as sponsor-ratified; and every
+sentence the grants falsified has been swept.
+
+**`WO-0044` is unblocked.** What is now executable, in the orchestrator's hands:
+(a) assign the vendoring of `test/third_party/verilog-ethernet/` under D2's
+rules — `COPYING` plus `PROVENANCE.md` plus the two byte-verbatim `.v` files,
+pinned by 40-hex SHA with per-file sha256, never edited; (b) implement the
+`cosim` job against **R-CI-1 … R-CI-8**, non-blocking on first landing with the
+stated removal condition; (c) `WO-0044`'s Phase 1 — one 64-octet frame plus the
+deliberate mismatch check — once those two land.
+
+**Handoff**: orchestrator, for (a)–(c) and to flip `WO-0044`'s `State:` line
+with dv_lead — **I deliberately did not touch another lead's packet header**.
+dv_lead additionally owes the Phase 0 comparison domain, into which D2's
+expected-value obligation should be folded.
+
+### Open-questions
+
+- **Relay fidelity is assumed, not verified.** I did not observe the decision
+  UI; the questions as put and the answers as received are the orchestrator's
+  relay and are transcribed as such. PROTOCOL §3's spot-check is the mechanism
+  if that ever matters.
+- **`WO-0044`'s header still reads `DRAFT — BLOCKED on an ADR`** and is stale by
+  my deliberate choice, not by oversight. Its owner and the orchestrator flip it.
+- **R-CI-4's gate removal still has a condition but no owner** — carried
+  unchanged from `J-architect_docs_lead-0014`. The grant makes the job
+  implementable, which makes this more urgent, not less: a `continue-on-error`
+  lane that nobody is assigned to un-gate is decoration that now exists.
+- **The `lfsr.v` closure was measured at `master`, not at a pin** — carried
+  unchanged. The vendoring worker re-derives it at the SHA it actually pins.
+- **A second, cheaper open item created by the grant**: the acceptance permits
+  a second simulator in the programme but does not pay its cost. Phase 2's
+  replay simulator remains undecided and Verilator remains its plan of record.
+- Carried unchanged from `J-architect_docs_lead-0014` and earlier: the M03 RTL
+  non-conformance against §9 ruling 9; §6.1 item 4 unscoped; §9's
+  "Aborted-and-forwarded" paragraph one step out of the table's literal order;
+  `tools/precompile_stubs/ifc_check.ml`'s stale note (dv_lead's, apparently in
+  flight in the working tree); **C-45**, C-36, ADR-0012's residual, REQ-007's
+  scoping clause at two modules, C-38, requirements.md's `DRAFT` header against
+  its §13's frozen treatment, C-2, C-3, C-5, C-7, C-9's REQ-903 half, C-32,
+  C-33, C-44; and the two re-countersignatures and one concurrence owed at
+  `J-architect_docs_lead-0013`'s SHA.
+
+### Files-in-this-commit
+
+- docs/adr/ADR-0015-the-cosim-lane-dependency-reference-and-determinism.md

@@ -1,27 +1,83 @@
 # ADR-0015: the differential co-simulation lane — Icarus in CI, a two-file vendored reference, and the determinism REQ-902 does not give it
 
-- **Status**: **PROPOSED.** Three sub-decisions are taken in-role and are in
-  force on commit; **two are E3** (PROTOCOL §8, charter §7 — a new toolchain
-  dependency, and third-party source entering the repository) and are **drafted
-  here for sponsor decision via the orchestrator**, not accepted by me. Each
-  section below carries its own authority line; the E3 items are D1 and D2's
-  *permission* halves. WO-0044 stays BLOCKED on the two E3 answers; everything
-  the in-role rulings settle is unblocked now.
-- **Deciders**: architect_docs_lead drafts; **sponsor (Renato) decides the two
-  E3 items** on an orchestrator escalation carrying options + recommendation +
-  cost. The in-role rulings (D2's placement and pinning mechanism, D2's
-  `libs/**` boundary ruling, D3's REQ-902 scoping) are mine under charter §3
-  and §7 and are recorded as decided.
+- **Status**: **ACCEPTED 2026-08-03.** Both E3 permission items were **granted
+  by the sponsor** (transcribed below); the three in-role rulings were already
+  in force from this ADR's first commit and are **unchanged by the acceptance**
+  — the grants answer *whether the dependency and the vendored source are
+  permitted*, and settle nothing about *which simulator*, *where the source
+  lives*, or *what REQ-902 covers*, which were never the sponsor's to decide.
+  This ADR was **PROPOSED** at `J-architect_docs_lead-0014`.
+- **Deciders**: **sponsor (Renato)** on the two E3 items (PROTOCOL §8, charter
+  §7 — a new toolchain dependency, and third-party source entering the
+  repository), on an orchestrator escalation carrying options + recommendation
+  + cost. **architect_docs_lead** on the three in-role rulings — D1's simulator
+  choice and bridge form, D2's placement, pinning mechanism, licensing rule and
+  `libs/**` boundary ruling with its converse expected-value obligation, and
+  D3's REQ-902 scoping — under charter §3 and §7.
 - **Work order**: WO-0044 (`agents/handoffs/WO-0044_cosim-lane-opening.md`, §7's
-  three questions) · **Journal**: `J-architect_docs_lead-0014`
+  three questions) · **Journal**: `J-architect_docs_lead-0014` (draft),
+  `J-architect_docs_lead-0015` (this acceptance)
 - **Affects**: **no frozen spec text and no requirement's normative sentence.**
   This ADR cites REQ-901, REQ-902 and REQ-906 and changes none of them. It
   creates one new tree path (`test/third_party/`), states requirements for
   `.github/workflows/build.yml` (implemented by the orchestrator, not here), and
   rules one independence boundary that WO-0044 §6 explicitly declined to settle
-  unilaterally. If the sponsor rejects either E3 item, no committed artifact has
-  to be unwound — that is why this ADR precedes the vendoring commit rather
-  than describing it.
+  unilaterally.
+
+### E3 grants — transcribed
+
+Recorded on PROTOCOL §7's transcription discipline, adapted: the gate rule has
+the orchestrator transcribe because signers cannot stage `docs/gates/**`; here
+`docs/adr/**` is my scope, so **I am the transcriber and the transcription is
+clerical**. Authority lives in the sponsor's answer as relayed by the
+orchestrator, not in my restatement of it. **Stated limit**: I did not observe
+the decision UI. Both the question text as put and the answer as received are
+the orchestrator's relay, verbatim below; if either was altered in relay, this
+record inherits the alteration and the relay-fidelity spot-check
+(PROTOCOL §3) is where that would surface.
+
+**E3-1 — the simulator dependency (D1's permission half).**
+
+> **Q**: "May a second simulator toolchain (Icarus Verilog, installed via apt)
+> be added to CI as its own job for the co-simulation lane?"
+> **A**: "Approve Icarus in CI (Recommended)"
+
+— Renato (sponsor), E3 decision relayed by the orchestrator 2026-08-03,
+transcribed by architect_docs_lead in `J-architect_docs_lead-0015`.
+
+**E3-2 — third-party source in the repository (D2's permission half).**
+
+> **Q**: "May third-party source (two MIT-licensed files from verilog-ethernet,
+> ~30KB total) be vendored verbatim into the repository under
+> `test/third_party/`?"
+> **A**: "Approve vendoring (Recommended)"
+
+— Renato (sponsor), E3 decision relayed by the orchestrator 2026-08-03,
+transcribed by architect_docs_lead in `J-architect_docs_lead-0015`.
+
+**What the grants unblock.** `WO-0044` was BLOCKED on these two answers and on
+nothing else. With them:
+
+- the **vendoring work** may be assigned and executed — `test/third_party/verilog-ethernet/`
+  with `COPYING`, `PROVENANCE.md` and the two byte-verbatim `.v` files, under
+  every rule D2 states (verbatim, pinned by 40-hex commit SHA, sha256 per file,
+  never edited, parameters set at instantiation, pin bumps in their own commit);
+- the **`cosim` CI job** may be implemented by the orchestrator against
+  **R-CI-1 … R-CI-8** as written, including the `continue-on-error` first
+  landing and its stated removal condition;
+- `WO-0044`'s own Phase 1 — one 64-octet frame plus the deliberate mismatch
+  check — becomes executable once those two land.
+
+**What the grants do not touch.** D1's choice of Icarus over Verilator, D1's
+file-based bridge, D2's placement/licensing/closure findings, D2's `libs/**`
+boundary ruling **and its converse obligation that the reference may never
+become a source of expected values**, and D3's ruling that REQ-902 is not
+extended — all were in force on this ADR's first commit and are unchanged. In
+particular the sponsor did **not** rule on the read bar; that remains an
+in-role adjudication under charter §3, and the expected-value clause stands
+exactly as written. The scope in "What this ADR does not decide" is likewise
+unchanged: Phase 2's replay simulator is still undecided, and nothing past
+Phase 1 is authorised.
 
 ---
 
@@ -59,8 +115,11 @@ decisions rather than inside them:
 
 ## D1 — The simulator: Icarus Verilog, from the Ubuntu archive, in its own job
 
-**Authority**: the *choice* is my recommendation; **adding a second toolchain
-dependency to CI at all is E3** and is the sponsor's.
+**Authority**: the *choice* is mine and was in force from this ADR's first
+commit; **adding a second toolchain dependency to CI at all was E3** and was the
+sponsor's — **granted 2026-08-03 as E3-1 above**. The grant permits the
+dependency; it does not select the simulator, and the grounds below are what
+select it.
 
 ### Decision
 
@@ -172,10 +231,12 @@ only ever agreed.
 
 ## D2 — The reference: two files, vendored verbatim under `test/third_party/`
 
-**Authority**: **whether third-party source may enter the repository at all is
-E3** (charter §7 — the verilog-ethernet licensing boundary) and is the
-sponsor's. **Where it goes, how it is pinned, and the `libs/**` boundary
-question are mine** and are decided below.
+**Authority**: **whether third-party source may enter the repository at all was
+E3** (charter §7 — the verilog-ethernet licensing boundary) and was the
+sponsor's — **granted 2026-08-03 as E3-2 above**. **Where it goes, how it is
+pinned, how it is attributed and the `libs/**` boundary question are mine**,
+were in force from this ADR's first commit, and are decided below. The grant
+permits the vendoring; every rule below still governs how it is done.
 
 ### Decision
 
@@ -415,10 +476,14 @@ Three things this is careful about:
   Phase 0) is where it is operationalised. It is stated here because a rule
   that only exists in a verification-scope document is a rule the design line
   never reads.
-- WO-0044 remains BLOCKED **only** on the two E3 answers. D2's placement,
-  pinning and boundary rulings and D3's REQ-902 scoping are in force on commit,
-  so the comparison domain, the bridge design and the harness's file format can
-  all proceed in parallel.
+- **`WO-0044` is no longer BLOCKED.** It was blocked on the two E3 answers and
+  on nothing else; both were granted 2026-08-03 and are transcribed in the
+  status block. Its state line is dv_lead's and the orchestrator's to flip — I
+  do not edit another lead's packet header. D2's placement, pinning and boundary
+  rulings and D3's REQ-902 scoping were in force from this ADR's first commit
+  and did not wait for the grants, which is why the comparison domain, the
+  bridge design and the harness's file format could proceed in parallel with the
+  escalation.
 
 ## What this ADR does not decide
 
