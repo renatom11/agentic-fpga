@@ -10117,3 +10117,243 @@ nothing.
 ### Files-in-this-commit
 - agents/handoffs/BUG-0001_m03-final-word-over-delivery.md
 - agents/handoffs/WO-0038_tb-m03-first-bench.md
+
+## [J-dv_lead-0035] 2026-08-06T09:30Z | task:WO-0039 | The mutation campaign frozen before a single diff exists: five RTL intents stated behaviourally so the seeder never needs my bench, predictions split REQUIRED / MUST-STAY-GREEN / PERMITTED because a flat kill list would score every monitor surprise as a prediction failure, and the auditor blinded to all of it — the informative outcome is a mutation that reddens the WRONG row, and only blinding keeps that outcome reachable
+
+### Trigger
+Orchestrator: runs `750be49` and `6bd7e5a` both fully green end-to-end, REQ-902
+byte-identical regeneration proven twice with my two controls unmoved; my Fix
+verdict committed at `6bd7e5a` and `BUG-0001` closed. Ruling on my escalation:
+**option (C)** — the **auditor** seeds, authoring the five mutation diffs into
+`docs/reports/audit/**`, the orchestrator applying each to a throwaway branch,
+CI executing, me adjudicating. My self-seeding refusal accepted and on the
+record; rtl_lead untouched by the campaign. Task: write the **freeze**, before
+the auditor is spawned — frozen predictions, mutation intents precise enough to
+implement without my seeing the diffs, the return path, and an explicit
+statement of what the auditor must not be told.
+
+### Inputs
+- `agents/handoffs/WO-0038_tb-m03-first-bench.md` §8's four named mutations and
+  my `RV-0038-R7-VERDICT` addendum's §4 sketch.
+- `agents/handoffs/BUG-0001_m03-final-word-over-delivery.md` — the
+  `excess = max(0, k − 4)` invariant, and run **30774152441**'s observed kill
+  shape (C1/C2 convicting, A3's **latency tagger** corroborating).
+- `test/xgmii_rx_64/test_m03_a.ml` (A1/A2 cycle and FCS assertions,
+  `assert_own_deltac`, `run_a3_a4`'s `List.equal tuple_equal`, A5's word-by-word
+  octet check), `test_m03_b.ml` (B1), `test_m03_c.ml` (`outcome_ok`,
+  `expected_tkeep_for`, `run_c1_c2`, `run_c3`, `run_c4`, `run_c5`,
+  `expected_disagree`), `test_m03_structural.ml` (L6), `bench.ml`'s
+  `account_clean_frame`, `test/monitors/octet_time.mli`'s `Latency` contract.
+- `docs/specs/modules/xgmii_rx_64.md` — §3 REQ-019 (ΔC = 3, ceiling 4), §6.2's
+  `Frame` row and its C-18 non-instance, §9's condition table (REQ-104
+  forwards-in-full with `tuser`[0] = 1 and `error_bad_fcs`; REQ-107's runt
+  classes at and below 5 octets; REQ-108's 1518/1514 truncation), §9's
+  co-occurrence rulings and the 2026-08-03 change-log entry that added the
+  ninth, §11.6's C-18 record.
+- `agents/PROTOCOL.md` §3 (the packet-type table, the *Summarizable* relay
+  class, orchestrator-allocated numbering, ADR-0003's auditor exception).
+- **No `libs/**`, no `rtl_snapshots/**`, no `top/**`.**
+
+### Reasoning
+
+**The campaign's validity condition is not the mutations — it is the blinding,
+and I put it in §0 of the brief rather than a footnote.** The informative
+outcome of a mutation campaign is a seeded defect that reddens the *wrong* row,
+or no row at all. A seeder who knows the predicted kill set can — with entirely
+good intentions — pick a mutation site that satisfies it, and the campaign then
+confirms my prediction instead of testing my bench. So the auditor gets the
+intents and never the predictions, and I wrote every intent **behaviourally**,
+in terms of SPEC-M03's observable output, precisely so it never needs to open
+`test/xgmii_rx_64/**` to implement one.
+
+**Two files, not one, because a bar you can trip over by opening a file is not a
+bar.** A sealed annex inside the brief would be visible to any reader of the
+brief. Separating them makes the instruction unambiguous and the disclosure
+checkable in the auditor's journal `Inputs`. I did **not** mint a `MUT-` packet
+type: PROTOCOL §3's table is closed, and the campaign is a work order from a
+lead to another agent, which is exactly what `WO-` is for. Both files carry the
+`WO-0039` stem with placeholder numbering per §3.
+
+**I also barred the auditor from `AP-xgmii_rx_64.md`, which the coordinator did
+not ask for.** The attack plan enumerates the rows and their assertions; reading
+it defeats §0 as completely as reading the sealed file. The symmetry is worth
+stating and I stated it in the brief: *the auditor is to M03's bench what I am
+to M03's RTL.* I have never opened `libs/**` in six rounds of judging this
+module; for five diffs, it can decline to open my bench. Neither of us is
+prevented by a tool — both of us are accountable in a journal.
+
+**A flat "named rows" list would have been dishonest, and I only saw why after
+tracing the rows.** Every row body ends in `account_clean_frame` +
+`assert_monitors_clean`, so a monitor layer runs inside all nine test units. A
+flat kill list makes every monitor-side surprise look like a failed prediction,
+which in practice means the prediction gets quietly widened after the fact.
+Hence **REQUIRED / MUST-STAY-GREEN / PERMITTED**, with PERMITTED reserved for
+cases that are genuinely two-way and where **both branches are named in advance
+with what each would teach**. That is the three-way-falsifier discipline from
+`BUG-0001`, generalised.
+
+**Making MUST-STAY-GREEN a first-class category is what turns this from a
+one-sided test into a two-sided one.** A mutation only one row can see is the
+strongest evidence that the row is load-bearing — but only if the other eight
+staying green is *also* a committed prediction rather than an unexamined
+default.
+
+**I checked the latency monitor before predicting M1's collateral, and it
+changed the answer.** `Octet_time.Latency` holds a **ceiling** of 4, not an
+equality against 3. So a +1 shift (ΔC = 4) does not trip it, and neither does
+−1. That collapses M1's REQUIRED set to the only three units that compare an
+absolute cycle at all — T-A12, T-A34 (via A4, not A3), T-C4 — and puts the
+other five in MUST-STAY-GREEN. Had I not read the monitor's contract I would
+have hedged M1 into uselessness.
+
+That result is worth recording independently of the campaign: **five of nine
+test units are blind to a one-cycle latency error.** Correct — they are content
+rows — but families D–H should not inherit an assumption that timing is broadly
+asserted here. It is asserted by three units.
+
+**M2 spread wide, and I let it, because the width is the claim.** REQ-104
+forwards a bad-FCS frame in full with `tuser`[0] = 1 and pulses
+`error_bad_fcs`, so a lane-4-only CRC defect touches every unit that drives a
+lane-4 start — seven of nine. A broken FCS verdict on half the stimulus is
+exactly what a spine bench must be unable to miss, and a mutation that kills
+only some of those seven is a finding I want.
+
+**M2 also yields one free piece of specification information, and I recorded
+both branches rather than guess.** C4's frame is **exactly 5** octets. §9's
+ninth co-occurrence ruling bars the `error_runt` + `error_bad_fcs` pairing for
+frames of *fewer than* 5, and the change-log entry adding it says the first
+ruling "bounds the admitted pairing **at** 5 octets" — so at exactly 5 the
+pairing reads as admitted, and C4 should die on `observed 2` strobes. If it
+stays green, the bound is above 5, and that is a question for
+architect_docs_lead rather than a bench defect. Either way I learn something;
+neither way is scored as a surprise.
+
+**M4's prediction is the sharpest thing in the freeze, and it fell out of
+arithmetic I had already done.** C5's two lengths deliver 1509 and 1512 octets
+— **189 words each**, exactly one below C3's 190. So a bound moved to 189 kills
+C3 and *must leave C5 alone*. C5 reddening under M4 means the bound landed at
+188. One row required, seven required green, and a third row acting as the
+boundary discriminator.
+
+**M5 is the best-calibrated because most of it has already been observed, and
+its novel content is a single cell.** I worked `k` for every stimulus in the
+suite before the diff exists: lengths 65–68 bite, 64/69/70/71 do not, C5's two
+lengths bite at +1 and +4, and A1/A2, A5, B1, C3, C4 all have `k` ≤ 4 and must
+stay green. Run 30774152441 carried this exact defect and reported this exact
+shape — including that A3 spoke through its **latency tagger** and not its
+tuple comparison, because the excess is lane-**independent** (`J-dv_lead-0031`)
+so the two lanes' sequences stay equal. **The one thing 30774152441 could not
+tell me is T-C5, which did not exist.** C5 is the only row in the suite that
+has never been red, and it carries fix-verdict condition 4 of the CRITICAL bug
+I closed yesterday. If M5 leaves it green, that fix verdict is retrospectively
+unsupported. That single cell is the campaign's most important result.
+
+**On B1–B3 I stated the weakness rather than let it pass.** I author both the
+mutation and the prediction, so they grade my own instrument with my own hand.
+They establish **reachability and wiring** of the round-6 machinery — which no
+RTL mutation touches — and nothing about discrimination. Complement, not
+substitute, and the freeze says so in those words. B3 is deliberately an
+**exhibit** rather than a test: it is expected to pass, because every check in
+`run_c5` iterates a list and an empty list satisfies all of them. If B3 fails,
+my entire argument for why this campaign is necessary is wrong, and I would
+rather learn that than be right.
+
+**Frozen twice, deliberately.** The predictions live in the sealed packet and,
+in substance, here. Two independent append-only copies mean that if either is
+later edited to fit a result, the other exposes it. `J-dv_lead-0031` is why:
+that prediction's entire value came from being un-adjustable after the fact.
+
+### Actions
+- Ruled the freeze **location and format**: two files, both `WO-` prefixed,
+  **no new packet type minted** (PROTOCOL §3's table is closed).
+  `WO-0039_m03-mutation-campaign.md` is auditor-facing — intents, bars,
+  mechanics, return format — and
+  `WO-0039_m03-mutation-campaign-SEALED-predictions.md` holds the frozen block.
+  Numbering flagged as a placeholder for orchestrator allocation.
+- Wrote **five behavioural mutation intents** (M1 latency shift, M2 C-18 CRC
+  hold, M3 input-derived `tkeep`, M4 word bound to 189, M5 BUG-0001 restored),
+  each with minimality and fidelity requirements and an instruction to report
+  rather than substitute when a faithful minimal diff is not reachable.
+- Wrote the frozen predictions against the **nine `%expect_test` units** CI
+  actually reports, classified **REQUIRED / MUST-STAY-GREEN / PERMITTED**, with
+  expected message strings and per-mutation FINDING conditions.
+- Recorded the three **pass criteria** and made criterion 3 structural via the
+  parent-SHA rule.
+- Specified the **return path**: parent SHA, mutation id, run id, Build state,
+  and `runtest`'s **verbatim** output with every failing test name — plus the
+  standing instruction that a **green run on M1–M5 is a campaign failure** and
+  must be relayed prominently.
+- Wrote the **explicit non-disclosure list** (§10 of the sealed file) and,
+  beyond the coordinator's ask, barred the auditor from
+  `test/attack_plans/AP-xgmii_rx_64.md` as well as `test/xgmii_rx_64/**`.
+- Marked WO-0038's addendum §4 **superseded in part**, so no stale sketch
+  competes with the issued packet.
+- Opened no `libs/**`. No `git commit`, no `git push`.
+
+### Evidence
+1. `Octet_time.Latency`'s `?ceiling` is a ceiling (4 at M03), not an equality —
+   so M1's ±1 shift does not trip the monitor, which is what let M1's REQUIRED
+   set collapse to three units.
+2. Only three assertion sites in the suite compare an absolute cycle: T-A12's
+   `start_cycle + 3 + m`, `assert_own_deltac`'s `observed <> 3`, T-C4's word
+   and strobe cycles.
+3. SPEC-M03 §9, REQ-104 row: bad FCS ⟹ **frame forwarded in full**,
+   `tuser`[0] = 1, `error_bad_fcs` pulses — the basis for M2's seven-unit set.
+4. §9's ninth co-occurrence ruling and its change-log entry ("bounds the
+   admitted pairing **at** 5 octets") — the basis for T-C4's two-way branch
+   under M2.
+5. C5's lengths deliver 1509 and 1512 octets = **189 words each**, one below
+   C3's 190 — the basis for M4's boundary discriminator.
+6. `k` worked for every stimulus in the suite: 65/66/67/68 → `k` = 5/6/7/8;
+   1513 → `k` = 5; 1516 → `k` = 8; A1/A2, A5, B1 → `k` = 4; C3 → `k` = 2;
+   C4 → `k` = 1.
+7. Run **30774152441** is the historical calibration for M5's kill shape,
+   including A3 speaking through the latency tagger rather than the tuple
+   comparison.
+8. `expected_disagree`'s dropped conjunct isolates **lane 0 / length 64** — the
+   sole `terminate_lane = 0` entry with a non-full final word — which is B1's
+   named expectation.
+
+### Outcome
+**The campaign is frozen** at bench SHA `6bd7e5a`, before any mutation diff
+exists. Freeze location: `agents/handoffs/WO-0039_m03-mutation-campaign.md`
+(auditor-facing) and
+`agents/handoffs/WO-0039_m03-mutation-campaign-SEALED-predictions.md` (sealed),
+with this entry as the second independent copy.
+
+Five RTL mutations, each with a REQUIRED kill set, a MUST-STAY-GREEN set and
+named two-way branches; three bench-side self-mutations declared as the weaker
+evidentiary class they are; three pass criteria; and an explicit list of what
+the auditor must not be told. **`SO-M03` does not issue until all five kill.**
+
+### Open-questions
+- **T-C4 under M2** is a live specification question, not a bench question: if
+  it stays green, §9's ninth co-occurrence ruling bounds the
+  `error_runt` + `error_bad_fcs` pairing *above* 5 octets rather than at it, and
+  that routes to architect_docs_lead.
+- **T-A34 under M3** may stay green while seven units die. If it does, that is
+  a clean demonstration that **A3 is a cross-lane equality row and not a
+  general content check** — a property families D–H must not assume away.
+- **T-C5 under M5 is the campaign's single most important cell.** A green there
+  means the row carrying `BUG-0001`'s fix-verdict condition 4 cannot fail, and
+  the verdict I issued yesterday would be retrospectively unsupported.
+- **B3 is expected to pass.** If it fails, my argument for the campaign's
+  necessity is wrong.
+- **Blinding is honour-enforced.** Nothing prevents the auditor opening the
+  sealed file; the campaign's validity rests on its journal `Inputs`
+  disclosure, exactly as my own `libs/**` bar rests on mine. If the disclosure
+  shows it read the bench or the attack plan, the affected mutations are void
+  and must be re-seeded by someone who did not.
+- **Owed by me, unchanged**: the `precompile_check.sh`
+  side-effect-in-combinator lane; `tools/precompile_stubs/ifc_check.ml`'s stale
+  UNVERIFIED note; SPEC-M01 §11.4's caveat retirement (architect_docs_lead);
+  the standing-rules list for the next bench packet's §5/§7, now including the
+  opam-switch read boundary and the "five of nine units are blind to a
+  one-cycle latency error" datum.
+- **Unchanged**: the RFC 1071 anchor closes on the next CI run that fetches;
+  X-7, X-10, X-11 remain deferred; L1–L5 still owed as a separate packet.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0038_tb-m03-first-bench.md
+- agents/handoffs/WO-0039_m03-mutation-campaign.md
+- agents/handoffs/WO-0039_m03-mutation-campaign-SEALED-predictions.md

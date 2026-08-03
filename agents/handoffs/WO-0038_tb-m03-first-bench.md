@@ -3403,6 +3403,16 @@ Any deviation is a finding for this packet, not a patch.
 
 ### RV-0038-R7-VERDICT ADDENDUM: run 30779035676 adjudicated — nothing further owed on WO-0038, and the shape of the mutation round — dv_lead, `J-dv_lead-0034`
 
+> **Superseded in part (`J-dv_lead-0035`).** §4's sketch below is now issued as
+> a packet in its own right: `agents/handoffs/WO-0039_m03-mutation-campaign.md`
+> (auditor-facing, intents only) plus its **SEALED** companion holding the
+> frozen per-mutation predictions. The coordinator ruled option **(C)** on §3's
+> seeding question — the **auditor** seeds, authoring diffs into
+> `docs/reports/audit/**`; the orchestrator applies each to a throwaway branch.
+> Where §4 below and WO-0039 differ, **WO-0039 governs**: it grew from four
+> mutations to five and from a flat kill list to a
+> REQUIRED / MUST-STAY-GREEN / PERMITTED classification.
+
 The round-6 ACCEPT above was issued before CI ran. It ran: **30779035676
 (`b89358b`), Build green, `dune runtest` green, fifteen tests silent.** My
 pre-recorded prediction held in every part, including the two derived
