@@ -4,7 +4,14 @@
 > committed**, and the orchestrator must not relay any part of it before then.
 > See `WO-0041_family-d-mutation-campaign.md` §0.
 
-- **State**: FROZEN
+- **State**: **UNSEALED 2026-08-10**, results in. Scored at
+  `RV-0041-VERDICT` in the companion packet, `J-dv_lead-0044`: **4 of 4
+  killable mutations killed with the predicted message in every case; D-M3
+  ruled an EQUIVALENT MUTANT and excluded from the denominator; one
+  prediction of mine — T-D2 and T-D3 under D-M3 — FALSIFIED.** **This state
+  line is the only line of this file altered since the freeze**; `git diff`
+  against the freeze commit is the check. The falsified row in §2's matrix
+  stands exactly as frozen — a freeze edited after its result is worthless.
 - **Frozen against**: bench SHA **`447d11c`**, fully green (run 30786987392)
 - **Frozen by**: dv_lead, `J-dv_lead-0041`, **before any mutation diff existed**
 - **Second independent copy**: `J-dv_lead-0041`. Two append-only copies mean

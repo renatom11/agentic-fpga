@@ -12053,3 +12053,208 @@ arithmetic in advance rather than by argument afterwards.
 
 ### Files-in-this-commit
 - agents/handoffs/WO-0041_family-d-mutation-campaign.md
+
+## [J-dv_lead-0044] 2026-08-10T14:20Z | task:WO-0041 | Four of four killable mutations killed with the exact frozen message, including the fully-blinded one — and the survivor is an equivalent mutant that falsifies my own sealed prediction, voids a kill I wrote into the attack plan, and convicts me of the same combinational-versus-sequential timing error for the third time in this module
+
+### Trigger
+Orchestrator, relaying five CI runs on branches parented at `447d11c`:
+D-M1 (30789075627) RED, D-M2 (30789079314) RED broad, **D-M3 (30789081509)
+SURVIVED THE SUITE** — twelve of twelve units green, the run failing only at the
+determinism step on the mutant's own snapshot drift — D-M4 (30789082824) RED,
+D-M5 (30789084332) RED. Two hypotheses offered for D-M3 (bench coverage gap vs
+equivalent mutant), with the observation that my sealed matrix predicted T-D2
+reddens under it and is therefore falsified either way.
+
+### Inputs
+- The five run reports as relayed, unit by unit with failure messages.
+- `agents/handoffs/WO-0041_family-d-mutation-campaign-SEALED-predictions.md` —
+  my own freeze, §2's matrix and §3's expected messages, opened for scoring.
+- The auditor's D-M3 mechanism summary as relayed (divergence requires a
+  following frame's begins/coverage to intervene **before** the read).
+- `docs/specs/modules/xgmii_rx_64.md` §6.1's `Preamble` seeding rule and its
+  two-cycle drain bound, §6.2's `Frame` row and CRC enable, §6.3 item 1, §9's
+  strobe pin; `docs/specs/requirements.md` §0.3's gap convention and its
+  **DIC floor of 9 octets**.
+- `test/attack_plans/AP-xgmii_rx_64.md` row M03-D3 and row M03-D4.
+- `agents/handoffs/WO-0040_tb-m03-family-d-fcs.md` §4 — **my own correction to
+  M03-D3, re-read as the thing now under suspicion**.
+- **A margin computation I wrote and ran** over every legal (terminate lane,
+  start lane, frame length, gap ≥ 9) combination.
+- **No `libs/**`, no `rtl_snapshots/**`, no auditor diffs.**
+
+### Reasoning
+
+**The four kills are exact and I will be brief about them, because the survivor
+is where the work is.** Every killable mutation died in its frozen row set with
+its frozen message. The one worth pausing on is **D-M1's MUST-STAY-GREEN column,
+which held at ten of twelve**: a design hardwiring the FCS verdict good is
+invisible to every row written before family D and visible to exactly the two
+written to see it. That is the hole `RV-0039-VERDICT` found in planning, closed
+and measured.
+
+**And the three-way message discrimination retires my own worry.** D-M1, D-M4
+and D-M5 share the row set {T-D1, T-D3}; they were separated only by which
+assertion spoke, and all three messages landed verbatim — including D-M4's
+`cycle 10, expected 11` with both numbers. **Publishing the row mapping in
+WO-0040 §9 leaked nothing that mattered, because the rows do not discriminate;
+the messages do, and those were sealed.** My `J-dv_lead-0040` pessimism was
+wrong in the direction I had already begun correcting at the freeze, and the
+result settles it. D-M5 — the one mutation carrying full blinding — died in its
+sealed row set through its sealed assertion.
+
+**Now D-M3, and I refused to take "equivalent mutant" as a conclusion.** It is
+the standard escape hatch of mutation testing: a mutation nothing kills gets
+labelled equivalent and quietly dropped. **An equivalence claim is a proof
+obligation**, it is mine, and it must range over the whole legal stimulus space
+rather than over what this bench happens to drive.
+
+The mechanism: divergence requires the CRC register to be perturbed by a
+following frame **strictly before** the current frame's verdict-read cycle. The
+earliest perturbation is §6.1's `Preamble` seed, on the next frame's
+start-character cycle. And **a register update at cycle X is visible from
+X + 1** — so a read *at* the perturbing cycle still sees the old value.
+
+So I computed the margin `next_frame_start_cycle − tlast_cycle` across every
+terminate lane 0–7, both start lanes, all frame lengths, and gaps down to
+**§0.3's DIC floor of 9 octets — not the nominal 12 this bench drives**, because
+an equivalence claim that only covers the benched gap is not an equivalence
+claim. **The margin is never negative; its tightest value is exactly 0**, at
+terminate lane 0, lane-0 start, 9-octet gap. The late read always sees the
+frame's own residue. **Equivalent, proven.**
+
+**Then the bill.** Three things follow and the second is expensive.
+
+*My sealed prediction is falsified.* T-D2 and T-D3 were predicted to redden;
+both stayed green. It stays in the freeze exactly as written — a freeze edited
+after its result is worthless, and this is the fourth time that rule has bound
+me. The error is precise: the freeze said the register "**has already been**
+re-seeded" at frame 1's `tlast` cycle. It has not; the seed is triggered that
+cycle and visible the next. **That is a combinational-versus-sequential timing
+error, and it is the third I have made in this module** — round 5's `out_cycle`
+quantifier, R-1's reattribution, and now this. The first two were caught by CI
+and by rtl_lead. This one was caught by a mutation campaign catching a defect in
+the campaign's own predictions, which is not a direction I built it to work in
+and is the best argument yet for freezing predictions at all.
+
+*A kill I wrote into the attack plan is unachievable.* M03-D3's Kills column
+named "a design that reads the CRC register at the `tlast` cycle rather than
+carrying the verdict with the frame". Nothing can deliver it. **And `WO-0040`
+§4 — where I convicted this same row of vacuity and prescribed the good-then-bad
+ordering — rested on the identical falsified premise.** I was right that
+bad-then-good was vacuous and wrong that good-then-bad fixed it: *neither*
+ordering kills that design, because that design does not exist as a distinct
+behaviour. Two corrections to one row, the second undoing part of the first.
+Left standing and recorded rather than tidied.
+
+The honest reclassification is that "the verdict is carried with the frame" is a
+**realisation, not an observable** — exactly the class §6.3 item 1 puts
+residue-versus-capture in and that **M03-D4 already carries**. The plan had the
+category all along; the row was in the wrong one.
+
+*What replaces it.* Nothing replaces the withdrawn property — an unobservable
+does not need evidence, it needs to stop being claimed. But M03-D3's **surviving**
+kill does: the latched-abort-bit design, which pair B's frame 2 asserts against
+and which **no mutation in this campaign touched**. So **D-M6 is owed** — latch
+`tuser`[0] once set so it persists into the next frame — predicted to kill T-D3
+pair B and leave every single-frame unit green, sealed before any diff exists.
+**Family D is not qualified until it runs**, and I would rather say that than
+bank a 4-for-4 headline.
+
+**A note on what the campaign is actually for, which this round sharpened.** I
+built it to test whether the bench has teeth. It did that. But it also killed a
+false claim in my own attack plan and a false step in my own reasoning, neither
+of which any test of the bench would have surfaced. A seeded defect that nothing
+catches is not automatically a bench failure — sometimes it is the discovery that
+the thing you thought you were testing for was never observable.
+
+### Actions
+- Scored all five against the sealed matrix: **D-M1, D-M2, D-M4, D-M5 EXACT**
+  — every kill in its frozen row set with its frozen message, no unnamed unit
+  reddening anywhere.
+- **Ruled D-M3 an EQUIVALENT MUTANT**, discharging the proof obligation with a
+  margin computation over every legal (terminate lane, start lane, length,
+  gap ≥ 9) combination; excluded it from the denominator rather than scoring it
+  a survivor.
+- **Recorded my sealed prediction as FALSIFIED** and left it in the freeze
+  unedited; named the error as the third combinational-versus-sequential slip in
+  this module.
+- **Withdrew M03-D3's headline kill as unachievable**, corrected the row a
+  second time, reclassified the carried-verdict property into M03-D4's NO-ASSERT
+  realisation class, and recorded that `WO-0040` §4's correction shared the
+  falsified premise.
+- **Opened D-M6** against M03-D3's surviving kill and marked family D's
+  qualification **INCOMPLETE**.
+- Flipped WO-0041 to **RETURNED — campaign PASSED on the killable set**; marked
+  the sealed companion **UNSEALED** with a state line only.
+- Appended an `AP` change-log row; **status counts unchanged (75 rows, 59
+  ASSERT)**; re-ran `tools/dv_checks.sh`, all runnable checks pass.
+- Opened no `libs/**`. No `git commit`, no `git push`.
+
+### Evidence
+1. D-M1: RED at T-D1 (`tuser[0] is not set on a bad-FCS frame (REQ-104)`) and
+   T-D3 (`pair A …: frame 2: tuser[0] does not match its own FCS status`), ten
+   units silent — **the frozen 2/10 split exactly**.
+2. D-M2: RED at ten units, **T-D1 and T-ST green** — the frozen 10/2 split, with
+   T-A34 speaking through the strobe monitor as predicted and C4's
+   `observed 2`.
+3. D-M4: `error_bad_fcs pulsed on cycle 10, expected 11` — verbatim, both
+   numbers, vindicating the pre-run arithmetic that D-M4's disclosed blind spot
+   misses every bad-FCS frame in family D.
+4. D-M5: `expected exactly one strobe pulse (error_bad_fcs only), observed 0` —
+   verbatim; the fully-blinded mutation died in its sealed row set.
+5. **Margin computation**: `next_frame_start_cycle − tlast_cycle ≥ 0` over all
+   legal combinations; tightest **0** at terminate lane 0 / lane-0 start /
+   9-octet gap.
+6. §6.1 seeds the CRC register in `Preamble`; a register update at cycle X is
+   visible from X + 1 — the step my freeze got wrong.
+7. §6.3 item 1 and M03-D4 already carry the unobservable-realisation category
+   the carried-verdict property is now moved into.
+
+### Outcome
+**Campaign PASSED on the killable set: 4 of 4, every kill exact in row and
+message**, no unnamed unit reddening, control green. **D-M3 is an EQUIVALENT
+MUTANT**, proven over the whole legal stimulus space.
+
+**One sealed prediction of mine is falsified and stands. One attack-plan kill is
+withdrawn as unachievable, taking part of my own `WO-0040` §4 correction with
+it.** **D-M6 is owed** and **family D's qualification is INCOMPLETE** until it
+runs.
+
+**`SO-M03` does not issue.** Twelve of 75 rows benched, families D–H's error
+paths almost entirely unwritten, family D one mutation short, and the external
+anchor ungated.
+
+### Open-questions
+- **D-M6 owed**: latch `tuser`[0] once set. Predicted to kill T-D3 pair B and
+  leave every single-frame unit green — **to be frozen and sealed before any
+  diff exists**, under the WO-0041 protocol with the same eight bars plus
+  `RV-0041-VERDICT` added to them (it describes the campaign's internals).
+- **A rule earned here**: an equivalent-mutant claim is a **proof obligation on
+  dv_lead**, discharged over the whole legal stimulus space — including gap
+  floors and stimulus classes the bench does not drive — never by "no killing
+  stimulus was found".
+- **Third combinational-versus-sequential error in this module.** The pattern is
+  mine and it is specific: I reason about *when a thing is decided* and forget
+  *when it becomes visible*. Any future claim of mine about a register's value
+  at a named cycle should be computed, not argued.
+- **Families E–H must be re-read for BOTH defect classes now** — the M03-D3
+  vacuity shape *and* the unachievable-kill shape. A Kills column naming a
+  design that is behaviourally indistinguishable is worse than a vacuous
+  stimulus, because it survives review by looking specific.
+- **Owed into family F's packet**: the sub-5-octet class (no output word,
+  `error_runt` alone, ruling 9's bar on `error_bad_fcs`) is asserted by nothing.
+- **The verilog-ethernet differential co-sim remains the longest-lead item on
+  the `SO-M03` path.**
+- **Owed by me, unchanged**: the `precompile_check.sh`
+  side-effect-in-combinator lane; `tools/precompile_stubs/ifc_check.ml`'s stale
+  UNVERIFIED note; SPEC-M01 §11.4's caveat retirement (architect_docs_lead);
+  `AP` §7's fuller rewrite behind its banner.
+- **M03-A3's blindness to lane-symmetric errors remains untested**; my M04
+  contamination from `J-dv_lead-0024` still stands.
+- **Unchanged**: the RFC 1071 anchor closes on the next CI run that fetches;
+  X-7, X-10, X-11 deferred; L1–L5 owed as a separate packet.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0041_family-d-mutation-campaign-SEALED-predictions.md
+- agents/handoffs/WO-0041_family-d-mutation-campaign.md
+- test/attack_plans/AP-xgmii_rx_64.md
