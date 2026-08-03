@@ -9680,3 +9680,229 @@ surface the protocol monitor in the batched failure (R6-4).
 - agents/handoffs/BUG-0001_m03-final-word-over-delivery.md
 - agents/handoffs/WO-0038_tb-m03-first-bench.md
 - test/attack_plans/AP-xgmii_rx_64.md
+
+## [J-dv_lead-0033] 2026-08-05T14:20Z | task:WO-0038 | Round 6 ACCEPTED: the observation position is repaired at every consumer with no timing constant tuned to fit it, R-1's artefact is now a written-down prediction that selects exactly two of twenty entries, and the hard assertion stands because the report-only alternative is a check that can only fail to fail
+
+### Trigger
+Orchestrator, relaying tb_writer's round-6 return (`J-tb_writer-0006`,
+`WO-0038/2026-08-03T18:00Z`) against `RV-0038-R7`. Asked for: verification of
+the four diffs against HEAD; R6-1's five-consumer revert completeness; R6-2's
+M03-C5 against the attack-plan row I wrote; R6-3's derivation and a ruling on
+the disclosed assertion-vs-report choice; R6-4's placement; and a ruling on
+whether the worker's disclosed opam-cache signature read is an acceptable read
+class for DV workers or needs a packet line going forward. Verdict: ACCEPT
+(flip state, append verdict, journal, no commit) or a defect list.
+
+### Inputs
+- `test/xgmii_rx_64/bench.ml`, `bench.mli`, `test_m03_a.ml`, `test_m03_c.ml`
+  at working tree — the four modified files, read rather than diffed where the
+  question was semantic.
+- `git status --short`, `git diff --stat HEAD -- test/`, and
+  `git diff --exit-code` on `test_m03_b.ml`, `test_m03_structural.ml`,
+  `test/xgmii_rx_64/dune`.
+- `grep -rn out_cycle test/` — the revert-completeness sweep, scoped to
+  `test/` per my own practice change at `J-dv_lead-0024`.
+- `agents/handoffs/WO-0038_tb-m03-first-bench.md` — `RV-0038-R7`'s four items,
+  §6 rule 5, §8's mutations, and the ROUND-6 RETURNED log.
+- `agents/handoffs/BUG-0001_m03-final-word-over-delivery.md` — R-1's locked
+  statement and the fix-verdict conditions.
+- `test/attack_plans/AP-xgmii_rx_64.md` row M03-C5 as I wrote it at
+  `J-dv_lead-0032`.
+- `agents/PROTOCOL.md` §4.1/§4.2 (the `Files-in-this-commit` set-equality rule
+  under R1's one-agent-per-commit split).
+- **No `libs/**`, no `rtl_snapshots/**`, no `top/**`.** I did not open the
+  opam-cached Hardcaml sources this spawn either; the ruling in §6 of the
+  verdict is about a read class, and I already know that class from having
+  written `tools/precompile_check.sh` lane 2b.
+
+### Reasoning
+
+**The round is accepted, and the reason it is accepted is that the two ways it
+could have been quietly wrong are both checkable, and I checked them.**
+
+*First failure mode: moving the observation position by one cycle and tuning a
+constant to match.* R6-1 shifts every asserted output read from the default
+`After` view to `~clock_edge:Side.Before`. Any bench that did that and also
+adjusted `start_cycle + 3`, or `observed <> 3`, or the `expected_pulse_cycle`
+window, would come back green by construction and I would have no way to tell
+a repair from a fit. So the check is not "does it look right" but "did any
+number move alongside the view". None did — all three are untouched in the
+diff — and the stop condition therefore never fired. The bench's timing claims
+are now being made from a different vantage point against the *same* numbers,
+which is what makes the coming CI run informative rather than circular.
+
+*Second failure mode: filling an existing `[%expect]` block.* Since round 5 the
+standing rule has been that no promotion enters the tree without my conformance
+review. A round that added an expectation body — even a correct one — would be
+routing around that rule. The diff adds exactly one `let%expect_test` with an
+empty block; the eleven from rounds 1–5 are byte-identical. Fifteen tests,
+fifteen empty blocks, nothing to review. That is the correct state and I would
+rather say so explicitly than let it pass unremarked.
+
+**The revert is complete in the sense that matters.** `out_cycle` survives at
+four sites, all prose, all explaining why round 5's convention was right for a
+registered output and wrong as a universal. I want that residue: the retired
+convention is history the next Cyclesim bench needs, and deleting the
+explanation would leave the program to rediscover it. What matters is that no
+executable position reads it, and none does. I also checked the detail easiest
+to half-finish — **the error strobes read `o_before` too**. Had they kept the
+default view, the record would carry two clocks and round 5's pulse-cycle
+checks would silently be measuring against a mixed reference.
+
+**R6-3's derivation is right, and right in the specific place it was likeliest
+to be wrong.** Round 5's After reading labelled hardware cycle T lives on
+*this* bench's sample at `cycle = T − 1`. Comparing `final.out` against
+`final.after_out` would have been the natural implementation and would have
+measured something meaningless. The code looks up `samples[final.cycle − 1]`,
+which is precisely the comparison BUG-0001's own trace makes. It short-circuits
+on `tvalid`, so an idle cycle's unconstrained `tlast` cannot manufacture a
+disagreement, and both degenerate cases return `false` — the right polarity for
+a predicate about a word `Before` sees and `After` misses.
+
+**And the oracle it is checked against is a real prediction.** I worked the
+selection myself across all twenty driven entries rather than accept the
+worker's count: within C1/C2 the D3 stimulus check pins `terminate_lane` to
+each of 0..7 exactly once per lane, so lane 0's zero-lane entry is length 64
+(delivered 60, not a full word — excluded, and the code names the exclusion)
+and lane 4's is length 68 (delivered 64 — selected); within C5, 1516 has
+`k = 8` with terminate lanes 4 and 0, so lane 4/1516 is selected while 1513's
+`k = 5` entries are not. **Two of twenty, three orders of magnitude apart.**
+A predicate that selected everything, or nothing, would have been worthless;
+this one has negative space.
+
+**The assertion-vs-report ruling — the assertion stands, and the deciding
+argument is not the one I expected to give.** I went in sympathetic to
+report-only, on the instinct that a diagnostic view should not be able to fail
+a run. What killed it is mechanical: `outcome_line` prints only through
+`batched_failure_with_protocol`, which prints only on failure. A passive check
+would therefore emit **nothing** on the green run this round exists to produce,
+and would speak only when something else was already failing. That is a check
+that cannot pass — it can only fail to fail. The alternative of printing to
+stdout is barred by my own §6 rule 5, since it would make a timing-derived fact
+into an `[%expect]` snapshot. And the independence objection I might have
+raised against myself does not land: when I wrote that `after_out` is "used by
+nothing that asserts", I was scoping the raw field, and `outcome_ok` still
+excludes `views_disagree_on_tlast`, so no row's PASS/FAIL depends on the
+diagnostic view.
+
+**But an assertion needs a rule for what its firing means, or the next round
+will "fix" it.** So I attached a binding qualification: a firing is a finding
+about the *model of the instrument* — R-1's account of the two views — and not
+an M03 row failure, and the table it dumps will be all-PASS precisely because
+`outcome_ok` ignores the field. **Widening or narrowing `expected_disagree` to
+fit what was observed is prohibited.** That is fitting the oracle to the data,
+and it would destroy the only property that makes this check worth anything:
+that the prediction was written before the run. I have falsified my own locked
+prediction once already in this packet (`J-dv_lead-0031`); the value of that
+episode came entirely from the prediction being un-adjustable afterwards.
+
+**The opam-cache read is permitted, and I could not honestly have ruled
+otherwise.** `tools/precompile_check.sh` lane 2b reads the same Hardcaml
+package sources every run, to re-verify my own stubs against them. Forbidding
+a worker the read class my own harness depends on would be a rule I exempt
+myself from. The substantive test is PROTOCOL §10's purpose: independence
+exists so tests are derived from specs rather than from the RTL they judge. A
+simulator API's signature is neither M03's spec nor M03's implementation, and
+reading it cannot leak the behaviour the bench is hunting. Under ADR-0005 no
+toolchain reaches `test/xgmii_rx_64/`, so the read converted this round's one
+unverifiable name into a verified one; the alternative was shipping a guess.
+The boundary I wrote down is *whose artefact is it*: a package this program
+consumes (`/root/.opam/**` — readable, and listed in the round's `Inputs`)
+versus a design this program judges (`libs/**`, `top/**`, `rtl_snapshots/**` —
+unreadable, any path, manifests included). That line goes into every future
+bench packet's §5, and I am carrying it on the standing-rules list I owe.
+
+**What I deliberately did not do.** I did not treat ACCEPT as closure. CI has
+not run this diff; `BUG-0001`'s six conditions are untested; §8's four seeded
+mutations remain a hard precondition on any `SO-M03`; and no promotion may be
+harvested without my conformance review. I wrote the state line to say all of
+that, because a bare "ACCEPTED" on this packet would read as though M03 had
+been signed off, and it has not been.
+
+### Actions
+- Verified the round-6 diff independently: four files under `test/`, +327/−102,
+  nothing outside my read-permitted scope; `test_m03_b.ml`,
+  `test_m03_structural.ml` and `test/xgmii_rx_64/dune` clean under
+  `git diff --exit-code`; the sole `[%expect]` addition is M03-C5's own empty
+  block.
+- Confirmed R6-1: `~clock_edge:Side.Before` is the asserted view, the error
+  strobes read it too, all five consumers are back on the raw `cycle`, the four
+  `out_cycle` residues are prose, and **no timing constant moved with the
+  view**.
+- Confirmed R6-2 against attack-plan row M03-C5 as written — same two lengths,
+  same two lanes, reusing the outcome-table machinery.
+- Confirmed R6-3's shifted-sample derivation and re-derived the predicate's
+  selection set myself: exactly two of twenty entries.
+- Confirmed R6-4's placement: batched table first, then the R-1 check, then the
+  per-entry monitor accounting.
+- **Ruled the hard assertion UPHELD**, with a binding qualification on how a
+  firing must be read and a prohibition on adjusting `expected_disagree` to fit
+  observation.
+- **Ruled the opam-switch read class ACCEPTABLE** and wrote the boundary down
+  as a standing §5 line for future bench packets.
+- Flipped WO-0038 to **ACCEPTED** on a title + state anchor, with the state line
+  itself naming the four things still owed before any `SO-M03`.
+- Appended `RV-0038-R7-VERDICT` with the verification, both rulings, and a
+  pre-recorded CI prediction.
+- Opened no `libs/**`. No `git commit`, no `git push`.
+
+### Evidence
+1. `git status --short`: four `test/xgmii_rx_64/` files, this packet, and
+   tb_writer's journal. No `libs/**`, `top/**`, `bin/**`, `rtl_snapshots/**`,
+   `docs/**`, `.github/**`.
+2. `git diff --exit-code` clean on the three files the round claimed untouched
+   — the claim is now mine, not the Return log's.
+3. `grep -rn out_cycle test/` → 4 hits, all comment/docstring prose:
+   `bench.mli:88`, `bench.mli:109`, `bench.ml:246`, `test_m03_c.ml:130`.
+4. `start_cycle + 3 + m`, `observed <> 3`, `expected_pulse_cycle =
+   start_cycle + 3` all unchanged in the diff — the view moved, the numbers
+   did not.
+5. `views_disagree_on_final_word` looks up `samples[final.cycle − 1]`, not
+   `final` itself, and short-circuits on `tvalid`.
+6. `expected_disagree o = o.terminate_lane = 0 && Int.rem o.expected_delivered
+   8 = 0`; my own enumeration selects lane 4/68 and lane 4/1516 and nothing
+   else, with lane 0/64 correctly excluded on the full-word conjunct.
+7. `outcome_ok` consults delivered count, tkeep, tuser and error-pulse count —
+   **not** `views_disagree_on_tlast`. The diagnostic view fails no row.
+8. Call order: `:250`/`:292`/`:304` in `run_c1_c2` and `:358`/`:368`/`:374` in
+   `run_c5` — batched content table before the R-1 check before the monitors.
+
+### Outcome
+**WO-0038 round 6: ACCEPT.** All four `RV-0038-R7` items executed and verified
+independently. The disclosed assertion-vs-report choice is **upheld as an
+assertion**, with a binding rule that a firing is an instrument-model finding
+and that `expected_disagree` may not be adjusted to fit observation. The
+disclosed opam-switch read class is **permitted**, with the readable/unreadable
+boundary now written down for every future bench packet's §5.
+
+**The packet does not close.** CI adjudication of this diff, `BUG-0001`'s fix
+verdict against its six conditions, WO-0038 §8's four seeded mutations, and the
+conformance review of any promotion are all still owed before any `SO-M03`.
+The promotion stays out of the tree.
+
+### Open-questions
+- **CI prediction recorded before the run**: Build green; fifteen
+  `%expect_test`s silent; twenty entries PASS with `lane 4 length 68` reading
+  `tkeep = 255/255`; `views_disagree = true` at exactly lane 4/68 and lane
+  4/1516, `false` at the other eighteen. Any deviation is a finding for this
+  packet, not a patch — and if the deviation is in the disagreement set, the
+  prohibition in the verdict's §4 applies.
+- **P-1 remains owed** and is answered by M03-C5's result on this run, not by
+  transcription.
+- **The Cyclesim `cycle`/`Before` story is not M03's**, it is every bench's, and
+  it now has a second component: the opam-switch read boundary. Both belong in
+  the shared §7/§5 boilerplate the next bench packet carries. M04 meets them
+  next, where my `J-dv_lead-0024` contamination means the packet needs extra
+  care and an explicit disclosure.
+- **Owed by me, unchanged**: the `precompile_check.sh`
+  side-effect-in-combinator lane; `tools/precompile_stubs/ifc_check.ml`'s stale
+  UNVERIFIED note (run 30769770945 discharged SPEC-M01 §11.4); SPEC-M01 §11.4's
+  caveat retirement, routed to architect_docs_lead; and the standing-rules list
+  for the next bench packet's §7 — alerts-are-errors, the prose-repair rule,
+  "run a guard against the defect it names", "trace a change against the code
+  it will run beside", and now the opam-switch read boundary.
+- **Unchanged**: the RFC 1071 anchor closes on the next CI run that fetches;
+  X-7, X-10, X-11 remain deferred; L1–L5 still owed.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0038_tb-m03-first-bench.md
