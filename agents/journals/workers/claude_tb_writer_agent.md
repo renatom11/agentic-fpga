@@ -2457,3 +2457,269 @@ it is a visible choice rather than a silent omission.
 - test/third_party/verilog-ethernet/lfsr.v
 - test/third_party/verilog-ethernet/COPYING
 - test/third_party/verilog-ethernet/PROVENANCE.md
+
+## [J-tb_writer-0010] 2026-08-03T14:00Z | task:WO-0046 | Co-simulation Phase 1 — the canonical form, the OCaml driver, the comparator's --self-test, and the one-frame stimulus
+
+### Trigger
+
+WO-0046/2026-08-03T14:00Z (no explicit spawn short-id token was included
+verbatim in my launch prompt — reconstructed from context at first tool call,
+the same convention `J-tb_writer-0007`/`0008`/`0009` used when a token was
+likewise absent). dv_lead's packet (authored `cc80439`, `J-dv_lead-0052`)
+splits WO-0046 by artifact: I hold `test/cosim/**` (the canonical form, the
+Verilog wrapper testbench, the OCaml driver, the comparator, the one-frame
+stimulus, and dune wiring); a parallel data_wrangler spawn holds
+`tools/cosim/run_cosim.sh`. The two meet only at the canonical transaction
+form the packet pins in §2.3 — I implemented it exactly, adding no local
+improvement to it.
+
+### Inputs
+
+Full read: `agents/charters/tb_writer.md`; `agents/PROTOCOL.md` (whole file,
+§2-6 and §10 in particular); `agents/handoffs/WO-0046_cosim-phase-1.md` at
+`cc80439` (confirmed current HEAD via `git rev-parse HEAD` /
+`git log --oneline -1 -- <path>`, both `cc80439`); `docs/specs/requirements.md`
+REQ-901 (in full, its own row) plus REQ-902…906, and grep'd context around
+REQ-301…306 (CRC-32/FCS), REQ-602 (divergence class (a)'s own citation),
+REQ-701…710, REQ-801…810 for cross-reference while reading REQ-901;
+`docs/specs/architecture.md` §4, the module inventory table, read in full for
+the M03 row and the whole table's shape; `test/attack_plans/CD-xgmii_rx_64_cosim.md`
+(whole file, as corrected at `cc80439`'s §0-bis); `docs/specs/modules/xgmii_rx_64.md`
+(SPEC-M03, all 13 sections, both halves of a paginated read);
+`test/third_party/verilog-ethernet/axis_xgmii_rx_64.v` (whole file, 449 lines
+— the vendored reference, explicitly readable per ADR-0015 D2 and this
+packet's §0) and its `PROVENANCE.md` (whole file);
+`docs/specs/ifc_check/xgmii_rx_64_ifc.ml` (whole file — M03's compile-time
+interface lift, spec text not RTL).
+
+DV machinery, read to learn the established Cyclesim-driving and probe
+conventions before writing against them (all under `test/`, none of it RTL):
+`test/xgmii_rx_64/dune`, `bench.mli` (whole file), `bench.ml` (lines 1-220,
+the `create`/`sample_cycle` pattern and the RV-0038-R6/BUG-0001
+`~clock_edge:Side.Before` rationale); `test/xgmii_probe/xgmii_probe.ml` (whole
+file); `test/axi64_probe/axi64_probe.ml` (whole file);
+`test/monitors/stream_word.mli` (whole file); `test/xgmii/frame.mli`,
+`arrival.mli`, `xgmii_word.mli` (whole files, plus `frame.ml`/`arrival.ml`/
+`xgmii_word.ml`'s own source once copied to a scratch directory for a real
+compile, below); `test/golden/crc32_ref.mli` and `test/golden/dune`;
+`test/xgmii/dune`, `test/monitors/dune`, `test/xgmii_probe/dune` (headers, for
+library-naming and dependency convention); `test/cost_probe/dune` (to see how
+an `(executable)` stanza can — and, by omission, how mine does not — get
+wired to the `runtest` alias). `tools/precompile_check.sh` (whole file, to
+learn its `discover()` auto-exclusion mechanism for `(executable(s))` stanzas
+*before* adding `test/cosim/`, so the addition would not need an edit to
+`tools/**`, which is outside my write scope regardless); `tools/dv_checks.sh`
+(headers/comments); `tools/precompile_stubs/hardcaml.ml` (whole file, to
+confirm its stub scope is six `Bits` functions only, no `Cyclesim`/`Scope`/
+`hardcaml_ethernet`, before relying on that limit in my own self-check
+section).
+
+**Not read, this spawn**: `libs/**`, `top/**`, `bin/**`, `rtl_snapshots/**` —
+no path under any of these four was opened, globbed, or otherwise consulted.
+
+### Reasoning
+
+**The canonical form is pinned; I did not vary it.** §2.3's grammar block
+(`F` / `W`* / `D`, one record per line, no version/tool/path/timestamp) is
+implemented in `canonical.ml`/`.mli` literally, including a reading choice the
+block itself settles once looked at as a whole rather than as three
+independent lines: an `F` line is **always** present for every input frame,
+even a discarded one (zero `W` lines between its `F` and its `D`), because
+that is the one reading under which "F, then W*, then D" is a per-frame
+template rather than three unrelated productions. Frame index is 0-based
+admission order, comparison is by index (not list position, via an `Int_map`)
+so a frame missing on one side is a detectable `Missing_frame` rather than a
+silent shift, and `class_of` returns `None` for every divergence this module
+can produce — REQ-901's four declared classes all name other module pairings
+(M14's checksum, M12/M13's ARP cache, M18's UDP checksum), none names M03, so
+this lane's permitted-divergence set is empty and everything prints `DEFECT`,
+exactly as CD-§0-bis rules ("a class is added to REQ-901 by spec diff, never
+invented locally").
+
+**The four question-deliverables (§6)** are answered in full in the WO-0046
+Return log, with line citations into `axis_xgmii_rx_64.v` for questions 1 and
+2, the quoted `architecture.md` §4 row for question 3, and the derivation
+rule (plus its scope limit — REQ-110's abort case, out of Phase 1's stimulus)
+for question 4. One finding surprised me enough to flag twice — in the Return
+log's question 1 and again as an open question: I read the whole 449-line
+reference file for a runt/oversize length check analogous to REQ-107/REQ-108
+and found none at all, not a different threshold. That bears on
+`CD-xgmii_rx_64_cosim.md`'s V1-V3 predictions ("reference drops"), which
+Phase 1 does not test but Phase 2/3 will, and I said so as a reading, not as
+an observed run result — I have not driven a runt or oversize frame through
+either side.
+
+**Why `stimulus.txt` is not the canonical form, and needed no independent
+pinning.** The packet's diagram shows `stimulus.txt` feeding both `ours_run`
+and the Verilog `tb`; I own both consumers (and the one producer,
+`stimulus_gen.ml`), so its format is test/cosim's own internal seam, not an
+interface with data_wrangler. I chose the simplest common denominator both
+languages parse trivially: one line per cycle, two hex tokens (16-hex
+`xgmii_rxd`, 2-hex `xgmii_rxc`) — no lane-decoding logic needed on either
+reading side, since the packing is already resolved by whichever side wrote
+the line.
+
+**Frame content: reused, not invented.** Phase 1's one frame is
+`Dv_xgmii.Frame.stress_frame ~sequence:0 ()` — SPEC-M03 §8's own frozen
+stimulus frame, whose FCS comes from `Dv_golden.Crc32_ref`, REQ-305's
+externally-anchored oracle (anchored to REQ-303's published check value in
+`test_crc32_ref.ml`, not by me this spawn). I considered hand-deriving a fresh
+60-octet payload and its FCS (I did, in fact, as a first pass, independently
+in `python3`'s `zlib.crc32` to understand the wire format before I found
+`Frame.stress_frame`) and rejected shipping that as the actual stimulus in
+favour of the already-reviewed generator: two independent CRC computations
+disagreeing would be ambiguous evidence, while reusing an anchored generator
+and cross-checking its OUTPUT against my own independent `zlib` computation
+(which I did — byte for byte, all ten real cycles, FCS included) is not.
+
+**The schedule**: `Arrival.create ~first_start:0 [ octets ]` — start
+character in lane 0 of octet time 0 (SPEC-M03 §6.1's own worked example,
+"Cycle 0 is the word carrying the start character"), with `Arrival.check`
+asserted empty before anything is written (an unchecked stimulus generator is
+an unverified assertion about the design — the same rule
+`test/xgmii_rx_64/bench.mli`'s `run` enforces for the main suite, restated
+here because this generator has no bench of its own). `first_start:0` was a
+deliberate choice, not the library's own default (8): it also exercises
+REQ-009's own named guarantee ("a frame whose start character arrives on the
+first cycle after `clear` returns to 0 is received correctly") for free,
+given the one-cycle reset hold both drivers apply before the loop starts.
+
+**Drain margin (24 cycles) is generous, not measured**, because I was told to
+say iverilog is unavailable rather than hand-simulate its output — deriving
+the reference's exact pipeline depth from its source to justify a tighter
+number would have been exactly that. SPEC-M03's own drain window is 2 cycles
+past the terminate word (§6.1, derived, not asserted); the reference's own
+state machine (`STATE_IDLE`/`STATE_PAYLOAD`/`STATE_LAST`, a handful of
+register stages) is visibly of the same small order, so 24 is comfortable
+margin without claiming a measured number I do not have.
+
+**The accept-or-discard decision (question 4) turned out symmetric.** I
+expected — the packet's own phrasing suggested — that "ours" and "theirs"
+would need different derivations. Writing `ours_run.ml`'s `accumulate`
+against the spec's own admission rule (REQ-101) and REQ-901's own D
+description ("no output word at all" for discard) produced a rule that reads
+equally well against the reference's `m_axis_tvalid`/`m_axis_tlast`, because
+both sides present an AXI-Stream-shaped output. I implemented the identical
+algorithm independently in `tb_xgmii_rx_64.v` (not by sharing code — Verilog
+cannot call into `canonical.ml` — but by re-deriving it from the same spec
+text a second time) rather than assume the OCaml side's answer would transfer,
+and it did. The one case neither implements — a second start character while
+a frame is open, REQ-110's abort — is outside Phase 1's authorised stimulus
+(§9); both `failwith`/`$finish` loudly on it rather than silently mishandle,
+which I judged safer than writing REQ-110 handling neither side's stimulus
+would ever exercise this phase and could not be checked against anything.
+
+**Self-checks, and what each one actually proves** (full transcripts in the
+WO-0046 Return log §4; not repeated verbatim here per the entry-grammar's own
+economy, but the verdicts are the load-bearing claims of this entry):
+`canonical.ml`/`.mli`/`compare.ml` need no Hardcaml, so I fully compiled AND
+linked AND ran them with the system `ocamlc` — not merely parsed — including
+`compare --self-test` genuinely passing both its assertions against real
+files on disk. `stimulus_gen.ml` needs only the Hardcaml-free `dv_xgmii`
+library, so I copied `frame.ml`/`arrival.ml`/`xgmii_word.ml`/`crc32_ref.ml`
+(real, unmodified sources) into a scratch directory, wrapped them under
+`Dv_xgmii`/`Dv_golden` aliases (the wrapping `tools/precompile_check.sh`'s own
+Lane 2 documents), fully compiled AND ran it, and cross-checked its output
+byte-for-byte against an independent `python3 zlib.crc32` computation of the
+same frame — every cycle matched, residue `2144df1c` confirmed. `ours_run.ml`'s
+bookkeeping core (`accumulate`, the frame-boundary/accept-discard logic — the
+part I trusted least) was pulled into a similar Hardcaml-free scratch copy and
+exercised against five hand-built traces (Phase-1 shape; an undrained
+admitted frame reporting discard; no admission at all; two back-to-back
+accepted frames indexed 0 and 1; the REQ-110-out-of-scope `failwith`) — all
+five passed. What could **not** be compiled here: `ours_run.ml`'s
+`Cyclesim`/`Scope`/`Hardcaml_ethernet.Xgmii_rx_64` elaboration code (no real
+Hardcaml toolchain in this opam switch, confirmed pre-existing by running
+`dune build` before touching anything and hitting the same
+`ppx_expect`/`hardcaml_axi` errors; `tools/precompile_stubs/hardcaml.ml`
+stubs six `Bits` functions only, nothing that reaches `Cyclesim`, and
+`hardcaml_ethernet` has no stub at all), and `tb_xgmii_rx_64.v` (iverilog not
+installed, per this WO's own rule not to hand-simulate it). Both were instead
+verified by close, field-by-field matching against already-established
+patterns — `test/xgmii_rx_64/bench.ml` for the OCaml side, the vendored
+file's own port list for the Verilog side — and I have said so, not implied
+a stronger check occurred.
+
+### Actions
+
+Wrote `test/cosim/dune`, `canonical.mli`, `canonical.ml`, `stimulus_gen.ml`,
+`ours_run.ml`, `compare.ml`, `tb_xgmii_rx_64.v`. Ran `tools/precompile_check.sh`
+and `tools/dv_checks.sh` before (baseline) and after adding the directory;
+both stayed green (identical `check_rfc1071_anchor.sh` OBLIGATION-OPEN line,
+pre-existing, unrelated). Appended this journal entry and a RETURNED block to
+`agents/handoffs/WO-0046_cosim-phase-1.md`'s Return log, state left `ISSUED`
+for dv_lead.
+
+### Evidence
+
+```
+$ git rev-parse HEAD && git log --oneline -1 -- agents/handoffs/WO-0046_cosim-phase-1.md
+cc8043930d6ca5c2b8e48608d814c96926653ae2
+cc80439 WO-0046: Phase 1 authored
+```
+```
+$ ocamlc -stop-after parsing test/cosim/canonical.ml test/cosim/compare.ml \
+    test/cosim/ours_run.ml test/cosim/stimulus_gen.ml test/cosim/canonical.mli
+(exit 0, no output — all five clean)
+```
+```
+$ bash tools/precompile_check.sh   # (both before test/cosim existed, and after)
+… LANE 3a: EXCLUDED cosim — executable stanza; this harness compiles libraries only
+… SUMMARY: precompile_check: ALL LANES PASSED    (unchanged both times)
+```
+```
+$ bash tools/dv_checks.sh; echo $?
+… dv_checks: every check that COULD run passed, and 1 obligation is still OPEN
+0                                                  (unchanged both times)
+```
+Real compile+link+run evidence (scratch directories, not committed — full
+transcripts in the WO-0046 Return log §4): `compare --self-test` — both its
+PASS lines, exit 0; `stimulus_gen` — 36-line `stimulus.txt`, cross-checked
+byte-for-byte against an independent `python3 zlib.crc32` computation; a
+five-case `accumulate` unit-test binary — 5/5 PASS.
+`dune build`/`dune runtest` could not be run: `hardcaml`, `hardcaml_axi`,
+`ppx_hardcaml`, `ppx_expect`, `hardcaml_waveterm` are absent from this opam
+switch, confirmed pre-existing (same failure before any file in this entry
+existed).
+
+### Outcome
+
+DoD (charter §5) against this WO: every §6 question answered with evidence,
+not background (met). `canonical.ml`/`.mli`/`compare.ml` fully compiled,
+linked and run (met, strong evidence). `stimulus_gen.ml` fully compiled and
+run against real, unmodified `dv_xgmii` sources, cross-checked independently
+(met, strong evidence). `ours_run.ml`'s bookkeeping core unit-tested for real
+(met); its Cyclesim-elaboration code and the whole of `tb_xgmii_rx_64.v`
+verified only by parsing plus hand cross-reference against established
+patterns, explicitly flagged as such rather than implied stronger (partially
+met — the gap is toolchain absence, not unwillingness to check, and is named
+as an open question). `tools/precompile_check.sh`/`tools/dv_checks.sh` clean
+before and after (met). `dune runtest`'s fifteen units unchanged: no file
+outside `test/cosim/` was touched (confirmed by `git status --porcelain`
+showing only pre-existing, not-mine modifications elsewhere), and
+`test/cosim`'s `(executables)` stanza carries no `runtest`-alias rule, so it
+is structurally unreachable from `dune runtest` — asserted by mechanism and
+by diff, not by an executed `dune runtest` I could not run either before or
+after this change (met, by construction; not independently observed either
+side, an unavoidable gap given this environment, not new). No sign-off
+claimed — PASS/FAIL is dv_lead's `RV-`.
+
+### Open-questions
+
+The four items are in the WO-0046 Return log §5 (sidecar-field ownership
+split between `ours_run.ml`/`tb_xgmii_rx_64.v` and `run_cosim.sh`; the
+reference's apparent absence of any runt/oversize length check, bearing on
+CD's V1-V3 predictions; `ours_run.ml`'s Cyclesim glue unverified by
+compilation here, closes at a real toolchain; the 24-cycle drain margin is
+generous-not-measured). No RTL leak to report. No licensing concern beyond
+what WO-0044's own vendoring already recorded (unchanged this spawn).
+
+### Files-in-this-commit
+- test/cosim/dune
+- test/cosim/canonical.mli
+- test/cosim/canonical.ml
+- test/cosim/stimulus_gen.ml
+- test/cosim/ours_run.ml
+- test/cosim/compare.ml
+- test/cosim/tb_xgmii_rx_64.v
+- agents/handoffs/WO-0046_cosim-phase-1.md

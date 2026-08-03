@@ -250,6 +250,325 @@ paths, no additional module pairs.
 
 ## Return log
 
+### RETURNED (tb_writer, spawn WO-0046/2026-08-03T14:00Z — reconstructed: no
+explicit spawn short-id token was included verbatim in my launch prompt, so
+this is derived from the current UTC context at first tool call, the same
+convention `J-tb_writer-0007`/`0008`/`0009` used when a token was likewise
+absent)
+
+State left as **ISSUED** — dv_lead's `RV-` flips it, per PROTOCOL §3. This is
+the `test/cosim/**` half only (§5); `tools/cosim/run_cosim.sh` is
+data_wrangler's and is not touched here.
+
+#### 1. What I built
+
+| File | Role |
+|---|---|
+| `test/cosim/dune` | `(executables)` — not `(inline_tests)`, per §2.2 |
+| `test/cosim/canonical.mli` / `.ml` | §2.3's pinned grammar: writer, parser, REQ-901's domain comparison |
+| `test/cosim/stimulus_gen.ml` | Phase 1's one-frame stimulus (§3) |
+| `test/cosim/ours_run.ml` | our-side driver: elaborates M03, writes `ours.canon` |
+| `test/cosim/compare.ml` | the comparator, with `--self-test` (§4.2) |
+| `test/cosim/tb_xgmii_rx_64.v` | the wrapper testbench around the vendored reference (§2.1) |
+
+No file outside `test/cosim/` was touched. `git status --porcelain` shows three
+other modified/untracked paths (`agents/handoffs/WO-0045_family-e-mutation-campaign.md`,
+`agents/journals/claude_dv_lead_agent.md`, `test/attack_plans/AP-xgmii_rx_64.md`)
+— **not mine**: no `Write`/`Edit`/mutating `Bash` call touched any of them this
+spawn, and I read none of them. They predate this spawn in the shared working
+tree.
+
+#### 2. The four question-deliverables (§6), with evidence
+
+**Question 1 — the parameter mapping.** `axis_xgmii_rx_64`'s actual parameters
+(its own header, `axis_xgmii_rx_64.v:34-42`): `DATA_WIDTH`, `KEEP_WIDTH`,
+`CTRL_WIDTH`, `PTP_TS_ENABLE`, `PTP_TS_FMT_TOD`, `PTP_TS_WIDTH`, `USER_WIDTH`.
+Of REQ-901's five settings, **only one has a counterpart**:
+
+- **"PTP disabled" → `PTP_TS_ENABLE(0)`** (`axis_xgmii_rx_64.v:39`, already its
+  own default). Set explicitly at instantiation in `tb_xgmii_rx_64.v` anyway,
+  for self-documentation.
+- **"deficit idle count disabled" → no counterpart.** DIC is transmit-side
+  gap-shortening (REQ-204); nothing in this file's 449 lines mentions idle
+  count or a gap at all — it is a pure receiver with no notion of inter-frame
+  spacing.
+- **"padding enabled" → no counterpart.** Padding to a minimum wire length
+  (REQ-203) is transmit-side; this file contains no padding logic.
+- **"minimum frame length 64" → no counterpart, and worth flagging.** I read
+  the whole file looking for anything resembling REQ-107/REQ-108's runt or
+  oversize handling and found **none**: no octet counter gates a minimum or
+  maximum, and the state machine (`STATE_IDLE`/`STATE_PAYLOAD`/`STATE_LAST`)
+  forwards whatever lies between a recognised start and the next terminate or
+  error character regardless of length. There is therefore no parameter to
+  set here, and — read together with `CD-xgmii_rx_64_cosim.md`'s V1-V3
+  predictions — this reference may not implement runt/oversize dropping or
+  truncation at all, which Phase 1's single 64-octet frame does not probe but
+  a future Phase 2/3 length sweep will.
+- **"transmit checksum generation disabled" → no counterpart.** That is an
+  IP/UDP transmit-layer behaviour (REQ-609, REQ-706), a different module
+  pairing entirely; this RX-only file computes no checksum of its own kind.
+
+**Question 2 — the `tuser` mapping.** Bit 0 of `m_axis_tuser` is the bad-frame
+indication: it is set to `1'b1` in exactly the three branches that mark a
+frame invalid (`axis_xgmii_rx_64.v:247` framing error, `:264` bad FCS in
+`STATE_PAYLOAD`, `:292` bad FCS in `STATE_LAST`) and defaults to `1'b0` every
+cycle (`:213`) and on every clean close (`:238`, `:283`). With
+`PTP_TS_ENABLE(0)` at our instantiation, `USER_WIDTH = (0 ? … : 0) + 1 = 1`
+(`:42`), so `m_axis_tuser` is exactly one bit and bit 0 is its only bit — no
+PTP-timestamp aliasing is possible at this configuration (the
+`PTP_TS_ENABLE`-gated block, `:240-242`, is dead code here). **Polarity
+matches**: 1 means "found invalid", identically to REQ-013's `tuser`\[0\]
+("this frame was found invalid"). No inversion, no remapping — the comparator
+reads both sides' bit 0 the same way.
+
+**Question 3 — the pairing.** Confirmed against `architecture.md` §4 itself,
+not assumed. The row, quoted verbatim:
+
+> `| M03 | `Xgmii_rx_64` | R | XGMII lanes to frame stream: start-lane
+> detection, preamble strip, terminate handling, FCS check, error marking. |
+> `axis_xgmii_rx_64.v` | 101–113 |`
+
+The counterpart column reads `axis_xgmii_rx_64.v` exactly. Matches this
+packet's assumption and `CD-xgmii_rx_64_cosim.md`'s own Pairing line; no
+disagreement to report.
+
+**Question 4 — the accept-or-discard decision.** Derived **identically** for
+both sides (`ours_run.ml`'s `accumulate`, `tb_xgmii_rx_64.v`'s per-cycle
+loop): a frame is admitted the cycle its start character is recognised (lane 0
+or lane 4, REQ-101's control-character encoding, read from the spec's own
+table, requirements.md §2 — not from either side's RTL); it is **accept** iff
+an output word with `tlast` is observed for it before the run (which already
+carries its own drain margin) ends, and **discard** otherwise — WO-0046
+§2.3's "no output word at all" case. I expected this to differ per side (your
+own phrasing anticipated it) and it did not: both M03 and the reference
+present an AXI-Stream-shaped `tvalid`/`tlast` output, so the same rule reads
+both. **Scope limit, stated rather than silently handled**: a second start
+character arriving while a frame is still open (REQ-110's abort case) is
+outside Phase 1's authorised stimulus (§9) and neither driver implements it —
+both `failwith`/`$finish` loudly rather than guess, so a Phase 2 stimulus that
+needs it will get an explicit failure pointing here, not a silently wrong `D`
+line.
+
+#### 3. Canonical-form implementation notes
+
+- **Grammar reading.** The packet's grammar block (`F` / `W`* / `D`) is
+  implemented literally as one triple per frame: an `F` line is **always**
+  present, even for a discarded frame (zero `W` lines between its `F` and its
+  `D`), rather than omitted. This is the plainest reading of the block as
+  given and it round-trips cleanly (evidence below).
+- **Frame index** is 0-based, input-admission order — not output position, so
+  a discarded frame still owns an index and a frame missing on one side
+  becomes a detectable `Missing_frame` divergence rather than an invisible
+  shift of every later index.
+- **Hex fields** are exactly 2 lowercase digits (`tkeep`, each octet), matching
+  "hex-2" literally.
+- **`tuser0` is written on every `W` line**, not only the `tlast` word,
+  because the grammar block shows it in every `W` line's shape; REQ-013 still
+  governs that only the `tlast` word's value is *meaningful* — the comparator
+  does not read it on other words (word comparison in `compare_transactions`
+  checks `tuser0` on every word only because both sides are required to
+  record 0 there by construction, not because a non-`tlast` value is spec'd).
+- **Comparison is by frame index**, not list position (`Int_map` keyed
+  comparison in `canonical.ml`), so a missing frame reports as `Missing_frame`
+  at its own index rather than desynchronising every frame after it.
+- **`class_of` is `None` for every divergence this module can produce.**
+  REQ-901's four declared classes all name other module pairings (M14's
+  checksum, M12/M13's ARP cache, M18's UDP checksum); none names M03, so this
+  lane's permitted-divergence set is empty and every divergence prints as
+  `DEFECT` (§1's own instruction). The function is kept as an extension seam,
+  never as an invented class.
+- **Word comparison is skipped when the two sides' `decision` already
+  disagree** (nothing to align a word list against), so a decision mismatch
+  is reported once, cleanly, rather than compounded with a spurious word-count
+  mismatch.
+- **stimulus.txt is NOT the canonical form.** It is test/cosim's own internal
+  seam between `stimulus_gen.ml`, `ours_run.ml` and `tb_xgmii_rx_64.v` (one
+  line per cycle, two hex tokens: 16-hex `xgmii_rxd`, 2-hex `xgmii_rxc`), and
+  carries no obligation to `tools/cosim/run_cosim.sh` beyond "a file path
+  three of my own binaries agree on" — `run_cosim.sh` only needs to sequence
+  named entry points and never needs to parse it.
+
+#### 4. Self-check evidence (verbatim; commands reproduce at this tree)
+
+`canonical.ml`/`.mli` and `compare.ml` need no Hardcaml — I fully type-checked
+AND linked AND ran them with the system compiler, not merely parsed them:
+
+```
+$ ocamlc -c canonical.mli canonical.ml compare.ml
+(exit 0, no output)
+$ ocamlc canonical.mli canonical.ml compare.ml -o compare
+$ ./compare --self-test
+compare --self-test: known-good pair (identical canonical files)
+frames compared: 1
+frames matching: 1
+divergences: none
+  PASS: identical canonical files compare clean (exit 0)
+compare --self-test: perturbed pair (exactly one octet changed, real files, real production path)
+frames compared: 1
+frames matching: 0
+divergences: 1
+  DEFECT: frame 0 word 1: octets mismatch (ours=08 09 0a 0b, theirs=09 09 0a 0b)
+  PASS: a one-octet perturbation is reported and exits nonzero (exit 1)
+compare --self-test: OK
+$ echo $?
+0
+```
+
+I additionally hand-wrote a round-trip + three grammar-violation scratch test
+(write→read equality; a `D` index mismatch; a `tkeep`/octet-count mismatch; a
+file ending with a frame still open) — all four raised or matched exactly as
+designed. Not committed (scratch-only, per instructions not to write report
+files); reproducible from `canonical.mli`/`.ml` alone.
+
+`stimulus_gen.ml` needs only `dv_xgmii` (Hardcaml-free). I copied
+`test/xgmii/{frame,arrival,xgmii_word}.ml{,i}` and `test/golden/crc32_ref.ml{,i}`
+into a scratch directory, wrapped them under `Dv_xgmii`/`Dv_golden` module
+aliases (the same wrapping `tools/precompile_check.sh`'s Lane 2 documents),
+and fully compiled AND ran `stimulus_gen.ml` against the **real, unmodified**
+library sources:
+
+```
+$ ocamlc crc32_ref.mli crc32_ref.ml dv_golden.ml xgmii_word.mli xgmii_word.ml \
+    frame.mli frame.ml arrival.mli arrival.ml dv_xgmii.ml stimulus_gen.ml \
+    -o stimulus_gen
+$ ./stimulus_gen stimulus.txt && wc -l stimulus.txt
+36 stimulus.txt
+```
+
+I cross-checked the output byte-for-byte against an independent hand/`python3
+zlib.crc32` computation of the same frame (`Dv_xgmii.Frame.stress_frame
+~sequence:0 ()`'s own recipe: DA 02:00:00:00:00:01, SA 02:00:00:00:00:02,
+ethertype 0x0800, sequence 0, 42-octet filler `offset land 0xff`, CRC-32 per
+REQ-301, appended least-significant-octet-first per REQ-202) — every one of
+the ten real cycles (start word, eight data words, terminate word) matched
+exactly, lane for lane, octet for octet, FCS included (`cfddc438` little-endian
+→ `38 c4 dd cf`), and the residue over frame+FCS came back `2144df1c`, REQ-304's
+constant.
+
+`ours_run.ml`'s Cyclesim-driving glue could **not** be compiled here:
+`hardcaml`/`hardcaml_axi`/`ppx_hardcaml`/`ppx_expect`/`hardcaml_waveterm` are
+not installed in this opam switch (confirmed pre-existing: `dune build`
+already failed on these before I touched anything), and
+`tools/precompile_stubs/hardcaml.ml` — the one thing that lets Lane 2
+type-check Hardcaml-*facing* code here — stubs only six `Bits` functions, not
+`Cyclesim`/`Scope`/`Side`, and there is no stub for `hardcaml_ethernet` at all
+(confirmed by reading the stub file and `tools/precompile_check.sh`'s own
+`discover()`, which is exactly why it classifies any `hardcaml_ethernet`-
+depending directory `EXCLUDED`). I instead pulled the bookkeeping half of
+`ours_run.ml` — `accumulate` and `word_of_stream_word`, the part that decides
+frame boundaries and the accept/discard call, and the part I was least
+willing to trust to review alone — into a Hardcaml-free scratch copy, wrapped
+`Dv_xgmii.Xgmii_word` and `Dv_monitors.Stream_word` (both real, both
+Hardcaml-free) the same way, and ran five unit tests against hand-built
+`(Xgmii_word.t * Stream_word.t)` traces:
+
+```
+$ ./run_tests
+TEST1 PASS: one Accept frame, 8 words, final tkeep=0x0f tlast
+TEST2 PASS: undrained admitted frame reports Discard with no words
+TEST3 PASS: no admission, empty transaction
+TEST4 PASS: two back-to-back frames get indices 0 and 1
+TEST5 PASS: raised as documented: ours_run: a second start character arrived while a frame was open -- ...
+```
+
+The remaining part of `ours_run.ml` — `Scope.create`, `Sim.create
+(Hardcaml_ethernet.Xgmii_rx_64.create scope)`, `Cyclesim.inputs`/`.outputs
+~clock_edge:Side.Before`, the `i.xgmii_rx.d`/`.c`, `i.clear`,
+`i.cfg_rx_enable`, `o.rx.tvalid`/`.tdata`/`.tkeep`/`.tstrb`/`.tlast`/`.tuser`
+field names — was verified only by close, field-by-field matching against
+`test/xgmii_rx_64/bench.ml`'s already-reviewed pattern (same construction, same
+`Before`-view convention and its BUG-0001/RV-0038-R6 rationale, same field
+names), and against the real signatures in
+`docs/specs/ifc_check/xgmii_rx_64_ifc.ml`, `test/xgmii_probe/xgmii_probe.ml`
+and `test/axi64_probe/axi64_probe.ml`. This is a hand cross-check, not a
+compiler, and I am saying so rather than letting the parsing-only result below
+imply more.
+
+All five `.ml`/`.mli` files, parsed (syntax only, the widest check reaching
+every file uniformly):
+
+```
+$ ocamlc -stop-after parsing test/cosim/canonical.ml test/cosim/compare.ml \
+    test/cosim/ours_run.ml test/cosim/stimulus_gen.ml test/cosim/canonical.mli
+(exit 0, no output — all five clean)
+```
+
+`tools/precompile_check.sh`, before and after adding `test/cosim/`: both
+`ALL LANES PASSED`. `test/cosim` is automatically classified
+`EXCLUDED — executable stanza; this harness compiles libraries only` by the
+script's own generic dune-stanza-kind discovery (`discover()`, read in full
+before I added anything) — no edit to `tools/**` was made or needed:
+
+```
+$ bash tools/precompile_check.sh   # after
+…
+--- LANE 3a — coverage sweep
+  EXCLUDED cosim — executable stanza; this harness compiles libraries only
+  EXCLUDED cost_probe — executable stanza; this harness compiles libraries only
+  EXCLUDED hardcaml_ethernet — depends on hardcaml_waveterm hardcaml_ethernet, which this harness cannot transcribe
+  EXCLUDED xgmii_rx_64 — depends on hardcaml_ethernet, which this harness cannot transcribe
+  RESULT: 43 files in compiled directories, all 43 materialised and compiled.
+…
+precompile_check: ALL LANES PASSED
+```
+
+`tools/dv_checks.sh`: exit 0 before and after, identical (the pre-existing
+`check_rfc1071_anchor.sh` OBLIGATION-OPEN line is unrelated — blocked network
+egress in this container, documented since `J-dv_lead-0017`).
+
+**`dune build`/`dune runtest` could not be run at all, before or after my
+change.** `dune build` (bare, no target) already failed on this checkout
+*before* I wrote anything, on `ppx_expect`/`hardcaml_axi`/`ppx_hardcaml`/
+`hardcaml_waveterm` not being installed in this opam switch — a pre-existing
+environment gap, not something this packet introduced. `test/cosim`'s
+`(executables)` stanza carries no `(rule (alias runtest) …)` (unlike
+`test/cost_probe/dune`'s own throwaway probe), so it is structurally
+unreachable from `dune runtest` by construction, which is the mechanism §2.2
+relies on — I could not additionally observe it stay green, only confirm the
+mechanism is in place and that the fifteen existing `%expect_test` units'
+source files are untouched (`git status --porcelain` above lists no path
+under `test/xgmii_rx_64/` or any other existing bench directory).
+
+#### 5. Open questions
+
+1. **The `.canon.meta` sidecar's simulator-name/version and runner-image
+   fields have no owner I can find pinned in the packet.** Neither
+   `ours_run.ml` nor `tb_xgmii_rx_64.v` can determine its own toolchain's
+   version or the runner's identity from inside itself with "no arguments, no
+   environment beyond `PATH`" (§2.1) — only the invoking shell
+   (`run_cosim.sh`) can, e.g. via `iverilog -V`. I had each producer write a
+   best-effort sidecar with what it *can* determine on its own (the fixed
+   reference pin, and the stimulus file/line count it actually consumed) and
+   left the other two fields explicitly marked `unknown (fill in: ...)`
+   rather than fabricate or silently omit them. Please confirm whether
+   `run_cosim.sh` should overwrite/append these two fields after each run, or
+   whether the split should move entirely.
+2. **The reference's own length-enforcement behaviour is unmeasured, not
+   just its parameters (question 1).** Reading the whole 449-line file, I
+   found no runt/oversize logic of any kind — not "a different threshold",
+   *none*. If that reading is right, `CD-xgmii_rx_64_cosim.md`'s V1/V2/V3
+   predictions ("reference drops" a runt/undersize/oversize frame) may
+   themselves need revising to "reference forwards regardless of length" once
+   Phase 2/3 actually drives one — I have not driven one (out of Phase 1's
+   scope, §9) and am not asserting this as a run result, only as a reading of
+   the source worth flagging before it surprises Phase 2.
+3. **`ours_run.ml`'s Cyclesim-driving code is unverified by compilation here**
+   (§4) — this environment has neither the real Hardcaml toolchain nor a stub
+   covering `Cyclesim`/`Scope`/`hardcaml_ethernet`. `dune build @default` at a
+   real toolchain is where this closes, per ADR-0005's own standing pattern
+   for every other Hardcaml-facing file in this tree.
+4. **The 24-cycle drain margin (`stimulus_gen.ml`) is a round, generous
+   number, not a measured one** — I was told not to hand-simulate iverilog's
+   output, so I did not try to derive the reference's exact pipeline depth
+   from its source to justify a tighter figure. If the first real run shows
+   it insufficient (unlikely — the reference visibly needs only a handful of
+   register stages), it is a one-constant change.
+
+No RTL was read this spawn. `libs/**`, `top/**`, `bin/**` and `rtl_snapshots/**`
+were not opened, globbed, or otherwise consulted at any point.
+
+## Return log
+
 ### data_wrangler — `tools/cosim/run_cosim.sh` (RETURNED)
 
 **Journal**: `J-data_wrangler-0001`. **Write scope used**: `tools/cosim/run_cosim.sh`
@@ -343,3 +662,4 @@ confirmed empirically, see below and my journal's Evidence):
    logs, the stimulus, the canonical files, the sidecars — not the OCaml
    toolchain's own cache, and `_build/` is already `.gitignore`d repo-wide).
    Flagging in case dv_lead reads §7.1 more strictly than I have.
+

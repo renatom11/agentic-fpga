@@ -1,0 +1,33 @@
+; WO-0046 Phase 1 — the co-simulation lane's tb_writer half (§2.1, §2.2).
+;
+; (executables), deliberately NOT (inline_tests): `compare` depends on a file
+; `vvp` produces, and `vvp` runs outside dune and does not exist in any
+; environment where the lane has not been run — including this dev
+; container, including every existing CI job that does not carry iverilog.
+; An inline test here would fail the MAIN suite everywhere iverilog is
+; absent. `dune build @default` builds these three binaries wherever a real
+; Hardcaml toolchain is present (which `ours_run` genuinely needs, to
+; elaborate M03); `dune runtest` never touches them, because nothing here is
+; wired to the `runtest` alias — no `(rule (alias runtest) ...)`, unlike
+; test/cost_probe/dune's throwaway probe. The main suite's fifteen
+; %expect_test units are therefore untouched by this stanza either way.
+;
+; iverilog is not invoked from here at all: tools/cosim/run_cosim.sh
+; (data_wrangler, WO-0046 §5) is the only thing that calls `iverilog`/`vvp`,
+; against test/cosim/tb_xgmii_rx_64.v plus the two vendored files under
+; test/third_party/verilog-ethernet/.
+;
+; canonical.ml/.mli (WO-0046 §2.3's pinned grammar, writer/parser/comparison)
+; and stimulus_gen.ml need no Hardcaml dependency at all -- the former is
+; plain stdlib text processing, the latter drives only the DUT-independent
+; dv_xgmii link-partner model. ours_run.ml is the one file here that touches
+; Hardcaml_ethernet.Xgmii_rx_64, through the same Cyclesim.With_interface
+; entry point and field-name projection test/xgmii_rx_64/bench.ml already
+; uses (libs/hardcaml_ethernet/src/ and rtl_snapshots/** were not opened to
+; write it, PROTOCOL §10). compare.ml depends on nothing beyond canonical.ml
+; and the standard library, on purpose, so the comparator itself never needs
+; a working Hardcaml toolchain to build or to run --self-test.
+
+(executables
+ (names stimulus_gen ours_run compare)
+ (libraries hardcaml hardcaml_ethernet dv_xgmii dv_xgmii_probe dv_axi64_probe dv_monitors))
