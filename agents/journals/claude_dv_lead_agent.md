@@ -17057,3 +17057,199 @@ discharged.
 
 ### Files-in-this-commit
 - agents/handoffs/WO-0054_tb-m03-family-g-oversize.md
+
+## [J-dv_lead-0069] 2026-08-04T21:05Z | task:WO-0055 | Family G's campaign frozen — and the freeze's two real outputs are a rider discharged by arithmetic (the protocol monitor cannot see G-c1 at all) and a sealed prediction written as a FUNCTION of the seeder's disclosed choice, which is the F-c8 repair made operational
+
+### Trigger
+Orchestrator: family G is landed and fully green — `8d3a8af` + `2e8994f`, CI run
+30841171667 with **both** jobs green (the `cosim` job blocking since R-CI-4's
+removal), board at `681864a`. Freeze family G's qualification campaign under my
+established freeze-first mechanics, with three named riders that must ride with
+the design: the monitor-coincidence, the `truncated_tkeep` residual, and my own
+F-4 rule now binding seeding instructions.
+
+### Inputs
+- `tools/dv_checks.sh`'s **bench inventory block, run at this tree** — the
+  re-measurement my own rule requires at a freeze rather than a carry-forward
+  from `RV-0054-VERDICT`.
+- CI run **30841171667** via the GitHub API: `head_sha` `2e8994f…`, workflow
+  `build`, `conclusion: success`.
+- `git diff --stat 2e8994f 681864a -- test/ libs/` → **empty**.
+- `test/xgmii_rx_64/test_m03_g.ml` — all five row functions' `row` strings,
+  assertion orders, `tkeep` and `tuser` and strobe-arity message strings, the
+  constants block, and both `%expect_test` iteration orders.
+- `test/xgmii_rx_64/test_m03_c.ml` — `run_c3`'s `row` string and its assertion
+  order (the G-c2 cell).
+- `agents/handoffs/WO-0054_…` §7's five classes, §9.2's rider, and
+  `RV-0054-VERDICT` §4's residual; `RV-0050-VERDICT` §6 and `J-dv_lead-0065`
+  (the F-c8 lesson); `WO-0050`'s brief and seal as the template.
+- `docs/specs/modules/xgmii_rx_64.md` §6.2's `Discard` row, §9's closure list and
+  rulings 2/6/7; `docs/specs/requirements.md` REQ-108, REQ-103, §0.6.
+- **No `libs/**`, no `docs/reports/audit/**`, no `docs/adr/**`, no
+  `/workspace/**`.**
+
+### Reasoning
+
+**Rider 1 is discharged by computation and it changes what the campaign
+credits.** I flagged at the family-G design that `Protocol_monitor`'s
+`~max_words_per_frame:190` and REQ-108's 1514 coincide **by construction**, and
+that the monitor must not be credited as an independent detector of G-c1 until
+that was checked. **Checked: `(1518 + 7) / 8 = 190 = (1514 + 7) / 8`.** G-c1's
+wrong constant produces **exactly the same word count** as the right one, so the
+bound is never exceeded and the monitor stays silent. **It contributes zero
+coverage against G-c1**, and the whole detection rests on the `tkeep` assertion.
+Had I not checked, the seal would have credited a detector that cannot fire — a
+false claim of redundancy, which is worse than no redundancy at all.
+
+**The same arithmetic settled G-c1's expected message, and I worked it rather
+than assumed it.** Every G row checks the output-word count first, so the naive
+prediction is that the count speaks. It does not: the count is unchanged at 190,
+**and so is the `tlast` cycle** — the final delivered octet moves from index 1513
+to 1517, octet times 1529 to 1533, which land in **the same input word 191**, and
+§7's per-octet constant gives 193 for both. So `tkeep` is the first assertion to
+differ, at all five units. This is the F-c1 lesson applied for the second time
+before a run instead of after it.
+
+**Rider 3 produced the freeze's method contribution, and it is the one I would
+defend hardest.** At WO-0050 I pinned F-c8's displacement direction to buy an
+exact sealed message; that over-specification made half the class unseedable and
+cost the campaign its only cross-family claim. The lesson I wrote — *a packet
+specifies the observable and leaves the mechanism to the party that can see it* —
+had an obvious tension with sealing: if the seeder chooses, I cannot name a row
+set.
+
+**The resolution is to seal the prediction as a function of the disclosed
+choice.** G-c4's intent names the observable (a control character arriving after
+REQ-108's truncation point is acted on as though a frame were open) and leaves
+the character to the seeder, **required to be disclosed**. The seal then carries a
+four-branch mapping — `/S/` → {T-G3, T-G6}; `/E/` → {T-G4}; `/T/` → {T-G1,
+T-G2}; generic → all five — each branch exact, none visible to the seeder.
+**The freeze is not weakened**: every branch is as precise as a flat row set
+would have been, and an observed set matching no branch is a finding, either
+against my enumeration or against the diff's fidelity.
+
+**The mapping's derivation is what makes it checkable rather than a guess**, and
+it turns on one fact: a character is "after the truncation point" only if the
+receiver is still in `Discard`, and §6.2's `Discard` row exits on the frame's own
+terminate. So T-G1's and T-G2's oversize frames carry their **own natural `/T/`**
+past 1514 and are the `/T/`-branch; T-G3's injected `/S/` and T-G6's *next
+frame's* `/S/` arrive before any `/T/` and are the `/S/`-branch; and T-G1's own
+following frame is **not**, because its predecessor's `/T/` already left
+`Discard`. That asymmetry — T-G6 in the `/S/` branch and T-G1 not — is the part a
+careless mapping would have got wrong.
+
+**Rider 2 has a clean answer and it is a negative.** `truncated_tkeep`'s missing
+zero-remainder guard is real but **lives on the bench side of the boundary and no
+RTL mutation can move it**. Under every class the bench's *expected* `tkeep` is
+computed from 1514 and is right; only the observed value moves. So the fragility
+is orthogonal to this campaign — and I wrote the consequence into the seal so it
+cannot be reached for as an excuse later: **if a `tkeep` message in this campaign
+carries an expected value other than 0x03, that is a finding about something
+other than the seeded defect.**
+
+**Base SHA: `2e8994f`, the SHA CI actually ran**, so criterion 3 needs no
+inference — the WO-0050 precedent, and the reason I moved off the landing-commit
+convention in the first place. `681864a`'s compiled surface is byte-identical
+(board and site only), so the choice is immaterial and I said so rather than
+leave a reader to wonder why I did not take the head.
+
+**Two structural differences from the last three campaigns, both recorded because
+their absence would otherwise read as an omission.** First, family G builds
+through `Arrival` and `Bench.run`'s `?word_at`, not through `Injection`, so
+**there is no `fail_cross` tripwire in `test_m03_g.ml`** — the finding-condition
+I have named as structurally impossible for three campaigns running simply has no
+instance here, and a `fail_cross` could only arrive from E or F, where it would
+mean something quite specific. Second, **the `cosim` job is now blocking and will
+be red on every branch**, since a mutated M03 must diverge from the reference;
+that is expected, out of scope, and named in the brief so no one adjudicates it.
+
+**The denominator is re-measured, not carried.** 25 and 105, from the tool, at
+this tree — agreeing with `RV-0054`. That is now three freezes in a row measured
+rather than recalled, after the round where I quoted a figure I had added in my
+head.
+
+**One cell I want on the record because it looks wrong and is not**: T-C3, a
+pre-existing unit, reddens under G-c2 — because M03-C3 drives **exactly 1518**,
+the one length G-c2 moves across the threshold. **So G-c2 is not a
+silently-always-pass class**, the same shape as F-c1's kill of T-C4, and the seal
+says so rather than leaving the cell to be queried in adjudication.
+
+### Actions
+- **Re-measured the denominator** at the freeze: 25 M03 units, 105
+  repository-wide.
+- **Verified the base and its control** through the API rather than the dispatch:
+  `2e8994f`, run 30841171667, both jobs green; and the head's compiled-surface
+  identity.
+- **Discharged rider 1 by arithmetic** and wrote the consequence into the seal:
+  the monitor cannot detect G-c1, so it is credited with nothing.
+- **Discharged rider 2** by locating the residual on the bench side of the
+  boundary and barring it as an explanation for any deviation.
+- **Implemented rider 3** as a sealed *mapping* from the seeder's disclosed
+  character class to the row set, with the derivation stated so it can be
+  checked, and instructed the disclosure in the brief.
+- Authored **`WO-0055`** (auditor-facing) — allowlist with item 6 settled, the
+  five intents, G-c4's choice-and-disclose clause, the `cosim`-expected-red note,
+  and three pass criteria — and its **SEALED companion** in the same commit, per
+  R-SEAL-1.
+- Worked G-c1's message derivation (count and cycle both unchanged; `tkeep`
+  speaks) and G-c3/G-c5's three-way discrimination against G-c1.
+- Opened no `libs/**`. No `git commit`, no `git push`.
+
+### Evidence
+1. Inventory at this tree: `3+1+4+3+4+4+5+1 = 25`; **105** repository-wide.
+2. CI run 30841171667 → `head_sha 2e8994f899941a14eab285e9a011a9890edb7c7d`,
+   `"conclusion":"success"`, workflow `build`.
+3. `git diff --stat 2e8994f 681864a -- test/ libs/` → empty.
+4. **Rider 1, computed**: `(1514 + 7) / 8 = 190`; `(1518 + 7) / 8 = 190`. Equal —
+   the monitor's bound is not exceeded under G-c1.
+5. **G-c1's cycle invariance, computed**: delivered index 1513 → octet time 1529
+   → input word 191, lane 1 → `191 + ⌊(1+16)/8⌋ = 193`; index 1517 → 1533 → word
+   191, lane 5 → `191 + ⌊(5+16)/8⌋ = 193`. Same word, same cycle.
+6. Row strings verified at source: `M03-G1 (lane N)`, `M03-G2 (lane N, 1518 legal
+   maximum)`, `M03-G2 (lane N, 1519 oversize)`, `M03-G3/G4/G6 (lane N)`,
+   `M03-C3 (lane N)`.
+7. `run_c3`'s order — word count → per-word `tlast` → `tuser` → strobe emptiness
+   → content — so `tuser[0] set unexpectedly` speaks under G-c2.
+8. `run_g2_legal` asserts `tuser` before its strobe-emptiness check; §6.2's
+   `Discard` row exits on the frame's own terminate — the two facts G-c4's
+   mapping rests on.
+9. `grep` for `fail_cross` in `test_m03_g.ml` → none; the family builds through
+   `Arrival`/`?word_at`, not `Injection`.
+
+### Outcome
+**Family G's campaign is FROZEN against `2e8994f`**, before any diff exists, in
+two files plus this entry — **five classes, twenty-five units, a 5 × 25 matrix**,
+expected messages, four named bounds, and G-c4's row set sealed as a **function**
+of the seeder's disclosed choice.
+
+**All three riders are discharged on the record**: the monitor is credited with
+nothing against G-c1 (computed, not assumed); the `truncated_tkeep` residual is
+located outside the campaign's reach and barred as an excuse; and the F-4 rule is
+implemented as a conditional seal rather than as an over-specified intent.
+
+**G-c5 is the class this family was written for**: twenty of twenty-five units
+are blind to it, and **before `test_m03_g.ml` existed, twenty-five of
+twenty-five** were — the widest such gap any family in this programme has closed.
+
+`SO-M03` does not issue on family G regardless: 26 of 60 ASSERT rows after it.
+
+### Open-questions
+- **If the observed G-c4 row set matches none of the four sealed branches**, that
+  is a finding — either my enumeration of character classes was incomplete, or the
+  diff reaches wider than the class it names. Adjudicated, never re-mapped after
+  the fact.
+- **The `cosim` job will be red on all five branches** and is out of scope. Named
+  in the brief; if it is ever red for a reason *other* than the seeded mutation,
+  that is a separate matter and not this campaign's.
+- **`fail_cross` has no instance in family G** — its silence this round is
+  structural and proves nothing, unlike the last three campaigns.
+- **The epoch-A no-output-word class** (`J-dv_lead-0065`) is deliberately not in
+  this campaign and rides with family H.
+- **Still owed**: AP-M14's §6 invariant; the `precompile_check.sh`
+  side-effect-in-combinator lane; M03-F5's discharge-by-citation qualification;
+  the RFC 1071 anchor on the next fetching run; X-7, X-10, X-11 deferred; L1–L5
+  as a separate packet.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0055_family-g-mutation-campaign-SEALED-predictions.md
+- agents/handoffs/WO-0055_family-g-mutation-campaign.md
