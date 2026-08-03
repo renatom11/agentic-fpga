@@ -93,11 +93,11 @@ jobs:
   # attributable to the lane, and the main suite must not wait on iverilog.
   cosim:
     runs-on: ubuntu-latest
-    # R-CI-4: non-blocking on FIRST landing only. Removal condition, owned by
-    # the orchestrator: this line comes off in its own commit once a run of
-    # this job has executed the deliberate-mismatch check (run_cosim.sh
-    # check 4.2) — proving the comparator can fail — and gone green.
-    continue-on-error: true
+    # R-CI-4: the first-landing continue-on-error came off here, per its own
+    # written condition, after run 30830553582 (991bb0c) executed all three
+    # checks green — differential agreement, the deliberate-mismatch check
+    # proving the comparator can fail, and two-run byte determinism. From
+    # this commit on, a cosim failure fails the build.
     steps:
       - uses: actions/checkout@v4
 

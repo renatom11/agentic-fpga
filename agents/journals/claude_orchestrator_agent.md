@@ -5990,3 +5990,49 @@ None.
 - site/public/index.html
 - site/public/org-chart.html
 - site/public/spec-atlas.html
+
+## [J-orchestrator-0136] 2026-08-03T17:50:00Z | task:WO-0046 | R-CI-4 discharged: the cosim lane's first green run met the written removal condition
+
+### Trigger
+Run 30830553582 (991bb0c): cosim job success with the log showing
+CHECK 1/3 PASSED (divergences: none), CHECK 2/3 PASSED (the
+deliberate-mismatch self-test executed, including the new third
+assertion on run 1's exact 16-digit defect shape), CHECK 3/3
+PASSED (ours.canon and theirs.canon byte-identical between runs).
+
+### Inputs
+The job log tail (fetched, quoted in part above); build.yml's own
+written condition: continue-on-error comes off in its own commit
+once a run has executed check 4.2 and gone green.
+
+### Reasoning
+The condition is met exactly as written — not merely 4.1 green
+but 4.2 executed and passed, which is what makes a green 4.1
+meaningful (a comparator that cannot fail proves nothing). dv's
+framing stands: this is the lane's FIRST verdict; run 1 reached
+none. From this commit a cosim failure fails the build. BOARD's
+WO-0046 row updated to LANE GREEN · ANCHOR LIVE with the run 1
+red kept as a record row.
+
+### Actions
+continue-on-error removed with the condition's discharge recorded
+in place; BOARD row updated; this commit; push.
+
+### Evidence
+Run 30830553582 log: "run_cosim: ALL THREE CHECKS PASSED";
+stimulus sha256 c675517176922d42bca42ec3def182cb3536861f1acaa838
+4116f33a5c4cc051; pin 77320a9471d19c7dd383914bc049e02d9f4f1ffb.
+
+### Outcome / DoD
+The differential co-sim lane is a blocking CI check and the
+external anchor mechanism for Phase 1 is live. What it anchors is
+bounded by REQ-901's exclusions and dv's per-row/per-requirement
+bars (f221100).
+
+### Open questions
+- dv's WO-0046 Phase 2+ (stimulus corpus beyond the one frame) is
+  the lane's next growth step — dv's call when it schedules it.
+
+### Files-in-this-commit
+- .github/workflows/build.yml
+- tasks/BOARD.md
