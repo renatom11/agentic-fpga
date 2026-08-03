@@ -26,11 +26,36 @@
     [tkeep] and never by holding octets back, which is what makes REQ-103 and
     REQ-005 compatible.
 
+    The same lookahead has a consequence the first revision of this module got
+    wrong (BUG-0001): when the FCS straddles two aligned words, the word behind
+    the one carrying `tlast` is left holding nothing but FCS octets, and the
+    pipeline must be told to drop it. One control bit does that — not a third
+    payload level, so REQ-019's depth is unchanged — and the block that raises
+    it in {!create} carries the argument.
+
     ΔC = 3 at both start lanes (§7): the input word carrying the start
     character is cycle 0, and the first output word leaves on cycle 3. Two of
     those cycles are the register levels above; the third is the assembly
     register that turns a lane-4 start's split octets into a word (§6.1's
     "same frame at a lane-4 start").
+
+    {2 Where in the cycle the outputs live}
+
+    [rx_tvalid], [rx_tkeep], [rx_tlast], [rx_tuser] and the five strobes are
+    combinational in the {e current} XGMII word — they are not registers, and
+    at ΔC = 3 they cannot be. Output word m leaves on cycle m + 3 (§7), and
+    §6.1's lookahead says its [tkeep] depends on the input word decoded on that
+    same cycle: at a lane-4 start whose terminate character falls in lane 0,
+    the character that ends the frame and the last delivered word's own cycle
+    are the same cycle. Registering the decision would move every octet one
+    cycle later and break §7's pinned L = 16 / 12.
+
+    The consequence for anything that watches this module: M03's output during
+    cycle t is f(registers at t, XGMII word at t) — the value a cycle simulator
+    exposes {e before} the clock edge of cycle t, labelled cycle t. Read after
+    the edge it is f(registers at t + 1, XGMII word at t), which is no cycle of
+    this design at all whenever the frame ends on the cycle its last word
+    leaves.
 
     {2 What this module deliberately does not do}
 
@@ -669,9 +694,40 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
      last of its own. *)
   let nc = mux2 al_new (zero 4) (popcount al_keep) in
   let strip = mux2 (sel_valid &: (sel_terminate |: sel_oversize)) (of_int ~width:4 4) (zero 4) in
-  let have_word = pc <>:. 0 in
+  (* ---- the all-FCS tail word (REQ-103, REQ-015; BUG-0001) ----
+     [emit_last_a] is the case where the FCS lies wholly inside the emitted
+     word, and its [pc >: strip] guard is what stops a word made *only* of FCS
+     octets from going out: §9's sixth row — the frame of fewer than five
+     octets, [pc] = 4 = [strip], no output word at all — is that guard's own
+     instance. [emit_last_b] is the straddling case: [nc] <= [strip] says every
+     octet of the word *behind* the emitted one is an FCS octet, and
+     [keep_count] below accounts for all four of them in the emitted word's own
+     [tkeep], which is why that word carries `tlast`.
+
+     That word behind is still in the two-word pipeline and arrives at this
+     decision on the very next cycle as [pc] = [nc] <= 4 with [nc] = 0 behind
+     it. By then the closure record has been consumed — §9 pins every strobe to
+     the `tlast` cycle, so [consume] fires on the [emit_last_b] cycle and
+     nothing is left to age — so [strip] is 0, [emit_last_a]'s guard reads
+     [pc] > 0 instead of [pc] > 4, and the residual FCS octets leave as a
+     second `tlast` word carrying [tuser] = 0 and no strobe. That is BUG-0001,
+     and its excess is exactly the fill of that residual word.
+
+     One registered bit carries the fact across the single cycle it has to
+     survive. It cannot suppress a word of the *next* frame: a lookahead word
+     that begins one forces [nc] = 0 through [al_new], and [emit_last_b] with
+     it, so the word this bit suppresses is always the one whose octets were
+     just counted into the previous word's [keep_count]. It cannot swallow a
+     strobe either — [consume] does not read it, and a record reaching age 2
+     still reports on its pinned cycle whether or not a word goes out. Frames
+     ended by REQ-105, REQ-110 or `clear` never set it, because [strip] is 0
+     for them and [emit_last_b] needs [nc] <= [strip] with [nc] >= 1. *)
+  let fcs_tail_pending = wire 1 in
+  let fcs_tail_now = reg spec fcs_tail_pending in
+  let have_word = (pc <>:. 0) &: ~:fcs_tail_now in
   let emit_last_a = have_word &: (nc ==:. 0) &: (pc >: strip) in
   let emit_last_b = have_word &: (nc <>:. 0) &: (nc <=: strip) in
+  fcs_tail_pending <== emit_last_b;
   let emit_full = have_word &: (nc >: strip) in
   let emit_tlast = emit_last_a |: emit_last_b in
   let keep_count =

@@ -190,6 +190,250 @@ before the run, and will not be restated after it.**
 directed-length entries are wrong. The mutation spot-check (WO-0038 §8) and the
 line-rate stress rows L1–L5 remain owed on top of this.
 
+## Root cause (rtl_lead, charter §8 — before the fix description)
+
+**Where.** `libs/hardcaml_ethernet/src/xgmii_rx_64.ml`, the output decision
+(§6.1's "Removing the FCS without varying the latency"), in its interaction
+with the closure record's `consume`. Four lines carried it:
+
+```ocaml
+let have_word = pc <>:. 0 in
+let emit_last_a = have_word &: (nc ==:. 0) &: (pc >: strip) in
+let emit_last_b = have_word &: (nc <>:. 0) &: (nc <=: strip) in
+let keep_count = mux2 emit_last_a (pc -: strip) (mux2 emit_last_b (pc -: strip +: nc) pc)
+```
+
+**The three quantities.** At the cycle an output word leaves: `pc` is that
+word's octet count (registered), `nc` is the octet count of the aligned word
+*behind* it — REQ-019's one word of lookahead — and `strip` is 4 exactly while
+the selected closure record says the frame ended on a terminate character (or
+on REQ-108's truncation), 0 otherwise. Two terminal shapes follow:
+
+- **`emit_last_a`** (`nc` = 0): the four FCS octets lie wholly inside the word
+  being emitted, so it delivers `pc − 4`. Its guard `pc >: strip` is what stops
+  a word made of *nothing but* FCS octets from going out at all; §9's sixth row
+  (fewer than five octets between start and terminate, `pc` = 4 = `strip`, no
+  output word) is that guard's own instance.
+- **`emit_last_b`** (0 < `nc` ≤ 4): the FCS straddles the two words. This word
+  delivers `pc − 4 + nc` and carries `tlast` — **correctly**; `keep_count` is
+  right and was never the defect. What it also says, and nowhere records, is
+  that *every octet of the word behind it is an FCS octet*.
+
+**The mechanism.** §9 pins each strobe to the cycle the frame's `tlast` word is
+emitted, so `consume` fires on the `emit_last_b` cycle and clears the record.
+One cycle later the residual all-FCS word reaches the same decision as `pc` =
+1…4 with `nc` = 0 — and `strip` is now **0**, because the record that produced
+it is gone. `emit_last_a` therefore evaluates `pc >: 0` where it should have
+evaluated `pc >: 4`, and emits those FCS octets as a **second `tlast` word**.
+The guard was never wrong; it was disarmed one cycle before it was needed.
+
+**The arithmetic, and why it is dv's invariant.** Let `N` be the octets between
+`/S/` and `/T/` and let `r = ((N − 1) mod 8) + 1` be the fill of the frame's
+last **aligned** word (the frame's octets are contiguous from aligned position
+0, so this is exact at both start lanes).
+
+| | `r` ≥ 5 | `r` ≤ 4 |
+|---|---|---|
+| where the FCS sits | wholly inside the last aligned word | straddles the last two |
+| which branch fires | `emit_last_a`, keep = `r − 4` | `emit_last_b`, keep = `4 + r` |
+| residual word behind it | none | **`r` octets, all FCS** |
+| excess | 0 | **`r`** |
+
+With `D = N − 4` and dv's `k = ((D − 1) mod 8) + 1`: `k = r − 4` when `r` ≥ 5
+and `k = r + 4` when `r` ≤ 4. So `excess = max(0, k − 4)` is not an empirical
+fit — it is `r` on the class where the residual word exists, and 0 elsewhere.
+The `4` dv read as the FCS length is the FCS length, twice over: once as
+`strip`, once as the width of the window in which a residual word can survive.
+
+**Why it is lane-independent.** The residual word is a property of the aligned-
+word pipeline, and the rotation window (§6.1's lane-4 paragraph) emits aligned
+word *m* on cycle *m* + 3 counted from the start word at **both** start lanes —
+§7's ΔC = 3 is the same constant twice. `r` is a function of `N` alone. Hence
+the excess is identical at both lanes at every length (dv's 8/8) and is not a
+function of the terminate lane (dv's 8/8 inconsistent) — the terminate lane
+moves *which cycle* the record is born on, never *whether* a residual word
+exists.
+
+**Why it is silent, and why it could not have been loud.** `tuser` is
+`emit_tlast &: abort`, and `abort` is an OR over the **selected record's** bits;
+every strobe is `consume &: sel_<bit>`, and `consume` requires `sel_valid`. On
+the residual word's cycle the record has been consumed, so `abort` = 0,
+`consume` = 0, `tuser`[0] = 0 and all five strobes are 0. The same act — the
+consumption — both *causes* the extra word and *removes* the only channel that
+could report it. dv's "M03 reports these frames as good" is structural.
+
+It is also a REQ-015 defect: two `tlast` words for one frame, which is what
+dv's `n_tlast` would have shown had the row carried the column.
+
+**How review and smoke sims missed it.** The `WO-0024` self-review checked
+`keep_count` — the arithmetic — against §6.1's worked 64-octet example, which is
+`r` = 8 and takes the `emit_last_a` path where no residual word exists; §6.1's
+own cycle table is the one directed case in the spec, and it is in the passing
+class. Nothing in the module's construction says "the pipeline may still hold a
+word after `tlast`", so the review question that would have found this — *what
+is in `al_keep_d` on the cycle after every terminal branch?* — was never asked.
+No smoke sim covered it because none existed for M03 (ADR-0005; the module has
+never been simulated outside dv's bench).
+
+### The one entry where the lanes differ is not a second defect, and is not in the hardware
+
+dv is right that this entry carries the most diagnostic information of the
+sixteen, and right to have kept it in one packet. It resolves as follows, and
+the resolution is a finding **about the observation position, not about M03**.
+
+M03's `rx_tvalid`/`tkeep`/`tlast`/`tuser` and its five strobes are combinational
+in the *current* XGMII word — at ΔC = 3 they cannot be anything else, because
+§6.1's lookahead makes output word *m*'s `tkeep` a function of the input word
+decoded on the cycle word *m* leaves. `test/xgmii_rx_64/bench.ml` reads
+`Cyclesim.outputs` (default `~clock_edge:After`) after `Cyclesim.cycle`, so the
+sample it labels `out_cycle = c + 1` is
+
+> **f(registers as of cycle c + 1, XGMII word of cycle c)** — a function of
+> input words 0…c only.
+
+For a registered output that labelling is exactly right (`word_counter` is the
+witness the bench cites, and it is a registered output). For M03 it drops the
+age-0 closure record: `a_close_*` is gated by `a_open` = `Preamble | Frame`, a
+**state** term, and a terminate character always leaves the state machine in
+`Idle` at c + 1 — so a record born on cycle c is invisible in the sample that
+carries cycle c + 1's payload. `strip` then reads 0 in the sample whenever the
+frame's `tlast` cycle **is** its closure cycle. That coincidence happens exactly
+when the last delivered aligned word leaves on the terminate word's own cycle,
+which is exactly (`excess` > 0) ∧ (`terminate_lane` = 0) — at lane 0 that pair
+is length 64, where the excess is 0; at lane 4 it is length 68. **One entry in
+sixteen, which is the singleton dv isolated.**
+
+Cycle traces from a model of this RTL transcribed line by line (see Evidence in
+`J-rtl_lead-0007` for its validation), lane 4, length 68, current tree:
+
+```
+HARDWARE (f(regs t, word t))              BENCH SAMPLE at label t (f(regs t, word t-1))
+cyc 11  pc=8 nc=4 strip=4 -> tkeep=0xFF   out 11  pc=8 nc=8 strip=0 -> tkeep=0xFF tlast=0
+        tlast=1   (record at age 0)
+cyc 12  pc=4 nc=0 strip=0 -> tkeep=0x0F   out 12  pc=4 nc=0 strip=0 -> tkeep=0x0F tlast=1
+        tlast=1   <- the bug                      <- the first tlast dv reads
+```
+
+Both columns deliver 68 octets, which is why the *delivered-count* half of the
+signature is untouched by the sampling and the defect is real at all eight
+failing entries. Only the placement of `tlast`/`tkeep` differs — and only here.
+
+**Consequence dv may want to weigh, offered as material and not as a request**
+(the bench is dv's, and I have not touched `test/**`): at this sampling position
+the eight strobes that fire on an age-0 record are invisible too, so the error
+families D–H would inherit the same blind spot on every frame whose closing
+character shares a cycle with its `tlast` word. `Cyclesim.outputs
+~clock_edge:Before`, with the sample labelled `cycle` rather than `cycle + 1`,
+returns f(regs t, word t) — correct for registered *and* combinational outputs
+alike; under it M03-C4's `start_cycle + 3` assertions and M03-A3's ΔC = 3 read
+exactly as they do today.
+
+## The fix
+
+One 1-bit register, in `libs/hardcaml_ethernet/src/xgmii_rx_64.ml`, in the
+output decision. No datapath signal, no state-machine transition, no interface,
+no constant, no new primitive:
+
+```ocaml
+-  let have_word = pc <>:. 0 in
++  let fcs_tail_pending = wire 1 in
++  let fcs_tail_now = reg spec fcs_tail_pending in
++  let have_word = (pc <>:. 0) &: ~:fcs_tail_now in
+   let emit_last_a = have_word &: (nc ==:. 0) &: (pc >: strip) in
+   let emit_last_b = have_word &: (nc <>:. 0) &: (nc <=: strip) in
++  fcs_tail_pending <== emit_last_b;
+```
+
+`emit_last_b` already *knows* the word behind it is entirely FCS; the bit
+carries that knowledge across the single cycle it has to survive, which is the
+cycle `strip` cannot. Why this is exact rather than approximately right:
+
+1. **It suppresses the right word.** `al_keep_d` on the next cycle is precisely
+   the word whose octets were counted as `nc` — `pc(t+1) = nc(t)` identically.
+2. **It can never suppress a word of the next frame.** An aligned word that
+   begins a new frame forces `nc` = 0 through `al_new`, and `emit_last_b`
+   (which needs `nc` ≥ 1) with it.
+3. **It cannot swallow a strobe.** `consume` does not read it; a record reaching
+   age 2 still reports on §9's pinned cycle whether or not a word goes out.
+4. **Aborted frames are untouched.** REQ-105, REQ-110 and `clear` leave `strip`
+   = 0, so `emit_last_b` cannot fire and the bit is never set — REQ-103's "no
+   FCS removal is attempted" cases still deliver every octet they received.
+5. **REQ-108 is covered by the same bit**, because truncation raises `strip`
+   through the same `sel_oversize` term.
+6. **REQ-019 and §7 are unmoved**: one control bit is not a payload level, and
+   no octet's cycle changes — L = 16 / 12 and ΔC = 3 are the same constants.
+
+**What I could not do and what CI will prove.** ADR-0005: I cannot compile, so
+the fix is reasoned line by line and CI at the promoting commit is the only
+authority for elaboration. Expected there: `dune build @default` green;
+determinism step **red** with exactly `rtl_snapshots/xgmii_rx_64.v` and
+`rtl_snapshots/eth_mac_10g.v` in the promotion block and
+`rtl_snapshots/xgmii_tx_64.v` / `rtl_snapshots/word_counter.v` **unchanged**
+(movement in either is a determinism defect, not this change); second run green.
+I have hand-edited no snapshot and no test.
+
+## P-1 concordance (locked before any run)
+
+**My mechanism produces P-1, in both of its halves, at both start lanes.**
+
+| dv's probe | `N` | `r = ((N−1) mod 8)+1` | `D` | `k` | mechanism's excess | P-1 |
+|---|---|---|---|---|---|---|
+| 1516-octet frame | 1516 | **4** | 1512 | 8 | **+4** | +4 ✓ |
+| 1513-octet frame | 1513 | **1** | 1509 | 5 | **+1** | +1 ✓ |
+
+Neither is near the 64-octet minimum and neither is oversize (`N` ≤ 1518, so
+REQ-108's cap never binds), and `r` is a function of `N` alone — so the defect
+is governed by the final word's fill, as dv's reading says, and **not** by frame
+length or proximity to the minimum. If the probe instead reports both lengths
+passing on the current tree, my root cause is wrong and this section is the
+thing to disbelieve first.
+
+**A sub-prediction dv's probe will also settle, locked here.** At a lane-4
+start the 1516-octet frame's terminate character lands in lane 0
+((12 + 8 + 1516) mod 8 = 0), so that frame is the **second instance of the
+`tkeep` singleton** and the only other one in the probe. On the current tree the
+probe should read
+
+```
+lane 0 length 1516: delivered=1516/1512 tkeep=255/255 terminate_lane=4
+lane 4 length 1516: delivered=1516/1512 tkeep=15/255  terminate_lane=0
+lane 0 length 1513: delivered=1510/1509 tkeep=31/31   terminate_lane=1
+lane 4 length 1513: delivered=1510/1509 tkeep=31/31   terminate_lane=5
+```
+
+If lane-4/1516 shows `tkeep=255` instead, the sampling account above is wrong
+and the singleton needs a different explanation.
+
+## R-1: what the sixteen will read after the fix, including the one that cannot pass
+
+Locked before the CI run, and stated because "all sixteen PASS" is what a fix
+verdict will look for and I do not believe it is reachable at the current
+sampling position:
+
+> **R-1.** Against the bench as it stands (`Cyclesim.outputs`, default
+> `~clock_edge:After`, sample labelled `out_cycle = cycle + 1`), the fixed M03
+> gives **fifteen PASS** and one line:
+>
+> `FAIL  lane 4 length 68: delivered=64/64 tkeep=none/255 tuser=none terminate_lane=0 error_pulses=0`
+>
+> — the delivered count repaired at every one of the sixteen, the `tlast` of
+> that one frame unobservable at that sampling position. Against the same tree
+> read with `~clock_edge:Before` and the sample labelled `cycle`, **all sixteen
+> PASS.**
+
+The impossibility, stated so it can be attacked rather than taken: the sample
+labelled `out_cycle = c + 1` is a function of XGMII words 0…c. The word M03
+emits on cycle c + 1 is aligned word c − 3 at both start lanes. Whether that
+word is its frame's last *delivered* word can depend on the terminate character
+in word **c + 1** — and does, at a lane-4 start with the terminate in lane 0,
+because ΔC = 3 puts the last delivered word's cycle and the terminate word's
+cycle together. Answering it one word early is not something a design with
+§7's pinned L = 16 / 12 can do; a registered output stage buys the answer at the
+price of one cycle on every octet, which is a spec diff to §7, not a fix. So
+this entry is repairable in the observation position and nowhere else — and if
+dv's re-test reads anything other than the line above, R-1 is wrong and I want
+to know it in the same words.
+
 ## Fix verdict
 
 *(appended by dv_lead after re-test; a fix entry must contain a `Root-cause`

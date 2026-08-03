@@ -1675,3 +1675,247 @@ orchestrator.
 
 - agents/handoffs/WO-0036_m03-sub5-conformance.md
 - libs/hardcaml_ethernet/src/xgmii_rx_64.ml
+
+## [J-rtl_lead-0007] 2026-08-03T15:10:00Z | task:BUG-0001 | BUG-0001 root-caused and fixed: the FCS-strip guard is disarmed one cycle before it is needed, so an all-FCS aligned word leaves as a second `tlast`; one registered bit repairs it, and the `tkeep` singleton is the bench's observation position rather than a second defect
+
+### Trigger
+
+dv_lead's `BUG-0001`, CRITICAL, relayed verbatim by the orchestrator against M03
+`Xgmii_rx_64` — my module, my fix (charter §3, §4). The packet is committed at
+`785bd94` and carries a characterised observable, a sixteen-entry signature, the
+invariant `excess = max(0, k − 4)`, the `tkeep` singleton at (lane 4, length 68) and
+locked prediction **P-1**, with no root cause: dv did not read `libs/**` and will not,
+so the mechanism is mine to establish and the `Root-cause` section below is the
+precondition for any fix verdict (charter §8).
+
+### Inputs
+
+- `agents/charters/rtl_lead.md`; `agents/PROTOCOL.md` (§3 packets, §4 entry grammar,
+  §6 write scopes, §10 independence).
+- `agents/handoffs/BUG-0001_m03-final-word-over-delivery.md` at `785bd94` — read whole,
+  including the sections I am not to touch.
+- `docs/specs/modules/xgmii_rx_64.md` (SPEC-M03, FROZEN `f78766e` + §13 rows): §6.1
+  (FCS removal by `tkeep`, the one-word lookahead, the 64-octet cycle table, the two
+  C-18 non-instances), §6.2, §7 (h = 8/12, L = 16/12, ΔC = 3, the two-cycle drain
+  derivation), §9 (the pinned strobe cycle, the sixth row, the ninth co-occurrence
+  ruling), §10's REQ-103/REQ-106/REQ-011/REQ-015 hooks.
+- `libs/hardcaml_ethernet/src/xgmii_rx_64.ml` and `.mli` at HEAD — verified identical
+  to `b190a9e`, the packet's evidence commit, by `git diff b190a9e HEAD -- libs/...`
+  (empty), so the code I read is the code that produced the signature.
+- `test/xgmii_rx_64/test_m03_c.ml` and `test/xgmii_rx_64/bench.ml` — read, not
+  written. Read to learn what the sixteen-entry table *measures*: `delivered_octets`
+  sums `tkeep` over every `tvalid` sample, `tlast_sample` takes the **first** `tvalid`
+  word carrying `tlast`, and `Cyclesim.outputs` is read with its default
+  `~clock_edge:After`. PROTOCOL §10 forbids DV deriving tests from RTL; it does not
+  forbid me reading the instrument that indicts my module, and I authored nothing
+  under `test/**`.
+- `docs/adr/ADR-0005` (CI is the only build environment) — the reason no compile
+  backs this entry.
+- Essenceia/Nasdaq-HFT-FPGA: **not consulted**, for this or anything in it.
+
+### Reasoning
+
+#### Root cause (before the fix description — charter §8)
+
+The FCS is removed by `tkeep` inside a fixed-delay two-word pipeline (§6.1), and the
+output decision has three quantities: `pc`, the registered octet count of the word
+being emitted; `nc`, the count of the aligned word behind it (REQ-019's one word of
+lookahead); and `strip`, which is 4 exactly while the *selected closure record* says
+this frame ended on a terminate character or on REQ-108's truncation. Two terminal
+branches use them. `emit_last_a` (`nc` = 0) is the FCS-wholly-inside case, and its
+guard `pc >: strip` is the thing that stops a word of nothing-but-FCS from going out
+— §9's sixth row, the sub-5-octet frame with `pc` = 4 = `strip`, is that guard's own
+instance. `emit_last_b` (0 < `nc` ≤ 4) is the straddling case: the emitted word
+delivers `pc − 4 + nc` and carries `tlast`, which is right, and it *also* establishes
+— without recording it anywhere — that every octet of the word behind it is an FCS
+octet.
+
+§9 pins each strobe to the cycle the frame's `tlast` word is emitted, so `consume`
+fires on that same `emit_last_b` cycle and clears the record. One cycle later the
+residual all-FCS word arrives at the same decision as `pc` = 1…4 with `nc` = 0, and
+`strip` is **0** — the record that would have raised it has been consumed by the very
+word that proved the residual word is FCS. `emit_last_a` then evaluates `pc >: 0`
+where it should evaluate `pc >: 4`, and emits those octets as a **second `tlast`
+word**. The guard was never wrong. It was disarmed one cycle before its instance
+arrived. The design has no statement anywhere that the pipeline may still hold a word
+after a frame's last delivered word has left, which is exactly the fact `emit_last_b`
+knows and drops.
+
+That reproduces dv's invariant as an identity rather than a fit. With `N` the octets
+between `/S/` and `/T/`, the frame's octets are contiguous from aligned position 0, so
+the last aligned word's fill is `r = ((N − 1) mod 8) + 1`. For `r` ≥ 5 the FCS is
+inside that word, `emit_last_a` takes it, nothing is left behind, excess 0. For
+`r` ≤ 4 the FCS straddles, `emit_last_b` fires one word earlier with keep `4 + r`, and
+the residual `r` octets are re-emitted: **excess = `r`**. With `D = N − 4` and dv's
+`k = ((D − 1) mod 8) + 1`, `k = r + 4` on that class and `k = r − 4` off it, so
+`excess = max(0, k − 4)` exactly, at every `N`. Lane-independent because the rotation
+window emits aligned word *m* on cycle *m* + 3 at **both** start lanes (§7's ΔC = 3 is
+one constant twice) and `r` depends on `N` alone; the terminate lane moves only *which
+cycle the record is born on*, never whether a residual word exists. Silent because
+`tuser` is `emit_tlast &: abort` with `abort` an OR over the selected record's bits,
+and every strobe is `consume &: sel_<bit>`: on the residual word's cycle the record is
+gone, so the single act that causes the extra word also removes the only channel that
+could report it. It is a REQ-015 defect as well as a REQ-103 one — two `tlast` words
+for one frame.
+
+**Why my own review missed it.** `J-rtl_lead-0002`'s self-review checked
+`keep_count`'s arithmetic against §6.1's worked 64-octet example. That example is
+`r` = 8: it takes `emit_last_a`, where no residual word exists. It is the only
+directed frame the specification works through, and it is in the passing class. The
+review question that would have caught this — *what is in `al_keep_d` on the cycle
+after each terminal branch?* — was never asked, because nothing in the module's own
+narrative says a word can survive `tlast`. No smoke sim covered it: under ADR-0005 I
+cannot run one, and M03 has never been simulated outside dv's bench.
+
+#### The `tkeep` singleton, which is not a second defect and is not in the hardware
+
+I could not reconcile the (lane 4, length 68) `tkeep` = 0x0F with the RTL by reading:
+every path I traced put the first `tlast` on the 8-octet word at both lanes. The
+resolution is the observation position. M03's `tvalid`/`tkeep`/`tlast`/`tuser` and its
+five strobes are **combinational in the current XGMII word** — at ΔC = 3 they cannot
+be anything else, since §6.1's lookahead makes output word *m*'s `tkeep` a function of
+the input word decoded on the cycle word *m* leaves. `bench.ml` reads
+`Cyclesim.outputs` with its default `~clock_edge:After` after `Cyclesim.cycle`, so the
+sample it labels `out_cycle = c + 1` is **f(registers at c + 1, XGMII word at c)** — a
+function of input words 0…c. That labelling is exactly right for a registered output
+(`word_counter`, the witness the bench cites, is one) and drops M03's age-0 closure
+record, because `a_close_*` is gated by `a_open` = `Preamble | Frame`, a **state**
+term, and a terminate character always leaves the machine in `Idle` at c + 1. `strip`
+therefore reads 0 in the sample whenever a frame's `tlast` cycle *is* its closure
+cycle — which is precisely (excess > 0) ∧ (terminate_lane = 0), one entry in sixteen,
+length 64 at lane 0 (excess 0, invisible) and length 68 at lane 4. Both columns
+deliver 68 octets: the over-delivery is real hardware at all eight failing entries and
+only the `tlast` placement is an artefact.
+
+#### The fix, and the alternatives rejected
+
+`emit_last_b` already knows the word behind it is entirely FCS. The minimal repair is
+to carry that knowledge across the one cycle `strip` cannot: a 1-bit register set by
+`emit_last_b` and gating `have_word` on the next cycle. Considered and rejected:
+
+1. **Do not consume the record on the `emit_last_b` cycle**, so `strip` survives to
+   disarm the residual word through the existing guard. Rejected: `consume` is what
+   pins the strobe, and §9 pins it to the `tlast` cycle. This trades a REQ-103 defect
+   for a REQ-008/§9 one.
+2. **Subtract the residual count from the next word's `pc`** (carry `nc` rather than a
+   boolean). Rejected as strictly more state for the same effect: the residual word's
+   `pc` *equals* the carried `nc` identically, so the comparison can only ever come
+   out one way and the boolean is the same statement without arithmetic.
+3. **Register the output stage**, which would also make the singleton observable.
+   Rejected as a spec diff, not a fix: the lookahead means the decision cannot be made
+   a cycle earlier, so registering costs one cycle on every octet and breaks §7's
+   pinned L = 16 / 12 and ΔC = 3. That is E2 material if anyone ever wants it, and
+   nobody should.
+
+The bit is exact rather than approximately right, and each clause is checkable: it
+suppresses the word whose octets were counted as `nc` (`pc(t+1) = nc(t)` identically);
+it can never suppress a new frame's word (`al_new` forces `nc` = 0 there, and
+`emit_last_b` needs `nc` ≥ 1); it cannot swallow a strobe (`consume` does not read it,
+and an age-2 record still reports on its pinned cycle); REQ-105/REQ-110/`clear`
+closures never set it (`strip` = 0 for them); REQ-108 is covered by the same bit
+through `sel_oversize`; and one control bit is not a payload level, so REQ-019's depth
+and §7's constants do not move.
+
+### Actions
+
+1. Read the packet, SPEC-M03, the module, and — to learn what the sixteen-entry table
+   measures — `test_m03_c.ml` and `bench.ml`. Wrote nothing under `test/**`.
+2. Established the root cause above by tracing the RTL against the observable, then
+   built an **ephemeral** cycle model of `xgmii_rx_64.ml` (Python, transcribed line by
+   line from the RTL, including the mongrel `~clock_edge:After` sampling) to test the
+   mechanism against all sixteen entries rather than the two I had traced by hand.
+3. Fixed `libs/hardcaml_ethernet/src/xgmii_rx_64.ml`: `fcs_tail_pending` /
+   `fcs_tail_now`, `have_word` gated, `fcs_tail_pending <== emit_last_b`, with the
+   argument in a block comment at the site. Extended the module docstring with the
+   consequence of the lookahead (BUG-0001) and a new section stating where in the
+   cycle M03's outputs live, so the next bench author does not have to rediscover it.
+4. Appended `Root cause` → `The fix` → `P-1 concordance` → `R-1` to the BUG-0001
+   packet, above dv's `Fix verdict` placeholder. No dv-authored section touched.
+5. Hand-edited **no** snapshot and **no** test; ran no `git commit`.
+
+### Evidence
+
+**Ephemeral instrument, declared as such (ADR-0003/F5).** The cycle model lives at
+`/tmp/claude-0/-home-user-agentic-fpga/681e6e34-cd2f-5f3e-a4c3-42391e4d282b/scratchpad/m03_model.py`
+(with `m03_cases.py`, `m03_trace.py`). It is **not committed, not in my write scope's
+spirit as a work product, and not re-executable from a repo checkout.** It carries no
+DoD weight (charter §3: throwaway sims are not verification). Its results are recorded
+here because they are what turned a hand-trace into a mechanism — and because every
+claim it produced is locked in the packet as a falsifiable prediction that dv's next
+run settles either way.
+
+1. **Model validation, the load-bearing one**: the model, run against the *unfixed*
+   RTL with `~clock_edge:After` sampling, reproduces dv's sixteen-entry table
+   **exactly** — all sixteen delivered counts, all sixteen `tkeep` values including
+   the 0x0F/255 singleton at (lane 4, 68), all sixteen terminate lanes, `tuser` = 0
+   and zero strobes throughout. An independently written model landing on all sixteen
+   cells is the reason I believe the mechanism rather than merely the arithmetic.
+2. Same model, *true* per-cycle semantics, unfixed: the same eight over-deliveries and
+   the same excesses, with the `tkeep` singleton **absent** — which is what identifies
+   the singleton as sampling and the over-delivery as hardware.
+3. Same model, fixed, true semantics: all sixteen correct; 1518 → 1514 octets in 190
+   words with final `tkeep` 0x03; the 5-octet runt → one word, `tkeep` 0x01,
+   `tuser` = 1, one `error_runt` at `start_cycle + 3`; lengths 5…63 → all forwarded,
+   one `tlast`, `tuser` = 1; lengths 0…4 → no output word, `error_runt` alone; the
+   1600-octet oversize → 1514 delivered, `tuser` = 1, one `error_oversize`, identical
+   fixed and unfixed; 128 back-to-back pairs (lengths 64…71 × 64…71 × four lane
+   orders) at the minimum IFG → both frames whole, two `tlast`, no strobe, where the
+   same pairs unfixed over-deliver in 96 of 128; a REQ-110 mid-frame abort → byte-
+   identical fixed and unfixed.
+4. **P-1 under the model, unfixed**: 1516 → +4 and 1513 → +1 at both lanes, in both
+   sampling modes. Recorded in the packet before dv's probe runs.
+5. `git diff b190a9e HEAD -- libs/hardcaml_ethernet/src/xgmii_rx_64.ml` → empty. This
+   one *is* reproducible from a checkout, and it is what licenses reading HEAD as the
+   code that produced the signature.
+
+**Owed by the promoting commit, and not claimed here** (ADR-0005): `opam exec -- dune
+build @default` green; `opam exec -- dune runtest` — the sixteen-entry row is expected
+to read as **R-1** predicts, fifteen PASS and (lane 4, 68) failing on an unobservable
+`tlast`, not on a delivered count; the determinism step **red** with exactly
+`rtl_snapshots/xgmii_rx_64.v` and `rtl_snapshots/eth_mac_10g.v` in the promotion block
+and `rtl_snapshots/xgmii_tx_64.v` / `rtl_snapshots/word_counter.v` unchanged, then a
+second run byte-identical (REQ-902).
+
+### Outcome
+
+BUG-0001's mechanism is established and the fix is staged-ready. Charter §5 DoD:
+frozen spec implemented with no silent deviation — REQ-103 and REQ-015 are restored,
+REQ-011's contiguity, §9's pinned strobe cycles, REQ-019's depth and §7's L = 16 / 12
+and ΔC = 3 are all untouched, and nothing was worked around; house style held (no new
+primitive, `Always` FSM untouched, one `Reg_spec`, the wire-and-assign idiom the
+module already uses for `consume`, `count`, `crc_reg`); the line-rate invariant is
+structural here and did not move (no `tready`, no new pipeline stage, one XGMII word
+accepted every cycle unconditionally). **Not met and owed by the promoting commit**:
+"compiles and elaborates hierarchically" and the double-generation byte-identity check
+— ADR-0005, no run exists at this tree. No DV sign-off claimed; `SO-xgmii_rx_64.md` is
+dv_lead's and cannot issue on my say-so. Handoff:
+`agents/handoffs/BUG-0001_m03-final-word-over-delivery.md`, four appended sections
+above the `Fix verdict` placeholder, to dv_lead via the orchestrator.
+
+### Open-questions
+
+1. **R-1 is a claim against dv's instrument and dv should get to refute it.** I predict
+   fifteen PASS and one line — `FAIL lane 4 length 68: delivered=64/64 tkeep=none/255
+   tuser=none terminate_lane=0 error_pulses=0` — and that no ΔC = 3 design can do
+   better at `~clock_edge:After`, because the sample carrying that word's payload is a
+   function of input words that exclude its terminate character. The remedy I can see
+   is dv's to weigh and dv's to make: read `Cyclesim.outputs ~clock_edge:Before` and
+   label the sample `cycle`, under which M03-C4's `start_cycle + 3` and M03-A3's
+   ΔC = 3 read as they do today. I have not touched `test/**` and will not. If dv
+   disagrees on the interface contract here, §4's route is architect_docs_lead's
+   adjudication, not my edit.
+2. **The same blind spot reaches the unwritten families D–H**, where the closing
+   character and the `tlast` word share a cycle far more often than once in sixteen —
+   every strobe consumed from an age-0 record is invisible at the current sampling
+   position. Flagged now rather than after those rows are written.
+3. **REQ-902, still owed** (carried from `J-rtl_lead-0003`, `-0004`, `-0005`,
+   `-0006`): the promoting commit cites the red determinism run that produced the two
+   snapshot diffs and the green run that proves byte-identity. I authored no snapshot
+   by hand; the promotion loop settles the drift.
+4. **Carried, unchanged**: the latent `first_v` gating on a stimulus §10 forbids (an
+   idle injected inside a frame's own preamble) — still unreachable, still recorded.
+
+### Files-in-this-commit
+
+- agents/handoffs/BUG-0001_m03-final-word-over-delivery.md
+- libs/hardcaml_ethernet/src/xgmii_rx_64.ml
