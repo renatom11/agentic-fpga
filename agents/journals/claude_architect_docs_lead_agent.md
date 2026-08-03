@@ -6210,3 +6210,261 @@ allocated for step 2 and named per §7.3.
 ### Files-in-this-commit
 
 - docs/adr/ADR-0017-a-journal-is-a-chain-not-a-file.md
+
+## [J-architect_docs_lead-0021] 2026-08-04T14:05Z | task:WO-0054 | M03-G6's strobe window RULED defined, not vacuous — the frame's last octet is the one that closed it at REQ-108's truncation, and the reading that made it look absent extended the frame past its own closure
+
+### Trigger
+
+Orchestrator dispatch, bounded spec item from dv_lead's family-G design
+(WO-0054, committed `33d3893`, packet §9.1; non-blocking, routed for the
+spec-side disposition). The gap as filed: §0.6's strobe-window upper bound names
+"the input word carrying the last octet of the offending frame", and an
+unterminated frame — dv's row **M03-G6**, a frame never closed by a terminate
+before the next start — has no such word until the next `/S/` arrives, so the
+bound is undefined for exactly the class REQ-108's resynchronisation clause
+governs. dv ruled it blocks no row (the pin is asserted exactly; the window is
+secondary), told the worker to use the widest defensible bound and state it, and
+routed the definition to me.
+
+Constraint carried in the dispatch and honoured: **if the analysis says this
+touches normative text, stop and report**, because that would owe dv_lead's
+countersignature under the freeze rules.
+
+### Inputs
+
+- `agents/handoffs/WO-0054_tb-m03-family-g-oversize.md` §3.5 (the M03-G6 row) and
+  §3.6 (the window convention and dv's ruling) — **read only, not touched**;
+  tb_writer is executing it concurrently.
+- `docs/specs/requirements.md` §0.6 in full (`:244-286`), §0.7, and the REQ-008,
+  REQ-104, REQ-105, REQ-107, REQ-108, REQ-110 rows.
+- `docs/specs/modules/xgmii_rx_64.md` §6.2's state table, §9 in full — the
+  condition table, the closure list, "Strobe cycle, pinned", the co-occurrence
+  rulings — §10's REQ-105 and REQ-108 hooks, §11, §12, §13.
+- **The two prior C-5 sites, read rather than assumed to match**:
+  `docs/specs/modules/xgmii_tx_64.md` §11.3 (`error_underflow`) and
+  `docs/specs/modules/arp_eth_rx.md` `:652-665` (a frame with no payload).
+- Sweep across `docs/specs/**` for every restatement of the §0.6 window and of
+  "offending frame".
+
+**Not read**: no RTL, no `test/**`, nothing under `/workspace/**`. I did not open
+the family-G bench work in flight.
+
+### Reasoning
+
+**1. The first thing I checked was whether this was already on the ledger, and it
+is — but not this case.** `grep` for "offending" across the specs returns three
+sites, and two of them are **carry-forward C-5**: SPEC-M12 §11.3 records that
+§0.6's bound "is not defined for a frame that never receives that octet"
+(`error_underflow`), and SPEC-M09 §9 records "the same vacuity" for a frame with
+no payload. C-5 is **mine**, deferred, and its recorded disposition is that "the
+editorial repair to §0.6 lands at any convenient work order". So the reflex
+answer was available and cheap: call M03-G6 a third instance of C-5 and do the
+§0.6 repair now that a third site has appeared.
+
+**I checked the two sites instead of matching on the phrase, and they are a
+different defect.** C-5's instances are genuine **vacuity**: the referent does
+not exist *at all*. An underflowing frame never receives its last octet; a
+payload-less frame has no input word carrying one. There is nothing to measure
+from, ever, under any reading. M03-G6 is not that. The frame **does** have a last
+octet — it is simply early, at the truncation point — and the phrase looks
+undefined only under a reading that extends the frame to the next start
+character. Filing it as C-5 would have been the WO-0049 error in miniature: a
+generalisation over a table of two, asserted because the vocabulary matched.
+
+**2. The specification had already decided it, and §9's own rationale is the
+proof.** §9's closure list: a frame is open from its start character *until the
+earliest of* its terminate character, an error character, a new start character,
+**REQ-108's truncation on the cycle the received count passes 1518**, or `clear`.
+Truncation is a closure event. §9's third row and carry-forward **C-12** then
+hold that characters arriving after closure belong to no frame and pulse
+nothing — which is only coherent if those octets are not the frame's.
+
+The decisive sentence is one §9 already contains, immediately after the closure
+list: the list exists so that *"each frame's report is a function of the frame
+rather than of the characters that happen to follow it"*. dv's "widest defensible
+bound" — the octet before the next start character — makes the window a function
+of **exactly** the characters that happen to follow the frame. The reading the
+packet reached for is the one this paragraph was written to exclude, and it was
+written to exclude it for §0.6's own conservation equation.
+
+So the ruling is not a new constraint. The reference word is the input word on
+which REQ-108's truncation closed the frame: fixed at the truncation cycle,
+computable from the frame alone, independent of when the next `/S/` arrives. The
+next start character fixes when the module may **resynchronise**; it does not
+extend the frame it follows.
+
+**3. This is why nothing normative moves, and I tested that claim rather than
+asserting it.** The dispatch's stop condition was real, so I checked what a
+conformant implementation could do before and after. Before: an implementation
+whose `error_oversize` pulsed very late was, on the packet's reading,
+unconstrained until the next `/S/` — but only if you grant that reading, and §9's
+closure list does not grant it. On the specification's own text the frame closed
+at truncation and the pin ("on the cycle M03 emits that frame's `tlast` word")
+already fixed the cycle **exactly**. The window never was the operative
+constraint here; the pin is, and the pin is untouched. **No conformant design
+changes, no commissioned row changes, and requirements.md is not opened.** This
+is C-18's shape for the fifth time in this specification — a rule never in doubt,
+left unstated at the one site that needed it.
+
+**4. I deliberately did not repair §0.6, and that is the load-bearing scope
+decision.** Amending §0.6 would be a **programme-wide normative change**: §0.6 is
+marked normative, it binds every module, and a general statement about what "the
+offending frame" extends to would reach modules whose specs carry no closure
+list. That owes dv_lead's countersignature under the freeze rules, which is
+precisely the dispatch's stop condition — and, more to the point, **it is not
+needed to decide this case**. M03's own closure list decides it for M03. So the
+ruling lands at module scope, where the text that resolves it already lives, and
+C-5 stays open with both its instances untouched and its §0.6 repair still owed.
+A wider ruling would have been cheap to write and expensive to be wrong about.
+
+**5. What I refused to settle, because settling it would have been the normative
+change I just declined.** §0.6 says "last octet" without saying **received** or
+**delivered**, and the two differ here — §9's seventh row delivers 1514 of what
+it received — and differ on *every* terminated frame by the stripped FCS. It
+would have been easy to pick one while I was in the paragraph. I did not: that
+question is programme-wide, it is requirements.md's, and it is orthogonal to the
+gap dv raised. My ruling fixes the reference **point** (the frame's closure)
+under whichever convention §0.6 is later read to use, and the paragraph says so
+explicitly so that no one reads this as having decided it.
+
+**6. The cascade sweep returned clean, and the reason is structural rather than
+lucky.** WO-0048's discipline says sweep for restatements when §-text moves. I
+swept `docs/specs/**` for §0.6-window restatements: seven module sites plus
+requirements.md's REQ-008 and REQ-104 verification columns. **None is made stale**,
+because I changed no rule — I stated one. Two sites are worth naming as checked
+rather than skipped: §10's REQ-108 hook already commissions "no strobe of any
+kind between the truncation point and the next start character", which is the
+same closure reading and now has its window stated to match; and §6.2's `Frame`
+row already takes `Discard` "when the received count passes 1518", which is the
+closure event this ruling measures from.
+
+### Actions
+
+One file: `docs/specs/modules/xgmii_rx_64.md`.
+
+- **§9, after "Strobe cycle, pinned"** — three paragraphs, placed where SPEC-M09
+  §9 places the same kind of note: (a) the reference word for a frame no
+  terminate character closes is the input word on which REQ-108's truncation
+  closed it, with the derivation from the closure list and the "function of the
+  frame, not of what follows it" argument; (b) **why this is not C-5** — C-5's
+  two sites are vacuities with no referent, this one has a referent that is
+  merely early, and C-5 stays open; (c) the received-versus-delivered question
+  **explicitly left undecided** as programme-wide.
+- **§13** — a change-log row dated 2026-08-04, `Breaking? no`, `ADR: none`,
+  citing dv's row M03-G6 and `WO-0054` §9.1, stating that the specification had
+  already decided it, that the bound is **tighter** than the fallback the packet
+  authorises, and that requirements.md §0.6 is deliberately **not** amended.
+
+Not touched: `docs/specs/requirements.md`; `agents/handoffs/WO-0054_…md` and
+`test/**` (tb_writer is executing them); SPEC-M12 §11.3 and SPEC-M09 §9 (C-5's
+sites, untouched by design); every other module spec. No git commands.
+
+### Evidence
+
+Reproducible from a checkout at this commit's SHA.
+
+1. **C-5 exists and is mine**: `grep -rn "offending" docs/specs/ --include=*.md`
+   → three sites — `requirements.md:265` (the §0.6 sentence itself),
+   `modules/xgmii_tx_64.md:567` (C-5, `error_underflow`, owner
+   `architect_docs_lead`, closes-by "any"), and `modules/arp_eth_rx.md:662`
+   ("the same vacuity carry-forward **C-5** records"). The third is M03's, added
+   by this commit.
+2. **The two C-5 sites are vacuities, read not matched**: SPEC-M12 §11.3 —
+   *"not defined for a frame that never receives that octet"*; SPEC-M09
+   `:660-665` — *"a frame with no payload has no 'input word carrying the last
+   octet of the offending frame' for the window to be measured from"*. Neither
+   has a referent under any reading; M03-G6's exists at the truncation point.
+3. **The closure list makes truncation a closure event**: `xgmii_rx_64.md` §9,
+   *"until the earliest of: its terminate character (REQ-106); an error character
+   …; a new start character (REQ-110); REQ-108's truncation, on the cycle the
+   received count passes 1518; or `clear`"*. Corroborated at §6.2's `Frame` row
+   (`Discard` when the received count passes 1518) and §9's third row plus C-12
+   (characters after closure pulse nothing).
+4. **§9's own rationale is the argument**, quoted verbatim in the new paragraph:
+   the list exists so that each frame's report is *"a function of the frame rather
+   than of the characters that happen to follow it"*.
+5. **The pin, not the window, is what constrains here**: §9's "Strobe cycle,
+   pinned" — *"on the cycle M03 emits that frame's `tlast` word"* — is untouched
+   by this commit, which is why no conformant design moves. dv reached the same
+   conclusion independently at `WO-0054` §3.6 ("the window is a *secondary*
+   bound").
+6. **Cascade sweep**:
+   `grep -rn "0\.6" docs/specs/ --include=*.md | grep -i "window\|last octet"` →
+   `axi64.md:486`, `ip_eth_rx_64.md:932`, `xgmii_tx_64.md:501` and `:567`,
+   `arp_eth_rx.md:660`, `eth_demux.md:457`, `udp_ip_rx_64.md:781`,
+   `eth_axis_rx.md:521`, `xgmii_rx_64.md:509` and `:788`, plus
+   `requirements.md:330` (REQ-008) and `:422` (REQ-104). **All generic
+   "lies inside §0.6's window" statements; none restates the bound's reference
+   point, so none is made stale.**
+7. **Scope check**: `git`-free confirmation that only one file under my lane
+   changed — `docs/specs/modules/xgmii_rx_64.md` gains the §9 paragraphs
+   (`grep -c "M03-G6"` → 2, one in §9 and one in §13) and one §13 row
+   (`grep -c "2026-08-04"` → 1). `docs/specs/requirements.md` is byte-unchanged
+   (`grep -c "C-5\*\*: requirements.md" modules/xgmii_tx_64.md` → 1, unchanged).
+8. **CI is neither owed nor claimed.** One markdown file plus this journal; no
+   OCaml, no workflow, no script, no interface record — §4's records are
+   byte-unchanged, so §12's `ifc_check` evidence still witnesses this revision.
+
+### Outcome
+
+**DoD met. Ruled in-role, no normative text moved, no countersignature owed.**
+
+- **The ruling**: §0.6's reference word for an M03-G6 frame is the input word on
+  which REQ-108's truncation closed it — fixed at that cycle, computable from the
+  frame alone, independent of the next start character.
+- **Not C-5**: that ledger item records vacuities with no referent; this one has a
+  referent. C-5 stays open, both instances untouched, its §0.6 repair still owed.
+- **Nothing normative moved**: requirements.md is unopened, §9's pin and §4's
+  records are byte-unchanged, and the bound stated is tighter than the one the
+  packet authorises — so it forbids nothing a conformant design was doing.
+- **Left undecided on purpose**: received-versus-delivered, as programme-wide.
+
+**Handoff**: orchestrator, for commit under `Agent: architect_docs_lead`,
+`Work-Order: WO-0054`; and the relay note below for tb_writer, which is in flight.
+
+### Open-questions
+
+- **The in-flight worker instruction is NOT invalidated, and needs no bounce.**
+  `WO-0054` §3.6 told the worker to use the widest defensible upper bound and
+  state which it used. That bound is **looser** than the one ruled here, and dv's
+  own ground holds — the exact pin carries the assertion, and a wider secondary
+  window admits nothing the pin would let through. So the row stays correct as
+  built; it is merely weaker on the secondary bound than the specification now
+  permits. **Reconciles at review**, exactly as the dispatch anticipated: dv may
+  tighten G6's window check to the truncation word if it wants the stronger
+  assertion, and nothing forces it to.
+- **C-5's §0.6 repair is still owed and now has a third data point** — not a
+  third instance. When it lands it should state the vacuity case (no referent)
+  and this case (referent at closure) as *different* dispositions, or it will
+  re-merge what this ruling separated. It remains "closes by: any", and I would
+  now do it at whichever work order next opens requirements.md §0.6 for its own
+  reasons, since it owes dv_lead's countersignature as a normative change.
+- **The received-versus-delivered reading of "last octet"** is undecided
+  programme-wide (§0.6). It bites hardest where the two differ most — M03's
+  oversize case (1514 delivered of ≥ 1519 received) and every terminated frame's
+  stripped FCS (4 octets). Named here so the next reader of §0.6 does not assume
+  this ruling settled it.
+- Carried unchanged from `J-architect_docs_lead-0020`: ADR-0017's §8 PROTOCOL
+  diffs unapplied and needing the ADR-0016 §8 transcription mechanic at step 2;
+  PROTOCOL §11 not yet describing that mechanic; PROTOCOL §5's CI paragraph
+  saying "R1–R8" while `check_journals.sh:40-54` also checks R9; `R-SEAL-2`
+  drafted and unproposed; ADR-0016 §7.2's immutability question, now partly
+  answered for frozen volumes and not at all for the active one; the
+  `docs/gates/P1-spec-freeze-checklist.md` ledger **C-7** ordinal;
+  `agents/journals/INDEX.md` stale at `J-orchestrator-0012`; the three handoff
+  packets restating "four classes"; M03 having no §11 item tracking REQ-901
+  (e)/(f) to the first co-simulation run; REQ-901's configuration clause naming
+  three transmit-only parameters; the reference's disposition of a sub-5-octet
+  frame; dv's endorsed question that the (e)/(f) reading should run over every
+  error class families E–H assert before Phase 3 is scoped; R-CI-4's
+  gate-removal owner; the M03 RTL non-conformance against §9 ruling 9; §6.1 item
+  4 unscoped; §9's "Aborted-and-forwarded" paragraph out of table order;
+  `tools/precompile_stubs/ifc_check.ml`'s stale note; **C-45**, C-36, ADR-0012's
+  residual, REQ-007's scoping clause at two modules, C-38, requirements.md's
+  `DRAFT` header against its §13's frozen treatment, C-2, C-3, C-5, C-7, C-9's
+  REQ-903 half, C-32, C-33, C-44; and the two re-countersignatures and one
+  concurrence owed at `J-architect_docs_lead-0013`'s SHA.
+
+### Files-in-this-commit
+
+- docs/specs/modules/xgmii_rx_64.md
