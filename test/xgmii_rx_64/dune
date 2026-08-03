@@ -14,6 +14,7 @@
 ;            E5 ASSERT, folded in but living beside its own family in
 ;            test_m03_e.ml, not here (four ASSERT + one citation + one ASSERT)
 ;   WO-0054  G1-G4, G6 ASSERT, G5 declared  (five ASSERT + one declared)
+;   WO-0056  G7, G8 ASSERT (first-epoch repair, RV-0056-VERDICT ACCEPT) (two)
 ; When a packet adds rows, add its line. When one does not, this comment
 ; is wrong and a reader has no way to tell — this file's own header found
 ; that exact staleness (E and F both missing) before WO-0054's own line was

@@ -3507,3 +3507,281 @@ beyond-my-own-WO addition, not a silent scope change.
 - test/xgmii_rx_64/test_m03_g.ml
 - test/xgmii_rx_64/dune
 - agents/handoffs/WO-0054_tb-m03-family-g-oversize.md
+
+---
+
+## [J-tb_writer-0014] 2026-08-03T22:40Z | task:WO-0056 | The epoch family G never drove — M03-G7/G8, and the mid-frame trap M03-G3/G4 taught me to avoid
+
+### Trigger
+
+`WO-0056/2026-08-03T21:20Z` (dv_lead, via the orchestrator): a repair packet
+against `RV-0055-VERDICT` FINDING G-2 — the WO-0055 mutation `g-c4` survived
+all twenty-five units because REQ-108's window has TWO epochs (truncation
+point to the oversize frame's OWN terminate character, then that terminate to
+the next start character) and no row before this packet ever drove a
+character into the FIRST one. Two new attack-plan rows, M03-G7 (a `/S/`
+strictly inside the first epoch, ASSERT) and M03-G8 (an `/E/` in the same
+epoch, ASSERT), landed at `AP-xgmii_rx_64.md` §4.G ahead of this spawn (`§7`
+of the packet: "the rows govern jointly with the packet on any difference").
+One new bar this round: `docs/reports/audit/**` out of bounds at every
+revision and every git subcommand — the mutation diff this repair is
+re-qualified against lives there and a row written against it "is worth
+nothing" (`WO-0056` §5's own words).
+
+### Inputs
+
+`agents/charters/tb_writer.md`; `agents/PROTOCOL.md` §2–6 and §10 (read in
+full); `agents/handoffs/WO-0056_m03-g-discard-window-repair.md` in full (all
+eight sections, plus my own Return log appended this spawn). `docs/specs/
+modules/xgmii_rx_64.md` in full (all 13 sections — §6.1's preamble/emission
+rules, §6.2's state table including the `Discard` row's own `/S/`/`/E/`
+exits, §6.3 items 3/6/8, §7's "Strobe cycle, pinned" section including the
+2026-08-04 truncation-closure paragraphs, §9's full table and its
+sixth/seventh co-occurrence rulings and closure list, §10's REQ-108 hook).
+`docs/specs/requirements.md` §0.5, §0.6, §0.7, §1 (REQ-001…021, full text),
+§2 (REQ-101…113, full text) — REQ-101's start-lane rule, REQ-105's closure
+clause, REQ-106, REQ-107, REQ-108's own sentence (quoted in the packet and
+re-read here at source), REQ-110, all cited inline. `test/attack_plans/
+AP-xgmii_rx_64.md` §0–3 (format, standing obligations, stimulus legality),
+§4.G in full including the family note and rows M03-G1 through M03-G8
+verbatim (G7/G8 are the packet's own canonical text per its own citation
+rule). `test/xgmii_rx_64/test_m03_g.ml` in full before editing (all six
+existing rows and the module docstring, WO-0054's own work). `test/xgmii/
+injection.ml`/`.mli` — read again in full this round, not assumed unchanged
+from the WO-0054 reading, specifically for `create`'s `At_octet` legality
+arithmetic (`injection.ml:159-178`) and the `outcomes` reference-model
+function (`injection.ml:284-446`), which this packet uses directly for the
+first time (WO-0054's rows read this file but built without it). `test/
+xgmii/arrival.mli`, `test/xgmii_rx_64/bench.mli` (`run`'s `?word_at` hook,
+`account_clean_frame`, `frames_at`, `directed_frame_octets`). `test/monitors/
+strobe_monitor.mli`, `test/monitors/conservation_monitor.mli`, `test/
+monitors/octet_time.mli` and `test/monitors/octet_time.ml` (the `Latency`
+module's own implementation — read past the `.mli` this round specifically
+to confirm `frame_dropped` does not inspect its popped array's content,
+which is what makes a hand-built `in_times` array safe to feed it).
+`test/xgmii_rx_64/test_m03_e.ml` and `test_m03_f.ml` (the `fail_cross` idiom
+and `account_dropped_frame`'s exact shape, both reused/generalised here).
+`test/xgmii_rx_64/test_m03_c.ml` (`run_c3`, unread reference already cited
+by the file I extended). Prior packet read for precedent: `agents/handoffs/
+WO-0054_tb-m03-family-g-oversize.md` in full, including its own RETURNED
+block (the Return-log format and the M03-G3/G4 "considered and rejected"
+section this packet's own construction argument extends). This journal's own
+header and my prior entries (confirmed next id 0014). **Not read, by
+charter/packet bar**: any path under `docs/reports/audit/**`, at any
+revision or git subcommand; `agents/handoffs/
+WO-0055_family-g-mutation-campaign-SEALED-predictions.md` (a `*SEALED*` file)
+and, out of caution, its non-sealed sibling `WO-0055_family-g-mutation-
+campaign.md` (adjacent to the mutation material, not needed — `RV-0055-
+VERDICT`'s own text is quoted in full inside `WO-0056` §1 and that quotation
+is what I cite); `scripts/**` (concurrently under the orchestrator's own
+work — the committed scripts were only run, never read as a diff). No path
+under `libs/**`, `top/**`, `bin/**` or `rtl_snapshots/**` was opened,
+targeted or swept, at any point in this spawn.
+
+### Reasoning
+
+**The corrected finding, and why it is sharper than the packet's own first
+wording of it.** `WO-0056` §1 itself corrects `RV-0055-VERDICT`'s claim that
+M03-G3/G4 place their characters "outside" REQ-108's window — they are
+inside it, in the window's SECOND epoch (the frame's own terminate to the
+next start character). The gap is narrower and more specific: no row before
+this packet drove a character into the FIRST epoch (truncation point to the
+frame's own terminate). I did not need to re-litigate this — the packet's
+own correction is itself the derivation, cited from REQ-108's sentence and
+§9's closure list, and I traced it against the spec text myself before
+trusting it (§9's closure list: a frame is open until the earliest of its
+terminate, an error character, a new start character, REQ-108's truncation,
+or `clear` — REQ-108's truncation closes the frame at content 1518, and its
+own terminate character, wherever it physically sits, is decoded AFTER that
+closure and is therefore inside the window REQ-108's sentence describes,
+confirming the two-epoch reading independently of the packet's own prose).
+
+**Why `Injection` is the right tool here where M03-G3/G4 rejected it — the
+single fact that makes this packet's construction different from its own
+sibling rows.** M03-G3/G4's target lay 100 octets PAST the truncation point —
+outside the 1600-element array `directed_frame_octets ~length:1600` builds —
+which is exactly why `At_octet`'s own bound check (`k < Array.length
+octets`) refused it and WO-0054 built a second, separately-scheduled frame
+instead. The first epoch's interval, 1518…1599, lies STRICTLY INSIDE that
+same array. I checked this arithmetically before choosing a construction
+route, not by pattern-matching M03-G3/G4's own choice: `At_octet 1588` and
+`At_octet 1560` are both well inside `0 <= k < 1600`, so `Injection.create`
+needed no extension and no second schedule. This is the inverse of WO-0054's
+own finding at the SAME boundary (`At_octet` requires an in-bounds index) —
+the boundary that refused M03-G3/G4's construction is exactly what
+authorises this one, and I state that contrast in the file's own docstring
+rather than let a reader assume family G always avoids `Injection` for the
+same reason twice.
+
+**The k = 1588 derivation — checked, not trusted, and checked three separate
+times in the committed code.** `WO-0056` §2 offers `k = 1588` explicitly "as
+a derivation to CHECK, not an instruction." I reduced `Injection`'s own
+`At_octet` legality test (which operates on the OCTET TIME `f.start_octet_
+time + 8 + k`, not on `k` directly — a distinction I had to get right, since
+checking `k mod 8` and checking `octet_time mod 8` are checking different
+things that happen to coincide here) to `k mod 8 ∈ {0, 4}` at BOTH lanes,
+using the same "preamble is a multiple of 8" argument `run_g3`'s own
+construction note already used for `/S/` lane-independence, and confirmed
+`1588 mod 8 = 4` satisfies it. I then wrote that reduction as THREE live
+guards in `run_g7` (an interval guard on `k`, a lane guard on `k`, and an
+independent lane/interval guard on the actual `inject_ot` the schedule
+computes) rather than one, and cross-checked the arithmetic a fourth way with
+a standalone Python calculation outside the repository (arithmetic only, no
+RTL, not committed) before writing the Return log's own evidence section —
+recorded there in full so dv_lead does not have to re-derive it to check my
+claim.
+
+**M03-G7's resynchronised-frame disposition, and why §2.1's RULING
+contingency never fired.** REQ-108 resynchronises on the injected `/S/`; the
+new frame's content runs from `k + 8` through 1599 and then reaches the SAME
+PHYSICAL terminate character that closes the original 1600-octet frame — a
+fact about REQ-106 (a terminate character's frame is whichever frame is open
+when it arrives), not an assumption. `1592 - k = 4` octets, inside REQ-107's
+fewer-than-5 band, which SPEC-M03 §9's row 6 already governs and
+`test_m03_f.ml`'s own M03-F2 already benches and `RV-0050-VERDICT` already
+mutation-qualifies — I did not need to invent a disposition for an
+unfamiliar class, only to show this specific instance lands in an
+already-derived one. This was fully derivable from REQ-106/REQ-107 and §9's
+own table, so the packet's own contingency (convert ASSERT → RULING, let
+M03-G8 carry the repair alone) never triggered; I record in the Return log
+that it did not fire and why, rather than silently building the ASSERT row
+and leaving the packet's own named contingency unaddressed.
+
+**The `fail_cross` idiom, used correctly this time as a REPORTED check, not
+a derivation.** WO-0056 §5 is explicit that `Injection.outcomes` may be used
+only as a reported cross-check (the `test_m03_e.ml`/`test_m03_f.ml` idiom),
+never as the source of an expected value. I registered every
+`Strobe_monitor.expect` event from my OWN hand-derived cycles and windows
+FIRST, and only THEN pattern-matched `Injection.outcomes inj` against those
+same hand-derived numbers via `fail_cross` — so the ordering in the committed
+code, not just the prose, keeps the derivation and the cross-check in the
+right relationship. I traced the model's own `outcomes` loop by hand
+(`injection.ml:284-446`) to predict it would report exactly THREE frames for
+M03-G7 (the oversize truncation, the resynchronised runt, the following
+ordinary frame — frames are numbered in the order the RECEIVER opens them,
+per the model's own docstring, not the catalogue's declared order) and
+exactly TWO for M03-G8 (the injected `/E/` opens nothing, absorbed in
+`Discard`, so it has no outcome entry at all) — and wrote the `fail_cross`
+match arms against those exact counts before knowing whether they would ever
+run (no Hardcaml toolchain in this container to actually execute either
+side).
+
+**A structural mistake I made and caught before this Return, worth recording
+because it is the failure mode a syntax-only checker cannot see reliably.**
+My first pass at the module docstring extension accidentally left a `{2
+Independence}` heading and its body sitting as bare text between two `let`
+bindings — outside any comment — because an `old_string`/`new_string` edit I
+made split the original docstring's closing `*)` away from its own
+"Independence" section while inserting new code in between. `ocamlc
+-stop-after parsing` did NOT catch this on the FIRST attempt in the sense of
+telling me exactly what was wrong from the error alone; I caught it by
+re-reading the file's own structure (Read, not just re-running the checker)
+before ever running the checker again, found the orphaned heading text
+sitting where `open! Base` should have been, and rebuilt the docstring as one
+continuous comment ending immediately before the code, moving `fail_cross`
+and `account_resync_runt_frame` to sit after `open! Base`/`open Bench`/`let
+fail`, where they can actually reference `String.concat`/`Dv_monitors`/
+`conservation`/`latency`. `ocamlc -stop-after parsing` passed cleanly only
+AFTER this repair. Flagged here because it is exactly the class of
+self-inflicted defect a large multi-part `Edit` risks and a "parses cleanly"
+result alone does not fully vouch for the STRUCTURE being what I intended,
+only that SOME valid structure resulted.
+
+### Actions
+
+Edited `test/xgmii_rx_64/test_m03_g.ml`: updated the module docstring's
+opening summary (six rows → eight) and added three new subsections (the
+epoch/`Injection` construction argument, the `k = 1588` derivation, M03-G7's
+disposition derivation, the `fail_cross` idiom note, M03-G8's simpler
+construction) ahead of a revised "Independence" section naming this round's
+additional reading and the new bars honoured; added `fail_cross` (after
+`fail`) and `account_resync_runt_frame` (after `split_at_first_tlast`, a
+generalisation of `test_m03_e.ml`'s/`test_m03_f.ml`'s own `account_dropped_
+frame` that takes a hand-built `in_times` array rather than an
+`Dv_xgmii.Arrival.frame` record, since the resynchronised frame the
+stimulus opens mid-array has no such record); appended `run_g7` and
+`run_g8` with their `%expect_test` blocks. Appended the Return log to
+`agents/handoffs/WO-0056_m03-g-discard-window-repair.md`. Initially did NOT
+touch `test/xgmii_rx_64/dune`, despite finding its standing per-packet header
+comment stale again (no line for this packet) — the packet's own
+"Deliverables" line narrows scope to `test_m03_g.ml` alone, and I read that
+as deliberate; reported, not fixed, in the Return log per the packet's own
+item 6. No file under `libs/**`/`rtl_snapshots/**`/`top/**`/`bin/**` was
+opened to write any of this.
+
+**Amended after `RV-0056-VERDICT` (ACCEPT) §8 ruled the header repair rides
+with this landing since my files were still uncommitted**: added the
+`WO-0056` line to `test/xgmii_rx_64/dune`'s header comment, matching the
+WO-0054 convention, and folded that file into this entry's own
+`Files-in-this-commit`.
+
+### Evidence
+
+All commands run from a repo checkout at this SHA.
+
+- `ocamlc -stop-after parsing test/xgmii_rx_64/test_m03_g.ml`: exit 0, run
+  after the initial draft (which had the structural mistake above — the
+  checker passed on it too, since the resulting token stream still parsed
+  as SOME sequence of top-level items, just not the one I intended, which is
+  the whole point of flagging it in Reasoning), and again after the repair —
+  unchanged exit 0, syntax only (ADR-0005).
+- `bash tools/precompile_check.sh`: `precompile_check: ALL LANES PASSED`;
+  `test/xgmii_rx_64` still `EXCLUDED — depends on hardcaml_ethernet`,
+  unaffected; `dv_golden`/`dv_monitors`/`dv_xgmii` (31 units) and
+  `dv_axi64_probe`/`dv_xgmii_probe` (12 units) unchanged, 0 errors.
+- `bash tools/dv_checks.sh`: `check_records_vs_appendix.sh` 23/23 PASS;
+  `check_emitted_verilog.sh` 5/5 PASS, 3 PENDING (pre-existing, not M03);
+  bench inventory shows `test_m03_g.ml` at **7** units (was 5), M03 total
+  **27**; `check_rfc1071_anchor.sh` OBLIGATION OPEN on blocked egress —
+  pre-existing (`J-dv_lead-0017/0018`), unrelated to M03 or this packet.
+- `git status --porcelain`: exactly `test/xgmii_rx_64/test_m03_g.ml`
+  (modified) and `agents/handoffs/WO-0056_m03-g-discard-window-repair.md`
+  (modified, the Return log) before this journal entry was staged.
+  `git diff --exit-code -- . ':!test/xgmii_rx_64/test_m03_g.ml'`: exit 0 —
+  nothing else in the tree differs from HEAD.
+- `(eval $(opam env); dune build @default)`: FAILED, `Library
+  "ppx_hardcaml"`/`"hardcaml"` not found — confirmed-absent toolchain, run
+  to record the fact for this spawn rather than assumed from the last one.
+  `dune runtest`: not run, same reason; both new `[%expect]` blocks are
+  `{||}`, empty — no snapshot was hand-authored or promoted.
+- Standalone Python arithmetic (not committed, no RTL, integer arithmetic
+  only) cross-checking the `k`-legality reduction and the resynchronised-
+  frame numbers at both start lanes: quoted in full in the WO-0056 Return
+  log, item 1.
+
+### Outcome
+
+DoD against `WO-0056`: both new rows (M03-G7, M03-G8) map to named tests,
+built, both ASSERT, both driven at both start lanes; all six of §8's
+deliverables answered in the Return log. `dune build`/`dune runtest`:
+unverified locally, confirmed-absent toolchain, CI is authoritative — and
+the DUT-side re-qualification against the committed `g-c4` diff (WO-0056
+§6) is explicitly the orchestrator's step, not observable from this
+container regardless of toolchain. Journal Inputs lists no `libs/**`/
+`top/**`/`bin/**`/`rtl_snapshots/**` path, and no path under `docs/reports/
+audit/**` and no `*SEALED*` file, targeted or opened, at any point.
+Diff scope: `test/xgmii_rx_64/test_m03_g.ml` only, plus this journal entry
+and the WO-0056 Return log — nothing else, matching the packet's own
+narrowed deliverable list exactly.
+
+Handoff: a RETURNED block appended to `agents/handoffs/
+WO-0056_m03-g-discard-window-repair.md`'s Return log. State left at
+`ISSUED` per the packet's own instruction — dv_lead's `RV-` and the
+orchestrator's transcription do the state flip, not me.
+
+### Open-questions
+
+None. §2.1's contingency question (whether M03-G7's second-frame disposition
+would prove underivable) is answered in the Return log item 2: it did not —
+the disposition derives cleanly from REQ-106/REQ-107 and §9's own table, so
+M03-G7 stays ASSERT and no question is being returned. One item for
+dv_lead's own judgment, not a question needing an answer before this round
+can be judged: whether `test/xgmii_rx_64/dune`'s renewed staleness (no line
+for this packet) should be repaired here or in a separate packet — disclosed
+in the Return log as found-but-not-fixed, per the packet's own item 6 and
+its own narrower "Deliverables" scope.
+
+### Files-in-this-commit
+- test/xgmii_rx_64/test_m03_g.ml
+- test/xgmii_rx_64/dune
+- agents/handoffs/WO-0056_m03-g-discard-window-repair.md
