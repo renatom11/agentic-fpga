@@ -310,17 +310,6 @@ index = head_block('agentic-fpga — a trading network card built by an AI org',
   a stock exchange&rsquo;s data feed and tracks the order book in hardware, written in
   Hardcaml by a hierarchy of AI agents under a human sponsor who sets vision and
   direction, giving the final sign off at each stage of the project.</p>
-  <p class="sub">The architect agent wrote the specification — 110 requirements,
-  tracing to 20 modules.<br>
-  The hardware design agent wrote the modules and repairs what verification
-  convicts.<br>
-  The verification agent wrote the comprehensive test plans and reviews every
-  test line by line.<br>
-  The auditor agent, blinded to the tests, seeds defects into the design; the
-  tests must catch them, with expected results sealed before the defects exist.<br>
-  The orchestrator agent routes the work and makes every commit.</p>
-  <p class="sub">Everything tracked in GitHub, with each commit carrying its
-  author&rsquo;s work history and full reasoning for everything it did and why.</p>
   <div class="cadence" title="A new minimum-size packet every 67.2 nanoseconds — slowed down exactly 20,000,000× so you can watch it"></div>
   {CAD_CAPTION}
 
@@ -340,7 +329,20 @@ index = head_block('agentic-fpga — a trading network card built by an AI org',
       itself is carried out by an organization of AI agents working under his
       direction and under strict written rules: an architect, a hardware
       designer, a verification lead, and an independent auditor, coordinated
-      by an orchestrator. None of it exists without that direction — the
+      by an orchestrator.</p>
+      <p>The architect agent wrote the specification — 110 requirements,
+      tracing to 20 modules.<br>
+      The hardware design agent wrote the modules and repairs what
+      verification convicts.<br>
+      The verification agent wrote the comprehensive test plans and reviews
+      every test line by line.<br>
+      The auditor agent, blinded to the tests, seeds defects into the design;
+      the tests must catch them, with expected results sealed before the
+      defects exist.<br>
+      The orchestrator agent routes the work and makes every commit.</p>
+      <p>Everything tracked in GitHub, with each commit carrying its
+      author&rsquo;s work history and full reasoning for everything it did and
+      why. None of it exists without that direction — the
       agents execute; the sponsor decides. And the rules have teeth: more than
       once, an agent refused to sign off another agent’s work until it was
       repaired; once, the verification lead rejected its own manager’s defect

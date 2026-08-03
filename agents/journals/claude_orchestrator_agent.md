@@ -5951,3 +5951,42 @@ None.
 - site/public/index.html
 - site/public/org-chart.html
 - site/public/spec-atlas.html
+
+## [J-orchestrator-0135] 2026-08-03T17:30:00Z | task:none | Agent lines moved from hero into Project details per sponsor
+
+### Trigger
+Sponsor: the five agent lines + GitHub closing move out of the
+hero into Project details, after the twist paragraph's role list;
+the hero keeps only the intro sentence, which he is happy with.
+
+### Inputs
+His message; the twist paragraph at build.py:337.
+
+### Reasoning
+Seam chosen: the twist paragraph now ends at "coordinated by an
+orchestrator." — its enumeration of roles leads directly into the
+five per-agent lines; the GitHub sentence then opens the closing
+paragraph, flowing into the existing "None of it exists without
+that direction… the rules have teeth" text unchanged. Clean-
+worktree rebuild (three agents in flight).
+
+### Actions
+Two edits; rebuild; this commit; push.
+
+### Evidence
+Regenerated index.html carries the block in Project details and
+the single-sentence hero.
+
+### Outcome / DoD
+Hero = intro sentence only; role detail lives in Project details.
+
+### Open questions
+None.
+
+### Files-in-this-commit
+- site/build.py
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/index.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html
