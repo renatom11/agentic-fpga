@@ -47,8 +47,8 @@
   specifications exist and every requirement they own names one. Four rows
   deliberately name a *process* document instead of a module spec — REQ-902
   (the CI determinism step), REQ-904 (this file and its script), REQ-906
-  (ADR-0005) and REQ-901 (requirements.md's own class list, with the four
-  classes' module homes named) — because no module specification fixes them and
+  (ADR-0005) and REQ-901 (requirements.md's own class list, with each class's
+  module home named) — because no module specification fixes them and
   none should: they are obligations on the programme, and pointing a
   process requirement at a module spec would be a false claim of coverage.
 - **REQ set equality survives spec diffs, and that is checked rather than
@@ -236,7 +236,7 @@ or withdrawn; ids remain permanent.
 | REQ-808 | PROC | Hierarchy and naming | M20 `Nic_top` | SPEC-M05 §4.1, §6.1; SPEC-M20 §4.1, §6.1, §10 (the root the module-name comparison walks) | | OPEN |
 | REQ-809 | FUNC | End-to-end datagram path | M20 `Nic_top` | SPEC-M20 §8, §10 | | OPEN |
 | REQ-810 | FUNC | Enable controls | M20 `Nic_top`, M03 `Xgmii_rx_64`, M04 `Xgmii_tx_64`, M18 `Udp_ip_tx_64` | SPEC-M20 §4.3, §6.1 (the configuration source, and the one field with two readers); SPEC-M03 §4.3 (the receive half); SPEC-M04 §4.3 (the XGMII transmit half); SPEC-M18 §4.3, §6.1 (the application-interface `tready` half); SPEC-M13 §11.2 (the ARP clause, which needs no enable) | | OPEN |
-| REQ-901 | PROC | Differential co-simulation | programme (process) | requirements.md REQ-901 (the four declared divergence classes); their module homes are SPEC-M14 header/§11.3 (a), SPEC-M12 §5 with SPEC-M13 §6.1 (b), SPEC-M15 header/§10 (c) and SPEC-M18 header/§10 (d) | | OPEN |
+| REQ-901 | PROC | Differential co-simulation | programme (process) | requirements.md REQ-901 (the declared divergence classes, lettered and appended-to, never renumbered); their module homes are SPEC-M14 header/§11.3 (a), SPEC-M12 §5 with SPEC-M13 §6.1 (b), SPEC-M15 header/§10 (c), SPEC-M18 header/§10 (d) and SPEC-M03 header/§10 (e), (f) | | OPEN |
 | REQ-902 | PROC | Deterministic emission | programme (process) | **no module spec pins it, by design** — it is a property of the build, fixed by the CI `build` workflow's determinism step and ADR-0005 | | OPEN |
 | REQ-903 | PROC | Module surface | programme (process) | SPEC-M01 §10; SPEC-M02 §4.1; SPEC-M03 §4.1 | | OPEN |
 | REQ-904 | PROC | Traceability currency | programme (process) | **this file**, plus the CI set-equality script requirements.md REQ-904's verification column commissions | | OPEN |

@@ -176,7 +176,11 @@ puts multicast group acceptance in the layer that actually knows about groups.
 
 *Rejected*: a MAC-layer address filter. It would drop foreign traffic one stage
 earlier, saving nothing in a simulation-only design, and it would introduce a
-co-simulation divergence class on the very first stage.
+co-simulation divergence class on the very first stage — **a further one**: the
+first stage already carries REQ-901's classes (e) and (f), the two length-derived
+error paths the reference has no logic for (SPEC-M03 header, §10). The argument
+is that the earliest stage should carry as few excluded classes as possible,
+each one bought by a behaviour that earns it, not that it carries none.
 
 ### 2.7 The application transmit interface declares its length up front
 

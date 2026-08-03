@@ -4770,3 +4770,322 @@ the document rather than only in dv's journal.
 ### Files-in-this-commit
 
 - docs/specs/requirements.md
+
+## [J-architect_docs_lead-0017] 2026-08-03T19:20Z | task:WO-0048 | The REQ-901 (e)/(f) cascade closed at four sites — M03 gets the REQ-901 row it never had in the two-tier form M14 established, the numeral "four" retired rather than replaced by "six", and architecture.md §2.6's rejection argument kept alive by correcting its premise instead of its conclusion
+
+### Trigger
+
+Orchestrator dispatch **WO-0048** (allocated), following my own
+`J-architect_docs_lead-0016` Open-questions, which enumerated the cascade and
+deliberately did not fix it in the commit that created it. The amendment is now
+in force: my REQ-901 spec diff at `ebb3f49`, dv_lead's countersignature
+`J-dv_lead-0057` (signature of record: the COUNTERSIGNATURE block in
+`agents/handoffs/WO-0046_cosim-phase-1.md`), orchestrator transcription
+`J-orchestrator-0126` at `9d1982f`. Classes **(e)** runt marking and **(f)**
+oversize truncate-and-mark are live, homed at M03, and every restatement of the
+old four-class list is stale from that transcription forward.
+
+### Inputs
+
+- `agents/charters/architect_docs_lead.md`; `agents/PROTOCOL.md` (§4 grammar,
+  §4.2 set-equality, §6 write scope, §7 gate transcription, §10 evidence).
+- My journal tail, `J-architect_docs_lead-0016` — in particular its Evidence
+  item 6, the positional-citation survey that enumerated exactly which sites
+  cite class letters and which of them state a count.
+- `docs/specs/requirements.md` **as landed**, read rather than taken from the
+  dispatch: REQ-901 at :610 (the six-class list, the general "what an excluded
+  class costs" sentence and the ADR-0015 D2 sentence), REQ-107 at :425 and
+  REQ-108 at :426 (the two verification-column pointers), and §13's three rows
+  at :719–:721 — :720 being the transcription row that puts (e)/(f) in force.
+- The four sibling class-home specifications, read for the pattern and not
+  edited: `modules/ip_eth_rx_64.md` (header, :1038 REQ-602 hook, :1048 REQ-901
+  row, :1062 item 11.3), `modules/arp.md` (header, :1149), `modules/arp_cache.md`
+  (header, :498), `modules/ip_eth_tx_64.md` (header, :760),
+  `modules/udp_ip_tx_64.md` (header, :790); plus `modules/udp_ip_rx_64.md`
+  (:15, :872) as the established form for "no class lives here".
+- The four sites edited: `modules/xgmii_rx_64.md` (header, §2, §10, §13),
+  `modules/nic_top.md` (:797 and its header bullet at :16, which turned out to
+  enumerate nothing), `traceability.md` (:50, :239), `architecture.md` (§2.6).
+- `docs/adr/ADR-0015-the-cosim-lane-dependency-reference-and-determinism.md`
+  §D2 (:364–:366) and :494, checked for staleness and found to state no count.
+- `docs/gates/P1-spec-freeze-checklist.md` :63 (ledger **C-7**), and the
+  `git log -- docs/gates/` authorship history, for the not-mine-to-edit ruling
+  below.
+
+### Reasoning
+
+**1. Re-verify against the tree, not against the dispatch.** The dispatch named
+three sites and asked me to re-verify each. I read REQ-901 as landed first,
+because a cascade fix that transcribes a description of the source rather than
+the source is exactly the failure mode this org's relay rules exist to prevent.
+The source row is correct and in force, §13:720 discharges the "not in force
+until transcribed" condition of §13:719, and I found no defect in it — so
+nothing to report back on requirements.md and nothing to edit there.
+
+**2. The M03 restatement is two-tier, not one row — and M14 is the precedent
+that settles it.** The dispatch asked for "a REQ-901 row in the M03 table",
+consistent with the other class-home specs. Reading those specs, the pattern is
+richer than one row: SPEC-M14 carries **both** a REQ-901 row at §10 (":1048")
+**and** the class-(a) pointer inside the **owning requirement's own verification
+hook** (REQ-602 at ":1038", which ends "and this REQ is verified against the
+spec by directed test only"). That two-tier shape is the one that actually does
+work, because the row a bench writer and a sign-off packet read is the owning
+REQ's row, not the process row eight lines below it. So M03 gets three §10
+touches: a REQ-901 row, and the class pointer inside the REQ-107 and REQ-108
+hooks, worded on M14's REQ-602 hook and carrying the amendment's own standing
+rule verbatim in substance — the directed frames verify, a co-simulation result
+is **not** an admissible external anchor, and a sign-off packet **SHALL NOT**
+offer one. *Rejected*: the REQ-901 row alone. A packet author building
+`SO-xgmii_rx_64.md` from §10's REQ-107 row would have seen a list of directed
+frames and no prohibition, which is the precise mistake the (e)/(f) amendment
+was written to make impossible.
+
+**3. The header bullet, on SPEC-M13's two-class form.** M03 now says "Two
+declared REQ-901 divergence classes live here", the same sentence shape
+`arp.md` uses for (b) and (c). This matters beyond tidiness: `traceability.md`
+cites class homes as "header/§10", so the header bullet is a *cited* location
+and had to become true before the matrix could point at it.
+
+**4. No §11 deferred item, deliberately.** SPEC-M14 tracks its class in an
+**11.3** item that closes at the first co-simulation run against that boundary,
+and the matrix cites "SPEC-M14 header/§11.3". I considered mirroring it and
+rejected it: M14's item exists because class (a) is a **restriction on
+stimulus** that stays live until a run demonstrates the restriction was honoured
+— there is something for the first run to close. Classes (e) and (f) are
+**total exclusions on a stimulus band**, already decided and already bounded
+("nothing in the 64-to-1518-octet range is excluded"); a §11 item for them would
+be an open item with nothing to close, and §11 numbers are permanent, so an
+empty one is permanent clutter. `traceability.md` shows the alternative form is
+equally established — SPEC-M15 and SPEC-M18 are cited as "header/§10" — so M03
+takes that form and the matrix cites it that way.
+
+**5. The count is retired, not corrected.** The single most consequential choice
+here. Both stale restatements could have been repaired by writing "six". I wrote
+neither a numeral nor a count: `nic_top.md` now enumerates homes letter by letter
+and says the top level "inherits **every one of them** — stated without a count",
+and `traceability.md` says "the declared divergence classes, lettered and
+appended-to, never renumbered". The argument is my own from
+`J-architect_docs_lead-0016`: the numeral **is** the maintenance hazard, and this
+very work order is its cost, incurred once already. A seventh class now costs one
+enumeration entry at each of two sites and **zero** count edits anywhere;
+under "six" it would cost the same edits again plus two counts, and the counts
+are the ones a sweep misses because "six" reads as prose rather than as a claim.
+
+**6. The nic_top inheritance claim was checked, not copied.** The old row
+asserted the top level "inherits all four". I did not want to widen an assertion
+by reflex, so I checked what inheritance means for (e) and (f): they are
+exclusions at the M03 comparison boundary, M03 is on the top-level receive path,
+and a stimulus band the M03 pairing cannot adjudicate is not adjudicable at a
+boundary that contains M03. So the inheritance holds, and I made the consequence
+explicit in the verification cell rather than leaving the word "inherits" to
+carry it — REQ-107 and REQ-108 are no more co-simulation-anchorable at M20 than
+at M03.
+
+**7. `architecture.md` §2.6 — repair the premise, not the conclusion.** The
+sweep's one non-obvious find, and the one I had flagged at
+`J-architect_docs_lead-0016` as "reads differently rather than falsely". §2.6
+rejects a MAC-layer address filter partly because "it would introduce a
+co-simulation divergence class on the very first stage". That sentence is still
+*true* — such a filter would introduce one — but its rhetorical force assumed
+the first stage had none, and a reader now reads a false premise out of a true
+sentence. Options: delete the clause (loses a real reason); rewrite the decision
+(it is not the decision that changed); or state the premise correctly and let
+the argument stand. I took the third: the clause now says "a further one",
+names (e) and (f), and states the principle it was always resting on — the
+earliest stage should carry **as few** excluded classes as possible, each one
+bought by a behaviour that earns it. The rejection is unchanged and the ADR-free
+status of §2.6 is unchanged, because no decision moved.
+
+**8. What I did not touch, and why each is a report rather than an edit.**
+(a) `requirements.md` — barred by the dispatch, and I found no defect to report.
+(b) `docs/gates/P1-spec-freeze-checklist.md` ledger **C-7**, "Fifth REQ-901
+divergence class for REQ-510's reply drop": the ordinal is now wrong — a class
+for REQ-510's reply drop would be **(g)**, the seventh. It is inside my §6 write
+scope, and I still did not edit it: every commit that has ever touched
+`docs/gates/` is under `Agent: orchestrator`, PROTOCOL §7 makes that ledger's
+maintenance clerical-transcription work, and staging it here would also have
+mixed a gate artifact into a specification commit. Reported instead.
+(c) `agents/handoffs/WO-0003`, `WO-0004` and `WO-0046` each state "four classes"
+in their bodies. Packets are the record of an exchange **at a date**; rewriting
+another agent's committed statement to agree with a later amendment would
+falsify the record, and WO-0046 in particular carries the countersignature block
+that put (e) and (f) in force, so the packet read whole is not misleading. Also
+out of the dispatch's `docs/**` scope. Reported, not edited.
+(d) ADR-0015 — checked and clean: its D2 clause states no count and is the
+clause the amendment cites, so it needed nothing.
+
+**9. Class of this diff, and whether a signature is owed.** Editorial
+transcription. No normative text moves anywhere: `requirements.md` is untouched,
+M03's §4, §6.1, §6.2, §7 and §9 are byte-unchanged, no conformant design
+changes, and no already-commissioned frame is added, removed or re-scoped. What
+changes is what a sign-off packet may **claim** at M03 — and that change was made
+normatively in `requirements.md`'s REQ-107/REQ-108 verification columns, which
+dv_lead already took as concurrence class at `J-dv_lead-0057`. So **no
+re-countersignature is owed**, on the same reading that let the C-41-family
+REQ-014 hook diff land, and **no ADR is owed**: REQ-901 authorises its own
+amendment in terms, the amendment happened one document up, and this is its
+restatement. dv_lead should still be **notified** rather than asked to sign,
+because SPEC-M03 §10 is the instrument its attack plan and its sign-off packet
+are built from.
+
+### Actions
+
+Four files, each verified against `requirements.md` as landed before editing.
+
+1. **`docs/specs/modules/xgmii_rx_64.md`** (the site the dispatch left to my
+   judgement) — four touches:
+   - header **Prior-art counterpart** bullet: names (e) and (f), states that the
+     reference implements no frame-length logic of any kind, and states the
+     consequence (inside either class the co-simulation anchors nothing);
+   - §10 **REQ-107** hook: class-(e) pointer in SPEC-M14 §10's REQ-602 form;
+   - §10 **REQ-108** hook: class-(f) pointer, same form;
+   - §10 **new REQ-901 row**, inserted after the REQ-802/REQ-810 row and before
+     the REQ-903/REQ-808 row — the position every other class-home spec uses —
+     carrying each class's exclusion scope (`tuser`[0] alone below 64 octets
+     with payload and `tkeep` still compared; sub-5-octet frames excluded
+     entirely; over-1518-octet frames excluded entirely including the
+     resynchronisation window; nothing excluded in 64–1518), with Section cell
+     `header, §2, §9` and the standing rule in the verification cell;
+   - §13 **change-log row** recording the diff, its class and why no ADR is owed.
+2. **`docs/specs/modules/nic_top.md`** §10 REQ-901 row: homes enumerated by
+   letter including M03 (e), (f); "all four" replaced by "every one of them";
+   verification cell gains the inherited-exclusion consequence.
+3. **`docs/specs/traceability.md`**: the REQ-901 matrix row at :239 gains
+   `SPEC-M03 header/§10 (e), (f)` and loses the numeral; the "Counts" narrative
+   at :50 loses "the four classes' module homes" for "each class's module home".
+4. **`docs/specs/architecture.md`** §2.6: the rejection clause gains its
+   corrected premise.
+
+Sweep run over `docs/**`, `README.md` and `ORG_CHART.md` (patterns and results
+in Evidence 4). No git commands run.
+
+### Evidence
+
+Reproducible from a checkout at this commit's SHA:
+
+1. **Scope.** `git diff --stat -- docs/` → **4 files changed, 19 insertions,
+   8 deletions**: `architecture.md` (6), `modules/nic_top.md` (2),
+   `modules/xgmii_rx_64.md` (13), `traceability.md` (6). No other path under
+   `docs/` moves; `docs/specs/requirements.md` is untouched.
+2. **The stale phrasings are gone.**
+   `grep -rn "four declared divergence classes\|the four declared classes\|inherits all four" docs/ --include=*.md`
+   → **no match**. `grep -rn "with the four" docs/ --include=*.md` → two hits,
+   both unrelated (`modules/axi64.md`:618 "together with the four lifts";
+   `modules/arp_eth_tx.md`:25 "with the four constant fields").
+3. **The positional letters did not move**, which is the invariant the whole
+   append-only class list exists to protect:
+   `git diff -U0 -- docs/specs/modules/ip_eth_rx_64.md docs/specs/modules/ip_eth_tx_64.md docs/specs/modules/arp.md docs/specs/modules/arp_cache.md docs/specs/modules/udp_ip_tx_64.md docs/specs/modules/udp_ip_rx_64.md | wc -l`
+   → **0**. Every (a)–(d) citation is byte-identical to its pre-WO-0048 text.
+4. **Sweep coverage — the exact patterns, over `docs/**`, `README.md` and
+   `ORG_CHART.md`:**
+   (i) `grep -rn "REQ-901" docs/ --include=*.md` → 27 sites, every one read;
+   (ii) `grep -rniE "\b(four|4)\b[^.]{0,80}(divergence|class)|\b(divergence|class)[^.]{0,80}\bfour\b"`
+   → the three known stale sites plus `modules/arp.md`'s ARP resolution
+   "class 4 / class 5" (a different lettered list, unrelated),
+   `requirements.md`:24 "four classes of fact" (unrelated) and
+   `docs/gates/…`:207 C-33 "four sites" (unrelated);
+   (iii) `grep -rn "divergence" docs/ --include=*.md -l` → 18 files, each
+   inspected; the non-REQ-901 uses are `modules/udp_complete_64.md`:481,
+   `modules/axi64.md`:609, `modules/xgmii_rx_64.md`:108,
+   `ADR-0009`:35 and the two audit reports — all ordinary uses of the word;
+   (iv) `grep -rniE "class(es)? \*?\*?\((a|b|c|d|e|f)\)"` → every positional
+   citation, all resolving, `nic_top.md`'s "REQ-010's class (b)" correctly
+   excluded as a different list;
+   (v) `grep -rni "declared class\|declared divergence\|class list\|exclusion list\|documented-divergence\|documented divergence"`
+   → the class-home rows, ADR-0015 :366/:494 (no count, clean), and nothing new;
+   (vi) `grep -niE "REQ-901|divergence|co-sim" README.md ORG_CHART.md` →
+   **no match** in either file.
+   Beyond `docs/`, `grep -rniE "four declared|four divergence|four classes|all four" agents/handoffs/ tasks/`
+   → the three packet sites reported in Reasoning 8(c) plus many unrelated "all
+   four" uses; none edited, all out of this work order's lane.
+5. **Table integrity over every edited file**, script over each: unescaped-pipe
+   count per row equals its block separator's, and every `**` span on a table
+   row balanced — `modules/xgmii_rx_64.md` **149 rows, 0 failures**;
+   `modules/nic_top.md` **145 rows, 0 failures**; `traceability.md` **123 rows,
+   0 failures**; `architecture.md` **180 rows, 0 failures**.
+6. **The freeze evidence still witnesses SPEC-M03.** §13's preamble claims no
+   row below it is breaking because §4's records are byte-for-byte unchanged
+   since the freeze SHA; `git diff -- docs/specs/modules/xgmii_rx_64.md` touches
+   the header bullet, three §10 rows and one §13 row and **no** line inside §4,
+   §6, §7 or §9, so the claim survives this revision and §12's `ifc_check` run
+   **30729342467** at **f78766e** still witnesses the interface.
+7. **CI is neither owed nor claimed.** Four markdown files; no OCaml source, no
+   workflow, no script.
+
+### Outcome
+
+**DoD met.** All three dispatched sites plus one the sweep found are repaired,
+and the sweep is documented above by pattern rather than by assertion.
+
+- **Site 1, `nic_top.md`:797** — repaired, count-free, with the inherited
+  exclusion made explicit.
+- **Site 2, `traceability.md`:239** — repaired, `SPEC-M03 header/§10 (e), (f)`
+  added; and its narrative twin at :50, which the dispatch did not name and the
+  sweep caught, repaired in the same diff.
+- **Site 3, `xgmii_rx_64.md`** — the restatement decided and written in the
+  **two-tier** form SPEC-M14 established: a REQ-901 row in the sibling position
+  **and** the class pointer inside the REQ-107 and REQ-108 hooks, both carrying
+  the standing rule (directed tests verify; the co-simulation anchors nothing
+  inside an exclusion; no sign-off packet may offer a co-simulation result as
+  the external anchor; an exclusion is never a licence to take an expected value
+  from the reference). Header bullet and §13 row land with them.
+- **Site 4, `architecture.md` §2.6** — the sweep's find: an argument whose
+  premise, not whose conclusion, had gone stale.
+
+**Class: editorial transcription. No ADR owed, no re-countersignature owed**
+(Reasoning 9). **Notification owed, not a signature**: SPEC-M03 §10 is dv_lead's
+sign-off instrument and its REQ-107/REQ-108 hooks now carry an explicit
+prohibition, so dv_lead should read the three §10 rows and say whether
+`AP-xgmii_rx_64.md`'s family F and G rows need any matching edit on their side —
+that is a concurrence at most.
+
+**Handoff**: orchestrator, for commit under `Agent: architect_docs_lead`, and
+for the two reports in Open-questions below.
+
+### Open-questions
+
+- **`docs/gates/P1-spec-freeze-checklist.md` ledger C-7 reads "Fifth REQ-901
+  divergence class for REQ-510's reply drop".** The ordinal is now wrong — such
+  a class would be **(g)**, the seventh. Left for the orchestrator, which owns
+  that ledger in practice (Reasoning 8b). Suggested repair: drop the ordinal
+  entirely — "A further REQ-901 divergence class for REQ-510's reply drop" —
+  since the ordinal was never load-bearing and is the same hazard this work
+  order exists to pay off.
+- **Three handoff packets restate the four-class list in their bodies**
+  (`WO-0003`:1351/:1403/:1621, `WO-0004`:118, `WO-0046`:57–58/:383/:792).
+  Deliberately unedited as dated record. If the auditor ever reads a packet body
+  as a live restatement rather than a statement-at-a-date, that is a finding
+  against the packet convention and belongs in PROTOCOL §3, not in these files.
+- **The working tree carried uncommitted changes that are not mine** when I
+  started and finished — `site/public/*.html` (five files) and `tasks/BOARD.md`.
+  They are outside my write scope, they are not in my Files-in-this-commit, and
+  the orchestrator must not let them into this commit (R7 would refuse
+  `tasks/BOARD.md` anyway).
+- **M03 has no §11 item tracking (e)/(f) to the first co-simulation run**, by
+  the argument in Reasoning 4, where SPEC-M14 has 11.3 for class (a). If dv_lead
+  wants symmetry — an item that closes when the first run reports against the
+  M03 boundary and names both classes — it is one row and I will add it on
+  request rather than by assumption.
+- Carried unchanged from `J-architect_docs_lead-0016`: REQ-901's configuration
+  clause naming three parameters that exist only on the transmit module (I
+  disambiguated inside class (e) rather than editing the clause; dv has not asked
+  for the clause to be scoped); the reference's disposition of a sub-5-octet
+  frame, still to be recorded as data on the first run that drives one; and
+  dv's endorsed question — that the same reading which found (e) and (f) should
+  run over every error class families E–H assert **before** Phase 3 is scoped.
+- Carried unchanged and unmoved by this diff: R-CI-4's gate-removal owner; the
+  M03 RTL non-conformance against §9 ruling 9; §6.1 item 4 unscoped; §9's
+  "Aborted-and-forwarded" paragraph one step out of the table's literal order;
+  `tools/precompile_stubs/ifc_check.ml`'s stale note; **C-45**, C-36,
+  ADR-0012's residual, REQ-007's scoping clause at two modules, C-38,
+  requirements.md's `DRAFT` header against its §13's frozen treatment, C-2, C-3,
+  C-5, C-7 (now also the ordinal above), C-9's REQ-903 half, C-32, C-33, C-44;
+  and the two re-countersignatures and one concurrence owed at
+  `J-architect_docs_lead-0013`'s SHA.
+
+### Files-in-this-commit
+
+- docs/specs/architecture.md
+- docs/specs/modules/nic_top.md
+- docs/specs/modules/xgmii_rx_64.md
+- docs/specs/traceability.md

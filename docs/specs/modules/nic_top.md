@@ -794,7 +794,7 @@ detectable anywhere in the design is detected by some module and reported by a
 | **REQ-809** | a received UDP datagram appears at `app_rx_payload` as its payload octets, and an application request appears at `xgmii_tx` as a well-formed frame with a valid FCS | §8 | §8's both-directions test, with the ARP cache primed first |
 | REQ-810 (configuration source) | the two enable fields enter here and are fanned to their three implementing modules | §4.3, §6.1 | §8's three-half test. **The receive half is M03's, the XGMII transmit half is M04's and the application-interface half is M18's**; all three are claimed at those modules and none here |
 | REQ-903 | `.mli` plus a `hierarchical` entry point taking a `Scope.t` | §4.1 | repository surface check at `P1-module-ready` |
-| REQ-901 | no divergence class of its own; the four declared classes live at M14, M12/M13, M15/M13 and M18, and the top-level comparison inherits all four | header | the co-simulation report's per-boundary table |
+| REQ-901 | no divergence class of its own; the declared classes live at M14 **(a)**, M12/M13 **(b)**, M15/M13 **(c)**, M18 **(d)** and M03 **(e)**, **(f)**, and the top-level comparison inherits **every one of them** — stated without a count, so a class appended to REQ-901's list needs no edit here beyond its own entry | header | the co-simulation report's per-boundary table. Where a class excludes something, the top-level comparison excludes it too, so REQ-107 and REQ-108 are no more co-simulation-anchorable at this boundary than at M03's (SPEC-M03 §10) |
 
 This table is the source of M20's rows in [`traceability.md`](../traceability.md),
 updated in the same commit.
