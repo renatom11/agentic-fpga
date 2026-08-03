@@ -14508,3 +14508,192 @@ diff.** CD is revised and the diff is routed.
 ### Files-in-this-commit
 - agents/handoffs/WO-0046_cosim-phase-1.md
 - test/attack_plans/CD-xgmii_rx_64_cosim.md
+
+## [J-dv_lead-0057] 2026-08-18T10:20Z | task:WO-0046 | REQ-901 classes (e) and (f) countersigned — the narrower exclusion confirmed after reading the reference's FCS check, which has no length gate, so family F's FCS-removal observable keeps an anchor a whole-frame exclusion would have thrown away
+
+### Trigger
+Orchestrator: architect_docs_lead's REQ-901 spec diff is committed at
+`ebb3f49`; my **re-countersignature is owed and the diff is not in force until
+transcribed**, on the C-43 discriminator — normative text moved, the subject is
+my own instrument's verdict rule, and a class in the tree but not in force would
+let an `SO-` cite unsigned text. Verify against the diff rather than the summary.
+One confirmation asked beyond the signature: whether (e) leaving payload and
+`tkeep` compared on 5-to-63-octet frames matches what my comparison domain
+needs, since the architect chose a **narrower** exclusion than my finding forced.
+
+### Inputs
+- **`git show ebb3f49`** — the diff itself: REQ-901's rewritten row, REQ-107's
+  and REQ-108's rows, and the two §13 change-log rows.
+- **`git show ebb3f49^:docs/specs/requirements.md` vs `ebb3f49:`** — the REQ-107
+  and REQ-108 **normative columns**, extracted and compared, to test the
+  concurrence-class claim rather than accept it.
+- **`test/third_party/verilog-ethernet/axis_xgmii_rx_64.v`** — the `crc_valid`
+  residue array and whether anything gates it on length. Read under the WO-0044
+  §6 boundary.
+- `test/attack_plans/CD-xgmii_rx_64_cosim.md` §2-bis — my own text, now
+  superseded in part.
+- `agents/handoffs/WO-0047_tb-m03-family-f-runts.md` §3.2 — M03-F2's flagged
+  underflow kill, for the cross-link.
+- **No `libs/**`, no `rtl_snapshots/**`.**
+
+### Reasoning
+
+**A countersignature is the one artefact where accepting a summary would be
+indefensible**, since the whole point is that someone independent read the
+normative text. So I read the diff, and two things in it are better than the
+summary said.
+
+**It pre-empts the objection I would have had to answer later.** REQ-901's own
+configuration clause names "minimum frame length 64", which is the obvious
+rebuttal to class (e) — *the requirement already configures a length check, so
+how can the reference lack one?* The diff answers it in its own text:
+`MIN_FRAME_LENGTH` is `axis_xgmii_tx_64.v`'s parameter, driving **transmit
+padding**, so the clause confers no receive-side check. I had not spotted that
+when I raised the finding.
+
+**And the append-only lettering rule is now in REQ-901's own text**, not merely
+practised. The numeral "four" was a maintenance hazard that this very diff
+proved — a class added means a count edited everywhere the count was quoted —
+and retiring it in favour of "the declared classes" is a better fix than
+incrementing.
+
+**The claim I would not sign on assertion I checked mechanically.** The
+change-log classes the REQ-107/REQ-108 edits as concurrence — verification
+columns only, both normative sentences untouched. A table row is one line, so the
+whole row shows as an addition and the eye cannot tell. I extracted each row's
+normative column at `ebb3f49^` and at `ebb3f49` and compared: **byte-identical,
+both.** The classification holds, and keeping the two axes on separate §13 rows
+means the countersignature-owed answer and the concurrence answer cannot be
+blurred into each other — which is exactly the failure the C-43 discriminator
+exists to prevent.
+
+**The (e) confirmation is where the work was, and it turned on one fact I refused
+to assume.** The architect chose a narrower exclusion than my finding forced:
+`tuser`[0] alone on 5-to-63-octet frames, with payload and `tkeep` still
+compared. That is only correct **if the reference strips the FCS on a runt**. If
+it did not, payload would diverge too and I would be signing a class that
+manufactures a false defect on every runt the lane ever drives — the exact
+failure mode a divergence class is supposed to prevent, inverted.
+
+So I read it. The reference's FCS check is an **eight-entry lane-indexed residue
+array**, `crc_valid[7..0]`, one precomputed residue per possible terminate lane,
+with **no length gate anywhere**. It strips unconditionally and delivers
+`length − 4`. **So on a runt the two designs deliver identical octets with
+identical `tkeep`, and `tuser`[0] is the only divergence.** (e) excludes exactly
+that and nothing more. **Confirmed.**
+
+**What the narrowness buys is worth naming, because I would not have asked for
+it.** M03-F1's core observable — REQ-103's FCS removal on a runt, delivered
+counts 1, 12, 56, 59 with their `tkeep` extents — **stays co-simulation
+anchorable.** My own finding would have supported a whole-frame exclusion, and
+that would have discarded a real anchor for a divergence confined to one bit.
+The architect did the narrower work and it is the better answer.
+
+**The sub-5 disposition is right for a reason the same reading supplies.** Below
+five octets there are not four octets to strip, so the reference's behaviour
+there is **undefined rather than merely different** — which is precisely why (e)
+excludes such a frame entirely, accept-or-discard included, and records the
+reference's actual disposition as data, never adjudicated.
+
+**One cross-link I flagged rather than acted on.** `WO-0047` §3.2 flags M03-F2's
+declared kill — an FCS-strip counter underflowing on a frame with nothing to
+strip — as possibly unachievable, and says the campaign settles it. The
+reference is a design with no sub-5 handling at all, so the data (e) mandates
+collecting will show what a real implementation does there. **That is evidence
+about whether the defect class is natural, and it is not evidence about our
+RTL** — and it may never become an expected value, which is the clause (e)
+itself restates. Flagging the connection while barring the misuse is the whole
+job.
+
+**On where the signature lives**: `docs/specs/**` is outside my write scope, so
+the signature of record goes in the packet and the orchestrator transcribes it —
+the clerical-transcription rule, and the reason the diff is not in force until
+that happens.
+
+**And the cascade being deferred is correct.** Three stale restatements in module
+specs and traceability are enumerated in the §13 row and not folded in. Folding
+them would have mixed a countersignature-owed diff with editorial repairs and
+made this signature harder to give rather than easier.
+
+### Actions
+- **Read the diff at `ebb3f49`** and verified every claimed element: classes (e)
+  and (f), the 64-to-1518 bound, the cost rule, ADR-0015's converse restated,
+  the retired numeral and the append-only lettering rule.
+- **Compared REQ-107's and REQ-108's normative columns across the diff
+  mechanically** — byte-identical — testing the concurrence-class claim rather
+  than accepting it.
+- **Read the reference's FCS check** and established it has no length gate,
+  which is what makes (e)'s narrowness correct.
+- **COUNTERSIGNED**, with the (e) confirmation folded into the same entry, in
+  `WO-0046` for the orchestrator to transcribe.
+- **Updated `CD-xgmii_rx_64_cosim.md` §2-bis**: my whole-frame prediction stands
+  as a recorded miss with the narrower class governing above it, and family F's
+  FCS-removal observable recorded as still anchorable.
+- Flagged the M03-F2 cross-link **with the misuse barred in the same sentence**.
+- Opened no `libs/**`. No `git commit`, no `git push`.
+
+### Evidence
+1. `ebb3f49` touches `docs/specs/requirements.md` (+8/−3) and the architect's
+   journal — nothing else.
+2. REQ-107 normative column at `ebb3f49^` vs `ebb3f49`: **IDENTICAL**. REQ-108:
+   **IDENTICAL**.
+3. REQ-901's new text: "**`tuser`[0] alone is excluded on frames below 64
+   octets, and the payload octets and `tkeep` extent are still compared**".
+4. REQ-901's new text: "Classes (e) and (f) exclude **nothing in the
+   64-to-1518-octet range**".
+5. REQ-901's new text: "the list is lettered and grows only by appending, so no
+   letter already cited elsewhere ever moves".
+6. `axis_xgmii_rx_64.v` `crc_valid[7..0]` — eight precomputed residues, one per
+   terminate lane, no length gate.
+7. The diff's own pre-emption: `MIN_FRAME_LENGTH` is `axis_xgmii_tx_64.v`'s
+   transmit-padding parameter.
+
+### Outcome
+**REQ-901 classes (e) and (f) are COUNTERSIGNED** and in force on transcription.
+The signature of record is in `WO-0046`; `docs/specs/**` is outside my write
+scope.
+
+**(e)'s narrower exclusion is CONFIRMED**, on a reading of the reference's FCS
+check rather than on agreement: it strips unconditionally, so payload and `tkeep`
+agree on runts and `tuser`[0] is the only divergence. **Family F's FCS-removal
+observable keeps a co-simulation anchor** that my own finding would have
+discarded.
+
+`SO-M03` consequence unchanged in kind, smaller in size: REQ-107 and REQ-108 rest
+on directed tests and no sign-off may offer a co-simulation result as their
+anchor.
+
+### Open-questions
+- **The cascade WO is owed** — three stale restatements in module specs and
+  `traceability.md`, enumerated in the §13 row. Correctly deferred; should not be
+  forgotten.
+- **The sub-5 reference disposition is data to be collected on first drive** and
+  **never adjudicated, never an expected value**. When it arrives it may inform
+  whether M03-F2's underflow kill is a natural defect class; it can inform
+  nothing about our RTL.
+- **The length sweep found one gap by asking one question.** Before Phase 3 is
+  scoped, run the same sweep for every error class families E–H assert — a
+  scoped reading, not a run. This is now twice as urgent: one sweep produced two
+  divergence classes and a countersignature.
+- **`run_cosim.sh` is still owed**, with the sidecar ruling fixed; `ours_run.ml`
+  remains the Build unknown.
+- **Owed by me, unchanged**: the `precompile_check.sh`
+  side-effect-in-combinator lane; `AP` §7's fuller rewrite.
+- **M03-A3's blindness to lane-symmetric errors remains untested**; my M04
+  contamination from `J-dv_lead-0024` still stands.
+- **Unchanged**: the RFC 1071 anchor closes on the next CI run that fetches;
+  X-7, X-10, X-11 deferred; L1–L5 owed as a separate packet.
+
+### Files-in-this-commit
+> **Amended before commit.** This entry's countersignature block was appended to
+> `agents/handoffs/WO-0046_cosim-phase-1.md` and then **carried at `6181781`**, a
+> commit attributed to data_wrangler, by an orchestrator staging error on a
+> shared packet two agents were concurrently writing — recorded against itself at
+> `J-orchestrator-0125` (`20571a1`). The signature **text** is intact at HEAD
+> (packet line 969), correctly worded and dated; only its commit attribution was
+> disturbed. The packet has no diff left for this commit to stage, so it is
+> dropped below and the set-equality holds. **The signature's authority is
+> unaffected** — it rests on its text and on this entry, not on which commit
+> carried it, and an auditor reconstructs the pair from `J-dv_lead-0057` and
+> `J-orchestrator-0125`.
+- test/attack_plans/CD-xgmii_rx_64_cosim.md

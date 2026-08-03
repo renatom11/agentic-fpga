@@ -159,6 +159,23 @@ defect".
 REQ-901's own rule the only legitimate resolution is **a fifth divergence class,
 added to REQ-901 by spec diff** — which this document cannot grant (§0-bis).
 
+> **RESOLVED at `ebb3f49`, and the class is NARROWER than I asked for
+> (`J-dv_lead-0057`).** REQ-901 classes **(e)** and **(f)** are appended and
+> countersigned. (e) excludes **`tuser`[0] alone** on 5-to-63-octet frames —
+> **payload octets and `tkeep` extent are still compared** — because the
+> reference's FCS check is a lane-indexed residue array with **no length gate**,
+> so it strips four octets and delivers `length − 4` exactly as we do. **So
+> family F's core observable (REQ-103's FCS removal on a runt: delivered
+> counts 1, 12, 56, 59 and their `tkeep`) REMAINS co-sim-anchorable**; only the
+> REQ-107 marking is not. A sub-5-octet frame is excluded entirely, its
+> accept-or-discard included, and the reference's disposition of one is
+> **recorded as data on first drive, never adjudicated**. (f) excludes an
+> over-1518-octet frame entirely. **Both exclude nothing in 64–1518.**
+>
+> The paragraph below was written before that diff and predicted a whole-frame
+> exclusion for runts. It is left standing as a recorded miss; **the narrower
+> class governs.**
+
 > **RAISED, and it gates part of the lane's value**: REQ-901 says a later class
 > "SHALL be added here by spec diff **before any sign-off packet may cite it**".
 > **So the co-simulation cannot anchor families F (runts) or G (oversize) at all
