@@ -369,8 +369,18 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
      epoch A's preamble positions — `/I/` and `/Q/` included (§6.2's [Preamble]
      row as revised at 541ea43). Outside a preamble position the same character
      is the hold above and closes nothing. *)
+  (* MUTATION g-c4 (WO-0055 family G) — NEVER MERGE. Seeded defect: the
+     [Discard] state is not gated. An error character arriving after REQ-108's
+     truncation point is acted on as though a frame were still open, so a frame
+     already closed and already reported by [error_oversize] draws a second
+     report — one [error_bad_frame], on §9's two-cycles-after pin. §6.2's
+     [Discard] row absorbs such a character, §9's third row pulses nothing for
+     it and C-12 is the ruling. SEEDED FOR [/E/] ONLY: [/T/] and [/S/] arriving
+     in [Discard] still pulse nothing, [/I/] and [/Q/] are still ignored
+     (REQ-113), no octet is covered and no output word is produced. *)
   let a_close_error =
     a_closes_with (lanes.is_error |: (other_ctl &: a_pre_mask))
+    |: (sm.is State.Discard &: any lanes.is_error)
   in
   let a_close_start = a_closes_with lanes.is_start in
   let a_close_char = a_close_terminate |: a_close_error |: a_close_start in
