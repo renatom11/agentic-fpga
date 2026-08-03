@@ -6348,3 +6348,43 @@ None new.
 - site/public/index.html
 - site/public/org-chart.html
 - site/public/spec-atlas.html
+
+## [J-orchestrator-0143] 2026-08-03T20:35:00Z | task:WO-0055 | Board row for the G campaign's harvest state; site refreshed for the sponsor
+
+### Trigger
+Sponsor asked for the backlog page brought current for a site
+redeploy.
+
+### Inputs
+The WO-0055 arc to date: freeze b94aa1e, seeds 762ae49, five
+runs harvested (four kills incl. the cross-family C3 catch; one
+survival pending the seal), adjudication dispatched.
+
+### Reasoning
+The row states the harvest facts and names the open question
+exactly as it stands — the survival's disposition belongs to the
+seal, so the row says ADJUDICATING rather than guessing. Tree
+verified clean (dv had not yet written its verdict files) and
+dv's journal count matched HEAD immediately before the rebuild.
+
+### Actions
+Board row; site rebuild; this commit; push.
+
+### Evidence
+git status empty before the edit; build line counts committed
+state.
+
+### Outcome / DoD
+The backlog page reflects the campaign mid-flight; the sponsor
+can redeploy.
+
+### Open questions
+None new; RV-0055-VERDICT lands next.
+
+### Files-in-this-commit
+- tasks/BOARD.md
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/index.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html
