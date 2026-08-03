@@ -725,7 +725,13 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
   let fcs_tail_pending = wire 1 in
   let fcs_tail_now = reg spec fcs_tail_pending in
   let have_word = (pc <>:. 0) &: ~:fcs_tail_now in
-  let emit_last_a = have_word &: (nc ==:. 0) &: (pc >: strip) in
+  (* E-c2 MUTATION (WO-0045) — an output word emitted for a frame that must
+     produce none: an `/E/`-closed frame whose record reaches its no-output-word
+     report cycle forces a `tlast` word out, "to have somewhere to put the abort
+     bit".  With [pc] = 0 and [strip] = 0 that word carries [tkeep] = 0. *)
+  let emit_last_a =
+    (have_word &: (nc ==:. 0) &: (pc >: strip)) |: (sel_valid &: sel_error &: sel_is_r2)
+  in
   let emit_last_b = have_word &: (nc <>:. 0) &: (nc <=: strip) in
   fcs_tail_pending <== emit_last_b;
   let emit_full = have_word &: (nc >: strip) in
