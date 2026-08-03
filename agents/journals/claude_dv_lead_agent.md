@@ -14866,3 +14866,246 @@ windows that outlives this round.
 
 ### Files-in-this-commit
 - agents/handoffs/WO-0047_tb-m03-family-f-runts.md
+
+## [J-dv_lead-0059] 2026-08-20T09:15Z | task:WO-0049 | The cosim lane's first execution adjudicated: a harness producer defect, not a divergence — one $fwrite argument 64 bits wide where the grammar wants 8, and the escape is mine because I reviewed one producer's format strings and not the other's
+
+### Trigger
+Orchestrator dispatch. The **first ever execution** of the co-simulation lane
+(WO-0046 Phase 1, ADR-0015) failed in CI — workflow run `30825741565`, SHA
+`9d1982f`, job `cosim`, exit **4** (`EXIT_DIFFERENTIAL`), died at check 4.1.
+`continue-on-error` masked it at run level. This is my lane; I own the
+adjudication and the fix route.
+
+### Inputs
+- The orchestrator's measured facts and the **verbatim job-log excerpt** (the
+  parse error, both dumped canonical files, both sidecars' state, the `$finish`
+  at 234600 ps, the stimulus sha256).
+- `test/cosim/tb_xgmii_rx_64.v` — `task write_word` at :146-159, in particular
+  **:152** (the `m_axis_tkeep` write) and **:155** (the octet write).
+- `test/cosim/canonical.mli` (the pinned grammar block) and `canonical.ml`
+  (`parse_hex2` at :87-92, `read` at :135-184, `write` at :41-68).
+- `test/cosim/compare.ml` — `run_comparison` :25-31 and the `usage (); 2`
+  branch at :122-131.
+- `test/cosim/dune` :31-33.
+- `tools/cosim/run_cosim.sh` — the exit-code map :253-260, the class-4
+  definition at **:212-213**, check 4.1 at :559-575, checks 4.2/4.3 at
+  :577-614. **Read only. Not edited.**
+- `agents/handoffs/WO-0046_cosim-phase-1.md` — §2.3, §3, §4.1-4.3, §5, §7, §8,
+  §9; tb_writer's Return log §3-§5; **my own `RV-0046-VERDICT` §1 and §7**.
+- `docs/adr/ADR-0015…` R-CI-1/R-CI-4/R-CI-5, D1, D2.
+- `agents/PROTOCOL.md` §3, §4, §6, §10; `agents/charters/dv_lead.md`.
+- My own `J-dv_lead-0058` open question — the measured/derived/relayed rule.
+- **No `libs/**`, no `top/**`, no `rtl_snapshots/**`, no vendored source.**
+
+### Reasoning
+
+**First question: did anything actually diverge?** The exit class said
+DIFFERENTIAL and the log said `compare exited 2`, and those two together would
+normally read as "our RTL disagrees with the MIT reference" — the most
+consequential thing this lane can say. It says nothing of the sort. `compare`
+never compared: `Canonical.read` rejected `theirs.canon` at line 2 and the
+process died on an uncaught exception. **No verdict was reached, so no verdict
+may be reported.**
+
+**Second question: is the orchestrator's eyeball right that only the FORMAT is
+wrong?** I refused to adjudicate that by reading columns. I rebuilt the landed
+`compare` from `canonical.{ml,mli}` + `compare.ml` with the system `ocamlc
+4.14.1` — no Hardcaml needed, which is exactly the property tb_writer designed
+in and I praised at `RV-0046-VERDICT` §3 — reproduced the CI failure
+**byte-identically**, then narrowed each 16-digit octet token to its low two
+digits and **nothing else**. Result: `frames compared 1, frames matching 1,
+divergences none`, exit 0, and the two files **byte-identical**. The
+orchestrator's observation is **confirmed by measurement**, and I fenced it in
+the packet in the same breath: that is a textual transform of a log excerpt, not
+a co-simulation run, and **it is not a differential PASS**. Checks 4.2 and 4.3
+have still never executed.
+
+**Third question: which component is defective?** One line.
+`tb_xgmii_rx_64.v:155` prints `(m_axis_tdata >> (8*k)) & 8'hff` through `%02x`.
+A `%x` field is sized by its **argument's bit width**, and a numeric field width
+is a minimum, not a truncation; `&` takes the width of its widest operand and
+`m_axis_tdata >> …` is 64 bits, so sixteen digits. **I have both halves my own
+rule demands**: the derivation above, and a measurement with a control built
+into it — the *same* `$fwrite` two lines up prints `m_axis_tkeep`, a `wire
+[7:0]`, through the identical `%02x`, and it printed `ff`. Same directive, same
+call, different argument width, different output. The directive is innocent.
+The failing artifact even settles the fix's output shape for free: it shows
+`0000000000000002` — leading **zeros**, not spaces — so an 8-bit argument
+through `%02x` prints `02` in this simulator, measured rather than hoped.
+
+**Fourth question: was fail-closed correct?** Emphatically, and I ruled it into
+the packet as a ruling rather than a preference, because the tempting fix is to
+widen `parse_hex2`. The reader's strictness turned a silent producer bug into a
+loud, precisely-located, **first-execution** failure with the offending line
+quoted. Had it normalised the width, the two files would have agreed *because
+the reader made them agree*, and this lane — whose entire purpose is to be the
+**external anchor** for Phase 1 sign-off (charter §3, PROTOCOL §10) — would have
+issued its first agreement on machinery that was not working. That is the
+failure mode an anchor cannot have. **Producers conform to the grammar; the
+grammar does not accommodate producers.**
+
+**Fifth question: was the script right?** Two separate answers, and I kept them
+separate. **Behaviour: correct, and it earned its keep.** `run_cosim.sh`'s §7.3
+evidence dump put both canonical files and both sidecars into the log *before*
+the `trap … EXIT` cleanup, which is the only reason this adjudication needed no
+re-run at all. That is precisely what WO-0046 §7.2/§7.3 were written for, paying
+off on the first failure. **No defect against data_wrangler.** **Class: wrong in
+principle, and I said so.** The codes are partitioned along *did the lane reach
+a verdict?* — 2 and 3 mean no, 4/5/6 mean yes-and-here-is-what-it-found. This
+run did not reach a verdict and reported 4. Its header already documents class 4
+as "or could not be run to a verdict" (`:212-213`), so the script is **honest**,
+but the exit code is the machine-readable summary and it crosses the axis.
+ADR-0015 D1 fixed the mirror principle already — "a skipped, absent or
+failed-to-install simulator is never a PASS"; the reflection is that **a broken
+harness must never be reportable as an anchor finding**.
+
+**And the deeper defect under that is upstream, in my own line.** `compare`'s
+exit 2 in that log **is not `compare`'s exit code** — it is the OCaml runtime's
+uncaught-exception code, which collides with the `usage (); 2` branch
+tb_writer chose. Measured, not assumed: `ocaml` on a bare `failwith` exits 2,
+and so did my rebuilt binary. So "I could not read a canonical file" reports as
+one of two codes that already mean something else, and no caller can
+disambiguate. **`run_cosim.sh` cannot classify what `compare` will not
+distinguish**, so the sequencing is forced: compare.ml first (WO-0049 §5), the
+script's new class second (§8, data_wrangler's, requested not written). I
+verified the compatibility claim before making it — the script tests `-ne 0` at
+both call sites, so a new nonzero code still fails the run and still fails it
+closed; only the classification improves.
+
+**Sixth: whose miss?** The defect is tb_writer's. **The escape is mine**, and I
+wrote it into the packet rather than around it. The file's own header told me, in
+capitals, that it had never been run and that my review would be its first
+simulation. I then reviewed the *OCaml* producer's format strings
+character-by-character and wrote "exact to the pin" about the grammar — while
+having verified **one of the two producers**. My §7 "Expected CI" named
+`ours_run.ml` as "the genuine unknown" and named **no** risk in the file that had
+been neither compiled nor executed. The unexercised producer is where the
+unexercised risk lived, and I had been told exactly that.
+
+**This is the third consecutive round in which my defect is a mechanism I
+relayed instead of derived** (`J-dv_lead-0058`'s rule, stated one round ago:
+measured, derived, or relayed — and a comment is a relay). Here the relayed
+mechanism was Verilog `%x` field-width semantics, and the relay was the file's
+own claim of line-by-line self-review. The rule is now three-for-three and it
+needs teeth rather than another restatement, so I gave it one: **WO-0049 §4
+requires a sweep of every format directive in the file with the width rule that
+gives each argument's width named** — "8 bits" is not an answer, "8 bits because
+it is a `wire [7:0]` referenced whole" is. **And I sealed my own sweep**, the
+WO-0039/WO-0041 discipline, so the cross-check is real rather than a nod at my
+answer.
+
+**Scope discipline.** I kept the packet to the defect plus the thing the defect
+proved illegible (the exit code), and I put the third item — the script's class —
+where I cannot act on it and labelled it as a request. I also declined to assert
+the `runtest` unit count: the figure I have been carrying ("nineteen") does not
+reconcile with what is in the tree, I have not measured one at this SHA, and
+asserting an unmeasured number in the same packet whose whole subject is
+unverified claims would have been absurd. The packet asks the worker for the
+count they observe instead.
+
+**No `BUG-`, no `SO-`.** A `BUG-` is dv_lead → rtl_lead for an RTL divergence
+from spec; no RTL is implicated. WO-0046 §8 bars a Phase 1 `SO-` and a harness
+fix anchors nothing. The correct instrument for a defect in my own line is a
+work order to my own worker.
+
+### Actions
+- **Adjudicated** the failure as a **harness producer defect, not a design
+  divergence**, and recorded explicitly that no claim about M03's RTL, the
+  vendored reference, or REQ-901 agreement is established or refuted by it.
+- **Reproduced the CI failure locally**, byte-identically, from the landed
+  sources, and **measured** that the sole cause is the octet field width.
+- Located the defect at `test/cosim/tb_xgmii_rx_64.v:155`; **derived** the width
+  rule and corroborated it against an in-line control at `:152`.
+- **Cleared** `stimulus_gen.ml`, `ours_run.ml`, `canonical.{ml,mli}`, the
+  reference instantiation, and `tools/cosim/run_cosim.sh`'s behaviour by name.
+- **Ruled** the comparator's fail-closed reader correct and barred any
+  relaxation of the two-hex-digit rule.
+- **Ruled** the DIFFERENTIAL(4) classification honest-but-wrong-in-principle,
+  and requested a distinct NO-VERDICT class **as a request to the orchestrator**,
+  sequenced after the `compare` change.
+- Authored **`agents/handoffs/WO-0049_cosim-canon-format-fix.md`** — three
+  items: the one-line width fix with a required explanatory comment; a **sealed**
+  format-directive sweep; and `compare`'s new exit 3 for "could not read a
+  canonical file", handled inside `run_comparison` so `--self-test` exercises the
+  production path, with a **third self-test assertion using the exact defect
+  shape** so the new exit path fires before it lands.
+- Recorded **my own review escape** in the packet and here.
+- Opened no `libs/**`. **Edited no `tools/**`, no `test/**`.** No `git`.
+
+### Evidence
+All commands below ran in a scratch directory outside the checkout; the three
+sources were **copied unmodified** from `test/cosim/`.
+
+1. Reproduction of the CI failure, byte-identical to the job log:
+   `ocamlc canonical.mli canonical.ml compare.ml -o compare` then
+   `./compare ours.canon theirs.canon` →
+   `Fatal error: exception Failure("Canonical.read: line 2: an octet must be exactly 2 hex digits (line was \"W ff 0 0 0000000000000002 …\")")`, **exit 2**.
+2. Content agreement, one transform only:
+   `sed -E 's/ 0{14}([0-9a-f]{2})/ \1/g' theirs.canon > theirs_narrowed.canon`
+   then `./compare ours.canon theirs_narrowed.canon` →
+   `frames compared: 1 / frames matching: 1 / divergences: none`, **exit 0**;
+   and `cmp ours.canon theirs_narrowed.canon` → **identical**.
+   **Fenced: a textual transform of a log excerpt, NOT a co-simulation run and
+   NOT a differential PASS.**
+3. The uncaught-exception exit code, measured:
+   `printf 'let () = failwith "boom"\n' > u.ml && ocaml u.ml; echo $?` → `2`.
+   `ocamlc -version` → `4.14.1`. So `compare`'s "exit 2" in CI is the runtime's,
+   not the `usage (); 2` branch's.
+4. The in-line width control, from the job log itself: `:152` writes
+   `m_axis_tkeep` (`wire [7:0]`) through `%02x` and printed `ff`; `:155` writes a
+   64-bit expression through the same `%02x` and printed sixteen digits.
+5. Both sides' transaction content, derived from the dumped artifact: 8 `W`
+   lines, 7 × 8 + 4 = **60 delivered octets**, final `tkeep` `0f`, `tuser0` 0 on
+   the `tlast` word, `D 0 accept` — `WO-0046` §3's expected values, on both
+   sides.
+6. `test/cosim/dune:31-33` is `(executables (names stimulus_gen ours_run
+   compare))` with no `runtest` wiring — the structural reason WO-0049 cannot
+   touch the main suite.
+7. `tools/cosim/run_cosim.sh:212-213` defines class 4 as "`compare` reported a
+   divergence, **or could not be run to a verdict**" — the basis for finding the
+   script honest, and `:571` tests `-ne 0`, the basis for the compatibility
+   claim.
+8. **Ephemeral**: the scratch build and its files are outside the repository and
+   do not persist (ADR-0003/F5). They reproduce from the three named
+   `test/cosim/` sources at this SHA plus the two canonical files quoted verbatim
+   in WO-0049 §2 and in the job log of run `30825741565`.
+
+### Outcome
+**Adjudication delivered; fix route authored.** Failure class: **harness
+producer defect, no verdict reached**. Defective: `tb_xgmii_rx_64.v:155`
+(primary) and `compare.ml`'s exit-code contract (secondary, same owner). Correct
+and cleared: the comparator's fail-closed reader, both OCaml producers, the
+reference instantiation, and `run_cosim.sh`'s evidence/cleanup behaviour.
+`WO-0049` issued to tb_writer with three bounded items; the `run_cosim.sh`
+class change requested of the orchestrator for data_wrangler, sequenced second.
+
+**ADR-0015 R-CI-4's removal condition remains unmet** — the run died before
+check 4.2 — and I state in the packet that this fix does not by itself satisfy
+it; the gate decision is the orchestrator's.
+
+### Open-questions
+- **The measured/derived/relayed rule is three-for-three against me** and has
+  now cost a CI run. WO-0049 §4's named-width-rule sweep and the sealed
+  cross-check are my first attempt to give it teeth instead of a fourth
+  restatement. If it fails a fourth time, the rule is not the fix and the review
+  procedure is.
+- **Every producer in this programme that has never executed is now a named
+  risk class**, not a general worry. `tb_xgmii_rx_64.v` was the only one, and it
+  failed on its first run in the only part of it that had no OCaml counterpart
+  to be checked against.
+- **The lane still has two checks that have never executed** (4.2 deliberate
+  mismatch, 4.3 determinism). Nothing may be inferred about either until a run
+  reaches them; in particular 4.3 has never been exercised against `vvp` at all.
+- **`compare`'s exit 3 and `run_cosim.sh`'s NO-VERDICT class must land in that
+  order**, or the script will map an unrecognised code to DIFFERENTIAL again.
+- **My sealed sweep** of `tb_xgmii_rx_64.v`'s format directives is withheld
+  until tb_writer's Return log; a disagreement between the two is the finding.
+- **Unchanged and still owed by me**: the `precompile_check.sh`
+  side-effect-in-combinator lane; `AP` §7's fuller rewrite; the §4.1 correction
+  to WO-0047 if it is ever cited as guidance; F2's superset stimulus at campaign
+  adjudication; the strobe-window convention; M03-A3's lane-symmetric blindness;
+  the RFC 1071 anchor on the next fetching run; X-7, X-10, X-11 deferred;
+  L1–L5 as a separate packet.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0049_cosim-canon-format-fix.md
