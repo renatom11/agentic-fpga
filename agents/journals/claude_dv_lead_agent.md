@@ -10816,3 +10816,208 @@ author as the next dv commit.
 - agents/handoffs/WO-0039_m03-mutation-campaign.md
 - test/attack_plans/AP-xgmii_rx_64.md
 - test/xgmii_rx_64/test_m03_c.ml
+
+## [J-dv_lead-0038] 2026-08-07T11:20Z | task:WO-0040 | Family D authored, and the packet found two defects before the worker did: my own attack-plan row M03-D3 passes vacuously against the design it names, because with a bad frame first both the right and the wrong design say "bad" — and my J-0037 age-0 wording was loose enough to have sent tb_writer building against the wrong class
+
+### Trigger
+Orchestrator: final campaign scoring committed (`fe1a7f6`), campaign row on the
+board (`85238b0`), local mutation branches removed — with a mechanics note that
+the push proxy refused remote deletion of the seven `mut/*` branches (403,
+designated-branch-only), so they stand marked never-merge under the greppable
+MUTATION markers with the auditor's marker-check covering them. **GO** on the
+family-D packet, to my own spine from `J-dv_lead-0037`, as WO-0040.
+
+### Inputs
+- `test/xgmii/arrival.mli` — `create ?ifg ?first_start ?fcs_valid`, `ifg`'s
+  §0.3 default of 12 counted from the terminate character inclusive, `frames`,
+  `start_cycle`, `terminate_octet_time`, `check`, `start_spacings`.
+- `test/xgmii/frame.mli` — `with_fcs`, `residue_ok`, `delivered`, `fcs`.
+- `test/xgmii_rx_64/bench.mli` — the full exported surface, to bound what
+  WO-0040 authorises adding.
+- `test/xgmii_rx_64/test_m03_a.ml` (A1/A2's `start_cycle + 3 + m` and its
+  `tuser`/strobe assertions), `test_m03_b.ml` (B1's `residue_ok` construction
+  guard), `test_m03_c.ml` (C4's `Strobe_monitor.expect` shape).
+- `test/attack_plans/AP-xgmii_rx_64.md` §4.D rows D1–D4, §7's banner, §8, §9.
+- `docs/specs/modules/xgmii_rx_64.md` §6.1's seeding and drain paragraphs,
+  §6.2's `Frame` row and `/T/` exit, §6.3 item 1, §9 row 1 and the strobe-cycle
+  pin, ruling 9.
+- `agents/handoffs/WO-0038_tb-m03-first-bench.md` for the packet's shape.
+- **No `libs/**`, no `rtl_snapshots/**`, no `top/**`.**
+
+### Reasoning
+
+**The open question I was told to pose resolved itself on the first read, and
+that mattered less than what the same read turned up.** `Arrival.create` takes
+a **list** of frames plus `?ifg` (default 12, §0.3's minimum) and `?fcs_valid`
+— so D3 needs no scheduling primitive at all, and the question I had queued as
+"the packet's one open question" is simply answered. What the read *did* buy
+was `fcs_valid`'s semantics, which are a trap: it defaults true, `check`
+verifies REQ-304's residue when it is set, and `Bench.run` discharges obligation
+5 by calling `check`. **Scheduling a bad-FCS frame without `~fcs_valid:false`
+makes the stimulus self-check fail, and it will look exactly like a DUT
+finding.** It is also per-*schedule*, so D3's mixed pair switches the residue
+check off for its good member too — which is why the packet requires
+`residue_ok` asserted by hand in **both** directions at construction. The
+negative direction is the one that matters: a bit-flip that silently failed to
+land leaves a good frame, and D1 would then assert `tuser`[0] = 1 against a
+conformant design and fail for a reason unrelated to M03.
+
+**Then the real find, and it is against my own attack plan.** M03-D3 specifies
+a **bad**-FCS frame followed at the minimum gap by a **good** one, and claims it
+kills a design that reads the CRC register at the `tlast` cycle instead of
+carrying the verdict with the frame. **It does not.** I worked the octet times
+rather than trusting the row:
+
+- lane-0 start, `first_start` = 8 ⟹ start character at octet time 8,
+  `start_cycle` = 1; the 64 octets occupy octet times 16–79; the terminate
+  character is at octet time **80** — cycle **10**, lane **0**.
+- the `tlast` word is word 7, at `start_cycle + 3 + 7` = cycle **11**.
+- `ifg` = 12 from the terminate **inclusive** ⟹ the next start character at
+  octet time **92** = cycle **11**, lane 4.
+
+So the second frame's start character arrives on the very cycle the first
+frame's `tlast` word is emitted, and §6.1 seeds the register in `Preamble`.
+The plan got that mechanism exactly right. What it got wrong is which ordering
+discriminates. **With a bad frame first, the wrong design reads the fresh seed,
+which differs from REQ-304's residue, and reports "bad" — the same verdict the
+correct design gives.** Both designs agree and the row passes vacuously. The
+kill needs a **good** frame first, where the correct design says good and the
+register-reading one says bad.
+
+I kept the original ordering as a second pair rather than deleting it, because
+it does kill something — a design that latches the abort bit and fails to clear
+it between frames — and that is a real defect class with no other row covering
+it. So D3 becomes four schedules: both orderings at both lanes, with the
+packet stating which pair carries which kill.
+
+**This is the anti-vacuity failure the plan itself warns about in a neighbouring
+row.** M03-D2 exists precisely because "D1 passes against a design that always
+asserts the bit"; M03-F2 carries a filler constraint because "that single frame
+passes a wrong design by accident". I wrote both of those and then wrote a D3
+with the same shape of hole. Worth recording plainly rather than fixing
+quietly: the discipline that catches this is working the arithmetic of the
+*wrong* design, not only of the right one, and I did not do it when the row was
+written.
+
+**The second correction is to my own wording from yesterday.** In
+`J-dv_lead-0037` I said D1's lane-0 case is "in the age-0 class" and lane 4 is
+out. That is loose enough to mislead. Lane-0/64 shares `terminate_lane` = 0 with
+R-1's disagreement class but is **excluded** from it by the full-final-word
+conjunct — its final delivered word carries four octets, `tkeep` = 0x0F — which
+is exactly the exclusion I verified entry by entry at `RV-0038-R7-VERDICT` §4
+and then failed to carry forward one day later. The distinction that actually
+survives is different and simpler: **whether the terminating word carries frame
+octets.** At lane 0 it carries none, so §6.2's `Frame` row **holds** the frame
+and that word produces no output; at lane 4 it carries four and is not held.
+Same frame, same `tlast` cycle, two structurally different closing words — a
+genuine built-in control, just not the one I named.
+
+And the honest answer to `AP` §8's age-0 bar for this family is **no row depends
+on an age-0 record**: §9 pins each strobe to the `tlast` cycle, which is one
+cycle *after* the terminate word at both start lanes, so verdict and strobe are
+never co-timed with the closing input word here. I put that in the packet as a
+statement rather than as a question, because a bar passed along unanswered is a
+review round.
+
+**On packet size, deliberately.** Four rows, one of them NO-ASSERT and one
+largely discharged by citation. The citation extent is enumerated in the packet
+rather than gestured at — a row discharged by citation is honest only if the
+citation is exact — and D2 still has to add the good-FCS partners of D1's and
+D3's *own* frames, so those two rows do not rest on an unasserted claim about
+their own construction.
+
+**And I named D's four mutations up front**, one per row's declared Kill, with
+**D-M1 — hardwire the verdict good, never pulse `error_bad_fcs`** — called out
+as the reason the packet exists. That is the *silently-always-pass* class the
+WO-0039 campaign contained no instance of, which is why the campaign could not
+find that REQ-104's positive direction is unverified. A D1 that does not die on
+D-M1 has closed nothing.
+
+**On the branches standing on the remote**: the 403 changes nothing I ruled.
+The packet is the record, the never-merge markers are greppable and the
+auditor's marker-check covers them. I would rather they were gone, but the
+evidence never lived in them.
+
+### Actions
+- Authored **`agents/handoffs/WO-0040_tb-m03-family-d-fcs.md`** — four rows,
+  DUT-instantiation and read prohibitions carried from WO-0038, the
+  opam-switch boundary from `RV-0038-R7-VERDICT` §6, an expected-CI section
+  carrying the eight regime facts already paid for, and the §9 mutation set.
+- **Resolved** the queued open question rather than posing it: `Arrival.create`
+  takes a frame list and `?ifg`, so D3 needs no library addition.
+- **Documented `fcs_valid` as a trap** and required `residue_ok` asserted in
+  both directions wherever it is cleared.
+- **Authorised exactly one bench addition** — `frames_at ~lane ~fcs_valid` with
+  `one_frame` re-expressed through it — with "all fifteen existing tests stay
+  green" as its whole acceptance evidence, and a standing instruction to return
+  a question rather than add a second.
+- **Corrected `AP` row M03-D3** in place: both orderings at both lanes, pair A
+  named as the carrier of the register-read kill with the octet-time arithmetic
+  in the row, pair B retained for the latched-abort-bit design.
+- **Corrected my own `J-dv_lead-0037` age-0 wording** in both the packet and the
+  attack plan's change log.
+- Appended an `AP` §9 change-log row; **status counts unchanged (75 rows,
+  59 ASSERT)**; re-ran `tools/dv_checks.sh` after the edit — every check that
+  could run passed.
+- Opened no `libs/**`. No `git commit`, no `git push`.
+
+### Evidence
+1. `arrival.mli`: `create ?ifg ?first_start ?fcs_valid (int list list)`; `ifg`
+   defaults to 12 octets from the terminate character inclusive; `fcs_valid`
+   defaults true and `check` verifies REQ-304's residue when set.
+2. The D3 arithmetic: terminate at octet time 80 = cycle 10 (lane 0); `tlast`
+   at `start_cycle + 3 + 7` = cycle 11; `ifg` = 12 ⟹ next start at octet time
+   92 = **cycle 11**. Coincident, at both start lanes (lane 4: terminate at
+   octet time 84, same cycles).
+3. The vacuity: seed ≠ REQ-304's residue ⟹ the register-reading design reports
+   "bad" ⟹ agrees with the correct design whenever the first frame is bad.
+4. `expected_disagree`'s second conjunct excludes lane-0/64 (delivered 60,
+   `60 mod 8 = 4`, `tkeep` 0x0F) — the basis for correcting J-0037's age-0
+   wording.
+5. §6.2's `Frame` row: a word covering **no** frame octet holds the frame and
+   produces no output — true of lane-0/64's terminating word, false of
+   lane-4/64's, which covers four.
+6. `frame.mli` supplies `with_fcs`, `residue_ok` and `delivered`, so D1's
+   corrupted frame and its assertions need no new primitive.
+7. C4's `Strobe_monitor.expect` call shape (pinned cycle, `not_before` /
+   `not_after` window, `why`) is the reusable pattern for D1's
+   `error_bad_fcs`.
+8. `tools/dv_checks.sh` after the attack-plan edit: all runnable checks pass.
+
+### Outcome
+**WO-0040 authored and ready to issue** — family D, four rows, no machinery
+owed, hand-derivable from §9 end to end, closing the live hole that a design
+hardwiring the FCS verdict good passes all fifteen WO-0038 tests today.
+
+**Two defects caught before the worker saw them**: attack-plan row M03-D3
+passed vacuously against its own declared kill and is corrected to both
+orderings, and my `J-dv_lead-0037` age-0 wording is loosened to what is true.
+Both are recorded in the plan's change log rather than fixed quietly.
+
+`SO-M03` unchanged: does not issue. Families E–H unwritten, and the
+verilog-ethernet differential co-sim still ungated.
+
+### Open-questions
+- **A discipline I did not have and now do**: when writing an attack-plan row,
+  work the arithmetic of the **wrong** design, not only of the right one. Every
+  vacuity hole this plan has had — M03-D2's reason for existing, M03-F2's
+  filler constraint, and now M03-D3 — is the same shape, and two of the three
+  were caught only because something else forced the calculation.
+- **Families E–H should be re-read for the same defect** before they are
+  benched. I am not doing it in this commit; it is a scoped review and it
+  should be its own pass, before E's packet rather than during it.
+- **The verilog-ethernet differential co-sim remains the longest-lead item on
+  the `SO-M03` path** and should start in parallel with family D. Not my packet
+  to issue.
+- **Owed by me, unchanged**: the `precompile_check.sh`
+  side-effect-in-combinator lane; `tools/precompile_stubs/ifc_check.ml`'s stale
+  UNVERIFIED note; SPEC-M01 §11.4's caveat retirement (architect_docs_lead);
+  `AP` §7's fuller rewrite behind its banner.
+- **M03-A3's blindness to lane-symmetric errors remains untested.**
+- **My M04 contamination from `J-dv_lead-0024` still stands.**
+- **Unchanged**: the RFC 1071 anchor closes on the next CI run that fetches;
+  X-7, X-10, X-11 deferred; L1–L5 owed as a separate packet.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0040_tb-m03-family-d-fcs.md
+- test/attack_plans/AP-xgmii_rx_64.md
