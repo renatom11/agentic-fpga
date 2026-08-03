@@ -61,3 +61,50 @@ None.
 
 ### Files-in-this-commit
 - (none)
+
+## [J-orchestrator-0148] 2026-08-03T23:05:00Z | task:none | The backlog ledger told the truth again - a single-word assumption retired
+
+### Trigger
+Sponsor deployed the site and reported WO-0038 as the newest work
+order on the live backlog.
+
+### Inputs
+build.py's wo_rows regex: the State capture was (\w+) — a single
+word — matching only the early rows' bare ACCEPTED. Every row
+since WO-0039 carries a compound state ("CLOSED · 8/8") and was
+silently dropped. The build line's "38 WOs" announced the bug on
+every run and was read as a fact instead of re-derived — the
+provenance lesson in the flesh, again, on my own tooling.
+
+### Reasoning
+- State capture widened to free text; the id accepts link and
+  bare forms (some rows deliberately have no packet file); the
+  status chip's CSS class keys on the state's first word.
+- The page's "what happens next" list had also fossilized
+  (naming work finished days ago) — refreshed to the current
+  truth: the WO-0056 repair + replay, family H onward, SO-M03,
+  the M06-M09 wave, the last pending journal rotation.
+- Rebuilt in a HEAD worktree (dv's WO-0056 review is mid-flight
+  in the tree); ledger verified: 51 rows, newest WO-0055, oldest
+  WO-0001.
+
+### Actions
+build.py fixes; clean rebuild; this commit; push.
+
+### Evidence
+The rebuilt page's row extraction printed in the session record.
+
+### Outcome / DoD
+The live backlog will show the full ledger on the sponsor's next
+deploy.
+
+### Open-questions
+None.
+
+### Files-in-this-commit
+- site/build.py
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/index.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html

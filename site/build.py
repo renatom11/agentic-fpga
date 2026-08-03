@@ -44,8 +44,13 @@ head_sha = sh('git', 'rev-parse', '--short', 'HEAD').strip()
 gen_date = sh('git', 'log', '-1', '--format=%ad', '--date=format:%Y-%m-%d').strip()
 
 board = open(os.path.join(ROOT, 'tasks', 'BOARD.md')).read()
+# A row's State cell is free text ("CLOSED · 8/8", "ACCEPTED · CI GREEN") —
+# the original single-word pattern silently dropped every row after WO-0038,
+# and the build line's "38 WOs" was that bug announcing itself unread. The id
+# may be a link or bare text (some rows have no packet file).
 wo_rows = re.findall(
-    r'^\| \[(WO-\d{4})\]\(([^)]*)\) \| ([^|]*) \| (\w+) \| (.*?) \|$', board, re.M)
+    r'^\| \[?(WO-\d{4})(?:[^|]*?)? \| ([^|]*) \| ([^|]+?) \| (.*?) \|$', board, re.M)
+wo_rows = [(wid, fromto.strip(), state.strip(), note) for wid, fromto, state, note in wo_rows]
 wo_rows.sort(key=lambda r: int(r[0][3:]), reverse=True)  # T6/D5: newest id first
 
 n_attack = 0
@@ -96,11 +101,11 @@ PHASES = [
 
 # D4: plain-first, insider reference in parentheses — the standing style.
 NEXT = [
-    'Finish the first module’s benches — its test rows land family by family, each after line-by-line review and a seeded-defect campaign (the tb_writer work orders)',
-    'Land the pre-flight compile check so build errors are caught before CI — the verification lead’s own proposal after its first escape (WO-0034)',
-    'Fix the receiver’s handling of frames shorter than 5 bytes — its own returned question, ruled against the shipped behaviour (WO-0036)',
-    'The verification lead re-signs the latest spec clarifications (two pre-worded countersignatures)',
+    'Land the receiver’s coverage repair and replay the surviving seeded defect against it — the new row must catch what the suite missed (WO-0056)',
+    'Design and bench family H, then the remaining test families of the receiver’s plan — each landing only after line-by-line review and a seeded-defect campaign',
+    'The receiver’s sign-off: every asserted row benched, every family qualified (SO-M03)',
     'Next construction wave: the four Ethernet-layer modules (M06–M09)',
+    'Rotate the last oversized agent journal to its second volume (the journal-chain rules landed 2026-08-03)',
 ]
 
 # ---- shared style -----------------------------------------------------------
@@ -453,9 +458,9 @@ def clean_cell(text):
 
 wrows = ''.join(
     f'<tr><td class="mono">{wid}</td>'
-    f'<td><span class="wost {state}">{state}</span></td>'
+    f'<td><span class="wost {state.split()[0]}">{html.escape(state)}</span></td>'
     f'<td>{html.escape(fromto.strip())}</td><td>{clean_cell(note)}</td></tr>'
-    for wid, _href, fromto, state, note in wo_rows)
+    for wid, fromto, state, note in wo_rows)
 
 next_html = ''.join(f'<li>{html.escape(x)}</li>' for x in NEXT)
 
