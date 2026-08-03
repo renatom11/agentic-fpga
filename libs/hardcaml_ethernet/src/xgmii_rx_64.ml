@@ -693,7 +693,12 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
      begins a new frame tells the word before it nothing except that it was the
      last of its own. *)
   let nc = mux2 al_new (zero 4) (popcount al_keep) in
-  let strip = mux2 (sel_valid &: (sel_terminate |: sel_oversize)) (of_int ~width:4 4) (zero 4) in
+  (* E-c1 MUTATION (WO-0045) — FCS removal applied on the REQ-105 abort path:
+     a frame closed by an `/E/` has four octets removed from the end of what it
+     delivers, as though the abort path had an FCS to strip. *)
+  let strip =
+    mux2 (sel_valid &: (sel_terminate |: sel_oversize |: sel_error)) (of_int ~width:4 4) (zero 4)
+  in
   (* ---- the all-FCS tail word (REQ-103, REQ-015; BUG-0001) ----
      [emit_last_a] is the case where the FCS lies wholly inside the emitted
      word, and its [pc >: strip] guard is what stops a word made *only* of FCS
