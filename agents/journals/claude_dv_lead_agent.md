@@ -13196,3 +13196,195 @@ misreading recorded rather than quietly fixed.
 ### Files-in-this-commit
 - test/attack_plans/CD-xgmii_rx_64_cosim.md
 - tools/precompile_stubs/ifc_check.ml
+
+## [J-dv_lead-0050] 2026-08-13T20:15Z | task:WO-0043 | Family E accepted with no repairs owed — the first such round — and the two things worth keeping are a check I did not commission and a distinction I failed to write into my own packet
+
+### Trigger
+Orchestrator: tb_writer's WO-0043 return is in, line review due. Sharp edges
+named from my own packet: E2's no-`tuser`-assertion rule, E4's positive-partner
+rule, the three trap answers at their cited lines, a ruling on the embedded
+model-vs-hand cross-check, the E1/E4 parameter choices, and whether declining
+the bench-addition budget was right.
+
+### Inputs
+- `test/xgmii_rx_64/test_m03_e.ml` (619 lines) — read in full, plus an
+  exhaustive `grep -n tuser` and a `grep -cE "print|Stdio|printf|Out_channel"`.
+- `test/xgmii/injection.ml` around line 135 — the `~fcs_valid:false` claim,
+  checked at the cited line rather than accepted.
+- `agents/handoffs/WO-0043_tb-m03-family-e-error-character.md` — my own §1, §2,
+  §4 and §8, re-read as the thing being conformed to, and the appended Return
+  log.
+- `docs/specs/modules/xgmii_rx_64.md` §4.1's `rx_tuser` line, §9 row 2 and the
+  no-output-word pin; `docs/specs/requirements.md` REQ-105, REQ-103, §0.7.
+- `agents/handoffs/WO-0038_tb-m03-first-bench.md` §6 rule 5, and
+  `RV-0038-R7-VERDICT` §4's tripwire ruling, for the cross-check precedent.
+- **No `libs/**`, no `rtl_snapshots/**`.**
+
+### Reasoning
+
+**I verified E2's prohibition by enumeration rather than by spot-check, because
+a prohibition is exactly the thing a spot-check misses.** Every `tuser`
+occurrence in the file is accounted for: two docstrings, an E1 comment, an E1
+assertion (correct — E1's frames *do* produce output and must be marked), an E2
+comment, an E3 explanation, and an E4 assertion on the *following* frame
+(correct — it must stay clean). **`run_e2` asserts nothing about `tuser`[0].**
+Had I grepped for the string and eyeballed the count, I would have seen "tuser
+appears in E1 and E4" and moved on.
+
+**And the substitute the worker chose is the right one, which I had not
+specified.** E2 asserts `tlast_sample samples = None` — the *structural* fact
+that no `tlast` word exists — instead of reaching for a field with no word to
+live on. That is what makes the prohibition enforceable rather than merely
+obeyed: there is a positive assertion in its place, so the row is not just
+silent about `tuser`, it is loud about why there is nothing to say.
+
+**E3 came back better than the packet asked for.** I asked for a declaration.
+What landed is a discipline visible in code: E2's frame is accounted through
+`Conservation_monitor.discarded` and never through `frame_out ~aborted:true`. A
+NO-ASSERT row is the easiest place in a bench to write a false green, and this
+one cannot — the forbidden monitor is not un-driven by accident, it is
+un-drivable by the helper the row uses.
+
+**E4's second check is the finding of this review, and it is against my packet.**
+I asked that the `/E/`'s presence be asserted before the negative. The file does
+it twice: once from the stimulus closure, once from `s.in_word` — the word
+`Bench.run` **actually drove**. **The second catches a failure the first
+cannot**: a `?word_at` hook passed but never consulted would satisfy the
+closure-side check, because that check interrogates the closure rather than the
+bench. Only the driven-word check proves the `/E/` reached the DUT. **That
+distinction was not in my packet and it should have been** — I generalised the
+`residue_ok`-both-directions lesson to "verify the stimulus" without noticing
+that a stimulus has two places it can fail, and only one of them is where I
+looked.
+
+**On the cross-check I was asked for a keep/move/strip ruling and the answer got
+larger the longer I looked at it.** The obvious grounds are that it raises
+rather than prints (so §6 rule 5 is untouched) and that its shape is
+`check_disagreement_matches_r1`'s, which I upheld and which then caught two real
+design changes no content assertion could see. The decisive ground is different:
+**WO-0033's standing limit records that X-1's outcome model "is cross-checked
+against this plan's hand-derived rows", and nothing has been maintaining that
+claim.** It was true once. These two functions make it continuously true for
+family E's rows. That does not discharge `WO-0044` and it is not an external
+anchor, but it is the first mechanism in the programme that keeps the sentence
+alive rather than historical.
+
+`fail_cross`'s text is better than I would have written: it names the class,
+routes to me, and **bars adopting either derivation** — which is ADR-0015's
+governing clause applied to the model rather than the reference, arrived at
+independently by someone who had not read that ADR.
+
+So: keep, and a standing rule, since this is the **third** instance of the
+idiom. A model-vs-hand tripwire may live inside a committed expect test provided
+it raises rather than prints, names its finding class, and routes to dv_lead
+with an explicit bar on resolving it by adopting either side.
+
+**The parameter choices I checked rather than waved through, and E1's is better
+than adequate.** Octets 24–31 sit inside the payload, clear of the FCS at 60–63
+— but more than that, the eight `/E/` lanes sweep delivered counts 24…31, which
+is **all eight final-word fills including `delivered = 24`, the full-word case
+that is R-1's disagreement class.** The code computes `final_word_full`
+explicitly. My §2 asked for a per-sub-case statement of whether the final word is
+full; it was discharged by construction instead of by prose, which is stronger.
+E4's `terminate0 + 5` is guarded by an explicit strict-inside assertion, so a
+future `ifg` change cannot silently slide the `/E/` onto the `/T/` or `/S/`.
+
+**And the two different lengths are an anti-vacuity device nobody commissioned.**
+Equal frames would let a design that duplicated one or dropped-and-repeated pass
+`split_at_first_tlast`; 60 and 64 delivered octets make them distinguishable.
+
+**Declining the budget was right and I want it as precedent rather than as a
+compliment.** The one-addition budget bounds **`Bench`'s exported surface** —
+what every future family inherits — not a row's own helpers. Where an existing
+accessor already exposes what a row needs, a file-local helper and no packet
+question is the correct move. Asking would not have been wrong; not needing to
+ask is better, and the next family should be able to cite this rather than
+re-derive it.
+
+**No repairs owed. That is the first time**, and it is worth saying that the bar
+did not move: I enumerated the prohibition rather than sampling it, checked the
+trap answer at its cited line rather than accepting it, and looked for the
+vacuity shapes I have been wrong about twice. The round survived that.
+
+### Actions
+- **Verified E2's `tuser` prohibition by exhaustive enumeration** of every
+  occurrence in the file, and recorded why the structural substitute is the
+  right one.
+- Confirmed **E3's mechanical discharge** through
+  `Conservation_monitor.discarded`, never `frame_out ~aborted:true`.
+- Verified **E4's two positive checks** and recorded that the driven-word one
+  catches a failure the stimulus-side one cannot — **a gap in my own packet**.
+- **Checked all three trap answers at their cited lines**, including
+  `injection.ml:135`'s unconditional `~fcs_valid:false`.
+- **Ruled the embedded cross-check KEEP**, on the WO-0033 maintenance ground,
+  and issued a standing rule for the model-vs-hand tripwire idiom.
+- Verified **E1's octets 24–31 sweep all eight final-word fills** including the
+  full-word R-1 case, and **E4's guarded gap offset**; named the two-length
+  choice as an anti-vacuity device.
+- **Ruled the declined bench budget correct and made it precedent**, with the
+  budget's scope stated as `Bench`'s exported surface.
+- Confirmed **nothing prints** (`grep -c` = 0) and predicted **runtest GREEN,
+  fifteen silent units**; named warning 9 on two record literals as the Build
+  risk.
+- Flipped WO-0043 to **ACCEPTED**; appended `RV-0043-VERDICT`.
+- Opened no `libs/**`. No `git commit`, no `git push`.
+
+### Evidence
+1. Exhaustive `grep -n tuser`: seven occurrences, each accounted for; none is an
+   assertion inside `run_e2`.
+2. `run_e2` asserts `tlast_sample samples = None` and `delivered_samples = []` —
+   structural, not field-reading.
+3. `account_dropped_frame` routes to `Conservation_monitor.discarded`;
+   `frame_out ~aborted:true` appears nowhere in E2's path.
+4. E4 checks the `/E/` at `word_at ~cycle:e_cycle` (pre-run) **and** at
+   `s.in_word` for the sample at `e_cycle` (post-run), both before the
+   `error_pulses` emptiness assertion.
+5. `injection.ml:135`: `Arrival.create ~ifg ~first_start ~fcs_valid:false
+   frame_octets` — unconditional, no branch on corruption kind.
+6. `fail_cross`: "Injection model cross-check disagrees on … report this to
+   dv_lead per WO-0043 section 1; do not silently adopt either derivation".
+7. `e1_word_octet0 = 24`; the eight lanes give delivered 24…31 — all eight
+   final-word fills, including the full-word case at 24.
+8. `grep -cE "print|Stdio|printf|Out_channel"` → **0**; three new
+   `%expect_test`s, fifteen total.
+
+### Outcome
+**WO-0043 round 1: ACCEPT, no repairs owed** — the first such round. All six
+sharp edges verified; the cross-check kept with a standing rule; the declined
+bench budget made precedent.
+
+**Expected CI: Build the unknown (warning 9 on two record literals); `runtest`
+GREEN, fifteen silent units, no promotion.** After it: family E's five-class
+sealed-mapping qualification per WO-0043 §8.
+
+`SO-M03` unchanged: does not issue.
+
+### Open-questions
+- **A gap in my own packet, now closed by the worker's instinct**: "verify the
+  stimulus" has two failure sites — the stimulus's own construction, and whether
+  the bench actually drove it. **Future packets must ask for both**, and this
+  belongs in the next bench packet's regime facts beside the
+  `residue_ok`-both-directions rule it generalises.
+- **Standing rule, new**: a model-vs-hand tripwire may live inside a committed
+  expect test if it raises rather than prints, names its finding class, and
+  routes to dv_lead with a bar on adopting either side.
+- **Precedent, new**: the one-addition budget bounds `Bench`'s exported surface,
+  not a row's own helpers.
+- **Family E's qualification is next**, five defect classes with the row mapping
+  sealed before any diff exists — the first campaign under the
+  intents-public/mapping-sealed compromise.
+- **Owed to family F**: §9 ruling 9's sub-5-octet class, and the bound it puts on
+  REQ-104's verification.
+- **`WO-0044` Phase 1** — the bridge — remains blocked on ADR-0015's E3 answers;
+  Phase 0 is frozen and its V7 prediction still decides how much of REQ-104 the
+  lane can touch.
+- **Owed by me, unchanged**: the `precompile_check.sh`
+  side-effect-in-combinator lane; `AP` §7's fuller rewrite distinguishing X-1's
+  placement machinery from its outcome model.
+- **M03-A3's blindness to lane-symmetric errors remains untested**; my M04
+  contamination from `J-dv_lead-0024` still stands.
+- **Unchanged**: the RFC 1071 anchor closes on the next CI run that fetches;
+  X-7, X-10, X-11 deferred; L1–L5 owed as a separate packet.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0043_tb-m03-family-e-error-character.md

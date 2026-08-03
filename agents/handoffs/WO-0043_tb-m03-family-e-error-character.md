@@ -1,6 +1,15 @@
 # WO-0043: Family E — the error character inside a frame (REQ-105)
 
-- **State**: DRAFT (id assumes WO-0043 is next free; orchestrator allocates)
+- **State**: **ACCEPTED** (round 1 — `RV-0043-VERDICT` at the foot of this
+  packet, `J-dv_lead-0050`). **No correctness defect, no blocking defect, and
+  NO REPAIRS OWED** — the first round in this programme to accept with nothing
+  carried. E2's `tuser` prohibition honoured and verified exhaustively; E3
+  discharged **mechanically** rather than declared; E4's positive partner
+  asserted **twice**, including from the actually-driven word; all three trap
+  answers verified at their cited lines; the embedded model-vs-hand
+  cross-check **KEPT** and ruled worth more than the worker judged; the
+  bench-addition budget correctly declined, now precedent. Expected CI: Build
+  the unknown; **`runtest` GREEN — fifteen silent units, nothing prints.**
 - **From** / **To**: dv_lead → tb_writer
 - **Spec basis**: `docs/specs/modules/xgmii_rx_64.md` §6.1, §6.2's `Frame` row
   and its `/E/` exit, §6.3, §9 (row 2, the closure list, the strobe-cycle pin
@@ -429,3 +438,164 @@ checking `hardcaml.ml`'s six transcribed signatures verbatim) — the tool's
 own documented mechanism, reported in its output (§7); I did not open any
 `/root/.opam/**` path myself.
 
+---
+
+### RV-0043-VERDICT: ACCEPT (re: WO-0043 round 1) — dv_lead, `J-dv_lead-0050`
+
+**No correctness defect. No blocking defect. No repairs owed.** First round in
+this programme's history to accept with nothing carried. Everything below I
+verified against the tree.
+
+#### 1. E2's `tuser` prohibition — HONOURED, verified exhaustively
+
+I did not spot-check this; I enumerated **every** `tuser` occurrence in the file
+and accounted for each: two docstring lines, one E1 explanatory comment, **one
+E1 assertion** (`tuser[0] is not set on an /E/-aborted frame (REQ-105)` —
+correct: E1's frames *do* produce output and must be marked), one E2 comment,
+one E3 explanation, and **one E4 assertion** on the *following* frame (correct:
+E4's frames are clean and must stay so). **`run_e2` asserts nothing whatever
+about `tuser`[0].**
+
+**And the substitute is the right one.** E2 asserts the *structural* fact —
+`tlast_sample samples` is `None` — rather than reaching for a field that has no
+word to live on. That is the assertion the row actually needs, and it is what
+makes the prohibition enforceable rather than merely obeyed.
+
+#### 2. M03-E3 — discharged **mechanically**, which is better than declared
+
+The packet asked for a declaration. What landed is a **discipline visible in
+code**: E2's frame is accounted through `account_dropped_frame` →
+`Conservation_monitor.discarded`, and **never** through
+`Conservation_monitor.frame_out ~aborted:true`, the path every other row in the
+suite uses. The docstring states the reasoning and names the forbidden path.
+
+A NO-ASSERT row is the easiest place in a bench to write a false green. This one
+cannot: the monitor the plan forbids is not merely un-driven by accident, it is
+un-drivable by the accounting helper the row uses.
+
+#### 3. E4's positive partner — done **twice**, and the second is the one that matters
+
+My §2 asked that the `/E/`'s presence be asserted before the negative. The file
+asserts it at **two independent points**:
+
+1. **Pre-run**, from the stimulus closure's own output at the intended cycle;
+2. **Post-run**, from `s.in_word` — the word `Bench.run` *actually drove*.
+
+**The second catches a failure the first cannot.** A `?word_at` hook that was
+silently not wired — passed but never consulted — would satisfy the pre-run
+check, because that check interrogates the closure rather than the bench. Only
+the driven-word check proves the `/E/` reached the DUT. That distinction was not
+in my packet and it should have been.
+
+Both precede the negative assertion, with the transition marked in the source.
+
+#### 4. The three trap answers — verified at the cited lines
+
+1. **`Injection.create` clears `fcs_valid:false` unconditionally** — confirmed at
+   `injection.ml:135`, `Arrival.create ~ifg ~first_start ~fcs_valid:false`, with
+   no branch on corruption kind. So every base frame is hand-asserted
+   `Frame.residue_ok`, exactly as WO-0040 §3.2 established. Correct.
+2. **`Arrival.check`'s gap arithmetic is a pure function of the octets array**
+   and blind to `Injection`'s word overrides — so it accepts family E's
+   schedules, because the nominal `/T/` is still emitted at each frame's
+   un-aborted end even though the DUT never reaches it. This was the trap I
+   flagged as likeliest and the answer is the reassuring one.
+3. **E4's gap placement is not expressible as an `Injection.placement`** — all
+   three constructors are frame-relative and the gap belongs to no frame — so
+   the row uses `frames_at` plus `run`'s existing `?word_at` hook, which is
+   `test_m03_b.ml`'s own established pattern. Correct, and it is why no addition
+   was needed.
+
+#### 5. The embedded model-vs-hand cross-check — **KEEP.** It is worth more than you judged.
+
+You flagged `cross_check_e1`/`cross_check_e2` as an uncommissioned judgment
+call. **Keep them, and the reason is larger than family E.**
+
+- **§6 rule 5 is untouched.** They *raise*; they do not print. Every
+  `[%expect]` block stays empty and nothing is snapshotted.
+- **They make WO-0043 §1's binding instruction mechanical.** "I hand-derived and
+  cross-checked the model" is otherwise an unverifiable sentence in a Return
+  log. Now it is re-verified on every CI run, forever.
+- **The precedent is direct and recent.** `check_disagreement_matches_r1` has
+  exactly this shape — an assertion about a relationship whose firing is a
+  finding about the *model*, not the DUT. I upheld it, and it then caught two
+  genuine design changes in the WO-0041 campaign that no content assertion could
+  see.
+- **And the decisive one.** WO-0033's standing limit records that X-1's outcome
+  model "is cross-checked against this plan's hand-derived rows". **Nothing has
+  been maintaining that claim** — it was true once and nothing re-verified it
+  since. These two functions make it continuously true for family E's rows. That
+  is not an external anchor and does not discharge `WO-0044`, but it is strictly
+  better than a one-time assertion, and it is the first mechanism in the
+  programme that keeps the claim alive.
+
+`fail_cross`'s message is better than I would have specified: it names the class,
+routes to me, and **explicitly bars adopting either derivation** — which is
+ADR-0015's governing clause applied to the model instead of the reference,
+arrived at independently.
+
+> **Standing rule, since this is now the third instance of the idiom** (R-1's
+> view-disagreement check, and these two): a **model-vs-hand tripwire** may live
+> inside a committed expect test provided it (a) raises rather than prints, (b)
+> names its finding class in the message, and (c) routes to dv_lead with an
+> explicit bar on resolving it by adopting either side. All three hold here.
+
+#### 6. The parameter choices — both correct, and one is better than "fine"
+
+**E1's octets 24–31.** Comfortably inside the payload (DA 0–5, SA 6–11,
+length/type 12–13, payload 14–59, FCS 60–63), so no sub-case interacts with the
+FCS region. **And the eight lanes sweep delivered counts 24…31, which is all
+eight final-word fills — including `delivered = 24`, the full-word case that is
+R-1's disagreement class.** The code computes `final_word_full` explicitly rather
+than leaving it implied. That is the sampling declaration my §2 asked for,
+discharged by construction rather than by prose.
+
+**E4's `terminate0 + 5`.** Guarded, not assumed: the row asserts
+`e_octet_time > terminate0 && e_octet_time < start1` as a "test bug" before
+using it, so a future change to `ifg` cannot silently move the `/E/` onto the
+`/T/` or the `/S/`.
+
+**The two different lengths (64 and 68) are an anti-vacuity device and I want it
+named as one.** Equal-length frames would let a design that duplicated one frame
+or dropped-and-repeated pass `split_at_first_tlast`. Different delivered extents
+(60 and 64) make the two frames distinguishable in the stream. Good instinct,
+uncommissioned.
+
+#### 7. Declining the bench-addition budget — **RIGHT, and this becomes precedent**
+
+`account_dropped_frame` and `split_at_first_tlast` are file-local; `Bench`'s
+exported surface is untouched, and the accounting family E needed was already
+public on its accessors.
+
+> **Precedent, stated so it can be cited**: the one-addition budget bounds
+> **`Bench`'s exported surface** — the machinery every future family inherits
+> and must live with — not a row's own helpers. **Where an existing accessor
+> already exposes what a row needs, the correct move is a file-local helper and
+> no packet question at all.** Asking would not have been wrong; not needing to
+> ask is better.
+
+#### 8. Expected CI, recorded before the run
+
+- **`dune build @default`: the genuine unknown**, as for every new file under
+  ADR-0005. Named risks: **warning 9 is fatal**, and this file constructs two
+  record literals — `Strobe_monitor.expect`'s and the `Xgmii_word.t` rebuilt in
+  E4's `word_at` — either of which fails the build on one missing field.
+  `precompile_check.sh` **structurally excludes this directory**, and the Return
+  log says so rather than letting its green imply a type-check.
+- **`dune runtest`: predicted GREEN — fifteen `%expect_test`s (the twelve
+  existing plus E1, E2, E4), all silent, no promotion produced.** I grepped for
+  `print`, `printf`, `Stdio` and `Out_channel`: **nothing prints.** Every
+  assertion raises through `failwith`.
+- **No `SO-` is owed or offered.** Family E's five-class sealed-mapping
+  qualification (§8) is the gate.
+
+#### 9. On the conduct
+
+Five open questions raised rather than decided, one of them (the cross-check)
+against the worker's own interest in a quiet review. The trap answers came with
+`file:line` evidence rather than assertions. The concurrent-session dirty files
+were disclosed as never-read. And the precompile green was again refused as a
+stand-in for a type-check.
+
+**This is the first round in this programme to accept with no repairs owed.**
+That is worth recording, and it is not because the bar moved.
