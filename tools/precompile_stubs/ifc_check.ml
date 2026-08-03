@@ -16,14 +16,32 @@
      can never be skipped. A drift between this file and the lift fails the
      harness.
 
-   UNVERIFIED — and this is the one gap, named rather than hidden
+   NOT RE-CHECKABLE BY THIS HARNESS — a limit of this tool, NOT an open
+   programme gap. The distinction is the correction below.
      [Axi64.Source] and [Axi64.Dest] are NOT in the lift. The lift writes
        module Axi64 = Hardcaml_axi.Stream.Make (Axi64_config)
-     so their field names come from hardcaml_axi v0.17.0's stream_intf.ml,
-     which SPEC-M01 §11.4 already records as "transcribed and unverified by
-     compilation". hardcaml_axi's sources are not present in this container,
-     so lane 2b cannot re-check these six names and says so. They are settled
-     by the real CI build of test/axi64_probe/, not here.
+     so their field names come from hardcaml_axi v0.17.0's stream_intf.ml.
+     hardcaml_axi's sources are not present in this container, so lane 2b
+     cannot re-check these six names and says so. They are settled by the
+     real CI build of test/axi64_probe/, not here.
+
+   CORRECTION (J-dv_lead-0049, on architect_docs_lead's return). Until now
+   this section read that SPEC-M01 §11.4 "already records" these names as
+   "transcribed and unverified by compilation", and cited that as support.
+   That citation was wrong, and wrong from the moment it was written:
+     - §11.4's **Status** has read CLOSED (WO-0010, CI run 30729342467)
+       since f78766e — the freeze SHA itself. The sentence I quoted is the
+       row's permanent **Item** cell, which states the ORIGINAL problem and
+       never changes; I read the Item column as though it were the Status
+       column, so the note was stale on the day it was committed rather
+       than going stale later.
+     - CI run 30769770945 is a CORROBORATION of that closure by SITE
+       INDEPENDENCE — bench.ml is an instantiated-DUT site outside the file
+       family that transcribed the names — and not a first discharge.
+   Nothing above this correction changes in substance: lane 2b still cannot
+   re-check these six names in this container. What changes is that the
+   limit is THIS HARNESS's, and must not be dressed as a standing programme
+   acknowledgement by citing a ledger row that is closed.
 
    SCOPE
      Types only. No values, so nothing here can be executed; a DV file that

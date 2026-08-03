@@ -12995,3 +12995,204 @@ architect_docs_lead in parallel.**
 ### Files-in-this-commit
 - agents/handoffs/WO-0043_tb-m03-family-e-error-character.md
 - agents/handoffs/WO-0044_cosim-lane-opening.md
+
+## [J-dv_lead-0049] 2026-08-13T11:30Z | task:WO-0044 | Phase 0 frozen before any bridge code — and its finding is that this lane can anchor only half of X-1's model, because the reference has no counterpart to §9's strobe taxonomy; plus my ifc_check note corrected, having cited a ledger row's Item cell as though it were its Status
+
+### Trigger
+Orchestrator, relaying architect_docs_lead's return on ADR-0015 (committed
+`9d357e6`, PROPOSED pending two sponsor E3 answers): three items are mine and
+Phase 0 is GO in parallel. (1) My SPEC-M01 §11.4 routing quoted the row's
+permanent **Item** cell as if it were its **Status**, which has read CLOSED
+(WO-0010, run 30729342467) since **f78766e — the freeze SHA itself**; run
+30769770945 is a corroboration by site independence, not a first discharge; my
+`ifc_check.ml` note has therefore been stale since f78766e, not since the bench
+compile. (2) Vendored third-party source is **outside** the `libs/**` bar (my
+reading confirmed), landing at `test/third_party/verilog-ethernet/`, with a
+converse obligation to fold into Phase 0 verbatim. (3) **REQ-902 is not extended
+to co-sim outputs**; the lane gets pinned-input reproducibility, with a hazard
+note that the determinism step stages untracked files so any simulator artifact
+left in the checkout fails the main suite. Do not touch `test/xgmii_rx_64/**` —
+the family-E worker is mid-flight.
+
+### Inputs
+- The architect's return as relayed, including the governing clause verbatim.
+- `tools/precompile_stubs/ifc_check.ml` lines 19–26 — my own stale note.
+- `agents/handoffs/WO-0044_cosim-lane-opening.md` §2 and §4 — my own Phase 0
+  scoping, now being executed.
+- `test/xgmii/injection.mli` — the `outcome` versus `report` split, which is
+  what §2 of the new document turns on.
+- `docs/specs/modules/xgmii_rx_64.md` §9's condition table and strobe pin;
+  `docs/specs/requirements.md` REQ-005, REQ-019, REQ-102, REQ-103, REQ-107,
+  REQ-108, REQ-110, §0.6.
+- `git status --short` and `git diff -- docs/adr/` — to establish that the
+  ADR-0015 modification in the tree is **not mine**.
+- **No `libs/**`, no `rtl_snapshots/**`, and no `test/xgmii_rx_64/**` this
+  sitting.**
+
+### Reasoning
+
+**The §11.4 correction is worse than "a stale note", and the architect's phrase
+"one line larger than you think" is exact.** I did not cite a fact that later
+changed; **I read the wrong column of a table.** §11.4's Item cell states the
+original problem and never changes; its Status cell has read CLOSED since
+f78766e — the freeze SHA. So the note was wrong on the day it was committed, and
+its wrongness was invisible because an Item cell reads exactly like a standing
+acknowledgement when quoted out of its row.
+
+**And the substance it distorted matters.** The note used that citation to dress
+a limitation of *my own harness* — lane 2b cannot re-check six field names
+because `hardcaml_axi`'s sources are not in this container — as a standing
+**programme** gap. Those are different claims, and conflating them makes a tool's
+blind spot look like an accepted risk. The corrected note separates them: the
+limit is this harness's, the programme closed the item at WO-0010, and run
+30769770945 corroborates that closure by **site independence** — `bench.ml` is
+an instantiated-DUT site outside the file family that transcribed the names —
+rather than discharging it first.
+
+**This is the same failure mode as "fifteen units", one level down.** There I
+quoted a relayed number nobody had measured; here I quoted a table cell nobody
+had checked was the operative one. My provenance rule says a quantity must be
+measured, derived or relayed-with-source. **It needs a clause: when the source
+is a tracked item, name the FIELD you read, not just the item.** "SPEC-M01
+§11.4 records X" is not a citation; "§11.4's Status cell reads X at SHA Y" is.
+
+**Phase 0's finding is the one I most wanted to surface before anyone builds.**
+X-1's outcome model computes two different kinds of thing — the **data-path
+outcome** (`received`, `delivered`, the resulting stream and its marking) and the
+**report** (which §9 strobe fires, on which pinned cycle). The reference is an
+AXI-Stream receiver whose error signalling is expected to be a `tuser` bit on
+`tlast`. **It is not expected to have counterparts for our five strobe names,
+still less for §9's per-strobe pinned cycles, which are SPEC-M03's own
+construction.**
+
+So **this lane can anchor half of X-1's model and not the other half**, and
+WO-0033's standing limit is only partly dischargeable by it. Any future `SO-`
+must say in its own words that the delivered/marking half rests on an
+independent implementation while **the strobe half rests on the specification
+and hand derivation alone**. Discovering that at Phase 3, after a bridge is
+built and a campaign is scoped around it, would have been expensive; discovering
+it in a document costs nothing. I froze it as a prediction so Phase 1 can
+falsify it.
+
+**I made the divergence list itself a frozen prediction rather than a settled
+list**, because I have not read the reference — it is not vendored yet — and a
+list of "permitted divergences" written from imagination is exactly the thing
+that later absorbs an inconvenient result. Seven entries, each naming what would
+confirm it, and **an unpredicted divergence is a finding against the document**,
+precisely as an unnamed reddening unit is a finding against a sealed matrix.
+**V7 is the one to watch**: if the reference drops bad-FCS frames — the commonest
+store-and-forward instinct, and REQ-005 forbids it for us — then family D's whole
+subject matter falls outside the comparison domain and REQ-104's verification
+continues to rest on family D's mutation-qualified bench alone. Which is a fine
+place for it to rest, provided the `SO-` says so rather than implying the co-sim
+covered it.
+
+**The governing clause is folded in verbatim and placed above everything else**,
+because its direction of authority is the thing most likely to erode under
+schedule pressure: the reference is an **anchor, not an oracle**. My own §0
+freeze clause said differences may not be reclassified after a run shows them;
+the architect's clause is stronger and names the three legitimate resolutions
+explicitly. I kept both, with the architect's governing.
+
+**The canonical form is transaction-level and carries no version string**, for
+two reasons that came from the D3 ruling and would not have occurred to me
+unprompted. Cycle-stamping would report the reference's different latency as a
+divergence on every frame; and a version embedded in the compared artifact turns
+every toolchain upgrade into a false difference and the two-run reproducibility
+check into noise. Provenance goes in a sidecar.
+
+**The artifact-hazard note is a hard design constraint and I wrote it as one.**
+The determinism step stages untracked files *deliberately*, so a stray waveform
+dump or object directory fails the main suite. I added the clause that the
+hazard note implies but does not state: **the bridge must clean up on the
+failure path as well as the happy path**, since a harness that tidies only when
+it succeeds will strand artifacts on exactly the runs that matter.
+
+**Two things in the tree are not mine and I am flagging rather than touching
+them.** `docs/adr/ADR-0015…md` shows modified — it is architect_docs_lead's
+in-flight revision moving the ADR to ACCEPTED and naming Icarus, and `docs/**`
+is outside my write scope in any case. **I pinned the CD document's citation to
+the committed state at `9d357e6` rather than build on an uncommitted foreign
+edit**: a frozen document that rests on another agent's unlanded work is not
+frozen. And `test/xgmii_rx_64/test_m03_e.ml` is untracked — the family-E worker
+mid-flight, which I was told not to touch and did not. **Neither belongs in my
+commit**, and R1's one-agent-per-commit rule needs the orchestrator to keep them
+out.
+
+### Actions
+- **Corrected `tools/precompile_stubs/ifc_check.ml`**: retitled the section from
+  "UNVERIFIED — the one gap" to **"NOT RE-CHECKABLE BY THIS HARNESS — a limit of
+  this tool, NOT an open programme gap"**, removed the false citation, and
+  recorded the correction in place — §11.4's Status CLOSED at WO-0010 since
+  f78766e, my Item-for-Status misreading, and run 30769770945's role as
+  corroboration by site independence.
+- **Authored `test/attack_plans/CD-xgmii_rx_64_cosim.md`** — WO-0044 Phase 0,
+  FROZEN for Phase 1: the freeze discipline; the governing clause **verbatim and
+  placed first**; the anchorable-half finding; the transaction-level canonical
+  form with provenance in a sidecar; pinned-input reproducibility exercised by a
+  two-run diff; the domain (D1–D5 in, X1–X5 out); **seven predicted divergences
+  as a frozen prediction**; the artifact-hygiene constraint with the
+  failure-path clause; Phase 1's instance including the **deliberate mismatch
+  check**; and a change discipline.
+- **Pinned the ADR citation to `9d357e6`** and recorded the uncommitted revision
+  without building on it.
+- Re-ran `tools/dv_checks.sh` — all runnable checks pass.
+- **Did not touch `test/xgmii_rx_64/**`.** Opened no `libs/**`. No `git commit`,
+  no `git push`.
+
+### Evidence
+1. §11.4's Status has read CLOSED (WO-0010, run 30729342467) since **f78766e**;
+   the sentence I quoted is its Item cell.
+2. `injection.mli` exposes `outcome` (data path) and `report` (strobe name +
+   pinned cycle) as distinct types — the split §2 turns on.
+3. Our five strobe names are SPEC-M03 §9's construction; an AXI-Stream receiver
+   signals invalidity as a `tuser` bit on `tlast`.
+4. REQ-019's ΔC = 3 is ours — the basis for excluding cycle timing (X1) and for
+   the transaction-level canonical form.
+5. `git diff -- docs/adr/` shows 91 insertions / 26 deletions authored by
+   architect_docs_lead, not by me.
+6. `git status --short` shows `test/xgmii_rx_64/test_m03_e.ml` untracked — the
+   family-E worker's file, untouched by this sitting.
+
+### Outcome
+**Phase 0 is frozen**, before any bridge code, vendored source or run. Its
+finding — **the lane anchors the data-path half of X-1's model and not the
+strobe half** — is on the record before anyone builds around the assumption that
+it anchors both.
+
+**The `ifc_check.ml` note is corrected at the site**, with the Item-for-Status
+misreading recorded rather than quietly fixed.
+
+**Two foreign changes in the tree are flagged and excluded from my commit.**
+
+### Open-questions
+- **Provenance rule needs a clause**: when the source is a tracked item, cite
+  the **field** you read and the SHA you read it at. "§11.4 records X" is not a
+  citation; "§11.4's Status cell reads X at f78766e" is. Owed into the next
+  bench packet's regime-facts section alongside the other nine.
+- **When ADR-0015's revision lands** (ACCEPTED, Icarus named), the CD document's
+  citation line and its simulator-agnostic phrasing get a recorded update under
+  §9's change discipline.
+- **V7 decides how much of REQ-104 the co-sim can ever touch.** If the reference
+  drops bad-FCS frames, family D stays anchored by its own campaign alone and
+  the `SO-` must say so.
+- **The strobe half needs a different anchor or an explicit `SO-` caveat.** This
+  lane cannot supply one, and pretending otherwise later would be the
+  expectation-amending the governing clause forbids.
+- **Phase 1 tests this document**, not only the bridge: an unpredicted divergence
+  is a finding against §6.
+- **Family E is mid-flight**; its `§4` trap answers are still owed and are a
+  deliverable of that packet.
+- **Owed by me, unchanged**: the `precompile_check.sh`
+  side-effect-in-combinator lane; SPEC-M01 §11.4's caveat retirement is now
+  **discharged** by the correction above and needs no further routing;
+  `AP` §7's fuller rewrite, which should distinguish X-1's placement machinery
+  from its outcome model.
+- **M03-A3's blindness to lane-symmetric errors remains untested**; my M04
+  contamination from `J-dv_lead-0024` still stands.
+- **Unchanged**: the RFC 1071 anchor closes on the next CI run that fetches;
+  X-7, X-10, X-11 deferred; L1–L5 owed as a separate packet.
+
+### Files-in-this-commit
+- test/attack_plans/CD-xgmii_rx_64_cosim.md
+- tools/precompile_stubs/ifc_check.ml
