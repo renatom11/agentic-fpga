@@ -6148,3 +6148,41 @@ implementation with proving scenarios (§11).
 
 ### Files-in-this-commit
 - agents/PROTOCOL.md
+
+## [J-orchestrator-0139] 2026-08-03T18:05:00Z | task:WO-0050 | Board and site landing: F campaign closed, seal rule in force, lane green
+
+### Trigger
+Three arcs closed since the last landing: WO-0050 (8/8), the
+ADR-0016 acceptance + transcription, WO-0049's lane-green close.
+
+### Inputs
+RV-0050-VERDICT (c3e877a); 8d83371 + 00519fd; run 30830553582.
+
+### Reasoning
+Three BOARD rows added (WO-0050, WO-0051, WO-0049); WO-0046's row
+already carries the lane-green state. Site rebuilt in place: the
+tree was fully committed before the rebuild (git status clean of
+agent files), so counts are committed-state without the worktree
+detour.
+
+### Actions
+BOARD rows; site rebuild; this commit; push.
+
+### Evidence
+git status before rebuild showed only tasks/BOARD.md modified.
+
+### Outcome / DoD
+The sponsor-facing record carries the campaign, the constitution
+change, and the lane state.
+
+### Open questions
+None new; dv's follow-up packet (AP edits + F-4 disposition +
+ADR-0017 countersign) dispatches next.
+
+### Files-in-this-commit
+- tasks/BOARD.md
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/index.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html
