@@ -247,3 +247,99 @@ because the reference has no counterpart to §9's strobe taxonomy.
 Phase 2 is scoped after Phase 1's result, because Phase 1 will teach us what the
 bridge actually costs. No additional lengths, no second start lane, no error
 paths, no additional module pairs.
+
+## Return log
+
+### data_wrangler — `tools/cosim/run_cosim.sh` (RETURNED)
+
+**Journal**: `J-data_wrangler-0001`. **Write scope used**: `tools/cosim/run_cosim.sh`
+only (new file); nothing under `test/**` read or written.
+
+**What was built**: the single CI entry point §2.1 names. It checks
+prerequisites (`iverilog`, `vvp`, `dune` all on `PATH` — absence is
+`EXIT_PREREQ=2`, never a PASS, per ADR-0015 D1's standing rule), builds the
+three pinned OCaml executables plus the `iverilog`/`vvp` reference sim, then
+sequences §4's three checks in order: 4.1 the differential comparison, 4.2
+`compare --self-test` through the production path, 4.3 the two-run
+byte-for-byte determinism diff of `ours.canon` and `theirs.canon`. Every
+simulator/harness artifact — the compiled sim binary, the stimulus, both
+canonical files, both sidecars — lives under one `mktemp -d`; `trap … EXIT`
+removes it on every exit path, including every failure branch. On a
+differential or determinism failure, both canonical files and both sidecars
+are `cat` to stdout before cleanup runs (§7.3). The vendored reference's pin
+is read from `test/third_party/verilog-ethernet/PROVENANCE.md` at run time
+and recorded in the sidecar — never inside a compared file — alongside the
+simulator's version (`iverilog -V`'s banner and the `dpkg-query` package
+version) and a best-effort runner-image identifier.
+
+**Exit-code map** (also documented in the script's own header comment): `0`
+PASS · `2` PREREQ (iverilog/vvp/dune absent — did not run) · `3` BUILD (`dune
+build`, the `iverilog` compile, or a pinned executable failed to run or
+produce its file) · `4` DIFFERENTIAL (check 4.1) · `5` SELFTEST (check 4.2) ·
+`6` DETERMINISM (check 4.3) · `9` INTERNAL (bad invocation, unparseable
+`PROVENANCE.md`, `mktemp` failure).
+
+**Interface decision flagged for tb_writer/dv_lead review** — §2.1 pins file
+names but not an argv/CLI or filename contract for the four pinned entry
+points, and I was told to build against the pinned interface rather than
+guess, so the guess that had to be made is written down rather than made
+silently. Absent a pin, `run_cosim.sh` commits to the smallest contract
+matching this repository's existing zero-argument idiom (`bin/generate.exe`):
+each of `stimulus_gen.exe`, `ours_run.exe`, `compare.exe` and
+`tb_xgmii_rx_64.v` takes **no CLI arguments** and reads/writes **fixed,
+cwd-relative** filenames (`./stimulus.txt`, `./ours.canon`, `./theirs.canon`);
+the harness places every path by controlling **cwd alone**, never a flag.
+This is spelled out at length in the script's own header (the section headed
+"WHAT THIS SCRIPT ASSUMES…") so it is easy to find and easy to overrule — if
+a different contract is wanted, only the four call sites marked `# INTERFACE`
+in `run_cosim.sh` need to change; the sequencing, hygiene and exit-code logic
+around them do not. Similarly, the `iverilog` invocation adds no flags beyond
+`-o <bin> <sources>` — ADR-0015 D1's own literally quoted shape — so if
+`tb_xgmii_rx_64.v` turns out to need `-g2012` or another generation flag,
+that is a one-line change here, not an assumption made now.
+
+**§6's four questions are tb_writer's to answer, not mine** — per §5's table
+they govern `test/cosim/canonical.ml` and `tb_xgmii_rx_64.v`'s content
+(parameter mapping, `tuser` polarity, the M03/`axis_xgmii_rx_64` pairing,
+per-side accept/discard derivation), none of which is `tools/cosim/`, and
+`test/**` is outside my write scope and outside what my charter reads. Not
+answered here for that reason, not by oversight.
+
+**Local testing performed** (this container has no simulator at all —
+confirmed empirically, see below and my journal's Evidence):
+- `bash -n tools/cosim/run_cosim.sh` — clean syntax.
+- `shellcheck tools/cosim/run_cosim.sh` — **zero findings, exit 0**
+  (shellcheck 0.9.0; not present in the base container, installed via
+  `apt-get install -y shellcheck` for this one check, per the standing
+  "try; report" instruction — this is a local dev-container action, not a
+  claim about CI).
+- **The degraded path, run for real**: `iverilog`, `vvp` and `dune` are all
+  absent from `PATH` here (`command -v` on each returns nothing). Running
+  `tools/cosim/run_cosim.sh` with no arguments fails at the PREREQUISITES
+  check, names all three missing tools on stdout, and exits `2`
+  (`EXIT_PREREQ`) — never `0`. Verbatim output is in `J-data_wrangler-0001`'s
+  Evidence.
+- The "everything present" path (build, `iverilog` compile, stimulus
+  generation, both runs, both checks, the determinism diff) could not be
+  executed in this container and is traceable by review only, as the task
+  anticipated; `test/cosim/`'s executables and `tb_xgmii_rx_64.v` do not yet
+  exist in this checkout either.
+- Confirmed the degraded-path run left nothing behind: `git status` shows
+  nothing new under `tools/cosim/` beyond the script itself, and the
+  `mktemp -d` directory the script created before dying at the prerequisite
+  check does not exist afterward — the `trap` fired.
+
+**Open questions**:
+1. Confirm or correct the zero-argument, fixed-relative-filename interface
+   assumption above before `test/cosim/`'s `dune` executables and
+   `tb_xgmii_rx_64.v` are written to a different contract.
+2. Confirm the bare `iverilog -o <bin> <tb> <ref1> <ref2>` invocation (no
+   `-g2012` or other generation flag) is sufficient for `tb_xgmii_rx_64.v`,
+   once it exists.
+3. `run_cosim.sh` lets `dune build` write to the checkout's own `_build/`
+   (dune's ordinary, `.gitignore`d cache) rather than relocating the OCaml
+   build tree into the `mktemp -d` too — reasoned through in the script's
+   header (§7.1 names *simulator* artifacts — iverilog/vvp output, VCDs,
+   logs, the stimulus, the canonical files, the sidecars — not the OCaml
+   toolchain's own cache, and `_build/` is already `.gitignore`d repo-wide).
+   Flagging in case dv_lead reads §7.1 more strictly than I have.
