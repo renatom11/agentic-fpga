@@ -16653,3 +16653,203 @@ orchestrator's.
 
 ### Files-in-this-commit
 - (none)
+
+## [J-dv_lead-0067] 2026-08-04T15:20Z | task:WO-0054 | Family G authored — and the scaling worry I recorded at family F was wrong in its axis: length was never the problem, and what actually changes is that the expected value stops being a function of the frame
+
+### Trigger
+Orchestrator, WO-0054: author the family-G bench packet for tb_writer against
+`AP-xgmii_rx_64.md` §4.G, under the plan as edited at `a2a3342`, with five
+standing facts named as binding — class (f)'s exclusion, the literal §0.6
+window, the uncitable shared-no-output-path claim, assertion order as contract,
+and my own F-4 rule that a packet specifies the observable and leaves the
+mechanism to the party that can see it. Answer the scaling question I flagged at
+the family-F design.
+
+### Inputs
+- `test/attack_plans/AP-xgmii_rx_64.md` §4.G's six rows **and the family note I
+  added at `J-dv_lead-0060`**, §4.C's M03-C3, §7's split X-1 row and its X-5
+  entry, §8 item 5, standing obligations 1 and 6.
+- `docs/specs/requirements.md` **REQ-108 in full**, REQ-103, REQ-104, §0.3, §0.6,
+  §0.7; `docs/specs/modules/xgmii_rx_64.md` §9's rulings 2, 6 and 7 and the
+  strobe pin, §6.2's `Discard` row, §6.3 item 6, §10's REQ-108 hook and REQ-901
+  row.
+- `test/xgmii/frame.mli` — **`Frame.delivered`'s docstring, read in full**, which
+  is where this packet's trap came from; `test/xgmii/injection.mli`'s `placement`
+  and `corruption` types and its exported surface; `test/xgmii_rx_64/bench.mli`'s
+  exported surface and `directed_frame_octets`'s docstring.
+- `WO-0047` §4.2 and §8; `RV-0047-VERDICT` ruling 2; `RV-0050-VERDICT` §2 and §6;
+  `J-dv_lead-0060`, `J-dv_lead-0065`.
+- **No `libs/**`, no `docs/reports/audit/**`, no `/workspace/**`, no
+  `docs/adr/**`.**
+
+### Reasoning
+
+**The scaling question first, because I asked it and the answer is that I asked
+it about the wrong axis.** At the family-F design I recorded a worry that
+hand-derivation of expected values might stop scaling at G, where frames are 1600
+octets and deliver 1514. **It does not, and the reason is that this programme has
+never tabulated anything.** M03-C3 already drives 1518 → 1514 octets in 190 words
+with every expected value **computed from the injected frame by a formula taken
+from the specification**. Length is not a scaling axis for a derivation; it is a
+scaling axis for a *table*, and there are no tables.
+
+**What actually changes at G is a different thing entirely, and naming it
+precisely is the useful output.** In families A through F the expected delivered
+set is a function of the **frame**: `Frame.delivered octets`, REQ-103's rule,
+one helper, always right. At G the expected set is a function of the frame **and
+of a specification constant that has no counterpart in any earlier family** —
+REQ-108's **1514**. So the risk moves from arithmetic volume to **which clause
+governs**, and no machinery fixes that. What fixes it is a stated obligation, so
+§8 makes it deliverable 1: **per member of every row, declare whether REQ-103's
+removal or REQ-108's truncation governs, and cite the clause.**
+
+**And what anchors that? The requirement itself, which makes family G the least
+oracle-dependent family so far.** 1514 is written in REQ-108's own text and
+restated in SPEC-M03 §10's REQ-108 hook. There is no model to consult and none
+permitted: X-1's oracle half is gated (§7's split row), and REQ-901 class (f)
+means the co-simulation can never anchor REQ-108 at all. **The oracle for this
+family is a number in the requirement**, and the derivation from it is one line
+per member.
+
+**The trap is the sharpest of the four and it is baited, which is why it leads
+the packet rather than sitting in a machinery section.** `Frame.delivered`
+implements REQ-103's FCS removal. REQ-108 says **no FCS stripping is attempted on
+a truncated frame**. So on a 1519-octet frame the helper every previous family
+correctly reaches for returns **1515** octets where the truth is 1514, with
+`tkeep` = 0x07 against 0x03 — and a row built that way **fails a conformant
+design and reads exactly like a REQ-108 defect.** A false DUT finding is worse
+than a crash, because it is believed.
+
+**The bait is what makes it worth a section of its own.** At **1518** —
+M03-G2's own first member — `Frame.delivered` is **right**, because 1518 − 4 =
+1514 is arithmetically the truncation constant. **One helper is correct for the
+first member of the sharpest row in the family and wrong for its second.** A
+worker who chooses a helper per row rather than per member gets exactly the row
+whose whole point is that the two frames are indistinguishable on the data path.
+This is the fourth stimulus trap in four families and the first that would have
+produced a finding against the design rather than an exception.
+
+**I checked whether family G leans on the claim I have just barred, and it does
+not.** Every oversize frame here delivers 1514 octets, so every one has a `tlast`
+and every strobe takes §9's ordinary pin. M03-G6's "no output word between the
+truncation point and the next start character" is a statement about an
+**interval**, not a no-output-word frame. So `WO-0047` §1.2's unestablished
+shared-path claim is not reachable from any G row, and I said so in the packet
+positively rather than leaving its absence to be inferred — a reader who finds
+themselves reaching for it has mis-derived a pin.
+
+**M03-G6 is where I test my own F-4 rule, in the direction it has not been tested
+in.** The rule — *a packet specifies the observable and leaves the mechanism to
+the party that can see it* — was written after I over-pinned a mutation's
+direction. Here the same discipline points at machinery: I do not know whether
+`Injection` can express a frame that is never closed by a terminate. Its
+`placement` offers `At_preamble`, `At_octet`, `At_terminate`, and `Place`
+**replaces** rather than removes. **So I stated the stimulus in specification
+terms and instructed the worker to establish the mechanism and return the
+question rather than invent it.** Naming a construction I have not traced is
+precisely what put a worker into a wall at `WO-0047` §4.1, and the cheapest place
+to not repeat that is here.
+
+**Two rulings I made on my own precedent rather than escalating.** §0.6's window
+upper bound is uncomputable for G6, whose frame has no last octet until the next
+start character. `RV-0047` ruling 2 already settled that the window is a
+**secondary** bound and the exact pin is the assertion, so I ruled: use the widest
+defensible bound, state which and why, and let the exact `error_pulses` check
+carry the row. It blocks nothing, and I routed the underlying scope question to
+the architect anyway rather than leaving a spec gap unrecorded.
+
+**One thing I found while deriving G1 and kept, because it is free coverage.**
+`Protocol_monitor`'s standing `~max_words_per_frame:190` is **exactly** the bound
+a correct truncation produces (1514 = 189×8 + 2). So the standing monitor is a
+second, independent detector of G1's headline kill — and I asked which speaks
+first, because that answer is what a sealed message will turn on. It also makes
+me slightly uncomfortable and I said so in the packet's own open questions: the
+monitor bound and the requirement's constant coincide numerically by
+construction, so a single wrong constant would move both. That is a campaign-design
+note, not a bench one.
+
+**Five defect classes published, mapping sealed**, as WO-0043 and WO-0047 did.
+**G-c5 — truncated correctly and never reported — is the silently-always-pass
+class**, and it is the fourth family running where naming that class in advance
+is the packet's centre of gravity.
+
+**Scope discipline.** I touched **no** row of the plan. The rows commissioned are
+the ones already there, the family note already carries class (f)'s scope, and
+§8 item 5 already carries the barred claim. **Moving the denominator before a
+campaign is the thing I have twice refused to do**, and there was nothing here
+that needed it.
+
+### Actions
+- Authored **`agents/handoffs/WO-0054_tb-m03-family-g-oversize.md`**: six rows
+  (G1–G4 and G6 ASSERT, G5 declared NO-ASSERT and not built), the §2 trap, the
+  §1.2 class-(f) statement, the §1.3 barred-claim check, §3.6's window ruling,
+  §4's ordering contract, §5's two machinery questions, §7's five defect classes
+  with the mapping sealed, §8's six deliverables and §9's two upward questions.
+- **Answered the scaling question** in the packet and here: length was never the
+  axis; the governing-clause question is, and its anchor is REQ-108's own
+  constant.
+- **Scoped the lane axis in G2's row text** rather than leaving it to a Return-log
+  question — the third time that omission has cost a round trip (M03-D2, M03-F2).
+- Ruled §0.6's G6 window on `RV-0047` ruling 2 and routed the scope question up.
+- **Specified no mechanism for G6** and instructed the question be returned.
+- Touched **no** file under `test/attack_plans/**`, `libs/**`,
+  `docs/reports/audit/**` or `/workspace/**`. No `git`.
+
+### Evidence
+1. `test/xgmii/frame.mli:42` — `Frame.delivered`'s docstring is REQ-103's rule
+   verbatim ("through the last octet before the four FCS octets"), which is what
+   makes it wrong for a truncated frame and right at 1518.
+2. Arithmetic behind §2's bait, derived: 1518 − 4 = **1514**; truncation constant
+   = **1514**; 1519 − 4 = **1515** ≠ 1514, `tkeep` 0x07 against 0x03.
+3. 1514 = 189 × 8 + 2 → **190 words**, final `tkeep` **0x03** — the same 190 that
+   standing obligation 1 pins `~max_words_per_frame` to.
+4. `test/xgmii/injection.mli` — `placement` is `At_preamble | At_octet |
+   At_terminate` and `corruption`'s `Place` replaces a character; **no
+   constructor removes one**, which is the basis for §3.5's returned question
+   rather than an instruction.
+5. `test/xgmii_rx_64/bench.mli` — no truncation-aware helper on the exported
+   surface, so §5 expects a file-local one under `RV-0043-VERDICT` §7's precedent.
+6. `AP` §4.G is unchanged by this packet: **76 rows, 60 ASSERT**, no status word
+   altered.
+
+### Outcome
+**WO-0054 authored and ready to issue.** Six rows commissioned, five defect
+classes published with the row mapping sealed, six named deliverables, two
+machinery questions returned rather than answered, and two questions routed
+upward.
+
+**The scaling question is answered and the answer corrects me**: hand-derivation
+scales fine at G because nothing here was ever tabulated; what changes is that
+the expected delivered set stops being a function of the frame alone and becomes
+a function of the frame **and REQ-108's 1514**. Nothing replaces hand-derivation;
+a **per-member governance declaration** is added, and its anchor is the
+requirement's own constant — which makes family G the **least** oracle-dependent
+family so far, not the most.
+
+`SO-M03` does not issue: after family G, 26 of 60 ASSERT rows would be
+discharged.
+
+### Open-questions
+- **§0.6's upper bound for a frame with no last octet** — routed to
+  architect_docs_lead as a scope question. Blocks no row; the pin is exact and
+  the window is secondary (`RV-0047` ruling 2).
+- **`Protocol_monitor`'s 190 and REQ-108's 1514 coincide by construction.** A
+  single wrong constant moves both, so the campaign must not treat the monitor as
+  an independent detector of G-c1 without checking that first. Campaign-design
+  note, recorded before the campaign so it cannot be discovered during it.
+- **Whether `Injection` can express an unterminated frame is genuinely unknown to
+  me** and is the worker's to establish. If it cannot, the bench addition is a
+  returned request, not a workaround.
+- **X-5's behaviour on a truncated extent is unconfirmed** — family G is the first
+  family to truncate, and X-5 was built at WO-0033 for exactly this and has never
+  been exercised.
+- **The epoch-A no-output-word class** (`J-dv_lead-0065`) is still owed and I
+  intend it to ride with families G/H's campaign rather than take a round of its
+  own.
+- **Still owed**: AP-M14's §6 invariant; the `precompile_check.sh`
+  side-effect-in-combinator lane; M03-F5's discharge-by-citation qualification;
+  the RFC 1071 anchor on the next fetching run; X-7, X-10, X-11 deferred; L1–L5
+  as a separate packet.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0054_tb-m03-family-g-oversize.md
