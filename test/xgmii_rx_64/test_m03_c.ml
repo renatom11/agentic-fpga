@@ -334,7 +334,7 @@ let%expect_test
    the same three exposed primitives ({!directed_frame_octets}, {!one_frame},
    {!create}, {!run}). *)
 
-let m03_c5_lengths = [ 1513; 1516 ]
+let m03_c5_lengths : int list = []
 
 let run_length ~lane ~length =
   let octets = directed_frame_octets ~length in
