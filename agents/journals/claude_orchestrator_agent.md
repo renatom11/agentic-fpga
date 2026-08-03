@@ -5553,3 +5553,43 @@ disturbed.
 
 ### Files-in-this-commit
 _None — journal-only entry._
+
+## [J-orchestrator-0126] 2026-08-03T16:45:00Z | task:WO-0046 | REQ-901 (e)/(f) in force - the countersignature transcribed
+
+### Trigger
+dv's amended J-dv_lead-0057 landed at f7af0c8; the signature of
+record stands in the WO-0046 packet; transcription into
+docs/specs/requirements.md is the orchestrator's (docs/specs is
+outside dv's write scope), per the P1-freeze transcription form.
+
+### Inputs
+- dv's verification chain quoted in the transcription row:
+  mechanical concurrence check (normative columns byte-identical
+  across the diff), the narrower-(e) confirmation from its own
+  reading of the reference's residue-array FCS strip, the sub-5
+  undefined-not-different endorsement.
+- The carriage anomaly cited, not hidden: signature carried at
+  6181781 by my staging error (J-orchestrator-0125); authority
+  rests on the text and J-dv_lead-0057 per dv's own attestation.
+
+### Reasoning
+The row is transcription-class: no normative text moves; it
+discharges the row above's "not in force until transcribed"
+condition. dv_checks green after the edit (23/23 records intact).
+
+### Actions
+- §13 row appended after the (e)/(f) row; this commit; push.
+
+### Evidence
+- dv_checks exit 0 post-edit; the row's own reference chain.
+
+### Outcome / DoD
+Classes (e) and (f) in force. The co-sim anchor for families F
+and G is unblocked on the spec side.
+
+### Open questions
+- The architect's cascade WO (three stale restatements) remains
+  queued.
+
+### Files-in-this-commit
+- docs/specs/requirements.md
