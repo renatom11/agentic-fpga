@@ -11827,3 +11827,229 @@ seeding under the eight bars.
 ### Files-in-this-commit
 - agents/handoffs/WO-0040_tb-m03-family-d-fcs.md
 - tools/dv_checks.sh
+
+## [J-dv_lead-0043] 2026-08-09T15:50Z | task:WO-0041 | Both rulings issued before any branch completed: D-M3 stands as authored because a floorless variant would break a second, unrelated rule and the bench could not see it anyway, no ambient exposure voids anything — and the D-M4 disclosure that looked like it threatened the frozen matrix turns out to miss every bad-FCS frame in the family, by arithmetic
+
+### Trigger
+Orchestrator: the auditor's five family-D diffs are committed (`fb49b80`) and
+running on `mut/wo-0041-d-m1..d-m5`, parented on `447d11c`. Two rulings needed
+**before results**, worded to preserve my adjudication position: (1) whether
+D-M3's kept sub-5-octet floor stands or a sixth floorless diff is wanted, and
+(2) whether three disclosed ambient exposures void any mutation. Plus, for
+awareness: an accepted process finding about blinded seeding running in a shared
+scratchpad, and a D-M4 note that the strobe move is unobservable for one
+stimulus class.
+
+### Inputs
+- The two questions and the D-M4 note as relayed.
+- `agents/handoffs/WO-0041_family-d-mutation-campaign.md` §0, §1, §2's D-M3 and
+  D-M4 intents — **my own text, re-read as the thing being interpreted**.
+- `agents/handoffs/WO-0041_family-d-mutation-campaign-SEALED-predictions.md`
+  §5 and §7 — the weighting and the must-not-be-told list, **read but not
+  edited**.
+- `git log --oneline -18` — read myself, to rule on (a) by inspection rather
+  than by accepting a characterisation.
+- `docs/specs/modules/xgmii_rx_64.md` §9's sixth row (a sub-5-octet frame
+  produces no output word), ruling 9, and the strobe-cycle pin.
+- `test/xgmii/arrival.ml`'s `terminate_octet_time` definition, for the D-M4
+  arithmetic.
+- **No `libs/**`, no `rtl_snapshots/**`, no auditor diffs.**
+
+### Reasoning
+
+**Ruling 1 turns on a constraint I wrote without noticing I had written it.**
+D-M3's intent says "on a lone frame this is indistinguishable from correct".
+That is not scene-setting — it is a claim about the mutant's behaviour, and the
+floorless variant falsifies it directly, because a lone 0–4-octet frame would
+report `error_bad_fcs` where §9 ruling 9 says nothing may pulse. The auditor
+read my intent as binding on its own terms, which is how an intent should be
+read, and it is right.
+
+**Minimality decides it a second time, independently, and that is the reason I
+would give even if the sentence were absent.** A mutation introduces one defect.
+The floorless variant introduces two — the late-read defect the campaign is
+about, and a violation of ruling 9, a rule about a frame class this mutation has
+no business touching. Had the campaign then reddened something, I could not have
+attributed the kill. That is exactly what the brief's minimality requirement
+exists to prevent, and it is satisfying to see it do work rather than sit there.
+
+**And a third reason, which is the one I am keeping out of the auditor's copy
+because it is bench-coverage information: the sixth diff would be a mutation
+this bench cannot see at all.** No unit in the twelve drives a frame below five
+octets — M03-C4's runt is *exactly* five, at the floor rather than under it — so
+the floorless and floored variants are observationally identical across the
+whole matrix. A sixth diff would carry an **empty** predicted kill set, which by
+pass criterion 1 is a campaign failure by construction. Declining it is not a
+close call.
+
+**But that observation is a finding about a different family, and it should not
+be lost with the question that produced it.** The sub-5-octet class — no output
+word at all, `error_runt` alone, and ruling 9's bar on `error_bad_fcs` there —
+is asserted by **nothing in this bench today**. That is family F's territory
+(REQ-107) and it belongs in family F's packet as a named row obligation, not as
+a footnote in a mutation campaign.
+
+**Two data points make a pattern in my authorship, not in the seeder's
+reading.** WO-0039's M1 had an ambiguous "the same error strobes" that the
+auditor resolved by reading §9's pin; D-M3 had an under-specified floor that it
+resolved by reading ruling 9. Both times it chose the spec-faithful branch and
+disclosed. So the fix belongs in my briefs rather than in its instructions:
+**when a spec rule collides with a mutation intent, preserve the spec rule and
+disclose the collision** — an intent describes one defect and is never a licence
+to break a second rule on the way to it.
+
+**Ruling 2, and I refused to rule on (a) from the description.** The relay
+characterised the subject lines as naming no bench unit, no expected value and
+no mapping. That is very likely true and it is not mine to assume, so I read the
+eighteen most recent subjects against the sealed §7 list myself. None conveys a
+MUST-STAY-GREEN column, an expected message, D-M5's mapping, or the message
+clause. Two subjects do name D-M5 as the fully blinded one — and **§0 of the
+brief already tells the auditor exactly that**, so the incremental disclosure is
+nil.
+
+**What the reading did surface is that this was closer than it should have
+been.** Our commit subjects are deliberately rich — multi-clause summaries, by
+house style — which makes the log a far larger surface than a normal one. One
+subject names the prediction matrix's *dimensions*. Harmless here; not harmless
+in general. So: during a blinded campaign, subjects on the sealed packet and its
+companion should be deliberately thin. That is a real practice change and it
+came out of looking rather than agreeing.
+
+**(b) is the one where the correct outcome could be mistaken for a licence.** A
+path-scoped `git log` on a barred path moved no content — subjects and SHAs,
+which is (a). No void. But the reasoning that makes it safe requires knowing
+that `git log` without `-p` does not surface content while `git log -p`,
+`git show` and `git blame` do, and **that is a judgment a seeder should not be
+making under pressure at the edge of a bar.** So the bar is sharpened for every
+future campaign: a barred path is barred to every git subcommand, not only to
+opening the file. A rule whose safe application depends on per-invocation
+expertise is a rule that will eventually be applied wrong.
+
+**(c) is the one where the vector was mine.** Filenames convey strictly less
+than the bar list, which necessarily discloses that every artifact on it exists.
+No void. But `rv40.md` and the `HEAD_test_m03_*.ml` copies are **my** working
+files — verdict drafts and HEAD snapshots I left in shared scratch while
+authoring the very verdicts the seeder is barred from. The orchestrator's
+private-subdirectory fix is right; my own practice change is the other half of
+it, and it is mine to make rather than to be given.
+
+**The prior-exposure correction runs in my favour and I am recording it as a
+correction anyway.** My brief's §1 says exposure to `RV-0039-VERDICT` is "known
+and ruled acceptable". The auditor reports — **verified by commit ordering, not
+recall** — that the WO-0039-era spawn read that packet *before* the verdict was
+appended, so the exposure I generously ruled on never happened. The clause
+stands as written, because a recorded ruling is not rewritten for turning out
+generous. Worth noting that the auditor volunteered the stateless caveat rather
+than asserting memory; that is what made the claim checkable at all.
+
+**Finally, the D-M4 note looked like it threatened the frozen matrix and does
+not, and I would rather establish that now than after results.** The disclosed
+unobservable class is a lane-4 start whose `/T/` falls in lane 0 — which
+requires `terminate_octet_time ≡ 0 (mod 8)` with `first_start = 12`, i.e.
+`12 + 8 + L ≡ 0`, i.e. `L ≡ 4 (mod 8)`: lengths 68, 1516 and so on. **Every one
+of those is a good-FCS frame** in M03-C1/C2 and M03-C5, which pulse no
+`error_bad_fcs` under D-M4 in the first place, because D-M4 leaves the verdict
+correct and moves only the strobe.
+
+**Every bad-FCS frame in family D is 64 octets**, and all four placements
+separate the terminate cycle from the `tlast` cycle by one:
+
+- lane-0 start: terminate octet time 80 → cycle 10; `tlast` cycle 11.
+- lane-4 start: terminate octet time 84 → cycle 10; `tlast` cycle 11.
+- the pair's second frame in a lane-0 schedule (starts at octet 92, lane 4):
+  terminate 164 → cycle 20; `tlast` cycle 21.
+- the pair's second frame in a lane-4 schedule (starts at octet 96, lane 0):
+  terminate 168 → cycle 21; `tlast` cycle 22.
+
+So D-M4's move is observable at every stimulus that can pulse for it, and **the
+frozen row set for D-M4 stands unchanged**. The coincidence is worth naming:
+the unobservable class is precisely R-1's singleton class — `terminate_lane` 0
+with a full final delivered word at a lane-4 start — the same structure this
+programme convicted, reattributed and then built M03-C5 around.
+
+**I did not touch the sealed file.** Its whole value is that it has not been
+edited since the freeze, and a defence of a frozen prediction belongs beside the
+freeze's second copy — here — not inside the frozen one.
+
+### Actions
+- **Ruled D-M3 AS AUTHORED, no sixth diff**, declined outright rather than
+  deferred, on three grounds (the intent's own sentence; minimality; and — in
+  this entry only — that the bench cannot see the difference).
+- Recorded the **sub-5-octet coverage gap as an obligation for family F's
+  packet**, so the finding outlives the question.
+- Added a standing brief clause: **when a spec rule collides with an intent,
+  preserve the rule and disclose**.
+- **Ruled (a), (b) and (c) void nothing**, having read the eighteen commit
+  subjects myself against the sealed §7 list rather than accepting the relay's
+  characterisation.
+- **Sharpened the git bar** for future campaigns: a barred path is barred to
+  every git subcommand.
+- **Recorded thin commit subjects during blinded campaigns** as a practice
+  change, on the evidence that one subject names the matrix's dimensions.
+- **Owned (c)'s vector** and changed my own scratch practice; endorsed the
+  private-subdirectory fix as the other half.
+- Recorded the prior-exposure correction, leaving the brief's clause standing.
+- **Confirmed by arithmetic that D-M4's disclosed blind spot misses every
+  bad-FCS frame in family D**, so the frozen matrix is unperturbed.
+- **Did not touch the sealed companion.** No `git commit`, no `git push`. Opened
+  no `libs/**` and no auditor diff.
+
+### Evidence
+1. §9's sixth row: a frame of fewer than 5 octets produces **no output word at
+   all** — so a floorless D-M3 would have to pulse at the no-output pinned
+   cycle, exactly where ruling 9 bars it.
+2. M03-C4's runt is **exactly 5** octets, at the floor and not under it; no unit
+   in the twelve drives fewer.
+3. `git log --oneline -18` read in full: no subject conveys a MUST-STAY-GREEN
+   column, an expected message, D-M5's mapping, or criterion 2's message clause.
+   Two name D-M5 as fully blinded — already disclosed by the brief's §0.
+4. One subject names the prediction matrix's dimensions — the basis for the
+   thin-subject practice change.
+5. D-M4 arithmetic: the unobservable class needs `L ≡ 4 (mod 8)` at a lane-4
+   start (68, 1516 …), all of which are good-FCS frames that pulse nothing under
+   D-M4; family D's bad-FCS frames are all 64 octets, with terminate and `tlast`
+   cycles 10/11, 10/11, 20/21 and 21/22 respectively.
+6. The unobservable class coincides exactly with R-1's singleton class.
+
+### Outcome
+**Both rulings issued before any branch completed**, so neither can have been
+shaped by a result. **D-M3 stands as authored; no sixth diff.** **No ambient
+exposure voids any mutation**, and the campaign's weighting is unchanged from
+the freeze — D-M1..D-M4 discounted for the published row mapping, **D-M5
+carrying the full blinding**.
+
+**The frozen matrix survives the D-M4 disclosure intact**, established by
+arithmetic in advance rather than by argument afterwards.
+
+### Open-questions
+- **Owed into family F's packet (REQ-107)**: the sub-5-octet class — no output
+  word, `error_runt` alone, and §9 ruling 9's bar on `error_bad_fcs` — is
+  asserted by nothing today. Found while declining a sixth diff; it must not be
+  lost with the question.
+- **Standing brief clause, new**: when a spec rule collides with a mutation
+  intent, preserve the rule and disclose the collision.
+- **Standing bar, sharpened**: a barred path is barred to every git subcommand.
+- **Standing practice, new**: thin commit subjects on a sealed packet and its
+  companion while a blinded campaign is live; no verdict drafts or HEAD copies
+  of barred files in shared scratch.
+- **Two instances now** of the seeder resolving an under-specified edge in my
+  intent text spec-faithfully. That is a pattern in my authorship; the clause
+  above is the fix, and I should expect a third if I write intents at the same
+  level of care.
+- **Awaiting the five harvests.** Adjudication happens with both rulings and all
+  results in hand, per the freeze's three pass criteria.
+- **Families E–H still owed the M03-D3 vacuity re-read**; the barred-document
+  sweep should be a checklist item in brief authoring.
+- **The verilog-ethernet differential co-sim remains the longest-lead item on
+  the `SO-M03` path.**
+- **Owed by me, unchanged**: the `precompile_check.sh`
+  side-effect-in-combinator lane; `tools/precompile_stubs/ifc_check.ml`'s stale
+  UNVERIFIED note; SPEC-M01 §11.4's caveat retirement (architect_docs_lead);
+  `AP` §7's fuller rewrite behind its banner.
+- **M03-A3's blindness to lane-symmetric errors remains untested**; my M04
+  contamination from `J-dv_lead-0024` still stands.
+- **Unchanged**: the RFC 1071 anchor closes on the next CI run that fetches;
+  X-7, X-10, X-11 deferred; L1–L5 owed as a separate packet.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0041_family-d-mutation-campaign.md

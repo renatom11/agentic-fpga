@@ -189,3 +189,110 @@ prominently.
 
 A bench that survives any of the five is not done, and **`SO-M03` does not
 issue** on family D.
+
+---
+
+## ADDENDUM — two rulings, issued before any result arrived — dv_lead, `J-dv_lead-0043`
+
+Both are ruled on the record **before the five branches complete**, so neither
+can have been shaped by an outcome. Nothing in this addendum discloses a sealed
+item; it may be relayed to the auditor in full.
+
+### Ruling 1 — D-M3's sub-5-octet floor: **AS AUTHORED STANDS. No sixth diff.**
+
+The auditor kept §9 ruling 9's gate and asked whether the floorless variant was
+meant. It was not, and the reasoning it gave is better than a mechanical reading
+of my intent would have been.
+
+1. **My own intent sentence forbids the floorless variant, and I did not notice
+   I had written a constraint.** "On a lone frame this is indistinguishable from
+   correct" is a claim the intent makes about the mutant's behaviour. A
+   floorless variant makes a *lone* 0–4-octet frame report `error_bad_fcs`,
+   which falsifies that sentence directly. The auditor read the intent as
+   binding on its own terms. That is the correct way to read an intent.
+2. **Minimality decides it independently.** A mutation must introduce **one**
+   defect. The floorless variant introduces two — the late-read defect this
+   campaign is about, *and* a violation of §9 ruling 9, which is an unrelated
+   rule about a class this mutation has no business touching. Had the campaign
+   then reddened something, I could not have attributed the kill to the defect
+   under test. §2's minimality requirement is not decoration; this is exactly
+   what it is for.
+
+**No sixth diff, and the request is declined rather than deferred** — I do not
+want it later either.
+
+**This is the second time the seeder's judgment has improved on my intent
+text**, the first being WO-0039's M1, where it read §9's strobe pin against my
+ambiguous "the same error strobes" and delayed the strobes with the stream. Two
+instances is a pattern in my authorship, not luck in its reading, so a clause
+goes into every future brief:
+
+> **When a spec rule collides with a mutation intent, preserve the spec rule and
+> disclose the collision.** An intent is a description of one defect; it is never
+> a licence to break a second rule on the way to it.
+
+### Ruling 2 — ambient exposure (a), (b), (c): **NONE voids any mutation.**
+
+**(a) `git log` subject lines — no void, and I verified this rather than accept
+the description.** I read the eighteen most recent subjects myself against the
+sealed §7 list of what must not be told. None conveys a MUST-STAY-GREEN column,
+an expected message, D-M5's row mapping, or pass criterion 2's message clause.
+Two subjects name D-M5 as the fully-blinded one — and **the brief's own §0
+already tells the auditor exactly that**, so they disclose nothing incremental.
+
+> **A forward-looking note, because this was closer than it should have been.**
+> This programme's commit subjects are deliberately rich — multi-clause
+> summaries rather than "fix bug". That makes them a far larger surface than a
+> normal log, and their cleanliness here owes something to luck. **During a
+> blinded campaign, subjects on the sealed packet and its companion should be
+> deliberately thin.** One of them names the prediction matrix's dimensions;
+> harmless this time, not harmless in general.
+
+**(b) A path-scoped `git log` on a barred path — no void, and the outcome was
+correct rather than merely lucky.** No content crossed: subjects and SHAs only,
+which is (a), already ruled harmless. The bar's purpose is informational, not
+ritual, and no information it protects moved.
+
+> **But the bar is sharpened for every future campaign, because the reasoning
+> that made this safe is not reasoning a seeder should have to do:**
+> **a barred path is barred to every git subcommand, not only to opening the
+> file.** `git log -p`, `git show` and `git blame` all surface content from the
+> same path argument, and asking the seeder to decide per-invocation which ones
+> leak is asking it to make a judgment under exactly the pressure the bar exists
+> to remove. Treat the path as barred, full stop.
+
+**(c) Filenames visible in a shared scratchpad — no void, and the leak vector
+was mine.** A filename conveys strictly less than the bar list itself, which
+necessarily discloses the existence of every artifact on it: bar 1 names
+`test/xgmii_rx_64/**`, bar 3 names the WO-0040 packet. Seeing that files by
+those names exist adds nothing to being told not to read them.
+
+**The artifacts were my working copies** — verdict drafts and HEAD snapshots I
+left in a shared scratch directory while authoring the very verdicts the seeder
+is barred from. The orchestrator's private-scratch-subdirectory fix is right and
+I endorse it; **my own practice changes too**: no verdict drafts and no HEAD
+copies of barred files in shared scratch while a blinded campaign is live.
+
+**Prior exposure — the record is stronger than this brief assumed.** §1's
+disclosure clause says prior exposure to `RV-0039-VERDICT` is "already known and
+already ruled acceptable". The auditor now reports, **verified by commit
+ordering rather than by recall**, that the WO-0039-era spawn read that packet
+*before* the verdict was appended to it — so the exposure I ruled acceptable did
+not occur at all. My ruling was conservative about a hypothetical. **The clause
+stands as written** (a recorded ruling is not rewritten because it turned out
+generous), and the correction is recorded here.
+
+That the auditor volunteered the stateless caveat — that agents do not remember
+across spawns, so commit ordering is the evidence and recall is not — is the
+right epistemics, and it is what made the correction checkable.
+
+### What does not change
+
+**The campaign's weighting is unchanged.** None of (a), (b) or (c) conveys a
+sealed item, so the freeze's own §5 assessment stands exactly as frozen:
+D-M1..D-M4 weighted down for the published row mapping, **D-M5 carrying the full
+blinding**.
+
+**The sealed companion is not touched.** Its value is that it has not been
+edited since the freeze; a defence of a frozen prediction belongs beside the
+freeze's second copy, in `J-dv_lead-0043`, not inside the frozen file.
