@@ -580,13 +580,18 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
        `error_bad_fcs` out of this vector entirely (above). *)
     concat_lsb [ error; terminate; start ]
   in
+  (* F-c8 MUTATION (WO-0050) — §9's no-output-word strobe pin displaced by one
+     cycle, earlier.  The two fixed register stages below are the whole of that
+     pin for a frame opened and closed inside one input word; one of them is
+     removed, so every such report pulses one cycle after that word instead of
+     two, whatever the strobe's name and whatever character closed the frame.
+     Frames that do produce an output word report on their own `tlast` cycle
+     and do not move. *)
   let q2 =
     reg
       spec
-      (reg
-         spec
-         (inword_strobes ~exists:b_exists ~closing:b_closing
-          |: inword_strobes ~exists:c_exists ~closing:c_closing))
+      (inword_strobes ~exists:b_exists ~closing:b_closing
+       |: inword_strobes ~exists:c_exists ~closing:c_closing)
   in
   (* ---- the state machine (§6.2) ----
      One [Always] switch, and every transition is a function of the closure
