@@ -468,7 +468,14 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
      something else, so a design that compares here reports "this frame's FCS
      is wrong" as a function of octets §9 says nothing is removed from. *)
   let has_fcs = count_next >=:. fcs_min_octets in
-  let bad_fcs = has_fcs &: (crc_final <>: of_int ~width:32 fcs_residue) in
+  (* D-M1 MUTATION (WO-0041): REQ-104's residue comparison is forced to
+     "the received FCS matches" — for every frame, whatever the frame
+     carries. The [gnd] conjunct is the whole of the mutation; [has_fcs] and
+     the comparison are left standing so that no binding above is orphaned.
+     Only the REQ-104 contribution to [tuser][0] and the whole of
+     [error_bad_fcs] go with it: REQ-107's runt, REQ-105's error character
+     and REQ-108's oversize reach [abort] by their own terms below. *)
+  let bad_fcs = gnd &: has_fcs &: (crc_final <>: of_int ~width:32 fcs_residue) in
   (* One reload condition for both state registers, and it is [begins]: the
      word that hands a new frame forward is the word before that frame's first
      octet at both start lanes, whether the frame was admitted from [Idle] /
