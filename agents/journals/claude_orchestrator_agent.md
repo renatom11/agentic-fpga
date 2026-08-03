@@ -5001,3 +5001,57 @@ SO- is explicit: D benched and qualified, then E-H, then co-sim.
 - site/public/org-chart.html
 - site/public/spec-atlas.html
 - tasks/BOARD.md
+
+## [J-orchestrator-0114] 2026-08-03T05:10:00Z | task:WO-0040 | Family D green first try - the design's first corrupted frames, answered correctly
+
+### Trigger
+CI check-in for the family-D push: run 30786086951 (7fac574)
+fully green, first try.
+
+### Inputs
+- dv's locked prediction exact on every axis: Build green (the
+  genuine unknown - 445 new lines meeting the type-checker for
+  the first time), runtest green with eighteen silent tests
+  (nothing prints; empty blocks match), no promotion,
+  determinism green.
+- Family D live: D1's bad-FCS frames at both lanes answered
+  with tuser[0]=1, exactly one error_bad_fcs on the pinned
+  cycle, 60 octets delivered from the corrupted frame; D3's
+  four schedules conformant.
+- Packet-state note for the record: WO-0040 was committed at
+  0b90227 still carrying its DRAFT state line (my miss - the
+  ISSUED flip was never made); dv flipped DRAFT->ACCEPTED
+  directly at 7fac574. The arc is legible in history; no
+  correction commit needed.
+
+### Reasoning
+Green here proves the rows run and the design agrees; per the
+standing doctrine it does not prove the rows can fail - that is
+the D qualification mutations' job, frozen against the repaired
+SHA per dv's own ruling. Repairs dispatched to dv; the seeder
+question (auditor again, and whether its WO-0039-verdict
+reading taints D blinding) put to dv explicitly rather than
+assumed.
+
+### Actions
+- Green relayed; repairs R1-R4(+R5) dispatched; BOARD row for
+  WO-0040 added; site rebuilt; this commit.
+
+### Evidence
+- Run 30786086951; board row quotes it.
+
+### Outcome / DoD
+Family D of five (D-H) is benched and green. Mutation
+qualification next, then E-H, then co-sim - the SO-M03 path as
+ruled.
+
+### Open questions
+- dv's seeder ruling for D's four mutations.
+
+### Files-in-this-commit
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/index.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html
+- tasks/BOARD.md
