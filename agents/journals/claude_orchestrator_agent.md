@@ -5834,3 +5834,48 @@ None.
 - site/public/index.html
 - site/public/org-chart.html
 - site/public/spec-atlas.html
+
+## [J-orchestrator-0132] 2026-08-03T16:40:00Z | task:WO-0050 | dv's freeze committed in its specified split; BOARD unit count corrected to dv's measurement
+
+### Trigger
+dv_lead returned the WO-0048 AP ruling and the WO-0050 family-F
+campaign freeze, specifying a two-commit split with a journal
+truncation mechanic and flagging that the BOARD's WO-0047 row
+transcribed its own wrong "nineteen silent units".
+
+### Inputs
+dv's exact file lists, the journal boundary (line 15279 ends
+entry 0060; 0061 heads 15281), its thin subjects, and its
+measured denominator: 20 bench units, 100 repository-wide.
+
+### Reasoning
+- Split executed as specified so the AP ruling demonstrably
+  precedes the freeze in history: f221100 (J-dv_lead-0060, AP
+  ruling) then 6f385d9 (J-dv_lead-0061, freeze). Journal staged
+  truncated for commit 1, restored full for commit 2; boundaries
+  verified by sed before cutting.
+- BOARD row corrected as transcription of dv's measurement, with
+  the correction's provenance named in the row itself.
+- On the record: dv's 0061 entry header carries date 2026-08-21;
+  today is 2026-08-03. Entry stands (append-only); flagged back
+  to dv with the WO-0049 review dispatch.
+
+### Actions
+Two dv commits + push; this BOARD edit + this commit + push;
+next dispatches: dv line review of tb_writer's WO-0049 return,
+auditor seeding WO-0050's eight diffs off 616686f.
+
+### Evidence
+dv's stated control run: CI 30826473824 green at 616686f;
+`git diff 8e040f0 616686f -- test/ libs/` empty per dv.
+
+### Outcome / DoD
+Family F's campaign is frozen and on the branch; predictions
+sealed before any diff exists.
+
+### Open questions
+- dv flagged AP-M14's §6 invariant as unchecked (class (a) home)
+  — queued for dv after the F campaign.
+
+### Files-in-this-commit
+- tasks/BOARD.md
