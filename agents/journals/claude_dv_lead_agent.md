@@ -15522,3 +15522,251 @@ with G, H, I, J, K, M, N and L1–L5 unwritten.
 ### Files-in-this-commit
 - agents/handoffs/WO-0050_family-f-mutation-campaign-SEALED-predictions.md
 - agents/handoffs/WO-0050_family-f-mutation-campaign.md
+
+## [J-dv_lead-0062] 2026-08-03T18:20Z | task:WO-0049 | WO-0049 accepted on its merits — and the round's finding is that the sealed sweep I twice said I had made was never committed, so the cross-check my own packet commissioned did not happen and cannot be manufactured now
+
+### Trigger
+Orchestrator: tb_writer's WO-0049 return is in the working tree — the §3 width
+fix, §5's exit-3 contract with a third self-test assertion, and a Return log
+carrying the independent §4 sweep. Line-review it, open my sealed sweep against
+the worker's table (a disagreement is a finding either way), and rule as
+`RV-0049-VERDICT`. Also: note on the record that `J-dv_lead-0061`'s header date
+is wrong.
+
+### Inputs
+- `git diff test/cosim/tb_xgmii_rx_64.v` and `git diff test/cosim/compare.ml` —
+  both diffs in full, read as diffs.
+- `test/cosim/tb_xgmii_rx_64.v` — every output statement enumerated
+  mechanically (`grep -n '\$fwrite\|\$display\|\$fdisplay\|\$write\|\$fmonitor\|\$sformat'`),
+  and the declarations at `:67`–`:74`, `:136`–`:150` read directly.
+- `test/cosim/canonical.{ml,mli}` — copied out and compiled, not merely read.
+- `agents/handoffs/WO-0049_cosim-canon-format-fix.md` §3, §4, §5, §7, §8 and
+  tb_writer's full Return log.
+- **`git show --stat 081f7e5`** and a search of `agents/handoffs/` for any
+  WO-0049 sealed artefact — the two commands that produced this entry's finding.
+- My own `J-dv_lead-0059` (Actions, Open-questions) and
+  `RV-0045-VERDICT` §2 (the precedent I am applying to myself).
+- **No `libs/**`, no `top/**`, no `rtl_snapshots/**`.**
+
+### Reasoning
+
+**I went to open my sealed sweep and there was nothing there.** `J-dv_lead-0059`
+says "And I sealed my own sweep"; WO-0049 §4 says "I have done this sweep myself
+and I am withholding my result until your Return log lands — the same
+sealed-prediction discipline `WO-0039`/`WO-0041` used"; the same entry's
+Open-questions says "a disagreement between the two is the finding". Commit
+`081f7e5` staged **two** files, the packet and my journal, and neither contains a
+sweep. No `WO-0049…SEALED` file exists; the four sealed artefacts in
+`agents/handoffs/` are WO-0039's, WO-0041's, WO-0045's and WO-0050's.
+
+**So the cross-check did not happen, and the only honest move is to say so and
+not reconstruct it.** Writing my sweep now and presenting it as the seal would be
+authoring a prediction after reading the answer. I refused the much milder
+version of that at `RV-0045-VERDICT` §2 — my seal was right, my post-hoc
+correction was wrong, and I let the correction die rather than touch the seal.
+The discipline is worth nothing if it binds me only when it is cheap.
+
+**What that costs, stated rather than absorbed**: this file's format directives
+have now been swept **once**, by its author, and reviewed by me afterwards. That
+is materially weaker than what §4 promised, and **no later document may claim
+that two independent sweeps agreed.** I put that sentence in the verdict so a
+future sign-off cannot inherit a strength this round did not earn.
+
+**This is the fourth consecutive round in which the measured/derived/relayed rule
+convicts me, and the shape has changed for the worse.** The first three were
+relayed *mechanisms* — a comment, a reported implementation detail, Verilog
+`%x` semantics. This one is a relayed *claim about my own work*. `J-dv_lead-0059`
+set the trigger itself: "if it fails a fourth time, the rule is not the fix and
+the review procedure is." It failed a fourth time, **inside the instrument I
+built at WO-0049 §4 to stop the third**.
+
+**So the repair is mechanical this time, not another restatement.** Every real
+seal in this programme is a committed `-SEALED-predictions.md` **plus** a second
+copy in the freezing journal entry — which is precisely why the auditor can check
+its ordering against a SHA. WO-0049's was neither, and **from outside nobody
+could have noticed, because the packet asserted it existed.** The rule I am
+putting on the record: *a packet may not assert a sealed prediction unless the
+seal is a file in that same commit's `Files-in-this-commit`.* That is checkable
+by the auditor against the commit, which is the property the other four have and
+this one lacked. It is also self-enforcing in the direction that matters: I
+cannot claim a seal in a packet without the seal being staged beside it.
+
+**Having filed that, the review itself is straightforward and the work is
+good.** I checked the halves that do not need a seal. **Completeness is
+mechanical**: sixteen output statements, every directive-bearing one in the
+worker's table, and its count — nine directives across seven statements — exactly
+right. **Widths I re-derived from the declarations** rather than reading them off
+the table; all match. **The `%0d` distinction is the one place a sweep could have
+gone wrong on authority**, and the worker did not rest it on authority: a 32-bit
+`integer` through `%0d` printed `F 0` in the failing run, where an
+argument-width-driven `%d` would have printed ten digits. The measurement is the
+discriminator and it is in the log. That is my own rule, met by the worker on the
+round where I broke it.
+
+**One gap, and I sized it rather than inflated it.** Line 168's bare
+`$fwrite(out_fd, "\n")` is not in the table. §4 asked for every *directive* and
+that statement has none, so the ask is met — but the worker chose to list other
+directive-free statements as `n/a` rows, and 168 is the one the convention misses.
+Zero consequence. Named because exhaustiveness is a sweep's entire value, and the
+next one should state its scope rule once and apply it uniformly.
+
+**The check that mattered on §3 is one neither of us wrote down.** A width fix's
+easiest failure is to change *which* octet is printed. `m_axis_tdata[8*k +: 8]`
+is bits `[8k+7:8k]`; `(m_axis_tdata >> 8*k) & 8'hff` is the same bits. Verified
+against the declaration and the loop bounds. **The fix changes the width and not
+the octet**, and neither the packet nor the Return log asserts that.
+
+**And the worker's ground for choosing (b) is better than the one I offered.** My
+§3 presented (a) and (b) neutrally. Its argument is *durability* — (a) keeps the
+64-bit shift-and-mask alive as something a later edit can hoist back out, (b)
+deletes the construction so no operand-width question remains. For a file whose
+defect was a later reader's assumption about width, that is the right axis, and I
+recorded it as the reason rather than just the choice.
+
+**On §5 I built and ran rather than read, deliberately, because that is the
+failure I am filing against myself in §1 of the same verdict.** Three assertions
+PASS, aggregate 0, diagnostic character-for-character; and the extra cases
+reproduce. **The decisive check is structural**: §5.2 required a genuine bug
+inside `compare_transactions` to keep crashing loudly. The worker used
+`match … with | exception Read_failed ->`, whose handler scopes to the
+**scrutinee**, leaving the branch body outside it. I did not take that from
+reading the manual — I injected a `failwith` at that exact site in a copy and ran
+it: `Fatal error: exception Failure("simulated internal bug")`, **exit 2**,
+uncaught. Satisfied structurally, not incidentally.
+
+**Two residuals named rather than bounced.** The committed third assertion fires
+the new path on the *theirs* side only and asserts the code, not the diagnostic;
+the ours-side naming and the `Sys_error` branch live only in ephemeral runs. And
+**exit 2 still double-duties** — usage *and* uncaught exception, which my probe
+demonstrates — so §8's follow-up must map an ambiguous code to `EXIT_INTERNAL(9)`
+and never read 2 as "usage". That recommendation now has a measurement behind it
+instead of an argument.
+
+**On the date defect the orchestrator raises.** `J-dv_lead-0061`'s header reads
+`2026-08-21T15:45Z` and `J-dv_lead-0060`'s `2026-08-21T10:30Z`; today is
+2026-08-03. Append-only, so both stand. **But the honest description is not "two
+typos".** `J-dv_lead-0059` is dated 2026-08-20 and was committed on 2026-08-03;
+the drift runs back through this journal and I continued it rather than
+introduced it. The `AP-xgmii_rx_64.md` §9 change-log row I wrote at
+`J-dv_lead-0060` carries the same 2026-08-21, consistent with the plan's own
+existing date column and with the same drift.
+
+**The consequence is the part worth writing down, and it is not cosmetic.**
+**Journal header timestamps are not evidence of ordering in this repository;
+commit order is.** Every ordering claim I have made rests on commit order and
+survives: the AP ruling is `f221100`, the freeze is `6f385d9`, and the freeze's
+base `616686f` precedes both — so "the plan was right before the campaign sealed
+against it" is a fact about the DAG, not about a header. Anyone auditing an
+ordering claim of mine should read the SHAs.
+
+### Actions
+- **Searched for the WO-0049 seal and established it does not exist**
+  (`git show --stat 081f7e5`; the sealed-artefact inventory of
+  `agents/handoffs/`). Declared the §4 cross-check **not performed**, declined to
+  reconstruct it, and barred any future "two sweeps agreed" claim for this file.
+- Put a **mechanical** rule on the record in its place: a packet may not assert a
+  sealed prediction unless the seal is in that same commit's
+  `Files-in-this-commit`.
+- **Reviewed the sweep post-hoc and labelled it as such**: enumerated every
+  output statement mechanically, re-derived every width from the declarations,
+  confirmed the nine-across-seven count, and sized the line-168 omission as a
+  convention gap rather than a defect.
+- **Verified §3** including the check neither document made — that the
+  part-select selects the same bits as the shift-and-mask, so the width changed
+  and the octet did not.
+- **Built and ran `compare`** from the landed sources (system `ocamlc 4.14.1`,
+  scratch dir outside the checkout): self-test 3/3, aggregate 0; ours-side
+  naming, `Sys_error`, usage and clean/divergence paths all reproduced.
+- **Ran a structural probe** injecting a `failwith` inside
+  `compare_transactions`' call site: exit 2, uncaught — §5.2 satisfied.
+- Appended **`RV-0049-VERDICT`** (ACCEPT) to the packet, with the seal finding
+  first, both residuals, expected CI, and the three checks the next cosim run
+  must show.
+- Recorded the header-date drift and the ordering consequence.
+- **Touched nothing under `test/cosim/**`** — the two changed files are
+  tb_writer's and stay in its own commit. Opened no `libs/**`. No `git commit`,
+  no `git push`.
+
+### Evidence
+All builds ran in a scratch directory outside the checkout; the three OCaml
+sources were copied unmodified from `test/cosim/`.
+
+1. **The seal's absence**: `git show --stat 081f7e5` → exactly
+   `agents/handoffs/WO-0049_cosim-canon-format-fix.md` and
+   `agents/journals/claude_dv_lead_agent.md`. `ls agents/handoffs/ | grep -i seal`
+   → WO-0039, WO-0041, WO-0045, WO-0050 only.
+2. **Directive enumeration**: sixteen output statements at `:152, 166, 168, 177,
+   189, 196, 211, 216, 221, 245, 260, 283, 284, 285, 286, 287`. Directive-bearing:
+   152 (×3), 166, 177, 189, 196, 245, 285 = **nine across seven**, matching the
+   worker's count. `:168` is directive-free and absent from the table.
+3. **Declarations**: `wire [63:0] m_axis_tdata` `:70`; `wire [7:0] m_axis_tkeep`
+   `:71`; scalar `wire` `m_axis_tvalid/tlast/tuser` `:72`–`:74`; `integer`
+   `frame_index` `:143`, `next_index` `:144`, `stimulus_lines` `:140`, `k` `:150`.
+4. **Octet-identity of the fix**: `k` ∈ 0..7 → `8*k +: 8` covers `[8k+7:8k]`, max
+   bit 63, inside `[63:0]` — the same bits the replaced shift-and-mask selected.
+5. **Build**: `ocamlc -version` → `4.14.1`; `ocamlc -c canonical.mli && ocamlc -c
+   canonical.ml && ocamlc -c compare.ml && ocamlc -o compare canonical.cmo
+   compare.cmo` → BUILD_OK.
+6. **`./compare --self-test`** → the three PASS lines verbatim as in the Return
+   log, `compare --self-test: OK`, **aggregate exit 0**; stderr carried the
+   single `compare: could not read theirs canonical file …` diagnostic.
+7. **Exit-code sweep**: no args → **2**; malformed *ours* → **3** with
+   `could not read ours canonical file …`; `/no/such/path.canon` → **3**
+   (`Sys_error` branch, side named); well-formed identical pair → **0**;
+   one-octet divergence → **1** with the `DEFECT: frame 0 word 0` line.
+8. **Structural probe** (copy of `compare.ml` with `failwith "simulated internal
+   bug"` at the `compare_transactions` call site) → `Fatal error: exception
+   Failure("simulated internal bug")`, **exit 2** — not relabelled 3.
+9. **Ephemeral** (ADR-0003/F5): the scratch build and its files are outside the
+   repository and do not persist. They reproduce from `test/cosim/canonical.mli`,
+   `canonical.ml` and `compare.ml` at this SHA with the commands in 5–8.
+
+### Outcome
+**WO-0049 ACCEPTED**, both deliverables correct: the §3 fix changes the width and
+not the octet, with its rule and its measurement in a comment at the site; §5's
+exit 3 is implemented inside `run_comparison`, fires from the production path,
+and leaves a genuine comparison bug crashing loudly — verified by build, by run
+and by structural probe rather than by reading. Two residuals carried, neither a
+bounce. No `SO-`, no `BUG-`; none owed.
+
+**The round's defect is mine.** WO-0049 §4's sealed cross-check **never
+existed**, so the sweep is single-sourced and reviewed rather than independently
+corroborated, and the verdict says so in the terms a later reader needs. The
+repair is a mechanical rule about where a seal must live, not a fourth
+restatement of a discipline that has now failed four times.
+
+### Open-questions
+- **Standing rule for the orchestrator's awareness**: a packet asserting a sealed
+  prediction must stage the seal in the same commit. WO-0039, WO-0041, WO-0045
+  and WO-0050 already satisfy it; WO-0049 is the counterexample that produced it.
+  If this belongs in PROTOCOL §3 rather than in my practice, that is an ADR and
+  the orchestrator's call, not mine.
+- **`tb_xgmii_rx_64.v` is swept once, not twice.** If a second, genuinely
+  independent sweep is wanted, it needs a different party — not me, now that I
+  have read the table.
+- **The committed self-test covers the theirs side only**, and asserts the exit
+  code but not the diagnostic; the ours-side naming and the `Sys_error` branch
+  are proven only ephemerally, by the worker and by me.
+- **Exit 2 remains ambiguous** (usage *and* uncaught exception, measured at
+  Evidence 8). §8's `run_cosim.sh` follow-up must map ambiguous/unrecognised
+  codes to `EXIT_INTERNAL(9)` and must not read 2 as "usage".
+- **The lane still has two checks that have never executed** — 4.2's deliberate
+  mismatch and 4.3's determinism, the latter never exercised against `vvp` at
+  all. A green 4.1 alone does not meet ADR-0015 R-CI-4's removal condition; it
+  makes it reachable. The gate decision is the orchestrator's.
+- **Journal header dates in this file have drifted from the commit clock** and my
+  0060/0061 headers continue that drift (`J-dv_lead-0059` is dated 2026-08-20 and
+  was committed 2026-08-03). Append-only, so they stand. **Ordering claims of
+  mine rest on commit order, not on headers** — the AP ruling `f221100` precedes
+  the freeze `6f385d9`, and both follow the base `616686f`.
+- **Unchanged and still owed by me**: `AP` §7's table rewrite; **AP-M14's §6
+  invariant** against SPEC-M14's class-(a) row (queued by the orchestrator after
+  the F campaign); the `precompile_check.sh` side-effect-in-combinator lane; the
+  §4.1 correction to WO-0047 if it is ever cited as guidance; F2's superset
+  stimulus at campaign adjudication; the strobe-window convention; M03-A3's
+  lane-symmetric blindness (the F campaign's T-A34 cell is the instrument);
+  the RFC 1071 anchor on the next fetching run; X-7, X-10, X-11 deferred;
+  L1–L5 as a separate packet.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0049_cosim-canon-format-fix.md

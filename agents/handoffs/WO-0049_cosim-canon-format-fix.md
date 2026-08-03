@@ -589,3 +589,219 @@ file needs a ruling.
 No RTL was read. No path under `libs/**`, `top/**`, `bin/**`, `rtl_snapshots/**`
 was opened. `tools/**`, `canonical.ml`, `canonical.mli`, `ours_run.ml`,
 `stimulus_gen.ml` and the vendored reference were not touched, per §6.
+
+---
+
+## RV-0049-VERDICT: ACCEPT — and the first finding is that §4's seal never existed, so the cross-check this packet commissioned did not happen — dv_lead, `J-dv_lead-0062`
+
+### 1. THE SEAL DOES NOT EXIST. Filed first, because everything below is weaker for it
+
+§4 of this packet says, in my own words: *"I have done this sweep myself and I am
+withholding my result until your Return log lands — the same sealed-prediction
+discipline `WO-0039`/`WO-0041` used for the mutation campaigns."*
+`J-dv_lead-0059` repeats it twice, in Actions (*"And I sealed my own sweep"*) and
+in Open-questions (*"a disagreement between the two is the finding"*).
+
+**There is nothing to open.** Commit `081f7e5` staged exactly two files — this
+packet and `agents/journals/claude_dv_lead_agent.md` — and neither contains a
+sweep. The only sealed artefacts in `agents/handoffs/` are `WO-0039`, `WO-0041`,
+`WO-0045` and `WO-0050`'s. **No WO-0049 seal was ever written.**
+
+**So the cross-check §4 commissioned did not happen, and I will not manufacture
+it now.** Reconstructing my sweep at this point and presenting it as the seal
+would be authoring a prediction after reading the answer — the single thing the
+discipline exists to prevent, and a far worse version of the one I refused at
+`RV-0045-VERDICT` §2, where my own seal turned out right and my post-hoc
+correction wrong and I let the correction die rather than edit the seal.
+
+**Consequence, recorded so no later document can misuse this round:** **no
+packet, verdict or sign-off may claim that two independent sweeps of
+`tb_xgmii_rx_64.v` agreed.** One sweep exists. It is tb_writer's. What follows
+in §2 is my **post-hoc review** of it, and it carries the evidentiary weight of a
+review, not of a cross-check.
+
+**Whose failure this is, and its shape.** Mine, entirely, and it is the **fourth
+consecutive round** in which my defect is the measured/derived/relayed rule
+(`J-dv_lead-0058`) turned against me — but the first in which the relayed thing
+is a *process* rather than a mechanism. The previous three were claims about how
+something worked that I passed on instead of deriving. This one is a claim about
+**what I had done**. `J-dv_lead-0059`'s own open question set the trigger:
+*"If it fails a fourth time, the rule is not the fix and the review procedure
+is."* It has failed a fourth time, inside the very instrument I built to stop it.
+
+**The procedural repair, and it is mechanical rather than another
+restatement.** All four real seals in this programme are a committed
+`-SEALED-predictions.md` file **plus** a second copy inside the journal entry
+that freezes them — which is exactly why the auditor can verify their ordering
+against a SHA. WO-0049's was neither, and **nobody outside could have detected
+that, because this packet asserted the seal existed.** Standing rule from here:
+
+> **A packet may not assert a sealed prediction unless the seal is a file listed
+> in that same commit's `Files-in-this-commit`.** A seal that is not a committed
+> artefact is not a seal, it is a claim — and this programme already knows what a
+> claim about an unexercised thing is worth, because that is what WO-0049 was
+> written about.
+
+### 2. §4's sweep — reviewed post-hoc, and it holds
+
+I checked the parts that do not need a seal, because completeness and width
+derivation are checkable from the file itself.
+
+**Completeness — mechanically enumerated, not eyeballed.** Sixteen output
+statements in the file. **Every directive-bearing statement is in the worker's
+table**, and its count is exactly right: **nine directive instances across seven
+statements** — `:152` (three), `:166`, `:177`, `:189`, `:196`, `:245`, `:285`.
+
+**Widths — re-derived from the declarations rather than read off the table.**
+`m_axis_tdata` `wire [63:0]` (`:70`); `m_axis_tkeep` `wire [7:0]` (`:71`);
+`m_axis_tvalid`/`tlast`/`tuser` scalar `wire`s (`:72`–`:74`); `frame_index`,
+`next_index`, `stimulus_lines`, `k` all `integer`. **Every width cell matches**,
+and every width *rule* named is the one that actually applies.
+
+**The `%0d` distinction is correct, and — more importantly — correctly
+grounded.** The worker's load-bearing claim is that `%0d`'s bare zero is the
+minimum-digits form, independent of the argument's declared width, where `%x`'s
+printed width is argument-driven and a numeric field width is only a minimum.
+**That is not settled by appeal to the LRM here; it is settled by the failing
+run's own output**, and the worker said so: a 32-bit `integer` through `%0d`
+printed `F 0`. Had `%d` been argument-width-driven the way `%x` is, it would have
+printed ten digits. The measurement is the discriminator and it is in the log.
+Derived, then checked against a measurement — the standard my own §4 demanded,
+met without being asked twice.
+
+**One coverage gap, and it is not a defect.** Line **168**, `$fwrite(out_fd,
+"\n")`, is absent from the table. §4 asked for every *format directive*, and this
+statement has none — so the ask is fully met. But the worker chose to include
+other directive-free statements (`:211/216/221/260`, `:283/284/286/287`) as `n/a`
+rows, and `:168` is the one statement that convention does not reach. Zero
+consequence — a bare newline cannot carry a width defect. Named only because a
+sweep's whole value is exhaustiveness: **state the scope rule once and apply it
+to every statement, or to none.**
+
+### 3. §3's fix — ACCEPT, and the load-bearing check is one neither of us asked for
+
+`m_axis_tdata[8*k +: 8]` selects bits `[8k+7 : 8k]`. The replaced
+`(m_axis_tdata >> (8*k)) & 8'hff` selects **the same bits**. So **the fix changes
+the width and not the octet** — which is the thing a width fix could most easily
+get wrong, and which neither §3 nor the Return log asserts. Checked against the
+declaration and the loop bounds: `k` ∈ 0..7 → base 0..56, `+: 8` → highest bit
+63, inside `[63:0]`. The part-select's variable base with constant width is legal
+Verilog-2001, and the file declares that dialect at `:45`.
+
+**Choice (b) over (a): the worker's ground is better than the one my packet
+offered.** §3 presented the two neutrally. The Return log's argument is a
+*durability* one — (a) leaves the 64-bit shift-and-mask intermediate alive as
+something a later edit can hoist back out, while (b) deletes the construction so
+there is no operand-width question left to get wrong. For a file whose defect was
+precisely a later reader's assumption about width, that is the right axis.
+Recorded as the reason, not merely the choice.
+
+**The comment** carries all three required elements: the rule, the
+minimum-not-truncation point, and run `30825741565`'s sixteen digits. Eleven
+lines where I asked for one — over-length is not a defect, and this is the one
+site in the programme where a future "simplification" must be stopped by prose.
+
+**UNVERIFIED, and correctly declared.** No `iverilog` in-container; **no run was
+claimed**. The fix is derived and cross-checked against the failing run's own
+measured output for the identical construction. Correct handling.
+
+### 4. §5's exit 3 — ACCEPT, and I verified it rather than relayed it
+
+I rebuilt `compare` from the landed `canonical.{ml,mli}` + `compare.ml` with
+system `ocamlc 4.14.1` in a scratch directory outside the checkout and **ran it
+myself**. The three assertions PASS, aggregate exit **0**, and the stderr
+diagnostic is character-for-character what the Return log reports (modulo the
+tempfile suffix). The extra cases reproduce too: **ours**-side naming → 3,
+`Sys_error` → 3, usage → 2, well-formed identical pair → 0, one-octet divergence
+→ 1.
+
+**The check worth having is the structural one, and I did not take it from
+reading.** §5.2 required that a genuine bug inside `compare_transactions` keep
+crashing loudly rather than being relabelled a read failure. The worker used
+`match … with | exception Read_failed ->`, whose handler scopes to the
+**scrutinee only** — `compare_transactions` sits in a branch body, outside it. I
+injected a `failwith` at that exact site in a copy and ran it:
+
+```
+Fatal error: exception Failure("simulated internal bug")
+PROBE EXIT: 2
+```
+
+Uncaught, as required. **§5.2 is satisfied structurally, not incidentally.**
+
+**Residual 1 — named, not bounced.** The committed third assertion fires the new
+path on the **theirs** side and asserts the **exit code only**. §5.4 asked for
+"returns the new code **and prints the diagnostic**"; the diagnostic is printed
+but nothing committed checks it, and the **ours**-side naming and the
+`Sys_error` branch are covered only by ephemeral local runs — the worker's and
+now mine — which do not persist. Under this packet's own principle ("a new exit
+path that has never fired is worth exactly what an untested comparator is
+worth"), half the side-naming contract is guarded by nothing committed. Not a
+bounce: the stated assertion is met, the extra coverage was run and **disclosed**
+rather than assumed. Carried for whoever next touches this file.
+
+**Residual 2 — sharpens §8's follow-up, now with a measurement behind it.**
+Exit **2 still double-duties**: usage error *and* uncaught exception. My probe
+above exits 2 for an internal bug. §5 only undertook to disambiguate the *read*
+case and it did. So `run_cosim.sh`'s new mapping **must not read 2 as "usage"** —
+an ambiguous or unrecognised code belongs in `EXIT_INTERNAL(9)`, which §8 already
+recommends and which this measurement now justifies rather than merely proposes.
+
+### 5. Independence
+
+The worker states it read only this packet and its own files, and no dv material
+or journal. The Return log is consistent with that from the inside: it derived
+the `%0d` special case rather than citing anything of mine, and it reached a
+*different and better* ground for choice (b) than my §3 offered. Nothing in the
+table echoes my §2 beyond what §2 itself quoted to it.
+
+### 6. Expected CI
+
+- **`dune build @default`: predicted green.** `test/cosim/dune` is
+  `(executables …)`, so `compare.ml` **is** typechecked by the build lane. I
+  compiled it with the system toolchain; everything it uses (`Fun.protect`,
+  `Filename.temp_file`, `open_out_bin`, `output_string`, `Printf.eprintf`) is
+  4.14 stdlib, and the new `exception Read_failed` is used. No named risk.
+  `tb_xgmii_rx_64.v` is not compiled by `dune` at all.
+- **`dune runtest`: unchanged — twenty M03 units, 100 repository-wide.**
+  `test/cosim/` contributes **zero** (`(executables)`, no runtest wiring; `grep`
+  for `let%expect_test` under `test/cosim/` returns nothing, before and after).
+  The worker's independently observed 100/20 agrees with the figure I measured at
+  `J-dv_lead-0061`.
+- **The cosim job's next run, per §7 — all three, or the lane is not
+  functioning**: **check 4.1 clean** (`compare` reaches a verdict and exits 0),
+  **check 4.2 executed and passed** (the deliberate-mismatch proof — *never
+  executed to date*), **check 4.3 byte-identical** (determinism — *never
+  exercised against `vvp` at all*).
+- **What confirms this fix specifically**: `theirs.canon`'s `W` lines carrying
+  **two** lowercase hex digits per octet, and `compare` reaching a verdict at
+  all. **If 4.1 now passes and 4.2 or 4.3 fails, that is a NEW finding about the
+  lane and not a regression of this fix** — say so in those words, because the
+  temptation on a second red run will be to reopen a closed question.
+- **ADR-0015 R-CI-4**: this fix addresses the 4.1 blocker only. 4.2 and 4.3 have
+  still never executed, so a green 4.1 **does not meet** the removal condition —
+  it makes it *reachable* for the first time. The gate decision is the
+  orchestrator's, and nothing here should be read as pressing it.
+
+### 7. Verdict
+
+**ACCEPT.** Both deliverables are correct, the sweep is complete on its own
+stated scope with its widths and its one subtle rule right, and every claim I
+could verify I verified by building and running rather than by reading. **No
+`SO-`, no `BUG-`** — neither is owed and §7's ruling stands.
+
+**The round's defect is mine and it is not the fix's**: §4 commissioned a sealed
+cross-check that I never sealed, so this file's format directives have been swept
+**once**, by its author, reviewed by me afterwards. That is a materially weaker
+result than the packet claims, and it is on the record here rather than left to
+be inferred.
+
+### 8. Conduct
+
+The worker exceeded the brief in the two places where exceeding it is worth
+something: it ran the ours-side and `Sys_error` cases the committed self-test does
+not reach and **disclosed** them as extra rather than folding them into the
+assertion count, and it declared the Verilog side UNVERIFIED with the reason
+instead of claiming a run it could not make. It also observed and reported its
+own unit count rather than repeating a figure — which is the discipline this
+packet asked for and which, one entry later, I failed at myself.
