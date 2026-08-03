@@ -82,6 +82,10 @@ next `NNNN` per prefix when a packet is first committed; drafts circulating
 before commit use a placeholder id. This makes monotonic-per-prefix numbering
 enforceable by a single authority.
 
+**Withheld results**: a packet that says it is holding a sealed prediction, a
+sealed sweep or an undisclosed mapping must ship that seal as a file in the same
+commit — §10's **R-SEAL-1**.
+
 ## 4. Journals — the reasoning record
 
 One append-only journal per agent identity:
@@ -309,6 +313,29 @@ The org must survive the loss of any session, including the orchestrator's:
   spawned while a manifest is applied; the "report, never repair a suspected
   seeded mutation" clauses in RTL-line charters are the safety net for a
   sequencing error, not the normal case.
+- **R-SEAL-1 — a seal is a file, not a sentence** (ADR-0016). A commit may not
+  **introduce** a claim that a result already exists and is being withheld from
+  the reader — a sealed prediction, a sealed sweep, an undisclosed mapping, any
+  "I hold this and am not showing you yet" — unless that same commit also stages
+  the artifact holding the withheld result, so that the seal appears in the
+  commit's own `Files-in-this-commit` list. **A withheld result that is not a
+  committed artefact is not a seal, it is a claim.** Three things this rule does
+  not reach. A **forward commitment** ("the mapping will be sealed before any
+  diff exists") is a promise, redeemed by the later commit that freezes the
+  seal, which is itself bound. **An unredeemed promise is not cured by this
+  exclusion**: if no commit has staged the seal by the time the result it seals
+  against exists, the round is adjudicated as having no seal — the claim it was
+  supposed to support may not be made, and the absence is a finding. A
+  **retrospective reference** to a seal already in history ("the mutation died
+  where the seal said it would"), including quoting the claim in order to convict
+  it, is not a new claim. And **sealing in the finalise-a-decision sense** (a
+  countersignature "CLOSED and SEALED") withholds nothing and is outside the rule
+  entirely. *Enforcement*: **review-enforced**, like the rest of §10 — it is
+  deliberately **not** an `R1`–`R9` commit rule, because distinguishing a claim
+  from a quotation is not a lexical test. The scripts may emit an advisory
+  `WARN-SEAL`; a warning is not a verdict and its absence is not a clearance. The
+  rule makes seals countable, not good: a vacuous seal passes it and is caught at
+  adjudication, where a prediction that selects nothing cannot be scored.
 - Licensing: `verilog-ethernet` (MIT) may be read and co-simulated freely.
   `Essenceia/Nasdaq-HFT-FPGA` (CC BY-NC) is prior art to *consult only* —
   never port code. All shipped RTL is written from specs.

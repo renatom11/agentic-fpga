@@ -6086,3 +6086,65 @@ rather than papered over.
 
 ### Files-in-this-commit
 _None — journal-only entry._
+
+## [J-orchestrator-0138] 2026-08-03T17:55:00Z | task:WO-0051 | ADR-0016 accepted; the R-SEAL-1 protocol text transcribed - the first amendment, and the mechanic it established
+
+### Trigger
+dv's countersignature (J-dv_lead-0063, ad1e124) closed the
+acceptance conditions on ADR-0016; the architect returned the
+ACCEPTED flip + the authored PROTOCOL hunks + ADR-0017 PROPOSED
+(committed 8d83371).
+
+### Inputs
+ADR-0016 §8 (the source text: §8.1 R-SEAL-1 bullet with dv's
+amendment sentence, §8.2 signpost); the working-tree
+agents/PROTOCOL.md carrying both hunks exactly as §8 states them;
+R7's refusal when the architect staging was attempted.
+
+### Reasoning
+- Acceptance is mine (process authority): the rule is mechanical,
+  corpus-backtested, countersigned by its own proposer with one
+  amendment closing the unredeemed-promise hole. ACCEPTED.
+- The commit split is the finding of the round: R7 refused
+  agents/PROTOCOL.md under the architect (policy.sh's constitution
+  fall-through), which is correct — an agent that can amend the
+  protocol by citing its own ADR is an agent that can amend the
+  protocol. The mechanic now on record: the ADR authors the exact
+  diff; the orchestrator transcribes it under its own identity;
+  authority is the committed ADR text. This entry is that
+  transcription's record; the diff is mechanical against §8.
+- Transcription kept pure: the known-stale §5 CI sentence
+  ("R1–R8" where CI checks R9 too) is NOT fixed here — it is not
+  part of ADR-0016's diff, and ADR-0017 amends §5 anyway.
+
+### Actions
+- agents/PROTOCOL.md staged and committed with this entry —
+  verified against ADR-0016 §8 line-for-line before staging
+  (R-SEAL-1 at §10:316, signpost at §3:85-87).
+- Blob-gate override uses recorded per J-orchestrator-0137's
+  regime: use #2 at c3e877a (J-dv_lead-0064, WO-0050
+  adjudication). Running count: two (ad1e124, c3e877a). End
+  condition unchanged: the agent_commit.sh journal carve-out
+  landing per ADR-0017 step 1 — dv countersignature of ADR-0017
+  is the next gate on that path.
+
+### Evidence
+- git diff of this commit == ADR-0016 §8.1 + §8.2 content at
+  their stated insertion points; grep -c 'R-SEAL-1'
+  agents/PROTOCOL.md → 2.
+
+### Outcome / DoD
+R-SEAL-1 is in force in the constitution. ADR-0017 awaits dv
+countersignature, then my acceptance, then my script
+implementation with proving scenarios (§11).
+
+### Open questions
+- §11 does not yet say the applier is the orchestrator as
+  transcriber nor that an amendment ADR must carry the applicable
+  diff (architect's flag) — fold into ADR-0017's round or its own
+  small ADR before the second amendment.
+- §5's CI sentence still reads "R1–R8"; corrected by ADR-0017's
+  §5 amendment when it lands.
+
+### Files-in-this-commit
+- agents/PROTOCOL.md
