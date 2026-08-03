@@ -6253,3 +6253,59 @@ closed with its counted record intact.
 ### Files-in-this-commit
 - scripts/agent_commit.sh
 - scripts/test_protocol.sh
+
+## [J-orchestrator-0141] 2026-08-03T19:35:00Z | task:none | Sponsor directive: Jane Street framing replaced with high-frequency-trading style
+
+### Trigger
+Sponsor, verbatim: 'You call it a "Jane-Street-style". Just call
+it a High Frequency Trading style instead. Remove all mentions to
+jane street'.
+
+### Inputs
+Repo-wide sweep. Occurrences fall into three classes:
+(1) sponsor-facing copy — README.md:3's framing line, the site's
+Hardcaml attribution (build.py) and org-chart's glossary
+definition (static page section build.py patches in place);
+(2) append-only records — journals, committed packets, audit
+reports; (3) technical vendor facts — the .ocamlformat profile
+value (changing it would reformat the codebase), package URLs
+(github.com/janestreet/hardcaml is the library's address), and
+the toolchain ADRs' provenance statements.
+
+### Reasoning
+Class (1) fixed here: 'Jane-Street-style' → 'high-frequency-
+trading-style'; the two library attributions reworded to name the
+domain, not the firm. Class (2) cannot be rewritten under the
+org's own append-only constitution — marked here, not rewritten.
+Class (3) is configuration and factual addresses, not framing;
+left intact and reported to the sponsor for confirmation.
+README.md is architect-lane by custom; this edit is transcription
+of a verbatim sponsor branding directive, committed under the
+unrestricted orchestrator scope with the directive quoted.
+
+### Actions
+README line 3; build.py Hardcaml line; org-chart glossary; site
+rebuilt (tree verified clean of agent files first); this commit;
+push.
+
+### Evidence
+grep -rniE 'jane[ -]?street' over site/public/ and README.md
+after the edits: zero hits. The shell repo was already clean
+(swept at seeding).
+
+### Outcome / DoD
+No sponsor-facing surface carries the firm's name.
+
+### Open questions
+- Whether the sponsor wants the class-(3) technical mentions
+  (ADR provenance prose, tool comments) also reworded — those are
+  records and tool internals; routed as a question, not assumed.
+
+### Files-in-this-commit
+- README.md
+- site/build.py
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/index.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html

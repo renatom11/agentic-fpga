@@ -192,7 +192,8 @@ ul.next { padding-left:1.2rem; } ul.next li { margin:.35rem 0; font-size:.92rem;
       can watch a packet arrive, byte by byte.</p>
     </div>
     <div class="col">
-      <p><b>Hardcaml</b> (Jane Street’s OCaml hardware DSL), simulation-first,
+      <p><b>Hardcaml</b> (an OCaml hardware DSL built for high-frequency
+      trading hardware), simulation-first,
       one 64-bit word per cycle at a 156.25&nbsp;MHz design clock with zero
       backpressure on the receive path. XGMII-attached 10G MAC with CRC-32,
       then ARP / IPv4 / UDP — 20 modules, every interface a compile-checked
@@ -224,8 +225,8 @@ ul.next { padding-left:1.2rem; } ul.next li { margin:.35rem 0; font-size:.92rem;
   agent’s reasoning entering beside it</b>, appended to that agent’s
   journal in the same commit. Journals are append-only; mistakes are corrected
   forward, never rewritten. The history is the experiment’s data.</p>
-  <p class="cadcap">The 237 journal entries — one per commit — by author:</p>
-  <div class="chips"><span class="chip">138 · orchestrator</span> <span class="chip">64 · verification lead (dv_lead)</span> <span class="chip">19 · architect (architect_docs_lead)</span> <span class="chip">8 · hardware designer (rtl_lead)</span> <span class="chip">8 · auditor</span></div>
+  <p class="cadcap">The 245 journal entries — one per commit — by author:</p>
+  <div class="chips"><span class="chip">140 · orchestrator</span> <span class="chip">68 · verification lead (dv_lead)</span> <span class="chip">21 · architect (architect_docs_lead)</span> <span class="chip">8 · hardware designer (rtl_lead)</span> <span class="chip">8 · auditor</span></div>
 
   <h2>The tech stack</h2>
   <div class="chips">
@@ -246,7 +247,7 @@ ul.next { padding-left:1.2rem; } ul.next li { margin:.35rem 0; font-size:.92rem;
     <a class="card" href="spec-atlas.html"><span class="ct">Spec atlas</span>
       <span class="cd">All 110 requirements, the 20-module inventory, dataflow diagrams,
       and the traceability matrix — regenerated from the spec text itself, pinned at
-      <span class="mono">00519fd</span>.</span><span class="go">open →</span></a>
+      <span class="mono">2e8994f</span>.</span><span class="go">open →</span></a>
     <a class="card" href="org-chart.html"><span class="ct">Org chart</span>
       <span class="cd">Who does what, who may refuse whom, and the journal rule no agent
       can escape — the org’s constitution, explorable.</span><span class="go">open →</span></a>
@@ -260,7 +261,7 @@ ul.next { padding-left:1.2rem; } ul.next li { margin:.35rem 0; font-size:.92rem;
   </div>
 
   <div class="foot">Generated from the repository at commit
-  <a class="mono" href="https://github.com/renatom11/agentic-fpga/commit/00519fd" target="_blank" rel="noopener">00519fd</a>
+  <a class="mono" href="https://github.com/renatom11/agentic-fpga/commit/2e8994f" target="_blank" rel="noopener">2e8994f</a>
   · 2026-08-03 · <a href="https://github.com/renatom11/agentic-fpga" target="_blank" rel="noopener">source on GitHub</a> · built by
   the org’s orchestrator, like everything else here.</div>
 </div>

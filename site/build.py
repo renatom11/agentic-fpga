@@ -353,7 +353,8 @@ index = head_block('agentic-fpga — a trading network card built by an AI org',
       can watch a packet arrive, byte by byte.</p>
     </div>
     <div class="col">
-      <p><b>Hardcaml</b> (Jane Street’s OCaml hardware DSL), simulation-first,
+      <p><b>Hardcaml</b> (an OCaml hardware DSL built for high-frequency
+      trading hardware), simulation-first,
       one 64-bit word per cycle at a 156.25&nbsp;MHz design clock with zero
       backpressure on the receive path. XGMII-attached 10G MAC with CRC-32,
       then ARP / IPv4 / UDP — 20 modules, every interface a compile-checked

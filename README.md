@@ -1,7 +1,8 @@
 # Agentic FPGA — a Hardcaml trading NIC, built end-to-end by an agent org
 
-An experiment in agent-driven hardware engineering: a phased, Jane-Street-style
-FPGA project — a **low-latency trading NIC front end** written in
+An experiment in agent-driven hardware engineering: a phased,
+high-frequency-trading-style FPGA project — a **low-latency trading NIC front
+end** written in
 [Hardcaml](https://github.com/janestreet/hardcaml) (OCaml hardware DSL) —
 where the **entire development lifecycle is executed by a hierarchy of Claude
 agents**: architecture, RTL, verification, validation, documentation, and an
