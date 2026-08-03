@@ -76,7 +76,10 @@ for mid, name, base in MODULES:
         re.search(r'\*\*Status\*\*: \*\*FROZEN\*\*', open(specp).read()))
     rtl = os.path.exists(os.path.join(ROOT, 'libs', 'hardcaml_ethernet', 'src', f'{base}.ml'))
     plan = base in plans
-    bench = 0  # benches are the current work; none exist yet
+    # A module has benches when a test directory of its name holds test files.
+    benchdir = os.path.join(ROOT, 'test', base)
+    bench = os.path.isdir(benchdir) and any(
+        f.startswith('test_') and f.endswith('.ml') for f in os.listdir(benchdir))
     MODS.append((mid, name, spec, rtl, plan, bench))
 n_rtl = sum(1 for m in MODS if m[3])
 n_spec = sum(1 for m in MODS if m[2])

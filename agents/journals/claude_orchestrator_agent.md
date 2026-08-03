@@ -6388,3 +6388,48 @@ None new; RV-0055-VERDICT lands next.
 - site/public/index.html
 - site/public/org-chart.html
 - site/public/spec-atlas.html
+
+## [J-orchestrator-0144] 2026-08-03T20:50:00Z | task:none | The bench column told the truth again - a stale hardcode retired
+
+### Trigger
+Sponsor asked whether the module-status table is accurate. It was
+not: M03's BENCHES cell showed none, from build.py:79's
+`bench = 0  # benches are the current work; none exist yet` — a
+hardcode true when written, false since the first bench landed.
+
+### Inputs
+build.py's module loop; the test/ tree (test/xgmii_rx_64/ holds
+the seven family files).
+
+### Reasoning
+Replaced the hardcode with derivation from the tree, matching the
+other three columns' method: a module has benches when a test
+directory of its name holds test_*.ml files. M03 now shows all
+four checks; every other module's row is unchanged and was
+verified correct (20/20 frozen, 5 RTL, plans at M03/M14).
+First rebuild was discarded: dv's WO-0055 verdict files landed
+mid-build, contaminating the entry count (the L-D15 class — the
+discipline just woven into my own shell charter, caught here in
+the flesh). Rebuilt from a HEAD worktree plus the fix only.
+
+### Actions
+build.py fix; clean-worktree rebuild; this commit; push.
+
+### Evidence
+M03 row in the rebuilt page: four ✓ cells; build line counts
+committed state (250 = HEAD entries).
+
+### Outcome / DoD
+The table derives all four columns from the trees; no hardcoded
+status cells remain in the module matrix.
+
+### Open questions
+None.
+
+### Files-in-this-commit
+- site/build.py
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/index.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html
