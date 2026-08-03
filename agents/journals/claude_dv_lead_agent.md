@@ -11453,3 +11453,215 @@ will therefore enumerate exhaustively over all eighteen units.
 - agents/handoffs/WO-0040_tb-m03-family-d-fcs.md
 - test/xgmii_rx_64/dune
 - test/xgmii_rx_64/test_m03_d.ml
+
+## [J-dv_lead-0041] 2026-08-08T16:30Z | task:WO-0041 | Family D's campaign frozen against 447d11c — but only after finding that the "eighteen units" I was asked to enumerate exhaustively do not exist: the bench has twelve, the repo has ninety-two, and the figure everyone has been quoting since round 6 matches neither
+
+### Trigger
+Orchestrator: run **30786987392** (`447d11c`) fully green — the repaired SHA is
+the campaign base per my own ruling. Freeze the family-D mutation predictions:
+two files plus the journal as second copy, five mutations D-M1..D-M5,
+**exhaustive MUST-STAY-GREEN enumeration across all eighteen units**, the
+definitive blinding bar list including my new side-channel rule, a ruling on
+whether my own journal is barrable given the auditor's rehydration needs, three
+pass criteria, and the acknowledged published-mapping weakness stated in the
+freeze so the adjudication weighs D-M1..D-M4 honestly against D-M5.
+
+### Inputs
+- The run report for `447d11c`.
+- **Counts I measured rather than inherited**: `grep -c let%expect_test` per
+  file in `test/xgmii_rx_64/` (3 + 1 + 4 + 3 + 1 = **12**), and repo-wide
+  (**92**).
+- `grep -rln Xgmii_rx_64 test/` — the blast-radius check.
+- `test/monitors/protocol_monitor.{ml,mli}`, `test/monitors/octet_time.mli`,
+  `test/monitors/test_octet_time.ml` — to classify their `Xgmii_rx_64` mentions
+  as prose.
+- `test/*/dune` — which test libraries depend on `hardcaml_ethernet`.
+- `test/xgmii_rx_64/test_m03_d.ml` (`run_d1`'s and `assert_frame`'s assertion
+  ORDER, which is what §3's message predictions rest on), `test_m03_a.ml`
+  (A1/A2's and A3/A4's order), `test_m03_c.ml` (`outcome_ok`, C4's strobe-arity
+  match).
+- `agents/handoffs/WO-0040_tb-m03-family-d-fcs.md` §9's published table.
+- `agents/handoffs/WO-0039_m03-mutation-campaign.md` §0/§1 and its sealed
+  companion §10, as the template.
+- `docs/specs/modules/xgmii_rx_64.md` §9 row 1, the strobe pin, ruling 9;
+  `docs/specs/requirements.md` REQ-013's `tuser`[0] semantics.
+- **No `libs/**`, no `rtl_snapshots/**`.**
+
+### Reasoning
+
+**I was asked to enumerate exhaustively across eighteen units and there are
+twelve.** That had to be settled before a single cell could be frozen, because
+an exhaustive enumeration against a wrong denominator is not exhaustive — it is
+just a list. `test/xgmii_rx_64/` holds **12** `%expect_test`s (9 before family
+D, 3 after); the repository holds **92**. Neither is 15 or 18.
+
+**The number has been circulating since WO-0038 round 6 and I propagated it
+myself** — `RV-0040-VERDICT` §7 predicted "eighteen `%expect_test`s (fifteen
+existing plus three new)", and that prediction was reported back as exact,
+which tells me the relay and I were agreeing on a label neither of us had tied
+to a measurement. I do not know what CI's "fifteen" counts — test executables,
+dune stanzas, something else — and I am recording that I do not know rather
+than inventing a reconciliation.
+
+**Nothing previously ruled is invalidated, and I checked that rather than
+assumed it.** `WO-0039`'s sealed table enumerated "the nine test units CI
+reports", and **nine is exactly right** for the M03 bench before family D: 3 in
+`test_m03_a.ml`, 1 in `test_m03_b.ml`, 4 in `test_m03_c.ml`, 1 in
+`test_m03_structural.ml`. Every one of the nine was scored in that campaign. A
+label drifted; an adjudication did not.
+
+**And I checked the blast radius instead of assuming the directory bounds it.**
+`grep -rln Xgmii_rx_64 test/` returns nothing outside the bench directory except
+prose in the monitors — comments citing SPEC-M03, not instantiations. But
+`test/monitors/dune`, `test/axi64_probe/dune` and `test/hardcaml_ethernet/dune`
+**do** depend on `hardcaml_ethernet`, so a mutation that fails to compile would
+redden them. That is why the freeze says a unit outside `test/xgmii_rx_64/`
+reddening is a **build-level** finding and never a behavioural one — the
+distinction matters, and without the dune check I would have written "twelve
+units, nothing else can move", which is false.
+
+**The matrix's non-obvious cells are where the freeze earns its keep, and three
+of them changed what I believed.**
+
+*T-D1 is GREEN under D-M2.* A design that marks every frame invalid hands D1
+exactly what D1 asserts. D1 cannot see D-M2 at all. That is not a weakness — it
+is precisely the sentence the attack plan wrote into M03-D2's Kills column
+("the anti-vacuity partner of M03-D1, without which D1 passes against a design
+that always asserts the bit"), and this cell makes it checkable for the first
+time.
+
+*T-D2 reddens under D-M3, which `WO-0040` §9's published table does not say.*
+That table names D-M3's kill as M03-D3 alone. It is **incomplete, not wrong**:
+D2's fault-isolation calls — the ones I required at R2 — drive the same mixed
+pair, so the register-read defect surfaces there too. I have recorded this
+explicitly, because an adjudication that scored T-D2 as an "unnamed unit
+reddening" would be charging the bench for my own table's omission.
+
+*T-A34 reddens under D-M2 through the monitor, not through A3.* A3 compares the
+two lanes' tuple sequences; a verdict hardwired bad moves both lanes
+identically, so the sequences stay equal and A3 passes. The unit still dies,
+one layer down. Getting that wrong would have produced a false finding.
+
+**Then the thing that changed my mind about the campaign's strength.** At
+`J-dv_lead-0040` I said D's campaign is structurally weaker than WO-0039's
+because I published the mutation → row mapping. Building the matrix shows that
+is **overstated, and I am revising it upward rather than leaving the record
+wrong**: D-M1, D-M4 and D-M5 have the **identical** row set {T-D1, T-D3}. A
+seeder steering toward "make T-D1 and T-D3 die" cannot thereby produce D-M1
+rather than D-M4 — the distinguishing content is entirely in **which assertion
+speaks**, and the expected messages are sealed. Publishing rows leaked less than
+I feared because the rows do not discriminate. What discriminates is the
+message, and for D-M1 the MUST-STAY-GREEN column: **ten of twelve units cannot
+see it**, which is unguessable from anything published.
+
+That also means pass criterion 2's message clause is carrying nearly the whole
+campaign here, which is a different shape from WO-0039 and the adjudication
+should know it in advance.
+
+**On barring my own journal.** `J-dv_lead-0039` and `J-dv_lead-0040` describe
+`test_m03_d.ml`'s internals directly, so they are inside the side-channel rule I
+set at `J-dv_lead-0040`. Entry-scoped barring reads cleaner in principle, but
+reading a journal means opening a file, and a bar that requires the reader to
+avert its eyes mid-file is not enforceable. So the ruling is a **whole-file
+bar, explicitly task-scoped**, justified by the fact that **nothing in this task
+needs my journal**: the auditor's inputs are the intents, SPEC-M03 and
+`libs/**`. I wrote the escape hatch into the bar rather than leaving it implicit
+— if it believes it needs an entry, it asks and the entry is extracted. A bar
+with no legitimate route through it invites quiet violation.
+
+**And I swept for other bench-describing documents rather than taking the two
+verdicts the coordinator named.** `RV-0039-VERDICT` and `RV-0040-VERDICT` live
+*inside* the WO-0039 and WO-0040 packet files, so barring those files covers
+them — but `WO-0040` needs barring on its own account anyway, since §6 lists the
+bench's expected values and its Return log describes the implementation line by
+line. `test/attack_plans/AP-xgmii_rx_64.md` carries family D's row observables.
+And tb_writer's journal describes what it built. **Eight read bars, not two.**
+
+**One addition to the brief that WO-0039's template has no analogue for.**
+D-M1's whole point is that it agrees with almost everything the pre-existing
+suite asserts. A conscientious seeder, seeing a diff with a tiny observable
+footprint, may well conclude the diff is weak and "improve" it — which would
+destroy the mutation. So the brief says plainly: **expect D-M1 to look too quiet,
+and do not improve it.** Pre-empting a failure mode the seeder cannot know about
+is not a leak; the intents already say what the defect is.
+
+### Actions
+- **Corrected the unit count** from the circulating "eighteen" to a measured
+  **twelve**, recorded that the repo holds 92 and that CI's "fifteen" matches
+  neither, and confirmed `WO-0039`'s nine was right for its own scope.
+- **Checked the blast radius**: no test outside `test/xgmii_rx_64/` instantiates
+  M03; three other test libraries link `hardcaml_ethernet`, so a compile failure
+  would reach them — hence the build-level-versus-behavioural distinction in the
+  freeze.
+- Authored the auditor-facing brief
+  `agents/handoffs/WO-0041_family-d-mutation-campaign.md` — five behavioural
+  intents, the `tuser`[0]-is-a-disjunction precision governing D-M1/D-M2/D-M5,
+  the eight read bars plus two process bars, mechanics, return format, three
+  pass criteria, and the "expect D-M1 to look quiet" instruction.
+- Authored the sealed freeze
+  `agents/handoffs/WO-0041_family-d-mutation-campaign-SEALED-predictions.md` —
+  the twelve units, the **full 5 × 12 matrix**, the expected message for every
+  kill, the reasoning for every non-obvious cell, and the honest weighting.
+- **Ruled the journal bar**: whole-file, task-scoped, with an ask-don't-read
+  escape hatch.
+- **Revised my own `J-dv_lead-0040` pessimism upward**, with the reason.
+- Opened no `libs/**`. No `git commit`, no `git push`.
+
+### Evidence
+1. `test/xgmii_rx_64/` `%expect_test` counts: `test_m03_a.ml` 3,
+   `test_m03_b.ml` 1, `test_m03_c.ml` 4, `test_m03_d.ml` 3,
+   `test_m03_structural.ml` 1 — **12**. Repo-wide: **92**.
+2. `grep -rln Xgmii_rx_64 test/` outside the bench dir: only prose mentions in
+   `test/monitors/**`.
+3. `test/monitors/dune`, `test/axi64_probe/dune`, `test/hardcaml_ethernet/dune`
+   link `hardcaml_ethernet` — the build-level reach.
+4. D-M1's MUST-STAY-GREEN column is **ten of twelve** — the
+   silently-always-pass demonstration, and the campaign's central claim.
+5. D-M1, D-M4 and D-M5 share the row set {T-D1, T-D3}; only the message
+   separates them, and messages are sealed.
+6. `run_d1`'s assertion order (cycle → `tuser` → octets → `error_pulses`) and
+   `assert_frame`'s (octets → `tuser` → strobe set) are what fix §3's
+   first-failing-assertion predictions.
+7. T-D1 green under D-M2 — the attack plan's own anti-vacuity sentence made
+   checkable.
+8. T-D2 red under D-M3, which `WO-0040` §9's table omits.
+
+### Outcome
+**Family D's campaign is FROZEN against `447d11c`**, before any diff exists, in
+two files plus this entry as the independent second copy. Five mutations, a
+complete 5 × 12 matrix with no loose naming, expected messages for every kill,
+eight read bars and two process bars, and three pass criteria.
+
+**The count correction is the freeze's precondition**, not a footnote: twelve
+units, not eighteen, with the blast radius checked rather than assumed.
+
+**D-M1 is the mutation this family was written for** — ten of twelve units
+cannot see it. A family D that does not die on D-M1 has closed nothing.
+
+### Open-questions
+- **What CI's "fifteen" actually counts is unresolved.** It is not
+  `%expect_test`s in the bench directory (12) nor in the repo (92). Worth
+  settling before the next packet quotes it — a number nobody can tie to a
+  measurement is how "five of nine units are timing-blind" happened.
+- **`WO-0040` §9's published table is incomplete for D-M3** (omits T-D2). Left
+  standing rather than edited: the packet is committed history and the sealed
+  file records the completion, which is this programme's own rule for a recorded
+  miss.
+- **The side-channel rule now has a swept bar list**, but it is swept *by hand*.
+  Before family E's campaign, the sweep should be a checklist item in the
+  brief-authoring step rather than something I remember to do.
+- **Families E–H still owed the M03-D3 vacuity re-read** before any is benched.
+- **The verilog-ethernet differential co-sim remains the longest-lead item on
+  the `SO-M03` path.**
+- **Owed by me, unchanged**: the `precompile_check.sh`
+  side-effect-in-combinator lane; `tools/precompile_stubs/ifc_check.ml`'s stale
+  UNVERIFIED note; SPEC-M01 §11.4's caveat retirement (architect_docs_lead);
+  `AP` §7's fuller rewrite behind its banner.
+- **M03-A3's blindness to lane-symmetric errors remains untested**; my M04
+  contamination from `J-dv_lead-0024` still stands.
+- **Unchanged**: the RFC 1071 anchor closes on the next CI run that fetches;
+  X-7, X-10, X-11 deferred; L1–L5 owed as a separate packet.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0041_family-d-mutation-campaign-SEALED-predictions.md
+- agents/handoffs/WO-0041_family-d-mutation-campaign.md
