@@ -72,7 +72,31 @@ let good_and_bad_64 ~row =
    §3.1: a bad-FCS frame is forwarded in full (§9 row 1), so its delivered
    extent is the ordinary clean-frame identity extent and
    account_clean_frame's ~aborted:false is correct — this is NOT the
-   truncated-frame path M03-C4 uses for its runt. *)
+   truncated-frame path M03-C4 uses for its runt.
+
+   WHAT THIS ROW ASSERTS DIRECTLY, AND WHAT IT CARRIES (RV-0040-VERDICT §3
+   — recorded because a reader must not believe this row asserts more than
+   it does). WO-0040 §6 lists five expected values. Asserted DIRECTLY
+   below: the output-word COUNT (8), the tlast word's own CYCLE
+   (start_cycle + 10), tuser[0] = 1, the delivered octet SEQUENCE against
+   the CORRUPTED frame's own sixty, and the exact strobe SET. NOT asserted
+   directly: the per-word tkeep pattern (0xFF x7 then 0x0F), "tlast on word
+   7 only", and the intermediate words' cycles (start_cycle + 3 + m for
+   m < 7). Those three are CARRIED, and by argument rather than by hope:
+
+   - a wrong tkeep changes the delivered octet stream, because
+     Stream_word.octets is tkeep-MASKED and directed_frame_octets' filler
+     is position-dependent — so the octet-sequence assertion below catches
+     it;
+   - a tlast on an earlier word is what tlast_sample finds FIRST, so its
+     cycle then fails the start_cycle + 10 check below;
+   - the intermediate word cycles transfer from M03-A1/A2 (which assert
+     start_cycle + 3 + m for every m on this same 64-octet shape) because
+     REQ-005 is CUT-THROUGH: no word is withheld, so no word's timing may
+     depend on a verdict that is not known until closure. A bad-FCS frame
+     cannot have different intermediate timing without violating REQ-005 —
+     and were it to, the accumulated displacement would surface in this
+     row's own word-7 cycle assertion. *)
 
 let run_d1 ~lane =
   let row = String.concat [ "M03-D1 (lane "; Int.to_string lane; ")" ] in
@@ -221,7 +245,37 @@ type mixed_pair_result =
    the bad frame's OWN [Arrival.frame] record — never off the other frame
    in the schedule, and never derived by arithmetic on octet times by hand
    (WO-0040 §6: "The second frame's start_cycle comes from
-   Arrival.frames sched).(1), not from arithmetic you do by hand"). *)
+   Arrival.frames sched).(1), not from arithmetic you do by hand").
+
+   WHY THAT FORMULA SURVIVES A TWO-FRAME SCHEDULE (RV-0040-VERDICT §5,
+   ruling on this file's open question 1 — the extension was flagged, and
+   this is the ground dv_lead confirmed it on, which is NOT the ground it
+   was first argued from).
+
+   SPEC-M03 §6.1 states the m + 3 cycle formula under a gapless qualifier,
+   and that qualifier is defined PER FRAME: "On a gapless stimulus — one in
+   which THE FRAME'S OCTETS occupy consecutive octet times from the start
+   character onward, so that no XGMII word between the start word and the
+   word carrying the terminate character is an idle word — output word m is
+   emitted on the cycle m + 3 counted from the word carrying the start
+   character." The span it constrains runs from THAT frame's start word to
+   THAT frame's terminate word, so an INTER-frame gap lies entirely outside
+   it. Both frames of a pair below are internally contiguous, so m + 3
+   applies to each from its own start word and start_cycle + 10 is the
+   frame-local consequence. (The qualifier exists for REQ-016's idle
+   injection, which puts an idle word INSIDE an open frame; §6.1's own
+   following paragraph makes the scoping explicit, noting that a /T/ in
+   lane 0 carries no frame octet "yet that table is the gapless case the
+   m + 3 formula is derived from … both words fall outside the span it
+   constrains".)
+
+   Second, independent route, kept because it is not wrong and reaches the
+   same answer from the datapath rather than from the formula's scope:
+   REQ-004/§8's zero-backpressure one-word-per-cycle invariant and
+   REQ-019's fixed ΔC = (L + h)/8 mean the datapath has no internal
+   buffering and a fixed per-octet delay, so each frame's output timing is
+   a pure function of its own input octet times, independent of a
+   neighbouring frame's presence. *)
 let run_mixed_pair ~row ~lane ~good_first =
   let good, bad = good_and_bad_64 ~row in
   let octets_list = if good_first then [ good; bad ] else [ bad; good ] in
@@ -377,8 +431,19 @@ let%expect_test
   =
   run_d2_d1_partner ~lane:0;
   run_d2_d1_partner ~lane:4;
+  (* RV-0040-R2, ruling this file's open question 2: all four (lane,
+     ordering) combinations, not lane 0 only. On COVERAGE these four are
+     redundant — run_d3 below already asserts every good member clean at
+     both lanes and both orderings, via assert_frame with
+     ~expected_pulses:[]. Their value is FAULT ISOLATION: in this separate
+     %expect_test the good-member claim still reports when run_d3 fails for
+     some other reason and aborts before reaching it — the same principle
+     that put RV-0038-R5's R5-4 batched table in test_m03_c.ml. That value
+     is symmetric in lane, so lane 0 alone had no justification. *)
   run_d2_d3_good_member ~lane:0 ~ordering:Good_then_bad;
   run_d2_d3_good_member ~lane:0 ~ordering:Bad_then_good;
+  run_d2_d3_good_member ~lane:4 ~ordering:Good_then_bad;
+  run_d2_d3_good_member ~lane:4 ~ordering:Bad_then_good;
   [%expect {||}]
 ;;
 

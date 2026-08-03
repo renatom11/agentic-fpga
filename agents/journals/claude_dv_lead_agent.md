@@ -11250,3 +11250,206 @@ remain the gate.
 
 ### Files-in-this-commit
 - agents/handoffs/WO-0040_tb-m03-family-d-fcs.md
+
+## [J-dv_lead-0040] 2026-08-08T09:05Z | task:WO-0040 | Repairs applied on a fully-green first-try family D — and the seeding question exposed that my own review verdicts have become a side channel around the blinding bars: RV-0040-VERDICT describes test_m03_d.ml's internals in detail and must itself be barred, while my choice to publish D's kill mapping in the worker-facing packet has structurally weakened D's campaign before it runs
+
+### Trigger
+Orchestrator: run **30786086951** (`7fac574`) **FULLY GREEN, first try** —
+Build green (the warning-9 risk on `Strobe_monitor.expect`'s record literal did
+not bite), `runtest` green with eighteen silent tests and no promotion
+produced, determinism green. My `RV-0040-VERDICT` §7 prediction held on every
+axis. **Family D is live and M03 answered its first bad-FCS frames correctly.**
+Execute R1–R5 as my own `test/**` commit; journal; and answer two questions —
+**who seeds** D's four qualification mutations, and whether the D seeder's
+blinding bars need any addition given the auditor has since read my WO-0039
+verdict.
+
+### Inputs
+- The run report as relayed (Build, runtest, determinism, unit count).
+- `test/xgmii_rx_64/test_m03_d.ml` — `run_mixed_pair`'s comment, `run_d1`'s
+  comment, M03-D2's `%expect_test` (the three repair sites).
+- `test/xgmii_rx_64/dune` — the stale header comment (R5).
+- `agents/handoffs/WO-0040_tb-m03-family-d-fcs.md` — Return log §2 and §4 (R4),
+  and **§9's published mutation table**, which is what the blinding answer
+  turns on.
+- `agents/handoffs/WO-0039_m03-mutation-campaign.md` §0/§1 (the blinding bars
+  as ruled) and its sealed companion's §10 non-disclosure list.
+- My own `RV-0039-VERDICT` and `RV-0040-VERDICT`, **re-read as disclosure
+  surfaces rather than as verdicts** — which is how the second question made me
+  look at them.
+- `docs/specs/modules/xgmii_rx_64.md` §6.1's gapless paragraph (R1's citation).
+- **No `libs/**`, no `rtl_snapshots/**`.**
+
+### Reasoning
+
+**The repairs are small and I will not dwell on them**, except to note that R1
+replaces a *right answer reached by the wrong route* with the right route —
+§6.1's gapless qualifier is scoped per frame, so an inter-frame gap is outside
+the span it constrains — and keeps the worker's REQ-004/REQ-019 datapath
+argument as an explicitly-second route rather than deleting it. R3 writes down
+which of WO-0040 §6's five expected values D1 asserts directly and which it
+carries, with the REQ-005 cut-through argument, so no reader believes the row
+asserts more than it does. R5 turns the `dune` header from a snapshot of
+WO-0038 into a standing per-packet list with a line saying that a packet which
+adds rows and does not add its line leaves the comment wrong — the same
+left-standing-summary defect that cost `RV-0039-VERDICT` finding F-2 and put a
+banner on `AP` §7, now fixed in the third place it has appeared.
+
+**The seeding question has an easy half and a hard half, and the hard half is
+about me.**
+
+*The easy half.* All four D mutations are RTL-side, and the auditor authored
+neither M03's RTL nor its bench, so it remains the no-stake party the WO-0039
+ruling selected. **The ruling carries.** Same mechanics: behavioural intents in
+an auditor-facing brief, diffs into `docs/reports/audit/**`, orchestrator
+applies each to a throwaway branch parented on the repaired SHA, predictions
+frozen and sealed before any diff exists.
+
+*The hard half.* The coordinator asked whether the auditor's having read
+`RV-0039-VERDICT` is a taint. Working that through, I found something worse and
+closer to home.
+
+**First, the prior exposure itself is acceptable, and for a reason that is not
+"it's probably fine".** `RV-0039-VERDICT`'s bench disclosures are about
+`test_m03_c.ml`'s machinery — `outcome_ok`, `expected_disagree`,
+`batched_failure_with_protocol` — and about the WO-0038 suite's coverage.
+**`test_m03_d.ml` did not exist when it was written**, and family D's rows use
+none of that machinery. The one D-relevant thing it discloses — that a
+hardwired-good design passes all fifteen and that M03-D1 is its closure — is
+**already public in WO-0040 §9**, so it tells a seeder nothing it was not about
+to be told.
+
+**Second, and this is the finding: my own `RV-0040-VERDICT` is a
+bench-disclosure document, and it must be barred.** It walks through
+`test_m03_d.ml`'s internals in detail — `good_and_bad_64`'s both-directions
+guard, `assert_frame`'s exact-set comparison, the `cycle ≤ tlast_cycle0`
+attribution partition, which of §6's values are asserted directly and which are
+carried, and a full trace of how D-M3 dies in pair A. **That is a direct
+description of the very file the seeder is barred from reading.** Reading my
+verdict would route around the §1 bar completely, and I wrote it a day before
+anyone asked who would seed D.
+
+So the general rule, which I did not have and now do: **a review verdict that
+describes bench internals is part of the sealed surface for the next campaign.**
+My verdicts have become a side channel around the blinding, because their job —
+proving I checked rather than waved — requires quoting the thing under
+protection. I do not intend to stop writing them that way; the fix is to bar
+them, and to notice which ones need barring at the time the next campaign is
+designed rather than after.
+
+**Third, D's campaign is structurally weaker evidence than WO-0039's was, and I
+would rather say so before it runs than explain it afterwards.** The reason is
+not the auditor — it is a choice I made deliberately in WO-0040. **§9 publishes
+the mutation → row kill mapping in the worker-facing packet**, so tb_writer
+would write against the mutations rather than around them. I still think that
+was right for the bench. But it means "which row must die" **cannot be blinded
+for D**; that ship sailed by design.
+
+What remains blindable is narrower: the **MUST-STAY-GREEN sets**, the exact
+messages, the PERMITTED branches, and pass criterion 2. And since the kill rows
+are public, **D's discriminating power now rests almost entirely on the
+MUST-STAY-GREEN sets** — which means I must enumerate them exhaustively across
+all eighteen test units for each of the four mutations, not just name the
+survivors loosely.
+
+**Fourth, the mitigation: a fifth mutation whose row mapping is NOT published.**
+To give D's campaign at least one mutation carrying WO-0039's full blinding, I
+am adding **D-M5 — set `tuser`[0] correctly on a bad-FCS frame but never pulse
+`error_bad_fcs`** — and sealing its row mapping. It splits D1's conjunction:
+the `tuser` assertion cannot see it and only the exact-strobe-**set** assertion
+can, so it tests that half of D1 independently. §9 row 1 requires both the bit
+and the strobe, and REQ-008's no-silent-discard principle is the same shape, so
+the intent is spec-grounded rather than invented. Nothing about it is in any
+committed document a seeder may read.
+
+### Actions
+- **R1** — `run_mixed_pair`'s comment now derives `start_cycle + 10` from
+  SPEC-M03 §6.1's **per-frame** gapless qualifier, quoting the sentence and the
+  following paragraph's own scoping note, with the REQ-004/REQ-019 datapath
+  argument kept as an explicitly-second route.
+- **R2** — M03-D2's `%expect_test` gains
+  `run_d2_d3_good_member ~lane:4 ~ordering:Good_then_bad` and
+  `~ordering:Bad_then_good`, with a comment stating the value is **fault
+  isolation, not coverage**, and that the value is symmetric in lane so lane 0
+  alone had no justification.
+- **R3** — `run_d1`'s comment now lists which of WO-0040 §6's five expected
+  values are asserted directly (count, word-7 cycle, `tuser`, octet sequence,
+  strobe set) and which are carried (per-word `tkeep`, `tlast`-on-word-7-only,
+  intermediate cycles), each with its carrying argument, including REQ-005's
+  cut-through rule.
+- **R4** — the packet's Return log §2 and §4 corrected from "four
+  `%expect_test`s" to **three**, marked as corrected rather than silently
+  rewritten.
+- **R5** — `test/xgmii_rx_64/dune`'s header rewritten from a WO-0038 snapshot
+  into a standing per-packet row list, naming its own staleness history.
+- Re-ran `tools/dv_checks.sh`: every check that could run passed.
+- **Ruled the D seeding**: auditor confirmed; **`RV-0040-VERDICT` added to the
+  seeder's read bars**; prior `RV-0039-VERDICT` exposure ruled acceptable with
+  reasons; D's campaign weight downgraded in advance; **D-M5 added with a
+  sealed row mapping**.
+- Opened no `libs/**`. No `git commit`, no `git push`.
+
+### Evidence
+1. Run **30786086951** (`7fac574`): Build green, `runtest` green, eighteen
+   silent tests, no promotion, determinism green — `RV-0040-VERDICT` §7's
+   prediction on every axis, including that this would **not** be
+   red-by-design.
+2. SPEC-M03 §6.1: "one in which **the frame's octets** occupy consecutive octet
+   times … between the start word and the word carrying the terminate
+   character" — the per-frame scope R1 now cites.
+3. `grep -c "run_d2_d3_good_member ~lane:4"` → **2** after R2.
+4. `test/xgmii_rx_64/dune` no longer contains "eleven AP".
+5. `WO-0040` §9's table publishes D-M1..D-M4 against the rows they must kill —
+   the fact that makes D's blinding narrower than WO-0039's.
+6. `RV-0040-VERDICT` §3–§5 describe `good_and_bad_64`, `assert_frame`, the
+   `cycle ≤ tlast_cycle0` partition and the D-M3 kill trace — a description of
+   the barred file, hence its own bar.
+7. `RV-0039-VERDICT`'s bench content concerns `test_m03_c.ml`'s machinery, which
+   family D's rows do not use, and predates `test_m03_d.ml` entirely.
+
+### Outcome
+**R1–R5 applied**; family D is green and repaired. The freeze for D's campaign
+is taken against the **repaired** SHA once CI confirms it — R2 changes what
+runs, so it needs its own run.
+
+**D's four mutations are seeded by the AUDITOR**, per the standing WO-0039
+ruling, with **`RV-0040-VERDICT` added to its read bars** and prior
+`RV-0039-VERDICT` exposure ruled acceptable. **A fifth mutation, D-M5, is added
+with a sealed row mapping** so at least one mutation in this campaign carries
+full blinding.
+
+**Stated before the run, not after: D's campaign is structurally weaker
+evidence than WO-0039's**, because WO-0040 §9 published the kill mapping by
+design. Its discriminating power rests on the MUST-STAY-GREEN sets, which I
+will therefore enumerate exhaustively over all eighteen units.
+
+### Open-questions
+- **Standing rule, new**: a review verdict that describes bench internals is
+  part of the sealed surface for the next campaign. Check which verdicts need
+  barring **when the campaign is designed**, not after. My verdicts are a side
+  channel around the blinding by construction, since proving I checked requires
+  quoting what is protected.
+- **A packet-design tension I have not resolved**: publishing the mutation → row
+  mapping to the worker makes the bench better and the campaign weaker. For
+  family E I should consider publishing the mutation **intents** to the worker
+  while sealing the row mapping — the worker needs to know what defect classes
+  it must catch, not which of its rows will catch them.
+- **D-M5's row mapping is sealed** and must not enter any worker-facing or
+  auditor-facing document.
+- **Families E–H still owed the M03-D3 vacuity re-read** before any is benched.
+- **The verilog-ethernet differential co-sim remains the longest-lead item on
+  the `SO-M03` path**; families E–H cannot carry a PASS until X-1's outcome
+  model is anchored.
+- **Owed by me, unchanged**: the `precompile_check.sh`
+  side-effect-in-combinator lane; `tools/precompile_stubs/ifc_check.ml`'s stale
+  UNVERIFIED note; SPEC-M01 §11.4's caveat retirement (architect_docs_lead);
+  `AP` §7's fuller rewrite behind its banner.
+- **M03-A3's blindness to lane-symmetric errors remains untested**; my M04
+  contamination from `J-dv_lead-0024` still stands.
+- **Unchanged**: the RFC 1071 anchor closes on the next CI run that fetches;
+  X-7, X-10, X-11 deferred; L1–L5 owed as a separate packet.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0040_tb-m03-family-d-fcs.md
+- test/xgmii_rx_64/dune
+- test/xgmii_rx_64/test_m03_d.ml

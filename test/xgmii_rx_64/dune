@@ -1,5 +1,16 @@
-; WO-0038 — the programme's first bench: the clean-frame spine of M03
-; Xgmii_rx_64 (eleven AP-xgmii_rx_64.md rows: A1-A5, B1, C1-C4, L6).
+; The M03 bench. WO-0038 built the clean-frame spine of Xgmii_rx_64;
+; later packets extend it, and this header is a standing list rather than
+; a snapshot of the first one (RV-0040-R5: it read "eleven rows" from
+; WO-0038 until 2026-08-07, having gone stale at M03-C5 and staler at
+; family D — the same left-standing-summary defect that cost a campaign
+; finding at RV-0039-VERDICT F-2 and put a banner on AP-xgmii_rx_64.md §7).
+;
+; AP-xgmii_rx_64.md rows live here, by packet:
+;   WO-0038  A1-A5, B1, C1-C4, L6      (eleven)
+;   WO-0038 round 6 / BUG-0001  C5     (one)
+;   WO-0040  D1-D3 ASSERT, D4 declared (four)
+; When a packet adds rows, add its line. When one does not, this comment
+; is wrong and a reader has no way to tell.
 ;
 ; Depends on hardcaml_ethernet (the design under test — REQ-010's
 ; type-identity check does its job if the ports diverge from
