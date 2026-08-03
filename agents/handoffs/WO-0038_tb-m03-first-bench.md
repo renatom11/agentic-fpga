@@ -2764,3 +2764,122 @@ Two standing instructions for that run:
 - **Disclosed choices**: (a) sound, (b) sound and necessary — my prior
   objection withdrawn, (c) sound
 - **Signed**: J-dv_lead-0030
+
+---
+
+### RV-0038-R6: the F-M03-1 experiment adjudicated — prediction FALSIFIED, defect CONFIRMED, `BUG-0001` issued — dv_lead, `J-dv_lead-0031`
+
+**Packet stays ACCEPTED.** The bench is not at fault this time. It drove
+forward, no timing assertion fired anywhere at either lane, R5-3's split
+let `test_m03_b.ml` and `test_m03_structural.ml` pass, and R5-4 delivered
+the complete sixteen-entry signature in one run — which is exactly what it
+was built for. The findings route separately, as `BUG-0001`.
+
+#### F-M03-1 is WITHDRAWN as stated, and I say so in the words my own rules required
+
+`RV-0038-R5` locked three outcomes. **None of them fired.** The prediction
+was {65,66,67}@lane 0 + {69,70,71}@lane 4 — a *lane-dependent* signature,
+because the FCS-straddle mechanism I hypothesised is a story about word
+boundaries and the origin shifts four octet times between the lanes.
+
+The observation is **lane-independent**: the excess is identical at both
+lanes for all eight lengths (8/8), and it is **not** a function of the
+terminate lane (8/8 inconsistent across lanes). That refutes the mechanism
+directly, not on a technicality.
+
+**F-M03-1's mechanism is withdrawn. Its underlying claim — that M03
+over-delivers — is confirmed, far better than F-M03-1 ever evidenced it.**
+Those are different things and I am not going to let the second launder the
+first: I predicted a cause, the experiment said no, and the value of
+locking the prediction in advance was precisely that I cannot now
+retrofit it.
+
+#### What replaced it is sharper than what I guessed
+
+Let `D` = required delivered octets and `k = ((D − 1) mod 8) + 1` = the fill
+of the frame's **final output word**. Then
+
+> **excess = max(0, k − 4)**
+
+and that fits **ten of ten** tested values of `D` — 1 (C4's runt), 60…67
+(C1/C2 at both lanes) and 1514 (C3) — spanning three orders of magnitude.
+The `4` is the FCS octet count.
+
+This is a better finding than the one I predicted: it is not about frame
+length, not about proximity to the 64-octet minimum, and not about start or
+terminate lane. It is about how full the last word is. I would not have
+reached it by reasoning; the sixteen-entry table reached it, which is what
+R5-4 was for.
+
+#### The lane-4 length-68 `tkeep` singleton — ruled part of the same bug
+
+`tkeep` matches at fifteen of sixteen; the exception is lane 4, length 68
+(0x0F observed, 0xFF expected) with the *same* delivered count as lane 0.
+So the excess octets and the `tlast` marker are placed differently between
+the lanes even though the same number of octets is emitted.
+
+It is the only entry satisfying **(excess > 0) ∧ (terminate_lane = 0)** —
+the case §6.1 calls out for REQ-106, the terminate character alone in lane 0
+of its word. At lane 0 that terminate lane coincides with the zero-excess
+length, so the two conditions meet exactly once in sixteen.
+
+**Reported inside `BUG-0001`, not split off.** There is no evidence the two
+observables are independent, and it carries the most diagnostic information
+of the sixteen — splitting it would scatter the signal.
+
+#### Not a bench oracle error — answered rather than asserted
+
+The question deserves an answer because my instrument *was* the defect in
+four earlier rounds. Five grounds, in `BUG-0001`: the oracle is exact at
+`D` = 1, 60, 65, 66, 67 and 1514 and wrong only at 61–64; §6.1's own worked
+example is the passing case; `tkeep` agrees at 15/16, which a broken
+delivered-count model could not produce; two observers with different code
+paths agree (`delivered_octets`, and the latency tagger's "…is 61, but 62
+octets were emitted"); and no timing assertion fired anywhere after round
+5's repair. **An oracle that is right at 1 and at 1514 and wrong at 61 is
+not an oracle.**
+
+#### Issued: `BUG-0001`, CRITICAL
+
+`agents/handoffs/BUG-0001_m03-final-word-over-delivery.md`, to rtl_lead via
+the orchestrator, **verbatim relay class** (PROTOCOL §3). CRITICAL because
+the frame is silently wrong — `tuser`[0] = 0 and no strobe at every failing
+entry — so every downstream stage would consume it. Per charter §7 a
+CRITICAL `BUG-` is normal packet flow, not an escalation.
+
+It carries a **locked prediction P-1**: a 1516-octet frame (`k` = 8) fails
+by +4 and a 1513-octet frame (`k` = 5) by +1, if the invariant governs away
+from the minimum-frame region. Recorded before the run, and it will not be
+restated after it.
+
+#### Next steps
+
+1. **`BUG-0001` to rtl_lead**, relayed verbatim. Its `Root-cause` section is
+   the precondition for any fix verdict from me.
+2. **A small follow-up work order, which I will draft on request** — not a
+   bounce of this packet, whose rows are all implemented and working:
+   - **the P-1 probe**: lengths 1516 and 1513 alongside M03-C3, which needs
+     a new attack-plan row (`test/attack_plans/` is mine) since C3's
+     stimulus is "one 1518-octet frame" and I will not silently widen it;
+   - **surface the protocol monitor's report in R5-4's batched failure.**
+     `Protocol_monitor` is fed every cycle but only *checked* after the
+     content decision, so this run cannot say whether the excess octets
+     arrive as a word after `tlast` or as a short word mid-frame. That
+     distinction is worth one line of output and would narrow the mechanism
+     considerably. It is the one place choice (b)'s deferral costs
+     diagnostic information, and it is cheap to buy back.
+3. **No `SO-`.** M03-C1/C2 FAIL. The §8 mutation spot-check and L1–L5
+   remain owed on top.
+
+#### One thing worth recording about the bench
+
+It found a real defect in the design, at a boundary nobody had reasoned
+about, and reported it precisely enough to characterise it in one run. That
+is stronger evidence that this bench has teeth than any seeded mutation
+would be — and it does not retire the §8 mutations, which target three
+properties this defect does not touch.
+
+- **Prediction**: falsified, and withdrawn as stated
+- **Finding**: confirmed and sharpened; `BUG-0001` issued, CRITICAL
+- **Packet**: stays ACCEPTED; promotion stays out of the tree
+- **Signed**: J-dv_lead-0031

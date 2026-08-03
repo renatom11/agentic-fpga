@@ -9221,3 +9221,230 @@ not be committed whatever it says.
 
 ### Files-in-this-commit
 - agents/handoffs/WO-0038_tb-m03-first-bench.md
+
+## [J-dv_lead-0031] 2026-08-05T02:15Z | task:WO-0038 | The programme's first RTL conviction: my locked prediction was falsified — the signature is lane-independent, not the FCS straddle I named — and the sixteen-entry table yielded a sharper invariant that fits ten of ten tested lengths; BUG-0001 issued CRITICAL
+
+### Trigger
+Orchestrator, relaying CI run **30774152441** (commit `b190a9e`): Build green,
+`test_m03_b.ml` and `test_m03_structural.ml` **passed**, no timing assertion
+fired anywhere — and the F-M03-1 experiment returned its sixteen-entry table.
+Against the prediction I locked at `RV-0038-R5`, **neither branch fired**.
+Adjudication requested with my own falsification rules in force.
+
+### Inputs
+- The sixteen-entry C1/C2 table verbatim, and `test_m03_a.ml`'s latency-tagger
+  failure text, as relayed.
+- My own `RV-0038-R5`'s locked prediction and its three named outcomes.
+- `docs/specs/modules/xgmii_rx_64.md` §6.1's cycle table (the 64-octet worked
+  example) and its REQ-106 sentence on a terminate character in lane 0;
+  REQ-103, REQ-011, REQ-101.
+- `test/xgmii_rx_64/test_m03_c.ml`'s `expected_tkeep_for`, `length_outcome`;
+  `test/monitors/octet_time.mli`'s `Latency.errors`.
+- `test/attack_plans/AP-xgmii_rx_64.md` rows M03-C1, M03-C2, M03-C3, M03-C4.
+- `agents/handoffs/README.md`'s `BUG-` template; PROTOCOL §3 (verbatim relay);
+  charter §7 (a CRITICAL BUG- is normal flow, not escalation).
+- A python tabulation of the sixteen entries, to test both candidate axes
+  rather than eyeball them.
+- **No `libs/**`, no `rtl_snapshots/**`.** The conviction is from the
+  specification and the recorded observable only.
+
+### Reasoning
+
+**First, the prediction. It failed, and I am not going to soften that.**
+`RV-0038-R5` locked three outcomes: the straddle signature
+({65,66,67}@lane 0 + {69,70,71}@lane 4), a uniform all-sixteen failure, or
+nothing. **None fired.** The observed set is {65,66,67,68} at *both* lanes.
+
+I tabulated both candidate axes rather than reading the table by eye, because
+by-eye is how I have got things wrong before. The excess is **identical at both
+lanes for all eight lengths (8/8)** and is **not a function of terminate lane
+(8/8 inconsistent across lanes)**. My mechanism was a story about the FCS
+crossing a 64-bit word boundary, and word boundaries move four octet times
+between the start lanes — so the mechanism *necessarily* predicted
+lane-dependence and the observation is lane-independent. That is a direct
+refutation, not a near miss.
+
+**So F-M03-1's mechanism is withdrawn, and its underlying claim is confirmed —
+and those are two different things.** The temptation, having been right that
+*something* is wrong, is to let the confirmation launder the refutation and
+quietly restate F-M03-1 with new numbers. Locking the prediction in advance was
+exactly what makes that impossible, and it is the reason I wrote it down before
+the run rather than after. The value of a falsifiable prediction is realised
+only at the moment it is falsified and you say so.
+
+**What the table gave me is better than what I guessed.** Excess as a function
+of length is 0,+1,+2,+3,+4,0,0,0 for L = 64…71. Expressed against the required
+delivered count `D = L − 4` that is 0,1,2,3,4 for `D` = 60…64 and 0 for 65…67 —
+which looks like a threshold at `D` ≤ 64 (eight output words). But two more
+data points were available in the same run and I nearly ignored them: **C3
+passed at `D` = 1514 and C4 passed at `D` = 1.** Fitting all ten:
+
+> `k` = octets in the frame's **final output word** = `((D − 1) mod 8) + 1`
+> **excess = max(0, k − 4)**
+
+`D` = 1 → k = 1 → 0 ✓; 60 → 4 → 0 ✓; 61 → 5 → +1 ✓; 62 → 6 → +2 ✓;
+63 → 7 → +3 ✓; 64 → 8 → +4 ✓; 65 → 1 → 0 ✓; 66 → 2 → 0 ✓; 67 → 3 → 0 ✓;
+1514 → 2 → 0 ✓. **Ten of ten, across three orders of magnitude.** And the 4 in
+`k − 4` is the FCS octet count.
+
+This is not about frame length, not about the 64-octet minimum, and not about
+either lane. It is about how full the last word is. I would not have reached it
+by reasoning — the sixteen-entry table reached it, which is precisely what
+R5-4 was built for and why the deferral argument in round 5 mattered.
+
+**The `tkeep` singleton.** Fifteen of sixteen `tkeep` values match; lane 4
+length 68 reads 0x0F where 0xFF was required, with the *same* delivered count
+as lane 0. Since `tkeep` is read from the first word carrying `tlast`, the
+excess octets and the `tlast` marker are placed differently between the lanes
+while the same number of octets is emitted. It is the only entry satisfying
+**(excess > 0) ∧ (terminate_lane = 0)** — §6.1's called-out REQ-106 case, the
+terminate character alone in lane 0 of its word — because at lane 0 that
+terminate lane coincides with the zero-excess length. I reported it *inside*
+BUG-0001 rather than as a second bug: there is no evidence the observables are
+independent, and it carries the most diagnostic information of the sixteen.
+Splitting it would scatter the signal.
+
+**Then the question I owed the most care to: is this my oracle again?** Four
+rounds of this packet were my instrument being wrong, and the honest thing is
+to answer rather than assure. Five grounds, all in the packet: the oracle is
+exact at `D` = 1, 60, 65, 66, 67 and 1514 and wrong only at 61–64; §6.1's own
+worked example is the *passing* case; `tkeep` agrees at 15/16, which a broken
+delivered-count model could not produce, since `expected_tkeep_for` is derived
+from that same count; two observers with different code paths agree — the
+delivered-octet count and the latency tagger's "73 input octets less 8 stripped
+from the front and 4 from the back is 61, but 62 octets were emitted"; and no
+timing assertion fired anywhere after round 5's repair. The compact form:
+**an oracle that is right at 1 and at 1514 and wrong at 61 is not an oracle
+error.**
+
+A third corroboration I nearly missed: **M03-A3's cross-lane tuple comparison
+passed.** The two lanes produce identical output streams, so REQ-101 holds and
+the defect is deterministic and alignment-independent — which is both further
+evidence the bench's lane machinery works and a fact rtl_lead will want.
+
+**Severity.** CRITICAL, and argued rather than asserted: `tuser`[0] = 0 and
+`error_pulses` = 0 at every failing entry, so M03 reports these frames as good
+while emitting a frame longer than the one it received. Every downstream stage
+would consume it with nothing anywhere reporting it. A loud failure would be a
+lesser bug. Charter §7 makes a CRITICAL `BUG-` normal packet flow, not an
+escalation, so it goes to rtl_lead via the orchestrator as verbatim-relay
+traffic and no E-class is raised.
+
+**I locked a new prediction, P-1, in the bug packet itself.** The `k` invariant
+and the "short frames only" reading agree on everything tested and diverge at
+large lengths: `D` = 1512 (`k` = 8) should fail by +4 and `D` = 1509 (`k` = 5)
+by +1 under the invariant, and both should pass under the threshold reading.
+Writing it into the packet before the probe runs is the same discipline that
+just paid for itself by falsifying F-M03-1 — and I said in the packet that it
+will not be restated afterwards.
+
+**What I did not do.** I did not read `libs/**` and I did not offer a root
+cause. The `k − 4` characterisation is a statement about the observable, and I
+labelled it as such in the packet; the mechanism is rtl_lead's to establish and
+its `Root-cause` section is the precondition for any fix verdict from me
+(charter §8). The pull toward diagnosing it — the invariant almost names a
+mechanism — is exactly where an independence rule earns its keep.
+
+**And I did not bounce the packet.** The bench drove forward, passed two files,
+fired no spurious timing assertion, and produced a complete characterisable
+signature in one run. It did its job. Bouncing an ACCEPTED packet because the
+*design* failed would confuse the two lines this programme exists to keep
+separate. The one diagnostic improvement worth having — surfacing the protocol
+monitor's report in R5-4's batched failure, so we learn whether the excess
+arrives after `tlast` or as a short word mid-frame — is a follow-up work order,
+and it is the single place round 5's deferral costs information.
+
+### Actions
+- Tabulated all sixteen entries and tested both candidate axes mechanically
+  (excess vs length; excess vs terminate lane) rather than by inspection.
+- Fitted the `k = ((D − 1) mod 8) + 1`, `excess = max(0, k − 4)` invariant and
+  verified it against all ten tested `D` values including C3's 1514 and C4's 1.
+- Ruled **F-M03-1 withdrawn as stated** — mechanism refuted by
+  lane-independence — while confirming and sharpening the underlying finding.
+- Ruled the lane-4 length-68 `tkeep` singleton part of the same bug, and
+  located it at the (excess > 0) ∧ (terminate_lane = 0) intersection §6.1
+  calls out for REQ-106.
+- Answered the bench-oracle question with five independent grounds.
+- Wrote **`agents/handoffs/BUG-0001_m03-final-word-over-delivery.md`**,
+  CRITICAL, to rtl_lead via the orchestrator, with the verbatim table, the
+  invariant, the corroborations, the severity argument, an explicit "what
+  dv_lead is NOT claiming" section, and **locked prediction P-1**.
+- Appended `RV-0038-R6` to the WO-0038 packet; **State left ACCEPTED**.
+- Listed the follow-up work order's two items (the P-1 probe, which needs a
+  new attack-plan row rather than a silent widening of M03-C3; and surfacing
+  the protocol monitor in the batched failure).
+- Opened no `libs/**`. Offered no root cause. No `git commit`, no `git push`.
+
+### Evidence
+1. **Lane-independence, mechanically checked.** Excess by length is
+   (0,+1,+2,+3,+4,0,0,0) at lane 0 and identically at lane 4 — 8/8 SAME.
+2. **Terminate lane refuted as the axis.** For every terminate lane 0…7 the
+   excess differs between the two start lanes — 8/8 INCONSISTENT. F-M03-1's
+   mechanism required this axis.
+3. **The invariant, ten for ten.** `excess = max(0, k − 4)` with
+   `k = ((D − 1) mod 8) + 1`, verified at `D` = 1, 60, 61, 62, 63, 64, 65, 66,
+   67, 1514.
+4. **Silence.** `tuser` = 0 and `error_pulses` = 0 at all sixteen entries,
+   including all eight failures.
+5. **Independent observer.** `M03-A3 (length 65) lane 0: latency tagger
+   errors: frame 0: 73 input octets less 8 stripped from the front and 4 from
+   the back is 61, but 62 octets were emitted` — a different code path
+   (`Octet_time.of_words`) reaching the same excess.
+6. **Third corroboration.** M03-A3's cross-lane tuple-sequence comparison
+   passed: identical output streams at both alignments (REQ-101 holds).
+7. **`tkeep` agrees 15/16**, the exception being lane 4 length 68 (0x0F vs
+   0xFF) at the unique (excess > 0) ∧ (terminate_lane = 0) entry.
+8. **Scope.** `git status --short` shows my two paths — the new `BUG-0001`
+   packet and the WO-0038 packet — plus this journal. The promotion is not in
+   the tree.
+
+### Outcome
+**The programme's first RTL conviction, and its first falsified prediction, in
+the same run.**
+
+**F-M03-1: WITHDRAWN as stated.** The FCS-straddle mechanism is refuted by
+lane-independence. Its underlying claim is confirmed and sharpened into an
+invariant that fits ten of ten tested lengths.
+
+**`BUG-0001` issued, CRITICAL**, to rtl_lead via the orchestrator as
+verbatim-relay traffic: M03 emits `max(0, k − 4)` extra octets where `k` is the
+fill of the frame's final output word, silently, at both start lanes. No root
+cause offered; that is rtl_lead's, and its `Root-cause` section gates my fix
+verdict.
+
+**WO-0038 stays ACCEPTED.** The bench is not the defect this time — it drove
+forward, passed two files, fired no spurious timing assertion, and
+characterised a real design defect in one run.
+
+**No `SO-xgmii_rx_64.md`.** M03-C1 and M03-C2 FAIL.
+
+### Open-questions
+- **P-1 is locked in `BUG-0001` and will not be restated after the probe.**
+  `D` = 1512 (`k` = 8) → +4 and `D` = 1509 (`k` = 5) → +1 if the invariant
+  governs away from the minimum-frame region; both pass if the defect is
+  confined to short frames. Either way I report it on the packet.
+- **The follow-up work order** (my draft, on the orchestrator's request): the
+  P-1 probe with its own attack-plan row — M03-C3's stimulus is "one
+  1518-octet frame" and I will not widen it silently — and the protocol-monitor
+  surfacing that tells us whether the excess arrives after `tlast` or as a
+  short word mid-frame.
+- **Whether families D–H interact with this defect is unknown.** They inject
+  errors and are unwritten; a design that mis-places the end of a clean frame
+  may mis-place an aborted one differently.
+- **The §8 mutation spot-check is still owed** and is not retired by this
+  result. The bench catching a real defect is stronger evidence of teeth than a
+  seeded mutation — but three of the four §8 mutations target properties this
+  defect does not touch.
+- **Owed by me, unchanged**: the `precompile_check.sh`
+  side-effect-in-combinator lane; `tools/precompile_stubs/ifc_check.ml`'s stale
+  UNVERIFIED note; SPEC-M01 §11.4's caveat retirement; and for the next bench
+  packet's §7 the accumulated standing rules.
+- **My M04 contamination from `J-dv_lead-0024` stands**, and now bears on
+  something concrete: BUG-0001 is a final-word/FCS-boundary question and M04 is
+  the transmit-side twin of exactly that boundary.
+- **Unchanged**: the RFC 1071 anchor closes on the next CI run that fetches;
+  X-7, X-10, X-11 remain deferred; L1–L5 still owed.
+
+### Files-in-this-commit
+- agents/handoffs/BUG-0001_m03-final-word-over-delivery.md
+- agents/handoffs/WO-0038_tb-m03-first-bench.md
