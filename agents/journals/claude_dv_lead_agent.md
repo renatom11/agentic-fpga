@@ -17656,3 +17656,172 @@ freeze.
 
 ### Files-in-this-commit
 - agents/handoffs/WO-0056_m03-g-discard-window-repair.md
+
+## [J-dv_lead-0072] 2026-08-05T16:30Z | task:WO-0056 | The two epoch rows landed — G7 enters ASSERT rather than RULING because I worked the resynchronised frame's arithmetic instead of deferring it, and the working produced an offset that puts it in a class already mutation-qualified
+
+### Trigger
+Orchestrator: my own call taken — the attack-plan edit lands **now**, before any
+worker spawn, per ADR-0001's row-before-bench rule. WO-0056's packet is committed
+at `b4698a7`. Author M03-G7 and M03-G8 with six cells each, scope M03-G3's and
+M03-G4's `Kills` cells to the epoch they actually cover, add the §9 row, and
+state the exact resulting counts and row states — including whether G7 enters as
+ASSERT or as RULING-pending.
+
+### Inputs
+- `docs/specs/requirements.md` **REQ-108**'s window sentence, REQ-101's lane
+  rule, REQ-106, REQ-107, REQ-110, §0.3, §0.7.
+- `docs/specs/modules/xgmii_rx_64.md` §6.1 (the preamble's eight octet times and
+  the per-octet constant), **§6.3 item 6**, §6.2's `Discard` row, §9's sixth,
+  seventh and **ninth** rulings and the no-output-word pin.
+- `test/attack_plans/AP-xgmii_rx_64.md` — §4.G's six existing rows in full, §4.F's
+  M03-F2 row (for the sub-five class the worked example lands in), §6's REQ-105 /
+  REQ-108 / REQ-110 rows, §9.
+- `agents/handoffs/WO-0056_…` §1, §2, §2.1, §6, §7 (my own packet, as the thing
+  being realised); `RV-0055-VERDICT` §4 and FINDING G-2; `J-dv_lead-0070`,
+  `J-dv_lead-0071`.
+- **No `libs/**`, no `docs/reports/audit/**`, no `scripts/**`, no
+  `/workspace/**`.**
+
+### Reasoning
+
+**The row-state question was the real work, and I resolved it by doing the
+arithmetic the packet had allowed the worker to defer.** `WO-0056` §2.1 gave
+M03-G7 an escape: if the resynchronised frame's disposition proved underivable,
+G7 would land RULING. Before writing a status cell I asked whether the frozen
+text actually leaves it open — and it does not.
+
+REQ-108 resynchronises on the start character; §6.1 gives the new frame eight
+octet times of preamble from that character inclusive; so with the character at
+content index `k` of a 1600-octet frame, the new frame's data runs from content
+`k + 8` to content `1599` and is closed by the original frame's own terminate.
+Its length between start and terminate is **1592 − k**, and REQ-106/REQ-107
+decide its disposition from that. **That is arithmetic, not ambiguity**, and the
+AP's own status vocabulary reserves RULING for *"the frozen text does not decide
+the observable"*. **So G7 enters ASSERT**, with the ASSERT → RULING contingency
+carried in its `Kills` cell rather than in its status — pre-committed, so a
+conversion later is a recorded event and not a re-negotiation.
+
+**And working the arithmetic paid for itself twice, because it exposes that the
+offset choice is load-bearing in a way the row would otherwise hide.** Over the
+legal interval `1518 … 1599`, `1592 − k` runs from **74** down to **−7**. So `k`
+selects, silently, which class the resynchronised frame lands in: a legal-length
+frame with a wrong FCS near the bottom of the interval; a runt in the middle; the
+sub-five class above `k = 1587`; and above `k = 1592` the terminate falls inside
+the new frame's own preamble — **M03-N2's two-events-in-one-word territory**,
+which is the most intricate corner of this whole plan. **An unconsidered `k`
+could put a repair row into the hardest class in the specification**, which is
+exactly the failure mode this repair exists to correct, one level up.
+
+So I did what WO-0027 did not: **I derived a value and showed the derivation** —
+`k = 1588`, inside the interval, satisfying REQ-101's lane rule (`1588 mod 8 =
+4`, and the lane-0 and lane-4 conditions coincide at `c ≡ 0 or 4 (mod 8)` because
+a lane-0 start puts content `c` at octet time 16 + c and a lane-4 start at 20 +
+c), leaving the resynchronised frame **four octets** — the sub-five class of
+M03-F2, which is **benched and mutation-qualified at WO-0050**, so its
+contribution to the exact strobe set is one `error_runt` at §9's no-output-word
+pin and nothing else. **Offered as a derivation to check, not as an
+instruction**, because handing down a number without its working is precisely
+what put "100 octets" into these rows in the first place.
+
+**Both new rows are specified as octet-time intervals and assert nothing about
+the receiver's internal state.** §6.3 item 6 makes `Discard`-versus-`Idle`
+unobservable and M03-G5 exists to say so, so a row phrased in terms of the state
+would assert what the specification forbids — and it would also repeat the exact
+error `J-dv_lead-0070` caught me in. Both ends of the interval are derived in the
+cell itself: content 1518 is the 1519th received octet, the first that makes the
+frame exceed 1518; content 1599 is the last octet before the terminate.
+
+**The scoping of G3 and G4 is a correction of a claim, and I wrote it as one.**
+Their `Kills` cells asserted the whole window; they cover its second epoch.
+Their ids, stimuli and observables stand — nothing about them is wrong, and I
+added to G4 the reason its second-epoch case is **not** redundant with M03-E4's
+gap `/E/`: the receiver reaches it through a **truncation** rather than an
+ordinary close, and REQ-108's sentence covers the whole interval. A scoping that
+read as a retirement would have quietly cost real coverage.
+
+**M03-G6 gains a note rather than a change**, and it is the one that makes the
+gap legible: its frame has no terminate, so **its whole window is the first
+epoch** — which is why it was the only row reaching there, and why the family
+looked covered.
+
+**Counts, and the discipline around them.** 78 rows, **62 ASSERT**, 7 NO-ASSERT,
+4 NO-STIMULUS, 4 STRUCTURAL, 1 GAP — verified by counting the file rather than by
+adding two to the previous figure, which is the arithmetic-in-prose habit that
+cost me the "nineteen" at `RV-0047`. **No campaign is open**, so no denominator is
+in motion; these rows enter one for the first time at the next freeze, measured
+then. And **WO-0055's seal stands unedited**, its two falsified G-c4 branches
+included — a mapping is re-derived fresh against the bench as it then is, and the
+bench about to change is exactly when that rule earns its keep.
+
+### Actions
+- **Derived the resynchronised frame's disposition** (`1592 − k`) and on that
+  ground entered **M03-G7 as ASSERT**, with the ASSERT → RULING contingency in
+  its `Kills` cell rather than its status.
+- **Added M03-G7 and M03-G8**, six cells each, both as octet-time intervals with
+  both ends derived and REQ-101's lane condition stated, neither asserting any
+  internal state.
+- **Worked and offered `k = 1588`** with its full derivation and the class it
+  lands in, explicitly as a value to check rather than to take.
+- **Scoped M03-G3's and M03-G4's `Kills` cells** to the second epoch, recording
+  the correction to my own `RV-0055` §4 wording and preserving what remains
+  genuinely theirs.
+- **Noted M03-G6** as the only row that ever reached the first epoch.
+- Updated **§6**'s REQ-105, REQ-108 and REQ-110 rows with the epoch split.
+- Appended the **§9** change-log row carrying the correction, the finding, the
+  add-not-repair ruling and the new counts.
+- Touched nothing else. No `libs/**`, no `scripts/**`, no
+  `docs/reports/audit/**`. No `git`.
+
+### Evidence
+1. Counted, not inferred: `grep -c '^| \*\*M03-'` → **78**; status tally → **62**
+   ASSERT, 7 NO-ASSERT, 4 NO-STIMULUS, 4 STRUCTURAL, 1 GAP. Sum 78.
+2. Both new rows are well-formed six-cell rows (seven pipes each).
+3. Interval derivation: content **1518** is the 1519th received octet, the first
+   exceeding REQ-108's 1518; content **1599** is the last octet before the
+   terminate of a 1600-octet frame.
+4. Lane rule: a lane-0 start puts content `c` at octet time 16 + c (lane
+   `c mod 8`); a lane-4 start at 20 + c (lane `(c + 4) mod 8`). REQ-101 admits
+   lanes 0 and 4, so both give **`c ≡ 0 or 4 (mod 8)`**.
+5. Resynchronised length `1592 − k`, from §6.1's eight preamble octet times:
+   `k = 1518` → 74 octets; `k = 1588` → **4**; `k > 1592` → the terminate lands
+   inside the new frame's preamble (M03-N2's class).
+6. `1588 mod 8 = 4` — legal at both start lanes.
+
+### Outcome
+**The attack plan carries the repair: 78 rows, 62 ASSERT** (was 76/60), with
+**M03-G7 and M03-G8 both entering as ASSERT**, M03-G3 and M03-G4 scoped to the
+second epoch with their ids and observables intact, M03-G6 annotated, §6's
+coverage map split by epoch, and §9 carrying the correction to my own verdict
+alongside the finding that produced it.
+
+**G7 is ASSERT and not RULING because the text decides its observable** — the
+resynchronised frame's disposition is arithmetic, and I did the arithmetic rather
+than pass the question on. The by-product is the offset derivation the row now
+carries: `k = 1588` lands the resynchronised frame in M03-F2's already-qualified
+sub-five class, where an unconsidered `k` could have landed it in M03-N2's.
+
+`SO-M03` does not issue; the count moves at the next freeze and nothing here
+scores anything.
+
+### Open-questions
+- **G7's contingency is live, not closed.** If tb_writer finds the resynchronised
+  disposition underivable in practice, the row converts ASSERT → RULING and G8
+  carries the repair alone. The conversion is pre-committed in the row, so it is a
+  recorded event rather than a re-negotiation.
+- **`k` is a recommendation and the worker must verify it**, at both start lanes,
+  with a guard that shows the index inside 1518 … 1599 — the check whose absence
+  is the whole reason this packet exists.
+- **The standing consequence is NOT lifted by this commit.** It lifts only on
+  `WO-0056` §6's evidence: the existing `g-c4` diff replayed against the repaired
+  bench with **M03-G8 reddening**.
+- **A `/T/` case in the first epoch remains uncommissioned** — M03-G1's and
+  M03-G2's own terminates already sit there, which is why WO-0055's `/T/` branch
+  was the one I got right. Considered, not owed.
+- **Still owed**: the epoch-A no-output-word class (`J-dv_lead-0065`, rides with
+  family H); AP-M14's §6 invariant; the `precompile_check.sh`
+  side-effect-in-combinator lane; M03-F5's discharge-by-citation qualification;
+  the RFC 1071 anchor on the next fetching run; X-7, X-10, X-11 deferred; L1–L5
+  as a separate packet.
+
+### Files-in-this-commit
+- test/attack_plans/AP-xgmii_rx_64.md
