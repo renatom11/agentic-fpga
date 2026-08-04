@@ -372,7 +372,24 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
   let a_close_error =
     a_closes_with (lanes.is_error |: (other_ctl &: a_pre_mask))
   in
-  let a_close_start = a_closes_with lanes.is_start in
+  (* MUTATION GH-c2 -- WO-0058, NEVER MERGE, first half of two. Seeded defect:
+     an [/E/] that closes an open frame does not close it for REQ-110's
+     purposes. [stale_frame] latches on every REQ-105 closure of an OPEN frame
+     and holds until a new frame is accepted, and while it is set the next
+     start character raises epoch A's REQ-110 closure -- so the frame the
+     error character already ended and already reported with [error_bad_frame]
+     draws a second report, one [error_start_without_terminate]. §9's fifth
+     co-occurrence ruling forbids the pairing in terms: an error character ends
+     the frame, so a start character after it begins a new frame and aborts
+     nothing. SCOPE: the latch is driven by [a_close_error], which is itself
+     gated by [a_char_acts] = [a_open] and not truncating, so it is never set
+     by an error character arriving with NO frame open -- not in the
+     inter-frame gap, not in [Discard]. Coverage, the truncation point, the
+     delivered octets, `tuser` bit 0 and the single [error_bad_frame] are all
+     untouched: the frame still stops delivering at the error character. *)
+  let stale_frame = wire 1 in
+  let stale_start = stale_frame &: any lanes.is_start in
+  let a_close_start = a_closes_with lanes.is_start |: stale_start in
   let a_close_char = a_close_terminate |: a_close_error |: a_close_start in
   let a_close_now = (a_close_char |: a_close_oversize) &: ~:(i.clear) in
   (* Covered octets: lanes [cov_first, cov_end). Empty when cov_end <= cov_first,
@@ -430,6 +447,11 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
   let begins = survivor_b |: survivor_c in
   let new_start4 = survivor_c in
   frame_start4 <== reg spec ~enable:begins new_start4;
+  (* MUTATION GH-c2, second half. Set by REQ-105's closure of an open frame,
+     cleared when a new frame is accepted. [a_close_error] and [begins] both
+     precede this point and neither depends on [a_close_start], so no
+     combinational loop is created. *)
+  stale_frame <== reg_fb spec ~width:1 ~f:(fun d -> (d |: a_close_error) &: ~:begins);
   (* ---- the running CRC (§6.1's FCS check, ADR-0006, ADR-0007) ----
      Seeded to 0x00000000 on the cycle a start character is accepted, which is
      the cycle before the frame's first octet is covered. Updated on every
