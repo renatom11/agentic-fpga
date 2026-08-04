@@ -1030,3 +1030,43 @@ None new.
 
 ### Files-in-this-commit
 - (none)
+
+## [J-orchestrator-0170] 2026-08-04T12:30Z | task:WO-0060 | Lane 0 conformant, the frontier at lane 4 exactly as escalated - the close-out round has it
+
+### Trigger
+The decisive run at fafb83d (30907419890).
+
+### Reasoning
+Measured: every lane-0 member of M03-I4/I6 passes under the
+new emission rule - including the word-7 discriminator that
+separates the real fix from a naive hold - and all 34 other
+units held green, the bit-identity claim's second empirical
+confirmation. The remaining red is the lane-4 structural gap
+rtl_lead escalated IN ADVANCE with three options and its
+recommendation: an injected idle at a lane-4 start splits an
+output word across cycles, which no hold can rejoin. Both the
+old and new designs are equally unable; the bench merely
+states the rule now. The close-out round is with dv in
+rtl_lead's own specified check-order, with the lane-4 ruling
+gating the next dispatch (merge packet to rtl_lead vs E2
+scope question to the architect vs unconstrained), and
+BUG-0002's disposition put precisely: a new finding must not
+hold an old packet hostage if the old defect is discharged.
+
+### Actions
+Harvest saved; dv close-out dispatched; this commit; push.
+
+### Evidence
+Run 30907419890's two failure strings (lane 4, word 0, 4 vs
+6); J-rtl_lead-0010's escalation 1 stating that exact shape.
+
+### Outcome / DoD
+One adjudication from the arc's close. Nothing outside
+family I has moved all night - 763 must-stay-green cells,
+then 34 units through four consecutive redesign rounds.
+
+### Open questions
+None new; the round carries them all by charge.
+
+### Files-in-this-commit
+- (none)
