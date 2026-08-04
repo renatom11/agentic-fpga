@@ -580,13 +580,24 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
        `error_bad_fcs` out of this vector entirely (above). *)
     concat_lsb [ error; terminate; start ]
   in
+  (* MUTATION IC-1 (WO-0063B), hunk 1 of 2 — NEVER MERGE.
+     The in-word epoch's report is deferred by one cycle: three fixed register
+     stages where SPEC-M03 §9's pin needs two. This is the module's *second*
+     no-output-word report structure — a frame opened and closed inside one
+     input word, which delivers no octet by construction (the block comment
+     above) — and hunk 2 defers the first. Deferring only one of the two would
+     leave WO-0063B §1.1's disclosure with an unnamed third axis.
+     Datapath untouched: [q2] is read only by [q_strobe], which is read only by
+     `error_bad_frame`, `error_runt` and `error_start_without_terminate`. *)
   let q2 =
     reg
       spec
       (reg
          spec
-         (inword_strobes ~exists:b_exists ~closing:b_closing
-          |: inword_strobes ~exists:c_exists ~closing:c_closing))
+         (reg
+            spec
+            (inword_strobes ~exists:b_exists ~closing:b_closing
+             |: inword_strobes ~exists:c_exists ~closing:c_closing)))
   in
   (* ---- the state machine (§6.2) ----
      One [Always] switch, and every transition is a function of the closure
@@ -987,7 +998,26 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
      no octet (REQ-108's count never advances there, and §9's ninth ruling
      leaves such a frame with no FCS to check). Their union is therefore a
      one-term union and is written as one. *)
-  let strobe s = consume &: s &: ~:(i.clear) in
+  (* MUTATION IC-1 (WO-0063B), hunk 2 of 2 — NEVER MERGE.
+     [consume] is a disjunction of exactly SPEC-M03 §9's two pins, and it is
+     partitioned here without being altered: [report_tlast] is the report
+     carried on the frame's own `tlast` cycle, [report_no_word] is the report of
+     a frame that emits no output word, taken from the aged record at age 2 (the
+     closure-record block above). [report_tlast |: report_no_word] is [consume]
+     term for term, so deleting the [deferred] register restores the base
+     design exactly.
+
+     IC-1 defers [report_no_word] by one cycle — the closing word + 3 rather
+     than §9's + 2, which is requirements.md §0.6's ceiling and which §0.6 rules
+     is inside the window and non-conformant — and leaves [report_tlast] where
+     it is. [consume] itself is untouched, so [r1], [r2], [sel], [strip],
+     [closed], [decided], [hold] and all six fields of [rx] are bit-identical to
+     base on every stimulus: this mutation's fan-out is closed inside the five
+     `error_*` outputs. *)
+  let report_tlast = sel_valid &: emit_tlast in
+  let report_no_word = sel_valid &: sel_is_r2 &: ~:emit_tlast in
+  let deferred s = reg spec (report_no_word &: s) in
+  let strobe s = ((report_tlast &: s) |: deferred s) &: ~:(i.clear) in
   let q_strobe k = bit q2 k &: ~:(i.clear) in
   { O.rx =
       { Axi64.Source.tvalid
