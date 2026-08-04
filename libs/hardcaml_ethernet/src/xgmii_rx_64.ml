@@ -580,13 +580,26 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
        `error_bad_fcs` out of this vector entirely (above). *)
     concat_lsb [ error; terminate; start ]
   in
+  (* MUTATION I-c4 -- WO-0061, NEVER MERGE. Seeded defect: SPEC-M03 6.2's
+     [Frame] row says NO CONDITION IS RAISED on an input word covering no frame
+     octet inside an open frame. Here such a word is treated as an anomaly and
+     reported as REQ-105's [error_bad_frame] through the in-word two-stage
+     report path, so the pulse lands exactly TWO cycles after the held cycle.
+     REQ-008's conservation is what makes a report of an event that did not
+     happen a defect. NOTHING ELSE MOVES: [q2] is read only by [q_strobe] and
+     only its bit 0 is touched, so the frame continues and its octets, count,
+     CRC, coverage, cycles, [tkeep], [tuser] and closure are the base design's.
+     [a_open] keeps the gate out of [Discard]; [a_close_now] keeps it off
+     6.2's other named held cycle, a terminate character in lane 0. *)
+  let strobe_carry_fwd = a_open &: ~:cov_nonempty &: ~:a_close_now in
   let q2 =
     reg
       spec
       (reg
          spec
          (inword_strobes ~exists:b_exists ~closing:b_closing
-          |: inword_strobes ~exists:c_exists ~closing:c_closing))
+          |: inword_strobes ~exists:c_exists ~closing:c_closing
+          |: uresize strobe_carry_fwd 3))
   in
   (* ---- the state machine (§6.2) ----
      One [Always] switch, and every transition is a function of the closure
