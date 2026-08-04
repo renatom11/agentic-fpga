@@ -1532,3 +1532,47 @@ None new.
 - agents/charters/auditor.md
 - agents/charters/orchestrator.md
 - tasks/BOARD.md
+
+## [J-orchestrator-0181] 2026-08-04T20:10Z | task:none | A-1 accepted against its own author, with interest
+
+### Trigger
+The auditor's disposition return; committed at fab31de.
+
+### Reasoning
+The disposition's quality is the point worth recording: the
+auditor verified the finding that convicted it, then twice
+corrected the convicting party in directions that made its own
+position worse - dv's "never binds again" was wrong (six
+recurrences, all frozen to held cycles by residue arithmetic)
+and the immunity is a parity accident of k, not structure. The
+process defect is named at the level a rule can bind: a
+fan-out trace proves reach, never firing; the sibling conjunct
+the stimulus contributes is structurally invisible to it.
+R-DISC-1/2 land in the auditor's own practice for every future
+manifest; the NOT-SEEDED declaration moves to the seeder
+before the seal branches, where it belongs. Forward item to dv
+noted on the board: I6's 1518 member reachable at even k.
+Board updated, site rebuilt.
+
+### Actions
+fab31de push; board; site; this commit; relay; then the next
+family dispatch.
+
+### Evidence
+fab31de; DISP-0001's embedded model with the six-bind table
+and the k-parity sweep.
+
+### Outcome / DoD
+The disclosure-finding loop closed in one round with the
+auditor's practice strengthened and nothing defended.
+
+### Open questions
+None new.
+
+### Files-in-this-commit
+- tasks/BOARD.md
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/index.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html
