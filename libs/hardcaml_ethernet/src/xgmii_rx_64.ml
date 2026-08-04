@@ -969,11 +969,33 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
      becomes age 1, and [off4] releases at age 0), so no record can reach the
      age-2 consumption §9 pins while the word it belongs to is still waiting. *)
   hold <== (have_word &: ~:decided &: ~:(i.clear));
+  (* MUTATION I-c8 -- WO-0061, NEVER MERGE. Seeded defect: REQ-109 requires
+     [tvalid] = 0 while idle characters are present and no frame remains in
+     flight. An eight-bit counter ages while the receiver is empty -- no frame
+     open, no closure record live, no word in the emission register -- and is
+     cleared on every cycle it is not. On the cycle it reads 255, i.e. after
+     255 consecutive empty cycles, one spurious output word is put on the
+     stream; because the counter wraps rather than saturating, another follows
+     every 256 cycles for as long as the receiver stays empty. THRESHOLD
+     T = 255 IDLE CYCLES, REPEATING EVERY 256. The word is well formed rather
+     than a REQ-011 violation: [keep_count] is forced to 8 on that cycle, the
+     pipeline holding no octet of its own to mark. It carries [tlast] = 0 and
+     no strobe. Nothing else moves: [consume], the record channel, the five
+     strobes and the state machine do not read this counter. *)
+  let rx_empty = ~:(a_open |: sel_valid |: have_word) in
+  let idle_age =
+    reg_fb spec ~width:8 ~f:(fun d ->
+      mux2 rx_empty (d +: of_int ~width:8 1) (zero 8))
+  in
+  let stale_word = rx_empty &: (idle_age ==:. 255) in
   let keep_count =
-    mux2 emit_last_a (pc -: strip) (mux2 emit_last_b (pc -: strip +: nc) pc)
+    mux2
+      stale_word
+      (of_int ~width:4 8)
+      (mux2 emit_last_a (pc -: strip) (mux2 emit_last_b (pc -: strip +: nc) pc))
   in
   let abort = sel_bad_fcs |: sel_error |: sel_start |: sel_oversize |: sel_runt in
-  let tvalid = (emit_full |: emit_tlast) &: ~:(i.clear) in
+  let tvalid = (emit_full |: emit_tlast |: stale_word) &: ~:(i.clear) in
   consume <== (sel_valid &: (emit_tlast |: sel_is_r2));
   (* Three of the five strobes are the union of the two report paths: epoch A's,
      consumed from the aged record on its `tlast` cycle or at age 2, and the
