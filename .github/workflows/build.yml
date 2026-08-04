@@ -27,6 +27,13 @@ jobs:
       - name: Build
         run: opam exec -- dune build @default
 
+      - name: BUG3 severity probe (print-only, transient branch only)
+        # Operational scaffolding for the BUG-0003 SV.2 probe (WO-0063 S10):
+        # the pre-fix tree's suite is EXPECTED red, and steps after a failed
+        # step never run, so the probe prints before runtest. Print-only,
+        # zero assertions; harvested from this step's log by BUG3-PROBE grep.
+        run: opam exec -- dune exec test/bug3_probe/bug3_severity_probe.exe
+
       - name: Run tests (expect tests, waveform snapshots)
         # An expect-test diff is a promotion source exactly like an RTL
         # snapshot (ADR-0005 rule 2), and it dies at this step — before the

@@ -1,0 +1,82 @@
+; THROWAWAY — BUG-0003 §V.2 / WO-0063 §10. This directory belongs at
+; test/bug3_probe/ on the TRANSIENT tree only, and is deleted with that tree.
+; It is never committed to the working branch: PROTOCOL §10's transient model
+; governs the whole operation (apply, run, harvest, revert fully, nothing
+; enters history), and WO-0063 §10.1 places this artefact outside the row
+; denominator, the unit inventory and every campaign scorecard.
+;
+; The probe is an executable on the runtest alias rather than an expect test,
+; for test/cost_probe/'s reason: its result is a measurement of a design nobody
+; intends to keep, and a measurement can never be promoted into a snapshot —
+; the build workflow's `git diff --cached --exit-code` step would then be
+; diffing a pre-fix module's behaviour into the tree forever. The output goes
+; to the CI log instead, every line prefixed BUG3-PROBE so it greps out.
+;
+; (deps (universe)) disables dune's cache for this action. Without it a cache
+; hit on an unchanged executable could replay a stale figure, which for a
+; severity decision is worse than no figure at all.
+;
+; ---------------------------------------------------------------------------
+; OPERATOR NOTE — read this before running, it is the one way to get no output
+; ---------------------------------------------------------------------------
+; On the transient tree the module under test carries fafb83d's PRE-FIX
+; content, so the committed M03 suite is EXPECTED TO BE RED there — that is the
+; whole premise of the measurement (BUG-0002 and BUG-0003 were both open at
+; that SHA). Dune stops scheduling new actions after a failure unless told
+; otherwise, so a plain `dune runtest` may never reach this rule.
+;
+; Prefer either of these, which do not depend on the rest of the suite:
+;
+;     dune exec test/bug3_probe/bug3_severity_probe.exe
+;     dune build @bug3-probe
+;
+; or, if running the whole alias, pass --keep-going:
+;
+;     dune runtest --keep-going
+;
+; The two rules below are deliberate duplication: the runtest attachment is the
+; cost_probe precedent, and the named alias is the insurance that the operator
+; gets the numbers even when everything around them is failing. Running both in
+; one invocation simply prints the block twice — the probe is print-only and has
+; no state, so a double run costs a duplicated log block and nothing else.
+;
+; ---------------------------------------------------------------------------
+; Libraries: exactly test/cosim/dune's list. This probe links NO test library —
+; not test_xgmii_rx_64, not any family module — so it pulls no expect tests into
+; its executable and cannot be perturbed by the suite's own redness. It reaches
+; the DUT the way test/cosim/ours_run.ml does, through the published
+; Cyclesim.With_interface entry point and field-name projection, and it reads
+; nothing under libs/ or rtl_snapshots/ (PROTOCOL §10).
+;
+; No (preprocess ...) stanza: the probe uses no ppx. It defines no Hardcaml
+; interface of its own (it uses Xgmii_rx_64.I / .O, already derived in the
+; library) and contains no let%expect_test — which is also why
+; tools/dv_checks.sh's repository-wide `let%expect_test` inventory is unchanged
+; by this directory's presence, and why tools/precompile_check.sh auto-classes
+; it EXCLUDED ("executable stanza; this harness compiles libraries only")
+; without needing an entry added to either script.
+
+(executable
+ (name bug3_severity_probe)
+ (modules bug3_severity_probe)
+ (libraries
+  hardcaml
+  hardcaml_ethernet
+  dv_xgmii
+  dv_xgmii_probe
+  dv_axi64_probe
+  dv_monitors))
+
+(rule
+ (alias runtest)
+ (deps
+  (universe))
+ (action
+  (run %{exe:bug3_severity_probe.exe})))
+
+(rule
+ (alias bug3-probe)
+ (deps
+  (universe))
+ (action
+  (run %{exe:bug3_severity_probe.exe})))
