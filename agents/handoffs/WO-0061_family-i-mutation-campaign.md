@@ -640,3 +640,561 @@ re-based instrument convicts at the lane where it has never spoken.
 7. **No class seeds a defect at the C-45 boundary or at M03-N3's prohibited
    site** — the wrapper refuses to build those stimuli, so no committed row can
    see such a defect and seeding one would measure the wrapper, not the design.
+
+---
+
+## WO-0061-VERDICT: nine of nine scoreable classes killed, four of five rows qualified, **M03-I2 NOT QUALIFIED** — dv_lead, `J-dv_lead-0097`
+
+**The campaign passes on its kill criterion and answers, in the negative, the one
+question it was built to answer.** All ten diffs went red. Nine classes are
+scoreable and **all nine are killed**. One class — I-c1 — is disclosed under
+`SEALED` §5.8's **branch (iv)**, whose adjudication this seal fixed in advance as
+*"the class not seeded as specified — a scope report, not a bench result — and no
+claim about any row is made from it in either direction"*; that rule binds me and
+I apply it. Four of the five scored units are qualified. **M03-I2 is not**, and
+the reason is measured rather than inferred: the strobe I-c10 puts on a clean
+frame pulses at **cycle 11** on a frame whose terminate word is at cycle 10 and
+whose C-14.3 window opens at **cycle 13**, so the tight window could not have
+seen it — and in the event the row never reached the window, because a generic
+clean-FCS `tuser` assertion four checks earlier spoke first. **The blast killed
+I-c10. M03-I2's window did not, and on this evidence no faithful rendering of
+I-c10's intent could have made it.**
+
+**No MUST-STAY-GREEN cell moved in any scoreable class, in either denominator.**
+Every deviation below is against my own seal or against one sentence of the
+auditor's disclosure — never against a bench row. **All eight falsified sealed
+cells stand in the SEALED file unedited** (the `RV-0055` G-1 precedent), and each
+is convicted here by quotation.
+
+### 0. Conduct, admissibility, and the evidence base
+
+The manifest (`docs/reports/audit/WO-0061-mutations/README.md`, `c4ffe7a`,
+`J-auditor-0011`) states its blinding **affirmatively**: no file under `test/**`
+opened at any revision by any route; nothing under `agents/**` beyond this packet
+and the two files its spawn mandates; the sealed companion untouched at every
+revision; no unscoped `git log`; and — the one place it improves on WO-0058 —
+`git status --porcelain` **scoped to `libs/`**, so it can name no out-of-bounds
+path even on a dirty tree. The single disclosed exposure, one `ls -a` at the
+repository root to fix the §2-item-6 set, surfaced no content and no name this
+packet does not itself use. §1.4's four ambiguities are resolved conservatively,
+and the one that had to be argued at WO-0058 is here **measured**:
+`git diff --stat 42b9df3 HEAD -- libs/ docs/specs/ docs/adr/ dune-project
+.ocamlformat` is empty, so the working-tree specifications are the base's.
+
+**All ten classes SEEDED. Nothing NOT-SEEDED, nothing substituted, nothing
+narrowed to build.** The three escapes §3 pre-authorises were each *tested* and
+declined rather than waved past. The **two pre-application comment corrections**
+(manifest §2 — I-c5's `error_bad_frame` cycle sentence, I-c6's corrupted-lane
+description) were made before any diff was applied anywhere and with no result of
+any kind in existence; both changed comment text only; the recorded `sha256`
+values are the corrected ones. **Bar 8 is not engaged and neither correction is a
+finding.** Both are, in the event, *confirmed* by the harvest: I-c5's kill is a
+word-count guard that is agnostic to the strobe's cycle, and I-c6's kill is the
+delivered-octet equality at a **lane-4** start — exactly the behaviour the
+corrected sentence describes.
+
+**§0.1's mechanical independence check, re-executed rather than accepted** — one
+command per branch, ten for ten **empty**, and each branch is one commit off the
+base touching one path:
+
+```
+for c in 1..10:  git diff 42b9df3 mut/wo-0061-i-c$c -- test/ | wc -c   -> 0
+                 git rev-list --count 42b9df3..mut/wo-0061-i-c$c       -> 1
+                 git diff --name-only 42b9df3 mut/wo-0061-i-c$c
+                     -> libs/hardcaml_ethernet/src/xgmii_rx_64.ml
+```
+
+Every bench blob that judged a mutant is therefore byte-identical to its blob at
+`42b9df3`, which precedes every mutant commit. **The campaign is admissible.**
+
+| class | branch | run | `runtest` | files promoted | first failing unit |
+|---|---|---|---|---|---|
+| i-c1 | `a4c7a04` | 30927976269 | RED | `test_m03_f.ml`, `test_m03_g.ml` | M03-F1 |
+| i-c2 | `4afe708` | 30927978551 | RED | `test_m03_i.ml` | M03-I4 |
+| i-c3 | `f2888c7` | 30927979347 | RED | `test_m03_i.ml` | M03-I4 |
+| i-c4 | `d0bf64a` | 30927986086 | RED | `test_m03_i.ml` | M03-I4 |
+| i-c5 | `ff6aaca` | 30927984066 | RED | `test_m03_i.ml` | M03-I4 |
+| i-c6 | `ea832f4` | 30927984786 | RED | `test_m03_i.ml` | M03-I4 |
+| i-c7 | `8d8cb93` | 30927986209 | RED | `test_m03_i.ml` | M03-I4 |
+| i-c8 | `9da40f3` | 30927988354 | RED | `test_m03_i.ml` | M03-I1 |
+| i-c9 | `29845d8` | 30927989865 | RED | `test_m03_i.ml` | M03-I3 (monitor) |
+| i-c10 | `992eead` | 30927994449 | RED | **nine**: `a`,`b`,`c`,`d`,`e`,`f`,`g`,`h`,`i` | M03-A1/A2 |
+
+`cosim` red on all ten, as §6 said it would be. **Out of scope, not a finding,
+not scored.** No Verilog-drift result is harvested. **No green run** — §6's
+campaign-failure condition is not triggered on any branch. Every failing-unit set
+below is read from the run's own **PROMOTION BLOCK**: each promoted source was
+base64-recovered from the log and its `sha256` verified against the block's own
+recorded digest, so the unit sets are the runs' bytes, not a reading of a diff.
+
+### 1. Per-class scorecard — kills are classes (§4.1), cells are blast radius
+
+`R✓` = sealed REQUIRED, red, **message character-exact**. `R✗msg` = sealed
+REQUIRED, red, **wrong message**. `R→G` = sealed REQUIRED, **green**. `VOID` = no
+cell scored, by a rule fixed in the seal before the diff existed.
+
+| class | branch the disclosure selects | sealed REQUIRED on it | observed | cells | verdict |
+|---|---|---|---|---|---|
+| **I-c1** | **§5.8 (iv)** — gate fires on a lane-0 `/T/` (disclosed **YES**) | *(§5.1(ii) wide: T-I6, T-I4)* | **all five I units GREEN**; T-F1, T-F2, T-G7 red | **VOID** | **NOT SEEDED AS SPECIFIED — scope report, 0 kills** |
+| **I-c2** | §5.2 **(i) narrow** — octets disclosed **NO** | T-I4, T-I6 | `R✓`, `R✓` | **2/2** | **KILL** |
+| **I-c3** | §5.3 **(i)** — count and CRC disclosed **YES/YES** | T-I4, T-I6 | `R✓` (got 16), `R✓` (got 64) | **2/2** | **KILL** |
+| **I-c4** | §5.4 **(i) narrow** — `error_bad_frame`, held + 2, no `tuser` | T-I4, T-I6 | `R✓`, `R✓` | **2/2** | **KILL** |
+| **I-c5** | §5.5 **(ii) `/E/`-like** — `strip` = 0, `tuser`[0] | T-I4, T-I6 | `R✓` (got 1), `R✓` (got 1) | **2/2** | **KILL** |
+| **I-c6** | §5.6 **(i) signature** — verdict clean; **+ lane-4-only** | T-I4, T-I6 | `R✗msg`, `R✗msg` (member field) | **2/2 rows** | **KILL** + **FINDING S-4** |
+| **I-c7** | no branch — `tlast` disclosed **NO** | T-I4, T-I6 | `R✓` (cycle 4, `< 5`), `R✓` | **2/2** | **KILL** |
+| **I-c8** | §5.7 **(iii)** — T = 255, repeating every 256 | T-I1, T-I6 | `R✓` (got 11); **T-I6 `R→G`** | **1/2** | **KILL** + **FINDING S-1** |
+| **I-c9** | **OPENS + PULSES**, emits nothing → §4(g) | T-I3 | `R✓` (monitor form) | **1/1** | **KILL**, monitor-caught, counted **once** |
+| **I-c10** | offset **+0…+2, never +3** (measured **+1**) | 35 (5 worked, 30 UNWORKED) | 28 red, 7 green; **T-ST green ✓** | **28/35** | **KILL** + **FINDINGS S-2, S-3** |
+
+**Kills: 9 of 9 scoreable classes; ten of ten branches red.** Not forty-two, not
+fifty — §7 criterion 4 and §4.1 fix the unit as the class, and I-c10's
+twenty-eight reds are **one** detection probed at twenty-eight stimuli.
+
+### 2. The four pre-named collision rules, and the shadowing predictions
+
+Named before the result precisely so they could not be argued after it. **None
+bites. No kill is withdrawn for double-counting.**
+
+- **§4(b) — I-c2 against I-c6.** Fires only if both report the same message at
+  the same unit. I-c2 speaks `tuser[0] set -- FCS content is unchanged by
+  injection…`; I-c6 speaks `delivered octets differ -- REQ-016 must not alter
+  frame content`. The auditor disclosed I-c2's octets **NO** and I-c6's verdict
+  **CLEAN**, and the harvest confirms both. **Two independent detections**, and
+  **I-c6 is the campaign's only exercise of the delivered-octet instrument** —
+  `J-dv_lead-0093`'s second named kill for the count-guard-blind class, now
+  measured rather than claimed.
+- **§4(c) — I-c2 against I-c4.** Fires only if I-c4's rendering also marks
+  `tuser`. Disclosed branch **(i)**: `q2` bit 0 only, read at exactly one site,
+  `tuser` untouched. The observed message is the strobe message, not I-c2's.
+  **Two independent detections.**
+- **§4(d) — I-c3 against I-c5.** Same instrument, separated by the **direction**
+  of the count. Observed: I-c3 `got 16` / `got 64` (**up**), I-c5 `got 1` /
+  `got 1` (**down**), at both units — and all four values are the seal's own
+  derived numbers to the digit. **The separation device worked exactly as
+  written. Two independent detections.**
+- **§4.1's monitor clause.** I-c9 is caught **only** by `assert_monitors_clean
+  overlay_bench`, which `test_m03_i.ml:789` places before the in-window scan at
+  `:793`. Reported as **monitor-caught and counted once**; M03-I3's own in-window
+  `tvalid` and strobe scans are recorded **blind to it**.
+- **§4.4 — M03-I4's expect block.** Every M03-I4 red produced the predicted
+  truncated-report diff. **No cell in this scorecard is scored on it**; every
+  M03-I4 cell is scored on the raised message. No class produced an expect-block
+  diff *without* a raise, so §4.4's second limb is not engaged.
+- **§4.5 — the shadowing predictions, both verified.** At M03-I1 under I-c8 the
+  **count guard** spoke (`:290`) and the idle-prefix `tvalid` scan (`:334`) did
+  not, exactly as the seal called it *"the campaign's sharpest shadowing
+  prediction"*. At M03-I3 under I-c9 the monitors spoke before the in-window
+  scan. §4.5's binding rule applies as written: **these are exact, not
+  near-misses**, and no defect of that shape can reach the absence scan.
+
+**§4(f)'s idiom correlation, reported because §4.1 obliges it.** The nine kills
+rest on **six** instrument families across nine stimulus geometries: word-count
+guard (I-c3, I-c5, and I-c8 at M03-I1), FCS verdict `tuser` (I-c2, and I-c10 at
+four rows), delivered content (I-c6), per-word cycle (I-c7), row-local strobe
+checks (I-c4, and I-c10 at M03-I4's baseline), strobe **monitor** (I-c9). Nine
+independent measurements of the geometry; **not** nine independent measurements
+of nine properties.
+
+### 3. THE QUESTION THIS CAMPAIGN EXISTS TO ANSWER — did M03-I2's window kill I-c10, or did the blast?
+
+**The blast.** The ruling and its two independent grounds:
+
+**Sealed** (`SEALED` §3 — the only cell in the file with two branches):
+offset ≤ +2 → `M03-I2 (member i, 64 octets, lane 0): an error strobe pulsed on a
+clean frame`; offset ≥ +3 → `M03-I2 (member i, 64 octets, lane 0): a strobe
+pulsed at or after cycle 13 (REQ-109, C-14.3)`.
+**Observed**: `M03-I2 (member i, 64 octets, lane 0): tuser[0] set -- expected a
+clean FCS verdict`. **Neither branch.** The row prefix is the seal's own to the
+character — §1's iteration order is confirmed — and the assertion is not.
+
+**Ground 1 — the offset, measured rather than derived.** §4.3 item 2 binds the
+scorecard to state which check spoke and what that proves, and makes the offset
+decisive. The offset is now a **measurement**: M03-A3's strobe-monitor report
+under i-c10 prints `observed: error_runt@11` for a 64-octet lane-0 frame whose
+terminate word is at cycle 10. **Offset = +1.** M03-I2's boundary is
+`terminate_cycle + 3` = **13** (`:404`). A pulse at 11 is **two cycles outside
+the window**, invisible to the silent-tail scan by construction. The auditor's
+disclosure — *"+1 or +2 at a lane-0 start … never +3 or later"* — is confirmed to
+the cycle.
+
+**Ground 2 — the row never reached the window.** `run_i2_member` orders its
+checks: count guard (`:445`) → per-word cycle/`tkeep`/`tlast` → **`tuser`
+(`:474`)** → delivered octets → silent-tail `tvalid` scan → **silent-tail strobe
+scan (`:501`, the C-14.3 window)** → run-wide `error_pulses` (`:505`). I-c10 sets
+`tuser`[0] through `abort` on every terminated frame, so `:474` raises and `:501`
+is never evaluated.
+
+**Ruling.** §4.3 item 1's mandatory UNQUALIFIED is not literally triggered —
+I-c10 did not survive. But §4.3 item 3 forbids crediting M03-I2's window with
+anything an earlier assertion caught first, and §6 bound 1 makes I-c10 the row's
+only qualifier. Both grounds point one way: **M03-I2's red is predicted blast
+radius, contributes zero kills, and qualifies nothing.** The assertion that spoke
+— a clean frame's `tuser` verdict — is shared by at least **twenty-two** other
+units that raised the same shape of message in the same run (M03-A1/A2, A5, B1,
+C3, D2, D3, F4, G1–G4, G6–G8, H1–H4, I1, I3, I6, plus C1/C2 and C5 inside their
+per-length signatures). It is the most ordinary assertion in the bench.
+**M03-I2 ends this campaign UNQUALIFIED**, and this packet says so rather than
+otherwise.
+
+**And the finding is general, not accidental.** The manifest's §6 judgement-call
+4 records that a `+3`-or-later rendering *"was available only by delaying the
+strobe — a defect in the report path rather than in the threshold comparison —
+which is a different class from the one §3 states"*. That is correct, and it is
+the campaign's most valuable by-product: **M03-I2's tight window is unfalsifiable
+by any threshold-class defect.** §9's report path pins epoch A's consumption to
+the frame's own `tlast` cycle or age 2, both of which lie at +0…+2 for every
+length and both start lanes. Qualifying M03-I2 requires a **report-path delay**
+class — a strobe whose consumption is deferred past age 2 — and that is a new
+mini-round, not a re-run of this one.
+
+### 4. FINDING S-1 — I-c8's sealed T-I6 cell is falsified, and the cause is an arithmetic error in the seal's own idle-run inventory
+
+**Sealed** (`SEALED` §3, §5.7 branch iii): `M03-I6 (length 1518, lane 0):
+expected 190 output words, got <mutant>` (> 190).
+**Observed: M03-I6 stayed green under i-c8.** M03-I1 alone reddened, in the whole
+116-unit suite. **The cell stands in the SEALED file unedited.**
+
+**It is not a weakness in M03-I6. The defect was never reachable there.** The
+seal derived the trailing idle run from `drain = Idle_injection.injected inj + 8`
+(`test_m03_i.ml:1557`) and concluded *"M03-I6's 1518-octet member at lane 0
+injects 1323 idle words → **1331** drain cycles"*. That reads `drain` as a tail
+appended to the injected stimulus. It is not. `Bench.run` computes
+`total = Arrival.cycles sched + drain` (`bench.ml:190`), and `Arrival.cycles` is
+a function of the **source** schedule's octet times alone (`arrival.ml:119–126`,
+`(terminate_octet_time last + ifg + 7)/8 + 1`). The injected idle words are
+consumed **from the inside**: at (1518, lane 0) the source span is ≈192 cycles,
+the terminate character is displaced to injected cycle ≈1514, and `total` ≈ 1523.
+**The trailing idle run is 8 cycles — which is exactly what `injected + 8` was
+written to produce.** The same holds at every M03-I4 and M03-I6 case.
+
+**Corrected inventory of idle runs in the 116-unit suite**: **1001** (M03-I1's
+prefix), **100** (M03-I3's gap), **8** (everything else, without exception).
+§5.7's branch table is therefore wrong at branches (i), (ii), (iii) and (v): the
+correct REQUIRED set for `100 < T ≤ 1001` is **{T-I1} alone**, and **no threshold
+whatsoever reaches T-I6 or T-I4.** The observed row set {T-I1} matches no
+enumerated branch, which §5 makes a finding; the finding is mine and this is its
+cause.
+
+**The correction improves M03-I1 rather than damaging it, and this is the
+campaign's best single result.** `SEALED` §6 bound 3 hedged that M03-I1's
+1000-cycle scale is *"proven load-bearing by neither"* of its two qualifiers
+unless T lands in (100, 1001]. T = 255 lands there — and with the inventory
+corrected, M03-I1's 1001-cycle prefix is the **only** idle run in the repository
+that can see any defect with T > 100. I-c8 reddened M03-I1 and **nothing else,
+anywhere**. Its scale is not merely load-bearing but **uniquely** so: delete
+M03-I1 and this defect class escapes the programme entirely.
+
+### 5. FINDING S-2 — I-c10's message column is falsified at four of five scored rows, and the datum that falsifies it was disclosed
+
+**Sealed** (`SEALED` §3): five worked messages, every one a **strobe** check.
+**Observed**: four of the five are the row's **clean-FCS `tuser`** check.
+
+| unit | sealed | observed |
+|---|---|---|
+| T-I1 | `an error strobe pulsed somewhere in this run …` | `tuser[0] set -- expected a clean FCS verdict after a long idle window` |
+| T-I2 | `an error strobe pulsed on a clean frame` / `a strobe pulsed at or after cycle 13 …` | `tuser[0] set -- expected a clean FCS verdict` |
+| T-I3 | `baseline: an error strobe pulsed on an idle-only gap` | `baseline frame 1: tuser[0] set -- expected a clean FCS verdict` |
+| **T-I4** | `M03-I4 baseline (length 64, lane 0): an error strobe pulsed on the plain, un-injected baseline run` | **identical, character for character** |
+| T-I6 | `an error strobe pulsed -- idle injection must not change which REQ-107/REQ-108 class …` | `tuser[0] set -- expected a clean FCS verdict, this frame's own class is unchanged` |
+
+**All four falsified cells stand unedited.** The mechanism is not obscure and it
+was **disclosed**: the manifest's I-c10 mechanism paragraph and its
+second-standing-clause reach note both state that *"REQ-107's own consequences
+travel with the condition, so the same frames take `tuser` bit 0 = 1 on their
+`tlast` word through `abort`"*. The seal read the disclosure question it had
+asked — *"which strobe, and the offset"* — and derived only the strobe's
+consequence.
+
+**Root cause, one thing, and it is a re-use failure rather than an analysis
+failure.** The seal had already established this exact ordering, one section
+earlier, for I-c2: *"`tuser` at `:1097` (M03-I4) and `:1596` (M03-I6),
+`error_pulses` at `:1156` and `:1607`"*. The same ordering holds at M03-I1
+(`:326` before `:346`), M03-I2 (`:474` before `:501`/`:505`) and M03-I3 (`:669`
+before `:789`). **Every row in family I checks the frame's verdict before it
+checks the run's strobes**, and the one cell that matched — M03-I4's *baseline* —
+matched precisely because `run_i4_length_lane`'s own `error_pulses` check
+(`:1267`) is the first assertion in the unit, ahead of any per-word loop. The
+seal worked that cell and got it exactly right; it did not re-work the other four.
+
+**Materiality: none to the kill, none to the M03-I2 ruling, and that is worth
+saying plainly.** I-c10 is killed once, at the cell whose message was exact. And
+a `tuser` red at M03-I2 is *further* from the tight window than the
+`error_pulses` red the seal expected, so §3's ruling is strengthened by the
+falsification, not weakened by it.
+
+### 6. FINDING S-3 — §4(e)'s reach derivation for I-c10 is too wide, and all seven greens are explained rather than adjudicated per row
+
+**Sealed** (`SEALED` §4(e)): thirty-five REQUIRED cells, the trigger *"a frame
+closes, which every M03 unit except T-ST provides"*, and the rule *"a green is a
+FINDING — it would mean a row that cannot see a spurious strobe on its own
+frame's closure … adjudicated per row"*.
+
+**Observed: 28 red, 7 green.** The greens are **T-C4, T-E1, T-E2, T-E5, T-F1,
+T-F2, T-F3**, and **every one is explained by the auditor's disclosed reach**:
+
+- `a_close_runt = a_close_terminate &: (count_cleared <:. 64)` fires only on
+  frames closed by a **terminate character**. **T-E1** (`/E/` in each of eight
+  mid-frame lanes), **T-E2** (`/E/` at the frame's first octet) and **T-E5**
+  (`/E/` at preamble positions) close under REQ-105 with `a_close_terminate` low
+  — the manifest says so in terms: *"Frames closed by `/E/`, by `/S/` or by
+  REQ-108's count … are untouched entirely."*
+- On a frame that is **already a runt** the mutation is the identity: the
+  record's `runt` field would have been set anyway. **T-C4** is *"the 5-octet
+  runt"*, **T-F1** is *"5, 16, 60 and 63-octet runts"*, **T-F2** is *"0, 1 and 4
+  octets"*, **T-F3** is *"a 63-octet frame with a wrong FCS"*. All below 64.
+- The rows that *do* carry a legal terminated frame reddened, including inside
+  those same families: **T-E4** (*"following frame intact"*) and **T-F4**
+  (*"63 is a runt, 64 is legal"*).
+
+**Adjudication: none of the seven is a row finding.** No row is blind to anything
+it should have seen. The finding is against §4(e)'s own derivation, which took
+"a frame closes" as the trigger when the disclosed trigger is "a frame closes on
+`/T/` **and** its true count is ≥ 64". **I-c10's true reach is 28 M03 units, not
+35**, and T-ST is green as sealed, for the reason sealed.
+
+### 7. FINDING S-4 — I-c6's member field, and a disclosure axis the seal had no column for
+
+**Sealed**: `M03-I4 (length 64, lane 0, idles 1): delivered octets differ …` and
+`M03-I6 (length 64, lane 0): delivered octets differ …`.
+**Observed**: the same assertion text, character for character, at **lane 4** —
+`M03-I4 (length 64, lane 4, idles 1)` and `M03-I6 (length 64, lane 4)`.
+**Both cells stand unedited.**
+
+Row set exact ({T-I4, T-I6}), branch exact (§5.6 **(i) signature** — verdict
+clean, confirmed by the harvest), instrument exact (the delivered-octet
+equality). The member is wrong because §5.6 branched on **one** axis, the
+verdict, and the manifest disclosed a **second**: *"the class has instances at
+**lane-4 starts only** … at offset 0 the aligned word *is* the previous input
+word, no output word's assembly spans a held cycle, and `bubble` is identically
+0."* That moves the first case that can differ from (64, lane 0, idles 1) to
+(64, lane 4, idles 1) at both rows. **The disclosure was complete; the seal's
+enumeration was not.** The cell scores — §5's finding condition is an unmatched
+**row set**, and the row set matched.
+
+### 8. FINDING A-1 (against the auditor's disclosure) — I-c1's "the 1518 + 7-idle crossing actually occurs: **YES**" is falsified by measurement
+
+The round's one finding against a disclosure. Disclosures are scoring inputs, so
+it is scored as its own class.
+
+**Disclosed** (manifest §3 I-c1, repeated in its §4.2 table): *"**YES.** … at
+N = 1518 with 7 idles at every in-frame boundary the mutated total passes 1518
+after roughly 24 of the frame's 190 source words, so the crossing happens with an
+enormous margin rather than marginally"*, with the mechanism spelled out —
+*"`cap_room` falls below 8, `cap_end` binds below `a_char_end`,
+`a_close_oversize` rises, the frame is truncated there, the state machine enters
+`Discard`, `error_oversize` is raised"*.
+
+**Measured**: under `mut/wo-0061-i-c1` the **whole of `test_m03_i.ml` is green** —
+all five units, both members of M03-I6 included. The only reds in the 36-unit M03
+bench are **T-F1, T-F2 and T-G7**, and all three are **gapless** consequences of
+the disclosed lane-0-terminate reach, not REQ-108 crossings. The counter crosses;
+**the truncation does not happen.**
+
+**Why, and both reasons are in the base file the manifest read in full.**
+
+1. `a_close_oversize = a_open &: (cap_end <: a_char_end) &: (cap_end <:
+   a_hold_end) &: (cap_end <:. 8)` (base lines 361–362). On an all-idle in-frame
+   word `a_hold_v = other_ctl &: ~:a_pre_mask` = `0xFF`, so **`a_hold_end` = 0**
+   and `cap_end <: a_hold_end` is unsatisfiable. **Truncation is structurally
+   impossible on precisely the cycles this mutation inflates.** With the count
+   advancing by exactly 8 every in-frame cycle from a reload of 0, `cap_room`
+   lies in [1, 7] at exactly one value — `count` = 1512 = 8 × 189 — and under
+   `uniform` at k = 7 the covering words sit at in-frame cycles ≡ 0 (mod 8) while
+   189 ≡ 5, so **that unique cycle is a held cycle.**
+2. `cap_room = of_int ~width:count_bits 1518 -: count` (base line 342) with
+   `count_bits = 11` (line 148) is an **unsigned 11-bit subtraction**. The next
+   cycle takes `count` to 1520 and `cap_room` **underflows** to 2046, after which
+   `cap_room >=:. 8` is permanently true and `cap_end` saturates at 8. The cap
+   never binds again for the life of the frame.
+
+At the terminate character `count_next` has wrapped to a value comfortably above
+64, so `a_close_runt` is low and `has_fcs` is true; the frame closes with the
+right octets, the right cycles and a clean verdict. **M03-I6 green is correct
+behaviour of the bench against a mutant that, on the injected half, is
+observationally equivalent to the base design.**
+
+**Severity: MAJOR, and material.** The disclosure is what selected `SEALED`
+§5.1's **wide** branch and therefore both of I-c1's REQUIRED cells, neither of
+which was reachable. §3's pre-authorised escape for this class — *"say so rather
+than seeding a diff that cannot fail"* — was correctly declined for the reason
+offered (the arithmetic crossing is real) but should have been invoked for the
+**injected half** on the observable question. The manifest's own I-c3 entry
+states the deciding fact — *"`a_hold_end` no longer participates in
+`a_close_oversize`, so a word whose hold lane lies below the REQ-108 cap no
+longer suppresses the truncation"* — and read at I-c1 it refutes I-c1's
+disclosure.
+
+**What this does *not* change.** I-c1's adjudication was already fixed by
+`SEALED` §5.8 branch (iv) before any of this was known, and that ruling stands
+independently: the gate was disclosed as firing on a **lane-0 terminate
+character**, a gapless event in every family, so the class *"is scored as the
+class not seeded as specified — a scope report, not a bench result — and no claim
+about any row is made from it in either direction."* **T-F1, T-F2 and T-G7's reds
+are therefore not MUST-STAY-GREEN violations, and the green I units are not
+falsified cells.** They are void. The seal earned that clause and it is applied.
+
+For the record, because the reads are worth having: I-c1's three reds are the
+disclosed +8-at-a-lane-0-`/T/` reach doing exactly what the disclosure said it
+would. **T-F1**'s 60-octet runt reads 68 and its `error_runt` is suppressed
+(`tuser[0] is not set on a runt`). **T-F2**'s 0-octet frame reads 8, which
+crosses `fcs_min_octets` = 5, so `has_fcs` turns on and a second strobe appears
+(`expected exactly one strobe pulse (error_runt only), observed 2`). **T-G7**
+gains a third strobe by the same route. **The disclosed reach is confirmed; only
+its injected half is refuted.**
+
+**A-2, recorded to the auditor's credit rather than as a finding.** I-c10's
+offset disclosure is exact (`+1` measured against `+1 or +2` disclosed) and it
+was **volunteered under the second standing clause rather than engineered**: the
+manifest explicitly refused to reach for a `+3` rendering that would have
+exercised M03-I2's window, on the correct ground that it would have been a
+different class. That refusal is what makes §3's ruling a measurement instead of
+an artefact. **A-3**: the `tuser` co-travel note is likewise correct and
+complete; the disclosure did its job and my seal failed to consume it (S-2).
+
+### 9. The seal's hard predictions that held, recorded because the falsifications are recorded
+
+- **I-c7's `expected 5`.** Derived in the seal from `D(0) = (8+8+12)/8 = 3`, the
+  wrapper's first site at `before_cycle` = 3, shift 1, `baseline_cycle(0)` = 4.
+  Sealed requirement `<mutant> < 5`, predicted value 4. **Observed: `word 0
+  arrived on cycle 4, expected 5`.** Exact, including the mutant's own value.
+- **I-c3's 16 and 64, and I-c5's 1 at both units.** All four derived counts exact.
+- **I-c5's "one output word on either closure path".** The manifest disclosed the
+  `/E/` path; the seal predicted `got 1` on **both** paths and said why. Exact.
+- **I-c8's shadowing call at M03-I1** — the count guard, not the prefix scan.
+- **§4(g)'s monitor prediction for I-c9**, down to the report's own
+  unexpected-pulse line: `cycle 15: M03 rx pulsed "error_bad_frame" and no
+  expected event claims it — a strobe the stimulus did not create
+  (requirements.md §0.6, REQ-008)`, 100 high cycles for 100 `/Q/` words, and the
+  **baseline green / overlay red** split that is M03-I3's anti-vacuity proof.
+- **T-ST green under I-c10**, for the sealed reason: `test_m03_structural.ml`
+  opens no frame, so there is no closure for the pulse to attach to.
+- **§1's three iteration orders**, confirmed by every observed row prefix:
+  `M03-I2 (member i, 64 octets, lane 0)`, `M03-I4 baseline (length 64, lane 0)`,
+  `M03-I6 (length 64, lane 0)`.
+
+### 10. Qualification rulings
+
+**M03-I1 — QUALIFIED, and its scale is proven uniquely load-bearing.** Killed
+I-c8 alone in the entire 116-unit suite, on its total-word count (`got 11`
+against 8 — three spurious words at empty-cycles 255, 511 and 767 of its
+1001-cycle prefix, at T = 255 repeating every 256; the arithmetic is exact). Also
+red under I-c10, on `tuser` — blast radius, zero additional kills. `SEALED` §6
+bound 3 is **resolved in the row's favour** by S-1's corrected inventory.
+Standing bound, unchanged and exact per §4.5: the row is qualified on its **count
+guard**; its idle-prefix `tvalid` and strobe **absence scans remain
+unexercised**, and no defect of the output-word shape can reach them.
+
+**M03-I2 — NOT QUALIFIED.** §3 above is the ruling in full. Its only qualifier
+was I-c10; I-c10 died elsewhere; the row's red is blast radius on the bench's
+most generic assertion; its C-14.3 window has still never spoken; and the window
+is unreachable by any threshold-class defect. **This is the campaign's designed
+outcome, not its failure** — the question was worth asking precisely because the
+answer could be this one, and the packet fixed in advance that no packet may say
+otherwise.
+
+**M03-I3 — QUALIFIED, narrowly, and by its stimulus rather than by its
+assertions.** Killed I-c9, with a row set of exactly {T-I3} out of 116 units. The
+detection is **monitor-caught** (§4(g)), so what is proven is the **overlay
+construction** — a `/Q/` run driven against a cycle-for-cycle idle-only baseline,
+red on the overlay and green on the baseline, which is the anti-vacuity property
+the row was built to guarantee and which no other row in the bench has. What is
+**not** proven is either of the row's own in-window absence scans: the `tvalid`
+scan is shadowed by two structural checks (§4.5, sealed) and the strobe scan by
+`assert_monitors_clean` (§4(g), sealed). I-c8's contingent qualification
+(branches iv–vi) did not materialise: T = 255 > 100. Also red under I-c10, on
+`tuser` — blast radius.
+
+**M03-I4 — QUALIFIED, by the widest margin in the campaign.** Killed six classes
+on **five distinct instruments**: FCS verdict (I-c2), word count upward (I-c3),
+strobe (I-c4), word count downward (I-c5), delivered content (I-c6), per-word
+cycle (I-c7); plus the I-c10 baseline red on its own `error_pulses` check, the
+one I-c10 cell whose message the seal got exactly right. Two specific debts
+discharged: **(a)** the delivered-octet equality convicted for the first time
+(I-c6) — `J-dv_lead-0093`'s second named kill for the count-guard-blind class,
+measured rather than asserted; **(b)** the **lane-0 half of the re-based cycle
+instrument convicted for the first time** (I-c7, `cycle 4, expected 5`). That
+instrument had spoken once ever, at a lane-4 start (BUG-0003), and `SEALED` §7's
+careful weighting stands: this does not re-prove BUG-0003, it proves the re-based
+instrument convicts where it had never had to. **Left open**: `WO-0061` §8 bound
+1's `tkeep` instrument at an injected run rode on I-c1's wide branch alone, and
+I-c1 is void — so that bound ends this round **half measured**, exactly as it was
+pre-named: the delivered-octet half is measured, the `tkeep` half is not.
+
+**M03-I6 — QUALIFIED**, on the same five instruments as M03-I4 (I-c2 … I-c7) plus
+the I-c10 blast red. **With one measured gap that is new and belongs on the
+record**: every M03-I6 red in this campaign came from a **64-octet** member — at
+lane 0 for I-c2/c3/c4/c5/c7/c10, at lane 4 for I-c6. **The 1518-octet member
+contributed no detection anywhere.** I-c1 was the only class aimed at it and I-c1
+is void; I-c8's second site was S-1's drain-length error. On this evidence
+M03-I6's 1518-octet member is **unexercised by every defect class this campaign
+could construct** — a coverage statement, not a criticism of the row: it exists
+to hold REQ-108's threshold under injection, and no seeded class reached that
+threshold observably.
+
+**Four of five rows qualified. One — M03-I2 — is not, and the campaign's central
+question is answered in the negative.**
+
+### 11. Headline numbers, in this packet's own denominators
+
+- **Classes seeded: 10. Branches red: 10 of 10. Scoreable classes: 9** (I-c1
+  excluded by `SEALED` §5.8(iv), a rule fixed before any diff existed).
+  **KILLS: 9 of 9.**
+- **Sealed REQUIRED cells on the branches the disclosures select: 50** (I-c1's
+  void cells excluded). **Met: 42.** Falsified: **8** — one under I-c8 (T-I6) and
+  seven under I-c10 (T-C4, T-E1, T-E2, T-E5, T-F1, T-F2, T-F3). All eight stand
+  unedited.
+- **Worked (message-sealed) cells among them: 20. Character-exact: 13.
+  Text-exact with a falsified member field: 2** (I-c6). **Falsified: 5** — one
+  unreachable (I-c8 × T-I6) and four wrong-assertion (I-c10 × T-I1/I2/I3/I6).
+  **UNWORKED I-c10 cells: 30** — 23 red (predicted blast, zero kills, per §4(e))
+  and 7 green (S-3; none a row finding).
+- **MUST-STAY-GREEN, M03: 274 cells across the nine scoreable classes
+  (34 × 7 + 35 + 1). Violations: 0.**
+- **MUST-STAY-GREEN, non-M03: 800 cells (80 units × 10 classes). Violations: 0.**
+  No file outside `test/xgmii_rx_64/` was promoted on any branch. **No
+  build-level finding**; §1's and `SEALED` §0's blast-radius argument is
+  confirmed empirically at 800 cells for the fourth campaign running.
+- **Instrument families exercised: 6** (word count, FCS verdict, delivered
+  content, per-word cycle, row-local strobe, strobe monitor) at **9 stimulus
+  geometries**.
+- **Findings: 6.** Against my seal: **S-1** (major — I-c8's idle-run inventory),
+  **S-2** (major — I-c10's message column), **S-3** (moderate — §4(e)'s reach),
+  **S-4** (minor — I-c6's member field). Against the auditor's disclosures:
+  **A-1** (major — I-c1's crossing claim). Recorded to the auditor's credit:
+  **A-2**, **A-3**. **Zero findings against any bench row.**
+- **Plan coverage unchanged: 38 of the plan's 62 ASSERT rows discharged.**
+  Families **J, K, M, N** and **L1–L5** unwritten; the verilog-ethernet anchor
+  undischarged.
+
+### 12. Consequences
+
+- **`SO-xgmii_rx_64.md` does not issue and is not offered.** §7's closing
+  paragraph is unchanged by this result. This campaign qualifies four units and
+  fails to qualify a fifth; it does not sign off a module.
+- **`WO-0061` §4.2's CRITICAL-against-me branch is CLOSED.** I-c5 died at both
+  units with the sealed count of exactly 1, so the wrapper's injected idle words
+  demonstrably reach the design inside an open frame. **Family I's injected half
+  is not vacuous**, and the hypothesis that would have been a CRITICAL finding
+  against dv_lead is refuted by measurement rather than argued away. I-c2, I-c3,
+  I-c4, I-c6 and I-c7 dying on the same stimulus are the corroboration.
+- **The SEALED companion is not edited, now or ever.** All eight falsified cells
+  stand as frozen. This block is the correction of record.
+- **Owed to `test/**` at its next touch**, joining `J-dv_lead-0094`'s two carried
+  notes (the count-guard identity at its own sites; guard ordering): **(iii)** a
+  note at M03-I1/I2/I3/I6 that the clean-FCS `tuser` check precedes every strobe
+  check — the ordering S-2 shows actually decides what a strobe-class defect
+  reports; **(iv)** a note at M03-I6 recording that its 1518-octet member is
+  unexercised by any constructed defect class; **(v)** a note at
+  `run_i6_case`/`run_i4_case` that `drain = injected + 8` yields an **8-cycle**
+  tail rather than `injected + 8` cycles of tail — S-1's misreading, written down
+  where the next reader will meet it. **No bench file is opened in this round**,
+  per §4.5's closing clause.
+- **Two plan rows are earned and are footnoted rather than added here**, on the
+  WO-0058 precedent: a prolonged-idle row whose threshold is *below* 100 cycles
+  (nothing in the suite between 8 and 100 can see one), and a report-path-delay
+  row for M03-I2's window.
+- **Nothing is owed to the auditor beyond A-1's correction**, which is a
+  disclosure defect and not a conduct defect. The blinding was complete, the ten
+  diffs were faithful, the disclosures decided the scoring of four of the nine
+  kills before any result existed, and the one that decided M03-I2's fate was
+  volunteered rather than engineered.

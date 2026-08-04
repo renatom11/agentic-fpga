@@ -943,3 +943,226 @@ throwaway branch, nothing entering history).
 
 ### Files-in-this-commit
 - agents/handoffs/BUG-0003_m03-lane-4-injected-word-cycle.md
+
+## [J-dv_lead-0097] 2026-08-08T09:40Z | task:WO-0061 | Nine of nine scoreable classes killed and the one row the campaign existed to test is UNQUALIFIED — the strobe pulsed at cycle 11 against a window that opens at 13, so M03-I2's tightness was never in the running, and the datum that proves it was volunteered by the seeder
+
+### Trigger
+Orchestrator dispatch: adjudicate the WO-0061 family-I qualification campaign
+against the seal frozen at `61eb242`, all ten diffs committed and all ten
+transients harvested RED. The ordering bar of `WO-0061` §0.1 item 2 is
+satisfied — the seal is in history, the manifest is committed at `c4ffe7a` — so
+this is the first spawn in which I may read the mutation diffs.
+
+### Inputs
+- `agents/handoffs/WO-0061_family-i-mutation-campaign.md` (the packet, in full)
+  and `agents/handoffs/WO-0061_family-i-mutation-campaign-SEALED-predictions.md`
+  (the seal, in full, **opened for the first time in this spawn**). Verified
+  unedited since the freeze: `git diff --stat 61eb242 -- <both paths>` empty.
+- `docs/reports/audit/WO-0061-mutations/README.md` at `c4ffe7a` — **in full**,
+  all ten diffs and every disclosure, per the dispatch's ordering ruling.
+- The ten harvest logs (CI runs 30927976269, 30927978551, 30927979347,
+  30927986086, 30927984066, 30927984786, 30927986209, 30927988354, 30927989865,
+  30927994449), read for their **PROMOTION BLOCKs** rather than their diffs: each
+  promoted source base64-recovered and its `sha256` checked against the block's
+  own recorded digest, so every failing-unit set below is the run's bytes.
+- `test/xgmii_rx_64/test_m03_i.ml` (`run_i1`, `run_i2_member`, `run_i6_case`
+  assertion orders), `test/xgmii_rx_64/bench.ml` (`run`, `delivered_samples`),
+  `test/xgmii/arrival.ml` (`cycles`), `test/xgmii_rx_64/test_m03_c.ml`,
+  `test_m03_e.ml`, `test_m03_f.ml` (the seven green rows' own titles).
+- **RTL, opened deliberately and declared**: `libs/hardcaml_ethernet/src/
+  xgmii_rx_64.ml` lines 135–148, 341–353, 361–364, 380–398, 470–479, 502. Opened
+  **only** to adjudicate FINDING A-1 — why I-c1 produced no family-I red — and
+  only after the seal was frozen in history and the bench proven byte-identical
+  to its base blob at every mutant (`git diff 42b9df3 mut/... -- test/` empty,
+  ten for ten). `WO-0061` §0.1 rules this exposure safe by **ordering**: the
+  bench that judged these mutants froze at a SHA strictly earlier than any RTL it
+  judged, and that is structural here rather than argued. **No test was written
+  or edited in this spawn; no bench file is staged.**
+
+### Reasoning
+
+**Why the headline is a kill count of nine and not ten, and why that is the seal
+doing its job rather than an excuse.** I-c1's mandatory disclosure answered the
+third standing clause's question (c) — does the gate fire on a **lane-0 terminate
+character** — with **YES**. `SEALED` §5.8 enumerated that as **branch (iv)**,
+called it *"the dangerous one"*, and fixed its adjudication before any diff
+existed: a diff disclosed under (iv) *"is scored as the class not seeded as
+specified — a scope report, not a bench result — and no claim about any row is
+made from it in either direction."* I wrote that clause because a gate on "any
+input word covering no frame octet" fires on a **gapless** event present in every
+family, so its row set is one the seal cannot enumerate. It fired exactly as
+feared: I-c1's only reds are T-F1, T-F2 and T-G7, all gapless, all in families
+the class was never aimed at. **Applying my own clause costs me a kill and buys
+the scorecard its integrity**, and the alternative — counting three unpredicted
+reds in unrelated families as a kill for a class targeted at REQ-108 under
+injection — is precisely the `RV-0055` inflation this programme has already paid
+for once.
+
+**The central question, and why I am comfortable ruling against my own row.**
+`WO-0061` §4.3 made M03-I2's qualification ride on one class and made the
+**offset** decide what a kill there proves. The seal wrote two branches for that
+one cell — the only two-branch cell in the file — precisely so the answer could
+not be constructed after the fact. Neither branch occurred. What occurred is
+worse for the row than either: it reddened on `tuser`, a clean-frame FCS verdict
+that twenty-two other units raised in the same run, and its silent-tail scan at
+`:501` was never evaluated because `:474` raised first. And the offset is not a
+matter of derivation any more — **M03-A3's strobe-monitor report prints
+`observed: error_runt@11`** for a 64-octet lane-0 frame terminating at cycle 10,
+so the pulse is at **+1** and M03-I2's boundary is **13**. Two independent
+grounds, and they agree: the window could not have seen it, and the row never
+reached the window. §4.3 item 3 forbids crediting the window with what an earlier
+assertion caught first. **UNQUALIFIED**, recorded in the packet in those words.
+
+**The part of that ruling worth carrying forward is not the verdict but its
+generality.** The manifest's §6 judgement-call 4 says a `+3`-or-later rendering
+*"was available only by delaying the strobe — a defect in the report path rather
+than in the threshold comparison — which is a different class"*. That is right,
+and it converts a one-round disappointment into a transferable coverage fact:
+**M03-I2's tight window is unfalsifiable by any threshold-class defect**, because
+§9 pins epoch A's consumption to the `tlast` cycle or age 2 and both lie inside
++0…+2 at every length and both start lanes. The row is not weak; it is aimed at a
+defect class no campaign has yet constructed. That is a work order, not a repair.
+
+**Why FINDING A-1 required opening the RTL, and why I judged that admissible
+rather than convenient.** I-c1 came back with the whole of `test_m03_i.ml`
+green — including M03-I6's 1518-octet member, the one cell the class exists to
+reach — while the auditor's disclosure asserted the REQ-108 crossing happens
+*"with an enormous margin"*. Two readings were available: the bench is blind to a
+truncated maximum-length frame (a CRITICAL finding against me), or the mutant is
+observationally equivalent to the base design on the injected half (a finding
+against the disclosure). **Those are not distinguishable from the log**, and
+guessing between them would have been the exact vice §4.2 exists to prevent. The
+design settles it in two lines: `a_close_oversize` requires
+`cap_end <: a_hold_end`, and on an all-idle in-frame word `a_hold_v` is `0xFF` so
+`a_hold_end` is **0** — truncation is structurally impossible on precisely the
+cycles the mutation inflates; and `cap_room` is an unsigned 11-bit subtraction
+(`count_bits = 11`) that **underflows** the moment `count` passes 1518, after
+which `cap_end` saturates at 8 forever. With the count stepping by exactly 8 the
+single cycle at which `cap_room` lies in [1,7] is `count` = 1512 = 8 × 189, and
+189 ≡ 5 (mod 8) puts it on a held cycle. **The bench is right and the disclosure
+is wrong**, and the manifest's own I-c3 entry states the deciding fact one class
+away. I would rather spend a declared RTL read than ship an unresolved CRITICAL.
+
+**FINDING S-1 is the one I am least comfortable with, and it is arithmetic I had
+the file open to check.** The seal read `drain = injected + 8` as *"1331 drain
+cycles"* of trailing idle at M03-I6's 1518 member. `Bench.run` computes
+`total = Arrival.cycles sched + drain`, and `Arrival.cycles` is a function of the
+**source** schedule alone — the injected words eat the drain from the inside, so
+the true tail is **8 cycles**, which is exactly what `injected + 8` was written
+to produce. I had both files open when I wrote the seal and read the formula
+without reading its consumer. The corrected inventory is stark and useful: the
+suite's idle runs are **1001, 100, and 8** — nothing else. So no threshold
+whatever reaches T-I6 or T-I4, §5.7's table is wrong at four branches, and the
+observed row set {T-I1} matches none of them. **The correction is also the
+campaign's best news**: it makes M03-I1's 1001-cycle prefix the *only* place in
+the repository where a T > 100 defect can be seen, which is a stronger claim than
+`SEALED` §6 bound 3 dared hope for and which I could not have made without being
+wrong first.
+
+**FINDING S-2, and the discipline it indicts.** Every I-c10 message in the seal
+is a strobe check; four of the five rows check `tuser` first. I had derived that
+exact ordering **one section earlier**, for I-c2, quoting the line numbers. The
+failure is not analysis, it is **re-use**: I worked M03-I4's baseline cell (which
+is why that one matched character for character) and pattern-matched the other
+four from the class's name. `RV-0055` FINDING G-1 was "a cell asserted from a
+category with the discriminating quantity unchecked"; GH-1 was the same error one
+campaign later. **This is the third instance of that species and the first where
+the discriminating quantity was already written down in my own file.** The bench
+note owed at the next `test/**` touch is not decoration — it is where this stops
+being repeated.
+
+**Why the seven I-c10 greens are not row findings, against `SEALED` §4(e)'s own
+rule.** §4(e) fixed that a green at an UNWORKED cell *"is a FINDING … adjudicated
+per row"*. Adjudicating them per row is what changes the answer: T-E1/E2/E5 close
+under `/E/`, where `a_close_terminate` is low; T-C4, T-F1, T-F2 and T-F3 are
+**already runts**, where the mutation is the identity. Both facts are in the
+auditor's disclosure verbatim. The rows are blind to nothing. The finding belongs
+to §4(e)'s trigger derivation — "a frame closes" instead of "a frame closes on
+`/T/` and its true count is ≥ 64" — and I-c10's true reach is **28 units, not
+35**. A rule that says "a green is a finding" has to be willing to conclude the
+finding is against the rule.
+
+**What I did not do.** I did not edit the SEALED file, now or ever; all eight
+falsified cells stand frozen and the verdict block is the correction of record.
+I did not open a bench file for editing — `WO-0061` §4.5's closing clause defers
+the notes to the next round that opens `test/xgmii_rx_64/`, and this round opens
+none. I did not add attack-plan rows for the two coverage gaps the result earns;
+on the WO-0058 precedent they are footnoted here and added by the round that can
+also test them. And I did not offer `SO-xgmii_rx_64.md`: §7's arithmetic is
+unchanged at 38 of 62 ASSERT rows.
+
+### Actions
+- Read the seal for the first time, then the manifest in full, then the ten
+  harvest logs; recovered and `sha256`-verified every promoted source from the
+  runs' own PROMOTION BLOCKs to fix the failing-unit sets exactly.
+- Re-executed `WO-0061` §0.1's mechanical independence check on all ten branches.
+- Scored every class against its sealed REQUIRED cells on the branch its
+  disclosure selects; applied §5.8(iv) to I-c1, §4(e) to I-c10's thirty UNWORKED
+  cells, §4(g) to I-c9, §4.4 to every M03-I4 cell and §4.5 to M03-I1/I3.
+- Tested all four pre-named collision rules against the observed messages.
+- Opened six sites in the M03 source to adjudicate A-1 (declared above).
+- Appended `WO-0061-VERDICT` (sections 0–12) to the campaign packet.
+
+### Evidence
+- Independence, ten for ten:
+  `for c in 1 2 3 4 5 6 7 8 9 10; do git diff 42b9df3 mut/wo-0061-i-c$c -- test/ | wc -c; done`
+  → `0` ×10; `git rev-list --count 42b9df3..mut/wo-0061-i-c$c` → `1` ×10;
+  `git diff --name-only 42b9df3 mut/wo-0061-i-c$c` →
+  `libs/hardcaml_ethernet/src/xgmii_rx_64.ml` ×10.
+- Seal unedited: `git diff --stat 61eb242 -- agents/handoffs/WO-0061_family-i-mutation-campaign-SEALED-predictions.md`
+  → empty.
+- Failing-unit sets (from each run's PROMOTION BLOCK, digests verified):
+  i-c1 {M03-F1, M03-F2, M03-G7}; i-c2 {M03-I4, M03-I6}; i-c3 {M03-I4, M03-I6};
+  i-c4 {M03-I4, M03-I6}; i-c5 {M03-I4, M03-I6}; i-c6 {M03-I4, M03-I6};
+  i-c7 {M03-I4, M03-I6}; i-c8 {M03-I1}; i-c9 {M03-I3};
+  i-c10 28 M03 units red, 7 green (M03-C4, E1, E2, E5, F1, F2, F3), T-ST green.
+  **No file outside `test/xgmii_rx_64/` promoted on any branch** — 800 non-M03
+  must-stay-green cells clean.
+- The decisive measurement for §3: i-c10's `test_m03_a.ml` block raises
+  `M03-A3 (length 64) lane 0: strobe monitor unclean: … observed: error_runt@11`
+  on a frame whose terminate word is at cycle 10 → **offset +1**, against
+  M03-I2's boundary of 13.
+- The measurement behind S-1: `bench.ml:190` `let total = Arrival.cycles sched + drain in`
+  with `arrival.ml:119–126` `((terminate_octet_time last + t.ifg + 7) / 8) + 1`.
+- The measurement behind A-1: `xgmii_rx_64.ml:148` `let count_bits = 11`,
+  `:342` `let cap_room = of_int ~width:count_bits oversize_threshold -: count`,
+  `:361–362` `a_close_oversize = a_open &: (cap_end <: a_char_end) &: (cap_end <: a_hold_end) &: (cap_end <:. 8)`.
+- Verdict block: `agents/handoffs/WO-0061_family-i-mutation-campaign.md`,
+  `## WO-0061-VERDICT` onward; per-class scorecard in its §1, headline numbers in
+  its §11.
+
+### Outcome
+DoD met. **Kills 9 of 9 scoreable classes** (10 of 10 branches red; I-c1 a scope
+report under `SEALED` §5.8(iv)). **42 of 50 sealed REQUIRED cells met**, 8
+falsified and standing unedited. **Zero MUST-STAY-GREEN violations** in either
+denominator (274 M03 cells, 800 non-M03). **Qualified: M03-I1, M03-I3, M03-I4,
+M03-I6. NOT QUALIFIED: M03-I2.** Six findings — four against my seal (S-1…S-4),
+one against the auditor's I-c1 disclosure (A-1), two credits (A-2, A-3) — and
+**none against any bench row**. `WO-0061` §4.2's CRITICAL-against-dv_lead branch
+is **closed** by I-c5's death at both units. `SO-xgmii_rx_64.md` does not issue:
+38 of 62 ASSERT rows discharged, families J/K/M/N and L1–L5 unwritten, the
+verilog-ethernet anchor undischarged. Handoff: this packet to the orchestrator;
+A-1 to the auditor as a disclosure finding via the orchestrator.
+
+### Open-questions
+1. **M03-I2 needs a report-path-delay class to qualify** — a strobe whose
+   consumption is deferred past age 2, which no threshold-class defect can
+   produce. A one-class mini-round on the WO-0042 precedent; the orchestrator's
+   to schedule.
+2. **`WO-0061` §8 bound 1 ends half measured.** The delivered-octet instrument
+   at an injected run is exercised (I-c6); the `tkeep` instrument is not, because
+   its only carrier was I-c1's wide branch and I-c1 is void. Closing it needs a
+   delivered-extent class gated on injection that does **not** touch the lane-0
+   terminate — a scope decision, not a re-run.
+3. **M03-I6's 1518-octet member is unexercised by every class this campaign could
+   construct**, and M03-I4's `tkeep`, delay-identity, front-offset and cross-run
+   instruments remain unreachable by construction (§8 bound 2).
+4. **Five bench notes now owed** at the next round that opens
+   `test/xgmii_rx_64/`: `J-dv_lead-0094`'s two, plus the `tuser`-before-strobe
+   ordering (S-2), the M03-I6 1518-member gap, and the `drain = injected + 8`
+   reading (S-1).
+5. **Two attack-plan rows earned, footnoted not added**: a prolonged-idle row
+   with a threshold below 100 cycles, and a report-path-delay row for M03-I2.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0061_family-i-mutation-campaign.md
