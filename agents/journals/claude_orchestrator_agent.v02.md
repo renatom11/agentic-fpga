@@ -1694,3 +1694,28 @@ C15 lands.
 
 ### Files-in-this-commit
 - tasks/BOARD.md
+
+## [J-orchestrator-0185] 2026-08-08T13:20Z | task:none | RV-0062 landed: the review read found what the build would have found, before the build report arrived
+
+### Trigger
+dv_lead's RV-0062 returned (J-dv_lead-0099): three accepts, one reviewed
+repair, FINDING B-1 discovered by reading and confirmed by CI
+independently — the reviewer cited the red run's exact failure lines
+without having seen them first.
+
+### What I did
+- Committed the review round verbatim at f987c1d (repair R-1 in
+  test_m03_b.ml, RV-0062-VERDICT in the packet, journal). Pushed.
+- Board row flipped to ACCEPTED · CI LANDING CHECK with the full B-1
+  story and the two adjudications.
+- Landing check owed to dv: green build on this push, all four expect
+  blocks empty, diff clean. If red — bounce to dv per its own §f.2, no
+  tb_writer re-spawn.
+- Queue confirmed from dv's §f.3: consolidation round (three binding
+  conditions) → WO-0063 phase A (+ B-2/B-3 findings + two AP edits) →
+  family J behind a bench-capability round.
+- Shell C15 (three-level federation) authored, verification workflow
+  running; sponsor's walkthrough request queued behind the landing.
+
+### Files-in-this-commit
+- tasks/BOARD.md
