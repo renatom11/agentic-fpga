@@ -520,18 +520,70 @@ a frame that delivers at least one octet.
    Nothing about the design is free here: its offset from D(m) is what the drain
    derivation below pins, and an earlier emission would put `tkeep`, `tlast` and
    `tuser` ahead of the evidence that decides them.
-2. **Every output word, at a lane-4 start.** Frame octets 0–3 lie in lanes 4–7 of
-   the word after the start word and octets 4–7 in the next (the paragraph above),
-   so **every** output word is assembled from two input words — h = 12 is not a
-   multiple of 8, which is §0.5's straddle test — and the wrapper's first legal
-   site falls between them. Octets 8m … 8m+3 and octets 8m+4 … 8m+7 arrive one
-   injected gap apart, the word leaves whole because REQ-011 gives no encoding for
-   half a word, and its octets therefore measure **L + 16k and L + 8k in one
-   word** — **28 and 20 at k = 1**, the two halves of a single output word. *The
-   figures previously stated here, 20 and 12, were this same split read against
-   the withdrawn D(m); the split is the point and is unchanged, its arithmetic is
-   re-based (`J-architect_docs_lead-0025`).* No conformant design can do
-   otherwise; equalising them would require splitting the word.
+2. **The straddle at a lane-4 start, and the `tlast` word by residue.** *(The
+   heading previously read "**Every** output word, at a lane-4 start"; that
+   universal is what F-1 below convicts.)* Frame octets 0–3 lie in lanes 4–7 of
+   the word after the start word and octets 4–7 in the next (the paragraph
+   above), so an output word carrying **more than four** octets is assembled from
+   two input words — h = 12 is not a multiple of 8, which is §0.5's straddle
+   test — and the wrapper's first legal site falls
+   between them. For a **non-`tlast`** word, octets 8m … 8m+3 and octets
+   8m+4 … 8m+7 arrive one injected gap apart while D(m), the word carrying octet
+   8m + 12, is one gap later still; the word leaves whole because REQ-011 gives no
+   encoding for half a word, and its octets therefore measure **L + 16k and L + 8k
+   in one word** — **28 and 20 at k = 1**, the two halves of a single output word.
+   No conformant design can do otherwise; equalising them would require splitting
+   the word.
+
+   **The `tlast` word does not follow that split, and at seven of the eight
+   residues it is not what this item used to claim** (dv_lead, **F-1** against
+   `J-architect_docs_lead-0025`). Its D is the closing character's word — call it
+   T — and not an octet four beyond its own, so item 1's rule governs it: an octet
+   measures **L + 8k′** for the k′ idles injected between its own input word and
+   D. Under a uniform wrapper at k that is derivation 1's residue table read at
+   lane 4, and nothing else:
+
+   | r = N mod 8 | the `tlast` word's delivered octets | where they lie | they measure |
+   |---|---|---|---|
+   | 0 | bytes 0–3 (four octets) | the word before T | **L + 8k** = 20 at k = 1 |
+   | 1, 2, 3 | bytes 0–3, then bytes 4 … r+3 | bytes 0–3 in the word before T; bytes 4 … r+3 in **T itself** | **L + 8k** and **L** = 20 and **12** |
+   | 4 | bytes 0–7 (a full word) | bytes 0–3 two words before T, bytes 4–7 one | **L + 16k** and **L + 8k** = 28 and 20 — the split above |
+   | 5, 6, 7 | bytes 0 … r−5 (r − 4 octets) | the word before T | **L + 8k** = 20 at k = 1 |
+
+   Only r = 4 puts a **full** `tlast` word two input words behind its own closing
+   character, so only there is the split of the preceding paragraph the `tlast`
+   word's own arithmetic; at the other seven residues that word is short, and
+   reading the split onto it overstates its octets by 8k. The r ∈ {1, 2, 3} row is
+   derivation 1's set read at lane 4: the closing character's word is later than
+   the word carrying the last delivered octet at r ∈ {0, 4, 5, 6, 7}, so its
+   complement {1, 2, 3} is exactly where the last delivered octets **share** the
+   closing character's word and are separated from their evidence by no injected
+   idle at all — the mirror of the lane-0 r ∈ {5, 6, 7} case item 3 states, which
+   is why both items state it or neither is right. The table holds at every length
+   delivering at least one octet, single-output-word frames included.
+
+   **What that costs a reader, in classes.** A frame of at least two output words
+   measures **three** values at r ∈ {1, 2, 3} — `{L, L + 8k, L + 16k}`, so
+   `{12, 20, 28}` at k = 1 and `{12, 68, 124}` at k = 7 — and **two**,
+   `{L + 8k, L + 16k}`, at the other five residues, the `tlast` word contributing
+   no value the non-`tlast` words do not already carry there. §8's directed set
+   puts the three-class case at lane-4 lengths **65, 66 and 67**, which §10's
+   REQ-016 hook drives at k = 1 and k = 7, so this is printed output on the next
+   run and not a corner: a bench built from this item's previous wording would see
+   three reported values where it predicted two and read a conformant design as
+   divergent. As everywhere in this item the values are **reported** and SHALL NOT
+   be asserted (§0.5, item 3).
+
+   *Provenance of the two corrections this item has now taken. The figures 20 and
+   12 it first carried were this split read against the withdrawn D(m), and were
+   re-based to 28 and 20 at `J-architect_docs_lead-0025`; that ruling left the
+   **scope** at "every output word", which is false for the `tlast` word at every
+   residue but 4 — the cell dv_lead refused as numerically incomplete (**F-1**,
+   `J-dv_lead-0086`), verified independently and repaired at
+   `J-architect_docs_lead-0026`. The arithmetic above is F-1's own in every cell;
+   only the wording is mine, F-1's offered "the split otherwise" being itself
+   inexact at r = 0 and r ∈ {5, 6, 7}, where the `tlast` word measures L + 8k and
+   not the split.*
 3. **There is no case in which it survives, and the carve-out this item used to
    state is withdrawn.** The previous text held that at a **lane-0** start with
    r ∈ {5, 6, 7} neither reason applied — h = 8 straddles nothing and the terminate
@@ -1174,3 +1226,4 @@ interface.
 | 2026-08-06 | **The §0.6 window's reference word generalised upward** — dv_lead's `WO-0057` §3.2 and §7 question 1 (the same question routed twice, once at family H's design and once in `RV-0057-VERDICT` Finding 2) asked whether the M03-G6 ruling's principle reaches **any** zero-delivered closure. requirements.md §0.6 gains the general rule and this section gains one paragraph recording it: the reference word is the last octet the frame **received while open**, a closing control character is not one of its octets and an octet that closes by count is, and a frame that closed before any octet of it arrived takes its closing word. The paragraph also records the lane-4 arithmetic that makes the **received** reading the one under which this section's own truncation-word answer holds, and re-states that a one-to-four-octet frame is not in the zero-received class | no | none — **no design choice is made**: §9's own two pinning rules and its closure list are untouched, every cycle this section pins is unchanged, and the rule requirements.md now states is the one the M03 bench has computed since family E (`test/xgmii/injection.ml`'s `window`). requirements.md §0.6 is **normative**, so that diff carries dv_lead's re-countersignature; this row is the module-side restatement and inherits nothing further | `J-architect_docs_lead-0023` |
 | 2026-08-04 | **SCR-M03-I4 ruled — §7's per-octet constant does not survive idle injection, and §6.1 now names the quantity that does.** dv_lead's `RV-0059-VERDICT` §6 derived that requirements.md §0.5's gapped-stimulus paragraph, REQ-016's verification column and this section's *"because §7's per-octet constant does"* are jointly unsatisfiable with REQ-011 and REQ-103/REQ-104 for k ≥ 1. Ruled at requirements.md §0.5 (**deciding input word**; the per-output-event delay as the gap-invariant quantity; the straddle and late-decision tests) and landed here at four sites: §6.1's consequence-1 scope note keeps its rule and **loses its justification**, which is withdrawn as false; §6.1's C-14.4 qualifier loses the sentence *"the per-octet constant of §7 holds on every stimulus"*, also withdrawn as false; §6.1 gains **D(m) for this module** — the input word carrying output word m's last octet, the **terminate character's** word for the `tlast` word — with the two structural derivations at both start lanes (`tlast` separation by residue; the lane-4 straddle) and the one case where the constant *does* survive (lane 0, r ∈ {5, 6, 7}); §7's handshake bullet and §10's REQ-016 hook state the achievable observable and forbid the unachievable one | no — **no conformant design moves and no committed test changes meaning**. Every cycle this specification pins is byte-unchanged, the two constants of §7 are unchanged (they are pinned on a gapless stimulus and the freeze evidence measures them there), families A–H and M03-I1/I2/I3 are gapless and assert exactly what they asserted, and the only committed units that drive intra-frame idles at the DUT are M03-I4/I6, which are **RED and BOUNCED** at this SHA. What changes is what a bench may assert, which is the C-41 and REQ-014-hook shape rather than a behavioural one; the design's own answer — word 0 on cycle 4 at the failing member — is the one this text now describes | none — **the correction is forced, not chosen**: the retired claim is arithmetically impossible, not merely rejected, so there is no live alternative for an ADR to record, and nothing in PROTOCOL, a charter or an enforcement script moves. requirements.md §0.5 is normative, so **that** diff carries dv_lead's re-countersignature (requirements.md §13); this row is the module-side restatement and inherits it | `J-architect_docs_lead-0024` |
 | 2026-08-04 | **rtl_lead's E5 RULED — D(m) is the evidence word for every output word, and the non-`tlast` clause of the `a77017c` ruling is replaced as unsatisfiable.** `BUG-0002`'s Root-cause response fixed the `tlast`-on-word-0 defect (last-ness gated on the closure record) and, doing so, exposed that §6.1's own D(m) demanded hindsight for **non**-`tlast` words. Verified and sharpened here, then landed at four sites: §6.1's D(m) becomes one object — **received frame octet 8m + 12, or the character that closes the frame, whichever arrives first** — with the proof that (a) decides exactly the non-`tlast` words and (b) exactly the `tlast` word, the two-frame refutation at lengths 64/69 and 64/12, the per-lane offsets (1 and 0 for (a), 1–2 and 0–1 for (b)), and the two consequences a reader checks (nothing gapless moves; a word whose D(m) has not arrived is not emitted, `tvalid` = 0, REQ-019's two-word bound untouched because word m + 1's octets complete no earlier than D(m)); §6.1's "why the constant does not survive" **item 3 withdraws its r ∈ {5, 6, 7} survival carve-out** — under the new D that case has two L classes and r ∈ {0…4} under a uniform wrapper has one, the exact inversion of what it promised, so M03 fails §0.5's late-decision test everywhere and no measured per-octet value may be asserted; §6.1's consequence-1 scope note is repaired — **W is the named word in all six rows**, including the two previously read against the word before it, so an injected idle moves both reports together and the coincidence column is unchanged at every k; §7's handshake bullet states the same contract and the withdrawal | no — **no interface, no port, no record, and no gapless cycle moves**: re-derived over N = 5…199 at both start lanes, k = 0 reproduces every pinned cycle exactly (`m + 3`, L = 16/12, ΔC = 3, the drain window, §9's strobe cycles), and **no `tlast` word's cycle moves at any k**. Behavioural under **injection** for the non-`tlast` words, and said so plainly rather than as an editorial claim: M03-I4's word 0 moves to cycle 5 at k = 1 and 11 at k = 7. Those units are RED and HELD at this SHA, so nothing committed and green changes meaning. The design consequence — M03 must hold a completed word until its evidence arrives — is a **DESIGN** consequence of an observable contract, and lands as a follow-on work order for rtl_lead and dv_lead, not in this diff | none — requirements.md §0.5 is where the rule lives and its §13 row carries the full class, countersignature and no-ADR argument (option 2, narrowing REQ-016 at an XGMII port, is charter §7 **E2** and not the architect's to take in-role, so this was a choice between one option and an escalation). This row is the module-side landing and inherits that diff's **countersignature condition: not in force until dv_lead's re-countersignature is transcribed** | `J-architect_docs_lead-0025` |
+| 2026-08-04 | **FINDING F-1 RULED — VERIFIED and repaired: §6.1 item 2's lane-4 split is the **non-`tlast`** words' arithmetic, and the `tlast` word now carries its own residue table.** dv_lead countersigned the `1f3c04c` D(m) ruling three points in full and **REFUSED the lane-4 class cell** as numerically incomplete (**F-1**, the COUNTERSIGNATURE block of `agents/handoffs/BUG-0002_m03-idle-injection-tlast-on-a-non-final-word.md` at `a8ca14d`, `J-dv_lead-0086`; requirements.md §13's transcription row records it outstanding). Re-derived here from §0.5's octet-time definition and this section's own geometry rather than from the finding: at a lane-4 start an octet of output word m measures L + 8k′ for the k′ wrapper boundaries between its own input word and D(m), and the `tlast` word's D is the closing character's word T, which sits **one** word behind its octets at r ∈ {0, 1, 2, 3, 5, 6, 7} and two only at r = 4. Hence bytes 0–3 measure **L + 8k** and not L + 16k at seven of the eight residues, and at r ∈ {1, 2, 3} the further bytes 4 … r+3 lie in **T itself** and measure **L**, giving a **third** class `{12, 12+8k, 12+16k}` — `{12, 20, 28}` at k = 1, `{12, 68, 124}` at k = 7 — at directed lengths **65, 66 and 67**, inside §8's own set and §10's REQ-016 hook. Every cell of dv_lead's table reproduces exactly; **its offered wording does not and is declined** — "the split otherwise" is refuted by F-1's own r = 0 and r ∈ {5, 6, 7} sentences, so the numbers are adopted and the phrasing derived fresh. The repair is one paragraph plus a four-row table inside item 2 | no — **nothing moves but a description**: D(m) is untouched, no cycle this specification pins moves at any k, no requirement, port, record, `Interface` field or REQ hook changes, and no conformant design changes. The values corrected were never assertable — §0.5 and item 3 bar demanding a per-octet L under injection and M03-I4 reports rather than asserts them — so **no committed test changes meaning and nothing goes red or green by this row**; what changes is what a reader, or a bench built from this item, would predict on printed output | none — **the defect does not reach requirements.md §0.5** and that is a derivation, not a convenience: §0.5's straddle and late-decision bullets, its "no surviving residue class" verdict on M03 and its monitor prohibition are each true as written under this repair, and §0.5 delegates this detail in terms ("*SPEC-M03 §6.1 states the residues*"), so the false sentence was homed here and is repaired here. No design alternative existed to record: item 2 was wrong about arithmetic, not about a choice. **Countersignature class — the refusal *is* the review, and no new dv_lead signature is owed**: this row repairs a cell dv_lead itself refused, to values dv_lead itself derived and published in a committed, signed artefact, so a further countersignature would be dv_lead signing its own derivation back to itself. That standing holds because the repair (i) departs from F-1's numbers in no cell, (ii) moves no rule, cycle or requirement, and (iii) does not reach normative programme-wide text; a repair failing any of the three would owe the signature under the `J-architect_docs_lead-0025` row's own condition. Dispute of any cell of the new table is a **fresh finding**, not an unsigned condition on this row — it is in force on commit. dv_lead is owed **notification**, not signature: F-1 is discharged and its `AP-xgmii_rx_64.md` M03-I4 repair may state the three-class case | `J-architect_docs_lead-0026` |
