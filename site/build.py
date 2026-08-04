@@ -55,11 +55,16 @@ wo_rows.sort(key=lambda r: int(r[0][3:]), reverse=True)  # T6/D5: newest id firs
 
 n_attack = 0
 plans = set()
+assert_ids = {}   # base -> set of row ids the plan marks ASSERT
 for ap in os.listdir(os.path.join(ROOT, 'test', 'attack_plans')):
     if ap.startswith('AP-') and ap.endswith('.md'):
-        plans.add(ap[3:-3])
-        n_attack += len(re.findall(r'^\| \*\*M\d{2}-[A-Z]\d+\*\*',
-                                   open(os.path.join(ROOT, 'test', 'attack_plans', ap)).read(), re.M))
+        base = ap[3:-3]
+        plans.add(base)
+        aptxt = open(os.path.join(ROOT, 'test', 'attack_plans', ap)).read()
+        n_attack += len(re.findall(r'^\| \*\*M\d{2}-[A-Z]\d+\*\*', aptxt, re.M))
+        assert_ids[base] = set(
+            m.group(1) for m in re.finditer(
+                r'^\| \*\*(M\d{2}-[A-Z]+\d+)\*\*.*\| ASSERT \|$', aptxt, re.M))
 
 # ---- module matrix, derived from the trees (H1) -----------------------------
 MODULES = [
@@ -85,7 +90,25 @@ for mid, name, base in MODULES:
     benchdir = os.path.join(ROOT, 'test', base)
     bench = os.path.isdir(benchdir) and any(
         f.startswith('test_') and f.endswith('.ml') for f in os.listdir(benchdir))
-    MODS.append((mid, name, spec, rtl, plan, bench))
+    # Verified = attack-plan ASSERT rows discharged by the bench: named in an
+    # expect-test title, or discharged by citation. Same derivation dv_lead's
+    # count uses; a signed SO- packet flips the cell to a check.
+    ver = None
+    if plan and bench:
+        named = set()
+        for f in os.listdir(benchdir):
+            if f.startswith('test_') and f.endswith('.ml'):
+                t = open(os.path.join(benchdir, f)).read()
+                for m in re.finditer(r'let%expect_test', t):
+                    named |= set(re.findall(r'(M\d{2}-[A-Z]+\d+)', t[m.end():m.end()+300]))
+                for line in t.splitlines():
+                    if 'discharged by citation' in line:
+                        named |= set(re.findall(r'(M\d{2}-[A-Z]+\d+)', line))
+        aset = assert_ids.get(base, set())
+        signed = any(f.startswith('SO-') and base in f
+                     for f in os.listdir(os.path.join(ROOT, 'agents', 'handoffs')))
+        ver = (len(named & aset), len(aset), signed)
+    MODS.append((mid, name, spec, rtl, plan, bench, ver))
 n_rtl = sum(1 for m in MODS if m[3])
 n_spec = sum(1 for m in MODS if m[2])
 assert n_spec == 20, n_spec
@@ -261,6 +284,7 @@ a.card .go { font-family:'Plex Mono',monospace; font-size:.74rem; color:var(--rx
 .phase h3 { margin:0 0 .2rem; font-size:.98rem; }
 .phase p { margin:0; font-size:.86rem; color:var(--ink-2); }
 .mtable { overflow-x:auto; }
+.mtable td.p { color:var(--accent); white-space:nowrap; }
 table { border-collapse:collapse; font-size:.82rem; min-width:640px; }
 th, td { text-align:left; padding:.4rem .7rem; border-bottom:1px solid var(--line); }
 th { font-family:'Plex Mono',monospace; font-size:.68rem; letter-spacing:.08em;
@@ -443,10 +467,18 @@ phases_html = ''.join(
 def cell(v):
     return '<td class="y">✓</td>' if v else '<td class="n">—</td>'
 
+def vcell(ver):
+    if ver is None:
+        return '<td class="n">\u2014</td>'
+    n, m, signed = ver
+    if signed:
+        return '<td class="y">\u2713</td>'
+    return f'<td class="p mono">{n}/{m}</td>'
+
 mrows = ''.join(
     f'<tr><td class="mono">{mid}</td><td class="mono">{name}</td>'
-    + cell(spec) + cell(rtl) + cell(plan) + cell(bench) + '</tr>'
-    for mid, name, spec, rtl, plan, bench in MODS)
+    + cell(spec) + cell(rtl) + cell(plan) + cell(bench) + vcell(ver) + '</tr>'
+    for mid, name, spec, rtl, plan, bench, ver in MODS)
 
 def clean_cell(text):
     # T7: markdown links degrade to bare text while the repo is private.
@@ -482,9 +514,10 @@ backlog = head_block('agentic-fpga — backlog & progress',
     <dt>rtl built</dt><dd>the hardware code is written and compiling</dd>
     <dt>test plan</dt><dd>the catalogue of ways testers will try to break it</dd>
     <dt>benches</dt><dd>those tests actually running against the hardware code</dd>
+    <dt>verified</dt><dd>how many of the test plan's assertions the benches have discharged so far &mdash; a check only lands with the module's signed-off verification, which no module has yet</dd>
   </dl>
   <div class="mtable"><table>
-    <tr><th>id</th><th>module</th><th>spec frozen</th><th>rtl built</th><th>test plan</th><th>benches</th></tr>
+    <tr><th>id</th><th>module</th><th>spec frozen</th><th>rtl built</th><th>test plan</th><th>benches</th><th>verified</th></tr>
     {mrows}
   </table></div>
 

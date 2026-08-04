@@ -1223,3 +1223,46 @@ None new.
 
 ### Files-in-this-commit
 - (none)
+
+## [J-orchestrator-0174] 2026-08-04T15:55Z | task:none | The backlog's checkmarks no longer overstate - a verified column, derived not asserted
+
+### Trigger
+Sponsor, reading the live module table: "If M03 is still
+under test why does it have all checkmarks?" The four columns
+were existence checks and honest as such - but a row of
+checks reads as done, and for the one module where
+verification is the entire current program, that reading was
+wrong.
+
+### Reasoning
+Added a fifth column, verified, derived from the trees like
+the others: the module's attack-plan ASSERT ids intersected
+with ids named in expect-test titles or discharged by
+citation - the same derivation dv_lead's count uses - shown
+as n/m; a checkmark only when a signed SO- packet for the
+module exists, which none does. The build reproduces dv's
+number exactly (M03: 38/62) with no hand-carried figure.
+Legend row added stating the semantics.
+
+### Actions
+build.py patch; rebuild; this commit; push; sponsor told to
+redeploy.
+
+### Evidence
+The rendered cell (class p, 38/62); dv's J-dv_lead-0092
+count re-derivation it matches.
+
+### Outcome / DoD
+The table now reads true at a glance: M03 fully built, 61
+percent verified, signed off never before it is signed off.
+
+### Open questions
+None.
+
+### Files-in-this-commit
+- site/build.py
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/index.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html
