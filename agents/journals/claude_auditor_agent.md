@@ -2600,3 +2600,190 @@ have seen none of them and will see none before the seal is opened.
 
 ### Files-in-this-commit
 - docs/reports/audit/WO-0061-mutations/README.md
+
+## [J-auditor-0012] 2026-08-04T17:10Z | task:WO-0061 | A-1 accepted: I-c1's reachability disclosure re-derived and refuted by my own arithmetic; the defect is fan-out reasoning standing in for a gate evaluation
+
+### Trigger
+Orchestrator spawn, scoped round: respond to `FINDING A-1` in
+`WO-0061-VERDICT` (dv_lead, `J-dv_lead-0097`, committed at `0929f3d`), which
+finds against my own I-c1 mandatory disclosure. My charter's standard is that
+findings are answered with dispositions, never defended, and this is the first
+finding of the programme against the auditor's own work product.
+
+### Inputs
+- `agents/charters/auditor.md`; `agents/PROTOCOL.md` (mandatory first actions).
+- `agents/handoffs/WO-0061_family-i-mutation-campaign.md` in full at `0929f3d`
+  -- §3's intents and standing clauses, §4.1's wide-branch definition, and the
+  VERDICT block: §8 (A-1, A-2, A-3), §10's rulings, §11's denominators, §12's
+  consequences.
+- `libs/hardcaml_ethernet/src/xgmii_rx_64.ml` at `42b9df3`, blob
+  `30ca0385f3106160917ab671c871d774cbaea371`, materialised with `git show`.
+  Read closely: lines 130-160, 236-302, 303-420, 455-510.
+- My own `docs/reports/audit/WO-0061-mutations/README.md` -- §3's I-c1 and I-c3
+  entries, §4.1/§4.2's collected disclosures, §5's verification taxonomy,
+  §6's fidelity ledger -- and my own `J-auditor-0011`.
+- **Not read**: `WO-0061_family-i-mutation-campaign-SEALED-predictions.md`,
+  barred to me during the campaign and permanently after it. Everything I say
+  about the seal is quoted from dv_lead's verdict quoting it, and is cited that
+  way. **Not read**: any file under `test/**`.
+
+### Reasoning
+**Sampling frame.** The frame was one finding, two arithmetic claims, one base
+SHA. Everything in the window was sampled -- there was nothing to select. What I
+chose was the *method*: rather than re-argue the gate in prose a second time
+(the failure mode that produced the finding), I modelled the closed arithmetic
+system `count` -> `cap_room` -> `cap_end` -> `cov_end` / `a_close_oversize`
+directly from the cited base lines and executed it, with the unmutated design as
+the control. What I deliberately skipped: the bench. `test/**` was never opened.
+Where the re-derivation needed a fact about a stimulus (T-F1's start lane) I
+derived it as a *condition* on the arithmetic and labelled it inferred.
+
+**Both of dv_lead's claims verify, and I refute nothing.** `a_hold_end` = 0 on
+an all-idle in-frame word makes `a_close_oversize`'s third conjunct
+`cap_end <: a_hold_end` unsatisfiable at every value of the counter, so the gate
+is dead on precisely the cycles the mutant inflates; and `cap_room` at
+`count_bits` = 11 is an unsigned subtraction that steps from 6 straight to 2046.
+The counter crosses 1518; the truncation does not happen. My disclosed YES was
+false and the void ruling that followed it is correct.
+
+**Where my re-derivation corrects dv_lead, it does not help me, and I recorded
+it anyway.** Its reason 2 says the cap "never binds again for the life of the
+frame". It binds six times -- `count` is itself an 11-bit counter and returns to
+1512 every 256 open-frame cycles (t = 189, 445, 701, 957, 1213, 1469 inside a
+1513-cycle frame). What carries the result is reason 1 extended over all six:
+256 is divisible by 8, so every recurrence keeps residue 189 mod 8 = 5 and lands
+on a held cycle. Had 256 not been divisible by 8 that sentence would have been
+load-bearing in the wrong direction. A-1's ruling is unaffected; my charter's
+falsifiability standard does not have an exception for findings I am the subject
+of.
+
+**The correction that matters for the next round is worse for me than A-1 is.**
+Sweeping the injection depth: the same mutant on the same 1518-octet frame
+**does** fire `a_close_oversize` at k in {2,4,6,8,10,12,14} and never at odd k,
+because binds fall at t = 189 + 256j, always odd, and covering words at
+t = 0 mod (k+1). k = 7 is odd. So the class is not structurally unreachable at
+REQ-108 -- it is unreachable *at the wrapper depth the required consequence
+names*. I did not claim something impossible; I claimed a reachability that is a
+function of k without ever evaluating that function.
+
+**Locating the defect rather than confessing to it.** Four sites, all mine.
+(1) Manifest lines 269-283 trace the mutated signal *outward* -- a fan-out trace
+-- and then assert the consequence. `a_close_oversize` is a four-term
+conjunction; the trace establishes the two terms `count` feeds and never names
+`cap_end <: a_hold_end`, which is not downstream of `count` at all but a sibling
+input contributed by the stimulus. A fan-out trace is structurally incapable of
+seeing it. **Fan-out proves the mutated value reaches the gate; it never proves
+the gate fires.** (2) The claim crossed from arithmetic to behaviour on the word
+"crossing" -- the packet's required consequence is an observable, its own next
+sentence says so, and I answered the counter question. (3) I wrote the refuting
+fact myself at I-c3, manifest lines 536-537 (`a_hold_end` no longer participates
+in `a_close_oversize`), 300 lines from the entry it refutes, visible there only
+because `a_hold_end` was that class's fan-out root. (4) Manifest §5's
+"verified / could not verify" taxonomy has rows for syntax, application,
+serialisation, column margins, vocabulary, types and loops -- every one a
+property of the *diff* -- and no row at all for a *disclosure*, even though the
+packet makes the seal a function of the disclosures. My own `J-auditor-0011`
+lines 2479-2486 show the same shape: the escapes were "tested rather than waved
+past", and what I tested for I-c1 was the counter's total.
+
+**Two rules, not a resolution to be careful.** R-DISC-1: a reachability claim is
+discharged term by term at the firing cycle -- name the gate, quote its complete
+defining expression with line numbers, evaluate *every* conjunct on the stimulus,
+call out the conjuncts contributed by the stimulus rather than by the mutation,
+and where the firing cycle is selected by modular arithmetic state the landing
+condition as arithmetic in k and enumerate the recurrence set rather than
+assuming it unique. Undischarged, the answer is not YES, it is the packet's own
+escape, and I declare NOT SEEDED AS SPECIFIED in the manifest before a seal
+branches on it -- not the adjudicator afterwards. R-DISC-2: gates named in more
+than one class entry are tabulated with their full term lists before delivery,
+and a fact one entry relies on while another contradicts it is a blocking defect
+in the manifest. R-DISC-1 turns I-c1 into a two-line refutation. R-DISC-2 would
+have caught it from the I-c3 side for the cost of a dozen table rows.
+
+**Why a numbered disposition file rather than an audit report.** A-1 is a
+finding against the auditor inside a live campaign directory, and the reader who
+needs it is whoever adjudicates my next manifest. Putting it beside the manifest
+it disposes of, as `DISP-0001`, keeps the artefact and its correction in one
+directory and opens a numbered series for the same event class. It is inside
+`docs/reports/audit/**` either way.
+
+### Actions
+- Re-derived both A-1 claims independently from `42b9df3`, by building an
+  arithmetic model of base lines 148, 243-244, 297-302, 308, 312-318, 328-331,
+  341-351, 353, 361-362, 381-383, 398, 470, 479, 502 and executing it against
+  the unmutated design as control and the I-c1 mutant as subject.
+- Swept injection depth k = 0..15 at both start lanes; reproduced the disclosed
+  gapless reach (the 60-octet runt) without opening `test/**`.
+- Wrote `docs/reports/audit/WO-0061-mutations/DISP-0001_A-1.md`, embedding the
+  model in full so the report is checkable without my scratch files.
+- Staged nothing else. No git command that writes was run.
+
+### Evidence
+Checkout: working tree at `HEAD` = `cbe04d1`; base identity verified as
+unchanged since the campaign base:
+
+    $ git rev-parse 42b9df3:libs/hardcaml_ethernet/src/xgmii_rx_64.ml
+    30ca0385f3106160917ab671c871d774cbaea371
+    $ git rev-parse HEAD:libs/hardcaml_ethernet/src/xgmii_rx_64.ml
+    30ca0385f3106160917ab671c871d774cbaea371
+
+Base lines quoted and confirmed by reading:
+
+    line 148   let count_bits = 11
+    line 342   let cap_room = of_int ~width:count_bits oversize_threshold -: count in
+    line 328   let a_hold_v = other_ctl &: ~:a_pre_mask in
+    lines 361-362
+               let a_close_oversize =
+                 a_open &: (cap_end <: a_char_end) &: (cap_end <: a_hold_end) &: (cap_end <:. 8)
+
+Model executed (the exact source is `DISP-0001_A-1.md` §6; extracted from the
+report with a three-line `re.findall` on the ```` ```python ```` fence and run
+with `python3`, so the report and the run are the same bytes). Observed:
+
+    MUTANT 1518 k=7 lane0: cycles=1513 count_next@close=1862 fired=0
+      binds=[(189,1512,6,'HELD'),(445,1512,6,'HELD'),(701,1512,6,'HELD'),
+             (957,1512,6,'HELD'),(1213,1512,6,'HELD'),(1469,1512,6,'HELD')]
+    BASE   1518 k=7 lane0: cycles=1513 count_next@close=1518 fired=0
+    MUTANT 1518 k=7 lane4: cycles=1521 count_next@close=1918 fired=0
+      binds=[(190,1516,2,'HELD'), ... all six HELD]
+    MUTANT 1518 k=0 lane0: cycles=190  count_next@close=1518 fired=0
+    MUTANT   64 k=7 lane0: cycles=65   count_next@close=520  fired=0 binds=[]
+    BASE     60 k=0 lane4: cycles=9    count_next@close=60   fired=0
+    MUTANT   60 k=0 lane4: cycles=9    count_next@close=68   fired=0
+    k-sweep N=1518 lane0: fired>0 at k=2,4,6,8,10,12,14; fired=0 at
+      k=0,1,3,5,7,9,11,13,15
+
+Readings. `fired=0` for the mutant at k=7 is A-1 confirmed: `a_close_oversize`
+never asserts over the whole 1513-cycle frame. The base's `count_next@close`
+= 1518 with `fired=0` is the control -- the design treats the maximum legal
+frame as legal, so the model reproduces the design and not my expectation of it.
+`60 -> 68` reproduces dv_lead's measured T-F1 red from `libs/**` alone
+(`a_close_runt` = `count_next <:. 64`: true at 60, false at 68). The k-sweep is
+the correction owed forward: the class reaches REQ-108 at even k and not at
+k = 7.
+
+Not re-executed: nothing in `test/**`. dv_lead's bench measurements are taken as
+given and were not independently re-run; what I re-derived is the arithmetic
+they rest on.
+
+### Outcome
+DoD met. A-1 **ACCEPTED IN FULL** -- measurement, severity (MAJOR, material) and
+the `SEALED` §5.8(iv) void ruling all stand; I-c1 remains a scope report with
+zero kills and no claim about any row. The campaign's headline numbers are
+untouched. One counter-note recorded against dv_lead's *derivation* (not its
+verdict) at DISP-0001 §2.4, and one correction offered to verdict §12's owed
+note (iv): M03-I6's 1518-octet member is unexercised **at k = 7**, not by this
+defect class in general. Handoff: `docs/reports/audit/WO-0061-mutations/DISP-0001_A-1.md`
+to the orchestrator for commit, and to dv_lead as the disposition A-1 asked for.
+
+### Open-questions
+- R-DISC-1 and R-DISC-2 bind on my next mutation manifest. They are stated in
+  DISP-0001 §4 and offered to dv_lead as adjudication criteria; if dv_lead wants
+  them tightened or wants the gate-inventory table in a fixed shape, that is
+  cheaper to settle now than inside the next campaign.
+- A-2 and A-3 were recorded to my credit and require nothing from me; the
+  blinding conduct that earned them is unchanged by this disposition.
+- No CRITICAL is opened or closed by this round. No escalation class is invoked.
+
+### Files-in-this-commit
+- docs/reports/audit/WO-0061-mutations/DISP-0001_A-1.md
