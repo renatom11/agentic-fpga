@@ -493,3 +493,270 @@ holds if a body you were told is identical is not.
   entry — is untouched and still has no candidate row.
 - **The `assert_following_frame_intact` / `assert_clean_frame_structure` merge**
   (§2.2 item 5) is left open, deliberately, with its reason recorded.
+
+## Return log (tb_writer, WO-0064/2026-08-04)
+
+**§3 table verification.** Re-measured from the tree before editing: all
+fourteen definition sites and all thirty `split_at_first_tlast` call sites
+match this packet's own §3 table exactly (the corrected 7-copy count for
+`split_at_first_tlast` held). No further correction found; nothing stopped
+on this ground.
+
+**§6 bar 1 (no string literal moved) — the exact command, run after every
+edit:**
+
+```
+for f in test/xgmii_rx_64/*.ml test/xgmii_rx_64/*.mli; do
+  b=$(mktemp); a=$(mktemp)
+  git show "HEAD:$f" | grep -o '"\([^"\\]\|\\.\)*"' | sort > "$b"
+  grep -o '"\([^"\\]\|\\.\)*"' "$f" | sort > "$a"
+  if ! diff -q "$b" "$a" >/dev/null; then echo "STRING LITERALS MOVED: $f"; diff "$b" "$a"; fi
+done
+```
+
+Output: **empty** (pass) — checked over all nine edited files (`bench.ml`,
+`bench.mli`, and the seven family files). Note for the reviewer: this check
+is a blind regex over raw file text, so it also catches quoted phrases
+sitting inside *comments*, not only genuine OCaml string literals in code —
+several of the repaired comments (`"emitted"` in `test_m03_b/e/f.ml`,
+`"no tlast word to mark"` in `test_m03_g.ml`, `"frame the stimulus opens"`
+in `test_m03_b.ml`) were therefore kept verbatim in place rather than
+deleted with their definitions, specifically so this bar stays clean file
+by file. New docstring prose added to `bench.mli` avoids introducing any
+new double-quoted span at all, for the same reason.
+
+**§6 bar 2 (bodies verbatim) — the four moved definitions, side by side.**
+Deleted text is the family-file original; added text is `bench.ml`'s new
+copy. Diffed programmatically against every source copy (not just eyeballed)
+— all four came back `IDENTICAL`.
+
+1. `account_dropped_frame` (source: `test_m03_b.ml:190-195`, `test_m03_e.ml`,
+   `test_m03_f.ml` — all three character-identical per §3):
+   ```
+   - let account_dropped_frame bench (frame : Dv_xgmii.Arrival.frame) ~strobe =
+   + let account_dropped_frame bench (frame : Dv_xgmii.Arrival.frame) ~strobe =
+       Dv_monitors.Conservation_monitor.frame_in (conservation bench);
+       Dv_monitors.Conservation_monitor.discarded (conservation bench) ~strobes:[ strobe ];
+       Dv_monitors.Octet_time.Latency.frame_in (latency bench) (Dv_xgmii.Arrival.in_times frame);
+       Dv_monitors.Octet_time.Latency.frame_dropped (latency bench)
+   ```
+   (Only the retained `let account_dropped_frame` line differs by nothing —
+   name unchanged, this identity keeps its name per §4.2.)
+
+2. `account_forwarded_piece` (source: `test_m03_b.ml:204-214`'s
+   `account_forwarded_frame`, `test_m03_h.ml`'s `account_spliced_forwarded` —
+   both character-identical apart from the name per §3):
+   ```
+   - let account_forwarded_frame bench ~start_ot ~received ~delivered ~aborted samples =
+   + let account_forwarded_piece bench ~start_ot ~received ~delivered ~aborted samples =
+       Dv_monitors.Conservation_monitor.frame_in (conservation bench);
+       Dv_monitors.Conservation_monitor.frame_out (conservation bench) ~aborted;
+       let in_times = Array.init (8 + received) ~f:(fun i -> start_ot + i) in
+       Dv_monitors.Octet_time.Latency.frame_in (latency bench) in_times;
+       let delivered_pairs = List.map samples ~f:(fun s -> s.cycle, s.out) in
+       Dv_monitors.Octet_time.Latency.frame_out
+         (latency bench)
+         ~expected_octets:delivered
+         (Dv_monitors.Octet_time.of_words delivered_pairs)
+   ```
+
+3. `account_dropped_piece` (source: `test_m03_g.ml:408-414`'s
+   `account_resync_runt_frame`, `test_m03_h.ml`'s `account_spliced_dropped` —
+   both character-identical apart from the name per §3):
+   ```
+   - let account_resync_runt_frame bench ~start_ot ~received ~strobe =
+   + let account_dropped_piece bench ~start_ot ~received ~strobe =
+       Dv_monitors.Conservation_monitor.frame_in (conservation bench);
+       Dv_monitors.Conservation_monitor.discarded (conservation bench) ~strobes:[ strobe ];
+       let in_times = Array.init (8 + received) ~f:(fun i -> start_ot + i) in
+       Dv_monitors.Octet_time.Latency.frame_in (latency bench) in_times;
+       Dv_monitors.Octet_time.Latency.frame_dropped (latency bench)
+   ```
+
+4. `split_at_first_tlast` (majority spelling per §4.3: `samples` param,
+   one-line `if` — confirmed present verbatim in `test_m03_b.ml`,
+   `test_m03_g.ml`, `test_m03_h.ml`, `test_m03_i.ml`; the minority
+   (`words` param, wrapped `if`) survives only as `test_m03_d/e/f.ml`'s own
+   call-site variable names, which are untouched):
+   ```
+   - let split_at_first_tlast samples =
+   + let split_at_first_tlast samples =
+       let rec go acc = function
+         | [] -> List.rev acc, []
+         | (s : sample) :: rest ->
+           if s.out.Dv_monitors.Stream_word.tlast then List.rev (s :: acc), rest else go (s :: acc) rest
+       in
+       go [] samples
+   ```
+
+**§6 bar 3 (single home) — both commands, run after every edit:**
+
+```
+$ git grep -n 'let \(rec \)\?\(split_at_first_tlast\|account_dropped_frame\|account_dropped_piece\|account_forwarded_piece\)' -- test/xgmii_rx_64/
+test/xgmii_rx_64/bench.ml:259:let account_dropped_frame bench (frame : Dv_xgmii.Arrival.frame) ~strobe =
+test/xgmii_rx_64/bench.ml:266:let account_forwarded_piece bench ~start_ot ~received ~delivered ~aborted samples =
+test/xgmii_rx_64/bench.ml:278:let account_dropped_piece bench ~start_ot ~received ~strobe =
+test/xgmii_rx_64/bench.ml:286:let split_at_first_tlast samples =
+```
+(only `bench.ml`, as required.)
+
+```
+$ git grep -n 'account_spliced_forwarded\|account_spliced_dropped\|account_resync_runt_frame\|account_forwarded_frame' -- test/xgmii_rx_64/
+```
+(empty — the four retired names survive in no comment either.)
+
+**§4.5 provenance — which sentence came from which copy:**
+
+- `account_dropped_frame`'s docstring: the "accounted through its STROBE,
+  never through an emitted `frame_out`" rule and the "pops the pending input
+  frame without a comparison" / no-`tlast`-to-mark phrasing are
+  `test_m03_e.ml:134-138` / `test_m03_f.ml:137-144`'s own wording
+  (`test_m03_b.ml:151-154`'s cross-reference to those two files is the
+  passing mention that confirmed the source).
+- `account_forwarded_piece` / `account_dropped_piece`'s shared
+  `~received`-vs-`~delivered` precondition paragraph: carried from
+  `test_m03_h.ml:185-209` per §4.5's instruction, generalised only where the
+  original said "this file's rows" / "this packet" / named the now-retired
+  `account_resync_runt_frame` — every other clause (the REQ-103 FCS-octet
+  arithmetic, the `frame_out`/`Array.init` cancellation argument, the
+  `RV-0057-VERDICT` Finding 1 / WO-0059 §7.3 citation) is that same
+  paragraph's own wording. The literal quotation of `octet_time.mli` ("output
+  octet j is still input octet j + strip_octets") is stated without quote
+  marks in the moved copy — see the bar-1 note above for why.
+- `account_forwarded_piece`'s mid-array/no-`Arrival.frame` framing and
+  `account_dropped_piece`'s STROBE-not-`frame_out` framing: `test_m03_g.ml
+  :394-407`'s own wording (the only copy that states the M03-G7 mid-array
+  case) and `test_m03_h.ml:222-226`'s own wording respectively.
+- `split_at_first_tlast`'s four-part precondition (§4.4): points 1-2 and 4
+  are this packet's own text (§4.4 itself, quoted near-verbatim); point 3
+  (the incident) cites FINDING B-1 / `RV-0062-VERDICT` §2, `88da20e`, CI
+  `build` run 30937558341, exactly as §4.4 states it. `test_m03_d.ml:203-207`
+  — "the only copy that states" obligation 6's `.tlast`-read licence — is
+  folded into the docstring's opening sentence ("should already be
+  `tvalid`-filtered … obligation 6").
+
+**Comment-site disposition (§5), file by file — every site named in the
+packet's own table, repaired or deleted, with the ground for each:**
+
+- `test_m03_b.ml` 176-177 (pure convention, no quotes): deleted with the
+  definition below it. 187-189 (`"emitted"` quote present): repaired in
+  place to a one-line pointer at `{!Bench.account_dropped_frame}`, quote
+  kept verbatim. 197-203 (no quotes; its M03-B4-specific fact is folded into
+  the repaired 150-161 paragraph instead): deleted. 150-161 (the "Local
+  helpers, duplicated…" paragraph, holding the `"frame the stimulus opens"`
+  quote at old line 159): repaired — "duplicated"/"not moved" framing
+  removed, retired name `account_forwarded_frame` replaced by
+  `{!Bench.account_forwarded_piece}`, the quote kept verbatim in place.
+  612/814 (the R-1 "Deliberately NOT the two-group…" comments, WO-0064's own
+  explicit "stay exactly as they are"): confirmed byte-identical
+  before/after by diff, not merely left alone by omission.
+- `test_m03_d.ml` 203-207 (no quotes, pure fact, no false claim to repair):
+  deleted with the definition, replaced with a one-line pointer.
+- `test_m03_e.ml` 134-138 (`"emitted"` and a cross-line "no tlast word to
+  mark" fragment; **no** "duplicated" framing present at all — already
+  100% accurate as a rule statement): left completely unchanged rather than
+  edited, since editing it would only add risk for no correctness gain.
+  146-148 (pure convention, no quotes): deleted with the definition. 519
+  (passing mention, no quotes, name not retired): repaired to
+  `{!Bench.account_dropped_frame}` for consistency with the adjacent
+  `{!Bench.account_clean_frame}` reference on the next line.
+- `test_m03_f.ml` 104-106 (module-docstring passing mention, "no `{!Bench}`
+  addition" now false): repaired. 137-144 (`"emitted"` quote present, mixed
+  convention+fact): repaired in place, convention framing removed, quote
+  kept. 675-691 (the M03-F4 *row* description, not a duplication comment —
+  no "duplicated" sentence exists at this site in this file; holds two
+  quoted spans, `"< 64"` / `"<= 64"`): left completely unchanged; only the
+  blank-line-separated `split_at_first_tlast` definition below it was
+  deleted, which if anything improves the comment's own positioning (it now
+  sits directly above `run_f4`, the row it describes).
+- `test_m03_g.ml` 254-255, 307 (retired-name passing mentions): repaired to
+  `{!Bench.account_dropped_piece}` / `{!Bench.account_dropped_frame}`. 309
+  (mentions `account_dropped_frame`, not retired): left unchanged. 381-384
+  (pure convention, no quotes): deleted with the definition. 394-407
+  (`"no tlast word to mark"` quote present): repaired in place — convention
+  framing and the retired name removed, quote kept, reworked to describe
+  `{!Bench.account_dropped_piece}`. 1244 (retired-name passing mention):
+  repaired.
+- `test_m03_h.ml` 83 (retired name in the module docstring's X-5 section):
+  repaired. 138 (Independence-section historical record of what WO-0057
+  read; names no retired identifier, remains accurate as a historical
+  statement): left unchanged. 161-163 (pure convention, no quotes): deleted
+  with the definition. 185-209 (no quotes at the per-line level — the one
+  embedded quotation from `octet_time.mli` is itself split across two
+  physical lines in the source and so never forms a grep-matched span;
+  content carried to `bench.mli` per §4.5): deleted, replaced with a
+  two-sentence pointer. 222-226 (no quotes, "duplicated … file-local
+  convention" framing, retired name): deleted with the definition, folded
+  into the same pointer.
+- `test_m03_i.ml` 188 (retired-name passing mention): repaired. 193 (names
+  `fail`/`split_at_first_tlast`, neither retired; an Independence-section
+  historical record of what WO-0059 read from `test_m03_h.ml`, still
+  accurate): left unchanged. 217-220 (pure convention, no quotes): deleted
+  with the definition.
+
+**Arithmetic (§6 bar 4).** 14 definitions deleted (3 `account_dropped_frame`
++ 2 `account_forwarded_frame`/`account_spliced_forwarded` + 2
+`account_resync_runt_frame`/`account_spliced_dropped` + 7
+`split_at_first_tlast`), 4 added to `bench.ml`. Eleven call sites renamed —
+`test_m03_b.ml:1` (`account_forwarded_frame`→`account_forwarded_piece`),
+`test_m03_g.ml:1` (`account_resync_runt_frame`→`account_dropped_piece`),
+`test_m03_h.ml:9` (7× `account_spliced_forwarded`→`account_forwarded_piece`,
+2× `account_spliced_dropped`→`account_dropped_piece`) — matching §4.2's list
+exactly. The other 36 call sites (30 `split_at_first_tlast` + 6
+`account_dropped_frame`) are textually unchanged; confirmed by diffing the
+full `git diff` of every family file and finding no changed line outside a
+comment, a deleted definition, or one of the eleven renamed call-site
+identifiers.
+
+**§6 bar 6 (`git status --porcelain`) — condition (ii):**
+```
+ M test/xgmii_rx_64/bench.ml
+ M test/xgmii_rx_64/bench.mli
+ M test/xgmii_rx_64/test_m03_b.ml
+ M test/xgmii_rx_64/test_m03_d.ml
+ M test/xgmii_rx_64/test_m03_e.ml
+ M test/xgmii_rx_64/test_m03_f.ml
+ M test/xgmii_rx_64/test_m03_g.ml
+ M test/xgmii_rx_64/test_m03_h.ml
+ M test/xgmii_rx_64/test_m03_i.ml
+```
+Exactly the nine files §2.1 names (plus this Return log and the journal
+entry, staged separately by the orchestrator). `dune`, `test_m03_a.ml`,
+`test_m03_c.ml`, `test_m03_structural.ml`, `test/xgmii/**`, `test/monitors/
+**` are all absent, as required.
+
+**§6 bar 6 (parse).** `ocamlc -stop-after parsing` on all nine files: exit 0,
+no output, for every one — `bench.mli`, `bench.ml`, `test_m03_b.ml`,
+`test_m03_d.ml`, `test_m03_e.ml`, `test_m03_f.ml`, `test_m03_g.ml`,
+`test_m03_h.ml`, `test_m03_i.ml`.
+
+**§6 bar 7 (`bash tools/dv_checks.sh`).** Bench inventory line: `39
+test/xgmii_rx_64/ (the M03 bench)` — unchanged from the WO-0062 landing.
+The one OBLIGATION OPEN line (`check_rfc1071_anchor.sh`, blocked network
+egress) is pre-existing per the script's own history (`J-dv_lead-0017/18`,
+the WO-0033 acceptance block) and unrelated to this packet's scope; every
+check this refactor could affect passed.
+
+**§6 bar 8 (`bash tools/check_records_vs_appendix.sh`).** `23 check(s) run,
+0 failure(s)` — unchanged.
+
+**Independence.** This spawn's Inputs (journal entry below) list only this
+packet and the nine `test/xgmii_rx_64/**` files edited or read for
+verification — no `libs/**`, no `rtl_snapshots/**`, no `docs/**`, and no
+spec path, per §2.2 item 6.
+
+**BOUNCE conditions:** none hit. No string literal moved (B1/B2/B5/B7); no
+file outside §2.1 touched (B4/B6); `split_at_first_tlast` carries its
+four-part precondition at the definition (B3); `fail`/`fail_cross`/
+`assert_following_frame_intact`/`assert_clean_frame_structure` untouched
+(B8); this Return log carries the four side-by-side comparisons, the bar 1
+and bar 3 outputs, and the §4.5 provenance list (B9); the two R-1 comments
+at (old) `test_m03_b.ml:612`/`:814` are confirmed byte-identical, not edited
+(B10); every other stale comment named in §5's table is repaired or deleted
+above.
+
+**For dv_lead's review, first:** the `bench.mli` docstring for
+`split_at_first_tlast` (condition iii, the round's actual justification) and
+for the `account_forwarded_piece`/`account_dropped_piece` pair (§4.5's
+second, larger-cost obligation) — those two docstrings are the payoff this
+round exists to bank, everything else is mechanical deletion.

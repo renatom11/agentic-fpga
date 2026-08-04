@@ -185,7 +185,7 @@
     `test_m03_d.ml` (M03-D4's shape, and [good_and_bad_64]'s
     both-directions-checked idiom, referenced but not needed here since
     no row in this family corrupts an FCS), `test_m03_g.ml` (in part --
-    [account_resync_runt_frame]'s own [~received] naming, the precedent
+    {!Bench.account_dropped_piece}'s own [~received] naming, the precedent
     Finding 1's repair follows; and, round 2, [fail_cross]'s own docstring,
     "WO-0056 §5: a reported check, never the derivation" -- the precedent
     round 2's own HELD-and-reported per-octet-constant declaration follows)
@@ -213,19 +213,6 @@ open! Base
 open Bench
 
 let fail row msg = failwith (String.concat [ row; ": "; msg ])
-
-(* Duplicated from every other family file's own local helper of the same
-   shape rather than shared, per this packet's own convention: {!Bench} is
-   the only shared surface (test_m03_h.ml's own docstring states the same
-   rule). *)
-let split_at_first_tlast samples =
-  let rec go acc = function
-    | [] -> List.rev acc, []
-    | (s : sample) :: rest ->
-      if s.out.Dv_monitors.Stream_word.tlast then List.rev (s :: acc), rest else go (s :: acc) rest
-  in
-  go [] samples
-;;
 
 (* ==================================================================== *)
 (* ---- M03-I1 -- silence with nothing in flight (REQ-109) -------------- *)

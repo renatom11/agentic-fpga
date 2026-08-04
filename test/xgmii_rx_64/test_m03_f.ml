@@ -101,9 +101,7 @@
     makes the bit meaningful only on the [tlast] word and this frame has
     none. The structural facts are asserted instead ([tlast_sample] is
     [None], [delivered_samples] is empty), and the frame is accounted for
-    through its STROBE ([account_dropped_frame], duplicated below from
-    `test_m03_e.ml`'s own file-local helper of the same shape per WO-0047
-    §4.3 — no {!Bench} addition).
+    through its STROBE ({!Bench.account_dropped_frame}).
 
     {2 Independence}
 
@@ -134,21 +132,10 @@ let fail_cross row what =
        ])
 ;;
 
-(* Duplicated from test_m03_e.ml's own file-local helper of the same shape
-   rather than shared, so this file has no dependency on another test file's
-   private code -- {!Bench} is the only shared surface WO-0047 authorises
-   (its own section4.3). A frame that delivered ZERO octets is accounted for
-   through its STROBE, never through an "emitted" frame_out -- this is
-   M03-E3's rule, restated as binding for every no-output-word frame by
-   WO-0047 section2. [Latency.frame_dropped] pops the input frame without a
-   comparison. *)
-let account_dropped_frame bench (frame : Dv_xgmii.Arrival.frame) ~strobe =
-  Dv_monitors.Conservation_monitor.frame_in (conservation bench);
-  Dv_monitors.Conservation_monitor.discarded (conservation bench) ~strobes:[ strobe ];
-  Dv_monitors.Octet_time.Latency.frame_in (latency bench) (Dv_xgmii.Arrival.in_times frame);
-  Dv_monitors.Octet_time.Latency.frame_dropped (latency bench)
-;;
-
+(* {!Bench.account_dropped_frame}: a frame that delivered ZERO octets is
+   accounted for through its STROBE, never through an "emitted" frame_out --
+   this is M03-E3's rule, restated as binding for every no-output-word frame
+   by WO-0047 section2. *)
 (* ---- M03-F1 ---------------------------------------------------------- *)
 (* "Frames of 5, 16, 60 and 63 octets DA through FCS, correct FCS, both start
    lanes | Delivered 1, 12, 56 and 59; tuser[0] = 1 on each tlast word;
@@ -689,17 +676,6 @@ let%expect_test
    cycle, tkeep, delivered content, tuser, exact strobe set (empty). tuser
    and strobe-presence/absence are the LAST check on EACH frame -- they are
    this row's whole point (the off-by-one and delivered-vs-received kills). *)
-
-let split_at_first_tlast words =
-  let rec go acc = function
-    | [] -> List.rev acc, []
-    | (s : sample) :: rest ->
-      if s.out.Dv_monitors.Stream_word.tlast
-      then List.rev (s :: acc), rest
-      else go (s :: acc) rest
-  in
-  go [] words
-;;
 
 let run_f4 ~lane =
   let row = String.concat [ "M03-F4 (lane "; Int.to_string lane; ")" ] in

@@ -80,7 +80,7 @@
     {2 X-5 (WO-0054 §5's entry point), on the abort extent this family adds}
 
     Every aborted (REQ-110-governed) frame below is accounted through
-    {!account_spliced_forwarded} `~aborted:true`, which supplies
+    {!Bench.account_forwarded_piece} `~aborted:true`, which supplies
     [Dv_monitors.Octet_time.Latency.frame_out]'s own `~expected_octets`
     override at the frame's actual delivered count rather than the
     clean-frame identity — X-5's own documented customer list already names
@@ -158,18 +158,6 @@ let fail_cross row what =
        ])
 ;;
 
-(* Duplicated from every other family file's own local helper of the same
-   shape rather than shared, per this packet's own convention: {!Bench} is
-   the only shared surface. *)
-let split_at_first_tlast samples =
-  let rec go acc = function
-    | [] -> List.rev acc, []
-    | (s : sample) :: rest ->
-      if s.out.Dv_monitors.Stream_word.tlast then List.rev (s :: acc), rest else go (s :: acc) rest
-  in
-  go [] samples
-;;
-
 (* [n] deterministic, position-dependent filler octets -- distinguishable by
    construction from {!Bench.directed_frame_octets}'s own pattern, so a
    defect that delivered the WRONG piece's octets (this row's neighbour's,
@@ -182,55 +170,14 @@ let filler n = List.init n ~f:(fun j -> (j * 13 + 5) land 0xFF)
    1..7 are these. *)
 let preamble_tail = List.init 7 ~f:(fun j -> 0xC0 + j)
 
-(* Accounting for a piece that delivers content but has no genuine
-   [Arrival.frame] record of its own -- every frame in this file's rows is
-   spliced inside a single, longer [Injection] [frame_case] (module
-   docstring's construction note), so [Latency.frame_in]'s usual
-   [Arrival.in_times frame] source does not exist for any of them. Hand-built
-   from octet times instead, generalising `test_m03_g.ml`'s own
-   [account_resync_runt_frame] (there, zero-delivered only) to the forwarded
-   case X-5 names for this family.
-
-   [~received] versus [~delivered] (WO-0059 §7.3, `RV-0057-VERDICT` Finding 1
-   -- the first of this packet's two owed, outcome-neutral repairs). The
-   INPUT TRACE must be sized by what the frame RECEIVED while open
-   (requirements.md §0.6's own window definition), not by what it DELIVERED
-   at the output: for an aborted (REQ-110/REQ-105-governed) frame the two
-   coincide because no FCS removal is attempted (REQ-103's no-removal
-   clause), but for an ordinary, cleanly-closed frame -- every second/third
-   piece in this file -- received is delivered PLUS the four FCS octets
-   REQ-103 strips. Building the trace from [delivered] alone was four octet
-   times short for every clean piece and sat exactly on [frame_out]'s own
-   stated bound (octet_time.mli: "output octet j is still input octet
-   j + strip_octets"); it was harmless only by cancellation, because
-   [frame_out]'s own per-octet walk reads [in_times.(j + strip_octets)] for
-   j in 0 .. delivered - 1, an index range [Array.init]'s VALUES never
-   depend on the array's own length -- [received] is therefore the honest
-   size and [delivered] stays the extent override, unchanged. *)
-let account_spliced_forwarded bench ~start_ot ~received ~delivered ~aborted samples =
-  Dv_monitors.Conservation_monitor.frame_in (conservation bench);
-  Dv_monitors.Conservation_monitor.frame_out (conservation bench) ~aborted;
-  let in_times = Array.init (8 + received) ~f:(fun i -> start_ot + i) in
-  Dv_monitors.Octet_time.Latency.frame_in (latency bench) in_times;
-  let delivered_pairs = List.map samples ~f:(fun s -> s.cycle, s.out) in
-  Dv_monitors.Octet_time.Latency.frame_out
-    (latency bench)
-    ~expected_octets:delivered
-    (Dv_monitors.Octet_time.of_words delivered_pairs)
-;;
-
-(* The zero-delivered shape (M03-H4's frame A and frame B): §0.6 accounts for
-   it through its STROBE alone, never through an emitted [frame_out] --
-   `test_m03_e.ml`'s/`test_m03_f.ml`'s/`test_m03_g.ml`'s own
-   [account_dropped_frame]/[account_resync_runt_frame] shape, duplicated here
-   per this packet's own file-local convention. *)
-let account_spliced_dropped bench ~start_ot ~received ~strobe =
-  Dv_monitors.Conservation_monitor.frame_in (conservation bench);
-  Dv_monitors.Conservation_monitor.discarded (conservation bench) ~strobes:[ strobe ];
-  let in_times = Array.init (8 + received) ~f:(fun i -> start_ot + i) in
-  Dv_monitors.Octet_time.Latency.frame_in (latency bench) in_times;
-  Dv_monitors.Octet_time.Latency.frame_dropped (latency bench)
-;;
+(* {!Bench.account_forwarded_piece} and {!Bench.account_dropped_piece}
+   account for a piece that delivers content, respectively no content, but
+   has no genuine [Arrival.frame] record of its own -- every frame in this
+   file's rows is spliced inside a single, longer [Injection] [frame_case]
+   (module docstring's construction note), so [Latency.frame_in]'s usual
+   [Arrival.in_times frame] source does not exist for any of them; bench.mli
+   documents the [~received]-not-[~delivered] precondition this family's own
+   Finding 1 repair discharges (WO-0059 §7.3, `RV-0057-VERDICT` Finding 1). *)
 
 (* ---- M03-H1 ------------------------------------------------------------ *)
 (* "A 64-octet frame whose terminate character is replaced by a new /S/ in
@@ -410,14 +357,14 @@ let run_h1 ~lane =
      delivered (no FCS removal is attempted, REQ-103); frame 2 is an
      ordinary clean frame, so received is its own 64 octets DA through FCS,
      four more than the 60 it delivers. *)
-  account_spliced_forwarded
+  account_forwarded_piece
     bench
     ~start_ot:start_ot1
     ~received:delivered1
     ~delivered:delivered1
     ~aborted:true
     words1_out;
-  account_spliced_forwarded
+  account_forwarded_piece
     bench
     ~start_ot:resync_start_ot
     ~received:(List.length frame2_octets)
@@ -640,14 +587,14 @@ let run_h3 ~lane =
   (* WO-0059 §7.3 Finding 1: frame 1 is REQ-105-aborted (no FCS removal
      attempted), so received = delivered; frame 2 is an ordinary clean
      frame, received = its own 64 octets DA through FCS. *)
-  account_spliced_forwarded
+  account_forwarded_piece
     bench
     ~start_ot:start_ot1
     ~received:delivered1
     ~delivered:delivered1
     ~aborted:true
     words1_out;
-  account_spliced_forwarded
+  account_forwarded_piece
     bench
     ~start_ot:resync_start_ot
     ~received:(List.length frame2_octets)
@@ -839,14 +786,14 @@ let run_h2 ~lane =
   (* WO-0059 §7.3 Finding 1: frame 1 is REQ-110-aborted (no FCS removal
      attempted), so received = delivered; frame 2 is an ordinary clean
      frame, received = its own 64 octets DA through FCS. *)
-  account_spliced_forwarded
+  account_forwarded_piece
     bench
     ~start_ot:start_ot1
     ~received:delivered1
     ~delivered:delivered1
     ~aborted:true
     words1_out;
-  account_spliced_forwarded
+  account_forwarded_piece
     bench
     ~start_ot:resync_start_ot
     ~received:(List.length frame2_octets)
@@ -1080,11 +1027,11 @@ let run_h4 () =
              (c + 2 and c + 3) -- observed "
           ; Int.to_string (List.length pulses)
           ]));
-  account_spliced_dropped bench ~start_ot:start_ot_a ~received:0 ~strobe:"error_start_without_terminate";
-  account_spliced_dropped bench ~start_ot:ot_2 ~received:0 ~strobe:"error_start_without_terminate";
+  account_dropped_piece bench ~start_ot:start_ot_a ~received:0 ~strobe:"error_start_without_terminate";
+  account_dropped_piece bench ~start_ot:ot_2 ~received:0 ~strobe:"error_start_without_terminate";
   (* WO-0059 §7.3 Finding 1: frame C is an ordinary clean frame, received =
      its own 64 octets DA through FCS, four more than the 60 it delivers. *)
-  account_spliced_forwarded
+  account_forwarded_piece
     bench
     ~start_ot:start_ot_c
     ~received:(List.length frame_c_octets)

@@ -250,6 +250,48 @@ let account_clean_frame t (frame : Arrival.frame) samples ~aborted =
   Octet_time.Latency.frame_out t.latency (Octet_time.of_words delivered_pairs)
 ;;
 
+(* WO-0064: consolidated from the fourteen file-local copies WO-0062 through
+   WO-0059 each left behind (test_m03_b.ml, test_m03_d.ml through
+   test_m03_i.ml) into the one home {!account_clean_frame} above already
+   established. Bodies moved verbatim; see bench.mli for the naming axis
+   (`_frame` carries a genuine {!Arrival.frame} record, `_piece` does not)
+   and each function's own precondition. *)
+let account_dropped_frame bench (frame : Dv_xgmii.Arrival.frame) ~strobe =
+  Dv_monitors.Conservation_monitor.frame_in (conservation bench);
+  Dv_monitors.Conservation_monitor.discarded (conservation bench) ~strobes:[ strobe ];
+  Dv_monitors.Octet_time.Latency.frame_in (latency bench) (Dv_xgmii.Arrival.in_times frame);
+  Dv_monitors.Octet_time.Latency.frame_dropped (latency bench)
+;;
+
+let account_forwarded_piece bench ~start_ot ~received ~delivered ~aborted samples =
+  Dv_monitors.Conservation_monitor.frame_in (conservation bench);
+  Dv_monitors.Conservation_monitor.frame_out (conservation bench) ~aborted;
+  let in_times = Array.init (8 + received) ~f:(fun i -> start_ot + i) in
+  Dv_monitors.Octet_time.Latency.frame_in (latency bench) in_times;
+  let delivered_pairs = List.map samples ~f:(fun s -> s.cycle, s.out) in
+  Dv_monitors.Octet_time.Latency.frame_out
+    (latency bench)
+    ~expected_octets:delivered
+    (Dv_monitors.Octet_time.of_words delivered_pairs)
+;;
+
+let account_dropped_piece bench ~start_ot ~received ~strobe =
+  Dv_monitors.Conservation_monitor.frame_in (conservation bench);
+  Dv_monitors.Conservation_monitor.discarded (conservation bench) ~strobes:[ strobe ];
+  let in_times = Array.init (8 + received) ~f:(fun i -> start_ot + i) in
+  Dv_monitors.Octet_time.Latency.frame_in (latency bench) in_times;
+  Dv_monitors.Octet_time.Latency.frame_dropped (latency bench)
+;;
+
+let split_at_first_tlast samples =
+  let rec go acc = function
+    | [] -> List.rev acc, []
+    | (s : sample) :: rest ->
+      if s.out.Dv_monitors.Stream_word.tlast then List.rev (s :: acc), rest else go (s :: acc) rest
+  in
+  go [] samples
+;;
+
 (* WO-0040 §3.3: the one authorised bench addition. [one_frame] is
    re-expressed through it immediately below so the §0.3 lane mapping
    (lane 0 -> first_start 8, lane 4 -> first_start 12) has exactly one home

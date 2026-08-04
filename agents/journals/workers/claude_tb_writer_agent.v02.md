@@ -1267,3 +1267,250 @@ omitted.
 - test/xgmii_rx_64/test_m03_i.ml
 - test/xgmii_rx_64/dune
 - agents/handoffs/WO-0062_tb-m03-family-b-preamble-and-sfd.md
+
+## [J-tb_writer-0022] 2026-08-04T19:30Z | task:WO-0064 | Bench-machinery consolidation — 14 local helpers to 4 in `bench.ml`/`bench.mli`, the naming axis and both preconditions recorded at the definition, no string literal moved
+
+### Trigger
+Orchestrator, spawning me against `WO-0064_bench-machinery-consolidation.md`
+(spawn `WO-0064/2026-08-04T19:30Z`): the standalone consolidation debt
+`RV-0062-VERDICT` §5 commissioned when it accepted family B's own
+duplication for that round only — the same debt I flagged as open at
+`J-tb_writer-0021`'s Open-questions ("whether the `account_dropped_frame`/
+`account_forwarded_frame` shapes... should consolidate into `bench.ml`").
+This packet is a **pure refactor**: no row, no assertion, no message string,
+no argument value changes anywhere; its own success criterion is that the
+suite's behaviour is bit-for-bit what it was before it.
+
+### Inputs
+- `agents/handoffs/WO-0064_bench-machinery-consolidation.md` in full — the
+  three binding conditions restated verbatim from `RV-0062-VERDICT` §5, the
+  §3 inventory table (and its own self-correction: `split_at_first_tlast`
+  has 7 copies, not the 6 the verdict's table said), §4's naming axis and
+  per-function precondition requirements, §5's comment-repair table, §6's
+  ten review-bar commands, §7's ten pre-committed BOUNCE conditions.
+- `agents/charters/tb_writer.md` in full; `agents/PROTOCOL.md` §2-6, §10 —
+  read per my own mandatory-first-actions ordering, ahead of any file edit.
+- `test/xgmii_rx_64/bench.ml` and `bench.mli` in full, before editing.
+- `test/xgmii_rx_64/test_m03_b.ml`, `test_m03_d.ml`, `test_m03_e.ml`,
+  `test_m03_f.ml`, `test_m03_g.ml`, `test_m03_h.ml`, `test_m03_i.ml` — each
+  read in full at every site the packet's §3/§5 tables named, plus a
+  directory-wide `git grep` of the four moved identities' names and the four
+  retired names, before and after editing.
+- No `libs/**`, no `rtl_snapshots/**`, no `docs/**`, no `test/attack_plans/
+  **`, no `test/golden/**`, and **no spec path of any kind** — this round's
+  own independence evidence per WO-0064 §2.2 item 6: a pure refactor that
+  cited a REQ id would be a refactor that re-derived something. Nothing
+  under `test/xgmii/**` or `test/monitors/**` was opened either, beyond what
+  the family files' own `open` lines already reference by name.
+
+### Reasoning
+**Why this entry's derivation map is empty, deliberately.** My charter's
+standing DoD asks for "which REQ-### ids and spec clauses each test
+discharges." This packet adds no test and discharges no row — WO-0064 §1
+states it directly ("Rows: none"), and §2.2 item 6 states that citing a spec
+path here would itself be a defect, since a pure refactor's whole claim is
+that it needed no new derivation. I am recording this explicitly rather than
+leaving the section conspicuously short with no explanation, since a
+tb_writer entry with no spec citation is unusual enough to need a stated
+reason rather than an assumed oversight.
+
+**The mechanical trap this round's own review bar 1 sets, found before it
+bit.** Bar 1's command is a blind `grep -o '"..."'` over each file's raw
+text — it does not distinguish an OCaml string literal in code from a
+quoted phrase sitting inside a `(* ... *)` comment. Several of the fourteen
+local helpers' own doc comments quote a short phrase for emphasis
+(`"emitted"` in three files, `"no tlast word to mark"`, `"frame the
+stimulus opens"`), and my first plan — delete every stale "duplicated per
+this file's own convention" comment wholesale, since the convention is now
+false — would have silently dropped those phrases from their file's own
+multiset and tripped bar 1 on a comment edit, not a code edit. I extracted
+the exact quoted-span baseline for every file with the packet's own command
+before writing a single edit, checked every comment site named in §5's
+table against it, and repaired each quote-bearing comment IN PLACE (keeping
+the exact phrase, deleting only the "duplicated"/"not moved" framing around
+it) rather than deleting it outright. One more subtlety worth recording: a
+quote spanning a physical line break (`"no tlast word to\nmark"` in
+`test_m03_e.ml`'s own copy) never forms a match at all under this command,
+since it processes line by line — I preserved that same invisibility when
+carrying `test_m03_h.ml`'s received-vs-delivered paragraph into `bench.mli`
+by phrasing its one embedded quotation without quote marks entirely, rather
+than gambling on reproducing an accidental line break correctly in a new
+location. Every new sentence I wrote for `bench.mli`'s four docstrings
+avoids a literal double quote outright, for the same reason — the check
+cannot tell a moved quote from a newly-authored one, so the only fully safe
+new text is text with no quote in it.
+
+**Which body was canonical, verified rather than eyeballed.** WO-0064 §4.3
+names a "majority spelling" for `split_at_first_tlast` (the `samples`
+parameter, one-line `if`, four copies) over the minority (`words`, wrapped
+`if`, three copies). I confirmed this by reading all seven definitions in
+full rather than trusting the packet's own characterisation, then diffed
+each of the four candidate identities' bench.ml copy against every one of
+its source copies programmatically (`diff`, not eyeball) before deleting
+any local definition — all four came back byte-identical modulo the `let
+<name>` line, confirmed in the Return log's own side-by-side listing.
+
+**The naming axis (§4.2) is the actual payoff, and I kept the two identities
+that cross it apart rather than merging their bodies.** `account_
+dropped_frame` keeps its name (it takes a genuine `Arrival.frame`);
+`account_forwarded_frame`/`account_spliced_forwarded` merge into
+`account_forwarded_piece`, and `account_resync_runt_frame`/`account_
+spliced_dropped` merge into `account_dropped_piece` (both take no such
+record, sizing their input trace by hand from `~start_ot`/`~received`).
+Eleven call sites carry this rename; the other thirty-six (thirty
+`split_at_first_tlast`, six `account_dropped_frame`) are textually
+unchanged — verified by reading every diff hunk in every family file after
+editing and confirming each one is either a comment, a deleted definition,
+or one of the eleven renamed identifiers, never an argument, a guard, a
+constant or an assertion.
+
+**Per-site comment disposition (§5), argued not just executed.** Several
+sites in the packet's own table turned out, on inspection, not to need the
+disposition I first assumed. `test_m03_e.ml:134-138`'s own `account_
+dropped_frame` comment carries no "duplicated" framing at all (unlike its
+sibling copies) — it is already 100% accurate as a rule statement post-move,
+so I left it completely untouched rather than editing it for edit's sake.
+`test_m03_f.ml:675-691`, sitting directly above the (now-deleted)
+`split_at_first_tlast` definition, turned out on re-reading to be the
+M03-F4 *row's own* description, not a duplication comment at all — no
+"duplicated" sentence exists at that site in that file — so it too was left
+untouched, and deleting only the definition below it arguably improves its
+own positioning (it now sits directly above `run_f4`). Two Independence-
+section "passing mentions" the packet's own table names (`test_m03_h.ml:
+138`, `test_m03_i.ml:193`) are historical records of what an earlier WO
+round read; neither names a retired identifier, both remain accurate as
+history, so both were left unchanged rather than edited to satisfy the
+table's own listing mechanically. Every other site (comment blocks
+directly above a deleted definition with no quote lock, retired-name
+passing mentions elsewhere) was repaired or deleted per §5's stated rule,
+and the full per-site table with its reasoning is in the WO's own Return
+log rather than duplicated here in full.
+
+### Actions
+- `test/xgmii_rx_64/bench.ml`: four definitions added after
+  `account_clean_frame` — `account_dropped_frame`, `account_forwarded_piece`,
+  `account_dropped_piece`, `split_at_first_tlast` — each body copied
+  character-identical from its canonical source copy (name line only
+  differs), confirmed by programmatic diff against every source copy, not
+  eyeballed.
+- `test/xgmii_rx_64/bench.mli`: four new `val`s with docstrings added after
+  `account_clean_frame`'s own `val` — the naming-axis orientation paragraph;
+  `account_dropped_frame`'s docstring; the `~received`-not-`~delivered`
+  precondition (carried from `test_m03_h.ml:185-209`, genericised past its
+  own file-local framing, `RV-0057-VERDICT` Finding 1 / WO-0059 §7.3 cited
+  as the incident) on `account_forwarded_piece`, referenced rather than
+  repeated at `account_dropped_piece`; `split_at_first_tlast`'s four-part
+  precondition (what it returns extensionally; the two-group reading's
+  precondition; FINDING B-1 / `RV-0062-VERDICT` §2 / commit `88da20e` / CI
+  `build` run 30937558341 as the incident; what a caller must do) per §4.4.
+- Seven family files (`test_m03_b.ml`, `_d.ml`, `_e.ml`, `_f.ml`, `_g.ml`,
+  `_h.ml`, `_i.ml`): fourteen local definitions deleted; eleven call sites
+  renamed (`test_m03_b.ml`:1, `test_m03_g.ml`:1, `test_m03_h.ml`:9 — 7×
+  `account_spliced_forwarded`→`account_forwarded_piece`, 2× `account_
+  spliced_dropped`→`account_dropped_piece`); every comment site named in
+  §5's table repaired, deleted, or (where inspection showed no false claim
+  and no retired name) explicitly left unchanged, per the reasoning above.
+  The two R-1 comments at `test_m03_b.ml`'s old `:612`/`:814` were not
+  touched — confirmed byte-identical before/after by diff, not merely
+  believed so.
+- `agents/handoffs/WO-0064_bench-machinery-consolidation.md`: Return log
+  appended — the §3 verification, the bar-1 command and its empty output
+  (with the quote-preservation note above), the four side-by-side body
+  comparisons, both bar-3 command outputs, the §4.5 provenance list, the
+  full per-file comment-site disposition table, the arithmetic check, `git
+  status --porcelain`, the parse/dv_checks/check_records_vs_appendix
+  outputs, and a note to dv_lead on what to read first.
+
+### Evidence
+- Bar 1 (no string literal moved), the packet's own command, run over all
+  nine edited files after every edit: **empty output** (pass).
+- Bar 3a (`git grep -n 'let \(rec \)\?\(split_at_first_tlast\|account_
+  dropped_frame\|account_dropped_piece\|account_forwarded_piece\)' --
+  test/xgmii_rx_64/`): four matches, all in `bench.ml`, none in any family
+  file.
+- Bar 3b (`git grep -n 'account_spliced_forwarded\|account_spliced_dropped
+  \|account_resync_runt_frame\|account_forwarded_frame' --
+  test/xgmii_rx_64/`): empty (pass) — the four retired names survive in no
+  comment either.
+- `ocamlc -stop-after parsing` on all nine edited files: exit 0, no output,
+  for every one.
+- `bash tools/dv_checks.sh`: bench inventory line `39 test/xgmii_rx_64/
+  (the M03 bench)` — unchanged from the WO-0062 landing. The one OBLIGATION
+  OPEN line (`check_rfc1071_anchor.sh`, blocked network egress) is
+  pre-existing per the script's own history and unrelated to this packet.
+- `bash tools/check_records_vs_appendix.sh`: `23 check(s) run, 0
+  failure(s)` — unchanged.
+- `git status --porcelain`: exactly the nine files WO-0064 §2.1 names
+  (`bench.ml`, `bench.mli`, and the seven family files) — `dune`,
+  `test_m03_a.ml`, `test_m03_c.ml`, `test_m03_structural.ml`,
+  `test/xgmii/**`, `test/monitors/**` all absent.
+- `dune build` / `dune runtest`: **not run** — no Hardcaml toolchain this
+  container (ADR-0005), unchanged from every prior round. No `%expect`
+  block exists anywhere in this diff (this packet touches no test body,
+  only helper definitions and comments), so no waveform-eyeball promotion
+  obligation is owed or claimed this round. CI is authoritative; the actual
+  proof of condition (i) is CI `build` green with every `%expect` block in
+  the directory unchanged, which this spawn cannot itself run.
+
+### Outcome
+DoD against WO-0064 §8's eight pass criteria: (1) fourteen local
+definitions gone, four in `bench.ml`, declared in `bench.mli` with
+docstrings carrying the union of what the copies documented — met; (2) bar
+1 prints nothing — met; (3) `split_at_first_tlast`'s precondition/
+consequence/incident and the `_piece` pair's `~received`-not-`~delivered`
+precondition are at the definitions — met; (4) eleven call sites renamed,
+the other thirty-six textually unchanged — met, verified by diff inspection
+not by count alone; (5) every stale duplication comment repaired or
+deleted, each choice stated — met, full table in the Return log; (6)
+`ocamlc -stop-after parsing` exit 0 on all nine files, unit count 39 — met;
+(7) nothing outside §2.1 staged — met (`git status --porcelain` above); (8)
+the Return log carries bars 1-3's evidence verbatim — met. No sign-off
+claimed; PASS/FAIL on this packet is dv_lead's own `RV-`, not mine.
+
+**Harvest note (PROTOCOL §7 / ADR-0018), this round's own span**:
+`J-tb_writer-0022 .. J-tb_writer-0022` (tiling with `J-tb_writer-0021`'s own
+`0021..0021` span — no gap). **One candidate, LH2-g (general).** *Rule*: a
+mechanical byte-identity check written as a blind text-pattern match (a
+regex over quoted spans, a diff of raw lines) cannot distinguish a token
+that is genuine payload from an identical-looking token that only appears
+inside an explanatory comment, a docstring, or other non-executable prose
+— so a refactor that moves or rewrites the surrounding prose while
+preserving the payload can still fail the check, and a refactor that
+subtly alters the payload while leaving the prose's own quoted fragments
+alone can still pass it. *Observable*: before trusting such a check's green
+result as proof of behavioural equivalence, enumerate every match the check
+itself would report, by hand, and confirm each one sits in a position the
+check's own author intended it to police — a check with a green result and
+an unexamined match list is not yet evidence, only an unread one.
+**LH1**: taught by this round's own review-bar-1 near-miss above (first
+draft would have deleted several comments carrying quoted phrases the
+check also tracks, discovered only by extracting the check's own full match
+list before editing rather than after). **LH2-g**: no project noun, no
+domain noun — stated for any text-pattern equivalence check over any
+artifact with both structured payload and free-text prose. **LH3**: without
+it, a byte-identity check's pass is read as "nothing of substance changed"
+when it may only mean "the substrings the regex happens to isolate are
+unchanged," which is a narrower and sometimes misleading claim — exactly
+the gap this round's own near-miss would have exploited silently if not
+caught before the first edit landed. **Domain pack**: n/a (LH2-g, general).
+
+### Open-questions
+- None. No spec ambiguity (none was consulted, by design — §2.2 item 6). No
+  RTL leak: `libs/**`/`rtl_snapshots/**` were never opened. No licensing
+  concern. No untestable requirement (this packet asserts nothing). No
+  effort anomaly.
+- The `assert_following_frame_intact` / `assert_clean_frame_structure`
+  merge WO-0064 §2.2 item 5 names is left open, deliberately, exactly as
+  the packet itself states — not mine to take unasked.
+
+### Files-in-this-commit
+- test/xgmii_rx_64/bench.ml
+- test/xgmii_rx_64/bench.mli
+- test/xgmii_rx_64/test_m03_b.ml
+- test/xgmii_rx_64/test_m03_d.ml
+- test/xgmii_rx_64/test_m03_e.ml
+- test/xgmii_rx_64/test_m03_f.ml
+- test/xgmii_rx_64/test_m03_g.ml
+- test/xgmii_rx_64/test_m03_h.ml
+- test/xgmii_rx_64/test_m03_i.ml
+- agents/handoffs/WO-0064_bench-machinery-consolidation.md

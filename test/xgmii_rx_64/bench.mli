@@ -204,6 +204,126 @@ val error_pulses : sample list -> (int * string) list
     driving more than one frame calls this once per frame. *)
 val account_clean_frame : t -> Dv_xgmii.Arrival.frame -> sample list -> aborted:bool -> unit
 
+(** WO-0064: the family's other three conservation-plus-latency accounting
+    cases, consolidated here from fourteen file-local copies (`bench.ml`'s own
+    comment above {!account_dropped_frame} names every source). The naming
+    axis below is what a caller must get right, and is the one thing this
+    consolidation exists to make impossible to miss (`RV-0062-VERDICT`
+    FINDING B-1 and `RV-0057-VERDICT` Finding 1 are the two incidents that
+    paid for it):
+
+    - {!account_clean_frame} above and {!account_dropped_frame} below both
+      take a genuine {!Dv_xgmii.Arrival.frame} — their input trace is
+      [Arrival.in_times frame], built by the schedule itself.
+    - {!account_forwarded_piece} and {!account_dropped_piece} below take no
+      such record: the caller sizes the input trace by hand, from
+      [~start_ot] and [~received], because the piece they account for is one
+      {!Dv_xgmii.Injection} opens mid-array rather than laying out as its own
+      declared frame case. *)
+
+(** Standing obligations 2 and 3 for a frame that delivered ZERO octets and
+    has a genuine {!Dv_xgmii.Arrival.frame} record of its own (M03-E2/E3's
+    own rule: requirements.md §0.6/§0.7 account for such a frame through its
+    STROBE, never through an emitted [frame_out]). Calls
+    [Conservation_monitor.frame_in], [.discarded ~strobes:[ strobe ]],
+    [Latency.frame_in] fed [Arrival.in_times frame] exactly as
+    {!account_clean_frame} does, then [Latency.frame_dropped], which pops the
+    pending input frame without a comparison — there is no delivered [tlast]
+    word to compare it against, and none is ever claimed. *)
+val account_dropped_frame : t -> Dv_xgmii.Arrival.frame -> strobe:string -> unit
+
+(** Standing obligations 2 and 3 for a piece that delivers content but has no
+    genuine {!Dv_xgmii.Arrival.frame} record of its own: [Injection] opens it
+    mid-array rather than laying it out as its own declared frame case (the
+    shape M03-G7's resynchronised runt and family H's splices both need), so
+    [Latency.frame_in]'s usual [Arrival.in_times frame] source does not exist
+    for it. [in_times] is instead built by hand from [~start_ot]: 8 preamble
+    octet times, then [~received] content octet times.
+
+    {2 [~received], not [~delivered] — the precondition this function and
+    {!account_dropped_piece} share (`RV-0057-VERDICT` Finding 1, WO-0059 §7.3
+    — the incident this precondition exists to close)}
+
+    The input trace must be sized by what the piece RECEIVED while it was
+    open (requirements.md §0.6's own window definition), not by what it
+    DELIVERED at the output. For an aborted (REQ-110/REQ-105-governed) piece
+    the two coincide, because no FCS removal is attempted (REQ-103's
+    no-removal clause); but for an ordinary, cleanly-closed piece, received is
+    delivered PLUS the four FCS octets REQ-103 strips. Building the trace
+    from [delivered] alone is four octet times short of the true received
+    extent, and sits exactly on [frame_out]'s own stated bound — per
+    `octet_time.mli`, output octet j is still input octet j + strip_octets —
+    so the shortfall is harmless only by cancellation: [frame_out]'s own
+    per-octet walk reads [in_times.(j + strip_octets)] for j in
+    [0, delivered - 1], an index range whose values [Array.init] never lets
+    depend on the array's own length. [received] is therefore the honest size
+    for [in_times]; [delivered] stays the separate [~expected_octets]
+    override below, unchanged.
+
+    Calls [Conservation_monitor.frame_in], [.frame_out ~aborted], [Latency.
+    frame_in] fed the hand-built [in_times], then [Latency.frame_out
+    ~expected_octets:delivered] against [samples]'s own delivered octet
+    times. *)
+val account_forwarded_piece
+  :  t
+  -> start_ot:int
+  -> received:int
+  -> delivered:int
+  -> aborted:bool
+  -> sample list
+  -> unit
+
+(** The zero-delivered counterpart of {!account_forwarded_piece}, for a piece
+    that delivers no content at all: accounted through its STROBE alone,
+    never through an emitted [frame_out] — [Conservation_monitor.frame_in],
+    then [.discarded ~strobes:[ strobe ]], [Latency.frame_in] fed the same
+    kind of hand-built [in_times] {!account_forwarded_piece} builds, then
+    [Latency.frame_dropped], which pops the pending input frame without a
+    comparison. The [~received]-not-[~delivered] precondition documented at
+    {!account_forwarded_piece} governs this function identically: for a
+    zero-delivered piece, [received] is simply the octet count observed
+    before the closing character — never a delivered count, which does not
+    exist here. *)
+val account_dropped_piece : t -> start_ot:int -> received:int -> strobe:string -> unit
+
+(** [split_at_first_tlast samples] returns the prefix of [samples] through and
+    including the first sample whose [tlast] is 1, paired with the
+    remainder — extensionally, and only extensionally: whether the first
+    element of the pair equals one frame's own words and the second the next
+    frame's depends on the precondition below, which this function does not
+    check. [samples] should already be [tvalid]-filtered (obligation 6; every
+    landed call site passes it {!delivered_samples}'s own output).
+
+    {2 The two-group reading's precondition}
+
+    Reading the first element of the returned pair as one frame's words and
+    the second as the next frame's is correct only if the FIRST frame
+    delivers at least one word. Where a frame may deliver none (requirements.
+    md §0.7: an abort at or before its own first octet), this function still
+    returns a well-formed pair — but the first group it returns is the NEXT
+    frame's own words, and the second group is empty, because there is no
+    earlier [tlast] to stop at. A guard written to prove the silent first
+    frame's absence by inspecting this function's own first group therefore
+    convicts the frame that is actually present.
+
+    {2 The incident (FINDING B-1, `RV-0062-VERDICT` §2)}
+
+    Two rows built directly on the two-group reading without checking this
+    precondition went red against a conforming design at commit `88da20e`
+    (CI `build` run 30937558341), each with a message accusing the design of
+    violating §0.7 — the design was innocent; the two-group reading's own
+    precondition was silently false for that run's first frame.
+
+    {2 What a caller must do}
+
+    Either establish that both groups this function returns are non-empty
+    before reading them as two frames' own words — every landed two-group
+    call site in this suite does so with its own [List.is_empty] guard on
+    each group — or do not use the two-group reading at all when the first
+    frame may deliver nothing, which is what the repaired M03-B2/M03-B3 call
+    sites do instead (repair R-1, `RV-0062-VERDICT`). *)
+val split_at_first_tlast : sample list -> sample list * sample list
+
 (** [frames_at ~lane ~fcs_valid ?ifg octets_lists] — {!Dv_xgmii.Arrival.create}
     at the §0.3 lane mapping (lane 0 -> [first_start:8], lane 4 ->
     [first_start:12]), passing [octets_lists] straight through as the frame

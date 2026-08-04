@@ -251,9 +251,9 @@
     mutation-qualified (`WO-0056`'s own citation), so this row's own
     contribution is the STROBE SET fact (that resynchronisation happened
     cleanly, with no `error_start_without_terminate`), not a fresh latency
-    claim. [account_resync_runt_frame] below accounts for it: the SAME
-    {!Bench} primitives {!account_dropped_frame}-shaped helpers in
-    `test_m03_e.ml`/`test_m03_f.ml` use, generalised to take a hand-built
+    claim. {!Bench.account_dropped_piece} below accounts for it: the SAME
+    {!Bench} primitives {!Bench.account_dropped_frame}-shaped helpers use,
+    generalised to take a hand-built
     `in_times` array (8 preamble + 4 content octet times, from the injected
     `/S/`'s own octet time) rather than an {!Dv_xgmii.Arrival.frame} record —
     there is no such record for a frame the STIMULUS opens mid-array, only
@@ -304,7 +304,7 @@
     in full again rather than assumed unchanged), `test/xgmii_rx_64/
     bench.mli`, `test/monitors/octet_time.ml` (`Latency.frame_dropped`'s own
     implementation, confirmed to not inspect its array argument — the fact
-    [account_resync_runt_frame] above relies on), `test_m03_c.ml`,
+    {!Bench.account_dropped_piece} above relies on), `test_m03_c.ml`,
     `test_m03_e.ml` and `test_m03_f.ml` (read as idiom reference, named
     where a pattern is reused, `fail_cross` and `account_dropped_frame`'s
     shape among them). `agents/handoffs/WO-0056_m03-g-discard-window-
@@ -378,40 +378,18 @@ let account_truncated_frame bench (frame : Dv_xgmii.Arrival.frame) samples =
     (Dv_monitors.Octet_time.of_words delivered_pairs)
 ;;
 
-(* Duplicated from test_m03_e.ml's/test_m03_f.ml's own file-local helper of
-   the same shape, per this packet's own convention: {!Bench} is the only
-   shared surface, so every family file carries its own copy rather than
-   reaching into a sibling file's private code. *)
-let split_at_first_tlast samples =
-  let rec go acc = function
-    | [] -> List.rev acc, []
-    | (s : sample) :: rest ->
-      if s.out.Dv_monitors.Stream_word.tlast then List.rev (s :: acc), rest else go (s :: acc) rest
-  in
-  go [] samples
-;;
-
 (* An /S/-injection frame the STIMULUS itself opens mid-array (M03-G7's
    resynchronised runt) has no {!Dv_xgmii.Arrival.frame} record to read
-   [in_times] from -- only a genuinely scheduled frame does. This is the
-   SAME shape as test_m03_e.ml's/test_m03_f.ml's own [account_dropped_frame]
-   (file-local there too, per this packet's own convention: {!Bench} is the
-   only shared surface), generalised to take the octet-time array by hand:
-   8 preamble octets from the injected start character inclusive, then
-   [received] content octets -- exactly {!Dv_monitors.Octet_time.Latency.
-   frame_in}'s own documented contract. [Latency.frame_dropped] pops it
-   without a comparison, the "no tlast word to mark" case its own docstring
-   names (confirmed against `test/monitors/octet_time.ml`'s own
-   implementation: [frame_dropped] only pops the pending queue and does not
-   inspect its argument, so an honestly-derived array costs nothing beyond
-   honesty itself). *)
-let account_resync_runt_frame bench ~start_ot ~received ~strobe =
-  Dv_monitors.Conservation_monitor.frame_in (conservation bench);
-  Dv_monitors.Conservation_monitor.discarded (conservation bench) ~strobes:[ strobe ];
-  let in_times = Array.init (8 + received) ~f:(fun i -> start_ot + i) in
-  Dv_monitors.Octet_time.Latency.frame_in (latency bench) in_times;
-  Dv_monitors.Octet_time.Latency.frame_dropped (latency bench)
-;;
+   [in_times] from -- only a genuinely scheduled frame does. {!Bench.
+   account_dropped_piece} is the SAME shape as {!Bench.account_dropped_frame},
+   generalised to take the octet-time array by hand: 8 preamble octets from
+   the injected start character inclusive, then [received] content octets --
+   exactly {!Dv_monitors.Octet_time.Latency.frame_in}'s own documented
+   contract. [Latency.frame_dropped] pops it without a comparison, the
+   "no tlast word to mark" case its own docstring names (confirmed against
+   `test/monitors/octet_time.ml`'s own implementation: [frame_dropped] only
+   pops the pending queue and does not inspect its argument, so an
+   honestly-derived array costs nothing beyond honesty itself). *)
 
 (* ---- M03-G1 ---------------------------------------------------------- *)
 (* "A 1600-octet frame followed immediately by a valid 64-octet frame |
@@ -1241,7 +1219,7 @@ let%expect_test
    disposition (4 octets between start and terminate, the M03-F2 sub-five
    class: no output word, error_runt alone) is asserted structurally
    (nothing delivered where it would be) and via the exact strobe set,
-   accounted through [account_resync_runt_frame].
+   accounted through {!Bench.account_dropped_piece}.
 
    Assertion order (module docstring's own convention, WO-0054 §4 item 1):
    construction-site checks (residue_ok x2, the k guards, [Injection.
@@ -1500,7 +1478,7 @@ let run_g7 ~lane =
           ; Int.to_string (List.length pulses)
           ]));
   account_truncated_frame bench frame1 words1;
-  account_resync_runt_frame bench ~start_ot:resync_start_ot ~received:resync_received ~strobe:"error_runt";
+  account_dropped_piece bench ~start_ot:resync_start_ot ~received:resync_received ~strobe:"error_runt";
   account_clean_frame bench frame2 words2 ~aborted:false;
   Dv_monitors.Conservation_monitor.strobe_pulse (conservation bench) ~name:"error_oversize";
   Dv_monitors.Conservation_monitor.strobe_pulse (conservation bench) ~name:"error_runt";

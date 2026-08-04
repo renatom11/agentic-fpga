@@ -136,26 +136,8 @@ let account_aborted_frame bench (frame : Dv_xgmii.Arrival.frame) samples ~expect
    this IS M03-E3's bench-side rule, made mechanical. [Latency.frame_dropped]
    pops the input frame without a comparison, exactly the "no tlast word to
    mark" case its own docstring names. *)
-let account_dropped_frame bench (frame : Dv_xgmii.Arrival.frame) ~strobe =
-  Dv_monitors.Conservation_monitor.frame_in (conservation bench);
-  Dv_monitors.Conservation_monitor.discarded (conservation bench) ~strobes:[ strobe ];
-  Dv_monitors.Octet_time.Latency.frame_in (latency bench) (Dv_xgmii.Arrival.in_times frame);
-  Dv_monitors.Octet_time.Latency.frame_dropped (latency bench)
-;;
-
-(* Duplicated from test_m03_d.ml's own local helper of the same shape rather
-   than shared, so this file has no dependency on another test file's private
-   code -- {!Bench} is the only shared surface WO-0043 authorises. *)
-let split_at_first_tlast words =
-  let rec go acc = function
-    | [] -> List.rev acc, []
-    | (s : sample) :: rest ->
-      if s.out.Dv_monitors.Stream_word.tlast
-      then List.rev (s :: acc), rest
-      else go (s :: acc) rest
-  in
-  go [] words
-;;
+(* {!Bench.split_at_first_tlast} is used below where this file's own rows
+   need the two-group reading. *)
 
 (* ---- M03-E1 ------------------------------------------------------------ *)
 (* "/E/ in each of the eight lanes of a mid-frame word of a 64-octet frame (8
@@ -516,7 +498,7 @@ let%expect_test
    Discharged above by [run_e2]'s own accounting DISCIPLINE, not by a
    separate test function: E2's frame is accounted to the conservation
    monitor through [Conservation_monitor.discarded] (the strobe path, via
-   [account_dropped_frame]), never through [Conservation_monitor.frame_out
+   {!Bench.account_dropped_frame}), never through [Conservation_monitor.frame_out
    ~aborted:true] (the clean-frame/abort-marked path {!Bench.account_clean_frame}
    uses for every other row in this suite) -- and [run_e2] never reads a
    [tlast_sample]'s [tuser] field for this frame, because [tlast_sample]

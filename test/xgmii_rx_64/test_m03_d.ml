@@ -200,21 +200,8 @@ let d3_ordering_label = function
   | Bad_then_good -> "pair B (bad-then-good)"
 ;;
 
-(* [samples], restricted to [tvalid] = 1 (obligation 6), split at the first
-   [tlast] = 1 entry (inclusive) — the boundary between a two-frame
-   schedule's first and second delivered frame. Reading [.tlast] here is
-   legitimate under obligation 6 because every element has already been
-   filtered to [tvalid] = 1 by the caller ({!Bench.delivered_samples}). *)
-let split_at_first_tlast words =
-  let rec go acc = function
-    | [] -> List.rev acc, []
-    | (s : sample) :: rest ->
-      if s.out.Dv_monitors.Stream_word.tlast
-      then List.rev (s :: acc), rest
-      else go (s :: acc) rest
-  in
-  go [] words
-;;
+(* {!Bench.split_at_first_tlast}: the boundary between a two-frame
+   schedule's first and second delivered frame. *)
 
 type mixed_pair_frame =
   { sample_words : sample list (* this frame's own delivered words, in

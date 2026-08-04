@@ -147,18 +147,15 @@ let%expect_test "M03-B1: nonstandard preamble filler and SFD octets, both start 
    below therefore always reads [(Dv_xgmii.Arrival.frames sched).(1)]'s own
    [start_octet_time], never assumes one.
 
-   Local helpers, duplicated rather than added to `bench.ml` (WO-0062 §2 bar
-   10): [account_dropped_frame] is test_m03_e.ml:139's / test_m03_f.ml:145's
-   own helper, in the same shape, for each row's own aborted, genuinely
-   [Dv_xgmii.Arrival.frame]-backed first case. [account_forwarded_frame] is
-   test_m03_h.ml's own [account_spliced_forwarded], in the same shape, for
-   M03-B4's frame B -- the one frame in this file's three rows that
-   [Injection] opens from inside the array rather than laying out as its own
-   declared frame case, so it has no [Dv_xgmii.Arrival.frame] record for
-   {!Bench.account_clean_frame} to read (bench.mli's own docstring names
-   this the "frame the stimulus opens" case). Neither is moved into
-   `bench.ml`; a machinery consolidation inside a row round is out of scope
-   (WO-0062 §2 bar 10), flagged in the Return log, not taken. *)
+   WO-0064: the accounting helpers below are {!Bench}'s shared surface, not
+   file-local copies. {!Bench.account_dropped_frame} is used for each row's
+   own aborted, genuinely [Dv_xgmii.Arrival.frame]-backed first case.
+   {!Bench.account_forwarded_piece} is used for M03-B4's frame B -- the one
+   frame in this file's three rows that [Injection] opens from inside the
+   array rather than laying out as its own declared frame case, so it has no
+   [Dv_xgmii.Arrival.frame] record for {!Bench.account_clean_frame} to read
+   (bench.mli's own docstring names this the "frame the stimulus opens"
+   case). *)
 
 let fail row msg = failwith (String.concat [ row; ": "; msg ])
 
@@ -173,45 +170,8 @@ let fail_cross row what =
        ])
 ;;
 
-(* Duplicated from every other family file's own local helper of the same
-   shape rather than shared, per this packet's own convention. *)
-let split_at_first_tlast samples =
-  let rec go acc = function
-    | [] -> List.rev acc, []
-    | (s : sample) :: rest ->
-      if s.out.Dv_monitors.Stream_word.tlast then List.rev (s :: acc), rest else go (s :: acc) rest
-  in
-  go [] samples
-;;
-
-(* test_m03_e.ml:139 / test_m03_f.ml:145's own shape, duplicated per
-   WO-0062 §2 bar 10: a frame that delivers ZERO octets is accounted through
-   its STROBE, never through an "emitted" frame_out. *)
-let account_dropped_frame bench (frame : Dv_xgmii.Arrival.frame) ~strobe =
-  Dv_monitors.Conservation_monitor.frame_in (conservation bench);
-  Dv_monitors.Conservation_monitor.discarded (conservation bench) ~strobes:[ strobe ];
-  Dv_monitors.Octet_time.Latency.frame_in (latency bench) (Dv_xgmii.Arrival.in_times frame);
-  Dv_monitors.Octet_time.Latency.frame_dropped (latency bench)
-;;
-
-(* test_m03_h.ml's own [account_spliced_forwarded], duplicated per WO-0062
-   §2 bar 10: accounting for a piece that delivers content but has no
-   genuine [Arrival.frame] record of its own -- M03-B4's frame B, which
-   [Injection] opens from inside the array (module comment above).
-   [~received] is the octet count the frame actually RECEIVED while open
-   (WO-0059 §7.3 Finding 1 / RV-0057-VERDICT Finding 1: [in_times] must be
-   sized by what was received, not by what was delivered). *)
-let account_forwarded_frame bench ~start_ot ~received ~delivered ~aborted samples =
-  Dv_monitors.Conservation_monitor.frame_in (conservation bench);
-  Dv_monitors.Conservation_monitor.frame_out (conservation bench) ~aborted;
-  let in_times = Array.init (8 + received) ~f:(fun i -> start_ot + i) in
-  Dv_monitors.Octet_time.Latency.frame_in (latency bench) in_times;
-  let delivered_pairs = List.map samples ~f:(fun s -> s.cycle, s.out) in
-  Dv_monitors.Octet_time.Latency.frame_out
-    (latency bench)
-    ~expected_octets:delivered
-    (Dv_monitors.Octet_time.of_words delivered_pairs)
-;;
+(* {!Bench.account_dropped_frame}: a frame that delivers ZERO octets is
+   accounted through its STROBE, never through an "emitted" frame_out. *)
 
 (* WO-0062 §5 T3: read the second, ordinary frame's own start lane/cycle
    from Arrival, never assume it. Shared by M03-B3 (one lane) and M03-B2
@@ -472,7 +432,7 @@ let run_b4 () =
   (* Conservation: frame A dropped, frame B forwarded/clean (WO-0062 §2 bar
      13). *)
   account_dropped_frame bench frame_a ~strobe:"error_start_without_terminate";
-  account_forwarded_frame
+  account_forwarded_piece
     bench
     ~start_ot:start_ot_b
     ~received:64
