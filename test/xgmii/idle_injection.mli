@@ -132,9 +132,19 @@ val cycles : t -> int
     source cycle a bench translates through [cycle_of] — never the output
     cycle itself. (This corrects the docstring's own former second sentence,
     which named `m + 3` — an output cycle — as an argument this function
-    could take; RV-0059-VERDICT FINDING 4, `agents/handoffs/
-    WO-0059_tb-m03-family-i-silence-and-ordered-sets.md` §8 states the
-    corrected rule a caller applies.) Monotonic and injective. *)
+    could take; RV-0059-VERDICT FINDING 4.) The corrected rule a caller
+    applies is SPEC-M03 §6.1's D(m) as re-ruled at `1f3c04c`:
+    [baseline_cycle(m) + (cycle_of(D m) - D m)], with D(m) always a SOURCE
+    cycle. (Citation repaired at `J-dv_lead-0105`: this docstring credited
+    "`agents/handoffs/WO-0059_…md` §8", and that packet's §8 is titled
+    "`test/xgmii_rx_64/bench.mli`, `bench.ml` and `dune`" and states no
+    cycle rule at all. The section meant was `RV-0059-VERDICT` §8 -- which
+    is appended inside that same file, so the path was right and only the
+    packet name was dropped -- but RV-0059-VERDICT §8 is the rule that was
+    REFUTED and re-based, so re-citing it would preserve a dead pointer's
+    aim rather than repair it. History kept, authority moved: WO-0060 §3.6's
+    own rule, applied here as it was to the three sites in
+    `test/xgmii_rx_64/test_m03_i.ml`.) Monotonic and injective. *)
 val cycle_of : t -> int -> int
 
 (** True when an injected-line cycle carries an injected idle word rather than

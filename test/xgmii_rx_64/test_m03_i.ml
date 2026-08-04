@@ -562,6 +562,21 @@ let run_i2_member
          ; Int.to_string boundary
          ; ", the silence boundary 3 cycles after the terminate word (REQ-109, C-14.3)"
          ]);
+  (* CITATION EXCEPTION, deliberate and dated -- do not "fix" this to match
+     [run_i2_zero_octet_member]'s strobe message below without reading this
+     first. The citation is WRONG in the same way that member's was: §0.6
+     rules that C-14.3 bounds output WORDS and not strobes, so the rule a
+     pulse at or after `boundary` violates is SPEC-M03 §9's pin and not
+     C-14.3 (the assertion itself is sound -- only its authority is
+     mis-named). It is NOT repaired here because this exact composed string
+     is quoted verbatim as a frozen sealed cell:
+     `WO-0061_family-i-mutation-campaign-SEALED-predictions.md` §3, class
+     I-c10, row T-I2 offset >= +3 -- `M03-I2 (member i, 64 octets, lane 0):
+     a strobe pulsed at or after cycle 13 (REQ-109, C-14.3)`. Editing it
+     would make a scored campaign's evidence unverifiable at HEAD, which
+     costs more than one documented divergence between two runners. The
+     repair is owed at the round that supersedes or retires that seal
+     (`J-dv_lead-0105`). *)
   if List.exists silent_tail ~f:(fun s -> not (List.is_empty s.errors_high))
   then
     fail
@@ -578,9 +593,14 @@ let run_i2_member
    `AP-xgmii_rx_64.md` row M03-I2, `J-dv_lead-0102`): a frame closed by its
    OWN `/T/` with zero octets received between start and terminate, the
    only member of this row that owes a strobe (members (i) and (ii) are
-   clean frames and owe none) and therefore the only member that can
-   convict C-14.3's window on its strobe half rather than only its
-   `tvalid` half. It is `test_m03_f.ml`'s own `run_f2` at `k = 0`, reused
+   clean frames and owe none) and therefore the only member whose
+   boundary scan can convict on its STROBE half rather than only on its
+   `tvalid` half. (The boundary is C-14.3's at both halves; the RULE the
+   strobe half enforces is SPEC-M03 §9's pin against §0.6's ceiling, not
+   C-14.3, which §0.6 rules bounds output words and not strobes -- see
+   step 6 below. C-14.3's window has a `tvalid` half and no strobe half;
+   what has both is this member's scan at C-14.3's boundary.)
+   It is `test_m03_f.ml`'s own `run_f2` at `k = 0`, reused
    rather than rebuilt (WO-0063A §2) -- a 64-octet base frame with its own
    frame octet 0 replaced by an injected `/T/`.
 
@@ -786,9 +806,22 @@ let run_i2_zero_octet_member
   then fail row "a tvalid word was observed for a frame that must deliver nothing (§0.7)";
   (* Step 6 (WO-0063A §5): the row's own observable -- silence from the
      boundary onward, over samples filtered to cycle >= boundary. Two
-     separate assertions, each naming boundary, REQ-109 and C-14.3. This is
-     the C-14.3 window's OWN scan, the instrument this member exists to
-     feed, and it speaks before the standing Strobe_monitor registration is
+     separate assertions, both naming boundary and REQ-109, and they cite
+     DIFFERENT authorities on purpose (RV-0063A §5 item (i), swept here):
+
+     - the `tvalid` half cites C-14.3, because C-14.3 is a bound on output
+       WORDS and that is exactly what this half asserts the absence of;
+     - the strobe half does NOT, because requirements.md §0.6 rules in terms
+       that C-14.3 "bounds output words and not strobes" and that on a frame
+       emitting no word it "contributes a scan boundary" rather than a second
+       rule about the pulse. The boundary is still C-14.3's -- what is not
+       C-14.3's is the RULE a pulse at or after it violates. That rule is
+       SPEC-M03 §9's pin (W + 2) read against §0.6's ceiling (W + 3): a
+       report deferred to the ceiling is inside §0.6's window and
+       non-conformant on §9's authority (requirements.md §0.6 at `a12ac8f`,
+       answering `WO-0063` §8 question 3).
+
+     Both assertions speak before the standing Strobe_monitor registration is
      ever checked (step 9). No comparison anywhere in this member reads the
      observed strobe's cycle against §9's pin of 4 (BO-4) -- the only cycle
      bound on the pulse is step 7's "< boundary" below, which is part of the
@@ -814,7 +847,11 @@ let run_i2_zero_octet_member
     fail
       row
       (String.concat
-         [ "a strobe pulsed at or after cycle "; Int.to_string boundary; " (REQ-109, C-14.3)" ]);
+         [ "a strobe pulsed at or after cycle "
+         ; Int.to_string boundary
+         ; " (REQ-109, §0.6's ceiling and SPEC-M03 §9's pin -- C-14.3 bounds output words, \
+            not strobes)"
+         ]);
   (* Step 7 (WO-0063A §5): anti-vacuity on the strobe -- exactly one
      error_runt pulse, strictly before the boundary. Nothing tighter: this
      is the only cycle bound the member places on the pulse, and it is
@@ -943,10 +980,12 @@ let%expect_test
    received) at both start lanes -- silence from 3 cycles after the \
    terminate word onward, the first two members' own delivered words / \
    tkeep / tlast cycle / clean FCS verdict, the third member's own \
-   error_runt checked against the C-14.3 window instead (its boundary \
-   derived from the closing character, never Arrival.terminate_octet_time), \
-   per-member per-lane boundaries derived and guarded independently \
-   (REQ-109, §6.1, C-14.3, §0.7)"
+   error_runt checked against the scan at C-14.3's boundary instead (that \
+   boundary derived from the closing character, never \
+   Arrival.terminate_octet_time; the rule its strobe half enforces is \
+   SPEC-M03 §9's pin against §0.6's ceiling, since C-14.3 bounds output \
+   words and not strobes), per-member per-lane boundaries derived and \
+   guarded independently (REQ-109, §6.1, C-14.3, §0.6, §9, §0.7)"
   =
   run_i2 ();
   [%expect {||}]

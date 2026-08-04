@@ -2923,3 +2923,282 @@ cumulative untiled span **J-dv_lead-0001 … 0104**, first harvest still firing 
 ### Files-in-this-commit
 - test/xgmii_rx_64/test_m03_i.ml
 - agents/handoffs/WO-0063A_m03-i2-member-iii-bench.md
+
+## [J-dv_lead-0105] 2026-08-05T01:15Z | task:WO-0063 | The citation sweep run by the defect rather than by the string — and it found a site the string could not reach, then stopped at one it could, because a frozen seal quotes it
+
+### Trigger
+My own `RV-0063A-VERDICT` §7, commissioned items 1 and 2, executed by me
+because §7 item 1 records the defect as **mine**: `WO-0063A` §5 instructed the
+message shape that carries it, so the sweep is not a worker's to run. The
+orchestrator's spawn scheduled this as the **first** of two commits this round,
+ahead of the phase-B packet, per this verdict's own ordering law (the sweep
+lands **before** the phase-B base SHA or **after** the campaign scores, never
+between).
+
+### Inputs
+- `agents/handoffs/WO-0063A_m03-i2-member-iii-bench.md` — the whole packet and
+  `RV-0063A-VERDICT`, §5 items (i)/(ii) and §7 items 1/2 above all.
+- `agents/handoffs/WO-0063_m03-i2-report-path-delay-mini-round.md` §5, §9.3.
+- `agents/handoffs/WO-0059_tb-m03-family-i-silence-and-ordered-sets.md` — its
+  **section headings in full** (`grep '^## \|^### '`), §8's own text, and the
+  appended `RV-0059-VERDICT` §5 (FINDING 4) and §8. This is the read the ruling
+  in Reasoning turns on; I did not take either candidate target on trust.
+- `agents/handoffs/WO-0061_family-i-mutation-campaign-SEALED-predictions.md` §3
+  (class I-c10, row T-I2), plus a grep of **all seven** `*-SEALED-predictions.md`
+  files for the two swept message strings.
+- `test/xgmii_rx_64/test_m03_i.ml` (both runners in full, the module docstring,
+  the M03-I2 unit title); `test/xgmii/idle_injection.mli` (:112–:161).
+- **Specs**: `docs/specs/requirements.md` §0.6 — the *bound-never-a-licence*
+  note at :467–:487 read in full, and its change-log row at :950 (the ruling at
+  `a12ac8f`); `docs/specs/modules/xgmii_rx_64.md` §6.1 (:690, the C-14.3
+  carry-forward), §9, and the REQ-109 hook at :1204.
+- No `libs/**`, no `rtl_snapshots/**`, no RTL of any kind. No agent's journal
+  but my own.
+
+### Reasoning
+
+**1. The predicate, stated before the sweep, because a sweep whose predicate
+cannot be stated cannot be claimed closed.** My own `J-dv_lead-0104` candidate
+(LH2-g) says an open enumeration is searched by the **defect**, never by the
+string its known instances share. The known instances share
+`" (REQ-109, C-14.3)"`. So that string is exactly what I was not allowed to
+search by.
+
+> **P** — *No message string, and no rule-stating comment, in an executable
+> bench source under `test/**` names SPEC-M03 §6.1's drain derivation
+> (carry-forward C-14.3) as the authority for a bound on a **strobe**.*
+
+**Why P closes on two searches and not one.** A violation of P must either
+(A) name the authority — in any spelling — or (B) bound a strobe's cycle. So the
+union of "every site naming that authority, classified by what claim it carries"
+and "every site bounding a strobe cycle, classified by what authority it cites"
+covers P. Direction (A) alone is what a string-grep does and is what missed the
+fourth site two rounds running; direction (B) is what makes the enumeration
+open in fact rather than in disclaimer. **Scope of P, stated so a reader knows
+what it excludes**: executable bench sources (`.ml`/`.mli`) under `test/**`.
+`test/attack_plans/**` is checked and classified below but deliberately not
+repaired, and packets are out of scope entirely — a packet is dated argument,
+not a live citation.
+
+**2. What the two directions returned.** Direction (A): 18 sites naming C-14.3
+in `test/**` `.ml`/`.mli` (all in `test_m03_i.ml`), plus a cross-check of the
+alternate spellings (`§6.1`, `drain`, `ΔC`) against strobe/report wording, which
+returned only two `axi64_probe` hits about a different module's one-cycle pulse
+— not this defect. Direction (B): every strobe-cycle-bounding string in
+`test/**` — seven sites across four files; five cite their own module's pin or
+C-23 or REQ-113 and are correct, and the two that cite C-14.3 are the two
+direction (A) already had. **Direction (B) added no new site and that is a
+result, not a nil**: it is what lets me say the two known instances are the only
+*message* instances, rather than hoping so.
+
+**Where direction (A) earned its keep** is the class of site that carries the
+defect in **prose that shares no string with the messages**: the member (iii)
+header comment claiming the member can *"convict C-14.3's window on its strobe
+half"*, and the M03-I2 unit title saying its `error_runt` is *"checked against
+the C-14.3 window"*. Both assert the refuted proposition — that C-14.3 issues a
+rule about the pulse — and neither contains `(REQ-109, C-14.3)`. A string-grep
+sweep would have repaired two messages and left two claims standing, which is
+the file speaking two ways with the contradiction hidden in the prose.
+
+**3. The distinction the repair turns on, and it is one cycle wide.** §0.6 at
+`a12ac8f` rules that C-14.3 *"bounds output **words** and not strobes"* and that
+on a frame emitting no word it *"contributes a scan boundary at the same cycle
+rather than a second rule about strobes."* So the **boundary** is C-14.3's at
+both halves of the scan — that citation is correct wherever the site names the
+boundary — and what is **not** C-14.3's is the rule a pulse at or after it
+violates. That rule is SPEC-M03 §9's pin (W + 2) read against §0.6's ceiling
+(W + 3). This is why the repair is not "delete C-14.3": four of the eighteen
+sites name the boundary and stay exactly as they are.
+
+**4. The stop, and why I took it rather than argue past it.** `run_i2_member`'s
+strobe message composes, at member (i) lane 0, the string
+`M03-I2 (member i, 64 octets, lane 0): a strobe pulsed at or after cycle 13
+(REQ-109, C-14.3)` — which is quoted **verbatim** as a sealed cell in
+`WO-0061_…-SEALED-predictions.md` §3, class I-c10. Editing it makes a scored
+campaign's evidence unverifiable at HEAD and forces every later reader into SHA
+archaeology to confirm the campaign was scored on the string it says it was.
+**That costs more than one documented divergence between two runners.** So the
+site is not repaired; it gains a comment naming the defect, naming the sealed
+cell that pins it, and naming what the repair waits on.
+
+**This falsifies my own commission.** `RV-0063A` §7 item 1 said *"Both runners
+in one edit, so the file never speaks two ways about one idiom."* That
+instruction was written without checking whether either string was already
+sealed, and it is wrong for the reason `J-dv_lead-0104` banked one round ago:
+a change proposal must state which existing claims its own instructions make
+false. Mine made a frozen seal's quotation false and did not know it. The
+recovery is not silence — it is that **the divergence is deliberate, dated and
+readable at both sites**, so a later reader meets an exception with its reason
+rather than an inconsistency with none.
+
+**5. The `idle_injection.mli` ruling — the credit belongs to a section of the
+same file under a different packet's name, and the rule it states is dead.**
+The site credited *"`agents/handoffs/WO-0059_…md` §8"* with stating *"the
+corrected rule a caller applies."* Read against the file: **`WO-0059` §8 is
+titled "`test/xgmii_rx_64/bench.mli`, `bench.ml` and `dune`"** and contains no
+cycle rule at all. **`RV-0059-VERDICT` §8** — appended inside that same file — is
+titled *"The corrected rule, stated once, and it replaces §2.4 and §3.4 items 2
+and 4"* and states exactly the caller's rule. So the **path was right and the
+packet name was dropped**; the section number was never wrong, it was attached
+to the wrong one of the two documents that share the file.
+
+**But re-citing `RV-0059-VERDICT` §8 would repair the pointer's aim and preserve
+its error**: that §8 is precisely the rule `RV-0060-VERDICT` §10 item 3 records
+as **refuted**, re-based to SPEC-M03 §6.1's D(m) at `1f3c04c`, and repaired at
+three sites in `test_m03_i.ml` last round. So `WO-0060` §3.6's rule governs —
+**history kept, authority moved**: `RV-0059-VERDICT` FINDING 4 stays as the
+record of what was wrong with the docstring, and the rule is re-cited to
+SPEC-M03 §6.1's D(m) (`1f3c04c`) in the same form the three repaired sites use.
+The garbled-name diagnosis is written into the docstring rather than only into
+this entry, because the next reader to follow that pointer is the one who needs
+it, and `RV-0063A` §5 item (ii) left the choice between two candidates open.
+
+**6. What I checked and did not repair, named so it is not read as missed.**
+`test/attack_plans/AP-xgmii_rx_64.md` §4.I item 6 contains the loose form
+(*"no assertion … reads a report against C-14.3's bound except this row's
+window"*) — but that block is an explicitly dated **open question to
+architect_docs_lead**, and the answer that supersedes it is already on the
+record at `RV-0063A` §5 item (iii). Editing a dated record of a question into
+the answer's language is rewriting the question, not repairing a citation.
+**Second and decisive reason**: the plan is phase B's contract and this commit
+becomes phase B's base SHA — moving the contract in the commit the seal freezes
+against is exactly the between-seal-and-campaign motion my own ordering law
+forbids. The plan owes a change-log row recording the closure at `a12ac8f`;
+commissioned, not taken.
+
+### Actions
+- **`test/xgmii_rx_64/test_m03_i.ml`** — four repairs and one deliberate
+  non-repair, all comment/message strings, no executable logic and no
+  `[%expect]` block touched:
+  1. **`run_i2_zero_octet_member`'s strobe-silence message** re-cited: the
+     parenthetical becomes `(REQ-109, §0.6's ceiling and SPEC-M03 §9's pin --
+     C-14.3 bounds output words, not strobes)`. The `tvalid` half one assertion
+     above keeps `(REQ-109, C-14.3)` unchanged and correct.
+  2. **Step 6's comment** rewritten: it previously said the two assertions each
+     name *"REQ-109 and C-14.3"*, which repair 1 makes false. It now states the
+     asymmetry, why each half cites what it cites, and that the boundary is
+     C-14.3's at both halves while the strobe half's rule is §9's.
+  3. **The member (iii) header comment**: *"convict C-14.3's window on its
+     strobe half"* → the scan at C-14.3's boundary convicts on its strobe half;
+     C-14.3's window has a `tvalid` half and no strobe half.
+  4. **The M03-I2 `%expect_test` title**: *"checked against the C-14.3 window"*
+     → *"checked against the scan at C-14.3's boundary"*, with the governing
+     rule named and the authority list extended to §0.6 and §9. The
+     `"M03-I2: "` prefix and the `[%expect {||}]` block are byte-identical.
+  5. **`run_i2_member`'s strobe-silence message: NOT repaired**, with a
+     `CITATION EXCEPTION` comment above it naming the defect, the sealed cell
+     that pins the string, and what the repair waits on.
+- **`test/xgmii/idle_injection.mli`** — `cycle_of`'s docstring citation
+  repaired per §5 of Reasoning: rule re-cited to SPEC-M03 §6.1's D(m)
+  (`1f3c04c`), `RV-0059-VERDICT` FINDING 4 kept as history, and the
+  misattribution diagnosed in place.
+- **No git command run. No RTL opened. No packet edited** — this commit is
+  message and comment strings in two bench sources and nothing else, which is
+  what lets the "touches no sealed string" claim be checked by reading the diff.
+
+### Evidence
+- **The sweep, both directions, reproducible**:
+  `grep -rn "C-14\.3" test/ --include=*.ml --include=*.mli --include=dune` → 18
+  sites, all in `test_m03_i.ml`;
+  `grep -rn "§6\.1\|drain" test/ --include=*.ml --include=*.mli | grep -i
+  "strobe\|pulse\|report\|error_"` → 2 hits, both `axi64_probe`/SPEC-M14, not
+  this defect; the claim-first pass
+  `grep -rn "strobe pulsed at or after\|strobe .*cycle\|pulse .*cycle" test/
+  --include=*.ml --include=*.mli` → 7 strobe-bounding sites across
+  `test_m03_g.ml`, `test_m03_h.ml`, `test_m03_i.ml`, `test_strobe_monitor.ml`;
+  the five outside `test_m03_i.ml`'s two cite their own module's pin, C-23 or
+  REQ-113 and are correct.
+- **Site disposition, all 18**: repaired 3 (the header comment, step 6's
+  comment, the strobe message) + 1 title = **4**; correct-as-written and
+  untouched **13** (the Independence source list, the section banner, the
+  `tvalid` messages at both runners, the two `test bug --` boundary guards, the
+  §5.1 registration comment and its `why` string, the call-site derivation
+  comment, and the docstring's *"says nothing whatever about C-14.3's bound"*,
+  which is true); stopped on **1** (`run_i2_member`'s strobe message).
+- **Frozen-seal collision check, all seven seals**:
+  `grep -rn "strobe pulsed at or after" agents/handoffs/` → one seal hit,
+  `WO-0061_…-SEALED-predictions.md:349`, quoting `run_i2_member`'s string —
+  **the site I stopped on**. `grep -rn "output word was emitted at or after"
+  agents/handoffs/` → **zero** hits, so the `tvalid` messages are unsealed
+  (and unedited anyway). `grep -rn "idle_injection.mli" agents/handoffs/*SEALED*`
+  → **zero**. **No string this commit edits is named by any frozen seal.**
+- **Parse**: `ocamlc -stop-after parsing test/xgmii_rx_64/test_m03_i.ml` → exit
+  **0**; same for `test/xgmii/idle_injection.mli` → exit **0**.
+- **Inventory**: `bash tools/dv_checks.sh` → `5 test/xgmii_rx_64/test_m03_i.ml`,
+  `39 test/xgmii_rx_64/`, `119 test/` — unchanged. Sole `OBLIGATION OPEN` is the
+  standing RFC-1071 network-fetch item, unrelated and pre-existing.
+- **No `[%expect]` movement**: `git diff -U0 -- test/xgmii_rx_64/test_m03_i.ml |
+  grep -E "^[+-]" | grep -c "%expect"` → **0**.
+- `git diff --stat` → exactly two files, `+63 / -14`.
+- **Not run**: `dune build`, `dune runtest` — no local toolchain (ADR-0005).
+  **CI at this commit is the authority** and does not exist yet; nothing above is
+  offered as a substitute for it, and the composed-string claims in the phase-B
+  seal are claims about source text, which the diff settles.
+- **The `WO-0059` §8 heading**, quotable: `grep -n "^## \|^### "` on that file
+  gives `605:## 8. \`test/xgmii_rx_64/bench.mli\`, \`bench.ml\` and \`dune\``
+  and `1362:### 8. The corrected rule, stated once, and it replaces §2.4 and
+  §3.4 items 2 and 4` — the two §8s, in one file, which is the whole ruling.
+
+### Outcome
+`RV-0063A` §7 commissioned items 1 and 2 **discharged**, item 1 **partially and
+visibly**: three of the four defect sites repaired plus the unit title, and the
+fourth stopped on a frozen-seal collision with the reason recorded at the site
+rather than only here. The predicate **P** is stated and both directions of its
+closure are reproducible above, so a reader can see what this sweep could not
+have found. **DoD**: no `SO-` this round; the round's own bar was "enumerate what
+you checked and what you found, and claim the predicate closed only if you can
+state it" — met, with the one stop declared rather than absorbed.
+
+**This commit is phase B's base SHA.** The seal in the next commit freezes
+against the strings **as repaired here**, which is the ordering law of
+`RV-0063A` §7 discharged in fact: the sweep lands before the base SHA, never
+between seal and campaign.
+
+**Harvest (ADR-0018, PROTOCOL §7).** **Not due this round** — no `SO-`, no gate.
+Span since the previous note: **J-dv_lead-0105** (this entry); cumulative
+untiled span **J-dv_lead-0001 … 0105**, first harvest still firing at `SO-M03`.
+
+- **All six banked candidates carry unchanged**, and the newest of them —
+  *search an open enumeration by the defect, never by the string its instances
+  share* (LH2-g, banked at `J-dv_lead-0104`) — was **run for the first time this
+  round and paid**: direction (A) found two prose sites carrying the refuted
+  proposition in words that share no substring with the two known messages. Its
+  observable is unchanged; its LH1 gains this commit as a second incident, and
+  the incident is the rule **working**, which is worth recording beside the
+  incidents where its absence cost something.
+- **Exemption-by-assertion gains a third incident**, in a new direction, and it
+  is **again mine**. The banked observable is *a change proposal states which
+  existing claims its own instructions make false*. `RV-0063A` §7 item 1
+  instructed an edit that would have falsified a **frozen seal's verbatim
+  quotation** — an artefact class the observable does not mention. Extended
+  observable, banked rather than merged: *before instructing an edit to a string,
+  a proposal establishes whether that string is quoted by any frozen artefact,
+  because a citation elsewhere makes a local edit a remote falsification.*
+  **LH1**: this commit. **LH2-g** — no proper noun. **LH3**: without it, a
+  hygiene sweep silently voids the evidence of a completed measurement, and the
+  voiding is invisible at the sweep's own site.
+- **Both war stories carry unchanged.** No candidate retired, none promoted.
+
+### Open-questions
+1. **`run_i2_member`'s strobe citation stays wrong on purpose**, and its repair
+   has no carrier. It becomes repairable when `WO-0061`'s seal is superseded or
+   retired — which is not an event anything currently schedules. Named here so
+   the exception does not become permanent by inattention.
+2. **`AP-xgmii_rx_64.md` §4.I item 6 owes a change-log row** recording that its
+   open question closed at `a12ac8f`, and its loose *"reads a report against
+   C-14.3's bound"* phrasing should follow §0.6's ruling. **Not** in this commit
+   (it is phase B's contract and this is phase B's base SHA); owed at the first
+   round after the campaign scores.
+3. Carried unchanged from `J-dv_lead-0104`: `WO-0058` bound 7; the
+   `assert_following_frame_intact` / `assert_clean_frame_structure` merge, still
+   deliberately uncommissioned; `WO-0061` §8 bound 1's `tkeep` half; **N-1**,
+   still without a carrier; the auditor's DV-escape ledger disposition on
+   `BUG-0003`, which is not mine; family J behind a bench-capability round;
+   `SO-xgmii_rx_64.md` unopened and not offered; and the whose-action-does-this-
+   bar-constrain requirement I owe at the next packet — **discharged in the
+   phase-B packet of the next commit**, not here.
+
+### Files-in-this-commit
+- test/xgmii_rx_64/test_m03_i.ml
+- test/xgmii/idle_injection.mli
+
