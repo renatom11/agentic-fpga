@@ -414,3 +414,199 @@ your return rather than from a re-read of the file.
   is untouched, and §3.1 says why B4 does not reach it.
 - **`WO-0061` §8 bound 1's `tkeep` half** at an injected run stays unmeasured;
   nothing here touches family I's instruments.
+
+---
+
+## RETURNED — tb_writer (spawn `WO-0062/2026-08-04T17:41Z`)
+
+**State**: RETURNED — no `SO-` claimed, no sign-off asserted. Deliverables:
+`test/xgmii_rx_64/test_m03_b.ml` (three new units, B4/B3/B2, built in the
+packet's own risk order with B1 untouched), `test/xgmii_rx_64/dune`'s header
+line (one new entry, comment-only), the five owed bench notes of §6.1 in
+`test/xgmii_rx_64/test_m03_i.ml` (comment-only, no assertion moved), and
+this Return log. Nothing else staged.
+
+### 1. Derivations — no disagreement with §3's numbers
+
+I re-derived every octet time, lane, cycle and window independently from
+`requirements.md` §0.3/§0.5/§0.6/§0.7 and REQ-101/102/103/105/106/107/110,
+and from `SPEC-M03` §6.1 (the preamble-position table, the one-word
+lookahead), §6.2, §6.3 items 3 and 8, §7, §9 (the closure list, the
+no-output-word pin, ruling 9), then cross-checked every aborted frame's
+report and every clean/forwarded frame's `delivered`/`words`/`last_tkeep`/
+`tlast_cycle` against `Dv_xgmii.Injection.outcomes` (hand-traced against
+`injection.ml`'s own per-octet-time walker, `injection.ml:284-446`, before
+trusting `fail_cross` on any of them — the walker's `Control c when
+c = terminate_char` arm inside the preamble range, `injection.ml:350-357`,
+is what confirmed B3's REQ-102-routing claim is exactly what the model
+computes, not merely what the spec text implies). **All three rows agree
+with §3's own numbers exactly** — cycle 3, window `[1, 4]` at all three
+rows and both of B2's lanes; B4's frame B at received 64 / delivered 60 /
+words 8 / `last_tkeep` 0x0F / `tlast_cycle` 11. No disagreement to report,
+per §3's own framing ("a derivation to check, not an instruction").
+
+### 2. Per-row status
+
+- **M03-B4**: ENCODED (`run_b4`). T4's array-arithmetic guard is a
+  double check: the array length is asserted `= 68` before construction,
+  and the model's own `received` field is separately asserted `= 64` after
+  cross-check — either one alone would have caught the T4 mistake, and I
+  wanted the failure to name which one tripped rather than leave a reader
+  to guess. Frame B's content is asserted by `List.equal` against
+  `Frame.delivered` of its own 64-octet source, per §3.1's own instruction
+  on why the count/`tkeep` instrument is too weak here (WO-0057 §2.3).
+- **M03-B3**: ENCODED (`run_b3`). The exact strobe-set check
+  (`error_pulses samples` matched against the single-element list) is the
+  one mechanism that both proves `error_runt` fired and proves
+  `error_bad_fcs` did NOT — I made the failure message name the
+  `error_bad_fcs` kill explicitly (M03-M10's own second carrier) rather
+  than let the set-equality alone carry that meaning silently, per your own
+  framing of T9 as "an assertion, not an omission."
+- **M03-B2**: ENCODED (`run_b2`, both lanes). Cited `test_m03_e.ml`'s
+  `run_e5` for the lane-0 preamble-in-start-word fact rather than
+  re-deriving it; did not open or touch `run_e5`. The lane-4 member's own
+  in-word placement (position 3 at octet time `start_ot + 3`, landing at
+  lane 7 of the start word) is derived and guarded in `run_b2` itself, not
+  assumed from the lane-0 case.
+
+### 3. T3 in practice — the following frame's lane, read not assumed
+
+`assert_following_frame_intact` (shared by B2 and B3) reads
+`(Dv_xgmii.Arrival.frames sched).(1)`'s own `start_octet_time` and never
+computes one. Worth recording since it is not obvious from the row text
+alone: with a 64-octet first declared frame and the default 12-octet IFG,
+B3's own second frame lands at octet time 92 — **lane 4**, not lane 0 —
+because the terminate character of a 64-octet frame at a lane-0 start
+lands at octet time 80 (a multiple of 8), and `80 + 12 = 92 ≡ 4 (mod 8)`.
+I do not assert this number in the row text (it is exactly what T3 warns
+against hand-assuming), but I traced it by hand before trusting the
+runtime read, so I can report here that the guard is live, not merely
+present as ceremony.
+
+### 4. Local machinery added, and why it was not moved to `bench.ml`
+
+Four functions local to `test_m03_b.ml`, all duplicated from an existing
+file-local precedent rather than added to `bench.ml`/`bench.mli` (§2 bar
+10): `fail`/`fail_cross` (every other family file's own shape),
+`split_at_first_tlast` (same), `account_dropped_frame`
+(`test_m03_e.ml:139`/`test_m03_f.ml:145`'s own shape, verbatim),
+`account_forwarded_frame` (`test_m03_h.ml`'s own `account_spliced_forwarded`,
+verbatim in shape, renamed only because "spliced" does not describe M03-B4's
+own construction — nothing here is spliced, frame B is simply a frame the
+stimulus opens mid-array). One new local helper with no direct precedent:
+`assert_following_frame_intact`, factoring the four-check "ordinary clean
+frame, checked structurally" shape `test_m03_i.ml`'s own
+`assert_clean_frame_structure` already uses for the identical reason (three
+call sites in this file: B3 once, B2 twice). **I did not add anything to
+`bench.ml`.** If a future round wants one of these four consolidated (the
+`account_*` pair now has three near-identical file-local copies across
+E/F, H and B), that is a machinery-consolidation call for you, not mine to
+take inside a row round.
+
+### 5. The five owed bench notes (§6.1) — sites chosen, and one placement
+judgement call to flag
+
+All five landed in `test/xgmii_rx_64/test_m03_i.ml`, comment-only, no
+assertion moved (confirmed by the diff itself — every hunk below is a pure
+insertion between existing lines, verified by eye before this Return log
+was written). Sites:
+
+- **(i)** (lane-4 count-guard blindness): full text at M03-I2's own
+  runtime count guard (`run_i2_member`, the guard that reads
+  `List.length words_out`, i.e. the design's actual emitted stream) —
+  **not** the construction-time guard immediately above it that only
+  checks this file's own arithmetic against the packet's `~expected_words`
+  parameter. I judged the runtime guard to be the one the note is actually
+  about (a "count-guard disagreement" that is "impossible" at lane 4 is a
+  claim about a DESIGN defect the guard would or would not catch, not
+  about the bench's own internal consistency), and cross-referenced the
+  same guard at M03-I1 (lane-0-only, so live, not blind — stated as the
+  contrast), M03-I3's `assert_clean_frame_structure`, M03-I4 and M03-I6.
+  **Flag**: if your own original note (i) meant the construction-time
+  guard instead, the placement is wrong and should move; I could not
+  settle which one was meant without reading `WO-0061` itself, which I
+  judged out of scope for a comment-only deliverable and did not open.
+- **(ii)** (guard ordering): one site, M03-I2's own four-guard cascade
+  (`run_i2_member`, `terminate_cycle`/`tlast_cycle`/`boundary`/`words`) —
+  the clearest illustration of "an earlier fail-raising guard prevents a
+  later, independently sufficient instrument from ever speaking" already
+  in the file. Not duplicated elsewhere; this note reads as a general
+  principle rather than a per-site fact, and I judged one clear site
+  better than five thin echoes.
+- **(iii)** (tuser precedes strobe check): four sites, exactly as named —
+  M03-I1, M03-I2, M03-I3's `assert_clean_frame_structure`, M03-I6.
+- **(iv)** (M03-I6 1518-octet member, corrected form): the module comment
+  immediately above `run_i6_case`, in the block-quote form your packet
+  gives verbatim.
+- **(v)** (`drain = injected + 8`): two sites, `run_i4_case` and
+  `run_i6_case`, exactly as named.
+
+**Scope note**: deliverable 3's own phrase "in `test_m03_i.ml` and
+wherever the count guard lives" I read as a hedge over the exact line
+within `test_m03_i.ml` (which is what note (i) needed, since it turned out
+to have two candidate sites at M03-I2 alone), not as license to touch any
+other family file — no file outside this packet's four named deliverables
+was staged, and none of `test_m03_a.ml` through `test_m03_h.ml` was
+opened for editing.
+
+### 6. Assertion order
+
+Every row: construction guards → the model cross-check (`fail_cross`) →
+stimulus-landing checks (pre-run in the schedule's own words, then
+post-run in the cycle `run` actually drove, §2 bar 3) → structural facts
+(no output word at all for the aborted frame) → the following/forwarded
+frame's own content (the anti-vacuity partner) → the exact strobe set,
+last → conservation → `assert_monitors_clean`. B4 additionally states, in
+its own docstring, that "frame A delivers no word at all and pulses
+exactly one `error_start_without_terminate`" (§3.1's own early framing) is
+discharged in two parts: the early structural word-count check proves
+nothing else was delivered, and the single, whole-run `error_pulses` match
+near the end proves the one pulse both exists and is alone — I did not
+duplicate the `error_pulses` match itself to satisfy the prose's two
+mentions literally, since no other row in this suite checks it twice and I
+judged a second, redundant check to be noise rather than signal. Flagging
+this judgement call in case you wanted two literal checks.
+
+### 7. Not built, not touched
+
+`run_e5` (`test_m03_e.ml`) — read for its own arithmetic, not edited.
+`AP-xgmii_rx_64.md` — not edited (dv_lead's). B4 at a lane-4 start, an
+`/I/`/`/Q/` preamble case, and M03-I6 at an even `k` — all three §6.2
+footnote items — not written, per your own instruction not to.
+
+### 8. Toolchain evidence
+
+- `ocamlc -stop-after parsing test/xgmii_rx_64/test_m03_b.ml`: exit 0.
+- `ocamlc -stop-after parsing test/xgmii_rx_64/test_m03_i.ml`: exit 0.
+- `bash tools/precompile_check.sh`: ALL LANES PASSED; `test/xgmii_rx_64`
+  correctly `EXCLUDED — depends on hardcaml_ethernet` (unaffected by this
+  packet's diff, as expected — this directory has never been in that
+  harness's lane).
+- `bash tools/dv_checks.sh`: `check_emitted_verilog.sh --self-test` OK
+  (17/17), `precompile_check.sh --self-test` OK (3/3 seeded defects
+  caught), `check_rfc1071_anchor.sh` OBLIGATION OPEN (blocked network
+  egress, pre-existing per `J-dv_lead-0017/0018`, unrelated to M03 or this
+  packet). Bench inventory: `test_m03_b.ml` now **4** units (was 1);
+  `test/xgmii_rx_64/` total **39** (was 36) — exactly `+3`, matching the
+  three rows commissioned.
+- `bash tools/check_records_vs_appendix.sh`: 23/23 PASS, unchanged.
+- `(eval $(opam env); dune build @default)` / `dune runtest`: **not run** —
+  no Hardcaml toolchain this container (ADR-0005); CI is authoritative.
+  All three new `%expect` blocks are `{||}`, empty — nothing hand-authored
+  or promoted.
+- `git status --porcelain`: exactly `test/xgmii_rx_64/dune`,
+  `test/xgmii_rx_64/test_m03_b.ml`, `test/xgmii_rx_64/test_m03_i.ml`
+  modified, before this Return log and the journal entry were staged —
+  matching the four named deliverables (this file being the fourth).
+
+### Escalations
+
+None blocking. One placement judgement call flagged in §5 (note (i)'s
+exact site among two candidates at M03-I2) and one flagged in §6 (B4's
+"two mentions" of the strobe check, resolved as one check). Neither
+blocks a row; both are reported per charter §3's "return ambiguity as
+written questions" rather than silently guessed past.
+
+Handoff: this RETURNED block, plus journal entry `J-tb_writer-0021`. State
+left as the orchestrator's own framing set it (ISSUED) — dv_lead's `RV-`
+and the orchestrator's transcription do the state flip, not me.

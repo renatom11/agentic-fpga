@@ -1047,3 +1047,223 @@ deliberately not acted on, being outside `3.6`'s own closed list.
 ### Files-in-this-commit
 - test/xgmii_rx_64/test_m03_i.ml
 - agents/handoffs/WO-0060_tb-m03-family-i-dm-rebase.md
+
+## [J-tb_writer-0021] 2026-08-04T18:10Z | task:WO-0062 | Family B closed out — M03-B4/B3/B2 built in risk order, no derivation disagreement, the five owed I-family bench notes landed
+
+### Trigger
+Orchestrator, spawning me against `WO-0062_tb-m03-family-b-preamble-and-sfd.md`
+(spawn `WO-0062/2026-08-04T17:41Z`): three ASSERT rows from
+`AP-xgmii_rx_64.md` §4.B (M03-B4, M03-B3, M03-B2) plus the five bench notes
+owed at the next round that opens `test/xgmii_rx_64/` (§6.1), built in the
+packet's own risk-ranked review order, B4 first.
+
+### Inputs
+- `agents/handoffs/WO-0062_tb-m03-family-b-preamble-and-sfd.md` in full —
+  spec basis, the three rows' own text and derivations, the ten derivation
+  traps (T1-T10), the five owed bench notes' texts, the two footnoted-not-
+  commissioned items.
+- `agents/charters/tb_writer.md` in full; `agents/PROTOCOL.md` §2-6, §10
+  (mechanics, independence, harvest note obligation) — read per my own
+  mandatory-first-actions ordering, ahead of any file edit.
+- `docs/specs/requirements.md` REQ-101, REQ-102, REQ-103, REQ-105, REQ-106,
+  REQ-107, REQ-110, REQ-008, REQ-011, REQ-021, REQ-104, §0.3, §0.5, §0.6,
+  §0.7, §12 — the packet's own citation list, read at the cited sections.
+- `docs/specs/modules/xgmii_rx_64.md` §6.1, §6.2, §6.3 items 3 and 8, §7,
+  §9 (closure list, nine-row table, no-output-word pin, ruling 9), §10 —
+  the packet's own citation list.
+- `test/attack_plans/AP-xgmii_rx_64.md` §4.B (M03-B1-B4 row text), §4.H
+  bound 1 (the REQ-110 lane-4-of-an-S-word citation), §4.M M03-M10 (the
+  second-carrier claim B3 pays), §4.N M03-N3 (the /I//Q/-in-preamble
+  reconciliation footnoted, not commissioned).
+- `test/xgmii_rx_64/test_m03_b.ml` (B1, read in full before extending —
+  not touched), `bench.mli` (in full), `bench.ml`'s own dune-file header
+  comment, `dune`.
+- `test/xgmii/injection.mli` and `injection.ml` (read in full, including
+  the per-octet-time walker `outcomes`, lines 284-446, and `create`'s own
+  override-table construction, lines 81-179 — hand-traced against all
+  three rows' own geometries before trusting `fail_cross`).
+- `test/xgmii/arrival.mli`, `test/xgmii/xgmii_word.mli`, `test/xgmii/frame.mli`.
+- `test/xgmii_rx_64/test_m03_e.ml` (in full — `run_e5`, `fail_cross`,
+  `account_dropped_frame`, `run_e4`'s gap-construction idiom, the WO-0043
+  trap-answer-2 note on `Arrival.check`'s gap arithmetic ignoring
+  `Injection`'s overrides — load-bearing for T3), `test_m03_f.ml` (in full
+  — `run_f1`/`run_f2`'s assertion order and `~expected_words`/count-guard
+  idiom), `test_m03_h.ml` (in full — the splice construction precedent,
+  `account_spliced_forwarded`, the risk-ranked file-ordering precedent,
+  `fail`/`split_at_first_tlast`).
+- `test/xgmii_rx_64/test_m03_i.ml` (in full, both before and after each of
+  the five note edits — module docstring, `run_i1`/`run_i2_member`/
+  `assert_clean_frame_structure`/`run_i4_case`/`run_i6_case`, every count
+  guard and tuser-check site touched).
+- `agents/handoffs/WO-0061_family-i-mutation-campaign.md` and
+  `WO-0059_tb-m03-family-i-silence-and-ordered-sets.md`: names checked via
+  `Glob` to confirm they exist; **neither opened** — WO-0062 §6.1 already
+  gives all five notes' texts verbatim, so no further read was needed, and
+  I judged opening `WO-0061_family-i-mutation-campaign-SEALED-predictions.md`
+  in particular to be out of scope for a comment-only deliverable (R-SEAL-1
+  territory, not mine to disturb).
+- `agents/handoffs/README.md`: not opened this spawn (not needed — the WO
+  itself carries the full lifecycle context).
+
+No path under `libs/**`, `top/**`, `bin/**`, `rtl_snapshots/**` or
+`docs/reports/audit/**` was opened at any point in this spawn.
+`BUG-0002*`/`BUG-0003*` were not opened.
+
+### Reasoning
+**Independence discipline.** Every expected value in all three rows —
+octet time, lane, cycle, window, delivered/received count, `tkeep`,
+`tlast` cycle — was hand-derived from the cited spec text FIRST, then
+cross-checked against `Dv_xgmii.Injection.outcomes` (WO-0062 §2 bar 2's
+own two-derivations-in-order rule). All three rows' hand derivations
+agreed with the packet's own §3 numbers exactly; no disagreement is
+reported (§9's escalation rule: bake nothing "provisionally"). I hand-
+traced `injection.ml`'s own `outcomes` walker against each row's specific
+geometry — in particular, confirming that a `/T/` landing inside a
+preamble range routes through the walker's `Control c when
+c = terminate_char` arm (line 350-357) to `error_runt` rather than falling
+through to the generic `Control _ -> error_bad_frame` arm, which is
+exactly REQ-102's third-sentence routing claim B3 rests on, not something
+I took on the model's say-so.
+
+**T4 (B4's array arithmetic) was the round's highest-risk single fact.**
+Built with a double guard: the array's own length asserted `= 68` before
+any `Injection` call, and the model's own `received` field on frame B
+separately asserted `= 64` after cross-check — either would independently
+have caught the 64-vs-68-octet mistake the trap describes, and I wanted
+the two failure messages to name which check tripped rather than leave a
+future reader re-deriving which one matters.
+
+**T2/T3 governed the shared machinery.** `account_dropped_frame` (a
+verbatim local copy of `test_m03_e.ml`/`test_m03_f.ml`'s own helper) and
+`account_forwarded_frame` (a verbatim-in-shape local copy of
+`test_m03_h.ml`'s `account_spliced_forwarded`, renamed because nothing in
+M03-B4's construction is a splice) keep the row round's own machinery
+local, per §2 bar 10 — I considered and rejected moving either into
+`bench.ml`; that is now three near-identical file-local copies of the
+"dropped frame" shape across E/F, H and B, which I flag in the Return log
+§4 as a future consolidation candidate rather than taking myself.
+`assert_following_frame_intact` is new (no direct precedent to copy), but
+it is the same four-check "ordinary clean frame" shape
+`test_m03_i.ml`'s own `assert_clean_frame_structure` already uses for the
+identical factoring reason (multiple call sites needing the same four
+checks) — I read `test_m03_i.ml`'s file specifically to confirm this
+precedent existed before writing a new function rather than a fourth,
+would-be first, ad hoc shape.
+
+**The five bench notes' site choices.** WO-0062 §6.1 gives all five
+notes' TEXT verbatim; my own work was locating the SITE each belongs at.
+Four of five had a single unambiguous site or an explicitly-named small
+set (iii at I1/I2/I3/I6; iv at I6's own header; v at
+`run_i4_case`/`run_i6_case`). Note (i) had two candidate sites at M03-I2
+alone — a construction-time self-consistency guard and a runtime guard
+that reads the design's own emitted stream — and I judged the runtime one
+to be what "a count-guard disagreement is impossible there" is actually
+about (a claim over what the guard would or would not catch of a REAL
+design defect), placing the full text there and a cross-reference at the
+construction-time guard's neighbourhood plus at I1/I3/I4/I6's own count
+guards. Flagged as a judgement call in the Return log §5 rather than
+silently resolved, since I could not settle it without opening
+`WO-0061_family-i-mutation-campaign.md` itself, which I judged unnecessary
+for a comment-only deliverable whose text was already given.
+
+### Actions
+- `test/xgmii_rx_64/test_m03_b.ml`: extended in place. B1's own code and
+  expect block (lines 1-97) untouched. Appended: a family-level comment
+  block (WO-0062 context, the T2/T3/T6 shared facts, the local-helper
+  rationale), `fail`/`fail_cross`/`split_at_first_tlast` (duplicated,
+  file-local), `account_dropped_frame`/`account_forwarded_frame`
+  (duplicated, file-local), `assert_following_frame_intact` (new,
+  file-local), `run_b4`/`run_b3`/`run_b2` and their three
+  `let%expect_test` blocks (empty `[%expect {||}]` bodies).
+- `test/xgmii_rx_64/dune`: one new header-comment line, `WO-0062  B2-B4
+  ASSERT (...)`, matching the file's own standing-list convention; no
+  stanza touched.
+- `test/xgmii_rx_64/test_m03_i.ml`: the five owed bench notes added as
+  pure comment insertions at nine total sites (note (i) at four sites —
+  I1, I2 x1 full + x1 cross-ref, I3, I4, I6; note (ii) at one site; note
+  (iii) at four sites — I1, I2, I3, I6; note (iv) at one site; note (v) at
+  two sites). No assertion, expression or expect block touched — confirmed
+  by re-reading every hunk before this entry was written.
+- `agents/handoffs/WO-0062_tb-m03-family-b-preamble-and-sfd.md`: appended
+  the Return log (eight numbered sections: derivations, per-row status,
+  T3 in practice, local machinery, the five notes' sites and one flagged
+  placement judgement call, assertion order and one flagged judgement
+  call, what stayed untouched, toolchain evidence).
+
+### Evidence
+- `ocamlc -stop-after parsing test/xgmii_rx_64/test_m03_b.ml`: exit 0.
+- `ocamlc -stop-after parsing test/xgmii_rx_64/test_m03_i.ml`: exit 0.
+- `bash tools/precompile_check.sh`: ALL LANES PASSED; `test/xgmii_rx_64`
+  correctly `EXCLUDED — depends on hardcaml_ethernet` (this packet's diff
+  does not touch that harness's own lanes).
+- `bash tools/dv_checks.sh`: `check_emitted_verilog.sh --self-test` 17/17
+  OK; `precompile_check.sh --self-test` 3/3 seeded defects caught;
+  `check_rfc1071_anchor.sh` OBLIGATION OPEN, pre-existing blocked egress
+  (`J-dv_lead-0017/0018`), unrelated to this packet. Bench inventory:
+  `test_m03_b.ml` 4 units (was 1, `+3` exactly matching the three
+  commissioned rows); `test/xgmii_rx_64/` total 39 units (was 36).
+- `bash tools/check_records_vs_appendix.sh`: 23/23 PASS, unchanged from
+  baseline.
+- `git status --porcelain`: exactly `test/xgmii_rx_64/dune`,
+  `test/xgmii_rx_64/test_m03_b.ml`, `test/xgmii_rx_64/test_m03_i.ml`
+  modified — before this journal entry and the Return log were staged.
+- `dune build` / `dune runtest`: **not run** — no Hardcaml toolchain this
+  container (ADR-0005); this is a container-wide, pre-existing absence,
+  not something this diff caused. CI is authoritative. All three new
+  `%expect` blocks are `{||}`, empty — nothing hand-authored or promoted,
+  so no waveform-eyeball promotion claim is made or owed this round.
+
+### Outcome
+All three rows ENCODED, no derivation disagreement with the packet's own
+§3 numbers, no row BLOCKED. Every REQ-### and derivation trap the packet
+assigned maps to a named guard or assertion in the delivered code (T1
+cited not re-derived; T2/T5 the whole-run exact-strobe-set checks; T3 the
+dynamic-read helper; T4 the double guard; T6/T7 construction-site guards;
+T8 no `tuser` claim on a no-`tlast` frame; T9 the explicit no-`error_bad_fcs`
+message; T10 `account_dropped_frame`/`account_clean_frame`/
+`account_forwarded_frame`'s own per-frame class split). The five owed
+bench notes are present at test_m03_i.ml, comment-only, with no assertion
+moved (self-verified before this entry). Two judgement calls made without
+a ruling to fall back on are flagged in the Return log rather than
+silently resolved: note (i)'s exact site among two candidates at M03-I2,
+and B4's "two mentions" of the strobe-exactness check read as one
+mechanical check rather than two literal, redundant ones. DoD: every
+promoted `[%expect]` body is empty, so no waveform-eyeball obligation is
+owed this round (bar 9); `git diff --exit-code` is not clean by
+construction (this IS the diff) but no UNPROMOTED drift exists — nothing
+was run, nothing was promoted. No sign-off claimed.
+
+**Harvest note (PROTOCOL §7 / ADR-0018), this round's own span**: `J-tb_writer-0021 .. J-tb_writer-0021`
+(this entry only — no prior `## [J-tb_writer-...]` entry in either journal
+volume carries a harvest note, so this is tb_writer's first; a full
+retrospective harvest over `0001..0020` is NOT attempted here and is a gap
+for a lead- or orchestrator-level pass, not claimed as closed by this
+note). **Nil yield.** This round's own work applied ten already-identified
+derivation traps (T1-T10) and five already-written note texts to new
+sites; no new incident, defect or surprising disagreement arose that
+taught a rule — every hand derivation agreed with the packet's own numbers
+on the first pass, and the two judgement calls in the Return log (§5, §6)
+are placement/reading questions, not defects with an incident commit to
+cite (LH1 fails for both: neither is "taught" by a commit, both are
+open questions I am asking dv_lead to rule on). A round that goes
+uneventfully to plan is a legitimate zero-yield round; nil declared, not
+omitted.
+
+### Open-questions
+- Note (i)'s exact intended site among the two candidate guards at
+  M03-I2 (construction-time self-consistency vs. runtime design-observing)
+  — flagged in the Return log §5, not resolved here; does not block a row.
+- Whether B4's own "frame A delivers no word... and pulses exactly one...
+  [early] / the run-wide exact strobe set [late]" two-mention prose wanted
+  two literal `error_pulses` checks or one (I built one) — flagged in the
+  Return log §6; does not block a row.
+- Whether the `account_dropped_frame`/`account_forwarded_frame` shapes
+  (now duplicated at E/F, H and B) should consolidate into `bench.ml` — a
+  machinery call for dv_lead, not taken here (Return log §4).
+- Nothing else open. No RTL leak. No licensing concern.
+
+### Files-in-this-commit
+- test/xgmii_rx_64/test_m03_b.ml
+- test/xgmii_rx_64/test_m03_i.ml
+- test/xgmii_rx_64/dune
+- agents/handoffs/WO-0062_tb-m03-family-b-preamble-and-sfd.md

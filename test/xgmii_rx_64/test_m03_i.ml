@@ -286,6 +286,13 @@ let run_i1 () =
   let expected_tkeep_last =
     if Int.rem delivered 8 = 0 then 0xFF else (1 lsl Int.rem delivered 8) - 1
   in
+  (* Owed bench note (i) (WO-0062 §6.1, carried forward from J-dv_lead-0094
+     / WO-0061 §12; full text at M03-I2's own word-count guard below): at a
+     lane-4 start the emitted word count equals W by identity, so a
+     count-guard disagreement is impossible there and the tlast-position
+     check is blind with it -- the instrument is present and blind at one
+     lane, not missing. M03-I1 is driven at lane 0 only, so this guard is
+     live here; it is the family-wide caveat that is the point. *)
   let words_out = delivered_samples samples in
   if List.length words_out <> words
   then
@@ -319,6 +326,10 @@ let run_i1 () =
     then (if not s.out.Dv_monitors.Stream_word.tlast then fail row "the last word does not carry tlast")
     else if s.out.Dv_monitors.Stream_word.tlast
     then fail row (String.concat [ "word "; Int.to_string m; " unexpectedly carries tlast" ]));
+  (* Owed bench note (iii) (WO-0062 §6.1, carried forward from J-dv_lead-0094
+     / WO-0061 §12): the clean-FCS tuser check precedes every strobe check,
+     and that ordering decides what a strobe-class defect reports (WO-0061
+     FINDING S-2). Present at M03-I1/I2/I3/I6; this is the M03-I1 site. *)
   (match tlast_sample samples with
    | None -> fail row "no tlast word observed"
    | Some s ->
@@ -408,6 +419,15 @@ let run_i2_member
     if Int.rem delivered 8 = 0 then 0xFF else (1 lsl Int.rem delivered 8) - 1
   in
   let tlast_cycle = start_cycle + 3 + (words - 1) in
+  (* Owed bench note (ii) (WO-0062 §6.1, carried forward from J-dv_lead-0094
+     / WO-0061 §12), on the four-guard cascade immediately below: an
+     earlier fail-raising guard prevents a later, independently sufficient
+     instrument from ever speaking; which instrument convicts is a
+     control-flow fact, not a coverage fact. Each of the four guards below
+     (terminate_cycle, tlast_cycle, boundary, words) is independently
+     sufficient to catch a disagreement with this packet's own derivation,
+     but only the FIRST one a given defect trips is the one whose message
+     a reader ever sees. *)
   if terminate_cycle <> expected_terminate_cycle
   then
     fail
@@ -441,6 +461,23 @@ let run_i2_member
       row
       "test bug -- the run's own drain does not reach the asserted silence boundary; \
        the absence check below would be vacuous (WO-0059 §3.2)";
+  (* Owed bench note (i) (WO-0062 §6.1, carried forward from J-dv_lead-0094
+     / WO-0061 §12), on the count guard immediately below -- the one that
+     actually reads the design's own emitted stream (the construction-time
+     guard above it only checks this file's own arithmetic against the
+     packet's derivation, not the DUT): at a lane-4 start the emitted word
+     count equals W by identity, so a count-guard disagreement is
+     impossible there and the tlast-position check is blind with it -- the
+     instrument is PRESENT and BLIND at one lane, not missing. This guard
+     fires at both lanes ([lane] is a parameter of this very function), but
+     it can only ever fire on a real design defect at lane 0; at lane 4 the
+     row's own coverage of a wrong-count defect rests on the per-word
+     cycle/tkeep/tlast checks and the content comparison below, not on this
+     guard. Present, in the same shape, at every count guard in this file
+     that also drives lane 4 (M03-I1 is lane-0-only and so is not blind;
+     M03-I3's [assert_clean_frame_structure], M03-I4 and M03-I6 all are) --
+     stated in full here since this is the guard already parameterised by
+     lane, closest to hand. *)
   let words_out = delivered_samples samples in
   if List.length words_out <> words
   then
@@ -469,6 +506,10 @@ let run_i2_member
     then (if not s.out.Dv_monitors.Stream_word.tlast then fail row "the last word does not carry tlast")
     else if s.out.Dv_monitors.Stream_word.tlast
     then fail row (String.concat [ "word "; Int.to_string m; " unexpectedly carries tlast" ]));
+  (* Owed bench note (iii) (WO-0062 §6.1, carried forward from J-dv_lead-0094
+     / WO-0061 §12): the clean-FCS tuser check precedes every strobe check,
+     and that ordering decides what a strobe-class defect reports (WO-0061
+     FINDING S-2). Present at M03-I1/I2/I3/I6; this is the M03-I2 site. *)
   let tlast_s = List.last_exn words_out in
   if tlast_s.out.Dv_monitors.Stream_word.tuser <> 0
   then fail row "tuser[0] set -- expected a clean FCS verdict";
@@ -634,6 +675,15 @@ let assert_clean_frame_structure ~row ~label ~start_cycle octets (samples : samp
   let expected_tkeep_last =
     if Int.rem delivered 8 = 0 then 0xFF else (1 lsl Int.rem delivered 8) - 1
   in
+  (* Owed bench note (i) (WO-0062 §6.1, carried forward from J-dv_lead-0094
+     / WO-0061 §12), on the count guard immediately below, called at both
+     start lanes by [run_i3]: at a lane-4 start the emitted word count
+     equals W by identity, so a count-guard disagreement is impossible
+     there and the tlast-position check is blind with it -- the instrument
+     is PRESENT and BLIND at one lane, not missing; this row's own coverage
+     of a wrong-count defect at lane 4 rests on the per-word cycle/tkeep
+     checks and the content comparison below. M03-I2's own word-count guard
+     carries this note's full text. *)
   if List.length samples <> words
   then
     fail
@@ -662,6 +712,10 @@ let assert_clean_frame_structure ~row ~label ~start_cycle octets (samples : samp
        then fail row (String.concat [ label; ": the last word does not carry tlast" ]))
     else if s.out.Dv_monitors.Stream_word.tlast
     then fail row (String.concat [ label; ": word "; Int.to_string m; " unexpectedly carries tlast" ]));
+  (* Owed bench note (iii) (WO-0062 §6.1, carried forward from J-dv_lead-0094
+     / WO-0061 §12): the clean-FCS tuser check precedes every strobe check,
+     and that ordering decides what a strobe-class defect reports (WO-0061
+     FINDING S-2). Present at M03-I1/I2/I3/I6; this is the M03-I3 site. *)
   (match List.last samples with
    | None -> fail row (String.concat [ label; ": no words to check tuser on" ])
    | Some s ->
@@ -1047,10 +1101,27 @@ let run_i4_case
     injected_word_cycle inj ~start_octet_time ~terminate_cycle ~words ~start_cycle (words - 1)
   in
   let bench = create () in
+  (* Owed bench note (v) (WO-0062 §6.1, carried forward from J-dv_lead-0094
+     / WO-0061 §12, WO-0061 FINDING S-1): [drain = injected + 8] yields an
+     EIGHT-CYCLE tail after the injected line ends, not [injected + 8]
+     cycles of tail -- [injected] is an octet count folded into the
+     schedule's own [cycles] via [Idle_injection], so the run this drives
+     is already [injected]-cycles longer before [drain] is even added; the
+     name reads as "injected cycles of extra tail" and is not. Present at
+     both [run_i4_case] and [run_i6_case]; this is the [run_i4_case] site. *)
   let drain = Dv_xgmii.Idle_injection.injected inj + 8 in
   let samples =
     run bench sched ~drain ~word_at:(fun ~cycle -> Dv_xgmii.Idle_injection.word_at inj ~cycle) ()
   in
+  (* Owed bench note (i) (WO-0062 §6.1, carried forward from J-dv_lead-0094
+     / WO-0061 §12), on the count guard immediately below, called at both
+     start lanes by [run_i4] (48 runs, both lanes among them): at a lane-4
+     start the emitted word count equals W by identity, so a count-guard
+     disagreement is impossible there and the tlast-position check is
+     blind with it -- the instrument is PRESENT and BLIND at one lane, not
+     missing; this row's own coverage of a wrong-count defect at lane 4
+     rests on the per-word cycle/tkeep/tlast checks below. M03-I2's own
+     word-count guard carries this note's full text. *)
   let words_out = delivered_samples samples in
   if List.length words_out <> words
   then
@@ -1504,7 +1575,23 @@ let%expect_test
    octets toward REQ-108's 1518 is lane-asymmetric -- it overshoots by
    roughly 3 cycles' worth of octets at a lane-0 start and undershoots by
    the same margin at a lane-4 start, so driving one lane only would miss
-   half of that defect's own reach). *)
+   half of that defect's own reach).
+
+   Owed bench note (iv) (WO-0062 §6.1, carried forward from J-dv_lead-0094
+   / WO-0061 §12, CORRECTED here -- the correction is the point):
+
+   M03-I6's 1518-octet member is unexercised at k = 7, the injection depth
+   this row drives -- not unexercised absolutely. The auditor's DISP-0001
+   §2.4 (fab31de) shows the same I-c1 mutant reaching REQ-108's truncation
+   on this member at even injection depths k >= 2: the binds recur at
+   t = 189 (mod 256), which is always odd, so no odd k can place one on a
+   covering word. The immunity is a parity accident of k, not a property
+   of this row or of the design.
+
+   Exercising an even k changes the injection depths §10 commissions (0, 1,
+   7, all odd or zero) -- WO-0062 §6.2 item 3 -- so it is a plan-and-spec-
+   hook question, not a bench decision this row settles; it rides as this
+   note, not as a stimulus change. *)
 
 let run_i6_case ~lane ~length =
   let row = String.concat [ "M03-I6 (length "; Int.to_string length; ", lane "; Int.to_string lane; ")" ] in
@@ -1554,10 +1641,22 @@ let run_i6_case ~lane ~length =
     injected_word_cycle inj ~start_octet_time ~terminate_cycle ~words ~start_cycle (words - 1)
   in
   let bench = create () in
+  (* Owed bench note (v) (WO-0062 §6.1, carried forward from J-dv_lead-0094
+     / WO-0061 §12, WO-0061 FINDING S-1): [drain = injected + 8] yields an
+     EIGHT-CYCLE tail after the injected line ends, not [injected + 8]
+     cycles of tail. Present at both [run_i4_case] (full text there) and
+     [run_i6_case]; this is the [run_i6_case] site. *)
   let drain = Dv_xgmii.Idle_injection.injected inj + 8 in
   let samples =
     run bench sched ~drain ~word_at:(fun ~cycle -> Dv_xgmii.Idle_injection.word_at inj ~cycle) ()
   in
+  (* Owed bench note (i) (WO-0062 §6.1, carried forward from J-dv_lead-0094
+     / WO-0061 §12), on the count guard immediately below, called at both
+     start lanes by [run_i6] (both members, both lanes): at a lane-4 start
+     the emitted word count equals W by identity, so a count-guard
+     disagreement is impossible there and the tlast-position check is
+     blind with it -- the instrument is PRESENT and BLIND at one lane, not
+     missing. M03-I2's own word-count guard carries this note's full text. *)
   let words_out = delivered_samples samples in
   if List.length words_out <> words
   then
@@ -1593,6 +1692,10 @@ let run_i6_case ~lane ~length =
   let tlast_s = List.last_exn words_out in
   if tlast_s.cycle <> injected_tlast_cycle
   then fail row "test bug -- the last word's own cycle does not match the corrected cycle rule's own value";
+  (* Owed bench note (iii) (WO-0062 §6.1, carried forward from J-dv_lead-0094
+     / WO-0061 §12): the clean-FCS tuser check precedes every strobe check,
+     and that ordering decides what a strobe-class defect reports (WO-0061
+     FINDING S-2). Present at M03-I1/I2/I3/I6; this is the M03-I6 site. *)
   if tlast_s.out.Dv_monitors.Stream_word.tuser <> 0
   then fail row "tuser[0] set -- expected a clean FCS verdict, this frame's own class is unchanged";
   let expected_octets = Dv_xgmii.Frame.delivered octets in
