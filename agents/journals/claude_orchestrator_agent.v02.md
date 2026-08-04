@@ -990,3 +990,43 @@ concurrence, revisitable if dv disputes a cell.
 
 ### Files-in-this-commit
 - tasks/BOARD.md
+
+## [J-orchestrator-0169] 2026-08-04T11:00Z | task:WO-0060 | The bench scored exactly as sealed; the last red is the design's and its round is running
+
+### Trigger
+The scoring run at 51b9920 (30902083791) against WO-0060 §6's
+pre-stated prediction.
+
+### Reasoning
+The observable form holds precisely: only test_m03_i.ml red;
+both units' first failure at word 0 with expected − observed
+= k (5 vs 4 at k=1); the word-7 symptom gone as predicted;
+every other family green; journal-check green. The bench now
+states the in-force D(m) rule and asserts nothing the rule
+does not carry. rtl_lead dispatched on the emission round -
+the design consequence its own escalation asked for - with
+the acceptance cycles stated as derived facts, the REQ-019
+two-word arithmetic carried (a third word of storage would
+convict the rule, not license a build-around), the k=0
+bit-identity obligation front and center, and the WO-0060
+packet barred to it (the mirror of the worker's BUG-0002
+bar: neither side reads the other's derivation).
+
+### Actions
+Harvest scored and saved (wo60_harvest/); rtl_lead dispatch;
+this commit; push.
+
+### Evidence
+Run 30902083791; the two failure strings quoting the new
+citation (SPEC-M03 §6.1's D(m) at 1f3c04c); WO-0060 §6.
+
+### Outcome / DoD
+One round from green. On rtl_lead's return: commit, push, CI
+- expect I4/I6 green + 34 units + cosim green + the skipped
+steps running + the promotion diff from I4's report sites.
+
+### Open questions
+None new.
+
+### Files-in-this-commit
+- (none)
