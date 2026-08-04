@@ -1407,3 +1407,239 @@ anchor undischarged.
 ### Files-in-this-commit
 - agents/handoffs/WO-0062_tb-m03-family-b-preamble-and-sfd.md
 - agents/handoffs/WO-0063_m03-i2-report-path-delay-mini-round.md
+
+## [J-dv_lead-0099] 2026-08-04T18:40Z | task:WO-0062 | Family B accepted with one reviewed repair — and the finding that decided the round is not a derivation error but a partition idiom transplanted into the first run in this bench where one partition is empty by construction
+
+### Trigger
+Orchestrator dispatch, `RV-0062`: line review of tb_writer's family-B build at
+`88da20e` (`run_b4`/`run_b3`/`run_b2` in `test/xgmii_rx_64/test_m03_b.ml`, the
+five owed §6.1 bench notes in `test_m03_i.ml`, one `dune` header line), in the
+packet's own ranked order B4 → B3 → B2, with two judgement calls flagged for
+adjudication and a helper-duplication disposition owed.
+
+### Inputs
+- `agents/handoffs/WO-0062_tb-m03-family-b-preamble-and-sfd.md` — §2 (the
+  thirteen bars), §3.1–§3.3 (the derivations), §4 (the ranking that is the review
+  order), §5 (traps T1–T10), §6.1 (the five owed notes), §6.2 (the three
+  footnoted items), §8 (pass criteria), and the full `RETURNED` block.
+- `test/xgmii_rx_64/test_m03_b.ml` at `88da20e`, read end to end.
+- `test/xgmii_rx_64/test_m03_i.ml` — the thirteen note insertions, and
+  `run_i2_member` / `assert_clean_frame_structure` for adjudication 1.
+- `test/xgmii_rx_64/bench.mli` (`run`, `delivered_samples`, `error_pulses`,
+  `account_clean_frame`, `frames_at`, `directed_frame_octets`,
+  `assert_monitors_clean`); `test/xgmii/injection.mli` (`placement`,
+  `corruption`, `outcome`'s ten fields, `create`'s `?first_lane`);
+  `test/xgmii/arrival.mli` (`frame`, `start_cycle`, `in_times`);
+  `test/monitors/conservation_monitor.mli` (`discarded`, `strobe_pulse`).
+- The landed precedents the review had to compare against:
+  `test_m03_e.ml:139/:598` (`account_dropped_frame`, `run_e5`'s zero-delivered
+  shape), `test_m03_f.ml:740`, `test_m03_g.ml` (six sites),
+  `test_m03_h.ml:164/:210/:227/:351/:905` (`split_at_first_tlast`,
+  `account_spliced_forwarded`, `run_h4`'s three-frame splice).
+- `agents/handoffs/WO-0061_family-i-mutation-campaign.md` §4.5 and my own
+  `J-dv_lead-0094` — opened specifically to settle adjudication 1, which
+  tb_writer correctly refused to open.
+- `agents/charters/dv_lead.md`, `agents/PROTOCOL.md` §3, §4, §6, §7, §10.
+- **CI**: run `30937558341` (`build`, `88da20e`, failure, job `92087417632`) and
+  its promotion block; `30937164518` (`build`, `a12ac8f`, success).
+- **No RTL, no `libs/**`, no `docs/reports/audit/**`.**
+
+### Reasoning
+
+**The review found the defect; CI proved it. I want the order on the record,
+because the reverse order is a different discipline.** Reading `run_b3`'s
+structural block against `split_at_first_tlast`'s own definition, the inversion
+is visible without running anything: the helper returns *(prefix through the
+first `tlast`, remainder)*, and with frame 1 delivering nothing under §0.7 the
+run's first `tlast` group **is** frame 2's. So frame 2's eight words are handed
+to the guard that asserts frame 1 delivered none, and a conforming design goes
+red with a message accusing the design of violating §0.7. Only afterwards did I
+pull run `30937558341`, which prints exactly that `Failure` at exactly
+`test_m03_b.ml:614` and `:791`. Had I taken the CI red first I would have been
+debugging a stack trace; taking it second, it is a confirmation of a diagnosis
+that already had a cause and a repair attached. Under ADR-0005 that ordering is
+the only thing separating review from bisection.
+
+**Why this is not a derivation failure, and why saying so precisely matters.**
+Every number tb_writer derived is right, and the same CI run proves it: for both
+failing rows, the construction guards, the `fail_cross` cross-check against
+`Injection.outcomes` and **both** landing sites executed without raising before
+line 614/791 was reached. Cycle 3, window `[1, 4]`, B4's received-64 /
+delivered-60 / 8 words / `tkeep` 0x0F / `tlast` at 11 — all of it stands, and
+B4's `%expect` block came back **unchanged**, meaning the whole runner including
+`account_forwarded_frame` and every standing monitor is green on the DUT. What
+failed is one **idiom**, imported from six landed files, whose unstated
+precondition — that both frames deliver — holds in all six and holds in neither
+of these two. That distinction decided the disposition, so it is not a
+courtesy.
+
+**Repair, not bounce, and the bar I applied.** The dispatch allows editing a
+bench for a defect I would otherwise bounce as trivial. I applied a three-part
+test: the correct form must be **unique**, **mechanical**, and **provable
+without re-deriving the row**. All three hold here — list partitioning is a
+one-sentence fact, no expected value moves, and everything upstream is already
+measured green. So: repaired, itemised as `RV-0062` reviewed repair R-1, under
+my own name. The counterfactual is the part worth journaling: had the defect
+been in a derivation, a strobe set, a §0.6 window or a stimulus cell, it would
+have **bounced**, because those are the worker's to re-derive and mine to
+re-review, and a lead who repairs them is grading his own work. The line is not
+"how small is the diff", it is "who owns the claim the diff makes".
+
+**The repair's shape was chosen for the message, not for brevity.** The
+one-liner would have been to pass `delivered_samples samples` straight to
+`assert_following_frame_intact` and let its word-count guard convict. I refused
+that: a frame-1 leak would then print a **frame 2** message, and owed note (ii)
+— written by me, one round ago, about exactly this — says which instrument
+convicts is a control-flow fact that decides what a reader sees. So frame 1
+keeps its own instrument (nothing delivered before frame 2's own first word
+could arrive, with the bound read from `Arrival`, never authored — T3 survives)
+and its own message, and a second guard catches the other leak shape (a frame-1
+group carrying its own `tlast`). Two defect shapes, two messages, one anti-vacuity
+partner retained.
+
+**Adjudication 1 — note (i)'s site — was settled by evidence, not by
+preference.** tb_writer could not open `WO-0061` and said so rather than
+guessing; that is the right conduct and I want it recorded as such. Opening it,
+the answer is overdetermined: `J-dv_lead-0094` states the finding as
+"`delivered_samples`' count cannot disagree", naming the instrument, and
+`WO-0061` §4.5 locates it by line (`:290`, `:445`). The construction-time guard
+compares this file's arithmetic to a packet parameter and never reads the DUT,
+so it cannot be the subject of a claim about the *emitted* count. Placement
+correct; no repair. I also counted the placements against §6.1 rather than
+against the dispatch's summary — 5 + 1 + 4 + 1 + 2 = **13**, exactly the sites
+the packet names.
+
+**Adjudication 2 — one strobe check, and tb_writer undersold its own work.** It
+asked whether the docstring's two mentions of strobe exactness owed two checks,
+and answered "one", calling the second redundant. Right answer, incomplete
+reason. §3.1 names two *claims*: frame A's report at the pin (which the standing
+`Strobe_monitor.expect` record checks, with §0.6's window, per frame) and the
+run-wide exact set (which `error_pulses` checks, drain included). Two
+instruments, both already present. A second `error_pulses` match would duplicate
+one instrument and leave the other uncredited — and would add a second message
+for one fact, which is note (ii)'s own hazard. I ruled the built form correct
+and recorded the two-instrument reading so the docstring is not re-litigated.
+
+**Helper duplication: accepted now, consolidation owed — and the justification
+is not tidiness.** Three copies of `account_dropped_frame`, two of the
+forwarded-with-no-`Arrival`-record shape, two of the spliced-dropped shape, six
+of `split_at_first_tlast`. I accepted the duplication for this round on the
+ground the round itself just demonstrated: B-1 was catchable because the row's
+diff was small enough to read line by line, and a refactor's blast radius inside
+a row round destroys exactly that. But I attached a third binding condition to
+the owed consolidation that turns it from housekeeping into a debt worth paying:
+`split_at_first_tlast` must not move into `bench.ml` **without its precondition
+recorded at the definition**. A shared copy of an idiom whose precondition is
+unstated is strictly worse than six local copies of it — six readers each
+transplanting it locally at least look at the call site, which is more scrutiny
+than one import gets.
+
+**Two findings I deliberately did not repair.** B-2: the Return log claims a
+five-field cross-check on every clean/forwarded frame; that is true of B4's
+frame B and false of B3's/B2's frame 2 (`delivered` + `reports` only). I did not
+add the missing fields, because an assertion I cannot run is how a reviewer
+turns a green row red — and the depth built is exactly `test_m03_h.ml`'s landed
+precedent for a following clean frame, with the `start_cycle + 3 + m` rule
+independently anchored by `assert_clean_frame_structure`, which is green at both
+lanes. B-3: both frames in B3/B2 are `directed_frame_octets ~length:64`, hence
+byte-identical, so frame 2's content comparison cannot distinguish frame 2 from
+frame 1 delivered in its place — only the cycle checks discriminate provenance.
+The remedy is a **stimulus** change, which is mine to commission in a packet,
+never to make inside a review. Both go to the next family-B round.
+
+**Harvest (ADR-0018, PROTOCOL §7).** **Not due this round** — no `SO-`, no gate.
+Span since the note at `J-dv_lead-0098`: **J-dv_lead-0099** (this entry);
+cumulative untiled span **J-dv_lead-0001 … 0099**, and the first harvest fires
+at `SO-M03` and will state that interval so the tiling is visible. **One
+candidate banked**, stated now so it is not reconstructed later: *"An idiom that
+partitions a stream by its own terminator presumes every partition is non-empty;
+transplanted to a case where one partition is empty by construction, it silently
+re-labels the surviving partition as the missing one — and the guard written to
+prove absence convicts the thing that is present."* **LH1**: `88da20e`, CI run
+`30937558341`. **LH2-g** (no proper noun in the rule). **LH3**: without it, a
+conforming implementation fails its own test with a message accusing it of the
+violation the test was written to detect — a false red indistinguishable, to its
+reader, from a true one. Not admitted here; admitted or refused at the harvest.
+
+### Actions
+- Line-reviewed `run_b4`, `run_b3`, `run_b2` against `WO-0062` §3's stimulus
+  cells and derivations, §5's traps T2/T3/T4/T6, and §2's bars 2, 3, 4, 5, 6, 8,
+  10, 12, 13; verified B1 untouched mechanically (728 insertions, 0 deletions)
+  and the thirteen `test_m03_i.ml` note insertions as comment-only.
+- Diagnosed FINDING **B-1** from the source, then confirmed it against CI run
+  `30937558341`'s promotion block (line- and message-exact).
+- **Edited `test/xgmii_rx_64/test_m03_b.ml`** — reviewed repair **R-1**, in
+  `run_b3` and `run_b2`: replaced the inverted two-group `split_at_first_tlast`
+  structural block with an `Arrival`-derived cycle bound for frame 1's silence
+  plus a single-`tlast`-group check, each carrying a comment naming the repair
+  and the idiom's precondition. No derivation, message string, strobe check,
+  conservation call or assertion order moved.
+- Opened `WO-0061` §4.5 and `J-dv_lead-0094` to adjudicate note (i)'s site;
+  ruled the placement correct.
+- Appended `RV-0062-VERDICT` to the work order: ACCEPT per row (B4 unmodified;
+  B3/B2 with R-1), the CI measurement table, the two adjudications, the
+  helper-duplication disposition with three binding conditions, findings B-2/B-3/B-4,
+  the trap-by-trap verification, and the landing check owed by the orchestrator.
+
+### Evidence
+```sh
+git show 88da20e --stat
+#   test/xgmii_rx_64/test_m03_b.ml | 728 +++++  (0 deletions -> M03-B1 untouched)
+#   test/xgmii_rx_64/test_m03_i.ml | 105 ++-   (104 insertions, 1 comment-terminator move)
+ocamlc -stop-after parsing test/xgmii_rx_64/test_m03_b.ml   # exit 0, after repair R-1
+git status --porcelain
+#   M agents/handoffs/WO-0062_tb-m03-family-b-preamble-and-sfd.md
+#   M test/xgmii_rx_64/test_m03_b.ml
+```
+CI at `88da20e` (externally verifiable, PROTOCOL §4.1(b)): `build` run
+**30937558341**, job **92087417632**, conclusion **failure**; `journal-check`
+run **30937558388**, success. Baseline `build` **30937164518** at `a12ac8f`,
+success. The failing run's promotion block carries, character-exact:
+
+- `(Failure "M03-B3: frame 1: an output word was observed for a frame that must deliver nothing (§0.7)")` raised at `test/xgmii_rx_64/test_m03_b.ml`, line **614**;
+- `(Failure "M03-B2 (lane 0): frame 1: an output word was observed for a frame that must deliver nothing (§0.7)")` raised at line **791**;
+- M03-B1's and **M03-B4's** `[%expect {||}]` blocks **unchanged** — both rows passed.
+
+`dune runtest` was **not run** (ADR-0005 — no Hardcaml toolchain in this
+container). The verdict's ACCEPT is conditioned on a green `build` at the commit
+carrying repair R-1; that run does not exist yet and no claim is made about it.
+
+### Outcome
+DoD met. `RV-0062` returned as a committed verdict in the packet, not as chat:
+**ACCEPTED**, B4 unmodified, B3/B2 with reviewed repair R-1, no row bounced.
+Both flagged judgement calls adjudicated with cited evidence; the
+helper-duplication disposition recorded with its three binding conditions.
+Handoff: `agents/handoffs/WO-0062_tb-m03-family-b-preamble-and-sfd.md`
+(`RV-0062-VERDICT`). **No `SO-xgmii_rx_64.md` issues and none is offered** — 41
+of 62 ASSERT rows once these three land; families J/K/M/N and L1–L5 unwritten;
+the verilog-ethernet anchor undischarged. No claim is made about what family B
+kills: these rows enter a mutation denominator for the first time at the next
+freeze (`WO-0058` §8).
+
+### Open-questions
+1. **The landing check is owed to me by the orchestrator**: a green `build` run
+   at the commit carrying repair R-1, with all four `%expect` blocks in
+   `test_m03_b.ml` empty and `git diff --exit-code` clean. **M03-B2's lane-4
+   member has never executed** — `List.iter` raised on lane 0 at `88da20e` — so
+   that run is a real check, not a formality. If it is red it is mine, not
+   tb_writer's, and bounces to me rather than re-spawning the worker.
+2. **Machinery-consolidation round owed and drafted by me**, with the three
+   conditions of `RV-0062-VERDICT` §5 — in particular that
+   `split_at_first_tlast` may not be shared without its precondition recorded at
+   the definition.
+3. **Findings B-2** (deepen the following-frame `Injection.outcomes` cross-check
+   to B4's five fields, suite-wide) and **B-3** (give B3/B2's frame 2 a distinct
+   declared length so content discriminates provenance) ride with the next
+   family-B round; **B-4** (a stale M03-B4 forward reference in
+   `test_m03_h.ml`'s module docstring) rides with the next round opening that
+   file.
+4. **My two owed plan edits stand** (`WO-0062` §6.2 items 1 and 2): M03-B4's
+   lane-4 member, and the M03-B2 / M03-N3 extension conflict over `/I/` in a
+   preamble position.
+5. Carried unchanged from `J-dv_lead-0098`: the §0.6-window question open to
+   architect_docs_lead; `WO-0058` bound 7 with no candidate row; `WO-0061` §8
+   bound 1's `tkeep` half; family J behind a bench-capability round.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0062_tb-m03-family-b-preamble-and-sfd.md
+- test/xgmii_rx_64/test_m03_b.ml

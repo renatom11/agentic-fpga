@@ -610,3 +610,309 @@ written questions" rather than silently guessed past.
 Handoff: this RETURNED block, plus journal entry `J-tb_writer-0021`. State
 left as the orchestrator's own framing set it (ISSUED) — dv_lead's `RV-`
 and the orchestrator's transcription do the state flip, not me.
+
+---
+
+## RV-0062-VERDICT — dv_lead, `J-dv_lead-0099`
+
+**State**: **ACCEPTED** — one row accepted as landed, two accepted **with a
+reviewed repair** made under this verdict. No row bounced. The packet's four
+deliverables are complete; `test/xgmii_rx_64/test_m03_b.ml` carries two edits of
+mine, itemised in §3 and made under my own name, not tb_writer's.
+
+**Reviewed in the packet's own risk-ranked order (§4): B4 → B3 → B2.**
+
+### 0. The measurement this verdict rests on, stated before the verdict
+
+The review was written from the source, line by line, against §3's stimulus
+cells, §3's derivations and §5's traps. It was then **confirmed against the
+suite** — `88da20e` was pushed and CI ran it:
+
+| Run | Workflow | head_sha | Conclusion |
+|---|---|---|---|
+| **30937558341** (job **92087417632**) | `build` | `88da20e` | **failure** |
+| 30937558388 | `journal-check` | `88da20e` | success |
+| 30937164518 | `build` | `a12ac8f` (parent) | success |
+| 30937645968 | `build` | `c4ced9c` (BOARD only) | failure — same tree |
+
+The `build` job's promotion block decides three things that no amount of reading
+could settle under ADR-0005, and I record them as measurements rather than as
+opinions:
+
+1. **M03-B4 passed.** Its `[%expect {||}]` is unchanged in the promotion block —
+   the runner reached `assert_monitors_clean` without raising. B4's T4
+   arithmetic, its model cross-check, both landing sites, frame B's
+   content/`tkeep`/`tlast`/cycles, the run-wide strobe set, `account_dropped_frame`,
+   `account_forwarded_frame` and every standing monitor are green **on the DUT**,
+   not merely on review. M03-B1 likewise unchanged.
+2. **M03-B3 and M03-B2 failed**, both with `[%expect.unreachable]` and an
+   `expect.uncaught_exn` block carrying, character-exact:
+   - `(Failure "M03-B3: frame 1: an output word was observed for a frame that must deliver nothing (§0.7)")`, raised at `test/xgmii_rx_64/test_m03_b.ml`, **line 614**;
+   - `(Failure "M03-B2 (lane 0): frame 1: an output word was observed for a frame that must deliver nothing (§0.7)")`, raised at **line 791**.
+3. Everything **upstream** of those two lines executed without raising: both
+   rows' construction guards, their `fail_cross` model cross-checks and **both**
+   landing sites are green. M03-B2's **lane-4 member never ran** — `List.iter`
+   raised on lane 0 — so nothing about it is measured yet.
+
+Lines 614 and 791 are the exact guard my line review had already convicted. The
+defect and its diagnosis agree to the line and to the message.
+
+### 1. Verdict per row
+
+| Rank | Row | Verdict |
+|---|---|---|
+| 1 | **M03-B4** | **ACCEPT — unmodified.** Every §3.1 figure, every §5 trap and all three named bars discharged, and measured green in run 30937558341. Not one byte changed. |
+| 2 | **M03-B3** | **ACCEPT with reviewed repair R-1** (§3). The row's derivations, guards, messages and assertion order are correct and unchanged; one transplanted idiom in its structural block was inverted and is repaired here. |
+| 3 | **M03-B2** | **ACCEPT with reviewed repair R-1** (§3), the same defect at the same idiom, both lanes. Stimulus, geometry and weighting are exactly §3.3's — verified in §7. |
+
+**M03-B1 untouched**, mechanically: the commit's `test_m03_b.ml` hunk is 728
+insertions and **zero deletions**.
+
+### 2. The defect (FINDING B-1) — a partition idiom transplanted to a partition that is empty by construction
+
+`split_at_first_tlast` returns *(the prefix through the first `tlast`, the
+remainder)*. Every landed use of the two-group form — `test_m03_e.ml:598`,
+`test_m03_f.ml:740`, `test_m03_g.ml` (×6), `test_m03_h.ml` (×3) — splits a run
+in which **both** frames deliver, and every one of them guards
+`List.is_empty words0 || List.is_empty words1`.
+
+M03-B3 and M03-B2 are the first rows in the bench where the **first** frame
+delivers nothing (§0.7) and a **second** frame delivers. With frame 1 silent,
+`delivered_samples samples` holds frame 2's words alone, so the split returns
+*(frame 2's 8 words, [])*: the row hands **frame 2's own words to frame 1's
+emptiness check** and hands the empty list to frame 2's presence check. Against a
+**conforming** design the first guard therefore raises — a false red that reads,
+in its own message, as a design defect in §0.7. That is exactly what CI printed.
+
+This is not a derivation error: §3.2's and §3.3's numbers, the model
+cross-checks, the landing sites and the strobe reasoning are all correct and all
+executed green. It is one idiom used where its precondition does not hold.
+
+### 3. Reviewed repair R-1 — the two edits I made
+
+Both edits are in `test/xgmii_rx_64/test_m03_b.ml`, in `run_b3` and `run_b2`,
+and they replace the two-group split with the two claims the rows actually make.
+Nothing else in either row is touched; no derivation, message string, strobe
+check, conservation call or assertion **order** moves.
+
+```ocaml
+  let words_out = delivered_samples samples in
+  let frame2_first_cycle = Dv_xgmii.Arrival.start_cycle frame2 + 3 in
+  (match List.hd words_out with
+   | None -> fail row "expected frame 2's own delivered words, got none"
+   | Some s ->
+     if s.cycle < frame2_first_cycle
+     then
+       fail
+         row
+         "frame 1: an output word was observed for a frame that must deliver nothing \
+          (§0.7) -- the run's first delivered word arrives before frame 2's own first \
+          word could");
+  let words2_out, after_frame2 = split_at_first_tlast words_out in
+  if not (List.is_empty after_frame2)
+  then
+    fail
+      row
+      "a second tlast group was observed -- frame 1 must deliver no output word at all \
+       (§0.7), so frame 2's own tlast is the run's only one";
+```
+
+Why this form and not another:
+
+- **Frame 1's silence keeps its own instrument and its own message.** It is now
+  asserted the way `run_e5` asserts it — nothing delivered where frame 1's words
+  would have to be — with the cycle bound read from `Arrival`, never authored
+  (T3 preserved). A design that leaks frame-1 words convicts on frame 1's own
+  message, at frame 1's own name, which is what a campaign seal reads.
+- **Two distinct defect shapes are covered**: a leaked frame-1 group *with* its
+  own `tlast` reddens the `after_frame2` check; a leaked group *without* one
+  reddens the earlier cycle bound. Neither can be absorbed silently into frame
+  2's word count.
+- **The anti-vacuity partner survives**: `List.hd = None` still fails, so the
+  absence claim is never made over an unobserved interval (§2 bar 4).
+- Each edit carries a comment naming the repair, why the inherited idiom does not
+  hold here, and `RV-0062 reviewed repair R-1`, so the next reader of that block
+  meets the reason rather than rediscovering it.
+
+`ocamlc -stop-after parsing test/xgmii_rx_64/test_m03_b.ml` → exit 0. **Not run:
+`dune runtest` (ADR-0005 — no toolchain in this container). CI is authoritative
+and the landing check in §8 is what closes this.**
+
+**Why repaired and not bounced.** The bar I applied: *is the defect's correct
+form unique, mechanical, and provable without re-deriving the row?* All three
+hold — the derivations are already measured green up to the failing line, the
+inherited idiom's precondition is a one-sentence fact about list partitioning,
+and the repair moves no expected value. Had the defect been in a derivation, a
+strobe set, a window or a stimulus cell, it would have bounced: those are the
+worker's to re-derive and mine to re-review, and a lead who repairs them is
+grading their own work.
+
+### 4. The two judgement calls tb_writer flagged — both adjudicated
+
+**(1) Bench note (i)'s site — tb_writer's placement is CORRECT. No repair, no bounce.**
+
+tb_writer put note (i)'s full text at M03-I2's **runtime** count guard (the one
+reading `delivered_samples`) rather than at the construction-time
+`words <> expected_words` self-consistency guard, and correctly refused to open
+`WO-0061` to settle it. I opened it — it is mine — and the record is unambiguous
+at two independent places:
+
+- **`J-dv_lead-0094`**, the entry that minted the note, states the finding as:
+  *"at a lane-4 start the emitted word count equals `W` by identity, so
+  **`delivered_samples`' count cannot disagree** and the `tlast`-position check
+  is blind with it."* The note names the instrument by name, and that instrument
+  is the runtime guard.
+- **`WO-0061` §4.5** locates the same guard by line — *"`delivered_samples`
+  counts every `tvalid` cycle in the run and the count guard runs first
+  (`:290`, `:445`)"* — and `:445` is `run_i2_member`'s runtime guard in the
+  pre-insertion file.
+
+The construction-time guard compares this file's arithmetic against a packet
+parameter and never reads the DUT; "a count-guard disagreement is impossible at
+lane 4" is a claim about the *design's emitted* count and cannot be a claim about
+it. The placement is the one that was meant, and the four cross-reference
+placements (`run_i1`, `assert_clean_frame_structure`, `run_i4_case`,
+`run_i6_case`) are correct too: §6.1(i) says *"at the count guard's own **sites**"*,
+plural. Placement tally against §6.1 — (i)×5, (ii)×1, (iii)×4, (iv)×1, (v)×2 =
+**13 insertions**, exactly the sites the packet names; the diff is pure
+insertion but for one comment-terminator move in M03-I6's docstring, so **no
+assertion moved**. Note (iv) is carried in its corrected form, verbatim.
+
+**(2) B4's docstring mentions strobe exactness twice — ONE `error_pulses` check
+discharges it, and tb_writer's resolution is RIGHT. Its reasoning understates
+its own work.**
+
+§3.1's assertion list mentions the fact twice because it names **two claims**,
+not two checks of one claim: (a) frame A pulses *exactly one*
+`error_start_without_terminate* **at the pinned cycle**, and (b) the **run-wide**
+exact set — nothing else anywhere, drain included (T2/T5). Both are already
+discharged, by **two distinct instruments**, and the second instrument is one
+tb_writer did not credit itself with:
+
+- **(a)** is carried by `Strobe_monitor.expect { cycle; not_before; not_after; why }`
+  plus `assert_monitors_clean` — the pin **and** §0.6's window, checked by the
+  standing monitor, on a per-frame event record.
+- **(b)** is carried by the single `error_pulses samples` set match over the
+  whole run.
+
+A second `error_pulses` check would be a duplicate of (b), not a discharge of
+(a): it would add a second message for one fact and a second control-flow order
+to reason about — precisely the hazard owed note **(ii)** exists to warn about.
+**Ruling: one check, as built. No edit.**
+
+### 5. Helper duplication — DISPOSITION: accepted for this round, consolidation now OWED and commissioned
+
+tb_writer was right to report and not take it (§2 bar 10), and right that the
+count has crossed a line. Inventory, from the tree:
+
+| Helper | Copies |
+|---|---|
+| `account_dropped_frame` | `test_m03_e.ml:139`, `test_m03_f.ml:145`, `test_m03_b.ml:190` (3) |
+| forwarded-with-no-`Arrival`-record (`account_spliced_forwarded` / `account_forwarded_frame`) | `test_m03_h.ml:210`, `test_m03_b.ml:204` (2) |
+| `account_spliced_dropped` / `account_resync_runt_frame` (same shape, different names) | `test_m03_h.ml:227`, `test_m03_g.ml` (2) |
+| `split_at_first_tlast` | 6 files |
+
+**Accepted for this round, with the reason stated so it is not read as
+indifference**: a machinery consolidation inside a row round mixes a refactor's
+blast radius with a row's evidence, and this round has just demonstrated why
+that matters — B-1 was found because the row's own diff was small enough to read
+line by line. **Owed**: a standalone consolidation round, mine to draft, with
+three binding conditions: (i) pure refactor — no assertion, no message string and
+no argument value changes, so every campaign seal keeps its exact text; (ii) it
+lands alone, on its own CI run, with no row in the same commit; (iii) it does
+**not** consolidate `split_at_first_tlast` into `bench.ml` without also
+recording FINDING B-1's precondition at the definition, because a shared copy of
+an idiom with an unstated precondition is worse than six local copies of it.
+That third condition is the round's actual justification, and it is what moves
+this from housekeeping to a debt worth paying.
+
+### 6. Findings recorded, not repaired
+
+- **B-2 — the Return log's §1 claim is broader than the code, for B3/B2.** §1
+  says every clean/forwarded frame's `delivered`/`words`/`last_tkeep`/`tlast_cycle`
+  was cross-checked against `Injection.outcomes`. That is true of **B4's frame B**
+  (all five fields plus `received`), and **not** of B3's/B2's frame 2, where the
+  cross-check reads `delivered` and `reports` only. **No repair, and the row still
+  meets §8 criterion 2 at the suite's own standing depth**: `test_m03_h.ml`'s
+  following clean frame is cross-checked at exactly that depth (`:307`, `:539`),
+  and the `start_cycle + 3 + m` rule the helper asserts is independently anchored
+  by `test_m03_i.ml`'s `assert_clean_frame_structure`, which is landed, green and
+  driven at **both** start lanes. Deepening the following-frame cross-check to
+  B4's is a suite-wide strengthening, not this row's debt; it goes to the next
+  family-B round. I deliberately did **not** add it here: an unrunnable new
+  assertion is how a green row is turned red by its reviewer.
+- **B-3 — frame 1 and frame 2 carry identical content in B3 and B2.**
+  `directed_frame_octets ~length:64` is deterministic in `length`, so both frames
+  are the same 64 octets. Frame 2's content comparison therefore cannot
+  distinguish *frame 2 delivered correctly* from *frame 1's content delivered in
+  frame 2's place*; only the per-word **cycle** checks discriminate provenance.
+  The row is sound (the cycles do discriminate) but the content instrument is
+  weaker than it reads. Remedy, owed to the next family-B round: give frame 2 a
+  different declared length, or `Injection.frame_of_length ~sequence`. **Not
+  repaired**: it is a stimulus change, which is mine to commission in a packet,
+  not to make inside a review.
+- **B-4 — a stale forward reference in `test_m03_h.ml`'s module docstring.** It
+  says the ordinary two-`frame_case` layout *"is the stimulus M03-B4 already
+  uses for an ordinary two-frame run"*. Written before B4 existed; the landed B4
+  uses the one-case 68-octet spliced array §3.1 commissions. Comment-only, no
+  assertion affected; owed to the next round that opens `test_m03_h.ml`.
+
+### 7. The four traps and the three named checks — verified
+
+- **T4 (B4's array).** `b4_filler` is 4 octets; `base = b4_filler @ frame_b_octets`
+  is guarded `<> 68` **before** construction, and the model's own
+  `ob.received <> 64` is guarded separately with a message naming the runt the
+  mistake would have produced. Two guards, two messages. Frame B's octets begin
+  at array index 4 and the auto-terminate lands at `16 + 68` = 84, so
+  `84 − 20` = **64 received**, 60 delivered — §3.1's number, and CI's.
+- **T3 (the following frame's lane).** No hand-coded lane constant anywhere.
+  B3/B2 read `(Arrival.frames sched).(1)` and take `start_cycle` from it;
+  `tkeep` is computed from the frame's own length, never from an assumed lane.
+  B4's frame B has no `Arrival` record by construction, and its geometry is
+  derived from `frame_a.start_octet_time` (itself guarded `= 8`) + 4, not
+  authored. Repair R-1 keeps this: the new cycle bound is read from `Arrival`.
+- **T2 (whole-run strobe sets).** All three rows match `error_pulses samples`
+  over the full run including the `drain:8` tail; no window-scoped accounting
+  anywhere in the file. B3's comment correctly banks the aborted frame's
+  continuing octets (16 … 79) and its own auto-terminate (80) as covered *for
+  free* by that set, and correctly declines to bank it as the row's own claim.
+- **T6 (position 4 in-word only at a lane-0 start).** B4 is lane-0 only and says
+  why, with the lane-4 counterpart correctly footnoted to §6.2 item 1 as **my**
+  plan edit. B2 is §3.3's geometry and **not** `run_e5`'s sweep restated: one
+  position (3) at two lanes, with `expected_close_lane` derived per lane
+  (3 at lane 0, 7 at lane 4) and the in-start-word fact guarded rather than
+  assumed at both. `run_e5` is cited, not re-derived, and **not touched** — the
+  commit's file list proves it.
+- **B4's frame B is asserted by delivered CONTENT** — `List.equal Int.equal`
+  against `Frame.delivered frame_b_octets` — with `tkeep`/`tlast`/cycles as
+  *additional* checks, not as the instrument. WO-0057 §2.3's lesson is applied,
+  not merely cited.
+- **B3's exact set is an exact set** and the `error_bad_fcs` absence is asserted,
+  not omitted: the single-element match excludes it mechanically, and the failure
+  message names M03-M10's kill so a reader of a red knows what was being claimed.
+- **B2 encodes §3.3's honest weighting and nothing more**: lane-4 geometry plus
+  the following frame, E5 cited for the lane-0 arithmetic, no swept positions,
+  no extra members, no `/I/`//`/Q/` extension (§6.2 item 2 correctly left alone).
+
+### 8. What I commission next
+
+1. **The CI landing is the orchestrator's to operate, and it is the condition of
+   this ACCEPT.** Commit the working tree — `test/xgmii_rx_64/test_m03_b.ml`
+   (repair R-1) and this packet — under `Agent: dv_lead`,
+   `Journal-Entry: J-dv_lead-0099`, and push. **The landing check owed to me is a
+   green `build` run at that commit**, whose promotion block leaves all four
+   `%expect` blocks in `test_m03_b.ml` empty and `git diff --exit-code` clean.
+   Report the run id and its conclusion. Baseline for comparison: `build`
+   **30937558341** at `88da20e` = failure; **30937164518** at `a12ac8f` = success.
+2. **If that run is red**, it is mine, not tb_writer's: bounce it to me with the
+   promotion block, do not re-spawn the worker.
+3. **Not claimed by this verdict**, restating §9: no `SO-xgmii_rx_64.md`, and no
+   claim about what family B kills — these three rows enter a mutation
+   denominator for the first time at the next freeze, and `WO-0058` §8's
+   weighting governs.
+4. **Queued behind the landing**, in order: (a) the machinery-consolidation round
+   of §5, with its three binding conditions; (b) `WO-0063` phase A, which carries
+   the `RV-0060` §10 item 3 citation sites; (c) my two owed plan edits (§6.2
+   items 1 and 2) and findings **B-2**/**B-3**, which ride with the next
+   family-B round; (d) family J, at the bench-capability round the orchestrator
+   schedules.

@@ -607,13 +607,36 @@ let run_b3 () =
           lane 5 -- the assertions below would be vacuous");
   (* Structural: frame 1 delivers no word at all (no tlast, no tvalid word
      of its own); the run's only delivered frame is frame 2. T8: no tuser
-     claim is made on frame 1, which has no tlast word to carry one. *)
-  let words1_out, rest = split_at_first_tlast (delivered_samples samples) in
-  let words2_out, _ = split_at_first_tlast rest in
-  if not (List.is_empty words1_out)
-  then fail row "frame 1: an output word was observed for a frame that must deliver nothing (§0.7)";
-  if List.is_empty words2_out
-  then fail row "expected frame 2's own delivered words, got none";
+     claim is made on frame 1, which has no tlast word to carry one.
+
+     Deliberately NOT the two-group [split_at_first_tlast] idiom this file
+     carries above and test_m03_e/f/g/h use: every landed use of that idiom
+     splits a run in which BOTH frames deliver. Here frame 1 delivers
+     NOTHING, so the run's FIRST tlast group is frame 2's own -- a two-group
+     split hands frame 2's words to frame 1's own emptiness check and
+     reddens a conforming design. Frame 1's silence is asserted instead the
+     way test_m03_e.ml's run_e5 asserts it (nothing delivered before frame
+     2's own first word could arrive), plus the run carrying exactly ONE
+     tlast group. RV-0062 reviewed repair R-1. *)
+  let words_out = delivered_samples samples in
+  let frame2_first_cycle = Dv_xgmii.Arrival.start_cycle frame2 + 3 in
+  (match List.hd words_out with
+   | None -> fail row "expected frame 2's own delivered words, got none"
+   | Some s ->
+     if s.cycle < frame2_first_cycle
+     then
+       fail
+         row
+         "frame 1: an output word was observed for a frame that must deliver nothing \
+          (§0.7) -- the run's first delivered word arrives before frame 2's own first \
+          word could");
+  let words2_out, after_frame2 = split_at_first_tlast words_out in
+  if not (List.is_empty after_frame2)
+  then
+    fail
+      row
+      "a second tlast group was observed -- frame 1 must deliver no output word at all \
+       (§0.7), so frame 2's own tlast is the run's only one";
   (* Frame 2 -- the anti-vacuity partner: "next frame intact" has a
      subject, at whatever lane/cycle Arrival actually gave it (WO-0062 T3). *)
   assert_following_frame_intact ~row ~label:"frame 2" frame2 words2_out frame2_octets;
@@ -785,12 +808,31 @@ let run_b2 ~lane =
          row
          "the driven word at the intended cycle does not carry the injected \"/E/\" -- \
           the assertions below would be vacuous");
-  let words1_out, rest = split_at_first_tlast (delivered_samples samples) in
-  let words2_out, _ = split_at_first_tlast rest in
-  if not (List.is_empty words1_out)
-  then fail row "frame 1: an output word was observed for a frame that must deliver nothing (§0.7)";
-  if List.is_empty words2_out
-  then fail row "expected frame 2's own delivered words, got none";
+  (* Structural: frame 1 delivers no word at all; the run's only delivered
+     frame is frame 2. Same repair, same reason as M03-B3's own structural
+     block above (RV-0062 reviewed repair R-1) -- the two-group
+     [split_at_first_tlast] idiom presumes both frames deliver, and here the
+     first tlast group in the run IS frame 2's. T8: no tuser claim is made
+     on frame 1, which has no tlast word to carry one. *)
+  let words_out = delivered_samples samples in
+  let frame2_first_cycle = Dv_xgmii.Arrival.start_cycle frame2 + 3 in
+  (match List.hd words_out with
+   | None -> fail row "expected frame 2's own delivered words, got none"
+   | Some s ->
+     if s.cycle < frame2_first_cycle
+     then
+       fail
+         row
+         "frame 1: an output word was observed for a frame that must deliver nothing \
+          (§0.7) -- the run's first delivered word arrives before frame 2's own first \
+          word could");
+  let words2_out, after_frame2 = split_at_first_tlast words_out in
+  if not (List.is_empty after_frame2)
+  then
+    fail
+      row
+      "a second tlast group was observed -- frame 1 must deliver no output word at all \
+       (§0.7), so frame 2's own tlast is the run's only one";
   assert_following_frame_intact ~row ~label:"frame 2" frame2 words2_out frame2_octets;
   (match error_pulses samples with
    | [ (cycle, name) ] ->
