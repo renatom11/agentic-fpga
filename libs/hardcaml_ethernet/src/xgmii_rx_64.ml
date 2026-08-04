@@ -438,13 +438,28 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
      and M02's result is ignored, so no update-by-zero is ever driven. *)
   let crc_reg = wire 32 in
   let crc_data = mux2 (cov_first ==:. 4) (srl i.xgmii_rx.d 32) i.xgmii_rx.d in
+  (* MUTATION I-c2 -- WO-0061, NEVER MERGE. Seeded defect: SPEC-M03 6.2's
+     [Frame] row says the CRC register HOLDS BY ITS ENABLE across a
+     carry-forward word. Here the enable is asserted on that word with
+     [octet_count] = 8, so all eight lanes of REQ-016's injected idle word are
+     folded into the running residue and every frame the wrapper touches takes
+     a wrong REQ-104 verdict. Driving the enable with [cov_count] = 0 instead
+     would be a no-op through M02's 1-to-8 domain and could not fail, so the
+     count is what moves. SEEDED FOR THE VERDICT ONLY: [cov_count] is
+     untouched, so coverage, [count_next], the delivered octets, every [tkeep]
+     and every cycle are the base design's. [a_close_now] excludes 6.2's other
+     named held cycle, a terminate character in lane 0: folding a closure
+     word's lanes would move gapless frames' verdicts too, a different defect.
+     [a_open] keeps the gate out of [Discard]. *)
+  let crc_carry_fwd = a_open &: ~:cov_nonempty &: ~:a_close_now in
+  let crc_octets = mux2 crc_carry_fwd (of_int ~width:4 8) cov_count in
   let crc =
     Crc32_eth.hierarchical
       scope
-      { Crc32_eth.I.crc_in = crc_reg; data = crc_data; octet_count = cov_count }
+      { Crc32_eth.I.crc_in = crc_reg; data = crc_data; octet_count = crc_octets }
   in
   let crc_out = crc.Crc32_eth.O.crc_out in
-  let crc_update = cov_count <>:. 0 in
+  let crc_update = crc_octets <>:. 0 in
   (* The value the residue is compared against is the one *after* this word's
      update, because §6.1 item 3 runs the coverage through the octet
      immediately preceding the terminate character — which is in this word. *)
