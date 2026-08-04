@@ -1739,3 +1739,26 @@ applied).
 
 ### Files-in-this-commit
 - tasks/BOARD.md
+
+## [J-orchestrator-0187] 2026-08-08T15:05Z | task:none | WO-0064 allocated - the refactor whose review bar is that nothing can tell it happened
+
+### Trigger
+dv's authoring round returned (J-dv_lead-0100): the WO-0064 packet, the
+two owed AP rulings, B-2/B-3 landed as note B-iii. Committed verbatim at
+cf1f13d, pushed.
+
+### What I did
+- Board: WO-0064 row added ALLOCATED · LANDS ALONE (full verdict note);
+  WO-0063 re-queued behind it.
+- Dispatched tb_writer on WO-0064 (entry J-tb_writer-0022) with the
+  three binding conditions restated and the string-literal multiset
+  check made the worker's own pre-return obligation.
+- Sequencing obligation accepted: WO-0064 lands ALONE on its own CI
+  run — nothing else commits to the branch between its landing and its
+  green build. WO-0063 phase A waits for that green.
+- Shell: C16 (user guide) landed a655654 earlier this window; shell now
+  feature-frozen until the first harvest transit per the sponsor's
+  convolution concern and my recorded recommendation.
+
+### Files-in-this-commit
+- tasks/BOARD.md
