@@ -395,7 +395,21 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
      and no base selection: the register is reloaded with 0 below on every word
      that hands a *new* frame forward, which is the cycle before that frame's
      first octet at both start lanes. *)
-  let count_next = count +: uresize cov_count count_bits in
+  (* MUTATION I-c1 -- WO-0061, NEVER MERGE. Seeded defect: SPEC-M03 6.2's
+     [Frame] row says the octet count HOLDS on an input word covering no frame
+     octet inside an open frame. This counter advances it by eight instead, on
+     every such word -- REQ-016's injected idle cycle and 6.2's other named
+     held cycle, a terminate character in lane 0, alike. The inflated total is
+     the one REQ-108's 1518 cap, REQ-107's 64-octet runt threshold and the
+     [fcs_min_octets] floor are all read against, so a legal frame under
+     injection changes class. Reach: [count] also feeds [cap_room], hence the
+     truncation point, hence REQ-103's delivered extent -- but only once the
+     inflated total approaches 1518; below that [cap_end] saturates at 8 and
+     coverage is bit-identical. The gate is low in [Discard], where [a_open] is
+     low, and covers no word that covers an octet. *)
+  let held_cycle = a_open &: ~:cov_nonempty in
+  let held_octets = mux2 held_cycle (of_int ~width:4 8) cov_count in
+  let count_next = count +: uresize held_octets count_bits in
   (* ---- epochs B and C: the frames this word begins (REQ-101, REQ-110) ----
      A [/S/] in lane 0 opens epoch B and a [/S/] in lane 4 opens epoch C, each
      closing whatever was open at its own octet time — epoch A, or epoch B in
