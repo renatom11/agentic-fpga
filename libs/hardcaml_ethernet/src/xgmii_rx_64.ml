@@ -665,6 +665,20 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
     reg_fb spec ~width:1 ~f:(fun d ->
       mux2 (begins &: ~:new_start4) gnd (mux2 start4_pending vdd d))
   in
+  (* MUTATION GH-c4 -- WO-0058, NEVER MERGE. Seeded defect: the alignment
+     window switches to the new frame's offset ON THE SAME CYCLE the new start
+     character is accepted, instead of one register level later. The comment
+     above states exactly what the lag is for: a REQ-110 restart can put the
+     aborted frame's last octets in the same word as the new frame's start
+     character, and the aborted frame's octets must still be rotated by the OLD
+     offset. With the bypass, the word decoded on the accepting cycle is
+     rotated by the NEW offset, so the octets of that word that belong to the
+     aborted frame are assembled from the wrong two half-words. REQ-021 and
+     REQ-101 govern the alignment; REQ-008 is what makes silent corruption of
+     already-decoded octets a defect rather than a nuance. The register itself
+     is untouched, so from the following cycle onward the offset is exactly the
+     base design's and the new frame's own words are unaffected. *)
+  let off4 = off4 |: (begins &: new_start4) in
   let data_d = reg spec i.xgmii_rx.d in
   let cov_d = reg spec cov in
   let first_d = reg spec first_v in
