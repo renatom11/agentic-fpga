@@ -3478,3 +3478,271 @@ span **J-dv_lead-0001 … 0106**, first harvest still firing at `SO-M03`.
 ### Files-in-this-commit
 - agents/handoffs/WO-0063B_m03-i2-report-path-campaign.md
 - agents/handoffs/WO-0063B_m03-i2-report-path-campaign-SEALED-predictions.md
+
+## [J-dv_lead-0107] 2026-08-05T09:20Z | task:WO-0063 | Two pre-run rulings on a manifest that found a second axis under my own disclosure question — and the axis turns out to protect the seal rather than threaten it, because my branch selector never ranged over the module's structures
+
+### Trigger
+The orchestrator, relaying two questions the auditor raised **for me, before the
+run**, against its manifest committed at `8bbc388`
+(`docs/reports/audit/WO-0063B-mutations/`, `J-auditor-0013`): (1) IC-1 defers
+**both** of the module's no-output-word structures, and does the sealed wide
+branch accommodate the `q2`-inclusive rendering; (2) how does adjudication read a
+**count-difference** red in the MUST-STAY-GREEN sweep. Plus a disclosed ambient
+exposure whose voiding call is mine by the standing rule, and a declared inability
+to compile either diff. **Rulings owed in writing before the transients are
+operated.**
+
+### Inputs
+- `docs/reports/audit/WO-0063B-mutations/README.md` — §0 (base SHA identity, the
+  target blob hashes, the allowlist compliance record, §0.4's four ambient
+  exposures), §1 (both diffs, the `consume` partition, the two hunks), §2.1 and
+  §2.2 (the two mandatory disclosures answered), §3.0–§3.2 (reachability, the
+  cycle arithmetic, the epoch-A derivation for member (iii)), §7.1 (the
+  count-losing shape with its 20 736-stimulus measurement), §7.2 (what the
+  auditor explicitly does not claim).
+- `git log --oneline`, `git rev-parse c6c3287^`, `git diff --name-only c0595f9
+  HEAD -- test/ libs/` — the base-identity and ordering-rule checks.
+- `docs/specs/modules/xgmii_rx_64.md` **§6.3 item 8** in full — read to verify
+  the auditor's separation claim rather than accept it.
+- `agents/handoffs/WO-0063B_m03-i2-report-path-campaign.md` §1.1, §2, §6, §8,
+  §11 — the *freely told* set, which is the vocabulary the reading note is
+  allowed to use.
+- **My own seal, consulted for consistency only and NOT edited** —
+  `WO-0063B_…-SEALED-predictions.md`. No byte moved.
+- **Not read**: `libs/**` beyond the diffs' quoted expressions inside the
+  auditor's own README (the manifest quotes them; I did not open the module),
+  tb_writer's journal, the auditor's journal.
+
+### Reasoning
+
+**1. Why reading the manifest now is legitimate, and why I checked it rather than
+assumed it.** The adjudicator-ordering rule I sealed at §7 says the bench is
+frozen strictly earlier than any mutant it judges. `c0595f9` (bench + sweep) <
+`c6c3287` (packet + seal) < `8bbc388` (manifest), and `git diff --name-only
+c0595f9 HEAD -- test/ libs/` is **empty**. So the mutants were authored behind a
+bench that cannot have been tuned to them, and reading them costs nothing that
+the ordering had not already spent. **The base identity my seal could only state
+symbolically is now CONFIRMED**: `git rev-parse c6c3287^` → `c0595f9`, whose
+subject is the citation sweep. `J-dv_lead-0106` open question 1 closes, and the
+auditor verified it independently before I did.
+
+**2. Item 1 — the second axis is real, my question did not have a column for it,
+and the seal survives for a reason that is not luck.** The module realises "emits
+no output word" **twice**: the epoch-A aged closure record consumed at age 2, and
+a fixed two-stage `q2` path for a frame opened *and* closed inside one input word.
+My §1.1 disclosure asked *closure-character-scoped or shared*, which has two
+values and no column for *which structure*. The auditor found the missing column,
+named it unprompted, and deferred **both** structures so the answer could not be
+"true and still incomplete."
+
+**The reconciliation runs opposite to the worry, and the derivation is what
+decides it.** My branch selector was defined over **the bench's registration of
+§9's pin** — every `Strobe_monitor.expect` site classified by the `cycle` it
+registers and the `why` it states. That classification reads §9's pin and
+**cannot** read which module structure realises it, because the bench does not
+know there are two: it knows *"two cycles after the input word carrying the
+closing character"*. So the selector is **structure-agnostic by construction**,
+and an axis it never ranged over cannot select a branch in it.
+
+**And the set cannot widen, for a reason that is checkable rather than
+comfortable.** Any unit driving an in-word closure **already** registers a
+no-output-word expectation — it must, or the monitor's exact `(strobe, cycle)`
+match fails it **at base**, with no mutation at all. Every unit `q2` can move is
+therefore already inside the nine. **The `q2` half adds no unit; it makes the
+nine reachable.**
+
+**The auditor's instinct that something would have been wrong is right, in the
+other direction, and this is the part worth having on the record.** Several of
+the nine close **inside the start word** — M03-B3's `/T/` in lane 5 of a lane-0
+start word, M03-B2's `/E/` in a preamble position, M03-E5's `/E/` at preamble
+positions 1–7. Those are in-word closures. **Had IC-1 deferred the aged record
+alone, they would not have moved and my wide column would have OVER-predicted** —
+the seal would have scored true greens as findings against the auditor. So hunk 1
+is **required** for IC-1 as specified, and had hunk 2 arrived alone I would have
+ruled the class partially seeded before the run. The auditor's completeness
+protected my seal from a defect my own question had built into it.
+
+**3. What I refused to do while ruling.** I did **not** classify all nine by
+structure. That would be a fresh derivation made against a frozen seal, and it
+changes no cell in either direction; it is a **scorecard-time tabulation**, and
+§2.1's structure table plus §2's unit table make it a lookup rather than an
+argument once the reds exist. Deriving new facts into a sealed round, even
+consistent ones, is how a seal stops being a measurement.
+
+**4. Item 2 — the count-losing shape, and why the answer is a derivation rather
+than a disposition.** C-23 counts high cycles, never rising edges, so a one-cycle
+shift can land a moved report on an unmoved same-name report's cycle and two
+events occupy one. Measured 291/20 736 (IC-1), 261/20 736 (IC-2), zero on
+`error_runt`, zero count-*gaining*, impossible at member (iii). It is a property
+of the **intent**, so no rendering choice could have avoided it.
+
+**The ruling falls out of who can host the shape:**
+
+- it needs two same-name reports in one run, one moved and one not;
+- under IC-1 the moved one is a no-output-word report → the unit registers a
+  no-output-word expectation → **already inside the nine**;
+- under IC-2 the moved one is `tlast`-pinned → the unit registers a `tlast`-pinned
+  expectation → **already inside IC-2's predicted-red set**.
+
+**So the shape can change HOW a predicted red presents and can never move a
+MUST-STAY-GREEN unit into red.** At a predicted-red unit it scores as a red
+contributing zero additional kills — which is exactly what the UNWORKED
+convention already anticipates at the eight non-scored units, where I declined to
+predict messages *because* their idioms differ; "count rather than cycle" is one
+more way to differ. At a MUST-STAY-GREEN unit my derivation says it cannot
+happen, and if it happens anyway it is a **bench** finding and **mine** — it would
+mean a unit carries a report it does not register, which would have been red at
+base and was not.
+
+**The decisive line, and the reason no disposition is reached**: all five
+dispositions key on **member (iii)**, where the shape is structurally impossible
+(one frame, one report, count = 1 both lanes, `error_runt` untouched across the
+entire sweep). **The qualification verdict cannot turn on a count difference in
+either direction.** That is a stronger thing to be able to say before a run than
+any rule I could have written afterwards.
+
+**One exception pre-fixed against myself.** If M03-I2 reddens under IC-2 by **any**
+mechanism including a count difference, disposition 2 fires mechanically — the
+IC-1 red is blast and M03-I2 stays UNQUALIFIED. That disposition is keyed on the
+control reddening, never on **why**, and it is **not** conditioned on the
+auditor's measurement being right. A pre-committed disposition that accepts a
+plausible late argument about what "really counts" is not pre-committed.
+
+**I checked the §6.3 item 8 separation rather than accepting it.** Item 8
+declares unconstrained the stimulus where two reports collide **at base**; here
+the base separates and the mutant collides. Mutation-induced, not a declared gap —
+the auditor is right. Item 8 names **M03-N2** as its row, the same row
+`J-dv_lead-0106` measured as having **no unit in this bench**: corroboration of
+that correction arriving from a direction I did not go looking in.
+
+**5. The ambient exposure — not voiding, on a subset argument rather than a
+judgement of degree.** The listing showed four bench *filenames*. `WO-0063B` §2
+names six bench files **with line numbers**, and the packet is a **mandatory**
+read. The exposure is a strict subset of what I told the auditor myself, so it
+conveys nothing a diff could be tuned by. **Not voiding**, and I say so
+explicitly because the standing rule requires the call either way rather than
+silence.
+
+**And I record it as conduct rather than merely clearing it.** It was disclosed
+unprompted, before the run, when omitting it would have been costless and
+undetectable. `WO-0058` GH-2 and `WO-0061` S-4 are both what non-disclosure
+costs; this is the opposite case reaching the record, and a regime that only ever
+converts disclosures into penalties stops receiving them.
+
+**6. Format — a file, not a journal-only entry, and the reason is PROTOCOL's.**
+These are rulings on questions another agent asked, and §3 makes inter-agent
+transfers versioned files, never chat-only. They change how a red is read; the
+seal may not be edited to carry them; and an adjudication rule reachable only by
+mining a journal is one the auditor and orchestrator cannot cite at the moment
+they need it. The note is written entirely in the packet's *freely told*
+vocabulary — **no cell, denominator, message string or iteration order of the
+seal appears in it**, and where a ruling needed a rule the seal holds, I
+re-derived it in public terms instead of quoting it.
+
+### Actions
+- Authored **`agents/handoffs/WO-0063B_pre-run-reading-note.md`** — BINDING,
+  pre-run: §0's two verified ordering facts; §1's ruling on the `q2` axis (the
+  wide branch applies unchanged, the set cannot widen, hunk 1 is required rather
+  than excess, the structure split is a scorecard-time tabulation); §2's ruling
+  on count-difference reds (message-level at predicted-red units, never
+  red/green, no disposition reached, one pre-fixed exception at M03-I2 under
+  IC-2); §3's **NOT VOIDING** call with the subset ground, plus §3.1 fixing that
+  an uncompilable diff is a manifest defect and not a NOT-SEEDED escape or a void
+  class; §4's four scorecard obligations.
+- **The seal was consulted for consistency and NOT edited — zero bytes.** No
+  `test/**` file moved. No packet amended. **No git command run.**
+
+### Evidence
+- **Base identity**: `git rev-parse c6c3287^` → `c0595f9e8026757cd4eed6e856d06555424437e0`;
+  `git log -1 --format='%H %s' c0595f9` → the citation-sweep subject. Matches the
+  seal's symbolic frozen-against line and the manifest's §0.1 independently.
+- **Ordering rule**: `git diff --name-only c0595f9 HEAD -- test/ libs/` → **empty**.
+  The bench and the RTL are unmoved since the base; `c0595f9` < `c6c3287` <
+  `8bbc388`.
+- **Manifest files**: `git show --name-only 8bbc388` → the auditor's journal,
+  `docs/reports/audit/WO-0063B-mutations/README.md`, `ic-1.diff`, `ic-2.diff` —
+  four paths, all inside the auditor's own scope (ADR-0003), none under `test/**`
+  or `libs/**`.
+- **§6.3 item 8, read at this tree**: *"Two frames whose §9 reports fall on the
+  same cycle under the same strobe name … one input word carrying two
+  frame-ending characters can pin two reports to one cycle"* — a **base**
+  property, and it names **M03-N2**. The auditor's separation claim is verified,
+  not accepted.
+- **The count-losing measurement, as disclosed**: IC-1 291/20 736 (285
+  `error_start_without_terminate`, 6 `error_bad_frame`, **0 `error_runt`**); IC-2
+  261/20 736 (235 / 26 / **0**); count-gaining **0** under both. I did not
+  re-execute this and do not represent it as mine — it is the auditor's measured
+  disclosure, and my rulings are constructed so that **none of them depends on
+  its figures being right**: §2.2's containment is derived from which units can
+  host the shape, and §2.3 fires on M03-I2 regardless.
+- **Not run**: `dune build`, `dune runtest` — no local toolchain (ADR-0005), and
+  this commit stages one markdown file. **No CI result is asserted.** The control
+  run at `c0595f9` is still owed by the campaign and does not exist yet.
+
+### Outcome
+Both questions **ruled in writing before the transients are operated**, which was
+the condition the orchestrator set. The ambient-exposure call is made
+**explicitly** and is **NOT VOIDING**; both intents stand; the seal is untouched.
+`WO-0063B` is unchanged and remains issuable as committed at `c6c3287`.
+**Handoff**: this tree to the orchestrator for commit, trailer `Agent: dv_lead`,
+`Work-Order: WO-0063`; the reading note relayed to the auditor with the manifest
+accepted for operation. **The campaign may run.**
+
+**Harvest (ADR-0018, PROTOCOL §7).** **Not due this round** — no `SO-`, no gate.
+Span since the previous note: **J-dv_lead-0107** (this entry); cumulative untiled
+span **J-dv_lead-0001 … 0107**, first harvest still firing at `SO-M03`.
+
+- **All seven banked candidates carry unchanged**, and the newest — *a correction
+  to an enumeration must be produced by the same method that would have produced
+  it correctly* (`J-dv_lead-0106`) — **paid again this round from the other
+  side**: §6.3 item 8's own text names M03-N2 as the row for a class whose row
+  has no unit, corroborating that correction from a document I did not consult
+  when making it.
+- **One NEW candidate banked, LH2-g.** *Rule*: **a disclosure question with n
+  values must state the dimension it ranges over, because a respondent who
+  answers it completely can still leave an axis the question never had a column
+  for.** *Observable*: each disclosure question names its dimension explicitly
+  ("scoped by X or shared across X") and invites the respondent to name any
+  further dimension its own artefact has, as a required field rather than as
+  goodwill. **LH1**: this round — my two-valued question was answered
+  *completely and correctly*, and a second structural axis underneath it would
+  have made the true answer "true and still incomplete" had the respondent not
+  volunteered it. **LH2-g** — no proper noun. **LH3**: without it, a disclosure
+  regime measures the answers it asked for and silently misses the axis it did
+  not, which is the same failure as an unstated partition precondition arriving
+  through a questionnaire instead of through code.
+- **The candidate is banked as a NEAR-MISS THAT COST NOTHING, and that is
+  recorded as part of it.** The axis was caught by the respondent, not by me, and
+  by a respondent under no obligation to volunteer it. A rule learned from a
+  near-miss is worth exactly as much as one learned from a failure and is cheaper;
+  what it must not do is get filed as a success of my own process, because it
+  was not one.
+- **Both war stories carry unchanged.** No candidate retired, none promoted.
+
+### Open-questions
+1. **The structure split across the nine no-output-word units** (aged record vs
+   `q2`) is deliberately **not** derived pre-run and is owed **at scorecard
+   time**, per the reading note §1.4 and §4 item 1.
+2. **My disclosure question's missing dimension is a defect in my own packet**,
+   caught by the respondent rather than by me. `WO-0063B` §1.1 is **not amended**
+   — it is a dated record of what was asked — and the completion lives in the
+   reading note and in the manifest's §2.1. The banked candidate above is the
+   forward repair.
+3. **The count-losing measurement is the auditor's and is unreplicated by me.**
+   My rulings are built not to depend on it (Evidence), but if the scorecard
+   shows a count-difference red at a unit outside the predicted sets, §2.2 case 2
+   fires and the finding is **mine**, not the auditor's.
+4. **`AP-xgmii_rx_64.md` still owes** its §4.I item 6 change-log row for
+   `a12ac8f` and the no-output-word-pin observation for M03-B4/E2/G7/H4 — and now
+   also `§6.3 item 8`'s M03-N2 row, whose class has no unit. All deferred to the
+   first round after the campaign scores, because the plan is phase B's contract.
+5. Carried unchanged from `J-dv_lead-0106`: `run_i2_member`'s deliberate citation
+   exception, still without a carrier; `WO-0058` bound 7; the
+   `assert_following_frame_intact` / `assert_clean_frame_structure` merge;
+   `WO-0061` §8 bound 1's `tkeep` half; **N-1**; the auditor's DV-escape ledger
+   disposition on `BUG-0003`; family J; `SO-xgmii_rx_64.md` unopened and not
+   offered. **Closed this entry**: the base-SHA identity (open question 1 of
+   `J-dv_lead-0106`).
+
+### Files-in-this-commit
+- agents/handoffs/WO-0063B_pre-run-reading-note.md
