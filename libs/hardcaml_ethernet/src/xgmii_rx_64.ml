@@ -325,7 +325,21 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
      frame) is not one §10 commissions: REQ-016's wrapper injects whole idle
      cycles, so the hold lane is lane 0 and no octet is at stake. Where it is
      driven anyway, coverage still stops at the hold lane. *)
-  let a_hold_v = other_ctl &: ~:a_pre_mask in
+  (* MUTATION I-c3 -- WO-0061, NEVER MERGE. Seeded defect: SPEC-M03 6.2's
+     [Frame] row says NO OUTPUT WORD IS PRODUCED on an input word covering no
+     frame octet. With the hold vector empty, an other-control lane inside an
+     open frame no longer ends this word's coverage, so REQ-016's injected idle
+     word is decoded as eight DATA octets, covered like any other word and
+     forwarded: the frame grows by eight octets per injected idle cycle and the
+     receiver delivers more words than the frame contains. The frame's octet
+     count and its CRC move with the forwarded octets, because [cov_count]
+     feeds both. Reach: the same edit removes the hold at sub-word granularity,
+     which no commissioned stimulus produces (6.1's C-14.4 paragraph), and it
+     removes [a_hold_end]'s suppression of REQ-108's truncation on a word whose
+     hold lane lies below the cap. In [Discard] and at a lane-4 start's
+     preamble positions nothing moves: [cov_first] is 8 in the first and
+     REQ-102 routes the character to REQ-105 in the second. *)
+  let a_hold_v = zero 8 in
   let a_hold_end =
     mux2 (any a_hold_v) (index_of_onehot (lowest_set a_hold_v)) (of_int ~width:4 8)
   in
