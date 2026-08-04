@@ -585,3 +585,44 @@ None new.
 
 ### Files-in-this-commit
 - (none)
+
+## [J-orchestrator-0160] 2026-08-04T01:50Z | task:WO-0058 | Harvest: seven of seven reddened the scored bench; adjudication dispatched
+
+### Trigger
+All seven mutation runs completed within nine minutes of the
+push; harvested per the packet (BUILD job runtest only).
+
+### Reasoning
+Measured facts, no interpretation: every class's runtest went
+red and every failure landed in the module's own bench files -
+gh-c1 in test_m03_g.ml (M03-G6 observed 2 strobes, M03-G7
+observed 3), gh-c2 through c7 in test_m03_h.ml alone. gh-c7's
+red is M03-H4 by itself on the exact consecutive-high-cycles
+assertion - the collapse class died on the one unit dv said
+could see it. gh-c1's M03-G6 red is a unit outside the scored
+five; named for dv, not judged here. The cosim job was GREEN
+on all seven branches - relayed as fact, unscored per the
+packet. No other test file failed anywhere. Full logs saved
+to the session scratchpad (wo58_harvest/). Adjudication
+dispatched to dv with the messages verbatim, the branch and
+run ids, the manifest's disclosures named as scoring inputs,
+and the round's other dues: the §0.6 re-countersign and the
+X-3(c) restatement call.
+
+### Actions
+Seven harvests parsed; dv dispatched; this commit; push.
+
+### Evidence
+Runs 30868752152/3423/4060/4798/6316/7246/8781; the message
+strings quoted in the dispatch, lifted character for character
+from the logs.
+
+### Outcome / DoD
+The campaign's field phase is complete and the record of it is
+with the adjudicator. The seal speaks next, not me.
+
+### Open questions
+None new.
+
+### Files-in-this-commit
+- (none)
