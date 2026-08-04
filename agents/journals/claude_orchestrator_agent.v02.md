@@ -1070,3 +1070,58 @@ None new; the round carries them all by charge.
 
 ### Files-in-this-commit
 - (none)
+
+## [J-orchestrator-0171] 2026-08-04T13:45Z | task:none | BUG-0002 closed, BUG-0003 opened, the board carries both as separate events
+
+### Trigger
+dv's close-out return (the round died silently mid-write at
+12:27Z and was resumed from transcript at 13:18Z - the
+SendMessage-resume remedy's second successful use).
+
+### Reasoning
+The split honored as designed: 2b10741 closes BUG-0002 (fix
+ACCEPTED - the defect measured absent across all 27 completed
+lane-0 runs, the word-7 discriminator holding at 19/67, 116
+units byte-identical outside the one file), 7788bb4 opens
+BUG-0003 (MAJOR: a lane-4 word delayed by 0 idles where §0.5
+pins exactly 2). dv's load-bearing acts this round were both
+refusals: the lane-4 red cannot hold BUG-0002 hostage (scope
+declared at authoring), and BUG-0003 refuses rtl_lead's own
+advance-escalated mechanism because the count guard's PASS
+contradicts it - no half-word reached the port. The E2
+spec-narrowing route ruled closed on merits with a written
+revival condition. Escalation 2: no row owed (REQ-010 forces
+the wrapper's granularity). Escalation 3 routes to the
+architect as a non-normative note. The adjudicator-exposure
+question RULED for the campaign packet: ordering, not
+blindness - the bench must be frozen at a SHA strictly
+earlier than the RTL it judges, with two absolute bars kept.
+Count 36 of 62, forward 38, rows red at lane 4 only. dv's
+journal crossed S again - volume 03 rotation owed at its next
+entry.
+
+### Actions
+The two dv commits + push; board (both flips + the new row);
+site rebuild; this commit; then BUG-0003 to rtl_lead
+(code-first brief) and escalation 3 to the architect;
+verbatim relay + redeploy suggestion to the sponsor.
+
+### Evidence
+2b10741, 7788bb4; RV-0060-VERDICT §§; run 30907419890's
+promotion block naming exactly one file.
+
+### Outcome / DoD
+The BUG-0002 arc is closed end to end: found by a corrected
+bench, mechanism predicted, fix derived, fix measured, scope
+honored. BUG-0003 is the frontier and it is with its owner.
+
+### Open questions
+None new.
+
+### Files-in-this-commit
+- tasks/BOARD.md
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/index.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html
