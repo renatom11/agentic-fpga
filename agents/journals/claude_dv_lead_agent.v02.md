@@ -3540,3 +3540,227 @@ stands at **36 of 62**, unchanged.
 
 ### Files-in-this-commit
 - test/attack_plans/AP-xgmii_rx_64.md
+
+## [J-dv_lead-0088] 2026-08-07T16:20Z | task:WO-0060 | The bench-repair work order authored — six of its seven changes are one term or one sentence, so the packet spends its length on the two things a small diff cannot carry: the derivations I refuse to accept without, and the bar against reading the packet this round came from
+
+### Trigger
+Orchestrator: the AP repair landed at `b5d7e6e` with my two paths staged
+explicitly and the architect's in-flight F-1 edit left untouched, so my own
+stated precondition — *"the tb_writer WO SHALL NOT issue before it lands"* — is
+satisfied. Author the bench-repair work order I declared mine to write next.
+Allocated id **WO-0060**; the family-I campaign shifts to WO-0061 when its turn
+comes.
+
+### Inputs
+- `agents/handoffs/README.md` — the `WO-` template.
+- `agents/handoffs/WO-0059_tb-m03-family-i-silence-and-ordered-sets.md` header
+  block, for the house form of a tb_writer packet of mine (State/From/Spec
+  basis/Rows/Deliverables, and the DRAFT convention's own sentence).
+- `docs/specs/requirements.md` §0.5 and REQ-016, and §13's transcription row at
+  `155c9b2` (`J-orchestrator-0167`), to cite the ruling as in force and F-1 as
+  outstanding.
+- `docs/specs/modules/xgmii_rx_64.md` §6.1 (D(m), the offsets paragraph,
+  derivations 1–3), §8's directed set, §10's REQ-016 hook — all at `1f3c04c`.
+- `test/attack_plans/AP-xgmii_rx_64.md` §4.I at `b5d7e6e` — M03-I4's and
+  M03-I5's `Observable` cells, quoted into the packet's `Context provided`.
+- `test/xgmii_rx_64/test_m03_i.ml` at `b5d7e6e` — every construct the packet
+  names, read to pin line numbers rather than quote them from memory.
+- My own `J-dv_lead-0086` return (the seven-change instruction) and
+  `J-dv_lead-0087` (the AP repair this packet's Context depends on).
+- **Read mid-authoring, because it landed mid-authoring**: `d54c931`
+  (`architect_docs_lead`, *"F-1 repaired: the tlast word by residue, in force on
+  commit"*) — SPEC-M03 §6.1 item 2 and its §13 row, no `requirements.md` change.
+- **No RTL.**
+
+### Reasoning
+The engineering here is small — one term at `:922`, one term at `:1100`, a
+docstring, a comment, two worked figures, ten citations, and an exhaustive
+nothing-else-moves list. A packet that only said that would be two pages and
+would fail, because **the defect being repaired was never a wrong number; it was
+a rule adopted without a derivation.** `RV-0059-VERDICT` §8 was mine, it was
+stated confidently, it was wrong, and it survived a full round of review because
+nobody had to show their working. So the packet spends its length on the parts a
+small diff cannot carry.
+
+**Two derivation obligations, both refusable.** **D1**: the docstring must state
+and derive `N ≥ 8m + 13 ⟺ m < W − 1` as the reason the existing
+`m = words - 1` branch stands. I wrote explicitly that changing `7` to `12`
+without it is a BOUNCE — which is a strong thing to pre-commit, and it is the
+right thing, because the equivalence is exactly what makes the ruled D(m)'s
+(a)/(b) split *the* non-`tlast`/`tlast` split rather than a stipulation, and a
+worker who has not seen that has not understood what they changed. **D2**: the
+in-range condition at `:1100` must be derived from the branch (`N ≥ 8m + 13` ⇒
+octet `8m + 12` exists), because the phrase it replaces — *"always inside that
+word by construction"* — is not merely false now, it is **inverted**: the anchor
+is deliberately outside word m, since the evidence that a word is full and not
+last is precisely an octet that is not its own. A worker who patches the index
+and leaves that phrase has written a comment that argues against the code above
+it.
+
+**I also forbade something I could have asked for.** §3.5's bar: the worker
+SHALL NOT write or derive an expected **lane-4** per-octet class set, because
+§6.1 item 2 is the subject of F-1 and the architect is repairing it in a parallel
+round. This is the packet's only instruction to write *less* than the worker
+could derive, and it is what makes the round independent of F-1's outcome in both
+directions — the classes land in the promoted expect blocks as data whichever way
+item 2 is ruled, and the file never has to be reopened for it. The alternative,
+handing over my own corrected lane-4 table, would have been faster and would have
+put an unruled number into a bench, which is the thing this programme keeps
+finding out is expensive.
+
+**And that independence claim was tested within the hour, which is the most
+useful thing that happened this round.** `d54c931` landed while I was writing:
+**F-1 RULED and repaired**, item 2's split restated as the non-`tlast` words'
+arithmetic with the `tlast` word carrying its own residue table. I had written in
+this entry's Outcome that *"when F-1 is ruled, nothing in `WO-0060` needs
+revising"*. **That was right about the engineering and wrong about the prose.**
+Nothing in the seven changes moved, the bar stands, no class set had been
+encoded, and no row, status or count changed — the substance was genuinely
+independent. But two sentences were **status claims with a shelf life**: §3.5's
+*"the architect is repairing it in a parallel round"* and §7.1's quotation of the
+AP cell's *"outstanding with architect_docs_lead"*. A worker reading those at a
+SHA where the repair is already in force would reasonably conclude the bar was
+void. So I re-based both — the bar now stands on the reason that always carried
+it (§0.5 forbids asserting a per-octet class here; a class set in a comment is a
+prediction a later reader treats as one) and the reference is re-pointed at the
+repaired item 2 as *reference, still not to be encoded*. **The lesson I want on
+the record: a packet's substance can be made independent of an open ruling, but
+its status sentences cannot, and those are the ones that mislead.** They should
+be written as of a named SHA or not written at all.
+
+I did **not** touch the AP cell's own wording for this. Its "outstanding" clause
+is the attack plan's to correct in its own next round; correcting it from inside
+a work order would be a lead editing a plan through a packet, and the cell's
+final sentence — *every one of these values is REPORTED and none is ASSERTED* —
+is exactly why the row survived the ruling in either direction and needs no
+urgency. I also did not countersign the repair here: I verified at
+`J-dv_lead-0087` that it agrees with my derivation cell for cell, and that
+observation is not a signature.
+
+**The exclusion I care most about, and it is unusual enough that I put its reason
+in the packet rather than just the rule.** The worker must not open `BUG-0002`.
+That packet is mine and is where this round comes from, but **from its "Root
+cause" heading onward it carries RTL source, rtl_lead's pre- and post-fix
+eight-row cycle tables, and the design's actual emitted cycles.** Those are
+design-derived expected values, and reading them would put a worker in exactly
+the position ADR-0015 D2 exists to prevent — on the very run whose entire value
+is that the bench and the design disagree. Normally a tb_writer WO omits RTL and
+that is the whole of the discipline; here the leak would come through a **DV**
+packet, which is a route the standing rule does not name. So I reproduced
+everything needed from it — the rule, the changes, the classes, the prediction —
+and said plainly that nothing is held back, because a bar without a reason gets
+worked around by a conscientious worker looking for context.
+
+**The prediction is in the packet and not only in my return.** 36 units red,
+every one at word 0, `expected − observed = k`, 5-against-4 and 11-against-4 at
+64/lane-0, all 16 `k = 0` members green, every other family green — and the
+current word-7 symptom disappearing as a distinct symptom. A red count going
+2 → 36 is precisely the shape of result that gets a bench blamed for a design's
+gap, and the defence has to exist **before** the run or it is not a defence. I
+also named what would convict the repair rather than the design, so the worker
+has a falsification condition and not just an expectation, and I bound them to
+report a deviation rather than accommodate it.
+
+**On the no-new-guard section.** §6.1's new sentence — *"a word whose D(m) has
+not arrived is not emitted"* — reads like an obligation and is not one: the
+word-count guard and the per-word cycle guard close it as a pair, because an
+early `tvalid` word is either extra (breaking the count) or displaced (breaking
+the cycle), and there is no third behaviour. I stated the argument rather than
+just the instruction, and then invited the worker to contradict it *without
+adding anything* if they think the pair misses a case. A redundant guard is
+cheap to add and expensive to maintain against every future ruling; a finding
+that the pair is incomplete is worth more than the guard would be.
+
+**One thing I deliberately did not do.** I did not fold the two `+ 12`s into a
+shared helper, and I forbade the worker from doing it. They are two derivations
+of one specification sentence, and they exist as two so that a defect in the
+injection translator cannot silently validate itself — route 1 goes through
+`Idle_injection.cycle_of`, route 2 through raw octet times. Deduplicating them
+would remove the only structural reason the file's cycle numbers are trustworthy,
+in exchange for one line.
+
+### Actions
+- Authored `agents/handoffs/WO-0060_tb-m03-family-i-dm-rebase.md` — State
+  **DRAFT** (the orchestrator issues; I do not), dv_lead → tb_writer, eight
+  sections: the rule re-derived so the worker can rebuild every number (§2); the
+  seven changes with file:line, before/after and the two derivation obligations
+  (§3); the no-new-guard argument (§4); the derivation-not-hardcode discipline in
+  five numbered clauses (§5); the predicted red set with its falsification
+  condition (§6); `Context provided` with the two AP cells quoted at `b5d7e6e`,
+  the BUG-0002 bar with its reason, and the read list (§7); the return
+  obligations (§8).
+- Pinned every line number by reading the file rather than quoting my own return
+  from memory — which moved four of them (`:4`/`:36`/`:134` not `:6`;
+  `:1167–1175` not `:1176`; `:895` as the docstring block's start; `:1461–1462`
+  confirmed) and added five citation sites my return had not enumerated
+  (`:1008`, `:1034`, `:1071`, `:1114`, `:1430`).
+- Verified the two AP quotations in §7.1 are byte-faithful to the file at
+  `b5d7e6e` rather than paraphrases.
+- Wrote **no** file under `test/**`, `libs/**` or `docs/**`; ran **no** git
+  command; opened **no** RTL.
+
+### Evidence
+- Packet at `agents/handoffs/WO-0060_tb-m03-family-i-dm-rebase.md`, State
+  **DRAFT**, `Files-in-this-commit` below naming it alone.
+- Line numbers verified against `test/xgmii_rx_64/test_m03_i.ml` at `b5d7e6e`:
+  `dependency_source_cycle` at **:922**, `injected_word_cycle` at **:926**, its
+  four call sites at **:1015 / :1039 / :1432 / :1452**, the delay-identity anchor
+  `let c = (8 * m) + 7 in` at **:1100**, the front-offset match at
+  **:1167–1175**, the ten `RV-0059-VERDICT §8` citation sites at **:4, :36, :134,
+  :1008, :1034, :1052, :1071, :1114, :1430, :1461**, the word-count guards at
+  **:1023** and **:1440**, and the three other families' count guards at
+  **:290 / :445 / :643** (named in the do-not-touch list).
+- AP quotations checked by exact-string match against
+  `test/attack_plans/AP-xgmii_rx_64.md` at `b5d7e6e`: the D(m) clause, the
+  branch-equivalence clause, the guard-pair clause and the lane-4 class cell all
+  return a match; the class-table sentence's `is WITHDRAWN at 1f3c04c` returns a
+  match.
+- **Cited, not re-derived this round**: the four derivations the packet installs
+  are `J-dv_lead-0086`'s (causality sweep 2 268 against 0; `k = 0` invariance 0
+  deviations over N = 5…199 and 0 of 6 630 `tlast` words moving over `k = 0…16`;
+  the class tables; the I4/I6 cycles), and the current-symptom baseline is CI run
+  **30895770553** at `ce00c06`.
+- **Working-tree note, carried forward from `J-dv_lead-0087` and still true**:
+  `docs/specs/modules/xgmii_rx_64.md` is modified in this tree by the
+  architect's concurrent F-1 round. It is not mine, it is outside dv_lead's write
+  scope, it is absent from the files list below, and the orchestrator SHALL stage
+  my paths explicitly rather than `git add -A`.
+
+### Outcome
+DoD met. `WO-0060` is authored and in **DRAFT**; the orchestrator issues it and
+records every state transition. The round it commissions is one file, seven
+changes, two refusable derivation obligations and a pre-stated 36-unit red-set
+prediction. Nothing else in family I moves: no row added, converted or
+re-statused, and M03-I1, I2, I3 and I6 keep their `Observable` cells unchanged
+(I6's *code* moves only because it shares M03-I4's helper). BUG-0002's `Fix
+verdict` stays open and `ce00c06` is still not accepted — the re-test is owed
+after this round and after rtl_lead's elastic-emission round. Family-I discharge
+stands at **36 of 62**, unchanged; this packet discharges nothing by itself.
+
+### Open-questions
+- **F-1 is CLOSED** — ruled and repaired at `d54c931`, in force on commit, and
+  agreeing with my derivation cell for cell (verified at `J-dv_lead-0087`). It
+  landed mid-authoring; `WO-0060`'s substance needed no revision and its two
+  **status** sentences did, both re-based in this same commit. Whether the repair
+  is owed a countersignature is architect_docs_lead's and the orchestrator's to
+  say — it repairs a false descriptive statement rather than moving a rule, and I
+  offer no view here beyond noting that I have not signed it.
+- **The AP's M03-I4 cell still calls F-1 "outstanding"** and is now one commit
+  stale. It asserts nothing and misleads no bench — the values it names are
+  reported — so it rides to the plan's next round rather than being corrected
+  through a work order.
+- **Sequencing remains the orchestrator's.** The red count goes 2 → 36 until
+  rtl_lead's elastic-emission round lands. My recommendation is unchanged —
+  bench first, prediction stated in advance — and it is now stated in the packet
+  as well as in my return, so a surprise cannot be mistaken for a bench defect.
+- **A question I put to the worker and cannot answer myself**: whether the
+  count/cycle guard pair of §4 really closes *"a word whose D(m) has not arrived
+  is not emitted"*, or whether there is a behaviour it misses. I argued it closes
+  it and instructed that a disagreement be **reported without adding a guard**.
+  If the worker finds a gap, it is a finding against this packet and against
+  M03-I4's repaired cell, and I would rather learn it that way than by adding a
+  third assertion defensively.
+- `d39ffb6`'s **N-1** still rides unanswered, unchanged by this round.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0060_tb-m03-family-i-dm-rebase.md
