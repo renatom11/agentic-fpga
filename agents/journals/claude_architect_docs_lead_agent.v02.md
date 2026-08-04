@@ -968,3 +968,258 @@ and to the M03-I4/I6 round-2 worker through dv's packet.
 ### Files-in-this-commit
 - docs/specs/requirements.md
 - docs/specs/modules/xgmii_rx_64.md
+
+## [J-architect_docs_lead-0025] 2026-08-04T18:40Z | task:BUG-0002 | rtl_lead's E5 against my own D(m) SUSTAINED — the non-`tlast` clause demanded hindsight and is refuted by two frames, so D becomes the evidence word for every output word, uniformly, and M03 must hold a completed word until its evidence arrives
+
+### Trigger
+
+E5 escalation from rtl_lead against my own `a77017c` §0.5 ruling
+(`J-architect_docs_lead-0024`), relayed by the orchestrator verbatim-by-pointer:
+`agents/handoffs/BUG-0002_m03-idle-injection-tlast-on-a-non-final-word.md` at
+`ce00c06`, "What the fix does not repair" and the Root-cause section above it.
+rtl_lead fixed the `tlast`-on-word-0 defect dv_lead convicted (last-ness gated on
+the closure record, gapless bit-identical), and the fix exposed that the
+specification's own `D(m)` — mine, one round old — pins an emission no causal
+design can produce. Adjudication, charter §3 and §5: the ruling is a spec diff.
+
+### Inputs
+
+- `agents/handoffs/BUG-0002_m03-idle-injection-tlast-on-a-non-final-word.md`
+  at `ce00c06` — read in full, both the packet body and rtl_lead's Root-cause /
+  fix / escalation response.
+- `docs/specs/requirements.md` §0.5 (whole gapped-stimulus block), REQ-016,
+  REQ-004/005/011/015/019, §13's last three rows.
+- `docs/specs/modules/xgmii_rx_64.md` §6.1 (whole), §6.2 `Frame` row, §7, §8's
+  directed-length set, §10's REQ-016 hook, §13.
+- `agents/charters/architect_docs_lead.md` §3, §5, §7, §8; `agents/PROTOCOL.md`
+  §3, §4, §6, §8, §10.
+- My own `J-architect_docs_lead-0024` (the ruling under appeal, including its
+  disclosed prediction) and §13's `J-dv_lead-0084` countersignature row.
+
+### Reasoning
+
+**1. The proof is sound, and I verified it rather than accepting it.** rtl_lead's
+pair is a 72- and a 64-octet lane-0 frame under `uniform ~idles:7`. Re-derived
+from the wrapper's own site rule (boundaries before source cycles 3 … the
+terminate word) with injected(c) = c + k·|{sites ≤ c}|: both put source cycle 9
+at injected 58 and source cycle 10 at 66, so the two injected lines are identical
+through cycle 65 and first differ at 66. Under D(m)-as-ruled the 72-octet frame's
+word 7 is non-`tlast`, keyed to the word carrying frame octet 63 (source cycle 9,
+injected 58), gapless cycle 11 + 49 idles = **60**; the 64-octet frame's word 7 is
+its `tlast` word, keyed to the terminate word, 11 + 56 = **67**, and REQ-015 plus
+§0.5's tuple invariance admit exactly eight words, so nothing at 60. Identical
+registers, identical current input word, `tvalid` required to be both 1 and 0.
+**Sustained.**
+
+**2. Sharpened twice, because the sharper forms decide the remedy.** (a) The pair
+does not need an uncommissioned length: **69** octets works identically — its
+terminate also lies in source cycle 10 (lane 5), so it has the *same* injection
+sites as the 64-octet frame and the same injected map, and 64 and 69 are both in
+§8's directed set {64 … 71} at a lane-0 start with k = 7, which §10 commissions.
+The collision is therefore inside the commissioned stimulus, not at its edge —
+which matters, because it is what stops option 2 from being a cheap escape from a
+merely exotic case. (b) The defect is not confined to word 7 or to long frames: a
+**64**- and a **12**-octet frame at k = 7 are identical through injected cycle 9,
+and the old rule pins word 0 at cycle **4** for the first while admitting nothing
+there for the second. So the very measurement `BUG-0002` §2.3 read as "the first
+confirmation of §6.1's D(m) against hardware" confirmed nothing: the design
+produced 4 by closing on emptiness — the defect the packet convicted — and the
+two agreed by coincidence. I say that plainly in §6.1 because a future reader
+would otherwise cite that green guard against this ruling.
+
+**3. Where my own rule went wrong, stated precisely.** Not "the `tlast` bullet is
+wrong" — it is right and it does not move. The error is that I kept the
+last-octet word as the **rule** and late decision as an **exception**, when the
+exception is the general case at any port whose framing is not carried in band.
+Whether output word m keeps eight octets and whether it is its frame's last are
+both comparisons against N, the frame's received length, which the module learns
+only from a further octet's arrival or from the closing character. Word m's own
+octets settle neither. So a specification keyed to them is running the module
+backwards — hindsight, exactly the shape I retired at `a77017c` for the per-octet
+constant, one level deeper.
+
+**4. The uniform rule, and why it is one object rather than two bullets.**
+D(m) = whichever arrives first, received frame octet **8m + 12** (the fifth after
+word m's own eight) or the character that closes the frame. The two are exclusive
+by arithmetic, not merely ordered: octet 8m + 12 exists iff N ≥ 8m + 13, and word
+m is last iff N ≤ 8m + 12 — so (a) decides exactly the non-`tlast` words and (b)
+exactly the `tlast` word, while the module, not knowing N, evaluates only
+"whichever came first". That is why the rule is causal *and* why it reproduces the
+old `tlast` clause exactly. rtl_lead's option 1 wording ("the first input word
+after word m's octets that carries a frame octet or closes the frame") is right
+gapless and undefined at two real cases — a lane-0 frame with r ∈ {5,6,7}, whose
+`tlast` word shares its input word with the terminate, and every lane-4 `tlast`
+word — because there the closure is *in* the octets' own word, not after it. The
+octet-index form has no such hole and needs no "at or after" hedge.
+
+**5. Option 1 vs option 2 was not a choice between two things I may do.** Option
+2 narrows REQ-016's reach at an XGMII port. REQ-016 is a countersigned normative
+IFC requirement whose verification column §10 commissions at this module by name;
+narrowing it **drops commissioned coverage**, which is charter §7 **E2** — the
+architect does not take it in-role, it goes up with options and cost. So the real
+choice was: rule option 1, or escalate E2 and block. I ruled. I record honestly
+that option 2 is not *refuted* — I checked two of the collisions against it and
+they dissolve, because a frame that ends earlier also loses injection sites and so
+becomes distinguishable in time; I did not prove it consistent in general and I do
+not claim it. It is not foreclosed: if the emission rule proves unaffordable in
+timing or area, rtl_lead returns with the cost and I take it up as E2. Option 3
+(keep row 7) is refuted above and is not available to anyone.
+
+**6. The costs I found that the escalation did not name, and would not have
+wanted hidden.** (a) §6.1's **r ∈ {5, 6, 7} survival carve-out is void** — the one
+clause of this ruling dv_lead re-derived exactly when it countersigned `a77017c`.
+Under the uniform D that case has *two* L classes (the `tlast` word's octets share
+the terminate word and are separated from their evidence by no idle, so they still
+measure L, while every other word measures L + 8k) and r ∈ {0 … 4} under a uniform
+wrapper has *one* — the exact inversion of what the item promised. Withdrawn, and
+replaced by "there is no surviving case", which is the safer statement anyway: no
+bench can now over-read a green. (b) §6.1 item 1's worked figure ("those four
+octets measure L = 24 while every octet before them measures L") and item 2's
+("L = 20 and L = 12 in one word") are stale for the same reason; re-based to 24 as
+a single value at 64/lane-0/k = 1, {16, 24} at 69/lane-0/k = 1, and 28/20 for the
+lane-4 straddle. (c) The consequence-1 scope note said rows 1 and 2 move *earlier*
+under an idle injected before W. They do not — the aborted frame's last word can
+be proven last by nothing except the character in W that aborted it, so W is the
+named word in **all six** rows and both reports move together. The conclusion
+(never coincident, §6.3 item 8 has no instance) survives on the offsets alone.
+(d) My own disclosed prediction at `J-architect_docs_lead-0024` about measured L
+classes is **falsified by this ruling** — by my own arithmetic, not by dv's
+measurement — and is retired and replaced in Open-questions rather than left to
+be quietly contradicted by a future run.
+
+**7. What I did not do.** I did not name a register, a hold, or a one-shot in the
+specification. §6.1 states the observable — a word whose D(m) has not arrived is
+not emitted, `tvalid` = 0 on those cycles — and REQ-019's two-word bound is stated
+to be untouched, with the reason (word m + 1's octets complete no earlier than
+D(m)), plus an instruction to raise rather than build if a design finds it needs a
+third. Whether that costs an elastic emission register is rtl_lead's to answer,
+and the work order to answer it is a follow-on, not a line in this diff.
+
+### Actions
+
+Two files, four sites in one and five in the other, no other file touched.
+
+`docs/specs/requirements.md` §0.5: the **output-word bullet** of *the deciding
+input word* replaced (evidence word; in-band framing named as the case where the
+two readings coincide; XGMII named as the case where they part); the paragraph
+after the bullets restated for the gapless coincidence; a new normative paragraph
+**the test a specification's D must pass** (causality, the SHALL NOT, and the
+two-frame refutation shape); the **late-decision** bullet extended to record that
+at an XGMII port every output word is late-decided and M03 has no surviving
+residue class; the *Relation to §0.6* paragraph's "fallback" framing corrected;
+the provenance paragraph given its second-ruling note, including that M06/M08/
+M14/M17 owe nothing further from this diff because their framing is in band.
+§13: one row.
+
+`docs/specs/modules/xgmii_rx_64.md`: §6.1's **D(m)** block rewritten (the
+blockquoted rule, the exclusivity proof, the 64/69 and 64/12 refutations, the
+per-lane offsets, the two consequences); §6.1 item 1 and item 2 re-based; item 3
+rewritten as **no surviving case**, carve-out withdrawn; consequence 1's scope
+note repaired to W in all six rows; §7's handshake bullet restated with the
+uniform D, the offsets, the not-emitted-before-D observable and the withdrawal.
+§13: one row.
+
+### Evidence
+
+The claims here are arithmetic on the committed specification and reproduce from
+a checkout at this SHA with no toolchain (ADR-0005). The closed forms, stated so
+the auditor and dv_lead re-derive rather than trust — lane-0 start, `/S/` at
+source cycle 1, frame octet j at source cycle 2 + ⌊j/8⌋, `/T/` at octet offset N,
+`uniform ~idles:k` injecting at boundaries before source cycles 3 … (terminate
+word), injected(c) = c + k·|{sites ≤ c}|, gapless emission of word m at cycle
+m + 4:
+
+- **The refutation.** N = 64 and N = 69 share sites {3…10}, so both map source
+  cycle 9 → 58 and source cycle 10 → 66 at k = 7. Old rule: N = 69 word 7 at
+  11 + 49 = **60**; N = 64 word 7 at 11 + 56 = **67** with exactly 8 words.
+  N = 64 and N = 12 map source cycle 2 → 2 and source cycle 3 → 10 at k = 7; old
+  rule pins word 0 at **4** and at **11** respectively.
+- **New-rule cycles, M03-I4 (64, lane 0, k = 1)**: 5, 7, 9, 11, 13, 15, 17, **19**.
+  **M03-I6 (64, lane 0, k = 7)**: 11, 19, 27, 35, 43, 51, 59, **67**. `tkeep`
+  0xFF ×7 then 0x0F, `tlast` on word 7 only, `tuser` 0 — the tuple sequence of
+  `BUG-0002` §2.2 unchanged, and word 7's cycle unchanged from it.
+- **Gapless invariance**: at k = 0 the new D reproduces m + 4 for every output
+  word of every N from 5 to 199 at **both** start lanes, hence `m + 3`, L = 16/12,
+  ΔC = 3, §7's table, the drain window and §9's cycles are byte-true as written.
+- **No `tlast` word's cycle moves** at any k ∈ {1,2,3,7}, any N in 5…199, either
+  lane — old and new D agree on the last word of every frame.
+- **Offsets taken**: lane 0 → 1 where D is the octet, 1 or 2 where D is the
+  closure; lane 4 → 0 and 0 or 1. **Words waiting at once**: maximum **2** over
+  N = 5…199, k ∈ {0,1,2,3,7,15}, both lanes — REQ-019's bound is not touched.
+- **L classes under a uniform wrapper, new rule**: lane 0, r ≤ 4 → one value
+  {L + 8k}; lane 0, r ≥ 5 → {L, L + 8k}; lane 4 → {L + 8k, L + 16k}. This is what
+  retires §6.1 item 3's carve-out and my `-0024` prediction.
+
+These were re-derived twice, by hand in the Reasoning above and by a throwaway
+enumeration script over N = 5…199 written in the session scratchpad. **That script
+is ephemeral and is not committed** (ADR-0003/F5): it is a convenience over the
+same closed forms printed here, every one of which is recomputable from the two
+committed sections with a pencil. Nothing in this entry rests on it.
+
+### Outcome
+
+**DoD met** for an adjudication (charter §5, §8): both positions recorded, the
+ruling landed as a spec diff in the two named files, the rejected alternative
+recorded with the reason it was rejected — and, unusually, with the reason it was
+*not available to me*. **Not in force until countersigned**: requirements.md §0.5
+is normative text in dv_lead's sole test-derivation basis, so this diff carries
+the same discipline as `a77017c` — dv_lead's re-countersignature is owed and the
+orchestrator transcribes it into §13 before the rule binds. Handed to the
+orchestrator for commit under `Agent: architect_docs_lead`,
+`Work-Order: BUG-0002`; the ruling goes to rtl_lead as the answer to its E5 and to
+dv_lead as the countersignature request and the guard-value change.
+
+### Open-questions
+
+- **Countersignature class, stated procedurally because this revises a
+  countersigned diff.** dv_lead countersigned the `a77017c` §0.5 text at `d39ffb6`
+  (`J-dv_lead-0084`) on seven checks. That signature is **neither withdrawn nor
+  inherited**. Five of its checks stand untouched (straddle verdicts, the L = 24
+  example *as a fact about the old D*, the forbidden predicate's location in
+  `Latency.is_constant`, REQ-016's clause mapping, confinement); the **residue
+  survival table is superseded** — its arithmetic was right for the D it assumed
+  and is void under this one; and the sixth, the D(m) bullet itself, is what this
+  diff replaces. The new countersignature is asked **narrowly**: (1) the two-frame
+  refutation at 64/69 and 64/12, (2) k = 0 invariance at both lanes, (3) the
+  withdrawal of the r ∈ {5,6,7} carve-out and the inverted class table, (4) the
+  new M03-I4/I6 pinned cycles above. Until it is transcribed, the a77017c text
+  remains the one in force and M03-I4/I6 stay red and held either way.
+- **A design consequence is owed as a work order, not absorbed.** M03 must not
+  emit a completed word before its D(m) arrives. Whether that is an elastic
+  emission register (rtl_lead's ~15 lines) or something else is rtl_lead's call;
+  what the specification fixes is the observable. This needs **one WO to rtl_lead**
+  (implement to the new §6.1) and **one to dv_lead** (M03-I4's `:1041` guard and
+  its siblings re-derived to the cycles above, not hardcoded from this entry).
+  Sequencing matters: the countersignature first, then the two work orders, or the
+  RTL is built to a rule not yet in force.
+- **`BUG-0002` cannot close on this ruling.** M03-I4/I6 remain red after
+  rtl_lead's committed fix and stay red until the emission rule lands; the packet's
+  Fix verdict stays open and the family-I qualification campaign stays shut. The
+  committed fix is **not** reverted by this — gating last-ness on the closure
+  record is necessary under the new rule too, and this ruling adds to it.
+- **My `-0024` prediction is retired as falsified by my own arithmetic**, and
+  replaced, disclosed in the open (PROTOCOL §10, R-SEAL-1: a forward statement, no
+  withheld artefact). Under `uniform ~idles:k`, k ≥ 1, new rule: **lane 0,
+  N mod 8 ∈ {0…4}** → one class {16 + 8k}; **lane 0, N mod 8 ∈ {5,6,7}** → two,
+  {16, 16 + 8k}, the 16 being the `tlast` word's delivered octets; **lane 4** →
+  two, {12 + 8k, 12 + 16k}, verified at N = 64 and predicted at the other
+  commissioned lengths. If dv's measurement disagrees anywhere, the disagreement is
+  a finding against this ruling and I want it returned with its numbers.
+- **Option 2 remains available only as E2.** Narrowing REQ-016 at an XGMII port
+  drops commissioned coverage from a countersigned requirement. If the emission
+  rule costs more than the org wants to pay, that is the route, and it needs the
+  sponsor via the orchestrator — not a spec diff of mine.
+- **A generalisation I deliberately did not make.** §0.5's new causality test is
+  stated for output events at any module, but I checked its consequences only at
+  M03 and by argument (in-band framing) at M06/M08/M14/M17. The three specs owing
+  the `-0024` repair (M06 §7/§10, M10 §3/§6.1/§7/§10, M14 §3/§6.1/§7/§10/§11.2)
+  owe nothing further from this diff, and that claim is worth a check by whoever
+  next opens them.
+- All items carried in `J-architect_docs_lead-0024`'s ledger remain open, **C-5
+  included**, together with the two re-countersignatures and one concurrence owed
+  at `J-architect_docs_lead-0013`'s SHA.
+
+### Files-in-this-commit
+
+- docs/specs/requirements.md
+- docs/specs/modules/xgmii_rx_64.md

@@ -242,18 +242,44 @@ than left to be derived.
 output word, or a header-record or strobe pulse — its **deciding input word** D
 is the **latest** input word that event depends on:
 
-- for an **output word**: the input word carrying that word's **last** octet,
-  except where the owning module's specification makes the word's `tkeep`,
-  `tlast` or `tuser`[0] undecidable until a later input event, in which case D is
-  the input word carrying **that** event;
+- for an **output word**: the input word carrying the **evidence that decides
+  that word's `tkeep`, `tlast` and `tuser`[0]** — the earliest input word by
+  which the owning module's own rules fix all three. D is **not** in general the
+  input word carrying the output word's last octet: whether a word keeps eight
+  octets, and whether it is its frame's last, are settled by what arrives
+  **after** those octets, so a specification naming the last-octet word names a
+  word at which the module does not yet know what it is being told to emit.
+  Where the module's input carries its framing **in band** — an `Axi64` `tlast`
+  and `tkeep` on the word itself, or a length the module has already parsed —
+  the evidence arrives with the last octet and the two readings name the same
+  word at every stimulus. Where the frame's end is signalled by a **later**
+  character, as the XGMII terminate is, they part company as soon as an idle
+  cycle can fall between them, and only the evidence reading is causal;
 - for a **pulse**: the input word carrying the last input octet the pulse's value
   depends on.
 
 Each module specification names D for its own output events; where it does not,
-the first clause of each bullet governs. On a gapless stimulus the two clauses of
-the first bullet always name the same cycle, which is why a specification can
-pin its cycles either way and be right — the choice only becomes observable
-under injection.
+the bullets govern. On a **gapless** stimulus the evidence word and the
+last-octet word are at most one word apart and every cycle a specification pins
+is the same under either reading, which is why the Phase-1 specifications could
+pin their cycles either way and be right — the difference only becomes
+observable under injection.
+
+**The test a specification's D must pass (normative).** D names a *cause*, so it
+is bound by causality: two stimuli identical at a module's input up to and
+including cycle *c* SHALL produce identical output at cycle *c*, no module being
+granted foreknowledge. A specification therefore SHALL NOT pin an output event
+**earlier** than the input word that first determines it — the same cycle is
+permitted, because a module's output at cycle *t* is a function of its registers
+and of the input word at *t* — and a D naming an earlier word does exactly that.
+Like an L for which (L + h) is not a multiple of 8, the error is refutable **by
+arithmetic on the specification** before any RTL exists, and the refutation has a
+fixed shape: exhibit two frames whose injected input lines agree through the
+pinned cycle and whose pinned events differ at it. One design, with identical
+registers and identical current input word, would have to both assert and not
+assert `tvalid` there; the pin is then satisfied by no design at all — the
+failure mode this document exists to prevent, reached from the specification's
+side rather than the monitor's.
 
 **What survives idle injection (normative).** Inserting idle cycles into a
 module's input delays each output event by **exactly** the number of idle cycles
@@ -289,7 +315,14 @@ each checkable at spec freeze before any RTL exists:
   instance — its `tkeep`, `tlast` and `tuser`[0] are not decidable until the
   terminate character arrives (REQ-011, REQ-103, REQ-104), which at most frame
   lengths is a later input word than the one carrying its last delivered octet
-  (SPEC-M03 §6.1 states the residues). M10 is the instance with no output word at
+  (SPEC-M03 §6.1 states the residues) — and at an XGMII port it is not the only
+  late-decided word: **every** output word is, because the evidence that a word
+  keeps eight octets and is not its frame's last is the arrival of a fifth
+  further received octet, or of the character that closes the frame, and never
+  the word's own octets. M03 therefore fails this test at both start lanes and at
+  every frame length producing more than one output word, with no surviving
+  residue class (SPEC-M03 §6.1, which withdrew the one it used to state). M10 is
+  the instance with no output word at
   all: its `arp_valid` pulse is decided by ARP octet 27's input word while its
   latency is measured from ARP octet 0's, so its constant does not survive
   injection either, though its h is 0.
@@ -314,8 +347,10 @@ arithmetic forbids.
 a frame's **report** to the input word that decides it — the last octet the frame
 received while open, or, where it received none, the word carrying the character
 that closed it. This paragraph keys an output **word** to the input word that
-decides it, with the same fallback in the same place: where the word's framing is
-not decidable from its own octets, the closing character's word stands in. One
+decides it, and since `J-architect_docs_lead-0025` it does so without a fallback
+clause: the deciding word **is** the word carrying the evidence, of which the
+closing character's word is one of the two forms that evidence takes — the
+structure §0.6 already had, reached here one ruling later. One
 rule, two ports — **a module's output event is a function of the latest input
 event it depends on, and the specification names that event rather than a formula
 in cycles.**
@@ -328,6 +363,20 @@ formulation is dv_lead's `D(m)`. The ruling, the generalisation to pulses and to
 `J-architect_docs_lead-0024`. **No conformant design changes**: the per-octet
 constant was never achievable under injection, so no module was ever built to it,
 and every cycle any module specification pins is unchanged.
+
+*The output-word bullet and the causality test above are the **second** ruling on
+this paragraph, `J-architect_docs_lead-0025`.* The first left the output-word
+bullet keyed to the last-octet word with late decision as an exception; rtl_lead
+escalated it (E5, `BUG-0002`) with a two-frame refutation of exactly the shape the
+test above now prescribes, and the refutation holds — worked at SPEC-M03 §6.1.
+The bullet is therefore inverted: evidence is the rule and coincidence with the
+last-octet word is the special case. **No gapless cycle in any specification
+moves**, and at M03 no `tlast` word's cycle moves at any k either; what moves is
+every **non**-`tlast` word's cycle on an **injected** run, at a module whose
+framing is not carried in band. The three module specifications named in §13's
+`J-architect_docs_lead-0024` row still owe their own repair and owe nothing
+further from this one: their inputs carry `tlast` in band, so the two readings
+coincide there at every stimulus.
 
 **Start lanes.** At the XGMII boundary the two start lanes yield two constants
 differing by the 4-octet-time difference in the start character's position
@@ -873,3 +922,4 @@ commissioned it. A behavioural row additionally names its ADR.
 | 2026-08-04 | §0.6 | **Countersignature transcribed — the reference-word ruling is IN FORCE from this row.** dv_lead COUNTERSIGNED the §0.6 diff at `0caf023` on checks rather than assertion: all three clauses and the 1-to-4-octet exclusion verified present in the committed DV instrument (`test/xgmii/injection.ml`'s `window` and its `outcomes` walker), and the lane arithmetic re-derived independently — at a lane-4 start the 1519th received octet's truncation word is `s+191` against the 1514th delivered octet's `s+190`, so the received reading is load-bearing exactly where the delivered reading would have shifted every family-G lane-4 window by a cycle; invisible at lane 0, decisive at lane 4. Signature of record: the COUNTERSIGNATURE block in `agents/handoffs/WO-0057_tb-m03-family-h-start-without-terminate.md`, `J-dv_lead-0081`, carried at `72192ba` | transcription — no normative text moves in this row; it records that the row above's condition ("not in force until transcribed") is discharged | `J-dv_lead-0081` (signature) | `J-orchestrator-0161` |
 | 2026-08-04 | §0.5, REQ-016 | **SCR-M03-I4 RULED: the per-octet constant is not the gap-invariant quantity; the per-output-event delay keyed to the deciding input word is.** §0.5's "Gapped stimulus" paragraph is replaced: the definition sentence gains its **gapless** qualifier (C-15's lesson a second time), the **deciding input word** D is defined for output words and pulses, the surviving quantity is stated as the delay from D to the event it decides, and the two arithmetic tests that decide whether a module's per-octet constant survives injection — **straddle** (h ≢ 0 mod 8) and **late decision** — are stated with their Phase-1 verdicts. A new normative clause says what a latency monitor may demand under injection and forbids demanding a single per-octet L where either test fails. REQ-016's verification column, which commissioned exactly that forbidden assertion, is repaired to the achievable observable. REQ-016's own normative sentence, REQ-005, REQ-011 and REQ-111 are **untouched** — their stimuli are gapless and they inherit §0.5's scope by citation | **editorial by this table's own test** — no conformant design and no committed test changes meaning. The per-octet constant was **never achievable** under injection, so nothing was ever built to it; every cycle every module specification pins is unchanged; and no committed test drives intra-frame idles at a DUT except M03-I4/I6, which are RED and BOUNCED at this SHA (`RV-0059-VERDICT` §12). The gapless benches — M03 families A–H, M03-I1/I2/I3, the REQ-004 stress and its directed lengths — assert exactly what they asserted, because they are the stimulus class §0.5 defines L over. **But the class and the countersignature question are different axes** — the C-43 precedent — and §0.5 is **normative** text in the test-derivation basis while REQ-016's column is dv_lead's own commissioning instrument, so this diff carries the **countersignature discipline: dv_lead's re-countersignature is owed and the diff is not in force until it is transcribed.** Nothing is blocked meanwhile — the rebuilt M03-I4/I6 assert the per-output-word rule, which SPEC-M03 §6.1 states in the same commit. **No ADR**, deliberately: an ADR records a design choice among live alternatives, and here the alternative is arithmetically impossible rather than merely rejected — the specification asserted something no module can do, and the correction is forced, not chosen. Nothing in PROTOCOL, a charter or an enforcement script moves, so it is not constitution-grade either; the precedent is the two prior §0.5/§0.6 diffs that settled a reading without one (C-15, C-23). **Owed and named, not smuggled** — the restatement discipline PROTOCOL §11 states for scope parameters, applied here by naming the sites rather than by widening this diff: **SPEC-M06 (§7, §10)**, **SPEC-M10 (§3, §6.1, §7, §10)** and **SPEC-M14 (§3, §6.1, §7, §10, §11.2)** each restate the retired claim for their own module and each **fails** one of §0.5's two tests — M06 (h = 14) and M14 (h = 20) straddle, M10's `arp_valid` pulse is late-decided — so each owes the same repair. **SPEC-M08 (h = 0) and SPEC-M17 (h = 8, `tlast` fixed by an in-data count) pass both tests, so their claims are true and are not to be "repaired".** None of the five has a committed bench, so nothing is blocked; the three repairs ride with the next work order that opens those specs, and each needs its own arithmetic worked against its own pinned numbers, which is why they are not folded in here. The loose §7 sentence *"idle gaps delay everything by exactly 8 octet times per cycle"* recurs at all five and is imprecise at all five, consequential at three | dv_lead, **SCR-M03-I4** in `RV-0059-VERDICT` §6 (Findings 1, 2 and 5), relayed verbatim by pointer; generalises `J-architect_docs_lead-0023`'s §0.6 reference-word ruling to the data path | `J-architect_docs_lead-0024` |
 | 2026-08-04 | §0.5, REQ-016 | **Countersignature transcribed — the deciding-input-word ruling is IN FORCE from this row.** dv_lead COUNTERSIGNED the §0.5 + REQ-016 diff at `a77017c` on seven checks rather than assertion: the residue table re-derived at both lanes (exact — survival at lane-0 r∈{5,6,7} where the tlast word's 1–3 octets all sit in the terminate's word); the straddle verdicts checked against §1.1's h column (12, 14, 20 vs 8, 0, 8); the L = 24 example reproduced to the octet time; the forbidden predicate located in the committed instrument (`Latency.is_constant`, held at both sites); REQ-016's clauses matched line-for-line to the bench; and the diff's confinement verified (three files, named sections, REQ-013/014/015/017/018 context-only). One note returned non-blocking (N-1): REQ-016's column gates per module while survival is per (start lane, residue) — licenses nothing at M03, offered for the next WO opening REQ-016. Signature of record: the COUNTERSIGNATURE block in `agents/handoffs/WO-0059_tb-m03-family-i-silence-and-ordered-sets.md`, `J-dv_lead-0084`, carried at `d39ffb6` | transcription — no normative text moves in this row; it records that the row above's condition ("not in force until transcribed") is discharged | `J-dv_lead-0084` (signature) | `J-orchestrator-0165` |
+| 2026-08-04 | §0.5 (**deciding input word**; new *test a specification's D must pass*; late-decision bullet; provenance) | **The output-word bullet of D(m) is RE-RULED on rtl_lead's E5 (`BUG-0002`), against my own `a77017c` ruling: D is the input word carrying the EVIDENCE that decides an output word's `tkeep`, `tlast` and `tuser`[0] — never, in general, the word carrying that word's last octet.** The first ruling kept the last-octet word as the rule and late decision as an exception; that reading demands hindsight, because *whether a word is non-`tlast`* is itself settled by what arrives **after** its octets. rtl_lead's refutation is **verified and sharpened**: a 64-octet and a 69-octet lane-0 frame under `uniform ~idles:7` are identical on the injected line through cycle 65, yet the old rule pins the second's word 7 at cycle **60** and admits nothing there for the first — one design, identical registers, identical current input word, required both to assert and not to assert `tvalid`. Both lengths are in SPEC-M03 §8's directed set, so the collision is inside the commissioned stimulus; the same construction convicts **word 0** at cycle 4 with a 64- and a 12-octet frame. §0.5 therefore gains a normative **causality test** — a specification SHALL NOT pin an output event earlier than the input word that first determines it, and the refutation shape (two frames agreeing through the pinned cycle) is stated so the next such error is arithmetic rather than argument. The late-decision bullet records that at an XGMII port every output word is late-decided, not only the `tlast` word | **editorial where anything is committed and green; behavioural only where nothing is.** Re-derived over N = 5…199 at both start lanes: at k = 0 **not one pinned cycle moves**, and at every k **no `tlast` word's cycle moves** either — (a) evidence decides exactly the non-`tlast` words and (b) closure exactly the `tlast` word, so the clause this ruling leaves standing is the one dv_lead countersigned. What moves is every **non**-`tlast` word's cycle on an **injected** run at a module whose framing is not carried in band, which is M03 alone in Phase 1: M03-I4's word 0 goes to cycle 5 (k = 1) and 11 (k = 7). Those two units are **RED and HELD** at this SHA (`BUG-0002`), so no green assertion changes; the gapless families, the REQ-004 stress and its directed lengths assert exactly what they asserted. It **is** behavioural for a design under injection, and stated as such rather than smuggled: a word whose evidence has not arrived may not be emitted. **No module spec beyond SPEC-M03 owes a repair** — M06, M08, M14 and M17 take `tlast`/`tkeep` in band, so evidence and last octet name the same word there at every stimulus, and M10's clause is the pulse bullet, untouched. **Countersignature: OWED and this diff is NOT IN FORCE until transcribed.** It revises text dv_lead countersigned at `d39ffb6` (`J-dv_lead-0084`): that signature is neither withdrawn nor inherited — five of its seven checks stand untouched, and the sixth (the (start lane, residue) survival table) is **superseded**, its arithmetic correct for the D it assumed and void under this one. The new countersignature is asked narrowly: the two-frame refutation, the k = 0 invariance at both lanes, the withdrawal of the r ∈ {5,6,7} carve-out, and M03-I4/I6's new pinned cycles. **No ADR**, and the reason differs from the last row's: there *were* two live options here (rtl_lead's 1 and 2), but option 2 — narrowing REQ-016's reach at an XGMII port — **drops commissioned coverage from a countersigned normative requirement**, which is charter §7 **E2** and not mine to take in-role, so the choice this ruling made was between one option and an escalation, not between two designs. Nothing in PROTOCOL, a charter or an enforcement script moves; the argument lives in §0.5's own text and this row, where the auditor's "ADR **or spec section**" test finds it. Option 2 is **not foreclosed**: if the emission rule proves unaffordable, rtl_lead returns with the cost and it goes up as E2 | rtl_lead, **E5** against `J-architect_docs_lead-0024`, relayed verbatim by pointer (`agents/handoffs/BUG-0002_m03-idle-injection-tlast-on-a-non-final-word.md` at `ce00c06`); the defect class is dv_lead's **SCR-M03-I4** one level deeper | `J-architect_docs_lead-0025` |
