@@ -762,3 +762,45 @@ corroboration owed at round 2's green SHA.
 
 ### Files-in-this-commit
 - tasks/BOARD.md
+
+## [J-orchestrator-0164] 2026-08-04T06:20Z | task:WO-0059 | Round 2's corrected rule unmasked a tlast on word 0 - the finalize round has the numbers
+
+### Trigger
+The measurement run at 4901161 (30881653846): compile clean,
+I1/I2/I3 green, and the two rebuilt units failed a guard the
+round-1 cycle error had been masking.
+
+### Reasoning
+Sequencing read from the promoted file (decoded from the
+promotion block to scratchpad): round 1 died at the arrival
+guard (4 vs 6) and never reached the tlast check; round 2's
+prediction matches the design (4 = 4, dv's own Finding-1
+number), so the walk advanced - and word 0 at the k=1 member
+carries tlast. The k=0 member printed its report green first
+(h=8 L=16, one class - the architect's k=0 expectation). The
+question this measures is three-way at least: unit guard,
+wrapper site model (uniform's sites 3..10 are mid-frame
+boundaries - does §0.5's promise cover idles inside an open
+frame?), design non-conformance (the withheld BUG- packet
+would issue), or the ruling itself (its author asked for
+disagreements back with numbers). Not mine to answer: dv's
+finalize round is dispatched with the log, the promoted file,
+the sequencing read, and its own owed items (re-countersign,
+AP edit, judgment calls, count, verdict).
+
+### Actions
+Harvest decoded; dv dispatched; this commit; push.
+
+### Evidence
+Run 30881653846; the two failure strings; the k=0 report line;
+the promoted-vs-HEAD diff hunks at :1301 and :1511.
+
+### Outcome / DoD
+The family-I arc is one adjudication from resolution either
+way; every measured number is in front of the adjudicator.
+
+### Open questions
+None new (the three-way question is the round's charge).
+
+### Files-in-this-commit
+- (none)
