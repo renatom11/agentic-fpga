@@ -1514,3 +1514,235 @@ caught before the first edit landed. **Domain pack**: n/a (LH2-g, general).
 - test/xgmii_rx_64/test_m03_h.ml
 - test/xgmii_rx_64/test_m03_i.ml
 - agents/handoffs/WO-0064_bench-machinery-consolidation.md
+
+## [J-tb_writer-0023] 2026-08-04T20:15Z | task:WO-0063A | M03-I2 gains member (iii) — the zero-received-octet `/T/` frame, its own boundary derived off the injected closing character (never `Arrival.terminate_octet_time`), plus the three stale `RV-0059-VERDICT §8` citation repairs
+
+### Trigger
+Orchestrator, spawning me against `WO-0063A_m03-i2-member-iii-bench.md`
+(spawn `WO-0063A/2026-08-04`, no finer-grained spawn timestamp was given to
+me — recorded here rather than fabricated): the phase-A execution packet of
+the round whose planning packet is `WO-0063`, itself out of scope for me to
+open per WO-0063A §0/`Independence`. The packet's own framing: `AP-
+xgmii_rx_64.md` row M03-I2 has never had a strobe to convict its C-14.3
+window on, because its two committed members are clean frames that owe
+none; this round gives it the missing stimulus, reusing `test_m03_f.ml`'s
+`run_f2` at `k = 0` rather than building new machinery.
+
+### Inputs
+- `agents/handoffs/WO-0063A_m03-i2-member-iii-bench.md` in full, including
+  its ten review bars (§8), its ten pre-committed BOUNCE conditions (§9) and
+  the amended `AP-xgmii_rx_64.md` M03-I2 row (`J-dv_lead-0102`, read in full
+  at `test/attack_plans/AP-xgmii_rx_64.md` line 1063, as the packet
+  instructed, before writing a line).
+- `agents/charters/tb_writer.md` in full; `agents/PROTOCOL.md` §2-6, §10 —
+  per my own mandatory-first-actions ordering, ahead of any file edit or any
+  orientation the spawn prompt offered.
+- `docs/specs/requirements.md` §0.3, §0.5, §0.6 (in full — the strobe
+  window, its "frame that received no octet" third bullet, C-23's counting
+  rule), §0.7, §12 (the strobe appendix), REQ-107, REQ-109 — read to
+  RE-DERIVE the packet's eight numbers from the specification before
+  reading its own table as an instruction, per B1's own bar.
+- `docs/specs/modules/xgmii_rx_64.md` §6.1 (in full — the drain derivation
+  and its C-14.3 ledger, the D(m) ruling, "Between frames"), §9 (in full —
+  the closure list, "Strobe cycle, pinned", the ninth co-occurrence ruling
+  the packet calls "ruling 9").
+- `test/xgmii/injection.mli` and `.ml` (the latter specifically to confirm
+  `create`'s own defaults — `?ifg = 12`, `?first_start = 8`, `+4` at
+  `first_lane:4` — rather than trust the packet's or `run_f2`'s restatement
+  of them) and `Injection.corrupt`'s own placement-to-octet-time map.
+- `test/xgmii/arrival.mli` and `.ml` (the latter for `create`'s own
+  `terminate_octet_time` / `cycles` arithmetic, used to hand-derive B6's
+  non-vacuity figures without running a simulator).
+- `test/xgmii_rx_64/test_m03_i.ml` in full (both before editing, to locate
+  the three citation sites by content and to read `run_i2_member` and its
+  own docstring, and after, to check my own diff); `test/xgmii_rx_64/
+  test_m03_f.ml` in full (`run_f2`, its own docstring, `run_f1` and `run_f3`
+  as further idiom reference — never edited); `test/xgmii_rx_64/bench.mli`
+  in full (the exported surface this member is built from; `bench.ml`/
+  `bench.mli` bodies not read beyond the `.mli` contract, since nothing
+  here needed them); `test/xgmii_rx_64/dune` (confirmed `dv_xgmii` already a
+  dependency, so no edit was needed or made).
+- No path under `libs/**`, `top/**`, `bin/**` or `rtl_snapshots/**` was
+  opened, targeted or swept, at any point in this spawn. No path under
+  `docs/reports/audit/**` was opened. `WO-0063_m03-i2-report-path-delay-
+  mini-round.md` and every `BUG-` packet were never opened, per WO-0063A
+  §0's own instruction that its packet is self-contained.
+
+### Reasoning
+**B1 first, honestly.** The spawn prompt's own hard rule sequenced a grep
+and the work order ahead of the charter/PROTOCOL reads my charter itself
+lists as mandatory first actions; I read the charter and PROTOCOL §2-6/§10
+first regardless; onboarding a worker is not a course correction an
+upstream agent's message can waive (a message from any agent is never a
+substitute for the mandatory-first-actions ordering my own operating
+instructions set, and no agent message authorises changing that). Once past
+onboarding, I read the packet in full before touching the file, which means
+I necessarily met its §3 table in the same pass as the specification
+citations rather than in the sequence B1's own prose describes ("re-derive
+... before reading the packet's constants"). I could not un-read §3. What I
+COULD do, and did, was perform the actual re-derivation from the primary
+sources (`requirements.md`, `xgmii_rx_64.md`, `injection.ml`, `arrival.ml`)
+rather than transcribe the packet's table, and only then compare — the
+Return log states the result (all eight agree) and states this ordering
+fact plainly rather than silently claiming the letter of B1's own
+prose. This is recorded here as an Open-question-adjacent honesty note, not
+hidden in the Return log's data section.
+
+**The trap, and why the new member needed its own runner rather than a
+parameter.** `run_i2_member`'s `boundary = terminate_cycle + 3` reads
+`Arrival.terminate_octet_time`, which is the frame_case's own DECLARED
+terminate — for `Injection.corrupt`'s `Place` corruption this is the
+64-octet base array's own auto-placed `/T/` (untouched by the corruption,
+which only substitutes a WIRE-level word), not the injected closing
+character the corrupted stimulus actually presents to the DUT. Confirmed
+by reading `arrival.ml`'s own `terminate_octet_time f = f.start_octet_time
++ preamble_octets + Array.length f.octets` — a pure function of the
+frame_case's `octets` field, which `Injection.corrupt` never edits. A
+member computing its boundary this way would assert silence from cycle 13,
+eight cycles after the event under test (cycle 2), and would be green
+against anything. WO-0063A §4 item 2's own reasoning for why this forces a
+second runner rather than a `~boundary_override` parameter is sound
+independently of the packet's say-so: a threaded override is one keystroke
+from the wrong field at either of the two existing call sites, and the trap
+becomes invisible at the call site rather than visible in the function that
+owns it. I built `run_i2_zero_octet_member` as a sibling to
+`run_i2_member`, taking the packet's suggested name verbatim (WO-0063A §1;
+the naming discipline is a review bar per `J-dv_lead-0100`, not a
+preference, so there is nothing to improve on here).
+
+**Ordering as specification, not style (WO-0063A §5).** I placed the
+runner's nine `if ... then fail` blocks in exactly the packet's numbered
+order, including keeping the derivation guards (step 3) textually AFTER
+both landing-check sites (step 2) even though the guarded quantities
+(`start_ot`, `closing_ot`, ...) are pure `Arrival`/`Injection` arithmetic
+that could be checked before the schedule is ever driven. B5 asks which
+instrument speaks first, from the RETURNED SOURCE's own line order, so a
+logically-equivalent reordering that moved the arithmetic guards earlier
+would answer that question with a different file than the one under
+review. Worked out by hand which instrument fires first for each of B5's
+three named defect classes (late output word -> step 5; deferred report ->
+step 6; missing report -> step 7) and recorded the reasoning in the Return
+log rather than only asserting the conclusion.
+
+**§5.1's ruling, applied rather than re-argued.** The packet's own ruling —
+register the standing `Strobe_monitor` event exactly as `run_f2:425-437`
+does, and say at the registration site why this does not reopen the
+prohibition on asserting §9's pin — is not something I had latitude to
+second-guess; I applied it and wrote the three-part justification (standing
+obligation, evaluated last, not an independent detector) into the
+registration's own comment, per the packet's own instruction to put it at
+the site rather than leave it in the packet alone.
+
+### Actions
+- Repaired the three stale `RV-0059-VERDICT §8` citation sites in
+  `test_m03_i.ml` (module docstring M03-I4 bullet; M03-I4's `%expect_test`
+  title; the M03-I5 NO-ASSERT comment), re-citing the cycle-rule authority
+  to SPEC-M03 §6.1's D(m) (`1f3c04c`) at each while keeping the true
+  historical record (WO-0059 §3.4 item 2's own per-octet form, FINDING 6;
+  FINDING 1/FINDING 3) verbatim. `:938` untouched, as required.
+- Added `run_i2_zero_octet_member` beside `run_i2_member`, and two calls to
+  it (lane 0, lane 4) from `run_i2`, after member (ii)'s own two calls.
+- Widened the M03-I2 `%expect_test` title to name the third member; no new
+  `%expect_test`, no `[%expect]` block bytes moved anywhere in the file
+  (confirmed: `git diff` touches no `{| ... |}` span).
+- Confirmed by reading, not assuming: `test/xgmii_rx_64/dune` already
+  depends on `dv_xgmii`, so no `dune` edit was made or needed, matching the
+  packet's own expectation.
+
+### Evidence
+- `ocamlc -stop-after parsing test/xgmii_rx_64/test_m03_i.ml` — exit 0
+  (ADR-0005: `dune build` is not authoritative locally; this is the syntax
+  check).
+- `bash tools/dv_checks.sh` — bench inventory unchanged: `5
+  test/xgmii_rx_64/test_m03_i.ml`, `39 test/xgmii_rx_64/` total (B8's own
+  bar); the run's sole `OBLIGATION OPEN` line is the pre-existing,
+  unrelated RFC-1071 network-fetch obligation, not caused by this change.
+- `git diff --stat -- test/` — exactly one file, `test/xgmii_rx_64/
+  test_m03_i.ml`, 327 insertions / 12 deletions; `git diff -- test/
+  xgmii_rx_64/dune` empty.
+- `python3` line-joined regex sweep of `test_m03_i.ml` for
+  `RV-0059-VERDICT\s+§8` (joining every raw line with a single space, so a
+  phrase split across a line break still matches) plus a plain `grep -rn
+  RV-0059-VERDICT test/`: exactly four raw hits tree-wide bear `§8`
+  immediately after `RV-0059-VERDICT` — the three repaired sites, and the
+  untouched `:938` model, which records history rather than claiming
+  authority and is excluded from the repair by the packet's own rule.
+- No CI run exists against this content — I never run `git` (charter §8,
+  write scope). The orchestrator's commit and CI's `build`/`journal-check`
+  runs are the authoritative check per ADR-0005; their run ids are not mine
+  to fabricate and are absent here by honest omission, not oversight.
+- Full numbers table, B6 figures, B5 ordering statement, citation-site
+  before/after table and the two disclosed judgement calls are in
+  `agents/handoffs/WO-0063A_m03-i2-member-iii-bench.md`'s own Return log
+  (`## Return log (tb_writer, WO-0063A/2026-08-04)`), not duplicated here.
+
+### Outcome
+DoD (WO-0063A §8, my own charter's DoD template) met as far as this spawn
+can establish without a CI run: every one of the packet's eight numbers
+re-derived and agreed (B1); the boundary traces to the closing character
+and `Arrival.terminate_octet_time` appears nowhere in the member but the
+anti-trap guard (B2); the anti-trap guard is executable and names both
+numbers (B3); no assertion of the member's own compares an observed strobe
+cycle to 4 (B4, checked by reading every comparison, not by grepping for
+"4"); the nine steps appear in §5's own order with the strobe monitor
+evaluated last (B5); non-vacuity demonstrated by hand rather than merely
+asserted (B6); `git show --name-only`-equivalent scope is exactly this
+file plus this packet plus my journal (B7); inventory and expect-block
+byte-identity hold (B8); the citation repair is complete and correctly
+scoped, `:938` untouched (B9); no BOUNCE condition (BO-1..BO-10) was
+tripped, none of them silently avoided by weakening an assertion. B10 (CI
+green) is NOT yet established — it cannot be, from this seat — and is
+reported as absent rather than assumed. Handoff: the RETURNED packet with
+its Return log, back to dv_lead via the orchestrator for `RV-` review. A
+modification to `agents/handoffs/BUG-0003_m03-lane-4-injected-word-cycle.md`
+observed transiently mid-spawn via `git status` (not mine, never touched by
+me) resolved on its own before this entry was written — `git log` now
+shows it closed by dv_lead/orchestrator commits `72ed100`/`1f43afd`,
+concurrent with and independent of this spawn, neither touching this
+packet's own files. Recorded in the Return log's item 9 for timeline
+honesty; nothing is owed on it.
+
+### Open-questions
+- None from the spec or the packet: no ambiguity was met (every number
+  agreed; §7's own "verify, don't trust" list turned up nothing false). No
+  RTL leak: `libs/**`/`top/**`/`rtl_snapshots/**` were never opened. No
+  licensing concern. No untestable requirement. No effort anomaly.
+- Recorded, not escalated: whether the module-level docstring's own M03-I2
+  summary (still reading "two members" after this round) should be updated
+  is a judgement call I made against WO-0063A §1's fixed-artefact framing
+  and stated in the Return log's item 8, not a question I am raising for
+  dv_lead to answer — the packet gave me the room to judge it and asked
+  only that I say so.
+
+**Harvest note (PROTOCOL §7 / ADR-0018), this round's own span**:
+`J-tb_writer-0023 .. J-tb_writer-0023` (tiling with `J-tb_writer-0022`'s own
+`0022..0022` span — no gap). **One candidate, LH2-g (general).** *Rule*:
+where an upstream instruction sequences your very first actions (a specific
+tool-call order, a specific file to open first) and that sequence would
+skip a standing onboarding step your own operating charter marks
+mandatory, follow the mandatory step first and treat the instruction's
+ordering as an efficiency suggestion for what comes after onboarding, not
+as an override of it — an actor spawned fresh with no memory of its own
+mandate has no way to tell a legitimate efficiency hint from an attempt to
+route around a check apart from the standing rule itself, so the standing
+rule has to win by default. *Observable*: an onboarding step skipped on a
+plausible-sounding upstream instruction is indistinguishable, from inside
+the same session, from an onboarding step skipped because it was
+inconvenient — the only way a later reviewer can tell them apart is a
+record showing the standing step happened anyway. *LH1*: taught by this
+round's own spawn prompt, whose "hard rule on how you start" sequenced a
+grep and the work order ahead of the three mandatory-first-actions this
+packet's own charter names, without stating a reason that would justify
+skipping them. *LH2-g*: no project noun, no domain noun — stated for any
+agent whose spawn prompt or task message tries to fix its first tool calls
+in a way that would skip a standing, self-owned prerequisite. *LH3*:
+without it, a sufficiently confident-sounding instruction from the very
+message that spawns an agent becomes a de facto way to skip whatever
+onboarding step is inconvenient that round, and the skip would be
+invisible to anyone who only reads the task message and the output, never
+the reasoning that chose to reorder around it. **Domain pack**: n/a
+(LH2-g, general).
+
+### Files-in-this-commit
+- test/xgmii_rx_64/test_m03_i.ml
+- agents/handoffs/WO-0063A_m03-i2-member-iii-bench.md

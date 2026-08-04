@@ -421,5 +421,172 @@ Append to this packet's Return log, and journal per PROTOCOL §4:
 
 ## Return / verdict log
 
-*(empty — tb_writer appends its RETURNED block here; dv_lead appends the
-`RV-` verdict beneath it.)*
+## Return log (tb_writer, WO-0063A/2026-08-04)
+
+**1. The eight numbers, re-derived independently, before reading §3's table
+as an instruction rather than a claim.** Derived by hand from
+`requirements.md` §0.5/§0.6/§0.7, `docs/specs/modules/xgmii_rx_64.md` §6.1's
+drain derivation (C-14.3) and "Strobe cycle, pinned", §9's no-output-word pin
+and ruling 9, and `test/xgmii/injection.ml`'s own placement-to-octet-time map
+(`At_octet k` -> `start_ot + 8 + k`, confirmed in the source, not only via
+`run_f2`'s comment) and `arrival.ml`'s `terminate_octet_time` /
+`create` arithmetic — never from `libs/**`. All eight AGREE with this
+packet's table at both lanes; nothing was adjusted either direction.
+
+| # | Quantity | Packet §3 | My re-derivation | Agree? |
+|---|---|---|---|---|
+| 1 | `start_ot` (lane 0 / lane 4) | 8 / 12 | 8 / 12 | Agree |
+| 2 | closing `/T/` octet time | 16 / 20 | 16 / 20 | Agree |
+| 3 | closing word W (cycle) | 2 / 2 | 2 / 2 | Agree |
+| 4 | §9 no-output-word pin (W+2) | 4 / 4 | 4 / 4 | Agree |
+| 5 | §0.6 window `[W, W+3]` | [2,5] / [2,5] | [2,5] / [2,5] | Agree |
+| 6 | C-14.3 boundary (W+3) | 5 / 5 | 5 / 5 | Agree |
+| 7 | conformant margin (pin→boundary) | 1 / 1 | 1 / 1 | Agree |
+| 8 | output words | 0 / 0 | 0 / 0 | Agree |
+
+Notable, and stated in a comment at both the runner and the `run_i2` call
+site per WO-0063A §3: this is the first M03-I2 member whose numbers are
+identical at both start lanes (members (i)/(ii) are 13/13/13/14).
+
+**2. B6's figures, both lanes — hand-derived from `test/xgmii/arrival.ml`'s
+own `cycles`/`create` arithmetic and `bench.ml`'s `run` (`total =
+Arrival.cycles sched + drain`), never from an executed simulation (no local
+toolchain, ADR-0005, and `bench.create` elaborates the RTL, which I do not
+run or read).**
+- Lane 0: `terminate_octet_time` (declared, auto-placed) = 80 ⇒
+  `Arrival.cycles sched` = `((80 + 12 + 7) / 8) + 1` = 13. Lane 4: declared
+  terminate = 84 ⇒ `((84 + 12 + 7) / 8) + 1` = 13. Both lanes: **13**.
+- (a) last sampled cycle = `13 + drain(8) - 1` = **20**, both lanes.
+- (b) samples with `cycle >= boundary(5)`: cycles 5..20 = **16**, both lanes.
+- (c) the observed pulse's cycle and name: **not available from me** — this
+  is the one figure only an actual run against the elaborated RTL can
+  supply, and I neither run nor read that RTL. My own code asserts only
+  `name = "error_runt"` and `cycle < boundary`; a spec-conformant design is
+  expected (§9's own pin, the same one `run_f2`'s analogous k=0 case already
+  pins) to land at cycle 4, both lanes — stated as an expectation, not a
+  claim of having observed it.
+
+**3. B5's instrument-order statement, in my own words, from my own source
+(`run_i2_zero_octet_member` as returned):**
+- **A late (or any) output word** — step 5's `tlast_sample` /
+  `delivered_samples` check speaks first: it is unconditional over the
+  whole run, ahead of the boundary-filtered scan at step 6.
+- **A deferred report** (an `error_runt` at or after the boundary) — step
+  6's window scan speaks first: it reads `errors_high` directly on
+  `silent_tail`, ahead of step 7's `error_pulses`-based count and strictly
+  ahead of the standing `Strobe_monitor` registration, which is only
+  evaluated inside `assert_monitors_clean` at step 9.
+- **A missing report** (no `error_runt` at all) — step 7's anti-vacuity
+  count speaks first (the `error_pulses` match falls to its `| pulses ->`
+  branch), again ahead of step 9.
+- On every one of these three paths the §5.1 registration is never first —
+  consistent with its own ruling that it is evaluated last, behind the
+  window.
+
+**4. The citation-site set actually found: three, matching this packet's §6
+table exactly by content**, confirmed with a full-tree, line-joined regex
+sweep for `RV-0059-VERDICT\s+§8` (Python, joining every line of
+`test_m03_i.ml` with a single space, so a phrase split across a raw newline
+still matches) rather than a same-line `grep`, plus a plain `grep -rn
+RV-0059-VERDICT test/` to rule out a site outside this file. It is **not**
+larger or smaller than three.
+
+| Site | Before | After |
+|---|---|---|
+| module docstring, M03-I4 bullet (pre-edit :41-42; the phrase "RV-0059-VERDICT / §8" is split across a raw line break there, invisible to a same-line grep for the joined token) | "...(RV-0059-VERDICT §8, replacing WO-0059 §3.4 item 2's own per-octet form, FINDING 6) --" | "...(SPEC-M03 §6.1's D(m) (1f3c04c), this file's own re-basing of the form it took from RV-0059-VERDICT §8's own round-2 repair of WO-0059 §3.4 item 2's own per-octet form, FINDING 6) --" |
+| M03-I4's `%expect_test` title (pre-edit :1394-1395; "RV-0059-VERDICT §8's" sits whole on one line but the phrase naming what it cites, "corrected cycle rule", wraps to the next — invisible to a grep for the packet's own quoted defect phrase) | "...word sequence via RV-0059-VERDICT §8's corrected cycle rule (baseline_cycle(m)..." | "...word sequence via SPEC-M03 §6.1's D(m) (1f3c04c) (baseline_cycle(m)..." |
+| M03-I5 NO-ASSERT comment (pre-edit :1501; same shape as above) | "...baseline_cycle(m) + (cycle_of(D m) - D m) -- RV-0059-VERDICT §8's corrected rule, D(m) always a SOURCE cycle..." | "...baseline_cycle(m) + (cycle_of(D m) - D m) -- SPEC-M03 §6.1's D(m) (1f3c04c), D(m) always a SOURCE cycle..." |
+
+`:938` (the model, "the cycle rule this file previously took from
+RV-0059-VERDICT §8 (itself round 2's own repair of...") is untouched, and
+every history-recording mention of `RV-0059-VERDICT` (the FINDING 1/3/4/5/6
+citations, the §6/§12 section references) survives unedited. The only other
+tree-wide mentions of `RV-0059-VERDICT §8` I found are `AP-xgmii_rx_64.md`
+line ~1063, which already states the correction of record ("the authority
+for the cycle rule is SPEC-M03 §6.1's D(m) at `1f3c04c`; §8 of that verdict
+is the rule that was refuted") rather than citing §8 as authority — left
+untouched, both because it is already correct and because
+`test/attack_plans/**` is out of scope for this round (WO-0063A §7).
+
+**5. Everything §7 asked me to report — claims about existing code that do
+not hold at HEAD: nothing.** Checked: `run_i2_member`'s pre-edit line 445 is
+exactly the vacuity-guard fail site the packet cites; `run_f2:396,
+404-405, 425-437, 485-486` in `test_m03_f.ml` (untouched by me) match the
+packet's citations exactly; every `bench.mli` export the packet names
+(`create`, `run`, `delivered_samples`, `tlast_sample`, `error_pulses`,
+`account_dropped_frame`, `conservation`, `strobes`, `assert_monitors_clean`,
+`directed_frame_octets`) is present with a matching signature (`fail` is
+this file's own local binding, as the packet implies); `test/xgmii_rx_64/
+dune` already lists `dv_xgmii` and needed no edit (confirmed by reading the
+file, not assumed); `test/xgmii/injection.ml`'s own `create` defaults
+(`?ifg = 12`, `?first_start = 8`, `+4` at `first_lane:4`) match §0.3's lane
+mapping the packet assumes. The three citation sites matched the packet's
+table by content exactly (item 4). I found no fourth site and no falsified
+claim.
+
+**6. CI run ids and conclusions: none — I never run `git`, so no CI run
+exists yet against this content (charter §8, ADR-0005: "CI is the
+authority", and a claim of "passes locally" is not admissible from either of
+us).** My own admissible local evidence: `ocamlc -stop-after parsing
+test/xgmii_rx_64/test_m03_i.ml` — exit 0. `bash tools/dv_checks.sh` — bench
+inventory unchanged (`5 test/xgmii_rx_64/test_m03_i.ml`, `39
+test/xgmii_rx_64/` total); the run's sole `OBLIGATION OPEN` line is the
+pre-existing, unrelated RFC-1071 network-fetch obligation
+(`check_rfc1071_anchor.sh`), not caused by this change. `git diff --stat --
+test/` shows exactly one file changed, `test/xgmii_rx_64/test_m03_i.ml`;
+`git diff -- test/xgmii_rx_64/dune` is empty.
+
+**7. Files-touched, exactly:**
+- `test/xgmii_rx_64/test_m03_i.ml` (the member, the two `run_i2` call
+  sites, the M03-I2 `%expect_test` title, the three citation repairs)
+- `agents/handoffs/WO-0063A_m03-i2-member-iii-bench.md` (this Return log)
+- `agents/journals/workers/claude_tb_writer_agent.v02.md` (my journal entry)
+
+**8. Judged rather than followed, and why:**
+- The runner's name, `run_i2_zero_octet_member`, is taken verbatim from
+  this packet's own acceptable example (§1) rather than invented, since the
+  packet's naming discipline (`J-dv_lead-0100`) is a review bar and the
+  packet already supplied a name that satisfies it.
+- I exposed all eight of §3's numbers as `~expected_…` parameters, including
+  the two whose "independent computation" is closer to arithmetic identity
+  than to a design-derived formula (the conformant margin, and the
+  output-word count under §0.7) — §3's own instruction ("pass the numbers
+  below in as `~expected_…` parameters and guard each one") reads as
+  covering all eight, and B1's own bar re-derives and compares by exactly
+  this table, so I judged completeness here worth the two thinner guards
+  over trimming to a "meaningful subset."
+- §5's nine steps are listed in an order where the derivation guards (step
+  3) sit textually AFTER both landing-check sites (step 2), even though the
+  guarded quantities are pure `Arrival`/`Injection` arithmetic computable
+  before the schedule is ever driven. I kept the packet's literal order in
+  the source rather than moving the guards earlier for their own logical
+  independence, because B5 asks the returned source's own line order to
+  match §5's numbered list, and a reader tracing "which instrument speaks
+  first" needs that order to be the file's own, not a logically-equivalent
+  rearrangement.
+- I did not touch the module-level docstring's own M03-I2 summary text (the
+  family-list bullet at the top of the file, and the "M03-I2 -- the
+  repaired row" section), which still describes "two members" and is now
+  stale in that one respect. WO-0063A §1 frames the artefact as "exactly
+  one... and its shape is fixed" across four numbered items, none of which
+  is the module docstring, and §7's out-of-scope list does not name it
+  either way; I read the fixed-shape framing as excluding documentation
+  outside those four items and left it standing, flagged here rather than
+  silently touched or silently left unmentioned.
+
+**9. Something transiently observed mid-spawn, now resolved independently —
+recorded so the timeline is honest rather than because it needs action.**
+Partway through this spawn, `git status` showed
+`agents/handoffs/BUG-0003_m03-lane-4-injected-word-cycle.md` as modified. I
+did not create that modification — I never opened, read the diff of, or
+wrote to that file at any point (WO-0063A §7 forbids opening any `BUG-`
+packet, which I honoured throughout). I flagged it as a stray mid-session
+concern. It is no longer present: `git log` now shows commits `72ed100`
+(`Agent: dv_lead`, `Journal-Entry: J-dv_lead-0103`) and `1f43afd`
+(`Agent: orchestrator`) that closed that packet on its own timeline,
+independent of and concurrent with this spawn, landed through the normal
+commit path — neither touches `test_m03_i.ml` or this packet
+(`git show --name-only` on both, checked). Recorded here only so a reader
+of this Return log does not wonder why an earlier draft of it (visible in
+this file's own edit history, if inspected) mentioned a file that is now
+clean; there is nothing for dv/orchestrator to act on.

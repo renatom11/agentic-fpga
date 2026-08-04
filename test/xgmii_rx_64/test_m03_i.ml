@@ -38,8 +38,10 @@
       OUTPUT cycle, FINDING 1 / FINDING 3), D(m) the SOURCE cycle of the
       latest input word m depends on, never m + 3 alone -- the
       word-granular DELAY IDENTITY against an actual, separately-driven
-      un-injected baseline run of the same (length, lane) (RV-0059-VERDICT
-      §8, replacing WO-0059 §3.4 item 2's own per-octet form, FINDING 6) --
+      un-injected baseline run of the same (length, lane) (SPEC-M03 §6.1's
+      D(m) (`1f3c04c`), this file's own re-basing of the form it took from
+      RV-0059-VERDICT §8's own round-2 repair of WO-0059 §3.4 item 2's own
+      per-octet form, FINDING 6) --
       and the per-octet constant of §7, MEASURED (never asserted, per
       RV-0059-VERDICT §12 item 3 / SCR-M03-I4 -- FINDING 5 showed it does
       NOT survive injection at either start lane) through file-local
@@ -536,6 +538,282 @@ let run_i2_member
   assert_monitors_clean bench ~row
 ;;
 
+(* Member (iii) -- the zero-received-octet frame (WO-0063A phase A,
+   `AP-xgmii_rx_64.md` row M03-I2, `J-dv_lead-0102`): a frame closed by its
+   OWN `/T/` with zero octets received between start and terminate, the
+   only member of this row that owes a strobe (members (i) and (ii) are
+   clean frames and owe none) and therefore the only member that can
+   convict C-14.3's window on its strobe half rather than only its
+   `tvalid` half. It is `test_m03_f.ml`'s own `run_f2` at `k = 0`, reused
+   rather than rebuilt (WO-0063A §2) -- a 64-octet base frame with its own
+   frame octet 0 replaced by an injected `/T/`.
+
+   THE TRAP (WO-0063A §4): [run_i2_member] above derives its boundary from
+   [Arrival.terminate_octet_time], the frame's DECLARED terminate -- for
+   this stimulus the auto-placed `/T/` that would have closed the
+   64-octet base array had it not been corrupted, at octet time 80, cycle
+   10, eight cycles after the event actually under test. A member
+   inheriting that field would assert silence from cycle 13 onward and
+   would be green against anything. Member (iii) therefore derives its
+   boundary from the INJECTED closing character's own octet time instead
+   (`closing_ot = start_ot + 8 + 0`, exactly as `run_f2:404-405` derives
+   `closing_cycle`), and gets its OWN runner rather than a parameter
+   threaded through [run_i2_member]: threading a `~boundary_override`
+   through the shared runner would leave the two committed members one
+   keystroke away from the wrong field and would make the trap invisible
+   at the call site (WO-0063A §4 item 2).
+
+   Unusual and worth stating (WO-0063A §3): this is the first member of
+   M03-I2 whose boundary is the SAME number at both start lanes. Members
+   (i) and (ii) differ across lanes (13 / 13 / 13 / 14); here lane 4's
+   four extra `start_ot` octet times land the `/T/` in lane 4 of the SAME
+   cycle rather than in the next one, so `start_ot` differs by lane but
+   `closing_cycle` does not.
+
+   The eight numbers below (WO-0059 §4 item 3's "derivation to check, not
+   an instruction", carried to this member) arrive as `~expected_…`
+   parameters at the call sites in [run_i2] and are guarded against this
+   file's own independent computation from [Arrival]/[Injection] here --
+   a disagreement is reported, never silently reconciled either way
+   (BO-1). *)
+let run_i2_zero_octet_member
+      ~lane
+      ~expected_start_ot
+      ~expected_closing_ot
+      ~expected_closing_cycle
+      ~expected_pin_cycle
+      ~expected_window_not_before
+      ~expected_window_not_after
+      ~expected_boundary
+      ~expected_margin
+      ~expected_words
+  =
+  let row =
+    String.concat
+      [ "M03-I2 (member iii, zero octets received, lane "; Int.to_string lane; ")" ]
+  in
+  let base = directed_frame_octets ~length:64 in
+  let case =
+    Dv_xgmii.Injection.corrupt
+      base
+      [ Dv_xgmii.Injection.Place
+          { placement = Dv_xgmii.Injection.At_octet 0
+          ; character = Dv_xgmii.Xgmii_word.terminate_char
+          }
+      ]
+  in
+  let inj = Dv_xgmii.Injection.create ~first_lane:lane [ case ] in
+  (* Step 1 (WO-0063A §5): construction, errors reported. *)
+  if not (Dv_xgmii.Injection.is_clean inj)
+  then
+    fail
+      row
+      (String.concat
+         ~sep:"; "
+         ("Injection construction errors:" :: Dv_xgmii.Injection.errors inj));
+  let sched = Dv_xgmii.Injection.schedule inj in
+  let frame = (Dv_xgmii.Arrival.frames sched).(0) in
+  let start_ot = frame.Dv_xgmii.Arrival.start_octet_time in
+  (* At_octet 0 lands the /T/ at start_ot + 8 + 0 (test/xgmii/injection.ml's
+     own placement-to-octet-time map; run_f2:396 states it). requirements.md
+     §0.6's third bullet: this frame received ZERO octets, so its window's
+     reference word is its own CLOSING word, and §9's no-output-word pin is
+     two cycles after that same word ("Strobe cycle, pinned"). *)
+  let closing_ot = start_ot + 8 + 0 in
+  let closing_cycle = closing_ot / 8 in
+  let closing_lane = Int.rem closing_ot 8 in
+  let pin_cycle = closing_cycle + 2 in
+  let window_not_before = closing_cycle in
+  let window_not_after = closing_cycle + 3 in
+  (* THE TRAP's own boundary, from the closing character -- never from
+     Arrival.terminate_octet_time (WO-0063A §4 item 1). *)
+  let boundary = closing_cycle + 3 in
+  let margin = boundary - pin_cycle in
+  (* Step 2, site 1 (WO-0047 §6 item 7 / WO-0063A §5 step 2): the /T/ lands
+     at the intended octet/lane in the SCHEDULE's own words, before a
+     single cycle is driven. *)
+  let pre_run_word = Dv_xgmii.Injection.word_at inj ~cycle:closing_cycle in
+  if (not (Dv_xgmii.Xgmii_word.is_control pre_run_word closing_lane))
+     || not
+          (Int.equal
+             (pre_run_word.Dv_xgmii.Xgmii_word.data).(closing_lane)
+             Dv_xgmii.Xgmii_word.terminate_char)
+  then
+    fail row "test bug -- the injected /T/ does not land at the intended octet time before driving";
+  let bench = create () in
+  (* §5.1's ruling: register the standing obligation-4 monitor exactly as
+     run_f2:425-437 does -- same strobe, frame, cycle, window -- and say why
+     this is not the row's own instrument. It is the STANDING monitor, not
+     a second detector: a unit that drives a strobe and registers nothing
+     here is a coverage regression, not a purer instrument. It is evaluated
+     LAST, inside assert_monitors_clean at step 9 below, strictly BEHIND
+     step 6's own C-14.3 window scan, so it cannot shadow that scan; and it
+     re-checks a pin this bench itself computed and handed it, saying
+     nothing whatever about C-14.3's bound. Which instrument speaks first if
+     this unit ever reddens (WO-0063A §5, B5): a LATE output word trips step
+     5 (no-output-word); a DEFERRED report (at or after the boundary) trips
+     step 6, ahead of this registration; a MISSING report trips step 7's
+     anti-vacuity count, also ahead of this registration -- this
+     registration is the last word on every path, never the first. *)
+  Dv_monitors.Strobe_monitor.expect
+    (strobes bench)
+    { Dv_monitors.Strobe_monitor.strobe = "error_runt"
+    ; frame = 0
+    ; cycle = pin_cycle
+    ; not_before = window_not_before
+    ; not_after = window_not_after
+    ; why =
+        "REQ-109 / requirements.md §0.7 / SPEC-M03 §9 'Strobe cycle, pinned': zero \
+         octets received, so the strobe is two cycles after the closing word (§9's \
+         no-output-word pin) -- registered as the standing obligation-4 monitor, \
+         not as this member's own instrument, which is the C-14.3 window scan at \
+         step 6 (WO-0063A §5.1)"
+    };
+  let samples =
+    run bench sched ~drain:8 ~word_at:(fun ~cycle -> Dv_xgmii.Injection.word_at inj ~cycle) ()
+  in
+  (* Step 2, site 2 (WO-0047 §6 item 7 / WO-0063A §5 step 2): the cycle
+     {!run} ACTUALLY drove carries the /T/ this member means to test. *)
+  (match List.find samples ~f:(fun s -> s.cycle = closing_cycle) with
+   | None -> fail row "test bug -- the intended closing cycle was never driven"
+   | Some s ->
+     if (not (Dv_xgmii.Xgmii_word.is_control s.in_word closing_lane))
+        || not
+             (Int.equal
+                (s.in_word.Dv_xgmii.Xgmii_word.data).(closing_lane)
+                Dv_xgmii.Xgmii_word.terminate_char)
+     then
+       fail
+         row
+         "the driven word at the intended cycle does not carry the /T/ this member \
+          means to test -- the no-output-word assertion below would be vacuous");
+  (* Step 3 (WO-0063A §5): the eight numbers of WO-0063A §3, each compared
+     against this file's own arithmetic -- and §4 item 3's anti-trap guard.
+     None of these reads the design, so none can be moved by a design
+     defect (WO-0063A §5); a disagreement here is reported, never silently
+     reconciled toward either side (BO-1). *)
+  if start_ot <> expected_start_ot
+  then fail row "test bug -- start_octet_time disagrees with this packet's own derivation";
+  if closing_ot <> expected_closing_ot
+  then fail row "test bug -- the closing character's own octet time disagrees with this packet's own derivation";
+  if closing_cycle <> expected_closing_cycle
+  then fail row "test bug -- the closing character's own cycle (W) disagrees with this packet's own derivation";
+  if pin_cycle <> expected_pin_cycle
+  then fail row "test bug -- the §9 no-output-word pin (W + 2) disagrees with this packet's own derivation";
+  if window_not_before <> expected_window_not_before || window_not_after <> expected_window_not_after
+  then fail row "test bug -- the §0.6 window disagrees with this packet's own derivation";
+  if boundary <> expected_boundary
+  then fail row "test bug -- the C-14.3 boundary (W + 3) disagrees with this packet's own derivation";
+  if margin <> expected_margin
+  then fail row "test bug -- the conformant margin (pin to boundary) disagrees with this packet's own derivation";
+  if expected_words <> 0
+  then fail row "test bug -- this packet's own expected output-word count is not 0 (§0.7)";
+  (* THE TRAP's own guard (WO-0063A §4 item 3): executable, not only a
+     comment, and naming both numbers. It passes today (boundary = 5,
+     declared_boundary = 13); it exists so a later refactor that re-points
+     this member at Arrival.terminate_octet_time fails instead of passing
+     quietly. *)
+  let declared_boundary = (Dv_xgmii.Arrival.terminate_octet_time frame / 8) + 3 in
+  if boundary = declared_boundary
+  then
+    fail
+      row
+      (String.concat
+         [ "test bug -- the member's own boundary ("
+         ; Int.to_string boundary
+         ; ") coincides with Arrival.terminate_octet_time's DECLARED boundary ("
+         ; Int.to_string declared_boundary
+         ; ") -- the event under test would be asserted from the auto-placed \
+            terminate rather than the injected closing character, making the \
+            silence assertion below vacuous (WO-0063A §4)"
+         ]);
+  (* Step 4 (WO-0063A §5): vacuity guard -- the run's own drain reaches the
+     asserted boundary, or step 6's scan below would be vacuous
+     (WO-0059 §3.2; run_i2_member:445 above carries the same guard for the
+     same reason). *)
+  let tail_cycle =
+    match List.last samples with
+    | Some s -> s.cycle
+    | None -> fail row "no samples driven"
+  in
+  if tail_cycle < boundary
+  then
+    fail
+      row
+      "test bug -- the run's own drain does not reach the asserted C-14.3 boundary; \
+       the silence assertion below would be vacuous";
+  (* Step 5 (WO-0063A §5): no output word at all (§0.7). *)
+  (match tlast_sample samples with
+   | Some _ -> fail row "a tlast word was observed for a frame that must deliver nothing (§0.7)"
+   | None -> ());
+  if not (List.is_empty (delivered_samples samples))
+  then fail row "a tvalid word was observed for a frame that must deliver nothing (§0.7)";
+  (* Step 6 (WO-0063A §5): the row's own observable -- silence from the
+     boundary onward, over samples filtered to cycle >= boundary. Two
+     separate assertions, each naming boundary, REQ-109 and C-14.3. This is
+     the C-14.3 window's OWN scan, the instrument this member exists to
+     feed, and it speaks before the standing Strobe_monitor registration is
+     ever checked (step 9). No comparison anywhere in this member reads the
+     observed strobe's cycle against §9's pin of 4 (BO-4) -- the only cycle
+     bound on the pulse is step 7's "< boundary" below, which is part of the
+     window rather than a second, tighter instrument in front of it. *)
+  let silent_tail = List.filter samples ~f:(fun s -> s.cycle >= boundary) in
+  if List.is_empty silent_tail
+  then
+    fail
+      row
+      "test bug -- the observed silent tail is empty; this assertion would be vacuous \
+       (WO-0059 §3.2)";
+  if List.exists silent_tail ~f:(fun s -> s.out.Dv_monitors.Stream_word.tvalid)
+  then
+    fail
+      row
+      (String.concat
+         [ "an output word was emitted at or after cycle "
+         ; Int.to_string boundary
+         ; ", the silence boundary 3 cycles after the closing word (REQ-109, C-14.3)"
+         ]);
+  if List.exists silent_tail ~f:(fun s -> not (List.is_empty s.errors_high))
+  then
+    fail
+      row
+      (String.concat
+         [ "a strobe pulsed at or after cycle "; Int.to_string boundary; " (REQ-109, C-14.3)" ]);
+  (* Step 7 (WO-0063A §5): anti-vacuity on the strobe -- exactly one
+     error_runt pulse, strictly before the boundary. Nothing tighter: this
+     is the only cycle bound the member places on the pulse, and it is
+     never compared to §9's pin of 4 (BO-4). *)
+  (match error_pulses samples with
+   | [ (cycle, name) ] ->
+     if not (String.equal name "error_runt")
+     then fail row (String.concat [ "expected error_runt, observed "; name ])
+     else if not (cycle < boundary)
+     then
+       fail
+         row
+         (String.concat
+            [ "error_runt pulsed on cycle "
+            ; Int.to_string cycle
+            ; ", which is not strictly before the boundary "
+            ; Int.to_string boundary
+            ])
+   | pulses ->
+     fail
+       row
+       (String.concat
+          [ "expected exactly one strobe pulse (error_runt alone), observed "
+          ; Int.to_string (List.length pulses)
+          ]));
+  (* Step 8 (WO-0063A §5): conservation -- run_f2:485-486's pair, because
+     this is the same dropped frame. *)
+  account_dropped_frame bench frame ~strobe:"error_runt";
+  Dv_monitors.Conservation_monitor.strobe_pulse (conservation bench) ~name:"error_runt";
+  (* Step 9, last (WO-0063A §5): the standing monitors, including §5.1's
+     registration -- evaluated here, strictly behind step 6's own window
+     scan above. *)
+  assert_monitors_clean bench ~row
+;;
+
 let run_i2 () =
   let member_i = directed_frame_octets ~length:64 in
   let member_ii = directed_frame_octets ~length:69 in
@@ -587,15 +865,52 @@ let run_i2 () =
     ~expected_terminate_cycle:11
     ~expected_tlast_cycle:12
     ~expected_boundary:14
-    ~expected_words:9
+    ~expected_words:9;
+  (* Member (iii), both lanes (WO-0063A). N = 0 received octets (At_octet 0
+     replaces frame octet 0 with the injected /T/): closing_ot 16 / 20,
+     closing_cycle (W) 2 at BOTH lanes -- lane 4's four extra start_ot octet
+     times land the /T/ in lane 4 of the SAME cycle rather than the next
+     one, so unlike members (i) and (ii) the two lanes share every one of
+     these eight numbers. §9's no-output-word pin is W + 2 = 4; §0.6's
+     window (zero received octets, so its reference word is the CLOSING
+     word) is [2, 5]; the C-14.3 boundary is W + 3 = 5, derived from the
+     INJECTED closing character, never from Arrival.terminate_octet_time
+     (which for this stimulus is the auto-placed /T/ at cycle 10, THE TRAP
+     run_i2_zero_octet_member's own anti-trap guard exists to catch). *)
+  run_i2_zero_octet_member
+    ~lane:0
+    ~expected_start_ot:8
+    ~expected_closing_ot:16
+    ~expected_closing_cycle:2
+    ~expected_pin_cycle:4
+    ~expected_window_not_before:2
+    ~expected_window_not_after:5
+    ~expected_boundary:5
+    ~expected_margin:1
+    ~expected_words:0;
+  run_i2_zero_octet_member
+    ~lane:4
+    ~expected_start_ot:12
+    ~expected_closing_ot:20
+    ~expected_closing_cycle:2
+    ~expected_pin_cycle:4
+    ~expected_window_not_before:2
+    ~expected_window_not_after:5
+    ~expected_boundary:5
+    ~expected_margin:1
+    ~expected_words:0
 ;;
 
 let%expect_test
-  "M03-I2: the drain window, two members (64 and 69 octets) at both start \
-   lanes -- silence from 3 cycles after the terminate word onward, the \
-   frame's own delivered words / tkeep / tlast cycle / clean FCS verdict as \
-   the positive companion, per-member per-lane boundaries derived and \
-   guarded independently (REQ-109, §6.1, C-14.3)"
+  "M03-I2: the drain window, three members (64 and 69 octets, clean and \
+   the positive companion; a third closed by its own /T/ with zero octets \
+   received) at both start lanes -- silence from 3 cycles after the \
+   terminate word onward, the first two members' own delivered words / \
+   tkeep / tlast cycle / clean FCS verdict, the third member's own \
+   error_runt checked against the C-14.3 window instead (its boundary \
+   derived from the closing character, never Arrival.terminate_octet_time), \
+   per-member per-lane boundaries derived and guarded independently \
+   (REQ-109, §6.1, C-14.3, §0.7)"
   =
   run_i2 ();
   [%expect {||}]
@@ -1391,8 +1706,8 @@ let run_i4 () =
 let%expect_test
   "M03-I4: the M03-C1 directed set (64..71 octets) through the idle-injection \
    wrapper at 0/1/7 idle cycles, both start lanes -- 48 injected runs plus \
-   16 un-injected baselines; word sequence via RV-0059-VERDICT §8's \
-   corrected cycle rule (baseline_cycle(m) + (cycle_of(D m) - D m), D m a \
+   16 un-injected baselines; word sequence via SPEC-M03 §6.1's D(m) \
+   (`1f3c04c`) (baseline_cycle(m) + (cycle_of(D m) - D m), D m a \
    SOURCE cycle, never m + 3 alone), word-granular delay identity against \
    each length/lane's own baseline (raw octet times where an anchor octet \
    exists, Idle_injection.uniform's own documented per-boundary contract \
@@ -1498,8 +1813,8 @@ let%expect_test
    itself has already shown conformant. NOT asserted anywhere in this file:
    the m + 3 formula, applied to an injected cycle. Asserted INSTEAD,
    throughout [run_i4]: every output word's own cycle is
-   baseline_cycle(m) + (cycle_of(D m) - D m) -- RV-0059-VERDICT §8's
-   corrected rule, D(m) always a SOURCE cycle and never an output one (the
+   baseline_cycle(m) + (cycle_of(D m) - D m) -- SPEC-M03 §6.1's D(m)
+   (`1f3c04c`), D(m) always a SOURCE cycle and never an output one (the
    round-1 form of this row's own claim sent [cycle_of] an output cycle,
    RV-0059-VERDICT FINDING 1 / FINDING 3, corrected in round 2).
 
