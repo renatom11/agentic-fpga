@@ -1174,8 +1174,17 @@ let run_i4_case
           M03-N3 constraint's own measurable consequence (WO-0059 §3.4 item 3)"
    | _ -> fail row "test bug -- expected exactly one front-offset class for a single-frame run");
   (* HELD, not asserted: the L classes land here as expect-block data once
-     CI promotes this block (SCR-M03-I4). *)
-  print_string (Dv_monitors.Octet_time.Latency.report local_tagger);
+     CI promotes this block (SCR-M03-I4). [Stdlib.print_string], not the
+     bare name: [open! Base] shadows [print_string] with a
+     [@deprecated]-alerted alias to [Base.print_string] (see
+     `agents/handoffs/WO-0059_tb-m03-family-i-silence-and-ordered-sets.md`
+     round 3's own coordinator note; CI's own alert is fatal at compile,
+     `30881003744`), and this file's own dune stanza does not depend on
+     `stdio`, so [Stdio.Out_channel.output_string] -- Base's own suggested
+     replacement -- is not available without a dune edit this WO does not
+     authorise. [Stdlib.print_string] reaches the compiler's own
+     un-shadowed primitive directly and needs no new library dependency. *)
+  Stdlib.print_string (Dv_monitors.Octet_time.Latency.report local_tagger);
   assert_monitors_clean bench ~row;
   (* fed into the cross-run tracker too, so the file-wide HOLD at the end of
      [run_i4] has real accumulated data to report across all 48 runs, not
@@ -1268,8 +1277,10 @@ let run_i4 () =
      then fail row "the lane-4 class did not accumulate all 24 runs"
    | _ -> fail row "expected exactly two front-offset classes (lane 0 and lane 4)");
   (* HELD, not asserted: the accumulated L classes land here as expect-block
-     data once CI promotes this block (SCR-M03-I4). *)
-  print_string (Dv_monitors.Octet_time.Latency.report cross_latency)
+     data once CI promotes this block (SCR-M03-I4). [Stdlib.print_string] --
+     see [run_i4_case]'s own comment on the bare [print_string] Base shadows
+     with a fatal deprecation alert. *)
+  Stdlib.print_string (Dv_monitors.Octet_time.Latency.report cross_latency)
 ;;
 
 let%expect_test

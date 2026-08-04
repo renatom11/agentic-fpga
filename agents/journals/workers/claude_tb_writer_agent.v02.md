@@ -628,3 +628,147 @@ orchestrator instead, per that same dispatch).
 ### Files-in-this-commit
 - test/xgmii_rx_64/test_m03_i.ml
 - test/xgmii/idle_injection.mli
+
+## [J-tb_writer-0019] 2026-08-04T05:43Z | task:WO-0059 | Round 2 compile fix — Base's deprecated `print_string` shadow, mechanical, two sites
+
+### Trigger
+Coordinator, after round 2 landed at `81e1d33` (rotation `6fa625f` before
+it): CI run `30881003744` died at the COMPILE step, before any test ran.
+Both of round 2's own reporting sites (`run_i4_case`'s per-run
+`local_tagger` report, `run_i4`'s own `cross_latency` report) call the bare
+`print_string`, which `open! Base` shadows with a `[@deprecated]`-alerted
+alias to `Base.print_string` ("Use [Stdio.Out_channel.output_string
+Stdio.stdout] instead."), and this file's own dune stanza builds with
+alerts fatal. Directed fix, mechanical and minimal: `Stdlib.print_string`
+at both sites, no dune edit (`stdio` is explicitly not to be added), no
+other line touched — the D(m) rule, the delay identity and every
+assertion built in `J-tb_writer-0018` stay exactly as built.
+
+### Inputs
+- The coordinator's own message, quoting CI run `30881003744`'s exact
+  error text and both site line numbers (`test_m03_i.ml:1178`, `:1272`, at
+  the SHA the error was read against).
+- `test/xgmii_rx_64/test_m03_i.ml` itself, this spawn: `grep`-scanned in
+  full for every bare `print_string`, `print_endline`, `print_char`,
+  `print_int`, `print_float`, `prerr_*` and `output_string` call —
+  confirmed exactly the two named sites exist and nothing else in the file
+  calls an unqualified stdlib output function that `open! Base` could
+  shadow the same way. No other file was opened; the fix is scoped to the
+  two named lines and their immediate doc comments.
+
+### Reasoning
+**Why `Stdlib.print_string` and not `Stdio`.** Base intentionally omits
+I/O from its own signature (Stdio is the companion library for that), but
+it does not merely omit `print_string` — Jane Street's shadow-stdlib ships
+a `Base.print_string` alias carrying `[@deprecated]`, and this project
+builds with `-alert @all-...` (or equivalent) treating that alert as
+fatal, which is exactly what killed the compile step before a single test
+ran (ADR-0005's own authoritative-CI point, arriving through a door this
+round had not yet opened: a compile-time alert, not a type error, and not
+a test failure). `Stdio.Out_channel.output_string Stdio.stdout` is Base's
+own suggested replacement, but `test/xgmii_rx_64/dune`'s own `libraries`
+stanza (`hardcaml hardcaml_ethernet dv_xgmii dv_xgmii_probe dv_axi64_probe
+dv_monitors`) does not carry `stdio`, and `dune` is out of this WO's
+write scope (`RV-0059-VERDICT` §12's own opening sentence, unchanged) —
+adding a dependency to reach a replacement function is not the minimal,
+mechanical fix the coordinator asked for, and the coordinator's own
+message says so explicitly. `Stdlib.print_string` sidesteps the shadow
+entirely: it names the compiler's own un-aliased primitive by its fully
+qualified path, which `open! Base` cannot hide (an `open` shadows
+unqualified names; it cannot remove a module's own qualified access to
+its members), and needs no new library.
+
+**Why I re-scanned the whole file rather than trusting that only the two
+named sites exist.** The coordinator's own message asked for this
+explicitly ("verify rather than assume"), and it is also the cheaper of
+the two possible mistakes: a third bare call sharing the same shadow would
+have died at the same compile step a second time, costing another CI round
+trip for a one-line grep would have caught here. The scan found exactly
+the two sites the coordinator named and nothing else — no
+`print_endline`, no `Printf.printf` (this file has never used it, unlike
+`test/xgmii/test_arrival.ml`'s own different dune stanza, which has no
+`base` dependency at all and so never hits this shadow), no bare
+`output_string`.
+
+**Nothing else moved.** The D(m) cycle rule (`dependency_source_cycle`,
+`injected_word_cycle`), the word-granular delay identity, the HOLD's own
+conservation-only `account_injected_frame`, the file-local taggers' own
+`errors`/front-offset assertions, and the M03-I5 declaration text are
+byte-identical to what `J-tb_writer-0018` built — confirmed by the diff
+this commit stages touching only the two `print_string` lines and their
+adjacent comments (Evidence below).
+
+**On the expect blocks, confirmed understood rather than merely
+acknowledged.** Both units this fix touches (`M03-I4`'s own
+`%expect_test`, which drives `run_i4_case` and therefore `local_tagger`'s
+report, and `run_i4`'s own tail feeding `cross_latency`'s report) still
+carry `[%expect {||}]`, empty, exactly as `J-tb_writer-0018` left them —
+I did not touch either block and did not attempt to hand-predict the
+`Latency.report` text either printed string would produce. On a green
+compile, `dune runtest` will now execute code that WRITES to stdout where
+it previously wrote nothing (the whole point of the HOLD: L is measured
+and reported, not asserted), so the empty block will diff against
+nonempty captured output and the run will fail with a promotion diff —
+this is `ADR-0005`'s own designed loop (CI promotes from its own diff
+output, never hand-authored), not a defect in this round's own work, and
+I am not promoting anything by hand here. The next CI run at this
+commit's SHA is expected to produce a promotion block for those two
+units, not a silent green, and that expectation is stated here so it is
+not mistaken for a surprise when it arrives.
+
+### Actions
+- `test/xgmii_rx_64/test_m03_i.ml`: `print_string` -> `Stdlib.print_string`
+  at both reporting sites (`run_i4_case`'s own `local_tagger` report;
+  `run_i4`'s own `cross_latency` report), with a one-line addition to each
+  site's adjacent comment stating the reason and cross-referencing the
+  other site's own fuller explanation, so a future reader hitting either
+  line alone still finds the reason without re-deriving it.
+- No other file opened for editing this spawn (`test/xgmii/
+  idle_injection.mli`, `bench.ml`, `bench.mli`, `dune`, `test_m03_h.ml`
+  untouched — confirmed via `git status --porcelain`, Evidence below).
+
+### Evidence
+- `grep -n "print_string\|print_endline\|print_char\|print_int\|print_float\|prerr_\|output_string\b" test/xgmii_rx_64/test_m03_i.ml`,
+  before the fix: exactly two matches, `:1178` and `:1272` (the SHA the
+  coordinator's own CI run read); after the fix: the two call sites now
+  read `Stdlib.print_string`, plus their own surrounding comment lines
+  (which mention the bare name in prose, not as code).
+- `ocamlc -stop-after parsing -impl test/xgmii_rx_64/test_m03_i.ml`: exit
+  0, re-run after the fix.
+- `git status --porcelain`: exactly `test/xgmii_rx_64/test_m03_i.ml`,
+  modified — no other path touched, in particular
+  `test/xgmii/idle_injection.mli` (round 2's other file) and `dune`
+  (explicitly not to be edited) both clean.
+- `dune build` / `dune runtest`: **not run** — no Hardcaml toolchain this
+  spawn (ADR-0005, unchanged). This alert-as-error class is exactly the
+  kind of defect this container's `ocamlc -stop-after parsing` mode
+  CANNOT catch (it stops at the parse tree, before typing or alert
+  processing), which is why this round's own local verification could not
+  have caught it before CI did — recorded so the gap is named rather than
+  quietly repeated as an unstated limitation next time.
+
+**CI is authoritative** (ADR-0005). This fix is unverified by this spawn's
+own toolchain beyond syntax; the next `build` run at this file's new SHA
+is what confirms the alert is gone, and (per Reasoning above) is expected
+to fail `dune runtest` with a promotion diff at the two touched units
+rather than pass silently.
+
+### Outcome
+Both cited sites repaired, mechanically, to the coordinator's own exact
+instruction; the file re-scanned and confirmed to carry no third instance
+of the same shadow. No dune dependency added. No line outside the two
+sites and their own adjacent comments changed. The D(m) rule, the delay
+identity and every assertion `J-tb_writer-0018` built are unchanged.
+
+### Open-questions
+- **The next CI run is expected to fail `dune runtest` with a promotion
+  diff at M03-I4's own two units** (the per-run and cross-run
+  `Latency.report` output), not a silent green — stated per the
+  coordinator's own request for explicit confirmation, not merely
+  implied by the Reasoning section above.
+- Nothing else open beyond what `J-tb_writer-0018` already recorded (the
+  tlast-anchor divergence, the `cross_latency` HOLD extension, both
+  unaffected by this fix).
+
+### Files-in-this-commit
+- test/xgmii_rx_64/test_m03_i.ml
