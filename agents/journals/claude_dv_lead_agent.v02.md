@@ -3332,3 +3332,211 @@ at **36 of 62**, unchanged.
 
 ### Files-in-this-commit
 - agents/handoffs/BUG-0002_m03-idle-injection-tlast-on-a-non-final-word.md
+
+## [J-dv_lead-0087] 2026-08-07T15:05Z | task:none | The AP repair the transcription licenses — three sites, all clerical because the replacement text was fixed before this commit existed, and the plan absorbs a live spec dispute without a status change because the values it carries are reported and not asserted
+
+### Trigger
+Orchestrator: my `J-dv_lead-0086` signature is transcribed at `155c9b2` and the
+re-ruled D(m) is **IN FORCE**; **FINDING F-1** is recorded outstanding against
+SPEC-M03 §6.1 item 2's lane-4 cell, with the architect on it in a parallel
+SPEC-M03-only round. Land escalation 2 of that return — the clerical repair of
+the three attack-plan sites the countersignature declared FALSE — because the
+tb_writer work order is waiting on my own stated precondition that it SHALL NOT
+issue before this lands.
+
+### Inputs
+- `agents/handoffs/BUG-0002_m03-idle-injection-tlast-on-a-non-final-word.md` at
+  `a8ca14d` — my own COUNTERSIGNATURE block, specifically the section *"Two of my
+  own attack-plan cells are now FALSE"*, which fixes the replacement text for all
+  three sites.
+- `docs/specs/requirements.md` §13 at `155c9b2` — the transcription row
+  (`J-orchestrator-0167`), read to confirm the ruling is in force and to confirm
+  F-1 is recorded as outstanding rather than resolved.
+- `docs/specs/modules/xgmii_rx_64.md` §6.1 at `1f3c04c` — the D(m) block, the
+  aborted-frame scope note (*"that named word is W in every row of the table"*)
+  and the withdrawn "moves earlier" clause, quoted into the repair.
+- `test/attack_plans/AP-xgmii_rx_64.md` at `155c9b2` — M03-I4, M03-N2, §4.N's
+  Route 2, and §9's change log; the status counts re-counted from the file.
+- My own `J-dv_lead-0084` → `J-dv_lead-0085` sequencing, re-read as the
+  precedent this round deliberately repeats.
+- **No RTL, this round or any round of this packet.**
+
+### Reasoning
+There was one judgement to make and I had already made it last round: **a ruling
+not yet in force does not license a repair.** That is why the signature commit
+(`a8ca14d`) touched no plan and why this one does — the same shape as `d39ffb6`
+→ `b2a3b95`, where the change-log row's own words were *"the AP repair the
+countersignature licenses"*. Doing it in this order costs one commit and buys the
+property that no cell of this plan ever cites a rule that was not in force when
+the cell was written, which is a property an auditor can check by commit ordering
+and cannot check any other way.
+
+The repair itself is **clerical by construction and I built it that way on
+purpose**: every replacement sentence was fixed in the COUNTERSIGNATURE block
+*before* this commit existed, so this commit installs text rather than deciding
+it. That is the difference between a repair and a second ruling, and it matters
+here because the thing being repaired is a contract the next work order is
+written against — a worker reading M03-I4's `Observable` would otherwise have
+been handed the superseded D(m) as the thing the bench asserts.
+
+**Site 1, M03-I4's `Observable`, is the one that actually mattered.** It named D
+as *the input word carrying output word m's last octet* for every non-`tlast`
+word — this plan's own restatement of the rule rtl_lead refuted. I replaced it
+with the ruled D(m) and, rather than assert the branch, **derived** it:
+`N ≥ 8m + 13 ⟺ m < W − 1` exactly, so evidence-first and `tlast`-first name the
+same partition and the (b) bullet is untouched. I wrote the consequence a reader
+of this plan most needs — **no `tlast` word's cycle moves at any `k`, no gapless
+cycle moves at all** — because without it the repair reads as if family I's whole
+expectation set had been rebuilt, and it has not: the `k = 0` members and every
+other family are exactly where they were. I also recorded, in the cell, that
+the ruling's new sentence *"a word whose D(m) has not arrived is not emitted"*
+owes **no new guard**, and why: the word-count guard and the per-word cycle guard
+cover it **as a pair** and neither alone does. That is there to stop a worker
+inventing a third guard for a property two existing guards already close, which
+is the failure mode this plan has hit before in the other direction.
+
+**The carve-out sentence was the subtler half of site 1.** The cell said §6.1
+item 3's lane-0 `r ∈ {5,6,7}` case survives with one class and that this row does
+not generalise from it. Under the ruled D(m) that case has **two** classes — the
+`tlast` octets still measure 16, but every earlier word now measures `16 + 8k` —
+so the sentence was false in its premise even though its instruction (*do not
+generalise*) was right. I replaced it with the full reported class tables at both
+lanes, **including F-1's three-class lane-4 cell**, and stated in the cell itself
+that all of it is REPORTED and none ASSERTED.
+
+**That last point is why this plan can carry a live spec dispute without a status
+change, and it is worth naming as a property rather than a coincidence.** F-1 is
+outstanding against §6.1 item 2 and the architect may resolve it either way. If
+the plan *asserted* those classes, F-1's resolution would move a row and the
+plan's counts would depend on an open dispute. Because the `J-dv_lead-0085`
+repair demoted the per-octet constant to reported data, **F-1 moves nothing here
+in either direction** — and lengths 65, 66 and 67 at a lane-4 start will print
+the third class into a promoted expect block whichever way the architect rules.
+A plan that reports where the specification is unsettled and asserts only where
+it is settled absorbs a dispute; one that asserts everywhere has to be reopened
+every time a ruling moves. I recorded that in the change-log row because it is
+the reusable part.
+
+**Sites 2 and 3 are the same error at two removes and both were mine.** M03-N2's
+`Observable` named the wrong pinned word ("W itself, or the word carrying the
+aborted frame's last octet") and carried the clause that idle injection moves the
+two lane-0-`/S/` reports *earlier, further from the new frame's and never onto
+it* — both withdrawn in terms at `1f3c04c`. The replacement reads every row at
+**W**, so both reports now move **together** and the coincidence column is
+unchanged at every `k` on the offsets alone (`W + 1` against `W + 2`). §4.N's
+Route 2 is the derivation underneath that cell and needed the same re-basing.
+
+**On Route 2 I checked rather than assumed, because the tempting repair is
+wrong.** Route 2's `U + ⌊(k + L)/8⌋` looks like it needs replacing, since `U` is
+the octet's own input word and that is the superseded D. It does not: the formula
+is a **gapless** derivation of the *offset*, and gapless the two readings
+coincide — a lane-0 `/S/` leaves the aborted frame's last octet at lane 7 of
+`W − 1`, so `U + 2 = W + 1`, which is W's own `+ 1`. So the formula, the six rows
+and the three coincidences all stand, and what is re-based is **only which word
+the offset is read from on an injected line**. Had I replaced the formula I would
+have destroyed the one thing Route 2 exists for — it is what makes the aborted
+frame's own start lane a discriminator, which `m + 3` does not — and I would have
+had to re-derive six rows that never moved.
+
+**Counts re-counted from the file rather than carried forward**, per this plan's
+own discipline: 78 rows, 62 ASSERT, 7 NO-ASSERT, 4 NO-STIMULUS, 4 STRUCTURAL,
+1 GAP, summing to 78. No row added, converted or re-statused — the repair is
+three `Observable`/derivation cells and one appended change-log row.
+
+**One residual phrase is deliberate.** The withdrawn parenthesis and the
+withdrawn "moves earlier" clause are **quoted inside their own replacements**, so
+a reader meeting the old wording elsewhere in the programme's history can find
+where it died. Quoting a claim in order to convict it is not restating it —
+PROTOCOL §10's own note on the point — and a repair that silently deletes the
+text it replaces makes the diff the only record of what was wrong.
+
+### Actions
+- Edited `test/attack_plans/AP-xgmii_rx_64.md` at exactly three sites plus one
+  appended change-log row:
+  1. **M03-I4** — `Attacks` cell re-cited (`a77017c`, re-ruled at `1f3c04c`);
+     `Observable` clause (b) rewritten to the ruled D(m) with the branch
+     equivalence derived, the refutation and sweep numbers recorded, the
+     no-early-emission half attributed to the count/cycle guard **pair**; the
+     carve-out sentence replaced by the withdrawal plus the reported class
+     tables at both lanes, F-1 named and marked outstanding.
+  2. **M03-N2** — `Observable`'s named word re-based to **W in every row**, with
+     the superseded alternative quoted as withdrawn; the "moves earlier" clause
+     replaced by "moves BOTH reports TOGETHER", the coincidence column now
+     resting on the offsets alone.
+  3. **§4.N Route 2** — re-based to **W**, with the formula, the six rows and the
+     three coincidences explicitly stated as unmoved and the gapless coincidence
+     `U + 2 = W + 1` worked in place.
+  4. **§9 change log** — one appended row, `J-dv_lead-0087`.
+- Re-counted every status class from the file after the edit.
+- Ran **no** git command. Touched **no** file under `libs/**`, `docs/**`,
+  `agents/handoffs/**` or the rest of `test/**`.
+
+### Evidence
+- `git status --porcelain` at this working tree shows **three** modified paths:
+  `test/attack_plans/AP-xgmii_rx_64.md` and this journal, which are mine, **and
+  `docs/specs/modules/xgmii_rx_64.md`, which is NOT** — it is the architect's
+  concurrent F-1 round landing in the same working tree. It is outside dv_lead's
+  write scope (PROTOCOL §6), it is absent from this entry's
+  `Files-in-this-commit`, and R7 would refuse it from a dv_lead commit in any
+  case; **the orchestrator SHALL stage my two paths explicitly and never
+  `git add -A` this tree.** Flagged rather than silently ignored, because a
+  files-list that set-equals the commit only proves what was staged, not what was
+  in the tree when it was staged.
+- **The architect's parallel repair, read from that uncommitted diff, accepts F-1
+  in full and agrees with my derivation cell for cell** — `r = 0` → `L + 8k`;
+  `r ∈ {1,2,3}` → `L + 8k` on bytes 0–3 and **`L`** on bytes 4 … r+3;
+  `r = 4` → the 28/20 split; `r ∈ {5,6,7}` → `L + 8k`; class sets `{12, 20, 28}`
+  at `k = 1` and `{12, 68, 124}` at `k = 7`, at lane-4 lengths 65, 66 and 67. It
+  reaches the mirror-of-lane-0 argument independently (*"which is why both items
+  state it or neither is right"*). I record the agreement as an observation on an
+  **uncommitted** working-tree diff, not as evidence of a committed state, and I
+  countersign nothing of it here — that round is the architect's and its
+  signature, if one is owed, is a later unit of work.
+- Status counts re-counted from the repaired file (`grep -c '| <STATUS> |$'`):
+  **ASSERT 62, NO-ASSERT 7, NO-STIMULUS 4, STRUCTURAL 4, GAP 1**; row count
+  (`grep -cE '^\| \*\*M03-'`) = **78**; 62 + 7 + 4 + 4 + 1 = 78. Identical to the
+  counts at `155c9b2`.
+- Residual-text check: a grep for the four superseded phrasings returns **one**
+  hit, at line 362, and it is the deliberate quotation inside M03-N2's own
+  withdrawal (*"The parenthesis this replaces read … the second alternative is
+  the superseded D and is withdrawn"*). No live cell states a superseded rule.
+- The replacement text is byte-comparable against its source: every sentence
+  installed here appears in the COUNTERSIGNATURE block at `a8ca14d`, which is
+  earlier in history than this commit — the ordering an auditor can check.
+- **Cited, not re-run**: the four derivations this repair installs are
+  `J-dv_lead-0086`'s (causality sweep 2 268 vs 0; `k = 0` invariance 0 deviations
+  over N = 5…199 and 0 of 6 630 `tlast` words moving over `k = 0…16`; the class
+  tables; the I4/I6 cycles 5,7,…,19 and 11,19,…,67). Nothing new was derived this
+  round — that is what makes it clerical.
+
+### Outcome
+DoD met. Escalation 2 of `J-dv_lead-0086` is discharged: the three FALSE sites
+are repaired, no row added, converted or re-statused, counts unmoved at
+78/62/7/4/4/1. **My own precondition is satisfied and the tb_writer work order is
+UNBLOCKED** — the `Context provided` section may now quote M03-I4's and M03-N2's
+`Observable` cells and §4.N's Route 2 as they stand at this commit. The bench
+instruction returned with `J-dv_lead-0086` is unchanged by this repair, including
+change 5(b), which already insulates the worker from §6.1 item 2's disputed
+lane-4 cell by forbidding an expected class set to be written from it. BUG-0002's
+`Fix verdict` stays open and `ce00c06` is still not accepted; family-I discharge
+stands at **36 of 62**, unchanged.
+
+### Open-questions
+- **F-1 remains with architect_docs_lead** (parallel SPEC-M03-only round).
+  It moves no row of this plan in either direction, because every value it
+  touches is reported and none is asserted. When it is ruled, this plan's §9
+  gains a one-line row recording the outcome and nothing else moves.
+- **The tb_writer WO is mine to draft next** — one file
+  (`test/xgmii_rx_64/test_m03_i.ml`), seven changes, the two `+ 12` derivations
+  kept independent so a defect in the translator cannot validate itself, and the
+  36-unit red-set prediction stated in the WO before the run.
+- **Sequencing remains the orchestrator's**: the bench repair takes the red count
+  from 2 to 36 until rtl_lead's elastic-emission round lands. My recommendation is
+  unchanged — bench first, prediction stated in advance so a surprise cannot be
+  mistaken for a bench defect.
+- `d39ffb6`'s **N-1** still rides unanswered, and this round leaves it where it
+  was: REQ-016's column gates per module while survival is per (start lane,
+  residue), which point 3 of `J-dv_lead-0086` showed varies at **both** lanes.
+
+### Files-in-this-commit
+- test/attack_plans/AP-xgmii_rx_64.md
