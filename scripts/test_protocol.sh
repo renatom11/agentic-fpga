@@ -614,6 +614,30 @@ expect_fail "CI refuses the oversized blob (R11)" "R11" \
   scripts/check_journals.sh --all
 git reset -q --hard HEAD~1
 
+# ---- S39: header-field helper drains its pipe (no SIGPIPE race) --------------
+# volume_header_field once exited at the header's end; a `git show` producer
+# of a volume larger than the pipe buffer then took SIGPIPE, and pipefail
+# turned that scheduling race into journal-check red — green locally, red in
+# CI, first seen at 1c3a89d when an active volume crossed 64 KB. The helper
+# must consume its whole stream so the pipeline's status is a verdict, never
+# a race. The fixture is deterministic: the field sits in the first line and
+# 200 KB of body follows, so an early-exit helper always strands the producer.
+say "S39: header-field extraction survives an over-buffer volume"
+{
+  printf -- '- **Volume**: 02\n'
+  printf -- '- **Continues-from**: J-x-0001\n'
+  printf -- '---\n'
+  head -c 200000 /dev/zero | tr '\0' 'x'
+  printf '\n'
+} > s39_volume.md
+if S39_VAL=$(set -o pipefail; . scripts/policy.sh; cat s39_volume.md | volume_header_field Volume) \
+   && [ "$S39_VAL" = "02" ]; then
+  ok "over-buffer volume read clean: pipeline status 0, field value intact"
+else
+  bad "header-field pipeline raced or misread (got '${S39_VAL:-}'; SIGPIPE regression)"
+fi
+rm -f s39_volume.md
+
 # ---- summary ----------------------------------------------------------------
 say ""
 say "protocol self-test: $PASS passed, $FAIL failed"

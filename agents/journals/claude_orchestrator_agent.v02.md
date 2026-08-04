@@ -489,3 +489,56 @@ round.
 
 ### Files-in-this-commit
 - tasks/BOARD.md
+
+## [J-orchestrator-0158] 2026-08-04T01:40Z | task:none | journal-check 141 was a SIGPIPE race in my own helper, not a violation - drained, proven, S39 added
+
+### Trigger
+journal-check red at 1c3a89d and d609b36 while build stayed
+green - the first red on that job since R10 landed.
+
+### Reasoning
+A broken harness is never an anchor finding, and this was the
+harness: the self-test passed 50/50, then check_journals.sh
+--all died exit 141 = SIGPIPE. volume_header_field (mine,
+WO-0053) awk-exited at the header's end; its `git show`
+producer strands once a volume outgrows the 64 KiB pipe
+capacity, and pipefail turns the race into red. It fired now
+because dv's active volume crossed 79 KB at 1c3a89d. Verified
+empirically rather than argued: locally the same tree is green
+because mawk buffers the whole stream before honoring exit
+(old helper leaves 0 leftover bytes); CI's awk is gawk, which
+exits promptly and strands the producer. No journal property
+was violated - both reds certify nothing about the record.
+Fix: the helper drains stdin to EOF (found/past flags, no awk
+exit), so the pipeline status is a verdict, never a schedule.
+Audited the other pipe consumers: last_entry_num reads to EOF;
+policy.sh:270's head-c/cmp stays verdict-correct under either
+status. S39 added: over-buffer fixture, status and value
+asserted; honest limitation recorded - the fixture reddens the
+old code only under a prompt-exit awk (gawk, the CI flavor
+where it raced; mawk cannot exhibit the bug at all). Suite
+51/51, check_journals green, chain green.
+
+### Actions
+policy.sh helper rewrite; test_protocol.sh S39; suite + both
+checkers run; this commit; push; confirm journal-check green
+at the new tip (it re-verifies the full history, which is the
+verdict that stands - the two red runs stay in the log as what
+they are, a race caught and named).
+
+### Evidence
+Run 30867156714's log (50 passed then exit 141 on
+check_journals); the two flavor measurements above; suite
+output 51 passed, 0 failed.
+
+### Outcome / DoD
+Enforcement lane clean again; nothing in the journal record
+was ever in question. The auditor's blind round continues
+undisturbed.
+
+### Open questions
+None new.
+
+### Files-in-this-commit
+- scripts/policy.sh
+- scripts/test_protocol.sh

@@ -146,11 +146,16 @@ active_journal_for() {
 # From a volume's content on stdin, print the value its frozen header block
 # (above the first `---` line) declares for field $1 — e.g. Volume,
 # Continues-from, Previous-volume, Previous-volume-sha256 (ADR-0017 §4.3).
-# Empty if absent.
+# Empty if absent. Drains stdin to EOF instead of exiting at the first `---`:
+# an early exit SIGPIPEs a `git show` producer once the volume outgrows the
+# pipe buffer, and under `set -o pipefail` that 141 is a scheduling race, not
+# a verdict (first seen as journal-check red at 1c3a89d when a 79 KB active
+# volume crossed the 64 KB pipe capacity — green locally, red in CI).
 volume_header_field() {
   awk -v f="$1" '
-    /^---$/ { exit }
-    index($0, "- **" f "**: ") == 1 { print substr($0, length("- **" f "**: ") + 1); exit }
+    done { next }
+    /^---$/ { done = 1; next }
+    index($0, "- **" f "**: ") == 1 { print substr($0, length("- **" f "**: ") + 1); done = 1 }
   '
 }
 
