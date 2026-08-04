@@ -750,6 +750,19 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
      one-term union and is written as one. *)
   let strobe s = consume &: s &: ~:(i.clear) in
   let q_strobe k = bit q2 k &: ~:(i.clear) in
+  (* MUTATION GH-c7 -- WO-0058, NEVER MERGE. Seeded defect: a one-cycle
+     per-name lockout on every strobe, i.e. a rising-edge-shaped report. Where
+     two frames' reports of the SAME strobe fall on CONSECUTIVE cycles the port
+     is high for one cycle instead of two, and the second frame's report is
+     lost. requirements.md §0.6's counting convention is the rule this breaks:
+     one high cycle per reported event, monitors count high cycles and never
+     rising edges, and a strobe does not return to 0 between consecutive
+     events. Nothing about a lone report changes -- a report preceded by an
+     idle cycle on its own name still occupies exactly one cycle on its pinned
+     cycle -- and nothing upstream of the ports moves: the second frame is
+     still aborted, closed and counted, it is simply not reported, so §0.6's
+     conservation equation is short by one frame. *)
+  let collapse s = s &: ~:(reg spec s) in
   { O.rx =
       { Axi64.Source.tvalid
       ; tdata = al_data_d
@@ -758,11 +771,11 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
       ; tlast = emit_tlast &: ~:(i.clear)
       ; tuser = emit_tlast &: abort
       }
-  ; error_bad_fcs = strobe sel_bad_fcs
-  ; error_bad_frame = strobe sel_error |: q_strobe 0
-  ; error_runt = strobe sel_runt |: q_strobe 1
-  ; error_oversize = strobe sel_oversize
-  ; error_start_without_terminate = strobe sel_start |: q_strobe 2
+  ; error_bad_fcs = collapse (strobe sel_bad_fcs)
+  ; error_bad_frame = collapse (strobe sel_error |: q_strobe 0)
+  ; error_runt = collapse (strobe sel_runt |: q_strobe 1)
+  ; error_oversize = collapse (strobe sel_oversize)
+  ; error_start_without_terminate = collapse (strobe sel_start |: q_strobe 2)
   }
 ;;
 
