@@ -1576,3 +1576,51 @@ None new.
 - site/public/index.html
 - site/public/org-chart.html
 - site/public/spec-atlas.html
+
+## [J-orchestrator-0182] 2026-08-04T21:00Z | task:none | The domain tier transcribed - LH2's two grades are law and the classifier routes by failure
+
+### Trigger
+The architect's A1 amendment landed at 8734c10 (resumed clean
+after an API error mid-round - nothing lost, the tree
+verified rather than re-applied).
+
+### Reasoning
+Transcribed A1.6's hunk into PROTOCOL §7 by the ADR's own
+extraction command (the fenced body plus reconstructed
+headers; apply --check clean; suite 51/51) and extended the
+board's deferred-intent line with the two-destinations
+clause. The amendment's teeth worth recording: LH2-d is
+reachable ONLY through a failed attempt at the general
+statement - the paraphrase test that refuses a fake
+generalisation is the same instrument that certifies an
+honest domain rule; the domain-noun discriminator is a test,
+not a list ("would a different project in the same domain use
+this noun without learning anything about this program"); and
+tier 3 forks into war-story versus local-accretion, which
+turned out to be a correction - the accretion tier WAS tier 3
+all along with nothing routed into it. The sponsor's
+numbering (1 general, 2 domain, 3 project) and his federation
+pipeline shape are both quoted in the ADR; the parked
+decision at A1.7(4) carries the prompt-injection reasoning
+with "nothing in this sub-item is in force" stated. SO-M03's
+first harvest classifies three ways from the outset.
+
+### Actions
+8734c10 push (architect's); this transcription commit; push.
+Still in flight: dv WO-0062; the shell workflow (C14).
+
+### Evidence
+8734c10; the applied hunk at PROTOCOL:274-295; the suite
+line; ADR §A1.6's reproduction command.
+
+### Outcome / DoD
+The three-tier taxonomy is law on the NIC side; the shell
+side lands with C14.
+
+### Open questions
+None new; A1's two threshold-less signals ride as auditor
+finding shapes.
+
+### Files-in-this-commit
+- agents/PROTOCOL.md
+- tasks/BOARD.md

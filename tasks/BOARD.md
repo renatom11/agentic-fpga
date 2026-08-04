@@ -153,4 +153,4 @@ No other escalations pending._
   end, extract the generic (project-agnostic) workflow from this org using
   accumulated ADRs/journals as the lessons-learned source — superseded as to
   cadence by ADR-0018: harvested per gate and per sign-off; the end-of-program
-  pass consolidates rather than extracts.
+  pass consolidates rather than extracts; two destinations since ADR-0018 A1 — the shell's universal set and named domain packs.

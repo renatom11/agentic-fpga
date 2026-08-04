@@ -273,15 +273,24 @@ stated as an entry-id interval so that spans tile and a skipped harvest is a
 visible gap, and records the yield as a harvest note in its journal entry for
 the round; a lead also mines the worker spans it commissioned. A candidate rule
 is admissible only if it **(LH1)** cites the incident commit(s) that taught it,
-**(LH2)** states its observable in terms portable beyond this project — no
-module, requirement, signal, protocol or toolchain name inside the rule
-statement — and **(LH3)** says what breaks without it. Anything failing the bar
-is recorded as a war story and goes no further; a nil yield is declared, never
+**(LH2)** states its observable in terms portable beyond this project, and
+**(LH3)** says what breaks without it. **LH2 has two grades** (ADR-0018 §A1):
+**LH2-g** (general) admits no proper noun of any kind inside the rule statement;
+**LH2-d** (domain) admits domain nouns — protocol names, interface standards,
+algorithm families — but still bars every project noun (module, requirement,
+carry-forward, signal, or a path in this repo), and obliges the harvest note to
+name the domain pack the rule belongs to. Both grades are read with the
+provenance hidden: a general candidate must teach a stranger to the domain, a
+domain candidate a stranger to this project. Anything passing neither grade is
+recorded as a war story and goes no further; a nil yield is declared, never
 omitted. The **orchestrator collates**: into the gate record locally, and into
 the generic shell's `LESSONS` file with permalinked provenance, the shell
 unfreezing for **exactly one commit per harvest**, sponsor-visible at the gate —
-the sponsor may refuse a candidate. A gate is not passed while any box of the
-instantiated `docs/gates/lessons-harvest-block.md` is unchecked. *Enforcement*:
+the sponsor may refuse a candidate. **Routing**: a general candidate goes to the
+shell's universal set, a domain candidate to the pack its note named, which a
+later project pulls in only if that domain is its own. A gate is not passed
+while any box of the instantiated `docs/gates/lessons-harvest-block.md` is
+unchecked. *Enforcement*:
 review-enforced, like §10 — no `R`-rule is minted and no script changes, so
 §11(3) owes no test case (ADR-0018 §7.4).
 
