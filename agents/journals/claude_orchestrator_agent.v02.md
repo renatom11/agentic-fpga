@@ -1266,3 +1266,44 @@ None.
 - site/public/index.html
 - site/public/org-chart.html
 - site/public/spec-atlas.html
+
+## [J-orchestrator-0175] 2026-08-04T16:20Z | task:WO-0061 | The campaign frozen with its seal in the freeze commit; the auditor's round is next
+
+### Trigger
+dv's WO-0061 return; two-commit split honored (61eb242 the
+freeze with the seal in its own file list; 5d1a3f3 the
+BUG-0003 item-5 flip on re-executable evidence).
+
+### Reasoning
+Ten classes as a decomposition of §6.2's Frame row - the
+campaign's coverable unit is the instrument, not the row.
+I-c5's pre-ruled liveness consequence and I-c10's
+tightness-only qualification of M03-I2 are the design's
+teeth. The severity transient deferred to its own round with
+the base-SHA hygiene argument (one round cannot carry two
+base SHAs in its evidence). Board row at allocation; site
+rebuilt. dv's routing bar binds me: no RTL-lane or worker
+spawn while a manifest is applied, and no patch body to dv
+until all ten diffs are committed.
+
+### Actions
+The two dv commits + push; board row; site; this commit;
+auditor dispatch next.
+
+### Evidence
+61eb242, 5d1a3f3; the seal's presence in 61eb242's file list.
+
+### Outcome / DoD
+The campaign is frozen and dispatchable; the practiced
+machine runs from here.
+
+### Open questions
+None new; F-1, N-1, §V.2 ride their owners.
+
+### Files-in-this-commit
+- tasks/BOARD.md
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/index.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html
