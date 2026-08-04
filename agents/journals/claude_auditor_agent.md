@@ -2132,3 +2132,282 @@ packet's own §5.
 - docs/reports/audit/WO-0055-mutations/g-c4.diff
 - docs/reports/audit/WO-0055-mutations/g-c5.diff
 - docs/reports/audit/WO-0055-mutations/README.md
+
+## [J-auditor-0010] 2026-08-04T01:22:02Z | task:WO-0058 | M03-G7 + family-H campaign seeded: seven start-character mutations authored blind against a2d090d, with GH-c4's count-preserving reading and GH-c2's one added bit of state disclosed, and the deliverable moved back inside my write scope
+
+### Trigger
+Orchestrator dispatch relaying dv_lead's `WO-0058`
+(`agents/handoffs/WO-0058_m03-g7-h-mutation-campaign.md`, which the dispatch
+records as frozen at `1c3a89d`), naming me the blinded seeder of the combined
+M03-G7 + family-H campaign — the same role I played at `WO-0045`, `WO-0050` and
+`WO-0055`. Repository at `d609b36` on
+`claude/fpga-hardcaml-agent-orchestration-37ceyf`; the base SHA for all seven
+diffs is **`a2d090d`**, which the packet's header fixes and its §6 mechanics
+build every throwaway branch from. Seven classes, GH-c1 … GH-c7, all seven to be
+authored before any is applied anywhere, by an auditor who is not to know what
+red is predicted.
+
+### Inputs
+Read, and this list is the whole of it (packet §2's allowlist item by item):
+
+1. `agents/handoffs/WO-0058_m03-g7-h-mutation-campaign.md`, in full, from the
+   working tree at `d609b36`. I did **not** diff it against `1c3a89d`: that
+   would have put an `agents/**` path on a git command line, and §2's bar on
+   git subcommands is the stricter of the two readings available. I take the
+   packet as given.
+2. `docs/specs/modules/xgmii_rx_64.md` in full (1014 lines, both pages) and
+   `docs/specs/requirements.md` §0.6, §0.7, the whole §2 table (REQ-101 …
+   REQ-113), the §1 rows REQ-001 … REQ-012 and the section index — both at
+   `d609b36`, not at `a2d090d`, for the reason in Reasoning below.
+3. `docs/adr/**`: **nothing opened**; `ls docs/adr` only.
+4. `libs/hardcaml_ethernet/src/xgmii_rx_64.ml` in full (772 lines) and
+   `libs/hardcaml_ethernet/src/dune` (3 lines), materialised by
+   `git archive a2d090d libs/`. Base blob `81cd9ed`, `sha256`
+   `3d87515a843d98d7d5bd6692a9d19cdbe2b0dee4e430c88f871a2d4887f5be92` —
+   byte-identical to the blob family E, F and G were seeded against, so the
+   design has not moved in seven campaigns.
+5. `docs/reports/audit/`: the recursive listing, the first 60 lines of
+   `WO-0055-mutations/README.md`, `WO-0055-mutations/g-c4.diff` in full, and my
+   own journal's tail.
+6. Root build configuration: `dune-project` and `.ocamlformat` at `a2d090d`.
+
+Plus, because my spawn prompt's mandatory first actions name them:
+`agents/charters/auditor.md` and `agents/PROTOCOL.md`.
+
+### Reasoning
+**Blinding conduct, stated affirmatively because it is the campaign's
+evidentiary core.** I did not open, list, hash, diff, `git show`, `git grep`,
+name to any tool or otherwise touch
+`agents/handoffs/WO-0058_m03-g7-h-mutation-campaign-SEALED-predictions.md` at
+any revision. I opened **no file under `test/**` at any revision** — not
+`test_m03_g.ml`, not `test_m03_h.ml`, not the rest of the bench, the attack
+plan, the DV machinery or the co-simulation lane — so everything I know about
+M03-G7, M03-H1, M03-H2, M03-H3 and M03-H4 is the one-line description the packet
+publishes for each in its own §1 table. I opened **no `agents/**` file other
+than the packet, my charter, the protocol and my own journal**; in particular
+not `WO-0056`, not `WO-0057`, not `RV-0055-VERDICT`, not `RV-0057-VERDICT`, not
+any other agent's journal, not `tasks/BOARD.md`. **No unscoped `git log`**, and
+no `git` subcommand of mine named a path outside the allowlist. One unscoped
+invocation is disclosed rather than smoothed: I ran `git status --porcelain`
+once to prove my `git apply --check` calls had left the tree clean; its output
+was **empty**, so it revealed no path, but had the tree been dirty it could
+have named out-of-bounds ones.
+
+**Sampling frame.** The frame is not a sample this round: it is the whole of
+one file. Every one of the seven intents is a defect of M03 and M03 is one
+772-line module, so I read it entire and reasoned about all seven classes
+against the same text rather than sampling sites. What I deliberately skipped is
+`docs/adr/**` — every rule I relied on is stated normatively in the two
+specification documents, and the ADRs restate rationale — and the other twelve
+files in the `libs/` extraction, which no class touches.
+
+**Why I read the specifications at `d609b36` rather than at `a2d090d`.** They
+moved: `git diff --stat a2d090d HEAD -- docs/specs/` reports +22 lines in the
+module spec and +50 in `requirements.md`, while the same command over `libs/` is
+empty. The packet's §3 spec basis cites §9's *2026-08-04 zero-referent
+paragraphs* and §0.6's *C-23 counting-convention paragraph* by name, which are
+only guaranteed present in the later text. Reading a strictly additive later
+statement of the rules cannot make a diff unfaithful to an earlier one where the
+two agree; reading the earlier one could have made me miss a rule the packet
+cites. The design I mutated is `a2d090d`'s either way.
+
+**The write-scope conflict, and why I resolved it against my own orders.** My
+spawn prompt names the deliverable `agents/handoffs/WO-0058_manifests.md`. That
+path is outside my write scope on four independent statements of it — PROTOCOL
+§6's table, PROTOCOL §3's ADR-0003 auditor exception (*stages
+`docs/reports/audit/**` and nothing else, ever — deliberately, so it can never
+modify an artifact it audits, including other agents' packets*), my charter §5,
+and `WO-0058` §5 itself (*a report under `docs/reports/audit/**`*) — and R7
+would have refused the commit mechanically under the trailer `Agent: auditor`.
+`agents/handoffs/` is also the directory holding this campaign's sealed
+companion, which makes it the last directory a blinded seeder should be writing
+into. I honoured every part of the instruction I could: **one file**, all seven
+manifest entries, diffs inline, with a tested one-command extraction to the
+`WO-0055` seven-`.diff` form. The deviation is reported in the report's §0, in
+my return message, and here. I did not write the named file.
+
+**Rendering decisions, class by class — what won and what was rejected.**
+
+- **GH-c1** is `a_close_start` extended by `sm.is State.Discard &: any
+  lanes.is_start`. It is the exact structural sibling of `g-c4`, which extended
+  `a_close_error` and which the packet puts out of scope; `a_close_error` is
+  byte-unchanged here, so the two are distinguishable by inspection. Rejected:
+  narrowing the added term to lanes 0 and 4, because the base predicate's own
+  `a_close_oh` search covers eight lanes and §6.3 item 3 leaves the rest
+  unconstrained anyway.
+- **GH-c2** is the only diff that adds state — one bit, set by `a_close_error`
+  and cleared by `begins`. I looked hard for a state-free rendering and there is
+  none: in this design the `/E/`-closed frame stops delivering **because the
+  machine leaves to `Idle`**, and `a_open` is what makes epoch A's REQ-110
+  closure reachable, so anything that keeps the frame abortable without keeping
+  it receiving has to carry a fact the base design carries nowhere. The
+  state-free alternatives — not taking the `Frame` → `Idle` exit, or adding a
+  fifth state — land squarely on the reading the packet's own scope clause calls
+  *a different and much wider defect*. One bit is the smallest thing that
+  carries the fact, and I disclosed it as a structural addition rather than
+  filing it under bar 8's build repairs, which it is not.
+- **GH-c3** is `sel_start` added to `strip`'s condition. The interesting part is
+  what I did **not** add: `sel_oversize` was already there, and reading it as
+  part of the seeded defect would have been wrong — the module's own comment
+  records it as REQ-108's 1518-to-1514 arithmetic, not FCS removal. Rejected:
+  adding `sel_error` as well, which the scope clause asks about and which would
+  have merged REQ-105 into a REQ-110 class.
+- **GH-c4** was the round's real judgement call and it turned on the word
+  *same*. The intent says the mutant switches its offset **on the same cycle it
+  accepts the new start character**, and it names the signature as
+  count-preserving and content-destroying. Three renderings exist. Removing the
+  register's one-cycle lag (`start4_pending` → `begins &: new_start4`) switches
+  the offset at W+1, not W, and — because `cov` is rotated through the same
+  window as the octets — empties the aborted frame's last aligned word, giving
+  the **count-moving** reading. Splitting the offset so `al_data` leads and
+  `al_keep` lags gives the content-destroying signature but is a rotation/keep
+  mismatch rather than an early offset. Bypassing the register combinationally
+  on cycle W itself — `off4 |: (begins &: new_start4)` — is literally *the same
+  cycle*, is one added line, and at REQ-110's own lane-4 geometry produces
+  exactly the stated signature: `al_keep` is 0xFF either way, `first_v` is low
+  in `Frame` so `al_new` and `nc` do not move, and only `al_data` changes, the
+  aborted frame losing octets 8m … 8m+3 and repeating 8m+8 … 8m+11. That is the
+  one I seeded, and the disclosure says so in the packet's own vocabulary.
+- **GH-c5** gates `begins` with `~:a_close_start`. `a_close_start` is the
+  module's own name for REQ-110's abort of epoch A, and being gated by
+  `a_char_acts` it is low in `Discard` **and** on the truncating word, so the
+  class's one named exclusion — REQ-108's resynchronisation — is excluded
+  structurally rather than by hand. Rejected: `~:a_open`, which is one character
+  shorter and would have swallowed the same-word truncate-then-resynchronise
+  case; and a widened gate covering epoch B's in-word abort, which would have
+  required a second term reproducing `inword_strobes`' start computation. The
+  edge that leaves is named in the report rather than papered over.
+- **GH-c6** drives one output field to `gnd`, which cuts both report paths for
+  the name at once while leaving `abort`, `consume` and the record channel
+  untouched. The packet asks that this class not be strengthened; it has not
+  been.
+- **GH-c7** applies `collapse s = s &: ~:(reg spec s)` to **all five** strobe
+  ports. Rejected: applying it to `error_start_without_terminate` alone, which
+  is narrower than the intent — §0.6's counting convention is programme-wide and
+  the intent's own words are *a one-cycle-per-name lockout*.
+
+**One formatting decision worth recording, because it is the fourth campaign in
+a row that the container cannot answer.** Hardcaml, `hardcaml_axi`,
+`ppx_hardcaml` and `ocamlformat` are all absent here, and the base file carries
+two 97-column lines against `.ocamlformat`'s janestreet profile, so whether
+`dune build @fmt` is clean at `a2d090d` at all is still unestablished. Rather
+than guess a margin, I made every added line ≤ 88 columns and every added
+expression a single-line `let … in`, which is a fixpoint at either 90 or 100.
+That is why GH-c1, GH-c2 and GH-c3 name an intermediate binding instead of
+extending the original line: extending it would have produced a 97-to-110-column
+line whose reformatting is margin-dependent.
+
+### Actions
+- Materialised the base by `git archive a2d090d libs/` into a private scratch
+  directory (packet bars 9 and 10) and fixed its identity by blob id and
+  `sha256`.
+- Authored seven mutants of `libs/hardcaml_ethernet/src/xgmii_rx_64.ml` — **all
+  seven before any was applied anywhere** (bar 7) — each carrying a
+  `MUTATION GH-cN … NEVER MERGE` comment at its own site; `gh-c2` is a two-site
+  diff and carries the marker at both.
+- Generated the seven unified diffs in a scratch git repository containing
+  nothing but the extraction, and verified each three ways (below).
+- Wrote `docs/reports/audit/WO-0058-mutations/README.md`: the deviation notice,
+  the allowlist scope statement, the seven entries with diffs inline and a
+  mechanical statement each, the four mandatory disclosures collected into one
+  table, the build state, the fidelity ledger, and a tested extraction command.
+- **Ran nothing against the bench, applied nothing to the repository working
+  tree, created no branch, ran no `git commit` or `git push`.** The working
+  tree's `libs/**` is unmodified.
+
+### Evidence
+All commands run from `/home/user/agentic-fpga` at `d609b36` unless a scratch
+path is named; `$S` is my scratch directory.
+
+1. `git rev-parse a2d090d:libs/hardcaml_ethernet/src/xgmii_rx_64.ml` →
+   `81cd9ed7fc64e6265c53117f251ef948f24e3b00`;
+   `sha256sum` of the extraction →
+   `3d87515a843d98d7d5bd6692a9d19cdbe2b0dee4e430c88f871a2d4887f5be92`;
+   `wc -l` → `772`.
+2. `git diff --stat a2d090d HEAD -- libs/ docs/specs/ docs/adr/ dune-project
+   .ocamlformat` → two files changed, both under `docs/specs/` (+22, +50);
+   `libs/` contributes nothing, so the base design and the working tree's design
+   are the same bytes.
+3. **Clean application, check 1.** In a scratch repository containing only
+   `git archive a2d090d libs/`: `git apply --check --index $S/diffs/<id>.diff`
+   returns **clean for all seven** (observed: `gh-c1 … gh-c7: CLEAN`).
+4. **Clean application, check 2 — faithful serialisation.** In that same
+   repository each diff was applied and the resulting blob's `sha256` compared
+   against the mutant I authored: **all seven match** (observed:
+   `<id>: applied blob == authored mutant`, seven times).
+5. **Clean application, check 3.** `git apply --check` against the live working
+   tree returns clean for all seven, and `git status --porcelain` afterwards is
+   **empty**.
+6. **Syntax and comment lexing.** `ocamlc -stop-after parsing -c` (system OCaml
+   **4.14.1**) accepts the unmutated base as a control and accepts all seven
+   mutants (observed: `base: PARSES`, then `gh-c1 … gh-c7: PARSES`). This is a
+   real check here: an unbalanced `"` inside an OCaml comment is a lexer error,
+   and `grep -c '"'` returns **33** on the base and **33** on each of the seven,
+   so no added comment introduces a quote at all.
+7. **Round-trip of the extraction command published in the report's §7.**
+   Extracted seven files from the committed README and compared with `cmp -s`
+   against the diffs I generated: **byte-identical, all seven**; the extracted
+   copies then `git apply --check` clean against the `a2d090d` tree.
+8. **Margin.** No added line exceeds **88** columns in any of the seven
+   (checked mechanically over the `+` lines of every diff).
+9. **Types are NOT demonstrated.** `dune build` in the scratch tree fails at
+   `Error: Library "hardcaml_axi" not found` — the only opam switch (`fpga`)
+   contains `dune` 3.24.1 and nothing else — and ADR-0005 makes a local build
+   inadmissible evidence in any case. The type argument is by construction and
+   is written out in the report's §5.
+10. **No prediction anywhere.** The report contains no statement about which
+    unit reddens, which stays green, or what any message says, and I am not in a
+    position to make one.
+
+### Outcome
+DoD met against `WO-0058` §5, with one disclosed deviation of location and none
+of substance. **All seven classes are SEEDED**; nothing is NOT-SEEDED, nothing
+was substituted for something easier, and no class was narrowed to make it
+build. The four disclosures the packet makes the sealed row sets a **function**
+of are answered in the packet's own terms: **GH-c2 does NOT fire where an error
+character arrived with no frame open**, in the gap or in `Discard`; **GH-c3
+shortens neither an `/E/`-aborted frame nor a truncated one**, its whole reach
+being the added `sel_start` term; **GH-c4 produced the count-preserving,
+content-destroying reading**, with the two geometries where it either does
+nothing or moves the count named; **GH-c5 does NOT reach REQ-108's
+resynchronisation** in either form, with the epoch-B narrowing named. The
+deliverable is `docs/reports/audit/WO-0058-mutations/README.md` and **not** the
+`agents/handoffs/` path my dispatch named — the reasons are four independent
+statements of my write scope plus R7, and they are set out in the report's §0.
+Handoff: to the orchestrator, which applies each diff transiently to
+`mut/wo-0058-gh-c1 … gh-c7` off `a2d090d` under PROTOCOL §10's transient model.
+No diff was run, no result was seen, no diff was revised, and the sealed
+companion was not opened.
+
+### Open-questions
+1. **The deliverable path is an orchestrator decision now, not mine.** If the
+   packet's manifests are wanted inside `agents/handoffs/`, the file has to be
+   staged by an agent whose scope reaches there — the orchestrator, under its
+   own trailer, transcribing from my committed report exactly as PROTOCOL §3's
+   ADR-0003 paragraph has it transcribe my `RETURNED` verdicts. I cannot do it
+   and should not.
+2. **GH-c4's reading.** I produced the count-preserving one and argued the word
+   *same* is what selects it. If dv_lead intended the count-moving reading, the
+   reversal is one token — `begins &: new_start4` back to `start4_pending`, in
+   the register rather than the bypass — and the report says so.
+3. **GH-c2's added bit of state.** No state-free rendering exists that respects
+   the scope clause; if dv_lead reads the intent as reaching the wider
+   *frame keeps receiving* defect, that is a different class and not a revision
+   of this one.
+4. **GH-c5's epoch-B edge.** A lane-4 start aborting a frame opened by a lane-0
+   start in the same word, with nothing open on entry, still begins its frame
+   under this diff. Widening is one extra term reproducing `inword_strobes`'
+   start computation; I judged the single-predicate gate the faithful minimal
+   rendering and disclosed the edge instead.
+5. **Is `dune build @fmt` clean at `a2d090d` at all?** The base carries two
+   97-column code lines. Unchanged from `WO-0050` and `WO-0055` and still open;
+   if a `@fmt` failure appears under any of these seven, the first question is
+   whether it is pre-existing, and bar 8's repair clause should not be spent on
+   a base-level failure.
+6. **Compile-confidence is argued, not demonstrated**, for the fifth campaign
+   running, because Hardcaml and its ppx are absent from this container. If any
+   diff fails to build, bar 8 applies: I will change nothing else and will
+   disclose the repair.
+
+### Files-in-this-commit
+- docs/reports/audit/WO-0058-mutations/README.md
