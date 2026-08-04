@@ -16,7 +16,10 @@ Nothing here is signed. This file never records a harvest; instantiations do.
    section) under the heading `## Lessons harvest — <gate or SO- tag>`.
 2. Replace `<harvest-tag>` with the gate name (`P1-module-ready`) or
    `SO-<module>`. It becomes the prefix of every candidate id minted this round:
-   `LC-<harvest-tag>-<n>`.
+   `LC-<harvest-tag>-<n>` for a **general** candidate (tier 1) and
+   `LD-<harvest-tag>-<n>` for a **domain** candidate (tier 2). The two sequences
+   number **independently**, so a regrade before the note is written does not
+   renumber a candidate's neighbours. Ids are never reused (ADR-0018 §A1.4).
 3. One row of the span table per agent holding a persistent journal chain —
    today: `architect_docs_lead`, `rtl_lead`, `dv_lead`, `auditor`, `orchestrator`.
    Add a row for any persistent journal that exists at the time of the harvest
@@ -30,16 +33,54 @@ Nothing here is signed. This file never records a harvest; instantiations do.
 
 ## 2. The bar, for the reviewer's convenience
 
-Normative text is ADR-0018 §3.4; this is the short form.
+Normative text is ADR-0018 §3.4 as amended by §A1.2; this is the short form.
+**Three tiers** (ADR-0018 §A1.1): **1 general** — to the shell's universal set;
+**2 domain** — to a named domain pack in the shell, pulled in by a later project
+only if that domain is its own; **3 project-specific** — stays here.
 
 | | Criterion | Passes when |
 |---|---|---|
 | **LH1** | provenance-pinned | Cites the incident commit SHA(s) **and** the entry/packet that adjudicated it; a reader at that SHA can see the thing going wrong |
-| **LH2** | portable observable | The **rule statement** carries no proper noun of this program — no module, requirement, carry-forward, signal, protocol, toolchain or library name — and reads as a complete instruction on a different project with different agents. Second test: hide the provenance; if the statement then says nothing, it was the nouns talking |
+| **LH2-g** | portable observable, **general** | The **rule statement** carries **no proper noun of any kind** — no module, requirement, carry-forward, signal, protocol, toolchain or library name — and reads as a complete instruction on a different project with different agents. Hide the provenance: it must still teach **a stranger to both the domain and this project** |
+| **LH2-d** | portable observable, **domain** | The statement may name **domain** nouns — protocols, interface standards, algorithm families, encodings — but **no project noun** (module, requirement, carry-forward, signal, packet/WO/entry id, or a path in this repo), **and the note names the domain pack**. Hide the provenance: it must still teach **a stranger who knows the domain and not this project** |
 | **LH3** | stated failure | Says what **breaks** without it — a concrete outcome a reviewer could recognise in someone else's repo, not a virtue |
 
-Failing any one → **war story**: recorded with the criterion it failed, not
-transcribed to the shell, re-offerable at a later harvest with new provenance.
+**The noun discriminator**, for anything the lists above do not settle: a *domain*
+noun is one that a different project, staffed by different agents, in the same
+domain, would use in its own rule statement without having to learn anything
+about this program; a *project* noun cannot be understood without this repo.
+
+Passing neither grade → **tier 3**, which forks (see §2.1): **war story**
+(recorded with the criterion or step it failed, binding nowhere, re-offerable at
+a later harvest with new provenance) or **local accretion** (adopted here by its
+own ADR / `C-` row / `R-` rule / spec clause — the note records the choice, the
+adoption is a separate artefact and commit).
+
+## 2.1 The classifier — three ways, in order
+
+Normative text is ADR-0018 §A1.3. Run it on the **rule statement alone**, with
+the provenance hidden; LH1 and LH3 are prior, and a candidate failing either is a
+war story before the classifier is reached.
+
+> **0.** Write the **most general honest statement** — fewest proper nouns that
+> still says what happened. This step is not optional: the domain grade is
+> reached only *through* a general statement that was attempted and went hollow.
+>
+> **1.** Any proper noun left? **No** → **general candidate**, `LC-`, tier 1.
+>
+> **2.** Is *every* surviving noun a domain noun? **No** → **tier 3**.
+>
+> **3.** Can the domain be **named** as a pack a stranger would recognise as a
+> domain rather than as this program? **No** → **tier 3**.
+>
+> **4.** Provenance hidden, does it teach a stranger who knows that domain and
+> not this project? **No** → **tier 3**. **Yes** → **domain candidate**, `LD-`,
+> tier 2, pack recorded.
+
+**Tie-break**: if the general statement of step 0 survives the hide test, the
+candidate is **general** and the domain noun was decoration. If it goes hollow,
+that hollowness *is* the evidence the domain noun was load-bearing — which is
+what routes the candidate to tier 2 rather than refusing it.
 
 ---
 
@@ -54,26 +95,30 @@ the orchestrator; each row's authority is the cited journal entry.
 
 ### Spans mined
 
-| Agent | Span (entry-id interval) | Harvest note | Candidates | War stories |
-|---|---|---|---|---|
-| architect_docs_lead | J-architect_docs_lead-NNNN … -MMMM | J-architect_docs_lead-MMMM | n | n |
-| rtl_lead | … | … | n | n |
-| dv_lead | … | … | n | n |
-| auditor | … | … | n | n |
-| orchestrator | … | … | n | n |
-| _(worker spans, by commissioning lead)_ | spawn short-ids covered | (in that lead's note) | n | n |
-
-### Yield
-
-| id | Rule statement (one line, LH2-clean) | Mined by | Note entry | LH1 provenance | Disposition |
+| Agent | Span (entry-id interval) | Harvest note | T1 general | T2 domain | T3 |
 |---|---|---|---|---|---|
-| LC-<harvest-tag>-1 | | | J-…-NNNN | `<sha>` | transcribed as `L-…` / war story / sponsor-refused |
+| architect_docs_lead | J-architect_docs_lead-NNNN … -MMMM | J-architect_docs_lead-MMMM | n | n | n |
+| rtl_lead | … | … | n | n | n |
+| dv_lead | … | … | n | n | n |
+| auditor | … | … | n | n | n |
+| orchestrator | … | … | n | n | n |
+| _(worker spans, by commissioning lead)_ | spawn short-ids covered | (in that lead's note) | n | n | n |
 
-### War stories (kept, not transcribed)
+### Yield — tiers 1 and 2
 
-| Candidate | Mined by | Failed | Why |
-|---|---|---|---|
-| | | LH1 / LH2 / LH3 | |
+`LC-` = tier 1, general, to the shell's universal set. `LD-` = tier 2, domain, to
+the named pack. The two prefixes number independently.
+
+| id | Rule statement (one line) | Grade | Domain pack | Mined by | Note entry | LH1 provenance | Disposition |
+|---|---|---|---|---|---|---|---|
+| LC-<harvest-tag>-1 | | LH2-g | — | | J-…-NNNN | `<sha>` | transcribed as `L-…` / sponsor-refused |
+| LD-<harvest-tag>-1 | | LH2-d | `<pack-slug>` | | J-…-NNNN | `<sha>` | transcribed as `L-…` in pack / sponsor-refused |
+
+### Tier 3 — war stories and local accretions (not transcribed to the shell)
+
+| Candidate | Mined by | Failed | Why | Tier-3 disposition |
+|---|---|---|---|---|
+| | | LH1 / LH2-g+LH2-d / LH3 / step 2 / step 3 / step 4 | | war story (kept, re-offerable) / local accretion → `<ADR / C-row / R-rule / spec clause>` |
 
 ### Checklist
 
@@ -83,14 +128,25 @@ the orchestrator; each row's authority is the cited journal entry.
 - [ ] **Each row's harvest note exists** in the named journal entry and carries
       its span interval, its candidates with LH1–LH3 discharged, its war stories
       with the criterion each failed — or an explicit nil yield.
-- [ ] **Every candidate in the Yield table discharges LH1, LH2 and LH3**, checked
-      by the transcriber against the note, not against the summary line.
+- [ ] **The classifier was run on every candidate** (§2.1), starting from the
+      most general honest statement — no candidate reached `LD-` without a
+      general statement having been attempted and found hollow.
+- [ ] **Every candidate in the Yield table discharges LH1, LH3 and LH2 at its
+      stated grade**, checked by the transcriber against the note, not against
+      the summary line.
+- [ ] **Every `LD-` row names a domain pack**, as a slug naming the technical
+      domain and not this program.
+- [ ] **Pack names checked against those already in use** in previous harvests;
+      an existing name was reused rather than a near-duplicate minted, and any
+      normalisation is noted here: `<none / LD-… : "<as offered>" → "<in use>">`
 - [ ] **No candidate was edited in transcription.** A defective statement is
-      bounced to its author, never rewritten by the collator.
+      bounced to its author, never rewritten by the collator. (Normalising a
+      *pack name* is metadata, permitted, and noted on the line above.)
 - [ ] **Shell transcription: exactly one commit**, containing the admissible
-      candidates with permalinked provenance, and nothing else. Commit: `<link>`
-- [ ] **`LC-` → `L-` pairs recorded** in the Yield table's Disposition column, so
-      the shell entry is traceable back to the note that minted it.
+      candidates — general and domain — with permalinked provenance, and nothing
+      else. Commit: `<link>`
+- [ ] **`LC-`/`LD-` → `L-` pairs recorded** in the Yield table's Disposition
+      column, so each shell entry is traceable back to the note that minted it.
 - [ ] **Sponsor-visible**: the harvest table and the shell diff were surfaced at
       this gate. Refusals, if any, are recorded as `sponsor-refused` above.
 - [ ] **Harvest declared complete** by the orchestrator: `J-orchestrator-NNNN`.
@@ -106,11 +162,25 @@ the orchestrator; each row's authority is the cited journal entry.
 - **You are not the selector.** Collation is clerical: you may bounce a candidate
   to its author for a defective statement, and you may not improve one. A collator
   who edits statements shapes the shell without any note showing it.
-- **Run LH2's second test yourself** at transcription — you are the reader who has
-  the shell's audience in mind, and it is the last point before the rule leaves
-  this repo.
+- **Run the hide-the-provenance test yourself** at transcription — you are the
+  reader who has the shell's audience in mind, and it is the last point before the
+  rule leaves this repo. Use the right stranger: for `LC-`, someone who knows
+  neither the domain nor this project; for `LD-`, someone who knows the domain and
+  not this project.
 - **A harvest whose war-stories table is empty at every round** says something
   about the bar, not about the span. Worth a line in the note when it happens.
+- **A harvest whose yield is all `LD-` and no `LC-`** says something about the
+  miner, not about the domain — the domain grade is a rescue for statements that
+  cannot generalise, not a shortcut past the attempt. Worth the same line.
+- **Pack names are an interface, not a label.** The slug is the only thing a later
+  project's "pull this in only if relevant" selector can select on, so reuse an
+  existing name rather than minting a near-duplicate (`ethernet-10g` /
+  `10g-ethernet` / `ethernet` are one pack no selector can reconcile). Naming and
+  normalising a pack is metadata and is inside your clerical role; editing a
+  candidate's statement never is.
+- **A pack whose second project cannot be named** — "this would also serve …" —
+  is a domain one project wide, which is a project lesson with a slug on it.
+  A finding shape for the auditor, not automatically a finding.
 - **Closed gates are not retro-harvested.** `G0-checklist.md` (PASSED 2026-08-01)
   and `P1-spec-freeze-checklist.md` (CLOSED 2026-08-02) predate this practice and
   are not reopened; their spans are covered by the interval rule, since each

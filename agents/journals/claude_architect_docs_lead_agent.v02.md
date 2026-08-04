@@ -1896,3 +1896,298 @@ All commands run from a checkout at this commit's SHA, repo root.
 
 - docs/adr/ADR-0018-the-harvest-is-a-cadence-not-an-event.md
 - docs/gates/lessons-harvest-block.md
+
+## [J-architect_docs_lead-0029] 2026-08-05T01:20Z | task:none | ADR-0018 amended with the sponsor's domain tier — LH2 splits into two grades, and the paraphrase test that refuses a fake generalisation turns out to be the same test that certifies an honest domain rule
+
+### Trigger
+
+Sponsor direction relayed by the orchestrator, extending the taxonomy ADR-0018
+assumed: three tiers — general, **domain**, project-specific — with the domain
+tier defined as *"portable across projects that share a technical domain but
+unstatable without domain vocabulary"*, the example being this program's
+Ethernet/networking lessons serving a future 25G NIC, and the shell knowing *"to
+pull them in only if relevant."* A second relay fixed the numbering (1 general,
+2 domain, 3 project-specific) and supplied the federation pipeline shape for the
+parked note. Scoped amendment round; no work order.
+
+**Round interrupted mid-flight by an API error** after the ADR edits and the
+first three block edits had landed. The orchestrator's recovery message told me
+to verify rather than assume, which I did before writing anything further —
+`git status --porcelain` and `git diff --numstat`, recorded in Evidence. Nothing
+was re-applied and nothing was lost; the remaining work was §1's id instruction,
+§2's tier preamble and the spans table, all of which were still two-way.
+
+### Inputs
+
+- `agents/charters/architect_docs_lead.md`; `agents/PROTOCOL.md` (§7's lessons-
+  harvest paragraph live at `:268-286`, §6 write scopes, §11 amendment procedure).
+- `docs/adr/ADR-0018-the-harvest-is-a-cadence-not-an-event.md` at `ec5d906` — the
+  whole of it, §3.4 (the bar), §4.3 (ids), §7.3 (the paraphrase attack), §8 (the
+  PROTOCOL hunk), §9 (the block), §10 (the "no collisions" claim), §12.
+- `docs/gates/lessons-harvest-block.md` at `ec5d906`.
+- `docs/adr/ADR-0003-aud-0001-disposition.md:142` — the "Corrections after …"
+  section, which is the amendment form this org already uses and the one I
+  followed rather than inventing a second.
+- `J-architect_docs_lead-0028`'s Open-questions — the prediction the sponsor
+  cited, and the three owed-to-orchestrator items whose status A1.7 restates.
+- `agents/journals/claude_orchestrator_agent.md` via §1.2's `L-D15` grep, for the
+  id near-collision check.
+
+### Reasoning
+
+**1. A grade split inside LH2, not a fourth criterion.** The obvious alternative
+was `LH4 — domain-portable`, sitting alongside LH1–LH3. Rejected on two grounds,
+one aesthetic and one countable. A fourth criterion would have to be *conditional
+on another criterion failing* ("LH4 applies only where LH2 does not"), which is a
+decision tree wearing a checklist's clothes and reads as a bar with an escape
+hatch bolted on. The truth is simpler and the split says it: there is **one**
+portability criterion with **two thresholds and one destination each**. The
+countable ground decided it: charters say *"candidates with LH1–LH3 discharged"*,
+and `agents/charters/**` is orchestrator-scope. An `LH4` makes **five charter
+edits owed**; a grade inside LH2 makes **zero**, because the grades live under
+the name the charters already cite. Given that §8's hunk took a full round to get
+transcribed, minting five more owed edits to say the same thing would have been a
+poor trade.
+
+**2. The domain noun is defined by a test, with the lists as examples.** An
+exhaustive list of admissible nouns is gameable and *will* be gamed at the
+boundary — toolchain and library names are the live case, since "Hardcaml" is a
+domain noun when the pack is that ecosystem and a project noun when what it
+actually carries is our lane and pin (ADR-0004's subject, portable to nobody). So
+A1.2 states the discriminator — *would a different project, different agents,
+same domain, use this noun without learning anything about this program?* — and
+demotes the lists to illustration. A list that has to be exhaustive is a list
+that will be argued with in bad faith; a test can be argued with in good faith,
+which is what §3.4 was already trying to buy with "deliberately mechanical enough
+to argue with".
+
+**3. The find of the round, and I did not engineer it.** The question was whether
+LH2-d should be reachable directly or only through a failed general statement. I
+wanted only-through, because a discount available on request is one every miner
+takes first — the cheapest path for a tired agent is to reach for the domain noun
+and skip the generalisation. What I did not expect is that the enforcement
+mechanism was already written: **§7.3's paraphrase test is the routing
+mechanism.** Attempt the general statement; hide its provenance; if it survives,
+the candidate is general and the domain noun was decoration; if it goes hollow,
+the hollowness *is the evidence* that the domain noun was load-bearing, and that
+is exactly the finding that routes it to tier 2. **The same test that refuses a
+fake generalisation certifies an honest domain rule.** §7.3 was written against
+an attack; it turns out to be a classifier, and A1.3's tie-break just names what
+it was already doing. This is why the classifier is stated as a procedure with
+step 0 non-optional rather than as a definition: the ordering is the whole
+guarantee.
+
+**4. Tier 3 needed a fork, and finding that out was a correction, not an
+addition.** The sponsor's tier 3 *"rewrites the local project's doctrines but
+never leaves it"* — that is **adoption**, not filing. But §3.5 gave failures
+exactly one outcome, "war story", and §1.1 described the accretion tier as
+something this ADR *does not touch*. Read together, those two were never
+connected: §1.1's accretion tier **was tier 3 all along** and §3.5 never routed
+anything into it. So A1.3.1 states the fork — war story (binds nowhere,
+re-offerable) versus local accretion (adopted here by its own ADR / `C-` row /
+`R-` rule / spec clause) — on one question, *does this project want the rule?*
+Two guards against this becoming a new obligation: the note **records** the
+choice, and the adoption itself is a separate artefact in a separate commit under
+the tier's existing instruments. Nothing here obliges anyone to adopt anything.
+
+**5. The honest half of A1.3.2 — the amendment does not do all the framing
+suggests.** The prediction the sponsor cited says *"unstatable without a module
+name"*, and a module id is a **project** noun, barred in both grades. So I split
+the predicted class three ways rather than claiming the rescue wholesale:
+domain-noun candidates are rescued; module-id candidates are **not**, before or
+after; and the interesting middle is candidates unstatable without the module's
+**role** — *the block that terminates a frame*, *the stage that realigns a
+message across a word boundary* — where a role is a domain noun and step 0's
+rewrite converts the refusal into a tier-2 pass. I asked the note to **count**
+that third case, because without the count the amendment is unscoreable, and an
+unscoreable amendment to a bar is how a bar softens without anyone deciding to
+soften it. Citation corrected in passing: the prediction is at
+`J-architect_docs_lead-0028`'s Open-questions, not at the ADR's §11, which is
+Alternatives.
+
+**6. Recording the federation shape rather than only the question.** The dispatch
+said *recorded, not decided*, and the second relay supplied a sketch. I recorded
+both, with `Nothing in this sub-item is in force` stated in the ADR, because the
+alternative failure is worse in each direction: a parked question with **no**
+shape is one the next reader re-opens from scratch and re-derives badly, while a
+shape recorded **without** the not-in-force marker hardens into policy by being
+read twice. Two substantive points inside it are worth flagging as the ones a
+future decision should not lose:
+- **(a) is a security argument, not a quality one.** The shell's `LESSONS` is
+  constitution-adjacent text that future agents obey, so a foreign contribution
+  is a **prompt-injection surface**; an agent reviewer is precisely the wrong last
+  line against an input written to address agent reviewers. The merge stays human,
+  which is the same shape as sponsor-signed gates: machinery prepares, a human
+  admits. I agree with it and still recorded it as parked, because it is the
+  sponsor's to decide and my agreement is not a ratification.
+- **(b) substitutes LH1's mechanism while preserving LH1's test** — *a reader of
+  the description* can see the thing going wrong, where ours makes *a reader at
+  the SHA* do it. I stated the cost rather than letting it pass: a description can
+  be read but not **re-executed**, so quarantine-until-reproduced gets **more**
+  load-bearing under (b), and re-execution is exactly what the pipeline's agent
+  reviewer cannot supply — which is (a)'s argument arriving from the other side.
+- **(c) is the coincidence worth naming**: LH2's grades were minted as a
+  generality bar and function as a **disclosure** bar on the identical test —
+  tier 1 discloses no proper noun at all, tier 2 discloses exactly the domain.
+  Named as a coincidence, not yet a guarantee.
+
+**7. Honesty maintenance on §10's "no collisions".** The original ADR claimed new
+vocabulary with no collisions. `LD-` and the shell's existing `L-D15` differ only
+in hyphen position, which is close enough to mislead a skimming reader, so A1.4
+names the near-miss and then **checks** it rather than asserting it — §1.2's own
+measurement regex is run against all three id forms and matches only `L-D15`.
+A claim in this ADR about ids should be as reproducible as the ADR's other
+measurements, and it now is.
+
+**8. What I deliberately did not touch.** §§1–12 stand byte-unedited (418
+insertions, 0 deletions). No spec, no requirement, no interface record, no
+enforcement script, no closed gate. No `R`-rule and no `test_protocol.sh` case —
+PROTOCOL §11(3) is untriggered for §7.4's reason, and a grade split inside a
+review-enforced criterion is not new enforcement semantics. **No PROTOCOL edit by
+me** (R7): A1.6 supplies the hunk and the orchestrator applies it, per ADR-0016
+§8, and I machine-checked the hunk against the live file so the transcription is
+clerical in fact and not just in name.
+
+**9. Not a harvest trigger.** This round is neither an `SO-` nor a phase gate, so
+no harvest note is owed and none is written — declaring one here would be the
+theatre §7.1 warns about, in the very entry that amends the bar. The **first**
+note under the amended bar is `SO-M03`'s.
+
+### Actions
+
+- Appended **Amendment A1** to `docs/adr/ADR-0018-the-harvest-is-a-cadence-not-an-event.md`
+  — A1.0 authority and reading rule, A1.1 the three tiers, A1.2 the two grades
+  and the noun discriminator, A1.3 the classifier (+ A1.3.1 tier-3 fork, A1.3.2
+  the prediction split three ways), A1.4 `LD-` ids and the pack-name interface,
+  A1.5 what changed in the block, A1.6 the PROTOCOL hunk, A1.7 downstream
+  including the parked federation decision, A1.8 five failure modes.
+- Amended `docs/gates/lessons-harvest-block.md`: §1 item 2 (both id sequences,
+  numbering independently); §2 preamble (the three tiers) and the LH2 row split
+  into LH2-g / LH2-d with the discriminator and the tier-3 fork; new §2.1
+  (classifier in short form with the tie-break); §3's spans table now `T1 / T2 /
+  T3`; Yield table gains **Grade** and **Domain pack** columns and an `LD-` row;
+  war-stories table becomes **Tier 3** with a disposition column; three new
+  checklist boxes (classifier run, every `LD-` names a pack, pack names checked
+  against those in use) and two amended ones; §4 gains four transcriber notes.
+  The §3 fence remains **self-contained** — a copier gets the three-way
+  classification without opening the ADR.
+- Ran the verifications below. **No PROTOCOL edit, no charter edit, no agents/**
+  file but this journal, no dv file, no test file.**
+
+### Evidence
+
+Reproducible at this commit's SHA, from a repo checkout at the repo root.
+
+1. **Scope — exactly two non-journal files:**
+   `git status --porcelain` →
+   `M docs/adr/ADR-0018-the-harvest-is-a-cadence-not-an-event.md`,
+   `M docs/gates/lessons-harvest-block.md`. Nothing else, in particular nothing
+   under `agents/` (bar this journal), `test/`, `tools/`, `libs/`.
+2. **§§1–12 unedited — the amendment is a pure append:**
+   `git diff --numstat docs/adr/ADR-0018-* docs/gates/lessons-harvest-block.md`
+   → `431  0  …ADR-0018…` and `100  30  …lessons-harvest-block.md`. The ADR's
+   **zero deletions** is the load-bearing figure: every line of §§1–12 survives
+   byte-identical, and the block's 30 deletions are its own amended rows, all
+   accounted for in Actions. **This journal's own row is stated as a property,
+   not a count** — a line count of the entry you are reading is not stable under
+   its own edits, which is §1.2's self-counting hazard in miniature — so: the
+   deletion column is `0`, and HEAD's version is a **byte-prefix** of the staged
+   one at 124,597 bytes (`git show HEAD:… | cmp` against `head -c`), which is R3
+   verified rather than assumed.
+3. **The PROTOCOL hunk applies clean to the live file**, extracted from the ADR's
+   own §A1.6 rather than retyped, header `@@ -274,13 +274,22 @@`:
+
+   ```sh
+   sed -n '/^### A1.6/,/^### A1.7/p' docs/adr/ADR-0018-*.md \
+     | sed -n '/^```diff$/,/^```$/p' | sed '1d;$d' > /tmp/body.diff
+   { printf -- '--- a/agents/PROTOCOL.md\n+++ b/agents/PROTOCOL.md\n@@ -274,13 +274,22 @@\n'
+     cat /tmp/body.diff; } | git apply --check -v -
+   # → Checking patch agents/PROTOCOL.md...      (exit 0)
+   ```
+
+   Applied to a scratch copy, the resulting §7 paragraph was read back in full and
+   reads correctly — the LH2 clause carries both grades and the collation sentence
+   is followed by the **Routing** sentence. **The scratch copy is ephemeral**
+   (`/tmp`, outside the repo); the reproducible claim is the `--check` above,
+   which is what the orchestrator should re-run before transcribing.
+4. **Nothing to migrate — no instantiation of the block exists:**
+   `grep -rln "Lessons harvest —" docs/ agents/` → `docs/gates/lessons-harvest-block.md`
+   only. A1.5's claim that no committed harvest is regraded rests on this.
+5. **`LD-` was unused before this round:** `grep -rn "LD-" --include=*.md .` →
+   empty at the parent commit.
+6. **The id near-collision is checked, not asserted** — §1.2's measurement regex
+   against all three forms:
+
+   ```sh
+   printf 'LD-SO-M03-1 LC-SO-M03-2 L-D15\n' | grep -oE "L-[A-Z]{1,3}[0-9]{1,3}"
+   # → L-D15
+   ```
+
+   Local ids do not match; §1.2's yield measurement is unaffected by tier 2.
+7. **No CI owed or claimed.** Two markdown files. No OCaml, no dune, no workflow,
+   no script, no interface record — §12's `ifc_check` evidence is untouched and
+   still witnesses the frozen records at their own SHA.
+
+### Outcome
+
+**DoD met** against the dispatch's five items.
+
+1. **LH2 split** — LH2-g verbatim from §3.4; LH2-d admitting domain nouns and
+   barring project nouns, with a discriminator for the boundary and the
+   hide-the-provenance test on both grades, its audience parameterised.
+2. **Classifier as a decision procedure** — A1.3, five steps, three terminal
+   states, with the tie-break making the general attempt mandatory.
+3. **`LD-` id class** — mirroring `LC-`, independently numbered, shell-side
+   allocation still refused (§4.3/§12 extended, not overridden); the harvest note
+   names the target pack, and the pack slug is stated as the **one field this
+   repo owes the shell** for tier 2.
+4. **Block amended**, three-way, §3 still self-contained; `SO-M03` is the first
+   instantiation and classifies three ways from the outset.
+5. **PROTOCOL §7 diff** supplied verbatim at A1.6 and machine-checked; **not
+   applied by me**.
+6. **Federation governance parked** at A1.7(4) — question, sponsor's four-property
+   pipeline shape, and an explicit `Nothing in this sub-item is in force`.
+
+**Handoff**: orchestrator, for commit under `Agent: architect_docs_lead`,
+`Work-Order: none`; then A1.6's hunk under its own identity and entry.
+
+### Open-questions
+
+- **Owed, orchestrator-scope, text already supplied**: **A1.6's PROTOCOL §7
+  hunk** — the only new owed item this round. `J-architect_docs_lead-0028`'s
+  item (a) is **discharged** (§8's paragraph is live at `:268-286`, which is why
+  A1.6 diffs against it rather than replacing it); (b) the five charter §8
+  clauses and (c) the `tasks/BOARD.md` line remain owed **unchanged in
+  substance** — no charter text moves, because the grades live inside the
+  `LH1–LH3` name the charters already cite. The BOARD line should additionally
+  record that the shell now has **two destinations**, so the end-of-program
+  consolidation knows it is consolidating more than one set.
+- **The amendment is unscoreable unless A1.3.2(3) is counted.** The measurement
+  of what the grade bought is the number of candidates that reached tier 2 via an
+  honest role-noun rewrite of what looked like a module-id refusal. If the first
+  harvests do not record it, nobody will later be able to say whether the domain
+  grade rescued lessons or merely lowered a bar.
+- **Two signals with no threshold behind them yet**: a yield that is all `LD-`
+  and no `LC-` (grade inflation, A1.8(2)), and a pack whose **second project
+  cannot be named** (A1.8(1)). Both are stated as finding *shapes* for the
+  auditor and neither is a rule. They plausibly need data before they can become
+  one — the same posture §12 already takes on nil-yield harvests.
+- **Pack storage is the shell's and is now on §12's list.** If the shell ends up
+  organising packs in a way the slug cannot address, the interface A1.4 defines
+  is wrong and this repo will hear about it from the shell, not the reverse.
+- **Federation, parked with the sponsor** — A1.7(4). Owed before the shell's
+  first outside contributor, not before our harvests; nothing is blocked on it.
+  The sharpest unresolved piece inside it is (b)'s cost: a self-contained
+  incident description is readable but not re-executable, and no one has said
+  what an un-re-executable LH1 is worth.
+- Carried unchanged from `J-architect_docs_lead-0028`: that entry's whole ledger,
+  none of which this round touches or advances — the closure-record promotion
+  path and through it the `-0026` ledger, the two re-countersignatures and one
+  concurrence owed at `J-architect_docs_lead-0013`'s SHA, C-5's still-owed §0.6
+  repair, the received-versus-delivered reading of §0.6, and the M03 RTL
+  non-conformance against §9 ruling 9.
+
+### Files-in-this-commit
+
+- docs/adr/ADR-0018-the-harvest-is-a-cadence-not-an-event.md
+- docs/gates/lessons-harvest-block.md

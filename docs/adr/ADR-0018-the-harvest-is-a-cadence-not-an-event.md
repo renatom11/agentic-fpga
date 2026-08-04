@@ -560,3 +560,434 @@ them — which is the argument for the interval discipline in miniature.
   charter text rides with §6 item 3's owed charter edits.
 - **Anything about the accretion tier** — carry-forward rows, ADRs, in-flight rule
   minting. §1.1 is a description, not a re-ratification.
+
+---
+
+## Amendment A1 (2026-08-04) — the domain tier
+
+**§§1–12 above stand unedited.** This section is an amendment in the sense
+ADR-0003 established: what changed is recorded here rather than rewritten
+silently upstream, so the original text and the reason it moved are both
+readable in one file and one diff.
+
+### A1.0 Authority, and what does not move
+
+The sponsor extended the taxonomy this ADR assumed. Two directions, both relayed
+by the orchestrator on 2026-08-04, quoted rather than paraphrased because they
+are the acceptance authority for what follows:
+
+> "there are three tiers — general lessons that improve the agent doctrines
+> universally, project-specific lessons that rewrite the local project's
+> doctrines but never leave it, and **domain-specific lessons** — portable
+> across projects that share a technical domain but unstatable without domain
+> vocabulary … this program's Ethernet/networking lessons would serve a future
+> 25G NIC, and the generic would know to pull them in only if relevant."
+> — Renato (sponsor), 2026-08-04
+
+> "Maybe tier 1 general, tier 2 domain, tier 3 project specific makes the most
+> sense"
+> — Renato (sponsor), 2026-08-04, on the numbering
+
+**Unmoved by this amendment**: LH1 and LH3, verbatim; the span discipline (§3.2);
+self-mining and who mines (§3.3, §3.6); war stories being kept and re-offerable
+(§3.5); collation as clerical and the collator's bar on editing statements
+(§4.1); one shell commit per harvest (§4.2); sponsor refusal (§4.4); the
+review-enforced posture and the refusal to mint an `R`-rule (§7.4); every
+alternative rejected at §11.
+
+**Reading rule for the original text.** Where §§1–12 say **LH2** they now mean
+*LH2-g or LH2-d*, except at §3.4, which is the definition itself and is where
+LH2-g's wording still lives verbatim. D3's "all three" reads: LH1, LH3, and LH2
+*at one of its two grades*.
+
+**One numbering hazard, named so it is not tripped over**: this ADR's §1.1
+describes what is now **tier 3** and §1.2 describes what is now **tier 1**. Those
+are section numbers and were never tier numbers; the sponsor's numbering is
+descending generality and nothing above is renumbered.
+
+### A1.1 The three tiers
+
+| Tier | Name | The rule statement may name | Destination | Bar |
+|---|---|---|---|---|
+| **1** | general | nothing proper — no noun of any kind | the shell's `LESSONS`, universal set | LH1 · **LH2-g** · LH3 |
+| **2** | domain | domain nouns; no project noun | the shell, in a **named domain pack** (`ethernet-10g`) | LH1 · **LH2-d** · LH3, **pack named** |
+| **3** | project-specific | anything, project nouns included | stays here — the accretion tier of §1.1 | this ADR sets none; the tier's own instruments (ADRs, `C-` rows, `R-` rules, spec clauses) are its bar |
+
+Tier 2 is the new one. It exists because the original bar had a dichotomy where
+the corpus has a gradient: a rule can be true, useful, and portable to every
+project that speaks a given protocol while being unstatable without naming that
+protocol. Under the unamended bar such a rule was a war story — refused not for
+being parochial but for being *specific*, which is not the same defect. Tier 2 is
+the whole of that difference.
+
+The sponsor's selector clause — *"the generic would know to pull them in only if
+relevant"* — is what makes tier 2 cost nothing at the far end: a pack that a
+later project does not pull in is inert, whereas a domain rule promoted into the
+universal set would be noise in every project that does not share the domain. The
+grade is therefore not a loosening of the shell's standard. It is a second
+destination with its own admission rule, and the universal set's standard is
+exactly what it was.
+
+### A1.2 LH2 splits into two grades
+
+**LH2-g (general)** — §3.4's bar, verbatim and unchanged. The rule statement
+contains **no proper noun of any kind**: no module id, no requirement id, no
+carry-forward id, no signal or port name, no protocol name, no toolchain or
+library name; and it reads as a complete instruction to someone building a
+different project with different agents. A candidate that passed LH2 before this
+amendment passes LH2-g after it, with the same words.
+
+**LH2-d (domain)** — the same statement discipline with one class of noun
+readmitted.
+
+- **Admissible**: **domain nouns** — protocol and standard names, interface
+  standards, algorithm families, encodings and their like. Ethernet, XGMII, CRC,
+  lane encoding, AXI-Stream are the sponsor's examples and this ADR's.
+- **Still barred**: **project nouns** — module ids (`M03`), requirement ids
+  (`REQ-###`), carry-forward ids (`C-##`), signal and port names, packet and
+  work-order ids, journal-entry ids, and any path inside this repo.
+
+**The discriminator, for a noun neither list settles.** The lists are examples,
+and an example list that has to be exhaustive is a list that will be gamed. The
+operative test:
+
+> A **domain noun** is one that a different project, staffed by different agents,
+> working in the same domain, would use in its own rule statement **without
+> having to learn anything about this program**. A **project noun** cannot be
+> understood without this repo.
+
+Toolchain and library names sit on that boundary and the discriminator decides
+them, not a standing verdict: such a name is a domain noun when the pack *is*
+that ecosystem and the note names it as the pack, and a project noun when what it
+actually carries is this program's lane, pin or version choice — which is
+ADR-0004's subject and portable to nobody. The residual is at A1.8(4).
+
+**The hide-the-provenance test applies to both grades, with the audience
+parameterised.** §3.4's second test is not weakened for a domain candidate; it is
+re-aimed. Hide the provenance, read the statement, and ask:
+
+| Grade | The stranger who must still learn something |
+|---|---|
+| LH2-g | knows neither the domain nor this project |
+| LH2-d | **knows the domain and not this project** |
+
+A domain candidate that goes silent once the provenance is hidden has failed in
+precisely the way a general one does: the nouns were carrying the meaning. The
+only difference is which stranger is holding the page.
+
+### A1.3 The classifier, as a decision procedure
+
+Run on the **rule statement alone**, provenance hidden. LH1 and LH3 are prior —
+a candidate failing either is a war story before the classifier is reached.
+
+> **0.** Write the candidate's **most general honest statement**: the version
+> with the fewest proper nouns that still says what happened.
+>
+> **1.** Does that statement contain a proper noun?
+> **No** → **general candidate.** LH2-g passes. Id `LC-`. Stop.
+> **Yes** → step 2.
+>
+> **2.** Is **every** surviving proper noun a domain noun (A1.2's discriminator)?
+> **No** — at least one project noun is load-bearing → **tier 3.** Stop (A1.3.1).
+> **Yes** → step 3.
+>
+> **3.** **Name the domain**, as a pack slug. Would a stranger recognise the name
+> as a technical domain rather than as this program?
+> **No** → **tier 3.** A candidate whose domain cannot be named is a project
+> lesson in domain clothes. Stop.
+> **Yes** → step 4.
+>
+> **4.** Hide the provenance and read it as a stranger who knows **that domain
+> and not this project**. Does it still teach?
+> **No** → **tier 3.** Stop.
+> **Yes** → **domain candidate.** LH2-d passes. Id `LD-`, pack recorded. Stop.
+
+**The routing tie-break, which is §7.3 doing double duty.** Step 0 is not
+ceremony. Attempt the general statement first and run the hide test on *it*: if
+the general statement survives, the candidate is **general** and the domain noun
+was decoration. If the general statement goes hollow, that is §7.3's paraphrase
+attack self-inflicted — and the hollowness *is the evidence* that the domain noun
+was load-bearing, which is what routes the candidate to tier 2. The same test
+that refuses a fake general statement is the test that promotes an honest domain
+one. **LH2-d is reached only through a failed general statement, never instead of
+attempting one.**
+
+#### A1.3.1 Tier 3's fork: war story or local accretion
+
+Tier 3 has two outcomes and they are not the same thing.
+
+- **War story** — the rule binds nowhere. Kept, one line, naming the criterion or
+  the classifier step it failed; re-offerable at a later harvest with new
+  provenance (§3.5, unchanged).
+- **Local accretion** — the rule is **adopted here**, as an ADR, a `C-` row, an
+  `R-` rule or a spec clause, and binds this project. §1.1's tier, which this ADR
+  did not touch then and does not touch now.
+
+The fork is one question: **does this project want the rule?** A candidate that is
+true and useful and simply cannot leave should be adopted locally, not filed as a
+war story; a war story is what you write when the rule is not yet worth binding
+anywhere. The harvest note **records** which — and the note does not itself
+perform the adoption, which needs its own artefact and its own commit, under the
+tier's existing instruments.
+
+#### A1.3.2 What tier 2 rescues from the predicted refusals, and what it does not
+
+The prediction the sponsor cites — *"the first refusals will be candidates that
+are true, useful and unstatable without a module name"* — is recorded at
+`J-architect_docs_lead-0028`'s Open-questions (this ADR's §11 is Alternatives;
+the prediction's home is the journal entry that carried the ADR). It named the
+class tier 2 exists for, and the class splits in three, worth being exact about:
+
+1. **Unstatable without a *domain* noun** — a protocol's framing rule, a
+   standard's alignment constraint, an encoding's error semantics. **Rescued**;
+   this is exactly what LH2-d admits.
+2. **Unstatable without a *module id*** — **not rescued.** A module id names this
+   program's decomposition, not the domain, and step 2 refuses it. That was true
+   before this amendment and is true after; the prediction's own wording names a
+   project noun, and tier 2 does not reach it.
+3. **The interesting middle** — candidates that look unstatable without a module
+   id but are only unstatable without the module's **role**: *the block that
+   terminates a frame*, *the stage that realigns a message across a word
+   boundary*. A role is a domain noun, not a project one. Step 0's honest rewrite
+   converts some predicted refusals into tier-2 passes by this route, and **the
+   note should say when it did** — that count is the measurement of what the
+   grade actually bought, and without it the amendment is unscoreable.
+
+### A1.4 `LD-` — the domain-candidate id class
+
+- A domain candidate carries the local id **`LD-<harvest-tag>-<n>`**, minted
+  exactly as `LC-` is (§4.3), from a **sequence independent of `LC-`'s**, so that
+  regrading one candidate before the note is written does not renumber its
+  neighbours. `LC-SO-M03-1` and `LD-SO-M03-1` may coexist and are different
+  candidates.
+- **Regrade**: before the note is committed, a regraded candidate takes a fresh id
+  from the other sequence and the note says so; ids are never reused. After the
+  note is committed the id is fixed — the note lives in an append-only journal, so
+  a later regrade is a **new** candidate at a later harvest, citing the old id.
+- **The shell side stays the shell's.** §4.3's and §12's refusal is unamended and
+  now covers one more thing: this repo does not legislate the shell's `L-` scheme,
+  its `LESSONS` format, **or how packs are stored** — files, directories, tags,
+  front-matter, all of it shell-side, and the shell's own history is its
+  authority.
+- **What this repo owes the shell for tier 2 is exactly one new field: the pack
+  name.** The harvest note states it as a lowercase slug naming the **technical
+  domain, not the program** — `ethernet-10g`, never `phase1-mac`. It is the only
+  thing the sponsor's "pull in only if relevant" selector has to select on, which
+  is what makes it the interface, and it is a bare name because a name is the
+  smallest thing that can be one.
+- **Against pack fragmentation**: the collator keeps the pack names already in use
+  in the gate record and **reuses an existing name rather than minting a
+  near-duplicate** (`ethernet-10g` / `10g-ethernet` / `ethernet` are one pack with
+  three spellings and no selector can tell). Naming a pack is metadata, not the
+  statement, so this sits inside the collator's clerical role and clear of §4.1's
+  bar on editing candidates; when it normalises a name it says so in the gate
+  record.
+- **The gate record holds the pair**, `LD-…` ↔ `L-…`, plus the pack — §4.3's
+  travel-in-either-direction property with one more column.
+- **Near-collision, named because §10 claimed none.** The shell's existing id
+  `L-D15` and the new local prefix `LD-` differ only in hyphen position. They do
+  not actually collide: shell ids begin `L-`, local ids begin `LC-` or `LD-`, and
+  §1.2's measurement command is unaffected —
+
+  ```sh
+  printf 'LD-SO-M03-1 LC-SO-M03-2 L-D15\n' | grep -oE "L-[A-Z]{1,3}[0-9]{1,3}"
+  #    L-D15
+  ```
+
+  §10's "no collisions" line is therefore still true and is now also *checked*.
+
+### A1.5 The checklist block gains a third disposition
+
+`docs/gates/lessons-harvest-block.md` is amended in this commit, keeping its
+copyable §3 block self-contained as before — a reader who copies the fence gets a
+three-way classification without needing this ADR open. What changed there:
+
+1. §2's bar table splits its LH2 row into **LH2-g** and **LH2-d**, with the
+   parameterised hide-the-provenance test stated on each.
+2. A new §2.1 carries A1.3's decision procedure in short form, so the classifier
+   travels with the block.
+3. The block's **Yield** table gains a **Grade** column (`LH2-g` / `LH2-d`) and a
+   **Domain pack** column, and takes `LD-` ids alongside `LC-`.
+4. The **War stories** table gains a **Tier-3 disposition** column separating *war
+   story (kept, re-offerable)* from *local accretion (bound here, by its own
+   artefact)* — A1.3.1's fork, made visible rather than inferred.
+5. Three checklist boxes: the classifier was run on every candidate; every `LD-`
+   names a pack; pack names were checked against those already in use.
+6. §4's transcriber notes gain the grade-inflation signal and the pack-name rule.
+
+**The first instantiation is `SO-M03`**, and it therefore classifies three ways
+from the outset. No instantiation exists under the two-way form — verified: the
+block file is the only file in the repo carrying the `Lessons harvest —` heading —
+so **nothing is migrated and no committed harvest is regraded.** §9's statement
+that `P1-module-ready` would be the first instantiation is superseded only as to
+*which* trigger comes first; its reasoning (a new file, never an edit to a closed
+gate) is untouched, and the closed gates are still not retro-harvested.
+
+### A1.6 The PROTOCOL §7 diff — source text; applied by the orchestrator
+
+**§8's rule governs this hunk too**: authored here, applied by the orchestrator
+under its own identity and journal entry citing this section, **not** in this
+commit — `agents/PROTOCOL.md` is outside the architect's write scope and ADR-0016
+§8 settled that an ADR is not an exception to that.
+
+§8's original hunk **is applied** at this commit; the paragraph is live at
+`agents/PROTOCOL.md:268-286`. This diff therefore applies to the live text, and
+it supersedes §8 **only** as to the LH2 clause and the sentence after the
+collation sentence. Verbatim:
+
+```diff
+ the round; a lead also mines the worker spans it commissioned. A candidate rule
+ is admissible only if it **(LH1)** cites the incident commit(s) that taught it,
+-**(LH2)** states its observable in terms portable beyond this project — no
+-module, requirement, signal, protocol or toolchain name inside the rule
+-statement — and **(LH3)** says what breaks without it. Anything failing the bar
+-is recorded as a war story and goes no further; a nil yield is declared, never
++**(LH2)** states its observable in terms portable beyond this project, and
++**(LH3)** says what breaks without it. **LH2 has two grades** (ADR-0018 §A1):
++**LH2-g** (general) admits no proper noun of any kind inside the rule statement;
++**LH2-d** (domain) admits domain nouns — protocol names, interface standards,
++algorithm families — but still bars every project noun (module, requirement,
++carry-forward, signal, or a path in this repo), and obliges the harvest note to
++name the domain pack the rule belongs to. Both grades are read with the
++provenance hidden: a general candidate must teach a stranger to the domain, a
++domain candidate a stranger to this project. Anything passing neither grade is
++recorded as a war story and goes no further; a nil yield is declared, never
+ omitted. The **orchestrator collates**: into the gate record locally, and into
+ the generic shell's `LESSONS` file with permalinked provenance, the shell
+ unfreezing for **exactly one commit per harvest**, sponsor-visible at the gate —
+-the sponsor may refuse a candidate. A gate is not passed while any box of the
+-instantiated `docs/gates/lessons-harvest-block.md` is unchecked. *Enforcement*:
++the sponsor may refuse a candidate. **Routing**: a general candidate goes to the
++shell's universal set, a domain candidate to the pack its note named, which a
++later project pulls in only if that domain is its own. A gate is not passed
++while any box of the instantiated `docs/gates/lessons-harvest-block.md` is
++unchecked. *Enforcement*:
+ review-enforced, like §10 — no `R`-rule is minted and no script changes, so
+ §11(3) owes no test case (ADR-0018 §7.4).
+```
+
+**The hunk is machine-checked against the live file**, so the transcriber is not
+re-deriving context by eye. Its header is `@@ -274,13 +274,22 @@`, and this
+reproduces at this commit — the patch body is extracted from *this section*, so
+the check is against the ADR's own text and not a retyped copy:
+
+```sh
+sed -n '/^### A1.6/,/^### A1.7/p' docs/adr/ADR-0018-*.md \
+  | sed -n '/^```diff$/,/^```$/p' | sed '1d;$d' > /tmp/body.diff
+{ printf -- '--- a/agents/PROTOCOL.md\n+++ b/agents/PROTOCOL.md\n@@ -274,13 +274,22 @@\n'
+  cat /tmp/body.diff; } | git apply --check -v -
+# Checking patch agents/PROTOCOL.md...   (exit 0)
+```
+
+**Still no test case owed.** No `R`-rule is minted, no script changes, no
+enforcement semantics move — PROTOCOL §11(3) is untriggered for the same reason
+§7.4 gave, and a grade split inside a review-enforced criterion is not a new
+enforcement mechanism.
+
+**Charters are not owed an edit.** §6 item 3's clause reads *"candidates with
+LH1–LH3 discharged"*, which is still exactly true — the grades live inside LH2.
+The five charter texts already supplied stand as written; nothing about this
+amendment adds to the orchestrator's owed-transcription list except this hunk.
+
+### A1.7 Downstream — for the board
+
+1. **Owed, orchestrator-scope**: A1.6's hunk. It is the only new item. The three
+   items already owed at `J-architect_docs_lead-0028` are unchanged in substance,
+   and (a) — §8's hunk — is **discharged**: the paragraph is live, which is why
+   A1.6 diffs against it rather than replacing it.
+2. **`tasks/BOARD.md`**'s 2026-08-01 deferred-intent line, already owed a
+   superseded-as-to-cadence clause (§10), should also record that the shell now
+   has **two destinations**, universal and per-domain, so the end-of-program
+   consolidation knows it is consolidating more than one set.
+3. **§12 gains two items**: how packs are stored shell-side (the shell's, A1.4);
+   and the parked question below.
+4. **PARKED SPONSOR DECISION — federation governance. Recorded, not decided.**
+   When the shell acquires contributors outside this org, lessons will arrive
+   whose **provenance is not re-executable by us**: a permalink into a repo we
+   cannot read, a SHA in a history we do not have, an incident no reader here can
+   witness. LH1's operative test is *"a reader at the cited SHA can see the thing
+   going wrong"* — and for a foreign lesson that reader may be nobody. The
+   acceptance policy for foreign lessons is **the sponsor's**: whether an
+   unreachable permalink satisfies LH1 at all; whether foreign lessons sit in a
+   quarantined set until a second project reproduces the incident; who may refuse
+   one; and whether a domain pack accepts contributions from projects outside the
+   one that opened it. **Owed before the shell's first outside contributor, not
+   before our harvests** — every harvest this program runs writes provenance we
+   can re-execute, so no harvest, gate or sign-off is blocked on it. It is
+   recorded now for one reason: tier 2 is what makes the question live, because a
+   domain pack is the artefact most likely to attract outside contribution — a
+   domain contains more projects than this program does — so the first foreign
+   lesson will very probably arrive at a pack rather than at the universal set.
+
+   **The sponsor's intended shape, recorded as shape and not as decision**
+   (2026-08-04, relayed): downstream use of the generic shell **carries a
+   mandatory lessons harvest** — already this org's law under D1 and PROTOCOL §7,
+   and the sponsor's analogy for extending it outward is *"agree to send data
+   back"*. Transmission upstream is **default-on via a staged pipeline**:
+
+   > "the changes could be staged, reviewed by an agent to make sure its all
+   > relevant to improving the agents, and then committed to the generic"
+   > — Renato (sponsor), 2026-08-04
+
+   Four properties the sponsor attaches to that pipeline, recorded verbatim in
+   substance so the eventual decision starts from them rather than from scratch:
+
+   - **(a) Automated up to, but never through, the merge.** `LESSONS` is
+     **constitution-adjacent text that future agents obey** — a foreign
+     contribution to it is therefore a **prompt-injection surface**, not merely a
+     quality risk, and an agent reviewer is exactly the wrong last line against an
+     input designed to address agent reviewers. **The final merge stays human.**
+     This is the same principle the org already runs on at sponsor-signed gates:
+     machinery prepares, a human admits.
+   - **(b) Self-contained incident description in lieu of permalinks.** Foreign
+     provenance will often be a private repo, so the permalink mechanism of §4.2
+     cannot cross the boundary. **LH1's test survives; its mechanism is
+     substituted**: the foreign lesson carries an incident description complete
+     enough that *a reader of the description* can see the thing going wrong,
+     where our own lessons make *a reader at the SHA* do it. The cost is stated
+     plainly: a description can be read but not re-executed, so the
+     quarantine-until-reproduced option above becomes **more** load-bearing under
+     (b), not less — and it is one of the things the pipeline's agent reviewer
+     provably cannot check, which is (a)'s argument again from the other side.
+   - **(c) The generality bar doubles as the outbound disclosure filter.**
+     Tier 1's noun-stripping is already an anonymisation: a statement with no
+     proper noun of any kind discloses no employer, product, module or customer.
+     **Tier 2 reveals exactly one thing — the domain** — which is the minimum a
+     selector needs to decide relevance. LH2-g and LH2-d were minted as a
+     generality bar (A1.2) and turn out to be a disclosure bar on the same test;
+     that coincidence is not an accident but it is also not yet a guarantee, and
+     the sponsor's decision is where it becomes one.
+   - **(d) An exception path for shops that cannot share.** Default-on is not
+     mandatory-on: some downstream users will be unable to transmit anything, for
+     policy reasons that have nothing to do with the lesson's quality. The
+     exception path is owed a shape — opt-out, hold-local, or harvest-without-
+     transmit — and which of those it is, is part of this same parked decision.
+
+   Named here so the first outside contribution meets a decision instead of an
+   improvisation. **Nothing in this sub-item is in force**; it is the sponsor's
+   sketch of an answer to a question he has parked, and this ADR neither adopts
+   nor amends anything by recording it.
+
+### A1.8 Failure modes new to the domain grade
+
+1. **The domain that is one project wide.** A pack named for a domain only this
+   program inhabits is tier 3 with a slug on it. The sharpened form of step 3:
+   **name a plausible second project in the domain.** The sponsor's own example
+   does exactly this ("a future 25G NIC"). A pack whose second project cannot be
+   named is a finding shape for the auditor, not automatically a finding.
+2. **Grade inflation.** LH2-d is easier to pass than LH2-g and will therefore
+   attract candidates that should have been generalised. The guards are step 0
+   and the routing tie-break: the domain grade is reachable only *through* a
+   general statement that was attempted and went hollow. The signal, symmetric to
+   §3.5's *"a bar nothing fails does not select"*: **a harvest whose yield is all
+   `LD-` and no `LC-` says something about the miner, not about the domain.**
+3. **Pack fragmentation.** A1.4's collator rule is the guard; residual risk
+   accepted, since a duplicate pack name is a shell-side cleanup and not a reason
+   to refuse a rule at minting.
+4. **The domain noun that is a project fact in disguise.** A protocol named where
+   what is really meant is *this repo's interpretation of that protocol at a spec
+   section*. Step 4 is aimed here and is the reason its stranger holds the
+   standard but not our specs: a rule that only makes sense against our spec goes
+   silent for a reader who has the standard, which is the refusal we want.
+5. **Federation** — A1.7(4), parked with the sponsor, and the only failure mode
+   here whose answer is not in this document.
