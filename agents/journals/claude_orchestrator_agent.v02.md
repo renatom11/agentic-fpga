@@ -1902,3 +1902,34 @@ commissioning item 2. Pushed.
 
 ### Files-in-this-commit
 - tasks/BOARD.md
+
+## [J-orchestrator-0193] 2026-08-08T19:40Z | task:WO-0063B | The campaign closed the loop it opened: the row that failed qualification by measurement is requalified by a kill
+
+### Trigger
+dv's adjudication returned (J-dv_lead-0108): IC-1 KILLED by the sealed
+cell character for character, IC-2 control clean at I2, disposition 1
+fires, M03-I2 QUALIFIED, 41 -> 42 of 62 on dv's signature. Committed
+verbatim at 22eb3e6, pushed.
+
+### The campaign's full operational record
+Transients mut/wo-0063b-ic2 (dbc4b0a) and mut/wo-0063b-ic1 (b82b888),
+each [c0595f9 + one manifest diff], control first; both build sweeps
+red as harvests (runs 30955861141 / 30955875363); logs decoded to
+scratchpad for dv's own extraction; branches stay as evidence, never
+merge. The blinding architecture closed its loop measurably: the
+auditor's volunteered completeness (both structures) protected dv's
+seal from a four-unit over-prediction dv's own two-valued question had
+built in - blind seeding and sealed prediction each covered the
+other's blind spot, and the scorecard proves it rather than asserts it.
+
+### What I did
+- Board row flipped CLOSED - KILLED 1/1 - M03-I2 QUALIFIED with the
+  verdict in full; count 42 of 62.
+- Dispatching dv's commissioned five-item AP round (the verdict is the
+  deriving authority) plus the many-to-many inventory note.
+- Carried forward, named: run_i2_member's citation exception still
+  without a carrier; dv's three self-findings ride the AP round's
+  record where applicable.
+
+### Files-in-this-commit
+- tasks/BOARD.md
