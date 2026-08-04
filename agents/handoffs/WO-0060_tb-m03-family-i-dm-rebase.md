@@ -430,3 +430,208 @@ State, in the Return log below and in your journal:
 ## Return / verdict log
 
 *(appended on RETURNED / ACCEPTED / BOUNCED, with journal-entry refs)*
+
+## RETURNED — tb_writer (spawn `WO-0060/2026-08-04T10:36Z`, journal `J-tb_writer-0020`)
+
+Only `test/xgmii_rx_64/test_m03_i.ml` was edited. `ocamlc -stop-after parsing`
+on the file exits 0 (syntax only, ADR-0005 — no Hardcaml toolchain this spawn).
+No path under `libs/**`, `top/**`, `rtl_snapshots/**`, `docs/reports/audit/**`
+or `agents/handoffs/BUG-0002_*` was opened.
+
+### 1. The seven changes — landed, with current line ranges (`b5d7e6e`'s
+numbers had drifted by the time each hunk was applied; ranges below are
+post-edit)
+
+- **3.1** (helper, `+7` → `+12`): landed, `:954–956`.
+- **3.2** (helper docstring, full rewrite with D1): landed, `:895–953`.
+- **3.3** (delay-identity anchor, `+7` → `+12`): landed, `:1140`.
+- **3.4** (comment above it, inverted phrase + D2): landed, `:1111–1122`.
+- **3.5** (per-octet reporting comment, both worked figures): landed,
+  `:1161–1176` — (a) the length-64 example replaced by length-69/r=5/`{16,
+  24}`; (b) the split figures `20`/`12` replaced by `28`/`20` for the
+  non-tlast words, with the tlast word's own classes stated as reported and
+  not predicted (the §3.5 BAR — no lane-4 class set written anywhere).
+- **3.6** (citations, the ten numbered sites): all ten landed. Confirmed by
+  `grep -n "RV-0059-VERDICT §8"` before/after: **13 matches before**, **3
+  after** (see §5 below — one of the three is deliberate history at `:897`,
+  kept per the packet's own instruction; the other two are a finding, not an
+  edit I made).
+- **3.7** (nothing else moves): confirmed — `git diff --stat` shows one file,
+  92 insertions / 47 deletions (net +45 lines, entirely inside the six
+  touched regions); `injected_word_cycle`'s own structure, `first_octet_cycle`,
+  `terminate_cycle` and its cross-checks, the word-count guards, the `tkeep`/
+  `tlast`/delivered-octet/strobe guards, `account_injected_frame`,
+  `assert_monitors_clean`, the `Latency.errors` assertion, `Stdlib.print_string`,
+  and every `%expect_test` body other than the code paths inside M03-I4's and
+  M03-I6's own — all untouched.
+
+**The four call sites of §3.1 needed no edit of their own, confirmed**:
+`grep -n "injected_word_cycle inj ~start_octet_time"` finds exactly four call
+sites (`:1047`, `:1071`, `:1479`, `:1499` post-edit) and all four are
+byte-identical to `b5d7e6e`'s own text — none touched.
+
+### 2. D1 and D2, as they appear in the source
+
+**D1** (`:917–935`, inside `dependency_source_cycle`'s docstring):
+
+> Octet 8m + 12 exists iff there are at least 8m + 13 received octets, i.e.
+> N >= 8m + 13. Word m is its frame's LAST word iff the delivered payload
+> (N - 4 octets, REQ-103) has no octet beyond word m's own eight, i.e.
+> N - 4 <= 8m + 8, i.e. N <= 8m + 12 -- exactly NOT (N >= 8m + 13). So:
+> N >= 8m + 13 <=> m < W - 1 <=> m <> words - 1 (words = W)
+> holds exactly, and the two evidences are therefore EXCLUSIVE rather than
+> merely ordered: (a) exists and decides precisely the non-tlast words
+> (m < words - 1); (b) is the only evidence available and decides precisely
+> the tlast word (m = words - 1). [words] passed in below IS W (REQ-103's
+> W = ceil((N - 4)/8), computed by every caller), and m never exceeds
+> words - 1 for a real output word, so [dependency_source_cycle]'s own
+> [m = words - 1] test already selects exactly the right branch.
+
+I hand-checked this against `W = ceil((N-4)/8)`'s own ceiling inequality
+(`ceil(x) = k <=> k-1 < x <= k`) independently of the packet's own §2: setting
+`m = W - 1` gives `8m+4 < N <= 8m+12`, i.e. `8m+5 <= N <= 8m+12` — the same
+two-sided bound the packet states — and for any valid `m <= W - 1` the
+complement `m < W - 1` forces `N >= 8m + 13` with no other branch possible
+(`W >= m + 2` forces `N - 4 > 8(m+1)`). My derivation in the source takes a
+one-directional route (word m is not-last iff undelivered content remains
+beyond its own eight octets) that is shorter but proves the same iff; I did
+not transcribe the packet's own two-sided inequality verbatim.
+
+**D2** (`:1118–1122`, inside the comment above the delay-identity anchor):
+
+> Derivation obligation D2 -- why that anchor index is in range, not
+> assumed: for a non-tlast word N >= 8m + 13 (the branch
+> [dependency_source_cycle] tests, D1 above), so received frame octet
+> 8m + 12 EXISTS (8m + 12 <= N - 1) and in_injected.(8m + 12 + 8) is
+> inside the array.
+
+Checked against `test/xgmii/arrival.mli`'s own `in_times` doc comment ("the
+eight preamble octets from the start character inclusive, then the frame's
+octets DA through FCS") and `idle_injection.mli`'s parallel `in_times`: array
+index `j + 8` holds content octet `j`'s time, for `j` in `[0, N-1]`. D2's
+bound `8m + 12 <= N - 1` is exactly what keeps `8m + 12 + 8 = 8m + 20` inside
+that range.
+
+### 3. Change 3.3 — the `tlast` shift formula, re-derived
+
+`idles * (terminate_cycle - first_octet_cycle)` at `:1138` is **unchanged**,
+and I re-derived rather than left it alone: the injection sites for a
+uniformly-injected frame run from the boundary before the word carrying the
+frame's first octet through the word carrying the terminate character — that
+span is exactly `terminate_cycle - first_octet_cycle` boundaries (one
+`idles`-sized insertion per boundary, by `Idle_injection.uniform`'s own
+documented contract), so a fully-drained tlast word with no anchor octet of
+its own (the length-64-lane-0 / length-68-lane-4 cases) shifts by
+`idles * (terminate_cycle - first_octet_cycle)` regardless of which branch of
+`dependency_source_cycle` produced its own `D(m)` — this identity is orthogonal
+to the D1/D2 branch change, which is why §3.3 required only the `7 -> 12`
+edit and no change to this line.
+
+### 4. The predicted red set — not yet observed; hand-verified against
+`J-dv_lead-0087`'s own published cycle table as due diligence
+
+**I have not run CI.** I never run git and this spawn has not been committed,
+so no CI run exists yet against this file's new content (item 6 below). What
+I did instead, because ADR-0005/REQ-906 make a local result inadmissible as
+evidence but not inadmissible as a pre-commit sanity check: hand-computed
+`dependency_source_cycle` / `injected_word_cycle` for the first case the
+file's own loop order (lane 0 → 4, length 64 → 71 ascending, idles 0 → 1 → 7)
+would reach — length 64, lane 0, `k = 1`, word 0.
+
+With `start_octet_time = 8` (lane 0, `s = 1` by `Arrival`'s own default
+one-idle-word prefix), `terminate_cycle = (8 + 8 + 64)/8 = 10`, `words = 8`:
+`D(0) = (8 + 8 + 0 + 12)/8 = 3` (the new branch, m = 0 ≠ words-1 = 7).
+`baseline_cycle(0) = 1 + 3 + 0 = 4`. Under `uniform ~idles:1`, injection sites
+run between the words carrying the frame's first octet (cycle 2) and the
+terminate word (cycle 10) — 8 boundaries, cycle 3 through cycle 10 inclusive —
+so `cycle_of(3) = 3 + 1 = 4` and `injected_word_cycle(0) = 4 + (4 - 3) = 5`.
+**This is exactly §6's own "5 against 4 at k = 1."** I extended the same
+hand-computation to `k = 7` (`cycle_of(3) = 3 + 7 = 10`,
+`injected_word_cycle(0) = 4 + (10 - 3) = 11`) and to the `tlast` word at both
+`k` (`cycle_of(10)` at k=1 is 18, tlast = 18+1 = 19; at k=7 is 66, tlast =
+66+1 = 67) — all four numbers match the eight-word cycle lists
+(`5,7,9,11,13,15,17,19` at k=1 and `11,19,27,35,43,51,59,67` at k=7`) already
+published in `AP-xgmii_rx_64.md`'s own `J-dv_lead-0087` change-log entry,
+independently of transcribing them. Given fail-fast semantics (`fail` is
+`failwith`, and `run_i4`/`run_i6` are flat `List.iter` loops with no
+per-case catch), the actual CI run will very likely report **one** aborted
+`%expect_test` per row (the first non-`k=0` combination the loop order
+reaches) rather than 36 separately-visible pass/fail lines — the packet's
+"36 units" is, on this reading, a count over the full logical matrix rather
+than something a single fail-fast run can display member-by-member in one
+pass. I flag this reading rather than silently assume the CI transcript will
+match "36" one-for-one; it is a fact about this file's own control flow, not
+a disagreement with §6's arithmetic.
+
+### 5. §2 and §4
+
+**Nothing in §2 was found wrong.** Every arithmetic claim I checked
+(the branch equivalence, the offset table, the k=0 and tlast invariants)
+reproduced independently.
+
+**One completeness finding against §3.6's own enumeration, not a disagreement
+with its content.** Beyond the ten numbered sites, three more places in the
+file cite "RV-0059-VERDICT §8" as the cycle-rule authority and were **not**
+edited, because they are outside the packet's own closed list and §3.7 bars
+edits beyond the seven named changes: `:41–42` (module docstring, M03-I4
+bullet, "...against an actual, separately-driven un-injected baseline run of
+the same (length, lane) (RV-0059-VERDICT §8, replacing WO-0059 §3.4 item 2's
+own per-octet form..."), `:1336` (M03-I4's own `%expect_test` name string),
+and `:1368` (the M03-I5 declared-not-built comment, itself one of the two
+rows the packet's own header names as "touched"). The packet's own rationale
+for re-citing ("it is now the most misleading citation in the tree") reads as
+applying equally to these three; I left them as found rather than either
+silently fixing them (out of the seven-change scope) or silently absorbing
+the inconsistency, and report it here for dv_lead's next round. (`:897` is a
+fourth remaining match, but it is the one place I deliberately kept
+"RV-0059-VERDICT §8" as pure history per the packet's own instruction —
+"round 2's own repair of this file's round-1 ... comment.")
+
+**§4's question — does the count-guard + cycle-guard pair close "a word
+whose D(m) has not arrived is not emitted"? Yes, and I did not add a guard.**
+The count guard (`:1055` M03-I4, `:1487` M03-I6: `List.length words_out <>
+words`) runs over `delivered_samples samples`, itself built from a run whose
+`drain` covers the whole injected schedule plus 8 cycles past it — so it
+bounds every `tvalid` sample in the simulated window, not merely a prefix.
+The cycle guard (`:1070–1071` / `:1498–1499`) compares the `m`-th *temporally
+ordered* `tvalid` sample's own cycle against `injected_word_cycle`'s fixed,
+independently-computed value for that `m`, for every `m` in `[0, words)`. A
+design that emits word `m` early **and again** at the pinned cycle inflates
+`words_out`'s length, which the count guard catches before the per-word loop
+even runs. A design that emits word `m` **only** early (displaced, not
+duplicated) leaves the count unchanged but puts a sample at a cycle earlier
+than `injected_word_cycle m`'s own fixed value at whichever list position
+that sample now occupies, which the cycle guard catches directly — its
+`expected_cycle` is computed from `m` alone, never from what was actually
+observed, so there is no way for a displaced sample to "hide" behind a
+neighbour's expected value. The one case that would evade both — a dropped
+word compensated by a spurious word carrying exactly the dropped word's own
+content, landing at exactly its list position's expected cycle — is a third
+mechanism distinct from "extra" and "displaced" only in the abstract; it is
+independently foreclosed by the pre-existing, unrelated `delivered_octets`
+whole-frame content check (`:1099–1102` M03-I4, `:1523–1526` M03-I6), which
+compares the full concatenated octet sequence against the injected frame and
+would fail on any content substitution. I did not add anything for this —
+the closure is real and already-present, structurally, not a gap in this
+row.
+
+### 6. CI run id and conclusion
+
+**None yet.** I never run `git`; this spawn's diff is unstaged, so no commit
+exists for CI to run against. Per ADR-0005 / REQ-906 the eventual CI run,
+once the orchestrator commits this file, is the authoritative check — my own
+`ocamlc -stop-after parsing -impl test/xgmii_rx_64/test_m03_i.ml` (exit 0)
+is a syntax check only and is not offered as evidence of the predicted red
+set.
+
+### Files touched, exactly
+
+- `test/xgmii_rx_64/test_m03_i.ml` (the seven changes of §3).
+- `agents/handoffs/WO-0060_tb-m03-family-i-dm-rebase.md` (this Return log).
+- `agents/journals/workers/claude_tb_writer_agent.v02.md` (`J-tb_writer-0020`).
+
+### Escalations
+
+None required. The §5 finding above (three un-enumerated citation sites) is
+reported, not escalated — it does not block acceptance and I made no edit
+against it.

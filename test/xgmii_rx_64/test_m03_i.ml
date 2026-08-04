@@ -1,8 +1,8 @@
 (** Family I — silence, ordered sets and idle (REQ-109, REQ-113, REQ-016).
     WO-0059. Round 2 (RV-0059-VERDICT BOUNCE, `agents/handoffs/
     WO-0059_tb-m03-family-i-silence-and-ordered-sets.md`) repairs M03-I4 and
-    M03-I6's own cycle rule and delay identity to RV-0059-VERDICT §8's
-    corrected form, and HOLDS §7's per-octet-constant claim under injection
+    M03-I6's own cycle rule and delay identity to SPEC-M03 §6.1's D(m) at
+    `1f3c04c`, and HOLDS §7's per-octet-constant claim under injection
     per SCR-M03-I4 -- see [dependency_source_cycle], [injected_word_cycle]
     and [run_i4_case]'s own declarations below. M03-I1, M03-I2, M03-I3 and
     M03-I5 were ACCEPTED round 1 and are unchanged.
@@ -33,8 +33,8 @@
       own terms AND compared cycle for cycle against the SAME frame received
       after idles only (two runs of one schedule, `?word_at` substitution).
     - M03-I4: the word sequence, each word's own cycle
-      baseline_cycle(m) + (cycle_of(D m) - D m) -- RV-0059-VERDICT §8's
-      corrected rule (round 2; round 1 sent [Idle_injection.cycle_of] an
+      baseline_cycle(m) + (cycle_of(D m) - D m) -- SPEC-M03 §6.1's D(m)
+      (`1f3c04c`) (round 2; round 1 sent [Idle_injection.cycle_of] an
       OUTPUT cycle, FINDING 1 / FINDING 3), D(m) the SOURCE cycle of the
       latest input word m depends on, never m + 3 alone -- the
       word-granular DELAY IDENTITY against an actual, separately-driven
@@ -131,7 +131,7 @@
     52 runs this file drives through the wrapper (48 at M03-I4, 4 at
     M03-I6). Where a cycle from §6.1 or §9 is needed on an injected line it
     is translated through [Idle_injection.cycle_of] applied to a SOURCE
-    cycle -- RV-0059-VERDICT §8's corrected rule, [dependency_source_cycle]
+    cycle -- SPEC-M03 §6.1's D(m) (`1f3c04c`), [dependency_source_cycle]
     / [injected_word_cycle] below -- never to an output cycle (round 1's own
     defect here, FINDING 1 / FINDING 3) and never recomputed from the
     gapless `m + 3` formula, which §6.1 itself scopes to a gapless stimulus
@@ -892,35 +892,67 @@ let account_injected_frame bench ~aborted =
   Dv_monitors.Conservation_monitor.frame_out (conservation bench) ~aborted
 ;;
 
-(* WO-0059 RV-0059-VERDICT §8 (round 2, replacing this file's own round-1
-   §2.4 / M03-I5 comment, which sent [Idle_injection.cycle_of] an OUTPUT
-   cycle -- RV-0059-VERDICT FINDING 1 / FINDING 3): the corrected cycle
-   rule, shared by M03-I4 ([run_i4_case]) and M03-I6 ([run_i6_case]) since
-   both drive a frame through the SAME wrapper.
+(* SPEC-M03 §6.1's ruled D(m) (`1f3c04c`, `J-architect_docs_lead-0025`;
+   requirements.md §0.5's output-word bullet) -- this WO's own re-basing of
+   the cycle rule this file previously took from RV-0059-VERDICT §8 (itself
+   round 2's own repair of this file's round-1 §2.4 / M03-I5 comment, which
+   sent [Idle_injection.cycle_of] an OUTPUT cycle -- RV-0059-VERDICT
+   FINDING 1 / FINDING 3) -- shared by M03-I4 ([run_i4_case]) and M03-I6
+   ([run_i6_case]) since both drive a frame through the SAME wrapper.
 
    injected_cycle(m) = baseline_cycle(m) + (cycle_of(D m) - D m)
 
-   where [D m] is the SOURCE cycle of the LATEST input word output word
-   [m] depends on:
-   - m is NOT the tlast word: the source cycle of the input word carrying
-     output word m's own LAST octet (content octet 8m + 7) -- SPEC-M03
-     §6.1 consequence 1 (the 2-cycle-at-lane-0 / 1-cycle-at-lane-4 offset,
-     itself scoped to a gapped stimulus in terms).
-   - m IS the tlast word: the source cycle of the TERMINATE CHARACTER, not
-     of its own last octet. tkeep, tlast and tuser[0] are not decidable
-     until that character arrives (REQ-011, REQ-103, REQ-104: until then
-     the design cannot know which octets are FCS), and §6.1's own drain
-     derivation states the tlast word's baseline position relative to the
-     TERMINATE word, not to its own last octet's word. The terminate
-     character's octet time always exceeds the last delivered octet's, so
-     this is also the later of the two dependencies and the formula needs
-     no [max].
+   where [D m] is the SOURCE cycle of the input word carrying whichever of
+   two pieces of evidence arrives first:
+   - (a) received frame octet 8m + 12 -- the fifth octet after output word
+     m's own eight, whose arrival proves the frame runs past word m; or
+   - (b) the character that closes the frame (REQ-106's /T/, REQ-105's /E/,
+     REQ-110's /S/, or REQ-108's count) -- tkeep, tlast and tuser[0] are not
+     decidable until it arrives (REQ-011, REQ-103, REQ-104).
+   Output word m is emitted 1 cycle after D(m) at a lane-0 start and 0 at a
+   lane-4 one where D(m) is (a); 1 or 2 at lane 0 and 0 or 1 at lane 4
+   where D(m) is (b), r = N mod 8 (received octets between the start and
+   terminate characters) deciding which within (b) (SPEC-M03 §6.1).
+
+   Derivation obligation D1 -- why [m = words - 1] below is already the
+   right branch and does not move. Octet 8m + 12 exists iff there are at
+   least 8m + 13 received octets, i.e. N >= 8m + 13. Word m is its frame's
+   LAST word iff the delivered payload (N - 4 octets, REQ-103) has no
+   octet beyond word m's own eight, i.e. N - 4 <= 8m + 8, i.e.
+   N <= 8m + 12 -- exactly NOT (N >= 8m + 13). So:
+
+     N >= 8m + 13   <=>   m < W - 1   <=>   m <> words - 1   (words = W)
+
+   holds exactly, and the two evidences are therefore EXCLUSIVE rather
+   than merely ordered: (a) exists and decides precisely the non-tlast
+   words (m < words - 1); (b) is the only evidence available and decides
+   precisely the tlast word (m = words - 1). [words] passed in below IS W
+   (REQ-103's W = ceil((N - 4)/8), computed by every caller), and m never
+   exceeds words - 1 for a real output word, so [dependency_source_cycle]'s
+   own [m = words - 1] test already selects exactly the right branch:
+   evidence (b)'s source cycle (terminate_cycle) where (a) has no octet to
+   name, evidence (a)'s own word otherwise. No other change to the branch
+   is owed.
+
+   No [max] is needed, for a DIFFERENT reason than this comment used to
+   give: the two branches are not merely ordered with (b) always later --
+   under the ruled D(m) they are MUTUALLY EXCLUSIVE by the N-comparison
+   just derived, so at most one of them ever applies to a given m and
+   there is nothing to take the max of.
+
+   Two consequences carried here because §6.1 states them and a later
+   reader will ask: no GAPLESS cycle moves at k = 0 (the injection map is
+   the identity there, so emit(m) = s + m + 3 identically, for every m);
+   and NO tlast word's cycle moves at ANY k (branch (b) above is the
+   UNCHANGED bullet from the superseded rule, so the tlast word's own
+   dependency -- and therefore its own injected cycle -- is exactly what
+   it always was).
 
    [cycle_of] is applied to [D m] -- a source cycle, its actual domain --
    and NEVER to an output cycle; `m + 3` is never recomputed under
    injection (M03-I5's own prohibition, held). *)
 let dependency_source_cycle ~start_octet_time ~terminate_cycle ~words m =
-  if m = words - 1 then terminate_cycle else (start_octet_time + 8 + (8 * m) + 7) / 8
+  if m = words - 1 then terminate_cycle else (start_octet_time + 8 + (8 * m) + 12) / 8
 ;;
 
 let injected_word_cycle inj ~start_octet_time ~terminate_cycle ~words ~start_cycle m =
@@ -1005,7 +1037,7 @@ let run_i4_case
       row
       "test bug -- uniform proposed a C-45 boundary; idle_injection.ml's own [uniform] \
        begins one boundary later and should never do this (WO-0059 §2.3)";
-  (* RV-0059-VERDICT §8's corrected cycle rule: D(m) for the tlast word is
+  (* SPEC-M03 §6.1's D(m) (`1f3c04c`): D(m) for the tlast word is
      the TERMINATE character's own source cycle, never its own last octet,
      and cycle_of is applied to that SOURCE cycle -- never to an output
      cycle (round 1's own defect here, FINDING 1 / FINDING 3; M03-I5's own
@@ -1031,8 +1063,8 @@ let run_i4_case
          ; Int.to_string (List.length words_out)
          ]);
   (* the output word SEQUENCE is unchanged: every word's own cycle is
-     baseline_cycle(m) + (cycle_of(D m) - D m), RV-0059-VERDICT §8's
-     corrected rule -- never m + 3 alone and never cycle_of applied to an
+     baseline_cycle(m) + (cycle_of(D m) - D m), SPEC-M03 §6.1's D(m)
+     (`1f3c04c`) -- never m + 3 alone and never cycle_of applied to an
      output cycle. *)
   List.iteri words_out ~f:(fun m s ->
     let expected_cycle =
@@ -1049,8 +1081,8 @@ let run_i4_case
            ; Int.to_string s.cycle
            ; ", expected "
            ; Int.to_string expected_cycle
-           ; " (RV-0059-VERDICT §8: baseline_cycle(m) + (cycle_of(D m) - D m), not m + 3 \
-              alone -- M03-I5)"
+           ; " (SPEC-M03 §6.1's D(m) (`1f3c04c`): baseline_cycle(m) + (cycle_of(D m) - D m), \
+              not m + 3 alone -- M03-I5)"
            ]);
     let expected_tkeep = if m = words - 1 then expected_tkeep_last else 0xFF in
     if s.out.Dv_monitors.Stream_word.tkeep <> expected_tkeep
@@ -1068,7 +1100,7 @@ let run_i4_case
   let got_octets = delivered_octets samples in
   if not (List.equal Int.equal got_octets expected_octets)
   then fail row "delivered octets differ -- REQ-016 must not alter frame content";
-  (* WO-0059 RV-0059-VERDICT §8 item 2 (round 2, FINDING 6): the delay
+  (* SPEC-M03 §6.1's D(m) (`1f3c04c`) (round 2, FINDING 6): the delay
      identity, corrected to WORD granularity. The original per-OCTET form
      (round 1) is false wherever a single output word's own octets carry
      more than one input shift -- every word at a lane-4 start, and the
@@ -1076,10 +1108,18 @@ let run_i4_case
      moves as a whole with its OWN dependency octet, D(m) above). For a
      non-tlast word the check reads D(m)'s own shift off raw octet times
      (Idle_injection.in_times against Arrival.in_times on the separately
-     driven baseline) at its own anchor octet (content index 8m + 7, always
-     inside that word by construction) -- independent of
-     Idle_injection.cycle_of, which the word-sequence check above already
-     used once. The tlast word has no anchor OCTET when its own word
+     driven baseline) at its own anchor octet (content index 8m + 12 --
+     deliberately OUTSIDE output word m's own eight octets: one input word
+     later at a lane-0 start, two at a lane-4 one, because the evidence
+     that word m is full and not last is precisely an octet that is not
+     word m's own) -- independent of Idle_injection.cycle_of, which the
+     word-sequence check above already used once.
+
+     Derivation obligation D2 -- why that anchor index is in range, not
+     assumed: for a non-tlast word N >= 8m + 13 (the branch
+     [dependency_source_cycle] tests, D1 above), so received frame octet
+     8m + 12 EXISTS (8m + 12 <= N - 1) and in_injected.(8m + 12 + 8) is
+     inside the array. The tlast word has no anchor OCTET when its own word
      carries no frame content at all (length 64 at lane 0, length 68 at
      lane 4 in M03-C1's own set -- the terminate character starts a brand
      new word there), so its own expected shift is instead derived from
@@ -1097,7 +1137,7 @@ let run_i4_case
       if m = words - 1
       then idles * (terminate_cycle - first_octet_cycle)
       else (
-        let c = (8 * m) + 7 in
+        let c = (8 * m) + 12 in
         (in_injected.(c + 8) - in_baseline.(c + 8)) / 8)
     in
     if observed_shift <> expected_shift
@@ -1111,7 +1151,7 @@ let run_i4_case
            ; Int.to_string observed_shift
            ; " but the delay identity predicts "
            ; Int.to_string expected_shift
-           ; " (REQ-016's delay identity, RV-0059-VERDICT §8, word granularity)"
+           ; " (REQ-016's delay identity, SPEC-M03 §6.1's D(m) (`1f3c04c`), word granularity)"
            ]));
   if not (List.is_empty (error_pulses samples))
   then fail row "an error strobe pulsed -- an idle-injected clean frame must not trip one";
@@ -1121,11 +1161,18 @@ let run_i4_case
      start lane -- (a) the tlast word's own dependency is the terminate
      character's source cycle rather than any content octet's, so its own L
      differs from every other word's the moment idles > 0 (worked at length
-     64, lane 0, idles 1: L = 24 for the last four octets against L = 16
-     for every earlier one); (b) at a lane-4 start every output word
-     straddles two source input words (REQ-011 forbids splitting it), so
-     octets 0..3 and 4..7 of the SAME word carry different L the moment
-     idles > 0. Both are structural consequences of REQ-011/REQ-103/REQ-104
+     69, lane 0, idles 1, r = 5 -- §8's own directed set, §6.1 item 1's own
+     worked example: {16, 24}, the 16 belonging to the tlast word's single
+     delivered octet, which shares the terminate character's own input
+     word and is therefore separated from its evidence by no injected idle
+     at all, against 24 for every earlier, non-tlast octet); (b) at a
+     lane-4 start every output word straddles two source input words
+     (REQ-011 forbids splitting it), so for a NON-tlast word octets 0..3
+     and 4..7 of the SAME word carry different L the moment idles > 0 --
+     28 and 20 at k = 1. The tlast word does NOT follow that split
+     (SPEC-M03 §6.1 item 2: its D is the closing character's own word, by
+     residue); its own classes are REPORTED here and not predicted. Both
+     are structural consequences of REQ-011/REQ-103/REQ-104
      and SPEC-M03 §6.1's own consequence-1 rule, not artefacts of this
      row's stimulus, so {!assert_monitors_clean}'s latency half -- gated on
      Latency.is_constant once the standing tagger has compared a frame --
@@ -1426,7 +1473,7 @@ let run_i6_case ~lane ~length =
   then fail row "test bug -- Idle_injection.errors is non-empty although is_clean reported true";
   if not (List.is_empty (Dv_xgmii.Idle_injection.c45_sites inj))
   then fail row "test bug -- uniform proposed a C-45 boundary";
-  (* RV-0059-VERDICT §8's corrected cycle rule -- shared with M03-I4, see
+  (* SPEC-M03 §6.1's D(m) (`1f3c04c`) -- shared with M03-I4, see
      [injected_word_cycle]'s own docstring above [run_i4_case]. *)
   let injected_tlast_cycle =
     injected_word_cycle inj ~start_octet_time ~terminate_cycle ~words ~start_cycle (words - 1)
@@ -1458,7 +1505,7 @@ let run_i6_case ~lane ~length =
         (String.concat
            [ "word "
            ; Int.to_string m
-           ; " arrived on the wrong cycle (RV-0059-VERDICT §8: \
+           ; " arrived on the wrong cycle (SPEC-M03 §6.1's D(m) (`1f3c04c`): \
               baseline_cycle(m) + (cycle_of(D m) - D m), not m + 3 alone)"
            ]);
     let expected_tkeep = if m = words - 1 then expected_tkeep_last else 0xFF in
