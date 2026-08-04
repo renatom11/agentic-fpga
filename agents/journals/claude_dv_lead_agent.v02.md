@@ -4080,3 +4080,133 @@ owed.** **Escalation 3 ruled: route to architect_docs_lead as a non-normative
 ### Files-in-this-commit
 - agents/handoffs/WO-0060_tb-m03-family-i-dm-rebase.md
 - agents/handoffs/BUG-0002_m03-idle-injection-tlast-on-a-non-final-word.md
+
+## [J-dv_lead-0090] 2026-08-07T19:05Z | task:none | BUG-0003 opened as its own commit so the close and the open are separable in the log — and the packet's hardest discipline is refusing to state the root cause rtl_lead already handed me, because the count guard says the mechanism it names did not reach the port
+
+### Trigger
+
+My own ruling at `J-dv_lead-0089` / `RV-0060-VERDICT` §5: the lane-4
+configuration under REQ-016's commissioned injection is a **design obligation**,
+and a design obligation with a measured divergence is a `BUG-` packet
+(charter §3 — *a `BUG-NNNN` packet for every divergence*). Deliberately a second
+commit rather than a fold into the close-out, so that `git log` shows BUG-0002
+closing and BUG-0003 opening as two events.
+
+### Inputs
+
+Same set as `J-dv_lead-0089` — nothing new was read to write this packet, which
+is itself the point: it is derived from the specification and from the measured
+run, not from anything further. Specifically load-bearing here:
+`docs/specs/requirements.md` REQ-016 (both halves), REQ-010, REQ-011, REQ-018,
+REQ-019, REQ-101, REQ-103, REQ-106, §0.5's *What survives idle injection*, §1.1;
+`docs/specs/modules/xgmii_rx_64.md` §6.1's D(m), §6.2's `Frame` row, §6.3's
+opening sentence and item 2, §8's directed set, §10's REQ-016 hook;
+`test/xgmii_rx_64/test_m03_i.ml`'s guard order; CI run **30907419890**.
+`J-rtl_lead-0010`'s open question 1 is quoted as the packet's origin and its
+proposed mechanism is deliberately **not** adopted. **No `libs/**`, no
+`rtl_snapshots/**`, no `docs/reports/audit/**`.**
+
+### Reasoning
+
+**The packet's whole difficulty is what to leave out.** rtl_lead handed me a
+mechanism — the alignment window at offset 4 forms each aligned word from two
+input words, so an injected idle splits output word m into two disjoint half
+aligned words (`al_keep` 0x0F then 0xF0) that one register plus a hold cannot
+rejoin. It is a good explanation and it may well be right. Writing it into the
+packet would have made the packet look authoritative and would have been two
+errors at once: it would be a divergence report derived from the **design**
+rather than the specification, and **the measurement does not corroborate it**.
+`delivered_samples` filters on `tvalid` alone and counts a short word like any
+other; the count guard runs before the cycle guard; it **passed**, with eight
+words. So either the split is absorbed before the port or the mechanism is
+something else, and settling that is precisely what a Root-cause section is for.
+The packet therefore states the measured observable — *the output event was
+delayed by 0 idle cycles where §0.5 requires exactly 2* — and makes the
+mechanism an explicit **question** in its §6, whose answer decides its severity.
+
+**Severity is MAJOR and I argued it down from CRITICAL on purpose.** BUG-0002
+was CRITICAL because it changed which word was final: a REQ-015 consumer saw one
+frame as two, and every downstream length and checksum decision is keyed to frame
+extent. Here the word count is conformant, so no frame-extent corruption is in
+evidence; what is in evidence is a timing violation of an IFC requirement and of
+§0.5's gap-invariant at one of the module's two required start lanes. Calling
+that CRITICAL by association with its neighbour would inflate the ledger, and an
+inflated severity is a severity nobody reads. But grading it down without stating
+what would raise it is the opposite failure, so §5 names the **two** conversions
+— any short mid-frame word (REQ-011 on its face, and exactly the shape
+escalation 1 predicts), or any change to the delivered octet sequence — and
+records that the protocol monitor already stands ready to catch the first.
+
+**The anti-vacuity half is what makes the packet unarguable, and it was free.**
+The same design, the same frame, the same run, one start lane later: lane 0 at
+`k` = 1 requires cycle 5 and produced 5, and all 24 lane-0 members are green at
+every commissioned figure. So the packet cannot be answered with "the rule is
+unmeetable" or "the bench is wrong" — it is one design meeting the rule at one
+alignment and not at the other, which is REQ-101's subject in one sentence.
+
+**Acceptance was written to be un-gameable in the direction that matters.** The
+easy fix for a cycle mismatch is a fix that moves lane 4 and quietly moves
+something else. So acceptance item 2 is the **promotion block**: at `fafb83d` it
+listed exactly one file, and a fix return whose block lists more than
+`test_m03_i.ml` has converted a fix into a regression — with the extra filename
+naming the family to look at first. Item 1 requires the **cross-run** tail
+assertions that have never executed, because they are the only check that both
+lanes accumulated their full 24. Item 5 carries `rtl_snapshots/**` and REQ-902
+forward, where they were quietly not done at `fafb83d`.
+
+**The packet number is a prediction, not an allocation.** PROTOCOL §3 gives the
+orchestrator the allocation; the filename says so in its header so that a rename
+is clerical rather than a correction.
+
+### Actions
+
+- Authored `agents/handoffs/BUG-0003_m03-lane-4-injected-word-cycle.md`:
+  reproduction with the stimulus rebuilt from octet times; observed-vs-expected
+  with the clause-by-clause derivation of the required cycle; the anti-vacuity
+  lane-0 comparison; §2.4's explicit not-measured list; four
+  it-is-the-design-not-the-bench arguments plus the bench-frozen-earlier
+  ordering; the ruling with its six clauses, the reason (b) did not route and its
+  revival condition; severity MAJOR with two named conversions; §6's
+  what-this-does-not-do including the refusal to adopt the mechanism; five
+  acceptance items; and N-1 plus the two sibling escalations carried rather than
+  folded in.
+- Staged nothing else. No `test/`, no `libs/**`, no spec, no attack plan. No
+  `git` write.
+
+### Evidence
+
+1. The packet's every numeric claim is either re-derived in its own §2.1 from
+   frozen text (octet times, `W` = 8, D(0) = source cycle 4, two sites at or
+   before it, required cycle 6) or quoted from CI run **30907419890** at
+   `fafb83d` (observed cycle 4; word count 8; the lane-0 counterpart at 5; ΔC = 3
+   at both lanes against §1.1's ceiling of 4).
+2. The guard-order claim is checkable in the committed bench: the word-count
+   guard precedes the `List.iteri` per-word loop in `run_i4_case`, so a count
+   mismatch raises before any cycle is compared.
+3. The bench-frozen-earlier ordering: `test/xgmii_rx_64/test_m03_i.ml` last
+   changed at `51b9920`; the design under judgment is `fafb83d`;
+   `git log --oneline -- test/xgmii_rx_64/test_m03_i.ml` shows the ordering.
+4. The one-file promotion block used as acceptance item 2 is the same artefact
+   cited at `J-dv_lead-0089` Evidence 2.
+
+### Outcome
+
+`BUG-0003` is **OPEN** and dispatchable to rtl_lead via the orchestrator,
+VERBATIM relay class. It carries the ruling, the measurement, the acceptance and
+N-1. It opens no campaign, discharges nothing, and does not reopen BUG-0002.
+Discharge count unchanged at **36 of 62**; `SO-xgmii_rx_64.md` remains unopened.
+
+### Open-questions
+
+- **The packet number is the orchestrator's to confirm** (PROTOCOL §3); the
+  filename is a prediction and a rename is clerical.
+- **§6's mechanism question is genuinely open** and I have deliberately not
+  answered it: whether the aligned-word split reaches the output port, and on
+  which members. Its answer decides §5's severity conversion.
+- **22 of M03-I4's runs and 1 of M03-I6's have never been driven at all**, so the
+  lane-4 divergence may have more than one shape. The packet claims only what was
+  measured.
+- Everything carried at `J-dv_lead-0089` remains open and is not re-counted here.
+
+### Files-in-this-commit
+- agents/handoffs/BUG-0003_m03-lane-4-injected-word-cycle.md
