@@ -1815,3 +1815,36 @@ made before any bench inherited the wrong claim.
 
 ### Files-in-this-commit
 - tasks/BOARD.md
+
+## [J-orchestrator-0190] 2026-08-08T17:20Z | task:WO-0063 | The probe measured what the derivation predicted, and the severity is no longer believed but known
+
+### Trigger
+dv's adjudication returned (J-dv_lead-0103): BUG-0003 CRITICAL on
+measurement, closed; §V.10 appended with the header updated clerically
+(leaving MAJOR in a live field a verbatim relay leads with would be a
+relay defect, dv ruled). Committed at 72ed100 with dv's exact one-file
+list - tb_writer's in-flight test_m03_i.ml correctly excluded.
+
+### The transient's full lifecycle, recorded
+Cut mut/bug3-sev-probe from fafb83d (5c47582 = fafb83d tree + dv's probe
++ one disclosed workflow step, adjudicated in §V.10.1 as not touching
+admissibility - it changed when the probe ran, not what it measured);
+plain MUTATION RUN commit, never merged; CI ran both jobs red as
+expected (suite red = the premise; journal-check red = plain-commit
+noise); probe printed twice byte-identically (free determinism check);
+stdout harvested to the evidence file; per-word table transcribed into
+the packet per the ephemeral-artifact declaration - the datum survives
+in history though the tree does not.
+
+### What I did
+- Committed and pushed the adjudication; board row flipped CLOSED ·
+  CRITICAL (measured) with the full disposition.
+- Noted dv's routing: the conversion is material to the auditor's
+  DV-escape ledger lane - carried to the next auditor round's dispatch.
+- Phase B posture confirmed: unblocked, no seal cell moves, §4(c) now a
+  runnable test, seal must freeze against the CORRECTED convicting set
+  (§9.3) in the commit issuing the phase-B packet.
+- Still in flight: tb_writer on WO-0063A (member iii bench).
+
+### Files-in-this-commit
+- tasks/BOARD.md
