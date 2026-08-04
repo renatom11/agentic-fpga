@@ -1643,3 +1643,291 @@ freeze (`WO-0058` §8).
 ### Files-in-this-commit
 - agents/handoffs/WO-0062_tb-m03-family-b-preamble-and-sfd.md
 - test/xgmii_rx_64/test_m03_b.ml
+
+## [J-dv_lead-0100] 2026-08-04T20:05Z | task:WO-0064 | The consolidation packet written to be un-hideable, and the plan stopped speaking twice about the preamble
+
+### Trigger
+Orchestrator dispatch: one round, two deliverables — item 1 of my own
+`RV-0062-VERDICT` §8 queue (the bench-machinery consolidation I commissioned at
+that verdict's §5, under three binding conditions I fixed there) and the two
+attack-plan edits owed since `J-dv_lead-0098` (`WO-0062` §6.2 items 1 and 2),
+with `RV-0062` findings B-2 and B-3 to be folded into the plan wherever it
+should carry them.
+
+### Inputs
+- `agents/handoffs/WO-0062_tb-m03-family-b-preamble-and-sfd.md` — §2 bar 10,
+  §3.1, §3.3, §5 (T3, T4, T6), §6.2 items 1 and 2, the `RETURNED` block §4, and
+  my own `RV-0062-VERDICT` §2, §5, §6 and §8.
+- `agents/handoffs/WO-0058_m03-g7-h-mutation-campaign.md` §9 bounds 6 and 7,
+  read in full because member (b)'s payment claim turns on their exact wording.
+- `test/attack_plans/AP-xgmii_rx_64.md` — §0, §1 (the row grammar and the
+  permanence rule), §2, §3, §4.B, §4.N (M03-N3 in full, and M03-N2's six-row
+  table), §6 (the REQ-102/105/110/113/016 lines), §8 (the WO-0029 §3b ruling
+  record), §9.
+- `test/xgmii_rx_64/` at HEAD, measured rather than recalled: `bench.ml`,
+  `bench.mli`, `dune`, `.ocamlformat`, and every `test_m03_*.ml` — the fourteen
+  helper definitions, their bodies, their comment blocks and all forty-seven
+  call sites and passing mentions.
+- `test/xgmii/injection.mli` (`placement`, `At_preamble`'s 1 … 7 domain, the
+  `Place` docstring's `/I/`//`/Q/` clause and its lack of a lane restriction);
+  `docs/specs/requirements.md` REQ-102, REQ-105, REQ-110, REQ-113, REQ-018,
+  §0.5, §0.7.
+- `agents/charters/dv_lead.md`; `agents/PROTOCOL.md` §3, §4, §6, §7, §10.
+- **No RTL, no `libs/**`, no `rtl_snapshots/**`, no `docs/reports/audit/**`.**
+
+### Reasoning
+
+**The consolidation's home: `bench.ml`, and the argument is the fourth
+member.** The tempting answer is a new `accounting.ml` — separation of concerns,
+and `bench.ml` is the file that elaborates the DUT. I rejected it because the
+family's fourth case, `account_clean_frame`, is *already* in `bench.ml`, and a
+new module does one of two bad things: it strands that case, leaving one concept
+with its cases in two modules — **which is precisely the configuration that
+produced the drift I am paying off** — or it drags the case along and rewrites
+every clean-frame call site in ten files, a diff several times the size of the
+one whose readability is condition (ii)'s whole point. The clinching fact is
+textual: fourteen local copies each carry a comment saying *"`{!Bench}` is the
+only shared surface, so every family file carries its own copy"*. The refactor's
+job is to make that sentence true, not to invent a second shared surface that
+makes it false in a new way.
+
+**The measurement that reshaped the packet, and that I would not have had by
+reasoning.** Every family file already carries `open Bench`. So for
+`account_dropped_frame` and `split_at_first_tlast`, deleting the local `let` is
+*sufficient* — the name re-resolves through the `open` and **not one of their
+thirty-six call sites changes**. That turns two thirds of this refactor into pure
+deletion, and it let me forbid gratuitous `Bench.` qualification in the packet
+rather than discover thirty-six needless edited lines at review. A packet
+written from memory would have commissioned those edits.
+
+**Naming: I spent churn deliberately, and here is what I bought.** I could have
+kept every existing name and had eleven fewer edits. I renamed two identities
+onto a `_frame`/`_piece` axis instead — `_frame` has an `Arrival.frame` and
+reads `Arrival.in_times`; `_piece` has no such record and the caller sizes the
+input trace by hand. The reason is not taste: **that axis is the trap**.
+`RV-0057-VERDICT` Finding 1 was a `_piece`-shaped call whose trace was sized by
+what the frame *delivered* where the contract wanted what it *received*, and it
+was harmless only by cancellation. `account_spliced_forwarded` and
+`account_resync_runt_frame` name *the family that first needed them*; the next
+writer meets a name describing someone else's situation and re-derives the
+contract from the body. A name must carry the thing the caller has to get right.
+
+**Condition (i) is the whole risk of this round, so I made it decidable by a
+script rather than by care.** Campaign seals cite exact failure messages. The
+obvious way to protect them is diligence; diligence does not survive a
+fourteen-way textual comparison. So I measured `fail` and `fail_cross` — and
+they are **character-identical in all nine and all five files respectively**,
+which means consolidating them would in fact change no emitted text. **I
+excluded them anyway.** First, because the debt is contract-bearing helpers, and
+a one-line `failwith` wrapper has no precondition anyone could transplant
+wrongly — fourteen copies of it cost nothing. Second, and this is the real
+reason: because no message-producing function moves, the diff of this round
+contains **no added or removed string literal anywhere in the directory**, which
+is one command that either prints nothing or bounces the packet. I chose the
+scope boundary to make the seal-safety property mechanical. That is worth more
+than the lines the exclusion leaves on the floor.
+
+**One correction against myself, put in the instruction rather than the
+verdict.** `RV-0062-VERDICT` §5's table says `split_at_first_tlast` has six
+copies. The tree has **seven** (b, d, e, f, g, h, i). The verdict's count came
+from the sites the review had opened, not from a census. I did **not** edit the
+verdict — a verdict records a judgement at a time — and put the corrected table
+in `WO-0064` §3 with the reason stated, because the *instruction* is the thing
+that has to be right, and I told the worker that if its own count disagrees with
+mine, its count and the Return log win and it stops before editing.
+
+**The B4 lane-4 member: I checked what it pays *and* what it does not.** The
+member is genuinely opposite geometry — the same `At_preamble 4` placement at a
+lane-4 start lands at octet time 16, which is **lane 0 of the following word**,
+aborting a frame already open on entry, with the alignment transition **4 → 0**
+against member (a)'s and `run_h2`'s common **0 → 4**. It was tempting to write
+that it closes `WO-0058` bound 7. It does not: bound 7 wants an **in-word**
+abort with a frame already open, and this `/S/` is in lane 0 — a word boundary,
+not in-word. It has the second half and not the first. I recorded the
+non-payment beside the payment in note B-i, because a member that looks as
+though it closes a bound and does not is exactly how a bound gets quietly
+dropped, and this programme has an instrument (`WO-0058` §9) whose value is that
+its bounds stay countable.
+
+The arithmetic also produced a gift I did not expect and used: **both members
+take the same 68-octet array and yield the same 64/60/8/`0x0F` expectation**
+(member (a): terminate at 84, frame B receives 84 − 20; member (b): terminate at
+88, receives 88 − 24). The pair therefore differs by one stimulus parameter and
+one observable cycle — a controlled comparison rather than two tests, which is
+the strongest form a two-member row can take.
+
+**The B2/N3 conflict: ruled, and the ruling had to be substantive or it was
+worthless.** The plan said two things — M03-N3: the idle-in-preamble REQ-105
+case is *"carried at M03-B2"*; M03-B2's cell: `/E/` only. The bookkeeping
+argument (N3 is the later, ruled text; B2's cell is unrevised batch-A text) gets
+to the right answer but would not have justified widening a committed row's
+stimulus. The argument that does: **`/E/` cannot discriminate REQ-102's third
+sentence at all.** An `/E/` in a preamble position routes to REQ-105 under that
+sentence *and* under a design that simply treats preamble positions as frame
+positions — same observable, both readings, so the landed members test the
+outcome and not the rule. `/I/` separates them, because REQ-113 orders a control
+character other than `/S/` **outside** a frame to be ignored, and a preamble
+position is **inside** an open frame. A design carrying REQ-113's ignore rule
+into the preamble is silent where REQ-102 demands one `error_bad_frame`, and
+nothing else in this plan sees it. A distinct kill is what makes it a member
+rather than a duplicate.
+
+**Where I refused to widen, and why that is not splitting the difference.**
+`injection.mli` accepts `/Q/` at any `At_preamble` position with no lane
+restriction. REQ-102's third sentence is extensional and admits it. But a
+sequence ordered set is a **four**-character set whose first character is `/Q/`,
+and this plan has never derived whether REQ-018's link-partner contract admits
+one at an arbitrary preamble position — §3 constrains the lane of `/S/` and of
+nothing else. Driving a stimulus whose legality is underived is how a bench
+asserts a fact about a space the specification does not constrain, which is
+M03-O5's own prohibition one level up. So `/I/` is commissioned and `/Q/` is a
+**carried, not driven** sub-member with the derivation named. The conflict is
+fully resolved — B2 carries the case — and `/Q/`'s position legality is a
+separate question that was never part of it.
+
+**The third obligation on that note exists because the edit is misreadable.**
+M03-N3 is NO-STIMULUS and its binding output is a prohibition on M03-I4's
+idle-injection **wrapper**. A reader meeting "B2 now drives `/I/` in a preamble
+position" could take it as licence to relax that prohibition. It is not: these
+members place a *character* through `Injection`'s `At_preamble`; the wrapper
+injects an idle *word*. I wrote the distinction into the note rather than trust
+it to be obvious.
+
+**B-2 and B-3: made binding forward, recorded backward, and deliberately not
+promoted.** Both findings are real and neither convicts a landed row — B-2's
+depth is the suite's own standing depth for a following clean frame, and B-3's
+provenance gap is closed by the cycle checks that are present. So I bound both
+on **new** members (where they cost nothing, because the members are not written
+yet) and left them as debts on the landed ones (where paying them means a
+stimulus change or an unrunnable assertion). What I did not do is mint either as
+a §2 standing obligation. §2 binds *every* M03 bench, and generalising a
+two-row observation into a claim about seventy-eight rows I have not re-read for
+it is the C-44 failure this plan already records against me twice. Recorded as
+owed at the next plan-wide pass, which is the honest altitude.
+
+**Harvest (ADR-0018, PROTOCOL §7).** **Not due this round** — no `SO-`, no gate.
+Span since the note at `J-dv_lead-0099`: **J-dv_lead-0100** (this entry);
+cumulative untiled span **J-dv_lead-0001 … 0100**, and the first harvest fires at
+`SO-M03` and will state that interval so the tiling is visible.
+
+- **0099's candidate is carried unchanged and did NOT ripen.** It concerns a
+  partition idiom whose precondition is unstated; this round wrote that
+  precondition into an instruction but produced no new incident for it. Nothing
+  is added to it.
+- **One new candidate banked**, adjacent to it: *"A helper lifted out of its
+  first caller inherits that caller's name, so the name describes the situation
+  that produced it rather than the obligation it imposes; the parameter the next
+  caller must get right is then the one the name is silent about."* **LH1**: the
+  input-trace sizing repair (`RV-0057-VERDICT` Finding 1 / `WO-0059` §7.3), and
+  the present tree, where one accounting concept carries five names across four
+  files. **LH2-g** — no proper noun in the rule. **LH3**: without it, the third
+  call site's author reads a name about someone else's situation, re-derives the
+  contract from the body, and applies a sizing rule to the wrong quantity.
+  **Explicitly not collapsed with 0099's candidate**, though they may prove one
+  rule ("a shared definition must carry its own contract") at the harvest —
+  collapsing candidates before they are scored is how a harvest loses the
+  narrower, more testable one.
+- **One item banked as a probable war story, not a candidate**: my
+  `RV-0062-VERDICT` §5 inventory counted six copies where the tree has seven,
+  because the count came from the sites the review had opened. The rule it
+  suggests — *a count taken from the artefacts an investigation happened to open
+  is a sample, not a census* — passes LH1/LH2-g/LH3 on its face, but it is close
+  enough to this plan's own recorded C-44 pattern that I expect the harvest to
+  refuse it as non-novel. Recorded so the harvest gets to make that call rather
+  than never seeing it.
+
+### Actions
+- Measured the consolidation surface from the tree rather than from the verdict:
+  fourteen definitions, their body identity (hashes over whitespace-normalised
+  text, then read side by side), forty-seven call sites and passing mentions,
+  every preceding comment block by line range, and the `open Bench` fact that
+  decides how many call sites move.
+- Drafted **`agents/handoffs/WO-0064_bench-machinery-consolidation.md`**: the
+  three binding conditions restated verbatim; the home decided with its reason;
+  the `_frame`/`_piece` naming axis with the trap it encodes; the measured
+  inventory including the correction of my own count; the precondition
+  obligations for `split_at_first_tlast` (condition (iii)) and, unasked, for the
+  `_piece` pair; the stale-comment repair as a deliverable with its sites
+  tabulated and two comments explicitly protected; a ten-item review bar stated
+  in runnable commands; ten pre-committed BOUNCE conditions; and the scope
+  exclusions (`dune`, `fail`/`fail_cross`, the two `assert_*` helpers) each with
+  a derived reason.
+- Edited **`test/attack_plans/AP-xgmii_rx_64.md`** §4.B: M03-B4's stimulus,
+  observable and kills cells widened to two members; M03-B2's widened to three
+  character members with `/Q/` carried and not driven; **notes B-i, B-ii and
+  B-iii** added below the table (the two-member arithmetic table and the
+  bound-6-paid/bound-7-not-paid record; the ruling with its two grounds and three
+  derivation obligations; findings B-2 and B-3 with what they bind); one §9
+  change-log row appended.
+
+### Evidence
+```sh
+git status --porcelain
+#  M test/attack_plans/AP-xgmii_rx_64.md
+#  ?? agents/handoffs/WO-0064_bench-machinery-consolidation.md
+```
+Inventory as measured at this tree (the numbers `WO-0064` §3 commissions
+against, reproducible from a checkout):
+```sh
+grep -c . /dev/null; \
+grep -n 'let split_at_first_tlast' test/xgmii_rx_64/*.ml   # 7: b:178 d:208 e:149 f:693 g:385 h:164 i:221
+grep -n 'let account_dropped_frame' test/xgmii_rx_64/*.ml  # 3: b:190 e:139 f:145
+grep -n 'let account_spliced_forwarded\|let account_forwarded_frame' test/xgmii_rx_64/*.ml   # h:210, b:204
+grep -n 'let account_spliced_dropped\|let account_resync_runt_frame' test/xgmii_rx_64/*.ml   # h:227, g:408
+grep -c 'open Bench' test/xgmii_rx_64/test_m03_*.ml        # 1 in each of the 10 files
+```
+Body identity, read side by side before it was written into the packet:
+`account_dropped_frame` character-identical across b/e/f; `account_forwarded_frame`
+(b:204) and `account_spliced_forwarded` (h:210) character-identical apart from
+the name; `account_resync_runt_frame` (g:408) and `account_spliced_dropped`
+(h:227) likewise; `split_at_first_tlast` identical apart from the parameter name
+(`samples` in b/g/h/i, `words` in d/e/f) and one `if`'s line-wrapping; `fail`
+character-identical in all **nine** files and `fail_cross` in all **five** —
+measured, and excluded from scope anyway (`WO-0064` §4.6).
+
+**No bench file was edited this round** (`test/xgmii_rx_64/**` is untouched — the
+consolidation is the worker's, under the packet), and no test was run: this
+round produces two documents. `dune runtest` remains unavailable in this
+container (ADR-0005); CI is authoritative and `WO-0064` §6 bar 10 states the
+landing check the packet's own ACCEPT will rest on.
+
+### Outcome
+DoD met for both deliverables. **(1)** `WO-0064` drafted for tb_writer, carrying
+`RV-0062-VERDICT` §5's three conditions verbatim, the consolidation's home and
+naming decided with reasons, a review bar in commands and ten pre-committed
+BOUNCE conditions. **(2)** Both owed plan edits paid in
+`test/attack_plans/AP-xgmii_rx_64.md`: M03-B4's lane-4 member added, the
+M03-B2 / M03-N3 conflict ruled for widening B2 (with `/Q/` carried, not driven),
+and findings B-2/B-3 folded in as note B-iii and made binding on the new
+members. **NO ROW ADDED, NO ROW CONVERTED, NO STATUS MOVED, NO COVERAGE-MAP LINE
+CHANGED**: 78 rows, 62 ASSERT, 7 NO-ASSERT, 4 NO-STIMULUS, 4 STRUCTURAL, 1 GAP.
+**No `SO-xgmii_rx_64.md` issues and none is offered**; nothing here qualifies a
+row against mutation. Handoff:
+`agents/handoffs/WO-0064_bench-machinery-consolidation.md`, for the orchestrator
+to issue to tb_writer.
+
+### Open-questions
+1. **`WO-0064` must land alone** (condition (ii)) — no row, no other packet's
+   work in its commit, and its own CI `build` run. That is an instruction to the
+   orchestrator as much as to the worker.
+2. **The `WO-0063` phase-A plan edit (M03-I2's member (iii)) is not in this
+   commit** — it rides the commit that opens phase A, per my own disposition.
+   Stated here so its absence is not read as an omission.
+3. **`WO-0058` bound 7 still has no candidate row.** M03-B4's new member (b) was
+   examined for it and does not close it (note B-i).
+4. **`/Q/` in a preamble position** is carried and not driven until REQ-018's
+   contract is derived for it (note B-ii obligation 1). If the derivation says it
+   is outside the constrained space, the sub-member converts to a declared gap,
+   not to silence.
+5. **B-2 and B-3 on the landed M03-B2/B3 members** remain debts: the first needs
+   a round that can run the suite, the second is a stimulus change and rides the
+   next family-B bench round. **B-4** (the stale M03-B4 forward reference in
+   `test_m03_h.ml`'s module docstring) rides the next round opening that file —
+   **not `WO-0064`**, whose scope forbids it.
+6. Carried unchanged from `J-dv_lead-0099`: the §0.6-window question open to
+   architect_docs_lead; `WO-0061` §8 bound 1's `tkeep` half; family J behind a
+   bench-capability round.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0064_bench-machinery-consolidation.md
+- test/attack_plans/AP-xgmii_rx_64.md
