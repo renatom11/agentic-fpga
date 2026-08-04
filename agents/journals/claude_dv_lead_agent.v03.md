@@ -833,3 +833,113 @@ companion goes nowhere until all ten diffs are committed.
 ### Files-in-this-commit
 - agents/handoffs/WO-0061_family-i-mutation-campaign.md
 - agents/handoffs/WO-0061_family-i-mutation-campaign-SEALED-predictions.md
+
+## [J-dv_lead-0096] 2026-08-07T22:20Z | task:none | BUG-0003's item 5 discharged on evidence that is re-executable rather than derived — and the reason that sentence matters is that it is the exact test §V.2 refuses to waive for the other open item
+
+### Trigger
+`J-rtl_lead-0012` landed the promotion at `42b9df3` and CI run **30920890962**
+completed REQ-902's double-generation check at that SHA. §7 item 5 — the item
+this packet has carried across two RTL changes and which `J-dv_lead-0093`
+refused to close over — is now met in both its limbs. The packet's Return log
+owes the flip.
+
+### Inputs
+- `agents/handoffs/BUG-0003_m03-lane-4-injected-word-cycle.md` §7 item 5, §9.6
+  item 5 (the structural prediction attached to it), §V.1's table row and §V.8's
+  packet state.
+- `agents/journals/claude_rtl_lead_agent.md` `J-rtl_lead-0012` in full — the
+  three-link sha chain, the two file hashes and byte counts, the netlist census,
+  and its own Open-question 1 (REQ-902 completing at the next CI run).
+- `git show --name-status 42b9df3`; `sha256sum rtl_snapshots/*.v` at HEAD.
+- The orchestrator's relay of CI run **30920890962** (both jobs green at
+  `42b9df3`, determinism's second sample an empty diff).
+- **No RTL.** `J-rtl_lead-0012` quotes no module source; the census it publishes
+  is a count over the **emitted netlist**, which is a generated artefact under
+  `rtl_snapshots/**` that I did not open.
+
+### Reasoning
+
+**Why this is an appended block and not an edited table cell.** §V.1's row says
+`NOT MET` and it will keep saying so. A verdict of record is corrected forward,
+never amended in place — the rule I applied to a countersignature block at
+`RV-0060-VERDICT` §10 item 1, applied now to my own verdict. A reader who finds
+the `NOT MET` row and reads on finds the discharge; a reader of a silently
+edited table finds a packet that was never wrong about anything, which is the
+kind of document nobody should trust.
+
+**Why the discharge is a real one and not a tick.** Item 5 was never about
+snapshots existing. It was written — and rewritten after being skipped once —
+because §9.6 item 5 attached a **structural prediction** to the regeneration
+(three existing registers gain an enable condition, one mux term, no new flop,
+no new process, mirrored into `eth_mac_10g.v`) that had gone **unverified across
+two fixes**. `J-rtl_lead-0012` grades it against the emitted netlist: 16 → 16
+`always @(posedge …)`, 3 → 3 `always @*`, 19 → 19 `reg`, 17 → 22 `if (`, 683 →
+709 `wire`. **No flop, no process, five enable conditions, one new mux** — and
+the 3,039-line raw diffstat that would have refuted all of it is Hardcaml net
+renumbering, which `J-rtl_lead-0012` establishes rather than asserts. The
+interlock of the two fixes is verified where it is actually decided.
+
+**The evidence-class point, which is the whole reason I am comfortable recording
+this and not comfortable recording the severity conversion.** Both facts come
+from rtl_lead. The difference is not authorship, it is **re-executability**: the
+sha-256 chain and the netlist census are re-runnable by anyone at `42b9df3` with
+two commands, and CI run 30920890962 is externally checkable by id. §9.2's
+severity evidence is a **derivation from the RTL** that no committed artefact
+reproduces — which is exactly what `J-dv_lead-0093` refused to convert on, and
+that refusal is unaffected by today's flip. The two items were separated in §V.8
+for a reason and they discharge by different tests.
+
+**Disposition of the remaining item, decided rather than carried.** §V.2's
+pre-fix measurement is **deferred to its own round**, not folded into the
+`WO-0061` campaign, and the reasons are all ordering reasons: it needs a
+transient tree at `fafb83d` (a de-mutation) while every campaign branch is
+`42b9df3` + one diff, and one round cannot carry two base SHAs in its evidence;
+it is a `test/**` artefact and the campaign round opens no bench file; and
+`WO-0061` §0.1's exposure rule bars me from RTL-adjacent work at a pre-fix SHA
+while that campaign's seal is being frozen. The shape is fully specified in
+§V.2 and restated in §V.9, so the round that runs it needs no further
+adjudication from me beyond reading the two numbers back.
+
+**Why this is a second commit and not folded into `J-dv_lead-0095`.** The freeze
+commit must contain exactly the packet and its seal, so that the seal appears in
+that commit's own `Files-in-this-commit` list and R-SEAL-1's evidence is the
+commit itself rather than a paragraph about it. A verbatim-relay bug packet
+riding in the same commit would not break the rule but would blur the one thing
+the commit exists to demonstrate. Two commits, two entries, two reasons.
+
+### Actions
+- Verified both limbs of §7 item 5 against `J-rtl_lead-0012` and the tree
+  (`sha256sum rtl_snapshots/*.v` matches the hashes that entry publishes).
+- Appended §V.9 to `BUG-0003`: item 5 DISCHARGED, the netlist grading recorded,
+  the packet state moved from OPEN-on-two to **OPEN on §V.2 alone**, severity
+  held at MAJOR, and §V.2's round scheduled with its reasons.
+- Left §V.1's table and §V.8 unedited.
+
+### Evidence
+```sh
+git show --name-status 42b9df3 | tail -3
+#   M  agents/journals/claude_rtl_lead_agent.md
+#   M  rtl_snapshots/eth_mac_10g.v
+#   M  rtl_snapshots/xgmii_rx_64.v
+sha256sum rtl_snapshots/xgmii_rx_64.v rtl_snapshots/eth_mac_10g.v
+#   05186ac1a9bae4b1478cdb45c279ab6c0b9dfab87a2031f11dc49e47291de239  xgmii_rx_64.v
+#   a309376c9d7082d49fd86100b5718c53dc700603a2780505cd2a50405d7acbc6  eth_mac_10g.v
+#   — the two hashes J-rtl_lead-0012 publishes, and the prefixes CI published
+```
+REQ-902's double-generation limb: CI run **30920890962** at `42b9df3`, both jobs
+green, determinism's second sample an empty diff. The netlist census is
+`J-rtl_lead-0012`'s own measurement, re-runnable at this SHA; this entry adds no
+measurement of its own and re-states none as if it did.
+
+### Outcome
+DoD met. `BUG-0003` state: **FIX ACCEPTED — OPEN on §V.2 alone**, severity
+**MAJOR**. Handoff: verbatim relay of the packet to rtl_lead via the
+orchestrator; the §V.2 round is the orchestrator's to schedule (transient tree,
+throwaway branch, nothing entering history).
+
+### Open-questions
+1. **§V.2's pre-fix measurement** — deferred with its shape fixed; it is the
+   packet's last open item and the severity line cannot move until it returns.
+
+### Files-in-this-commit
+- agents/handoffs/BUG-0003_m03-lane-4-injected-word-cycle.md

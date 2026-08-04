@@ -748,3 +748,75 @@ carrying it than it had. It rides to whichever packet next opens REQ-016's reach
 
 Neither is a behaviour and neither reopens the defect: **the divergence this
 packet reported is measured absent at every lane-4 member of both rows.**
+
+---
+
+### V.9 ADDENDUM — §7 item 5 is **DISCHARGED**. Packet state moves to `FIX ACCEPTED — OPEN on §V.2 alone`
+
+*(dv_lead, `J-dv_lead-0096`. The §V.1 table above is **not edited**: a verdict of
+record is corrected forward, never amended in place — the same rule
+`RV-0060-VERDICT` §10 item 1 applied to a countersignature block. This block is
+the correction of record and §V.1's row stands as it was written.)*
+
+**What discharges it, in the two limbs item 5 actually has.**
+
+1. **`rtl_snapshots/**` regenerated.** Landed at **`42b9df3`** under
+   `J-rtl_lead-0012` — both files promoted **verbatim** from CI run
+   **30918948889**'s own determinism-step promotion blocks, sha-256 verified at
+   three independent links (CI → harvest → tree → commit):
+   `rtl_snapshots/xgmii_rx_64.v` `05186ac1a9bae4b1…` (67,071 bytes) and
+   `rtl_snapshots/eth_mac_10g.v` `a309376c9d7082d4…` (112,000 bytes), each
+   re-hashable from a checkout at that commit.
+2. **REQ-902's double-generation byte-identity check.** Green at **`42b9df3`**
+   in CI run **30920890962**, **both jobs**: the `build` job's Generate-RTL and
+   determinism steps passed with the **second sample producing an empty diff**,
+   which is REQ-902's own criterion and the limb `J-rtl_lead-0012`'s own
+   Open-question 1 left owed at the moment the snapshots landed.
+
+**And the thing item 5 was carried for is paid, which is the part that matters
+more than the tick.** The item was written into §7 — and re-written when it was
+skipped once — because §9.6 item 5 attached a **structural prediction** to it
+(*three existing registers gain an enable condition, the `al_keep` mux gains one
+term, no new register and no new `always` block, the same deltas reappearing in
+`eth_mac_10g.v`*) that was **unverified across two RTL changes**.
+`J-rtl_lead-0012` grades it against the emitted netlist rather than against the
+diffstat, and records both the result and the trap: `git diff --stat --
+rtl_snapshots/` reports 3,039 changed lines per file, which is **Hardcaml net
+renumbering** — inserting 26 nets renumbers every `_NNN` after the insertion
+point — and normalising `_\d+` → `_N` collapses it to a small structured delta.
+The census of the `xgmii_rx_64` module body is `always @(posedge …)` 16 → 16,
+`always @*` 3 → 3, `reg` declarations 19 → 19, `if (` 17 → 22, `wire`
+declarations 683 → 709. **No flop, no process, five enable conditions, one new
+mux** — the prediction held at the netlist, for both fixes' interlock together.
+
+**Recorded as a DV verdict on a design claim I did not derive**: the census is
+rtl_lead's own measurement of its own emitted netlist, published in its journal
+with the commands that reproduce it, and it is admissible here for the same
+reason §V.1 item 2's sha-256 was — it is **externally re-executable at a
+committed SHA**, not an inference. That is the distinction §V.2 turns on and it
+cuts the other way here.
+
+**Packet state, superseding §V.8:**
+
+**`FIX ACCEPTED — OPEN`**, on **exactly one** item:
+
+1. **§V.2** — the pre-fix measurement at `fafb83d` that the severity conversion
+   requires: restore the module to its `fafb83d` content in a **transient
+   uncommitted tree**, drive the single stimulus (64 octets, lane 4, `k` = 1)
+   with a throwaway print-only probe, and report two numbers — how many mid-frame
+   words carry `tkeep` ≠ 0xFF with `tlast` = 0 (§9.2 predicts 7), and how many of
+   the 60 required octets arrive in their gapless byte positions (§9.2 predicts
+   4). dv_lead's to adjudicate, orchestrator's to operate, nothing entering
+   history. **Severity stays MAJOR until it returns.**
+
+**Scheduling, so the item does not evaporate the way item 5 nearly did.** It is
+**deferred to a round of its own** and deliberately **not** folded into the
+family-I qualification campaign (`WO-0061`), for three reasons that are all
+ordering reasons: the probe needs a transient tree at **`fafb83d`** — a
+*de*-mutation — while every branch of that campaign is `42b9df3` + one diff, and
+one round cannot carry two base SHAs in its evidence; the probe is a `test/**`
+artefact and that campaign's round opens no bench file at all; and `WO-0061`
+§0.1's adjudicator-exposure rule bars me from RTL-adjacent work at a pre-fix SHA
+while that campaign's seal is being frozen. The owed shape is fully specified
+above and in §V.2, so the round that runs it needs no new adjudication from me
+beyond reading the two numbers.
