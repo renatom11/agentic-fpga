@@ -1351,3 +1351,43 @@ None.
 - site/public/index.html
 - site/public/org-chart.html
 - site/public/spec-atlas.html
+
+## [J-orchestrator-0177] 2026-08-04T17:10Z | task:WO-0061 | Manifests landed and the ten transients applied
+
+### Trigger
+Auditor returned: ten of ten SEEDED, no escapes, blinding
+conduct tighter than WO-0058's (scoped status calls, its own
+journal never read, docs/adr allowlisted but unopened).
+
+### Reasoning
+Committed under auditor at c4ffe7a. Transient application per
+the packet and the manifest's own §7: diffs extracted by the
+published command (10 extracted, the count being the
+tamper-evidence), apply --check clean ten of ten, then ten
+branches each = 42b9df3 + one diff: i-c1 a4c7a04, i-c2
+4afe708, i-c3 f2888c7, i-c4 d0bf64a, i-c5 ff6aaca, i-c6
+ea832f4, i-c7 8d8cb93, i-c8 9da40f3, i-c9 29845d8, i-c10
+992eead - plain never-merge commits, all pushed. dv's routing
+bar holds: no patch body reaches it until adjudication, no
+RTL-lane spawn while a mutant is applied (none is - the
+transients live on branches, the working tree is clean at
+c4ffe7a).
+
+### Actions
+c4ffe7a push; extraction; ten branches pushed; this commit.
+Next: wait the ten runs, harvest BUILD runtest per class,
+relay to dv with the disclosures for adjudication against the
+seal at 61eb242.
+
+### Evidence
+c4ffe7a; the ten branch SHAs; apply-check output ten clean.
+
+### Outcome / DoD
+The campaign's field phase is running. The seal speaks at
+adjudication; nothing about outcomes is claimed here.
+
+### Open questions
+None new.
+
+### Files-in-this-commit
+- (none)
