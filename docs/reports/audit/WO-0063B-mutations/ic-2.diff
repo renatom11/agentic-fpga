@@ -1,0 +1,28 @@
+diff --git a/libs/hardcaml_ethernet/src/xgmii_rx_64.ml b/libs/hardcaml_ethernet/src/xgmii_rx_64.ml
+index 30ca0385f3106160917ab671c871d774cbaea371..2e9f9b1453938e953cf6dc80c232c70aca944816 100644
+--- a/libs/hardcaml_ethernet/src/xgmii_rx_64.ml
++++ b/libs/hardcaml_ethernet/src/xgmii_rx_64.ml
+@@ -987,7 +987,22 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
+      no octet (REQ-108's count never advances there, and §9's ninth ruling
+      leaves such a frame with no FCS to check). Their union is therefore a
+      one-term union and is written as one. *)
+-  let strobe s = consume &: s &: ~:(i.clear) in
++  (* MUTATION IC-2 (WO-0063B) — the control — NEVER MERGE.
++     The same site, the same partition of [consume], the opposite disjunct.
++     [report_tlast] is the report SPEC-M03 §9 pins to "the cycle M03 emits that
++     frame's `tlast` word" (REQ-104, and REQ-107's with-delivery half); it is
++     deferred here by one cycle. [report_no_word] — the no-output-word pin — is
++     left exactly where §9 puts it, which is what makes this the control for
++     IC-1 rather than a second copy of it.
++
++     [report_tlast |: report_no_word] is [consume] term for term, so deleting
++     the [deferred] register restores the base design exactly, and [consume]
++     itself is untouched, so every datapath output is bit-identical to base on
++     every stimulus. *)
++  let report_tlast = sel_valid &: emit_tlast in
++  let report_no_word = sel_valid &: sel_is_r2 &: ~:emit_tlast in
++  let deferred s = reg spec (report_tlast &: s) in
++  let strobe s = (deferred s |: (report_no_word &: s)) &: ~:(i.clear) in
+   let q_strobe k = bit q2 k &: ~:(i.clear) in
+   { O.rx =
+       { Axi64.Source.tvalid

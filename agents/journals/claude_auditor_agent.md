@@ -2787,3 +2787,325 @@ to the orchestrator for commit, and to dv_lead as the disposition A-1 asked for.
 
 ### Files-in-this-commit
 - docs/reports/audit/WO-0061-mutations/DISP-0001_A-1.md
+
+## [J-auditor-0013] 2026-08-04T22:06Z | task:WO-0063B | Two report-path mutations seeded blind at c0595f9: the no-output-word pin deferred one cycle, the tlast pin deferred as its control, and the literal rendering of the intent rejected on a measured datapath perturbation
+
+### Trigger
+Orchestrator spawn: author the WO-0063B mutation manifest as the no-stake,
+blinded seeder for dv_lead's M03-I2 report-path-delay campaign. Both diffs are
+owed **before any run executes** (the packet's freeze-first law and its §7
+adjudicator-ordering rule), and R-DISC-1 / R-DISC-2 -- the two rules I minted
+against myself in `DISP-0001` §4 after dv_lead's FINDING A-1 -- bind this
+manifest and are its adjudication criteria. First campaign in which I am
+judged by rules of my own making.
+
+### Inputs
+- `agents/charters/auditor.md`; `agents/PROTOCOL.md` §4 (entry grammar), §4.2,
+  §6, §7 (the lessons harvest, LH1-LH3) -- mandatory first actions.
+- `agents/handoffs/WO-0063B_m03-i2-report-path-campaign.md` in full at
+  `c6c3287` -- §0 (member (iii)), §1 and §1.1 (the two intents and the two
+  mandatory disclosures), §3 (R-DISC-1's application, both start lanes), §4
+  (the measured perturbation signature and the three datapath messages), §5
+  (the allowlist and the six manifest bars), §6 (five dispositions), §7 (the
+  base-SHA identity and the ordering rule), §8 (mutant-owned inequalities).
+- `libs/hardcaml_ethernet/src/xgmii_rx_64.ml` at `c0595f9`, blob
+  `30ca0385f3106160917ab671c871d774cbaea371`, materialised with `git show`.
+  Read in full; worked closely: 480-534 (the closure record and its ageing),
+  535-590 (the in-word epoch's report path), 780-1005 (the emission decision,
+  `consume`, `strobe`, the output record). Its `.mli` read (no logic there).
+- `docs/specs/requirements.md` §0.6 (the strobe window; the *bound-never-a-licence*
+  paragraph, which rules a report deferred to the ceiling **non-conformant**
+  against SPEC-M03 §9's pin; C-23's high-cycle counting), §0.7, §12's
+  change-log row for that ruling.
+- `docs/specs/modules/xgmii_rx_64.md` §9 in full -- the closure list, the
+  explicitly **non-normative** record-age note (*"this module's observable is
+  the emitted stream, not the age of a record inside it"*), and **Strobe cycle,
+  pinned** -- plus §6.3 item 8, §10's REQ-109 row, §13's C-14.3 row.
+- `docs/reports/audit/WO-0061-mutations/DISP-0001_A-1.md` in full (R-DISC-1 and
+  R-DISC-2's authoritative text, and §4's supporting change to the manifest's
+  verification taxonomy); the WO-0061 manifest header and one prior `.diff` for
+  house form; my own journal, for the id chain and the harvest span.
+- **Not read**: `WO-0063B_..._-SEALED-predictions.md`, which sits in the same
+  commit as the packet and was never opened or listed for content -- everything
+  I say about what the seal may branch on comes from the packet's §11
+  *freely told* set. **Not read**: any file under `test/**`, by any command
+  including `grep`. **Not read**: any journal but my own, any other packet, any
+  `BUG-` packet, any prior verdict.
+- Ambient exposure, disclosed in the manifest §0.4 rather than judged by me: the
+  four PROTOCOL sections above, my own charter and journal, and a directory
+  listing of a shared scratch area that showed *filenames* including
+  `HEAD_test_m03_*.ml` and `head_m03_i.ml`. No such file was opened; a dedicated
+  clean working directory was used from that point.
+
+### Reasoning
+**Sampling frame.** Not a sampling round -- a construction round -- so the frame
+is the allowlist. In scope: one RTL file at one SHA, two specification
+documents, one packet, my own audit tree. Everything in that scope was read in
+full except the two specifications, of which the cited sections were read and
+the remainder deliberately skipped as irrelevant to a report-path pin.
+Deliberately skipped and load-bearing: the sealed companion and all of
+`test/**`, without which §6's expected killing behaviour must be stated as
+spec-derived design behaviour naming no unit, message or ordering -- which is
+what it does.
+
+**Locating the class before rendering it.** The packet says "consumed at age 3
+instead of age 2", which is the ageing vocabulary of `r0`/`r1`/`r2`. Base 486-488
+says in its own words that a record *"is always consumed by age 2, which is §9's
+pinned cycle for a frame that emits no word"*, and base 977 is
+`consume <== (sel_valid &: (emit_tlast |: sel_is_r2))` -- a disjunction of
+**exactly SPEC-M03 §9's two pins**, `emit_tlast` for the with-delivery report
+and `sel_is_r2` for the no-output-word report. So IC-1 and IC-2 are not two
+sites: they are one partition of one gate with the delay on opposite disjuncts,
+which is the strongest possible form for a control and is why the two diffs
+share a hunk site and are alternatives rather than composable.
+
+**Which structure member (iii) uses, derived rather than assumed.** The packet
+§3 fixes the closing character in **lane 0** at a lane-0 start and **lane 4** at
+a lane-4 start. At a lane-0 start the `/S/` occupies lane 0, so a closing
+character in lane 0 cannot be in the frame's own start word; likewise at lane 4.
+Member (iii) is therefore on the **epoch-A aged-record** path and not on the
+in-word `q2` path, and its closing word is the word after the start word --
+which, with the boundary at 5 and §0.6's ceiling at the closing word + 3, fixes
+the closing word at cycle 2, the conformant report at 4 and the deferred report
+at **5, exactly at the boundary**. All of that is derived from the packet and
+the two specifications; no bench file was needed and none was opened.
+
+**Why the literal rendering was rejected -- the decision this round turned on.**
+The obvious rendering of "consumed at age 3" is a fourth record stage with
+`consume` firing at `sel_is_r3`. I built it. At member (iii) it is
+**indistinguishable from what I shipped** -- `error_runt` at cycle 5, both lanes,
+no output word. Over an exhaustive 20 736-stimulus sweep it **moves the datapath
+on 191 stimuli**, emitting a `tlast` word with `tuser` set where the base emits
+nothing. The mechanism is that the closure record is not only the report's
+source: `sel` feeds `strip`, `closed`, `decided`, `hold` and `keep_count`, so
+holding a record one cycle longer changes the *next* frame's `tkeep` and
+`tvalid`. That is the packet §4's out-of-specification case -- IC-1 plus a
+datapath defect, unscoreable apart -- and it would have been invisible at the
+scored unit. The delivered rendering therefore leaves `consume` byte-identical
+and defers only the report **output**, which is the only rendering of IC-1 this
+module admits with the datapath untouched. SPEC-M03 §9 licenses that choice
+explicitly by declaring the record's age non-normative and the emitted stream
+the observable.
+
+**Both disclosures answered as facts, and one axis the question did not name.**
+Disclosure 1: the deferral reads the record's validity and age and **none** of
+its closure-character fields, so it is shared across the whole path, not
+`/T/`-scoped. But this module realises "emits no output word" in **two**
+structures -- the aged record, and the fixed two-stage `q2` path for a frame
+opened and closed inside one word -- and deferring only the first would have made
+"shared, all closure characters" true and still incomplete. That is the WO-0058
+GH-2 / WO-0061 S-4 shape the packet names, arriving on a third axis the question
+does not have a column for. IC-1 therefore carries a second hunk and defers both;
+the axis is named in the manifest rather than left to be discovered.
+Disclosure 2: a hold, one unit-delay register, so the map is `t -> t + 1`
+applied independently -- a second report moves with it and intervals are
+preserved.
+
+**What I disclosed against myself.** A one-cycle shift can land a moved report
+on the cycle of an unmoved one of the same name, and C-23 counts high cycles, so
+two events can occupy one. Measured: 291 of 20 736 stimuli for IC-1, 261 for
+IC-2, **never on `error_runt`**, and structurally impossible at member (iii),
+whose run holds one frame and one report. It is a property of the intent, not of
+my rendering -- the rejected chain rendering does it too -- and it is not §6.3
+item 8's class, because the base separates the two reports and the mutant
+collides them. Disclosed before the run, where it costs nothing.
+
+**Discharging R-DISC-1 without repeating A-1's defect.** A-1's class was that a
+fan-out trace proves the mutated value reaches a gate and never that the gate
+fires. So every conjunct of the quoted gate is evaluated at the firing cycle,
+per lane, including the ones the mutation does not feed -- and at the lane-4
+start that meant evaluating `a_hold_end` (5, does not bind), `a_pre_mask`
+(`0x0f`, and the idle characters lie *above* the `/T/` so `a_close_error` is 0)
+and `a_char_end` (4 = `cov_first`, so zero octets are covered) as sibling inputs
+contributed by the stimulus. The recurrence set is enumerated, not assumed
+unique, and the schedule's later terminate character is shown to raise nothing
+because `a_open` is 0 from cycle 3. The one fan-out argument in the manifest is
+§5.2's, and it is a **syntactic closure over the whole file** -- every occurrence
+of every introduced identifier, forwards to the output record -- rather than a
+walk outward from the mutated signal, and it is corroborated by exhaustive
+execution rather than left standing alone.
+
+**Model discipline, learned the hard way this round.** My first model run
+manufactured a spurious `error_bad_fcs` at the lane-4 start. It was a modelling
+bug, not a design fact -- Python's `and` returns an operand, so
+`int(cond and (vector & onehot))` wrote a bitmask into a one-bit record field and
+polluted the FCS bit. It was caught because the model is validated against
+figures it was **not** given: SPEC-M03 §9's measured `tlast` at 19 (k=1) and 67
+(k=7), and base 938-942 / 951-953's full word-cycle sequences at both start
+lanes. All reproduce exactly. A model checked only against my expectations would
+have reproduced my expectations, and this manifest's measured evidence would have
+been worth nothing.
+
+**LESSONS HARVEST (PROTOCOL §7, ADR-0018).** Span **`J-auditor-0001` ..
+`J-auditor-0012`** -- this is my **first** harvest note, so the span opens at the
+start of my chain rather than tiling from a predecessor; there is no skipped
+harvest above it. The A-1 / DISP-0001 arc (`J-auditor-0011`, `J-auditor-0012`)
+is the productive part of the span and is mined below. **Yield: three candidates,
+one war story.**
+
+- **Candidate LH-A1 (from `J-auditor-0011`, `J-auditor-0012`).** *A claim that a
+  change will produce a particular effect is discharged by evaluating every term
+  of the condition that decides the effect, at the moment the effect is claimed,
+  including terms the change does not feed -- or the claim is recorded as not
+  derived. Tracing a changed value forward to a decision point shows only that it
+  arrives there.* **LH1**: the WO-0061 manifest's I-c1 disclosure, dv_lead's
+  FINDING A-1 at `0929f3d`, my acceptance at `fab31de` (`DISP-0001` §3(1)).
+  **LH2-g** -- no proper noun of any kind; it teaches a stranger to the domain.
+  **LH3**: without it a claim that is arithmetically true and behaviourally false
+  survives into a downstream decision, and is found from a result rather than
+  from a disclosure -- a finding rather than a note.
+- **Candidate LH-A2 (from this round, §5.5).** *Minimality of a deliberate change
+  is measured by its effect cone, not by its edit size. Before making one,
+  enumerate every reader of each value the edit would alter; an edit that alters
+  a value read outside the intended effect makes two changes, and no later
+  measurement can separate them.* **LH1**: this commit's manifest §5.5 (191 of
+  20 736 stimuli perturbed by the rejected rendering), against the incident it
+  generalises -- the measured datapath signature the packet §4 quotes.
+  **LH2-g** -- no proper nouns. **LH3**: without it, an experiment meant to
+  isolate one effect seeds two, both detectors fire, attribution is impossible,
+  and the result reads as a success while measuring nothing.
+- **Candidate LH-A3 (from this round, §8.2).** *A model built to check a system
+  must first reproduce quantities of that system it was not given -- figures
+  already measured and on record. A model validated only against the modeller's
+  expectations reproduces the expectations.* **LH1**: this commit (the lane-4
+  spurious-event bug, caught by the fidelity control), and `DISP-0001` §2.1's
+  control at `fab31de`, which established the practice. **LH2-g** -- no proper
+  nouns. **LH3**: without it the model's agreement with the claim it exists to
+  check is circular, and every "measured" figure in a report is unfounded.
+- **War story, recorded and going no further.** Python's `and` returns an
+  operand rather than a boolean, so coercing a bitmask through it silently
+  widened a one-bit field in my model and manufactured an event. **Fails LH2**
+  at both grades: stated without naming the language it is not actionable, and
+  named it belongs to no domain pack in ADR-0018's sense -- one language's
+  evaluation semantics is not a domain. The transferable part of it is LH-A3,
+  which is carried as a candidate instead.
+- **Out of span, routed rather than harvested**: the "a disclosure with a fixed
+  answer set can still be incomplete" rule that this round's §2.1 exercises. Its
+  incidents (`WO-0058` GH-2, `WO-0061` S-4) are dv_lead's, in dv_lead's span, and
+  I mine my own; noted here so the orchestrator can see it was considered and
+  deliberately not claimed.
+
+### Actions
+- Verified the base SHA's identity against the packet §7 rather than accepting
+  it: `c0595f9` is the exact parent of the packet commit `c6c3287` and carries
+  `J-dv_lead-0105`'s citation sweep. No disagreement to report as a finding.
+- Authored **both** diffs before any run existed, under
+  `docs/reports/audit/WO-0063B-mutations/`, each `[c0595f9 + exactly one diff]`,
+  each touching one file and no other.
+- Built a cycle-accurate model of the module from the base source with base line
+  numbers against every signal, in four variants -- BASE, IC-1, IC-2 and the
+  rejected CHAIN rendering -- and reproduced it **in full inside the manifest**
+  so the report is checkable without any scratch file.
+- Discharged R-DISC-1 term by term at the firing cycle, per lane, for both
+  intents; R-DISC-2 as an 11-row gate inventory with four cross-class facts
+  tabulated; the packet §4 pre-ship check structurally (syntactic fan-out
+  closure) and by exhaustive execution; and both §1.1 disclosures as measured
+  facts of the delivered diffs.
+- Wrote nothing outside `docs/reports/audit/WO-0063B-mutations/` and this
+  journal. Ran no `git` write of any kind -- every `git` invocation was a read
+  (`rev-parse`, `show`, `log`, `hash-object`, `diff --no-index`,
+  `apply --check`). Applied nothing to the repository working tree; all
+  apply/revert round trips were done in a scratch directory with `patch`.
+
+### Evidence
+Base identity and diff mechanics, runnable from a checkout at this commit:
+
+```
+$ git rev-parse c6c3287^
+c0595f9e8026757cd4eed6e856d06555424437e0
+$ git rev-parse c0595f9:libs/hardcaml_ethernet/src/xgmii_rx_64.ml
+30ca0385f3106160917ab671c871d774cbaea371
+$ git show c0595f9:libs/hardcaml_ethernet/src/xgmii_rx_64.ml | sha256sum
+8fc08242046ec0b8431df90d0fafb581cb22f30acf2b9651e29d3c4c7656fec1
+$ git apply --check docs/reports/audit/WO-0063B-mutations/ic-1.diff   # exit 0
+$ git apply --check docs/reports/audit/WO-0063B-mutations/ic-2.diff   # exit 0
+$ git apply --check -R docs/reports/audit/WO-0063B-mutations/ic-1.diff
+error: patch failed: libs/hardcaml_ethernet/src/xgmii_rx_64.ml:580   # as it must
+$ sha256sum docs/reports/audit/WO-0063B-mutations/*.diff
+87e285e28a64ea1893bfdad42a5f37407f095ae5ffa37df2ba1a4399d7d41283  ic-1.diff
+36263bd5ecbfbaa2bb30eafba908b43e11da0a4a7df02042c005e11d4390cac2  ic-2.diff
+```
+
+Apply/revert round trip, in a scratch copy of the base (not the working tree):
+IC-1 applied gives the intended mutant byte for byte and reverts to the base
+byte for byte; IC-2 likewise. Both observed.
+
+`consume` unchanged in both mutants, checked by `grep`: base line 977 and both
+mutants read `consume <== (sel_valid &: (emit_tlast |: sel_is_r2));` identically.
+Fan-out closure checked by `grep`: the introduced identifiers occur only inside
+`strobe`'s definition, and `strobe` / `q_strobe` occur only in the five
+`error_*` output fields -- no field of `rx` references either.
+
+The model is reproduced verbatim in the manifest's §9 and was re-extracted from
+the committed markdown and re-run to confirm the manifest is self-checking. Its
+output, load-bearing lines:
+
+```
+A. FIDELITY CONTROL (figures the model was not given)
+   lane4=0 k=1: words at [5,7,9,11,13,15,17,19]   tlast at [19]
+   lane4=0 k=7: words at [11,19,27,35,43,51,59,67] tlast at [67]
+   lane4=1 k=1: words at [6,8,10,12,14,16,18,19]  tlast at [19]
+   lane4=1 k=7: words at [18,26,34,42,50,58,66,67] tlast at [67]
+      -- SPEC-M03 §9's measured 19 and 67, and base 938-942 / 951-953's
+         sequences at both start lanes, all reproduced exactly.
+B. MEMBER (iii)
+   lane-0 BASE {'error_runt': [4]}  IC1 {'error_runt': [5]}  IC2 {'error_runt': [4]}
+   lane-4 BASE {'error_runt': [4]}  IC1 {'error_runt': [5]}  IC2 {'error_runt': [4]}
+   output-words = 0 in all six runs
+D. §4 PRE-SHIP CHECK, 20736 stimuli
+   IC1: stimuli whose DATAPATH moves vs BASE = 0
+   IC2: stimuli whose DATAPATH moves vs BASE = 0
+   CHAIN (rejected rendering): stimuli whose DATAPATH moves = 191
+   IC1: strobe differences on 18668 stimuli (90.0%); count-gaining = 0
+   IC2: strobe differences on 1868 stimuli (9.0%);  count-gaining = 0
+   count-losing: IC1 {eswt: 285, ebf: 6}   IC2 {eswt: 235, ebf: 26}   (never error_runt)
+E. member (iii): emitted words = [] under BASE, IC1, IC2 and CHAIN, both lanes
+G. 32-octet delivering runt: BASE error_runt at 7, IC1 at 7, IC2 at 8, both lanes
+```
+
+Reproduce: save the manifest's §9 code block as `model.py` and run
+`python3 model.py`. It needs nothing from this repository.
+
+**Not evidence, and labelled so**: no OCaml toolchain was run, so neither diff is
+claimed to compile, elaborate or type-check (manifest §8.3). CI is the authority
+(ADR-0005) and the control run is dv_lead's to record, not mine.
+
+### Outcome
+DoD met against the packet's §5 six bars: two minimal independent diffs frozen
+before any run (bar 1); R-DISC-1 discharged term by term, per lane, per intent,
+with the stimulus-contributed conjuncts called out and the recurrence set
+enumerated -- **no term undischarged and no lane declared NOT SEEDED** (bar 2);
+R-DISC-2's gate inventory with cross-class facts tabulated before delivery
+(bar 3); both §1.1 disclosures answered as measured facts, plus one axis the
+question did not name (bar 4); the §4 pre-ship check discharged two ways and
+**shown to have done real work** by rejecting the literal rendering (bar 5); the
+base SHA quoted and its §7 identity verified (bar 6).
+
+Both classes are **SEEDED AS SPECIFIED at both start lanes**. The escape of
+packet §1 was available and is not taken. Handoff:
+`docs/reports/audit/WO-0063B-mutations/` to the orchestrator for commit and
+transient application, and to dv_lead for adjudication against the sealed
+companion, which I have not read and will not read.
+
+### Open-questions
+- **For dv_lead, before the campaign runs.** IC-1 defers **both** of the
+  module's no-output-word report structures -- the aged closure record and the
+  in-word two-stage path. If the seal's wide branch was written against the aged
+  record alone, the extra structure widens the convicting set and I would rather
+  that were reconciled now than read off a scorecard. The manifest §2.1 tabulates
+  exactly which structure and which closure character moves.
+- **For dv_lead.** The count-losing shape of manifest §7.1 means a red in the
+  blast radius may arrive as a **count** difference rather than a **cycle**
+  difference. It cannot occur at member (iii) and never occurs on `error_runt`,
+  but a scorer expecting only cycle differences should know before the fact.
+- **Ambient exposure** (manifest §0.4) is disclosed for dv_lead's call, not
+  mine: four PROTOCOL sections, my own charter and journal, and a directory
+  listing showing bench *filenames*, none opened.
+- No CRITICAL is opened or closed by this round; no escalation class is invoked.
+  Nothing in this round is a finding against any agent, including the
+  orchestrator.
+
+### Files-in-this-commit
+- docs/reports/audit/WO-0063B-mutations/README.md
+- docs/reports/audit/WO-0063B-mutations/ic-1.diff
+- docs/reports/audit/WO-0063B-mutations/ic-2.diff
