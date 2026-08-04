@@ -2191,3 +2191,379 @@ Reproducible at this commit's SHA, from a repo checkout at the repo root.
 
 - docs/adr/ADR-0018-the-harvest-is-a-cadence-not-an-event.md
 - docs/gates/lessons-harvest-block.md
+
+## [J-architect_docs_lead-0030] 2026-08-05T03:05Z | task:WO-0063 | F-1 discharged as phrased, and §0.6's window ruled a BOUND AND NEVER A LICENCE — the two rules dv found in conflict were never about the same object, and the one cycle between them belongs to §9
+
+### Trigger
+
+Orchestrator, relaying a two-item batch from dv_lead. **Item 1**: verify that
+`d54c931` discharges dv_lead's **FINDING F-1** *as dv phrased it*, and rule
+DISCHARGED or name the residue. **Item 2**: dv_lead's new escalation, raised in
+the design of `WO-0063` (the M03-I2 report-path-delay mini-round) and carried in
+that packet's §5 and §8 item 3 — is requirements.md §0.6's `[W, W + 3]` strobe
+window normative for M03's no-output-word reports alongside SPEC-M03 §9's exact
+pin at `W + 2`, and is a report at `W + 3` conformant under §0.6 while
+non-conformant under carry-forward **C-14.3**? dv states the consequence it cares
+about: the standing `Strobe_monitor`, attached to every M03 unit, cannot see the
+report-path-delay defect class at any unit at all. Two bounds on the answer,
+stated by dv and honoured here: no row moves on it, and it must pass §0.5's
+causality test.
+
+### Inputs
+
+- `docs/specs/requirements.md` at HEAD — §0.5 in full (the gapped-stimulus
+  paragraph, the straddle and late-decision tests, the causality test, the
+  start-lane bound), **§0.6 in full** (the window, the reference-word clauses and
+  the `RV-0057-VERDICT` Finding 2 note), §0.7, REQ-008's verification column,
+  §13's table in full including `J-orchestrator-0167`'s transcription row.
+- `docs/specs/modules/xgmii_rx_64.md` at HEAD — **§6.1 item 2** in full (the
+  repaired lane-4 paragraph and its four-row residue table, `:523–586`), item 1's
+  worked 64/69-octet examples and item 3's withdrawal, **§7**'s latency table
+  (ΔC = 3 at both lanes) and handshake bullet, **§9** in full (the closure list,
+  the non-normative closure-record note, *Strobe cycle, pinned*, the reference-word
+  paragraphs), §11, §13's last five rows.
+- `docs/specs/SPEC-TEMPLATE.md` §9 — checked for whether a module spec is
+  *obliged* to pin an exact strobe cycle. It is not; that is the decisive fact
+  under Reasoning 7.
+- `agents/handoffs/BUG-0002_m03-idle-injection-tlast-on-a-non-final-word.md`
+  `:840–944` — dv_lead's COUNTERSIGNATURE block, point 3 and the **FINDING F-1**
+  refusal verbatim, including its offered repair and its disclaimer of that
+  offer.
+- `agents/handoffs/WO-0060_tb-m03-family-i-dm-rebase.md` §3.5 and §7.1 (the two
+  AP cells and the superseded "outstanding" clause), `RV-0060-VERDICT` §7.
+- `agents/handoffs/WO-0061_family-i-mutation-campaign.md` **`WO-0061-VERDICT` §3**
+  in full — the I-c10 offset **measurement** (`error_runt@11` against a terminate
+  word at cycle 10), ground 2's assertion ordering, and the general finding that
+  M03-I2's window is unfalsifiable by any threshold-class defect.
+- `agents/handoffs/WO-0063_m03-i2-report-path-delay-mini-round.md` — §1, §2.2's
+  arithmetic table, §2.3, §3's two intents, **§4** (both R-DISC discharges), **§5**
+  (the instrument fact and the question), §7's pre-committed dispositions, §8
+  item 3.
+- `docs/gates/P1-spec-freeze-checklist.md` — the carry-forward ledger, read for
+  its **actual** tail (see Evidence 4).
+- `agents/charters/architect_docs_lead.md`; `agents/PROTOCOL.md` §4, §6, §7.
+- **Not opened**, deliberately: `test/xgmii_rx_64/test_m03_*.ml` and every other
+  bench source. PROTOCOL §10 independence — the bench is judged against this
+  ruling and never the reverse — so both rulings derive from spec text and from
+  the arithmetic the packets themselves state. Also not opened: `libs/**`,
+  `docs/reports/audit/**`.
+
+### Reasoning
+
+**1. Item 1 — the test I applied, stated before applying it.** "Discharges the
+escalation *as phrased*" is not "adopts the repair dv offered". A refusal binds on
+its **claims**; an offered wording binds only if the finding presents it as a
+term. F-1 does neither by accident: it labels its numbers as derivation
+("*this is §6.1's own residue table, read at lane 4*") and labels its wording as
+a gift — "*Repair I offer (the architect's call, not mine, and I hold no position
+beyond it)*". So the test is: does every **claim** F-1 makes now hold of the
+landed text, and is every **number** it derived reproduced in the cell? A
+departure from the offered phrasing is not a residue; a departure in one cell
+would be.
+
+**2. Item 1 — term by term, against the file at HEAD.** F-1 makes six claims and
+`d54c931` carries all six. (i) The heading's universal "*Every output word, at a
+lane-4 start*" is false — landed: the heading is now "*The straddle at a lane-4
+start, and the `tlast` word by residue*", with a parenthetical naming the old
+universal as *"what F-1 below convicts"*. (ii) The `L + 16k` / `L + 8k` split is
+exact for the **non**-`tlast` words — landed: the split paragraph now opens "*For
+a **non-`tlast`** word*". (iii) It is exact for the `tlast` word at r = 4 and
+wrong at the other seven — landed: "*Only r = 4 puts a **full** `tlast` word two
+input words behind its own closing character … at the other seven residues that
+word is short*". (iv) At r ∈ {1, 2, 3} bytes 4 … r+3 measure **L**, not L + 8k,
+because they sit in the closing character's own word — landed as the table's
+r ∈ {1, 2, 3} row: "*bytes 4 … r+3 in **T itself*** … **L + 8k** and **L** = 20
+and **12**". (v) At r = 0 and r ∈ {5, 6, 7} the word has no byte above 3 and its
+bytes 0–3 measure L + 8k, not L + 16k, so the *set* is unchanged while the
+per-word description was still wrong — landed as two table rows at **L + 8k** =
+20, plus "*the `tlast` word contributing no value the non-`tlast` words do not
+already carry there*". (vi) The three-class set and its observability — landed:
+`{L, L + 8k, L + 16k}`, `{12, 20, 28}` at k = 1 and `{12, 68, 124}` at k = 7, at
+directed lengths **65, 66, 67**, "*reported and SHALL NOT be asserted*". **Every
+number is F-1's own and no cell departs.** F-1's structural charge — that the
+`J-architect_docs_lead-0025` ruling preserved the sharing argument at lane 0 and
+dropped it at lane 4, so "*the two halves of the ruling are inconsistent with
+each other*" — is answered in the text rather than around it: the landed
+paragraph derives {1, 2, 3} as the complement of derivation 1's own
+{0, 4, 5, 6, 7} and calls it "*the mirror of the lane-0 r ∈ {5, 6, 7} case item 3
+states, which is why both items state it or neither is right*". **Verdict:
+DISCHARGED as phrased. No residue.**
+
+**3. Item 1 — the one departure, and why it is not a residue.** The offered
+sentence "*state … `L` for those sharing the closing character's word and the
+split otherwise*" is declined. It is refuted by F-1's own text two sentences
+earlier: at r = 0 and r ∈ {5, 6, 7} the `tlast` word measures **L + 8k**, which
+is neither `L` nor "the split". Adopting the offered wording would have
+reintroduced, at three residues, exactly the error F-1 convicted at seven. That
+is a case of a finding being **more right than its own proposed repair**, and the
+right disposition is to take the derivation and re-word — which is what the
+`J-architect_docs_lead-0026` row records, and which F-1's own disclaimer licenses.
+
+**4. Item 1 — dv's new measurement, and what it actually bears on. I decline to
+overstate it, including in dv's favour.** The batch offers `WO-0061-VERDICT` §3's
+I-c10 offset as confirming evidence on this cell. Read exactly, it is
+`error_runt@11` on a **64-octet, lane-0** frame whose terminate word is at cycle
+10 — offset **+1**, at k = 0, of a *strobe*. The F-1 cell is a **lane-4**,
+**k ≥ 1** statement about *per-octet latency classes*. Different lane, different
+quantity, and the whole content of the cell is the separation an injected idle
+creates, which a k = 0 run cannot exhibit. So it is **not** evidence about the
+cell. What it *is* evidence for is worth recording rather than discarding: the
+`tlast` word's D is the closing character's word T with a lane-0 offset in
+{1, 2}, and a measured +1 at r = 0 lands inside that set at its tight end — an
+independent, gapless confirmation of the **branch-(b) offset** that the F-1 table
+is read through, and of §9's own "*on the cycle M03 emits that frame's `tlast`
+word*". It confirms the frame the cell sits in, not the cell. Both statements are
+in the §13 row so that no later reader upgrades it.
+
+**5. Item 1 — why a spec note was owed at all, when the repair landed a week of
+commits ago.** Because requirements.md §13's transcription row (`J-orchestrator-0167`)
+records the `a8ca14d` countersignature "*with F-1 outstanding against §6.1 item 2's
+lane-4 cell*", and **nothing in requirements.md closes it**. The discharge is
+recorded only in SPEC-M03's own §13. A reader of the programme-wide document
+therefore sees an open condition with no closing row — the stale-by-omission
+shape this table has hit before (the REQ-901 restatement row at SPEC-M03 §13).
+The fix is a **new row**, never an edit to the old one: that row is another
+agent's signature transcription and rewriting it would be rewriting the record of
+a signature. One row, no text moved.
+
+**6. Item 2 — the finding restated as arithmetic, because that is where the
+answer is.** dv's numbers reproduce exactly (`WO-0063` §2.2, re-derived here at
+Evidence 5). At either start lane the zero-received frame's closing `/T/` sits in
+input word **W = cycle 2**; §9's no-output pin is **W + 2 = 4**; §0.6's ceiling
+is the module's latency in cycles, ΔC = **3** (SPEC-M03 §7), so **W + 3 = 5**;
+and the boundary M03-I2 scans from is also **5**. The apparent conflict is that
+one rule *admits* cycle 5 and the other *excludes* it. **They are not two rules
+about the same object.** §0.6's ceiling bounds a **strobe** and includes its
+endpoint. C-14.3 is SPEC-M03 §6.1's **drain** derivation and bounds the last
+output **word** to two cycles after the terminate word; a bench scanning for
+silence from the third cycle onward is reading that word bound, and on a frame
+with no output word the only thing that scan can catch is a pulse. So the two
+quantities coincide in *cycle number* by arithmetic and differ in *subject*.
+Nothing in the specification disagrees with itself, and the ruling must not
+manufacture a reconciliation between rules that were never in contact.
+
+**7. Item 2 — the ruling: (a), and the term the existing note was missing.**
+§0.6's window is normative and §9's pin is the tighter requirement; **both bind,
+and conformance is their conjunction.** A report at `W + 3` is inside the window
+and **non-conformant**, on §9's authority. §0.6 already carried half of this — the
+note added at `J-architect_docs_lead-0023` says that on this class the window
+"carries **no independent information**" and that the assurance is the module's
+exact pin plus the exact strobe-event set, "never the window check". What it did
+not say is the **converse**, and the converse is what dv actually needed: a cycle
+inside the window is not thereby *conformant*. Stated only in the first
+direction, the note explains why a window check proves little; stated in both, it
+explains why a window check's **green is not evidence about the pin** — which is
+precisely the sentence that turns dv's `Strobe_monitor` observation from an open
+defect into a documented, bounded instrument reach. So the edit is one paragraph
+appended to that note, carrying: the bound-not-licence rule; the one-cycle
+arithmetic at M03 with both quantities named; the instrument consequence; and the
+C-14.3 disambiguation from Reasoning 6. dv's own reading of its monitor is
+confirmed in terms.
+
+**8. Item 2 — why (b) is refused, on a derivation and not a preference.** dv's
+option (b) — §0.6 gains a carve-out tying the window on the zero-received class
+to the module's exact pin — is coherent and I rejected it on three grounds, the
+third decisive. (i) **Direction of inheritance.** §0.6 delegates the *names* of a
+module's closure events to that module's spec, and always has; it has never
+delegated the *rule*. A ceiling defined as "whatever the owning module pinned"
+makes the programme-wide document inherit its content from the documents it
+governs, which inverts the hierarchy every module spec's "restates rather than
+paraphrases" discipline depends on. (ii) **It would move a signed instrument for
+nothing.** dv's committed `window` computes `not_after = W + ΔC` and was
+countersigned at `0caf023` as implementing §0.6's clauses verbatim; narrowing
+§0.6 puts that instrument out of conformance with the text it was signed against,
+in exchange for a conviction that the per-row pin assertions already make.
+(iii) **Decisive: it deletes the bound exactly where the bound is the only one.**
+SPEC-TEMPLATE §9 requires a strobe, a stream effect and a co-occurrence ruling —
+it does **not** oblige a module to pin an exact strobe cycle, and REQ-008's own
+verification column commissions the check *inside the §0.6 window*, not against a
+pin. Under (b), a module that pins nothing on its zero-received class would have
+**no ceiling at all** on that class: the carve-out is silent where the window is
+redundant's opposite. That is manufacturing a **C-5** vacuity deliberately — a
+phrase with no referent — in the very clause whose reference-word ruling exists
+to supply referents. (a) keeps a bound everywhere and loses nothing, because
+where a module pins, the pin already governs.
+
+**9. Item 2 — the (c) I considered and refused.** The tempting third option is to
+give §0.6 teeth on this class by commissioning the standing monitor to check the
+owning module's pin. I refuse it for two reasons and neither is timidity. It
+would be **normative** text commissioning an assertion in dv_lead's own
+instrument, which is the C-41 unpassable-assertion shape running in the other
+direction — the architect writing DV's monitor from requirements.md — and it
+would owe a countersignature I have no reason to spend. And it would be capable
+of **moving rows**, which dv fixed as a bound on this answer: a new obligation on
+the monitor attached to *every* M03 unit changes what those units assert. The
+plan disposition — whether the standing monitor gains a pin check, or whether the
+per-row assertions carry it as they do today — is dv_lead's, and this ruling
+deliberately leaves it whole.
+
+**10. The two bounds dv set, checked rather than asserted.** **Causality
+(§0.5)**: the paragraph pins nothing. It names two cycles that already exist,
+`W + 2` and `W + 3`, both at or after the deciding input word W, which is the
+word carrying the closing character — the reference word §0.6's own third clause
+already fixes for this class. The test is passed trivially, and I record that it
+would *also* have been passed by (b), so causality is not what discriminates the
+options; Reasoning 8 is. **No row moves**: no attack-plan row's disposition
+changes (M03-I2's qualification still turns on member (iii) against IC-1/IC-2,
+exactly as `WO-0063` §7 pre-commits), no strobe cycle moves, and no latency figure
+moves — §1.1's ceilings and h column, SPEC-M03 §7's L = 16/12 and ΔC = 3, §6.1's
+D(m), its residue tables and the `m + 3` cycles are all byte-unchanged (Evidence
+2 and 3).
+
+**11. Class, countersignature, ADR.** The paragraph is **non-normative
+guidance** — the class the closure-record note took at `J-architect_docs_lead-0027`,
+and lighter than editorial. Its honest test: delete the paragraph and every
+conformant design, every committed test and every requirement is exactly what it
+was. It states no SHALL, moves no sentence, pins no cycle, amends no requirement
+and no verification column, moves **no window edge**, commissions no test and
+closes no ledger item. On that ground **no countersignature is owed**; were it
+ever restated normatively that would be a fresh, narrowly countersigned change,
+and the §13 row says so. **No ADR**: there is no design choice among live
+alternatives — (b) is refused as structurally unsound rather than as a rejected
+design — and nothing in PROTOCOL, a charter or an enforcement script moves.
+
+**12. No ledger row, and the spawn's premise corrected.** The batch suggested
+"C-44 next if the ledger is at C-43" and told me to verify. The carry-forward
+ledger's actual tail is **C-50** (Evidence 4), so C-43 and C-44 are both long
+since allocated — C-43 is the `error_ip_bad_header` cell and C-44 is dv's own
+M14-B4 self-report. More to the point, **no ledger row is owed at all**: a
+carry-forward records something *carried*, and both items are closed here.
+Minting C-51 to record a closed question would put a permanent open-looking row
+in a gate checklist. The two §13 rows are the record.
+
+**13. §7 harvest note — explicit nil, with the span stated so the interval
+tiles.** Span since my last harvest note: **there is none**, in either volume;
+ADR-0018 established the practice at `J-architect_docs_lead-0028` and amended it
+at `-0029`, and the interval `[J-architect_docs_lead-0022 … -0030]` contains no
+harvest trigger. This round is neither an `SO-` nor a phase gate, so under
+PROTOCOL §7 no note is owed and none is manufactured — the same disposition
+`-0029` §9 took, for the same reason, and declaring one here would be the theatre
+ADR-0018 §7.1 warns about. **Yield: nil.** The first note under the amended bar
+remains `SO-M03`'s, where the span will be stated from `-0022`.
+
+**14. What I deliberately did not touch.** `docs/specs/modules/xgmii_rx_64.md` is
+**byte-unchanged**, and that is a decision rather than an omission: §9's pin is
+exact and correct, its *Strobe cycle, pinned* paragraph already ties itself to
+§0.6's window, and the ruling adds nothing that §9 must restate — a module-side
+restatement of a non-normative note would be text with no reader. No AP file, no
+gate checklist, no ADR, no test, no `libs/**`, no `traceability.md` (the
+paragraph is normative nowhere, so it claims no coverage).
+
+### Actions
+
+- **`docs/specs/requirements.md` §0.6** — appended **one paragraph** to the
+  existing non-normative note that follows the reference-word clauses: the
+  window is a bound and never a licence; both it and the module's own pin bind,
+  so a cycle inside the window is not thereby conformant; the M03 arithmetic
+  (ΔC = 3 → ceiling W + 3, §9's pin W + 2) with the deferred report named
+  **non-conformant on §9's authority**; the instrument consequence (a monitor on
+  the window alone convicts nothing here, and its green is evidence about the
+  window and none about the pin); and the C-14.3 disambiguation (a bound on
+  output **words**, contributing a scan boundary at the same cycle, not a second
+  rule about the pulse).
+- **`docs/specs/requirements.md` §13** — appended **two rows**, both journalled
+  here. Row 1 records **F-1 DISCHARGED** with the term-by-term verification, the
+  one declined wording and F-1's own disclaimer of it, and the exact reach of the
+  I-c10 measurement. Row 2 records the §0.6 ruling with its class, the refused
+  alternative and its three grounds, the no-countersignature and no-ADR
+  arguments, and the causality check.
+- Ran the verifications below. **No git command that writes**, no edit to any
+  file outside `docs/`, and no edit above EOF of this journal.
+
+### Evidence
+
+Reproducible at this commit's SHA from a repo checkout at the repo root.
+
+1. **Scope — exactly one non-journal file is mine.**
+   `git status --porcelain` → ` M docs/specs/requirements.md`, plus
+   ` M test/xgmii_rx_64/test_m03_b.ml` and ` M test/xgmii_rx_64/test_m03_i.ml`.
+   **The two `test/**` files are not mine** — they are pre-existing working-tree
+   changes from the DV line (`test/**` is outside my write scope, PROTOCOL §6),
+   I opened neither, and they are excluded from Files-in-this-commit. Flagged in
+   Outcome so the orchestrator stages only the `docs/` path.
+2. **Pure append, zero deletions:**
+   `git diff --numstat docs/specs/requirements.md` → `24  0  docs/specs/requirements.md`.
+   The **0** is the load-bearing figure: every pre-existing line of §0.6 —
+   including the normative *Strobe timing window* sentence, all three
+   reference-word clauses and the C-23 counting convention — survives
+   byte-identical, and no §13 row is edited. `git diff -U2` shows exactly two
+   hunks, at `@@ -465,4 +465,26 @@` (the note) and `@@ -925,2 +947,4 @@` (the two
+   rows).
+3. **No other specification moves:** `git status --porcelain docs/` returns only
+   `requirements.md`, so `docs/specs/modules/xgmii_rx_64.md`, every latency
+   figure it pins (§7's L = 16/12 and ΔC = 3, §6.1's D(m) and residue tables,
+   §9's strobe cycles) and requirements.md §1.1 are untouched at this commit.
+4. **The ledger tail, checked rather than assumed:**
+   `grep -o "^| C-[0-9]*" docs/gates/P1-spec-freeze-checklist.md | tail -1` →
+   `| C-50`. The spawn's "the ledger is at C-43" premise is false; no ledger row
+   was minted, and none is owed (Reasoning 12).
+5. **dv's `WO-0063` §2.2 arithmetic, re-derived from the packet's own stimulus
+   rather than read off its table.** `At_octet 0` places the closing `/T/` at
+   `start_ot + 8`. Lane 0: `start_ot` = 8 → closing octet time **16** → word
+   `16 / 8` = cycle **2**, lane 0. Lane 4: `start_ot` = 12 → closing octet time
+   **20** → cycle `⌊20/8⌋` = **2**, lane `20 mod 8` = **4**. Both give W = 2;
+   §9's no-output pin W + 2 = **4**; §0.6's ceiling W + ΔC with ΔC = 3
+   (SPEC-M03 §7's table) = **5**; C-14.3's scan boundary = **5**. dv's table
+   reproduces at both lanes, and the one-cycle margin it claims is confirmed.
+6. **F-1's six claims against the file at HEAD** — the comparison of Reasoning 2,
+   run as a read of `docs/specs/modules/xgmii_rx_64.md` `:523–586` (the repaired
+   item 2, its four-row table at `:546–551`) against
+   `agents/handoffs/BUG-0002_m03-idle-injection-tlast-on-a-non-final-word.md`
+   `:893–938` (the FINDING F-1 block). Every numeric cell matches: r ∈ {1,2,3} →
+   `L + 8k` and `L` (20 and 12 at k = 1); r = 0 and r ∈ {5,6,7} → `L + 8k` (20);
+   r = 4 → the split (28 and 20); class set `{12, 20, 28}` / `{12, 68, 124}` at
+   lengths 65/66/67.
+7. **The I-c10 datum, quoted rather than characterised:**
+   `agents/handoffs/WO-0061_family-i-mutation-campaign.md` `WO-0061-VERDICT` §3 —
+   "*M03-A3's strobe-monitor report under i-c10 prints `observed: error_runt@11`
+   for a 64-octet lane-0 frame whose terminate word is at cycle 10. **Offset =
+   +1**.*" Lane 0, k = 0, a strobe. SPEC-M03 §7's handshake bullet pins the
+   branch-(b) lane-0 offset at "*one or two*"; +1 lies inside it.
+8. **No build, no simulation.** ADR-0005: the toolchain is lost and CI is the
+   only authority. This round is textual and commissions nothing, so there is no
+   run to cite and none is implied.
+
+### Outcome
+
+**DoD met, both items.**
+
+- **Item 1 — DISCHARGED as phrased. No residue.** All six of F-1's claims and
+  every numeric cell hold of the landed text at HEAD; the single departure is the
+  offered *wording*, which F-1 itself disclaims as not a term of the refusal and
+  which is inexact at three residues by F-1's own arithmetic. dv_lead is owed
+  **notification**, not a signature — the standing already recorded in SPEC-M03
+  §13's `J-architect_docs_lead-0026` row.
+- **Item 2 — ruled (a)**, with the bound-not-licence direction added: §0.6's
+  window is normative, §9's pin is the tighter requirement, both bind, a report
+  at `W + 3` is **non-conformant on §9's authority**, and the standing
+  `Strobe_monitor`'s inability to convict the report-path class is a **bounded
+  instrument reach that is accepted and now documented**, not a specification
+  defect. C-14.3 is disambiguated as a bound on output words. Causality passed;
+  **no row moves**, no latency figure moves, no committed instrument moves.
+- **Handoff**: to the orchestrator for commit, then to dv_lead as the answer to
+  `WO-0063` §8 item 3 — which unblocks that packet's phase B, since IC-1's
+  required consequence ("*the pulse lands **at** the C-14.3 boundary and the
+  row's window raises*") is now backed by a specification that says such a pulse
+  is non-conformant.
+- **Staging note for the orchestrator**: stage `docs/specs/requirements.md`
+  **only**. The two modified `test/xgmii_rx_64/*.ml` files in the working tree
+  are the DV line's and are outside my write scope (Evidence 1); staging them
+  under this entry would fail R4 and R7 both.
+
+### Open-questions
+
+- **dv_lead's plan disposition, explicitly left whole and not decided here**:
+  whether the standing `Strobe_monitor` gains a pin check on the no-output-word
+  class, or whether the per-row cycle assertions keep carrying it as they do
+  today. Reasoning 9 records why I refused to commission it from
+  requirements.md; it is dv's instrument and dv's call.
+- **`WO-0063` phase B's disclosure axis** (§3.1 — is IC-1's rendering scoped to
+  `/T/`-closed frames or shared across the whole no-output report path) is
+  untouched by this ruling and remains the auditor's to answer. My paragraph is
+  scoped to the class, not to the closure character, so it discriminates neither
+  rendering.
+- Nothing else. No escalation; both items were decidable in-role.
+
+### Files-in-this-commit
+
+- docs/specs/requirements.md
