@@ -1446,3 +1446,183 @@ dv_lead.
 ### Files-in-this-commit
 
 - docs/specs/modules/xgmii_rx_64.md
+
+## [J-architect_docs_lead-0027] 2026-08-04T23:05Z | task:none | The closure-record age skew landed in SPEC-M03 §9 as guidance and nothing else — the lightest row this log has, because §6.3 item 2 is exactly what a normative version of it would have retracted
+
+### Trigger
+
+Orchestrator, routing rtl_lead's `J-rtl_lead-0010` escalation 3 under dv_lead's
+disposition of it in `RV-0060-VERDICT` §7 at `2b10741`: the closure-record age
+skew is a general trap for future consumers and SPEC-M03 §9 should carry a note.
+dv_lead ruled the routing YES and attached one condition it is entitled to attach
+as testability countersigner — the note lands **explicitly non-normative and not
+a DV observable**. Charter §3: a trap found by building against a specification
+is spec-side work, and this one is mine to home.
+
+### Inputs
+
+- `agents/handoffs/WO-0060_tb-m03-family-i-dm-rebase.md` §7 (`RV-0060-VERDICT`,
+  the ruling and its condition, including the REQ-019 sentence dv names as the
+  form to imitate and the "*owes me no countersignature*" clause) and §8.
+- `agents/journals/claude_rtl_lead_agent.md`, `J-rtl_lead-0010` in full — the
+  **second** root cause (the record decoded from this cycle's XGMII word while
+  that word's octets reach the emission decision one cycle later), the
+  `ev12` / `closure_aligned` / `decided` mechanism, the k-table whose word-7
+  entries are 19 and 67, and the seven-case gapless argument.
+- `agents/journals/claude_dv_lead_agent.v02.md`, `J-dv_lead-0089` Evidence 6 —
+  the measured lane-0 cycles at k = 1 and k = 7, and the counterfactual
+  ("*a hold without `closure_aligned` gives 18 and 66*").
+- `docs/specs/modules/xgmii_rx_64.md` §6.3 (whole, item 2 and item 5 closely),
+  §9 (whole), §12, §13's last three rows.
+- `docs/specs/requirements.md` REQ-019's payload-storage sentence (the
+  guidance-not-observable precedent, quoted by dv).
+- `agents/charters/architect_docs_lead.md`; `agents/PROTOCOL.md` §4, §6.
+- **Not opened**: `libs/**` (rtl_lead is concurrently in it on BUG-0003 —
+  disjoint lane, and its in-flight state is none of this round's evidence),
+  `test/**`, `docs/reports/audit/**`.
+
+### Reasoning
+
+**1. What is true, and how much of it is this specification's business.** The
+fact is not in doubt and I verified it against §9's own text rather than against
+rtl_lead's prose: §9's closure list makes the frame open until the earliest of
+its closure events, and clause (a) — ruled at `J-architect_docs_lead-0011` —
+evaluates each such event at **its own octet time**. An implementation that turns
+that list into a *record* therefore captures it when the closing character is
+decoded, which is one cycle before that same word's octets have travelled through
+the alignment stage to the emission decision. The skew is a **consequence of a
+normative clause meeting an unconstrained implementation choice**, and that is
+precisely the shape of thing that must not be written normatively: the clause is
+already stated, and the choice is §6.3 item 2's to make.
+
+**2. Why the condition is right, and not merely accepted.** dv's argument is that
+a normative §9 sentence about how a consumer must read the closure record would
+constrain "the placement of the two register levels … and every internal
+encoding", which §6.3 item 2 declares unconstrained, and would commission a test
+whose object — the age of an internal record — is not this module's observable.
+I agree, and I would add the reason from my own side of the table: the one-cycle
+figure is **not a property of M03**. It is a property of where `fafb83d` decodes
+closure. An implementation that decodes it after the alignment stage has no skew;
+one that decodes it two stages early has two cycles. A normative sentence would
+have to pick one of those and would thereby specify the pipeline — the exact
+retraction of item 2. So the note says the number and immediately disclaims it as
+the decode placement's rather than the specification's. That sentence is the
+whole load-bearing difference between guidance and a rule.
+
+**3. Where it goes, and why not at the end of §9.** I homed it immediately after
+the closure-list block — after the (a)/(b) paragraph, before "**Strobe cycle,
+pinned**" — and not at the end of the section. The trap is unintelligible apart
+from clause (a): "the record is born at age 0 on the closing character's own
+input word" is a *consequence* of evaluating the event at its own octet time, and
+a reader who meets the note eight paragraphs later has to walk back to find out
+why. End-of-section placement would have bought tidier segregation of
+non-normative text at the price of separating the note from the only sentence
+that explains it, and §9 is a section whose later paragraphs already refer
+backwards ("the closure list above"), all of which stay true across the
+insertion. The segregation is bought instead with marking: the opening clause,
+an italic sentence that constrains nothing and asserts nothing, and a closing
+sentence returning §6.3 item 2 unamended.
+
+**4. The §13 class — the lightest in this log, and I will name why it is lighter
+than "editorial".** My existing rows run: behavioural-under-ADR (`ADR-0014`),
+forced correction of false normative text (`-0024`, `-0026`), clarification that
+moves no normative sentence (`-0021`, `-0023`), and editorial (`-0005`). This one
+sits below all of them. An **editorial** row repairs text that was being read
+normatively — the reading changes, even if no design does. This row adds text
+that is normative **nowhere**: no SHALL, no sentence moved, no cycle pinned, no
+requirement or REQ hook added or amended, no `Interface` field touched, no test
+commissioned, no ledger item closed, and §6.3 item 2 stands byte-unchanged. The
+class is **non-normative guidance**, and the honest test for it is that deleting
+the paragraph would leave every conformant design, every committed test and every
+requirement exactly as they are — which is true here and is false of every other
+row in the table.
+
+**5. Countersignature: none owed, and I record why rather than inferring it.**
+dv wrote it in terms — "*as guidance it costs nothing and owes me no
+countersignature*" — and the reason it holds is that the test-derivation basis
+(PROTOCOL §10) is untouched: DV derives tests from REQ-### and from normative
+spec text, and this paragraph is neither. The conditional half of dv's ruling is
+recorded in the §13 row so that a later editor who promotes the note to normative
+text knows the promotion is a fresh change owing a narrow countersignature, not a
+formatting decision.
+
+**6. What I deliberately did not do.** I did not touch `docs/specs/requirements.md`
+— the trap has no programme-wide normative statement to make, and §0.5/§0.6 say
+nothing that this contradicts. I did not add a §6.3 item: item 2 already covers
+the case, and a ninth item would imply the carve-out needed widening when the
+point is that it did not. I did not add a §10 hook or a §11 item; there is nothing
+to verify and nothing deferred.
+
+### Actions
+
+- `docs/specs/modules/xgmii_rx_64.md` §9: one paragraph inserted after the
+  closure-list (a)/(b) block and before "**Strobe cycle, pinned**" — the
+  non-normative note, marked as such twice (opening clause and italic
+  no-assertion sentence), stating the mechanism, the alignment-corrected view
+  (`closure_aligned`: age ≥ 1 at offset 0, age 0 admitted at offset 4), the
+  measured 19/67-against-18/66 discriminator, and the disclaimer that the
+  one-cycle figure belongs to the decode placement. Cites `J-rtl_lead-0010`,
+  `J-dv_lead-0089` / `RV-0060-VERDICT` §7, §6.3 item 2, REQ-019's precedent and
+  REQ-016.
+- `docs/specs/modules/xgmii_rx_64.md` §13: one row, `Breaking?` **no**, ADR
+  **none**, carrying the class argument of Reasoning §4 and dv's condition.
+- No other file opened for writing. No git command run (PROTOCOL §2).
+
+### Evidence
+
+All commands run from a checkout at this commit's SHA, repo root.
+
+1. `git status --porcelain` → `M docs/specs/modules/xgmii_rx_64.md` — **one
+   file**, no `libs/**`, no `test/**`, no `agents/**` but this journal.
+2. `grep -n "A note for a future consumer" docs/specs/modules/xgmii_rx_64.md`
+   → `974`; `grep -n "^\*\*Strobe cycle, pinned" …` → `1011`. The note occupies
+   974–1009 and sits **after** the closure list (952–972) and **before** the
+   strobe pin, as Actions states.
+3. `sed -n '974,1010p' docs/specs/modules/xgmii_rx_64.md | grep -c "SHALL"`
+   → **0**. The note contains no normative modal.
+4. `grep -c "closure_aligned" docs/specs/modules/xgmii_rx_64.md` → **2** (the
+   note and the §13 row).
+5. `grep -c "^| 2026-08-0" docs/specs/modules/xgmii_rx_64.md` → **20** §13 rows,
+   one more than at HEAD.
+6. Unchanged-by-construction check: `git diff` touches only §9's insertion point
+   and §13's tail, so §4's `Interface` records are byte-unchanged and §12's
+   `ifc_check` evidence (CI run **30729342467**, SHA **f78766e**) still witnesses
+   this revision's interface — §13's preamble claim holds.
+7. **No CI is owed or claimed.** One markdown file plus this journal; no OCaml,
+   no dune, no workflow, no script. Nothing goes red or green by this diff, and
+   the note commissions nothing that could.
+
+### Outcome
+
+**DoD met.** The trap is on the record where a future consumer of an internal
+closure record will meet it, in the only form dv_lead's testability role permits
+and I judge correct: guidance, marked twice, disclaiming its own number. §6.3
+item 2 is unamended, no requirement moves, no countersignature is owed, and no
+committed test changes meaning. rtl_lead's escalation 3 is **discharged**.
+
+**Handoff**: orchestrator, for commit under `Agent: architect_docs_lead`,
+`Work-Order: none`.
+
+### Open-questions
+
+- **rtl_lead and dv_lead are owed notification, not signature.** rtl_lead's
+  escalation 3 is discharged and the note names `closure_aligned` by its landed
+  identifier; if BUG-0003's lane-4 work renames or relocates that view, the note
+  should follow it — a one-line §9 edit and a §13 row of this same lightest
+  class, not a re-ruling. dv_lead is owed nothing here beyond knowing its
+  condition was met in terms.
+- **The promotion path is deliberately left open and deliberately priced.** If
+  the org ever wants a *normative* statement about how a consumer reads a closure
+  record, it is a fresh change owing dv_lead's narrow countersignature on that
+  sentence alone (`RV-0060-VERDICT` §7), and it would have to amend §6.3 item 2
+  in the same diff or contradict it. Recorded so the promotion is not made by an
+  editor who reads the note as a rule already half-written.
+- Carried unchanged from `J-architect_docs_lead-0026`: every item of that entry's
+  ledger, none of which this round touches or advances — including the two
+  re-countersignatures and one concurrence owed at `J-architect_docs_lead-0013`'s
+  SHA, C-5's still-owed §0.6 repair, and the M03 RTL non-conformance against §9
+  ruling 9.
+
+### Files-in-this-commit
+
+- docs/specs/modules/xgmii_rx_64.md
