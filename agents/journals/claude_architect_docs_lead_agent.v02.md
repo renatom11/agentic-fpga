@@ -1626,3 +1626,273 @@ committed test changes meaning. rtl_lead's escalation 3 is **discharged**.
 ### Files-in-this-commit
 
 - docs/specs/modules/xgmii_rx_64.md
+
+## [J-architect_docs_lead-0028] 2026-08-04T23:55Z | task:none | The cross-project tier gets a clock — ADR-0018 accepted on the sponsor's own sentence, its bar written to be refusable, and the gate hook landed as a new file because both existing gates are closed
+
+### Trigger
+
+Orchestrator dispatch relaying the sponsor's direction verbatim: the
+lessons-harvest practice is to become *"not a one time thing we do but something
+we continually do... build this into our general philosophy."* The dispatch
+carried the sponsor-approved shape (per-`SO-`/per-gate self-mining, three
+refusable criteria, orchestrator collation locally and into the generic shell's
+`LESSONS` file, one shell commit per harvest, sponsor-visible at the gate) and
+asked for three things: the ADR, the exact PROTOCOL diff for transcription, and a
+gate-checklist hook.
+
+### Inputs
+
+- `agents/charters/architect_docs_lead.md` (§3 ADRs, §7 escalation, §8 ADR
+  coupling); `agents/PROTOCOL.md` (§3 packets, §4 journals, §6 write scopes, §7
+  gates + transcription, §10 R-SEAL-1, §11 amendment procedure).
+- `docs/adr/ADR-0016-a-seal-is-a-file-or-it-is-not-a-seal.md` §2.3 (forward
+  commitment), §6.3 (why advisory), §8 (the amendment mechanic and its refusal
+  history) — the governing precedent for deliverable 2.
+- `docs/adr/ADR-0017-a-journal-is-a-chain-not-a-file.md` header block and §1.1
+  (the 2,131,151-byte / 249-entry corpus measurement), §8 (diff-not-applied
+  formatting).
+- `docs/gates/G0-checklist.md` (PASSED 2026-08-01) and
+  `docs/gates/P1-spec-freeze-checklist.md` (CLOSED 2026-08-02T16:53Z, sponsor
+  signature transcribed) — the two committed gate files, both closed.
+- `tasks/BOARD.md` lines 152–154 (the 2026-08-01 deferred intent: extract the
+  generic workflow at program end from accumulated ADRs/journals).
+- `agents/journals/claude_orchestrator_agent.md` `J-orchestrator-0144` (the sole
+  `L-D15` citation, "just woven into my own shell charter") and
+  `J-orchestrator-0146` (the generic shell exists and carries proven chain code).
+- My own volume-02 tail through `J-architect_docs_lead-0027` for the carried
+  ledger.
+
+### Reasoning
+
+The dispatch handed me the practice; what it did not hand me was the wording, and
+this entry records the five places where the wording was a decision rather than a
+transcription. I am deliberately **not** restating the ADR here (charter §8's
+vacuity clause) — §§1–12 of the file say what the practice is. What follows is how
+it came to be asked in this shape and what I chose against.
+
+**1. The question the sponsor was actually answering.** The org already turns
+incidents into binding rules within hours: R-SEAL-1, ADR-0017's R10/R11, the fifty
+carry-forward rows, the seal rule minted mid-adjudication at WO-0055. That tier
+works and nobody complained about it. So the directive is not "start learning" —
+it is "the *other* tier has never run", and the evidence is a one-line grep: over
+`agents/`, `docs/` and `tasks/`, the pattern `L-[A-Z]{1,3}[0-9]{1,3}` matches
+**once**, at `L-D15`, inside an orchestrator entry. Eighteen ADRs, fifty ledger
+rows, a quarter-million words, and one exported lesson. Framing the ADR around
+*two tiers, one of which has no clock* — rather than around "we should capture
+lessons", which would have been true and useless — is what made the rest of the
+document decide anything. It also settles what the ADR must **not** do: touch the
+accretion tier. §1.1 is a description, and I say so in §12 so a later reader does
+not take it as a re-ratification of rules it merely lists.
+
+**2. Why the bar's three criteria are written to be *operationally* refusable, and
+LH2 twice.** The dispatch gave me the three criteria in substance (provenance,
+generality, stated failure). A criterion that cannot be failed at a table is not a
+criterion, and the failure mode I could see coming is LH2: "state it generally" is
+the kind of instruction everyone agrees with and nobody can adjudicate. So LH2
+carries a **mechanical first test** — the *rule statement* contains no proper noun
+of this program (no `M03`, no `REQ-###`, no `C-nn`, no signal, no XGMII/ITCH, no
+toolchain) — which a transcriber can run against a line of text without
+interpreting anything, and which is exactly the sponsor's standing generality
+guard for the shell made checkable. And because a mechanical noun test invites the
+obvious attack (swap the nouns for placeholders and ship the same project-specific
+rule), it carries a **second test aimed at the attack**: hide the provenance and
+read the statement; if it now says nothing, the nouns were carrying the meaning.
+That pair is the part of this document I expect to earn its keep. The corollary I
+made explicit rather than leaving to taste: the project-specific detail is not
+banned, it is **relocated** — into LH1's citation, where it belongs, so LH1 and LH2
+are complementary rather than in tension.
+
+**3. War stories are kept, and a bar nothing fails is reported as a defect.** The
+dispatch's word was "refusable"; the risk is that refusal becomes theatre in the
+other direction — everything passes, and the shell fills with preferences. Two
+counterweights, both cheap: a nil yield is **explicitly legitimate** (so there is
+no pressure to mint), and an empty war-stories section at *every* round is stated
+as a signal about the bar rather than about the span. I also declined to make war
+stories disposable. A candidate that fails LH2 at its first incident often passes
+at its second, because the second provenance is what shows which half of the
+statement was project-specific; deleting the pile would throw away the only input
+to that comparison. Guidance, not law — I did not want to create an obligation on
+anyone to periodically re-read a growing heap.
+
+**4. Extending past the sponsor's floor, and flagging it as mine.** The dispatch
+said "each LEAD". I extended to every persistent journal chain — leads, auditor,
+orchestrator — and the deciding fact is embarrassing in the right way: the single
+lesson id this program has ever exported was mined out of an **orchestrator**
+entry. A rule that exempts the orchestrator exempts the only proven source. The
+auditor's journal is the second obvious case, because its subject matter *is* the
+process, which is what a shell contains. But the sponsor said leads and I am not
+entitled to silently widen a directive, so the extension is marked as this ADR's
+own decision in §3.3, argued in §11 item 8 as a rejected alternative
+("mine only the leads"), and therefore refusable on its own without touching the
+rest. Workers get the opposite treatment for a structural reason rather than a
+judgment one: their journals are shared per template with per-spawn entries, so
+there is no continuous identity to hold "the span since my last harvest" — the
+commissioning lead mines those spans and names the spawn short-ids.
+
+**5. The span is an interval, and that is the whole enforcement story.** The one
+thing a review-enforced practice needs is for **skipping** to be visible, and I did
+not want to buy that with a script (§7.4's argument, which is ADR-0016 §6.3's
+argument reused: counting harvests cannot distinguish a harvest from a shrug, and
+counting creates the incentive the bar exists to remove). Stating each span as an
+entry-id interval makes consecutive harvests **tile**: a gap between one harvest's
+end and the next one's start is arithmetic, not judgment, and it is visible to a
+reader of the gate record without anyone re-reading a journal. That single
+choice is what let me refuse `R12` in good conscience rather than as timidity.
+It also disposes of retroactive harvesting for free: because every agent's first
+span opens at its first entry, the two closed gates' spans are covered at the next
+harvest and nothing needs reopening.
+
+**6. The hook: a new file, and why not an edit.** The dispatch anticipated this
+and it landed on the anticipated branch. `docs/gates/` holds exactly two files and
+**both are closed** — G0 PASSED 2026-08-01, P1-spec-freeze CLOSED 2026-08-02 with
+the sponsor's verbatim signature transcribed above the sign-off list. A harvest box
+added to either lands unchecked (retroactively un-passing a gate the sponsor
+signed, on evidence that is complete) or pre-checked (recording a harvest nobody
+ran). Both are worse than a third file. So `docs/gates/lessons-harvest-block.md` is
+an **addition** to the directory, not an edit to a closed gate: a template that
+never records anything itself, instantiated verbatim by the next checklist
+(`P1-module-ready`, which does not exist yet and will be authored with it) and by
+every `SO-` sign-off section. I put the instantiation instructions, the short-form
+bar, and the transcriber's notes in the same file rather than pointing at the ADR,
+because the person filling it in at a gate is not the person who read ADR-0018 —
+and I put the normative pointer at the top so the copy cannot drift into being the
+authority.
+
+**7. The PROTOCOL half — mechanic, placement, and what I did not write.** ADR-0016
+§8 settled the mechanic by refusal (`R7` bounced the architect staging
+`agents/PROTOCOL.md`, and the right answer was that there is no ADR-driven
+exception to the constitution's write scope). So §8 of this ADR is the authority
+and the edit is clerical, formatted as ADR-0017 §8 formats an unapplied diff.
+Placement was a real choice: §7 (Gates) over §3 (Packets) even though half the
+trigger is an `SO-` packet, because §7 is where a gate's preconditions live, §7
+already states the transcription rule the collation reuses, and one hunk that
+*names* `SO-` reaches the packet case without a second hunk that would then need
+keeping in sync — the maintenance hazard ADR-0016 §8.2 names for its own signpost.
+I wrote **one** addition, no cross-reference in §3, for exactly that reason. And I
+recorded in the diff itself that §11(3) owes no test case, because nothing about
+enforcement semantics moves — no `R`-rule, no path scope, no journal grammar
+field — so a future reader does not go looking for the missing
+`scripts/test_protocol.sh` scenario and conclude it was forgotten.
+
+**8. One collision, disposed rather than discovered.** "Harvest" already means
+something in this repo — the mutation-campaign and promotion-block sense
+(`J-orchestrator-0106`, the family-G board row). I kept the sponsor's word because
+it is the sponsor's word, and paid for it with a naming rule (§7.5): the new sense
+is always "lessons harvest", the bare word keeps its old meaning. Same treatment
+for ids — `LC-` and `LH1`–`LH3` are new and collide with nothing (`R`, `C-`,
+`REQ-`, `AUD-`, `SO-`, `X-` untouched), and I explicitly declined to define the
+shell's `L-` scheme, which is the shell's: legislating a file format for a repo
+this one does not own would have been the easiest overreach in the document.
+
+**9. What I did not do.** No charter edit (orchestrator scope, R7 — the exact text
+is supplied in §6 item 3 so the transcription is mechanical). No `tasks/BOARD.md`
+edit (same, text supplied in §10). No `agents/PROTOCOL.md` edit. No new `R`-rule
+and no script. No retro-harvest ordered against the closed gates. No touch of
+`agents/handoffs/WO-0061*`, any dv artefact, `test/**` or any spec — dv_lead is
+mid-adjudication in a disjoint lane and this round shares no file with it.
+
+### Actions
+
+- Wrote `docs/adr/ADR-0018-the-harvest-is-a-cadence-not-an-event.md` — ACCEPTED on
+  the sponsor's direction, quoted in the Status block as the acceptance authority;
+  §8 carries the unapplied PROTOCOL §7 hunk for orchestrator transcription; §9
+  states the checklist hook's landing site and the closed-gate argument.
+- Wrote `docs/gates/lessons-harvest-block.md` — the reusable, never-signed gate
+  block: instantiation procedure, short-form bar, the copyable block (span table,
+  yield table, war-stories table, eight checkboxes), transcriber's notes.
+- No other file opened for writing. No git command run (PROTOCOL §2).
+
+### Evidence
+
+All commands run from a checkout at this commit's SHA, repo root.
+
+1. `git status --porcelain` → `?? docs/adr/ADR-0018-the-harvest-is-a-cadence-not-an-event.md`,
+   `?? docs/gates/lessons-harvest-block.md`, `M agents/journals/claude_architect_docs_lead_agent.v02.md`
+   — **two new files** plus this journal. No `agents/PROTOCOL.md`, no
+   `agents/charters/`, no `tasks/`, no `test/**`, no `libs/**`, no
+   `agents/handoffs/`.
+2. The §1.2 measurement, and the honesty correction it needed. At this commit's
+   parent, `grep -rnoE "L-[A-Z]{1,3}[0-9]{1,3}" agents/ docs/ tasks/ | awk -F: '{print $NF}' | sort | uniq -c`
+   → `1 L-D15`. **At this commit the same command counts higher** — the ADR and
+   this entry now cite the id themselves, so the raw count does not reproduce and
+   is not stable under its own edits; the ADR's §1.2 block states both readings
+   rather than the first one only, and gives no number for the polluted one.
+   The substantive count is unchanged and is the reproducing form:
+   `grep -rl "L-D15" agents/journals/ | grep -v architect_docs_lead` →
+   `agents/journals/claude_orchestrator_agent.md`, one file, one occurrence.
+   Caught twice by running the claim rather than by writing it — the first
+   correction still counted the ADR itself, because the ADR's filename does not
+   contain the excluded string. The scoped form is also the right claim: the
+   assertion is about the journal corpus.
+3. Both gate files are closed, quoted in ADR §9 from the committed text:
+   `grep -n "G0: PASSED" docs/gates/G0-checklist.md` → hit;
+   `grep -n "P1-spec-freeze: CLOSED" docs/gates/P1-spec-freeze-checklist.md` → hit.
+   Neither file is in this commit — `git status` (1) is the check.
+4. The ADR's §8 anchor is live text: `sed -n '264,266p' agents/PROTOCOL.md` is the
+   "Phase hardening" paragraph the diff's context lines quote, and line 267 is
+   blank, line 268 is `## 8. Escalation to the human sponsor` — so the hunk
+   applies at the end of §7 as stated.
+5. Corpus figure in §1.3 item 2 is quoted, not recomputed: 2,131,151 bytes / 249
+   entries is ADR-0017 §1.1's table total, cited as such and stale-by-design (it
+   predates two volumes and every bench).
+6. **No CI is owed or claimed.** Two markdown files plus this journal; no OCaml,
+   no dune, no workflow, no script, no `Interface` record. Nothing goes red or
+   green by this diff, and neither file commissions a test.
+7. **Scope self-check against my own rule**: the ADR's §8 hunk and §6 item 3's
+   charter text are *quoted*, not applied — grep confirms the strings exist only
+   inside `docs/adr/` at this SHA:
+   `grep -rn "Lessons harvest\*\* (ADR-0018)" agents/` → no hits.
+
+### Outcome
+
+**DoD met.** Three deliverables, two files, nothing outside `docs/`.
+
+- **The ADR** is ACCEPTED on the sponsor's quoted sentence, which is named as the
+  acceptance authority rather than paraphrased into one — the practice is his, the
+  wording of the bar and the span discipline are mine, and §3.3/§11(8) mark the one
+  place I widened his shape so he can put it back without disturbing anything else.
+- **The PROTOCOL diff** is written and **not applied**: one addition at the end of
+  §7, per ADR-0016 §8's mechanic, with `§11(3) owes no test case` stated inside the
+  hunk so its absence reads as a decision.
+- **The gate hook** lands as a **new** file in `docs/gates/`, not an edit — both
+  committed gates are closed and signed, and the ADR §9 states that on the record.
+  Nothing in this commit can un-pass a passed gate.
+
+**Handoff**: orchestrator, for commit under `Agent: architect_docs_lead`,
+`Work-Order: none`; then the §8 transcription under its own identity and entry.
+
+### Open-questions
+
+- **Owed, orchestrator-scope, texts already supplied** (none of it is mine to
+  stage): (a) the PROTOCOL §7 hunk of ADR-0018 §8; (b) the five charter §8
+  harvest-note clauses of §6 item 3 — `architect_docs_lead`, `rtl_lead`,
+  `dv_lead`, `auditor`, `orchestrator`, plus `rtl_lead_md` when it is activated;
+  (c) the `tasks/BOARD.md` 2026-08-01 deferred-intent line's superseded-as-to-
+  cadence clause of §10. **(b) and (c) landing without (a) is the ADR-0016 §8.2
+  failure shape** — a pointer to a rule that lives nowhere — so (a) goes first or
+  they go together.
+- **`P1-module-ready`'s checklist does not exist yet**, and it is the first
+  instantiation of the block. Whoever authors it should copy §3 of
+  `lessons-harvest-block.md` verbatim rather than paraphrase; a paraphrased block
+  is a second site that drifts, which is the hazard ADR-0016 §8.2 names.
+- **The first harvest will test the bar, not the practice.** My prediction, on the
+  record so it can be scored: the criterion that bites is LH2, and the first
+  refusals will be candidates that are true, useful and unstatable without a
+  module name. If the first harvest refuses nothing, §3.5's last sentence applies
+  to the bar, not to the span.
+- **Undecided by design** (ADR §12): the shell's `L-` scheme and `LESSONS` format;
+  what a sponsor refusal converts a candidate into; whether a nil-yield harvest is
+  itself an auditor finding shape; retroactive promotion of war stories beyond the
+  stated re-offer path.
+- Carried unchanged from `J-architect_docs_lead-0027`: every item of that entry's
+  ledger, none of which this round touches or advances — the `closure_aligned`
+  rename-follows-it note, the deliberately-open promotion path for a normative
+  closure-record statement, and through it the whole `-0026` ledger, including the
+  two re-countersignatures and one concurrence owed at `J-architect_docs_lead-0013`'s
+  SHA, C-5's still-owed §0.6 repair, and the M03 RTL non-conformance against §9
+  ruling 9.
+
+### Files-in-this-commit
+
+- docs/adr/ADR-0018-the-harvest-is-a-cadence-not-an-event.md
+- docs/gates/lessons-harvest-block.md
