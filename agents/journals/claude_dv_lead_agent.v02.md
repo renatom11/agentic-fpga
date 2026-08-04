@@ -2837,3 +2837,215 @@ repair the signature licenses follows in the next commit
 ### Files-in-this-commit
 - agents/handoffs/BUG-0002_m03-idle-injection-tlast-on-a-non-final-word.md
 - agents/handoffs/WO-0059_tb-m03-family-i-silence-and-ordered-sets.md
+
+
+## [J-dv_lead-0085] 2026-08-07T10:15Z | task:WO-0059 | The attack-plan repair the countersignature licenses — and it is four cells, not the two I declared owed, because the two I missed cite the retired claim as a *ground* in a family I was not looking at
+
+### Trigger
+My own call, taken inside the WO-0059 FINALIZE round and immediately after the
+commit carrying the signature (`J-dv_lead-0084`). `J-dv_lead-0083` declared the
+`AP` §4.I edit **owed and blocked** on the SCR ruling; the ruling landed at
+`a77017c` and I countersigned it one commit ago, so the block lifts and the
+repair lands now, before any bench is re-commissioned (ADR-0001's
+row-before-bench rule). Packet traffic in the previous commit, the plan in this
+one — the split `J-dv_lead-0071` and `J-dv_lead-0072` used for exactly this pair.
+**The two commits have disjoint file sets and this one touches
+`test/attack_plans/AP-xgmii_rx_64.md` alone.**
+
+### Inputs
+- `test/attack_plans/AP-xgmii_rx_64.md` — **§4.I's six rows in full**, **§4.N's
+  M03-N2 row and the two-routes prose that follows §4.N's table**, §6's REQ-005
+  and REQ-016 rows, §7's X-4 row, §9's tail and its three-column format.
+- `docs/specs/requirements.md` at `a77017c`: §0.5's **Gapped stimulus**, **the
+  deciding input word**, **what survives idle injection**, **what a latency
+  monitor may demand**; **REQ-016's repaired verification column**; **REQ-005's
+  own verification column** (the gapless-stimulus fact the coverage-map removal
+  turns on); REQ-011, REQ-015, REQ-103, REQ-104.
+- `docs/specs/modules/xgmii_rx_64.md` at `a77017c`: §6.1's **repaired
+  consequence-1 scope note** (the named-input-word ground that replaces the
+  withdrawn one), the repaired **C-14.4** qualifier, **D(m)**, **the residue
+  table**, **item 3's survival case and its no-generalisation instruction**;
+  §6.2's `Frame` row; §7's handshake bullet; §10's REQ-016 hook.
+- `agents/handoffs/WO-0059_…` — the `COUNTERSIGNATURE` block committed one
+  commit ago (its C-1 … C-7 and N-1), and the round-2 `RV-0059-VERDICT` block's
+  §3 (the ruling that the stimuli do not move) and §5 (`BUG-0002`).
+- `agents/handoffs/BUG-0002_…` — its §2.2 conformant table and §2.3 measured
+  facts, for the class M03-I4's `Kills` cell now names.
+- `J-dv_lead-0083` (the owed-and-blocked declaration), `J-dv_lead-0084`,
+  `J-dv_lead-0072` (the precedent for a plan repair as its own commit).
+- **No path under `libs/**`, `top/**`, `bin/**` or `rtl_snapshots/**` was
+  opened, targeted or swept. No path under `docs/reports/audit/**`.**
+
+### Reasoning
+
+**The edit I declared owed was two cells. It is four, plus a coverage
+reduction, and finding the extra two was the actual work of this commit.**
+
+The ruling withdrew two justifications from SPEC-M03 §6.1 — *"because §7's
+per-octet constant does"* and *"the per-octet constant of §7 holds on every
+stimulus, gapped or not"*. `J-dv_lead-0083` named the two §4.I cells that assert
+the retired claim as an **observable**. What it did not do was ask where else in
+my own plan the claim appears as a **ground**, and the answer is a different
+family:
+
+- **M03-I4's `Observable`** asserted the constant outright. Replaced by
+  REQ-016's two achievable clauses — (a) the ordered
+  (`tdata`, `tkeep`, `tlast`, `tuser`) tuple sequence with every octet in its own
+  byte position, and (b) the per-output-word delay from **D(m)**, at both start
+  lanes — with the constant demoted to *measured and reported*. I named §6.1
+  item 3's surviving case (lane 0, `r ∈ {5,6,7}`) in the cell **and explicitly
+  barred asserting it**, because a cell that mentions a three-in-eight exception
+  without barring generalisation is an invitation rather than a warning.
+- **M03-I5's `Observable`** stated the same false claim as a **rule** — *"the
+  gap-invariant quantity is the per-octet constant"* — which is worse than
+  asserting it, because a NO-ASSERT row is exactly where a later bench writer
+  goes to learn what may and may not be asserted. Repaired, and the row's
+  NO-ASSERT scope **widens by one**: on an injected run neither `m + 3` nor a
+  single per-octet L. The second half is the one that would have failed a
+  conformant design; the first half never could.
+- **M03-N2's `Observable` and §4.N's Route 2** cite the constant as the
+  **ground** for the two-events-in-one-word table surviving injection — *"and it
+  is gap-invariant, so the table holds under idle injection as well"*. **This is
+  the pair I would have missed had I read only §4.I**, and it is text I wrote at
+  `J-dv_lead-0016` on the strength of a spec sentence that has since been
+  withdrawn as false. The ground is replaced with §6.1's repaired one: each cycle
+  is pinned to a **named input word** and is read at that word's own injected
+  position. **The six sub-cases and the three coincidences do not move**,
+  because they never rested on the constant — which is exactly what §6.1's own
+  repaired note says about itself, and is why this is a ground repair and not a
+  row change. Route 2 also stays the route to keep: it is what makes the aborted
+  frame's own start lane a discriminator, and `m + 3` does not.
+- **§6's REQ-005 row loses M03-I4.** REQ-005's per-octet constancy is defined and
+  measured on a **gapless** stimulus — which is precisely why the ruling leaves
+  REQ-005 untouched — and M03-I4 no longer asserts a constant at all; it reports
+  one. **A reporting row discharges nothing.** Leaving it in the coverage map
+  would have claimed coverage this plan does not have, which is the one kind of
+  error a coverage map can make that no test run will ever surface. It is a
+  coverage **reduction** found by working the consequences of a signature I was
+  granting, and that is what a countersignature is supposed to produce.
+
+**M03-I4's `Kills` cell gains the class the row actually caught**, and with it
+the fact that matters for anyone reading the row later: **clause (b)'s cycle rule
+passed at the failing word.** The arrival guard is not what caught `BUG-0002`;
+the tuple guard is. A row asserting cycles alone would have been green on a
+design that closes a 60-octet frame on its first word. That is the reason the
+repaired `Observable` keeps (a) as a separate assertion instead of folding it
+into (b), and I wrote the reason into the cell rather than leaving it to be
+re-derived.
+
+**What I deliberately did not do.** No row added, no row converted, no status
+moved — **78 rows and 62 ASSERT before and after, counted from the file rather
+than reasoned about**. M03-I4 stays **ASSERT**, and it asserts *more* after the
+repair than before, not less: clause (a) was always there and clause (b) replaces
+a claim that asserted nothing any design could satisfy. I did not touch a single
+`Stimulus` cell, because §3 of the round-2 verdict ruled that the sites are the
+ones §10 commissions and §6.2's `Frame` row governs; a stimulus edit here would
+have been me quietly agreeing with a reading the verdict rejects. And I did not
+weaken M03-I4 or M03-I6 to make CI green — that decision belongs to
+`J-dv_lead-0084` and is barred twice over.
+
+**On §7's X-4 note**, which I added rather than left alone: the wrapper's first
+contact with a DUT produced two results — a falsified docstring and a hardware
+bug — and **no behaviour defect in the wrapper itself across two adjudications
+that each read it in full**. The last clause is the one worth committing. X-4 is
+the only piece of machinery in this plan that has now been audited twice by
+someone actively looking for a reason to blame it, and the record should say that
+it survived both, so that the third round does not start by re-litigating it.
+
+### Actions
+- **Repaired `test/attack_plans/AP-xgmii_rx_64.md`**, seven sites:
+  **M03-I4's `Observable`** (replaced with REQ-016's clauses (a) and (b), the
+  per-octet constant demoted to reported, §6.1 item 3's survival case named and
+  barred from generalisation) and its **`Kills`** (the `BUG-0002` class, with the
+  note that clause (b) passed at the failing word); **M03-I5's `Observable`**
+  (the gap-invariant quantity restated as the per-output-event delay from D; the
+  NO-ASSERT scope widened by one); **M03-N2's `Observable`** and **§4.N's
+  Route 2** (the withdrawn ground replaced by the named-input-word one, the
+  table's rows and coincidences explicitly unaffected); **§6's REQ-005 row**
+  (M03-I4 removed, with the reason); **§7's X-4 note** (the wrapper's first
+  contact with a DUT, both results, and the no-behaviour-defect record).
+- **Appended one §9 change-log row** carrying the countersignature's seven
+  checks in summary, N-1, the four repairs, the coverage reduction, `BUG-0002`,
+  and the counts.
+- **Converted nothing, added nothing, moved no status.** Counts re-counted from
+  the file after the edit.
+- Ran no `git` command that writes. Opened no design source.
+
+### Evidence
+1. **Counts after the repair, counted from the file, not carried forward**:
+   `grep -c '^| \*\*M03-[A-Z0-9]*\*\*'` → **78**; status tally → **62 ASSERT**,
+   7 NO-ASSERT, 4 NO-STIMULUS, 4 STRUCTURAL, 1 GAP (sum 78) — byte-for-byte the
+   same distribution as at `4901161` before the edit.
+2. **Table well-formedness after the edit**: every six-cell row touched carries
+   exactly **seven** pipes (M03-I1 … M03-I6 and M03-N2 all checked, not only the
+   edited ones); §6's REQ-005 row carries **three**; the appended §9 row carries
+   **four**.
+3. **The removal from §6's REQ-005 row is sound**: REQ-005's verification column
+   is *"per-octet latency tagger inside the REQ-004 stress bench... directed
+   lengths 64 through 71 inclusive plus 1518, at both start lanes"* — a gapless
+   stimulus, which is why requirements.md §13's own ruling row lists REQ-005
+   among the requirements it leaves **untouched**. M03-L2 and M03-L5 remain and
+   carry the REQ.
+4. **The `Kills` cell's claim that clause (b) passed** is CI's, not mine: at run
+   `30881653846` the arrival guard (`test_m03_i.ml:1041`, `:1454`) passed at
+   word 0 at both `k = 1` and `k = 7`, and the tuple guard (`:1058–1061`,
+   `:1467–1470`) raised.
+5. **The M03-N2 ground repair changes no cycle**: §6.1's repaired consequence-1
+   note states the same rule on the named-input-word ground and says so in
+   terms — *"The rule is unaffected, because it never rested on the constant"* —
+   and the row's six sub-cases, three coincidences and W-relative offsets are
+   textually unchanged in the cell.
+6. **The countersignature this repair rests on** is the `COUNTERSIGNATURE` block
+   in `agents/handoffs/WO-0059_…` plus `J-dv_lead-0084`, committed one commit
+   earlier; its seven checks and note N-1 are recorded there and are not restated
+   here.
+7. **Discharge count unchanged**: **36 of 62** at `4901161`, re-derived in
+   `J-dv_lead-0084` (37 ASSERT rows named in a committed `%expect_test` title,
+   plus M03-F5 by citation, minus M03-I4 and M03-I6 red). **This commit does not
+   move it**, because a plan repair discharges nothing.
+
+### Outcome
+**The attack-plan edit `J-dv_lead-0083` declared owed-and-blocked is
+DISCHARGED** — and it was **four cells plus a coverage reduction**, not the two I
+declared: M03-I4's `Observable` and `Kills`, M03-I5's `Observable`, **M03-N2's
+`Observable` and §4.N's Route 2** (the retired claim as a *ground*, in a family
+the declaration never looked at), and **§6's REQ-005 row**, which loses M03-I4
+because a reporting row discharges nothing.
+
+**Counts unchanged: 78 rows, 62 ASSERT**, 7 NO-ASSERT, 4 NO-STIMULUS, 4
+STRUCTURAL, 1 GAP. No row added, converted, or moved. **M03-I4 asserts more than
+it did**, not less.
+
+`SO-xgmii_rx_64.md` does not issue. Family I's qualification campaign does not
+open. The discharge count stays **36 of 62** at `4901161`, forward 38 and blocked
+on `BUG-0002`'s fix rather than on any bench work.
+
+Handoff: to the orchestrator — this file for commit, second of the round's two
+and with a file set disjoint from the first.
+
+### Open-questions
+- **AP-M14 has not been checked for the same defect.** SPEC-M14 is one of the
+  three restatements the ruling's §13 row names as owing the same repair (`h` =
+  20 straddles), and if its spec carries the retired claim then its attack plan
+  may carry it as a ground the way `AP-M03`'s §4.N did. **I have not asked.** It
+  rides with AP-M14's already-owed §6 sweep companion, and is named here rather
+  than left to be discovered by whoever opens that file next.
+- **Whether `AP-M03` carries the claim anywhere I still have not looked** is not
+  something this commit can close. I searched §4.I and §4.N and the coverage map;
+  a fourth site in a family I did not think to check would be the same miss one
+  level down, and the honest statement is that the search was targeted rather
+  than exhaustive.
+- **M03-I4's repaired `Observable` has been executed as far as word 0 of one
+  member.** Clause (a) is what is red; clause (b) is confirmed at exactly two
+  words of two runs. Everything else in the cell — lane 4, every length but 64,
+  the 1518-octet member, the reported L classes — is still a prediction, and a
+  fix that turns word 0 green may reveal a second disagreement further in.
+- **Still owed**, unchanged: `RV-0057-VERDICT` Finding 3's total-output-word
+  sweep (precondition satisfied); AP-M14's §6 sweep companion, now carrying the
+  question above; the `precompile_check.sh` side-effect-in-combinator lane;
+  M03-F5's discharge-by-citation qualification; the RFC 1071 anchor on the next
+  fetching run; bound 6 (blocked on M03-B4, family B still unqueued); bound 7;
+  X-7, X-10, X-11 deferred.
+
+### Files-in-this-commit
+- test/attack_plans/AP-xgmii_rx_64.md
