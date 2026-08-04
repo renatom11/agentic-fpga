@@ -854,3 +854,52 @@ campaign packet.
 - site/public/index.html
 - site/public/org-chart.html
 - site/public/spec-atlas.html
+
+## [J-orchestrator-0166] 2026-08-04T09:35Z | task:none | The fix landed and convicted the ruling's tlast case - the causality proof goes back up
+
+### Trigger
+rtl_lead's BUG-0002 return (fourth spawn; the first three
+stalled in their reading phase and were stopped - the
+hung-spawn signature and remedy are now practiced: zero tree
+writes plus a probe still queued at two checks).
+
+### Reasoning
+The fix is exactly dv's §4 prediction made concrete:
+emit_last_a derived "frame ended" from nc = 0 - an emptiness
+test - while the closure record sat unconsulted; an injected
+mid-frame idle shifts empty coverage through the alignment
+window and one cycle later "nothing behind" read as "frame
+over". Two-line fix gating on the closure record; gapless
+bit-identity argued case-by-case, not hoped. Committed
+ce00c06 under J-rtl_lead-0009 (snapshots deliberately absent:
+regeneration is CI-side per the promote-verbatim practice).
+The escalation is the round's real yield: with word 0 fixed,
+word 7 fails by 1 cycle - and rtl_lead PROVED the ruled row
+unsatisfiable by causality (S_A/S_B identical through cycle
+65, divergent obligations at 60). The same defect shape the
+architect retired at a77017c, one level deeper: D(m) for
+non-tlast words uses hindsight. Routed to the architect as an
+E5 against its own ruling, with rtl_lead's three options and
+its recommendation (uniform evidence-word D + elastic emission
+register). The branch stays red; the rows stay HELD; that
+remains the correct cost.
+
+### Actions
+ce00c06 push; architect dispatch; this commit.
+
+### Evidence
+ce00c06; the packet's Root-cause table (pre-fix: eight
+one-word frames; post-fix: seven cycles of §2.2's sequence
+with word 7 at 18 vs 19); the S_A/S_B proof.
+
+### Outcome / DoD
+The design defect is fixed on the record. The remaining red
+is the spec's, and it is with the spec's owner.
+
+### Open questions
+Whether option 1's elastic register lands in M03 this phase -
+the architect rules the contract; the design consequence
+returns to rtl_lead + dv after.
+
+### Files-in-this-commit
+- (none)
