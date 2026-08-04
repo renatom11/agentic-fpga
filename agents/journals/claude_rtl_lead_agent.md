@@ -2099,3 +2099,242 @@ Handoff: nothing owed to anyone by me on this packet.
 
 - rtl_snapshots/eth_mac_10g.v
 - rtl_snapshots/xgmii_rx_64.v
+
+## [J-rtl_lead-0009] 2026-08-04T09:20:00Z | task:BUG-0002 | BUG-0002 root-caused and fixed: `tlast` was derived from an emptiness test that an injected idle makes momentarily true, so a held frame closed on its own first word; last-ness is now gated on the closure record — and the packet's own expected cycle for word 7 is unsatisfiable by any design, which goes up rather than into the RTL
+
+### Trigger
+
+dv_lead's `BUG-0002`, CRITICAL, relayed verbatim by the orchestrator against M03
+`Xgmii_rx_64` — my module, my fix (charter §3, §4). The orchestrator's spawn message
+states the adjudication is settled and binding (`RV-0059-VERDICT`, `J-dv_lead-0084`):
+the bench, the wrapper and the spec are right, the module is wrong, do not re-derive
+it, do not open `test/**`. I did none of those three things. The packet withholds a
+root cause deliberately (§6) and states an open prediction (§4) whose settlement it
+asks the fix return to carry: the eight-row `(cycle, tkeep, tlast, tuser)` list for
+`M03-I4 (length 64, lane 0, idles 1)`.
+
+### Inputs
+
+- `agents/charters/rtl_lead.md`; `agents/PROTOCOL.md` (§3 packet classes, §4 entry
+  grammar, §5 R1–R9, §6 write scopes, §10 independence and R-SEAL-1).
+- `agents/handoffs/BUG-0002_m03-idle-injection-tlast-on-a-non-final-word.md` at HEAD
+  (`22c8591`) — read whole, once, including §3's three alternatives and §5, which I am
+  not re-arguing.
+- `libs/hardcaml_ethernet/src/xgmii_rx_64.ml` at HEAD — the whole file, and the output
+  decision block (`pc` / `nc` / `strip` / `emit_last_a` / `emit_last_b` / `emit_full`)
+  line by line. This is the file the packet names and the only file I changed.
+- `docs/specs/modules/xgmii_rx_64.md` (SPEC-M03): §6.1's "Emitting the frame" and its
+  C-18 and C-14.4 qualifiers, §6.1's **D(m)** block as landed at `a77017c`, §6.2's
+  `Frame` and `Preamble` rows, §7's drain derivation, §9's record cycles, §13's
+  2026-08-04 SCR-M03-I4 row.
+- `docs/specs/requirements.md` §0.5 (the gapped-stimulus ruling: deciding input word,
+  per-output-event delay, the straddle and late-decision tests, what a latency monitor
+  may demand) and §0.6 (report keyed to the deciding input word).
+- `docs/adr/ADR-0005` (CI is the authoritative build environment — the reason nothing
+  in Evidence is a local simulation) and `git log --oneline -3 -- rtl_snapshots/`
+  (`750be49`, `681f0a9`, `15e2458`) for the snapshot-promotion practice.
+- `agents/journals/claude_rtl_lead_agent.md` tail (`J-rtl_lead-0007`, `-0008`) for the
+  BUG-0001 history in this same block and the carried REQ-902 criterion.
+- **Not opened**: `test/**`, anything under it, and the bench this packet cites — the
+  spawn message barred it and nothing in this fix needed it. **Essenceia/Nasdaq-HFT-FPGA:
+  not consulted**, for this or anything in it.
+
+### Reasoning
+
+#### Root cause (before the fix description — charter §8)
+
+The output decision computes three quantities and branches on them: `pc`, the octets
+of the word in the emission register; `nc`, the octets of the aligned word behind it;
+and `strip`, which is 4 exactly while the selected closure record says this frame
+ended on a terminate character or REQ-108's truncation. The `tlast` branch was
+
+    let emit_last_a = have_word &: (nc ==:. 0) &: (pc >: strip) in
+
+and its **only** evidence that the frame has ended is `nc = 0` — "nothing of this
+frame is behind the word I am emitting". That is an emptiness test standing in for a
+terminate event, which is precisely what the packet's §4 predicted without having read
+the file. The terminate event exists in this module three lines away
+(`a_close_terminate`, the aged record channel, `sel_terminate`) and the branch does not
+consult it; `strip` reads the record only to decide **how many** octets to remove, never
+**whether** the word is the frame's last.
+
+On a gapless stimulus the substitution is sound, and that soundness is why it survived
+review, WO-0032, WO-0036, BUG-0001 and every green family: inside an open frame a
+gapless word covers eight octets unless it carries the character that ends the frame,
+so an empty word behind genuinely means the frame ended. §6.2's `Frame` row is the rule
+that breaks it, and it breaks it in one cycle: an injected idle covers no frame octet
+and **holds** the frame, `cov` is empty for that cycle, the empty coverage shifts through
+the alignment window like any other, and one cycle later the design reads "nothing
+behind" as "frame over" while the frame is open and eight words are owed. No record has
+been born, so `strip` is 0, `pc >: strip` reads 8 > 0, and output word 0 leaves full
+**and** last. The state machine never moved — §3's fourth reading is right that it did
+not abort — because the state machine reads closure signals and the output decision does
+not.
+
+Why my own review missed it, stated as the charter wants it: I designed the *input* side
+of REQ-016 deliberately (the module header says an output cycle without `tvalid` inside a
+frame "is one the input gave it (REQ-016, C-14.4)") and then assumed the *output* side
+followed from it. It does not. Holding the frame and marking the frame are different
+computations and only the first was written against §6.2's `Frame` row. BUG-0001 made it
+worse by hardening my reading of `nc` — that fix reasoned about `nc` against `strip` in
+the straddle arm, which made the `nc`-only test in the other arm look load-bearing rather
+than accidental.
+
+#### The fix, and why this one rather than a restructure
+
+`sel_valid` is already "epoch A's closure for the frame being emitted is decided and not
+yet reported". Gating last-ness on it is the whole repair: `emit_last_a` gains
+`closed`, and `emit_full` gains the `~:closed` disjunct so that an unclosed frame's word
+still goes out (it must — the frame continues), while the `pc <= strip` all-FCS
+suppression that §9's sixth row depends on is untouched. Three arms, still mutually
+exclusive; one row of the case table changes, the row that is the bug.
+
+Alternatives I considered and rejected. **(a) Test the current XGMII word's coverage as a
+third lookahead level** — it distinguishes bubble from end at k = 1 and not at k = 7, so
+it buys a passing unit and not a correct module. **(b) Make the emission register elastic**
+(hold while the aligned lookahead is empty, one-shot the emission) — this is the design
+that preserves REQ-016's tuple sequence at *every* k, and I did not build it, because it
+moves the injected-run cycle of **every** output word and would therefore break the guard
+at the bench's `:1041` that is green today; that is a specification change, not an RTL
+choice, and it is option 1 of the escalation below. **(c) Hold the emitted word one cycle
+when the terminate arrives on its emission cycle** — repairs k = 1 only, provably nothing
+at k ≥ 2, so it is building half of a rule that cannot hold. The applied fix is the only
+one of the four that is minimal, gapless-invariant, and correct on its own terms.
+
+Gapless bit-identity is the acceptance condition I held myself to, and it is an argument
+rather than a hope: the changed case needs a word in the emission register, nothing of its
+frame behind it, and no live record. The record is born on the closure character's own
+cycle and the word that closure ends is emitted one or two cycles later (§6.1's drain
+derivation), so it is live at age 1 or 2 whenever `nc` = 0 for a real frame end; the
+`al_new` route to `nc` = 0 carries the `/S/` closure that created it; outside a frame
+`pc` = 0. The case is reachable only on an input word covering no frame octet inside an
+open frame — REQ-016's wrapper, and nothing else committed.
+
+#### What the fix cannot repair, and why it is an escalation rather than a line of RTL
+
+The fix makes seven of the packet's eight expected rows exact at k = 1 and the first
+seven at k = 7. It does not turn M03-I4 or M03-I6 green, because **§2.2's row 7 is not
+satisfiable by any design**, and I would rather say so before a re-test than after one.
+
+The proof is arithmetic on the specification, in §0.5's own style. Take S_A, a 72-octet
+lane-0 frame, and S_B, this packet's 64-octet lane-0 frame, both under
+`uniform ~idles:7`. Both put source cycle 9 at injected cycle 58 and source cycle 10 at
+injected cycle 66, and the two injected lines are **identical through cycle 65** — they
+first differ at 66, where S_A carries eight octets and S_B carries `/T/`. §0.5's rule pins
+S_A's output word 7 (not its `tlast` word, D = source cycle 9, 49 idles at or before it)
+to cycle **60**, and S_B's output word 7 (its `tlast` word, D = the terminate word, 56
+idles) to cycle **67** — with REQ-015 and §0.5's tuple invariance admitting exactly eight
+words, so S_B may emit **nothing** at 60. At cycle 60 one design must assert `tvalid` and
+must not assert it, on inputs identical in every register and in the current XGMII word.
+No sequential circuit does that.
+
+Where the two bullets of §6.1's D(m) part company is worth recording because it points at
+the repair: for the `tlast` word D(m) is the word that supplies the *evidence*, and for a
+non-`tlast` word it is the word carrying its **last octet** — which is not what decides it
+either, since whether output word m keeps eight octets or loses FCS octets is decided by
+whatever comes after it. Gapless they coincide. Under injection only the `tlast` bullet is
+keyed to evidence. §0.5's principle ("a module's output event is a function of the latest
+input event it depends on") is right; its non-`tlast` instantiation is not, and restating
+D(m) uniformly as *the first input word after word m's octets that carries a frame octet of
+the same frame or closes the frame, plus one cycle* reproduces **every gapless cycle this
+programme has pinned** — ΔC = 3, §7's L = 16/12, m + 3, both lanes — while preserving the
+tuple sequence at every k. That is option 1 in the packet, it costs M03 an elastic emission
+register and dv_lead a guard, and it is architect_docs_lead's call, not mine (charter §7,
+E5's first step). Option 2 is the spec diff §5 item 4 already names. Option 3, keeping
+row 7, is unsatisfiable and I say so as a finding rather than a preference.
+
+I am not disputing the adjudication. The module was wrong, it is fixed, and the residual
+is a different row of a different word discovered by fixing it.
+
+### Actions
+
+- Read the packet, the module, SPEC-M03 §6.1/§6.2/§7/§13 and requirements.md §0.5–§0.6.
+- Edited `libs/hardcaml_ethernet/src/xgmii_rx_64.ml`, one block: introduced `closed`
+  (= `sel_valid`), gated `emit_last_a` on it, added the `~:closed` disjunct to
+  `emit_full`, and wrote the 30-line comment block carrying the C-14.4 argument and the
+  gapless-unreachability proof at the site. `emit_last_b`, `fcs_tail_pending`,
+  `keep_count`, `emit_tlast`, `tvalid`, `consume`, `abort`, `tuser` and the five strobes
+  are textually unchanged. No interface change: `.mli` untouched.
+- Appended the Root-cause, fix, fan-out, both eight-row tables, the escalation with its
+  proof and options, and the snapshot-practice note to
+  `agents/handoffs/BUG-0002_m03-idle-injection-tlast-on-a-non-final-word.md`, above
+  dv_lead's `Fix verdict` placeholder, which I left untouched.
+- Ran `git log --oneline -3 -- rtl_snapshots/` and followed the practice it shows.
+- Staged no test, no spec, no snapshot. Ran no git write.
+
+### Evidence
+
+Reproducible from a checkout at this commit:
+
+```sh
+ocamlc -stop-after parsing libs/hardcaml_ethernet/src/xgmii_rx_64.ml   # exit 0
+git diff --stat -- libs/                    # 1 file, +33 -2
+git log --oneline -3 -- rtl_snapshots/      # 750be49, 681f0a9, 15e2458 — all "promote ... verbatim from run ..."
+```
+
+`ocamlc -stop-after parsing` is a **syntax** check and nothing more: it does not
+type-check, does not elaborate, and is not evidence that the design is correct. Under
+ADR-0005 there is no local toolchain that could give more — no `dune build`, no
+`dune runtest`, no simulation — so **both eight-row tables in the packet are derived
+from the source, not measured**, and they are labelled that way there and here. They are
+predictions of what the next CI run prints, published so they can be wrong in public;
+§4's prediction was published the same way and this return confirms it.
+
+What the next run should show if this fix is right: M03-I4 and M03-I6 stop failing at
+word 0, `words 0 … 6` print `tkeep` 0xFF with no `tlast` at cycles 4, 6, …, 16 (k = 1)
+and 4, 12, …, 52 (k = 7), and the remaining red is word 7 — cycle 18 against an expected
+19 at k = 1, and `tkeep` 0xFF / `tlast` 0 at cycle 60 against an expected 0x0F / 1 at 67
+at k = 7. Every gapless family (A–H, M03-I1/I2/I3), the co-sim and the line-rate rows
+must be **unchanged**; a single moved gapless result convicts this fix and not the
+bench, because the case-table row that changed is unreachable without an input word
+covering no frame octet inside an open frame.
+
+`rtl_snapshots/**` is deliberately **absent** from this commit: no local emission is
+possible (ADR-0005) and the practice the three commits above establish is CI-side
+regeneration promoted byte-exact afterwards. Prediction for that promotion, stated
+before the run: **no new register and no new `always` block** in `xgmii_rx_64.v` — the
+fix is combinational in the output decision — so `wire`/`assign` deltas only, and the
+same deltas again in `eth_mac_10g.v` from the inlined instance. REQ-902's
+double-generation byte-identity check is still owed by the next run, carried from
+`J-rtl_lead-0008`.
+
+### Outcome
+
+BUG-0002's mechanism is established and the defect it names is fixed: the packet's §4
+prediction is **confirmed** (all eight words carried `tlast`; eight one-word frames), and
+the frame-closing decision is now anchored on the terminate event rather than on an
+emptiness that a held frame makes momentarily true. Charter §5 DoD against the packet:
+root cause before fix ✔, in-scope single file ✔, house style ✔, line-rate invariant
+structurally unmoved (nothing registered, nothing elastic, no backpressure introduced) ✔,
+gapless behaviour argued invariant ✔ — and "compiles and elaborates" **not** claimed:
+that is the next CI run's, as it always is here.
+
+**The packet's two units do not go green with this commit and I do not claim they will.**
+M03-I4 and M03-I6 move their failure from word 0 to word 7, and word 7's expected row is
+unsatisfiable by any design — the proof is in the packet under "What the fix does not
+repair". Handoff: the packet returns to dv_lead for re-test with the eight rows it asked
+for, and the row-7 question goes to **architect_docs_lead** via the orchestrator with
+three options and a recommendation. No sign-off claimed: `SO-xgmii_rx_64.md` is dv_lead's.
+
+### Open-questions
+
+1. **Escalation, spec class, for architect_docs_lead (rtl_lead charter §7; E5's first
+   step)**: §0.5's per-output-word rule pins two output words of two stimuli with
+   identical prefixes to contradictory behaviour on one cycle. Options 1 (restate D(m) as
+   the evidence word, elastic emission register — my recommendation), 2 (narrow REQ-016's
+   injection sites at an XGMII port, the spec diff `BUG-0002` §5 item 4 already names), 3
+   (keep row 7 — unsatisfiable). Whichever is ruled, the RTL consequence is mine and I
+   will implement it; option 1 is roughly fifteen lines and a new gapless-equivalence
+   obligation, option 2 is zero.
+2. **REQ-902 remains a criterion, not a debt** — carried from `J-rtl_lead-0003` through
+   `-0008`: the next CI run must regenerate byte-identically, and the snapshot promotion
+   for this fix is owed by that run.
+3. **Carried, unchanged**: the latent `first_v` gating on a stimulus §10 forbids (an idle
+   injected inside a frame's own preamble, M03-N3) — still unreachable, still recorded.
+4. The mutation spot-check (WO-0038 §8) and line-rate rows L1–L5 remain owed before
+   `SO-xgmii_rx_64.md` can issue; nothing in this commit touches either.
+
+### Files-in-this-commit
+
+- libs/hardcaml_ethernet/src/xgmii_rx_64.ml
+- agents/handoffs/BUG-0002_m03-idle-injection-tlast-on-a-non-final-word.md

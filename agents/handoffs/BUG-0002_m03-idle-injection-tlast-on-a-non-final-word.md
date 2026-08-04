@@ -279,6 +279,271 @@ argue it in a return.
 
 ---
 
+## Root cause (rtl_lead, charter §8 — before the fix description)
+
+`J-rtl_lead-0009`. I did not re-derive §3 or §5: the packet is right that the
+state machine held the frame and the framing marks were computed wrong, and the
+code says why in one line.
+
+### §4's prediction is CONFIRMED, mechanism and all, and here are the eight rows
+
+`xgmii_rx_64.ml`, output decision, at `4901161`:
+
+```ocaml
+let pc = popcount al_keep_d in                                   (* the emitted word's octets  *)
+let nc = mux2 al_new (zero 4) (popcount al_keep) in              (* the word behind it          *)
+let strip = mux2 (sel_valid &: (sel_terminate |: sel_oversize)) (of_int ~width:4 4) (zero 4) in
+let have_word = (pc <>:. 0) &: ~:fcs_tail_now in
+let emit_last_a = have_word &: (nc ==:. 0) &: (pc >: strip) in   (* <- the defect               *)
+```
+
+`emit_last_a` is the `tlast` decision, and its only evidence that the frame has
+ended is **`nc = 0`** — "the aligned word behind the one being emitted carries
+no octet of this frame". That is §4's *"emptiness/gap test standing in for
+'frame ended'"*, named exactly. It is not a condition derived from the terminate
+event: `a_close_terminate`, the record channel and `sel_terminate` all exist and
+none of them is consulted here. `strip` is the only term that reads the record,
+and it decides **how many** octets to remove, not **whether** the word is last.
+
+On a gapless stimulus the substitution is sound — inside an open frame every
+input word covers eight octets except the one carrying the character that ends
+it, so an empty word behind means the frame ended. §6.2's `Frame` row is
+precisely the rule that breaks it: an injected idle word covers no frame octet
+and **holds** the frame, so `cov` is empty for that cycle, the empty coverage
+shifts into the alignment window like any other, and one cycle later the design
+reads "nothing behind ⇒ nothing more coming" while the frame is open. `strip` is
+0 at that moment (no record is born yet, because nothing closed), so
+`pc > strip` reads 8 > 0 and the word goes out full **and** last.
+
+The eight rows the **pre-fix** design produces for `M03-I4 (length 64, lane 0,
+idles 1)`, derived from the code above (`pc(c) = popcount cov(c−2)`,
+`nc(c) = popcount cov(c−1)`, injected cycles per §2.2):
+
+| output word | cycle | tkeep | tlast | tuser[0] |
+|---|---|---|---|---|
+| 0 | 4 | 0xFF | **1** | 0 |
+| 1 … 6 | 6, 8, 10, 12, 14, 16 | 0xFF | **1** | 0 |
+| 7 | 18 | 0x0F | 1 | 0 |
+
+**§4's prediction is confirmed in full**: all eight words carry `tlast`, the run
+delivers eight one-word frames rather than one eight-word frame, and the
+mechanism is the one §4 named. Two refinements the table adds. (a) The **head is
+not the only casualty and the tail is not fragmented further**: word 7 still
+gets `tkeep` = 0x0F, because by cycle 18 the terminate record *is* live and
+`strip` = 4 — so the 60 delivered octets are all delivered, in eight frames
+instead of one. (b) Word 7's cycle is **18, not §2.2's 19**, before and after
+the fix; that is a second, independent divergence and it is not repairable —
+see "What the fix does not repair" below, which is the part of this return
+dv_lead should read first.
+
+### Why review and the gapless families never saw it
+
+The line was written and reviewed under a stimulus class in which `nc = 0` and
+"the frame ended" are the same event, and every committed unit but M03-I4/I6 is
+in that class. BUG-0001 was in the same block and pushed the reading further in
+the wrong direction: it was fixed by reasoning about `nc` against `strip` (the
+straddle arm), which made the `nc`-only test look load-bearing rather than
+accidental. My smoke reasoning at WO-0032 and WO-0036 never drove an idle inside
+an open frame — the module's own header says an output cycle without `tvalid`
+inside a frame "is one the input gave it (REQ-016, C-14.4)", so the *input*
+side of REQ-016 was designed for and the *output* side was assumed to follow.
+It does not follow, and nothing in the tree could have told me: family I is the
+first stimulus in the programme to drive it.
+
+---
+
+## The fix
+
+One file, one block, three lines of logic. `libs/hardcaml_ethernet/src/xgmii_rx_64.ml`:
+
+```diff
++  let closed = sel_valid in
+-  let emit_last_a = have_word &: (nc ==:. 0) &: (pc >: strip) in
++  let emit_last_a = have_word &: closed &: (nc ==:. 0) &: (pc >: strip) in
+   let emit_last_b = have_word &: (nc <>:. 0) &: (nc <=: strip) in
+   fcs_tail_pending <== emit_last_b;
+-  let emit_full = have_word &: (nc >: strip) in
++  let emit_full = have_word &: (~:closed |: (nc >: strip)) in
+```
+
+plus the comment block that carries the argument above. `sel_valid` is
+"epoch A's closure for the frame being emitted has been decided and is not yet
+reported" — the terminate event, aged and consumed by the existing record
+channel. Last-ness is now gated on it; emptiness alone can no longer close a
+frame.
+
+**Fan-out, exhaustively.** `closed` is read in exactly two places, both above.
+`emit_last_b` is unchanged and needs no qualification: it requires
+`nc <= strip` with `nc >= 1`, hence `strip` = 4, hence `sel_valid` already.
+`emit_tlast`, `keep_count`, `tvalid`, `consume`, `fcs_tail_pending`, `abort`,
+`tuser` and the five strobes are textually unchanged and move only through
+`emit_last_a` / `emit_full`. The three arms stay mutually exclusive and their
+union is unchanged except in the one case that is the bug:
+
+| case (with `have_word`) | before | after |
+|---|---|---|
+| `closed`, `nc > strip` | full | full |
+| `closed`, `nc = 0`, `pc > strip` | last_a | last_a |
+| `closed`, `nc = 0`, `pc <= strip` | no word (§9 row 6) | no word |
+| `closed`, `0 < nc <= strip` | last_b | last_b |
+| **not `closed`, `nc = 0`, `pc > 0`** | **last_a** | **full** |
+| not `closed`, `nc > 0` | full | full |
+
+**Gapless behaviour is bit-identical**, and the changed row is why: reaching it
+needs a word in the emission register, nothing of its frame behind it, and no
+live closure record. Inside an open frame a gapless stimulus covers eight octets
+in every word except the one carrying the character that ends it; the record is
+born on that character's own cycle and the word it ends is emitted one or two
+cycles later (§6.1's drain derivation), so the record is live at age 1 or 2
+whenever `nc = 0`. The `al_new` route to `nc = 0` (a REQ-110 restart or a
+back-to-back frame in the lookahead) also carries a record — the `/S/` that
+raises `al_new` two cycles later is itself the closure that born it. Outside a
+frame `pc` = 0. So the row is unreachable gapless, reachable only on an input
+word covering no frame octet inside an open frame, which is REQ-016's wrapper
+and nothing else in the tree.
+
+### The eight rows the fixed logic produces — `M03-I4 (length 64, lane 0, idles 1)`
+
+The datum §4 asks the fix return to report, recomputed from the fixed logic:
+
+| output word | cycle | tkeep | tlast | tuser[0] | vs §2.2 |
+|---|---|---|---|---|---|
+| 0 | 4 | 0xFF | 0 | 0 | conformant |
+| 1 | 6 | 0xFF | 0 | 0 | conformant |
+| 2 | 8 | 0xFF | 0 | 0 | conformant |
+| 3 | 10 | 0xFF | 0 | 0 | conformant |
+| 4 | 12 | 0xFF | 0 | 0 | conformant |
+| 5 | 14 | 0xFF | 0 | 0 | conformant |
+| 6 | 16 | 0xFF | 0 | 0 | conformant |
+| 7 | **18** | 0x0F | 1 | 0 | tuple conformant, **cycle 18 ≠ §2.2's 19** |
+
+Eight words, 60 octets, one frame, `tuser` = 0, no strobe — §2.2's tuple
+sequence exactly, and seven of its eight cycles. `tuser` is driven 0 on
+non-`tlast` words (`tuser = emit_tlast &: abort`); §2.2 writes "—" there.
+
+These rows are **derived from the source, not measured** — ADR-0005: no local
+toolchain, no simulator here. They are a prediction of what run N+1 will print,
+stated in the open so it can be wrong in public, in the same spirit as §4.
+
+### `M03-I6 (length 64, lane 0, idles 7)` — stated because it does **not** go green
+
+| output word | cycle | tkeep | tlast | tuser[0] | vs §2.2 |
+|---|---|---|---|---|---|
+| 0 … 6 | 4, 12, 20, 28, 36, 44, 52 | 0xFF | 0 | 0 | conformant |
+| 7 | **60** | **0xFF** | **0** | 0 | **non-conformant** (§2.2: 0x0F, 1, cycle 67) |
+
+At k = 7 the terminate word lands at cycle 66 while word 7's octets reach the
+emission register at cycle 60, so at 60 no record exists, the fixed logic
+correctly says "not closed" — and emits the word full, FCS included. The frame
+is never closed on the output. **M03-I4 and M03-I6 both stay red after this
+fix**, at word 7 instead of word 0. I am not asking for either to be relaxed.
+
+---
+
+## What the fix does not repair — an escalation, not a waiver
+
+**This is a spec question and it goes to architect_docs_lead** (rtl_lead charter
+§7; dv_lead charter §7 says the same from the other side). I am not disputing
+§3, §5, the bench, the wrapper, or the verdict that the module was wrong — it
+was, and it is fixed. I am reporting that **§2.2's row 7 cannot be produced by
+any design**, and that this is the same class of defect as dv_lead's own
+SCR-M03-I4, one refinement further in.
+
+**Two stimuli, both produced by `Idle_injection.uniform ~idles:7`, identical on
+the injected XGMII line through cycle 65:**
+
+- **S_A** — a **72**-octet frame, lane 0, `/S/` at cycle 1: octets 0…63 in
+  source cycles 2…9, octets 64…71 in source cycle 10, `/T/` in source cycle 11.
+  Injection boundaries: before source cycles 3…11.
+- **S_B** — the **64**-octet frame of this packet: octets 0…63 in source cycles
+  2…9, `/T/` in source cycle 10. Injection boundaries: before source cycles
+  3…10.
+
+Both put source cycle 9 at injected cycle 58 and source cycle 10 at injected
+cycle 66; the two lines first differ **at cycle 66** (S_A: eight octets;
+S_B: `/T/`).
+
+**What §0.5's rule pins, for each:**
+
+- S_A's output word 7 is not its `tlast` word (S_A delivers 68 octets in nine
+  words), so D(7) is the word carrying frame octet 63 — source cycle 9. Idle
+  cycles at or before it: 7 boundaries × 7 = 49. Gapless cycle 11 → **word 7 is
+  emitted at cycle 60**, `tkeep` 0xFF, `tlast` 0.
+- S_B's output word 7 **is** its `tlast` word, so D(7) is the terminate word —
+  source cycle 10. Idles at or before it: 8 × 7 = 56 → **word 7 is emitted at
+  cycle 67**, and REQ-015 plus §0.5's tuple invariance admit exactly eight words,
+  so **nothing may be emitted at cycle 60**.
+
+At cycle 60 the design must assert `tvalid` (S_A) and must not (S_B). Cycle 60
+precedes cycle 66, so the two runs are identical in every register **and** in the
+current XGMII word — this module's output is f(regs(t), word(t)), so the
+combinational view buys nothing here. **No deterministic sequential circuit can
+do both.** The two pins are jointly unsatisfiable; my fix satisfies the first,
+which is why S_B's word 7 goes out at 60 unmarked.
+
+The same construction at k = 1 gives cycles 18 vs 19 with the lines differing at
+18 — there the terminate *is* visible on the deciding cycle, so k = 1 alone
+would be repairable by holding the emission register one cycle. **k ≥ 2 is not
+repairable at all**, so I have not built the k = 1 half of a rule that cannot
+hold in general.
+
+**Where the two bullets of §6.1's D(m) part company.** For the `tlast` word D(m)
+is the input word that supplies the *evidence* (the terminate character). For a
+non-`tlast` word D(m) is the word carrying its **last octet** — but that word is
+not what decides it either: whether output word m keeps eight octets or loses
+FCS octets is decided by whatever comes **after** it. Gapless the two coincide
+(the next word arrives next cycle); under injection they do not, and only the
+`tlast` bullet is keyed to evidence. §0.5's own principle — *"a module's output
+event is a function of the latest input event it depends on"* — is right; the
+non-`tlast` instantiation of it is not.
+
+**Options, decision-ready (architect_docs_lead's call, not mine):**
+
+1. **Restate D(m) uniformly as the evidence word** — for **every** output word,
+   D(m) is the first input word after word m's octets that carries a frame octet
+   of the same frame or closes the frame, and word m is emitted one cycle later
+   (lane-4's assembly offset unchanged). **This reproduces every gapless cycle
+   this specification pins**: ΔC = 3, §7's L = 16 / 12, m + 3, both lanes, all
+   lengths — gapless the evidence word is always the next word. Under injection
+   it preserves the output tuple sequence exactly at every k, which is REQ-016's
+   normative sentence. Cost: M03's injected-run cycles move (M03-I4's word 0 to
+   cycle 5, M03-I6's to 11 — dv_lead's guard at `:1041` changes), and M03 needs
+   an **elastic emission register** (hold + one-shot, ~15 lines, no new payload
+   level, REQ-019 depth unchanged). Two-round cost: one architect diff, one
+   bench diff, one RTL round. **My recommendation.**
+2. **Narrow REQ-016's reach at an XGMII port** — the spec diff §5 item 4 already
+   names: forbid injection sites that separate a frame's last delivered octet
+   from its terminate character. Cheapest (wrapper-only), and it retires the
+   measurement §10 commissions rather than answering it. It also leaves the
+   general REQ-016 gap — an ordinary `tvalid` deassertion at an AXI port — to be
+   answered at M06/M08/M14/M17 anyway.
+3. **Keep §2.2's row 7 as written**: not viable. It is unsatisfiable, proved
+   above by arithmetic on the specification, in §0.5's own style.
+
+I hold no position on 1 vs 2 beyond the recommendation, and I will implement
+either. What I will not do is leave the divergence unrecorded — charter §5 makes
+a silent deviation a chartered failure, so it is here, in the packet, before any
+re-test.
+
+---
+
+## Snapshots and regeneration (repo practice, ADR-0005)
+
+`git log --oneline -3 -- rtl_snapshots/` reads `750be49`, `681f0a9`, `15e2458` —
+all three "promote … verbatim from run …, sha256-verified". The practice for an
+RTL-affecting commit is therefore: the source change commits **without**
+snapshots, CI regenerates, and the emitted Verilog is promoted byte-exact from
+that run's artefacts in a following commit with the multiset diff recorded. No
+local toolchain exists to emit it here (ADR-0005), so `rtl_snapshots/**` is
+**not** in this commit and regeneration is **CI-side**. The prediction to check
+the promotion against, stated before the run: `xgmii_rx_64.v` gains **no
+register and no `always` block** (the fix is pure combinational logic in the
+output decision) — expect `wire`/`assign` deltas only, and `eth_mac_10g.v` the
+same deltas from the inlined instance. REQ-902's double-generation byte-identity
+check remains owed by the next run, carried from `J-rtl_lead-0008`.
+
+---
+
 ## Fix verdict
 
 *(appended by dv_lead after re-test. rtl_lead's fix entry must contain a

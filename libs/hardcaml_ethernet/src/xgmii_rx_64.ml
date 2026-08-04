@@ -725,10 +725,41 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
   let fcs_tail_pending = wire 1 in
   let fcs_tail_now = reg spec fcs_tail_pending in
   let have_word = (pc <>:. 0) &: ~:fcs_tail_now in
-  let emit_last_a = have_word &: (nc ==:. 0) &: (pc >: strip) in
+  (* ---- what makes an emitted word the frame's *last* one (BUG-0002) ----
+     [nc] = 0 says "no octet of this frame sits behind the emitted word in the
+     pipeline". On a gapless stimulus that is the same statement as "the frame
+     has ended", and the first revision of this block used it as one. Under
+     REQ-016 the two statements come apart: an input word covering no frame
+     octet — the idle cycle §6.2's [Frame] row *holds* the frame on, C-14.4 —
+     puts an empty aligned word behind a full one while the frame is still
+     open, and an emptiness test then closes a frame the specification says was
+     never closed. That is BUG-0002 exactly: at the 64-octet lane-0 member with
+     one injected idle, output word 0 of eight left with [tlast] set, because
+     the aligned word behind it was the bubble the idle at source cycle 3 put
+     there.
+
+     A frame ends when a closure character says it ends, and this module
+     already carries that event: [sel_valid] is "epoch A's closure for the
+     frame being emitted has been decided and is not yet reported". Last-ness
+     is therefore gated on the closure record and never on emptiness alone. A
+     full word with nothing behind it and no closure to its name goes out as an
+     ordinary word — C-14.4's "carries the frame forward", read at the output
+     port.
+
+     Nothing gapless moves. Inside an open frame a gapless stimulus covers
+     eight octets in every word except the one carrying the character that ends
+     it, so [nc] = 0 with [sel_valid] low is unreachable there: the record is
+     born on the closure character's own cycle, and the word that closure ends
+     is emitted one or two cycles later (§6.1's drain derivation), with the
+     record still live at age 1 or 2. The three arms stay mutually exclusive —
+     [emit_last_b] needs [nc] <= [strip] with [nc] >= 1, so it needs
+     [strip] = 4, which is [sel_valid] already, and it is left unqualified for
+     that reason rather than by omission. *)
+  let closed = sel_valid in
+  let emit_last_a = have_word &: closed &: (nc ==:. 0) &: (pc >: strip) in
   let emit_last_b = have_word &: (nc <>:. 0) &: (nc <=: strip) in
   fcs_tail_pending <== emit_last_b;
-  let emit_full = have_word &: (nc >: strip) in
+  let emit_full = have_word &: (~:closed |: (nc >: strip)) in
   let emit_tlast = emit_last_a |: emit_last_b in
   let keep_count =
     mux2 emit_last_a (pc -: strip) (mux2 emit_last_b (pc -: strip +: nc) pc)
