@@ -903,3 +903,49 @@ returns to rtl_lead + dv after.
 
 ### Files-in-this-commit
 - (none)
+
+## [J-orchestrator-0167] 2026-08-04T10:15Z | task:none | The re-ruled D(m) transcribed into force with F-1 outstanding against one cell
+
+### Trigger
+dv_lead's countersignature return: three granted, the lane-4
+class cell refused as FINDING F-1.
+
+### Reasoning
+Signature committed at a8ca14d; this commit transcribes it
+per the C-43 form - the ruling is IN FORCE from the row, with
+F-1 recorded outstanding against §6.1 item 2's lane-4 cell
+(non-blocking: the bench reports, never asserts, those
+classes; dv's change 5(b) explicitly bars the worker from
+deriving expectations off the false cell). dv's sweep is the
+strongest verification any ruling here has had: 17,100
+pair-runs, 0 violations under the new rule against 2,268
+under the replaced one. Sequencing adopted as dv recommends:
+bench-first (the bench states the requirement, red 2 -> 36
+falsifiably predicted in advance, every red at word 0 with
+delta = k), and the AP repair - two of dv's own cells now
+false, replacement text fixed in the packet - lands BEFORE
+the tb_writer WO, which SHALL NOT issue before it. F-1 goes
+to the architect in parallel (repair offered: one paragraph,
+no rule moves). BUG-0002's fix verdict stays open; ce00c06
+is not accepted until a meaningful re-test exists.
+
+### Actions
+a8ca14d push; this transcription commit; two parallel
+dispatches (architect on F-1; dv resumed for the clerical AP
+repair); then the bench WO.
+
+### Evidence
+a8ca14d; the COUNTERSIGNATURE block; dv's sweep table; the
+draft row it supplied (reworded here only for date and id).
+
+### Outcome / DoD
+The causality rule is law; the path to green is: AP repair ->
+bench round (36 red, falsifiable) -> rtl_lead emission round
+-> green -> promotion harvest -> BUG-0002 verdict ->
+campaign.
+
+### Open questions
+None new; F-1 and N-1 ride their owners.
+
+### Files-in-this-commit
+- docs/specs/requirements.md
