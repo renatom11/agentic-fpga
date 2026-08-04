@@ -693,7 +693,19 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
      begins a new frame tells the word before it nothing except that it was the
      last of its own. *)
   let nc = mux2 al_new (zero 4) (popcount al_keep) in
-  let strip = mux2 (sel_valid &: (sel_terminate |: sel_oversize)) (of_int ~width:4 4) (zero 4) in
+  (* MUTATION GH-c3 -- WO-0058, NEVER MERGE. Seeded defect: FCS removal is
+     attempted on a frame cut short by a start character. [strip] is the count
+     of trailing octets the output decision withholds from the emitted word;
+     REQ-103's last sentence says a frame cut short under REQ-110 delivers
+     every octet decoded up to its abort point, WITH NO FCS REMOVAL ATTEMPTED,
+     so [sel_start] must not appear here. With it, a REQ-110-aborted frame's
+     delivered extent is four octets shorter, and [tkeep] and the output-word
+     count follow that shorter extent. SEEDED ON THE REQ-110 PATH ONLY:
+     [sel_error] -- REQ-105's abort -- is NOT added, and [sel_oversize] was
+     already present as REQ-108's own 1518-to-1514 arithmetic and is untouched.
+     The abort bit is unchanged, since [abort] is a separate term. *)
+  let strip_cond = sel_valid &: (sel_terminate |: sel_oversize |: sel_start) in
+  let strip = mux2 strip_cond (of_int ~width:4 4) (zero 4) in
   (* ---- the all-FCS tail word (REQ-103, REQ-015; BUG-0001) ----
      [emit_last_a] is the case where the FCS lies wholly inside the emitted
      word, and its [pc >: strip] guard is what stops a word made *only* of FCS
