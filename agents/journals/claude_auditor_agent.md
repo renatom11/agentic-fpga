@@ -2411,3 +2411,192 @@ companion was not opened.
 
 ### Files-in-this-commit
 - docs/reports/audit/WO-0058-mutations/README.md
+
+## [J-auditor-0011] 2026-08-04T16:08Z | task:WO-0061 | Ten family-I mutations seeded blind against 42b9df3; all ten SEEDED, no escape taken
+
+### Trigger
+Orchestrator spawn carrying `agents/handoffs/WO-0061_family-i-mutation-campaign.md`
+(dv_lead -> auditor, frozen DRAFT), instructing me to author ten mutation diffs,
+one per class I-c1 ... I-c10, against base SHA `42b9df3`, before any of them is
+applied anywhere, and to deliver one file under `docs/reports/audit/`. This is
+the eighth mutation campaign of the programme and the first against family I --
+the first family whose rows survived a design round.
+
+### Inputs
+- `agents/charters/auditor.md`; `agents/PROTOCOL.md` (mandatory first actions).
+- `agents/handoffs/WO-0061_family-i-mutation-campaign.md`, in full, from the
+  working tree at `d08552e`. Not verified against `61eb242`: packet bar 11 puts
+  a path outside the allowlist out of bounds to every git subcommand, and
+  `agents/**` is outside it, so verification would have cost more than it bought.
+- `docs/specs/modules/xgmii_rx_64.md`: SS6 in full (SS6.1, SS6.2's four-row
+  table, SS6.3), SS7, SS8, SS9 in full, SS10's REQ table, SS11, SS13.
+- `docs/specs/requirements.md`: SS0.5's opening, SS0.6 and SS0.7 in full, the
+  REQ-001 ... REQ-021 rows and the REQ-101 ... REQ-113 rows.
+- `libs/hardcaml_ethernet/src/xgmii_rx_64.ml` in full (1011 lines, blob
+  `30ca0385`), and `libs/hardcaml_ethernet/src/dune`, materialised with
+  `git archive 42b9df3 libs/` per bar 10.
+- `dune-project` and `.ocamlformat` at `42b9df3` (root build configuration).
+- `docs/reports/audit/WO-0058-mutations/README.md` -- heading index, lines
+  1-240 and SS4-SS7 -- as the template my orders name.
+- Nothing else. See Reasoning for the blinding statement.
+
+### Reasoning
+**Sampling frame.** The frame was fixed by the packet, not by me: ten published
+intents, one design file, one base SHA. What I chose was the *rendering* of each
+intent and the *gate* each rendering is written on, and that is where the
+judgement is. The frame I deliberately did not enter is the whole of `test/**`
+and the whole of `agents/**` beyond the packet -- see the blinding statement
+below.
+
+**The gate question is this family's whole difficulty.** Seven of the ten
+classes are gated on SS6.2's *held cycle*, and SS6.2 names **two** of them: an
+idle cycle injected under REQ-016, and a terminate character in lane 0. The
+design's own name for the first is `bubble` minus its `off4` qualifier --
+`a_open &: ~:cov_nonempty &: ~:a_close_now` -- and the second differs from it
+by exactly the `a_close_now` term. I did not use one gate for all seven. I-c1
+quotes SS6.2's *the octet count holds*, which governs both named held cycles, so
+its gate omits `~:a_close_now` and reaches the lane-0 terminate; I-c2 and I-c4
+quote sentences naming the idle word specifically (*the idle word's lanes are
+folded*, *an idle word arriving inside an open frame*), so theirs carry it.
+I-c5 could not use `a_close_now` at all -- it is a function of `a_close_error`,
+which is what I-c5 mutates, so the pair would be a combinational loop -- and is
+written from `a_char_acts`, `cov_end`/`cov_first` and `a_closing_v` instead.
+Every one of those choices is disclosed at its class and each is a one-term
+reversal if dv_lead reads the intent the other way.
+
+**Three renderings were rejected as unfaithful or unable to fail.** (1) I-c2 by
+enabling the CRC update alone, leaving `octet_count` at 0: M02's 1-to-8 domain
+makes a zero-octet update the identity, so the mutant would fold nothing and
+could not fail -- moving the count is what makes the class a defect. (2) I-c7 by
+forcing `ev12` to 1: that releases the `tlast` word at record age 0 and moves its
+cycle, which the class's scope clause forbids in terms; ORing `~:closed` into
+`decided` leaves every `tlast` arm on `closure_aligned` untouched. (3) I-c8
+without forcing `keep_count`: the spurious word would carry `tkeep` = 0 with
+`tvalid` = 1, breaking REQ-011 on the way to a REQ-109 defect, which the
+packet's first standing clause forbids -- preserve the spec rule, disclose the
+collision.
+
+**None of the three pre-authorised NOT-SEEDED escapes was taken, and each was
+tested rather than waved past.** I-c1's required 1518+7-idle crossing is
+arithmetic: at k = 7 each source word contributes 64 to the mutated total, so
+1518 is passed after ~24 of the frame's 190 source words. I-c8's threshold is
+T = 255, strictly between the bench's 100- and 1001-cycle idle runs and well
+under 1331. I-c9's rendering opens epoch B on a `/Q/` in lane 0 in `Idle`, and
+the ordered set's own lanes 1-7 close that epoch in-word, so it reports through
+`q2` rather than producing no observable.
+
+**Two scope reaches I chose to disclose rather than narrow.** I-c1's gate fires
+on the lane-0 terminate word, so a 56-to-63-octet frame's `error_runt` is
+suppressed -- reachable **gapless**, the only class here of which that is true.
+I-c3 nulls the hold vector rather than gating it to whole-word idles, because a
+gated rendering would have had to encode the wrapper's stimulus shape inside the
+design, which measures the wrapper and not the design.
+
+**Blinding conduct, stated affirmatively.** I opened no file under `test/**` at
+any revision, by any route: not the five units under test, not the rest of the
+bench, not the attack plan, not the monitors, not the XGMII stimulus libraries,
+not the co-simulation lane, not a `dune` file inside any of them. I do not know
+what M03-I1, M03-I2, M03-I3, M03-I4 or M03-I6 assert or print. I did not open,
+list, grep, hash, diff, `git show` or otherwise touch
+`agents/handoffs/WO-0061_family-i-mutation-campaign-SEALED-predictions.md` at any
+revision. I opened no `agents/**` file other than the packet, my charter and
+PROTOCOL, and I did not read my own journal -- my orders supplied the next entry
+id, so the append needed no read. No unscoped `git log` was run and no git
+subcommand of mine named a path outside the allowlist; `git status --porcelain`
+was scoped to `libs/`, which is the one place this round improves on WO-0058.
+The report contains **no prediction**: every behavioural sentence in it is a
+statement about M03 under the mutation, argued from the two specification
+documents and the diff.
+
+**Deliverable path.** My orders name `docs/reports/audit/WO-0061-mutations/README.md`
+-- inside my write scope, unlike WO-0058's instruction, so no deviation is owed
+this round. One file, all ten manifest entries inline, with the WO-0058 SS7
+extraction form preserved so the orchestrator may recover ten `.diff` files.
+
+### Actions
+- Materialised the base with `git archive 42b9df3 libs/` into a private scratch
+  directory (twice, into two independent throwaway git repositories).
+- Authored ten mutations by exact string substitution on the base file, **all
+  ten before any was applied anywhere**, and generated each diff with `git diff`
+  inside the scratch repository.
+- Corrected two mechanism comments during authoring (I-c5's strobe cycle, I-c6's
+  corrupted-lane wording) **before any application and with no result of any
+  kind in existence** -- authoring, not bar 8's forbidden revision-after-a-result.
+- Wrote `docs/reports/audit/WO-0061-mutations/README.md`: scope statement against
+  the packet's SS2 allowlist, the ten manifest entries with their diffs inline,
+  a mechanism statement per class, the SS5 mandatory disclosures per class and
+  collected in one table, build state, a fidelity ledger, and a tested
+  one-command extraction.
+- Ran nothing: no diff was applied to the repository, no branch was created, no
+  git write of any kind was performed, and I have seen no result.
+
+### Evidence
+All commands read-only against the repository; the scratch paths below are
+under my session scratch directory and are **ephemeral** (ADR-0003/F5).
+
+1. Base identity. `git rev-parse 42b9df3:libs/hardcaml_ethernet/src/xgmii_rx_64.ml`
+   -> `30ca0385f3106160917ab671c871d774cbaea371`; the file is **1011 lines**,
+   `sha256` `8fc08242046ec0b8431df90d0fafb581cb22f30acf2b9651e29d3c4c7656fec1`;
+   the whole `git archive 42b9df3 libs/` extraction (12 files, hashed in sorted
+   path order) is `1849eac6165c9a7a01d0f0088d930e0190fe38641e046ed238c6004ff818d20d`.
+2. Specification currency.
+   `git diff --stat 42b9df3 HEAD -- libs/ docs/specs/ docs/adr/ dune-project .ocamlformat`
+   is **empty**, so the working-tree specifications and design I read are the
+   base SHA's byte for byte. No revision ambiguity arises this round.
+3. Clean application, three ways. In a fresh `git archive 42b9df3 libs/`
+   repository, `git apply --check --index` returns **CLEAN for all ten**. Each
+   diff applied there produces a file whose `sha256` **MATCHES** the mutant I
+   authored by substitution -- prefixes `e6f9033c1adc`, `49e519a224cb`,
+   `17350b4c82e6`, `9f575099666e`, `451c548196e8`, `5d07112bea6a`,
+   `1ca5b149cba2`, `c2725feb793d`, `1504357cf5fb`, `ba665e1578f3` for I-c1 ...
+   I-c10. Against the live working tree at `d08552e`, `git apply --check`
+   returns **CLEAN for all ten** and `git status --porcelain libs/` is **empty**
+   afterwards.
+4. Syntax. `ocamlc -stop-after parsing -c` (system OCaml **4.14.1**) accepts all
+   ten mutants and the unmutated base as a control. Every added line is
+   <= 87 columns (widest: I-c9's `b_exists` line, 87), and **no added line
+   contains a double quote** (0 in all ten), which is the lexer hazard this
+   file's comment style carries.
+5. Extraction. The command published as SS7 of the report was executed from the
+   repository root: it prints `10 diffs extracted` and the ten recovered files
+   are **byte-identical** to the ten I generated, each still `git apply --check`
+   CLEAN against the working tree.
+6. What could not be verified, and is argued rather than demonstrated: types,
+   widths and elaboration. Hardcaml, `hardcaml_axi`, `ppx_hardcaml` and
+   `ppx_jane` are absent from this container, and ADR-0005 makes a local build
+   inadmissible evidence in any case. Report SS5 carries the width-by-width
+   construction argument and the vocabulary check (every operator used appears
+   in the base file; `+:.` and `-:.` do not appear there and were avoided;
+   `<=:` does appear, at base line 960).
+
+### Outcome
+DoD **met**. Ten diffs, one per class, all **SEEDED**; none NOT-SEEDED; no
+substitution and no narrowing to make anything build. Every SS5 mandatory
+disclosure is answered per class and collected in one table, including the third
+standing clause's three answers for I-c1 ... I-c7. Deliverable:
+`docs/reports/audit/WO-0061-mutations/README.md`, handed to the orchestrator for
+commit and for transient application per PROTOCOL SS10's transient model. The
+campaign's results are dv_lead's to adjudicate against its sealed predictions; I
+have seen none of them and will see none before the seal is opened.
+
+### Open-questions
+1. **`dune build @fmt` cleanliness at the base is still unestablished.** The
+   base carries two 97-column lines (622 and 800) against `.ocamlformat`'s
+   janestreet profile. Carried since WO-0050 and unchanged. If an `@fmt` failure
+   appears under any of these ten, the first question is whether it is
+   pre-existing; bar 8's build-only repair clause should not be spent on a
+   base-level failure.
+2. **I-c10 cannot reach the `+3`-or-later region** SS4.3 item 2 identifies as
+   the only place C-14.3's tightened window is the unique detector. Its offset
+   is the design's own drain offset (+1/+2 at lane 0, +0/+1 at lane 4, +2 for a
+   frame emitting no word), because the class as stated moves the threshold
+   comparison and the report cycle then follows SS9's pin. Reaching +3 would
+   have required seeding a defect in the report path instead -- a different
+   class. Flagged so the adjudication does not read the absence as a rendering
+   failure.
+3. **I-c6 has no lane-0 instance and I-c1 has no instance at the 64-octet
+   member.** Both are structural properties of the design and the class, derived
+   in the report, and neither is a narrowing I chose.
+
+### Files-in-this-commit
+- docs/reports/audit/WO-0061-mutations/README.md
