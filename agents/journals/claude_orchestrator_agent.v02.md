@@ -1874,3 +1874,31 @@ git status before this commit.)
 
 ### Files-in-this-commit
 - tasks/BOARD.md
+
+## [J-orchestrator-0192] 2026-08-08T18:50Z | task:WO-0063B | The seal redeemed on schedule - and the split executed with the base-SHA identity verified in the log
+
+### Trigger
+dv's seal round returned (J-dv_lead-0105 + 0106). Split executed as
+practiced: journal truncated at the 0106 boundary (line 3205), commit 1
+c0595f9 (sweep + mli ruling), journal restored, commit 2 c6c3287
+(packet + SEALED companion). git log confirms adjacency - the seal's
+symbolic base-SHA statement ("the commit this packet's own immediately
+follows") resolves to c0595f9, verified before push per dv's
+commissioning item 2. Pushed.
+
+### What I did
+- Board: WO-0063B row added SEALED · SEEDING with the full verdict
+  note; WO-0063 phase-A row retained beneath as history.
+- Dispatching the auditor to seed under the allowlist: WO-0063B packet
+  attached, the SEALED file NOT attached and barred absolutely; all
+  test/** and agents/** barred; R-DISC-1/2 bind the manifest per lane;
+  the §4(c) pre-ship check (BUG-0003 §V.10.2's measured signature) is
+  now a runnable obligation on the auditor before delivery.
+- After the manifest: I operate the transients at c0595f9 (control
+  first, then both intents with the full MUST-STAY-GREEN sweep), dv
+  adjudicates against the seal.
+- Carried: dv's items 3 (post-campaign AP rows) and 4 (the citation
+  exception's standing carrier) on the queue.
+
+### Files-in-this-commit
+- tasks/BOARD.md
