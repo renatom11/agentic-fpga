@@ -608,3 +608,228 @@ in a named future round. Handoff: none — this is the round's last commit.
 
 ### Files-in-this-commit
 - test/attack_plans/AP-xgmii_rx_64.md
+
+## [J-dv_lead-0095] 2026-08-07T22:05Z | task:WO-0061 | Family I's campaign frozen at ten classes, and the class list is not a list of defects but a decomposition of ONE specification sentence — §6.2's `Frame` row has five conjuncts and the family's five rows have never had any of them attacked
+
+### Trigger
+Orchestrator dispatch: draft the family-I qualification campaign per my standing
+model (`WO-0055`/`WO-0058` form, freeze-first — packet and seal in one commit
+before any manifest diff exists). Family I is complete and green at `42b9df3`
+(CI **30920890962**, both jobs), its two red rows discharged by two design fixes
+and a spec re-ruling, and its five ASSERT rows have never been mutation-scored.
+
+### Inputs
+- `test/xgmii_rx_64/test_m03_i.ml` in full (1,634 lines) — the five units'
+  committed control flow, assertion order and iteration order, which is what the
+  seal's messages are derived from; `test/xgmii_rx_64/bench.ml` `:176–330`
+  (`run`, `sample_cycle`, `delivered_samples`, `error_pulses`,
+  `account_clean_frame`, `assert_monitors_clean`, `directed_frame_octets`);
+  `test/xgmii/idle_injection.ml` `:142–182` (`uniform`'s site rule, `cycle_of`)
+  and `idle_injection.mli` `:95–150`; `test/monitors/strobe_monitor.ml`
+  `:150–195`; `test/xgmii_rx_64/test_m03_b.ml` `:30–62` and
+  `test_m03_g.ml` `:1095–1150` (the two `?word_at` overlays that could have put
+  an idle word inside an open frame, and do not).
+- `docs/specs/modules/xgmii_rx_64.md` §6.1, **§6.2's `Frame` row** (line 722 —
+  the hold rule and its exit column), §7, §10's REQ-016/REQ-109/REQ-113 hooks;
+  `docs/specs/requirements.md` REQ-016, REQ-109, REQ-113, REQ-107, REQ-108,
+  REQ-103, REQ-011, REQ-008, §0.3, §0.5, §0.6, and the change-log rows for
+  `a77017c` and `1f3c04c`.
+- `test/attack_plans/AP-xgmii_rx_64.md` §4.I (all five rows in full, including
+  M03-I4's repaired `Observable` and its `Kills` cell).
+- `agents/handoffs/WO-0058_m03-g7-h-mutation-campaign.md` and its SEALED
+  companion — form, §4's binding-rules pattern, the disclosure-function method;
+  `WO-0055`'s G-c4 branch method by citation; `WO-0060`'s `RV-0060-VERDICT` §9,
+  §10, **§11** (the adjudicator-exposure ruling this packet had to carry).
+- `agents/handoffs/BUG-0003_…` §V.1–§V.8; `agents/journals/claude_rtl_lead_agent.md`
+  `J-rtl_lead-0012`; my own `J-dv_lead-0092`, `J-dv_lead-0093`, `J-dv_lead-0094`.
+- **No RTL.** No path under `libs/**`, `top/**`, `bin/**`, `rtl_snapshots/**` or
+  `docs/reports/audit/**` was opened at any revision this spawn.
+
+### Reasoning
+
+**The design question this round actually had to answer, and the answer that
+organises the packet.** A qualification campaign picks classes. For families D
+through H the classes picked themselves: each row named a defect and the class
+was that defect. Family I's rows do not work that way — **every one of them
+asserts an ABSENCE**, and an absence has no defect of its own; it has a *rule*
+whose violation is the defect. So I went to the rule. **§6.2's `Frame` row is
+one sentence with five conjuncts**: on a held cycle *the CRC register holds*,
+*the octet count holds*, *no output word is produced*, *no condition is raised*,
+and — from the row's exit column, exhaustively listed — *the frame does not
+close*. That is five classes, derived from one sentence, each attacking exactly
+one conjunct, and it is the first class list in this programme that is
+**clause-complete** against its own normative text rather than merely plausible.
+Three more classes cover the family's other three requirements (REQ-016's D(m),
+REQ-109's silence, REQ-113's ordered set), one covers REQ-016's clause (a) as
+content rather than timing, and one covers REQ-109's drain bound. Ten.
+
+**Why ten and not seven, stated as a cost I am choosing to pay.** Ten diffs is
+more than any prior campaign. The justification is not thoroughness for its own
+sake: family I's five rows carry roughly forty distinct assertions and the
+family's characteristic failure is **vacuity**, so the unit this campaign must
+cover is the **instrument**, not the row. Seven classes would have qualified all
+five rows and left the delivered-octet equality, the FCS verdict and the tight
+drain window untouched — three instruments whose teeth are exactly what nobody
+has ever measured here.
+
+**The finding I did not expect to make while writing the seal, and it is the
+round's most useful output: the absence assertions are SHADOWED by their own
+positive companions.** Worked from the committed control flow rather than
+assumed. `delivered_samples` counts every `tvalid` cycle in a run, and in M03-I1,
+M03-I2 and M03-I3 the word-count guard runs **before** the row's headline
+absence scan. So a spurious output word in the idle window, in the drain window
+or inside the ordered set reddens the **count**, never the silence. The silence
+assertions can only speak for a defect that adds a word inside the window *and*
+removes one elsewhere. **The strobe halves are not shadowed** — no count guard
+sees a pulse — which is why three of the ten classes are strobe classes and why
+M03-I2's tight window is reachable at all. I recorded this in the packet
+(§4.5) as a binding adjudication rule **before** the result rather than
+discovering it in a scorecard, which is the only reason it is worth anything.
+It is a property of putting the positive companion first — the very thing that
+makes the absence non-vacuous — so it is a price, not a defect, and I say so.
+
+**The class that decides whether family I means anything at all.** I-c5 (a held
+cycle closes the frame) is drastic and looks like an easy kill. Its real job is
+different: it is the **wrapper's liveness proof**. If `Idle_injection`'s idle
+words are not reaching the design, then I-c1 … I-c6 all survive and the injected
+half of family I — 48 runs, two rows, the whole SCR-M03-I4 saga — is vacuous.
+The packet fixes in advance (§4.2) that a double survival there is adjudicated
+as a **CRITICAL finding against me**, not as weak rows. That is the inversion
+this family needed: for once, the informative outcome is named before it can be
+argued about.
+
+**M03-I2 is the row I could not qualify narrowly, and I decided to say so rather
+than manufacture a class.** Everything M03-I2 can see, some other row can see:
+its stimulus is the most ordinary in the bench (one clean frame, then idle) and
+its distinction is the **tightness of its window**, not the shape of its input.
+So it is REQUIRED by exactly one class (I-c10, deliberately wide), and the
+packet states that if I-c10 survives the row ends the campaign **unqualified**.
+Better: the class carries a disclosed **offset**, and the offset is the one
+datum that measures what C-14.3's tightening actually bought — a pulse at + 1 or
++ 2 is caught by machinery every row has, a pulse at + 3 or later is caught by
+M03-I2's window **and nothing else in the repository**. That is a real
+measurement of a specification decision, extracted from a class I would
+otherwise have called a formality.
+
+**Where the seal's exactness comes from, and the one place I refused to fake
+it.** Every message is the first assertion to speak given the row's own
+iteration order (M03-I4 drives its **baseline** run first, then idles 0/1/7 —
+and `idles = 0` places no sites at all, so the first run any injection-gated
+class can reach is `(64, lane 0, idles 1)`). The counts are derived, not
+guessed: `uniform` places sites at `before_cycle` 3…10 for every M03-C1 length
+at lane 0, so 8 idle words at `k` = 1 and 56 at `k` = 7, which gives I-c3's
+`got 16` / `got 64` and I-c5's `got 1` at both units by arithmetic. I-c7's
+`expected 5` is derived from `D(0) = 3`, `cycle_of(3) = 4` and
+`baseline_cycle(0) = 4`. **What I would not seal is the mutant's own value**: the
+observed-cycle field, the observed counts, the strobe names. Those are sealed as
+*inequalities with a named direction* — early, greater, fewer — with the
+adjudication rule fixed in advance that a differing magnitude is a rendering
+fact and a differing **assertion** is a finding. GH-1 was a cell asserted from a
+category; the repair is not to guess harder but to seal only what the
+specification and the bench determine.
+
+**The UNWORKED cells, and why each is honest rather than lazy.** Three: I-c10's
+thirty non-scored M03 units (deriving thirty first-speaking assertions would be
+thirty chances to repeat G-1; the rule fixed instead is that a red there is
+blast radius worth zero kills and a **green is a finding**, because a row that
+cannot see a spurious strobe on its own frame's closure is a coverage fact worth
+having); T-G6 under a `Discard`-wide gate (the bench's only unit where idle
+words arrive while the machine is not in `Idle` — no cell scored in either
+direction); and I-c1's `tkeep`-versus-count sub-branch. Each carries its
+adjudication rule in the seal, before the result.
+
+**The adjudicator-exposure rule, carried as the packet's standing discipline and
+sharpened by one fact I had to disclose against myself.** `RV-0060-VERDICT` §11
+ruled ordering, not blindness: the bench that judges must be frozen at a SHA
+strictly earlier than the RTL it judges, mechanically checkable. For a mutation
+campaign the check is one line per branch (`git diff 42b9df3 <branch> -- test/`
+must be empty), because every mutant is base + one diff. But **M03-I4's expect
+block is non-empty and was promoted from CI's output at `b848d56`** — later than
+the RTL it now helps judge — so a reader could reasonably ask whether that
+instrument was tuned to the design. I put it in the packet (§0.1) rather than
+leaving it to be found, with the three facts that bound it (CI's bytes not mine,
+sha-verified; no assertion authored there; 48 of 48 printed class sets agreed
+with predictions made before the run existed) and, more usefully, a **scoring
+rule**: no kill is ever scored on the expect-block diff alone. An exposure with
+a rule attached is a control; an exposure with a paragraph attached is an
+excuse.
+
+**The mapping, restated here as the seal's second copy** (row sets only, never
+the messages — the practice since `J-dv_lead-0079`, and the reason a seal's
+claims can be checked even if its file is lost): I-c1 → {T-I6}; I-c2, I-c3,
+I-c4, I-c5, I-c6, I-c7 → {T-I4, T-I6} each; I-c8 → {T-I1, T-I6} on the nominal
+threshold branch; I-c9 → {T-I3}; I-c10 → every M03 unit except T-ST (35).
+**Fifty-one REQUIRED cells, ten possible kills, 309 M03 and 800 non-M03
+must-stay-green cells.**
+
+**What I deliberately kept OUT of the campaign.** BUG-0002's and BUG-0003's own
+defects. Both are settled measurements — the committed bench convicted each on a
+real design, with the raised message on the record — and re-seeding them would
+recycle a result this programme already owns (the `g-c4` exclusion at
+`WO-0058` §1). I-c7 is adjacent to BUG-0003 and the packet says exactly what it
+adds instead: the **lane-0** half of the re-based cycle instrument, which no
+defect has ever exercised, under a different rendering.
+
+### Actions
+- Measured the denominators at the base SHA from the base's own blobs (36 M03
+  units, 116 repository-wide, 80 non-M03) rather than carrying `WO-0058`'s 31 /
+  111 / 80.
+- Derived the ten intents from §6.2's `Frame` row (five conjuncts), REQ-016's
+  clauses (a) and (b), REQ-109 (silence and drain) and REQ-113.
+- Derived every sealed message from the bench's committed assertion and
+  iteration order; derived every sealed count from `uniform`'s site rule.
+- Derived the MUST-STAY-GREEN complement from a stimulus inventory (which units
+  can present an idle word inside an open frame — two — and which is the one
+  near-miss — T-G6, in `Discard`).
+- Wrote the disclosure functions (eight branch tables) and fixed the
+  adjudication rule for every UNWORKED cell.
+- Carried `RV-0060-VERDICT` §11 into the packet as its standing discipline and
+  disclosed the M03-I4 expect-block provenance against myself.
+- Staged packet and seal in ONE commit, before any manifest diff exists.
+
+### Evidence
+```sh
+# denominators, measured at the base SHA's own blobs (not at HEAD, not recalled)
+for f in $(git ls-tree --name-only -r 42b9df3 test/ | grep '\.ml$'); do
+  git show 42b9df3:$f | grep -c 'let%expect_test'; done | paste -sd+ | bc
+#   116          (test/ repository-wide)
+#   36           (test/xgmii_rx_64/, summed per file: 3 1 4 3 4 4 7 4 5 1)
+git diff --stat 42b9df3 172347c -- test/ libs/ tools/ dune-project
+#   (empty — the base's compiled surface is the branch head's)
+grep -rl "Idle_injection" test/ --include=*.ml
+#   test/xgmii/test_idle_injection.ml   (library test, instantiates no DUT)
+#   test/xgmii_rx_64/test_m03_i.ml      (the only DUT-facing user)
+grep -rl "sequence_char" test/ --include=*.ml   # /Q/ reaches a DUT at one unit
+sha256sum test/xgmii_rx_64/test_m03_i.ml
+#   4b66e2b9f2b3f789f41b31b22418e3257644776f833ee27c8b60b774b914b3e8
+```
+Control for the campaign: CI run **30920890962** at `42b9df3`, **both jobs**
+green (`build` including Generate-RTL and determinism, and `cosim`) — the
+figure the packet's §7 criterion 3 rests on, relayed by the orchestrator and
+externally checkable by run id.
+
+### Outcome
+DoD met. `WO-0061` is **DRAFT — FROZEN, awaiting seeding**, with its SEALED
+companion staged in the same commit (R-SEAL-1). Ten classes, five scored units,
+51 REQUIRED cells on the nominal branches, 309 M03 + 800 non-M03 must-stay-green
+cells. Handoff: the packet goes to the auditor via the orchestrator; the sealed
+companion goes nowhere until all ten diffs are committed.
+`SO-xgmii_rx_64.md` remains unopened and is not offered.
+
+### Open-questions
+1. **The two bench notes** (count-guard identity at a lane-4 start; guard
+   ordering) remain owed at the next round that opens `test/xgmii_rx_64/` for
+   editing — this round opens no bench file. `WO-0061` §4.5's shadowing rule is
+   a **third** candidate note for that same round; it binds this campaign's
+   adjudication now and is deliberately not duplicated into the bench yet.
+2. **§V.2's pre-fix measurement** for BUG-0003 — deferred to a round of its own;
+   disposition and reasons recorded in the packet's own §V.9 and in
+   `J-dv_lead-0096`.
+3. **FINDING F-1** (SPEC-M03 §6.1 item 2's lane-4 cell) still owed a ruling by
+   architect_docs_lead; it moves no cell in this campaign, since every value it
+   concerns is REPORTED and none is ASSERTED.
+4. **N-1**, carried unchanged.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0061_family-i-mutation-campaign.md
+- agents/handoffs/WO-0061_family-i-mutation-campaign-SEALED-predictions.md
