@@ -4019,3 +4019,279 @@ a blocking question.
 - test/xgmii_rx_64/test_m03_h.ml
 - test/xgmii_rx_64/dune
 - agents/handoffs/WO-0057_tb-m03-family-h-start-without-terminate.md
+
+## [J-tb_writer-0016] 2026-08-04T03:04Z | task:WO-0059 | Family I — silence, ordered sets, the M03-I2 repair benched, and the idle-injection wrapper's first customer against a DUT
+
+### Trigger
+
+`WO-0059/2026-08-04T03:04Z` (dv_lead, via the orchestrator): the plan's only
+all-negative family — six rows, five ASSERT (M03-I1, I2, I3, I4, I6) and one
+NO-ASSERT (M03-I5, stated rather than built) — closing REQ-109, REQ-113 and
+REQ-016, none of which had a unit anywhere before this spawn. Built in the
+packet's own order I1 -> I2 -> I3 -> I4 -> I5 -> I6. The packet's own
+repaired M03-I2 cells (`fc2a4ee`) are the row contract; the packet also owed
+two `test_m03_h.ml` repairs (`RV-0057-VERDICT` Findings 1 and 4) and
+authorised one `Bench.frames_at` addition (`?ifg`).
+
+### Inputs
+
+`agents/charters/tb_writer.md`; `agents/PROTOCOL.md` §2-6 and §10 (read in
+full); `agents/handoffs/WO-0059_tb-m03-family-i-silence-and-ordered-sets.md`
+in full (all 11 sections, plus my own Return log appended this spawn). This
+journal's own header and my prior entries through `J-tb_writer-0015`
+(confirmed next id 0016). `docs/specs/modules/xgmii_rx_64.md` in full (all
+13 sections — §6.1's preamble-position paragraph and gapless qualifier,
+§6.2's `Idle`/`Frame` rows, §6.3 items 2/4/5/6, §7's timing contract, §9's
+strobe table and its "Strobe cycle, pinned" section, §10's REQ-109/
+REQ-113/REQ-016 hooks). `docs/specs/requirements.md` §0.3 (gap convention),
+§0.4, §0.5 (octet time, front offset h, word delay ΔC, "Start lanes"), §0.6
+(strobe window, C-23 counting), §0.7, §1, §2 (control characters), REQ-004,
+REQ-005, REQ-011, REQ-015, REQ-016, REQ-101 through REQ-113 (full §2 table).
+`test/attack_plans/AP-xgmii_rx_64.md` §0-3, §4.I in full (all six rows,
+verbatim — the repaired M03-I2 cells read as landed, not re-derived from
+the correction narrative alone) and its §9 change log entries for the
+M03-I2 repair and the family's own authoring. `test/xgmii/idle_injection.mli`
+AND `.ml` read in full (the M03-N3 constraint's own `check_sites`
+implementation, `uniform`'s own boundary range, `in_times`'s arithmetic,
+`cycle_of`'s array). `test/xgmii/arrival.mli` AND `.ml` read in full
+(`check`'s own gap logic, confirmed to impose nothing on the space before a
+schedule's first frame — M03-I1's own 1000-cycle prefix depends on this).
+`test/xgmii/xgmii_word.mli`, `test/xgmii/frame.mli`. `test/xgmii_rx_64/
+bench.mli` AND `.ml` in full, before and after my own edit. `test/monitors/
+strobe_monitor.mli`, `test/monitors/octet_time.mli` AND `.ml` read in full
+(`frame_out`'s own per-octet walk — the fact the `test_m03_h.ml` Finding 1
+repair's outcome-neutrality argument rests on), `test/monitors/
+conservation_monitor.mli`. `test/xgmii_rx_64/test_m03_structural.ml` (the
+ten-cycle scaffolding precedent M03-I1 scales), `test_m03_a.ml` (M03-A4's
+shape), `test_m03_d.ml` (M03-D4's shape, `good_and_bad_64`'s idiom),
+`test_m03_g.ml` in part (`account_resync_runt_frame`'s own `~received`
+naming), `test_m03_h.ml` in full, both before my edits (to find the two
+owed repair sites) and after (to confirm the diff). No path under
+`libs/**`, `top/**`, `bin/**` or `rtl_snapshots/**` was opened, targeted or
+swept, at any point in this spawn. No path under `docs/reports/audit/**`
+was opened. No path under `test/third_party/verilog-ethernet/**` was
+opened (WO-0059 §9: M03-I3's ordered-set shape is derived from
+requirements.md §2 and §6.2 alone).
+
+### Reasoning
+
+**The construction problem each row posed, and the choice made for each.**
+
+*M03-I1* — the existing ten-cycle scaffolding smoke test
+(`test_m03_structural.ml`) already drives "all idle, nothing asserted but
+the simulation built," and its own comment says the ten-cycle figure is not
+REQ-109's. I chose to build M03-I1 as that same shape at REQ-109's own
+verification-column figure (1000 idle cycles) rather than inventing a
+different construction, because the row's own point is the SCALE, not the
+shape: `Arrival.create ~first_start:(8 + 8 × 1000) [frame]` puts the frame's
+own start character one idle word after a 1001-cycle idle prefix, and I
+confirmed by reading `arrival.ml`'s own `check` that a one-frame schedule's
+`gaps` list is empty (gaps are only ever computed BETWEEN frames), so this
+long a prefix needs no `?ifg` override and is legal by construction — a
+fact I checked rather than assumed, since a schedule that failed its own
+`Arrival.check` at construction would read as a bench defect, not a finding.
+
+*M03-I2* — I benched the packet's OWN repair rather than re-deriving
+whether the repair was needed: `AP-xgmii_rx_64.md`'s M03-I2 row was already
+corrected at `fc2a4ee`, so my job was to derive and guard the four
+(member, lane) boundaries the corrected cells imply, not to re-litigate the
+correction. I derived member (i)'s own lane-4 boundary independently (13,
+matching lane 0) since the AP text states only the lane-0 coincidence for
+member (i); the arithmetic — `terminate_octet_time = first_start + 72`,
+and 72's own multiple-of-8ness — makes this a checked fact rather than an
+assumed symmetry, and I record in the Return log that this is my own
+derivation, not a transcription.
+
+*M03-I3* — the ordered-set row's own construction problem is proving an
+ABSENCE (no `tvalid`, no strobe) is not proving VACUITY (a design that does
+nothing during idle proves nothing about `/Q/` specifically). I chose the
+two-runs-of-one-schedule construction WO-0059 §3.3 itself specifies (drive
+one schedule twice, once idle-filled, once `/Q/`-substituted through
+`?word_at`) precisely because it makes the comparison CYCLE FOR CYCLE
+rather than tuple-sequence — the two runs share cycle numbering by
+construction, so `List.iter2_exn` over both sample lists, checking every
+field at every driven cycle, is a stronger and cheaper check than
+re-deriving frame 2's own expected values twice. `Bench.frames_at`'s new
+`?ifg` parameter exists for exactly this: no other row in this family or
+any prior one needed a non-default gap, so `frames_at` — already the one
+home for the §0.3 lane mapping — was the right, and only, extension point,
+consistent with `RV-0043-VERDICT`'s bar on widening `Bench`'s surface
+casually.
+
+*M03-I4* — this is where my first draft under-delivered against the
+packet's own text, and I caught it myself before returning. WO-0059 §3.4
+item 2 asks, explicitly: "assert, per octet: `out_injected(j) −
+out_baseline(j) = in_injected(j) − in_baseline(j)`... that is stronger than
+'L is unchanged' and it does not require you to count boundaries." My
+first draft checked the word SEQUENCE via `Idle_injection.cycle_of`
+(translating each word's expected cycle) and the per-octet CONSTANT L via
+the standing latency tagger — both real checks, but neither is the
+delay-identity assertion the packet asks for, and using `cycle_of` to
+PREDICT the expected cycle and then checking the DUT against that
+prediction is not the same claim as checking the delay identity against an
+INDEPENDENTLY-DRIVEN baseline's own real octet times: a bug in `cycle_of`
+itself could not be caught by a check that uses `cycle_of` to construct its
+own expectation. I re-read §3.4 item 2 against my own draft, found the gap,
+and rebuilt M03-I4 around a genuine architecture change: one plain,
+un-injected simulation per (length, lane) — `run_i4_length_lane`, 16 total,
+never touching `Idle_injection` — supplying `in_baseline` (`Arrival.
+in_times`) and `out_baseline` (`Octet_time.of_words` over its own delivered
+samples) as GROUND TRUTH, against which each of the three injected runs at
+that (length, lane) checks the delay identity in raw octet-time arithmetic,
+independent of `cycle_of`. The word-sequence check via `cycle_of` stays
+(M03-I5's own prohibition on `m + 3` needs SOME translator asserted
+correct, and `cycle_of` is what M03-I5 names), so the two checks are now
+genuinely complementary rather than one masquerading as two. I also built a
+standalone, cross-run `Octet_time.Latency.t` (`cross_latency`) fed by all
+48 injected runs independently of each run's own per-bench tagger, because
+a single-frame class is trivially "constant" (one L value, one class,
+nothing to disagree with itself) and the packet's own language — "the
+per-octet constant of §7 is unchanged... MEASURED" — reads as a claim about
+ALL 48 runs together, which only a shared accumulator actually tests. This
+is beyond WO-0059's literal minimum (it asks the constant be measured "at
+every figure," which a per-run check alone would satisfy); I built the
+stronger form because REQ-005/REQ-111's own text is about constancy ACROSS
+frames, not within one, and a row this packet ranks highest-risk should not
+settle for the weaker reading when the stronger one costs one extra
+accumulator.
+
+*M03-I5* — WO-0059 §3.4 left the discharge shape open between M03-A4's
+(a real assertion woven into a shared unit) and M03-D4's (a comment-only
+declaration). I chose D4's shape and record why in both the file and the
+Return log: A4 earns a unit because A4's own positive fact (each lane's own
+ΔC = 3) is DISTINCT from A3's own assertion and would otherwise go
+unasserted; M03-I5's own "asserted instead" fact is NOT distinct from
+M03-I4's — it is M03-I4's own per-octet-constant assertion, verbatim, in
+both its per-run and cross-run forms. Giving I5 its own unit here would
+either duplicate M03-I4's own check under a different name or assert
+nothing I5 does not already borrow wholesale, neither of which is a
+positive companion in the sense §2.1 defines one. This is a judgement call
+the packet left to me, not an instruction I followed, and I say so in both
+places rather than let the choice look automatic.
+
+*M03-I6* — I read the row as REQ-108's threshold's own COUNT half,
+complementary to M03-I4's CRC half (both are instances of §6.2's `Frame`
+row hold rule), and drove both members (64 and 1518 octets) at BOTH start
+lanes rather than one, because WO-0059 §3.5's own third reach fact — a
+design that counts CYCLES rather than OCTETS toward REQ-108's 1518 is
+lane-asymmetric under that specific defect model — means a single-lane row
+would silently halve this row's own reach against exactly the defect class
+it exists to catch, even though this row's own assertions (a conformant
+design) do not themselves distinguish the two lanes' outcomes.
+
+**The two `test_m03_h.ml` repairs.** Finding 1's own claim — that
+`account_spliced_forwarded`'s `~delivered`-sized input trace is "harmless
+by cancellation" — is not something I took on trust: I read
+`octet_time.ml`'s `frame_out` in full and confirmed its own per-octet walk
+indexes `in_times.(j + strip_octets)` for `j` in `0 .. got - 1` only, and
+`Array.init`'s own values at any index depend solely on that index, never
+on the array's declared length — so the repair (`~received` sized to the
+frame's own full length, `~delivered` kept for the extent override only)
+changes what the trace SAYS about the input without changing any value the
+existing assertions actually read. I re-derived this independently rather
+than restate the finding's own words as proof. Finding 4 is a citation-only
+repair (SPEC-M03 §6.2's `Idle` row is the ground for the 15 filler octets
+between M03-H3's `/E/` and `/S/` pulsing nothing); I added the note that
+M03-I1 and M03-I3 (this spawn's own new rows) rest on the identical clause,
+which is why the packet lands all three repairs/rows together.
+
+### Actions
+
+Wrote `test/xgmii_rx_64/test_m03_i.ml` in full (five row-driving functions
+plus their supporting helpers — `split_at_first_tlast`, `outputs_equal`,
+`assert_clean_frame_structure` for M03-I3; `account_injected_frame` for
+M03-I4/I6 — and five `%expect_test` blocks, all `[%expect {||}]` empty per
+ADR-0005 rule 2). Edited `test/xgmii_rx_64/bench.mli` and `bench.ml`: added
+`?ifg:int` to `frames_at`, passed straight through to `Arrival.create`'s own
+`?ifg`, no other change to either file (WO-0059 §8.1's one authorised
+addition). Edited `test/xgmii_rx_64/test_m03_h.ml`: `account_spliced_
+forwarded`'s signature gained `~received` (input-trace sizing) alongside
+the existing `~delivered` (extent override only), all four call sites
+updated with the derivation named per site; a citation to SPEC-M03 §6.2's
+`Idle` row added at M03-H3's own doc block. Edited `test/xgmii_rx_64/dune`'s
+header comment: one new line naming this packet's six rows, matching the
+existing per-packet list's format. Appended the Return log to
+`agents/handoffs/WO-0059_tb-m03-family-i-silence-and-ordered-sets.md`. No
+file under `libs/**`/`rtl_snapshots/**`/`top/**`/`bin/**` was opened to
+write any of this.
+
+### Evidence
+
+All commands run from a repo checkout at this SHA.
+
+- `eval $(opam env) && which dune && dune --version`: dune 3.24.1 present
+  (`/root/.opam/fpga/bin/dune`) — the dune binary is there, the Hardcaml
+  package tree is not.
+- `eval $(opam env) && dune build @test/xgmii_rx_64/runtest`: FAILED,
+  `Library "hardcaml" not found` / `Library "ppx_hardcaml" not found`,
+  reproduced fresh this spawn.
+- `eval $(opam env) && dune build @test/xgmii/runtest @test/monitors/
+  runtest`: FAILED, `Library "ppx_expect" not found` — confirms the absence
+  is container-wide, not local to `xgmii_rx_64`, matching `J-tb_writer-0015`.
+- `dune runtest`: not run, same reason; all five `[%expect]` blocks in
+  `test_m03_i.ml` are `{||}`, empty.
+- `ocamlc -stop-after parsing` on `bench.ml`, `bench.mli`, `test_m03_h.ml`,
+  `test_m03_i.ml`: exit 0 on all four, syntax only.
+- `bash tools/precompile_check.sh`: `precompile_check: ALL LANES PASSED`;
+  `test/xgmii_rx_64` still correctly `EXCLUDED — depends on
+  hardcaml_ethernet` (so this lane does not type-check either my `bench.ml`/
+  `.mli` edit or the new file); `dv_golden`/`dv_monitors`/`dv_xgmii`
+  (31 units — `Idle_injection`, `Arrival`, `Xgmii_word`, `Frame` all compile
+  clean, unmodified by me) and `dv_axi64_probe`/`dv_xgmii_probe` (12 units)
+  unchanged, 0 errors.
+- `bash tools/dv_checks.sh`: `check_records_vs_appendix.sh` 23/23 PASS;
+  `check_emitted_verilog.sh` self-test + main run both OK; bench inventory
+  shows `test_m03_i.ml` at 5 units, `test_m03_h.ml` unchanged at 4, M03
+  total 36 (was 31 at `J-tb_writer-0015`); `check_rfc1071_anchor.sh`
+  OBLIGATION OPEN on blocked network egress — pre-existing
+  (`J-dv_lead-0017/0018`), unrelated to M03.
+- `git status --porcelain`: exactly `test/xgmii_rx_64/bench.ml`,
+  `bench.mli`, `dune` (modified) and `test_m03_h.ml` (modified),
+  `test_m03_i.ml` (new) — before this journal entry and the WO-0059 Return
+  log were staged, matching the packet's own narrowed deliverables list.
+
+### Outcome
+
+DoD against WO-0059: all five ASSERT rows (M03-I1, I2, I3, I4, I6) map to
+named units, built in the packet's own order, zero declared gaps, zero
+silent skips; M03-I5 declared per §2.4/§3.4 in the shape reasoned about
+above. All items of §10's own Return-log checklist answered (per-row
+positive companions, the per-run input-time-array declaration, the
+stimulus-legality observations, the derived-cycle-guard table, the four
+M03-I4 derivations including the delay identity rebuilt to the packet's own
+form, the three M03-I6 reach facts, M03-I5's discharge shape and reasoning,
+assertion/iteration order per row, the measured unit count, both
+`test_m03_h.ml` repairs confirmed outcome-neutral by independent argument).
+`dune build`/`dune runtest`: unverified locally, confirmed-absent toolchain
+(container-wide), CI is authoritative. Journal Inputs lists no
+`libs/**`/`top/**`/`bin/**`/`rtl_snapshots/**` path and no
+`docs/reports/audit/**` path, targeted or opened, at any point. Diff scope:
+`test/xgmii_rx_64/test_m03_i.ml` (new), `bench.mli`/`bench.ml` (the one
+authorised `?ifg` addition), `test_m03_h.ml` (the two owed repairs), `dune`
+(one comment line) — matching WO-0059's own narrowed "Deliverables" list
+exactly.
+
+Handoff: a RETURNED block appended to `agents/handoffs/
+WO-0059_tb-m03-family-i-silence-and-ordered-sets.md`'s Return log. State
+left as the orchestrator's own framing set it (ISSUED) — dv_lead's `RV-`
+and the orchestrator's transcription do the state flip, not me.
+
+### Open-questions
+
+None blocking. One item recorded as a decision made rather than a question
+asked: M03-I5's discharge shape (D4's, not A4's — WO-0059 §3.4 left this
+open and my reasoning is in both the file and the Return log §(j), not
+raised here as something needing dv_lead's answer before this round can be
+judged). Nothing found beyond the packet's own two named `test_m03_h.ml`
+repairs while reading `idle_injection.ml`/`.mli`, `arrival.ml`/`.mli`,
+`octet_time.ml`/`.mli`, `xgmii_word.mli`, `frame.mli`,
+`conservation_monitor.mli` and `strobe_monitor.mli` in full this spawn — no
+further out-of-scope defect to report.
+
+### Files-in-this-commit
+- test/xgmii_rx_64/test_m03_i.ml
+- test/xgmii_rx_64/bench.mli
+- test/xgmii_rx_64/bench.ml
+- test/xgmii_rx_64/test_m03_h.ml
+- test/xgmii_rx_64/dune
+- agents/handoffs/WO-0059_tb-m03-family-i-silence-and-ordered-sets.md

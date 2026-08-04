@@ -16,6 +16,9 @@
 ;   WO-0054  G1-G4, G6 ASSERT, G5 declared  (five ASSERT + one declared)
 ;   WO-0056  G7, G8 ASSERT (first-epoch repair, RV-0056-VERDICT ACCEPT) (two)
 ;   WO-0057  H1-H4 ASSERT (start without terminate, REQ-110)          (four)
+;   WO-0059  I1-I4, I6 ASSERT, I5 declared (silence, ordered sets,
+;            idle-injection wrapper, REQ-109/REQ-113/REQ-016) (five ASSERT
+;            + one declared)
 ; When a packet adds rows, add its line. When one does not, this comment
 ; is wrong and a reader has no way to tell — this file's own header found
 ; that exact staleness (E and F both missing) before WO-0054's own line was

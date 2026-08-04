@@ -254,15 +254,19 @@ let account_clean_frame t (frame : Arrival.frame) samples ~aborted =
    re-expressed through it immediately below so the §0.3 lane mapping
    (lane 0 -> first_start 8, lane 4 -> first_start 12) has exactly one home
    — see the Return log for the line-by-line behaviour-preservation
-   argument for that re-expression. *)
-let frames_at ~lane ~fcs_valid octets_lists =
+   argument for that re-expression.
+
+   [?ifg] added by WO-0059 §8.1, passed straight through to [Arrival.create]'s
+   own [?ifg] and defaulting to [Arrival]'s own default when omitted — every
+   caller before WO-0059 omits it and is therefore unaffected. *)
+let frames_at ~lane ~fcs_valid ?ifg octets_lists =
   let first_start =
     match lane with
     | 0 -> 8
     | 4 -> 12
     | _ -> failwith "Bench.frames_at: lane must be 0 or 4 (REQ-101, §6.3 item 3)"
   in
-  Arrival.create ~first_start ~fcs_valid octets_lists
+  Arrival.create ~first_start ?ifg ~fcs_valid octets_lists
 ;;
 
 let one_frame ~lane octets = frames_at ~lane ~fcs_valid:true [ octets ]

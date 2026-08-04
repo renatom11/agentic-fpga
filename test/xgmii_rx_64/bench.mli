@@ -204,16 +204,30 @@ val error_pulses : sample list -> (int * string) list
     driving more than one frame calls this once per frame. *)
 val account_clean_frame : t -> Dv_xgmii.Arrival.frame -> sample list -> aborted:bool -> unit
 
-(** [frames_at ~lane ~fcs_valid octets_lists] — {!Dv_xgmii.Arrival.create} at
-    the §0.3 lane mapping (lane 0 -> [first_start:8], lane 4 ->
+(** [frames_at ~lane ~fcs_valid ?ifg octets_lists] — {!Dv_xgmii.Arrival.create}
+    at the §0.3 lane mapping (lane 0 -> [first_start:8], lane 4 ->
     [first_start:12]), passing [octets_lists] straight through as the frame
-    list and [fcs_valid] straight through as [Arrival.create]'s
-    [?fcs_valid] ([ifg] is left at [Arrival.create]'s own default, §0.3's
-    minimum 12 octets). WO-0040 §3.3: the one bench addition that packet
-    authorises, added so M03-D3's two-frame, mixed-FCS schedule needs no new
-    scheduling primitive. {!one_frame} is re-expressed through this
-    function so the lane mapping has exactly one home. *)
-val frames_at : lane:int -> fcs_valid:bool -> int list list -> Dv_xgmii.Arrival.t
+    list, [fcs_valid] straight through as [Arrival.create]'s [?fcs_valid],
+    and [?ifg] straight through as [Arrival.create]'s own [?ifg] (defaulting
+    to [Arrival]'s own default, §0.3's minimum 12 octets, when omitted).
+    WO-0040 §3.3: the one bench addition that packet authorises, added so
+    M03-D3's two-frame, mixed-FCS schedule needs no new scheduling primitive.
+    {!one_frame} is re-expressed through this function so the lane mapping
+    has exactly one home.
+
+    [?ifg] added by WO-0059 §8.1: M03-I3 needs the same lane mapping with a
+    non-default inter-frame gap (824 octets, so that a 100-cycle ordered set
+    fits strictly inside the gap between two frames), and [frames_at] is
+    where that mapping already lives — its own docstring says so. Every
+    existing caller is unaffected: the parameter is optional and every call
+    site before this one omits it, so [Arrival.create]'s own default (12
+    octets) governs exactly as before. *)
+val frames_at
+  :  lane:int
+  -> fcs_valid:bool
+  -> ?ifg:int
+  -> int list list
+  -> Dv_xgmii.Arrival.t
 
 (** A single-frame link-partner schedule: [octets] (DA through FCS) preceded
     by the standard preamble, at start lane 0 ([first_start:8]) or lane 4

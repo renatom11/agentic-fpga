@@ -189,11 +189,28 @@ let preamble_tail = List.init 7 ~f:(fun j -> 0xC0 + j)
    [Arrival.in_times frame] source does not exist for any of them. Hand-built
    from octet times instead, generalising `test_m03_g.ml`'s own
    [account_resync_runt_frame] (there, zero-delivered only) to the forwarded
-   case X-5 names for this family. *)
-let account_spliced_forwarded bench ~start_ot ~delivered ~aborted samples =
+   case X-5 names for this family.
+
+   [~received] versus [~delivered] (WO-0059 §7.3, `RV-0057-VERDICT` Finding 1
+   -- the first of this packet's two owed, outcome-neutral repairs). The
+   INPUT TRACE must be sized by what the frame RECEIVED while open
+   (requirements.md §0.6's own window definition), not by what it DELIVERED
+   at the output: for an aborted (REQ-110/REQ-105-governed) frame the two
+   coincide because no FCS removal is attempted (REQ-103's no-removal
+   clause), but for an ordinary, cleanly-closed frame -- every second/third
+   piece in this file -- received is delivered PLUS the four FCS octets
+   REQ-103 strips. Building the trace from [delivered] alone was four octet
+   times short for every clean piece and sat exactly on [frame_out]'s own
+   stated bound (octet_time.mli: "output octet j is still input octet
+   j + strip_octets"); it was harmless only by cancellation, because
+   [frame_out]'s own per-octet walk reads [in_times.(j + strip_octets)] for
+   j in 0 .. delivered - 1, an index range [Array.init]'s VALUES never
+   depend on the array's own length -- [received] is therefore the honest
+   size and [delivered] stays the extent override, unchanged. *)
+let account_spliced_forwarded bench ~start_ot ~received ~delivered ~aborted samples =
   Dv_monitors.Conservation_monitor.frame_in (conservation bench);
   Dv_monitors.Conservation_monitor.frame_out (conservation bench) ~aborted;
-  let in_times = Array.init (8 + delivered) ~f:(fun i -> start_ot + i) in
+  let in_times = Array.init (8 + received) ~f:(fun i -> start_ot + i) in
   Dv_monitors.Octet_time.Latency.frame_in (latency bench) in_times;
   let delivered_pairs = List.map samples ~f:(fun s -> s.cycle, s.out) in
   Dv_monitors.Octet_time.Latency.frame_out
@@ -389,8 +406,24 @@ let run_h1 ~lane =
              error_bad_fcs, §9 ruling 4), observed "
           ; Int.to_string (List.length pulses)
           ]));
-  account_spliced_forwarded bench ~start_ot:start_ot1 ~delivered:delivered1 ~aborted:true words1_out;
-  account_spliced_forwarded bench ~start_ot:resync_start_ot ~delivered:delivered2 ~aborted:false words2_out;
+  (* WO-0059 §7.3 Finding 1: frame 1 is REQ-110-aborted, so received =
+     delivered (no FCS removal is attempted, REQ-103); frame 2 is an
+     ordinary clean frame, so received is its own 64 octets DA through FCS,
+     four more than the 60 it delivers. *)
+  account_spliced_forwarded
+    bench
+    ~start_ot:start_ot1
+    ~received:delivered1
+    ~delivered:delivered1
+    ~aborted:true
+    words1_out;
+  account_spliced_forwarded
+    bench
+    ~start_ot:resync_start_ot
+    ~received:(List.length frame2_octets)
+    ~delivered:delivered2
+    ~aborted:false
+    words2_out;
   Dv_monitors.Conservation_monitor.strobe_pulse (conservation bench) ~name:"error_start_without_terminate";
   assert_monitors_clean bench ~row
 ;;
@@ -419,7 +452,20 @@ let%expect_test
    e_idx + 16), 7 preamble-filler octets, a clean 64-octet frame. e_idx is
    chosen per start lane so the /E/'s own octet time lands at lane 0 -- which
    makes "two cycles later" (16 octet times) land the /S/ at lane 0 too, an
-   exact, guarded claim rather than an approximation. *)
+   exact, guarded claim rather than an approximation.
+
+   WO-0059 §7.3 Finding 4 (`RV-0057-VERDICT` Finding 4): this row's exact
+   strobe set rests on those 15 filler octets between the /E/ and the /S/
+   pulsing nothing and opening nothing while no frame is open over them --
+   and the ground for that is SPEC-M03 §6.2's `Idle` row itself: "ignores
+   every lane; tvalid = 0", leaving to `Preamble` only on /S/ (§9's own
+   closure list and REQ-105 pin what happens AT the /E/ and AT the /S/, but
+   it is §6.2's `Idle` row that governs the fifteen data-valued octets
+   strictly between them). M03-I1 and M03-I3 (`test/xgmii_rx_64/
+   test_m03_i.ml`, WO-0059) rest on the identical clause -- REQ-109's silent
+   pipeline and REQ-113's ordered set are both instances of the same `Idle`
+   row governing a stretch of octets between two frames -- which is why the
+   three land together at this packet's one touch of family H. *)
 
 let run_h3 ~lane =
   let row = String.concat [ "M03-H3 (lane "; Int.to_string lane; ")" ] in
@@ -591,8 +637,23 @@ let run_h3 ~lane =
              closed the frame before the /S/ arrives), observed "
           ; Int.to_string (List.length pulses)
           ]));
-  account_spliced_forwarded bench ~start_ot:start_ot1 ~delivered:delivered1 ~aborted:true words1_out;
-  account_spliced_forwarded bench ~start_ot:resync_start_ot ~delivered:delivered2 ~aborted:false words2_out;
+  (* WO-0059 §7.3 Finding 1: frame 1 is REQ-105-aborted (no FCS removal
+     attempted), so received = delivered; frame 2 is an ordinary clean
+     frame, received = its own 64 octets DA through FCS. *)
+  account_spliced_forwarded
+    bench
+    ~start_ot:start_ot1
+    ~received:delivered1
+    ~delivered:delivered1
+    ~aborted:true
+    words1_out;
+  account_spliced_forwarded
+    bench
+    ~start_ot:resync_start_ot
+    ~received:(List.length frame2_octets)
+    ~delivered:delivered2
+    ~aborted:false
+    words2_out;
   Dv_monitors.Conservation_monitor.strobe_pulse (conservation bench) ~name:"error_bad_frame";
   assert_monitors_clean bench ~row
 ;;
@@ -775,8 +836,23 @@ let run_h2 ~lane =
           [ "expected exactly one strobe (error_start_without_terminate alone), observed "
           ; Int.to_string (List.length pulses)
           ]));
-  account_spliced_forwarded bench ~start_ot:start_ot1 ~delivered:delivered1 ~aborted:true words1_out;
-  account_spliced_forwarded bench ~start_ot:resync_start_ot ~delivered:delivered2 ~aborted:false words2_out;
+  (* WO-0059 §7.3 Finding 1: frame 1 is REQ-110-aborted (no FCS removal
+     attempted), so received = delivered; frame 2 is an ordinary clean
+     frame, received = its own 64 octets DA through FCS. *)
+  account_spliced_forwarded
+    bench
+    ~start_ot:start_ot1
+    ~received:delivered1
+    ~delivered:delivered1
+    ~aborted:true
+    words1_out;
+  account_spliced_forwarded
+    bench
+    ~start_ot:resync_start_ot
+    ~received:(List.length frame2_octets)
+    ~delivered:delivered2
+    ~aborted:false
+    words2_out;
   Dv_monitors.Conservation_monitor.strobe_pulse (conservation bench) ~name:"error_start_without_terminate";
   assert_monitors_clean bench ~row
 ;;
@@ -1006,7 +1082,15 @@ let run_h4 () =
           ]));
   account_spliced_dropped bench ~start_ot:start_ot_a ~received:0 ~strobe:"error_start_without_terminate";
   account_spliced_dropped bench ~start_ot:ot_2 ~received:0 ~strobe:"error_start_without_terminate";
-  account_spliced_forwarded bench ~start_ot:start_ot_c ~delivered:delivered_c ~aborted:false words_c_out;
+  (* WO-0059 §7.3 Finding 1: frame C is an ordinary clean frame, received =
+     its own 64 octets DA through FCS, four more than the 60 it delivers. *)
+  account_spliced_forwarded
+    bench
+    ~start_ot:start_ot_c
+    ~received:(List.length frame_c_octets)
+    ~delivered:delivered_c
+    ~aborted:false
+    words_c_out;
   Dv_monitors.Conservation_monitor.strobe_pulse (conservation bench) ~name:"error_start_without_terminate";
   Dv_monitors.Conservation_monitor.strobe_pulse (conservation bench) ~name:"error_start_without_terminate";
   assert_monitors_clean bench ~row

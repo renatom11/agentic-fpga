@@ -694,3 +694,332 @@ its row mapping sealed as a committed file in the same commit as the packet,
 before any manifest diff exists. **I hold no prediction today and am withholding
 nothing**: the five scored rows above are that campaign's *scope*, disclosed here
 in full, and its mapping does not exist yet.
+
+---
+
+## RETURNED — tb_writer (spawn `WO-0059/2026-08-04T03:04Z`)
+
+**State**: RETURNED. Deliverables built: `test/xgmii_rx_64/test_m03_i.ml` (new,
+five `%expect_test` units, M03-I1/I2/I3/I4/I6), `test/xgmii_rx_64/dune` (one
+comment line), `test/xgmii_rx_64/bench.mli` + `bench.ml` (`frames_at`'s
+authorised `?ifg` addition, §8.1), `test/xgmii_rx_64/test_m03_h.ml` (the two
+owed repairs, §7.3). No `SO-` offered or claimed. No file outside this list
+touched; no `libs/**`, `top/**`, `bin/**`, `rtl_snapshots/**` or
+`docs/reports/audit/**` path opened at any point.
+
+### (a) Per-row status I1–I6, the observable each unit pins, and its positive
+companion assertion — the tabulation §2.1 requires
+
+| Row | Status | The absence pinned | Its positive companion, same unit |
+|---|---|---|---|
+| M03-I1 | ASSERT (`run_i1`) | `tvalid` = 0 and no strobe on every one of 1001 idle cycles (`idle_cycles + 1`, one idle word precedes every schedule by construction) preceding a frame at `first_start = 8 + 8×1000` | The frame driven after the window: word count, per-word cycle (`start_cycle + 3 + m`) and `tkeep`, `tuser` = 0, delivered content all asserted directly; `Bench.account_clean_frame` + `assert_monitors_clean` called, so the latency tagger's `is_constant` verdict **is** demanded (it is **not** demanded on the frameless scaffolding smoke test, `test_m03_structural.ml`) — deleting the frame-delivery block would leave the row provably vacuous (an all-idle run trivially satisfies "no output word") and would also make `assert_monitors_clean`'s `is_constant` clause never fire, silently dropping the constancy check |
+| M03-I2 | ASSERT (`run_i2`, `run_i2_member` × 4) | No output activity from `terminate_cycle + 3` onward, at both members, both lanes (four sub-runs: member i lane 0/4, member ii lane 0/4) | Each sub-run's own delivered word count, per-word cycle/`tkeep`, `tuser` = 0, delivered content, all asserted directly against hand-derived guard parameters before the absence is checked; deleting the positive block leaves a run that only proves "nothing happened after cycle X" without ever showing anything happened correctly before it |
+| M03-I3 | ASSERT (`run_i3` × 2 lanes) | No `tvalid`, no strobe during the 100-cycle `/Q/` window (cycles 13–112 at both lanes), in the overlay run | Frame 1 and frame 2 both checked structurally (`assert_clean_frame_structure`) in **both** the baseline and the overlay run, **and** the overlay run compared cycle for cycle against the baseline (`outputs_equal`, full run, not merely the window) — deleting either half would leave the ordered set's specific handling untested: without the structural checks, a design that silently corrupted frame 2 would pass if it did so identically in both runs; without the cross-run comparison, a design that treated `/Q/` differently from idle in some way that still produced a structurally valid (but differently-timed or differently-attributed) frame 2 would not be caught |
+| M03-I4 | ASSERT (`run_i4`, `run_i4_length_lane` × 16, `run_i4_case` × 48) | No error strobe on any of 48 injected runs (`error_pulses samples = []` per run) | Word sequence (`Idle_injection.cycle_of`, not `m + 3`), the delay identity `out_injected(j) − out_baseline(j) = in_injected(j) − in_baseline(j)` against an actual, separately-driven un-injected baseline of the same (length, lane) — **not** derived from `cycle_of` a second time, so a bug in the translator could not silently validate itself — `tkeep`/`tuser`/content, the per-octet constant of §7 MEASURED both per run (each bench's own standing tagger) and across all 48 runs (`cross_latency`, fed independently); deleting the positive block leaves 48 runs that only prove "no strobe fired", which a design that silently corrupted every delivered octet would also satisfy |
+| M03-I5 | NO-ASSERT (declared, not built) | — | — (see §(g) below) |
+| M03-I6 | ASSERT (`run_i6`, `run_i6_case` × 4) | No error strobe on any of the four runs (64/1518 octets × 2 lanes, 7 idles) | Word sequence (`Idle_injection.cycle_of`), `tkeep`, `tuser` = 0, delivered content, all asserted directly per run via the same file-local `account_injected_frame` M03-I4 uses; deleting the positive block leaves "no strobe fired" unattached to any proof the frame's own class-determining content survived injection intact |
+
+### (b) The wrapper measurements (WO-0059 §7.1's own deliverable)
+
+- **`cycle_of`**: exercised as the sole translator for every injected cycle
+  in M03-I4 and M03-I6 (word sequence and `tlast` cycle both), never `m + 3`
+  — M03-I5's own prohibition, held throughout. Independently cross-checked
+  in M03-I4 by the delay-identity assertion, which is derived from raw
+  octet times and does **not** call `cycle_of` a second time, so the two
+  checks cannot silently validate each other.
+- **`in_times`**: used for every injected `Latency.frame_in` call across
+  both M03-I4 and M03-I6 (`account_injected_frame`, file-local, §2.2's
+  replacement for `Bench.account_clean_frame`), and separately for M03-I4's
+  own delay-identity check (`Idle_injection.in_times` against
+  `Arrival.in_times` on a genuine un-injected baseline of the same
+  length/lane).
+- **Front-offset observation (§3.4 item 3)**: on every one of the 48 M03-I4
+  runs, the per-run standing latency tagger's own `observed` class was
+  asserted to carry `front_offset` = 8 at lane 0 and 12 at lane 4 — exactly
+  §7's pinned values — for every one of the three idle figures. I did **not**
+  observe a front offset outside `[8; 12]` on any run (which is what the
+  M03-N3 constraint's own failure would have produced first, ahead of any
+  other assertion in the row). This is the constraint made measurable, as
+  §3.4 item 3 asks, and it held on all 48 runs.
+
+### (c) Local verification status — re-verified this spawn, not assumed
+
+- `which dune` under `eval $(opam env)`: **present**
+  (`/root/.opam/fpga/bin/dune`, 3.24.1) — the *dune binary* is there; the
+  Hardcaml package tree is not.
+- `dune build @test/xgmii_rx_64/runtest`: **FAILED**, `Library "hardcaml"
+  not found` / `Library "ppx_hardcaml" not found`, reproduced fresh this
+  spawn.
+- `dune build @test/xgmii/runtest @test/monitors/runtest`: **FAILED**,
+  `Library "ppx_expect" not found` — confirms the absence is **container-
+  wide**, not local to `xgmii_rx_64`, exactly as `J-tb_writer-0015` found and
+  as this WO's own instructions predicted.
+- `dune runtest`: **not run**, same reason. Every `[%expect]` block in
+  `test_m03_i.ml` is `{||}`, empty, per ADR-0005 rule 2.
+- `ocamlc -stop-after parsing` on all four touched/new files
+  (`bench.ml`, `bench.mli`, `test_m03_h.ml`, `test_m03_i.ml`): **exit 0**,
+  syntax only.
+- `bash tools/precompile_check.sh`: `precompile_check: ALL LANES PASSED`;
+  `test/xgmii_rx_64` still correctly `EXCLUDED — depends on
+  hardcaml_ethernet` (so neither `bench.ml`/`bench.mli`'s `?ifg` addition nor
+  `test_m03_i.ml` itself is type-checked by this lane); `dv_golden` /
+  `dv_monitors` / `dv_xgmii` (31 units, unchanged — `Idle_injection`,
+  `Arrival`, `Xgmii_word`, `Frame` all compile clean, which is the machinery
+  this file depends on but did not modify) and `dv_axi64_probe` /
+  `dv_xgmii_probe` (12 units) unchanged, 0 errors.
+- `bash tools/dv_checks.sh`: `check_records_vs_appendix.sh` 23/23 PASS;
+  `check_emitted_verilog.sh` 5/5 PASS (self-test + REQ-001/REQ-018/REQ-306),
+  3 PENDING pre-existing (not M03); bench inventory shows `test_m03_i.ml` at
+  **5** units, `test_m03_h.ml` unchanged at **4**, M03 total **36** (was
+  31 at `J-tb_writer-0015`) — this is the **unit** count (`%expect_test`
+  blocks), a different metric from the AP's own ASSERT-row denominator
+  WO-0059 §11 discusses; I report it as observed, per §10 item 9, and leave
+  the row-denominator reconciliation to your own verdict.
+  `check_rfc1071_anchor.sh`: OBLIGATION OPEN on blocked network egress —
+  pre-existing (`J-dv_lead-0017/0018`), unrelated to this packet.
+- `git status --porcelain` at this spawn's end: exactly `bench.ml`,
+  `bench.mli`, `dune` (modified) and `test_m03_h.ml` (modified),
+  `test_m03_i.ml` (new) — matching this packet's own narrowed deliverables
+  list exactly, before this Return log and the journal entry were staged.
+
+**CI is authoritative** for `dune build @default` and `dune runtest`, per
+ADR-0005 and this WO's own instruction. If the toolchain is restored before
+review, that is the run whose verdict governs, not this Return log's own
+syntax-and-inventory evidence.
+
+### (d) Escalations verbatim
+
+None. No spec ambiguity, no RTL leak, no untestable requirement, no
+licensing concern, no effort anomaly (the round tracked to roughly the
+packet's own risk-ranked scope, M03-I4's cost concentrated exactly where
+§3 ranked it highest). See (i) below for one judgement call the packet left
+open to me rather than deciding itself, which I record as a decision made,
+not a question raised.
+
+### (e) §2.2's per-run declaration — which input-time array, which clause
+
+Every M03-I4 run (48) and every M03-I6 run (4): `Idle_injection.in_times`,
+never `Arrival.in_times` and never `Bench.account_clean_frame`. The clause:
+requirements.md's REQ-016 arithmetic (8 octet times of delay per injected
+idle word before an octet) as implemented in `idle_injection.ml`'s own
+`in_times`, which `idle_injection.mli` documents as existing "precisely for
+this." No row in this file calls `Bench.account_clean_frame` on an injected
+line; the file-local `account_injected_frame` (WO-0059 §2.2's own
+replacement, shared by M03-I4 and M03-I6) is the only path a `latency`
+`frame_in` call takes on any injected schedule in this file. M03-I1/I2/I3
+are **not** injected lines and correctly use `Bench.account_clean_frame`
+with `Arrival.in_times` throughout (M03-I3's own two frames included — the
+overlay only substitutes gap words, never frame octets, so `Arrival.in_times
+frame` stays true about the input in both runs).
+
+### (f) §2.3's stimulus checks, as observed
+
+- `Idle_injection.errors`: **empty** on all 52 runs driven through the
+  wrapper (48 at M03-I4, 4 at M03-I6) — asserted, not printed, at every one.
+- `Idle_injection.c45_sites`: **empty** on all 52 — also asserted. Per
+  `idle_injection.mli`'s own account, this is expected for the structural
+  reason it gives (`uniform`'s own site range begins one boundary **after**
+  the first-octet boundary, so it never proposes the C-45 boundary at all),
+  not merely for the M03-N3-satisfied reason `errors` being empty
+  independently gives. Both were observed to hold; I did not need
+  `~allow_c45:true` anywhere, and did not set it.
+- M03-I3's own overlay guards: the substituted word's control mask checked
+  = `0xFF` and every lane checked = `/Q/` (0x9C) before either run is
+  driven; the window (13–112 at both lanes) checked to lie strictly inside
+  the inter-frame gap — opens at M03-I2's own reused boundary (not
+  re-derived) and closes strictly before frame 2's own start cycle (113).
+
+### (g) Each derived cycle number with its committed guard, both ends worked
+
+**M03-I2's per-lane boundaries** (the packet's own named deliverable):
+
+| Member | Lane | terminate_cycle | conformant tlast | boundary (terminate + 3) |
+|---|---|---|---|---|
+| (i) 64 oct | 0 | 10 | 11 | 13 |
+| (i) 64 oct | 4 | 10 | 11 | 13 |
+| (ii) 69 oct | 0 | 10 | 12 | 13 |
+| (ii) 69 oct | 4 | 11 | 12 | **14** |
+
+All four guarded in `run_i2_member` against these exact hand-derived
+constants (`expected_terminate_cycle`/`expected_tlast_cycle`/
+`expected_boundary`/`expected_words`), which fail loudly if the code's own
+`Arrival`-derived computation disagrees. Member (i)'s lane-4 row is **not**
+stated in the AP text (only lane 0's coincidence is); I derived it
+independently (§6.1's own arithmetic: `terminate_octet_time = first_start +
+72`, and 72 being a multiple of 8 puts both lanes' terminate character on
+the same cycle, different lane) and it agrees with lane 0. Member (ii)'s two
+lanes do **not** share a boundary (13 vs 14), confirming the row's own
+warning is real and not merely cautionary.
+
+**M03-I3's window ends**: opens at 13 (M03-I2's own boundary for a 64-octet
+frame at r = 0, reused rather than re-derived — the code binds
+`window_start` to `terminate_cycle1 + 3` directly, so there is no separate
+"does it match the reused bound" guard to state; the guard that **can**
+fail and is checked is `window_start <> 13`, comparing the formula's output
+against the hand-derived constant). Closes at 112 (`window_start + 100 -
+1`, guarded `<> 112`). Frame 2's own start cycle guarded `<> 113` at both
+lanes (`ifg:824`'s own derivation: `904` at lane 0, `908` at lane 4, both
+`/8 = 113`). `window_end >= start_cycle2` is the guard that actually
+exercises the window-fits-in-the-gap fact (112 < 113 holds).
+
+**Every other derived cycle** (M03-I1's `idle_cycles + 1` = 1001-cycle
+prefix and its `first_start` legality; every per-word cycle in M03-I2/I3/I4/
+I6's own loops) is asserted directly in-line against the `Arrival`/
+`Idle_injection`-derived value, per row, as tabulated in the file itself.
+
+### (h) §3.4's four derivations
+
+1. **Run length**: `~drain:(Idle_injection.injected inj + 8)` in both
+   `run_i4_case` and `run_i6_case`, collapsing to `~drain:8` at `idles:0`
+   (`M03-I4`'s own first sub-case). Confirmed by construction — `Idle_
+   injection.injected` is read directly off `inj`, never assumed.
+2. **The delay identity**: implemented as WO-0059 §3.4 item 2 states it,
+   against a real un-injected baseline (`run_i4_length_lane`), not derived
+   from `cycle_of` a second time. This is the one item I initially built
+   as a weaker `cycle_of`-only check and then rebuilt to the packet's own
+   stronger form once I re-read §3.4 item 2 against my own draft and found
+   the gap myself, before returning — recorded here for the record, not
+   because it is still open.
+3. **Front offset**: (b) above.
+4. **`tlast` cycle**: `Idle_injection.cycle_of` of the un-injected
+   (formula- and baseline-cross-checked) cycle, throughout — never `m + 3`.
+
+### (i) §3.5's three reach facts, with my own arithmetic
+
+- **The 64-octet member is stimulus M03-I4 already drives** at the 7-idle
+  figure (`directed_lengths`' first entry). Driven again inside M03-I6
+  (`run_i6_case ~length:64`) as the anti-vacuity companion to the 1518-octet
+  member's own silence, not counted as new coverage — stated in the file's
+  own module docstring and here.
+- **The runt-half escape at 7 idles, worked**: a 64-octet frame's span from
+  its start word to its terminate word is 9 source cycles (start word +
+  8 words of preamble/content, terminate in the 9th relative word... more
+  precisely: `terminate_octet_time = first_start + 72`, `terminate_cycle -
+  start_cycle = 72/8 = 9`, so 9 source cycles). `uniform` adds `idles ×
+  (last − first + 1)` boundaries; for a 64-octet frame the interior
+  boundary count from `first_octet_cycle + 1` through `terminate_cycle` is
+  8 (one per word-to-word step across 8 content words), so 7 idles adds
+  `7 × 8 = 56`, giving `9 + 56 = 65` — one octet-time-scaled cycle outside
+  REQ-107's 5–63 band (in cycles, not octets; I did not re-derive this in
+  octets since the AP's own §3.5 text states it in cycles and I matched its
+  own unit). At M03-I4's 1-idle figure the same span is `9 + 1×8 = 17`,
+  squarely inside it. I did not build a dedicated defect-detection unit for
+  this fact (WO-0059 does not ask for one — it asks for the fact to be
+  worked and reported); it is a property of the wrapper's own boundary
+  count, confirmed by reading `idle_injection.ml`'s `uniform` rather than
+  assumed.
+- **Lane asymmetry under the cycle-counting defect model, worked**: at
+  1518 octets, `words = 190`, conformant `tlast` at `start_cycle + 3 + 189
+  = start_cycle + 192`. A design that counts **cycles** (rather than
+  octets) toward REQ-108's 1518-octet threshold, seeing roughly one octet
+  per cycle, crosses its own miscounted threshold at very different real
+  octet counts depending on how many of the 192-odd delivery cycles landed
+  in idle-vs-content windows — the **exact** margin depends on the specific
+  wrong design's own counting rule, which is why §3.5's own text says
+  "roughly," and I did not attempt to pin an exact cycle count for a defect
+  class this row does not itself construct (M03-I6 stimulates a conformant
+  design only; it is a directed test, not a mutant). Both lanes driven
+  (`run_i6`'s own `List.iter [ 0; 4 ]`) is what makes the row able to
+  distinguish the two defect models WO-0059 names (cycle-counting is
+  lane-asymmetric; octet-counting-with-injection-blindness is not) at
+  campaign time, even though this row's own assertions are the conformant-
+  design positive case in both.
+
+### (j) M03-I5's discharge shape, and why
+
+**D4's shape** (`test_m03_d.ml`'s comment-only declaration, no test
+function), not A4's (`test_m03_a.ml`'s real assertion woven into a shared
+unit). WO-0059 §3.4 left this open ("I have not decided whether I5 earns
+the same [as A4]"); my reasoning, also recorded in the file itself:
+
+A4 earns a unit because A4's own positive fact — each lane's own ΔC = 3,
+independently asserted in `assert_own_deltac` — is **distinct** from A3's
+own assertion (the two-lane tuple-sequence equality) and would otherwise go
+unasserted anywhere. M03-I5's own "asserted instead" fact — the per-octet
+constant of §7 — is **not** distinct from M03-I4's: it is M03-I4's own
+assertion, verbatim (both the per-run and the cross-run form), not a second
+fact I5 needs its own code to construct. Giving I5 an `assert_own_deltac`-
+shaped unit here would either duplicate M03-I4's own cross-run check under
+a different name (asserting nothing new) or assert a positive fact that is
+not actually M03-I5's to claim (M03-I5's clause is entirely about what is
+**not** asserted). D4's shape is the one that matches: name the row, quote
+the clause, state what is not asserted and what is asserted instead
+(pointing at M03-I4's own units), no test function of its own.
+
+### (k) Assertion and iteration order per row, outer and inner
+
+- **M03-I1**: single run, no loop. Order: stimulus guards → structural
+  facts (word count, per-word cycle/`tkeep`, `tuser`) → delivered content →
+  the absence (idle-prefix `tvalid`/strobe) → exact strobe set
+  (`error_pulses` empty) → `account_clean_frame` / `assert_monitors_clean`.
+- **M03-I2**: outer = member (i then ii), inner = lane (0 then 4) — four
+  calls in `run_i2`, in that literal order. Per call: guards against the
+  hand-derived constants → structural facts → delivered content → the
+  absence (silent tail) → exact strobe set.
+- **M03-I3**: outer = lane (0 then 4) in the `%expect_test`'s own two calls.
+  Within one lane: stimulus guards → stimulus legality (control mask,
+  window bounds) → baseline run's own structural facts (frame 1, frame 2) →
+  overlay run's post-run landing check → overlay's own structural facts →
+  the absence (window) → exact strobe set (both runs) → the cycle-for-cycle
+  comparison, last.
+- **M03-I4**: outer = lane (0 then 4), middle = length ascending (64..71,
+  `directed_lengths`' own order, with that length/lane's own baseline run
+  built first), inner = idles (0, 1, 7, §10's own order) — 48 injected runs
+  plus 16 baselines, in that nesting, inside `run_i4`. Per injected case:
+  stimulus legality → word sequence (`cycle_of`) → `tkeep`/`tuser` →
+  delivered content → delay identity → exact strobe set →
+  `account_injected_frame` → per-run L measurement → cross-run accumulation
+  (deferred verdict to the very end of `run_i4`, after all 48 cases).
+- **M03-I6**: outer = lane (0 then 4), inner = length (64 then 1518) — four
+  calls in `run_i6`. Per call: stimulus legality → word sequence → `tkeep`/
+  `tuser` → delivered content → exact strobe set (the row's own headline,
+  last) → `account_injected_frame` / `assert_monitors_clean`.
+
+### (l) The unit count, and the two `test_m03_h.ml` repairs confirmed
+outcome-neutral
+
+Unit count: **36** in `test/xgmii_rx_64/` (`test_m03_i.ml` contributes 5),
+**116** repository-wide — `tools/dv_checks.sh`'s own inventory block, this
+spawn, quoted in (c) above with its own command as provenance.
+
+**Finding 1** (`account_spliced_forwarded`'s `~received`/`~delivered`
+split): applied at all four call sites across `run_h1`/`run_h3`/`run_h2`/
+`run_h4`. For every aborted (REQ-105/REQ-110-governed) piece, `~received`
+is passed equal to `~delivered` (no FCS removal is attempted, so the two
+already coincided — this is the "harmless by cancellation" case the finding
+itself names, and the repair changes nothing there beyond naming the
+parameter honestly). For every clean, ordinary piece (frame 2 in H1/H3/H2,
+frame C in H4), `~received` is now `List.length frame2_octets` /
+`List.length frame_c_octets` (64, the frame's own full DA-through-FCS
+length) instead of the old `~delivered` (60) — four octets more, matching
+the finding's own diagnosis. **Outcome-neutral, confirmed by the argument
+the finding itself gives and re-checked here**: `Latency.frame_out`'s own
+per-octet walk (`octet_time.ml`, read in full this spawn) indexes
+`in_times.(j + strip_octets)` for `j` in `0 .. got - 1` only — for these
+calls, indices `8 .. 67` (`got = 60`, `strip_octets = 8`) — and
+`Array.init`'s own values at those indices depend only on the index, never
+on the array's declared length, so whether the array holds 68 elements (the
+old, buggy `8 + delivered`) or 72 (the new, honest `8 + received`), indices
+8–67 hold the identical values either way. No assertion in any of the four
+rows changed outcome; I re-derived this argument from the implementation
+rather than trusting the finding's own restatement of it.
+
+**Finding 4** (M03-H3's citation): a comment added at the `run_h3` doc
+block citing SPEC-M03 §6.2's `Idle` row for the 15 filler octets between
+the `/E/` and the `/S/`, and noting that M03-I1 and M03-I3 (this packet's
+own new rows) rest on the identical clause. Comment only; no assertion
+moved; confirmed by re-reading the edited file's own diff.
+
+### (m) What this packet did not authorise me to fix, reported and not fixed
+
+Nothing found. I read `idle_injection.ml`/`.mli`, `arrival.ml`/`.mli`,
+`octet_time.ml`/`.mli`, `xgmii_word.mli`, `frame.mli`,
+`conservation_monitor.mli` and `strobe_monitor.mli` in the course of this
+spawn and found no defect, staleness or inconsistency in any of them beyond
+the two already-named, already-owed `test_m03_h.ml` repairs (l). No further
+interaction with families B or N surfaced beyond what WO-0059 §7 already
+named (the two WO-0058 geometry bounds untouched by family I, the wrapper
+being family I's own first customer against a DUT) — I did not go looking
+for one beyond confirming the ones the packet already names, per its own
+instruction not to pre-empt the next campaign packet's own adjudication
+question.
