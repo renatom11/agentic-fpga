@@ -3202,3 +3202,279 @@ untiled span **J-dv_lead-0001 … 0105**, first harvest still firing at `SO-M03`
 - test/xgmii_rx_64/test_m03_i.ml
 - test/xgmii/idle_injection.mli
 
+## [J-dv_lead-0106] 2026-08-05T02:30Z | task:WO-0063 | The phase-B seal redeemed on the commit it fell due at — and freezing it forced a measurement that found my own convicting set wrong in both directions at once
+
+### Trigger
+`WO-0063` §6's **forward commitment under R-SEAL-1**, which falls due *"in the
+commit that issues this packet for phase B"* and whose own terms are that if no
+commit has staged the seal by the time the first diff exists, **the round is
+adjudicated as having no seal** and its cell-level claims may not be made. That
+commit is this one. Also `RV-0063A-VERDICT` §7 commissioned item 3 (the phase-B
+packet and its seal, **in one commit**), and the orchestrator's spawn, which
+split this round into two commits at the journal-entry boundary.
+
+### Inputs
+- `agents/handoffs/WO-0063_m03-i2-report-path-delay-mini-round.md` — §3, §3.1,
+  §4, §5, §6, §7's four dispositions, §8, §9.3, §9.4.
+- `agents/handoffs/WO-0063A_m03-i2-member-iii-bench.md` — `RV-0063A-VERDICT` §5
+  items (i)/(ii)/(iii), §6 (§4(c)'s ruling), §7 (the convicting set as I
+  enumerated it, and the three commissions).
+- `agents/handoffs/WO-0061_family-i-mutation-campaign-SEALED-predictions.md` —
+  read as the **form** a seal takes in this programme (its standing rules, its
+  UNWORKED convention, its per-class kill counting), not for its content.
+- `agents/handoffs/BUG-0003_m03-lane-4-injected-word-cycle.md` §V.10.1 and
+  **§V.10.2** — the measured datapath-perturbation signature, recomputed figures
+  and the three further measured facts.
+- **Measured from the tree at this round's base SHA** (my own commit 1):
+  all 28 `Dv_monitors.Strobe_monitor.expect` sites in `test/xgmii_rx_64/*.ml`,
+  each mapped to its enclosing runner and classified by its `cycle` field and
+  `why` text; `run_i2`'s six call sites (`:901`, `:909`, `:926`, `:934`, `:953`,
+  `:964`); `run_i2_zero_octet_member`'s nine steps by line; every
+  pinned-cycle assertion message in families B/E/F/G/H;
+  `bash tools/dv_checks.sh`'s inventory.
+- **Specs**: `requirements.md` §0.6 (the `a12ac8f` note in full), §0.7, REQ-105,
+  REQ-107, REQ-109, REQ-110; `xgmii_rx_64.md` §6.1 (C-14.3), §9 including
+  ruling 9.
+- **Not read, deliberately**: `libs/**`, `rtl_snapshots/**`, tb_writer's journal,
+  and every in-flight state. Everything in the packet and the seal is derived
+  from committed history at or before this round's base SHA, which is what lets
+  the seal claim to precede every diff it judges.
+
+### Reasoning
+
+**1. Why the seal had to be measured and not recalled, and what the measurement
+cost me.** `RV-0063A` §7 enumerated the §9.3-corrected convicting set from
+memory of which rows own a no-output-word pin: *"M03-F2 all members/lanes,
+M03-E5, M03-B3 … plus the zero-delivered sub-cases of M03-B2, M03-B3 and
+M03-N2 … and member (iii) itself."* I froze the seal against that sentence's
+**method** and not its content: I enumerated every `Strobe_monitor.expect` site
+in the bench and classified each by the cycle it registers and the reason it
+states. **The enumeration was wrong in both directions at once:**
+
+- **Four units missing.** `run_b4` (REQ-110, zero delivered), `run_e2` (REQ-105
+  at the first octet), `run_g7`'s **second** registration (the resynchronised
+  sub-5 frame, `WO-0056`) and `run_h4`'s **two** registrations all pin a report
+  on §9's no-output-word pin. Nine units register one, not five. A seal frozen
+  against five would have scored four true reds as **unnamed-unit findings**.
+- **One unit named that does not exist.** M03-N2 has **no unit in this bench** —
+  17 mentions in the plan, two in library files, zero registrations. A cell at a
+  non-existent unit is unscoreable in both directions, and a MUST-STAY-GREEN
+  denominator containing one is simply wrong.
+- **A vocabulary error that hid the first two.** I wrote *"sub-cases"*, which is
+  how I remembered families B and N; each row's runner registers exactly one
+  no-output-word expectation and it is the unit's only one. Thinking in sub-cases
+  is what let me believe the set was small enough to recall.
+
+**This is the third round running in which the convicting set moved when someone
+measured it** — `WO-0063` §5's figure, corrected by §9.3's; §9.3's, corrected by
+`RV-0063A` §7's; and now §7's, corrected here. The pattern is not carelessness,
+it is that **each correction was itself derived rather than measured**, and the
+rule I am taking from it is in the harvest note.
+
+**2. What survives every correction, and it is the claim the round is for.** All
+nine units detect IC-1 by re-checking a pin **the bench itself computed and
+handed the monitor**, or by comparing an observed cycle to a number the bench
+derived. **Not one reads a report against a drain bound.** Member (iii)'s step-6
+strobe scan remains the only assertion in this repository that does. §9.3
+consequence 2 is therefore unaffected by finding four more units — it is
+*strengthened*, because the instrument claim now rests on a complete inventory
+instead of a remembered one.
+
+**And it cuts against my own round, which the packet says out loud (§10):** eight
+of the nine detect IC-1 without member (iii), so **this bench is not blind to a
+report-path delay** and no verdict may imply it was. The claim available is
+narrower and is the one worth having.
+
+**3. The ordering cell, and why the seal freezes a string rather than an
+outcome.** Member (iii) is in **both** convicting sets. The two detectors agree
+about the defect and disagree about nothing — but they carry **different
+messages**, and `WO-0063` §7 disposition 1 requires the red to arrive with *the
+window's own*. The landed source decides it: step 6 raises at `:845`, step 9's
+`assert_monitors_clean` is at `:887`. So the qualification is an **ordering**
+question, and the only way to make it unre-readable after the scorecard is to
+freeze the exact string **now**. A red arriving through `assert_monitors_clean`
+instead scores UNQUALIFIED–structurally-shadowed under disposition 4, and it
+cannot be re-argued, because the alternative was written down before anyone knew
+which would happen.
+
+**4. Why the string the seal freezes is the one my previous commit created.**
+`RV-0063A` §7 quoted the REQUIRED cell in its **pre-sweep** form and stated the
+ordering law that follows from it: the citation sweep lands **before** the
+phase-B base SHA or **after** the campaign scores, never between. Commit 1 landed
+it. So the seal freezes `a strobe pulsed at or after cycle 5 (REQ-109, §0.6's
+ceiling and SPEC-M03 §9's pin -- C-14.3 bounds output words, not strobes)` — the
+repaired form — and the ordering law is discharged **in fact** rather than
+promised. Had I written the packet first, the seal would have frozen a citation I
+already knew was wrong, and the sweep would have been stuck behind the campaign.
+
+**5. Mutant-owned quantities as inequalities, and the discipline that keeps the
+device honest.** A seal that pins a rendering's own arithmetic scores a *correct*
+rendering as a finding. So the deferred pulse's cycle is sealed as `observed ≥ 5`
+with the direction named (**later**; IC-1 defers, it does not advance). **But
+three of the five quantities in that table are sealed as equalities on purpose** —
+the pulse count (1), the strobe name (`error_runt`) and the output-word count (0)
+are fixed by §0.7 and §9 ruling 9, not by the rendering. Calling them
+mutant-owned would buy an unfalsifiable seal, which is the failure mode
+`ADR-0016`'s own carve-out warns about: the rule makes seals countable, not good,
+and a vacuous seal passes it and dies at adjudication.
+
+**6. §4(c) as a test, and the honest admission inside it.** The measured
+signature from `BUG-0003` §V.10.2 is what a datapath perturbation looks like on
+this design **when measured**. But member (iii)'s conformant emitted stream is
+**empty** — no words, no `tkeep`, no octet sequence, no `tlast` — so the
+signature **has no domain at the scored unit**, and a check with no domain is
+exactly the vacuity this family's own docstring exists to avoid. What
+discriminates there is the landed **ordering**: steps 5 and 6's first assertion
+are the datapath-unmoved claims and both precede the strobe scan, so a
+datapath-moving rendering raises with a datapath message and never reaches the
+sealed string. The signature is therefore the **auditor's pre-ship check** and
+the ordering is **my adjudication check**, and the two agree by construction
+rather than by negotiation. That asymmetry is stated in both files rather than
+smoothed over.
+
+**7. The whose-action-does-this-bar-constrain requirement, discharged.**
+`J-dv_lead-0104` open question 5 recorded that `WO-0063A` §8's B1 described *my*
+procedure but read as binding the worker. In `WO-0063B` every bar names its
+actor in its own sentence: §5's manifest bars are the auditor's, §4's pre-ship
+check is the auditor's and the adjudication check is mine, §7's base-SHA identity
+is the orchestrator's to verify, and §9's adjudication is mine. The debt is paid
+in the first packet written after it was incurred.
+
+### Actions
+- Authored **`agents/handoffs/WO-0063B_m03-i2-report-path-campaign.md`** — the
+  phase-B execution packet: the two intents with their required consequences,
+  §1.1's two mandatory disclosures, §2's **measured** convicting set with its
+  three corrections against my own verdict, §3's term-by-term reachability
+  standard (both lanes as separate evaluations) discharged on the bench side
+  here, §4's datapath signature as an executable pre-ship check with its
+  consequence fixed, §5's allowlist and manifest bars, §6's **five**
+  pre-committed dispositions, §7's base SHA and the adjudicator-ordering rule,
+  §8's mutant-owned inequalities, §9's return format, §10's discount, §11's
+  not-to-be-told.
+- Authored **`agents/handoffs/WO-0063B_m03-i2-report-path-campaign-SEALED-predictions.md`**
+  — the seal: the re-measured denominator, `run_i2`'s six-call iteration order
+  and the runner's nine steps by line, the IC-1 (narrow / wide) × IC-2 matrix
+  with MUST-STAY-GREEN denominators, **§3.1's two verbatim REQUIRED cells**,
+  §3.2's ordering ruling with the three alternative message classes and what
+  each scores as, §3.3's REQUIRED green derived from stimulus facts, §3.4's
+  UNWORKED rule for the other eight units, §4's inequality table, §5's
+  reasoning, §6's §4(c) discharge, §7's sealed ordering rule, §8's seven bounds
+  and §9's pass criteria.
+- **No `test/**` file moved in this commit** — deliberately, and it is the
+  adjudicator-ordering rule applied to myself: the bench is frozen strictly
+  earlier than any mutant it judges, and the last bench byte moved in the
+  previous commit.
+- **No git command run. No RTL opened. No worker or auditor journal read.**
+
+### Evidence
+- **The registration inventory, reproducible**: `grep -rn
+  "Dv_monitors.Strobe_monitor.expect" test/xgmii_rx_64/*.ml` → **28** sites; each
+  mapped to its enclosing runner by an `awk` pass over `^let run_`; each
+  classified by reading its `cycle` field and `why` string. **Nine** register a
+  no-output-word pin: `run_b2` (`test_m03_b.ml:743`), `run_b3` (`:542`),
+  `run_b4` (`:337`), `run_e2` (`test_m03_e.ml:429`), `run_e5` (`:731`),
+  `run_f2` (`test_m03_f.ml:425`), `run_g7` (`test_m03_g.ml:1375`), `run_h4`
+  (`test_m03_h.ml:939` and `:951`), `run_i2_zero_octet_member`
+  (`test_m03_i.ml:714`).
+- **The six with a direct pinned-cycle assertion of their own**:
+  `test_m03_b.ml:802` / `:620` / `:421`, `test_m03_e.ml:463` / `:776`,
+  `test_m03_f.ml:472`. **M03-G7 and M03-H4 are monitor-only** — no such
+  assertion in their runners.
+- **M03-N2 registers nothing**: `grep -rn "M03-N2" test/ --include=*.ml
+  --include=*.mli` → three hits, all in `test/xgmii/` library files and none a
+  bench unit; `grep -c "M03-N2" test/attack_plans/AP-xgmii_rx_64.md` → **17**.
+- **Iteration order**: `run_i2` at `test_m03_i.ml:890` calls
+  `run_i2_member` at `:901`, `:909`, `:926`, `:934` and
+  `run_i2_zero_octet_member` at `:953`, `:964` — **member (iii) last, lane 0
+  before lane 4**.
+- **The ordering cell**: step 6's strobe scan at `test_m03_i.ml:845`;
+  `assert_monitors_clean bench ~row` at `:887`. Step 6 precedes step 9 in source
+  order, which is what the REQUIRED cell claims.
+- **Denominator**: `bash tools/dv_checks.sh` at this tree → `39
+  test/xgmii_rx_64/`, `119 test/`, so **80 non-M03** — the same 80 four prior
+  campaigns measured, moved from `WO-0061`'s 116 repo-wide by exactly family B's
+  three units.
+- **Matrix arithmetic, checked rather than asserted**: 1 (M03-I2) + 8
+  (no-output-word units) + 16 (`tlast`-registering units) + 14 (no registration
+  at all) = **39**. IC-1 narrow 4 R / 35 G; IC-1 wide 9 R / 30 G; IC-2 17 r /
+  22 G. Every column sums to 39.
+- **`BUG-0003` §V.10.2's figures**, quoted in both files as measured: (a) = 7,
+  (b) = 4 of 60 over 32 comparable positions, 28 delivered as `0x07` and 28 never
+  delivered, `tlast` on word 7, `tuser` = 0.
+- **Not run**: `dune build`, `dune runtest` — no local toolchain (ADR-0005). This
+  commit stages **two markdown packets and no code**, so there is nothing in it a
+  build could measure; the control run the seal's pass criterion 4 requires is
+  the auditor's and the orchestrator's, at the base SHA, and it does not exist
+  yet. **No CI result is asserted for this commit and none is available.**
+
+### Outcome
+`WO-0063` §6's forward commitment **REDEEMED** in the commit it fell due at:
+`R-SEAL-1` is satisfied by a committed artefact staged beside its packet, and
+the seal appears in this commit's own `Files-in-this-commit` list. `RV-0063A`
+§7's commissioned item 3 **discharged**. `WO-0063` §7 pass criterion 2 is now
+**open and issuable**: the manifest bars, the dispositions, the base SHA and the
+allowlist are all fixed before any diff exists.
+
+**DoD vs the round**: phase A discharged at `J-dv_lead-0104`; phase B **issued**
+here, not executed — the campaign is the orchestrator's to operate (PROTOCOL
+§10's transient model) and the auditor's to seed. **Handoff**: this tree to the
+orchestrator for commit, trailer `Agent: dv_lead`, `Work-Order: WO-0063`; then
+`WO-0063B` to the auditor with its paths, **and not this seal**.
+
+**Harvest (ADR-0018, PROTOCOL §7).** **Not due this round** — no `SO-`, no gate.
+Span since the previous note: **J-dv_lead-0106** (this entry); cumulative untiled
+span **J-dv_lead-0001 … 0106**, first harvest still firing at `SO-M03`.
+
+- **All six banked candidates carry unchanged**, plus the extension banked at
+  `J-dv_lead-0105`.
+- **One NEW candidate banked, LH2-g.** *Rule*: **a correction to an enumeration
+  must be produced by the same method that would have produced the enumeration
+  correctly — never by deriving a fix from the erroneous version.** *Observable*:
+  each successive statement of a set cites the mechanical pass that produced it
+  (the query, the classification criterion, the count), and a statement that
+  cites only a prior statement is marked as a restatement rather than a
+  measurement. **LH1**: this commit and the two before it — one set was stated,
+  corrected once by derivation, corrected again by derivation, and was still
+  wrong in **both** directions when finally measured (four members missing, one
+  member non-existent). **LH2-g** — no proper noun in the rule. **LH3**: without
+  it, a chain of careful corrections converges on a confident wrong answer,
+  because every correction inherits the frame of the thing it corrects; the
+  errors that survive are exactly the ones no derivation can see.
+- **The `J-dv_lead-0104` candidate on searching by defect rather than by string
+  is a special case of the new one** and is **kept separate rather than merged**:
+  its observable is about search predicates, this one's is about set statements,
+  and merging them would produce a rule too abstract to fail a review.
+- **Both war stories carry unchanged.** No candidate retired, none promoted.
+
+### Open-questions
+1. **The base SHA's identity is stated symbolically and must be verified
+   clerically.** The seal and `WO-0063B` §7 both say *"the commit this packet's
+   own commit immediately follows"*. **The orchestrator verifies that identity at
+   commit time and records the hash**; if the two commits do not end up adjacent,
+   the seal's frozen-against line is wrong and must be corrected **before** the
+   manifest is requested, not after.
+2. **`WO-0063` §7's dispositions are now five, not four.** The fifth (a red
+   carrying a datapath message → out of specification, reported not scored) is
+   new and derives from §4(c) becoming decidable. It is an **addition** to a
+   pre-committed set, made **before** any diff exists, which is the only time
+   such an addition is legitimate; recorded here so that timing is checkable.
+3. **The narrow branch leaves five of the nine IC-1 units unexercised**, so a
+   narrow disclosure buys a smaller measurement. Priced in the seal (§8 bound 7),
+   not negotiable after the disclosure is made.
+4. **`AP-xgmii_rx_64.md` §4.I item 6 still owes its change-log row** for the
+   `a12ac8f` closure, and its §4 rows owe **M03-B4, M03-E2, M03-G7 and M03-H4**
+   the observation that they carry no-output-word pins — the plan's own record of
+   this round's measurement. Deferred to the first round after the campaign
+   scores, because the plan is phase B's contract and moving it now would violate
+   §7's own ordering rule.
+5. Carried unchanged from `J-dv_lead-0105`: `run_i2_member`'s deliberate citation
+   exception, still without a carrier; `WO-0058` bound 7; the
+   `assert_following_frame_intact` / `assert_clean_frame_structure` merge, still
+   deliberately uncommissioned; `WO-0061` §8 bound 1's `tkeep` half; **N-1**;
+   the auditor's DV-escape ledger disposition on `BUG-0003`, which is not mine;
+   family J behind a bench-capability round; `SO-xgmii_rx_64.md` unopened and not
+   offered. **Closed this entry**: the whose-action-does-this-bar-constrain debt.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0063B_m03-i2-report-path-campaign.md
+- agents/handoffs/WO-0063B_m03-i2-report-path-campaign-SEALED-predictions.md
