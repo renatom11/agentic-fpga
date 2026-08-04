@@ -1045,3 +1045,246 @@ and for the campaign dispatch.
 
 ### Files-in-this-commit
 - agents/handoffs/WO-0057_tb-m03-family-h-start-without-terminate.md
+
+## [J-dv_lead-0079] 2026-08-06T20:40Z | task:WO-0058 | The combined G7+H campaign drafted and its seal frozen in the same commit — seven classes, fourteen REQUIRED cells, and the two places where two classes could be one measurement are named before the diffs exist
+
+### Trigger
+Orchestrator, following my own `RV-0057-VERDICT` §8 ruling: draft the campaign I
+declared dispatchable, as `WO-0058`, with the sealed class → predicted-red
+mapping frozen in the **same commit** — the R-SEAL-1 forward commitment I made at
+that verdict, redeemed before any manifest diff exists. My own ruling is the
+specification for this round.
+
+### Inputs
+- `agents/charters/dv_lead.md`; `agents/PROTOCOL.md` §3 (packet forms and the
+  withheld-results clause), §4.1/§4.2, §6, §10 (**R-SEAL-1**, ADR-0016).
+- `agents/handoffs/WO-0057_tb-m03-family-h-start-without-terminate.md` — the
+  packet §5/§6/§7 and **`RV-0057-VERDICT` §2 (FINDING 1), §3 (FINDING 2), §4
+  (FINDING 3), §8 (the campaign ruling), §9 (the D1/D2 device ruling)**, read
+  back in full rather than recalled.
+- `agents/handoffs/WO-0055_family-g-mutation-campaign.md` and its
+  `-SEALED-predictions.md` companion — the form this packet follows, and
+  `RV-0055-VERDICT` §3's **FINDING G-1** (a sealed cell asserted from a category)
+  and §4's **FINDING G-2**, which are the two errors this seal is built not to
+  repeat. `WO-0056`'s **LIFT RULING** §1–§2 (g-c4 adjudicated and closed; M03-G7
+  stayed green under it "the diff being gated on an error character").
+- **Committed test sources**, read as the object under test — `test_m03_h.ml` in
+  full; `test_m03_g.ml`'s `run_g1`, `run_g2_legal`/`run_g2_oversize`, `run_g3`,
+  `run_g4`, `run_g6`, `run_g7`, `run_g8`; `test_m03_e.ml`'s `run_e1` and
+  `run_e4`; `test/xgmii_rx_64/bench.ml`'s `run`, `error_pulses`,
+  `delivered_samples`, `assert_monitors_clean`; `test/monitors/strobe_monitor.ml`
+  (to establish that monitor errors accumulate and are raised last, so the first
+  `fail` in each row's own order is what a campaign sees); the four `dune`
+  stanzas that fix the blast radius.
+- `docs/specs/modules/xgmii_rx_64.md` §6.1, §6.2 (`Preamble`/`Frame`/`Discard`
+  rows), §6.3 items 6 and 8, §7, §9 (closure list; table rows 2, 3, 7, 8, 9; the
+  fifth and sixth co-occurrence rulings; the pinned-strobe-cycle section);
+  `docs/specs/requirements.md` REQ-110, REQ-108, REQ-105, REQ-103, REQ-101,
+  REQ-021, REQ-008, REQ-007, §0.3, §0.6, §0.7.
+- CI, read through the Actions API rather than assumed: run **30865856907**
+  (`build`, run 271) at `a2d090d`, **both jobs green**.
+- **No `libs/**`, no `top/**`, no `bin/**`, no `rtl_snapshots/**`, no
+  `docs/reports/audit/**`** — at any point in this spawn. No prior campaign's
+  SEALED file was opened.
+
+### Reasoning
+
+**Why seven classes and not five.** The scored set is five units and every one of
+them must be reachable by at least one class, or the campaign qualifies nothing
+at the row it skips. M03-G7 needs the `/S`-in-`Discard` class (GH-c1) — the
+variant the WO-0055 seeder rejected on minimality grounds and `RV-0055` §7 bound
+3 named as a candidate of its own. M03-H3 needs the `/E/`-closure class (GH-c2),
+because every other class here is gated on a REQ-110 abort and M03-H3's whole
+point is that its `/S/` is **not** one. M03-H4 needs the C-23 collapse class
+(GH-c7), which no other unit in the bench can even see. M03-H1 and M03-H2 are
+reached by four (GH-c3 through GH-c6). Fewer classes would have left a scored row
+unqualified; more would have been padding.
+
+**The hard problem this round was scope collision, not class invention.** M03's
+error paths share machinery: one "this frame ended without a terminate character"
+gate serves REQ-105's abort, REQ-108's truncation and REQ-110's abort, so a
+minimal diff aimed at one can land on all three. My first instinct was to
+over-specify the intents until only one rendering was possible — which is exactly
+the F-c8 mistake `RV-0050` cost me, where pinning a mechanism made half a class
+unseedable. **So I did the opposite and made the seal a function of a required
+disclosure**, the G-c4 method: the packet states each class's scope, requires the
+seeder to say what its diff actually reaches, and the seal carries an exact
+branch per answer. GH-c2 has two branches, GH-c3 three, GH-c5 two, GH-c4 two
+readings. Every branch is worked; the one rendering I could not work — an `/E/`
+that stops closing the frame at all — is marked **UNWORKED** in the seal with its
+adjudication rule fixed in advance: that disclosure scores the class as *not
+seeded*, and no claim about the bench is made from it in either direction.
+
+**Where FINDING G-1 could have recurred, and what I did instead.** Every cell in
+this seal that rests on "the receiver is in state X when this character arrives"
+carries the row's own arithmetic. The G-family cells are the exact shape of the
+cell I got wrong at WO-0055: T-G7 REQUIRED because `run_g7` **guards**
+`inject_ot > start_ot1 + 8 + 1518 && inject_ot < terminate1`; T-G6 REQUIRED
+because it replaces frame 1's terminate with an idle character and asserts the
+substitution landed; **T-G3 GREEN because its second frame's `/S/` is scheduled
+at content 1620 and frame 1's terminate is at 1600** — twenty octet times
+earlier, so `Discard` was left before the character arrived. That last cell is
+the one FINDING G-1 was, re-derived from source rather than from the category
+"a character past the truncation point".
+
+**Two classes could be one measurement, and I named both places before the
+diffs.** GH-c3(i) and GH-c4(b) produce a **character-identical** message at
+M03-H2 and differ at M03-H1 **only in the lane label** — because M03-H1's `/S/`
+lands in the same lane as its frame's own start, so a lane-independent
+extent defect speaks at lane 0 while an alignment defect that needs octets below
+the `/S/` speaks at lane 4. And GH-c5 and GH-c7 both print `observed 1` at
+M03-H4, separated only by whether M03-H1 and M03-H2 also move. Both collisions
+are written into the seal with the rule that a coincidence there is **one defect
+measured twice**, not two kills. That is `RV-0055`'s inflation lesson applied
+where it can actually recur, rather than restated as a principle.
+
+**On the D2 correlation the verdict ordered carried, the useful half turned out
+to be a negative.** D2 — the accounting for a frame the stimulus itself opened —
+spans all five scored units, so a class detected *through it* would be one
+measurement replicated five times. But in every one of those rows the accounting
+calls and `assert_monitors_clean` come **after** every assertion, so a row that
+reddens never reaches them: **no cell in this seal is scored on D2's output**, and
+I said so with the line numbers so it can be checked rather than trusted. What
+survives as a live warning is the weaker correlation I found while writing the
+messages — four of the seven classes are detected by the same
+exact-`error_pulses` idiom, replicated per row, which makes those units
+independent measurements of the *stimulus geometry* and not of the *property*.
+Both statements are in `WO-0058` §4.1, and the kill unit is fixed as the **class**:
+seven classes, at most seven kills, fourteen REQUIRED cells that are evidence of
+blast radius and nothing more.
+
+**Base SHA `a2d090d`, chosen not inherited.** The bench landed at `f806272` and
+two packet-only commits followed; `git diff f806272 a2d090d -- test/ libs/ tools/
+dune-project` is empty, so the compiled surface is identical and I take **the SHA
+CI actually ran green on** — run 30865856907, both jobs, verified through the API
+— which is the WO-0050/WO-0055 precedent and removes any byte-identity inference
+from pass criterion 3. Denominators re-measured at that SHA with
+`tools/dv_checks.sh`'s inventory block rather than carried: **31 M03 units, 111
+repository-wide, 80 non-M03**.
+
+**What I did not do.** I did not touch `AP-xgmii_rx_64.md`, any test file or any
+spec — everything owed there stays owed and is re-listed below. I did not open
+RTL. I did not gate this draft on the architect's answer to the §0.6
+zero-delivered referent question: the campaign seals against the **bench at the
+base SHA**, and FINDING 2 already establishes that M03-H4's window check cannot
+fail either way, so nothing in the mapping moves on that ruling.
+
+**The mapping, second copy** (row sets only; the messages, the MUST-STAY-GREEN
+columns and the reasoning live in the sealed file):
+
+| class | narrow-branch REQUIRED | disclosure branches |
+|---|---|---|
+| GH-c1 `/S/` in `Discard` read as a second abort | T-G7, T-G6 | none |
+| GH-c2 `/E/`-closed frame re-aborted by the next `/S/` | T-H3 | wide: + T-E4, T-G4, T-G8; third rendering UNWORKED |
+| GH-c3 FCS removal on a `/S/`-aborted frame | T-H1, T-H2 | +REQ-105: + T-H3, T-E1; +REQ-108: + T-G1, T-G2, T-G3, T-G4, T-G6, T-G7, T-G8 |
+| GH-c4 new frame's alignment on the aborted frame's octets | T-H1, T-H2 | two readings, same row set |
+| GH-c5 the aborting `/S/` opens no new frame | T-H1, T-H2, T-H4 | wide: + T-G7, T-G6 |
+| GH-c6 `error_start_without_terminate` never pulses | T-H1, T-H2, T-H4 | none |
+| GH-c7 consecutive same-name reports collapsed | T-H4 | none |
+
+### Actions
+- Authored `agents/handoffs/WO-0058_m03-g7-h-mutation-campaign.md`: base SHA and
+  its control run, the scored set and re-measured denominators, the standing
+  allowlist and five process bars, **seven** mutation intents each with a scope
+  clause, the kill-counting rule with the D2 correlation, and the two
+  constraints that bound what a result may be read to mean (FINDING 3's blind
+  spot, FINDING 2's vacuity) — the three constraints `RV-0057-VERDICT` §8
+  requires, all present as §4.1–§4.3.
+- Authored
+  `agents/handoffs/WO-0058_m03-g7-h-mutation-campaign-SEALED-predictions.md`:
+  the 31-unit table, the 7 × 31 matrix, every expected message quoted as the row
+  composes it, nine grounded reasoning notes, the disclosure functions branch by
+  branch, seven named bounds, the weighting and the not-to-be-told list.
+- **Derived, not assumed, for every REQUIRED cell**: which assertion speaks
+  first, given each row's committed order and its lane iteration. Two of them are
+  arithmetic that could easily have gone the other way — M03-H1's word count is
+  **unchanged** under a four-octet shortening (`(64+7)/8 = (60+7)/8 = 8`) and so
+  is its `tlast` cycle (both last octets sit in the same input word), so `tkeep`
+  speaks; M03-H2's count **does** move (2 → 1), so the count speaks.
+- Verified the blast radius from the `dune` stanzas rather than from memory, and
+  the control run from the Actions API rather than from a relay.
+- Touched no test, no attack plan, no spec, no RTL. No `git`.
+
+### Evidence
+1. **Control run at the base SHA**: CI run **30865856907**, workflow `build`, run
+   number 271, `head_sha` `a2d090d49d5c2271e81a942091a4faa7fd66bfac`, jobs
+   `build` (91857431361) and `cosim` (91857431300) both `conclusion: success`.
+   Read from the GitHub Actions API.
+2. **Compiled surface unchanged since the bench landed**:
+   `git diff f806272 a2d090d -- test/ libs/ tools/ dune-project` prints nothing.
+3. **Denominators**, from `tools/dv_checks.sh`'s inventory block run at
+   `a2d090d`: `31  test/xgmii_rx_64/ (the M03 bench)` and
+   `111  test/ (repository-wide)`; 111 − 31 = **80** non-M03.
+4. **REQ-110 events are confined to two files**:
+   `grep -rn start_char test/xgmii_rx_64/*.ml` returns hits in `test_m03_g.ml`
+   and `test_m03_h.ml` only — the fact that bounds GH-c3 through GH-c6 to at most
+   three units each.
+5. **`Discard` is reachable only in family G**: no unit outside it drives a frame
+   above 1518 octets (T-C3 is exactly 1518, legal; T-C5 is 1513 and 1516) — the
+   fact that bounds GH-c1.
+6. **The G-family state cells, from source**: `run_g7`'s guard
+   `inject_ot > start_ot1 + 8 + 1518 && inject_ot < terminate1` with `k = 1588`;
+   `run_g6`'s `?word_at` substitution of an idle character at
+   `Arrival.terminate_octet_time frame1`; `run_g3`'s
+   `terminate1 = first_start + 8 + 1600` against
+   `target_start2 = first_start + 8 + 1620`; `run_g4`'s guard
+   `inject_ot > terminate1 && inject_ot < start_ot2`; `run_g8`'s `k = 1560` with
+   frame 1's own terminate left in place.
+7. **Monitor errors do not pre-empt row assertions**: `strobe_monitor.ml`'s
+   `error` accumulates into `rev_errors`, and `bench.ml:298`'s
+   `assert_monitors_clean` is the only reader — so the first `fail` in each row's
+   own order is what a campaign observes, which is what every message in the seal
+   assumes.
+8. **The accounting-after-assertions fact** (why D2 cannot produce any sealed
+   message): `test_m03_h.ml:392-395`, `594-597`, `778-781`, `1007-1012` and
+   `test_m03_g.ml:1502-1507` are all after their rows' last assertion.
+9. **Cell counts**: 14 REQUIRED cells over 7 × 31 = 217 M03 cells, so 203
+   must-stay-green M03 cells plus 7 × 80 = 560 non-M03 ones, on the narrow
+   branches.
+
+### Outcome
+**DoD met.** Both deliverables exist and land in one commit, which is what makes
+the seal a seal: `WO-0058` asserts a withheld mapping and
+`WO-0058_..._-SEALED-predictions.md` is staged beside it, so the claim and the
+artefact appear in the same `Files-in-this-commit` list (PROTOCOL §10, R-SEAL-1).
+**The forward commitment of `RV-0057-VERDICT` §8 is redeemed, before any manifest
+diff exists.**
+
+The campaign carries all three constraints my own verdict ordered: the D2
+correlation with the classes it does and does not touch (§4.1), FINDING 3's
+blind spot with the rule that a survival at M03-H1/H2/H3 is not evidence of
+weakness on the written-for class (§4.2), and FINDING 2's vacuity with the rule
+that a class scored against M03-H4 is scored against the exact two-element
+`error_pulses` list and nothing else (§4.3). `g-c4` is out of scope by name.
+
+Handoff: to the orchestrator, for commit and for dispatch to the auditor as the
+manifest round — base SHA `a2d090d`, allowlist `WO-0058` §2, branches
+`mut/wo-0058-gh-c1` … `gh-c7`. **`SO-M03` does not issue and is not offered**;
+32 of the plan's 62 ASSERT rows are discharged.
+
+### Open-questions
+- **The seal is unopened and must stay so until all seven diffs are committed.**
+  Its unsealing is on the orchestrator's word that the branches have run, exactly
+  as at WO-0039/0041/0045/0050/0055.
+- **If GH-c2 is disclosed under the seal's UNWORKED third rendering, M03-H3 ends
+  this campaign unqualified** and no packet may say otherwise.
+- **§0.6's reference word for a zero-delivered frame** — still with
+  architect_docs_lead. It does not gate this campaign: the seal is written
+  against the bench at the base SHA, and FINDING 2 makes M03-H4's window check
+  vacuous either way.
+- **Owed to `AP-xgmii_rx_64.md` at its next touch**: the M03-H2 parenthetical
+  footnote (§4.H).
+- **Owed to `test/**` at its next touch**: `account_spliced_forwarded`'s
+  `~received`-vs-`~delivered` input trace (FINDING 1), M03-H3's §6.2 `Idle`
+  citation (FINDING 4), and the total-output-word line at the ordinary two-frame
+  rows (FINDING 3) — the last of which this campaign explicitly does **not**
+  seed against.
+- **Still owed**: AP-M14's sweep companion if more plans are written
+  (`J-dv_lead-0076`); the `precompile_check.sh` side-effect-in-combinator lane;
+  M03-F5's discharge-by-citation qualification; the RFC 1071 anchor on the next
+  fetching run; X-7, X-10, X-11 deferred; families I, J, K, M, N and L1–L5
+  unwritten.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0058_m03-g7-h-mutation-campaign.md
+- agents/handoffs/WO-0058_m03-g7-h-mutation-campaign-SEALED-predictions.md
