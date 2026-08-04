@@ -369,8 +369,24 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
      epoch A's preamble positions — `/I/` and `/Q/` included (§6.2's [Preamble]
      row as revised at 541ea43). Outside a preamble position the same character
      is the hold above and closes nothing. *)
+  (* MUTATION I-c5 -- WO-0061, NEVER MERGE. Seeded defect: SPEC-M03 6.2's
+     [Frame] row lists the frame's exits exhaustively -- /T/, /E/, /S/ and
+     REQ-108's count -- and a held cycle is not among them. Here the first
+     input word covering no frame octet inside an open frame closes the frame
+     through the REQ-105 path: the record carries [error], so the frame ends
+     there, whatever it has received is delivered with no FCS removal
+     ([strip] = 0) and [tuser] bit 0 set on its [tlast] word, one
+     [error_bad_frame] pulses on the cycle 9 pins for it -- that frame's
+     [tlast] cycle, or age 2 where it emits no word -- the machine falls to
+     [Idle], and everything after the idle word is orphaned until the next
+     start character. The gate is written from [a_char_acts] and [a_closing_v]
+     rather than from [a_close_now], because [a_close_now] is a function of
+     [a_close_error] and the pair would be a combinational loop; the
+     consequence is that it excludes REQ-108's truncating word and every word
+     carrying a closure character, 6.2's lane-0 terminate among them. *)
+  let held_close = a_char_acts &: ~:(cov_end >: cov_first) &: ~:(any a_closing_v) in
   let a_close_error =
-    a_closes_with (lanes.is_error |: (other_ctl &: a_pre_mask))
+    a_closes_with (lanes.is_error |: (other_ctl &: a_pre_mask)) |: held_close
   in
   let a_close_start = a_closes_with lanes.is_start in
   let a_close_char = a_close_terminate |: a_close_error |: a_close_start in
