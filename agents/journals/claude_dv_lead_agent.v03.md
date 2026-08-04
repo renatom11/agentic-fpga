@@ -4016,3 +4016,293 @@ span **J-dv_lead-0001 … 0108**, first harvest still firing at `SO-M03`.
 
 ### Files-in-this-commit
 - agents/handoffs/WO-0063B_m03-i2-report-path-campaign.md
+
+## [J-dv_lead-0109] 2026-08-05T16:05Z | task:WO-0063 | The five plan debts the ordering rule deferred, paid in one commit — and the count the verdict commissioned is the right number reached by the wrong cause, which is my correction to make against myself
+
+### Trigger
+The orchestrator, with the plan round commissioned at `WO-0063B-VERDICT` §9
+items 1.1–1.5 and item 2 — the edits deliberately held out of every commit of
+the campaign because `test/attack_plans/AP-xgmii_rx_64.md` was phase B's
+contract and moving a contract between a seal and its scoring is what that
+round's own ordering rule forbids. The campaign has scored (1/1, `J-dv_lead-0108`),
+so the window is closed and the hold expires.
+
+### Inputs
+- `agents/handoffs/WO-0063B_m03-i2-report-path-campaign.md` — the
+  **WO-0063B-VERDICT** section at `22eb3e6`, this round's deriving authority:
+  §1 and §1.1–1.3 (the scorecard, the sealed cell, the backtrace), §2 (the
+  control), §3 (the five dispositions and disposition 1's scope), §4 (the
+  requalification and its three bounds), §5 (the corrected instrument tally),
+  §6.1–§6.3 (the three findings), §7.1 (the structure split), §9 (what is
+  commissioned and what deliberately is not).
+- `agents/handoffs/WO-0063B_pre-run-reading-note.md` — §2.2's two-valued
+  taxonomy, whose missing third column is verdict §6.3.
+- `agents/journals/claude_dv_lead_agent.v03.md`: `J-dv_lead-0105` (§4.I item 6's
+  held-back closure and the reason it was held; the citation sweep and its one
+  deliberate non-repair), `J-dv_lead-0106` (the measured registration inventory
+  and its file:line evidence), `J-dv_lead-0094` (the discharge-count method),
+  `J-dv_lead-0099` (the forward figure of 41).
+- `test/attack_plans/AP-xgmii_rx_64.md` at HEAD — §1's status vocabulary, §2's
+  obligations, the M03-B4/D2/D3/E2/G7/H4/I2 rows, §4.N's note block, §6's
+  coverage map, §8's item 6, §9's change log and the qualification precedents in
+  M03-E5's and M03-F2's Kills cells.
+- `test/xgmii_rx_64/*.ml` — read for **measurement only**: `%expect_test` titles,
+  `Strobe_monitor.expect` sites, `run_mixed_pair`'s call sites, M03-G7's and
+  M03-H4's row-local strobe checks, M03-F5's citation discharge.
+- `test/xgmii/injection.mli` — its own statement that the two-events-in-one-word
+  cases (**M03-N2 by name**) are ordinary for `Injection.outcomes`; the basis for
+  ruling M03-N2 a bench round rather than a capability item.
+- `tools/dv_checks.sh` — the inventory block and its `J-dv_lead-0042` rationale.
+- `agents/charters/dv_lead.md`, `agents/PROTOCOL.md` (§4, §6, §7, §10).
+- **No RTL opened**, no `libs/**` path read, no auditor or worker journal read.
+
+### Reasoning
+
+**1. Where a qualification goes, and it is decided by the plan's own grammar
+rather than by the sentence that commissioned it.** The commission says "the
+row's status cell". §1 of this plan defines the Status cell as **a closed set of
+six values** — ASSERT, NO-ASSERT, NO-STIMULUS, RULING, GAP, STRUCTURAL, *"the
+same six values in every plan"* — and `QUALIFIED` is not one of them; writing it
+there mints a seventh status in the template every later `AP-` copies, and does
+it in the one document whose format is the programme's. The precedent is already
+in the file and it is two rows old: **M03-E5's and M03-F2's qualifications sit in
+their Kills cells with Status `ASSERT`**. Qualification is a **measured property
+of the Kills claim** — the row detects the wrong design it names, shown rather
+than asserted — so the Kills cell is where it belongs by meaning as well as by
+precedent. Landed there, and the divergence from the commissioning sentence is
+recorded in the change log rather than left for a reader to notice.
+
+**2. What the qualification cell may say, and the three things it must refuse to
+say.** The verdict states the result at full strength and no further, and the
+cell copies that discipline: the class killed is *this cell's own* named class; the
+raise is located by **backtrace** (`:847` spoke, `:887` never ran) rather than by
+argument; the control's greenness is the qualification's precondition and is
+stated as such. Refused, all three deliberately: (a) that the window is the sole
+detector — **eight of the nine units convicted IC-1 without it**, and the cell
+names all eight so no later reader has to trust the adjective; (b) that the
+discount is spent — member (iii) remains the first unit in this programme authored
+with its mutation class known, and a kill under those conditions proves the
+instrument **can** convict, never that it is a general detector; (c) that lane 4
+passed — it is **unobserved**, because lane 0 raises first and the run ends,
+and unobserved is neither a pass nor a miss. A qualification cell that omits (a)
+is how a bench acquires a reputation it did not earn.
+
+**3. Item 6: the answer goes BESIDE the question, not into it.** `J-dv_lead-0105`
+had already ruled that editing a dated open question into its answer's language
+*rewrites the question*, and that ruling is not weaker now that I am the one who
+would benefit from the tidier text. So item 6's words are untouched and a dated
+**CLOSED** block follows them, carrying §0.6's ruling at `a12ac8f` in its own
+words and the closed form of the loose sentence: the **boundary** is C-14.3's,
+the **rule a pulse at or after it violates** is §9's pin read against §0.6's
+ceiling. The loose form — *"no assertion reads a report against C-14.3's
+bound except this row's window"* — flatters in the direction of my own
+instrument, which is exactly why it needed restating rather than deleting: the
+plan now holds both the sentence that was wrong and the reason it was wrong.
+
+**4. The four no-output-word pins, and where the inventory lives.** The
+commission puts the record at B4/E2/G7/H4; a set of four identical sentences in
+four giant cells states the fact four times and the **set** nowhere, and the
+set is the thing a campaign needs. So the measured nine-unit inventory lands
+**once**, under §2 obligation 4 (which already owns strobe accounting and already
+names M03-H4), with every `Strobe_monitor.expect` file and line — and each of the
+four rows carries its **own** pin, its own line number and the message its own
+row-local check raised under IC-1. The four are marked in the inventory because
+they are the four that no recalled enumeration ever contained: five was the
+remembered figure, nine is the measured one, and a seal frozen against five
+would have scored four true reds as findings against the auditor. Two corrections
+ride with the inventory and both are against my text: the *"sub-cases"*
+vocabulary is withdrawn, and **"monitor-only" is withdrawn for M03-G7 and
+M03-H4** — each has a row-local strobe-order check that speaks first, and I
+classified them by message *form* rather than by defect one round after banking
+the rule that forbids exactly that.
+
+**5. M03-N2: the routing is the substance, and I ruled it rather than passing it
+up.** The fact is measured twice by independent means (zero registrations, zero
+titles; three `test/` hits, all library files) and the plan now says it in four
+places: §4.N's closing note, §6's REQ-102 and REQ-110 entries, and the change
+log. The **routing** was left to me and has three candidate shapes. It is not a
+**capability item**: `injection.mli` states in its own header that the
+two-events-in-one-word cases — *"dv_lead's row M03-N2"*, by name — are ordinary
+for `Injection.outcomes`, and `At_preamble` is driven by committed family-B
+members, so the machinery exists and has existed since WO-0033. It is not a **row
+correction**: the row is spec-derived, ruled at `06c1eba`, and its six sub-cases
+carry cycles from §6.1's landed table — nothing about it is wrong. And it is not
+a **`GAP`**: §1 reserves GAP for an attack that *cannot* be mounted, and
+converting a mountable attack to GAP would launder an unwritten bench into a
+declared limitation. So: an **outstanding ASSERT row**, inside the twenty the
+count line leaves open, commissioned into the next family round — with the two
+prohibitions that make the absence cost something today rather than at sign-off
+time: **no `SO-` may cite it as coverage of REQ-102 or REQ-110, and no campaign
+may put it in a denominator.** The second is not hypothetical; one did.
+
+**6. The D2/D3 record, and why the mechanical form goes in `tools/` rather than
+only in the plan.** The plan cell states the incident and the rule; a rule stated
+in a plan is read by whoever opens that plan, and the pass that will repeat this
+mistake is run by whoever is enumerating a bench — who opens `dv_checks.sh` to
+get a unit count. So the note sits **beside the inventory report** it is most
+likely to be misread from, with the incident, the two call sites, and the
+generalisation: **runner → unit is many-to-many; build per-unit classifications
+from call sites, never from enclosing definitions.** The report also now prints
+one line saying so, because a reader who quotes the count without reading the
+comment is exactly the reader the note exists for.
+
+**7. The count line, and the correction I owe against my own verdict.** The
+commission expects **42 of 62**, and 42 is the right number — measured from the
+tree by `J-dv_lead-0094`'s method: 42 distinct rows in committed `%expect_test`
+titles, minus **M03-A4** (a NO-ASSERT row named in a title) = 41, plus
+**M03-F5** by citation = **42**, nothing subtracted; 20 ASSERT rows outstanding
+and enumerable by name. **But `WO-0063B-VERDICT` §9 item 1.1 attributes the move
+41 → 42 to the M03-I2 signature, and that is wrong.** M03-I2's unit has been
+titled since family I landed, so the row was **already inside** the count, and —
+the general point — **qualification measures an instrument; it discharges no row
+and moves no discharge count.** The count reached 42 at **family B's landing**,
+which titled **four** rows and not three: B2, B3, B4 and **M03-M10**, which shares
+M03-B3's `%expect_test` title. `J-dv_lead-0099`'s forward figure of 41 was
+**derived, not measured**, which is the failure mode I banked a candidate against
+two entries ago; my own verdict then inherited it and dressed it as a consequence
+of the round it was written in. **A number can be right and its cause wrong, and
+the cause is the part a later reader reasons with** — so the change-log row states
+the correction, names the fourth row, and re-derives the figure from the tree
+rather than repeating either prior statement of it.
+
+**Harvest (ADR-0018, PROTOCOL §7).** **Not due this round** — no `SO-`, no gate.
+Span since the previous note: **J-dv_lead-0109** (this entry); cumulative untiled
+span **J-dv_lead-0001 … 0109**, first harvest still firing at `SO-M03`.
+
+- **All nine banked candidates carry, and one of them was USED rather than
+  re-cited.** `J-dv_lead-0108`'s LH2-g — *a set built by a mechanical pass must
+  state the relation its pass assumes, and a pass that assumes a one-to-one
+  relation must be checked against the many-to-many case before the set is used*
+  — is what the `tools/dv_checks.sh` note makes mechanical one entry after
+  banking. That is its **LH3 discharged forward**: the rule now sits where the
+  next pass will be run rather than where the last one was journalled.
+- **`J-dv_lead-0106`'s LH2-g gains a third incident and it is mine again**: the
+  count corrected in §7 above was derived from a derived figure. Two independent
+  quantities in this programme have now moved on measurement after two rounds of
+  careful derivation — a convicting set and a discharge count — which is the
+  candidate's observable behaving exactly as stated.
+- **The three verdict findings are carried as harvest INPUTS and none is promoted
+  here.** The D2 mapping is the incident behind an already-banked candidate; the
+  monitor-only mis-classification is a second incident for `J-dv_lead-0104`'s
+  search-by-defect rule, already carrying two; the missing third column is a
+  second incident for `J-dv_lead-0107`'s n-values rule. **Three incidents, zero
+  new candidates** — and that is the honest yield: a rule that keeps firing does
+  not need a sibling, it needs to be applied, which §6 above is an attempt at.
+- **Both war stories carry unchanged.** None retired, none promoted.
+
+### Actions
+- `test/attack_plans/AP-xgmii_rx_64.md`, one round, seven sites and no row
+  added, converted or re-statused:
+  1. **M03-I2's Kills cell** — QUALIFIED, with the sealed cell quoted character
+     for character, the raise-site backtrace, the control's result, and the three
+     refusals (not the sole detector, discount undiminished, lane 4 unobserved).
+     **Status left `ASSERT`** per §1's closed vocabulary.
+  2. **§8 item 6** — a dated CLOSED block appended beside the question, carrying
+     `a12ac8f`'s ruling and the closed form of the loose sentence; the question's
+     own words untouched.
+  3. **§2 obligation 4** — the measured nine-unit no-output-word registration
+     inventory with file:line, the four previously-missing units marked, and the
+     two corrections (sub-cases vocabulary withdrawn; G7/H4 not monitor-only).
+  4. **M03-B4, M03-E2, M03-G7, M03-H4** — each row's own pin, its registration
+     site, the IC-1 message its own row-local check raised, and (E2) its
+     epoch-A structure, (H4) its both-structures status.
+  5. **§4.N closing note** — M03-N2 has no unit; what the absence costs; the
+     routing ruled as a bench round with two prohibitions until it lands.
+  6. **§6's REQ-102 and REQ-110 entries** — M03-N2 supplies no coverage today.
+  7. **M03-D2 and M03-D3** — the shared `run_mixed_pair`, the two call sites,
+     the many-to-many rule and where its mechanical form lives.
+  8. **§9 change log** — one row for the round, carrying the recount, the
+     discharge count re-derived from the tree, and the correction in §7 above.
+- `tools/dv_checks.sh` — a standing note above the bench-inventory block (the
+  many-to-many relation, the incident with its call sites, the portable form)
+  and one printed line in the report so a reader who quotes the count meets it.
+- **No bench change**: nothing in `test/xgmii_rx_64/**` is owed by this result,
+  as the verdict's §9 says in terms.
+
+### Evidence
+```sh
+# Row and status totals, recounted from the file (not carried forward)
+awk -F'|' '/^\| \*\*M03-/ {n++; s=$(NF-1); gsub(/[ *]/,"",s); c[s]++} \
+  END {print n; for (k in c) print k, c[k]}' test/attack_plans/AP-xgmii_rx_64.md
+#   78 rows; ASSERT 62, NO-ASSERT 7, NO-STIMULUS 4, STRUCTURAL 4, GAP 1
+
+# Discharge count, re-derived by J-dv_lead-0094's method
+#   distinct rows named in committed %expect_test titles under test/xgmii_rx_64/
+#     = 42  (A1 A2 A3 A4 A5 B1 B2 B3 B4 C1 C2 C3 C4 C5 D1 D2 D3 E1 E2 E4 E5
+#            F1 F2 F3 F4 G1 G2 G3 G4 G6 G7 G8 H1 H2 H3 H4 I1 I2 I3 I4 I6 M10)
+#   minus M03-A4 (NO-ASSERT named in a title)               = 41
+#   plus  M03-F5 by citation (test/xgmii_rx_64/test_m03_f.ml:809)
+#                                                           = 42 of 62
+#   outstanding ASSERT rows = 20: J1 J2 J3 K1 K2 L1 L2 L3 L4 L5
+#                                 M1 M2 M3 M4 M5 M6 M7 N1 N2 N4
+
+# The fourth row family B's landing titled — the cause the verdict got wrong
+grep -n "M03-M10" test/xgmii_rx_64/test_m03_b.ml   # :636, sharing M03-B3's title
+
+# The nine no-output-word registrations, re-verified at HEAD
+grep -rn "Strobe_monitor.expect" test/xgmii_rx_64/*.ml
+#   b:337 (b4)  b:542 (b3)  b:743 (b2)  e:429 (e2)  e:731 (e5)  f:425 (f2)
+#   g:1375 (g7) h:939 h:951 (h4)  i:714 (i2 member iii)
+
+# G7 and H4 are NOT monitor-only — the checks that speak first
+grep -rn "own pinned cycle" test/xgmii_rx_64/test_m03_g.ml test/xgmii_rx_64/test_m03_h.ml
+#   g:1463 error_oversize, g:1465 error_runt; h:1017 and h:1019
+
+# M03-N2 has no unit, from two independent directions
+grep -rn "M03-N2" test/ --include=*.ml --include=*.mli   # 3 hits, all test/xgmii/
+grep -c "M03-N2" test/attack_plans/AP-xgmii_rx_64.md      # 17
+
+# run_mixed_pair's two call sites (FINDING WO-0063B-1's root cause)
+grep -n "run_mixed_pair" test/xgmii_rx_64/test_m03_d.ml   # def :266; calls :408, :455
+
+# The edited script still parses; table cells still 6 per row
+bash -n tools/dv_checks.sh                                # exit 0
+awk -F'|' '/^\| \*\*M03-/ {if (NF-2 != 6) print "BAD", $2}' \
+  test/attack_plans/AP-xgmii_rx_64.md                     # no output
+```
+**Not run**: `dune build`, `dune runtest` — no Hardcaml toolchain in this
+container (ADR-0005); CI is authoritative. This commit stages **one markdown
+plan and one shell comment/print change**, and `tools/dv_checks.sh`'s edit is
+confined to a comment block and three `printf` lines inside the report block that
+has no pass/fail semantics and no effect on `$status`.
+
+### Outcome
+DoD met for the commissioned round. All five `WO-0063B-VERDICT` §9 item 1
+sub-items and item 2 are landed; the §9 change-log row records them with the
+recount. **One deliberate divergence from the commissioning sentence**
+(qualification in the Kills cell, Status left `ASSERT`, on §1's closed status
+vocabulary and the M03-E5/M03-F2 precedent) and **one correction against my own
+verdict** (the count's cause), both stated in the plan itself rather than only
+here. No row added, converted or re-statused; no bench file touched; the seal and
+the verdict were cited and not edited. Handoff: the plan and the tool note, for
+the orchestrator to commit.
+
+### Open-questions
+1. **`WO-0063B-VERDICT` §9 item 1.1's stated cause for the count is corrected in
+   the plan, and the verdict itself is frozen** — the packet's text stands as
+   written and the correction lives in the artefact the number is quoted from.
+   If the orchestrator prefers the correction visible at the verdict too, it is a
+   Return-log append, not an edit, and I will write it on request.
+2. **M03-N2 is now a named, dated, unbenched ASSERT row with two prohibitions
+   attached.** It is the strongest candidate in the next family round on
+   coverage grounds; it is **not** ranked first below, and the reason is in the
+   queue read.
+3. **Lane 4 of member (iii) stays reachable-and-unobserved.** Observing it needs
+   a lane-4-only driver built for the purpose; hoping for it means hoping lane 0
+   is green in a run where the class is live, which is itself a finding.
+4. **The disclosed C-23 collision shape is still driven by no unit in this
+   bench** (verdict §6.3). Whether that earns a row is a coverage question I have
+   deliberately not answered in this round: it belongs with the family round that
+   opens family M, not with a plan-transcription round.
+5. Carried unchanged: `run_i2_member`'s deliberate citation exception, still
+   without a carrier and now with a second reason to stay (its string is quoted
+   in a scored campaign's seal); `WO-0058` bound 7; the
+   `assert_following_frame_intact` / `assert_clean_frame_structure` merge;
+   `WO-0061` §8 bound 1's `tkeep` half; **N-1**; the auditor's DV-escape ledger
+   disposition on `BUG-0003`; family J behind a bench-capability round;
+   `SO-xgmii_rx_64.md` unopened and **not offered** — 20 ASSERT rows outstanding
+   and the verilog-ethernet anchor undischarged.
+
+### Files-in-this-commit
+- test/attack_plans/AP-xgmii_rx_64.md
+- tools/dv_checks.sh

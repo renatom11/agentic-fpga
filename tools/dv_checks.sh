@@ -181,6 +181,36 @@ esac
 #
 # Deliberately no pass/fail semantics and no effect on $status: this block
 # cannot manufacture a green and cannot redden one.
+#
+# WHAT THIS REPORT COUNTS, AND THE JOIN IT DOES NOT SUPPLY (J-dv_lead-0109,
+# from WO-0063B-VERDICT §6.1 / FINDING WO-0063B-1).
+#
+# It counts `let%expect_test` occurrences per file — units, nothing else. It is
+# NOT a per-row or per-unit classification, and the difference has already cost
+# a campaign one MUST-STAY-GREEN violation, so the rule is written here rather
+# than remembered:
+#
+#   THE RUNNER -> UNIT RELATION IN THIS BENCH IS MANY-TO-MANY. A helper is
+#   called from more than one unit, and a unit calls more than one helper.
+#   Therefore ANY per-unit or per-row classification — which units register a
+#   given monitor expectation, which rows a seeded class can reach, which units
+#   a mutation should redden — MUST be built from CALL SITES, never from the
+#   enclosing definition a `grep` result happens to sit inside.
+#
+# The incident: a pass mapped each `Strobe_monitor.expect` site to the runner
+# enclosing it and then to ONE unit. `run_mixed_pair` (test/xgmii_rx_64/
+# test_m03_d.ml:266) is called from TWO units — M03-D3's `run_d3` (:455) and
+# M03-D2's `run_d2_d1_partner` (:408) — so its tlast-pinned registration
+# belongs to both rows. It was assigned to M03-D3 alone, M03-D2 was sealed as
+# MUST-STAY-GREEN, and M03-D2 reddened. The file said so IN PROSE at :330; a
+# structural pass cannot read prose, which is precisely why the join must be
+# measured rather than inferred.
+#
+# The mechanical form, portable to any later bench: state the relation your
+# pass assumes before you use its output. A pass that assumed one-to-one and
+# was never checked against the many-to-many case carries the confidence of a
+# measurement and the blind spot of an assumption — and the blind spot is
+# invisible exactly because the pass ran cleanly.
 printf '=== bench inventory (REPORT only — no check, no verdict) ===\n'
 inv_total=0
 for inv_f in test/xgmii_rx_64/*.ml; do
@@ -200,7 +230,10 @@ inv_repo=$(grep -rh 'let%expect_test' test/ 2>/dev/null | grep -c . || printf '0
 printf '  ---\n  %3s  test/xgmii_rx_64/ (the M03 bench)\n' "$inv_total"
 printf '  %3s  test/ (repository-wide)\n' "${inv_repo:-0}"
 printf 'Quote these figures with this command as their provenance, or measure\n'
-printf 'your own. Do not quote a unit count nobody has counted.\n\n'
+printf 'your own. Do not quote a unit count nobody has counted.\n'
+printf 'These are UNIT COUNTS, not a per-unit classification: runner -> unit is\n'
+printf 'MANY-TO-MANY here, so any per-unit or per-row set must be built from CALL\n'
+printf 'SITES, never from enclosing definitions (see the note above this block).\n\n'
 
 
 if [ "$status" -ne 0 ]; then
