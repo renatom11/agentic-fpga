@@ -750,6 +750,17 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
      one-term union and is written as one. *)
   let strobe s = consume &: s &: ~:(i.clear) in
   let q_strobe k = bit q2 k &: ~:(i.clear) in
+  (* MUTATION GH-c6 -- WO-0058, NEVER MERGE. Seeded defect:
+     [error_start_without_terminate] never pulses, for any frame and from
+     either report path. The condition is still detected and still acted on in
+     every other respect -- [a_close_start] still closes the frame at the right
+     octet, [abort] still carries [sel_start] so `tuser` bit 0 is still set on
+     the `tlast` word of a frame that delivers anything, [consume] is unchanged
+     so the closure record is still retired on its pinned cycle, and the new
+     frame still begins normally. Only the port is held low. REQ-008 forbids
+     silent discard and §9's rows 8 and 9 require the report; for a
+     zero-delivered abort §9 and §0.7 make this strobe the frame's only report.
+     Every other strobe is untouched. *)
   { O.rx =
       { Axi64.Source.tvalid
       ; tdata = al_data_d
@@ -762,7 +773,7 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
   ; error_bad_frame = strobe sel_error |: q_strobe 0
   ; error_runt = strobe sel_runt |: q_strobe 1
   ; error_oversize = strobe sel_oversize
-  ; error_start_without_terminate = strobe sel_start |: q_strobe 2
+  ; error_start_without_terminate = gnd
   }
 ;;
 
