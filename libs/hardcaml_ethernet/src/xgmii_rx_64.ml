@@ -731,7 +731,22 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
      the open question below and is untouched here. *)
   let bubble = off4 &: a_open &: ~:cov_nonempty &: ~:a_close_now in
   let window_advance = ~:bubble in
-  let data_d = reg spec ~enable:window_advance i.xgmii_rx.d in
+  (* MUTATION I-c6 -- WO-0061, NEVER MERGE. Seeded defect: REQ-016 clause (a)
+     requires the output word sequence unchanged, every octet in its own byte
+     position. The alignment window's DATA register no longer holds across a
+     carry-forward word, so at offset 4 -- where an aligned word straddles two
+     input words -- the word assembled on the cycle after an injected idle
+     takes that idle word's lanes 4 to 7 in its own byte positions 0 to 3,
+     where the frame's octets belong, while [cov_d] and [first_d] still hold
+     and supply that word's shape from the last CONTRIBUTING input word.
+     COUNT-, CYCLE-, [tkeep]- AND
+     VERDICT-PRESERVING AND CONTENT-DESTROYING: [al_keep] is unchanged so every
+     word's shape and [tkeep] are the base design's, [bubble] still empties the
+     held cycle's own aligned word so no word is added or removed, and the CRC
+     is computed from the raw input word and [cov_count] rather than from this
+     register, so the REQ-104 verdict stays clean. At offset 0 [bubble] is
+     identically 0, so a lane-0 start is bit-identical to the base. *)
+  let data_d = reg spec i.xgmii_rx.d in
   let cov_d = reg spec ~enable:window_advance cov in
   let first_d = reg spec ~enable:window_advance first_v in
   let rotate_hi window = select window 11 4 in
