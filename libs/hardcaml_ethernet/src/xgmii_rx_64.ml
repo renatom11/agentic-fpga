@@ -674,8 +674,36 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
   let al_data = mux2 off4 (select (concat_msb [ i.xgmii_rx.d; data_d ]) 95 32) data_d in
   let al_keep = mux2 off4 (rotate_hi window_keep) cov_d in
   let al_new = any (mux2 off4 (rotate_hi window_first) first_d) in
-  let al_data_d = reg spec al_data in
-  let al_keep_d = reg spec al_keep in
+  (* ---- the elastic hold on the emission stage (§6.1's D(m), §7's handshake) ----
+     The emission stage is still one register deep. What changes is *when* it
+     advances: [hold], driven by the output decision below, is high on exactly
+     the cycles a completed word is waiting for its deciding input word, and on
+     those cycles the stage keeps what it has and drops the aligned word in
+     front of it.
+
+     What the drop costs is the whole safety question, and under the injection
+     this rule is written against it costs nothing: an injected idle word makes
+     an aligned word covering no octet, and the cycle an octet or a closure does
+     appear is by construction the cycle the held word leaves — so the word
+     dropped is always an empty one, and the word carrying something is loaded
+     on the same edge that retires the word in front of it. Two words are
+     resident at most: one in this register, one forming combinationally in the
+     alignment window, which is REQ-019's bound met with an enable rather than
+     with storage — no flop is added by this change.
+
+     The one configuration where the drop is not automatically empty is a
+     control character *inside* a word of an open frame — §6.2's hold lane,
+     REQ-016 at sub-word rather than whole-word granularity — which truncates
+     coverage without closing the frame, leaving one to four octets in front of
+     a held word with no closure to release it. That stimulus is malformed for
+     the old decision too (it emitted them as a short mid-frame word, which
+     REQ-011 does not admit either), it is outside the whole-word injection
+     §6.1's D(m) is stated over, and it is carried as an open question rather
+     than repaired blind. *)
+  let hold = wire 1 in
+  let advance = ~:hold in
+  let al_data_d = reg spec ~enable:advance al_data in
+  let al_keep_d = reg spec ~enable:advance al_keep in
   (* ---- the output decision (§6.1's FCS removal, REQ-011, REQ-015) ----
      The word being emitted is the previous aligned word; the current aligned
      word is the one word of lookahead REQ-019 permits and §6.1 requires. Two
@@ -755,12 +783,104 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
      [emit_last_b] needs [nc] <= [strip] with [nc] >= 1, so it needs
      [strip] = 4, which is [sel_valid] already, and it is left unqualified for
      that reason rather than by omission. *)
+  (* ---- the deciding input word (§6.1's D(m), §7's handshake; BUG-0002) ----
+     A completed word may not be emitted until the input word that decides it
+     has arrived, and `tvalid` is 0 in between. For the frame's last word that
+     decider is the closing character's own word, and this module already keys
+     last-ness on the closure record — the [closed] gate is that decider, and
+     needs nothing added. For every other word m the decider is the input word
+     carrying received frame octet 8m + 12: the fifth octet past word m's own
+     eight, and so the evidence that the frame continues past word m rather
+     than ending at it.
+
+     That octet has a fixed home in this pipeline, and the same home at both
+     start lanes. The aligned lookahead word is output word m + 1, whose octets
+     are 8m + 8 … 8m + 15, so octet 8m + 12 sits at its position 4 and the
+     evidence is one bit of [al_keep]. At a lane-0 start that bit is [cov_d]
+     bit 4, the fifth octet of the input word behind; at a lane-4 start the
+     rotation puts [cov] bit 0 there, the first octet of the word arriving now.
+     Both are the same octet of the same frame — the rotation is what moves it
+     — which is why one bit serves both lanes. [al_new] disqualifies the word:
+     a lookahead word that begins a *new* frame is evidence that this frame
+     ended, not that it continues, and that is the closure record's business.
+
+     Nothing gapless moves, because [ev12] and "there is an octet behind" are
+     the same statement on a gapless stimulus. Take any cycle with [have_word]
+     and no live record. The lookahead word is empty, or it begins a new frame
+     — both unreachable there, which is the argument above, unchanged. Or it
+     holds 1 … 4 octets, which gapless means the frame's octets stop inside the
+     alignment window and the character that stops them lies in a word the
+     window is already looking at: at offset 0 that is the word behind, its
+     record born a cycle ago and now at age 1; at offset 4 it is either the
+     word behind (age 1) or this cycle's own word, whose record is [r0] — age 0
+     is a live record, [sel] selects it, [closed] is high, and the cycle is not
+     one of the cycles under consideration. Or it holds 5 … 8 octets, contiguous
+     from position 0 as every in-frame aligned word is, so bit 4 is set. The
+     surviving case is always the last: with [have_word] and no closure,
+     gapless, [ev12] is 1. Emission is unchanged cycle for cycle, [hold] is low
+     on every gapless cycle so both emission registers are enabled exactly as
+     they were, and the whole downstream — [tdata], [tkeep], [tlast], [tuser],
+     and every strobe, which are functions of that stream and of [consume] —
+     is bit-identical.
+
+     Under REQ-016 the two statements come apart, which is the point. An idle
+     word mid-frame puts a bubble in the lookahead where a full word would have
+     been; [ev12] is 0; the completed word waits with `tvalid` low until the
+     frame's next octets arrive, and leaves on the cycle its decider reaches
+     this decision.
+
+     ---- the closing character's word, observed where the octets are ----
+
+     The `tlast` word's decider is the closing character's word, and the closure
+     record is that event — but the record is *not* observed at the same point
+     in the pipeline as the octets, and the hold is what exposes the difference.
+     [lanes] decodes the XGMII word arriving **this** cycle, so a closure enters
+     the record at age 0 on its own word's cycle, while the aligned view of that
+     same word — [al_keep], [nc] — is one cycle behind it at a lane-0 start.
+     Gapless the skew is unobservable: the word that closure ends is still one
+     stage upstream on the record's own cycle, so the record is at age 1 by the
+     time there is anything to emit. With a hold in the path the word is already
+     sitting in the stage, and an age-0 record would release it one cycle before
+     the aligned pipeline has caught up — the 64-octet lane-0 member at k = 7
+     would emit its `tlast` word at 66 against §6.1's 67.
+
+     [closure_aligned] is therefore the record read with the octets' own
+     alignment: at a lane-0 start the aligned view spans the *previous* input
+     word, so the record must be at age 1 or 2 — [sel] takes the oldest, so
+     "not [sel_is_r0]" is exactly that; at a lane-4 start the aligned view
+     already contains lanes 0…3 of this cycle's word, so an age-0 record can be
+     the decider and [off4] admits it. That disjunct is also what keeps the
+     lane-4 straddle of §9 — [emit_last_b] firing on a record born this cycle,
+     with the frame's last octets in the word behind — moving on the cycle it
+     always moved on.
+
+     [decided] is the two together, and every arm of the decision is qualified
+     by it: a word leaves when its decider has arrived, whichever kind of
+     decider it has. Gapless [decided] is 1 on every cycle [have_word] is, so
+     the three arms are their old selves conjoined with a constant, which is the
+     bit-identity claim above. At the 64-octet lane-0 member with k idles
+     injected between input words, word m now leaves at cycle
+     3 + (m + 1)(k + 1) — 5, 7, … 19 at k = 1 and 11, 19, … 67 at k = 7, the
+     last of each being the `tlast` word released by [closure_aligned] one cycle
+     after the terminate word arrives — and at k = 0 every one of those is the
+     cycle the word already left on. *)
+  let ev12 = ~:al_new &: bit al_keep 4 in
   let closed = sel_valid in
-  let emit_last_a = have_word &: closed &: (nc ==:. 0) &: (pc >: strip) in
-  let emit_last_b = have_word &: (nc <>:. 0) &: (nc <=: strip) in
+  let closure_aligned = closed &: (~:sel_is_r0 |: off4) in
+  let decided = ev12 |: closure_aligned in
+  let emit_last_a = have_word &: decided &: closed &: (nc ==:. 0) &: (pc >: strip) in
+  let emit_last_b = have_word &: decided &: (nc <>:. 0) &: (nc <=: strip) in
   fcs_tail_pending <== emit_last_b;
-  let emit_full = have_word &: (~:closed |: (nc >: strip)) in
+  let emit_full = have_word &: decided &: (~:closed |: (nc >: strip)) in
   let emit_tlast = emit_last_a |: emit_last_b in
+  (* The hold is the exact complement of the emission it withholds — a word is
+     held iff it is not [decided] — which is what makes the stage lossless: the
+     register advances only on a cycle its word leaves, is discarded by
+     [fcs_tail_now], or is not there at all. It cannot strand a report either.
+     A held word's release is at most one cycle after its record is born (age 0
+     becomes age 1, and [off4] releases at age 0), so no record can reach the
+     age-2 consumption §9 pins while the word it belongs to is still waiting. *)
+  hold <== (have_word &: ~:decided &: ~:(i.clear));
   let keep_count =
     mux2 emit_last_a (pc -: strip) (mux2 emit_last_b (pc -: strip +: nc) pc)
   in

@@ -2338,3 +2338,342 @@ three options and a recommendation. No sign-off claimed: `SO-xgmii_rx_64.md` is 
 
 - libs/hardcaml_ethernet/src/xgmii_rx_64.ml
 - agents/handoffs/BUG-0002_m03-idle-injection-tlast-on-a-non-final-word.md
+
+## [J-rtl_lead-0010] 2026-08-04T11:59:22Z | task:BUG-0002 | §6.1's restated D(m) built into M03: a completed word now waits for its deciding input word — frame octet 8m + 12 as one bit of the aligned lookahead — and the `tlast` word's decider turned out to be read one cycle ahead of the octets it decides, which is the whole of the difference between cycle 66 and §6.1's 67
+
+### Trigger
+
+Orchestrator spawn against M03 `Xgmii_rx_64`, branch
+`claude/fpga-hardcaml-agent-orchestration-37ceyf` at HEAD `4737715`. No spawn short-id was
+minted into this spawn prompt; the round is identified by that HEAD and by its subject — the
+RTL consequence of the ruling on open question 1 of `J-rtl_lead-0009`. My option 1 was ruled
+in: SPEC-M03 §6.1's D(m) and §7's handshake, in force at HEAD, now say that a completed
+output word is **not** emitted until its deciding input word has arrived, with `tvalid` = 0 in
+between; D of a non-`tlast` word m is the input word carrying received frame octet 8m + 12,
+and D of the `tlast` word is the closing character's word. So this is my own escalation
+returning as work, which is also why the spawn barred me from re-reading my own `BUG-0002`
+packet: it now carries bench-derived tables, and the mirror-bar keeps this derivation
+independent of them.
+
+### Inputs
+
+- `libs/hardcaml_ethernet/src/xgmii_rx_64.ml` — the alignment window and output decision
+  (lines 648–800 at HEAD) read in full, plus the closure-record block (§9, lines 480–534)
+  and the closure decode at lines 234 and 361–377, which is where this round's second
+  defect was found.
+- `agents/PROTOCOL.md` §4–§5; `agents/charters/rtl_lead.md` (§5 DoD, §7 escalation classes,
+  §8 root-cause-before-fix).
+- My own `J-rtl_lead-0009` (the ce00c06 closure-record gate, its case analysis, and the
+  escalation this round implements).
+- The in-force clauses as relayed verbatim in the spawn prompt: §6.1 D(m), §7's handshake,
+  REQ-019's two-word bound, and the two M03-I4 acceptance rows (64 octets, lane 0: k = 1 →
+  5, 7, 9, 11, 13, 15, 17, 19; k = 7 → 11, 19, 27, 35, 43, 51, 59, 67).
+- **Not opened, by spawn bar**: `test/**`, `docs/reports/audit/**`,
+  `agents/handoffs/WO-0060*`, `agents/handoffs/BUG-0002*`. SPEC-M03 itself was not re-read
+  this round; every derivation below rests on the relayed clauses plus the module source.
+- No Essenceia material consulted (charter §8, Inputs honesty).
+
+### Reasoning
+
+#### Root cause
+
+Two, one carried and one new.
+
+**The carried one, which is what §6.1's restatement fixes.** The module emitted an output
+word the moment the word was *complete* — the aligned word behind it having been counted —
+rather than when the frame gave evidence about it. Completion is a property of the octets
+already in hand; the decision the word encodes (does it carry `tlast`, does it lose FCS
+octets to `tkeep`) is a property of what comes *after* it. Gapless the two coincide, so the
+design was never wrong on any stimulus the programme had run, and the coincidence is exactly
+what let the wrong keying survive review, smoke reasoning and eight prior entries. Under
+REQ-016's injected idle the word is complete cycles before the frame says anything about it,
+and the module answered early. `J-rtl_lead-0009` fixed the *symptom* that surfaced first
+(last-ness derived from an emptiness test an idle makes momentarily true) and left the
+timing defect standing, because under the then-frozen §0.5 wording the timing defect was
+unsatisfiable rather than fixable — that is the escalation this round discharges.
+
+**The new one, found by building the fix.** The closure record is decoded from the XGMII
+word arriving *this* cycle (`lanes = decode_lanes i.xgmii_rx`, line 234, feeding
+`a_close_now` at line 377 into `r0`), while the octets of that same word are seen by the
+output decision one cycle later, through the registered half of the alignment window. The
+record is therefore one cycle *ahead* of the octet stream at a lane-0 start. Gapless this is
+unobservable — on the record's own cycle the word that closure ends has not reached the
+emission register yet, so the record is always at age 1 or later by the time there is
+anything to emit — and the ce00c06 gate rode on that coincidence. Put an elastic hold in the
+path and the coincidence breaks: the held word is already in the register when the terminate
+word arrives, and an age-0 record releases it a cycle before the aligned pipeline has caught
+up. Concretely, at the 64-octet lane-0 member with k = 7, the `tlast` word would leave at 66
+where §6.1 puts it at 67. The spawn told me this path was "likely already right; verify,
+don't rebuild" — it was not right, and the verification is the reason the acceptance row for
+word 7 lands.
+
+#### The mechanism
+
+Two decider tests and one enable, and no new storage.
+
+1. **`ev12` — the non-`tlast` decider.** §6.1 names received frame octet 8m + 12: the fifth
+   octet past word m's own eight, the evidence that the frame continues past word m rather
+   than ending at it. That octet has one fixed home in this pipeline. The aligned lookahead
+   word is output word m + 1, whose octets are 8m + 8 … 8m + 15, so 8m + 12 is its position
+   4 — one bit of `al_keep`, at *both* start lanes, because the lane-4 rotation is precisely
+   what moves that octet into position. At offset 0, `al_keep` bit 4 is `cov_d` bit 4, the
+   fifth octet of the input word behind; at offset 4 the rotation puts `cov` bit 0 there, the
+   first octet of the word arriving now. `al_new` disqualifies it: a lookahead word that
+   begins a *new* frame is evidence that this frame ended, not that it continues, and that is
+   the closure record's business.
+
+       let ev12 = ~:al_new &: bit al_keep 4 in
+
+2. **`closure_aligned` — the `tlast` decider, read where the octets are read.** The record is
+   the closing-character event, but per the second root cause it is one cycle early at a
+   lane-0 start, so it is admitted only once the aligned view has reached it: at offset 0 the
+   aligned view spans the previous input word, so the record must be at age 1 or 2, and since
+   `sel` takes the oldest live record, "not `sel_is_r0`" *is* that test; at offset 4 the
+   aligned view already contains lanes 0…3 of this cycle's word, so an age-0 record can be
+   the decider and `off4` admits it.
+
+       let closure_aligned = closed &: (~:sel_is_r0 |: off4) in
+       let decided = ev12 |: closure_aligned in
+
+3. **The enable.** Every arm of the decision is conjoined with `decided`, and the emission
+   register pair holds while a word is not decided:
+
+       let emit_last_a = have_word &: decided &: closed &: (nc ==:. 0) &: (pc >: strip) in
+       let emit_last_b = have_word &: decided &: (nc <>:. 0) &: (nc <=: strip) in
+       let emit_full   = have_word &: decided &: (~:closed |: (nc >: strip)) in
+       hold <== (have_word &: ~:decided &: ~:(i.clear));
+       (* at the register site *)
+       let al_data_d = reg spec ~enable:advance al_data in   (* advance = ~:hold *)
+
+   `hold` is the exact complement of the emission it withholds, which is what makes the stage
+   lossless: the register advances only on a cycle its word leaves, or is discarded by
+   `fcs_tail_now`, or is not there at all. `keep_count`, `consume`, `abort`, `tuser`, `tvalid`
+   and the five strobes are textually unchanged.
+
+#### The derivation of the acceptance rows
+
+With k idle words injected between input words at a lane-0 start, let the frame's data word j
+(received octets 8j … 8j + 7) arrive at cycle a_j, so a_j = a_0 + j(k + 1), and let the
+terminate word arrive at a_7 + (k + 1). Word m's decider is the input word carrying octet
+8m + 12, which is data word m + 1; it becomes visible in `al_keep` one cycle after it arrives
+(offset 0 reads `cov_d`), so word m leaves at a_{m+1} + 1. With the module's own gapless
+anchor a_0 + 2 = 4 (word 0 currently emitted at cycle 4, both k, which is the bug), a_0 = 2
+and word m leaves at 3 + (m + 1)(k + 1):
+
+| k | word 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 |
+|---|---|---|---|---|---|---|---|---|
+| 0 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 |
+| 1 | 5 | 7 | 9 | 11 | 13 | 15 | 17 | **19** |
+| 7 | 11 | 19 | 27 | 35 | 43 | 51 | 59 | **67** |
+
+The k = 1 and k = 7 rows are the acceptance rows exactly, and the k = 0 row is what the
+module already does. The two bold entries are the `tlast` word, and they are *not* produced
+by `ev12` — that word has no octet 8m + 12, the frame having ended. They come from
+`closure_aligned`: the terminate word arrives at a_7 + (k + 1) = 18 (k = 1) and 66 (k = 7),
+the record is born at age 0 on that cycle and is not yet aligned, the word is held one more
+cycle, and at 19 and 67 the record is at age 1, `nc` = 0, `pc` = 8 and `strip` = 4, so
+`emit_last_a` fires with `keep_count` = 4 — `tkeep` 0x0F, `tlast` 1. Both the cycle and the
+`tkeep`/`tlast` pair match the row `J-rtl_lead-0009` recorded the bench as expecting, which
+is the first independent corroboration this round has of a bench number I was barred from
+reading.
+
+#### Gapless bit-identity, case by case
+
+The three emission arms are their pre-change selves conjoined with `decided`, and the two
+emission registers differ only by an enable that is `~:hold`. So the whole claim reduces to
+one proposition: **on a gapless stimulus, `decided` = 1 on every cycle `have_word` = 1** —
+whence `hold` ≡ 0, both registers are enabled every cycle exactly as before, the aligned
+stream into the decision is identical, and `tdata`, `tkeep`, `tlast`, `tuser`, `consume` and
+all five strobes are bit-identical. The proof enumerates the lookahead word at such a cycle:
+
+1. **A live record at age 1 or 2** — `closure_aligned` holds, whatever the lookahead is.
+   This covers every `tlast` cycle at a lane-0 start, because the closing character is always
+   in a word the aligned view has already passed: the emitted word comes from two input words
+   back, so the closure that ends it was decoded at least one cycle ago.
+2. **Offset 4 with any live record** — `off4` admits age 0, so the lane-4 straddle of §9
+   (`emit_last_b` firing on a record born this cycle, the frame's last octets in the word
+   behind, `nc` = 4 = `strip`) fires on exactly the cycle it always fired on. This disjunct
+   exists for that case and no other.
+3. **No live record at all.** Then by the argument already in the file from ce00c06, the
+   lookahead is a same-frame word covering octets — an empty or new-frame lookahead inside an
+   open frame is unreachable gapless — and gapless every in-frame aligned word except the
+   frame's final one covers all eight octets. Bit 4 is set, `al_new` is low, `ev12` = 1.
+4. **Offset 0 with an age-0 record only, lookahead covering 8 octets** — `ev12` = 1 by
+   contiguity; the record is irrelevant.
+5. **Offset 0 with an age-0 record only, lookahead covering 5 … 7 octets** — bit 4 is set
+   (aligned coverage is contiguous from position 0 inside a frame), `ev12` = 1.
+6. **Offset 0 with an age-0 record only, lookahead covering 1 … 4 octets** — unreachable.
+   A partial lookahead at offset 0 is a whole input word's coverage, so the frame's octets
+   stopped inside that word, so gapless the closing character is in *that* word — one cycle
+   back — and its record is at age 1, not age 0. Case 1 applies instead.
+7. **`pc` = 0, or `fcs_tail_now`** — `have_word` = 0; nothing is held and the stage advances
+   as before. This is where §9's sixth row (the sub-five-octet frame, `pc` ≤ `strip`, no
+   output word at all) and BUG-0001's suppressed residual word live, and neither can lodge in
+   the stage because neither satisfies `have_word`.
+
+Case 6 is the one obligation this round adds over ce00c06's, and it is the reason the
+strict form of the gate is safe: I did not have to weaken `decided` to a "any octet behind"
+test to protect it. `clear` is unchanged in every case — it forces `hold` low, so the
+pipeline flushes exactly as it did.
+
+#### REQ-019 (the two-word bound)
+
+Met, and met without adding a flop. The elastic hold is an **enable on the existing
+emission register pair**, not a stage: while a word waits, word m + 1 is not stored anywhere
+— it is still forming combinationally in the alignment window from the two most recent input
+words — and it is loaded on the very edge that retires word m. Residency is therefore one
+word in the register and one word forming in the window: exactly two, never three. The
+arithmetic agrees with the bound as stated to me: word m leaves once octet 8m + 12 has been
+received, and word m + 1 is not complete until octet 8m + 15 has been received; 8m + 12
+precedes 8m + 15 in the same input word at both start lanes, so the departure of word m is
+never later than the completion of word m + 1. I did not need a third word of storage, so I
+have no rule-convicting finding to raise on that head.
+
+The line-rate invariant (charter §5, §9) is untouched in the direction that matters: nothing
+in this change asserts backpressure, and there is no rx ready to assert it on. At k = 0
+`hold` is identically 0, so the module still retires one 64-bit word per cycle on
+back-to-back minimum frames. The hold can only make the output *sparser* than the input, and
+only when the input itself was sparse.
+
+#### What I considered and rejected
+
+- **Releasing on "any octet in the lookahead" (`al_keep` ≠ 0) rather than on position 4.**
+  This is my own J-0009 sketch, it is simpler, and it produces the same numbers at a lane-0
+  start under whole-word injection. Rejected: §6.1 in force says octet 8m + 12, and at a
+  lane-4 start the two differ — a half-full aligned word carries octets 8m + 8 … 8m + 11
+  without 8m + 12 — so it would be a silent deviation from a frozen clause in exactly the
+  configuration the clause was written to pin (charter §6: no silent spec deviations). It
+  would also have papered over the sub-word hold-lane hazard below rather than exposing it.
+- **Suppressing the age-0 record unconditionally** (dropping the `off4` disjunct from
+  `closure_aligned`). Rejected: it moves the lane-4 §9 straddle by a cycle, breaking case 2
+  of the gapless proof.
+- **An assembler that merges two half aligned words** instead of a hold. This is what a
+  lane-4 start under injection actually needs (open question 1) and it is a structural
+  change to the alignment window, not the elastic hold the round sanctioned. Not built.
+- **A second word of storage.** Not needed, per REQ-019 above, and it was the one outcome
+  the round told me to stop and report rather than build.
+
+### Actions
+
+- Edited `libs/hardcaml_ethernet/src/xgmii_rx_64.ml`, two blocks, eight changed code lines:
+  at the alignment-window site, `al_data_d`/`al_keep_d` gained `~enable:advance` with
+  `advance = ~:hold` and `hold` declared as a forward `wire 1` (the same forward-wire idiom
+  the module already uses for `consume` and `fcs_tail_pending`); at the output decision,
+  `ev12`, `closure_aligned` and `decided` were introduced, `decided` was conjoined into
+  `emit_last_a`, `emit_last_b` and `emit_full`, and `hold` was assigned. Roughly 90 lines of
+  comment carry the derivation, the alignment-skew finding and the gapless case analysis at
+  the site.
+- Verified rather than rebuilt the `tlast` path as instructed, and found it wrong by one
+  cycle under a hold; that finding is the second root cause above.
+- Confirmed no interface change: `.mli` untouched, `I`/`O` records untouched.
+- Staged no test, no spec, no snapshot, no handoff packet. Ran no git write.
+
+### Evidence
+
+Reproducible from a checkout at this commit:
+
+```sh
+ocamlc -stop-after parsing libs/hardcaml_ethernet/src/xgmii_rx_64.ml   # exit 0
+git diff --stat -- libs/                                              # 1 file, +125 -5
+awk 'length > 90' libs/hardcaml_ethernet/src/xgmii_rx_64.ml           # 2 lines, both at HEAD already
+```
+
+The margin check is the `.ocamlformat` `janestreet` profile's 90 columns: the two
+over-margin lines (the `Preamble` `if_` row and the `strip` definition) are both present at
+HEAD unchanged, and this change adds none.
+
+What is **not** available and therefore not claimed: `dune build` cannot run in this
+environment. The `fpga` opam switch has neither `hardcaml_axi` nor `ppx_hardcaml`
+(`dune build libs/hardcaml_ethernet/src` fails with `Library "ppx_hardcaml" not found`), so
+as in every prior entry there is **no type-check, no elaboration and no simulation locally**
+(ADR-0005). `ocamlc -stop-after parsing` is a syntax check and nothing more. Every cycle
+number in this entry — the whole table above — is **derived from the source and the relayed
+clauses, not measured**, and is published as a prediction so it can be wrong in public.
+
+What the next CI run should show if this is right:
+
+- **M03-I4 (64 octets, lane 0)**: `tvalid` cycles 5, 7, 9, 11, 13, 15, 17, 19 at k = 1 and
+  11, 19, 27, 35, 43, 51, 59, 67 at k = 7; words 0…6 `tkeep` 0xFF, `tlast` 0, `tuser` 0;
+  word 7 `tkeep` 0x0F, `tlast` 1, and the frame's strobes on cycle 19 / 67 with it.
+- **M03-I6** and the rest of family I at a lane-0 start: same shape, shifted by length.
+- **Every gapless family (A–H, M03-I1/I2/I3), the co-simulation lane and the line-rate rows
+  L1–L5: unchanged, bit for bit.** A single moved gapless result convicts this change and
+  not the bench — the gapless proof above is a seven-case enumeration and every case is
+  checkable against the source, so a moved gapless cycle means one of those seven cases is
+  wrong and the entry says which one to look at first (case 6, the partial lookahead with an
+  age-0 record).
+- Family-I members at a **lane-4** start under injection: not claimed, see open question 1.
+
+`rtl_snapshots/**` is deliberately absent from this commit: no local emission is possible
+and the established practice (`git log --oneline -3 -- rtl_snapshots/`) is CI-side
+regeneration promoted byte-exact afterwards. Prediction for that promotion, stated before
+the run: **one enable term on two existing registers and combinational terms in the output
+decision — no new register, no new `always` block** in `xgmii_rx_64.v`; the two `al_*_d`
+processes gain an enable condition, and the same deltas reappear in `eth_mac_10g.v` from the
+inlined instance. REQ-902's double-generation byte-identity check remains owed by that run.
+
+### Outcome
+
+The in-force §6.1 D(m) and §7 handshake are implemented in M03, and with them the residual
+row that `J-rtl_lead-0009` proved unsatisfiable under the *old* wording now lands: word 7 at
+cycle 19 (k = 1) and 67 (k = 7). Charter §5 DoD: implements its frozen spec ✔ (with two
+configurations escalated below rather than deviated from silently); root cause before fix ✔
+(two, one carried and one new); single in-scope file ✔; house style and margin ✔; line-rate
+invariant structurally intact ✔ (`hold` ≡ 0 gapless, no backpressure introduced); gapless
+behaviour argued invariant case by case ✔. "Compiles and elaborates" is **not** claimed —
+that is the next CI run's, as always here — and no DV sign-off is claimed: `SO-xgmii_rx_64.md`
+is dv_lead's.
+
+Handoff: the `BUG-0002` Fix-verdict round. What it should check, in order: (1) the eight
+cycles and the eight `(tkeep, tlast, tuser)` tuples for M03-I4 at k = 1 and k = 7 against the
+table above — the word-7 rows are the ones that discriminate this fix from a naive one, since
+a hold without `closure_aligned` emits word 7 at 18 and 66; (2) that every gapless family,
+the co-sim lane and L1–L5 are bit-identical to HEAD, which is the load-bearing claim; (3) that
+`hold` is never observed high on a gapless stimulus, which is the mechanised form of the
+seven-case proof and the cheapest single assertion to add; (4) whether family I contains any
+**lane-4-start** member under injection, because those are open question 1 and I do not claim
+them; (5) whether any member injects idles at **sub-word** granularity, which is open
+question 2.
+
+### Open-questions
+
+1. **Escalation, spec/DV class, for architect_docs_lead and dv_lead via the orchestrator.**
+   At a **lane-4 start under whole-word idle injection**, §6.1's D(m) is not satisfiable by an
+   elastic hold, and the reason is structural rather than a defect of this fix: the alignment
+   window at offset 4 forms each aligned word from the upper half of one input word and the
+   lower half of the next, so an injected idle splits output word m into two *disjoint* half
+   aligned words on different cycles (`al_keep` = 0x0F then 0xF0). One register plus a hold
+   cannot rejoin them; an assembler that merges disjoint halves can, and that is a change to
+   the alignment window, not to the emission stage. The pre-change design is equally unable
+   (it emits both halves as separate short words), so this is **not a regression** and not a
+   green-to-red risk on any member that passes today — but it is a real gap between the
+   frozen clause and the RTL at that start lane, and I will not close it by silently widening
+   the sanctioned change. Options: (a) merge in the alignment window (my recommendation,
+   roughly a keep-masked OR into the emission register plus a second gapless-equivalence
+   obligation); (b) restrict REQ-016's injection sites at a lane-4 start in the spec, as the
+   `BUG-0002` spec diff §5 item 4 already contemplates for a different reason; (c) declare the
+   configuration unconstrained. Whichever is ruled, the RTL consequence is mine.
+2. **New hazard introduced by the hold, recorded rather than repaired.** A control character
+   *inside* a word of an open frame — §6.2's hold lane, REQ-016 at sub-word granularity —
+   truncates coverage without closing the frame. The aligned word in front of a held word then
+   carries one to four octets with no closure to release it, `decided` is 0, and those octets
+   are dropped when the hold ends. The old decision emitted them instead, as a short mid-frame
+   word that REQ-011 does not admit either, so neither behaviour is correct and no member that
+   passes today can be relying on the old one. It is outside the whole-word injection §6.1's
+   D(m) is stated over. If DV has (or wants) such a stimulus, say so and I will repair it
+   properly — the fix is a merge, the same machinery as option 1(a), not a special case.
+3. **The `tlast` decider's alignment skew is a general pattern, not a one-off.** Any future
+   consumer of the closure record that compares it against the aligned octet stream must read
+   it through `closure_aligned`, not through `sel_valid`, or it will be one cycle early at a
+   lane-0 start. Worth a line in SPEC-M03 §9's implementation note if architect_docs_lead
+   wants the trap documented rather than rediscovered.
+4. **REQ-902 remains a criterion, not a debt** — carried from `J-rtl_lead-0003` through
+   `-0009`: the next CI run must regenerate byte-identically, and the snapshot promotion for
+   this change is owed by that run.
+5. **Carried, unchanged**: the latent `first_v` gating on a stimulus §10 forbids (M03-N3);
+   the WO-0038 §8 mutation spot-check and the line-rate rows L1–L5, both still owed before
+   `SO-xgmii_rx_64.md` can issue. Nothing in this commit touches any of them.
+
+### Files-in-this-commit
+
+- libs/hardcaml_ethernet/src/xgmii_rx_64.ml
