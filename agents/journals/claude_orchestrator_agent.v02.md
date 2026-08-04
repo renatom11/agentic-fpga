@@ -1391,3 +1391,46 @@ None new.
 
 ### Files-in-this-commit
 - (none)
+
+## [J-orchestrator-0178] 2026-08-04T18:00Z | task:WO-0061 | Ten of ten red at first look - the harvest is with the adjudicator
+
+### Trigger
+All ten mutation runs completed; harvested per the packet
+(BUILD runtest only).
+
+### Reasoning
+Measured, not judged: every class reddened the bench. Shapes
+at first-failure: c1 cross-family (F1/F2/G7 - the count
+inflation reaching REQ-103's extent per the auditor's
+disclosed wide branch); c2 the FCS verdict alone; c3 double
+emission (16 and 64 words); c4 a spurious strobe; c5 ONE word
+where eight were owed - the liveness class died, the wrapper
+is proven live; c6 content corruption at the disclosed lane-4
+scope; c7 the D(m) cycle rule; c8 the 255-wrap caught by
+M03-I1 (11 words after the idle window); c9 no assertion
+message at all - the kill is M03-I3's overlay strobe monitor,
+100 unclaimed high-cycles; c10 the wide blast, nine files
+promoted, whose worth the seal pre-ruled at zero kills - the
+I-c10/M03-I2 tightness question turns on what the full log
+shows past first-failures and is dv's to read. Full logs in
+scratchpad wo61_harvest/; dv dispatched with run and branch
+ids, the disclosures named as scoring inputs, and the
+finding-class reminder that a wrong disclosure convicts the
+auditor.
+
+### Actions
+Ten harvests parsed and saved; dv dispatched; this commit;
+push.
+
+### Evidence
+Runs 30927976269..30927994449; the first-failure strings
+quoted in the dispatch verbatim.
+
+### Outcome / DoD
+Field phase complete. The seal speaks at adjudication.
+
+### Open questions
+None new.
+
+### Files-in-this-commit
+- (none)
