@@ -447,3 +447,45 @@ None new; C-5's module-side half rides the ledger.
 
 ### Files-in-this-commit
 - docs/gates/P1-spec-freeze-checklist.md
+
+## [J-orchestrator-0157] 2026-08-04T01:20Z | task:WO-0058 | Campaign frozen in one commit; the auditor's blind round dispatched
+
+### Trigger
+dv_lead returned with WO-0058 drafted and its seal complete.
+
+### Reasoning
+Freeze-first honored: packet + SEALED companion in one commit
+(1c3a89d) under J-dv_lead-0079, before any manifest diff
+exists - the property that makes the seal a seal. Seven
+classes GH-c1..c7 over the five scored units; 14 REQUIRED
+cells; 203/217 M03 + 560 non-M03 must-stay-green measured at
+base SHA a2d090d (run 30865856907, both jobs); two collisions
+named in advance (the RV-0055 inflation lesson); one UNWORKED
+rendering with its adjudication rule fixed before the fact.
+dv confirmed the architect's §0.6 ruling does not gate the
+campaign (seal written against the bench at the base SHA;
+Finding 2 holds under either outcome). Board row added at
+allocation. Next: auditor authors seven blind diffs under the
+§2 allowlist; the transient application (branches = base + one
+diff) is mine when the manifests return.
+
+### Actions
+1c3a89d push; board row; this commit; auditor dispatch with
+base SHA, allowlist, branch naming, and the four mandatory
+scope disclosures carried verbatim.
+
+### Evidence
+1c3a89d; dv's return (seal completeness statement, collision
+list, base-SHA verification including the empty
+f806272..a2d090d diff over test/ libs/ tools/).
+
+### Outcome / DoD
+The campaign is frozen and dispatchable. SO-M03 neither issues
+nor is offered; 32 of 62 stands until the harvest.
+
+### Open questions
+None new. dv's §0.6 re-countersign rides its adjudication
+round.
+
+### Files-in-this-commit
+- tasks/BOARD.md
