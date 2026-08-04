@@ -1738,3 +1738,333 @@ requirements.md's change log, and both files for commit.
 ### Files-in-this-commit
 - agents/handoffs/WO-0057_tb-m03-family-h-start-without-terminate.md
 - test/attack_plans/AP-xgmii_rx_64.md
+
+## [J-dv_lead-0082] 2026-08-07T03:15Z | task:WO-0059 | Family I authored — and authoring it found that M03-I2's own stimulus cannot produce the design its Kills cell names, which is the third unachievable kill this plan has carried and the first caught by arithmetic before a bench existed
+
+### Trigger
+Orchestrator: author the next family packet in the sponsor-approved queue —
+**WO-0059, family I**, for tb_writer, against `AP-xgmii_rx_64.md` §4.I as it
+stands at `abf5d0b`, in the `WO-0057` form. With two interactions named
+explicitly: whether family I touches the two unbenched geometry bounds my
+`WO-0058` verdict recorded, and whether family I's rows will be scored by the
+next campaign — whose adjudicator-blind-by-default control belongs in that
+campaign's packet and not in this one.
+
+### Inputs
+- `test/attack_plans/AP-xgmii_rx_64.md` at `abf5d0b` in full: **§4.I's six
+  rows** (the object), §0–§3 (the format, the standing obligations, stimulus
+  legality), §4.A/B/C/F/G/H/M/N (the rows family I reuses stimulus from or is
+  bounded against), §5 (the rejected list, item 10 in particular), §6's coverage
+  map, §7's staleness banner and its **X-1 / X-3 / X-4 / X-5** rows, §8 item 5,
+  §9's change log.
+- `docs/specs/requirements.md`: **REQ-016, REQ-109, REQ-113**, REQ-101–REQ-108,
+  REQ-110, REQ-111, §0.3, **§0.5** (octet time, h, ΔC, "Start lanes"), **§0.6**
+  as ruled at `0caf023` and in force at `abf5d0b`, §2, §12.
+- `docs/specs/modules/xgmii_rx_64.md`: **§6.1** (the preamble-position
+  paragraph, the C-14.4 gapless qualifier, the two C-18 non-instances, the
+  64-octet cycle table, and **the "Between frames" paragraph with its
+  two-cycle drain derivation**), **§6.2**'s `Idle` and `Frame` rows, §6.3 items
+  2/4/5/6, **§7**, §9's closure list and strobe table, **§10**'s REQ-109,
+  REQ-113 and REQ-016 hooks.
+- `test/xgmii/idle_injection.mli` **and `.ml`** (`uniform`'s site range,
+  `word_at`, `cycle_of`, `in_times`, `check_sites`, `is_c45_boundary`),
+  `test/xgmii/arrival.mli`, `test/xgmii/xgmii_word.mli`,
+  `test/monitors/octet_time.mli`, `test/monitors/strobe_monitor.mli`,
+  `test/xgmii_rx_64/bench.mli` and `bench.ml`'s `run`,
+  `test/xgmii_rx_64/test_m03_structural.ml`, and the `%expect_test` inventory
+  of all nine `test/xgmii_rx_64/*.ml`.
+- `test/attack_plans/CD-xgmii_rx_64_cosim.md` §0-bis, §5.1, §5.2, §8.
+- `agents/handoffs/WO-0057_…` in full — the form, its `RV-0057-VERDICT`
+  (Findings 1–4 and the §8/§9 rulings), and its COUNTERSIGNATURE block.
+- My own `J-dv_lead-0079`, `J-dv_lead-0080` (the WO-0058 verdict and its
+  Open-questions: the RTL-exposure escalation, bounds 6 and 7, the three owed
+  `test/**` repairs), `J-dv_lead-0081` (the §0.6 countersignature and the AP
+  touch); `tasks/BOARD.md`'s WO-0058 row.
+- **No `libs/**`, no `top/**`, no `rtl_snapshots/**`, no `docs/reports/audit/**`,
+  no `test/third_party/**`.**
+
+### Reasoning
+
+**Family I is authorable and is genuinely next — I checked the three things that
+could have stopped it and none did.** Its machinery exists and is unit-tested
+(X-4 at WO-0033, X-3 likewise), so no row is blocked on a build. Its
+specification basis is settled: REQ-109's drain bound was fixed by C-14.3,
+REQ-016's wrapper constraint by the M03-N3 ruling at `541ea43`/`06c1eba` with
+C-45 recorded against it, and REQ-113 needs nothing further. And the one place I
+expected to need a ruling — whether a `/Q/` ordered set is legal stimulus at all
+under REQ-018's contract — is already answered by this plan's own §5 item 10,
+which names M03-I3's ordered set as the closest legal attack to a deliberately
+illegal `xgmii_rxc` pattern. So no escalation, and the packet is authored.
+
+**What authoring it found is that M03-I2 cannot kill what M03-I2 says it
+kills.** The row drove a 64-octet frame and asserted silence from three cycles
+after the terminate word. I worked §6.1's own drain derivation at both ends
+rather than quoting it: N = 8q + r, and a lane-0-started frame's `tlast` word
+leaves at cycle q + 2 for r ≤ 4 and q + 3 for r ≥ 5 — one or two cycles after
+the terminate word — while a lane-4-started frame's leaves zero or one. A
+64-octet frame is r = 0. So a conformant design's last output falls at **+1**,
+the assertion starts at **+3**, and the one-cycle-long drain defect the `Kills`
+cell names emits at **+2** — inside two cycles the row never asserts about.
+**The stimulus cannot produce the design the cell claims to kill.** That is the
+M03-D3 / M03-F2 shape, and this plan has now carried it three times.
+
+**I repaired it rather than deferring it, and the choice is against my own
+standing default.** My default — `RV-0056` §1, `J-dv_lead-0078` — is *footnote
+owed at the plan's next touch, the file is the authority meanwhile*, because a
+restatement can drift from its source. That default is right for a **claim about
+how a benched row is proved**. It is wrong here for three reasons. First, the
+defect is not in a description, it is in the **commissioning cell** of a row
+that has not been written yet, and the plan is the document a bench writer reads
+before writing one. Second, **the direct precedent is `J-dv_lead-0038`** —
+family D corrected before it was benched, WO-0040 issued against the corrected
+row — and it is precedent for exactly this shape, an unachievable kill found by
+working octet-time arithmetic while authoring the work order. Third, family I's
+qualification campaign will seal against this plan; a campaign seals against the
+plan and **the plan must already be right**, which is the ordering
+`J-dv_lead-0060` deliberately established in history rather than claimed in a
+packet.
+
+**The repair is a second member and not a new row, which is what keeps every
+count still.** A **69**-octet frame at a **lane-0** start — already in M03-C1's
+committed directed set, so no new frame class and no new builder — is r = 5, so
+a conformant `tlast` lands **exactly on** the last legal drain cycle. The
+defect emits at +3 and dies; and, the half I care about almost as much, **a
+bench that mis-derives the bound one cycle tight goes red against a conformant
+design instead of passing in silence**, which the 64-octet member also could not
+do. On `Bench`'s own lane-0 schedules both members put their terminate character
+in cycle 10 and share the boundary at cycle 13 — a convenience, not the reason —
+while the same 69 octets at a **lane-4** start put it in cycle 11 with the
+boundary at 14. The two lanes do not share a boundary, so the `Observable` cell
+now says so: a bench giving them one is wrong. **The maximum drain of 2 is
+reachable only at a lane-0 start with N mod 8 ≥ 5**, derived, and that is why
+the member names its lane. 78 rows, 62 ASSERT, 7 NO-ASSERT, 4 NO-STIMULUS, 4
+STRUCTURAL, 1 GAP — all unchanged.
+
+**The packet's organising idea is that this family's characteristic failure is
+vacuity rather than wrongness.** Every one of §4.I's rows asserts an *absence* —
+no output word, no strobe, no change — and an absence is satisfied by a design
+that does nothing and by a bench that drove nothing. Six such rows is the
+easiest green in this programme and the least evidence. So the packet's first
+trap is a rule with teeth: **each row carries a positive companion assertion in
+its own unit**, named, with what would go red if it were deleted, and a
+companion living in another unit or another family is not one — cross-file
+liveness is an argument about the suite, and a campaign scores rows one at a
+time. I tabulated the five companions rather than gesturing at the idea, and I
+recorded the cost of M03-I1's: once a frame is in the run,
+`assert_monitors_clean`'s latency half stops being carved out and starts being
+demanded.
+
+**Three more traps, and two of them are the same trap this bench has now met
+twice.** `Bench.account_clean_frame` feeds the latency tagger
+`Arrival.in_times`, which is false about an **injected** input line by exactly 8
+octet times per idle inserted before each octet — the `Frame.delivered`-on-an-
+abort-path trap of `WO-0057` §3.1 in a new dress, and worse in one respect: a
+tagger handed a false input trace does not fail, it reports a *varying* L, so
+this trap's failure mode is a **false BUG- packet** rather than a missed one.
+And `Bench.run` discharges standing obligation 5 against the **source** schedule
+only, so neither an overlaid word nor an injected line is checked by it — while
+`Idle_injection` deliberately *applies* an illegal site rather than dropping it.
+The rows therefore check their own stimulus before driving it. I also stated
+M03-I5's prohibition in the traps section rather than in the row list, because it
+is a prohibition on the row a writer builds immediately before breaking it: §6.1's
+`m + 3` is scoped to a gapless stimulus and §10 commissions injection against
+this very module, so a bench asserting the formula under injection fails a
+conformant design.
+
+**One trap is this family's own and I expect it to be the one that bites.** Every
+`Kills` cell in §4.I is written in the language of the design's internals — a
+spurious word out of an *empty pipeline*, a design that *holds the CRC register*,
+a design that *counts cycles rather than octets*. That is what a `Kills` cell is
+for and it is not an observable; §6.3 items 2, 4 and 5 forbid asserting register
+placement, FSM encoding or counter direction, and `RV-0055`'s rule requires a
+state claim to cite the stimulus fact that establishes it or not be made. The
+packet says it plainly: if a row's reasoning needs the word "pipeline" it needs a
+different sentence.
+
+**Four findings about the family's reach that I derived rather than assumed, and
+all four would otherwise have been a campaign's to discover.** (1) **X-3's checks
+(a), (b) and (c) have no instance here at all** — no row registers an expected
+event, so there is no high cycle to count, no pin to compare and no window to
+check, and the family's entire strobe assurance is check (d) plus each row's
+positive companion. That is the exact mirror of the M03-H4 bound I wrote into
+§7's X-3 row at `J-dv_lead-0081`, where (c) alone was vacuous. (2) **M03-I4 and
+M03-I6 attack the two halves of one rule** — §6.2's hold: I4 the CRC register,
+I6 the received-octet count — so a class that moves the hold path moves both, and
+they are **not** independent kills (`RV-0057-VERDICT` §9(c)'s lesson, applied
+before the diffs exist rather than after). (3) **M03-I6's 64-octet member is
+stimulus M03-I4 already drives** at the same 7-idle figure; its value is as a
+positive companion, not as coverage, and no `SO-` may count it twice. (4) **At 7
+idles the runt half of the count defect escapes by one cycle** — a 64-octet
+frame's injected span from start word to terminate word is 9 + 8×7 = 65, one
+outside REQ-107's 5-to-63 band — **while at M03-I4's 1-idle figure the same span
+is 17, squarely inside it**. §10's three figures are not a ladder of increasing
+severity, and that is the instance which proves it. I also derived that the
+naive cycle-counting oversize defect is **lane-asymmetric** on the 1518-octet
+member (roughly 1513 cycles at lane 0, 1521 at lane 4), so it fires at one lane
+only, by three.
+
+**On the two interactions I was asked to settle, the answer to both is a clean
+negative and the negatives are worth stating.** **Bound 6** — the
+alignment-transition instrument is a single stimulus point, with the second owed
+at M03-B4's geometry — and **bound 7** — the in-word abort exists at M03-H4
+only. **Family I drives no start character while a frame is open, and no abort of
+any kind**; not one row. So it discharges neither and moves neither, and the next
+campaign should not come here looking. What *is* real is forward-facing: `AP` §4.N
+records that M03-N2 may be run inside the M03-I4 wrapper, and **family I is the
+wrapper's first customer against a DUT** — everything before this was the
+wrapper's own unit tests — so every later row that runs inside it inherits a
+wrapper measured rather than assumed. That is why the packet asks for
+`cycle_of`, `in_times` and the front-offset observation to be reported: the
+tagger reads h = 8 and 12 under injection **only because** no idle is ever
+inserted between the start character and the frame's first octet, so the
+observation is the M03-N3 constraint made measurable.
+
+**On the next campaign, I put its structure in the packet and its escalation
+out of it.** The combined G7+H campaign is closed, so **the next campaign is
+family I's own qualification and its scored set is this packet's five ASSERT
+rows** — which is why assertion and iteration order are contract items here, why
+the two correlations above are named now, and why §6 item 1's bound is flagged
+as belonging in the class rationale. My RTL-exposure escalation from
+`J-dv_lead-0080` — adjudicator reads the disclosure table and fidelity ledger by
+default, opens a diff only for an off-pattern cell, journals which and why — is
+raised and undecided and **belongs in that campaign packet, not in a bench work
+order**. It governs how a campaign is adjudicated and nothing about how a bench
+is written; putting it here would pre-empt the orchestrator's own routing of an
+item I deliberately raised rather than decided.
+
+**I ruled on all three owed `test/**` repairs rather than letting the round pass
+them again.** This packet is the "next `test/**` touch" they were owed to.
+Finding 1 (`account_spliced_forwarded`'s `~received`-versus-`~delivered` input
+trace, right today only by cancellation and sitting exactly on `frame_out`'s
+bound) and Finding 4 (M03-H3's missing §6.2 `Idle` citation) **ride**: one site
+each, both mechanical, both already specified in the verdict, and Finding 4's
+clause is the same one M03-I1 and M03-I3 rest on, which is a reason to land them
+together. Finding 3's sweep — the total-output-word line at the ordinary
+two-frame rows of families D–H — **does not ride**, and the reason that decides
+it is not review load: **the line is not uniform**. Each row's "nothing else was
+emitted" bound is a function of that row's own legitimate output *and its
+drain*, and the drain is the quantity **M03-I2 derives from §6.1 for the first
+time in this bench**. The sweep should be written on top of that derivation
+rather than beside it, so it is deferred to the first `test/**` touch after
+family I lands, with a named ground instead of a recurring reminder.
+
+**And I corrected a scope sentence of my own.** `WO-0057` §11 wrote "Families I,
+J, K, M, N and L1–L5 remain unwritten". `test_m03_b.ml` carries **one** unit;
+**M03-B2, M03-B3 and M03-B4 have no unit of their own**. That is three ASSERT
+rows omitted from a scope statement — and it matters beyond bookkeeping, because
+**bound 6 is owed at M03-B4's geometry and M03-B4 does not exist**, so that bound
+is blocked on a family-B packet rather than on a campaign. A scope sentence that
+omits three rows is how an owed row becomes an escape.
+
+**What I did not do.** No `docs/specs/**` — outside my scope and nothing here
+needs a ruling. No `test/**` code: this packet commissions the bench, it does not
+write it. No RTL, no audit reports, no vendored reference — and the packet bars
+tb_writer from `test/third_party/verilog-ethernet/**` for this round, not on
+licensing (it is MIT and freely readable) but because the ordered set's shape is
+to be derived from requirements.md §2 and §6.2 alone and the reference is the
+nearest place to take one from instead.
+
+**One deviation from my instructions, stated rather than absorbed.** I was told
+`Files-in-this-commit` should be exactly the packet, and it is two files: the AP
+edit of §1.1 is the named exception in the same instruction ("AP edits only if a
+defect requires one, said loudly"), and R4's set-equality is mechanical, so the
+list follows the diff.
+
+### Actions
+- Authored `agents/handoffs/WO-0059_tb-m03-family-i-silence-and-ordered-sets.md`
+  — six rows (five ASSERT, one NO-ASSERT), traps before the rows, rows ranked by
+  risk with the build order stated and its one deviation explained, one
+  authorised `Bench` addition (`?ifg` on `frames_at`), and ten Return-log
+  deliverables.
+- Edited `test/attack_plans/AP-xgmii_rx_64.md`: **M03-I2's Stimulus and
+  Observable and Kills cells** (the two-member repair, the per-lane boundary
+  derivation, and the unachievable-kill finding stated in the cell), plus a §9
+  change-log row. No row added, no status converted, no count moved.
+- Re-derived, from specification text only: §6.1's drain arithmetic at both
+  lanes and both residue classes; M03-I3's 100-cycle window and its `ifg`;
+  M03-I4's drain arithmetic and front-offset invariance; M03-I6's injected spans
+  at both lanes for both members.
+- Ruled on the three owed `test/**` repairs; corrected `WO-0057` §11's scope
+  sentence; flagged the inherited 32-of-62 discharge figure as unverified.
+- No `git`.
+
+### Evidence
+1. **The defect, reproducible by arithmetic from committed text alone.**
+   SPEC-M03 §6.1's "Between frames" paragraph: N = 8q + r; lane-0 terminate word
+   q + 1, `tlast` at q + 2 (r ≤ 4) or q + 3 (r ≥ 5); lane-4 gives 0 or 1. At
+   N = 64 (r = 0) a conformant `tlast` is **+1** after the terminate word and the
+   row asserted only from **+3**; the one-cycle defect emits at **+2**.
+2. **The repair's own numbers, on `Bench`'s schedules.** Lane 0
+   (`first_start` = 8): 64 octets → terminate at octet time 80, cycle **10**;
+   delivered 60 → 8 words; `tlast` cycle **11**. 69 octets → terminate at octet
+   time 85, cycle **10**; delivered 65 → 9 words; `tlast` cycle **12** = the last
+   legal drain cycle. Both boundaries cycle **13**. Lane 4 (`first_start` = 12),
+   69 octets → terminate at octet time 89, cycle **11**; `tlast` cycle **12**;
+   boundary **14**.
+3. **`uniform` proposes no C-45 site**, from source:
+   `test/xgmii/idle_injection.ml`'s `uniform` starts at
+   `first = first_octet_cycle f + 1` while the prohibited boundary is
+   `first_octet_cycle f`, so `c45_sites` is empty on every uniform schedule and
+   there is no residue to report — the packet bars manufacturing one.
+4. **M03-I6's spans.** 64 octets, lane 0: source span 9 cycles, sites at
+   `before_cycle` 3 … 10 (8 sites) × 7 = 56 → **65**, one outside REQ-107's
+   5-to-63 band; at 1 idle the same span is **17**, inside it. 1518 octets: lane
+   0, sites 3 … 191 (189) × 7 = 1323, span **1513**; lane 4, sites 3 … 192 (190)
+   × 7 = 1330, span **1521** — the naive cycle-counting oversize defect fires at
+   lane 4 only, by three.
+5. **The co-simulation reach**, from `CD-xgmii_rx_64_cosim.md` §5.2: X1 excludes
+   all cycle timing, latency and word-to-word spacing; X2 excludes strobe
+   identity and pinned cycles. So M03-I1, I2, I5 and I6 are anchorable in
+   nothing, and only the delivered-frame half of I3 and I4 could be. **Not a
+   REQ-901 effect** — REQ-016/109/113 are outside classes (e) and (f).
+6. **Family B's unbenched rows**, measured:
+   `grep -c 'let%expect_test' test/xgmii_rx_64/test_m03_b.ml` = **1** (M03-B1),
+   against §4.B's four ASSERT rows.
+7. **AP status counts unchanged by this touch**: 78 rows, 62 ASSERT, 7
+   NO-ASSERT, 4 NO-STIMULUS, 4 STRUCTURAL, 1 GAP. Table well-formedness checked:
+   the edited M03-I2 row carries six cells, the appended change-log row three.
+8. **Nothing was executed.** No `dune`, no test run, no simulator: this round
+   produced a work order and a plan edit, and every number above is derived from
+   committed specification text or read from committed `test/**` source. The
+   container's absent-toolchain state (ADR-0005) is unchanged and untested by me
+   this round.
+
+### Outcome
+**DoD met.** `WO-0059` is authored and ready for the orchestrator to issue to
+tb_writer: six rows, traps before the rows, risk ranking with a stated build
+order, the two asked-for interactions declared (both negative, with the real
+forward interaction named instead), the next campaign's scored set stated and
+its escalation deliberately excluded, the three owed `test/**` repairs ruled on,
+and five bars on what this family may not claim. **One AP defect was found and
+repaired in the same round, loudly** — M03-I2's stimulus could not reach its own
+kill — with no row, status or count moved. `SO-M03` neither issues nor is
+offered.
+
+Handoff: to the orchestrator — both files for commit, and the packet for issue
+to tb_writer under a fresh spawn short-id.
+
+### Open-questions
+- **The 37-of-62 discharge figure is inherited, not re-derived.** It is
+  `WO-0057` §11's "32 of 62" plus family I's five; my own count of benched ASSERT
+  rows at `abf5d0b` gives **33**, so the running figure is uncertain by one. I
+  will re-derive it at this packet's verdict rather than quote it again — the
+  `J-dv_lead-0061` failure mode, where a denominator I had quoted rather than
+  counted survived one packet too long.
+- **A §4.I family note on co-simulation reach is offered, not written.** Families
+  F and G carry notes because REQ-901's exclusions bind what a sign-off packet
+  may offer; family I's limitation is the comparison domain's, which binds
+  nothing normatively. It lives in `WO-0059` §6 item 4 for now; if `SO-M03` needs
+  it in the plan, it is one note at the plan's next touch.
+- **Owed and still owed**, updated: **bound 6** is blocked on **M03-B4**, which
+  is unbenched along with M03-B2 and M03-B3 — family B is not in the queue's
+  stated remainder and should be; **bound 7** unbenched; Finding 3's
+  total-output-word sweep deferred with a named ground and a named home (§7.3);
+  AP-M14's sweep companion; the `precompile_check.sh` side-effect-in-combinator
+  lane; M03-F5's discharge-by-citation qualification; the RFC 1071 anchor on the
+  next fetching run; X-7, X-10, X-11 deferred.
+- **Raised, not decided, unchanged**: the adjudicator RTL-exposure control, which
+  belongs in the next campaign packet.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0059_tb-m03-family-i-silence-and-ordered-sets.md
+- test/attack_plans/AP-xgmii_rx_64.md
