@@ -361,3 +361,44 @@ but CI-authoritative has held twice now under this posture.
 
 ### Files-in-this-commit
 - tasks/BOARD.md
+
+## [J-orchestrator-0155] 2026-08-04T00:45Z | task:WO-0057 | ACCEPT transcribed - family H closes at 32 of 62, one combined campaign next
+
+### Trigger
+dv_lead's RV-0057 return sat complete in the tree (notification
+lost again); verdict read in full, committed under dv at 32257d7.
+
+### Reasoning
+ACCEPT with no bounce: four rows clean, every observable
+re-derived rather than checked off. The verdict directs the
+orchestrator to transcribe the state flip (RETURNED → ACCEPTED)
+- done on the packet's State line, and the board row flipped
+with the verdict's substance: the three green-run-cannot-say
+findings (H4's vacuous window check, the unexcluded third
+frame, the right-by-cancellation helper), the D1/D2 two-device
+correction, and the coupling ruling - ONE campaign, scored set
+G7 + H1-H4, three constraints carried, g-c4 out of scope.
+Count: 32 of 62 ASSERT discharged. Next dispatches: dv drafts
+the campaign packet with its SEALED companion frozen in the
+same commit (R-SEAL-1 forward commitment, held); architect
+round on the twice-routed §0.6 zero-delivered referent now
+unblocked - review landed, no active round cites the clause.
+
+### Actions
+32257d7 push; packet State line transcription; board row flip;
+this commit; then the two dispatches.
+
+### Evidence
+32257d7; RV-0057-VERDICT §10's boxed ruling; §8's scope and
+constraints; §9's three-part ruling.
+
+### Outcome / DoD
+WO-0057 ACCEPTED on the record with the verdict's reasoning
+preserved verbatim in the packet. Families A-H all landed.
+
+### Open questions
+None new; dv's owed-at-next-touch items ride in its journal.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0057_tb-m03-family-h-start-without-terminate.md
+- tasks/BOARD.md

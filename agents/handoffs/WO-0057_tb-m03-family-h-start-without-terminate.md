@@ -1,6 +1,6 @@
 # WO-0057: Family H — start without terminate (REQ-110), and the row that makes C-23 testable
 
-- **State**: **DRAFT** (dv_lead-authored; the orchestrator issues)
+- **State**: **ACCEPTED** (RV-0057-VERDICT: RETURNED → ACCEPTED, `J-dv_lead-0078`; state transcribed by the orchestrator)
 - **From** / **To**: dv_lead → tb_writer
 - **Spec basis**: `docs/specs/requirements.md` **REQ-110** (its zero-delivered
   clause in particular), REQ-101, REQ-103, REQ-105, REQ-021, REQ-008, REQ-007,
