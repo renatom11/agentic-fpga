@@ -542,3 +542,46 @@ None new.
 ### Files-in-this-commit
 - scripts/policy.sh
 - scripts/test_protocol.sh
+
+## [J-orchestrator-0159] 2026-08-04T01:30Z | task:WO-0058 | Manifests landed and the seven transients applied
+
+### Trigger
+Auditor returned: seven classes SEEDED, blinding conduct
+affirmed, four mandatory disclosures on the record.
+
+### Reasoning
+The auditor refused the manifest path my dispatch named -
+agents/handoffs/ is outside its lane on four independent
+statements and R7 would have refused the commit; the manifest
+lives at docs/reports/audit/WO-0058-mutations/README.md and
+that is the correct resolution, mine to have gotten right in
+the dispatch. Committed under auditor at 480c38a. Transient
+application per packet §6 and the manifest's own §7: diffs
+extracted by the published command, byte-checked clean against
+the tree, then seven branches each = a2d090d + one diff:
+gh-c1 39bcccb, gh-c2 4e84d64, gh-c3 2ddb3db, gh-c4 6795ae6,
+gh-c5 63af79d, gh-c6 e996f8e, gh-c7 3cf90ac - plain
+"MUTATION RUN <id> -- never merge" commits, never merged.
+journal-check red on those branches is plain-commit noise;
+cosim red is by design; the harvest scores the BUILD job's
+runtest alone.
+
+### Actions
+480c38a push; extraction; seven branches pushed; this commit.
+Next: wait the runs out, harvest, relay to dv with the four
+disclosures verbatim for adjudication against the seal at
+1c3a89d.
+
+### Evidence
+480c38a; the seven branch SHAs above; git apply --check clean
+seven of seven before any branch existed.
+
+### Outcome / DoD
+The campaign's field work is running. Nothing about outcomes
+is claimed here; the seal speaks at adjudication.
+
+### Open questions
+None new.
+
+### Files-in-this-commit
+- (none)
