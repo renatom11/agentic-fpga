@@ -3018,3 +3018,273 @@ the count guard's blindness at a lane-4 start (§9.1), and the pre-fix octet cor
 
 - libs/hardcaml_ethernet/src/xgmii_rx_64.ml
 - agents/handoffs/BUG-0003_m03-lane-4-injected-word-cycle.md
+
+## [J-rtl_lead-0012] 2026-08-04T14:52:00Z | task:BUG-0003 | The BUG-0002 + BUG-0003 snapshots landed byte-exact from run 30918948889, and the emitted netlist grades both predictions: five enable conditions on five existing registers, one new mux, twenty-six combinational nets, no flop, no process — the raw 3039-line diffstat is Hardcaml net renumbering and nothing else
+
+### Trigger
+
+Orchestrator spawn, branch `claude/fpga-hardcaml-agent-orchestration-37ceyf` at HEAD
+`ba1189a`. No spawn short-id. The round is the promotion landing owed since `fafb83d`: CI run
+`30918948889` at `46dbadb` passed `runtest` with zero assertion failures, ran Generate RTL,
+and its determinism step shipped promotion blocks for exactly the two files I named —
+`rtl_snapshots/xgmii_rx_64.v` and `rtl_snapshots/eth_mac_10g.v`. The orchestrator decoded
+both blocks and sha-verified them against CI's own hashes before handing them to me. My part
+is mechanical (two `cp`s) plus the one thing only I can sign: grading my own structural
+prediction against the netlist that actually came out.
+
+### Inputs
+
+- `/tmp/.../wo60_harvest/xgmii_rx_64.v.promoted` (67,071 bytes) and
+  `eth_mac_10g.v.promoted` (112,000 bytes) — the orchestrator's decoded, sha-verified
+  harvest of run `30918948889`'s promotion blocks. **Ephemeral session artefacts**
+  (ADR-0003/F5): they are not in the repo and the paths do not survive this session. What
+  *is* durable is the content, now at `rtl_snapshots/**` under the hashes below, and the CI
+  run id.
+- `rtl_snapshots/xgmii_rx_64.v` and `rtl_snapshots/eth_mac_10g.v` at HEAD `ba1189a` — the
+  pre-landing versions, read via `git show` for the differential below.
+- My own `J-rtl_lead-0010` (Evidence, final paragraph) and `J-rtl_lead-0011` (Evidence,
+  final paragraph) — the two predictions this entry grades. Both are already in history;
+  quoting them to score them is a retrospective reference, not a new withheld claim
+  (PROTOCOL §10, R-SEAL-1's second exclusion).
+- `agents/PROTOCOL.md` §4–§6; `agents/charters/rtl_lead.md` (§5 DoD, §8 determinism
+  evidence).
+- **Not opened, by spawn bar**: `libs/**`, `test/**`, every packet including
+  `BUG-0003_m03-lane-4-injected-word-cycle.md`, and anything SEALED. The item-5 discharge
+  below is recorded here, in my own journal, precisely because I am barred from flipping the
+  packet; dv_lead does that in its own round.
+- No Essenceia material consulted (charter §8, Inputs honesty).
+
+### Reasoning
+
+#### The sha chain, end to end
+
+Three links, each independently checkable, no link resting on my say-so alone:
+
+1. **CI → harvest.** Run `30918948889` at `46dbadb` emitted the two files and published their
+   sha-256 in its own determinism step. The orchestrator decoded the promotion blocks and
+   re-hashed the decoded bytes against CI's published hashes; match reported true.
+2. **Harvest → tree.** I copied both files with `cp`, no editor in the path, and re-hashed
+   both source and destination. `cmp` reports byte-identity on both pairs.
+3. **Tree → this commit.** The hashes below are the hashes of the files staged in this
+   commit, and they equal CI's:
+
+   | file | sha-256 | bytes |
+   |---|---|---|
+   | `rtl_snapshots/xgmii_rx_64.v` | `05186ac1a9bae4b1478cdb45c279ab6c0b9dfab87a2031f11dc49e47291de239` | 67,071 |
+   | `rtl_snapshots/eth_mac_10g.v` | `a309376c9d7082d49fd86100b5718c53dc700603a2780505cd2a50405d7acbc6` | 112,000 |
+
+   The prefixes CI published — `05186ac1a9bae4b1…` and `a309376c9d7082d4…` — are the
+   prefixes of those two hashes. Anyone at this commit can re-run `sha256sum` and get them.
+
+The displaced versions were `43b4056…` (65,788 bytes) and `3ae651a…` (110,717 bytes). Both
+files grew by **exactly 1,283 bytes and exactly 57 lines** — the identical delta, which is
+the first and cheapest sign that the mirroring prediction held.
+
+#### Grading the prediction
+
+`git diff --stat -- rtl_snapshots/` reports **3,039 changed lines in each file**. Taken at
+face value that refutes everything I predicted, and the first thing this round had to
+establish is that it does not. Hardcaml names nets `_NNN` in emission order; inserting 26
+nets into that sequence renumbers every declaration and every reference after the insertion
+point. Normalising `_\d+` → `_N` collapses the 3,039 to a small structured delta. **This is
+worth recording for its own sake**: a future reader grading a snapshot promotion by diffstat
+alone will draw the wrong conclusion every time, and `J-rtl_lead-0008`'s much smaller
+promotion did not make the trap visible because a one-flop change renumbers little.
+
+The netlist census, `xgmii_rx_64` module body only, before → after:
+
+| construct | before | after | Δ |
+|---|---|---|---|
+| `always @(posedge …)` | 16 | 16 | **0** |
+| `always @*` | 3 | 3 | **0** |
+| `reg` declarations | 19 | 19 | **0** |
+| `if (` (i.e. clear + enable branches) | 17 | 22 | **+5** |
+| `wire` declarations | 683 | 709 | +26 |
+| `assign` `&` / `\|` / `~` / `?:` / bit-select / alias | — | — | +11 / +3 / +9 / +1 / +1 / +1 |
+
+The six `assign` deltas sum to 26 and equal the wire delta exactly: **every net this change
+added is combinational, and the state of the module is untouched.**
+
+Point by point against what I staked:
+
+1. *`J-0010`: "one enable term on two existing registers".* **Held.** `_590 = ~_17` enables
+   exactly two registers, `_777` [63:0] and `_591` [7:0] — `al_data_d` and `al_keep_d`.
+2. *`J-0010`: "no new register, no new `always` block".* **Held**, twice over: `reg`
+   declarations 19 → 19 and sequential processes 16 → 16.
+3. *`J-0010`: "the same deltas reappear in `eth_mac_10g.v` from the inlined instance".*
+   **Held, and stronger than I claimed.** I predicted same-*shape*; what landed is
+   byte-identity. Splitting both snapshots per module and hashing the bodies: `crc32_eth` is
+   the same text in all four versions; `xgmii_tx_64` and the `eth_mac_10g` wrapper are
+   byte-unchanged; and the post-change `xgmii_rx_64` body is character-for-character equal in
+   `xgmii_rx_64.v` and `eth_mac_10g.v`. The whole of both files' change is one module's text,
+   emitted once and reproduced identically, with the +57 lines shifting `xgmii_tx_64`'s start
+   2795 → 2852 and `eth_mac_10g`'s 4541 → 4598. That is the generator's hierarchical emission
+   behaving exactly as `Hierarchy.In_scope` promises, demonstrated rather than assumed.
+4. *`J-0011`: "three existing registers gain an enable condition".* **Held.** `_581 = ~_539`
+   enables exactly three: `_771` [63:0], `_675` [7:0], `_582` [7:0] — `data_d`, `cov_d`,
+   `first_d`. (`first_v` is the 8-bit per-lane first-octet vector, hence `first_d`'s [7:0];
+   it is not a 1-bit flag and I should not have let the name suggest otherwise.)
+5. *`J-0011`: "the `al_keep` mux gains one term".* **Held, and it is the only new mux in the
+   module** — `assign ?:` 38 → 39. The emitted pair is
+
+       assign _587 = _539 ? 8'b00000000 : _585;
+       assign _585 = _534 ? _584 : _582;
+
+   which is `mux2 bubble (zero 8) (mux2 off4 (rotate_hi window_keep) cov_d)` in netlist form,
+   term for term, with `_534` = `off4` and `_582` = the newly-enabled `cov_d`.
+6. *"a bubble/hold wire".* **Held, and both decompose to their source expressions exactly.**
+   `bubble` is `_539 = ((_534 & _45) & ~_333) & ~_370` — four conjuncts:
+   `off4 & a_open & ~cov_nonempty & ~a_close_now`, with `_45 = (2'b01 == state) | (2'b10 ==
+   state)` the open-state test and `_370` carrying `a_close_now`'s own `& ~clear`. `hold` is
+   `_827 = (_629 & _824) & ~clear` — `have_word & ~decided & ~clear`, three conjuncts —
+   published through `assign _17 = _827;`, a *low*-numbered wire assigned from a high-numbered
+   expression, which is the emitted signature of the forward `wire 1` / `<==` idiom the source
+   uses. The netlist confirms the polarity of every conjunct, which the source could only
+   assert.
+7. *The `+5` enable branches split 2 + 3.* **Held exactly**, and the two groups are the two
+   bug fixes: `_590` (BUG-0002's hold) on two registers, `_581` (BUG-0003's bubble) on three.
+   No sixth enable appeared, and the one pre-existing enabled register (`_798`, the CRC-path
+   flop) kept its enable unchanged.
+
+**Grade: held on every named point, zero deviations.** One item came out stronger than
+stated (3, byte-identity rather than same-shape) and one exposed sloppy naming rather than a
+wrong prediction (4, `first_d`'s width). Nothing I predicted failed to appear and nothing
+appeared that I had not predicted.
+
+#### Two things the netlist showed that the source could not
+
+Neither is a defect; both are worth having in the record because they are load-bearing for
+the correctness arguments in `J-0010` and `J-0011`, and until now those arguments rested on
+reading OCaml.
+
+**The two fixes interlock through `al_keep`, in the order the argument needs.** `_587` — the
+*post-mask* `al_keep` — fans out to eleven places: the `al_keep_d` register, the eight
+bit-selects feeding the coverage popcount, and `assign _683 = _587[4:4]`, which is `ev12`'s
+`bit al_keep 4`. So `ev12` reads `al_keep` **after** the bubble mask, not before. That is
+precisely the composition `J-0011` claimed in prose ("no half word is ever presented and
+`hold`'s drop is empty at offset 4"): on a bubble cycle the mask zeroes `al_keep`, so
+`al_keep[4]` = 0, so `ev12` = 0, so `decided` = 0, so `hold` = 1 and the emission register
+holds. Had the generator ordered these the other way the two fixes would have fought. It did
+not, and now that is a checkable fact at a SHA rather than a reading of my own code.
+
+**Clear dominates every one of the five new enables.** All five emitted processes have the
+form `if (_24) X <= <reset>; else if (<enable>) X <= <d>;` with `_24 = clear` — so a cleared
+window is a cleared window, which `J-0011` asserted from the register spec and is now visible
+in the Verilog. The combinational mask is *not* clear-dominated in the same way (under
+`clear`, `_370` goes low, so `~_370` goes high and `bubble` can assert), but the mask can
+only *reduce* coverage, never invent it, and both registers behind it are being cleared on
+that same edge — so it is conservative in the safe direction. I record it as an observation
+rather than an open question because there is no reachable behaviour change, but it is the
+one asymmetry between the registers and the mask and it should be named rather than
+rediscovered.
+
+#### What this landing discharges, and what it does not
+
+**BUG-0003 §7 item 5 is discharged by this commit**, and the discharge consists of exactly
+this: the snapshots regenerated by CI from the fixed source now *are* the snapshots in the
+tree, byte-for-byte, under the hashes CI published. Item 5 held the packet open on the
+tree's `rtl_snapshots/**` being stale with respect to `ce00c06`/`fafb83d`/`b848d56` — three
+commits of source change with no regeneration, because there is no local toolchain (ADR-0005)
+and the established practice is CI-side regeneration promoted afterwards. That staleness is
+now zero: one regeneration covering all three source commits, promoted intact. The packet's
+Return log is dv_lead's to flip and I have not touched it; this entry is the authority the
+flip cites, the same shape as a gate signature's (PROTOCOL §7).
+
+**REQ-902 is not discharged here, and this commit is not where it can be.** The
+double-generation byte-identity criterion asks that the same source SHA emit byte-identical
+Verilog on every run and every machine. Run `30918948889` generated *once*, at `46dbadb`, and
+its output is what I landed — that is one sample, and one sample cannot demonstrate identity
+of two. **The criterion completes at the next CI run at this commit**: that run regenerates
+from the same source and diffs its output against the `rtl_snapshots/**` this commit
+establishes, and an empty diff is the second sample the criterion has always been asking for.
+So the check is owed by the run this landing itself triggers, and the artefact it checks
+against is the pair of files listed below. That is the whole reason a promotion must land
+before the criterion can close rather than after: until the snapshots are in the tree there
+is nothing for the second generation to be diffed against. Carried from `J-rtl_lead-0003`
+through `-0011`; this is the first round in which it is one run from complete rather than
+indefinitely owed.
+
+### Actions
+
+- `cp` of the two harvested files over `rtl_snapshots/xgmii_rx_64.v` and
+  `rtl_snapshots/eth_mac_10g.v`. No editor touched either file; `cmp` confirms both.
+- Differential analysis of the landed netlist against the pre-landing versions: per-module
+  split and hashing, net-renumbering normalisation, operator census, expansion of both new
+  enable expressions to their conjuncts, fan-out enumeration of `bubble`, `hold` and the
+  masked `al_keep`, and a hygiene scan of both files.
+- Staged nothing else. No `libs/`, no `test/`, no packet, no spec. Ran no git write command.
+
+### Evidence
+
+Reproducible from a checkout at this commit:
+
+```sh
+sha256sum rtl_snapshots/xgmii_rx_64.v rtl_snapshots/eth_mac_10g.v
+# 05186ac1a9bae4b1478cdb45c279ab6c0b9dfab87a2031f11dc49e47291de239  rtl_snapshots/xgmii_rx_64.v
+# a309376c9d7082d49fd86100b5718c53dc700603a2780505cd2a50405d7acbc6  rtl_snapshots/eth_mac_10g.v
+wc -c rtl_snapshots/xgmii_rx_64.v rtl_snapshots/eth_mac_10g.v      # 67071, 112000
+
+# the census (module body only; the raw diffstat's 3039 lines are net renumbering)
+grep -c 'always @(posedge' rtl_snapshots/xgmii_rx_64.v             # 16, unchanged
+grep -c '^    reg ' rtl_snapshots/xgmii_rx_64.v                    # 20 file-wide, unchanged
+grep -c '^    wire ' rtl_snapshots/xgmii_rx_64.v                   # 1166 (was 1140)
+grep -n 'assign _587 = _539 ? _491 : _585;' rtl_snapshots/xgmii_rx_64.v   # the al_keep mask
+grep -n 'assign _17 = _827;' rtl_snapshots/xgmii_rx_64.v                  # hold's forward wire
+grep -n 'assign _683 = _587\[4:4\];' rtl_snapshots/xgmii_rx_64.v          # ev12 reads masked al_keep
+
+# mirroring: module start lines shift by exactly +57, bodies otherwise unchanged
+grep -n '^module ' rtl_snapshots/eth_mac_10g.v
+#   1 crc32_eth / 1031 xgmii_rx_64 / 2852 xgmii_tx_64 / 4598 eth_mac_10g   (was 2795 / 4541)
+```
+
+Externally verifiable reference: CI run **`30918948889`** at `46dbadb` — `runtest` PASSED,
+zero assertion failures, Generate RTL ran, determinism step emitted promotion blocks for
+these two files and no others, with the two sha-256 values above.
+
+Hygiene scan of both landed files, all clean: zero `x`/`z` literals, zero `initial` blocks,
+zero delays, zero `$` system tasks, zero `negedge`, zero `tri`/`wand`/`wor`, zero `inout`,
+zero blocking assignments inside sequential processes, zero CRLF, zero tabs, zero trailing
+whitespace, single trailing newline. Every `always @*` block carries a `default:` arm (4/4 in
+`xgmii_rx_64.v`, 13/13 in `eth_mac_10g.v`) — latch-free. **Zero multiply-driven nets in every
+one of the four modules.** The one net per module that is declared and never `assign`ed is an
+instance output port (`_787`, the `crc32_eth` instance's `crc_out`), present identically
+before the change as `_764` — not a new dangle.
+
+What is **not** claimed: I did not run the generator, did not compile, did not simulate, and
+did not re-derive any cycle number this round. Nothing in this entry is a verification
+result; the netlist analysis is static inspection of bytes CI produced. No DV sign-off is
+claimed — `SO-xgmii_rx_64.md` is dv_lead's, and the `BUG-0003` verdict is dv_lead's.
+
+### Outcome
+
+The promotion owed since `fafb83d` has landed byte-exact, and the two predictions I staked
+before the run held on every named point with zero deviations. Charter §5 DoD for this round:
+snapshots regenerated and promoted ✔; determinism evidence in Evidence ✔ (with the honest
+statement that the byte-identity criterion needs the *next* run, not this one); in-scope files
+only ✔ (`rtl_snapshots/**`); no test, spec or packet touched ✔; no git write ✔.
+
+Handoff: back to the orchestrator for commit, and thence to dv_lead — `BUG-0003` §7 item 5 is
+discharged by this commit as described above, and dv_lead flips the packet's Return log in its
+own round citing this entry.
+
+### Open-questions
+
+1. **REQ-902 completes at the next CI run at this commit** — that run's regeneration must
+   diff empty against the two files landed here. Carried since `J-rtl_lead-0003`; this is the
+   first round where it is one run from closing rather than open-ended. If that diff is
+   non-empty the fault is the generator's determinism, not these fixes, and it is mine.
+2. **Diffstat is not a review instrument for `rtl_snapshots/**`.** 3,039 changed lines for a
+   26-net change is the normal case, not an anomaly, because Hardcaml renumbers nets from the
+   insertion point. Any future review of a snapshot promotion — mine or the auditor's — needs
+   the normalisation step or it will either wave through a large real change or challenge a
+   small one. Worth an implementation note wherever the determinism practice is written down;
+   architect_docs_lead's call whether that belongs in a doc.
+3. **Carried, unchanged, and untouched by this commit**: escalation 2 of `J-0010` (sub-word
+   idle granularity, no row owed per `RV-0060-VERDICT` §6); the latent `first_v` gating on a
+   stimulus §10 forbids (M03-N3); the `WO-0038` §8 mutation spot-check; and the line-rate rows
+   L1–L5 — the last two both still owed before `SO-xgmii_rx_64.md` can issue.
+
+### Files-in-this-commit
+
+- rtl_snapshots/xgmii_rx_64.v
+- rtl_snapshots/eth_mac_10g.v
