@@ -402,3 +402,48 @@ None new; dv's owed-at-next-touch items ride in its journal.
 ### Files-in-this-commit
 - agents/handoffs/WO-0057_tb-m03-family-h-start-without-terminate.md
 - tasks/BOARD.md
+
+## [J-orchestrator-0156] 2026-08-04T01:00Z | task:WO-0057 | The section-0.6 ruling landed and C-5 re-scoped by transcription
+
+### Trigger
+architect_docs_lead returned from the twice-routed §0.6 round;
+dv_lead still drafting WO-0058 in a disjoint lane.
+
+### Reasoning
+The ruling landed at 0caf023 under the architect's identity:
+the window's reference word is the last octet the frame
+RECEIVED while open; the closing word stands in only for the
+zero-received class; what follows a frame never extends it
+(M03-G6's principle generalised upward, not distinguished).
+The architect's material correction: the routed question said
+"delivered nothing" but the right trigger is "received
+nothing" - the delivered reading would have falsified
+SPEC-M03 §9's committed far-edge sentence and changed what
+run_f2 asserts at (lane 4, k=4). The escalation condition was
+avoided by correcting the class, not weakening the rule. No
+ADR, per the C-12/C-23 precedent. The -0021 received-versus-
+delivered deferral is closed. Its one transcription request:
+C-5's re-scope in docs/gates (not its staging lane) - done
+here citing J-architect_docs_lead-0023.
+
+### Actions
+0caf023 commit + push; C-5 row amendment; this commit.
+Queued for dv's next natural round: the §0.6 re-countersign
+(C-43 discipline - not in force until transcribed) and its
+call on restating Finding 2's note in the attack plan.
+
+### Evidence
+0caf023; the return's mechanical check (injection.ml:277's
+window function computes the ruled rule clause for clause -
+the diff ratifies the bench).
+
+### Outcome / DoD
+The §0.6 referent question that recurred across G6, family F's
+k=0 branch, and family H is settled programme-wide. Nothing
+benched moves.
+
+### Open questions
+None new; C-5's module-side half rides the ledger.
+
+### Files-in-this-commit
+- docs/gates/P1-spec-freeze-checklist.md

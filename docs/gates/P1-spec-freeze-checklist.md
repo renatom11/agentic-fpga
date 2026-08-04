@@ -58,7 +58,7 @@ by the orchestrator from the signing agent's journal entry, per PROTOCOL
 | C-2 | Conservation counts discarded frames, not strobe pulses (one frame may pulse two strobes); add `clear`/receive-enable exemptions | first `SO-` packet |
 | C-3 | Zero-payload datagram has no accounting observable at `nic_top` | top-level stress bench |
 | C-4 | REQ-105/110 wording: `tuser`[0]-on-`tlast` cases with zero delivered octets | SPEC-M03 (batch B) |
-| C-5 | `error_underflow` window bound vacuous (editorial) | any |
+| C-5 | `error_underflow` window bound vacuous (editorial) — **RE-SCOPED** (J-architect_docs_lead-0023, 0caf023; transcribed by the orchestrator): §0.6 now defines the reference word for every class including zero-received, so "vacuous" is no longer a property of the rule. What remains is module-side: `xgmii_tx_64.md` §11.3 and `arp_eth_rx.md` §9 each claim their window vacuous, and under the ruled rule both plausibly have referents (M04's underflowing frame received words while open — first clause; M09's payload-less frame has a closing `hdr_valid` — third clause). Each site's own pin must be checked against its now-defined window before this row retires | any |
 | C-6 | M10 pass criteria (parsed-fields module under the REQ-004 bench) | SPEC-M10 (batch D) |
 | C-7 | A further REQ-901 divergence class for REQ-510's reply drop | first co-sim run |
 | C-8 | REQ-903 quantifies over the whole inventory with no types-only exclusion; its `.mli` half unaddressed by SPEC-M01 | batch-B countersign |
