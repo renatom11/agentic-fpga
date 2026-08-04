@@ -479,3 +479,272 @@ it was at `fafb83d`.
 *(appended by dv_lead after re-test. rtl_lead's fix entry must contain a
 Root-cause section — including §6's open mechanism question — before ACCEPT can
 be written here.)*
+
+---
+
+### FIX VERDICT: **ACCEPT** — the defect is measured absent at every lane-4 member. **The packet does NOT close**: §7 item 5 is unmet for the second consecutive RTL change, and §5's severity conversion is warranted in substance but rests on derived evidence, which is not a class DV may record a severity on
+
+*(dv_lead, `J-dv_lead-0093`, after the promotion at `J-dv_lead-0092`. Fix under
+judgment: `b848d56`. Bench under which it is judged: `test_m03_i.ml` frozen at
+`51b9920`, **four commits earlier than the RTL** — §3 item 4's ordering property
+is stronger this round than last.)*
+
+### V.1 The five acceptance items of §7, item by item
+
+| §7 item | Verdict | Evidence |
+|---|---|---|
+| **1.** M03-I4 and M03-I6 green in full — 48 + 4 runs, both lanes, `k` ∈ {0,1,7}, lengths 64–71 and the 1518-octet member, **including M03-I4's cross-run tail assertions** | **MET** | Run **30916188480**, job **92014809540**, `head_sha` `b848d56`. **Zero assertion failures in the entire suite**; no `fail` message anywhere in the job log. The cross-run assertions (exactly two front-offset classes; `h` = 8 and `h` = 12; 24 accumulated frames each) **executed for the first time in this program's history** and passed. |
+| **2.** Every other M03 unit and all 80 non-M03 units byte-identical; the promotion block lists exactly one file | **MET** | The block lists **exactly** `test/xgmii_rx_64/test_m03_i.ml`, sha256 `4b66e2b9f2b3f789f41b31b22418e3257644776f833ee27c8b60b774b914b3e8`. The trap §7 item 2 set did not spring. §9.4's "bit-identical by inspection rather than by argument" is now bit-identical by measurement. |
+| **3.** REQ-019's DV-observable half unmoved — gapless `word_delay` **3** at both lanes (`h` = 8 / `L` = 16; `h` = 12 / `L` = 12) | **MET** | Printed in the promoted block at every `k` = 0 member of both lanes. §1.1's ceiling is 4. No E2 revival condition is tripped on the half I can measure. |
+| **4.** A Root-cause section settling §6's open mechanism question | **MET** | §9.1 answers it in terms and does not hedge: the split **is** real, it **does** reach the output port, and exactly one half of each pair is emitted while the other is dropped by `hold` — which is why the count never moved. §6's disjunction ("*either absorbed before the port, or a different mechanism*") is refuted in both disjuncts, and the refutation is correct. |
+| **5.** `rtl_snapshots/**` regenerated with REQ-902's double-generation byte-identity check, **carried from `fafb83d`** | **NOT MET** | `b848d56` stages three paths: this packet, `agents/journals/claude_rtl_lead_agent.md`, and `libs/hardcaml_ethernet/src/xgmii_rx_64.ml`. `rtl_snapshots/` last moved at `750be49` — **two RTL changes ago**. §9.6 item 5 restates the obligation and the prediction it carries (three existing registers gain an enable condition, the `al_keep` mux gains one term, **no new register and no new `always` block**, the same deltas reappearing in `eth_mac_10g.v`); that prediction is now **unverified across two fixes**, not one. |
+
+**Four of five met, and the fifth is not a behaviour.** The design defect this
+packet exists for is discharged: at every lane-4 injected member the cycles, the
+`tkeep`s, the `tlast` placement, the `tuser` verdict, the 60 delivered octets,
+the five error strobes, the conservation and protocol monitors and
+`Idle_injection.errors`/`c45_sites` are all green, and §2.4's list of 22 undriven
+runs is now empty. **ACCEPT is written on that.** But §7 item 5 is a numbered
+acceptance item that I wrote into this packet myself, deliberately, *because it
+had already been skipped once* — and a packet that closes over its own carried
+item teaches the next round that carried items evaporate. **The packet state is
+therefore `FIX ACCEPTED / OPEN on §7 item 5 and §V.2`, not `CLOSED`.**
+
+### V.2 Severity — the conversion is **warranted in substance and NOT recorded**. Severity line stays **MAJOR**; a throwaway-branch measurement at `fafb83d` is **OWED** before CRITICAL is written
+
+§9.2 reports both of §5's conversion conditions present in the pre-fix design:
+seven mid-frame words at `tkeep` = 0x0F with `tlast` = 0, and **4 of the 60
+required octets delivered**, the other marked octets being the injected idle
+word's own filler `0x07` presented to a REQ-015 consumer as frame octets. If
+that is what the port carried, it is frame corruption of BUG-0002's class and
+worse than BUG-0002's, and I said in §5 I would convert **without argument**.
+
+**I am not arguing. I am refusing to record a DV severity on evidence §9.2 itself
+labels "Derived, not measured (the run stops at word 0's cycle)".** Three
+reasons, and the third is the one that decides it:
+
+1. **§5's conditions are appearance predicates.** "*dv_lead will convert it
+   without argument if either **appears***." This packet spent all of §2.4
+   separating what was measured from what was not, at a granularity of individual
+   words; converting its own severity on a derivation would contradict the
+   standard the packet is built on, in the packet.
+2. **The derivation is the designer's, and it is derived from the RTL.** If DV
+   writes CRITICAL on rtl_lead's reading of `libs/**`, the severity of a DV bug
+   packet becomes a designer-supplied fact. PROTOCOL §10 exists to stop exactly
+   that transfer. Note that this cuts **against** my own convenience: the
+   conversion would make my packet more consequential, not less.
+3. **I have already been wrong once this round about what that port carried, on
+   an inference rather than a measurement** — §6's count-guard argument, which
+   §9.1 refutes structurally (below, §V.3). That is precisely why the second
+   claim about the same port must be measured. An agent whose inference about a
+   port has just failed does not then accept someone else's inference about the
+   same port.
+
+**The measurement owed, specified so it cannot be argued about later.** It is
+cheap, it is reproducible, and the operating pattern already exists in PROTOCOL
+§10 — the orchestrator applies a transient change in an **uncommitted working
+tree**, runs, harvests, reverts fully, and nothing enters history. Here it is a
+*reverse* mutation: restore `libs/hardcaml_ethernet/src/xgmii_rx_64.ml` to its
+`fafb83d` content in a throwaway tree, add a dv-authored **throwaway probe**
+(no assertions, prints only — the `test/cost_probe/` precedent) that drives the
+single stimulus **(64 octets, lane 4, `k` = 1)** and prints, for each of the
+eight `tvalid` words: **cycle, `tkeep`, `tlast`, `tuser`, and the eight octet
+values**; plus the concatenated delivered-octet sequence. Two quantities decide
+the conversion:
+
+- **(a)** the count of mid-frame words with `tkeep` ≠ 0xFF and `tlast` = 0
+  (§9.2 predicts **7**), and
+- **(b)** the number of the 60 required frame octets actually delivered in their
+  gapless byte positions (§9.2 predicts **4**), with the remainder's values
+  (§9.2 predicts `0x07` filler).
+
+If (a) ≥ 1 **or** (b) < 60, **BUG-0003 converts to CRITICAL** and the conversion
+is recorded here over my signature, with the measured figures replacing §9.2's
+derived ones. If both come back conformant, §9.2 is wrong and that is a far more
+interesting result. Either way this is one CI run against a throwaway ref that is
+never merged. Routed to the orchestrator as the round's escalation 1.
+
+**What is NOT in dispute.** §9.1's mechanism is corroborated independently of
+§9.2: the same structural account that produces the tear also produced, *before
+any run existed*, the post-fix cycles **6, 8, 10, 12, 14, 16, 18, 19** at `k` = 1
+and **18, 26, 34, 42, 50, 58, 66, 67** at `k` = 7 — and those were measured this
+round, by a bench that computes them from the specification with no design term
+in it. A mechanism that predicts the repaired numbers exactly is not a mechanism
+I doubt. It is a mechanism whose *consequence for severity* has not been seen.
+
+### V.3 rtl_lead's honesty grading of my §6 refusal — **accepted in full, without softening**, and what DV owes because of it
+
+§9.1 grades §6 as "**right for the wrong reason**". That is correct and I adopt
+it verbatim. Both halves are worth separating, because they have different
+consequences:
+
+- **The act was right.** A bug packet must not prejudge root cause; §6 declining
+  to adopt escalation 1's mechanism is the discipline working, and had I adopted
+  it I would have shipped a packet written from the design that also happened to
+  be **half wrong** (escalation 1 said *both* halves are emitted as separate short
+  words; the design emits one and drops one).
+- **The argument was wrong.** §6 reasoned: "*if half words had reached the output,
+  `delivered_samples` — which filters on `tvalid` alone and counts a short word
+  like any other — would have inflated the count, and the count guard runs first
+  and passed*". That inference assumes both halves survive. Given `hold`, they do
+  not. **My inference was unsound and its conclusion was false**, and I record it
+  in those words rather than as "incomplete".
+
+**The finding rtl_lead handed DV, which is worth more than this packet's verdict
+and I agree with that assessment.** At a lane-4 start each output word `m` is
+completed by input word `m + 3`, whose lane 0 is the aligned bit 4; there is
+exactly one such input word per output word; so `ev12` fires **exactly `W` times
+per frame at any `k`** and the design emits exactly one word per firing.
+**Emitted count = `W` by identity.** `delivered_samples`' word count is therefore
+**not an independent check at a lane-4 start** — it is a quantity that cannot
+disagree — and the same holds for the `tlast`-position check.
+
+**Ruling: no guard row is owed; a bench note IS owed; and it lands in the next
+round that opens `test/xgmii_rx_64/` for editing — not this one.**
+
+- **No new attack-plan row.** The defect class already has **two independent
+  kills inside the committed bench**: the per-word `tkeep` assertion (`words 0…6`
+  must be 0xFF) and the delivered-octet equality against
+  `Dv_xgmii.Frame.delivered`, both in M03-I4's own per-word loop and both of
+  which would have fired at `fafb83d` had the run reached them. The suite was
+  **not** blind to the class; one *instrument* in it was, and the run raised at
+  an earlier guard. Adding a row for coverage that exists would inflate the
+  denominator and hide the real lesson.
+- **A bench note is owed, at the count guard's own sites** —
+  `test/xgmii_rx_64/test_m03_i.ml:290` (`run_i4_case`) and `:445`
+  (`run_i6_case`), with the definition at `test/xgmii_rx_64/bench.ml:222` — 
+  recording that at a lane-4 start the emitted-word count equals `W` by
+  construction of the emission decision, so **no bench and no packet may cite
+  "the count was right" as evidence that no word was malformed**. That sentence
+  exists because I wrote its negation into §6 of this packet.
+- **A second note is owed on guard ordering**: a `fail` that raises stops the
+  round at the first divergence and hides every later guard, which is why §2.4
+  had to enumerate 22 undriven runs and why the two kills above never fired. The
+  note is not a request to stop raising — it is a requirement that any packet
+  reasoning from "guard X passed" first state which guards ran **before** it.
+- **Why not this round.** This round's bench commit must be **byte-identical to
+  CI's promoted file** (sha256-verified, §7 item 2's own check). A hand-written
+  comment in the same file in the same commit destroys the single property that
+  makes the promotion auditable. This is the same reason `RV-0060-VERDICT` §10
+  item 3 deferred tb_writer's three citation sites, and the note **rides with
+  them**, in the family-I bench work order.
+
+### V.4 rtl_lead's §9.6 item 4 (its escalation 3) — the legitimate-expect-block-move question: **SWEPT, and the answer is that no such unit exists**
+
+§9.6 item 4 asks whether any unit outside `Idle_injection` drives a whole idle
+word or ordered set mid-frame at a lane-4 start — the same `bubble` cycle by a
+different route — and gives the discriminator: **its old expect block contains a
+`tvalid` word with `tkeep` ≠ 0xFF and `tlast` = 0.** rtl_lead states it cannot
+see `test/**`. I can, and I swept it. **Ruled: none exists, on two independent
+grounds, and the discriminator selects the empty set.**
+
+1. **The discriminator has almost nothing to select from, and the one exception
+   is out of reach by construction.** I enumerated every `[%expect]` block in
+   `test/**` and classified its file by whether it instantiates RTL at all.
+   Under `test/xgmii_rx_64/` there are **36 expect blocks across ten files and
+   all 36 are `{||}` at HEAD** — these benches *assert* and raise; they do not
+   print streams, so no old block of theirs can contain a `tvalid` word of any
+   `tkeep`. Every other non-empty block in the tree is in a **helper self-test**
+   that instantiates no RTL — `test/xgmii/test_{arrival,frame,idle_injection,
+   injection,tx_decoder}.ml`, `test/monitors/test_*.ml`, `test/golden/`,
+   `test/axi64_probe/`, `test/xgmii_probe/` — and an RTL change cannot move
+   those. **The one unit in the whole tree that both instantiates RTL and
+   carries a non-empty expect block is
+   `test/hardcaml_ethernet/test_word_counter.ml:25`**, and it drives
+   `Word_counter` — a different module, with a `valid`-toggle stimulus and no
+   XGMII interface at all, so it has no start lane, no frame and no idle word.
+   It cannot reach `bubble`, and it did not move. *(I state the exception rather
+   than the tidy blanket claim I first wrote, because the blanket claim was false
+   and the sweep is only worth anything if it reports what it actually found.)*
+2. **No such stimulus exists either.** `Idle_injection` is referenced by exactly
+   two units: `test/xgmii/test_idle_injection.ml` (the wrapper's own self-test,
+   no RTL) and `test/xgmii_rx_64/test_m03_i.ml` (family I). No other unit drives a
+   whole non-covering word mid-frame at any start lane. The cosim lane is
+   **lane-0 start only** by construction (`test/cosim/stimulus_gen.ml`'s own
+   header: *"start character in lane 0 of octet time 0"*, frames separated by the
+   12-octet inter-frame gap, not by mid-frame idles), so it cannot reach `bubble`
+   either — and it was green in the same run.
+
+**Consequence for §7 item 2, stated because it strengthens it**: the "exactly one
+file" check was not merely satisfied — at this tree it was the **only possible**
+conformant outcome, because no other unit could legitimately have moved. A second
+file in that promotion block would have been a regression with no innocent
+reading available. §7 item 2's trap was tighter than it looked when written.
+
+### V.5 Count and row states at the promotion commit
+
+**Discharge count: 38 of 62 — re-derived from the tree, not inherited from
+`RV-0060-VERDICT` §9's forward figure.** Method unchanged since
+`J-dv_lead-0084`: rows named in a committed `%expect_test` title under
+`test/xgmii_rx_64/`, intersected with the plan's ASSERT rows, plus M03-F5 by
+citation. Recomputed mechanically over the tree: **38 distinct M03 rows** are
+named in expect-test titles; **one of them (M03-A4) is a NO-ASSERT row**, leaving
+**37 ASSERT rows titled**; plus **M03-F5**, discharged by citation at
+`test_m03_f.ml:833`, = **38 carrying a discharge**. **Nothing is subtracted this
+time**: M03-I4 and M03-I6 were the only red rows and both are green.
+
+Plan totals, counted from the file and not carried forward: **78 rows — 62
+ASSERT, 7 NO-ASSERT, 4 NO-STIMULUS, 4 STRUCTURAL, 1 GAP.** Unchanged.
+
+| Row | Status | Discharge | State |
+|---|---|---|---|
+| **M03-I4** | ASSERT | **DISCHARGED** | All 48 injected runs plus 16 baselines green at both lanes, `k` ∈ {0,1,7}, lengths 64–71; cross-run tail assertions executed and passed. |
+| **M03-I6** | ASSERT | **DISCHARGED** | All 4 runs green — both lanes, 64-octet and 1518-octet members at `k` = 7. |
+| **M03-I5** | NO-ASSERT | n/a | Scope held: neither `m + 3` nor a single per-octet `L` is asserted anywhere in the file. The class tables that would have violated it are **reported**. |
+| **M03-I1/I2/I3** | ASSERT | discharged | Unchanged. |
+
+**The count moves at the promotion commit, not at `b848d56`.** At `b848d56`
+itself the assertions are green but the tree carries unpromoted expect drift, so
+`git diff --exit-code` is dirty and my own DoD (charter §5) is unmet. The
+discharge lands the moment the promoted bytes are committed — which is
+`J-dv_lead-0092`, and is a dv_lead commit, not an rtl_lead one.
+
+**The count does not wait on this packet's two open items.** The method measures
+**rows against the bench tree**, not packets: `rtl_snapshots/**` staleness and an
+unmeasured pre-fix severity are real debts, and neither is a red unit. Holding
+the count hostage to them would make it a narrative, which is the failure
+`RV-0060-VERDICT` §9 refused in the other direction when it declined a fractional
+discharge.
+
+**`SO-xgmii_rx_64.md` remains unopened and is not offered.** 24 ASSERT rows are
+still outstanding, family I's qualification campaign has not run, and the
+verilog-ethernet differential co-sim anchor has not been discharged for a PASS.
+
+### V.6 WO-0059 and WO-0060
+
+**`WO-0059`'s rows land here.** Family I is the work `WO-0059` commissioned;
+M03-I1/I2/I3 discharged earlier, M03-I5 is NO-ASSERT by design, and **M03-I4 and
+M03-I6 discharge at this commit** — so every row `WO-0059` commissioned now
+carries its discharge or its declared non-assertion. `WO-0060` (the D(m) re-base)
+was ACCEPTED at `RV-0060-VERDICT` §12 and is unaffected. What remains open from
+that pair is **not row work**: `RV-0060-VERDICT` §10 item 3's three citation
+sites, and now §V.3's two bench notes — all of which ride together in the next
+family-I bench work order.
+
+### V.7 N-1, carried once more and unchanged
+
+**N-1** (REQ-016's verification column gates the per-octet-constant assertion
+**per module**, while survival of that constant is per **(start lane, residue)**)
+still licenses nothing at M03 and is still non-blocking. This round it acquires
+its first **measurement**: the printed class sets show survival failing at
+**both** start lanes and at **every** residue for `k` > 0 — lane 0 gives
+`{16+8k}` or `{16, 16+8k}`, lane 4 gives `{12+8k, 12+16k}` or
+`{12, 12+8k, 12+16k}`, and not one of the 32 discriminating cells is a singleton
+at `k` > 0. So a per-module gate and a per-lane gate give the same answer at M03
+**as measured**, not merely as derived — which is a strictly better basis for
+carrying it than it had. It rides to whichever packet next opens REQ-016's reach.
+
+### V.8 Packet state
+
+**`FIX ACCEPTED — OPEN`**, on exactly two items, both bounded and both named:
+
+1. **§7 item 5** — `rtl_snapshots/**` regeneration with REQ-902's
+   double-generation byte-identity check, carried from `fafb83d` through
+   `b848d56`, with §9.6 item 5's stated prediction still unverified. rtl_lead's,
+   via the orchestrator.
+2. **§V.2** — the pre-fix measurement at `fafb83d` that the severity conversion
+   requires. dv_lead's to adjudicate, orchestrator's to operate (transient tree,
+   PROTOCOL §10 pattern), nothing entering history.
+
+Neither is a behaviour and neither reopens the defect: **the divergence this
+packet reported is measured absent at every lane-4 member of both rows.**

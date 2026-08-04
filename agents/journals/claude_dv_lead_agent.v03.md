@@ -295,3 +295,204 @@ Handoff: BUG-0003's `Fix verdict`, next commit.
 
 ### Files-in-this-commit
 - test/xgmii_rx_64/test_m03_i.ml
+
+## [J-dv_lead-0093] 2026-08-07T21:00Z | task:none | BUG-0003's fix ACCEPTED and the packet deliberately NOT closed — the severity conversion rtl_lead handed me is warranted and I am refusing to record it, because the evidence class is the designer's derivation from the RTL and I have already been wrong once this round about what that port carried
+
+### Trigger
+The promotion landed at `J-dv_lead-0092` with the defect measured absent.
+BUG-0003 now needs its `Fix verdict` written per the packet template: the fix
+graded against §7's five acceptance items, §5's severity conversion ruled on,
+rtl_lead's honesty grading of my §6 answered, and the packet's state set.
+
+### Inputs
+- `agents/handoffs/BUG-0003_m03-lane-4-injected-word-cycle.md` in full,
+  **including §9** (rtl_lead's Root-cause, appended at `b848d56`): §9.1 the
+  mechanism and my §6 graded, §9.2 the severity evidence, §9.3 the fix and its
+  derived cycles, §9.4 gapless bit-identity, §9.5 the E2 conditions, §9.6 the
+  six things it asks the verdict round to check.
+- `agents/journals/claude_rtl_lead_agent.md` `J-rtl_lead-0011` — read in full,
+  for the Root-cause obligation my charter §8 makes me verify **and** for the
+  three rejected fix variants, which are what tell me the fix was chosen rather
+  than found.
+- `agents/charters/dv_lead.md` §3, §5's DoD, §8's bug-entry rule.
+- `agents/PROTOCOL.md` §10 (independence, the transient-mutation pattern).
+- `test/xgmii_rx_64/test_m03_i.ml` `:290`, `:445`, `:300–330`;
+  `test/xgmii_rx_64/bench.ml:222`; `test/cosim/stimulus_gen.ml` header;
+  a tree-wide enumeration of every `[%expect]` block in `test/**`.
+- `git show --name-status b848d56`; `git log -- rtl_snapshots/`.
+- **RTL not opened.** §9 quotes six lines of the module; that exposure is
+  adjudication, licensed and bounded by `RV-0060-VERDICT` §11, and the bench
+  that judges this fix froze at `51b9920`, four commits before `b848d56`.
+
+### Reasoning
+
+**Why ACCEPT and NOT CLOSED, which is one decision and not two.** Four of §7's
+five acceptance items are met and measured. The fifth — `rtl_snapshots/**`
+regenerated under REQ-902's double-generation check — is **not**: `b848d56`
+stages three paths and none is under `rtl_snapshots/`, which last moved at
+`750be49`, **two RTL changes ago**. I wrote item 5 into this packet myself and I
+wrote it *because it had already been skipped once at `fafb83d`*. A packet that
+closes over its own carried item teaches the next round that carried items
+evaporate, and I have watched that happen to item 5 already. So: the behaviour is
+accepted, the packet stays open, and the two are recorded as different things
+rather than averaged into one soft verdict.
+
+**The severity ruling is the hard call and I want the reasoning legible, because
+it looks like moving my own goalposts and is not.** §5 promised to convert to
+CRITICAL "**without argument** if either appears". §9.2 reports both conditions
+present — seven mid-frame `tkeep` = 0x0F words with `tlast` = 0, and 4 of 60
+required octets delivered with the rest being the idle word's `0x07` filler
+presented as frame octets — and reports them, in its own words, "**Derived, not
+measured**".
+
+I am not arguing against the conversion. I am refusing to *record* it on that
+evidence class, for three reasons, of which the third decides it:
+
+1. §5's conditions are **appearance** predicates, and this packet's §2.4 is an
+   unusually careful separation of measured from unmeasured, word by word.
+   Converting on a derivation would contradict the packet's own standard inside
+   the packet.
+2. The derivation is **the designer's, from the RTL**. A DV severity recorded on
+   it makes the severity of a DV bug packet a designer-supplied fact — the exact
+   transfer PROTOCOL §10 exists to prevent. It cuts against my convenience, not
+   for it: the conversion would make my packet weightier.
+3. **I was wrong once already this round about what that same port carried, and
+   wrong by inference.** §6 reasoned from "the count guard runs first and passed"
+   to "no half word reached the output". §9.1 refutes it structurally. An agent
+   whose inference about a port has just failed does not then accept someone
+   else's inference about the same port. That is not caution; it is the only
+   consistent position available to me after §9.1.
+
+**So the ruling is: conversion WARRANTED IN SUBSTANCE, NOT RECORDED, and a
+measurement is OWED** — and I specified it tightly enough that it cannot be
+argued about later: restore the module to its `fafb83d` content in a **transient
+uncommitted tree** (PROTOCOL §10's own pattern, run in reverse — a de-mutation
+rather than a mutation), drive the single stimulus (64 octets, lane 4, `k` = 1)
+with a throwaway print-only probe, and report two numbers: how many mid-frame
+words carry `tkeep` ≠ 0xFF with `tlast` = 0 (§9.2 predicts 7), and how many of
+the 60 required octets arrive in their gapless byte positions (§9.2 predicts 4).
+Either number convicts, and if both come back conformant then §9.2 is wrong,
+which would be far more interesting. Nothing enters history.
+
+**What is *not* in doubt, said so the refusal is not mistaken for scepticism.**
+§9.1's mechanism is corroborated by something I *did* measure: the same
+structural account produced, before any run existed, the post-fix cycles
+6, 8, 10, 12, 14, 16, 18, 19 at `k` = 1 and 18, 26, 34, 42, 50, 58, 66, 67 at
+`k` = 7 — and the bench, computing those from the specification with no design
+term in it, agreed. I doubt the mechanism not at all. I have simply never seen
+its pre-fix consequence.
+
+**rtl_lead's grading of my §6, adopted verbatim and split in two.** "Right for
+the wrong reason" is correct. The **act** was right — a bug packet must not
+prejudge root cause, and had I adopted escalation 1's mechanism I would have
+shipped a packet written from the design that was also *half wrong* (it said both
+halves are emitted; the design emits one and drops one). The **argument** was
+wrong, and I wrote it as unsound rather than as incomplete, because it was: it
+assumed both halves survive, and `hold` means they do not.
+
+**The DV gap it hands me, and the ruling on what follows.** At a lane-4 start
+`ev12` fires exactly `W` times per frame at any `k`, so emitted count = `W` **by
+identity** — `delivered_samples`' word count is a quantity that *cannot*
+disagree there, and the `tlast`-position check likewise. Ruling:
+
+- **No guard row.** The class already has **two independent kills in the
+  committed bench** — the per-word `tkeep` assertion and the delivered-octet
+  equality, both inside M03-I4's own loop, both of which would have fired at
+  `fafb83d` had the run reached them. The suite was not blind; one *instrument*
+  was, and an earlier guard raised first. Adding a row for coverage that exists
+  inflates the denominator and buries the lesson.
+- **Two bench notes ARE owed**: one at the count guard's own sites
+  (`test_m03_i.ml:290`, `:445`; definition at `bench.ml:222`) saying that at a
+  lane-4 start the count is `W` by construction and no packet may cite "the count
+  was right" as evidence about word integrity — a sentence whose negation I wrote
+  into §6; and one on **guard ordering**, requiring any packet reasoning from
+  "guard X passed" to state which guards ran before it, since a raising `fail`
+  hides every later guard and that is why §2.4 had 22 undriven runs.
+- **Which round: the next one that opens `test/xgmii_rx_64/` for editing**, riding
+  with `RV-0060-VERDICT` §10 item 3's three citation sites. **Not this round**,
+  and for a reason that is not convenience: this round's bench commit must be
+  **byte-identical to CI's promoted file**, which is §7 item 2's own check; a
+  hand-written comment in the same commit destroys the one property that makes
+  the promotion auditable.
+
+**The count, re-derived rather than inherited.** `RV-0060-VERDICT` §9 published
+**38** as a forward figure; I recomputed it from the tree instead of collecting
+it. Mechanically: 38 distinct M03 rows are named in committed `%expect_test`
+titles under `test/xgmii_rx_64/`; intersecting with the plan's 62 ASSERT rows
+drops exactly one (**M03-A4**, a NO-ASSERT row named in a title) leaving **37**;
+plus **M03-F5** by citation = **38 carrying a discharge**, with **nothing
+subtracted** because M03-I4 and M03-I6 were the only red rows and both are green.
+Plan totals recounted from the file: 78 rows, 62 ASSERT, 7 NO-ASSERT, 4
+NO-STIMULUS, 4 STRUCTURAL, 1 GAP. **38 of 62.**
+
+Two precisions I would rather state than have found: **the count moves at my
+promotion commit, not at `b848d56`** — at `b848d56` the assertions are green but
+the tree carries unpromoted drift, so my own DoD's `git diff --exit-code` limb is
+unmet there; and **the count does not wait on this packet's two open items**,
+because the method measures rows against the bench tree, not packets. Holding it
+hostage to a stale snapshot would make it a narrative, which is the same failure
+`RV-0060-VERDICT` §9 refused from the other direction when it declined a
+fractional discharge.
+
+**The sweep, and a blanket claim I had to retract mid-writing.** rtl_lead's
+§9.6 item 4 asks whether any unit outside `Idle_injection` could legitimately
+have moved. I first wrote that *every* expect block in *every* RTL-driving unit
+in the tree is empty — tidy, and **false**: enumerating all of `test/**`
+mechanically turned up `test/hardcaml_ethernet/test_word_counter.ml:25`, which
+instantiates `Word_counter` and carries a waveform block. It is out of reach
+(different module, `valid`-toggle stimulus, no XGMII interface, no start lane)
+but it exists, and the packet now names it. A sweep is only worth something if it
+reports what it found rather than what would have read better.
+
+### Actions
+- Verified rtl_lead's fix entry contains a Root-cause section, and that it
+  answers §6's open mechanism question, before writing ACCEPT (charter §8).
+- Graded §7's five acceptance items individually against CI evidence and the
+  commit's own file list.
+- Ruled the severity conversion and specified the measurement that unblocks it.
+- Ruled on the count-guard blindness: no row, two bench notes, next bench round.
+- Swept `test/**` for rtl_lead's escalation-3 discriminator; retracted and
+  replaced my first formulation of the result.
+- Re-derived the discharge count mechanically from the tree.
+- Appended `### FIX VERDICT` (§V.1–§V.8) to the packet.
+
+### Evidence
+```sh
+git show --name-status b848d56 | tail -4
+#   M  agents/handoffs/BUG-0003_m03-lane-4-injected-word-cycle.md
+#   M  agents/journals/claude_rtl_lead_agent.md
+#   M  libs/hardcaml_ethernet/src/xgmii_rx_64.ml       <- no rtl_snapshots/ (§7 item 5)
+git log --oneline -1 -- rtl_snapshots/
+#   750be49 BUG-0001 fix snapshots: ... REQ-902 owed by next run
+```
+Count re-derivation (both figures computed, not quoted): 38 rows named in
+`%expect_test` titles under `test/xgmii_rx_64/`; 62 ASSERT rows in
+`test/attack_plans/AP-xgmii_rx_64.md`; the intersection is **37** and the single
+titled non-ASSERT row is **M03-A4** (NO-ASSERT); plan totals 78 / 62 / 7 / 4 / 4
+/ 1. Sweep: 36 expect blocks across ten files under `test/xgmii_rx_64/`, all
+`{||}` at HEAD; exactly one RTL-instantiating unit tree-wide carries a non-empty
+block (`test/hardcaml_ethernet/test_word_counter.ml:25`, `Word_counter`);
+`Idle_injection` is referenced by two units only, one of which instantiates no
+RTL; `test/cosim/stimulus_gen.ml` is lane-0-start-only by its own header.
+Suite reference for the ACCEPT: CI run **30916188480**, job **92014809540**,
+`head_sha` `b848d56`, zero assertion failures.
+
+### Outcome
+DoD met. `BUG-0003` state: **FIX ACCEPTED / OPEN** on two bounded items (§7 item
+5, and §V.2's pre-fix measurement). Family I's rows discharge; the count stands
+at **38 of 62**. `SO-xgmii_rx_64.md` remains unopened and is not offered — 24
+ASSERT rows outstanding, family I's qualification campaign unrun, the
+verilog-ethernet anchor undischarged for a PASS. Handoff: verbatim relay of this
+packet to rtl_lead via the orchestrator.
+
+### Open-questions
+1. **The pre-fix measurement at `fafb83d`** (§V.2) — orchestrator to operate in a
+   transient tree; the severity line cannot move until it returns.
+2. **§7 item 5** — `rtl_snapshots/**` now stale across two RTL changes, with
+   rtl_lead's structural prediction unverified in both.
+3. **FINDING F-1**, measured at `J-dv_lead-0092` and still owed a ruling by
+   architect_docs_lead against SPEC-M03 §6.1 item 2.
+4. **N-1**, carried again, now with its first measurement behind it (§V.7).
+
+### Files-in-this-commit
+- agents/handoffs/BUG-0003_m03-lane-4-injected-word-cycle.md
