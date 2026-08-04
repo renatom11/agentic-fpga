@@ -124,9 +124,17 @@ val word_at : t -> cycle:int -> Xgmii_word.t
 val cycles : t -> int
 
 (** [cycle_of t source_cycle] — where a source cycle lands on the injected
-    line. This is what a bench applies to every cycle SPEC-M03 §6.1 and §9 pin
-    on the un-injected schedule: `m + 3`, the strobe cycles, the drain bound.
-    Monotonic and injective. *)
+    line. A bench applies this to a SOURCE cycle only — never to an output
+    cycle such as `m + 3`, which is not in this function's domain: an output
+    word's own timing depends on the LATEST source word it depends on
+    (SPEC-M03 §6.1 consequence 1's own dependency octet for an ordinary word,
+    or the terminate character's word for the tlast word), and it is THAT
+    source cycle a bench translates through [cycle_of] — never the output
+    cycle itself. (This corrects the docstring's own former second sentence,
+    which named `m + 3` — an output cycle — as an argument this function
+    could take; RV-0059-VERDICT FINDING 4, `agents/handoffs/
+    WO-0059_tb-m03-family-i-silence-and-ordered-sets.md` §8 states the
+    corrected rule a caller applies.) Monotonic and injective. *)
 val cycle_of : t -> int -> int
 
 (** True when an injected-line cycle carries an injected idle word rather than

@@ -1,5 +1,11 @@
 (** Family I — silence, ordered sets and idle (REQ-109, REQ-113, REQ-016).
-    WO-0059.
+    WO-0059. Round 2 (RV-0059-VERDICT BOUNCE, `agents/handoffs/
+    WO-0059_tb-m03-family-i-silence-and-ordered-sets.md`) repairs M03-I4 and
+    M03-I6's own cycle rule and delay identity to RV-0059-VERDICT §8's
+    corrected form, and HOLDS §7's per-octet-constant claim under injection
+    per SCR-M03-I4 -- see [dependency_source_cycle], [injected_word_cycle]
+    and [run_i4_case]'s own declarations below. M03-I1, M03-I2, M03-I3 and
+    M03-I5 were ACCEPTED round 1 and are unchanged.
 
     Six rows (`AP-xgmii_rx_64.md` §4.I), built in the packet's own build
     order M03-I1 -> M03-I2 -> M03-I3 -> M03-I4 -> M03-I5 -> M03-I6: M03-I1
@@ -26,18 +32,19 @@
     - M03-I3: the frame after the ordered set, checked structurally on its
       own terms AND compared cycle for cycle against the SAME frame received
       after idles only (two runs of one schedule, `?word_at` substitution).
-    - M03-I4: the word sequence (translated through [Idle_injection.cycle_of],
-      never m + 3), the per-octet DELAY IDENTITY against an actual,
-      separately-driven un-injected baseline run of the same (length, lane)
-      -- WO-0059 §3.4 item 2's own form, derived from raw octet times rather
-      than from [cycle_of] a second time, so a bug in the translator could
-      not silently validate itself -- and the per-octet constant of §7,
-      MEASURED both per run via each bench's own standing
-      {!Octet_time.Latency} tagger and across all 48 runs via one extra,
-      standalone tagger this file builds and feeds independently
-      ([cross_latency]), which is the strong form of "one value per start
-      lane across every run" REQ-005 / REQ-111 actually ask for, rather than
-      a single-frame tautology.
+    - M03-I4: the word sequence, each word's own cycle
+      baseline_cycle(m) + (cycle_of(D m) - D m) -- RV-0059-VERDICT §8's
+      corrected rule (round 2; round 1 sent [Idle_injection.cycle_of] an
+      OUTPUT cycle, FINDING 1 / FINDING 3), D(m) the SOURCE cycle of the
+      latest input word m depends on, never m + 3 alone -- the
+      word-granular DELAY IDENTITY against an actual, separately-driven
+      un-injected baseline run of the same (length, lane) (RV-0059-VERDICT
+      §8, replacing WO-0059 §3.4 item 2's own per-octet form, FINDING 6) --
+      and the per-octet constant of §7, MEASURED (never asserted, per
+      RV-0059-VERDICT §12 item 3 / SCR-M03-I4 -- FINDING 5 showed it does
+      NOT survive injection at either start lane) through file-local
+      taggers, per run and across all 48 runs via [cross_latency], and
+      REPORTED.
     - M03-I6: the delivered content and clean FCS verdict of both the
       64-octet and the 1518-octet member, at both lanes -- the 64-octet
       member is stimulus M03-I4 already drives at 7 idles (WO-0059 §3.5),
@@ -102,12 +109,18 @@
     about the input under injection by exactly 8 octet times per idle word
     inserted before each octet -- REQ-016's own arithmetic, and exactly what
     [Idle_injection.in_times] exists to correct. [account_injected_frame]
-    below is this file's own, file-local replacement (mirroring
-    [Bench.account_clean_frame]'s own shape with [Idle_injection.in_times]
-    in place of [Arrival.in_times]), used by both M03-I4 and M03-I6 -- no
-    change to `bench.ml`/`bench.mli` is needed or made beyond the one
-    authorised [?ifg] addition M03-I3 uses; `RV-0043-VERDICT` §7's bar on
-    widening [Bench]'s exported surface stands (WO-0059 §8.1).
+    below is this file's own, file-local replacement, used by both M03-I4
+    and M03-I6 -- no change to `bench.ml`/`bench.mli` is needed or made
+    beyond the one authorised [?ifg] addition M03-I3 uses; `RV-0043-VERDICT`
+    §7's bar on widening [Bench]'s exported surface stands (WO-0059 §8.1).
+    As of round 2 (RV-0059-VERDICT §12 item 3 / SCR-M03-I4)
+    [account_injected_frame] is CONSERVATION-ONLY: it no longer feeds the
+    standing {!Octet_time.Latency} tagger at all, because FINDING 5 showed
+    the per-octet constant does not survive injection at either lane, and
+    feeding the standing tagger would make {!Bench.assert_monitors_clean}'s
+    latency half fail a conformant design. A row that still wants a
+    measured L class (M03-I4) builds its OWN file-local tagger and reports
+    it instead of asserting it -- see [run_i4_case].
 
     Every run through {!Dv_xgmii.Idle_injection.uniform} is checked against
     its OWN stimulus before being trusted (WO-0059 §2.3): [errors] and
@@ -117,9 +130,12 @@
     begins one boundary later). Both were observed empty on every one of the
     52 runs this file drives through the wrapper (48 at M03-I4, 4 at
     M03-I6). Where a cycle from §6.1 or §9 is needed on an injected line it
-    is translated through [Idle_injection.cycle_of] -- never recomputed from
-    the gapless `m + 3` formula, which §6.1 itself scopes to a gapless
-    stimulus and which M03-I5 exists to bar (below).
+    is translated through [Idle_injection.cycle_of] applied to a SOURCE
+    cycle -- RV-0059-VERDICT §8's corrected rule, [dependency_source_cycle]
+    / [injected_word_cycle] below -- never to an output cycle (round 1's own
+    defect here, FINDING 1 / FINDING 3) and never recomputed from the
+    gapless `m + 3` formula, which §6.1 itself scopes to a gapless stimulus
+    and which M03-I5 exists to bar (below).
 
     {2 M03-I5 -- declared, not built}
 
@@ -156,23 +172,37 @@
     M03-I1's 1000-cycle prefix depends on), `test/xgmii/xgmii_word.mli`,
     `test/xgmii/frame.mli`, `test/xgmii_rx_64/bench.mli` AND `.ml` (in full),
     `test/monitors/strobe_monitor.mli`, `test/monitors/octet_time.mli` AND
-    `.ml` (read in full: [frame_out]'s own per-octet walk, confirmed to read
-    [in_times] only at indices [j + strip_octets] for j in
+    `.ml` (read in full, again this round: [frame_out]'s own per-octet walk,
+    confirmed to read [in_times] only at indices [j + strip_octets] for j in
     [0, got - 1] -- the fact WO-0059 §7.3 Finding 1's repair to
-    `test_m03_h.ml` rests on), `test/monitors/conservation_monitor.mli`.
+    `test_m03_h.ml` rests on; [Latency.observed]/[errors]/[derived_errors]'s
+    own per-class match on [latencies] -- confirmed a multi-L class
+    contributes nothing to [errors], so only [is_constant] -- not
+    [errors] -- needed holding, round 2's own basis for §12 item 3),
+    `test/monitors/conservation_monitor.mli`.
     `test/xgmii_rx_64/test_m03_structural.ml` (the ten-cycle scaffolding
     precedent M03-I1 is scaled from), `test_m03_a.ml` (M03-A4's shape),
     `test_m03_d.ml` (M03-D4's shape, and [good_and_bad_64]'s
     both-directions-checked idiom, referenced but not needed here since
     no row in this family corrupts an FCS), `test_m03_g.ml` (in part --
     [account_resync_runt_frame]'s own [~received] naming, the precedent
-    Finding 1's repair follows) and `test_m03_h.ml` (in full, as the most
-    recent family and the file this packet also repairs -- [fail],
-    [split_at_first_tlast], the "test bug" construction-guard idiom, the
-    per-row docstring shape, all reused). `agents/handoffs/
-    WO-0059_tb-m03-family-i-silence-and-ordered-sets.md` in full.
-    `test/attack_plans/AP-xgmii_rx_64.md` §4.I (the repaired M03-I2 cells)
-    and its §9 change log. No path under `libs/**`, `top/**`, `bin/**` or
+    Finding 1's repair follows; and, round 2, [fail_cross]'s own docstring,
+    "WO-0056 §5: a reported check, never the derivation" -- the precedent
+    round 2's own HELD-and-reported per-octet-constant declaration follows)
+    and `test_m03_h.ml` (in full, as the most recent family and the file
+    this packet also repairs -- [fail], [split_at_first_tlast], the "test
+    bug" construction-guard idiom, the per-row docstring shape, all
+    reused). `agents/handoffs/
+    WO-0059_tb-m03-family-i-silence-and-ordered-sets.md` in full, including
+    round 1's own Return log and `RV-0059-VERDICT` in full (the corrected
+    cycle rule of §8, FINDING 1 through FINDING 6, SCR-M03-I4, and §12's
+    five-item round-2 scope) -- round 2's own governing text.
+    `test/attack_plans/AP-xgmii_rx_64.md` §4.I (the repaired M03-I2 cells,
+    and M03-I4/M03-I5's own now-disputed `Observable` cells, read again this
+    round against RV-0059-VERDICT §6's SCR-M03-I4 -- not edited: WO-0059
+    §1.1's own rule is that a row is corrected before it is benched, and the
+    edit here is owed on `architect_docs_lead`'s ruling, not before) and its
+    §9 change log. No path under `libs/**`, `top/**`, `bin/**` or
     `rtl_snapshots/**` was opened, targeted or swept, at any point in this
     spawn. No path under `docs/reports/audit/**` was opened. No path under
     `test/third_party/verilog-ethernet/**` was opened (WO-0059 §9: this
@@ -838,20 +868,65 @@ let%expect_test
    loops 48 times. *)
 
 (* WO-0059 §2.2's own replacement for {!Bench.account_clean_frame} on an
-   injected line -- see this file's module docstring. Mirrors
-   [Bench.account_clean_frame]'s own shape exactly, with
-   [Idle_injection.in_times] in place of [Arrival.in_times]; no
-   [~expected_octets] override is needed because [Idle_injection.in_times]
-   preserves the source array's own length (REQ-016 delays octets, it does
-   not add or remove any), so the clean-frame identity extent
-   [Bench.account_clean_frame] itself relies on still holds. *)
-let account_injected_frame bench ~inj (frame : Dv_xgmii.Arrival.frame) samples ~aborted =
+   injected line -- see this file's module docstring. CONSERVATION-ONLY as
+   of RV-0059-VERDICT §12 item 3 / SCR-M03-I4 (round 2): FINDING 5 showed
+   the per-octet constant of §7 does NOT survive idle injection at either
+   start lane (the tlast word depends on the terminate character's own
+   source cycle, not on any content octet's, and at a lane-4 start every
+   output word straddles two source input words), so feeding the STANDING
+   {!latency} tagger from an injected run would make
+   {!Bench.assert_monitors_clean}'s latency half -- gated on
+   Octet_time.Latency.is_constant once the tagger has compared a frame --
+   fail a CONFORMANT design the moment this run's octets reached it, the
+   same "false BUG- packet" failure mode WO-0059 §2.2 itself warned against,
+   arriving through a door that section did not name. [account_injected_frame]
+   therefore feeds only the conservation monitor now; every call site that
+   still wants a measured L class builds its OWN file-local
+   {!Dv_monitors.Octet_time.Latency.t} and reports it rather than asserting
+   it (see [run_i4_case]). No change to `bench.ml`/`bench.mli` is needed or
+   made beyond the one authorised [?ifg] addition M03-I3 uses;
+   `RV-0043-VERDICT` §7's bar on widening [Bench]'s exported surface stands
+   (WO-0059 §8.1). *)
+let account_injected_frame bench ~aborted =
   Dv_monitors.Conservation_monitor.frame_in (conservation bench);
-  Dv_monitors.Conservation_monitor.frame_out (conservation bench) ~aborted;
-  let in_times = Dv_xgmii.Idle_injection.in_times inj frame in
-  Dv_monitors.Octet_time.Latency.frame_in (latency bench) in_times;
-  let delivered_pairs = List.map (delivered_samples samples) ~f:(fun s -> s.cycle, s.out) in
-  Dv_monitors.Octet_time.Latency.frame_out (latency bench) (Dv_monitors.Octet_time.of_words delivered_pairs)
+  Dv_monitors.Conservation_monitor.frame_out (conservation bench) ~aborted
+;;
+
+(* WO-0059 RV-0059-VERDICT §8 (round 2, replacing this file's own round-1
+   §2.4 / M03-I5 comment, which sent [Idle_injection.cycle_of] an OUTPUT
+   cycle -- RV-0059-VERDICT FINDING 1 / FINDING 3): the corrected cycle
+   rule, shared by M03-I4 ([run_i4_case]) and M03-I6 ([run_i6_case]) since
+   both drive a frame through the SAME wrapper.
+
+   injected_cycle(m) = baseline_cycle(m) + (cycle_of(D m) - D m)
+
+   where [D m] is the SOURCE cycle of the LATEST input word output word
+   [m] depends on:
+   - m is NOT the tlast word: the source cycle of the input word carrying
+     output word m's own LAST octet (content octet 8m + 7) -- SPEC-M03
+     §6.1 consequence 1 (the 2-cycle-at-lane-0 / 1-cycle-at-lane-4 offset,
+     itself scoped to a gapped stimulus in terms).
+   - m IS the tlast word: the source cycle of the TERMINATE CHARACTER, not
+     of its own last octet. tkeep, tlast and tuser[0] are not decidable
+     until that character arrives (REQ-011, REQ-103, REQ-104: until then
+     the design cannot know which octets are FCS), and §6.1's own drain
+     derivation states the tlast word's baseline position relative to the
+     TERMINATE word, not to its own last octet's word. The terminate
+     character's octet time always exceeds the last delivered octet's, so
+     this is also the later of the two dependencies and the formula needs
+     no [max].
+
+   [cycle_of] is applied to [D m] -- a source cycle, its actual domain --
+   and NEVER to an output cycle; `m + 3` is never recomputed under
+   injection (M03-I5's own prohibition, held). *)
+let dependency_source_cycle ~start_octet_time ~terminate_cycle ~words m =
+  if m = words - 1 then terminate_cycle else (start_octet_time + 8 + (8 * m) + 7) / 8
+;;
+
+let injected_word_cycle inj ~start_octet_time ~terminate_cycle ~words ~start_cycle m =
+  let baseline_cycle = start_cycle + 3 + m in
+  let d = dependency_source_cycle ~start_octet_time ~terminate_cycle ~words m in
+  baseline_cycle + (Dv_xgmii.Idle_injection.cycle_of inj d - d)
 ;;
 
 let run_i4_case
@@ -865,7 +940,6 @@ let run_i4_case
       ~start_cycle
       ~baseline_tlast_cycle
       ~in_baseline
-      ~out_baseline
   =
   let row =
     String.concat
@@ -880,9 +954,39 @@ let run_i4_case
   in
   let sched = one_frame ~lane octets in
   let frame = (Dv_xgmii.Arrival.frames sched).(0) in
-  let delivered = length - 4 in
+  let start_octet_time = frame.Dv_xgmii.Arrival.start_octet_time in
   let expected_h = if lane = 0 then 8 else 12 in
-  let expected_l = if lane = 0 then 16 else 12 in
+  (* WO-0059 §4 item 1 / M03-I2's own guard discipline, extended to this
+     row's 16 (length, lane) combinations: start_octet_time (REQ-101's lane
+     mapping) and the terminate character's own cycle (REQ-106: immediately
+     after the last FCS octet) are re-derived independently here rather than
+     trusted from Arrival alone -- every constant must be able to fail. Over
+     M03-C1's directed set (64..71 octets) this gives terminate_cycle = 10 at
+     every lane-0 case and 10 (length <= 67) or 11 (length >= 68) at lane 4,
+     matching M03-I2's own lane-4 derivation at the length-64/69 boundary. *)
+  let expected_start_octet_time = if lane = 0 then 8 else 12 in
+  if start_octet_time <> expected_start_octet_time
+  then
+    fail
+      row
+      "test bug -- start_octet_time does not match this lane's own §0.3 mapping (8 at \
+       lane 0, 12 at lane 4)";
+  let terminate_ot = Dv_xgmii.Arrival.terminate_octet_time frame in
+  let terminate_cycle = terminate_ot / 8 in
+  let expected_terminate_cycle = (start_octet_time + 8 + length) / 8 in
+  if terminate_cycle <> expected_terminate_cycle
+  then
+    fail
+      row
+      "test bug -- terminate_cycle does not match this file's own independent derivation \
+       (start_octet_time + 8 + length, REQ-106)";
+  if start_cycle + 3 + (words - 1) <> baseline_tlast_cycle
+  then
+    fail
+      row
+      "test bug -- baseline_tlast_cycle (from the caller's own separately-driven baseline \
+       run) does not match the gapless m + 3 formula";
+  let first_octet_cycle = start_cycle + 1 in
   (* stimulus legality (WO-0059 §2.3): checked before this case's own run
      is driven. *)
   let inj = Dv_xgmii.Idle_injection.uniform sched ~idles in
@@ -901,9 +1005,15 @@ let run_i4_case
       row
       "test bug -- uniform proposed a C-45 boundary; idle_injection.ml's own [uniform] \
        begins one boundary later and should never do this (WO-0059 §2.3)";
-  (* §2.4: the tlast cycle is translated through Idle_injection.cycle_of,
-     never recomputed from the gapless m + 3 formula (M03-I5). *)
-  let injected_tlast_cycle = Dv_xgmii.Idle_injection.cycle_of inj baseline_tlast_cycle in
+  (* RV-0059-VERDICT §8's corrected cycle rule: D(m) for the tlast word is
+     the TERMINATE character's own source cycle, never its own last octet,
+     and cycle_of is applied to that SOURCE cycle -- never to an output
+     cycle (round 1's own defect here, FINDING 1 / FINDING 3; M03-I5's own
+     prohibition on recomputing m + 3 under injection is unaffected and
+     still holds). *)
+  let injected_tlast_cycle =
+    injected_word_cycle inj ~start_octet_time ~terminate_cycle ~words ~start_cycle (words - 1)
+  in
   let bench = create () in
   let drain = Dv_xgmii.Idle_injection.injected inj + 8 in
   let samples =
@@ -920,11 +1030,14 @@ let run_i4_case
          ; " output words, got "
          ; Int.to_string (List.length words_out)
          ]);
-  (* the output word SEQUENCE is unchanged: every word's own cycle is the
-     baseline's own translated through cycle_of, not m + 3. *)
+  (* the output word SEQUENCE is unchanged: every word's own cycle is
+     baseline_cycle(m) + (cycle_of(D m) - D m), RV-0059-VERDICT §8's
+     corrected rule -- never m + 3 alone and never cycle_of applied to an
+     output cycle. *)
   List.iteri words_out ~f:(fun m s ->
-    let expected_baseline_cycle = start_cycle + 3 + m in
-    let expected_cycle = Dv_xgmii.Idle_injection.cycle_of inj expected_baseline_cycle in
+    let expected_cycle =
+      injected_word_cycle inj ~start_octet_time ~terminate_cycle ~words ~start_cycle m
+    in
     if s.cycle <> expected_cycle
     then
       fail
@@ -936,7 +1049,8 @@ let run_i4_case
            ; Int.to_string s.cycle
            ; ", expected "
            ; Int.to_string expected_cycle
-           ; " (Idle_injection.cycle_of the baseline cycle, not m + 3 -- M03-I5)"
+           ; " (RV-0059-VERDICT §8: baseline_cycle(m) + (cycle_of(D m) - D m), not m + 3 \
+              alone -- M03-I5)"
            ]);
     let expected_tkeep = if m = words - 1 then expected_tkeep_last else 0xFF in
     if s.out.Dv_monitors.Stream_word.tkeep <> expected_tkeep
@@ -947,75 +1061,127 @@ let run_i4_case
     then fail row (String.concat [ "word "; Int.to_string m; " unexpectedly carries tlast" ]));
   let tlast_s = List.last_exn words_out in
   if tlast_s.cycle <> injected_tlast_cycle
-  then fail row "test bug -- the last word's own cycle does not match Idle_injection.cycle_of's own value";
+  then fail row "test bug -- the last word's own cycle does not match the corrected cycle rule's own value";
   if tlast_s.out.Dv_monitors.Stream_word.tuser <> 0
   then fail row "tuser[0] set -- FCS content is unchanged by injection, expected a clean verdict";
   let expected_octets = Dv_xgmii.Frame.delivered octets in
   let got_octets = delivered_octets samples in
   if not (List.equal Int.equal got_octets expected_octets)
   then fail row "delivered octets differ -- REQ-016 must not alter frame content";
-  (* WO-0059 §3.4 item 2, the delay identity in the form the packet itself
-     specifies -- stronger than "L is unchanged" and independent of
-     Idle_injection.cycle_of (the word-sequence check above already used
-     that translator; this check is a SEPARATE derivation, off raw octet
-     times, so a bug in cycle_of could not silently validate itself here).
-     out_baseline/in_baseline come from an actual, separately-driven
-     un-injected simulation of this same (length, lane) -- not from the
-     m + 3 formula -- so this is ground truth, not a repeated prediction. *)
+  (* WO-0059 RV-0059-VERDICT §8 item 2 (round 2, FINDING 6): the delay
+     identity, corrected to WORD granularity. The original per-OCTET form
+     (round 1) is false wherever a single output word's own octets carry
+     more than one input shift -- every word at a lane-4 start, and the
+     tlast word at both lanes (REQ-011 forbids splitting a word, so it
+     moves as a whole with its OWN dependency octet, D(m) above). For a
+     non-tlast word the check reads D(m)'s own shift off raw octet times
+     (Idle_injection.in_times against Arrival.in_times on the separately
+     driven baseline) at its own anchor octet (content index 8m + 7, always
+     inside that word by construction) -- independent of
+     Idle_injection.cycle_of, which the word-sequence check above already
+     used once. The tlast word has no anchor OCTET when its own word
+     carries no frame content at all (length 64 at lane 0, length 68 at
+     lane 4 in M03-C1's own set -- the terminate character starts a brand
+     new word there), so its own expected shift is instead derived from
+     Idle_injection.uniform's OWN documented contract (idle_injection.mli:
+     idles idle words at every legal boundary from the word carrying the
+     frame's first octet through the word carrying the terminate
+     character) -- idles * (terminate_cycle - first_octet_cycle) -- which
+     calls neither Idle_injection.cycle_of nor Idle_injection.in_times, so a
+     defect in the translator cannot silently validate itself here either. *)
   let in_injected = Dv_xgmii.Idle_injection.in_times inj frame in
-  let out_injected =
-    Dv_monitors.Octet_time.of_words (List.map words_out ~f:(fun s -> s.cycle, s.out))
-  in
-  if Array.length out_injected <> delivered
-  then fail row "test bug -- the injected run's own delivered octet-time array has the wrong length";
-  if Array.length out_baseline <> delivered
-  then fail row "test bug -- the baseline's own delivered octet-time array has the wrong length";
-  for j = 0 to delivered - 1 do
-    let lhs = out_injected.(j) - out_baseline.(j) in
-    let rhs = in_injected.(j + 8) - in_baseline.(j + 8) in
-    if lhs <> rhs
+  List.iteri words_out ~f:(fun m s ->
+    let baseline_cycle = start_cycle + 3 + m in
+    let observed_shift = s.cycle - baseline_cycle in
+    let expected_shift =
+      if m = words - 1
+      then idles * (terminate_cycle - first_octet_cycle)
+      else (
+        let c = (8 * m) + 7 in
+        (in_injected.(c + 8) - in_baseline.(c + 8)) / 8)
+    in
+    if observed_shift <> expected_shift
     then
       fail
         row
         (String.concat
-           [ "octet "
-           ; Int.to_string j
-           ; ": out_injected - out_baseline = "
-           ; Int.to_string lhs
-           ; " but in_injected - in_baseline = "
-           ; Int.to_string rhs
-           ; " (REQ-016's delay identity, WO-0059 §3.4 item 2)"
-           ])
-  done;
+           [ "word "
+           ; Int.to_string m
+           ; ": observed shift (injected cycle minus baseline cycle) = "
+           ; Int.to_string observed_shift
+           ; " but the delay identity predicts "
+           ; Int.to_string expected_shift
+           ; " (REQ-016's delay identity, RV-0059-VERDICT §8, word granularity)"
+           ]));
   if not (List.is_empty (error_pulses samples))
   then fail row "an error strobe pulsed -- an idle-injected clean frame must not trip one";
-  account_injected_frame bench ~inj frame samples ~aborted:false;
-  (* the per-octet constant of §7, MEASURED for this one run, via this
-     bench's own standing latency tagger -- not merely self-consistent
-     (a single-frame class is trivially "constant"), but checked against
-     the declared h and L for this lane. *)
-  (match Dv_monitors.Octet_time.Latency.observed (latency bench) with
+  account_injected_frame bench ~aborted:false;
+  (* WO-0059 RV-0059-VERDICT §12 item 3 / SCR-M03-I4: FINDING 5 showed the
+     per-octet constant of §7 does NOT survive idle injection at either
+     start lane -- (a) the tlast word's own dependency is the terminate
+     character's source cycle rather than any content octet's, so its own L
+     differs from every other word's the moment idles > 0 (worked at length
+     64, lane 0, idles 1: L = 24 for the last four octets against L = 16
+     for every earlier one); (b) at a lane-4 start every output word
+     straddles two source input words (REQ-011 forbids splitting it), so
+     octets 0..3 and 4..7 of the SAME word carry different L the moment
+     idles > 0. Both are structural consequences of REQ-011/REQ-103/REQ-104
+     and SPEC-M03 §6.1's own consequence-1 rule, not artefacts of this
+     row's stimulus, so {!assert_monitors_clean}'s latency half -- gated on
+     Latency.is_constant once the standing tagger has compared a frame --
+     would fail a CONFORMANT design the moment this run's octets reached
+     it. The standing tagger ([latency bench]) is therefore NOT fed from
+     this or any injected run -- [account_injected_frame] above feeds only
+     the conservation monitor now, per this same verdict. The observed L
+     classes are instead measured through a FILE-LOCAL tagger and
+     REPORTED, never asserted -- the fail_cross idiom's reporting half,
+     `test_m03_g.ml`'s own precedent (WO-0056 §5). The front-offset check
+     below stays a real assertion: h is the §0.5 CORRESPONDENCE term (where
+     a frame's first octet lands, the M03-N3 constraint's own measurable
+     consequence), not the per-octet CONSTANT Finding 5 holds, and it is
+     unaffected (RV-0059-VERDICT §6 consequence 2). *)
+  let out_injected =
+    Dv_monitors.Octet_time.of_words (List.map words_out ~f:(fun s -> s.cycle, s.out))
+  in
+  let local_tagger =
+    Dv_monitors.Octet_time.Latency.create
+      ~name:row
+      ~strip_octets:8
+      ~tail_octets:4
+      ~front_offsets:[ 8; 12 ]
+      ()
+  in
+  Dv_monitors.Octet_time.Latency.frame_in local_tagger in_injected;
+  Dv_monitors.Octet_time.Latency.frame_out local_tagger out_injected;
+  (* the local tagger's own structural errors stay asserted -- they are
+     unaffected by Finding 5 (§0.5's closure/ceiling/pair checks only ever
+     fire for a SINGLE-L class, per octet_time.ml's own [derived_errors];
+     confirmed this spawn rather than assumed, see the module docstring's
+     Independence section). *)
+  (match Dv_monitors.Octet_time.Latency.errors local_tagger with
+   | [] -> ()
+   | errs ->
+     fail
+       row
+       (String.concat [ "local latency tagger errors:\n"; String.concat ~sep:"\n" errs ]));
+  (match Dv_monitors.Octet_time.Latency.observed local_tagger with
    | [ c ] ->
      if c.Dv_monitors.Octet_time.Latency.front_offset <> expected_h
      then
        fail
          row
          "observed front offset h is not this lane's own pinned value (§7) -- the \
-          M03-N3 constraint's own measurable consequence (WO-0059 §3.4 item 3)";
-     (match c.Dv_monitors.Octet_time.Latency.latencies with
-      | [ l ] ->
-        if l <> expected_l
-        then fail row "observed per-octet constant L differs from §7's own pinned value for this lane"
-      | _ -> fail row "test bug -- more than one L observed for a single-frame run")
+          M03-N3 constraint's own measurable consequence (WO-0059 §3.4 item 3)"
    | _ -> fail row "test bug -- expected exactly one front-offset class for a single-frame run");
+  (* HELD, not asserted: the L classes land here as expect-block data once
+     CI promotes this block (SCR-M03-I4). *)
+  print_string (Dv_monitors.Octet_time.Latency.report local_tagger);
   assert_monitors_clean bench ~row;
-  (* fed into the cross-run tracker too, so the "measured, at every figure"
-     claim is a real multi-frame constancy demonstration and not 48
-     single-frame tautologies (this file's own module docstring). *)
-  Dv_monitors.Octet_time.Latency.frame_in cross_latency (Dv_xgmii.Idle_injection.in_times inj frame);
-  Dv_monitors.Octet_time.Latency.frame_out
-    cross_latency
-    (Dv_monitors.Octet_time.of_words (List.map (delivered_samples samples) ~f:(fun s -> s.cycle, s.out)))
+  (* fed into the cross-run tracker too, so the file-wide HOLD at the end of
+     [run_i4] has real accumulated data to report across all 48 runs, not
+     16 separate per-run reports. *)
+  Dv_monitors.Octet_time.Latency.frame_in cross_latency in_injected;
+  Dv_monitors.Octet_time.Latency.frame_out cross_latency out_injected
 ;;
 
 (* One plain, un-injected simulation per (length, lane) -- shared ground
@@ -1042,9 +1208,6 @@ let run_i4_length_lane ~cross_latency ~lane ~length =
   if baseline_tlast_cycle <> start_cycle + 3 + (words - 1)
   then fail row "test bug -- the baseline's own tlast cycle does not match the gapless m + 3 formula";
   let in_baseline = Dv_xgmii.Arrival.in_times baseline_frame in
-  let out_baseline =
-    Dv_monitors.Octet_time.of_words (List.map baseline_words ~f:(fun s -> s.cycle, s.out))
-  in
   if not (List.is_empty (error_pulses baseline_samples))
   then fail row "an error strobe pulsed on the plain, un-injected baseline run";
   account_clean_frame baseline_bench baseline_frame baseline_samples ~aborted:false;
@@ -1060,8 +1223,7 @@ let run_i4_length_lane ~cross_latency ~lane ~length =
       ~expected_tkeep_last
       ~start_cycle
       ~baseline_tlast_cycle
-      ~in_baseline
-      ~out_baseline)
+      ~in_baseline)
 ;;
 
 let run_i4 () =
@@ -1080,12 +1242,15 @@ let run_i4 () =
   (match Dv_monitors.Octet_time.Latency.errors cross_latency with
    | [] -> ()
    | errs -> fail row (String.concat ~sep:"\n" errs));
-  if not (Dv_monitors.Octet_time.Latency.is_constant cross_latency)
-  then
-    fail
-      row
-      "the per-octet constant of §7 is NOT constant across the 48 injected runs -- \
-       REQ-005/REQ-111's own claim, measured";
+  (* WO-0059 RV-0059-VERDICT §12 item 3 / SCR-M03-I4: the per-octet constant
+     claim (Latency.is_constant, and each class's own single-L equality) is
+     HELD here too -- this is the SAME claim as the per-run check in
+     [run_i4_case], just accumulated across all 48 runs, and FINDING 5
+     shows it is false for a conformant design at either lane the moment
+     idles > 0. Reported, not asserted (see [run_i4_case]'s own declaration
+     for the two structural reasons); front_offset and frames are
+     unaffected structural facts (a class's own h, and how many runs
+     landed in it) and stay asserted. *)
   let classes =
     List.sort
       (Dv_monitors.Octet_time.Latency.observed cross_latency)
@@ -1094,27 +1259,32 @@ let run_i4 () =
   (match classes with
    | [ c0; c4 ] ->
      if c0.Dv_monitors.Octet_time.Latency.front_offset <> 8
-        || not (List.equal Int.equal c0.Dv_monitors.Octet_time.Latency.latencies [ 16 ])
-     then fail row "the lane-0 class is not exactly h = 8, L = 16 across all 24 runs";
+     then fail row "the lane-0 class's own front offset is not h = 8 across all 24 runs";
      if c0.Dv_monitors.Octet_time.Latency.frames <> 24
      then fail row "the lane-0 class did not accumulate all 24 runs";
      if c4.Dv_monitors.Octet_time.Latency.front_offset <> 12
-        || not (List.equal Int.equal c4.Dv_monitors.Octet_time.Latency.latencies [ 12 ])
-     then fail row "the lane-4 class is not exactly h = 12, L = 12 across all 24 runs";
+     then fail row "the lane-4 class's own front offset is not h = 12 across all 24 runs";
      if c4.Dv_monitors.Octet_time.Latency.frames <> 24
      then fail row "the lane-4 class did not accumulate all 24 runs"
-   | _ -> fail row "expected exactly two front-offset classes (lane 0 and lane 4)")
+   | _ -> fail row "expected exactly two front-offset classes (lane 0 and lane 4)");
+  (* HELD, not asserted: the accumulated L classes land here as expect-block
+     data once CI promotes this block (SCR-M03-I4). *)
+  print_string (Dv_monitors.Octet_time.Latency.report cross_latency)
 ;;
 
 let%expect_test
   "M03-I4: the M03-C1 directed set (64..71 octets) through the idle-injection \
    wrapper at 0/1/7 idle cycles, both start lanes -- 48 injected runs plus \
-   16 un-injected baselines; word sequence unchanged (Idle_injection.cycle_of, \
-   not m + 3), per-octet delay identity against each length/lane's own \
-   baseline (raw octet times, independent of cycle_of), per-octet constant \
-   unchanged and MEASURED both per run and across all 48, FCS verdicts \
-   unchanged, Idle_injection.errors and c45_sites empty on every run \
-   (REQ-016, §6.1's gapless qualifier, C-14.4, C-18)"
+   16 un-injected baselines; word sequence via RV-0059-VERDICT §8's \
+   corrected cycle rule (baseline_cycle(m) + (cycle_of(D m) - D m), D m a \
+   SOURCE cycle, never m + 3 alone), word-granular delay identity against \
+   each length/lane's own baseline (raw octet times where an anchor octet \
+   exists, Idle_injection.uniform's own documented per-boundary contract \
+   for the tlast word where it does not), per-octet constant of §7 \
+   MEASURED and REPORTED rather than asserted (SCR-M03-I4 -- FINDING 5 \
+   showed it does not survive injection), FCS verdicts unchanged, \
+   Idle_injection.errors and c45_sites empty on every run (REQ-016, §6.1's \
+   gapless qualifier, C-14.4, C-18)"
   =
   run_i4 ();
   [%expect {||}]
@@ -1136,11 +1306,29 @@ let%expect_test
    asserting m + 3 against an injected run would fail a design [run_i4]
    itself has already shown conformant. NOT asserted anywhere in this file:
    the m + 3 formula, applied to an injected cycle. Asserted INSTEAD,
-   throughout [run_i4]: every cycle needed on the injected line is
-   [Idle_injection.cycle_of] of the corresponding un-injected (gapless)
-   cycle, and separately, the gap-invariant quantity §6.1 itself names --
-   the per-octet constant L of §7 -- MEASURED per run and across all 48
-   runs via [cross_latency].
+   throughout [run_i4]: every output word's own cycle is
+   baseline_cycle(m) + (cycle_of(D m) - D m) -- RV-0059-VERDICT §8's
+   corrected rule, D(m) always a SOURCE cycle and never an output one (the
+   round-1 form of this row's own claim sent [cycle_of] an output cycle,
+   RV-0059-VERDICT FINDING 1 / FINDING 3, corrected in round 2).
+
+   The quoted cell's OWN "asserted instead" clause -- the per-octet
+   constant L of §7 -- does NOT survive injection at either start lane
+   (RV-0059-VERDICT FINDING 5, `agents/handoffs/
+   WO-0059_tb-m03-family-i-silence-and-ordered-sets.md` §6, opening
+   SCR-M03-I4 with `architect_docs_lead`, undecided as of this spawn): the
+   tlast word's own dependency is the terminate character's source cycle
+   rather than any content octet's, and at a lane-4 start every output word
+   straddles two source input words, so §7's own single-L claim is
+   unsatisfiable by a CONFORMANT design the moment idles > 0. [run_i4]
+   therefore no longer ASSERTS L -- it MEASURES it, per run and across all
+   48 runs via [cross_latency], and REPORTS it (not asserted; see
+   [run_i4_case]'s own declaration). This quoted cell is itself the thing
+   SCR-M03-I4 asks `architect_docs_lead` to correct; this file does not
+   edit `AP-xgmii_rx_64.md` (WO-0059 §1.1's own rule: a row is corrected
+   before it is benched, never silently reinterpreted after) and the
+   discharge-shape reasoning below is unaffected by which way that ruling
+   lands.
 
    Discharge shape (WO-0059 §2.4, §3, item 7 of §10's own Return-log list):
    this comment, naming the row and the clause, what is not asserted and
@@ -1191,12 +1379,29 @@ let run_i6_case ~lane ~length =
   let sched = one_frame ~lane octets in
   let frame = (Dv_xgmii.Arrival.frames sched).(0) in
   let start_cycle = Dv_xgmii.Arrival.start_cycle frame in
+  let start_octet_time = frame.Dv_xgmii.Arrival.start_octet_time in
   let delivered = length - 4 in
   let words = (delivered + 7) / 8 in
   let expected_tkeep_last =
     if Int.rem delivered 8 = 0 then 0xFF else (1 lsl Int.rem delivered 8) - 1
   in
-  let baseline_tlast_cycle = start_cycle + 3 + (words - 1) in
+  (* WO-0059 §4 item 1 / M03-I2's own guard discipline, as run_i4_case. *)
+  let expected_start_octet_time = if lane = 0 then 8 else 12 in
+  if start_octet_time <> expected_start_octet_time
+  then
+    fail
+      row
+      "test bug -- start_octet_time does not match this lane's own §0.3 mapping (8 at \
+       lane 0, 12 at lane 4)";
+  let terminate_ot = Dv_xgmii.Arrival.terminate_octet_time frame in
+  let terminate_cycle = terminate_ot / 8 in
+  let expected_terminate_cycle = (start_octet_time + 8 + length) / 8 in
+  if terminate_cycle <> expected_terminate_cycle
+  then
+    fail
+      row
+      "test bug -- terminate_cycle does not match this file's own independent derivation \
+       (start_octet_time + 8 + length, REQ-106)";
   let idles = 7 in
   let inj = Dv_xgmii.Idle_injection.uniform sched ~idles in
   if not (Dv_xgmii.Idle_injection.is_clean inj)
@@ -1210,7 +1415,11 @@ let run_i6_case ~lane ~length =
   then fail row "test bug -- Idle_injection.errors is non-empty although is_clean reported true";
   if not (List.is_empty (Dv_xgmii.Idle_injection.c45_sites inj))
   then fail row "test bug -- uniform proposed a C-45 boundary";
-  let injected_tlast_cycle = Dv_xgmii.Idle_injection.cycle_of inj baseline_tlast_cycle in
+  (* RV-0059-VERDICT §8's corrected cycle rule -- shared with M03-I4, see
+     [injected_word_cycle]'s own docstring above [run_i4_case]. *)
+  let injected_tlast_cycle =
+    injected_word_cycle inj ~start_octet_time ~terminate_cycle ~words ~start_cycle (words - 1)
+  in
   let bench = create () in
   let drain = Dv_xgmii.Idle_injection.injected inj + 8 in
   let samples =
@@ -1228,12 +1437,19 @@ let run_i6_case ~lane ~length =
          ; Int.to_string (List.length words_out)
          ]);
   List.iteri words_out ~f:(fun m s ->
-    let expected_cycle = Dv_xgmii.Idle_injection.cycle_of inj (start_cycle + 3 + m) in
+    let expected_cycle =
+      injected_word_cycle inj ~start_octet_time ~terminate_cycle ~words ~start_cycle m
+    in
     if s.cycle <> expected_cycle
     then
       fail
         row
-        (String.concat [ "word "; Int.to_string m; " arrived on the wrong cycle (Idle_injection.cycle_of)" ]);
+        (String.concat
+           [ "word "
+           ; Int.to_string m
+           ; " arrived on the wrong cycle (RV-0059-VERDICT §8: \
+              baseline_cycle(m) + (cycle_of(D m) - D m), not m + 3 alone)"
+           ]);
     let expected_tkeep = if m = words - 1 then expected_tkeep_last else 0xFF in
     if s.out.Dv_monitors.Stream_word.tkeep <> expected_tkeep
     then fail row (String.concat [ "word "; Int.to_string m; " tkeep does not match the expected pattern" ]);
@@ -1243,7 +1459,7 @@ let run_i6_case ~lane ~length =
     then fail row (String.concat [ "word "; Int.to_string m; " unexpectedly carries tlast" ]));
   let tlast_s = List.last_exn words_out in
   if tlast_s.cycle <> injected_tlast_cycle
-  then fail row "test bug -- the last word's own cycle does not match Idle_injection.cycle_of's own value";
+  then fail row "test bug -- the last word's own cycle does not match the corrected cycle rule's own value";
   if tlast_s.out.Dv_monitors.Stream_word.tuser <> 0
   then fail row "tuser[0] set -- expected a clean FCS verdict, this frame's own class is unchanged";
   let expected_octets = Dv_xgmii.Frame.delivered octets in
@@ -1261,7 +1477,7 @@ let run_i6_case ~lane ~length =
       row
       "an error strobe pulsed -- idle injection must not change which REQ-107/REQ-108 \
        class this frame falls into";
-  account_injected_frame bench ~inj frame samples ~aborted:false;
+  account_injected_frame bench ~aborted:false;
   assert_monitors_clean bench ~row
 ;;
 

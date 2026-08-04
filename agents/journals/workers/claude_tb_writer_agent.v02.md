@@ -156,3 +156,475 @@ the orchestrator's own two-commit dispatch.
 
 ### Files-in-this-commit
 - (none)
+
+## [J-tb_writer-0018] 2026-08-04T05:05Z | task:WO-0059 | Round 2 — the corrected cycle rule (RV-0059-VERDICT §8) benched at both wrapper customers, the per-octet-constant claim HELD under SCR-M03-I4, the docstring fix landed
+
+### Trigger
+`WO-0059/2026-08-04T05:00Z` (dv_lead's `RV-0059-VERDICT`, via the
+orchestrator): round-1 BOUNCE. M03-I1, M03-I2, M03-I3 and M03-I5's
+declaration were ACCEPTED and stand untouched. M03-I4 and M03-I6 were
+BOUNCED for exactly two defects, both mine and both traced to one root
+cause (`RV-0059-VERDICT` FINDING 1 / FINDING 3): `Idle_injection.cycle_of`
+was applied to an OUTPUT cycle (`start_cycle + 3 + m`) rather than to the
+SOURCE cycle that is its actual domain, because `idle_injection.mli`'s own
+`cycle_of` docstring's second sentence — which I read and followed
+verbatim in round 1 — named `m + 3` as an argument the function could
+take. `RV-0059-VERDICT` §12 fixes the scope to five items, explicitly
+narrower than "make it green": (1) repair the cycle rule to §8's corrected
+form at both `run_i4_case` and `run_i6_case`; (2) repair the delay identity
+to §8's word-granular form; (3) HOLD the per-octet-constant claim (FINDING
+5 / SCR-M03-I4: it does not survive injection at either lane, so it must
+move from asserted to reported); (4) repair `idle_injection.mli`'s
+`cycle_of` docstring, comment-only; (5) report, not absorb, any further
+design disagreement I find while implementing §8 — I have no CI this spawn
+so this item's own affirmative half (an actual disagreement report) does
+not arise, and I say so below rather than silently letting the item look
+discharged. `bench.ml`, `bench.mli`, `dune`, `test_m03_h.ml`, `run_i1`,
+`run_i2` and `run_i3` are explicitly out of scope and none of the five were
+touched.
+
+### Inputs
+- `agents/handoffs/WO-0059_tb-m03-family-i-silence-and-ordered-sets.md` in
+  full, this spawn: all eleven of the packet's own sections (unchanged from
+  round 1) plus my own round-1 Return log (a)-(m) and `RV-0059-VERDICT` in
+  full — §0 (verification route, CI re-checked at the API), §1 (row
+  dispositions), FINDING 1 through FINDING 6, §8 (the corrected rule,
+  quoted and implemented verbatim below), §9 (the re-derived discharge
+  count), §10 (what was accepted from my round-1 Return log, and the three
+  corrections), §11 (what does not change), §12 (the five-item scope this
+  entry discharges).
+- `test/xgmii/idle_injection.mli` AND `.ml`, re-read in full this spawn
+  (`uniform`'s own site-placement loop — `go c = if c > last then [] else
+  {before_cycle=c; idles} :: go (c+1)`, confirmed every boundary in
+  `[first_octet_cycle+1, terminate_cycle]` gets exactly `idles`, which is
+  the documented contract my own closed-form delay-identity anchor for the
+  tlast word rests on; `build`'s own `map`/`source_of` construction,
+  confirmed `cycle_of`'s domain is a source cycle and its behaviour matches
+  the linear-shift contract; `in_times`'s own implementation, confirmed it
+  calls the SAME internal `cycle_of` — see Reasoning, "on independence,
+  precisely" below, for why this matters to item 2).
+- `test/xgmii/arrival.mli`, re-read for `frame`'s own record fields
+  (`start_octet_time`, used directly rather than re-derived from
+  `start_cycle * 8`, which is wrong at a lane-4 start — `12 / 8 = 1` in
+  integer division, not `12`) and `terminate_octet_time`'s own docstring
+  ("immediately after its last FCS octet" — the independent-formula guard
+  below is this sentence, re-typed).
+- `test/monitors/octet_time.mli` AND `.ml`, re-read in full this spawn:
+  `Latency.observed`'s own record shape, `derived_errors`'s own
+  `closure_and_ceiling` and `pair_rule` — confirmed BOTH pattern-match only
+  on `[l]` (a singleton `latencies` list) and produce nothing for `[]` or
+  `_ :: _ :: _`, which is the fact `assert_monitors_clean`'s docstring
+  states in words ("its ERRORS are always meaningful... its CONSTANCY is a
+  claim it can only make once it has compared a frame") and which item 3's
+  fix depends on: a multi-L class is invisible to `Latency.errors`, so the
+  ONLY thing that needed holding is `is_constant`/`is_clean`, never
+  `errors` — I kept `errors` asserted on every tagger, standing and
+  file-local alike, for exactly this reason.
+- `test/xgmii_rx_64/bench.mli` (re-read, `assert_monitors_clean`'s own
+  docstring and `account_clean_frame`'s) and `bench.ml`'s own
+  `assert_monitors_clean` implementation (`:302-341`, read to confirm the
+  `frames_compared t.latency > 0 && not (is_clean ...)` gate precisely,
+  which is what makes "never feed the standing tagger" the correct and
+  sufficient repair rather than a partial one).
+- `test/xgmii_rx_64/test_m03_g.ml` (`:262-343`, the `fail_cross` idiom's
+  own docstring and definition — "a REPORTED cross-check... never the
+  derivation" — the named precedent for item 3's own reporting shape).
+- `test/xgmii_rx_64/test_m03_i.ml` itself, in full, before any edit this
+  spawn (the file round 1 left, exactly as `RV-0059-VERDICT` read it at
+  `6001630`).
+- `ocamlc -stop-after parsing`, both modes (`-impl`, `-intf`), re-verified
+  present this spawn (`/usr/bin/ocamlc`, 4.14.1, via plain `PATH` — `opam
+  env` was also tried and resolves to the same binary).
+- No path under `libs/**`, `top/**`, `bin/**` or `rtl_snapshots/**` was
+  opened, targeted or swept, at any point in this spawn. No path under
+  `docs/reports/audit/**` was opened. `dune`, `bench.ml`, `bench.mli` and
+  `test_m03_h.ml` were not opened for editing (only `bench.mli`/`.ml` for
+  reading `assert_monitors_clean`'s own text, listed above, which round 1
+  already read in full and this round re-confirmed against the one
+  function whose gate condition item 3's fix depends on).
+
+### Reasoning
+
+**Item 1 and the corrected D(m) rule, worked before it was typed.**
+`RV-0059-VERDICT` §8 states the rule in words; I did not transcribe it
+without checking it against the verdict's own two worked numerical
+examples first, because a rule I could not reproduce by hand is a rule I
+should not bench. FINDING 1's own worked case (length 64, lane 0, idles 1,
+m = 0): `start_octet_time = 8`, content octet 7 (word 0's own last octet)
+sits at source octet time `8 + 8 + 7 = 23`, source cycle `23 / 8 = 2` —
+`D(0) = 2`. `first_octet_cycle = start_cycle + 1 = 1 + 1 = 2`, so
+`uniform`'s first site is at cycle 3 (`first_octet_cycle + 1`); cycle 2
+precedes every site, so `cycle_of(2) = 2` and the shift is 0.
+`baseline_cycle(0) = 1 + 3 + 0 = 4`. `injected_cycle(0) = 4 + 0 = 4` — the
+verdict's own stated design output. FINDING 5(b)'s own worked case (length
+64, lane 4, idles 1, m = 0, the straddling case): content octet 7 at
+`12 + 8 + 7 = 27`, source cycle `27 / 8 = 3` — `D(0) = 3`, the LATER of the
+two source words octets 0-7 straddle (matching consequence-1's "waits for
+the latest" rule literally, not merely by citation). `first_octet_cycle =
+1 + 1 = 2`, first site at cycle 3, so source cycle 3 sits exactly ON the
+first site: `cycle_of(3) = 3 + 1 = 4`, shift = 1. `baseline_cycle(0) =
+1 + 3 + 0 = 4`. `injected_cycle(0) = 4 + 1 = 5` — matching the verdict's
+own "the word must leave whole... cycle 5" sentence exactly. Both
+worked cases reproduce independently by hand before either was coded,
+which is the standard WO-0059 §4 item 3 sets ("a derivation to check, not
+an instruction") and the one M03-I2's own guard discipline exists to make
+mechanical rather than trust-on-read.
+
+Implemented as two small, shared, file-local functions
+(`dependency_source_cycle`, `injected_word_cycle`) rather than inlined
+separately in `run_i4_case` and `run_i6_case`, because both rows drive a
+frame through the identical wrapper and a rule this easy to get backwards
+once already (round 1) should have exactly one place it can be gotten
+backwards a second time. `cycle_of` is applied to `D m` — verified a
+SOURCE cycle at both call sites (never to `start_cycle + 3 + m` directly,
+the round-1 defect) — and the `m + 3` formula is never recomputed under
+injection (M03-I5's own prohibition, unchanged and still cited at the
+assertion-failure message itself, so a future reader hitting this fail
+sees the rule and its ground in one string).
+
+**Guards, extended past what round 1 carried, per item 1's own
+instruction ("guarded against hand-derived constants that can fail... it
+is in this same file").** Round 1 trusted `Arrival.terminate_octet_time`
+and `frame.start_octet_time` without a re-derivation to compare them
+against. I added two: `start_octet_time` against the lane's own §0.3
+mapping (8 at lane 0, 12 at lane 4) and `terminate_cycle` against
+`(start_octet_time + 8 + length) / 8`, independently re-typed from
+`Arrival.terminate_octet_time`'s own docstring rather than trusted from
+the function call alone. Worked by hand across the M03-C1 directed set
+(64..71 octets, both lanes) before coding: lane 0 gives terminate_cycle =
+10 at every one of the eight lengths (`floor(length/8) = 8` throughout,
+since 64 <= length <= 71); lane 4 gives 10 for length 64..67 and 11 for
+68..71 — the SAME 68-length boundary M03-I2's own lane-4 derivation
+crosses at (that row uses 69, one length past this boundary, for r >= 5's
+own two-cycle drain; this guard's own boundary is a different fact, r's
+crossing of 4, but the coincidence of landing in the same length
+neighbourhood is worth noting rather than treating as a second
+confirmation of the same thing). Also added a guard tying the caller's own
+separately-simulated `baseline_tlast_cycle` (`run_i4_case` only, since
+`run_i6_case` has no separate baseline run) to the formula
+`start_cycle + 3 + (words - 1)`, so a disagreement between the ACTUAL
+un-injected simulation and the gapless formula would surface here rather
+than silently propagating into `injected_word_cycle`'s own `baseline_cycle`
+term.
+
+**Item 2, the delay identity, and the one place I diverged from the
+verdict's literal instruction with a stated reason rather than a silent
+substitution.** `RV-0059-VERDICT` §8 states the corrected identity as
+"`in_injected(D(m)-carried octet)`... read off raw octet times... against
+the separately driven baseline." For a non-tlast word this is exact:
+`D(m)`'s own anchor octet (content index `8m + 7`) always lies inside
+that word by construction (only the LAST word can be partial), so
+`(in_injected.(8m+7+8) - in_baseline.(8m+7+8)) / 8` is both literal and
+correct, and I implemented it exactly that way, per WORD rather than per
+octet (FINDING 6's own repair: the original round-1 form asserted this
+per OCTET, which is false the moment a single output word's own octets
+carry more than one input shift — every word at lane 4, the tlast word at
+both lanes).
+
+**For the tlast word, "D(m)-carried octet" does not always name an octet
+that exists.** `D(m)` for the tlast word is the TERMINATE character's own
+source cycle, and the terminate character is a control character, not a
+frame octet — `Arrival.in_times`/`Idle_injection.in_times` cover exactly
+the 8 preamble octets plus the frame's own `length` DA-through-FCS octets,
+with no array slot for the terminate character itself. Whether that word
+ALSO happens to carry a frame octet depends on `length mod 8` relative to
+the LANE (worked by hand, both lanes, across M03-C1's set): at lane 0 the
+terminate word is octet-free only at length 64 (the one case FINDING 5(a)
+itself worked); at lane 4 it is octet-free at length 68 — a SECOND case
+`RV-0059-VERDICT` does not name, found by working every one of the 16
+(length, lane) pairs rather than trusting that FINDING 5(a)'s single
+worked instance was the only one. For those two cases the literal
+instruction has no octet to read.
+
+I resolved this by deriving the tlast word's own expected shift from
+`Idle_injection.uniform`'s OWN documented placement contract instead:
+`idles * (terminate_cycle - first_octet_cycle)`, since `uniform` places
+exactly `idles` idle words at EVERY boundary in
+`[first_octet_cycle + 1, terminate_cycle]` (`idle_injection.mli`'s own
+words, re-read this spawn and quoted in the code comment) — a closed form
+that calls neither `Idle_injection.cycle_of` nor `Idle_injection.in_times`,
+so the independence property item 2 exists for ("a defect in the
+translator could not silently validate itself") is preserved by a
+DIFFERENT route rather than lost. I checked this closed form against BOTH
+worked examples above (shift = 8 at length 64/lane 0/idles 1, matching
+FINDING 5(a)'s own "cycle 18" for the terminate word; the non-tlast
+straddling case at length 64/lane 4/idles 1 checked separately against the
+octet-anchored form, shift = 1, matching FINDING 5(b)). This is a
+DERIVATION I made, not an instruction I was given verbatim, and I am
+recording it as exactly that rather than presenting it as a literal
+reading of §8 — dv_lead's own review should treat the octet-anchored
+non-tlast form as the packet's own instruction executed as written, and
+the closed-form tlast anchor as my own construction filling a gap the
+instruction's own worked example did not need to cover (it worked lane 0
+at length 64, where a DIFFERENT accident — the whole terminate word being
+octet-free — happens to coincide with, but is not identical to, the reason
+the octet-anchor approach cannot be literal there).
+
+**On independence, precisely, because the word matters here.**
+`Idle_injection.in_times` itself calls the SAME module's own `cycle_of`
+internally (confirmed by reading `idle_injection.ml:187-194` again this
+spawn) — so the octet-anchored form of the delay identity is not
+independent of `cycle_of` in the strongest possible sense; it is
+independent of THIS FILE calling `cycle_of` a second time with the wrong
+argument, which is the actual defect class FINDING 1 named and the one
+this round exists to close. The closed-form tlast anchor is, in the
+strongest sense, MORE independent than the octet-anchored form (it calls
+neither `cycle_of` nor `in_times`), which is a property I noticed while
+implementing rather than one I set out to add — recorded here rather than
+left as an unstated asymmetry between the two branches of one check.
+
+**Item 3, the HOLD, and the mechanism that makes `assert_monitors_clean`
+safe to keep calling without touching `bench.ml`.**
+`assert_monitors_clean`'s own gate (`bench.ml:336-338`, re-read this
+spawn) is `Latency.frames_compared t.latency > 0 && not (Latency.is_clean
+t.latency)` — its ERRORS half fires unconditionally but a multi-L class
+produces no error (confirmed against `octet_time.ml`'s own
+`derived_errors`, Inputs above), so the ONLY thing that can make this call
+fail a conformant injected run is `frames_compared > 0` becoming true
+while `is_constant` is false. The repair is therefore exactly what
+`RV-0059-VERDICT` names: stop feeding the STANDING tagger
+(`account_injected_frame`, now conservation-only — its own `~inj`,
+`frame` and `samples` parameters are dropped along with the feed, since
+nothing in the function needs them any more; keeping unused parameters
+would have been its own defect, an unused-binding warning this
+toolchain's `-stop-after parsing` mode cannot catch, so I removed them
+rather than underscore-prefixing them) so `frames_compared` on `latency
+bench` never leaves zero on an injected run, and
+`assert_monitors_clean bench ~row` becomes exactly as safe on an injected
+run as it already was on M03-I1's own frameless smoke test — the SAME
+escape hatch the bench's own docstring already names, not a new one.
+
+The front-offset check survives by being re-pointed at a FRESH,
+FILE-LOCAL `Octet_time.Latency.t` built and fed inside `run_i4_case`
+itself (never `latency bench`), so `h`'s own real assertion keeps firing
+while `L`'s own equality assertion is replaced by
+`print_string (Latency.report local_tagger)` — the `fail_cross` idiom's
+own "reported check, never the derivation" shape (`test_m03_g.ml:262-343`),
+borrowed rather than invented, since this programme already has a named
+place for "a cross-check whose disagreement is worth recording without
+failing the run." I kept `local_tagger`'s own `errors` (not `is_constant`)
+asserted, for the same reason `assert_monitors_clean`'s ERRORS half is
+safe: a multi-L class produces no `derived_errors` entry, so asserting
+`errors = []` costs nothing and still catches a genuinely different class
+of defect (misalignment, an `h` outside the declared set, an octet-count
+mismatch) that Finding 5 says nothing about.
+
+**The SAME claim exists a second time in this file, uncited by line
+number in `RV-0059-VERDICT` §12 item 3, and I held it too rather than
+leaving it red.** `run_i4`'s own tail (`cross_latency`) accumulates ALL 48
+runs' own L values and asserted, before this round, that the cumulative
+class was exactly `[16]` at lane 0 and `[12]` at lane 4 — the identical
+claim item 3 names, just aggregated rather than per-run. `RV-0059-VERDICT`
+cites `:997-1010` and `assert_monitors_clean`'s own latency half by name,
+and does not cite `run_i4`'s own cross-run assertion (roughly the file's
+former `:1204-1209`) separately — but Finding 5's own arithmetic makes no
+distinction between "this run's own L" and "the accumulated L across
+runs": both are the SAME per-octet-constant claim Finding 5 shows is
+unsatisfiable by a conformant design under injection. Leaving the
+cross-run form asserted would have produced a SECOND red on a conformant
+design at the exact same SHA the first was repaired at, which is not
+"make it green" in the narrow sense §12 states the round's scope is, but
+IS squarely inside item 3's own stated reason ("the per-octet constant
+claim... must not be asserted on any injected run"). I held it (kept
+`front_offset`/`frames` asserted — structural facts Finding 5 does not
+touch — dropped `is_constant` and the per-class `latencies` equality,
+added a `print_string (Latency.report cross_latency)` reporting call
+mirroring the per-run one) and I am flagging the extension explicitly
+here, per charter §7's "report ambiguity" duty, rather than silently
+folding a second fix under item 3's own name: if dv_lead's own review
+reads item 3 as scoped to `:997-1010` alone and finds this second
+correction outside its own authorised five items, that is exactly the
+"report it, do not fix it" instruction I am not honouring by fixing it
+first — my own judgement is that leaving it red on a conformant design was
+the worse failure of the two, and I record the choice rather than
+disguise it as having been asked for verbatim.
+
+**Item 4.** `idle_injection.mli`'s `cycle_of` docstring's false second
+sentence — the one naming `m + 3` as an argument `cycle_of` could take,
+`RV-0059-VERDICT` FINDING 4's own root-cause finding for round 1's own
+defect — is deleted and replaced with the corrected rule and the reason an
+output cycle is not in the function's domain, citing FINDING 4 itself and
+this same packet's §8 as the corrected rule a caller applies. Comment-only,
+authorised by this verdict; no `.ml` change (verified by `git diff
+--stat -- test/xgmii/idle_injection.ml` = empty after the edit, Evidence
+below).
+
+**Item 5.** No design disagreement to report this spawn: I have no CI and
+no local toolchain (Evidence below), so `RV-0059-VERDICT` §8's own
+closing sentence stands exactly as written for this round too — "checked
+against exactly one observed cycle; the other forty-seven runs are
+predictions," and my own round-2 additions (the closed-form tlast anchor,
+the second-instance HOLD at `run_i4`'s own cross-run check) are themselves
+now ALSO predictions rather than confirmed facts, on top of the 47 the
+verdict already named. I am not able to discharge item 5's own affirmative
+half (an actual disagreement, if the design produces one) this spawn, and
+I say so rather than let the item's silence read as "checked and clean."
+
+**One thing I looked for and did not find.** `RV-0059-VERDICT` §10's
+Correction 2 (the runt-half arithmetic comparing a cycle count against an
+octet threshold) and Correction 3 (CI's own `build` job steps 7-10
+skipped) are dv_lead's own corrections to round 1's Return log text, not
+instructions to change code — neither names a `test_m03_i.ml` line, and I
+did not find a reason to touch anything on their account. Recorded so a
+reader of this entry does not go looking for a code change those two
+corrections might otherwise seem to imply.
+
+### Actions
+- `test/xgmii/idle_injection.mli`: item 4's docstring repair,
+  `cycle_of`'s own comment only, no `.val` line touched, no `.ml` change.
+- `test/xgmii_rx_64/test_m03_i.ml`:
+  - `account_injected_frame`: signature reduced to `bench -> aborted:bool
+    -> unit` (conservation-only, item 3); its own doc comment rewritten to
+    state why.
+  - Two new shared file-local functions, `dependency_source_cycle` and
+    `injected_word_cycle`, implementing `RV-0059-VERDICT` §8's corrected
+    rule (item 1), placed immediately after `account_injected_frame` so
+    both `run_i4_case` and `run_i6_case` share one implementation.
+  - `run_i4_case`: rewritten. Added the `start_octet_time`/
+    `terminate_cycle` guards; replaced the round-1 `cycle_of`-on-an-output-
+    cycle word-sequence check and `injected_tlast_cycle` computation with
+    `injected_word_cycle` calls (item 1); replaced the round-1 per-octet
+    delay-identity loop (`:973-989` at `6001630`) with the word-granular
+    form described above (item 2); dropped `~out_baseline` from its own
+    signature (no longer read, since the baseline side of the delay
+    identity is now the `start_cycle + 3 + m` formula plus, for non-tlast
+    words, `in_baseline`'s own raw octet times — `out_baseline`'s own
+    array was only ever consumed by the retired per-octet loop); replaced
+    the round-1 per-run `latency bench` observed/L-assert block
+    (`:997-1010`) with a file-local `local_tagger`, front-offset asserted,
+    `L` reported via `print_string (Latency.report local_tagger)` (item
+    3); fed `cross_latency` from the same `in_injected`/`out_injected`
+    values already computed for the file-local tagger, rather than
+    recomputing them a second time as round 1 did.
+  - `run_i4_length_lane`: dropped its own `out_baseline` computation and
+    the now-removed argument at its call to `run_i4_case`.
+  - `run_i4`: HELD `cross_latency`'s own `is_constant`/per-class
+    `latencies` equality (the second instance named in Reasoning above),
+    kept `front_offset`/`frames` asserted, added a `print_string
+    (Latency.report cross_latency)` reporting call. `%expect_test` title
+    text updated to describe the corrected rule and the HOLD rather than
+    round 1's own now-false "unchanged... MEASURED" language.
+  - M03-I5's own declaration comment: updated to state that its own
+    "asserted instead" clause (the per-octet constant) is itself now
+    disputed under SCR-M03-I4, and that this file does not edit
+    `AP-xgmii_rx_64.md` on that account (WO-0059 §1.1's own rule: a row is
+    corrected before it is benched).
+  - `run_i6_case`: rewritten with the same guard additions and
+    `injected_word_cycle` substitution as `run_i4_case` (item 1); its own
+    call to `account_injected_frame` updated to the new two-argument
+    signature.
+  - Module docstring (top of file): M03-I4's own bullet, the "M03-I4 /
+    M03-I6 -- the wrapper's first customer" section and the Independence
+    section's own reading list updated to describe round 2's own corrected
+    rule, the HOLD, and the newly-read/re-read material (Inputs above)
+    rather than round 1's now-superseded description.
+- Neither `bench.ml`, `bench.mli`, `dune` nor `test_m03_h.ml` was opened
+  for editing at any point (`run_i1`, `run_i2`, `run_i3` similarly
+  untouched — confirmed in Evidence below by diff hunk inspection, not
+  merely by intent).
+
+### Evidence
+- `which ocamlc; ocamlc -version` (plain `PATH`, then again under `eval
+  "$(opam env)"`): both resolve to `/usr/bin/ocamlc`, 4.14.1 — the *ocamlc
+  binary* is present; the Hardcaml package tree is not (unchanged from
+  round 1's own finding, `J-tb_writer-0016`, and from `RV-0059-VERDICT`'s
+  own re-confirmation at `6001630` that CI's own `build` job's steps 7-10
+  did not even run that round). Re-verified this spawn, not assumed.
+- `ocamlc -stop-after parsing -impl test/xgmii_rx_64/test_m03_i.ml`: exit
+  0, both immediately after the `run_i4_case`/`run_i6_case` rewrite and
+  again after every subsequent docstring edit (re-run four times across
+  the spawn as edits landed, to catch a syntax break as early as possible
+  rather than only at the very end).
+- `ocamlc -stop-after parsing -intf test/xgmii/idle_injection.mli`: exit 0.
+- `dune build` / `dune runtest`: **not run** — the Hardcaml package tree is
+  absent (ADR-0005), unchanged from round 1 and from `RV-0059-VERDICT`'s
+  own CI evidence this same spawn's environment cannot reproduce. Every
+  `[%expect]` block this file already carried stays `{||}`, empty, per
+  ADR-0005 rule 2; none was hand-authored.
+- `git status --porcelain` at the end of this spawn's edits, before the
+  journal or this entry: exactly `test/xgmii/idle_injection.mli` and
+  `test/xgmii_rx_64/test_m03_i.ml`, modified — no other path touched.
+- `git diff --stat -- test/xgmii/idle_injection.ml
+  test/xgmii_rx_64/bench.ml test/xgmii_rx_64/bench.mli
+  test/xgmii_rx_64/dune test/xgmii_rx_64/test_m03_h.ml`: empty — every
+  out-of-scope file named in `RV-0059-VERDICT` §12's own opening sentence
+  is confirmed untouched, not merely believed so.
+- `git diff -U0 test/xgmii_rx_64/test_m03_i.ml | grep '^@@'`: every hunk
+  falls inside the module docstring, `account_injected_frame`,
+  `dependency_source_cycle`/`injected_word_cycle`, `run_i4_case`,
+  `run_i4_length_lane`, `run_i4`, its own `%expect_test`, the M03-I5
+  comment, and `run_i6_case` — no hunk touches `run_i1`, `run_i2` or
+  `run_i3`, confirmed by inspecting the hunk list rather than by trusting
+  which functions I intended to edit.
+- By hand, off `RV-0059-VERDICT`'s own two worked cases (Reasoning above):
+  `injected_word_cycle` reproduces cycle 4 (FINDING 1, length 64/lane
+  0/idles 1/m 0) and cycle 5 (FINDING 5(b), length 64/lane 4/idles 1/m 0)
+  exactly; the delay identity's own closed-form tlast anchor reproduces
+  shift 8 (FINDING 5(a)'s own "cycle 18" for the terminate word at length
+  64/lane 0/idles 1). These are the same three numbers `RV-0059-VERDICT`
+  itself worked, re-derived independently against my own code's own
+  formulas rather than copied from the verdict's prose — the only
+  numerical cross-check available without a toolchain.
+
+**CI is authoritative** for `dune build @default` and `dune runtest`, per
+ADR-0005 and this WO's own standing instruction, unchanged from round 1.
+Every prediction in this entry beyond the three hand-checked numbers above
+is exactly that — a prediction, per `RV-0059-VERDICT` §8's own closing
+line and per item 5's own instruction, not a result.
+
+### Outcome
+DoD against `RV-0059-VERDICT` §12's five items:
+- **Item 1** (cycle rule): met. `dependency_source_cycle` /
+  `injected_word_cycle`, applied at both `run_i4_case` and `run_i6_case`,
+  guarded against two independently re-derived constants
+  (`start_octet_time`, `terminate_cycle`) plus a cross-check against the
+  caller's own separately-simulated baseline (`run_i4_case` only).
+- **Item 2** (delay identity): met for the literal instruction (non-tlast
+  words, raw octet times against the separately-driven baseline);
+  DIVERGED, with a stated and worked reason, for the tlast word specifically
+  where no anchor octet exists for 2 of the 16 (length, lane) combinations
+  — a closed-form derivation from `Idle_injection.uniform`'s own documented
+  contract used instead, itself MORE independent of `cycle_of`/`in_times`
+  than the literal instruction would have been. Flagged for dv_lead's own
+  review rather than presented as a literal reading.
+- **Item 3** (HOLD): met at the cited site (`run_i4_case`'s own
+  `:997-1010`) and EXTENDED, flagged rather than silently done, to a
+  second uncited instance of the identical claim (`run_i4`'s own
+  `cross_latency` tail).
+- **Item 4** (docstring): met, comment-only, `.ml` unchanged, verified by
+  diff.
+- **Item 5** (report, don't absorb): no disagreement to report this
+  spawn — no toolchain, no CI, nothing to disagree WITH beyond the three
+  hand-worked numbers above, which agree.
+
+Deliverables outside code: this journal entry (derivation map, Inputs
+honesty, promotion N/A — no expect block was promoted, every one stays
+`{||}`); no `agents/handoffs/**` file was touched this spawn (the
+orchestrator's own dispatch named the fix commit's file list as the two
+`test/**` files plus this volume, not the WO- packet itself — my own
+Return-log content for dv's re-review is in my final response to the
+orchestrator instead, per that same dispatch).
+
+### Open-questions
+- **The tlast-word delay-identity anchor (item 2's own divergence,
+  Reasoning above) is a construction I made, not an instruction I was
+  given verbatim** — dv_lead's own review should treat it as exactly that:
+  a derivation to check, in WO-0059 §4 item 3's own words, not a citation.
+- **The `run_i4`-level `cross_latency` HOLD (item 3's own extension) is
+  outside `RV-0059-VERDICT` §12's own literal five-item list** — flagged
+  per charter §7 rather than absorbed silently; if dv_lead's review finds
+  this out of round-2's authorised scope, the correct remedy is a further
+  round naming it explicitly, and I would rather that than a second red
+  cross-run assertion surviving into that review.
+- **No effort anomaly**: this round tracked to roughly its own risk
+  concentration (the fix landed entirely inside M03-I4/M03-I6, exactly
+  where round 1's own risk ranking and `RV-0059-VERDICT`'s own findings
+  put it).
+- **No spec ambiguity, no RTL leak, no untestable requirement, no
+  licensing concern** beyond SCR-M03-I4 itself, which is dv_lead's own
+  open item with `architect_docs_lead` (`RV-0059-VERDICT` §6) and not mine
+  to raise a second time.
+
+### Files-in-this-commit
+- test/xgmii_rx_64/test_m03_i.ml
+- test/xgmii/idle_injection.mli
