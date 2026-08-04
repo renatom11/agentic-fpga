@@ -2068,3 +2068,293 @@ to tb_writer under a fresh spawn short-id.
 ### Files-in-this-commit
 - agents/handoffs/WO-0059_tb-m03-family-i-silence-and-ordered-sets.md
 - test/attack_plans/AP-xgmii_rx_64.md
+
+## [J-dv_lead-0083] 2026-08-07T06:20Z | task:WO-0059 | Family I BOUNCED on two reds that are the bench's and not the design's — and the arithmetic that acquits the design convicts my own §2.4, the wrapper's own docstring and, worst of the three, an attack-plan Observable cell that no conformant design can satisfy
+
+### Trigger
+Orchestrator: review WO-0059's return at `6001630` (`J-tb_writer-0016`), where
+CI run `30874173054`'s `build` job went red on two of family I's five units —
+`M03-I4 (length 64, lane 0, idles 1): word 0 arrived on cycle 4, expected 6` and
+`M03-I6 (length 64, lane 0): word 0 arrived on the wrong cycle`. Adjudicate the
+reds (worker defect, design defect, or wrapper defect — rule out rather than
+assume), re-derive the discharge count I flagged as inherited at
+`J-dv_lead-0082`, and issue the verdict.
+
+### Inputs
+- `agents/handoffs/WO-0059_…` in full, my own packet, including the RETURNED
+  Return log (a)–(m).
+- **`test/xgmii_rx_64/test_m03_i.ml`** (whole, 1285 lines), `test_m03_h.ml`'s
+  diff at `6001630`, `bench.ml`/`bench.mli`'s diff, `dune`'s diff,
+  `test_m03_f.ml:833` (M03-F5's citation discharge).
+- **`test/xgmii/idle_injection.ml` and `.mli` in full** — the adjudication turns
+  on whether the wrapper mis-models the front boundary, which cannot be ruled
+  out by reading the bench.
+- **`test/monitors/octet_time.mli` in full** — the adjudication turns on what
+  `Latency.is_constant` actually demands.
+- `docs/specs/requirements.md` **§0.5 in full** (Latency, front offset h, word
+  delay ΔC, **Gapped stimulus**, Start lanes), REQ-004, REQ-005, REQ-011,
+  REQ-016, REQ-019, REQ-101, REQ-103, REQ-104, REQ-111.
+- `docs/specs/modules/xgmii_rx_64.md` **§6.1 in full** — the preamble-position
+  paragraph, the more-than-one-event paragraph and its consequence 1 (the
+  output-word-leaves-N-cycles rule and its **gapped-stimulus scope note**), the
+  *Emitting the frame* paragraph, C-18, C-14.4.
+- `test/attack_plans/AP-xgmii_rx_64.md` §4.I (all six rows), §4.N (M03-N2's
+  injection-proof note, M03-N3), §7 (X-4), §9.
+- `agents/charters/dv_lead.md`, `agents/PROTOCOL.md`, `J-dv_lead-0080`,
+  `J-dv_lead-0082`; `WO-0057`'s RV-0057-VERDICT (form).
+- CI: run `30874173054` and both its jobs, read at the GitHub API rather than
+  taken from the relay; the harvested `build` log's expect diff and promotion
+  block.
+- **No `libs/**`, no `top/**`, no `bin/**`, no `rtl_snapshots/**`, no
+  `docs/reports/audit/**`, no `scripts/**`.** **The RV-0058 escalation-1
+  exposure note did not bite**: I opened no design source, because the
+  adjudication is arithmetic on the specification and on `test/**`. The single
+  design fact used is the one number CI printed.
+
+### Reasoning
+
+**I set out to decide between three possibilities and the answer was a fourth
+that contains all three.**
+
+**First, the red itself.** `test_m03_i.ml:926–927` computes the expected
+injected-line cycle of output word m as `Idle_injection.cycle_of (start_cycle +
+3 + m)`. `cycle_of`'s domain is the **source input** cycle line — its own first
+sentence says so and `idle_injection.ml` builds its map by walking
+`Arrival.cycles schedule`. `start_cycle + 3 + m` is an **output** cycle. The
+composition is a category error, and it is acausal in form: it delays an output
+word by idles inserted **after** that word's octets had already arrived.
+
+Worked for the exact failing member (64 octets, lane 0, `first_start:8`,
+`idles:1`): the start character is at octet time 8, cycle 1; §6.1 puts the first
+frame octet 8 octet times later, at octet time 16, cycle 2; content octets 0…63
+fill source cycles 2…9; the terminate character is at octet time 80, cycle 10.
+`uniform ~idles:1` proposes boundaries before cycles 3…10 — **none before cycle
+2**, because the only earlier one is M03-N3's prohibited boundary. So content
+octets 0…7 are **not delayed at all**, and output word 0, which carries exactly
+those octets, leaves on its baseline cycle **4** — by §6.1's consequence-1 rule
+(two cycles after the input word carrying the word's last octet at a lane-0
+start, *scoped by §6.1 itself to hold on a gapped stimulus*) and independently by
+§0.5's identity (input octet time 16 + L 16 = output octet time 32 = cycle 4,
+byte 0). **The design's 4 is right and the bench's 6 is wrong**, and the error is
+closed-form: 2k at a lane-0 start, k at a lane-4 start, for every m. At k = 7 it
+predicts M03-I6's own red exactly (4 against 18). Two reds, one arithmetic, and
+the correlation is the shared translator §7.2 item 2 named before the diff
+existed.
+
+**Second, the wrapper — ruled out rather than assumed, which is why I read it in
+full.** `first_octet_cycle = start_cycle + 1` is the word carrying the frame's
+first octet at **both** lanes (§6.1's own paragraph gives the lane-0 and lane-4
+geometries separately and they agree on that index), `uniform`'s
+`first = first_octet_cycle + 1` is the first boundary §6.1 admits, `cycle_of` is
+a correct monotone injection, `in_times` is REQ-016's arithmetic applied. **No
+behaviour defect.** But its `cycle_of` docstring's *second* sentence — *"This is
+what a bench applies to every cycle §6.1 and §9 pin on the un-injected schedule:
+`m + 3`…"* — is false, names an output cycle as the argument, and is where my own
+§2.4 came from. X-4's unit tests could never have caught it: they exercise the
+map, and the map is right. **Only a first customer against a DUT finds a defect
+in the instructions for using a correct function**, which is precisely the
+measurement §7.1 commissioned family I to make. It came back with a result.
+
+**Third, and this is the finding that outgrew the round.** Having derived the
+right rule I checked it against the row it serves — and `AP` §4.I's M03-I4
+`Observable` cell says *"the per-octet constant of §7 is unchanged (16 at lane 0,
+12 at lane 4)"*, with M03-I5 restating it as *the* gap-invariant quantity. **It
+is not, at either start lane, and no conformant design can make it so.** Two
+independent structural reasons, both derived at both ends:
+
+*(a) The `tlast` word, both lanes.* `uniform`'s last site is the boundary before
+the **terminate** word. The `tlast` word's `tkeep`, `tlast` and `tuser`[0] are
+undecidable until that character arrives (REQ-011, REQ-103, REQ-104 — the design
+cannot know which octets are FCS before it), so the word moves with the
+terminate word while its own octets moved with an earlier one. At 64 octets,
+lane 0, k = 1: delivered octets 56…59 arrive at injected cycle 16, the terminate
+at 18, `tlast` therefore at 19, and **L = 24 for those four octets** while every
+earlier octet holds 16.
+
+*(b) Every output word's first half, lane 4.* §6.1 puts frame octets 0…3 in
+lanes 4…7 of the word after the start word and 4…7 in the next, so **every**
+output word straddles two input words and `uniform`'s first legal site falls
+between them. REQ-011 forbids splitting the word and REQ-016 requires the word
+sequence unchanged, so it must leave whole — giving **L = 20 and L = 12 inside
+one word** at k = 1.
+
+So `Latency.is_constant`, which demands a single L per front-offset class, is
+**unsatisfiable on any injected run**, and `test_m03_i.ml:997–1010` plus
+`assert_monitors_clean`'s latency half would fail a conformant design after the
+cycle repair. **That is my own §2.2's false-`BUG-` failure mode arriving through
+a door §2.2 did not name** — the worker handed the tagger the right array; the
+claim the tagger is asked to judge is the wrong claim.
+
+**Why I did not simply fix the row.** The claim lives in **frozen** text —
+requirements.md §0.5's "Gapped stimulus" paragraph, REQ-016's verification
+column, and §6.1's *"because §7's per-octet constant does"* justification. The
+rule those sentences justify is right and survives; the justification does not.
+Deciding that a normative sentence over-claims is the architect's, not mine
+(charter §4: spec-ambiguity findings go up as packetized change requests), so I
+raised **SCR-M03-I4** inside the verdict with the derivation and the ask, and
+**left the AP cells unedited**. Editing them now would be me writing the ruling I
+am asking for; commissioning a bench against them as they stand would be
+building on a claim — **§1.1's own rule, applied to myself**. Hence the third
+bounce item: round 2 **holds** the per-octet-constant clause as a *reported*
+measurement rather than asserting it, and that measurement is what the ruling
+will be scored against.
+
+**Options I considered and rejected.** *Hold M03-I4 and M03-I6 entirely until
+the ruling* — rejected because the cycle rule is unambiguous and already
+normative, so most of both rows can land now and leaving CI red to wait on an
+architect round costs more than it protects. *Let round 2 assert the per-octet
+constant and see* — rejected outright: I have derived that it fails a conformant
+design, and shipping an assertion I expect to redden correctly is manufacturing a
+false `BUG-`. *Fix the docstring myself in this commit* — rejected as
+gratuitous scope: it is one comment, it belongs with the round that consumes it,
+and authorising it in the verdict keeps the repair and its reason in one diff.
+
+**On conduct, and I want this on the record in the right order.** The worker did
+what my packet told it to do, cited my section at the site, and its failure
+message quotes my own prohibition back at me. It also caught its own circularity
+in the delay identity before returning and rebuilt against sixteen separately
+driven baselines — **which is the only reason the file contained an independent
+expectation at all**, and therefore the only reason this red is distinguishable
+from a design defect without a rerun. Three of my six sections that touch
+injection were wrong (§2.4, §3.4 item 2, §3.4 item 4) and the fourth (§2.2) was
+right about the trap and wrong about its only door. **The bounce is against the
+file; the findings are against me.**
+
+**The count.** §11 carried "37 of 62" flagged as inherited. Counted rather than
+added: 78 rows, 62 ASSERT; 37 ASSERT rows named in a committed `%expect_test`
+title; plus M03-F5, discharged by citation, which is exactly the missing one
+that made `WO-0057`'s 32 and my own 33 disagree — **so the uncertainty of one is
+closed, with its cause**. Minus M03-I4 and M03-I6, red at this SHA and therefore
+discharging nothing. **36 of 62 at `6001630`**; 38 forward once family I lands
+clean, not 37.
+
+### Actions
+- **Adjudicated both reds as bench defects.** Derived the conformant arrival
+  cycle for the failing member from §6.1, §0.5 and REQ-016 by two independent
+  routes; both give cycle 4, which is what the design produced. **No `BUG-`
+  packet opened and none owed.**
+- **Ruled out the wrapper as a behaviour defect** by reading `idle_injection.ml`
+  and `.mli` in full against §6.1's two lane geometries, and **found its
+  `cycle_of` docstring's second sentence false** — a test-infrastructure
+  documentation defect with its own repair lane, authorised into round 2.
+- **Derived the correct rule** (verdict §8) — `cycle_of` applied to the source
+  cycle of the latest input word each output word depends on, plus that word's
+  baseline offset, with the `tlast` word keyed to the **terminate** word — and
+  **corrected `WO-0059` §2.4 and §3.4 items 2 and 4** in the packet itself.
+- **Raised SCR-M03-I4** to architect_docs_lead inside the verdict, with the two
+  structural derivations, the statement of what does survive, and an explicit
+  refusal to draft text for a frozen document.
+- **Re-derived the discharge count** and ruled **36 of 62** at `6001630`, naming
+  both errors in the inherited figure.
+- **Appended `RV-0059-VERDICT`** to `WO-0059`: state BOUNCED, twelve sections,
+  six numbered findings, per-row dispositions, a five-item bounce scope, the
+  round-2 Return-log deliverables and the tb_writer volume-02 rotation note.
+- **Left `test/attack_plans/AP-xgmii_rx_64.md` untouched** — the owed edit is
+  blocked on SCR-M03-I4 and saying so is the ruling.
+- Ran no `git` command that writes.
+
+### Evidence
+1. CI, at the API: run `30874173054` head `6001630` conclusion **failure**; job
+   `build` `91882127561` **failure** at step 6, steps 7–10 (**Generate RTL**,
+   **Verify nothing was left unpromoted**, **DV mechanical checks**, **C-37
+   quantifier**) **skipped**; job `cosim` `91882127487` **success**. The cosim
+   result anchors nothing here — `CD-xgmii_rx_64_cosim.md` §5.2's X1 puts all
+   cycle timing outside the comparison domain, so no family-I row is anchorable
+   in it, and I do not cite it as support for the design.
+2. Row/status tally, counted from the file at `6001630`:
+   `grep -o '^| \*\*M03-[A-Z0-9]*\*\*.*| [A-Z-]* |$'` over
+   `test/attack_plans/AP-xgmii_rx_64.md` → **78** rows; statuses **62 ASSERT**,
+   7 NO-ASSERT, 4 NO-STIMULUS, 4 STRUCTURAL, 1 GAP (sum 78).
+3. ASSERT rows named in a committed `%expect_test` title in
+   `test/xgmii_rx_64/`: A1 A2 A3 A5 / B1 / C1 C2 C3 C4 C5 / D1 D2 D3 / E1 E2 E4
+   E5 / F1 F2 F3 F4 / G1 G2 G3 G4 G6 G7 G8 / H1 H2 H3 H4 / I1 I2 I3 I4 I6 =
+   **37**, all ASSERT. Plus M03-F5 by citation (`test_m03_f.ml:833`) = **38**
+   carrying a discharge; minus I4 and I6, red at this SHA = **36 of 62
+   discharged**. At `abf5d0b` the same method gives 38 − 5 = **33**, reproducing
+   `J-dv_lead-0082`'s own figure and identifying F5 as the missing one in
+   `WO-0057` §11's 32.
+4. Failing-member derivation, reproducible by hand from the specification:
+   start character octet time 8 → cycle 1; first frame octet at 16 → cycle 2
+   (§6.1); content 0…63 at octet times 16…79 → cycles 2…9; terminate at 80 →
+   cycle 10; `uniform ~idles:1` sites before cycles 3…10 (`first_octet_cycle +
+   1` through `terminate_octet_time / 8`), `injected = 8`; `cycle_of 2 = 2`,
+   `cycle_of 3 = 4`, `cycle_of 4 = 6`, `cycle_of 10 = 18`. Output word 0 carries
+   content 0…7, whose input octet times are unchanged at 16…23 ⇒ output octet
+   times 32…39 ⇒ **cycle 4**. Bench asserted `cycle_of 4 = 6`. CI observed 4.
+5. FINDING 5 (a), same member at k = 1: delivered octets 56…59 at source cycle 9
+   → injected 16 → input octet times 128…131; terminate at source cycle 10 →
+   injected 18; baseline `tlast` one cycle after the terminate word (11 after
+   10) ⇒ injected `tlast` at 19 ⇒ output octet times 152…155 ⇒ **L = 24** where
+   every earlier octet has 16.
+6. FINDING 5 (b), 64 octets lane 4 (`first_start:12`) at k = 1: content 0…3 at
+   octet times 20…23 (cycle 2, lanes 4…7) and 4…7 at 24…27 (cycle 3, lanes 0…3);
+   `cycle_of 2 = 2`, `cycle_of 3 = 4`, so injected input times are 20…23 and
+   32…35; the word must leave whole (REQ-011, REQ-016) one cycle after its last
+   octet's word ⇒ cycle 5 ⇒ output octet times 40…47 ⇒ **L = 20 and L = 12
+   inside one output word**.
+7. `Latency.is_constant`'s contract, quoted from `test/monitors/octet_time.mli`:
+   *"True iff at least one octet was compared and every front-offset class has a
+   single L."* Evidence 5 and 6 are each a counter-example under injection.
+8. Bench and `dune` deliverables verified against §8.1/§8.2 by
+   `git show 6001630 -- test/xgmii_rx_64/bench.ml bench.mli dune`: one optional
+   parameter threaded to `Arrival.create`, one comment line, nothing else.
+9. `test_m03_h.ml` repairs verified against §7.3 by `git show 6001630 --
+   test/xgmii_rx_64/test_m03_h.ml`: `~received`/`~delivered` split at four call
+   sites, `~received = delivered` on aborted pieces and 64 on clean ones; one
+   comment-only citation at `run_h3`. Green in CI at `6001630`.
+
+### Outcome
+**WO-0059 BOUNCED**, DoD partially met. **M03-I1, M03-I2, M03-I3 discharged**
+(green, well-guarded, anti-vacuity satisfied); **M03-I5's declaration, the
+`?ifg` addition, the `dune` line and both `test_m03_h.ml` repairs accepted**;
+**M03-I4 and M03-I6 bounced** on a five-item scope.
+
+**No `BUG-` packet**: the design's behaviour at the disputed observable is the
+conformant one, derived twice from frozen text without opening `libs/**`.
+
+**Three findings against my own work** (§2.4 and §3.4 item 4's replacement rule;
+§3.4 item 2's per-octet delay identity; `AP` §4.I's M03-I4 Observable and
+M03-I5's clause), **one against the machinery I own** (X-4's `cycle_of`
+docstring), and **one against frozen specification text** raised as
+**SCR-M03-I4** to architect_docs_lead rather than decided here.
+
+**Discharge count ruled: 36 of 62 at `6001630`**, 38 forward once family I lands
+clean. `SO-M03` does not issue. Family I's qualification campaign does not open.
+
+Handoff: to the orchestrator — the packet for commit and the bounce for reissue
+to tb_writer under a fresh spawn short-id, and **SCR-M03-I4 for relay to
+architect_docs_lead**.
+
+### Open-questions
+- **SCR-M03-I4 needs a route.** It is written inside `RV-0059-VERDICT` §6 because
+  packet numbers are the orchestrator's to allocate and I will not invent one. If
+  the orchestrator prefers a standalone packet addressed to architect_docs_lead I
+  will author it against an allocated id; otherwise the verdict section is the
+  artifact and should be relayed as it stands.
+- **The `AP` §4.I edit is owed and is deliberately not in this commit** —
+  M03-I4's `Observable` and M03-I5's cells, blocked on that ruling. Counts stay
+  78 / 62 ASSERT until it lands. This is the same shape as `J-dv_lead-0072`'s
+  owed edit, with the block named instead of the timing.
+- **§8's rule is checked against exactly one observed cycle.** Forty-seven of
+  M03-I4's runs and all four of M03-I6's are predictions. If round 2 finds the
+  design disagreeing anywhere, that is a finding to receive, not an expectation
+  to adjust — and it would be the first evidence for a `BUG-` in this family.
+- **CI at `6001630` did not run `dv_checks.sh` or the unpromoted-drift check**
+  (steps 7–10 skipped), so §(l)'s inventory figures are the worker's local
+  measurement only. They will be corroborated at round 2's green SHA.
+- **Owed and still owed**, updated: the `AP` §4.I edit (above, blocked);
+  `RV-0057-VERDICT` Finding 3's total-output-word sweep, whose shared ground —
+  M03-I2's derived drain bound — **now exists and is green**, so its precondition
+  is satisfied for the first `test/**` touch after family I lands; bound 6
+  blocked on M03-B4, with M03-B2/B3/B4 all unbenched and family B still not in
+  the queue's stated remainder; bound 7 unbenched; AP-M14's sweep companion;
+  the `precompile_check.sh` side-effect-in-combinator lane; **M03-F5's
+  discharge-by-citation qualification, now load-bearing** because it is the row
+  that closes the denominator's uncertainty-of-one; the RFC 1071 anchor on the
+  next fetching run; X-7, X-10, X-11 deferred.
+- **Raised, not decided, unchanged**: the adjudicator RTL-exposure control,
+  which belongs in the next campaign packet. It did not bind this round — I
+  opened no design source — and that is a datum for it, not a resolution of it.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0059_tb-m03-family-i-silence-and-ordered-sets.md

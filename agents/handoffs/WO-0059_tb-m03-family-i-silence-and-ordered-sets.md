@@ -1023,3 +1023,548 @@ being family I's own first customer against a DUT) — I did not go looking
 for one beyond confirming the ones the packet already names, per its own
 instruction not to pre-empt the next campaign packet's own adjudication
 question.
+
+---
+
+## RV-0059-VERDICT: **BOUNCE** — three rows land clean; the two reds are the bench's and **not** the design's, and the arithmetic that acquits the design convicts four other things, three of them mine — dv_lead, `J-dv_lead-0083`
+
+**State**: **BOUNCED.** M03-I1, M03-I2, M03-I3 ACCEPTED and discharged.
+M03-I5's declaration ACCEPTED. The `bench.ml`/`bench.mli` `?ifg` addition, the
+`dune` line and both `test_m03_h.ml` repairs ACCEPTED. **M03-I4 and M03-I6
+BOUNCED** to a second round whose scope is fixed in §12 and is narrower than
+"make it green".
+
+**No `BUG-` packet issues from this round.** The design's behaviour at the one
+observable in dispute is the conformant one, derived below from the frozen text
+without opening `libs/**`.
+
+---
+
+### 0. What I verified, and by what route
+
+Line by line against my own §§1–11 and `AP-xgmii_rx_64.md` §4.I at `fc2a4ee`,
+plus the two bench files, the `dune` line, both `test_m03_h.ml` repairs and all
+thirteen Return-log answers (a)–(m).
+
+**Read**: `test/xgmii_rx_64/test_m03_i.ml` (whole), `test_m03_h.ml`'s diff at
+`6001630` (whole), `bench.ml`/`bench.mli`'s diff, `dune`'s diff,
+`test/xgmii/idle_injection.ml` **and** `.mli` (whole — the adjudication turns on
+the wrapper), `test/monitors/octet_time.mli` (whole — the adjudication turns on
+what `Latency.is_constant` demands), `docs/specs/requirements.md` §0.5 (whole),
+REQ-005, REQ-011, REQ-016, REQ-019, REQ-101, REQ-111, `docs/specs/modules/
+xgmii_rx_64.md` §6.1 (whole), `AP-xgmii_rx_64.md` §4.I and §9.
+
+**Not read**: no path under `libs/**`, `top/**`, `bin/**`, `rtl_snapshots/**`,
+`docs/reports/audit/**`. **The RV-0058 escalation-1 exposure question did not
+arise**: the adjudication below is arithmetic on the specification and on the
+test tree, and I did not need the design's source to do it. The one design fact
+I used is the single number CI printed — *word 0 arrived on cycle 4* — which is
+an observation, not a reading.
+
+**CI, re-verified at the API rather than taken from the relay** (run
+`30874173054`, head `6001630`): job `build` (`91882127561`) **failure** at step 6
+`Run tests`; steps 7–10 **skipped**, so *Generate RTL*, *Verify nothing was left
+unpromoted*, the **DV mechanical checks** and the **C-37 quantifier did not run at
+this SHA** — the round has no `dv_checks.sh` evidence of its own beyond the
+worker's local run, and §(l)'s unit count is therefore uncorroborated by CI.
+Job `cosim` (`91882127487`) **success**. **The cosim result is not material to
+this adjudication and I say so rather than lean on it**: my own §6 item 4 puts
+all cycle timing outside the comparison domain (`CD-xgmii_rx_64_cosim.md` §5.2
+X1), so no family-I row — least of all a dispute about *which cycle a word
+arrived on* — is anchorable there. A green cosim job is not evidence for the
+design here and I do not offer it as any.
+
+---
+
+### 1. Row dispositions
+
+| Row | Disposition | Ground |
+|---|---|---|
+| **M03-I1** | **ACCEPT — discharged** | Green. `first_start = 8008` guarded against §0.3's multiple-of-4 rule and against `start_cycle = idle_cycles + 1`; the 1001-cycle idle prefix **measured from the samples** and guarded against its intended length, so the absence is not asserted over an empty list; the positive companion (word count, per-word cycle `start_cycle + 3 + m` — correct, this run is gapless — `tkeep`, `tuser`, content) precedes it, and `account_clean_frame` + `assert_monitors_clean` make the `is_constant` demand live, which is the cost §2.1 said the companion would carry and it is paid. |
+| **M03-I2** | **ACCEPT — discharged** | Green, and it is the round's best work. All four members' `terminate_cycle`/`tlast`/boundary/word-count derived from `Arrival` **and** guarded against hand-derived constants that can fail; member (i) lane 4 derived independently rather than assumed symmetric with lane 0 (correctly: 72 is a multiple of 8, so both lanes' terminate lands in cycle 10); member (ii)'s two lanes correctly **do not** share a boundary (13 vs 14); and `tail_cycle < boundary` is guarded, which is the anti-vacuity check §3.2 demanded by name. |
+| **M03-I3** | **ACCEPT — discharged** | Green. One schedule driven twice on two fresh benches; the overlay's control mask and every lane checked `= 0x9C` **before** either run; window 13…112 guarded at both ends and against frame 2's start cycle 113 at both lanes; the ordered set's shape derived from §2 and §6.2 alone; `Bench.account_clean_frame`/`Arrival.in_times` correctly retained (the overlay substitutes gap words only, so the source trace stays true). The cycle-for-cycle comparison's ground is stated as §7's constant plus REQ-113, not as M03-A4's silence, exactly as §3.3 item 2 required. |
+| **M03-I4** | **BOUNCE** | RED. FINDING 1 (the cycle rule), FINDING 5 (an unachievable clause in the row itself) and FINDING 6 (the delay identity). |
+| **M03-I5** | **ACCEPT** | D4's declaration shape, with a reason I accept and did not supply: A4 earns a unit because its "asserted instead" fact is distinct from A3's; I5's is **M03-I4's own assertion verbatim**, so a unit would either duplicate it or claim a positive fact I5 does not own. That is the right discrimination and it answers §3.4's open question properly. **But see FINDING 5**: the clause I5 declares — "the gap-invariant quantity is the per-octet constant" — is itself wrong, so the declaration is accepted as *shaped* and its *content* moves with the change request. |
+| **M03-I6** | **BOUNCE** | RED, correlated with M03-I4 through the shared translator exactly as §7.2 item 2 predicted. Same three findings. |
+| `bench.ml`/`.mli` `?ifg` | **ACCEPT** | Exactly §8.1: one optional parameter, passed straight through to `Arrival.create`'s own `?ifg`, defaulting to `Arrival`'s default, no other line of either file moved, every prior caller provably unaffected. Nothing else in `Bench` was touched — `run`, `account_clean_frame` and `assert_monitors_clean` are as they were. |
+| `dune` | **ACCEPT** | Comment-only, header list only, no stanza touched. |
+| `test_m03_h.ml` ×2 | **ACCEPT** | Finding 1's `~received`/`~delivered` split applied at all four call sites with the right value at each (aborted pieces `received = delivered`, clean pieces `received = 64`); Finding 4's citation added as comment only. **Outcome-neutrality re-derived by the worker from `octet_time.ml`'s own index walk rather than restated from my finding** — that is the correct handling of a "SHALL NOT change any assertion's outcome" instruction, and CI's green `test_m03_h.ml` at `6001630` is the confirmation. |
+
+---
+
+### 2. FINDING 1 (the red, **CRITICAL**, bench) — `Idle_injection.cycle_of` is applied to an **output** cycle, and its domain is the **source input** cycle line
+
+`test_m03_i.ml:926–927`:
+
+```ocaml
+let expected_baseline_cycle = start_cycle + 3 + m in
+let expected_cycle = Dv_xgmii.Idle_injection.cycle_of inj expected_baseline_cycle in
+```
+
+and identically at `:1231` (M03-I6), and at `:906`/`:1213` for the `tlast`
+cycle (whose self-check at `:949`/`:1246` therefore cannot fire — the two agree
+because they are wrong the same way).
+
+`start_cycle + 3 + m` is an **output** cycle. `cycle_of` maps a **source
+schedule** cycle to the injected-line cycle carrying that same source word
+(`idle_injection.mli`: *"where a source cycle lands on the injected line"*; and
+`idle_injection.ml`'s `map` is built by walking `Arrival.cycles schedule`). An
+output cycle is not on that line. Applying `cycle_of` to one asks *"how much was
+the input word at index 4 delayed"* and answers a question about output word 0.
+
+**The derivation, from the frozen text, for the exact failing member** (length
+64, lane 0, `idles:1`; `Bench.one_frame ~lane:0` ⇒ `first_start = 8`):
+
+1. §6.1: the start character is at octet time 8 → source cycle 1, lane 0
+   (REQ-101 satisfied). The frame's first octet is **8 octet times after the
+   start character** → octet time 16 = cycle 2, lane 0. Content octets 0…63
+   occupy octet times 16…79, i.e. source cycles 2…9, eight whole words. The
+   terminate character is at octet time 80 → source cycle 10.
+2. `uniform ~idles:1` proposes sites at `first_octet_cycle + 1 = 3` through
+   `terminate_octet_time / 8 = 10` — eight boundaries, one idle each,
+   `injected = 8`. **No site precedes source cycle 2**: the only earlier
+   boundary is the one M03-N3 prohibits, and `uniform` does not propose it.
+3. Therefore **content octets 0…7 are not delayed at all**: their injected
+   octet times are 16…23, identical to the baseline. This is REQ-016's own
+   arithmetic — *"k idle cycles before an input word delay every octet that
+   word carries by exactly 8k octet times"* — with k = 0 for that word.
+4. Output word 0 carries content octets 0…7 (§6.1's *Emitting the frame*,
+   REQ-021). §6.1's consequence-1 rule, stated normatively and **explicitly
+   scoped to hold on a gapped stimulus**: *"an output word leaves two cycles
+   after the input word carrying its last octet when its frame began at lane 0
+   (L = 16)… these cycles hold on a **gapped** stimulus as well as a gapless
+   one."* Output word 0's last octet is content octet 7, in source cycle 2,
+   which injection did not move. **So output word 0 is emitted on cycle 4 —
+   exactly its baseline cycle.**
+5. The same answer by the second route, §0.5's latency identity: octet 0's
+   injected input octet time is 16, L = 16 at a lane-0 start (§7), so its output
+   octet time is 32 → cycle 4, byte position 0.
+
+**The design emitted word 0 on cycle 4. That is the conformant value. The bench
+demanded 6.** `cycle_of(4) = 6` because two sites (before cycles 3 and 4) lie at
+or below source cycle 4 — two boundaries that occur **after** word 0's octets
+had already arrived. The error is acausal in form: it delays an output because
+of idles inserted later in the input.
+
+**The size of the error is closed-form and both reds fall out of it.** With k
+idles per boundary and a lane-0 start, the bench's rule over-delays output word
+m by **2k** for every m; at a lane-4 start by **k**. Hence:
+
+| Case | truth | bench | CI |
+|---|---|---|---|
+| M03-I4, 64 oct, lane 0, k = 1, m = 0 | 4 | 4 + 2 = **6** | *"arrived on cycle 4, expected 6"* ✔ |
+| M03-I6, 64 oct, lane 0, k = 7, m = 0 | 4 | 4 + 14 = **18** | *"arrived on the wrong cycle"* ✔ |
+
+The `idles:0` sub-case passes because the map is the identity there, which is
+why the first red is the second sub-case of the first length of the first lane,
+in exactly the iteration order §(k) declares.
+
+**The discriminating fact was already inside the unit, and §(b) is where it is
+hiding.** The Return log says the delay identity *"does not call `cycle_of` a
+second time, so the two checks cannot silently validate each other."* Correct —
+and in this case they **contradict** each other: at `:973–989` the identity
+computes `in_injected(0) − in_baseline(0) = 0` and therefore demands
+`out_injected(0) = out_baseline(0) = 32`, i.e. cycle 4 — the design's own
+answer. The unit holds two mutually exclusive expectations for one event and
+§5's assertion order runs the false one first, so the true one never spoke. That
+is not an argument against §5's order; it is the reason a round can be red and
+right at the same time in one file.
+
+---
+
+### 3. FINDING 2 — the third possibility, ruled out rather than assumed: the **wrapper's behaviour is correct**
+
+`Idle_injection`'s *code* models the front boundary faithfully.
+`first_octet_cycle f = start_cycle + 1` is the word carrying the frame's first
+octet at **both** lanes (§6.1's own paragraph: at lane 0 the eight preamble
+positions are lanes 0…7 of the start word; at lane 4 they run into the next word
+and octets 0…3 follow in its lanes 4…7 — both put the first octet in
+`start_cycle + 1`). `uniform`'s `first = first_octet_cycle f + 1` is therefore
+the first boundary §6.1's *"injection begins at the frame's first octet"*
+admits, `errors` and `c45_sites` are correctly empty for it, `cycle_of` is a
+correct monotone injection on the source line, and `in_times` implements
+REQ-016's 8-octet-times-per-idle exactly. **No wrapper behaviour defect. No
+`BUG-`.** But see FINDING 3 for the wrapper's *documentation*, which is a
+different object and is defective.
+
+---
+
+### 4. FINDING 3 (mine) — **WO-0059 §2.4 and §3.4 item 4 told the worker to do this**, and a bounce that did not say so would be a lie about where the round failed
+
+§2.4: *"Where a cycle from §6.1 or §9 is needed on an injected line it is
+translated through `Idle_injection.cycle_of`, never recomputed from the
+formula."* §3.4 item 4: *"**The `tlast` cycle.** Where you need it, take
+`Idle_injection.cycle_of` of the un-injected cycle. **Not `m + 3`** — §2.4."*
+
+Both are **wrong as written**, and the second is wrong twice: it names the
+un-injected *output* cycle as `cycle_of`'s argument in terms. The worker
+implemented my instruction faithfully, cited it at the site, and its failure
+message quotes it back at me verbatim (*"Idle_injection.cycle_of the baseline
+cycle, not m + 3 — M03-I5"*). **The prohibition in those two sections is right —
+`m + 3` must not be recomputed under injection — and the replacement I supplied
+is wrong.** §2.4 and §3.4 item 4 are **CORRECTED** by §8 below and are not to be
+read again as written.
+
+This is the second time this programme has found that a packet's *replacement*
+for a barred idiom was itself unsound, and the first time the bench went red for
+it rather than green. I record it that way deliberately.
+
+---
+
+### 5. FINDING 4 (test-infrastructure, **its own repair lane**) — `idle_injection.mli`'s `cycle_of` docstring mis-instructs its callers
+
+```
+(** [cycle_of t source_cycle] — where a source cycle lands on the injected
+    line. This is what a bench applies to every cycle SPEC-M03 §6.1 and §9 pin
+    on the un-injected schedule: `m + 3`, the strobe cycles, the drain bound.
+    Monotonic and injective. *)
+```
+
+Sentence 1 is correct and is the contract. **Sentence 2 is false**, and it names
+`m + 3` — an output cycle — as the argument. It is the origin of my own §2.4,
+which is where the bench got it. X-4's own unit tests never caught it because
+they exercise the map, and the map is right; the defect is in the instruction
+for using it, which is exactly the class of defect only a first customer against
+a DUT can find. **Family I is that first customer, as §7.1 said it would be, and
+this is the measurement §7.1 asked for coming back with a result.**
+
+Repaired in round 2 (see §12 item 4). This matters beyond family I: `AP` §4.N
+records that **M03-N2 "may be run inside the M03-I4 wrapper"**, so the next
+customer would have inherited the same wrong rule from the same docstring.
+
+---
+
+### 6. FINDING 5 (**spec**, and it is also mine at the attack plan) — the per-octet latency constant does **not** survive idle injection, and `AP` §4.I's M03-I4 asserts an observable no conformant design can satisfy
+
+This is the round's real finding and it is larger than the reds.
+
+**M03-I4's `Observable` cell** (AP §4.I): *"The output **word sequence** is
+unchanged; the **per-octet** constant of §7 is unchanged (16 at lane 0, 12 at
+lane 4); every octet is delayed by exactly 8 octet times per injected cycle."*
+**M03-I5's cell**: *"The gap-invariant quantity is the per-octet constant, and
+that is what M03-I4 asserts."* Both rest on **requirements.md §0.5's "Gapped
+stimulus" paragraph** (*"…so L remains well defined on a gapped stimulus by
+subtraction"*), **REQ-016's verification column** (*"per-octet latency shifts by
+exactly the injected amount"*) and **SPEC-M03 §6.1's scope note** (*"these
+cycles hold on a gapped stimulus… **because §7's per-octet constant does**"*).
+
+**The per-octet constant does not survive, at either start lane. Two independent
+places, both structural, neither avoidable by a design.**
+
+**(a) The `tlast` word, at both lanes.** `uniform`'s last site is the boundary
+**before the terminate word** (`last = terminate_octet_time / 8`), which is
+legal and is C-14.4's own case. Take 64 octets at lane 0, k = 1. Delivered
+octets 56…59 arrive in source cycle 9 → injected cycle 16 → injected input octet
+times 128…131. The `tlast` word's `tkeep`, its `tlast` and its `tuser`[0] are
+**not decidable until the terminate character arrives** (REQ-011, REQ-103,
+REQ-104: until then the design cannot know which octets are FCS), and that word
+is at source cycle 10 → injected cycle 18. The baseline emits `tlast` one cycle
+after the terminate word (cycle 11 after cycle 10 — §6.1's own drain derivation,
+r = 0), so the injected line emits it at **19**, giving output octet times
+152…155 and **L = 24** for those four octets while every earlier octet has
+L = 16. A design that instead emitted at 18 would be producing `tlast`, `tkeep`
+and `tuser` in the same cycle the terminate character arrives, which its own
+baseline says it cannot do. **There is no conformant emission cycle that keeps
+L = 16 for the last word.**
+
+**(b) The first half of every output word, at a lane-4 start.** §6.1: at a
+lane-4 start frame octets 0…3 lie in lanes 4…7 of the word after the start word
+and octets 4…7 in the next — so **every output word straddles two input words**,
+and `uniform`'s first legal site falls between them. At k = 1 octets 0…3 keep
+input octet times 20…23 while octets 4…7 move to 32…35. REQ-011 forbids emitting
+them as two partial words and REQ-016's own verification column requires the
+word sequence unchanged, so the word must leave whole, one cycle after the input
+word carrying its last octet (§6.1's consequence-1 rule) — cycle 5, output octet
+times 40…47. **L = 20 for octets 0…3 and 12 for octets 4…7.** No conformant
+design can do otherwise: keeping L = 12 for all eight would require splitting the
+word, which REQ-011 prohibits.
+
+**Consequences, and I am not absorbing any of them.**
+
+1. **`Latency.is_constant` cannot be satisfied on any injected run.** It demands
+   *"a single L for every octet"* within a front-offset class
+   (`octet_time.mli`). So `test_m03_i.ml:997–1010`'s per-run `observed` check and
+   `assert_monitors_clean`'s latency half at `:1011` **fail a conformant design**
+   — the false-`BUG-` failure mode my own §2.2 warned about, arriving through a
+   door §2.2 did not name. The worker's §2.2 compliance is not at fault: it
+   handed the tagger the **right** array. The claim the tagger is being asked to
+   judge is the wrong claim.
+2. **§(b)'s front-offset observation survives intact and is worth keeping.** h is
+   computed as `in_times.(8) − 8 × (in_times.(0) / 8)`; no idle is ever inserted
+   before the word carrying octet 0 at either lane, so h reads 8 / 12 under
+   injection exactly as reported. That measurement is sound and is the M03-N3
+   constraint made measurable, as §3.4 item 3 asked. It is the only one of §(b)'s
+   three that is unaffected by this finding.
+3. **This is the fourth unachievable cell this plan has carried and the first
+   that is an unachievable *observable* rather than an unachievable *kill*.** The
+   previous three (M03-D3, M03-F2, M03-I2) named a defect their stimulus could
+   not produce and passed in silence. This one names a behaviour no conformant
+   design can produce and **goes red against a correct design**, which is the
+   worse of the two failure modes and the one this family's own §1.1 said a good
+   repair should convert the other into. I found it the same way: by working
+   §6.1's arithmetic at both ends instead of quoting it.
+
+> **SCR-M03-I4 — spec change request, addressed to `architect_docs_lead`,
+> relay requested verbatim.**
+>
+> **The claim.** requirements.md **§0.5 "Gapped stimulus"**, **REQ-016's
+> verification column**, and **SPEC-M03 §6.1**'s consequence-1 scope note
+> (*"because §7's per-octet constant does"*) each state or presuppose that the
+> per-octet latency constant L of §0.5 survives REQ-016's idle injection. **It
+> does not**, for the two structural reasons derived at (a) and (b) above, at
+> **both** start lanes, on the very stimulus §10's REQ-016 hook commissions.
+> The three sentences are jointly unsatisfiable with REQ-011 and REQ-103/REQ-104
+> for k ≥ 1.
+>
+> **What does survive, and it is already in the specification.** §6.1's
+> consequence-1 rule — *"an output word leaves two cycles after the input word
+> carrying its last octet when its frame began at lane 0 (L = 16), and two or
+> one cycle after it when its frame began at lane 4 (L = 12), according as that
+> octet lies in lanes 4 … 7 or in lanes 0 … 3"* — together with §6.1's own drain
+> derivation for the `tlast` word (one or two cycles after the **terminate**
+> word at lane 0; zero or one at lane 4). Both are already normative, both are
+> already scoped to gapped stimulus in §6.1's own words, and both are causal.
+> The gap-invariant quantity is therefore **the per-output-word delay, keyed to
+> the latest input word each output word depends on** — not the per-octet
+> constant.
+>
+> **What I ask for.** A spec diff that (i) narrows §0.5's "Gapped stimulus"
+> paragraph and REQ-016's verification column to what holds, (ii) removes §6.1's
+> *"because §7's per-octet constant does"* justification while **keeping** the
+> rule it wrongly justifies, and (iii) says explicitly what a latency monitor
+> may demand on a gapped stimulus. **I am not proposing text for a frozen
+> document**; the derivation is above and the ruling is the architect's.
+>
+> **What it blocks.** `AP` §4.I's M03-I4 `Observable` and M03-I5 cells are owed
+> an edit **on that ruling and not before** — a bench commissioned against a
+> cell I know to be false is a bench built on a claim (§1.1's own rule, applied
+> to myself). Round 2 therefore **holds** the per-octet-constant clause rather
+> than asserting it; see §12 item 3.
+
+---
+
+### 7. FINDING 6 (mine) — §3.4 item 2's delay identity is **per-octet** and must be **per output word**
+
+`test_m03_i.ml:973–989` implements my §3.4 item 2 exactly:
+`out_injected(j) − out_baseline(j) = in_injected(j+8) − in_baseline(j+8)`, per
+delivered octet j. **Sound at a lane-0 start for every word but the last; false
+everywhere else**, by FINDING 5's own arithmetic: at lane 4 the left side is 8k
+and the right side 0 for the first four octets of every word; at the `tlast`
+word both lanes' left side exceeds the right by 8k. It did not fire only because
+the wrong word-sequence check fired first.
+
+**Corrected form** (§8). The identity is not abandoned — it is the right kind of
+assertion, differential and independent of the translator — it is **stated at the
+granularity the specification supports**.
+
+---
+
+### 8. The corrected rule, stated once, and it replaces §2.4 and §3.4 items 2 and 4
+
+> **Under idle injection, the injected-line cycle of output word m is**
+>
+> ```
+> injected_cycle(m) = baseline_cycle(m) + ( cycle_of(D(m)) − D(m) )
+> ```
+>
+> **where `D(m)` is the SOURCE cycle of the latest input word output word m
+> depends on:**
+>
+> - **m is not the `tlast` word** → `D(m)` = the source cycle of the input word
+>   carrying output word m's **last** octet (content octet 8m+7). SPEC-M03 §6.1
+>   consequence 1, which fixes the offset at **2** cycles at a lane-0 start and
+>   **1** at a lane-4 start, and which §6.1 scopes to gapped stimulus in terms.
+> - **m is the `tlast` word** → `D(m)` = the source cycle of the **terminate
+>   character**. Its `tkeep`, its `tlast` and its `tuser`[0] are not decidable
+>   until that character arrives (REQ-011, REQ-103, REQ-104), and §6.1's drain
+>   derivation states its baseline position relative to that word, not relative
+>   to its own last octet. The terminate character's octet time always exceeds
+>   the last delivered octet's, so this is also the later of the two
+>   dependencies and the formula needs no `max`.
+>
+> **`cycle_of` is applied to `D(m)` — a source *input* cycle, its actual domain.
+> It is never applied to an output cycle. `m + 3` is never recomputed under
+> injection.** Both halves of §2.4's prohibition survive; only its replacement
+> changes.
+>
+> **The delay identity, corrected to word granularity** (replacing §3.4 item 2):
+> for every output word m,
+>
+> ```
+> out_injected_cycle(m) − out_baseline_cycle(m)
+>   = ( in_injected(D(m)-carried octet) − in_baseline(same octet) ) / 8
+> ```
+>
+> read off raw octet times from `Idle_injection.in_times` and `Arrival.in_times`
+> against the **separately driven** baseline run — so it remains independent of
+> `cycle_of` and a defect in the translator still cannot validate itself. That
+> independence was the point of §3.4 item 2 and it is preserved.
+
+`baseline_cycle(m)` comes from `run_i4_length_lane`'s real un-injected
+simulation, which is **not** circular: that run's own cycles are asserted
+against §6.1's `m + 3` formula, which is valid there because it is gapless. The
+injected run is then asserted against *baseline + REQ-016's shift*. Spec pins the
+baseline; REQ-016 pins the difference.
+
+---
+
+### 9. RULING — the discharge count, **re-derived at `6001630`** as §11 promised
+
+§11 carried **"37 of 62"** as an inherited figure and flagged it. It is wrong,
+and it is wrong twice.
+
+**Derivation** (counted from the file, not added to a previous figure — the
+`RV-0047` "nineteen" rule):
+
+1. `AP-xgmii_rx_64.md` at `6001630`: **78 rows**, status tally **62 ASSERT**, 7
+   NO-ASSERT, 4 NO-STIMULUS, 4 STRUCTURAL, 1 GAP (sum 78). Denominator **62**,
+   confirmed.
+2. ASSERT rows named in the title of a committed `%expect_test` in
+   `test/xgmii_rx_64/`: A1, A2, A3, A5 (4); B1 (1); C1, C2, C3, C4, C5 (5); D1,
+   D2, D3 (3); E1, E2, E4, E5 (4); F1, F2, F3, F4 (4); G1, G2, G3, G4, G6, G7,
+   G8 (7); H1, H2, H3, H4 (4); I1, I2, I3, I4, I6 (5) — **37**. Every one is
+   ASSERT; no NO-ASSERT row is counted.
+3. Plus **M03-F5**, ASSERT, **discharged by citation** to M03-C4/M03-F1
+   (`test_m03_f.ml:833`, WO-0047 §3.3) with no unit of its own → **38 rows carry
+   a discharge at `6001630`**.
+4. **Minus M03-I4 and M03-I6, whose units are RED at this SHA.** A row is
+   discharged when a committed unit asserts its observable **and that unit is
+   green at the SHA** — my own DoD, and a red unit discharges nothing.
+
+> **The true figure at `6001630` is 36 of 62.** 38 rows carry a committed
+> discharge; two of them are held red.
+
+**Both errors in the inherited number, named.** (i) It inherited `WO-0057` §11's
+**32** where my own count gives **33** — the difference is exactly **M03-F5's
+citation discharge**, which the running figure never picked up; that is the
+uncertainty-of-one §11 flagged, now closed with its cause. (ii) It assumed all
+five family-I rows would land, and three did. **The forward figure once family I
+lands clean is 38 of 62, not 37.** `SO-M03` does not issue and nothing here
+scores anything.
+
+---
+
+### 10. The Return log — what I accept, and three corrections
+
+**Accepted without qualification**: (a)'s per-row companion tabulation, which is
+the best-evidenced answer to §2.1 any family has returned; (e)'s per-run
+declaration (the injected runs handed `Idle_injection.in_times`, never
+`Arrival.in_times`, and M03-I3 correctly kept `Bench.account_clean_frame`
+because its overlay substitutes gap words only — that discrimination is exactly
+right and was not free); (f)'s stimulus checks, both empty, **each for the
+structural reason `idle_injection.mli` gives rather than for the coincidental
+one** — the distinction §2.3 asked for and got; (g)'s four-row boundary table,
+with member (i) lane 4 derived independently; (j)'s I5 reasoning; (k)'s
+assertion and iteration orders, which are what let me locate the first red
+without a rerun.
+
+**§(h) item 2, and I record it as the round's best conduct.** The worker built
+the delay identity as a weaker `cycle_of`-only check, re-read §3.4 item 2
+against its own draft, found the circularity itself and rebuilt against sixteen
+separately driven baselines **before returning**. That self-catch is why the
+contradiction described in §2 exists inside the unit at all — without it there
+would have been no independent expectation in the file and the red would have
+been indistinguishable from a design defect. **The check that was rebuilt is
+also the one FINDING 6 now corrects; the instinct was right and my
+specification of it was not.**
+
+**Correction 1 — §(b)'s "`cycle_of` exercised as the sole translator … held
+throughout".** True as a description and it is the defect. The claim that the
+delay identity and the word-sequence check "cannot silently validate each other"
+is correct and is stronger than it reads: they **contradicted** each other, and
+only assertion order hid it.
+
+**Correction 2 — §(i)'s runt-half arithmetic.** The span is worked partly in
+cycles and partly in octet times and the answer 65 is then compared against
+REQ-107's 5-to-63 band, which is a band in **octets**. The number 65 is right for
+what §3.5 asked (the injected span in cycles) and my own §3.5 text set the unit,
+so this is my imprecision carried forward, not the worker's error — but the
+comparison as written compares a cycle count against an octet threshold and the
+next reader should not inherit it.
+
+**Correction 3 — §(c)'s "CI is authoritative".** Right, and the round's CI is
+thinner than it looks: steps 7–10 of the `build` job were **skipped**, so
+`dv_checks.sh` and the unpromoted-drift verification did **not** run at
+`6001630`. §(l)'s unit count of 36 / 116 is the worker's local measurement only.
+I do not dispute it and I do not treat it as CI-corroborated.
+
+**§(m) "nothing found"** — accepted as honest and, as it turns out, incomplete
+through no fault of the worker: what was there to find is FINDING 5, and finding
+it required reading `octet_time.mli`'s constancy contract **against** the AP row's
+own observable, which is an adjudication and not a build.
+
+---
+
+### 11. What this round does **not** change
+
+- **No `BUG-` packet.** §2 acquits the design on the one observable in dispute.
+- **No AP edit in this commit.** M03-I4's and M03-I5's cells are owed one and it
+  rides with SCR-M03-I4's ruling (§6). Nothing else in §4.I moves; **78 rows, 62
+  ASSERT, unchanged**.
+- **No `SO-M03`.** Not offered, not owed.
+- **The family-I qualification campaign does not open.** Its scored set is the
+  five ASSERT rows of this packet and two of them are not built. §7.2's
+  correlation notes and §6 item 1's X-3-check-(d) bound stand unchanged for
+  whenever it does open, and my RTL-exposure escalation from `J-dv_lead-0080`
+  remains where §7.2 put it — in that packet, undecided, and not here.
+- **`RV-0057-VERDICT` Finding 3** (the total-output-word sweep) stays deferred
+  per §7.3, and its shared ground — M03-I2's derived drain bound — **now exists
+  and is green**, so the deferral's own precondition is satisfied for the first
+  `test/**` touch after family I lands.
+
+---
+
+### 12. Verdict, state and conduct
+
+**BOUNCED.** Round 2's scope is these five items and **nothing else**. Do not
+touch `bench.ml`, `bench.mli`, `dune`, `test_m03_h.ml`, `run_i1`, `run_i2` or
+`run_i3` — all six are ACCEPTED and any change to them is out of scope.
+
+1. **Repair the cycle rule** in `run_i4_case` (`:906`, `:926–927`, `:949–950`)
+   and `run_i6_case` (`:1213`, `:1231`, `:1246`) to **§8's rule**, at both start
+   lanes, with `D(m)` derived from the schedule and **guarded** against
+   hand-derived constants that can fail (M03-I2's guard discipline is the
+   standard, and it is in this same file). The `tlast` word's `D` is the
+   terminate character's source cycle and **not** its own last octet — state in
+   the file why, citing REQ-011/REQ-103/REQ-104 and §6.1's drain derivation.
+2. **Repair the delay identity** (`:973–989`) to §8's word-granular form,
+   keeping it read off raw octet times against the separately driven baseline.
+   Do not delete it and do not weaken it to "L is unchanged".
+3. **HOLD the per-octet-constant claim.** `:997–1010`'s `observed` check and
+   `assert_monitors_clean`'s latency half must **not** be asserted on any
+   injected run — FINDING 5 makes them unsatisfiable by a conformant design.
+   Convert them to a **reported** measurement (the `fail_cross` idiom's
+   reporting half) through a **file-local** tagger, so the observed L classes
+   land in the expect block as data; do not feed the bench's standing tagger
+   from an injected run, and keep the conservation monitor fed. Add a
+   declaration naming **SCR-M03-I4**, this verdict and the two structural
+   reasons, in M03-I5's own declaration style. **The front-offset check at
+   `:999–1004` stays asserted** — it is unaffected (§6 consequence 2).
+4. **Repair `test/xgmii/idle_injection.mli`'s `cycle_of` docstring** — authorised
+   by this verdict, **comment-only**, no `.ml` change. Delete the false second
+   sentence and replace it with §8's rule and the reason an output cycle is not
+   in this function's domain. Every other line of X-4 stays as it is.
+5. **Report, do not absorb.** If the design disagrees with §8's rule anywhere —
+   any lane, any length, any figure — that is a finding to return with its
+   numbers, not an expectation to adjust. §8 is derived from frozen text and has
+   been checked against exactly **one** observed cycle; the other forty-seven
+   runs are predictions.
+
+**Return-log deliverables for round 2**: the corrected `D(m)` per row with its
+guard; the observed L classes on the held runs, at both lanes and all three
+figures, **as data** — that measurement is what SCR-M03-I4's ruling will be
+scored against and it is the round's most valuable output; and any disagreement
+under item 5.
+
+**Conduct.** The worker's round was faithful, well-guarded and self-corrected
+before return, and it went red on an instruction I wrote twice. **The bounce is
+against the file, not against the round.** Three of five rows are discharged, the
+wrapper's first contact with a DUT produced exactly the measurement §7.1
+commissioned it to produce, and what that measurement found is that my own
+attack plan asserts something no conformant design can do. That is the row
+ranking in §3 working: the risk was where I said it was, and it was larger than I
+said.
+
+**One administrative note for round 2**: `agents/journals/workers/
+claude_tb_writer_agent.md` must **rotate to volume 02** at its next entry —
+warned at `6001630` (R10) and not optional.
