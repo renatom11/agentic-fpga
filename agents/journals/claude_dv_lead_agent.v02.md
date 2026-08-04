@@ -1288,3 +1288,275 @@ manifest round — base SHA `a2d090d`, allowlist `WO-0058` §2, branches
 ### Files-in-this-commit
 - agents/handoffs/WO-0058_m03-g7-h-mutation-campaign.md
 - agents/handoffs/WO-0058_m03-g7-h-mutation-campaign-SEALED-predictions.md
+
+## [J-dv_lead-0080] 2026-08-06T23:30Z | task:WO-0058 | Seven of seven classes killed and all five scored units qualified — and both deviations are my seal's, not the bench's: a cell that could not have reddened under any faithful rendering, and a cell whose message turned on a scope dimension my disclosure function had no column for
+
+### Trigger
+Orchestrator: all seven `mut/wo-0058-gh-c*` branches have run. Adjudicate the
+campaign against the seal frozen at `1c3a89d`, score each class in the packet's
+own denominators, apply the two pre-named collision rules, rule the five
+qualification questions, dispose of the M03-G6 red, and append the verdict to the
+packet. The SEALED companion stays untouched.
+
+### Inputs
+- **The harvest, relayed verbatim**: seven branches (`39bcccb`, `4e84d64`,
+  `2ddb3db`, `6795ae6`, `63af79d`, `e996f8e`, `3cf90ac`, each `a2d090d` + one
+  diff), seven CI runs (30868752152, 30868753423, 30868754060, 30868754798,
+  30868756316, 30868757246, 30868758781), the `build` job's `runtest` failing-file
+  list and complete message set per run, and the `cosim`-green note.
+- `agents/handoffs/WO-0058_m03-g7-h-mutation-campaign.md` at `1c3a89d` — §1's
+  scored set and denominators, §4.1–§4.3's three binding constraints, §7's four
+  pass criteria, §8's five bounds.
+- `agents/handoffs/WO-0058_m03-g7-h-mutation-campaign-SEALED-predictions.md` at
+  `1c3a89d` — the 31-unit table, the 7 × 31 matrix, §3's messages, §4's nine
+  reasoning notes, §5's disclosure functions. **Opened at adjudication, on the
+  orchestrator's word that the seven diffs are committed, exactly as at the five
+  prior campaigns.**
+- `docs/reports/audit/WO-0058-mutations/README.md` at `480c38a` (`J-auditor-0010`)
+  **in full** — the scope statement, the seven diffs, the four mandatory
+  disclosures, the two flagged judgement calls, the fidelity ledger.
+- **My own bench sources, post-verdict, for the two findings**:
+  `test/xgmii_rx_64/test_m03_h.ml` `run_h1` (lines 236-290), `run_h2` (626-670),
+  `run_h4` (855-880, 960-1010).
+- **Departure from my own practice at `J-dv_lead-0075`, disclosed loudly**: that
+  entry recorded "**No `libs/**`, no `docs/reports/audit/**`**" and adjudicated
+  the `g-c4` replay from the harvest alone. **This round I read the audit manifest
+  in full, including seven RTL diffs with their base-design context lines**, on
+  the orchestrator's explicit instruction and because this campaign's seal makes
+  four classes' row sets a **function** of the disclosures, so the manifest is
+  constitutive of the score rather than commentary on it. **It is not a charter
+  violation** — the five units and the seal were frozen at `f806272` and `1c3a89d`
+  respectively, both before any diff existed, so nothing already committed can
+  have been contaminated. **It is a hazard for what is not yet written**, and it
+  is in Open-questions with a proposed control rather than left implicit.
+- `PROTOCOL.md` §10 (R-SEAL-1's retrospective-reference clause, which is what lets
+  a verdict quote a seal in order to convict it), charter §3, §8.
+
+### Reasoning
+
+**The result, stated in the shape that matters: the bench killed everything, and
+the seal mispredicted twice.** Seven classes seeded, seven classes dead, no green
+run. All five scored units reddened with a sealed message under at least one
+class, so all five are qualified. **763 of 763 must-stay-green cells held** — 203
+sealed-green M03 cells and 560 non-M03 — which is the half of pass criterion 2
+that most often fails and it is perfect. Zero unnamed-unit reds. So the two
+deviations are not escapes and not weak rows: they are **wrong predictions**, and
+the G-1 precedent says the falsified cells stand unedited and the finding names
+them. Both are mine.
+
+**FINDING GH-1 — the T-H1 × GH-c4 cell could not have reddened, and the seal had
+the arithmetic on the page.** GH-c4 corrupts by applying the new frame's
+alignment offset a cycle early. That can only corrupt if the two offsets
+**differ**. `run_h1` splices its `/S/` at `close_ot = start_ot1 + 8 + 64`, and
+**72 ≡ 0 (mod 8)**, so the aborting character lands in the frame's own start lane
+at both members — lane 0 → lane 0, lane 4 → lane 4. The new frame's offset **is**
+the aborted frame's offset, so applying it early is the identity, and the mutant
+is behaviourally equal to base at that stimulus. The auditor's rendering (an OR
+bypass gated on `begins &: new_start4`) makes this concrete — at the lane-4
+member it ORs a 4 into a register already holding 4 — but the conclusion is
+**rendering-independent**, which is what makes it a prediction error rather than
+a disclosure surprise.
+
+And the seal states the very fact it then fails to use. SEALED §4(c) writes *"72
+is a multiple of 8, so it lands in the same lane as the frame's own start"*, and
+concludes from a **category** — that GH-c4 "needs aborted-frame octets in the
+`/S/`'s own word", which is necessary and not sufficient — that the lane-4 member
+speaks. **This is `RV-0055` FINDING G-1's exact species**, recurring in the file
+whose §4(a) exists to repair it, one subsection away from the repair. I record it
+without discount. The mitigating fact is not mine: `AP-xgmii_rx_64.md` §4.H never
+claimed M03-H1 against the alignment class — it names that defect in **M03-H2's**
+Kills cell, where it died — so the plan was right and the seal over-extended.
+
+**The bound this uncovers is worth more than the finding costs.** An alignment
+defect on the REQ-110 path is observable only where the aborting `/S/`'s lane
+differs from the aborted frame's start lane, and **that geometry exists at
+exactly one member of one unit in the entire 31-unit bench**: `run_h2`'s lane-0
+member (`k = 12`). The lane-4 member (`k = 16`) is offset-preserving, M03-H1 is
+offset-preserving at both, M03-H4 delivers nothing. One stimulus point carries the
+whole class. It works — but a single point is not a sweep, and I could not have
+found this by inspection; the campaign found it by falsifying me.
+
+**FINDING GH-2 — the T-H4 × GH-c5 cell is red with the wrong message, and the
+root cause is one missing column.** Sealed: `observed 1`. Observed: `expected one
+delivered frame (frame C's own tlast word), got none`. The auditor **disclosed**
+the deciding fact before any result existed: its GH-c5 diff gates `begins` on
+`a_close_start`, which is **epoch A only**, so a lane-4 `/S/` aborting a frame
+opened by a lane-0 `/S/` in the same word aborts **epoch B** and its new frame
+still begins. **That is M03-H4's word `c` verbatim.** So frame B opens after all,
+frame B is epoch A at word `c + 1`, the third `/S/` aborts it and **suppresses
+frame C** — both strobes fire correctly on `c + 2` and `c + 3`, the `error_pulses`
+pattern passes, and the row speaks at its earlier frame-C emptiness check. I
+traced the row's assertion order to confirm the message can only come from there
+(`test_m03_h.ml:970`, before the `error_pulses` match at `990`).
+
+SEALED §5.3 branches GH-c5 on **one** dimension — does it reach REQ-108's
+resynchronisation — and has **no column for the epoch dimension**. M03-H4 is the
+only unit in the bench whose stimulus contains both an in-word and a cross-word
+abort, so it is the only unit where that dimension is observable, and it is
+precisely the unit I got wrong. The observed **row set** still matches branch (i)
+exactly, so §5's incomplete-enumeration rule does not fire: the enumeration was
+right about reach and silent about scope. **The auditor discharged its duty
+completely** — it volunteered the narrowing under a heading saying so.
+
+**And GH-2 improves the row it falsifies, which is why I would not trade it
+away.** §4.3 bound me to score M03-H4 against "the exact two-element
+`error_pulses` list … and nothing else", on FINDING 2's ground that the §0.6
+window is vacuous there. That phrasing over-narrowed the row against §4.2, which
+records that the total-output-word check exists at four rows including M03-H4.
+The campaign settles it: GH-c5 was caught at M03-H4 by **frame C's own `tlast`
+word**, an instrument independent of every strobe. So M03-H4 is qualified on two
+instruments, not one. I honour §4.3's operative content in full — no window is
+cited as a bound, no kill is attributed to the strobe monitor — and rule its
+"nothing else" clause scoped to the strobe-monitor instruments it names. **A
+constraint I wrote is corrected by the experiment it constrained**, in the
+verdict, not by editing the frozen packet.
+
+**Why neither collision rule bites, checked rather than assumed.** §4(c) fires
+only if GH-c4 landed the count-moving reading; it landed reading (a), and the
+messages prove it independently of the disclosure — `delivered octets differ`
+against `unexpected output word count` at the shared unit. §4(e) fires only if
+GH-c5 and GH-c7 both produce a lone `observed 1` at M03-H4; GH-c5 moved three
+units and its H4 message is not `observed 1` at all, and GH-c7 reddened M03-H4
+**alone out of 111 units** under a diff that rewires all five strobe ports. That
+last is the strongest positive result in the round: §4(e)'s uniqueness argument —
+§0.3's 12-octet gap plus REQ-102's 8-octet preamble put any ordinary schedule's
+second closure ≥ 2.5 cycles away — is confirmed at 110 units rather than argued.
+**Seven kills are seven detections.**
+
+**D2 is absent and that is checkable, not claimed.** Every one of the thirteen
+observed messages is a row-local assertion; not one is a monitor message. In all
+five scored units the accounting helpers sit after the last assertion, so a
+reddening row never reaches them. §4(g)'s off-pattern condition — a class caught
+only by `assert_monitors_clean` — did not occur. The **weaker** correlation is
+real and the scorecard says so: four of the seven kills rest wholly on the
+exact-`error_pulses` idiom, three on structural or content instruments, so the
+campaign is seven detections at six geometries probing two property families.
+
+**The M03-G6 red is a kill cell, not collateral and not a finding, and I ruled it
+on the two documents that named it in advance.** §1 published that a class's
+REQUIRED set may contain a unit outside the scored five and that the cell would be
+sealed REQUIRED rather than left to surface as a violation; SEALED §2 carries
+`T-G6` as **R** under GH-c1 with its exact message and its stimulus ground. A
+finding needs an **unnamed** unit or a wrong message; neither holds. A second kill
+would be the `RV-0055` inflation the packet exists to prevent. **Its real value is
+that it is the demonstrated repair of FINDING G-1**: SEALED §4(a) re-derived all
+seven G cells from their own committed arithmetic — two REQUIRED, five GREEN,
+including T-G3, the cell whose category-reasoning cost a campaign — and **all
+seven landed as derived**. The method worked where it had failed; it failed once
+more this round in a different family, which is where §3 of the verdict puts it.
+
+**The two flagged judgement calls, and I would reverse neither.** GH-c2's one
+added latch bit is the **only** rendering the scope clause leaves standing —
+the clause forbids the state-free version by name, and in this design the fact
+that must survive from the `/E/` cycle to the `/S/` cycle is carried nowhere. So
+SEALED §5.1's UNWORKED third rendering is **not** invoked, §6 bound 1 does not
+bite, and **M03-H3 is qualified** — thinly, by one class, which is all the bench
+can offer it. The three volunteered extra reaches make the mutant strictly larger
+than an `/E/`-then-`/S/` pair; they could only have produced more reds and none
+appeared, correctly, because the latch needs a genuinely open frame and T-E1/E2/E5
+build one `frame_case` each with no `/S/` following. GH-c4's count-preserving
+reading is the signature class named in §3's own words, and its disclosed second
+geometry moves no cell — it needs a frame open on entry with covered octets in
+`W−1`, and M03-H4, the bench's only two-`/S/`-in-one-word stimulus, has nothing
+open on entry.
+
+**What I did not do.** I did not touch the SEALED file and never will. I did not
+edit any test. I did not issue `SO-M03` and did not offer it: 32 of 62 ASSERT rows
+are discharged and families I, J, K, M, N and L1–L5 are unwritten. **I opened no
+RTL source file** — my exposure this round is the seven diffs inside the audit
+manifest, disclosed in Inputs and in Open-questions.
+
+### Actions
+- Scored all seven classes cell by cell against SEALED §2's matrix and §3's
+  message strings, comparing observed text **character-for-character** including
+  lane labels.
+- Selected the disclosure branch for each of GH-c2, GH-c3, GH-c4, GH-c5 from the
+  **observed row set** and cross-checked it against the manifest's §4 disclosure
+  table: all four landed narrow / reading (a), 4 of 4 agreeing.
+- Re-derived M03-H1's and M03-H2's splice arithmetic from the rows' own committed
+  source to establish FINDING GH-1, and M03-H4's three-frame epoch structure and
+  assertion order to establish FINDING GH-2.
+- Applied §4(c) and §4(e) explicitly and recorded that neither fires; applied
+  §4(g)'s D2 test and §4(f)'s idiom test.
+- Appended `WO-0058-VERDICT` (ten sections) to the campaign packet.
+- Touched no test, no spec, no RTL, no audit tree. No `git`.
+
+### Evidence
+1. **Seven runs, all RED on the `build` job's `runtest` step**: 30868752152,
+   30868753423, 30868754060, 30868754798, 30868756316, 30868757246, 30868758781,
+   on branches `39bcccb`, `4e84d64`, `2ddb3db`, `6795ae6`, `63af79d`, `e996f8e`,
+   `3cf90ac`. No green run on any branch.
+2. **Failing-file sets**: `test/xgmii_rx_64/test_m03_g.ml` for gh-c1 and
+   `test/xgmii_rx_64/test_m03_h.ml` for gh-c2 … gh-c7; **no other file failed on
+   any branch**, which is the 560-cell non-M03 must-stay-green result and the
+   203-cell M03 one.
+3. **Cell tally**: 14 sealed REQUIRED cells; **13 red**; **12 red with the exact
+   sealed message**; 1 sealed-R-observed-G (T-H1 × GH-c4); 1 red-with-wrong-message
+   (T-H4 × GH-c5); **0 unnamed-unit reds**.
+4. **GH-1's arithmetic, from the row's own source**: `test_m03_h.ml:262`
+   `let close_ot = start_ot1 + 8 + close_idx` with `close_idx = frame1_len = 64`;
+   `72 mod 8 = 0`; guard at `264` accepts lane 0 or lane 4 only. Both members are
+   offset-preserving.
+5. **The single lane-changing abort in the bench**: `test_m03_h.ml:634`
+   `let k = if lane = 0 then 12 else 16`, with the guard at `657` forcing
+   `close_ot ≡ 4 (mod 8)`. At lane 0 the frame starts at lane 0 and the `/S/` is
+   at lane 4 — offsets differ; at lane 4 both are lane 4 — offsets equal.
+6. **GH-2's assertion order, from source**: `test_m03_h.ml:970`
+   `fail row "expected one delivered frame (frame C's own tlast word), got none"`
+   precedes the `error_pulses` two-element match at `990`, so the observed message
+   is reachable only with both strobes correct and frame C absent.
+7. **M03-H4's epoch geometry**: `test_m03_h.ml:856-861` — `ot_2 = start_ot_a + 4`
+   in word `c` lane 4, `ot_3 = start_ot_a + 8` in word `c + 1` lane 0 — so frame A
+   is opened **and** aborted inside word `c` (an in-word abort) while frame B is
+   aborted across a word boundary (a cross-word abort). The only unit with both.
+8. **Control, unchanged**: `a2d090d`, CI **30865856907**, both jobs green — pass
+   criterion 3, established before the campaign at `J-dv_lead-0079` Evidence 1.
+9. **Manifest conduct**: `docs/reports/audit/WO-0058-mutations/README.md` §1.2
+   affirms no `test/**` file opened at any revision and the sealed companion
+   untouched; §2 fixes the base blob at `81cd9ed…` with the extraction's
+   `sha256` `3d87515a…5be92`; §6 declares **NOT-SEEDED: none**.
+
+### Outcome
+**DoD met.** The campaign is adjudicated and the verdict is a committed packet
+section, not a chat message. **Kills 7 of 7 classes; all five scored units
+qualified; 763 of 763 must-stay-green cells held; two findings, both against my
+own seal.** Pass criteria 1, 3 and 4 met; criterion 2 met in full on its
+must-stay-green half and at 12 of 14 cells on its message half, with the two
+deviations adjudicated as FINDING GH-1 and FINDING GH-2 rather than scored away.
+**M03-G7's qualification discharges the oldest open DV debt on this module.**
+
+Handoff: to the orchestrator for commit. **`SO-M03` does not issue and is not
+offered.** The §0.6 countersignature and the attack-plan consequences ride in the
+next entry and the next commit.
+
+### Open-questions
+- **RTL exposure at adjudication — disclosed, not a violation, and it wants a
+  control.** `J-dv_lead-0075` recorded "no `libs/**`, no `docs/reports/audit/**`"
+  and scored from the harvest alone; this round I read seven RTL diffs in the
+  manifest, because the seal makes four classes' row sets a function of the
+  disclosures and because **neither finding was diagnosable without the diff's
+  mechanism**. Nothing already committed is contaminated. But families I, J, K,
+  M, N and L1–L5 are unwritten, and I now hold this module's internal signal
+  names. **Proposal to the orchestrator, for the next campaign packet**: the
+  adjudicator reads the manifest's disclosure table and fidelity ledger by
+  default, and opens a diff only when a cell is off-pattern — journaling which
+  diff and why, as here. Raising it rather than deciding it: the mutation
+  discipline is PROTOCOL §10's, and an amendment there is an ADR.
+- **Bound 6, owed**: the alignment-transition instrument is a single stimulus
+  point (`run_h2` lane 0). The second point belongs at REQ-110's commissioned
+  **M03-B4** geometry, which is unwritten.
+- **Bound 7, owed**: the in-word (epoch B/C) REQ-110 abort exists at one unit in
+  one form; no row drives it with a frame already open on entry.
+- **§4.3's "nothing else" clause** is corrected by ruling in the verdict, not by
+  editing the frozen packet. If a future packet restates that constraint it must
+  carry §4.2's four-row total-output-word fact with it.
+- **Owed to `test/**` at its next touch**, unchanged from `J-dv_lead-0079`:
+  `account_spliced_forwarded`'s `~received`-vs-`~delivered` trace (Finding 1),
+  M03-H3's §6.2 `Idle` citation (Finding 4), the total-output-word line at the
+  ordinary two-frame rows (Finding 3).
+- **Still owed**: AP-M14's sweep companion; the `precompile_check.sh`
+  side-effect-in-combinator lane; M03-F5's discharge-by-citation qualification;
+  the RFC 1071 anchor on the next fetching run; X-7, X-10, X-11 deferred.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0058_m03-g7-h-mutation-campaign.md
