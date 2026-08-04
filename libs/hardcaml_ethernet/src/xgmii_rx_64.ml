@@ -372,7 +372,22 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
   let a_close_error =
     a_closes_with (lanes.is_error |: (other_ctl &: a_pre_mask))
   in
-  let a_close_start = a_closes_with lanes.is_start in
+  (* MUTATION GH-c1 -- WO-0058, NEVER MERGE. Seeded defect: a start character
+     arriving in the [Discard] state -- after REQ-108's truncation point, while
+     the remainder of the oversize frame is being discarded -- raises epoch A's
+     REQ-110 closure as though a frame were still open, so a frame already
+     closed and already reported by [error_oversize] draws a second report: one
+     [error_start_without_terminate] on §9's two-cycles-after pin. §9's sixth
+     co-occurrence ruling makes such a character REQ-108's resynchronisation
+     rather than a second abort, pulsing nothing; C-12 is the carry-forward.
+     SEEDED FOR [/S/] IN [Discard] ONLY: [a_closing_v], [cov_first] and the
+     REQ-108 cap are untouched, so the truncation, its 1514-octet extent, its
+     `tuser` bit 0 and its own [error_oversize] are unchanged; [to_preamble] is
+     unchanged, so the receiver still resynchronises onto this very start
+     character and receives what follows normally; and [Discard]'s own switch
+     arm does not read [a_close_char], so the state sequence does not move. *)
+  let discard_start = sm.is State.Discard &: any lanes.is_start in
+  let a_close_start = a_closes_with lanes.is_start |: discard_start in
   let a_close_char = a_close_terminate |: a_close_error |: a_close_start in
   let a_close_now = (a_close_char |: a_close_oversize) &: ~:(i.clear) in
   (* Covered octets: lanes [cov_first, cov_end). Empty when cov_end <= cov_first,
