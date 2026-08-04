@@ -499,7 +499,21 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
      word at W + 3, while the record born at W is consumed at W + 2 at the
      latest. Consumptions therefore never contend, and each record is at age 2
      exactly when its turn comes. *)
-  let a_close_runt = a_close_terminate &: (count_next <:. runt_threshold) in
+  (* MUTATION I-c10 -- WO-0061, NEVER MERGE. Seeded defect: REQ-008's
+     conservation makes a report of an event that did not happen a defect.
+     REQ-107's runt threshold is evaluated here against a counter that has
+     ALREADY BEEN CLEARED and therefore reads zero, so every frame closed by a
+     terminate character satisfies it and every clean frame in the suite
+     carries one [error_runt] it did not earn. STROBE: [error_runt]. OFFSET:
+     the record is born on the terminate character's own input word and is
+     consumed on that frame's [tlast] cycle, which 6.1's drain derivation pins
+     at ONE OR TWO cycles after the terminate word at a lane-0 start and ZERO
+     OR ONE at a lane-4 start, and at TWO for a frame that emits no output
+     word. Reach: REQ-107's own consequences travel with the condition, so the
+     same frames take [tuser] bit 0 = 1 on their [tlast] word through [abort].
+     Frames closed by /E/, /S/ or REQ-108's count are untouched. *)
+  let count_cleared = zero count_bits in
+  let a_close_runt = a_close_terminate &: (count_cleared <:. runt_threshold) in
   let record_fields ~valid ~terminate ~error ~start ~oversize ~fcs ~runt =
     concat_lsb [ valid; terminate; error; start; oversize; fcs; runt ]
   in
