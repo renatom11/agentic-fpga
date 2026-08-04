@@ -1166,3 +1166,244 @@ A-1 to the auditor as a disclosure finding via the orchestrator.
 
 ### Files-in-this-commit
 - agents/handoffs/WO-0061_family-i-mutation-campaign.md
+
+## [J-dv_lead-0098] 2026-08-08T11:15Z | task:none | Family B chosen over family J because one of its rows is another family's measured blocked dependency — and the I2 mini-round splits into two packets on the reader, not on the subject, because the family packet's reader is the one agent who must not see a mutation intent
+
+### Trigger
+Orchestrator dispatch after the auditor's `DISP-0001` landed at `fab31de`: one
+round, two deliverables — the next family bench packet (my queue read governs),
+and the M03-I2 report-path-delay class designed as a one-class mini-campaign
+(my own escalation 1 from `WO-0061-VERDICT` §3). Plus three dispositions to
+return: the `BUG-0003` §V.2 probe's scheduling, the I6-at-even-k gift, and the
+correction to my own §12 owed note (iv).
+
+### Inputs
+- `agents/charters/dv_lead.md` (§3 attack plans, §8 harvest notes),
+  `agents/PROTOCOL.md` (§3 packets and numbering, §4 grammar, §6 scope, **§7's
+  new lessons-harvest section**, §10 independence and **R-SEAL-1**).
+- `docs/reports/audit/WO-0061-mutations/DISP-0001_A-1.md` **in full** at
+  `fab31de` — §2.4's correction of my two supporting sentences (the cap binds
+  **six** times, all frozen to held cycles by the residue 189 mod 8 = 5),
+  §2.4's k-parity rule (binds at `t ≡ 189 (mod 256)`, always odd, so no odd k
+  can place one on a covering word), §4's **R-DISC-1**/**R-DISC-2**, and §5's
+  forward gift.
+- `agents/handoffs/WO-0061_family-i-mutation-campaign.md` §8 (bounds 1–7), and
+  its VERDICT §3, §10, §11, §12 (the owed notes and the two earned rows).
+- `agents/handoffs/WO-0058_m03-g7-h-mutation-campaign.md` §3 (FINDING GH-1's
+  by-product: the alignment-transition instrument is one point), §4 (GH-2's
+  missing disclosure column), §8 bound 2, §9 bounds 6 and 7.
+- `agents/handoffs/BUG-0003_m03-lane-4-injected-word-cycle.md` §V.2 and §V.9
+  (the probe's specification and the three grounds for deferring it).
+- `test/attack_plans/AP-xgmii_rx_64.md` §4.A–§4.N — B1–B4, E5, F2, H2, H4, I2,
+  I6, J1–J4, M10, N3's "carried at M03-B2" sentence.
+- `test/xgmii_rx_64/bench.mli` (in full — `create` holds `cfg_rx_enable` at 1;
+  the `Before` view; `run`'s drain), `test/xgmii/injection.mli` (placements,
+  the `/S/` lane refusal, the `/I/`-at-preamble acceptance),
+  `test/monitors/strobe_monitor.mli` (`not_before`/`not_after`),
+  `test/xgmii_rx_64/test_m03_b.ml`, and the relevant runners of
+  `test_m03_e.ml` (`run_e5`), `test_m03_f.ml` (`run_f2`), `test_m03_h.ml`
+  (`run_h4`), `test_m03_i.ml` (`run_i2_member`, `run_i2`).
+- My own `J-dv_lead-0094`, `J-dv_lead-0096`, `J-dv_lead-0097`;
+  `WO-0060`'s `RV-0060-VERDICT` §10 item 3.
+- **No `libs/**`, no `rtl_snapshots/**`. No writes anywhere but
+  `agents/handoffs/`.**
+
+### Reasoning
+
+**The queue read, and it is not close.** Family J opens a new requirement group
+(REQ-802/803/810) behind a **machinery** dependency I confirmed rather than
+recalled: `bench.mli`'s `create` holds `cfg_rx_enable` at 1 for the whole run
+and exposes no schedule for it, so J1–J3 cannot be written at all until a
+capability round lands, and J's observables are entangled with **M03-N4**
+(ADR-0014) and family K's `clear` exemptions, so rows written now would be
+re-litigated when N4 does. Family B needs **no new capability** and pays **two
+named debts**: `WO-0058` §9 bound 6 names **M03-B4's geometry** as where the
+alignment-transition instrument's owed second point belongs — a class carried
+today by one member of one unit in a 116-unit bench — and `AP` §4.M's **M03-M10
+claims two carriers and has one**, the missing one being M03-B3's `/T/` in a
+preamble position. Three rows that close another family's measured hole beat
+three rows that open a frontier behind a tool dependency.
+
+**What I checked rather than assumed, because the plan's prose hides it.**
+`At_preamble p` puts a character at `start_ot + p`, and with `frames_at`'s
+mapping (`first_start` 8 / 12) both start words are cycle 1. So B2's two members
+— "lane 3 of a lane-0 start word" and "lane 7 of the start word at a lane-4
+start" — are **the same placement, position 3**, at the two lanes; B3's is
+position 5 at lane 0; B4's is position 4 at lane 0, landing in lane 4 of the
+same word. And `run_e5` **already sweeps preamble positions 1 … 7 with an `/E/`
+at a lane-0 start**, so B2's lane-0 member is E5's position-3 unit plus a
+following frame. I wrote that into the packet as the row's honest weighting
+instead of letting the worker discover it: B2's new content is the lane-4
+geometry and the following-frame recovery, and nothing else.
+
+**B4's construction is the round's real derivation, and its trap is silent.**
+Frame B opens at octet time 12, so its preamble positions 4 … 7 consume the
+first four octets of the case's array and **its own octet 0 is array index 4**;
+`Arrival` auto-places the terminate after the whole array. An array of 64
+therefore gives frame B **60** received octets — a runt, a different observable,
+and a row that passes as a different test. The array must be **68** (4 filler +
+a clean 64-octet frame), giving 64 received, 60 delivered, 8 words, final
+`tkeep` 0x0F, word m at cycle 4 + m. I put the arithmetic in the packet as a
+derivation to check and the count as a guard to write, because handing down a
+number without its working is what put "100 octets" into families G3/G4.
+
+**What B4 does and does not pay, said in the packet so it cannot be over-read.**
+It pays bound 6 with a second point **and a second instrument** — the
+resynchronised frame's delivered content, where `run_h2`'s instrument is the
+aborted frame's trailing octets. It does **not** pay bound 7: nothing is open on
+entry to the word, so the in-word abort with a frame already open is untouched.
+And the genuinely *opposite* transition (4 → 0) is `At_preamble 4` at a **lane-4**
+start, which is a cross-word abort in the next word — a **member addition to a
+committed row**, therefore my plan edit and not a worker's. Footnoted, not
+written: this round has no defect requiring an AP edit and I did not manufacture
+one.
+
+**The second plan ambiguity I found and did not resolve by fiat.** §4.N's M03-N3
+says the assertable REQ-105 case an idle-in-preamble makes available is
+*"carried at M03-B2"*, while B2's own stimulus cell names only `/E/`, and
+`injection.mli` accepts `/I/`//`/Q/` at `At_preamble` and nowhere else. The plan
+speaks twice with different extension. The narrow reading (the row's stimulus
+cell governs) is what I commissioned, because commissioning a unit that maps to
+no row breaks the coverage map that the `SO-` is built on; reconciling the cells
+is a plan edit I now owe.
+
+**The I2 mini-round: why two packets, and it is a rule about readers.**
+`WO-0042`'s precedent folded a mini-round into the family packet — and its
+reader was the *seeder*. `WO-0062`'s reader is the **bench author**, and the two
+rows nearest this class are B2's and B3's strobe pins, exactly what a leaked
+intent would tune. Every campaign since family E has kept intents away from
+bench authors; folding here would have spent that discipline for a page saved.
+
+**Designing the class made me refute the brief's own hope, and the refutation is
+the design.** A mutant *only* M03-I2 can kill does not exist: `run_f2` asserts
+the pinned strobe cycle exactly, so any report-path deferral reddens M03-F2 at
+six units and M03-B3 at one. Claiming uniqueness without evaluating the sibling
+units would be `DISP-0001` §3's fan-out error committed in my own direction, one
+round after I convicted it. **What is unique is the instrument**: M03-I2's
+window is the only assertion in the bench that reads a strobe's cycle against
+C-14.3's drain bound rather than against §9's pin, and qualification is earned
+when *that* instrument convicts with its own message and nothing inside its own
+unit convicted first.
+
+**Three structural findings fell out of the design and all three are in the
+packet.** (1) The `tvalid` half of I2's window is **permanently shadowed**: the
+row asserts every output word's cycle before it scans the tail, so a late word
+always raises at the earlier guard — the window can only ever convict on a
+strobe. (2) Both committed members are clean frames that owe no strobe, so
+member **(iii)** — F2's zero-received `/T/` stimulus, no new machinery — is what
+makes the row's own declared kill reachable; and its boundary must come from the
+**closing** character, not from `Arrival.terminate_octet_time`'s declared one,
+or the member measures a window ten cycles away from its own defect. (3) §0.6's
+window `[W, W+3]` **admits the very cycle C-14.3 forbids**, so the standing
+strobe monitor cannot see this class at any unit in the bench — an open question
+for the architect, not a defect, since §9's pin is exact and normative.
+
+**A member, not a row — correcting my own footnote.** `WO-0061` §12 called the
+earned artefact a *row*. A new row would carry a **copy** of the silent-tail
+scan, and qualifying a copy qualifies nothing about M03-I2. It is a member.
+
+**IC-2 is the part I would not have written a month ago.** Seeding only the
+class you hope will convict cannot distinguish a working instrument from a loud
+one — that is precisely what `WO-0061` §3 had to settle *after* the run, on a
+datum the seeder happened to volunteer. So the round seeds a **control**: the
+same deferral on the `tlast`-pinned path, whose required consequence is that
+M03-I2 stays **green** at all three members. The four dispositions are
+pre-committed, including the one where the window is declared structurally
+shadowed and the plan owes a NO-ASSERT rather than another member.
+
+**Harvest (ADR-0018, PROTOCOL §7).** **Not due this round** — no `SO-` and no
+gate. Span accruing since the chain's start and untiled by any prior harvest:
+**J-dv_lead-0001 … 0098**; the first harvest fires at `SO-M03` and will state
+that interval so the tiling is visible and a skip would be a gap.
+
+### Actions
+- Read `DISP-0001` in full, the two campaign packets it turns on, and the four
+  bench runners whose assertions decide this round's designs. No RTL.
+- **Authored `WO-0062`** (family B: M03-B2, B3, B4) — the queue-read rationale,
+  thirteen standing bars, per-row derivations with their guards, a risk ranking
+  that doubles as the review order, ten named traps, the five owed bench notes
+  with **(iv) corrected**, and three earned-but-not-commissioned items.
+- **Authored `WO-0063`** (the M03-I2 mini-round) — two phases, the plan-edit
+  precedence, member (iii)'s derivation and its boundary trap, two mutation
+  intents (one required red, one required green), the mandatory disclosure axis,
+  R-DISC-1 discharged on the bench side term by term, the uniqueness claim
+  explicitly withheld with its refutation, an R-SEAL-1 forward commitment, four
+  pre-committed dispositions, and the `BUG-0003` §V.2 probe's scheduling.
+- **Edited no `test/**` file, including the attack plan.** No defect this round
+  required an AP edit; the two plan changes I found I owe are footnoted in
+  `WO-0062` §6.2 and `WO-0063` §2.1.
+- Ran no `git` command that writes.
+
+### Evidence
+1. `At_preamble p` → `start_ot + p` (`test/xgmii/injection.mli`, placement) with
+   `first_start` 8 / 12 (`bench.mli`, `frames_at`): B2 position 3 → octet times
+   **11** (lane 0, lane 3 of cycle 1) and **15** (lane 4, lane 7 of cycle 1);
+   B3 position 5 → **13** (lane 5, cycle 1); B4 position 4 → **12** (lane 4,
+   cycle 1). All four closing characters lie in the **start word**, so §9's
+   no-output pin puts every family-B report on **cycle 3**, window **[1, 4]**.
+2. B4 frame B: opens at octet time 12 (lane 4); octet 0 at **20** = array index
+   4; auto-terminate at `16 + 68` = **84**; received `84 − 20` = **64**;
+   delivered **60**; **8** words; final `tkeep` **0x0F**; word m at cycle
+   **4 + m**.
+3. Family J's blocker, quoted from the file rather than recalled —
+   `test/xgmii_rx_64/bench.mli:53–56`: `create` "release `clear` after one cycle
+   and hold `cfg_rx_enable` at 1 for the rest of the run — family J (the disable
+   path) is out of this packet's eleven rows".
+4. E5's sweep is positions **1 … 7** at a lane-0 start with `error_char`
+   (`test_m03_e.ml:696–710`), single case, no following frame — hence B2's
+   overlap and its two genuinely new facts.
+5. `run_f2` asserts the exact pulse cycle (`test_m03_f.ml`, the
+   `error_runt pulsed on cycle …, expected …` branch) — the measurement behind
+   `WO-0063` §5's refusal to claim uniqueness.
+6. `run_i2_member` orders per-word cycle assertions **before** the silent-tail
+   scan (`test_m03_i.ml`, `run_i2_member`) — the measurement behind the
+   permanently-shadowed `tvalid` half.
+7. Member (iii)'s numbers: `At_octet 0` → closing `/T/` at octet time **16**
+   (lane 0) / **20** (lane 4), both **cycle 2**; §9 pin **cycle 4**; §0.6 window
+   **[2, 5]**; C-14.3 boundary `W + 3` = **5**; conformant margin **one cycle**.
+   The declared terminate for the same stimulus is at octet time 80, **cycle
+   10** — the trap the member's own runner must avoid.
+8. §0.6's window upper bound for the zero-received branch is `closing_cycle + 3`
+   (`test_m03_f.ml`'s `expected_not_after` when `k = 0`), i.e. the same cycle
+   C-14.3 forbids — the strobe-monitor blindness recorded in `WO-0063` §5.
+9. `DISP-0001` §2.4's gift, transcribed into `WO-0062` §6.1(iv) as the corrected
+   note: binds recur at `t ≡ 189 (mod 256)`, always odd; k = 7 is odd; the same
+   mutant truncates at k = 2.
+
+### Outcome
+DoD met for the round as dispatched. **Two packets drafted, nothing else
+staged**: `WO-0062` (family B, three rows, to tb_writer) and `WO-0063` (the
+M03-I2 two-phase mini-round, to orchestrator/auditor). **No `test/**` edit and
+no AP edit** — the two plan changes I owe are footnoted, with their derivations,
+in the packets. The three dispositions asked for are recorded: the `BUG-0003`
+§V.2 probe **rides with phase A** of `WO-0063` (two of §V.9's three grounds have
+expired; the two-base-SHA ground is honoured by keeping it out of phase B), the
+**I6-at-even-k gift rides as a note** and joins no class list until the
+injection-depth question is settled, and **owed note (iv) is corrected** to
+*unexercised at k = 7*, with the parity rule that makes the immunity an
+accident. `SO-xgmii_rx_64.md` does not issue and is not offered: 38 of 62 ASSERT
+rows discharged, families J/K/M/N and L1–L5 unwritten, the verilog-ethernet
+anchor undischarged.
+
+### Open-questions
+1. **Two plan edits are now owed by me**, both footnoted rather than taken:
+   M03-B4's lane-4 member (the 4 → 0 transition, `WO-0062` §6.2 item 1) and the
+   M03-B2 / M03-N3 extension conflict over `/I/` in a preamble position (item 2).
+2. **M03-I2's third member is a plan edit that must precede its bench**
+   (`WO-0063` §2.1) — charter §3's attack-plan-before-first-test rule, and it is
+   mine to make in the commit that opens phase A.
+3. **Open to architect_docs_lead**: is §0.6's `[W, W+3]` window normative
+   alongside §9's exact pin for a no-output report, and is `W + 3` therefore
+   conformant under §0.6 and non-conformant under C-14.3? No row moves on the
+   answer; the standing strobe monitor's reach does.
+4. **`WO-0058` bound 7** (an in-word abort with a frame already open on entry)
+   is untouched by family B and has no candidate row.
+5. **`WO-0061` §8 bound 1's `tkeep` half** at an injected run stays unmeasured,
+   and the `RV-0060` §10 item 3 citation sites ride with `WO-0063` phase A, the
+   next family-I bench round.
+6. **Family J is next after a bench-capability round**, and that round is the
+   orchestrator's to schedule; it is not deferred further than that.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0062_tb-m03-family-b-preamble-and-sfd.md
+- agents/handoffs/WO-0063_m03-i2-report-path-delay-mini-round.md
