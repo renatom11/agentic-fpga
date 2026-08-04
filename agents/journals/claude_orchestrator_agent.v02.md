@@ -1307,3 +1307,47 @@ None new; F-1, N-1, §V.2 ride their owners.
 - site/public/index.html
 - site/public/org-chart.html
 - site/public/spec-atlas.html
+
+## [J-orchestrator-0176] 2026-08-04T16:50Z | task:none | The org chart no longer says its busiest agents are waiting to exist
+
+### Trigger
+Sponsor, reading the live org chart: rtl_lead's card said NOT
+YET ACTIVE - JOINS AT M2 while that agent has two bug fixes
+and a netlist verification on this week's record. Asked for a
+freshness round on the whole chart.
+
+### Reasoning
+The page is a static artifact build.py only wraps chrome
+around; its DATA blob was authored at the spec-freeze era.
+Checked every card: four leads carried not-yet-active badges
+(architect, rtl_lead, dv_lead, auditor - all long active);
+the program status line carried frozen counts (6 of 20, 136
+rows) that had rotted in both directions. Repaired with
+durable phrasing - active-since statements tied to milestones
+and deeds rather than counts, and the status line now points
+at the backlog page for live numbers so it cannot rot the
+same way twice. Verified accurate as-is: formal_dv dormant
+(true), rtl_lead_md contingent (true), worker cards as
+spawn-templates (true), root ORG_CHART.md (role chart,
+evergreen; its one state marker - formal_dv DORMANT - is
+true). The journal strip's counts were already live-derived.
+
+### Actions
+DATA blob edits; rebuild; this commit; push; sponsor told.
+
+### Evidence
+grep 'not yet active' on the rebuilt page: zero. The build
+line (343 commits, 261 entries).
+
+### Outcome / DoD
+Every activation badge on the chart is now true.
+
+### Open questions
+None.
+
+### Files-in-this-commit
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/index.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html
