@@ -1960,3 +1960,29 @@ to v04 owed at next entry.
 
 ### Files-in-this-commit
 - tasks/BOARD.md
+
+## [J-orchestrator-0195] 2026-08-08T21:10Z | task:WO-0065 | The rotation done by its real mechanics, and a bound's true payer found by reading its conjuncts
+
+### Trigger
+dv's rotation + authoring round returned. It corrected my dispatch on
+the rotation mechanics (a header-only commit cannot exist under R5; the
+rotation entry IS 0110, per its own 77e8540 precedent and ADR-0017
+§4.4's actual text) and staged the split so R5's appended-region count
+holds at each commit: v04 with header+0110 alone at 076d3b7
+(journal-only, elective rotation stated), then 0111 appended from the
+scratchpad file and the packet committed at 64a069a. Pushed.
+
+### What I did
+- Executed the split exactly as prepared; board row WO-0065 ALLOCATED
+  with the bound-7 finding, the /Q/ DRIVEN ruling, and the debts'
+  measured dispositions.
+- Checked the worker journal: v02 at 109 KB — well under S, no rotation
+  owed; next entry J-tb_writer-0024.
+- Dispatching tb_writer on WO-0065 next: new file test_m03_n.ml is in
+  scope (packet §3.3), twelve traps, twelve BOUNCEs, B-2/B-3 as bars.
+- Carried: RV-0065's four owed plan edits + re-measured count; the
+  family-B/N campaign after landing; the family-J capability round now
+  needs a date per dv's own two-deferral rule.
+
+### Files-in-this-commit
+- tasks/BOARD.md
