@@ -666,3 +666,305 @@ to `WO-0057` §7 question 1.
 ### Files-in-this-commit
 - docs/specs/requirements.md
 - docs/specs/modules/xgmii_rx_64.md
+
+## [J-architect_docs_lead-0024] 2026-08-04T06:20Z | task:SCR-M03-I4 | dv's unsatisfiability derivation CONFIRMED and widened — the per-octet constant is not the gap-invariant quantity at any module, the deciding input word is, and that is §0.6's reference-word ruling arriving at the data path
+
+### Trigger
+
+Orchestrator dispatch of **SCR-M03-I4**, dv_lead's spec change request, escalated
+in `RV-0059-VERDICT` §6 (`agents/handoffs/WO-0059_tb-m03-family-i-silence-and-
+ordered-sets.md` at `9bc6dd1`) and relayed to me verbatim by pointer under the
+WO-0057 §7 routing precedent. The claim to rule on: requirements.md §0.5's
+"Gapped stimulus" paragraph, REQ-016's verification column and SPEC-M03 §6.1's
+clause *"because §7's per-octet constant does"* are **jointly unsatisfiable** with
+REQ-011 and REQ-103/REQ-104 for any idle-injected stimulus with k ≥ 1. The
+consequence dv states and does not absorb: `Latency.is_constant` cannot be
+satisfied on an injected run, and `AP-xgmii_rx_64.md` §4.I's M03-I4 Observable is
+unachievable as written. M03-I4 and M03-I6 are BOUNCED and rebuilding to dv's
+`D(m)` rule in parallel; the ruling gates dv's owed AP edit and the worker's HOLD
+declaration. The dispatch's stop condition: if the ruling would change what any
+committed **green** test asserts, escalate instead of landing.
+
+### Inputs
+
+- `agents/charters/architect_docs_lead.md`; `agents/PROTOCOL.md` §3, §4, §4.1,
+  §4.2, §6, §7, §10, §11.
+- `agents/handoffs/WO-0059_tb-m03-family-i-silence-and-ordered-sets.md`, the
+  `RV-0059-VERDICT` block in full (§0 through §12), Findings 1, 2, 5 and 6 and
+  §8's corrected rule read line by line. Read only; not touched.
+- `docs/specs/requirements.md` §0.5 in full, §0.6 in full (the ruling I am asked
+  to compare against), §0.7, REQ-004, REQ-005, REQ-011, REQ-013, REQ-015,
+  REQ-016, REQ-019, REQ-021, REQ-101 … REQ-113, §1.1 including its currency
+  table, §13.
+- `docs/specs/modules/xgmii_rx_64.md` §3's REQ-016 row, §6.1 in full, §6.2's
+  `Frame` row, §7, §8, §10, §11, §13.
+- The other five REQ-016 restatement sites, read rather than assumed:
+  `eth_axis_rx.md` §3/§7/§10, `eth_demux.md` §3/§7/§10, `arp_eth_rx.md`
+  §3/§6.1/§7/§10, `ip_eth_rx_64.md` §3/§6.1/§7/§10/§11.2, `udp_ip_rx_64.md`
+  §3/§7/§10.
+- My own `J-architect_docs_lead-0023` (the §0.6 reference-word ruling) and
+  `-0022`'s open-questions ledger.
+- **The committed bench, as evidence of what is asserted and not as authority**:
+  `test/xgmii_rx_64/test_m03_i.ml` (`run_i1`, `run_i2`, `run_i3`, `run_i4_case`,
+  `run_i6_case` call sites), `test/xgmii/test_idle_injection.ml` in full,
+  `test/monitors/octet_time.mli`'s `is_constant`/`observed`/`constant` contract,
+  and a tree-wide search for `Idle_injection` users.
+- **Not read**: no path under `libs/**`, `top/**`, `bin/**`, `rtl_snapshots/**`,
+  `docs/reports/audit/**`. **Not written**: nothing outside the two spec files
+  below and this journal.
+
+### Reasoning
+
+**1. I re-derived dv's arithmetic instead of accepting it, because a ruling that
+quotes a derivation has not made one. Both halves confirm, and one of them is
+narrower than dv states while the other is wider.**
+
+*(a) The `tlast` word.* Confirmed exactly, at the failing member. 64 octets at a
+lane-0 start: content octets 0…63 occupy source cycles s+1…s+8, terminate at
+s+9, `uniform ~idles:1` sites at every boundary from s+2 through s+9. Delivered
+octets 56…59 sit in source cycle s+8 and move by 7 idles; the terminate word
+moves by 8; §6.1's drain derivation pins the `tlast` word one cycle after the
+terminate word at this residue, so it moves by 8 while its octets moved by 7 —
+**L = 24 against 16**, dv's number. *Narrower than dv states in one respect I had
+to work to find*: the separation exists only where the terminate character's
+input word is **later** than the word carrying the last delivered octet, which is
+`r = N mod 8 ∈ {0,1,2,3,4}` at a lane-0 start and `r ∈ {0,4,5,6,7}` at a lane-4
+one. At a **lane-0** start with `r ∈ {5,6,7}` the two are the same word and the
+per-octet constant **does** survive — three of the eight commissioned directed
+lengths, at one lane. dv's `D(m)` rule is right at every residue; it is the
+*consequence* that is residue-dependent, and I put the residues in §6.1 because a
+bench that measures one class at length 69 and two at length 68 must be able to
+tell a conformant reading from a defect.
+
+*(b) The lane-4 straddle.* Confirmed and **structural in the strongest sense**.
+Octets 8m…8m+3 lie in lanes 4…7 of one input word and 8m+4…8m+7 in lanes 0…3 of
+the next; an injected idle between them moves the second half by 8 octet times
+and not the first; the eight octets of an output word occupy eight *consecutive*
+output octet times whatever their input did, so L(8m+4) − L(8m+3) = 1 − 9 = −8
+and **no emission cycle can fix it**. At k = 1 that is L = 20 and L = 12 in one
+word, dv's numbers. REQ-011 forecloses the only alternative.
+
+**2. dv's derivation is right and its scope is too small — the same defect is at
+three other modules, and I found it by asking what makes the straddle happen
+rather than by looking at M03.** Output word m carries the octets at input octet
+times T + h + 8m … T + h + 8m + 7; those lie in one input word **iff h ≡ 0
+(mod 8)**. That is a one-line test over §1.1's own h column, and it convicts
+**M06 (h = 14)** and **M14 (h = 20)** as well as M03 at a lane-4 start (12), while
+acquitting M03 at lane 0 (8), M08 (0) and M17 (8). **M10** fails the other test:
+its `arp_valid` pulse is decided by ARP octet 27's input word while its latency is
+measured from ARP octet 0's, so its constant does not survive injection although
+its h is 0. Three module specs therefore state, in their own §3/§6.1/§7/§10, the
+sentence I am retiring; each §10 hook **commissions the unachievable assertion**,
+which is a worse residue than the stale sentences C-5 left at M04 and M09.
+
+**3. Why I did not repair those three in this diff, and why that is not
+timidity.** The dispatch names two files. Each of the three needs its own
+arithmetic worked against its own pinned numbers, its own `tlast`/pulse
+dependency and its own §10 hooks — real work, not clerical, and exactly the
+ground on which `-0023` declined to close C-5. None of the three has a committed
+bench, so nothing is blocked and no bench can be built against the false cell
+without a work order I would see. What I refused to do is leave them *silent*:
+§0.5 now carries the arithmetic test that decides each one, and §13's row **names
+all five modules and the verdict for each**, including the two that pass and are
+not to be "repaired". That converts three latent traps into three bounded,
+owned, dated repairs — the honest form of PROTOCOL §11's restatement discipline
+when the diff that would satisfy it mechanically is larger than the ruling.
+
+**4. What I ruled, and why the promise is per output *event* rather than per
+output *word*.** dv asked for a per-word rule keyed to `D(m)`. I state it one
+level more general — the **deciding input word** of any output *event*, word or
+pulse — for two reasons, neither cosmetic. First, M10 has no output word at all
+and its defect is the same defect; a word-only rule leaves the module whose
+observable is a pulse outside the rule that convicts it. Second, §0.6's window is
+already keyed to a *pulse's* deciding word, so a word-only rule would have stated
+half of a principle the document already carries in the other half. The
+gap-invariant quantity is then: **the delay in cycles from D to the event it
+decides is the same gapped as gapless.** That is what every module spec's §6.1
+and §7 already pin, which is why the ruling moves no pinned number anywhere.
+
+**5. Two options I rejected.** *(i) Scope §0.5's per-octet constant to gapless
+and stop there* — the minimum the SCR asks for. Rejected: it says what does not
+hold and leaves what does hold to be derived, and the derivation is exactly the
+one that went wrong twice already (dv's own §2.4 and §3.4 item 4 supplied a
+replacement for a barred idiom that was itself unsound). A specification that
+retires a promise without stating its successor hands the next bench the same
+problem with less text to get it right from. *(ii) Delegate the gapped-stimulus
+promise to each module spec's §7* — the shape `-0023` rejected for §0.6 and
+rejects again for the same reason: a rule derived from the pin cannot catch a
+defective pin, and this diff exists because a programme-level sentence was wrong,
+not because a module's was.
+
+**6. Does it generalise the §0.6 ruling, or is it independent? It generalises,
+and I can name the shared clause.** `-0023` keyed a frame's **report** to the
+input word that decides it: the last octet the frame received while open, or —
+where it received none — the input word carrying the character that closed it.
+This ruling keys an output **word** to the input word that decides it: the word
+carrying its last octet, or — where its `tkeep`, `tlast` and `tuser`[0] are not
+decidable from its own octets — the word carrying the **terminate character**.
+The fallback is not merely analogous; it is the *same clause*: the closing event
+is the last input event that belongs to the object being reported, so it stands
+in wherever the object's own octets do not decide it. One principle, two ports.
+I wrote that cross-reference into §0.5 rather than into this journal, because the
+next reader who needs it is a bench writer reading the requirements, not an
+auditor reading me. **It is a generalisation and not a coincidence**, and the
+test is that the two rules now share their degenerate case.
+
+**7. The stop condition, checked row by row rather than asserted.** No committed
+green test changes meaning. `Idle_injection` has exactly two customers in the
+tree: its own X-4 unit tests, which assert only **input**-side octet times (every
+shift a non-negative multiple of 8, no octet changes lane, the preamble stays
+contiguous) — all of them consequences of REQ-016's normative sentence, which
+this diff leaves **untouched** — and `run_i4_case`/`run_i6_case`, which are RED
+and BOUNCED at this SHA and are rebuilding to the rule I am ruling. M03-I1, I2, I3,
+families A–H, the REQ-004 stress and its directed lengths are all gapless, which
+is the stimulus class §0.5 defines L over and which this diff scopes it to
+explicitly. Adding "on a gapless stimulus" to §0.5's definition sentence
+therefore removes no assertion any of them makes. REQ-005 and REQ-111 inherit the
+scope by citation, so neither row needed touching — a discipline that kept the
+diff to two files.
+
+**8. Class, countersignature and ADR.** **Editorial** by §13's own test: no
+conformant design changes — the per-octet constant was *never* achievable under
+injection, so nothing was ever built to it, and the design's own answer at the
+failing member (word 0 on cycle 4) is what the corrected text describes — and no
+committed test changes meaning (§7). **Countersignature discipline applies**, the
+C-43 precedent: §0.5 is normative text in the test-derivation basis and REQ-016's
+verification column is dv_lead's own commissioning instrument, so dv_lead's
+re-countersignature is owed and the diff is not in force until transcribed.
+Nothing is blocked meanwhile, because the rebuilt M03-I4/I6 assert the
+per-output-word rule that SPEC-M03 §6.1 states in this same commit. **No ADR**,
+and the reason is sharper than at `-0023`: an ADR records a choice among live
+alternatives, and here the alternative is **arithmetically impossible** rather
+than merely rejected — a specification asserted something no module can do, and
+the correction is forced. Nor is it constitution-grade: nothing in PROTOCOL, a
+charter or an enforcement script moves, and calling a corrected derivation a
+constitutional amendment would devalue the class. The precedents are the §0.5 and
+§0.6 diffs that settled a reading without an ADR (C-15, C-23, and `-0023`'s).
+
+**9. What I owe dv_lead that is not text.** The ruling makes a complete,
+falsifiable prediction about the measurement `RV-0059-VERDICT` §12 commissions —
+the observed L classes on the held runs — and I state it in the return rather than
+hold it, because a withheld prediction is a claim (PROTOCOL §10, R-SEAL-1) and
+because a ruling that cannot be scored is not worth countersigning.
+
+### Actions
+
+- `docs/specs/requirements.md` §0.5 **"Latency"**: the definition sentence gains
+  **"on a gapless stimulus"**, with the C-15 note below it named as the precedent
+  for putting a qualifier in the sentence rather than eighty lines away.
+- `docs/specs/requirements.md` §0.5 **"Gapped stimulus"**: the two-sentence
+  paragraph replaced by five — the retired inference named as retired; **the
+  deciding input word** defined for output words and for pulses; **what survives
+  idle injection** stated as the delay from D to the event it decides; the
+  *why* paragraph with the two arithmetic tests (**straddle**, h ≢ 0 mod 8, with
+  the Phase-1 verdict read off §1.1's h column; **late decision**, with M03's
+  `tlast` word and M10's pulse as the two instances); **what a latency monitor may
+  demand**, with the SHALL NOT and the report-don't-assert clause; the *relation to
+  §0.6*; and a provenance paragraph in §0.5's existing voice.
+- `docs/specs/requirements.md` **REQ-016 verification column** repaired to the two
+  achievable observables, with the retired clause quoted and convicted in place.
+  REQ-016's **normative sentence is untouched**, as are REQ-005, REQ-011 and
+  REQ-111.
+- `docs/specs/requirements.md` §13: one row, class **editorial with
+  countersignature discipline**, naming the five restatement sites and the verdict
+  for each.
+- `docs/specs/modules/xgmii_rx_64.md` §6.1 consequence 1: the **justification**
+  *"because §7's per-octet constant does"* withdrawn, the **rule kept** and
+  re-grounded on the fact that its cycles are keyed to named input words.
+- `docs/specs/modules/xgmii_rx_64.md` §6.1 C-14.4 paragraph: the sentence *"the
+  per-octet constant of §7 holds on every stimulus, gapped or not"* withdrawn as
+  false; a new subsection states **D(m) for this module** (both bullets, with the
+  offsets consequence 1 and the drain derivation already pin), why the two
+  readings coincide gaplessly, and the three worked derivations — `tlast`
+  separation by residue at both lanes, the lane-4 straddle, and the lane-0
+  `r ∈ {5,6,7}` case where the constant survives and a bench must not generalise
+  from it.
+- `docs/specs/modules/xgmii_rx_64.md` §7 handshake bullet and §10's REQ-016 hook:
+  the achievable observable stated, the unachievable one forbidden by name, and
+  per-octet latencies on an injected run declared reportable but not assertable.
+- `docs/specs/modules/xgmii_rx_64.md` §13: one row, `Breaking? no`, `ADR none`.
+- **No ADR. No `test/**`, no `libs/**`, no `agents/**` but this journal, no
+  `docs/gates/**`** (PROTOCOL §7 reserves gate staging to the orchestrator, so the
+  ledger consequences below are transcription requests). `AP-xgmii_rx_64.md` is
+  dv_lead's and is **not** touched.
+
+### Evidence
+
+Reads and hand arithmetic; this unit produces no code and moves no `Interface`
+record, so no `ifc_check` run is owed (charter §5's compile item binds spec
+freezes; §4's records are byte-unchanged).
+
+- `git show 9bc6dd1 --stat` → the SCR's commit, `RV-0059-VERDICT` at
+  `agents/handoffs/WO-0059_…md:1029–1571`, `Agent: dv_lead`,
+  `Journal-Entry: J-dv_lead-0083`.
+- `grep -rn "Idle_injection" test/ --include=*.ml --include=*.mli` → two
+  customers only: `test/xgmii/test_idle_injection.ml` (X-4's own units) and
+  `test/xgmii_rx_64/test_m03_i.ml` at `run_i4_case`/`run_i6_case`. No family A–H
+  file and no `run_i1`/`run_i2`/`run_i3` appears. This is the mechanical form of
+  the stop-condition check.
+- `test/xgmii/test_idle_injection.ml:114–165` → X-4's REQ-016 unit asserts only
+  input-side octet times (`every shift is a non-negative multiple of 8`, `no octet
+  changes lane within its word`, `the frame's first octet is still 8 octet times
+  after its start character`). REQ-016's normative sentence is untouched by this
+  diff, so all three still hold.
+- `grep -n "is_constant" -B4 -A6 test/monitors/octet_time.mli` → *"True iff at
+  least one octet was compared and every front-offset class has a single L"* —
+  the demand this ruling declares unsatisfiable on an injected run, quoted from
+  the instrument itself.
+- `grep -rn "gapped\|gapless\|REQ-016" docs/specs/` → the five restatement sites
+  named in §13's row, each read at its own line before being listed.
+- Hand arithmetic, stated in the spec text and reproducible from it: at a lane-0
+  start octet j has input octet time 8s + 8 + j and the terminate character
+  8s + 8 + N, so the terminate word exceeds the last delivered octet's word iff
+  `N mod 8 ≤ 4`; at a lane-4 start the offsets are 8s + 12 + j and 8s + 12 + N,
+  giving `N mod 8 ∈ {0,4,5,6,7}`. Output word m spans input octet times
+  T + h + 8m … T + h + 8m + 7, which lie in one input word iff `h ≡ 0 (mod 8)`.
+- `git status --porcelain` → exactly the two spec files listed below.
+- Markdown table integrity re-checked by column count on every edited row: the
+  REQ-016 row and both §13 rows have the same pipe count as their neighbours.
+
+### Outcome
+
+**DoD met.** SCR-M03-I4 is ruled as a spec diff in the two named files, in the
+voice and class §13 requires. dv's derivation is **confirmed** at both structural
+sites, with one narrowing (the `tlast` consequence is residue-dependent and the
+constant survives at a lane-0 start with `N mod 8 ∈ {5,6,7}`) and one widening
+(the same defect convicts M06, M14 and M10). M03-I4/I6's rebuilt form is
+representable: §6.1 names `D(m)` with both clauses and the offset at each start
+lane, §10's hook commissions the per-word delay and the unchanged tuple sequence,
+and per-octet latencies are declared reportable-not-assertable, which is exactly
+the HOLD `RV-0059-VERDICT` §12 item 3 instructs. dv_lead's owed `AP` §4.I edit is
+unblocked on this ruling. **No committed green test changes meaning**, so the
+dispatch's escalate-instead-of-land condition was not triggered. Handed to the
+orchestrator for commit; the ruling goes to dv_lead as the answer to SCR-M03-I4
+and to the M03-I4/I6 round-2 worker through dv's packet.
+
+### Open-questions
+
+- **dv_lead's re-countersignature is owed on the §0.5 + REQ-016 diff**, which is
+  not in force until transcribed. Nothing is blocked meanwhile — the module-side
+  rule SPEC-M03 §6.1 states in the same commit carries round 2's assertions.
+- **Three module specs owe the same repair and are named in §13's row**:
+  SPEC-M06 (§7, §10), SPEC-M10 (§3, §6.1, §7, §10), SPEC-M14 (§3, §6.1, §7, §10,
+  §11.2). SPEC-M08 and SPEC-M17 pass both of §0.5's tests and are **not** to be
+  touched. Owner: me; closes at the next work order that opens those specs. This
+  is a **work-order request** to the orchestrator, not a silent to-do.
+- **A prediction, disclosed rather than held** (PROTOCOL §10, R-SEAL-1: this is a
+  forward statement in the open, not a seal). Under `uniform ~idles:k`, k ≥ 1, at
+  the commissioned lengths 64…71, the observed L classes are: **lane 0, N mod 8 ∈
+  {5,6,7}** → one class {16}; **lane 0, N mod 8 ∈ {0,1,2,3,4}** → two classes
+  {16, 16 + 8k}, the second being exactly the `tlast` word's delivered octets;
+  **lane 4, N mod 8 = 4** → **three** classes {12, 12 + 8k, 12 + 16k}, because the
+  `tlast` word both straddles and is late-decided by one further word; **lane 4,
+  every other residue** → two classes {12, 12 + 8k}. If dv's round-2 measurement
+  disagrees anywhere, the disagreement is a finding against this ruling and I want
+  it returned with its numbers, on §12 item 5's own terms applied to me.
+- **`AP-xgmii_rx_64.md` §4.I's M03-I4 and M03-I5 cells** are dv_lead's to edit and
+  I have not touched them; the ruling they were waiting on is this entry.
+- All items carried in `J-architect_docs_lead-0023`'s ledger remain open,
+  **C-5 included** — this ruling does not touch it, and the third disposition it
+  predicted is still owed at SPEC-M04 §11.3 and SPEC-M09 §9.
+
+### Files-in-this-commit
+- docs/specs/requirements.md
+- docs/specs/modules/xgmii_rx_64.md

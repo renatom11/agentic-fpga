@@ -360,11 +360,19 @@ preamble filler. Two consequences a bench may rely on:
    on **W + 2** — its last octet is at lane 3 of W with L = 16, equivalently
    `m + 3` from its start word W − 1 — while the second frame delivers none and
    its `error_runt` is on **W + 2** too. Two scope notes for a bench: these cycles
-   hold on a **gapped** stimulus as well as a gapless one, because §7's per-octet
-   constant does and the `m + 3` formula is not what pins them; and the two rows
-   that depend on the word *before* W carrying the aborted frame's last octet —
-   the first two — move **earlier** if REQ-016's wrapper injects an idle word
-   there, which moves that report further from the new frame's and never onto it.
+   hold on a **gapped** stimulus as well as a gapless one, because each of them is
+   pinned relative to a **named input word** — W itself, or the word carrying the
+   aborted frame's last octet — and not by the `m + 3` formula, so on an injected
+   line each is read at that word's own injected position (requirements.md §0.5,
+   *deciding input word*). *The justification this clause previously carried —
+   "because §7's per-octet constant does" — is **withdrawn**: that constant does
+   **not** survive idle injection at either start lane (requirements.md §0.5;
+   dv_lead's **SCR-M03-I4**). The rule is unaffected, because it never rested on
+   the constant: its cycles are causal, keyed to input words, and that is exactly
+   what makes them survive.* And the two rows that depend on the word *before* W
+   carrying the aborted frame's last octet — the first two — move **earlier** if
+   REQ-016's wrapper injects an idle word there, which moves that report further
+   from the new frame's and never onto it.
 2. A start character in **lane 4** is recognised whatever lane 0 carried,
    including another start character — REQ-110's own commissioned case, whose
    verification column pins the outcome at **one** `error_start_without_terminate`
@@ -398,10 +406,76 @@ character in **lane 0**, or an idle cycle injected by REQ-016's wrapper, which
 §10 commissions against this module at 0, 1 and 7 cycles — carries the frame
 forward without advancing m: it is *not* a condition, it holds the CRC register
 by its enable (§6.2) and it delays every later octet by exactly 8 octet times
-per cycle, which is REQ-016's own arithmetic. The **per-octet** constant of §7
-holds on every stimulus, gapped or not; the cycle formula above holds only on
-the gapless one, and a bench asserting the formula under idle injection would
-fail a conformant design.
+per cycle, which is REQ-016's own arithmetic. The cycle formula above holds only
+on the gapless stimulus, and a bench asserting the formula under idle injection
+would fail a conformant design. *This paragraph previously continued "the
+**per-octet** constant of §7 holds on every stimulus, gapped or not". **That
+sentence is withdrawn — it is false at both start lanes**, and the paragraph
+below replaces it with what does hold (requirements.md §0.5; dv_lead's
+**SCR-M03-I4**).*
+
+**What survives idle injection at this module, and what does not** (dv_lead's
+**SCR-M03-I4**, ruled at requirements.md §0.5). M03's **deciding input word**
+D(m), in the sense §0.5 defines, is:
+
+- **m is not the frame's `tlast` word** → D(m) is the input word carrying output
+  word m's **last** octet, frame octet 8m + 7. Consequence 1 above fixes the
+  offset from D(m) and is unchanged and unqualified: **two** cycles at a lane-0
+  start, and two or one at a lane-4 start according as that octet lies in lanes
+  4 … 7 or in lanes 0 … 3 — which for a full output word of a frame this module
+  carries to its terminate character is always lanes 0 … 3, hence **one**.
+- **m is the `tlast` word** → D(m) is the input word carrying the **terminate
+  character**. Its `tkeep`, its `tlast` and its `tuser`[0] are not decidable until
+  that character arrives (REQ-011, REQ-103, REQ-104), and the drain derivation
+  below pins its position relative to *that* word — one or two cycles after it at
+  a lane-0 start, **zero** or one at a lane-4 start. The terminate character's
+  octet time always exceeds the last delivered octet's, so it is also the later of
+  the two dependencies and no `max` is needed.
+
+On a **gapless** stimulus the two bullets name the same cycle for the `tlast` word
+at every length and both lanes, which is why consequence 1 above is stated without
+this qualification and is not wrong: the choice only becomes observable under
+injection, and there the terminate character governs. Under injection, output word
+m is emitted **exactly** as many cycles later than its gapless cycle as there are
+idle cycles injected at or before D(m) — requirements.md §0.5's rule, instantiated
+here. That, and not §7's per-octet constant, is what a bench asserts on an
+injected run.
+
+*Why the per-octet constant does not survive, worked at both start lanes, because
+a bench that has to derive this is a bench that will get it wrong.* Write N for
+the octets between the start and terminate characters and r = N mod 8, and take
+a frame that delivers at least one octet.
+
+1. **The `tlast` word, at both start lanes.** The terminate character's input word
+   is **later** than the word carrying the frame's last delivered octet whenever
+   **r ∈ {0, 1, 2, 3, 4} at a lane-0 start** and **r ∈ {0, 4, 5, 6, 7} at a lane-4
+   start**; REQ-016's wrapper, which §10 commissions at every boundary from the
+   frame's first octet onward, always injects between them. The `tlast` word then
+   moves with the terminate word while its own octets moved with an earlier one,
+   and those octets measure **L + 8k** while every octet before them measures L.
+   Worked, at the 64-octet lane-0 frame of the table above with k = 1: delivered
+   octets 56–59 arrive in the source cycle they always did relative to their
+   neighbours, the terminate word is one cycle further away than it was, so the
+   `tlast` word leaves one cycle later than L = 16 places it and those four octets
+   measure **L = 24**. Nothing about the design is free here: its offset from the
+   terminate word is what the drain derivation below pins, and an earlier emission
+   would put `tkeep`, `tlast` and `tuser` ahead of the character that decides them.
+2. **Every output word, at a lane-4 start.** Frame octets 0–3 lie in lanes 4–7 of
+   the word after the start word and octets 4–7 in the next (the paragraph above),
+   so **every** output word is assembled from two input words — h = 12 is not a
+   multiple of 8, which is §0.5's straddle test — and the wrapper's first legal
+   site falls between them. At k = 1 octets 8m … 8m+3 keep their arrival while
+   octets 8m+4 … 8m+7 move by 8, the word leaves whole because REQ-011 gives no
+   encoding for half a word, and its octets measure **L = 20 and L = 12 in one
+   word**. No conformant design can do otherwise; equalising them would require
+   splitting the word.
+3. **Where it does survive, stated so a green reading is not over-read.** At a
+   **lane-0** start with r ∈ {5, 6, 7} neither reason applies — h = 8 straddles
+   nothing and the terminate character shares the word carrying the last delivered
+   octet — so L = 16 holds octet for octet under injection. That is three frame
+   lengths in eight at one of the two start lanes, and it is **not** a promise this
+   specification makes about injection generally: a bench SHALL NOT generalise
+   from it, and requirements.md §0.5 states what it may assert instead.
 
 **Two words that are not instances of that rule, stated because reading them as
 instances breaks the FCS check of every frame that has one** (carry-forward
@@ -645,8 +719,13 @@ rely on it.
   word. At most 190 words between successive `tlast` words, the `tlast` word
   included — 1514 octets is 189 full words and a final two-octet word (REQ-108).
   No header record is emitted, so REQ-401's `valid` pattern has no instance
-  here. Idle gaps on the input (REQ-016) delay everything by exactly 8 octet
-  times per cycle and change nothing else.
+  here. Idle gaps on the input (REQ-016) delay each **output word** by exactly the
+  number of idle cycles injected at or before its **deciding input word**
+  (requirements.md §0.5; §6.1 names D for this module) and change nothing else
+  about the output. The two per-octet constants above are pinned on a **gapless**
+  stimulus and do **not** survive injection at either start lane — §6.1 derives
+  why, at both lanes, and requirements.md §0.5 states what a latency monitor may
+  demand instead.
 
   *This bullet previously forbade a `tlast` word with no preceding word since
   the previous `tlast`, restating a sentence of REQ-015 that contradicted the
@@ -937,7 +1016,7 @@ M03 inherits no abort: it is the origin of `tuser`[0] on this chain, so
 | REQ-012 | lane k to `tdata` position, lane 0 earliest | §6.1 | known-frame directed test |
 | REQ-014 | `tstrb` driven 0 on every output word | §7 | protocol monitor on the output stream — the **producer** half, which is all of REQ-014 that has an instance here. **REQ-014's differential run has none**: it varies `tstrb` on a module's input, and M03's input is an XGMII lane pair, which has no `tstrb` to vary (REQ-010 class (b)). Stated so that no sign-off packet claims REQ-014 whole at M03; the consumer half is M06's (dv_lead, **M03-O2**) |
 | REQ-015 | one `tlast` per frame, at most 190 words | §7 | protocol monitor |
-| REQ-016 | input idle cycles delay octets and change nothing else; an input word covering no frame octet holds the frame and is not a condition | §6.1, §6.2, §7 | idle-injection wrapper at 0, 1 and 7 cycles, asserting the **per-octet** constant of §7 rather than §6.1's gapless cycle formula (C-14.4). **The wrapper SHALL NOT inject between a frame's start character and its first octet**: those lanes are preamble positions, REQ-102 routes a control character there to REQ-105, and the wrapper would be measuring an abort (§6.1, **M03-N3**). Injection begins at the frame's first octet |
+| REQ-016 | input idle cycles delay each output word by the idles injected at or before its deciding input word and change nothing else; an input word covering no frame octet holds the frame and is not a condition | §6.1, §6.2, §7 | idle-injection wrapper at 0, 1 and 7 cycles, asserting the **output word sequence unchanged** and each output word delayed by exactly the idle cycles injected at or before its **deciding input word D** (§6.1, which names D for this module and pins the offset at each start lane), at **both** start lanes. **Not** §6.1's gapless `m + 3` formula (C-14.4) and **not** §7's per-octet constant, which §6.1 derives is unsatisfiable under injection at either start lane (**SCR-M03-I4**): a wrapper asserting it fails a conformant design, and one did. Per-octet latencies on an injected run may be **reported** as data and SHALL NOT be asserted as a single constant. **The wrapper SHALL NOT inject between a frame's start character and its first octet**: those lanes are preamble positions, REQ-102 routes a control character there to REQ-105, and the wrapper would be measuring an abort (§6.1, **M03-N3**). Injection begins at the frame's first octet |
 | REQ-017 | `xgmii_rxd` / `xgmii_rxc` from SPEC-M01's `Xgmii` record | §4.1, §4.2 | emitted-Verilog port check at M05 and M20 |
 | REQ-018 | no sub-XGMII logic; instantiates only M02 | §2, §3 | the emitted-module whitelist check |
 | REQ-019 | ΔC = 3 against a ceiling of 4; two words of payload storage | §7 | ΔC computed from the pinned L and h at freeze; measured ΔC from the stress run in the sign-off packet |
@@ -1011,3 +1090,4 @@ interface.
 | 2026-08-04 | **§0.6's window reference word for a frame no terminate character closes** — dv_lead's row **M03-G6**, raised as `WO-0054` §9.1 open question 1 after §3.6 ruled the bound "not computable from the frame alone" and instructed the worker to use the widest defensible one. §9's "Strobe cycle, pinned" gains three paragraphs: the reference word is the input word on which REQ-108's truncation **closed** the frame, fixed at that cycle and independent of the next start character; the case is **not** an instance of ledger **C-5**, whose two sites are genuine vacuities (no referent at all) where this one has a referent that is merely early; and the received-versus-delivered reading of "last octet" is explicitly **left undecided** as programme-wide and requirements.md's | no — **the specification had already decided it**: §9's closure list makes REQ-108's truncation a closure event, §9's third row and **C-12** already hold that characters after it belong to no frame, and §9's own rationale already says the list exists so each frame's report is "a function of the frame rather than of the characters that happen to follow it". The bound this states is **tighter** than the fallback `WO-0054` §3.6 authorises, and the exact pin carries every assertion either way, so no commissioned row changes and no conformant design moves. C-18's shape a fifth time — a rule never in doubt, left unstated at the one site that needed it | none — clarification; no normative sentence moves, requirements.md §0.6 is **not** amended (that would be a programme-wide normative change owing dv_lead countersignature, and it is not needed to decide this case) | `J-architect_docs_lead-0021` |
 | 2026-08-03 | **The REQ-901 divergence-class cascade lands here** — requirements.md's REQ-901 gained classes **(e)** runt marking and **(f)** oversize truncate-and-mark, both homed at M03, in force from the countersignature transcribed at `9d1982f` (requirements.md §13, `J-dv_lead-0057`). This specification carried **no REQ-901 row at all** while being the home of two classes. The header's prior-art bullet now names them, in the form SPEC-M13's and SPEC-M14's bullets use; §10 gains a **REQ-901 row** placed where every other class-home spec places it (after the configuration rows, before REQ-903/REQ-808), carrying each class's exclusion scope; and §10's REQ-107 and REQ-108 hooks gain the class pointer in the form SPEC-M14 §10's REQ-602 hook uses — the directed frames verify, a co-simulation result is not an admissible external anchor, and a sign-off packet SHALL NOT offer one | no — **no normative text moves**: §6.1, §6.2, §7 and §9 are byte-unchanged, REQ-107 and REQ-108 mean exactly what they meant, and every directed frame already commissioned stays commissioned. What changes is what a sign-off packet may **claim**, which is the REQ-014 hook's shape (this table's 2026-08-03 C-41-family row) rather than a behavioural one | none — the class list is requirements.md's and was amended there under its own "SHALL be added here by spec diff" clause with no ADR owed (requirements.md §13, `J-architect_docs_lead-0016`); this row is the restatement that clause's amendment made stale-by-omission | `J-architect_docs_lead-0017` |
 | 2026-08-06 | **The §0.6 window's reference word generalised upward** — dv_lead's `WO-0057` §3.2 and §7 question 1 (the same question routed twice, once at family H's design and once in `RV-0057-VERDICT` Finding 2) asked whether the M03-G6 ruling's principle reaches **any** zero-delivered closure. requirements.md §0.6 gains the general rule and this section gains one paragraph recording it: the reference word is the last octet the frame **received while open**, a closing control character is not one of its octets and an octet that closes by count is, and a frame that closed before any octet of it arrived takes its closing word. The paragraph also records the lane-4 arithmetic that makes the **received** reading the one under which this section's own truncation-word answer holds, and re-states that a one-to-four-octet frame is not in the zero-received class | no | none — **no design choice is made**: §9's own two pinning rules and its closure list are untouched, every cycle this section pins is unchanged, and the rule requirements.md now states is the one the M03 bench has computed since family E (`test/xgmii/injection.ml`'s `window`). requirements.md §0.6 is **normative**, so that diff carries dv_lead's re-countersignature; this row is the module-side restatement and inherits nothing further | `J-architect_docs_lead-0023` |
+| 2026-08-04 | **SCR-M03-I4 ruled — §7's per-octet constant does not survive idle injection, and §6.1 now names the quantity that does.** dv_lead's `RV-0059-VERDICT` §6 derived that requirements.md §0.5's gapped-stimulus paragraph, REQ-016's verification column and this section's *"because §7's per-octet constant does"* are jointly unsatisfiable with REQ-011 and REQ-103/REQ-104 for k ≥ 1. Ruled at requirements.md §0.5 (**deciding input word**; the per-output-event delay as the gap-invariant quantity; the straddle and late-decision tests) and landed here at four sites: §6.1's consequence-1 scope note keeps its rule and **loses its justification**, which is withdrawn as false; §6.1's C-14.4 qualifier loses the sentence *"the per-octet constant of §7 holds on every stimulus"*, also withdrawn as false; §6.1 gains **D(m) for this module** — the input word carrying output word m's last octet, the **terminate character's** word for the `tlast` word — with the two structural derivations at both start lanes (`tlast` separation by residue; the lane-4 straddle) and the one case where the constant *does* survive (lane 0, r ∈ {5, 6, 7}); §7's handshake bullet and §10's REQ-016 hook state the achievable observable and forbid the unachievable one | no — **no conformant design moves and no committed test changes meaning**. Every cycle this specification pins is byte-unchanged, the two constants of §7 are unchanged (they are pinned on a gapless stimulus and the freeze evidence measures them there), families A–H and M03-I1/I2/I3 are gapless and assert exactly what they asserted, and the only committed units that drive intra-frame idles at the DUT are M03-I4/I6, which are **RED and BOUNCED** at this SHA. What changes is what a bench may assert, which is the C-41 and REQ-014-hook shape rather than a behavioural one; the design's own answer — word 0 on cycle 4 at the failing member — is the one this text now describes | none — **the correction is forced, not chosen**: the retired claim is arithmetically impossible, not merely rejected, so there is no live alternative for an ADR to record, and nothing in PROTOCOL, a charter or an enforcement script moves. requirements.md §0.5 is normative, so **that** diff carries dv_lead's re-countersignature (requirements.md §13); this row is the module-side restatement and inherits it | `J-architect_docs_lead-0024` |

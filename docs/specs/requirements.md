@@ -152,10 +152,16 @@ observable at every port this document constrains.
 **Latency.** The latency of octet n at a module is
 (octet time of n at the module's output) − (octet time of n at its input). A
 module has **constant latency** iff that value is a single constant L for every
-octet of every frame, at every frame length and content the module accepts —
-**at the XGMII boundary, one constant per start lane** (see **Start lanes**
-below, which is the only place in this document where "a single constant"
-means two, and which bounds the pair). Everywhere else L is one value.
+octet of every frame, at every frame length and content the module accepts **on
+a gapless stimulus** — **at the XGMII boundary, one constant per start lane**
+(see **Start lanes** below, which is the only place in this document where "a
+single constant" means two, and which bounds the pair). Everywhere else L is one
+value. **Gapped stimulus** below states what replaces L when REQ-016's idle
+cycles are present; the gapless qualifier sits in *this* sentence rather than
+only in that paragraph for the same reason the start-lane qualifier does — the
+note immediately below, **applied a second time**, and again only after a
+monitor built from the unqualified sentence had failed a conformant M03, on the
+first injected run this programme ever drove (dv_lead, **SCR-M03-I4**).
 
 *Why the qualifier is in this sentence and not only seventy lines below it*
 (carry-forward **C-15**, dv_lead's finding). A monitor built from the
@@ -223,10 +229,105 @@ stream measurement of a non-stripping stage — ΔC = L / 8 = floor(L / 8) and t
 two readings coincide; the change of unit only ever moves a stripping stage,
 and it always moves it upward.
 
-**Gapped stimulus.** L is measured on a gapless stimulus. REQ-016 requires that
-inserting k idle cycles before an input word delays every octet that word
-carries by exactly 8k octet times, so L remains well defined on a gapped
-stimulus by subtraction.
+**Gapped stimulus (normative).** L is defined and measured on a **gapless**
+stimulus — one in which the frame's octets occupy consecutive octet times at the
+module's input. REQ-016 permits idle cycles inside a frame, and **L is not what
+survives them**. The sentence this paragraph replaces said it was: it inferred
+from REQ-016's input-side clause that "L remains well defined on a gapped
+stimulus by subtraction". That inference is false, for two structural reasons
+stated below, and the quantity that *is* gap-invariant is stated here rather
+than left to be derived.
+
+**The deciding input word (normative).** For an output event of a module — an
+output word, or a header-record or strobe pulse — its **deciding input word** D
+is the **latest** input word that event depends on:
+
+- for an **output word**: the input word carrying that word's **last** octet,
+  except where the owning module's specification makes the word's `tkeep`,
+  `tlast` or `tuser`[0] undecidable until a later input event, in which case D is
+  the input word carrying **that** event;
+- for a **pulse**: the input word carrying the last input octet the pulse's value
+  depends on.
+
+Each module specification names D for its own output events; where it does not,
+the first clause of each bullet governs. On a gapless stimulus the two clauses of
+the first bullet always name the same cycle, which is why a specification can
+pin its cycles either way and be right — the choice only becomes observable
+under injection.
+
+**What survives idle injection (normative).** Inserting idle cycles into a
+module's input delays each output event by **exactly** the number of idle cycles
+inserted at or before its deciding input word, and changes nothing else about the
+output: the ordered sequence of (`tdata`, `tkeep`, `tlast`, `tuser`) tuples is
+unchanged, and every octet keeps its byte position within its word. Equivalently,
+**the delay in cycles from D to the output event it decides is the same on a
+gapped stimulus as on the gapless one**, and it is that delay each module
+specification's §6.1 and §7 pin. This is the gap-invariant quantity; it is
+per output event, not per octet.
+
+*Why L itself does not survive, and why that is arithmetic and not a design
+question.* REQ-016's clause is about the **input**: k idle cycles before an input
+word delay the octets **that word carries** by 8k octet times. An output word, by
+contrast, leaves **whole** — REQ-011 forbids `tkeep` = 0 and gives no encoding for
+half a word — so its eight octets occupy eight consecutive output octet times
+whatever their input words did. Two consequences, each sufficient on its own and
+each checkable at spec freeze before any RTL exists:
+
+- **Straddle.** Output word m carries the octets at input octet times
+  T + h + 8m … T + h + 8m + 7, where T is the octet time of the input word named
+  by the measurement event and is a multiple of 8. Those eight lie in **one**
+  input word iff **h ≡ 0 (mod 8)**. Where h is not a multiple of 8, *every* output
+  word is assembled from two input words; an idle injected at the boundary between
+  them moves one part and not the other, and REQ-011 forbids resolving that by
+  splitting the word, so its octets take **two** latencies differing by 8k. Read
+  §1.1's h column for the Phase-1 verdict: **M03 at a lane-4 start (h = 12), M06
+  (14) and M14 (20) straddle; M03 at a lane-0 start (8), M08 (0) and M17 (8) do
+  not.**
+- **Late decision.** An output event decided by an input event **later** than the
+  input word carrying the octets it reports moves with the deciding event while
+  those octets moved with an earlier one. M03's `tlast` word is the worked
+  instance — its `tkeep`, `tlast` and `tuser`[0] are not decidable until the
+  terminate character arrives (REQ-011, REQ-103, REQ-104), which at most frame
+  lengths is a later input word than the one carrying its last delivered octet
+  (SPEC-M03 §6.1 states the residues). M10 is the instance with no output word at
+  all: its `arp_valid` pulse is decided by ARP octet 27's input word while its
+  latency is measured from ARP octet 0's, so its constant does not survive
+  injection either, though its h is 0.
+
+A specification claiming that its per-octet constant survives idle injection while
+failing either test is claiming something no module can do — the same class of
+error as pinning an L for which (L + h) is not a multiple of 8, and detectable the
+same way, by arithmetic on the specification.
+
+**What a latency monitor may demand on a gapped stimulus (normative).** The
+per-output-event delay stated above, and the invariance of the output tuple
+sequence. A monitor **SHALL NOT** demand a single per-octet L on an injected run
+at a module failing either test: that assertion fails a conformant design, which
+is the failure mode this document exists to prevent, and it is not cured by
+choosing k. Where a module passes **both** tests its per-octet constant does
+survive injection; that is a fact about the module, stated in its own §7, and this
+paragraph never presumes it. Per-octet latencies measured on an injected run may
+always be **reported** as data — what is barred is asserting a constancy that
+arithmetic forbids.
+
+*Relation to §0.6, because it is the same principle at the other port.* §0.6 keys
+a frame's **report** to the input word that decides it — the last octet the frame
+received while open, or, where it received none, the word carrying the character
+that closed it. This paragraph keys an output **word** to the input word that
+decides it, with the same fallback in the same place: where the word's framing is
+not decidable from its own octets, the closing character's word stands in. One
+rule, two ports — **a module's output event is a function of the latest input
+event it depends on, and the specification names that event rather than a formula
+in cycles.**
+
+*Provenance and authority.* The unsatisfiability of the replaced sentence is
+dv_lead's derivation, raised as **SCR-M03-I4** in `RV-0059-VERDICT` §6 after M03's
+family-I bench went red against a conformant design on it; the per-output-word
+formulation is dv_lead's `D(m)`. The ruling, the generalisation to pulses and to
+§0.6's principle, and the two arithmetic tests are the architect's, applied under
+`J-architect_docs_lead-0024`. **No conformant design changes**: the per-octet
+constant was never achievable under injection, so no module was ever built to it,
+and every cycle any module specification pins is unchanged.
 
 **Start lanes.** At the XGMII boundary the two start lanes yield two constants
 differing by the 4-octet-time difference in the start character's position
@@ -384,7 +485,7 @@ apply to it (SPEC-TEMPLATE §"REQ coverage") rather than paraphrasing them.
 | **REQ-013** | IFC | **tuser semantics.** `tuser`[0] SHALL mean "this frame was found invalid; the ultimate consumer must discard it". It SHALL be meaningful only on the word carrying `tlast` and SHALL be ignored by consumers on all other words. No Phase-1 module SHALL drop or alter a frame solely because `tuser`[0] = 1 on its input (REQ-007, REQ-104, REQ-403, REQ-707); it is advisory metadata carried to the application. **Who the ultimate consumer is, named per receive branch** (ADR-0009). On the UDP path it is the application, which receives the bit unchanged on the application receive stream (REQ-707) and discards there. The ARP branch has **no application**, so its ultimate consumer is the module that acts on a received packet's content instead of forwarding it — M13 `Arp` — and its discard obligation is stated as the qualifier in REQ-503. Declining, at an ultimate consumer, to act on the content of a frame marked invalid is **not** "dropping or altering a frame" within the prohibition above: that prohibition binds a module that *forwards*, and on a branch that forwards nothing there is nothing to drop. A receive branch whose ultimate consumer is not named in this row is a gap in this requirement, not a licence for the bit to be consumed by nobody. | Monitor plus a test driving `tuser` = 1 on a non-last word and checking the frame is still delivered intact, and a test driving `tuser`[0] = 1 on a `tlast` word and checking every downstream stage still forwards the frame **with the bit set where that stage can still carry it, and with a derived 0 where it cannot** — the same two-module scope REQ-007's column states and for the same reason (ledger **C-41**); the frame itself is forwarded intact in both cases, which is this row's actual subject. On the ARP branch, which forwards nothing, the discharge is REQ-503's own bad-FCS case. |
 | **REQ-014** | IFC | **tstrb unused.** Every producer SHALL drive `tstrb` to 0 and every consumer SHALL ignore it. | Monitor on every stream; a differential run of the same stimulus with `tstrb` = 0x00 and `tstrb` = 0xFF, asserting the two output traces are byte-identical. |
 | **REQ-015** | IFC | **One frame at a time.** A stream SHALL carry the words of exactly one frame between successive `tlast` words. A frame comprises at least one word and at most the number of words its maximum payload requires, pinned in the owning module's spec, **the `tlast` word included in that count** — for example 190 words on the `Xgmii_rx_64` output stream (1514 octets: 189 full words and a final two-octet word, REQ-108). A one-word frame, whose single word carries `tlast`, is legal and is the mandatory encoding of any payload of 1 to 8 octets (REQ-011, §0.7). Merge atomicity is REQ-406. | Protocol monitor over the residue above, on every stream in every bench. The monitor resets its frame-in-progress state on `clear` and makes no assertion across a clear (REQ-009). |
-| **REQ-016** | IFC | **Idle words permitted.** On every receive-path stream (§0.4) and every internal frame stream, a producer MAY deassert `tvalid` between words of a frame, and every consumer SHALL tolerate arbitrary idle gaps within a frame without corrupting it: k idle cycles before an input word delay every octet that word carries by exactly 8k octet times and change nothing else. This does not apply to `Xgmii_tx_64`'s source interface, where a missing word after transmission has begun is an underflow (REQ-206). | Idle-injection wrapper around any directed bench, parameterised at 0, 1 and 7 idle cycles between every pair of words at each module boundary, asserting the output word sequence is unchanged and per-octet latency shifts by exactly the injected amount. |
+| **REQ-016** | IFC | **Idle words permitted.** On every receive-path stream (§0.4) and every internal frame stream, a producer MAY deassert `tvalid` between words of a frame, and every consumer SHALL tolerate arbitrary idle gaps within a frame without corrupting it: k idle cycles before an input word delay every octet that word carries by exactly 8k octet times and change nothing else. This does not apply to `Xgmii_tx_64`'s source interface, where a missing word after transmission has begun is an underflow (REQ-206). | Idle-injection wrapper around any directed bench, parameterised at 0, 1 and 7 idle cycles between every pair of words at each module boundary, asserting **(a)** the output word sequence is unchanged — the ordered (`tdata`, `tkeep`, `tlast`, `tuser`) tuples, each octet in its own byte position — and **(b)** each output event delayed by **exactly the idle cycles injected at or before its deciding input word** (§0.5), at every start lane the module has. **Not** "per-octet latency shifts by exactly the injected amount", which is what this column said and which no conformant module satisfies for k ≥ 1 at any module whose front offset is not a multiple of 8, nor on any output word whose framing is decided late: §0.5 derives both, and a wrapper asserting it fails a conformant design — as one did, at this programme's first injected run (**SCR-M03-I4**). Where §0.5's two tests both pass at a module, its own §7 says so and the wrapper asserts the per-octet constant as well. Measured per-octet latencies may always be reported as data. |
 | **REQ-017** | INV | **XGMII closure.** The only wire-side ports of the Phase-1 top level SHALL be `xgmii_rxd`[63:0], `xgmii_rxc`[7:0], `xgmii_txd`[63:0] and `xgmii_txc`[7:0]; all other top-level ports SHALL be clock, clear, configuration, application streams and status. | Port-list check parsing the emitted `nic_top` module in `rtl_snapshots/` and set-comparing against SPEC-M20 §4.1. |
 | **REQ-018** | INV | **XGMII boundary is simulation-only.** Phase-1 RTL SHALL contain no PMA, serdes, PCS, 64b/66b, scrambler, auto-negotiation, link-training or PTP-timestamping logic, no vendor-specific primitive and no device constraint file. The link partner SHALL be a simulation model owned by DV under `test/` whose contract is: it emits start characters in lane 0 and lane 4 including the REQ-004 alternation; it injects each condition named in REQ-104, REQ-105, REQ-107, REQ-108 and REQ-110; and it decodes transmit-side XGMII well enough to validate REQ-201 through REQ-205. | Whitelist check, not a blacklist: the emitted Verilog SHALL instantiate no module outside the architecture.md §4 inventory, which catches every vendor primitive by construction. Plus repository inspection at the freeze SHA showing no `.xdc`, `.sdc`, `.qsf` or equivalent constraint file, and that the XGMII driver lives under `test/`. |
 | **REQ-019** | INV | **Bounded receive latency, no deep buffering.** Each receive-path module's **word delay** ΔC = (L + h)/8, computed per §0.5 from its pinned latency constant L and its stated front offset h, SHALL be no greater than its ceiling in §1.1 — at **every** start lane where the module's constants differ by lane. No receive-path module SHALL contain payload storage deeper than two datapath words; header fields captured into registers are not payload storage and the ARP cache is not on the payload path — that second sentence is design guidance and is explicitly **not** a DV observable, so `traceability.md` claims no test coverage for it. | Two checks, both against ΔC. At spec freeze: the module spec's pinned L and stated h are converted per §0.5 and compared against §1.1, which is arithmetic on the specification and needs no design. In each sign-off packet: the per-octet latency measured by the REQ-004 stress run (REQ-005) is converted the same way, with h taken from the spec, and compared against the same ceiling. The two must agree; a disagreement is a defect in whichever of the two the evidence contradicts, and the packet says which. |
@@ -770,3 +871,4 @@ commissioned it. A behavioural row additionally names its ADR.
 | 2026-08-03 | REQ-107, REQ-108 | verification columns each gain the pointer to their new REQ-901 class — **(e)** and **(f)** respectively — with the reference behaviour named and the consequence stated in the row a bench writer actually reads: the REQ is verified by the directed tests already in the column **only**, a co-simulation result is not an admissible external anchor for it, and a sign-off packet SHALL NOT offer one. Worded on REQ-602's existing class-(a) pointer, which is the established form for exactly this | **editorial, concurrence class** — verification columns only; both normative sentences are untouched, no assertion already commissioned changes meaning, and nothing is added to either column's stimulus. This is the class C-39 and C-41's verification-column diffs closed under, and it is deliberately **not** folded into the REQ-901 row above, whose class is different | the REQ-901 row above; the pattern is REQ-602's class-(a) pointer | `J-architect_docs_lead-0016` |
 | 2026-08-06 | §0.6 | the strobe window's **reference word** stated: the last octet the frame **received while it was open**; a closing control character is not one of its octets and an octet that closes the frame by count (REQ-108) is; octets arriving after closure never extend the frame; and — where the frame closed before any octet of it arrived — the **input word carrying the event that closed it** stands in. A non-normative note records that on that last class the window is inside-by-arithmetic against a module pin taken from the same word, so the assurance there is the module's exact pin plus the exact strobe-event set and never the window check | **editorial by this table's own test** — no conformant design and no committed test changes meaning. Every module's strobe cycle is pinned exactly by its own specification and every pin already lies inside the window this row defines, at both start lanes, so nothing that conformed stops conforming; and the DV model that computes this window (`test/xgmii/injection.ml`'s `window`, used by M03 families E–H) already implements these three clauses verbatim, so the diff ratifies the committed bench rather than moving it. **But the class and the countersignature question are different axes** — the C-43 precedent — and §0.6 is **normative** text in the test-derivation basis that settles a reading left open twice, so this diff carries the **countersignature discipline: dv_lead's re-countersignature is owed and the diff is not in force until it is transcribed.** Nothing is blocked meanwhile: the module pin carries every commissioned assertion (`RV-0047` ruling 2, standing). **No ADR**, deliberately: no design choice is made and no alternative was live — the two readings differ only in which of them leaves a class undefined, and the C-12 and C-23 §0.6 diffs are the precedent for settling an undecided corner without one | dv_lead, `WO-0057` §3.2 and §7 question 1 (routed twice) and `RV-0057-VERDICT` Finding 2; generalises `J-architect_docs_lead-0021`'s M03-G6 ruling upward; supplies the text ledger **C-5** has been owed | `J-architect_docs_lead-0023` |
 | 2026-08-04 | §0.6 | **Countersignature transcribed — the reference-word ruling is IN FORCE from this row.** dv_lead COUNTERSIGNED the §0.6 diff at `0caf023` on checks rather than assertion: all three clauses and the 1-to-4-octet exclusion verified present in the committed DV instrument (`test/xgmii/injection.ml`'s `window` and its `outcomes` walker), and the lane arithmetic re-derived independently — at a lane-4 start the 1519th received octet's truncation word is `s+191` against the 1514th delivered octet's `s+190`, so the received reading is load-bearing exactly where the delivered reading would have shifted every family-G lane-4 window by a cycle; invisible at lane 0, decisive at lane 4. Signature of record: the COUNTERSIGNATURE block in `agents/handoffs/WO-0057_tb-m03-family-h-start-without-terminate.md`, `J-dv_lead-0081`, carried at `72192ba` | transcription — no normative text moves in this row; it records that the row above's condition ("not in force until transcribed") is discharged | `J-dv_lead-0081` (signature) | `J-orchestrator-0161` |
+| 2026-08-04 | §0.5, REQ-016 | **SCR-M03-I4 RULED: the per-octet constant is not the gap-invariant quantity; the per-output-event delay keyed to the deciding input word is.** §0.5's "Gapped stimulus" paragraph is replaced: the definition sentence gains its **gapless** qualifier (C-15's lesson a second time), the **deciding input word** D is defined for output words and pulses, the surviving quantity is stated as the delay from D to the event it decides, and the two arithmetic tests that decide whether a module's per-octet constant survives injection — **straddle** (h ≢ 0 mod 8) and **late decision** — are stated with their Phase-1 verdicts. A new normative clause says what a latency monitor may demand under injection and forbids demanding a single per-octet L where either test fails. REQ-016's verification column, which commissioned exactly that forbidden assertion, is repaired to the achievable observable. REQ-016's own normative sentence, REQ-005, REQ-011 and REQ-111 are **untouched** — their stimuli are gapless and they inherit §0.5's scope by citation | **editorial by this table's own test** — no conformant design and no committed test changes meaning. The per-octet constant was **never achievable** under injection, so nothing was ever built to it; every cycle every module specification pins is unchanged; and no committed test drives intra-frame idles at a DUT except M03-I4/I6, which are RED and BOUNCED at this SHA (`RV-0059-VERDICT` §12). The gapless benches — M03 families A–H, M03-I1/I2/I3, the REQ-004 stress and its directed lengths — assert exactly what they asserted, because they are the stimulus class §0.5 defines L over. **But the class and the countersignature question are different axes** — the C-43 precedent — and §0.5 is **normative** text in the test-derivation basis while REQ-016's column is dv_lead's own commissioning instrument, so this diff carries the **countersignature discipline: dv_lead's re-countersignature is owed and the diff is not in force until it is transcribed.** Nothing is blocked meanwhile — the rebuilt M03-I4/I6 assert the per-output-word rule, which SPEC-M03 §6.1 states in the same commit. **No ADR**, deliberately: an ADR records a design choice among live alternatives, and here the alternative is arithmetically impossible rather than merely rejected — the specification asserted something no module can do, and the correction is forced, not chosen. Nothing in PROTOCOL, a charter or an enforcement script moves, so it is not constitution-grade either; the precedent is the two prior §0.5/§0.6 diffs that settled a reading without one (C-15, C-23). **Owed and named, not smuggled** — the restatement discipline PROTOCOL §11 states for scope parameters, applied here by naming the sites rather than by widening this diff: **SPEC-M06 (§7, §10)**, **SPEC-M10 (§3, §6.1, §7, §10)** and **SPEC-M14 (§3, §6.1, §7, §10, §11.2)** each restate the retired claim for their own module and each **fails** one of §0.5's two tests — M06 (h = 14) and M14 (h = 20) straddle, M10's `arp_valid` pulse is late-decided — so each owes the same repair. **SPEC-M08 (h = 0) and SPEC-M17 (h = 8, `tlast` fixed by an in-data count) pass both tests, so their claims are true and are not to be "repaired".** None of the five has a committed bench, so nothing is blocked; the three repairs ride with the next work order that opens those specs, and each needs its own arithmetic worked against its own pinned numbers, which is why they are not folded in here. The loose §7 sentence *"idle gaps delay everything by exactly 8 octet times per cycle"* recurs at all five and is imprecise at all five, consequential at three | dv_lead, **SCR-M03-I4** in `RV-0059-VERDICT` §6 (Findings 1, 2 and 5), relayed verbatim by pointer; generalises `J-architect_docs_lead-0023`'s §0.6 reference-word ruling to the data path | `J-architect_docs_lead-0024` |
