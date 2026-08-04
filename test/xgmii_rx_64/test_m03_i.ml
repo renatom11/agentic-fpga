@@ -1345,7 +1345,82 @@ let%expect_test
    gapless qualifier, C-14.4, C-18)"
   =
   run_i4 ();
-  [%expect {||}]
+  [%expect {|
+    [M03-I4 (length 64, lane 0, idles 0)] frames=1 octets=60 latency=CONSTANT per front offset (1 class)
+      h=8 L=16 word_delay=3 frames=1 octets=60[M03-I4 (length 64, lane 0, idles 1)] frames=1 octets=60 latency=CONSTANT per front offset (1 class)
+      h=8 L=24 word_delay=4 frames=1 octets=60[M03-I4 (length 64, lane 0, idles 7)] frames=1 octets=60 latency=CONSTANT per front offset (1 class)
+      h=8 L=72 word_delay=10 frames=1 octets=60[M03-I4 (length 65, lane 0, idles 0)] frames=1 octets=61 latency=CONSTANT per front offset (1 class)
+      h=8 L=16 word_delay=3 frames=1 octets=61[M03-I4 (length 65, lane 0, idles 1)] frames=1 octets=61 latency=CONSTANT per front offset (1 class)
+      h=8 L=24 word_delay=4 frames=1 octets=61[M03-I4 (length 65, lane 0, idles 7)] frames=1 octets=61 latency=CONSTANT per front offset (1 class)
+      h=8 L=72 word_delay=10 frames=1 octets=61[M03-I4 (length 66, lane 0, idles 0)] frames=1 octets=62 latency=CONSTANT per front offset (1 class)
+      h=8 L=16 word_delay=3 frames=1 octets=62[M03-I4 (length 66, lane 0, idles 1)] frames=1 octets=62 latency=CONSTANT per front offset (1 class)
+      h=8 L=24 word_delay=4 frames=1 octets=62[M03-I4 (length 66, lane 0, idles 7)] frames=1 octets=62 latency=CONSTANT per front offset (1 class)
+      h=8 L=72 word_delay=10 frames=1 octets=62[M03-I4 (length 67, lane 0, idles 0)] frames=1 octets=63 latency=CONSTANT per front offset (1 class)
+      h=8 L=16 word_delay=3 frames=1 octets=63[M03-I4 (length 67, lane 0, idles 1)] frames=1 octets=63 latency=CONSTANT per front offset (1 class)
+      h=8 L=24 word_delay=4 frames=1 octets=63[M03-I4 (length 67, lane 0, idles 7)] frames=1 octets=63 latency=CONSTANT per front offset (1 class)
+      h=8 L=72 word_delay=10 frames=1 octets=63[M03-I4 (length 68, lane 0, idles 0)] frames=1 octets=64 latency=CONSTANT per front offset (1 class)
+      h=8 L=16 word_delay=3 frames=1 octets=64[M03-I4 (length 68, lane 0, idles 1)] frames=1 octets=64 latency=CONSTANT per front offset (1 class)
+      h=8 L=24 word_delay=4 frames=1 octets=64[M03-I4 (length 68, lane 0, idles 7)] frames=1 octets=64 latency=CONSTANT per front offset (1 class)
+      h=8 L=72 word_delay=10 frames=1 octets=64[M03-I4 (length 69, lane 0, idles 0)] frames=1 octets=65 latency=CONSTANT per front offset (1 class)
+      h=8 L=16 word_delay=3 frames=1 octets=65[M03-I4 (length 69, lane 0, idles 1)] frames=1 octets=65 latency=NOT CONSTANT
+      h=8 L=NOT CONSTANT distinct=[16; 24] word_delay=(undefined) frames=1 octets=65
+      first offender: frame 0 octet 64 has latency 16 octet times; every earlier octet at front offset 8 had 24 (REQ-005, requirements.md §0.5)[M03-I4 (length 69, lane 0, idles 7)] frames=1 octets=65 latency=NOT CONSTANT
+      h=8 L=NOT CONSTANT distinct=[16; 72] word_delay=(undefined) frames=1 octets=65
+      first offender: frame 0 octet 64 has latency 16 octet times; every earlier octet at front offset 8 had 72 (REQ-005, requirements.md §0.5)[M03-I4 (length 70, lane 0, idles 0)] frames=1 octets=66 latency=CONSTANT per front offset (1 class)
+      h=8 L=16 word_delay=3 frames=1 octets=66[M03-I4 (length 70, lane 0, idles 1)] frames=1 octets=66 latency=NOT CONSTANT
+      h=8 L=NOT CONSTANT distinct=[16; 24] word_delay=(undefined) frames=1 octets=66
+      first offender: frame 0 octet 64 has latency 16 octet times; every earlier octet at front offset 8 had 24 (REQ-005, requirements.md §0.5)[M03-I4 (length 70, lane 0, idles 7)] frames=1 octets=66 latency=NOT CONSTANT
+      h=8 L=NOT CONSTANT distinct=[16; 72] word_delay=(undefined) frames=1 octets=66
+      first offender: frame 0 octet 64 has latency 16 octet times; every earlier octet at front offset 8 had 72 (REQ-005, requirements.md §0.5)[M03-I4 (length 71, lane 0, idles 0)] frames=1 octets=67 latency=CONSTANT per front offset (1 class)
+      h=8 L=16 word_delay=3 frames=1 octets=67[M03-I4 (length 71, lane 0, idles 1)] frames=1 octets=67 latency=NOT CONSTANT
+      h=8 L=NOT CONSTANT distinct=[16; 24] word_delay=(undefined) frames=1 octets=67
+      first offender: frame 0 octet 64 has latency 16 octet times; every earlier octet at front offset 8 had 24 (REQ-005, requirements.md §0.5)[M03-I4 (length 71, lane 0, idles 7)] frames=1 octets=67 latency=NOT CONSTANT
+      h=8 L=NOT CONSTANT distinct=[16; 72] word_delay=(undefined) frames=1 octets=67
+      first offender: frame 0 octet 64 has latency 16 octet times; every earlier octet at front offset 8 had 72 (REQ-005, requirements.md §0.5)[M03-I4 (length 64, lane 4, idles 0)] frames=1 octets=60 latency=CONSTANT per front offset (1 class)
+      h=12 L=12 word_delay=3 frames=1 octets=60[M03-I4 (length 64, lane 4, idles 1)] frames=1 octets=60 latency=NOT CONSTANT
+      h=12 L=NOT CONSTANT distinct=[20; 28] word_delay=(undefined) frames=1 octets=60
+      first offender: frame 0 octet 4 has latency 20 octet times; every earlier octet at front offset 12 had 28 (REQ-005, requirements.md §0.5)[M03-I4 (length 64, lane 4, idles 7)] frames=1 octets=60 latency=NOT CONSTANT
+      h=12 L=NOT CONSTANT distinct=[68; 124] word_delay=(undefined) frames=1 octets=60
+      first offender: frame 0 octet 4 has latency 68 octet times; every earlier octet at front offset 12 had 124 (REQ-005, requirements.md §0.5)[M03-I4 (length 65, lane 4, idles 0)] frames=1 octets=61 latency=CONSTANT per front offset (1 class)
+      h=12 L=12 word_delay=3 frames=1 octets=61[M03-I4 (length 65, lane 4, idles 1)] frames=1 octets=61 latency=NOT CONSTANT
+      h=12 L=NOT CONSTANT distinct=[12; 20; 28] word_delay=(undefined) frames=1 octets=61
+      first offender: frame 0 octet 4 has latency 20 octet times; every earlier octet at front offset 12 had 28 (REQ-005, requirements.md §0.5)[M03-I4 (length 65, lane 4, idles 7)] frames=1 octets=61 latency=NOT CONSTANT
+      h=12 L=NOT CONSTANT distinct=[12; 68; 124] word_delay=(undefined) frames=1 octets=61
+      first offender: frame 0 octet 4 has latency 68 octet times; every earlier octet at front offset 12 had 124 (REQ-005, requirements.md §0.5)[M03-I4 (length 66, lane 4, idles 0)] frames=1 octets=62 latency=CONSTANT per front offset (1 class)
+      h=12 L=12 word_delay=3 frames=1 octets=62[M03-I4 (length 66, lane 4, idles 1)] frames=1 octets=62 latency=NOT CONSTANT
+      h=12 L=NOT CONSTANT distinct=[12; 20; 28] word_delay=(undefined) frames=1 octets=62
+      first offender: frame 0 octet 4 has latency 20 octet times; every earlier octet at front offset 12 had 28 (REQ-005, requirements.md §0.5)[M03-I4 (length 66, lane 4, idles 7)] frames=1 octets=62 latency=NOT CONSTANT
+      h=12 L=NOT CONSTANT distinct=[12; 68; 124] word_delay=(undefined) frames=1 octets=62
+      first offender: frame 0 octet 4 has latency 68 octet times; every earlier octet at front offset 12 had 124 (REQ-005, requirements.md §0.5)[M03-I4 (length 67, lane 4, idles 0)] frames=1 octets=63 latency=CONSTANT per front offset (1 class)
+      h=12 L=12 word_delay=3 frames=1 octets=63[M03-I4 (length 67, lane 4, idles 1)] frames=1 octets=63 latency=NOT CONSTANT
+      h=12 L=NOT CONSTANT distinct=[12; 20; 28] word_delay=(undefined) frames=1 octets=63
+      first offender: frame 0 octet 4 has latency 20 octet times; every earlier octet at front offset 12 had 28 (REQ-005, requirements.md §0.5)[M03-I4 (length 67, lane 4, idles 7)] frames=1 octets=63 latency=NOT CONSTANT
+      h=12 L=NOT CONSTANT distinct=[12; 68; 124] word_delay=(undefined) frames=1 octets=63
+      first offender: frame 0 octet 4 has latency 68 octet times; every earlier octet at front offset 12 had 124 (REQ-005, requirements.md §0.5)[M03-I4 (length 68, lane 4, idles 0)] frames=1 octets=64 latency=CONSTANT per front offset (1 class)
+      h=12 L=12 word_delay=3 frames=1 octets=64[M03-I4 (length 68, lane 4, idles 1)] frames=1 octets=64 latency=NOT CONSTANT
+      h=12 L=NOT CONSTANT distinct=[20; 28] word_delay=(undefined) frames=1 octets=64
+      first offender: frame 0 octet 4 has latency 20 octet times; every earlier octet at front offset 12 had 28 (REQ-005, requirements.md §0.5)[M03-I4 (length 68, lane 4, idles 7)] frames=1 octets=64 latency=NOT CONSTANT
+      h=12 L=NOT CONSTANT distinct=[68; 124] word_delay=(undefined) frames=1 octets=64
+      first offender: frame 0 octet 4 has latency 68 octet times; every earlier octet at front offset 12 had 124 (REQ-005, requirements.md §0.5)[M03-I4 (length 69, lane 4, idles 0)] frames=1 octets=65 latency=CONSTANT per front offset (1 class)
+      h=12 L=12 word_delay=3 frames=1 octets=65[M03-I4 (length 69, lane 4, idles 1)] frames=1 octets=65 latency=NOT CONSTANT
+      h=12 L=NOT CONSTANT distinct=[20; 28] word_delay=(undefined) frames=1 octets=65
+      first offender: frame 0 octet 4 has latency 20 octet times; every earlier octet at front offset 12 had 28 (REQ-005, requirements.md §0.5)[M03-I4 (length 69, lane 4, idles 7)] frames=1 octets=65 latency=NOT CONSTANT
+      h=12 L=NOT CONSTANT distinct=[68; 124] word_delay=(undefined) frames=1 octets=65
+      first offender: frame 0 octet 4 has latency 68 octet times; every earlier octet at front offset 12 had 124 (REQ-005, requirements.md §0.5)[M03-I4 (length 70, lane 4, idles 0)] frames=1 octets=66 latency=CONSTANT per front offset (1 class)
+      h=12 L=12 word_delay=3 frames=1 octets=66[M03-I4 (length 70, lane 4, idles 1)] frames=1 octets=66 latency=NOT CONSTANT
+      h=12 L=NOT CONSTANT distinct=[20; 28] word_delay=(undefined) frames=1 octets=66
+      first offender: frame 0 octet 4 has latency 20 octet times; every earlier octet at front offset 12 had 28 (REQ-005, requirements.md §0.5)[M03-I4 (length 70, lane 4, idles 7)] frames=1 octets=66 latency=NOT CONSTANT
+      h=12 L=NOT CONSTANT distinct=[68; 124] word_delay=(undefined) frames=1 octets=66
+      first offender: frame 0 octet 4 has latency 68 octet times; every earlier octet at front offset 12 had 124 (REQ-005, requirements.md §0.5)[M03-I4 (length 71, lane 4, idles 0)] frames=1 octets=67 latency=CONSTANT per front offset (1 class)
+      h=12 L=12 word_delay=3 frames=1 octets=67[M03-I4 (length 71, lane 4, idles 1)] frames=1 octets=67 latency=NOT CONSTANT
+      h=12 L=NOT CONSTANT distinct=[20; 28] word_delay=(undefined) frames=1 octets=67
+      first offender: frame 0 octet 4 has latency 20 octet times; every earlier octet at front offset 12 had 28 (REQ-005, requirements.md §0.5)[M03-I4 (length 71, lane 4, idles 7)] frames=1 octets=67 latency=NOT CONSTANT
+      h=12 L=NOT CONSTANT distinct=[68; 124] word_delay=(undefined) frames=1 octets=67
+      first offender: frame 0 octet 4 has latency 68 octet times; every earlier octet at front offset 12 had 124 (REQ-005, requirements.md §0.5)[M03-I4 cross-run] frames=48 octets=3048 latency=NOT CONSTANT
+      h=8 L=NOT CONSTANT distinct=[16; 24; 72] word_delay=(undefined) frames=24 octets=1524
+      h=12 L=NOT CONSTANT distinct=[12; 20; 28; 68; 124] word_delay=(undefined) frames=24 octets=1524
+      first offender: frame 1 octet 0 has latency 24 octet times; every earlier octet at front offset 8 had 16 (REQ-005, requirements.md §0.5)
+    |}]
 ;;
 
 (* ==================================================================== *)
