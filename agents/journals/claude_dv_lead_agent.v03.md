@@ -496,3 +496,115 @@ packet to rtl_lead via the orchestrator.
 
 ### Files-in-this-commit
 - agents/handoffs/BUG-0003_m03-lane-4-injected-word-cycle.md
+
+## [J-dv_lead-0094] 2026-08-07T21:20Z | task:none | The plan's carried §9 row paid at the first round that could pay it, and the one judgement in a clerical edit is what I refused to add — no row for the count-guard blindness, because the class already has two kills and a row for coverage that exists inflates the denominator
+
+### Trigger
+`RV-0060-VERDICT` §9 recorded a change-log row **owed** to the attack plan "at
+the next round that opens the plan": a record of §6's ruling that rtl_lead's
+escalation 2 (sub-word granularity) earns **no row and none owed**. This round is
+the first since that could open the plan without confounding an open design
+round, and it has three further plan-relevant facts to put on the same record.
+
+### Inputs
+- `test/attack_plans/AP-xgmii_rx_64.md` — §9's change log (its last three rows,
+  at `J-dv_lead-0082`, `J-dv_lead-0085` and `J-dv_lead-0087`, for form and for
+  the totals they publish), §4.I's rows, §5's rejected-attack section.
+- `agents/handoffs/WO-0060_tb-m03-family-i-dm-rebase.md` — `RV-0060-VERDICT` §6
+  (the no-row ruling being recorded), §9 (the owed row, and the count method),
+  §10 item 3 (the deferred citation sites).
+- `agents/handoffs/BUG-0003_m03-lane-4-injected-word-cycle.md` §V.1–§V.8 as
+  written at `J-dv_lead-0093`.
+- `agents/journals/claude_rtl_lead_agent.md` `J-rtl_lead-0011` §9.6 item 4.
+- The promoted `test/xgmii_rx_64/test_m03_i.ml` as landed at `J-dv_lead-0092`.
+- **No RTL.**
+
+### Reasoning
+
+**Whether to open the plan at all this round, which the dispatch left to me.**
+Yes, and the argument that decided it is that the reason for the last two
+deferrals has expired. `RV-0060-VERDICT` §10 item 3 deferred bench edits because
+"a bench edit inside an open design round is the confound this whole sequence
+exists to avoid" — the design round is now closed, the fix is measured, and the
+plan is not a bench in any case. Against that: a one-row debt deferred a third
+time becomes a debt nobody expects to be paid. And this round generates three
+further facts whose home is the plan's own record rather than a journal an
+auditor has to go looking for — F-1 measured, the sweep result as a rejected
+attack, and the count moving to 38 of 62. Paying one row and recording three
+findings in the same row is strictly better than four deferrals.
+
+**Why the plan edit is a change-log row and nothing else.** No cell of §4.I is
+wrong. M03-I4's and M03-I6's `Observable` cells already state, at both start
+lanes, the exact clause lane 4 was failing — that is why they held the red
+honestly — and the fix does not change what they observe. The values F-1 concerns
+are REPORTED, not ASSERTED, which is exactly what the `J-dv_lead-0085` repair
+bought, so a live spec dispute lands in a committed expect block without moving a
+status. And the discharge count is measured **from the tree**, not tracked in the
+plan, so no cell records it. **78 / 62 / 7 / 4 / 4 / 1, recounted from the file
+after the edit and unchanged** — I recount rather than assert, because every
+prior row of this log that claimed unchanged totals claimed them after counting.
+
+**The one judgement inside an otherwise clerical edit: the row I did NOT add.**
+rtl_lead's §9.1 hands DV a real instrument limit — at a lane-4 start the emitted
+word count equals `W` by identity, so `delivered_samples`' count cannot disagree
+and the `tlast`-position check is blind with it. The reflex is to add an attack
+row. I refused, and the reason is a denominator argument I want on the record
+because it will recur: **the defect class already has two independent kills
+inside the committed bench** — M03-I4's per-word `tkeep` assertion and its
+delivered-octet equality — either of which would have convicted `fafb83d` had the
+run reached them; they did not fire because an earlier guard raised first, which
+is a *guard-ordering* fact, not a coverage fact. A row added here would raise the
+plan's denominator for coverage that already exists, dilute the ratio the auditor
+reads, and misdescribe the failure as a hole in the attack table when it is a
+property of one instrument and of `fail`-raising control flow. What the finding
+actually earns is **two bench notes** — at the count guard's own sites and on
+guard ordering — and those land where a reader of the guard meets them, in the
+next round that opens `test/xgmii_rx_64/`.
+
+**Why the notes are not duplicated into §7 now.** §7 is "machinery this plan
+requires and does not have"; the count guard is not missing, it is present and
+blind at one lane, so §7 is the wrong home. More importantly, a note in §7 plus a
+note in the bench is two records of one fact, and two records drift. The
+change-log row states the ruling and names where the note will land; the bench
+gets the operative sentence next round.
+
+**What I deliberately kept out of this commit.** The promoted bench file. Its
+whole auditability is that its bytes equal CI's, sha256-verified — so the plan
+edit is a separate commit from the promotion, and both are separate from the
+verbatim-relay packet. Three files, three commits, three reasons, none of them
+stylistic.
+
+### Actions
+- Appended one row to `test/attack_plans/AP-xgmii_rx_64.md` §9 recording: the
+  carried `RV-0060-VERDICT` §6 no-row ruling; family I's discharge and the
+  count at 38 of 62 re-derived; F-1 measured with its selection boundary; the
+  count-guard instrument limit with the no-row ruling and the two owed bench
+  notes; and the escalation-3 sweep result as a rejected attack.
+- Recounted the plan's rows and status totals from the file after the edit.
+
+### Evidence
+```sh
+# row totals recounted from the file AFTER the edit
+# 78 rows: ASSERT 62, NO-ASSERT 7, NO-STIMULUS 4, STRUCTURAL 4, GAP 1
+# §9 change log grew by exactly one row (19 -> 20 table lines)
+```
+The row's own claims are the ones evidenced at `J-dv_lead-0092` (CI run
+**30916188480**, job **92014809540**, `head_sha` `b848d56`, promoted sha256
+`4b66e2b9f2b3f789f41b31b22418e3257644776f833ee27c8b60b774b914b3e8`) and
+`J-dv_lead-0093` (the count re-derivation and the tree-wide sweep); this entry
+adds no new measurement and deliberately re-states none as if it did.
+
+### Outcome
+DoD met. The plan carries no owed change-log row. Family I's record is complete
+on the plan's own face: rows discharged, the ruling that added none recorded, the
+rejected attack recorded, and the instrument limit ruled with its remedy located
+in a named future round. Handoff: none — this is the round's last commit.
+
+### Open-questions
+1. **The two bench notes** (count-guard identity at a lane-4 start; guard
+   ordering) ride with `RV-0060-VERDICT` §10 item 3's three citation sites in the
+   next family-I bench work order. Recorded as owed, in the plan, so the debt is
+   not journal-only this time.
+
+### Files-in-this-commit
+- test/attack_plans/AP-xgmii_rx_64.md
