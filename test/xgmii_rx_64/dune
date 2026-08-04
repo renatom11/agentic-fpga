@@ -22,6 +22,10 @@
 ;   WO-0062  B2-B4 ASSERT (the preamble as an attack surface, REQ-102;
 ;            REQ-110's commissioned lane-4-of-an-S-word geometry, WO-0058
 ;            §9 bound 6; B1 untouched)                             (three)
+;   WO-0065  B4 member (b), B2's /I/+/Q/ members ASSERT, in test_m03_b.ml
+;            (family B completed); N2's first unit ASSERT, all six
+;            sub-cases, in a NEW FILE test_m03_n.ml (WO-0058 bound 7 paid)
+;            (two qualified rows + one new row, new file)
 ; When a packet adds rows, add its line. When one does not, this comment
 ; is wrong and a reader has no way to tell — this file's own header found
 ; that exact staleness (E and F both missing) before WO-0054's own line was

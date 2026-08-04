@@ -155,7 +155,18 @@ let%expect_test "M03-B1: nonstandard preamble filler and SFD octets, both start 
    array rather than laying out as its own declared frame case, so it has no
    [Dv_xgmii.Arrival.frame] record for {!Bench.account_clean_frame} to read
    (bench.mli's own docstring names this the "frame the stimulus opens"
-   case). *)
+   case).
+
+   WO-0065 extends this family in place, in its own risk-ranked order
+   (WO-0065 §4): M03-B4 member (b) first ([run_b4b], the bench's only 4 -> 0
+   alignment transition, WO-0065 §3.1), M03-B2's /I/ and /Q/ members second
+   ([run_b2_new], WO-0065 §3.2). M03-B1, M03-B3, M03-B4 member (a) and
+   M03-B2's /E/ members above this note are UNTOUCHED -- neither re-derived
+   nor re-benched (WO-0065 §7 item 1). M03-N2's own six sub-cases, which
+   share this family's geometry (a control character at a preamble
+   position, reported off the input word carrying the closing character),
+   live in their own new file, test_m03_n.ml, and are not filed here
+   (WO-0065 §3.3.1). *)
 
 let fail row msg = failwith (String.concat [ row; ": "; msg ])
 
@@ -452,6 +463,266 @@ let%expect_test
    content-compared (REQ-110, REQ-102, §0.7, WO-0058 §9 bound 6)"
   =
   run_b4 ();
+  [%expect {||}]
+;;
+
+(* ---- M03-B4 member (b) -- the SAME At_preamble 4 placement, at a LANE-4 *)
+(* start -- WO-0065 §3.1, the bench's only 4 -> 0 alignment transition     *)
+(* (REQ-110, REQ-102, §0.7; WO-0065 §3.1, ranked 2nd; WO-0058 §9 bound 6). *)
+(* Same 68-octet array as member (a) above (b4_filler, reused, then a
+   clean 64-octet frame). Same corruption (Place {At_preamble 4;
+   start_char}); only the first frame's START LANE differs: 4, not 0.
+   Member (a)'s /S/ lands in lane 4 of its OWN start word (0 -> 4, in-word,
+   "nothing open on entry" since A opens that very word); member (b)'s
+   IDENTICAL At_preamble 4 lands in lane 0 of the FOLLOWING word (4 -> 0,
+   cross-word, A already open on entry -- WO-0065 §3.1's own derivation
+   table, T3). Frame A's report is therefore pinned to the NEXT word's own
+   +2, not the start word's +2 -- cycle 4, not member (a)'s 3 -- which is
+   the single trap this member exists to expose (T3) and the single figure
+   that differs from member (a)'s. Every other figure (received 64,
+   delivered 60, 8 words, final tkeep 0x0F, tuser[0] = 0, no strobe on B)
+   is IDENTICAL, because the array is identical (WO-0065 §3.1: "the
+   stimulus difference is one parameter ... and the observable difference
+   is one cycle").
+
+   Does NOT pay WO-0058 bound 7 (T1): the aborting /S/ is in LANE 0 (the
+   word's own first lane), so this is a WORD-BOUNDARY abort, not an
+   in-word one -- bound 7 wants both "in-word" AND "already open on
+   entry", and member (b) has only the second. Bound 7 is paid at
+   test_m03_n.ml's M03-N2 sub-cases 4 and 5 (and, in the zero-delivered
+   form, by sub-case 6's lane-4-start instance) -- never by any M03-B4
+   member.
+
+   Bench note owed at this member (WO-0065 §6.1 debt 2): the
+   count-blindness caveat lives at its own guard below -- this member is
+   driven at a LANE-4 start, the lane the caveat is about. *)
+
+let run_b4b () =
+  let row = "M03-B4 (b)" in
+  let frame_b_octets = directed_frame_octets ~length:64 in
+  if not (Dv_xgmii.Frame.residue_ok frame_b_octets)
+  then fail row "test bug -- frame B's own 64-octet content does not check out";
+  let base = b4_filler @ frame_b_octets in
+  if List.length base <> 68
+  then fail row "test bug -- the array is not 68 octets (4 filler + a 64-octet frame, WO-0062 T4)";
+  let case =
+    Dv_xgmii.Injection.corrupt
+      base
+      [ Dv_xgmii.Injection.Place
+          { placement = Dv_xgmii.Injection.At_preamble 4
+          ; character = Dv_xgmii.Xgmii_word.start_char
+          }
+      ]
+  in
+  let inj = Dv_xgmii.Injection.create ~first_lane:4 [ case ] in
+  if not (Dv_xgmii.Injection.is_clean inj)
+  then
+    fail
+      row
+      (String.concat
+         ~sep:"; "
+         ("Injection construction errors:" :: Dv_xgmii.Injection.errors inj));
+  let sched = Dv_xgmii.Injection.schedule inj in
+  let frame_a = (Dv_xgmii.Arrival.frames sched).(0) in
+  let start_ot_a = frame_a.Dv_xgmii.Arrival.start_octet_time in
+  let start_cycle_a = Dv_xgmii.Arrival.start_cycle frame_a in
+  if start_ot_a <> 12
+  then fail row "test bug -- frame A's own start is not octet time 12 (lane 4, WO-0065 §3.1)";
+  let close_ot = start_ot_a + 4 in
+  if close_ot <> 16 || Int.rem close_ot 8 <> 0
+  then fail row "test bug -- the injected \"/S/\" does not land at octet time 16, lane 0";
+  let close_cycle = close_ot / 8 in
+  (* T3, two independent guards, each alone sufficient to catch this
+     member's own trap, in the order below (WO-0065 §6.1 debt 3's own
+     guard-ordering note, carried into this member): an earlier
+     fail-raising guard prevents a later, independently sufficient
+     instrument from ever speaking. First, that the landing is in the
+     NEXT word after frame A's own start word (the inverse of member
+     (a)'s own guard); second, that the resulting pin is cycle 4 and not
+     member (a)'s 3. *)
+  if close_cycle <> start_cycle_a + 1
+  then
+    fail
+      row
+      "test bug -- the injected \"/S/\" does not land in the word AFTER frame A's own \
+       start word -- T3, this member's whole point";
+  let start_ot_b = close_ot in
+  let expected_pulse_cycle = close_cycle + 2 in
+  if expected_pulse_cycle <> 4
+  then fail row "test bug -- member (b)'s own pin is not cycle 4, not member (a)'s 3 (T3)";
+  let expected_not_before = close_cycle in
+  let expected_not_after = close_cycle + 3 in
+  let delivered_b = 60 in
+  let words_b = 8 in
+  let expected_tkeep_b = 0x0F in
+  let start_cycle_b = start_ot_b / 8 in
+  let expected_tlast_cycle_b = start_cycle_b + 3 + (words_b - 1) in
+  (* Two independent derivations agreeing is the cross-check (WO-0062 §2 bar
+     2) -- including T4's own guard, restated against the model's own
+     number: frame B's RECEIVED count must be 64, not 60. *)
+  (match Dv_xgmii.Injection.outcomes inj with
+   | [ oa; ob ] ->
+     if oa.Dv_xgmii.Injection.delivered <> 0 then fail_cross row "frame A delivered (expected 0)";
+     (match oa.Dv_xgmii.Injection.reports with
+      | [ r ]
+        when String.equal r.Dv_xgmii.Injection.strobe "error_start_without_terminate"
+             && r.Dv_xgmii.Injection.cycle = expected_pulse_cycle
+             && r.Dv_xgmii.Injection.not_before = expected_not_before
+             && r.Dv_xgmii.Injection.not_after = expected_not_after -> ()
+      | _ -> fail_cross row "frame A reports");
+     if ob.Dv_xgmii.Injection.received <> 64
+     then
+       fail_cross
+         row
+         "frame B received (expected 64 -- WO-0062 T4: a 60-octet array would give a runt, \
+          a different row entirely)";
+     if ob.Dv_xgmii.Injection.delivered <> delivered_b then fail_cross row "frame B delivered";
+     if ob.Dv_xgmii.Injection.words <> words_b then fail_cross row "frame B words";
+     if ob.Dv_xgmii.Injection.last_tkeep <> expected_tkeep_b then fail_cross row "frame B last_tkeep";
+     (match ob.Dv_xgmii.Injection.tlast_cycle with
+      | Some c when c = expected_tlast_cycle_b -> ()
+      | _ -> fail_cross row "frame B tlast_cycle");
+     if not (List.is_empty ob.Dv_xgmii.Injection.reports) then fail_cross row "frame B reports"
+   | outcomes ->
+     fail_cross
+       row
+       (String.concat
+          [ "outcome count (expected 2: frame A, frame B; got "
+          ; Int.to_string (List.length outcomes)
+          ; ")"
+          ]));
+  (* Landing, site 1 (WO-0062 §2 bar 3): the injected "/S/" in the
+     SCHEDULE's own word, before a single cycle is driven. *)
+  let pre_run_word = Dv_xgmii.Injection.word_at inj ~cycle:close_cycle in
+  if (not (Dv_xgmii.Xgmii_word.is_control pre_run_word 0))
+     || not (Int.equal (pre_run_word.Dv_xgmii.Xgmii_word.data).(0) Dv_xgmii.Xgmii_word.start_char)
+  then fail row "test bug -- the injected \"/S/\" does not land at lane 0 of the intended cycle before driving";
+  let bench = create () in
+  Dv_monitors.Strobe_monitor.expect
+    (strobes bench)
+    { Dv_monitors.Strobe_monitor.strobe = "error_start_without_terminate"
+    ; frame = 0
+    ; cycle = expected_pulse_cycle
+    ; not_before = expected_not_before
+    ; not_after = expected_not_after
+    ; why =
+        "REQ-110 (new /S/ while frame A is still open -- it consumed preamble positions \
+         1 .. 3 in lanes 5 .. 7 of its own start word, zero delivered); SPEC-M03 §9's \
+         no-output-word pin: two cycles after the input word carrying the closing \
+         character, which is the word AFTER frame A's own start word here, not the start \
+         word itself (WO-0065 §3.1, T3)"
+    };
+  let samples =
+    run bench sched ~drain:8 ~word_at:(fun ~cycle -> Dv_xgmii.Injection.word_at inj ~cycle) ()
+  in
+  (* Landing, site 2: the cycle {!run} ACTUALLY drove. *)
+  (match List.find samples ~f:(fun s -> s.cycle = close_cycle) with
+   | None -> fail row "test bug -- the intended \"/S/\" cycle was never driven"
+   | Some s ->
+     if (not (Dv_xgmii.Xgmii_word.is_control s.in_word 0))
+        || not (Int.equal (s.in_word.Dv_xgmii.Xgmii_word.data).(0) Dv_xgmii.Xgmii_word.start_char)
+     then
+       fail
+         row
+         "the driven word at the intended cycle does not carry the injected \"/S/\" in \
+          lane 0 -- the assertions below would be vacuous");
+  (* Structural, before frame B's own content is trusted (WO-0062 §2 bar 6):
+     frame A delivers no word at all -- the run's ONLY delivered words are
+     frame B's own. *)
+  let words_out = delivered_samples samples in
+  (* T6's own caveat, restated here because this is a NEW lane-4 member
+     (WO-0065 §6.1 debt 2): at a lane-4 start the emitted word count
+     equals the input word count by identity, so a count-guard
+     disagreement below is impossible and the tlast-position check built
+     on it is blind with it -- the instrument is present and blind at
+     this lane, not missing. The per-word cycle/tkeep checks after it
+     carry the weight this guard cannot. *)
+  if List.length words_out <> words_b
+  then
+    fail
+      row
+      (String.concat
+         [ "expected frame A to deliver nothing and frame B exactly "
+         ; Int.to_string words_b
+         ; " output words, got "
+         ; Int.to_string (List.length words_out)
+         ; " words total"
+         ]);
+  (* Frame B's delivered CONTENT, compared content for content against
+     Frame.delivered of its own 64 octets -- not just tkeep and the count
+     (WO-0065 §3.1 item 8: this member asserts frame B's content, not its
+     count). *)
+  let expected_octets_b = Dv_xgmii.Frame.delivered frame_b_octets in
+  let got_octets_b = delivered_octets samples in
+  if not (List.equal Int.equal got_octets_b expected_octets_b)
+  then
+    fail
+      row
+      "frame B: delivered octets differ from its own 60 -- the row's own kill (WO-0065 \
+       §3.1, WO-0057 §2.3)";
+  (* Frame B's per-word tkeep, tlast and cycles. *)
+  List.iteri words_out ~f:(fun m s ->
+    let expected_cycle = start_cycle_b + 3 + m in
+    if s.cycle <> expected_cycle
+    then fail row (String.concat [ "frame B: word "; Int.to_string m; " arrived on the wrong cycle (REQ-019)" ]);
+    let expected_tkeep = if m = words_b - 1 then expected_tkeep_b else 0xFF in
+    if s.out.Dv_monitors.Stream_word.tkeep <> expected_tkeep
+    then fail row (String.concat [ "frame B: word "; Int.to_string m; " tkeep mismatch" ]);
+    if m = words_b - 1
+    then
+      (if not s.out.Dv_monitors.Stream_word.tlast
+       then fail row "frame B: the last word does not carry tlast")
+    else if s.out.Dv_monitors.Stream_word.tlast
+    then fail row (String.concat [ "frame B: word "; Int.to_string m; " unexpectedly carries tlast" ]));
+  (match tlast_sample samples with
+   | None -> fail row "frame B: no tlast word observed"
+   | Some s ->
+     if s.cycle <> expected_tlast_cycle_b
+     then fail row "frame B: tlast word did not arrive on its own pinned cycle";
+     if s.out.Dv_monitors.Stream_word.tuser <> 0
+     then fail row "frame B: tuser[0] set -- the second frame is legal and intact");
+  (* The run-wide exact strobe set, last (WO-0062 T2/T5): exactly one pulse,
+     that name, that cycle -- over the WHOLE run, drain included. *)
+  (match error_pulses samples with
+   | [ (cycle, name) ] ->
+     if not (String.equal name "error_start_without_terminate")
+     then fail row (String.concat [ "expected error_start_without_terminate alone, observed "; name ])
+     else if cycle <> expected_pulse_cycle
+     then fail row "error_start_without_terminate pulsed on the wrong cycle"
+   | pulses ->
+     fail
+       row
+       (String.concat
+          [ "expected exactly one strobe pulse (error_start_without_terminate alone) over \
+             the WHOLE run, observed "
+          ; Int.to_string (List.length pulses)
+          ; " pulse(s)"
+          ]));
+  (* Conservation: frame A dropped, frame B forwarded/clean (WO-0062 §2 bar
+     13). *)
+  account_dropped_frame bench frame_a ~strobe:"error_start_without_terminate";
+  account_forwarded_piece
+    bench
+    ~start_ot:start_ot_b
+    ~received:64
+    ~delivered:delivered_b
+    ~aborted:false
+    words_out;
+  Dv_monitors.Conservation_monitor.strobe_pulse
+    (conservation bench)
+    ~name:"error_start_without_terminate";
+  assert_monitors_clean bench ~row
+;;
+
+let%expect_test
+  "M03-B4 (b): /S/ in lane 0 of the word AFTER the word whose lane 4 carried \
+   the outer frame's own /S/ -- the bench's only 4 -> 0 alignment \
+   transition, no output word for frame A, exactly one \
+   error_start_without_terminate on cycle 4 (not member (a)'s 3), frame B \
+   received intact and correct, content-compared. Does NOT pay WO-0058 \
+   bound 7 (T1) (REQ-110, REQ-102, §0.7, WO-0065 §3.1, WO-0058 §9 bound 6)"
+  =
+  run_b4b ();
   [%expect {||}]
 ;;
 
@@ -823,5 +1094,263 @@ let%expect_test
    citing test_m03_e.ml's run_e5 for the lane-0 arithmetic)"
   =
   List.iter [ 0; 4 ] ~f:(fun lane -> run_b2 ~lane);
+  [%expect {||}]
+;;
+
+(* ---- M03-B2's /I/ and /Q/ members -- WO-0065 §3.2 --------------------- *)
+(* (REQ-102, REQ-105, REQ-113, §0.7, §9 row 3; WO-0065 §3.2, ranked 3rd)    *)
+(* Four members: {/I/, /Q/} x {lane 0, lane 4}, at the SAME preamble
+   position 3 the landed /E/ members above already occupy. T5: the figures
+   below MUST equal /E/'s figure for figure -- no output word at all,
+   exactly one error_bad_frame two cycles after the input word carrying
+   the character, next frame received intact -- and a difference from
+   /E/'s numbers is this row's own defect signature, reported and never
+   reconciled (guarded below as a named constant, not just derived).
+
+   What /I/ kills that /E/ cannot (WO-0065 §3.2): a design carrying
+   REQ-113's ignore rule ("a control character other than the start
+   character occurring OUTSIDE a frame is ignored") into a PREAMBLE
+   position -- which is INSIDE an open frame -- is silent where REQ-102's
+   third sentence demands one error_bad_frame and no output word. /E/
+   cannot see this: it routes to REQ-105 under both readings.
+
+   What /Q/ kills that /I/ cannot (WO-0065 §3.2, ruling at §3.2.1): a
+   design whose preamble-position routing is a CLOSED code table (/T/,
+   /S/, /E/, /I/ each named, everything else falls through) rather than
+   REQ-102's own EXTENSIONAL "any other control character" -- SPEC-M03
+   §6.2's Preamble row says the same in the same shape ("/I/ and /Q/
+   included"). /I/ cannot see it, because a closed table would contain
+   /I/. /Q/ is DRIVEN, not merely declared (§3.2.1's ruling, discharging
+   note B-ii obligation 1): SPEC-M03 §6.2's Preamble row and the REQ-102
+   traceability row (xgmii_rx_64.md:1197) both fix the design's own
+   obligation on this exact input, by name, which is enough to constrain
+   it under M03-O5. What is NOT claimed: a /Q/ at a preamble position is a
+   single control character, not a four-character sequence ordered set --
+   REQ-113's ordered-set case is family I's (M03-I3) and stays untouched
+   here (T10, BOUNCE 7).
+
+   Construction: a NEW runner, [run_b2_new], separate from [run_b2] above
+   -- [run_b2] is left completely untouched (its own /E/ call site, its
+   own cross-check depth, its own expect block; git diff touches none of
+   its lines), rather than widened with a [character] parameter, because
+   widening it would put the deeper BAR B-2 cross-check this member owes
+   onto the landed /E/ member too, and WO-0065 §7 item 1 keeps the landed
+   /E/ members "neither re-derived nor re-benched" (stated in the Return
+   log per WO-0065's own "your call" clause).
+
+   BAR B-2 (WO-0065 §8 item 3): frame 2 is cross-checked against
+   [Dv_xgmii.Injection.outcomes] on all five delivered-side fields plus
+   [received] -- M03-B4's own depth, not the suite's standing two-field
+   (delivered + reports) depth, which this bar names insufficient for a
+   new member.
+
+   BAR B-3 (WO-0065 §8 item 4): frame 1 and frame 2 must NOT be
+   byte-identical, so a content comparison testifies to provenance and not
+   only to shape. [run_b2]'s own landed frame 1 and frame 2 (both
+   [directed_frame_octets ~length:64]) ARE byte-identical (WO-0065 §6.2
+   item 2's own debt, on the LANDED members, not owed here). This member's
+   own frame 2 instead uses [Dv_xgmii.Injection.frame_of_length ~sequence:2
+   64] -- a different content-generation mechanism at the SAME declared
+   length, guarded explicitly below -- so its content differs from frame
+   1's [directed_frame_octets ~length:64]. *)
+
+let run_b2_new ~lane ~character ~character_name =
+  let row = String.concat [ "M03-B2 ("; character_name; ", lane "; Int.to_string lane; ")" ] in
+  let frame1_octets = directed_frame_octets ~length:64 in
+  let frame2_octets = Dv_xgmii.Injection.frame_of_length ~sequence:2 64 in
+  if not (Dv_xgmii.Frame.residue_ok frame1_octets)
+  then fail row "test bug -- frame 1's own content does not check out";
+  if not (Dv_xgmii.Frame.residue_ok frame2_octets)
+  then fail row "test bug -- frame 2's own content does not check out";
+  if List.equal Int.equal frame1_octets frame2_octets
+  then fail row "test bug -- frame 1 and frame 2 are byte-identical (BAR B-3)";
+  let case1 =
+    Dv_xgmii.Injection.corrupt
+      frame1_octets
+      [ Dv_xgmii.Injection.Place { placement = Dv_xgmii.Injection.At_preamble 3; character } ]
+  in
+  let case2 = Dv_xgmii.Injection.clean frame2_octets in
+  let inj = Dv_xgmii.Injection.create ~first_lane:lane [ case1; case2 ] in
+  if not (Dv_xgmii.Injection.is_clean inj)
+  then
+    (* T4: /I/ and /Q/ are accepted only At_preamble (injection.mli), which
+       is exactly the placement this member uses, so a refusal here would
+       be a construction failure and not a result -- asserted per
+       WO-0065's own bar even though it should never trigger. *)
+    fail
+      row
+      (String.concat
+         ~sep:"; "
+         ("Injection construction errors:" :: Dv_xgmii.Injection.errors inj));
+  let sched = Dv_xgmii.Injection.schedule inj in
+  let frame1 = (Dv_xgmii.Arrival.frames sched).(0) in
+  let frame2 = (Dv_xgmii.Arrival.frames sched).(1) in
+  let start_ot1 = frame1.Dv_xgmii.Arrival.start_octet_time in
+  let start_cycle1 = Dv_xgmii.Arrival.start_cycle frame1 in
+  let expected_start_ot1 = if lane = 0 then 8 else 12 in
+  if start_ot1 <> expected_start_ot1
+  then fail row "test bug -- frame 1's own start does not match this lane's §0.3 mapping";
+  let close_ot = start_ot1 + 3 in
+  let close_lane = Int.rem close_ot 8 in
+  let expected_close_lane = if lane = 0 then 3 else 7 in
+  if close_lane <> expected_close_lane
+  then fail row "test bug -- the injected character does not land at this row's own intended lane";
+  let close_cycle = close_ot / 8 in
+  (* T5, two independent guards, each alone sufficient to catch a
+     disagreement with the landed /E/ members, in the order below
+     (WO-0065 §6.1 debt 3's own guard-ordering note, carried into this new
+     runner): an earlier fail-raising guard prevents a later,
+     independently sufficient instrument from ever speaking. First, that
+     the character lands in the start word (T6); second, that the
+     resulting pin is cycle 3, matching run_b2's own /E/ derivation
+     exactly. *)
+  if close_cycle <> start_cycle1
+  then fail row "test bug -- the injected character does not land in the start word (T5/T6)";
+  let expected_pulse_cycle = close_cycle + 2 in
+  if expected_pulse_cycle <> 3
+  then fail row "test bug -- this member's own pin differs from the landed /E/ members' (T5)";
+  let expected_not_before = close_cycle in
+  let expected_not_after = close_cycle + 3 in
+  (match Dv_xgmii.Injection.outcomes inj with
+   | [ o1; o2 ] ->
+     if o1.Dv_xgmii.Injection.delivered <> 0 then fail_cross row "frame 1 delivered (expected 0)";
+     (match o1.Dv_xgmii.Injection.reports with
+      | [ r ]
+        when String.equal r.Dv_xgmii.Injection.strobe "error_bad_frame"
+             && r.Dv_xgmii.Injection.cycle = expected_pulse_cycle
+             && r.Dv_xgmii.Injection.not_before = expected_not_before
+             && r.Dv_xgmii.Injection.not_after = expected_not_after -> ()
+      | _ -> fail_cross row "frame 1 reports");
+     (* BAR B-2: all five delivered-side fields plus received, M03-B4's
+        own depth. *)
+     let expected_received2 = List.length frame2_octets in
+     let expected_delivered2 = expected_received2 - 4 in
+     let expected_words2 = (expected_delivered2 + 7) / 8 in
+     let expected_tkeep2 =
+       if Int.rem expected_delivered2 8 = 0
+       then 0xFF
+       else (1 lsl Int.rem expected_delivered2 8) - 1
+     in
+     let expected_tlast_cycle2 =
+       Dv_xgmii.Arrival.start_cycle frame2 + 3 + (expected_words2 - 1)
+     in
+     if o2.Dv_xgmii.Injection.received <> expected_received2 then fail_cross row "frame 2 received";
+     if o2.Dv_xgmii.Injection.delivered <> expected_delivered2 then fail_cross row "frame 2 delivered";
+     if o2.Dv_xgmii.Injection.words <> expected_words2 then fail_cross row "frame 2 words";
+     if o2.Dv_xgmii.Injection.last_tkeep <> expected_tkeep2 then fail_cross row "frame 2 last_tkeep";
+     (match o2.Dv_xgmii.Injection.tlast_cycle with
+      | Some c when c = expected_tlast_cycle2 -> ()
+      | _ -> fail_cross row "frame 2 tlast_cycle");
+     if not (List.is_empty o2.Dv_xgmii.Injection.reports) then fail_cross row "frame 2 reports"
+   | outcomes ->
+     fail_cross
+       row
+       (String.concat
+          [ "outcome count (expected 2: frame 1, frame 2; got "
+          ; Int.to_string (List.length outcomes)
+          ; ")"
+          ]));
+  (* Landing, site 1. *)
+  let pre_run_word = Dv_xgmii.Injection.word_at inj ~cycle:close_cycle in
+  if (not (Dv_xgmii.Xgmii_word.is_control pre_run_word close_lane))
+     || not (Int.equal (pre_run_word.Dv_xgmii.Xgmii_word.data).(close_lane) character)
+  then fail row "test bug -- the injected character does not land at the intended octet time before driving";
+  let bench = create () in
+  Dv_monitors.Strobe_monitor.expect
+    (strobes bench)
+    { Dv_monitors.Strobe_monitor.strobe = "error_bad_frame"
+    ; frame = 0
+    ; cycle = expected_pulse_cycle
+    ; not_before = expected_not_before
+    ; not_after = expected_not_after
+    ; why =
+        String.concat
+          [ "REQ-102's third sentence routes "
+          ; character_name
+          ; " in a preamble position to REQ-105 (SPEC-M03 §6.2's Preamble row names it by \
+             name); SPEC-M03 §9 row 3 and the no-output-word pin: two cycles after the \
+             input word carrying the character, the start word itself at both start lanes \
+             (WO-0065 §3.2, T5: figures identical to run_b2's landed /E/ members)"
+          ]
+    };
+  let samples =
+    run bench sched ~drain:8 ~word_at:(fun ~cycle -> Dv_xgmii.Injection.word_at inj ~cycle) ()
+  in
+  (* Landing, site 2. *)
+  (match List.find samples ~f:(fun s -> s.cycle = close_cycle) with
+   | None -> fail row "test bug -- the intended cycle was never driven"
+   | Some s ->
+     if (not (Dv_xgmii.Xgmii_word.is_control s.in_word close_lane))
+        || not (Int.equal (s.in_word.Dv_xgmii.Xgmii_word.data).(close_lane) character)
+     then
+       fail
+         row
+         "the driven word at the intended cycle does not carry the injected character -- \
+          the assertions below would be vacuous");
+  let words_out = delivered_samples samples in
+  let frame2_first_cycle = Dv_xgmii.Arrival.start_cycle frame2 + 3 in
+  (match List.hd words_out with
+   | None -> fail row "expected frame 2's own delivered words, got none"
+   | Some s ->
+     if s.cycle < frame2_first_cycle
+     then
+       fail
+         row
+         "frame 1: an output word was observed for a frame that must deliver nothing \
+          (§0.7) -- the run's first delivered word arrives before frame 2's own first \
+          word could");
+  let words2_out, after_frame2 = split_at_first_tlast words_out in
+  if not (List.is_empty after_frame2)
+  then
+    fail
+      row
+      "a second tlast group was observed -- frame 1 must deliver no output word at all \
+       (§0.7), so frame 2's own tlast is the run's only one";
+  assert_following_frame_intact ~row ~label:"frame 2" frame2 words2_out frame2_octets;
+  (match error_pulses samples with
+   | [ (cycle, name) ] ->
+     if not (String.equal name "error_bad_frame")
+     then fail row (String.concat [ "expected error_bad_frame alone, observed "; name ])
+     else if cycle <> expected_pulse_cycle
+     then fail row "error_bad_frame pulsed on the wrong cycle"
+   | pulses ->
+     fail
+       row
+       (String.concat
+          [ "expected exactly one strobe pulse (error_bad_frame alone) over the WHOLE \
+             run, observed "
+          ; Int.to_string (List.length pulses)
+          ; " pulse(s)"
+          ]));
+  account_dropped_frame bench frame1 ~strobe:"error_bad_frame";
+  account_clean_frame bench frame2 words2_out ~aborted:false;
+  Dv_monitors.Conservation_monitor.strobe_pulse (conservation bench) ~name:"error_bad_frame";
+  assert_monitors_clean bench ~row
+;;
+
+let%expect_test
+  "M03-B2 /I/: idle character in a preamble position, both start lanes -- \
+   figures identical to the landed /E/ members figure for figure (T5); \
+   kills a design that carries REQ-113's ignore rule into the preamble \
+   instead of REQ-102's third-sentence report (REQ-102, REQ-105, REQ-113, \
+   §0.7, §9 row 3, WO-0065 §3.2)"
+  =
+  List.iter [ 0; 4 ] ~f:(fun lane ->
+    run_b2_new ~lane ~character:Dv_xgmii.Xgmii_word.idle_char ~character_name:"/I/");
+  [%expect {||}]
+;;
+
+let%expect_test
+  "M03-B2 /Q/: sequence-ordered-set character in a preamble position, \
+   both start lanes -- DRIVEN per WO-0065 §3.2.1's ruling, figures \
+   identical to the landed /E/ members figure for figure (T5); kills a \
+   design whose preamble-position routing is a closed code table rather \
+   than REQ-102's own extensional \"any other control character\" rule. \
+   Does NOT test REQ-113's ordered-set case -- that is family I's \
+   (M03-I3), untouched here (T10, BOUNCE 7) (REQ-102, REQ-105, §0.7, §9 \
+   row 3, WO-0065 §3.2/§3.2.1)"
+  =
+  List.iter [ 0; 4 ] ~f:(fun lane ->
+    run_b2_new ~lane ~character:Dv_xgmii.Xgmii_word.sequence_char ~character_name:"/Q/");
   [%expect {||}]
 ;;

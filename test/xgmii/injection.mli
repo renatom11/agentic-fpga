@@ -22,17 +22,21 @@
     choice rather than being programmed:
 
     - the {b two-events-in-one-word} cases of §6.1's consequence 1 (dv_lead's
-      row **M03-N2** ) are ordinary: each character is evaluated at its own
-      octet time, against the frame open at that octet time, so one input word
-      aborting a frame, opening another and closing that one too is three
-      events and three outcome entries;
+      row **M03-N2**, benched at `WO-0065` §3.3) are ordinary: each character
+      is evaluated at its own octet time, against the frame open at that octet
+      time, so one input word aborting a frame, opening another and closing
+      that one too is three events and three outcome entries;
     - a frame the {e stimulus} opens — an injected `/S/` mid-frame opens one —
       gets an outcome even though no entry of the catalogue describes it, which
       is exactly the frame a hand-written table forgets;
-    - the strobe cycles come from §7's per-octet constant and §9's
-      no-output-word clause, which are {b gap-invariant}, rather than from
-      §6.1's `m + 3`, which is qualified to a gapless stimulus (C-14.4). That
-      is what lets these outcomes be used inside [Idle_injection] — see below.
+    - the strobe cycles are pinned relative to a {b named input word} — REQ-105's,
+      REQ-107's and REQ-110's own closing character, or REQ-108's truncating
+      octet — which is what makes them survive idle injection (requirements.md
+      §0.5's {e deciding input word}), rather than from §7's per-octet constant,
+      whose gap-invariance is WITHDRAWN as false (`SCR-M03-I4`, requirements.md
+      §0.5 and SPEC-M03 §6.1 at `a77017c`), nor from §6.1's `m + 3`, which is
+      qualified to a gapless stimulus (C-14.4). That is what lets these
+      outcomes be used inside [Idle_injection] — see below.
 
     {2 What this model is, and what it may not yet do}
 
@@ -56,11 +60,23 @@
 
     Outcomes are stated on the {b un-injected} cycle line. A bench running a
     case inside [Idle_injection] maps every [cycle] through
-    [Idle_injection.cycle_of]. That is sound because both pinning rules used
-    here are gap-invariant, and dv_lead's WO-0031 scope note applies unchanged:
-    of §6.1's six two-events sub-cases, injection moves the two lane-0-`/S/`
-    rows {b earlier}, widening their separation from the new frame's report,
-    and never onto it.
+    [Idle_injection.cycle_of]. That is sound because every cycle here is
+    pinned relative to a {b named input word}, and for the two-events case
+    that word is **W** — the word carrying the aborting `/S/` — in EVERY row
+    of §6.1's six-row table, the two whose report is `W + 1` included: an
+    aborted frame's last word can be proven last by nothing except the
+    character that aborted it, so its own deciding word is W, not the word
+    carrying its own last octet (SPEC-M03 §6.1's `D(m)`, re-ruled at
+    `1f3c04c`, countersigned `J-dv_lead-0086`). Idle injection before W
+    therefore moves BOTH reports TOGETHER, by the same amount, and the
+    coincidence column is unchanged at every k (`06c1eba`; `J-dv_lead-0087`).
+    *Superseded ground, kept for history rather than deleted*: dv_lead's
+    WO-0031 scope note originally read this pinning against the word carrying
+    the aborted frame's own last octet, under which injection before that
+    word moved the two lane-0-`/S/` rows {b earlier}, widening their
+    separation from the new frame's report and never onto it — a conclusion
+    that still holds, now for the reason stated above rather than for that
+    one (§6.1's own withdrawal notes are the ground; `J-dv_lead-0085`).
 
     {2 Derived from}
 

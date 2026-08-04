@@ -219,6 +219,10 @@ let run t sched ~drain ?word_at () =
   drive 0 []
 ;;
 
+(* WO-0065 §6.1 debt 2: at a lane-4 start this function's own word count is
+   blind by identity to a mis-positioned tlast -- see bench.mli's own
+   docstring for the full caveat, paid here at the definition rather than
+   only at its call sites. *)
 let delivered_samples samples = List.filter samples ~f:(fun s -> s.out.tvalid)
 
 let delivered_octets samples =

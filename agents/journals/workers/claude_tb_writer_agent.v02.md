@@ -1746,3 +1746,239 @@ the reasoning that chose to reorder around it. **Domain pack**: n/a
 ### Files-in-this-commit
 - test/xgmii_rx_64/test_m03_i.ml
 - agents/handoffs/WO-0063A_m03-i2-member-iii-bench.md
+
+## [J-tb_writer-0024] 2026-08-04T21:30Z | task:WO-0065 | Family B completed (M03-B4 member (b), M03-B2's /I//Q/ members) and M03-N2 lands its first unit, all six sub-cases, in a new file — WO-0058 bound 7 paid for the first time
+
+### Trigger
+Orchestrator, spawn `WO-0065/2026-08-04T18:00Z`: dv_lead's WO-0065 packet
+(committed at `64a069a`), three ASSERT rows from `AP-xgmii_rx_64.md` — `M03-B4`
+member (b), `M03-B2`'s `/I/` and `/Q/` members (both §4.B), and `M03-N2`'s
+first unit, all six sub-cases (§4.N) — plus four riding bench debts (two
+already evaporated and recorded as such, one half-paid and completed here,
+one newly found and repaired here).
+
+### Inputs
+`agents/handoffs/WO-0065_tb-m03-family-b-completion-and-n2.md` in full;
+`agents/charters/tb_writer.md`; `agents/PROTOCOL.md` §2–6, §10; `docs/specs/
+requirements.md` §0.3, §0.5, §0.6, §0.7, §1 (REQ-001…REQ-021), §2
+(REQ-101…REQ-113), §12; `docs/specs/modules/xgmii_rx_64.md` §6.1, §6.2, §6.3
+(items 3 and 8), §7, §9, §10 (including the REQ-102 traceability row at
+`:1197`); `test/attack_plans/AP-xgmii_rx_64.md` §4.B (rows M03-B2, M03-B4,
+notes B-i/B-ii/B-iii), §4.N (row M03-N2, its cycle table, defects M03-R1/R2),
+§5 item 5, §6, §9's change log tail; `test/xgmii_rx_64/test_m03_b.ml`
+(existing, read in full before editing), `bench.mli`, `bench.ml` (existing,
+in full); `test/xgmii/injection.mli`, `idle_injection.mli`, `injection.ml`
+(read to hand-trace the two-corruption-per-frame-case state machine before
+trusting `fail_cross` on it, per WO-0062 §2 bar 2's carried obligation),
+`arrival.mli`, `frame.mli`, `xgmii_word.mli`; `test/xgmii_rx_64/test_m03_i.ml`
+(the count-blindness and guard-ordering note sites, for house phrasing only —
+not edited); `tools/dv_checks.sh` (the bench-inventory report mechanism);
+`agents/journals/workers/claude_tb_writer_agent.v02.md` (this file's own tail,
+for the last entry id and grammar). No `libs/**`, `top/**` or
+`rtl_snapshots/**` path was opened at any point in this spawn.
+
+### Reasoning
+**Every figure in this packet's own tables was re-derived from the spec text
+before being checked against the packet, per bar 2's "spec first, then
+cross-check" order** — never the reverse. All three rows' full derivation
+tables are in the WO's own Return log (§(a)); none disagreed with the
+packet's own arithmetic anywhere, so nothing here is a reported disagreement.
+
+**M03-B4 member (b) (§3.1).** The identical `At_preamble 4` corruption that
+member (a) drives at a lane-0 start lands, at a lane-4 start, in lane 0 of
+the WORD AFTER frame A's own start word (12 + 4 = 16, cycle 2, versus A's own
+start word cycle 1) — a cross-word abort with frame A already open on entry,
+the bench's only 4 → 0 alignment transition. T3's trap is that a bench
+deriving this member's pin from member (a)'s own cycle 3 is wrong: the report
+lands two cycles after the CLOSING word, and the closing word here is the
+NEXT word, giving cycle 4. I built the member with two independent,
+textually-ordered guards for exactly this (the landing-word guard, then the
+pin-value guard as a named constant, in that order — WO-0065 §6.1 debt 3's
+guard-ordering note, applied here for the first time outside `test_m03_i.ml`)
+so a wrong derivation fails loudly at the FIRST guard it trips rather than
+silently passing a later one. **Does not pay WO-0058 bound 7** (T1): the
+aborting `/S/` is in lane 0 — a word-boundary landing regardless of what
+"already open" holds — and I said so in the member's own comment and expect
+title, in terms, rather than leaving the omission to be noticed.
+
+**M03-B2's `/I/` and `/Q/` members (§3.2).** Built a NEW runner,
+`run_b2_new`, parameterised on `~character`/`~character_name`, rather than
+widening the landed `run_b2` — disclosed as judgement call 1 in the Return
+log, because widening would have put BAR B-2's deeper cross-check onto the
+landed `/E/` call site, and WO-0065 §7 item 1 keeps that member "neither
+re-derived nor re-benched." T5's own guard (a named-constant check that the
+derived pulse cycle is 3, matching `/E/`'s own landed figure) sits beside the
+same guard-ordering note as B4(b)'s. `/Q/` is DRIVEN, not declared — §3.2.1's
+own ruling, which I did not re-litigate, only implemented; its Attacks/why
+strings cite SPEC-M03 §6.2's `Preamble` row and the REQ-102 traceability row
+by name, and its expect title states in terms that it does NOT test REQ-113's
+ordered-set case (T10/BOUNCE 7).
+
+**M03-N2, all six sub-cases (§3.3).** The hardest derivation in the round:
+I worked all six sub-cases' own `(W, /S/ lane, /T/ lane, A delivered, both
+cycles)` tuples from requirements.md §0.5's *deciding input word* and §0.6's
+window text directly (never from `injection.mli`'s or `idle_injection.mli`'s
+docstrings, both of which still carried the WITHDRAWN gap-invariance ground
+until this same round's own §6.1 debt 4 repair — T11), then cross-checked
+every one against `Dv_xgmii.Injection.outcomes`. All six agree with
+`AP-xgmii_rx_64.md` §4.N's own table, row for row, and sub-case 4's
+construction reproduces the plan's own worked minimal witness for defect
+M03-R1 exactly, arrived at independently before comparing. **The sub-case-6
+split** (WO-0065 §3.3.2) was derived, not assumed: at a lane-0-start A the
+only way to land the aborting `/S/` at lane 4 with A delivered 0 is
+`At_preamble 4`, landing in the SAME word A itself opened (M03-B4 member
+(a)'s own geometry — nothing open on entry, bound 7's second conjunct
+fails). At a lane-4-start A no preamble position reaches lane 4 at all (it
+is A's own `/S/`'s lane), so the only construction is `At_octet 0` — A's own
+first frame octet, replaced — landing one octet-time later, with A already
+an open frame from the PRECEDING word: in-word, already open, a third bound-7
+instance. I built the lane-4-start instance as sub-case 6. This matches the
+packet's own §3.3.2 conclusion, and the Return log's item (c) states the
+derivation in full rather than only the agreement. **Frame A's accounting**
+in the four delivered sub-cases uses `Bench.account_forwarded_piece`, not
+`account_clean_frame`, disclosed as judgement call 3: `account_clean_frame`'s
+own precondition is the clean-frame identity extent, and frame A here is
+REQ-110-aborted with no FCS stripped — `account_forwarded_piece`'s own
+documented precondition ("for an aborted piece the two coincide") is the one
+frame A actually satisfies, even though `frame_a` itself is a genuine
+`Arrival.frame` record.
+
+**The four debts (§6.1).** Debts 1 and 3 were already discharged (measured,
+not re-argued, per the packet's own re-measurement). Debt 2 (the
+count-blindness caveat) landed at `bench.mli`'s `delivered_samples` docstring
+and, by my own judgement, a short pointer comment at `bench.ml`'s definition
+too — both comment-only, confirmed via `git diff`. Debt 4 (the three stale
+docstring sites) was repaired with the SAME pattern `J-tb_writer-0023`
+executed on debt 1: keep the conclusion (the six rows, the three
+coincidences, §6.3 item 8's non-instance all stand), replace the ground (a
+NAMED input word W, not a gap-invariant per-octet constant), keep the
+superseded text explicitly marked as superseded rather than deleted. Hit one
+real bug while writing the first repair: a literal `*deciding input word*)`
+closed the enclosing OCaml comment early (the trailing `*)` reads as the
+comment terminator) — caught immediately by `ocamlc -stop-after parsing`,
+fixed by using the file's own `{e ...}` odoc emphasis convention instead of
+bare asterisks. The frozen-seal collision check the packet already ran was
+independently re-run rather than trusted (bar 2's discipline applied to a
+provenance claim, not only to a cycle figure): same two grep patterns, same
+tree, same result — no `*SEALED*` packet quotes either withdrawn string.
+
+### Actions
+- Created `test/xgmii_rx_64/test_m03_n.ml`: module docstring (spec basis, the
+  six-row cycle table, the bound-7 payment/split derivation, traps T7–T10 and
+  T12), a `window` function re-deriving requirements.md §0.6 fresh, a
+  `subcase` record type, six named records `sc1 .. sc6` each with its own
+  derivation comment, one shared `run_subcase`, six `%expect_test` blocks.
+- Extended `test/xgmii_rx_64/test_m03_b.ml`: `run_b4b` + its own
+  `%expect_test` (M03-B4 member (b)); `run_b2_new` + two new `%expect_test`
+  blocks (`/I/`, `/Q/`, each over both lanes); one new banner paragraph
+  recording this round's own extension, appended after the existing WO-0062
+  banner rather than editing it.
+- `test/xgmii_rx_64/dune`: one header-comment line.
+- `test/xgmii_rx_64/bench.mli` / `bench.ml`: the count-blindness caveat,
+  comment-only, at `delivered_samples`.
+- `test/xgmii/injection.mli` / `idle_injection.mli`: the three stale-ground
+  repairs, comment-only.
+- Appended this packet's Return log (`## Return log (tb_writer,
+  WO-0065/2026-08-04)`) to `agents/handoffs/
+  WO-0065_tb-m03-family-b-completion-and-n2.md`, carrying the full per-member
+  derivation table, file/member counts, the sub-case-6 derivation in full,
+  the inventory delta, the BOUNCE-by-BOUNCE check, five disclosed judgement
+  calls, and three items for dv_lead's own review-first list.
+
+### Evidence
+- `ocamlc -stop-after parsing <file>` on every touched/created file — all
+  exit 0: `test/xgmii_rx_64/test_m03_b.ml`, `test/xgmii_rx_64/test_m03_n.ml`,
+  `test/xgmii_rx_64/bench.ml`, `test/xgmii_rx_64/bench.mli`,
+  `test/xgmii/injection.mli`, `test/xgmii/idle_injection.mli` (ADR-0005:
+  `dune build` is not authoritative locally; this is the syntax check).
+- `bash tools/dv_checks.sh`'s bench-inventory report, run before and after:
+  `test/xgmii_rx_64/test_m03_b.ml` 4 → 7; `test_m03_n.ml` (new) → 6;
+  `test/xgmii_rx_64/` total 39 → **48**; `test/` repository-wide 119 → **128**.
+  The run's `OBLIGATION OPEN` line (RFC-1071 network fetch) is the
+  pre-existing, unrelated obligation, not caused by this change.
+- `git diff --stat` — exactly the packet's own six named deliverable files
+  plus the one new file; `git status --porcelain` confirms no other path is
+  touched, `test_m03_h.ml`/`test_m03_e.ml`/`test_m03_i.ml`/
+  `AP-xgmii_rx_64.md` absent from it entirely.
+- `grep -rn "injection moves the two lane-0\|both pinning rules used here are
+  gap-invariant" agents/handoffs/` — three hits, all this draft's own quoted
+  history plus `WO-0033_dv-machinery.md:10`; a sweep of every `*SEALED*`
+  packet for either string returns nothing.
+- No CI run exists against this content — I never run `git` (charter §8,
+  write scope). The orchestrator's commit and CI's `build`/`journal-check`
+  runs are authoritative per ADR-0005; their run ids are absent here by
+  honest omission.
+- Full per-member derivation tables, the six-sub-case tuple table, the
+  BOUNCE-by-BOUNCE check and five disclosed judgement calls are in the WO's
+  own Return log, not duplicated here in full.
+
+### Outcome
+DoD (my own charter, WO-0065 §8's pass criteria) met as far as this spawn can
+establish without a CI run: every REQ-### and attack-plan row this packet
+assigned maps to a named test (no silent skips); every promoted expectation
+is the house-style empty `[%expect {||}]`, so no waveform-eyeball promotion
+was owed this round (every assertion is a `failwith` that never fires against
+a conforming design, not a printed value being promoted); the Return log
+carries the full derivation-to-spec-clause map WO-0065 §7 item 7 asks for;
+the mandatory rx-path line-rate stress case is unaffected (out of this
+packet's own three rows, already covered elsewhere in the suite, not
+re-asserted here). B10-equivalent (CI green) is NOT yet established and is
+reported as absent, not assumed. Handoff: the RETURNED packet, back to
+dv_lead via the orchestrator for `RV-0065` review; the Return log's §(g)
+names three items for dv_lead to look at first.
+
+### Open-questions
+- None from the spec: every figure in this round agreed with the packet's
+  own derivation, and no REQ- text underdetermined an observable this round
+  needed. No RTL leak: `libs/**`/`top/**`/`rtl_snapshots/**` were never
+  opened. No licensing concern (Essenceia never appeared in any input). No
+  untestable requirement. No effort anomaly against WO-0065's own estimate.
+- Recorded, not escalated (Return log judgement call 2): whether BAR B-2's
+  "all five fields plus received" requires a literal separate `.abort`
+  comparison, or whether the landed `run_b4`'s own pattern (reports-emptiness
+  standing in for it, since the type's own construction makes them
+  equivalent) already satisfies the bar — this packet matches `run_b4`'s
+  existing depth exactly and cannot go deeper without touching `run_b4`
+  itself, which §7 item 1 forbids. dv_lead's call, not mine to guess at.
+
+**Harvest note (PROTOCOL §7 / ADR-0018), this round's own span**:
+`J-tb_writer-0024 .. J-tb_writer-0024` (tiling with `J-tb_writer-0023`'s own
+`0023..0023` span — no gap). **One candidate, LH2-g (general).** *Rule*: when
+a shared verification helper is deliberately calibrated to one precondition
+(here, "received minus a fixed header equals delivered"), a new call site
+whose input satisfies a DIFFERENT, textually-adjacent precondition the SAME
+helper family also documents (here, "received equals delivered, nothing
+stripped") should be routed to the sibling helper built for that precondition
+rather than stretched onto the first one — reaching for the nearer-named
+helper's OWN stated precondition, not merely its type signature, is what
+keeps a shared-machinery library from silently drifting into use outside the
+cases it was verified for. *Observable*: a helper call that type-checks but
+violates its own documented precondition produces no error at the call site
+and no visible defect until the specific input shape it silently mishandles
+is driven — indistinguishable, from the diff alone, from a correct call,
+until a later reader compares the call against the precondition prose rather
+than the type. *LH1*: taught by this round's own choice between
+`Bench.account_clean_frame` and `Bench.account_forwarded_piece` for M03-N2's
+frame A — both would have type-checked, and picking the wrong one would have
+silently fed a delivered-but-aborted frame through machinery documented and
+built for exactly the clean-identity case, discoverable only by reading
+`bench.ml`'s own module docstring rather than either function's signature.
+*LH2-g*: no project noun, no domain noun — "helper", "precondition",
+"sibling", "documented" are the vocabulary; a stranger to hardware
+verification entirely could apply it to any small library of variously-
+preconditioned helpers sharing a type signature. *LH3*: without it, a shared
+helper library accretes silent misuse at its own edges precisely where its
+type system offers no resistance, and each misuse is invisible until the
+specific input it mishandles is finally driven — which is exactly the shape
+of defect a mutation campaign exists to find late rather than a reviewer to
+catch early. **Domain pack**: n/a (LH2-g, general).
+
+### Files-in-this-commit
+- test/xgmii_rx_64/test_m03_n.ml
+- test/xgmii_rx_64/test_m03_b.ml
+- test/xgmii_rx_64/dune
+- test/xgmii_rx_64/bench.mli
+- test/xgmii_rx_64/bench.ml
+- test/xgmii/injection.mli
+- test/xgmii/idle_injection.mli
+- agents/handoffs/WO-0065_tb-m03-family-b-completion-and-n2.md

@@ -63,17 +63,29 @@
 
     {2 What injection does to §6.1's two-events-in-one-word cycles}
 
-    dv_lead, WO-0031, recorded in SPEC-M03 §6.1's consequence 1 and repeated
-    here because a bench driving M03-N2 inside this wrapper needs it: of the
-    six sub-cases, the two whose aborted-frame report is pinned to the word
-    {e before} W — the two lane-0-`/S/` rows — move {b earlier} when an idle is
-    injected at that boundary, which widens their separation from the new
-    frame's report at W + 2 and never collapses it. The three coinciding rows
-    are pinned to W itself or to the closing character's own word and move
-    {e with} it, so a coincidence cannot be broken either. Injection therefore
-    never turns a "no" into a "yes" or the reverse in that table, and the
-    scope note is one-directional: it moves those two rows earlier, and never
-    onto the other report.
+    Repeated here because a bench driving M03-N2 (benched at `WO-0065` §3.3)
+    inside this wrapper needs it: every cycle in §6.1's six-row table is
+    pinned relative to a {b named input word}, and that word is **W** — the
+    word carrying the aborting `/S/` — in EVERY row, the two whose report is
+    `W + 1` included: an aborted frame's last word can be proven last by
+    nothing except the character that aborted it, so its own deciding word is
+    W and not the word carrying its own last octet (SPEC-M03 §6.1's `D(m)`,
+    re-ruled at `1f3c04c`, countersigned `J-dv_lead-0086`). Idle injection
+    before W therefore moves BOTH reports of every row TOGETHER, by the same
+    amount — the new frame's report at `W + 2` included — so the coincidence
+    column is unchanged at every k (`06c1eba`; `J-dv_lead-0087`). The three
+    coinciding rows are pinned to W itself and move {e with} it for the same
+    reason, not a different one. Injection therefore never turns a "no" into
+    a "yes" or the reverse in that table.
+
+    *Superseded ground, kept for history rather than deleted* (dv_lead,
+    WO-0031's own scope note): this paragraph originally pinned the two
+    non-coinciding rows against the word carrying the aborted frame's own
+    LAST OCTET, under which injection before that word moved those two rows
+    {b earlier}, widening their separation from the new frame's report and
+    never onto it. The conclusion is unchanged; the ground it now rests on is
+    the named word W above, not that one (§6.1's own withdrawal note,
+    `J-dv_lead-0085`).
 
     {2 Derived from}
 

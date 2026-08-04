@@ -793,3 +793,262 @@ doing what it was written to do.
   is quoted verbatim in a scored campaign's frozen seal, and repairing it would
   falsify that seal. It is not this packet's and must not be touched.
 - **Family J** stays behind a bench-capability round (§1).
+
+---
+
+## Return log (tb_writer, WO-0065/2026-08-04)
+
+**State: RETURNED.** All three rows built, all four debts landed, no BOUNCE
+condition tripped. `dune build`/`dune runtest` cannot be run from this seat
+(ADR-0005: no Hardcaml toolchain in this container); `ocamlc -stop-after
+parsing` is the local syntax check, run on every touched file, all exit 0.
+CI's `build` and `journal-check` are the authoritative gates and have not run
+against this content yet — reported as absent, not assumed green.
+
+### (a) Per-member derivation table — spec-derived figure vs. this packet's
+table, then cross-checked against `Dv_xgmii.Injection.outcomes`
+
+Every row below: **agree**. No disagreement was found anywhere in this round;
+none is silently reconciled because none arose.
+
+**M03-B4 member (b)** (§3.1): frame A's `/S/` octet time 12 (cycle 1, lane 4);
+aborting `/S/` octet time 16 (cycle 2, lane 0) — cross-word, A already open on
+entry; alignment transition 4 → 0; frame B's first octet at array index 4;
+`Arrival`'s auto-terminate at octet time 88; frame B receives 88 − 24 = 64;
+A's report cycle 4 (close_cycle 2 + 2). All eight figures agree with the
+packet's own table (§3.1) and with `Injection.outcomes`.
+
+**M03-B2's `/I/` and `/Q/` members** (§3.2): both lanes, octet time 11/15,
+lane 3/7, close_cycle 1, pulse cycle 3 — identical to the landed `/E/`
+members' own figures at every field checked (T5's own requirement), and
+cross-checked against `Injection.outcomes` at the same six-field depth as
+M03-B4 (BAR B-2, below).
+
+**M03-N2, all six sub-cases** (§3.3.2): the derived `(W, /S/ lane, /T/ lane,
+A delivered, A's cycle, B's cycle)` tuple, independently re-derived from
+requirements.md §0.5's *deciding input word* and §0.6's window (never from
+`test/xgmii/injection.mli`'s or `idle_injection.mli`'s docstrings — T11) and
+cross-checked against `Injection.outcomes`'s `received`/`delivered`/`reports`
+fields for both frame A and frame B:
+
+| # | W | /S/ lane | /T/ lane | A delivered | A's cycle | B's cycle | Pays bound 7 |
+|---|---|---|---|---|---|---|---|
+| 1 | 3 | 0 | 2 | 8 | 4 | 5 | no |
+| 2 | 3 | 0 | 2 | 4 | 4 | 5 | no |
+| 3 | 2 | 0 | 2 | 0 | 4 | 4 | no |
+| 4 | 2 | 4 | 6 | 4 | 4 | 4 | **YES** |
+| 5 | 3 | 4 | 6 | 8 | 4 | 5 | **YES** |
+| 6 | 2 | 4 | 6 | 0 | 4 | 4 | **YES** (lane-4-start instance) |
+
+All six agree with `AP-xgmii_rx_64.md` §4.N's own table and with WO-0065
+§3.3.2's own table, row for row. Sub-case 4's construction (`/S/` `At_octet
+4`, `/T/` `At_octet 6`, A delivered four octets, both reports at cycle 4)
+matches the packet's own worked example (§3.3.2) exactly, arrived at
+independently before comparing.
+
+One observation, not a disagreement: at the minimal, lane-granularity-forced
+construction each sub-case's own array uses, **frame A's own report cycle
+happens to be 4 in all six sub-cases** — an artefact of choosing the smallest
+legal `A delivered` at each geometry, not a spec property. Recorded so a
+reader does not mistake six identical numbers for a copy-paste error; each
+was independently re-derived and the six sub-cases differ in W, in the two
+characters' own lanes, and (three of six) in `A delivered` and the
+coincidence/non-coincidence of the two reports.
+
+### (b) Files created/edited, with member counts
+
+- `test/xgmii_rx_64/test_m03_n.ml` — **new file**, 6 members (`M03-N2`
+  sub-cases 1–6, one shared runner `run_subcase` over six named `subcase`
+  records `sc1 .. sc6`, six separate `%expect_test` blocks so each sub-case
+  carries its own title per the three discriminators).
+- `test/xgmii_rx_64/test_m03_b.ml` — extended in place, **5 new members**:
+  `M03-B4` member (b) (1, `run_b4b`); `M03-B2` `/I/` at lane 0 and lane 4 (2,
+  `run_b2_new` with `character:idle_char`); `M03-B2` `/Q/` at lane 0 and lane
+  4 (2, `run_b2_new` with `character:sequence_char`). 3 new `%expect_test`
+  blocks (one for B4(b), one for `/I/` over both lanes, one for `/Q/` over
+  both lanes). `M03-B1`, `M03-B3`, `M03-B4` member (a) and `M03-B2`'s `/E/`
+  member are byte-for-byte untouched — confirmed by reading the diff, not
+  assumed: `git diff` touches no line inside `run_b1`, `run_b3`, `run_b4` or
+  `run_b2`'s own bodies, and no `[%expect]` block anywhere in the file moved.
+- `test/xgmii_rx_64/dune` — one header-comment line, comment-only.
+- `test/xgmii_rx_64/bench.mli` / `bench.ml` — the count-blindness caveat at
+  `delivered_samples`' own definition (§6.1 debt 2), comment-only at both
+  sites; confirmed via `git diff` that no `val`, type or expression changed.
+- `test/xgmii/injection.mli` / `test/xgmii/idle_injection.mli` — the three
+  stale-ground repairs (§6.1 debt 4), comment-only at all three sites;
+  confirmed via `git diff` that no `val`, type or expression changed. The
+  frozen-seal collision check (§6.1's own "already run and clear" claim) was
+  **independently re-run**, not trusted: `grep -rn "injection moves the two
+  lane-0\|both pinning rules used here are gap-invariant" agents/handoffs/`
+  returns exactly the same three hits the packet reports (this draft's own
+  three quotations of the strings it withdraws, plus `WO-0033_dv-
+  machinery.md:10`), and a `find`/`grep` sweep of every `*SEALED*` packet in
+  `agents/handoffs/` for either string returns nothing. No frozen seal is
+  falsified.
+
+Nothing outside these seven files (six edited, one new) plus this Return log
+and my journal entry is staged.
+
+### (c) The sub-case-6 split, as derived (not assumed)
+
+At a **lane-0-start** A, the aborting `/S/` (target lane 4) can only be built
+via `At_preamble 4` — the only preamble position of a lane-0 start that
+reaches lane 4 at all, since it is the SAME word A's own `/S/` occupies (lane
+0). That places A's abort in the SAME word A itself opened: nothing was open
+on entry to that word (it is exactly M03-B4 member (a)'s own geometry, epoch
+B, 0 → 4). Bound 7's second conjunct ("already open on entry") fails, so this
+instance does **not** pay it — not built, left as a derivation.
+
+At a **lane-4-start** A, no preamble-range placement (positions 1 … 7) reaches
+lane 4 at all: lane 4 of A's own start word is A's own `/S/`, and positions
+4 … 7 occupy lanes 0 … 3 of the FOLLOWING word (never lane 4 of it). The only
+way to land the aborting `/S/` at lane 4 with A delivered 0 is to replace A's
+own first FRAME octet (`At_octet 0`, one octet-time later than the last
+preamble position). A had already accepted its own `/S/` in the PRECEDING
+word and had delivered nothing yet, so A was an open frame entering this
+word, and the landing itself is at lane 4 — in-word. This instance pays
+bound 7, a **third** instance, in the zero-delivered form. **Built** as
+sub-case 6.
+
+This matches the packet's own §3.3.2 conclusion (lane-4-start pays, lane-0-
+start does not) exactly; the derivation above was worked independently
+before re-reading that paragraph, per bar 2's "spec first" discipline.
+
+### (d) Syntax check results + `dv_checks.sh` inventory delta
+
+`ocamlc -stop-after parsing <file>` on every touched/created file — all exit
+0: `test_m03_b.ml`, `test_m03_n.ml`, `bench.ml`, `bench.mli`,
+`test/xgmii/injection.mli`, `test/xgmii/idle_injection.mli`.
+
+`tools/dv_checks.sh`'s bench-inventory report (REPORT only, per its own
+header, not a check):
+
+| | Before | After | Δ |
+|---|---|---|---|
+| `test/xgmii_rx_64/test_m03_b.ml` | 4 | 7 | +3 |
+| `test/xgmii_rx_64/test_m03_n.ml` | — | 6 | +6 (new file) |
+| `test/xgmii_rx_64/` total | 39 | **48** | **+9** |
+| `test/` repository-wide | 119 | **128** | **+9** |
+
+**The new figure is 48** (M03 bench) / **128** (repository-wide). Every other
+per-file count in `test/xgmii_rx_64/` is unchanged (confirmed by re-running
+the same report before and after).
+
+### (e) BOUNCE conditions — none hit
+
+Checked each of the twelve against this round's own output before writing
+this log:
+1. No M03-B4 member (b) comment/message/Return-log sentence claims it closes
+   bound 7 — checked by reading every occurrence of "bound 7" in the new
+   code; all say member (b) does NOT pay it.
+2. Member (b)'s report is pinned to cycle 4, guarded twice (T3's own
+   guard-ordering cascade), never derived from member (a)'s cycle 3.
+3. No B2 `/I/`/`/Q/` figure differs from `/E/`'s; none arose to reconcile.
+4. Six M03-N2 sub-cases, spanning all three discriminators (table at (a)
+   above), each with its own derived tuple in a comment above its own
+   `subcase` record.
+5. `tuser`[0] is asserted only inside the `sc.a_delivered > 0` branch of
+   `run_subcase`, never in the zero-delivered branch, never on B4/B2.
+6. No lower-bound strobe assertion anywhere; `error_bad_fcs`'s absence is
+   asserted as part of every exact-strobe-set match (its absence is what
+   "exactly these named strobes, nothing else" already forces — never
+   asserted as a bare negative alone, matching the landed rows' own idiom).
+7. No claim that this packet tests SPEC-M03 §6.3 item 8, or that a `/Q/`
+   member tests REQ-113's ordered-set case — checked by reading the `/Q/`
+   member's own comment and expect-title, which say the opposite in terms.
+8. Every cycle in `test_m03_n.ml` and in `run_b4b`/`run_b2_new` is derived
+   from `window`/the `(last_in + l) / 8` formula (both written fresh from
+   requirements.md §0.5/§0.6's own text) or from SPEC-M03 §6.1's landed
+   table figures, never from `injection.mli`'s or `idle_injection.mli`'s
+   docstrings — and the §6.1 debt 4 repair itself restates the WITHDRAWN
+   clause nowhere, replacing it with the named-word-W ground throughout.
+9. `git diff` confirms every change in `bench.ml`, `bench.mli`,
+   `injection.mli`, `idle_injection.mli` is comment-only (shown at (b)
+   above), and `test_m03_h.ml`, `test_m03_e.ml`, `test_m03_i.ml`,
+   `AP-xgmii_rx_64.md` are absent from `git status` entirely.
+10. Every new member (B4(b), B2's four `/I/`/`/Q/` members) cross-checks the
+    following/aborted-piece side of `Injection.outcomes` at M03-B4's own
+    six-field depth (`received`, `delivered`, `words`, `last_tkeep`,
+    `tlast_cycle`, and the `reports`-emptiness stand-in for `abort` that
+    the landed `run_b4` itself uses — see judgement call 2 below). Every
+    two-frame stimulus this packet adds (`run_b2_new`'s frame 1/frame 2)
+    uses different content-generation mechanisms at the same declared
+    length (`directed_frame_octets` vs. `Injection.frame_of_length
+    ~sequence:2`), guarded by an explicit byte-inequality check.
+11. My journal's Inputs section (below) lists no `libs/**`, `top/**` or
+    `rtl_snapshots/**` path, and my entry is appended to volume 02, not the
+    frozen volume 01.
+12. No expect-block content was written or promoted beyond the house-style
+    empty `[%expect {||}]` — every assertion in this packet is a `failwith`
+    that never fires against a conforming design, so there is nothing to
+    promote and nothing to drift.
+
+### Judgement calls disclosed
+
+1. **`run_b2_new` is a NEW runner, not a widened `run_b2`** (§7 item 1's
+   "your call"). Widening `run_b2` with a `~character` parameter would have
+   put BAR B-2's deeper cross-check on the landed `/E/` call site too, and
+   WO-0065 §7 item 1 keeps the landed `/E/` members "neither re-derived nor
+   re-benched." A new runner keeps `run_b2` — and its own `[%expect]` block
+   — byte-identical, confirmed by reading the diff.
+2. **`abort` is not asserted as a separate field in the BAR B-2 cross-check**,
+   matching the LANDED `run_b4`'s own pattern exactly (which this packet
+   copies rather than deepens further): `Injection.outcome.abort` is defined
+   as `delivered > 0 && strobes <> []`, so asserting `reports = []` on a
+   clean/forwarded piece already entails `abort = false` by the type's own
+   construction, and a separate explicit check would be redundant with the
+   one already present. If dv_lead reads BAR B-2's "all five fields" as
+   requiring a literal separate `.abort` comparison, that is a defect against
+   `run_b4` itself (this packet's own depth standard) and not something this
+   packet can repair without touching `run_b4`'s own body, which §7 item 1
+   forbids.
+3. **Frame A's accounting in `test_m03_n.ml`'s delivered sub-cases (1, 2, 4,
+   5) uses `Bench.account_forwarded_piece`, not `account_clean_frame`**, even
+   though frame A has a genuine `Dv_xgmii.Arrival.frame` record. Reasoning:
+   `account_clean_frame`'s own precondition (bench.ml's module docstring) is
+   the CLEAN-frame identity extent (received − 8 − 4 = delivered); frame A
+   here is REQ-110-aborted with NO FCS stripped, so received = delivered
+   exactly — `account_forwarded_piece`'s own documented precondition
+   ("for an aborted piece the two coincide, because no FCS removal is
+   attempted"), which is the one frame A actually satisfies. `frame_a`
+   itself is still read for its own `start_octet_time` (used throughout the
+   guards) even though its `Arrival.in_times` is not fed to the latency
+   tagger for the delivered sub-cases.
+4. **The six sub-cases' own arrays use a plain, uncorrelated filler**
+   (`j land 0xFF`), not `directed_frame_octets` or `frame_of_length`: no
+   sub-case asserts content on frame A beyond its delivered COUNT (WO-0065
+   §3.3.4 item 4 asks for count, `tkeep` and `tuser` only, never content
+   equality), and frame B never delivers anything in any sub-case, so no
+   content comparison exists for the filler to discriminate. BAR B-3 (byte-
+   identical frames) does not bite `test_m03_n.ml`'s construction: each
+   sub-case has exactly one declared array, never two.
+5. **Sub-case 3 is built at A's lane-0 start**, not lane-4 (the "either" cell
+   in the packet's own table, §3.3.2). Both instances agree on not paying
+   bound 7 for the identical reason (the aborting `/S/`'s lane-0 landing is
+   always a word boundary, never in-word, regardless of A's own start lane),
+   so the choice carries no coverage consequence; lane 0 was chosen so
+   sub-case 3's own construction (`At_octet 0`, A's real first frame octet)
+   is visibly distinct from M03-B4 member (b)'s own `At_preamble 4`
+   geometry, rather than reusing the identical octet-time placement.
+
+### (g) What dv must review first
+
+1. **Judgement call 2 above** (BAR B-2's `abort` field) — whether the
+   existing `run_b4`'s own depth (received/delivered/words/last_tkeep/
+   tlast_cycle plus reports-emptiness) is what "all five fields plus
+   received" was always meant to require, since this packet's new members
+   match that existing depth exactly and can go no deeper without touching
+   `run_b4` itself.
+2. **The `run_subcase` shared-runner construction** in `test_m03_n.ml` —
+   whether a reviewer prefers six syntactically separate runners (WO-0065
+   §7 item 2's first-offered shape) over one shared function called from six
+   named records; the six-way discriminator table at (a) above is offered so
+   the choice can be reviewed against the packet's own six-row table without
+   re-reading the code.
+3. **The M03-N2 sub-case numbering** (1 … 6) against `AP-xgmii_rx_64.md`
+   §4.N's own table — this packet's sub-case IDs follow that table's own row
+   order exactly (confirmed at (a) above), but the file itself does not
+   print row numbers in its `%expect_test` titles (it prints the three
+   discriminators instead, per WO-0065 §7 item 2's own instruction), so a
+   reader matching sub-case to table row needs the comment above each
+   `subcase` record, not the title alone.

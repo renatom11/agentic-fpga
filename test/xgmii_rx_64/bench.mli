@@ -169,7 +169,22 @@ val run
 (** [samples] restricted to cycles with [tvalid] = 1, in cycle order — the
     frame's delivered stream with idle cycles dropped. Obligation 6: this is
     the only sanctioned way to read [out] across a run, because it never
-    looks at a [tvalid] = 0 cycle's fields. *)
+    looks at a [tvalid] = 0 cycle's fields.
+
+    {2 The count-blindness caveat (WO-0065 §6.1 debt 2)}
+
+    At a lane-4 start the emitted word count equals the input word count W
+    by identity, so a disagreement in the count this function's own
+    [List.length] exposes is IMPOSSIBLE there, and a [tlast]-position check
+    built on that count alone is blind with it. The instrument is present
+    and blind at one lane, not missing — a row driven only at a lane-4 start
+    needs its per-word cycle/tkeep checks to carry the weight this guard
+    cannot, and no packet may cite "the count was right" as evidence about
+    word integrity at that lane. First owed at the count guard's own call
+    sites (`J-dv_lead-0094`; landed at those sites, `WO-0062` §6.1(i)); paid
+    here, at the definition itself, because the rule belongs where the NEXT
+    reader will meet the instrument, not only where the last incident was
+    journalled (`J-dv_lead-0108`'s banked rule, applied a second time). *)
 val delivered_samples : sample list -> sample list
 
 (** The concatenation of every delivered sample's [Stream_word.octets], in
