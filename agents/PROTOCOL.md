@@ -265,6 +265,26 @@ checklist edit is clerical and commits under `Agent: orchestrator`.
 `P<n>-module-ready` and `P<n>-phase-accept`. It is the activation window for
 `formal_dv` and the overlap trigger for the contingent `rtl_lead_md`.
 
+**Lessons harvest** (ADR-0018). Every module sign-off (`SO-`) and every phase
+gate carries one; it is a precondition of the gate, not a follow-up to it. Each
+agent holding a persistent journal chain — the leads, the auditor, the
+orchestrator — mines **its own** journal over the span since its last harvest,
+stated as an entry-id interval so that spans tile and a skipped harvest is a
+visible gap, and records the yield as a harvest note in its journal entry for
+the round; a lead also mines the worker spans it commissioned. A candidate rule
+is admissible only if it **(LH1)** cites the incident commit(s) that taught it,
+**(LH2)** states its observable in terms portable beyond this project — no
+module, requirement, signal, protocol or toolchain name inside the rule
+statement — and **(LH3)** says what breaks without it. Anything failing the bar
+is recorded as a war story and goes no further; a nil yield is declared, never
+omitted. The **orchestrator collates**: into the gate record locally, and into
+the generic shell's `LESSONS` file with permalinked provenance, the shell
+unfreezing for **exactly one commit per harvest**, sponsor-visible at the gate —
+the sponsor may refuse a candidate. A gate is not passed while any box of the
+instantiated `docs/gates/lessons-harvest-block.md` is unchecked. *Enforcement*:
+review-enforced, like §10 — no `R`-rule is minted and no script changes, so
+§11(3) owes no test case (ADR-0018 §7.4).
+
 ## 8. Escalation to the human sponsor
 
 The orchestrator escalates **only** these classes, batched and decision-ready

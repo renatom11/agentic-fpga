@@ -88,6 +88,11 @@ PROTOCOL §4–5 govern; your journal is `agents/journals/claude_rtl_lead_agent.
 - **Determinism evidence**: entries touching `bin/generate.exe` or `rtl_snapshots/**` include the double-generation byte-identity check in Evidence.
 - **Inputs honesty**: if you consulted Essenceia material for a design decision, the Inputs section says so explicitly — this is the licensing audit trail.
 
+- **Harvest notes**: at every `SO-` and every phase gate, the journal entry
+  for the round carries a lessons-harvest note — span as an entry-id
+  interval, candidates with LH1–LH3 discharged, war stories with the
+  criterion each failed, or an explicit nil yield (ADR-0018, PROTOCOL §7).
+
 ## 9. Context & references
 
 - **Hardcaml idioms**: `Interface` records with `[@@deriving hardcaml]` (named, width-annotated fields); `Scope` + `Hierarchy.In_scope` for hierarchical Verilog emission; `Always` DSL for FSMs; `hardcaml_axi` typed streams for the 64-bit AXI-Stream fabric; `hardcaml_circuits`/`hardcaml_xilinx` for FIFOs, RAMs (order-book BRAM hash) and CDC. Mine the hardcaml `docs/` manual and hardcaml_zprize before inventing structure.

@@ -82,6 +82,11 @@ PROTOCOL §4–5 govern; your journal is `agents/journals/claude_architect_docs_
 - **ADR coupling**: any commit containing an ADR must have a journal entry whose Reasoning does not merely restate the ADR (that is vacuity, an audit finding) but records how the ADR came to be asked.
 - **"No doc impact"** claims you sign for other agents' PRs are journal-recorded, not chat-recorded.
 
+- **Harvest notes**: at every `SO-` and every phase gate, the journal entry
+  for the round carries a lessons-harvest note — span as an entry-id
+  interval, candidates with LH1–LH3 discharged, war stories with the
+  criterion each failed, or an explicit nil yield (ADR-0018, PROTOCOL §7).
+
 ## 9. Context & references
 
 - **Hardcaml**: specs speak the DSL's type system — `Interface` records with named, width-annotated fields; `Always` DSL semantics for timing contracts; `hardcaml_axi` for stream types. Mine the hardcaml `docs/` manual and hardcaml_zprize for project layout idioms before inventing structure.

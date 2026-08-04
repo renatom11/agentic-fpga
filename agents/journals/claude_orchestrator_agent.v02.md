@@ -1483,3 +1483,52 @@ None new beyond the verdict's own §12 list.
 - site/public/index.html
 - site/public/org-chart.html
 - site/public/spec-atlas.html
+
+## [J-orchestrator-0180] 2026-08-04T19:40Z | task:none | The harvest is law - ADR-0018 transcribed into PROTOCOL, five charters, and the board
+
+### Trigger
+ADR-0018 landed at ec5d906 with its three transcription texts
+supplied verbatim; the ordering rule binds (the PROTOCOL hunk
+lands first or together with the charter clauses - together,
+here).
+
+### Reasoning
+The sponsor's direction ("not a one time thing... something we
+continually do") is now constitution: the lessons harvest is a
+per-gate precondition with a refusable three-part bar (LH1
+provenance, LH2 portability with the hide-the-provenance test,
+LH3 stated failure), span-tiling that makes a skipped harvest
+a visible arithmetic gap, nil-yield legitimacy so nothing gets
+minted to fill a table, and the two-tier structure that keeps
+the binding constitution lean while the shell's lesson library
+grows. His skepticism check shaped the design and both
+safeguards are structural. Transcribed per the ADR-0016
+mechanic: the §7 hunk into PROTOCOL under my identity, the
+identical §8 clause into all five persistent-journal charters,
+the board's deferred-intent line superseded as to cadence.
+Suite 51/51 after the PROTOCOL edit.
+
+### Actions
+ec5d906 push (architect's commit); this transcription commit;
+push; relay.
+
+### Evidence
+ec5d906; ADR-0018 §6/§8/§11; the suite line.
+
+### Outcome / DoD
+First instantiation of the harvest block lands with the
+P1-module-ready checklist; the first harvest fires at SO-M03.
+The architect left a scoreable prediction on the record: LH2
+will be the criterion that bites first.
+
+### Open questions
+None new.
+
+### Files-in-this-commit
+- agents/PROTOCOL.md
+- agents/charters/architect_docs_lead.md
+- agents/charters/rtl_lead.md
+- agents/charters/dv_lead.md
+- agents/charters/auditor.md
+- agents/charters/orchestrator.md
+- tasks/BOARD.md

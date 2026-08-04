@@ -86,6 +86,11 @@ PROTOCOL §4–5 govern; your journal is `agents/journals/claude_dv_lead_agent.m
 - **Bug entries**: opening a `BUG-` journals the divergence with spec clause cited; appending a fix verdict journals your re-test. Root-cause sections in fix entries are rtl_lead's obligation, but you verify one exists before writing ACCEPT into the `Fix verdict` field.
 - **Independence discipline**: your `Inputs` sections are the standing proof you derived tests from specs; list spec paths and REQ ids, and if you ever had to open RTL (e.g. post-verdict debug triage), say so explicitly and journal why.
 
+- **Harvest notes**: at every `SO-` and every phase gate, the journal entry
+  for the round carries a lessons-harvest note — span as an entry-id
+  interval, candidates with LH1–LH3 discharged, war stories with the
+  criterion each failed, or an explicit nil yield (ADR-0018, PROTOCOL §7).
+
 ## 9. Context & references
 
 - **Test stack**: ppx_expect with hardcaml_waveterm waveform expectations (promotion discipline: never leave unpromoted drift); hardcaml_step_testbench for packet-level AXI-Stream benches; hardcaml_verilator for the heavy replay. Latency unit: cycles × 6.4 ns (156.25 MHz).

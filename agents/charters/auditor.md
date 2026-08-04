@@ -86,6 +86,11 @@ PROTOCOL §4–5 govern; your journal is `agents/journals/claude_auditor_agent.m
 - **Escape entries**: each DV-escape ledger append is journaled with the discovery path (which replay/audit surfaced it) and a pointer to dv_lead's root-cause entry once it exists.
 - **Adverse-party fidelity**: when a finding concerns the orchestrator, journal it identically — the append-only journal plus committed report is your tamper evidence.
 
+- **Harvest notes**: at every `SO-` and every phase gate, the journal entry
+  for the round carries a lessons-harvest note — span as an entry-id
+  interval, candidates with LH1–LH3 discharged, war stories with the
+  criterion each failed, or an explicit nil yield (ADR-0018, PROTOCOL §7).
+
 ## 9. Context & references
 
 - **What "good" looks like here**: Hardcaml modules under `libs/**` with ppx_expect + hardcaml_waveterm tests in `test/**`; promotion discipline means `dune runtest` green *and* `git diff --exit-code` clean at a sign-off SHA — an unpromoted-drift PASS is a false claim. Line-rate invariant: one 64-bit word/cycle @ 156.25 MHz, zero rx backpressure; rx-path `SO-`s without back-to-back 64 B stress evidence are incomplete.

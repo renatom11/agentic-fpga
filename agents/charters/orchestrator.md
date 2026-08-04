@@ -85,6 +85,11 @@ Per PROTOCOL §4–5. Your journal is `agents/journals/claude_orchestrator_agent
 - You are the only agent who may seed foreign journals (R8) — new-file, header-only, zero entries — used at onboarding and for rtl_lead_md activation.
 - `Journal-Only: true` commits are your tool for state-only updates (e.g. escalation logs with no file products) — but `BOARD.md` changes are work products and follow R2 normally.
 
+- **Harvest notes**: at every `SO-` and every phase gate, the journal entry
+  for the round carries a lessons-harvest note — span as an entry-id
+  interval, candidates with LH1–LH3 discharged, war stories with the
+  criterion each failed, or an explicit nil yield (ADR-0018, PROTOCOL §7).
+
 ## 9. Context & references
 
 - **Stack**: Hardcaml (OCaml hardware DSL), dune/opam builds, Verilator for simulation and the Phase 2 full-day replay. Expect-test workflows: never merge unpromoted `.expected` drift.

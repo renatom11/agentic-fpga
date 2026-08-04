@@ -151,4 +151,6 @@ No other escalations pending._
   roles may be added or reshaped as the program learns, via the existing
   E2 + ADR + journal-seed mechanism. Deferred intent on record: at program
   end, extract the generic (project-agnostic) workflow from this org using
-  accumulated ADRs/journals as the lessons-learned source.
+  accumulated ADRs/journals as the lessons-learned source — superseded as to
+  cadence by ADR-0018: harvested per gate and per sign-off; the end-of-program
+  pass consolidates rather than extracts.
