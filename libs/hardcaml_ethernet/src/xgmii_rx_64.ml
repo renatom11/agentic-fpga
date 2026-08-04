@@ -955,7 +955,20 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
   let ev12 = ~:al_new &: bit al_keep 4 in
   let closed = sel_valid in
   let closure_aligned = closed &: (~:sel_is_r0 |: off4) in
-  let decided = ev12 |: closure_aligned in
+  (* MUTATION I-c7 -- WO-0061, NEVER MERGE. Seeded defect: SPEC-M03 6.1's
+     ruled D(m) makes an output word's deciding input word the one carrying
+     whichever arrives first of received frame octet 8m + 12 or the character
+     that closes the frame. Here a word with NO live closure record is decided
+     the moment it reaches the emission register -- the SUPERSEDED rule, the
+     input word carrying that word's own last octet -- so under injection every
+     non-[tlast] word leaves early, by the idle cycles injected between its own
+     last octet and its deciding octet. THE [tlast] WORD DOES NOT MOVE: its
+     release still needs [closed], and where [closed] holds the added term is
+     low, so [closure_aligned] alone releases it exactly as at base. Gapless
+     the two rules coincide -- [ev12] is already 1 on every cycle [have_word]
+     is with no live record -- so k = 0 is bit-identical. [hold] is the exact
+     complement of [decided] and follows it, so no word is emitted twice. *)
+  let decided = ev12 |: closure_aligned |: ~:closed in
   let emit_last_a = have_word &: decided &: closed &: (nc ==:. 0) &: (pc >: strip) in
   let emit_last_b = have_word &: decided &: (nc <>:. 0) &: (nc <=: strip) in
   fcs_tail_pending <== emit_last_b;
