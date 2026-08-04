@@ -949,3 +949,44 @@ None new; F-1 and N-1 ride their owners.
 
 ### Files-in-this-commit
 - docs/specs/requirements.md
+
+## [J-orchestrator-0168] 2026-08-04T10:40Z | task:WO-0060 | The re-base issued - the red set is on the record before the run
+
+### Trigger
+dv_lead returned with WO-0060 drafted; the F-1 repair had
+landed under it mid-draft and its two stale status sentences
+were re-based in the same entry, with the lesson stated.
+
+### Reasoning
+Committed f924f0f. The packet's two properties worth the
+board row: the predicted red set stated before any run (36
+units, word 0, delta = k - falsifiable in both directions),
+and the BUG-0002 reading bar with its reason (the packet now
+carries RTL source and design cycle tables; a bar without a
+reason gets worked around by a conscientious worker). dv's
+open question to the worker - whether the guard pair truly
+closes the not-emitted-early property - is the kind of
+invited contradiction that has been finding real defects all
+night. Board row at allocation; tb_writer dispatched (its
+v02 journal active, next entry J-tb_writer-0020).
+
+### Actions
+f924f0f push; board row; this commit; tb_writer dispatch.
+
+### Evidence
+f924f0f; the packet §6's red-set table; dv's return.
+
+### Outcome / DoD
+The bench round is running. After it: rtl_lead's emission
+round, then green, then the promotion harvest, then the
+BUG-0002 verdict at a bench that means something.
+
+### Open questions
+Whether d54c931 owes a countersignature - the architect ruled
+the refusal-is-the-review argument; dv recorded its agreement
+as observation-not-signature; I accept the architect's
+reasoning and record it here as the orchestrator's
+concurrence, revisitable if dv disputes a cell.
+
+### Files-in-this-commit
+- tasks/BOARD.md
