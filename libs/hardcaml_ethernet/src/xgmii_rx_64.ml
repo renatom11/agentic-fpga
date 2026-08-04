@@ -418,7 +418,23 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
   let inword_closing above =
     (lanes.is_terminate |: lanes.is_error |: lanes.is_start |: other_ctl) &: above
   in
-  let b_exists = bit lanes.is_start 0 &: i.cfg_rx_enable &: ~:(i.clear) in
+  (* MUTATION I-c9 -- WO-0061, NEVER MERGE. Seeded defect: REQ-113 requires a
+     sequence ordered set outside a frame to be IGNORED -- no output word, no
+     header effect and no strobe. Here a /Q/ (0x9c) in lane 0 arriving while
+     the machine is in [Idle] is acted on as though it were a start character:
+     it OPENS epoch B. Lanes 1 to 7 of a /Q/ word are themselves other-control,
+     so [b_closing] is non-zero and REQ-102's third sentence closes that frame
+     inside its own word under REQ-105. [survivor_b] therefore stays low, so
+     [begins], [frame_start4], the CRC seed, the counter reload and the state
+     machine do not move and NO OUTPUT WORD is produced -- while
+     [inword_strobes] reports the closure, PULSING ONE [error_bad_frame] TWO
+     CYCLES LATER for every /Q/ word. So: it OPENS a frame and PULSES a strobe,
+     and EMITS nothing. The gate is [Idle] rather than [a_open] low, so
+     REQ-108's discard window keeps the silence REQ-108 requires of it. *)
+  let q_opens =
+    bit i.xgmii_rx.c 0 &: (select i.xgmii_rx.d 7 0 ==:. 0x9c) &: sm.is State.Idle
+  in
+  let b_exists = (bit lanes.is_start 0 |: q_opens) &: i.cfg_rx_enable &: ~:(i.clear) in
   let c_exists = bit lanes.is_start 4 &: i.cfg_rx_enable &: ~:(i.clear) in
   let b_closing = inword_closing (of_int ~width:8 0xfe) in
   let c_closing = inword_closing (of_int ~width:8 0xe0) in
