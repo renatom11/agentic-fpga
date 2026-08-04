@@ -2158,3 +2158,302 @@ notes' citation sites ride the next family-I bench round.
 - test/xgmii_rx_64/bench.mli
 - test/xgmii_rx_64/test_m03_b.ml
 - test/xgmii_rx_64/test_m03_e.ml
+
+## [J-dv_lead-0102] 2026-08-04T23:05Z | task:WO-0063 | Phase A opened plan-first, and writing the plan before the bench killed one of my own claims before a bench could inherit it — the standing strobe monitor is not blind to a deferred report, it is not independent of the bench that hands it the pin
+
+### Trigger
+Orchestrator dispatch, `WO-0063` **phase A** — my own commission, standing since
+`J-dv_lead-0098` and re-confirmed in the `RV-0064` round's forward statement
+(`J-dv_lead-0101` Outcome). Phase A's own law, from §2.1 of that packet and
+charter §3: **the attack plan moves before the bench does**. This round is the
+opening commit's content — the plan edit, the worker's execution packet, and the
+`BUG-0003` §V.2 probe specification — and deliberately **no bench edit**.
+
+### Inputs
+- `agents/handoffs/WO-0063_m03-i2-report-path-delay-mini-round.md` in full (my
+  own draft: §1's two structural reasons, §2.1–2.4, §3's two intents, §4's
+  reachability discharge, §5's instrument fact, §7's dispositions, §8's
+  scheduling).
+- `agents/charters/dv_lead.md`; `agents/PROTOCOL.md` (§3, §4, §6, §7, §10 —
+  mandatory first actions).
+- `test/attack_plans/AP-xgmii_rx_64.md` — §4.I row M03-I2 and its two committed
+  members, §4.F/§4.H context rows, §8's open-question blocks, §9's change log.
+- `agents/handoffs/WO-0060_tb-m03-family-i-dm-rebase.md` §3.6, §3.7 and
+  `RV-0060-VERDICT` §10 item 3 (the three citation sites and the closed-list
+  finding against my own enumeration).
+- `agents/handoffs/BUG-0003_m03-lane-4-injected-word-cycle.md` §V.2 and §V.9 —
+  the probe's own specification and the three deferral grounds.
+- `agents/handoffs/WO-0061_family-i-mutation-campaign.md` §§4–5 (the shadowing
+  note and its deferral), `agents/handoffs/WO-0064_bench-machinery-consolidation.md`
+  "What this unlocks" (my scheduling), `agents/journals/claude_dv_lead_agent.v03.md`
+  entries `J-dv_lead-0094`, `0098`, `0101`.
+- **`test/**` read, and only `test/**`**: `test/xgmii_rx_64/test_m03_i.ml`
+  (`run_i2_member`, `run_i2`, the module docstring, the five owed bench notes,
+  the three citation sites), `test/xgmii_rx_64/test_m03_f.ml` (`run_f2`),
+  `test/xgmii_rx_64/bench.ml` / `bench.mli` (`assert_monitors_clean`,
+  `one_frame`, `directed_frame_octets`), `test/xgmii/injection.mli`,
+  **`test/monitors/strobe_monitor.mli` AND `strobe_monitor.ml`** — the `.ml`
+  deliberately, and §Reasoning records why.
+- **No `libs/**`, no `rtl_snapshots/**`, no `docs/reports/audit/**`.**
+  `BUG-0002` was not opened (it carries RTL source); `BUG-0003` was, and it is
+  mine.
+
+### Reasoning
+**Why a member and not a row, restated where the auditor reads it.** `WO-0061`
+§12 — my own footnote — asked for a *row*. A new row would carry a **copy** of
+M03-I2's silent-tail scan, and qualifying a copy qualifies nothing about M03-I2:
+the instrument under test has to be the committed one. The correction was already
+in the packet; what this round does is put it on the **plan's** record, because
+the plan is what the auditor mines for rejected attacks and superseded
+dispositions, not the packets.
+
+**Why the row needed a strobe-owing member at all, and both halves of the
+answer are structural rather than about intent strength.** `run_i2_member`
+asserts each output word's cycle **before** it scans the silent tail, so a drain
+defect emitting one cycle late always raises at the per-word guard and never at
+the window — the `tvalid` half is permanently shadowed at every member and every
+lane. And the strobe half, the only unshadowed axis, has never had a stimulus:
+both committed members are clean frames that owe no strobe. Member (iii) is
+M03-F2's `k` = 0 frame, so the row's own declared kill becomes reachable with **no
+new machinery**.
+
+**The trap is the reason the plan edit had to be mine and not the worker's.**
+`run_i2_member` takes its boundary from `Arrival.terminate_octet_time`, which for
+this stimulus is the **auto-placed** terminate at cycle 10, not the injected
+closing character at cycle 2. A member inheriting that field asserts silence from
+cycle 13 while the whole event lives at cycles 2–5 — green against anything,
+forever, with no symptom. That is a derivation fact about the row, so it belongs
+in the `Observable` cell, and I converted it into an executable guard in the
+worker packet rather than leaving it as a warning.
+
+**The correction that decided the round, and it is against myself.** §5 of my own
+packet says a report deferred to `W + 3` sits inside §0.6's window and outside
+C-14.3's bound, and concludes the standing `Strobe_monitor` *"cannot see IC-1 at
+any unit at all"*. I had derived that from the monitor's **interface prose**,
+which describes the §0.6 window check because that is the check the module was
+built to explain. Writing the worker's assertion order forced me to answer a
+different question — *how does this member keep the monitor clean while driving a
+strobe?* — and that sent me to `strobe_monitor.ml`'s matching, which pairs
+expected events to observed high cycles **exactly on `(strobe, cycle)`**. A pulse
+moved by one cycle is therefore simultaneously a `missing` event and an
+`unexpected` pulse, `is_clean` is false, and `assert_monitors_clean` fails at
+**every** unit registering a no-output-word expectation. §5 is wrong; the
+predicted convicting set for phase B is **wider** than it said. What survives is
+sharper: the monitor detects the class only by re-checking a pin **this bench
+computed and handed it**, so it is **not independent**, and no assertion anywhere
+in this bench reads a report against **C-14.3** except M03-I2's own window.
+
+**This is exactly what the plan-before-bench ordering is for, and it is the first
+round in which it visibly paid.** The false sentence would otherwise have been
+copied into a bench comment, into the phase-B seal's denominator, and into a
+verdict — and a seal that under-predicts its own convicting set scores a campaign
+in the direction that flatters its author. It cost nothing to find because no
+bench existed yet to disagree with.
+
+**A second correction fell out of the same reading, and I fixed my sentence
+rather than let a worker discover the collision.** §2.3 says member (iii) *"does
+not assert §9's pin"*. Taken literally that is unimplementable: there is no
+unpinned form of `Strobe_monitor.expect`, and a unit that drives a strobe and
+registers nothing fails `assert_monitors_clean` **on a conformant design**. Ruled:
+register the event exactly as `run_f2` does, and scope the prohibition to **the
+member's own assertions** — no comparison of an observed pulse cycle to 4, no
+message of its own naming it. The registration is a standing obligation-4
+artefact, evaluated **last**, so it cannot be *"an earlier assertion in that
+unit"* under §7 disposition 4 and cannot shadow the window. §7's dispositions do
+not move; only the reading of "asserts the pin" is sharpened.
+
+**Why the worker's packet is a separate file rather than a section of `WO-0063`.**
+§0 of that packet makes blinding a property of the **reader**, and it names IC-1
+and IC-2 in §3. Appending worker-facing instructions to it would break its own
+law in the commit that states it, and "the orchestrator excerpts §9" is a
+protection rather than a check — precisely the shape `J-dv_lead-0101` banked as a
+candidate. So `WO-0063A` is self-contained, and `WO-0063` §9 carries the exposure
+ledger instead of assuming one. The ledger is honest about what leaks: the AP
+row's `Kills` cell now names the class, unavoidably, and §2.4 already priced that
+discount; what stays back is the **rendering** — §3.1's scoped-versus-shared axis
+is what the seal branches on, and the class alone does not determine it.
+
+**Applying `J-dv_lead-0101`'s own lesson to the packet I just wrote.** Every
+claim `WO-0063A` makes about existing code — the eight derived numbers, the
+quoted `run_i2_member` lines, the three citation sites — is written as a claim to
+**verify and report**, never as an exemption. §7 says so in terms, and §9's BO-1
+bounces a guard edited to match code after a disagreement. The citation-site
+enumeration is explicitly **not** claimed closed, because claiming a closed list
+is exactly how those three sites survived two rounds (`RV-0060-VERDICT` §10 item
+3 is a finding against my own `WO-0060` §3.6).
+
+**On the `BUG-0003` probe's scheduling.** §V.9 deferred it on three grounds; two
+expired (phase A opens a bench file; no seal is frozen while it does) and the
+third — one round, one base SHA — is **honoured, not waived**, by keeping the
+probe out of phase B. Its harvest is reported in its own block against no campaign
+denominator, and the severity line stays **MAJOR** until the two numbers return.
+I fixed the decision rule before the run so no result can be re-read afterwards,
+including the branch that says my correspondent's derivation is wrong.
+
+### Actions
+- Amended `AP-xgmii_rx_64.md` §4.I row **M03-I2** in four cells — Attacks
+  (member (iii)'s §9/§0.6 context, marked *not asserted*), Stimulus (the
+  EXTENDED banner, the member/row correction, member (iii)'s construction),
+  Observable (the eight-number derivation at both lanes, the boundary trap, the
+  assertion order, the §9-pin exclusion), Kills (the two structural reasons the
+  window has been silent, the class member (iii) reaches, the corrected
+  monitor-reach paragraph, the stated discount).
+- Added **§8 item 6** — the §0.6-versus-C-14.3 open question to
+  architect_docs_lead, carrying the corrected monitor statement.
+- Added the **§9 change-log row** for `J-dv_lead-0102`, with counts re-derived
+  from the file.
+- Appended **§9 and §10 to `WO-0063`**: the phase-A dispatch record and exposure
+  ledger; three forward corrections (§5's monitor claim, §2.3's pin prohibition,
+  §12's row-versus-member footnote); and the finalized `BUG-0003` §V.2 probe
+  specification for the orchestrator.
+- Wrote **`agents/handoffs/WO-0063A_m03-i2-member-iii-bench.md`** — the phase-A
+  execution packet for tb_writer: the artefact, the stimulus, the eight numbers
+  as a derivation to check, the trap and its executable guard, the nine-step
+  assertion order, the strobe-monitor ruling, the three citation sites, the
+  out-of-scope list with its no-exemption clause, ten review bars and ten BOUNCE
+  conditions.
+- **No bench file edited. No git command run.**
+
+### Evidence
+All commands runnable from a checkout at this commit.
+
+- Row and status counts, re-derived from the amended file rather than carried
+  forward:
+  `awk 'NR>=126 && NR<=720' test/attack_plans/AP-xgmii_rx_64.md | grep -c '^| \*\*M03-'`
+  → **78**; the same selection piped through
+  `awk -F'|' '{print $(NF-1)}' | sort | uniq -c` →
+  **62 ASSERT, 7 NO-ASSERT, 4 NO-STIMULUS, 4 STRUCTURAL, 1 GAP**. Unchanged from
+  `J-dv_lead-0100`.
+- Table integrity after the edit: the same selection through
+  `awk -F'|' '{print NF}' | sort | uniq -c` → **78 rows, all with 8 fields**
+  (6 columns), so no cell boundary was broken by the four amended cells.
+- The derivation, cross-checked against the committed bench that already drives
+  this stimulus — `test/xgmii_rx_64/test_m03_f.ml:404-410`:
+  `closing_ot = start_ot + 8 + k`; `closing_cycle = closing_ot / 8`;
+  `expected_pulse_cycle = closing_cycle + 2`; `expected_not_before =
+  closing_cycle`; `expected_not_after = if k = 0 then closing_cycle + 3 else …`.
+  At `k` = 0 and `start_ot` ∈ {8, 12} that is **W = 2, pin = 4, window [2, 5]**,
+  and C-14.3's `W + 3` = **5**, at both lanes — the numbers landed in the plan.
+- The trap, from the committed source: `test/xgmii_rx_64/test_m03_i.ml:398-402`
+  computes `terminate_ot = Arrival.terminate_octet_time frame`,
+  `terminate_cycle = terminate_ot / 8`, `boundary = terminate_cycle + 3`. For
+  member (iii)'s stimulus the declared terminate is the auto-placed one at octet
+  time 80 → cycle 10 → boundary **13**, against the true boundary **5**.
+- **The §5 correction, read from the implementation and not from the prose**:
+  `test/monitors/strobe_monitor.ml`'s `match_up` pairs an expected event to an
+  observed pair only when `s = e.strobe && c = e.cycle` — an **exact** match on
+  name and cycle; unmatched expectations become `missing`, unmatched observations
+  become `unexpected`, and `errors`/`is_clean` fold both. A pulse moved from
+  `W + 2` to `W + 3` therefore produces **both** error classes.
+  `test/xgmii_rx_64/bench.ml:344`'s `assert_monitors_clean` fails on
+  `not (Strobe_monitor.is_clean …)`.
+- The three citation sites, located **by content**:
+  `grep -rn 'RV-0059-VERDICT §8' test/` → `test_m03_i.ml:938`, `:1394`, `:1501`;
+  the fourth, `:41–42`, is **line-wrapped** across the `(RV-0059-VERDICT` /
+  `§8,` boundary and is invisible to a line-based grep — which is why the
+  worker packet instructs locating by content and forbids treating the
+  enumeration as closed. `:938` is already in `WO-0060` §3.6's repaired form
+  (authority `1f3c04c`, §8 kept as history) and is marked do-not-edit.
+- The five `Owed bench note` blocks are present at
+  `test_m03_i.ml:276, 316, 409, 451, 496, 665, 702, 1091, 1103, 1567, 1631,
+  1640, 1682` (`grep -n 'Owed bench note' …`), i.e. landed at `WO-0062`'s round;
+  their remaining citation sites are the item `WO-0064` deferred and are named
+  in `WO-0063` §9.6 as **not** riding this round.
+- `git status --porcelain` at this tree: exactly the three files listed below
+  (two modified, one added). **No RTL path, no `docs/**` path, nothing outside
+  my write scope (PROTOCOL §6).**
+- **Not run, and stated rather than implied**: `dune build` / `dune runtest`.
+  The local toolchain is unavailable (**ADR-0005**) and **CI is authoritative**;
+  this commit stages no compiled artefact — two Markdown edits and one new
+  Markdown packet — so there is no build claim to make. The first build claim of
+  this round belongs to phase A's bench commit.
+
+**Harvest (ADR-0018, PROTOCOL §7).** **Not due this round** — no `SO-`, no gate.
+Span since the note at `J-dv_lead-0101`: **J-dv_lead-0102** (this entry);
+cumulative untiled span **J-dv_lead-0001 … 0102**, with the first harvest still
+firing at `SO-M03` and stating that interval so the tiling stays visible.
+
+- **All three banked candidates carry unchanged**: `J-dv_lead-0099`'s (a
+  partition idiom whose precondition is unstated), `J-dv_lead-0100`'s (a helper
+  inheriting its first caller's name, so the name describes the situation rather
+  than the obligation — **applied** this round as a naming bar in `WO-0063A` §1,
+  which is its use, not a new incident), and `J-dv_lead-0101`'s (an instruction
+  that exempts an artefact from review by asserting it correct — **applied** this
+  round as `WO-0063A` §7's no-exemption clause and BO-1). Application is not
+  evidence; none of the three gains an incident and none collapses.
+- **The probable war story carries unchanged**: my `RV-0062-VERDICT` §5
+  six-versus-seven miscount.
+- **The worker's LH2-g candidate at `J-tb_writer-0022`** (a blind text-pattern
+  equivalence check cannot distinguish payload from prose) carries with my
+  `J-dv_lead-0101` strengthening clause, unchanged.
+- **One NEW candidate banked, LH2-g, and its adjacency is declared rather than
+  hidden.** *Rule*: a negative claim about an instrument — *"it cannot detect
+  X"* — must be derived from the instrument's **matching rule**, never from its
+  documentation or its stated purpose; an instrument normally implements several
+  independent checks and its prose describes the one it was built to explain, so
+  a blindness claim read off the prose is a claim about one check presented as a
+  claim about the instrument. *Observable*: every "cannot detect" sentence in a
+  packet or verdict cites, by location, the comparison whose failure the claim
+  depends on. **LH1**: this round — I wrote that a standing monitor could not see
+  a one-cycle deferral, having read the window check its interface documents;
+  its matching implementation compares name and cycle exactly, so it detects the
+  deferral at every registering unit, and the packet's predicted convicting set
+  was too narrow. **LH2-g** — no proper noun in the rule. **LH3**: without it, a
+  campaign under-predicts its own convicting set, and an under-predicting seal
+  scores a result in the direction that flatters its author. **Domain pack**: n/a
+  (general). **Adjacency**: this overlaps my `J-dv_lead-0101` strengthening
+  clause (*enumerate what a check's pattern cannot match, because a blind spot is
+  not visible in its output*); the two may be one rule about **evidence for
+  negative coverage claims**, and **the harvest decides whether to merge them** —
+  I am not merging them myself, and I am not banking the overlap twice as if it
+  were two incidents.
+
+### Outcome
+`WO-0063` **phase A opened**, DoD met for the opening commit as the packet
+defines it (§2.1: plan edit before bench, dv_lead's and not the worker's).
+Delivered: the M03-I2 member (iii) plan edit in four cells plus §8 item 6 plus
+the §9 change-log row, counts re-derived and unchanged; the phase-A execution
+packet `WO-0063A` for tb_writer with ten bars and ten BOUNCE conditions; and
+`WO-0063` §§9–10 carrying the dispatch record, the exposure ledger, three forward
+corrections against my own text, and the finalized `BUG-0003` §V.2 probe
+specification.
+
+**Handoff**: this tree to the orchestrator for commit (three files, trailer
+`Agent: dv_lead`, `Work-Order: WO-0063`). Then, in either order or in parallel
+(`WO-0063` §10.4): **tb_writer spawned on `WO-0063A`** — with **`WO-0063` itself
+withheld from that spawn** — and the **orchestrator operating the `BUG-0003`
+§V.2 transient** at `fafb83d`. Phase B does not open until phase A's bench has
+landed and its seal has been frozen in the commit that issues the campaign
+packet.
+
+### Open-questions
+1. **`WO-0063` §5's convicting-set figure is now known to be too narrow** (§9.3).
+   The phase-B seal must be frozen against the corrected reach — every unit
+   registering a no-output-word expectation reddens under IC-1 through
+   `assert_monitors_clean` — and the seal is owed **in the commit that issues the
+   phase-B packet**, before any diff exists (R-SEAL-1; §6's forward commitment is
+   a promise, and an unredeemed promise is adjudicated as no seal at all).
+2. **New, to architect_docs_lead** (AP §8 item 6): is §0.6's `[W, W + 3]` window
+   normative for M03's no-output-word reports alongside §9's exact pin, and is a
+   report at `W + 3` therefore conformant under §0.6 and non-conformant under
+   C-14.3? No row moves on the answer.
+3. **`BUG-0003` stays MAJOR** until the §V.2 probe's two numbers return. If they
+   come back conformant, §9.2's derivation of the pre-fix design did not
+   reproduce, and that result is owed a disposition in the packet just as loudly
+   as a conversion would be.
+4. Carried unchanged: `WO-0058` bound 7 (an in-word REQ-110 abort with a frame
+   already open on entry) still has no candidate row; the
+   `assert_following_frame_intact` / `assert_clean_frame_structure` merge stays
+   deliberately uncommissioned as a redesign, not a refactor; `WO-0061` §8 bound
+   1's `tkeep` half at an injected run stays unmeasured; `WO-0064`'s five owed
+   notes' remaining citation sites ride a later round, by that packet's own
+   scheduling; family J behind a bench-capability round; `SO-xgmii_rx_64.md`
+   remains unopened and is not offered.
+5. **My own bar 1 mis-specification** (`J-dv_lead-0101` open question 1) is not
+   yet discharged, and this packet did not need it — `WO-0063A` has no
+   behavioural-equivalence criterion. It falls due at the next packet that does.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0063A_m03-i2-member-iii-bench.md
+- agents/handoffs/WO-0063_m03-i2-report-path-delay-mini-round.md
+- test/attack_plans/AP-xgmii_rx_64.md

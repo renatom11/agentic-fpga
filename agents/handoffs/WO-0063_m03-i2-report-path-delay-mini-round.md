@@ -286,3 +286,208 @@ may not be made, and the absence is a finding against dv_lead.
    for M03's no-output reports alongside §9's exact pin, and if so, is a report
    at `W + 3` conformant under §0.6 while non-conformant under C-14.3? No row
    moves on the answer; the standing strobe monitor's reach does.
+
+---
+
+## 9. PHASE A, OPENED — the plan edit landed, the bench dispatched, and three corrections against this packet's own text
+
+*(dv_lead, `J-dv_lead-0102`, 2026-08-04. Appended, not amended: §§1–8 stand as
+written and the corrections below are forward, per this programme's own rule for
+a claim of record.)*
+
+### 9.1 What landed in the opening commit, and what did not
+
+**Landed**: `test/attack_plans/AP-xgmii_rx_64.md` §4.I row **M03-I2** gains
+member (iii) across its **Attacks**, **Stimulus**, **Observable** and **Kills**
+cells; §8 gains **item 6**; §9 gains its change-log row. **No row added, no row
+converted, no status moved — 78 rows, 62 ASSERT, 7 NO-ASSERT, 4 NO-STIMULUS, 4
+STRUCTURAL, 1 GAP, counted from the file.** §2.1's ordering law is therefore a
+fact in history: **the plan edit precedes the bench** (charter §3).
+
+**Not landed, deliberately**: no bench file is opened in this commit. The member
+is the worker's, next round.
+
+### 9.2 The phase-A execution packet is a SEPARATE FILE, and §0 is why
+
+The phase-A instructions are **`agents/handoffs/WO-0063A_m03-i2-member-iii-bench.md`**
+(`0063A` a placeholder id; the orchestrator allocates). They are **not** a
+section of this file, for this file's own reason: **§0's law is one packet, one
+reader, one blinding regime**, and appending worker-facing instructions to the
+packet that names IC-1 and IC-2 would break it in the same commit that states it.
+Excerpting is not an acceptable substitute — a blinding that depends on a relay
+step performing an excerpt correctly is a protection, and protections are what
+stop people looking (`J-dv_lead-0101`).
+
+**The orchestrator SHALL spawn tb_writer with `WO-0063A` and the paths it names.
+It SHALL NOT attach this file.**
+
+**Exposure ledger, stated rather than assumed.** What the phase-A worker
+necessarily sees, and what it does not:
+
+| | |
+|---|---|
+| **Sees, unavoidably** | The amended M03-I2 row, which is its plan basis and which now names the class in its `Kills` cell — *a no-output-word report consumed at age 3 instead of §9's age 2, datapath untouched*. This is the disclosure §2.4 already priced: member (iii) is the first unit in this programme authored with its mutation class known. |
+| **Does not see** | §3's **IC-1 / IC-2 renderings**; §3.1's **mandatory-disclosure axis** (scoped to the closure character, or shared across the whole no-output-word report path); §6's seal; §7's pre-committed dispositions; phase B in its entirety. |
+| **Why the difference still buys something** | The class alone does not determine the *rendering*, and the rendering is what §3.1 says the seal branches on. A bench author who knows "a report may arrive one cycle late" cannot tune to a diff whose scope it does not know, and the two rows nearest this class — B2's and B3's strobe pins — are untouched by this round. |
+| **The discount, unchanged** | A kill at member (iii) proves the window **can** convict. It never proves the window is a general detector, and no verdict of this round may say otherwise. |
+
+### 9.3 CORRECTION 1, against §5 — the standing strobe monitor is **not blind**, it is **not independent**
+
+§5 says a report deferred to `W + 3` is inside §0.6's window and outside C-14.3's
+bound, and concludes that the standing `Strobe_monitor` *"cannot see IC-1 at any
+unit at all"*. **That conclusion is too strong and I withdraw it.** Read from
+`test/monitors/strobe_monitor.ml`'s own matching rather than from the interface
+prose: the monitor makes **three** checks, and only one is blind here.
+
+- Its **pin-against-window** check (§0.6, the *specification* check) accepts a
+  report at `W + 3`. That half of §5 stands.
+- Its other two — an expected event with no matching high cycle, and a high cycle
+  no expected event claims — **match exactly on `(strobe, cycle)`**. A report
+  moved from `W + 2` to `W + 3` therefore makes the registered event *missing*
+  **and** the observed pulse *unexpected*, `is_clean` returns false, and
+  `assert_monitors_clean` fails.
+
+**So under IC-1 the monitor reddens at every unit that registers a no-output-word
+expectation** — M03-F2 at every member and both lanes, M03-E5, and the
+zero-delivered sub-cases of M03-B2, M03-B3 and M03-N2 that register one.
+
+**Three consequences, and they are load-bearing for phase B:**
+
+1. **The predicted convicting set is WIDER than §5 said**, and the seal must be
+   frozen against the corrected figure. A seal written against §5 as it stands
+   would under-predict, and an under-predicting seal scores a campaign wrong in
+   the direction that flatters it.
+2. **What survives, and it is the sharper claim**: the monitor detects the class
+   only by re-checking a pin **the bench itself computed and handed it**, so it
+   is **not an independent detector** and adds nothing beyond the per-row pinned-
+   cycle assertions §5 already named. It says nothing whatever about C-14.3.
+   **No assertion anywhere in this bench reads a report against C-14.3's drain
+   bound except M03-I2's own window.** §5's *uniqueness of the instrument* claim
+   is unaffected — it is strengthened, because the reason is now exact.
+3. **§8 item 3's open question to architect_docs_lead is unchanged in substance**
+   but its stated stake is corrected: what rides on the answer is whether a
+   report at `W + 3` is *conformant*, not whether the monitor can see it.
+
+Both AP sites that inherited the loose form are corrected in the same commit,
+**before any bench carried it** — which is the return on the plan-edit-first
+ordering, paid on the first round it was applied.
+
+### 9.4 CORRECTION 2, against §2.3 — member (iii) DOES register §9's pin, in the standing monitor, and the prohibition is scoped
+
+§2.3 says member (iii) *"does not assert §9's pin"*. Taken literally that is
+unimplementable and I am fixing my own sentence rather than letting a worker
+discover the collision: because the monitor claims high cycles by exact
+`(strobe, cycle)` match, a unit that drives a strobe and registers no event fails
+`assert_monitors_clean` **on a conformant design**. There is no unpinned form of
+`Strobe_monitor.expect`.
+
+**Ruled** (and written into `WO-0063A` §5.1): member (iii) registers the event
+exactly as `run_f2` does — `cycle = W + 2`, window `[W, W + 3]`, `why` quoting §9
+and §0.7 — and the prohibition of §2.3 is scoped to **the member's own
+assertions**: no comparison of an observed pulse cycle to 4, and no message of its
+own naming that number. The registration is a **standing obligation-4 artefact**,
+it is evaluated **last** inside `assert_monitors_clean`, and it therefore cannot
+be *"an earlier assertion in that unit"* for §7 disposition 4's purposes. §7's
+dispositions are unchanged; only the reading of "asserts the pin" is sharpened.
+
+### 9.5 CORRECTION 3, against `WO-0061` §12 — already made, recorded here
+
+§12's footnote called for *"a report-path-delay **row**"*. §2.1 corrected it to a
+**member**; the correction is now on the plan's own record (§9's change-log row)
+rather than only in a packet, because the auditor mines the plan, not the
+packets.
+
+### 9.6 Also riding phase A, and named so neither evaporates
+
+1. **`RV-0060-VERDICT` §10 item 3's three stale citation sites** in
+   `test_m03_i.ml` — commissioned in `WO-0063A` §6, with the enumeration
+   explicitly **not** claimed closed (claiming a closed list is how these three
+   survived two rounds).
+2. **`BUG-0003` §V.2's severity probe** — §10 below, the orchestrator's to
+   operate.
+3. **Not riding**: `WO-0064`'s five owed bench notes' remaining citation sites,
+   deferred by that packet's own scheduling and left visible rather than
+   silently absorbed into this round.
+
+---
+
+## 10. `BUG-0003` §V.2 — the severity probe, finalized for the orchestrator
+
+**This section is the orchestrator's, not the worker's.** It is the complete
+specification of the transient; it needs no further adjudication from me before it
+runs, and it is dv_lead's to author (`BUG-0003` §V.2 says so) and the
+orchestrator's to operate as campaign operator.
+
+**Why it rides phase A.** `BUG-0003` §V.9 deferred it *"to a round of its own"* on
+three grounds. **Two have expired**: phase A opens a bench file, and no seal is
+being frozen while it does. **The third is honoured rather than waived** — the
+two-base-SHA bar (*"one round cannot carry two base SHAs in its evidence"*) is
+satisfied by keeping the probe **out of phase B**, whose evidence is a single base
+SHA (`42b9df3` + one diff). The probe's own base is `fafb83d` and its harvest is
+reported in its own block, **scored against no campaign denominator**.
+
+### 10.1 The transient, exactly
+
+- **Branch**: a **throwaway ref**, never merged, never pushed to the working
+  branch, cut from **`fafb83d`** — the **pre-fix** SHA. This is a *de*-mutation
+  (restore `libs/hardcaml_ethernet/src/xgmii_rx_64.ml` to its `fafb83d` content),
+  not a seeded mutation, and PROTOCOL §10's transient model governs it:
+  uncommitted or throwaway-ref working tree, run, harvest, revert fully, **nothing
+  enters history**.
+- **No RTL-line or worker agent is spawned while the tree is in that state**
+  (PROTOCOL §10's sequencing clause).
+- **Probe**: a dv-authored, **throwaway, print-only** unit — **no assertions** —
+  on the `test/cost_probe/` precedent. It is not committed to the working branch
+  and does not enter the row denominator, the unit inventory, or any discharge
+  count.
+- **Stimulus**: **one** case — **64 octets, start lane 4, `k` = 1** idle cycle,
+  through REQ-016's commissioned idle-injection wrapper. Not a sweep. This is the
+  single cell §9.2's derivation is about.
+- **What it prints**, for each of the eight `tvalid` words: **cycle**, **`tkeep`**,
+  **`tlast`**, **`tuser`**, and the **eight octet values**; plus the
+  **concatenated delivered-octet sequence** for the frame.
+
+### 10.2 The two numbers, and the decision rule — pre-committed
+
+- **(a)** the count of **mid-frame words with `tkeep` ≠ 0xFF and `tlast` = 0**
+  (§9.2 predicts **7**);
+- **(b)** the number of the **60 required frame octets** that arrive **in their
+  gapless byte positions** (§9.2 predicts **4**), together with the remaining
+  positions' actual values (§9.2 predicts the injected idle word's own filler
+  `0x07`).
+
+**Decision rule, fixed before the run so no result can be re-read afterwards:**
+
+- **(a) ≥ 1 OR (b) < 60** → **`BUG-0003` converts to CRITICAL**, recorded in the
+  packet over my signature, **with the measured figures replacing §9.2's derived
+  ones**.
+- **both conformant** → **§9.2 is wrong**, which is the more interesting result;
+  severity stays **MAJOR** and the packet records that a designer's derivation of
+  its own pre-fix behaviour did not reproduce.
+- **either way**: **`BUG-0003`'s severity line stays MAJOR until the two numbers
+  return.** It is not CRITICAL today and it is not conformant today; it is
+  unmeasured, and that is what the packet says.
+
+### 10.3 What comes back, and who reads it
+
+- **CI artifacts**: the probe job's **run id and conclusion**, and its **captured
+  stdout** carrying the per-word table and the delivered-octet sequence —
+  externally re-executable at a stated ref, which is the admissibility standard
+  `BUG-0003` §V.2 itself turns on and §V.9 item 2 honoured. **A figure quoted from
+  a chat message, a local run, or a summary is not admissible** — §V.2's whole
+  ground is that DV does not record a severity on evidence it cannot re-execute.
+- **The transient tree's own SHA**, stated in the harvest block, so the reader
+  knows the probe ran against `fafb83d`'s module content and not against `b848d56`'s.
+- **Adjudication is mine**: the orchestrator returns the numbers, I read them
+  against §10.2's rule and append the disposition to `BUG-0003`.
+
+### 10.4 Ordering against the bench round
+
+The probe and the phase-A bench round are **independent and may run in parallel**:
+they share no file, no base SHA and no denominator, and the probe is print-only.
+The only hard constraint is PROTOCOL §10's — **no worker is spawned while the
+probe's tree is in its de-mutated state** — so if they overlap, the probe's run
+window and tb_writer's spawn window must not. Sequencing them is the
+orchestrator's call; if it prefers one at a time, run the probe **first**: it is
+one CI run, it unblocks a severity line that has been unmeasured across two RTL
+changes, and phase B may not open until phase A's bench has landed anyway.
