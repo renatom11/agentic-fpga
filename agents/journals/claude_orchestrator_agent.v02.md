@@ -1787,3 +1787,31 @@ pushed.
 
 ### Files-in-this-commit
 - tasks/BOARD.md
+
+## [J-orchestrator-0189] 2026-08-08T16:35Z | task:WO-0063 | Phase A open - and the probe waits on its own author
+
+### Trigger
+dv's phase-A opening round landed at 11da1e2 (J-dv_lead-0102): the plan
+edit, the blinded WO-0063A split, §9/§10 appended to WO-0063, and the
+self-correction on the strobe monitor (not blind - not independent)
+made before any bench inherited the wrong claim.
+
+### What I did
+- Committed and pushed the round; board row flipped to PHASE A OPEN with
+  the full note.
+- Read §10 in full before operating anything. Caught a gap between spec
+  and operability: §10.1 requires the probe unit be DV-AUTHORED (BUG-0003
+  §V.2's own rule) and no probe file exists - dv specified it but did
+  not write its bytes. Operating with orchestrator-authored probe code
+  would put the wrong author on the evidence.
+- SendMessage-resumed dv to author the probe files OUTSIDE the repo
+  (scratchpad), on the cost_probe precedent, compiled against fafb83d's
+  interfaces, zero assertions, BUG3-PROBE prefix - with the explicit
+  instruction NOT to append a journal entry for throwaway transient
+  content that never enters history, and to object rather than comply
+  if it reads the protocol differently.
+- Sequencing per §10.4: probe transient FIRST (no worker while the
+  de-mutated tree is live), tb_writer on WO-0063A after.
+
+### Files-in-this-commit
+- tasks/BOARD.md
