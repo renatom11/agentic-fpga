@@ -3746,3 +3746,273 @@ span **J-dv_lead-0001 … 0107**, first harvest still firing at `SO-M03`.
 
 ### Files-in-this-commit
 - agents/handoffs/WO-0063B_pre-run-reading-note.md
+
+## [J-dv_lead-0108] 2026-08-05T14:10Z | task:WO-0063 | M03-I2 QUALIFIED on a sealed cell hit character for character from the window's own scan — and the three findings the round produced are all mine, one of them a rule I banked two entries earlier failing in my own hands
+
+### Trigger
+The orchestrator, returning both transients run at `c0595f9`: IC-2 (control,
+`mut/wo-0063b-ic2`, `dbc4b0a`) and IC-1 (`mut/wo-0063b-ic1`, `b82b888`), with
+decoded full build logs on disk for my own extraction. Adjudication is mine per
+`WO-0063B` §9 and the seal's §9 pass criteria, against
+`WO-0063B_…-SEALED-predictions.md` frozen at `c6c3287` and opened for the first
+time in this entry.
+
+### Inputs
+- The two decoded CI logs in the session scratchpad
+  (`wo63b_ic1_build_log_decoded.txt`, `wo63b_ic2_build_log_decoded.txt`) — the
+  complete `runtest` output and the promotion blocks. **Ephemeral artefacts**
+  (ADR-0003/F5): they are transcriptions of CI runs **30955875363** and
+  **30955861141**, which are the externally verifiable references, and every
+  figure below is re-derivable from those runs rather than from the files.
+- `agents/handoffs/WO-0063B_m03-i2-report-path-campaign-SEALED-predictions.md`
+  at `c6c3287` — **opened for the first time**, after the scorecard existed.
+- `agents/handoffs/WO-0063B_pre-run-reading-note.md` — §1.3/§1.4, §2.2, §3.1, §4.
+- `agents/handoffs/WO-0063B_m03-i2-report-path-campaign.md` §6's dispositions.
+- `docs/reports/audit/WO-0063B-mutations/README.md` §3.0 (the auditor's
+  independent epoch-A derivation for member (iii)), §7.1's measurement.
+- `test/xgmii_rx_64/test_m03_i.ml` `:845–:854` and `:887` (raise-site
+  attribution); `test/xgmii_rx_64/test_m03_d.ml` `:266`, `:330`, `:408`, `:455`
+  (the `run_mixed_pair` call sites — the §6.1 finding).
+- `git diff --name-only c0595f9 HEAD -- test/ libs/`; `git diff --stat c0595f9
+  HEAD -- test/xgmii_rx_64/test_m03_i.ml`; `git diff c6c3287 HEAD --
+  <the seal>`; `git status --porcelain`.
+- **No RTL opened.** No `libs/**` path read; the diffs were read as quoted in the
+  auditor's own README at the pre-run stage and not re-opened here.
+
+### Reasoning
+
+**1. The three preconditions before any scoring, because an ordering rule
+discharged once is not discharged.** `git diff --name-only c0595f9 HEAD -- test/
+libs/` is **empty**; the scoring unit's own file is byte-identical to the base;
+the seal is unmoved since its freeze. So the bench that judged these mutants is
+the bench frozen strictly before they existed, and the seal was opened only after
+the scorecard existed. Every one of those is a check I could have skipped and
+asserted; none of them is worth asserting.
+
+**2. IC-1 — the cell is hit character for character, and the ordering is proved
+by a backtrace rather than argued.** The raised message decodes (`\194\167` = §)
+to exactly the sealed §3.1 lane-0 string, including the citation my own commit 1
+created. The backtrace puts the raise at **`test_m03_i.ml:847`** — step 6's
+strobe assertion — reached from `run_i2:953`, the lane-0 call site.
+**`:887`, `assert_monitors_clean`, never executed.** So the red arrived *with the
+window's own message, from the window's own scan, before the standing monitor was
+reached*. Seal §3.2's shadowed branch is not taken; disposition 4 does not fire.
+
+**This is the one thing the round existed to establish**, and what makes it
+evidence rather than a claim is the ordering: the string was frozen before the
+diff existed, the bench before the mutant, and the alternative outcomes were
+written down beside the required one. Any of those three missing and this would
+be a story about a test that failed.
+
+**3. Lane 4 is unobserved, and the seal said so first.** Lane 0 raises first, so
+lane 4 cannot be observed in the same run. Seal §3.1 pre-fixed exactly this. The
+auditor discharged R-DISC-1 **per lane**, so the class is *reachable* at lane 4
+by term-by-term evaluation and merely unobserved by the bench. Recorded as
+unobserved — never as a miss, never as a pass. A seal that had not anticipated it
+would have had to decide after seeing the result, which is the thing seals exist
+to prevent.
+
+**4. IC-2 did the only thing a control can do to prove something: it was green
+where the qualification needed green.** `test_m03_i.ml` does not appear in IC-2's
+failure set at all, so all three members at both lanes held. Disposition 2 —
+the trap I set for my own qualification — did not fire. And the seal's
+*derivation* for that green (members (i)/(ii) owe no report; member (iii) has no
+`tlast` cycle to attach a `tlast`-pinned deferral to) is now confirmed by
+measurement rather than by reasoning.
+
+**5. Three findings, all mine, and I want the pattern named because it is one
+pattern.** Each is a **classification** error, and each has the same shape: I
+built a set by a mechanical pass whose predicate was narrower than the property
+it was supposed to capture.
+
+- **§6.1 — M03-D2.** I mapped registration → enclosing runner → **one** unit.
+  `run_mixed_pair` serves **two** (M03-D2 and M03-D3). One MUST-STAY-GREEN
+  violation under IC-2. **The file states the sharing in prose at
+  `test_m03_d.ml:330`** — *"shared by M03-D3 (both frames) and M03-D2's …"* — and
+  my pass could not read prose. The datum was in the file I was classifying.
+- **§6.2 — "monitor-only".** I classified M03-G7 and M03-H4 as having no direct
+  pinned-cycle assertion because I searched for two message *forms*. Their checks
+  exist and speak first, phrased differently. **This is `J-dv_lead-0104`'s own
+  banked rule — search by the defect, never by the string its known instances
+  share — failing in my hands, applied to classification instead of search, in
+  the artefact that cites it.** I had both strings in the sweep that produced the
+  seal.
+- **§6.3 — the reading note's binary.** I ruled on *cycle* versus *count*
+  differences; a **third** presentation appeared (windowed attribution: a report
+  crossing a per-frame window, giving `observed 0` at M03-F4 and a wrong strobe
+  set at D2/D3). **This is the candidate I banked two entries ago — a question
+  with n values must state the dimension it ranges over — firing against me in
+  the very next round.**
+
+**None of the three touches the verdict**, and I checked that rather than assumed
+it: §6.1 is under the control class at a unit that is not M03-I2 and IC-2 scores
+no kill; §6.2 corrects an instrument tally, not a cell; §6.3's three units are
+inside IC-2's predicted-red set but for D2, which is §6.1. **But "it did not
+matter this time" is a fact about this round's luck and not about the method**,
+and the commissioned `dv_checks.sh` note in §9 is the mechanical repair for the
+one that generalises.
+
+**6. The disclosed count-losing shape never fired, and I say so plainly.** The
+auditor measured 291/20 736 and 261/20 736 count-losing stimuli; **not one of
+this bench's 39 units drives one**. My reading-note §2.2 ruling was therefore
+never exercised. Recording a pre-committed ruling as "vindicated" when its
+trigger never occurred would be exactly the re-reading the pre-commitment exists
+to forbid.
+
+**7. What the measurement corrected in my favour, and why I state it as a
+correction rather than a win.** Seal §5(f) predicted two instrument families with
+the standing monitor detecting at all nine. Measured: **the monitor spoke at
+zero units** — shadowed at every one by a row-local assertion. Eight of nine
+convicted by row-local strobe checks, one (member (iii)) by the C-14.3 boundary
+scan. That is **sharper** than I sealed and it strengthens the instrument claim,
+but it strengthens it by showing my §5(f) reasoning was wrong about the monitor's
+reach a third time in this round's family of errors, not by showing I was right.
+
+**8. Reading-note §1.3 vindicated, and it is the round's most consequential
+counterfactual.** Four of the nine — M03-B2, B3, B4, E5 — are **in-word `q2`
+closures**, confirmed by their own pin arithmetic (E5's pin at 3 means the
+closing word *is* the start word). **Had the auditor delivered hunk 2 alone,
+those four would have stayed green and my sealed wide column would have
+over-predicted by four**, scoring four true greens as findings *against the
+auditor*. The completeness it volunteered — finding a structural axis my own
+disclosure question had no column for — is what made 9/9 possible. I record that
+as the auditor's, in the verdict and here.
+
+**9. Why the plan edit is commissioned rather than taken in this commit.** Every
+prior commit of this round held the AP back because it is phase B's contract and
+§7's ordering rule forbade moving it. **The campaign has scored and that window
+is closed**, so the edit is now legitimate. I still keep it out of *this* commit:
+the verdict is the authority the plan edit derives from, and a plan edit
+reviewable against a landed verdict is worth more than one bundled into it. The
+five items are enumerated in §9 so they cannot evaporate — the failure mode
+`J-dv_lead-0103` already paid for once.
+
+### Actions
+- Extracted both scorecards **myself** from the decoded logs rather than from the
+  orchestrator's navigation summaries: 9 failing units under IC-1, 18 under IC-2,
+  by `expect.uncaught_exn` count and by every `File "test/…"` failure path.
+- Scored both runs against the seal cell by cell; decoded the OCaml string
+  escaping to compare the REQUIRED cell **character for character**; attributed
+  the raise by backtrace line to step 6 rather than step 9.
+- Derived the structure split across the nine from stimulus geometry and observed
+  pin arithmetic (reading-note §4 item 1); tabulated cycle vs count vs the third
+  class for every red (item 2); re-ran the `test/**` diff check (item 3).
+- Appended **`WO-0063B-VERDICT`** to the packet: the two runs, IC-1's and IC-2's
+  scorecards, the ordering-cell proof, the five dispositions, the signed
+  requalification with its scope limits, the corrected instrument tally, three
+  findings against me, the manifest accepted with none, the reading note's four
+  obligations discharged, the per-class campaign verdict, and nine commissioned
+  items across two rounds.
+- **The seal was NOT edited — zero bytes** (`git diff c6c3287 HEAD` on it is
+  empty). **No `test/**` file moved.** No RTL opened. **No git command that
+  writes.**
+
+### Evidence
+- **CI runs**: IC-1 build **30955875363**, IC-2 build **30955861141** — both
+  completed, both red, and **a red build is the measurement**: the suite going
+  red is what a killed mutation looks like. `journal-check` **30955875349** /
+  **30955861144** red in the known throwaway-ref plain-commit class, bearing on
+  nothing. Transients `b82b888` and `dbc4b0a`, each `[c0595f9 + exactly one
+  manifest diff]` applied from the blobs committed at `8bbc388`.
+- **Unit counts, extracted**: `grep -c "expect.uncaught_exn"` → **9** (IC-1),
+  **18** (IC-2).
+- **Non-M03 sweep**: every `File "test/…"` failure path in both logs is under
+  `test/xgmii_rx_64/`. **80 / 80 non-M03 MUST-STAY-GREEN held under both
+  intents.**
+- **IC-1**: red at M03-B2, B3, B4, E2, E5, F2, G7, H4 and **M03-I2** — the
+  sealed wide column's nine, **exactly**; 30/30 M03 MUST-STAY-GREEN held.
+- **The scored cell, decoded**: `M03-I2 (member iii, zero octets received, lane
+  0): a strobe pulsed at or after cycle 5 (REQ-109, §0.6's ceiling and SPEC-M03
+  §9's pin -- C-14.3 bounds output words, not strobes)` — identical to seal §3.1.
+- **The ordering cell**: backtrace `…run_i2_zero_octet_member … line 847,
+  characters 4-254` / `…run_i2 … line 953`. `:845–:854` is step 6's strobe
+  assertion; `:887` is `assert_monitors_clean` and did not execute.
+- **IC-2**: `test_m03_i.ml` absent from the failure set entirely → M03-I2 green
+  at all three members, both lanes. 18 red vs 17 sealed; **M03-D2** the one
+  MUST-STAY-GREEN violation.
+- **The §6.1 root cause, in the source**: `test/xgmii_rx_64/test_m03_d.ml:266`
+  defines `run_mixed_pair`; `:408` and `:455` call it from two different units;
+  `:330` states the sharing in prose.
+- **Preconditions**: `git diff --name-only c0595f9 HEAD -- test/ libs/` → empty;
+  `git diff --stat c0595f9 HEAD -- test/xgmii_rx_64/test_m03_i.ml` → empty;
+  `git diff c6c3287 HEAD -- <seal>` → empty; `git status --porcelain` → clean of
+  mutations.
+- **Not run**: `dune build` / `dune runtest` locally — no toolchain (ADR-0005).
+  This commit stages one markdown packet. The authority for every result above is
+  the two CI runs named.
+
+### Outcome
+**`WO-0063` §7 pass criterion 2 DISCHARGED** and the round complete. **IC-1
+KILLED (1 kill); IC-2 behaved as a control must; 1/1 scoreable class.**
+**M03-I2 REQUALIFIED — QUALIFIED**, disposition 1, scoped to *"the window
+convicts"* and explicitly not to *"the window is the sole detector"*, with the
+`WO-0063` §2.4 discount undiminished and the fact that eight of nine units
+detected the class without it recorded in the verdict itself.
+
+The auditor's manifest is **accepted with no defect recorded against it**, and
+two acts of its conduct are recorded as more than compliance (the volunteered
+second structural axis, without which my own seal would have over-predicted by
+four; and the unprompted ambient disclosure). Three findings stand **against
+dv_lead**.
+
+**DoD**: verdict shipped as a committed packet section, never a chat message.
+**Handoff**: this tree to the orchestrator for commit, trailer `Agent: dv_lead`,
+`Work-Order: WO-0063`; the verdict relayed to the auditor.
+
+**Harvest (ADR-0018, PROTOCOL §7).** **Not due this round** — no `SO-`, no gate.
+Span since the previous note: **J-dv_lead-0108** (this entry); cumulative untiled
+span **J-dv_lead-0001 … 0108**, first harvest still firing at `SO-M03`.
+
+- **All eight banked candidates carry.** Two of them **fired against me this
+  round** and both are strengthened by the incident rather than merely re-cited:
+  *search by the defect, never by the string its instances share*
+  (`J-dv_lead-0104`) now carries a second observable — **it governs
+  classification as well as search**, because a classifier keyed on a message
+  form is a string search wearing a different hat (incident: §6.2, this commit).
+  *A question with n values must state the dimension it ranges over*
+  (`J-dv_lead-0107`) gains its second incident from my own reading note one round
+  after banking (§6.3).
+- **One NEW candidate banked, LH2-g.** *Rule*: **a set built by a mechanical pass
+  must state the relation its pass assumes, and a pass that assumes a
+  one-to-one relation must be checked against the many-to-many case before the
+  set is used.** *Observable*: the enumeration records its own join — "each X
+  mapped to the Y that encloses it" — and a reviewer can see, without re-running
+  it, which cardinality it took for granted. **LH1**: this commit — a
+  registration→runner→unit pass assumed one runner serves one unit; one runner
+  served two; the artefact under classification said so **in prose**, which no
+  such pass can read. **LH2-g** — no proper noun. **LH3**: without it, a
+  mechanically-derived set carries the confidence of a measurement and the
+  blind spot of an assumption, and the blind spot is invisible precisely because
+  the pass ran cleanly.
+- **The three candidates are kept separate** — search predicates, question
+  dimensions, and join cardinalities are three different places to be too narrow,
+  and a merged rule ("be less narrow") would fail no review.
+- **A war story promoted to candidate is NOT claimed here**, and the near-miss
+  discipline of `J-dv_lead-0107` is repeated: the `q2` axis was caught by the
+  respondent, not by me. **Both war stories carry unchanged.**
+
+### Open-questions
+1. **The `AP-xgmii_rx_64.md` round is now unblocked and is the immediate next
+   work** — five enumerated items (verdict §9), including **M03-I2 → QUALIFIED
+   and the qualified-row count 41 → 42, which moves on this signature and on
+   nothing else**.
+2. **The `dv_checks.sh` many-to-many note** (verdict §9 item 2) is the mechanical
+   repair for §6.1's root cause; without it the next classification repeats the
+   assumption.
+3. **Lane 4 of member (iii) is discharged as reachable and unobserved.** If a
+   later round needs it observed, the only route is a run in which lane 0 is
+   green, which is itself a finding — so it should be sought by construction (a
+   lane-4-only driver), not by hoping for it.
+4. **The disclosed C-23 collision shape remains untested by this bench** — no
+   unit drives it (§6.3). Whether that is a coverage gap worth a row is a
+   question for the plan round, and I do not prejudge it here.
+5. Carried unchanged: `run_i2_member`'s deliberate citation exception, still
+   without a carrier; `WO-0058` bound 7; the
+   `assert_following_frame_intact` / `assert_clean_frame_structure` merge;
+   `WO-0061` §8 bound 1's `tkeep` half; **N-1**; the auditor's DV-escape ledger
+   disposition on `BUG-0003`; family J behind a bench-capability round;
+   `SO-xgmii_rx_64.md` unopened and **not offered** — this round qualifies one
+   row and does not discharge a module sign-off.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0063B_m03-i2-report-path-campaign.md

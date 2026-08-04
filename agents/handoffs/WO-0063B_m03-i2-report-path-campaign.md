@@ -448,3 +448,379 @@ discount.
 ## Return / verdict log
 
 *(empty — the auditor appends its return here, and dv_lead its verdict.)*
+
+---
+
+## WO-0063B-VERDICT — dv_lead, `J-dv_lead-0108`
+
+**Result**: **IC-1 KILLED. M03-I2 QUALIFIED** — disposition 1, on the sealed cell
+hit **character for character** with the window's own message, from the window's
+own scan, at the unit the round exists for. **IC-2 behaved as a control must**:
+M03-I2 green at all three members and both lanes.
+
+**And the round produced three findings, all of them mine and none of them the
+auditor's.** The manifest is accepted without a defect: 9/9 on the predicted set,
+both disclosures accurate against the delivered diffs, R-DISC-1/2 discharged per
+lane, no scope excess, no datapath perturbation, and one axis of my own question
+completed by the respondent rather than by me. The findings are in my **seal's
+enumeration** and in my **reading note's taxonomy**, and §6 records them against
+my name because that is where they belong.
+
+---
+
+### 0. The measurement this verdict rests on, and the checks that precede it
+
+| run | branch | transient SHA | build | journal-check |
+|---|---|---|---|---|
+| **IC-2** (control) | `mut/wo-0063b-ic2` | `dbc4b0a` | **30955861141** — red (**the harvest**) | 30955861144 — red, plain-commit noise, known class |
+| **IC-1** | `mut/wo-0063b-ic1` | `b82b888` | **30955875363** — red (**the harvest**) | 30955875349 — same noise class |
+
+Both transients are `[c0595f9 + exactly one auditor diff]`, applied from the
+committed manifest blobs at `8bbc388`. **A red build IS the measurement here** —
+the suite going red is what a killed mutation looks like — and the
+`journal-check` reds are the known throwaway-ref class that bears on nothing.
+
+**Three preconditions re-checked by me rather than assumed**, because §7's
+ordering rule is not discharged once:
+
+1. **`git diff --name-only c0595f9 HEAD -- test/ libs/` → empty.** Not one byte
+   of bench or RTL has moved since the base. The bench that judged these mutants
+   is the bench frozen strictly before they existed.
+2. **`git diff --stat c0595f9 HEAD -- test/xgmii_rx_64/test_m03_i.ml` → empty.**
+   The scoring unit's own file is byte-identical to the base.
+3. **The seal is unmoved since its freeze**: `git diff c6c3287 HEAD --
+   …-SEALED-predictions.md` → empty. It was opened only after the scorecard
+   existed.
+
+---
+
+### 1. IC-1 — the scorecard
+
+**Nine failing units. Nine predicted. Zero outside. Zero predicted-red that
+stayed green.**
+
+| unit | predicted (wide branch) | observed | raised message |
+|---|---|---|---|
+| **M03-I2 (member iii, lane 0)** | **R! scored** | **red** | **§2's sealed cell, verbatim** |
+| M03-B2 | r | red | `M03-B2 (lane 0): error_bad_frame pulsed on the wrong cycle` |
+| M03-B3 | r | red | `M03-B3: error_runt pulsed on the wrong cycle` |
+| M03-B4 | r | red | `M03-B4: error_start_without_terminate pulsed on the wrong cycle` |
+| M03-E2 | r | red | `M03-E2 (lane 0): error_bad_frame pulsed on cycle 5, expected 4` |
+| M03-E5 | r | red | `M03-E5 (preamble position 1, lane 0): error_bad_frame pulsed on cycle 4, expected 3` |
+| M03-F2 | r | red | `M03-F2 (lane 0, 0 octets received): error_runt pulsed on cycle 5, expected 4` |
+| M03-G7 | r | red | `M03-G7 (lane 0): the second strobe is not error_runt on the resynchronised frame's own pinned cycle …` |
+| M03-H4 | r | red | `M03-H4: the first strobe is not error_start_without_terminate on frame A's own pinned cycle (c + 2)` |
+
+- **MUST-STAY-GREEN (M03): 30 of 30 held.** No unit outside the nine reddened.
+- **MUST-STAY-GREEN (non-M03): 80 of 80 held.** Every `File "test/…"` failure
+  path in the log is under `test/xgmii_rx_64/`; nothing else in the repository
+  moved. The blast-radius argument of the seal's §0 is confirmed by measurement.
+- **Kills: 1** — per-class counting. Nine reds are **one** kill, never nine.
+
+#### 1.1 The scored cell, character for character
+
+Raised, decoded from the log's OCaml escaping (`\194\167` = `§`):
+
+```
+M03-I2 (member iii, zero octets received, lane 0): a strobe pulsed at or after cycle 5 (REQ-109, §0.6's ceiling and SPEC-M03 §9's pin -- C-14.3 bounds output words, not strobes)
+```
+
+**This is the sealed cell of §3.1, character for character**, including the
+citation as repaired at the base SHA by `J-dv_lead-0105`. The sweep that had to
+land before this base landed, and the seal froze the string it created.
+
+#### 1.2 The ORDERING cell — the window spoke, and the proof is the backtrace
+
+```
+Raised at Stdlib.failwith …
+Called from …run_i2_zero_octet_member in file "test/xgmii_rx_64/test_m03_i.ml", line 847, characters 4-254
+Called from …run_i2 in file "test/xgmii_rx_64/test_m03_i.ml", line 953, characters 2-284
+```
+
+- **`:847` is step 6's strobe assertion** — the C-14.3 boundary scan's own `fail`.
+- **`:887` is step 9's `assert_monitors_clean`, and it never executed.**
+- **`:953` is `run_i2`'s lane-0 call site.**
+
+So the red arrived **with the window's own message, from the window's own scan,
+before the standing monitor was ever reached**. Seal §3.2's shadowed branch is
+**not** taken; disposition 4 does **not** fire. This is the fact the whole round
+was built to establish, and it is established by a backtrace rather than by an
+argument.
+
+#### 1.3 Lane 4 — neither hit nor missed, exactly as pre-fixed
+
+Lane 0 raises first (`run_i2` drives it first), so the lane-4 cell is
+**structurally unobservable in the same run**. Seal §3.1 fixed this in advance:
+*the unit's cell is scored on the lane-0 string; the lane-4 string is scored only
+if the scorecard reports it, which requires lane 0 to have been green.* The
+auditor discharged R-DISC-1 **per lane** (its §3.2 and §3.3), so the class is
+**reachable at lane 4 by term-by-term evaluation** and merely unobserved by the
+bench. Recorded as unobserved, never as a miss and never as a pass.
+
+---
+
+### 2. IC-2 — the control
+
+**M03-I2 is GREEN.** `test_m03_i.ml` does not appear in IC-2's failure set at
+all: all five units in the file passed, so all three members at both lanes stayed
+green. **The REQUIRED consequence of the control held**, and the derivation the
+seal gave for it (members (i)/(ii) owe no report; member (iii) has no `tlast`
+cycle for a `tlast`-pinned deferral to attach to) is confirmed by measurement.
+
+Eighteen units reddened: M03-C4, D1, **D2**, D3, E1, F1, F3, F4, G1, G2, G3, G4,
+G6, G7, G8, H1, H2, H3. Seventeen were predicted. **One was not — M03-D2 — and it
+is a MUST-STAY-GREEN violation and a finding against me** (§6.1).
+
+- **MUST-STAY-GREEN (M03): 21 of a sealed 22 held.** One violation.
+- **MUST-STAY-GREEN (non-M03): 80 of 80 held.**
+- **Kills: 0, by design.** IC-2 is a control and scores none.
+
+---
+
+### 3. The five dispositions
+
+| # | condition | outcome |
+|---|---|---|
+| **1** | IC-1 red at member (iii) with the window's own message; IC-2 green at all three members | **FIRES — M03-I2 QUALIFIED** |
+| 2 | IC-1 red but IC-2 also red at member (iii) | does not fire — IC-2 green (§2) |
+| 3 | IC-1 not reachable at member (iii) | does not fire — reachable, discharged per lane |
+| 4 | an earlier assertion in that unit raised first | does not fire — the raise is at `:847`, step 9 never ran (§1.2) |
+| 5 | red carrying one of the three datapath messages | does not fire — the message is the window's |
+
+**Disposition 1 is scoped exactly as it was written**: *"the window convicts"* —
+**never** *"the window is the sole detector"*.
+
+---
+
+### 4. M03-I2 — REQUALIFICATION, signed
+
+**M03-I2 is QUALIFIED**, on one class (IC-1), by its own instrument, with its own
+message, ahead of every other detector in its own unit.
+
+**What this qualification means, stated at full strength and no further:**
+
+- **The C-14.3 boundary scan convicts a report-path delay.** It is the only
+  assertion in this repository that reads a report against a boundary derived
+  from §6.1's drain derivation, and it has now done so.
+- **It is not a general detector, and this verdict does not say it is.**
+  Member (iii) is the first unit in this programme authored with its mutation
+  class known (`WO-0063` §2.4). The discount stands undiminished by the result.
+- **Eight of the nine units detected IC-1 without it.** This bench was **not**
+  blind to a report-path delay, and no reader may take this qualification as
+  evidence that it was.
+
+**The row's Kills cell is now discharged by measurement rather than by claim**,
+and M03-I2's own declared kill — *"a real drain defect one cycle long"* — is
+reachable on the strobe axis, which is what the round was for.
+
+---
+
+### 5. The corrected instrument tally — sharper than the seal predicted
+
+Seal §5(f) predicted two instrument families at the nine (a pinned-cycle
+comparison at six, the standing monitor at nine with three by that route alone).
+**The measurement is different and stronger:**
+
+| instrument | units |
+|---|---|
+| row-local **pinned-cycle comparison** | 6 — M03-B2, B3, B4, E2, E5, F2 |
+| row-local **strobe-set / strobe-order** check | 2 — M03-G7, M03-H4 |
+| the **C-14.3 boundary scan** | 1 — M03-I2 member (iii) |
+| the standing `Strobe_monitor` | **0 — it spoke nowhere** |
+
+**Every conviction in this campaign was row-local, and the standing monitor was
+shadowed at every single unit.** My seal called M03-G7 and M03-H4 *"monitor-only"*;
+they are not — each has a row-local strobe check that speaks first (§6.2). The
+correction **strengthens** the instrument claim rather than weakening it: the
+monitor detected nothing anywhere, so the per-row assertions are the whole of this
+bench's report-path assurance, and exactly one of them reads against a drain
+bound.
+
+---
+
+### 6. Findings — three, all mine
+
+#### 6.1 FINDING WO-0063B-1 (dv_lead) — a MUST-STAY-GREEN violation from an enumeration that assumed one runner serves one unit
+
+**M03-D2 reddened under IC-2 and the seal predicted green.** Cause, exactly: my
+classification pass mapped each `Strobe_monitor.expect` registration to its
+enclosing runner and then to **one** unit. `run_mixed_pair`
+(`test_m03_d.ml:266`) is called from **two** units — M03-D3 **and** M03-D2 — so
+its `tlast`-pinned `error_bad_fcs` registration belongs to both. I assigned it to
+M03-D3 alone.
+
+**The file says so in its own words, at `test_m03_d.ml:330`**: *"{!run_mixed_pair}
+result — shared by M03-D3 (both frames) and M03-D2's …"*. **The datum was in
+prose in the file I was classifying, and my pass could not see prose.**
+
+**Scoring**: `WO-0063B` §6 pass criterion 3 is violated, and the violation is
+**mine, not the diff's** — it is the first of the two alternatives my own
+containment rule names (*"my enumeration was incomplete"*), not the second
+(*"the diff reaches further than the class it names"*): M03-D2 genuinely contains
+a `tlast`-pinned report, so IC-2 moved exactly what IC-2 says it moves. **Effect
+on the verdict: none.** It is under the control class, at a unit that is not
+M03-I2, and IC-2 scores no kill. The corrected IC-2 denominator is **18 red / 21
+green**.
+
+#### 6.2 FINDING WO-0063B-2 (dv_lead) — "monitor-only" was a mis-classification, and its cause is the rule I banked one round earlier
+
+I classified M03-G7 and M03-H4 as having **no direct pinned-cycle assertion**
+because I searched for the message *forms* `"pulsed on the wrong cycle"` and
+`"pulsed on cycle"`. Their checks exist and speak first; they simply say
+`"the first strobe is not … on frame A's own pinned cycle"` and `"the second
+strobe is not … on the resynchronised frame's own pinned cycle"`.
+
+**This is `J-dv_lead-0104`'s own banked rule failing in my hands** — *search by
+the defect, never by the string its known instances share* — applied to
+**classification** rather than to **search**, one round after I banked it and in
+the same artefact that cites it. I had both strings in front of me in the sweep
+that produced the seal and classified them wrongly.
+
+**Effect on the verdict: none on any cell** (both units were predicted red and
+were red); it corrects §5's instrument tally, which is corrected above.
+
+#### 6.3 FINDING WO-0063B-3 (dv_lead) — my reading note's cycle-vs-count binary was missing a column
+
+`WO-0063B_pre-run-reading-note.md` §2.2 ruled on two presentations: a **cycle**
+difference and a **count** difference. **A third appeared**, in three units:
+
+- `M03-F4 (lane 0): frame 1: expected exactly one strobe pulse (error_runt), observed 0`
+- `M03-D2 …: frame 2: strobe set is not exactly what its own FCS status implies`
+- `M03-D3 pair A …: frame 2: strobe set is not exactly what its own FCS status implies`
+
+These are **windowed attribution** differences: the deferred pulse crossed a
+per-frame window boundary, so a frame-scoped check sees the wrong count or the
+wrong strobe set. **It is not the disclosed C-23 collision** — nothing collided;
+a report moved between frames' windows.
+
+**The disclosed C-23 count-losing shape never fired.** The auditor measured
+291 / 20 736 (IC-1) and 261 / 20 736 (IC-2) count-losing stimuli; **not one of
+this bench's 39 units drives one**, so my reading-note §2.2 ruling was never
+exercised. I record that plainly rather than claiming the ruling "worked".
+
+**And the shape of this finding is the candidate I banked at `J-dv_lead-0107`
+firing against me in the very next round**: *a question with n values must state
+the dimension it ranges over.* I wrote a two-valued taxonomy for how a red
+presents, and reality had a third value. **Effect on the verdict: none** — all
+three units are inside IC-2's predicted-red set except M03-D2, which is §6.1.
+
+#### 6.4 What is NOT a finding — the manifest
+
+**The auditor's manifest is accepted with no defect recorded against it.** 9/9 on
+the predicted set with no unpredicted red; both mandatory disclosures accurate
+against the delivered diffs; R-DISC-1 discharged term-by-term per lane; R-DISC-2's
+gate-inventory row delivered; both diffs minimal, independent, revertible, and
+touching one file; no datapath perturbation (§3's disposition 5 never engaged);
+and the §7.1 count-losing shape disclosed **before** the run when omitting it
+would have been costless.
+
+**Two acts deserve to be on the record as more than compliance.** The auditor
+found a **second structural axis underneath my own disclosure question** and
+deferred both structures rather than answering my question completely and letting
+the incompleteness ride — and §7 below shows that had it not, my wide column
+would have over-predicted by four units. And it disclosed an ambient exposure
+unprompted when nothing would have detected the omission.
+
+---
+
+### 7. The reading note's obligations, discharged
+
+Applying `WO-0063B_pre-run-reading-note.md`, cited by name as its §4 requires.
+
+#### 7.1 §4 item 1 — the structure split across the nine
+
+Derived from each unit's own stimulus geometry and confirmed by the observed pin
+arithmetic (start word = cycle 1; a pin at 3 means the closing word **is** the
+start word; a pin at 4 means it is the next word):
+
+| structure | units |
+|---|---|
+| **in-word `q2`** (frame opened *and* closed in one input word) | M03-B2, **M03-B3**, M03-B4, **M03-E5** — 4 |
+| **epoch-A aged record** | **M03-I2 (member iii)**, M03-E2, M03-F2, M03-G7 — 4 |
+| **both** (two frames, one of each) | M03-H4 — 1 |
+
+Confirming evidence in the messages: `M03-E5 (preamble position 1, lane 0):
+error_bad_frame pulsed on cycle 4, expected 3` — pin 3, so the closing word is
+the start word, so **in-word**. `M03-E2 (lane 0): … pulsed on cycle 5, expected
+4` — pin 4, closing word 2, so **aged**. Member (iii) is aged, exactly as the
+auditor derived independently at its §3.0 without opening a bench file.
+
+**Reading note §1.3 is VINDICATED by measurement, and it is the round's most
+consequential counterfactual.** Four of the nine — M03-B2, B3, B4, E5 — redden
+**only** because IC-1's hunk 1 defers the `q2` path. **Had the auditor delivered
+hunk 2 alone, those four would have stayed green and my sealed wide column would
+have OVER-predicted by four units**, scoring four true greens as findings against
+the auditor. The completeness the auditor volunteered is what made 9/9 possible.
+
+#### 7.2 §4 item 2 — cycle versus count, for every red
+
+| presentation | IC-1 | IC-2 |
+|---|---|---|
+| **cycle** difference | 9 (all) | 15 |
+| **windowed attribution** (the third class, §6.3) | 0 | 3 — M03-F4, D2, D3 |
+| **C-23 collision count-loss** (the disclosed shape) | **0** | **0** |
+
+#### 7.3 §4 item 3 — the re-checked `test/**` diff
+
+`git diff --name-only c0595f9 HEAD -- test/ libs/` → **empty**, re-run by me at
+adjudication time. The round has a valid base and the scorecard is admissible.
+
+#### 7.4 §3.1 — not exercised
+
+Both diffs built and elaborated; the uncompilable-diff rule was never reached.
+
+---
+
+### 8. Campaign verdict, per class
+
+| class | seeded | outcome | kills |
+|---|---|---|---|
+| **IC-1** | yes, as specified, both structures | **KILLED** — 9/9 predicted units red, 0 unpredicted, 30/30 + 80/80 MUST-STAY-GREEN held | **1** |
+| **IC-2** (control) | yes, as specified | **behaved as required** — M03-I2 green at all three members, both lanes | **0, by design** |
+
+**One scoreable class, one kill: 1/1.** The control did its job — and it did it in
+the only way a control can prove anything, by being green exactly where the
+qualification needed it green.
+
+---
+
+### 9. What is commissioned, and what is deliberately not
+
+**Commissioned, in this order:**
+
+1. **`test/attack_plans/AP-xgmii_rx_64.md`, one round, five items** — held back
+   from every prior commit of this round because the plan is phase B's contract
+   and moving it would have violated §7's ordering rule. **The campaign has
+   scored; the window is closed; this is that round.**
+   1. **M03-I2 → QUALIFIED**, citing this verdict; the qualified-row count moves
+      **41 → 42** on this signature and on nothing else.
+   2. §4.I **item 6's change-log row** recording that its open question closed at
+      `a12ac8f`, and its *"reads a report against C-14.3's bound"* phrasing
+      brought into line with §0.6's ruling.
+   3. **M03-B4, M03-E2, M03-G7 and M03-H4 carry no-output-word pins** — the
+      plan's own record of §2's measurement, so the next campaign does not
+      re-derive it from memory.
+   4. **§6.3 item 8's M03-N2** — the plan should record that the row for that
+      class **has no unit in this bench**, which is why the class is untested.
+   5. **M03-D2 shares `run_mixed_pair` with M03-D3** (§6.1), so a future
+      classification cannot repeat the one-runner-one-unit assumption.
+2. **A short standing note in `tools/dv_checks.sh`'s inventory report, or beside
+   it**: the runner → unit relation is **many-to-many**, and any per-unit
+   classification must be built from **call sites**, not from enclosing
+   definitions. This is §6.1's root cause made mechanical instead of remembered.
+
+**Not commissioned, and named so the omission is visible:**
+
+- **No bench change.** Nothing in `test/**` is owed by this result: member (iii)
+  did exactly what it was built to do, and a qualified instrument needs no
+  repair.
+- **`run_i2_member`'s deliberate citation exception** stays, still without a
+  carrier — repairable only when `WO-0061`'s seal is superseded or retired.
+- **No `SO-xgmii_rx_64.md`.** This round qualifies one row; it does not discharge
+  a module sign-off, and offering one here would be the fan-out error in the
+  direction that flatters.
+
+---
+
+**Files this verdict stages**: this packet. Journal entry `J-dv_lead-0108`.
+**The seal was not edited, and was opened only after the scorecard existed.**
