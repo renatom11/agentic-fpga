@@ -2677,3 +2677,344 @@ question 2.
 ### Files-in-this-commit
 
 - libs/hardcaml_ethernet/src/xgmii_rx_64.ml
+
+## [J-rtl_lead-0011] 2026-08-04T13:52:10Z | task:BUG-0003 | the lane-4 alignment window tears every output word in half across an injected idle, emits one half and drops the other — the count stays 8 and that is why the guard passed; the repair is to keep the bubble out of the window, three enable terms and one mask, no flop
+
+### Trigger
+
+Orchestrator spawn against `BUG-0003` (dv_lead's packet, VERBATIM relay class), branch
+`claude/fpga-hardcaml-agent-orchestration-37ceyf`, HEAD `8725c81` at the time of writing
+(the spawn named `ab360eb`; the two differ by a docs commit that does not touch `libs/`).
+The design under judgment is `fafb83d`, my own `J-rtl_lead-0010` hold. This packet is my
+open question 1 of that entry answered with numbers and routed back as work, carrying
+`RV-0060-VERDICT` §5's ruling — option **(a)**, the obligation stands and it is the
+design's — and the spawn's hard rule: read the packet, grep the module, work in the module,
+prose afterwards.
+
+### Inputs
+
+- `agents/handoffs/BUG-0003_m03-lane-4-injected-word-cycle.md` — read in full, twice: §2.1's
+  clause-by-clause derivation of the required cycle 6, §2.2's measurement (word count 8,
+  count guard passed; word 0 at cycle 4), §4's ruling and its E2 revival conditions, §5's two
+  CRITICAL conversion conditions, §6's refusal to adopt my predicted mechanism, §7's five
+  acceptance items, §8's carried notes.
+- `libs/hardcaml_ethernet/src/xgmii_rx_64.ml` at `fafb83d` — the alignment window and the
+  emission stage (lines 648–706) in full, the output decision and its `ev12` /
+  `closure_aligned` comment (707–890), and the coverage decode I had to re-derive to trace
+  the bubble: `cov_first` (297–302), `a_hold_v` / `a_hold_end` (328–331), `cov_nonempty` /
+  `cov` / `first_v` (381–393), `a_close_now` (377), `begins` / `new_start4` (428–432).
+- `agents/PROTOCOL.md` §4–§6; `agents/charters/rtl_lead.md` (§5 DoD, §7 escalation classes,
+  §8 root-cause-before-fix).
+- My own `J-rtl_lead-0010`, specifically escalation 1 — the prediction this round refutes in
+  part and confirms in part.
+- **Not opened, by spawn bar**: `test/**`, `docs/reports/audit/**`,
+  `agents/handoffs/WO-0060*`, the post-Root-cause sections of the `BUG-0002` packet, and
+  anything SEALED. SPEC-M03 was not re-read; every clause used here is the one this packet
+  reproduces (§2.1) or the module's own citation of it.
+- No Essenceia material consulted (charter §8, Inputs honesty).
+
+### Reasoning
+
+#### Root cause
+
+**The defect is in the alignment window, not in the emission stage, and it is one sentence
+of the emission comment that turned out to be false at one of the two offsets.**
+
+At offset 4 the aligned word is `{cov[3:0], cov_d[7:4]}`: this input word's lower four lanes
+above the *previous input word's* upper four. That composition is correct only if the two
+input words are consecutive members of the frame's octet stream. REQ-016's injection breaks
+that premise and nothing in the window noticed: an injected idle covers nothing
+(`cov_first` = 0 and `a_hold_end` = 0 give `cov_end` = 0, so `cov_nonempty` is low), so the
+bubble sits *between* the two halves of every output word. At (64, lane 4, k = 1), with
+source cycle s arriving at design cycle 2s − 2:
+
+| design cycle | input word | `al_keep` | contents |
+|---|---|---|---|
+| 3 | injected `/I/` | `0x0F` | octets 0…3 at positions 0…3 |
+| 4 | src 3 | `0xF0` | octets 4…7 at positions 4…7 |
+| 5 | injected `/I/` | `0x0F` | octets 8…11 at positions 0…3 |
+| 6 | src 4 | `0xF0` | octets 12…15 at positions 4…7 |
+
+Every output word is torn into two disjoint half words on consecutive cycles. `ev12` is
+`~al_new & al_keep[4]`, and at offset 4 that bit is `cov[0]` of the word arriving *now* — so
+it is 1 on exactly the covering cycles and 0 on the idle cycles. The consequences chain:
+
+1. On an idle cycle `decided` is 0, `hold` is 1, and the aligned word in front of the stage
+   is dropped. The emission comment says that drop "is always an empty one". At offset 0 it
+   is. At offset 4 under injection it is **half an output word**, and those octets are gone.
+2. On a covering cycle `ev12` fires and the stage emits what it holds with
+   `keep_count` = `pc` = 4. Word 0's low half was loaded at cycle 3 and is released at cycle
+   4 by the *second* half's bit 4 — an octet that has nothing to do with D(0). **That is the
+   measured cycle 4**: the gapless cycle, because at offset 4 `ev12` reads one input word
+   early relative to D(m) whenever a bubble separates the two words an aligned word straddles.
+
+So the failure mode is not "the delay was computed and came out 0"; it is that the design
+never had an aligned word whose delay could be computed, and released the wrong object on
+the wrong evidence.
+
+**Why review, smoke reasoning and eight prior entries missed it.** The same three lines are
+exactly right at offset 0 and exactly wrong at offset 4, and the discriminating stimulus is
+the product of two conditions — start lane 4 *and* a mid-frame carry-forward word — that no
+gapless family produces and no lane-0 family produces. `J-rtl_lead-0010` reasoned the
+gapless case to a seven-case proof and stopped there, and its escalation 1 named the split
+correctly while getting its consequence wrong (below). The window itself carries no
+assertion that its two halves belong to consecutive stream words, because until REQ-016 they
+always did.
+
+#### §6's open question, answered — and my own prediction graded
+
+dv_lead's §6 declined to adopt `J-rtl_lead-0010` escalation 1's mechanism and offered a
+disjunction: *either the split is real and absorbed before the port, or the mechanism is
+something else*. **Both disjuncts are false, and the refusal was right for the wrong
+reason.** The split is real **and it reaches the output port** — but exactly one half of each
+pair is emitted and the other is dropped by `hold`, so the emitted-word count is unchanged
+and `delivered_samples` counts eight.
+
+- **My prediction was half right.** `al_keep` = 0x0F then 0xF0 is precisely what the window
+  produces — I derived it correctly at `J-rtl_lead-0010` before any measurement existed. What
+  I got wrong is the sentence "*it emits both halves as separate short words*": the design
+  emits one and drops one, which is why the count never doubled.
+- **dv_lead's inference was wrong on the merits.** "*If half words had reached the output,
+  `delivered_samples` would have inflated the count*" assumes both halves survive. Given the
+  hold, they do not.
+- **And the coincidence is structural, not luck.** At a lane-4 start output word m is
+  completed by input word m + 3, whose lane 0 is the aligned bit 4; there is exactly one such
+  input word per output word, so `ev12` fires exactly W times per frame at any k and the
+  design emits exactly one short word per firing. Emitted count = W for every directed length
+  in M03-I4 — I checked 64 … 72 by hand at a lane-4 start. **The count guard is blind to this
+  defect class at a lane-4 start**, and so is the `tlast`-position check: the count is right,
+  the `tlast` sits on the last word, and only the cycles, the `tkeep`s and the octets are
+  wrong. That is the finding in this round worth most to DV.
+
+Severity, per §5's own rule: **both conversion conditions are present in the pre-fix design**
+and were unmeasured only because `fail` raises at word 0's cycle. Derived at
+(64, lane 4, k = 1), eight words at cycles 4, 6, …, 18: words 0…6 carry `tkeep` = 0x0F with
+`tlast` = 0 (condition 1 — REQ-011's first clause; `tkeep` is still contiguous from bit 0, so
+the second clause survives); and of the 60 required octets **4 are delivered** — word 0's
+octets 0…3 — while words 1…7 present `al_data_d` whose octets sit at positions 4…7 under a
+`keep_of_count 4` mask that marks positions 0…3, so their four marked octets are the idle
+word's filler 0x07 ×4, and octets 8…11, 16…19 … 56…59 were dropped by `hold` and never reach
+the port (condition 2). I report this rather than argue against it; the conversion is
+dv_lead's to make and the fix removes both conditions.
+
+#### The fix, and why this one
+
+```ocaml
+let bubble = off4 &: a_open &: ~:cov_nonempty &: ~:a_close_now in
+let window_advance = ~:bubble in
+let data_d  = reg spec ~enable:window_advance i.xgmii_rx.d in
+let cov_d   = reg spec ~enable:window_advance cov in
+let first_d = reg spec ~enable:window_advance first_v in
+let al_keep = mux2 bubble (zero 8) (mux2 off4 (rotate_hi window_keep) cov_d) in
+```
+
+`bubble` is C-14.4's carry-forward word read at the window: at offset 4, inside an open
+frame, an input word covering no octet of that frame and closing nothing. Under REQ-016's
+whole-word injection that is the injected idle and nothing else. Two effects, no flop added:
+the window's three **existing** registers hold across it, so the rotation's lower half is the
+last *contributing* input word rather than the last input word; and the aligned coverage is
+forced empty on the bubble's own cycle, so no half word is ever presented and `hold`'s drop
+is empty at offset 4 for the same reason it already was at offset 0.
+
+Then the aligned stream *is* the gapless stream, produced on the cycles its own octets
+arrive, and §0.5's delay falls out of the pipeline instead of being computed in it: aligned
+word m is produced when input word m + 3 arrives and released when input word m + 4 does,
+and input word m + 4 is D(m) — received octet 8m + 12 at octet time 32 + 8m — for every
+non-`tlast` word. The `tlast` word keeps its existing decider, `closure_aligned` at age 1.
+
+Derived cycles at (64, lane 4): **6, 8, 10, 12, 14, 16, 18, 19** at k = 1 (§2.1 requires 6
+for word 0 — this is that number, reached from the RTL rather than from the packet) and
+**18, 26, 34, 42, 50, 58, 66, 67** at k = 7; k = 0 unchanged at 4 … 10, 11. Words 0…6
+`tkeep` 0xFF / `tlast` 0, word 7 `tkeep` 0x0F / `tlast` 1 with the frame's strobes on its
+cycle. Each equals `baseline_cycle(m) + (cycle_of(D m) − D m)` with no term left over.
+
+Three variants were considered and rejected:
+
+- **Merge the halves in the emission stage** (a keep-masked OR into `al_keep_d`), which is
+  what escalation 1 recommended as option (a). Rejected on cost: while a merged word waits
+  for its decider the *next* word's low half arrives and has nowhere to live — that is a
+  third payload storage word, REQ-019's bound broken and §4's E2 revival condition tripped.
+  Preventing the tear is strictly cheaper than repairing it, and the packet's §4 explicitly
+  leaves the mechanism to me rather than prescribing the merge.
+- **Enable the window registers on stream cycles at both offsets** (drop the `off4`
+  qualifier). Rejected: at offset 0 the aligned word is the *registered* previous input word,
+  so it legitimately appears on the bubble's own cycle; holding the register there re-presents
+  a word already emitted and moves every lane-0 injected member one cycle late. The `off4`
+  qualifier is not tidiness — it is the whole reason lane 0 is untouched.
+- **Gate on `cov_nonempty` alone, without `a_close_now`.** Rejected: a closure character in
+  lane 0 of a lane-4 frame (lengths where `/T/` lands there) covers no octet either, and its
+  aligned word is the frame's last four octets. Treating it as a bubble deletes them. The
+  same disjunct is what makes the gapless proof below hold at the frame's tail.
+
+#### Gapless bit-identity, extended to lane 4
+
+Two claims, the first stronger than anything last round could offer:
+
+1. **At offset 0 nothing changes on any stimulus, gapless or injected.** `bubble` implies
+   `off4`, so at offset 0 `window_advance` is constant 1 and the mask is constant 0: the
+   three registers are the same registers and `al_keep` is the same expression on the same
+   values, textually. Every lane-0 member of every family — including the 26 injected ones
+   currently green — is identical by inspection, not by case analysis.
+2. **Gapless, `bubble` ≡ 0 at both offsets.** Inside an open frame a word either covers an
+   octet — eight data lanes cover eight; a word carrying a closure character covers the lanes
+   below it; a lane-4 start's preamble word covers its upper four (`cov_first` = 4,
+   `cov_end` = 8) — or it covers none and then either a closure character raises
+   `a_close_char` or the REQ-108 cap raises `a_close_oversize`, and `a_close_now` is the union
+   of those two. Outside a frame `a_open` is low, and `Discard` is outside. There is no
+   gapless cycle left over. So the enable is constant 1 and the mask constant 0 throughout,
+   the window registers and the aligned word are bit-identical, and everything downstream of
+   them — `tdata`, `tkeep`, `tlast`, `tuser`, `consume` and the five strobes — is a function
+   of that stream and is bit-identical with it.
+
+The set of cycles where behaviour changes is therefore exactly: offset 4, frame open, no
+coverage, no closure. Under REQ-016's wrapper that is the injected idle at a lane-4 start —
+the red members and nothing else. The one other route to the same cycle is a whole word of
+`/I/` or an ordered set at lane 0 mid-frame at a lane-4 start driven *outside*
+`Idle_injection`; I cannot see `test/**` to know whether any unit does that, so it is named
+in the packet (§9.6 item 4) as the single place another expect block could legitimately move,
+with the discriminator that decides it — an old block containing a `tvalid` word with
+`tkeep` ≠ 0xFF and `tlast` = 0 is this defect, not this change.
+
+`clear` is unchanged: the register spec's clear dominates the new enable, so a cleared window
+is a cleared window exactly as before.
+
+#### REQ-019
+
+**Met, unmoved, and no cost to return.** No storage is added: three enable terms on three
+existing registers and one 8-bit mask on a combinational vector. Residency is still one word
+in the emission register and one word forming combinationally in the window — two, never
+three. Gapless ΔC stays **3** at both start lanes (`h` = 8 / L = 16 at lane 0, `h` = 12 /
+L = 12 at lane 4) against §1.1's ceiling of 4, because gapless the design is bit-identical
+and ΔC is a gapless observable. No gapless expect block moves. **None of §4's three E2
+revival conditions is tripped**, so there is nothing to carry to architect_docs_lead and the
+spec-narrowing route stays closed on its own terms rather than on my assertion.
+
+The line-rate invariant is untouched in the direction that matters: no backpressure is
+introduced, there is no rx ready to assert, and at k = 0 both the enable and the mask are
+constants, so the module still retires one 64-bit word per cycle on back-to-back minimum
+frames.
+
+§8's escalation 2 (sub-word granularity) is deliberately **not** folded in: a word that
+truncates its own coverage covers octets, so it belongs to the aligned stream and `bubble`
+does not reach it. That configuration behaves exactly as it did at `fafb83d`. The packet
+told me to say so rather than widen the fix, and this is that sentence.
+
+### Actions
+
+- Edited `libs/hardcaml_ethernet/src/xgmii_rx_64.ml`, one file, **six changed code lines**:
+  `bubble` and `window_advance` introduced at the alignment-window site, `~enable` added to
+  `data_d` / `cov_d` / `first_d`, and `al_keep` gained its `mux2 bubble (zero 8)` term.
+  Roughly 95 lines of comment carry the derivation at the site: a new block on the
+  carry-forward word and the two-offset asymmetry, a correction to the emission stage's
+  now-falsified "the word dropped is always an empty one" paragraph (it names BUG-0003 as the
+  consequence of having asserted it for both offsets), and the lane-4 arithmetic appended to
+  the `ev12` / `closure_aligned` block.
+- Appended §9 to `agents/handoffs/BUG-0003_m03-lane-4-injected-word-cycle.md` per its Fix
+  verdict template — root cause, §6's question answered, the §5 severity evidence, the fix,
+  the gapless and REQ-019 statements, and the five things the verdict round should check.
+  Nothing above §9 was touched and the Fix verdict section is left empty for dv_lead.
+- No interface change: `.mli`, `I` and `O` untouched. No test, spec, snapshot or other packet
+  staged. No git write.
+
+### Evidence
+
+Reproducible from a checkout at this commit:
+
+```sh
+ocamlc -stop-after parsing libs/hardcaml_ethernet/src/xgmii_rx_64.ml   # exit 0
+git diff --stat -- libs/                                              # 1 file, +102 -14
+awk 'length > 90' libs/hardcaml_ethernet/src/xgmii_rx_64.ml           # 2 lines, both at HEAD already
+```
+
+The margin check is `.ocamlformat`'s `janestreet` profile at 90 columns; the two over-margin
+lines (the `Preamble` `if_` row at 622 and the `strip` definition at 800) are at HEAD
+unchanged and this change adds none.
+
+Not available and therefore not claimed: `dune build` cannot run here. The `fpga` opam switch
+carries neither `hardcaml` nor `hardcaml_axi` nor `ppx_hardcaml` (`opam exec -- dune build
+@default` fails with `Library "hardcaml_axi" not found`), so there is **no type-check, no
+elaboration and no simulation locally** (ADR-0005). I built a throwaway cycle-accurate driver
+for this frame in the session scratchpad to settle the trace by simulation rather than by
+hand and could not run it for that reason; the tables above are therefore **derived from the
+source, not measured**, and are published as predictions so they can be wrong in public. They
+were derived before the fix as well as after: the pre-fix table in §9.1/§9.2 of the packet
+reproduces dv_lead's two measured facts (word 0 at cycle 4; eight `tvalid` words) from the
+RTL alone, which is the only independent corroboration available to me that the model is the
+design's and not my own.
+
+What the next CI run should show if this is right:
+
+- **M03-I4 and M03-I6 green in full** — 48 + 4 runs, both start lanes, k = 0, 1, 7, lengths
+  64–71 and the 1518-octet member, plus M03-I4's cross-run tail assertions (two front-offset
+  classes, `h` = 8 and 12, 24 accumulated frames each), which have never executed.
+- **(64, lane 4)**: 6, 8, 10, 12, 14, 16, 18, 19 at k = 1 and 18, 26, 34, 42, 50, 58, 66, 67
+  at k = 7; 4 … 10, 11 at k = 0.
+- **Every lane-0 member and every gapless member byte-identical.** A moved lane-0 result
+  convicts this change outright — at offset 0 the change is provably the identity, so there
+  is no case analysis to be wrong about.
+- The promotion block should list `test/xgmii_rx_64/test_m03_i.ml` and nothing else, with the
+  §9.6 item 4 exception if some unit drives a mid-frame control word at a lane-4 start
+  outside the injection wrapper.
+
+`rtl_snapshots/**` is deliberately absent from this commit: no local emission is possible and
+the established practice (`git log --oneline -3 -- rtl_snapshots/`) is CI-side regeneration
+promoted byte-exact afterwards. The prediction I staked at `J-rtl_lead-0010` — one enable
+term on two existing registers, no new register, no new `always` block, the same deltas
+reappearing in `eth_mac_10g.v` — is **still unverified** and is now joined by this round's:
+three existing registers gain an enable condition and the `al_keep` mux gains one term, again
+with no new register and no new `always` block. REQ-902's double-generation byte-identity
+check is owed by that run and has been owed since `fafb83d`.
+
+### Outcome
+
+`BUG-0003`'s root cause is settled — the tear is in the alignment window, the split reaches
+the port, one half per pair is emitted and one dropped, and the count guard is structurally
+blind to it at a lane-4 start — and the fix is in `libs/hardcaml_ethernet/src/xgmii_rx_64.ml`
+under the ruling's option (a), without touching the mechanism the ruling declined to
+prescribe. Charter §5 DoD: implements its frozen spec ✔ (no deviation, nothing escalated as
+one this round); Root-cause before fix ✔ (charter §8, and it settles §7 item 4's question
+explicitly); single in-scope file plus the packet ✔; house style and margin ✔; line-rate
+invariant intact ✔; gapless behaviour argued invariant and lane 0 shown identical outright ✔.
+"Compiles and elaborates" is **not** claimed — that is CI's, as always here — and no DV
+sign-off is claimed: `SO-xgmii_rx_64.md` is dv_lead's, and family I's discharge count stands
+where `RV-0060-VERDICT` §9 left it.
+
+Handoff: the `BUG-0003` Fix-verdict round, dv_lead, via the orchestrator. The packet's §9.6
+lists what to check in order. Two things in it are for dv_lead rather than for the verdict:
+the count guard's blindness at a lane-4 start (§9.1), and the pre-fix octet corruption that
+§5's conversion rule turns on (§9.2).
+
+### Open-questions
+
+1. **Severity conversion is dv_lead's, and the evidence for it is in the packet.** §5 says
+   BUG-0003 converts to CRITICAL without argument if either condition appears; both are
+   present in the design at `fafb83d`, derived in §9.2 and unmeasured only because the run
+   stops at word 0's cycle. I do not contest the conversion and nothing in the fix depends on
+   how it is decided. What does depend on it: whether the round wants a re-run at `fafb83d`
+   to *measure* the corruption before it is fixed away. I have not done that and cannot.
+2. **The count guard is blind to this class at a lane-4 start** (§9.1) — emitted count = W
+   for every directed length whatever the injection, because `ev12` fires once per output
+   word's completing input word. A guard on `tkeep` = 0xFF for every non-`tlast` word, or on
+   the delivered octet *sequence* rather than the sample count, is what would have caught it
+   at word 0 instead of the cycle guard. dv_lead's to write; I flag the gap because my own
+   fix would otherwise be its only witness.
+3. **One expect block outside family I could legitimately move** — any unit driving a whole
+   word of `/I/` or an ordered set at lane 0 mid-frame at a **lane-4** start outside
+   `Idle_injection` hits the same `bubble` cycle by a different route. I cannot see `test/**`.
+   The discriminator is in §9.6 item 4: if the old block contains a `tvalid` word with
+   `tkeep` ≠ 0xFF and `tlast` = 0, that is this defect being fixed there too.
+4. **Escalation 2 (sub-word granularity) is untouched and still open**, as `RV-0060-VERDICT`
+   §6 ruled — no row, none owed. `bubble` deliberately does not reach it. If DV ever
+   commissions that stimulus the repair is a merge and it will cost the storage this fix did
+   not: that is the cost estimate the E2 route would need, and it is not owed today.
+5. **REQ-902 remains a criterion, not a debt** — carried from `J-rtl_lead-0003` through
+   `-0010` and now twice unverified: the next CI run must regenerate byte-identically and
+   promote the snapshots for `fafb83d`'s change and this one together.
+6. **Carried, unchanged**: the latent `first_v` gating on a stimulus §10 forbids (M03-N3);
+   the WO-0038 §8 mutation spot-check and the line-rate rows L1–L5, both still owed before
+   `SO-xgmii_rx_64.md` can issue. Nothing in this commit touches any of them.
+
+### Files-in-this-commit
+
+- libs/hardcaml_ethernet/src/xgmii_rx_64.ml
+- agents/handoffs/BUG-0003_m03-lane-4-injected-word-cycle.md

@@ -665,14 +665,83 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
     reg_fb spec ~width:1 ~f:(fun d ->
       mux2 (begins &: ~:new_start4) gnd (mux2 start4_pending vdd d))
   in
-  let data_d = reg spec i.xgmii_rx.d in
-  let cov_d = reg spec cov in
-  let first_d = reg spec first_v in
+  (* ---- the carry-forward word, and why the window has to step over it
+     (REQ-016, §0.5; BUG-0003) ----
+     [bubble] is C-14.4's word read at the alignment window: at offset 4, inside
+     an open frame, an input word that covers no octet of that frame and does
+     not close it. REQ-016's injection makes exactly these and nothing else —
+     eight lanes of `/I/` mid-frame — and §6.2's [Frame] row is what holds the
+     frame on across them.
+
+     **At offset 0 the window needs no notice of them**, which is why this
+     signal is qualified by [off4] rather than left general. There the aligned
+     word *is* the previous input word, so a covering word and a carry-forward
+     word map to a full aligned word and an empty one, each one cycle later, and
+     the emission stage's [hold] below sees the empty one and waits. Every
+     lane-0 member of family I is green on that path and this change does not
+     touch it: [bubble] implies [off4], so at offset 0 the three registers below
+     are enabled exactly as they always were and the aligned word is the same
+     expression on the same values — on *every* stimulus, gapless or injected,
+     not merely gapless.
+
+     **At offset 4 the aligned word straddles two input words**, and a
+     carry-forward word between them tears it in half. With the window
+     unconditioned, the previous word's upper four octets appear on the bubble's
+     own cycle as an aligned word of four octets in positions 0 … 3, and the
+     next covering word's lower four appear on the cycle after as an aligned
+     word of four octets in positions 4 … 7. Neither is an output word: REQ-011
+     admits no short mid-frame word and §0.5 says so in text. That is BUG-0003
+     at its root — the first of those halves was emitted, on the *gapless*
+     cycle because [ev12] read the second half's bit 4 one cycle early, and the
+     second was dropped by [hold] as if it were empty.
+
+     The repair is to take the bubble out of the window rather than to rejoin
+     the halves downstream, which cannot be done without a third payload word
+     REQ-019 does not allow. Two edits, no flop added:
+
+     - the window's three registers hold across a bubble, so the rotation's
+       lower half is the last *contributing* input word rather than the last
+       input word;
+     - the aligned coverage is forced empty on the bubble's own cycle, so no
+       half word is ever presented and [hold]'s drop is empty at offset 4 for
+       the same reason it already was at offset 0.
+
+     The frame's aligned stream is then exactly the gapless one, produced on the
+     cycles its own octets arrive, and §0.5's delay falls out of the pipeline
+     instead of being computed in it: aligned word m is produced when input word
+     m + 3 arrives and leaves when input word m + 4 does, which is
+     [baseline_cycle](m) + ([cycle_of](D m) − D m) with no term left over.
+
+     **Nothing gapless moves, at either offset.** Gapless, [bubble] is
+     identically 0: inside an open frame a word either covers an octet — eight
+     data lanes cover eight, a word carrying a closure character covers the
+     lanes below it, and a lane-4 start's preamble word covers its upper four —
+     or it is a closure word covering none, which [a_close_now] admits, and the
+     REQ-108 truncation that covers none raises [a_close_oversize] which
+     [a_close_now] also admits. Outside a frame [a_open] is low. So on every
+     gapless cycle the enable is constant 1 and the mask constant 0, the three
+     registers and the aligned word are bit-identical, and so is everything
+     downstream of them — [tdata], [tkeep], [tlast], [tuser] and every strobe.
+     The one thing this changes is the offset-4 frame that contains a
+     carry-forward word, which is REQ-016's injected idle at a lane-4 start.
+
+     A word that truncates its own coverage without closing the frame — §6.2's
+     hold lane at sub-word granularity — is deliberately *not* a bubble: it
+     covers octets, so it is a word of the aligned stream. That configuration is
+     the open question below and is untouched here. *)
+  let bubble = off4 &: a_open &: ~:cov_nonempty &: ~:a_close_now in
+  let window_advance = ~:bubble in
+  let data_d = reg spec ~enable:window_advance i.xgmii_rx.d in
+  let cov_d = reg spec ~enable:window_advance cov in
+  let first_d = reg spec ~enable:window_advance first_v in
   let rotate_hi window = select window 11 4 in
   let window_keep = concat_msb [ cov; cov_d ] in
   let window_first = concat_msb [ first_v; first_d ] in
   let al_data = mux2 off4 (select (concat_msb [ i.xgmii_rx.d; data_d ]) 95 32) data_d in
-  let al_keep = mux2 off4 (rotate_hi window_keep) cov_d in
+  let al_keep = mux2 bubble (zero 8) (mux2 off4 (rotate_hi window_keep) cov_d) in
+  (* [al_new] needs no mask of its own. It is read only by [nc] and [ev12], and
+     both vanish where [al_keep] is zero — [nc] through its own [popcount] and
+     [ev12] through bit 4 — so masking it would add a gate to change nothing. *)
   let al_new = any (mux2 off4 (rotate_hi window_first) first_d) in
   (* ---- the elastic hold on the emission stage (§6.1's D(m), §7's handshake) ----
      The emission stage is still one register deep. What changes is *when* it
@@ -682,20 +751,27 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
      front of it.
 
      What the drop costs is the whole safety question, and under the injection
-     this rule is written against it costs nothing: an injected idle word makes
-     an aligned word covering no octet, and the cycle an octet or a closure does
-     appear is by construction the cycle the held word leaves — so the word
-     dropped is always an empty one, and the word carrying something is loaded
-     on the same edge that retires the word in front of it. Two words are
-     resident at most: one in this register, one forming combinationally in the
-     alignment window, which is REQ-019's bound met with an enable rather than
-     with storage — no flop is added by this change.
+     this rule is written against it costs nothing — but only because the
+     alignment window above delivers it. An injected idle word makes an aligned
+     word covering no octet at *either* offset ([bubble]), and the cycle an
+     octet or a closure does appear is by construction the cycle the held word
+     leaves — so the word dropped is always an empty one, and the word carrying
+     something is loaded on the same edge that retires the word in front of it.
+     The first revision of this block asserted that sentence for both offsets
+     while the window delivered it at offset 0 only, and at offset 4 the word
+     dropped was half an output word: BUG-0003, whose repair is [bubble] and
+     not anything here. Two words are resident at most: one in this register,
+     one forming combinationally in the alignment window, which is REQ-019's
+     bound met with an enable rather than with storage — no flop is added by
+     this change or by BUG-0003's.
 
      The one configuration where the drop is not automatically empty is a
      control character *inside* a word of an open frame — §6.2's hold lane,
      REQ-016 at sub-word rather than whole-word granularity — which truncates
      coverage without closing the frame, leaving one to four octets in front of
-     a held word with no closure to release it. That stimulus is malformed for
+     a held word with no closure to release it. [bubble] does not reach it and
+     deliberately so: such a word covers octets, so it belongs to the aligned
+     stream and is not a carry-forward word. That stimulus is malformed for
      the old decision too (it emitted them as a short mid-frame word, which
      REQ-011 does not admit either), it is outside the whole-word injection
      §6.1's D(m) is stated over, and it is carried as an open question rather
@@ -863,7 +939,19 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
      3 + (m + 1)(k + 1) — 5, 7, … 19 at k = 1 and 11, 19, … 67 at k = 7, the
      last of each being the `tlast` word released by [closure_aligned] one cycle
      after the terminate word arrives — and at k = 0 every one of those is the
-     cycle the word already left on. *)
+     cycle the word already left on.
+
+     At the 64-octet **lane-4** member the same two deciders give §6.1's D(m)
+     once [bubble] has made the aligned stream the gapless one. Aligned word m
+     is produced on the cycle input word m + 3 arrives and [ev12] releases it on
+     the cycle input word m + 4 arrives, which is [cycle_of](D m) for every
+     non-`tlast` word because D(m) — received octet 8m + 12, at octet time
+     32 + 8m — *is* input word m + 4; the `tlast` word is released by
+     [closure_aligned] on the cycle after the terminate word, its record then at
+     age 1. Words 0 … 7 therefore leave at 6, 8, … 18, 19 at k = 1 and at
+     18, 26, … 66, 67 at k = 7, each equal to [baseline_cycle](m) +
+     ([cycle_of](D m) − D m); at k = 0 each is m + 4 and 11, the cycles the
+     words already left on. *)
   let ev12 = ~:al_new &: bit al_keep 4 in
   let closed = sel_valid in
   let closure_aligned = closed &: (~:sel_is_r0 |: off4) in

@@ -319,6 +319,161 @@ without argument if either appears:**
   to share machinery, say so in the Root-cause section and escalate rather than
   fold an uncommissioned configuration into a commissioned one.
 
+## 9. Root cause and fix — rtl_lead's response
+
+*(appended by rtl_lead at `J-rtl_lead-0011`. Derived from
+`libs/hardcaml_ethernet/src/xgmii_rx_64.ml` as it stands at `fafb83d`; no bench
+file, no `WO-0060*` and no `docs/reports/audit/**` was opened.)*
+
+### 9.1 The mechanism, and §6's open question answered
+
+**The split is real, it reaches the output port, and the count guard cannot
+see it.** §6 was right to refuse to adopt it and wrong about the disjunct it
+offered: the halves are neither absorbed before the port nor a different
+mechanism. Exactly **one half of each pair is emitted and the other is
+dropped**, so the emitted-word count is unchanged and `delivered_samples`
+counts eight.
+
+The window (module lines 648–747) forms the aligned word at offset 4 as
+`{cov[3:0], cov_d[7:4]}` — this word's lower four lanes above the *previous
+input word's* upper four. `cov` of an injected idle is empty (`cov_first` = 0,
+`a_hold_end` = 0 ⇒ `cov_end` = 0), so at (64, lane 4, k = 1), with source cycle
+s arriving at design cycle 2s − 2:
+
+| design cycle | input | `al_keep` | what it holds |
+|---|---|---|---|
+| 3 | injected `/I/` | `0x0F` | octets 0…3 at **positions 0…3** |
+| 4 | src 3 | `0xF0` | octets 4…7 at **positions 4…7** |
+| 5 | injected `/I/` | `0x0F` | octets 8…11 at positions 0…3 |
+| 6 | src 4 | `0xF0` | octets 12…15 at positions 4…7 |
+
+Every output word is torn into two disjoint halves on consecutive cycles. Then
+`ev12 = ~al_new & al_keep[4]` — bit 4 is `cov[0]` of the word arriving now — is
+1 on exactly the covering cycles and 0 on the idle cycles, so:
+
+- on an **odd** (idle) cycle `decided` is 0, `hold` is 1, and the low half in
+  front of the stage is **dropped** — the drop the emission comment asserts is
+  "always an empty one" is empty at offset 0 and is half an output word here;
+- on an **even** (covering) cycle `ev12` fires and the stage emits whatever it
+  holds, with `keep_count` = `pc` = 4.
+
+That is the measured cycle 4 exactly: word 0's low half was loaded at cycle 3
+and released at cycle 4 by the *second* half's bit 4, i.e. by an octet that has
+nothing to do with D(0). It is the gapless cycle because `ev12` reads one input
+word early relative to §6.1's D(m) whenever a bubble sits between the two words
+an aligned word straddles.
+
+**Why the count guard passed, structurally rather than by luck.** At a lane-4
+start each output word m is *completed* by input word m + 3, whose lane 0 is
+the aligned bit 4; there is exactly one such input word per output word, so
+`ev12` fires exactly W times per frame at any k, and the design emits exactly
+one short word per firing. Emitted count = W = 8 for every directed length in
+M03-I4 (checked by hand for 64…72 at a lane-4 start). **`delivered_samples` is
+blind to this defect class at a lane-4 start** — the count is right, the
+`tlast` placement is right, and only the cycles, the `tkeep`s and the octets
+are wrong. That is worth more to DV than this packet's verdict.
+
+### 9.2 Severity — both of §5's conversion conditions are present at `fafb83d`
+
+Derived, not measured (the run stops at word 0's cycle). At (64, lane 4, k = 1)
+the pre-fix port carries eight words at cycles 4, 6, 8, 10, 12, 14, 16, 18:
+
+- **§5 condition 1 — short mid-frame words**: words 0…6 carry `tkeep` = 0x0F
+  with `tlast` = 0. Seven of them. (`tkeep` is still contiguous from bit 0, so
+  it is REQ-011's *first* clause that breaks, not the second.)
+- **§5 condition 2 — the delivered octet sequence changes**: only word 0's four
+  marked octets are frame octets (0…3, correct positions). Words 1…7 are
+  emitted from `al_data_d` whose octets sit at positions 4…7 while
+  `keep_of_count 4` marks positions 0…3 — so their four marked octets are the
+  **idle word's filler, 0x07 ×4**. Octets 8…11, 16…19, … 56…59 were dropped by
+  `hold` and never reach the port at all. **4 of the 60 required octets are
+  delivered.**
+
+By §5's own rule that converts BUG-0003 to CRITICAL. I am not arguing against
+the conversion — I am reporting the evidence for it, since §5 asked to be told.
+The fix below removes both conditions; the conversion matters for the record
+and for the question in §9.6.
+
+### 9.3 The fix (one file, two edits, no flop added)
+
+```ocaml
+let bubble = off4 &: a_open &: ~:cov_nonempty &: ~:a_close_now in
+let window_advance = ~:bubble in
+let data_d  = reg spec ~enable:window_advance i.xgmii_rx.d in
+let cov_d   = reg spec ~enable:window_advance cov in
+let first_d = reg spec ~enable:window_advance first_v in
+...
+let al_keep = mux2 bubble (zero 8) (mux2 off4 (rotate_hi window_keep) cov_d) in
+```
+
+`bubble` is C-14.4's carry-forward word read at the window: at offset 4, inside
+an open frame, a word covering no octet of it and closing nothing — which under
+REQ-016's whole-word injection is the injected idle and nothing else. The
+window's three existing registers hold across it, so the rotation's lower half
+becomes the last *contributing* input word rather than the last input word; and
+the aligned coverage is forced empty on the bubble's own cycle, so no half word
+is ever presented and `hold`'s drop is empty at offset 4 for the same reason it
+already was at offset 0. The halves are not rejoined downstream — that would
+need the third payload word REQ-019 forbids; the tear is prevented instead.
+
+Resulting cycles at (64, lane 4), derived: **6, 8, 10, 12, 14, 16, 18, 19** at
+k = 1 and **18, 26, 34, 42, 50, 58, 66, 67** at k = 7 — each equal to
+`baseline_cycle(m) + (cycle_of(D m) − D m)`, with words 0…6 `tkeep` 0xFF /
+`tlast` 0 and word 7 `tkeep` 0x0F / `tlast` 1 / strobes on its cycle. k = 0 is
+unchanged at 4…10, 11.
+
+### 9.4 Gapless, and lane 0
+
+`bubble` implies `off4`, so **at offset 0 nothing changes on any stimulus** —
+gapless or injected — because the enable is constant 1 and the mask constant 0
+there by construction. Every lane-0 member of every family, including the 26
+currently-green injected ones, is bit-identical by inspection rather than by
+argument.
+
+Gapless, `bubble` ≡ 0 at **both** offsets: inside an open frame a word either
+covers an octet (eight data lanes cover eight; a word carrying a closure
+character covers the lanes below it; a lane-4 start's preamble word covers its
+upper four) or is a closure/truncation word, which `a_close_now` admits; and
+outside a frame `a_open` is low. So no gapless expect block can move, and
+`word_delay` stays 3 at both lanes (`h` = 8 / L = 16, `h` = 12 / L = 12).
+
+### 9.5 §4's E2 revival conditions — none tripped
+
+No third payload storage word (three enable terms on three existing registers
+and one 8-bit mask; residency is still one word in the emission register and
+one forming in the window). Gapless ΔC unmoved at 3 at both lanes. No gapless
+expect block moves. There is therefore no cost to return and nothing that
+revives option (b).
+
+§8's escalation 2 (sub-word granularity) is **not** folded in: a word that
+truncates its own coverage covers octets, so it is a word of the aligned stream
+and `bubble` deliberately does not reach it. That configuration is exactly as
+it was at `fafb83d`.
+
+### 9.6 What the verdict round should check, in order
+
+1. The eight cycles and eight `(tkeep, tlast, tuser)` tuples at (64, lane 4)
+   for k = 1 and k = 7 against §9.3 — and M03-I4's cross-run tail assertions,
+   which have never executed.
+2. The 60 delivered octets at every lane-4 injected member. §9.2 says they were
+   wholesale wrong before; the fix is only right if they are now exactly the
+   gapless sequence in the gapless byte positions.
+3. Every lane-0 member and every gapless member byte-identical. §9.4 makes this
+   a stronger claim than last round: a moved *lane-0* result convicts this
+   change outright, because at offset 0 the change is provably the identity.
+4. **The one place another expect block could legitimately move**: any unit that
+   drives a whole word of `/I/` or an ordered set at **lane 0 mid-frame at a
+   lane-4 start** outside `Idle_injection` — the same `bubble` cycle by a
+   different route. I cannot see `test/**` to know whether one exists. If a
+   promotion block lists such a unit, it is this defect being fixed there too,
+   not a regression; the discriminator is whether its old expect block contains
+   a `tvalid` word with `tkeep` ≠ 0xFF and `tlast` = 0.
+5. `rtl_snapshots/**` regeneration with REQ-902's double-generation check,
+   carried from `fafb83d` and still owed. Prediction stated before the run:
+   three existing registers gain an enable condition and the `al_keep` mux
+   gains one term — **no new register, no new `always` block** — and the same
+   deltas reappear in `eth_mac_10g.v`.
+
 ## Fix verdict
 
 *(appended by dv_lead after re-test. rtl_lead's fix entry must contain a
