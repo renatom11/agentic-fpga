@@ -3049,3 +3049,286 @@ and with a file set disjoint from the first.
 
 ### Files-in-this-commit
 - test/attack_plans/AP-xgmii_rx_64.md
+
+## [J-dv_lead-0086] 2026-08-07T13:40Z | task:none | The D(m) re-ruling countersigned on four independent derivations — three granted, and the one refused is refused because the ruling contradicts its OWN residue table one paragraph up, at the other start lane
+
+### Trigger
+Orchestrator, scoped re-countersignature round at `1f3c04c`. rtl_lead's
+BUG-0002 fix landed at `ce00c06` and CI validated it exactly as its return
+predicted (run **30895770553**: only M03-I4 and M03-I6 red, only at word 7,
+18 against 19; all 34 other units green). rtl_lead's E5 escalation proved my own
+`RV-0059` §8 D(m) rule's non-`tlast` case unsatisfiable by causality, and the
+architect re-ruled D(m) at `1f3c04c` (`J-architect_docs_lead-0025`): a new
+output-word bullet and a causality test in requirements.md §0.5, a new D(m) block
+in SPEC-M03 §6.1. My `d39ffb6` signature is neither withdrawn nor inherited —
+five of its seven checks stand, C-2's residue-survival conclusion is superseded —
+and a **new, narrow** signature is owed on exactly four points: the two
+refutations, `k = 0` invariance, the carve-out withdrawal and inverted class
+table, and the new I4/I6 pinned cycles. Sign or refuse each separately; any
+numeric disagreement returns as a finding with its numbers.
+
+### Inputs
+- `agents/charters/dv_lead.md`; `agents/PROTOCOL.md` (§3 packets, §4 grammar,
+  §6 scope, §10 R-SEAL-1 and the independence rules).
+- `docs/specs/requirements.md` at `1f3c04c` — §0.5 whole, and specifically **The
+  deciding input word (normative)** with its new output-word bullet, **The test a
+  specification's D must pass (normative)**, **What survives idle injection**,
+  the *why L does not survive* pair of tests, and the new
+  `J-architect_docs_lead-0025` paragraph; REQ-016; REQ-005, REQ-011, REQ-015,
+  REQ-103, REQ-107; §0.6's window paragraphs; §1.1's `h` column; §13's
+  countersignature rows for `ebb3f49`, `0caf023` and `a77017c`.
+- `docs/specs/modules/xgmii_rx_64.md` at `1f3c04c` — §6.1 whole (the new D(m)
+  block, the refutation paragraph, the two consequences, derivations 1–3 with
+  the withdrawn carve-out, the preamble/octet-time geometry, the 64-octet table,
+  the drain derivation), §8's directed set and stress obligation, §9, §10's
+  REQ-016 / REQ-005 / REQ-107 hooks.
+- `agents/handoffs/BUG-0002_m03-idle-injection-tlast-on-a-non-final-word.md`
+  whole, including rtl_lead's Root-cause, fix and *What the fix does not repair*
+  escalation.
+- `agents/handoffs/WO-0059_tb-m03-family-i-silence-and-ordered-sets.md` — the
+  `d39ffb6` COUNTERSIGNATURE block (C-1 … C-7 and N-1), re-read to fix exactly
+  what my earlier signature did and did not certify.
+- `test/attack_plans/AP-xgmii_rx_64.md` — M03-I4, M03-I5, M03-I6, M03-N2 and
+  §4.N's Route 2, plus the `J-dv_lead-0085` change-log row.
+- `test/xgmii_rx_64/test_m03_i.ml` — `dependency_source_cycle` (`:922`),
+  `injected_word_cycle` (`:926`), the four call sites (`:1015`, `:1039`,
+  `:1432`, `:1452`), the delay-identity block (`:1084–1115`), the per-octet
+  reporting block (`:1119–1196`), the module docstring (`:1–140`). **This is a
+  test file I own, not RTL.**
+- **No RTL read this round or any round of this packet.** Every statement below
+  about what the design does is taken from rtl_lead's own returned tables in this
+  packet or from CI run 30895770553's published result, and is labelled as such.
+
+### Reasoning
+The instruction was to re-derive rather than verify prose, so I rebuilt M03's
+octet-time geometry from §6.1's own preamble paragraph and §0.5's octet-time
+definition — received octet `j` at octet time `8s + ℓ + 8 + j`, closing character
+at `8s + ℓ + 8 + N`, uniform injection `g(c) = c + k·max(0, min(c,T) − f)` with
+sites at the boundaries before cycles `f+1 … T` — instantiated the new D(m) on
+it, and read the four points off the result. I validated the geometry **before**
+trusting it, against constants the ruling does not touch: at `k = 0` it returns a
+single per-octet `L` of 16 at lane 0 and 12 at lane 4 over `N = 5 … 199`, which is
+§7's pinned pair, and it reproduces `m + 3` identically.
+
+**Two things fell out of the geometry that made three of the four points cheap,
+and they are the reason this entry is not four separate arguments.** First, `N ≥
+8m+13 ⟺ m < W−1` exactly, so the new rule's (a)/(b) split *is* the
+non-`tlast`/`tlast` split — not a stipulation but an identity, which means the
+`tlast` bullet is untouched and point 2's second half needs no sweep at all. It
+also means the bench's existing `m = words - 1` branch is already the right
+branch and only the octet index inside it moves. Second, `c(N−5) = T` — the last
+delivered octet sharing the closing character's own word — holds iff `r ∈ {5,6,7}`
+at lane 0 and `r ∈ {1,2,3}` at lane 4, and those are exactly the complements of
+§6.1 derivation 1's own "terminate later" sets, the table I re-derived
+independently at C-1 of `d39ffb6` and which this ruling leaves standing. That
+second fact is what produced the refusal.
+
+**Point 1 (refutations) — granted, and I refused to settle for checking two
+examples.** Both worked by hand and both hold: 64/69 at lane 0, `k = 7` collide at
+cycle 60 with the lines agreeing through 65, and 64/12 collide at cycle 4 with the
+lines agreeing through 9. But two witnesses do not tell you whether the *new* rule
+is causal, only that the old one is not — so I swept the causality test itself:
+every pair of lengths `N ∈ [5,80]`, `k ∈ {0,1,7}`, both lanes, comparing the two
+rules' pinned tuples at every cycle through the last one on which the two injected
+lines agree. The new D(m) violates **nothing** in 17 100 pair-runs; the replaced
+rule violates 1 620 times at lane 0 (all at `k = 7`) and 648 at lane 4 (`k = 1`
+and `k = 7`, 324 each). That converts the signature from "the architect's two
+examples check out" into "the rule passes the test the architect made normative,
+over the space I could sweep" — which is what a countersignature should be worth,
+and it cost one script.
+
+Two precisions I insisted on rather than let ride. The 64/69 pair carries **no
+FCS side-condition**: making the lines identical forces the 69-octet frame's
+octets 60–63 to equal the other frame's FCS, but those are payload for it and its
+own FCS at 65–68 is free, so **both frames can carry correct FCSs simultaneously**
+and no `tuser` confound enters. And 1b's 12-octet frame is **not** in a
+commissioned set — REQ-107's row commissions 5, 16, 60 and 63 — where 1a's 64 and
+69 both are, in §8's directed 64…71. The refutation is sound either way (§0.5's
+test ranges over legal stimuli, and a 12-octet runt is one), but the packet must
+not be read as claiming an in-set collision it does not have. Any `N ∈ [8,12]`
+serves; 12 is the best because it makes the two frames' word 0 tuple-identical, so
+the collision is purely in the cycle.
+
+**And I withdrew my own §2.3.** BUG-0002 recorded word 0's measured cycle 4 as the
+first hardware confirmation of §6.1's D(m). Under the ruled D(m) the conformant
+value is 5 at `k = 1` and 11 at `k = 7`; 4 is conformant at neither, and the design
+reached it through `emit_last_a`'s emptiness test — the very defect the packet
+convicted. The general lesson, which I would rather write against myself than have
+the auditor write: **a guard passing is not evidence for the rule it encodes when
+the design under it is already known to compute that guard's quantity by the wrong
+mechanism.** An emptiness test and an evidence test agree on a gapless line and
+only there, and the whole point of family I is that it is not a gapless line.
+
+**Point 2 (`k = 0` invariance) — granted, and the honest form of it is that it is
+an identity, not a coincidence.** At `k = 0`, `g` is the identity, so
+`emit(m) = s+m+3` for every `m` by construction. The real content is that D(m)
+exists and never lies *after* the word it decides, i.e. that every offset is
+non-negative — and the offset table is `{1}` for (a) and `{1,2}` for (b) at lane 0,
+`{0}` and `{0,1}` at lane 4, all of them `≥ 0`, all of them exactly §6.1's own four
+numbers, recovered rather than read. The lane-4 zeros are legal precisely because
+§0.5's test permits the same cycle. Mechanically: 0 deviations over `N = 5…199`
+at both lanes at `k = 0`, and 0 of 6 630 frames move their `tlast` word over
+`k = 0…16`. The consequence worth stating is the ruling's blast radius: every
+gapless cycle this programme ever pinned, and every `tlast` word on every injected
+run already driven, is untouched. What moves is exactly the non-`tlast` words of
+an injected run.
+
+**Point 3 (class table) — granted in part, refused in part, and this is the
+round's real output.** The lane-0 half reproduces exactly, inversion and all:
+`r ∈ {0…4} → {16+8k}` where the withdrawn item predicted two classes, and
+`r ∈ {5,6,7} → {16, 16+8k}` where it promised one. The carve-out withdrawal is
+right and C-2's arithmetic survives intact inside it — those one, two and three
+octets *do* still measure 16; what died is the inference that the frame therefore
+has one class, because the other words no longer measure 16 either.
+
+The lane-4 cell is wrong, and it is wrong in a way the ruling could have caught
+against its own text. §6.1 item 2 is headed *"**Every** output word, at a lane-4
+start"* and gives `L+16k` / `L+8k`. That is exact for the non-`tlast` words and
+for the `tlast` word at `r = 4` **only**. At `r ∈ {1,2,3}` the `tlast` word's bytes
+4 … r+3 sit in the closing character's own input word, so no injected idle
+separates them from their evidence and they measure **12** flat — a **third**
+class, `{12, 12+8k, 12+16k}`, which is `{12,20,28}` at `k = 1` and `{12,68,124}` at
+`k = 7`. At `r = 0` and `r ∈ {5,6,7}` the `tlast` word has no bytes above 3 and its
+bytes 0–3 measure `12+8k` rather than `12+16k`, so the set is unchanged but the
+per-word description is still wrong. **The ruling preserved exactly this reasoning
+at lane 0 and dropped it at lane 4, where its own derivation-1 residue table names
+the mirror set** — `{1,2,3}` is the complement of `{0,4,5,6,7}` just as `{5,6,7}`
+is the complement of `{0,1,2,3,4}`. So the two halves of the ruling are
+inconsistent with each other, not merely incomplete, and that is the sharpest form
+I could put the finding in.
+
+I weighed returning it as a non-blocking note in the style of `d39ffb6`'s N-1 and
+rejected that: N-1 was a gate that licensed nothing at M03, where this is a false
+statement in a normative section that **the next CI run will contradict in printed
+output**. §8's directed lengths are 64…71, so lane-4 `r ∈ {1,2,3}` is lengths 65,
+66 and 67 — three of the sixteen (length, lane) members M03-I4 already drives, at
+both `k = 1` and `k = 7`, and the bench *reports* these classes. A reader, or a
+later bench built from item 2, would read a conformant design as divergent.
+Nothing fails today (§0.5 forbids asserting a per-octet constant here and M03-I4
+does not assert one, so it cannot fail a conformant design and blocks nothing) —
+but "cannot fail a design" is not a reason to leave a normative sentence false. I
+offered a repair that costs one paragraph and moves no rule, no cycle and no
+design, and stated that I hold no position beyond offering it.
+
+**Point 4 (I4/I6 cycles) — granted, on three internal checks rather than on
+arithmetic agreement alone.** `emit(m) = m+4+k(m+1)` for `m ≤ 6` and `11+8k` for
+`m = 7` gives 5,7,9,11,13,15,17,19 at `k = 1` and 11,19,27,35,43,51,59,67 at
+`k = 7`, `FF×7` then `0F`, `tlast` on word 7 only, `tuser` 0 throughout — the
+architect's rows to the cycle. The checks: the `k = 7` row's 67 is the same 67
+refutation 1a computes from the other side and nothing sits at 60, so points 1 and
+4 are consistent; the spacing is uniform at `k+1` including the step to word 7,
+which is *why* `r = 0` is the one-class residue in point 3, so points 3 and 4 are
+consistent; and **REQ-019's two-word bound holds at these cycles** — at `k = 7`
+word `m`'s octets complete at `8m+2`, it leaves at `8m+11`, and word `m+1`'s
+octets complete at `8m+10`, so exactly two words are resident and never three.
+§6.1 asserts that bound at every `k` and this is the stimulus most likely to break
+it; it does not break.
+
+**On editing the attack plan, which I did not do.** Two of my own AP cells are now
+false — M03-I4's `Observable` names the superseded D(m) as the thing the bench
+asserts and cites the withdrawn carve-out as live; M03-N2's `Observable` names the
+wrong pinned word and carries the "moves earlier, never onto it" clause the ruling
+withdraws in terms; §4.N's Route 2 needs its injected reading re-based to `W`. The
+round's own predecessor settles the sequencing: at `d39ffb6` the signature commit
+touched no plan and the repair landed at `b2a3b95` *after* transcription — "the AP
+repair the countersignature licenses". A ruling not yet in force does not license a
+repair, so I declared all three loudly in the packet with their replacement text
+fixed, making the repair clerical, and left the file untouched. No row is added,
+converted or re-statused by any of the three and the plan's counts do not move.
+
+**Why the packet carries a prediction about the next CI run.** The bench repair
+**widens** the red set before it narrows it: word 0's pin moves by exactly `k`
+cycles at both lanes and every directed length, and the design emits a word as
+soon as its octets are complete, so 36 units go red — M03-I4's 32 injected members
+at `k ∈ {1,7}` and all 4 of M03-I6's — all at **word 0**, with
+`expected − observed = k`, while all 16 `k = 0` members stay green. That is the
+correct direction (ADR-0015 D2: never amend an expectation to agree), but a
+red count going 2 → 36 is exactly the kind of surprise that gets a bench blamed
+for a design's gap, so it is written down before the run, falsifiably: a green
+`k ≥ 1` unit, a first failure at a word other than 0, or a delta other than `k`
+means the bench repair is wrong and not the design.
+
+### Actions
+- Read the four artefacts above; rebuilt M03's octet-time geometry from the
+  specification and instantiated the new D(m) on it; derived all four points
+  independently.
+- Ran three ephemeral scratchpad derivations (not committed, ADR-0003/F5): the
+  offset/invariance sweep over `N = 5…199` × both lanes × `k = 0…16`; the
+  per-octet class tables by residue at both lanes at `k ∈ {1,7}`; and the
+  causality-test sweep over all length pairs `N ∈ [5,80]` × `k ∈ {0,1,7}` ×
+  both lanes, for both the new and the replaced rule.
+- Appended the COUNTERSIGNATURE block to
+  `agents/handoffs/BUG-0002_m03-idle-injection-tlast-on-a-non-final-word.md`:
+  points 1, 2 and 4 GRANTED, point 3 GRANTED IN PART with **FINDING F-1**; the
+  standing of `d39ffb6` restated (five checks stand, C-1 load-bearing, C-2
+  superseded); BUG-0002 §2.3's "first confirmation" claim withdrawn by its own
+  author; the three false AP sites declared with replacement text; the 36-unit
+  red-set prediction stated in the open.
+- Wrote **no** file under `test/**`, `libs/**` or `docs/**`; ran **no** git
+  command; opened **no** RTL.
+
+### Evidence
+Everything below is arithmetic on the specification and reproduces by hand from
+the closed forms in the packet's §C-0. The scratchpad scripts are **ephemeral and
+uncommitted** (ADR-0003/F5) and are not offered as evidence; the numbers are.
+
+- **Geometry validated against frozen constants before use**: at `k = 0` the model
+  returns a single per-octet `L` of **16** at lane 0 and **12** at lane 4 over
+  `N = 5…199` — §7's pinned pair — and reproduces `m + 3` identically.
+- **Point 2**: 0 deviations from `s+m+3` at `k = 0` over `N = 5…199` at both
+  lanes; observed offset sets `{1}` (a) / `{1,2}` (b) at lane 0 and `{0}` /
+  `{0,1}` at lane 4, matching §6.1's four numbers; **0 of 6 630** frames move
+  their `tlast` word over `N = 5…199` × both lanes × `k = 0…16`.
+- **Point 1**: causality violations over all pairs `N ∈ [5,80]` × `k ∈ {0,1,7}` ×
+  both lanes — **new D(m): 0 and 0**; replaced rule: **1 620** (lane 0, all
+  `k = 7`) and **648** (lane 4, `k = 1` and `k = 7`, 324 each). The two named
+  witnesses appear at exactly the stated numbers: `(64,69)` lane 0 `k = 7`
+  violating at cycle **60**, lines agreeing through **65**; `(12,64)` lane 0
+  `k = 7` violating at cycle **4**, lines agreeing through **9**.
+- **Point 3**: lane 0 by residue at `k = 1` → `{24}` for `r ∈ {0…4}` and
+  `{16,24}` for `r ∈ {5,6,7}`; at `k = 7` → `{72}` and `{16,72}`. Lane 4 at
+  `k = 1` → `{20,28}` for `r ∈ {0,4,5,6,7}` and **`{12,20,28}`** for
+  `r ∈ {1,2,3}`; at `k = 7` → `{68,124}` and **`{12,68,124}`**. Over
+  `N = 13…199`, no exceptions in either lane.
+- **Point 4**: `(64, lane 0, k = 1)` → 5, 7, 9, 11, 13, 15, 17, 19;
+  `(64, lane 0, k = 7)` → 11, 19, 27, 35, 43, 51, 59, 67; `tkeep` `FF`×7 then
+  `0F`; `tlast` word 7 only; D kinds `a`×7 then `b`; offsets all 1.
+- **Cited, not re-run**: CI run **30895770553** at `ce00c06` (only M03-I4 and
+  M03-I6 red, at word 7, 18 against 19; 34 other units green) — the externally
+  verifiable reference this round's premise rests on, per PROTOCOL §4.1(b).
+
+### Outcome
+DoD met for the round as scoped. Four points adjudicated separately: **1, 2 and 4
+GRANTED; 3 GRANTED IN PART**, with the lane-4 class cell REFUSED as numerically
+incomplete and returned as **FINDING F-1** with its numbers and an offered repair.
+Signature of record: the COUNTERSIGNATURE block in
+`agents/handoffs/BUG-0002_m03-idle-injection-tlast-on-a-non-final-word.md` plus
+this entry. **The diff is not in force until the orchestrator transcribes the
+signature into requirements.md §13.** The **Fix verdict** section of BUG-0002
+stays open and `ce00c06` is not accepted: the bench that would re-test it asserts
+a superseded D(m), so the verdict is owed after the bench round and the RTL round
+after it. `SO-xgmii_rx_64.md` remains unopened; family I's discharge count stands
+at **36 of 62**, unchanged.
+
+### Open-questions
+- **F-1 is with architect_docs_lead**: SPEC-M03 §6.1 item 2's "every output word"
+  is false for the `tlast` word at seven of eight lane-4 residues and produces a
+  third latency class at `r ∈ {1,2,3}` — observable in printed output at directed
+  lengths 65, 66 and 67 on the next run. Non-blocking, cannot fail a conformant
+  design, offered repair costs one paragraph.
+- **The AP repair is owed in the next commit of this round** (M03-I4's and
+  M03-N2's `Observable`, §4.N's Route 2), licensed by transcription and not by
+  this signature — the `J-dv_lead-0084` → `J-dv_lead-0085` sequencing, repeated.
+  The tb_writer work order SHALL NOT issue before it lands.
+- **Sequencing question for the orchestrator, not a decision of mine**: the bench
+  repair takes the red count from 2 to 36 until rtl_lead's elastic-emission round
+  lands. I recommend bench-first (the bench states the requirement; the design
+  meets it) and have stated the predicted red set falsifiably, but the ordering is
+  the orchestrator's call.
+- `d39ffb6`'s **N-1** still rides unanswered — REQ-016's verification column gates
+  the per-octet assertion per **module** while survival is per (start lane,
+  residue). This round strengthens it: point 3 now shows the class count varying
+  by residue at **both** lanes, not one.
+
+### Files-in-this-commit
+- agents/handoffs/BUG-0002_m03-idle-injection-tlast-on-a-non-final-word.md

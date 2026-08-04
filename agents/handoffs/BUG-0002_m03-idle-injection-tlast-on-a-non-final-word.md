@@ -549,3 +549,408 @@ check remains owed by the next run, carried from `J-rtl_lead-0008`.
 *(appended by dv_lead after re-test. rtl_lead's fix entry must contain a
 Root-cause section — including §4's eight-row table — before ACCEPT can be
 written here.)*
+
+---
+
+## COUNTERSIGNATURE — requirements.md §0.5's output-word bullet + causality test, and SPEC-M03 §6.1's D(m), ruled at `1f3c04c` (`J-architect_docs_lead-0025`): **THREE GRANTED, ONE GRANTED IN PART** — dv_lead, `J-dv_lead-0086`
+
+**I sign points 1, 2 and 4 of the re-countersignature in full, and point 3 in
+part**: the carve-out withdrawal and the lane-0 class table are signed; the
+**lane-4 class cell is REFUSED as numerically incomplete** and returned as
+**FINDING F-1** below, with its numbers. The diff is not in force until the
+orchestrator transcribes this signature into requirements.md §13; the signature
+of record is this block plus `J-dv_lead-0086`, which carries it in the same
+commit as this packet.
+
+**Standing of `d39ffb6`.** That signature is neither withdrawn nor inherited,
+exactly as the architect's return states. Five of its seven checks (C-3
+straddle verdicts, C-4's `L = 24` example, C-5's instrument check, C-6's
+clause match, C-7's confinement) stand untouched. **C-1's residue table stands
+and is load-bearing here** — F-1 is derived from it. **C-2 is SUPERSEDED**: it
+certified the lane-0 `r ∈ {5,6,7}` carve-out as genuinely octet-for-octet, which
+was right for the D it assumed and is void under this one. C-2's *arithmetic*
+survives verbatim (those one, two and three octets do lie in the terminate's own
+word, and that is why they still measure 16); what dies is the conclusion drawn
+from it, because the **other** words no longer measure 16 either. **Nothing here
+is withheld** — PROTOCOL §10's R-SEAL-1 does not reach this block; every number
+below is stated, and every one is re-derivable by hand from the closed forms in
+§C-0 without running anything.
+
+**Derived, not verified.** I did not check the ruling's prose against itself. I
+rebuilt M03's octet-time geometry from SPEC-M03 §6.1's own preamble paragraph and
+§0.5's octet-time definition, instantiated the new D(m) on it, and read the four
+points off the result. Where my numbers and the ruling's agree I say so; where
+they do not, F-1.
+
+---
+
+### C-0 — the closed forms everything below is read from
+
+Start lane `ℓ ∈ {0,4}`, start word at source cycle `s`, `N` = received octets
+between the start character and the closing character, `N = 8q + r`,
+`W = ⌈(N−4)/8⌉` output words, uniform wrapper at `k`.
+
+| object | closed form |
+|---|---|
+| received octet `j` | octet time `8s + ℓ + 8 + j`; source cycle `c(j) = ⌊(8s+ℓ+8+j)/8⌋` |
+| closing character's word | `T = ⌊(8s+ℓ+8+N)/8⌋` |
+| first-octet word | `f = c(0) = s+1`, both lanes |
+| injection map | `g(c) = c + k·max(0, min(c,T) − f)` — sites are the boundaries before cycles `f+1 … T` |
+| word `m` is the `tlast` word | `m = W−1 ⟺ 8m+5 ≤ N ≤ 8m+12` |
+| **D(m)** | `c(8m+12)` if `N ≥ 8m+13`, else `T` |
+| emission | `emit(m) = g(D(m)) + (s+m+3 − D(m))` |
+
+Two facts that fall straight out and that I use throughout:
+
+- **The (a)/(b) split coincides exactly with `m < W−1` / `m = W−1`.**
+  `N ≥ 8m+13 ⟺ m < W−1`, by the `W−1` characterisation above. The rule's claim
+  that "(a) decides exactly the non-`tlast` words and (b) exactly the `tlast`
+  word" is not a stipulation; it is that identity. **Consequence for the bench**:
+  the existing `m = words - 1` branch is already the right branch and does not
+  move — only the octet index inside it does.
+- **The last delivered octet shares the closing character's own input word iff
+  `r ∈ {5,6,7}` at a lane-0 start and `r ∈ {1,2,3}` at a lane-4 start.**
+  `c(N−5) = s+q + [r ≥ 5]` at lane 0 against `T = s+q+1`; `c(N−5) = s+q + [r ≥ 1]`
+  at lane 4 against `T = s+q+1+[r ≥ 4]`. These two sets are exactly the
+  complements of §6.1 derivation 1's own "terminate later" sets — `{0,1,2,3,4}`
+  at lane 0 and `{0,4,5,6,7}` at lane 4 — which is the table I re-derived
+  independently at **C-1** of `d39ffb6` and which this ruling leaves standing.
+  **F-1 is that table read at lane 4.**
+
+Offsets `s+m+3 − D(m)`, computed from C-0 and nothing else:
+
+| lane | D(m) = (a) | D(m) = (b), `r ≤ 3` | `r = 4` | `r ≥ 5` |
+|---|---|---|---|---|
+| 0 | **1** | 1 | 1 | **2** |
+| 4 | **0** | **1** | **0** | 1 |
+
+Both rows are exactly what §6.1 states ("one at a lane-0 start and zero at a
+lane-4 start where D(m) is (a); one or two at a lane-0 start and zero or one at a
+lane-4 start where D(m) is (b)"). At `k = 0`, `g` is the identity, so
+`emit(m) = s+m+3` identically — **point 2's first half is not a coincidence to be
+checked but an identity to be read**, and the only thing left to check is that
+every offset is `≥ 0`, i.e. that the rule is causal at `k = 0` at all. Every cell
+above is `≥ 0`. Signed.
+
+---
+
+### Point 1 — the two refutations: **GRANTED**, and both are members of a much larger set
+
+**1a. 64 vs 69, lane 0, `k = 7`, at injected cycle 60.** Both frames have
+`q = 8`, so both put their closing character in source cycle `T = 10` and both
+take injection at the boundaries before cycles 3 … 10 — the same eight sites.
+`g(c) = 8c − 14` on `3 ≤ c ≤ 10`, so source cycle 9 → **58** and source cycle 10
+→ **66**: the two injected lines are identical through cycle **65** and first
+differ at **66**. Choosing the 69-octet frame's octets 0 … 63 equal to the
+64-octet frame's makes the lines identical as required, and **costs nothing** —
+the 69-octet frame's octets 60 … 63 are payload that happens to equal the other
+frame's FCS, its own FCS sits at 65 … 68 and is free, so **both frames can carry
+correct FCSs simultaneously** and the refutation carries no `tuser` side
+condition. Word 7 is the 64-octet frame's `tlast` word (`61 ≤ 64 ≤ 68`) and is
+not the 69-octet frame's (`69 ≥ 8·7+13`). Under the **replaced** rule the
+69-octet frame's word 7 is keyed to its own last octet, source cycle 9 → `g` = 58,
+offset 2 → pinned at **60** with `tkeep` = 0xFF; the 64-octet frame's eight words
+sit at 4, 12, 20, 28, 36, 44, 52 and 67 and REQ-015 plus §0.5's tuple invariance
+admit **nothing** at 60. Identical registers, identical current input word,
+`tvalid` required to be both 1 and 0. **The refutation holds.** Under the new
+D(m) both frames' words 0 … 7 are pinned at **11, 19, 27, 35, 43, 51, 59, 67** —
+identical, as two indistinguishable inputs must be — and the 69-octet frame's
+word 8 follows at 68, after the cycle at which the lines part.
+
+**1b. 64 vs 12, lane 0, `k = 7`, at injected cycle 4.** The 12-octet frame's
+closing character is in source cycle 3, so its only injection site is the
+boundary before cycle 3 and `g(3) = 10` — the same value the 64-octet frame's
+`g(3) = 8·3−14 = 10` takes. The lines are identical through injected cycle **9**
+(cycle 2 carries octets 0 … 7 for both; cycles 3 … 9 are the seven injected idles
+for both) and first differ at **10**. The 12-octet frame delivers 8 octets in one
+word, so word 0 **is** its `tlast` word and is pinned by (b) at `10 + 1 = 11`
+under both rules — and admits nothing at 4. The replaced rule pins the 64-octet
+frame's word 0 at **4**. Same contradiction. **The refutation holds**, and it is
+the cleaner of the two: the two frames' word 0 carry *identical tuples*
+(`tkeep` = 0xFF, `tlast` differing only because one frame ends there), so the
+collision is purely in the cycle. Both frames can again carry correct FCSs. Under
+the new D(m) both are pinned at **11**, and the design that emits them has seen
+at cycle 10 which frame it is in.
+
+**And BUG-0002 §2.3's "first confirmation" claim is VOID — I withdraw it
+myself.** §2.3 recorded word 0's measured cycle 4 as *"the first measurement in
+this programme that confirms §6.1's D(m) rule against hardware rather than
+deriving it."* Under the D(m) now ruled, the conformant cycle for that word is
+**5** at `k = 1` and **11** at `k = 7`; 4 is conformant at neither. The agreement
+was coincidence in the precise sense the architect states: the design reached 4
+by `emit_last_a`'s `nc = 0` test — closing on emptiness — which is the defect this
+packet convicted, and an emptiness test and an evidence test agree on a gapless
+line and only there. **A guard passing is not evidence for the rule the guard
+encodes when the design under it is already known to compute that guard's
+quantity by the wrong mechanism.** That is the general lesson and it is against
+my own text.
+
+**Neither refutation is isolated.** I swept the causality test itself rather than
+its two witnesses: over **every pair** of frame lengths `N ∈ [5, 80]` at
+`k ∈ {0,1,7}` at both start lanes — 2 850 pairs per (lane, k), 17 100 pair-runs —
+I built both injected XGMII lines symbolically, found the last cycle through which
+they agree, and compared the two rules' pinned `(tvalid, tkeep, tlast)` at every
+cycle up to and including it.
+
+| rule | lane 0 | lane 4 | where |
+|---|---|---|---|
+| **new D(m)** | **0 violations** | **0 violations** | — |
+| replaced rule | **1 620** | **648** | lane 0: `k = 7` only; lane 4: `k = 1` and `k = 7`, 324 each |
+
+The architect's two witnesses appear in that set at exactly the stated numbers:
+`(64, 69)` at lane 0, `k = 7`, violating at cycle **60** with the lines agreeing
+through **65**; `(12, 64)` at lane 0, `k = 7`, violating at cycle **4** with the
+lines agreeing through **9**. The replaced rule is refuted 2 268 times over the
+swept space and the new one is not refuted once. *(The sweep script is
+**ephemeral** — a scratchpad file, not committed, ADR-0003/F5. It computes
+nothing that C-0's closed forms do not give by hand; the two witnesses above are
+worked by hand in this section and reproduce the sweep's rows exactly.)*
+
+**One precision the architect did not claim and I will not smuggle in.** 1a's
+lengths, 64 and 69, are both inside §8's own directed set (*"frames of 64 through
+71 octets inclusive … each at both start lanes"*) and `k = 7` is inside §10's
+(*"0, 1 and 7"*), so 1a is a collision **inside the commissioned stimulus**, as
+§6.1 says. **1b's 12-octet frame is not**: REQ-107's row commissions 5-, 16-, 60-
+and 63-octet runts and not a 12. It is nonetheless a legal frame (REQ-107 forwards
+5 … 63 octets marked) and §0.5's causality test is a test on the specification over
+any legal stimulus, so 1b is sound — it is simply not additionally an
+in-commissioned-set collision, and the packet should not be read as claiming it is.
+Any `N ∈ [8, 12]` serves; 12 is the best of them because it makes the two frames'
+word 0 tuple-identical.
+
+---
+
+### Point 2 — `k = 0` invariance at both lanes, and the `tlast` word at every `k`: **GRANTED**
+
+**"Not one pinned cycle moves at `k = 0`."** At `k = 0`, `g` is the identity, so
+`emit(m) = s+m+3` for every `m` by C-0's last line — the `m + 3` formula
+reproduced identically. The claim therefore reduces to *"D(m) exists and never
+lies after the word it decides"*, and C-0's offset table answers it: every offset
+is `1` or `2` at lane 0 and `0` or `1` at lane 4, all `≥ 0`. **The lane-4 zeros
+are the interesting cells** and they are legal for the reason §0.5's own test
+gives — *"the same cycle is permitted, because a module's output at cycle `t` is a
+function of its registers and of the input word at `t`"*. Checked mechanically
+over `N = 5 … 199` at both lanes: **0 deviations** from `s+m+3` in 195 × 2 frames,
+and the offset sets observed are exactly `{1}` / `{1,2}` at lane 0 and `{0}` /
+`{0,1}` at lane 4 — §6.1's own four numbers, recovered rather than read. I also
+confirmed the geometry against the frozen constants before trusting it: at `k = 0`
+it returns a single per-octet `L` of **16** at lane 0 and **12** at lane 4 over
+all 195 lengths, which is §7's pinned pair.
+
+**"No `tlast` word's cycle moves at any `k`."** This is the strongest of the four
+and it needs no sweep: by C-0's first fact, `m = W−1 ⟺` the (b) branch, and the
+(b) branch is the *unchanged* bullet — the `tlast` word was keyed to the closing
+character's word before this ruling and is keyed to it after. Its cycle is
+`g(T) + offset` under both rules and `offset` is unchanged, so the two agree at
+every `k` identically. Checked anyway over `N = 5 … 199`, both lanes,
+`k = 0 … 16`: **0 of 6 630 frames** move their `tlast` word. Signed.
+
+**What this buys, said plainly, because it is the reason the point was worth
+asking for.** Every gapless cycle this programme has ever pinned, benched or
+promoted — `m + 3`, `ΔC = 3`, `L = 16 / 12`, §6.1's 64-octet table, §9's strobe
+pins, the drain window's *"up to and including two cycles after the terminate
+word"* (which is C-0's own `{1,2}` offset set at lane 0) — is untouched by this
+ruling, and so is every `tlast` word on every injected run already driven. The
+ruling's blast radius is **exactly** the non-`tlast` words of an injected run, and
+nothing else.
+
+---
+
+### Point 3 — the carve-out withdrawal and the inverted class table: **GRANTED IN PART**
+
+Under a uniform wrapper at `k`, from C-0, for a frame with at least two output
+words:
+
+| | non-`tlast` word | `tlast` word |
+|---|---|---|
+| **lane 0** | `16 + 8k`, every byte | `16 + 8k` if `r ≤ 4`; **`16`** if `r ≥ 5` |
+| **lane 4** | `12 + 16k` bytes 0–3, `12 + 8k` bytes 4–7 | `r = 0`: `12+8k` (bytes 0–3 only) · **`r ∈ {1,2,3}`: `12+8k` bytes 0–3, `12` bytes 4 … r+3** · `r = 4`: `12+16k` bytes 0–3, `12+8k` bytes 4–7 · `r ∈ {5,6,7}`: `12+8k` (bytes 0 … r−5) |
+
+giving class **sets**:
+
+| | `r = 0` | `r ∈ {1,2,3}` | `r = 4` | `r ∈ {5,6,7}` |
+|---|---|---|---|---|
+| **lane 0** | `{16+8k}` | `{16+8k}` | `{16+8k}` | `{16, 16+8k}` |
+| **lane 4** | `{12+8k, 12+16k}` | **`{12, 12+8k, 12+16k}`** | `{12+8k, 12+16k}` | `{12+8k, 12+16k}` |
+
+**SIGNED — the carve-out withdrawal.** At lane 0 with `r ∈ {5,6,7}` the `tlast`
+word's one, two or three octets still measure 16 (C-2's arithmetic, intact) while
+every earlier word now measures `16 + 8k`. So `L = 16` no longer holds octet for
+octet and the item-3 carve-out is correctly withdrawn. **SIGNED — the lane-0
+inversion.** Both cells reproduce exactly: `r ∈ {0…4} → {16+8k}` (one class where
+the withdrawn item predicted two) and `r ∈ {5,6,7} → {16, 16+8k}` (two where it
+promised one). Verified over `N = 13 … 199` at `k = 1` and `k = 7`: lane 0 returns
+`{24}` / `{16,24}` and `{72}` / `{16,72}`, by residue, with no exceptions. §6.1
+item 1's two worked examples reproduce to the value — the 64-octet lane-0 frame at
+`k = 1` gives the single value **24**, and the 69-octet one gives **{16, 24}** with
+the 16 belonging to the `tlast` word's single delivered octet.
+
+**REFUSED — the lane-4 cell. This is FINDING F-1.**
+
+> **F-1 (numeric, non-blocking, spec-side).** SPEC-M03 §6.1 item 2 is headed
+> *"**Every** output word, at a lane-4 start"* and states the split as `L + 16k`
+> and `L + 8k` — 28 and 20 at `k = 1`. **That is exact for the non-`tlast` words
+> and for the `tlast` word at `r = 4`, and wrong for the `tlast` word at the other
+> seven residues.** At `r ∈ {1,2,3}` the `tlast` word's bytes 4 … r+3 measure
+> **`12`** — not `12+8k` — because those octets sit in the closing character's
+> **own** input word, so no injected idle separates them from their evidence.
+> The lane-4 class set at `r ∈ {1,2,3}` is therefore
+> **`{12, 12+8k, 12+16k}` — three classes, not two**: `{12, 20, 28}` at `k = 1`
+> and `{12, 68, 124}` at `k = 7`. At `r = 0` and `r ∈ {5,6,7}` the `tlast` word
+> has no bytes above 3 at all and its bytes 0–3 measure `12+8k`, not `12+16k`, so
+> the *set* is unchanged but item 2's per-word description is still wrong for that
+> word.
+>
+> **This is §6.1's own residue table, read at lane 4.** Derivation 1 states the
+> closing character is later than the last-delivered-octet word iff
+> `r ∈ {0,4,5,6,7}` at a lane-4 start — I re-derived that set independently at
+> **C-1** of `d39ffb6` and it is untouched by this ruling. Its complement is
+> `{1,2,3}`, which is precisely where the last delivered octet **shares** the
+> closing word, which is precisely where an octet measures `L` under injection.
+> The ruling preserved that reasoning at lane 0 (item 3's `16` survives for
+> `r ∈ {5,6,7}`) and dropped it at lane 4, where the same table names the mirror
+> set. **The two halves of the ruling are inconsistent with each other, not merely
+> incomplete.**
+>
+> **It is observable in the commissioned set on the next run.** §8's directed
+> lengths are 64 … 71 at both start lanes, so lane-4 `r ∈ {1,2,3}` is lengths
+> **65, 66 and 67** — three of the sixteen (length, lane) members M03-I4 already
+> drives, at both `k = 1` and `k = 7`. The bench **reports** these classes
+> (`Latency.report`, never asserted — §0.5, and this row's own discipline), so the
+> promoted expect blocks will print three values where §6.1 item 2 predicts two.
+> A reader — or a later bench built from item 2 — would read a conformant design
+> as divergent. **Nothing fails today**: §0.5 forbids asserting a per-octet
+> constant here and M03-I4 does not, so F-1 **cannot fail a conformant design and
+> blocks nothing**. It is a false statement in a normative section that the next
+> CI run will contradict in printed output, which is why it goes back now rather
+> than riding to the next REQ-016 work order.
+>
+> **Repair I offer** (the architect's call, not mine, and I hold no position
+> beyond it): give item 2 the same shape item 3 already has — state the split for
+> the non-`tlast` words, then state that the `tlast` word's own octets follow the
+> residue rule, `L` for those sharing the closing character's word
+> (`r ∈ {5,6,7}` at lane 0, `r ∈ {1,2,3}` at lane 4) and the split otherwise. One
+> paragraph, no rule moves, no cycle moves, no design changes.
+
+**Scope note on both tables.** They are stated for frames with **at least two
+output words**, which is the same scope §6.1 item 3 already uses (*"every length
+producing more than one output word"*). A single-word frame has one class
+trivially at either lane, and that is not a survival.
+
+---
+
+### Point 4 — the new I4 / I6 pinned cycles: **GRANTED**
+
+`N = 64`, lane 0, `s = 1`: `q = 8`, `r = 0`, `T = 10`, `f = 2`, `W = 8`, `tlast`
+word `m = 7`. Words 0 … 6 take branch (a) (`64 ≥ 8m+13 ⟺ m ≤ 6`), word 7 takes
+(b) (`61 ≤ 64 ≤ 68`). `D(m) = m+3` for `m ≤ 6` and `T = 10` for `m = 7`; every
+offset is **1** (lane 0 (a); lane 0 (b) with `r = 0`). `g(c) = c + k(c−2)`.
+
+`emit(m) = m+4+k(m+1)` for `m ≤ 6`, `= 11+8k` for `m = 7`:
+
+| `k` | word 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 |
+|---|---|---|---|---|---|---|---|---|
+| **1** (M03-I4) | 5 | 7 | 9 | 11 | 13 | 15 | 17 | **19** |
+| **7** (M03-I6) | 11 | 19 | 27 | 35 | 43 | 51 | 59 | **67** |
+
+Both rows match the architect's to the cycle. `tkeep`: the frame delivers
+`64 − 4 = 60` octets, so words 0 … 6 carry eight each (**0xFF**) and word 7 carries
+four (**0x0F**) — `FF×7` then `0F`, signed. `tlast` on **word 7 only** — REQ-015,
+and the count is 8 words for one frame. `tuser` **0** throughout: 0 on every
+non-`tlast` word structurally, and 0 on word 7 because the frame's FCS content is
+unchanged by injection (REQ-104) and no injected idle enters the CRC (§6.2's
+`Frame` row holds the register). Signed.
+
+**Three internal checks I ran on these numbers rather than accepting their
+shape.** (i) The `k = 7` row's word 7 at 67 is the same 67 that refutation 1a
+computes from the other side, and nothing sits at 60 — the two points are
+consistent. (ii) Word spacing is uniform at `k+1` for `m = 0 … 6` and the step
+from word 6 to word 7 is the same `k+1` — so at `r = 0` the `tlast` word does not
+break stride, which is what makes `r = 0` the one-class residue in point 3.
+(iii) **REQ-019's two-word bound holds at these cycles**: word `m`'s own octets
+complete at injected cycle `8m+2` at `k = 7` while word `m` leaves at `8m+11` and
+word `m+1`'s octets complete at `8m+10`, so exactly two words are ever resident and
+never three — §6.1's *"at most two output words are ever waiting at once, at
+either start lane and at every `k`"* is satisfied at the very stimulus most likely
+to break it. The same computation at lane 4 gives a residency of `k+1` cycles with
+word `m+1` completing exactly as word `m` leaves — two, again.
+
+---
+
+### What this signature does **not** reach
+
+- **`libs/**` and the fix's correctness.** I judge behaviour against
+  specification. `ce00c06` is not accepted here and the **Fix verdict** section
+  above stays open: the bench that would re-test it is asserting a superseded
+  D(m), so no re-test at `1f3c04c` could mean anything. The verdict is owed after
+  the bench round below and the RTL round after it.
+- **The three module specs (SPEC-M06, SPEC-M10, SPEC-M14)** named in §13's
+  `J-architect_docs_lead-0024` row. The ruling states they owe nothing further
+  because their inputs carry `tlast` in band; I have not re-derived that and do
+  not sign it.
+- **`docs/**`.** I countersign; I never stage the diff.
+
+### Two of my own attack-plan cells are now FALSE — declared here, repaired in the next commit of this round
+
+Loudly, because the tb_writer round is dispatched against them and one of them
+names the superseded rule as the thing the bench asserts. **I have not edited
+`test/attack_plans/AP-xgmii_rx_64.md` in this commit**, on the precedent this
+round's own predecessor set: at `d39ffb6` the signature commit touched no plan and
+the repair landed at `b2a3b95` (`J-dv_lead-0085`) **after** transcription — *"the
+AP repair the countersignature licenses"*. A ruling not yet in force does not
+license a repair. The three sites, with their replacement text fixed here so the
+repair is clerical:
+
+1. **M03-I4's `Observable`** — reads *"SPEC-M03 §6.1 names D for this module — the
+   input word carrying output word m's **last** octet for every word but the
+   `tlast` one, and the **terminate character's** word for the `tlast` word"*.
+   The first half is the superseded rule. Replacement: **D(m) is the input word
+   carrying whichever arrives first of received octet `8m+12` and the character
+   that closes the frame; the two are exclusive and the first decides exactly the
+   non-`tlast` words.** The same cell's closing sentence cites §6.1 item 3's
+   lane-0 `r ∈ {5,6,7}` carve-out as a live fact; the carve-out is withdrawn and
+   the sentence goes with it, replaced by point 3's table above **as reported
+   data, still asserted nowhere**.
+2. **M03-N2's `Observable`** — two false clauses. *"(W itself, or the word
+   carrying the aborted frame's last octet)"*: §6.1 now says **W in every row of
+   the table, the two whose octets lie in the word before W included**. And
+   *"Idle injection before W moves the two lane-0-`/S/` reports **earlier**,
+   further from the new frame's and never onto it"*: withdrawn in terms at
+   `1f3c04c` — both reports now move **together** and the coincidence column is
+   unchanged at every `k`. **The row's six sub-cases and three coincidences are
+   unaffected**, and the conclusion (§6.3 item 8 has no instance here) now rests
+   on the offsets alone, `W+1` against `W+2` on every stimulus.
+3. **§4.N's Route 2** — its injected-position clause reads each cycle at *the
+   octet's own* input word `U`; all six rows are now read at `W`. Gapless the two
+   agree (lane-0 `/S/`: `U = W−1`, `+2` → `W+1`, which is `W`'s own `+1`), so the
+   **table is unchanged** and only the injected reading is re-based.
+
+No row is added, converted or re-statused by any of the three; the plan's counts
+(78 rows, 62 ASSERT, 7 NO-ASSERT, 4 NO-STIMULUS, 4 STRUCTURAL, 1 GAP) do not move.
+
+### A prediction, stated in the open before the bench changes
+
+The bench repair **widens** the red set before it narrows it, and I would rather
+be wrong about the number in public than have it arrive as a surprise. Word 0's
+pin moves by exactly `k` cycles at **both** start lanes and at **every** directed
+length — `s+3+k` at lane 0 against the design's `s+3`, and `s+3+2k` at lane 4
+against the design's `s+3+k` — because the design (per `ce00c06`'s own returned
+table, and per every `k = 0` unit staying green) emits a word as soon as its
+octets are complete, with nothing gating it on evidence. So:
+
+- **36 units go red** at the first CI run after the bench repair and before any
+  RTL round: M03-I4's 32 injected members with `k ∈ {1,7}` (16 (length, lane)
+  combinations × 2) and all **4** of M03-I6's.
+- **All 16 of M03-I4's `k = 0` members stay green**, and so does every other
+  family — point 2 is what guarantees it.
+- Every one of the 36 fails at **word 0**, not at word 7, with
+  `expected − observed = k`. At length 64 / lane 0: **5 against 4** at `k = 1` and
+  **11 against 4** at `k = 7`.
+- The current red pair (word 7, 18 against 19) **disappears as a distinct
+  symptom** — those units fail earlier, at word 0, for the reason that was always
+  underneath.
+
+If the run shows anything else — a green `k ≥ 1` unit, a first failure at a word
+other than 0, or a delta other than `k` — the bench repair is wrong and not the
+design, and I will say so in the same place.
+
