@@ -387,3 +387,282 @@ still describe the committed object.
 
 ### Files-in-this-commit
 - (none)
+
+## [J-architect_docs_lead-0023] 2026-08-06T20:15Z | task:WO-0057 | §0.6's window reference word RULED and generalised upward — the last octet the frame RECEIVED while open, the closing word standing in only where it received none, and the received-versus-delivered question I deferred at -0021 settled because the fallback's own trigger depends on it
+
+### Trigger
+
+Orchestrator dispatch of a scope ruling dv_lead routed to me **twice** and which
+is now unblocked (no active round cites the clause). First routing:
+`WO-0057` §3.2 and §7 question 1, written while designing family H —
+"§0.6's upper bound is ΔC = 3 after the input word carrying the frame's last
+received octet; M03-H4's frames received none, so that phrase has no referent",
+with dv's own grounded proposal (the closing character's word) and the note that
+it **blocks no row** because the exact pin carries every assertion. Second
+routing: `RV-0057-VERDICT` Finding 2, which adds the measured consequence — at
+M03-H4 the §0.6 window check "cannot fail", because the pin and both window ends
+are functions of one quantity, so the row's entire assurance is its exact
+two-element `error_pulses` list.
+
+The dispatch named the constraints I worked to: make M03-H4's situation
+representable; contradict neither SPEC-M03 §9's committed pin nor
+`test_m03_f.ml`'s `run_f2` `k = 0` precedent; and **stop and escalate rather than
+land** if the ruling would change what any committed test asserts. It also left
+the ADR question to my judgement.
+
+### Inputs
+
+- `agents/charters/architect_docs_lead.md`; `agents/PROTOCOL.md` §4, §4.1, §4.2,
+  §6, §7, §11.
+- `docs/specs/requirements.md` §0.1–§0.7 in full, §1's REQ-007/REQ-008/REQ-011/
+  REQ-015 rows, §1.1, §12, §13 — and its DRAFT header, which is what makes a
+  §0.6 diff a countersignature question.
+- `docs/specs/modules/xgmii_rx_64.md` §7 (the pinned L and ΔC = 3 at both start
+  lanes), §9 in full — the condition table, the closure list, "Strobe cycle,
+  pinned" with its withdrawn gloss and its **far-edge** sentence, the M03-G6
+  reference-word paragraphs, the C-5 distinction, the nine co-occurrence
+  rulings — §10, §13.
+- `agents/handoffs/WO-0057_tb-m03-family-h-start-without-terminate.md` §2.4,
+  §3.1, §3.2, §4, §6, §7, and the `RV-0057-VERDICT` block (§0, §1, Findings 1–4,
+  rulings 8 and 9). Read only; not touched.
+- My own `J-architect_docs_lead-0021` (the M03-G6 ruling, read in full from
+  volume 01 through `git show 1004384`) and `-0022`'s open-questions ledger.
+- **The committed bench, read as evidence and not as authority** (PROTOCOL §10
+  runs the other way — DV derives from specs — but what a committed test already
+  asserts is a fact about whether a ruling changes anything):
+  `test/xgmii/injection.ml`'s `window`/`no_output_cycle`, `test_m03_f.ml`
+  `run_f2` with `f2_received_counts = [0; 1; 4]` at both start lanes,
+  `test_m03_h.ml` `run_h2` and `run_h4` plus the file's header sections,
+  `test_m03_g.ml`'s G1 window derivation, `test_m03_d.ml` `run_d1`,
+  `test_m03_e.ml` `run_e1`.
+- The two carry-forward **C-5** sites read rather than assumed:
+  `docs/specs/modules/xgmii_tx_64.md` §9 and §11.3, and
+  `docs/specs/modules/arp_eth_rx.md`'s closure list and pinned strobe cycle.
+  Also `docs/specs/modules/eth_axis_rx.md` §9 (`error_short_frame`) and
+  `docs/specs/SPEC-TEMPLATE.md` §9.
+- **Not read**: no RTL, no `docs/reports/audit/**`. **Not written**: nothing
+  outside the two spec files below and this journal.
+
+### Reasoning
+
+**1. The question is not the one the routing names, and the difference is the
+whole ruling.** Both routings and the dispatch say "a frame that delivered
+nothing". But §0.6's window is anchored to an **input** word — "the input word
+carrying the last octet of the offending frame" — and delivery is an output
+property. The class with no referent is therefore not the zero-**delivered**
+class; it is the zero-**received** class, and the two are different at M03 by
+exactly the frames that receive one to four octets and deliver none (§9's sixth
+row). So the first thing I had to decide was which of the two the fallback keys
+on, and that decision is forced from outside: it is exactly the question I
+declined to settle at `-0021`.
+
+**2. It is forced by text already committed, in two independent places, and I
+checked both rather than reasoning from the phrase.**
+
+*SPEC-M03 §9's own far-edge sentence.* "Strobe cycle, pinned" says the
+no-output-word pin lies inside §0.6's window and, in one case, **at its far
+edge**: "the four-octet case just named (last frame octet in the word before the
+terminate word, ΔC = 3)". Work it. A lane-4-started frame with four octets and a
+terminate character in lane 0 of the next word has `closing_ot ≡ 0 (mod 8)`, its
+last received octet one octet earlier in the **previous** word, so the window's
+upper end is `(closing_cycle − 1) + 3 = closing_cycle + 2`, which is exactly the
+pin. That sentence is true **only** if a received-but-undelivered octet is one of
+the frame's octets. Key the fallback on "delivered nothing" and this frame takes
+its closing word instead, the upper end becomes `closing_cycle + 3`, and §9's
+committed sentence becomes false. The dispatch's own stop condition — do not
+contradict SPEC-M03 §9's committed pin — therefore decides the trigger before any
+preference of mine gets a vote.
+
+*The committed bench, which is that case.* `run_f2` runs `k ∈ {0, 1, 4}` at lanes
+0 and 4, so **(lane 4, k = 4) is the far-edge frame**, and it computes
+`expected_not_after = ((closing_ot − 1) / 8) + 3` for every `k ≥ 1` and
+`closing_cycle + 3` only at `k = 0`. A "delivered nothing" trigger changes that
+row's asserted value. That is the dispatch's escalate-instead-of-land condition,
+and it is avoided not by weakening the ruling but by getting its trigger right.
+
+**3. Having settled the trigger I had also settled the deferred question, so I
+said so instead of leaving it implicit.** `-0021` left "received or delivered"
+open on the ground that the M03-G6 answer held "under whichever of the two
+conventions §0.6 is later read to use". Working the lane-4 arithmetic shows that
+claim is generous to itself: at a lane-4 start an oversize frame's last
+*delivered* octet (index 1513) sits at cycle *s* + 190 while the truncation octet
+sits at *s* + 191, a **different input word**, so under the delivered reading
+`-0021`'s own answer — the truncation word — is wrong at one of the two start
+lanes that `test_m03_g.ml` runs. The received reading is the one that makes the
+earlier ruling true. Leaving the question open a second time would have left a
+ruling resting on arithmetic that only holds under the reading nobody had
+adopted, and it is precisely the silence that made the question recur twice. So
+§0.6 now says **received**, and SPEC-M03 §9 gains the paragraph that records it
+at the site whose own sentence was relying on it.
+
+**4. I rejected option (b) — delegate the zero-received reference to each module
+spec's pin — and the reason is Finding 2 read forwards.** Delegation makes the
+window a restatement of the pin at every module that has one, so the window check
+becomes inside-by-arithmetic **everywhere**, not merely on the zero-received
+class. Finding 2's disposition ("no defect, recorded so a green M03-H4 is not
+read as evidence its pin was independently bounded") would generalise from one
+class into the rule itself, and §0.6 would keep a paragraph that constrains
+nothing. The window exists to catch a **specification** defect — a module pin
+outside its own window, which is exactly what M03-R2 was — and a rule derived
+from the pin cannot do that. Delegation is the shape of the disease, not the
+cure.
+
+**5. What I added beyond the two options, and why it belongs in normative
+text.** Finding 2's real content is a warning to every future bench writer, and
+it is not M03-specific: wherever the reference word and the pin come from the
+same input word, a green window check carries no information and the assurance is
+the exact pin plus the **exact** strobe-event set. I wrote that as a non-normative
+note under the rule rather than leaving it in a verdict packet, because §0.6 is
+the test-derivation basis and this is the one place a test writer will look. It
+also states where the window **does** keep teeth — any frame that received an
+octet, where the two ends and the pin are three different quantities — so the note
+cannot be read as retiring the check.
+
+**6. Does it generalise M03-G6 or distinguish it? It generalises, and the
+generalisation is the second clause verbatim.** `-0021`'s principle was that a
+frame's report is a function of the frame and never of the characters that happen
+to follow it, so REQ-108's truncation — a closure event — fixes the reference and
+the next start character does not extend the frame. §0.6 now states that as a
+general clause binding every module, and adds the degenerate case `-0021` had no
+instance of: where the frame closed before any octet of it arrived, the closure
+**is** the last input event that belongs to the frame, so the closing word stands
+in. G6 and H4 are then the same rule at two points on one scale — a frame whose
+last octet is early, and a frame whose last octet does not exist — rather than two
+rulings that happen to agree.
+
+**7. Nothing benched moves, and I checked it row by row rather than asserting
+it.** The rule I wrote is, clause for clause, what `test/xgmii/injection.ml`'s
+`window` has computed since family E: `received > 0 → start_ot + 8 + (received −
+1)`, else `closing_ot`, plus three. Every M03 window value in families E, F, G
+and H is that function's output or a hand-computation equal to it. One
+hand-computed exception exists and is **looser**, not different in kind:
+`test_m03_d.ml`'s D1/D2 take the terminate word where the rule takes the last
+received octet's word, which at a lane-0-started 64-octet frame is one cycle
+later. A looser stated bound cannot fail a row whose pin is inside the tighter
+one, so nothing changes meaning; it is a DV-side tightening opportunity and I
+have listed it as such rather than treating it as a defect.
+
+**8. Class, countersignature and ADR.** Editorial by §13's own test: no
+conformant design changes (every module's cycle is pinned exactly by its own
+specification and every pin lies inside the window this rule defines, at both
+start lanes), and no committed test changes meaning (§7). But §0.6 is
+**normative** text in the test-derivation basis and this settles a reading, so it
+takes the **countersignature discipline** the C-43 precedent established rather
+than the concurrence class C-39/C-41 diffs closed under: dv_lead's
+re-countersignature is owed and the diff is not in force until transcribed. That
+costs nothing operationally — the module pin carries every commissioned
+assertion (`RV-0047` ruling 2) and the bench already computes these values.
+**No ADR**, deliberately: an ADR records a design choice among live alternatives,
+and here no design moves and the two readings are not rival designs — they differ
+only in which class each leaves undefined, and one of them falsifies text already
+committed. The precedent is exact: the two prior §0.6 diffs that settled
+undecided corners, C-12's open-frame scoping and C-23's counting convention, both
+landed as revision-record rows with no ADR. Calling this constitution-grade would
+also be a category error: it changes no rule of the org, only the reading of one
+sentence about one module class.
+
+**9. What I did not do.** I did not close ledger **C-5**. The rule I wrote very
+likely reaches both of its sites — M04's underflowing frame has received words
+while open (first clause), and M09's payload-less frame has a closing `hdr_valid`
+(third clause) — which means C-5's §0.6 repair is now **written** and only its two
+module-side dispositions remain. But closing it means editing SPEC-M04 §11.3 and
+SPEC-M09 §9 and checking each module's own pin against its own newly-defined
+window, which is outside this dispatch's file scope and is real work rather than
+clerical. `-0021` predicted C-5's repair would have to state the vacuity case and
+the referent-at-closure case as different dispositions; it now must state a third,
+that the fallback supplies a referent where the frame received nothing. Recorded
+as an open question, not smuggled in.
+
+### Actions
+
+- `docs/specs/requirements.md` §0.6: new normative paragraph **"The window's
+  reference word"** inserted between "Strobe timing window" and "Counting a
+  strobe" — three clauses (received-not-delivered with the control-character
+  carve-out; closure never extended by what follows; the zero-received fallback
+  to the closing word, with the one-to-four-octet frame explicitly excluded from
+  it) plus the non-normative note on what the window is worth when reference and
+  pin share a word.
+- `docs/specs/requirements.md` §13: one revision row, dated 2026-08-06, class
+  **editorial with countersignature discipline**, commissioned-by naming both
+  routings and Finding 2.
+- `docs/specs/modules/xgmii_rx_64.md` §9: one paragraph **"Decided since,
+  upward"** appended after the M03-G6 paragraph that deferred the question — the
+  earlier text is left standing untouched, and the new paragraph records the
+  upward decision, the lane-4 arithmetic that makes the received reading the one
+  under which §9's own answer holds, and the one-to-four-octet exclusion.
+- `docs/specs/modules/xgmii_rx_64.md` §13: one change-log row, `Breaking? no`,
+  `ADR none`.
+- No ADR. No `agents/**` file but this journal. No `test/**`, no `libs/**`, no
+  `docs/gates/**` (PROTOCOL §7 reserves gate-checklist staging to the
+  orchestrator, so the ledger consequences below are transcription requests).
+
+### Evidence
+
+Commands run from a checkout at this commit; all reads, no builds (this unit of
+work produces no code and touches no `Interface` record, so no `ifc_check` run is
+owed — charter §5's compile item applies to spec freezes, and §4's records are
+byte-unchanged here).
+
+- `git show 1004384 -- agents/journals/claude_architect_docs_lead_agent.md` —
+  `J-architect_docs_lead-0021` in full, the ruling this generalises.
+- `grep -n "let window" -A 6 test/xgmii/injection.ml` → the committed DV model:
+  `let last_octet_ot = if received > 0 then start_ot + 8 + (received - 1) else
+  closing_ot in closing_ot / 8, (last_octet_ot / 8) + 3`. This is the rule §0.6
+  now states, clause for clause, and it is the mechanical demonstration that the
+  diff ratifies the bench rather than moving it.
+- `grep -n "f2_received_counts" test/xgmii_rx_64/test_m03_f.ml` → `[ 0; 1; 4 ]`,
+  driven at lanes `[ 0; 4 ]`, so the far-edge member `(lane 4, k = 4)` is
+  committed and running.
+- `test_m03_f.ml:417-423` → `expected_not_after = if k = 0 then closing_cycle + 3
+  else ((closing_ot - 1) / 8) + 3`; `test_m03_h.ml:861-865` → both of M03-H4's
+  frames take `not_before = closing_word`, `not_after = closing_word + 3`,
+  `cycle = closing_word + 2`. Both are outputs of the rule above.
+- Arithmetic re-derived by hand and stated in the spec text: at a lane-4 start an
+  oversize frame's truncation octet (`start_ot + 8 + 1518`) lies at cycle
+  *s* + 191 and its last delivered octet (`start_ot + 8 + 1513`) at *s* + 190 —
+  different input words, which is the check that decides received vs delivered.
+  At a lane-0 start both fall in *s* + 190, which is why the question stayed
+  invisible for one ruling.
+- `git status --porcelain` → exactly the two spec files listed below.
+
+### Outcome
+
+**DoD met.** The ruling is landed as a spec diff in the two files, in the voice
+and the class the §13 table requires, with the generalisation stated explicitly
+and the alternative (delegation) recorded with its price. M03-H4's situation is
+representable: two zero-received aborts each take their own closing word, the
+consecutive high cycles are already governed by §0.6's C-23 counting convention,
+and §0.6's conservation equation counts each by its own discard-strobe pulse. No
+committed test changes meaning, so no escalation was triggered. Handed back to
+the orchestrator for commit; the ruling's answer goes to dv_lead as the response
+to `WO-0057` §7 question 1.
+
+### Open-questions
+
+- **dv_lead's re-countersignature is owed on the §0.6 diff**, which is not in
+  force until it is transcribed. Nothing is blocked meanwhile.
+- **Ledger C-5 is now half-repaired and should be re-scoped, not closed.** The
+  §0.6 text it has been owed since batch B exists; what remains is SPEC-M04
+  §11.3's and SPEC-M09 §9's own dispositions — each site's "the window is vacuous
+  here" sentence is now stale, and each module's pinned cycle must be checked
+  against its own newly-defined window before either row is retired. Owner: me;
+  closes at any work order that opens either spec. This is a **transcription
+  request** to the orchestrator, since `docs/gates/**` is not mine to stage.
+- **A DV-side tightening, non-blocking**: `test_m03_d.ml`'s D1 and D2 compute the
+  window from the **terminate** word where the rule now names the last received
+  octet's word — one cycle looser at a lane-0-started 64-octet frame, identical at
+  a lane-4 start. The rows pass either way; tightening them makes the check as
+  sharp as the newer families' and removes a divergence between the hand values
+  and `injection.ml`'s `window`. Rides with any later `test/**` touch, as
+  `RV-0057-VERDICT` Finding 3's one-line repair does.
+- **Finding 2's standing note is now normative-adjacent**: `AP-xgmii_rx_64.md`'s
+  X-3 check (c) is a real instrument on frames that deliver and a tautology on
+  frames that do not. §0.6 now says so in the document a plan writer derives from;
+  whether the attack plan restates it is dv_lead's call, not mine.
+- All items carried in `J-architect_docs_lead-0022`'s ledger remain open except
+  as amended above; the one it listed as **"last octet received-versus-delivered
+  is undecided programme-wide"** is **closed by this entry**.
+
+### Files-in-this-commit
+- docs/specs/requirements.md
+- docs/specs/modules/xgmii_rx_64.md

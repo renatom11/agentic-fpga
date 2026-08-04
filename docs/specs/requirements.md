@@ -265,6 +265,55 @@ module's inputs, and not later than the module's latency in cycles (§0.5) after
 the input word carrying the last octet of the offending frame. Outside that
 window the strobe SHALL be 0.
 
+**The window's reference word (normative).** "The input word carrying the last
+octet of the offending frame" names the last octet that frame **received while
+it was open** — open from the event that began it until the earliest of the
+events that close it, both named by the owning module's specification
+(SPEC-TEMPLATE §9; SPEC-M03 §9's closure list is this programme's worked
+instance). Three clauses, and together they are the whole of the rule:
+
+- **Received, not delivered; and a closing character is not an octet.** An octet
+  the module received while the frame was open is one of that frame's octets
+  whether or not the module ever emitted it — the four FCS octets REQ-103 strips
+  are its octets, and so are the one to four octets of a frame that produces no
+  output word at all (REQ-107, §0.7). A **control character** that closes a frame
+  is not one of its octets, because it is not a frame octet; an **octet** whose
+  own arrival closes the frame by count (REQ-108) is. This is the reading under
+  which every cycle SPEC-M03 §9 pins lands where §9 says it lands, at **both**
+  start lanes, and it is what the window is for: it bounds the report against the
+  last of the frame the module saw, not against the shorter thing the module
+  chose to forward.
+- **What follows the frame never extends it.** Octets arriving after the frame
+  closed belong to no open frame, are not the offending frame's octets, and do
+  not move its reference word. A frame closed by REQ-108's truncation therefore
+  measures from the truncation word and not from the next start character
+  (SPEC-M03 §9, `J-architect_docs_lead-0021`); the general form is that a frame's
+  report is a function of the frame and never of the characters that happen to
+  follow it.
+- **A frame that received no octet at all takes its closing word.** Where the
+  frame closed before any octet of it arrived, the two clauses above name no
+  word, and the reference word is instead **the input word carrying the event
+  that closed the frame** — the last input event that belongs to the frame, and
+  the only candidate those clauses leave standing. This is the abort that
+  delivers nothing and produces no output word, hence no `tlast` word to carry
+  `tuser`[0] and no `tlast` cycle of its own (§0.7): REQ-105's and REQ-110's
+  at-or-before-the-first-octet cases, and the zero-octet member of REQ-107's
+  class. **A frame of one to four octets is not in this clause** — it received
+  those octets and measures from them, which is why SPEC-M03 §9 places a
+  lane-4-started four-octet frame's strobe at this window's far edge rather than
+  inside it.
+
+*What the window is worth on that last class, stated so that a green check is
+not read as a bound.* Where the reference word is the closing word and the module
+specification also pins the strobe relative to the closing word — SPEC-M03 §9
+pins it two cycles after — the pin lies inside the window as a matter of
+arithmetic, whatever either rule said, and the window carries **no independent
+information**. For such a frame the assurance is the module specification's exact
+pin together with the **exact** set of strobe events the run may contain, never
+the window check (dv_lead, `RV-0057-VERDICT` Finding 2). The window keeps its
+teeth wherever the frame received an octet, because there its two ends and the
+pin are three different quantities.
+
 **Counting a strobe (normative, carry-forward C-23).** The observable is **one
 high cycle per reported event**. Where a module can legitimately report events on
 consecutive cycles — M13's `error_arp_miss` under a back-to-back query stream is
@@ -719,3 +768,4 @@ commissioned it. A behavioural row additionally names its ADR.
 | 2026-08-03 | REQ-901 | **Two divergence classes appended, (e) and (f)** — runt marking (REQ-107, REQ-013) and oversize truncate-and-mark (REQ-108, REQ-013) at the M03 boundary, both grounded in the same verified fact: the vendored `axis_xgmii_rx_64.v` at pin `77320a9` contains **no frame-length logic at all** (a length-identifier sweep over its 449 lines returns zero matches, independently re-run by me over the vendored bytes, and its parameter block carries no `MIN_FRAME_LENGTH` — that is `axis_xgmii_tx_64.v`'s transmit-padding parameter, so REQ-901's own configuration clause confers no receive-side length check). Each class states **the narrowest exclusion that covers its divergence**: (e) excludes `tuser`[0] alone on 5-to-63-octet frames, still comparing payload and `tkeep`, and excludes a sub-5-octet frame entirely because REQ-107's no-output-word disposition has no counterpart rule; (f) excludes an over-1518-octet frame entirely, the resynchronisation window included, because payload, `tkeep`, `tlast` and `tuser`[0] all diverge. Bounded in the text: **(e) and (f) exclude nothing in the 64-to-1518-octet range.** Appended, never inserted — the letters (a) to (d) are cited positionally in six module specs and in `traceability.md`, so no existing letter moves; and the sentence that carried the numeral **four** is reworded to "the declared classes" so that a future class needs no count edit anywhere, which is the maintenance hazard this very diff proves. Two general sentences added with them: what an excluded class costs (the co-simulation anchors nothing inside it, the excluded requirement is verified by directed test, and no sign-off packet may offer a co-simulation result as its external anchor), and that an exclusion is **never** a licence to take an expected value from the reference | **editorial by this table's own test** — no conformant design changes (REQ-107, REQ-108 and REQ-013 are untouched and our behaviour is what it was) and no existing test changes meaning (the co-simulation has probed none of this: Phase 1 drives one 64-octet good frame, `J-dv_lead-0056` Evidence 8, and family F's rows derive from REQ-107 by directed test). **But the class and the countersignature question are different axes** — the C-43 precedent — and this diff moves **normative text** that changes a verdict rule from *defect* to *excluded* in DV's own instrument, so it carries the **countersignature discipline: dv_lead's re-countersignature is owed and this diff is not in force until it is transcribed.** **No ADR, deliberately**: REQ-901 authorises its own amendment in terms ("SHALL be added here by spec diff"), and no design choice is being made — the divergence was **discovered**, not chosen, and REQ-107/REQ-108 already decided our side. A missing ADR here is not a gap | `J-dv_lead-0056` (WO-0046 bench-half verdict, `RV-0046-VERDICT` at aa51971), which raised the diff and recorded that families F and G cannot be co-sim-anchored without it | `J-architect_docs_lead-0016` |
 | 2026-08-03 | REQ-901 | **Countersignature transcribed — classes (e) and (f) are IN FORCE from this row.** dv_lead COUNTERSIGNED the (e)/(f) diff at `ebb3f49`, verifying the concurrence classification mechanically (normative columns extracted at `ebb3f49^` and `ebb3f49`, byte-identical), confirming the narrower (e) exclusion on its own reading of the reference (the FCS strip is an eight-entry lane-indexed residue array with no length gate, so 5-to-63-octet frames deliver identical octets and `tkeep`, and `tuser`[0] is the only divergence), and endorsing the sub-5 disposition (below five octets there are not four to strip, so the reference behaviour is undefined rather than merely different). Signature of record: the COUNTERSIGNATURE block in `agents/handoffs/WO-0046_cosim-phase-1.md`, `J-dv_lead-0057` — carried into history at `6181781` by an orchestrator staging error recorded at `J-orchestrator-0125`; the signature's authority rests on its text and on `J-dv_lead-0057`, not on the carrying commit, per that entry's own attestation | transcription — no normative text moves in this row; it records that the row above's condition ("not in force until transcribed") is discharged | `J-dv_lead-0057` (signature), `J-orchestrator-0125` (carriage) | `J-orchestrator-0126` |
 | 2026-08-03 | REQ-107, REQ-108 | verification columns each gain the pointer to their new REQ-901 class — **(e)** and **(f)** respectively — with the reference behaviour named and the consequence stated in the row a bench writer actually reads: the REQ is verified by the directed tests already in the column **only**, a co-simulation result is not an admissible external anchor for it, and a sign-off packet SHALL NOT offer one. Worded on REQ-602's existing class-(a) pointer, which is the established form for exactly this | **editorial, concurrence class** — verification columns only; both normative sentences are untouched, no assertion already commissioned changes meaning, and nothing is added to either column's stimulus. This is the class C-39 and C-41's verification-column diffs closed under, and it is deliberately **not** folded into the REQ-901 row above, whose class is different | the REQ-901 row above; the pattern is REQ-602's class-(a) pointer | `J-architect_docs_lead-0016` |
+| 2026-08-06 | §0.6 | the strobe window's **reference word** stated: the last octet the frame **received while it was open**; a closing control character is not one of its octets and an octet that closes the frame by count (REQ-108) is; octets arriving after closure never extend the frame; and — where the frame closed before any octet of it arrived — the **input word carrying the event that closed it** stands in. A non-normative note records that on that last class the window is inside-by-arithmetic against a module pin taken from the same word, so the assurance there is the module's exact pin plus the exact strobe-event set and never the window check | **editorial by this table's own test** — no conformant design and no committed test changes meaning. Every module's strobe cycle is pinned exactly by its own specification and every pin already lies inside the window this row defines, at both start lanes, so nothing that conformed stops conforming; and the DV model that computes this window (`test/xgmii/injection.ml`'s `window`, used by M03 families E–H) already implements these three clauses verbatim, so the diff ratifies the committed bench rather than moving it. **But the class and the countersignature question are different axes** — the C-43 precedent — and §0.6 is **normative** text in the test-derivation basis that settles a reading left open twice, so this diff carries the **countersignature discipline: dv_lead's re-countersignature is owed and the diff is not in force until it is transcribed.** Nothing is blocked meanwhile: the module pin carries every commissioned assertion (`RV-0047` ruling 2, standing). **No ADR**, deliberately: no design choice is made and no alternative was live — the two readings differ only in which of them leaves a class undefined, and the C-12 and C-23 §0.6 diffs are the precedent for settling an undecided corner without one | dv_lead, `WO-0057` §3.2 and §7 question 1 (routed twice) and `RV-0057-VERDICT` Finding 2; generalises `J-architect_docs_lead-0021`'s M03-G6 ruling upward; supplies the text ledger **C-5** has been owed | `J-architect_docs_lead-0023` |
