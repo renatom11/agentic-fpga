@@ -491,3 +491,491 @@ rather than merely asserted in prose.
 Handoff: this RETURNED block, plus journal entry `J-tb_writer-0015`. State
 left as the orchestrator's own framing set it (ISSUED) — dv_lead's `RV-`
 and the orchestrator's transcription do the state flip, not me.
+
+---
+
+## RV-0057-VERDICT: ACCEPT — four rows, four clean; the round's findings are three things a green M03-H4 does not prove, and a helper that is right by cancellation — dv_lead, `J-dv_lead-0078`
+
+**No correctness defect in the delivered work and no bounce.** Every row pins the
+observable its `AP-xgmii_rx_64.md` §4.H contract names, in this packet's §5
+order, at constants I re-derived rather than checked off; the construction the
+whole file rests on is the right one and its justification is derived rather than
+asserted; and the two deliverables this packet cared most about — M03-H2's
+delivered **content** and M03-H4's **two** registered high-cycle events — are
+both built the way §2.3 and §2.4 demanded.
+
+The findings below are the ones a green run cannot produce on its own. Three of
+them are statements about what these units **do not** constrain, which is
+material now rather than later because the next dispatch is the campaign that
+seals against them (§8).
+
+### 0. What I verified, and by what route
+
+**Not by reading the runs.** I re-derived every octet time, lane, output-word
+count, `tkeep`, `tlast` cycle and strobe window in all four rows from
+`requirements.md` §0.3/§0.5/§0.6/§0.7 and REQ-101/102/103/105/110, and from
+`SPEC-M03` §6.1 (the preamble geometry, the two-events paragraph and its table,
+the emission rule), §6.2 (the `Preamble` and `Frame` rows), §6.3 items 3 and 8,
+§7's `L = 16 / 12`, and §9 (the nine-row table, the closure list, "Strobe cycle,
+pinned" and the fifth co-occurrence ruling) — then compared my derivation
+against the file's. They agree everywhere. Where they were interesting I say so
+below; where they were arithmetic I do not.
+
+Three cross-checks worth recording because they were not free:
+
+1. **The splice's frame geometry closes exactly.** In H1/H2/H3 the array is
+   `close_idx + 72` octets, the following frame's content sits at array indices
+   `close_idx + 8 … close_idx + 71`, and `Arrival`'s auto-placed terminate
+   character lands at `close_ot + 72` — one octet time after that frame's last
+   octet, which is where a terminate belongs. At M03-H4 the 72-octet array puts
+   frame C's content at indices 8 … 71 and its terminate at `start_ot_a + 88`,
+   again exactly abutting. **The following frame in every row is a genuine
+   REQ-103 frame with a genuine FCS**, so "no `error_bad_fcs`" is a real
+   assertion and not an artefact of a frame the schedule never completed.
+2. **The FCS is not silently rewritten under the splice.** `Injection.create`
+   passes `~fcs_valid:false` to `Arrival.create` (`injection.ml:135`), and
+   `fcs_valid` only gates `Arrival.check`'s residue verification — it never
+   edits octets. So `directed_frame_octets`' own correct FCS survives into the
+   spliced array, and the DUT's residue check on the second frame is a live
+   check. Had `Arrival` recomputed a residue over the whole array, every one of
+   these rows would have been asserting "exactly one strobe" against a frame
+   whose FCS the stimulus had just broken.
+3. **§6.3 item 8's prohibition has no instance at M03-H4, and I checked it on
+   the stimulus rather than on the row text.** Word `c` carries two start
+   characters but ends exactly **one** frame (frame A, by the lane-4 `/S/`);
+   word `c + 1` ends exactly one (frame B). Item 8 bars a word carrying **two
+   frame-ending characters**, and this stimulus produces none — which is the
+   same ground item 8's own text uses to keep REQ-110's commissioned lane-4 case
+   commissioned. My `J-dv_lead-0077` claim that it holds is now verified against
+   the built stimulus and not only against the design.
+
+**Unit inventory, measured at `f806272` by my own count, not relayed**:
+`grep -c 'let%expect_test'` over `test/xgmii_rx_64/` gives A 3, B 1, C 4, D 3,
+E 4, F 4, G 7, **H 4**, structural 1 — **31**. The worker's figure reproduces.
+
+### 1. Row dispositions — green is the floor, not the verdict
+
+#### 1.1 M03-H1 — **CLEAN**
+
+`At_octet 64` on a 64-octet frame, so the `/S/` replaces the terminate position
+and the aborted frame delivers **all 64** of its own octets — four more than a
+clean frame of the same length, which is the row's whole discriminator. The
+bench asserts the **exact 64-octet content**, not the count, so the FCS-strip
+defect dies on content before it reaches the count. `tkeep = 0xFF`, `tuser`[0]
+= 1, exactly one `error_start_without_terminate` at the frame's own `tlast`
+cycle. The governance is declared correctly at both ends: REQ-103's own
+no-removal sentence ("a frame … cut short under REQ-110 delivers every octet
+decoded up to its abort point, with no FCS removal attempted") and REQ-110's
+"no FCS is stripped from it (REQ-103)" are the same clause hosted twice, and the
+file cites both without confusing either with `Frame.delivered`'s removal
+identity — which it uses only for the second frame. **The §3.1 trap did not
+catch anyone.**
+
+The derivation I most wanted checked was the free one: `72 = 8 + 64` is a
+multiple of 8, so `At_octet 64`'s octet time shares the outer frame's start
+lane. Driving both lanes therefore reproduces REQ-110's own verification column
+("in lane 0 and in lane 4") even though the AP row's text names only lane 0.
+That is correct, it is derived rather than asserted, and it is the kind of thing
+that is cheap only if you notice it.
+
+Window arithmetic verified: `not_after = ((close_ot − 1) / 8) + 3` — the last
+**delivered** octet's word plus ΔC — which is one cycle **tighter** than the
+`closing_cycle + 3` form family G uses for its truncation rows, and is the
+correct general form here because the closing character does not sit in the same
+word as the last delivered octet. Pin `m + 10` inside window `[m + 9, m + 11]`
+at a lane-0 start. The window check has teeth on this row.
+
+#### 1.2 M03-H3 — **CLEAN**
+
+`e_idx = 24` (lane 0) / `20` (lane 4), chosen so the `/E/` lands at lane 0 at
+**both** start lanes, with the `/S/` exactly 16 octet times later so
+"two cycles later" is the equality `s_cycle = e_cycle + 2` and is **guarded**,
+not arranged. Exactly one `error_bad_frame`, asserted as an **exact strobe set**
+— which is where the row's teeth are, because the negative half (§9's fifth
+ruling: "a bench that injects `/E/` and then `/S/` SHALL see exactly one
+`error_bad_frame` and no `error_start_without_terminate`") cannot be proved by a
+lower bound. §2.2's instruction is honoured to the letter.
+
+M03-M5 is discharged by this stimulus, as §2.2 directed, and the row says so
+rather than leaving a second file to be written.
+
+#### 1.3 M03-H2 — **CLEAN**, and the AP row's own parenthetical is false at one of its two lanes
+
+The `k` derivation is right and it is right for the reason that makes it
+non-obvious: REQ-101 binds the injected character's **absolute** lane, not a
+property of the frame it interrupts, so `k ≡ 4 (mod 8)` at a lane-0 start and
+`k ≡ 0 (mod 8)` at a lane-4 one. `k = 12` / `k = 16`, each guarded
+independently against `Int.rem close_ot 8 <> 4` — a guard **stronger** than
+`Injection.create`'s own (which admits lane 0 or 4), so it is not the redundant
+insurance the Return log modestly calls it: it pins this row's own point.
+
+I checked the geometry the row exists for at both lanes. Lane 0: content indices
+8–11 occupy lanes 0–3 of the `/S/` word. Lane 4: content indices 12–15 do. In
+both cases four octets of the aborted frame share the word with the character
+that aborts it, which is REQ-110's "a start character in lane 4 leaves lanes 0
+to 3 of that word belonging to the aborted frame". ✔
+
+**FINDING — and it is against my own attack plan, not against the bench.**
+`AP` §4.H's M03-H2 outcome cell says those four octets are delivered
+"(`tkeep` and the delivered count prove it)". **At a lane-4 start they do not.**
+`k ≡ 0 (mod 8)` there, so the aborted frame delivers a whole number of words,
+`tkeep` is `0xFF`, and it distinguishes nothing about the last four octets;
+`tkeep` carries the proof only at a lane-0 start, where `delivered mod 8 = 4`
+gives `0x0F`. The parenthetical is a claim about the row's proof mechanism that
+is true at one of the two alignments the row is driven at.
+
+**Disposition: no bench defect, no bounce, and no attack-plan edit this round.**
+The row's `Kills` cell already says the defect is "invisible to every row that
+does not count the aborted frame's octets", `WO-0057` §2.3 required the content
+assertion in terms, and `run_h2` asserts `got1 = filler k` — the exact octet
+**values** — at both lanes. So the row is proved by the instrument that works at
+both, and the parenthetical over-promises about a weaker one. It is a footnote
+owed to `AP` §4.H at the plan's next touch, and until then **the file is the
+authority on how M03-H2 is proved, not the row's parenthetical** — the same
+disposition shape `RV-0056-VERDICT` §1 gave the `k = 1518` bound (whose repair,
+I confirm, landed at `J-dv_lead-0075` and is not outstanding).
+
+#### 1.4 M03-H4 — **CLEAN**, and it is the C-23 instrument the packet commissioned
+
+The geometry is exact and I re-derived all of it: frame A opens at `8c` and is
+closed at `8c + 4` (same word); frame B opens at `8c + 4`, its preamble runs
+`8c + 4 … 8c + 11`, and it is closed at `8c + 8` (next word); frame C opens at
+`8c + 8`, its content begins at `8c + 16` = array index 8, and its terminate
+lands one octet time after array index 71. Both no-output-word shapes in one
+stimulus, exactly as `J-dv_lead-0077` predicted from §6.1's geometry, and the
+epoch-A zero-delivered class owed since `J-dv_lead-0065` is discharged by frame
+B rather than by an assertion that it was.
+
+**The single fixed geometry is the row's, not a narrowing.** The AP row writes
+frame A's start as `8c`, which is a lane-0 octet time by §0.5's own definition;
+at a lane-4 start `start_ot + 4` falls in the **next** word and "both `/S/` in
+one word" is unreachable. The worker read that off the row's notation and
+guarded it in code (`Int.rem start_ot_a 8 <> 0` fails loud) instead of assuming
+it. That is the right reading and the right way to hold it.
+
+The C-23 registration is exactly what §2.4 asked for: **two** separate
+`Strobe_monitor.expect` events, distinct `cycle` fields, same strobe name, never
+summed; `error_pulses` asserted to be the exact two-element list at `c + 2` and
+`c + 3`; and an explicit `c2 = c1 + 1` check making "consecutive" a checked fact
+rather than an inference from two numbers. **A rising-edge counter fails this
+row.** And the "no output word for either" half is asserted structurally, by
+comparing the total delivered-sample count against frame C's own words — the
+`test_m03_g.ml` idiom, correctly imported.
+
+### 2. FINDING 1 — `account_spliced_forwarded` builds its input trace from `delivered`, and on a clean frame that is four octet times short
+
+```
+let in_times = Array.init (8 + delivered) ~f:(fun i -> start_ot + i)
+```
+
+`Octet_time.Latency.frame_in`'s contract is "the eight preamble octets from the
+start character inclusive, **then the frame's octets DA through FCS**". For
+every **aborted** frame in this file `received = delivered` and the array is
+exactly right. For every **clean** spliced frame — H1/H2/H3's frame 2 and
+M03-H4's frame C — `received = delivered + 4`, and the array handed to the
+tagger is **four octet times shorter than the frame's actual input trace**: the
+FCS octets are missing.
+
+**It is harmless today, and it is harmless by cancellation rather than by
+design.** The clean-frame identity extent over that short array is
+`delivered − 4`; `~expected_octets:delivered` overrides it back to `delivered`;
+and because the delivered octets are a prefix, the per-octet comparison reads
+only input indices `8 … 8 + delivered − 1`, all of which are present and
+correct. Two errors that cancel exactly. The cost is that the call sits **on**
+`frame_out`'s stated bound (`expected_octets ≤ len(in_times) − strip_octets`,
+`60 ≤ 60`), so it is one octet of slack away from erroring, and a monitor whose
+whole job is to be handed true facts about the input is being handed one that is
+not.
+
+**Disposition: no bounce.** No assertion in the file is wrong, nothing is
+masked, and the latency claim the tagger makes about these frames — constant
+per-octet latency over exactly the delivered octets — is the claim it should be
+making. It is a **precision defect in a helper**, and the right moment to fix it
+is the moment the helper is next touched, which §9 rules on. The fix is one
+parameter: take `~received` (as `test_m03_g.ml`'s `account_resync_runt_frame`
+already does) and keep `~delivered` only for the extent override.
+
+### 3. FINDING 2 — the strobe monitor's window check is vacuous by arithmetic on every zero-delivered frame, M03-H4 included
+
+`Strobe_monitor` carries §0.6's window "because it is what makes a
+**specification** defect visible — a pin outside its own window is the class
+M03-R2 already was". That check has teeth at M03-H1 (pin `m + 10`, window
+`[m + 9, m + 11]`) and at M03-H2 (pin `m + 4`, window `[m + 2, m + 5]`), because
+the pin comes from §7's per-octet constant and the window's ends come from the
+closing character and the last delivered octet — three different quantities.
+
+**At M03-H4 it cannot fail.** For a frame that delivers nothing, §9's pin is
+`closing_word + 2` and §0.6's window is `[closing_word, closing_word + 3]` —
+both functions of the **same single quantity** — so the pin is inside the window
+as a matter of arithmetic, whatever either rule said. The file makes this
+visible by writing `expected_cycle_a = expected_not_before_a + 2`, but the
+vacuity is **not the worker's**: it is a property of the specification's two
+pinning rules meeting on one frame, and it holds identically at
+`test_m03_f.ml`'s `run_f2` `k = 0` member and at M03-G7's resynchronised runt.
+
+**Disposition: no defect, no action on the bench.** Recorded because a green
+M03-H4 must not be read as evidence that its pin was independently bounded. The
+row's assurance comes entirely from the **exact** `error_pulses` list and the
+consecutive-cycle check, which is where the packet put it and where it belongs.
+This is also a standing note against `AP` §7's X-3 check (c): it is a real
+instrument on frames that deliver, and a tautology on frames that do not.
+
+### 4. FINDING 3 — no two-frame row in the M03 bench excludes a spurious **third** output frame, and this matters now rather than later
+
+`run_h1`, `run_h2` and `run_h3` split the delivered samples at the first
+`tlast`, split the remainder again, and discard what follows
+(`let words2_out, _ = split_at_first_tlast rest`). Output words appearing after
+the second frame's `tlast` — in the schedule tail or the eight drain cycles —
+are asserted about by nothing: not by the word counts, not by the conservation
+monitor (whose `frames_in` / `frames_out` are hand-made calls the bench makes
+for the frames it knows about), not by the latency tagger (which is only offered
+what the bench hands it), and not by the strobe monitor.
+
+**This is not a deviation and not a WO-0057 defect.** `test_m03_g.ml` carries
+the total-output-word check at exactly three rows — G6, G7, G8 — and at all
+three the row's own point is that some *third* piece must emit nothing; G1, G3
+and G4, its ordinary two-frame rows, omit it. `test_m03_h.ml` follows that
+distinction precisely: absent at H1/H2/H3, present at M03-H4, which is the row
+with two silent frames. **The idiom was applied correctly.**
+
+**What I am recording is the consequence, not a fault**: across families D, E, F,
+G and H, every ordinary two-frame row leaves "and nothing else was emitted"
+unasserted. That is a coverage fact about roughly a dozen units and it belongs on
+the record **before** a campaign seals mutation classes against them, not after
+one survives. The repair is one line per row and is not worth a spawn of its
+own; it rides with the next `test/**` touch, as the `WO-0056` dune line did.
+
+### 5. FINDING 4 — M03-H3's exact strobe set rests on a clause the file does not cite
+
+Between the `/E/` and the `/S/`, `run_h3` drives **15 data octets** (`0x80 + j`)
+while no frame is open. The row then asserts an **exact** strobe set, so
+"those 15 octets pulse nothing and open nothing" is load-bearing. Its ground
+exists and is normative — SPEC-M03 §6.2's `Idle` row, "ignores every lane;
+`tvalid` = 0", leaving to `Preamble` only on `/S/` — but the file cites §9's
+closure list and REQ-105 for the `/E/`'s closure and never cites §6.2 for the
+octets that follow it.
+
+**Disposition: no defect** (the assertion is correct and the ground is in the
+frozen text), **citation owed**. It is the one place in the file where an
+assertion's ground is left implicit, and this packet's own §4 item 4 is the
+standard it falls short of by a hair.
+
+### 6. Two corrections to the Return log, neither a bench defect
+
+1. **§5 attributes X-5's customer list to `bench.mli`.** It lives in
+   `test/monitors/octet_time.mli`, in `Latency.frame_out`'s `?expected_octets`
+   docstring, which names rows E1, F1, G1, G2, **H1, H2**. `bench.mli` names
+   "family E/F/G/H" without per-row granularity. `J-tb_writer-0015`'s Inputs
+   section gets this right; only the Return log slipped.
+2. **The "five sites" figure merges two different devices** — see §9, where it
+   changes the answer.
+
+Everything else in the Return log reproduces. §2's argument that
+`Injection.create`'s own lane validation is a second independent check is fair
+as far as it goes, and the guards are not redundant: M03-H2's pins lane **4**
+where `Injection` admits 0 or 4, and M03-H4's pin both the lane **and** the
+word, which `Injection` does not check at all. This packet recommended no
+constants, so §4 item 2's disagreement clause had nothing to fire on — which is
+worth saying, because its silence here is not the same fact as its firing at
+`WO-0056`.
+
+### 7. CI — relayed, and re-verified where I could
+
+**Relayed by the orchestrator**: at `f806272`, run **30862176345** (`build`:
+`dune build @default` + `dune runtest` + cosim) and run **30862176314**
+(`journal-check`) both **SUCCESS**.
+
+**Re-verified by me, not taken**: both runs' `head_sha` is
+`f8062722da52d5aa304557a26d42cdd61207684f`, both `conclusion: success`, run 268
+and run 286 of their workflows, read from the Actions API. `.github/workflows/
+build.yml`'s own header states the authority ("The authoritative build/test
+environment for this project … CI — not a developer machine — is where OCaml
+correctness is established"), which is why a locally-unrunnable round is
+adjudicable at all (ADR-0005).
+
+**This was the four units' first execution anywhere**, and three things follow
+that a green does not usually carry:
+
+- `test/xgmii_rx_64/dune` declares **no** `(modules …)` field, so
+  `test_m03_h.ml` is in the library by construction and its four
+  `%expect_test`s ran. A green here is not a green that skipped them.
+- Every `fail_cross` in the file passed. That is not a null result: it means
+  `Injection`'s own §6.2/§9 walker — evaluating a splice **no committed caller
+  had built before**, with a corrupted preamble position and a third character —
+  independently produced the same delivered counts, strobe names, pinned cycles
+  and §0.6 windows the file derived by hand. Two derivations by different routes
+  agreeing is exactly the standing this model has (`injection.mli`: "not an
+  external anchor; it is the cross-check that makes the model fit to build
+  benches with"), and it is worth more here than on a row whose shape the model
+  had seen.
+- All four `[%expect]` blocks are `{||}` and the determinism step passed, so
+  nothing was promoted and no snapshot was hand-authored. ADR-0005 rule 2 held.
+
+The `hardcaml`-absent failure the worker reproduced is confirmed container-wide
+and predates the diff; I did not re-run it, and nothing in this verdict rests on
+a local execution.
+
+### 8. RULING — the G/H campaign coupling: **ONE campaign, and here is each seal's unit list**
+
+This closes my own carried open question from `J-dv_lead-0077`. Family H's unit
+list now exists, so the coupling is decidable, and I am deciding it before a
+freeze rather than at an adjudication.
+
+> **RULING. The next mutation campaign on M03 is a single campaign covering both
+> obligations — M03-G7's qualification and family H's qualification — dispatched
+> as one packet. Two sequenced campaigns are refused.**
+
+**Why one.** Both obligations owe the same defect *site*: the receiver's
+response to a start character arriving while a frame is open. M03-G7 is that
+event inside REQ-108's first epoch; M03-H1/H2/H4 are that event on the ordinary
+path; M03-H3 is the ruling that it is *not* that event once an `/E/` has closed
+the frame. A class gated on `/S/`-while-open moves units in both families at
+once, which is precisely why neither seal could be written without the other's
+unit list. Sequencing them would mean seeding the same predicate twice and
+scoring the second against a bench the first had already measured — two readings
+of one experiment, reported as two kills. One campaign, one manifest round, one
+transient application sequence, one harvest.
+
+**Why not wait for more families.** Families I, J, K, L, M and N are unwritten.
+Folding them in would make the oldest open DV debt on this module — G7,
+unqualified since `RV-0055-VERDICT` FINDING G-2 — wait on benches that do not
+exist. That is the trap that produced this coupling in the first place.
+
+**The unit lists, measured at `f806272` and to be re-measured at the campaign's
+own base SHA rather than recalled:**
+
+- **Scored set (candidates for the sealed predicted-red mapping): five units** —
+  `test_m03_g.ml`'s **M03-G7**, and `test_m03_h.ml`'s **M03-H1, M03-H2,
+  M03-H3, M03-H4**. The seal maps **class → the exact unit set predicted to
+  redden**, per class, never per family.
+- **MUST-STAY-GREEN, per class**: the complement within the M03 bench's **31**
+  units (A 3, B 1, C 4, D 3, E 4, F 4, G 7, H 4, structural 1) — so **26** units
+  when a class targets one of the five, and correspondingly more when it targets
+  fewer. **Plus the entire non-M03 suite as a standing must-stay-green for every
+  class**, its count measured at the base SHA.
+- **Explicitly out of scope**: the `g-c4` diff. It is adjudicated and closed
+  (the LIFT RULING in `WO-0056`), and re-scoring it would recycle a settled
+  measurement.
+
+**Three constraints the campaign packet SHALL carry**, all of them findings of
+this round:
+
+1. **The correlation warning of §9.** Five units share one accounting device;
+   a class that moves that path moves all five, and five such units are **not**
+   five independent kills. The class rationale states which classes are
+   correlated by the device and which are independent — because a kill count
+   that treats them as independent is inflated, and inflation is the failure
+   mode `RV-0055` already paid for once.
+2. **Finding 3's blind spot, stated in the packet.** M03-H1/H2/H3 (and family
+   G's ordinary two-frame rows) do not exclude a spurious third output frame. A
+   class producing one would survive them, and the campaign must not read that
+   survival as evidence the rows are weak on the class they *were* written for.
+3. **Finding 2's vacuity, stated in the packet.** M03-H4's §0.6 window check
+   cannot fail. Its assurance is the exact two-element `error_pulses` list, and
+   a class scored against M03-H4 is scored against that and nothing else.
+
+**Forward commitment, and it is a promise rather than a seal** (PROTOCOL §10,
+R-SEAL-1): the class → predicted-red mapping will be frozen as a committed
+`-SEALED-predictions.md` file in the same commit as the campaign packet, before
+any manifest diff exists — the `WO-0039`/`WO-0041`/`WO-0045`/`WO-0050`/`WO-0055`
+form. **I hold no prediction today and am withholding nothing**; the five units
+above are the campaign's *scope*, which is disclosed here in full, not its
+mapping.
+
+**Dispatchable now.** The campaign packet is mine to draft; the manifests are the
+auditor's to author; the transient application is the orchestrator's. Nothing in
+it waits on family I.
+
+### 9. RULING — the shared-device flag: the count is right, the object is not, and the answer changes because of it
+
+The worker reports "the merged/spliced array via `Injection`" at **five** sites
+and asks whether it should be named a shared device in a future MUST-STAY-GREEN
+list. I checked the sites. **There are two devices, not one, and they have
+different counts and different answers.**
+
+- **D1 — the hand-built spliced array** (`filler … @ [placeholder] @
+  preamble_tail @ <a whole frame>`, closing on the array's own natural terminate
+  character). **Four sites, all inside `test_m03_h.ml`.** M03-G7 does **not**
+  use it: `run_g7` is an ordinary `Injection.create [case1; case2]` whose
+  injected `/S/` happens to open a third frame out of `case1`'s own tail. D1 is
+  genuinely new this round and has **no cross-file duplication at all**.
+- **D2 — accounting for a frame the *stimulus* opened, which therefore has no
+  `Arrival.frame` record.** **Five sites across two files**: `test_m03_g.ml`'s
+  `account_resync_runt_frame` at M03-G7, and `test_m03_h.ml`'s
+  `account_spliced_dropped` (M03-H4 ×2) and `account_spliced_forwarded`
+  (H1/H2/H3/H4). This is the device the worker's instinct was actually pointing
+  at, and it is already duplicated: `account_spliced_dropped` and
+  `account_resync_runt_frame` are the same function under two names.
+
+> **RULING, three parts.**
+>
+> **(a) On promotion to a shared surface: NO for D1, DEFERRED for D2.** D1 is
+> file-local and has no second customer; promoting a construction used in one
+> file is speculation. D2 has two customers and will have a third — but
+> `RV-0043-VERDICT` §7's bar on widening `Bench`'s exported surface stands, and
+> the file-local-duplication convention is this bench's standing one. **D2 moves
+> into `Bench` at the third file that needs it, and not before** — and when it
+> does, **Finding 1 is repaired in the same edit**: the helper takes `~received`
+> for the input trace and `~delivered` only for the extent override. A device
+> that is wrong-by-cancellation must not be promoted while it is wrong.
+>
+> **(b) On the MUST-STAY-GREEN list specifically: NO — a MUST-STAY-GREEN list
+> names units, never devices.** Its job is to enumerate what must not move, and
+> a device is not a thing that can be green. Naming one there would make the
+> list unfalsifiable at exactly the column that has to be checkable.
+>
+> **(c) On the campaign's *class rationale*: YES, and this is the part worth
+> having asked.** D2 is a **correlation** between five units, and a campaign
+> that does not say so will report five kills where one path was tested. §8
+> constraint 1 carries it.
+
+**The flag was worth raising and the worker was right to raise it rather than
+act on it.** What it needed was the distinction between "this code repeats" and
+"these units are not independent" — the second is the one that changes a
+verdict, and it is a campaign fact rather than a refactoring one.
+
+### 10. Verdict, state, and conduct
+
+> **ACCEPT. `WO-0057`: RETURNED → ACCEPTED.** The bench is clean in this packet's
+> own terms: four ASSERT rows built, four observables pinned as their §4.H
+> contracts state them, assertion order per §5, the zero-delivered window applied
+> as §3.2 directed with both its supports cited, no mechanism-testing anywhere,
+> and no state claim made without its stimulus fact. **No defect returns to the
+> worker; the round does not reopen.**
+>
+> **`AP-xgmii_rx_64.md` is untouched by this verdict** — the M03-H2 parenthetical
+> of §1.3 is a footnote owed at the plan's next touch, not a correction that
+> blocks anything, and the file is the authority on that row's proof meanwhile.
+>
+> **After family H, 32 of the plan's 62 ASSERT rows are discharged.** `SO-M03`
+> does not issue and is not offered.
+
+**Four things worth recording as precedent.**
+
+**The construction was derived before it was written, and the wrong one was
+derived first.** `J-tb_writer-0015` works out what a naive two-`frame_case`
+attempt puts on the wire — an idle gap landing inside the *second* frame's own
+preamble, routing to REQ-105 and aborting the very frame the row means to open —
+and rejects it on that ground rather than discovering it as a red run. In a
+container that cannot execute a test, deriving the failure is the only way to
+have it.
+
+**The model was checked at the mechanism, not at the interface.**
+`injection.ml`'s placement arithmetic and its `outcomes` walker were both read
+and hand-traced against each splice before `fail_cross` was trusted on any of
+them. This stimulus is the first in the programme to corrupt a preamble position
+with a start character and to place a third; trusting a gated oracle on a shape
+none of its committed callers had built would have been the easy move.
+
+**Both instances of "the row asks for one geometry" were read off the row's own
+notation.** M03-H4 is driven once because `8c` is a lane-0 octet time by §0.5's
+definition; M03-H1 is driven twice because `72 ≡ 0 (mod 8)` makes both lanes
+free. Two opposite decisions, one method.
+
+**And the round's findings are all mine or the plan's, not the worker's.** The
+helper that is right by cancellation is a helper I commissioned by pointing at
+X-5; the window check that cannot fail is my specification's two rules meeting;
+the parenthetical that over-promises is my attack plan's cell; and the blind spot
+about a spurious third frame has been in this bench since family D. That is the
+third round running in which the instrument has found more against the packet
+than against the return, which is the instrument working.

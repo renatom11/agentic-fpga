@@ -786,3 +786,262 @@ discharged.
 
 ### Files-in-this-commit
 - agents/handoffs/WO-0057_tb-m03-family-h-start-without-terminate.md
+
+## [J-dv_lead-0078] 2026-08-06T18:30Z | task:WO-0057 | Family H ACCEPTED — four clean rows, and every finding of the round is against my own plan or my own machinery; the G/H campaigns are RULED into one, scored on five units against a 26-unit floor
+
+### Trigger
+Orchestrator: tb_writer returned `WO-0057` at `f806272` — `test/xgmii_rx_64/
+test_m03_h.ml` (four rows, built in my own risk order H1, H3, H2, H4), the
+`dune` header line, and a RETURNED log. Review round in the `RV-0056` shape,
+plus two rulings the dispatch asked for by name: the G/H campaign coupling I
+carried out of `J-dv_lead-0077` as an open question, and the worker's
+non-blocking shared-device flag.
+
+### Inputs
+- `agents/charters/dv_lead.md`; `agents/PROTOCOL.md` (§3 packet classes and
+  lifecycle, §4 entry grammar, §5's R2/R3/R4/R5/R7, §6 write scopes, §10's
+  independence rules and **R-SEAL-1**).
+- `agents/handoffs/WO-0057_tb-m03-family-h-start-without-terminate.md` in full,
+  my own §1–§11 re-read against the return rather than from memory.
+- **`test/xgmii_rx_64/test_m03_h.ml` in full (1024 lines)** and the one-line
+  `test/xgmii_rx_64/dune` diff, both at `f806272` via `git show`.
+- `test/attack_plans/AP-xgmii_rx_64.md` §4.H rows M03-H1 … M03-H4 verbatim, §4.G
+  rows M03-G3/G4/G6/G7/G8, §6's REQ-007/008/021/103/105/108/110 rows, §7's X-3
+  and X-5 entries.
+- `docs/specs/requirements.md` §0.3, §0.5 (front offset, ΔC identity, the
+  per-start-lane exception), **§0.6 in full** (window, C-23 counting, frame
+  conservation), §0.7, REQ-101, REQ-102, **REQ-103** (its no-removal sentence),
+  REQ-105, REQ-107, REQ-108, **REQ-110**, REQ-007, REQ-008, REQ-019, REQ-021.
+- `docs/specs/modules/xgmii_rx_64.md` §6.1 (preamble geometry, the
+  two-events-in-one-word paragraph **and its six-row table**, the emission rule
+  and C-18's two non-instances), §6.2 (all four state rows, `Idle` in
+  particular), §6.3 items 3, 5, 6 and **8**, §7 (L = 16 / 12, h = 8 / 12,
+  ΔC = 3), **§9 in full** (the nine-row table, the closure list, "Strobe cycle,
+  pinned", the zero-referent paragraphs, the fifth co-occurrence ruling).
+- DV machinery, read to review the file against its contracts, not to write
+  RTL-derived tests: `test/xgmii_rx_64/bench.mli`, `test/monitors/
+  strobe_monitor.mli`, `test/monitors/octet_time.mli` (`Latency.frame_in` /
+  `frame_out`'s `?expected_octets`), `test/monitors/conservation_monitor.mli`,
+  `test/monitors/stream_word.mli`, `test/xgmii/injection.mli`, **`test/xgmii/
+  injection.ml` lines 130–300** (the `Place` octet-time arithmetic, the `/S/`
+  lane validation, `Arrival.create ~fcs_valid:false`, `tlast_cycle_of`,
+  `no_output_cycle`, `window`), `test/xgmii/arrival.mli`,
+  `test/xgmii_rx_64/test_m03_g.ml` (M03-G7's construction and
+  `account_resync_runt_frame`; the total-output-word idiom at G6/G7/G8).
+- `agents/journals/workers/claude_tb_writer_agent.md` entry `J-tb_writer-0015`
+  (Trigger, Inputs, Reasoning — read for independence discipline).
+- `agents/journals/claude_architect_docs_lead_agent.md` `J-architect_docs_lead-0021`
+  and `docs/specs/modules/xgmii_rx_64.md`'s 2026-08-04 change-log row, to verify
+  the ruling the file cites for the zero-delivered window is the one it names.
+- `.github/workflows/build.yml`'s header (ADR-0005's authority statement); the
+  GitHub Actions API records for runs **30862176345** and **30862176314**.
+- My own `J-dv_lead-0074`, `-0075`, `-0077`; `RV-0056-VERDICT` and the LIFT
+  RULING in `WO-0056`.
+- **No `libs/**`, no `top/**`, no `bin/**`, no `rtl_snapshots/**`, no
+  `docs/reports/audit/**`** — at any point in this spawn.
+
+### Reasoning
+
+**The review method was re-derivation, because a green run is the one thing this
+round could not have been short of.** The four units executed for the first time
+anywhere and passed, so nothing was going to be found by reading a failure.
+I re-derived every octet time, lane, output-word count, `tkeep`, `tlast` cycle
+and §0.6 window in all four rows from the frozen text — §6.1's geometry, §7's
+`L = 16 / 12`, §9's two pinning rules — and compared against the file. They
+agree everywhere, and the places where agreement was not automatic are what the
+verdict spends its length on.
+
+**Three cross-checks I would not have got from the assertions.** First, the
+splice's geometry closes exactly at every row: the following frame's content
+ends one octet time before `Arrival`'s auto-placed terminate character, so the
+second frame is a genuine REQ-103 frame and "no `error_bad_fcs`" is a live
+assertion. Second — and this one could have made the whole file vacuous —
+`Injection.create` passes `~fcs_valid:false` to `Arrival.create`, and
+`fcs_valid` gates only `Arrival.check`'s residue verification; it never edits
+octets. Had `Arrival` recomputed a residue over the spliced array, every row
+would have been asserting "exactly one strobe" against a frame whose FCS the
+stimulus had just broken, and all four would still have been green if the model
+made the same assumption. Third, §6.3 item 8's prohibition: I had claimed at
+`J-dv_lead-0077` that M03-H4 does not violate it; I have now verified it on the
+**built stimulus** — word `c` carries two start characters but ends exactly one
+frame, word `c + 1` ends exactly one, and item 8 bars a word carrying two
+frame-**ending** characters.
+
+**The M03-H2 finding is against my own attack plan.** §4.H's outcome cell says
+the four octets are proved by "`tkeep` and the delivered count". At a lane-4
+start REQ-101's absolute-lane rule forces `k ≡ 0 (mod 8)`, the aborted frame
+delivers a whole number of words, `tkeep` is `0xFF`, and it distinguishes
+nothing. The parenthetical is true at one of the two alignments the row is
+driven at. The bench is unaffected because `WO-0057` §2.3 required the **content**
+assertion and `run_h2` makes it at both lanes — so the row is proved by the
+instrument that works everywhere and my cell over-promised about a weaker one.
+Same disposition shape as `RV-0056` §1's `k = 1518`: no bounce, footnote owed to
+the plan at its next touch, file is the authority meanwhile. (I confirmed the
+`1518 → 1519` repair itself landed at `J-dv_lead-0075` and is not outstanding.)
+
+**Three findings are about what a green does not prove, and I am recording them
+now because the campaign is the next dispatch.**
+
+1. `account_spliced_forwarded` builds its input trace as `8 + delivered`, but
+   `Latency.frame_in`'s contract wants the frame's octets **DA through FCS**. On
+   an aborted frame `received = delivered` and it is right; on a **clean**
+   spliced frame the two differ by four and the array is four octet times short.
+   It is harmless **by cancellation** — the identity extent is `delivered − 4`,
+   `~expected_octets:delivered` overrides it back, and the delivered octets are
+   a prefix so the comparison never reads past index `8 + delivered − 1`. Two
+   errors that cancel exactly, sitting **on** `frame_out`'s stated bound. No
+   assertion is wrong; a monitor is being handed a fact that is not true.
+2. The strobe monitor's §0.6 window check **cannot fail on a zero-delivered
+   frame**. §9 pins such a frame at `closing_word + 2` and §0.6's window is
+   `[closing_word, closing_word + 3]` — both functions of one quantity — so the
+   pin is inside by arithmetic, whatever either rule said. That is my
+   specification's two rules meeting, not the worker's code, and it holds
+   identically at `run_f2`'s `k = 0` member and M03-G7's resynchronised runt. It
+   matters because X-3's check (c) exists to catch a **specification** defect of
+   exactly the M03-R2 class, and at M03-H4 it is a tautology. The row's real
+   assurance is the exact two-element `error_pulses` list and the
+   consecutive-cycle check — which is where I put it.
+3. No ordinary two-frame row in the M03 bench excludes a spurious **third**
+   output frame. `test_m03_h.ml` follows `test_m03_g.ml`'s idiom exactly (the
+   total-output-word check appears where a *third piece* must emit nothing —
+   G6, G7, G8, and M03-H4 — and not otherwise), so this is **not** a deviation
+   and not a WO-0057 defect. It is a coverage fact spanning roughly a dozen
+   units across D, E, F, G and H, and it belongs on the record before a campaign
+   seals classes against them rather than after one survives.
+
+**On the campaign coupling I ruled ONE campaign, and the reason is that the two
+obligations are one experiment.** M03-G7 and family H owe the same defect
+*site*: the receiver's response to a start character arriving while a frame is
+open — G7 inside REQ-108's first epoch, H1/H2/H4 on the ordinary path, H3 the
+ruling that it stops being that event once an `/E/` has closed the frame. A
+`/S/`-gated class moves units in both families at once, which is exactly why
+neither seal could be written without the other's unit list. Two sequenced
+campaigns would seed the same predicate twice and score the second against a
+bench the first had already measured — **two readings of one experiment reported
+as two kills**, which is the inflation `RV-0055` already cost me once. I
+rejected waiting for families I–N on the opposite ground: G7 is the oldest open
+DV debt on this module, and making it wait on unwritten benches is the trap that
+produced the coupling.
+
+**On the shared-device flag, the count was right and the object was not, and
+that changed the answer.** I checked the five sites. There are **two** devices:
+the hand-built spliced array (four sites, all in `test_m03_h.ml` — M03-G7 does
+**not** use it; `run_g7` is an ordinary two-`frame_case` `create`), and the
+accounting for a frame the *stimulus* opened, which has no `Arrival.frame`
+record (five sites across two files, already duplicated as
+`account_resync_runt_frame` and `account_spliced_dropped`). So: no promotion for
+the first (one file, no second customer), deferred for the second to the third
+file that needs it, with Finding 1 repaired in that same edit — a device that is
+right by cancellation must not be promoted while it is wrong. And the literal
+question answers itself once the object is named: **a MUST-STAY-GREEN list names
+units, never devices** — naming one there makes the column unfalsifiable. What
+the flag was really pointing at is a **correlation**: five units share one
+accounting path, so a class that moves it moves all five and they are not five
+independent kills. That goes in the campaign's class rationale, and it is the
+part worth having asked.
+
+**What I did not do.** I did not touch `AP-xgmii_rx_64.md` — no finding required
+it, and the M03-H2 footnote rides with the plan's next touch. I did not open
+RTL. I offered no `SO-`.
+
+### Actions
+- Reviewed `test/xgmii_rx_64/test_m03_h.ml` and the `dune` line at `f806272`
+  line by line against `WO-0057` §-by-§ and `AP` §4.H's four row contracts.
+- Re-derived independently: H1's `At_octet 64` lane identity at both starts and
+  its `[m + 9, m + 11]` window against an `m + 10` pin; H3's `e_idx = 24 / 20`
+  lane-0 landing and the exact `s_cycle = e_cycle + 2`; H2's per-lane `k` from
+  REQ-101's absolute-lane rule and the four-octets-in-the-`/S/`-word geometry at
+  **both** lanes; H4's full three-frame octet-time layout, its `c + 2` / `c + 3`
+  pins from §9's no-output rule, and its windows from §0.6.
+- Verified the splice's terminate placement, `Arrival.create ~fcs_valid:false`,
+  and §6.3 item 8's non-instance on the built stimulus.
+- **Counted the units myself**: 31 in `test/xgmii_rx_64/` (A 3, B 1, C 4, D 3,
+  E 4, F 4, G 7, H 4, structural 1) — the worker's figure reproduces.
+- Verified both CI runs through the Actions API rather than accepting the relay.
+- Appended **`RV-0057-VERDICT`** to
+  `agents/handoffs/WO-0057_tb-m03-family-h-start-without-terminate.md`: ACCEPT,
+  four row dispositions, four numbered findings, two Return-log corrections, the
+  CI section, the campaign ruling with its unit lists, and the shared-device
+  ruling.
+- Touched no attack plan, no test file, no spec. No `git`.
+
+### Evidence
+1. **CI at `f806272`, verified not relayed**: run **30862176345** (`build`,
+   run 268) `conclusion: success`, `head_sha`
+   `f8062722da52d5aa304557a26d42cdd61207684f`; run **30862176314**
+   (`journal-check`, run 286) `conclusion: success`, same `head_sha`. Read from
+   the GitHub Actions API.
+2. **The four units genuinely ran**: `test/xgmii_rx_64/dune` declares no
+   `(modules …)` field, so every `.ml` in the directory is in the library;
+   `grep -c 'let%expect_test' test/xgmii_rx_64/test_m03_h.ml` = **4**;
+   repository M03 total **31**. All four `[%expect]` blocks are `{||}` and the
+   determinism step passed, so nothing was promoted (ADR-0005 rule 2).
+3. **`fail_cross` passed in all four rows** — `Injection`'s own §6.2/§9 walker,
+   evaluating a splice no committed caller had built before, independently
+   reproduced the delivered counts, strobe names, pinned cycles and §0.6 windows
+   the file derived by hand.
+4. **H1's window is the tighter of the two forms in the bench**:
+   `((close_ot − 1) / 8) + 3` (last **delivered** octet's word + ΔC), one cycle
+   tighter than family G's `closing_cycle + 3`, and it matches
+   `injection.ml`'s `window` exactly.
+5. **The M03-H2 lane-4 arithmetic**: `k = 16`, `start_ot ≡ 4 (mod 8)`,
+   `delivered = 16`, `16 mod 8 = 0`, so `tkeep = 0xFF` — the AP parenthetical's
+   proof mechanism is unavailable at that alignment, and `got1 = filler k` is
+   what carries the row there.
+6. **Finding 1's cancellation, exactly**: `in_times` length `8 + delivered`;
+   identity extent `delivered − 4`; override `delivered`; comparison indices
+   `8 … 8 + delivered − 1`; bound `expected_octets ≤ len − strip_octets` met at
+   equality (`60 ≤ 60`).
+7. **Finding 3's idiom check**: `grep -n 'List.length (delivered_samples'`
+   returns `test_m03_g.ml` lines 1185, 1472, 1685 (G6, G7, G8) and
+   `test_m03_h.ml` line 971 (M03-H4) — and nothing else in the bench.
+8. **The citation the file rests its window on is the right one**:
+   `J-architect_docs_lead-0021`, 2026-08-04, SPEC-M03 §9's zero-referent
+   paragraphs, committed at `1004384`.
+9. **Independence**: `J-tb_writer-0015`'s Inputs list specs, the packet, the
+   attack plan and DV machinery only, and state explicitly that no path under
+   `libs/**`, `top/**`, `bin/**`, `rtl_snapshots/**` or `docs/reports/audit/**`
+   was opened. The file's own docstring repeats it.
+
+### Outcome
+**`WO-0057`: RETURNED → ACCEPTED.** Four ASSERT rows built and clean; the bench
+pins what §4.H's contracts name, in `WO-0057` §5's order, with no
+mechanism-testing and no unsupported state claim. **Nothing returns to the
+worker and the round does not reopen.** After family H, **32 of the plan's 62
+ASSERT rows** are discharged. `SO-M03` does not issue and is not offered.
+
+**Two rulings delivered, both dispatchable.** (1) The next M03 mutation campaign
+is **one** campaign covering M03-G7's qualification and family H's: scored set
+**five units** (G7, H1–H4), MUST-STAY-GREEN the complement within the M03
+bench's 31 — **26** when a class targets one of the five — plus the whole non-M03
+suite, all re-measured at the campaign's base SHA; `g-c4` explicitly out of
+scope as already adjudicated; three constraints carried from this round's
+findings. (2) The shared device is **not** named in a MUST-STAY-GREEN list (that
+column names units), is **not** promoted to `Bench` now, and **is** named in the
+campaign's class rationale as a correlation across the five scored units.
+
+Handoff: `agents/handoffs/WO-0057_tb-m03-family-h-start-without-terminate.md`,
+`RV-0057-VERDICT` block, to the orchestrator for transcription of the state flip
+and for the campaign dispatch.
+
+### Open-questions
+- **The campaign packet is owed and is mine to draft** — with its
+  `-SEALED-predictions.md` companion frozen in the same commit, before any
+  manifest diff exists (R-SEAL-1 forward commitment; I hold no mapping today).
+- **Owed to `AP-xgmii_rx_64.md` at its next touch**: the M03-H2 parenthetical
+  footnote (§4.H) — `tkeep` proves the four octets at a lane-0 start only.
+- **Owed to `test/**` at its next touch**: `account_spliced_forwarded`'s
+  `~received`-vs-`~delivered` input trace (Finding 1), M03-H3's §6.2 `Idle`
+  citation (Finding 4), and the total-output-word line at the ordinary two-frame
+  rows (Finding 3).
+- **§0.6's reference word for a zero-delivered frame** — still with
+  architect_docs_lead as a scope question; blocks no row, and Finding 2 now adds
+  that the window check is vacuous on that class either way.
+- **Still owed**: AP-M14's sweep companion if more plans are written
+  (`J-dv_lead-0076`); the `precompile_check.sh` side-effect-in-combinator lane;
+  M03-F5's discharge-by-citation qualification; the RFC 1071 anchor on the next
+  fetching run; X-7, X-10, X-11 deferred; families I, J, K, M, N and L1–L5
+  unwritten.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0057_tb-m03-family-h-start-without-terminate.md
