@@ -2669,3 +2669,257 @@ phase A's bench round continues; `RV-0063A` is mine when tb_writer returns.
 
 ### Files-in-this-commit
 - agents/handoffs/BUG-0003_m03-lane-4-injected-word-cycle.md
+
+## [J-dv_lead-0104] 2026-08-05T00:40Z | task:WO-0063A | Member (iii) accepted on a green CI run that supplied the one figure the worker was right to refuse — and my own §5.1 ruling had falsified a universal in the file it was ruling about
+
+### Trigger
+`RV-0063A` — review of tb_writer's `WO-0063A` return, landed as `c00771f`
+(`Agent: tb_writer`, `Journal-Entry: J-tb_writer-0023`). Mine by `WO-0063A` §8's
+pre-committed bars and `J-dv_lead-0103`'s Outcome (*"`RV-0063A` is mine when
+tb_writer returns"*). The orchestrator's spawn additionally directed me to check
+the Actions runs for `c00771f` myself and to adjudicate three items the worker
+flagged.
+
+### Inputs
+- `agents/handoffs/WO-0063A_m03-i2-member-iii-bench.md` — the whole packet, and
+  the Return log at its end.
+- `git show c00771f --stat` / `--name-only`; the full diff of
+  `test/xgmii_rx_64/test_m03_i.ml`.
+- `test/xgmii_rx_64/test_m03_i.ml` as landed — the new runner in full, plus
+  `run_i2_member` (:396–:539) and the module docstring, read directly rather
+  than through the diff.
+- `test/xgmii/injection.ml` (the placement-to-octet-time map at :162, `create`'s
+  `first_lane` handling at :128–:135, and `outcomes`' zero-received close),
+  `test/xgmii/arrival.ml` (`create`, `terminate_octet_time`, `cycles`),
+  `test/xgmii/idle_injection.mli` (:112–:138),
+  `test/xgmii_rx_64/bench.mli` (`run`, `account_dropped_frame`, and the
+  exported set §7 names), `test/xgmii_rx_64/bench.ml` (:176–:206),
+  `test/xgmii_rx_64/test_m03_f.ml` (`run_f2`, :388–:497),
+  `test/monitors/strobe_monitor.mli` (the (a)/(b)/(c)/(d) split).
+- **Specs**: `docs/specs/requirements.md` §0.6 (all three reference-word
+  clauses, the *bound-never-a-licence* note, C-23) and §0.7;
+  `docs/specs/modules/xgmii_rx_64.md` §6.1's drain derivation (C-14.3, :685–:702)
+  and the REQ-109 row. `git log -L` on §0.6's note to date it to `a12ac8f`.
+- `agents/handoffs/WO-0063_m03-i2-report-path-delay-mini-round.md` §3, §4, §5,
+  §6, §7, §9.3, §9.4, §9.6; `WO-0059` §8 (read to check a citation);
+  `WO-0062`'s `RV-0062-VERDICT` (for verdict form).
+- My own `J-dv_lead-0102` and `J-dv_lead-0103`; `agents/PROTOCOL.md` §3, §4, §6,
+  §7, §10; `agents/charters/dv_lead.md`.
+- **GitHub Actions API** for runs `30949738685` and `30949738762`, including the
+  job list for the former.
+- **No `libs/**`, no `rtl_snapshots/**`, no RTL of any kind.**
+
+### Reasoning
+
+**I re-derived the eight numbers before opening the returned code, and that
+ordering is the only thing that makes B1 an anchor rather than an echo.** From
+`injection.ml:162`'s own map (`At_octet k` → `start_ot + 8 + k`), `arrival.ml`'s
+`create` (`first_lane:4` adds 4 to `first_start`), §0.6's third clause (a frame
+that received no octet takes its **closing** word as the window's reference),
+§0.7, §9's no-output-word pin and §6.1's C-14.3 derivation: `start_ot` 8/12,
+closing octet time 16/20, W = **2 at both lanes**, pin 4, window [2, 5],
+boundary 5, margin 1, words 0. Every cell matches the packet's table and the
+returned constants. That the worker could not derive blind — its charter forces
+it to read the work order first — is a **defect in my packet's shape**, not in
+its compliance; B1's own sentence describes *my* procedure, and I performed it.
+I ruled the intent met and banked the structural fix (omit the numbers from the
+worker packet, or seal them) rather than pretending a self-contradictory
+instruction had been disobeyed.
+
+**The verdict turns on a green run, and the green supplied the figure the worker
+was right to withhold.** B6(c) — the observed pulse's cycle and name — is not
+available to an agent with no toolchain, and tb_writer said so instead of
+asserting an expectation as an observation. Run `30949738685` closes it: step 7
+passing means exactly one pulse named `error_runt` strictly below cycle 5, and
+`assert_monitors_clean` passing over a registration pinned at cycle 4 — matched
+exactly on `(strobe, cycle)` — pins the observation to **cycle 4 at both lanes**.
+The honest gap in the return was closed by the authority ADR-0005 names, which is
+how it is supposed to work; had the worker filled it with its own expectation I
+would have had a BO-10 and no measurement.
+
+**The thing I am recording hardest is against me.** The file's module docstring
+asserted, as a universal, that *no `Strobe_monitor.expect` call appears anywhere
+in this file* and that the family's entire strobe assurance is check (d) on an
+expectation-free run. **`WO-0063A` §5.1 — my own ruling, written to resolve a
+collision I had found in my own §2.3 — required member (iii) to make exactly such
+a call.** So the round shipped with a false universal in the file it changed, and
+the falsifying instruction was mine. This is `J-dv_lead-0101`'s shape one round
+later, inside a packet whose §7 exists to prevent it, which tells me §7's
+*"claims to verify, not facts to trust"* clause covers the packet's claims about
+**existing code** but says nothing about the file's own prose that the packet's
+**instructions** will falsify. Those are different failure modes and I had only
+armed against one. The worker flagged the adjacent staleness (the "two members"
+summary) and read §1's four-item fixed shape defensibly; it could not have been
+expected to find this one, which requires knowing that `Strobe_monitor`'s checks
+(a)/(b)/(c) go from vacuous to instanced.
+
+**Repair now, in review, rather than as a next-round item.** Comment-only, in a
+file already in scope, correct content fully determined by what landed, zero
+behavioural risk. Deferring a *known* false universal to preserve a round
+boundary is the trade `J-dv_lead-0101` already lost; the round boundary is worth
+less than the claim's truth. Four edits, all in the docstring, none touching an
+executable line, a message string, an assertion, a derivation or an `[%expect]`
+block.
+
+**What I refused to repair, and why the refusal is not laziness.** (i) The
+strobe-silence message cites *(REQ-109, C-14.3)*, but §0.6 now says in terms that
+C-14.3 bounds output **words**, not strobes; the assertion is sound (a pulse at
+W+3 is non-conformant on **§9's** authority, since §0.6's ceiling admits it) but
+the citation names the wrong rule — and it is **my §5** that instructed that
+shape, matching `run_i2_member`'s established idiom. Repairing only member
+(iii)'s two messages would make one file speak two ways about one idiom, so it is
+commissioned as a single-idiom sweep across both runners. (ii)
+`idle_injection.mli:135–137` credits `WO-0059` **§8** with stating the corrected
+cycle rule; I read `WO-0059` §8 and it is titled *"`bench.mli`, `bench.ml` and
+`dune`"* and states nothing of the kind. That is a fourth site of the same
+disease, in a file outside this round's single-file shape, and choosing its right
+target is a ruling rather than a typo fix. Commissioned, not smuggled in.
+
+**The generalisation worth keeping from (ii).** §6 said three sites *"is NOT a
+closed list"* and invited a fourth — and a fourth existed, one directory over, in
+a form no regex for the packet's own quoted string could reach. The invitation
+was open; the **predicate** was closed. Declaring an enumeration open does
+nothing unless the search is defined by the *defect* (a citation crediting a
+section with a rule it does not state) rather than by the *string* the known
+instances happened to share.
+
+**On phase B I changed nothing, deliberately.** The orchestrator asked whether
+`WO-0063` §4(c)'s datapath-unmoved condition — now backed by a **measured**
+perturbation signature from `J-dv_lead-0103` — belongs in this member's
+assertions. It does not, and not merely because phase-B machinery is out of
+scope: the signature is defined over an emitted stream (`tkeep` patterns,
+positional octet matches, a `tlast` index) and this member's conformant emitted
+stream is **empty**, so the check would have no domain. What the landed member
+supplies instead is better and already executable — its **ordering** puts the two
+datapath-unmoved assertions ahead of the strobe scan, so a rendering that
+perturbs the datapath reddens with a datapath message and not the window's, which
+is exactly the discrimination §4(c) asked for. Recorded for the seal; nothing
+built.
+
+**What the seal now waits on.** The bench phase B maps against exists as of
+`c00771f`, so `WO-0063` §6's forward commitment is redeemable and falls due in
+the commit that issues the phase-B packet — with the **§9.3-corrected** convicting
+set, which is wider than §5's and now places member (iii) in **both** the standing-
+monitor set and the C-14.3-instrument set. Because both detectors redden on the
+same stimulus with **different messages**, the qualification cell is an *ordering*
+cell, and the seal must freeze member (iii)'s step-6 message verbatim as the
+REQUIRED cell so a red arriving via `assert_monitors_clean` scores as
+structurally shadowed instead of as a qualification. One consequence of the
+sweep I commissioned: it edits that very string, so it must land **before** the
+phase-B base SHA or **after** the campaign, never between.
+
+### Actions
+- Full line review of `run_i2_zero_octet_member` against all ten bars and all ten
+  BOUNCE conditions; independent re-derivation of the eight numbers at both lanes
+  from specs and `test/xgmii/**` before reading the returned constants.
+- Queried the Actions API for both `c00771f` runs and the `build` run's job list;
+  ran `bash tools/dv_checks.sh` and `ocamlc -stop-after parsing`.
+- Four reviewed repairs (R-1 … R-4), comment-only, in `test_m03_i.ml`'s module
+  docstring — the "two members" summaries and the false `Strobe_monitor.expect`
+  universal.
+- Appended `RV-0063A-VERDICT` to the packet: bar-by-bar table, the three
+  adjudications, three findings, the §4(c) ruling, and what phase B's seal waits
+  on plus three commissioned items. Updated the packet's `State` header field
+  clerically, preserving its superseded value inline.
+- **No git command run. No RTL opened.**
+
+### Evidence
+- **CI run `30949738685`** (`build`, `c00771f`), jobs **92128549658** (`build`)
+  and **92128549560** (`cosim`), both **success**; green steps include *Build*,
+  *Run tests (expect tests, waveform snapshots)* and *Verify nothing was left
+  unpromoted or non-deterministic*. **CI run `30949738762`** (`journal-check`,
+  `c00771f`) — **success**. Both externally verifiable via the Actions API at
+  those run ids; this is the admissibility class ADR-0005 requires, and no
+  "passes locally" claim is made by me or accepted from the return.
+- **B6, re-derived by me**: `Arrival.cycles` = `((80+12+7)/8)+1` = 13 at lane 0
+  and `((84+12+7)/8)+1` = 13 at lane 4; `bench.ml:190`'s `total = cycles + drain`
+  with `drain:8` gives last sampled cycle **20** and **16** samples at
+  `cycle >= 5`, both lanes. **B6(c) = (cycle 4, `error_runt`) at both lanes**,
+  derived from the green run as argued in Reasoning, not observed by me directly.
+- **B7**: `git show --name-only c00771f` = `test/xgmii_rx_64/test_m03_i.ml`,
+  `agents/handoffs/WO-0063A_m03-i2-member-iii-bench.md`,
+  `agents/journals/workers/claude_tb_writer_agent.v02.md` — three files, no
+  `dune`, no `bench.*`.
+- **B8**: `bash tools/dv_checks.sh` → `5 test/xgmii_rx_64/test_m03_i.ml`,
+  `39 test/xgmii_rx_64/`, both before and after my repairs; the commit's diff of
+  that file contains **zero** added or removed lines matching `%expect`.
+- **B9**: multiline (line-joined) sweep of `test/**` for `RV-0059-VERDICT\s+§8`
+  → two hits, both correct (the repaired docstring history mention, and the
+  untouched model site formerly at `:938`, now `:1253`).
+- **My repairs**: `ocamlc -stop-after parsing test/xgmii_rx_64/test_m03_i.ml`
+  → exit **0**; `git status --porcelain` shows exactly the two files in the list
+  below. **Not run**: `dune build` / `dune runtest` — no local toolchain
+  (ADR-0005). **The landing check for THIS commit is its own CI run**, which does
+  not exist yet and which I do not pre-empt: my repairs are docstring-only and
+  parse clean, and that is a necessary condition, not a verdict.
+- **`a12ac8f`** dated by `git log -L 467,488:docs/specs/requirements.md` as the
+  commit adding §0.6's *bound-never-a-licence* note, which closes `WO-0063` §8
+  item 3 by name.
+
+### Outcome
+`WO-0063A` **ACCEPTED**; `WO-0063` §7 pass criterion 1 (phase A) fully
+discharged. DoD met: bars B1–B10 all met, no BOUNCE condition met, verdict
+committed as a packet rather than a chat message. Four reviewed repairs staged
+under my own name, each stated in the verdict. Three items commissioned: the
+single-idiom citation sweep, the `idle_injection.mli` citation ruling, and the
+phase-B packet with its seal in one commit. **Handoff**: this tree to the
+orchestrator for commit, trailer `Agent: dv_lead`, `Work-Order: WO-0063A`.
+
+**Harvest (ADR-0018, PROTOCOL §7).** **Not due this round** — no `SO-`, no gate.
+Span since the note at the previous entry: **J-dv_lead-0104** (this entry);
+cumulative untiled span **J-dv_lead-0001 … 0104**, first harvest still firing at
+`SO-M03` and stating that interval so the tiling stays visible.
+
+- **All five banked candidates carry unchanged**: the unstated partition
+  precondition; the helper named for its situation rather than its obligation;
+  exemption-by-assertion; a blindness claim derived from an instrument's
+  documentation rather than from its matching rule; and the
+  vindicated-precaution-must-state-its-price rule. The worker's LH2-g candidate
+  and the two war stories carry unchanged.
+- **Exemption-by-assertion gains a second incident** and is **strengthened**:
+  the rule as banked covers a packet asserting existing artefacts are correct.
+  This round shows the sibling case — a packet whose own **instruction**
+  falsifies a claim elsewhere in the artefact it edits, which no
+  verify-the-packet's-claims clause reaches. Incident commits: `WO-0064` §5's
+  (`J-dv_lead-0101`) and this one. Observable extended: *a change proposal states
+  which existing claims its own instructions make false, not only which existing
+  claims it relies on.*
+- **One NEW candidate banked, LH2-g.** *Rule*: an enumeration declared open must
+  be searched by the **defect** it enumerates, never by the string its known
+  instances share. *Observable*: the search predicate is written as a description
+  of the fault (here: a citation crediting a section with a rule that section does
+  not state) and the round reports what predicate it ran, so a reader can see what
+  the sweep could not have found. **LH1**: this round — a packet explicitly
+  invited a fourth citation site, and a fourth existed one directory away in a
+  form the packet's own quoted string could not match. **LH2-g** — no proper noun
+  in the rule. **LH3**: without it, "the list is not closed" is a disclaimer
+  rather than a method, and each round re-finds the same three instances and
+  re-misses the same fourth. **Domain pack**: n/a (general).
+
+### Open-questions
+1. **The `(REQ-109, C-14.3)` citation on the strobe half is live in two runners**
+   and its sweep is **ordering-constrained** against phase B's base SHA (before
+   the packet, or after the campaign, never between). If phase B is issued first,
+   the sweep waits, and the seal freezes the current string.
+2. **`idle_injection.mli:135–137`'s target is undecided** — `RV-0059-VERDICT` §8
+   with a garbled packet name, or a wrong section number. Named so it does not
+   evaporate; carrier is the sweep above or the deferred `WO-0064` owed-notes
+   round.
+3. **`WO-0063` §5's convicting-set figure remains superseded** by §9.3's and now
+   by this verdict's concrete enumeration; the seal must be frozen against the
+   latter, in the commit issuing the phase-B packet, or the round has no seal.
+4. Carried unchanged: `WO-0058` bound 7; the `assert_following_frame_intact` /
+   `assert_clean_frame_structure` merge, still deliberately uncommissioned;
+   `WO-0061` §8 bound 1's `tkeep` half; **N-1**, still without a carrier until a
+   packet opens REQ-016's reach; the auditor's DV-escape ledger disposition on
+   `BUG-0003`, which is not mine; family J behind a bench-capability round;
+   `SO-xgmii_rx_64.md` unopened and not offered.
+5. **My own bar-1 mis-specification is now two of a kind.** `WO-0063A` §8's B1
+   describes my procedure but was read — reasonably — as binding the worker, and
+   the packet simultaneously made the reading it demanded impossible. The
+   equivalence criterion I owe at the next packet must state, for each bar,
+   **whose** action it constrains.
+
+### Files-in-this-commit
+- test/xgmii_rx_64/test_m03_i.ml
+- agents/handoffs/WO-0063A_m03-i2-member-iii-bench.md

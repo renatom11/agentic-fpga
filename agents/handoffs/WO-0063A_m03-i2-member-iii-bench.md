@@ -1,9 +1,14 @@
 # WO-0063A: M03-I2's third member — the zero-received-`/T/` frame, its own boundary, and the three stale citations that ride with it
 
-- **State**: **DRAFT** — dv_lead's draft. The orchestrator issues it and
-  allocates its id (PROTOCOL §3); **`0063A` is a placeholder**, not a claim of
-  allocation. It is the **phase-A execution packet** of the round whose planning
-  packet is `WO-0063`.
+- **State**: **ACCEPTED** (`RV-0063A-VERDICT`, `J-dv_lead-0104`) — superseding
+  **DRAFT**, which this line carried while the packet circulated; the
+  intermediate `ISSUED` / `RETURNED` transitions are evidenced by the spawn and
+  by the Return log rather than by this field, which no one updated in flight.
+  A live field, updated clerically; nothing else in this packet's body is ever
+  amended in place. The id was allocated by the orchestrator at first commit
+  (PROTOCOL §3) and `0063A` is now that allocation rather than the placeholder
+  this line originally called it. It is the **phase-A execution packet** of the
+  round whose planning packet is `WO-0063`.
 - **From** / **To**: dv_lead → **tb_writer**, via the orchestrator.
 - **Spec basis**: `docs/specs/requirements.md` **REQ-109**, **REQ-107**, **§0.6**
   (the strobe window and C-23's counting), **§0.7**, §12;
@@ -590,3 +595,366 @@ commit path — neither touches `test_m03_i.ml` or this packet
 of this Return log does not wonder why an earlier draft of it (visible in
 this file's own edit history, if inspected) mentioned a file that is now
 clean; there is nothing for dv/orchestrator to act on.
+
+---
+
+## RV-0063A-VERDICT — dv_lead, `J-dv_lead-0104`
+
+**State**: **ACCEPTED**. Member (iii) lands as specified; not one line of
+`run_i2_zero_octet_member` is changed by this verdict. Four **reviewed repairs**
+are made under my own name, all comment-only and all in the module docstring of
+the same file — §4 itemises them, and one of them repairs a claim **this
+packet's own §5.1 ruling falsified**, which is my defect and not tb_writer's.
+No BOUNCE condition is met and none is invented after the fact.
+
+**The landing check is not residual.** Both CI runs for `c00771f` are conclusive
+and green; §1 records them before the verdict, because under ADR-0005 they are
+the only admissible evidence either of us has.
+
+---
+
+### 1. CI, as found — the measurement this verdict rests on
+
+| Run | Workflow | head_sha | Status | Conclusion |
+|---|---|---|---|---|
+| **30949738685** (jobs **92128549658** `build`, **92128549560** `cosim`) | `build` | `c00771f` | completed | **success** |
+| **30949738762** | `journal-check` | `c00771f` | completed | **success** |
+
+Every step of job 92128549658 is green, and three of them are the ones B10
+actually names: **"Build"**, **"Run tests (expect tests, waveform snapshots)"**
+and **"Verify nothing was left unpromoted or non-deterministic"** (the
+`git diff --exit-code` half — no unpromoted expect drift). `journal-check` green
+re-verifies R1–R8 over the pushed range.
+
+**What that green measures, stated as measurement and not as opinion**, because
+it closes the one figure tb_writer could not supply:
+
+1. **B6(c) is now answered, at both lanes, and tb_writer was right to refuse to
+   assert it.** Its Return log gave (a) = 20 and (b) = 16 and declared (c)
+   unavailable to an agent that cannot run. The green suite supplies it: step 7
+   passed, so the run holds **exactly one** pulse, named **`error_runt`**, at a
+   cycle **strictly below 5**; and step 9's `assert_monitors_clean` passed over a
+   `Strobe_monitor` registration pinned at `cycle = 4`, whose match is exact on
+   `(strobe, cycle)` — so the observed pulse is at **cycle 4 exactly, both
+   lanes**. (c) = *(4, `error_runt`)* at lane 0 and at lane 4.
+2. The whole nine-step body executed without raising on the DUT — both landing
+   sites, all eight derivation guards, the anti-trap guard, the vacuity guard,
+   the no-output-word pair, both window assertions, the conservation pair and
+   every standing monitor.
+3. `bash tools/dv_checks.sh` at my tree: `5 test/xgmii_rx_64/test_m03_i.ml`,
+   `39 test/xgmii_rx_64/` — unchanged, after my repairs as well. The sole
+   `OBLIGATION OPEN` is the standing RFC-1071 network-fetch item, unrelated.
+
+---
+
+### 2. The bar-by-bar table
+
+| Bar | Verdict | What I checked, and where |
+|---|---|---|
+| **B1** — eight numbers, re-derived independently | **MET** | I re-derived all eight at both lanes from `test/xgmii/injection.ml:162` (`At_octet k` → `start_ot + 8 + k`), `arrival.ml`'s `create` (`first_lane:4` → `first_start = 12`) and `terminate_octet_time`, `requirements.md` §0.6's third clause, §0.7, `SPEC-M03` §6.1's C-14.3 derivation and §9's pin — **before** reading the returned constants. Result: `start_ot` 8/12, closing `/T/` ot 16/20, **W = 2 at both lanes**, pin 4, window [2,5], boundary 5, margin 1, words 0. Identical to §3 and to the returned code at every cell. Ordering adjudicated in §3.1 below. |
+| **B2** — the boundary's provenance | **MET** | `boundary = closing_cycle + 3`; `closing_cycle = closing_ot / 8`; `closing_ot = start_ot + 8 + 0`; `start_ot = frame.start_octet_time`. The chain terminates at the frame's **start**, never its terminate. `Arrival.terminate_octet_time` appears in the runner exactly **once**, at **:716**, inside the anti-trap guard — verified by enumerating every occurrence in the file (:400, :1043, :1362, :1918 are other runners; :552, :629, :714, :877, :911 are comment and title text). |
+| **B3** — anti-trap guard executable, names both numbers | **MET** | :716–:729. Executable `if boundary = declared_boundary then fail …`; the message interpolates **both** `boundary` and `declared_boundary` and states the consequence (the silence assertion would be vacuous). Passes today at 5 ≠ 13, and 13 is the same at both lanes (`80/8+3` and `84/8+3`). |
+| **B4** — no pinned-cycle assertion | **MET** | Read every comparison in the runner rather than grepping for `4`. Observed-value comparisons are exactly two: `cycle < boundary` (:790) and the `[ (cycle, name) ]` shape/name match (:787–:789). `pin_cycle <> expected_pin_cycle` (:701) compares a **derived** quantity to a parameter — not an observation — and its message names no cycle. Contrast `run_f2:467`, which does compare to the pin: the separation this round exists to create is real in the source. |
+| **B5** — ordering | **MET** | The nine numbered steps appear in §5's order: 1 (:600), 2-site-1 (:648), 2-site-2 (:679), 3 (:690–:729), 4 (:730), 5 (:745), 6 (:751), 7 (:782), 8 (:807), 9 (:811). §5.1's registration sits textually between the two landing sites — where `run_f2:425-437` puts it, as ruled — and is **evaluated** last inside `assert_monitors_clean`. My instrument-order statement, read off the returned source: **late/any output word** → step 5 (`tlast_sample` / `delivered_samples`), unconditional over the whole run, ahead of everything boundary-filtered; **deferred report** → step 6's second assertion on `silent_tail`'s `errors_high`, ahead of step 7 and far ahead of step 9; **missing report** → step 7's `\| pulses ->` branch. On all three paths the registration is last. Agrees with the Return log's item 3. |
+| **B6** — non-vacuity demonstrated | **MET** | (a) 20 and (b) 16 at both lanes, re-derived by me from `Arrival.cycles` (`((80+12+7)/8)+1 = 13`, `((84+12+7)/8)+1 = 13`) and `bench.ml:190` (`total = cycles + drain`), giving last cycle 20 and cycles 5..20 = 16. (c) supplied by run 30949738685 — §1 item 1. The scanned set is counted, not assumed. |
+| **B7** — no scope creep | **MET** | `git show --name-only c00771f` = exactly `test/xgmii_rx_64/test_m03_i.ml`, this packet, and `agents/journals/workers/claude_tb_writer_agent.v02.md`. No `dune`, no `bench.*`, no other family file. |
+| **B8** — inventory and expect blocks | **MET** | `dv_checks.sh`: `39 test/xgmii_rx_64/`. `git diff c00771f~1 c00771f -- test/xgmii_rx_64/test_m03_i.ml` contains **zero** added or removed lines matching `%expect` — neither a `let%expect_test` line nor an `[%expect …]` block moved a byte; only the two authorised title strings changed. |
+| **B9** — citation repair complete and correctly scoped | **MET** | Line-joined multiline sweep of `test/**` for `RV-0059-VERDICT\s+§8`: two survivors, both correct — the module docstring at :41–44, now re-cited to `SPEC-M03 §6.1`'s D(m) (`1f3c04c`) with the §8 mention demoted to history, and **:938 (now :1253) untouched**, exactly as required. Both the title and the comment site are repaired. All the history-recording `RV-0059-VERDICT` mentions survive. `AP-xgmii_rx_64.md:1063` correctly left alone (already carries the correction of record; out of scope). One adjacent site is a **finding**, not a B9 failure — §5 item (ii). |
+| **B10** — CI | **MET, conclusively** | §1. |
+
+**BOUNCE conditions BO-1 … BO-10: none met.** BO-1 — no guard was edited to
+match code and no disagreement existed to suppress; my own re-derivation
+independently reproduces all eight. BO-2 — B2 above. BO-3 — B3 above. BO-4 —
+B4 above. BO-5 — sibling runner, and `run_i2_zero_octet_member` names the
+stimulus class, not an ordinal. BO-6 — B8. BO-7 — `~word_at` present at :667,
+in the shared runner both lanes call; both landing sites present. BO-8 — B7.
+BO-9 — B9. BO-10 — the Return log asserted **no** CI result (it correctly said
+none existed) and gave the B6 figures it could produce, declaring (c)
+unavailable rather than inventing it. That declaration is the opposite of BO-10
+and I record it as the right call.
+
+---
+
+### 3. The three adjudications tb_writer asked for, ruled explicitly
+
+#### 3.1 B1's ordering — the bar's intent was met, and the bar was mis-addressed
+
+**Ruling: MET.** Three grounds, and the third is the one that decides it.
+
+1. **B1 binds me, not the worker.** Read its own words: *"**I** re-derive … at
+   both lanes … **before** reading your constants, then compare."* It is a
+   description of my review procedure. I performed it this round, from primary
+   sources, before opening the returned code, and it reproduces all eight cells.
+   The bar's evidentiary purpose — an anchor outside the worker's arithmetic —
+   is discharged by that, whatever order the worker read in.
+2. **The worker's actual obligation was §3's and BO-1's**, and neither requires
+   blindness. §3 says the numbers are *"a claim of mine and they are yours to
+   falsify"*; falsification requires derivation **from primary sources** and
+   **reporting** a disagreement rather than reconciling it. The Return log names
+   the primary sources it derived from (`injection.ml`'s placement map,
+   `arrival.ml`'s `create` / `terminate_octet_time`, §0.5/§0.6/§0.7, §6.1's
+   C-14.3, §9), and BO-1 never engaged because there was nothing to reconcile.
+3. **The constraint was structural, not a lapse.** Its charter's
+   mandatory-first-actions compel reading the work order before writing; a packet
+   that both carries the table and demands a blind derivation is
+   **self-contradictory**, and that is my defect in packet design, not its
+   disobedience. It read the rule before the table, compared rather than copied,
+   and **said so** — the latitude `WO-0064` recorded and this packet's §10 item 8
+   explicitly invited.
+
+**The residual, recorded rather than waved off.** Two derivations anchored to the
+same table agree more cheaply than two independent ones. The structural fix is a
+packet-shape change, not a worker instruction: either **omit** the numbers from
+the worker packet and have the return carry the worker's own derivation for
+comparison, or **seal** them in a companion the worker opens only after
+committing its own. Banked as a harvest candidate at `J-dv_lead-0104`; tb_writer
+banked the same observation independently at `J-tb_writer-0023`, which is
+corroboration, not duplication.
+
+#### 3.2 All eight exposed as guard parameters — UPHELD
+
+**Ruling: correct, and inside the letter rather than beyond it.** §3 says *"Pass
+the numbers below in as `~expected_…` parameters and guard each one"* over a
+table with eight rows. Eight is the letter. The judgement it actually made was to
+keep the two **thin** ones rather than trim to a "meaningful subset", and I
+uphold that:
+
+- `margin` (:707) can only fire if the packet's own table is internally
+  inconsistent — its boundary and its pin already being guarded. That is not
+  nothing: **a transcription error inside my own table is precisely the failure
+  mode this round's design is built around**, and this is the cheapest possible
+  check for it.
+- `expected_words <> 0` (:709) guards the **parameter against a literal**, not a
+  computation against the parameter — degenerate as a derivation check, and the
+  Return log says so. But it is a real guard on a real future edit: the runner
+  asserts zero output words unconditionally, so a caller who ever passes a
+  nonzero count is asserting something the runner cannot honour, and this line
+  catches that at the call site rather than as a confusing downstream failure.
+
+Disclosure of the thinness is what the latitude requires, and it was given. No
+change.
+
+#### 3.3 The stale module docstring — staleness wins, and the repair is **mine, in review**
+
+**Ruling: repair now, by me, in this verdict.** And the framing needs correcting
+first, because what is stale is worse than what was flagged.
+
+tb_writer flagged the *"two members"* summary. Correct, and it read §1's
+fixed-shape framing defensibly — §1 enumerates four items and §7's out-of-scope
+list names neither the docstring nor its opposite, so the file's own prose fell
+in a genuine gap between them. That gap is mine.
+
+**What it did not find is the one that matters.** The docstring's §6-item-1 block
+asserted, as a universal over the whole file:
+
+> *"Every row asserts that NO strobe pulses, so no expected event is ever
+> registered here: no `[Dv_monitors.Strobe_monitor.expect]` call appears anywhere
+> in this file … this family's entire strobe assurance is check (d)."*
+
+**Member (iii)'s §5.1 registration is exactly such a call, and it is the file's
+first.** So that paragraph shipped false in `c00771f`, and it was **my own §5.1
+ruling that falsified it** — the same shape as `J-dv_lead-0101` (`WO-0064` §5
+shipping a comment its own instruction had made false), one round later, in a
+packet whose §7 exists to prevent it. Recorded against me, not against the
+worker: nothing in `WO-0063A` pointed at that paragraph, and finding it required
+knowing that `Strobe_monitor`'s checks (a)/(b)/(c) went from vacuous to
+instanced — a fact about the *monitor's* semantics, which is review-side
+knowledge.
+
+**Why mine-in-review rather than a next-round item.** It is comment-only, in a
+file already in scope, zero behavioural risk, and its correct content is fully
+determined by what landed — there is nothing left to decide. Deferring a known
+false universal in order to preserve a round boundary is the trade
+`J-dv_lead-0101` already lost once.
+
+---
+
+### 4. Reviewed repairs — four edits, comment-only, all in `test/xgmii_rx_64/test_m03_i.ml`'s module docstring
+
+No executable line, no message string, no assertion, no `[%expect]` block and no
+derivation is touched. `ocamlc -stop-after parsing` exit 0; inventory 39 / 5
+unchanged.
+
+- **R-1 (:12)** — *"M03-I2 (ASSERT, two members x two lanes, [run_i2])"* → three
+  members, naming `WO-0063A` as where the third arrived.
+- **R-2 (:30–31)** — the positive-companion bullet claimed delivered words,
+  `tkeep`, `tlast` cycle and a clean-FCS verdict *"for BOTH members"*. Scoped to
+  members (i)/(ii), and member (iii)'s **own** positive companion stated in its
+  own terms: the one `error_runt` it owes, strictly before the boundary, never
+  compared to §9's pin.
+- **R-3 (the §6-item-1 block)** — §3.3's defect. The universal is replaced by the
+  true statement: every row **except** member (iii) registers no expected event;
+  that member's registration is the file's only one and is the **standing**
+  obligation-4 artefact rather than its own instrument; checks (a)/(b)/(c) of
+  `strobe_monitor.mli`'s split therefore have exactly **one** positive instance
+  in this file and C-23 exactly one event to count; check (d) alone remains the
+  assurance everywhere else. The paragraph states that it was true when written
+  at `WO-0059` and names this verdict as what corrected it — history kept,
+  authority moved, which is `WO-0060` §3.6's own rule applied to a claim rather
+  than to a citation.
+- **R-4 (new `{3}` subsection under "M03-I2 — the repaired row")** — that section
+  described a two-member repair and stopped. A subsection now records member
+  (iii): why the row's strobe half had never had a stimulus, that it is `run_f2`
+  at `k = 0` reused, that its boundary comes from the injected closing character
+  and not `Arrival.terminate_octet_time` (13, not 5), that the trap is guarded in
+  executable code, and that its eight numbers coincide across lanes.
+
+---
+
+### 5. Findings that are **not** defects in this return, recorded so neither evaporates
+
+**(i) The strobe half of step 6 is cited to an authority that does not carry it —
+and the defect is mine, in §5 of this packet.** `requirements.md` §0.6 now states
+in terms that C-14.3 *"bounds output **words** and not strobes"*. So the message
+at **:781** (*"a strobe pulsed at or after cycle 5 (REQ-109, C-14.3)"*) attaches
+to C-14.3 a bound C-14.3 does not issue. **The assertion is sound** — §0.6's
+ceiling admits a pulse at exactly W+3 = 5, and `SPEC-M03` §9's pin forbids it, so
+a pulse at 5 is non-conformant on **§9's** authority — but the citation names the
+wrong rule. tb_writer wrote what §5 instructed and matched `run_i2_member`'s
+established shape (:527 / :534) exactly; correcting only member (iii)'s two
+messages would leave the file speaking two ways about one idiom. **Not repaired
+here**; commissioned in §7 as a single-idiom sweep across both runners.
+
+**(ii) A fourth citation site of the same disease, outside this packet's regex and
+outside its file.** `test/xgmii/idle_injection.mli:135–137` credits
+*"`agents/handoffs/WO-0059_…md` §8"* with *"stat[ing] the corrected rule a caller
+applies"*. **`WO-0059` §8 is titled "`test/xgmii_rx_64/bench.mli`, `bench.ml` and
+`dune`"** and states nothing about any cycle rule — I read it to check. Either the
+intended target was `RV-0059-VERDICT` §8 (the rule that was **refuted**) with the
+packet name garbled, or the section number is simply wrong; either way a reader
+following that pointer lands nowhere. **Not a B9 miss**: the string
+`RV-0059-VERDICT §8` does not occur there, and B9's bar is met as written. **Not
+repaired here** either — the file is outside the round's single-file shape, and
+choosing the right target is a ruling, not a typo fix. Commissioned in §7. Note
+the shape of it: §6 said *"three is where I expect to land and it is NOT a closed
+list"* and invited a fourth; the fourth existed, one directory over, in a form no
+regex for the packet's own quoted string could reach. **An open enumeration is
+only as open as the predicate that searches it.**
+
+**(iii) `WO-0063` §8 item 3's open question to architect_docs_lead is CLOSED, and
+the seal must be written against the answer.** The question was whether a report
+at W+3 is *conformant*. `requirements.md` §0.6 answers it at commit **`a12ac8f`**
+(*"F-1 acknowledged discharged; the 0.6 window ruled normative beside 9's tighter
+pin"*): *"a report deferred to that ceiling is inside this window and
+**non-conformant**, on §9's authority and not on this window's"* — and the passage
+cites `WO-0063` §5 and its §8 question 3 by name. So phase B's IC-1 red is a
+**true positive against a settled rule**, not a tolerance dispute that could be
+argued away after the scorecard is read. That removes the only route by which a
+red at member (iii) could have been re-litigated.
+
+---
+
+### 6. `WO-0063` §4(c) as an executable test — where it belongs, and why not here
+
+`J-dv_lead-0103` produced a **measured** datapath-perturbation signature at
+`5c47582` ((a) = 7 words with `tkeep` ≠ 0xFF and `tlast` = 0; (b) = 4 of 60
+positional matches over 32 comparable positions; `tlast` on word 7; `tuser` = 0),
+and §4(c) — *"every assertion ordered before the scan is … unmoved, because IC-1
+touches no datapath signal"* — is still prose. Does that check belong in **this
+member's** assertions?
+
+**No, and the reason is structural rather than scheduling.** The signature is
+defined over an **emitted stream** — `tkeep` patterns, positional octet matches, a
+`tlast` word index. Member (iii)'s conformant emitted stream is **empty**: zero
+words, no `tkeep`, no octet sequence, no `tlast`. The signature has no domain
+here, and a check with no domain is a vacuous assertion — the one thing this
+family's own docstring says it exists to avoid.
+
+**What the landed member contributes instead is better than an added assertion,
+and it is already executable.** §4(c) asked for a way to tell a spec-conformant
+IC-1 rendering from one that perturbs the datapath. The returned **ordering**
+supplies it: step 5 and step 6's *first* assertion are the datapath-unmoved
+claims, and both are evaluated **before** step 6's strobe scan. So if the
+auditor's rendering does move the datapath, member (iii) raises with a
+**datapath** message (*"a tlast word was observed…"*, *"an output word was emitted
+at or after cycle 5…"*), not with the window's. §7 disposition 1's REQUIRED cell
+— *red with the window's own message* — therefore already discriminates the two
+cases, at both lanes, with no new machinery. That is a finding **for the seal to
+record**, not a change to make.
+
+And no change is made: **phase B's machinery is not this round's to touch** (my
+own no-seal-adjustment ruling stands). Nothing under `test/**` moves for phase B
+until the commit that issues the phase-B packet.
+
+---
+
+### 7. What phase B's seal now waits on, and what I commission
+
+**Phase A is complete.** `WO-0063` §7 pass criterion 1 — *member (iii) green at
+both lanes, plan cells amended before the bench, no assertion of §9's pin inside
+the member, vacuity guard present, no machinery change* — is **fully
+discharged**, each clause measured above.
+
+**The seal is now redeemable, and it was not before.** `WO-0063` §6 made a
+**forward commitment** under R-SEAL-1 and gave the reason it was not yet a seal:
+*"a mapping written against a bench that does not exist selects nothing."* That
+bench now exists at `c00771f`. The commitment falls due at the commit that issues
+the phase-B packet, and if that commit does not stage the seal file, the round is
+adjudicated as having **no** seal — my own rule, against me.
+
+**What the seal must be frozen against — the §9.3-corrected convicting set**,
+wider than `WO-0063` §5's figure and now concrete:
+
+1. **Direct pinned-cycle assertions** (redden under IC-1 by their own message):
+   M03-F2 at every member and both lanes (`run_f2:467` compares to the pin
+   exactly), M03-E5, and M03-B3.
+2. **Standing-`Strobe_monitor` detections** — §9.3's correction. Because the
+   monitor matches exactly on `(strobe, cycle)`, a report moved from W+2 to W+3 is
+   **both** a missing expected event **and** an unclaimed high cycle, so
+   `assert_monitors_clean` fails at **every unit registering a no-output-word
+   expectation**: the units above plus the zero-delivered sub-cases of M03-B2,
+   M03-B3 and M03-N2 — **and now M03-I2 member (iii) itself**, which registers one
+   under §5.1.
+3. **The C-14.3 instrument** — member (iii)'s step 6 window scan, still the
+   **only** assertion in the bench that reads a report against C-14.3's drain
+   bound rather than against §9's pin. §9.3 consequence 2 is unchanged and is now
+   demonstrated in source rather than argued.
+
+**The cell that decides qualification, and it is an ordering cell.** Member (iii)
+is in **both** (2) and (3). The two detectors disagree about nothing — they redden
+on the same stimulus — but they carry **different messages**, and §7 disposition 1
+requires the red to arrive with *the window's own message*. The landed source
+guarantees which speaks: step 6 (:781) raises before step 9 (:814) ever runs.
+**The seal must record that string verbatim as the REQUIRED cell** — `M03-I2
+(member iii, zero octets received, lane 0): a strobe pulsed at or after cycle 5
+(REQ-109, C-14.3)`, and its lane-4 twin — so that a red arriving instead through
+`assert_monitors_clean` scores as **UNQUALIFIED, structurally shadowed** under
+disposition 4 and cannot be re-read as a qualification after the fact. The same
+string is the one §5 item (i) proposes to re-cite, so the seal must be frozen
+against whichever form is in the tree **at the phase-B base SHA**: the sweep below
+is therefore ordered **before** the phase-B packet or **after** the campaign
+scores, never between.
+
+**MUST-STAY-GREEN denominators for IC-2**: all **three** M03-I2 members at both
+lanes — member (iii) has no `tlast` word for a `tlast`-pinned deferral to attach
+to; members (i)/(ii) owe no report at all.
+
+**Commissioned, in this order:**
+
+1. **A single-idiom citation sweep** (§5 item (i)) over `run_i2_member` and
+   `run_i2_zero_octet_member`: the strobe-silence message's authority becomes
+   §0.6's ceiling with `SPEC-M03` §9's pin as what forbids W+3, C-14.3 staying
+   where it belongs — on the `tvalid` half. Both runners in one edit, so the file
+   never speaks two ways about one idiom. **Must land before the phase-B base SHA
+   is cut, or wait until after the campaign scores.**
+2. **The `idle_injection.mli:135–137` citation ruling** (§5 item (ii)): decide the
+   intended target and re-cite it to `SPEC-M03` §6.1's D(m) at `1f3c04c`, keeping
+   the `FINDING 4` history. Rides with (1) or with the deferred `WO-0064`
+   owed-notes round; **named here so it does not evaporate**, which is the failure
+   mode `J-dv_lead-0103`'s Outcome section already paid for once.
+3. **The phase-B packet and its seal, in one commit** — the corrected convicting
+   set above, the REQUIRED message cells verbatim, the MUST-STAY-GREEN
+   denominators, §3.1's MANDATORY DISCLOSURE column, and R-DISC-1 / R-DISC-2 on
+   the auditor's manifest. Not drafted this round and not started: this verdict
+   changes nothing under `test/**` that phase B reads.
+
+**Not commissioned, and named so the omission is visible**: `WO-0064`'s five owed
+bench notes' remaining citation sites stay deferred by that packet's own
+scheduling; `test/attack_plans/**` needs no edit for this round — the plan's
+M03-I2 cells were amended at `J-dv_lead-0102` **before** the bench, and the
+returned bench matches them.
+
+---
+
+**Files this verdict stages**: `test/xgmii_rx_64/test_m03_i.ml` (R-1 … R-4,
+comment-only) and this packet. Journal entry `J-dv_lead-0104`.

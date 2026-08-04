@@ -9,7 +9,8 @@
 
     Six rows (`AP-xgmii_rx_64.md` §4.I), built in the packet's own build
     order M03-I1 -> M03-I2 -> M03-I3 -> M03-I4 -> M03-I5 -> M03-I6: M03-I1
-    (ASSERT, [run_i1]), M03-I2 (ASSERT, two members x two lanes, [run_i2]),
+    (ASSERT, [run_i1]), M03-I2 (ASSERT, three members x two lanes,
+    [run_i2] -- the third added at WO-0063A),
     M03-I3 (ASSERT, both lanes, [run_i3]), M03-I4 (ASSERT, 48 runs,
     [run_i4]), M03-I5 (NO-ASSERT, declared below rather than built), M03-I6
     (ASSERT, four runs, [run_i6]).
@@ -28,7 +29,12 @@
       verdict IS demanded here (unlike the frameless scaffolding smoke test,
       `test_m03_structural.ml`), because a frame is in this run.
     - M03-I2: the frame's own delivered words, tkeep, tlast cycle and a
-      clean FCS verdict, for BOTH members at BOTH start lanes.
+      clean FCS verdict, for members (i) and (ii) at BOTH start lanes.
+      Member (iii) (WO-0063A, [run_i2_zero_octet_member]) delivers nothing
+      and so has none of those: ITS positive companion is the strobe it
+      owes -- exactly one [error_runt] pulse, strictly before the boundary
+      the absence is asserted from (never compared to SPEC-M03 §9's pin,
+      which is M03-F2's and M03-E5's claim, WO-0063A §5).
     - M03-I3: the frame after the ordered set, checked structurally on its
       own terms AND compared cycle for cycle against the SAME frame received
       after idles only (two runs of one schedule, `?word_at` substitution).
@@ -55,14 +61,26 @@
 
     {2 §6 item 1 -- what this family's strobe assurance is, and is not}
 
-    Every row asserts that NO strobe pulses, so no expected event is ever
-    registered here: no [Dv_monitors.Strobe_monitor.expect] call appears
-    anywhere in this file. C-23's "one high cycle per reported event"
-    counting rule has no positive instance to count (checks (a)/(b)/(c) of
-    `test/monitors/strobe_monitor.mli`'s own three-way split are vacuous on
-    an expectation-free run); this family's entire strobe assurance is
-    check (d) -- "no strobe the stimulus did not create" -- read both
-    directly ([error_pulses samples] asserted empty, in every row) and
+    This paragraph was written at WO-0059, when it was true of every row in
+    the file, and WO-0063A falsified its universal by adding the file's
+    first stimulus that OWES a strobe. Corrected in review
+    (`RV-0063A-VERDICT`, dv_lead) rather than left standing:
+
+    Every row here EXCEPT M03-I2's member (iii) asserts that no strobe
+    pulses, and registers no expected event. The single exception is
+    [run_i2_zero_octet_member]'s own [Dv_monitors.Strobe_monitor.expect]
+    call (WO-0063A §5.1) -- the file's only one -- which is the STANDING
+    obligation-4 registration for the one frame here that must pulse, not
+    that member's own instrument -- its own instrument is the C-14.3 window
+    scan, evaluated strictly ahead of it, and the registration site states
+    that in full where a reader meets it. So checks (a), (b) and (c) of
+    `test/monitors/strobe_monitor.mli`'s own lettered checks have exactly
+    ONE positive instance in this file, at that member, and C-23's "one high
+    cycle per reported event" counting rule exactly one event to count;
+    everywhere else in the family they remain vacuous on an
+    expectation-free run. The strobe assurance of every other row is
+    check (d) alone -- "no strobe the stimulus did not create" -- read both
+    directly ([error_pulses samples] asserted empty, in those rows) and
     through {!Bench.assert_monitors_clean}'s own [Strobe_monitor.is_clean]
     call, which reduces to exactly the same check once no event is expected.
 
@@ -81,9 +99,27 @@
     AP text names lane 0 for the 69-octet member and permits lane 4 as a
     witness of the other half of the derivation, WO-0059 §3.2 -- driven here
     because it is cheap and it independently confirms member (i)'s own
-    lane-4 boundary, which the AP text does not itself state). The two
+    lane-4 boundary, which the AP text does not itself state). Those two
     members do NOT share a silence boundary at lane 4 (13 for member (i),
     14 for member (ii)); each is derived and guarded on its own.
+
+    {3 Member (iii), WO-0063A -- the half of this row that had nothing to
+    speak about}
+
+    Both members above are CLEAN frames, and a clean frame owes no strobe,
+    so the row's "no strobe from the boundary onward" half had never had a
+    stimulus that could falsify it. Member (iii)
+    ([run_i2_zero_octet_member]) is that stimulus: `test_m03_f.ml`'s
+    [run_f2] at k = 0, reused rather than rebuilt -- a frame closed by its
+    OWN injected `/T/` with ZERO octets received, which owes exactly one
+    [error_runt] and no output word at all (REQ-107, requirements.md §0.7).
+    Its boundary is derived from the INJECTED closing character's octet
+    time and never from [Arrival.terminate_octet_time], whose DECLARED
+    terminate for this stimulus is the auto-placed `/T/` eight cycles later
+    (boundary 13, not 5) and would make the whole member vacuous; that trap
+    is guarded in executable code, not only described (WO-0063A §4). Unlike
+    members (i) and (ii) its eight derivation numbers are identical at both
+    start lanes.
 
     {2 M03-I3 -- the one authorised bench addition it needs}
 
