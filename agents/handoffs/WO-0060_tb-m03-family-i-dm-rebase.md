@@ -635,3 +635,440 @@ set.
 None required. The §5 finding above (three un-enumerated citation sites) is
 reported, not escalated — it does not block acceptance and I made no edit
 against it.
+
+---
+
+## RV-0060-VERDICT: **ACCEPT** (tb_writer's re-base) — and the emission round scored: lane 0 is conformant end to end, the word-7 discriminator held, and the one remaining red is a **design obligation at lane 4** that BUG-0002's own §6 put outside its scope — dv_lead, `J-dv_lead-0089`
+
+**Scored SHA**: `fafb83d` (rtl_lead's emission implementation, `J-rtl_lead-0010`).
+**Evidence run**: CI `build` **30907419890**, job `91985668746`, `head_sha`
+`fafb83d52b34c8d4011a507b02247d53a382ed0e`, conclusion **failure** (the two red
+units below and nothing else). `journal-check` at the same SHA: run
+**30907419643**, conclusion **success**.
+**Carries to HEAD**: `git diff --stat fafb83d..310a33d` is one file — the
+orchestrator's own journal — so every non-journal path in the tree is
+byte-identical between the scored SHA and HEAD, and this verdict is a verdict at
+HEAD.
+
+Reproduce:
+
+```sh
+opam exec -- dune build @default
+opam exec -- dune runtest        # at fafb83d or 310a33d
+```
+
+---
+
+### 1. The two red units, verbatim
+
+```
+M03-I4 (length 64, lane 4, idles 1): word 0 arrived on cycle 4, expected 6
+  (SPEC-M03 §6.1's D(m) (`1f3c04c`): baseline_cycle(m) + (cycle_of(D m) - D m),
+   not m + 3 alone -- M03-I5)
+M03-I6 (length 64, lane 4): word 0 arrived on the wrong cycle
+  (SPEC-M03 §6.1's D(m) (`1f3c04c`): baseline_cycle(m) + (cycle_of(D m) - D m),
+   not m + 3 alone)
+```
+
+Both at a **lane-4** start. Nothing else in the tree raised.
+
+---
+
+### 2. What is PROVEN at `fafb83d`
+
+**P1 — BUG-0002's defect is gone, and gone across the whole lane-0 injected
+matrix, not merely at its reproduction member.** The guard that raised it —
+`word m unexpectedly carries tlast`, evaluated for every `m < words − 1` of
+every completed run — is silent on **25 of M03-I4's 48 runs** and **2 of
+M03-I6's 4**, which is every lane-0 member of both rows plus M03-I4's lane-4
+`k = 0` member. That set contains both units the packet named: `M03-I4 (length
+64, lane 0, idles 1)` and `M03-I6 (length 64, lane 0)` at `k = 7`.
+
+**P2 — the lane-0 acceptance cycle sets are met.** At length 64 / lane 0 the
+eight `tvalid` cycles are **5, 7, 9, 11, 13, 15, 17, 19** at `k = 1` and
+**11, 19, 27, 35, 43, 51, 59, 67** at `k = 7` — the sets pinned at
+`J-dv_lead-0086` point 4 and published in `AP-xgmii_rx_64.md` §9 at
+`J-dv_lead-0087`. The per-word cycle guard evaluates
+`baseline_cycle(m) + (cycle_of(D m) − D m)` from the specification alone and
+compares it against the design for every `m`; it passed for all eight words at
+both figures, and at all of lengths 65–71 as well.
+
+**P3 — the word-7 discriminator held.** Word 7 left at **19** (`k = 1`) and
+**67** (`k = 7`). A hold **without** `closure_aligned` — the naive
+implementation of the same sanctioned change — emits it at **18** and **66**,
+and the per-word cycle guard would have raised there. It did not. This is the
+one measurement in the round that separates rtl_lead's fix from the fix it
+would have been natural to write, and it is the payoff of its second root cause
+(the closure record ageing one cycle out of skew with the octet stream).
+
+**P4 — nothing outside `test/xgmii_rx_64/test_m03_i.ml` moved.** The run's own
+promotion block runs `dune promote` and then `git diff --name-only`; it lists
+**exactly one file**. So **34 of the 36 M03 expect-test units** and **all 80
+non-M03 units in the tree** (116 total; `grep -rc 'let%expect_test' test/`)
+produced byte-identical expect output at `fafb83d`. Families A–H, M03-I1/I2/I3,
+M03-structural, the co-simulation lane, the monitors, the golden references and
+the probes are unmoved. This is the strongest empirical form available of
+rtl_lead's gapless bit-identity claim, and it is what its "a single moved
+gapless result convicts this change" test asked for.
+
+**P5 — REQ-019's DV-observable half is green at both lanes and unmoved.** The
+run prints, from its own latency tagger: lane 0 `h=8 L=16 word_delay=3`;
+lane 4 `h=12 L=12 word_delay=3`. §1.1's ceiling on M03's ΔC is **4** at both
+lanes. Measured ΔC **3 / 3**, one cycle of headroom at each. The elastic hold
+did not move the gapless word delay.
+
+---
+
+### 3. What is NOT proven, said before anyone asks
+
+**O1 — the seven-case gapless argument is corroborated, not verified.** P4
+proves bit-identity over *the stimulus the committed suite drives*. It proves
+nothing about stimuli it does not. rtl_lead's own case 6 (a partial lookahead
+with an age-0 record) is asserted **unreachable**, and no row in
+`AP-xgmii_rx_64.md` distinguishes reachable from unreachable there. I record
+this as an argument I did not check rather than one I checked and granted — I
+judge behaviour against spec, not case analyses against source.
+
+**O2 — the line-rate rows L1–L5 do not exist.** rtl_lead's "what the next CI run
+should show" names them as unchanged. They are **unwritten** (standing debt from
+`WO-0038` §8), so the line-rate invariant at `fafb83d` is *argued* (`hold ≡ 0`
+gapless, no backpressure introduced) and **not measured**. No claim in this
+verdict rests on them.
+
+**O3 — `rtl_snapshots/**` was not regenerated.** `fafb83d` stages the module and
+the journal only. rtl_lead's Verilog-side prediction (one enable term on two
+existing registers, no new register and no new `always` block, the same deltas
+reappearing in `eth_mac_10g.v`) and **REQ-902**'s double-generation
+byte-identity check are both **unverified and owed** by the next run that emits.
+
+**O4 — M03-I4's cross-run assertions never executed.** The row's tail checks —
+exactly two front-offset classes, `h = 8` and `h = 12`, 24 accumulated frames
+each — and the accumulated per-octet class report run *after* all 48 cases. The
+loop aborted at the 26th. Those structural facts are **unmeasured** at
+`fafb83d`, and the lane-4 class data the row exists to *report* was not printed.
+
+**O5 — everything at lane 4 past word 0's cycle.** `fail` raises, so at the
+failing member I know exactly two things: the drained window carried **exactly 8
+`tvalid` words** (the count guard passed), and word 0's cycle was **4** against
+the spec-derived **6**. `tkeep`, `tlast`, `tuser`, the 60 delivered octets, the
+five strobes and the monitor verdicts are unmeasured there. **22 of M03-I4's
+runs and 1 of M03-I6's were never driven at all.**
+
+**O6 — §6's `k = 0` invariant is 9 of 16, not 16 of 16.** §6 predicted "all 16
+of M03-I4's `k = 0` members stay green". Measured: the 8 lane-0 members and the
+1 lane-4 member that ran, all green; the remaining 7 lane-4 `k = 0` members were
+not reached. The clause is **unrefuted and partially measured**, and I will not
+report it as met.
+
+**O7 — family I carries no qualification.** No mutation campaign has opened on
+these rows. `SO-xgmii_rx_64.md` remains unopened and is not offered.
+
+---
+
+### 4. Two deviations from my own §6, reported rather than absorbed
+
+**D-1 — §6's characterisation of the *design* at lane 4 is UNSCORED, and could
+not have been scored.** §6 said word 0 moves "to `s + 3 + 2k` at lane 4 against
+the design's `s + 3 + k`". The design's lane-4 injected behaviour was **never
+measured** at `51b9920` — that run aborted at lane 0 — and at `fafb83d` the
+design is a different design. The spec side of the clause is confirmed
+(`s + 3 + 2k = 6` at `s = 1, k = 1`, and that is exactly the bench's expected
+value); the design side named a quantity nothing ever observed. Measured at
+`fafb83d` the design gives **4 = `s + 3`**, delta **2 = 2k**, not the `5` §6
+guessed. A prediction about an unmeasured configuration is a guess wearing a
+prediction's clothes, and I am recording it as one.
+
+**D-2 — the measured lane-4 defect is NOT the defect rtl_lead's escalation 1
+describes, and this matters for what gets dispatched.** Escalation 1 predicts
+output word m split into two disjoint half aligned words (`al_keep` 0x0F then
+0xF0) that one register plus a hold cannot rejoin. If half words reached the
+output, `delivered_samples` — which filters on `tvalid` alone and counts short
+words like any other — would have inflated the count and the **count guard would
+have raised first**. It did not: **8 words, the conformant count.** What is
+measured is a **cycle** defect with the tuple count intact, not a tuple-sequence
+defect. Whether the split is real and absorbed internally, or the mechanism is
+something else, is rtl_lead's to establish in a Root-cause section. **The
+follow-on packet states the measured observable and does not adopt the
+mechanism** — a bug packet that prejudges the root cause is a bug packet written
+from the design.
+
+---
+
+### 5. RULING — the lane-4 gap is **(a) a design obligation**. Not (b), not (c).
+
+Derived from the frozen text, clause by clause. Every citation is to text in
+force at `155c9b2` or earlier.
+
+1. **REQ-016's normative sentence has no lane qualifier**: "*every consumer
+   SHALL tolerate arbitrary idle gaps within a frame without corrupting it: k
+   idle cycles before an input word delay every octet that word carries by
+   exactly 8k octet times and change nothing else*". Its one carve-out is
+   `Xgmii_tx_64`'s source interface (REQ-206). This is not that port.
+2. **REQ-016's verification column commissions lane 4 by name**: "*at every
+   start lane the module has*". REQ-101 gives M03 lanes 0 and 4. Lane 4 under
+   injection is **commissioned, countersigned coverage** (`J-dv_lead-0084`,
+   in force from `a77017c`), not a frontier the programme wandered into.
+3. **§0.5's *What survives idle injection* forecloses the split in text**: the
+   ordered `(tdata, tkeep, tlast, tuser)` sequence "*is unchanged, and every
+   octet keeps its byte position within its word*", and "*an output word …
+   leaves **whole** — REQ-011 forbids `tkeep` = 0 and gives no encoding for half
+   a word*". A half word is not a permitted output object at all.
+4. **REQ-101 convicts independently**: "*SHALL produce identical output streams
+   for the same frame received at either alignment*", compared as the ordered
+   tuple sequence. A lane-4 stream that differs from lane 0's on the same
+   stimulus class fails it whatever the cycles do.
+5. **REQ-011 convicts any short mid-frame word independently**: on every
+   `tvalid` word `tkeep` is contiguous from bit 0, and 0xFF on every word but the
+   `tlast` one. 0x0F on a non-`tlast` word fails the second; 0xF0 fails the
+   first.
+6. **§6.3 closes option (c) textually.** "*Anything not listed here is
+   constrained by this specification, and a test may rely on it.*" Lane-4 under
+   injection is not listed. It is constrained, so it cannot be declared
+   unconstrained without a spec diff — and a spec diff is option (b), not
+   option (c).
+7. **REQ-019 does not bar the fix and may not be invoked to.** Its
+   payload-storage sentence is, by its own words, "*design guidance and …
+   explicitly not a DV observable, so `traceability.md` claims no test coverage
+   for it*" — I have no instrument for it and will not pretend one. Its
+   DV-observable half is ΔC ≤ 4, measured **3 at both lanes** at `fafb83d`
+   (P5), so even a merge that cost a gapless cycle would still clear the
+   ceiling — and it should cost none, because the merge fires only where an
+   aligned word is split, which never happens on a gapless stimulus.
+
+**Why option (b) does not trigger, stated against the architect's own reserve.**
+`J-architect_docs_lead-0025` held option 2 as E2 with an explicit condition:
+"*if the emission rule proves unaffordable, rtl_lead returns with the cost and I
+take it up as E2*". rtl_lead did not return a cost. It returned a
+**recommendation to build** (its option (a)), reported that it "did not need a
+third word of storage, so I have no rule-convicting finding to raise on that
+head", and named REQ-019 as **met**. There is therefore nothing for an E2 to
+weigh, and routing one now would ask the sponsor to drop countersigned coverage
+on an unpriced claim. **Option (b) is not foreclosed for ever**, and I name the
+condition that revives it precisely so it cannot be revived on assertion: a
+**returned, quantified cost** — a third payload storage word, a gapless ΔC that
+moves off 3, or any gapless expect block in the tree that moves. Any one of
+those and I carry it to architect_docs_lead as E2 **myself, that same round**,
+with the numbers.
+
+**Why this is a new packet and not a widening of WO-0060.** The merge is more
+than the elastic hold this round sanctioned, and rtl_lead was right to stop and
+report rather than build it — that is charter §6's no-silent-deviation rule
+working. But "the sanctioned change was smaller than the obligation" is a
+**work-order** scope question, not a specification scope question, and its
+answer is a packet, not an escalation.
+
+**Dispatch**: `agents/handoffs/BUG-0003_m03-lane-4-injected-word-cycle.md`
+(number subject to the orchestrator's allocation, PROTOCOL §3), dv_lead →
+rtl_lead, VERBATIM relay class. Severity **MAJOR**, argued in the packet
+against BUG-0002's CRITICAL. Its acceptance is: the lane-4 half of M03-I4's 48
+runs and M03-I6's 4 green, **with every one of the 34 green M03 units and all 80
+non-M03 units still byte-identical** — a moved gapless expect block converts the
+round from a fix into a regression.
+
+---
+
+### 6. RULING — rtl_lead's escalation 2 (sub-word granularity): **nothing**. No row, and none owed.
+
+**No commissioned row drives it, and no instrument this programme has can
+reach it.**
+
+- **The granularity is forced, not chosen.** REQ-010 declares the six XGMII
+  lane-pair ports **not stream ports**: "*a lane pair carries a value on every
+  cycle, so it has no valid indication, no octet mask, no end-of-frame
+  indication and no abort bit to be a stream with*". REQ-016's "*a producer MAY
+  deassert `tvalid` between words*" therefore has **no sub-word realisation at
+  M03's input**. The injection wrapper's whole-word granularity is a consequence
+  of the port, not a simplification I chose.
+- **REQ-018 hands the link-partner model's contract to DV and enumerates it**:
+  start characters in lanes 0 and 4 with the REQ-004 alternation, plus each
+  condition named in REQ-104, REQ-105, REQ-107, REQ-108 and REQ-110. A
+  partial-lane idle inside an open frame is not in that list.
+- **The L-series cannot reach it either**: L1–L5 are back-to-back line-rate
+  stress, gapless by construction.
+- **And no clause decides the observable.** In `Frame` state every §6.2 exit —
+  `/T/` (REQ-106), `/E/` (REQ-105), `/S/` (REQ-110) — *closes or aborts*, so the
+  only characters that could truncate coverage without closing are `/I/` and
+  `/Q/` in a **data-lane** position of an open frame. REQ-113 governs control
+  characters *outside* a frame; REQ-102's third sentence governs a *preamble*
+  position; §6.2's `Frame` row decides hold-versus-advance ("*a word covering one
+  or more frame octets is never held*") and says nothing about where the covered
+  octets go; §6.3 does not list the case. That is a **specification silence**,
+  which this plan's own status vocabulary calls **RULING** — and a RULING row
+  needs an architect ruling before it can be a bench, not a bench that invents
+  one.
+
+**And the harm it names is already guarded, unconditionally.** rtl_lead's
+concern is a short mid-frame word ("*a short mid-frame word that REQ-011 does not
+admit either*") — correct, and REQ-011 is asserted by the protocol monitor on
+every stream in every bench:
+
+```
+test/monitors/protocol_monitor.ml:99
+  "tkeep = 0x%02x on a word without tlast; only the tlast word may be partial"
+```
+
+Any design change that produced one **anywhere**, on stimuli that already exist,
+raises there. No new row buys coverage that instrument does not already hold.
+
+**Recorded as considered and rejected, with the reason** (charter §8 — the
+rejected list is what the auditor mines). If the org ever wants the
+configuration constrained, the order is: architect ruling on the observable
+first, then a row, then a bench. Not a bench first.
+
+---
+
+### 7. RULING — rtl_lead's escalation 3 (the `closure_aligned` trap): **route to architect_docs_lead, YES — with one condition that is mine to state**
+
+No objection, and it is worth carrying: a trap rediscovered is a defect, and
+rtl_lead found this one by building against it.
+
+**Condition**: it lands in SPEC-M03 §9 as an **implementation note explicitly
+marked non-normative and not a DV observable**, in the manner REQ-019's storage
+sentence already uses ("*design guidance and … explicitly not a DV observable,
+so `traceability.md` claims no test coverage for it*"). The reason is
+testability, which I countersign at every spec freeze: **§6.3 item 2 already
+declares "the placement of the two register levels … and every internal
+encoding" deliberately unconstrained.** A *normative* sentence in §9 about how a
+future consumer must read the closure record would constrain exactly that, and
+would commission a test I cannot write from the specification — the module's
+observable is the emitted stream, not the age of an internal record.
+
+As guidance it costs nothing and owes me no countersignature. If it lands as
+normative text it revises the test-derivation basis and **I countersign
+narrowly**, on that sentence alone.
+
+---
+
+### 8. BUG-0002: **CLOSED**. The verdict of record is in the packet's own `Fix verdict` section.
+
+`agents/handoffs/BUG-0002_m03-idle-injection-tlast-on-a-non-final-word.md`,
+**Fix verdict: ACCEPT — CLOSED**, `J-dv_lead-0089`. In one sentence: the
+packet's defect is *tlast on a non-final word under injection*, it is measured
+absent across every lane-0 member of both rows, and the packet's own §6 says in
+its own words that it "*does not claim any coverage at lane 4*" — so the lane-4
+finding is outside its scope by its author's declaration and carries as its **own
+item**, not as a hold on an old packet whose defect is discharged.
+
+---
+
+### 9. Count and row states at `fafb83d` / `310a33d`
+
+**Discharge count: 36 of 62 — re-derived, not inherited.** Method unchanged
+since `J-dv_lead-0084`: 37 ASSERT rows named in a committed `%expect_test` title
+under `test/xgmii_rx_64/`, plus M03-F5 by citation (`test_m03_f.ml:833`) = **38
+carrying a discharge**; minus **M03-I4** and **M03-I6**, red at this SHA = **36
+of 62**. Plan totals unchanged and counted from the file, not added to: **78
+rows — 62 ASSERT, 7 NO-ASSERT, 4 NO-STIMULUS, 4 STRUCTURAL, 1 GAP.**
+
+| Row | Status | Discharge | State at `fafb83d` |
+|---|---|---|---|
+| **M03-I4** | ASSERT | **NOT discharged** | **Red at lane 4 only.** 25 of 48 runs completed green (all 24 lane-0, plus lane-4 `k = 0` length 64); 1 red; 22 undriven. Its lane-0 half is met in full. |
+| **M03-I5** | NO-ASSERT | n/a | Unchanged. Its scope held: neither `m + 3` nor a single per-octet `L` was asserted anywhere in the round. |
+| **M03-I6** | ASSERT | **NOT discharged** | **Red at lane 4 only.** 2 of 4 runs green — both lane-0, **including the 1518-octet member at `k = 7`**; 1 red; 1 undriven. |
+| **M03-I1/I2/I3** | ASSERT | discharged | Unchanged, green. |
+
+**No partial discharge, deliberately.** The method is per row, and a row with a
+red unit carries none. Inventing a fractional discharge to reflect that the red
+has shrunk from "everything" to "lane 4" would make the count a narrative
+instead of a measurement. **The number is unchanged; what changed is its
+content**, and that belongs in prose, which is where it is.
+
+**Forward figure: 38 of 62** the moment the lane-4 merge lands green. BUG-0003
+is the whole of the distance.
+
+**No attack-plan edit this round, and the reason stated loudly.** No ruling here
+requires one. §5's ruling adds no row, converts none and moves no status —
+M03-I4's and M03-I6's `Observable` cells already state, at both start lanes, the
+exact clause lane 4 fails, so they are correct as written and the red is theirs
+to hold. §6's ruling adds no row by construction. The architect's single-word
+observation (§10 below) reaches no cell: M03-I4's class table is scoped "*for a
+frame of more than one output word*" and every commissioned length is
+multi-word. **Owed at the next round that opens the plan**: a §9 change-log row
+recording §6's no-row ruling, so the rejected attack sits on the plan's own
+record and not only in my journal.
+
+---
+
+### 10. Carried items disposed
+
+1. **The architect's single-word / lane-4 observation** (`J-architect_docs_lead-0026`,
+   downstream 2) — **verified and accepted against myself.** The
+   COUNTERSIGNATURE scope note in BUG-0002 says "*a single-word frame has one
+   class trivially at either lane*"; that is true at lane 0 and **false at lane
+   4** whenever the single output word carries more than four octets — `N` ∈
+   {9, 10, 11} give `W = 1` with bytes 0–3 at `12 + 8k` and bytes 4…r+3 at 12,
+   and `N` = 12 gives the full `12 + 16k` / `12 + 8k` split in one word.
+   Recorded in BUG-0002's Fix verdict under my own authorship. **The signature
+   block itself is not edited** — a signature of record is corrected forward,
+   never amended in place. **No AP cell inherits the error.** Closed.
+2. **N-1** (REQ-016's column gates per module while survival is per
+   (start lane, residue)) — **still non-blocking, and it still licenses nothing
+   at M03**: M03 fails **both** of §0.5's tests at **both** lanes (the `tlast`
+   word is late-decided at either start, and `h = 12` straddles at lane 4), so a
+   per-module gate and a per-lane gate give the same answer here — do not assert
+   the per-octet constant. Carried forward **with BUG-0003**, which is the next
+   packet that opens REQ-016's reach, exactly as N-1 was offered.
+3. **tb_writer's §5 finding** — three `RV-0059-VERDICT §8` citation sites beyond
+   §3.6's enumeration (`test_m03_i.ml` `:41–42`, `:1336`, `:1368`). **Accepted
+   as a finding against my own packet's enumeration, not against the worker's
+   execution**: §3.6 claimed a closed list and the list was not closed, while
+   §3.7 forbade edits beyond it, so the worker was right to report rather than
+   fix. **Not repaired this round, deliberately**: a bench edit inside an open
+   design round is the confound this whole sequence exists to avoid. Rides with
+   the next family-I bench work order.
+4. **Adjudicator RTL exposure** — ruled at §11.
+5. **Unchanged standing debts**: `WO-0038` §8's mutation spot-check; L1–L5;
+   family I's qualification campaign; the epoch-A no-output-word class; AP-M14's
+   §6 invariant; M03-F5's discharge-by-citation qualification; the RFC 1071
+   anchor; X-7, X-10, X-11. `SO-xgmii_rx_64.md` remains unopened and is not
+   offered.
+
+---
+
+### 11. RULING — adjudicator RTL exposure, for the next campaign packet
+
+**The independence bar is on *test derivation*, not on *adjudication*, and the
+two are separated by ordering rather than by pretence.**
+
+- Charter §8 **requires** me to verify a Root-cause section exists before
+  writing ACCEPT. A Root-cause section that names a mechanism will quote RTL.
+  Adjudication exposure is therefore compelled by my own charter, and a rule
+  forbidding it would be a rule I break every time I do my job — PROTOCOL §10's
+  honest-enforcement note exists to stop exactly that kind of fiction.
+- **The safe form is mechanically checkable: the bench that judges a fix must be
+  frozen at a SHA strictly earlier than the RTL it judges.** Here it is —
+  `test_m03_i.ml` froze at `51b9920` and the RTL under judgment is `fafb83d`,
+  two commits later. **No expectation in this round was written after any RTL
+  was read**, because no expectation was written at all: this round edits no
+  file under `test/`.
+- **Two bars stay absolute and are not relaxed by this ruling.** (i) tb_writer's
+  work orders omit RTL **and** omit the journal entries that quote it — `WO-0060`
+  §7.2 is the model and it held. (ii) In a **mutation campaign**, the adjudicator
+  does not read the manifest's patch bodies before the seal is frozen; there the
+  seal is the instrument and exposure destroys it, which is a different failure
+  mode from fix adjudication and does not inherit this licence.
+- **Declared for this round**: I opened `agents/journals/claude_rtl_lead_agent.md`
+  at `fafb83d` (`J-rtl_lead-0010`) **in full**. It quotes six lines of
+  `libs/hardcaml_ethernet/src/xgmii_rx_64.ml` verbatim (`ev12`,
+  `closure_aligned`, `decided`, the three `emit_*` arms, `hold`, `al_data_d`) and
+  describes the module's structure in prose. I did **not** open `libs/**`,
+  `top/**`, `rtl_snapshots/**` or `docs/reports/audit/**`.
+
+This clause goes into the next campaign packet as written.
+
+---
+
+### 12. tb_writer's return: **ACCEPT**
+
+All seven changes landed; the four call sites needed no edit and the return says
+so; **D1** and **D2** are in the source with derivations that take a different
+route from the packet's and reach the same `iff`; §3.3's `T − f` was re-derived
+rather than left alone; the §3.5 BAR held (no lane-4 class set appears anywhere
+in the file); the expect blocks were committed exactly as CI produced them and
+**no expectation was amended to agree** (ADR-0015 D2); §4's guard pair was
+analysed and **no third guard was added**, with the analysis returned instead —
+which is what §4 asked for and the harder thing to do. The one finding returned
+(§5) is a finding **against my packet**, correctly scoped and correctly not
+acted on. The fail-fast caveat in its §4 was right and is now the reason §3 of
+this verdict is as long as it is.
+

@@ -550,6 +550,111 @@ check remains owed by the next run, carried from `J-rtl_lead-0008`.
 Root-cause section — including §4's eight-row table — before ACCEPT can be
 written here.)*
 
+## **ACCEPT — CLOSED** at `fafb83d`, dv_lead, `J-dv_lead-0089`
+
+**Fixes**: `ce00c06` (`J-rtl_lead-0009`, the closure-record gate) **and**
+`fafb83d` (`J-rtl_lead-0010`, the elastic hold + `closure_aligned`). Two
+commits, one defect: `ce00c06` discharged the `tlast` keying and **said in its
+own entry** that it left the timing defect standing, because under the
+then-frozen §0.5 that defect was unsatisfiable rather than fixable. `fafb83d`
+discharged the timing defect once §0.5's D(m) was re-ruled and in force. Both
+are inside this packet's defect and this verdict closes both.
+
+**Evidence**: CI `build` run **30907419890**, job `91985668746`, `head_sha`
+`fafb83d52b34c8d4011a507b02247d53a382ed0e`, conclusion `failure` (the two lane-4
+units of §"the carve-out" below, and nothing else in the tree).
+`journal-check` at the same SHA: run **30907419643**, `success`. Reproduce with
+`opam exec -- dune build @default && opam exec -- dune runtest`. Full scoring:
+`agents/handoffs/WO-0060_tb-m03-family-i-dm-rebase.md`, **RV-0060-VERDICT**.
+
+### The defect is gone, and proven gone
+
+This packet's defect is `tlast` asserted on a **non-final** output word when
+REQ-016's wrapper injects idle cycles inside an open frame — §1's two named
+units, `M03-I4 (length 64, lane 0, idles 1)` and `M03-I6 (length 64, lane 0)` at
+`k = 7`.
+
+The guard that raised it — *"word m unexpectedly carries tlast"*, evaluated for
+every `m < words − 1` of every completed run — is **silent on 25 of M03-I4's 48
+runs and 2 of M03-I6's 4**: every lane-0 member of both rows, at `k` = 0, 1 and
+7, at all eight directed lengths 64…71, plus M03-I6's **1518-octet** member,
+plus M03-I4's lane-4 `k = 0` member. Both units this packet named are in that
+set.
+
+And the frame is no longer merely un-corrupted, it is **conformant**: at length
+64 / lane 0 the eight `tvalid` cycles are **5, 7, 9, 11, 13, 15, 17, 19** at
+`k = 1` and **11, 19, 27, 35, 43, 51, 59, 67** at `k = 7` — the sets pinned at
+`J-dv_lead-0086` point 4 — with the conformant word count, `tkeep` pattern,
+`tuser` = 0, 60 delivered octets and no strobe of any kind. §5's severity
+argument (a REQ-015 consumer seeing one 60-octet frame as two; every downstream
+length, protocol and checksum decision keyed to frame extent) is discharged at
+every lane-0 member measured.
+
+**Root-cause requirement satisfied** (dv_lead charter §8, and this section's own
+precondition): `J-rtl_lead-0009` for `ce00c06`, and `J-rtl_lead-0010` for
+`fafb83d` with **two** root causes — the carried keying defect, and a new one
+found by building the fix (the closure record is decoded a cycle ahead of the
+octet stream, so a naive hold releases the `tlast` word a cycle early). The
+second is load-bearing: it is why word 7 lands at **19 / 67** and not at the
+**18 / 66** a hold without `closure_aligned` produces. §4's prediction was
+confirmed with its mechanism at `ce00c06` and the eight-row table is in that
+entry.
+
+### The carve-out — what CLOSED does **not** certify
+
+Two units are red at `fafb83d`, both at a **lane-4** start:
+
+```
+M03-I4 (length 64, lane 4, idles 1): word 0 arrived on cycle 4, expected 6
+M03-I6 (length 64, lane 4): word 0 arrived on the wrong cycle
+```
+
+**This is not a reason to hold this packet open, and the reason is this
+packet's own words.** §6 states: *"It does not claim any coverage at lane 4, at
+lengths other than 64, or on the 1518-octet member; §2.4 says what was not
+measured."* Lane 4 is outside this packet's scope **by its author's own
+declaration at authoring time**, not by a convenience found afterwards. It is
+also **not a regression**: the pre-`fafb83d` design was equally unable there
+(`J-rtl_lead-0010`, open question 1), and no member that was green has gone red.
+A new finding does not hold an old packet hostage when the old packet's defect
+is discharged and the new finding was never inside it.
+
+The lane-4 gap carries as its **own item**:
+`agents/handoffs/BUG-0003_m03-lane-4-injected-word-cycle.md` (number subject to
+the orchestrator's allocation, PROTOCOL §3), ruled a **design obligation** in
+RV-0060-VERDICT §5 on REQ-016's normative sentence and its "at every start lane"
+verification column, §0.5's *What survives idle injection*, REQ-101, REQ-011 and
+§6.3's closing sentence.
+
+CLOSED therefore does **not** certify: lane 4 under injection; M03-I4's or
+M03-I6's discharge (both remain ASSERT, **not discharged**, discharge count
+**36 of 62**, forward 38); family I's qualification campaign (unopened); or
+`SO-xgmii_rx_64.md`, which remains unopened and is not offered.
+
+### Two corrections to this packet, recorded forward by its own author
+
+Neither is edited in place. A committed packet is corrected by a later block,
+and a **signature of record is never amended**.
+
+1. **§2.2's conformant table is stated under the SUPERSEDED D(m)** — it pins
+   word 0 at cycle 4 at both `k`, which was correct under the last-octet reading
+   in force when this packet was written and is void under the re-ruled D(m)
+   (`1f3c04c`). The in-force acceptance is word 0 at **5** (`k = 1`) and **11**
+   (`k = 7`), per the COUNTERSIGNATURE's point 4 below. The table stands as the
+   historical record of the packet at its authoring SHA and is marked superseded
+   here.
+2. **The COUNTERSIGNATURE block's scope note is false at lane 4.** It says *"a
+   single-word frame has one class trivially at either lane"*. True at lane 0;
+   **false at lane 4** whenever the single output word carries more than four
+   octets — `N` ∈ {9, 10, 11} give `W = 1` with bytes 0–3 at `12 + 8k` and bytes
+   4 … r+3 at 12, and `N` = 12 gives the full `12 + 16k` / `12 + 8k` split
+   inside one word. Returned by architect_docs_lead as a downstream observation
+   at `J-architect_docs_lead-0026`, **verified and accepted against myself**. It
+   costs the signature nothing (the two tables it scopes are stated for frames
+   of more than one output word and are unaffected) and **no attack-plan cell
+   inherits it**: M03-I4's class table carries the same scope and every
+   commissioned length is multi-word.
+
 ---
 
 ## COUNTERSIGNATURE — requirements.md §0.5's output-word bullet + causality test, and SPEC-M03 §6.1's D(m), ruled at `1f3c04c` (`J-architect_docs_lead-0025`): **THREE GRANTED, ONE GRANTED IN PART** — dv_lead, `J-dv_lead-0086`

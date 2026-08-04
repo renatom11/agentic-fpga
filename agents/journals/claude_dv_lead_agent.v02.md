@@ -3764,3 +3764,319 @@ stands at **36 of 62**, unchanged; this packet discharges nothing by itself.
 
 ### Files-in-this-commit
 - agents/handoffs/WO-0060_tb-m03-family-i-dm-rebase.md
+
+## [J-dv_lead-0089] 2026-08-07T18:10Z | task:WO-0060 | The emission round scored and BUG-0002 CLOSED — and the load-bearing act is a refusal: the lane-4 red is outside BUG-0002's scope by the packet's own §6, so a new finding does not hold an old packet whose defect is measured absent across every lane-0 member of both rows
+
+### Trigger
+
+Orchestrator, WO-0060/BUG-0002 close-out round at `310a33d` (`J-orchestrator-0170`).
+Score CI run **30907419890** at `fafb83d` against my seal and `WO-0060` §6;
+adjudicate the lane-4 gap that rtl_lead escalated **before** it was measured;
+rule its escalations 2 and 3; return BUG-0002's Fix verdict; re-derive the
+discharge count and the row states. rtl_lead's check-order (`J-rtl_lead-0010`,
+Handoff) is the spine of §1–§7 of the verdict.
+
+### Inputs
+
+- **`agents/handoffs/WO-0060_tb-m03-family-i-dm-rebase.md`** in full, including
+  tb_writer's Return log (`J-tb_writer-0020`) — my own §6 prediction, §5's
+  discipline, §7.2's exclusion.
+- **`agents/handoffs/BUG-0002_m03-idle-injection-tlast-on-a-non-final-word.md`**
+  §1, §2.2, §2.3, §2.4, §5, §6, the `Fix verdict` placeholder and my own
+  COUNTERSIGNATURE block's scope note.
+- **`agents/journals/claude_rtl_lead_agent.md` at `fafb83d` (`J-rtl_lead-0010`),
+  read IN FULL** — its two root causes, the `ev12` / `closure_aligned` / `decided`
+  mechanism, the seven-case gapless argument, the REQ-019 paragraph, the
+  rejected alternatives, and its three escalations. **Declared under charter §8's
+  independence discipline: this entry is where I say so.** That entry quotes six
+  lines of `libs/hardcaml_ethernet/src/xgmii_rx_64.ml` verbatim and describes the
+  module's structure in prose, so reading it is RTL exposure by proxy. It is
+  compelled by charter §8 (I must verify a Root-cause section exists before
+  writing ACCEPT) and it is safe here on ordering, not on abstention — see the
+  ruling in Reasoning 6.
+- `docs/specs/requirements.md` — **REQ-016** (normative sentence **and**
+  verification column), **REQ-019** (both sentences), **REQ-011**, **REQ-010**,
+  **REQ-015**, **REQ-018**, **REQ-101** … **REQ-113**, **§0.5**'s *deciding input
+  word* / *test a specification's D must pass* / *What survives idle injection*,
+  **§1.1**'s ceiling table, and §13's change-log rows for `a77017c`, `1f3c04c`
+  and their two transcriptions.
+- `docs/specs/modules/xgmii_rx_64.md` **§6.2** (the `Frame` row's hold rule and
+  its exits) and **§6.3** (its opening sentence and items 2 and 6).
+- `test/attack_plans/AP-xgmii_rx_64.md` §4.I (M03-I4, I5, I6 in full), §6's
+  REQ-016 row, §9's counts.
+- `test/xgmii_rx_64/test_m03_i.ml` at HEAD — `run_i4_case`'s guard order,
+  `run_i4`'s and `run_i6`'s case matrices and the cross-run tail;
+  `test/monitors/protocol_monitor.ml:99`.
+- `agents/journals/claude_architect_docs_lead_agent.v02.md`
+  (`J-architect_docs_lead-0026`), Open-questions, downstream observation 2.
+- CI: run **30907419890** (`build`, `fafb83d`, `failure`) via the GitHub API and
+  its harvested log; run **30907419643** (`journal-check`, `fafb83d`, `success`).
+- **No `libs/**`, no `top/**`, no `rtl_snapshots/**`, no `docs/reports/audit/**`,
+  no Essenceia material.**
+
+### Reasoning
+
+**1. The scoring had to separate what a fail-fast run proves from what it
+merely leaves standing, and that is most of the verdict's length.** Two
+`%expect_test` blocks are red, so the honest unit of account is not "two units
+failed" but *which runs executed*. M03-I4's loop is lane 0 → lane 4, lengths
+64…71, idles 0/1/7; the trailing output shows it completing all 24 lane-0 runs
+and lane-4 `k` = 0, then raising at lane-4 `k` = 1. M03-I6's is lanes {0,4} ×
+lengths {64,1518}, completing both lane-0 members and raising at lane-4/64. So
+**27 runs completed green and 23 were never driven**. Everything I could
+truthfully call proven had to come from the 27, and I wrote the other side out
+explicitly (O1–O7) rather than letting silence read as coverage. Two of those
+are mine to carry, not rtl_lead's: **L1–L5 do not exist**, so rtl_lead's
+"line-rate rows unchanged" is unmeasurable rather than unmet; and **M03-I4's
+cross-run assertions never executed**, which is a real hole in a lane-0 claim
+that otherwise looks total.
+
+**2. §6's k = 0 clause is 9 of 16, and I refuse to report it as met.** §6
+predicted "all 16 of M03-I4's `k = 0` members stay green". Nine ran. The
+remaining seven are lane-4 `k` = 0 at lengths 65…71 and were never reached. The
+clause is unrefuted and partially measured, and reporting a partially measured
+prediction as met is exactly the arithmetic-in-prose habit that cost me the
+"nineteen" at `RV-0047`.
+
+**3. Two deviations against my own §6, and the second changes what gets
+dispatched.** The first is bookkeeping: §6's claim about the *design* at lane 4
+("`s + 3 + k`") named a configuration nothing had ever driven — the `51b9920`
+run aborted at lane 0 — so it is **UNSCORED**, and at `fafb83d` the design gives
+`s + 3` = 4 anyway. A prediction about an unmeasured configuration is a guess in
+a prediction's clothes and I recorded it as one. The second is substantive:
+**the measured lane-4 defect is not the defect rtl_lead's escalation 1
+describes.** Escalation 1 predicts word m split into two disjoint half aligned
+words; `delivered_samples` filters on `tvalid` alone and counts a short word like
+any other, and the **count guard runs before the cycle guard and passed** — eight
+words, the conformant count. So no half word reached the port at that member.
+That is why `BUG-0003` states the measured observable and pointedly **does not
+adopt the mechanism**: a bug packet that names the root cause is a bug packet
+written from the design, and it would also have been a bug packet that was
+possibly wrong.
+
+**4. The lane-4 adjudication was never close, and the work was showing why
+rather than deciding.** Six clauses convict independently and none of them has a
+lane qualifier: REQ-016's normative sentence; REQ-016's verification column,
+which commissions *"every start lane the module has"* and which I countersigned;
+§0.5's *What survives idle injection*, whose own reasoning ("an output word
+leaves **whole** — REQ-011 gives no encoding for half a word") forecloses the
+half-word outcome in text; REQ-101's identical-streams requirement; REQ-011
+itself; and **§6.3's opening sentence**, which is the one that closes option (c)
+outright — *"Anything not listed here is constrained by this specification"*, and
+this configuration is not listed. Declaring it unconstrained is therefore a spec
+diff, i.e. option (b) wearing (c)'s label.
+
+**The interesting half was (b), because the architect explicitly held it in
+reserve and I could have taken the easy route of passing it up.** Its E2 is
+conditional — *"if the emission rule proves unaffordable, rtl_lead returns with
+the cost"* — and **no cost was returned**: `J-rtl_lead-0010` recommends the
+merge, reports no third storage word needed and records REQ-019 as met. An E2
+with nothing on the cost side asks the sponsor to drop countersigned coverage on
+an unpriced claim, which is worse than not escalating. So I ruled (a) and, so
+that (b) cannot later be revived on assertion, wrote the **exact** revival
+condition into both the verdict and the packet: a third payload word, a gapless
+ΔC off the measured 3, or any gapless expect block that moves — any one and I
+carry it to the architect as E2 myself, that round, with the numbers.
+
+**REQ-019 needed care in the other direction too.** Its storage sentence is by
+its own words *"design guidance and explicitly not a DV observable"*, so I have
+no instrument for it and must not invoke it as a bar **or** as a licence. What I
+do have is its observable half, and the run prints it: ΔC = 3 at both lanes
+against §1.1's ceiling of 4. That is a full cycle of headroom, which is why
+"unaffordable" is not credible on the latency axis either.
+
+**And the scope point that keeps this out of the architect's inbox: the merge is
+more than the hold WO-0060 sanctioned, and rtl_lead was right to stop.** But
+"the sanctioned change was smaller than the obligation" is a *work-order* scope
+question, not a specification one. Its answer is a packet.
+
+**5. Escalation 2 is the one I nearly got wrong by reflex.** The instinct on
+hearing "both old and new designs are wrong here" is to write a row. Working it
+instead: in `Frame` state every §6.2 exit closes or aborts (`/T/`, `/E/`, `/S/`),
+so the only truncating-without-closing characters are `/I/` and `/Q/` in a
+data-lane position — and **no clause decides that observable**. REQ-113 is
+outside a frame, REQ-102's third sentence is a preamble position, §6.2's `Frame`
+row decides hold-versus-advance and nothing about where the covered octets go,
+and §6.3 does not list it. That is a specification silence, which this plan's own
+vocabulary calls RULING, and a RULING row needs an architect ruling *before* a
+bench, not a bench that invents one. **More decisive, the stimulus is
+unreachable by the instrument the programme has**: REQ-010 declares the six XGMII
+lane-pair ports **not stream ports** — "*a lane pair carries a value on every
+cycle, so it has no valid indication*" — so REQ-016's `tvalid`-deassertion has no
+sub-word realisation at M03's input at all. The wrapper's whole-word granularity
+is **forced by the port**, not a simplification I chose, and REQ-018's
+link-partner contract does not enumerate a partial-lane idle either. Then the
+last check, which is the one that made me comfortable ruling *nothing*: the harm
+rtl_lead names — a short mid-frame word — is **already guarded unconditionally**
+by the protocol monitor's REQ-011 assertion at `protocol_monitor.ml:99`, on every
+stream in every bench. A new row would buy no coverage that instrument does not
+already hold. Recorded as considered-and-rejected with its reason, because the
+rejected list is what the auditor mines.
+
+**6. Escalation 3, and the adjudicator-exposure ruling it forced me to write
+down.** The §9 note is worth having — a trap rediscovered is a defect — and my
+only condition is testability, which is mine to state: it must be explicitly
+non-normative and not a DV observable, in REQ-019's own manner, because **§6.3
+item 2 already declares the placement of the register levels and every internal
+encoding unconstrained** and a normative §9 sentence about the age of an internal
+record would commission a test I cannot write from spec.
+
+Writing that sent me back to my own exposure this round. The honest position is
+that **the independence bar is on test derivation, not on adjudication**: charter
+§8 *requires* me to verify a Root-cause section before ACCEPT, and any Root-cause
+section naming a mechanism will quote RTL, so a rule forbidding adjudication
+exposure would be a rule I break every time I do my job — PROTOCOL §10's
+honest-enforcement note exists to stop exactly that fiction. What makes it safe
+is **ordering, and it is mechanically checkable**: the bench that judges a fix
+must be frozen at a SHA strictly earlier than the RTL it judges. Here
+`test_m03_i.ml` froze at `51b9920` and the design under judgment is `fafb83d`,
+two commits later, and this round edits no file under `test/` at all. Two bars
+stay absolute and do not inherit the licence: tb_writer's work orders omit RTL
+**and** the journal entries that quote it (`WO-0060` §7.2, which held), and in a
+mutation campaign the adjudicator does not read patch bodies before the seal is
+frozen — there the seal is the instrument.
+
+**7. BUG-0002 closes, and the precision is the whole point.** Its defect is
+`tlast` on a non-final word under injection; the guard that raised it is silent
+on all 27 completed runs, including both units the packet named and M03-I6's
+1518-octet member, and the frame is not merely un-corrupted but conformant at
+the pinned cycles. Its Root-cause requirement is satisfied twice over. And the
+lane-4 red **cannot** hold it open, because §6 of the packet says in its author's
+own words that it *"does not claim any coverage at lane 4"* — a scope declared at
+authoring time, not a convenience found afterwards. Letting a new finding hold a
+discharged packet would be the mirror of the error this programme keeps
+catching: a claim surviving past the evidence that supported it, only inverted.
+
+**8. Two corrections to BUG-0002, forward and not in place.** §2.2's conformant
+table is stated under the superseded D(m) and is marked superseded rather than
+edited. And the COUNTERSIGNATURE scope note's *"a single-word frame has one class
+trivially at either lane"* is **false at lane 4** for N ∈ {9,10,11,12} — the
+architect's downstream observation, verified against §6.1's residue arithmetic
+and accepted against myself. **A signature of record is corrected forward, never
+amended**, which is why both live in the Fix verdict under my own authorship. No
+attack-plan cell inherits the error: M03-I4's class table carries the same "more
+than one output word" scope and every commissioned length is multi-word.
+
+**9. No attack-plan edit, and I say so loudly because silence would look like an
+oversight.** No ruling here requires one. §5 adds no row and moves no status —
+M03-I4's and M03-I6's `Observable` cells already state, at both start lanes, the
+exact clause lane 4 fails, so they are correct as written and the red is theirs
+to hold. §6 adds no row by construction. The architect's note reaches no cell.
+What I do owe, and named rather than dropped, is a §9 change-log row recording
+§6's no-row ruling at the next round that opens the plan, so the rejected attack
+sits on the plan's record and not only here.
+
+**10. The count is unchanged and its content is not, and I refuse to blur the
+two.** Re-derived by the same method, not inherited: 37 ASSERT rows named in a
+committed `%expect_test` title plus M03-F5 by citation = 38 carrying a discharge,
+minus M03-I4 and M03-I6 red = **36 of 62**. Inventing a fractional discharge to
+reflect that the red has shrunk from "everything" to "lane 4" would make the
+count a narrative instead of a measurement. The number goes in the table; the
+change goes in prose.
+
+### Actions
+
+- Appended **RV-0060-VERDICT** to `WO-0060_tb-m03-family-i-dm-rebase.md`: the
+  scored run with PROVEN (P1–P5) and NOT-PROVEN (O1–O7) stated separately; two
+  deviations against my own §6 (D-1, D-2); the **lane-4 ruling (a)** with its
+  six-clause derivation, the reason (b) does not trigger and the exact condition
+  that revives it; the **escalation-2 ruling (nothing owed)**; the
+  **escalation-3 ruling (route, with the non-normative condition)**; the count
+  and row-state table; carried items; the **adjudicator-RTL-exposure ruling**;
+  and **ACCEPT** for tb_writer's return.
+- Appended the **Fix verdict: ACCEPT — CLOSED** to `BUG-0002`, with the lane-4
+  carve-out stated on the packet's own §6, the list of what CLOSED does not
+  certify, and the two forward corrections.
+- Re-derived the discharge count from the file rather than adding to a previous
+  figure; re-derived the failing member's required cycle (6) by hand from octet
+  times before accepting the bench's value.
+- **Edited no file under `test/`**, no spec, no attack plan, no `libs/**`. Ran no
+  `git` write.
+
+### Evidence
+
+1. **CI run 30907419890** (`build`, workflow `.github/workflows/build.yml`,
+   `head_sha` `fafb83d52b34c8d4011a507b02247d53a382ed0e`, `run_number` 311,
+   conclusion **failure**), job **91985668746**. The only two raises in the whole
+   tree are `M03-I4 (length 64, lane 4, idles 1): word 0 arrived on cycle 4,
+   expected 6` and `M03-I6 (length 64, lane 4): word 0 arrived on the wrong
+   cycle`. **CI run 30907419643** (`journal-check`, same SHA) conclusion
+   **success**.
+2. **The promotion block lists exactly one file.** The workflow runs `dune
+   promote` then `git diff --name-only`; the output is
+   `test/xgmii_rx_64/test_m03_i.ml` and nothing else, sha256
+   `c3d2183ecd1d09629020263231b83da8bc1b90ca3d58a14ec4c20829e003b900`. So 34 of
+   the 36 M03 expect-test units and all 80 non-M03 units are byte-identical.
+   Unit counts, counted rather than recalled: `grep -rn 'let%expect_test' test/
+   --include=*.ml | wc -l` → **116**; the ten `test_m03_*.ml` files sum to
+   **36** (a 3, b 1, c 4, d 3, e 4, f 4, g 7, h 4, i 5, structural 1).
+3. **Runs completed, from the run's own trailing output**: M03-I4 printed all 24
+   lane-0 members (lengths 64…71 × idles 0/1/7) and `(length 64, lane 4, idles
+   0)` — `h=12 L=12 word_delay=3` — before raising; M03-I6's loop order
+   (`[0;4]` × `{64,1518}`) puts both lane-0 members before the raise. **27
+   completed, 23 undriven.**
+4. **REQ-019's observable half, printed by the run**: lane 0 `h=8 L=16
+   word_delay=3`; lane 4 `h=12 L=12 word_delay=3`; §1.1's M03 ceiling on ΔC is
+   **4**.
+5. **The failing member's required cycle, re-derived by hand from the frozen
+   text**: lane-4 `/S/` at octet time 12 → source cycle 1; preamble 12…19;
+   received octet `j` at octet time `20 + j` → first frame octet in cycle 2, last
+   in cycle 10; `/T/` at octet time 84 → cycle 10; `N` = 64 → `W` = ⌈60/8⌉ = 8;
+   word 0 non-`tlast` so D(0) = octet `8·0+12` = 12 at octet time 32 → **source
+   cycle 4**; `uniform ~idles:1` sites before cycles 3…10, of which **two** fall
+   at or before cycle 4; gapless `s + m + 3` = 4; required **4 + 2 = 6**.
+   Observed **4** — delayed by **0** where §0.5 requires **exactly 2**.
+6. **The lane-0 counterpart in the same run**: D(0) at octet time 28 → cycle 3,
+   one site at or before it, required **5**, observed **5**; and the eight lane-0
+   cycles 5,7,9,11,13,15,17,19 (`k`=1) and 11,19,27,35,43,51,59,67 (`k`=7) all
+   met — **word 7 at 19 and 67**, where a hold without `closure_aligned` gives
+   **18 and 66**.
+7. **Discharge count**: `grep -c '^| \*\*M03-' test/attack_plans/AP-xgmii_rx_64.md`
+   → **78**; status tally 62 ASSERT / 7 NO-ASSERT / 4 NO-STIMULUS / 4 STRUCTURAL
+   / 1 GAP (sum 78). 37 ASSERT rows named in a committed `%expect_test` title +
+   M03-F5 by citation = 38; minus I4 and I6 = **36 of 62**.
+8. **`git diff --stat fafb83d..310a33d`** → one file, the orchestrator's journal,
+   so this verdict is a verdict at HEAD.
+9. **The standing REQ-011 guard**: `test/monitors/protocol_monitor.ml:99` —
+   *"tkeep = 0x%02x on a word without tlast; only the tlast word may be
+   partial"*.
+
+### Outcome
+
+DoD met for the close-out half of the round. **BUG-0002 is CLOSED (ACCEPT)** on a
+defect measured absent across every lane-0 member of both rows, with the lane-4
+gap carried as its own item and not as a hold. **WO-0060 is ACCEPTED** and
+scored. **The lane-4 gap is ruled a design obligation**, dispatchable, and the
+packet that dispatches it is `J-dv_lead-0090`'s. **Escalation 2 ruled: nothing
+owed.** **Escalation 3 ruled: route to architect_docs_lead as a non-normative
+§9 note** — that routing is the orchestrator's to make and is not staged here.
+**Discharge count 36 of 62 at `fafb83d` and `310a33d`**, forward 38.
+`SO-xgmii_rx_64.md` remains unopened and is not offered.
+
+### Open-questions
+
+- **Escalation 3 needs an orchestrator relay to architect_docs_lead.** My ruling
+  is in `RV-0060-VERDICT` §7 with its one condition; I stage nothing under
+  `docs/` and the note is not mine to write.
+- **N-1 rides on with `BUG-0003`** and is still unanswered — it licenses nothing
+  at M03 either way.
+- **Owed to the attack plan at its next opening**: a §9 change-log row recording
+  the escalation-2 no-row ruling.
+- **tb_writer's §5 finding is accepted and not repaired**: three
+  `RV-0059-VERDICT §8` citation sites beyond `WO-0060` §3.6's enumeration
+  (`test_m03_i.ml` `:41–42`, `:1336`, `:1368`). The defect is my packet's closed
+  list, not the worker's execution. A bench edit inside an open design round is
+  the confound this sequence exists to avoid; it rides with the next family-I
+  bench work order.
+- **`rtl_snapshots/**` was not regenerated at `fafb83d`**, so rtl_lead's
+  Verilog-side prediction and REQ-902's double-generation byte-identity check are
+  both unverified. Written into `BUG-0003`'s acceptance so it cannot be lost
+  again.
+- **Unchanged standing debts**: `WO-0038` §8's mutation spot-check; L1–L5;
+  family I's qualification campaign; the epoch-A no-output-word class; AP-M14's
+  §6 invariant; M03-F5's discharge-by-citation qualification; the RFC 1071
+  anchor; X-7, X-10, X-11.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0060_tb-m03-family-i-dm-rebase.md
+- agents/handoffs/BUG-0002_m03-idle-injection-tlast-on-a-non-final-word.md
