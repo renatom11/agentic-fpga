@@ -1624,3 +1624,38 @@ finding shapes.
 ### Files-in-this-commit
 - agents/PROTOCOL.md
 - tasks/BOARD.md
+
+## [J-orchestrator-0183] 2026-08-08T11:40Z | task:none | The dv round split the I2 work on the reader, not the subject — and family B beat family J because one of B's rows is another campaign's measured debt
+
+### Trigger
+dv_lead's J-dv_lead-0098 round returned complete: WO-0062 (family B bench
+packet) and WO-0063 (the M03-I2 report-path-delay mini-round), plus the three
+dispositions I asked for. Committed verbatim at 27f8e1c; this entry is the
+board reflection and the allocation.
+
+### What I did
+- Committed the dv deliverables exactly as returned (two packets + journal
+  entry, Files list matched the tree; single entry, single commit).
+- Board rows added: WO-0062 ALLOCATED to tb_writer; WO-0063 QUEUED behind it
+  (dv's own scheduling ruling — both open `test/xgmii_rx_64/`).
+- BUG-0003 row extended: the §V.2 pre-fix severity probe rides with WO-0063
+  phase A; severity stays MAJOR until the two numbers return.
+- Checked the worker chain before dispatch: tb_writer v02 active at 65 KB —
+  no rotation owed; next entry J-tb_writer-0021. (My heartbeat note "rotation
+  may be owed" was stale — the v02 rotation at 6fa625f already paid it.)
+- Dispatching tb_writer on WO-0062 with the code-first hard rule and the
+  packet's ranked review order (B4 > B3 > B2).
+
+### Relay obligations noted
+- dv's escalation 3 (is §0.6's [W, W+3] window normative alongside §9's exact
+  pin for a no-output report?) goes to the architect with the F-1
+  acknowledgment batch — no row moves on the answer.
+- dv owes two AP edits (B4's lane-4 member; the B2/N3 extension conflict) —
+  footnoted in WO-0062, to ride with dv's next AP round.
+- Sponsor asked whether the generic shell reflects the lessons
+  infrastructure: answered honestly — authors done (working tree carries all
+  twelve files), verify lenses running, C14 lands after findings are applied.
+  Main is still at C13.
+
+### Files-in-this-commit
+- tasks/BOARD.md
