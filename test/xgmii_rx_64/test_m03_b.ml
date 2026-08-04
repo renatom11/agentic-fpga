@@ -570,7 +570,7 @@ let run_b3 () =
      claim is made on frame 1, which has no tlast word to carry one.
 
      Deliberately NOT the two-group [split_at_first_tlast] idiom this file
-     carries above and test_m03_e/f/g/h use: every landed use of that idiom
+     and test_m03_e/f/g/h call from {!Bench}: every landed use of that idiom
      splits a run in which BOTH frames deliver. Here frame 1 delivers
      NOTHING, so the run's FIRST tlast group is frame 2's own -- a two-group
      split hands frame 2's words to frame 1's own emptiness check and

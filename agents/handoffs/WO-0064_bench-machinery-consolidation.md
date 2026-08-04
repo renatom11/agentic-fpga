@@ -760,3 +760,174 @@ above.
 for the `account_forwarded_piece`/`account_dropped_piece` pair (§4.5's
 second, larger-cost obligation) — those two docstrings are the payoff this
 round exists to bank, everything else is mechanical deletion.
+
+---
+
+## RV-0064-VERDICT (dv_lead, 2026-08-04) — **ACCEPT**
+
+**State**: `RETURNED → ACCEPTED`. Landed alone at `c501425` per condition (ii).
+Build run **30943522690** = SUCCESS and journal-check run **30943522449** =
+SUCCESS, both confirmed by me against `head_sha
+c50142500e7a8233902cf061a7f8bb6737492a9d` through the Actions API, not taken
+from the Return log.
+
+I re-ran every one of §6's ten bars myself. Where the packet's command compares
+`HEAD` against a working tree, that form is vacuous now that the work has
+landed, so I ran each against **`42a81e3` (the parent) versus `c501425`** —
+the same comparison the bar was written to make.
+
+### The ten bars
+
+| # | Bar | Verdict | What I measured, not what I was told |
+|---|---|---|---|
+| 1 | String-literal multiset identical | **PASS** | Empty output over **all twelve** `.ml`/`.mli` files in the directory (the Return log checked the nine edited; the bar says *every* file). |
+| 2 | Bodies verbatim | **PASS** | Extracted each definition from parent and from `bench.ml` and compared byte-for-byte modulo the leading `let <name>`: `account_dropped_frame` IDENTICAL against all 3 copies; `account_forwarded_piece` against both; `account_dropped_piece` against both; `split_at_first_tlast` against all 4 majority copies. The 3 minority copies (`d`/`e`/`f`) differ **only** in the parameter name (`words`) and one `if`'s line-wrapping — the two dimensions §4.3 pre-authorised by name. Not B2. |
+| 3 | Single home | **PASS** | `git grep` returns only the four `bench.ml` lines; the four retired names return **nothing** under `test/xgmii_rx_64/` (their survival in historical packets and journals is history, correctly outside the bar's `--` scope). |
+| 4 | Arithmetic | **PASS** | 14 definitions in parent at **exactly** §3's fourteen line numbers; 4 at `c501425`. Call sites recounted on **comment-stripped** source so prose mentions could not inflate them: `split_at_first_tlast` 30 (b2 d1 e2 f2 g12 h7 i4), `account_dropped_frame` 6 (b3 e2 f1), forwarded 8 (b1 h7), dropped-piece 3 (g1 h2) — every cell matches §3. Renames = **11**, matching §4.2's list exactly. |
+| 5 | No behavioural line moved | **PASS** | Strongest check I ran. I stripped comments (nested, string-aware) from all seven family files at both revisions and diffed the code alone: **11 added code lines across the whole family, all eleven of them the renamed call sites**, each character-identical to its predecessor including its `~strobe:` string arguments. Zero added or removed line anywhere contains an assertion, guard, comparison, `List.is_empty`, `[%expect`, `let%expect_test` or `failwith`. |
+| 6 | Parse | **PASS** | `ocamlc -stop-after parsing` exit 0 on all nine (`ocamlc` *is* present; full `dune build`/`runtest` remain unavailable per ADR-0005, and the Return log correctly claims neither). |
+| 7 | Inventory 39 | **PASS** | `bash tools/dv_checks.sh` → `39 test/xgmii_rx_64/`. The one OBLIGATION OPEN line is the pre-existing blocked-egress RFC-1071 anchor, untouched by and unrelated to this round. |
+| 8 | Records vs appendix | **PASS** | `bash tools/check_records_vs_appendix.sh` → `23 check(s) run, 0 failure(s)`. |
+| 9 | Independence | **PASS** | `J-tb_writer-0022` Inputs: this packet, the tb_writer charter, PROTOCOL, and the nine `test/xgmii_rx_64/**` files. No `libs/**`, no `rtl_snapshots/**`, no `docs/**`, **and no spec path** — §2.2 item 6 satisfied in the affirmative sense the packet wanted. |
+| 10 | The landing | **PASS** | Both CI runs SUCCESS at `c501425` (verified via API). And the part of bar 10 that carries the actual meaning: I extracted and compared **all 40 `[%expect …]` blocks** in the directory across the two revisions — **every one byte-identical**. The promotion block could not tell the refactor happened. That is condition (i) discharged. |
+
+**Pre-committed BOUNCE conditions B1–B10: none hit.** B4/B6 confirmed from the
+commit's own file list — exactly the nine files plus this packet and the worker
+journal, nothing else. B8 confirmed by count and by absence from the diff:
+`fail` 9→9, `fail_cross` 5→5, `assert_following_frame_intact` 1→1,
+`assert_clean_frame_structure` 1→1, none appearing in any hunk.
+
+### B3 — the condition (iii) docstring, read clause by clause
+
+This is the round's justification and it is the one thing I would have bounced
+on. §4.4 demanded four parts in order; `bench.mli` carries all four, at full
+strength, none reduced to a general caution:
+
+1. **Extensional return** — present, and *stronger* than asked: "returns the
+   prefix … through and including the first sample whose `tlast` is 1, paired
+   with the remainder — **extensionally, and only extensionally**". It also
+   folds in obligation 6's `tvalid`-filtered licence, which §4.5 flagged as
+   surviving in `test_m03_d.ml` alone.
+2. **The precondition** — present with all three of its clauses: correct only
+   if the first frame delivers at least one word; where none is delivered the
+   first group returned is the *next* frame's and the second is empty; and
+   therefore "a guard written to prove the silent first frame's absence …
+   convicts the frame that is actually present."
+3. **The incident** — present with all four citation elements: FINDING B-1,
+   `RV-0062-VERDICT` §2, `88da20e`, CI run 30937558341, plus the load-bearing
+   sentence "the design was innocent".
+4. **What a caller must do** — both halves present, including the half that is
+   easy to drop: the `List.is_empty` guard route *and* the do-not-use-the-
+   two-group-form route the R-1 repair took.
+
+§4.5's parallel obligation on the `_piece` pair is likewise discharged. I
+diffed the moved paragraph against its source at `test_m03_h.ml:185-209`: every
+clause survives — §0.6's window, the aborted-frame coincidence, REQ-103's
+no-removal clause, the four-FCS-octet arithmetic, the `frame_out`/`Array.init`
+cancellation argument, and both citations. The generalisations are exactly the
+ones §4.5 licensed (file-local claims like "every second/third piece in this
+file" removed; past-tense repair narration turned into a standing contract).
+
+**One forced adaptation, and the worker was right to make it.** §4.5 said
+*carry the text*; condition (i)'s bar 1 forbids adding any new double-quoted
+span. The source paragraphs quote phrases — `"emitted"`, the `octet_time.mli`
+sentence — and carrying those quote marks into `bench.mli` would have **fired
+B1**. The worker carried the content without the quote marks and kept the
+quoted phrases verbatim in the comments that already held them. That is the
+correct resolution of a genuine conflict between two of my own requirements,
+and it is why bar 1 stayed clean file by file.
+
+### Comment-site dispositions taken on the worker's own judgement — adjudicated
+
+All **upheld**. §5's own rule ("do not extend this to comments that merely
+mention a helper in passing beyond changing a name that no longer exists") is
+what governs, and it was applied correctly in each case:
+
+- `test_m03_e.ml:134-138`, `test_m03_f.ml:675-691` — left unchanged. **Upheld.**
+  Neither carries a duplication claim; `f`'s block is a *row* description whose
+  "two-frame SPLIT (structural: both non-empty)" is a call-site decision that
+  stays true, and it now sits directly above `run_f4`, which improves it.
+- `test_m03_g.ml:309`, `test_m03_h.ml:138`, `test_m03_i.ml:193` — left
+  unchanged. **Upheld.** All three are Independence-section historical records
+  of what a past round *read*; none names a retired identifier; each remains
+  accurate as a statement about its own moment.
+- `test_m03_g.ml:307`, `test_m03_h.ml:83`, `test_m03_i.ml:188` — repaired
+  although also inside historical prose. **Upheld**, and necessary: each named
+  a **retired** identifier, which B10 reaches regardless of the sentence's
+  tense.
+- `test_m03_h.ml:191` is absent from the disposition table; it is subsumed by
+  the deletion of the `185-209` block that contains it. No defect.
+- Repairing quote-bearing comments **in place** rather than deleting them —
+  **upheld**, and it is the single judgement that kept bar 1 clean per file.
+- `test_m03_b.ml:612`/`:814` — confirmed **byte-identical** by my own extract
+  and diff. B10 satisfied in the direction it was written.
+
+I verified the whole class mechanically as well: no `duplicat*`, "only shared
+surface", "own local helper" or "carries its own copy" claim about any of the
+fourteen helpers survives anywhere in the directory.
+
+### Three reviewed repairs, made by me under this round's repair bar
+
+The first is a defect **in my own packet**, not in the execution.
+
+1. **`test/xgmii_rx_64/test_m03_b.ml`** — §5 named the two R-1 comments as
+   comments that "remain true after the consolidation" and made editing either
+   BOUNCE **B10**. One clause of the first is **not** true after it: it calls
+   the idiom the one "this file **carries above**", and this file no longer
+   carries it — the packet itself ordered that copy deleted. The worker obeyed
+   the instruction and proved byte-identity, which is exactly right; bouncing an
+   executor for obeying a named instruction backed by a bounce condition is how
+   a pre-committed review bar gets renegotiated after the fact. The error is
+   mine. Repaired to `…idiom this file / and test_m03_e/f/g/h call from
+   {!Bench}: …`, preserving the line structure and the rest of the comment.
+2. **`test/xgmii_rx_64/test_m03_e.ml`** — the `134-138` block was correctly
+   judged to carry no false claim, but with its definition deleted it was left
+   describing a function it never names, floating above another comment. §5's
+   rule for a fact comment is that it "stays and **keeps pointing at it**"; this
+   one pointed at nothing. Repaired by naming `{!Bench.account_dropped_frame}`
+   in its opening clause. The two quoted spans are untouched, and the
+   `"no tlast word to / mark"` span is deliberately left straddling its newline
+   — joining it onto one line would make it *newly visible* to bar 1's
+   line-based regex and add an element to the file's multiset.
+3. **`test/xgmii_rx_64/bench.mli`** — §4.5 named "the hand-built-`in_times`
+   contract **and its verification against `test/monitors/octet_time.ml`**" as
+   content that must reach the shared definition. The sizing contract arrived;
+   the verification clause — that `Latency.frame_dropped` only pops the pending
+   queue and never inspects the array — stayed behind in `test_m03_g.ml`'s
+   call-site comment. It matters precisely at `account_dropped_piece`, where it
+   means the `~received` precondition is **unenforced by construction**: a
+   wrongly-sized array is not caught here, and the mistake surfaces only once
+   the habit reaches `account_forwarded_piece`, where the array is read.
+   Restored to `account_dropped_piece`'s docstring.
+
+Each repair is **comment/docstring only** — I re-ran the comment-stripped code
+diff on all three files against `c501425` and got **zero** code-line
+differences — and I re-ran bar 1 (clean over all twelve files against the
+parent), the parse check (exit 0), the inventory (39) and the records check
+(23/23) against the repaired tree.
+
+### What this unlocks
+
+`WO-0064` closes the `RV-0062-VERDICT` §5 debt in full. One home, four
+definitions, and — the part that was the actual point — **two contracts that
+were previously carried only in the heads of the people who transplanted them
+are now written where the next caller cannot miss them.** Fourteen-to-four is
+the bookkeeping; the preconditions are the payoff.
+
+**`WO-0063` phase A opens next.** My scheduling, stated so it is not
+rediscovered later:
+
+- The member (iii) plan edit **rides phase A's opening commit**.
+- The `BUG-0003` §V.2 probe **rides phase A**.
+- My five owed notes' citation sites **ride the next family-I bench round**,
+  not phase A.
+
+Unchanged and still open, so their absence stays legible: `WO-0058` bound 7
+(the in-word REQ-110 abort with a frame already open on entry) still has no
+candidate row; the `assert_following_frame_intact` /
+`assert_clean_frame_structure` merge remains deliberately uncommissioned, a
+redesign rather than a refactor; `SO-xgmii_rx_64.md` does not issue; 41 of 62
+ASSERT rows discharged before this packet and 41 after it — a refactor moves no
+coverage, which is the whole claim.
+
+**Verdict: ACCEPT.** Recorded at `J-dv_lead-0101`.

@@ -1931,3 +1931,230 @@ to issue to tb_writer.
 ### Files-in-this-commit
 - agents/handoffs/WO-0064_bench-machinery-consolidation.md
 - test/attack_plans/AP-xgmii_rx_64.md
+
+## [J-dv_lead-0101] 2026-08-04T21:30Z | task:WO-0064 | The refactor accepted on a check my own packet did not specify — bar 1 is necessary and provably insufficient, and the one comment my packet ordered protected is the one the packet made false
+
+### Trigger
+Orchestrator, RV-0064: review tb_writer's execution of `WO-0064` at `c501425`,
+landed alone per condition (ii) with build run 30943522690 and journal-check
+run 30943522449 both SUCCESS. My own packet pre-committed ten review bars and
+ten BOUNCE conditions; this entry records running them myself rather than
+reading them off the Return log.
+
+### Inputs
+- `agents/handoffs/WO-0064_bench-machinery-consolidation.md` in full — my own
+  §3 inventory table, §4.2 rename list, §4.4/§4.5 docstring obligations, §5
+  comment table, §6's ten bars, §7's ten BOUNCE conditions — and the worker's
+  Return log at lines 497-763.
+- `agents/charters/dv_lead.md`, `agents/PROTOCOL.md` (mandatory first actions).
+- `agents/journals/workers/claude_tb_writer_agent.v02.md`, entry
+  `J-tb_writer-0022` — Trigger, Inputs, Reasoning, harvest note, Files list.
+- `test/xgmii_rx_64/bench.ml`, `bench.mli`, `test_m03_b.ml`, `test_m03_d.ml`,
+  `test_m03_e.ml`, `test_m03_f.ml`, `test_m03_g.ml`, `test_m03_h.ml`,
+  `test_m03_i.ml` — at `42a81e3` and at `c501425`, read at every site §3 and §5
+  name and compared programmatically.
+- CI runs 30943522690 and 30943522449 via the Actions API (`head_sha`
+  confirmed, conclusions read, not quoted from the Return log).
+- **No `libs/**`, no `rtl_snapshots/**`, no `docs/**`, and no spec path.** A
+  pure refactor's review needs no re-derivation; citing a REQ id here would
+  mean I had done one.
+
+### Reasoning
+**The bar I wrote as primary is not the bar that carried the acceptance, and I
+want that on the record against my own packet.** §6 bar 1 — the string-literal
+multiset — is called "the primary bar" and condition (i) is operationalised
+through it. It passed, over twelve files rather than the nine the Return log
+checked. But it cannot bear the weight I put on it, for three reasons I
+measured rather than suspected. It is a blind line-based regex, so it polices
+quoted phrases sitting in **comments** it was never meant to reach — which is
+what nearly bit the worker, and what forced several comments to be repaired in
+place rather than deleted. It is a **per-file multiset**, so a literal deleted
+from code while an identical span survives in a comment, or two literals
+swapped between code positions in one file, both pass it. And decisively: this
+suite's observable behaviour lives in `[%expect {| … |}]` blocks, whose `{| |}`
+delimiters **the `"…"` regex never sees at all**. A bar that cannot see the
+expect blocks cannot by itself prove a bench's behaviour is unchanged.
+
+What actually discharged condition (i) was two checks my packet did not
+specify: a **comment-stripped code diff** (nested, string-aware strip, then
+diff the code alone — yielding exactly 11 added lines across seven files, all
+of them the renamed call sites), and a direct byte-comparison of **all 40
+`[%expect]` blocks** across the two revisions. Those, plus the green build, are
+the evidence. Bar 1 is a useful cheap screen and a bad primary. I am recording
+this as a defect in my own review design, discovered by executing it.
+
+**Why the three minority `split_at_first_tlast` copies are not B2.** The
+programmatic comparison returned DIFFERS for `d`/`e`/`f`, and a reviewer
+reading only that word would bounce. The differences are exactly two: the
+parameter name (`words` vs `samples`) and one `if`'s line-wrapping — the two
+dimensions §4.3 named in advance and authorised, with the instruction to say so
+in the Return log, which the worker did. A parameter name is not observable and
+a line-wrap is not semantics. Bouncing here would be renegotiating a bar after
+seeing the result.
+
+**The failure this round taught me, and it is mine.** §5 named
+`test_m03_b.ml:612`/`:814` as two comments that "remain true after the
+consolidation", made editing either BOUNCE B10, and told the worker to confirm
+byte-identity instead. The worker did exactly that and proved it. But one
+clause of the first comment is **not** true after the consolidation: it
+describes the idiom as the one "this file **carries above**", and the packet's
+own instruction deleted the copy that sentence refers to. I asserted an
+artefact was already correct, exempted it from review, and backed the exemption
+with a bounce condition — so the only agent positioned to notice was
+instructed not to look, and the check was performed once, by me, from memory,
+before the change existed. **The protection is what stopped anyone looking.**
+That is a more interesting failure than a miscount, and it generalises.
+
+**Why I repaired rather than bounced.** All ten bars pass and no B1-B10
+condition is hit. Two of the three defects I found are mine (the false
+exemption; the §4.5 clause that never reached the shared definition); the third
+— an orphaned fact comment in `test_m03_e.ml` that no longer points at the
+definition it describes — is a shortfall against §5's *rule* but not against
+B10's *text*, which reaches stale duplication claims and retired names, neither
+of which it contains. My pre-committed discipline is that the verdict is not
+renegotiated after the fact, so a defect that no pre-committed condition names
+is repairable, not bounceable. All three repairs are comment-only and each is
+stated in the verdict.
+
+**On the worker's own judgement calls.** Several comment sites were left
+unchanged after inspection rather than edited mechanically to match my table. I
+checked each against the post-state and upheld all of them: the Independence-
+section mentions are historical records of what a past round read, they name no
+retired identifier, and my §5 explicitly says not to extend repairs to passing
+mentions beyond a name that no longer exists. The worker read the rule rather
+than the table, which is the right order.
+
+### Actions
+- Ran all ten §6 bars against `42a81e3`..`c501425` (the packet's HEAD-vs-tree
+  form is vacuous once the work has landed), plus two checks the packet does
+  not specify: the comment-stripped code diff and the `[%expect]` block
+  comparison.
+- Verified the four moved bodies byte-for-byte against **every** source copy;
+  recounted all definitions and call sites on comment-stripped source; verified
+  B4/B6 from the commit's file list and B8 by count and by absence from the
+  diff; confirmed both CI runs through the Actions API.
+- Read the `bench.mli` docstrings clause by clause against §4.4's four parts
+  and §4.5, and diffed the moved `_piece` paragraph against its source at
+  `test_m03_h.ml:185-209`.
+- Made three reviewed repairs (`test_m03_b.ml`, `test_m03_e.ml`, `bench.mli`),
+  then re-ran bar 1, the parse check, the inventory and the records check
+  against the repaired tree.
+- Appended **RV-0064-VERDICT (ACCEPT)** to the packet.
+
+### Evidence
+- CI at `c501425`: build **30943522690** conclusion `success`; journal-check
+  **30943522449** conclusion `success`; both `head_sha
+  c50142500e7a8233902cf061a7f8bb6737492a9d` (Actions API).
+- Bar 1, parent-vs-commit, over all twelve `.ml`/`.mli` files in
+  `test/xgmii_rx_64/`: **empty output**. Re-run against my repaired tree:
+  **empty output**.
+- All **40** `[%expect …]` blocks in the directory: **byte-identical** across
+  `42a81e3`..`c501425`.
+- Comment-stripped code diff, seven family files: removed 26/10/16/16/16/35/8,
+  added 1/0/0/0/1/9/0 — **11 added code lines, all eleven renamed call sites**,
+  each identical to its predecessor including its `~strobe:` arguments.
+- Definitions: **14** in parent at exactly §3's fourteen line numbers, **4** at
+  `c501425`, all in `bench.ml`. Retired-name grep under `test/xgmii_rx_64/`:
+  **no match**.
+- Call sites on comment-stripped source: `split_at_first_tlast` 30
+  (b2 d1 e2 f2 g12 h7 i4); `account_dropped_frame` 6 (b3 e2 f1);
+  `account_forwarded_piece` 8 (b1 h7); `account_dropped_piece` 3 (g1 h2) —
+  every cell matches §3; renames **11**, matching §4.2.
+- Body identity: `account_dropped_frame` IDENTICAL vs all 3 copies;
+  `account_forwarded_piece` vs both; `account_dropped_piece` vs both;
+  `split_at_first_tlast` vs all 4 majority copies, with `d`/`e`/`f` differing
+  only in parameter name and one `if`'s wrapping (§4.3-authorised).
+- B8: `fail` 9→9, `fail_cross` 5→5, `assert_following_frame_intact` 1→1,
+  `assert_clean_frame_structure` 1→1, none in any hunk.
+- `ocamlc -stop-after parsing` exit 0 on all nine files, and again on the three
+  I repaired. `bash tools/dv_checks.sh` → `39 test/xgmii_rx_64/` before and
+  after my repairs. `bash tools/check_records_vs_appendix.sh` → `23 check(s)
+  run, 0 failure(s)` before and after.
+- Comment-stripped code diff of my own three repaired files against `c501425`:
+  **0 code-line differences** in each — the repairs are comment-only.
+- `git show c501425 --name-only`: exactly the nine files plus the packet and
+  the worker journal (B4/B6).
+
+**Harvest (ADR-0018, PROTOCOL §7).** **Not due this round** — no `SO-`, no
+gate. Span since the note at `J-dv_lead-0100`: **J-dv_lead-0101** (this entry);
+cumulative untiled span **J-dv_lead-0001 … 0101**, with the first harvest still
+firing at `SO-M03` and stating that interval so the tiling is visible.
+
+- **Both banked candidates carry unchanged.** `J-dv_lead-0099`'s (a partition
+  idiom whose precondition is unstated) and `J-dv_lead-0100`'s (a helper
+  inheriting its first caller's name, so the name describes the situation
+  rather than the obligation) — this round wrote **both** contracts into a
+  shared definition's docstring, which is their remedy, not a new incident for
+  them. Nothing is added to either, and they stay uncollapsed.
+- **The probable war story carries unchanged**: my `RV-0062-VERDICT` §5
+  six-versus-seven miscount. This round confirmed the corrected count of 7 from
+  the tree, which is its closure, not new evidence.
+- **The worker's LH2-g candidate at `J-tb_writer-0022` — premise CONFIRMED,
+  and I can strengthen it.** Its claim is that a blind text-pattern equivalence
+  check cannot distinguish payload from prose, so it both fails spuriously on
+  prose edits and passes spuriously on payload edits. My review is a second,
+  independent incident for it, from the reviewer's side rather than the
+  executor's: I designed that check, called it "the primary bar", and it is
+  provably insufficient in three distinct ways — it polices comment-resident
+  quoted spans; it is a per-file multiset blind to a literal moving between
+  code and comment or swapping code positions; and it cannot see `{| |}`
+  delimited blocks at all, which is where this artefact's entire observable
+  behaviour lives. The candidate's own observable ("enumerate every match the
+  check would report and confirm each sits where its author intended") is
+  right, and I would add a second clause to it at the harvest: *also enumerate
+  what the check's pattern cannot match, because a check's blind spot is not
+  visible in its output*. Recorded for the harvest to score, not merged into
+  the worker's statement by me.
+- **One new candidate banked, LH2-g.** *Rule*: an instruction that exempts an
+  artefact from review by asserting it is already correct transfers the check
+  from the executor to the author, where it is performed once, from memory, and
+  before the change exists — so the exempted artefact is where staleness
+  accumulates, because the exemption is what stops anyone looking. *Observable*:
+  every exemption clause in a work instruction either carries the evidence for
+  its own claim or is rewritten as an instruction to verify; an exemption backed
+  by a penalty for touching the artefact is the strongest form of the defect.
+  **LH1**: this round — §5 asserted two comments "remain true after the
+  consolidation" and made editing either a bounce condition; the very change the
+  packet ordered falsified one clause of one of them, and the executor,
+  correctly obeying, preserved the falsehood and proved byte-identity.
+  **LH2-g** — no proper noun in the rule. **LH3**: without it, the artefacts a
+  reviewer is most confident about become the only ones no one re-reads, and
+  the confidence is what causes it. **Domain pack**: n/a (general).
+
+### Outcome
+`WO-0064` **ACCEPTED**, verdict appended to the packet as `RV-0064-VERDICT`
+with the ten bars' results, the comment-site adjudications and the three
+reviewed repairs each stated. DoD met in full: fourteen definitions to four;
+bar 1 clean; condition (iii)'s four-part precondition and §4.5's `~received`
+precondition both at the definition; eleven renames and thirty-six unchanged
+call sites; every stale comment repaired or deleted; parse clean; inventory 39;
+nothing outside §2.1 staged. The `RV-0062-VERDICT` §5 consolidation debt is
+closed.
+
+Handoff: this tree (packet + three comment-only repairs) to the orchestrator
+for commit. **`WO-0063` phase A opens next** — the member (iii) plan edit rides
+phase A's opening commit; the `BUG-0003` §V.2 probe rides phase A; my five owed
+notes' citation sites ride the next family-I bench round.
+
+### Open-questions
+1. **My own bar 1 is mis-specified as primary** and should not be reused in
+   that role. Any future packet whose success criterion is behavioural
+   equivalence needs the comment-stripped code diff and the expect-block
+   comparison named as its bars, with the literal multiset demoted to a cheap
+   screen. Owed at the next packet I write with an equivalence criterion.
+2. **The exemption-clause failure above** is not yet a rule I have applied
+   anywhere; it is banked as a candidate only. Until the harvest scores it, I
+   should treat every "this stays exactly as it is" clause I write as owing its
+   own evidence.
+3. Carried unchanged: `WO-0058` bound 7 (in-word REQ-110 abort with a frame
+   already open on entry) still has no candidate row; the
+   `assert_following_frame_intact` / `assert_clean_frame_structure` merge stays
+   deliberately uncommissioned as a redesign, not a refactor; the §0.6-window
+   question remains open to architect_docs_lead; `WO-0061` §8 bound 1's `tkeep`
+   half; family J behind a bench-capability round.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0064_bench-machinery-consolidation.md
+- test/xgmii_rx_64/bench.mli
+- test/xgmii_rx_64/test_m03_b.ml
+- test/xgmii_rx_64/test_m03_e.ml

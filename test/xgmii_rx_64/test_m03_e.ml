@@ -131,7 +131,9 @@ let account_aborted_frame bench (frame : Dv_xgmii.Arrival.frame) samples ~expect
     (Dv_monitors.Octet_time.of_words delivered_pairs)
 ;;
 
-(* A frame that delivered ZERO octets (M03-E2, section0.7): section0.6
+(* {!Bench.account_dropped_frame}'s own rule, which this file's M03-E2 and
+   M03-E3 rows call it for. A frame that delivered ZERO octets (M03-E2,
+   section0.7): section0.6
    accounts for it through its STROBE, never through an "emitted" frame_out --
    this IS M03-E3's bench-side rule, made mechanical. [Latency.frame_dropped]
    pops the input frame without a comparison, exactly the "no tlast word to

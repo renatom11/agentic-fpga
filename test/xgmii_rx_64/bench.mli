@@ -283,7 +283,16 @@ val account_forwarded_piece
     {!account_forwarded_piece} governs this function identically: for a
     zero-delivered piece, [received] is simply the octet count observed
     before the closing character — never a delivered count, which does not
-    exist here. *)
+    exist here.
+
+    And here that precondition is unenforced by construction, which is the
+    reason to state it rather than rely on it being caught:
+    [Latency.frame_dropped] only pops the pending queue and does not inspect
+    the array it was handed (confirmed against `test/monitors/octet_time.ml`'s
+    own implementation), so an [in_times] this function sized from a
+    delivered count would go unpunished here and the error would surface only
+    when the same habit reached {!account_forwarded_piece}, where the array
+    IS read. An honestly-derived array costs nothing beyond honesty itself. *)
 val account_dropped_piece : t -> start_ot:int -> received:int -> strobe:string -> unit
 
 (** [split_at_first_tlast samples] returns the prefix of [samples] through and
