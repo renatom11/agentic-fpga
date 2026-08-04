@@ -680,3 +680,42 @@ the next campaign packet's drafting round.
 - site/public/index.html
 - site/public/org-chart.html
 - site/public/spec-atlas.html
+
+## [J-orchestrator-0162] 2026-08-04T02:55Z | task:WO-0059 | Family I issued - the packet's own design round repaired a third unachievable kill
+
+### Trigger
+dv_lead returned with WO-0059 authored (696 lines, DRAFT) plus
+the AP repair its dispatch authorized ("said loudly" - it was).
+
+### Reasoning
+Committed under dv at fc2a4ee: packet + AP edit + entry 0082,
+Files list two files as declared, the deviation from my
+"exactly the packet" instruction stated rather than absorbed -
+the AP edit is the named exception and R4 held mechanically.
+The round's finding: M03-I2's stimulus could not reach its own
+declared kill (conformant tlast at +1, defect emits at +2, row
+asserted from +3) - the M03-D3/M03-F2 shape, third instance,
+repaired with no count moved. Escalation 3 changes the queue:
+family B is unwritten (one unit in test_m03_b.ml; B2/B3/B4 have
+none) and joins the remaining-work list alongside J, K, M, N,
+L1-L5. dv's inherited 37-of-62 figure is flagged not asserted;
+re-derivation owed at the verdict per its own J-dv_lead-0061
+lesson. Board row at allocation; tb_writer dispatched with the
+packet's build order binding (I1-I2-I3-I4-I6) and the wrapper
+measurement deliverables named.
+
+### Actions
+fc2a4ee push; board row; this commit; tb_writer dispatch.
+
+### Evidence
+fc2a4ee; the packet's §4.I repair cells and §9 change-log row;
+dv's return escalations 1-4.
+
+### Outcome / DoD
+Family I is with the worker. Queue corrected: B added.
+
+### Open questions
+None new.
+
+### Files-in-this-commit
+- tasks/BOARD.md
