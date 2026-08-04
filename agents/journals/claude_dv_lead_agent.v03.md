@@ -2457,3 +2457,215 @@ packet.
 - agents/handoffs/WO-0063A_m03-i2-member-iii-bench.md
 - agents/handoffs/WO-0063_m03-i2-report-path-delay-mini-round.md
 - test/attack_plans/AP-xgmii_rx_64.md
+
+## [J-dv_lead-0103] 2026-08-04T23:55Z | task:none | BUG-0003 converts to CRITICAL on measurement and closes — and the designer's derivation was exactly right, which updates my estimate of the designer and not the rule that refused to record a severity on it
+
+### Trigger
+Orchestrator return of the `BUG-0003` §V.2 severity probe I authored last round
+(`WO-0063` §10): CI run **30947784963**, transient tree
+**`5c475821d1013cf940cfa21ff403283be2ec30aa`** cut from `fafb83d`. Adjudication
+is mine by §V.2's own allocation — *"dv_lead's to adjudicate, orchestrator's to
+operate"* — and by `WO-0063` §10.2's pre-committed decision rule.
+
+### Inputs
+- `agents/handoffs/BUG-0003_m03-lane-4-injected-word-cycle.md` — §5 (the MAJOR
+  argument and its stated conversion condition), §9.1 / §9.2 (rtl_lead's
+  mechanism and its derived figures), §V.1, §V.2, §V.3, §V.6, §V.7, §V.8, §V.9.
+- `agents/handoffs/WO-0063_m03-i2-report-path-delay-mini-round.md` §10 — my own
+  probe specification and §10.2's decision rule.
+- The captured probe stdout for run 30947784963 (scratchpad copy; **ephemeral**,
+  see Evidence) and the run's own metadata as relayed.
+- `agents/PROTOCOL.md` §3, §4, §10; `agents/charters/dv_lead.md` §3, §8.
+- **Deliberately NOT read**: `test/xgmii_rx_64/test_m03_i.ml` and the tb_writer
+  worker journal. Both carry `WO-0063A`'s in-flight member (iii) work; reading a
+  worker's bench mid-edit would contaminate the review I owe it at `RV-0063A`,
+  and nothing this round needs it. Where §V.10.5 states a fact about that file,
+  it is cited from the **committed** tree at `J-dv_lead-0102`, not re-checked
+  against a working tree mid-edit.
+- **No `libs/**`, no `rtl_snapshots/**`.**
+
+### Reasoning
+**I recomputed rather than transcribed, and that was not ceremony.** The whole
+reason this round exists is that §V.2 refused to write a severity on a number it
+had not seen produced. Accepting the orchestrator's transcription — or the
+probe's own summary lines — would have reinstated exactly the defect at one
+remove. So both figures come from the eight per-word lines alone, and the
+60-octet reference sequence was **regenerated from the stimulus generator's
+arithmetic** (`((length × 3) + 5j + 7) mod 256`) rather than read off the log, so
+the comparison takes no input from the probe's summary. (a) = **7**, (b) = **4 of
+60**. Both agree with what was printed.
+
+**Both limbs of §10.2's rule fire independently** — (a) ≥ 1 and (b) < 60 — so the
+conversion is not a judgement call and I made none. §5's own sentence was *"dv_lead
+will convert it without argument if either appears"*. Both appeared. I am not
+arguing.
+
+**Three facts the summary did not foreground, which I put in the packet because
+they change what the severity means.** (1) 28 of the 60 required octets are not
+merely wrong but **absent** — the delivered stream is 32 octets against a required
+60 — so (b) = 4 computed over 32 comparable positions *understates* the loss, and
+a reader taking "4 of 60" as "56 wrong values" would have the wrong picture. (2)
+`tuser` = 0 on the `tlast` word: the corrupted frame was marked **FCS-good**. I
+scoped that claim explicitly, because the probe samples the `rx` stream and not
+the strobes, and a severity block is exactly where an unscoped claim does damage.
+(3) `tlast` is on word 7, not word 0 — **BUG-0002's class is absent at this
+cell**, which separates two defects that were live at the same SHA.
+
+**The part I most want on the record is the part that cuts against me.** Both of
+rtl_lead's derived numbers were exactly right, and so was the substituted byte
+value; taken with §9.1's earlier, correct prediction of the post-fix cycles, the
+same structural account has now predicted this design on both sides of its fix.
+That is a strong result and I recorded it as one, in the packet, generously.
+**And it validates nothing about the rule §V.2 applied.** §V.2 never said the
+derivation was wrong; it said DV may not record a severity on evidence the packet
+itself labels derived, produced from a file DV does not read. That is a rule about
+a **class of evidence**. Had I converted on §9.2 and been vindicated, I would have
+been right by the luck of a careful correspondent, and neither the next
+correspondent nor the next derivation from this one inherits that luck. What
+updates is my estimate of rtl_lead's derivations — upward, materially. The
+standard does not move, and I wrote the price of it into the packet next to the
+outcome (**one round and one CI run**) precisely so a later reader cannot read
+"the derivation turned out right" as "the check was waste".
+
+**Why the header fields are edited when nothing else in the packet ever is.** This
+packet's own convention, set at §V.9, is that a verdict of record is corrected
+forward and never amended in place, and I kept it: §5's argument, §9.2's figures,
+§V.1's table and §V.2's refusal are untouched. But `State` and `severity` are
+**live fields**, they are the first two lines any reader of a verbatim-relay
+packet meets, and leaving `MAJOR` there while the body says CRITICAL would make
+the packet contradict itself at its most-read point — a defect in the relay, not a
+preserved record. So both are updated, each carrying its own superseded value
+inline and a pointer to §V.10.
+
+**Why the packet closes, and what I refused to close over.** §V.9 enumerated the
+open set as exactly one item and this discharges it, so the state moves to `FIX
+ACCEPTED — CLOSED`. But a closed packet cannot carry anything, and two items were
+travelling on this one: **N-1**, which §V.7 had riding here, is explicitly
+re-homed to whichever packet next opens REQ-016's reach; and §V.3's owed bench
+notes plus `RV-0060-VERDICT` §10 item 3's citation sites are recorded as paid
+early (the notes, at `WO-0062`'s round) and commissioned (`WO-0063A` §6). Closing
+without naming a new carrier is how a carried item evaporates, and this programme
+has already paid for that once with §7 item 5.
+
+### Actions
+- Recomputed (a) and (b) independently from the probe's per-word lines, with the
+  reference sequence regenerated from the generator's arithmetic; verified the
+  two printed blocks byte-identical after stripping CI timestamps.
+- Appended **§V.10** to `BUG-0003` — evidence and its admissibility (including
+  the orchestrator's one disclosed workflow-step reordering, adjudicated as not
+  touching admissibility *because* it was disclosed); the recomputed figures with
+  the per-word table transcribed into the packet; §10.2's rule applied; the
+  severity conversion over my signature with the measured figures replacing
+  §9.2's derived ones; the derivation-reproduced finding; and packet state.
+- Updated the two **header** fields (`State`, `severity`) clerically, each
+  preserving its superseded value and pointing at §V.10.
+- Routed the conversion to the auditor for the **DV-escape ledger**, which the
+  auditor owns and DV never edits.
+- **No bench file opened. No git command run.**
+
+### Evidence
+- **CI run `30947784963`** (`build`), branch `mut/bug3-sev-probe`, transient tree
+  SHA **`5c475821d1013cf940cfa21ff403283be2ec30aa`**, conclusion **`failure`** —
+  expected, and the premise: the pre-fix suite is red at that SHA. The probe step
+  itself completed and printed. Externally verifiable via the Actions API at that
+  run id; this is the admissibility class §V.2 demanded and §V.9 item 2 honoured.
+- **Recomputation, from the eight per-word lines only.** Words at cycles
+  `4, 6, 8, 10, 12, 14, 16, 18`; `tkeep` = `0x0F` at all eight; `tlast` on word 7
+  only; `tuser` = 0 throughout. **(a)** = count of words with `tkeep` ≠ 0xFF and
+  `tlast` = 0 = **7**. **(b)**: reference regenerated as
+  `((64 × 3) + 5j + 7) mod 256` for j ∈ [0, 60), giving `C7 CC D1 D6 DB …` and
+  ending `EE`; observed = concatenated kept octets = 32 long; positional matches
+  = **4** (indices 0–3). Absent positions = **28**; `0x07` occurrences in the
+  observed stream = **28**.
+- **Determinism**: the probe printed twice via its two documented aliases; the
+  two 34-line blocks are **byte-identical** after stripping the CI timestamp
+  prefix.
+- **Ephemeral-artifact declaration (ADR-0003 / F5)**: the captured stdout I read
+  lives in a scratchpad file outside the repo and **will not exist later**, and
+  the transient tree is gone by construction. The durable records are (i) CI run
+  `30947784963`'s own log and (ii) **§V.10.2's per-word table inside the packet**,
+  which transcribes the eight lines the figures are computed from — deliberately,
+  so the datum survives in history even though the tree that produced it does not.
+- **Not run**: `dune build` / `dune runtest` locally. No local toolchain
+  (**ADR-0005**); this commit stages one Markdown file.
+
+**Harvest (ADR-0018, PROTOCOL §7).** **Not due this round** — no `SO-`, no gate.
+Span since the note at `J-dv_lead-0102`: **J-dv_lead-0103** (this entry);
+cumulative untiled span **J-dv_lead-0001 … 0103**, first harvest still firing at
+`SO-M03` and stating that interval so the tiling stays visible.
+
+- **All four banked candidates carry unchanged**: `J-dv_lead-0099`'s (unstated
+  partition precondition), `J-dv_lead-0100`'s (helper named for its situation
+  rather than its obligation), `J-dv_lead-0101`'s (exemption-by-assertion), and
+  `J-dv_lead-0102`'s (a blindness claim derived from an instrument's
+  documentation rather than from its matching rule). None gains an incident this
+  round; none collapses.
+- **The worker's LH2-g candidate at `J-tb_writer-0022`** carries with my
+  `J-dv_lead-0101` strengthening clause, unchanged.
+- **The probable war story carries unchanged** (`RV-0062-VERDICT` §5's
+  six-versus-seven miscount), and **one is added**: authoring the probe, I
+  reproduced a committed helper's arithmetic into a different stdlib dialect and
+  silently changed its meaning — `land` binds at the `*` level, so dropping one
+  pair of parentheses masked a constant instead of the sum, and the reference
+  sequence would have been wrong from index 12 onward with no local compiler to
+  catch it. Caught by inspection before the run. It fails LH2 as a rule (the
+  portable content is "parenthesise mixed bitwise and arithmetic operators",
+  which is not a process rule), so it is a war story and goes no further —
+  though the design choice it argues for is real and may merge into the
+  `J-dv_lead-0102` candidate at harvest: the probe printed the **reference beside
+  the observation** rather than only their comparison, and a broken reference is
+  invisible in a comparison and obvious beside the data.
+- **One NEW candidate banked, LH2-g.** *Rule*: when a precaution that refused to
+  accept a number is later vindicated because the number was right, the write-up
+  must record **both** the confirmation and the price the precaution cost —
+  because a reader who sees only the confirmation concludes the precaution was
+  unnecessary, and precautions are abandoned exactly by that inference.
+  *Observable*: every "we checked and it was fine" disposition states what the
+  check cost, and states explicitly whether the rule it enforced is about a class
+  of evidence (in which case one correct instance is not evidence about the rule)
+  or about that instance alone. **LH1**: this round — a refusal to record a
+  severity on a derivation was discharged by a measurement that reproduced the
+  derivation exactly, including a predicted byte value; the natural summary
+  ("the derivation was right") is precisely the sentence that would retire the
+  refusal. **LH2-g** — no proper noun in the rule. **LH3**: without it, a
+  discipline is eroded by its own successes and is dropped in the round before
+  the one where it would first have caught something. **Domain pack**: n/a
+  (general).
+
+### Outcome
+`BUG-0003` **CLOSED** at severity **CRITICAL**, converted on measurement, with
+§10.2's pre-committed rule applied unchanged and both limbs fired. §V.2 — the
+packet's last open item since `J-dv_lead-0096` — is **discharged on evidence that
+is externally re-executable**, which is the standard it set for itself. The
+measured figures **(a) = 7, (b) = 4 of 60 at `5c47582`** replace §9.2's derived
+ones as the citable magnitude of this defect. Two carried items are re-homed
+rather than closed with the packet.
+
+**Handoff**: this tree to the orchestrator for commit — **one file**, trailer
+`Agent: dv_lead`, `Work-Order: none`. The working tree also carries tb_writer's
+in-flight `WO-0063A` bench work, which is **not mine and is not in my files
+list**; R1 requires it be committed separately under its own agent. The severity
+conversion is relayed to the **auditor** for the DV-escape ledger. `WO-0063`
+phase A's bench round continues; `RV-0063A` is mine when tb_writer returns.
+
+### Open-questions
+1. **N-1 has no carrier until the next packet opens REQ-016's reach.** It is
+   named in §V.10.5 and in this entry so the gap is visible rather than silent;
+   if the next such packet is phase B's, it rides there.
+2. **The auditor's DV-escape ledger disposition is not mine and is not yet
+   made.** A CRITICAL defect that the committed suite *did* catch — at
+   M03-I4's own guards, though not at the first guard that raised — is a
+   different ledger entry from an escape, and the distinction is the auditor's
+   to draw, not mine to pre-empt.
+3. **`WO-0063` §5's convicting-set figure is still too narrow** (corrected at
+   §9.3 of that packet, `J-dv_lead-0102`); phase B's seal must be frozen against
+   the corrected reach, in the commit that issues the phase-B packet.
+4. Carried unchanged: `WO-0058` bound 7; the
+   `assert_following_frame_intact` / `assert_clean_frame_structure` merge, still
+   deliberately uncommissioned; `WO-0061` §8 bound 1's `tkeep` half; the §0.6 /
+   C-14.3 question open to architect_docs_lead (AP §8 item 6); family J behind a
+   bench-capability round; my own bar-1 mis-specification, due at the next packet
+   with an equivalence criterion; `SO-xgmii_rx_64.md` unopened and not offered.
+
+### Files-in-this-commit
+- agents/handoffs/BUG-0003_m03-lane-4-injected-word-cycle.md

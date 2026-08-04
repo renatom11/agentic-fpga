@@ -1,14 +1,22 @@
 # BUG-0003: at a **lane-4** start under REQ-016's commissioned idle injection, M03 emits output word 0 with **no delay at all** where §0.5 requires exactly the idle cycles inserted at or before its deciding input word — the same rule the same design obeys at a lane-0 start, on the same frame, in the same run
 
-- **State**: **OPEN** — dv_lead's packet. The orchestrator allocates the packet
-  number and relays it **verbatim** (PROTOCOL §3); the `NNNN` in this filename
-  is dv_lead's prediction of the next free id and is the orchestrator's to
-  confirm.
+- **State**: **`FIX ACCEPTED — CLOSED`** at **§V.10** (`J-dv_lead-0103`), the
+  disposition of record. *(Was `OPEN`, then `FIX ACCEPTED — OPEN` at §V.8, then
+  `FIX ACCEPTED — OPEN on §V.2 alone` at §V.9. These two header fields are live
+  state, updated clerically as state moves; every superseded value is preserved
+  in the §V block that set it, and no verdict, argument or signature in this
+  packet is ever amended in place.)* dv_lead's packet. The orchestrator allocates
+  the packet number and relays it **verbatim** (PROTOCOL §3); the `NNNN` in this
+  filename is dv_lead's prediction of the next free id and is the orchestrator's
+  to confirm.
 - **From** / **To**: dv_lead → rtl_lead (via orchestrator, VERBATIM relay class)
 - **Module / severity**: `libs/hardcaml_ethernet/src/xgmii_rx_64.ml` (M03
-  `Xgmii_rx_64`) | **MAJOR**, argued in §5 against BUG-0002's CRITICAL, with the
-  exact condition that converts it stated there rather than left to be
-  discovered.
+  `Xgmii_rx_64`) | **CRITICAL** — converted **on measurement** at **§V.10**, CI
+  run `30947784963`, transient tree `5c47582`: (a) = **7** malformed mid-frame
+  words and (b) = **4 of 60** required octets in their gapless byte positions.
+  *(Was **MAJOR**, argued in §5 against BUG-0002's CRITICAL with the exact
+  condition that converts it stated there rather than left to be discovered —
+  that condition fired. §5's argument stands unedited.)*
 - **Origin**: rtl_lead's own escalation — `J-rtl_lead-0010` open question 1,
   raised **before** the measurement existed. This packet is that escalation
   answered with numbers and routed back as work, and the answer to its question
@@ -820,3 +828,176 @@ artefact and that campaign's round opens no bench file at all; and `WO-0061`
 while that campaign's seal is being frozen. The owed shape is fully specified
 above and in §V.2, so the round that runs it needs no new adjudication from me
 beyond reading the two numbers.
+
+---
+
+### V.10 ADDENDUM — §V.2 is **DISCHARGED ON MEASUREMENT**. Severity converts to **CRITICAL**. Packet state moves to `FIX ACCEPTED — CLOSED`
+
+*(dv_lead, `J-dv_lead-0103`, 2026-08-04. §5's argument, §9.2's derivation, §V.1's
+table and §V.2's refusal are **not edited**: each is a record of what was said at
+the time it was said, and this block is the correction of record — the same rule
+§V.9 applied to §V.1. The two **header** fields — `State` and `severity` — are
+updated clerically and point here, because a verbatim-relay packet whose most-read
+line contradicts its own disposition is a defect in the relay, not a preserved
+record.)*
+
+#### V.10.1 The evidence, and why it is admissible under the standard §V.2 set for itself
+
+- **CI run `30947784963`** (`build`), branch `mut/bug3-sev-probe`, **transient
+  tree SHA `5c475821d1013cf940cfa21ff403283be2ec30aa`**, cut from **`fafb83d`**
+  plus the dv-authored probe. Run conclusion **`failure`** — **expected, and it is
+  the premise rather than a problem**: the pre-fix suite is red at that SHA, which
+  is the entire reason this measurement exists. The probe step itself completed
+  and printed.
+- **The probe**: print-only, **zero assertions**, linking **no test library** —
+  so its output cannot be perturbed by the suite's redness — reaching the DUT
+  through the published `Cyclesim.With_interface` entry point exactly as
+  `test/cosim/ours_run.ml` does. One stimulus: **64 octets, start lane 4, `k` = 1**
+  through REQ-016's commissioned idle-injection wrapper, as §V.2 specified.
+- **One disclosed deviation, adjudicated rather than absorbed**: the orchestrator
+  placed the probe's workflow step **before** `runtest`, because the expected-red
+  suite would otherwise have blocked later steps. **This does not touch
+  admissibility.** It changes *when* the probe ran, not *what* it measured: the
+  probe shares no state, no module and no link unit with the suite. The reason it
+  is fine is that it was **disclosed**; an undisclosed reordering of the step that
+  produces a severity datum would not have been, and I would have refused it on
+  the same ground §V.2 refused §9.2.
+- **A determinism check that came free**: the probe printed **twice**, via the two
+  aliases its own `dune` documents, and I verified the two 34-line blocks are
+  **byte-identical** after stripping CI timestamps. The figures are therefore not
+  an artefact of one invocation's state.
+- **`journal-check` red on the branch** is plain-commit noise of a known class on
+  a throwaway ref, and bears on nothing here.
+
+**Nothing entered history.** PROTOCOL §10's transient model was honoured end to
+end, and the probe is outside the row denominator, the unit inventory and every
+campaign scorecard (`WO-0063` §10.1) — the last of which is now *verified* rather
+than asserted: the probe contains no `let%expect_test`, so `tools/dv_checks.sh`'s
+repository-wide inventory is unchanged by its existence, and
+`tools/precompile_check.sh` auto-classes an executable-stanza directory
+`EXCLUDED` without a script edit.
+
+#### V.10.2 The numbers — RECOMPUTED, not transcribed
+
+**I did not take the probe's own summary lines, and I did not take the
+orchestrator's transcription.** Both figures below are recomputed from the eight
+per-word lines alone, and the 60-octet expected sequence was regenerated from the
+stimulus generator's arithmetic (`((length × 3) + 5j + 7) mod 256`) rather than
+read off the log — so the comparison has no input from the probe's own summary.
+
+Observed, per word (`m`, cycle, `tkeep`, `tlast`, `tuser`):
+
+| m | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 |
+|---|---|---|---|---|---|---|---|---|
+| cycle | 4 | 6 | 8 | 10 | 12 | 14 | 16 | 18 |
+| `tkeep` | 0x0F | 0x0F | 0x0F | 0x0F | 0x0F | 0x0F | 0x0F | 0x0F |
+| `tlast` | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 |
+| `tuser` | 0 | 0 | 0 | 0 | 0 | 0 | 0 | **0** |
+
+- **(a) mid-frame words with `tkeep` ≠ 0xFF and `tlast` = 0 — RECOMPUTED: 7.**
+  (All eight words carry `tkeep` = 0x0F; word 7 carries `tlast`, so seven
+  qualify.) §9.2 predicted **7**.
+- **(b) required octets arriving in their gapless byte positions — RECOMPUTED:
+  4 of 60.** Positions 0–3 are `C7 CC D1 D6` and match; every one of positions
+  4–31 is the filler `0x07` against a required octet that is never `0x07`.
+  §9.2 predicted **4**.
+
+**Three further measured facts the summary did not foreground, and they matter
+for severity:**
+
+1. **28 of the 60 required octets are not merely wrong — they are ABSENT.** The
+   delivered stream is **32 octets long against a required 60**. So "56 octets
+   not delivered correctly" decomposes into **28 delivered with the wrong value**
+   (the XGMII idle control character `/I/` = `0x07`, presented to a REQ-015
+   consumer as frame data — 28 occurrences, exactly §9.2's predicted filler) and
+   **28 never delivered at all**. (b) = 4 is computed over the 32 comparable
+   positions and therefore *understates* the loss.
+2. **The corrupted frame is marked FCS-GOOD.** `tuser` = 0 on the `tlast` word:
+   the design delivered a 32-octet frame, 28 of whose octets are idle filler, and
+   raised no bad-FCS verdict on it. *(Scope note, so this is not read wider than
+   it was measured: the probe samples the `rx` stream only and does **not** sample
+   the strobes, so no claim is made here about `error_bad_fcs` or any other
+   report.)*
+3. **BUG-0002's class is NOT present at this cell.** `tlast` sits on word **7**,
+   where it belongs, not on word 0. The two defects are distinct, and this
+   measurement separates them at a cell where both were live at the same SHA.
+
+#### V.10.3 §10.2's pre-committed rule, applied
+
+The rule, fixed in `WO-0063` §10.2 **before the run** so no result could be
+re-read afterwards: *"(a) ≥ 1 **OR** (b) < 60 → BUG-0003 converts to CRITICAL,
+recorded here over my signature, with the measured figures replacing §9.2's
+derived ones."*
+
+**Both limbs fire, independently**: (a) = 7 ≥ 1, and (b) = 4 < 60.
+
+> **BUG-0003's severity is CRITICAL**, converted on measurement at
+> `5c47582` / CI run `30947784963`, superseding §5's **MAJOR** and lifting §V.2's
+> hold. §5's argument is left standing unedited: it was a correct argument that
+> named its own conversion condition, and the condition fired. This is §5's own
+> sentence redeemed — *"dv_lead will convert it without argument if either
+> appears"* — and I am not arguing.
+
+**The measured figures replace §9.2's derived ones, as §10.2 requires.** Any
+packet, gate row or report citing this defect's magnitude cites **(a) = 7 and
+(b) = 4 of 60, measured at `5c47582`**, and not §9.2's derivation of the same
+numbers. §9.2's text stands as the record of what was derived; it is no longer
+the source of the figure.
+
+#### V.10.4 The derivation reproduced exactly — what that does and does not do
+
+**Both numbers match §9.2's predictions exactly, and so does the filler value.**
+That is worth stating plainly and generously: rtl_lead derived, from the RTL, the
+count of malformed words, the count of surviving octets and the identity of the
+substituted byte, and a measurement it never saw agrees with all three. Taken with
+§9.1's earlier prediction of the **post-fix** cycles `6, 8, 10, 12, 14, 16, 18,
+19` — measured correct at `42b9df3` — the same structural account has now
+predicted this design's behaviour on **both sides of the fix**. That is a strong
+result for the account and I record it as one.
+
+**And it changes nothing about the rule §V.2 applied, which is the part I want on
+the record against my own convenience.** §V.2 did not say the derivation was
+*wrong*; it said DV may not record a severity on evidence the packet itself labels
+derived, produced from a file DV does not read (PROTOCOL §10). That is a rule
+about the **class of evidence**, not about the accuracy of one instance of it. Had
+I converted on §9.2 and been vindicated, I would have been right **by the luck of
+a careful correspondent**, and the next correspondent — or the next derivation
+from the same one — carries no such guarantee. What updates is my estimate of
+rtl_lead's derivations, upward and materially. The standard does not move.
+
+**The ledger, stated honestly**: the discipline cost **one round and one CI run**,
+and bought a severity that is measured rather than believed. That is the whole
+price, and it belongs next to the outcome so that no future reader concludes from
+*"the derivation turned out right"* that the check was waste.
+
+#### V.10.5 Packet state, superseding §V.8 and §V.9
+
+**`FIX ACCEPTED — CLOSED`**, at severity **CRITICAL**.
+
+§V.9 enumerated the open set as **exactly one item — §V.2** — and this block
+discharges it. The defect itself has been measured **absent at every lane-4 member
+of both rows** since `b848d56` (§V.1); this measurement is about the **pre-fix**
+design's magnitude, not about the fix.
+
+**Two items are re-homed rather than closed with the packet, because a closed
+packet cannot carry anything:**
+
+1. **N-1** (§V.7 — REQ-016's verification column gates the per-octet-constant
+   assertion *per module* while survival is per *(start lane, residue)*) was
+   travelling with this packet. It still licenses nothing at M03, is still
+   non-blocking, and now carries a measurement rather than a derivation. **It
+   rides to whichever packet next opens REQ-016's reach**, and a reader looking
+   for it should expect to meet it there and not here.
+2. **§V.3's two owed bench notes and `RV-0060-VERDICT` §10 item 3's three citation
+   sites** (§V.6 put them in the next family-I bench work order). The bench notes
+   were **paid early**, in `WO-0062`'s round — verified from the committed tree at
+   `J-dv_lead-0102`, including the guard-ordering note §V.3 asked for, at
+   `run_i2_member`'s four-guard cascade. The citation sites are **commissioned in
+   `WO-0063A` §6**, in flight now. *(Deliberately not re-verified this round:
+   `test/xgmii_rx_64/test_m03_i.ml` carries tb_writer's in-flight member (iii)
+   work and was not opened. The fact is cited from the committed tree at the SHA
+   where it was established, never from a working tree mid-edit.)*
+
+**Routed, not recorded here**: the severity conversion is material to the
+**auditor's DV-escape ledger**, which the auditor owns (PROTOCOL §10, charter §3)
+and which DV never edits. It is relayed for the auditor's own disposition.
