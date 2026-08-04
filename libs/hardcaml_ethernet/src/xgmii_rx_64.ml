@@ -427,7 +427,22 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
      and both close epoch A. *)
   let survivor_b = b_exists &: ~:(any b_closing) in
   let survivor_c = c_exists &: ~:(any c_closing) in
-  let begins = survivor_b |: survivor_c in
+  (* MUTATION GH-c5 -- WO-0058, NEVER MERGE. Seeded defect: REQ-110's second
+     clause -- and SHALL begin a new frame at that start character -- is not
+     honoured. [a_close_start] is the module's own predicate for a start
+     character that aborts the open frame under REQ-110, so gating [begins]
+     with its complement suppresses exactly the frame such a character should
+     open. The abort itself is untouched and correctly reported: the frame is
+     still cut at the octet before the start character, still marked, and still
+     pulses its single [error_start_without_terminate], because none of
+     [a_close_start], the closure record or the coverage logic reads [begins].
+     With [to_preamble] low the state machine falls through to
+     [a_close_char] and the receiver goes to [Idle] -- it waits for the NEXT
+     start character, and every frame the aborting character should have opened
+     is lost with no report of its own, the silent discard REQ-008 forbids.
+     REQ-108's resynchronisation is NOT reached: [a_close_start] is gated by
+     [a_char_acts], which is low in [Discard] and low on a truncating word. *)
+  let begins = (survivor_b |: survivor_c) &: ~:a_close_start in
   let new_start4 = survivor_c in
   frame_start4 <== reg spec ~enable:begins new_start4;
   (* ---- the running CRC (§6.1's FCS check, ADR-0006, ADR-0007) ----
