@@ -979,3 +979,114 @@ the parenthetical that over-promises is my attack plan's cell; and the blind spo
 about a spurious third frame has been in this bench since family D. That is the
 third round running in which the instrument has found more against the packet
 than against the return, which is the instrument working.
+
+---
+
+## COUNTERSIGNATURE — requirements.md §0.6's window reference word at `0caf023` — dv_lead, `J-dv_lead-0081`
+
+**SIGNED. The diff is countersigned and in force on transcription.**
+`docs/specs/**` is outside my write scope, so this is the signature of record and
+the orchestrator transcribes it, per the clerical-transcription rule. The
+change-log row classes the diff **editorial** while carrying the **C-43
+discipline** — the class and the countersignature question are different axes,
+and §0.6 is normative text in my own test-derivation basis — so the diff is not
+in force until this signature is transcribed. This is the question `WO-0057` §3.2
+and §7 question 1 routed upward twice.
+
+### 1. The three clauses, verified against the diff rather than the summary
+
+- **Received, not delivered; a closing control character is not one of the
+  frame's octets; an octet that closes the frame **by count** (REQ-108) is.**
+  Present, normative, and the reading that makes every §9 pin land where §9 says
+  it lands at **both** start lanes.
+- **What follows the frame never extends it.** Present, and it generalises
+  `J-architect_docs_lead-0021`'s M03-G6 ruling upward rather than restating it —
+  a frame's report is a function of the frame and never of the characters that
+  happen to follow it (C-12's shape).
+- **A frame that received no octet at all takes its closing word**, with the
+  one-to-four-octet frame **expressly excluded** — it received those octets and
+  measures from them, which is what puts a lane-4-started four-octet frame's
+  strobe at the window's far edge instead of inside it.
+
+### 2. The claim I would not sign on assertion, checked directly
+
+The change-log row asserts that *"the DV model that computes this window
+(`test/xgmii/injection.ml`'s `window`, used by M03 families E–H) already
+implements these three clauses verbatim, so the diff ratifies the committed bench
+rather than moving it."* **That is my instrument, so I checked it rather than
+accepting it.** At `test/xgmii/injection.ml:277-282`:
+
+```
+let window ~start_ot ~received ~closing_ot =
+  let last_octet_ot =
+    if received > 0 then start_ot + 8 + (received - 1) else closing_ot
+  in
+  closing_ot / 8, (last_octet_ot / 8) + 3
+```
+
+- **Clause 1, received-not-delivered**: the upper bound is computed from
+  `received`, never from `delivered`. ✓
+- **Clause 1, a closing control character is not an octet**: `rev_octets` is
+  pushed **only** in the `Xgmii_word.Data octet` arm (line 370); no control
+  character can enter the count. ✓
+- **Clause 1, an octet closing by count IS one of them**: the REQ-108 arm fires
+  at `received () > 1518` — i.e. with the 1519th octet **already pushed** — and
+  emits `~received:(received ()) ~closing_ot:ot`, that same octet's own time. The
+  truncating octet is counted and is the reference. ✓
+- **Clause 2**: `current := None` at every closure, so no later octet can reach a
+  closed frame's `emit`. ✓
+- **Clause 3, and its exclusion**: the zero-received branch takes `closing_ot`;
+  the 1-to-4-octet runt reaches `close_zero` with `~received:r`, `r ≥ 1`, so it
+  measures from its octets and **not** from its closing word. ✓ The exclusion is
+  implemented, not merely stated.
+
+**And the arithmetic the module-side paragraph rests on, re-derived rather than
+read.** The paragraph claims the *received* reading is what makes SPEC-M03 §9's
+truncation-word answer right at a **lane-4** start. Checking: the truncation binds
+on the 1519th received octet, at octet time `start_ot + 8 + 1518`. At a lane-4
+start (`start_ot = 8s + 4`) that is `8s + 1530` → word **s + 191**, while the
+1514th delivered octet sits at `8s + 1525` → word **s + 190**. At a lane-0 start
+(`start_ot = 8s`) the two are `8s + 1526` and `8s + 1521` → **both word s + 190**.
+**So the two readings coincide at lane 0 and diverge by one word at lane 4**,
+exactly as the paragraph says — which means the delivered reading would have
+moved every family-G lane-4 member's window by a cycle, and the orthogonality the
+older paragraph claimed holds for its **conclusion** and not for its arithmetic.
+That is the concrete thing this ruling buys, and it is why the diff is worth a
+signature rather than a nod.
+
+### 3. My own finding, adopted — and scoped correctly
+
+The non-normative note ratifies `RV-0057-VERDICT` **Finding 2** and attributes it:
+where the reference word is the closing word and the module pins from the same
+word, the pin is inside the window **by arithmetic**, the window carries **no
+independent information**, and the assurance there is the module's exact pin plus
+the exact strobe-event set — *never* the window check. **The scoping sentence is
+the part I would have insisted on and did not have to**: *"The window keeps its
+teeth wherever the frame received an octet, because there its two ends and the pin
+are three different quantities."* The vacuity is confined to the class that has
+it, and is not allowed to discredit the check generally.
+
+### 4. Concurrence classification concurred, and one fresh datum for it
+
+No conformant design changes and no committed assertion changes meaning: every
+module's strobe cycle is pinned exactly by its own specification, and the M03
+bench has computed this window since family E. **Fresh evidence, from the round
+that just closed**: `WO-0058` ran all 111 committed units under seven seeded M03
+mutations at `a2d090d`, and **no window check spoke on any branch** — every one of
+the thirteen observed failures was a row-local assertion. The ruling ratifies the
+committed bench rather than moving it, and that is now measured rather than
+argued.
+
+### 5. What I do about it, and it is not nothing
+
+The ruling makes X-3 check (c)'s vacuity on the zero-received class **normative
+and programme-wide**, not a local M03-H4 curiosity. A bench writer who reads
+`AP-xgmii_rx_64.md` §7's X-3 row and takes check (c) at face value on a
+zero-delivered abort will write a row whose cycle assurance is a tautology — and
+that has already happened once, at M03-H4. **I have written the bound into the
+plan's X-3 row in the same commit as this signature** (`J-dv_lead-0081`), citing
+this ruling as its authority so the restatement points at its source and cannot
+drift from it.
+
+**Nothing is blocked meanwhile**: the module pin carries every commissioned
+assertion (`RV-0047` ruling 2, standing), and no row of any family changes.

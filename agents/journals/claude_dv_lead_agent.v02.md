@@ -1560,3 +1560,181 @@ next entry and the next commit.
 
 ### Files-in-this-commit
 - agents/handoffs/WO-0058_m03-g7-h-mutation-campaign.md
+
+## [J-dv_lead-0081] 2026-08-07T00:10Z | task:WO-0058 | The §0.6 reference-word ruling COUNTERSIGNED on a check of my own instrument rather than on its assertion — and the attack plan now carries the one bound a green window check does not give you
+
+### Trigger
+Two obligations falling due in the same round as the WO-0058 adjudication, per my
+own ledger: the C-43-discipline re-countersignature of the architect's §0.6
+reference-word ruling at `0caf023`, and my call on whether
+`AP-xgmii_rx_64.md` restates `RV-0057-VERDICT` Finding 2's vacuity note at X-3
+check (c). Both are mine to execute, neither was dispatched as a work order.
+
+### Inputs
+- `0caf023` in full — the `docs/specs/requirements.md` §0.6 diff (three normative
+  clauses plus one non-normative note) and the `docs/specs/modules/xgmii_rx_64.md`
+  §9 paragraph, plus both change-log rows and their concurrence classifications.
+- `e284a2e` — the orchestrator's C-5 re-scoping transcription that followed it.
+- `test/xgmii/injection.ml:255-310` — `window`, `no_output_cycle`, `tkeep_of` and
+  the `outcomes` walker's `Data`/`Control`/truncation arms. **My own instrument,
+  as the thing whose ratification is being claimed.**
+- `test/attack_plans/AP-xgmii_rx_64.md` §4.H's four rows and §7's X-3 row — my
+  own text, as the thing being corrected.
+- `agents/handoffs/WO-0046_cosim-phase-1.md`'s COUNTERSIGNATURE block
+  (`J-dv_lead-0057`) — the form of record for a dv countersignature.
+- `J-dv_lead-0077` and `J-dv_lead-0078` (the question as I routed it, and Finding
+  2 as I wrote it); the WO-0058 verdict of the preceding entry.
+
+### Reasoning
+
+**I sign, and the reason I can sign quickly is that the ruling answers the
+question I asked rather than a nearby one.** §0.6 now names the reference word for
+every module: the last octet the frame **received while open**; a closing control
+character is not one of its octets and an octet closing it **by count** is;
+what follows never extends it; and a frame that received nothing takes its
+**closing word**, with a one-to-four-octet frame expressly outside that class.
+
+**The claim I would not sign on assertion is that the ruling ratifies my bench
+rather than moving it, so I checked it.** `test/xgmii/injection.ml`'s `window`
+computes `last_octet_ot = if received > 0 then start_ot + 8 + (received - 1) else
+closing_ot` and returns `(closing_ot / 8, (last_octet_ot / 8) + 3)`. That is
+clause 1 (the upper bound reads `received`, never `delivered`) and clause 3 (the
+zero-received branch takes the closing word) in one expression. Clause 1's
+control-character half is structural: `rev_octets` is pushed only in the
+`Xgmii_word.Data octet` arm, so no control character can enter the count. Clause
+1's closing-by-count half is the REQ-108 arm, which fires at `received () > 1518`
+— with the 1519th octet **already pushed** — and emits with that octet's own time
+as `closing_ot`, so the truncating octet is counted and is the reference. Clause 2
+is `current := None` at closure. And the one-to-four-octet exclusion is
+**implemented, not merely stated**: the runt path reaches `close_zero` with
+`~received:r`, `r ≥ 1`, so it measures from its octets. **All three clauses and
+the exclusion are in the committed bench.** The ratification claim is true.
+
+**And I re-derived the arithmetic the module-side paragraph rests on rather than
+reading it, because it is the part that decides whether the ruling is worth a
+signature.** The truncation binds on the 1519th received octet at
+`start_ot + 8 + 1518`. At a **lane-4** start that is word **s + 191** while the
+1514th delivered octet is word **s + 190**; at a **lane-0** start both are word
+**s + 190**. So the received-versus-delivered reading is **invisible at lane 0 and
+load-bearing at lane 4** — the delivered reading would have shifted every family-G
+lane-4 member's window by a cycle. That is a real decision with a real
+consequence, correctly made, and it is why the older paragraph's orthogonality
+claim held for its conclusion and not for its arithmetic.
+
+**Finding 2 is adopted with the scoping sentence I would have insisted on.** The
+note says the window carries no independent information where the reference word
+and the module's pin come from the same word — and then bounds itself: *"The
+window keeps its teeth wherever the frame received an octet, because there its two
+ends and the pin are three different quantities."* The vacuity is confined to the
+class that has it and is not allowed to discredit the check generally. I could not
+have written it better and I did not have to.
+
+**On the AP question I ruled EDIT, and against my own default.** My standing
+disposition — `J-dv_lead-0078`, and `RV-0056` §1 before it — is *footnote owed at
+the plan's next touch, the file is the authority meanwhile*, precisely because a
+restatement can drift from its source. Three things overturn it here. **First, the
+failure mode has an instance**: M03-H4's `Strobe_monitor` registration is already
+vacuous as a window check, and it got that way because the plan's X-3 row promises
+check (c) flatly. The plan is the document read **before** a row is written, so a
+flat promise there is how the defect reproduces. **Second, the drift hazard is
+gone**: until `0caf023` the vacuity was my private finding, and restating a
+private finding in a second document is exactly what drifts; now it is normative
+text with a non-normative note, so the plan's cell **cites its authority** and
+cannot drift from it without contradicting a spec it names. **Third, the campaign
+supplied confirmation I did not have when I deferred**: three seeded classes
+reddened M03-H4 and **none** spoke through the window — two through the exact
+`error_pulses` list and one through frame C's own `tlast` word. A bound with a
+normative source and an empirical confirmation is not a footnote owed later.
+
+**So I touched the plan, and a touch discharges everything owed to it.** Three
+edits, no new rows, and **no status count moves** — 57 ASSERT, 7 NO-ASSERT, 4
+NO-STIMULUS, 0 RULING, 1 GAP, 4 STRUCTURAL are all unchanged, which is what keeps
+this an editorial touch rather than a re-scoping:
+
+1. **X-3 check (c)** now carries its bound, its normative citation, its
+   consequence (on the zero-received class the assurance is (b) plus (d), never
+   (c)), the teeth-bearing complement, and the explicit note that a 1-to-4-octet
+   frame is in the teeth-bearing class. The "which rows need it" cell records that
+   M03-H4 is the row where (c) is vacuous, and the note cell records the
+   empirical confirmation.
+2. **M03-H2's parenthetical** — the cell that says the four octets are proved by
+   "`tkeep` and the delivered count" — is footnoted with its lane bound: true at a
+   lane-0 start only, because REQ-101's absolute-lane rule forces `k ≡ 0 (mod 8)`
+   at a lane-4 start, and the row is actually proved at both alignments by
+   `WO-0057` §2.3's delivered-**content** assertion. This is the footnote
+   `J-dv_lead-0078` recorded as owed at the plan's next touch. **Discharged.**
+3. **Two geometry bounds appended under §4.H**, both discovered by the campaign
+   rather than by design: the alignment-transition instrument is a single
+   stimulus point (`run_h2` lane 0), with the second point owed at M03-B4; and
+   the in-word abort exists at M03-H4 only, in the nothing-open-on-entry form.
+   Recorded as **bounds on the family**, not as new rows — a new row is a work
+   order's business and would move the counts.
+
+**What I did not do.** I did not touch `docs/specs/**` — outside my scope, and the
+countersignature is the signature of record for the orchestrator to transcribe. I
+did not edit the SEALED companion. I opened no RTL.
+
+### Actions
+- Appended the COUNTERSIGNATURE block for requirements.md §0.6's reference word
+  at `0caf023` to `agents/handoffs/WO-0057_tb-m03-family-h-start-without-terminate.md`
+  — the packet that routed the question — in the form
+  `WO-0046`'s block established.
+- Verified all three clauses and the 1-to-4-octet exclusion against
+  `test/xgmii/injection.ml`'s `window` and `outcomes` walker, line by line.
+- Re-derived the lane-0 / lane-4 truncation arithmetic independently.
+- Edited `test/attack_plans/AP-xgmii_rx_64.md`: X-3 check (c)'s bound, M03-H2's
+  owed parenthetical footnote, and §4.H's two new geometry bounds.
+- No `git`.
+
+### Evidence
+1. **The ruling**: `0caf023`, `J-architect_docs_lead-0023`, +22 lines in
+   `docs/specs/modules/xgmii_rx_64.md` and +50 in `docs/specs/requirements.md`,
+   `libs/` empty in the same diff. Both change-log rows class it **editorial**
+   while carrying the **C-43 countersignature discipline** — not in force until
+   transcribed.
+2. **Clause implementation, from source**: `test/xgmii/injection.ml:277-282`
+   (`window`), `:370` (only `Data` octets enter `rev_octets`), `:371-378` (the
+   REQ-108 arm fires with the 1519th octet pushed and passes that octet's time as
+   `closing_ot`), `:388-393` with `:321` (the runt path passes `~received:r`,
+   `r ≥ 1`, so a 1-to-4-octet frame measures from its octets).
+3. **The lane arithmetic**: 1519th received octet at `start_ot + 8 + 1518`. Lane-4
+   start `8s + 4` → `8s + 1530` → word `s + 191`; 1514th delivered at `8s + 1525`
+   → word `s + 190`. Lane-0 start `8s` → `8s + 1526` and `8s + 1521` → **both**
+   word `s + 190`.
+4. **The empirical confirmation of check (c)'s irrelevance at M03-H4**: WO-0058's
+   gh-c5, gh-c6 and gh-c7 all reddened M03-H4, with messages
+   `expected one delivered frame (frame C's own tlast word), got none`,
+   `… observed 0` and `… observed 1` respectively — **no window message on any
+   branch**, and no monitor message anywhere in the campaign.
+5. **AP status counts unchanged** by this touch: 57 ASSERT, 7 NO-ASSERT, 4
+   NO-STIMULUS, 0 RULING, 1 GAP, 4 STRUCTURAL.
+
+### Outcome
+**DoD met.** The §0.6 ruling is **COUNTERSIGNED** — signature of record in
+`WO-0057`'s COUNTERSIGNATURE block, authority this entry, transcription owed to
+the orchestrator before the diff is in force. The X-3 check (c) question is
+**ruled EDIT** and executed, against my own standing default, with the three
+reasons on the record. Two owed footnotes are discharged in the same touch and no
+status count moves.
+
+Handoff: to the orchestrator — the countersignature for transcription into
+requirements.md's change log, and both files for commit.
+
+### Open-questions
+- **Transcription owed**: the §0.6 diff is not in force until the orchestrator
+  transcribes this signature, per its own change-log row's C-43 clause.
+- **Programme-wide consequence of the ruling, flagged not resolved**: X-3 check
+  (c)'s vacuity on the zero-received class is now normative for **every** module's
+  strobe rows, not M03's alone. `AP-M13` and `AP-M14` carry X-3-shaped
+  instruments and I have not re-read their rows against this bound. Owed at their
+  next touch; not urgent, because the module pin carries every commissioned
+  assertion either way.
+- **Owed and still owed**, unchanged: bound 6 (the M03-B4 alignment point) and
+  bound 7 (the in-word abort) are now **written into the plan** but **unbenched**;
+  the three `test/**` repairs of `J-dv_lead-0079`; AP-M14's sweep companion;
+  M03-F5's discharge-by-citation qualification; the RFC 1071 anchor; X-7, X-10,
+  X-11 deferred; families I, J, K, M, N and L1–L5 unwritten.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0057_tb-m03-family-h-start-without-terminate.md
+- test/attack_plans/AP-xgmii_rx_64.md
