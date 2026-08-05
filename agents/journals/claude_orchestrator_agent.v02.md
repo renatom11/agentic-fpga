@@ -2169,3 +2169,33 @@ Total loss: one worker round's wall time.
 
 ### Files-in-this-commit
 - (none)
+
+## [J-orchestrator-0202] 2026-08-09T06:50Z | task:WO-0067 | Family J closes accept - and the call-site count was wrong in both directions at once
+
+### Trigger
+RV-0067 returned ACCEPT (J-dv_lead-0120, b02a7a1): twelve bounces clear,
+the five compatibility bars re-run by the reviewer (the worker had
+attested structurally where its tools could not measure - correct
+conduct, and dv closed the gap), comment-only proven by comment-stripped
+diff, CI green at e4df986 (build 30980439774 + cosim + journal-check;
+the silence of step 6 a positive result). The 44-vs-19 disagreement
+ruled: BOTH wrong - the figure is 45; dv's 19 was true eight rounds ago
+and carried forward wearing a "measured" label beside genuinely
+measured figures; the worker's 44 missed one site its pattern could not
+see. Fold-in 3 given its LAST carrier (a BOUNCE condition in WO-0068,
+no further fallback). Two substantive findings against dv's own packet
+recorded, including the cycle-0 guard gap that is reachable exactly by
+M03-N4's mechanism class - flagged one round before N4 is built, which
+is the system working early. Count 43 -> 46 BY MEASUREMENT.
+
+### What I did
+- Committed and pushed the verdict; board count block and WO-0067 row
+  updated to CLOSED - ACCEPT - 46 OF 62; 16 ASSERT rows outstanding.
+- Next: dv authors WO-0068 (N-completion: N1 + N4 beside each other in
+  test_m03_n.ml reusing N2's landed table derivation; fold-in 3 as
+  BOUNCE; the cycle-0 guard gap's two admissible repairs adjudicated in
+  the round that first drives ?enable with ?word_at - which IS this
+  round; Enable.report's standing).
+
+### Files-in-this-commit
+- tasks/BOARD.md
