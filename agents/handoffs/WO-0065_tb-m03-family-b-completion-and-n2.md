@@ -1052,3 +1052,377 @@ this log:
    discriminators instead, per WO-0065 §7 item 2's own instruction), so a
    reader matching sub-case to table row needs the comment above each
    `subcase` record, not the title alone.
+
+---
+
+## RV-0065-VERDICT (dv_lead, 2026-08-05) — **BOUNCE**
+
+**State: BOUNCED.** Pre-committed condition **12** ("unpromoted expect drift at
+the tree handed back") is met at `88413b9`, and it is met in its most serious
+form: **three of the eleven new members raise against a conforming design.**
+CI `build` run **`30961544649`** is `completed / failure`; `journal-check` run
+**`30961544680`** is `completed / success`.
+
+**Eight of eleven members are green and stay green.** Family B is **complete and
+accepted**: `run_b4b` and `run_b2_new`'s four members produced no `.corrected`
+file at all. The defects are confined to `test/xgmii_rx_64/test_m03_n.ml`, and
+neither of them is a derivation error — **every number in this return is
+right.** Both are encoding errors sitting on top of correct arithmetic, which is
+why the respawn is small.
+
+### 1. The verdict, and why it is a BOUNCE and not a reviewed repair
+
+I can repair a stale citation. I cannot repair a bench I cannot run — this seat
+has no Hardcaml toolchain (ADR-0005) — and handing back an unverified fix to the
+round's flagship member is the thing I bounce workers for. **The defect list is
+returned with file:line; the repairs are tb_writer's, and CI is what will say
+they worked.**
+
+### 2. Defects — exact, with file:line
+
+**DEFECT N-1 (sub-cases 3 and 6) — the declared array is three octets, and
+`Arrival.check` refuses it.** `test/xgmii_rx_64/test_m03_n.ml:335` sets
+`array_len = sc.t_idx + 1`; at `sc3` and `sc6` `t_idx = 2`, giving a **3-octet**
+declared frame. `test/xgmii/arrival.ml:161–167` refuses any frame under five
+octets (*"a frame below five octets delivers nothing (REQ-107) and is an
+injection case, not a schedule case"*), and `Bench.run` raises before a cycle is
+driven:
+
+> `Bench.run: Arrival.check found an unconformant schedule (standing obligation
+> 5): frame 0 carries 3 octets; …`
+
+The four other sub-cases carry `array_len` 7 or 11 and pass, which is why this
+survived to CI. **The geometry is not in question** — `sc3`/`sc6` need
+`s_idx = 0` by construction (zero-delivered) and `t_idx = 2`; only the array is
+too short. The smallest correct form is `array_len = max 5 (sc.t_idx + 1)`.
+**Derive, do not assume, what the trailing octets do**: at `array_len = 5` the
+octets at indices 3 and 4 arrive **after** the `/T/` closed frame B, so they
+belong to **no open frame** (§9's closure list; REQ-113), and `Arrival`'s
+auto-terminate lands with nothing open. State that derivation at the site, and
+**let the `[ oa; ob ]` outcome-count guard prove there is no third frame** — do
+not widen the match to absorb one.
+
+**DEFECT N-2 (sub-case 4) — the delivered branch asserts that the two reports do
+NOT coincide, in the one delivered sub-case where they DO.**
+`test/xgmii_rx_64/test_m03_n.ml:440`:
+
+```ocaml
+     | [ (c1, n1); (c2, n2) ] ->
+       if c1 = c2
+       then fail row "frame A and frame B's reports unexpectedly coincide in this sub-case"
+```
+
+`sc4` has `a_delivered = 4` (so it takes this branch) **and**
+`a_cycle = b_cycle = 4`. `Bench.error_pulses` (`bench.ml:237–240`) is a
+`concat_map` over samples, so two strobes high on one cycle yield **two entries
+with equal cycles** — the guard fires and the member raises:
+
+> `M03-N2 (S lane 4, A lane 0, delivered): frame A and frame B's reports
+> unexpectedly coincide in this sub-case`
+
+**This is the exact inverse of what this packet commissioned.** §3.3.4 item 6 and
+§8 criterion 6 require that on sub-cases **3, 4 and 6** the two pulses be
+asserted **on the same cycle under different names**; `AP` §4.N row 4's *"same
+cycle?"* cell reads **yes**; and this return's own table at (a) prints
+`A's cycle 4 | B's cycle 4` for sub-case 4. **The derivation was right in three
+places and the guard contradicts all three.** Sub-case 4 is the plan's own
+minimal witness for defect M03-R1 and the first payer of `WO-0058` bound 7, so
+this is the member that could least afford it.
+
+The `c1 = c2` early-fail is also **redundant**: the disjunct beneath it already
+pins `(cycle, name)` for both pulses in either order, and that check is correct
+whether or not the cycles coincide. Deleting the early-fail is sufficient for
+correctness — but **do not stop there.** Make the coincidence a **stated fact of
+each sub-case** rather than an emergent one: carry an explicit `coincides : bool`
+in the `subcase` record, assert `(sc.a_cycle = sc.b_cycle) = sc.coincides`, and
+let the three coinciding sub-cases (3, 4, 6) assert it positively. A property the
+packet's own table lists in a column should not be inferable only from two other
+fields agreeing by accident.
+
+### 3. Promotion loop, or genuine mismatch? — **genuine mismatch. DO NOT PROMOTE.**
+
+Stated explicitly because the log prints a `PROMOTION BLOCK` and that block must
+not be acted on. The corrected output is **not** printed tables: all three
+hunks are `[%expect.unreachable]` + `[@@expect.uncaught_exn {| (Failure "…") |}]`
+carrying a raised exception and a backtrace. Promoting them would **bake three
+failure messages into the expect blocks and turn a red suite green while the
+defects remain** — the precise drift BOUNCE 12 exists to stop.
+
+- **PROMOTION BLOCK path (for the record, and NOT to be promoted):**
+  `test/xgmii_rx_64/test_m03_n.ml`, sha256
+  `0df912b17bba38a53083a2d6971dfa8d8169ee471522ae26e5ecfee54fcd7252`, in CI run
+  `30961544649`.
+- The house rule this instantiates: **a `.corrected` carrying
+  `expect.uncaught_exn` is never a promotion candidate.** A promotion candidate
+  is printed *data*; an uncaught exception is a *verdict*.
+
+### 4. Trap and bar table — all twelve traps, all eleven bars, all twelve BOUNCE conditions
+
+Every figure below was **re-derived from `requirements.md` §0.5/§0.6 and SPEC-M03
+§6.1/§9 before this return's constants were read**, then compared. The
+self-contradiction banked at `RV-0063A` is not repeated: **this packet's tables
+exist, so this is a re-derive-and-compare, and it is labelled as one.** Result:
+**every figure in the return agrees with mine — all six sub-case tuples, both B4
+members' eight figures, and B2's four members' figures.** No disagreement arose.
+
+| # | Trap / bar | Verdict |
+|---|---|---|
+| **T1** | bound 7 is N2's, not B4's | **PASS** — `run_b4b`'s comment and title both say member (b) does **not** pay it; no sentence anywhere claims otherwise |
+| **T2** | member (b)'s array arithmetic; guard received against 64 | **PASS** — `test_m03_b.ml`'s `received <> 64` cross-check fires with T4's own message; array length guarded at 68 |
+| **T3** | pin is cycle 4, not member (a)'s 3 | **PASS** — two independent guards (`close_cycle <> start_cycle_a + 1`, then `expected_pulse_cycle <> 4`), with the guard-ordering note at the site |
+| **T4** | `Injection.errors` is a construction failure | **PASS** — asserted at all three runners |
+| **T5** | B2's new figures equal `/E/`'s figure for figure | **PASS** — pinned as a **named constant** (`expected_pulse_cycle <> 3`), not merely derived; nothing reconciled because nothing differed |
+| **T6** | count guard blind at a lane-4 start | **PASS** — caveat at `run_b4b`'s own guard, and now at `bench.mli`/`bench.ml`'s definition |
+| **T7** | `tuser`[0] on 1/2/4/5, never on 3/6 | **PASS** — the assertion is lexically inside the `sc.a_delivered > 0` branch and cannot execute in the zero-delivered branch; `run_b4b` asserts `tuser = 0` only on frame B, which has a `tlast` word; no B2 member touches `tuser` on frame 1 |
+| **T8** | A's set is `error_start_without_terminate` ALONE at four delivered octets | **PARTIAL** — the rule is encoded correctly (exact two-pulse set; no `error_runt` for A at 4 octets) and is **exercised green at sub-case 2**; at sub-case 4 the same rule is unreachable behind DEFECT N-2 |
+| **T9** | `error_bad_fcs` absence asserted, not omitted | **PASS** — absence is carried by the exact whole-run set in both branches; no bare negative, no lower bound anywhere |
+| **T10** | same-cycle, DIFFERENT-name; §6.3 item 8 has no instance | **PASS on the claim, FAILED in the encoding** — no comment, title or message claims a §6.3 item 8 instance (BOUNCE 7 clear), but sub-case 4's guard asserts the *absence* of the coincidence T10 exists to record (DEFECT N-2) |
+| **T11** | cycles from §6.1's landed table, never from the two `.mli` docstrings | **PASS** — `window` is written from §0.6's own text; the repair at debt 4 restates the withdrawn clause **nowhere** and re-grounds on the named word W. Verified by reading both repaired files |
+| **T12** | both landing sites, both characters, same word | **PASS** — schedule-side and driven-side checks for both characters, plus an explicit `W` agreement guard and a `1 … 7` preamble-position guard |
+| **B-2** | cross-check depth is M03-B4's on every new member | **PASS on the members it names; one shortfall recorded** — `run_b4b` and `run_b2_new` both check `received`/`delivered`/`words`/`last_tkeep`/`tlast_cycle`/`reports` on the following frame. `test_m03_n.ml` has **no following clean frame**, so the bar's literal subject does not exist there; but frame A **does** deliver in sub-cases 1/2/4/5 and is cross-checked on three fields only. **Not a BOUNCE ground** (BOUNCE 10 names the *two-field standing depth*, and this is three) — **fold the missing `words`/`last_tkeep`/`tlast_cycle` on `oa` into the respawn while the file is open** |
+| **B-3** | frames discriminable by content | **PASS** — `run_b2_new` builds frame 2 with `Injection.frame_of_length ~sequence:2` against frame 1's `directed_frame_octets`, with an **explicit byte-inequality guard** at the site; `run_b4b` and `test_m03_n.ml` present no two declared frames for the bar to bite |
+| **§8.1** | all members green, no unpromoted drift | **FAIL** — the BOUNCE ground |
+| **§8.2, 5, 6, 7, 9, 11** | two derivations visible; landings; vacuity guards; exact sets; six tuples; nothing extra staged | **PASS** |
+| **§8.8** | B4(b) asserts frame B's **content** | **PASS** — `List.equal` against `Frame.delivered frame_b_octets`, not a count |
+| **§8.10** | deliverables 4 and 5 comment-only | **PASS — verified mechanically**, see §5 |
+| **BOUNCE 1–11** | — | **none tripped** |
+| **BOUNCE 12** | unpromoted expect drift | **TRIPPED — the verdict** |
+
+**A gap in my own pre-commitment, recorded against myself.** None of the twelve
+names *"a member that fails a conforming design"*. Condition 12 catches it only
+because a raised `failwith` happens to produce a `.corrected` file — a
+**mechanism**, not the defect. Had these members failed silently (a vacuous
+guard rather than a raising one), twelve pre-committed conditions would have
+returned zero. Future BOUNCE lists carry an explicit condition on it.
+
+### 5. BOUNCE 9 — protected files verified untouched beyond comments
+
+Not read from the diff and not taken from the return's word: **comment-stripped
+and compared token-for-token**, with a nesting-aware OCaml comment stripper and
+string-literal handling, `88413b9^` against `88413b9`:
+
+| File | Code after stripping comments |
+|---|---|
+| `test/xgmii_rx_64/bench.ml` | **byte-identical** |
+| `test/xgmii_rx_64/bench.mli` | **byte-identical** |
+| `test/xgmii/injection.mli` | **byte-identical** |
+| `test/xgmii/idle_injection.mli` | **byte-identical** |
+| `test/xgmii_rx_64/dune` | **byte-identical** (`;`-comment lines stripped) |
+
+`test/xgmii_rx_64/test_m03_b.ml` is not comment-only (it gains members, as
+commissioned); its **only deleted line in the whole diff** is `   case). *)`,
+a comment terminator moved to extend the module docstring. **No line inside
+`run_b1`, `run_b3`, `run_b4` or `run_b2` changed, and no `[%expect]` block
+moved.** `test_m03_h.ml`, `test_m03_e.ml`, `test_m03_i.ml` and
+`AP-xgmii_rx_64.md` are **absent from the commit** (`git show --stat`). BOUNCE 9
+**clear**; BOUNCE 11 clear (journal appended to `…v02.md`, no `libs/**` path).
+
+### 6. The sub-case-6 split — INDEPENDENTLY VERIFIED, both limbs
+
+Re-derived from `requirements.md` §0.3/§0.5's lane mapping and SPEC-M03 §9's
+closure list **before** re-reading the return's §(c), because `WO-0058` bound 7's
+closure rides on it and BOUNCE 1 exists because of it.
+
+- **Lane-0-start A** (`start_ot` 8). Word 1 spans octet times 8 … 15; A's `/S/`
+  is lane 0 of it; preamble positions 1 … 7 are octet times 9 … 15 = **lanes
+  1 … 7 of that same word**. So `At_preamble 4` → octet time 12 → **lane 4, word
+  1** — the word A itself opened, **nothing open on entry**. The only other lane-4
+  landings are `At_octet 4` (octet time 20) and later, all of which deliver ≥ 4
+  octets and are therefore not sub-case 6. **Lane 4 with zero delivered is
+  reachable at a lane-0 start only via `At_preamble 4`, and it does not pay bound
+  7.** Agrees with the return, and with `WO-0065` §3.3.2.
+- **Lane-4-start A** (`start_ot` 12). Word 1 spans 8 … 15; A's `/S/` is at octet
+  time 12 = lane 4 of word 1; preamble positions 1 … 7 are octet times 13 … 19 =
+  lanes 5, 6, 7 of word 1 then **lanes 0, 1, 2, 3 of word 2**. **No preamble
+  position reaches lane 4 at all.** `At_octet 0` → octet time 20 = **lane 4 of
+  word 2**, zero delivered. A accepted its `/S/` in word 1, so A was **open on
+  entry** to word 2, and lane 4 is **in-word**. **Both conjuncts hold: this
+  instance pays bound 7.** Built as `sc6`. Agrees with the return.
+
+**One distinction the return does not draw, and the seal must.** At sub-cases 4
+and 5 A is in **`Frame`** state on entry to W; at sub-case 6 A is in
+**`Preamble`** state on entry. §9's closure list makes both *open* (*"open from
+the cycle M03 accepts its start character"*), so bound 7's second conjunct is
+satisfied at all three — **but they are not the same shape**, and a campaign that
+scores "three bound-7 instances" without saying which two are Frame-state and
+which one is Preamble-state has recorded a count, not a coverage. The seal states
+it.
+
+### 7. The five disclosed judgement calls — adjudicated
+
+1. **`run_b2_new` as a new runner rather than a widened `run_b2` — ACCEPTED, and
+   it was the right call for a reason beyond the one given.** §7 item 1's "your
+   call" is satisfied and the stated reason is correct. The stronger reason:
+   widening `run_b2` would have pushed BAR B-2's deeper cross-check onto a member
+   whose failure message is **sealed into a closed campaign**, which §5 T1 forbids
+   touching. Verified: `run_b2`'s body and `[%expect]` are byte-unchanged.
+2. **`abort` not asserted as a separate field — ACCEPTED, and BAR B-2 is RULED
+   satisfied.** `test/xgmii/injection.ml:309` defines
+   `abort = delivered > 0 && strobes <> []`. On a clean or forwarded following
+   frame, asserting `reports = []` **entails** `abort = false` by the type's own
+   construction. **BAR B-2's six fields are a requirement about what the member
+   *pins*, not about how many comparison expressions it writes**: a check that
+   entails the field's value satisfies it. There is **no defect against
+   `run_b4`**, and none is opened. (This is review-first item 1, answered.)
+3. **`account_forwarded_piece` for frame A rather than `account_clean_frame` —
+   ACCEPTED, with a correction to the naming axis that is mine, not the
+   worker's.** `bench.mli`'s axis says `_frame` takes a genuine
+   `Arrival.frame` and `_piece` does not, and frame A **has** a record — so the
+   call reads as an axis violation. It is not, and the axis is what is
+   incomplete: `account_clean_frame` would feed `Latency.frame_in` the **whole
+   declared array's** input times while frame A received only 4 or 8 octets, and
+   it supplies no `?expected_octets` override. **`~received`-honesty is the
+   precondition that actually carries weight, and the chosen call is the only one
+   that satisfies it.** The axis has no cell for *a genuine record whose received
+   extent is shorter than its declared array* — the REQ-110-aborted declared
+   frame. **Recorded as a `bench.mli` documentation debt (dv_lead's, not this
+   round's); no code moves.**
+4. **Plain `j land 0xFF` filler — ACCEPTED.** §3.3.4 item 4 asks for count,
+   `tkeep` and `tuser` and never for content equality; frame B delivers nothing;
+   B-3 needs two declared frames and there is one. **Optional strengthening for
+   the respawn, not a bar**: `delivered_octets samples` against
+   `List.init sc.a_delivered ~f:(fun j -> j land 0xFF)` would convert A's count
+   assertion into a provenance assertion for two lines.
+5. **Sub-case 3 built at A's lane-0 start — ACCEPTED.** The packet's own table
+   says "either"; both instances fail bound 7 for the identical reason (a lane-0
+   landing is always a word boundary, at either start lane), so the choice carries
+   no coverage consequence. The stated tie-breaker is also **correct on its
+   facts**: the lane-4-start instance of sub-case 3 *is* `At_preamble 4` at a
+   lane-4 start, which is M03-B4 member (b)'s geometry exactly, and building it
+   here would have duplicated a member landing in the same commit.
+
+### 8. The three review-first items — ruled
+
+1. **BAR B-2's `abort`** — ruled at judgement call 2 above: the reports-emptiness
+   stand-in **satisfies** the bar by entailment; no literal `.abort` comparison is
+   required and no defect against `run_b4` is opened.
+2. **Shared runner vs six separate runners** — **the shared runner is correct, and
+   preferred.** §7 item 2 offered it in terms (`WO-0062` §2 bar 7's list form),
+   and the executed shape is **better than what was offered**: six named `subcase`
+   records over one `run_subcase`, with **six separate `%expect_test` blocks**
+   rather than one `List.iter`, so each sub-case carries its own title and its own
+   failure. **CI proved the value of that choice in this very run** — three
+   distinct, individually named failures instead of one blocking the other five.
+   Had this been a single `List.iter` block, sub-case 3 would have masked 4 and 6.
+   Keep it.
+3. **Sub-case-ID → AP-row mapping** — **acceptable as landed, and improved in the
+   respawn.** The discriminator triple (`/S/` lane, A start lane, delivered-or-not)
+   is a **total, injective** map onto §4.N's six rows, so nothing is ambiguous.
+   But it is not *mechanically* recoverable, and this plan has already paid once
+   for a census that could not read prose (`M03-M10`/`M03-B3`). **Commissioned:
+   each `%expect_test` title gains its `AP` §4.N row number** — "M03-N2 sub-case
+   4 (§4.N row 4): …" — and the `row` strings passed to `fail` stay exactly as
+   they are, because campaign seals are written against those and they must not
+   move.
+
+### 9. Inventory and the discharge count — RE-MEASURED from the tree
+
+**The bench inventory reproduces independently.** `%expect_test` titles under
+`test/xgmii_rx_64/`: **39** at `88413b9^` → **48** at `88413b9` (**+9**);
+repository-wide **119 → 128**. Identical to the return's §(d) at every cell.
+
+**The discharge count, measured — and the method's own blind spot found while
+measuring it.** `WO-0065` §10 published **42 → 43** as *derived, not measured*
+and required this verdict to re-measure. Measured by the `J-dv_lead-0094` titles
+method, at both ends:
+
+| | `88413b9^` | `88413b9` |
+|---|---|---|
+| `%expect_test` titles under `test/xgmii_rx_64/` | 39 | **48** |
+| distinct plan rows named in those titles | 42 | **43** |
+| − `M03-A4` (a NO-ASSERT row named in a title) | 41 | **42** |
+| + `M03-F5` by citation (`test_m03_f.ml:809`, not a title) | 42 | **43** |
+| **Discharge** | **42 of 62** | **43 of 62** |
+
+The parent figure reproduces `J-dv_lead-0109`'s **42** and its outstanding list
+of twenty **exactly, row for row**, which is what licenses the HEAD figure. The
+whole of the +1 is **M03-N2**, the only row that leaves the outstanding list
+(now nineteen). **So the derived figure's number was right AND its cause was
+right** — the first time in four attempts in this programme that both held, and
+worth recording as such rather than only recording the failures.
+
+**But the number is not yet earned, and the method is why.** The titles census
+counts **titles, not passes**: M03-N2's six titles are in the tree and three of
+them raise. **43 is the titled figure; the EFFECTIVE discharge at `88413b9` is
+42**, and it becomes 43 when the respawn is green. Both figures are now carried
+in §4.N so no later reader has to choose between them.
+
+**A defect in the census method itself, found by running it twice.** A naive
+substring match discharges **`M03-M1` on `M03-M10`'s title** — inflating the
+count by one and silently retiring an outstanding row. My first pass made exactly
+that error and reported 44; the boundary-matched pass reproduces 42 at the parent
+and is the one above. This is the `M03-M10`/`M03-B3` shared-title problem biting
+from a **third** direction. **Commissioned into the campaign packet**: the census
+in `tools/dv_checks.sh` matches row ids with a trailing-digit boundary, and its
+own comment says why. Not landed here — a review commit is not where tooling
+changes belong.
+
+### 10. Reviewed repairs made in this commit
+
+**None to `test/**`.** The two defects are returned, not repaired, for the reason
+at §1. The plan edits at §11 are dv_lead's own commissioned work, not repairs to
+this return.
+
+### 11. The four owed plan edits, as landed in `AP-xgmii_rx_64.md`
+
+1. **§4.B's cells marked DRIVEN.** M03-B4's member (b) → **DRIVEN**, `run_b4b`,
+   `88413b9`, green in run `30961544649`. M03-B2's `/I/` → **DRIVEN**
+   (`run_b2_new`, both lanes, green); `/Q/` → **DRIVEN**, replacing *"carried and
+   NOT driven"*. **One consistency repair, stated**: B2's Observable cell said
+   *"Members (a) and (b)"* while the row now has three members; it reads *"(a),
+   (b) and (c)"*, with the superseded wording noted rather than deleted.
+2. **Note B-ii obligation 1 → DISCHARGED**, carrying §3.2.1's ruling in full —
+   all four grounds, the refusal (`/Q/` is a single control character, **not** an
+   ordered set; REQ-113's ordered-set case stays family I's), the one-site/two-site
+   asymmetry, and the standing conversion clause. **The obligation's own text is
+   kept below the discharge**, because the argument that retired it is only
+   readable against it.
+3. **§4.N's closing note and §6's two no-coverage marks — NOT struck. They
+   STAND.** This is the *"subject to your review verdict"* clause biting exactly
+   as written: `WO-0065` §10 holds the prohibitions in force *"until the unit
+   LANDS"*, and **a red unit has not landed**. The mark is **re-grounded** rather
+   than left stale — it no longer rests on *"has no unit"* (false at `88413b9`)
+   but on *"benched and not green"* — and both §6 rows now say what strikes them:
+   a green respawn and a verdict, nothing else.
+4. **The "17" → the measured 25 lines / 26 occurrences**, re-measured twice at
+   `88413b9` by this verdict and not inherited from the return, with the cause
+   recorded (a count taken before the same round's own edits and published about
+   the state after them) and the instruction *"cite the measurement, never the
+   17"*. **§9 change-log row appended.**
+
+### 12. What the respawn is, and what it is not
+
+**`WO-0065B`, ISSUED as a revision of this packet** — not a new round. Scope:
+`test/xgmii_rx_64/test_m03_n.ml` **only**, plus the journal entry and this
+packet's revision log. Everything else in this commit is **accepted and frozen**:
+family B's five members, the four debt repairs, the `dune` line.
+
+1. **DEFECT N-1** — `array_len = max 5 (sc.t_idx + 1)`, with the trailing-octet
+   derivation stated at the site.
+2. **DEFECT N-2** — delete the `c1 = c2` early-fail; add `coincides : bool` to
+   the `subcase` record and assert it per sub-case.
+3. **Fold in while the file is open**: `oa`'s `words`/`last_tkeep`/`tlast_cycle`
+   against `Injection.outcomes` (§4, B-2 shortfall); the `%expect_test` titles
+   gain their §4.N row numbers (§8 item 3); optionally, A's delivered **content**
+   (§7 item 4). **The `row` strings passed to `fail` do not change.**
+4. **Nothing else moves.** No `[%expect]` block is promoted. `test_m03_b.ml`,
+   `bench.*`, `test/xgmii/**` and `AP-xgmii_rx_64.md` are **not** deliverables of
+   the respawn.
+
+**The two standing prohibitions on M03-N2 remain in force**, and the campaign
+packet at §13 does not issue until the respawn is green.
+
+### 13. Commissioned on the green respawn, and dated
+
+- **The family-B / N campaign packet + seal, in one commit.** It becomes the
+  first legitimate N2 denominator. **Bound 7 is SCORED, never asserted**: the
+  seal records three instances and **distinguishes their shapes** — sub-cases 4
+  and 5 (`Frame`-state on entry) and sub-case 6 (`Preamble`-state on entry) —
+  per §6. Nothing in this round is mutation-qualified by being written.
+- **The family-J capability round — DATED, on my own two-deferral rule.** Family
+  J has now been deferred twice (`WO-0065` §10, and the round before it). It is
+  **scheduled as the round immediately following the family-B/N campaign seal**,
+  and it does not slip a third time without an E2 to the orchestrator naming
+  the cost.
+
+**Signed** dv_lead, `J-dv_lead-0112`, at `88413b9` + this commit.

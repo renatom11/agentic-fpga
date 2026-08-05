@@ -551,3 +551,304 @@ orchestrator to issue to tb_writer.
 
 ### Files-in-this-commit
 - agents/handoffs/WO-0065_tb-m03-family-b-completion-and-n2.md
+
+## [J-dv_lead-0112] 2026-08-05T21:40Z | task:WO-0065 | RV-0065 BOUNCED on three of eleven members — and the flagship sub-case fails because a guard asserts the absence of the coincidence the row exists to record, which my own twelve pre-committed conditions would not have caught if it had failed silently
+
+### Trigger
+Orchestrator spawn: review tb_writer's `WO-0065` execution at `88413b9`
+(11 members, 4 comment-only debt repairs), issue `RV-0065-VERDICT`, and land the
+four plan edits my own `J-dv_lead-0111` §(f)1 deferred to this round with write
+scope open.
+
+### Inputs
+- `agents/charters/dv_lead.md`; `agents/PROTOCOL.md` §4, §4.2, §5, §6, §10.
+- `agents/handoffs/WO-0065_tb-m03-family-b-completion-and-n2.md` — the whole
+  packet: §2 bars, §3.1/§3.2/§3.2.1/§3.3, §4 ranking, **§5's twelve traps**,
+  §6.1's four debts, §7, **§8's eleven pass criteria**, **§9's twelve BOUNCE
+  conditions**, §10, and tb_writer's Return log (a)–(g).
+- `git show 88413b9` in full: `test/xgmii_rx_64/test_m03_n.ml` (new, 534 lines),
+  `test_m03_b.ml`, `bench.ml`, `bench.mli`, `dune`, `test/xgmii/injection.mli`,
+  `test/xgmii/idle_injection.mli`.
+- Spec, read **before** the return's constants: `docs/specs/requirements.md`
+  §0.6 in full (the strobe window, its reference word, all three clauses, the
+  bound-never-a-licence note, C-23), §0.3, §0.5, §0.7; REQ-102, REQ-105, REQ-107,
+  REQ-110, REQ-113, REQ-018, REQ-101, REQ-008, REQ-011, REQ-103, REQ-104.
+  `docs/specs/modules/xgmii_rx_64.md` **§9 in full** (the nine-row table, the
+  closure list, clauses (a)/(b), the non-normative closure-record note, the
+  pinned-strobe-cycle paragraph and its withdrawn gloss, the no-terminate
+  reference word), §6.1's D(m) at `1f3c04c`, §6.2's `Preamble` row, §6.3 items 3
+  and 8, §7, §10, the REQ-102 traceability row at `:1197`, §13's change rows for
+  `a77017c` / `1f3c04c` / F-1.
+- `test/attack_plans/AP-xgmii_rx_64.md` §4.B rows + notes B-i/B-ii/B-iii, §4.N's
+  closing note, §6's REQ-102/REQ-110 rows, §9's last two rows.
+- `test/xgmii/arrival.ml:150–174` (standing obligation 5's checks),
+  `test/xgmii/injection.ml:228, 309` (`outcome.abort`'s definition),
+  `test/xgmii_rx_64/bench.ml:237–240` (`error_pulses`), `bench.mli`'s accounting
+  contracts, existing accounting call sites across `test_m03_a` … `test_m03_i`.
+- `J-dv_lead-0109`, `J-dv_lead-0111` (my own prior rulings and the count method).
+- **CI, read directly and not inferred**: `build` run **`30961544649`** and
+  `journal-check` run **`30961544680`**, both at `88413b9`, and the failing
+  job's full log.
+- **No `libs/**`, no `top/**`, no `rtl_snapshots/**`, no
+  `docs/reports/audit/**`** was opened (PROTOCOL §10, charter §3).
+
+### Reasoning
+
+**1. The verdict is BOUNCE, and CI said it before I finished saying it.** I
+derived the sub-case-4 defect by reading `run_subcase` against the packet's own
+table — the delivered branch opens with `if c1 = c2 then fail "…unexpectedly
+coincide…"`, and sub-case 4 is a delivered sub-case whose two reports **do**
+coincide at cycle 4 — and only then pulled the CI log, which carries that exact
+`failwith` string. Two independent routes to the same defect. The log also
+carried a **second** defect I had not derived: sub-cases 3 and 6 declare a
+**3-octet** array (`array_len = sc.t_idx + 1`, `t_idx = 2`) and
+`Arrival.check`'s five-octet rule refuses the schedule before a cycle is driven.
+**Three of eleven members raise; the other eight are green and family B is
+complete.**
+
+**2. Both defects sit on top of arithmetic that is entirely correct, and that is
+the finding worth carrying.** I re-derived every figure from §0.5/§0.6 and §9
+before reading the return's constants: all six sub-case tuples, both B4 members'
+eight figures, B2's four members' figures. **Every one agrees.** The
+`(last_in + L)/8` pin for the delivered sub-cases reproduces §4.N's W+1/W+2
+column at all four; the zero-delivered pin is §9's own no-output-word clause;
+the window function is §0.6's three clauses written out. **The worker derived
+right and encoded wrong**, in the one member that could least afford it — sub-case
+4 is the plan's minimal witness for M03-R1 and the first payer of bound 7. That
+is a much cheaper failure to fix than the reverse, and the BOUNCE should say so
+rather than reading as a judgement on the round.
+
+**3. Why I did not repair it myself.** `test/**` is my scope and the fix is small
+— delete three lines, widen one array. But **this seat cannot run the suite**
+(ADR-0005: no Hardcaml toolchain), so a repair by me would be an unverified fix
+to a flagship member handed back as if reviewed, which is precisely what I bounce
+workers for. The defects return with `file:line`; CI is what will say they
+worked. I did make one **stated** consistency repair, in the plan and not the
+bench: B2's Observable cell said "Members (a) and (b)" while the row now has
+three.
+
+**4. The promotion question, answered in the log rather than from the shape of
+the failure.** The run prints a `PROMOTION BLOCK` and it must **not** be acted
+on. The three corrected hunks are `[%expect.unreachable]` +
+`[@@expect.uncaught_exn {| (Failure "…") |}]` with backtraces — raised
+exceptions, not printed tables. Promoting them would bake three failure messages
+into the expect blocks and turn a red suite green with the defects intact. I
+stated the house rule this instantiates, because it will be needed again: **a
+`.corrected` carrying `expect.uncaught_exn` is never a promotion candidate; a
+promotion candidate is printed data, an uncaught exception is a verdict.**
+
+**5. A gap in my own pre-commitment, and I am recording it against myself rather
+than letting condition 12 look like foresight.** None of my twelve BOUNCE
+conditions names *"a member that fails a conforming design"*. Condition 12
+("unpromoted expect drift") catches this only because a raised `failwith`
+happens to produce a `.corrected` file — a **mechanism**, not the defect. Had
+these three members failed *silently* — a vacuous guard rather than a raising
+one — twelve pre-committed conditions would have returned zero and I would have
+ACCEPTed. The twelve were written to stop me writing the verdict to fit what
+arrived; they did that, but they were not a coverage claim and I should not have
+let them read as one.
+
+**6. The sub-case-6 split, verified independently in both limbs, because bound
+7's closure rides on it.** At a lane-0 start, preamble positions 1…7 are lanes
+1…7 of A's **own** start word, so `At_preamble 4` reaches lane 4 **inside the
+word A opened** — nothing open on entry, no bound-7 payment — and it is the only
+placement reaching lane 4 at zero delivered. At a lane-4 start, positions 1…7 are
+lanes 5,6,7 of word 1 and lanes 0…3 of word 2 — **no preamble position reaches
+lane 4 at all** — so `At_octet 0` (octet time 20, lane 4 of word 2) is the only
+route, with A open since word 1: **in-word, already open, bound 7 paid.** The
+worker's derivation is correct in both limbs. **One distinction it does not
+draw and the seal must**: at sub-cases 4 and 5 A is in `Frame` state on entry, at
+sub-case 6 in `Preamble` state. §9's closure list makes both *open*, so all three
+satisfy bound 7 — but "three instances" without that split is a count, not a
+coverage, and I have already been caught once this programme generalising over a
+table that did not support it.
+
+**7. BAR B-2's `abort`, ruled by entailment rather than by counting
+expressions.** `injection.ml:309` defines `abort = delivered > 0 && strobes <>
+[]`, so asserting `reports = []` on a clean following frame **entails**
+`abort = false` by construction. The bar is a requirement about **what the
+member pins**, not about how many comparisons it writes. No defect against
+`run_b4` is opened — the worker was right to ask rather than to deepen a landed
+member, and right that it could not have deepened it without touching what §7
+item 1 froze.
+
+**8. The `_piece`/`_frame` naming axis is incomplete, and the correction is
+mine.** Frame A in `test_m03_n.ml` **has** a genuine `Arrival.frame` record, so
+`account_forwarded_piece` reads as an axis violation. It is not:
+`account_clean_frame` would feed `Latency.frame_in` the **whole declared array's**
+input times while A received only 4 or 8 octets, with no `?expected_octets`
+override — and `~received`-honesty is the precondition that actually carries
+weight. The axis has **no cell** for *a genuine record whose received extent is
+shorter than its declared array*, which is what every REQ-110-aborted declared
+frame is. A `bench.mli` documentation debt, mine, not this round's; no code
+moves.
+
+**9. Three of my four plan edits landed as commissioned; the third landed as its
+own escape clause.** `J-dv_lead-0111` §(f)1 pre-authorised striking §4.N's
+closing note and §6's two no-coverage marks **"subject to your review verdict"**,
+and the verdict is what stopped it. `WO-0065` §10 holds the prohibitions *"until
+the unit LANDS"*, and **a red unit has not landed**. But leaving the marks
+untouched would have left them **false on their face** — a unit now exists — so
+they are **re-grounded**, from *"has no unit"* to *"benched and not green"*, with
+both §6 rows naming exactly what strikes them. That is the same
+keep-the-history-replace-the-ground pattern the debt-4 repairs used, applied to
+my own text.
+
+**10. The count is right, its cause is right, and the method has a defect I
+found by running it twice.** `WO-0065` §10 published 42 → 43 as *derived, not
+measured* and told this verdict to re-measure. Measured at both ends: **42** at
+`88413b9^`, **43** at `88413b9`, and the parent reproduces `J-dv_lead-0109`'s
+outstanding list of twenty **row for row** — which is what licenses the new
+figure rather than merely agreeing with it. The whole +1 is M03-N2. **First time
+in four attempts that a forward figure's number and its cause both held.** Two
+things ride with it. (a) **43 is not earned**: the census counts **titles, not
+passes**, and M03-N2's are red, so the *effective* figure is **42**; both are
+carried in §4.N so no later reader has to choose. (b) **My first pass returned
+44**, because a naive substring match discharges **`M03-M1` on `M03-M10`'s
+title** — the `M03-M10`/`M03-B3` shared-title problem biting from a **third**
+direction, and this time it was mine. Boundary-matched row ids are commissioned
+into `tools/dv_checks.sh` with the campaign packet; a review commit is not where
+tooling changes belong.
+
+**11. What I commissioned.** `WO-0065B` as a **revision**, scoped to
+`test_m03_n.ml` alone — everything else in `88413b9` is accepted and frozen — with
+the two defects, three fold-ins (B-2's shortfall on `oa`'s
+`words`/`last_tkeep`/`tlast_cycle`; §4.N row numbers in the titles; optionally A's
+delivered content), and an explicit instruction that the `row` strings passed to
+`fail` do **not** move, because campaign seals are written against them. On green:
+the family-B/N campaign packet + seal in one commit, bound 7 **scored** with its
+three instances' shapes distinguished; and **family J gets a date** — the round
+immediately after that seal, on my own two-deferral rule, with an E2 required
+before it slips a third time.
+
+### Actions
+- Line-reviewed all eleven new members and all four comment-only debt repairs.
+- Re-derived every figure from spec text before reading the return's constants;
+  compared; recorded agreement.
+- Verified BOUNCE 9 **mechanically**: nesting-aware comment-stripped comparison
+  of `88413b9^` vs `88413b9` for `bench.ml`, `bench.mli`, `injection.mli`,
+  `idle_injection.mli`, `dune` — all five code-identical.
+- Read CI runs `30961544649` (build, **failure**) and `30961544680`
+  (journal-check, success) and the failing job's full log.
+- Appended **`RV-0065-VERDICT`** (BOUNCE) to
+  `agents/handoffs/WO-0065_tb-m03-family-b-completion-and-n2.md`.
+- Landed the four owed edits in `test/attack_plans/AP-xgmii_rx_64.md` (§4.B two
+  cells, note B-ii obligation 1, §4.N + §6's two marks re-grounded, the 17 → 25/26
+  correction) and one §9 change-log row.
+
+### Evidence
+- **CI at `88413b9`**: `build` run **`30961544649`** → `completed` / **`failure`**;
+  `journal-check` run **`30961544680`** → `completed` / `success`. Failing job
+  `92166342111`.
+- **The three failures, from the log**: `M03-N2 (S lane 4, A lane 0, delivered):
+  frame A and frame B's reports unexpectedly coincide in this sub-case`
+  (`test_m03_n.ml:440`, from `:513`); and, twice, `Bench.run: Arrival.check found
+  an unconformant schedule (standing obligation 5): frame 0 carries 3 octets; a
+  frame below five octets delivers nothing (REQ-107) and is an injection case,
+  not a schedule case` (`bench.ml:180` via `test_m03_n.ml:370`, from `:503` and
+  `:532`). Only `test_m03_n.ml` produced a `.corrected`.
+- **PROMOTION BLOCK, recorded and NOT to be promoted**:
+  `test/xgmii_rx_64/test_m03_n.ml`, sha256
+  `0df912b17bba38a53083a2d6971dfa8d8169ee471522ae26e5ecfee54fcd7252`.
+- **Comment-stripped protected-file check** (runnable from a checkout): strip
+  OCaml comments with nesting and string-literal handling from
+  `git show 88413b9^:<f>` and `git show 88413b9:<f>`, normalise whitespace,
+  compare — **identical** for `test/xgmii_rx_64/bench.ml`, `bench.mli`,
+  `test/xgmii/injection.mli`, `test/xgmii/idle_injection.mli`, and (with `;`
+  lines dropped) `test/xgmii_rx_64/dune`. `test_m03_b.ml`'s only deleted line in
+  the whole diff is `   case). *)`.
+- **Name-count, measured twice at `88413b9`**:
+  `grep -c "M03-N2" test/attack_plans/AP-xgmii_rx_64.md` = **25**;
+  `grep -o "M03-N2" test/attack_plans/AP-xgmii_rx_64.md | wc -l` = **26**.
+  (`grep -rn "M03-N2" test/ --include=*.ml --include=*.mli` = **18**, was 3.)
+  **And at the tree this commit hands back — because the commit correcting the
+  count adds names, which is the trap itself, one turn later**: **29** lines /
+  **33** occurrences, re-measured after the last edit and stable. §4.N carries
+  both figures with both states; neither is written without its SHA.
+- **Bench inventory, reproduced independently of the return**: `%expect_test`
+  titles under `test/xgmii_rx_64/` **39 → 48** (+9); repository-wide
+  **119 → 128** (+9).
+- **Discharge count, `J-dv_lead-0094` titles method, both ends** — 48 titles
+  under `test/xgmii_rx_64/`, 43 distinct plan rows named, − `M03-A4`
+  (NO-ASSERT in a title), + `M03-F5` by citation (`test_m03_f.ml:809`) =
+  **43 of 62** at `88413b9`; the same procedure at `88413b9^` returns **42 of
+  62** with outstanding = `M03-J1…J3, K1, K2, L1…L5, M1…M7, N1, N2, N4`,
+  reproducing `J-dv_lead-0109` exactly. Outstanding at HEAD is that list minus
+  `M03-N2` (**19**). **Row ids must be matched with a trailing-digit boundary**:
+  a substring match discharges `M03-M1` on `M03-M10`'s title and returns 44.
+- **`Injection.outcome.abort`** is `delivered > 0 && strobes <> []`
+  (`test/xgmii/injection.ml:309`); **`error_pulses`** is a `concat_map` over
+  samples (`test/xgmii_rx_64/bench.ml:237–240`), so two strobes on one cycle
+  yield two entries with equal cycles; **`Arrival.check`** refuses frames under
+  five octets (`test/xgmii/arrival.ml:161–167`).
+
+### Outcome
+**BOUNCE**, on pre-committed condition **12**, with two defects at `file:line`
+and eight of eleven members accepted. `WO-0065`'s DoD is **partially met**:
+§8 criteria 2, 5, 6, 7, 8, 9, 10, 11 met; **criterion 1 (all members green, no
+unpromoted drift) failed**; criteria 3 (B-2) and 4 (B-3) met on the members they
+name, with one recorded shortfall on `test_m03_n.ml`'s frame A. All four
+comment-only debts (§6.1 debts 2 and 4) **accepted as landed**. My four owed
+plan edits are **landed**, the third as a **re-grounding rather than a striking**
+— the verdict is what stopped it. Handoff: `RV-0065-VERDICT` in
+`agents/handoffs/WO-0065_tb-m03-family-b-completion-and-n2.md`; the respawn is
+`WO-0065B`, scoped to `test_m03_n.ml` alone, for the orchestrator to issue.
+
+### Open-questions
+1. **`WO-0065B` is drafted inside the verdict (§12) and not as its own packet
+   file** — the orchestrator allocates its id and issues it. If it wants a
+   standalone packet I draft one on request; the scope, the two defects and the
+   three fold-ins are already stated in terms.
+2. **`bench.mli`'s `_frame`/`_piece` naming axis has no cell for a genuine
+   `Arrival.frame` whose received extent is shorter than its declared array** —
+   every REQ-110-aborted declared frame. A documentation debt, **mine**, riding
+   the next round that opens `bench.mli`. No code moves.
+3. **`tools/dv_checks.sh`'s census must match row ids with a trailing-digit
+   boundary** (`M03-M1` vs `M03-M10`). Commissioned into the campaign packet,
+   deliberately not landed in a review commit.
+4. **Family J is now DATED** — the round immediately after the family-B/N
+   campaign seal, on my own two-deferral rule. A third deferral is an **E2** to
+   the orchestrator with the cost named, not a footnote.
+5. Carried unchanged from `J-dv_lead-0111`: `run_i2_member`'s deliberate
+   citation exception; the `assert_following_frame_intact` /
+   `assert_clean_frame_structure` merge; `WO-0061` §8 bound 1's `tkeep` half;
+   **N-1**; the auditor's DV-escape ledger disposition on `BUG-0003`; **B-4**'s
+   stale forward reference in `test_m03_h.ml`'s docstring. **`WO-0058` bound 7
+   does NOT leave the list this round** — `J-dv_lead-0111` said it would "the
+   moment `WO-0065` lands green", and it did not land green. It stays,
+   commissioned, until the respawn is scored.
+
+**Harvest (ADR-0018, PROTOCOL §7).** **Not due this round** — no `SO-`, no gate.
+Span since `J-dv_lead-0111`'s note: **J-dv_lead-0112** (this entry); cumulative
+untiled span **J-dv_lead-0001 … 0112**, first harvest still firing at `SO-M03`.
+
+- **`J-dv_lead-0111`'s new candidate gains its first confirming instance from the
+  other side.** *"A bound stated as a conjunction is discharged only by a
+  stimulus containing every conjunct"* — sub-case 6 satisfies both conjuncts on
+  a **third** shape (`Preamble`-state on entry, not `Frame`-state), and the seal
+  now has to say which shape each instance is. The candidate's observable is
+  unchanged; it gains this commit as an LH1 incident.
+- **`J-dv_lead-0106`'s LH2-g gains a FIFTH incident, and for the first time the
+  candidate fires in the direction of a false POSITIVE.** Every previous incident
+  was a published figure that measurement moved **down** or **corrected**. Here
+  measurement moved a figure **up** — my first census pass returned 44 because
+  `M03-M1` matched inside `M03-M10` — and the wrong number would have **retired an
+  outstanding row**. The observable holds unchanged; recording the direction
+  because a candidate only ever seen failing one way gets read as a rule about
+  that way.
+- **One new candidate banked.** *"A list of pre-committed reject conditions is a
+  guarantee about the reviewer's independence, never a claim of coverage; before
+  citing one as met, name the defect class it would have MISSED."* **LH1**: this
+  commit — twelve conditions caught three raising members only via the
+  `.corrected` file a `failwith` happens to produce, and would have returned zero
+  had the same three members failed silently. **LH2-g** — no proper noun in the
+  rule; it binds any pre-commitment list, mine or a campaign seal's. **LH3**:
+  without it, a pre-commitment list is read as an audit of the work rather than
+  an audit of the reviewer, and its silence is taken as evidence of absence —
+  which is the exact inference `WO-0058` §8's weighting paragraph forbids about
+  mutation denominators, unnoticed one level up.
+- **Both war stories carry unchanged.** None retired, none promoted.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0065_tb-m03-family-b-completion-and-n2.md
+- test/attack_plans/AP-xgmii_rx_64.md
