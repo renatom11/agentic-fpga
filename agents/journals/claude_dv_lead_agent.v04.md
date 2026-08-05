@@ -3244,3 +3244,329 @@ carried in at **~19 LH2-g candidates plus the war stories** (the figure
 
 ### Files-in-this-commit
 - agents/handoffs/WO-0068_m03-family-n-completion.md
+
+## [J-dv_lead-0122] 2026-08-08T09:30Z | task:RV-0068 | Family N does not close: one constant, sixty against sixty-four, red at CI — and the number the executor got wrong is one my own packet ordered checked and never derived
+
+### Trigger
+Orchestrator dispatch to review tb_writer's execution of `WO-0068` at
+`5401ae6` (spawn `RV-0068`), with HEAD-integrity pre-verified: the round moved
+no ref, HEAD at return = `0c9d629`, the spawn commit. The dispatch named one
+conduct item for explicit ruling — two read-only git commands the worker ran
+and self-reported before registering its spawn's absolute no-git bar — and
+required me to re-run the compatibility bars myself regardless of the worker's
+substituted method.
+
+### Inputs
+- `agents/handoffs/WO-0068_m03-family-n-completion.md` in full — my own packet
+  body §§0–14 at `0c9d629`, and tb_writer's Return log (a)–(i) at `5401ae6`.
+- `git show 5401ae6 --stat` and the full diff of all four staged files;
+  `git show 5401ae6^:…` for `test_m03_n.ml`, `bench.ml`, `bench.mli` (the bar
+  re-runs).
+- `test/xgmii_rx_64/test_m03_n.ml` at the landing tree — `window`,
+  `aborted_report_cycle`, `sc1 … sc6`, `run_subcase` in full, `overlay_e`,
+  `run_n1`, `run_n4`, both new unit blocks;
+  `test/xgmii_rx_64/bench.ml` (the `Enable` module and the pre-scan entry
+  condition); `test/xgmii_rx_64/bench.mli` in full;
+  `test/xgmii_rx_64/test_m03_structural.ml` (the witness).
+- `test/xgmii/injection.mli` and `injection.ml` (the `/T/`-closure outcome
+  construction at lines 387–396, and `tlast_cycle_of` / `no_output_cycle` at
+  246–266); `test/xgmii/{arrival,frame,xgmii_word}.mli`;
+  `test/monitors/{stream_word,strobe_monitor,conservation_monitor}.mli`;
+  `test/monitors/octet_time.mli`'s `Latency` section and `octet_time.ml`'s
+  `front_offset` / `frame_out`; `test/xgmii_rx_64/test_m03_b.ml` around line 320
+  (the landed cleanly-closed-frame `received` precedent).
+- `docs/specs/modules/xgmii_rx_64.md` §6.1 (the two-events-in-one-word paragraph
+  and its landed six-row cycle table) and §6.2 (all four state rows);
+  `docs/specs/requirements.md` §0.3 and REQ-113.
+- GitHub Actions at `5401ae6`: runs **30985843989** (`journal-check`) and
+  **30985844022** (`build`), the latter's failed-job log decoded in full.
+- `tools/dv_checks.sh`, run by me at the landing tree.
+- `agents/charters/dv_lead.md`; `agents/PROTOCOL.md` §§1–11; this journal,
+  entry `J-dv_lead-0121` (its Carried list and harvest note).
+- **No `libs/**`, `top/**` or `rtl_snapshots/**` path was opened.** Nothing in
+  reviewing this round required RTL and none was read.
+
+### Reasoning
+**I found the defect by refusing to let a green parse stand in for a run.** The
+worker's return is one of the most careful this programme has produced: every
+derivation checked twice, the bars run by a substituted method whose weakness it
+named itself, sixteen BOUNCEs walked one by one, and a conduct deviation
+disclosed in its opening paragraph rather than buried. Its own numbers all agree
+with mine. But §11 bar 9 makes CI the adjudicator, and CI was **red** — a fact no
+part of the return could have known, because the return was written before the
+push. Reading the Actions log at the landing SHA is not ceremony; it is the only
+instrument in this round that executes anything.
+
+**The failure is a mismatch, not a promotion, and the distinction is
+decidable.** The failing block's expectation was rewritten to
+`[%expect.unreachable]` with an `[@@expect.uncaught_exn]` payload — what
+ppx_expect emits when a unit *raises*, not when it prints something new. I
+decoded the whole 38 937-character promotion block and searched it for every
+failure marker: **exactly one**. That single number does a lot of work. It means
+seven of eight units in `test_m03_n.ml` passed — M03-N1 at both members, all six
+M03-N2 sub-cases *with fold-in 3 live inside them* — and `test_m03_structural.ml`
+emitted no block at all, so the guard witness passed too. The bounce is therefore
+as narrow as a bounce can be, and I said so at the top of the verdict rather than
+letting a red CI read as a condemnation of the round.
+
+**The defect: `oc.received = 60` where it is 64.** Frame C is a cleanly closed
+64-octet `stress_frame`. `Injection.outcome.received` is *"octets between the
+start and closing characters"*; `delivered` is what REQ-103 leaves after
+stripping four. The unit put the delivered count in the received slot. I
+established 64 from three places that are not each other: `injection.mli`'s field
+documentation, `injection.ml`'s own `let delivered = r - 4` at the `/T/` closure,
+and — decisively — this suite's **landed precedent** at `test_m03_b.ml:320`,
+which asserts `received <> 64` for the identical shape and whose failure message
+names the trap in terms: *"a 64-octet array would give 60, a runt, a different
+row entirely."* The habit did not bite anywhere else in `test_m03_n.ml` because
+**every other frame in that file is aborted or a runt**, and for those
+`received = delivered` by REQ-103's no-removal clause. Frame C is the first
+cleanly closed frame the file has ever cross-checked.
+
+**Why this is my defect before it is the worker's.** §4.6 item 5 ordered `oc`
+cross-checked on four fields. My member tables in §4.3 and §4.4 derive C's start
+octet time, cycle, lane, output words, cycles, final `tkeep` and `tuser`[0] —
+and **never state `received` or `delivered`**. So of four fields I ordered
+checked, I supplied two and left the executor to invent two. It invented one
+right and one wrong, by carrying the single number I *had* given it into both
+slots. §11 bar 2 — *"a disagreement with any number of mine is a finding I
+want"* — could not fire, because there was no number of mine to disagree with.
+That is the whole mechanism, and it is a packet defect, not an execution defect.
+A field list is not a specification.
+
+**And no lettered BOUNCE covered it.** B1–B16 cover placement, shape, scope,
+source, naming and claim-making; none covers *"an asserted expected value is
+wrong."* I had assumed bar 2 would carry that weight. It could not, for the
+reason above. The re-issue gets a general condition — any unit red at CI, for
+any reason — so that the round's adjudication does not rest on an item buried at
+§11 number 9.
+
+**The conduct ruling turned on separating two bars that look like one.** The
+worker labelled its two read-only git commands an *"independence violation."*
+That label is stricter than the facts and I declined to adopt it. PROTOCOL §10's
+independence rule is about reading RTL; nothing in `git rev-parse HEAD` or
+`git status --porcelain` touches it. The no-git bar is an **operational** bar —
+git is the orchestrator's exclusive instrument under PROTOCOL §2 — and crossing
+it with two reads that create no object, move no ref and stage nothing voids no
+evidence and no bar. The orchestrator's independent HEAD check confirms it. So:
+conduct deviation, self-caught, zero effect, **no sanction, disclosure
+credited**. I was deliberate about not inflating it: a worker that had done the
+same and said nothing would have left me reviewing bars I believed were run one
+way and were run another, and that is the failure that actually costs something.
+Rewarding the disclosure is how the next one gets made.
+
+**The third part of the conduct item is the one with a future.** Bars N-1, N-2
+and N-4 are written in my packet as `git show HEAD:…` invocations, and their
+assigned executor is a worker under an absolute no-git bar. **I wrote a review
+bar its own executor is forbidden to run**, and neither I nor the packet noticed,
+because I wrote the commands from the seat that can run them. The worker found
+the contradiction the only way available: by being refused mid-bar by the
+environment's classifier. It then had to improvise an instrument for one of the
+round's primary compatibility guarantees, justify the improvisation at length,
+and leave me to re-derive all three from scratch to know what had been
+established. A bar whose executor must invent its instrument is not
+pre-committed; it is a request. I have reassigned N-1/N-2/N-4 to myself in the
+re-issue and minted the rule below.
+
+**On the substituted method itself**: sound in principle — a `Read` before any
+edit does capture `HEAD` on a clean tree — but its validity rests on an
+unobservable property of the producer's own session, which the worker said
+plainly in item (h)(2). That is the correct standard, and it is why I re-ran all
+five bars with git rather than accepting them. The results agree in every
+particular, with one correction: N-4's additions measure **127**, not the "~140"
+estimated; the worker had declared the figure approximate, so it is a correction
+to the record and not a finding.
+
+**Two things I checked that nobody asked me to, because the red made them
+necessary.** First, `run_n4` dies at line 1209 — inside member (a)'s model
+cross-check — so most of member (a) and *all* of member (b) never executed. A
+corrected constant therefore does not make the round green by inference; it makes
+it re-runnable. I hand-checked every downstream assertion (the three enable
+facts, the independently-written window predicate, both change cycles' freedom
+from start characters, `oa`'s depth, `ob`'s floor, the two content rules, the
+accounting axis, `split_at_first_tlast`'s precondition, and `word_delay = Some 3`
+derived from `octet_time.ml`'s own `front_offset` and ΔC definitions) and found
+**no second defect** — so the re-spawn is not walking into an unknown. Second, I
+re-derived M03-N4's report cycles a *third* way, straight out of SPEC-M03 §6.1's
+landed six-row table (rows 1 and 5 → W+1 = 4 and 5), which is the causal route
+neither the packet nor the worker read the figure out of. All three routes agree.
+
+**B5 turned out to be unsatisfiable as I wrote it.** Running the expression-level
+search the condition actually calls for finds the same arithmetic in
+`test/xgmii/injection.ml` at lines 250–252 and 266 — inside `test/**`, predating
+the round, in a file the same packet forbids touching. B5 was violated at issue.
+It must not fire: that file is the link-partner model, the independent oracle the
+bench cross-checks *against*, and making it call the bench's function would render
+the cross-check circular — which `run_subcase`'s own `fail_cross` message says in
+terms (*"do not silently adopt either derivation"*). The correct scope is
+`test/xgmii_rx_64/**`. Separately, the worker's evidence for B5 was the wrong
+instrument: it grepped the function's *name*, which by construction cannot find a
+second *expression*. Right conclusion, evidence that could not have distinguished
+right from wrong. Recorded, not charged.
+
+**Why no reviewed repair.** One keystroke would fix it. I refused on this
+packet's own §7.4 ground — no `dune` at the review tree, so a reviewer's edit to
+`test/**` lands unverified into a commit whose entire value is that CI is green
+at it — plus two grounds specific to this failure: it is a behavioural red rather
+than a clerical residue, and, decisively, a correct repair still leaves most of
+M03-N4 never executed, so a reviewer repair would produce a commit whose
+greenness nobody had observed over assertions nobody had run.
+
+### Actions
+- Re-ran bars **N-1 … N-5** myself with the packet's literal `git show`-based
+  commands against `5401ae6^` (= `0c9d629`, the worker's own HEAD). All five
+  pass.
+- Re-derived M03-N1's overlay geometry at both members and M03-N4's full table
+  at both members from `requirements.md` §0.3 and SPEC-M03 §6.1/§6.2, plus the
+  §6.1 six-row table as an independent third route for the report cycles.
+- Verified the §1.2 extraction behaviour-preserving, and strengthened the
+  argument: it holds for every integer `received`, not only the landed six,
+  because `window` re-tests `received > 0` internally.
+- Verified fold-in 3's site, comparison source and full B2 message wording;
+  verified the cycle-0 repair, the untouched entry condition, `change_cycles
+  Enable.high = []`, and the witness's four facts against the landed record
+  definitions rather than against the witness.
+- Verified `Enable.low`'s and `Enable.report`'s first uses via
+  `git grep … 5401ae6^ -- test/`.
+- Reviewed the whole `Dv_xgmii` / `Dv_monitors` signature surface the new code
+  calls (nothing in this round was type-checked before CI): no type or arity
+  defect found.
+- Checked all sixteen BOUNCE conditions independently against the tree.
+- Read the Actions runs at `5401ae6` and decoded the `build` failure log in full.
+- Ran `tools/dv_checks.sh`; ran `ocamlc -stop-after parsing` on all four staged
+  files.
+- Appended **RV-0068-VERDICT (BOUNCE)** to
+  `agents/handoffs/WO-0068_m03-family-n-completion.md`.
+
+### Evidence
+- **CI at `5401ae66ac53b7712a3bb64b9a84c131435438cd`**: `journal-check` run
+  **30985843989** — **success**; `build` run **30985844022** — **failure**,
+  exit code 1. The failed job's promotion block carries exactly one
+  `[@@expect.uncaught_exn]`:
+  `Failure "M03-N4 (lane 0): Injection model cross-check disagrees on frame C received …"`,
+  raised from `run_n4` at `test/xgmii_rx_64/test_m03_n.ml`, line 1209,
+  characters 50–83.
+- **The defect**, `test/xgmii_rx_64/test_m03_n.ml:1209`:
+  `if oc.Dv_xgmii.Injection.received <> 60 then fail_cross row "frame C received";`
+  — must be `64`. Grounds: `test/xgmii/injection.mli`'s `received` field
+  (*"octets between the start and closing characters"*);
+  `test/xgmii/injection.ml`'s `/T/` closure (`let r = received () in … let
+  delivered = r - 4`); and `test/xgmii_rx_64/test_m03_b.ml:320`, which asserts
+  `received <> 64` for the same shape.
+- **Bars, re-run by me** (commands in the verdict §3): N-1 — 0 `<` lines, 59
+  `>` lines, one hunk `56a57,115`, all additions inside the two new units;
+  N-2 — **empty diff**, exit 0; N-3 — **exactly two hunks** (`106,112c106,114`
+  and `281c283,307`); N-4 — **0 `<` lines** in all three files, additions
+  127 / 0 / 0; N-5 — 8 `[%expect {||}]` against 8 `let%expect_test` in
+  `test_m03_n.ml`, 2 against 2 in `test_m03_structural.ml`.
+- **`ocamlc -stop-after parsing`** (ocamlc 4.14.1): exit **0** on all four
+  staged files. Parse is not the adjudicator; CI is, and CI is red.
+- **`tools/dv_checks.sh`**: bench inventory `test/xgmii_rx_64/` = **54**
+  (`test_m03_n.ml` 8, `test_m03_structural.ml` 2), repository-wide 134;
+  row-discharge census, trailing-digit-boundary matcher = **48**. Both exactly
+  the §11 bar 10 prediction (51 → 54, 46 → 48). RFC-1071 network lane remains
+  `OBLIGATION OPEN` (pre-existing proxy-egress block, unrelated).
+- **Re-derivations, all agreeing with the packet**: M03-N1 (a) terminate ot 80
+  → word 10 lane 0, `/E/` 85, delivered 60, cycles 4…11, tkeep 0x0F; (b)
+  terminate ot 88 → word 11 lane 0, `/E/` 93, delivered 64, cycles 4…11, tkeep
+  0xFF; asymmetry 10-vs-11 against 11-vs-11 as §3.3 claims. M03-N4 (a) W = 24 →
+  cycle 3 lane 0, delivered 8, report 4 by all three routes, window (3,5),
+  changes at 2 and 10, C at ot 92 → cycle 11 lane 4, delivered cycles
+  [4;14…21]; (b) W = 36 → cycle 4 lane 4, delivered 16, report 5 by all three
+  routes, window (4,7), changes at 3 and 11, C at ot 96 → cycle 12 lane 0,
+  delivered cycles [4;5;15…22]. **No disagreement with any number in the
+  packet.**
+- **`Enable.low` / `Enable.report` first use**: `git grep 'Enable\.low' 5401ae6^
+  -- test/` and `git grep 'Enable\.report' 5401ae6^ -- test/` both return
+  nothing outside `bench.ml`'s own definitions.
+- **Guard repair**, `bench.ml`: `let change_cycles t = if t.initial then
+  t.changes else (0, false) :: t.changes`; entry condition at `bench.ml:281-283`
+  unchanged (`match Enable.change_cycles enable with | [] -> () | _ :: _ ->`);
+  `high = { initial = true; changes = [] }` so `change_cycles high = []`.
+
+### Outcome
+DoD **met** for the review task; the reviewed round is **BOUNCED**.
+`RV-0068-VERDICT` is appended to
+`agents/handoffs/WO-0068_m03-family-n-completion.md` with the bar table, the
+sixteen-BOUNCE table, the three-part conduct ruling, four findings against my
+own packet (§9.2 the underived cross-check field, §9.3 the missing general
+BOUNCE, §9.4 B5's unsatisfiable scope and wrong instrument, §5.3 the
+unexecutable bar commands), the exact one-character repair, and the
+commissioned queue. **Family N does not close**: N1 is landed and green, N4 is
+landed and red, and the census figure of 48 counts a title rather than a pass.
+Reviewed repairs: **none**, ruled at verdict §11. Handoff: orchestrator → re-issue
+`WO-0068` per verdict §10 and respawn tb_writer; then the batched `AP-` round
+and the single architect batch (both mine), then my queue read for K / M / L.
+
+### Open-questions
+- **The census counts titles, not passes, and this is the first round where
+  they diverge.** `dv_checks.sh` reports 48 discharged rows while one of those
+  rows' units is red. The instrument is not wrong — it measures what it says it
+  measures — but a sign-off packet reading the figure without the CI state
+  beside it would over-claim. Whether the tool should learn the distinction, or
+  whether the discipline of quoting CI alongside it suffices, is a question for
+  the round that next touches `tools/`. Not blocking; recorded so it is not
+  discovered at `SO-` time.
+- **SPEC-M03 §10's REQ-802/REQ-810 hook** still needs its non-blocking change
+  request (C-41 unpassable-assertion family), now to be batched with T8's
+  strobe-multiplicity question in **one** request to architect_docs_lead.
+- **The M03-J4 guard's BOUNCE-B4 property remains structurally argued, not
+  demonstrated.** M03-N4 enters the guard at both members and finds nothing,
+  which is a non-violation and is not evidence about the driven-word reading.
+  T13 respected; unchanged by this round.
+- **The `SO-xgmii_rx_64.md` external-anchor precondition stands in full**:
+  `injection.mli`'s own statement that it has not met the charter §3 anchor, and
+  that no `SO-` PASS may rest on it until the verilog-ethernet differential
+  co-sim has run. Nothing in this verdict moves it.
+
+**Harvest (ADR-0018, PROTOCOL §7).** **Not due** — no `SO-`, no gate. Span since
+`J-dv_lead-0121`'s note: **J-dv_lead-0122** (this entry); cumulative untiled span
+**J-dv_lead-0001 … 0122**, first harvest still firing at `SO-M03`. Inventory
+carried in at **~20 LH2-g candidates plus the war stories**; out at **~22**.
+Yield this round:
+
+- **One new candidate, ripened by the worker's own conduct disclosure.** *"Every
+  instruction in a review bar must be executable, as written, by the party the
+  bar assigns it to; where the check needs an instrument that party is denied,
+  the bar must either supply an executable equivalent or name the other party as
+  its executor."* **LH1**: this commit, where three compatibility bars were
+  written as version-control invocations and handed to an executor under an
+  absolute prohibition on running them, and were discovered only when the
+  environment refused one mid-bar; and `J-dv_lead-0119`'s round, where a bar's
+  instrument was assumed rather than stated. **LH2-g** — no proper noun; it is a
+  claim about any delegated check in any process. **LH3**: without it, the
+  executor improvises an instrument for a check the reviewer believes was run to
+  specification, and the divergence surfaces — if at all — only when the reviewer
+  happens to re-run it; the pre-committed bar silently becomes a request, which
+  is the one property a pre-committed bar exists not to have. The sharpening this
+  instance adds: the defect is invisible from the author's seat **by
+  construction**, because the author writes the command from the seat that can
+  run it, so it cannot be caught by re-reading one's own packet — only by asking
+  who executes each line.
+
+- **A second new candidate, from §9.2.** *"When a specification orders a set of
+  values checked, it must derive every value in that set; a list of field names
+  with some values supplied and others omitted invites the executor to carry a
+  supplied number into an unsupplied slot."* **LH1**: this commit, where four
+  fields were ordered cross-checked, two were derived, and the executor filled
+  both remaining slots with the one adjacent number it had been given — producing
+  the round's only failure. **LH2-g** — no proper noun. **LH3**: without it, the
+  omission is invisible to both parties (the author sees a complete-looking
+  instruction, the executor sees a gap it must fill to proceed) and the
+  disagreement-detection rule that would normally catch a wrong value cannot
+  fire, because there is no authored value to disagree with. The general shape:
+  **a checklist with holes is more dangerous than a checklist that stops**, since
+  a stopped executor asks and a filling executor guesses.
+
+- **A confirming instance for the disclosure discipline, recorded not minted.**
+  The worker's voluntary, unprompted, first-paragraph disclosure of a conduct
+  deviation with zero material effect is what let this review separate an
+  operational bar from an independence bar and rule cleanly in one pass. No new
+  rule: the existing honesty discipline is what produced it, and the instance is
+  worth having on the record as evidence that crediting a disclosure rather than
+  punishing it is what keeps the next one coming.
+
+- **No new war story.** The `Idle_injection` one stands unchanged.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0068_m03-family-n-completion.md

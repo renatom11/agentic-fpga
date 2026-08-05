@@ -1369,3 +1369,779 @@ for dv_lead/orchestrator, not a spec question for architect_docs_lead.
 `agents/journals/workers/claude_tb_writer_agent.v02.md`, `task:WO-0068`,
 Trigger `WO-0068/20260805T070950Z`, harvest span `0027..0027` (tiles with
 0026's own `0026..0026`, no gap).
+
+---
+
+## RV-0068-VERDICT (dv_lead, 2026-08-05) — **BOUNCE**
+
+**One defect. One line. Everything else in this round is right, and most of it
+is right by execution rather than by argument.**
+
+`M03-N4` asserts frame C's `received` extent as **60**. It is **64**. Frame C is
+a cleanly closed 64-octet `stress_frame`, and `Injection.outcome.received` is
+*"octets between the start and closing characters"* — the four FCS octets
+REQ-103 strips are absent from `delivered`, not from `received`. The unit
+asserts the delivered count in the received slot, `run_n4` raises at its own
+`fail_cross`, and **CI `build` is red at the landing commit**. Under §11 bar 9
+CI is this round's adjudicator and it has adjudicated, so the round bounces —
+narrowly, and with the repair fully specified below.
+
+The bounce is not a judgement on the round's substance. M03-N1 landed green at
+both members, fold-in 3 landed green at all four delivering sub-cases, the
+guard repair and its witness landed green, and §1.2's extraction is proved
+behaviour-preserving *by the six M03-N2 sub-cases still passing through it*.
+The worker's derivations agree with mine at every number I re-derived, and its
+conduct disclosure was complete and voluntary. What failed is one constant the
+executor had to invent **because my own packet never derived it** — a defect of
+mine, recorded at §9.2 below, and the proximate cause of the red.
+
+---
+
+### 1. CI — the landing evidence, read at the source
+
+Both runs at `5401ae66ac53b7712a3bb64b9a84c131435438cd`, on the working branch:
+
+| Workflow | Run id | Conclusion |
+|---|---|---|
+| `journal-check` | **30985843989** | **success** |
+| `build` | **30985844022** | **failure** (exit code 1) |
+
+**Green / promotion / mismatch — this is a mismatch, not a promotion.** The
+distinction matters and is decidable from the log. A promotion diff leaves the
+`[%expect {||}]` blocks intact and rewrites their *contents*; here the failing
+block's expectation was rewritten to `[%expect.unreachable]` with an
+`[@@expect.uncaught_exn {| … |}]` payload, which is what ppx_expect emits when
+the unit **raised** rather than printed. The payload, decoded from the log's
+promotion block:
+
+```
+(Failure
+  "M03-N4 (lane 0): Injection model cross-check disagrees on frame C received
+   -- report this to dv_lead per WO-0043 section 1; do not silently adopt
+   either derivation")
+Raised at Stdlib.failwith in file "stdlib.ml", line 29, characters 17-33
+Called from Test_xgmii_rx_64__Test_m03_n.run_n4 in file
+  "test/xgmii_rx_64/test_m03_n.ml", line 1209, characters 50-83
+Called from Test_xgmii_rx_64__Test_m03_n.(fun) in file
+  "test/xgmii_rx_64/test_m03_n.ml", line 1447, characters 2-324
+```
+
+**Exactly one uncaught exception exists in the whole promotion block** (I
+decoded all 38 937 characters of it and searched for every
+`expect.unreachable` / `uncaught_exn` / `Failure` marker; there is one of
+each, all three belonging to this single event). `test_m03_structural.ml`
+produced **no promotion block at all**. Two consequences, both load-bearing
+for the size of this bounce:
+
+1. **Seven of the eight units in `test_m03_n.ml` passed**, and so did both
+   units in `test_m03_structural.ml`. That is M03-N1 at both members, all six
+   M03-N2 sub-cases *with fold-in 3 live inside them*, the WO-0038 scaffolding
+   unit, and the cycle-0 guard witness.
+2. **The rest of M03-N4 never ran.** `run_n4` raises at line 1209, which is
+   inside member (a)'s model cross-check — well before member (a)'s landing
+   site 2, its enable facts, its delivered stream, its content rules, its
+   strobe check and its accounting, and before member (b) executes at all. **A
+   corrected constant does not make this round green by inference**; it makes
+   it re-runnable. Nothing downstream of line 1209 has been executed by
+   anything, and I do not certify it here — see §3.4 for what I checked by hand
+   instead, and §10 for what the re-spawn owes.
+
+---
+
+### 2. The defect, and its exact repair
+
+**`test/xgmii_rx_64/test_m03_n.ml:1209`**
+
+```ocaml
+     if oc.Dv_xgmii.Injection.received <> 60 then fail_cross row "frame C received";
+```
+
+**must read**
+
+```ocaml
+     if oc.Dv_xgmii.Injection.received <> 64 then fail_cross row "frame C received";
+```
+
+**Why 64, from three independent places, none of them the RTL:**
+
+1. **`test/xgmii/injection.mli`'s own field documentation.**
+   `received : int` is *"octets between the start and closing characters"*;
+   `delivered : int` is *"octets emitted, REQ-103"*. Frame C's start and
+   closing characters bracket all 64 octets of its declared array.
+2. **`test/xgmii/injection.ml`'s own construction**, at the `/T/` closure:
+   `let r = received () in … let delivered = r - 4`. For a cleanly closed
+   64-octet frame the model produces `received = 64`, `delivered = 60`. The
+   unit's next line — `oc.delivered <> 60` — is **correct**, which is exactly
+   how the two got conflated: one of the pair was right.
+3. **This suite's own landed precedent, with the trap named in its message.**
+   `test/xgmii_rx_64/test_m03_b.ml:320` cross-checks a cleanly closed 64-octet
+   frame and asserts `received <> 64`, failing with:
+
+   > `"frame B received (expected 64 -- WO-0062 T4: a 64-octet array would give 60, a runt, a different row entirely)"`
+
+`Frame.stress_frame` is fixed at 64 octets DA through FCS with the FCS at
+offsets 60 … 63 (`frame.mli`), so `~sequence:1`'s array is 64 and nothing about
+frame C varies between the two members — **the same one-character repair fixes
+both**.
+
+**The class this defect belongs to.** It is the `~received`-versus-`~delivered`
+conflation that `bench.mli` spends a full subsection on, under
+`account_forwarded_piece`: *"for an ordinary, cleanly-closed piece, received is
+delivered PLUS the four FCS octets REQ-103 strips."* That subsection exists
+because `RV-0057-VERDICT` Finding 1 paid for it once already. It did not bite
+anywhere else in this file because **every other frame in `test_m03_n.ml` is
+aborted or a runt**, and for those `received = delivered` by REQ-103's
+no-removal clause — including frame A in this very unit, whose
+`oa.received <> a_delivered` at line 1181 is correct for that reason. Frame C is
+the first cleanly closed frame the file has ever cross-checked, and it met the
+habit the rest of the file had no occasion to break.
+
+No lettered BOUNCE condition of §12 fires on this. That is a gap in **my**
+table, recorded at §9.3.
+
+---
+
+### 3. The bar table — every bar re-run by me, with git
+
+The worker could not run §2's literal commands (§9.1 below). I ran them, at
+`5401ae6` against its parent `0c9d629` — which **is** the worker's `HEAD`, so
+my `git show 5401ae6^:…` reads byte-for-byte what its `git show HEAD:…` would
+have read.
+
+| Bar | Command | Result |
+|---|---|---|
+| **N-1** | `awk '/^let%expect_test/,/^;;$/'` on both sides, `diff` | **PASS** — 60-line diff, **0 `<` lines**, 59 `>` lines, **one hunk** (`56a57,115`), all 59 additions inside the two new unit blocks. No old block touched. |
+| **N-2** | `diff` over `type subcase` … end of `sc6` (140 lines each side) | **PASS** — **empty diff**, exit 0. `sc1 … sc6` byte-identical, comments included. |
+| **N-3** | `diff` over `run_subcase` alone (head 301–644, tree 327–696) | **PASS** — **exactly two hunks**. (i) `106,112c106,114` — §1.2's substitution; (ii) `281c283,307` — fold-in 3. No third hunk. |
+| **N-4** | literal extraction + `sort` + `diff`, all three files | **PASS** — **0 `<` lines in all three**. Added: `test_m03_n.ml` **127**; `bench.ml` **0**; `bench.mli` **0**. |
+| **N-5** | `[%expect {||}]` count vs `let%expect_test` count | **PASS** — `test_m03_n.ml` **8 / 8**; `test_m03_structural.ml` **2 / 2**. Zero non-empty blocks in either. |
+
+§11's thirteen review bars:
+
+| # | Bar | Verdict |
+|---|---|---|
+| 1 | Bars N-1 … N-5 | **PASS** (above) |
+| 2 | The derivations, re-derived | **PASS** — §3.2/§3.3; every number agrees |
+| 3 | §1.2 behaviour-preserving | **PASS** — §3.1, and now proved by execution |
+| 4 | Fold-in 3 present, sited, against the declared array | **PASS** — §3.5 |
+| 5 | Repair A, `Enable.high` still `[]` | **PASS** — §3.6 |
+| 6 | Entry condition quoted verbatim | **PASS** — §3.6 |
+| 7 | Four `Enable` assertions, no row id in title | **PASS** — §3.6 |
+| 8 | `Enable.report` used at two sites, docstring re-grounded | **PASS** — §3.7 |
+| 9 | Parse exit 0 on all four staged files | **PASS** — re-run by me, ocamlc 4.14.1, **exit 0 ×4**. But see §1: parse is not the adjudicator and CI is **red** |
+| 10 | `dv_checks.sh` inventory + census | **PASS** — §8, both figures exactly as predicted |
+| 11 | Independence | **PASS** — §9.1 |
+| 12 | No claim the packet forbids | **PASS** — §7 (B14, T12, T13 all clear) |
+| 13 | Staged set is exactly §9.1 | **PASS** — four files, confirmed against the commit's own stat |
+
+#### 3.1 The extraction — behaviour-preserving, and I strengthen the argument
+
+The worker's clause-by-clause argument is correct as far as it goes. I re-ran
+it and found it holds **more generally than either of us stated**.
+
+`aborted_report_cycle`'s cycle computation is the original `then` branch
+character-for-character under the renames `sc.a_lane → a_lane`,
+`start_ot_a → start_ot`, `sc.a_delivered → delivered`, and the original `else`
+branch under `s_ot → closing_ot`, with `closing_ot` passed `s_ot` at the only
+call site. Identical on both branches.
+
+The `window` call is where the worker's argument rested on the six landed
+tuples' values (`a_delivered ∈ {8,4,0,4,8,0}`, so the `else` branch always has
+`a_delivered = 0` and `~received:0` and `~received:sc.a_delivered` coincide).
+**That is true but weaker than the fact.** `window`'s own body re-tests the
+predicate: `let last_octet_ot = if received > 0 then … else closing_ot`. So the
+unified call site agrees with the original pair **for every integer value of
+`received`, including negatives**, because any `received ≤ 0` reaches `window`'s
+own `else` exactly as `0` does. The substitution is unconditionally
+behaviour-preserving, not preserving-on-the-landed-six.
+
+**B4's second clause, checked by hand at all six.** The derived report cycle is
+`4` at every sub-case under both the old and new expressions — sc1
+`(8+8+7+16)/8 = 4`; sc2 `(12+8+3+12)/8 = 4`; sc3 `(16/8)+2 = 4`; sc4
+`(8+8+3+16)/8 = 4`; sc5 `(12+8+7+12)/8 = 4`; sc6 `(20/8)+2 = 4`. Windows
+likewise unchanged. **And this is now settled by execution, not by my
+arithmetic**: all six sub-cases passed at CI through the extracted function,
+and each one internally asserts `expected_a_cycle <> sc.a_cycle`.
+
+#### 3.2 M03-N1's overlay geometry, re-derived
+
+Every figure from §0.3's lane mapping and §6.1's exactly-eight preamble, not
+from the packet's table:
+
+| | member (a), lane 0 | member (b), lane 4 |
+|---|---|---|
+| `first_start` → start ot / cycle / lane | 8 → 8 / **1** / 0 | 12 → 12 / **1** / 4 |
+| frame octets | 16 … 79 (64) | 20 … 87 (68) |
+| terminate ot = start + 8 + n | 8+8+64 = **80** → word **10**, lane **0** | 12+8+68 = **88** → word **11**, lane **0** |
+| `/E/` = 8·word + 5 | **85** | **93** |
+| delivered (REQ-103) | 64−4 = **60** | 68−4 = **64** |
+| output words / cycles | 8 / **4 … 11** | 8 / **4 … 11** |
+| final `tkeep` | 60 mod 8 = 4 → **0x0F** | 64 mod 8 = 0 → **0xFF** |
+
+**§3.3's lane-0-`/T/` condition at a lane-4 start, checked rather than taken:**
+terminate lane is `(20 + n) mod 8 = 0` ⟺ `n ≡ 4 (mod 8)`; `68 mod 8 = 4`. ✓ And
+68 is in `directed_lengths` (64 … 71), so `directed_frame_octets ~length:68` is
+the right builder.
+
+**The asymmetry, which is member (b)'s whole justification.** (a): `/E/`'s input
+word is `85/8 = 10`, the frame's last output word is cycle 11 — **one apart**.
+(b): `93/8 = 11`, last output word cycle 11 — **the same cycle**. Agrees with
+§3.3 exactly. The code derives `e_ot` as `(terminate_word * 8) + 5` from the
+observed terminate octet time and then checks it against the member's stated
+constant, which is §4.5's derive-then-assert rule applied where I did not
+explicitly demand it. Good.
+
+**The overlay itself** rebuilds the schedule's own word from its own eight lanes
+with lane 5 alone replaced (`List.init 8 ~f:(fun k -> if k = 5 then Control
+error_char else lane w k)` → `of_lanes`), and returns `Arrival.word_at` unchanged
+on every other cycle — T6 respected, and the `/T/` in lane 0 survives, which
+both landing sites then assert. T7's two clauses (terminate lane strictly below
+the `/E/`'s; no start character in the word) are both asserted at site 1.
+
+#### 3.3 M03-N4's full table, re-derived — including against §6.1's own table
+
+I derived the report cycles **twice**: once through §7's per-octet constant
+(the code's Route 2) and once by reading SPEC-M03 §6.1's landed six-row table
+directly, which is the causal route and the one the packet's whole sequencing
+rule exists to protect.
+
+| | member (a) | member (b) |
+|---|---|---|
+| A start ot / cycle / lane | 8 / 1 / 0 | 12 / 1 / 4 |
+| A's octet *j* at ot | 16 + j | 20 + j |
+| W = start + 8 + `s_idx` | 8+8+8 = **24** → cycle **3**, lane **0** | 12+8+16 = **36** → cycle **4**, lane **4** |
+| A delivered | **8** | **16** |
+| A words / cycles | 1 / **4** | 2 / **4, 5** |
+| **A report, Route 2** | `(8+8+7+16)/8 = 39/8 = ` **4** | `(12+8+15+12)/8 = 47/8 = ` **5** |
+| **A report, §6.1 table** | row 1 (`/S/` lane 0, A lane 0, ≥1 octet) → **W+1 = 4** | row 5 (`/S/` lane 4, A lane 4, ≥1 octet) → **W+1 = 5** |
+| **A report, route `m+3`** | `1+3+0 = ` **4** | `1+3+1 = ` **5** |
+| A's §0.6 window | `(24/8, 23/8+3) = ` **(3, 5)** | `(36/8, 35/8+3) = ` **(4, 7)** |
+| disable cycle = W−1 | **2** (1 < 2 < 3) | **3** (1 < 3 < 4) |
+| disable cycle's word | ots 16 … 23 = A's octets 0 … 7 | ots 24 … 31 = A's octets 4 … 11 |
+| A's terminate = start+8+64 | **80** → cycle **10**, lane 0 | **84** → cycle **10**, lane 4 |
+| C start ot = term + 12 | **92** → cycle **11**, lane **4** | **96** → cycle **12**, lane **0** |
+| enable cycle = C.start−1 | **10** | **11** |
+| enable cycle's word | ots 80 … 87 — carries A's `/T/` | ots 88 … 95 — **pure gap** |
+| C words / cycles | 8 / **14 … 21** | 8 / **15 … 22** |
+| C final `tkeep` | 60 mod 8 = 4 → **0x0F** | **0x0F** |
+| delivered cycles | **[4; 14 … 21]** (9) | **[4; 5; 15 … 22]** (10) |
+| `error_pulses` | **[(4, e_s_w_t)]** | **[(5, e_s_w_t)]** |
+
+**All three report-cycle routes agree at both members**, and the §6.1 table —
+the anchor neither the packet nor the worker read the figure *out* of — returns
+the same two numbers. The start-to-start spacings fall out as 10 cycles (a) and
+11 cycles (b), which is precisely §0.3's REQ-004 alternation, so the lane
+alternation `0→4` / `4→0` is derived and not assumed.
+
+**Every number in §4.3 and §4.4 agrees with my re-derivation. No disagreement.**
+
+#### 3.4 What CI could not reach, checked by hand
+
+Because `run_n4` dies at line 1209, I hand-checked everything downstream so the
+re-spawn is not walking into a second unknown. All of the following are
+**correct as written**:
+
+- **The three named enable facts.** (a) enable true at cycle 1 (1 < 2), false at
+  W = 3 (2 ≤ 3 < 10), true at cycle 11 (≥ 10). (b) true at 1 (1 < 3), false at
+  W = 4 (3 ≤ 4 < 11), true at 12 (≥ 11).
+- **The driven-window predicate** `s.cycle < disable_cycle || s.cycle >= enable_cycle`
+  reproduces `Enable.changes ~initial:true [(2,false);(10,true)]` and
+  `[(3,false);(11,true)]` exactly, and is written independently of
+  `Enable.value_at` — **T10 respected**.
+- **Neither change cycle carries a start character**, read from
+  `Injection.word_at` (the driven word, never `Arrival`) — **T9 respected**, and
+  true on my own derivation: (a) cycle 2 is A's octets 0…7 and cycle 10 is
+  `/T/`-plus-idle; (b) cycle 3 is A's octets 4…11 and cycle 11 is pure gap. The
+  M03-J4 guard is entered at both members and finds nothing.
+- **`oa`'s cross-check depth.** `received = delivered = a_delivered` is right
+  **for A** — an aborted frame has no FCS removed (REQ-103's no-removal clause),
+  which is the same fact that makes line 1209 wrong for C.
+  `last_tkeep`: 8 mod 8 = 0 → 0xFF; 16 mod 8 = 0 → 0xFF. `words`: 1, 2.
+- **`ob`'s floor.** The model, enable-blind, opens a frame at the refused start
+  which runs to A's own auto-terminate — 48 (a) / 40 (b) octets received, so
+  `delivered > 0` holds and the contrast is non-vacuous. **B7 respected**: `ob`
+  is asserted against nothing the DUT did, and the three-outcome match is left
+  unwidened.
+- **`oc`'s other three fields.** `delivered = 60` ✓, `words = 8` ✓,
+  `last_tkeep = 0x0F` ✓. **Only `received` is wrong.**
+- **Exactly one strobe.** No `error_runt` for A (§9's runt check is sequenced at
+  REQ-106's `/T/` exit, never taken); no `error_bad_fcs` (nothing removed);
+  nothing for the refused start (ADR-0014 clause 1); and **nothing for A's own
+  auto-terminate arriving in `Idle`** — I checked this against REQ-113's own
+  text rather than the packet's paraphrase: *"any control character other than
+  the start character occurring outside a frame SHALL be ignored: no output
+  word, no header effect and no strobe."* Correct.
+- **The two content rules.** A ← `List.take frame_a_octets a_delivered` (the
+  declared array's prefix); C ← `Array.to_list (Arrival.delivered frame_c)`.
+  **T4 respected in both directions**, in one unit, with the comment saying why
+  they differ.
+- **Accounting.** A takes `account_forwarded_piece ~received:a_delivered
+  ~delivered:a_delivered ~aborted:true group_a` — `_piece` because the declared
+  array (64) is not the received extent (8/16), which is `bench.mli`'s naming
+  axis exactly (**T3**); C takes `account_clean_frame … group_c`, its own words
+  and not the whole run; the refused start is accounted **nowhere** (**T2**).
+  The §0.6 equation balances 2-in / 2-out. `strobe_pulse` is called once.
+  `account_forwarded_piece` does **not** filter internally (`List.map samples`),
+  so passing the pre-filtered `group_a` is required and correct;
+  `account_clean_frame` **does** filter, so passing `group_c` is correct and
+  passing the whole run would have mis-tagged A's word as C's.
+- **`split_at_first_tlast`'s precondition** is established, not assumed — both
+  groups guarded non-empty before being read (`bench.mli`'s FINDING B-1 block).
+  A delivers ≥ 1 word at both members, so the two-group reading is sound.
+- **`word_delay = Some 3`.** I derived it from `octet_time.ml`'s own definitions
+  rather than the packet's assertion: `front_offset = strip_octets + start_lane`
+  and `h = in_times.(strip) − 8·(in_times.(0)/8)`, giving h = 8 at a lane-0
+  start and 12 at a lane-4 one; L = 16 and 12 respectively; ΔC = (L+h)/8 = **3
+  in both classes at both members**. Since A and C start at different lanes at
+  each member, one run genuinely populates both front-offset classes and
+  `word_delay` is `Some 3` rather than `None`. The by-product assertion is
+  sound.
+
+#### 3.5 Fold-in 3 — present, sited, correct, and **green**
+
+- **Site.** `run_subcase`'s delivering branch. The branch is written
+  `if sc.a_delivered = 0 then (…) else (…)`, so the delivering branch is the
+  `else`; the fold-in is in its `| [ s ] ->` arm, **immediately after** the
+  `tuser` assertion (line 609) and before `| words ->` (line 634). Exactly §6's
+  position.
+- **Comparison source.** `List.init sc.a_delivered ~f:(fun j -> j land 0xFF)` —
+  byte-for-byte the generator `octets` itself is built with at line 380
+  (`List.init array_len ~f:(fun j -> j land 0xFF)`). **Not** `Arrival.delivered`,
+  **not** `Frame.delivered`, **not** `Injection.outcome.delivered`. Compared
+  against `Stream_word.octets s.out` under `List.equal Int.equal`.
+- **§6's derivation (i), checked at all six**: `a_delivered = s_idx` — 8=8, 4=4,
+  0=0, 4=4, 8=8, 0=0. So the prefix `List.init sc.a_delivered` is exactly the
+  octets A received before the `/S/` replaced index `s_idx`. ✓
+- **§6's derivation (ii), the live trap**: `array_len = max 5 (t_idx+1)` = 11 at
+  sc1, so `Arrival.delivered` would drop four and return 7 against the 8 this
+  check expects — wrong in length *and* content. The comment states it at the
+  call site, as §6 required.
+- **B2's message wording**: names the sub-case (`row`), the expected extent
+  (`List.length expected_a_octets`) and the observed length
+  (`List.length (Stream_word.octets s.out)`). All three present. (`fail` also
+  prefixes `row`, so the sub-case is named twice — harmless.)
+- **Population four, and all four passed at CI.** Fold-in 3 is redeemed. **It
+  leaves my carried list.**
+
+#### 3.6 The cycle-0 guard — repair A, at its subject, with `high` untouched
+
+Landed in `bench.ml`, one line, verbatim §7.2 A:
+
+```ocaml
+  let change_cycles t = if t.initial then t.changes else (0, false) :: t.changes
+```
+
+The pre-scan's entry condition, quoted verbatim from the tree
+(`bench.ml:281-283`) — **untouched**, which is repair A's own ground 1:
+
+```ocaml
+  (match Enable.change_cycles enable with
+   | [] -> ()
+   | _ :: _ ->
+```
+
+I checked the four contract facts against the landed record definitions
+(`high = { initial = true; changes = [] }`, `low = { initial = false; changes = [] }`)
+rather than against the witness that asserts them: `change_cycles high = []`
+(**T11 / B10 respected**); `change_cycles low = [(0,false)]`;
+`change_cycles (changes ~initial:false [(7,true)]) = [(0,false);(7,true)]`;
+`change_cycles (changes ~initial:true [(7,false)]) = [(7,false)]`. All four
+true. The guard's walk then does its job for `low`: at cycle 0 its
+`prev_enable` convention is `true` and `value_at ~cycle:0` is `false`, so the
+transition is seen — the hole is shut.
+
+**The witness** landed in `test_m03_structural.ml` as one `%expect_test`, title
+`"Bench.Enable.change_cycles: the cycle-0 guard repair (WO-0068 §7)"` — **no
+`M03-` row id** (T8 / B16 respected), empty `[%expect {||}]`, four assertions,
+no raise-assertion test. **It passed at CI.**
+
+**`Enable.low`'s first use, verified independently rather than accepted**:
+`git grep 'Enable\.low' 5401ae6^ -- test/` returns nothing outside `bench.ml`'s
+own definition. This is genuinely the first use in `test/**`. Half of
+`RV-0067-VERDICT` §6.1 closes **by use**.
+
+`bench.mli`'s two docstring repairs both landed, with history kept and ground
+replaced, and add no string literal (Bar N-4 measured 0 additions there).
+
+#### 3.7 `Enable.report` — re-grounded and used
+
+`git grep 'Enable\.report' 5401ae6^ -- test/` returns **nothing**; the tree has
+it at exactly the two sites §8.2 names — the driven-window message
+(`test_m03_n.ml:1282`) and the delivered-cycle-list message (line 1299). The
+`bench.mli` docstring no longer cites the expect-block justification and
+carries the withdrawal in terms. **B11 clear**, and the other half of
+`RV-0067-VERDICT` §6.1 closes.
+
+---
+
+### 4. The sixteen BOUNCE conditions, checked independently
+
+I checked each against the tree myself rather than reading the worker's list.
+
+| # | Verdict |
+|---|---|
+| **B1** | **Clear** — four files, exactly §9.1, per the commit's own stat. No other `test_m03_*.ml` touched. |
+| **B2** | **Clear** — §3.5. |
+| **B3** | **Clear** — Bar N-1 (0 `<` lines) and Bar N-2 (empty diff); all `[%expect]` empty. |
+| **B4** | **Clear** — Bar N-3's exactly two hunks; the six derived report cycles and windows unchanged (§3.1). |
+| **B5** | **Clear on the correct reading** — adjudicated at §9.4, because the literal reading of my own text is unsatisfiable and the worker's evidence for it was the wrong instrument. |
+| **B6** | **Clear** — neither change cycle carries a start character (§3.4), asserted at the site and independently derived by me. |
+| **B7** | **Clear** — `ob` floored at `delivered > 0`, asserted against nothing the DUT did; three-outcome match unwidened. |
+| **B8** | **Clear** — no `frame_in` / `frame_in_exempt` / `discarded` anywhere for the refused start. |
+| **B9** | **Clear** — A through `account_forwarded_piece`, C through `account_clean_frame` with its own `group_c`. |
+| **B10** | **Clear** — repair A, in `change_cycles`, `high` still `[]`, entry condition untouched (§3.6). |
+| **B11** | **Clear** — §3.7. |
+| **B12** | **Clear** — the Return log claims no `dune` result; it says in terms that CI is the adjudicator. |
+| **B13** | **Clear** — Bar N-5, 8/8 and 2/2. |
+| **B14** | **Clear** — no assertion, comment or Return-log sentence claims M03-N4 covers the zero-delivered branch. I grepped the unit and the log for it. |
+| **B15** | **Clear** — Bar N-4, zero `<` lines in all three files. |
+| **B16** | **Clear** — `M03-N1` and `M03-N4` carry one row id each; the witness carries none. |
+
+**No lettered BOUNCE fires.** The round bounces on §11 bar 9 — CI red at the
+landing commit — and the absence of a lettered condition covering it is my
+defect, §9.3.
+
+---
+
+### 5. The conduct ruling — all three parts
+
+The worker disclosed this itself, in full, unprompted, at the head of its
+Return log and again as review-first item (h)(1). **It is a finding against its
+conduct and it is also the single best piece of evidence in the round that the
+disclosure discipline works.** I rule as follows.
+
+#### 5.1 Do the two read-only git commands void anything? **No. Nothing.**
+
+`git rev-parse HEAD` and `git status --porcelain` are both **read-only**. They
+create no object, move no ref, stage nothing, and cannot alter a working tree.
+The orchestrator's independent HEAD check confirms the round moved no ref
+(HEAD at return = `0c9d629`, the spawn commit). The commands' outputs were used
+only to confirm a SHA the packet's own header already stated and a working-tree
+file set the worker re-derived by other means anyway.
+
+Crucially, **the bar they crossed is not an independence bar**. PROTOCOL §10's
+independence rule is about *reading RTL* — `libs/**`, `rtl_snapshots/**` — and
+nothing about `git rev-parse` touches it. The no-git bar is an **operational**
+bar: git is the orchestrator's exclusive instrument (PROTOCOL §2), and the
+absolute form in the spawn prompt exists so that no worker can approach the
+commit surface at all. Crossing an operational bar with two read-only reads
+that provably changed nothing voids **no evidence, no bar, and no part of this
+round**. The worker labelled it an "independence violation"; that label is
+stricter than the facts. It is a **conduct deviation, self-caught,
+self-reported, with zero effect** — and I record it as such rather than
+inflating it.
+
+**No sanction, and the disclosure is credited.** The worker stopped the instant
+the rule surfaced, ran nothing further, said so in the first paragraph of its
+return rather than the last, and refused to let the substitution pass as
+equivalent without flagging its provenance (item (h)(2)). That is exactly the
+behaviour this org's honesty rules are for. A worker that had done the same
+thing and said nothing would have left me reviewing a bar I believed had been
+run one way and had been run another — which is the failure mode that actually
+costs something.
+
+#### 5.2 Is the substituted bar method acceptable evidence? **Acceptable in principle, and moot in fact, because I re-ran all five myself.**
+
+The substitution — transcribing pre-edit `Read` output into scratch files and
+diffing with plain `diff`/`grep` — is **sound in principle**: a `Read` before
+any edit does capture `HEAD`'s content when the tree is clean, and the worker
+established tree cleanliness. But the worker named its own weakness precisely
+in item (h)(2): its soundness *"rests on my own `Read` calls having captured
+HEAD's exact byte content … unverifiable by dv_lead without re-deriving it
+independently."* That is right, and it is the correct standard: **evidence
+whose validity depends on an unobservable property of the producer's own
+session is weaker than evidence anyone can re-run.**
+
+So I did not accept it. **I re-ran N-1 through N-5 with the packet's literal
+`git show`-based commands** (§3), which is my standing practice and would have
+happened regardless. All five pass. The worker's substituted results and my
+git-based results **agree in every particular** — same zero-`<`-line outcome,
+same empty N-2 diff, same two N-3 hunks — with one refinement: the worker
+estimated N-4's additions at "~140"; the measurement is **127**. It flagged that
+figure as approximate by the instrument's documented limit and declined to
+hand-verify each entry (item (h)(4)), so this is a correction to the record,
+not a defect. The bar's content — the absence of `<` lines — holds either way.
+
+#### 5.3 The packet-level fact: **my own bar commands are unexecutable by their executor. A defect of mine, recorded.**
+
+This is the part that matters beyond this round.
+
+**Bars N-1, N-2 and N-4 are written as `git show HEAD:…` invocations.** The
+executor of those bars is a worker under an absolute no-git bar. I therefore
+wrote a review bar **that its own executor is forbidden to run** — and neither
+I nor the packet noticed, because I wrote the commands from the seat that *can*
+run them. The worker discovered the contradiction the only way it could: by
+being refused by the environment's classifier mid-bar.
+
+The consequences were real even though the outcome was fine. The worker had to
+improvise a substitution under time pressure, on a bar that is one of the round's
+primary compatibility guarantees; it then had to spend a section of its return
+justifying the improvisation; and I had to re-derive all three bars from scratch
+to know what had actually been established. A bar whose executor must invent its
+instrument is not a pre-committed bar — it is a request.
+
+**The rule this mints, and which I am obliged to apply to every packet I write
+from here:** *a bar's commands must be executable, as written, by the seat the
+packet assigns them to.* Where a check genuinely requires an instrument the
+executor lacks, the packet must either (a) supply an executable equivalent, or
+(b) assign the check to the reviewer explicitly and say so, rather than
+appearing to delegate it.
+
+**Concretely, for the re-spawn**: bars N-1, N-2 and N-4 are hereby **reassigned
+to me**. §10 below does not ask the worker to run them. I have run them at
+`5401ae6` and will re-run them at the repair commit. The worker's bars are N-3,
+N-5, the parse check and `dv_checks.sh` — all four of which it can execute
+without git.
+
+---
+
+### 6. The review-first items, adjudicated
+
+| Item | Ruling |
+|---|---|
+| **(h)(1)** the two git commands | **§5.1** — no effect, no sanction, disclosure credited. |
+| **(h)(2)** the substituted bars | **§5.2** — sound in principle, superseded in fact; I re-ran all five with git and they agree. |
+| **(h)(3)** nothing type-checked | **This is where the round was lost, and the worker said so in advance.** It named the exact exposure — *"CI's `dune build` is the first place a type error would surface"* — and it was right about the shape while being unlucky in the particular: what CI caught was not a type error but a **wrong constant**, which no amount of `.mli` reading catches because `60` and `64` have the same type. I record that the worker did read every `.mli` its calls touch and matched them by hand; my own independent signature review (§3.4 and the `Dv_xgmii`/`Dv_monitors` surface) found **no type or arity defect anywhere in `overlay_e`, `run_n1` or `run_n4`**. The parse-only constraint is ADR-0005's and mine, not the worker's. |
+| **(h)(4)** N-4's count approximate | **Confirmed and corrected**: 127, not ~140. Declared as approximate, so no finding. |
+
+---
+
+### 7. Claims neither strengthened nor weakened (bar 12)
+
+- **§5's zero-delivered branch** appears nowhere as coverage — not in an
+  assertion, not in a comment, not in a Return-log sentence. **B14 clear.**
+- **§2's `WO-0066` seal paragraph** is neither restated more strongly nor more
+  weakly, and no re-score is claimed. **T12 respected.**
+- **T13's limit** is respected: nothing claims M03-N4 demonstrates the M03-J4
+  guard's BOUNCE-B4 property. The guard is entered at both members and finds
+  nothing, which is a non-violation and is not evidence about the driven-word
+  reading.
+
+---
+
+### 8. The count, by measurement
+
+`tools/dv_checks.sh`, run by me at the landing tree:
+
+```
+    8  test/xgmii_rx_64/test_m03_n.ml
+    2  test/xgmii_rx_64/test_m03_structural.ml
+  ---
+   54  test/xgmii_rx_64/ (the M03 bench)
+  134  test/ (repository-wide)
+
+   78  row ids declared in the plan
+   48  named in a unit title — TRAILING-DIGIT BOUNDARY match (use this one)
+```
+
+**Inventory 54. Census 48.** Both **exactly** my §11 bar 10 prediction
+(51 → 54, 46 → 48). No discrepancy to report, in either direction — and I state
+that as a measurement I ran, not as a prediction I am confirming.
+
+The RFC-1071 network-lane obligation remains **OPEN** (pre-existing proxy-egress
+block, unrelated to this round, unchanged). No sign-off cites it.
+
+**The census figure does not mean family N is discharged this round.** M03-N4's
+row id is in a landed title, so the census counts it — but its unit is **red**.
+The census counts titles, not passes; that is a known property of the
+instrument and this is the first round where the two diverge. **Family N does
+not close on this commit.**
+
+---
+
+### 9. Findings against my own packet
+
+#### 9.1 Independence — clean, and the bar that was not
+
+The worker's `Inputs` name this packet, its charter, PROTOCOL, the spec paths
+and `test/**` paths. **No `libs/**`, no `rtl_snapshots/**`.** Bar 11 satisfied.
+The no-git bar is separately treated at §5.
+
+#### 9.2 **§4.3 and §4.4 commission a cross-check whose expected value they never derive — and that is the proximate cause of this bounce**
+
+§4.6 item 5 orders `oc` cross-checked *"on `received`, `delivered`, `words` and
+`last_tkeep`"*. My member tables give C's start octet time, cycle and lane, its
+output words, its cycles, its final `tkeep` and its `tuser`[0]. **They never
+state C's `received` or `delivered`.** So of the four fields I ordered checked,
+I supplied derived values for two and left the executor to invent the other two.
+
+It invented `delivered = 60` correctly and `received = 60` wrongly, by carrying
+the one number I *had* given it into both slots. That is exactly the error a
+packet exists to prevent. §11 bar 2 says *"a disagreement with any number of
+mine is a finding I want"* — but there was no number of mine to disagree with,
+so the bar could not fire, and no lettered BOUNCE covered it either (§9.3).
+
+**The rule**: *every field a packet orders cross-checked must have its expected
+value derived in the packet, or be explicitly marked as the executor's to derive
+with the derivation named.* A field list is not a specification. Recorded, and
+applied in §10's re-issue, which supplies both numbers.
+
+#### 9.3 The BOUNCE table has no condition for a wrong asserted constant
+
+B1–B16 cover placement, shape, scope, source, naming and claim-making. **None
+covers "an asserted expected value is wrong."** I assumed §11 bar 2's
+derivation-checking would carry that weight; it could not, for the reason at
+§9.2. The table should carry a general condition — *any unit red at CI for any
+reason* — and I will write one into the re-issue rather than leaving the round's
+adjudication resting on a bar buried at §11 item 9.
+
+#### 9.4 **B5 is unsatisfiable as written, and was already violated at issue**
+
+B5 says *"a second expression computing an aborted frame's report cycle exists
+anywhere in `test/**`."* I ran the expression-level search the condition
+actually calls for:
+
+```
+test/xgmii/injection.ml:250:    let l = if start_lane = 0 then 16 else 12 in
+test/xgmii/injection.ml:251:    let last_in = start_ot + 8 + (delivered - 1) in
+test/xgmii/injection.ml:252:    Some ((last_in + l) / 8))
+test/xgmii/injection.ml:266:let no_output_cycle ~closing_ot = (closing_ot / 8) + 2
+```
+
+**That is the same expression, in `test/**`, and it predates this round.** B5,
+read literally, was violated before the packet was issued — by a file the same
+packet forbids touching (§9.2: `test/xgmii/**` does not move).
+
+**It does not fire, and must not.** `test/xgmii/injection.ml` is the
+link-partner model — the independent oracle the bench cross-checks *against*.
+Its separateness is the whole content of `run_subcase`'s own `fail_cross`
+message: *"do not silently adopt either derivation."* Making the model call the
+bench's function would render the cross-check circular and vacuous. §1.1's rule
+is about **rows** — *"every row that needs one calls it"* — and the correct
+scope is `test/xgmii_rx_64/**`, not `test/**`.
+
+**A second, narrower observation, recorded and not charged.** Within
+`test_m03_n.ml` the §9 no-output-word rule now has two expressions:
+`aborted_report_cycle`'s `else` branch and `expected_b_cycle = (t_ot / 8) + 2`
+at line 445. B5 does not reach it — frame B is a **runt** closed by its own
+`/T/` (`error_runt`, REQ-107), not an aborted frame — and unifying them would
+either mis-name the function or mint a third. **No repair, no finding against
+the worker**; recorded so the next reader does not re-discover it as a defect.
+
+**The worker's B5 evidence was the wrong instrument.** It searched for the
+*name* (`grep -rn 'aborted_report_cycle' test/`), which by construction cannot
+find a second *expression* — a duplicate would not contain the name. Its
+conclusion was right; its evidence could not have distinguished right from
+wrong. Not a bounce item (the tree is correct), but the re-issue will say what
+B5's instrument is.
+
+#### 9.5 Carried from `RV-0067-VERDICT`, now closed
+
+`RV-0067-VERDICT` §6.1's specified-but-unused finding is **closed in both
+halves** — `Enable.low` by first use, `Enable.report` by two live call sites.
+§6.2's cycle-0 hole is **repaired at its subject and witnessed**. Fold-in 3 is
+**redeemed at its last carrier**. These three do not bounce with the round and
+do not need re-doing; they are green at CI and I am not putting them back on
+anyone's list.
+
+---
+
+### 10. What the re-spawn must do — and what it must not
+
+**Scope: one character.**
+
+1. **`test/xgmii_rx_64/test_m03_n.ml:1209`** — `60` → `64`. Optionally extend
+   the `fail_cross` label to `"frame C received"` with a comment naming the
+   trap, in the manner of `test_m03_b.ml:320`; that is encouraged, not required,
+   and adds a string literal Bar N-4 permits.
+2. **Nothing else.** Every other file in §9.1 is correct and green. Re-staging
+   `bench.ml`, `bench.mli` or `test_m03_structural.ml` is out of scope for the
+   repair round and any change to them is a fresh B1.
+3. **The bars the re-spawn runs**: N-3, N-5, `ocamlc -stop-after parsing` on the
+   one edited file, and `dv_checks.sh`. **N-1, N-2 and N-4 are mine** (§5.3) —
+   do not improvise an instrument for them.
+4. **The derived values, supplied this time, so nothing is invented**: frame C
+   at both members is `Frame.stress_frame ~sequence:1 ()`, 64 octets DA through
+   FCS, cleanly closed by its own `/T/`. Therefore
+   **`oc.received = 64`**, **`oc.delivered = 60`**, **`oc.words = 8`**,
+   **`oc.last_tkeep = 0x0F`**. Frame A, being aborted, has
+   `oa.received = oa.delivered = a_delivered` (8 / 16) — no FCS removed.
+5. **CI must be green at the repair commit**, and the repair round's own
+   adjudicator is that CI run, whose id goes in its Return log. Because
+   line 1209 aborted member (a) before most of M03-N4 executed, **the repair
+   round is the first time the row runs to completion** — its Return log should
+   say so rather than describing the repair as clerical.
+
+The no-git bar stands, unchanged, and is not in question.
+
+---
+
+### 11. Reviewed repairs — **none, and that is a ruling, not an omission**
+
+I could change `60` to `64` in one keystroke. I am not going to, on the ground
+this packet's own §7.4 already committed me to and which applies here with more
+force than it did there:
+
+> there is no `dune` at the review tree (ADR-0005) — a reviewer's edit to
+> `test/**` lands unverified into a commit whose entire value is that CI is
+> green at it.
+
+Two additional grounds specific to this failure. **First**, this is a
+*behavioural* red, not a clerical residue; the class of thing §7.4 refused to
+let a reviewer touch is exactly this class. **Second and decisively**, a correct
+one-character repair **does not make this round green by inference** — member
+(a) died at line 1209 and the majority of M03-N4 has never executed at all. A
+reviewer repair would produce a commit whose green-ness nobody had observed,
+covering assertions nobody had run. The repair has to go through the same
+review-then-CI loop as everything else, which is the whole reason §7.4 put the
+guard repair in the worker's hands rather than mine.
+
+---
+
+### 12. What I commission
+
+**Family N does not close.** N2 is landed and campaign-scored; N3 is
+`NO-STIMULUS` with its spec citation; N1 is **landed and green**; **N4 is
+landed and red**. The row is one character from closing and the round is one CI
+run from done — but it is not done, and the census figure of **48** counts a
+title, not a pass. I will not sign family N closed on a red unit.
+
+**Commissioned now, in order:**
+
+1. **The M03-N4 repair round**, per §10 — a one-line `WO-` re-issue against this
+   packet, carrying §10's five items, the corrected §4.3/§4.4 tables with C's
+   `received` and `delivered` stated (§9.2's repair), the new general BOUNCE
+   condition of §9.3, B5's corrected scope and instrument (§9.4), and §5.3's
+   bar reassignment. Blocking: family N cannot close and no `SO-` traffic can
+   reference these rows until CI is green.
+
+2. **The batched AP round**, unchanged in content and now with one addition —
+   still **mine**, not a worker's:
+   - `WO-0067` §11's four carried items (M03-J2's Kills cell, M03-J1's
+     Observable clause, §7's machinery row for the `cfg_rx_enable` schedule,
+     and `J-dv_lead-0118` item 5's two clerical residues);
+   - **M03-N4's Observable cell** — §5's finding, that the parenthesised
+     zero-delivered branch has no instance, with the derivation, the
+     M03-D3 / M03-F2 / M03-I2 / M03-J2 precedent and the pointer to M03-N2
+     sub-cases 3 and 6;
+   - **new**: a `test/attack_plans/` note that M03-N1 and M03-N4 are landed,
+     with N4's status tracking the repair round rather than this commit.
+
+3. **One architect batch, not two** — a single change request to
+   architect_docs_lead carrying **both** open spec questions together:
+   - **SPEC-M03 §10's REQ-802/REQ-810 hook** — the C-41 unpassable-assertion
+     family: the hook's parenthetical commissions an observable whose stimulus
+     the same specification's §6.3 item 7 excludes; the proposed repair form is
+     the one §10 already uses twice (REQ-014's *"none — stated so that no
+     sign-off packet claims coverage here"*). Non-blocking.
+   - **T8's strobe-multiplicity question**, carried since `WO-0066`.
+
+   Batching them is the point: two separate requests to one counterpart in one
+   week is how a queue becomes noise.
+
+4. **Then, and only then, my queue read for K / M / L** — deferred deliberately
+   until the repair lands, because a queue read taken against a tree with a red
+   unit in it would be planning around a number I have just refused to sign.
+
+**Unchanged and carried**: family J is not mutation-scored and no `SO-` is
+implied by this round; the `SO-xgmii_rx_64.md` external-anchor precondition
+stands in full — `injection.mli`'s own statement that it has not met the charter
+§3 anchor, and that **no `SO-` PASS may rest on it until the verilog-ethernet
+differential co-sim has run**. Nothing in this verdict moves that.
+
+---
+
+### 13. Journal
+
+`J-dv_lead-0122`, appended to `agents/journals/claude_dv_lead_agent.v04.md`,
+`task:RV-0068`.
