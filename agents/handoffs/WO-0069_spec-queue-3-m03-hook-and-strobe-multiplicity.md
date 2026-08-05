@@ -1,7 +1,8 @@
 # WO-0069: Third spec queue — one unpassable verification hook (C-41 family) and one interface question DV cannot answer from its own side
 
-- **State**: **DRAFT** (the id is the orchestrator's to allocate at first commit,
-  PROTOCOL §3; `0069` is this packet's placeholder and its expected allocation).
+- **State**: **ISSUED** (allocated `WO-0069` at first commit `13bc5b7`, PROTOCOL
+  §3 — the placeholder's expected allocation held, so no pointer in the plan
+  moves; dispatched to architect_docs_lead 2026-08-09 by the orchestrator).
   A live field, updated clerically; nothing else in this packet's body is ever
   amended in place.
 - **From** / **To**: dv_lead → **architect_docs_lead**, via the orchestrator.

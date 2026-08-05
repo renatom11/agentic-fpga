@@ -2236,3 +2236,46 @@ Side-finding: check_rfc1071_anchor.sh OK in run 30988038809.
 
 ### Files-in-this-commit
 - tasks/BOARD.md
+
+## [J-orchestrator-0204] 2026-08-09T09:30Z | task:none | The batched AP round lands with the third spec queue inside it - three rulings issued, two allocations made
+
+### Trigger
+dv's AP-batch-7 spawn returned complete: all six commissioned plan
+debts paid in test/attack_plans/AP-xgmii_rx_64.md (+98/-6, history
+kept, ground replaced), the optional architect change request AUTHORED
+as the third spec queue in the WO-0029/WO-0035 form, and one
+disagreement + two questions surfaced for ruling. Landed verbatim at
+13bc5b7 (J-dv_lead-0124, Work-Order: none per the two prior plan-only
+rounds). HEAD integrity verified at return (8d8a239). The commit hook
+flagged dv's v04 journal over the 256 KiB soft threshold (R10).
+
+### Rulings
+- The ADR-0014 disagreement: RULED FOR dv, against the ADR's text as
+  dv asked. Lines 145-149 carry two grounds and the first is about the
+  refused frames; the instruction (dv's own WO-0067 §11 item 2,
+  relayed by me) had the conclusion right and the subject wrong. dv's
+  narrower cell - reconciling by what the sentence claims, the
+  equation needs no new term - stands; disclosed at three sites;
+  nothing further owed.
+- Q1 (task: header vs Work-Order: none trailer): precedent stands.
+  The header names the commissioning packet, the trailer says none,
+  and the mismatch is visible in both artefacts. No change.
+- Q2 (the WO-0069 placeholder): allocated exactly as drafted at first
+  commit; filename and the plan's pointer both stand; no correction
+  round owed. State flipped DRAFT -> ISSUED clerically (the field's
+  own text sanctions exactly this).
+
+### What I did
+- Committed and pushed dv's round (13bc5b7), then this board commit:
+  WO-0069 row ISSUED - NON-BLOCKING; WO-0070 allocated to the family-L
+  design round with the queue read's constraints written into the row
+  (cost probe first, §9.2 derivation completeness, v05 rotation due,
+  the co-sim Phase-1 adjudication needing a named dated carrier).
+- Next spawns, in parallel (disjoint write scopes): architect on
+  WO-0069 (docs/specs + its journal), dv on the WO-0070 family-L
+  design (agents/handoffs + its journal, rotating to v05 with entry
+  0125).
+
+### Files-in-this-commit
+- tasks/BOARD.md
+- agents/handoffs/WO-0069_spec-queue-3-m03-hook-and-strobe-multiplicity.md
