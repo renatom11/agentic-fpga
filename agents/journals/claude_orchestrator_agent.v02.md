@@ -2071,3 +2071,33 @@ statement). Pushed.
 
 ### Files-in-this-commit
 - tasks/BOARD.md
+
+## [J-orchestrator-0199] 2026-08-09T03:10Z | task:WO-0066 | Six of six killed - and the campaign's best result is the false premise it caught in its own charter
+
+### Trigger
+WO-0066 adjudicated (J-dv_lead-0117, be8f7c2): every class killed,
+bound 7 scored 3-of-3 under the sealed rules, both predicted
+self-violations confirmed exactly as pre-classified, and FINDING
+WO-0066-6 - the bound's premise was false at authorship; two units had
+driven the exact conjunction one work order earlier, and six packets
+quoted the sentence instead of re-measuring it. The verdict reduces its
+own headline honestly: what is genuinely new in N2 is the
+Preamble-state instance and the coincidence geometry, not first
+detection.
+
+### What I did
+- Committed and pushed the verdict; board row CLOSED with the full
+  record including the headline reduction.
+- Next per dv's commissioning: the six-item AP round (the plan is the
+  campaign's contract - held back from every commit of the round), then
+  FAMILY J'S CAPABILITY ROUND, DUE NOW on its date.
+- Carried to the architect's next batch: the strobe-multiplicity
+  specification question (a strobe reports presence per cycle, not
+  multiplicity - is that interface the spec's intent?).
+- Harvest inventory after this round: dv ~15 LH2-g + war stories
+  (prose-carried-claims twice; the equivalent-mutant reclassification);
+  auditor 5 LH2-g + 2 war stories; tb_writer 3+. SO-M03's first
+  harvest will be the richest single collation of the program.
+
+### Files-in-this-commit
+- tasks/BOARD.md
