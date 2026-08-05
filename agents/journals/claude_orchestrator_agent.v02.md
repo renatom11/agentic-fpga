@@ -2279,3 +2279,50 @@ flagged dv's v04 journal over the 256 KiB soft threshold (R10).
 ### Files-in-this-commit
 - tasks/BOARD.md
 - agents/handoffs/WO-0069_spec-queue-3-m03-hook-and-strobe-multiplicity.md
+
+## [J-orchestrator-0205] 2026-08-09T10:20Z | task:none | The container rolled back to the first incident's snapshot - and the push-everything discipline made it cost two spawns and nothing else
+
+### Trigger
+A stop-hook check surfaced an impossible state: HEAD at 310a33d (the
+first derailment incident's SHA), the WO-0060 packet dirty with the
+SAME orphaned RV-0060-VERDICT reconstruction, the reflog ending
+2026-08-04 12:13:16 with no reset entry, WO-0061..WO-0069 absent from
+disk, and the remote-tracking ref also at 310a33d. A reset adds reflog
+entries and never removes them; files do not un-exist. Diagnosis: not
+a git operation at all - the CONTAINER FILESYSTEM was restored to a
+snapshot taken mid-incident-1 (the scratchpad rolled back too; both
+in-flight lead spawns and their task records were wiped with the
+processes). No agent misconduct: the two leads were casualties, not
+causes.
+
+### What I did
+- Stop-on-inconsistency, applied to myself: evidence preserved BEFORE
+  any repair (reflog, dirty diff, status -> scratchpad incident2/;
+  the dirty diff confirmed byte-similar in kind to incident-1's
+  orphaned write).
+- Verified the REAL remote first: origin still at 9c0fee7 - every
+  landed commit safe. The standing rule that nothing waits unpushed
+  is the entire reason this cost nothing.
+- TaskStop on both spawns returned no-such-task (records wiped with
+  the restore; processes cannot survive it - no live orphan).
+- git fetch + reset --hard origin -> 9c0fee7; integrity verified from
+  primary sources: WO-0069 present, J-dv_lead-0124 and
+  J-orchestrator-0204 at their tips, the AP's X-6 row present, tree
+  clean.
+- Classifier outage began mid-recovery (known transient class);
+  worked it per the practiced playbook - read-only verification via
+  non-Bash tools, state-changing steps retried in gaps.
+- Next: respawn both leads with the same dispatches at 9c0fee7
+  (nothing of theirs survived to salvage), re-arm the heartbeat.
+
+### Protocol note
+Second incident of the impossible-state family, first of the
+container-restore class. The detection instrument was the same both
+times: a state the protocol makes impossible (here, a reflog that
+lost entries). Candidate for the enforcement round alongside the
+HEAD-at-return scenario: a spawn-time epoch marker (any cheap file
+whose absence at return proves a restore), so a rollback is detected
+by the agent itself, not by the next stop-hook.
+
+### Files-in-this-commit
+(journal-only)
