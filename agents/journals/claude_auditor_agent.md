@@ -3350,3 +3350,213 @@ gap). Two candidates, one war story.
 - docs/reports/audit/WO-0066-mutations/ic-d.diff
 - docs/reports/audit/WO-0066-mutations/ic-e.diff
 - docs/reports/audit/WO-0066-mutations/ic-f.diff
+
+## [J-auditor-0015] 2026-08-09T22:40Z | task:WO-0073 | Five family-L classes seeded blind against bbd4122: the per-lane discharge refuted my own IC-L3 rendering before delivery, and IC-L1 and IC-L4 are shown to be different edits at different gates on the same cycle
+### Trigger
+Orchestrator spawn, short-id `WO-0073-SEED-2/2026-08-09T21:15Z` — a respawn after
+the prior seeding spawn died mid-round in a tool outage having pushed no branch
+and written no file. Commission: seed the family-L mutation campaign per
+`agents/handoffs/WO-0073_family-l-mutation-campaign.md`, five classes IC-L1…IC-L5,
+one single-diff mutant each, blinded, with dv_lead's pre-run question about
+IC-L1/IC-L4 collision answered in the manifest **before** any run.
+### Inputs
+Read, and nothing else (the packet's §7 allowlist is absolute):
+`agents/charters/auditor.md` and `agents/PROTOCOL.md` (my mandatory first actions,
+predating the packet); `agents/handoffs/WO-0073_family-l-mutation-campaign.md`;
+`libs/hardcaml_ethernet/src/xgmii_rx_64.ml` (all 1011 lines) and its `.mli` (45
+lines) at `bbd4122`; `docs/specs/modules/xgmii_rx_64.md` §7 (lines 803–879) and §8
+(lines 881–928); `docs/specs/requirements.md` rows REQ-005, REQ-011, REQ-014,
+REQ-015, REQ-019, REQ-020, REQ-021, REQ-103, REQ-107, REQ-111, REQ-112;
+`docs/reports/audit/WO-0061-mutations/DISP-0001_A-1.md` §4 (lines 276–314, the two
+rules that bind this manifest); the section **headings only** of
+`docs/reports/audit/WO-0066-mutations/README.md`, for the manifest's shape.
+**Not read**: the sealed companion
+`agents/handoffs/WO-0073_family-l-mutation-campaign-SEALED-predictions.md` — not
+opened, not grepped, not `git show`n, no excerpt; **all of `test/**`**, including
+`test/xgmii_rx_64/test_m03_l.ml`, `bench.ml`/`bench.mli`, `test/monitors/`,
+`test/xgmii/`, `test/golden/`, `test/cosim/`, and `test/attack_plans/AP-xgmii_rx_64.md`
+by name; **all of `agents/**` bar the packet and my two charter documents**,
+including every journal but this one.
+### Reasoning
+**Sampling frame.** The window is one file and five classes. I read the mutation
+target in full rather than sampling it, because a manifest that discharges
+reachability term by term cannot cite line numbers it has not seen; I sampled the
+specs at the two sections and eleven rows the packet's Spec basis names, and
+deliberately skipped everything else in `requirements.md` (the §0.x prose, REQ-1xx
+rows no class touches) as ground for classes this round does not seed. I
+deliberately skipped, absolutely, the whole of `test/**` and `agents/**` bar the
+packet — that is the packet's blinding and not a sampling choice, and the AP is
+barred by name precisely because the five classes are quoted from its Kills cells.
+
+**Why these five classes and these five renderings.** The classes were given; the
+renderings and every disclosure branch were mine. I derived the stress schedule
+independently from SPEC-M03 §8 and a cycle trace of `create` rather than adopting
+the packet's §1 statement of it, so that agreement is evidence rather than
+transcription: even frame `2k` starts at cycle 1+21k lane 0 and terminates at
+10+21k; odd frame `2k+1` starts at 11+21k lane 4 and terminates at 20+21k;
+start-to-start 10 and 11 alternating, matching §8. From that fall the two
+coincidences the campaign's geometric classes live on — cycle 11+21k is
+*simultaneously* an odd frame's start word (adjacent to a terminate word) and an
+even frame's word-7 emission cycle.
+
+Branch choices, each with what it rejected:
+- **IC-L1 = A (adjacency) + D (drop)**, gating `begins` (430) with a register of
+  the previous word's `have_terminate` (235). **Rejected T** (take one cycle late):
+  this pipeline's `hold` (971) *drops* the aligned word in front of the emission
+  stage, so every acceptance-gate rendering of "one cycle late" I constructed
+  mis-covered the frame's octets and would have shipped as the class plus a
+  datapath defect, failing §6's pre-ship check. **Rejected gating `b_exists`/`c_exists`**
+  (421–422) in favour of `begins`: those two feed `inword_strobes` (570–582), the
+  report path, which R-DISC-2 says no class here names.
+- **IC-L2 = U (uniform)**, one register level on the whole `O` record. **Rejected H**
+  (head word only) — the packet marks its cells UNWORKED and it is a second defect
+  riding the first. **Rejected registering `rx` alone**: §9 pins every strobe to its
+  frame's `tlast` cycle, so delaying the datapath without the strobes would have
+  introduced a skew no class names.
+- **IC-L3 = R {2}, on the delivered count.** **Rejected R = {4}** (it reddens unit
+  1 and forfeits the length-dependence claim, §8.1 rule 2). **Rejected R = {1,2,3}**:
+  {2} alone selects both the short set (length 70) and the 1518 member, at both
+  lanes, so four members can be discharged completely rather than eight thinly.
+- **IC-L4 = S (suppressed)**, gating `have_word` (831) with `~:begins`. **Rejected F**
+  (deferred): it would have been a third latency class beside IC-L2 and IC-L3, and
+  S is the only one of the five that exercises REQ-112's own stated observable,
+  word loss. Redundancy costs more than a disclosed message collision.
+- **IC-L5 = repeated once**, at the port with a shadow copy. **Rejected holding the
+  pipeline**: `consume` spends the closure record on the first `tlast` cycle, so
+  the repeat would have carried `strip` = 0 — an eight-octet duplicate including
+  the FCS rather than the frame's own four, which is not "the final output word
+  twice" and would have falsified the seal's derived value.
+- **Not seeded, deliberately**: REQ-014's `tstrb`, family C's per-word observables
+  at scale, item 5's empty-strobe-set check, and REQ-020's reordering half — all
+  four declared non-targets by the packet's §4, and I independently agree the
+  reordering half has no minimal renderable mutant in a cut-through pipeline with
+  two datapath words of storage.
+
+**The round's own defect, found by the obligation that exists to find it.**
+R-DISC-1 requires discharge **per lane**. IC-L3's first rendering (`c66565d`) held
+only `r2`, which is correct at the lane-0 members of R, whose closure record is at
+age 2 when the `tlast` word is due. At the lane-**4** members it is at age **1**,
+`r1` reloads unconditionally from `r0`, the record would have vanished during the
+deferral and the word would have been stranded — word loss, not a one-cycle delay,
+and therefore not the class at all. Discharging length 70 and 1518 at lane 4 term
+by term is what surfaced it. The rendering now holds both stages. This is the
+second consecutive campaign in which the term-by-term obligation refuted my own
+first reading before a seal branched on it (`DISP-0001` §4's purpose, discharged).
+
+**Base identity.** §8's literal base SHA is the parent of the packet's commit,
+`8acd28d`; the dispatch operates at `bbd4122`, the packet's commit itself. I filed
+the disagreement as FINDING WO-0073-M1 (MINOR) **before cutting the first branch**,
+with the proof that it is materially void — `libs/`, `test/`, `tools/` and
+`docs/specs/` are byte-identical at the two SHAs — and proceeded rather than
+burning five CI runs to change nothing measurable. §8's own instruction is that a
+disagreement is "a finding before the campaign runs", which is what this is.
+### Actions
+- Verified the respawn precondition before anything else: no `mut/wo-0073-*` ref
+  on the remote, no WO-0073 manifest in the tree.
+- Authored five single-class diffs against `bbd4122`, one per class, each touching
+  only `libs/hardcaml_ethernet/src/xgmii_rx_64.ml`.
+- Cut, committed (plain `git commit`, never `agent_commit`) and pushed five
+  transient branches in the packet's fixed delivery order: `mut/wo-0073-l1`
+  `8fe0251`, `-l2` `e24e523`, `-l3` `60ed49c`, `-l4` `22b538f`, `-l5` `806d3d5`.
+- Corrected IC-L3 after the lane-4 discharge failed. `git push --force-with-lease`
+  was **refused by repository rules** — PROTOCOL R9's no-force-push guarantee
+  holding on transient refs too — so the correction landed as a fast-forward second
+  commit; the branch tip `60ed49c` is the deliverable and `c66565d` is superseded.
+- Wrote the manifest `docs/reports/audit/WO-0073-mutations/README.md` (single file,
+  the five diffs inline) carrying: the blinding statement, FINDING WO-0073-M1, the
+  independently derived stimulus geometry, the five diffs, R-DISC-1's per-class
+  per-lane per-length per-parity discharge, R-DISC-2's three-path gate inventory
+  with the report path as a negative and the cross-class table, the six mandatory
+  disclosures, the §6 pre-ship check, the five blast-radius rules, and the pre-run
+  reading note answering dv_lead's question.
+- Returned to `claude/fpga-hardcaml-agent-orchestration-37ceyf` and verified its
+  HEAD is `bbd4122`, unmoved. Ran no `dune`, staged nothing outside my scope, and
+  committed nothing on the working branch.
+### Evidence
+At `bbd4122`, working tree clean:
+```
+$ git rev-parse HEAD                 -> bbd4122cb37f7481f6dd8bf34676c31a0a19899e
+$ git rev-parse bbd4122^             -> 8acd28df5e83e99953816c79d160b41eb1e3a447
+$ git diff --stat 8acd28d bbd4122 -- libs/ test/ tools/ docs/specs/
+(empty output — the two trees agree on every path this campaign scores)
+$ git ls-remote --heads origin 'refs/heads/mut/wo-0073*'   (before seeding)
+(empty)
+```
+Diff independence, for N in 1…5 at `bbd4122` with a clean tree:
+```
+$ git diff bbd4122 mut/wo-0073-l$N -- libs/hardcaml_ethernet/src/xgmii_rx_64.ml > ic-l$N.diff
+$ git apply --check ic-l$N.diff && git apply ic-l$N.diff \
+    && git apply -R ic-l$N.diff && git diff --quiet -- libs/
+ic-l1: applies alone at bbd4122, reverts clean      (18 diff lines)
+ic-l2: applies alone at bbd4122, reverts clean      (40)
+ic-l3: applies alone at bbd4122, reverts clean      (63)
+ic-l4: applies alone at bbd4122, reverts clean      (19)
+ic-l5: applies alone at bbd4122, reverts clean      (36)
+```
+Syntax, with the OCaml front-end only — **no `dune` was run anywhere**:
+```
+$ ocamlc -stop-after parsing -dsource <file> > /dev/null
+ic-l1: PARSES  ic-l2: PARSES  ic-l3: PARSES  ic-l4: PARSES  ic-l5: PARSES  base: PARSES
+```
+This is a syntax result and nothing more; per the packet's §2.1 a mutant that does
+not compile is a **build finding** whose evidence is the CI build step's own
+conclusion, never a green `test/cosim/`.
+Refs on the remote after seeding:
+```
+$ git ls-remote --heads origin 'refs/heads/mut/wo-0073-*'
+8fe0251404f569bef9a6f5cbda190a5a864be496  refs/heads/mut/wo-0073-l1
+e24e5230faba5118e97dbb392c0ae91661d722d5  refs/heads/mut/wo-0073-l2
+60ed49cc885bc759590c57ccf29889a19824e1ce  refs/heads/mut/wo-0073-l3
+22b538f7e6702e705296dbc869ed40b9a679f8cd  refs/heads/mut/wo-0073-l4
+806d3d5652772aab36731e680d3f756775085a3f  refs/heads/mut/wo-0073-l5
+```
+Working branch at return:
+```
+$ git rev-parse HEAD    -> bbd4122cb37f7481f6dd8bf34676c31a0a19899e
+$ git branch --show-current -> claude/fpga-hardcaml-agent-orchestration-37ceyf
+$ git status --porcelain -uall
+?? docs/reports/audit/WO-0073-mutations/README.md
+```
+The scorecard, the control run and the per-class CI run ids are **not** in this
+entry and are not mine to supply: this round is the seeding half, CI is the
+authority (ADR-0005), and no toolchain in this environment elaborates a mutant.
+### Outcome
+DoD **met** for the seeding half of WO-0073. Five classes seeded, **none declared
+NOT SEEDED**; the one term I could not discharge on the first attempt (IC-L3's
+lane-4 members) was repaired before delivery rather than escaped. All six mandatory
+disclosures answered in my own words: D-L1a **D**, D-L1b **A**, D-L2a **U**, D-L3a
+**R = {2} delivered**, D-L4a **S**, D-L5a **once**. §6's pre-ship check applies to
+IC-L2 and IC-L3 only — I rendered IC-L1 at D and IC-L4 at S, which move the
+datapath by design — and both pass. Handoff: manifest
+`docs/reports/audit/WO-0073-mutations/README.md` to the orchestrator for commit and
+to dv_lead as the campaign's manifest and its pre-run reading note; the five
+transient branches are pushed and ready for their CI runs. No lessons harvest is
+due — the charter fixes harvests at every `SO-` and every phase gate, and this
+round is neither; declared rather than omitted.
+### Open-questions
+1. **FINDING WO-0073-M1 (MINOR) — base identity.** §8's literal base SHA
+   (`8acd28d`, the parent of the packet's commit) and the operating base SHA
+   (`bbd4122`, the packet's commit) are different commits with byte-identical
+   trees at `libs/`, `test/`, `tools/` and `docs/specs/`. Filed before the first
+   branch was cut. Ruling wanted: every §8 reference to "the base SHA" reads
+   `bbd4122`, and the control run is `bbd4122`'s.
+2. **`mut/wo-0073-l3` carries two commits.** Score from the tip `60ed49c`;
+   `c66565d`'s run, if one exists, is a superseded rendering and scores nothing.
+3. **IC-L2 registers the five strobes with the datapath.** Judged, not followed: I
+   read "the reserve is spent" as a uniform ΔC = 4 preserving §9's
+   strobe-on-`tlast` coincidence, and the narrower alternative as the class plus a
+   skew defect. If the seal branched the other way, the cells differ only at units
+   asserting a strobe cycle — and this campaign injects no errors.
+4. **A derived collision prediction, offered before the run**: IC-L1(D) and
+   IC-L4(S) both yield 5 000 `tlast` words in unit 1 and both leave unit 2 green,
+   so they may speak with one string at a frame-count cell. They are **not** the
+   same edit — different gates 400 lines apart, registered versus combinational
+   conjuncts, disjoint frame parities — which is dv_lead's pre-run question
+   answered in the negative, and every quantity beyond the count separates them.
+5. **A clock discrepancy, recorded because I audit rather than tidy**: my spawn
+   short-id is minted `2026-08-09T21:15Z` while this session's environment reports
+   the date as 2026-08-05. I have taken the spawn mint as authoritative for this
+   entry's timestamp. Entry-id monotonicity is unaffected; if the mint is wrong,
+   the orchestrator owns the correction.
+### Files-in-this-commit
+- docs/reports/audit/WO-0073-mutations/README.md
