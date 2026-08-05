@@ -510,7 +510,7 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
       ~error:a_close_error
       ~start:a_close_start
       ~oversize:a_close_oversize
-      ~fcs:(a_close_terminate &: bad_fcs)
+      ~fcs:((a_close_terminate |: a_close_error) &: bad_fcs)
       ~runt:a_close_runt
   in
   (* [consume] is defined by the output decision below; the two are mutually
