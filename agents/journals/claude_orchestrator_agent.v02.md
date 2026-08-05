@@ -2045,3 +2045,29 @@ carried into the campaign round.
 
 ### Files-in-this-commit
 - tasks/BOARD.md
+
+## [J-orchestrator-0198] 2026-08-09T02:00Z | task:WO-0066 | The sixth seal: two classes corrected at freeze, one blindness confessed by derivation
+
+### Trigger
+dv's campaign-authoring round returned; split executed (199e319 the
+census commit = the base, ebaac58 the packet + seal immediately
+following — adjacency verified in the log per the seal's symbolic
+statement). Pushed.
+
+### What I did
+- Board row WO-0066 SEALED · SEEDING with the full note including the
+  GREEN-BY-BLINDNESS discovery and the IC-F minting.
+- Dispatching the auditor: six diffs, blinded under the packet's §7
+  allowlist (test/** AND the attack plan barred — the plan bar is new
+  this campaign; the sealed companion emphatically barred); seven
+  disclosures answered before the run; R-DISC-1 per class, per
+  sub-case, per lane; the §6 pre-ship datapath check for the three
+  classes it binds; no combined IC-D/IC-F diff.
+- After the manifest: pre-run questions to dv if any (the WO-0063B
+  reading-note precedent stands), then I operate six transients at
+  199e319, then dv adjudicates.
+- Family J: DUE the round after this seal closes; E2 to the sponsor
+  before any third deferral.
+
+### Files-in-this-commit
+- tasks/BOARD.md
