@@ -2326,3 +2326,54 @@ by the agent itself, not by the next stop-hook.
 
 ### Files-in-this-commit
 (journal-only)
+
+## [J-orchestrator-0206] 2026-08-09T11:15Z | task:none | Two concurrent lead rounds land in two commits - and the overlap they both reported becomes a rule
+
+### Trigger
+Both respawned leads returned complete against the same working tree,
+each REPORTING the other's in-flight files and touching none of them -
+the stop-on-inconsistency bar working in both directions at once. dv's
+family-L design (WO-0070 packet + the WO-0046 co-sim adjudication
+companion + journal v05 rotation) and the architect's WO-0069 rulings
+(both items, no countersignature owed on its stated authority). Landed
+in two commits by scope: 9bdf03c (dv_lead, J-dv_lead-0125) and b6ef1cb
+(architect_docs_lead, J-architect_docs_lead-0031). The v05 rotation
+header verified independently: sha256 and byte count recomputed from
+git show HEAD:v04 before staging - both match.
+
+### Rulings
+- dv Q1 (probe seat): stage 1 executes on MY transient - throwaway
+  ref cut from d2bdd57 per the packet's own §1.2, probe source from
+  WO-0070 Appendix A, plain never-merge commit, CI executes, dv reads
+  the printed figures from the run. BUG-0003 §V.2/§V.10.1 precedent.
+  tb_writer is not taxed and no probe file enters the working branch.
+- dv Q2 (thresholds): measured input supplied - run 30988038809 total
+  duration 326 s via the API. Restating 30 s / 180 s against it is
+  dv's call at decision time, not mine.
+- dv Q3 (ordering): dv landed first, architect second; disjoint, no
+  contention.
+- architect Q1 (concurrent overlap): RULED - the overlap was intended
+  and declared in both dispatches; it stays lawful ONLY under
+  orchestrator-declared disjoint write scopes. ADOPTED going forward:
+  concurrent dispatches name the sibling spawn and its declared scope,
+  and scope evidence cites the dispatch's allowlist, never "exactly N
+  modified paths". Joins HEAD-at-return and the spawn-epoch marker as
+  candidate scenarios for the next enforcement round.
+- architect Q2 (strobe reachability sweep): NOT commissioned as a
+  side effect of a ruling round - named as a candidate work order,
+  carried on the board.
+- The architect's countersignature standing will be relayed to dv
+  VERBATIM at its next dispatch: any sentence of the new §0.6 note dv
+  reads as normative is a FRESH FINDING taking its own narrow
+  countersignature round.
+
+### What I did
+- Landed both rounds (9bdf03c, b6ef1cb), pushed; board flipped:
+  WO-0070 PACKET LANDED / stage 1 = cost probe on my transient;
+  WO-0069 RETURNED, both items ruled.
+- Next: cut the probe transient from d2bdd57, land Appendix A's
+  source as a plain never-merge commit, push, let CI run; dv reads
+  the figures and applies its own pre-committed band rule.
+
+### Files-in-this-commit
+- tasks/BOARD.md
