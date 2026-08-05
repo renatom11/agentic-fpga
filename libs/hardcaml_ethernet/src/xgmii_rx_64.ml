@@ -372,7 +372,14 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
   let a_close_error =
     a_closes_with (lanes.is_error |: (other_ctl &: a_pre_mask))
   in
-  let a_close_start = a_closes_with lanes.is_start in
+  (* IC-A: epoch A — the frame open on entry to this word — decodes REQ-110's
+     abort only for a start character in **lane 0**. A start character in lane 4
+     of a word carrying an already-open frame still ends that frame's coverage
+     at its own octet time (REQ-110's lane rule, [a_closing_v] above) and still
+     opens the new frame below, but raises no abort condition, so no closure
+     record is born for it and the frame carries forward unclosed and
+     unreported. Epochs B and C are untouched. *)
+  let a_close_start = a_closes_with (lanes.is_start &: of_int ~width:8 0x01) in
   let a_close_char = a_close_terminate |: a_close_error |: a_close_start in
   let a_close_now = (a_close_char |: a_close_oversize) &: ~:(i.clear) in
   (* Covered octets: lanes [cov_first, cov_end). Empty when cov_end <= cov_first,
