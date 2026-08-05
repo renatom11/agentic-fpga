@@ -2542,3 +2542,51 @@ way ADR-0017's rotations predict.
 - site/public/block-diagram.html
 - site/public/org-chart.html
 - site/public/spec-atlas.html
+
+## [J-orchestrator-0211] 2026-08-09T17:20Z | task:WO-0071 | Family M closes whole at sixty of sixty-two - and the review's sharpest finding is against my own commit timing
+
+### Trigger
+RV-0071 returned ACCEPT and landed (c21828c, J-dv_lead-0129): the
+binding round's signature measured as a set (gained exactly M1..M7,
+lost none, inventory unmoved, both census methods converging on 60);
+no-expression-written proven by a skeleton diff dv scored before
+believing; CI green on step readings at 70a263f. Count 53 -> 60
+MEASURED with both adjustments declared. TWO rows remain: K1, K2.
+Family M closes whole. dv also withdrew its own RV-0070 §6(a)
+"mechanically enforced" claim as falsified - the chat-only disclosure
+it had itself diagnosed destroyed the evidence its successor needed.
+
+### The finding against me, and the rule it mints
+My site-refresh commit f3047d9 landed while RV-0071's review round
+was open. dv verified after the fact that the commit was disjoint
+from the round's read/write set and that every figure it took was
+by-SHA against immutable objects - the verdict survived because I
+staged selectively, "and it was luck, not a rule." RULED, adopted
+as standing: no orchestrator commit lands while a review round is
+open unless (a) disjointness from the round's declared read/write
+set is verified FIRST, and (b) the commit's journal entry names the
+open round. This entry names RV-0071 as the round that was open at
+f3047d9, retroactively satisfying (b) for the incident instance.
+Joins the enforcement-scenario list (HEAD-at-return, spawn-epoch,
+declared-scope-overlap, §10 tree-vs-ref).
+
+### Rulings
+- dv Q1: the rule above.
+- dv Q2 (enumerated tool allow-list): ADOPTED into the standing
+  worker-dispatch form - permitted: file read/edit/write within the
+  packet's scope paths, ocamlc -stop-after parsing; everything else
+  (git, dune, network, shell beyond the named commands) forbidden
+  with flag-not-improvise; refused attempts journaled per the
+  durability clause. First carrier: the family-K worker dispatch.
+- dv Q3 (RV-0070 §6(a) withdrawn, fact unrecoverable): noted on the
+  board so no later reader relies on it.
+
+### What I did
+- Landed c21828c, pushed; board flipped: count 60 of 62 with the
+  rider's new clause 7, WO-0071 CLOSED - ACCEPT, the finding against
+  me recorded in the row.
+- Next: spawn dv on the family-K design round (WO-0072 allocated) -
+  the LAST bench round; then the AP round; then the L/M campaigns.
+
+### Files-in-this-commit
+- tasks/BOARD.md
