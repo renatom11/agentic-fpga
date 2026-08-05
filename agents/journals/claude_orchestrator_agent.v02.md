@@ -2010,3 +2010,38 @@ produce a .corrected file. Harvest-grade, banked by dv.
 
 ### Files-in-this-commit
 - tasks/BOARD.md
+
+## [J-orchestrator-0197] 2026-08-09T01:15Z | task:WO-0065B | The bounce loop closed accept - eleven of eleven checked in both directions
+
+### Trigger
+RV-0065B returned ACCEPT (J-dv_lead-0113, fa91964): both repairs
+verified by re-derivation (and the sc6 ruling went DEEPER than the
+worker's report - two boundary crossings found, one a control character
+the site's defence couldn't reach; ruled sound on the Idle row's form
+with the full geometry now in a proved-comment-only repair); the
+superset ruled the correct reading of the commission, not scope drift;
+discriminator strings verified by sorted-multiset sha256; CI green in
+both directions per dv's own new defect class (three red-to-green AND
+eight stayed-green); N2's prohibitions LIFTED and the plan's two oldest
+no-coverage marks STRUCK with superseded wording kept.
+
+### The count
+43 of 62, titled and effective now coinciding - "the census is the
+numerator's provenance; the run id is the adjective's." 19 ASSERT rows
+outstanding. The naive matcher still returns 44; the boundary fix is
+carried into the campaign round.
+
+### What I did
+- Committed and pushed the verdict; board count block and WO-0065 row
+  updated.
+- Next dispatch: dv authors the family-B/N campaign packet + seal in
+  ONE commit - denominator re-measured at freeze (expected 48/128/80),
+  five foreseen REQUIRED classes IC-A..IC-E, bound 7 SCORED with the
+  three instances' Frame-vs-Preamble shapes distinguished so a
+  two-of-three kill is visibly short, the seal a forward commitment in
+  PROTOCOL §10's terms.
+- Family J: DATED to the round immediately after that seal; a third
+  deferral requires an E2 naming the cost to the sponsor.
+
+### Files-in-this-commit
+- tasks/BOARD.md
