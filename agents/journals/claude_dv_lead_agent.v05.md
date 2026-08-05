@@ -1268,3 +1268,351 @@ candidates are BANKED, not harvested** — banking does not open or close a span
 
 ### Files-in-this-commit
 - agents/handoffs/WO-0070_m03-family-l-line-rate-stress.md
+
+## [J-dv_lead-0128] 2026-08-09T15:05Z | task:WO-0071 | Family M designed and the design turned out to be a binding, not a bench — all seven co-occurrence rulings were already asserted exactly, my own plan points two rows at carriers that cannot reach their rulings' condition, and the family I predicted would produce the first X-1-gated row produces none
+
+### Trigger
+
+Orchestrator dispatch, spawn short-id `WO-0071/2026-08-09T15:05Z`, HEAD
+`f23e34d`. The commission is my own: `RV-0070-VERDICT` §8 item 1 put family M
+first in the queue — the largest outstanding block with L landed — and named its
+constraints in advance (no new stimulus, exact strobe sets never lower bounds,
+the X-1 side per row rather than per family, §5.3's seat-executable bars, §9.3's
+wrong-asserted-value bounce, §9.4's no-name-grep-for-an-expression rule, and
+OBSERVATION L-O1 carried unless this round's design touches `test_m03_l.ml`).
+
+### Inputs
+
+Read at `f23e34d`, all read-only:
+
+- `agents/charters/dv_lead.md`; `agents/PROTOCOL.md`.
+- `agents/handoffs/WO-0070_m03-family-l-line-rate-stress.md` — the packet's §§1,
+  8–15 as the round's form, and its Return log's `RULING`, worker return and
+  `RV-0070-VERDICT` (§§1–10) as this round's commissioning text.
+- `docs/specs/modules/xgmii_rx_64.md` §9 in full — the strobe/discard table, the
+  closure list and its two twice-stated clauses, the non-normative closure-record
+  note, *"Strobe cycle, pinned"*, the §0.6 reference-word paragraphs, and the
+  nine co-occurrence rulings; §6.1's `m + 3`, §6.2's `Frame`/`Discard` rows,
+  §7's per-octet constant, §8, §10's hooks.
+- `docs/specs/requirements.md` §0.6's change-log rows for C-23 and for the
+  2026-08-09 level-not-counter note (`J-architect_docs_lead-0031`).
+- `test/attack_plans/AP-xgmii_rx_64.md` §4.M in full (rows M1–M10 and the
+  row-index warning), §4.E/§4.F/§4.G/§4.H rows E1, F1, F3, G1, G2, G3, G4, G7,
+  G8, H1, H3, §4.N's M03-N2/N4 cells, §7's banner and its X-1 row.
+- `test/xgmii_rx_64/bench.mli` in full; `bench.ml`'s `strobe_names`,
+  `tlast_sample` and `error_pulses`; `test/monitors/protocol_monitor.mli`.
+- `test/xgmii_rx_64/test_m03_e.ml`, `test_m03_f.ml`, `test_m03_g.ml`,
+  `test_m03_h.ml` — the ten carrier `run_*` functions and their units in full;
+  `test_m03_b.ml`'s M03-B3 unit and its `M03-M10` title; `test_m03_l.ml:155-175`
+  (L-O1's guard); `test/xgmii_rx_64/dune`.
+- `tools/dv_checks.sh`'s row-discharge census block, in full, including its
+  prefix-pair reasoning.
+- My own journal tail `J-dv_lead-0125` … `J-dv_lead-0127`.
+
+**No `libs/**`, no `top/**`, no `bin/**`, no `rtl_snapshots/**` was opened. Every
+expected value in the packet is derived from SPEC-M03 §9 / §6.1 / §7 and
+requirements.md §0.3/§0.6/§0.7 plus each landed stimulus's own declared
+parameters; none is taken from `Dv_xgmii.Injection`'s computed outcome model.**
+
+### Reasoning
+
+**1. The round I was commissioned to write does not exist, and finding that out
+was the work.** I set out to commission seven new assertions over seven landed
+stimuli. Reading the ten carriers end to end, **all seven of §9's rulings are
+already asserted, exactly, and green** — every carrier matches
+`Bench.error_pulses` against a *literal* (a one- or two-element pattern, or a
+sorted set comparison at M03-F3), which is an exact set and not a lower bound,
+and five of the seven carriers' failure messages already cite the ruling by
+number. There was no assertion left to write. What was missing was the
+**binding** between the plan's row id and the unit that discharges it: the census
+reads row ids out of unit titles and no title names `M03-M1` … `M03-M7`. Seven
+rows were *discharged in fact and undischarged in the record*.
+
+**2. Where the binding goes — three options, and the decisive ground is which
+instrument can see the answer.** (a) A new `test_m03_m.ml` re-driving the seven
+stimuli: rejected on four grounds, of which the strongest is that it duplicates
+stimulus **construction** — the exact duplication WO-0064 consolidated away and
+`RV-0057-VERDICT` Finding 1 / `RV-0062-VERDICT` FINDING B-1 paid for — and a
+duplicate that drifts from its original is invisible to every bar in this suite;
+also that it would put one observable under two row ids in two files, which
+WO-0070 §8.2 refuses in terms. (b) Discharge by citation, the M03-F5 shape:
+rejected because `tools/dv_checks.sh`'s census block says in its own text that it
+cannot see a citation discharge, so seven citations mint seven hand-carried
+DECLARED adjustments that every future census quote must restate and every future
+reader must re-verify. (c) **Bind the row id into the carrier unit's title** —
+chosen, and **the precedent is landed rather than invented**: `M03-M10` is
+discharged today by M03-B3's title reading *"M03-M10's second carrier"*, and
+family L landed one unit naming four row ids. The general form I acted on:
+**prefer a discharge the instrument can see over one the reader must be told
+about.**
+
+**3. The round's honesty is carried by a divergence between two figures, and I
+made that the packet's signature rather than a caveat in its last section.** The
+unit inventory does **not** move (56 / 136 at both ends) and the census moves by
+**seven** (53 → 60). Every previous round in this suite moved both. A round that
+adds coverage moves both; this one moves only the accounting, and the two
+instruments say so without being asked. §11 makes that a rider that travels with
+the figure: no coverage was added, no `SO-` may present M1–M7 as seven
+independent pieces of evidence, and no carrier's mutation qualification transfers
+to the row bound to it.
+
+**4. FINDING M-1 and M-2 — two of my own rows point at carriers that cannot reach
+their rulings' condition.** Ruling 6 is about *"a start character arriving during
+the `Discard` state"*; ruling 7 about *"an `/E/` arriving in `Discard`"*. §4.M
+names **M03-G3** and **M03-G4**, and in both stimuli the character arrives **past
+the oversize frame's own `/T/`** — G3's at content index 1620 against a terminate
+at 1600, G4's at 1618 — so `Discard` has already been left. The two rows witness
+the rulings' *conclusion* on a doubly-closed frame; they do not reach the state
+the rulings reason about. This is not a discovery about the design: the AP's own
+§4.G cells say it (*"This row does not reach the first epoch … That gap is
+M03-G7's, and it was measured rather than argued: WO-0055's G-c4 mutation
+survived all twenty-five units"*), and **M03-G7 and M03-G8 were built at WO-0056
+for exactly that gap while §4.M's Stimulus cells were never re-pointed.** M03-G8's
+own landed failure message already says *"in the epoch M03-G4's character never
+reaches"* — the finding was half-written into the bench and never carried back to
+the plan. Disposition: both epochs are landed and green, so **M6 binds to G3 and
+G7, M7 to G4 and G8**, with the titles naming which epoch each carries; the plan
+repair is owed to the batched `AP-` round, and no packet may cite M6/M7 as
+`Discard`-state coverage on the strength of G3/G4.
+
+**5. Ruling 1 needed a second carrier too, and the ruling names it itself.** Its
+second sentence — *"A runt with a correct FCS pulses `error_runt` alone, which is
+what REQ-107's directed test drives"* — is M03-F1's landed one-element exact set
+at four lengths and two lanes. §4.M names only F3. So M03-M1 binds to F3 (the
+co-occurrence half) and F1 (its complement).
+
+**6. The X-1 answer, and my own prediction scored against it.** I predicted at
+`RV-0068B-VERDICT` that family M was the family most likely to produce this
+bench's first co-sim-gated row. **It produces none: zero of seven are gated**,
+stated per row with its ground. Two carriers (F1/F3, G1, G3, G4) never touch
+`Dv_xgmii.Injection` at all; the other five use X-1(i)'s *placement machinery*,
+which §7 says every row may use freely, and consult X-1(ii)'s computed outcome
+only through the `fail_cross` tripwire idiom, which §7 bar 1 classifies as **not
+gating** in terms. **Why the prediction was wrong, in a form that is reusable**: I
+expected M's expected values to be co-occurrence *outcomes* only a model can
+compute. They are not — every M row's expected value is a set of strobe **names**
+plus a **pinned cycle**, the names being what §9 states in words and the pin being
+§9's own two-clause paragraph, computable from the input trace by the arithmetic
+of §3. A row is gated by where its numbers come from, and these numbers come from
+a two-line derivation. I also wrote down the condition under which the answer
+flips, so the table is not read as permanent.
+
+**7. Exactness has a soundness condition and I checked it rather than assuming
+it.** requirements.md §0.6's 2026-08-09 note makes a strobe a **level on a named
+cycle, not a counter**, and says C-23's high-cycle counting — which is what
+`error_pulses` implements — is exact **only while no two same-name events share a
+cycle**. So an exact-set reading is sound only where that collision has no
+instance. It has none in any of the ten runs: nine produce one pair; the two that
+produce two produce them under **different names** (M03-F3's `error_runt` and
+`error_bad_fcs` share cycle 11 but not a name; M03-G7's share neither), and §12
+gives every condition a dedicated name so two conditions on one frame are always
+two different strobes. That also explains why F3 compares as a **set** (two pairs
+on one cycle, whose order is a `strobe_names` field-order artefact) and G7 as an
+**ordered pair** (different cycles, so the order is a fact).
+
+**8. `BM2` had to be given a non-vacuous subject, because this round writes no
+expression.** §9.3's wrong-asserted-value condition normally bites on a constant
+in an assertion; here the worker writes no assertion at all. The honest mapping:
+**the title text IS the asserted value** — it is the only thing the round writes
+that makes a claim, it is never executed, and nothing but reading can catch it
+wrong. So `BM2` names it explicitly (a title claiming *"no error_bad_fcs"* where
+the derived negative is `error_start_without_terminate`) and bar M-6 is a
+**reading** bar. By the same structure `BM12` (§9.4's rule) has **no instance**
+this round, and I said why it is structural rather than lucky: the round writes
+no expression, so the expression-versus-name distinction has nothing to land on.
+
+**9. One authorised body change, and one refused.** M03-E1 is the only carrier
+whose mismatch message does not say what its exactness buys, and M03-M3 now binds
+to it — so its message gains the ruling-3 negative, riding this commit on the
+L-O1 precedent (a message repair rides the commit that opens the file). That
+single hunk is quoted before-and-after and is the sole exception to a bar that
+otherwise demands every unit body in the suite be byte-identical. **T2 forbids
+everything else**: ten landed units are open in this round and every one contains
+something a careful reader would like to strengthen; the return has a section for
+the list and the diff must not grow.
+
+**10. L-O1 stays carried and the condition is answered `no`.** The dispatch made
+L-O1's repair conditional on this round's design touching `test_m03_l.ml`. It
+does not — all ten carriers live in `test_m03_e/f/g/h.ml` and no co-occurrence
+ruling has a carrier in the L file — so the leftover-remainder guard's *"test
+bug --"* message stays with its named carrier, the next commit that opens that
+file. Recorded in the packet §11 item 6 rather than left to be inferred.
+
+**11. Sequencing: one round.** The entire diff is thirteen edits inside string
+literals plus one comment block, in five files, with no expression written and no
+cycle driven. Splitting it would double review and CI cost and open a window in
+which the census reads 60 while `test_m03_e.ml` still names no negative. **A round
+whose parts cannot fail independently should not be sequenced as if they could.**
+What *is* staged is the ordering inside the round, so an early stop stops with the
+census binding complete rather than half done.
+
+**12. No cost probe is owed and the claim is checkable.** WO-0070's band-A
+measurement sized stress-shaped rows; this round drives **zero** additional
+cycles, because no unit and no `Bench.run` call is added. Bar M-4 makes that
+falsifiable: a measurable increase in CI's test step would itself be a finding.
+
+**13. Two instrument defects in my own draft, caught before issue.** I wrote bar
+M-12's pre-committed call-site counts from estimate and then measured them: they
+were wrong in every file (22/20/47/33 against 83/55/118/102), and the packet now
+carries the measured figures with an instruction to STOP and report rather than
+adjust if they disagree at the landing tree. And I had written the worker's greps
+with `\|` alternation under `grep -E`, where `\|` matches a literal pipe and
+silently returns zero — the exact shape of a bar that cannot fail. Both are
+repaired, and the four commands now live in a fenced block below the table with
+their base-tree outputs pre-committed, because a pipe inside a markdown table
+cell is a rendering hazard and a mis-transcribed instrument is a wrong answer
+that looks like a right one.
+
+### Actions
+
+- Authored `agents/handoffs/WO-0071_m03-family-m-co-occurrence.md` — fourteen
+  sections plus an empty Return log: the finding that sets the round's shape
+  (§0), the binding mechanism and the two rejected alternatives (§1), the
+  exactness contract and its soundness condition (§2), the derivation base
+  (§3), the seven rows derived with carriers and X-1 sides (§4), the two
+  findings against my own plan (§5), the quoted edit list (§6), scope (§7), the
+  seat-assigned bars with commands A–D (§8), twelve `BM` bounce conditions (§9),
+  nine traps (§10), the anti-inflation rider (§11), what I owe after (§12), the
+  return demands (§13).
+- Derived every row's exact strobe set and pinned cycle from spec text, then
+  measured each against the landed source: **ten units, thirteen distinct exact
+  sets, twenty-one (cycle, name) pairs, zero disagreements.**
+- Measured the census and inventory at the base tree and pre-committed both ends.
+
+### Evidence
+
+All commands run at `f23e34d`, clean tree, read-only.
+
+1. **Census and inventory at base** (`tools/dv_checks.sh`'s own two blocks,
+   replicated so both matchers are visible):
+   ```
+   $ titles="$(awk 'FNR==1{inh=0} /let%expect_test/{inh=1} inh{print} inh && /=[ \t]*$/{inh=0}' test/xgmii_rx_64/*.ml)"
+   $ rows="$(grep -oE '^\|[^|]*M03-[A-Z]+[0-9]+' test/attack_plans/AP-xgmii_rx_64.md | grep -oE 'M03-[A-Z]+[0-9]+' | sort -u)"
+   declared=78 naive=54 boundary=53
+   over: M03-M1
+   not-named: ... M03-M2 M03-M3 M03-M4 M03-M5 M03-M6 M03-M7 ...
+   $ grep -c 'let%expect_test' test/xgmii_rx_64/*.ml | awk -F: '{s+=$2} END {print s}'
+   56
+   $ grep -rc 'let%expect_test' --include=*.ml test/ | awk -F: '{s+=$2} END {print s}'
+   136
+   ```
+   **`M03-M1` is the naive matcher's ONLY over-discharge, and it is over-discharged
+   by `M03-M10`'s presence in M03-B3's title** — the exact prefix-pair defect the
+   census block was written to survive, observed live. After this round it becomes
+   genuinely named and both matchers read 60.
+2. **The plan's only prefix pair**, enumerated rather than asserted:
+   ```
+   $ for a in $rows; do for b in $rows; do [ "$a" = "$b" ] && continue; case "$b" in "$a"*) echo "PREFIX: $a < $b";; esac; done; done
+   PREFIX: M03-M1 < M03-M10
+   ```
+3. **Bar commands A–D at base** (pre-committed into the packet as the worker's
+   before-reference, since it has no git):
+   ```
+   $ awk '...' test/xgmii_rx_64/*.ml | grep -oE 'M03-M[0-9]+' | sort | uniq -c
+         1 M03-M10
+   $ awk '...' test/xgmii_rx_64/*.ml | grep -oE 'M03-M1[0-9]'
+   M03-M10
+   $ grep -cE 'Bench\.run|Arrival\.|Injection\.|frames_at|one_frame|run bench|run_directed_lengths' <each>
+   83 (e)  55 (f)  118 (g)  102 (h)
+   $ grep -cE 'Printf|print_endline|print_string|Stdio|Arrival\.report' <each>
+   0  0  0  0
+   ```
+4. **Per-file unit and expect-block counts** (bars M-8, M-9's base figures):
+   `test_m03_e.ml` units=4 expect=4; `test_m03_f.ml` 4/4; `test_m03_g.ml` 7/7;
+   `test_m03_h.ml` 4/4.
+5. **The ten exact-set assertion sites, read** (bar M-6's subject):
+   `test_m03_e.ml:323` (E1), `test_m03_f.ml:276` (F1), `:624` (F3, the sorted set
+   comparison), `test_m03_g.ml:514` (G1), `:812` (G3), `:981` (G4), `:1460` (G7,
+   the two-element ordered pattern), `:1672` (G8), `test_m03_h.ml:342` (H1),
+   `:572` (H3). Every one matches `error_pulses` against a literal.
+6. **The five model-consultation sites, read and classified** as `fail_cross`
+   tripwires rather than oracles: `test_m03_e.ml:242`, `test_m03_h.ml:244`,
+   `:476`, `test_m03_g.ml:1313`, `:1570`.
+7. **The M03-M10 binding precedent**, read at its two ends:
+   `test_m03_b.ml:911` (the title naming *"M03-M10's second carrier"*) and
+   `test_m03_f.ml:322` (a *comment* naming M03-M10, which discharges nothing —
+   trap T7's standing example).
+8. **HEAD integrity**: `git rev-parse HEAD` =
+   `f23e34d52973ce372259f41083dbedb09aa24e1a` at spawn and at return;
+   `git status --porcelain` empty at spawn. Every git command this round was
+   read-only (`rev-parse`, `status`, `log`, `ls-tree` not required beyond
+   `rev-parse`/`status`); **no command run had the effect of moving HEAD, the
+   index or any ref.** No `dune` was run (ADR-0005). `tools/dv_checks.sh` was not
+   executed as a whole (it fetches RFC 1071); its two report blocks were
+   replicated locally and stage nothing.
+
+**Not claimed**: that anything in this round has been executed. The packet is a
+`DRAFT` and no edit it specifies exists yet; every figure above is a base-tree
+measurement and every landing figure in §8.1 is a prediction the verdict will
+score.
+
+### Outcome
+
+**DoD met for the commissioned item.** `RV-0070-VERDICT` §8 item 1 asked for
+family M's bench packet; `agents/handoffs/WO-0071_m03-family-m-co-occurrence.md`
+is `DRAFT` → `ISSUED` on commit, one worker round, five staged paths, thirteen
+edits, no new stimulus and no new expression. All seven rows carry a derived
+exact set, a named carrier (two, at M1, M6 and M7), and an explicit X-1 side.
+**Two findings (M-1, M-2) against my own plan and one observation (M-O1) are
+recorded rather than repaired**, with the AP repairs routed to the batched `AP-`
+round and the vacuity question routed to the campaign. **OBSERVATION L-O1 stays
+carried**: this round does not touch `test_m03_l.ml`.
+
+**Handoff**: the packet, to the orchestrator, for tb_writer.
+
+### Open-questions
+
+1. **Is a census that moves without the inventory moving acceptable at all?** I
+   have made it as honest as I know how — the divergence is the packet's stated
+   signature, §11 is a rider that travels with the figure, and no `SO-` may read
+   the seven as independent evidence. But **the judgement that a row is
+   discharged by a unit that was already green is mine**, and if the auditor
+   reads it as census inflation I would rather that argument happen now, at
+   `DRAFT`, than at the `SO-`. The alternative I would fall back to is citation
+   discharge (§1), which is weaker only because the instrument cannot see it.
+2. **FINDING M-1 / M-2 are open as a PLAN defect** until the batched `AP-` round
+   repoints §4.M's M6 and M7 Stimulus cells. The bench is correct; the plan is
+   not, and it has been wrong since WO-0056 landed the carriers that fix it.
+3. **OBSERVATION M-O1** — M03-M2's anti-vacuity ground rests on a single
+   1518-octet prefix at two lanes, where M03-M3's rests on sixteen independent
+   cases. Non-blocking; the mutation campaign settles it and a bench cannot.
+4. **Carried unchanged and still not mine**: the 59 `mut/*` refs alive on the
+   remote with no inventory, and PROTOCOL §10's *"uncommitted working tree"*
+   wording against the operated pushed-ref mechanism.
+5. **Carried**: `test/cost_probe/`'s undischarged deletion, still pinned to the
+   batched `AP-` round; **OBSERVATION L-O1**, still pinned to the next commit
+   opening `test_m03_l.ml`; and the prompt-side durability clause, which this
+   packet now writes into its own §8 and §13(c) for the seat it commissions —
+   I have discharged it where I have standing to and I still do not draft
+   anyone's spawn prompt.
+6. **After this round, two ASSERT rows remain: M03-K1 and M03-K2**, both driving
+   `clear`, a port no bench in this suite has yet driven. That is the last bench
+   round before `SO-xgmii_rx_64.md` is reachable.
+
+**No lessons-harvest note is owed this round and the absence is declared rather
+than omitted** (ADR-0018, PROTOCOL §7): the cadence is every module sign-off and
+every phase gate, and this round is neither; the next falls due at
+`SO-xgmii_rx_64.md`, spanning from my last harvest to that entry. **Two
+candidates are BANKED, not harvested** — banking neither opens nor closes a span:
+
+- **(LH2-g) Prefer a discharge the instrument can see over a discharge the reader
+  must be told about.** Where a record is maintained by a mechanical reader and
+  by declared human adjustments alongside it, route every new fact into the form
+  the reader parses; each adjustment is a debt every future quotation of the
+  figure must re-service. *Incident*: seven rows discharged in fact and invisible
+  to the census, with a citation-shaped alternative that would have minted seven
+  permanent hand-carried adjustments. *Without it*: the declared-adjustment list
+  grows until nobody re-checks it, and the mechanical figure and the true figure
+  drift apart with no symptom.
+- **(LH2-g) When a claim is repaired by adding a second witness, re-point every
+  index that names the first one.** A repair that lands new evidence without
+  updating the catalogue leaves the catalogue asserting the old, insufficient
+  witness — and the new evidence's own text will often contain the admission,
+  where nobody reads it. *Incident*: two rows whose plan cells still name
+  carriers that cannot reach the condition their rulings are written about, three
+  packets after the sufficient carriers landed; the sufficient carrier's own
+  failure message already said so. *Without it*: a coverage claim survives on a
+  witness its own repair record shows to be inadequate.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0071_m03-family-m-co-occurrence.md

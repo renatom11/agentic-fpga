@@ -1,0 +1,1017 @@
+# WO-0071: family M — co-occurrence (M03-M1 … M03-M7), a round that moves the census by seven and adds no coverage, and says so in its own bars
+
+- **Type**: Work order (PROTOCOL §3). **State**: `DRAFT` → `ISSUED` on commit.
+- **From**: dv_lead. **To**: the orchestrator, then tb_writer — **one stage, one
+  worker round** (§8.0 states the grounds).
+- **Plan rows**: `test/attack_plans/AP-xgmii_rx_64.md` §4.M — **M03-M1, M03-M2,
+  M03-M3, M03-M4, M03-M5, M03-M6, M03-M7**. M03-M8 is `NO-STIMULUS`, M03-M9 is
+  `STRUCTURAL`, M03-M10 is already discharged (its second carrier is
+  `test_m03_b.ml`'s M03-B3 unit, landed at WO-0062); none of the three is in
+  this round.
+- **Spec basis**: SPEC-M03 §9 — the closure list, the *"Strobe cycle, pinned"*
+  paragraph, and the nine co-occurrence rulings under *"Which conditions can
+  co-occur on one frame, and what then pulses"*; §6.1's `m + 3`; §6.2's `Frame`
+  and `Discard` rows; §7's per-octet constant; requirements.md §0.3, §0.5, §0.6
+  (the C-23 counting convention **and** its 2026-08-09 level-not-counter note),
+  §0.7, §12, REQ-103, REQ-104, REQ-105, REQ-107, REQ-108, REQ-110.
+- **Context provided to tb_writer**: this packet; the plan rows above; the spec
+  sections above; `test/xgmii_rx_64/test_m03_e.ml`, `test_m03_f.ml`,
+  `test_m03_g.ml`, `test_m03_h.ml` (the four files it edits);
+  `test/xgmii_rx_64/dune`. **No `libs/**`, no `top/**`, no `rtl_snapshots/**`**
+  (PROTOCOL §10).
+- **Base commit**: `f23e34d`, branch
+  `claude/fpga-hardcaml-agent-orchestration-37ceyf`.
+
+---
+
+## 0. What this round is, and the finding that decides its shape
+
+I opened this round expecting to commission seven new assertions over seven
+landed stimuli. **I found that all seven assertions are already landed, exact,
+and green.** Every carrier §4.M names was commissioned in its own packet with an
+**exact strobe set** over its whole run — a literal match on `Bench.error_pulses`
+— and five of the seven carriers' failure messages already cite the co-occurrence
+ruling by number. There is no assertion here left to write.
+
+What is missing is not coverage. It is the **binding** between the plan's row id
+and the unit that discharges it: `tools/dv_checks.sh`'s census reads row ids out
+of **unit titles**, a `SO-` packet cites a row id, and no title in this suite
+names `M03-M1` … `M03-M7`. Seven rows are therefore *discharged in fact and
+undischarged in the record*, which is the failure mode this programme calls a
+stale inference and has already paid for twice (`RV-0039-VERDICT` F-2; `AP` §7's
+own banner).
+
+**So this round supplies the binding and nothing else, and the packet is written
+so that its own instruments convict it if it ever tries to be more.** Its
+signature is stated here, before any bar:
+
+> **The unit inventory does NOT move (56 in `test/xgmii_rx_64/`, 136
+> repository-wide, at both ends) and the census moves by SEVEN (53 → 60).** This
+> is the first round in this suite where those two figures diverge, and the
+> divergence *is* the honest content: a round that adds coverage moves both; this
+> one moves only the accounting.
+
+Two things came out of the derivation that are not accounting, and they are
+findings against my own plan rather than against any bench — **§5**: M03-M6's and
+M03-M7's named carriers do **not** drive the condition their rulings are written
+about, and the carriers that do have been landed since WO-0056 without §4.M being
+re-pointed.
+
+---
+
+## 1. The binding mechanism — why the row id goes in the carrier's title
+
+**The precedent is landed, not invented.** `M03-M10` is discharged today by a
+title that reads *"… (REQ-102, REQ-107, §0.7, §9 ruling 9, **M03-M10's second
+carrier**)"* on `test_m03_b.ml`'s M03-B3 unit. One unit, two row ids, one
+stimulus, and the census counts both. Family L did the same thing at scale in the
+other direction: one unit naming four ids (`M03-L1/L2/L3/L4`), with WO-0070 §7
+stating in the open that on that stimulus L4 is *implied* by L1 so that no `SO-`
+reads them as independent evidence. This round is that discipline applied to
+seven rows at once.
+
+**The alternative I rejected, with the grounds, because it is the obvious one.**
+A new file `test/xgmii_rx_64/test_m03_m.ml` re-driving the seven stimuli:
+
+1. It would **duplicate stimulus construction** — the `Injection.corrupt` /
+   `Arrival.create` / `frames_at` code of ten runs — which is exactly the
+   duplication WO-0064 consolidated away and which `RV-0057-VERDICT` Finding 1
+   and `RV-0062-VERDICT` FINDING B-1 both paid for. A duplicate that drifts from
+   its original is undetectable by any bar in this suite.
+2. It would **drive cycles for no information**: ten more elaborations and two
+   1600-octet runs per lane, to observe strobes already observed.
+3. It would put **the same observable under two row ids in two files**, which
+   WO-0070 §8.2 refuses in terms.
+4. It would be **new stimulus** in the only sense that matters — new
+   construction code — even though the wire would be the same, and the dispatch's
+   constraint is not satisfied by a stimulus that merely *looks* the same.
+
+**The alternative I also rejected**: discharge by citation, the M03-F5 shape.
+`tools/dv_checks.sh`'s census block says in its own text that it *"does not see a
+row discharged by a CITATION rather than a title"* and that such adjustments are
+**declared judgements** a reader must re-check. Seven citation discharges would
+mint seven hand-carried adjustments that every future census quote must restate
+and every future reader must re-verify. A title binding is read by the
+instrument. **The mechanical form: prefer a discharge the instrument can see over
+a discharge the reader must be told about.**
+
+---
+
+## 2. The exactness contract — and the one condition under which it is sound
+
+§4.M's rows and SPEC-M03 §9's ruling 9 are emphatic in a way the other rulings
+are not: *"A bench SHALL assert `error_runt` alone on every frame of 0 to 4
+octets — **an exact strobe set, not a lower bound**"*. That property is what a
+permissive bench silently loses, and it is what every row below is about.
+Restated so a worker cannot read it as ceremony:
+
+> **A lower bound asserts that the strobe this row expects DID pulse. An exact
+> set asserts that it pulsed AND that nothing else did AND that it did not pulse
+> twice.** The second and third conjuncts are the whole of family M: every one of
+> §9's seven rulings is a statement about what does **not** accompany what.
+
+**The instrument.** `Bench.error_pulses samples` returns *every* (cycle, strobe
+name) pair high anywhere in the run, in cycle order, and within one cycle in the
+`O` record's field order (`error_bad_fcs`, `error_bad_frame`, `error_runt`,
+`error_oversize`, `error_start_without_terminate` — `Bench.strobe_names`). A row
+that matches that list against a literal has asserted an exact set. A row that
+matches `List.exists` or `List.hd` has asserted a lower bound. **All ten landed
+carriers below match against a literal**, verified by reading in §4.
+
+**The soundness condition, checked per row rather than assumed.** requirements.md
+§0.6's 2026-08-09 note (`J-architect_docs_lead-0031`) rules that a strobe is a
+**level on a named cycle and not a counter**, and that C-23's high-cycle counting
+— which is what `error_pulses` implements — is the observer's inverse of that and
+is **exact only while no two same-name events share a cycle**, under-counting
+where they do. So an exact-set reading is sound only where that collision has no
+instance.
+
+> **It has no instance in any of the ten runs.** Nine of the ten produce exactly
+> one strobe pair. The two that produce two pairs produce them under **different
+> names**: M03-F3's `error_runt` and `error_bad_fcs` share cycle 11 but not a
+> name, and M03-G7's `error_oversize` and `error_runt` share neither. §0.6's
+> collision is a *same-name* collision, and §12 gives every condition a dedicated
+> name, so two conditions on one frame are always two different strobes. **The
+> exact-set reading is therefore exact at all seven rows**, and this paragraph is
+> the derivation that says so rather than the assumption that it does.
+
+**One consequence for the order of comparison, and it is why two carriers compare
+differently.** Where two pairs share a cycle (M03-F3), which of the two the
+sampling loop reports first is a **bench-probe artefact** — `strobe_names`'s field
+order — and not something §9 pins, so M03-F3 compares the two as a **set**
+(sorted by name). Where two pairs sit on different cycles (M03-G7), the order is
+a **fact about the design** and M03-G7 compares them as an **ordered pair**. Both
+landed constructions are correct and the distinction is deliberate.
+
+---
+
+## 3. The derivation base — the pin and the constants, from the spec text
+
+Everything in §4 is derived from the sources below plus each landed stimulus's
+own declared parameters. **No expected value in this packet is taken from
+`Dv_xgmii.Injection`'s computed outcome model** (§6.3's X-1 statement is per row).
+
+### 3.1 Where a strobe pulses
+
+SPEC-M03 §9, *"Strobe cycle, pinned"*, in two clauses:
+
+1. **A frame that produces an output word**: the strobe pulses for exactly one
+   cycle, **on the cycle M03 emits that frame's `tlast` word**.
+2. **A frame that produces no output word**: it pulses **two cycles after the
+   input word carrying the character that ended the frame**, at both start lanes,
+   *"and that clause is the whole of the rule for such a frame"* — a pin in its
+   own right, never a corollary of `m + 3`.
+
+### 3.2 Which cycle the `tlast` word is on
+
+§6.1: output word `m` is emitted on cycle **`m + 3`** counted from the word
+carrying the start character, on a gapless stimulus. §7's per-octet constant
+(L = 16 at h = 8, L = 12 at h = 12) gives ΔC = (L + h)/8 = **3** at both start
+lanes. So for a frame delivering `d` octets in `w = ⌈d/8⌉` words:
+
+> **`tlast` cycle = `start_cycle + 3 + (w − 1)`.**
+
+### 3.3 The start cycle is 1 at BOTH lanes, and that is worth one line
+
+requirements.md §0.3's lane mapping gives `first_start` = **8** at a lane-0 start
+and **12** at a lane-4 start. Both divide to start cycle **`8 / 8 = 1`** and
+**`12 / 8 = 1`**. **Every first frame in this round starts on cycle 1**, which is
+why every derived cycle below is lane-independent even though the front offset
+h is not.
+
+### 3.4 How many octets are delivered, by closure class
+
+| closure | delivered | FCS removed? | authority |
+|---|---|---|---|
+| `/T/`, 5 … 63 octets | received − 4 | **yes** | REQ-103; §9 row 5 forwards the frame |
+| `/E/` while open, ≥ 1 octet | octets strictly before the `/E/` | **no** | §9 row 2: *"no FCS removed"*; REQ-103's no-removal clause |
+| new `/S/` while open, ≥ 1 octet | octets strictly before the `/S/` | **no** | §9 row 8: *"no FCS removed"*; REQ-110 |
+| > 1518 received | **1514**, the received prefix | **no** | §9 row 7 / REQ-108: truncated to exactly 1514, *"the remainder is discarded until `/T/` or `/S/`"* |
+| < 5 octets | **0**, no output word | **no** | §9 row 6; §0.7 |
+
+`tkeep` on the `tlast` word = `(1 lsl (d mod 8)) − 1`, reading a residue of 0 as
+`0xFF` (REQ-011, §6.1). `tuser`[0] = 1 on every aborted or truncated frame's
+`tlast` word (REQ-007, REQ-013), and — §9 ruling 1 — **once**: it is one bit on
+one word, not one bit per condition.
+
+---
+
+## 4. The seven rows, derived — exact set, carrier, X-1 side
+
+**Format.** Each row states (a) the ruling verbatim in one clause, (b) the exact
+set this packet derives, (c) the landed unit that asserts it and the line at
+which it does, (d) which side of §7's X-1 bar the row sits on **and why**.
+Nothing in column (b) is copied from the landed source: the sets are derived from
+§3 plus the stimulus parameters, and only then measured against what landed. Any
+disagreement would be a `BM2`, and there is none — §4.9 records the measurement.
+
+### 4.1 M03-M1 — ruling 1: `error_runt` WITH `error_bad_fcs`, both, each once
+
+**Ruling** (§9): *"yes, and both pulse. A frame of 5 to 63 octets ends with a
+terminate character, so its FCS **is** removed and **is** checked (REQ-103); if
+it is also wrong, two locally detected conditions apply to one frame and
+requirements.md §0.6 makes each pulse once. `tuser`[0] is set once … A runt with
+a correct FCS pulses `error_runt` alone, which is what REQ-107's directed test
+drives."*
+
+**The ruling has two sentences and they need two carriers.** The first is the
+co-occurrence; the second is its complement, and the ruling names its own carrier
+for it — *REQ-107's directed test*, which is M03-F1.
+
+**Primary carrier — M03-F3** (`test_m03_f.ml:536-649`, unit at `:651`): a
+63-octet frame, one payload bit flipped at index 20, at start lanes 0 and 4. The
+row asserts the flip changed the residue before driving.
+
+| quantity | derived value | derivation |
+|---|---|---|
+| delivered | **59** | 63 − 4; closes on `/T/`, so REQ-103 removes the FCS (§3.4 row 1) |
+| output words | **8** | ⌈59/8⌉ |
+| `tlast` cycle | **11** | 1 + 3 + 7 (§3.2, §3.3) — both lanes |
+| `tlast` `tkeep` | **0x07** | (1 lsl (59 mod 8)) − 1 = (1 lsl 3) − 1 |
+| `tuser`[0] | **1**, on that one word | REQ-007; ruling 1's *"set once"* |
+| **exact strobe set** | **{ (11, `error_bad_fcs`), (11, `error_runt`) }** — two pairs, no third, over the whole run, each name exactly once | REQ-107 (5…63 octets) and REQ-104 (received FCS ≠ residue) both apply to this one frame; §9 ruling 1 admits both; §9's pin puts both on the frame's own `tlast` cycle |
+
+**Landed**: `test_m03_f.ml:624-644` sorts `error_pulses samples` and compares it
+for **equality** against the two-element literal above (sorted). A set
+comparison, not a lower bound; a widened pulse gives three pairs and fails; a
+precedence design gives one and fails.
+
+**Second carrier — M03-F1** (`test_m03_f.ml:173-302`, unit at `:304`): 5, 16, 60
+and 63 octets, **correct** FCS, both lanes — ruling 1's second sentence.
+
+| length | delivered | words | `tlast` cycle | **exact set** |
+|---|---|---|---|---|
+| 5 | 1 | 1 | **4** | { (4, `error_runt`) } |
+| 16 | 12 | 2 | **5** | { (5, `error_runt`) } |
+| 60 | 56 | 7 | **10** | { (10, `error_runt`) } |
+| 63 | 59 | 8 | **11** | { (11, `error_runt`) } |
+
+**Landed**: `test_m03_f.ml:276-298` matches `error_pulses samples` against a
+**one**-element pattern and fails the `| pulses ->` arm otherwise, with a message
+that names what the exactness buys: *"error_runt alone — proving the FCS WAS
+checked and found good"*. That is ruling 1's second sentence asserted, at four
+lengths and two lanes.
+
+**X-1 side — NOT GATED, and there is not even a cross-check to classify.**
+Neither `run_f3` nor `run_f1` touches `Dv_xgmii.Injection` at all: both build
+through `Bench.frames_at` / `Bench.one_frame`. Every expected value above is
+derived in this section from §9 and §3. §7 bar 1 is not reached.
+
+### 4.2 M03-M2 — ruling 2: `error_oversize` NEVER with `error_bad_fcs`
+
+**Ruling**: *"never. REQ-108 says so explicitly, and the reason is that no FCS is
+present at the truncation point, so no check is performed and no result exists to
+report."*
+
+**Carrier — M03-G1** (`test_m03_g.ml:423-532`, unit at `:534`): a 1600-octet
+frame with a correct FCS, followed immediately (§0.3's 12-octet minimum gap) by a
+valid 64-octet frame, both lanes.
+
+| quantity | derived value | derivation |
+|---|---|---|
+| truncation | on the **1519th received octet**, content index 1518 | §9 row 7 / REQ-108 |
+| delivered (frame 1) | **1514** | REQ-108's constant; the received prefix, **not** `Frame.delivered`'s FCS-removal identity |
+| output words | **190** | 1514 = 189 × 8 + 2 ⇒ ⌈1514/8⌉ = 190; equals REQ-015's own bound as §7 states it, touched at equality |
+| `tlast` cycle (frame 1) | **193** | 1 + 3 + 189 — both lanes |
+| `tlast` `tkeep` | **0x03** | (1 lsl 2) − 1 |
+| frame 2 | 60 delivered, 8 words, `tuser`[0] = **0**, no strobe | an ordinary legal frame; §9 gives it no condition |
+| **exact strobe set** | **{ (193, `error_oversize`) }** — one pair, over the **whole two-frame run** | ruling 2 forbids `error_bad_fcs`; frame 2 is legal; §9's pin puts the one strobe on frame 1's `tlast` cycle |
+
+**Landed**: `test_m03_g.ml:514-527` matches `error_pulses samples` against a
+one-element pattern over the whole run, failure message naming *"no
+error_bad_fcs, §9 ruling 2"*.
+
+**X-1 side — NOT GATED.** `run_g1` uses no `Dv_xgmii.Injection`: two ordinary
+`frame_case` arrays through `Bench.frames_at`. No model output exists to
+cross-check, let alone to source a value from.
+
+### 4.3 M03-M3 — ruling 3: `error_bad_frame` NEVER with `error_bad_fcs`
+
+**Ruling**: *"never, for the same reason — a frame ended by an error character
+has no terminate character, so REQ-103 attempts no FCS removal and M03 performs
+no check."*
+
+**Carrier — M03-E1** (`test_m03_e.ml:182-347`, unit at `:349`): `/E/` placed at
+content index **24 + e_lane** for `e_lane` ∈ 0…7 — the eight lanes of the
+mid-frame word at octets 24…31 of a 64-octet frame — at both start lanes.
+**Sixteen independent runs.**
+
+| `e_lane` | delivered | words | `tlast` cycle | `tlast` `tkeep` | **exact strobe set** |
+|---|---|---|---|---|---|
+| 0 | 24 | 3 | **6** | 0xFF | { (6, `error_bad_frame`) } |
+| 1 | 25 | 4 | **7** | 0x01 | { (7, `error_bad_frame`) } |
+| 2 | 26 | 4 | **7** | 0x03 | { (7, `error_bad_frame`) } |
+| 3 | 27 | 4 | **7** | 0x07 | { (7, `error_bad_frame`) } |
+| 4 | 28 | 4 | **7** | 0x0F | { (7, `error_bad_frame`) } |
+| 5 | 29 | 4 | **7** | 0x1F | { (7, `error_bad_frame`) } |
+| 6 | 30 | 4 | **7** | 0x3F | { (7, `error_bad_frame`) } |
+| 7 | 31 | 4 | **7** | 0x7F | { (7, `error_bad_frame`) } |
+
+**Only `e_lane` = 0 differs, and the reason is the word boundary, not the lane**:
+24 delivered octets are exactly three full words, so its `tlast` is word 2 and
+its cycle is 1 + 3 + 2 = 6; every other member spills into a fourth word.
+
+- delivered = the octets **strictly before** the `/E/` (REQ-106's rule with `/E/`
+  in place of `/T/`), and **no FCS removal** (§3.4 row 2) — which is the other
+  half of M03-E1's own row and is why a design applying removal on the abort path
+  would be four octets short at every one of the sixteen.
+- `tuser`[0] = **1** on the `tlast` word (REQ-105, §9 row 2).
+- The set is **one pair** in each of the sixteen runs: ruling 3 forbids
+  `error_bad_fcs`, and no other condition applies to a 24-to-31-octet frame ended
+  by `/E/` (it is not in REQ-107's sub-64 runt class *as a runt* — it never
+  reaches a terminate character, so §9 row 5's *"5 to 63 octets between start and
+  terminate"* has no instance; §9 row 2 is its whole disposition).
+
+**Landed**: `test_m03_e.ml:323-343` matches `error_pulses samples` against a
+one-element pattern.
+
+**The anti-vacuity ground, stated because ruling 3's kill is content-dependent
+and ruling 9's is the precedent for saying so.** The kill is *"a design that runs
+the residue comparison on every frame closure regardless of how it closed"*. Such
+a design compares a CRC over 24…31 received octets against REQ-304's residue; it
+goes red unless that CRC happens to equal the residue. **Sixteen independent
+cases** make an accidental pass require sixteen coincidences, so the row is not
+vacuous. Recorded, not asserted — see OBSERVATION M-O1 for the one row where the
+same argument rests on fewer cases.
+
+**X-1 side — NOT GATED, and this is the row where the distinction actually
+bites.** `run_e1` is built **through** `Dv_xgmii.Injection` — X-1(i), the
+**placement machinery**, which §7's X-1 row says *"every row below may use
+freely"* and which is anchored by nothing and needs to be. It also reads
+X-1(ii), the **computed outcome**, at `test_m03_e.ml:242-251` — but only through
+`cross_check_e1`, which compares the model against the row's own hand-derived
+`delivered`, `words`, `last_tkeep`, `tlast_cycle` and report record and calls
+`fail_cross` on disagreement, with a message forbidding silent adoption of either
+derivation. **That is X-1(ii) used as a reported tripwire, not as an oracle**,
+which §7 bar 1 classifies as **not gating** in terms. The expected values are
+§4.3's table, derived here.
+
+### 4.4 M03-M4 — ruling 4: `error_start_without_terminate` NEVER with `error_bad_fcs`
+
+**Ruling**: *"never, likewise"* — the same antecedent: no terminate character, so
+no removal, so no comparison, so no result to report.
+
+**Carrier — M03-H1** (`test_m03_h.ml:200-376`, unit at `:378`): a 64-octet frame
+whose terminate position is replaced by a new `/S/` (`At_octet 64`), then seven
+preamble-filler octets, then a complete 64-octet frame; both start lanes. Because
+72 ≡ 0 (mod 8), the spliced `/S/` lands in the **same lane as the outer frame's
+own start** at both lanes, so the pair of runs is REQ-110's own *"in lane 0 and
+in lane 4"* verification column.
+
+| quantity | derived value | derivation |
+|---|---|---|
+| delivered (frame 1) | **64** | REQ-110's last-delivered-octet rule: every octet before the `/S/`; **no FCS removed** (§3.4 row 3) — four octets *more* than a clean 64-octet frame delivers, which is this row's other half |
+| output words | **8** | ⌈64/8⌉ |
+| `tlast` cycle | **11** | 1 + 3 + 7 — both lanes |
+| `tlast` `tkeep` | **0xFF** | 64 mod 8 = 0 ⇒ full final word |
+| `tuser`[0] | **1** | REQ-007, REQ-110 |
+| frame 2 | 60 delivered, 8 words, `tuser`[0] = **0**, no strobe | *"the new frame begins normally"* (§9 row 8) |
+| **exact strobe set** | **{ (11, `error_start_without_terminate`) }** — one pair over the whole run | ruling 4 forbids `error_bad_fcs`; the resynchronised frame is legal |
+
+**Landed**: `test_m03_h.ml:342-358` matches against a one-element pattern,
+message naming *"no error_bad_fcs, §9 ruling 4"*.
+
+**X-1 side — NOT GATED.** Same shape as §4.3: built through `Injection`'s
+placement machinery, model consulted only through `fail_cross`
+(`test_m03_h.ml:244`), every expected value derived above.
+
+### 4.5 M03-M5 — ruling 5: `error_bad_frame` NEVER with `error_start_without_terminate`
+
+**Ruling**: *"never on the same frame. An error character **ends** the frame
+(§6.2 leaves to `Idle`), so a start character after it begins a new frame and
+aborts nothing. **A bench that injects `/E/` and then `/S/` SHALL see exactly one
+`error_bad_frame` and no `error_start_without_terminate`.**"*
+
+This is the one ruling that commissions its bench in its own words, and M03-H3 is
+that bench.
+
+**Carrier — M03-H3** (`test_m03_h.ml:417-606`, unit at `:608`): `/E/` at content
+index `e_idx` (**24** at a lane-0 start, **20** at a lane-4 start — chosen so the
+`/E/`'s own octet time lands in lane 0 at both), then 15 filler octets, then `/S/`
+at `e_idx + 16` — exactly **two cycles** later, guarded rather than assumed —
+then a clean 64-octet frame.
+
+| start lane | `e_idx` | delivered | words | `tlast` cycle | `tkeep` | **exact strobe set** |
+|---|---|---|---|---|---|---|
+| 0 | 24 | **24** | 3 | **6** | 0xFF | **{ (6, `error_bad_frame`) }** |
+| 4 | 20 | **20** | 3 | **6** | 0x0F | **{ (6, `error_bad_frame`) }** |
+
+- delivered = the octets strictly before the `/E/`; no FCS removal (§3.4 row 2).
+- The **fifteen octets between** the `/E/` and the `/S/` pulse nothing and open
+  nothing, on §6.2's `Idle` row — *"ignores every lane; tvalid = 0"* — which
+  leaves to `Preamble` only on `/S/`. That clause, not §9, is what makes the set
+  exact across the gap, and the landed row says so at `test_m03_h.ml:404-416`.
+- The frame the `/S/` opens is received normally: 60 delivered, `tuser`[0] = 0,
+  no strobe.
+- **One pair, over the whole run.** The kill — a design in which `/E/` marks but
+  does not **close** the frame — appears as a second pair named
+  `error_start_without_terminate`, and the exact set is what sees it. Unlike
+  §§4.2–4.4 this kill is **not content-dependent**: it is a state-machine
+  question, so no anti-vacuity argument is owed.
+
+**Landed**: `test_m03_h.ml:572-590`, one-element pattern, message naming *"NO
+error_start_without_terminate, §9's fifth ruling"*.
+
+**X-1 side — NOT GATED.** Built through `Injection`'s placement machinery (two
+`Place` corruptions); model consulted only through `fail_cross`
+(`test_m03_h.ml:476`); every value derived above.
+
+### 4.6 M03-M6 — ruling 6: `error_oversize` NEVER with `error_start_without_terminate`
+
+**Ruling**: *"never on the same frame. REQ-108's truncation has already closed the
+frame with `tlast` and `tuser`[0] = 1; **a start character arriving during the
+`Discard` state** is the resynchronisation REQ-108 requires, not a second abort,
+and it pulses nothing."*
+
+**This ruling names an epoch, and its §4.M carrier does not drive it — FINDING
+M-1, §5.1.** Both carriers are bound.
+
+**Carrier (a) — M03-G3, the SECOND epoch** (`test_m03_g.ml:719-831`, unit at
+`:833`): a 1600-octet frame, then a genuinely separate ordinary frame whose own
+`/S/` lands at content index **1620** — 102 octets past the truncation point
+(1518) and **20 octets past the oversize frame's own `/T/`** (1600). The receiver
+is therefore in `Idle`, not `Discard`, when that `/S/` arrives.
+
+| quantity | derived value |
+|---|---|
+| delivered (frame 1) | **1514**, `tkeep` 0x03, `tuser`[0] = 1, 190 words |
+| `tlast` cycle (frame 1) | **193** — both lanes |
+| frame 2 | 60 delivered, 8 words, `tuser`[0] = **0**, no strobe |
+| **exact strobe set** | **{ (193, `error_oversize`) }** — one pair over the whole run |
+
+**Carrier (b) — M03-G7, the FIRST epoch** (`test_m03_g.ml:1235-1486`, unit at
+`:1488`): a `/S/` injected at content index **k = 1588**, strictly inside
+[1518, 1599] — inside `Discard`, which is the state ruling 6 is written about.
+The `/S/` opens a frame that receives `1592 − 1588 = 4` octets before the
+**original frame's own `/T/`** closes it too, putting it in §0.7's sub-5 class.
+
+| quantity | derived value | derivation |
+|---|---|---|
+| frame 1 `tlast` cycle | **193** | 1 + 3 + 189 |
+| resynchronised frame | **0 delivered, no output word** | 4 octets < 5 ⇒ §9 row 6 / §0.7 |
+| its strobe cycle | **204** — both lanes | §3.1 clause 2: two cycles after the input word carrying the character that ended it, which is the shared `/T/` at octet time `start_ot + 8 + 1600` = 1616 (lane 0) or 1620 (lane 4); both give input word **202**; 202 + 2 = 204 |
+| **exact strobe set** | **[ (193, `error_oversize`); (204, `error_runt`) ]** — two pairs, in that **cycle order**, and no third | ruling 6 forbids `error_start_without_terminate`; ruling 9 gives the sub-5 frame `error_runt` alone |
+
+**Landed**: G3 at `test_m03_g.ml:812-826` (one-element pattern, message naming
+*"NO error_start_without_terminate, §9's sixth ruling, C-12"*); G7 at
+`test_m03_g.ml:1460-1481` (two-element **ordered** pattern with both cycles
+pinned, message naming the same negative and WO-0056's own point). G7 also
+asserts that **no output word appeared outside the two accounted frames**
+(`:1450-1456`), which is the resynchronised frame's no-output half.
+
+**X-1 side — NOT GATED, at both carriers.** `run_g3` uses no `Injection` at all
+(`Dv_xgmii.Arrival.create` directly, with the `ifg` solved for and then
+**checked** against the schedule's own numbers). `run_g7` uses the placement
+machinery and consults the model only through `fail_cross`
+(`test_m03_g.ml:1313`). Every value in both tables is derived above.
+
+### 4.7 M03-M7 — ruling 7: `error_oversize` NEVER with `error_bad_frame`
+
+**Ruling** (carry-forward **C-12**, dv's own proposed ruling adopted): *"never on
+the same frame, for the same reason and by the same ruling. REQ-108's truncation
+closes the frame; **an `/E/` arriving in `Discard`** therefore finds no open
+frame, emits nothing and pulses nothing. A bench that injects a 1600-octet frame
+with an error character after the truncation point SHALL see exactly one
+`error_oversize`, no `error_bad_frame`, and the following frame intact."*
+
+**Same shape as M6, same finding — FINDING M-2, §5.1.** Both carriers are bound.
+
+**Carrier (a) — M03-G4, the SECOND epoch** (`test_m03_g.ml:865-999`, unit at
+`:1001`): the same 1600-octet frame at a widened `ifg` of 40, with a `/E/`
+injected by a row-local `?word_at` override at the literal octet time **100 past
+the truncation point** — content index **1618**, which is **past the frame's own
+`/T/`** at 1600 and strictly inside the inter-frame gap (guarded at `:893`).
+
+**Carrier (b) — M03-G8, the FIRST epoch** (`test_m03_g.ml:1524-1691`, unit at
+`:1693`): a `/E/` injected at content index **k = 1560**, strictly inside
+[1518, 1599] — inside `Discard`.
+
+| | G4 | G8 |
+|---|---|---|
+| delivered (frame 1) | **1514**, `tkeep` 0x03, `tuser`[0] = 1, 190 words | identical |
+| `tlast` cycle | **193** — both lanes | **193** — both lanes |
+| the injected `/E/` | finds **no open frame** ⇒ emits nothing, pulses nothing (§9 row 3, C-12) | identical, one state earlier |
+| frame 2 | 60 delivered, `tuser`[0] = 0, no strobe | identical |
+| **exact strobe set** | **{ (193, `error_oversize`) }** — one pair over the whole run | **{ (193, `error_oversize`) }** — one pair over the whole run |
+
+**Landed**: G4 at `test_m03_g.ml:981-994`, G8 at `test_m03_g.ml:1672-1686`, both
+one-element patterns, both messages naming *"NO error_bad_frame, §9's seventh
+ruling, C-12"*; G8's adds *"in the epoch M03-G4's character never reaches"*,
+which is FINDING M-2 already half-recorded in the bench and never carried back to
+§4.M. Both also assert **no output word outside the two accounted frames**.
+
+**X-1 side — NOT GATED, at both carriers.** `run_g4` uses no `Injection` at all
+(an `Arrival.create` schedule plus a row-local `?word_at` override, verified at
+both the pre-run word and the driven sample). `run_g8` uses the placement
+machinery with a `fail_cross` tripwire (`test_m03_g.ml:1570`).
+
+### 4.8 The X-1 answer for the family, and my own prediction scored against it
+
+**Zero of the seven rows is gated on the differential co-sim.** Stated per row
+above; collected here so a `SO-` can cite one place:
+
+| row | carriers | uses `Injection` placement (X-1 i) | consults the outcome model (X-1 ii) | **X-1 side** |
+|---|---|---|---|---|
+| M03-M1 | F3, F1 | **no** | **no** | not gated |
+| M03-M2 | G1 | **no** | **no** | not gated |
+| M03-M3 | E1 | yes | as a `fail_cross` tripwire | not gated |
+| M03-M4 | H1 | yes | as a `fail_cross` tripwire | not gated |
+| M03-M5 | H3 | yes | as a `fail_cross` tripwire | not gated |
+| M03-M6 | G3, G7 | G3 no / G7 yes | G7 as a `fail_cross` tripwire | not gated |
+| M03-M7 | G4, G8 | G4 no / G8 yes | G8 as a `fail_cross` tripwire | not gated |
+
+**I predicted the opposite and the prediction is wrong.** `RV-0068B-VERDICT`'s
+queue read said family M was the family most likely to produce this bench's first
+X-1-gated row. **The reason it does not, stated so the error is reusable**: I
+expected M's expected values to be co-occurrence *outcomes* that only a model of
+the link partner can compute. They are not. **Every M row's expected value is a
+set of strobe NAMES and a pinned CYCLE** — the names are what §9 states in words,
+and the pin is §9's own two-clause paragraph, computable from the input trace
+with the arithmetic of §3. A row is gated by **where its numbers come from**, and
+these numbers come from a two-line derivation, not from a simulation.
+
+**The condition under which the answer flips, so this table is not read as
+permanent**: at the five carriers that consult X-1(ii), the consultation is a
+`fail_cross` tripwire whose own message forbids adopting either derivation
+silently. If any of those were ever rewritten to *take* an expected value from
+the model — the shape §7 bar 1 describes — the corresponding row becomes gated
+and must say so in its own text. **No such rewrite is authorised this round**, and
+`BM3` would convict one.
+
+### 4.9 The measurement — my derivations against what is landed
+
+**Every set in §§4.1–4.7 was derived first, from §3 and the stimulus parameters,
+and only then compared against the landed source. Zero disagreements, at every
+cell: ten units, thirteen distinct exact sets, twenty-one (cycle, name) pairs.**
+Recorded as a measurement rather than as agreement, because a derived constant
+and a transcribed one are different evidence classes and this packet binds seven
+rows onto them.
+
+---
+
+## 5. Two findings against my own plan
+
+### 5.1 FINDING M-1 and FINDING M-2 — §4.M's carriers for M6 and M7 do not drive their rulings' own condition
+
+**Ruling 6's condition is a start character arriving *during the `Discard`
+state*. Ruling 7's is an error character arriving *in `Discard`*.** §4.M's
+Stimulus cells name **M03-G3** and **M03-G4**, and in both of those stimuli the
+character arrives **after the oversize frame's own `/T/`** — G3's at content index
+1620 against a terminate at 1600, G4's at 1618 against the same 1600. `Discard`
+has already been left. The two carriers witness the rulings' *conclusion*
+("never on the same frame") on a stimulus where the frame is doubly closed; they
+do not reach the state the rulings reason about.
+
+**This is not a new discovery about the design; it is a carrier that was never
+re-pointed.** The AP's own §4.G cells say it in terms — M03-G3's cell: *"This row
+does not reach the first epoch … a design that resynchronised correctly in the
+second while treating the start character as an abort in the first passes it.
+That gap is M03-G7's, and it was measured rather than argued: WO-0055's G-c4
+mutation survived all twenty-five units"* — and M03-G7 and M03-G8 were built at
+WO-0056 for exactly that gap. **§4.M was written before WO-0056 and its Stimulus
+cells still point at the pre-repair carriers.**
+
+**Disposition, and it is deliberately not a bench change.** Both epochs are
+landed and green, so nothing is owed to `test/**` beyond the binding: **M03-M6
+binds to G3 *and* G7, M03-M7 to G4 *and* G8**, and the titles say which epoch
+each carries (§6.1). What is owed is a **plan** repair — §4.M's M6 and M7
+Stimulus cells — and `test/attack_plans/**` is not this round's to stage. It goes
+to the batched `AP-` round as items 7 and 8 (§10).
+
+**What no packet may say after this.** No `SO-`, campaign or scorecard may cite
+M03-M6 or M03-M7 as coverage of the `Discard`-state case **on the strength of G3
+or G4**. That coverage exists, and it is G7's and G8's.
+
+### 5.2 OBSERVATION M-O1 — the anti-vacuity ground for M2 is thinner than for M3, and it belongs to the campaign
+
+Rulings 2, 3 and 4 all have **content-dependent** kills: the wrong design
+computes a CRC over a prefix and pulses `error_bad_fcs` unless that CRC happens
+to equal REQ-304's residue. §9 ruling 9 is the precedent for taking this
+seriously — it names the one 4-octet frame that passes by accident and makes a
+non-zero filler mandatory.
+
+The three rows are not equally protected. **M3 has sixteen independent cases and
+M4 has two; M2 has one stimulus at two lanes**, and its prefix is 1518 octets of
+`Bench.directed_frame_octets ~length:1600` — deterministic, never all-zero, but a
+single value. An accidental residue match at M2 is a 2⁻³² event that is
+nonetheless *fixed* rather than random.
+
+**Non-blocking, no bench change, and routed rather than repaired.** This is a
+question the **mutation campaign settles empirically and a bench cannot**: seed
+"run the residue comparison at the truncation point" and observe whether M03-G1
+reddens. If it survives while M03-E1 and M03-H1 kill it, the vacuity is real and
+M03-G1 owes a second content. **Carrier: family M's / family G's campaign
+packet** (§10 item 4). Recorded here because the packet that binds M03-M2 is the
+right place for the bound on what M03-M2 buys.
+
+---
+
+## 6. The edit list — quoted, before and after
+
+**This round writes no expression.** Every edit is inside a string literal or a
+comment. That is not a stylistic observation: it is why §9's `BM12` has no
+instance (§9.4's expression-versus-name distinction needs an expression) and why
+`BM2`'s subject is the **title text itself**.
+
+### 6.1 The ten title bindings
+
+For each unit below, **insert the quoted text immediately before the title
+string's closing `)` — i.e. inside the existing trailing citation parenthesis —
+and change nothing else in the title.** The worker may re-wrap the title across
+source lines using OCaml's `\` continuation, provided (a) the resulting *string*
+is exactly the base string with that text inserted at that point, and (b) the
+`=` that follows the title **stays alone on its own line** — `tools/dv_checks.sh`'s
+census extractor terminates a title on `/=[ \t]*$/` and a title whose `=` moves
+becomes invisible to the census, which would silently undo this entire round.
+
+**Section symbols: `test_m03_e.ml` and `test_m03_f.ml` spell it `section 9`;
+`test_m03_g.ml` and `test_m03_h.ml` spell it `§9`. Match the file you are in — do
+not normalise either way.**
+
+| # | file | unit (line at base) | text to insert before the closing `)` |
+|---|---|---|---|
+| 1 | `test_m03_e.ml` | M03-E1 (`:349`) | `; M03-M3 -- section 9 ruling 3: the exact set is error_bad_frame ALONE, no error_bad_fcs` |
+| 2 | `test_m03_f.ml` | M03-F1 (`:304`) | `; M03-M1's second carrier -- section 9 ruling 1's second sentence, a runt with a CORRECT FCS pulses error_runt alone` |
+| 3 | `test_m03_f.ml` | M03-F3 (`:651`) | `; M03-M1` |
+| 4 | `test_m03_g.ml` | M03-G1 (`:534`) | `; M03-M2 -- §9 ruling 2: the exact set is error_oversize ALONE` |
+| 5 | `test_m03_g.ml` | M03-G3 (`:833`) | `; M03-M6's second-epoch carrier` |
+| 6 | `test_m03_g.ml` | M03-G4 (`:1001`) | `; M03-M7's second-epoch carrier` |
+| 7 | `test_m03_g.ml` | M03-G7 (`:1488`) | `; M03-M6's first-epoch carrier -- the Discard state §9 ruling 6 is written about` |
+| 8 | `test_m03_g.ml` | M03-G8 (`:1693`) | `; M03-M7's first-epoch carrier -- the Discard state §9 ruling 7 is written about` |
+| 9 | `test_m03_h.ml` | M03-H1 (`:378`) | `; M03-M4 -- §9 ruling 4: the exact set is error_start_without_terminate ALONE, no error_bad_fcs` |
+| 10 | `test_m03_h.ml` | M03-H3 (`:608`) | `; M03-M5` |
+
+**Every one of the ten is followed by a non-digit** — `)`, `'` or a space —
+which is the trailing-digit boundary `tools/dv_checks.sh` matches on. **`M03-M1`
+is the one id in this plan that is a prefix of another (`M03-M10`)**, which is
+the defect the census block was built to survive; edits 2 and 3 must leave no
+site where `M03-M1` is followed by a digit inside a **unit title**. (`M03-M10`
+appears in a *comment* at `test_m03_f.ml:322` and that is untouched and outside
+the census extractor's window.)
+
+### 6.2 The one authorised body change — M03-E1's mismatch message
+
+M03-E1 is the only one of the ten carriers whose failure message does not say
+what its exactness buys. Since M03-M3 now binds to it, a reader landing on its
+red must be told which negative failed. **This is the L-O1 riding precedent
+applied — a message repair rides the commit that opens the file.**
+
+**Exactly one hunk, at `test_m03_e.ml:341`. Before (verbatim, 10 leading
+spaces):**
+
+```
+          [ "expected exactly one strobe pulse (error_bad_frame only), observed "
+```
+
+**After:**
+
+```
+          [ "expected exactly one strobe pulse (error_bad_frame ALONE -- no \
+             error_bad_fcs: section 9 ruling 3, a frame ended by an error \
+             character has no terminate character, so REQ-103 attempts no FCS \
+             removal and there is no comparison to report; M03-M3's own kill), \
+             observed "
+```
+
+**Nothing else in any unit body moves, in any file.** `BM5` convicts a second
+hunk.
+
+### 6.3 The `dune` header line
+
+`test/xgmii_rx_64/dune`'s header carries a standing by-packet row list whose own
+rule is *"When a packet adds rows, add its line. When one does not, this comment
+is wrong and a reader has no way to tell"*. Add, immediately after the `WO-0070`
+block and before the `; When a packet adds rows` paragraph:
+
+```
+;   WO-0071  M1-M7 BOUND to their landed carriers -- NO new unit, NO new
+;            stimulus, NO cycle driven. §9's seven co-occurrence rulings were
+;            each already asserted as an EXACT strobe set by the row that
+;            drives them (E1; F1 and F3; G1; G3 and G7; G4 and G8; H1; H3),
+;            and this packet supplies only the row-id binding the census
+;            reads. The inventory does not move and the census moves by seven
+;            -- which is the mechanical statement that no coverage was added
+;            (seven ASSERT rows bound, zero rows written)
+```
+
+---
+
+## 7. Scope — the files this round stages
+
+**Exactly five paths:**
+
+1. `test/xgmii_rx_64/test_m03_e.ml` — one title (§6.1 #1), one message (§6.2).
+2. `test/xgmii_rx_64/test_m03_f.ml` — two titles (§6.1 #2, #3).
+3. `test/xgmii_rx_64/test_m03_g.ml` — five titles (§6.1 #4–#8).
+4. `test/xgmii_rx_64/test_m03_h.ml` — two titles (§6.1 #9, #10).
+5. `test/xgmii_rx_64/dune` — the header block of §6.3. **No stanza change.**
+
+Plus the worker's own journal append and this packet's Return log.
+
+**What does not move, and this is not a claim that it is correct**: no other
+`test_m03_*.ml`; no `test/xgmii/**`; no `test/monitors/**`; no
+`test/attack_plans/**`. §4.M's own cells — including FINDING M-1's and M-2's
+carrier repairs — are **mine**, in the batched `AP-` round (§10), not the
+worker's.
+
+---
+
+## 8. The review bar — pre-committed, and assigned by seat
+
+**§5.3's rule, applied before this packet issues: every bar below is assigned to a
+seat that can execute it.** The worker has **no git** and **no dune** (ADR-0005).
+Every bar marked *worker* is executable with Read, Grep, Glob and
+`ocamlc -stop-after parsing` alone. Every bar needing `git`, `diff`,
+`tools/dv_checks.sh` or a CI reading is **mine**.
+
+**The substitution clause, named rather than left to be improvised** (the repair
+`RV-0070-VERDICT` §6(a) item 2 asked for). The worker cannot enumerate its own
+staged set and **must not reach for `git status` to try**. Its instrument for
+§13(e) is **its own record of what it wrote, with §7's list as the authority** —
+that is the sanctioned substitute, it is sufficient, and the last round's worker
+got it right unaided. Likewise the worker cannot compare against the base tree:
+**every base-side figure a bar needs is pre-committed in the bar itself**, so the
+worker checks against this packet and never against history.
+
+**The durability clause, and it is a return demand** (`RV-0070-VERDICT` §6(a)
+item 3). **If the worker attempts an instrument outside its seat and is refused —
+by the environment, by a permission prompt, or by its own judgement mid-command —
+that attempt goes into its JOURNAL** (Evidence or Open-questions), not only into
+its return message. A disclosure that lives only in chat does not survive the
+session, and PROTOCOL §4 exists precisely so reasoning does not. Disclosure is
+credited in full either way; the point is that the credit must be readable from
+the repo.
+
+### 8.0 Sequencing — ONE worker round, and the grounds
+
+**One round, one worker, one commit.** Grounds, stated because the alternative
+was live: the round's entire diff is thirteen edits inside string literals and
+one comment block, in five files, with no expression written and no cycle driven.
+Splitting it (say, titles first and the message repair second) would double the
+review cost, double the CI cost, and create a window in which the census reads
+`60` while `test_m03_e.ml` still carries a message that names no negative. **A
+round whose parts cannot fail independently should not be sequenced as if they
+could.** The one thing that *is* staged is the ordering **inside** the round:
+§6.1's ten titles before §6.2's message before §6.3's header, so that if the
+worker stops early it stops with the census binding complete rather than half
+done.
+
+### 8.1 The bars
+
+| Bar | Whose | Instrument | Pass condition |
+|---|---|---|---|
+| **M-1** | **dv** | `git diff f23e34d <landing>` read **hunk by hunk** | every hunk is one of §6's thirteen pre-committed edits and there is no fourteenth. **This bar is run by reading** — the round is small enough that reading is the correct instrument and a grep would be the weaker one (`RV-0070-VERDICT` §3's own rule) |
+| **M-2** | **dv** | extract each unit's **body** (the lines after the title's `=` through `;;`) from every `test/xgmii_rx_64/*.ml` at base and at landing, then `diff -r` | **exactly one differing hunk**, and it is §6.2's message verbatim. Every other unit body in the suite is byte-identical |
+| **M-3** | **dv** | `git diff --stat f23e34d <landing>` | five source paths (+ the packet + the worker journal); **zero deletions outside the two lines §6.2 replaces** |
+| **M-4** | **dv** | the CI `build` run at the landing commit, **read as a step reading** | step *"Run tests"* success **and** step *"Verify nothing was left unpromoted or non-deterministic"* success. **A badge is not a reading.** Expected step-6 duration: unchanged from base within the runner's 1 s granularity — the round drives zero additional cycles, and a measurable increase would itself be a finding |
+| **M-5** | **dv** | `tools/dv_checks.sh` at the landing commit and the same figures at base | census **boundary 53 → 60**; census **naive 54 → 60**; the naive over-discharge list goes from `M03-M1` to **empty** (both matchers agree, because `M03-M1` is the plan's only prefix pair and it becomes genuinely named); `test/xgmii_rx_64/` inventory **56 → 56**; repository-wide **136 → 136** |
+| **M-6** | **dv** | §§4.1–4.7's tables, cell by cell, against the landed source | every derived set and pin equals the landed assertion. This is the bar `BM2` exists for and it is run by reading |
+| **M-7** | **dv** | line-based string-literal extraction over `test/xgmii_rx_64/**`, sorted, base vs landing | the differing lines are only title lines and §6.2's message lines. **Stated in the instrument's own terms**: the extractor is line-based and a title re-wrapped with `\` continuations reports as several `<`/`>` pairs rather than one; that shape is expected, and what is checked is that no literal *outside* §6's sites appears on either side |
+| **M-8** | worker | `grep -c 'let%expect_test'` per touched file | `test_m03_e.ml` **4**, `test_m03_f.ml` **4**, `test_m03_g.ml` **7**, `test_m03_h.ml` **4**. No unit added, none removed |
+| **M-9** | worker | `grep -c '\[%expect'` per touched file, then Read each match | **4 / 4 / 7 / 4**, every block `{||}`, zero non-empty. **Report the raw counts too** — a `[%expect_test]` token inside a comment inflates them, the artefact `RV-0068B-VERDICT` §3 names |
+| **M-10** | worker | **command A** below the table — the census extractor's own awk, piped to `grep -oE 'M03-M[0-9]+' \| sort \| uniq -c` | **exactly the eight-line output pre-committed below the command block**, eleven occurrences in total. **Report the raw output.** This is the bar that proves the round did what it exists to do |
+| **M-11** | worker | **command B** below the table — the same extraction, run **per file**, then `grep -oE 'M03-M1[0-9]'` | exactly **one** match in the whole directory: `M03-M10`, attributed to **`test_m03_b.ml`** by the per-file loop. **Zero** in each of the four touched files — i.e. no `M03-M1` was written at a digit boundary |
+| **M-12** | worker | **command C** below the table, run for each of the four touched files, compared against the packet's pre-committed counts | **`test_m03_e.ml` 83, `test_m03_f.ml` 55, `test_m03_g.ml` 118, `test_m03_h.ml` 102** matching LINES (the grep counts lines, comments and docstrings included — deliberately, because a comment naming a call site must not move either). **These are the base counts, pre-committed here so the worker checks against the packet and not against git.** A single moved call site is `BM3`. *(If a count disagrees at the landing tree, do NOT adjust anything — stop and report the disagreement; a miscount in this packet is a defect I want found, and the last two rounds were both decided by defects in my instructions.)* |
+| **M-13** | worker | **command D** below the table, run for each of the four touched files | **zero** matches (the base figure is zero in all four) |
+| **M-14** | worker | `ocamlc -stop-after parsing` on each of the four touched files | exit 0 for each. **Parse is not the adjudicator; M-4 is** — it establishes syntax and nothing about types, and the worker should say so rather than let a green parse stand in for a build |
+| **M-15** | worker | Read each of the ten edited titles back in full, and the `=` line after it | each title is the base string with exactly §6.1's insert at exactly the stated point; each `=` is alone on its own line |
+| **M-16** | worker | its own journal `Inputs` section, read back | no `libs/**`, no `top/**`, no `rtl_snapshots/**` path |
+
+**Commands A–D, verbatim.** They are here rather than in the table because a
+pipe or an alternation inside a table cell is a rendering hazard and a
+mis-transcribed instrument is a wrong answer that looks like a right one.
+**ERE alternation is a bare `|`** — a `\|` under `grep -E` matches a literal pipe
+character and silently returns zero, which is the failure mode this block exists
+to prevent.
+
+```
+# A  (bar M-10) -- row ids named in unit titles, via the census's OWN extractor
+awk 'FNR==1{inh=0} /let%expect_test/{inh=1} inh{print} inh && /=[ \t]*$/{inh=0}' \
+  test/xgmii_rx_64/*.ml | grep -oE 'M03-M[0-9]+' | sort | uniq -c
+
+# B  (bar M-11) -- any M03-M1 written at a DIGIT boundary inside a title,
+#     PER FILE, so the one legitimate hit is attributed rather than assumed
+for f in test/xgmii_rx_64/*.ml; do
+  printf '%s: ' "$f"
+  awk 'FNR==1{inh=0} /let%expect_test/{inh=1} inh{print} inh && /=[ \t]*$/{inh=0}' "$f" \
+    | grep -oE 'M03-M1[0-9]' | tr '\n' ' '
+  echo
+done
+
+# C  (bar M-12) -- call-site lines, per touched file; run once per file
+grep -cE 'Bench\.run|Arrival\.|Injection\.|frames_at|one_frame|run bench|run_directed_lengths' \
+  test/xgmii_rx_64/test_m03_e.ml
+
+# D  (bar M-13) -- printing, per touched file; run once per file
+grep -cE 'Printf|print_endline|print_string|Stdio|Arrival\.report' \
+  test/xgmii_rx_64/test_m03_e.ml
+```
+
+**Command A's expected output AT LANDING, pre-committed line for line** (`sort`
+is lexicographic, so `M03-M10` sorts between `M03-M1` and `M03-M2`):
+
+```
+      2 M03-M1
+      1 M03-M10
+      1 M03-M2
+      1 M03-M3
+      1 M03-M4
+      1 M03-M5
+      2 M03-M6
+      2 M03-M7
+```
+
+**Their output at the BASE tree `f23e34d`, pre-committed so you have a before
+without touching git**: **A** prints exactly `      1 M03-M10` and nothing else;
+**B** prints one hit, `M03-M10`, on the `test_m03_b.ml` line and an empty tail on
+every other line; **C** prints 83 / 55 / 118 / 102 for `e` / `f` / `g` / `h`;
+**D** prints `0` for all four. A, C and D were run at this seat at `f23e34d`
+while writing this packet; B is the same extraction with a per-file loop around
+it.
+
+---
+
+## 9. BOUNCE conditions — pre-committed
+
+- **BM1 — any unit in `test/xgmii_rx_64/**` is red at CI at the landing commit,
+  for any reason.** General by construction.
+- **BM2 — a WRONG ASSERTED VALUE.** In this round **the title text is the
+  asserted value**: it is the only thing the round writes that makes a claim. A
+  title that names a strobe set, a ruling number, an epoch or a carrier role
+  differing from what §§4.1–4.7 derive is `BM2`, **whether or not CI is green** —
+  a title is never executed, so nothing but reading can catch it, which is why
+  M-6 is a reading bar. Concretely: writing *"no error_bad_fcs"* into M03-G3's
+  title (whose derived negative is `error_start_without_terminate`) is `BM2`.
+- **BM3 — a new stimulus, in any form.** Any `Bench.run`, `Arrival.*`,
+  `Dv_xgmii.Injection.*`, `frames_at`, `one_frame` or `run_directed_lengths` call
+  site added, removed, or changed anywhere in `test/**`. The dispatch's binding
+  constraint, made a bounce.
+- **BM4 — an expect-test unit added or removed anywhere, or a `[%expect]` block
+  made non-empty.**
+- **BM5 — a byte of any unit body changed other than §6.2's single quoted
+  hunk.**
+- **BM6 — any path outside §7's list is staged.**
+- **BM7 — `libs/**`, `top/**` or `rtl_snapshots/**` appears in the worker's
+  `Inputs`, or is read at any point in the round.**
+- **BM8 — an M row id written into a unit title at a digit boundary**, or any
+  site where `M03-M1` is followed by a digit inside a title, so the census
+  over- or under-counts with no visible symptom.
+- **BM9 — an M row bound to a unit this packet does not name as its carrier, or
+  an M row left unbound.** Over-binding is as much a defect as under-binding: it
+  claims a coverage relation this packet did not derive.
+- **BM10 — a title's `=` no longer alone on its own line**, so the census
+  extractor loses the title and the round silently undoes itself.
+- **BM11 — the worker attempts an instrument outside its seat and records the
+  attempt only in its return and not in its journal** (§8's durability clause).
+  The *attempt* is not the bounce and never has been; the **undurable
+  disclosure** is.
+- **BM12 — a bar about an *expression* answered with a grep for a *name*.**
+  `RV-0068-VERDICT` §9.4. **This condition has no instance this round, and the
+  reason is structural rather than lucky: the round writes no expression at
+  all.** Bars M-10 through M-13 are name-greps **by design** — their subjects are
+  named row ids and named call sites, which is exactly the case a name-grep is
+  the correct instrument for — and the two bars whose subject is a *claim*
+  (M-1, M-6) are assigned to reading, not to grep.
+
+---
+
+## 10. Traps — named so they are not discovered
+
+- **T1 — do not write a new file.** §1. The temptation to give family M a
+  `test_m03_m.ml` is the round's main hazard and it is refused with grounds.
+- **T2 — do not "improve" a carrier while you are in it.** Ten landed units are
+  open in this round and every one of them contains something a careful reader
+  would like to strengthen. `BM5` convicts all of it. Anything you notice, put in
+  the return under §13(f); I want the list, and I do not want the diff.
+- **T3 — the `=` line is load-bearing.** §6.1(b), `BM10`. It is the census
+  extractor's terminator, and a title that re-wraps onto the `=` line makes seven
+  rows vanish while every test stays green.
+- **T4 — `M03-M1` is a prefix of `M03-M10`.** `BM8`, bar M-11. This is the exact
+  defect `tools/dv_checks.sh`'s census block was written to survive; do not
+  reintroduce it from the other side by writing `M03-M1` where a digit follows.
+- **T5 — match each file's own section-symbol spelling.** §6.1. `e` and `f` use
+  `section 9`; `g` and `h` use `§9`.
+- **T6 — this round drives zero cycles, and that is checkable.** If your edit
+  makes CI's test step measurably longer, you have changed something you should
+  not have (bar M-4).
+- **T7 — the M row ids go in the TITLE, not in a comment.** A comment naming
+  `M03-M2` is invisible to the census and discharges nothing. `test_m03_f.ml:322`
+  is the standing example: it names `M03-M10` in a comment and contributes
+  nothing to that row's discharge — M03-B3's *title* is what discharges it.
+- **T8 — do not touch `test/attack_plans/**`.** §4.M's cells, including FINDING
+  M-1's and M-2's repairs, are mine and are `BM6` for you.
+- **T9 — no `git`, and the substitute is named.** §8. Your files list comes from
+  your own record against §7, and a refused attempt goes in your journal.
+
+---
+
+## 11. What this round does NOT close — the rider that travels with the figure
+
+**Stated here so that it travels with the census figure and cannot be dropped by
+a later packet quoting `60 of 62`:**
+
+1. **No coverage was added.** Seven rows move from *undischarged in the record*
+   to *discharged in the record*; all seven were **already green before this
+   round**, at units that have been landing since WO-0043. The inventory figures
+   (56 / 136, unchanged) are the mechanical proof of that and are quoted beside
+   the census for exactly this reason.
+2. **No `SO-` may present M03-M1 … M03-M7 as seven independent pieces of
+   evidence.** On these stimuli each M row is *implied* by its carrier row —
+   WO-0070 §7's discipline, applied at seven-fold scale. What each M row adds is
+   the **direct statement of a §9 ruling** through an exact strobe set, which is
+   the reading a requirement-to-test matrix row cites; what it does not add is a
+   second observation.
+3. **No mutation-kill evidence exists for any of the seven**, and binding a row
+   id does not create any. PROTOCOL §10 sequences the campaign after ACCEPT and
+   before any `SO-` PASS. Several carriers *are* qualified in their own right
+   (M03-F2's and M03-N2's cells record theirs); **that is the carrier's
+   qualification and not the M row's**, and a `SO-` that transferred it would be
+   making exactly the claim §5.1 forbids in the epoch case.
+4. **FINDING M-1 and M-2 remain open as a PLAN defect** until the batched `AP-`
+   round repairs §4.M's Stimulus cells (§10 items 7–8). The bench is correct; the
+   plan points at the wrong carriers.
+5. **OBSERVATION M-O1** (§5.2) is open and routed to the campaign.
+6. **OBSERVATION L-O1 stays carried, unchanged, with its named carrier.** This
+   round does **not** touch `test/xgmii_rx_64/test_m03_l.ml` — family M's ten
+   carriers live in `test_m03_e/f/g/h.ml` and no co-occurrence ruling has a
+   carrier in the L file — so the leftover-remainder guard's *"test bug --"*
+   message at `test_m03_l.ml:162-170` is **not** repaired here and rides the next
+   commit that opens that file, exactly as `J-dv_lead-0127` recorded. Stated
+   explicitly because the dispatch made the repair conditional on this round's
+   design touching that file, and the honest answer to the condition is *no*.
+
+---
+
+## 12. What I owe after this round, recorded so it cannot evaporate
+
+1. **The `RV-0071` verdict**, into this packet's Return log: my six bars re-run
+   at my own seat, the CI step reading with its run id, the census measured at
+   both ends, and §§4.1–4.7 re-read against the landed source.
+2. **The batched `AP-` round** — still mine, still the next commit opening
+   `test/attack_plans/**`, and it now carries **eight** items: (i) family L's
+   status cells with `RV-0070-VERDICT`'s CI run id; (ii)
+   `CD-xgmii_rx_64_cosim.md` §0-bis's stale sentence **and** its copy in
+   `tools/cosim/run_cosim.sh`'s check-4.1 comment; (iii) `AP` §7's per-class
+   *"until it has run"* repair; (iv) `J-dv_lead-0094`'s malformed change-log row;
+   (v) `WO-0069`'s two stale clauses; (vi) family M's status cells with this
+   round's CI run id; **(vii) §4.M's M03-M6 Stimulus cell — add M03-G7 as the
+   first-epoch carrier (FINDING M-1); (viii) §4.M's M03-M7 Stimulus cell — add
+   M03-G8 (FINDING M-2)**, each with the finding's ground beside it.
+3. **`test/cost_probe/`'s undischarged deletion.** Carrier re-pinned by
+   `RV-0070-VERDICT` §8 item 3 to a `dv_lead` commit of this window. **It is NOT
+   paid by this round**: `BM6` scopes the worker to five paths and I will not
+   convict an executor of my housekeeping. It stays on the batched `AP-` round.
+4. **The mutation campaign packets.** Family L's (per `RV-0070-VERDICT` §8 item
+   4) and family M's — the latter with OBSERVATION M-O1's seeded class named in
+   it. **Family M's campaign has a shape worth pre-recording**: because every M
+   row's assertion is a carrier's assertion, a seeded class that kills a carrier
+   kills its M row by construction, and a scorecard must not report that as two
+   kills.
+5. **The remaining census.** After this round, **two ASSERT rows outstanding:
+   M03-K1 and M03-K2**, both `clear`-driven, and `clear` is a port no bench in
+   this suite has yet driven (`AP` §7's own note). That is the last bench round
+   before `SO-xgmii_rx_64.md` is reachable, and the lessons harvest falls due at
+   the `SO-`, spanning from my last harvest.
+
+---
+
+## 13. Your return
+
+In this order:
+
+(a) **Per-row derivation: agree or disagree.** Take §§3–4 cell by cell — every
+exact set, every pinned cycle, every delivered count — and say, for each, whether
+your own derivation from the cited spec text agrees. **A disagreement with any
+number of mine is a finding I want.** You are also invited to disagree with §5's
+two findings and with §1's rejection of a new file; both are my judgements and
+both are arguable.
+
+(b) **The thirteen edits as landed**, each quoted in full — the ten titles with
+their surrounding lines, the one message hunk, the dune block.
+
+(c) **Bar results: M-8 … M-16**, each with its command and its **raw** output.
+**M-1 … M-7 are mine — do not improvise an instrument for them.** If a bar I
+assigned you turns out to be unexecutable in your tool scope, **flag it rather
+than substituting one**, and put the flag in your journal as well as here (§8's
+durability clause).
+
+(d) **BOUNCE conditions**: which of `BM1`–`BM12` you checked, and which you
+stopped on.
+
+(e) **Files staged** — exactly §7's five paths — **and how you established that
+set**, which is your own record against §7 and not any git command (§8's
+substitution clause). Plus your journal entry id.
+
+(f) **Everything you noticed and did not touch.** T2 makes improving a carrier a
+bounce, so this section is where those observations go. I would rather have a
+long list here than a short diff that grew.
+
+(g) **Anything in this packet you found inconsistent with a frozen artefact.**
+**The artefact wins**; stop and report rather than repairing the world into
+consistency.
+
+---
+
+## Return / verdict log
+
+*(empty at issue)*
