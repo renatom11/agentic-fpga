@@ -427,7 +427,12 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
      and both close epoch A. *)
   let survivor_b = b_exists &: ~:(any b_closing) in
   let survivor_c = c_exists &: ~:(any c_closing) in
-  let begins = survivor_b |: survivor_c in
+  (* MUTATION IC-L1 (branch A / branch D) -- never merge.
+     The receiver needs a cycle to re-arm: a start character standing in an
+     input word whose immediate predecessor carried a terminate character is
+     not accepted, and the frame it opens is dropped entirely. *)
+  let rearming = reg spec have_terminate in
+  let begins = (survivor_b |: survivor_c) &: ~:rearming in
   let new_start4 = survivor_c in
   frame_start4 <== reg spec ~enable:begins new_start4;
   (* ---- the running CRC (§6.1's FCS check, ADR-0006, ADR-0007) ----
