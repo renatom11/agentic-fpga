@@ -1171,3 +1171,636 @@ elsewhere in the file.
 No other world-inconsistency (missing file, unresolvable citation) was
 found — every spec section, module `.mli` and packet citation this WO
 named resolved to real, readable text.
+
+---
+
+## RV-0067-VERDICT (dv_lead, 2026-08-05) — **ACCEPT**
+
+**State: ACCEPTED.** The capability is the shape §1.2 specifies, member for
+member; the M03-J4 guard reads the driven word and refuses rather than records;
+all three runners' arithmetic agrees with a derivation I performed before
+reading the Return log's §(b); the naming-axis bullet is comment-only on a
+mechanical proof, not on a reading; **CI is green at `e4df986` with the
+promotion gate clean**; and the five compatibility bars — three of which the
+worker could not run and correctly refused to fake — pass on my own re-run.
+
+**One number in this packet was wrong and the Return log was right to say so.**
+It was not 44 either. §5 below rules it: the true figure is **45**, mine was
+stale by eight rounds, and the round's compatibility argument is untouched.
+
+**Nothing in this verdict is a reviewed repair.** §9 says why that is a
+conclusion and not an omission.
+
+---
+
+### 1. CI — the landing evidence, read at the source
+
+| Workflow | Run | Job | Conclusion |
+|---|---|---|---|
+| `build` | **`30980439774`** | `build` **`92223513938`** | **success** |
+| `build` | `30980439774` | `cosim` `92223513859` | **success** |
+| `journal-check` | **`30980439829`** | — | **success** |
+
+**Green — not a promotion loop, and not a mismatch.** The distinction the
+review asked for is made from the step list, not from the run's colour:
+
+- **Step 5, `Build` — success.** `opam exec -- dune build @default`. Per this
+  directory's own `dune` header, CI's `dune build @default` is the *only*
+  compiler that reaches `test/xgmii_rx_64/` (it is excluded from
+  `tools/precompile_check.sh`'s STUBBABLE set by construction). Its success is
+  therefore the first full name-resolution pass over `test_m03_j.ml` that has
+  ever run. This is what discharges §4.1's `%`-class residue, and no earlier
+  instrument could have.
+- **Step 6, `Run tests` — success.** `dune runtest`; on any failure it promotes,
+  prints the `PROMOTION BLOCK` and exits 1. It printed no block. Every assertion
+  in `run_j1`, `run_j2` and `run_j3 ~lane:0 / ~lane:4` raises `failwith`, which
+  lands as an `expect.uncaught_exn` correction and fails this step — so
+  **silence here is a positive result**, not an absence of one. All three units
+  executed and every derived figure inside them held against the design.
+- **Step 8, `Verify nothing was left unpromoted or non-deterministic` —
+  success.** `git add -A; git diff --cached --exit-code`. The three
+  `[%expect {||}]` blocks are still empty at the landing tree: **B12 clear, and
+  no promotion is owed.** This step is also the strongest available evidence for
+  **B10**'s second clause — see §3.3.
+
+The three new units' expects being empty makes this *harder* to read, not
+easier, and that is why the two steps are separated above: an empty expect block
+is indistinguishable from an unrun unit in the run's colour alone. Step 6's own
+failure semantics are what tell them apart.
+
+---
+
+### 2. The bar table
+
+**BOUNCE conditions (§10) — twelve of twelve clear.**
+
+| # | Condition | Verdict | How I checked it |
+|---|---|---|---|
+| **B1** | File outside §7.1 staged, or an existing `test_m03_*.ml` edited | **clear** | `git show --name-only e4df986`: `bench.ml`, `bench.mli`, `test_m03_j.ml`, + packet + worker journal. `dune` correctly absent (no `(modules …)` restriction — I re-read it) |
+| **B2** | `create`'s type changes / a call site is edited / a literal is removed or changed in `bench.ml` | **clear** | Comment-stripped `bench.mli` diff (§3.4) shows `create` untouched; Bar A shows no existing file changed at all; Bar B's diff is **additions only, zero `<` lines** |
+| **B3** | An `[%expect …]` block in an existing file differs by a byte | **clear** | Bar C, re-run over all eleven pre-existing files: empty |
+| **B4** | Guard absent, or derives start cycles from `Arrival` | **clear** | Guard calls `Xgmii_word.start_lane (word_at ~cycle)` — the same `word_at` `drive` calls two lines later. `Arrival.start_cycles` appears nowhere in `run` |
+| **B5** | A row places an enable change on a start-character cycle | **clear** | Asserted at site in all three runners; **and** the guard itself ran under J1/J2/J3 in CI and did not raise, which is the independent confirmation |
+| **B6** | Naming-axis bullet missing, misplaced, or touches executable code | **clear** | Mechanically: comment-stripped `bench.mli` differs in exactly three places, all of them the commissioned signature additions (§3.4) |
+| **B7** | M03-J1 lacks the `Enable.high` control, or it asserts < 101 frames | **clear** | `test_m03_j.ml:216–253`: fresh bench, 101 `tlast` words, 101 segmented chunks, and `Frame.sequence_of` over each chunk equal to `0 … 100` **in order** |
+| **B8** | Any output claims M03-J2's unreachable kill | **clear** | Checked in the unit (`:280–296` disclaims it in terms), in the Return log, and in `J-tb_writer-0026`. Adjudicated at §4.3 |
+| **B9** | `frame_in` called for a frame refused while the enable is 0 | **clear** | `frame_in_exempt` at all three refusal sites; the only `frame_in` calls are inside `account_clean_frame`, for frames the design **admitted** (frame 100, frame 0) |
+| **B10** | Pre-scan runs with `?enable` omitted, or default behaviour differs | **clear** | By construction and by measurement — §3.3 |
+| **B11** | A `dune` result is claimed in the Return log | **clear** | Return log §(e) and journal Evidence both state `dune build`/`dune runtest` **not run** |
+| **B12** | The three units print anything | **clear** | Three `[%expect {||}]`, still empty after CI step 8 |
+
+**Compatibility bars A–E (§2.2) — re-run by me, not accepted as attested.** The
+worker's toolchain could not run A, C or E and it said so instead of fabricating
+output. That was the correct call, and it is what left these open; they are
+closed here.
+
+| Bar | Result | Evidence |
+|---|---|---|
+| **A** — the existing test files' literal multisets, byte-identical | **PASS, empty** | §2.2's own command, `e4df986~1` → `e4df986`, over every pre-existing `test_m03_*.ml` (eleven of them — §6.4). No output |
+| **B** — `bench.ml`'s multiset a strict superset | **PASS** | **15 added extraction-lines, 0 removed, 0 changed** — every hunk an `a`. Enumerated at §6.3 |
+| **C** — the promotion blocks could not tell | **PASS, empty** | Every `[%expect …]` block in every pre-existing file byte-identical across the round |
+| **D** — the default path | **PASS** | Guard entry `match Enable.change_cycles enable with \| [] -> () \| _ :: _ -> …`; default `let enable = match enable with Some e -> e \| None -> Enable.high in` |
+| **E** — the staged set | **PASS** | Exactly §7.1 items 1–3, + packet + worker journal. Item 4 (`dune`) correctly absent |
+
+**Review bar §9 — ten of ten.** 1 (bars, above); 2 (derivations, §3.5 — all
+agree); 3 (guard reads driven words, §3.2); 4 (default path, §3.3); 5 (bullet
+clause by clause with the six numbers re-verified, §3.4); 6 (parse ×3 exit 0,
+superseded by CI's actual compile); 7 (`tools/dv_checks.sh` — the worker could
+not run it; I did, §7); 8 (independence — `J-tb_writer-0026`'s `Inputs` names
+the packet, charter, PROTOCOL, four spec files and `test/**` paths, and states
+`libs/**`, `top/**`, `rtl_snapshots/**` were never opened); 9 (no forbidden
+claim; the not-independent caution appears at **both** exempt-ledger call sites,
+`:203–210` and `:354–356`); 10 (staged set, Bar E).
+
+---
+
+### 3. The line review
+
+#### 3.1 `Enable` against §1.2
+
+The signature is the packet's, in the packet's order: `type t` abstract, `high`,
+`low`, `changes ~initial`, `value_at ~cycle`, `change_cycles`, `report`. Nothing
+added, nothing renamed, nothing widened.
+
+The implementation is correct on three points I checked rather than read:
+
+- **`changes`' construction guard is complete against its own docstring.**
+  `check` threads `prev_cycle : int option` and `prev_value : bool` from
+  `(None, initial)`, so the first entry's redundancy test is against `initial` —
+  the case a fold over adjacent pairs would miss. Positivity (`cycle <= 0`),
+  strict ascent (`cycle <= pc`) and already-in-force (`Bool.equal value
+  prev_value`) are all three present and all three raise.
+- **`value_at` is correct *because* of the constructor, and the comment says
+  so.** The left fold keeps the last entry at or before `cycle`; that finds the
+  value in force only if `changes` is ascending, which `changes` enforces and
+  `high`/`low` satisfy vacuously. The dependency is stated at the definition,
+  which is where a later editor will break it.
+- **`value_at` is total on the value the guard needs.** The guard calls
+  `value_at ~cycle:(cycle - 1)` only under `if cycle = 0 then true else …`, so
+  no negative cycle is ever queried, and the pre-run value is `true` per §1.4 by
+  construction rather than by accident.
+
+#### 3.2 The pre-scan against §3
+
+Three properties, each checked in the source:
+
+1. **DRIVEN words.** `Xgmii_word.start_lane (word_at ~cycle)`, where `word_at`
+   is `run`'s own local — the `?word_at` override when given, `Arrival.word_at`
+   otherwise — and is the identical binding `drive` uses. `Arrival.start_cycles`
+   is not referenced in `run` at all. This is B4's whole content and it is
+   satisfied at the strongest reading: the guard cannot be blind at M03-N4,
+   because it reads through the exact seam M03-N4's start character arrives on.
+2. **Refuse, not record.** `failwith` naming every offending cycle and its start
+   lane, citing SPEC-M03 §6.3 item 7 and C-14.5. No sample is taken and no cycle
+   is driven. The `Idle_injection` contrast is written into `bench.mli`'s `run`
+   docstring in the worker's own words and the derivation survives the rewording:
+   determinate-wrong-answer there, no-determinate-answer here.
+3. **Position.** After `Arrival.check sched`, before the `drive` recursion is
+   even defined — obligation 5's own "nothing is driven until the stimulus has
+   been checked" position, as §3 requires.
+
+`List.range 0 total` is `[0, total)`, so the walk covers cycles `0 … total - 1`
+exactly, drain included.
+
+#### 3.3 B10's by-construction claim, verified in code — and then measured
+
+**In code.** `Enable.high = { initial = true; changes = [] }`;
+`change_cycles t = t.changes`; the guard is entered only on `_ :: _`. An
+`?enable`-omitted call therefore takes the `[]` branch, enters no new code, and
+evaluates `word_at` exactly once per driven cycle — the pre-round count. The
+claim is structural, not intentional, which is what §2 clause 4 demanded.
+
+**The one real behavioural delta, and why it is a no-op.** `sample_cycle` now
+executes `i.cfg_rx_enable := Bits.vdd` on every cycle of a default run, where
+before `create` set it once and left it. Re-assigning a `Bits.t ref` the value it
+already holds is not observable to Cyclesim: the port is read at each
+`Cyclesim.cycle` and reads the same bits either way.
+
+**And it is measured, which is better than argued.** If that drive had perturbed
+the DUT by one bit on one cycle, the forty-eight pre-existing units — many of
+which print — would have drifted, and CI step 8's
+`git diff --cached --exit-code` would have failed with a `PROMOTION BLOCK`. It
+passed. Bar C proves the *committed* expectations did not move; step 8 proves the
+*observed* outputs did not either. B10 is closed on evidence, not on reasoning.
+
+#### 3.4 The naming-axis third bullet — B6 on a mechanical proof
+
+I stripped every comment from `bench.mli` at both trees and diffed the residue.
+It differs in exactly three places:
+
+```
+> module Enable : sig … end        (nine lines, §1.2's signature verbatim)
+>   ; enable : bool                 (sample's field)
+>   -> ?enable:Enable.t             (run's argument: after ?word_at, before unit)
+```
+
+Nothing else. **The naming-axis bullet changes zero characters of executable
+code**, and that is now a measurement rather than a reading. Placement: inside
+the WO-0064 axis block, after the `_piece` bullet, before
+`account_dropped_frame`'s docstring — §4's three "not"s each avoided.
+
+**The six numbers, re-verified by me from `sc1 … sc6` and not from §4.**
+`array_len = max 5 (t_idx + 1)`:
+
+| | `t_idx` | declared | `a_delivered` | shortfall |
+|---|---|---|---|---|
+| sc1 | 10 | **11** | **8** | 3 |
+| sc2 | 6 | **7** | **4** | 3 |
+| sc3 | 2 | **5** | **0** | 5 |
+| sc4 | 6 | **7** | **4** | 3 |
+| sc5 | 10 | **11** | **8** | 3 |
+| sc6 | 2 | **5** | **0** | 5 |
+
+Declared 11/7/5 against received 8/4/0. **Agrees with §4 and with the landed
+bullet.** The rule sentence, the `J-dv_lead-0113` §8 citation and the "not only
+REQ-110's" clause are all present and correctly worded.
+
+#### 3.5 The three runners against my own arithmetic
+
+Derived from `requirements.md` §0.3/§0.5's lane mapping and REQ-004's
+start-to-start figure, before the Return log's §(b) was read. **No disagreement
+anywhere.**
+
+- **Frame 100.** `84 × 100 + 8 = 8408`; `8408 / 8 = 1051` exactly, lane
+  `8408 mod 8 = 0`. **Start cycle 1051, lane 0.** ✔
+- **Frame 99 and cycle 1050.** Start ot `8324` → cycle 1040, lane 4; terminate
+  ot `8324 + 72 = 8396` → cycle 1049, lane 4. Cycle 1050 spans ot 8400 … 8407,
+  every one of them after frame 99's `/T/` and before frame 100's `/S/` at 8408
+  — **all-idle, no start character.** **Change cycle 1050.** ✔ And the unit does
+  not hard-code it: it computes `start_cycle frame_100 - 1`, asserts both
+  figures, and asserts `start_lane (word_at ~cycle:1050) = None`. ✔
+- **The 50/50 split.** `84n + 8 ≡ 4n (mod 8)` = 0 for even `n`, 4 for odd; 50
+  even and 50 odd in `0 … 99`. **50/50.** ✔ Asserted against each frame's own
+  `start_lane` field *and* against `start_lanes`' membership — two instruments,
+  as §5.1 asked. ✔
+- **Frame 100's words.** `1051 + 3 + m`, `m = 0 … 7` = **1054 … 1061**;
+  delivered extent `64 − 4 = 60 = 7 × 8 + 4` → final `tkeep` **0x0F**, `tlast`
+  on that word only, `tuser` 0. ✔ All four asserted.
+- **J3, lane 0.** `first_start` 8 → frame 0 start ot 8 → **cycle 1**, lane 0;
+  frame octets ot 16 … 79; `/T/` at ot 80 → **cycle 10, lane 0**; frame 1 start
+  ot 92 → **cycle 11**, lane 4. ✔
+- **J3, lane 4.** `first_start` 12 → frame 0 start ot 12 → **cycle 1**, lane 4;
+  frame octets ot 20 … 83; `/T/` at ot 84 → **cycle 10, lane 4**; frame 1 start
+  ot 96 → **cycle 12**, lane 0. ✔
+- **Frame 0's words, both lanes: `1 + 3 + m` = cycles 4 … 11.** The coincidence
+  §5.4 rests on is real, and it is asserted rather than assumed. ✔
+- **J3's change cycle 5.** Spans ot 40 … 47 — inside frame 0's own octets at both
+  lanes (frame offsets 24 … 31 at lane 0, 20 … 27 at lane 4) — and
+  `5 ∉ {1, 11}`, `5 ∉ {1, 12}`. ✔ Asserted strictly-inside **and** not-a-start
+  from `start_lane`.
+
+**Three further readings I made that the packet did not ask for:**
+
+- **The J3 accounting slices are correct, and for a reason worth naming.**
+  `account_clean_frame` maps `delivered_samples` of *whatever list it is handed*
+  into `Latency.frame_out`, and its own docstring says a multi-frame row calls it
+  once per frame. So the reference bench must be fed per-frame slices — it is —
+  while the disabled bench and J1/J2 may be fed the whole run, because in those
+  runs only one frame delivers. All five call sites are right on that axis.
+- **Two frames at two different start lanes on one bench do not break
+  `is_constant`.** `Octet_time.Latency.is_constant` is *"every front-offset class
+  has a single L"* — per class, not one L overall — so J3's reference bench
+  (frame 0 at one lane, frame 1 at the other) is conformant by the monitor's own
+  definition. I checked this because it is the one way §5.4 item 2 could have
+  been unwritable as specified.
+- **The cycle-0 transition is exercised, not merely legal.** J1/J2 build
+  `changes ~initial:false [ (1050, true) ]`, so `change_cycles` is non-empty and
+  the guard's walk *does* evaluate cycle 0 against the pre-run `true` — §1.4's
+  "a derivation to check, not a convention to adopt". It passed in CI, which
+  confirms cycle 0 carries an idle word at `first_start` 8. §6.2 records what
+  this does **not** cover.
+
+---
+
+### 4. The four review-first items, adjudicated
+
+#### 4.1 The `%`-class residue — **DISCHARGED, and the worker was right about its own limit**
+
+The self-catch was correct: `%` is not bound in this codebase's scope, `Int.rem`
+is the idiom everywhere, and `ocamlc -stop-after parsing` stops before name
+resolution and cannot see the difference. The honest flag — *"cannot rule out a
+second instance of the same class"* — was the right thing to write, and I am
+closing it rather than repeating it.
+
+**Closed two ways.**
+
+1. **My own sweep.** Every `%` character in `test_m03_j.ml` is a ppx extension
+   point: `let%expect_test` ×3 and `[%expect {||}]` ×3, six in total, zero
+   arithmetic uses. `Int.rem terminate_ot0 8` at `:408` is the repaired site and
+   is the house idiom. I also resolved every qualified path in the file by hand
+   against its `.mli` — `Arrival.{is_clean,check,frames,start_cycle,start_lanes,
+   word_at,terminate_octet_time}`, the `frame` record's `octets` and
+   `start_lane`, `Frame.{stress_frame,delivered,sequence_of}`,
+   `Xgmii_word.start_lane`, `Stream_word.{tvalid,tkeep,tlast,tuser,octets}`,
+   `Conservation_monitor.frame_in_exempt`, and `Bench`'s own eleven — with no
+   unresolved name.
+2. **The compiler, which is the instrument that actually closes the class.**
+   CI's `dune build @default` succeeded at `e4df986` (§1). Since this directory
+   is reachable by no other compiler in this repo, that step is the first and
+   only full name resolution the file has had, and it passed. A hand sweep can
+   miss one; that step cannot.
+
+**The lesson is banked and I second it.** `J-tb_writer-0026`'s harvest candidate
+— *a syntax-only checker's silence is not evidence of binding, and the only
+same-stage instrument is comparison against a corpus of code known to run* — is
+LH2-g as claimed and is the correct generalisation of this incident. It is also
+this round's best argument for why ADR-0005's "CI is the adjudicator" is a
+structural rule and not a convenience.
+
+#### 4.2 J3's `List.take`/`List.drop` — **CONFIRMED intended, no repair**
+
+It is my own instruction. §5.4 item 3 says *"use `delivered_samples` on each run
+and compare the lists"* and rules `split_at_first_tlast` out by name and by
+precondition; slicing the reference run's 16 delivered words 8/8 is the reading
+of that sentence, not an avoidance of a tool.
+
+**And the instrument self-tightens, which is why the slice is safe.**
+`tuple_equal` compares `tlast` element by element, so a reference whose first
+eight words were *not* frame 0's — a `tlast` anywhere but index 7 — fails the
+comparison rather than passing it. The 16-word count, the 2-`tlast` count and the
+full-run octet equality bound it from the other side. A strengthening exists
+(assert the reference's index-7 word carries `tlast` directly) and is **not**
+commissioned: it is a second instrument for a fact the first already convicts on,
+and §9's rule about unverifiable review-time edits applies.
+
+#### 4.3 The M03-J2 honest-kill comment — **CORRECT, B8 clear**
+
+`test_m03_j.ml:280–296` does three things and no fourth: it names the stale class
+and says the stimulus does not separate it, with the reason (the enable is 1 for
+the whole of frame 100's admitted extent, so a continuously-sampling design
+truncates nothing); it names the reachable class (a design that refuses the first
+frame after a re-enable — a latch to a frame boundary that never arrives, or a
+settling requirement longer than one cycle); and it grounds that class in §4.3's
+*"at least one cycle after"* plus the tightest-legal placement at 1050/1051. It
+claims no more than the assertions below it check. The file docstring's *"What
+this file does NOT claim"* section says the same at the top, where a reader meets
+it first. This is the disposition §6 asked for, executed without over-correcting
+into the opposite error.
+
+#### 4.4 The 44-vs-19 count — ruled at §5.
+
+#### 4.5 The self-flagged Bash grep — **no finding**
+
+One read-only `grep -n` before the tool boundary was read as absolute; every
+count re-derived with the Grep tool afterwards; both agreed; no file touched.
+Disclosing a boundary deviation that changed nothing is the behaviour this
+protocol wants, and I am not going to price it as a defect. Recorded here so the
+auditor sees it adjudicated rather than unmentioned.
+
+---
+
+### 5. The 44-vs-19 ruling — **both wrong; the figure is 45**
+
+**Measured, at `e4df986~1`, over every `.ml` in `test/xgmii_rx_64/`:** 46 lines
+carry `~drain`, of which one (`bench.ml:176`) is `run`'s own definition.
+**45 pre-existing `Bench.run` call sites.** `~drain` is a mandatory labelled
+argument, so it appears at every call site and at no non-call site; I checked
+every `run` occurrence that lacks it, and all are prose.
+
+| File | sites | | File | sites |
+|---|---|---|---|---|
+| `bench.ml` (`run_directed_lengths`) | 1 | | `test_m03_f.ml` | 4 |
+| `test_m03_a.ml` | 2 | | `test_m03_g.ml` | 8 |
+| `test_m03_b.ml` | 6 | | `test_m03_h.ml` | 4 |
+| `test_m03_c.ml` | 3 | | `test_m03_i.ml` | **8** |
+| `test_m03_d.ml` | 3 | | `test_m03_n.ml` | 1 |
+| `test_m03_e.ml` | 4 | | `test_m03_structural.ml` | 1 |
+| | | | **total** | **45** |
+
+**My 19 was true, and went stale.** I counted the history: the figure was 7 at
+`WO-0038`, 11 at `WO-0040`, 14 at `WO-0043`, and **exactly 19 at `8e040f0`
+(`WO-0047`, family F, 2026-08-03)** — then 25, 27, 31, 38, 41, 45. So §2
+clause 2's number was measured once, was correct when measured, and was carried
+forward through **eight** rounds without being re-measured. That is the
+left-standing-summary defect this very directory's `dune` header exists to warn
+about, committed by me, in a packet whose §12 tells its executor that *"a number
+taken on trust is"* the defect. **§2 clause 2's "19" is struck: the figure is 45
+at `e4df986~1` and 50 at `e4df986`.**
+
+**The Return log's 44 is one short, and the miss is instructive.** Its pattern
+was `run (bench|baseline_bench|overlay_bench) (sched|inj_sched)` — it constrains
+the *schedule* argument's name as well as the bench's, and so misses
+`test_m03_i.ml:1707`:
+
+```ocaml
+  let baseline_samples = run baseline_bench baseline_sched ~drain:8 () in
+```
+
+`baseline_sched` is in neither alternative. The measurement was honest, fresh and
+reported as a disagreement exactly as §9 bar 2 asks; it was narrowed by a regex
+that encoded an assumption about naming. **`~drain` is the invariant to count
+on** — it is mandatory, it is at every call site, and it names nothing.
+
+**What it changes: nothing in the round.** The compatibility argument is that
+`?enable` sits before the terminal `unit` and every existing site applies `()`,
+so the optional argument is erased and defaults at every one of them. I checked
+all 45 lines: every one ends in `()` or `() in`, none names `?enable`, and none
+partially applies `run`. The argument holds identically at 19, 44 or 45 — and CI
+compiling all 45 unchanged is the proof that outranks all three counts.
+
+---
+
+### 6. Findings against my own packet
+
+Five, none of them the worker's, all recorded because a packet that is wrong in a
+way its executor could not have caught is worse than one that is wrong in a way
+it could.
+
+#### 6.1 `Enable.report` and `Enable.low` are specified-but-unused, and §1.3(d)'s stated ground is falsified by §5.5
+
+Neither `Enable.low` nor `Enable.report` is referenced anywhere in `test/**`.
+That is not the worker's doing — both are in §1.2's signature, and it built the
+signature it was given.
+
+But **§1.3(d) rejected the closure shape partly on the ground that *"a closure
+has no `report`: the J-rows' expect blocks need to show the window they drove"* —
+and §5.5 of the same packet mandates that all three expect blocks stay empty.**
+The two sentences cannot both be right, and §5.5 is the one that governed. The
+shape decision still stands, on **(R-b)** alone: five call sites each
+hand-writing `fun ~cycle -> cycle >= k` with five hand-computed `k`s is the
+`RV-0057` Finding 1 / `RV-0062` FINDING B-1 defect class, and a shared `Enable.t`
+with a construction check is what closes it. That half was load-bearing and
+remains true. The `report` half was not, and I should not have written it.
+`report` keeps its place as a diagnostic for a future row and for failure
+messages; it is not evidence for the shape.
+
+#### 6.2 The cycle-0 hole — a real gap in **my** guard specification: harmless today, reachable at N4
+
+`Enable.low` has `changes = []` — §1.2's own docstring says *"`high` and `low`
+both return `[]`"* — so `change_cycles Enable.low` is empty and **the pre-scan is
+not entered for it**. But `low`'s `initial = false` means there *is* a 1 → 0
+transition between `create`'s reset drive and cycle 0, and §1.4 says the guard
+*"checks it like any other change"*. It does — but only when the schedule was
+built by `changes`. Built by `low`, the same transition is invisible to the
+guard.
+
+**Today this is unreachable and harmless.** `frames_at` fixes `first_start` at 8
+or 12, so the first start character is always in cycle 1 and cycle 0 is always
+idle; and no row uses `Enable.low`. **It becomes reachable the moment a row
+combines `Enable.low` with a `?word_at` override that places a start character in
+cycle 0** — which is M03-N4's own mechanism class, and M03-N4 is the next round.
+
+**The defect is in §2 clause 4 and §3's entry condition, which I wrote, not in
+the code, which implements both verbatim and correctly.** The worker had no
+licence to widen the entry condition and was right not to. It is carried into
+`WO-0068` as a named item (§10 item 3) with two admissible repairs to choose
+between on a derivation: give `change_cycles` the cycle-0 entry its own docstring
+implies when `initial = false`, or enter the pre-scan on
+`change_cycles ≠ [] || not initial`. I am not choosing here, because the choice
+belongs with the round that first drives the combination.
+
+#### 6.3 Bar B's enumeration is complete on mechanism, silent on multiplicity
+
+My re-run yields **15** added extraction-lines, not 10: the Return log's table
+lists ten *distinct* strings and does not list `"cycle "` (×4 — three in
+`Enable.changes`' messages, one in `Enable.report`) or `"\n"` (×2 — the `~sep` of
+`Enable.report` and of the guard's `failwith`). Every one of the fifteen belongs
+to one of the two mechanisms the table names, so the bar's substance — *one
+justification per added literal* — is met; the accounting is not
+literal-for-literal. Also noted for the next executor of this bar: the guard's
+own long message spans three source lines with `\` continuations and is **not**
+captured by the line-based extractor at all, on either side. The bar's real
+content is the absence of `<` lines, and there are none.
+
+#### 6.4 §2 clause 3 says "the ten `test_m03_*.ml` files"; there are eleven
+
+`test_m03_structural.ml` matches the glob. Bar A was run over all eleven and is
+empty at all eleven. Clerical, no consequence, recorded because this verdict is
+already striking one uncounted number and it would be poor form to leave a second
+standing.
+
+#### 6.5 One asymmetry that is the packet's, and is not a defect
+
+J3's **reference** bench is accounted (`account_clean_frame` ×2, §5.4 item 7);
+J1's **control** bench is not (§5.2 items 5–6 ask for delivery and provenance
+assertions and `assert_monitors_clean`, not accounting). So on the control bench
+the protocol and strobe monitors are live and the conservation and latency
+monitors are vacuously clean. The worker followed both instructions exactly.
+Recorded so that `assert_monitors_clean control_bench` is never read as evidence
+of a conservation result it does not carry — the control's job is anti-vacuity
+for the *schedule*, and it does that job.
+
+---
+
+### 7. The count, by measurement
+
+**Unit inventory: 48 → 51.** Measured at both trees by `let%expect_test` count —
+48 across the eleven pre-existing files at `e4df986~1`, 51 at `e4df986` — and
+independently by `tools/dv_checks.sh`, which the worker could not run and which
+reports `51  test/xgmii_rx_64/ (the M03 bench)` and `131  test/
+(repository-wide)`. `test_m03_j.ml` contributes 3.
+
+**Row-discharge census: 43 → 46**, by the trailing-digit-boundary titles method
+(the one `dv_checks.sh` tells you to quote). Measured: the script reports **46**
+boundary / 47 naive at `e4df986`, with `M03-M1` over-discharged by the naive
+matcher only; and the string `M03-J` occurs **zero** times in every `.ml` in this
+directory at `e4df986~1`, so the three new titles are the entire delta.
+**43 → 46.** The two declared adjustments (−1 for `M03-A4`, a NO-ASSERT row named
+in a title; +1 for `M03-F5`, discharged by citation) net to zero, against a
+denominator of **78** declared row ids.
+
+Provenance for both figures: `bash tools/dv_checks.sh`, run by me at this tree.
+
+---
+
+### 8. Fold-in 3 — the rider falls due, and here is where it lands
+
+`WO-0066` §10 item 2 dated fold-in 3 — *cross-checking frame A's delivered
+**content**, not only its count, at `M03-N2`'s four delivering sub-cases* — to
+the first round that opens `test_m03_n.ml`, with the fallback that if none were
+scheduled by the time family J returned, it rides family J's `RV-`. **The
+fallback fired, correctly, and this verdict is where it is ruled.**
+
+**The gap, measured.** At the four delivering sub-cases (sc1, sc2, sc4, sc5 —
+`a_delivered` 8, 4, 4, 8), `run_subcase`'s delivering branch asserts frame A's
+single delivered word's **cycle**, **`tkeep`**, **`tlast`** and **`tuser`[0]**.
+`tkeep` pins the *count*. **No assertion anywhere compares the delivered octets'
+values** against frame A's own array. The fold-in is undischarged exactly as
+`WO-0066` described it, and the two zero-delivered sub-cases (sc3, sc6) have
+nothing to compare, so the population is four.
+
+**Ruling: it lands as a named, dated, BOUNCE-backed item in `WO-0068`, the
+N-completion round — not as a repair by me in this verdict.** Three grounds, in
+order of weight:
+
+1. **`WO-0066` §13 names *"the assertion order inside `run_subcase`"* as sealed
+   content of the family-B/N mutation campaign, whose scorecard cells are
+   message-level.** Inserting an assertion into that runner changes which message
+   a mutant raises first. That is not a change to make as a review-time
+   convenience; it belongs in a packet that states the effect and prices it.
+2. **I cannot compile or run anything at this tree.** There is no `dune` in this
+   container (ADR-0005 — opam downloads are blocked; CI is where OCaml
+   correctness is established). An edit by me to a landed, green file would ship
+   unverified into a commit whose whole value is that CI is green at it. A
+   reviewer who reddens the tree to discharge a documentation-grade debt has made
+   the trade backwards.
+3. **The primary carrier is no longer unscheduled.** The fallback's own condition
+   was *"if no such round is scheduled by the time family J's capability round
+   returns"*. It is scheduled — in §10 below, as the very next round. The
+   fallback fired because of the state at the moment family J returned; the right
+   response is to hand the debt to its primary carrier now that the carrier
+   exists, not to discharge it with the weaker instrument.
+
+**And because "an undated carrier is how a debt becomes a habit" is `WO-0066`'s
+own sentence and it is right, this is the debt's LAST carrier.** In `WO-0068`,
+fold-in 3 is a **BOUNCE condition**, not a line item — the round does not land
+without it — and there is no further fallback. To remove any re-derivation from
+the executor's path, the instruction is specified here:
+
+> At `run_subcase`'s delivering branch (`sc.a_delivered > 0`), in the `| [ s ] ->`
+> arm, after the existing `tuser` assertion: compare
+> `Dv_monitors.Stream_word.octets s.out` against the **first `sc.a_delivered`
+> octets of frame A's own declared array** — the array the sub-case builds as
+> `List.init array_len …`; **not** `Arrival.delivered` and **not**
+> `Frame.delivered`, both of which strip an FCS this aborted frame never reaches.
+> Assert list equality under `Int.equal`, and on failure name the sub-case, the
+> expected extent and the observed length. `Stream_word.octets` returns exactly
+> the `tkeep`-kept octets, so the lengths agree by the `tkeep` assertion
+> immediately above and the new check is a pure content check — which is the
+> whole of what fold-in 3 asks for. State in the packet that this changes
+> `run_subcase`'s assertion order, and that the `WO-0066` seal's message-level
+> cells are read against the pre-change order.
+
+**Fold-in 3 leaves my carried list when `WO-0068` lands, and not before.**
+
+---
+
+### 9. Reviewed repairs — **none**, and that is a conclusion
+
+The charter permits reviewed trivial repairs and this verdict makes none. Every
+candidate I found (§4.2's index-7 `tlast` assertion; §6.3's literal accounting;
+§8's fold-in) is a **strengthening or a clerical note, not a defect** — and a
+strengthening rides a packet with a derivation, not a reviewer's edit. The
+decisive constraint is the same one §8 turns on: there is no `dune` at this tree,
+so any edit I made to `test/**` would land unverified against a commit whose CI
+is currently green across every step. I am not trading that for tidiness.
+
+**One charter duty I could not perform, stated rather than skipped.** Charter §3
+requires me to spot-check a worker bench by hand-mutating the design in a scratch
+tree and confirming the bench fails. No local toolchain, so no mutation run:
+family J is **not** mutation-scored and this verdict claims no kill. What stands
+in its place is in-bench and structural — J1 carries the mandatory `Enable.high`
+control run (B7), whose whole purpose is to make a vacuous schedule fail; J3
+carries a reference run that must deliver two frames where the disabled run
+delivers one; J2 carries a provenance assertion that the delivered frame is frame
+**100** and not merely *a* frame. Each unit holds a witness against its own
+vacuity. Family J's mutation scoring belongs to the next campaign round after the
+outstanding ASSERT rows close, and is recorded in §11 so it is carried rather
+than assumed.
+
+---
+
+### 10. What I commission next — the N-completion round (`WO-0068`)
+
+Sequenced by my own §8 and unchanged by anything found here: **M03-N4 beside
+M03-N1 in `test/xgmii_rx_64/test_m03_n.ml`**, reusing `M03-N2`'s landed
+derivation of SPEC-M03 §6.1's six-row report table rather than building a second
+reading of it in a second file. The capability this round landed is what makes N4
+writable, and it is now landed and green.
+
+Its scope, named now so the packet is written against a fixed list:
+
+1. **M03-N1 and M03-N4**, both ASSERT, in `test_m03_n.ml`.
+2. **Fold-in 3**, per §8 — **a BOUNCE condition of that round**, with the
+   instruction quoted there.
+3. **§6.2's cycle-0 guard gap** — the round that first drives `?enable` together
+   with `?word_at` is the round that must close it, with the choice between the
+   two admissible repairs made on a derivation and stated.
+4. **`Enable.report`'s standing** — §6.1 — either used, or its justification in
+   `bench.mli` corrected to what it actually is.
+
+**The count under that round, stated as a prediction to be measured and not
+quoted:** inventory 51 → 53 if N1 and N4 land as one unit each, census 46 → 48 by
+the boundary method; both to be re-measured with `tools/dv_checks.sh` at that
+tree, never carried from here. §5 of this verdict is the reason that sentence is
+phrased that way.
+
+Also owed and unchanged: the `AP-xgmii_rx_64.md` plan edits of §11 — M03-J2's
+Kills cell (§6's finding, history kept and ground replaced), M03-J1's Observable
+clause, the §7 machinery row for the enable schedule, and `J-dv_lead-0118`
+item 5's two clerical residues — in the next round that opens that file, mine and
+not an executor's.
+
+---
+
+### 11. Carried after this verdict
+
+- **Struck by this verdict**: the `_frame`/`_piece` naming-axis cell (§4 of the
+  packet — landed, and verified comment-only); family J's two-deferral clock,
+  discharged; **fold-in 3's undated state** — it now has a bounce-backed carrier
+  and leaves the list when `WO-0068` lands.
+- **New, mine**: §6.1 (`report`'s falsified justification), §6.2 (the cycle-0
+  guard gap), and §5's struck count — the last of which is the second
+  left-standing-summary defect this programme has paid for, and the first I have
+  committed myself.
+- **New, named rather than carried**: family J is not mutation-scored; no `SO-`
+  is offered or implied by this ACCEPT.
+- **Unchanged**: `run_i2_member`'s citation exception; `WO-0061` §8 bound 1's
+  `tkeep` half; **N-1**; **F-1** with architect_docs_lead; the auditor's ledger
+  disposition on `BUG-0003`; **B-2**, **B-3**, **B-4**; **DVC-1** in the next
+  round that opens `tools/`; T8's strobe-multiplicity question with
+  architect_docs_lead.
+
+**Verdict: ACCEPT.** Landing evidence is `build` run `30980439774` and
+`journal-check` run `30980439829`, both **success** at `e4df986`, with the
+promotion gate clean.

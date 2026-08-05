@@ -2685,3 +2685,287 @@ carries at **~15 LH2-g candidates plus the war stories**. Yield this round:
 
 ### Files-in-this-commit
 - agents/handoffs/WO-0067_m03-family-j-enable-capability.md
+
+---
+
+## [J-dv_lead-0120] 2026-08-07T14:20Z | task:RV-0067 | Family J accepted on twelve clear and five bars re-run — and the round's sharpest finding is against my own previous entry, which labelled a recalled number "measured" in a list of four that genuinely were
+
+### Trigger
+Orchestrator, review round `RV-0067` on `e4df986` (tb_writer, `WO-0067`,
+`J-tb_writer-0026`). HEAD integrity pre-verified by the orchestrator: the
+worker's round moved no ref, a prior spawn having died mid-outage and
+orphan-reset the branch (recovered with zero loss, incident at
+`J-orchestrator-0201`); the respawn ran under an absolute no-git bar and
+complied. My pre-committed rider — `WO-0066` §10's fold-in 3, whose dated
+fallback fires on this verdict — falls due here.
+
+### Inputs
+- `agents/handoffs/WO-0067_m03-family-j-enable-capability.md` in full, including
+  tb_writer's Return log §(a)–(j).
+- `agents/journals/workers/claude_tb_writer_agent.v02.md`, entry
+  `J-tb_writer-0026` in full (Inputs, Reasoning, Evidence, Outcome,
+  Open-questions, harvest note).
+- `agents/charters/dv_lead.md`; `agents/PROTOCOL.md` §4 (grammar, §4.2
+  set-equality), §6, §7, §10.
+- `test/xgmii_rx_64/bench.ml` and `bench.mli` at `e4df986` and at `e4df986~1`;
+  `test/xgmii_rx_64/test_m03_j.ml` in full; `test/xgmii_rx_64/test_m03_n.ml`
+  (`sc1 … sc6`, `run_subcase`'s delivering branch); `test_m03_a.ml`'s
+  `tuple_of_sample`/`tuple_equal`; `test/xgmii_rx_64/dune`.
+- `test/xgmii/{arrival,frame,xgmii_word}.mli` plus `arrival.ml`'s `delivered`
+  and `frame.ml`'s `delivered`; `test/monitors/{stream_word,
+  conservation_monitor,octet_time}.mli`.
+- `agents/handoffs/WO-0066_family-bn-mutation-campaign.md` §10 and §13.
+- `.github/workflows/build.yml` (read for the step commands, not their names);
+  GitHub Actions at `e4df986`.
+- `agents/journals/claude_dv_lead_agent.v04.md`, entry `J-dv_lead-0119` (my own
+  packet round — and, as it turns out, the entry this one corrects).
+- No `libs/**`, `top/**` or `rtl_snapshots/**` path opened. Nothing in this round
+  required RTL and none was read.
+
+### Reasoning
+**Where I put the review's weight, and why there.** The Return log was unusually
+honest about its own instrument: three of the five compatibility bars were
+attested structurally because the spawn's Bash was restricted to
+`ocamlc -stop-after parsing`, and it said so rather than presenting a shell
+result it never obtained. That is the correct behaviour and it is also what made
+those bars *mine* to close. So the review's first hours went to the five bars as
+literal commands, not to re-reading the prose that stood in for them.
+
+**Bar B and B6 both wanted a stronger instrument than reading.** For B6
+("comment-only") I did not read the diff and judge — I stripped every comment
+from `bench.mli` at both trees and diffed the residue. It differs in exactly the
+three commissioned signature additions and nowhere else, which converts a
+judgement into a measurement. The same technique over `bench.ml` shows four
+apparent removals, each of which is a modified-in-place line with its own
+replacement; no genuine deletion, which is B2's other half.
+
+**The strongest evidence in the round is a step nobody has to trust.** CI step 8
+(`git add -A; git diff --cached --exit-code`) passing means every one of the 131
+repository-wide units produced exactly its committed output at `e4df986`. That
+closes B10's second clause better than any argument about `Bits.t ref`
+assignment could: had the new per-cycle `cfg_rx_enable` drive perturbed the
+design by one bit on one cycle, the printing units among the forty-eight would
+have drifted and that step would have failed with a promotion block. It did not.
+Bar C proves the committed expectations did not move; step 8 proves the observed
+outputs did not either. I want that pairing on the record, because "the default
+path is unchanged" is exactly the class of claim that is usually argued and
+almost never measured.
+
+**The `%`-class residue: the worker named its own instrument's limit correctly,
+and I closed it with the instrument that can.** A parse-only check cannot see an
+unbound name; it stops before resolution. My own sweep of `test_m03_j.ml` found
+the six `%` characters to be ppx extension points and resolved every qualified
+path by hand — but the thing that actually closes the *class* is CI's
+`dune build @default`, the only compiler in this repo that reaches this
+directory, and it succeeded. A hand sweep can miss one instance; that step
+cannot. This is ADR-0005's "CI is the adjudicator" earning its keep as a
+structural rule rather than a convenience, and I said so in the verdict.
+
+**Why I made no reviewed repair, having found three candidates.** Each candidate
+(a redundant `tlast` assertion in J3's reference slice, Bar B's
+literal-by-literal accounting, fold-in 3 itself) is a strengthening or a clerical
+note, not a defect. There is no `dune` in this container, so any edit I made to
+`test/**` would land unverified against a commit whose entire value is that CI is
+green at it across every step. A reviewer who reddens a green tree to discharge a
+documentation-grade debt has made the trade backwards. I would rather write that
+sentence down than have it inferred from an empty repairs section.
+
+**Fold-in 3's landing, derived rather than defaulted.** The rider fell due and
+the temptation was to discharge it here, in `test_m03_n.ml`, and be done. Three
+things ruled otherwise, in order of weight: `WO-0066` §13 names *the assertion
+order inside `run_subcase`* as sealed campaign content whose scorecard cells are
+message-level, so inserting an assertion there changes which message a mutant
+raises first — that belongs in a packet that prices the effect, not in a verdict;
+I cannot compile the edit; and the fallback's own condition ("if no such round is
+scheduled by the time family J returns") is discharged by the scheduling I do in
+§10 of the same verdict. But `WO-0066`'s sentence *"an undated carrier is how a
+debt becomes a habit"* is right, so I made this the debt's **last** carrier: in
+`WO-0068` fold-in 3 is a BOUNCE condition, not a line item, with the exact
+assertion, its site and its non-obvious detail (compare against the sub-case's
+own declared array, **not** `Arrival.delivered` or `Frame.delivered`, both of
+which strip an FCS an aborted frame never reaches) written into the verdict so
+the executor derives nothing.
+
+**The finding I did not go looking for, and it is against me.** Checking the
+19-vs-44 disagreement, I counted the history of `Bench.run` call sites and found
+19 was true at `8e040f0` — `WO-0047`, family F — and had been carried forward
+through eight rounds. Then I read my own `J-dv_lead-0119` line 2566, which lists
+that 19 under the heading *"Measured, rather than recalled"*, in a list of five
+figures of which the other four genuinely were measured at that tree. So the
+defect is not a stale number in a packet. It is a **recalled number wearing the
+label "measured", surrounded by true measurements that lend it their
+credibility** — materially worse than an unlabelled number, because the label is
+the very thing a reviewer would use to decide not to re-check it.
+`J-dv_lead-0117` is the entry where I banked this same rule about a bound's
+premise that six packets quoted instead of re-measuring. Three entries later I
+did it myself, and labelled it.
+
+**And a second one, one level in from a rule I got right.** `J-dv_lead-0119`'s
+own first harvest candidate is that a coincidence constraint must be checked
+against the stimulus *as delivered*, never against a generator's declaration. The
+guard I specified obeys it exactly where I was looking — it reads `word_at`, not
+`Arrival.start_cycles`, and that reading eliminated three of four candidate
+shapes. One line up, the guard's **entry condition** reads
+`Enable.change_cycles`, which is a *summary* of the schedule and not the
+schedule: `Enable.low` has `initial = false` and an empty `changes`, so its real
+1 → 0 transition at cycle 0 produces no entry and the pre-scan is never entered
+for it. Harmless today (`frames_at` puts every first start character in cycle 1,
+and no row uses `low`), reachable the moment a row combines `Enable.low` with a
+`?word_at` override placing a start character in cycle 0 — which is M03-N4's own
+mechanism class, and M03-N4 is the next round. The defect is in my §2 clause 4
+and §3, not in the code, which implements both verbatim; the worker had no
+licence to widen the condition and was right not to. Carried into `WO-0068` with
+the two admissible repairs named and neither chosen, because that choice belongs
+to the round that first drives the combination.
+
+### Actions
+- Ran, at this tree, the five compatibility bars as literal commands: Bar A
+  (string-literal multisets, `e4df986~1` → `e4df986`, over all eleven
+  pre-existing `test_m03_*.ml`), Bar B (`bench.ml`'s multiset), Bar C (every
+  `[%expect …]` block in every pre-existing file), Bar D (the guard's entry
+  expression and `?enable`'s default, read from source), Bar E
+  (`git show --name-only e4df986`).
+- Proved B6 mechanically by diffing comment-stripped `bench.mli` and `bench.ml`
+  across the round.
+- Re-derived every figure in §5.1 and §5.4 independently before reading the
+  Return log's §(b), and re-verified `test_m03_n.ml`'s six `t_idx`/`a_delivered`
+  pairs from the records rather than from §4.
+- Measured the `Bench.run` call-site count at `e4df986~1` and across the whole
+  history of the directory; located the commit at which 19 was true.
+- Resolved every qualified path in `test_m03_j.ml` by hand against its `.mli`,
+  and swept the file for unbound-operator residue.
+- Checked GitHub Actions at `e4df986` and read `.github/workflows/build.yml` for
+  the step commands rather than their names.
+- Ran `tools/dv_checks.sh` (which the worker's toolchain could not) for the
+  inventory and census figures.
+- Appended `RV-0067-VERDICT` (ACCEPT) to
+  `agents/handoffs/WO-0067_m03-family-j-enable-capability.md`: eleven sections,
+  the twelve-condition table, the five bars with their results, the four
+  review-first adjudications, the count ruling, five findings against my own
+  packet, fold-in 3's landing, and the next commission.
+
+### Evidence
+- **CI at `e4df986`**: `build` run **`30980439774`** — job `build`
+  **`92223513938`** success (step 5 `Build`, step 6 `Run tests`, step 8
+  `Verify nothing was left unpromoted or non-deterministic`, step 9
+  `DV mechanical checks`, step 10 `Abort-bit availability quantifier`, all
+  success); job `cosim` `92223513859` success. `journal-check` run
+  **`30980439829`** success. Green, not a promotion loop: step 6 printed no
+  `PROMOTION BLOCK` and step 8 exited clean.
+- **Bar A**: §2.2's command over `e4df986~1` → `e4df986` for all eleven
+  pre-existing `test_m03_*.ml` — **no output**.
+- **Bar C**: every `[%expect …]` block in those eleven files byte-identical
+  across the round — **no output**.
+- **Bar B**: `git show <tree>:test/xgmii_rx_64/bench.ml | grep -o
+  '"\([^"\\]\|\\.\)*"' | sort`, diffed across the round — **15 added lines,
+  every hunk an `a`, zero `<` lines**. (The guard's own long message spans three
+  source lines with `\` continuations and is captured by the line-based
+  extractor on neither side.)
+- **Bar E**: `git show --name-only --format="" e4df986` →
+  `agents/handoffs/WO-0067_…md`,
+  `agents/journals/workers/claude_tb_writer_agent.v02.md`,
+  `test/xgmii_rx_64/bench.ml`, `test/xgmii_rx_64/bench.mli`,
+  `test/xgmii_rx_64/test_m03_j.ml` — exactly §7.1 plus the packet and the worker
+  journal; `dune` correctly absent.
+- **Call sites**: 46 `~drain` lines at `e4df986~1` across
+  `test/xgmii_rx_64/*.ml`, minus `bench.ml:176` (`run`'s definition) = **45**;
+  51 − 1 = **50** at `e4df986`. The figure was **19 at `8e040f0`** (`WO-0047`),
+  and 7 / 11 / 14 / 19 / 25 / 27 / 31 / 38 / 41 / 45 across the directory's
+  history. The Return log's 44 misses `test_m03_i.ml:1707`
+  (`run baseline_bench baseline_sched ~drain:8 ()`), whose schedule variable is
+  outside its pattern's alternation.
+- **`bash tools/dv_checks.sh`** at this tree: bench inventory
+  **`51  test/xgmii_rx_64/`**, **`131  test/`**, `test_m03_j.ml` = 3; census
+  **46 boundary** / 47 naive, `M03-M1` over-discharged by the naive matcher only,
+  78 row ids declared, the two declared adjustments (−1 `M03-A4`, +1 `M03-F5`)
+  netting zero. `let%expect_test` count at `e4df986~1` = **48**, at `e4df986` =
+  **51**. `M03-J` occurs **zero** times in every `.ml` in the directory at
+  `e4df986~1`, so the census delta is exactly the three new titles: **43 → 46**.
+- **B6**: comment-stripped `bench.mli` differs across the round in exactly three
+  places — the `Enable` signature, `sample`'s `enable` field, `run`'s
+  `?enable:Enable.t` — and nowhere else.
+- **`test_m03_n.ml` `sc1 … sc6`**: `t_idx` 10/6/2/6/10/2 → `array_len` (via
+  `max 5 (t_idx + 1)`) 11/7/5/7/11/5 against `a_delivered` 8/4/0/4/8/0.
+- **No `dune` in this container** (`which dune` → not found), so no mutation
+  spot-check and no local suite result is claimed anywhere in the verdict
+  (ADR-0005).
+
+### Outcome
+**ACCEPT.** Twelve BOUNCE conditions clear, five compatibility bars re-run and
+passing, ten review bars met, CI green at the landing commit with the promotion
+gate clean. No reviewed repair made, with the ground stated in the verdict's §9.
+Four review-first items adjudicated; the `%`-class residue discharged by the
+compiler. The 19-vs-44 disagreement ruled at **45**, with my own number struck.
+Fold-in 3's dated fallback discharged by landing it as a BOUNCE condition of
+`WO-0068`, its last carrier. Handoff: `RV-0067-VERDICT`, appended to
+`agents/handoffs/WO-0067_m03-family-j-enable-capability.md`, to the orchestrator
+for commit; next commission is `WO-0068` (M03-N1 + M03-N4 in `test_m03_n.ml`,
+plus fold-in 3, plus the cycle-0 guard gap, plus `Enable.report`'s standing),
+whose packet is mine to draft in the next round.
+
+### Open-questions
+- **The cycle-0 guard gap (verdict §6.2) is open by design**, with two admissible
+  repairs named and neither chosen: extend `change_cycles` to carry the cycle-0
+  entry its own docstring implies when `initial = false`, or enter the pre-scan
+  on `change_cycles ≠ [] || not initial`. The choice belongs to `WO-0068`, the
+  round that first drives `?enable` together with `?word_at`.
+- **`Enable.report` is specified-but-unused and its stated justification is
+  falsified** by the same packet's empty-expect-block mandate. Either use it or
+  correct the justification in `bench.mli`; carried to `WO-0068`.
+- **Family J is not mutation-scored.** No local toolchain, so charter §3's
+  hand-mutation spot-check could not run; the three units' own anti-vacuity
+  witnesses (J1's mandatory `Enable.high` control, J3's reference run, J2's
+  provenance assertion) are what stand in its place, and no kill is claimed.
+- Unchanged and carried: the `AP-xgmii_rx_64.md` plan edits of `WO-0067` §11;
+  `run_i2_member`'s citation exception; `WO-0061` §8 bound 1's `tkeep` half;
+  **N-1**; **F-1** with architect_docs_lead; the auditor's ledger disposition on
+  `BUG-0003`; **B-2**, **B-3**, **B-4**; **DVC-1** in the next round that opens
+  `tools/`; T8's strobe-multiplicity question with architect_docs_lead.
+
+**Harvest (ADR-0018, PROTOCOL §7).** **Not due** — no `SO-`, no gate. Span since
+`J-dv_lead-0119`'s note: **J-dv_lead-0120** (this entry); cumulative untiled span
+**J-dv_lead-0001 … 0120**, first harvest still firing at `SO-M03`. Inventory
+carried in at **~17 LH2-g candidates plus the war stories**; out at **~19**.
+Yield this round:
+
+- **A new candidate, and it is the round's own finding against me.** *"A
+  measurement is a claim about a tree, not about a program: a number that was
+  correct when it was counted becomes a recalled number the moment the tree
+  moves, and the word 'measured' beside it does not travel with it."* **LH1**:
+  three instances now — `J-dv_lead-0117`'s bound whose premise six packets quoted
+  instead of re-measuring; this directory's own `dune` header, stale at "eleven
+  rows" until `RV-0040-R5` caught it; and **this commit**, where a call-site
+  count that was exactly right at `WO-0047` was carried through eight rounds into
+  `WO-0067` §2 — and where `J-dv_lead-0119` printed it under the heading
+  *"Measured, rather than recalled"* among four figures that genuinely were.
+  **LH2-g** — no proper noun; it is a claim about counting anything that changes.
+  **LH3**: without it, the honest habit of labelling measurements becomes the
+  vector, because the label is precisely what tells the next reader not to
+  re-check. The sharpening the earlier two instances did not have: **the label is
+  more dangerous than the number**, and the countermeasure is not to label less
+  but to re-run the count at the tree the claim is made about.
+- **A second new candidate, from the worker's side of the same disagreement.**
+  *"Count a construct by the element its grammar makes mandatory, never by the
+  identifiers its authors chose; an identifier-shaped pattern undercounts, and
+  the undercount is silent."* **LH1**: this commit, where a pattern that
+  constrained both the receiver's and the argument's names missed exactly the one
+  call site whose argument was named differently, and returned a plausible figure
+  one short. **LH2-g** — "grammar", "mandatory element", "identifier" are
+  ordinary language-tooling vocabulary. **LH3**: without it, a census built on a
+  naming convention silently measures the convention's adherence instead of the
+  construct's population, and reports the difference as the answer.
+- **A confirming instance for `J-dv_lead-0119`'s own first candidate, from one
+  level in.** The rule — *a coincidence constraint must be checked against the
+  stimulus as delivered, never against a generator's declaration* — is obeyed
+  exactly where I was looking (the guard reads `word_at`) and broken one line up
+  (the guard's **entry condition** reads `change_cycles`, a summary of the
+  schedule rather than the schedule). The sharpening: **a check gated on a digest
+  of the object it checks inherits the digest's omissions as blind spots** —
+  getting the rule right in the check does not get it right in the gate, and the
+  gate is the easier of the two to write without noticing it is a reading of a
+  declaration.
+- **No new war story.** `J-dv_lead-0119`'s `Idle_injection` one stands unchanged;
+  this round did not sharpen it.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0067_m03-family-j-enable-capability.md
