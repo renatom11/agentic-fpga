@@ -26,6 +26,13 @@
 ;            (family B completed); N2's first unit ASSERT, all six
 ;            sub-cases, in a NEW FILE test_m03_n.ml (WO-0058 bound 7 paid)
 ;            (two qualified rows + one new row, new file)
+;   WO-0070  L1-L4 ASSERT (10 000-frame REQ-004 line-rate stress, one
+;            expect-test unit over one Bench.run, BAND A ruling -- see this
+;            packet's Return log) and L5 ASSERT (the directed-length set
+;            64..71 plus 1518, both start lanes, through the standing
+;            latency tagger), both in a NEW FILE test_m03_l.ml; L6
+;            STRUCTURAL, landed WO-0038 and not in this round (five ASSERT,
+;            new file)
 ; When a packet adds rows, add its line. When one does not, this comment
 ; is wrong and a reader has no way to tell — this file's own header found
 ; that exact staleness (E and F both missing) before WO-0054's own line was

@@ -1378,3 +1378,228 @@ and **no artefact of this round depends on its answer.**
 spawn. No command run this round moved HEAD, the index or any ref; all git use was
 read-only (`rev-parse`, `status`, `log`, `diff --name-only`, `branch`,
 `ls-remote`).
+
+---
+
+### RETURN — tb_writer, stage 2, spawn `WO-0070-S2/2026-08-09T13:05Z`
+
+HEAD at spawn: `d943d33`. Band A commissioned §§2–13 and §15 as written and
+unamended (dv's ruling above); nothing in §1 was executed. No `git` and no
+`dune` command was run this round (standing bars); `ocamlc -stop-after
+parsing` is the only compiler invoked. No `libs/**`, `top/**` or
+`rtl_snapshots/**` path was opened.
+
+#### (a) Per-row derivation — agree or disagree, §§2–8 cell by cell
+
+**No disagreement found anywhere in §§2–8.** Every cell was re-derived from
+the cited primary sources (the four `.mli` context files, the spec sections
+quoted in the packet, and — where the packet's own arithmetic could be
+cross-checked against a second, independent source — that source), not
+transcribed. Specifics, by subsection:
+
+- **§2.1** (start octet times/lanes/cycles/spacings/gaps). Re-derived from
+  `84 = 8·10 + 4` independently: lane alternation `4i mod 8` (0 even, 4 odd),
+  cycle formulas `1+21k` / `11+21k` by floor-division, spacing alternation
+  10/11 from the successive-cycle differences, gap = 12 from
+  `(s+84)−(s+72)`. Frame 9999 (`k=4999`): start octet time `839 924`, start
+  cycle `104 990`, terminate `839 996` — all reproduced exactly. **Agree.**
+- **§2.2** (run extent). `Arrival.cycles` = `((839 996+12+7)/8)+1` =
+  `105 001+1 = 105 002` reproduced by direct integer division; driven cycles
+  `105 010`; samples `105 010`; words/frame `8` (`⌈60/8⌉`); delivered
+  samples `80 000`; tlast samples `10 000`; delivered octets `600 000`. All
+  five of these figures are *also* independently confirmed by dv's own
+  ruling §1, item 2 (the probe's `cycles=105010` field at `count=10000`, and
+  the same recurrence checked at `count=100` and `count=1000`) — a second,
+  measurement-based confirmation of the same arithmetic I re-derived from
+  the schedule formula alone. **Agree**, doubly.
+- **§2.3** (gaplessness). Definitional; the per-frame span
+  `[s, s+72]` never contains an idle word by construction (`Arrival` only
+  emits idle in `[s+72, s+84)`), so gaplessness holds per frame regardless of
+  the gapped run. **Agree**, no arithmetic to re-check.
+- **§3.1** (h). `octet_time.mli`'s own docstring states the M03 case
+  directly and normatively: *"at M03, `front_offset ~strip_octets:8
+  ~start_lane:0 = 8` and `~start_lane:4 = 12`"* — this is not the packet's
+  derivation, it is the interface's own stated contract, and it matches the
+  packet exactly. **Agree**, confirmed against a second primary source
+  independent of the packet's own prose.
+- **§3.2/§3.3** (ΔC=3, L=16/12). Route 1 (`L = 8ΔC − h`) and Route 2 (octet-
+  time cancellation) both reproduce `L=16` at `h=8`, `L=12` at `h=12`.
+  `octet_time.mli`'s own docstring again states this independently and
+  verbatim: *"SPEC-M03 §7: h = 8/12, L = 16/12, ΔC = 3 at both"*, and its
+  `word_cycles` doc gives the exact worked values `word_cycles
+  ~front_offset:8 16 = Some 3`, `~front_offset:12 12 = Some 3`, which I
+  reproduced by hand from the `(L+h)/8` formula. **Agree**, confirmed
+  against the interface file directly.
+- **§3.4** (length independence). The cancellation argument uses only "word
+  m leaves at c+m+3" and "octet j sits at position j mod 8 of word ⌊j/8⌋",
+  neither mentioning frame length — sound by inspection, and consistent with
+  `octet_time.mli`'s own framing of L/ΔC as module-and-lane properties, never
+  length properties. **Agree.**
+- **§3.5**. A cross-reference to a prior verdict I cannot independently
+  reproduce (it is not one of my provided sources); consistent with
+  everything re-derivable from my own sources. No disagreement raised.
+- **§4.1** items 1–13. Recomputed every arithmetic cell independently:
+  frames presented 10 000 (`arrival.mli`'s own stated default), tkeep 0xFF/
+  0x0F split from `60 mod 8 = 4` → `(1 lsl 4)−1 = 0x0F` — this exact formula
+  and result is *also* the one `test_m03_c.ml`'s own landed
+  `expected_tkeep_for` helper computes and asserts for M03-C1, an
+  independent confirmation from already-landed, CI-green code. Items 1–13
+  otherwise reproduce directly from §2.1/§2.2's own figures. **Agree**,
+  including the cross-check against landed code.
+- **§4.2** (the empty strobe set, five strobes). Re-derived each of the five
+  independently from the `.mli` contracts: REQ-104 closed because
+  `fcs_valid` defaults true and `Arrival.check` verifies the residue;
+  REQ-107/REQ-108 closed because every frame is exactly 64 octets (outside
+  both the runt and oversize classes); REQ-105 closed because `arrival.mli`'s
+  own docstring states error injection is a *separate*, not-yet-attached
+  catalogue (*"the second — error injection — lands with
+  `test/attack_plans/AP-xgmii_rx_64.md`"*), so the base stress schedule
+  injects no `/E/` at all; REQ-110 closed because `s+84 > s+72` at every
+  frame, i.e. every frame's own terminate always precedes the next frame's
+  start. **Agree**, all five independently re-closed.
+- **§4.3**. Definitional pairing statement; consistent with how
+  `split_at_first_tlast` is documented to behave. **Agree.**
+- **§5** (M03-L2). Frame counts 5 000/5 000 recomputed directly from the
+  even/odd index counts over `0..9999` (5000 each by the arithmetic-sequence
+  count, not assumed); octets `5000×60=300 000` each. **Agree.**
+- **§6** (M03-L3). `word_delay = Some 3` (both classes agree), `errors=[]`
+  (both classes' `(L+h)` divisible by 8, both ΔC ≤ ceiling 4), `frames_compared
+  = 10 000` (`5000+5000`), `octets_compared = 600 000` (`10000×60`). Reserve
+  arithmetic `4 − 3 = 1` re-checked. **Agree.**
+- **§7** (M03-L4). REQ-020 field order (MSB-first, octets 14–17) matches
+  `frame.mli`'s own `sequence_of` docstring exactly. The stated overlap with
+  M03-L1 is a reasoning claim, not an arithmetic one, and it holds by
+  inspection: both checks read the same 60 delivered octets, just through
+  different accessors. **Agree.**
+- **§8.1** (the nine-length table). Recomputed every row from
+  `tkeep = (1 lsl ((ℓ−4) mod 8 = 0 ? 8 : (ℓ−4) mod 8)) − 1` (the same formula
+  `test_m03_c.ml` uses): lengths 64–68 give residues 4,5,6,7,0(→8) → 0x0F,
+  0x1F, 0x3F, 0x7F, 0xFF; 69–71 give residues 1,2,3 → 0x01, 0x03, 0x07; 1518
+  gives delivered 1514, residue 2 → 0x03, 190 words. **The 1518 row is also
+  independently confirmed against `test_m03_c.ml`'s own already-landed
+  M03-C3 test**, which I read directly: it drives length 1518 and asserts
+  190 words with a final `tkeep = expected_tkeep_for ~delivered:1514 =
+  0x03` — byte-for-byte the same figures WO-0070 §8.1 states. **Agree**,
+  with a second, landed-code confirmation on the one row that matters most
+  (the boundary length).
+- **§8.2** (what M03-L5 asserts / does not). The scope statement matches
+  what I built: per-run I assert the tagger's `errors=[]`,
+  `frames_compared=1`, and the single class's `front_offset`/`latencies`/
+  `word_delay`, then `assert_monitors_clean` — nothing about tkeep or word
+  count, which stay M03-C1/C3's own rows. **Agree.**
+
+#### (b) The two units as landed
+
+`test/xgmii_rx_64/test_m03_l.ml`, 367 lines, two `%expect_test` units.
+
+**Unit 1** (`M03-L1/L2/L3/L4`, lines 36–264), §9's nine items in order:
+1. `let samples = run bench sched ~drain:8 ()` — stimulus legality is
+   discharged inside this call (no separate `Arrival.check` call written).
+2. Frame count (`Array.length frames = 10 000`), `start_lanes`,
+   `start_spacings` checked against the schedule's own arithmetic.
+3. `tlast_count` over `delivered_samples samples` checked `= 10 000`.
+4. One left-to-right pass, `split_at_first_tlast` on a shrinking
+   `remainder` ref (mirrors Appendix A's Φ5 loop): per frame, 8 words,
+   tkeep 0xFF/0x0F, tlast on word 7 only, `tuser=0`, 60 delivered octets
+   positionally equal to `Arrival.delivered frame`, then
+   `account_clean_frame`. Sequence numbers accumulated (not yet asserted).
+5. `error_pulses samples = []`.
+6. Accumulated sequence read-back compared to `0..9999` (M03-L4).
+7. `Latency.observed`: exactly 2 classes, matched by `front_offset` (not
+   position), each asserted whole — `latencies`, `word_delay`, `frames`,
+   `octets` (M03-L2).
+8. Whole-run `word_delay`, `errors`, `frames_compared`, `octets_compared`
+   (M03-L3).
+9. `assert_monitors_clean bench ~row:"M03-L1/L2/L3/L4"`.
+
+**Unit 2** (`M03-L5`, lines 266–367): 16 runs via `run_directed_lengths`
+(64..71 × 2 lanes) + 2 runs built by hand (`one_frame` at length 1518 × 2
+lanes) = 18 runs, each `account_clean_frame`'d then checked for
+`errors=[]`, `frames_compared=1`, the single class's `front_offset`/
+`latencies`/`word_delay`, then `assert_monitors_clean`.
+
+#### (c) Bar results, L-3 … L-12 (mine to run; L-1/L-2/L-13/L-14/L-15/L-16 are dv's, not attempted)
+
+- **L-3** — `grep -n 'let%expect_test' test_m03_l.ml` → lines 258, 361.
+  **2, as required.**
+- **L-4** — `grep -n '\[%expect' test_m03_l.ml` → lines 263, 366, both
+  `[%expect {||}]` (confirmed by reading both lines). **2, both empty, raw
+  count also 2 — no comment-embedded token inflating it.**
+- **L-5** — `grep -n 'Printf\|print_endline\|print_string\|Stdio\|Arrival\.report' test_m03_l.ml`
+  → **no matches.**
+- **L-6** — `grep -o 'M03-L[0-9]\+'` restricted to the two title strings
+  (lines 259–260, 362): unit 1's title contains `M03-L1,`, `M03-L2,`,
+  `M03-L3,`, `M03-L4:` (each followed by a non-digit); unit 2's title
+  contains `M03-L5:`. **As required.**
+- **L-7** — `grep -n 'Arrival\.stress' test_m03_l.ml` → line 78 only, `let
+  sched = Dv_xgmii.Arrival.stress () in`, no `~count`. **Exactly one, no
+  `~count`.**
+- **L-8** — `grep -n 'Bench\.run\|run bench\|run t '` over the whole file →
+  lines 84 and 348; line 84 is inside unit 1's own range (36–264), line 348
+  is inside unit 2's. **Exactly one inside unit 1's range.**
+- **L-9** — `grep -n 'frames_compared'` → lines 236, 241–242 (unit 1),
+  290–291 (unit 2). **≥ 2, one in each unit.**
+- **L-10** — `grep -n 'account_forwarded_piece\|account_dropped_piece\|account_dropped_frame\|expected_octets'`
+  → **no matches.**
+- **L-11** — `ocamlc -stop-after parsing test/xgmii_rx_64/test_m03_l.ml` →
+  **exit 0.**
+- **L-12** — this journal entry's own Inputs section, read back before
+  filing: no `libs/**`, `top/**`, `rtl_snapshots/**` path listed. **Clean.**
+
+#### (d) BOUNCE conditions checked
+
+BL1 (CI redness), BL13/BL14/BL15/BL16-class dv-only bars are not mine to
+run and are left to dv (flagged, not improvised). Self-checked and clean:
+BL2 (no asserted value disagrees with §§2–8 — see (a), zero disagreements),
+BL3 (`Injection` never referenced — grep confirms), BL4 (exactly one
+`Bench.run`-shaped call in unit 1, exactly one `Arrival.stress` with no
+`~count` — (c) L-7/L-8), BL5 (both `[%expect]` blocks empty — (c) L-4), BL6
+(only the two §11 paths staged — see (e)), BL7 (no `libs/**`/`top/**`/
+`rtl_snapshots/**` opened — confirmed by my own read history), BL8
+(`frames_compared` asserted in both units — (c) L-9), BL9 (the `dune` edit
+is a pure insertion between two existing, unedited lines — no `<`-only
+line, nothing else in `test/xgmii_rx_64/**` touched), BL10 (discharged
+before this stage began — dv's ruling above, pre-existing at spawn), BL11
+(unit 1's title names all four row ids at a trailing-digit boundary — (c)
+L-6), BL12 (not applicable — I did not answer an expression-shaped bar with
+a name-grep; L-5/L-7/L-8/L-10 are the name-grep-shaped bars per §12's own
+design and that is what I ran).
+
+#### (e) Files staged
+
+Exactly §11's two paths, plus this Return-log append and the journal entry:
+- `test/xgmii_rx_64/test_m03_l.ml` (new, 367 lines)
+- `test/xgmii_rx_64/dune` (header comment only — one new line block
+  inserted between the WO-0065 line and the "When a packet adds rows"
+  line; stanza untouched)
+- `agents/handoffs/WO-0070_m03-family-l-line-rate-stress.md` (this Return
+  log append)
+- Journal: `J-tb_writer-0029` in
+  `agents/journals/workers/claude_tb_writer_agent.v02.md` (see (f) for the
+  path note).
+
+#### (f) Inconsistencies found against a frozen artefact — dispatch vs. journal location
+
+The orchestrator's dispatch names my journal as
+`agents/journals/claude_tb_writer_agent.md`. That exact path does not
+exist. PROTOCOL §4 places worker journals at
+`agents/journals/workers/claude_<name>_agent.md`, and this journal was
+rotated to a second volume under ADR-0018/ADR-0017's procedure: the file at
+the literal (non-`workers/`) path was never the real location, and the
+`workers/claude_tb_writer_agent.md` (volume 01, frozen, last entry
+`J-tb_writer-0016`) is superseded by
+`agents/journals/workers/claude_tb_writer_agent.v02.md`, whose own last
+entry is `J-tb_writer-0028` (`WO-0068B`) — making the next id
+`J-tb_writer-0029`, exactly the id the dispatch names. **I read this as a
+clerical shorthand in the dispatch, not a substantive conflict**: the
+numeric id supplied is only reachable by consulting the actual, rotated
+file, so the dispatch's author was clearly reading the real journal state
+and simply abbreviated the path. Per the standing bar ("if this dispatch
+contradicts the packet or any frozen artefact, the artefact wins"), I
+appended to the artefact's real, currently-open location
+(`agents/journals/workers/claude_tb_writer_agent.v02.md`) under id
+`J-tb_writer-0029`, and record the discrepancy here rather than silently
+correcting the dispatch text or, conversely, creating a wrongly-named file
+at the literal path. No other inconsistency was found: the packet's own
+context list, the four `.mli` files, and §11's two-path scope were all
+exactly as stated.

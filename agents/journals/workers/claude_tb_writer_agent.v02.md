@@ -2776,3 +2776,189 @@ complete. **Domain pack**: n/a (LH2-g, general).
 ### Files-in-this-commit
 - test/xgmii_rx_64/test_m03_n.ml
 - agents/handoffs/WO-0068_m03-family-n-completion.md
+
+## [J-tb_writer-0029] 2026-08-09T13:05Z | task:WO-0070 | Family L lands — the 10 000-frame line-rate stress unit (M03-L1/L2/L3/L4) and the nine-length latency-independence unit (M03-L5), Band A, machinery diff empty
+
+### Trigger
+Spawned by the orchestrator, spawn short-id `WO-0070-S2/2026-08-09T13:05Z`,
+HEAD at spawn `d943d33`, to execute stage 2 of
+`agents/handoffs/WO-0070_m03-family-l-line-rate-stress.md` — §§2–13 and §15
+as written and unamended, per that packet's own Return-log ruling (dv_lead,
+`2026-08-09T12:10Z`, `J-dv_lead-0126`): the cost probe measured Band A on
+all three clauses (`T=2.036 s ≤ 30`, `R=8.664 ≤ 15`, the 10 000-frame line
+printed), so no machinery round is authorised and §9's forced single-unit
+structure stands unrelaxed by the run's own cheapness. Stage 1 (the probe)
+was the orchestrator's; I executed nothing in §1.
+
+### Inputs
+`agents/charters/tb_writer.md`; `agents/PROTOCOL.md` §2–6, §10; the full
+work order `agents/handoffs/WO-0070_m03-family-l-line-rate-stress.md`
+(§0–§15 and Appendix A, plus the dv_lead ruling already filed in its
+Return log before this spawn began). Context-list files, read in full:
+`test/xgmii_rx_64/bench.mli`, `test/xgmii/arrival.mli`,
+`test/xgmii/frame.mli`, `test/monitors/octet_time.mli`. For code
+convention only (never for expected values, which come solely from the WO's
+own §§2–8 derivations): `test/xgmii_rx_64/test_m03_a.ml` (the
+`fail`/`String.concat` idiom, the `directed_frame_octets`/`one_frame`
+call shape, `open! Base` / `open Bench`), `test/xgmii_rx_64/test_m03_c.ml`
+(the `expected_tkeep_for` formula and its landed M03-C3 use at length 1518,
+independently confirming WO-0070 §8.1's 1518 row), `test/xgmii_rx_64/test_m03_i.ml`
+(the `Latency.observed` per-class field-matching idiom),
+`test/xgmii_rx_64/test_m03_j.ml`/`test_m03_n.ml` (precedent for
+`Array.to_list (Arrival.delivered frame)` and fully-qualified
+`Arrival.frame` field access), `test/xgmii_rx_64/dune` (the by-packet
+header list and its own "add a line" rule). `.github/workflows/build.yml`
+(confirmed no `dune fmt` gate exists, only `dune runtest` and the
+promotion-diff step). No `libs/**`, `top/**` or `rtl_snapshots/**` path was
+opened at any point this spawn.
+
+### Reasoning
+**Machinery**: bar L-2's Band-A branch requires the diff over
+`bench.ml`/`bench.mli`/`test/xgmii/`/`test/monitors/` to be empty, so I
+wrote zero lines there and built the two rows entirely from the four
+`.mli` contracts already in context.
+
+**Why one file, two units, in that order.** §9 forces one `%expect_test`
+over one 10 000-frame `Bench.run` for L1–L4 and a second for L5, and names
+the exact nine-item assertion order for unit 1. I followed both structural
+constraints as fixed points rather than as defaults to reconsider — the
+packet is explicit that the run's cheapness (2.036 s CPU, confirmed in the
+ruling) does not relax them (BL4, BL11 stand regardless of cost). Inside
+unit 1 I mirrored Appendix A's own Φ5 loop shape (`split_at_first_tlast` on
+a shrinking `remainder` ref, one `Array.iter` over the 10 000 schedule
+frames) rather than inventing a different traversal, both because it is a
+packet-endorsed pattern and because T2 specifically names a re-scan from
+the head as the likeliest way a correct row lands in band C by its own
+construction.
+
+**Verifying rather than transcribing §§2–8.** For every table I recomputed
+the arithmetic myself rather than copying the packet's printed values, and
+where a second primary source existed I used it: `octet_time.mli`'s own
+docstring states SPEC-M03 §7's `h=8/12, L=16/12, ΔC=3` directly and
+normatively, independent of the packet's own derivation prose, and it
+agreed. `test_m03_c.ml`'s already-landed, CI-green `expected_tkeep_for`
+helper and its M03-C3 test (length 1518, 190 words, final tkeep `0x03`)
+reproduce WO-0070 §8.1's own numbers for the boundary length exactly — a
+second, independent confirmation on the one row where a length-dependent
+defect would be easiest to miss. No disagreement turned up anywhere; the
+full cell-by-cell record is in the WO's own Return log (§15(a)) rather than
+repeated here.
+
+**One correctness risk I could not close by type-checking, and how I
+closed it instead.** `ocamlc -stop-after parsing` (the only compiler this
+role may invoke, ADR-0005) verifies syntax, not types — so a field
+projection that resolves to the wrong type, or fails to resolve at all,
+would not be caught before CI. I first wrote `frame.index` (relying on
+type-directed disambiguation from the preceding `(frame : Dv_xgmii.Arrival.frame)`
+annotation, which the codebase does use successfully for
+`Dv_monitors.Octet_time.Latency.observed` at one site in `test_m03_i.ml`)
+and then swept the codebase for precedent on `Arrival.frame` field access
+specifically. Every existing site — a dozen-plus across
+`test_m03_b/e/f/h/j.ml` — fully qualifies (`frame.Dv_xgmii.Arrival.start_octet_time`,
+`f.Dv_xgmii.Arrival.start_lane`, …), with zero counterexamples, unlike the
+`Latency.observed` case where the unqualified form is at least once
+precedented. Rather than trust the annotation to carry the day on a type I
+could not check, I rewrote the one site to
+`frame.Dv_xgmii.Arrival.index`, matching the unanimous precedent. The
+general point (harvested below): when you cannot type-check your own
+output before it ships, a single precedent licensing a shortcut is weaker
+evidence than a unanimous precedent that does not use it, and the second
+should win.
+
+### Actions
+Wrote `test/xgmii_rx_64/test_m03_l.ml` (new, 367 lines): unit 1
+(`M03-L1/L2/L3/L4`) and unit 2 (`M03-L5`), per §9's structure and assertion
+order. Edited `test/xgmii_rx_64/dune`'s header comment only, inserting one
+new by-packet line block between the WO-0065 line and the "When a packet
+adds rows" sentence; the `(library …)` stanza is byte-identical. Appended a
+Return-log entry to `agents/handoffs/WO-0070_m03-family-l-line-rate-stress.md`
+covering §15(a)–(f): the cell-by-cell derivation agreement, the landed
+units and their assertion order, bars L-3…L-12 with raw output, the BOUNCE
+self-check, the files list, and one flagged inconsistency (below).
+
+### Evidence
+`ocamlc -stop-after parsing test/xgmii_rx_64/test_m03_l.ml`: exit 0 (run
+twice, once before and once after the `frame.index` → fully-qualified
+fix). Bar self-checks via Grep, all matching the WO's own pass conditions:
+L-3 (`let%expect_test` × 2, lines 258/361), L-4 (`[%expect` × 2, lines
+263/366, both `{||}`), L-5 (zero matches for
+`Printf|print_endline|print_string|Stdio|Arrival\.report`), L-6 (both unit
+titles carry their four/one row ids at a trailing-digit boundary), L-7
+(`Arrival.stress` × 1, line 78, no `~count`), L-8 (`Bench\.run|run
+bench|run t ` × 1 inside unit 1's own line range, 36–264 — the file's only
+other match, line 348, is inside unit 2), L-9 (`frames_compared` present in
+both units), L-10 (zero matches for
+`account_forwarded_piece|account_dropped_piece|account_dropped_frame|expected_octets`).
+L-1/L-2/L-13/L-14/L-15/L-16 are dv's own instruments (`git diff`,
+`tools/dv_checks.sh`, a CI-run reading) and were not attempted, per the
+packet's own seat assignment.
+
+### Outcome
+DoD met: every one of M03-L1…L5 maps to a named, asserted test (no declared
+gap); the two units and their nine-item order match §9 exactly; every
+worker-seat bar (L-3…L-12) passed by direct instrument; the machinery diff
+is empty (bar L-2's own instrument is dv's, but the diff itself — zero
+lines outside the two §11 paths — is verifiable by inspection and is
+empty); the journal Inputs list carries no RTL path. Handoff: back to
+dv_lead via the orchestrator for review against L-1, L-2, L-13, L-14, L-15,
+L-16 and CI.
+
+### Open-questions
+- **Dispatch path vs. actual journal location, flagged not silently
+  resolved.** The spawn dispatch named my journal as
+  `agents/journals/claude_tb_writer_agent.md`; the real, current file — per
+  PROTOCOL §4's `workers/` convention and this journal's own ADR-0017/
+  ADR-0018 rotation to volume 02 — is
+  `agents/journals/workers/claude_tb_writer_agent.v02.md`, whose last entry
+  before this one is `J-tb_writer-0028`. The dispatch's numeric next-id
+  (0029) only reconciles against the rotated file, so I read this as
+  shorthand rather than a substantive conflict and filed here; recorded in
+  the WO's own Return log §15(f) as well, per the standing "artefact wins,
+  state the disagreement" rule.
+- No spec ambiguity: every observable this round asserts is fully
+  determined by the four `.mli` context files and the WO's own §§2–8.
+- No RTL leak: `libs/**`, `top/**`, `rtl_snapshots/**` never opened.
+- No licensing concern; nothing here touches `verilog-ethernet` or
+  Essenceia material.
+- No effort anomaly: the round tracked to its own scope (one new file, one
+  header-comment edit), no E6 flag.
+
+**Harvest note (PROTOCOL §7 / ADR-0018), this round's own span**:
+`J-tb_writer-0029 .. J-tb_writer-0029` (tiles with `0028`'s own
+`0028..0028` span — no gap). **One candidate, LH2-g (general).** *Rule*:
+when a syntax checker can confirm a construct parses but not that it
+type-resolves, and two different precedents in the existing body of work
+disagree on whether a shortcut (an unqualified reference relying on
+context-carried type information) is safe to use at a given call shape,
+weight the precedents by their unanimity rather than by their mere
+existence — a single instance of a shortcut succeeding is not evidence it
+is safe at a new call site, while a large, exception-free sample using the
+fully-explicit form at structurally similar call sites is evidence the
+shortcut's success was situational. *Observable*: two call shapes in the
+same body of work are outwardly similar (both are "a labelled type
+annotation on a function parameter, followed by unqualified field
+access on that parameter inside the function"), yet one has one
+precedent for the terse form and the other has none across a dozen or
+more sites — the terse form is not obviously wrong at either shape from
+inspection alone, and only a census of the existing precedent (not a
+single example) distinguishes them. *LH1*: taught by this round's own
+incident — writing `frame.index` on a type-annotated parameter, matching
+one working example elsewhere in the same codebase for a structurally
+similar record type, then finding zero examples of the same terse form
+for the record type actually in use here despite abundant call sites,
+and reverting to the fully-qualified form before it could reach a
+compiler that cannot check it. *LH2-g*: no project noun, no domain noun —
+"syntax checker," "type-resolve," "precedent," "call shape," "shortcut"
+are the vocabulary; a stranger to any statically-typed codebase with a
+parse-only pre-check could apply this. *LH3*: without it, a single
+successful precedent is read as blanket permission for a syntactic
+shortcut, and the shortcut ships at a call site the precedent never
+actually covered, deferred entirely to whatever check runs after the
+work leaves the author's hands — which, when that check is type-blind,
+may be the first human or CI reader, several steps downstream of where
+the mistake was cheap to catch. **Domain pack**: n/a (LH2-g, general).
+
+### Files-in-this-commit
+- test/xgmii_rx_64/test_m03_l.ml
+- test/xgmii_rx_64/dune
+- agents/handoffs/WO-0070_m03-family-l-line-rate-stress.md
