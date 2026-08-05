@@ -58,7 +58,12 @@ type t
     attach the three standing monitors described above. From cycle 0 the
     enable is {!run}'s own [?enable] argument: its default, {!Enable.high},
     is 1 for the whole run and is byte-for-byte what every unit landed
-    before WO-0067 was written against. *)
+    before WO-0067 was written against. [clear] itself is driven at 1 through
+    this same reset cycle and released immediately after — REQ-009's own
+    cycle, likewise OUTSIDE every schedule {!Clear.t} governs (WO-0072 §1.4):
+    from cycle 0 the clear state is {!run}'s own [?clear] argument, whose
+    default {!Clear.never} is 0 for the whole run and is byte-for-byte what
+    every unit landed before WO-0072 was written against. *)
 val create : unit -> t
 
 val protocol : t -> Dv_monitors.Protocol_monitor.t
@@ -117,6 +122,64 @@ module Enable : sig
       chosen on the five-call-sites-hand-computing-an-off-by-one ground
       alone (`WO-0067` §1.3(d)'s (R-b)); the [report] half of that argument
       was falsified by the same packet's own §5.5 and is withdrawn here. *)
+  val report : t -> string
+end
+
+(** A [clear] schedule: which cycles of a run drive REQ-009's synchronous
+    clear. The reset cycle {!create} drives is OUTSIDE every schedule and is
+    not governed by this type — see {!create} (WO-0072 §1.4).
+
+    {2 Why this shape and not {!Enable.t}'s (WO-0072 §1.3, §2)}
+
+    A literal transplant of {!Enable}'s [changes ~initial [(cycle, value)]]
+    shape breaks twice at this port. First, [~initial] expresses a cycle-0
+    transition no author declares, and for [clear] the value in force before
+    cycle 0 is 1 ({!create} drives it through the reset cycle) — so [never],
+    the default, would itself carry a real 1 -> 0 boundary transition and a
+    guard entered on a non-empty transition set would enter on EVERY landed
+    run in this suite (BOUNCE BK4). Second, the guard's subject here is a
+    HIGH CYCLE coinciding with a start character, not a CHANGE coinciding
+    with one — [cfg_rx_enable]'s guard fires on a change because §6.3 item 7
+    leaves a same-cycle change undetermined; this port's guard must not fire
+    on the release cycle, which REQ-009's last sentence blesses in terms, and
+    a transition-set guard would refuse M03-K2's own commissioned stimulus
+    (BOUNCE BK5). The reusable form: a guard's entry condition must project
+    the guard's OWN subject, and that subject is re-derived per port — two
+    ports of the same module can share a schedule's shape and have different
+    subjects, different reset polarities and opposite verdicts on the same
+    coincidence. *)
+module Clear : sig
+  type t
+
+  (** 0 for the whole run. The DEFAULT, and byte-for-byte the behaviour every
+      unit landed before WO-0072 was written against. *)
+  val never : t
+
+  (** [window ~first ~last] — 1 on cycles [first] .. [last] INCLUSIVE, 0 on
+      every other cycle. Raises unless [0 <= first] and [first <= last],
+      because a window whose end precedes its start is a window its author
+      did not mean. [first = 0] is legal and means "extend the reset":
+      {!create}'s own reset cycle already drove [clear] = 1, so a window
+      opening at cycle 0 is a longer reset and nothing else. *)
+  val window : first:int -> last:int -> t
+
+  (** The value driven on [cycle]. Total, like [Arrival.word_at]. *)
+  val value_at : t -> cycle:int -> bool
+
+  (** The cycles at which the driven value is 1, ascending; [[]] for
+      {!never}. This is the SUBJECT of {!run}'s pre-scan guard, and {!run}
+      enters that guard on this set being non-empty — a projection of the
+      subject, never a separate predicate that reconstructs it (WO-0068
+      §7.3's rule, applied at the design rather than at a repair). *)
+  val high_cycles : t -> int list
+
+  (** [not (List.is_empty (high_cycles t))] — the guard's entry condition,
+      named so the condition and its subject are the same object. *)
+  val is_ever_high : t -> bool
+
+  (** A deterministic diagnostic rendering, for failure messages. NOT for an
+      expect block — [WO-0067] §5.5's rule still governs and this docstring
+      does not withdraw it. *)
   val report : t -> string
 end
 
@@ -182,6 +245,15 @@ type sample =
           cycle, never the schedule's memory of the argument passed in
           (M03-I2 member (iii)'s "construction and landing checked at both
           sites", applied to this port a second time). *)
+  ; clear : bool
+      (** [clear] as driven on [cycle] (WO-0072 §1.2) — the choke-point
+          reading of whatever {!run}'s own [?clear] resolved to for this
+          cycle, never the schedule's memory of the argument passed in
+          (M03-I2 member (iii)'s "construction and landing checked at both
+          sites", applied to this port a third time). Both K rows assert
+          "this cycle was a clear cycle and the design was silent on it";
+          without this field a row whose window landed one cycle off has no
+          instrument that can say so (WO-0072 §1.2). *)
   ; out : Dv_monitors.Stream_word.t
   ; after_out : Dv_monitors.Stream_word.t
   ; errors_high : string list
@@ -203,12 +275,22 @@ type sample =
     skipped drive can be caught before anything downstream treats the result
     as a statement about the design), then (a) turned into a {!sample}, (b)
     fed to the standing {!Protocol_monitor} and (c) fed to the standing
-    {!Strobe_monitor} via [sample ~cycle ~high:errors_high] — [cycle] is the
-    sample's only cycle label (RV-0038-R6 / R6-1: the [Before] view read into
-    {!sample}'s [out] already belongs to this same cycle, so there is no
-    second, later cycle for a monitor call to name). C-23's counting
-    convention requires every cycle, including ones where nothing is high,
-    so [run] is the only place that call is allowed to happen.
+    {!Strobe_monitor} via [sample ~cycle ~high:errors_high], then (d), when
+    the driven [clear] is 1, fed to the standing {!Protocol_monitor}'s
+    [on_clear] (WO-0072 §4) — [cycle] is the sample's only cycle label
+    (RV-0038-R6 / R6-1: the [Before] view read into {!sample}'s [out] already
+    belongs to this same cycle, so there is no second, later cycle for a
+    monitor call to name). C-23's counting convention requires every cycle,
+    including ones where nothing is high, so [run] is the only place that
+    call is allowed to happen. [on_clear]'s own call goes LAST, after both
+    (d) follows (b) and (c): a run with {!Clear.never} makes zero [on_clear]
+    calls, so the landed call sequence stays byte-identical rather than
+    merely equivalent, and reading [observe] before [on_clear] is what lets a
+    phantom [tlast] on a clear cycle be caught twice, independently, rather
+    than masked by [observe] having already zeroed the frame-in-progress
+    count [on_clear] would otherwise find (WO-0072 §4.2). A row never calls
+    [on_clear] itself — {!bench.mli}'s own "wire the calls where the schedule
+    is in scope" rule, one port over.
 
     [?word_at] overrides the word driven on a single cycle (identity is
     [Arrival.word_at sched]): M03-B1 uses it to substitute a non-standard
@@ -227,6 +309,14 @@ type sample =
     the same cycle it drives the word, and the value driven is recorded in
     {!sample}'s [enable] field, never left to a caller's memory of the
     schedule it built.
+
+    [?clear] is the per-cycle synchronous-clear schedule (WO-0072, REQ-009),
+    defaulting to {!Clear.never} — 0 for the whole run, byte-for-byte what
+    every unit landed before WO-0072 drove. It reaches the design through the
+    SAME choke point as the XGMII word and [cfg_rx_enable]: {!sample_cycle}
+    drives [clear] on the same cycle it drives the word, and the value driven
+    is recorded in {!sample}'s [clear] field, never left to a caller's memory
+    of the schedule it built (R-c, WO-0072 §1.1).
 
     {2 The M03-J4 guard}
 
@@ -257,13 +347,62 @@ type sample =
     did before WO-0067 and can raise no exception this guard introduces. A
     schedule whose value at cycle 0 is [false] now enters the pre-scan
     through this same condition, because its boundary transition with the
-    reset cycle is one of the cycles [change_cycles] reports (WO-0068 §7). *)
+    reset cycle is one of the cycles [change_cycles] reports (WO-0068 §7).
+
+    {2 The K guard (WO-0072 §3) — refuse-to-drive, not record-and-apply}
+
+    When, and only when, [Clear.is_ever_high clear], [run] walks cycles
+    [0 .. total - 1] BEFORE driving any of them, and for every cycle [c] at
+    which [Clear.value_at clear ~cycle:c] is [true] it evaluates the word
+    this call would actually drive on [c] — through this same [word_at], and
+    NEVER through [Arrival.start_cycles]: an injected start character is
+    absent from [Arrival] entirely (§3.3, BOUNCE BK6) — and tests
+    [Dv_xgmii.Xgmii_word.start_lane]. Every cycle at which that returns
+    [Some lane] is collected; if the collection is non-empty, [run]
+    [failwith]s naming every such cycle and its start lane, citing REQ-009,
+    SPEC-M03 §6.2's [Idle] row and §7's reset bullet.
+
+    This is not prudence, it mechanises a genuine ambiguity: SPEC-M03 §6.2's
+    [Idle] row admits a [/S/] with no [clear] = 0 qualifier, while §7's reset
+    bullet holds the state in [Idle] while [clear] = 1 — the two cannot both
+    be applied literally to a cycle carrying both a [/S/] and [clear] = 1,
+    and neither reading is asserted here because there is no determinate
+    answer to assert against (unlike {!Dv_xgmii.Idle_injection}'s own
+    illegal-placement guard, whose illegal stimulus produces a DETERMINATE
+    wrong answer a bench can assert via [errors] — REFUSE-TO-DRIVE is this
+    guard's own inverse of that shape, and for the reason stated, not by
+    convention).
+
+    The guard's SUBJECT is [Clear.high_cycles] — a high cycle, never a
+    transition — which is why {!Enable}'s own transition-set guard cannot be
+    transplanted here (WO-0072 §2): [clear]'s reset-cycle polarity is
+    inverted against [cfg_rx_enable]'s, so [Clear.never] would report a
+    boundary transition under a copied guard and every landed run would enter
+    a walk it does not today (BOUNCE BK4); and a transition-set guard fires
+    on M03-K2's own release-cycle stimulus, which REQ-009's last sentence
+    blesses in terms and which the guard above therefore must NOT refuse
+    (BOUNCE BK5) — the guard tests HIGH CYCLES, and the release cycle is
+    never one. Three cases this guard must not refuse, named so they are not
+    rediscovered: a clear window whose release cycle carries a start
+    character (M03-K2's own stimulus); a clear window opening at cycle 0
+    (an ordinary longer reset — {!create}'s own reset cycle already drove
+    [clear] = 1); and a terminate or error character on a clear cycle (§6.2's
+    [Idle] row is unambiguous for [/T/] and [/E/] — the guard tests
+    [start_lane] and nothing else).
+
+    [Clear.never]'s empty [high_cycles] means a [?clear]-omitted call enters
+    none of this: it evaluates [word_at] exactly as many times as it did
+    before WO-0072 and can raise no exception this guard introduces. This
+    walk sits after the M03-J4 guard above and before the first
+    [sample_cycle] — the two pre-scans are independent and neither reads the
+    other's schedule. *)
 val run
   :  t
   -> Dv_xgmii.Arrival.t
   -> drain:int
   -> ?word_at:(cycle:int -> Dv_xgmii.Xgmii_word.t)
   -> ?enable:Enable.t
+  -> ?clear:Clear.t
   -> unit
   -> sample list
 
@@ -430,6 +569,37 @@ val account_forwarded_piece
     IS read. An honestly-derived array costs nothing beyond honesty itself. *)
 val account_dropped_piece : t -> start_ot:int -> received:int -> strobe:string -> unit
 
+(** Standing obligations 2 and 3 for a frame the module ACCEPTED and then
+    ABANDONED under REQ-009's synchronous clear: presented, partially emitted
+    or not emitted at all, with no output [tlast] and — REQ-009's own
+    explicit licence, the one place in SPEC-M03 where a frame vanishes
+    without a report — no strobe (WO-0072 §8.3).
+
+    Conservation: [frame_in_exempt ~reason:"clear (REQ-009)"], NEVER
+    [frame_in] and never [discarded]. The §0.6 equation has no term for such
+    a frame: counting it as presented reports the silent-discard hole
+    REQ-009 disclaims, and attributing it to a strobe requires a strobe that
+    specification forbids ({!Dv_monitors.Conservation_monitor}'s own
+    deviation 3, WO-0072 §10.1).
+
+    Latency: [frame_in] fed [Arrival.in_times frame], then — on [delivered] —
+    either [frame_out ~expected_octets:delivered] against [samples]'s own
+    delivered octet times, or, at [delivered = 0], [frame_dropped], which
+    pops the pending input frame without a comparison because there is no
+    output frame to compare.
+
+    [samples] must be THIS frame's own delivered words and no others, and
+    [delivered] must be a value the caller has already ASSERTED rather than
+    observed — the branch above is selected by that number, so a number
+    taken from the run it is meant to judge would let a wrong observation
+    choose its own accounting. [delivered < 0] raises. *)
+val account_cleared_frame
+  :  t
+  -> Dv_xgmii.Arrival.frame
+  -> delivered:int
+  -> sample list
+  -> unit
+
 (** [split_at_first_tlast samples] returns the prefix of [samples] through and
     including the first sample whose [tlast] is 1, paired with the
     remainder — extensionally, and only extensionally: whether the first
@@ -449,6 +619,13 @@ val account_dropped_piece : t -> start_ot:int -> received:int -> strobe:string -
     earlier [tlast] to stop at. A guard written to prove the silent first
     frame's absence by inspecting this function's own first group therefore
     convicts the frame that is actually present.
+
+    The reading also fails where the first frame delivers words and never
+    closes: [clear] asserted mid-frame (REQ-009) truncates with no [tlast],
+    so the first group returned is the two frames' words concatenated and the
+    second is empty, and both groups being non-empty is not the guard a
+    caller needs. Where a frame may deliver without closing, partition by an
+    asserted cycle set, not by [tlast] (WO-0072 §10.2).
 
     {2 The incident (FINDING B-1, `RV-0062-VERDICT` §2)}
 

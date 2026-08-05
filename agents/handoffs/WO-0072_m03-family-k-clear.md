@@ -1430,3 +1430,302 @@ K1 or K2 will pass. The verdict is CI's and the adjudication is mine.
 ## Return / verdict log
 
 *(empty at issue — participants append here, PROTOCOL §3)*
+
+---
+
+### RETURN — tb_writer, spawn `WO-0072-B/2026-08-09T18:20Z`
+
+#### 1. What I built, against §13.2's six
+
+1. `test/xgmii_rx_64/bench.mli` — the `Clear` module signature (`never`,
+   `window`, `value_at`, `high_cycles`, `is_ever_high`, `report`), placed
+   after `Enable`'s `end`; `run`'s `?clear:Clear.t` argument (after
+   `?enable`, before the terminal `unit`) with a new "The K guard" doc
+   section; `sample`'s `clear` field (after `enable`); the on-clear sentence
+   folded into the (a)/(b)/(c)/(d) list in `run`'s own docstring;
+   `account_cleared_frame`'s declaration (placed after
+   `account_dropped_piece`, before `split_at_first_tlast`); §10.2's added
+   paragraph at `split_at_first_tlast`'s docstring; `create`'s docstring
+   gains one clause naming `clear`'s reset cycle as outside every `Clear.t`
+   schedule.
+2. `test/xgmii_rx_64/bench.ml` — the `Clear` module (implemented as a plain
+   `{ first; last }` record, `last < first` encoding `never`); `sample`'s
+   `clear` field; `sample_cycle` gains a `~clear` parameter, drives
+   `i.clear` at the same choke point as `i.cfg_rx_enable`, and feeds
+   `Protocol_monitor.on_clear` last, guarded on the driven boolean;
+   `run` gains `?clear`, resolves its default to `Clear.never`, and runs
+   the K guard (§3) after the M03-J4 guard and before the drive loop;
+   `account_cleared_frame`'s implementation (placed after
+   `account_dropped_piece`, before `split_at_first_tlast`).
+3. `test/xgmii_rx_64/test_m03_k.ml` — **NEW**. Two `%expect_test` units:
+   M03-K1 (`run_k1`, plus its mandatory control run) and M03-K2 (`run_k2`,
+   plus its mandatory control run). One shared helper,
+   `assert_delivered_words`, factors the per-word cycle/tkeep/tlast/tuser
+   check both rows' own clean 8-word frames need (K1's bad-FCS frame in
+   both its runs, K2's frame B in both its runs).
+4. `test/xgmii_rx_64/test_m03_structural.ml` — one appended unit (§11): four
+   pure facts about `Bench.Clear` (`high_cycles never = []`,
+   `is_ever_high never = false`, `high_cycles (window ~first:6 ~last:10) =
+   [6;7;8;9;10]`, `value_at` at cycles 5/6/10/11), empty `[%expect {||}]`,
+   title carries no `M03-` id. Nothing above it in the file moved.
+5. `test/xgmii_rx_64/dune` — one comment block appended to the standing
+   per-packet header list, naming K1/K2 ASSERT, K3 NO-ASSERT and not in
+   this round, new file `test_m03_k.ml`. The stanza itself is untouched.
+6. `test/monitors/conservation_monitor.mli` — one paragraph appended inside
+   deviation 3, extending the stated ground to the mid-flight-abandonment
+   case (§10.1, FINDING K-1). Comment-only; nothing else in `test/monitors/`
+   moved.
+
+Plus this Return log and my journal entry `J-tb_writer-0031`.
+
+#### 2. Worker bars K-8 … K-17
+
+**K-8** — Read `test_m03_k.ml` back in full against §7.2 and §8.2. Every
+constant in both tables appears as a computed or asserted value at the site
+the packet places it (details in item 3 below). No disagreement found on
+any of the 25 (§7.2) or 30 (§8.2) numbered cells I could map to an
+assertion. Two cells — §7.2 item 24 and §8.2 item 28
+(`Latency.observed`'s per-class front-offset/L breakdown) — are **not**
+directly asserted in either row, because both rows' own ordered assertion
+lists (§7.3 step 8: "Item 22, item 23's five counters, item 25"; §8.4 step
+10: "Items 25, 26, 27's five counters, item 29") skip from the item before
+to `Latency.word_delay`, omitting an explicit check of item 24/28 itself. I
+followed the ordered list literally rather than adding an assertion it does
+not call for — see Open-question 1.
+
+**K-9** — file search for `let%expect_test` across `test/xgmii_rx_64/`, per
+file, raw counts:
+```
+test_m03_a.ml: 3    test_m03_b.ml: 7    test_m03_c.ml: 4
+test_m03_d.ml: 3    test_m03_e.ml: 4    test_m03_f.ml: 4
+test_m03_g.ml: 7    test_m03_h.ml: 4    test_m03_i.ml: 5
+test_m03_j.ml: 3    test_m03_k.ml: 2    test_m03_l.ml: 2
+test_m03_n.ml: 8    test_m03_structural.ml: 3
+```
+`test_m03_k.ml` = 2, `test_m03_structural.ml` = 3 (was 2, +1); every other
+twelve file's count is unchanged from the base list §13.1 derives (total
+59, up from 56 at base — matches +2 (K file) +1 (structural)).
+
+**K-10** — file search for `[%expect` across `test/xgmii_rx_64/`, then read
+every match. Raw counts per file (this pattern also matches the substring
+`[%expect_test]`, which is the artefact `RV-0068B-VERDICT` §3 names):
+```
+test_m03_a.ml: 3    test_m03_b.ml: 7    test_m03_c.ml: 4
+test_m03_d.ml: 3    test_m03_e.ml: 4    test_m03_f.ml: 4
+test_m03_g.ml: 7    test_m03_h.ml: 4    test_m03_i.ml: 5
+test_m03_j.ml: 3    test_m03_k.ml: 2    test_m03_l.ml: 2
+test_m03_n.ml: 8    test_m03_structural.ml: 4  <- includes the artefact
+```
+The `test_m03_structural.ml` figure of 4 against `let%expect_test`'s 3 is
+exactly the artefact: line 22 of that file is the pre-existing sentence
+"These bindings are never called from any `[%expect_test]` — they are
+witnessed by compiling at all", inside a doc comment I did not touch. Every
+block in the three new units this round adds — both of `test_m03_k.ml`'s
+and the one appended to `test_m03_structural.ml` — is `{||}`, verified by
+reading each. **Finding, not resolved**: `test_m03_i.ml:1796` carries a
+pre-existing, non-empty, promoted `[%expect {| … |}]` block (M03-I4),
+predating this round entirely and untouched by it. Bar K-10's literal pass
+condition — "zero non-empty blocks anywhere in the directory" — does not
+hold against the base tree because of it. I read the bar as "zero non-empty
+blocks ADDED this round" and satisfied that reading; see Open-question 2.
+
+**K-11** — file search for `clear` / `i\.clear` across
+`test/xgmii_rx_64/*.ml`, every hit read. Every write of `i.clear` in the
+directory is at exactly two sites (by function, as the bar's own wording
+groups them):
+```
+bench.ml:65:  i.clear := Bits.vdd;
+bench.ml:68:  i.clear := Bits.gnd;
+```
+— both inside `Bench.create`'s reset drive (pre-existing, unchanged by this
+round — `create`'s own body was already asserting then releasing `clear`
+through the reset cycle before WO-0072), and
+```
+bench.ml:267:  i.clear := if clear then Bits.vdd else Bits.gnd;
+```
+— inside `Bench.sample_cycle`'s choke point (this round's own addition).
+Every other `.clear` hit in `test/xgmii_rx_64/*.ml` is a *read* of
+`s.clear` in `test_m03_k.ml` (T3's own instrument, five hits: lines 256,
+264, 504, 512, and the comment naming it at 252) — no other write site
+exists.
+
+**K-12** — `run`'s pre-scan entry condition and `Clear.is_ever_high`, read
+back side by side and quoted verbatim:
+```
+bench.ml:387:  (match Clear.is_ever_high clear with
+bench.ml:186:  let is_ever_high t = not (List.is_empty (high_cycles t))
+```
+The entry condition is `Clear.is_ever_high clear`, which is exactly the
+projection at line 186 — `not (List.is_empty (high_cycles t))` — and
+contains no second predicate reconstructing the high set.
+
+**K-13** — `sample_cycle`'s body, read back; the three monitor calls in
+order plus the return record showing `clear` threaded, quoted verbatim:
+```
+bench.ml:300:  Protocol_monitor.observe t.protocol ~cycle out;
+bench.ml:301:  Strobe_monitor.sample t.strobes ~cycle ~high:errors_high;
+bench.ml:308:  if clear then Protocol_monitor.on_clear t.protocol ~cycle;
+bench.ml:309:  { cycle; in_word; enable; clear; out; after_out; errors_high }
+```
+Order is `observe`, `sample`, `on_clear`; `on_clear` is guarded on the
+driven `clear` boolean (line 308's own `if clear then …`), never called
+unconditionally.
+
+**K-14** — the two files §10 authorises, read back. Both edits sit entirely
+inside `(** … *)` comment blocks:
+`conservation_monitor.mli` lines 46–53 (the new deviation-3 paragraph) and
+`bench.mli` lines 623–628 (the new `split_at_first_tlast` paragraph). No
+`val`, `type`, `let` or expression appears on any changed line in either
+file — confirmed by reading both ranges back after the edit.
+
+**K-15** — `ocamlc -stop-after parsing` on the four touched/new files, run
+twice (once mid-round, once after the journal write, to catch any
+accidental disturbance from the later edit):
+```
+$ ocamlc -stop-after parsing test/xgmii_rx_64/bench.mli   ; EXIT:0
+$ ocamlc -stop-after parsing test/xgmii_rx_64/bench.ml     ; EXIT:0
+$ ocamlc -stop-after parsing test/xgmii_rx_64/test_m03_k.ml            ; EXIT:0
+$ ocamlc -stop-after parsing test/xgmii_rx_64/test_m03_structural.ml   ; EXIT:0
+```
+Parse is not the adjudicator — this establishes syntax only, nothing about
+types, and K-2 (the CI `build` run) is dv's own bar, not mine.
+
+**K-16** — the three new unit titles, read back in full, and the `=` line
+after each:
+- `test_m03_k.ml:361-365`: `"M03-K1: clear held for five cycles with no
+  frame in flight -- the bad-FCS strobe on the preceding cycle does not
+  survive into the window, and the window's five cycles plus the release
+  cycle are silent; a control run at the default schedule shows the
+  delivered stream is unchanged (REQ-009)"`, `=` alone on line 366. Contains
+  `M03-K1` and no other `M03-` id.
+- `test_m03_k.ml:627-632`: `"M03-K2: clear asserted mid-frame and released
+  onto the next frame's start character -- the in-flight frame vanishes
+  with two words delivered, no tlast and no strobe, frame_in_exempt
+  accounts it (C-2), and the frame starting on the release cycle is
+  received correctly and completely; a control run at the default schedule
+  proves the schedule carries two well-formed frames (REQ-009)"`, `=` alone
+  on line 633. Contains `M03-K2` and no other `M03-` id.
+- `test_m03_structural.ml:111-112`: `"Bench.Clear: the default schedule's
+  high set is empty, and window is inclusive at both ends (WO-0072 section
+  11)"`, `=` alone on line 113. Contains no `M03-` id at all.
+
+**K-17** — my own journal `Inputs` section, read back: lists
+`docs/specs/modules/xgmii_rx_64.md`, `docs/specs/requirements.md`,
+`test/attack_plans/AP-xgmii_rx_64.md`, `test/xgmii_rx_64/bench.mli`,
+`test/xgmii/{arrival,frame,xgmii_word}.mli`,
+`test/monitors/{conservation,protocol,strobe}_monitor.mli`, `octet_time.mli`,
+`stream_word.mli`, `test/xgmii_rx_64/{test_m03_d,test_m03_j,
+test_m03_structural}.ml` (convention only), `test/xgmii_rx_64/dune`, and this
+work order. No `libs/**`, `top/**` or `rtl_snapshots/**` path appears.
+
+#### 3. Constants checked against §7.2 and §8.2
+
+**§7.2 (M03-K1), items 1–23, 25** — all checked against the landed source
+and all agree with the packet: frame count 1; `start_octet_time` 8;
+`start_lane` 0; `start_cycle` 1; `terminate_octet_time` 80; terminate cycle
+10; `Arrival.cycles` 13; cycles driven 21; sample count 21 (both implicit in
+`~drain:8` and unchecked as a bare count, but the underlying `total` these
+derive from was independently confirmed via `Arrival.cycles` = 13); 60
+delivered octets; 8 output words; delivered cycles `[4;5;6;7;8;9;10;11]`;
+tlast cycle 11; tkeep 0xFF ×7 then 0x0F; tuser 1 on tlast; `error_pulses`
+exactly `[(11, "error_bad_fcs")]`; `Strobe_monitor.expect` event (cycle 11,
+not_before 10, not_after 13, frame 0); delivered octets =
+`Frame.delivered bad`; clear window 12..16; release cycle 17; `s.clear`
+predicate `12 <= cycle <= 16`; `cleared_mid_frame` 0; conservation five
+counters (1/1/0/0/0); `Latency.word_delay` `Some 3`. **Item 24
+(`Latency.observed`) not directly asserted — see item 1/Open-question 1.**
+No disagreement on any checked cell.
+
+**§8.2 (M03-K2), items 1–27, 29** — all checked and all agree: frames in
+schedule 2; A start_octet_time/lane/cycle 8/0/1; A terminate_octet_time/
+cycle 80/10; B start_octet_time/lane/cycle 92/4/11 (the number the whole
+row rests on, checked and separately flagged); B terminate_octet_time/cycle
+164/20; `start_spacings` `[10]`; `gaps` `[12]`; `Arrival.cycles` 23; clear
+window 6..10; release cycle 11 (= B's own start cycle); A's would-be words
+at `[4;5;6;7;8;9;10;11]`; A's delivered words WITH clear = exactly 2, at
+cycles 4 and 5; A's delivered tkeep 0xFF both; A's delivered octet count
+16; A's delivered octets = first 16 of `Frame.delivered a`; A's tlast none
+anywhere; B's delivered words 8, at cycles 14..21; B's tlast cycle/tkeep/
+tuser 21/0x0F/0; B's delivered octets = `Frame.delivered b`, 60 octets;
+`sequence_of` of B's delivered octets 1; the run's complete delivered-cycle
+list `[4;5;14;15;16;17;18;19;20;21]`; `error_pulses` `[]`; `s.clear`
+predicate `6 <= cycle <= 10`; `cleared_mid_frame` 1; `frames`/`words`/
+`aborts` 1/10/0; conservation five counters (1/1/1/0/0);
+`Latency.word_delay` `Some 3`. **Item 28 (`Latency.observed`) not directly
+asserted — see item 1/Open-question 1.**
+
+**No disagreement with any number in §6, §7.2 or §8.2 was found.** Every
+cell I could independently re-derive from `Arrival`'s own arithmetic (§6's
+own layout: `ifg=12`, `first_start=8`) agreed with the packet's printed
+value.
+
+#### 4. The three quoted code readings (K-12, K-13)
+
+Reproduced verbatim from item 2 above:
+```
+bench.ml:387:  (match Clear.is_ever_high clear with
+bench.ml:186:  let is_ever_high t = not (List.is_empty (high_cycles t))
+bench.ml:300:  Protocol_monitor.observe t.protocol ~cycle out;
+bench.ml:301:  Strobe_monitor.sample t.strobes ~cycle ~high:errors_high;
+bench.ml:308:  if clear then Protocol_monitor.on_clear t.protocol ~cycle;
+```
+
+#### 5. Files list and journal entry id
+
+From my own write record, §13.2 as authority (§17.3):
+- `test/xgmii_rx_64/bench.mli`
+- `test/xgmii_rx_64/bench.ml`
+- `test/xgmii_rx_64/test_m03_k.ml` (new)
+- `test/xgmii_rx_64/test_m03_structural.ml`
+- `test/xgmii_rx_64/dune`
+- `test/monitors/conservation_monitor.mli`
+- this packet's Return log (`agents/handoffs/WO-0072_m03-family-k-clear.md`)
+
+Journal entry: `J-tb_writer-0031`, appended to
+`agents/journals/workers/claude_tb_writer_agent.v02.md`, `task:WO-0072`,
+Trigger carries spawn short-id `WO-0072-B/2026-08-09T18:20Z`.
+
+#### 6. Instruments attempted outside §17.1's list
+
+None. Every instrument used was file read/search (Read, Grep, Glob) within
+the six staged paths plus this packet plus my journal, or
+`ocamlc -stop-after parsing` on the four `.ml`/`.mli` files I wrote. No
+`git`, no `dune`, no network call, no other shell command was attempted at
+any point — nothing to journal under the durability clause (§17.2) because
+nothing was refused. (One tool-level hiccup occurred mid-round — the Bash
+tool itself returned "temporarily unavailable" twice for unrelated
+environment reasons before the `ocamlc` calls succeeded; this is an
+environment transient, not a refused-instrument event, and both retries
+used the same permitted `ocamlc -stop-after parsing` command with no
+substitution.)
+
+#### 7. What I could not execute as written
+
+Nothing in this packet was unexecutable as written. Two items are recorded
+as open questions rather than defects because I could not tell, from the
+packet's own text, whether a literal reading (item 24/28 unasserted; K-10's
+"zero non-empty blocks" against a tree that already has one) was intended
+or an oversight — see Open-questions below, which restates them for the
+record.
+
+#### Open questions for dv_lead
+
+1. **§7.2 item 24 / §8.2 item 28 (`Latency.observed`'s per-class
+   front-offset/L breakdown).** Both rows' own ordered assertion lists
+   (§7.3 step 8, §8.4 step 10) skip this item and go straight to
+   `Latency.word_delay`. I did not add an explicit `Latency.observed` check
+   in either row, reading the omission as deliberate (a "carried" figure,
+   in the sense §7.3's own note on M03-D1 uses the word). Please confirm
+   whether that reading is correct or whether a future round should add the
+   explicit check.
+2. **Bar K-10's literal pass condition** ("zero non-empty blocks anywhere
+   in the directory") does not hold against the base tree —
+   `test_m03_i.ml:1796` carries a pre-existing, non-empty, promoted
+   `[%expect]` block from M03-I4, untouched by and predating this round. I
+   executed the bar under the reading "zero non-empty blocks ADDED this
+   round," which holds. Flagging the literal/tree mismatch per §17.3's
+   stop-on-inconsistency clause rather than resolving it myself.
+3. No RTL leak, no licensing concern, no untestable requirement, no spec
+   ambiguity beyond the one §3.2 already resolves for me (the guard removes
+   any need for a ruling before this round lands, per the packet's own
+   text) — nothing further to escalate.

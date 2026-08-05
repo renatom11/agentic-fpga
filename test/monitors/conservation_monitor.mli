@@ -43,6 +43,16 @@
     report a false silent discard. [frame_in_exempt] records them, with a
     reason, outside the equation.
 
+    A frame the module ACCEPTED and then abandoned mid-flight under [clear]
+    is exempt too, and for a different reason: it is not emitted, because
+    there is no output [tlast], and it cannot be attributed to a strobe,
+    because REQ-009 is the one clause in SPEC-M03 that licenses a frame to
+    vanish without one (SPEC-M03 §9's own "one real exception"). The common
+    test is not "was it accepted" but "does §0.6 have a term for it" -- the
+    stated ground above covers only the never-accepted case, and this
+    sentence extends it to the mid-flight one without changing what the
+    machinery below already does (WO-0072 §10.1, FINDING K-1).
+
     A zero-payload datagram at the top level (carry-forward C-3) is
     [zero_payload_header]: requirements.md §0.7 says the header record's
     [valid] pulse is the frame's only report, and §0.6 counts the frame as

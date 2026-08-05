@@ -41,6 +41,11 @@
 ;            reads. The inventory does not move and the census moves by seven
 ;            -- which is the mechanical statement that no coverage was added
 ;            (seven ASSERT rows bound, zero rows written)
+;   WO-0072  K1, K2 ASSERT (clear, REQ-009), K3 NO-ASSERT and not in this
+;            round, in a NEW FILE test_m03_k.ml; the Clear capability, its
+;            guard and account_cleared_frame land in bench.mli/bench.ml in
+;            the same commit (two ASSERT, new file) -- the LAST bench round
+;            of this module
 ; When a packet adds rows, add its line. When one does not, this comment
 ; is wrong and a reader has no way to tell — this file's own header found
 ; that exact staleness (E and F both missing) before WO-0054's own line was

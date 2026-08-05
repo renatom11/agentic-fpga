@@ -3313,3 +3313,219 @@ does not supply. **Domain pack**: n/a (LH2-g, general).
 - test/xgmii_rx_64/test_m03_h.ml
 - test/xgmii_rx_64/dune
 - agents/handoffs/WO-0071_m03-family-m-co-occurrence.md
+
+## [J-tb_writer-0031] 2026-08-09T19:20Z | task:WO-0072 | The `Clear` capability, its guard and `on_clear` feed land, `account_cleared_frame` lands, and family K (M03-K1, M03-K2) is written against them — the LAST bench round of this module, the first to drive `clear`
+
+### Trigger
+Spawned by the orchestrator, spawn short-id `WO-0072-B/2026-08-09T18:20Z`,
+HEAD at spawn `5ac5baf`, to execute
+`agents/handoffs/WO-0072_m03-family-k-clear.md` in full, following §17.4's
+internal order: (1) `Clear` in `bench.mli`/`bench.ml` plus `run`'s
+plumbing, guard and `on_clear` feed; (2) the structural witness; (3)
+`account_cleared_frame`; (4) M03-K1 and its control run; (5) M03-K2 and its
+control run; (6) the two comment-only re-groundings (§10.1, §10.2); (7) the
+`dune` header line.
+
+### Inputs
+`agents/charters/tb_writer.md`; `agents/PROTOCOL.md` §2–6, §10; the full
+work order `agents/handoffs/WO-0072_m03-family-k-clear.md` (§0–§19,
+Return/verdict log). Context-list files, read in full:
+`docs/specs/modules/xgmii_rx_64.md` §6.1 (as needed for the closure-list
+and D(m) ground already load-bearing at prior rounds), §6.2, §6.3, §7, §9;
+`docs/specs/requirements.md` §0.3, §0.5, §0.6, §0.7, §12, and the REQ-009,
+REQ-011, REQ-015 rows of §1; `test/attack_plans/AP-xgmii_rx_64.md` §2, §4.K,
+§7; `test/xgmii_rx_64/bench.mli` (pre-edit, in full); `test/xgmii/arrival.mli`,
+`test/xgmii/frame.mli`, `test/xgmii/xgmii_word.mli`;
+`test/monitors/conservation_monitor.mli`, `protocol_monitor.mli`,
+`strobe_monitor.mli`, `octet_time.mli`, `stream_word.mli`. For code
+convention and citation only (never for expected values, which come solely
+from the WO's own §7.2/§8.2 derivations): `test/xgmii_rx_64/test_m03_d.ml`
+(M03-D1's bad-FCS construction and `Strobe_monitor.expect` shape, cited and
+reproduced rather than imported per WO-0072 §7.1), `test_m03_j.ml` (family
+J's `Enable` shape, the control-run pattern M03-J1 sets, and the reason
+`RV-0067-VERDICT` §6.2's transplant does not apply here — WO-0072 §2),
+`test_m03_structural.ml` (the structural-witness pattern the appended unit
+follows). `test/xgmii_rx_64/dune` (the by-packet header list and its own
+"add a line" rule). No `libs/**`, `top/**` or `rtl_snapshots/**` path was
+opened at any point this spawn.
+
+### Reasoning
+**Why `Clear` is a window, not a transplant of `Enable`.** WO-0072 §2 derives
+this in the packet itself and I re-derived it independently before writing
+code: `create` drives `clear` = 1 through the reset cycle (the opposite
+polarity from `cfg_rx_enable`'s own), so a literal `changes ~initial [...]`
+shape would make `never`'s own boundary transition non-empty and enter every
+landed run's pre-scan (BOUNCE BK4), and the guard's subject here is a HIGH
+CYCLE, not a CHANGE, so a transition-set guard would refuse M03-K2's own
+release-cycle stimulus, which REQ-009's last sentence commissions in terms
+(BOUNCE BK5). I represented `Clear.t` as a plain `{ first; last }` record
+with `last < first` encoding `never` as an empty range, so `value_at` and
+`high_cycles` need no separate case and `is_ever_high` is a literal
+`not (List.is_empty (high_cycles t))` — a true projection of its own
+subject rather than a second predicate that could drift from it, which is
+the general form WO-0072 §2 banks.
+
+**The guard (§3).** Placed after the M03-J4 enable guard and before the
+first `sample_cycle`, walking `0 .. total - 1` and testing the DRIVEN word
+via the same `word_at` closure `run` already threads — never
+`Arrival.start_cycles`, which would report clean on exactly the class of
+stimulus (an injected start character reaching a row through `?word_at`)
+the guard exists to catch. I checked the three "must NOT refuse" cases by
+hand against both K rows before writing the walk: K1's window (12..16) sits
+strictly inside the schedule's trailing gap with the only start character
+at cycle 1; K2's window (6..10) sits before B's start character at cycle
+11, one cycle outside the window on its release side, which is exactly the
+stimulus REQ-009's last sentence licenses.
+
+**The four-mechanism literal audit (bar B).** Every new string literal in
+`bench.ml` traces to one of: the `Clear.window` construction check
+("Bench.Clear.window: first … must be >= 0 and <= last …"), the `Clear`
+guard's failure message ("Bench.run: clear is asserted on a cycle carrying
+a start character …" and its two per-line fragments), `Clear.report`'s
+rendering ("never", "window first ", " last "), and
+`account_cleared_frame`'s own two literals — the `delivered < 0` refusal
+message and the `"clear (REQ-009)"` exemption reason passed to
+`frame_in_exempt`. No literal in `bench.ml` was removed or changed; I
+diffed the file mentally against the pre-edit read rather than trusting
+memory. `bench.mli` gained no literal — every insertion there is a
+signature or a doc comment, and I checked this by construction (a `.mli`
+has no executable string literals except inside `(** *)` blocks, which do
+not count for Bar B).
+
+**Ordering inside `sample_cycle` (§4.2).** `observe`, then `sample`, then
+`on_clear` guarded on the driven boolean. I traced K2's own declared kill
+(a phantom `tlast` on a clear cycle) through both orderings by hand before
+committing to the landed one: under `observe`-first, `observe` zeroes
+`words_this_frame` on the phantom `tlast` before `on_clear` runs, so
+`on_clear` finds nothing in progress and `cleared_mid_frame` stays 0 — the
+row's own `cleared_mid_frame = 1` assertion reds independently of the
+no-`tlast` assertion, which is strictly more discriminating than a single
+combined red under the opposite order. This matches WO-0072 §4.2's own
+derivation exactly; I did not need to disagree with it.
+
+**K1's derivation (§7.2), verified constant-by-constant.** I recomputed
+every row of the table from `Arrival`'s own arithmetic (`first_start=8`,
+`ifg=12`) rather than transcribing it: frame start cycle 1, terminate octet
+time 80, terminate cycle 10, `Arrival.cycles` 13, tlast cycle
+`start_cycle + 10 = 11`, clear window 12..16 (opens the cycle after the
+strobe, five cycles per §4.K's own figure), release cycle 17. All matched
+the packet with no disagreement. I did NOT assert item 24
+(`Latency.observed`'s per-class front-offset/L breakdown) as a direct
+check in either row — WO-0072's own ordered assertion lists (§7.3 step 8,
+§8.4 step 10) both skip from the item before it to the item after
+(`Latency.word_delay` alone), which I read as a deliberate "carried, not
+directly asserted" choice in the same sense §7.3's own commentary on M03-D1
+distinguishes carried figures from directly-asserted ones, and followed
+literally rather than adding an assertion the packet's own ordering does
+not call for. Recorded as a question rather than resolved either way (see
+Open-questions).
+
+**K2's derivation (§8.2), verified constant-by-constant.** Frame A: start
+cycle 1, terminate cycle 10. Frame B: start octet time 92 (80 + 12, already
+a multiple of 4), start lane 4, start cycle 11 — the number WO-0072 §8.4
+step 1 says the whole row rests on, checked first and separately flagged in
+the failure message if wrong. `Arrival.cycles` 23. Clear window 6..10
+(`last` forced by the release cycle needing to be B's own start cycle;
+`first` chosen at 6 so exactly two of A's eight words escape). Delivered-
+cycle list `[4;5;14;15;16;17;18;19;20;21]`, asserted before any partition
+is taken (WO-0072 §8.4 step 3's own precondition). I partitioned A/B by this
+asserted list via `List.split_n`, never via `split_at_first_tlast` (T1):
+frame A delivers words and never closes, so "the first tlast" in that
+function's own sense is B's, and the function would silently merge A's two
+words into B's ten. `account_cleared_frame bench frame_a ~delivered:16
+a_words` then `account_clean_frame bench frame_b b_words ~aborted:false`,
+in that order (§8.4 step 9) — T5 is why `b_words`, and not the whole run's
+`samples`, is what `account_clean_frame` is handed: passing the whole run
+would feed frame A's two escaped words into frame B's latency comparison
+and report a wrong L for a conformant design. All constants matched the
+packet with no disagreement, and item 28 (`Latency.observed`'s per-class
+breakdown) is likewise not directly asserted, for the same reason as K1's.
+
+**What I found and reported rather than resolved (see Open-questions).**
+Bar K-10's literal pass condition ("zero non-empty blocks anywhere in the
+directory") does not hold at the base tree: `test_m03_i.ml:1796` already
+carries a promoted, non-empty `[%expect]` block from a much earlier round
+(M03-I4), predating this WO entirely. I did not touch that file, and both
+of my own new units plus the structural addition are `{||}`. I read the
+bar as intending "zero non-empty blocks ADDED by this round" and satisfied
+that reading, but the literal text disagrees with the pre-existing tree,
+which is a packet-vs-tree inconsistency I am reporting rather than
+resolving silently (§17.3's stop-on-inconsistency clause).
+
+### Actions
+Landed, in WO-0072 §17.4's stated order: (1) `Bench.Clear` (`never`,
+`window`, `value_at`, `high_cycles`, `is_ever_high`, `report`) in both
+`bench.mli` and `bench.ml`; `run`'s `?clear` argument, the K guard, and the
+`sample.clear` field threaded through `sample_cycle`'s choke point
+(one unconditional `i.clear := if clear then Bits.vdd else Bits.gnd`
+write, matching `cfg_rx_enable`'s own unconditional write); the `on_clear`
+feed inside `sample_cycle`, guarded on the driven boolean, after `observe`
+and `sample`. (2) The structural witness — one appended `%expect_test` in
+`test_m03_structural.ml`, four pure facts about `Bench.Clear`, empty
+`[%expect {||}]`, no `M03-` id in its title. (3) `account_cleared_frame` in
+both `bench.mli` and `bench.ml`. (4)+(5) `test/xgmii_rx_64/test_m03_k.ml`
+(new file): `run_k1`/M03-K1 with its mandatory control run, `run_k2`/M03-K2
+with its mandatory control run, and a shared `assert_delivered_words`
+helper factoring the per-word cycle/tkeep/tlast/tuser check both rows'
+clean 8-word frames need. (6) One added paragraph in
+`conservation_monitor.mli` deviation 3 (§10.1, FINDING K-1) and one added
+paragraph in `bench.mli`'s `split_at_first_tlast` docstring (§10.2) — both
+comment-only, verified by re-reading the exact changed lines back and
+confirming no `val`/`type`/`let`/expression appears on any of them (bar
+K-14). (7) One `WO-0072` line appended to `test/xgmii_rx_64/dune`'s header
+comment.
+
+### Evidence
+`ocamlc -stop-after parsing` on all four touched/new `.ml`/`.mli` files,
+exit 0 for each: `test/xgmii_rx_64/bench.mli`, `test/xgmii_rx_64/bench.ml`,
+`test/xgmii_rx_64/test_m03_k.ml`, `test/xgmii_rx_64/test_m03_structural.ml`
+(commands and raw output are quoted verbatim in this WO's own Return log,
+§19 item 2/K-15). This establishes syntax only — no type-checking, no
+`dune runtest`; neither is in my allow-list this round (§17.1), and K-2 —
+the CI `build` run's own read — is dv_lead's bar, not mine. File-search
+bars K-9 through K-14, K-16, K-17 executed via Grep/Read and their raw
+results are quoted in the WO's Return log rather than repeated here.
+
+### Outcome
+DoD met against WO-0072 as issued: `Clear`, its guard, `on_clear` feed and
+`account_cleared_frame` land in the same commit as their two consumers
+(§17.4's "no window in which the hole is live" ground); M03-K1 and M03-K2
+are both written with their mandatory control runs; the two comment-only
+re-groundings and the `dune` line land; the twelve untouched
+`test_m03_*.ml` files do not appear in my write record. Not met / not
+mine to meet this round: K-2 (the CI `build` run's own read) and K-1, K-3
+through K-7 (dv's own bars) — all pre-committed to dv_lead's seat by §14's
+own table. Whether M03-K1 and M03-K2 pass at the landing commit is
+unknown to me and is not something I judged; §9's disposition table is
+dv_lead's to apply against the CI result, not mine to anticipate.
+
+### Open-questions
+1. WO-0072 §7.2/§8.2 list item 24 / item 28 (`Latency.observed`'s
+   per-class front-offset/L breakdown) as a derived table entry, but both
+   rows' own ordered assertion lists (§7.3 step 8, §8.4 step 10) skip from
+   the item before it straight to `Latency.word_delay`, omitting an
+   explicit check of the per-class L value itself. I followed the ordered
+   list literally rather than adding an assertion it does not call for.
+   Asking dv_lead to confirm whether this is deliberate (a "carried, not
+   directly asserted" figure, in the same sense the packet uses for M03-D1's
+   own carried figures) or a gap in the packet's own ordering that should
+   gain an explicit `Latency.observed` check in a future round.
+2. Bar K-10's literal pass condition ("zero non-empty blocks anywhere in
+   the directory") does not hold at the base tree — `test_m03_i.ml:1796`
+   already carries a pre-existing, non-empty, promoted `[%expect]` block
+   from M03-I4, untouched by and predating this round. I read the bar as
+   "zero non-empty blocks ADDED by this round" (which holds: both new K
+   units and the new structural unit are `{||}`) and executed it under that
+   reading, but the literal text disagrees with the tree and I am not
+   resolving that disagreement myself (§17.3).
+3. No RTL leak, no forbidden instrument used or attempted this round — see
+   the Return log's §17.1/§17.2 confirmation for the full record.
+
+### Files-in-this-commit
+- test/xgmii_rx_64/bench.mli
+- test/xgmii_rx_64/bench.ml
+- test/xgmii_rx_64/test_m03_k.ml
+- test/xgmii_rx_64/test_m03_structural.ml
+- test/xgmii_rx_64/dune
+- test/monitors/conservation_monitor.mli
+- agents/handoffs/WO-0072_m03-family-k-clear.md

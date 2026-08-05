@@ -146,6 +146,54 @@ module Enable = struct
   ;;
 end
 
+(* WO-0072 §1.2: the [clear] schedule (REQ-009). A window, not a set of
+   changes reached by transplanting {!Enable}'s shape -- see bench.mli's own
+   [Clear] docstring and WO-0072 §2 for why the transplant breaks twice at
+   this port. [t] is kept as a plain [first]/[last] pair rather than a
+   variant: [last < first] encodes {!never} (an empty window), so [value_at]
+   and [high_cycles] need no separate case for it and {!is_ever_high} is a
+   true projection of {!high_cycles} rather than a second predicate on the
+   same two fields (WO-0068 §7.3's rule, reused at §2). *)
+module Clear = struct
+  type t =
+    { first : int
+    ; last : int
+    }
+
+  let never = { first = 0; last = -1 }
+
+  let window ~first ~last =
+    if not (0 <= first && first <= last)
+    then
+      failwith
+        (String.concat
+           [ "Bench.Clear.window: first "
+           ; Int.to_string first
+           ; " must be >= 0 and <= last "
+           ; Int.to_string last
+           ]);
+    { first; last }
+  ;;
+
+  let value_at t ~cycle = cycle >= t.first && cycle <= t.last
+
+  let high_cycles t = if t.last < t.first then [] else List.range t.first (t.last + 1)
+
+  (* WO-0072 §2(ii): the entry condition IS this projection, not a
+     hand-written predicate ([t.last >= t.first]) that reconstructs it --
+     the two happen to agree today, but only [high_cycles] is the guard's
+     stated subject (bench.mli). *)
+  let is_ever_high t = not (List.is_empty (high_cycles t))
+
+  let report t =
+    if t.last < t.first
+    then "never"
+    else
+      String.concat
+        [ "window first "; Int.to_string t.first; " last "; Int.to_string t.last ]
+  ;;
+end
+
 type sample =
   { cycle : int (* schedule cycle whose input word was driven AND whose
                    [Before]-view outputs [out]/[errors_high] belong to —
@@ -154,6 +202,9 @@ type sample =
   ; enable : bool (* WO-0067: [cfg_rx_enable] as driven on [cycle] — the
                      choke-point reading of [run]'s own [?enable] argument,
                      resolved through {!Enable.value_at} for this cycle *)
+  ; clear : bool (* WO-0072: [clear] as driven on [cycle] — the choke-point
+                    reading of [run]'s own [?clear] argument, resolved
+                    through {!Clear.value_at} for this cycle *)
   ; out : Stream_word.t
   ; after_out : Stream_word.t (* RV-0038-R6 / R6-3: the SAME cycle read from
                                   the default [After] view instead — round
@@ -175,7 +226,7 @@ type sample =
    guard (bench.mli history, withdrawn), which checked the order [run]
    RETURNED its samples in rather than the order the design was actually
    driven in and would not have fired on run 30771064764's reversed drive. *)
-let sample_cycle t ~cycle ~enable (in_word : Xgmii_word.t) : sample =
+let sample_cycle t ~cycle ~enable ~clear (in_word : Xgmii_word.t) : sample =
   if cycle <> t.cycles_driven
   then
     failwith
@@ -208,6 +259,12 @@ let sample_cycle t ~cycle ~enable (in_word : Xgmii_word.t) : sample =
      the XGMII word — the one function that touches the design — so there is
      exactly one place a stimulus port reaches the DUT from. *)
   i.cfg_rx_enable := if enable then Bits.vdd else Bits.gnd;
+  (* WO-0072 §1.1(R-e) / §5 clause 4: [clear] reaches the design through the
+     SAME choke point, one unconditional ref write per cycle matching
+     [cfg_rx_enable]'s own — the default ({!Clear.never}) schedule always
+     resolves this to [Bits.gnd], so the write's VALUE is the only thing
+     WO-0072 changes about a [?clear]-omitted run, never its presence. *)
+  i.clear := if clear then Bits.vdd else Bits.gnd;
   Cyclesim.cycle t.sim;
   let out =
     Axi64_probe.of_refs
@@ -242,10 +299,17 @@ let sample_cycle t ~cycle ~enable (in_word : Xgmii_word.t) : sample =
   in
   Protocol_monitor.observe t.protocol ~cycle out;
   Strobe_monitor.sample t.strobes ~cycle ~high:errors_high;
-  { cycle; in_word; enable; out; after_out; errors_high }
+  (* WO-0072 §4.2: [on_clear] goes LAST, after both [observe] and [sample] —
+     compatibility (a {!Clear.never} run makes zero calls) and, the real
+     reason, discrimination: [observe] zeroes [words_this_frame] on a
+     [tlast] BEFORE [on_clear] can see it, so a phantom [tlast] on a clear
+     cycle reds independently at [cleared_mid_frame] rather than being
+     masked by [observe] having already counted it as a completed frame. *)
+  if clear then Protocol_monitor.on_clear t.protocol ~cycle;
+  { cycle; in_word; enable; clear; out; after_out; errors_high }
 ;;
 
-let run t sched ~drain ?word_at ?enable () =
+let run t sched ~drain ?word_at ?enable ?clear () =
   (match Arrival.check sched with
    | [] -> ()
    | problems ->
@@ -260,6 +324,7 @@ let run t sched ~drain ?word_at ?enable () =
     | None -> fun ~cycle -> Arrival.word_at sched ~cycle
   in
   let enable = match enable with Some e -> e | None -> Enable.high in
+  let clear = match clear with Some c -> c | None -> Clear.never in
   let total = Arrival.cycles sched + drain in
   (* WO-0067 §3, the M03-J4 guard. Entered ONLY when [Enable.change_cycles]
      is non-empty (compatibility bar §2 clause 4: [Enable.high] — [run]'s
@@ -304,6 +369,45 @@ let run t sched ~drain ?word_at ?enable () =
               :: List.map violations ~f:(fun (cycle, lane) ->
                    String.concat
                      [ "  cycle "; Int.to_string cycle; ", start lane "; Int.to_string lane ])))));
+  (* WO-0072 §3, the K guard. Entered ONLY when [Clear.is_ever_high clear]
+     (compatibility bar §5 clause 4: [Clear.never] — [run]'s default — has an
+     empty high set, so a [?clear]-omitted call enters no new branch and
+     evaluates [word_at] exactly as many times as it did before this round).
+     Walks cycles [0 .. total - 1] and, for every cycle at which the DRIVEN
+     clear value is [true], checks the DRIVEN WORD -- never
+     [Arrival.start_cycles] (§3.3, BOUNCE BK6). REQ-009 / SPEC-M03 §6.2's
+     [Idle] row and §7's reset bullet leave a [/S/] under [clear] = 1
+     genuinely undetermined (§3.2), so this REFUSES to drive rather than
+     recording-and-applying the way {!Dv_xgmii.Idle_injection} does for its
+     own illegal placements: that module's illegal stimulus produces a
+     DETERMINATE wrong answer a bench can assert against; this one produces
+     no answer at all. This is a DIFFERENT subject from the M03-J4 guard
+     above -- HIGH CYCLES, never transitions (§2) -- so the two pre-scans are
+     independent and neither reads the other's schedule. *)
+  (match Clear.is_ever_high clear with
+   | false -> ()
+   | true ->
+     let violations =
+       List.filter_map (List.range 0 total) ~f:(fun cycle ->
+         if not (Clear.value_at clear ~cycle)
+         then None
+         else (
+           match Xgmii_word.start_lane (word_at ~cycle) with
+           | None -> None
+           | Some lane -> Some (cycle, lane)))
+     in
+     (match violations with
+      | [] -> ()
+      | _ :: _ ->
+        failwith
+          (String.concat
+             ~sep:"\n"
+             ("Bench.run: clear is asserted on a cycle carrying a start character \
+               (REQ-009, SPEC-M03 section 6.2's Idle row, section 7's reset bullet) \
+               — the outcome is deliberately unconstrained and SHALL NOT be driven, at:"
+              :: List.map violations ~f:(fun (cycle, lane) ->
+                   String.concat
+                     [ "  cycle "; Int.to_string cycle; ", start lane "; Int.to_string lane ])))));
   (* Cycles are driven in ASCENDING order by an explicit recursion, never by
      a [List.*] combinator. [sample_cycle] drives the port and steps the
      clock, so its evaluation order IS the stimulus: Base's [List.init]
@@ -318,7 +422,14 @@ let run t sched ~drain ?word_at ?enable () =
     if cycle >= total
     then List.rev acc
     else (
-      let s = sample_cycle t ~cycle ~enable:(Enable.value_at enable ~cycle) (word_at ~cycle) in
+      let s =
+        sample_cycle
+          t
+          ~cycle
+          ~enable:(Enable.value_at enable ~cycle)
+          ~clear:(Clear.value_at clear ~cycle)
+          (word_at ~cycle)
+      in
       drive (cycle + 1) (s :: acc))
   in
   (* [run]'s ascending-cycle contract is checked at the choke point inside
@@ -401,6 +512,30 @@ let account_dropped_piece bench ~start_ot ~received ~strobe =
   let in_times = Array.init (8 + received) ~f:(fun i -> start_ot + i) in
   Dv_monitors.Octet_time.Latency.frame_in (latency bench) in_times;
   Dv_monitors.Octet_time.Latency.frame_dropped (latency bench)
+;;
+
+(* WO-0072 §8.3: standing obligations 2 and 3 for a frame accepted and then
+   abandoned under REQ-009's synchronous clear. [samples] must already be
+   THIS frame's own delivered words and no others -- see bench.mli's own
+   docstring; this function does not filter or otherwise select from it. *)
+let account_cleared_frame t (frame : Arrival.frame) ~delivered samples =
+  if delivered < 0
+  then
+    failwith
+      (String.concat
+         [ "Bench.account_cleared_frame: delivered must be >= 0, got "
+         ; Int.to_string delivered
+         ]);
+  Conservation_monitor.frame_in_exempt t.conservation ~reason:"clear (REQ-009)";
+  Octet_time.Latency.frame_in t.latency (Arrival.in_times frame);
+  if delivered = 0
+  then Octet_time.Latency.frame_dropped t.latency
+  else (
+    let delivered_pairs = List.map samples ~f:(fun s -> s.cycle, s.out) in
+    Octet_time.Latency.frame_out
+      t.latency
+      ~expected_octets:delivered
+      (Octet_time.of_words delivered_pairs))
 ;;
 
 let split_at_first_tlast samples =

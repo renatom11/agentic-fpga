@@ -98,6 +98,37 @@ let%expect_test "Bench.Enable.change_cycles: the cycle-0 guard repair (WO-0068 �
   [%expect {||}]
 ;;
 
+(* WO-0072 §11: the structural witness for {!Bench.Clear} -- the direct,
+   mechanical statement that the default schedule's high set is empty, which
+   is what §5 clause 4's "enters no new branch" rests on and is otherwise
+   only an argument, plus a pin of [window]'s inclusivity at BOTH ends -- the
+   one thing about it a reader could get wrong. No design is driven; this is
+   the seam, not a row, exactly as this file's own docstring above already
+   says of the scaffolding test. Title carries no [M03-] row id (BOUNCE
+   BK12, WO-0072 §11/§13.1) -- in particular it names no [M03-K3], which is
+   NO-ASSERT and not in this round. *)
+let%expect_test
+  "Bench.Clear: the default schedule's high set is empty, and window is \
+   inclusive at both ends (WO-0072 section 11)"
+  =
+  if not (List.is_empty (Clear.high_cycles Clear.never))
+  then failwith "Clear.high_cycles Clear.never is not []";
+  if Clear.is_ever_high Clear.never
+  then failwith "Clear.is_ever_high Clear.never is not false";
+  let w = Clear.window ~first:6 ~last:10 in
+  if not (List.equal Int.equal (Clear.high_cycles w) [ 6; 7; 8; 9; 10 ])
+  then failwith "Clear.high_cycles (window ~first:6 ~last:10) is not [6;7;8;9;10]";
+  if Clear.value_at w ~cycle:5
+  then failwith "Clear.value_at (window ~first:6 ~last:10) ~cycle:5 is not false";
+  if not (Clear.value_at w ~cycle:6)
+  then failwith "Clear.value_at (window ~first:6 ~last:10) ~cycle:6 is not true";
+  if not (Clear.value_at w ~cycle:10)
+  then failwith "Clear.value_at (window ~first:6 ~last:10) ~cycle:10 is not true";
+  if Clear.value_at w ~cycle:11
+  then failwith "Clear.value_at (window ~first:6 ~last:10) ~cycle:11 is not false";
+  [%expect {||}]
+;;
+
 let _witness_i_has_no_tready
   (b : Bits.t ref)
   (i : Bits.t ref Hardcaml_ethernet.Xgmii_rx_64.I.t)
