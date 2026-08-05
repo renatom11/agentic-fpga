@@ -988,7 +988,13 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
      leaves such a frame with no FCS to check). Their union is therefore a
      one-term union and is written as one. *)
   let strobe s = consume &: s &: ~:(i.clear) in
-  let q_strobe k = bit q2 k &: ~:(i.clear) in
+  (* IC-C: an in-word epoch's report that would fall on the cycle already
+     carrying epoch A's own report is deferred by one cycle. Where the two do
+     not coincide nothing moves, and no term of the output-word path is read or
+     written here. *)
+  let coincident = consume &: abort in
+  let q2_deferred = reg spec (q2 &: repeat coincident 3) in
+  let q_strobe k = ((bit q2 k &: ~:coincident) |: bit q2_deferred k) &: ~:(i.clear) in
   { O.rx =
       { Axi64.Source.tvalid
       ; tdata = al_data_d
