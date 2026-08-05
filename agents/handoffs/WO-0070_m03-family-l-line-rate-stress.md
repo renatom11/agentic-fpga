@@ -970,3 +970,411 @@ let () =
 
 *(empty at issue — §1.6's ruling is the first entry, and `BL10` makes stage 2
 conditional on it)*
+
+### RULING — dv_lead, 2026-08-09T12:10Z · **BAND A FIRES** · stage 2 is commissioned
+
+- **Spawn** `WO-0070-S1/2026-08-09T12:10Z` · **HEAD** `d8d68db` · **Journal**
+  `J-dv_lead-0126`.
+- **This is §1.6's ruling. It discharges `BL10`** and nothing else in this packet
+  moves: §§2–13 and §15 stand as written, unamended, and stage 2 issues against
+  them.
+
+#### 0. The evidence, read first-hand and not taken from the dispatch
+
+The three figures reached me in a dispatch message. §1.6's whole shape is *"a
+rule fixed in a committed artefact before the run, then applied to figures nobody
+could re-read afterwards"* — and a figure I cannot re-read is exactly the kind a
+verdict of mine may not rest on when the primary source is reachable (charter §8;
+PROTOCOL §4.1's Evidence rule, which admits a CI run id precisely so the reading
+can be repeated). So I read the lines out of the job log before ruling on them.
+
+```
+$ mcp__github__get_job_logs owner=renatom11 repo=agentic-fpga job_id=92310423073
+$ grep -o 'COST-PROBE-L[^\]*'
+COST-PROBE-L begin (THROWAWAY, WO-0070 §1; never committed to the working branch)
+COST-PROBE-L count=100 schedule=0.001 check=0.001 elaborate=0.011 drive=0.020 account=0.000 total=0.033 cycles=1060 dsamples=800 frames=100 top_heap_words=360073 schedule_problems=0
+COST-PROBE-L count=1000 schedule=0.011 check=0.005 elaborate=0.007 drive=0.209 account=0.003 total=0.235 cycles=10510 dsamples=8000 frames=1000 top_heap_words=915109 schedule_problems=0
+COST-PROBE-L count=10000 schedule=0.110 check=0.052 elaborate=0.007 drive=1.831 account=0.036 total=2.036 cycles=105010 dsamples=80000 frames=10000 top_heap_words=7238821 schedule_problems=0
+COST-PROBE-L end
+```
+
+**Byte-identical to the relay, in all five lines. The relay is recorded as
+faithful** — which is a fact about this round's routing and is worth the sentence,
+because the same seat's fidelity on protected classes is what PROTOCOL §3 asks
+the auditor to spot-check.
+
+**The citation.** CI `build` run **`31007340877`**, job **`92310423073`**, name
+`build`, conclusion **success**; head ref `mut/wo70-cost-probe-l`, head SHA
+**`9f3a6166a1639b3ecb2344d570f59aecffd2c447`**. The probe ran inside **step 6**,
+*"Run tests (expect tests, waveform snapshots)"*, `12:54:28 → 12:54:32`, and the
+dune action that produced it is echoed in the log immediately above the first
+line: `(cd _build/default/test/cost_probe_l && ./l_cost_probe.exe)`.
+
+**One reading I checked and discarded, stated so nobody re-finds it as a
+contradiction.** The five lines carry log timestamps spanning **12.9 ms**
+(`12:54:31.5797` → `12:54:31.5926`), against a printed CPU total of
+`0.033 + 0.235 + 2.036 = 2.304 s`. That is not an inconsistency in the figures:
+dune **captures** an action's output and replays it into the log when the action
+completes, so those stamps date the replay, not the execution — the command echo
+itself sits inside the same 16 ms burst, which is the tell. **A per-line log
+timestamp from a parallelising build tool is not an elapsed-time instrument**, and
+§1.3's choice of `Sys.time` inside the process is what makes the figure
+independent of it. The step reading in §7 below is the corroboration that is
+same-class.
+
+#### 1. The three figures, derived here from the lines above
+
+> **`T` = 2.036 s** — `total` at `count` = 10 000, read off the third line.
+>
+> **`R` = 2.036 / 0.235 = 8.664** — `total(10 000) / total(1 000)`, to three
+> decimals; 8.66 to two.
+>
+> **`H` = 7 238 821 words** — `top_heap_words` at `count` = 10 000. On a 64-bit
+> runner that is 57 910 568 B ≈ **55.2 MiB**. The band-B clause needs its partner:
+> `H(1 000)` = **915 109**, and `H(10 000) / H(1 000)` = **7.9103**.
+
+**Three internal-consistency checks run before any of the three was used.**
+
+1. **Each line's phases sum to its own printed total, exactly**, at all three
+   sizes: `0.001+0.001+0.011+0.020+0.000 = 0.033`;
+   `0.011+0.005+0.007+0.209+0.003 = 0.235`;
+   `0.110+0.052+0.007+1.831+0.036 = 2.036`. No rounding residue anywhere, so no
+   phase is silently unaccounted and `T` is the sum of the five things §1.3
+   defined rather than a sixth thing.
+2. **`cycles` reproduces §2.2's arithmetic at all three sizes**, and the probe
+   prints `Arrival.cycles sched + 8`. At `count` = 10 000 that is 105 010 ⇒
+   `Arrival.cycles` = **105 002**, §2.2's derived value exactly. Re-derived for
+   the two smaller sizes from §2.1's recurrence: at 1 000, last index 999, start
+   `8 + 84·999 = 83 924`, terminate `83 996`, `((83 996+12+7)/8)+1 = 10 502`,
+   +8 = **10 510** — printed 10 510; at 100, start `8 324`, terminate `8 396`,
+   `((8 396+12+7)/8)+1 = 1 052`, +8 = **1 060** — printed 1 060. **§2.1's whole
+   layout recurrence is confirmed at three independent sizes**, including frame
+   9999's start octet time 839 924 which §2.1 states by name.
+3. **`schedule_problems = 0` at all three sizes.** `Arrival.check` finds nothing,
+   so standing obligation 5 is discharged on this exact stimulus and §9's
+   assertion-order item 1 will pass rather than being assumed to.
+
+**`top_heap_words` is a running maximum over the process's whole life, so `H` at
+a size is the peak the process had reached by then, not that size's own
+footprint.** Here 360 073 < 915 109 < 7 238 821, so each size did raise the peak
+and each figure is its own run's; in general the ratio bounds growth **from
+below**, which makes the band-B heap clause conservative in the direction that
+matters — it under-fires rather than over-fires. Recorded because §1.5 keys a
+band on it and the instrument's monotonicity is not obvious from the name.
+
+#### 2. The band arithmetic — every clause of all three bands, evaluated
+
+| band | clause (§1.5, verbatim in substance) | arithmetic | value |
+|---|---|---|---|
+| **A** | `T` ≤ 30 s | 2.036 ≤ 30 | **TRUE** (margin 27.964 s; 14.7× headroom) |
+| **A** | `R` ≤ 15 | 8.664 ≤ 15 | **TRUE** (margin 6.336) |
+| **A** | the `count` = 10 000 line printed | printed, in full, with all twelve fields, and `COST-PROBE-L end` after it — so the self-cap never engaged and **no `COST-PROBE-L abort` line exists in the log** | **TRUE** |
+| **A** | **conjunction of the three** | — | **⇒ BAND A FIRES** |
+| B | the `count` = 10 000 line printed | as above | TRUE |
+| B | 30 s < `T` ≤ 180 s | 30 < 2.036 | **FALSE** |
+| B | `R` > 15 | 8.664 > 15 | **FALSE** |
+| B | `H(10 000) > 8 × H(1 000)` | 8 × 915 109 = **7 320 872**; 7 238 821 > 7 320 872 | **FALSE**, by **82 051 words** |
+| B | conjunction (printed **AND** the disjunction) | disjunction is FALSE ∨ FALSE ∨ FALSE | **⇒ BAND B DOES NOT FIRE** |
+| C | `T` > 180 s | 2.036 > 180 | **FALSE** |
+| C | the `count` = 10 000 line did not print | it printed | **FALSE** |
+| C | disjunction | — | **⇒ BAND C DOES NOT FIRE** |
+
+**Band A fires, alone and on all three of its clauses. No E2 is raised, no
+machinery round is interposed, and no frozen figure is narrowed.**
+
+#### 3. A defect in my own rule, found by running it — and it missed mattering by 1.12%
+
+**§1.5's three bands are not a partition.** Band A is
+`T ≤ 30 ∧ R ≤ 15 ∧ printed`; band B is `printed ∧ (30 < T ≤ 180 ∨ R > 15 ∨ H(10 000) > 8·H(1 000))`.
+The heap clause appears in B's trigger and **nowhere in A's**, so any run with
+`T ≤ 30`, `R ≤ 15` and a heap ratio above 8 satisfies **both** band A and band B,
+and §1.5 gives no tie-break. A rule whose whole purpose is to be applied without
+discretion would, in that region, have handed the discretion straight back — after
+the number was known, which is the exact failure §1.6 exists to prevent.
+
+**How close it came, measured**: the heap ratio is **7.9103** against a threshold
+of 8, i.e. `H(10 000)` is **82 051 words (≈ 0.63 MiB) below** the 7 320 872 that
+would have fired band B, a margin of **1.12% of the threshold**. Of the three
+clauses this is by far the tightest — `T` cleared its bound by 14.7× and `R` by
+1.7× — so the overlap region was one part in ninety away from being this round's
+problem.
+
+**Disposition: the defect is recorded, and it is NOT repaired into the rule after
+the measurement.** Rewriting §1.5 now would be re-drafting a pre-commitment with
+the answer in hand, which is worth less than the honest record. What the band-A
+ruling rests on is unaffected: A's three clauses are each independently TRUE, and
+B's disjunction is independently FALSE in all three disjuncts, so **no tie-break
+was needed and none was exercised.** The portable form goes to the harvest bank
+in `J-dv_lead-0126`.
+
+#### 4. §1.4's predictions, scored one by one, as §1.6 requires
+
+All at `count` = 10 000. "Over-predicted by *k*×" means the prediction's **floor**
+is *k* times the measurement.
+
+| # | quantity | §1.4 predicted | measured | verdict |
+|---|---|---|---|---|
+| 1 | Φ1 `schedule` | 0.1 – 0.5 s | **0.110** | **HIT** — inside, 10% above the floor |
+| 2 | Φ2 `check` | 0.1 – 0.5 s | **0.052** | **MISS** — over-predicted 1.92× |
+| 3 | Φ3 `elaborate` | < 0.5 s | **0.007** | **HIT** |
+| 4 | Φ4 `drive` | 2 – 15 s | **1.831** | **MISS** — 8.4% below the floor; the narrowest miss |
+| 5 | Φ5 `account` | 1 – 5 s | **0.036** | **MISS** — over-predicted **27.8×**; the round's largest error |
+| 6 | `total` | 4 – 20 s | **2.036** | **MISS** — over-predicted 1.97× |
+| 7 | `top_heap_words` | 2×10⁷ – 1×10⁸ | **7.239×10⁶** | **MISS** — over-predicted 2.76× |
+| 8 | `total(10 000)/total(1 000)` ≈ 10 | "near 10"; "above 15 means something super-linear I have not found" | **8.664** | **HIT** on the prediction's own stated criterion |
+
+**Score 3 of 8. And the score is not the finding — the sign is.** Every one of the
+five misses is in the **same direction**: I over-predicted cost at four of five
+phases and at both aggregates, by between 1.9× and 27.8×. A uniform-sign error
+across independent quantities is a model error, not five estimating errors, and
+the model is identifiable: **§1.4 built most of its ranges by multiplying an
+operation count by an assumed per-operation cost, and that assumed cost is
+pessimistic by roughly an order of magnitude on this runner.** The one prediction
+that landed within 10% of the truth (Φ4) is the one whose floor came from a
+**prior measurement** on the same execution surface — `test/cost_probe/`'s 653 k
+cycles/s. That contrast is the round's most portable output and it goes to the
+harvest bank.
+
+**§1.4 said which cell mattered, before the run: *"the prediction that matters is
+the ratio, not the total"*. It is the cell that hit.** `R` = 8.664 is near 10 and
+nowhere near 15, so the linear cost model behind §1.4 is right in its **shape**
+while wrong in its **scale** — which is precisely the split a ratio prediction and
+a magnitude prediction are supposed to separate, and it is why the band keyed on
+both.
+
+**Two mechanism findings behind the misses, derived rather than guessed.**
+
+- **Φ2 is the CRC's true price, and Φ1's is not what I said it was.** §1.4
+  reasoned that Φ1 ≈ Φ2 because each does one CRC-32 per frame over 60 and 64
+  octets. Measured, **Φ1 = 2.12 × Φ2**. Φ2 is very nearly a pure CRC pass
+  (10 000 × 64 × 8 = 5.12 M bit-steps, plus an `Array.iter` sweep over 10 000
+  that cannot be more than a millisecond at any plausible per-element cost), which
+  implies **≈ 10.2 ns per bit-step**. At that rate Φ1's own CRC (10 000 × 60 × 8 =
+  4.8 M steps) is ≈ **0.049 s** — leaving ≈ **0.061 s, 55% of Φ1, in frame
+  construction and schedule layout**, a term §1.4's reasoning did not have.
+  My Φ1 prediction was right for the wrong reason, by a compensating error.
+- **`R` came in *below* the cycle ratio, and my named sublinear term points the
+  other way.** `cycles(10 000)/cycles(1 000) = 105 010/10 510 = 9.9914`, against
+  `R` = 8.664. Per driven cycle, Φ4 fell from **19.89 µs** (0.209/10 510) to
+  **17.44 µs** (1.831/105 010) — **12.3% cheaper** at the larger size. §1.4 named
+  the binary search's log term as "the only sublinear part"; a log term adds
+  ~3.3 comparisons per search going 1 000 → 10 000, i.e. it makes the larger run
+  **more** expensive per cycle, not less. **So the observed sublinearity is not
+  the one I predicted, and I do not have its mechanism.** It is recorded as
+  unexplained; nothing in this ruling depends on it, because `R` clears its bound
+  by 1.7× under either sign.
+
+#### 5. The decomposition band A did not need — recorded because §1.3 is what bought it
+
+| Φ | phase | seconds at 10 000 | share of `T` | 1 000 → 10 000 |
+|---|---|---|---|---|
+| Φ1 | `schedule` | 0.110 | 5.40% | 10.00× |
+| Φ2 | `check` | 0.052 | 2.55% | 10.40× |
+| Φ3 | `elaborate` | 0.007 | 0.34% | 1.00× |
+| **Φ4** | **`drive`** | **1.831** | **89.93%** | **8.76×** |
+| Φ5 | `account` | 0.036 | 1.77% | 12.00× |
+
+**Φ4 dominates at 89.9%**, so had band B fired, §1.5's remedy table would have
+selected Φ4's row — `Bench.run_fold`, or suppressing the diagnostic-only
+`after_out` read — with bar L-2 run against it. **Recorded, and not executed**:
+band A fires, so **no machinery change is authorised this round**, and §11's
+band-B branch stays closed. Φ3 is flat across a 100× stimulus range, as one
+elaboration must be, and Φ2 — the phase whose pre-committed remedy was *"none,
+and that is the pre-commitment"* — costs 2.55% of the round, so the obligation it
+protects was never in tension with the cost anyway.
+
+#### 6. What the probe independently confirms about §§2's derivation base — and what it may NOT be used for
+
+**Confirmed, and these are arithmetic facts about the stimulus generator, which is
+DV-owned machinery**: `Arrival.cycles` = 105 002 at 10 000 frames (§2.2), the
+layout recurrence at three sizes (§2.1), and a clean `Arrival.check` (obligation
+5). Those strengthen the packet's derivation base and are cited as such.
+
+**Not adopted, deliberately.** `dsamples` (800 / 8 000 / 80 000 = 8 per frame) and
+`frames` (100 / 1 000 / 10 000, every schedule frame producing a non-empty
+`tlast` group) are **measurements of the design's output**, not derivations. They
+happen to agree with §4.1 item 3's `ceil(60/8) = 8` and item 2's 10 000 — both of
+which were derived from REQ-103 and REQ-015 at `d2bdd57`, in a committed packet,
+**before** this run existed. **The expected values of every L row remain §§2–8's
+derivations and nothing here replaces one** (PROTOCOL §10; `BL3`). Stated
+explicitly because an agreement noticed after the fact is exactly how a spec-derived
+expected value quietly acquires a design-derived provenance, and the ordering that
+refutes it is only legible if someone writes it down.
+
+**A bonus reading from the same job, and it re-bases bar L-14.** `tools/dv_checks.sh`
+ran in this job and printed `54  test/xgmii_rx_64/`, `134  test/ (repository-wide)`
+and `48  named in a unit title — TRAILING-DIGIT BOUNDARY match`. The probe ref is
+`d2bdd57` plus one directory containing zero `%expect_test` units, so those are
+`d2bdd57`'s figures — **bar L-14's base, confirmed by a second run**.
+
+#### 7. §1.5's threshold, restated on measurement — the answer to the round's Q2
+
+Band A's own words were *"`runtest` goes from ~3 s to ≤ ~33 s, which keeps it a
+minority of a `build` job"*. I restate it on three measurements rather than on
+that estimate.
+
+- **The step reading, same instrument as §1.1's.** Step 6 at the probe ref ran
+  `12:54:28 → 12:54:32` = **4 s**; §1.1 records the same step at build
+  `30988038809` as `08:17:01 → 08:17:04` = **3 s**. Both at one-second
+  granularity, so the *delta* is only bounded to (−1, +3) s — but the **absolute**
+  is what the band cares about, and it is firm: **with a family-L-sized stress
+  inside it, the test step measured 4 s, bounded ≤ 5 s at that granularity,
+  against band A's 33 s ceiling.** Roughly 8× headroom on the step reading and
+  14.7× on the CPU figure.
+- **The job decomposition, from the same job's step timings.** `build` at the
+  probe ref: `Install dependencies` **205 s** (12:50:55 → 12:54:20), `Set up
+  OCaml` **75 s**, `Build` 8 s, `Run tests` **4 s**, everything else ≤ 7 s; job
+  wall `12:49:37 → 12:54:43` = **306 s**. So the test step is **1.3% of the job**
+  and the two dominant steps are **91.5%** — §1.5's "dominant costs" clause is
+  confirmed by measurement rather than asserted.
+- **The Q2 figure, used with its class stated.** Build run `30988038809`'s total
+  duration is **326 s** by the dispatch's API measurement. The probe ref's `build`
+  **job** was **306 s**. These are a *run* total and a *job* wall and I will not
+  net one against the other as though they were the same quantity — but taken as
+  the order of magnitude they jointly establish, **the tax family L mints is
+  smaller than the run-to-run spread of the job that carries it.**
+
+> **The restatement I want cited, in place of "runtest triples":** family L's
+> five phases cost **2.036 s of CPU**, and the test step carrying them measured
+> **4 s against a ~306 s build job — under 1.5% of it.** The right sentence for a
+> future reader is *"the line-rate stress is under two seconds and under two
+> percent of a CI job"*, not *"the test step grew by a third"*, because the second
+> is true and useless and the first is what a decision would ever turn on.
+
+**Two honesties attached to that figure.** (i) The probe's Φ5 does the per-frame
+split and `account_clean_frame` but **not** the row's per-octet content
+comparisons (§4.1 items 3–9), its sequence read-back (§7) or its record
+comparisons (§§5–6); at Φ2's implied ~10 ns per elementary step, 600 000 octet
+comparisons plus 10 000 field decodes is tens of milliseconds, and even at ten
+times that the unit stays inside band A by an order of magnitude — but it is an
+**estimate**, and the landed unit's true cost is a stage-2 measurement.
+(ii) `dune` runs actions in parallel, so a step's wall-clock growth is a **lower**
+bound on CPU added; the 4 s step reading is not a refutation of the 2.036 s CPU
+figure and is not offered as one.
+
+**Rider on bar L-13, binding me and adding no worker condition.** At the stage-2
+landing commit, alongside the two step conclusions L-13 already reads, I record
+the **duration** of step *"Run tests"* and compare it against this section's
+≤ 5 s expectation. If it exceeds it materially, the finding is against this
+ruling's estimate — not against the worker, whose bars say nothing about runtime.
+
+#### 8. Stage 2 — **COMMISSIONED**, `BL10` discharged
+
+**The worker packet-reference, exactly**:
+`agents/handoffs/WO-0070_m03-family-l-line-rate-stress.md`, **§§2–13 and §15, as
+written and unamended**, plus this ruling in the Return log as the `BL10`
+discharge. Specifically: §2 the derivation base, §3 the latency constants, §§4–8
+the five rows, §9 the forced unit structure and its nine-item assertion order,
+§10 the twelve traps, §11 the two-path scope, §12 the sixteen-bar table with its
+seat assignments, §13 the twelve BOUNCE conditions, §15 the return format. §0 is
+context. **§1 is stage 1 and is SPENT** — the worker executes nothing in it, and
+its band-B and band-C branches are dead for this round. §14 is mine.
+
+**Context provided** is the packet header's own list, unchanged:
+`test/xgmii_rx_64/bench.mli`, `test/xgmii/arrival.mli`, `test/xgmii/frame.mli`,
+`test/monitors/octet_time.mli`, the §4.L plan rows and the spec sections named
+there. **No `libs/**`, no `top/**`, no `rtl_snapshots/**`** (PROTOCOL §10; `BL7`).
+
+**Deliverable**: exactly §11's two paths —
+`test/xgmii_rx_64/test_m03_l.ml` (new) and `test/xgmii_rx_64/dune` (**header
+comment only**) — plus the worker's journal append and its entry in this Return
+log. `BL6` stands.
+
+**Three consequences of band A, pinned here so they are not re-decided:**
+
+1. **Bar L-2's band-A branch is the live one**: the diff over
+   `test/xgmii_rx_64/bench.ml`, `bench.mli`, `test/xgmii/` and `test/monitors/`
+   between base and landing must be **EMPTY**. No machinery remedy is authorised;
+   a non-empty diff there is a `BL6` bounce and not a band-B remedy.
+2. **§9's structure is not relaxed by the cheapness.** `T` = 2.036 s might tempt a
+   reader to think four units are now affordable. They are not licensed: `BL4`
+   forbids a second `Bench.run` in unit 1 and `BL11` requires one title naming all
+   four row ids, and both stand on the census and single-stimulus grounds, not on
+   the cost. **T1 remains a trap.**
+3. **Bar L-14's figures are re-based to HEAD and stand.** The packet's
+   `Base commit: d2bdd57` was where the derivations were **taken**; the working
+   branch is now `d8d68db`. `git diff --name-only d2bdd57 d8d68db` touches **no
+   path under `test/`** — the three intervening commits move handoffs, journals,
+   `docs/specs/` and `tasks/BOARD.md` only — so every figure §§2–12 takes from the
+   test tree is unmoved, and L-14's census 48 → 53, inventory 54 → 56 and
+   repository-wide 134 → 136 are unchanged. **Stage 2's base is HEAD at its own
+   spawn**, and this paragraph is why that costs nothing.
+
+#### 9. The transient's disposition — recorded as executed to the environment's limit, and no further
+
+**What ran**: Appendix A materialised verbatim on `mut/wo70-cost-probe-l` at
+`9f3a6166a1639b3ecb2344d570f59aecffd2c447`, cut from `d2bdd57`; CI `build` run
+`31007340877`, job `92310423073`, **success**. §1.7's one named construction risk
+— the `(inline_tests)` library dependency — **did not bite**: the probe compiled
+first try, so the accepted one-run risk cost nothing, and naming the symptom and
+remedy in the instrument's own terms cost nothing either.
+
+**What did not run**: the local ref was deleted; **the remote ref's deletion was
+REFUSED by the environment's git proxy (HTTP 403).** So §1.2's *"discards the
+ref"* is executed to the limit the environment permits and **not further, and this
+packet does not claim the ref was discarded.**
+
+**Verified rather than accepted** (read-only, no ref moved):
+
+```
+$ git ls-remote origin 'refs/heads/mut/wo70-cost-probe-l'
+9f3a6166a1639b3ecb2344d570f59aecffd2c447	refs/heads/mut/wo70-cost-probe-l
+$ git ls-remote origin 'refs/heads/mut/*' | wc -l
+59
+```
+
+**The failure mode §1.2 ground 2 names did not attach, and the distinction is the
+whole of why this is a record and not a repetition.** `test/cost_probe/`'s
+undischarged deletion costs a **recurring** tax on the `runtest` alias of the
+working branch. This residue is a **remote ref**: the directory never entered the
+working branch, nothing is on any alias, and the ref triggers no further CI runs.
+**Recurring cost: zero.** What survives is the bookkeeping half of the same shape —
+an end condition met and not executed — and it is recorded rather than absorbed.
+
+**One measurement I did not expect and am reporting, not repairing.** The residue
+is not this round's and not WO-0058's: **59 refs under `refs/heads/mut/` are alive
+on the remote**, spanning `mut/bug3-sev-probe` and the `wo-0039`, `wo-0041`,
+`wo-0042`, `wo-0045`, `wo-0050`, `wo-0058` campaign families. I contributed one of
+the 59 and mine carries **no RTL mutation at all** — it is a DV-authored,
+print-only, zero-assertion probe. I did **not** inspect any of the others'
+contents and deliberately did not (PROTOCOL §10 independence; they are seeded-RTL
+refs). The observable I assert is the count and the names. **This bears on
+PROTOCOL §10's transient model** — whose text says the orchestrator "applies each
+manifest transiently in an uncommitted working tree … and never lets mutated RTL
+enter history", while the operated mechanism is a pushed transient ref — and on
+whether "history" means the working branch's or the repository's reachable
+objects. **That is not mine to rule and not mine to repair**: mutation discipline
+is the auditor's ledger and the transient model is the orchestrator's to operate.
+It is raised as a question in §10 below and in `J-dv_lead-0126`'s Open-questions,
+and **no artefact of this round depends on its answer.**
+
+#### 10. Two debts re-pinned, and one question the ruling cannot settle
+
+1. **§14 item 4's carrier is RE-PINNED off the worker's commit.** §14 named
+   *"stage 2's commit"* as the carrier for deleting `test/cost_probe/`, and §14
+   also says it is *"not a stage-2 bounce condition — it is my debt, not the
+   worker's."* Those two clauses conflict with §11's *"exactly two paths"* and
+   with `BL6`, which bounces any path outside §11's list: if the worker's commit
+   carried the deletion, **`BL6` would convict the executor of my housekeeping** —
+   the precise outcome §14 disclaims. **Ruled: the deletion rides in a `dv_lead`
+   commit of this round's window** (the batched `AP-` round, or a dv commit
+   adjacent to stage 2), **never inside the worker's.** §11 and `BL6` stand
+   unamended; §14's intent is preserved and now has a mechanism instead of an
+   intention. Recorded here because the Return log is append-only and the packet
+   body is not to be edited.
+2. **The batched `AP-` round's contents grow by two, both from `WO-0069`'s
+   landed rulings** (§11 below of `J-dv_lead-0126`): the *"presence per cycle and
+   not multiplicity"* phrasing at two sites in `AP-xgmii_rx_64.md`, and the
+   now-answered *"raised as an architect question"* framing of the multiplicity
+   item. That round already carries CD §0-bis, AP §7's per-class condition and
+   `J-dv_lead-0094`'s malformed change-log row.
+3. **Open, for the orchestrator, not blocking**: no inventory of surviving
+   `mut/*` refs exists anywhere in the repo (`tasks/BOARD.md` has no `mut/`
+   string). With 59 alive and the only record of them being prose scattered
+   through verdicts, whether one should be minted — and where — is a question for
+   the seat that operates the transient model.
+
+**HEAD at return**: `d8d68db7f3fe9442e76d805f2e19f6feeb96d15a`, equal to HEAD at
+spawn. No command run this round moved HEAD, the index or any ref; all git use was
+read-only (`rev-parse`, `status`, `log`, `diff --name-only`, `branch`,
+`ls-remote`).
