@@ -3560,3 +3560,280 @@ round is neither; declared rather than omitted.
    the orchestrator owns the correction.
 ### Files-in-this-commit
 - docs/reports/audit/WO-0073-mutations/README.md
+
+## [J-auditor-0016] 2026-08-10T02:35Z | task:WO-0074 | Eight family-M strobe-set classes: seven seeded datapath-silent by reachability against ca1bb80, IC-M5 declared NOT SEEDED on a quoted shared open-frame term, and the branches withheld pending a ruling on who may push them
+### Trigger
+Orchestrator spawn, short-id `WO-0074-SEED/2026-08-10T01:40Z`. Commission: seed the
+family-M mutation campaign per `agents/handoffs/WO-0074_family-m-mutation-campaign.md`
+— eight classes IC-M1…IC-M7 and IC-M10 (ids 8 and 9 deliberately absent and
+unseedable, derived in the packet's §4), every one of them required to be
+**datapath-silent**, each a single independent diff, blinded, with the ten mandatory
+disclosures answered and the reading-note channel open **before** any run.
+### Inputs
+Read, and nothing else — the packet's §7 allowlist is absolute:
+`agents/charters/auditor.md` and `agents/PROTOCOL.md` (mandatory first actions,
+predating the packet); `agents/handoffs/WO-0074_family-m-mutation-campaign.md` in
+full; `libs/hardcaml_ethernet/src/xgmii_rx_64.ml` (all 1011 lines) and its `.mli`
+(45 lines) at `ca1bb80`; `docs/specs/modules/xgmii_rx_64.md` §6.1 (261–380,
+618–713), §6.2 (714–728), §6.3 (729–801), §7 (803–813), §9 (929–1175);
+`docs/specs/requirements.md` §0.6 (394–464) and rows REQ-102, REQ-103, REQ-104,
+REQ-105, REQ-107, REQ-108, REQ-110, REQ-007, REQ-008, REQ-013, REQ-015, REQ-018,
+REQ-301, REQ-304, REQ-810, REQ-901; the tail of this journal, to derive the entry
+id and last round's form.
+**Not read**: the sealed companion
+`agents/handoffs/WO-0074_family-m-mutation-campaign-SEALED-predictions.md` — not
+opened, not grepped, not `git show`n, no excerpt, no line count; **all of
+`test/**`**, the five carrier files `test_m03_b.ml`, `test_m03_e.ml`,
+`test_m03_f.ml`, `test_m03_g.ml`, `test_m03_h.ml` included, `bench.ml`/`bench.mli`,
+`test/xgmii/`, `test/monitors/`, `test/golden/`, `test/cosim/`, and
+`test/attack_plans/AP-xgmii_rx_64.md` **by name**; **all of `agents/**`** bar the
+packet and my two charter documents, every journal but this one included; and
+`docs/adr/`, `docs/gates/`, `tasks/`, `tools/`, `scripts/`, `.github/`.
+**Three exposures outside the allowlist, disclosed in the manifest's §0 and here.**
+`.gitignore` and `ls` of the dune/opam layout — toolchain hygiene, no campaign
+content. `git show --stat --name-only ca1bb80` — file **names** only, which
+returned the packet, the seal and dv_lead's journal, and unavoidably the commit's
+**subject line**, whose third clause (*"seven load-bearing greens"*) is a count I
+cannot map to a cell and did not act on; the IC-M5 derivation was complete before
+that command ran, which is checkable against the Actions order below.
+`git log --oneline -1` on the mutation target, returning `b848d56`, to confirm the
+file I read is the file at the base.
+### Reasoning
+**Sampling frame.** The window is one file and eight classes. I read the mutation
+target in full rather than sampling it — a manifest discharging reachability term
+by term cannot cite lines it has not seen — and sampled the specs at the sections
+and rows the packet's Spec basis names. I deliberately skipped the rest of
+`requirements.md` (the §0.x prose beyond §0.6, the REQ-2xx/4xx/5xx/7xx rows) as
+ground for classes this round does not seed, and skipped **absolutely** all of
+`test/**` and `agents/**` bar the packet: that is the packet's blinding, not a
+sampling choice, and the AP is barred by name because the eight classes are quoted
+from its Kills cells.
+
+**What made this campaign different from the previous seven, and what it forced.**
+`WO-0073`'s classes moved the datapath by design; every class here is forbidden to.
+So the pre-ship check stopped being a side condition and became the qualification
+criterion, and I inverted the selection rule accordingly: instead of choosing the
+most faithful rendering and then checking it, I chose the rendering **whose
+mutated term has no consumer on a path to an `rx` field**, and only then checked
+faithfulness. Six of the seven seeded classes pass §6 by *reachability* rather
+than by argument — the mutated term is read only by `abort` (975) and an
+`error_*` port, and `abort` reaches `tuser` (998) alone, where the class's own
+co-condition already holds it high. That is a stronger result than "identical at
+the carrier": identical **everywhere**, at every stimulus, including ones no
+carrier drives. It is also the only form of the check I could honestly make, since
+the carriers are barred and no mutant can be elaborated in this environment.
+
+Renderings chosen, each with what it rejected:
+- **IC-M1 at the port (1000)**, `strobe (sel_bad_fcs &: ~:sel_runt)`. **Rejected
+  gating the record bit at 513** with `~:a_close_runt`: same observable, but it
+  routes the suppression through `abort` and would have rested the class's
+  datapath-silence on the coincidence that `sel_runt` keeps `abort` high, instead
+  of on the port having no consumer. D-M1b is then answerable without a hedge.
+- **IC-M2/M3/M4 as three replacements of the same line (513)**, one per closure
+  kind. The shared site is §5's predicted four-class share and `WO-0073-VERDICT`
+  §7 Q4 governs; they are not combinable even textually. **All three retain
+  `has_fcs` (470)** — dropping it would make each of them also IC-M10, which §10
+  forbids, and it makes the zero-delivered abort members *required greens*.
+- **IC-M6/M7 by widening `a_char_acts` (364) on exactly one arm each**, keyed on
+  `sm.is State.Discard`. **Rejected widening `a_char_acts` itself**: that enables
+  the terminate arm too, sets `sel_terminate` and therefore `strip` = 4 (800) on a
+  stray `/T/`, and would have shipped the class plus a datapath defect. **Rejected
+  keying on "any character that finds no open frame"** (the second reading of
+  D-M6a/D-M7a): it reddens ordinary inter-frame characters, scores zero under
+  §8.1 rule 3 and destroys the epoch measurement that is the whole point of
+  `FINDING M-1`/`M-2`.
+- **IC-M10 by corrupting the named constant (136), `fcs_min_octets` 5 → 0.**
+  **Rejected `let has_fcs = vdd`** at 470: it renders the same class but leaves
+  `fcs_min_octets` unreferenced in a module whose `.mli` does not export it — an
+  unused-value declaration, a **build** failure, and a branch red at build scores
+  nothing. This is the second consecutive campaign in which the cheapest-looking
+  edit was rejected for a reason that has nothing to do with the class.
+
+**IC-M5, which is the round's own result rather than its gap.** D-M5a states a
+checkable test — *one signal serves both* — and this design meets it: `a_open`
+(296) is the REQ-110 abort detector's open-frame term, through `a_char_acts` (364)
+→ `a_closes_with` (365) → `a_close_start` (375), **and** the delivery path's,
+through `bubble` (732) and, as the FSM state behind it, `cov_first` (297–302). I
+attempted two renderings before declaring, and both move the datapath. Dropping
+the error arm from `a_close_char` (376) never births the closure record (`a_close_now`,
+377 → `r0.~valid`, 508), so the aborted frame's last word is stranded — `emit_full`
+(962) needs `ev12`, which is 0 once the octets stop. Keeping the record and
+removing the arm only from the FSM's `Preamble`/`Frame` rows (622, 632) leaves
+`a_open` high, which at **offset 4** forces `bubble` = 1 on the first idle word
+after the `/E/` and drives `al_keep` (741) to zero where the base delivers
+`{cov[3:0], cov_d[7:4]}` — **the aborted frame's final half word is lost**, which
+is a `BUG-0003`-signature component and exactly what §6 refuses. A third rendering
+— adding a report-only open-frame register this design does not contain — I
+rejected on two grounds, the second load-bearing: it is the construction of a term
+rather than the mutation of one, and its spurious `r0` reaches `strip`, `closed`,
+`decided`, every emission arm and `consume`, so §6's **positive** confirmation
+would have to be argued at a carrier I may not read. I therefore declare NOT
+SEEDED, and I state the claim in its **narrow** form — no datapath-silent mutant is
+reachable by modifying *this design's existing terms*, because it has exactly one
+open-frame term and that term bounds the delivered extent — rather than §8.1 rule
+3's wider wording, which would assert something about implementations generally
+that this evidence does not reach.
+
+**The mechanics conflict, and why I did not resolve it myself.** The spawn
+instructs me to cut, commit and push seven branches carrying mutated RTL. PROTOCOL
+§2 (sole operator of git), §6/R7 (auditor stages `docs/reports/audit/**` only),
+§10's transient model (the *orchestrator* applies manifests) and my own charter §4
+and §8 all forbid it, and my spawn's own non-negotiable list restates the
+prohibition in terms. This is not new: my own `J-auditor-0015` Actions (lines
+3458–3464 of this journal) record the same instruction being followed at `WO-0073`,
+and `J-auditor-0014` at `WO-0066`. So the practice is established, journaled and —
+so far as I can verify from inside this campaign's blinding — **never authorised by
+an ADR**, which PROTOCOL §11 requires for any change to the protocol or a charter.
+The asymmetry decided it: a wrong push is irreversible (my own last entry records
+R9's no-force-push holding on transient refs), a withheld push costs the operator
+seven commands. I filed it as **FINDING WO-0074-A1 (MAJOR)** before any branch
+existed — §8's own window for a disagreement — and made the operator step
+mechanical instead of merely describing it.
+### Actions
+- Ran the anti-collision precheck first: no `mut/wo-0074-*` ref locally or on the
+  remote, no `docs/reports/audit/WO-0074-mutations/` in the tree, HEAD `ca1bb80`,
+  working tree clean.
+- Read the mutation target and its `.mli` in full, then the packet's named spec
+  sections and rows; derived all eight renderings from the source and the
+  specification, never from a bench.
+- Derived IC-M5's NOT SEEDED declaration — including both refuted renderings —
+  **before** running any `git show` against the base commit.
+- Authored seven single-class diffs against `ca1bb80`, each touching only
+  `libs/hardcaml_ethernet/src/xgmii_rx_64.ml`, and verified every one by
+  `git apply --check`, then by apply → `git status --porcelain` → revert →
+  `git status --porcelain`, restoring a clean tree each time.
+- Enumerated, by `grep` with comment lines excluded, every consumer of every
+  mutated identifier — `sel_bad_fcs`, `sel_runt`, `bad_fcs`, `has_fcs`,
+  `fcs_min_octets`, `a_close_start`, `a_close_error`, `a_close_char`,
+  `a_close_now`, `a_open`, `abort`, `sel_valid` — so that §6's positive check and
+  R-DISC-2's inventory are falsifiable rather than asserted.
+- Wrote the manifest `docs/reports/audit/WO-0074-mutations/README.md` (one file):
+  blinding statement with its three disclosed exposures, the §8 base-SHA
+  discharge, FINDING WO-0074-A1, the seven diffs and IC-M5's derivation,
+  R-DISC-2's **inverted** gate inventory with the datapath as a negative and nine
+  cross-class rows, R-DISC-1's per-class per-lane per-member discharge with
+  stimulus/mutation/design conjuncts marked, the ten disclosures, §6's positive
+  check for all eight, seven blast-radius rules, the five-question pre-run reading
+  note, and the operator's branch table.
+- **Cut, committed and pushed nothing.** Ran no `dune`, anywhere. Returned to
+  `claude/fpga-hardcaml-agent-orchestration-37ceyf` and verified HEAD unmoved.
+### Evidence
+Precheck and base, working tree clean:
+```
+$ git branch -a --list '*wo-0074*'                        -> (empty)
+$ git ls-remote --heads origin 'refs/heads/mut/wo-0074-*'  -> (empty)
+$ ls -d docs/reports/audit/WO-0074-mutations                -> No such file or directory
+$ git rev-parse HEAD    -> ca1bb80a80d1b7a3f4f705fe4c056e97227c2b5b
+$ git show --stat --name-only ca1bb80    (names only — the seal was not opened)
+agents/handoffs/WO-0074_family-m-mutation-campaign-SEALED-predictions.md
+agents/handoffs/WO-0074_family-m-mutation-campaign.md
+agents/journals/claude_dv_lead_agent.v05.md
+$ git rev-parse ca1bb80^ -> 2761ec5af245379a931a299a80229a288d9bbd8d
+```
+`ca1bb80` stages the packet **and** its seal, so §8's rule and the operating base
+are the same commit and there is nothing to file — unlike `WO-0073`, where they
+differed and cost `FINDING WO-0073-M1`. R-SEAL-1 satisfied on its face.
+
+Diff independence, each patch alone at `ca1bb80` with a clean tree:
+```
+$ git apply --check $N.patch && git apply $N.patch \
+    && git status --porcelain && git apply -R $N.patch && git status --porcelain
+IC-M1 : anchors=1 apply-check=OK  applied[ M libs/hardcaml_ethernet/src/xgmii_rx_64.ml] reverted-clean=0
+IC-M2 : anchors=1 apply-check=OK  applied[ M libs/hardcaml_ethernet/src/xgmii_rx_64.ml] reverted-clean=0
+IC-M3 : anchors=1 apply-check=OK  applied[ M libs/hardcaml_ethernet/src/xgmii_rx_64.ml] reverted-clean=0
+IC-M4 : anchors=1 apply-check=OK  applied[ M libs/hardcaml_ethernet/src/xgmii_rx_64.ml] reverted-clean=0
+IC-M6 : anchors=1 apply-check=OK  applied[ M libs/hardcaml_ethernet/src/xgmii_rx_64.ml] reverted-clean=0
+IC-M7 : anchors=1 apply-check=OK  applied[ M libs/hardcaml_ethernet/src/xgmii_rx_64.ml] reverted-clean=0
+IC-M10: anchors=1 apply-check=OK  applied[ M libs/hardcaml_ethernet/src/xgmii_rx_64.ml] reverted-clean=0
+```
+Consumer enumeration behind §6's positive check (comment lines excluded):
+```
+$ grep -n '\bsel_bad_fcs\b' ...   533 (def), 975 (abort), 1000 (port)   -- and nothing else
+$ grep -n '\babort\b' ...          975 (def), 998 (tuser)               -- and nothing else
+$ grep -n '\bfcs_min_octets\b' ... 136 (def), 470 (has_fcs)             -- and nothing else
+$ grep -n '\ba_close_now\b' ...    377 (def), 508 (r0 ~valid), 732 (bubble)
+$ grep -n '\ba_close_char\b' ...   376 (def), 377, 622 (Preamble row), 632 (Frame row)
+$ grep -n '\ba_open\b' ...         296 (def), 362, 364, 732             -- report, report, delivery
+$ grep -n '\bsel_valid\b' ...      528 (def), 800 (strip), 956 (closed), 977 (consume)
+```
+No elaboration was attempted and none is offered: the `fpga` opam switch here
+carries `dune` 3.24.1 and **no compiler libraries and no Hardcaml**
+(`ls ~/.opam/fpga/lib` -> `dune stublibs toplevel`), so neither a mutant nor the
+base can be built in this environment. **`dune` was not run, on the working branch
+or anywhere.** CI is the authority (ADR-0005, packet §12(c)); a mutant that does
+not compile is a build finding whose evidence is the CI build step's own
+conclusion.
+
+Remote after this round — deliberately unchanged:
+```
+$ git ls-remote --heads origin 'refs/heads/mut/wo-0074-*'   -> (empty)
+```
+Working branch at return:
+```
+$ git rev-parse HEAD          -> ca1bb80a80d1b7a3f4f705fe4c056e97227c2b5b
+$ git branch --show-current   -> claude/fpga-hardcaml-agent-orchestration-37ceyf
+$ git status --porcelain -uall
+?? docs/reports/audit/WO-0074-mutations/README.md
+```
+### Outcome
+DoD **partially met**, with the gap named rather than glossed. **Met**: eight
+classes dispositioned — seven seeded as minimal independent diffs verified to apply
+and revert at the base SHA, one (**IC-M5**) self-declared NOT SEEDED under D-M5a
+with the shared term quoted, which §8.1 rule 3 pre-fixes as a result of this
+campaign; all ten mandatory disclosures answered in my own words — D-M1a **R**,
+D-M1b **strobe only**, D-M2a **the 1518 received octets against `0x2144DF1C`**,
+D-M3a **the octets before the `/E/`, no removal, `has_fcs` retained**, D-M4a **the
+octets before the `/S/`, likewise**, D-M5a **NOT SEEDED, shared term `a_open`
+(296)**, D-M5b **the FSM's own exits**, D-M6a **the `Discard` state**, D-M7a **the
+`Discard` state**, D-M10a **the `0x00000000` seed, and the class fires there**;
+§6's pre-ship check **positive for all eight**, six of the seven seeded classes
+passing by reachability rather than by argument; R-DISC-1 discharged per class at
+both start lanes and over the design's own parameter space, with the carrier member
+lists declared unavailable by blinding and the rule form governing; R-DISC-2's
+inventory stated **inverted** — every class names the report path, none names the
+datapath — with nine cross-class rows tabulated before delivery. **Not met**: the
+seven transient branches are **not cut**, on FINDING WO-0074-A1, so no CI run
+exists and the scorecard half cannot start until that is ruled. Price restated
+downward and declared before any run: **7 × 344 s ≈ 40.1 minutes**, against §12's
+≈ 45.9; IC-M10 rides, per §12(b)'s recommendation. Handoff: the manifest to the
+orchestrator for commit, and to dv_lead as this campaign's manifest **and** its
+pre-run reading note (§9, five questions, all before the run). **No lessons harvest
+is due** — the charter fixes harvests at every `SO-` and every phase gate and this
+round is neither; declared rather than omitted.
+### Open-questions
+1. **FINDING WO-0074-A1 (MAJOR) — who may cut the transient branches.** My spawn
+   instructs the auditor to push seven branches carrying mutated RTL; PROTOCOL §2,
+   §6/R7 and §10, my charter §4/§8, and my spawn's own non-negotiable list forbid
+   it. `J-auditor-0015` (this journal, 3458–3464) and `J-auditor-0014` record the
+   same instruction followed at `WO-0073` and `WO-0066`, so the practice is three
+   campaigns deep and, so far as I can verify without breaking blinding, unamended
+   by ADR — which PROTOCOL §11 requires. **Ruling wanted, in one of two forms**:
+   cite the ADR that authorises auditor-operated transient branches and this closes
+   in a line; or have the orchestrator cut them from the manifest's §11 table,
+   under its own trailer, and open the amendment. Blocking for the run half only.
+2. **IC-M5's declaration scope.** I claim the **narrow** form — ruling 5 has no
+   datapath-silent mutant reachable by modifying *this design's* existing terms.
+   §8.1 rule 3's wording is wider. Does the verdict adopt the narrow form? I
+   decline the wide one on evidence grounds.
+3. **IC-M10 cannot reach epochs B and C**, structurally: `inword_strobes`
+   (571–582) carries no `error_bad_fcs` bit at all. Any sub-five member closed
+   inside its own start word is a **required green** of the class, not a miss.
+   Declared before the run; if a seal cell reads only the octet count it will
+   score a structural green as a failure to seed.
+4. **IC-M2, IC-M3 and IC-M4 keep the sub-five gate deliberately**, so the
+   zero-delivered abort members are required greens of M3 and M4. A seal cell
+   expecting a red there is expecting the combined class §10 forbids.
+5. **A collision prediction offered before the run**: IC-M3 and IC-M4 both add one
+   `error_bad_fcs` pulse to a zero-`strip` abort with the delivered stream
+   unmoved, so at a count-shaped cell that prints neither the strobe name nor its
+   cycle their messages can be character-identical. They are **not** the same edit
+   — different disjuncts at 372 and 375 selecting disjoint closure kinds — and the
+   branch name is the discriminator §10 item 2's fixed ordering preserves.
+6. **The clock discrepancy, recorded again because I audit rather than tidy**: my
+   spawn short-id is minted `2026-08-10T01:40Z` while this session's environment
+   reports the date as 2026-08-05. I have taken the spawn mint as authoritative
+   for this entry's timestamp, as I did at `J-auditor-0015`. Entry-id
+   monotonicity is unaffected; if the mint is wrong the orchestrator owns the
+   correction, and this is now the second consecutive round it has recurred.
+### Files-in-this-commit
+- docs/reports/audit/WO-0074-mutations/README.md
