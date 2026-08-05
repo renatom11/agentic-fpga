@@ -2590,3 +2590,38 @@ declared-scope-overlap, §10 tree-vs-ref).
 
 ### Files-in-this-commit
 - tasks/BOARD.md
+
+## [J-orchestrator-0212] 2026-08-09T18:10Z | task:WO-0072 | The last bench round opens - six dispositions before any run, and a red at the landing pre-ruled a designed outcome
+
+### Trigger
+dv's WO-0072 family-K design returned and landed (97073be,
+J-dv_lead-0130): K1/K2 fully derived with kill audits (nothing
+withdrawn, one claim forbidden - the sixth instance of the
+unreachable-kill shape); K2 at the tightest legal placement (release
+cycle = frame B's own start cycle); disposition classes D1-D6
+pre-committed with D5's position filed before any red; dv's three
+refinements of my dispatch each stated and turned into BOUNCEs
+(literal Enable reuse wrong twice; third kill reclassified; the
+cost ceiling made falsifiable). dv applied the durability clause to
+itself for two classifier-outage refusals. HEAD integrity held.
+
+### Rulings
+- dv Q1: AFFIRMED - a red at the landing commit is a DESIGNED
+  outcome of this round. The CI result routes to dv for disposition
+  under D1-D6; I will not treat a red Run-tests step as a failed
+  worker round, and reverting is expressly not a class. Written
+  into the heartbeat so no wake mishandles it.
+- dv Q2: AFFIRMED - the batched AP round follows immediately after
+  K's landing and review, now carrying its five new items.
+- dv Q3: the SPEC-M03 §6.2 Idle-row ambiguity is NOTED for the next
+  spec queue to architect_docs_lead; not this round's.
+
+### What I did
+- Landed 97073be, pushed; board row WO-0072 PACKET LANDED - WORKER
+  BUILDING - THE LAST BENCH ROUND, with the rulings recorded.
+- Next: spawn tb_writer on the build (six staged files, §17's
+  enumerated allow-list verbatim), then the review, then the AP
+  round, then the campaigns, then the SO-M03 arc.
+
+### Files-in-this-commit
+- tasks/BOARD.md
