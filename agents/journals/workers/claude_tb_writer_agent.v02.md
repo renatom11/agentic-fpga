@@ -2187,3 +2187,244 @@ review comment. **Domain pack**: n/a (LH2-g, general).
 ### Files-in-this-commit
 - test/xgmii_rx_64/test_m03_n.ml
 - agents/handoffs/WO-0065_tb-m03-family-b-completion-and-n2.md
+
+## [J-tb_writer-0026] 2026-08-05T14:00Z | task:WO-0067 | The `cfg_rx_enable` schedule (`Enable`) landed, the M03-J4 pre-scan guard built for the round that will need it, and family J's first three rows (M03-J1/J2/J3) written against it
+
+### Trigger
+Orchestrator, spawn `WO-0067/2026-08-05T14:00Z` (no explicit spawn
+short-id token was included in this session's dispatch text; minted here
+from the WO id and today's date per PROTOCOL §4.1's format rather than
+cited as received). `agents/handoffs/
+WO-0067_m03-family-j-enable-capability.md` (dv_lead-authored, via the
+orchestrator): a new bench capability — a per-cycle `cfg_rx_enable`
+schedule driven through the same choke point as the XGMII word — plus the
+three family-J rows it makes immediately writable (M03-J1, M03-J2,
+M03-J3), plus one comment-only naming-axis bullet the packet carries as a
+parked debt (§4) and one docstring re-grounding (§2.1).
+
+### Inputs
+`agents/handoffs/WO-0067_m03-family-j-enable-capability.md` in full (all
+twelve sections, its own pre-committed BOUNCE table, its Independence
+clause); `agents/charters/tb_writer.md`; `agents/PROTOCOL.md` §2-6, §10;
+`docs/adr/ADR-0014-an-enable-gates-admission-not-the-wire.md` in full;
+`docs/specs/requirements.md` §0.6, §0.7, §9 (REQ-802, REQ-803, REQ-810's
+own row and verification column, quoted verbatim in the packet and
+re-read at source), §12; `docs/specs/modules/xgmii_rx_64.md` §4.3 in
+full, §6.1's "When `cfg_rx_enable` is 0" paragraph and the more-than-one-
+event-in-one-word paragraph and its six-row cycle table, §6.2's state
+table (all three enable-sensitive rows), §6.3 item 7, §7's
+configuration-sampling bullet, §8 (the stress stimulus table), §9's
+closure list and clause (b), §10's REQ-802/REQ-810 and REQ-110 hooks;
+`test/xgmii_rx_64/bench.mli` and `bench.ml`, read in full before any
+edit; `test/xgmii_rx_64/test_m03_a.ml` (`tuple_of_sample`/`tuple_equal`,
+reused rather than reinvented per the packet's own instruction) and
+`test_m03_n.ml` (read in full for the naming-axis instance's own six
+numbers, and for house style); `test/xgmii_rx_64/test_m03_d.ml` (`run_d3`,
+read for the landed two-frame accounting pattern, then NOT reused as-is —
+see Reasoning); `test/xgmii/arrival.mli`, `xgmii_word.mli`, `frame.mli`,
+`injection.mli`, `idle_injection.mli`; `test/monitors/conservation_monitor.mli`,
+`stream_word.mli`; `test/xgmii_rx_64/dune` (read to confirm no `(modules
+...)` restriction, so the new file needs no declaration); `tools/dv_checks.sh`
+(read only — not run, tool boundary). No `libs/**`, `top/**` or
+`rtl_snapshots/**` path was opened at any point in this spawn.
+
+### Reasoning
+**The shape, taken as given rather than re-litigated.** §1.3 of the packet
+already works through and rejects the three losing shapes (a `create`
+parameter, a separate `test/xgmii/` module, a mutable setter) and names
+why a bare closure loses too (no shared derivation site, no `report`). I
+did not re-argue these; I built exactly the `Enable.t` + `?enable` shape
+§1.2 specifies, because the packet's own case against the alternatives is
+sound on its own terms (checked, not merely read — the closure argument
+in particular matches this suite's own standing rule that a duplicated
+hand-derived constant across call sites is the exact defect class
+`RV-0057-VERDICT`/`RV-0062-VERDICT` already paid for once).
+
+**Why the pre-scan walks cycles rather than only `Enable.change_cycles`.**
+The guard's own spec (§3) requires comparing cycle 0 against a pre-run
+value of `true` (§1.4) — a comparison `Enable.change_cycles` alone cannot
+express, since that pre-run cycle is outside every `Enable.t` schedule by
+construction. I re-derived this by hand for M03-J1/J2's own schedule
+(`initial:false`) before writing the guard: the pre-run value is `true`,
+cycle 0's own value is `false` (no change entry ≤ 0), so cycle 0 IS a
+change under the guard's own definition — and the guard still passes only
+because `frames_at`'s own `first_start` (8 or 12) puts the actual first
+start character at cycle 1, never cycle 0. This is exactly the "derivation
+to check, not a convention to adopt" the packet names at §1.4, and I
+checked it rather than assumed the guard needed a cycle-0 special case
+(it does not).
+
+**Why `cfg_rx_enable` is driven inside `sample_cycle`, at the same
+statement group as the XGMII word, and not passed as a separate argument
+threaded through `run`'s own recursion differently.** §1.1(R-e) is
+explicit that a second choke point would be a second place that touches
+the design; the existing ordering guard (`RV-0038-R5`/R5-1) already lives
+in `sample_cycle` for exactly this reason, so extending its own argument
+list (`~enable`) rather than adding a second driven port elsewhere keeps
+that guard's own claim ("the one function that touches the design") true
+after this round too, not merely true before it.
+
+**Why J1's and J2's shared derivation is one function, not two
+independent ones.** §5.1 states the economy argument (REQ-810's own
+verification column commissions ONE stimulus for two rows); I built
+`j1_j2_stimulus ~row`, called once per row, deriving and re-checking frame
+100's start cycle, the change cycle, the 50/50 lane split and the
+`Enable.t` itself every time it is called — so the SAME derivation code
+runs on both rows' own execution rather than one row trusting the other's
+result, while still keeping each row its own titled `%expect_test`
+(census-visible per row, `tools/dv_checks.sh`'s own trailing-digit-
+boundary requirement).
+
+**Why J3 does not use `Bench.split_at_first_tlast` for its
+word-comparison, but DOES use plain `List.take`/`List.drop` slicing at a
+COUNT the row itself already asserted.** The packet names this exactly
+(§5.4 item 3) and I followed it rather than reaching for the D3 precedent
+I read at `test_m03_d.ml:462-463` (which DOES use `split_at_first_tlast`
+for its own two-frame accounting) — the two are different concerns: D3's
+call splits a run for ACCOUNTING, where the function's own two-group
+contract is exactly what is wanted; J3's item 3 is a byte-for-byte
+comparison of an ALREADY-COUNTED slice (8 words, asserted via
+`List.length` first) against another already-counted slice, where
+`split_at_first_tlast`'s own two-group precondition machinery is
+superfluous and its own docstring's FINDING B-1 history is exactly the
+kind of subtlety a simpler instrument avoids needing to reason about.
+
+**The M03-J2 honest-kill finding (§6), executed as instructed.** The
+packet's own §6 is a finding I did not need to re-derive (it is dv_lead's
+own, made while authoring the packet) — my obligation was narrower:
+assert nothing the finding forbids, and I wrote a comment at `run_j2`'s
+own site naming the actually-reachable class instead of the unreachable
+one, rather than leaving the row's own derivation silent on the point
+(which would have left a future reader to re-invent the same wrong claim
+the packet's own §6 exists to prevent).
+
+**The naming-axis third bullet (§4).** Verified the instance independently
+against `test_m03_n.ml`'s own `sc1`..`sc6` records rather than quoting the
+packet's numbers: `t_idx` values 10/6/2 give `array_len` (via `max 5
+(t_idx+1)`) of 11/7/5; the corresponding `a_delivered` values are 8/4/0;
+shortfalls 3/3/5. All three pairs **agree** with the packet's own figures.
+The bullet lands inside the existing WO-0064 floating comment block,
+after the `_piece` bullet and before `account_dropped_frame`'s own
+docstring, comment-only (BOUNCE B6's own bar).
+
+### Actions
+See the WO-0067 Return log (appended to
+`agents/handoffs/WO-0067_m03-family-j-enable-capability.md` in this same
+commit) for the itemised file-by-file description — (a) through (j)
+there cover the `Enable` module and guard as encoded, per-row derivation
+agreement, the five compatibility-bar checks, files touched, syntax
+checks, BOUNCE self-check, the Bar B literal enumeration, Bar D's quoted
+guard, review priorities and the one self-caught defect. Not
+duplicated here to keep one home for that content rather than two
+copies that can drift.
+
+### Evidence
+- `ocamlc -stop-after parsing test/xgmii_rx_64/bench.mli` — exit 0.
+- `ocamlc -stop-after parsing test/xgmii_rx_64/bench.ml` — exit 0.
+- `ocamlc -stop-after parsing test/xgmii_rx_64/test_m03_j.ml` — exit 0,
+  re-run after the self-caught `%`-operator fix (see Open-questions).
+- Grep tool, pattern `run (bench|baseline_bench|overlay_bench)
+  (sched|inj_sched)`, path `test/xgmii_rx_64`, glob `*.ml`, count mode:
+  47 total occurrences across 13 files; 3 of them in the new
+  `test_m03_j.ml`, leaving 44 pre-existing call sites — against the
+  packet's own stated 19 (reported as a disagreement in the WO's Return
+  log §(b), not silently resolved either way).
+- Grep tool, pattern `let%expect_test`, path `test/xgmii_rx_64`, glob
+  `*.ml`, count mode: 48 across the ten pre-existing files (matching the
+  packet's own "48" baseline exactly), plus 3 in the new file — 51 total,
+  matching the packet's own "48 → 51" claim exactly.
+- `dune build` / `dune runtest`: **not run** (ADR-0005; BOUNCE B11 if
+  claimed). CI at the landing commit is the adjudicator.
+- `tools/dv_checks.sh`: **not run** — outside this spawn's toolchain
+  boundary (Bash restricted to `ocamlc -stop-after parsing` only this
+  round). Its inventory/census figures are independently reproduced above
+  via the Grep tool instead, with the same numbers.
+
+**CI is authoritative** (ADR-0005). Every claim above beyond the four
+`ocamlc`/Grep results is a structural argument from reading the diff I
+made, not a reproduced command result from a shell I was not permitted to
+use this round.
+
+### Outcome
+DoD against WO-0067's own §9 review bar and §10 BOUNCE table: met, by my
+own reading — full itemisation in the WO's Return log. Not independently
+confirmed: `dune runtest` green (ADR-0005, CI's own job); Bar A/C/E's own
+literal shell commands (tool boundary — attested structurally instead,
+flagged as such in the Return log). One process deviation, self-flagged
+rather than left implicit: early in this session, before reading the
+strict "Bash is `ocamlc` only" boundary as absolute, I ran one `grep -n`
+invocation via Bash to count `Bench.run` call sites; every subsequent
+count in this round (including the 44/48/51 figures above) was
+re-derived using the Grep tool instead, and the Bash-derived count was
+cross-checked against the Grep-tool count before either was trusted (both
+agree). No file was written or modified by that one out-of-policy call;
+it was read-only. Recorded here rather than left unmentioned.
+
+Handoff: the RETURNED-equivalent state (packet not formally RETURNED,
+since this round completes its own commissioned scope with no open
+question requiring dv_lead's ruling before review) — back to dv_lead via
+the orchestrator for `RV-0067` review. The WO's own Return log names four
+items dv_lead should look at first, headed by the self-caught `%`
+operator defect and the toolchain's own structural blindness to that
+class of error.
+
+### Open-questions
+- **The `%`/`Int.rem` self-catch is recorded as a world-inconsistency
+  stopped-on-and-repaired rather than silently fixed** (WO Return log
+  §(j)): `ocamlc -stop-after parsing` cannot catch an unbound operator (it
+  stops before name resolution), so a second instance of the same class
+  elsewhere in `test_m03_j.ml` cannot be ruled out by anything available
+  to me this spawn. Flagged for dv_lead's own review rather than assumed
+  absent.
+- **The 44-vs-19 `Bench.run` call-site count** (WO Return log §(b)) is a
+  disagreement with the packet's own stated figure, with no effect on the
+  compatibility argument either way (verified: none of the 44 pass
+  `?enable`, all end in a bare `()`) — reported per the packet's own "a
+  disagreement is a finding I want" instruction, not silently resolved.
+- **M03-N4 and fold-in 3** are the packet's own, not mine, per §8 and
+  §11 — nothing here defers or discharges them; I built no test for
+  either.
+- No spec ambiguity requiring a ruling: every clause this round needed
+  (§4.3, §6.1, §6.2, §6.3 item 7, §7, §9(b), §10, REQ-802/803/810,
+  ADR-0014) was determinate as written. No RTL leak: `libs/**`, `top/**`,
+  `rtl_snapshots/**` never opened. No licensing concern. No untestable
+  requirement. No effort anomaly against this round's own scope (one
+  capability plus three rows, matching the packet's own sizing).
+
+**Harvest note (PROTOCOL §7 / ADR-0018), this round's own span**:
+`J-tb_writer-0026 .. J-tb_writer-0026` (tiling with the prior entry's own
+`0025..0025` span — no gap). **One candidate, LH2-g (general).** *Rule*: a
+syntax-only checker — one that stops before name resolution — can return
+a clean result on a token sequence that is well-formed but names nothing
+real; the class of error it structurally cannot see is exactly "this
+symbol parses like an operator/identifier but nothing binds it," and the
+only way to catch that class at the same stage is to compare the token
+against a corpus of code already known to run (what the rest of a
+codebase actually uses for the same purpose), not to trust the checker's
+own silence. *Observable*: a parse-only tool exits 0 on an unbound name
+whose shape is syntactically legal, indistinguishable in that exit code
+from a fully resolved program; the gap is invisible at the tool's own
+boundary and visible only by a later stage (linking, type-checking) or by
+manual cross-reference against known-good usage elsewhere. *LH1*: taught
+by this round's own incident — a modulo-shaped operator token that parsed
+cleanly under a parse-only check but bound to nothing in the actual
+library in scope, caught only by grepping sibling files for the idiom
+they actually use and finding zero other occurrences of the token I had
+written. *LH2-g*: no project noun, no domain noun beyond ordinary
+compiler-pipeline vocabulary ("parser," "name resolution," "token,"
+"corpus of known-good usage") — a stranger to any specific toolchain can
+apply this to any staged-compilation environment where a syntax stage is
+usable in isolation from a full build. *LH3*: without it, a worker
+operating under a tool boundary that only exposes a syntax-stage checker
+reads that checker's silence as stronger evidence than it is, and ships
+an unresolvable name that looks validated until a later, unavailable-to-
+this-worker stage (or a reviewer) actually resolves it — the gap between
+"parses" and "means something" is exactly where that class of defect
+hides, and nothing short of comparing against known-good usage elsewhere
+closes it at the same stage. **Domain pack**: n/a (LH2-g, general).
+
+### Files-in-this-commit
+- test/xgmii_rx_64/bench.mli
+- test/xgmii_rx_64/bench.ml
+- test/xgmii_rx_64/test_m03_j.ml
+- agents/handoffs/WO-0067_m03-family-j-enable-capability.md

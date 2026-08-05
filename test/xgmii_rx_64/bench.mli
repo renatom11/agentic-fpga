@@ -30,9 +30,11 @@
     {!strobes}. [run] feeds every cycle to the protocol and strobe monitors
     automatically. The conservation and latency monitors are *not* fed by
     [run]: only a row knows how many of its frames are exempt, aborted or
-    discarded (none, in this packet's clean-frame slice — no row here drives
-    family J's disabled-enable frames or family K's [clear]-truncated ones),
-    so {!account_clean_frame} is what a row calls instead, per the charter's
+    discarded (none, in this packet's clean-frame slice — family J's
+    disabled-enable frames are `test_m03_j.ml`'s own rows now (WO-0067 §5),
+    which call {!Conservation_monitor.frame_in_exempt} rather than this
+    function; family K's [clear]-truncated ones are still out of every row
+    here), so {!account_clean_frame} is what a row calls instead, per the charter's
     "wire the calls now" even though every call in this slice but M03-C4's is
     the same [~aborted:false] shape. Every frame in this packet delivers
     exactly the clean-frame identity extent (input − 8 − 4 octets, M03-C4's
@@ -51,9 +53,12 @@ open! Base
 type t
 
 (** Elaborate [Hardcaml_ethernet.Xgmii_rx_64], release [clear] after one
-    cycle and hold [cfg_rx_enable] at 1 for the rest of the run — family J
-    (the disable path) is out of this packet's eleven rows (WO-0038 §1) — and
-    attach the three standing monitors described above. *)
+    cycle, driving [cfg_rx_enable] = 1 THROUGH that reset cycle — REQ-009's
+    cycle, outside every schedule {!Enable.t} governs (WO-0067 §1.4) — and
+    attach the three standing monitors described above. From cycle 0 the
+    enable is {!run}'s own [?enable] argument: its default, {!Enable.high},
+    is 1 for the whole run and is byte-for-byte what every unit landed
+    before WO-0067 was written against. *)
 val create : unit -> t
 
 val protocol : t -> Dv_monitors.Protocol_monitor.t
@@ -66,12 +71,47 @@ val latency : t -> Dv_monitors.Octet_time.Latency.t
     built with. *)
 val strobe_names : string list
 
+(** A [cfg_rx_enable] schedule: the value in force from cycle 0, and the
+    cycles at which it changes. The reset cycle {!create} drives is outside
+    every schedule and is not governed by this type — see {!create}
+    (WO-0067). *)
+module Enable : sig
+  type t
+
+  (** 1 for the whole run. The DEFAULT, and byte-for-byte the behaviour every
+      unit landed before WO-0067 was written against. *)
+  val high : t
+
+  (** 0 for the whole run — M03-J1's own stimulus before its re-enable. *)
+  val low : t
+
+  (** [changes ~initial cs] — [initial] from cycle 0, then the value of each
+      [(cycle, value)] of [cs] from that cycle inclusive. Cycles must be
+      strictly ascending and positive; a repeated or descending cycle, or a
+      change to the value already in force, raises at construction, because
+      a schedule that says nothing at a cycle it names is a schedule its
+      author did not mean. *)
+  val changes : initial:bool -> (int * bool) list -> t
+
+  (** The value driven on [cycle]. Total, like [Arrival.word_at]. *)
+  val value_at : t -> cycle:int -> bool
+
+  (** The cycles at which the driven value differs from the previous cycle's,
+      with the value taken. [high] and [low] both return []. *)
+  val change_cycles : t -> (int * bool) list
+
+  (** Deterministic summary for an expect block: the initial value and every
+      change. *)
+  val report : t -> string
+end
+
 (** One driven-and-sampled cycle: the XGMII word presented to [xgmii_rx] on
-    [cycle], and the [rx] word the standing {!Axi64_probe} sampled from
-    [cycle]'s own outputs, plus the names of every error strobe high that
-    same cycle (a subset of {!strobe_names}, read directly off the DUT's
-    error outputs — never inferred). [after_out] is a second, diagnostic-only
-    reading of that same cycle, described below.
+    [cycle], the [cfg_rx_enable] value driven that same cycle ({!Enable},
+    WO-0067 — [true] is enabled), and the [rx] word the standing
+    {!Axi64_probe} sampled from [cycle]'s own outputs, plus the names of
+    every error strobe high that same cycle (a subset of {!strobe_names},
+    read directly off the DUT's error outputs — never inferred). [after_out]
+    is a second, diagnostic-only reading of that same cycle, described below.
 
     {2 [Before], not the default [After] (RV-0038-R6 / R6-1)}
 
@@ -121,6 +161,12 @@ val strobe_names : string list
 type sample =
   { cycle : int
   ; in_word : Dv_xgmii.Xgmii_word.t
+  ; enable : bool
+      (** [cfg_rx_enable] as driven on [cycle] (WO-0067) — the choke-point
+          reading of whatever {!run}'s own [?enable] resolved to for this
+          cycle, never the schedule's memory of the argument passed in
+          (M03-I2 member (iii)'s "construction and landing checked at both
+          sites", applied to this port a second time). *)
   ; out : Dv_monitors.Stream_word.t
   ; after_out : Dv_monitors.Stream_word.t
   ; errors_high : string list
@@ -157,12 +203,49 @@ type sample =
     exposes no parameter to vary it (test/xgmii/arrival.mli, "What the model
     does not decide"), so overriding the word after [Arrival] builds the
     schedule is the only way to drive that stimulus without hand-deriving
-    the rest of the cycle table. *)
+    the rest of the cycle table.
+
+    [?enable] is the per-cycle [cfg_rx_enable] schedule (WO-0067), defaulting
+    to {!Enable.high} — 1 for the whole run, byte-for-byte what every unit
+    landed before WO-0067 drove. It reaches the design through the same
+    choke point as the XGMII word: {!sample_cycle} drives [cfg_rx_enable] on
+    the same cycle it drives the word, and the value driven is recorded in
+    {!sample}'s [enable] field, never left to a caller's memory of the
+    schedule it built.
+
+    {2 The M03-J4 guard}
+
+    When, and only when, [Enable.change_cycles enable] is non-empty, [run]
+    walks every cycle it is about to drive — BEFORE driving any of them —
+    and compares the enable value that cycle would carry against the
+    previous cycle's, with the pre-run value {!create} drives through the
+    reset cycle taken as [true] for cycle 0's own comparison (WO-0067 §1.4).
+    Where that comparison is a change AND the word this call would actually
+    drive that cycle carries a start character
+    ([Dv_xgmii.Xgmii_word.start_lane] returns [Some _]) — read from the
+    DRIVEN word, through the very [word_at] this function drives from, and
+    never from [Arrival.start_cycles]: an injected start character (M03-N4's
+    own stimulus) reaches a row through [?word_at] and is absent from
+    [Arrival] entirely, so a guard built on [Arrival] would report clean on
+    the one stimulus it exists to catch — [run] [failwith]s naming every
+    such cycle and its start lane, citing SPEC-M03 §6.3 item 7 and
+    carry-forward C-14.5. It REFUSES to drive rather than recording the
+    violation and driving it anyway, unlike {!Dv_xgmii.Idle_injection}'s own
+    illegal-placement guard: that guard's illegal stimulus produces a
+    DETERMINATE wrong answer (REQ-105's abort) a bench can assert against via
+    [errors]; a [cfg_rx_enable] change on a start character's own cycle has
+    no determinate outcome at all (§6.3 item 7's own words), so there is
+    nothing for a recorded-and-applied run to assert and a green result would
+    certify coverage of a stimulus this specification refuses to constrain.
+    [Enable.high]'s empty [change_cycles] means an [?enable]-omitted call
+    enters none of this: it evaluates [word_at] exactly as many times as it
+    did before WO-0067 and can raise no exception this guard introduces. *)
 val run
   :  t
   -> Dv_xgmii.Arrival.t
   -> drain:int
   -> ?word_at:(cycle:int -> Dv_xgmii.Xgmii_word.t)
+  -> ?enable:Enable.t
   -> unit
   -> sample list
 
@@ -234,7 +317,26 @@ val account_clean_frame : t -> Dv_xgmii.Arrival.frame -> sample list -> aborted:
       such record: the caller sizes the input trace by hand, from
       [~start_ot] and [~received], because the piece they account for is one
       {!Dv_xgmii.Injection} opens mid-array rather than laying out as its own
-      declared frame case. *)
+      declared frame case.
+    - The axis is NOT "does a record exist", and reading it that way
+      convicts a correct call site: a genuine {!Dv_xgmii.Arrival.frame} whose
+      RECEIVED extent is shorter than its DECLARED array still takes the
+      [_piece] entry points, because {!account_clean_frame} would size
+      [Latency.frame_in]'s input trace from the declared array while the
+      frame received less, with no [?expected_octets] override to correct
+      it — {!account_forwarded_piece}'s own [~received]-not-[~delivered]
+      precondition is what actually carries the weight, and this bullet is
+      what routes a caller to it. The rule, in one sentence: read the axis
+      as [_frame] where the declared array IS the received extent, [_piece]
+      wherever it is not — whether or not a record exists
+      (`J-dv_lead-0113` §8). The class is "every frame REQ-110 aborts", and
+      it is not only REQ-110's: REQ-105's and REQ-108's early closures
+      produce it too. Instance: `test/xgmii_rx_64/test_m03_n.ml`'s six
+      sub-cases each build frame A's schedule array as
+      [List.init (max 5 (sc.t_idx + 1))] — declared 11, 7 or 5 octets against
+      a RECEIVED extent ([sc.a_delivered]) of 8, 4 or 0 — so frame A has a
+      record in every sub-case and still takes
+      {!account_forwarded_piece}/{!account_dropped_piece} throughout. *)
 
 (** Standing obligations 2 and 3 for a frame that delivered ZERO octets and
     has a genuine {!Dv_xgmii.Arrival.frame} record of its own (M03-E2/E3's

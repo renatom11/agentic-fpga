@@ -895,3 +895,279 @@ with the spawn short-id in Trigger.
 ---
 
 ## Return / verdict log
+
+### tb_writer's Return — spawn `WO-0067/2026-08-05T14:00Z`
+
+No explicit spawn short-id token was included in this session's dispatch
+text (PROTOCOL §4.1's format, `<WO-id>/<spawn-UTC-timestamp>`); I minted the
+one above from the WO id and today's date rather than cite a token I was
+never actually given, and flag that here rather than silently presenting it
+as received.
+
+**Toolchain note, stated up front because it bears on every bar below.** My
+tools this spawn are Read/Grep/Glob/Edit/Write and `ocamlc -stop-after
+parsing` via Bash — nothing else. I could not run `git status`,
+`git show`, `diff`, or `tools/dv_checks.sh` (all of §9 bars A, C, E and
+review bar 7's own commands are shell commands other than the one permitted
+invocation). Every claim below that would ordinarily be a shell command's
+literal output is instead a structural attestation from my own Read/Edit/
+Write history in this session, stated as such — dv_lead's own re-run of
+the literal commands is what actually closes each bar; I did not fabricate
+command output.
+
+#### (a) The `Enable` module + pre-scan, as encoded
+
+`test/xgmii_rx_64/bench.mli` — `Enable` matches §1.2's signature exactly:
+`high`, `low`, `changes ~initial (int*bool) list -> t` (raises on a
+cycle ≤ 0, non-ascending, or a change equal to the value already in
+force), `value_at`, `change_cycles`, `report`. `run` gains `?enable`
+immediately before the terminal `unit`; `sample` gains `enable : bool`
+immediately after `in_word`.
+
+`test/xgmii_rx_64/bench.ml` — `Enable` is `{ initial : bool; changes :
+(int * bool) list }`; `value_at` folds left over `changes`, taking the
+last entry at or before the queried cycle (correct because `changes` is
+already ascending and non-redundant by construction); `change_cycles t =
+t.changes`. `sample_cycle` gains `~enable`, drives `i.cfg_rx_enable := if
+enable then Bits.vdd else Bits.gnd` at the SAME point `Xgmii_probe.to_refs`
+drives the word (the choke point, §1.1(R-e)), and records `enable` in the
+returned record. `run`'s pre-scan — the exact source, `bench.ml`:
+
+```
+  (match Enable.change_cycles enable with
+   | [] -> ()
+   | _ :: _ ->
+     let violations =
+       List.filter_map (List.range 0 total) ~f:(fun cycle ->
+         let prev_enable = if cycle = 0 then true else Enable.value_at enable ~cycle:(cycle - 1) in
+         let this_enable = Enable.value_at enable ~cycle in
+         if Bool.equal prev_enable this_enable
+         then None
+         else (
+           match Xgmii_word.start_lane (word_at ~cycle) with
+           | None -> None
+           | Some lane -> Some (cycle, lane)))
+     in
+     (match violations with
+      | [] -> ()
+      | _ :: _ -> failwith (...)));
+```
+
+reads `word_at ~cycle` — the SAME function `drive` calls two lines later —
+never `Arrival.start_cycles`, so it sees an injected start character
+through `?word_at` exactly as a future M03-N4 row would drive one. It
+`failwith`s (refuses) rather than recording-and-applying, matching §3's own
+disposition argument. `create`'s own reset-cycle drive
+(`i.cfg_rx_enable := Bits.vdd`) is untouched, one line, comment re-grounded
+only.
+
+#### (b) Per-row derivation — agree/disagree vs the packet's numbers
+
+Every number in §5.1 and §5.4 was re-derived independently before being
+written into `test_m03_j.ml`'s own assertions (which additionally check
+themselves against the packet's own frozen expectations, `<> 1051` etc.,
+`fail`-ing loudly on disagreement rather than silently taking either
+figure). **All AGREE**:
+
+- Frame 100's start octet time `84 * 100 + 8 = 8408`; `8408 / 8 = 1051`
+  exactly, lane `8408 mod 8 = 0`. **Agree** (1051, lane 0).
+- Frame 99: start octet time `8324`, cycle `1040`, lane 4; terminate octet
+  time `8396`, cycle `1049`, lane 4. Cycle 1050 covers octet times
+  8400–8407, all inside frame 99's own 12-octet gap `[8396, 8407]` —
+  all-idle, no start character. **Agree** with the change cycle 1050.
+- 50/50 lane split, frames 0..99: `84n + 8 ≡ 4n (mod 8)` — 0 for even `n`,
+  4 for odd `n`; 50 even, 50 odd in `0..99`. **Agree**, and asserted at
+  site against `frames.(0..99)`'s own `start_lane` field, not merely
+  against `Arrival.start_lanes`'s flat membership.
+- Frame 100's 8 output words at `1051 + 3 + m` for `m = 0..7` = cycles
+  1054..1061; final word `m=7` tkeep 0x0F (60 delivered octets = 7×8+4).
+  **Agree**.
+- J3 lane 0: frame 0 start cycle 1 (`8/8`), terminate octet time
+  `8+8+64=80` → cycle 10 lane 0; frame 1 start octet time `8+84=92` →
+  cycle 11 (floor), lane 4. Frame 0's 8 words at cycles 4..11 (`1+3+m`).
+  **Agree.**
+- J3 lane 4: frame 0 start cycle `floor(12/8)=1`; terminate octet time
+  `12+8+64=84` → cycle 10 (floor), lane 4; frame 1 start octet time
+  `12+84=96` → cycle 12, lane 0. Frame 0's 8 words again at cycles 4..11
+  (same `start_cycle=1`). **Agree**, including the "same output cycles at
+  both lanes" coincidence the packet calls out.
+- Change cycle 5, both lanes: covers octet times 40–47, entirely inside
+  frame 0's own frame octets at both lanes (16..79 at lane 0, 20..83 at
+  lane 4), and 5 ∉ {1, 11} / {1, 12}. **Agree.**
+
+No arithmetic disagreement found anywhere in §5.
+
+**One disagreement, not in §9 bar 2's own list but found while checking
+compatibility bar clause 2**: §2 clause 2 states "all **19** existing
+`Bench.run` call sites compile." I count **44** existing call sites (before
+`test_m03_j.ml`'s own 3): `test_m03_a.ml` 2, `test_m03_b.ml` 6,
+`test_m03_c.ml` 3, `test_m03_d.ml` 3, `test_m03_e.ml` 4, `test_m03_f.ml` 4,
+`test_m03_g.ml` 8, `test_m03_h.ml` 4, `test_m03_i.ml` 7, `test_m03_n.ml` 1,
+`test_m03_structural.ml` 1, `bench.ml`'s own `run_directed_lengths` 1 — sum
+44 (Grep tool, pattern `run (bench|baseline_bench|overlay_bench)
+(sched|inj_sched)`, glob `*.ml`, path `test/xgmii_rx_64`, count mode,
+reproducible from a checkout). The compatibility ARGUMENT is unaffected
+either way (every call site ends in a bare `()` with no `?enable` named, so
+none is edited regardless of whether there are 19 or 44 of them) — this is
+a count disagreement, not a defect in the compatibility bar itself, and I
+report it per §9 bar 2's own instruction rather than silently quoting 19.
+
+#### (c) The compatibility bar's five checks — results
+
+1. **`create`'s type unchanged.** `val create : unit -> t` — byte-identical
+   in signature; docstring re-grounded per §2.1 (comment only).
+2. **`run`'s existing arguments not moved.** `?enable` inserted immediately
+   before the terminal `unit`; the four prior parameters (`t`,
+   `Dv_xgmii.Arrival.t`, `~drain`, `?word_at`) are in the same order. All
+   44 measured call sites (see (b) above) pass no `?enable` and end in a
+   bare `()`, so all compile unchanged.
+3. **No existing test file touched.** `bench.mli`, `bench.ml` and the new
+   `test_m03_j.ml` are the only files I opened for writing. I could not run
+   Bar A's literal command (Bash restricted to `ocamlc`); attested instead
+   from my own Edit/Write history — I never opened any `test_m03_*.ml`
+   file other than the new `test_m03_j.ml`. dv_lead's own re-run of Bar A's
+   command is the actual closure of this clause.
+4. **The default path is the old path by construction.** Exact guarding
+   expression, quoted in (a) above: `match Enable.change_cycles enable
+   with | [] -> () | _ :: _ -> ...`. `Enable.high = { initial = true;
+   changes = [] }`, so `change_cycles Enable.high = []` and an
+   `?enable`-omitted call (which defaults to `Enable.high`, `let enable =
+   match enable with Some e -> e | None -> Enable.high in`) takes the `[]`
+   branch, entering none of the guard's own code and calling `word_at`
+   exactly once per driven cycle, as before. `Enable.value_at Enable.high
+   ~cycle` is `true` for every cycle (empty `changes`, fold returns
+   `t.initial`), so `sample_cycle` drives `i.cfg_rx_enable := Bits.vdd`
+   every cycle under the default — the SAME value `create` set once and
+   left; re-setting a ref to its own held value has no additional
+   Cyclesim effect, so this is a no-op relative to HEAD's behaviour.
+5. **`sample`'s new field breaks nothing — measured.** Grep tool,
+   patterns for record-pattern matches / exhaustive construction of
+   `sample` across `test/xgmii_rx_64/*.ml` and `bench.ml` itself: every
+   site outside `bench.ml` projects fields by name (`s.out`, `s.cycle`,
+   `s.errors_high`, `(s : sample)` as a type annotation only) or calls a
+   `Bench`-provided accessor (`delivered_samples`, `tlast_sample`,
+   `error_pulses`); `test_m03_a.ml`'s `tuple_of_sample` is the closest
+   thing to an exception, and it too only projects `s.out...` fields. No
+   counter-example found — none to report.
+
+#### (d) Files created/edited
+
+- `test/xgmii_rx_64/bench.mli` — edited (Enable module signature, `run`'s
+  `?enable` + M03-J4 guard doc, `sample`'s `enable` field, `create`'s and
+  the module header's re-grounded comments, the naming-axis third bullet).
+- `test/xgmii_rx_64/bench.ml` — edited (Enable implementation, the guard,
+  `sample_cycle`'s `~enable` drive, `sample`'s `enable` field, two
+  comment re-groundings).
+- `test/xgmii_rx_64/test_m03_j.ml` — created (M03-J1, M03-J2, M03-J3,
+  three `let%expect_test`s, all `[%expect {||}]` empty).
+- `test/xgmii_rx_64/dune` — **not touched**: read first (already on
+  record in this packet's own §7.1 item 4 condition), confirmed no
+  `(modules ...)` restriction exists, so the new file needs no
+  declaration.
+- This Return log, appended to this file.
+- My journal entry, `J-tb_writer-0026`.
+
+Nothing else. `git status --porcelain` itself could not be run this spawn
+(tool boundary); the set above is exact per my own Edit/Write history.
+
+#### (e) Syntax checks
+
+`ocamlc -stop-after parsing` on each edited/created file this spawn, in
+this repo checkout:
+- `test/xgmii_rx_64/bench.mli` — exit 0.
+- `test/xgmii_rx_64/bench.ml` — exit 0.
+- `test/xgmii_rx_64/test_m03_j.ml` — exit 0 (re-run after a self-caught
+  fix, see (i) below).
+
+No `dune build` / `dune runtest` claimed (BOUNCE B11, ADR-0005) — CI at
+the landing commit is the adjudicator.
+
+#### (f) BOUNCE conditions — none hit that I can find
+
+Checked against all twelve: B1 (only §7.1's files touched, dune excluded
+correctly), B2 (`create`'s type unchanged, no call site edited, no
+literal removed — see (g) below), B3 (n/a, no existing file touched), B4
+(guard reads `word_at`, never `Arrival.start_cycles` — quoted in (a)), B5
+(every enable change in J1/J2/J3 is checked against its own driven word's
+`start_lane` and `fail`s the row as a "test bug" if it ever lands on one —
+none does under the derived numbers), B6 (naming-axis bullet lands inside
+the existing WO-0064 block, comment-only), B7 (M03-J1's `Enable.high`
+control run asserts exactly 101 delivered/tlast frames and their sequence
+provenance), B8 (M03-J2's comment explicitly disclaims the stale kill and
+names the honest one instead — no assertion or Return-log sentence claims
+the unreachable class), B9 (`frame_in_exempt` only, never `frame_in`, for
+any refused frame in any of the three units), B10 (guarded and argued in
+(c) item 4), B11 (none claimed), B12 (all three `[%expect]` blocks empty).
+
+#### (g) Bar B — bench.ml's literal multiset, enumerated
+
+Could not run Bar B's literal command (tool boundary). Enumerated by
+reading my own diff instead — every literal I added to `bench.ml`, none
+removed or changed:
+
+| Literal | Mechanism |
+|---|---|
+| `"Bench.Enable.changes: "` | `Enable.changes`'s own construction-guard message prefix |
+| `" is not positive"` | `Enable.changes`'s positivity check |
+| `" does not strictly ascend past "` | `Enable.changes`'s ascending-order check |
+| `" changes to "` | `Enable.changes`'s already-in-force check |
+| `", which is already the value in force"` | same message, continued |
+| `"initial "` | `Enable.report`'s rendering |
+| `" -> "` | `Enable.report`'s rendering (change separator) |
+| `"Bench.run: cfg_rx_enable changes on the same cycle as a start character (SPEC-M03 §6.3 item 7, carry-forward C-14.5) — the outcome is deliberately unconstrained and SHALL NOT be driven, at:"` | the M03-J4 guard's `failwith` |
+| `"  cycle "` | the M03-J4 guard's per-violation line |
+| `", start lane "` | the M03-J4 guard's per-violation line, continued |
+
+Ten literals, all additions, each belonging to exactly one of the two
+named mechanisms. `bench.mli` gains no literal (comments/signatures only).
+dv_lead's own re-run of Bar B's command is what actually closes this bar;
+this table is my own accounting of the diff I made, not a substitute for
+that run.
+
+#### (h) Bar D — the default path, quoted
+
+Guard entry: `match Enable.change_cycles enable with | [] -> () | _ :: _ ->
+...` (quoted in full in (a)). Default: `let enable = match enable with
+Some e -> e | None -> Enable.high in`.
+
+#### (i) What dv_lead should review first
+
+1. **The `%`/`Int.rem` self-catch** (below, (j)) — I introduced an
+   undefined `%` operator in `test_m03_j.ml` that `ocamlc -stop-after
+   parsing` passed silently (it only parses; it does not resolve names).
+   Found by grepping the rest of the suite for its own modulo idiom
+   (`Int.rem`, used everywhere, `%` used nowhere) before this Return log
+   was written, and fixed. I re-ran the parse check after the fix (exit
+   0) but **cannot rule out a second instance of the same class of error
+   anywhere else in `test_m03_j.ml`** — a parse-only check is structurally
+   blind to it, and dv_lead's own review (or CI's actual typecheck) is
+   the only instrument that closes this class fully. Worth a deliberate
+   look rather than trusting the green parse.
+2. The J3 word-comparison instrument (`disabled_words` vs `ref_frame0_words`,
+   via plain `List.take`/`List.drop` slicing rather than
+   `split_at_first_tlast`) — a design choice explained inline at the call
+   site; worth confirming it reads as the intended "straight slice
+   comparison" rather than as an avoidance of a tool I should have used.
+3. The M03-J2 honest-kill comment (§6) — confirm it neither claims the
+   stale kill nor over-claims the honest one.
+4. The 44-vs-19 call-site count disagreement in (b) above.
+
+#### (j) World-inconsistency found and stopped on rather than repaired
+
+One, self-inflicted rather than found in the world: my own first draft of
+`test_m03_j.ml` used `%` as a modulo operator (`terminate_ot0 % 8`), which
+is not a bound operator in this codebase's toolchain (every other file
+uses `Int.rem`). `ocamlc -stop-after parsing` cannot catch an unbound
+operator — it stops before name resolution — so this passed the only
+check available to me silently. I caught it myself, before writing this
+Return log, by grepping the rest of the suite for the modulo idiom
+actually in use and finding zero other occurrences of `%`. Fixed to
+`Int.rem terminate_ot0 8`, re-parsed (exit 0). Recorded here in full
+because it is exactly the class of error this spawn's toolchain
+(ADR-0005) is structurally unable to catch on its own, and dv_lead should
+not read a clean `ocamlc -stop-after parsing` result as ruling it out
+elsewhere in the file.
+
+No other world-inconsistency (missing file, unresolvable citation) was
+found — every spec section, module `.mli` and packet citation this WO
+named resolved to real, readable text.

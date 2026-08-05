@@ -50,9 +50,10 @@ let create () =
   let scope = Scope.create ~flatten_design:true () in
   let sim = Sim.create (Hardcaml_ethernet.Xgmii_rx_64.create scope) in
   let i = Cyclesim.inputs sim in
-  (* REQ-009: clear for one cycle, then release. cfg_rx_enable held at 1 for
-     the whole run — family J (the disable path) is out of this packet's
-     eleven rows (WO-0038 §1), so there is no reading to gate here.
+  (* REQ-009: clear for one cycle, then release. cfg_rx_enable driven at 1
+     through this reset cycle only — WO-0067 §1.4: that cycle is outside
+     every {!Enable.t} schedule, [run]'s own [?enable] argument governs from
+     cycle 0.
      N2 (RV-0038 addendum): drive an idle XGMII word through the reset cycle
      rather than leaving xgmii_rx at Cyclesim's zero default, which is eight
      *data* octets of 0x00 — not idle, and not something REQ-018's link
@@ -81,11 +82,78 @@ let create () =
   }
 ;;
 
+(* WO-0067 §1.2: the [cfg_rx_enable] schedule. Kept as [initial] plus an
+   ascending, non-redundant [changes] list rather than a closure, so it has a
+   [report] and so [change_cycles] is a plain field read rather than a
+   re-derivation (§1.3(d) is the shape this rejects). *)
+module Enable = struct
+  type t =
+    { initial : bool
+    ; changes : (int * bool) list
+    }
+
+  let high = { initial = true; changes = [] }
+  let low = { initial = false; changes = [] }
+
+  let changes ~initial cs =
+    let fail msg = failwith (String.concat [ "Bench.Enable.changes: "; msg ]) in
+    let rec check prev_cycle prev_value = function
+      | [] -> ()
+      | (cycle, value) :: rest ->
+        if cycle <= 0
+        then fail (String.concat [ "cycle "; Int.to_string cycle; " is not positive" ]);
+        (match prev_cycle with
+         | Some pc when cycle <= pc ->
+           fail
+             (String.concat
+                [ "cycle "
+                ; Int.to_string cycle
+                ; " does not strictly ascend past "
+                ; Int.to_string pc
+                ])
+         | _ -> ());
+        if Bool.equal value prev_value
+        then
+          fail
+            (String.concat
+               [ "cycle "
+               ; Int.to_string cycle
+               ; " changes to "
+               ; Bool.to_string value
+               ; ", which is already the value in force"
+               ]);
+        check (Some cycle) value rest
+    in
+    check None initial cs;
+    { initial; changes = cs }
+  ;;
+
+  (* [changes] is ascending by construction, so the last entry at or before
+     [cycle] is the value in force; folding left to right and always
+     preferring a later admissible entry finds exactly that. *)
+  let value_at t ~cycle =
+    List.fold t.changes ~init:t.initial ~f:(fun acc (c, v) -> if c <= cycle then v else acc)
+  ;;
+
+  let change_cycles t = t.changes
+
+  let report t =
+    String.concat
+      ~sep:"\n"
+      (String.concat [ "initial "; Bool.to_string t.initial ]
+       :: List.map t.changes ~f:(fun (c, v) ->
+            String.concat [ "cycle "; Int.to_string c; " -> "; Bool.to_string v ]))
+  ;;
+end
+
 type sample =
   { cycle : int (* schedule cycle whose input word was driven AND whose
                    [Before]-view outputs [out]/[errors_high] belong to —
                    RV-0038-R6 / R6-1, one label for both directions *)
   ; in_word : Xgmii_word.t
+  ; enable : bool (* WO-0067: [cfg_rx_enable] as driven on [cycle] — the
+                     choke-point reading of [run]'s own [?enable] argument,
+                     resolved through {!Enable.value_at} for this cycle *)
   ; out : Stream_word.t
   ; after_out : Stream_word.t (* RV-0038-R6 / R6-3: the SAME cycle read from
                                   the default [After] view instead — round
@@ -107,7 +175,7 @@ type sample =
    guard (bench.mli history, withdrawn), which checked the order [run]
    RETURNED its samples in rather than the order the design was actually
    driven in and would not have fired on run 30771064764's reversed drive. *)
-let sample_cycle t ~cycle (in_word : Xgmii_word.t) : sample =
+let sample_cycle t ~cycle ~enable (in_word : Xgmii_word.t) : sample =
   if cycle <> t.cycles_driven
   then
     failwith
@@ -136,6 +204,10 @@ let sample_cycle t ~cycle (in_word : Xgmii_word.t) : sample =
   let o_before = Cyclesim.outputs ~clock_edge:Side.Before t.sim in
   let o_after = Cyclesim.outputs t.sim in
   Xgmii_probe.to_refs ~d:i.xgmii_rx.d ~c:i.xgmii_rx.c in_word;
+  (* WO-0067 §1.1(R-e): [cfg_rx_enable] is driven at the same choke point as
+     the XGMII word — the one function that touches the design — so there is
+     exactly one place a stimulus port reaches the DUT from. *)
+  i.cfg_rx_enable := if enable then Bits.vdd else Bits.gnd;
   Cyclesim.cycle t.sim;
   let out =
     Axi64_probe.of_refs
@@ -170,10 +242,10 @@ let sample_cycle t ~cycle (in_word : Xgmii_word.t) : sample =
   in
   Protocol_monitor.observe t.protocol ~cycle out;
   Strobe_monitor.sample t.strobes ~cycle ~high:errors_high;
-  { cycle; in_word; out; after_out; errors_high }
+  { cycle; in_word; enable; out; after_out; errors_high }
 ;;
 
-let run t sched ~drain ?word_at () =
+let run t sched ~drain ?word_at ?enable () =
   (match Arrival.check sched with
    | [] -> ()
    | problems ->
@@ -187,7 +259,51 @@ let run t sched ~drain ?word_at () =
     | Some f -> f
     | None -> fun ~cycle -> Arrival.word_at sched ~cycle
   in
+  let enable = match enable with Some e -> e | None -> Enable.high in
   let total = Arrival.cycles sched + drain in
+  (* WO-0067 §3, the M03-J4 guard. Entered ONLY when [Enable.change_cycles]
+     is non-empty (compatibility bar §2 clause 4: [Enable.high] — [run]'s
+     default — has none, so an [?enable]-omitted call enters no new branch
+     and evaluates [word_at] exactly as many times as it did before this
+     round). Walks every driven cycle and checks the DRIVEN WORD, never
+     [Arrival.start_cycles]: M03-N4's injected start character reaches a row
+     through [?word_at] and is absent from [Arrival] entirely, so a guard
+     built on [Arrival] would report clean on the one stimulus it exists to
+     catch (BOUNCE B4). SPEC-M03 §6.3 item 7 / carry-forward C-14.5: a
+     [cfg_rx_enable] change landing on a start character's own cycle has no
+     determinate outcome, so this REFUSES to drive (raises) rather than
+     recording-and-applying the way {!Dv_xgmii.Idle_injection} does for its
+     own illegal placements — that module's illegal stimulus produces a
+     DETERMINATE wrong answer a bench can assert against; this one produces
+     no answer at all, so there is nothing to assert and a recorded-and-
+     applied run would certify coverage of a stimulus the specification
+     refuses to constrain. *)
+  (match Enable.change_cycles enable with
+   | [] -> ()
+   | _ :: _ ->
+     let violations =
+       List.filter_map (List.range 0 total) ~f:(fun cycle ->
+         let prev_enable = if cycle = 0 then true else Enable.value_at enable ~cycle:(cycle - 1) in
+         let this_enable = Enable.value_at enable ~cycle in
+         if Bool.equal prev_enable this_enable
+         then None
+         else (
+           match Xgmii_word.start_lane (word_at ~cycle) with
+           | None -> None
+           | Some lane -> Some (cycle, lane)))
+     in
+     (match violations with
+      | [] -> ()
+      | _ :: _ ->
+        failwith
+          (String.concat
+             ~sep:"\n"
+             ("Bench.run: cfg_rx_enable changes on the same cycle as a start character \
+               (SPEC-M03 §6.3 item 7, carry-forward C-14.5) — the outcome is deliberately \
+               unconstrained and SHALL NOT be driven, at:"
+              :: List.map violations ~f:(fun (cycle, lane) ->
+                   String.concat
+                     [ "  cycle "; Int.to_string cycle; ", start lane "; Int.to_string lane ])))));
   (* Cycles are driven in ASCENDING order by an explicit recursion, never by
      a [List.*] combinator. [sample_cycle] drives the port and steps the
      clock, so its evaluation order IS the stimulus: Base's [List.init]
@@ -202,7 +318,7 @@ let run t sched ~drain ?word_at () =
     if cycle >= total
     then List.rev acc
     else (
-      let s = sample_cycle t ~cycle (word_at ~cycle) in
+      let s = sample_cycle t ~cycle ~enable:(Enable.value_at enable ~cycle) (word_at ~cycle) in
       drive (cycle + 1) (s :: acc))
   in
   (* [run]'s ascending-cycle contract is checked at the choke point inside
