@@ -2705,3 +2705,34 @@ one"). The landing CI's green on test_m03_k.ml is K-O2's check.
 - site/public/block-diagram.html
 - site/public/org-chart.html
 - site/public/spec-atlas.html
+
+## [J-orchestrator-0215] 2026-08-09T22:35Z | task:WO-0073 | Five of five killed character-exact - and the campaign finds the anchor blind to time
+
+### Trigger
+WO-0073 adjudicated and landed (7bedc30, J-dv_lead-0134): 5/5 killed,
+7/7 REQUIRED reds character-exact, MUST-STAY-GREEN zero violations,
+collisions as sealed. Seeding landed e5c0b11 (J-auditor-0015) after
+SEED-1 died in the classifier outage (zero traces, verified, respawn
+clean). L1/L2/L5 QUALIFIED; L3/L4 cannot be (sealed unreachability);
+no M row counted - the scorecard rule's first test held. Tally: 41
+classes sealed, 40 killed, 1 survived (G-c4). MATERIAL finding
+WO-0073-D2: the co-sim lane passed under a uniform one-cycle delay -
+content-comparing, not timing-comparing.
+
+### Rulings
+- dv Q1: OPTION (a) ADOPTED - the co-sim lane gains an explicit
+  cycle comparison; an anchor whose blind spot is documented is
+  still an anchor that cannot see. dv drafts the WO; the cosim-lane
+  round pays D2 + D5 + the dangling reference together.
+- dv Q2: CONFIRMED - the post-campaign AP round drafts first, then
+  the family M campaign packet, then the cosim round, then J and K.
+- Auditor Q3/Q4/Q5 all ruled in the verdict as dv's; base = bbd4122
+  confirmed; IC-L3 scored from tip.
+
+### What I did
+- Landed 7bedc30, board flipped (WO-0073 CLOSED 5/5, tally, D2
+  ruling, SEED-1 incident), this commit. Next: dv on the
+  post-campaign AP round.
+
+### Files-in-this-commit
+- tasks/BOARD.md
