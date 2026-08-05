@@ -158,6 +158,32 @@ let window ~start_ot ~received ~closing_ot =
   (closing_ot / 8), (last_octet_ot / 8) + 3
 ;;
 
+(* SPEC-M03 §9's "Strobe cycle, pinned" rule for a frame closed by an abort,
+   in its two branches (WO-0068 §1): the frame's own tlast cycle where it
+   delivered an octet (§7's per-octet constant, L = 16 at a lane-0 start and
+   12 at a lane-4 one -- AP §4.N's Route 2, the route that makes the
+   ABORTED frame's own start lane a discriminator), and two cycles after the
+   input word carrying the CLOSING character where it delivered none.
+
+   [~closing_ot] is the octet time of the character that CLOSED the frame,
+   not the octet time of the frame's own last octet -- SPEC-M03 §6.1's
+   D(m) re-ruling at 1f3c04c, countersigned J-dv_lead-0086: "an aborted
+   frame's last word can be proven last by nothing except the character
+   that aborted it". This is the sentence that makes the figure survive
+   idle injection, and it is why the parameter is named for the closing
+   character, never for the frame's own last octet.
+
+   Every row that needs an aborted frame's own report cycle calls this. A
+   second expression computing it anywhere in test/** is BOUNCE B5. *)
+let aborted_report_cycle ~a_lane ~start_ot ~delivered ~closing_ot =
+  if delivered > 0
+  then (
+    let l = if a_lane = 0 then 16 else 12 in
+    let last_in = start_ot + 8 + (delivered - 1) in
+    (last_in + l) / 8)
+  else (closing_ot / 8) + 2
+;;
+
 type subcase =
   { s_lane : int (* the aborting /S/'s own lane in W: 0 or 4 *)
   ; a_lane : int (* frame A's own start lane: 0 or 4 *)
@@ -403,13 +429,15 @@ let run_subcase ~row sc =
   let b_preamble_position = t_ot - s_ot in
   if b_preamble_position < 1 || b_preamble_position > 7
   then fail row "test bug -- B's own preamble position for the /T/ is outside 1 .. 7";
-  let expected_a_cycle, (expected_a_not_before, expected_a_not_after) =
-    if sc.a_delivered > 0
-    then (
-      let l = if sc.a_lane = 0 then 16 else 12 in
-      let last_in = start_ot_a + 8 + (sc.a_delivered - 1) in
-      (last_in + l) / 8, window ~start_ot:start_ot_a ~received:sc.a_delivered ~closing_ot:s_ot)
-    else (s_ot / 8) + 2, window ~start_ot:start_ot_a ~received:0 ~closing_ot:s_ot
+  let expected_a_cycle =
+    aborted_report_cycle
+      ~a_lane:sc.a_lane
+      ~start_ot:start_ot_a
+      ~delivered:sc.a_delivered
+      ~closing_ot:s_ot
+  in
+  let expected_a_not_before, expected_a_not_after =
+    window ~start_ot:start_ot_a ~received:sc.a_delivered ~closing_ot:s_ot
   in
   if expected_a_cycle <> sc.a_cycle
   then fail row "test bug -- frame A's own derived report cycle disagrees with this sub-case's stated one";
@@ -578,7 +606,31 @@ let run_subcase ~row sc =
        (* T7: tuser[0] = 1 on A's own tlast word (REQ-110's main clause) --
           never asserted on sub-cases 3/6, which have no tlast word. *)
        if s.out.Dv_monitors.Stream_word.tuser <> 1
-       then fail row "frame A's own tlast word does not carry tuser[0] = 1 (REQ-110)"
+       then fail row "frame A's own tlast word does not carry tuser[0] = 1 (REQ-110)";
+       (* Fold-in 3 (WO-0068 §6, BOUNCE B2, its last carrier): frame A's own
+          delivered CONTENT, not merely its count -- compared against THIS
+          SUB-CASE'S OWN DECLARED-ARRAY PREFIX, built with the SAME
+          generator [octets] itself uses above, never against
+          [Arrival.delivered] or [Frame.delivered] (both strip an FCS this
+          aborted frame never reaches, REQ-103/REQ-110 -- the trap is LIVE:
+          Arrival.delivered on sc1's own array drops its last four entries
+          and returns 7 octets against the 8 this check expects, wrong in
+          length AND in content). [tkeep] above already pins the length, so
+          this is a pure content check. *)
+       let expected_a_octets = List.init sc.a_delivered ~f:(fun j -> j land 0xFF) in
+       if not (List.equal Int.equal (Dv_monitors.Stream_word.octets s.out) expected_a_octets)
+       then
+         fail
+           row
+           (String.concat
+              [ "frame A's own tlast word content differs from sub-case "
+              ; row
+              ; "'s own declared-array prefix: expected "
+              ; Int.to_string (List.length expected_a_octets)
+              ; " octets, observed "
+              ; Int.to_string (List.length (Dv_monitors.Stream_word.octets s.out))
+              ; " octets"
+              ])
      | words ->
        fail
          row
@@ -702,5 +754,719 @@ let%expect_test
    REQ-107, REQ-110, WO-0065 §3.3.2/§3.3.3)"
   =
   run_subcase ~row:"M03-N2 (S lane 4, A lane 4, zero-delivered)" sc6;
+  [%expect {||}]
+;;
+
+(* ---- M03-N1 (WO-0068 §3) ---------------------------------------------------
+
+   Two closure characters in one input word where the SECOND arrives AFTER
+   the frame is already closed and no frame is open: a /T/ in lane 0 (the
+   frame's own terminate character, unmoved) and an /E/ in lane 5 of the
+   SAME word -- five octet times later on the wire, strictly inside the
+   inter-frame gap. The /T/ closes the frame normally (REQ-106, FCS
+   checked); the /E/ finds NO open frame and produces nothing and pulses
+   nothing (§9's third row, C-12).
+
+   The /E/ is driven through [run]'s own [?word_at] override (T6), never
+   through [Dv_xgmii.Injection]: every one of that catalogue's three
+   placements sits INSIDE the frame or on its own terminate octet time, and
+   this row's /E/ is outside both -- inside the inter-frame gap, which is
+   [Arrival]'s business, not the injection catalogue's. [overlay_e] REBUILDS
+   the schedule's own word from its own eight lanes
+   ([Xgmii_word.lane]/[of_lanes]) with lane 5 alone replaced -- a word built
+   from scratch would destroy the /T/ in lane 0 and turn this row into a
+   different one (T6, T7).
+
+   Both members are necessarily a lane-0-/T/ hold (§6.2's [Frame] row: a
+   /T/ in lane 0 covers no frame octet) -- the row's own stimulus fixes
+   that; it is not a member-level discriminator:
+
+   - (a), a lane-0 start: terminate at octet time 80 (word 10, lane 0),
+     /E/ at word 10 lane 5 = octet time 85; 60 delivered octets (REQ-103),
+     8 output words at cycles 4 .. 11, final tkeep 0x0F.
+   - (b), a lane-4 start, a 68-octet frame (the directed set's own length
+     whose terminate index, 88 mod 8 = 0, still lands /T/ in lane 0):
+     terminate at octet time 88 (word 11, lane 0), /E/ at word 11 lane 5 =
+     octet time 93; 64 delivered octets, 8 output words at cycles 4 .. 11,
+     final tkeep 0xFF.
+
+   The derived asymmetry that is member (b)'s whole justification: at (a)
+   the /E/'s own input word (cycle 10) and the frame's own last output
+   word (cycle 11) are ONE APART; at (b) they are the SAME cycle, 11. A
+   design that mishandled the out-of-frame /E/ by suppressing or
+   corrupting the output word on that cycle shows at (b) as a coincidence
+   and at (a) not at all, so the row's verdict is proved not to depend on
+   the coincidence by holding at both (WO-0068 §3.3). *)
+
+let overlay_e sched ~e_cycle ~cycle =
+  if cycle <> e_cycle
+  then Dv_xgmii.Arrival.word_at sched ~cycle
+  else (
+    let w = Dv_xgmii.Arrival.word_at sched ~cycle in
+    let lanes =
+      List.init 8 ~f:(fun k ->
+        if k = 5
+        then Dv_xgmii.Xgmii_word.Control Dv_xgmii.Xgmii_word.error_char
+        else Dv_xgmii.Xgmii_word.lane w k)
+    in
+    Dv_xgmii.Xgmii_word.of_lanes lanes)
+;;
+
+let run_n1
+      ~row
+      ~lane
+      ~octets
+      ~expected_terminate_ot
+      ~expected_e_ot
+      ~expected_delivered
+      ~expected_final_tkeep
+  =
+  let sched = one_frame ~lane octets in
+  if not (Dv_xgmii.Arrival.is_clean sched)
+  then
+    fail
+      row
+      (String.concat
+         ~sep:"\n"
+         ("Arrival.check found problems with the schedule:" :: Dv_xgmii.Arrival.check sched));
+  let frame = (Dv_xgmii.Arrival.frames sched).(0) in
+  let expected_start_ot = if lane = 0 then 8 else 12 in
+  if frame.Dv_xgmii.Arrival.start_octet_time <> expected_start_ot
+     || frame.Dv_xgmii.Arrival.start_lane <> lane
+  then fail row "test bug -- frame's own start does not match this member's own lane";
+  if not (Dv_xgmii.Frame.residue_ok octets)
+  then fail row "test bug -- the stimulus frame's own FCS is not correct (Frame.residue_ok)";
+  let terminate_ot = Dv_xgmii.Arrival.terminate_octet_time frame in
+  if terminate_ot <> expected_terminate_ot
+  then
+    fail
+      row
+      (String.concat
+         [ "frame's own terminate octet time is "
+         ; Int.to_string terminate_ot
+         ; ", expected "
+         ; Int.to_string expected_terminate_ot
+         ]);
+  let terminate_word = terminate_ot / 8 in
+  let terminate_lane = Int.rem terminate_ot 8 in
+  if terminate_lane <> 0
+  then fail row "test bug -- the frame's own terminate character is not at lane 0";
+  let e_ot = (terminate_word * 8) + 5 in
+  if e_ot <> expected_e_ot
+  then
+    fail
+      row
+      (String.concat
+         [ "the /E/'s own derived octet time is "
+         ; Int.to_string e_ot
+         ; ", expected "
+         ; Int.to_string expected_e_ot
+         ]);
+  let word_at ~cycle = overlay_e sched ~e_cycle:terminate_word ~cycle in
+  (* Landing, site 1 -- before a cycle is driven (T6, T7): the OVERLAID
+     word at the terminate cycle carries /T/ at lane 0 and /E/ at lane 5,
+     both control, /T/'s lane strictly below /E/'s, and no start character
+     shares the word. *)
+  let w = word_at ~cycle:terminate_word in
+  if (not (Dv_xgmii.Xgmii_word.is_control w 0))
+     || not (Int.equal (w.Dv_xgmii.Xgmii_word.data).(0) Dv_xgmii.Xgmii_word.terminate_char)
+  then fail row "test bug -- the overlaid word's own lane 0 does not carry /T/ before driving";
+  if (not (Dv_xgmii.Xgmii_word.is_control w 5))
+     || not (Int.equal (w.Dv_xgmii.Xgmii_word.data).(5) Dv_xgmii.Xgmii_word.error_char)
+  then fail row "test bug -- the overlaid word's own lane 5 does not carry /E/ before driving";
+  (match Dv_xgmii.Xgmii_word.start_lane w with
+   | None -> ()
+   | Some l ->
+     fail
+       row
+       (String.concat
+          [ "test bug -- the overlaid word unexpectedly carries a start character at lane "
+          ; Int.to_string l
+          ]));
+  let bench = create () in
+  let samples = run bench sched ~drain:8 ~word_at () in
+  (* Landing, site 2 -- the cycle run actually drove. *)
+  (match List.find samples ~f:(fun s -> s.cycle = terminate_word) with
+   | None -> fail row "test bug -- the terminate word was never driven"
+   | Some s ->
+     if (not (Dv_xgmii.Xgmii_word.is_control s.in_word 0))
+        || not
+             (Int.equal (s.in_word.Dv_xgmii.Xgmii_word.data).(0) Dv_xgmii.Xgmii_word.terminate_char)
+     then fail row "the driven word does not carry /T/ at lane 0 -- assertions below would be vacuous";
+     if (not (Dv_xgmii.Xgmii_word.is_control s.in_word 5))
+        || not (Int.equal (s.in_word.Dv_xgmii.Xgmii_word.data).(5) Dv_xgmii.Xgmii_word.error_char)
+     then fail row "the driven word does not carry /E/ at lane 5 -- assertions below would be vacuous");
+  let words_out = delivered_samples samples in
+  let expected_words = (expected_delivered + 7) / 8 in
+  if List.length words_out <> expected_words
+  then
+    fail
+      row
+      (String.concat
+         [ "expected "
+         ; Int.to_string expected_words
+         ; " delivered words, got "
+         ; Int.to_string (List.length words_out)
+         ]);
+  let expected_start_cycle = expected_start_ot / 8 in
+  List.iteri words_out ~f:(fun m s ->
+    let expected_cycle = expected_start_cycle + 3 + m in
+    if s.cycle <> expected_cycle
+    then
+      fail
+        row
+        (String.concat
+           [ "word "
+           ; Int.to_string m
+           ; " expected on cycle "
+           ; Int.to_string expected_cycle
+           ; ", observed on cycle "
+           ; Int.to_string s.cycle
+           ]);
+    let is_last = m = expected_words - 1 in
+    if not (Bool.equal s.out.Dv_monitors.Stream_word.tlast is_last)
+    then
+      fail
+        row
+        (String.concat [ "word "; Int.to_string m; ": tlast does not match its expected position" ]);
+    if is_last
+    then (
+      if s.out.Dv_monitors.Stream_word.tkeep <> expected_final_tkeep
+      then fail row "the frame's own final tkeep does not match the delivered count";
+      if s.out.Dv_monitors.Stream_word.tuser <> 0
+      then
+        fail
+          row
+          "the frame's own tlast word unexpectedly carries tuser[0] = 1 -- a clean frame is not \
+           aborted"));
+  (* T4: this frame closes on its own /T/, so Arrival.delivered IS the
+     right source here (REQ-103's four FCS octets are stripped) -- the
+     OPPOSITE rule from M03-N4's frame A, below. *)
+  let expected_octets = Array.to_list (Dv_xgmii.Arrival.delivered frame) in
+  let got_octets = delivered_octets samples in
+  if not (List.equal Int.equal got_octets expected_octets)
+  then fail row "delivered octets differ from Arrival.delivered frame";
+  (* The row's own kill (§9's third row, C-12): a design evaluating lane 5
+     against the state the word STARTED in sees Frame, routes the /E/ to
+     REQ-105 and pulses error_bad_frame. Over the WHOLE run, nothing
+     pulses. *)
+  if not (List.is_empty (error_pulses samples))
+  then fail row "the out-of-frame /E/ unexpectedly produced a strobe";
+  account_clean_frame bench frame samples ~aborted:false;
+  assert_monitors_clean bench ~row
+;;
+
+let%expect_test
+  "M03-N1: an /E/ five octet times after the frame's own /T/, overlaid onto \
+   the schedule's own terminate word via ?word_at -- the /T/ closes the frame \
+   normally (FCS checked), the /E/ finds no open frame and produces nothing \
+   and pulses nothing (REQ-101, REQ-105, REQ-106, REQ-107, §9's third row / \
+   C-12; WO-0068 §3)"
+  =
+  run_n1
+    ~row:"M03-N1 (lane 0)"
+    ~lane:0
+    ~octets:(Dv_xgmii.Frame.stress_frame ~sequence:0 ())
+    ~expected_terminate_ot:80
+    ~expected_e_ot:85
+    ~expected_delivered:60
+    ~expected_final_tkeep:0x0F;
+  run_n1
+    ~row:"M03-N1 (lane 4)"
+    ~lane:4
+    ~octets:(directed_frame_octets ~length:68)
+    ~expected_terminate_ot:88
+    ~expected_e_ot:93
+    ~expected_delivered:64
+    ~expected_final_tkeep:0xFF;
+  [%expect {||}]
+;;
+
+(* ---- M03-N4 (WO-0068 §4) ----------------------------------------------------
+
+   REQ-802/REQ-810's mid-frame case: open a frame with cfg_rx_enable = 1,
+   drop it to 0 strictly inside that frame, at least one cycle before a
+   start character that arrives while it is still open; the in-flight
+   frame -- frame A -- is aborted at the octet before that refused start,
+   exactly ONE error_start_without_terminate, no output word for the frame
+   the refused start would have begun, and the NEXT declared frame -- frame
+   C -- received normally after the enable returns to 1 (ADR-0014, SPEC-M03
+   §4.3, §6.2's [Frame] row).
+
+   Three named objects, deliberately NOT "frame B" (T2, WO-0068 §4.1):
+   frame A (in-flight, admitted under enable = 1, aborted by the refused
+   start); the refused start (an injected /S/ that opens NOTHING under the
+   real enable and is accounted NOWHERE -- not frame_in, not
+   frame_in_exempt, not discarded); frame C (the next declared frame,
+   admitted after re-enable).
+
+   The mechanism (WO-0068 §4.2): [Dv_xgmii.Injection.create ~first_lane
+   [ case_a; case_c ]], where [case_a] is frame A's own 64-octet declared
+   array ([Frame.stress_frame]) corrupted with ONE [Place (At_octet k,
+   start_char)] -- the refused start -- and [case_c] is
+   [Injection.clean (Frame.stress_frame ~sequence:1 ())]. The model is
+   enable-blind by construction (T1): it opens a frame at the refused
+   start that the DUT must not, so [Injection.outcomes] returns THREE
+   outcomes where the DUT admits only two; the middle one is asserted
+   against nothing the DUT did (B7), floored only at [delivered > 0] so the
+   contrast stays non-vacuous.
+
+   Both change cycles are derived from the schedule, then checked against
+   this member's own stated constants (WO-0067 §5.1's rule): the disable
+   cycle as [w - 1] with [w] the word carrying the refused start, the
+   enable cycle as [frame_c's own start_cycle - 1].
+
+   Member (a): refused start at [At_octet 8] (frame A delivers 8 octets, 1
+   word); member (b): [At_octet 16] (16 octets, 2 words -- the first
+   member of this family to place tuser[0] on a SECOND word rather than a
+   first, and to place the aborting refused start at lane 4). *)
+
+let run_n4
+      ~row
+      ~lane
+      ~s_idx
+      ~expected_w_cycle
+      ~expected_w_lane
+      ~expected_a_delivered
+      ~expected_disable_cycle
+      ~expected_enable_cycle
+      ~expected_c_start_cycle
+      ~expected_c_start_lane
+      ~expected_delivered_cycles
+  =
+  let frame_a_octets = Dv_xgmii.Frame.stress_frame ~sequence:0 () in
+  let case_a =
+    Dv_xgmii.Injection.corrupt
+      frame_a_octets
+      [ Dv_xgmii.Injection.Place
+          { placement = Dv_xgmii.Injection.At_octet s_idx
+          ; character = Dv_xgmii.Xgmii_word.start_char
+          }
+      ]
+  in
+  let frame_c_octets = Dv_xgmii.Frame.stress_frame ~sequence:1 () in
+  let case_c = Dv_xgmii.Injection.clean frame_c_octets in
+  let inj = Dv_xgmii.Injection.create ~first_lane:lane [ case_a; case_c ] in
+  if not (Dv_xgmii.Injection.is_clean inj)
+  then
+    fail
+      row
+      (String.concat
+         ~sep:"; "
+         ("Injection construction errors:" :: Dv_xgmii.Injection.errors inj));
+  let sched = Dv_xgmii.Injection.schedule inj in
+  if not (Dv_xgmii.Arrival.is_clean sched)
+  then
+    fail
+      row
+      (String.concat
+         ~sep:"\n"
+         ("Arrival.check found problems with the schedule:" :: Dv_xgmii.Arrival.check sched));
+  let frames = Dv_xgmii.Arrival.frames sched in
+  if Array.length frames <> 2
+  then fail row "test bug -- expected exactly 2 declared frames in the schedule";
+  let frame_a = frames.(0) in
+  let frame_c = frames.(1) in
+  (* 1. Construction. *)
+  let expected_start_ot = if lane = 0 then 8 else 12 in
+  if frame_a.Dv_xgmii.Arrival.start_octet_time <> expected_start_ot
+     || frame_a.Dv_xgmii.Arrival.start_lane <> lane
+  then fail row "test bug -- frame A's own start does not match this member's own lane";
+  let a_start_cycle = Dv_xgmii.Arrival.start_cycle frame_a in
+  if not (Dv_xgmii.Frame.residue_ok frame_c_octets)
+  then fail row "test bug -- frame C's own FCS is not correct (Frame.residue_ok)";
+  let w_ot = frame_a.Dv_xgmii.Arrival.start_octet_time + 8 + s_idx in
+  let w_cycle = w_ot / 8 in
+  let w_lane = Int.rem w_ot 8 in
+  if w_lane <> 0 && w_lane <> 4
+  then fail row "test bug -- the refused start's own derived lane is not 0 or 4";
+  if w_cycle <> expected_w_cycle || w_lane <> expected_w_lane
+  then
+    fail
+      row
+      (String.concat
+         [ "the refused start's own word is cycle "
+         ; Int.to_string w_cycle
+         ; " lane "
+         ; Int.to_string w_lane
+         ; ", expected cycle "
+         ; Int.to_string expected_w_cycle
+         ; " lane "
+         ; Int.to_string expected_w_lane
+         ]);
+  let a_delivered = s_idx in
+  if a_delivered <> expected_a_delivered
+  then
+    fail row "test bug -- frame A's own derived delivered count disagrees with this member's stated one";
+  let a_words = (a_delivered + 7) / 8 in
+  (* 3. The two report-cycle routes agree: the shared aborted_report_cycle
+     function (Route 2, WO-0068 §1) against start_cycle + 3 + (words - 1)
+     (§6.1's m + 3 -- legitimate here and only here because this stimulus
+     is gapless, C-14.4's qualifier). *)
+  let a_cycle_route2 =
+    aborted_report_cycle
+      ~a_lane:lane
+      ~start_ot:frame_a.Dv_xgmii.Arrival.start_octet_time
+      ~delivered:a_delivered
+      ~closing_ot:w_ot
+  in
+  let a_cycle_route_m3 = a_start_cycle + 3 + (a_words - 1) in
+  if a_cycle_route2 <> a_cycle_route_m3
+  then
+    fail
+      row
+      (String.concat
+         [ "the two report-cycle routes disagree: aborted_report_cycle gives "
+         ; Int.to_string a_cycle_route2
+         ; ", start_cycle + 3 + (words - 1) gives "
+         ; Int.to_string a_cycle_route_m3
+         ]);
+  let a_cycle = a_cycle_route2 in
+  let a_not_before, a_not_after =
+    window ~start_ot:frame_a.Dv_xgmii.Arrival.start_octet_time ~received:a_delivered ~closing_ot:w_ot
+  in
+  let disable_cycle = w_cycle - 1 in
+  let c_start_cycle = Dv_xgmii.Arrival.start_cycle frame_c in
+  let enable_cycle = c_start_cycle - 1 in
+  if disable_cycle <> expected_disable_cycle || enable_cycle <> expected_enable_cycle
+  then
+    fail
+      row
+      (String.concat
+         [ "derived enable change cycles are ("
+         ; Int.to_string disable_cycle
+         ; ", "
+         ; Int.to_string enable_cycle
+         ; "), expected ("
+         ; Int.to_string expected_disable_cycle
+         ; ", "
+         ; Int.to_string expected_enable_cycle
+         ; ")"
+         ]);
+  if c_start_cycle <> expected_c_start_cycle
+     || frame_c.Dv_xgmii.Arrival.start_lane <> expected_c_start_lane
+  then fail row "test bug -- frame C's own start cycle/lane disagrees with this member's stated one";
+  if disable_cycle <= a_start_cycle || disable_cycle >= w_cycle
+  then fail row "test bug -- the disable cycle does not lie strictly inside frame A, before W";
+  if enable_cycle >= c_start_cycle
+  then fail row "test bug -- the enable cycle is not strictly before frame C's own start cycle";
+  (* 2. T9: neither change cycle carries a start character, AT THE SITE --
+     from the DRIVEN word (Injection.word_at), never Arrival. *)
+  (match Dv_xgmii.Xgmii_word.start_lane (Dv_xgmii.Injection.word_at inj ~cycle:disable_cycle) with
+   | None -> ()
+   | Some l ->
+     fail
+       row
+       (String.concat
+          [ "the disable cycle ("
+          ; Int.to_string disable_cycle
+          ; ") carries a start character at lane "
+          ; Int.to_string l
+          ]));
+  (match Dv_xgmii.Xgmii_word.start_lane (Dv_xgmii.Injection.word_at inj ~cycle:enable_cycle) with
+   | None -> ()
+   | Some l ->
+     fail
+       row
+       (String.concat
+          [ "the enable cycle ("
+          ; Int.to_string enable_cycle
+          ; ") carries a start character at lane "
+          ; Int.to_string l
+          ]));
+  let enable = Enable.changes ~initial:true [ (disable_cycle, false); (enable_cycle, true) ] in
+  (* 5. T1: the model cross-check, with its one exclusion. *)
+  (match Dv_xgmii.Injection.outcomes inj with
+   | [ oa; ob; oc ] ->
+     if oa.Dv_xgmii.Injection.received <> a_delivered then fail_cross row "frame A received";
+     if oa.Dv_xgmii.Injection.delivered <> a_delivered then fail_cross row "frame A delivered";
+     if oa.Dv_xgmii.Injection.words <> a_words then fail_cross row "frame A words";
+     let expected_a_last_tkeep =
+       if Int.rem a_delivered 8 = 0 then 0xFF else (1 lsl Int.rem a_delivered 8) - 1
+     in
+     if oa.Dv_xgmii.Injection.last_tkeep <> expected_a_last_tkeep
+     then fail_cross row "frame A last_tkeep";
+     (match oa.Dv_xgmii.Injection.tlast_cycle with
+      | Some c when c = a_cycle -> ()
+      | _ -> fail_cross row "frame A tlast_cycle");
+     (match oa.Dv_xgmii.Injection.reports with
+      | [ r ]
+        when String.equal r.Dv_xgmii.Injection.strobe "error_start_without_terminate"
+             && r.Dv_xgmii.Injection.cycle = a_cycle
+             && r.Dv_xgmii.Injection.not_before = a_not_before
+             && r.Dv_xgmii.Injection.not_after = a_not_after -> ()
+      | _ -> fail_cross row "frame A reports");
+     (* B7: the named contrast, floored at delivered > 0 and asserted
+        against NOTHING the DUT did -- exactly what an enable-ignoring or
+        datapath-gating design would emit and what this row asserts the
+        DUT does not. *)
+     if not (ob.Dv_xgmii.Injection.delivered > 0)
+     then
+       fail
+         row
+         "test bug -- the model's own middle outcome (the refused start) must deliver > 0 to \
+          be a non-vacuous contrast";
+     if oc.Dv_xgmii.Injection.received <> 60 then fail_cross row "frame C received";
+     if oc.Dv_xgmii.Injection.delivered <> 60 then fail_cross row "frame C delivered";
+     if oc.Dv_xgmii.Injection.words <> 8 then fail_cross row "frame C words";
+     if oc.Dv_xgmii.Injection.last_tkeep <> 0x0F then fail_cross row "frame C last_tkeep"
+   | outcomes ->
+     fail_cross
+       row
+       (String.concat
+          [ "outcome count (expected 3: frame A, the refused start, frame C; got "
+          ; Int.to_string (List.length outcomes)
+          ; ")"
+          ]));
+  (* 4. Landing, site 1 -- before a cycle is driven. *)
+  let pre_run_w = Dv_xgmii.Injection.word_at inj ~cycle:w_cycle in
+  if (not (Dv_xgmii.Xgmii_word.is_control pre_run_w w_lane))
+     || not (Int.equal (pre_run_w.Dv_xgmii.Xgmii_word.data).(w_lane) Dv_xgmii.Xgmii_word.start_char)
+  then fail row "test bug -- the refused start does not land at its own lane of W before driving";
+  let bench = create () in
+  Dv_monitors.Strobe_monitor.expect
+    (strobes bench)
+    { Dv_monitors.Strobe_monitor.strobe = "error_start_without_terminate"
+    ; frame = 0
+    ; cycle = a_cycle
+    ; not_before = a_not_before
+    ; not_after = a_not_after
+    ; why =
+        "REQ-110/REQ-802/REQ-810, ADR-0014 clause 3: the refused start aborts frame A exactly \
+         as it would under enable = 1 -- the abort and its report are identical under either \
+         enable value (WO-0068 §4)"
+    };
+  let samples =
+    run
+      bench
+      sched
+      ~drain:8
+      ~word_at:(fun ~cycle -> Dv_xgmii.Injection.word_at inj ~cycle)
+      ~enable
+      ()
+  in
+  (* 6. Landing, site 2 -- the cycle run actually drove. *)
+  (match List.find samples ~f:(fun s -> s.cycle = w_cycle) with
+   | None -> fail row "test bug -- W was never driven"
+   | Some s ->
+     if (not (Dv_xgmii.Xgmii_word.is_control s.in_word w_lane))
+        || not (Int.equal (s.in_word.Dv_xgmii.Xgmii_word.data).(w_lane) Dv_xgmii.Xgmii_word.start_char)
+     then fail row "the driven word W does not carry the refused start -- assertions below would be vacuous");
+  (* 7. The three named enable facts, each its own assertion. *)
+  (match List.find samples ~f:(fun s -> s.cycle = a_start_cycle) with
+   | None -> fail row "test bug -- A's own start cycle was never driven"
+   | Some s -> if not s.enable then fail row "enable was not true on A's own start cycle");
+  (match List.find samples ~f:(fun s -> s.cycle = w_cycle) with
+   | None -> fail row "test bug -- W was never driven"
+   | Some s -> if s.enable then fail row "enable was not false on W (the refused start's own cycle)");
+  (match List.find samples ~f:(fun s -> s.cycle = c_start_cycle) with
+   | None -> fail row "test bug -- C's own start cycle was never driven"
+   | Some s -> if not s.enable then fail row "enable was not true on C's own start cycle");
+  (* 8. The whole driven window, from an INDEPENDENTLY written predicate
+     (T10) -- never sample.enable against Enable.value_at, which is the
+     schedule against itself. Enable.report used here (WO-0068 §8). *)
+  List.iter samples ~f:(fun s ->
+    let expected = s.cycle < disable_cycle || s.cycle >= enable_cycle in
+    if not (Bool.equal s.enable expected)
+    then
+      fail
+        row
+        (String.concat
+           [ "cycle "
+           ; Int.to_string s.cycle
+           ; ": enable = "
+           ; Bool.to_string s.enable
+           ; ", expected "
+           ; Bool.to_string expected
+           ; "\n"
+           ; Enable.report enable
+           ]));
+  (* 9. The delivered stream, whole run -- one assertion pinning A's own
+     words, C's own words, and the ABSENCE of any output word for the
+     refused start. Enable.report used here too (WO-0068 §8). *)
+  let words_out = delivered_samples samples in
+  let got_cycles = List.map words_out ~f:(fun s -> s.cycle) in
+  if not (List.equal Int.equal got_cycles expected_delivered_cycles)
+  then
+    fail
+      row
+      (String.concat
+         [ "delivered-sample cycles are ["
+         ; String.concat ~sep:"; " (List.map got_cycles ~f:Int.to_string)
+         ; "], expected ["
+         ; String.concat ~sep:"; " (List.map expected_delivered_cycles ~f:Int.to_string)
+         ; "]\n"
+         ; Enable.report enable
+         ]);
+  let group_a, group_c = split_at_first_tlast words_out in
+  if List.is_empty group_a
+  then fail row "test bug -- frame A's own group is empty (split_at_first_tlast's own precondition)";
+  if List.is_empty group_c
+  then fail row "test bug -- frame C's own group is empty (split_at_first_tlast's own precondition)";
+  (* 10. Frame A's own words. *)
+  if List.length group_a <> a_words
+  then
+    fail
+      row
+      (String.concat
+         [ "frame A's own word count is "
+         ; Int.to_string (List.length group_a)
+         ; ", expected "
+         ; Int.to_string a_words
+         ]);
+  List.iteri group_a ~f:(fun m s ->
+    let is_last = m = a_words - 1 in
+    let expected_tkeep =
+      if Int.rem a_delivered 8 = 0 then 0xFF else (1 lsl Int.rem a_delivered 8) - 1
+    in
+    if is_last
+    then (
+      if s.cycle <> a_cycle
+      then fail row "frame A's own tlast word did not arrive on its own report cycle";
+      if not s.out.Dv_monitors.Stream_word.tlast
+      then fail row "frame A's own last word does not carry tlast";
+      if s.out.Dv_monitors.Stream_word.tkeep <> expected_tkeep
+      then fail row "frame A's own last word tkeep does not match the delivered count";
+      if s.out.Dv_monitors.Stream_word.tuser <> 1
+      then fail row "frame A's own tlast word does not carry tuser[0] = 1 (REQ-110)")
+    else (
+      if s.out.Dv_monitors.Stream_word.tlast
+      then
+        fail
+          row
+          (String.concat [ "frame A's own word "; Int.to_string m; " unexpectedly carries tlast" ]);
+      if s.out.Dv_monitors.Stream_word.tkeep <> 0xFF
+      then fail row (String.concat [ "frame A's own word "; Int.to_string m; " tkeep is not 0xFF" ]);
+      if s.out.Dv_monitors.Stream_word.tuser <> 0
+      then
+        fail
+          row
+          (String.concat
+             [ "frame A's own word "; Int.to_string m; " unexpectedly carries tuser[0] = 1" ])));
+  (* T4: frame A's own content is the FIRST a_delivered octets of its own
+     DECLARED array -- the list case_a was built from -- never
+     Arrival.delivered/Frame.delivered, both of which strip four FCS
+     octets this aborted frame never reaches. *)
+  let expected_a_content = List.take frame_a_octets a_delivered in
+  let got_a_content = List.concat_map group_a ~f:(fun s -> Dv_monitors.Stream_word.octets s.out) in
+  if not (List.equal Int.equal got_a_content expected_a_content)
+  then fail row "frame A's own delivered content differs from its own declared array's prefix (T4)";
+  (* 11. Frame C's own words -- the OTHER content rule (T4): C closes on
+     its own /T/, so Arrival.delivered IS the right source (REQ-103's four
+     FCS octets are stripped). *)
+  if List.length group_c <> 8
+  then
+    fail
+      row
+      (String.concat
+         [ "frame C's own word count is "; Int.to_string (List.length group_c); ", expected 8" ]);
+  List.iteri group_c ~f:(fun m s ->
+    let expected_cycle = c_start_cycle + 3 + m in
+    if s.cycle <> expected_cycle
+    then
+      fail
+        row
+        (String.concat
+           [ "frame C's own word "
+           ; Int.to_string m
+           ; " expected on cycle "
+           ; Int.to_string expected_cycle
+           ; ", observed on cycle "
+           ; Int.to_string s.cycle
+           ]);
+    let is_last = m = 7 in
+    if is_last
+    then (
+      if not s.out.Dv_monitors.Stream_word.tlast then fail row "frame C's own word 7 does not carry tlast";
+      if s.out.Dv_monitors.Stream_word.tkeep <> 0x0F then fail row "frame C's own final tkeep is not 0x0F";
+      if s.out.Dv_monitors.Stream_word.tuser <> 0
+      then fail row "frame C's own tlast word unexpectedly carries tuser[0] = 1")
+    else if s.out.Dv_monitors.Stream_word.tlast
+    then
+      fail row (String.concat [ "frame C's own word "; Int.to_string m; " unexpectedly carries tlast" ]));
+  let expected_c_content = Array.to_list (Dv_xgmii.Arrival.delivered frame_c) in
+  let got_c_content = List.concat_map group_c ~f:(fun s -> Dv_monitors.Stream_word.octets s.out) in
+  if not (List.equal Int.equal got_c_content expected_c_content)
+  then fail row "frame C's own delivered content differs from Arrival.delivered frame_c";
+  let got_c_seq = Dv_xgmii.Frame.sequence_of got_c_content in
+  if got_c_seq <> 1
+  then
+    fail
+      row
+      (String.concat
+         [ "frame C's own delivered sequence number is "
+         ; Int.to_string got_c_seq
+         ; ", expected 1 (provenance -- this proves it IS frame C, not merely a frame)"
+         ]);
+  (* 12. Exactly one strobe over the whole run (T5): no error_runt for A
+     even though A delivers fewer than 64 octets (the runt check is
+     sequenced at REQ-106's own /T/ exit, which an aborted frame never
+     takes); no error_bad_fcs (no FCS removed); nothing for the refused
+     start (ADR-0014 clause 1, REQ-810); nothing for A's own auto-terminate
+     arriving in Idle (REQ-113, §6.2's Idle row). *)
+  (match error_pulses samples with
+   | [ (c, n) ] when c = a_cycle && String.equal n "error_start_without_terminate" -> ()
+   | pulses ->
+     fail
+       row
+       (String.concat
+          [ "expected exactly one strobe (error_start_without_terminate at A's own report \
+             cycle), observed "
+          ; Int.to_string (List.length pulses)
+          ]));
+  (* 13. Accounting, in arrival order -- A first, then C (T2, T3). *)
+  account_forwarded_piece
+    bench
+    ~start_ot:frame_a.Dv_xgmii.Arrival.start_octet_time
+    ~received:a_delivered
+    ~delivered:a_delivered
+    ~aborted:true
+    group_a;
+  account_clean_frame bench frame_c group_c ~aborted:false;
+  Dv_monitors.Conservation_monitor.strobe_pulse
+    (conservation bench)
+    ~name:"error_start_without_terminate";
+  (* The by-product: A and C start at DIFFERENT lanes, so this one run
+     exercises BOTH front-offset classes and both must report ΔC = 3. *)
+  (match Dv_monitors.Octet_time.Latency.word_delay (latency bench) with
+   | Some 3 -> ()
+   | Some d -> fail row (String.concat [ "word_delay = "; Int.to_string d; ", expected Some 3" ])
+   | None -> fail row "word_delay is None, expected Some 3");
+  (* 14. *)
+  assert_monitors_clean bench ~row
+;;
+
+let%expect_test
+  "M03-N4: cfg_rx_enable 1 -> 0 strictly inside frame A, at least one cycle \
+   before a refused start character -- frame A is aborted at the octet before \
+   it with tuser[0] = 1 on its own tlast word, exactly one \
+   error_start_without_terminate, no output word for the refused start, and \
+   frame C received normally after the enable returns to 1 (REQ-105, REQ-110, \
+   REQ-113, REQ-802, REQ-803, REQ-810, ADR-0014; WO-0068 §4)"
+  =
+  run_n4
+    ~row:"M03-N4 (lane 0)"
+    ~lane:0
+    ~s_idx:8
+    ~expected_w_cycle:3
+    ~expected_w_lane:0
+    ~expected_a_delivered:8
+    ~expected_disable_cycle:2
+    ~expected_enable_cycle:10
+    ~expected_c_start_cycle:11
+    ~expected_c_start_lane:4
+    ~expected_delivered_cycles:[ 4; 14; 15; 16; 17; 18; 19; 20; 21 ];
+  run_n4
+    ~row:"M03-N4 (lane 4)"
+    ~lane:4
+    ~s_idx:16
+    ~expected_w_cycle:4
+    ~expected_w_lane:4
+    ~expected_a_delivered:16
+    ~expected_disable_cycle:3
+    ~expected_enable_cycle:11
+    ~expected_c_start_cycle:12
+    ~expected_c_start_lane:0
+    ~expected_delivered_cycles:[ 4; 5; 15; 16; 17; 18; 19; 20; 21; 22 ];
   [%expect {||}]
 ;;

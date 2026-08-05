@@ -135,7 +135,7 @@ module Enable = struct
     List.fold t.changes ~init:t.initial ~f:(fun acc (c, v) -> if c <= cycle then v else acc)
   ;;
 
-  let change_cycles t = t.changes
+  let change_cycles t = if t.initial then t.changes else (0, false) :: t.changes
 
   let report t =
     String.concat

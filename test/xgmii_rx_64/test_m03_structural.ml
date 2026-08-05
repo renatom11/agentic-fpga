@@ -60,6 +60,44 @@ let%expect_test "WO-0038 scaffolding: Xgmii_rx_64 elaborates and runs idle cycle
   [%expect {||}]
 ;;
 
+(* WO-0068 §7.5: the cycle-0 guard repair's own witness -- four pure facts
+   about {!Bench.Enable.change_cycles} (repair A, WO-0068 §7.2), none of
+   them touching the design. First use of {!Bench.Enable.low} anywhere in
+   test/** -- closes half of RV-0067-VERDICT §6.1's specified-but-unused
+   finding, by use rather than by deletion. Title carries no [M03-] row id
+   (T8, BOUNCE B16): the guard's own entry condition is the seam this
+   file's own docstring already promises to hold, not a row. Not a
+   guard-raises test (WO-0068 §7.5's own rejection): this suite has no
+   raise-assertion idiom, and coupling a unit to the guard's own message
+   text is exactly what the compatibility bar's literal clause exists to
+   keep stable -- the guard's own walk at cycle 0 is already exercised as a
+   non-violation by M03-J1's landed [~initial:false] schedule; what was
+   broken was only the entry condition, and these four assertions plus the
+   Return log's quoted entry-condition line are that condition's complete
+   evidence. *)
+let%expect_test "Bench.Enable.change_cycles: the cycle-0 guard repair (WO-0068 §7)" =
+  let cc_equal (c1, v1) (c2, v2) = c1 = c2 && Bool.equal v1 v2 in
+  if not (List.is_empty (Enable.change_cycles Enable.high))
+  then failwith "change_cycles Enable.high is not []";
+  if not (List.equal cc_equal (Enable.change_cycles Enable.low) [ 0, false ])
+  then failwith "change_cycles Enable.low is not [ (0, false) ]";
+  if not
+       (List.equal
+          cc_equal
+          (Enable.change_cycles (Enable.changes ~initial:false [ 7, true ]))
+          [ 0, false; 7, true ])
+  then
+    failwith
+      "change_cycles (changes ~initial:false [ (7, true) ]) is not [ (0, false); (7, true) ]";
+  if not
+       (List.equal
+          cc_equal
+          (Enable.change_cycles (Enable.changes ~initial:true [ 7, false ]))
+          [ 7, false ])
+  then failwith "change_cycles (changes ~initial:true [ (7, false) ]) is not [ (7, false) ]";
+  [%expect {||}]
+;;
+
 let _witness_i_has_no_tready
   (b : Bits.t ref)
   (i : Bits.t ref Hardcaml_ethernet.Xgmii_rx_64.I.t)

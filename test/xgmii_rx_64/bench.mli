@@ -97,11 +97,26 @@ module Enable : sig
   val value_at : t -> cycle:int -> bool
 
   (** The cycles at which the driven value differs from the previous cycle's,
-      with the value taken. [high] and [low] both return []. *)
+      with the value taken -- including the boundary transition against the
+      value {!create} drives through the reset cycle, taken as the value in
+      force immediately before cycle 0 (WO-0068 §7): a schedule whose
+      [initial] is [false] therefore reports [(0, false)] as its own first
+      entry, and [high] -- [initial] [true], no further changes -- still
+      reports [[]]. [changes] and [change_cycles] are NOT inverse:
+      [changes] refuses a cycle-0 entry ([cycle <= 0] raises), so a value
+      this function returns cannot always be fed back to it. [changes] is
+      the author's DECLARATION; this is the derived OBSERVATION, including
+      the boundary transition no author declares because [~initial] is how
+      it is expressed (WO-0068 §7.3). *)
   val change_cycles : t -> (int * bool) list
 
-  (** Deterministic summary for an expect block: the initial value and every
-      change. *)
+  (** A deterministic diagnostic rendering of a schedule, for failure
+      messages and for a future row that needs to print one -- not for an
+      expect block: `WO-0067` §5.5 forbids that use, and the docstring that
+      once named it is withdrawn (WO-0068 §8). The {!Enable.t} shape was
+      chosen on the five-call-sites-hand-computing-an-off-by-one ground
+      alone (`WO-0067` §1.3(d)'s (R-b)); the [report] half of that argument
+      was falsified by the same packet's own §5.5 and is withdrawn here. *)
   val report : t -> string
 end
 
@@ -239,7 +254,10 @@ type sample =
     certify coverage of a stimulus this specification refuses to constrain.
     [Enable.high]'s empty [change_cycles] means an [?enable]-omitted call
     enters none of this: it evaluates [word_at] exactly as many times as it
-    did before WO-0067 and can raise no exception this guard introduces. *)
+    did before WO-0067 and can raise no exception this guard introduces. A
+    schedule whose value at cycle 0 is [false] now enters the pre-scan
+    through this same condition, because its boundary transition with the
+    reset cycle is one of the cycles [change_cycles] reports (WO-0068 §7). *)
 val run
   :  t
   -> Dv_xgmii.Arrival.t
