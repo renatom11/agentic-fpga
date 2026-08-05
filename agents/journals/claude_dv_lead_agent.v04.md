@@ -1554,3 +1554,245 @@ the twelfth). Yield this round:
 ### Files-in-this-commit
 - agents/handoffs/WO-0066_family-bn-mutation-campaign-SEALED-predictions.md
 - agents/handoffs/WO-0066_family-bn-mutation-campaign.md
+
+## [J-dv_lead-0116] 2026-08-06T14:10Z | task:WO-0066 | Two pre-run questions ruled and a third the manifest raised without asking — my seal's runt floor was five where the specification says sixty-four, and the auditor falsifying two of my green cells is the best independence evidence this round could have produced
+
+### Trigger
+Orchestrator relay: the auditor's `WO-0066` manifest is committed at `8869705`
+(six diffs, frozen before any run, base `199e319` verified as `ebaac58^`), and
+the adjudicator-ordering rule permits my read. **Two pre-run questions from its
+§7 to rule on in writing before the transients are operated**, plus the voiding
+call on a disclosed ambient exposure, which `WO-0066` §7 makes mine alone.
+
+### Inputs
+- `docs/reports/audit/WO-0066-mutations/README.md` — the manifest **in full**
+  (841 lines): §1 base-SHA verification, §2 stimulus geometry, §3's six diffs,
+  §4's seven disclosure answers, §5's gate inventory, §6's fan-out closure, §7's
+  two pre-run notes, §8's mechanical checks, §9's allowlist statement.
+- `docs/specs/requirements.md` — **§12's strobe table, line 881** (decisive), §0.6
+  (the counting convention and the bound-never-a-licence note), REQ-102, REQ-107.
+- `agents/handoffs/WO-0066_family-bn-mutation-campaign.md` §1.3, §1.6, §4, §6,
+  §7, §9 — my own packet, re-read against the manifest's answers.
+- `agents/handoffs/WO-0066_family-bn-mutation-campaign-SEALED-predictions.md`
+  §3.3, §4.5, §5.2, §6, §7, §8 — **read, not edited**.
+- `agents/handoffs/WO-0063B_pre-run-reading-note.md` — the form.
+- `agents/PROTOCOL.md` §2, §4.1, §10; `agents/charters/dv_lead.md` §3.
+- Git metadata for `199e319`, `ebaac58`, `fb27764`, `8869705` — subjects and
+  trailers, to measure the exposure channel rather than assume it.
+- **No `libs/**`, `top/**` or `rtl_snapshots/**` path was opened.** Every RTL
+  claim below is cited as the auditor's disclosed evaluation and none enters a
+  verdict as verification.
+
+### Reasoning
+**The governing constraint, fixed before any ruling.** The diffs exist. Anything
+I write now is written with a rendering in view, so a "clarification" can become
+a seal tuned to a mutant — and it does not stop being that failure because the
+tuning would raise the kill count rather than lower it. **No cell moves.** Where
+the manifest shows a sealed cell wrong, the cell stands and the round scores it a
+violation against me. That is strictly harsher than a correction and it is the
+only disposition that leaves the seal doing its job. What the note may legitimately
+do is **pre-commit an adjudication** the manifest has made foreseeable, which is
+the opposite of amending a prediction after a result.
+
+**Question 1 was easier than it looked, and the auditor's ground is better than
+mine.** My seal already marked N sub-cases 3, 4 and 6 `G✱` under IC-E — green by
+blindness — and scoped `R!` to sub-case 2. So its NOT-SEEDED and my `G✱` are the
+same fact; the ruling is **concordant**, and disposition 3 does **not** fire
+because disposition 3 keys on unreachability at the **`R!`** set, which is
+sub-case 2 and is reachable. **The refinement I did adopt cuts against my own
+wording.** I located the limitation in the *instrument* ("blindness"); the auditor
+locates it in the *waveform* — under §0.6's high-cycle counting the mutant is
+**bit-identical** to a conformant design there, which makes it an **equivalent
+mutant**. That is a **larger** limitation than my seal claimed: sub-case 4 is not
+a defective instrument, and no bench repair can fix it, because the strobe
+interface reports presence per cycle and not multiplicity. I restated seal §6.1
+rather than withdrew it, and barred any verdict from reading IC-E's kill as
+evidence that T8 is instrumented at two members.
+
+**Question 2 needed a rule that did not exist, so I minted one rather than
+stretch a disposition to fit.** IC-B's `W` branch is unrenderable at this design
+(the auditor's derivation: the in-word path has no payload machinery, and the
+epoch-A `W` rendering cannot fire because `have_word` needs `pc ≠ 0`, which a
+zero-delivered frame never gives). D-B1's **disclosure structure already absorbs
+it** — that is what putting the rendering on a mandatory axis bought — and IC-B is
+seeded and scoreable on the `R` branch. But none of seal §7's seven dispositions
+covers *a disclosed branch that cannot exist*. **Disposition 8, VOID BY
+DISCLOSURE**, minted pre-run and citable: the branch's cells are not scored,
+contribute zero kills, and are findings in neither direction; the class scores on
+the rendered branch alone. Seal §5.2's UNWORKED cell at sub-case 4 becomes
+**moot** — void by disclosure, not by the one-word-per-cycle argument — and I said
+so, because conflating the two later would launder a design fact into a coverage
+argument. **And I barred the tempting half**: the auditor's derivation implies the
+design *structurally* cannot emit a word for a zero-delivered frame, which would be
+stronger than any test — and it is **not mine to claim**. I have not read the RTL,
+DV does not derive from RTL, and no `SO-` may cite it as §0.7 coverage.
+
+**The third item is the round's real event, and neither question asked about it.**
+The manifest predicts IC-E red at sub-cases **1, 2 and 5**. My seal marks **1 and
+5 `G` — MUST STAY GREEN**. I checked which of us was right **from the
+specification, not from the diff**: `requirements.md` §12 line 881 defines
+`error_runt` as *"fewer than 64 octets between start and terminate"*. My seal §4.5
+derived from a **sub-five floor** and marked 1 and 5 green *because A delivers 8*.
+**Eight is also fewer than sixty-four.** At those two sub-cases A reports at W + 1
+and B at W + 2, so unlike at 3/4/6 the two runts do **not** collapse and three high
+cycles are observable. **The manifest is right and my seal is wrong at two cells.**
+
+Worse and more instructive: **my disclosure question was malformed.** §1.6 asked
+*"`delivered < 5` or `0 < delivered < 5`?"* — **both options wrong**; the predicate
+is `< 64` on octets received. The auditor answered the one sound half and
+**disclosed the real threshold in the open**. The disclosure function worked
+*despite* the axis being mis-stated by me, which is simultaneously the strongest
+argument for mandatory disclosures and against trusting whoever writes them.
+
+**How I scored it, and why not by correcting the seal.** Sub-cases 1 and 5 **stand
+as sealed**. If they redden it is a MUST-STAY-GREEN violation **against me**,
+scored exactly as `WO-0063B-VERDICT` §6.1's M03-D2 violation was. It is the first
+of my own containment rule's two alternatives — *my enumeration was incomplete* —
+never the second, because IC-E reaches precisely what IC-E says it reaches. **Kill
+count unaffected**: the scored cell is sub-case 2. So the seal produced exactly
+the behaviour a seal is for — it caught its author.
+
+**The voiding call: NOT VOIDED, and I priced the channel instead of waving it
+through.** Two of the four exposures are **my drafting defect**: barring all of
+`agents/**` forbade the charter, PROTOCOL and own-journal reads PROTOCOL §2 makes
+mandatory first actions, so an agent obeying my allowlist literally could not have
+written the manifest. Carve-out stated and binding. The fourth — git metadata — I
+**measured**: `ebaac58`'s subject carries "six classes" and "eleven never-scored
+members", both **freely told in the packet itself**; `199e319`'s is census content;
+the `--stat` line leaks a filename the packet's own header names. **Marginal leak
+zero.** But it was luck: my `J-dv_lead-0115` title continues into seal §6
+substance — listed in seal §12 as not to be told — and reached the subject only in
+**truncated** form because the orchestrator shortened it. That discipline is mine
+and I did not keep it.
+
+**Materiality, tested rather than asserted.** Three positive signs the exposure
+changed nothing: the auditor's IC-E ground is *different from and stronger than*
+mine; the shape of question 1 is inconsistent with having read the answer (a reader
+of seal §3.3 sees `G✱` and has nothing to ask); and **decisively, its IC-E red set
+contradicts two of my green cells**. A contaminated auditor matches the seal; it
+does not falsify it from the specification. **The best independence evidence this
+round could produce arrives as a by-product of my own error**, and it is worth more
+than any assurance either of us could have written.
+
+**Class order is for reading, not gating**, and two orderings are load-bearing:
+IC-C first because its three required greens are the round's control and every
+later report-path red is read against them; IC-E **after** IC-C, because IC-C's
+green at 1/2/5 is what makes IC-E's predicted red at 1 and 5 attributable to my
+enumeration rather than to a general report perturbation. IC-D before IC-F because
+the `/E/` control must be established before the class that reddens only `/Q/`, and
+IC-A last because bound 7's verdict must not be contaminated.
+
+### Actions
+- Wrote `agents/handoffs/WO-0066_pre-run-reading-note.md`, **BINDING and citable
+  by the scorecard**: §0 the no-cell-moves rule; §1 ruling 1 (concordant,
+  disposition 3 does not fire, the equivalent-mutant refinement adopted); §2
+  ruling 2 (**disposition 8, VOID BY DISCLOSURE**, minted) with the bar on
+  claiming the design fact as coverage; §3 **FINDING WO-0066-3** and its scoring;
+  §4 the voiding call with the measured metadata table and the allowlist
+  carve-out; §5 the four findings, all mine, and the statement that **nothing is
+  found against the manifest**; §6 the run ruling and class order; §7 what the
+  note does not do.
+- **The seal was read and NOT edited.** No `test/**` byte moved. No git command
+  was run (PROTOCOL §2).
+
+### Evidence
+- **The decisive specification citation, read by me at this tree**:
+  `docs/specs/requirements.md:881` — `` `error_runt` | fewer than 64 octets
+  between start and terminate | REQ-107 | M03 ``. This is what falsifies seal
+  §3.3's IC-E `G` at sub-cases 1 and 5, and it is a **spec** read, not an RTL one.
+- **Seal §3.3's IC-E row as landed, re-read before ruling**: sub-case 2 `R!`;
+  1 and 5 `G`; 3, 4 and 6 `G✱`. **Concordance with the manifest at 3/4/6;
+  contradiction at 1/5.**
+- **Exposure channel measured, not assumed**: `git log --format='%H %s'` at
+  `ebaac58` → *"Six classes sealed against eleven never-scored members - the
+  packet and its seal in one commit"*; at `199e319` → *"The census stops being a
+  hand measurement: both matchers printed, the stolen row named"*. Neither carries
+  a seal cell. My own `J-dv_lead-0115` header at this file shows the clause the
+  subject dropped.
+- **Base SHA agreement**: manifest §1 gives `199e319` = `ebaac58^`, carrying
+  `tools/dv_checks.sh` and `J-dv_lead-0114` and **no `test/**` or `libs/**`
+  path**; `git log --oneline 199e319..HEAD -- test/ libs/` **empty**; last bench
+  edit `fa91964`, strictly earlier. **No disagreement to raise as a pre-run
+  finding.**
+- **Manifest mechanics quoted from its §8**: all six `git apply --check` clean;
+  each applies alone and reverts to empty; one file each; hunks 1/2/1/3/2/6; all
+  six parse under `ocamlc -stop-after parsing`, with a deliberately broken file
+  failing so the check is not vacuous. Elaboration is the orchestrator's to
+  observe; a mutant that fails to compile is a **build-level** finding per
+  `WO-0066` §2.1.
+- **No transient has been applied.** Nothing in this entry is a campaign result,
+  and every disposition in the note is conditional and pre-run.
+
+### Outcome
+**DoD met.** Both pre-run questions ruled in writing, in a committed and citable
+form, **before any transient is operated** — the `WO-0063B` precedent honoured.
+Ruling 1: **concordant**, IC-E scoreable at sub-case 2. Ruling 2: **VOID BY
+DISCLOSURE** under new disposition 8, IC-B scoreable on branch `R`. Voiding call:
+**NOT VOIDED**, campaign may run, six classes in the order IC-C → IC-D → IC-F →
+IC-B → IC-E → IC-A. Four findings, **all against me**; **none against the
+manifest**. Handoff: this note to the auditor and orchestrator; the transients may
+proceed.
+
+### Open-questions
+1. **Two MUST-STAY-GREEN violations are PREDICTED at N sub-cases 1 and 5 under
+   IC-E**, against my own seal, on the manifest's disclosed derivation. If they
+   occur they are mine; if they do **not**, that is equally a finding and I must
+   explain why a `< 64` predicate did not reach an eight-octet frame.
+2. **The IC-B(W) design fact is recorded and NOT banked.** That a zero-delivered
+   frame structurally cannot emit a word is the auditor's RTL derivation; **no
+   `SO-` may cite it as §0.7 coverage** until a bench re-establishes it from the
+   specification side. Whether that bench is worth writing is a question for the
+   family-J round, not for this one.
+3. **The strobe interface reports presence per cycle, not multiplicity**, so a
+   duplicated report under one name on one cycle is unobservable by construction
+   (§1(c)). That is not a bench defect and no bench change fixes it. Whether M03's
+   strobe contract should carry a multiplicity signal is an **architect** question
+   and I raise it as one, not as a `BUG-`.
+4. Carried unchanged from `J-dv_lead-0115`: the ordering rule's standing bar on
+   `test/**` until the scorecard exists; `bench.mli`'s naming-axis cell and
+   fold-in 3 with their dated carriers; family J one deferral from an E2;
+   `run_i2_member`'s citation exception; `WO-0061` §8 bound 1's `tkeep` half;
+   **N-1**; the ledger disposition on `BUG-0003`; **B-4**.
+
+**Harvest (ADR-0018, PROTOCOL §7).** **Not due** — no `SO-`, no gate. Span since
+`J-dv_lead-0115`'s note: **J-dv_lead-0116** (this entry); cumulative untiled span
+**J-dv_lead-0001 … 0116**, first harvest still firing at `SO-M03`. Inventory
+carries at **~13 LH2-g candidates plus the war stories**. Yield this round:
+
+- **The sharpest candidate this round, and it is about my own instrument.** *"A
+  question offered as a choice between n values asserts that the answer lies among
+  them; state the quantity the values range over, or a respondent can answer
+  correctly and leave the questioner's error intact."* **LH1**: this commit — I
+  offered a floor as *"< 5 or 0 < … < 5"* when the governing predicate was
+  *"< 64"*, and the respondent answered the one sound half while disclosing the
+  real threshold in passing; had it answered only the question, two of my sealed
+  cells would have been falsified by a scorecard instead of by a disclosure.
+  **LH2-g** — no proper noun. **LH3**: without it, a disclosure protocol
+  transmits the asker's misconception intact and certifies it as answered.
+  **This supersedes `J-dv_lead-0107`'s weaker form** (*a question with n values
+  must state the dimension it ranges over*) by adding what goes wrong when it is
+  answered rather than when it is asked.
+- **A second candidate, banked.** *"When a prediction and an independent
+  derivation disagree, resolve it from the shared source both claim to derive
+  from — never from the artefact one of them was derived against."* **LH1**: this
+  commit — the manifest and my seal disagreed at two cells, and I settled it from
+  the specification's own strobe table rather than from the diff that raised it,
+  which is the only resolution that does not convert a disagreement into a
+  tuning. **LH2-g**. **LH3**: without it, the party with access to the
+  implementation always wins, and the record cannot tell agreement from
+  capitulation.
+- **A third, weaker, banked as a war story.** An adversary's contradiction of
+  your own prediction is stronger evidence of its independence than any assurance
+  either party can write. True, and I could not state it without leaning on this
+  round's particulars — it reads as an observation about adversarial review rather
+  than a portable rule. Recorded, not banked.
+- **`J-dv_lead-0115`'s coincidence candidate gains a same-round strengthening**
+  from the other side: the auditor derived the same collapse from the DUT's
+  waveform while I derived it from the bench's reading, and its version is
+  stronger — the events are **not distinguishable at the interface**, so no
+  instrument change reaches them. Observable restated; the candidate is now about
+  the observation channel rather than about a bench.
+- **No war story retired, none promoted.**
+
+### Files-in-this-commit
+- agents/handoffs/WO-0066_pre-run-reading-note.md
