@@ -2035,3 +2035,291 @@ carries at **~15 LH2-g candidates plus the war stories**. Yield this round:
 
 ### Files-in-this-commit
 - agents/handoffs/WO-0066_family-bn-mutation-campaign.md
+
+## [J-dv_lead-0118] 2026-08-06T21:15Z | task:WO-0066 | The plan absorbs the campaign — and the round's own discipline rule caught a miscount in my draft of the paragraph that mints it, three hours after the finding that taught me the rule
+
+### Trigger
+Orchestrator dispatch: execute the six-item `AP-xgmii_rx_64.md` round I
+commissioned at `WO-0066-VERDICT` §10 item 1, deriving from the verdict
+committed at `be8f7c2`, citing it at every site, with the pre-run reading
+note cited wherever its rulings bind. The plan was held back from every commit
+of the campaign because it is the campaign's contract and moving it inside the
+window would have violated `WO-0066` §8's ordering rule. The campaign has
+scored; the window is closed; this is that round.
+
+### Inputs
+- `agents/handoffs/WO-0066_family-bn-mutation-campaign.md`, **`WO-0066-VERDICT`
+  section at `be8f7c2`** — §§1–6 the six per-class scorecards, §7 the bound-7
+  verdict under §4's four rules, §8 the campaign scorecard, §9 the six findings
+  and their shared root cause, §10 what is commissioned. **This round's deriving
+  authority; cited, never edited.**
+- `agents/handoffs/WO-0066_pre-run-reading-note.md` — **ruling 1(c)** (the
+  equivalent-mutant ground and the T8 consequence, adopted from the auditor over
+  my own "green by blindness" wording), **ruling 2 / disposition 8** (IC-B branch
+  `W`, VOID BY DISCLOSURE), and `FINDING WO-0066-3`'s pre-classification.
+- `test/attack_plans/AP-xgmii_rx_64.md` at `9293ef1` — §0, §1's status
+  vocabulary, §2 obligation 4, §4.B (rows M03-B2/B4 and notes B-i, B-ii, B-iii),
+  §4.H (rows and the two family bounds), §4.N (row M03-N2, its tables and its
+  struck blocks), §6's REQ-102/REQ-110 entries, §7's banner, §9's change log.
+- `agents/charters/dv_lead.md`; `agents/PROTOCOL.md` §2, §3, §4.1, §4.2, §6, §7,
+  §10.
+- `agents/journals/claude_dv_lead_agent.v04.md` — my own `J-dv_lead-0109`
+  (the divergence ruling: qualification lives in the Kills cell and discharges no
+  row), `J-dv_lead-0112` (tooling does not land in a review commit),
+  `J-dv_lead-0113` (the state split, already in §6), `J-dv_lead-0117` (this
+  campaign's adjudication and its five open questions).
+- `tools/dv_checks.sh` lines 238–322 — the census block, **read so that what I
+  say it does not cover is read off the code rather than recalled**.
+- `test/xgmii_rx_64/test_m03_n.ml` lines 85–130 — **trap T8's own text**, read so
+  that the permanence note names what the bench actually asserts. Read only.
+- **No `libs/**` path was opened.** No RTL claim is made anywhere in this round;
+  the equivalent-mutant fact is cited as the auditor's disclosed derivation,
+  adopted at the reading note.
+
+### Reasoning
+**The whole round is one judgement repeated six times: record what the campaign
+measured, at the site where a later reader will look for it, in the vocabulary
+this plan already has — and never let a score be recorded without the correction
+that makes it true.**
+
+**Qualification goes in the Kills cell, twice, and the Status cells do not move.**
+`J-dv_lead-0109` settled this and I followed it rather than re-decide it: §1's
+status vocabulary is a **closed set of six values**, `QUALIFIED` is not one of
+them, and M03-I2's, M03-E5's and M03-F2's qualifications already sit in their
+Kills cells. Qualification is a **measured property of the Kills claim**, not a
+seventh status — which is also why it discharges no row, a point the count line
+below turns on.
+
+**M03-N2's qualification had to carry its own narrowing in the same breath, or it
+would have been a lie by arrangement.** The four classes give it 4/4, and IC-C's
+three REQUIRED GREENS are what make the kill mean *the coincidence* rather than
+*reports in general*. But `FINDING WO-0066-6` says `M03-H1` and `M03-H2` have
+driven bound 7's conjunction since `WO-0057`, so sub-cases 4 and 5 are **not the
+conjunction's first detectors** and this bench was never blind to it. I put that
+sentence **inside the qualification**, not in a footnote below it, because a
+reader who stops after the kill count must not be able to leave with the larger
+claim. What survives as genuinely M03-N2's own — the `Preamble`-state instance
+and the coincidence geometry — is written in the same paragraph as the score.
+
+**M03-B2's qualification is where the campaign paid for a ruling I made on
+argument.** IC-D and IC-F emit **identical strings**; the seal recorded that the
+bench cannot tell them apart and that the separation rests entirely on running
+them as separate transients. The measured asymmetry — `/I/` red under IC-D,
+green under IC-F, `/Q/` red under both — is therefore the **separating
+observable**, and it is what turns note B-ii's `/Q/` ruling from an admitted
+argument into a ruling with a kill under it. I said so in the cell in those
+terms, because `WO-0065` §3.2.1 overruled a REQ-018 objection to get that
+stimulus and the record should show what the overrule bought.
+
+**M03-B4 member (b): a result, stated as one.** It sat in all six classes'
+denominator and convicted under none. The temptation is to leave that unsaid,
+since it reads like an omission; the plan says it explicitly, and says the
+opposite thing too — its value is bound 6's **4 → 0** alignment point, which no
+campaign attacking report paths was ever going to exercise. **A member can be
+worth adding for a geometry it uniquely supplies and convict nothing in a
+campaign that does not attack that geometry.** Both facts, adjacent, so neither
+can be quoted alone.
+
+**Bound 7 is adjudicated in exactly one place and pointed at from two.** The
+bound's home in this plan is §4.H's second family bound, and that is the sentence
+`FINDING WO-0066-6` refutes, so the strike, the superseded wording, the 3-of-3
+score, the state-split table and the correction all land **there**. Note B-i's
+*"Bound 7 remains open with no candidate row"* is struck with its wording kept,
+and §6's REQ-110 entry gains a **pointer** rather than a restatement. That is not
+tidiness: this round's own new rule is about claims carried in prose, and
+restating an adjudicated claim at three sites is how the next re-statement gets
+quoted instead of re-measured.
+
+**Why §0 and not §2 for the new rule.** The dispatch offered §2. I filed it in
+§0 and recorded the reason in the change log: **§2's obligations attach to
+"every M03 bench" by that section's own opening sentence**, and this rule binds
+**prose** — a plan's, a packet's, a seal's — not a bench. Minting it as a seventh
+bench obligation would have mis-filed it in the one section whose scope is
+stated in its first line. §0 is where this plan defines what it is and what its
+cells may not say, and that is the same kind of rule.
+
+**And I made the note say what the tool does not do.** `WO-0066-3` is a
+row-status/threshold claim; `WO-0066-6` is a cross-row premise claim; the
+boundary-matched census answers *which rows are named in a unit title* and
+catches **neither**. The tool shipped in the same round as both findings. Left
+unsaid, its existence would be read as coverage of the class — which is the
+second-order version of the failure it was built for. So `DVC-1` is commissioned
+**with an executor and with its own bound written into the commission** (part b
+reports what docstrings *declare*, never what stimuli *do*), and it is
+deliberately not built here: a plan round is not where tooling lands, which is
+`J-dv_lead-0112`'s rule applied to its author.
+
+**The count line does not move, and that is the rule rather than an oversight.**
+Two rows qualified and **43 of 62** stands, because qualification measures an
+instrument and discharges no row. I re-measured rather than carried it forward —
+78 declared row ids, 43 under the trailing-digit boundary matcher, 44 under the
+naive one over-discharging `M03-M1` inside `M03-M10`'s title (**the same defect
+at a fourth SHA**), − `M03-A4` + `M03-F5` = 43 — and counted the 62 ASSERT
+denominator from the file's own status cells in the same pass.
+
+**The round's best moment is against me, and it is three hours old.** My first
+draft of the M03-N2 qualification said *"three MUST-STAY-GREEN violations across
+the two classes"*. There are **five**, at four distinct units — three under IC-E
+and two under IC-A, with `M03-H2` violated under both from one root cause. I had
+carried a count in prose, from the paragraph I had just read, into the very cell
+whose neighbouring section mints the rule against doing that. I caught it by
+re-reading the verdict's two scorecards instead of my own sentence, corrected it
+at both sites, and I am recording it here rather than quietly fixing it, because
+**the rule's first violation being committed by its author while writing it down
+is the strongest evidence the rule is worth having.**
+
+### Actions
+- **`test/attack_plans/AP-xgmii_rx_64.md`, one round, six items plus the change
+  log** — the only file touched:
+  1. **§4.N, M03-N2's Kills cell** — QUALIFIED on IC-A/IC-B/IC-C/IC-E, 4/4, per
+     class with its controls, disposition 8 named for IC-B's `W` column, the
+     WO-0066-5 message miss recorded and not absorbed; the honest scope from
+     `FINDING WO-0066-6`; the five MUST-STAY-GREEN violations attributed to the
+     seal; **and trap T8's permanent single observability** as an interface
+     property, stated once, where the row's coverage claims are read.
+  2. **§4.B, M03-B2's Kills cell** — QUALIFIED on IC-D/IC-F, 2/2, with the
+     `/I/`-red-under-D / `/I/`-green-under-F asymmetry as the separating
+     observable, note B-ii obligation 1's `/Q/` ruling recorded as paid by
+     measurement, and lane 4 recorded UNOBSERVED.
+  3. **§4.B, note B-i** — member (b) recorded **SCORED-AND-UNCONVICTING** beside
+     what it does pay (bound 6's opposite-direction point).
+  4. **§4.H, family bound 2** — struck, with the superseded wording reproduced
+     verbatim and its emphasis intact beneath; bound 7 **SCORED 3 of 3** with the
+     three instances' state-split table (`Frame` ×2, `Preamble` ×1), the
+     `WO-0066-6` correction, and the mechanism by which the false premise
+     survived every packet that re-stated it. Note B-i's *"remains open"*
+     sentence struck; §6's REQ-110 entry given a pointer, not a restatement.
+  5. **§0.1, new** — the prose-carried set-claim rule, its two minting instances,
+     what the census tool does **not** cover, and `DVC-1` commissioned with an
+     executor and a bound.
+  6. **§9** — one change-log row carrying all six items, the unchanged status
+     counts and the re-measured count line.
+- **No git command was run** (PROTOCOL §2). **No `test/**` file other than the
+  plan was edited**; no packet was edited; the verdict and the seal were read and
+  not touched.
+
+### Evidence
+- **Count line, re-measured at `9293ef1` by the committed tool's own census
+  block** (`tools/dv_checks.sh` lines 275–322, run standalone): `78` row ids
+  declared, `44` naive, **`43` boundary-matched**, over-discharged by the naive
+  matcher: `M03-M1`. Declared adjustments − `M03-A4` + `M03-F5` ⇒ **43**.
+- **ASSERT denominator, counted from the file rather than carried**:
+  `grep -oE '\| (ASSERT|NO-ASSERT|NO-STIMULUS|STRUCTURAL|GAP|RULING) \|$'
+  test/attack_plans/AP-xgmii_rx_64.md | sort | uniq -c` → **62 ASSERT**, 7
+  NO-ASSERT, 4 NO-STIMULUS, 4 STRUCTURAL, 1 GAP. **Re-run after my edits:
+  identical.** Row ids declared: **78**, before and after.
+- **Post-edit re-measure of the census: 78 / 44 / 43, unchanged** — the
+  state-split table I added inside §4.H names `M03-N2`, an already-declared id,
+  so the declared-id set does not move.
+- **Working tree**: `git status --porcelain` → `M test/attack_plans/AP-xgmii_rx_64.md`,
+  one file (plus this journal). `git diff --numstat --
+  test/attack_plans/AP-xgmii_rx_64.md` → **181 insertions, 10 deletions**, one
+  file. **The ten deleted lines, enumerated rather than characterised, because
+  "nothing was deleted" is exactly the kind of claim §0.1 now forbids me to
+  assert without checking**: three whole-row table lines rewritten in place with
+  their prior text retained in full (`M03-B2`, `M03-N2`, §6's REQ-110 entry); one
+  line of note B-i, whose struck sentence is quoted back verbatim in the block
+  beneath it; and §4.H bound 2's six lines, reproduced **word for word with their
+  own emphasis** inside the blockquote that replaces them. **No wording of this
+  plan is deleted by this round** — verified by reading the diff's `-` side, not
+  by intending it.
+- **Deriving authority**: `WO-0066-VERDICT` at `be8f7c2`
+  (`git show --stat be8f7c2` → the campaign packet and my journal, 2 files),
+  read at that commit and **not edited by this round**.
+- **T8's text**, quoted from the bench rather than recalled:
+  `test/xgmii_rx_64/test_m03_n.ml:102` — *"T8: A's strobe set on the delivered
+  sub-cases is `error_start_without_terminate` ALONE, even where A delivers FEWER
+  than five octets (sub-cases 2 and 4, four octets each)"*.
+- `dune runtest` is CI's, not this seat's (ADR-0005). **This round runs no
+  simulation and claims no run**: it edits a plan, and every number in it is
+  either quoted from `WO-0066-VERDICT` with its section or measured by the two
+  commands above.
+
+### Outcome
+**DoD met.** All six commissioned items landed in the single commissioned file,
+each citing `WO-0066-VERDICT` at its site and the pre-run reading note where its
+rulings bind, plus the §9 change-log row. **Counts unchanged and re-measured:
+78 rows, 62 ASSERT, 7 NO-ASSERT, 4 NO-STIMULUS, 4 STRUCTURAL, 1 GAP; discharge
+43 of 62, nineteen outstanding — qualification discharges no row.** **`WO-0058`
+bound 7 leaves my carried list**, under `WO-0066` §4 rule 4, now that the plan
+records the score, the split and the correction together. **No `SO-` is opened
+and none is offered.** Handoff: the file to the orchestrator; next commission in
+Open-questions.
+
+### Open-questions
+1. **FAMILY J'S BENCH-CAPABILITY ROUND IS WHAT I COMMISSION NEXT, AND I AM NOT
+   DEFERRING IT AGAIN.** `RV-0065B-VERDICT` §7.2 dated it to the round
+   immediately following this seal; `WO-0066-VERDICT` §10 item 2 carried the date
+   forward; this is that round's successor and the packet is **DUE**. It carries
+   the two debts parked with named carriers — **`bench.mli`'s `_frame`/`_piece`
+   naming-axis cell** and, if no `M03-N1`/`N4` round is scheduled first,
+   **fold-in 3**. A third deferral is an E2 to the sponsor by my own rule and I
+   am not invoking it.
+2. **`DVC-1` is commissioned with me as executor**, in the next round that opens
+   `tools/`, and is named in §0.1 so it cannot evaporate. It is **not** owed
+   before family J.
+3. **T8's multiplicity question stands with architect_docs_lead** — whether M03's
+   strobe contract should carry a multiplicity signal. Specification question,
+   not a `BUG-`; unchanged by this round, now recorded in the plan.
+4. **The IC-B(W) design fact stays unbanked**; no `SO-` may cite §0.7 coverage
+   from the auditor's RTL derivation until a bench re-establishes it from the
+   specification side.
+5. **Two clerical observations on the plan, neither repaired here and both
+   reported rather than silently fixed.** (a) §9's last pre-existing change-log
+   row (`J-dv_lead-0113`'s) has **no Author cell** — the table is
+   `| Date | Change | Author |` and that row carries two fields; the author is
+   recoverable from inside the cell, and I did not edit a committed historical
+   row to add it. (b) §4.H **bound 1** still reads *"Owed: the second point at
+   REQ-110's commissioned M03-B4 geometry"*, which note B-i records as **paid**
+   by member (b); the bound and the note do not contradict each other but the
+   bound is stale in its tense. Both are candidates for the next round that opens
+   this plan.
+6. Carried, unchanged: `run_i2_member`'s citation exception; `WO-0061` §8
+   bound 1's `tkeep` half; **N-1**; **F-1** with architect_docs_lead; the ledger
+   disposition on `BUG-0003`; **B-2**, **B-3** and **B-4**.
+
+**Harvest (ADR-0018, PROTOCOL §7).** **Not due** — no `SO-`, no gate. Span since
+`J-dv_lead-0117`'s note: **J-dv_lead-0118** (this entry); cumulative untiled span
+**J-dv_lead-0001 … 0118**, first harvest still firing at `SO-M03`. Inventory
+carries at **~15 LH2-g candidates plus the war stories**. Yield this round:
+
+- **`J-dv_lead-0117`'s strongest candidate is BANKED and I now regard it as
+  tier-1 general and promotion-ready.** *"A sentence asserting the result of a
+  census is not the census; re-measure at every re-statement, or quote the
+  measurement with the state it was taken at."* **LH1**: two commits now —
+  `be8f7c2`, where a bound's premise was falsified by units that had driven its
+  conjunction since before the bound existed, and **this commit**, where the rule
+  was written into a plan as §0.1 **and its author violated it in the draft of
+  the neighbouring cell** (a violation count carried from memory: three, where
+  the measurement is five). **LH2-g** — no proper noun. **LH3**: without it, a
+  programme's most-repeated claims are its least-verified ones and the repetition
+  is what protects them. The second incident adds the sharper half: **the rule is
+  hardest to obey in the sentence that states it**, because a claim one has just
+  read feels measured.
+- **A new candidate, and it is about mitigations rather than about claims.** *"A
+  tool commissioned in response to a failure must be checked against the
+  instances that commissioned it; one that would not have caught them is a
+  mitigation in name only, and its existence is what stops anyone looking
+  further."* **LH1**: this commit — the census shipped in the same round as the
+  two findings it was built to prevent, and covers **neither**, because both were
+  claims of a kind it does not match; §0.1 now says so in the plan rather than
+  leaving the tool's existence to imply the coverage. **LH2-g**. **LH3**: without
+  it, a class is recorded as mitigated on the strength of an artefact nobody
+  tested against the class, and the artefact suppresses the next check.
+- **A third, weaker, and I bank it as a candidate rather than a war story because
+  it has bitten twice.** *"Keep the counter that measures an instrument separate
+  from the counter that measures obligations discharged; a result that qualifies
+  a tool must not be allowed to look like progress against the work."* **LH1**:
+  `J-dv_lead-0109` (a verdict's forward figure right in its number and wrong in
+  its cause) and **this commit** (two rows qualified, count line deliberately
+  unmoved and re-measured to prove it). **LH2-g**. **LH3**: without it, coverage
+  figures drift upward on rounds that added no coverage.
+- **One war story, retained as a war story.** The plan's own strike notation is
+  now two things — the prose *"STRUCK … superseded wording kept"* block it has
+  always used, and the literal strikethrough I added at the two sites this round.
+  It fails **LH2** in both grades (it is a notation choice in one document) and
+  it is recorded only so the next editor knows the mixture was deliberate: the
+  literal strike marks *which sentence* died, the prose block carries *why*.
+
+### Files-in-this-commit
+- test/attack_plans/AP-xgmii_rx_64.md
