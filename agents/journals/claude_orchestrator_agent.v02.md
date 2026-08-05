@@ -2779,3 +2779,39 @@ the rule.
 
 ### Files-in-this-commit
 - .github/workflows/site-deploy.yml
+
+## [J-orchestrator-0218] 2026-08-10T02:30Z | task:WO-0074 | The auditor refuses my instruction and is right - the transients return to their lawful operator
+
+### Trigger
+The auditor's seeding return (landed adac5ca, J-auditor-0016): seven
+diffs prepared, byte-exact, apply-check verified and round-trip
+reverted - and NO branch cut. FINDING WO-0074-A1 (MAJOR): my dispatch
+told the auditor to operate git; PROTOCOL §2, §10's transient model,
+R7 and its own charter forbid it; the practice was three campaigns
+deep and never authorised by the ADR §11 requires. It refused the
+fourth instance and supplied the operator table instead. IC-M5
+declared NOT SEEDED on a two-rendering refutation with the shared
+term (a_open, line 296) disclosed. Blinding affirmed with three
+leaks self-disclosed.
+
+### Rulings
+- WO-0074-A1: ACCEPTED against my own dispatches. I cut the seven
+  branches myself from the manifest §11 table (pushed in the fixed
+  order m1,m2,m3,m4,m6,m7,m10 from ca1bb80; working branch verified
+  unmoved after each). The ADR recording the three prior deviations
+  and fixing the operator rule is routed to the architect - carrier:
+  the next architect round. My future seeding dispatches carry
+  manifest-only terms.
+- Auditor Q2 (IC-M5 narrow form): relayed to dv for the verdict; my
+  view matches the auditor - evidence supports only the narrow claim.
+- Q3/Q4/Q5 (M10 epoch structure, retained sub-five gates, the M3/M4
+  collision prediction): relayed to dv verbatim for adjudication.
+- Q6 (clock): the mint is authoritative, standing practice.
+
+### What I did
+- Landed adac5ca, cut and pushed the seven transients, this board
+  commit. CI ~40 min; dv adjudicates on conclusion (J-dv_lead-0137
+  OPENS JOURNAL v06 - v05 crossed 256 KiB at ca1bb80).
+
+### Files-in-this-commit
+- tasks/BOARD.md
