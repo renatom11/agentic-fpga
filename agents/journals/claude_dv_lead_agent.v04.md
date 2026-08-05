@@ -2323,3 +2323,365 @@ carries at **~15 LH2-g candidates plus the war stories**. Yield this round:
 
 ### Files-in-this-commit
 - test/attack_plans/AP-xgmii_rx_64.md
+
+## [J-dv_lead-0119] 2026-08-07T09:40Z | task:WO-0067 | The family-J capability packet, on its date — and the shape is decided by the one row whose start character is not in the schedule, which is also what makes my own J2 kill unreachable
+
+### Trigger
+Orchestrator dispatch: author the family-J bench-capability work order, DUE on
+its date, no third deferral. Family J has been deferred twice on one stated
+ground — `bench.mli`'s `create` holds `cfg_rx_enable` at 1 for the whole run and
+exposes no schedule — dated at `RV-0065B-VERDICT` §7.2, carried at `WO-0066`
+§10 item 2, and made due by my own two-deferral rule at
+`J-dv_lead-0118` open-question 1, where a third deferral is an **E2** to the
+sponsor with the cost named. This round discharges it; no E2 is raised.
+
+### Inputs
+- `agents/charters/dv_lead.md` (§3 delegation and attack plans, §5 DoD, §8
+  journaling), `agents/PROTOCOL.md` (§3 packets and numbering, §4 grammar, §6
+  write scope, §7 harvest, §10 independence).
+- **`test/xgmii_rx_64/bench.mli` in full** — `create`'s own "holds
+  `cfg_rx_enable` at 1 for the rest of the run" sentence (the capability gap
+  itself), the module docstring's family-J clause, `run`'s `?word_at` and its
+  obligation-5 paragraph, the `sample` record, the WO-0064 naming-axis block,
+  `split_at_first_tlast`'s FINDING B-1 precondition, `delivered_samples`'s
+  count-blindness caveat, `frames_at` / `one_frame`, `assert_monitors_clean`'s
+  two-part latency rule.
+- `test/xgmii_rx_64/bench.ml` lines 1–230 — `create`'s reset cycle and its
+  single `i.cfg_rx_enable := Bits.vdd`, `sample_cycle`'s choke-point ordering
+  guard, `run`'s `Arrival.check` gate and its explicit ascending recursion.
+- `test/attack_plans/AP-xgmii_rx_64.md` **§4.J in full** (M03-J1 … M03-J4),
+  §4.N row **M03-N4** and §4.N's M03-N2 table, §4.I row M03-I2 (the
+  anti-vacuity and not-independent precedents), §7's machinery table (X-3, X-4,
+  X-5) and its "Not gaps" paragraph, §8 item 3 and the WO-0029 answer block.
+- `docs/adr/ADR-0014-an-enable-gates-admission-not-the-wire.md` **in full** —
+  Decision clauses 1–5, Alternatives (a)–(d), and the Consequences bullet on the
+  conservation monitor, which is the sentence the J1 accounting question turns
+  on.
+- `docs/specs/requirements.md` **REQ-810** (both normative clauses and the
+  verification column at `541ea43`), **REQ-803**, **REQ-802**, **§0.6** (the
+  equation, the multiplicity paragraph, the window and its reference-word
+  clauses), §9.1's field table.
+- `docs/specs/modules/xgmii_rx_64.md` **§4.3** in full, **§6.1**'s "When
+  `cfg_rx_enable` is 0" paragraph, **§6.2**'s `Idle`/`Preamble`/`Frame`/`Discard`
+  rows, **§6.3 items 6–8**, **§7**'s reset and configuration-sampling bullets,
+  **§9**'s closure-list clause (b), **§10**'s REQ-110 and REQ-802/REQ-810 hooks.
+- `test/xgmii/arrival.mli` (the 84-octet-time derivation, `start_cycle`,
+  `start_lanes`, `delivered`, `check`), `test/xgmii/frame.mli`
+  (`stress_frame ~sequence`, `sequence_of`), `test/xgmii/idle_injection.mli` in
+  full (the schedule-type precedent and its record-and-apply disposition),
+  `test/xgmii/xgmii_word.mli` (`start_lane`), `test/monitors/conservation_monitor.mli`
+  (deviation 3 — the exemption that already names REQ-810).
+- `test/xgmii_rx_64/test_m03_n.ml` — `subcase`'s six records and
+  `array_len = max 5 (sc.t_idx + 1)`, measured for the naming-axis cell's
+  numbers; `test_m03_a.ml`'s `tuple_of_sample` / `tuple_equal`.
+- `agents/handoffs/WO-0064_bench-machinery-consolidation.md` §1, §6 bar 1 and
+  the verdict's ten-bar table (the compatibility-bar precedent);
+  `agents/handoffs/WO-0063A_…md` (the packet form); `WO-0066_…md` §10 (the two
+  debts' dated carriers).
+- My own `J-dv_lead-0098` (the queue read that named the entanglement),
+  `J-dv_lead-0113` §8 (the naming-axis debt's content), `J-dv_lead-0117`,
+  `J-dv_lead-0118`.
+- **No `libs/**`, no `rtl_snapshots/**`. No writes anywhere but
+  `agents/handoffs/` and this journal.**
+
+### Reasoning
+
+**The capability's shape is decided by M03-N4, and by nothing else.** I went in
+expecting to choose between a `create` parameter and an `Idle_injection`-style
+schedule type on grounds of taste, and the decision turned out to be forced by
+one fact I had to go and check rather than recall: **at M03-N4 the start
+character that the enable must not collide with is INJECTED**, placed by
+`Dv_xgmii.Injection` and reaching the DUT through `run`'s `?word_at` override.
+It is not in the `Arrival` schedule at all. M03-J4 and §6.3 item 7 forbid an
+enable change on a start character's own cycle, so the capability owes that
+constraint a guard — and a guard that reads start cycles from `Arrival` is
+**blind at the one row the guard exists for** and would report clean on the
+stimulus it must refuse. That single fact eliminates every shape whose
+constraint is checked anywhere but inside `run`'s own drive loop, against the
+words as driven. It eliminates the `create` parameter (which never sees a
+driven word, and additionally puts the change cycle one call away from the only
+object that can derive it), and it eliminates a `test/xgmii/` schedule module
+(same blindness, plus the wrong home: everything in that directory is the link
+partner and the wire, and ADR-0014's whole content is that the enable is **not**
+on the wire — homing it there would state the rejected reading in the directory
+structure).
+
+**The two shapes that survive that test are separated by a different argument,
+and I nearly got it wrong.** A bare closure `?enable_at:(cycle:int -> bool)`,
+mirroring `?word_at` exactly, satisfies every requirement including the guard
+(`run` can detect a change by comparing consecutive evaluations). Its defect is
+not technical: five call sites each hand-writing `fun ~cycle -> cycle >= k` with
+five hand-computed `k`s is the duplicated-idiom-with-an-unstated-precondition
+shape this programme has paid for twice (`RV-0057` Finding 1, `RV-0062` FINDING
+B-1) and that WO-0064 existed to end — and the one quantity every family-J row
+must get right is an off-by-one against a start cycle. A closure also cannot be
+printed into an expect block. So the winner is a **small declarative `Enable`
+module inside `bench.mli`** — `high`, `low`, `changes ~initial`, `value_at`,
+`change_cycles`, `report` — which is the same closure with a name, a
+construction check and a rendering, exactly what `Arrival.t` is to a list of
+words. The mutable-setter-and-segmented-runs shape is named and killed in the
+packet on the hardest ground available: `run` drives from cycle 0 and
+`sample_cycle`'s guard raises on a second `run`, so that shape costs either the
+ordering guard that caught run `30771064764`'s reversed drive or a start-cycle
+parameter on the one function that touches the design. I named it because it is
+what a reader reaches for first.
+
+**One difference from `Idle_injection` that I derived rather than inherited.**
+That wrapper *records* an illegal site and **still applies it**, deliberately, so
+a bench ignoring `errors` fails loudly. I nearly copied that disposition and it
+would have been wrong here: an illegal injection site produces a **determinate**
+wrong answer (REQ-105's abort) that a bench cannot miss, while an enable change
+on a start cycle produces **no determinate answer at all** (§6.3 item 7) — so
+record-and-apply would let it pass on some designs and a pass would enter a
+sign-off as coverage of a stimulus the specification refuses to constrain. Same
+family of constraint, opposite failure mode, opposite disposition: refuse to
+drive. The packet says so in those terms so the next reader does not "fix" the
+inconsistency.
+
+**Re-deriving the entanglement I named at `J-dv_lead-0098`, which is what the
+dispatch asked for and which came out in three parts rather than one.** That
+entry said J's observables were entangled with M03-N4 (ADR-0014) and family K's
+`clear` exemptions, so rows written then would be re-litigated when N4 was.
+Measured now:
+
+1. **The N4 half is discharged as a *ruling* dependency and survives only as a
+   *coverage* relation.** ADR-0014 is landed and M03-N4 converted to ASSERT at
+   `06c1eba`; the admission-versus-datapath question J1 and J3 turn on is
+   settled text, not a pending ruling. What remains is that J3 and N4 drive the
+   same disable window and differ only in what arrives inside it — nothing
+   versus a `/S/`. That is a sequencing preference and I resolved it by
+   sequence, not by deferral: N4 goes beside M03-N1 in `test_m03_n.ml`, reusing
+   M03-N2's landed derivation of §6.1's six-row table, because writing it in a
+   family-J file would build a **second** derivation of that table in a
+   different file, which is how two readings of one table come to exist.
+2. **N2 being benched and qualified changes J's writability not at all, and
+   that is the honest answer rather than the flattering one.** J1–J3 have no
+   two-event input word and no injected start character; their stimuli are
+   enable changes on idle or mid-frame cycles against declared `Arrival` starts.
+   What `WO-0066` changed is **N4's** cost, not J's: N4 reads the same report
+   table N2's six sub-cases now exercise with a measured instrument. So the
+   qualification is an argument for the ordering I chose, not for writing N4
+   here.
+3. **The family-K half was not what I thought it was, and the correction is the
+   round's most useful derivation.** I read the AP's J1 cell (*"the conservation
+   monitor records all 100 as `frame_in_exempt` (C-2)"*) against ADR-0014's
+   Consequences bullet (*"the conservation monitor needs no new exemption"*) and
+   first concluded my own cell was stale. It is not, and I talked myself out of
+   a wrong plan edit by reading three sources instead of two. ADR-0014's bullet
+   is about the **in-flight** frame at N4 — it contrasts with `clear`, which
+   abandons an *admitted* frame and therefore does need an exemption. SPEC-M03
+   §6.1 settles the refused frames directly and in the bench's own terms: *"a
+   bench's frame-conservation monitor (§0.6) counts no frame presented across
+   the disabled window"* — that is the **equation's presented term**, which
+   `frame_in_exempt` keeps at zero by construction while recording the frames in
+   a ledger explicitly *outside* the equation, and
+   `conservation_monitor.mli`'s deviation 3 built that ledger naming **REQ-810**
+   by number. All three agree. The cell stands; what it lacks is the clause
+   saying why, which is a plan edit I now owe rather than a correction.
+
+**The finding I did not go looking for: M03-J2's declared kill is unreachable
+under M03-J2's own stimulus, and the row is mine.** The cell kills *"a design
+that samples the enable continuously and truncates the frame it just admitted"*.
+Work the stimulus: the enable goes 0 → 1 before the start character and **stays
+1** for the whole admitted frame, so a continuously-sampling design sees 1 on
+every cycle of it and truncates nothing. The kill belongs to **M03-J3**, whose
+change goes 1 → 0 *inside* the admitted frame. This is the M03-D3 / M03-F2 /
+M03-I2 unachievable-kill shape, found the same way each of those was — by
+working the row's own arithmetic while authoring the packet, before a bench
+exists — and it takes the same disposition: the row is still commissioned,
+because its *observable* is REQ-803's own and REQ-810's verification column
+commissions it in terms, but the packet forbids the claim and names the honest
+kill (a design that refuses the first frame after a re-enable). That honest kill
+is also the second, independent reason the change sits at the tightest legal
+placement rather than comfortably earlier — a change one cycle before the start
+character is what makes a settling-time defect reachable at all.
+
+**REQ-810's verification column decided the stimulus economy, not I.** It
+commissions one run for two rows — *"inject 100 frames … re-enable and check the
+next frame is received correctly"* — so J1 and J2 share a 101-frame schedule and
+one runner, which is also what stops them drifting apart on the single number
+they must agree about. Two consequences fell out of the arithmetic rather than
+being imposed: because 84 octet times is not a multiple of 8, the hundred
+refused frames **alternate start lanes**, so one schedule covers REQ-810's
+refusal at both — and I wrote that in as a thing the bench must **assert** from
+`Arrival.start_lanes` rather than claim, because a coverage nobody measured is
+not a coverage, which is the rule I banked at `J-dv_lead-0117` and violated in
+my own draft at `J-dv_lead-0118`. And frame 100's start lands at octet time 8408,
+exactly cycle 1051, putting the change at cycle 1050 in an all-idle word inside
+frame 99's gap.
+
+**J1's anti-vacuity is the row's real design problem and the re-enable does not
+solve it.** J1 asserts an absence over a thousand cycles; a schedule carrying no
+start characters at all would make it green. The re-enabled frame 100 proves
+only that frame 100 is well-formed. So the unit drives the **same schedule on a
+fresh bench with the enable high** and asserts all 101 frames delivered with
+sequence numbers 0 … 100 in order — `Frame.stress_frame`'s sequence field is why
+I chose that builder over `directed_frame_octets`, since it converts J2's
+"a frame arrived" into "frame **100** arrived". I made the control a BOUNCE
+rather than a suggestion.
+
+**J3 at both lanes, and the reason is a coincidence rather than symmetry.** At a
+lane-0 schedule frame 1's refused start character lands in cycle 11 — the very
+cycle carrying frame 0's `tlast` word — so a design gating the datapath kills
+that `tlast` on exactly that cycle; at a lane-4 schedule the refused start lands
+one cycle after the `tlast` and the same defect shows without the coincidence.
+Driving both proves the verdict does not depend on the coincidence, and as a
+by-product the refused start character is lane 4 in one member and lane 0 in the
+other, which separates a design that samples the enable at only one start lane.
+I would not have found that by asking "should this row run at both lanes"; I
+found it by tabulating the two schedules' cycles.
+
+**Scope discipline against my own round.** The naming-axis cell rides here
+because this round opens `bench.mli` and its carrier was named at `WO-0066` §10;
+I measured its numbers at this tree (declared arrays 11/7/5 against received
+extents 8/4/0 across N2's six sub-cases) rather than quoting `J-dv_lead-0113`,
+and told the executor to verify them independently. **Fold-in 3 does not ride
+here**: its carrier is the first round that opens `test_m03_n.ml`, this round
+does not (§8's N4 disposition is the ground), and its **pre-committed fallback
+therefore fires exactly as written** — commissioned as a rider on this round's
+`RV-`. I recorded the firing in the packet that caused it rather than only in
+this entry, because a fallback that fires invisibly is how a dated debt becomes
+an undated one.
+
+**The compatibility bar, and why WO-0064's cannot be reused unchanged.** That
+round's bar was a byte-identical string-literal multiset because it was a pure
+refactor. This round **adds**, so the bar splits: byte-identical multisets over
+the ten untouched `test_m03_*.ml` files, a strict superset over `bench.ml` with
+every added literal enumerated and justified one line each, and byte-identity of
+every `[%expect]` block in the ten existing files — the clause that would
+actually catch a capability that changed observed behaviour rather than merely
+adding options. The fourth clause is the one that matters most and it is
+structural rather than measured: the M03-J4 pre-scan is entered **only when the
+schedule has a change**, and `Enable.high` has none, so a `run` with `?enable`
+omitted traverses the same code and evaluates `word_at` the same number of times
+as today. Default behaviour equals current behaviour **by construction**, not by
+intention, which is the only form of that bar worth stating.
+
+### Actions
+- Read the charter, PROTOCOL, `bench.mli` in full, `bench.ml`'s first 230 lines,
+  AP §4.I/§4.J/§4.N/§7/§8, ADR-0014 in full, requirements.md REQ-802/803/810 and
+  §0.6, SPEC-M03 §4.3/§6.1/§6.2/§6.3/§7/§9/§10, and the five `test/xgmii/` and
+  `test/monitors/` interfaces named in Inputs.
+- Measured, rather than recalled: the landed unit count (**48**), the `Bench.run`
+  call-site count (**19**), the absence of any `sample` literal or exhaustive
+  match outside `bench.ml`, `test_m03_n.ml`'s `array_len` expression and its six
+  `t_idx` / `a_delivered` pairs, and that `tools/dv_checks.sh`'s inventory is a
+  report carrying no asserted count to update.
+- Derived and tabulated the schedule arithmetic for both stimuli (frame 100 at
+  octet time 8408 / cycle 1051; the change at 1050 inside frame 99's gap; the
+  50/50 lane split; J3's two-lane table and its output cycles 4 … 11 at both
+  lanes; J2's output cycles 1054 … 1061).
+- Wrote `agents/handoffs/WO-0067_m03-family-j-enable-capability.md`: the
+  capability with its three rejected shapes, the compatibility bar in five
+  clauses and three commands, the M03-J4 guard specification, the naming-axis
+  cell's landing site and content, the three rows with their derivations, §6's
+  finding against my own plan, §8's dispositions for M03-N4 / M03-J4 /
+  fold-in 3, a ten-item review bar and twelve BOUNCE conditions.
+- Wrote no `test/**` file. The bench edits are the executor's under this packet;
+  my write scope this round was `agents/handoffs/` and this journal.
+
+### Evidence
+- The packet: `agents/handoffs/WO-0067_m03-family-j-enable-capability.md`.
+- Measurements reproducible from a checkout at this commit:
+  - `grep -h 'let%expect_test' test/xgmii_rx_64/*.ml | wc -l` → **48**.
+  - `grep -rn 'Bench.run\b' test/ | wc -l` → **19**.
+  - `grep -n 's_idx = \|t_idx = \|a_delivered = ' test/xgmii_rx_64/test_m03_n.ml`
+    → `t_idx` 10/6/2/6/10/2 and `a_delivered` 8/4/0/4/8/0 across `sc1 … sc6`;
+    `test/xgmii_rx_64/test_m03_n.ml:353` is
+    `let array_len = max 5 (sc.t_idx + 1) in`, giving declared arrays 11/7/5.
+  - `test/xgmii_rx_64/bench.mli:53-57` is the capability gap in its own words;
+    `test/xgmii_rx_64/bench.ml:63-64` is the single `i.cfg_rx_enable := Bits.vdd`
+    that implements it.
+- Arithmetic, checkable by hand against `test/xgmii/arrival.mli`'s own 84-octet
+  derivation and `frames_at`'s 8/12 `first_start` mapping: `84 × 100 + 8 = 8408`,
+  `8408 / 8 = 1051` exactly (lane 0); frame 99 at `84 × 99 + 8 = 8324` → cycle
+  1040 lane 4, its terminate at 8396 → cycle 1049; cycle 1050 spans octet times
+  8400 … 8407, wholly inside the 12-octet gap.
+- **This round runs no simulation and claims no run.** `dune runtest` is CI's,
+  not this seat's (ADR-0005); every number above is derived or measured by the
+  commands quoted.
+
+### Outcome
+**DoD met.** The family-J bench-capability packet exists, on its date, with the
+capability's shape derived rather than preferred, the three rows the capability
+makes writable commissioned with their arithmetic, the parked naming-axis debt
+carried with its landing site fixed, and the compatibility bar stated as a
+construction rather than an intention. **No third deferral and no E2**: the
+round the two prior deferrals owed is this packet. One row (**M03-N4**) is
+sequenced rather than deferred, with its ground and its date in the packet; one
+pre-committed fallback (**fold-in 3**) fires as written. Handoff:
+`agents/handoffs/WO-0067_m03-family-j-enable-capability.md` to the orchestrator
+for id allocation and a **tb_writer** spawn.
+
+### Open-questions
+1. **Four plan edits are owed by me**, in the next round that opens
+   `test/attack_plans/AP-xgmii_rx_64.md`, and they are listed in the packet's
+   §11 so they cannot evaporate: M03-J2's unreachable Kills cell (the §6
+   finding, history kept and ground replaced); M03-J1's Observable cell gaining
+   the one clause that reconciles `frame_in_exempt` with SPEC-M03 §6.1 and
+   ADR-0014 so the next reader does not re-derive what I had to; a §7 machinery
+   row recording the enable schedule and its constraint on the X-4 precedent;
+   and `J-dv_lead-0118` item 5's two clerical residues.
+2. **M03-N4 is sequenced to the round after this one's `RV-`**, beside M03-N1 in
+   `test_m03_n.ml`. That is a row's date, not a family's deferral, and it does
+   not restart the two-deferral clock family J has now discharged.
+3. **Fold-in 3's dated fallback has fired** — commissioned as a rider on
+   `RV-0067-VERDICT`, per `WO-0066` §10. It leaves my carried list when that
+   verdict lands it.
+4. **The `_frame`/`_piece` naming-axis cell leaves my carried list when
+   `WO-0067` lands**, and not before: a debt with a carrier is still a debt
+   until the carrier arrives.
+5. **T8's strobe-multiplicity question stands with architect_docs_lead**,
+   untouched by this round and deliberately outside this packet — no row here
+   depends on its answer, because a refused frame pulses no strobe at all and so
+   offers multiplicity nothing to hide behind.
+6. Carried, unchanged: `run_i2_member`'s citation exception; `WO-0061` §8
+   bound 1's `tkeep` half; **N-1**; **F-1** with architect_docs_lead; the
+   auditor's ledger disposition on `BUG-0003`; **B-2**, **B-3**, **B-4**;
+   **DVC-1** in the next round that opens `tools/`.
+
+**Harvest (ADR-0018, PROTOCOL §7).** **Not due** — no `SO-`, no gate. Span since
+`J-dv_lead-0118`'s note: **J-dv_lead-0119** (this entry); cumulative untiled span
+**J-dv_lead-0001 … 0119**, first harvest still firing at `SO-M03`. Inventory
+carries at **~15 LH2-g candidates plus the war stories**. Yield this round:
+
+- **A new candidate, and it is the round's own decision procedure.** *"When a
+  stimulus is generated by two mechanisms, a constraint on their coincidence
+  must be checked against the stimulus as delivered, never against either
+  generator's own declaration — the generator that omits the offending element
+  is the one the constraint exists for."* **LH1**: this commit, where a guard
+  built on the declared arrival schedule would have been blind at the only row
+  whose start character is injected by the second generator, and where that one
+  fact eliminated three of the four candidate capability shapes. **LH2-g** — no
+  proper noun. **LH3**: without it, a coincidence constraint reports clean on
+  exactly the stimuli it was written to refuse, and its silence is read as
+  compliance.
+- **A second, weaker but it has now bitten three times.** *"A row's stated kill
+  is a claim about a stimulus, and it must be re-derived from that stimulus each
+  time the row is commissioned; a kill nobody re-worked is the most likely thing
+  in a plan to be false."* **LH1**: three commits now — the M03-D3 ordering, the
+  M03-I2 members (i)/(ii) repair, and **this commit**, where the row's kill
+  turned out to belong to its neighbour. **LH2-g**. **LH3**: without it a bench
+  is written to a kill it cannot reach, passes, and enters a sign-off as
+  coverage of a class nothing in the suite touches.
+- **A confirming instance for the banked tier-1 candidate, from the direction
+  that hurts.** *"A sentence asserting the result of a census is not the
+  census."* This round I nearly filed a plan edit striking my own J1 accounting
+  cell on the strength of **two** sources that seemed to disagree; reading the
+  **third** (the specification sentence that speaks about the bench's monitor
+  directly) showed all three agreeing and the cell correct. The sharper half the
+  earlier incidents did not have: **the failure mode is not only over-claiming
+  from an unmeasured census, it is over-correcting from an incomplete one** —
+  and a correction feels more rigorous than the claim it replaces, which is what
+  makes it harder to stop.
+- **One war story, retained as a war story.** `Idle_injection` records an illegal
+  site and applies it; this capability refuses one. The rule that separates them
+  — determinate-wrong-answer versus no-determinate-answer — is genuinely
+  general, but every attempt I made to state it without naming a stimulus
+  generator or a specification's carve-out clause produced a sentence that could
+  not be applied. It fails **LH2-d** as well as **LH2-g** and is recorded only so
+  the next editor of either file knows the inconsistency is deliberate and which
+  way each one runs.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0067_m03-family-j-enable-capability.md
