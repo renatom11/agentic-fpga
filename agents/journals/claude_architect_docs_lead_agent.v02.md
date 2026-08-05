@@ -2567,3 +2567,420 @@ Reproducible at this commit's SHA from a repo checkout at the repo root.
 ### Files-in-this-commit
 
 - docs/specs/requirements.md
+
+## [J-architect_docs_lead-0031] 2026-08-09T11:40Z | task:WO-0069 | Two ways a verification claim outruns its interface — an empty stimulus interval at M03's enable hook, and a strobe that is a level where DV had been reading it as a count
+
+### Trigger
+
+Orchestrator, relaying dv_lead's **third spec queue**,
+`agents/handoffs/WO-0069_spec-queue-3-m03-hook-and-strobe-multiplicity.md`
+(ISSUED, non-blocking, the form of WO-0029/WO-0035), spawn short-id
+`WO-0069/2026-08-09T10:30Z`, HEAD `d2bdd57`. Two items, batched because both had
+been carried without a carrier date and not because they are related. **Item 1**:
+SPEC-M03 §10's REQ-802/REQ-810 hook — dv's claim is that its parenthetical
+commissions an observable whose stimulus the same specification's §6.3 item 7
+excludes (the **C-41** unpassable-assertion family), with the repair proposed in
+the form §10 already uses at REQ-014. The dispatch's instruction was explicit and
+is the one I worked to: **re-derive the claim from SPEC-M03's own text before
+accepting the proposed form, and if the hook is passable, rule so with the
+derivation rather than apply a repair to a non-defect.** **Item 2**: the
+strobe-multiplicity question dv has carried since `WO-0066` — whether a strobe
+is a signal or a counter when two same-name reports pin to one cycle — to be
+answered as spec text wherever the answer belongs, with the campaign's measured
+green-by-blindness instance as motivating evidence.
+
+The prior spawn of this same dispatch was wiped by a container-level
+infrastructure event before anything landed; the dispatch says to treat this as
+fresh, and I found nothing of it in the tree to salvage or defer to (Evidence 1).
+
+### Inputs
+
+- `agents/handoffs/WO-0069_spec-queue-3-m03-hook-and-strobe-multiplicity.md` at
+  HEAD, in full — §0, §1.1's quoted hook text, §1.2's six-step derivation and its
+  two closed escapes, §1.3, §1.4, §1.5's recommended form and two rejected
+  alternatives, §2.1's two quoted §0.6 paragraphs, §2.2, §2.3, §3's DoD, §4's two
+  questions.
+- `docs/specs/modules/xgmii_rx_64.md` at HEAD — the header and **§4.3** (the
+  admission statement and the sampling rule), **§6.1** (the preamble geometry at
+  both start lanes, the "more than one event in one input word" paragraph and its
+  cycle table, the idle-injection prohibition), **§6.2**'s `Preamble` and `Frame`
+  rows, **§6.3 items 7 and 8** in full, **§7**, **§9** in full (the closure list,
+  rows 8 and 9, *Strobe cycle, pinned*, the co-occurrence rulings), **§10**'s
+  REQ-014, REQ-016, REQ-102, REQ-110 and REQ-802/REQ-810 hooks, **§13**'s table
+  in full.
+- `docs/specs/requirements.md` at HEAD — **§0.3** (the lane-0-or-lane-4 rule and
+  the twelve-octet gap), §0.5, **§0.6 in full**, §0.7, **REQ-102, REQ-105,
+  REQ-110, REQ-018, REQ-802, REQ-810**, §9.1, **§12** in full, **§13**'s table in
+  full (the C-41, C-43, C-46, REQ-901, §0.5 and §0.6 rows read for their class
+  arguments and their countersignature standings).
+- `docs/specs/SPEC-TEMPLATE.md` — **rule 7** (what a post-freeze change to §4, §6
+  or §7 costs, and that everything else needs "only a journal entry"), and §9's
+  co-occurrence instruction. Rule 7 is the decisive text for item 1's class.
+- `docs/adr/ADR-0012-the-abort-bit-m14-cannot-copy.md` header and Context — read
+  for the revision discipline dv's DoD names, and to confirm it is not engaged
+  here.
+- `docs/gates/P1-spec-freeze-checklist.md` — carry-forward rows **C-23** and
+  **C-41**, read for their actual text rather than for their citations.
+- `test/attack_plans/AP-xgmii_rx_64.md` — **row M03-N4** and **row M03-N2** only,
+  read as the filer's own statement of its finding (the derivation there is dv's,
+  and I re-derived rather than adopted it) and to check the DoD's no-row-moves
+  bound against the rows themselves.
+- `agents/handoffs/WO-0066_family-bn-mutation-campaign.md` **`WO-0066-VERDICT`
+  §5.2** — the equivalent-mutant adjudication and its exact wording, quoted in
+  the ruling rather than characterised.
+- `tasks/BOARD.md` row WO-0069; `agents/charters/architect_docs_lead.md`;
+  `agents/PROTOCOL.md` §3, §4, §6, §7, §10.
+- **Not opened, deliberately**: `test/xgmii_rx_64/**` and every bench source,
+  `libs/**`, `docs/reports/audit/**`. PROTOCOL §10 — the bench is judged against
+  the specification and never the reverse — so both rulings derive from
+  specification text and from arithmetic worked here.
+
+### Reasoning
+
+**1. The test I set for item 1 before working it.** The dispatch forbids applying
+a repair to a non-defect, so the question is not "is dv's prose persuasive" but
+"does the conjunction the hook commissions have a model". I worked it in cycles
+rather than in prose, because an emptiness claim is exactly the kind that survives
+a plausible paragraph and dies to an index.
+
+**2. Item 1, the derivation, worked from the specification.** Octet time
+= 8·cycle + lane; `s` is the cycle of the aborted frame **A**'s start word, `w`
+the cycle of the word **W** carrying the refusing start character, `c` the cycle
+at which the enable falls 1 → 0 (high for cycles < `c`, low from `c` on).
+(i) A is *admitted*, so the enable is 1 when A's start character is sampled:
+`c > s` (§4.3, sampling at the start character). (ii) A delivers no octet, so the
+refusing `/S/` lies at or before A's first octet — §9's ninth row and REQ-110's
+governing clause — and A's first octet is exactly 8 octet times after its start
+character (§6.1, REQ-102), so that `/S/` lies in `(start_A, start_A + 8]`.
+(iii) §0.3 admits start characters in lanes 0 and 4 only: at a lane-0 A
+(`start_A = 8s`) the candidates are `8s + 4` and `8s + 8`; at a lane-4 A
+(`start_A = 8s + 4`) they are `8s + 8` and `8s + 12`. **Hence `w` is `s` or
+`s + 1` at both start lanes**, never further. (iv) The new frame must be *refused*
+determinately, so `c` is at most `w − 1` (§4.3's "at least one cycle after the
+input changes", and §6.3 item 7 forbidding the same-cycle case). (v) Therefore
+`c` lies in `[s + 1, w − 1]`, which is `[s+1, s−1]` at `w = s` and `[s+1, s]` at
+`w = s+1`. **Empty at both start lanes.** dv's claim is **verified**, and the
+hook is unpassable on its parenthesised branch.
+
+**3. The hole in the packet's version that I closed, and why it matters here
+rather than as a note.** The packet's step 5 rests the emptiness on §6.3 item 7.
+That reads as though the finding depends on the very clause §1.5 declines to
+widen, which would make the item look like a bootstrap. It is not: `c = s` is
+already excluded by step (i) alone — at `c = s` the enable is 0 when A's start
+character is sampled, so **A is never admitted and there is no in-flight frame to
+abort**. Item 7 is load-bearing only for the *determinacy* of the `w = s` row,
+where W is A's own start word. So the finding **survives the removal of item 7
+from the argument**, which is the strongest form of it and the form the repaired
+cell and the Return log both carry. This is the one place I improved on the filing
+rather than merely confirming it.
+
+**4. Item 1 — the two escapes, checked independently.** Enlarging the front
+offset: §0.3 fixes start characters at lanes 0 and 4, so `first_start` is 8 or 12
+and moving it moves A's start cycle and W **together** — the interval is
+translation-invariant and never opens. Inserting an idle between A's start
+character and its first octet: forbidden in terms by §6.1 and §10's REQ-016 hook
+(**M03-N3**), and — the point the packet does not make — it would not produce the
+branch even if a wrapper drove it, because such a cycle occupies preamble
+positions and REQ-102's third sentence routes it to REQ-105, so A would end under
+`error_bad_frame` rather than be aborted by a start character at all.
+
+**5. Item 1 — why the REQ-014 form, and why not the two alternatives.** Deletion
+was rejected by dv on the ground that it loses the record; I agree and go one
+further — the repaired cell **quotes the withdrawn parenthetical inside its own
+withdrawal**, which is the same device §9's *Strobe cycle, pinned* used when it
+withdrew its gloss on 2026-08-03, so the house already has the shape. Widening
+§6.3 item 7 is refused for dv's reason and for one of my own: item 7's
+unconstrainedness protects a hardware freedom (**C-14.5**), and buying a
+verification-column annotation with a new normative constraint on the module
+would be the first time this programme paid for a claim with a design obligation.
+
+**6. Item 1 — §4 question 1, ruled: one form, two grounds.** dv is right that
+"commissioned, and no stimulus exists" and "commissioned, and no instance exists
+at this module" are different facts — one about the stimulus space, one about the
+interface. They do not deserve different **forms**, because the annotation's
+function is identical in both: stop a coverage claim on a branch that cannot be
+exercised. §10 has one form because one form is what a sign-off reader should
+have to learn, and a taxonomy costs legibility at exactly the moment the column is
+being read for a claim. The form is four parts — keep the text that has
+instances; name what has none, quoting the withdrawn wording; **state the ground,
+which is where the distinction lives**; close the claim with the "stated so that
+no sign-off packet claims …" clause — and only the third part varies.
+
+**7. Item 1's class, and why it is unilateral.** SPEC-TEMPLATE rule 7 is decisive
+and is quoted rather than paraphrased: after freeze, a change to **§4, §6 or §7**
+is a spec diff plus an ADR; "editorial changes elsewhere need only a journal
+entry". This diff is confined to a **§10 verification-hook cell** and one §13 row.
+No normative sentence moves — §4.3, §6.1, §6.2, §6.3 item 7, §9 rows 8 and 9,
+REQ-110, REQ-802 and REQ-810 are unchanged and are what the derivation is *taken
+from*, and **ADR-0014 is untouched in every clause**. The precedents are §10's own
+2026-08-03 REQ-014 row and requirements.md §13's C-46 and C-39/C-41
+verification-column rows; the line it stays on the right side of is **C-43's** —
+normative text, not a verification column, is what carries the countersignature
+discipline. **No ADR, no countersignature, no ledger row.**
+
+**8. Item 2 — the question is malformed in a way that is itself the answer, and I
+say so rather than picking one of the two offered readings.** dv asks whether
+§0.6's multiplicity rule is satisfied by a single high cycle (presence) or whether
+the contract owes a multiplicity signal (count). Reading the primary sources, the
+multiplicity rule is **not the rule the case is under**. Its own words scope it to
+*one frame* — "if two or more locally detected conditions apply to one frame" —
+and §12 states in terms that "each condition has a dedicated name, and no name is
+shared", so two conditions applying to one frame are always **two different
+strobes**. The per-frame rule is structurally incapable of producing a same-name
+pair. dv's case is two **frames**, one name, one cycle, and the paragraph that
+governs it is *Counting a strobe*.
+
+**9. Item 2 — a strobe is a level on a named cycle, not a counter, and §6.3
+item 8 already says so.** The obligation a reported event creates is that the
+signal be **high on the one cycle its module specification pins** for it, inside
+§0.6's window; C-23's own gloss confirms the shape ("the 'exactly one cycle'
+sentence … fixes the width a single event occupies"). Two same-name events pinned
+to one cycle are therefore **both discharged by that one high cycle**. I did not
+invent that: SPEC-M03 §6.3 item 8 — frozen, countersigned — says a bench driving
+such a stimulus "reports a silent discard against an **M03 that has done
+everything this specification asks**". Read for what it says about the *design*
+rather than about the bench, that sentence is the ruling. The counting convention
+is the **observer's inverse**, exact only while no two same-name events share a
+cycle; where they do it under-counts and the conservation equation is short. **The
+shortfall is in the decoding, never in the design.**
+
+**10. Item 2 — §4 question 2 answered, and dv's assumption corrected in its
+subject while confirmed in its consequence.** *Presence* is right about the
+**port** — one bit, one level per cycle — and wrong about the **contract**, which
+is per event. The consequence dv relied on does not move, because bit-identity is
+the criterion under either reading and the M03-N2 sub-case-4 mutant is equivalent
+either way. What moves is what a packet may **say**: not "the design is conformant
+because presence held", but "both obligations were discharged by the level, and no
+instrument at this port recovers the count". That distinction is worth a diff
+because a sign-off resting on the first sentence is resting on a reading the
+specification does not have.
+
+**11. Item 2 — no multiplicity signal is owed, and the ground is derivation, not
+cost.** Clause 9 settles it: the contract is already discharged by the level, so a
+count port buys **nothing for conformance** and only fault observability — at the
+price of a normative port change at every module, a new field class in §12's
+twenty-one-strobe enumeration and in REQ-804's status record. §6.3 item 8 already
+priced and refused widening for the case where it *would* have bought something;
+this is weaker still, so the refusal is a fortiori. Fault observability is the
+mutation ledger's business, and the campaign already recorded the mutant as
+**equivalent** rather than as an escape, which is the correct disposition.
+
+**12. Item 2 — §6.3 item 8 is M03-local in its ground and general in its shape,
+and dv's expectation is the right one.** The exclusion is available at M03 because
+REQ-018's link partner injects one condition at a time and §0.3's twelve-octet gap
+with REQ-102's eight-octet preamble put two frame-ending characters at least eight
+octet times apart. Those grounds are the module's and its stimulus contract's,
+not §0.6's, so the carve-out **does not travel**: a module that can reach the
+collision is not covered by it and owns its own disposition. What is general —
+and what the §0.6 note states — is clauses 8 to 10 plus the programme's default
+shape, exclude the stimulus rather than widen the signal.
+
+**13. Where item 2's answer lives, and why not at §6.3.** dv proposed §0.6 and
+that is right, but **not** beside the multiplicity paragraph: the note interprets
+the *counting* convention, so it is appended to that paragraph, which is also
+where a reader who has just been told "count high cycles" needs to learn what
+happens when the encoding runs out. **SPEC-M03 §6.3 is deliberately not edited** —
+a post-freeze change to §6 is a spec diff **plus an ADR** under rule 7, and
+nothing here needs one because §6.3 item 8 already says everything its own module
+owes. Declining to touch §6 is also what keeps this round clear of the ADR-owing
+zone entirely, which is the discipline the freeze exists for.
+
+**14. Item 2's class, tested rather than asserted.** The 2026-08-04 §0.6 row and
+`J-architect_docs_lead-0027` establish a class lighter than editorial —
+**non-normative guidance** — with an honest test: *deleting the paragraph leaves
+every conformant design, every committed test and every requirement exactly as
+they are*. Applied here: no design changes (no module's output moves); no
+committed bench changes meaning (the equivalent-mutant classification is
+`WO-0066-VERDICT` §5.2's own and is ratified, not moved); no requirement, strobe,
+cycle, window edge, pin or verification column moves; no test is commissioned and
+no ledger item closes — **C-23 stands unchanged and is not narrowed**, the note
+being an interpretation of it. **Passes. No countersignature owed**, and I state
+the standing rather than assume it: if dv_lead reads any sentence of the note as
+normative — the likeliest candidate being "the strobe set carries no multiplicity
+field and is not owed one" — that is a **fresh finding**, not an unsigned
+condition on this round, and the sentence takes a narrow countersignature round of
+its own.
+
+**15. The DoD bound I checked rather than asserted.** dv's §3 forbids either item
+moving a row of `AP-xgmii_rx_64.md` in either direction, and says that if my
+answer would, that is itself the finding. **Neither does.** M03-N4 stays ASSERT on
+its delivering branch, which the repair leaves commissioned whole; M03-N2 stays
+ASSERT with its qualification and its T8 scope exactly as recorded, because the
+ruling ratifies the equivalent-mutant classification rather than reclassifying it.
+Two *offers* are recorded in the Return log as notification and explicitly not as
+obligations: M03-N4's Observable cell may cite the landed repair, and M03-N2's T8
+clause may sharpen "presence and not multiplicity" to "a level per cycle" if it
+wishes.
+
+**16. What I did not do.** No ADR (neither item makes a design choice among live
+alternatives). No ledger row (item 1 is C-41's family and cites it; item 2 closes
+nothing). No `traceability.md` change — no REQ row's ownership or evidence set
+moves, and the repaired hook narrows a *claim* rather than a coverage mapping. No
+edit to SPEC-M03 §4, §6 or §7. No escalation: both items were decidable in-role
+under charter §3.
+
+### Actions
+
+- Repaired `docs/specs/modules/xgmii_rx_64.md` **§10's REQ-802/REQ-810 hook**:
+  the parenthesised zero-delivered branch withdrawn in the REQ-014 four-part form,
+  quoted inside its own withdrawal, with the interval derivation and both closed
+  escapes stated in the cell, and the claim closed against sign-off packets.
+  Appended **one §13 row** carrying the derivation, the class argument and the
+  precedent chain.
+- Appended to `docs/specs/requirements.md` **§0.6**, immediately after *Counting a
+  strobe*, one **non-normative note** in five bullets: the multiplicity rule's
+  per-frame scope and §12's no-shared-names consequence; the level-not-counter
+  ruling; the counting convention as the observer's inverse and where it
+  under-counts; the exclusion's M03-local ground and its non-inheritance; and the
+  equivalent-mutant consequence for a campaign. Appended **one §13 row** with the
+  five clauses, the honest-test class argument and the countersignature standing.
+- Appended the **Return / verdict log** to
+  `agents/handoffs/WO-0069_spec-queue-3-m03-hook-and-strobe-multiplicity.md` in
+  six sections, and updated that packet's live **State** field ISSUED → RETURNED
+  (clerical, PROTOCOL §3).
+- Ran the read-only verifications below. **No git command that writes**; no file
+  touched outside `docs/**` and `agents/handoffs/**`; no edit above EOF of this
+  journal.
+
+### Evidence
+
+Reproducible at this commit's SHA from a repo checkout at the repo root.
+
+1. **HEAD integrity and scope.** `git rev-parse HEAD` →
+   `d2bdd57cf35e190c624f8779443fee2cc0add10a`, equal to the spawn's HEAD, with no
+   ref-, index- or HEAD-moving command run in this round.
+   `git status --porcelain` at the **start** of the round → **empty**: the tree
+   was clean, and nothing from the wiped prior spawn was present to salvage.
+   At the **end** of the round the same command reports **four** ` M` paths —
+   this journal plus my three work products
+   (`agents/handoffs/WO-0069_spec-queue-3-m03-hook-and-strobe-multiplicity.md`,
+   `docs/specs/modules/xgmii_rx_64.md`, `docs/specs/requirements.md`) — **and
+   three `??` untracked paths that are not mine**: see Evidence 10. Nothing
+   outside my write scope was written by me.
+2. **Diff shape.** `git diff --numstat` →
+   `210 1` (the packet), `2 1` (SPEC-M03), `53 0` (requirements.md).
+   `git diff -U0 -- docs/specs/modules/xgmii_rx_64.md docs/specs/requirements.md`
+   shows **four hunks and no more**: `@@ -1209 +1209 @@` (the §10 hook cell),
+   `@@ -1267,0 +1268 @@` (SPEC-M03's new §13 row), `@@ -499,0 +500,52 @@` (§0.6's
+   note) and `@@ -950,0 +1003 @@` (requirements.md's new §13 row). The **`53 0`**
+   is the load-bearing figure: requirements.md is a **pure append**, so every
+   pre-existing line of §0.6 — the normative *Strobe timing window*, all three
+   reference-word clauses, both existing non-normative notes and the C-23
+   counting convention — survives byte-identical, and no existing §13 row is
+   edited.
+3. **SPEC-M03's only deletion is the hook line itself.** The single deletion at
+   `@@ -1209 +1209 @@` is that one table row; the 2026-08-04 §13 row above the
+   new one is untouched, which the numstat total of one deletion confirms
+   independently of reading it.
+4. **Table integrity, checked because a malformed change-log row is a live hazard
+   in this programme** (dv_lead's second such report, `J-dv_lead-0094`'s literal
+   pipe). Pipe counts per row, via
+   `awk 'NR==<n>{print gsub(/\|/,"|")}' <file>`: SPEC-M03 `NR==1268` → **6**,
+   equal to the 2026-08-04 row above it (`NR==1267` → 6); requirements.md
+   `NR==1003` → **7**, equal to the row above it (`NR==1002` → 7); SPEC-M03
+   `NR==1209` → **5**, equal to the §10 row above it (`NR==1208` → 5). No cell
+   gained or lost a column.
+5. **Item 1's emptiness, re-derivable by hand from the specification alone.** At a
+   lane-0 A: `start_A = 8s`, first octet at `8s + 8`; §0.3 leaves `8s + 4` and
+   `8s + 8` as the only start-character positions in `(8s, 8s + 8]`, so `w` is `s`
+   or `s + 1`. At a lane-4 A: `start_A = 8s + 4`, first octet at `8s + 12`; the
+   only positions in `(8s + 4, 8s + 12]` are `8s + 8` and `8s + 12`, both in word
+   `s + 1`, so `w = s + 1`. With `c > s` (§4.3 admission) and `c ≤ w − 1` (§4.3
+   determinacy, §6.3 item 7), `[s+1, w−1]` is empty for `w = s` and for `w = s+1`.
+   **Four cases, four empties**, and the `c = s` row is excluded by the admission
+   clause alone, without item 7.
+6. **The two sentences the item-2 ruling rests on, quoted rather than
+   characterised.** `docs/specs/modules/xgmii_rx_64.md` §6.3 item 8: "*a bench
+   driving such a stimulus reports a silent discard against an M03 that has done
+   everything this specification asks*". `docs/specs/requirements.md` §12's
+   preamble: "*each condition has a dedicated name, and no name is shared*". Both
+   are at HEAD and neither moves in this diff.
+7. **The motivating measurement, quoted from the filer's own verdict.**
+   `agents/handoffs/WO-0066_family-bn-mutation-campaign.md` `WO-0066-VERDICT`
+   §5.2: "*the mutant's output is **bit-identical** to a conformant design's,
+   because §0.6 counts high cycles and frame A's added `error_runt` lands on the
+   cycle frame B's genuine one already occupies. **This is an equivalent mutant,
+   not an undetected one.***"
+8. **SPEC-TEMPLATE rule 7, the class-deciding text**: "*After freeze, any change
+   to §4, §6 or §7 is a spec diff plus an ADR (charter §3); §13 records it.
+   Editorial changes elsewhere need only a journal entry.*" Neither diff touches
+   §4, §6 or §7 of any specification.
+9. **No build, no simulation.** ADR-0005: the toolchain is lost and CI is the only
+   authority. This round is textual and commissions nothing, so there is no run to
+   cite and none is implied. The one CI figure quoted — `build` run
+   **`30988038809`** at `2dbd39b`, the landed-and-green status of the hook's
+   delivering branch — is **dv_lead's**, carried from `WO-0069` §1.4 with its
+   figure and run id travelling together, and is not re-executed here.
+10. **Three untracked files appeared in the working tree during this round and
+    are NOT mine — reported, not repaired** (the dispatch's stop-on-inconsistency
+    bar, and PROTOCOL §6). `git status --porcelain` was **empty** at spawn and now
+    additionally reports
+    `?? agents/handoffs/WO-0046_cosim-phase-1-adjudication.md`,
+    `?? agents/handoffs/WO-0070_m03-family-l-line-rate-stress.md` and
+    `?? agents/journals/claude_dv_lead_agent.v05.md`; `ls -la` dates all three
+    inside this round's window. They are a **concurrent dv_lead spawn's** work
+    products — the third is another agent's journal, which PROTOCOL §6 puts
+    outside my write scope and R8 permits only as a zero-entry seed, and the
+    first two are packets I neither opened nor authored. **I opened none of the
+    three, edited none, and deleted none**, and they are excluded from
+    Files-in-this-commit. The staging consequence is in Outcome.
+
+### Outcome
+
+**DoD met, both items.**
+
+- **Item 1 — RULED UNPASSABLE; dv's derivation VERIFIED, not accepted, and
+  sharpened at one step.** The commissioned conjunction has no model at either
+  start lane; the parenthetical is withdrawn in §10's own REQ-014 four-part form
+  with the wording quoted inside its withdrawal. **§4 question 1 ruled**: one
+  form, two grounds, the distinction living in the ground clause. **Class:
+  editorial, verification-column-only; unilateral under SPEC-TEMPLATE rule 7; no
+  ADR, no countersignature, no ledger row.**
+- **Item 2 — RULED: a strobe is a level on a named cycle, not a counter**, and
+  the multiplicity rule is not the rule the case is under. **§4 question 2
+  answered**: the contract is on **events**, dv's *presence* assumption is right
+  about the port and wrong about the contract, and its consequence is unchanged.
+  **No multiplicity signal is owed.** **§6.3 item 8 is M03-local in its ground**
+  and does not travel; a module reaching the collision owns its own disposition.
+  **Class: non-normative guidance, the `J-architect_docs_lead-0027` class, honest
+  test applied; no countersignature owed, with the fresh-finding standing stated.**
+- **No row of `AP-xgmii_rx_64.md` moves in either direction**, checked against
+  both rows rather than asserted — dv's own bound on this round.
+- **Handoff**: to the orchestrator for commit, then to dv_lead as the spec queue's
+  answer. Nothing is blocked on it either way; both items were non-blocking on
+  filing and remain so on ruling.
+- **Staging note for the orchestrator, and it is load-bearing.** Stage **only**
+  the three paths in Files-in-this-commit plus this journal. Evidence 10 records
+  three untracked paths that appeared mid-round from a **concurrent dv_lead
+  spawn** — `agents/handoffs/WO-0046_cosim-phase-1-adjudication.md`,
+  `agents/handoffs/WO-0070_m03-family-l-line-rate-stress.md` and
+  `agents/journals/claude_dv_lead_agent.v05.md`. Staging any of them under this
+  entry would fail **R4** (files-list set equality), and the third would fail
+  **R8** as well, being another agent's journal arriving with entries rather than
+  as a zero-entry seed. They are dv_lead's to commit under dv_lead's own trailer,
+  and I have left them exactly as I found them.
+
+### Open-questions
+
+- **Left whole and not decided here**: whether any Phase-1 module other than M03
+  can reach the same-name-two-events-one-cycle collision. §12's twenty-one
+  strobes were read for their names, not swept for reachability, and the ruling
+  is deliberately written so that it does not need the answer — the disposition
+  is per module and owed only where the collision is reachable. A module
+  specification that finds one is the right place for it, not this round.
+- **dv_lead's two offers in Return log §6** are notifications, not conditions:
+  neither the M03-N4 citation nor the M03-N2 phrasing sharpen is owed before any
+  sign-off, and I hold no position on whether dv takes either.
+- **One sentence flagged against myself**: "*the strobe set carries no
+  multiplicity field and is not owed one*" in the §0.6 note is the sentence most
+  likely to be read as normative. It is a conclusion from the level semantics
+  rather than a new obligation, and it forbids nothing — but if dv_lead reads it
+  otherwise, that is a fresh finding and it takes its own narrow countersignature
+  round.
+- No escalation. Nothing else.
+
+### Files-in-this-commit
+
+- agents/handoffs/WO-0069_spec-queue-3-m03-hook-and-strobe-multiplicity.md
+- docs/specs/modules/xgmii_rx_64.md
+- docs/specs/requirements.md

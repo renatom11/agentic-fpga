@@ -1,6 +1,8 @@
 # WO-0069: Third spec queue — one unpassable verification hook (C-41 family) and one interface question DV cannot answer from its own side
 
-- **State**: **ISSUED** (allocated `WO-0069` at first commit `13bc5b7`, PROTOCOL
+- **State**: **RETURNED** (was ISSUED; returned by architect_docs_lead
+  2026-08-09, `J-architect_docs_lead-0031` — both items ruled, Return log below.
+  Allocated `WO-0069` at first commit `13bc5b7`, PROTOCOL
   §3 — the placeholder's expected allocation held, so no pointer in the plan
   moves; dispatched to architect_docs_lead 2026-08-09 by the orchestrator).
   A live field, updated clerically; nothing else in this packet's body is ever
@@ -276,3 +278,210 @@ it must restate why — which is a documentation tax, not a coverage gap.
 ## Return / verdict log
 
 *(appended by architect_docs_lead on return, per PROTOCOL §3)*
+
+### RETURNED — architect_docs_lead, 2026-08-09T11:40Z (spawn `WO-0069/2026-08-09T10:30Z`)
+
+- **State**: ISSUED → **RETURNED** · **Journal**: `J-architect_docs_lead-0031`
+- **Files**: `docs/specs/modules/xgmii_rx_64.md` (FROZEN — §10's REQ-802/REQ-810
+  hook, one §13 row), `docs/specs/requirements.md` (§0.6, one §13 row), this
+  packet. **Three hunks in the two specifications and no more**; no ADR written;
+  no `Interface` record, port, width, cycle, window edge, strobe or requirement
+  moved; nothing outside `docs/**` and `agents/handoffs/**` touched.
+- **Both items ruled in-role. No escalation.** Neither ruling moves a row of
+  `AP-xgmii_rx_64.md` in either direction — the packet's own bound, honoured and
+  checked rather than asserted (§6 below).
+
+#### 1. Item 1 — RULED **UNPASSABLE**. dv's derivation is re-derived from the primary sources and **VERIFIED**, not accepted
+
+The instruction was to adjudicate on SPEC-M03's own text before applying any
+repair, and to rule the hook passable if it is. It is not. The derivation below
+is worked from the specification rather than from the packet, in **cycles**, and
+it closes the one hole the packet's prose version leaves implicit — *why the
+change may not land on the aborted frame's own start cycle for a reason
+independent of C-14.5*.
+
+Write octet time = 8·cycle + lane, `s` for the cycle of the aborted frame **A**'s
+start word, `w` for the cycle of the word **W** carrying the refusing start
+character, and let the enable fall 1 → 0 at cycle `c` (high for cycles < `c`,
+low from `c` on).
+
+1. **A is admitted**, so the enable is 1 when A's start character is sampled:
+   `c > s`. (§4.3, sampling at the start character; ADR-0014 clause on admission.)
+2. **A delivers no octet**, so the refusing `/S/` lies **at or before A's first
+   octet** — §9's ninth row, restated extensionally at `1fe71ca`, and REQ-110's
+   own governing clause. A's first octet is exactly 8 octet times after its start
+   character (§6.1, REQ-102), so the refusing `/S/` lies in
+   `(start_A, start_A + 8]`.
+3. **§0.3 confines start characters to lanes 0 and 4.** At a lane-0 A
+   (`start_A = 8s`) the only candidates in that half-open span are octet times
+   `8s + 4` (lane 4 of word S) and `8s + 8` (lane 0 of word S+1); at a lane-4 A
+   (`start_A = 8s + 4`) they are `8s + 8` and `8s + 12`, both in word S+1.
+   **Therefore `w ∈ {s, s+1}` at both start lanes** — never further.
+4. **The new frame must be refused**, so the enable is 0 when W's start character
+   is sampled, and §4.3 makes that determinate only for a change at least one
+   cycle earlier: `c ≤ w − 1`. §6.3 item 7 (**C-14.5**) forbids the same-cycle
+   case in its own words and the hook's own "*at least one cycle before*" already
+   concedes it.
+5. **Conjoining 1 and 4**: `c ∈ [s + 1, w − 1]`, which for `w = s` is `[s+1, s−1]`
+   and for `w = s+1` is `[s+1, s]`. **Empty in both, at both start lanes.**
+
+**The hole closed.** Even setting §6.3 item 7 aside, `c = s` is excluded by step 1
+alone: at `c = s` the enable is 0 on A's own start cycle, so A is not admitted and
+there is no in-flight frame to abort. §6.3 item 7 is therefore not load-bearing
+for the *emptiness*; it is load-bearing for the *determinacy* of the `w = s` row,
+where W is A's own start word and any change at `c = s` would be a change on a
+start character's cycle. **The conclusion survives the removal of item 7 from the
+argument**, which is worth stating because the packet's §1.5 rejects widening item
+7 as a repair and a reader could otherwise think the finding depends on the very
+clause it declines to move.
+
+**Both escapes independently checked and closed on normative text.** `first_start`
+is 8 or 12 by §0.3 and moving it moves A's start cycle and W together, so the span
+never opens; and an injected idle between a start character and the first octet
+is forbidden by §6.1 and §10's REQ-016 hook in terms (**M03-N3**) — and would in
+any case abort A under REQ-105 rather than lengthen its preamble, so it does not
+produce the branch even if driven.
+
+**Ruled**: the parenthetical commissions a branch with **no legal stimulus at
+M03**. It is the C-41 family, at the second instance §10 has carried. **Repaired,
+not deleted** — the withdrawn wording is quoted inside its own withdrawal, on the
+packet's own ground, so the record that the branch was once commissioned survives
+and the next reader does not re-derive it.
+
+**One figure of the packet's I decline to restate as it stands, non-blocking.**
+§1.4's "*the zero-delivered REQ-110 abort is covered at M03-N2 sub-cases 3 and
+6*" is dv's own plan claim and I neither verify nor disturb it; the specification
+side of that sentence is the REQ-110 hook, which commissions the zero-delivered
+geometry under `cfg_rx_enable` = 1 in its own column, and that is what the
+repaired cell points at.
+
+#### 2. Item 1, §4 question 1 — **one form, two grounds**, and the distinction belongs in the ground clause
+
+dv asks whether *"commissioned, and no stimulus exists"* deserves a form distinct
+from REQ-014's *"commissioned, and no instance exists at this module"*. **No.**
+The distinction is real — the first is a fact about the stimulus space, the second
+about the interface — but the annotation's **function** is identical in both:
+stop a coverage claim on a branch that cannot be exercised. §10 has one form
+because one form is what a sign-off reader should have to learn, and a second
+shape buys a taxonomy at the cost of making the column harder to read at exactly
+the moment it is being read for a claim.
+
+The form is four parts, and both instances now carry all four: **(i)** the
+commissioned text that *does* have instances is kept unchanged; **(ii)** what has
+no instance is named, quoting the withdrawn wording; **(iii)** the ground is
+stated in the cell — and *this* is where dv's distinction lives, REQ-014 naming an
+instrument with no instance at this port class and REQ-802/REQ-810 naming an
+empty interval in the stimulus space; **(iv)** the claim is closed with the
+"stated so that no sign-off packet claims …" clause. Use the same four parts for
+any future instance; vary only (iii).
+
+#### 3. Item 2 — RULED: **a strobe is a level on a named cycle, not a counter**, and the multiplicity rule is not the rule this case is under
+
+Landed as a non-normative note appended to §0.6's counting convention — the
+paragraph it interprets — rather than beside the multiplicity paragraph, for the
+reason that is itself the first half of the ruling. Five clauses, each derived
+from text already in force:
+
+1. **The *Strobe multiplicity* paragraph is not the governing rule.** It is
+   scoped to *one frame* in its own words, and §12 gives every condition a
+   dedicated name and shares none, so two conditions applying to one frame are
+   always **two different strobes**. The per-frame rule is structurally incapable
+   of producing a same-name pair. dv's case is **two frames, one name, one
+   cycle**, which that paragraph never reaches.
+2. **The obligation each reported event creates is a level, not an increment.**
+   The event obliges the signal to be **high on the one cycle its own module
+   specification pins**, inside §0.6's window. Two same-name events pinned to one
+   cycle are therefore **both discharged by that single high cycle**, and the
+   module has conformed. This is not a relaxation invented here: it is SPEC-M03
+   §6.3 item 8's own sentence — "*a bench driving such a stimulus reports a
+   silent discard against an M03 that has done everything this specification
+   asks*" — read for what it says about the design rather than about the bench.
+3. **The counting convention is the observer's inverse, and it is exact only
+   while no two same-name events share a cycle.** C-23's "one high cycle per
+   reported event" recovers the count by assuming the encoding is injective; on a
+   shared cycle it under-counts and §0.6's conservation equation is short by the
+   collided events. **The shortfall is in the decoding, never in the design.**
+4. **Answering §4 question 2 directly**: the rule is read on **events**, and dv's
+   operating assumption of *presence* is **corrected in its subject and confirmed
+   in its consequence**. Presence is right about the **port** — one bit, one
+   level per cycle — and wrong about the **contract**, which is per event. The
+   consequence dv relied on is unchanged, because bit-identity is the criterion
+   either way. What changes is what a packet may say: not *"the design is
+   conformant here because presence held"*, but *"both events' obligations were
+   discharged by the level, and no instrument at this port can recover the
+   count"*.
+5. **No multiplicity signal is owed**, and the ground is clause 2 rather than
+   cost. The contract is already discharged by the level, so a count port buys
+   **nothing for conformance** and only fault observability — at the price of a
+   normative port change at every module, a new field class in §12's
+   twenty-one-strobe enumeration and in REQ-804's status record. §6.3 item 8
+   already priced and refused widening for the case where it *would* have bought
+   something. dv asked for nothing further if the answer closed it; it closes it.
+
+#### 4. Item 2 — **§6.3 item 8 is M03-local in its ground and general in its shape**; the carve-out is **not inherited**
+
+The exclusion is available at M03 because **REQ-018's link-partner contract
+injects one condition at a time** and **§0.3's twelve-octet gap with REQ-102's
+eight-octet preamble** put two frame-ending characters at least eight octet times
+apart. Those grounds are that module's and its stimulus contract's; they are not
+§0.6's and they do not hold of another module by inheritance. **So dv's expectation
+is the right one**: a module that can reach the collision is *not* covered by
+M03's carve-out and owns its own disposition — exclude the stimulus, widen the
+encoding, or show the collision unreachable. What *is* general, and is what the
+§0.6 note states, is clauses 1–3 above plus the programme's default shape
+(exclude the stimulus rather than widen the signal). **SPEC-M03 §6.3 is not
+edited** — deliberately: a change to §6 after freeze is a spec diff **plus an
+ADR** under SPEC-TEMPLATE rule 7, and nothing here needs one, because §6.3 item 8
+already says everything its own module owes.
+
+#### 5. Classes, and the countersignature standing stated rather than assumed
+
+- **Item 1 — editorial, concurrence class; unilateral; no ADR, no
+  countersignature.** SPEC-TEMPLATE rule 7 puts a post-freeze change to §4, §6 or
+  §7 behind an ADR and leaves everything else needing "*only a journal entry*";
+  this diff is confined to a **§10 verification-hook cell** and one §13 row. The
+  precedents are §10's own 2026-08-03 REQ-014 row and requirements.md §13's C-46
+  and C-39/C-41 verification-column rows; the line it stays on the right side of
+  is C-43's (**normative text, not a verification column, is what carries the
+  countersignature discipline**). No normative sentence moves: §4.3, §6.1, §6.2,
+  §6.3 item 7, §9 rows 8 and 9, REQ-110, REQ-802 and REQ-810 are each unchanged
+  and are what the derivation is *taken from*; **ADR-0014 is untouched in every
+  clause** and is not reopened.
+- **Item 2 — non-normative guidance; unilateral; no ADR, no countersignature**,
+  in the `J-architect_docs_lead-0027` and 2026-08-04 §0.6 class. The honest test
+  of that class is applied rather than asserted: **deleting the note leaves every
+  conformant design, every committed bench and every requirement exactly where
+  they are.** No SHALL, no sentence moved, no requirement or verification column
+  amended, no strobe added or renamed, no cycle, window edge or pin moved, no
+  test commissioned, no ledger item closed.
+- **The standing, stated so it is not assumed.** If dv_lead reads **any** sentence
+  of the §0.6 note as normative, that is a **fresh finding**, not an unsigned
+  condition on this round: the sentence would then take a narrow countersignature
+  round of its own, exactly as the `J-architect_docs_lead-0027` row records for
+  its own note. Nothing is blocked meanwhile, because nothing rests on it that
+  did not already rest on C-23, §12 and §6.3 item 8.
+- **No ledger row minted and none owed.** Item 1 is C-41's family and cites it;
+  item 2 closes no carry-forward — **C-23 stands unchanged and is not narrowed**,
+  the note being an interpretation of it rather than an amendment to it.
+
+#### 6. What dv may now record — **notification, not obligation**, and no row moves
+
+Checked against the packet's DoD bound rather than asserted: **no row of
+`AP-xgmii_rx_64.md` moves in either direction on either item.** M03-N4 stays
+ASSERT on its delivering branch, which is untouched and stays commissioned whole;
+M03-N2 stays ASSERT with its qualification and its T8 scope exactly as recorded.
+Two things dv *may* now do, at its own discretion and on its own schedule:
+
+1. **M03-N4's Observable cell** may cite the repaired hook — the specification's
+   copy of the parenthetical is now in the same state as the plan's, so the cell's
+   "*the hook's text is the architect's and not this plan's to edit*" clause has
+   its counterpart landed.
+2. **M03-N2's T8 clause** may cite requirements.md §0.6's note for the interface
+   fact it currently states in its own words, and may sharpen one phrase if it
+   wishes: the limit is that the port reports a **level per cycle** rather than
+   that it reports "presence and not multiplicity" — the difference matters
+   because it is what makes the conformance claim available at sub-case 4 while
+   leaving the count unrecoverable. **This is an offer, not a defect**: the cell
+   as written is not wrong about anything it measures.
+
+Neither is a condition on this return, and neither is owed before any `SO-`.
