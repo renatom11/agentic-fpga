@@ -370,7 +370,8 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
      row as revised at 541ea43). Outside a preamble position the same character
      is the hold above and closes nothing. *)
   let a_close_error =
-    a_closes_with (lanes.is_error |: (other_ctl &: a_pre_mask))
+    (a_char_acts |: sm.is State.Discard)
+    &: any ((lanes.is_error |: (other_ctl &: a_pre_mask)) &: a_close_oh)
   in
   let a_close_start = a_closes_with lanes.is_start in
   let a_close_char = a_close_terminate |: a_close_error |: a_close_start in
