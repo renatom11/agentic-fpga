@@ -2492,3 +2492,399 @@ harvested, so they cannot evaporate between here and there:
 
 ### Files-in-this-commit
 - agents/handoffs/WO-0072_m03-family-k-clear.md
+
+## [J-dv_lead-0132] 2026-08-09T20:50Z | task:none | Fourteen carried plan debts paid in one commit, the throwaway directory finally deleted seven days after its own condition was met — and re-measuring one sentence to complete it proved that sentence's own census was wrong when it was written
+### Trigger
+My own commission. `RV-0072-VERDICT` §5 item 1 (in the Return log of
+`agents/handoffs/WO-0072_m03-family-k-clear.md`) names the batched `AP-` round as
+the next commit that opens `test/attack_plans/**` and enumerates it at fourteen
+items; the orchestrator dispatched it as spawn `AP-batch-8/2026-08-09T19:15Z`
+with HEAD at `5d2beff`. No worker was spawned and none was owed: every item is a
+plan-side debt of mine, and three of the fourteen exist precisely because a
+worker's write scope would have convicted an executor of my housekeeping.
+
+### Inputs
+Read, all at `5d2beff` unless a SHA is given:
+
+- `agents/charters/dv_lead.md`, `agents/PROTOCOL.md` (§§3, 4, 6, 9, 10; R3, R4,
+  R7, R10 via ADR-0017).
+- `agents/handoffs/WO-0071_m03-family-m-co-occurrence.md` — §5.1 (FINDING M-1,
+  FINDING M-2), §5.2 (OBSERVATION M-O1), §12 item 2's eight items (i)–(viii),
+  and `RV-0071-VERDICT` §§1, 7.
+- `agents/handoffs/WO-0072_m03-family-k-clear.md` — §2 (the cycle-0 lesson
+  reused), §7.5, §8.6, §10.3, §11, §18, and `RV-0072-VERDICT` §§2, 3, 4, 5.
+- `agents/handoffs/WO-0070_m03-family-l-line-rate-stress.md` — §8's commissioning
+  list, `RV-0070-VERDICT` bar L-14's census table and its CI reading.
+- `agents/handoffs/WO-0069_spec-queue-3-m03-hook-and-strobe-multiplicity.md` —
+  §2.2, §4 question 2, and architect_docs_lead's Return §3 (the five-clause
+  strobe ruling, `J-architect_docs_lead-0031`, landed `b6ef1cb`).
+- `agents/handoffs/WO-0046_cosim-phase-1-adjudication.md` §§6, 7, 8 — my own
+  Phase 1 adjudication, which is where items (ii) and (iii) were minted.
+- `test/attack_plans/AP-xgmii_rx_64.md` (§0.1, §1, §2, §4.J–§4.O, §7, §9) and
+  `test/attack_plans/CD-xgmii_rx_64_cosim.md` (§0-bis, §2-bis, §8, §9).
+- `tools/cosim/run_cosim.sh` (the header's THREE CHECKS block), `tools/dv_checks.sh`
+  (lines 214–314, the inventory and census passes), `test/cost_probe/dune` and
+  `test/cost_probe/cyclesim_cost_probe.ml` (their own deletion condition).
+- `test/xgmii_rx_64/test_m03_k.ml`, `test/xgmii_rx_64/bench.ml` (the accounting
+  functions), `test/monitors/octet_time.ml` and `.mli` (the `Latency` counter),
+  `test/monitors/test_conservation_monitor.ml`, `test/cosim/dune`.
+- `agents/journals/claude_orchestrator_agent.md` `J-orchestrator-0041` — the
+  entry that recorded the cost probe's figure with its CI run id, i.e. the
+  deletion condition's own evidence.
+
+**No `libs/`, `top/` or `rtl_snapshots/` path was opened at any point in this
+round** (PROTOCOL §10). Nothing here derives from RTL; every edit is a statement
+about specification text, about a committed artefact, or about a measurement
+taken from git objects or from CI run records.
+
+### Reasoning
+
+**1. Why fourteen items in one commit, and why that is not sloppiness.** Three
+families landed between plan rounds — L at `630e34a`, M at `70a263f`, K at
+`284225d` — and each left single-cell debts with named carriers pointing at "the
+next commit that opens `test/attack_plans/`". The alternative to one batch is
+fourteen commits, each opening the same file to move one cell. My own rule from
+the last batch stands and cuts both ways: *a round per debt is how a debt becomes
+a habit*, and a batch is the cheapest place to pay parked single-cell edits — but
+the batch is only honest if every item is enumerated with its ground, which is
+why §9's new row is long rather than a summary. **The count is mine and it agrees
+with the dispatch**: eight from `WO-0071` §12 item 2, five from `WO-0072` §18
+item 2, one added by `RV-0072-VERDICT` §5 item 1(f). I record one citation defect
+of my own on the way past: `RV-0072-VERDICT` §5 item 1 cites *"`RV-0071-VERDICT`
+§12 item 2"* and that verdict has no §12 — the §12 is `WO-0071`'s own, which
+`RV-0071-VERDICT` §7 item 2 cites correctly. Same eight items either way; the
+pointer is wrong and is corrected here rather than inside the frozen verdict.
+
+**2. The one item that changed under measurement, and it is the round's finding.**
+Item (e) asked only for a date: §7's "Not gaps" note says C-2's exemption is
+*"used by M03-J1 and M03-K2"*, and family K's landing is when that became true of
+K2. Paying it meant re-measuring the call sites, because §0.1 binds this plan's
+own prose and a set claim is re-measured at citation or it is not evidence. The
+re-measurement produced the date — `284225d`, through `Bench.account_cleared_frame`
+at `bench.ml:529`, reached by the row's own unit — **and convicted the note above
+it.** The 2026-08-09 note claims *"exactly three call sites in `test/`, all three
+in `test_m03_j.ml`"*; at `8d8a239`, the commit that claim itself names, the figure
+is **five**. The two it missed are `test/monitors/test_conservation_monitor.ml:161`
+and `:163`, the monitor's own unit test, and both are calls, not docstrings.
+**The conclusion the claim supported survives** — neither missed site is an M03
+row's call, so "true of J1 at `e4df986`, not yet true of K2" was correct — but the
+enumeration is false, and I recorded it as `FINDING AP-1` rather than quietly
+correcting the number. What makes it worth a name: **this is the first time §0.1
+has caught one of these at the point of citation** rather than after a campaign
+paid for it. §0.1 was minted by two failures that had already cost four
+MUST-STAY-GREEN violations between them; here the cost was one re-measurement.
+That is the whole argument for the rule, and it is now an instance rather than a
+hope.
+
+**3. Where I diverged from the dispatch's stated write scope, and why the artefact
+wins.** The dispatch scoped this round to `AP-xgmii_rx_64.md`, `run_cosim.sh`'s
+comment, the `cost_probe` deletion and (conditionally) `test_m03_k.ml`. But item
+(ii) as `WO-0071` §12 item 2 states it is *"`CD-xgmii_rx_64_cosim.md` §0-bis's
+stale sentence **and** its copy in `tools/cosim/run_cosim.sh`"* — two halves of
+one repair, and the dispatch's list carries only the copy. **The artefact governs
+and I staged both.** `test/attack_plans/CD-xgmii_rx_64_cosim.md` is inside my
+charter write scope, so no scope rule is strained; what would have been strained
+is the repair itself, which is worthless in half: annotating the script while
+leaving the document it cites uncorrected leaves the next reader one hop from the
+same error. Disclosed in the return rather than absorbed.
+
+**4. The CD repair is an annotation and never an edit, and the ground is not
+politeness.** CD is FROZEN for Phase 1 and §9's change discipline requires every
+change to state the section, what moved, the justifying clause, and **whether a
+run has already probed the area**. A run has — Phase 1's own, `build`
+`30988038809`. That is exactly why the entry may not move *outward*, and this one
+does not: §0-bis's sentence is being **narrowed to the scope at which it was
+always true**, since REQ-901 itself gained classes (e) and (f) by spec diff at
+`ebb3f49` through the only channel that can grant them. So the annotation reports
+a change made elsewhere; it does not make one here. I tabulated the three scopes
+rather than picking one, because picking one is how the defect happened: the
+sentence is false of the *pairing*, true of the *64-to-1518-octet range*, and
+true of *Phase 1's own domain instance*, and the original wrote the third while
+naming the first.
+
+**5. Why `run_cosim.sh` needed more than a one-line comment fix.** That comment is
+the site where the stale sentence could do damage rather than merely mislead: a
+later phase driving a runt or an oversize frame through the same script would read
+*"For M03 the permitted-divergence set is EMPTY"* and adjudicate its own result
+against a set that is not empty for those classes. So the corrected comment states
+both classes at their exact narrowness — (e) excludes `tuser`[0] **alone** on
+5-to-63-octet frames while payload octets and `tkeep` extent are still compared;
+(f) excludes an over-1518-octet frame entirely; both exclude nothing in 64–1518 —
+and says in terms that the script's **mechanics do not change**. `compare` still
+exits nonzero on any difference; narrowing that verdict is the reader's job, and
+pretending a script can do it would be a second defect wearing the first one's
+repair.
+
+**6. The X-7 row, and the reason it is two things.** X-4 and X-6 both record that
+their constraint is the deliverable as much as their machinery is, and X-7 is the
+third instance. What is new is *why* the guard could not be transplanted: the two
+schedules are the same shape over two ports with **inverted reset polarities** and
+**different subjects**. A literal copy of X-6's boundary-transition prepend would
+have made `Clear.never` report a transition, which would have taken all fifty-six
+landed units into a walk they do not enter today — and it would have refused this
+round's own K2 stimulus, whose release cycle carries a start character by
+REQ-009's own last sentence. The portable form is in the row: *a guard's entry
+condition must project the guard's own subject, and the subject must be re-derived
+per port.* I banked `FINDING K-3`'s bar rule in the same note because that is
+where a reader who is writing the next guard's review bars will be standing.
+
+**7. OBSERVATION K-O2: paid, not carried, and the argument for paying is not
+"it is cheap".** Cheap is why it was possible; the reason is that
+`Bench.account_cleared_frame` shipped with **two branches and one witnessed**.
+`word_delay = Some 3` reads that way from frame B alone, and `~delivered:16` is an
+argument the row asserts rather than an outcome it observes — so nothing in the
+landed suite recorded which branch ran. `frames_compared` is incremented by
+`frame_out` (`octet_time.ml:244`) and not by `frame_dropped` (`:85`), so **2**
+states mechanically that the abandoned frame was offered to the tagger as a
+16-octet output frame and **1** would have stated that it was dropped. Deriving
+the expected value cost one reading of the counter's own code; carrying it would
+have cost a dead branch shipping unwitnessed into a module's sign-off, which is
+M03-K1's own §7.5 shape one level down and I had just finished writing that
+finding. **I cannot run `dune` (ADR-0005), so the landing's CI is the check** —
+the affirmed path — and the assertion is derived from the counter's source rather
+than from a run precisely because no run was available to me.
+
+**8. The change-log row is repaired clerically and the change-log PROSE is not.**
+`J-dv_lead-0094`'s row carried two unescaped pipe characters inside an inline code
+span, which GFM reads as cell delimiters, so a three-field row rendered as five.
+Escaping them changes **no word** — the `J-dv_lead-0113` precedent, where an
+Author cell was supplied and nothing was rewritten. By contrast the 2026-08-06
+change-log row carries the *same superseded "presence per cycle" phrasing* that
+item (v) strikes in M03-N2's live cell, and **I left it unedited on purpose**. A
+change log is a dated record of what was decided then, not a live requirement;
+rewriting one is how a change log stops being one. So the live cell is struck and
+replaced, the historical row is annotated from this round's own row, and I say so
+rather than letting a reader discover two copies in two states. **This is a
+divergence in form from the dispatch's "phrasing at two sites" and it is
+deliberate.**
+
+**9. `test/cost_probe/`, and the general form its seven-day survival teaches.**
+Its own `dune` header set the condition — *"delete this whole directory once the
+cycles-per-second figure is recorded in a journal entry with its CI run id"* —
+and `J-orchestrator-0041` recorded 3.42 M / 1.77 M / 653 k cycles per second at
+CI run `30729880948` on 2026-08-02. The condition was met that day. The directory
+then survived **four carriers**, each of which declined it correctly: it is
+dv_lead housekeeping, and a worker staging it would have been convicted by its own
+packet's file-set bound. **The general form, and it is this round's own
+contribution**: *a self-deleting artefact needs a named executor as well as a
+named condition — a condition with no executor is met by nobody.* Checked before
+deleting: no `%expect_test` inside it, so neither inventory figure moves; no
+`dirs` stanza anywhere, so dune simply stops seeing it; and the only reference
+outside journals and packets is a **comment** in `test/cosim/dune`.
+
+**10. What I deliberately did not do.** I did not edit `test/cosim/dune`'s now
+dangling comment reference — it is a true historical statement about why that
+stanza is shaped as it is, the repair is one word, and I would rather report a
+newly-created stale pointer with a named carrier than widen a plan-round's file
+set on my own authority. I did not touch `WO-0069` itself: its two stale clauses
+live in **this plan**, not in that packet — which the enumeration's wording
+("`WO-0069`'s two stale clauses") could be read either way about — and the plan is
+where a bench author reads them. I did not repay OBSERVATION L-O1 (carrier: the
+next commit opening `test_m03_l.ml`, which this is not), OBSERVATION M-O1
+(carrier: the family M/G campaign packet), or OBSERVATION K-O1 (carrier: the next
+round opening `test/monitors/`) — all three are recorded with their carriers
+rather than moved. And I opened no new row, converted none, and moved no status:
+the counts are the check that this round did what it says.
+
+### Actions
+
+Six paths staged, two of them a directory deletion. Fourteen items, by landing
+site:
+
+- **`test/attack_plans/AP-xgmii_rx_64.md`** — (i) §4.L gains a family-L
+  landed-status block with `630e34a` / run `31015276337`; (iii) §7's banner gains
+  the per-class restatement and withdraws *"until it has run"* as its statement;
+  (iv) §9's `J-dv_lead-0094` row has its two unescaped pipes escaped; (v) §4.N's
+  M03-N2 Kills cell has both `WO-0069`-stale clauses struck and replaced, with the
+  ruling's operative clauses transcribed; (vi) §4.M gains a family-M
+  landed-status block with `70a263f` / run `31022685374`; (vii) and (viii) §4.M's
+  M03-M6 and M03-M7 Stimulus cells gain M03-G7 and M03-G8 with FINDING M-1/M-2's
+  ground; (a) §4.K's M03-K1 Kills cell withdraws its second class with the
+  sixth-instance disposition; (b) §7 gains the **X-7** row; (c) §4.K gains a
+  landed-status block with `284225d` / run `31032021108`; (d) §4.K's M03-K2 Kills
+  cell reclassifies its third kill; (e) §7's "Not gaps" note gains K2's date **and**
+  `FINDING AP-1`; (f) X-7's note banks `FINDING K-3`'s bar rule and §7 gains
+  OBSERVATION K-O2's record with its disposition. OBSERVATION K-O1 is recorded
+  beside it with its carrier. §9 gains this round's own row.
+- **`test/attack_plans/CD-xgmii_rx_64_cosim.md`** — (ii) first half: a new §0-ter
+  dated annotation beside §0-bis, carrying CD §9's four required parts and the
+  three-scope table.
+- **`tools/cosim/run_cosim.sh`** — (ii) second half: the check-4.1 comment
+  corrected and scoped to the frame the script drives, with (e) and (f) stated at
+  their exact narrowness.
+- **`test/xgmii_rx_64/test_m03_k.ml`** — K-O2's payment: one assertion,
+  `Latency.frames_compared = 2`, plus its derivation in a comment and a short
+  header section.
+- **`test/cost_probe/cyclesim_cost_probe.ml`** and **`test/cost_probe/dune`** —
+  **DELETED**, the whole directory.
+
+No `git` command with any effect on `HEAD`, the index or any ref was run at any
+point; `rev-parse`, `status`, `log`, `show`, `grep` and `merge-base --is-ancestor`
+only. No `dune` was run (ADR-0005). The directory was removed from the working
+tree with `rm -rf`; staging the deletion is the orchestrator's, through this
+entry's files list.
+
+### Evidence
+
+**Plan counts, measured before and after the edits at this working tree, by a
+status-cell pass over every row table — not carried forward:**
+
+```
+$ awk -F'|' '/^\| \*\*M03-/ {st=$(NF-1); gsub(/^[ \t]+|[ \t]+$/,"",st); print st}' \
+    test/attack_plans/AP-xgmii_rx_64.md | sort | uniq -c
+  BEFORE: 62 ASSERT · 7 NO-ASSERT · 4 NO-STIMULUS · 4 STRUCTURAL · 1 GAP
+  AFTER:  62 ASSERT · 7 NO-ASSERT · 4 NO-STIMULUS · 4 STRUCTURAL · 1 GAP
+$ grep -c '^| \*\*M03-' test/attack_plans/AP-xgmii_rx_64.md
+  BEFORE: 78        AFTER: 78
+```
+
+**Census and inventory, `bash tools/dv_checks.sh` at this working tree, before the
+edits and after them including the deletion** — identical at both ends:
+
+```
+  78  row ids declared in the plan
+  62  named in a unit title — NAIVE substring match
+  62  named in a unit title — TRAILING-DIGIT BOUNDARY match (use this one)
+  59  test/xgmii_rx_64/ (the M03 bench)
+ 139  test/ (repository-wide)
+  dv_checks: every check that COULD run passed, 1 obligation still OPEN
+```
+
+The inventory is unmoved by the deletion because `cyclesim_cost_probe.ml`
+contains **zero** `let%expect_test` (`grep -c` = 0), and unmoved by the K-O2
+payment because that adds an assertion inside an existing unit
+(`grep -c 'let%expect_test' test/xgmii_rx_64/test_m03_k.ml` = 2 at both ends).
+
+**Table well-formedness, measured after the edits** (the defect item (iv) repairs
+is exactly this class, so the check runs over the whole file rather than one row):
+
+```
+$ awk '/^\| \*\*M03-/ { l=$0; gsub(/\\\|/,"",l); n=gsub(/\|/,"|",l); if(n!=7) print NR": "n }'
+  (no output — all 78 row lines render as 6 cells)
+$ awk 'NR>=1778 { l=$0; gsub(/\\\|/,"",l); n=gsub(/\|/,"|",l); if(n!=4) print NR": "n }'
+  (no output — every §9 change-log row renders as 3 cells; it printed "1797: 6" before)
+```
+
+**`FINDING AP-1`, measured from git objects at three commits:**
+
+```
+$ git grep -n "Conservation_monitor.frame_in_exempt" <sha> -- 'test/*.ml' 'test/**/*.ml'
+  8d8a239  5 call sites: test_m03_j.ml:212,:358,:564 +
+                         test/monitors/test_conservation_monitor.ml:161,:163
+  284225d  6 call sites: the five above + test/xgmii_rx_64/bench.ml:529
+  5d2beff  6 call sites: identical to 284225d
+```
+
+`test_m03_j.ml:41` is a docstring cross-reference and is not a call; the claim
+under repair counted three and named `test_m03_j.ml` as their only home.
+
+**K-O2's expected value, derived from the counter's own source and not from a run**
+(I cannot run `dune`, ADR-0005): `test/monitors/octet_time.ml:244` increments
+`frames_compared` at the end of `frame_out`, unconditionally, once per call;
+`:85`'s `frame_dropped` takes from the pending queue and does not increment it.
+M03-K2's unit makes exactly two accounting calls that reach the tagger's output
+side — `account_cleared_frame … ~delivered:16` (`bench.ml:521`, whose
+`delivered <> 0` branch calls `frame_out`) and `account_clean_frame` for frame B
+(`bench.ml:481`) — so `frames_compared = 2`, and `1` is what a `frame_dropped`
+branch would have left. `frames_compared : t -> int` is exported from
+`octet_time.mli`'s `module Latency` at line 232.
+
+**Shell syntax of the edited script**: `bash -n tools/cosim/run_cosim.sh` → clean.
+Only comment lines moved.
+
+**CI run ids quoted in this round, each read from a committed artefact rather than
+recalled**: family L `31015276337` @ `630e34a` (`RV-0070-VERDICT` bars L-13/L-14);
+family M `31022685374` @ `70a263f` (`RV-0071-VERDICT` §2's step table, job
+`92363162764`); family K `31032021108` @ `284225d` (`RV-0072-VERDICT` bar K-2, job
+`92394814728`); Phase 1 co-sim `30988038809` @ `2dbd39b`, job `92247281222`; the
+cost probe's own figure `30729880948` (`J-orchestrator-0041`). **No CI run was
+executed by me and none could be** — these are externally verifiable references
+per ADR-0003/F5, not claims about a run I made.
+
+**HEAD integrity**: `git rev-parse HEAD` = `5d2beffbd3feb70c1383b403579b886931d15c39`
+at spawn and at return, branch `claude/fpga-hardcaml-agent-orchestration-37ceyf`.
+`git status --porcelain` was empty at spawn and shows exactly the six paths of this
+entry's files list at return, with the two `cost_probe` paths as `D`.
+
+### Outcome
+
+**DoD met.** All fourteen commissioned items land, plus the two riders their
+carriers named for this commit — `test/cost_probe/`'s deletion and OBSERVATION
+K-O2's payment — and OBSERVATION K-O1's record. No row added, none converted, no
+status moved, no coverage-map line changed, and the census and inventory are
+unmoved at both ends, which is the mechanical statement that a plan round changed
+no coverage.
+
+**No `SO-xgmii_rx_64.md` is opened or offered, and nothing here moves it closer
+except by removing debts from its path.** Outstanding before any PASS remains
+exactly what `RV-0072-VERDICT` §4 lists: the family **J, K, L and M** mutation
+campaigns, PROTOCOL §10-sequenced after `RV-` ACCEPT and before `SO-` PASS, and
+the charter §3 verilog-ethernet differential co-sim anchor, undischarged **per
+class** — which is now the plan's own wording rather than a coarser one a literal
+reading discharged.
+
+**Handoff**: this working tree to the orchestrator, trailer `Agent: dv_lead`,
+`Work-Order: none`, `Journal-Entry: J-dv_lead-0132`. Next in my queue, unchanged
+in order: the family **L** and **M** mutation campaign packets, then **J** and
+**K**, then the co-sim anchor's next phase; the lessons harvest falls due at the
+`SO-` and spans from my last harvest to that entry.
+
+**No lessons-harvest note is owed this round and the absence is declared rather
+than omitted** (ADR-0018, PROTOCOL §7): the cadence is every module sign-off and
+every phase gate, and a plan round is neither. **Two candidates are BANKED, not
+harvested** — banking neither opens nor closes a span:
+
+- **(LH2-g) A self-deleting artefact needs a named executor as well as a named
+  condition.** Write the condition and the party who executes it into the artefact
+  itself; a condition with no executor is met by nobody, and the artefact outlives
+  the question it was built to answer. *LH1*: a throwaway probe directory whose own
+  header set its deletion condition, met at CI run `30729880948` on 2026-08-02 and
+  executed on 2026-08-09, having survived four rounds each of which correctly
+  declined it because staging it lay outside that round's writer's scope. *LH3*:
+  without it, dead scaffolding accumulates in a tree every later reader must
+  classify, and each round's decision to leave it is individually right.
+- **(LH2-g) A function whose branches are selected by a caller-supplied value owes
+  a witness of WHICH BRANCH RAN, not only of the value.** Assert an observable the
+  two branches drive differently, in the same round the function ships. *LH1*: a
+  new accounting entry point landed at `284225d` with a positive-quantity branch
+  and a zero-quantity branch, where the only landed assertion was the caller's own
+  argument — sound, and blind to the branch. *LH3*: without it, a capability ships
+  with a dead branch nothing has ever executed, and the first stimulus to reach it
+  does so in the round that trusts it most.
+
+### Open-questions
+
+1. **A newly created dangling reference I did not repair, reported rather than
+   fixed.** `test/cosim/dune`'s header comment reads *"unlike `test/cost_probe/dune`'s
+   throwaway probe"*, and `test/cost_probe/` no longer exists as of this commit.
+   It is a comment, it changes no behaviour, and its statement about why that
+   stanza has no `runtest` rule is still true — but a reader who greps the path now
+   finds nothing. **Carrier: the next commit that opens `test/cosim/`.** I did not
+   widen this round's file set for one word on my own authority; orchestrator, if
+   you would rather it rode here, say so and it is a one-line edit inside my scope.
+2. **One citation defect in a frozen verdict of mine, corrected here and not
+   there.** `RV-0072-VERDICT` §5 item 1 cites *"`RV-0071-VERDICT` §12 item 2"*;
+   that verdict has no §12, and the eight items live at `WO-0071` §12 item 2, which
+   `RV-0071-VERDICT` §7 item 2 cites correctly. Same eight items; the pointer is
+   wrong. Recorded, not edited into the verdict.
+3. **The two guards' asymmetry is carried unchanged from my previous entry** and
+   X-7's note now states it beside X-6's: both entry conditions are mechanically
+   witnessed, neither refusal has ever fired on a real violation, and no unit in
+   this suite drives a stimulus either guard rejects. Still a `formal_dv` candidate
+   for Phase 1 hardening rather than a bench I can write.
+4. **§3.2's spec ambiguity remains open, non-blocking, and queued** — SPEC-M03
+   §6.2's `Idle` row transition column against §7's reset bullet, on a cycle
+   carrying both a start character and `clear` = 1. The K guard removes any need
+   for a ruling before a bench lands, which is why it is queued rather than
+   escalated. **This round adds nothing further to the spec queue** — a nil
+   addition, declared rather than omitted.
+5. Nothing else. No RTL was read, no licensing question arose, and no escalation
+   class is triggered.
+
+### Files-in-this-commit
+- test/attack_plans/AP-xgmii_rx_64.md
+- test/attack_plans/CD-xgmii_rx_64_cosim.md
+- test/cost_probe/cyclesim_cost_probe.ml
+- test/cost_probe/dune
+- test/xgmii_rx_64/test_m03_k.ml
+- tools/cosim/run_cosim.sh

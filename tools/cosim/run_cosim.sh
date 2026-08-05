@@ -49,9 +49,36 @@
 #        driven into both `Xgmii_rx_64` (ours, via ours_run) and
 #        `axis_xgmii_rx_64` (theirs, via the vendored reference under
 #        `iverilog`/`vvp`), reduced to canonical transaction files and
-#        compared under REQ-901. For M03 the permitted-divergence set is
-#        EMPTY (CD-xgmii_rx_64_cosim.md §0-bis) — any divergence is a defect
+#        compared under REQ-901. For the FRAME THIS SCRIPT DRIVES the
+#        permitted-divergence set is EMPTY, so any divergence is a defect
 #        and `compare` exits nonzero.
+#
+#        CORRECTED 2026-08-09 (dv_lead, J-dv_lead-0132; CD-xgmii_rx_64_cosim.md
+#        §0-ter, the dated annotation beside §0-bis). This comment used to say
+#        "For M03 the permitted-divergence set is EMPTY", quoting §0-bis's
+#        closing sentence. THAT SENTENCE IS STALE AT THE SCOPE IT IS WRITTEN
+#        AT, and this file is where the staleness could do damage rather than
+#        merely mislead. REQ-901 gained divergence classes (e) and (f) at the
+#        M03 boundary by spec diff at ebb3f49, countersigned:
+#
+#          (e) `tuser`[0] ALONE is excluded on 5-to-63-octet frames — payload
+#              octets and the `tkeep` extent are STILL COMPARED, because the
+#              reference's FCS check is a lane-indexed residue array with no
+#              length gate, so it strips four octets and delivers length-4
+#              exactly as we do. A sub-5-octet frame is excluded entirely,
+#              its accept-or-discard included.
+#          (f) an over-1518-octet frame is excluded ENTIRELY.
+#
+#        Both exclude NOTHING in the 64-to-1518-octet range, which is why the
+#        statement above is scoped to the frame this script drives (64 octets,
+#        inside that range) rather than to "M03". A LATER PHASE THAT DRIVES A
+#        RUNT OR AN OVERSIZE FRAME THROUGH THIS SAME SCRIPT MUST NOT READ THE
+#        OLD SENTENCE AND ADJUDICATE ITS OWN RESULT AGAINST AN EMPTY SET — for
+#        those classes the set is not empty, and a `tuser`[0] difference there
+#        is a declared divergence, not a defect. Nothing about the check's
+#        MECHANICS changes: `compare` still exits nonzero on any difference it
+#        finds, and narrowing that verdict is the reader's job, not this
+#        script's.
 #   4.2  DELIBERATE-MISMATCH SELF-TEST — `compare --self-test`, in the SAME
 #        binary as 4.1, so the self-test exercises the production comparison
 #        path rather than a parallel harness that proves nothing about it.

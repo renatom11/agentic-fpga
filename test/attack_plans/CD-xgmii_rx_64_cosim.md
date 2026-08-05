@@ -50,6 +50,57 @@ both.** It was found while authoring Phase 1. Two corrections, in force:
 > never a quiet entry in this file. **For the M03 pairing the permitted-divergence
 > set is EMPTY.**
 
+## 0-ter. DATED ANNOTATION beside §0-bis — the "EMPTY" sentence is STALE AT THE SCOPE IT IS WRITTEN AT (2026-08-09, `J-dv_lead-0132`)
+
+**This is an annotation beside §0-bis, never an edit inside it.** §0-bis is
+frozen and a run has probed its area; the four things CD §9's change discipline
+requires of every change are stated below in its own order.
+
+- **The section**: §0-bis, closing sentence — *"For the M03 pairing the
+  permitted-divergence set is EMPTY."*
+- **What moved**: **nothing in this document, and everything in the requirement
+  it reports.** REQ-901 gained divergence classes **(e)** — `tuser`[0] alone on
+  5-to-63-octet frames, with payload octets and `tkeep` extent still compared —
+  and **(f)** — an over-1518-octet frame excluded entirely — **at the M03
+  boundary, by spec diff, at `ebb3f49`, countersigned.** **This document's own
+  §2-bis already carries the resolution block naming them**, so the two halves of
+  this file have disagreed with each other since that diff landed.
+- **The justifying clause**: §0-bis's own rule that **REQ-901 governs** and that a
+  divergence class is added *there* by spec diff and nowhere else. The sentence
+  is not being widened by this note; it is being **narrowed to the scope at which
+  it was always true**, which §0 permits and §9 requires be recorded.
+- **Whether a run has probed the area**: **YES — Phase 1's own**, `build` run
+  `30988038809` at `2dbd39b`, `cosim` job `92247281222`. **That is precisely why
+  the entry may not move outward and does not.** Phase 1 drove one 64-octet
+  good-FCS lane-0 frame, which is **inside** the 64-to-1518-octet range, so it
+  compared under an empty permitted set — **correctly** — and the operative fact
+  for Phase 1 is unaffected.
+
+**The three scopes, tabulated rather than picked between**, because picking one
+is how the defect happened:
+
+| statement | truth at this commit |
+|---|---|
+| "for the M03 **pairing** the permitted-divergence set is empty" | **FALSE.** It contains (e) and (f). |
+| "for the **64-to-1518-octet range** at this boundary the permitted-divergence set is empty" | **TRUE**, and it is REQ-901's own sentence: *"Classes (e) and (f) exclude nothing in the 64-to-1518-octet range."* |
+| "for **Phase 1's own domain instance** the permitted-divergence set is empty" | **TRUE**, because §8's frame is 64 octets and therefore inside that range. |
+
+**The defect is one of SCOPE, not of arithmetic**, and it is the
+left-standing-summary class this programme has now paid for at
+`RV-0039-VERDICT` F-2, at `AP-xgmii_rx_64.md` §7's staleness banner, and at
+`bench.mli`'s own header. **AND IT HAD PROPAGATED**: `tools/cosim/run_cosim.sh`'s
+check-4.1 comment carried the same sentence into a script, where a future phase
+driving a runt or an oversize frame would have read it and **mis-adjudicated its
+own result**. That comment is annotated in the same commit as this note, which is
+the whole reason the two are one edit set rather than two.
+
+**What this annotation does NOT do.** It permits no divergence — this document
+still cannot, and §0-bis's ruling on that is untouched. It does not reclassify
+V1–V7. And it does not weaken §5.1: classes (e) and (f) are **narrow**, they
+exclude `tuser`[0] alone on 5-to-63-octet frames and the whole of an
+over-1518-octet frame, and **family F's core observable — REQ-103's FCS removal
+on a runt, its delivered counts and their `tkeep` — REMAINS co-sim-anchorable**.
+
 ## 0. What this document is, and the discipline it runs under
 
 Two conformant implementations of "10G Ethernet receive" differ **legally and

@@ -43,6 +43,17 @@
       §10.3 records why that is not this round's to change, and M03-K1's
       `account_clean_frame` call below copies it unchanged.
 
+    {2 One assertion added after the round landed}
+
+    M03-K2 asserts [Dv_monitors.Octet_time.Latency.frames_compared = 2].
+    OBSERVATION K-O2 (RV-0072-VERDICT §3(a)) recorded that
+    {!Bench.account_cleared_frame} shipped with two branches and only one of
+    them witnessed anywhere: [frame_out] on a positive [~delivered] and
+    [frame_dropped] on zero. [frames_compared] is incremented by the former
+    and not by the latter, so the assertion is the direct statement of which
+    branch ran. It adds no coverage, moves no plan row and names no [M03-] row
+    id; the plan records the disposition beside its own K-O2 note.
+
     Derived from the spec sections named above, `test/xgmii_rx_64/bench.mli`
     and `test/xgmii/{arrival,xgmii_word,frame}.mli`, all read as spec text.
     No `libs/**`, `top/**` or `rtl_snapshots/**` was opened (PROTOCOL §10,
@@ -557,6 +568,20 @@ let run_k2 () =
    | Some n ->
      fail row (String.concat [ "latency word_delay is Some "; Int.to_string n; ", expected Some 3" ])
    | None -> fail row "latency word_delay is None, expected Some 3");
+  (* OBSERVATION K-O2, RAISED AND PAID (RV-0072-VERDICT §3(a); AP-xgmii_rx_64.md
+     §7's K-O2 note). This is the one quantity that witnesses WHICH BRANCH
+     [Bench.account_cleared_frame] took for frame A. Nothing else here does:
+     [word_delay] would read [Some 3] from frame B alone, and [~delivered:16]
+     is an argument this unit ASSERTS rather than an outcome it observes.
+     [Octet_time.Latency.frame_out] increments [frames_compared] and
+     [frame_dropped] does not, so 2 is the mechanical statement that frame A
+     was offered to the tagger as a 16-octet output frame; 1 would have been
+     the statement that it was dropped. The capability shipped at 284225d with
+     two branches and one of them dead and unwitnessed -- M03-K1's own §7.5
+     shape one level down -- and this line closes that, adding no coverage
+     claim and naming no plan row. *)
+  if Dv_monitors.Octet_time.Latency.frames_compared (latency bench) <> 2
+  then fail row "latency frames_compared is not 2";
   (* WO-0072 §8.5: the mandatory control run, charged exactly as M03-J1's
      was -- without it, a schedule that never carried a well-formed frame A
      at all (a construction error, not a design fact) would make K2 green,
