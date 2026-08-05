@@ -3906,3 +3906,329 @@ war stories**; out at **~24**. Yield:
 
 ### Files-in-this-commit
 - agents/handoffs/WO-0068_m03-family-n-completion.md
+
+## [J-dv_lead-0124] 2026-08-09T09:05Z | task:WO-0068 | Six carried plan debts paid in one batched round — and the clause I was asked to write about ADR-0014 is narrower than the instruction that commissioned it, because the sentence's first ground is about the frames the instruction said it was not about
+
+### Trigger
+Orchestrator dispatch, spawn short-id `AP-batch-7/2026-08-09T07:45Z`, HEAD at
+spawn `8d8a239`. **Self-commissioned**: `RV-0068B-VERDICT` §9 item 1 — my own
+verdict, appended at `64a36f3` — commissions the batched `AP-` round against
+`test/attack_plans/AP-xgmii_rx_64.md` carrying six items, and offers item 2 (the
+single architect change request) at my discretion as either this round or the
+next. This is that round, and I took the optional item: it is the spec-side half
+of the same defect as plan item 5, and splitting one derivation across two
+rounds is how the second half acquires a carrier and then a habit. The commit's
+`Work-Order` trailer is **none** — `WO-0068`/`WO-0068B` is ACCEPTED and CLOSED
+and this round is not work against it — while this entry's `task:` field names
+the packet that **commissioned** the round, which is the convention my two
+previous plan-only rounds landed under (`J-dv_lead-0109` / `task:WO-0063` at
+`79074cb`, `J-dv_lead-0118` / `task:WO-0066` at `7059e51`, both
+`Work-Order: none`).
+
+### Inputs
+- `agents/charters/dv_lead.md`; `agents/PROTOCOL.md` §§1–11.
+- `agents/handoffs/WO-0068_m03-family-n-completion.md` — §5 (the finding against
+  my own M03-N4 row) and `RV-0068B-VERDICT` §§7, 9, 10, 11 read at the source
+  rather than from the dispatch's restatement of them.
+- `agents/handoffs/WO-0067_m03-family-j-enable-capability.md` — **§6** (the
+  M03-J2 kill finding), **§5.2** (M03-J1's two must-nots and the anti-vacuity
+  control), **§5.4**, **§11** items 1–4 (the four carried plan edits),
+  `RV-0067-VERDICT` §§6.1, 6.2, 6.3, 7, 11.
+- `test/attack_plans/AP-xgmii_rx_64.md` in full at the sites edited: §0.1, §1's
+  row grammar and status vocabulary, §2 obligations 2 and 4, §4.H bound 1 and
+  the struck bound 2, §4.J, §4.N (the table, the six-row cycle table, the
+  closing notes and their nested strike blocks), §7 (the staleness banner, X-1
+  through X-5, the "Not gaps" paragraph), §8 items 4 and 5, §9's change log.
+- **Primary sources, each read at its own file rather than through a packet that
+  quotes it — this is `RV-0068` §9.2's rule applied to myself**:
+  `docs/specs/modules/xgmii_rx_64.md` §6.1's disabled-state paragraph
+  (lines 704–712), §6.2's `Preamble` and `Frame` rows, **§6.3 item 7**
+  (lines 761–768), §10's REQ-014 hook (line 1188) and REQ-802/REQ-810 hook
+  (line 1209); `docs/specs/requirements.md` §0.6's *Strobe multiplicity* and
+  *Strobe timing window* paragraphs (lines 405–416);
+  `docs/adr/ADR-0014-an-enable-gates-admission-not-the-wire.md` lines 141–149;
+  `test/monitors/conservation_monitor.mli` lines 19–61 (the three deviations and
+  `frame_in_exempt`'s own signature docstring); `tools/dv_checks.sh` lines
+  275–305 (the row-id extractor, read to check my edits do not move its census).
+- `agents/journals/claude_dv_lead_agent.v04.md`, entries `J-dv_lead-0118`
+  (item 5's two clerical residues, in its Open-questions) and `J-dv_lead-0123`
+  (the closure measurement and the commissioning I am executing).
+- Read-only git: `git log`/`show`/`diff` at `e4df986`, `88413b9`, `eb1e06a`,
+  `2dbd39b`, `8d8a239`.
+- **No `libs/**`, `top/**` or `rtl_snapshots/**` path was opened.** This is a
+  plan round; nothing in it required RTL and none was read.
+
+### Reasoning
+**The round is six single-cell debts and one derivation, and the derivation is
+the only part that could have gone wrong quietly.** Five of the six were already
+adjudicated in committed packets and needed transcription with their grounds
+attached. The sixth — M03-J1's `frame_in_exempt` clause — was handed to me as a
+three-part explanation to write down, and **writing it down is where I found
+that one of its three parts is not what the instruction says it is.**
+
+**The disagreement, stated as one rather than resolved into the text.**
+`WO-0067` §11 item 2 (mine, from `J-dv_lead-0119`) instructs that ADR-0014's
+*"the conservation monitor needs no new exemption"* is *"about the **in-flight**
+frame at M03-N4, not about the refused frames here"*. Read at the ADR's own words
+— lines 145–149, which I opened rather than quoting my own packet's quotation of
+them — the sentence has **two** grounds, and the first is plainly about the
+refused frames: *"No frame is presented to the module while the enable is 0 in
+§0.6's sense — nothing is accepted — so the equation balances across the
+disabled window with the in-flight frame counted under its own strobe."* Only
+the second clause is about the in-flight frame. **So the characterisation I was
+given is wrong in its subject and right in its conclusion**, and the honest
+reconciliation is by **what the sentence claims** rather than by **which frame
+it is about**: the ADR's claim is that the *equation* needs no new **term**, and
+`frame_in_exempt` adds no term — `conservation_monitor.mli`'s deviation 3 puts
+that ledger *"outside the equation"* in terms. The demand is therefore correct
+for a reason one clause stronger than the one I was told to write, and the
+plan's cell says so with the narrowing disclosed in its own text and again in
+§9's change-log row. **The alternative — writing the instruction's version
+because it reaches the right answer — is exactly the substitution my own §9.2
+rule was minted against**, and it would have planted a misquotation of an ADR in
+the cell a future K-family round will read when it builds `clear`'s exemption.
+
+**Item 5's derivation I re-worked rather than transcribed, and it holds at both
+lanes.** A zero-delivered abort puts the aborting `/S/` in
+`[first_start, first_start + 8]`, a span whose first element is frame A's **own**
+start character, because §6.2's `Preamble` row discards *"the eight octets from
+the start character inclusive"*. With `first_start` ∈ {8, 12} that puts **W** at
+cycle 1 or cycle 2 at both lanes, and the enable change must satisfy
+`A_start_cycle < c < W` with `A_start_cycle` = 1 — empty at `W` = 1 and at
+`W` = 2 alike, before §6.3 item 7 is even invoked, and item 7 independently
+forbids `c` = 1. **Two escapes are closed by specification text and not by
+convention** and I checked both: §0.3's lane mapping fixes `first_start`, and
+moving it moves A's start cycle and W **together**; and the idle-word escape is
+what M03-N3 and §10's REQ-016 hook forbid. This is the **fifth** instance of the
+unachievable-observable shape in this plan — M03-D3, M03-F2, M03-I2, M03-J2,
+M03-N4 — **all five in this plan's own rows and all five found the same way**:
+by working the row's arithmetic while a packet was being authored, before a
+bench existed, rather than after one had passed vacuously against the very
+design its Kills cell named.
+
+**Where the six items landed, and why each is in the cell it is in rather than
+in a note.** J2's finding is in its **Kills** cell because that is where a row's
+coverage claim is read; N4's is in its **Observable** cell for the same reason,
+and it is flagged *at the parenthetical itself* as well as at the end, because a
+reader who stops at the parenthetical is precisely the reader the finding is
+for. The parenthetical is **kept**, not deleted: it is quoted from §10's hook,
+the hook is the architect's text, and a plan that silently edits its quotation of
+a specification is a plan that has stopped being checkable against it. §4.H's
+bound and §9's row are struck-and-re-grounded in place, the plan's standing
+notation. The landed-status block is a **family-level** note at the end of §4.N
+rather than four cell edits, following M03-N2's own precedent in the same
+section, and because a status figure stated four times is a figure that will be
+updated in three places.
+
+**§7 gets a new row and its "Not gaps" paragraph gets a note beside it, not a
+tense change — and that distinction is the item's whole content.** §7 already
+carries a staleness banner because a *requirements* statement was read as a
+*gap* list; rewriting the sentence *"used by M03-J1 and M03-K2"* into the present
+tense would repeat that failure in the other direction, turning a requirements
+statement into a status report and leaving neither. So the sentence is byte-
+identical — I checked it with `diff` against `HEAD` rather than by looking at it
+— and the measurement sits beside it: three `frame_in_exempt` call sites in
+`test/**`, all in one file, so the sentence became true of J1 at `e4df986` and is
+still not true of K2. **X-6 records the constraint as a deliverable on X-4's
+precedent, and it can now do so with a measured instance rather than a claim**:
+the guard's entry condition was one transition short of its own subject, and the
+repair went **at the subject** so the entry test is a projection of it. That is
+the portable half and it is stated in the row in terms that leave this module.
+
+**One thing I found and deliberately did not repair, because repairing it was not
+commissioned and because the discipline that produced item 4 is to report.**
+§9's `J-dv_lead-0094` change-log row contains a literal `|` inside its Change
+cell — the `{||}` empty-expect-block notation — which splits that row into
+**five** fields where the table has three, and breaks it in any renderer. It is
+the same *class* as the missing Author cell I was commissioned to repair and it
+is **not** the same instance, so it is recorded here and in my Open-questions
+rather than fixed on my own authority in a round whose scope was enumerated.
+
+**What I did not do, listed because each was available and each would have been
+scope I was not given.** I did not add a §8 item for either architect question:
+T8's is stated *once*, in M03-N2's Kills cell, by `J-dv_lead-0118`'s own ruling,
+and duplicating it into §8 would create two sites to keep in agreement; the C-41
+item is pointed at from M03-N4's cell, where a reader meets it. I did not touch
+`docs/specs/**` — outside my write scope in every round, and the spec-side repair
+is the architect's to make. I did not move a row, a status, a count or a
+coverage-map line, and I re-measured all six counts from the file rather than
+carrying them forward.
+
+**On authoring the architect request in this round rather than the next.** The
+C-41 item and plan item 5 are one derivation with two homes; the arithmetic is
+loaded now, and the packet's §1.2 is that arithmetic written for a reader who
+has not been living in it. Batching T8's question with it costs the architect one
+round instead of two and costs me nothing, and the packet says in its own text
+that the two items are batched for scheduling and are **not** related — because a
+reader who infers a relation between them will look for one.
+
+### Actions
+- Edited `test/attack_plans/AP-xgmii_rx_64.md` in **six** places plus a §9
+  change-log row: M03-J2's Kills cell (§4.J), M03-J1's Observable cell (§4.J),
+  a new **X-6** row and a dated note beside the untouched "Not gaps" paragraph
+  (§7), §4.H bound 1's struck-and-re-grounded closing sentence, M03-N4's
+  Observable cell in two places (§4.N), a family-level **LANDED STATUS** block
+  at the end of §4.N, and the Author cell supplied on §9's `J-dv_lead-0113` row.
+- Drafted
+  `agents/handoffs/WO-0069_spec-queue-3-m03-hook-and-strobe-multiplicity.md` —
+  the third dv → architect spec queue, two non-blocking items, the id a
+  placeholder for the orchestrator to allocate (PROTOCOL §3).
+- Re-derived, rather than transcribed: M03-N4's zero-delivered exclusion at both
+  start lanes; the `frame_in_exempt` clause's three grounds from
+  SPEC-M03 §6.1, `conservation_monitor.mli` and ADR-0014 directly.
+- Measured, rather than recalled: the plan's row and status counts; the
+  `frame_in_exempt` call-site census; the declared-row-id extractor's output
+  before and after my edits; the byte-identity of the "Not gaps" paragraph and
+  of the repaired change-log row's Change cell.
+- Ran **no** build and **no** test: ADR-0005, and a markdown round needs neither.
+
+### Evidence
+Every command below is runnable from a checkout at this commit's tree.
+
+- **Row and status counts, counted from the file and not carried forward** —
+  `awk -F'|' '/^\| \*\*M03-/ {n++; st=$(NF-1); gsub(/[ *]/,"",st); c[st]++} END {print n; for (k in c) print k, c[k]}' test/attack_plans/AP-xgmii_rx_64.md`
+  → **78 rows; ASSERT 62, NO-ASSERT 7, NO-STIMULUS 4, STRUCTURAL 4, GAP 1**.
+  62 + 7 + 4 + 4 + 1 = 78. **Identical before and after my edits** (run at
+  `8d8a239` and at this tree).
+- **The census instrument is unmoved by this round** —
+  `grep -oE '^\|[^|]*M03-[A-Z]+[0-9]+' test/attack_plans/AP-xgmii_rx_64.md | grep -oE 'M03-[A-Z]+[0-9]+' | sort -u | wc -l`
+  → **78**, the same figure `tools/dv_checks.sh` prints as *"row ids declared in
+  the plan"*, before and after. The extractor scans only a row's **first** cell
+  (`[^|]*` cannot cross a `|`), so §4.N's new status table — whose rows begin
+  `> |` — and §7's new `**X-6**` row add **no** declared row id. Checked by
+  running it, not by reading the regex.
+- **Table integrity at every edited row** —
+  `awk -F'|' '/^\| \*\*M03-(J1|J2|N4)\*\*/ {print $2, NF-2} /^\| \*\*X-[0-9]\*\*/ {print $2, NF-2}'`
+  → **6** fields at each of M03-J1, M03-J2, M03-N4 (the row grammar's six cells)
+  and **4** at each of X-1 … **X-6**. No edited cell contains a stray `|`.
+- **§7's "Not gaps" paragraph is BYTE-IDENTICAL to `HEAD`** —
+  `git show HEAD:test/attack_plans/AP-xgmii_rx_64.md | grep -A4 '^Not gaps:'`
+  diffed against the same `grep` at the tree: **empty diff**. This is the item's
+  own bar and it is measured rather than asserted.
+- **The repaired change-log row's Change cell is BYTE-IDENTICAL** — the row's
+  text up to the newly supplied `| dv_lead, ...` field compared against
+  `HEAD`'s whole row minus its trailing `|`: **empty diff**. Only the missing
+  field was added; no committed historical prose was rewritten.
+- **The whole diff removes six lines and they are the six lines replaced in
+  place** — `git diff -U0 | grep '^-' | grep -v '^---'` returns exactly: §4.H
+  bound 1's two-line sentence (re-quoted verbatim inside the strike), the
+  M03-J1, M03-J2 and M03-N4 row lines, and §9's `J-dv_lead-0113` row.
+  `git diff --stat` → `1 file changed, 98 insertions(+), 6 deletions(-)`.
+  Word-level (`git diff --word-diff=porcelain`) removals are six tokens —
+  `**Owed:`, `belongs.`, `discards`, `A`, `none),`, `hunks` — every one of them
+  a token that reappears in the replacement with punctuation or a quotation mark
+  attached. **No substantive text was deleted anywhere in this round.**
+- **The `frame_in_exempt` census, measured at `8d8a239`** —
+  `grep -rn "frame_in_exempt" test/ --include=*.ml --include=*.mli` → nine hits,
+  of which **three are calls** and all three are in
+  `test/xgmii_rx_64/test_m03_j.ml` (`:212`, `:358`, `:564`); the rest are
+  docstrings and comments (`bench.mli:35`, `test_m03_j.ml:41,163,203,261`,
+  `test_m03_n.ml:1000`). `test_m03_j.ml` landed at **`e4df986`**.
+- **Figures carried into the plan, each with the source I read it from rather
+  than the packet that repeats it**: family J landed at `e4df986`, CI `build`
+  run **`30980439774`** (`RV-0067-VERDICT` §11); M03-B4 member (b) driven at
+  `88413b9` in run **`30961544649`** and green in the fully successful run
+  **`30963617198`** at `eb1e06a` (`J-dv_lead-0112`, `J-dv_lead-0113`); M03-N1
+  and M03-N4 landed and green at `2dbd39b`, `build` run **`30988038809`**, with
+  `tools/dv_checks.sh` reporting inventory **54** / **134** and boundary census
+  **48**, adjustments −1 (`M03-A4`) +1 (`M03-F5`), **48 of 62** with **14
+  outstanding (K1, K2, L1–L5, M1–M7)** and 48 + 14 = 62 (`J-dv_lead-0123`
+  Evidence, run by me at that tree and independently by CI in the same build).
+  **I did not re-run `dv_checks.sh` at this tree**: its census reads unit titles
+  under `test/xgmii_rx_64/`, which this round does not touch, and its declared
+  row-id half I did re-run above.
+- **No `dune` was invoked** (ADR-0005). No test, no build, no promotion.
+- **HEAD is unmoved**: `git rev-parse HEAD` →
+  `8d8a2399b4be13207c1c775409bfd53cf0e5b33e`, equal to HEAD at spawn. Working
+  tree carries one modified path and one untracked path, both listed below.
+
+### Outcome
+DoD **met** against `RV-0068B-VERDICT` §9 item 1, all six items landed with
+their grounds, plus item 2 taken at my discretion. **NO ROW ADDED, NO ROW
+CONVERTED, NO STATUS MOVED, NO COVERAGE-MAP LINE CHANGED, NO COUNT MOVED**:
+78 rows, 62 ASSERT, 7 NO-ASSERT, 4 NO-STIMULUS, 4 STRUCTURAL, 1 GAP, discharge
+48 of 62 — the plan-side counts re-measured from the file at this tree, the
+discharge figure carried with its SHA and CI run id and not re-derived, because
+this round changes no unit title. **Four carried items leave my list**:
+`WO-0067` §11 items 1–4, all four now on the plan's own record where the auditor
+mines rejected and withdrawn claims rather than only in a journal. **`WO-0068`
+§5's finding leaves it too**, its plan half here and its spec half in the queue
+packet. **No `SO-` is opened and none is offered.** Handoff: both files to the
+orchestrator; `WO-0069` to architect_docs_lead via the orchestrator, id to be
+allocated at first commit; then **family L**, per `RV-0068B-VERDICT` §10.
+
+### Open-questions
+1. **A third clerical residue in §9, observed and NOT repaired.** The
+   `J-dv_lead-0094` change-log row carries a literal `|` inside its Change cell
+   (the `{||}` empty-expect notation), so it renders as **five** fields where
+   the table has three. Same class as the missing Author cell, **different
+   instance**, and not in this round's enumerated scope — reported rather than
+   silently fixed, which is the discipline that surfaced item 4 in the first
+   place. Candidate for the next round that opens this plan.
+2. **My disagreement with `WO-0067` §11 item 2 stands recorded, not resolved
+   away.** ADR-0014's *"needs no new exemption"* has two grounds and its first
+   is about the refused frames; the instruction says the sentence is about the
+   in-flight frame alone. The conclusion the instruction reaches is right and the
+   cell reaches it on the stronger ground. If the orchestrator or a later reader
+   prefers the instruction's characterisation, that is a ruling I want made
+   against the ADR's text rather than against my paraphrase of it.
+3. **Two spec questions are now in one packet and neither blocks anything** —
+   §10's REQ-802/REQ-810 hook (C-41) and T8's strobe-multiplicity question. What
+   I want ruled rather than guessed is in that packet's §4: whether §10 has a
+   distinct form for *"no stimulus exists"* as against *"no instance exists at
+   this module"*, and whether §0.6's multiplicity rule is read on **conditions**
+   (presence) or on **events** (count). I have assumed presence throughout,
+   because C-23's high-cycle convention forces it operationally.
+4. **Carried, unchanged**: the census counts titles and not passes; the co-sim
+   Phase-1 adjudication I owe from committed artefacts; family J unscored and
+   family N's scoring predating two of its rows; the M03-J4 guard's driven-word
+   reading structurally argued and not demonstrated; `DVC-1` with me as executor
+   in the next round that opens `tools/`; `run_i2_member`'s citation exception;
+   `WO-0061` §8 bound 1's `tkeep` half; **N-1**; **F-1** with
+   architect_docs_lead; the auditor's ledger disposition on `BUG-0003`;
+   **B-2**, **B-3**, **B-4**.
+
+**Harvest (ADR-0018, PROTOCOL §7).** **Not due** — no `SO-`, no gate. Span since
+`J-dv_lead-0123`'s note: **J-dv_lead-0124** (this entry); cumulative untiled span
+**J-dv_lead-0001 … 0124**, first harvest still firing at `SO-M03`. No worker span
+this round — I commissioned none. Inventory carried in at **~24 LH2-g candidates
+plus the war stories**; out at **~25**. Yield:
+
+- **New candidate, and it is the sharpest thing this round produced.** *"When a
+  reviewer's instruction characterises a source document, open the source before
+  writing the characterisation down — an instruction that reaches the right
+  conclusion by the wrong reading of a cited text will propagate the reading, not
+  the conclusion, because the next reader inherits the citation and not the
+  reasoning."* **LH1**: this commit, where an instruction of my own said a
+  decision record's sentence was *about* one object, the sentence has two grounds
+  and the first is about the other object, and the instruction's conclusion was
+  nonetheless correct — so nothing would have gone red, and a misquotation of a
+  decision record would have entered the document a later round reads when it
+  builds the same machinery for a different input. **LH2-g** — no proper noun.
+  **LH3**: without it, a document's citations decay into paraphrases of
+  paraphrases while every conclusion drawn from them stays true, which is the
+  failure mode that leaves no evidence of itself until someone needs the cited
+  clause for a *different* purpose.
+- **A second confirming instance for the set-claim rule (§0.1's own), recorded
+  and not re-minted.** Every status word this round put into the plan travels
+  with its SHA and run id, and the one place I nearly did not — M03-B4 member
+  (b)'s *"green"* — turned out to be green **inside a build that failed**, so the
+  citation now carries both readings and says which to quote. The rule's second
+  half earned its keep here: not *"measure it"* but *"state what state the
+  measurement was taken in"*.
+- **A candidate about repair scope, weaker, banked rather than promoted.** *"A
+  round with an enumerated scope repairs what it was given and reports what it
+  finds; the found item goes into the record with its class named, because the
+  next enumeration is written from that record and an unreported item cannot
+  enter one."* **LH1**: this commit — a third instance of the malformed-table-row
+  class was found while repairing the second, and the second was itself in scope
+  only because the first had been **reported** rather than fixed two rounds
+  earlier. **LH2-g**. **LH3**: without it, out-of-scope findings die at the end of
+  the round that found them, and scope discipline turns into a mechanism for
+  losing defects rather than for controlling risk.
+- **No new war story.** The `Idle_injection` one and the strike-notation one both
+  stand unchanged.
+
+### Files-in-this-commit
+- test/attack_plans/AP-xgmii_rx_64.md
+- agents/handoffs/WO-0069_spec-queue-3-m03-hook-and-strobe-multiplicity.md
