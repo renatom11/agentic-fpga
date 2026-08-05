@@ -2422,3 +2422,54 @@ here rather than smoothed over.
 
 ### Files-in-this-commit
 - tasks/BOARD.md
+
+## [J-orchestrator-0208] 2026-08-09T14:55Z | task:WO-0070 | Family L closes accepted at fifty-three of sixty-two - and the conduct ruling finally names what the repair was missing
+
+### Trigger
+RV-0070 returned ACCEPT and landed (93d8da6, J-dv_lead-0127): all six
+dv bars re-run from primary sources; the machinery diff measured
+EMPTY (785 insertions, 0 deletions - foreclosing BL9 by arithmetic);
+CI at 630e34a GREEN on both jobs (build 31015276337, journal-check
+31015278694), the units' first execution anywhere, decided on steps
+6 and 8 with the promotion-vs-raise distinction derived not assumed.
+Count MEASURED at both ends: 48 -> 53 of 62, the +5 pinned to family
+L by a negative (no M03-L id exists at base). Nine ASSERT rows
+remain: K1, K2, M1-M7. dv's own rider scored against itself and
+held (4 s measured against its <=5 s expectation). The gate line:
+P1-module-ready's line-rate-stress row now has both halves -
+EVIDENCED, NOT SIGNED. Landed-and-green is not qualified: the
+family-L campaign is owed before any SO- lists it. dv's unasked
+check that mattered: the spec files moved between derivation base
+and landing base - dv diffed both and proved neither change reaches
+a section family L derives from.
+
+### Rulings
+- dv Q1 (mut/* inventory + PROTOCOL §10 wording): carried unchanged
+  - both already ruled at J-orchestrator-0207.
+- dv Q2 (the prompt-side repair's third clause): ADOPTED - a blocked
+  or refused instrument attempt goes in the JOURNAL, not only in the
+  return message. Enters my standing worker-dispatch template with
+  the substitution clause (name what the seat uses instead - its own
+  write record, the packet's scope section as authority).
+- dv Q3 (§1.5's band overlap): AFFIRMED as standing - recorded and
+  unrepaired in WO-0070; any future packet reusing the shape closes
+  it in that packet before its run.
+- Conduct: the worker's two blocked git-status attempts - no
+  sanction, disclosure credited, per dv's ruling; the journal-path
+  defect was MINE (dispatch named a nonexistent path), disclosed at
+  J-orchestrator-0207's round and confirmed to the worker.
+- OBSERVATION L-O1 (the leftover-remainder guard's "test bug" label
+  on a design-reachable condition) rides the next commit opening
+  test_m03_l.ml - non-blocking, recorded on the board.
+
+### What I did
+- Landed 93d8da6 through a five-denial classifier outage window
+  (retry chain per the practiced playbook; the landing sequence was
+  staged via Edit-tool board preparation during the dead window).
+- Board flipped: count block 53 of 62 with both run ids; WO-0070 row
+  CLOSED - ACCEPTED with the verdict's substance and dv's four
+  commissioned next steps in order.
+- Next: spawn dv on the family M design packet (WO-0071 allocated).
+
+### Files-in-this-commit
+- tasks/BOARD.md
