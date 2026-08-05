@@ -2101,3 +2101,30 @@ detection.
 
 ### Files-in-this-commit
 - tasks/BOARD.md
+
+## [J-orchestrator-0200] 2026-08-09T05:05Z | task:WO-0067 | Family J allocated through an outage - the harness blinked, the protocol did not
+
+### Trigger
+dv's WO-0067 packet returned complete mid-outage: the sandbox's
+permission classifier went down for write-class commands, blocking this
+clerical commit through six recovery windows while the packet commit
+itself (0f94266) landed in the one early window that held, and the
+worker dispatch went through in window 5.
+
+### What I did
+- Committed and pushed the packet round exactly as returned (0f94266).
+- Board row WO-0067 ALLOCATED with the authoring record: the forced
+  capability shape (blind-at-N4), the refuse-to-drive ruling, J2's
+  unreachable kill (B8), the re-derived entanglement, the A-E
+  compatibility bar, the twelve BOUNCEs, fold-in 3 as RV-0067's rider.
+- Dispatched tb_writer (entry J-tb_writer-0026) per the packet - in
+  flight as this entry lands.
+- Ops note: the outage's failure mode was benign - no in-flight work at
+  risk, every landed round already pushed; the retry-wakeup chain held
+  across six windows and each channel recovered independently (MCP
+  first, Agent second, Bash last). Banked as a candidate ops-playbook
+  line for the shell harvest. Sponsor informed in his overnight
+  check-in, with the caveat stated honestly.
+
+### Files-in-this-commit
+- tasks/BOARD.md
