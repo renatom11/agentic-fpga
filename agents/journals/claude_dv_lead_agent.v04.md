@@ -2969,3 +2969,278 @@ Yield this round:
 
 ### Files-in-this-commit
 - agents/handoffs/WO-0067_m03-family-j-enable-capability.md
+
+## [J-dv_lead-0121] 2026-08-07T19:05Z | task:WO-0068 | The N-completion packet — and the row my own verdict commissioned turns out to carry a branch its own §6.3 item 7 makes unreachable, which is the fifth time this shape has been found by working the arithmetic before a bench existed
+
+### Trigger
+Orchestrator dispatch to author `WO-0068`, the round my own `RV-0067-VERDICT`
+§10 commissioned at `b02a7a1`: **M03-N1 and M03-N4 beside each other in
+`test/xgmii_rx_64/test_m03_n.ml`**, plus the three debts that verdict attached
+to it — fold-in 3 as a BOUNCE at its last carrier (§8), the cycle-0 guard gap
+(§6.2), and `Enable.report`'s standing (§6.1). Write scope this round:
+`agents/handoffs/` and this journal only; the bench edits are the worker's.
+
+### Inputs
+- `agents/handoffs/WO-0067_m03-family-j-enable-capability.md` in full at
+  `b02a7a1` — the packet body §§0–12 and my own `RV-0067-VERDICT` §§1–11, with
+  §6 (five findings against my own packet), §8 (fold-in 3's ruling and its
+  quoted instruction) and §10 (this round's commissioned scope) read as the
+  contract they are.
+- `test/attack_plans/AP-xgmii_rx_64.md` §4.N — rows **M03-N1**, **M03-N2** (the
+  six-row table and its two routes), **M03-N3**, **M03-N4** — plus §6's
+  REQ-105/REQ-110/REQ-802/REQ-810 traceability rows and §9's change log.
+- `docs/adr/ADR-0014-an-enable-gates-admission-not-the-wire.md` in full.
+- `docs/specs/modules/xgmii_rx_64.md` **§4.3**, **§6.2** (all four state rows),
+  **§6.3 items 3, 6, 7, 8**, **§9** (the nine-row table, the closure list with
+  both stated clauses, the pinned-strobe-cycle rule and the §0.6-window
+  paragraph), **§10** (the REQ-016, REQ-102, REQ-105, REQ-110, REQ-113 and
+  REQ-802/REQ-810 hooks), §11.
+- `docs/specs/requirements.md` REQ-113, REQ-803, REQ-810 and §13's three REQ-810
+  change-log rows.
+- `test/xgmii_rx_64/test_m03_n.ml` in full (all 706 lines: the header, `window`,
+  `sc1 … sc6`, `run_subcase`, the six units); `test/xgmii_rx_64/bench.mli` in
+  full; `test/xgmii_rx_64/bench.ml` — `create`, the `Enable` module, `sample`,
+  `sample_cycle`, `run` and the four accounting functions;
+  `test/xgmii_rx_64/test_m03_j.ml` (the landed `Enable` call sites and
+  `j1_j2_stimulus`'s derive-then-assert idiom);
+  `test/xgmii_rx_64/test_m03_structural.ml` in full.
+- `test/xgmii/{injection,arrival,frame,xgmii_word}.mli`;
+  `test/monitors/{conservation_monitor,stream_word}.mli` and
+  `octet_time.mli`'s `Latency` section.
+- `agents/charters/dv_lead.md`; `agents/PROTOCOL.md` §§1–11.
+- This journal, entry `J-dv_lead-0120` (its Carried list and its harvest note).
+- **No `libs/**`, `top/**` or `rtl_snapshots/**` path was opened.** Nothing in
+  authoring this packet required RTL and none was read.
+
+### Reasoning
+**The sequencing rule had to be executed, not merely honoured.** `WO-0067` §8
+deferred M03-N4 out of `test_m03_j.ml` on one ground — writing it there would
+build a second derivation of SPEC-M03 §6.1's table in a second file. Reading
+`run_subcase` made the obvious next thing visible: putting N4 in *this* file and
+letting it write its own `(last_in + l) / 8` is the same defect one directory
+shallower. So the packet commissions the **extraction** of that expression into
+one top-level `aborted_report_cycle` both rows call, with the substitution
+argued clause by clause and BOUNCE **B5** on any second expression anywhere in
+`test/**`. The rule is about the number of derivations, not about the file.
+
+**The finding I did not expect, and it is against my own row.** M03-N4's
+Observable — in my plan cell *and* in SPEC-M03 §10's own hook — carries a
+parenthetical: *"or no output word at all where it had delivered none"*. Working
+the geometry: a zero-delivered REQ-110 abort lands at or before the frame's first
+octet, i.e. within nine octet times of the frame's **own start character**, so the
+aborting word is the start word or its immediate successor; the enable must drop
+strictly between the frame's start cycle and that word; and §6.3 item 7 forbids a
+change on a start character's own cycle, which the frame's start cycle is. **No
+admissible cycle exists.** Both escapes are closed by the specification itself
+rather than by convention — `first_start` is 8 or 12 and enlarging it moves both
+cycles together, and M03-N3 plus §10's REQ-016 hook forbid injecting an idle word
+between a start character and the first octet. That is the fifth instance of the
+unachievable-observable shape (M03-D3, M03-F2, M03-I2, M03-J2 before it) and the
+fifth time it was found the same way: by working the row's own arithmetic while
+authoring the packet, before a bench existed. Disposition follows the precedent
+exactly — the row stays commissioned on its delivering branch, the executor is
+forbidden from claiming the other one (**B14**), and the plan edit plus a
+non-blocking change request to architect_docs_lead on the §10 hook are **mine**
+(§13 items 1 and 2). The hook's defect is the C-41 family and the repair form
+§10 already uses twice for REQ-014 is the one to propose.
+
+**The cycle-0 adjudication turned on which repair reproduces the shape that
+caused it.** My own `RV-0067` §6.2 named two admissible repairs and deliberately
+chose neither, because the choice belongs with the round that first drives the
+combination. Working them: repair B (widen `run`'s entry condition to
+`change_cycles ≠ [] || not initial`) restates, inline and separately, the walk's
+own cycle-0 convention — so the same fact would live in two places that must be
+kept in agreement. **The defect being repaired *is* a hand-written predicate that
+reconstructed the transition set incompletely**, and repairing it with a longer
+hand-written predicate leaves the shape intact. Repair A (`change_cycles` returns
+the boundary transition it observes) makes the entry condition a projection of
+the guard's own subject, and it cannot drift from it. Two subsidiary grounds
+carried it further: `change_cycles` is the only public window onto the transition
+set and stays permanently one short under B, at exactly the boundary `bench.mli`
+spends a paragraph on; and A's blast radius is **measured at zero** — `grep -rn
+'change_cycles' test/` returns `bench.ml` alone, `Enable.high` keeps
+`initial = true` so the default path is untouched, and M03-J1's landed schedule
+already entered the guard. A's one real cost — `changes` refuses a cycle-0 entry,
+so the two functions do not round-trip — is named rather than hidden, and it
+resolves into the distinction the repair is actually about: **`changes` is the
+author's declaration, `change_cycles` is the derived observation**, and they were
+never inverse.
+
+**Whose edit, and it is not the reviewer's.** Two reasons pointing the same way:
+a round that makes the hole reachable and repairs it at review has shipped a
+commit in which it is live; and there is no `dune` at the review tree, so a
+reviewer's edit to `test/**` lands unverified into a commit whose whole value is
+that CI is green at it — the trade `RV-0067` §§8–9 refused twice, and I am not
+taking it now to spare a worker four lines.
+
+**A repair needs a witness, and I nearly shipped one without.** The gap is in the
+*entry condition*, and neither N4 member exercises it (both are
+`~initial:true`) — this round makes it reachable, it does not drive it. So the
+packet adds one pure structural unit asserting `change_cycles`'s four cases,
+homed in `test_m03_structural.ml` because that file's own docstring says a red
+there "is the seam, not a row" and the enable schedule is the seam. I considered
+and rejected a test that the guard *raises*: this suite has no raise-assertion
+idiom, and matching the guard's message would couple a unit to exactly the
+literal the compatibility bar exists to keep stable. Stated in the packet rather
+than skipped, so the absence is not read as an oversight. The unit is also the
+first use of `Enable.low` anywhere in `test/**`, which closes half of §6.1's
+specified-but-unused finding by use rather than by argument.
+
+**`Enable.report`: recorded and put to work, not deleted.** Its stated
+justification was falsified by `WO-0067`'s own §5.5 and the shape stands on (R-b)
+alone. Deleting `report` would remove string literals from a landed green file to
+buy tidiness — the trade `RV-0067` §9 refused in terms. Leaving it unused leaves
+the finding open. So the docstring is re-grounded (history kept, ground
+replaced) **and** the M03-N4 unit uses it at the two failure messages a debugger
+would most want a schedule beside. A value justified "for failure messages" that
+appears in no failure message is still specified-but-unused.
+
+**The compatibility bar had to be derived, because the inherited one is
+unsatisfiable.** `WO-0067` §2's bar was "no existing test file is touched";
+fold-in 3 and the extraction both edit the runner all six landed units share. The
+derived bar is five clauses that protect what actually matters — the six unit
+blocks byte-identical, the six sub-case tuples byte-identical, `run_subcase`
+gaining exactly two enumerated hunks and losing nothing, string literals a strict
+superset with no removal, and every `[%expect]` empty. And it says what it cannot
+protect: `WO-0066` §13 sealed "the assertion order inside `run_subcase`". Here I
+**refined my own §8 statement rather than repeating it** — the campaign's measured
+raises at the four delivering sub-cases were the *pulse* message and the class was
+disclosed report-path-only, and fold-in 3's assertion sits before that check and
+after `tuser`, so for the mutants that campaign actually scored the first-raise
+message does not move. The general property is nonetheless now false, and the
+packet says exactly that and forbids the executor from saying either more or less.
+
+**Two geometry choices worth recording because they are derived, not aesthetic.**
+(i) M03-N1's two members are not symmetry-for-its-own-sake: at a lane-0 start the
+`/E/`'s word is cycle 10 and the last output word is cycle 11, while at a lane-4
+start with a 68-octet frame they are the **same** cycle 11 — so one member shows
+the defect as a coincidence and the other proves the verdict does not depend on
+it, which is `WO-0067` §5.4's argument re-derived at a different row. (ii)
+M03-N4's member (b) places the refused start at `At_octet 16` rather than
+copying member (a)'s index, which buys three things at once: a lane-4 refused
+start, an enable change sitting strictly among frame octets, and a **two-word**
+abort — a `tuser`[0]-on-the-second-word placement no member of this family has
+ever asserted, because every landed M03-N2 sub-case delivers 8, 4 or 0 octets.
+
+**One trap I would not have found without reading `injection.mli` against
+ADR-0014.** `Dv_xgmii.Injection.outcomes` is **enable-blind by construction** —
+it lives in `test/xgmii/**`, which is the link partner and the wire, and
+ADR-0014's whole content is that the enable does not reach the wire. So at
+M03-N4 it opens a frame at the refused start that the DUT must not open. Frame
+A's and frame C's outcomes remain valid cross-checks (§6.2's `Frame` row says the
+abort and its report are identical under either enable value); the middle outcome
+is turned into a **named contrast** with a `delivered > 0` floor, so that a
+future enable-aware model fails the floor loudly instead of letting the row go
+quietly vacuous. A packet that had simply told the worker to "cross-check against
+the model" would have commissioned an assertion that convicts a conformant
+design.
+
+### Actions
+- Authored `agents/handoffs/WO-0068_m03-family-n-completion.md` (14 sections):
+  the sequencing rule and the `aborted_report_cycle` extraction with its
+  behaviour-preservation argument; the five-clause derived compatibility bar for
+  the shared file; M03-N1 as one unit with two derived members; M03-N4 as one
+  unit with two derived members, its enable schedules, its fourteen ordered
+  assertions and its accounting; the unreachable-branch finding; fold-in 3 as
+  BOUNCE **B2** with the verdict's instruction quoted; the cycle-0 adjudication
+  (repair A, worker's edit, structural witness); `Enable.report`'s resolution;
+  scope of exactly four files; thirteen traps; a thirteen-item review bar;
+  sixteen BOUNCE conditions; and the four items I owe after the round.
+- Ran no git command. Staged nothing outside `agents/handoffs/` and this journal.
+
+### Evidence
+Authoring round; no simulation and no build were run (ADR-0005 — there is no
+`dune` in this container). The checks that *were* executed, reproducible from a
+checkout at this commit:
+
+- `grep -rn "change_cycles\|Enable\." test/ --include=*.ml` — `change_cycles`
+  occurs **only** in `test/xgmii_rx_64/bench.ml`; no test file references it.
+  This is the measurement repair A's zero-blast-radius ground rests on, made at
+  this tree rather than recalled.
+- `grep -rn "does_raise\|try\b" test/ --include=*.ml` — no raise-assertion idiom
+  exists under `test/xgmii_rx_64/`; the only `try` uses are in `test/cosim/`'s
+  file I/O. This is the ground for §7.5's rejection of a guard-raises test.
+- `wc -l test/xgmii_rx_64/*.ml` — `test_m03_n.ml` is 706 lines and
+  `test_m03_structural.ml` 93, the two files the round edits beyond `bench.*`.
+- Arithmetic checks, all by hand from §0.3's lane mapping (octet time *t* lies at
+  lane *t* mod 8 of word *t* / 8) and §0.3's 84-octet start-to-start budget, and
+  each recorded in the packet as owed a check by the executor rather than as
+  settled: M03-N1's terminate at octet time 80 → word 10 lane 0 (lane-0, 64
+  octets) and 88 → word 11 lane 0 (lane-4, 68 octets); M03-N4's refused start at
+  24 → cycle 3 lane 0 and 36 → cycle 4 lane 4; frame A's report cycles 4 and 5
+  by both of AP §4.N's routes; frame C's start cycles 11 and 12; the two enable
+  windows (2 → 10 and 3 → 11); the delivered-cycle lists `[4; 14 … 21]` and
+  `[4; 5; 15 … 22]`.
+- **Not measured and not claimed**: the inventory and census figures in §11
+  bar 10 (51 → 54, 46 → 48) are stated as a **prediction to be measured with
+  `tools/dv_checks.sh` at the landing tree**, never quoted from here. That
+  phrasing is `J-dv_lead-0120`'s own harvest candidate applied to the packet that
+  entry's round commissioned.
+
+### Outcome
+DoD **met** for the authoring task. `agents/handoffs/WO-0068_m03-family-n-completion.md`
+is `DRAFT` and ready to issue to tb_writer via the orchestrator; it carries the
+definition of done (§9 scope, §11 review bar, §12 BOUNCEs, §14 return format),
+every derived number the worker must encode, and the three commissioned debts as
+executable obligations rather than as references. Handoff: orchestrator → spawn
+tb_writer against this packet. Nothing else in this round is mine to do.
+
+### Open-questions
+- **The dispatch's harvest inventory figure disagrees with my own last entry's,
+  by one.** The spawn text carried "~18 LH2-g + war stories";
+  `J-dv_lead-0120`'s harvest note records the inventory going **out at ~19**
+  (in at ~17, plus two new candidates). I carry **~19** below and flag the
+  difference rather than adopting the figure I was handed — which is exactly the
+  rule that entry minted, applied to the first number the next round handed me.
+  Clerical, no consequence beyond the note itself.
+- **SPEC-M03 §10's REQ-802/REQ-810 hook needs a non-blocking change request**
+  (§13 item 2): its parenthetical commissions an observable whose stimulus §6.3
+  item 7 excludes. Mine to raise with architect_docs_lead; nothing in `WO-0068`
+  depends on it, and the packet forbids the executor from asserting the branch
+  meanwhile.
+- **The M03-J4 guard's BOUNCE-B4 property remains structurally argued, not
+  demonstrated**, and this round does not change that: demonstrating it needs an
+  enable change on an injected start character's own cycle, which §6.3 item 7
+  forbids driving. Recorded as trap **T13** so no later packet reads M03-N4's
+  landing as the guard's proof.
+- Carried unchanged from `J-dv_lead-0120`: `run_i2_member`'s citation exception;
+  `WO-0061` §8 bound 1's `tkeep` half; **N-1**; **F-1** with
+  architect_docs_lead; the auditor's ledger disposition on `BUG-0003`; **B-2**,
+  **B-3**, **B-4**; **DVC-1** in the next round that opens `tools/`; T8's
+  strobe-multiplicity question with architect_docs_lead; family J is not
+  mutation-scored and no `SO-` is implied.
+
+**Harvest (ADR-0018, PROTOCOL §7).** **Not due** — no `SO-`, no gate. Span since
+`J-dv_lead-0120`'s note: **J-dv_lead-0121** (this entry); cumulative untiled span
+**J-dv_lead-0001 … 0121**, first harvest still firing at `SO-M03`. Inventory
+carried in at **~19 LH2-g candidates plus the war stories** (the figure
+`J-dv_lead-0120` recorded out; see Open-questions on the dispatch's ~18); out at
+**~20**. Yield this round:
+
+- **One new candidate.** *"When a specification states an outcome as covering two
+  alternatives, check each alternative against the same document's own
+  exclusions before commissioning a test for it: a clause can name a case the
+  rest of the document forbids anyone from producing."* **LH1**: this commit,
+  where a hook's parenthetical zero-delivered branch is excluded by the same
+  specification's own same-cycle prohibition; and `J-dv_lead-0119`'s M03-J2
+  finding, where a Kills cell named a class the row's own stimulus could not
+  separate. **LH2-g** — no proper noun: it is a claim about reading any
+  requirement whose observable is stated as a disjunction. **LH3**: without it,
+  the unreachable alternative is written into a bench as a second member, dies
+  in review at best and lands as an untestable assertion at worst, and either way
+  a coverage claim is made for a case nothing can drive. The sharpening the
+  earlier instance did not have: the earlier one was an unreachable *kill* (a
+  claim about what a test discriminates); this one is an unreachable *stimulus*
+  (a claim about what a test can drive at all), and the second is worse because
+  it survives review by looking like ordinary spec text.
+- **A confirming instance for `J-dv_lead-0120`'s first candidate, at one round's
+  remove.** The rule — *a measurement is a claim about a tree, and the word
+  "measured" does not travel with the number* — fired on **the very next number
+  handed to me**, the harvest inventory in my own dispatch. Recorded rather than
+  re-minted: the candidate needs no sharpening, it needs an instance where the
+  cost of adopting the handed figure would have been zero and the discipline was
+  applied anyway.
+- **No new war story.** The `Idle_injection` one stands unchanged.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0068_m03-family-n-completion.md
