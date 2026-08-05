@@ -902,3 +902,369 @@ candidates are BANKED, not harvested** — banking does not open or close a span
 
 ### Files-in-this-commit
 - agents/handoffs/WO-0070_m03-family-l-line-rate-stress.md
+
+## [J-dv_lead-0127] 2026-08-09T13:55Z | task:WO-0070 | Family L ACCEPTED on a step reading and a measured census — five rows land, my own rider scores against me and holds, and the recurring tool-scope collision finally names what the repair was missing
+
+### Trigger
+Spawned by the orchestrator, spawn short-id `RV-0070/2026-08-09T13:55Z`, HEAD at
+spawn `630e34a`, to run the RV-0070 review round on tb_writer's stage-2 build of
+`WO-0070` (`J-tb_writer-0029`, commit `630e34a`). My own §12 assigned me six of
+the sixteen bars by seat; this round is where I run them. Two conduct rulings
+were routed with the commission.
+
+### Inputs
+`agents/charters/dv_lead.md`; `agents/PROTOCOL.md` (§2–§7, §10, §11);
+`agents/handoffs/WO-0070_m03-family-l-line-rate-stress.md` in full, including my
+own `J-dv_lead-0126` ruling and the worker's §15 return;
+`test/xgmii_rx_64/test_m03_l.ml` (the landed file, read whole);
+`test/xgmii_rx_64/dune`; `test/xgmii_rx_64/bench.mli` and `bench.ml`
+(`account_clean_frame`, `run_directed_lengths`, `assert_monitors_clean` — DV
+machinery, read to verify the row's call sites, not RTL);
+`test/monitors/octet_time.mli` and `octet_time.ml:7,9-12,205-212,237-241,249-255`;
+`test/monitors/stream_word.mli`; `test/monitors/protocol_monitor.ml:112-128`;
+`test/xgmii/arrival.mli` and `arrival.ml` (`create`'s layout loop, `stress`);
+`test/xgmii/frame.mli` and `frame.ml:23-37`; `test/xgmii_rx_64/test_m03_c.ml:417-433`
+(M03-C3, the 1518 cross-check); `test/attack_plans/AP-xgmii_rx_64.md` §4.L and its
+ASSERT denominator; `tools/dv_checks.sh`;
+`agents/journals/workers/claude_tb_writer_agent.v02.md` (`J-tb_writer-0029`, and
+the volume's own head for the path ruling); `docs/specs/modules/xgmii_rx_64.md`
+and `docs/specs/requirements.md` diffed `d2bdd57..630e34a` to confirm the
+derivation base had not moved under the packet; my own `J-dv_lead-0126` and the
+tool-scope precedent at `claude_dv_lead_agent.v04.md:3348,3674`.
+
+**No `libs/**`, `top/**` or `rtl_snapshots/**` path was opened this round.**
+This is a review of a bench against a packet's derivations and of CI against
+those benches; the design is judged through its observable behaviour and nothing
+else (PROTOCOL §10).
+
+### Reasoning
+
+**Why I re-ran every bar instead of reading the worker's results.** The worker
+returned bars L-3…L-12 with raw output and zero derivation disagreements, and it
+was right on all of them — I checked. But a bar assigned to a seat and answered
+by quoting the executor is not a review, and the whole point of the seat split in
+§12 was that six bars need `git`, `tools/dv_checks.sh` or a CI reading that the
+worker cannot produce. So the six are mine and I ran them; the ten that are the
+worker's I re-ran anyway as the charter §3 spot-check, at a cost of one Grep.
+
+**Bar L-2's band-A branch is the one I most wanted from the primary source, and
+it is the cheapest possible verdict when you ask the right question.** The ruling
+pinned it: under band A the machinery diff must be **empty**, and a non-empty
+diff there is a `BL6` bounce rather than a band-B remedy. `git diff d943d33
+630e34a -- bench.ml bench.mli test/xgmii/ test/monitors/` returned **zero
+bytes**. Better still, the round's whole `--name-status` is four paths and
+`--stat` is **785 insertions, 0 deletions** — which forecloses `BL9` before bar
+L-16 runs at all, because a diff that deletes no line cannot remove or change a
+literal. I ran L-16 regardless (1475 literals each side, identical, zero `<`
+lines): a bar whose answer is already implied is still cheap, and the implication
+is only visible to someone who has already looked.
+
+**The CI reading, and why the promotion/mismatch distinction had to be decided
+rather than assumed.** These two units had never executed anywhere — the file is
+new, so no cache entry can replay it, and the library has no `(modules …)`
+partition so the module cannot be excluded. CI at `630e34a` is therefore the
+adjudicator in the strong sense. I read run `31015276337`'s `build` job
+`92337605716` step by step rather than its badge: **step 6 "Run tests" success
+(4 s), step 8 "Verify nothing was left unpromoted or non-deterministic" success
+(1 s)**. The two failure signatures are distinguishable and neither is present: a
+**promotion** leaves 6 green and 8 red, because ppx_expect writes a `.corrected`
+that the determinism step's staged `git diff --exit-code` catches; a **raise or
+mismatch** fails 6 itself, with `[%expect.unreachable]` and an
+`expect.uncaught_exn` payload — which is the shape every assertion in this file
+would take, since both blocks are `{||}` and every check convicts by raising.
+Both green leaves one reading: the units ran and passed.
+
+**Step 5's success closes an exposure the worker named and could not close.**
+`L-11`'s `ocamlc -stop-after parsing` establishes syntax and nothing about types.
+The worker said so in its own Reasoning, and — this is the part worth recording —
+acted on it: it had written `frame.index` relying on type-directed
+disambiguation, found a single precedent for the terse form on a *different*
+record type and **zero** across a dozen-plus sites for the one actually in use,
+and rewrote to the fully-qualified form rather than trust an annotation it could
+not check. `Build` at `630e34a` type-checked the file. The right instrument
+answered the question, and the worker's discipline meant the question was cheap.
+
+**My own rider scored against me, which is the only reason to write a rider.**
+`J-dv_lead-0126` §7 expected the test step to stay **≤ 5 s** with family L inside
+it, and bound the miss to *this ruling, never the worker*. Measured: **4 s** at
+the landing against **3 s** at the base — 1.16% of a 344 s job. Held. And the
+delta's class matters as much as its value: dune parallelises actions, so +1 s of
+wall clock is a **lower** bound on the ~2.0 s of CPU added, exactly as that
+section's own honesty (ii) said in advance. A ruling that predicts an instrument
+in the instrument's own terms can be scored; one that predicts intent cannot.
+
+**Why I measured the census at both ends and refused to subtract.** The bar
+pre-committed 48 → 53, 54 → 56, 134 → 136. It would have been easy to measure the
+landing and derive the base, and that would have hidden the interesting question:
+*is the +5 exactly family L?* So I established it by a negative instead —
+extracting every unit title at `d943d33` and finding **no `M03-L` id anywhere** —
+which means the five newly-matched ids can only be L1…L5 and no other row was
+quietly picked up by a boundary match. The landing figure is measured twice
+independently: at this working tree, and by `dv_checks.sh`'s own step-9 output
+inside the very CI run that adjudicated the units. **A census figure and a CI
+reading from the same run is exactly the pairing §7 of the plan demands.**
+
+**One thing I checked that nobody asked me to, and it mattered.** The packet took
+its derivations at `d2bdd57`; the stage-2 base was `d943d33`, and in between
+`docs/specs/modules/xgmii_rx_64.md` and `docs/specs/requirements.md` both moved
+(WO-0069's landings). A derivation base that shifts under a packet is precisely
+how a correct bench acquires a wrong constant, so I diffed both. The SPEC-M03
+change touches §10's REQ-802/REQ-810 hook and the change log; the requirements
+change is a **non-normative** note appended to §0.6's counting convention. Neither
+reaches §6.1, §7, §8, §9, §0.3, §0.5, or any of REQ-004/005/019/020/103/111/112.
+**The base is unmoved and the five rows' constants are unaffected** — but that is
+a measurement I made, not an assumption I inherited, and had it gone the other
+way it would have been a bounce on `BL2` against a worker who did nothing wrong.
+
+**The line review's two false alarms, resolved and recorded so they are not
+re-found.** Unit 2 hands `account_clean_frame` the raw `samples` where unit 1
+hands it a filtered `group` — correct, because `bench.ml:367-368` filters
+internally and is idempotent on an already-filtered list. And `assert_class`'s
+`~front_offset` is never compared, only printed — correct, because `find_class`'s
+predicate pins the field by construction, and §5's "assert the record whole" is
+discharged jointly by the 2-class count, both finders succeeding, and the four
+field assertions. Recording a checked-and-cleared suspicion is worth as much as
+recording a defect: the next reviewer spends the time once.
+
+**The one thing I found, and why it is an observation and not a bounce.** The
+row's leftover-remainder guard (:162-170) is a genuine strengthening — a trailing
+delivered word carrying no `tlast` is invisible to the `tlast` count, so the
+guard closes a real gap the packet did not ask for. But its message begins *"test
+bug"*, and its condition is also reachable by a design that emits after the last
+frame's `tlast`. That is FINDING B-1's shape **inverted**: there a bench message
+accused the design where the bench's own precondition was false; here a message
+would accuse the bench where the design may be at fault. It cannot turn a wrong
+result green or a right result red — it can only mislabel a red — so it rides the
+next commit that opens the file. Bouncing a round over the wording of a message
+on a path that has never fired would be a worse instrument than the defect.
+
+**The conduct ruling that changed shape.** Two read-only `git status` calls,
+**blocked pre-execution**, disclosed unprompted. My precedent applies unchanged —
+operational bar not the independence bar, nothing created, nothing moved, nothing
+staged, no evidence resting on them, no sanction, disclosure credited. What is
+new is what it teaches about the repair I have been carrying. Twice before, the
+commands *ran*. This time the environment refused them, which means the
+prohibition is now mechanically enforced for this seat and **more prose
+restating it buys nothing**. What is still unrepaired is the **motive**: the seat
+reached for `git status` to satisfy §15(e) and R4's `Files-in-this-commit`
+set-equality, obligations this programme imposes on an agent that has no
+instrument to enumerate its own staged set. *A seat obliged to state a set it
+cannot read will reach for the forbidden instrument every time, and blocking the
+instrument does not discharge the obligation.* So the repair's live half is the
+**substitution clause** — name the instrument the seat uses instead — and this
+worker got that right unaided. And a clause the earlier instances never reached:
+this disclosure exists **only in the return message**. Neither `J-tb_writer-0029`
+nor §15 mentions it. PROTOCOL §4 exists so that reasoning survives the session; a
+bar-touching action disclosed in chat alone does not. **The repair gains a
+durability clause.**
+
+**The journal-path item, verified rather than accepted.** I confirmed at this
+tree that the dispatch's path does not exist, that volume 01 is frozen at
+`J-tb_writer-0016`, and that the open volume ended at `0028` — making `0029` the
+only admissible id and reachable only by consulting the real file. The worker
+resolved to the artefact and flagged the discrepancy instead of silently
+repairing it or creating a file at an unsanctioned path. That is the standing rule
+executed exactly. The orchestrator owns the clerical defect and has disclosed it.
+Nothing to sanction; recorded so the next reader of this packet does not re-open
+it.
+
+**What I deliberately did not claim.** Five rows are landed and green; they are
+**not qualified**. PROTOCOL §10 sequences the mutation campaign after this ACCEPT
+and before any `SO-` PASS, and my charter §3 spot-check — hand-mutate and confirm
+the bench fails — is not executable at this seat (ADR-0005 blocks the toolchain
+here, and a scratch mutation needs a working tree I am barred from moving). An
+ACCEPT is an ACCEPT of a build against a packet. It is not kill evidence, and the
+verdict says so in terms so that no `SO-` can quietly read it as such.
+
+### Actions
+Re-ran bars L-1, L-2, L-13, L-14, L-15, L-16 at this seat, and L-3…L-10 as the
+charter §3 spot-check. Read `test/xgmii_rx_64/test_m03_l.ml` whole and verified
+§9's nine-item assertion order item by item against it. Re-derived §2.1's layout
+recurrence, §2.2's extent, §3's h/L/ΔC and §4.1 item 10's filler from
+`arrival.ml`, `frame.ml` and `octet_time.ml` at this tree. Cross-checked §8.1's
+1518 row against landed M03-C3 and against `protocol_monitor.ml`'s own
+`max_words + 1` comparison. Diffed the two spec files across the derivation-base
+gap. Read CI build run `31015276337` (both jobs, step by step) and journal-check
+run `31015278694`. Appended **RV-0070-VERDICT** to the packet's Return/verdict
+log. No file was created; no `dune` was run; no git command had the effect of
+moving HEAD, the index or any ref.
+
+### Evidence
+
+**Bar L-1** — unit-block extraction over the twelve `test_m03_*.ml` at both revs:
+
+```
+$ diff -r <base blocks> <landing blocks> ; echo $?
+0                      # 32 680 bytes of blocks at base, byte-identical at landing
+```
+
+**Bar L-2 (band A)** and the round's whole diff:
+
+```
+$ git diff d943d33 630e34a -- test/xgmii_rx_64/bench.ml test/xgmii_rx_64/bench.mli \
+      test/xgmii/ test/monitors/ | wc -c
+0
+$ git diff --name-status d943d33 630e34a
+M	agents/handoffs/WO-0070_m03-family-l-line-rate-stress.md
+M	agents/journals/workers/claude_tb_writer_agent.v02.md
+M	test/xgmii_rx_64/dune
+A	test/xgmii_rx_64/test_m03_l.ml
+$ git diff --stat d943d33 630e34a
+ 4 files changed, 785 insertions(+)
+$ diff <(git show d943d33:test/xgmii_rx_64/dune | grep -v '^;') \
+       <(git show 630e34a:test/xgmii_rx_64/dune | grep -v '^;') ; echo $?
+0                      # the (library …) stanza is byte-identical
+```
+
+**Bar L-13 — the step reading.** CI `build` run **`31015276337`** (run #418,
+event push, head SHA `630e34ab42f3541d6960b2b6efdf9542d98404d4`, conclusion
+success), job **`build` `92337605716`** (success, 14:27:32 → 14:33:16):
+
+| # | step | conclusion | window |
+|---|---|---|---|
+| 5 | Build | success | 14:32:51 → 14:32:59 |
+| **6** | **Run tests (expect tests, waveform snapshots)** | **success** | **14:32:59 → 14:33:03 (4 s)** |
+| **8** | **Verify nothing was left unpromoted or non-deterministic** | **success** | **14:33:03 → 14:33:04 (1 s)** |
+
+Job **`cosim` `92337605722`**: success (step 6, the WO-0046 Phase 1 lane,
+success). Workflow **`journal-check` run `31015278694`**: success. Base
+comparison for the rider: run `31011107020`, job `92323214508`, step 6
+13:42:44 → 13:42:47 = **3 s**.
+
+**Bar L-14 — measured at both ends.**
+
+```
+                                base d943d33   landing 630e34a
+boundary-matched census              48              53        (of 62 ASSERT; 78 declared)
+test/xgmii_rx_64/ inventory          54              56
+repository-wide                     134             136
+```
+
+Landing measured twice: `tools/dv_checks.sh` at this clean working tree, and the
+same script inside CI run `31015276337`'s step 9, which printed
+`56  test/xgmii_rx_64/`, `136  test/ (repository-wide)`,
+`53  named in a unit title — TRAILING-DIGIT BOUNDARY match`. The +5 pinned to
+family L by a negative at base:
+
+```
+$ for f in $(git ls-tree --name-only d943d33 test/xgmii_rx_64/ | grep '\.ml$'); do
+    git show d943d33:$f | awk 'FNR==1{inh=0} /let%expect_test/{inh=1} inh{print} inh && /=[ \t]*$/{inh=0}' \
+      | grep -o 'M03-L[0-9]*'; done | sort -u
+(no output)          # no M03-L row id is named in any unit title at the base
+```
+
+**Bar L-16:**
+
+```
+$ diff lits.d943d33 lits.630e34a ; echo $?
+0
+$ wc -l lits.d943d33 lits.630e34a
+1475 lits.d943d33
+1475 lits.630e34a
+$ grep -c '^<' <that diff>
+0
+```
+
+**Bar L-15** — every constant re-derived at this tree: `arrival.ml`'s
+`create`/`stress` (`floor_gap = min 12 9 = 9`, `shorten = 0`, `round_up_4`
+identity at `s ≡ 0 mod 4`, so start = `8 + 84i`, lanes `4i mod 8`, spacings
+10/11, gaps 12, frame 9999 at octet time 839 924 / cycle 104 990 / terminate
+839 996, `cycles = 105 002`); `octet_time.ml:7` (`front_offset = strip + lane` ⇒
+h = 8/12), `:9-12` (`word_cycles ~front_offset:8 16 = Some 3`,
+`~front_offset:12 12 = Some 3`), `:239` (the tagger measures
+`out_times.(j) − in_times.(j + strip_octets)`), `:251-253` (`observed` sorted by
+`front_offset`); `frame.ml:23,36` (default filler `fun offset -> offset`, pad
+`filler (18 + i)` ⇒ octets 18…59); `test_m03_c.ml:417-433` (M03-C3 at 1518:
+**190 words, final tkeep 0x03, delivered 1514** — identical to §8.1);
+`protocol_monitor.ml:117-118` (flags at `words_this_frame = max_words + 1`, so
+190 against 190 touches the bound without crossing it). **Zero disagreements.**
+
+**Worker-seat bars re-run here**: 2 units (`:258`, `:361`); 2 `[%expect`, raw
+count 2, both `{||}` (`:263`, `:366`); zero print calls; all five row ids at a
+trailing-digit boundary in the two titles; exactly one `Arrival.stress` in
+`test/xgmii_rx_64/**` (`:78`, no `~count` — the repo's other six are outside that
+directory); one `run` call in unit 1's range (`:84`), the other at `:348` in unit
+2; `frames_compared` at `:236` (= 10 000) and `:290` (= 1); zero matches for the
+`_piece`/`_dropped_frame`/`expected_octets` set; `Injection` present once, at
+`:17`, inside the docstring disclaiming it.
+
+**Derivation-base check:** `git diff d2bdd57 630e34a -- docs/specs/modules/xgmii_rx_64.md`
+touches §10's REQ-802/REQ-810 hook and the change log only;
+`docs/specs/requirements.md` gains a **non-normative** note under §0.6 plus its
+change-log row. Nothing reaching §6.1/§7/§8/§9/§0.3/§0.5 or
+REQ-004/005/019/020/103/111/112. **The base is unmoved.**
+
+**Bonus, and a sign-off will need it**: the same job's
+`check_rfc1071_anchor.sh` fetched RFC 1071 (HTTP 200, sha256
+`e10dfd6816447843d47a7f1b990eba756a791a6308fd5b698a6276075a8e4f9b`,
+byte-identical to the copy CI fetched at run `30764198256`) and printed **ANCHOR
+CONFIRMED**. The obligation `test/golden/ipv4_ref.ml` records is discharged at
+this SHA with **run `31015276337`** as its citation.
+
+**HEAD integrity**: `git rev-parse HEAD` = `630e34ab42f3541d6960b2b6efdf9542d98404d4`
+at spawn and at return; `git status --porcelain` empty at both. All git use was
+read-only (`rev-parse`, `status`, `log`, `diff`, `show`, `ls-tree`). No `dune`
+(ADR-0005).
+
+### Outcome
+**ACCEPT.** `WO-0070` moves `RETURNED` → `ACCEPTED`; `RV-0070-VERDICT` is
+appended to the packet's Return/verdict log and is the verdict of record. All six
+of my bars pass, all ten worker bars re-verified, all twelve `BL` conditions
+clear. **Five ASSERT rows land: M03-L1 … M03-L5. The census moves 48 → 53 of 62,
+measured at both ends; nine ASSERT rows remain (K1, K2, M1 … M7).** The
+`P1-module-ready` line-rate-stress line now has its evidence composed — M03-L1
+for the back-to-back stress, M03-L6 (STRUCTURAL, WO-0038) for the absence of a
+backpressure port — **evidenced, not signed**. Two conduct items ruled: the
+blocked `git status` pair (no sanction, disclosure credited, and the repair's
+shape amended) and the journal-path discrepancy (worker correct, orchestrator's
+clerical defect, recorded). One non-blocking observation (L-O1) recorded against
+the row's leftover-guard message. **Not claimed**: any mutation-kill evidence for
+family L; the campaign is sequenced after this ACCEPT and before any `SO-`.
+
+### Open-questions
+1. **Carried unchanged from `J-dv_lead-0126`, and still not mine**: 59 `mut/*`
+   refs alive on the remote with no inventory anywhere in the repo, and
+   PROTOCOL §10's *"uncommitted working tree"* wording against the operated
+   pushed-ref mechanism. The orchestrator operates the transient model; the
+   auditor owns the ledger. No artefact of this round depends on the answer.
+2. **§1.5's band overlap** stays recorded and unrepaired. If a future packet
+   reuses the band shape, the overlap is closed **in the new packet before its
+   run**, never retroactively in this one.
+3. **OBSERVATION L-O1** — the leftover guard's *"test bug"* message can mislabel
+   a design defect. Non-blocking; rides the next commit opening
+   `test_m03_l.ml`.
+4. **The prompt-side repair's third clause, raised not drafted**: a blocked or
+   refused instrument attempt belongs in the seat's **journal**, not only in its
+   return message. This round's disclosure exists in chat alone and will not
+   survive the session. Whoever writes spawn prompts owns the clause; I am
+   naming the gap, not amending anyone's prompt.
+5. **`test/cost_probe/`'s deletion is still owed**, carrier re-pinned to a
+   `dv_lead` commit of this window — the batched `AP-` round unless something
+   lands sooner.
+
+**No lessons-harvest note is owed this round and the absence is declared rather
+than omitted** (ADR-0018, PROTOCOL §7): the cadence is every module sign-off and
+every phase gate, and this round is neither; the next falls due at
+`SO-xgmii_rx_64.md` and will span from my last harvest to that entry. **Two
+candidates are BANKED, not harvested** — banking does not open or close a span:
+
+- **(LH2-g) When a seat is obliged to state a fact it has no instrument to
+  measure, blocking its reach for the wrong instrument does not discharge the
+  obligation — name the substitute.** A prohibition and an obligation that meet
+  at the same fact will collide at every execution until the substitute is
+  written down. *Incident*: a third recurrence of the same tool-scope collision,
+  this time refused by the environment before execution, where the reaching seat
+  was trying to satisfy a files-list obligation imposed on it. *Without it*: the
+  collision is re-ruled every round, the ruling is identical every round, and the
+  repeated identical ruling is mistaken for a tolerance.
+- **(LH2-g) A disclosure that lives only in a channel the record does not keep is
+  a disclosure the next reviewer will not have.** Route any admission about a
+  bar-touching action into the durable record in the same act that makes it.
+  *Incident*: an unprompted, fully creditable disclosure of two refused commands
+  that appears in a return message and in neither the journal nor the packet.
+  *Without it*: the credit is earned once and the information is gone, so the
+  next reviewer re-discovers the same collision from scratch and grades it as
+  new.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0070_m03-family-l-line-rate-stress.md
