@@ -379,7 +379,8 @@ let%expect_test
   "M03-H1: terminate replaced by a new /S/, both start lanes -- all 64 \
    octets delivered (no FCS removed), exactly one \
    error_start_without_terminate, the second frame received intact \
-   (REQ-110, REQ-103)"
+   (REQ-110, REQ-103; M03-M4 -- §9 ruling 4: the exact set is \
+   error_start_without_terminate ALONE, no error_bad_fcs)"
   =
   run_h1 ~lane:0;
   run_h1 ~lane:4;
@@ -609,7 +610,7 @@ let%expect_test
   "M03-H3: /E/ mid-frame, then a /S/ exactly two cycles later, both start \
    lanes -- exactly one error_bad_frame and no \
    error_start_without_terminate, the frame the /S/ opens received normally \
-   (REQ-110, REQ-105, §9's fifth ruling)"
+   (REQ-110, REQ-105, §9's fifth ruling; M03-M5)"
   =
   run_h3 ~lane:0;
   run_h3 ~lane:4;

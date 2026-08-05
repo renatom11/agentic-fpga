@@ -338,7 +338,11 @@ let run_e1 ~lane ~e_lane =
      fail
        row
        (String.concat
-          [ "expected exactly one strobe pulse (error_bad_frame only), observed "
+          [ "expected exactly one strobe pulse (error_bad_frame ALONE -- no \
+             error_bad_fcs: section 9 ruling 3, a frame ended by an error \
+             character has no terminate character, so REQ-103 attempts no FCS \
+             removal and there is no comparison to report; M03-M3's own kill), \
+             observed "
           ; Int.to_string (List.length pulses)
           ]));
   account_aborted_frame bench frame samples ~expected_octets:delivered;
@@ -348,7 +352,9 @@ let run_e1 ~lane ~e_lane =
 
 let%expect_test
   "M03-E1: /E/ in each of the eight lanes of a mid-frame word, both start \
-   lanes -- sixteen cases (REQ-105, REQ-103's no-removal clause)"
+   lanes -- sixteen cases (REQ-105, REQ-103's no-removal clause; M03-M3 -- \
+   section 9 ruling 3: the exact set is error_bad_frame ALONE, no \
+   error_bad_fcs)"
   =
   List.iter [ 0; 4 ] ~f:(fun lane ->
     List.iter (List.range 0 8) ~f:(fun e_lane -> run_e1 ~lane ~e_lane));

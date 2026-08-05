@@ -303,7 +303,9 @@ let run_f1 ~lane ~length =
 
 let%expect_test
   "M03-F1: 5, 16, 60 and 63-octet runts, both start lanes -- forwarded, \
-   marked, FCS removed and checked (REQ-107, REQ-103)"
+   marked, FCS removed and checked (REQ-107, REQ-103; M03-M1's second \
+   carrier -- section 9 ruling 1's second sentence, a runt with a CORRECT \
+   FCS pulses error_runt alone)"
   =
   List.iter [ 0; 4 ] ~f:(fun lane -> List.iter f1_lengths ~f:(fun length -> run_f1 ~lane ~length));
   [%expect {||}]
@@ -651,7 +653,7 @@ let run_f3 ~lane =
 let%expect_test
   "M03-F3: a 63-octet frame with a wrong FCS, both start lanes -- \
    error_runt AND error_bad_fcs pulse once each, tuser[0] set once (REQ-107, \
-   REQ-104, section9's first co-occurrence ruling)"
+   REQ-104, section9's first co-occurrence ruling; M03-M1)"
   =
   run_f3 ~lane:0;
   run_f3 ~lane:4;

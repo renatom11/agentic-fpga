@@ -534,7 +534,8 @@ let run_g1 ~lane =
 let%expect_test
   "M03-G1: a 1600-octet frame followed immediately by a valid 64-octet frame \
    -- 1514 octets delivered, exactly one error_oversize, no error_bad_fcs, \
-   following frame intact (REQ-108, REQ-103)"
+   following frame intact (REQ-108, REQ-103; M03-M2 -- §9 ruling 2: the \
+   exact set is error_oversize ALONE)"
   =
   run_g1 ~lane:0;
   run_g1 ~lane:4;
@@ -834,7 +835,8 @@ let%expect_test
   "M03-G3: a 1600-octet frame, then a new /S/ (a genuinely separate, \
    ordinary frame) 102 octets past the truncation point -- exactly one \
    error_oversize, no error_start_without_terminate, the new frame received \
-   normally (REQ-108, REQ-110, §9's sixth ruling, C-12)"
+   normally (REQ-108, REQ-110, §9's sixth ruling, C-12; M03-M6's \
+   second-epoch carrier)"
   =
   run_g3 ~lane:0;
   run_g3 ~lane:4;
@@ -1002,7 +1004,7 @@ let%expect_test
   "M03-G4: the same 1600-octet frame, with an /E/ absorbed 100 octets past \
    the truncation point -- exactly one error_oversize, no error_bad_frame, \
    nothing else emitted, following frame intact (REQ-108, REQ-105, §9's \
-   seventh ruling, C-12)"
+   seventh ruling, C-12; M03-M7's second-epoch carrier)"
   =
   run_g4 ~lane:0;
   run_g4 ~lane:4;
@@ -1490,7 +1492,8 @@ let%expect_test
    1588, content 1518..1599) -- exactly one error_oversize, no \
    error_start_without_terminate, and the resynchronised frame's own \
    disposition (4 octets, sub-5 class: one error_runt, no output word) \
-   (REQ-108, REQ-110, §9's sixth ruling, C-12)"
+   (REQ-108, REQ-110, §9's sixth ruling, C-12; M03-M6's first-epoch \
+   carrier -- the Discard state §9 ruling 6 is written about)"
   =
   run_g7 ~lane:0;
   run_g7 ~lane:4;
@@ -1694,7 +1697,8 @@ let%expect_test
   "M03-G8: an error character injected strictly inside the first epoch (k = \
    1560, content 1518..1599) -- exactly one error_oversize, no \
    error_bad_frame, following frame intact (REQ-108, REQ-105, §9's seventh \
-   ruling, C-12)"
+   ruling, C-12; M03-M7's first-epoch carrier -- the Discard state §9 \
+   ruling 7 is written about)"
   =
   run_g8 ~lane:0;
   run_g8 ~lane:4;

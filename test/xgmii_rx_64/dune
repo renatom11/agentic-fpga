@@ -33,6 +33,14 @@
 ;            latency tagger), both in a NEW FILE test_m03_l.ml; L6
 ;            STRUCTURAL, landed WO-0038 and not in this round (five ASSERT,
 ;            new file)
+;   WO-0071  M1-M7 BOUND to their landed carriers -- NO new unit, NO new
+;            stimulus, NO cycle driven. §9's seven co-occurrence rulings were
+;            each already asserted as an EXACT strobe set by the row that
+;            drives them (E1; F1 and F3; G1; G3 and G7; G4 and G8; H1; H3),
+;            and this packet supplies only the row-id binding the census
+;            reads. The inventory does not move and the census moves by seven
+;            -- which is the mechanical statement that no coverage was added
+;            (seven ASSERT rows bound, zero rows written)
 ; When a packet adds rows, add its line. When one does not, this comment
 ; is wrong and a reader has no way to tell — this file's own header found
 ; that exact staleness (E and F both missing) before WO-0054's own line was
