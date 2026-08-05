@@ -133,7 +133,7 @@ let error_char = 0xfe
    check, which is the site an implementation codes and is where the gate
    below sits. *)
 let runt_threshold = 64
-let fcs_min_octets = 5
+let fcs_min_octets = 0
 
 (* REQ-108: more than 1518 octets received is oversize; exactly 1514 are then
    delivered, which this design obtains by capping coverage at 1518 and
