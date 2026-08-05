@@ -107,6 +107,12 @@ let start_char = 0xfb
 let terminate_char = 0xfd
 let error_char = 0xfe
 
+(* IC-F: the idle code, compared against. The preamble-position routing below
+   becomes a closed enumeration of {/S/, /T/, /E/, /I/} instead of REQ-102's
+   extensional "any other control character", and falls through on any code
+   outside it. *)
+let idle_char = 0x07
+
 (* ---- pinned frame-length constants (REQ-107, REQ-108) ----
    §5: M03 has no parameter, and these two are pinned by REQ-108 and REQ-107
    rather than overridable — a test that shortened them would be testing a
@@ -179,6 +185,7 @@ type lanes =
   { is_start : Signal.t (** 8 bits: lane k carries [/S/] *)
   ; is_terminate : Signal.t (** 8 bits: lane k carries [/T/] *)
   ; is_error : Signal.t (** 8 bits: lane k carries [/E/] *)
+  ; is_idle : Signal.t (** 8 bits: lane k carries [/I/] *)
   }
 
 let decode_lanes (xgmii : Signal.t Xgmii.t) =
@@ -190,6 +197,7 @@ let decode_lanes (xgmii : Signal.t Xgmii.t) =
   { is_start = vector ~f:(fun k -> matches k start_char)
   ; is_terminate = vector ~f:(fun k -> matches k terminate_char)
   ; is_error = vector ~f:(fun k -> matches k error_char)
+  ; is_idle = vector ~f:(fun k -> matches k idle_char)
   }
 ;;
 
@@ -309,8 +317,9 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
   (* Epoch A is open from lane 0 of this word, so its search covers all eight
      lanes. An other-control character closes it only in a preamble position
      (REQ-102 → REQ-105); elsewhere it is the REQ-016 hold, below. *)
+  (* IC-F: the enumeration, in epoch A's own preamble positions. *)
   let a_closing_v =
-    lanes.is_terminate |: lanes.is_error |: lanes.is_start |: (other_ctl &: a_pre_mask)
+    lanes.is_terminate |: lanes.is_error |: lanes.is_start |: (lanes.is_idle &: a_pre_mask)
   in
   let a_close_oh = lowest_set a_closing_v in
   let a_char_end =
@@ -370,7 +379,7 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
      row as revised at 541ea43). Outside a preamble position the same character
      is the hold above and closes nothing. *)
   let a_close_error =
-    a_closes_with (lanes.is_error |: (other_ctl &: a_pre_mask))
+    a_closes_with (lanes.is_error |: (lanes.is_idle &: a_pre_mask))
   in
   let a_close_start = a_closes_with lanes.is_start in
   let a_close_char = a_close_terminate |: a_close_error |: a_close_start in
@@ -415,8 +424,10 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
      (REQ-803) and its REQ-110 abort is still reported, because the abort
      belongs to a frame that was accepted — which is why [a_closing_v] above
      tests [lanes.is_start] ungated while the two epochs below are gated. *)
+  (* IC-F: the same enumeration in the preamble positions of an epoch opened
+     by this word. *)
   let inword_closing above =
-    (lanes.is_terminate |: lanes.is_error |: lanes.is_start |: other_ctl) &: above
+    (lanes.is_terminate |: lanes.is_error |: lanes.is_start |: lanes.is_idle) &: above
   in
   let b_exists = bit lanes.is_start 0 &: i.cfg_rx_enable &: ~:(i.clear) in
   let c_exists = bit lanes.is_start 4 &: i.cfg_rx_enable &: ~:(i.clear) in
