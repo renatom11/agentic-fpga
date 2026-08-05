@@ -2815,3 +2815,45 @@ leaks self-disclosed.
 
 ### Files-in-this-commit
 - tasks/BOARD.md
+
+## [J-orchestrator-0219] 2026-08-10T04:10Z | task:WO-0074 | Incident three: the container rolls back 120 commits mid-adjudication - and the round stops itself instead of fabricating
+
+### Trigger
+The WO-0074-ADJ spawn returned STOP-ON-INCONSISTENCY, no verdict, no
+cell scored: its container (shared with mine) had rolled back to
+310a33d - the same incident-1 snapshot as incident two, 120 commits
+deep this time, with the same orphaned WO-0060 dirty file (proven
+byte-identical to the landed 2b10741 version). dv verified the
+REMOTE intact before stopping: packet + seal at 319ed7f, manifest at
+adac5ca, all seven transients and their runs - nothing lost, only
+the container stale. It refused to write any journal entry because
+no lawful entry exists on a rolled-back tree ("writing 0137/v06
+would be a fabrication against this tree; writing 0089 would
+contradict the org's real record"), refused to commit onto 310a33d
+(R9 fork), and supplied restore-ready v06 header facts computed from
+the fetched blob. Its warning that MY tree was also rolled back was
+correct - verified before any write.
+
+### Recovery (per J-orchestrator-0205, third execution)
+Evidence diff preserved (scratchpad incident3/), fetch, reset --hard
+to origin tip, HEAD verified 319ed7f, tree clean, campaign artifacts
+present. Zero loss: everything was pushed. Cost: one lead round.
+
+### Rulings (dv's two questions)
+- Q1: CONFIRMED as standing rule - a container whose tree is not the
+  commissioned tree STOPS UNCONDITIONALLY. No read-only verdict from
+  fetched objects: a verdict that cannot be committed is not a
+  verdict, and the committed-packet discipline outranks round
+  latency.
+- Q2: ADOPTED - every spawn dispatch now opens with an abort-first
+  HEAD check: run git rev-parse HEAD FIRST; on mismatch with the
+  stated spawn HEAD, stop and report in one line. Catches the class
+  in one command instead of a round.
+
+### What I did
+- Restored, verified, this incident entry; WO-0074-ADJ respawns
+  UNCHANGED (the seal, manifest, branches and runs are intact - no
+  re-seed) with the abort-first check prepended.
+
+### Files-in-this-commit
+- (none)
