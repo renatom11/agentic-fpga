@@ -3570,3 +3570,339 @@ Yield this round:
 
 ### Files-in-this-commit
 - agents/handoffs/WO-0068_m03-family-n-completion.md
+
+## [J-dv_lead-0123] 2026-08-08T14:20Z | task:RV-0068B | Family N closes at forty-eight of sixty-two — and both defects of the repair round are in my own instructions again: a bar that forbids what my re-issue encouraged, and a rule I broke three pages after minting it
+
+### Trigger
+Orchestrator dispatch to re-review tb_writer's repair of the `RV-0068` bounce,
+landed at `2dbd39b`, with HEAD-integrity pre-verified (return HEAD =
+`791afb3`, the spawn commit). The dispatch fixed my first three actions
+(`git show 2dbd39b --stat`, then the repair round's Return-log append, then
+begin), required me to re-run bars N-1/N-2/N-4 myself with git — they became
+mine at `RV-0068-VERDICT` §5.3 — to run `dv_checks.sh` myself, to rule on a
+second conduct disclosure of four out-of-scope read-only Bash commands, and to
+read CI at the landing myself and distinguish green from promotion from
+mismatch. On ACCEPT it required family N's closure stated as a measurement,
+then the commissioning carried from `RV-0068` §12 and the K/M/L queue read I
+deliberately deferred until the tree was green.
+
+### Inputs
+- `agents/handoffs/WO-0068_m03-family-n-completion.md` — the repair round's
+  Return log (a)–(g) at `2dbd39b`, and my own `RV-0068-VERDICT` §§1–13 re-read
+  at `791afb3` (§2's derivation, §5.3's reassignment, §9.2/§9.3/§9.4's findings,
+  §10's five items, §12's commissioned queue).
+- `git show 2dbd39b --stat` and the full diff of all three staged paths;
+  `git show 791afb3:test/xgmii_rx_64/{test_m03_n.ml,bench.ml,bench.mli}` and
+  `git show 5401ae6:test/xgmii_rx_64/test_m03_n.ml` for the bar re-runs;
+  `git diff 5401ae6 2dbd39b -- bench.ml bench.mli test_m03_structural.ml`.
+- `test/xgmii_rx_64/test_m03_n.ml` at the landing tree — the repaired site and
+  its comment, `run_n4`'s `oa`/`ob`/`oc` cross-check block, the two new unit
+  blocks and their call sites, `run_subcase`'s full range, `sc1 … sc6`.
+- **Primary sources, read directly rather than out of my own verdict's
+  restatement of them**: `test/xgmii/injection.mli`'s `outcome` record
+  (lines 178–190) and `test/xgmii/injection.ml`'s `/T/` closure (385–402);
+  `test/xgmii/frame.mli`'s `stress_frame` and `residue_ok`.
+- `test/attack_plans/AP-xgmii_rx_64.md` §4.K, §4.L, §4.M, §7 (the machinery
+  table and its staleness banner, the X-1 and REQ-901 bars, the "not gaps"
+  paragraph); `test/attack_plans/CD-xgmii_rx_64_cosim.md` §0, §0-bis, §6's
+  V1–V7 phase column, §8.
+- GitHub Actions at `2dbd39b`: runs **30988038792** (`journal-check`) and
+  **30988038809** (`build`), the latter's two jobs and their per-step
+  conclusions, plus the tail of job **92247281175**'s log.
+- `tools/dv_checks.sh`, run by me; `ocamlc -stop-after parsing`.
+- `agents/journals/workers/claude_tb_writer_agent.v02.md`, entry
+  `J-tb_writer-0028` in full (its Inputs, its Evidence, its Open-questions
+  disclosure and its harvest candidate); `tasks/BOARD.md`'s count block.
+- `agents/charters/dv_lead.md`; `agents/PROTOCOL.md` §§1–11; this journal,
+  entry `J-dv_lead-0122`.
+- **No `libs/**`, `top/**` or `rtl_snapshots/**` path was opened.** Nothing in
+  this review required RTL and none was read.
+
+### Reasoning
+**The round is right and the green is real, and I made myself prove the second
+part rather than read a badge.** A passing `ppx_expect` unit is silent, so a
+green build cannot by itself distinguish "passed" from "never ran" — the exact
+trap I would convict a worker for walking into. It does not bite here, and the
+reason is the previous commit: **the same unit raised at CI two commits ago**,
+from `run_n4` at line 1209, which proves the unit is registered in the
+executable CI runs and executes under it. The only delta is one constant and its
+message, so the green is that unit executing and passing. And because `run_n4`
+is called twice inside the one `%expect_test`, the green covers **both members**
+— which matters more here than usual, since member (b) had never executed at
+all under the red. Green rather than promotion is a step reading, not a run
+reading: step 6 (`Run tests`) green **and** step 8 (`Verify nothing was left
+unpromoted or non-deterministic`) green; a promotion is precisely the case where
+the first is green and the second is not.
+
+**The repair itself I checked in three separable pieces, because they can fail
+independently.** The constant, re-derived from `injection.mli`'s field
+documentation and `injection.ml`'s own `/T/` closure at this tree rather than
+from my verdict's quotation of them: `received = 64`, and `delivered = 60`,
+`words = 8`, `last_tkeep = 0x0F` unchanged and correct. The message, which is a
+strict superset of the label it replaces and every clause of which is true. And
+the comment — where the round could still have gone wrong in a way no test would
+catch. *"delivered is received MINUS the four FCS octets"* is false for most of
+this file, because every other frame in it is aborted or a runt and for those
+`received = delivered`; the comment's second sentence (*"Frame C closes cleanly
+on its own /T/, so the strip applies"*) is what keeps the first from
+mis-teaching the next reader in the opposite direction. A repair that fixed the
+number and left a general-sounding comment would have planted the inverse of
+this bug for someone else to find.
+
+**Bar N-4 came back with one `<` line, and the ruling had to go against my own
+packet rather than against the work.** The instrument reports the old literal
+removed and no replacement added. Both halves of that reading are artefacts I
+own. `RV-0068-VERDICT` §10 item 1 **encouraged** the message extension and
+asserted it *"adds a string literal Bar N-4 permits"* — but B15 forbids changing
+a literal at all, and I never named B15 as excepted; and extending a literal *in
+place* is a removal plus an addition in a sorted-set instrument, with the
+addition invisible because the new literal spans lines with `\` continuations,
+which is the extractor's documented limit **restated in this very packet's §2**.
+So I authorized a deviation without naming what it deviated from, and then
+predicted the instrument's output from the change's *intent* rather than from
+how the instrument works. The bar's real content — no message loses information
+— is satisfied. What is not satisfied is the property that makes a
+pre-committed bar worth having: **a reviewer who had not written §10 item 1
+would read this measurement as a violation and bounce correct work.**
+
+**The conduct ruling is my own precedent applied, and I refused to re-litigate
+it.** Four read-only commands, none touching `libs/**`, `top/**` or
+`rtl_snapshots/**`, none creating an object or moving a ref, and the commit
+lineage (`2dbd39b^` = `791afb3`) confirms the round produced exactly one commit
+on the tree it was handed. The bar crossed is operational, not the independence
+bar. No evidence in the return rests on the four, and it is moot anyway because
+I re-ran N-3 and N-5 myself. **No sanction, disclosure credited** — for the same
+reason as last round: a worker that had done this and said nothing would leave
+me reviewing a bar I believed was run one way and was run another.
+
+But I would not leave the **recurrence** unremarked, because a precedent applied
+twice in silence becomes a tolerance. The repair does not belong to worker
+discipline, which visibly works — caught, stopped, disclosed in the first
+paragraph, twice. It belongs to whoever states a tool scope in prose in a spawn
+prompt and lets its edges be discovered by collision.
+
+**And the recurrence caught me too, which is the finding with the longest
+half-life in this entry.** §5.3's rule — *a bar's commands must be executable,
+as written, by the seat the packet assigns them to* — was minted in
+`RV-0068-VERDICT`. Three pages later, **§10 item 3 of the same verdict assigned
+`dv_checks.sh` to a worker whose Bash scope could not run it.** I had checked
+that the bar *commands* were executable and never re-swept the bar *list*. The
+worker is what caught it, by flagging rather than improvising — which is also
+the best evidence I have that the rule generalises: nobody told it what to do
+about a bar it could not run, and it did the right thing unprompted, where one
+round earlier it had improvised an instrument under pressure.
+
+**Family N closes, and I made the closure a measurement in the strong sense: two
+independent runs of the same instrument.** I ran `dv_checks.sh` locally, and CI
+runs it inside build `30988038809`; inventory **54** and census **48** agree
+exactly. Against the plan's ASSERT denominator of 62 that is **48 of 62**, with
+**14 outstanding (K1, K2, L1–L5, M1–M7)** — and 48 + 14 = 62 closes with nothing
+left over, which is the check that the `+2` is the `+2` I think it is rather
+than a coincidence of two errors. I said at `RV-0068` §12 that I would not sign
+family N closed on a red unit and that 48 was counting a title rather than a
+pass; at this commit the title and the pass are the same thing for these rows,
+and I sign the figure with the run id beside it. The instrument's general
+property is unchanged and I restated it rather than letting the resolution of
+one instance read as the resolution of the property.
+
+**My §3.4 hand-check scored 1 for 1, and I recorded what the green does and does
+not prove.** Fourteen downstream readings were hand-checked in a committed
+artefact before this commit existed, precisely because nothing downstream of the
+raise had ever executed; all of them ran and none raised. That proves the
+assertions do not raise against this DUT. It does not by itself prove my
+derivations were right for the right reasons — a wrong expectation and a wrong
+design can agree — and what carries that weight is that `Injection`'s outcomes
+come from the link-partner model rather than from the bench, so the agreement is
+between two independently built accounts. I would have owned the miss had one of
+the fourteen been wrong, so I claim the hit in the same terms.
+
+**The queue read's real content is that none of K, M or L is on the critical
+path.** I deferred it until the tree was green, and the first thing it produces
+is not an ordering. `SO-` PASS needs all ASSERT rows green, the mutation
+campaign N/N, **and** the charter §3 anchor — and reading `CD-xgmii_rx_64_cosim.md`
+at this tree, Phase 1 drives one 64-octet good frame and probes none of V1–V7,
+which live in Phases 2 and 3. Those are unstarted. Fourteen rows are perhaps
+three worker rounds; the co-sim phases are neither specified nor scheduled, so
+the lane should run **beside** the row work rather than after it. Among the
+three families the order is **L, then M, then K**: L because
+`P<n>-module-ready` makes line-rate stress a gate line in its own right —
+the only remaining family whose absence blocks the gate even with every row
+green — with five rows off one stimulus, no machinery gap, and its latency
+constants (L = 16 / 12, ΔC = 3) already re-derived by me four days early at
+`RV-0068` §3.4; M second as the cheapest per row, seven rows over stimuli that
+are already landed and green, with the exact-strobe-set discipline and the X-1
+bar per row written into its packet; K last not because it is small but because
+it is **new capability** — no bench here has driven `clear` — and it should
+inherit family J's schedule-shaped design and its cycle-0 guard lesson after
+that machinery has one more round of use behind it.
+
+### Actions
+- Re-ran bars **N-1, N-2, N-4** myself with git against `2dbd39b^` = `791afb3`
+  (and N-1 additionally against `5401ae6`); re-ran **N-3** and **N-5** myself
+  rather than accepting the worker's inspection argument; re-ran
+  `ocamlc -stop-after parsing`; ran `tools/dv_checks.sh`.
+- Re-derived frame C's four `Injection.outcome` fields from `injection.mli`,
+  `injection.ml` and `frame.mli` at the landing tree; verified the repaired
+  site's constant, message and comment separately; counted and read every
+  `oc.`, `oa.` and `ob.` reference in the file.
+- Read the Actions runs at `2dbd39b` — both workflows, both jobs, per-step
+  conclusions — and the tail of the `build` job's log.
+- Ruled the four-command conduct disclosure on `RV-0068-VERDICT` §5.1's
+  precedent; recorded the recurrence and my own re-violation of §5.3.
+- Adjudicated Bar N-4's single `<` line against B15 and §10 item 1.
+- Read `AP-xgmii_rx_64.md` §4.K/§4.L/§4.M/§7 and `CD-xgmii_rx_64_cosim.md` for
+  the queue read.
+- Appended **RV-0068B-VERDICT (ACCEPT)** to
+  `agents/handoffs/WO-0068_m03-family-n-completion.md`, closing the work order.
+
+### Evidence
+- **CI at `2dbd39bfa05809a289b7859957ca6883ad0e5309`**: `journal-check` run
+  **30988038792** — **success**; `build` run **30988038809** — **success**,
+  jobs **92247281175** (`build`) and **92247281222** (`cosim`) both success.
+  Decisive steps: **6** *"Run tests (expect tests, waveform snapshots)"*
+  success, **8** *"Verify nothing was left unpromoted or non-deterministic"*
+  success, **10** the C-37/ADR-0012 quantifier — `8720452 check(s) run, 0
+  failure(s)`. Predecessors: `5401ae6` build **30985844022** failure;
+  `791afb3` build **30987328568** failure (verdict-only commit, no repair).
+- **The repair**, `test/xgmii_rx_64/test_m03_n.ml`, one hunk
+  `@@ -1206,7 +1206,18 @@`, predicate now at line **1214**:
+  `if oc.Dv_xgmii.Injection.received <> 64`. Derivation re-run at this tree:
+  `injection.mli:182-184` (`received` = *"octets between the start and closing
+  characters"*, `delivered` = *"octets emitted, REQ-103"*, `words` =
+  *"[ceil (delivered / 8)]"*); `injection.ml:388-402`
+  (`let r = received () in … let delivered = r - 4`, `error_runt` only when
+  `r <= 63`); `frame.mli`'s `stress_frame` = **64 octets DA through FCS, FCS at
+  60 … 63**. Hence 64 / 60 / 8 / 0x0F, and no runt strobe.
+- **Bars, re-run by me**: **N-1** — **empty diff**, exit 0, 115 lines each side
+  (also empty against `5401ae6`); **N-2** — **empty diff**, exit 0, 140 lines
+  each side (lines 187–326); **N-3** — **empty diff, zero hunks**
+  (`run_subcase`, 327–800 both sides); **N-4** — `test_m03_n.ml` head 189
+  literals / tree 188, **one `<` (`"frame C received"`), zero `>`**;
+  `bench.ml` 44/44 and `bench.mli` 5/5 **no diff**; **N-5** — `test_m03_n.ml`
+  **8 / 8** empty `{||}`, zero non-empty; `test_m03_structural.ml` **2 / 2**
+  (a naive `grep -c '\[%expect'` returns 3 there — the third is the token
+  `[%expect_test]` inside a prose comment at line 22).
+- **`ocamlc -stop-after parsing`** (ocamlc 4.14.1) on the edited file: exit
+  **0**.
+- **`tools/dv_checks.sh`**, run by me at the landing tree: bench inventory
+  `test/xgmii_rx_64/` **54** (`test_m03_n.ml` 8, `test_m03_structural.ml` 2),
+  repository-wide **134**; row-discharge census, trailing-digit-boundary
+  matcher **48**; declared adjustments −1 (M03-A4) +1 (M03-F5), net zero.
+  **CI's own run of the same script inside build `30988038809` reports the
+  identical 54 and 48**, and `dv_checks: all checks passed`.
+- **RFC-1071 anchor**: `OBLIGATION OPEN` locally (proxy egress block), but in
+  CI at the same run — `check_rfc1071_anchor.sh: OK — anchor CONFIRMED against
+  fetched text`, `sha256
+  e10dfd6816447843d47a7f1b990eba756a791a6308fd5b698a6276075a8e4f9b`. The
+  citable run id for that anchor is therefore **30988038809**. This is the
+  `test/golden/ipv4_ref.ml` checksum anchor, **not** the charter §3 external
+  anchor for this module.
+- **Scope**: `git diff 5401ae6 2dbd39b -- test/xgmii_rx_64/bench.ml
+  test/xgmii_rx_64/bench.mli test/xgmii_rx_64/test_m03_structural.ml` — **empty**.
+  The commit stages three paths; the packet append is **+96/−0** and the
+  worker's journal append **+167/−0**, both pure appends.
+- **`oc.` references**: exactly **four**, lines 1214, 1221, 1222, 1223, all at
+  the repaired site. `oa`'s twelve compare against named quantities
+  (`a_delivered`, `a_words`, `expected_a_last_tkeep`, `a_cycle`,
+  `a_not_before`, `a_not_after`); `ob` is a `delivered > 0` floor.
+- **Count**: **48 of 62** ASSERT rows discharged; **14 outstanding — K1, K2,
+  L1–L5, M1–M7**; 48 + 14 = 62.
+
+### Outcome
+DoD **met**. `RV-0068B-VERDICT` — **ACCEPT** — is appended to
+`agents/handoffs/WO-0068_m03-family-n-completion.md`, carrying the CI reading
+with its green/promotion/mismatch discrimination, the five bars, the Bar N-4
+adjudication, the conduct ruling, the scored §3.4 prediction, the closure
+measurement, two findings against my own packet, the commissioned queue and the
+K/M/L read. **`WO-0068`/`WO-0068B` is ACCEPTED and CLOSED, and family N closes
+with it**: N1 landed and green, N2 landed and campaign-scored, N3 `NO-STIMULUS`
+with its spec citation, N4 landed and green and run to completion for the first
+time. Handoff: orchestrator → the batched `AP-` round (mine), then the single
+architect batch (mine), then family L.
+
+### Open-questions
+- **The census still counts titles, not passes.** The divergence flagged at
+  `J-dv_lead-0122` is closed *for these rows* — title and pass now coincide —
+  but the instrument's property is unchanged, and the discipline that replaces
+  the fix is quoting a CI run id beside the figure. Whether `tools/` should
+  learn the distinction remains for the round that next touches it.
+- **What Phase 1 of the co-sim lane discharged is an adjudication I owe.** It
+  drives one 64-octet good frame; V1–V7 are Phases 2 and 3, unstarted. My
+  standing statement — no `SO-` PASS may rest on `injection.mli`'s model until
+  the differential co-sim has run — is **unchanged and not re-adjudicated this
+  round**. It is the longest-lead item on this module's sign-off and no row
+  round advances it.
+- **SPEC-M03 §10's REQ-802/REQ-810 hook** (C-41) still needs its non-blocking
+  change request, batched with **T8's strobe-multiplicity** question in one
+  request to architect_docs_lead.
+- **Family J is not mutation-scored** and family N's scoring predates two of its
+  rows; the campaign debt grows with every family and is discharged in one
+  campaign at `SO-` time.
+- **The M03-J4 guard's BOUNCE-B4 property remains structurally argued, not
+  demonstrated.** M03-N4 enters it at both members and finds nothing; T13
+  respected, unchanged by the green.
+
+**Harvest (ADR-0018, PROTOCOL §7).** **Not due** — no `SO-`, no gate. Span since
+`J-dv_lead-0122`'s note: **J-dv_lead-0123** (this entry); cumulative untiled
+span **J-dv_lead-0001 … 0123**, first harvest still firing at `SO-M03`. I also
+mine the worker span I commissioned: **J-tb_writer-0028 .. 0028**, which tiles
+with 0027's own span. Inventory carried in at **~22 LH2-g candidates plus the
+war stories**; out at **~24**. Yield:
+
+- **New candidate — authorizing an exception to a check.** *"When an
+  instruction authorizes a deviation from a pre-committed check, it must name
+  the check it excepts and state the exception in the terms that check's
+  instrument reports; describing the deviation's intent instead of the
+  instrument's reading is not an authorization the reviewer can act on."*
+  **LH1**: this commit, where a re-issue encouraged extending a failure message
+  and asserted the literal-extraction bar would show an addition — while the
+  bar forbade the change outright and its instrument, by a limit the same
+  document restated, reported one removal and no addition. **LH2-g** — no
+  proper noun; it is a claim about any authorization against any mechanical
+  check. **LH3**: without it the next reviewer sees a bar reading "violated"
+  and must choose between bouncing correct work and waiving a bar from memory
+  of an authorization — and both outcomes destroy exactly the property a
+  pre-committed bar exists to have. The sharpening: the failure is a **units
+  error between intent and instrument**, and it is invisible to its author for
+  the same reason §5.3's was — the author reasons about what the change means,
+  while the bar reports what its extractor sees.
+
+- **New candidate — the sweep a newly minted rule owes its own document.** *"A
+  rule minted inside a document must be run over the rest of that same document
+  before the document ships; the minting text is the place the rule is least
+  likely to have been applied, because its author was thinking about the
+  incident that taught it rather than about the instructions being written
+  alongside it."* **LH1**: this commit, where a verdict minted "a bar's commands
+  must be executable by the seat they are assigned to" and, three pages later,
+  assigned a script to a seat whose tool scope could not run it — caught by the
+  executor, not the author. **LH2-g** — no proper noun. **LH3**: without it a
+  rule's first violation is committed by its own author in the artefact that
+  announces it, which costs the rule most of its authority at the moment of
+  introduction and teaches every reader that minting is rhetoric.
+
+- **Seconding the worker's candidate, and adopting its clause into mine.**
+  `J-tb_writer-0028`'s LH2-g candidate is, in substance, `J-dv_lead-0122`'s
+  §9.2 candidate derived from the opposite seat — mine says *derive every value
+  you order checked*, its says *do not fill an unsupplied slot with an adjacent
+  supplied one*. Two seats reaching the same rule independently is the strongest
+  admissibility evidence a candidate in this inventory has. And it carries a
+  **mechanism I did not have**: the substitution is likeliest exactly where
+  every previously handled case had the two quantities **coincide**, because
+  that coincidence reads as permission rather than as an untested case. That is
+  literally true here — every other frame in the file is aborted or a runt,
+  where `received = delivered`, so the file's whole history taught the wrong
+  identity. **I adopt that clause into the candidate's statement** and record
+  the seconding rather than minting a duplicate.
+
+- **A second confirming instance for the disclosure discipline, and one for
+  §5.3's portability.** Two consecutive rounds of voluntary, unprompted,
+  first-paragraph disclosure with zero material effect. And §5.3's rule
+  generalised without instruction at its first opportunity — told which bars
+  were not its to run, the executor also **flagged rather than improvised** a
+  bar nobody had reassigned, which is the behaviour the rule wants and not the
+  behaviour it was told. Recorded, not minted.
+
+- **No new war story.** The `Idle_injection` one stands unchanged.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0068_m03-family-n-completion.md

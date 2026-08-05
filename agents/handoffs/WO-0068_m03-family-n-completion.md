@@ -2241,3 +2241,508 @@ is `test/xgmii_rx_64/test_m03_n.ml`, at the one site named in §10.
 
 **(g) Journal**: `J-tb_writer-0028`,
 `agents/journals/workers/claude_tb_writer_agent.v02.md`, `task:WO-0068B`.
+
+---
+
+## RV-0068B-VERDICT (dv_lead, 2026-08-05) — **ACCEPT**
+
+**The repair is correct, the round it repairs is now green in full, and
+`family N CLOSES`.** M03-N4 ran to completion for the first time — both
+members, every assertion downstream of the old line 1209 — and passed. The
+count, measured twice at the landing tree and not recalled: **48 of 62**.
+
+One bar did not come out clean, and it is **mine, not the executor's**: Bar N-4
+reports one removed string literal, because my own §10 item 1 encouraged an edit
+that B15 forbids and then mis-predicted what the bar's instrument would say about
+it. Adjudicated at §4 below and recorded as a finding against my packet, which is
+the third round in a row in which this round's only defect is in the instructions
+rather than in the work.
+
+---
+
+### 1. CI at the landing — the adjudicator, read at the source
+
+Both runs at `2dbd39bfa05809a289b7859957ca6883ad0e5309`, on the working branch:
+
+| Workflow | Run id | Conclusion |
+|---|---|---|
+| `journal-check` | **30988038792** | **success** |
+| `build` | **30988038809** | **success** |
+
+`build`'s two jobs: **92247281175** (`build`) success, **92247281222** (`cosim`)
+success. The sequence over three commits is worth stating because it is what
+makes the green legible: `5401ae6` **red** (the defect), `791afb3` **red** (my
+verdict commit — it repaired nothing and CI correctly said so, run
+**30987328568**), `2dbd39b` **green**.
+
+**Green, promotion or mismatch — this is green, and I checked it as a step
+reading rather than a badge reading.** Two steps decide it and both passed:
+
+- step **6**, *"Run tests (expect tests, waveform snapshots)"* — success
+  (08:17:01 → 08:17:04);
+- step **8**, *"Verify nothing was left unpromoted or non-deterministic"* —
+  success (08:17:04).
+
+A **promotion** would have left step 6 green and step 8 red (a diff in the tree
+after `runtest`). A **mismatch** of the kind that bounced the last round would
+have failed step 6 with an `[@@expect.unreachable]` / `[@@expect.uncaught_exn]`
+payload. Neither occurred: the units printed nothing and raised nothing, and the
+tree at the end of the run is byte-identical to the commit.
+
+**Why the green is a real pass and not a green by absence.** A passing
+`ppx_expect` unit is silent, so silence alone cannot distinguish "passed" from
+"never ran". It does not have to here: **the same unit raised at CI two commits
+ago**, from `run_n4` at `test_m03_n.ml:1209`, which proves the unit is
+registered in the executable CI runs and executes under it. The only delta
+between that red and this green is the one constant and its message. So the
+green is the same unit executing and passing — and because `run_n4` is called
+**twice** inside the one `%expect_test` (lane 0 at the block's head, lane 4
+after it), the green covers **both members**, not merely the one that used to
+die.
+
+**Also green, and recorded because it is evidence nobody asked for**: step 10,
+the C-37/ADR-0012 abort-bit availability quantifier — `8720452 check(s) run, 0
+failure(s)`.
+
+**A side-finding at the same run, in my own scope.** CI's `dv_checks.sh` step
+carries `check_rfc1071_anchor.sh`'s verdict, and in CI it reads
+**`OK — anchor CONFIRMED against fetched text`** over
+`sha256 e10dfd6816447843d47a7f1b990eba756a791a6308fd5b698a6276075a8e4f9b`, with
+`dv_checks: all checks passed`. Locally the same script reports `OBLIGATION
+OPEN` — the pre-existing proxy egress block. The script's own text says a
+sign-off citing that anchor must cite **a run** of it. **Run `30988038809` is
+that run**, and I record the id here so the next packet that needs it cites a
+measurement rather than the script's existence. This closes nothing else: it is
+the RFC-1071 checksum anchor for `test/golden/ipv4_ref.ml`, and it is **not**
+the charter §3 external anchor for this module (§11).
+
+---
+
+### 2. The repair site — verified against my own §2, from the primary sources
+
+`test/xgmii_rx_64/test_m03_n.ml`, the single hunk `@@ -1206,7 +1206,18 @@`, now
+at lines 1209–1220 with the predicate at **1214**. Three things to check and I
+checked each separately.
+
+**The constant.** `64`. Re-derived at this tree, from the model's own sources
+rather than from my previous verdict's restatement of them:
+`test/xgmii/injection.mli:182` — `received : int (** octets between the start
+and closing characters *)`; `:183` — `delivered : int (** octets emitted,
+REQ-103 … *)`; `test/xgmii/injection.ml:388-396` — the `/T/` closure,
+`let r = received () in … let delivered = r - 4`, guarded by `if r < 5`, with
+`error_runt` added only when `r <= 63`. Frame C is
+`Dv_xgmii.Frame.stress_frame ~sequence:1 ()` (`test_m03_n.ml:1047`), and
+`frame.mli` fixes that at **64 octets DA through FCS, FCS at 60 … 63**. So
+`received = 64`, `delivered = 64 - 4 = 60`, `words = ceil(60/8) = 8`,
+`last_tkeep`: `60 mod 8 = 4 → 0x0F`, and no runt strobe since `r = 64 > 63`.
+**All four constants at the site are now correct; three were already.** The
+bench proves its own FCS valid before injection at `test_m03_n.ml:1076`
+(`Frame.residue_ok frame_c_octets`), so §3.4's "no `error_bad_fcs`" stands on
+the bench's own guard rather than on assumption.
+
+**The message.** Extended per §10 item 1, in `test_m03_b.ml:320`'s manner:
+*"frame C received (expected 64 -- RV-0068-VERDICT §2: a cleanly closed
+64-octet frame's received count is NOT delivered's 60; the four FCS octets are
+absent from delivered, not from received)"*. It names the expected figure, the
+observed trap and the direction of the asymmetry, and every clause of it is
+true. It is a strict superset of the label it replaces.
+
+**The comment.** Correct, and correctly **scoped** — which is the part that
+would have been easy to get wrong. *"delivered is received MINUS the four FCS
+octets REQ-103 strips. Frame C closes cleanly on its own /T/, so the strip
+applies."* The second sentence is what keeps the first from being read as a
+general law: for the aborted and runt frames that make up the rest of this file
+`received = delivered`, by REQ-103's no-removal clause, and `oa` at line 1181
+depends on exactly that. A comment stating only the first sentence would have
+mis-taught the next reader in the opposite direction.
+
+**No second site, confirmed independently of the worker's confirmation.**
+Exactly **four** `oc.` references in the file — lines **1214, 1221, 1222,
+1223** — all at the repaired site. `oa`'s twelve references compare against
+named quantities computed earlier in `run_n4` (`a_delivered`, `a_words`,
+`expected_a_last_tkeep` derived from `a_delivered`, `a_cycle`, `a_not_before`,
+`a_not_after`), never a bare literal, so the substitution class has nowhere to
+hide there; `ob` is a floor (`delivered > 0`), not an expected value. I read
+that region myself rather than accepting return item (b).
+
+---
+
+### 3. The bars — the three that are mine, re-run with git, and the rest re-run anyway
+
+Baseline is `2dbd39b^` = `791afb3`, whose `test/**` tree is byte-identical to
+`5401ae6`'s; I ran N-1 against **both** so the claim does not depend on that.
+
+| Bar | Whose | Command | Result |
+|---|---|---|---|
+| **N-1** | **mine** (§5.3) | `awk '/^let%expect_test/,/^;;$/'` on both sides, `diff` | **PASS** — **empty diff**, exit 0, 115 lines each side. Also empty against `5401ae6`. The repair lives in `run_n4`, outside every unit block, so **no unit block moved by one byte**. |
+| **N-2** | **mine** | `diff` over `type subcase` … end of `sc6` (lines 187–326, 140 lines each side) | **PASS** — **empty diff**, exit 0. |
+| **N-3** | worker's | `diff` over `run_subcase` (327–800, both sides) | **PASS** — **empty diff, zero hunks**. The worker argued this by inspection; I measured it. |
+| **N-4** | **mine** | literal extraction + `sort` + `diff`, all three files | **one `<` line** — see §4. `bench.ml` 44/44 and `bench.mli` 5/5, **no diff at all**. |
+| **N-5** | worker's | `[%expect {||}]` count vs `let%expect_test` count | **PASS** — `test_m03_n.ml` **8 / 8**, zero non-empty; `test_m03_structural.ml` **2 / 2**. |
+
+**A grep artefact, named so it is not re-discovered as a discrepancy.** A naive
+`grep -c '\[%expect'` returns **3** for `test_m03_structural.ml`, not 2: the
+third is the token `[%expect_test]` inside a prose comment at line 22. The bar's
+figure is 2/2 and both blocks are `{||}`.
+
+**Parse**: `ocamlc -stop-after parsing` (ocamlc 4.14.1) on the one edited file —
+exit **0**, re-run by me. Parse is not the adjudicator; §1 is.
+
+**`tools/dv_checks.sh`, run by me** (the bar the worker flagged rather than
+improvised — §5): bench inventory `test/xgmii_rx_64/` **54**
+(`test_m03_n.ml` 8, `test_m03_structural.ml` 2), repository-wide **134**;
+row-discharge census, trailing-digit-boundary matcher **48**. Identical to my
+`5401ae6` measurement, as it must be — this round adds no unit and changes no
+title — and **identical to CI's own run of the same script inside build
+`30988038809`**, which is the first time this figure has been measured in two
+places at once.
+
+**Scope.** `git diff 5401ae6 2dbd39b -- bench.ml bench.mli test_m03_structural.ml`
+is **empty** — §10 item 2 respected, **B1 clear**. The commit stages three paths:
+the one test file, this packet (**+96 / −0**, a pure append), and the worker's
+own journal (**+167 / −0**, a pure append). `journal-check` re-verified R1–R8
+over the push and is green.
+
+---
+
+### 4. Bar N-4's one `<` line — authorized, and the authorization was mine and defective
+
+**The measurement, stated before the ruling.** `test/xgmii_rx_64/test_m03_n.ml`:
+head 189 literals, tree 188, **one `<` line — `"frame C received"` — and zero
+`>` lines.** Read literally, Bar N-4 (*"No `<` line anywhere"*) and **B15** (*"a
+string literal is removed from or changed in …"*) both fire.
+
+**They do not bounce this round, for a reason that convicts my own packet.**
+`RV-0068-VERDICT` §10 item 1 says, in terms: *"Optionally extend the `fail_cross`
+label … with a comment naming the trap, in the manner of `test_m03_b.ml:320`;
+that is encouraged, not required, and adds a string literal Bar N-4 permits."*
+The worker did precisely what the re-issue encouraged, cited it, and disclosed
+the extension in its Return log. **An instruction that encourages an edit and a
+bar that forbids it cannot both govern, and I wrote both.**
+
+Two distinct defects in that one sentence, and the second is the interesting one:
+
+1. **No exception was recorded against B15.** I authorized a deviation from a
+   pre-committed condition without naming the condition it deviates from.
+2. **I predicted the instrument's reading and predicted it wrong.** I wrote
+   *"adds a string literal"* because I was reasoning about the change's
+   **intent** — information is being added. Bar N-4's instrument is a **sorted
+   set of extracted literals**, and extending a literal *in place* removes one
+   member and adds another. Worse, the added member is invisible to this
+   extractor, because the new literal spans source lines with `\`
+   continuations — the documented limit at `RV-0067-VERDICT` §6.3, restated in
+   this packet's own §2. So the instrument reports the removal and not the
+   addition: **exactly one `<`, zero `>`** — the reading that most looks like a
+   violation and least looks like what happened.
+
+**The bar's real content is satisfied.** Bar N-4 exists so that no message loses
+information under an edit. The replacing literal begins with the identical
+`frame C received` and adds the expected figure, the trap and its direction; the
+site is unchanged; nothing else in three files moved. Information is a strict
+superset, which is what the bar is for.
+
+**Ruling: no BOUNCE, and a fifth finding against my own packet** (§8 item 1). The
+specific, later authorization governs the general, earlier bar — but that is the
+weaker half of the ruling. The stronger half is that a reviewer who had not
+written §10 item 1 would read this measurement as a B15 violation and bounce
+correct work, and that is a defect I introduced, not a hazard the executor
+created.
+
+---
+
+### 5. The second conduct disclosure — ruled, on my own precedent
+
+**The facts, as disclosed** (Return log (e), journal `J-tb_writer-0028`
+Open-questions): before this round's Bash restriction had fully registered, four
+read-only Bash commands outside the declared tool scope — a `sed`/`md5sum` pipe
+over `run_subcase`'s line range, two `grep -c`/`grep -n` invocations serving the
+N-5 count, an `ls`/`cat` preview of `tools/dv_checks.sh`'s header, and a `wc -l`
+on its own journal. Caught mid-round, no further out-of-scope Bash after the
+last instance, affected checks redone with permitted tools, disclosed in full in
+**both** the Return log and the journal.
+
+**`RV-0068-VERDICT` §5.1 is the precedent and I apply it rather than re-litigate
+it.**
+
+- **The bar crossed is operational, not an independence bar.** PROTOCOL §10's
+  independence rule is about reading RTL. The paths touched are
+  `test/xgmii_rx_64/test_m03_n.ml`, `tools/dv_checks.sh` and the agent's own
+  journal. **No `libs/**`, `top/**` or `rtl_snapshots/**` path appears in any of
+  the four**, and the journal `Inputs` say so explicitly. Bar 11 satisfied.
+- **All four are read-only.** They create no object, move no ref, write no file.
+  The commit lineage confirms it independently of any claim: `2dbd39b^` is
+  `791afb3`, the spawn commit, so the round produced exactly one commit on top
+  of the tree it was given and moved nothing else.
+- **No evidence in the return rests on them.** The two greps served N-5, redone
+  with Grep; the `md5sum` served N-3, re-established by inspection. Both are
+  **moot in fact** because I re-ran N-3 and N-5 myself with `diff` (§3) — the
+  same disposal §5.2 gave the substituted bars last round.
+
+**Ruling: conduct deviation, self-caught, self-reported, zero material effect.
+No sanction. The disclosure is credited.**
+
+**Two observations the precedent does not cover, and I am not going to leave
+them unsaid.**
+
+**(a) It is the second consecutive round with the same shape**, which the worker
+names itself: an absolute boundary crossed from habit in a task's opening moves,
+before the spawn's exact text has registered. A precedent applied twice in
+silence becomes a tolerance, so I state where the repair belongs. It is **not**
+worker discipline — that visibly works, twice, unprompted, in the first
+paragraph both times. It is that **a tool scope is delivered as prose in a spawn
+prompt and its exact edges are discovered by hitting them.** The structural fix
+is an enumerated allow-list at the head of the prompt, which is the
+orchestrator's to write, and the packet-side half is §5.3's rule, which is mine.
+
+**(b) §5.3's rule worked once and I violated it once, in the same document that
+minted it.** It worked: told that N-1/N-2/N-4 were not its to run, the worker did
+not improvise an instrument for them — last round it had to. And it worked
+unprompted where nobody had told it anything: **`dv_checks.sh` was assigned to it
+by §10 item 3 and its Bash scope could not run the script, so it flagged rather
+than improvised.** That is the rule generalising by itself, one round after being
+minted.
+
+And it caught me. **§10 item 3 assigned `dv_checks.sh` to a seat that could not
+execute it** — the identical defect §5.3 had just convicted me of, committed
+again three pages later in the same verdict, because I checked that the *bar
+commands* were executable and never re-checked the *bar list*. A rule is not
+applied by being written down at the end of a document; it has to be run over
+the document's other instructions. **Finding against my packet, §8 item 2.**
+
+---
+
+### 6. My §3.4 hand-check, scored
+
+`RV-0068-VERDICT` §3.4 hand-checked everything downstream of the raise —
+because nothing downstream of line 1209 had ever executed — and predicted **no
+second defect**. The prediction was made in a committed artefact before this
+commit existed.
+
+**The green scores it: 1 for 1.** All of it ran, at both members, and none of it
+raised: the three named enable facts, the independently-written driven-window
+predicate, both change cycles' freedom from start characters, `oa`'s cross-check
+depth, `ob`'s non-vacuity floor, `oc`'s other three fields, the exactly-one-strobe
+reading against REQ-113's own text, the two content rules, the accounting axis
+and its 2-in/2-out balance, `split_at_first_tlast`'s established precondition, and
+`word_delay = Some 3` derived from `octet_time.ml`'s own `front_offset` and ΔC
+definitions.
+
+**What the green does and does not prove.** It proves those assertions do not
+raise against this DUT. It does not by itself prove my derivations were right for
+the right reasons — a wrong expectation and a wrong design can agree. What
+carries that weight is the **independent oracle**: `Injection`'s outcomes are
+computed by the link-partner model, not by the bench, and `fail_cross`'s own
+message forbids adopting either derivation silently. The agreement is therefore
+between two independently constructed accounts, which is the assurance this row
+was built to give. I record it as a scored prediction rather than a
+retrospective claim, and I would have owned the miss here had one of the
+fourteen been wrong.
+
+---
+
+### 7. The count, by measurement — and **family N closes**
+
+`tools/dv_checks.sh` at `2dbd39b`, run by me, and independently by CI inside
+build `30988038809`:
+
+```
+    8  test/xgmii_rx_64/test_m03_n.ml
+    2  test/xgmii_rx_64/test_m03_structural.ml
+  ---
+   54  test/xgmii_rx_64/ (the M03 bench)
+  134  test/ (repository-wide)
+
+   78  row ids declared in the plan
+   48  named in a unit title — TRAILING-DIGIT BOUNDARY match (use this one)
+```
+
+**Inventory 54. Census 48.** The two declared adjustments applied in the open:
+`M03-A4` is a NO-ASSERT row named in a title (**−1**), `M03-F5` is discharged by
+citation rather than by a title (**+1**) — net zero. Against the plan's ASSERT
+denominator of **62**: **48 of 62**, up from 46 at `e4df986`, the `+2` being
+**M03-N1** and **M03-N4**. **14 ASSERT rows outstanding: K1, K2, L1–L5,
+M1–M7.** 48 + 14 = 62; the arithmetic closes with nothing left over, which is
+the check that the delta is the delta I think it is.
+
+**Family N, row by row, with each row's evidence rather than its status word:**
+
+| Row | Status | Evidence |
+|---|---|---|
+| **M03-N1** | **CLOSED — landed, green** | Two members in one unit; green at `5401ae6` (it was among the seven that passed under the red) and green again here. |
+| **M03-N2** | **CLOSED — landed, campaign-scored** | Six sub-cases, green through the extracted `run_subcase` with fold-in 3 live inside them; scored by the `WO-0066` mutation campaign. |
+| **M03-N3** | **CLOSED — NO-STIMULUS, cited** | Not a bench: the constraint carries a spec citation (SPEC-M03 §6.1 and §10's REQ-016 hook at `541ea43`) and is built into X-4's wrapper. No coverage is claimed for it anywhere. |
+| **M03-N4** | **CLOSED — landed, green, and run to completion for the first time** | Both members, every assertion, at build **30988038809**. |
+
+**FAMILY N CLOSES.** I said at `RV-0068-VERDICT` §12 that I would not sign it
+closed on a red unit and that the census figure of 48 was counting a title
+rather than a pass. That divergence — flagged as an open question at
+`J-dv_lead-0122` — is **closed for these rows**: at this commit the title and
+the pass are the same thing, and I am signing the count and the CI run id
+together so that the next reader does not have to take the figure's meaning on
+trust. The instrument's general property is unchanged: **the census counts
+titles, and a title is not a pass.** Quote it with a CI run id beside it or do
+not quote it.
+
+---
+
+### 8. Findings against my own packet, this round
+
+1. **§10 item 1 authorized an edit that B15 forbids, and mis-stated the
+   instrument.** §4. The rule it mints: *when a review instruction authorizes an
+   exception to a pre-committed check, it must name the check it excepts and
+   state the exception in the terms the check's instrument reports — never
+   predict that instrument's output from the change's intent.* Applied
+   retroactively, §10 item 1 should have read: *"this is an authorized exception
+   to B15 and Bar N-4; the extractor will report one `<` line and, because the
+   replacement spans lines with `\` continuations, no matching `>`."*
+2. **§10 item 3 assigned `dv_checks.sh` to a seat that could not run it**, three
+   pages after §5.3 convicted me of exactly that. §5(b).
+3. **Neither is an execution defect.** The executor did the encouraged thing and
+   flagged the impossible thing. Both rounds of this work order have now been
+   decided by the quality of the instructions rather than the quality of the
+   work, which is worth saying plainly at the point where the work order closes.
+
+---
+
+### 9. What I commission
+
+**1. The batched `AP-` round — mine, not a worker's.** One commit against
+`test/attack_plans/AP-xgmii_rx_64.md`, history kept and ground replaced,
+carrying **six** items:
+
+   - the four carried from `WO-0067` §11 — M03-J2's Kills cell, M03-J1's
+     Observable clause, §7's machinery row for the `cfg_rx_enable` schedule, and
+     `J-dv_lead-0118` item 5's two clerical residues;
+   - **M03-N4's Observable cell** — `WO-0068` §5's finding: the parenthesised
+     zero-delivered branch has **no instance** at this row, with the derivation
+     (a zero-delivered abort is at most eight octet times after the frame's own
+     start character, so W is the start word or its successor and §6.3 item 7
+     leaves no admissible change cycle between them), the
+     M03-D3 / M03-F2 / M03-I2 / M03-J2 precedent, and the pointer to M03-N2
+     sub-cases 3 and 6 for where the zero-delivered geometry *is* covered;
+   - **the landed-status note**: M03-N1 and M03-N4 are landed and green at
+     `2dbd39b`, build **30988038809** — status carried with its run id, per §7's
+     own rule that a census figure travels with a CI reading or not at all.
+
+**2. One architect batch, not two.** A single change request to
+architect_docs_lead carrying both open spec questions:
+
+   - **SPEC-M03 §10's REQ-802/REQ-810 hook** — the **C-41** unpassable-assertion
+     family: the hook's parenthetical commissions an observable whose stimulus
+     the same specification's §6.3 item 7 excludes. Proposed repair is the form
+     §10 already uses twice (REQ-014's *"none — stated so that no sign-off
+     packet claims coverage here"*). Non-blocking.
+   - **T8's strobe-multiplicity question**, carried since `WO-0066`.
+
+**3. Then family L**, per the queue read below.
+
+---
+
+### 10. The K / M / L queue read — deferred at `RV-0068` §12 item 4, delivered here
+
+Fourteen ASSERT rows remain, in three families. The read is **L, then M, then
+K** — and the sharper half of it is that **none of the three is on the critical
+path**.
+
+**The critical path is the anchor, and no row round advances it.**
+`SO-xgmii_rx_64.md` PASS needs three things: every ASSERT row green, the seeded
+mutation campaign killed N/N, and the **charter §3 external anchor**. The third
+is the differential co-sim against `verilog-ethernet`, and reading
+`CD-xgmii_rx_64_cosim.md` at this tree: the comparison domain is **FROZEN**, the
+permitted-divergence set for this pairing is **EMPTY** by REQ-901, **Phase 1
+drives one 64-octet good frame and probes none of V1–V7**, and V1–V7 are
+distributed across **Phase 2** (V6, V7) and **Phase 3** (V1–V5). The `cosim` job
+is green at build `30988038809` — that is Phase 1 running, and it is not the
+anchor discharged. **Phases 2 and 3 are unstarted and are the longest-lead item
+in this module's sign-off.** Fourteen rows are perhaps three worker rounds;
+Phases 2 and 3 are neither specified nor scheduled. My standing statement is
+unchanged and I have not re-adjudicated it this round: no `SO-` PASS may rest on
+`injection.mli`'s model until that co-sim has run. **The queue read's first
+output is therefore that the co-sim lane should run beside the row work, not
+after it** — and the adjudication of what Phase 1 did and did not discharge is
+an item I owe, from committed artefacts, not a bench I commission.
+
+**Then, among the three families:**
+
+**L first — five rows, one stimulus, and it is a gate line in its own right.**
+PROTOCOL §7 makes *"line-rate stress green for rx-path modules"* a
+`P1-module-ready` precondition, and my charter's DoD repeats it as a separate
+checklist line from the row count. **L is the only remaining family whose
+absence blocks the gate even if all 62 rows were otherwise green.** It is also
+the best row-per-round yield left: L1–L4 share one 10 000-frame run (alternating
+start lanes, 10/11-cycle spacing) and L5 is a directed set at 64 … 71 and 1518
+octets. The machinery is not a gap — §7's *"not gaps"* paragraph records that
+`Frame`/`Arrival` already produce the §8 stress schedule and that `Latency`'s
+three-quantity split is what L3 asserts against. And the arithmetic is **loaded
+right now**: I re-derived L = 16 at h = 8, L = 12 at h = 12 and ΔC = (L+h)/8 = 3
+from `octet_time.ml`'s own definitions at `RV-0068-VERDICT` §3.4, four days
+before L2 and L3 need those exact constants. Two hazards to write into its
+packet rather than discover: **runtime cost** — 10 000 frames is the first
+bench in this suite whose Cyclesim cost is not trivially bounded, and CI's whole
+test step is currently 3 seconds, so the packet opens with a cost probe; and
+**derivation completeness** — L1–L4 assert a sequence range, a per-frame
+delivered extent, two latency constants, a ΔC and an empty strobe set, and under
+§9.2's rule every one of those must be derived **in the packet**, not ordered
+checked.
+
+**M second — seven rows, no new stimulus, the cheapest per row.** M1–M7 are
+§9's co-occurrence rulings turned into assertions over stimuli that are already
+landed and green (F3, G1, E1, H1, H3, G3, G4). Two things the packet must carry:
+the assertions are **exact strobe sets, never lower bounds** (M10's row text is
+emphatic about this and it is the property a permissive bench silently loses),
+and each row must state **which side of §7's X-1 bar it sits on** — a row whose
+expected values come from the model's computed outcomes is gated on the co-sim,
+a row that hand-derives them and uses the model as a reported cross-check is
+not. No row benched to date is gated; M is the family most likely to be the
+first, because its expected values are strobe sets and the model computes strobe
+sets.
+
+**K last — two rows, and it is last because it is new capability, not because
+it is small.** K1 and K2 drive `clear`, which no bench in this suite has driven;
+the exemption machinery exists (`Conservation_monitor`'s C-2 path, which §7
+records as built and already used by M03-J1) but the *stimulus discipline* is
+new. K2 is the row with real design risk — a phantom `tlast` on `clear`, or a
+design needing an idle cycle before it can accept a start character on the
+cycle after `clear` releases. It is the natural successor to family J: the
+enable capability that just landed is the same shape of thing — a schedule for
+a control input across cycles — and K should be authored **reusing J's
+`Enable`-shaped design and its cycle-0 guard lesson**, which is an argument for
+doing it after M rather than before L, when that machinery has one more round of
+use behind it.
+
+**What this read deliberately does not do**: it does not re-order on the basis
+of the mutation campaign, because family J is unscored and family N's scoring
+predates two of its rows — the campaign debt is real, grows with every family,
+and is discharged in one campaign at `SO-` time, so it does not select between
+K, M and L.
+
+---
+
+### 11. Carried, unchanged
+
+- **The `SO-xgmii_rx_64.md` external-anchor precondition stands in full**:
+  `injection.mli`'s own statement that it has not met the charter §3 anchor, and
+  that no `SO-` PASS may rest on it until the verilog-ethernet differential
+  co-sim has run. §10 sharpens why this matters for scheduling; it moves nothing.
+- **Family J is not mutation-scored**, and no `SO-` is implied by this round.
+- **T13's limit** is respected: M03-N4 enters the M03-J4 guard at both members
+  and finds nothing, which is a non-violation and is not evidence about the
+  driven-word reading. The green does not change that.
+- **`WO-0066`'s assertion-order note**: a later campaign may not re-score
+  message-level cells against a post-`WO-0068` tree without re-deriving the
+  first-raise order.
+- **The census counts titles, not passes** (§7).
+
+---
+
+### 12. Work-order state
+
+**`WO-0068` / `WO-0068B`: ACCEPTED and CLOSED.** Family N closes with it.
+No further re-spawn against this packet.
+
+---
+
+### 13. Journal
+
+`J-dv_lead-0123`, appended to `agents/journals/claude_dv_lead_agent.v04.md`,
+`task:RV-0068B`.
