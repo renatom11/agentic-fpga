@@ -989,13 +989,26 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
      one-term union and is written as one. *)
   let strobe s = consume &: s &: ~:(i.clear) in
   let q_strobe k = bit q2 k &: ~:(i.clear) in
+  (* MUTATION IC-L5 (branch: repeated ONCE) -- never merge.
+     The last output word is delivered twice: the frame's final word is held in
+     a shadow copy and re-presented on the very next cycle, carrying [tlast],
+     the same octets and the same [tkeep] extent a second time. [l5_again] is a
+     one-cycle register of the [tlast] event and does not feed [emit_tlast], so
+     the repeat cannot re-trigger itself: exactly one extra cycle, never more. *)
+  let l5_tkeep = keep_of_count keep_count in
+  let l5_tuser = emit_tlast &: abort in
+  let l5_tlast = emit_tlast &: ~:(i.clear) in
+  let l5_again = reg spec l5_tlast in
+  let l5_data_q = reg spec al_data_d in
+  let l5_keep_q = reg spec l5_tkeep in
+  let l5_user_q = reg spec l5_tuser in
   { O.rx =
-      { Axi64.Source.tvalid
-      ; tdata = al_data_d
-      ; tkeep = keep_of_count keep_count
+      { Axi64.Source.tvalid = tvalid |: l5_again
+      ; tdata = mux2 l5_again l5_data_q al_data_d
+      ; tkeep = mux2 l5_again l5_keep_q l5_tkeep
       ; tstrb = zero 8 (* REQ-014 *)
-      ; tlast = emit_tlast &: ~:(i.clear)
-      ; tuser = emit_tlast &: abort
+      ; tlast = l5_tlast |: l5_again
+      ; tuser = mux2 l5_again l5_user_q l5_tuser
       }
   ; error_bad_fcs = strobe sel_bad_fcs
   ; error_bad_frame = strobe sel_error |: q_strobe 0
