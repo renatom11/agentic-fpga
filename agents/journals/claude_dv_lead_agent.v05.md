@@ -3872,3 +3872,288 @@ after it.
 
 ### Files-in-this-commit
 - test/attack_plans/AP-xgmii_rx_64.md
+
+## [J-dv_lead-0136] 2026-08-10T00:30Z | task:WO-0074 | The eighth campaign is designed against a family that owns no file — and measuring where each bound assertion sits in its host proved that my own plan's rule for scoring it is false as written
+
+### Trigger
+
+Orchestrator spawn `WO-0074/2026-08-10T00:30Z`, HEAD `2761ec5`, discharging
+`WO-0073-VERDICT` §12 commissioning item 2: author the **family M mutation
+campaign** as work-order packet **WO-0074** with its SEALED predictions companion
+in the same commit (R-SEAL-1, freeze-first). The spawn fixes the design
+constraint in terms: family M's seven rows are **bindings** over carriers, and a
+carrier kill and its M row are never two kills; what qualifies an M row is a
+mutant whose kill mechanism runs **through** the co-occurrence the row asserts.
+`OBSERVATION M-O1`'s seeded class rides this campaign per its named carrier.
+
+### Inputs
+
+- `agents/charters/dv_lead.md`, `agents/PROTOCOL.md` (§3, §4, §5, §6, §7, §10 —
+  R-SEAL-1 in full).
+- `docs/specs/modules/xgmii_rx_64.md` **§9 entire** (the nine-row condition
+  table, the closure list, the two clauses stated twice, the "Strobe cycle,
+  pinned" paragraph and its no-output-word pin, the §0.6 reference-word rulings,
+  and the eight co-occurrence rulings plus ruling 9 at `1fe71ca`), **§6.1**
+  items 1–4, **§6.2**, **§6.3** items 2 and 6, **§7**, **§10**. REQ ids named in
+  the packet's Spec basis: REQ-103, REQ-104, REQ-105, REQ-107, REQ-108, REQ-110,
+  REQ-007, REQ-008, REQ-304, §0.6, §0.7, §12.
+- `test/attack_plans/AP-xgmii_rx_64.md` §4.M in full (rows M03-M1 … M03-M10, the
+  row-index warning, the LANDED-STATUS block, `FINDING M-1`, `FINDING M-2`,
+  `OBSERVATION M-O1`), §4.L's landed-status block at HEAD (the campaign
+  absorption, and its item 2 — the first application of the carrier/bound-row
+  rule), §0.1, and the change-log rows for `J-dv_lead-0132` and `J-dv_lead-0135`.
+- `agents/handoffs/WO-0073_family-l-mutation-campaign.md` in full, including its
+  verdict §7 (the base-identity corrective rule, Q4's shared-hunk ruling), §8,
+  §10, §11 and §12; and
+  `agents/handoffs/WO-0073_family-l-mutation-campaign-SEALED-predictions.md` in
+  full — **my own prior seal, opened and adjudicated, which is why reading it now
+  is a retrospective reference and not a disclosure**.
+- Bench, all under `test/**` and all mine: `test/xgmii_rx_64/bench.ml`
+  (`strobe_names`, `error_pulses`, `delivered_samples`, `frames_at`,
+  `directed_frame_octets`), `test_m03_b.ml` (M03-B3, M03-B2), `test_m03_e.ml`
+  (M03-E1, E2, E4, E5), `test_m03_f.ml` (M03-F1, F2, F3), `test_m03_g.ml` (the
+  file header's governance and assertion-order declarations, M03-G1 … G8),
+  `test_m03_h.ml` (M03-H1, H3), `test_m03_k.ml` (K1's bad-FCS construction),
+  `test_m03_n.ml` (N2's frame-B received count), `test/cosim/canonical.mli` and
+  `compare.ml` (the pinned transaction grammar), `tools/dv_checks.sh` (the
+  inventory and census blocks).
+- **Independence, stated because this is a mutation campaign**: I did **not**
+  open `libs/hardcaml_ethernet/src/xgmii_rx_64.ml` or its `.mli`, nor anything
+  under `libs/**`, `top/**`, `bin/**`, `rtl_snapshots/**` or
+  `docs/reports/audit/**`. Every class below is derived from a sentence of §9
+  and every cell from a committed `test/**` file. No `*SEALED*` file of an
+  unadjudicated round was opened.
+
+### Reasoning
+
+**1. The shape decided the design, and the shape is unlike any prior campaign's.**
+Family M writes no assertion: each row binds one of §9's co-occurrence rulings to
+an assertion that already exists inside a carrier of families B, E, F, G or H.
+So a red at a carrier is not, by itself, a family-M result. I made the criterion
+explicit and put it at §0 of the packet: **a class qualifies its M row iff the
+exact strobe SET changes with the delivered stream unmoved, so that the carrier's
+own strobe-set assertion is the assertion that speaks.**
+
+**2. That criterion is only mechanical because of a fact I measured rather than
+assumed.** In all twelve carriers the exact-strobe-set assertion is the **last**
+assertion in the unit, after every datapath assertion; two of the five files
+state the ordering as a stated convention in their own headers. Therefore any
+mutation that moves a word count, a `tlast` cycle, a `tkeep`, a `tuser` bit or an
+octet reddens the carrier **earlier** and the M row's own observable is never
+evaluated. **Every class in this campaign is therefore datapath-silent by
+construction, and §4(c)'s pre-ship check stops being a side condition and becomes
+the qualification criterion itself.** That is the round's structural contribution
+and it is stated before the run, not derived from a scorecard.
+
+**3. Eight classes, one per scoreable row, and three rejected alternatives.**
+IC-M1 (a precedence design at a bad-FCS runt, ruling 1), IC-M2 (the residue
+comparison at REQ-108's truncation, ruling 2 — `OBSERVATION M-O1`'s own seed),
+IC-M3 (at an error-character closure, ruling 3), IC-M4 (at a start-character
+closure, ruling 4), IC-M5 (the error character not clearing the **abort
+detector's** open-frame term, ruling 5), IC-M6 (a start character in `Discard`
+reported as an abort, ruling 6), IC-M7 (an error character in `Discard` reported,
+ruling 7, C-12), IC-M10 (the sub-five suppression removed, ruling 9). Rejected:
+**(a)** the single wide "compare the residue at every closure" class, which the
+AP's own M4 cell invites (*"as M03-M3"*) — it would have reddened three carriers
+for **one** kill, forfeited per-row attribution, and collapsed M-O1's question,
+which is about one carrier's one content; **(b)** seeding anything against
+`M03-M8` or `M03-M9`, both of which I instead **declared unscoreable with their
+derivations** (disjoint octet ranges; an input bit this module does not have);
+**(c)** the unrestricted IC-M5 in which the frame stays open for everything —
+that necessarily moves the delivered extent, so an earlier assertion speaks and
+the row cannot be attributed. The restricted class is the one that can be scored,
+and if the design's gate cannot separate the report path from the delivery path
+the auditor declares NOT SEEDED and **that declaration is the result**, pre-fixed
+at §8.1.
+
+**4. `FINDING M-O1a` — my own observation, widened by a derivation done at draft
+time.** M-O1 ranks the anti-vacuity ground by number of *cases* (M3 sixteen, M4
+two, M2 one stimulus at two lanes). The quantity that governs is the number of
+**distinct delivered-octet contents at the closure point**, because the residue
+is a function of content alone. Measured: M3's carrier drives **eight** distinct
+contents (delivered lengths 24…31, each at two lanes); M2's drives **one**; and
+**M4's drives one too** — its two members deliver the identical 64-octet filler
+at both lanes. So M4's ground is exactly as thin as M2's and M-O1's ranking is
+wrong in the direction that matters. IC-M4 therefore carries the same
+vacuity-scoring rule as IC-M2.
+
+**5. `FINDING M-3` — a sentence of my own plan is false as written, and
+`WO-0073` had already measured the counterexample.** §4.M's landed-status block
+says *"every M row's assertion IS a carrier's assertion, so a seeded class that
+kills a carrier kills its M row by construction"*. The antecedent is true; the
+consequent is not. The M row's assertion is **one** of the carrier's, and it is
+the last one — so a class reddening the carrier earlier kills the carrier's row
+and **not** the M row. `WO-0073` is the proof: IC-L2 and IC-L5 reddened M03-G3,
+G4, G7 and G8 — all four family-M carriers — and qualified no family-M row, which
+that verdict got right while §4.M's sentence still asserts the general form. The
+corrected form is in the packet §11 and the carrier for the plan edit is the
+post-campaign AP round.
+
+**6. `FINDING M-4` — my own inventory instrument counts markdown.**
+`tools/dv_checks.sh`'s repository-wide line greps every file under `test/`, not
+only `*.ml`; at this tree it reports **140** where the OCaml unit count is
+**139**, and the extra match is a line the *plan itself* gained at `2761ec5`
+whose own content is the better matcher. Raised, not repaired — `tools/` is not
+this commit's business and §8's freeze is worth more than a tidier script.
+
+**7. The anchor is blind to this entire campaign, and the ground is grammatical.**
+The pinned canonical transaction form is `{ tkeep; tlast; tuser0; octets }` per
+word plus an `Accept`/`Discard` decision per frame. **It has no strobe field.**
+Every class here changes only which strobes pulse, so the differential
+co-simulation lane could not convict any of them **even if it drove the
+stimuli** — a third blindness beside `WO-0073-D2`'s, and a stronger kind, since
+D-2's is a property of the current comparison and this one of the grammar. It
+gives the commissioned cosim-lane round a second thing to price and is my reason
+for recommending that round be drafted after this campaign's verdict.
+
+**8. Collisions: two pairs and one triple, and one of them is the commission's
+question in miniature.** Every scored message in this campaign is raised by a
+count-shaped match arm, so the added strobe's *name* is never printed. That makes
+IC-M1's two branches message-identical at their cell with **no** bench-produced
+discriminator (carried by the disclosure alone, the third repeat of `WO-0066`'s
+IC-D/IC-F situation); makes IC-M3 and IC-M5 message-identical at `M03-H3`, where
+the same characters mean *blast radius through ruling 3* under one class and *the
+kill of M03-M5* under the other, separated by a measurement; and makes IC-M2,
+IC-M6 and IC-M10 message-identical at `M03-G7`, separated by four other carriers'
+states. Every one is pre-named with its discriminator.
+
+**9. Price and scope.** Eight classes, eight transients, ≈ 45.9 minutes of CI at
+the measured 344 s job wall. **The campaign adds no stimulus at all** — every
+unit it scores is already in the suite — so unlike family L there is no frame
+count to defend and the only lever is the class count. IC-M10 is the one class
+outside the seven bindings; it costs one job and it is the only scoring `M03-M10`
+is scheduled to ever receive, since its carriers' families have already had their
+campaigns. I recommend keeping it and priced the alternative in the open.
+
+**10. The seal's second copy, restated here as the seal itself requires** — the
+class → `R!`-carrier row mapping, without the strings and without the matrix:
+IC-M1 → `M03-F3`; IC-M2 → `M03-G1`; IC-M3 → `M03-E1`; IC-M4 → `M03-H1`;
+IC-M5 → `M03-H3`; IC-M6 → `M03-G7`; IC-M7 → `M03-G8`; IC-M10 → `M03-F2` **and**
+`M03-B3`. The two load-bearing greens that measure `FINDING M-1` and
+`FINDING M-2` are `M03-G3` under IC-M6 and `M03-G4` under IC-M7.
+
+### Actions
+
+Wrote `agents/handoffs/WO-0074_family-m-mutation-campaign.md` (17 sections: the
+eight classes with their §9 grounds and ten mandatory disclosures; the
+re-measured denominator and `FINDING M-4`; the instrument survey and the
+last-assertion fact; seven declarations of what the campaign cannot score;
+R-DISC-1/2 in an inverted gate inventory; §4(c) as the qualification criterion;
+the blinded absolute allowlist; the base-SHA rule in its corrected form plus
+three bounded-class scoring rules; the mutant-owned axes; collisions; the
+corrected carrier/bound-row rule; the price; the owed list with carriers; the
+weighting; the return format; the not-to-be-told split) and its sealed companion
+`WO-0074_family-m-mutation-campaign-SEALED-predictions.md` (13 sections: the
+denominator at the freeze; row prefixes; the orders every cell depends on; the
+matrix over twelve carriers with seven load-bearing greens; the eight REQUIRED cells
+verbatim with mutant-owned integers marked; the UNWORKED cells with adjudication
+pre-fixed; six GREEN-BY-BLINDNESS declarations; three named collisions with their
+discriminators; nine dispositions; the inequality table; the reasoning; the
+bounds; seven pass criteria). **No `test/**` byte moved and none may move until
+the campaign scores.**
+
+### Evidence
+
+All commands are read-only and run from a repo checkout at `2761ec5`
+(`git status --porcelain` empty at both ends of this round).
+
+1. **Bench inventory, three matchers, at this tree:**
+   - `for f in test/xgmii_rx_64/*.ml; do printf '%5s %s\n' "$(grep -c 'let%expect_test' "$f")" "$f"; done`
+     → a 3/7/4/3/4/4/7/4/5/3/2/2/8/3 split summing to **59**.
+   - `grep -rh 'let%expect_test' --include=*.ml test/ | grep -c .` → **139**;
+     `grep -rc '^let%expect_test' --include=*.ml test/ | awk -F: '{s+=$2} END {print s}'` → **139**.
+   - `grep -rh 'let%expect_test' test/ | grep -c .` → **140** (the script's own
+     matcher). `grep -rn 'let%expect_test' test/attack_plans/` → one hit,
+     `test/attack_plans/AP-xgmii_rx_64.md:865`. **That is `FINDING M-4`.**
+   - Per directory: `monitors` 37, `xgmii` 25, `golden` 11, `axi64_probe` 3,
+     `xgmii_probe` 3, `xgmii_rx_64` 59, `cosim` 0, `hardcaml_ethernet` 1 →
+     **79 behavioural + 1 build-level non-M03**.
+2. **Row-discharge census**, by `tools/dv_checks.sh`'s own two matchers run
+   against `test/attack_plans/AP-xgmii_rx_64.md` and `test/xgmii_rx_64/*.ml`:
+   **declared = 78, naive = 62, boundary = 62, over-discharged = (empty)**; with
+   `M03-A4` − 1 and `M03-F5` + 1 → **62 of 62 ASSERT rows discharged**, unmoved
+   from `WO-0073`'s base.
+3. **The last-assertion fact**, read from the five carrier files in source order:
+   in `run_f1`, `run_f2`, `run_f3`, `run_g1`, `run_g3`, `run_g4`, `run_g7`,
+   `run_g8`, `run_h1`, `run_h3`, `run_e1` and `run_b3` the `match error_pulses
+   samples with` block is the **last** assertion before the accounting calls and
+   `assert_monitors_clean`, and every delivered-stream assertion precedes it.
+   `test_m03_g.ml`'s header states the convention in terms (*"the EXACT strobe
+   set, across the whole run, last"*), as does `test_m03_f.ml`'s M03-F1 block.
+4. **`error_pulses`' counting convention**: `bench.ml` maps each sample's
+   high-strobe list to `(cycle, name)` pairs over `strobe_names` =
+   `[error_bad_fcs; error_bad_frame; error_runt; error_oversize;
+   error_start_without_terminate]`, so two **different** strobes on one cycle are
+   two entries and the same strobe twice within one cycle is one — C-23, and
+   `WO-0069`'s ruling makes the latter an equivalent mutant rather than a gap.
+5. **`FINDING M-O1a`'s measurement**: `run_e1` delivers `24 + e_lane` octets over
+   `List.range 0 8` at each of two lanes → **eight** distinct contents; `run_h1`
+   delivers `filler 64` at both lanes → **one**; `run_g1` truncates the same
+   1600-octet `directed_frame_octets` prefix at both lanes → **one**.
+6. **IC-M1's rule is a singleton, measured**: the bad-FCS constructions in the
+   M03 bench are `test_m03_d.ml:104` and `:269` (64 octets), `test_m03_k.ml:143`
+   (64 octets) and `test_m03_f.ml:546` (**63 octets** — M03-F3). Only the last is
+   a runt, so 58 of 59 M03 units are MUST-STAY-GREEN under IC-M1.
+7. **IC-M7's rule is a singleton, measured**: the only error character placed
+   strictly inside REQ-108's first epoch is `test_m03_g.ml:1542`'s `At_octet k`
+   at `k = 1560`; M03-G4's `/E/` lands past the frame's own terminate character.
+8. **The anchor's grammatical blindness**: `test/cosim/canonical.mli`'s pinned
+   `type word = { tkeep; tlast; tuser0; octets }` and `type decision = Accept |
+   Discard` carry **no strobe field**; `grep -rn 'error_bad_fcs\|error_runt\|
+   strobe' test/cosim/*.ml` returns one hit, a comment.
+9. **`M03-F3`'s printed cycle = 11 at both lanes**, derived: `frames_at` sets the
+   first start octet time to 8 (lane 0) / 12 (lane 4), `start_cycle = ot / 8 = 1`
+   at both; 63 − 4 = 59 delivered in 8 words; §7's constant gives
+   `1 + 3 + (8 − 1) = 11`.
+10. **No CI run is claimed by this round**: nothing is built, nothing is
+    simulated, and the campaign's control run is the base commit's own — which
+    does not exist until the orchestrator creates it. The reference wall figures
+    quoted for pricing are `WO-0073`'s measured ones (job wall 344 s at run
+    `31015276337`, job `92337605716`), cited as prior measurements and not
+    re-measured here.
+
+### Outcome
+
+DoD **met** for the commissioned item: the family M campaign packet and its
+SEALED companion exist and are handed to the orchestrator to land in **one**
+commit, which is R-SEAL-1's freeze-first form and the condition of every
+cell-level claim the round will later make. The base SHA is defined as **the
+commit that stages these two files** — the corrective drafting rule adopted at
+`WO-0073-VERDICT` §7, applied for the first time. Handoff: the two files, for the
+orchestrator to issue to the auditor. **No `test/**` byte moved, no attack-plan
+row moved, no `SO-` opened or offered, no `BUG-` opened** — this round observed
+no design at all. **The lessons harvest is not due at a campaign packet**; it
+falls due at the `SO-`, spanning from my last harvest, and is declared here
+rather than omitted.
+
+### Open-questions
+
+1. **Whether IC-M10 rides, and it is a cost question the operator pays.** Eight
+   classes cost ≈ 45.9 minutes of CI against seven at ≈ 40.1. IC-M10 is the one
+   class outside the seven bindings and the only scoring `M03-M10` is scheduled
+   to receive. **My recommendation is to keep it**; the figures are in §12 so the
+   decision is made rather than inherited.
+2. **Whether the cosim-lane round should wait for this campaign's verdict.**
+   `WO-0073-D2` commissioned an explicit cycle comparison for the lane; §4 item 5
+   of this packet adds a second, independent blindness — the canonical grammar
+   has no strobe record — and the two are cheaper to price together. **I
+   recommend the cosim-lane `WO-` be drafted after this verdict**, which changes
+   the commissioned order's item 3 in timing only, not in content.
+3. **IC-M5 may be unrenderable as a datapath-silent diff**, if the design's
+   open-frame term is shared between the abort detector and the delivery path.
+   §8.1 pre-fixes the disposition (`M03-M5` recorded SCORED AND UNQUALIFIABLE at
+   this design, with the shared term quoted) — but it is a disposition I wrote
+   for myself, and a ruling that the round should instead be re-scoped is
+   available to the orchestrator **before** seeding, not after.
+4. **Three findings are raised and unpaid, with carriers named**: `FINDING M-3`
+   (§4.M's "by construction" sentence) and `FINDING M-O1a` (the anti-vacuity
+   quantity) ride the post-campaign `AP-` round; `FINDING M-4`
+   (`tools/dv_checks.sh`'s matcher) rides the next commit that opens `tools/**`.
+   None is repaired here, deliberately, because §8's freeze is worth more than
+   any of them.
+5. **Nothing is escalated.** No `BUG-`, no spec-queue addition — a nil addition,
+   declared rather than omitted.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0074_family-m-mutation-campaign.md
+- agents/handoffs/WO-0074_family-m-mutation-campaign-SEALED-predictions.md
