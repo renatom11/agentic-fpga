@@ -2663,3 +2663,45 @@ return never named.
 
 ### Files-in-this-commit
 - tasks/BOARD.md
+
+## [J-orchestrator-0214] 2026-08-09T19:55Z | task:none | The plan absorbs the whole bench era in one batch - and the site now shows sixty-two of sixty-two
+
+### Trigger
+AP-batch-8 returned complete and landed (1702f0f, J-dv_lead-0132):
+all fourteen items placed, K-O2 PAID with the assertion derived from
+the counter's own source (frames_compared=2 the mechanical witness
+that the abandoned frame was offered, not dropped), test/cost_probe/
+DELETED under its own stated condition seven days late, plan counts
+provably unmoved (78/62 both ends, extractor blind to the blockquoted
+status tables by design), and FINDING AP-1 - a set claim in dv's own
+J-dv_lead-0124 note convicted at the point of citation, the first
+time §0.1 caught one before a campaign paid for it. Four
+disagreements stated, all upheld as artefact-over-dispatch (the CD
+file was always item (ii)'s own text; the change-log row annotated
+not rewritten - "rewriting a dated record is how it stops being
+one"). The landing CI's green on test_m03_k.ml is K-O2's check.
+
+### Rulings
+- dv Q1 (the dangling test/cost_probe path in test/cosim/dune's
+  comment): CARRIED as dv named it - next commit opening test/cosim/.
+  The discipline of not widening a plan round's file set on one's own
+  authority is worth more than a harmless dangling word; dv refusing
+  to widen was correct.
+- dv Q2 (a bench file re-opened after the era closed): per the
+  affirmed K-O2 path; the landing CI is the check, nothing further.
+
+### What I did
+- Landed 1702f0f, pushed; rebuilt the site from the 62-era tree
+  (436 commits, 402 entries, 74 WOs; the module matrix's M03 cell
+  now reads 62/62 off the same census the program uses). Deploy
+  still awaits the sponsor's CLOUDFLARE_API_TOKEN.
+- Next: dv on the FAMILY L CAMPAIGN packet - the campaign era's
+  first packet (order per RV-0072: L, M, then J and K, then the
+  anchor, then SO-M03 and the first harvest).
+
+### Files-in-this-commit
+- site/public/index.html
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html
