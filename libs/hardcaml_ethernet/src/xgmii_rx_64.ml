@@ -516,6 +516,10 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
   (* [consume] is defined by the output decision below; the two are mutually
      recursive through one cycle of register, so the wire is declared here. *)
   let consume = wire 1 in
+  (* MUTATION IC-L3 -- never merge. Declared here, driven at the output
+     decision below, because the deferral it renders must hold the closure
+     record for the one extra cycle the deferred word waits. *)
+  let l3_block = wire 1 in
   let r1 = wire 7 in
   let r2 = wire 7 in
   let valid_of r = bit r 0 in
@@ -524,7 +528,7 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
   let sel_is_r0 = ~:sel_is_r2 &: ~:sel_is_r1 in
   let sel = mux2 sel_is_r2 r2 (mux2 sel_is_r1 r1 r0) in
   r1 <== reg spec (r0 &: ~:(repeat (consume &: sel_is_r0) 7));
-  r2 <== reg spec (r1 &: ~:(repeat (consume &: sel_is_r1) 7));
+  r2 <== reg spec ~enable:(~:l3_block) (r1 &: ~:(repeat (consume &: sel_is_r1) 7));
   let sel_valid = valid_of sel in
   let sel_terminate = bit sel 1 in
   let sel_error = bit sel 2 in
@@ -955,7 +959,23 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
   let ev12 = ~:al_new &: bit al_keep 4 in
   let closed = sel_valid in
   let closure_aligned = closed &: (~:sel_is_r0 |: off4) in
-  let decided = ev12 |: closure_aligned in
+  (* MUTATION IC-L3 -- never merge.
+     The delay varies with the final word's residue: when the word about to be
+     emitted is the frame's [tlast] word and its DELIVERED extent (the [tkeep]
+     extent, [pc] - [strip]) is 2 modulo 8, the deciding evidence is withheld
+     for exactly one cycle. The word waits in the emission register, its
+     closure record is held at its own age, and it leaves complete on the next
+     cycle with its strobes still on its own [tlast] cycle. *)
+  let l3_block_d = reg spec l3_block in
+  l3_block
+  <== (have_word
+       &: (ev12 |: closure_aligned)
+       &: closed
+       &: (nc ==:. 0)
+       &: (pc >: strip)
+       &: ((pc -: strip) ==:. 2)
+       &: ~:l3_block_d);
+  let decided = (ev12 |: closure_aligned) &: ~:l3_block in
   let emit_last_a = have_word &: decided &: closed &: (nc ==:. 0) &: (pc >: strip) in
   let emit_last_b = have_word &: decided &: (nc <>:. 0) &: (nc <=: strip) in
   fcs_tail_pending <== emit_last_b;
@@ -974,7 +994,7 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
   in
   let abort = sel_bad_fcs |: sel_error |: sel_start |: sel_oversize |: sel_runt in
   let tvalid = (emit_full |: emit_tlast) &: ~:(i.clear) in
-  consume <== (sel_valid &: (emit_tlast |: sel_is_r2));
+  consume <== (sel_valid &: (emit_tlast |: sel_is_r2) &: ~:l3_block);
   (* Three of the five strobes are the union of the two report paths: epoch A's,
      consumed from the aged record on its `tlast` cycle or at age 2, and the
      in-word epochs', fixed two cycles after their word. §0.6 counts high
