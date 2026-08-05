@@ -1,0 +1,651 @@
+# WO-0066: the family-B/N mutation campaign — six classes against eleven members that have never been scored, and the first campaign in this programme whose scored bound splits into instances the seal has to distinguish
+
+- **State**: **DRAFT** — dv_lead's draft. The orchestrator issues it, operates it
+  (PROTOCOL §10's transient model) and allocates its id (PROTOCOL §3); `0066` is
+  a placeholder used for reference throughout and is **not** a claim of
+  allocation.
+- **From** / **To**: dv_lead → **auditor** (manifest author), via the
+  orchestrator (campaign operator).
+- **Spec basis**: `docs/specs/requirements.md` **REQ-102** (the third sentence —
+  a control character other than `/S/` and `/T/` in a preamble position routes to
+  REQ-105), **REQ-105**, **REQ-107**, **REQ-110** (the abort rule, its
+  *"a start character in lane 4 leaves lanes 0 to 3 of that word belonging to the
+  aborted frame"* clause, and its zero-delivered clause), **REQ-113** (ordered
+  sets and out-of-frame control characters ignored), **REQ-103**, **REQ-104**,
+  **REQ-011**, **REQ-008**, **REQ-101**; **§0.3** (the gap convention and the
+  start lanes), **§0.5** (octet time, the deciding input word), **§0.6** (the
+  strobe window, C-23's counting), **§0.7** (the zero-delivered class), **§2**
+  (the control-character codes), **§12**;
+  `docs/specs/modules/xgmii_rx_64.md` **§6.1** (the two-events-in-one-word
+  paragraph and its landed six-row cycle table), **§6.2** (the `Idle`,
+  `Preamble` and `Frame` rows), **§6.3** items 3 and 8, **§7** (the per-octet
+  constant), **§9** (the closure list, the nine-row table, the no-output-word
+  pin, ruling 9's sub-5 class), **§10**.
+- **Plan basis**: `test/attack_plans/AP-xgmii_rx_64.md` **§4.N** row `M03-N2`
+  and **§4.B** rows `M03-B2` and `M03-B4`, as amended at `RV-0065B-VERDICT` §6;
+  §4.E / §4.F / §4.G / §4.H / §4.I for the units this packet predicts as blast
+  radius.
+- **Binding**: the auditor's **R-DISC-1** and **R-DISC-2** (`DISP-0001` §4,
+  `fab31de`) bind these manifests and are adjudication criteria for them.
+- **The seal**: `WO-0066_family-bn-mutation-campaign-SEALED-predictions.md`,
+  frozen in **this packet's own commit**, before any diff exists.
+  `RV-0065B-VERDICT` §7.1's forward commitment under **R-SEAL-1** falls due here
+  and is redeemed here. **If this commit does not stage that file, this round has
+  no seal**, its cell-level claims may not be made, and the absence is a finding
+  against me — my own rule, written against me at `J-dv_lead-0113` Open-question 1.
+- **Precedent carried in terms**: `WO-0063B`'s pre-run reading note. **If the
+  manifest raises a question for me, it comes to me BEFORE the run**, as a
+  committed reading note, not as a post-hoc reading of a scorecard.
+
+---
+
+## 0. What this round is for, and the two things it cannot do
+
+Eleven members landed at `88413b9`/`eb1e06a` and **not one of them has been
+scored**: `M03-B4` member (b), `M03-B2`'s four `/I/` and `/Q/` members, and
+`M03-N2`'s six sub-cases. `WO-0065` §10 said in terms that *"nothing here is
+mutation-qualified by being written"*; this is the round that makes the claim
+falsifiable. Three of the six N sub-cases were **red against a conforming design**
+until `eb1e06a`, so this is also the **first legitimate M03-N2 denominator** — a
+red member kills nothing and cannot be scored in either direction.
+
+**Two things this round cannot do, stated first so no verdict drifts into them.**
+
+1. **It cannot pay `WO-0058` bound 7.** The bench pays bound 7; the plan records
+   it; a campaign only *scores* whether a design that breaks the bound's own
+   conjunction is caught. §4 fixes how, and fixes it so that a partial catch is
+   **visible as partial** rather than rounded up.
+2. **It cannot qualify a row on a class the row was authored against.** None of
+   the eleven members was written with a mutation class known — unlike `WO-0063B`'s
+   member (iii), and that discount does **not** apply here. What does apply is the
+   opposite honesty: several of the six classes below are already detected by
+   units outside the new eleven, and §9 prices that unit by unit rather than
+   letting the scorecard imply the bench was blind.
+
+---
+
+## 1. The six intent classes
+
+The five I foresaw at `RV-0065B-VERDICT` §7.1 were a **plan**, not a seal. At the
+freeze derivation two of them turned out to conflate distinct objects, and the
+correction is recorded here rather than absorbed:
+
+- **IC-B as foreseen** named two renderings (*"emits a `tkeep` = 0 word for frame
+  B, **or** suppresses `error_runt` below some octet floor"*). They redden the
+  same six cells with **different first-speaking messages**, so they are one class
+  with a **mandatory rendering disclosure**, not one class with one cell.
+- **IC-D as foreseen** put `/I/` and `/Q/` in one `R!` set. They are **two
+  different defects**: `M03-B2`'s own row text says `/I/` kills a design carrying
+  REQ-113's ignore rule into the preamble, and `/Q/` kills a design whose
+  preamble routing is a **closed code table**. A campaign that scored them as one
+  class would leave the `/Q/` member unscored on the only class it was built for.
+  **IC-F is minted here** for that reason, and the addition is named rather than
+  smuggled.
+
+Six classes. Each is **one kill**, never one kill per reddened unit.
+
+### IC-A — the in-word REQ-110 abort is recognised only at a word boundary
+
+REQ-110's abort is decoded for a `/S/` in **lane 0** of an input word and **not**
+for a `/S/` in **lane 4** of a word carrying an already-open frame. **This is
+`WO-0058` bound 7's own convicting class** and the reason the round exists.
+
+**Required consequence**: `M03-N2` sub-cases **4, 5 and 6** redden. §4 governs how
+the three are scored and why a rendering that reddens only two is recorded as
+**short**, not as a kill.
+
+#### 1.1 MANDATORY DISCLOSURE **D-A1** — the axis that decides how much of bound 7 is scored
+
+**On what does your non-recognition key?** Exactly one of:
+
+- **L** — the `/S/`'s **lane alone**. Any lane-4 `/S/` fails to abort, regardless
+  of what is open.
+- **O** — the lane **and** *some* frame being open on entry to the word.
+- **F** — the lane **and** the aborted frame being in the **`Frame`** state
+  (already delivering octets) on entry to the word.
+
+This is not a stylistic question. Bound 7's three instances split on it: two enter
+their word in `Frame` state and one in `Preamble` state, and **L** additionally
+reaches two units whose lane-4 abort has nothing open on entry at all. A
+manifest that does not answer **D-A1** is scored under the widest branch and
+every disagreement is a finding against the manifest.
+
+#### 1.2 MANDATORY DISCLOSURE **D-A2** — what the unrecognised `/S/` then routes to
+
+Removing one decode condition does not delete the character. **Where does the
+lane-4 `/S/` land in your rendering?**
+
+- **E** — it falls through to the design's existing handling for *a control
+  character other than `/T/` inside a frame*, i.e. REQ-102/REQ-105. **This is the
+  expected consequence of a minimal diff** and the branch the seal derives.
+- **P** — it is consumed as a data octet, with no routing at all.
+
+**P is admissible but is a second defect riding the first**, and the seal marks
+its cells **UNWORKED** with adjudication pre-fixed (§6 disposition 6). Prefer **E**;
+if your diff produces **P**, say so before the run — a disclosure made before
+running costs nothing, the same fact read off a scorecard is a finding.
+
+### IC-B — the zero-delivered close is mis-scored
+
+REQ-107's zero-delivered close — the frame that a `/T/` closes having received no
+octet at all (§9 ruling 9's sub-5 class, §0.7) — owes **exactly one `error_runt`
+and no output word whatsoever**. Break exactly that.
+
+#### 1.3 MANDATORY DISCLOSURE **D-B1** — which half you broke
+
+- **W** — the close **emits an output word** (a `tvalid` word for a frame that
+  must deliver none; a `tkeep` = 0 or otherwise empty `tlast` is the natural
+  shape).
+- **R** — the close's **report is suppressed** below a delivered-octet floor
+  (`delivered > 0` gating `error_runt`).
+
+Both satisfy IC-B and both redden all six N sub-cases; they differ in **which
+assertion speaks**, and the seal branches on it.
+
+#### 1.4 MANDATORY DISCLOSURE **D-B2** — the scope, narrow or wide
+
+Is the mis-scoring scoped to **REQ-107's** zero-delivered close, or to **every**
+no-output-word closure — REQ-105's and REQ-110's alike? The answer moves the
+predicted set from ten units to eighteen. `WO-0058` FINDING GH-2 and `WO-0061`
+FINDING S-4 were the same failure twice — a disclosure function with no column
+for the dimension that decided the result — and `WO-0063B` §1.1 was the third.
+This is that column, named a fourth time and before the diff exists.
+
+### IC-C — the coincidence is serialised
+
+Given two frame-ending events pinned by §9 to **one cycle** under **different**
+strobe names, delay one report by a cycle. **Report path only: no word moves, no
+`tkeep` changes, no octet count changes, no `tuser` marking appears or
+disappears.**
+
+**Required consequence**: `M03-N2` sub-cases **3, 4 and 6** redden and sub-cases
+**1, 2 and 5** stay **green**. The green half is not decoration: 1, 2 and 5 pin
+their two reports a cycle apart *by their own stimulus arithmetic*, so a class
+that moves reports generally rather than coincident ones reddens them too — and
+then IC-C's red at 3/4/6 is blast radius and the coincidence is not what was
+measured.
+
+### IC-D — REQ-113's ignore rule is carried into a preamble position
+
+REQ-113 orders a control character other than the start character occurring
+**outside** a frame to be ignored. A preamble position is **inside an open
+frame**, where REQ-102's third sentence demands one `error_bad_frame` and no
+output word. Render a design that applies REQ-113's ignore rule there.
+
+**Required consequence**: `M03-B2`'s `/I/` unit reddens, and its `/E/` unit stays
+**green**. `/E/` is the control and it is load-bearing: an `/E/` in a preamble
+position routes to REQ-105 under *both* the specification's reading and a design
+that simply treats preamble positions as frame positions, so a rendering that
+reddens `/E/` too is **not** IC-D — it is a general preamble-routing defect, and
+§6 disposition 5 governs.
+
+#### 1.5 MANDATORY DISCLOSURE **D-D2** — does the ignore reach `/Q/`?
+
+Is the carried-in ignore keyed on the **idle code** alone, or on **any control
+character REQ-113 would ignore outside a frame** (which includes the sequence
+ordered set)? Narrow reddens the `/I/` unit only and the campaign scores **1 of
+2**; wide reddens both.
+
+### IC-E — the runt check is sequenced on the abort path
+
+§9's runt rows key on *"octets between start and terminate"*, and an
+**aborted** frame has no terminate: the runt check is sequenced at REQ-106's exit,
+which an `/S/`-aborted frame never takes. Render a design that applies the runt
+test to the abort path anyway, so an aborted frame below the floor pulses
+`error_runt` **in addition to** `error_start_without_terminate`.
+
+**This is trap T8's own class.** `test_m03_n.ml` asserts it at two members today
+and **no campaign has ever killed it**.
+
+#### 1.6 MANDATORY DISCLOSURE **D-E1** — does your floor include zero?
+
+Is the predicate `delivered < 5`, or `0 < delivered < 5`? The first reaches the
+zero-delivered sub-cases and three units outside family N; the second reaches only
+the two four-octet members. Both are IC-E; they are scored on different sets.
+
+### IC-F — the preamble-position routing is a closed code table
+
+REQ-102's third sentence is **extensional** — *"any other control character"* —
+and SPEC-M03 §6.2's `Preamble` row says the same in the same shape, naming `/I/`
+**and `/Q/`**. Render a design whose preamble-position routing is instead a
+**closed enumeration** (`/T/` → REQ-107, `/S/` → REQ-110, `/E/` → REQ-105,
+`/I/` → REQ-105) that **falls through** on any code outside it.
+
+**Required consequence**: `M03-B2`'s `/Q/` unit reddens; its `/I/` and `/E/` units
+stay **green**. This is the only class in the campaign that distinguishes
+*routing by the control bit* from *routing by an enumeration*, and the `/Q/`
+member is the only stimulus in the plan that can see it.
+
+#### 1.7 MANDATORY DISCLOSURE **D-DF1** — shared by IC-D and IC-F: what does the un-exited preamble do?
+
+When the character is ignored (IC-D) or falls through the table (IC-F), does the
+frame:
+
+- **C** — **continue**? The preamble runs on, the SFD is accepted, and the frame
+  delivers its octets normally. This is the REQ-008 *silent-discard hole's*
+  loud twin and the branch the seal derives.
+- **S** — **stop silently**? The frame ends with no output word and **no report at
+  all** — REQ-008's silent-discard hole itself.
+
+Both are the class. They speak through different assertions and the seal branches
+on it.
+
+---
+
+## 2. The denominator, and one correction against my own prior seal
+
+Re-measured at the base SHA by `bash tools/dv_checks.sh`, whose inventory block is
+the provenance:
+
+```
+    3  test_m03_a.ml    7  test_m03_b.ml    4  test_m03_c.ml    3  test_m03_d.ml
+    4  test_m03_e.ml    4  test_m03_f.ml    7  test_m03_g.ml    4  test_m03_h.ml
+    5  test_m03_i.ml    6  test_m03_n.ml    1  test_m03_structural.ml
+  ---
+   48  test/xgmii_rx_64/ (the M03 bench)
+  128  test/ (repository-wide)
+```
+
+**48 M03 units; 128 repository-wide; 80 non-M03.** The non-M03 80 is unchanged
+across all five prior campaigns and is the stability check on the measurement: the
+repo-wide figure moved from `WO-0063B`'s 119 by **exactly the nine units** family
+B's completion and family N's first file added, and by nothing else.
+
+### 2.1 The blast-radius claim, corrected — the non-M03 80 is not uniformly DUT-independent
+
+`WO-0063B`'s seal §0 said *"only `test/xgmii_rx_64/dune` declares
+`hardcaml_ethernet` among the bench libraries containing `%expect_test`s"*.
+**Measured at this tree, that is wrong**, and the correction is mine:
+
+| directory | units | relation to the DUT |
+|---|---|---|
+| `test/xgmii_rx_64/` | **48** | the M03 bench — the campaign's whole behavioural surface |
+| `test/hardcaml_ethernet/` | **1** | **declares `hardcaml_ethernet`** and names no M03 module |
+| `test/monitors/`, `test/xgmii/`, `test/golden/`, `test/axi64_probe/`, `test/xgmii_probe/` | 37 + 25 + 11 + 3 + 3 = **79** | DUT-independent by their own dune stanzas |
+| `test/cosim/`, `test/cost_probe/`, `test/third_party/`, `test/attack_plans/` | 0 | no `%expect_test` at all |
+
+**Consequence, stated before the run**: a red at `test/hardcaml_ethernet/`'s single
+unit is a **build-level finding — a mutant that does not compile — and never a
+behavioural one**. A red anywhere in the DUT-independent 79 is a finding of a
+third kind: neither behaviour nor build, but a manifest that reached outside its
+own file. The old sentence would have scored the first of those as the second.
+
+---
+
+## 3. The convicting sets, measured rather than remembered
+
+**Method, so it is checkable**: every `Dv_monitors.Strobe_monitor.expect`
+registration under `test/xgmii_rx_64/*.ml` was enumerated and classified by the
+`cycle` field it registers and the `why` it states — **no-output-word pin** (two
+cycles after the input word carrying the closing character) or **`tlast`-pinned**.
+Classification is by the registration's own text. The nine no-output-word units
+`WO-0063B` §2 measured are unchanged; **nine more registrations landed with the
+eleven new members**, and the set is now:
+
+| unit | registration | strobe | pin class |
+|---|---|---|---|
+| M03-B2 `/E/` | `test_m03_b.ml:1014` | `error_bad_frame` | no-output-word |
+| **M03-B2 `/I/`** | `:1259` | `error_bad_frame` | **no-output-word** |
+| **M03-B2 `/Q/`** | `:1259` | `error_bad_frame` | **no-output-word** |
+| M03-B3 | `:813` | `error_runt` | no-output-word |
+| M03-B4 (a) | `:348` | `error_start_without_terminate` | no-output-word |
+| **M03-B4 (b)** | `:601` | `error_start_without_terminate` | **no-output-word** |
+| M03-E2 | `test_m03_e.ml:429` | `error_bad_frame` | no-output-word |
+| M03-E5 | `:731` | `error_bad_frame` | no-output-word |
+| M03-F2 | `test_m03_f.ml:425` | `error_runt` | no-output-word |
+| M03-G7 | `test_m03_g.ml:1375` | `error_runt` | no-output-word |
+| M03-H4 | `test_m03_h.ml:939` **and** `:951` | `error_start_without_terminate` ×2 | no-output-word ×2 |
+| M03-I2 (member iii) | `test_m03_i.ml:714` | `error_runt` | no-output-word |
+| **M03-N2 ×6** | `test_m03_n.ml:497` **and** `:509` | `error_start_without_terminate`, `error_runt` | frame B always no-output-word; frame A no-output-word at sub-cases 3 and 6, `tlast`-pinned at 1, 2, 4, 5 |
+
+**Eighteen units carry a no-output-word expectation** at this SHA, against nine one
+campaign ago. That doubling is what IC-B's **D-B2** disclosure ranges over.
+
+### 3.1 The two lane-4 in-word aborts that already exist, and why D-A1 exists because of them
+
+`M03-B4` member (a) and `M03-H4`'s word `c` both drive a `/S/` in **lane 4** of a
+word — an in-word abort — with **nothing open on entry**, because in both the
+aborted frame opened in that same word at lane 0. They have bound 7's *first*
+conjunct and not its second (`WO-0065` T1, `WO-0058` FINDING GH-2's own
+dimension). Under **D-A1 = L** they redden; under **O** and **F** they do not.
+**Naming them here is what stops two true greens, or two true reds, from being
+scored as findings against the manifest.**
+
+---
+
+## 4. Bound 7 — SCORED, never asserted, with the three instances DISTINGUISHED
+
+`WO-0058` bound 7 asked for **an in-word REQ-110 abort with a frame already open
+on entry**. `M03-N2` pays it at **three** instances, and a campaign that scores
+*"three bound-7 instances"* without saying which is which has recorded a count and
+called it a coverage. The split, derived at `RV-0065B-VERDICT` §6 from
+`requirements.md` §0.3/§0.5's lane mapping and SPEC-M03 §6.2's state table:
+
+| instance | frame A's state **on entry to W** | why that state | `/S/` landing | A delivered |
+|---|---|---|---|---|
+| **sub-case 4** | **`Frame`** | A's SFD is consumed at lane 7 of the preceding word; A enters W already delivering | lane 4, in-word | 4 |
+| **sub-case 5** | **`Frame`** | A's octets 0…3 occupy lanes 4…7 of the preceding word | lane 4, in-word | 8 |
+| **sub-case 6** (lane-4-start) | **`Preamble`** | A's SFD lands at lane 3 of W itself; A enters W with preamble positions still pending | lane 4, in-word | 0 |
+
+§9's closure list makes all three **open** on entry (*"open from the cycle M03
+accepts its start character"*), so bound 7's second conjunct holds at each.
+
+**The scoring rule, fixed before the result:**
+
+1. **IC-A red at all three → bound 7 scored 3 of 3.** The verdict may then say
+   the bound's conjunction is *detected*, in both its state shapes.
+2. **IC-A red at sub-cases 4 and 5 only → bound 7 scored 2 of 3, and the verdict
+   says SHORT, naming the `Preamble`-state instance as the unscored one.** This is
+   the expected outcome under **D-A1 = F** and it is a legitimate rendering, not a
+   defect in the manifest. **It may not be rounded to a kill of the bound.**
+3. **IC-A red at sub-case 6 only, or at 6 and one of 4/5 → the rendering does not
+   key on the conjunct the bound is about**; the class is reported and the bound
+   is scored **0 of 3**.
+4. **Bound 7 is not "closed" by any outcome of this round.** It is *paid* by the
+   bench (`RV-0065B-VERDICT`) and *scored* here. The bound leaves my carried list
+   when the plan records both, and not before.
+
+---
+
+## 5. Reachability, discharged term by term — both sides
+
+**R-DISC-1 binds your manifests** (`DISP-0001` §4). For **each** of the six
+classes separately: name the gate signal, quote its **complete** defining
+expression from the base file with line numbers, and evaluate **every** conjunct
+on the named stimulus at the claimed firing cycle, calling out which conjuncts are
+contributed by the **stimulus** rather than by the mutation. Where a landing
+condition is modular, write it as arithmetic and show it satisfied at the value
+the required consequence names, with the recurrence set **enumerated rather than
+assumed unique**.
+
+**Per-lane and per-sub-case evaluation is required where the class's own
+consequence names more than one.** IC-A names three sub-cases whose aborting `/S/`
+lands at three different octet times in two different words; IC-D and IC-F name
+two start lanes at which the injected character lands in lane 3 and lane 7
+respectively. **A conjunct satisfiable at one lane is not thereby satisfiable at
+the other**, and a sub-case or lane you did not evaluate is **NOT SEEDED** for
+scoring purposes.
+
+**R-DISC-2**: IC-A, IC-B, IC-C and IC-E all name the **report path**; IC-B(W)
+additionally names the **output-word path**; IC-D and IC-F name the
+**preamble-exit decode**. Each gets a gate-inventory row carrying its full term
+list and every intent's claim about it, **before delivery**. Where two classes
+touch the same term, say so — that is a cross-class gate fact and §7's allowlist
+requires it **tabulated, not discovered**.
+
+**And the same standard applies to me, on the bench side, discharged here.** Every
+`R!` cell in the seal is a message raised by an assertion whose own terms are:
+
+- **(a)** the stimulus reaches the assertion — every `M03-N2` sub-case is its own
+  `%expect_test` unit calling `run_subcase` exactly once, so **no sub-case is
+  shadowed by any other sub-case**, and each of the six is independently
+  observable in the same run. (This is the structural difference from `WO-0063B`,
+  whose six simulations shared one unit, and it is why this campaign's N cells do
+  not need that round's shadowing carve-out.)
+- **(b)** the observable is read from the DUT's own outputs under the `Before`
+  view (`bench.mli`), so no relabelling stands between the pulse and the check;
+- **(c)** every assertion ordered **before** the scored one is unmoved under the
+  class — discharged per class at §6 for the three that claim not to touch the
+  datapath;
+- **(d)** nothing outside the unit is required for the conviction.
+
+---
+
+## 6. §4(c) as a test, not as prose — and this round it has a domain
+
+`WO-0063B` §4 measured a datapath-perturbation signature and then had to record
+that the signature **had no domain** at the unit it was scoring, because member
+(iii)'s conformant emitted stream is empty. **That is not true here**, and it is
+the round's one methodological gain.
+
+**The measured signature** (`BUG-0003` §V.10.2, `J-dv_lead-0103`, transient tree
+`5c47582`): **(a)** 7 mid-frame words with `tkeep` ≠ 0xFF and `tlast` = 0;
+**(b)** 4 of 60 required octets in their gapless byte positions, 28 delivered as
+the idle filler `0x07` and **28 never delivered at all**; `tlast` on word 7;
+`tuser` = 0 on a corrupted frame.
+
+**Three of the six classes claim the datapath does not move**: **IC-C**,
+**IC-B(R)** and **IC-E**. For those three, and only those three:
+
+1. **The auditor's pre-ship check.** Before delivering the manifest, confirm the
+   rendering produces **none** of the signature's components on a *delivering*
+   stimulus. A rendering that produces any of them is not the class; it is the
+   class plus a datapath defect, and the two cannot be scored apart.
+2. **My adjudication check, and it is executable here.** `M03-N2`'s four
+   delivering sub-cases assert **frame A's `tlast` cycle, its `tkeep`, its
+   `tlast` bit and its `tuser`[0]** — and all four are evaluated **before** the
+   strobe check that the three classes are scored on. So a rendering that moves
+   the datapath raises with a **datapath** message:
+
+   ```
+   frame A's own tlast word did not arrive on its own pinned cycle
+   frame A's own tlast word tkeep does not match the delivered count
+   frame A's own single delivered word does not carry tlast
+   frame A's own tlast word does not carry tuser[0] = 1 (REQ-110)
+   expected exactly one delivered word for frame A, got <n>
+   ```
+
+   and **never** with the strobe message the class is scored on.
+
+**Consequence, fixed here so it cannot be renegotiated**: for IC-C, IC-B(R) and
+IC-E, a red carrying any of those five messages scores as **the class out of
+specification — reported, not scored**, and no claim about the affected row is
+made in either direction. **IC-A, IC-B(W), IC-D and IC-F move the datapath by
+design** and this check does not apply to them; saying so is the difference
+between a check and a ritual.
+
+---
+
+## 7. The allowlist, and what the manifests must carry
+
+**Allowlist for the campaign's duration** — the auditor reads:
+
+- `libs/hardcaml_ethernet/src/xgmii_rx_64.ml` and its `.mli`, **at the base SHA**
+  (the mutation target);
+- `docs/specs/requirements.md` and `docs/specs/modules/xgmii_rx_64.md`;
+- **this packet**;
+- `docs/reports/audit/**`, its own scope.
+
+**Out of bounds, absolutely, for the campaign's duration**: all of `test/**` —
+which includes the bench, `test/xgmii/`, `test/monitors/` **and
+`test/attack_plans/AP-xgmii_rx_64.md`** — all of `agents/**`, **this packet
+excepted and its sealed companion emphatically not excepted**, and every journal.
+The seal names cells, message strings and assertion orders; reading it is reading
+the answer.
+
+**The manifests must carry**, per R-DISC-1 / R-DISC-2:
+
+1. **Six diffs** — IC-A, IC-B, IC-C, IC-D, IC-E, IC-F — each **minimal and
+   independent**: each applies alone to the base SHA, elaborates, and reverts
+   cleanly. **No diff may combine two classes**; a combined diff makes both
+   unscoreable.
+2. **A reachability discharge per class, per named sub-case and per named lane,
+   term by term at the firing cycle**, with the stimulus-contributed conjuncts
+   called out — or a **self-declared NOT SEEDED** for any term you cannot
+   discharge.
+3. **Gate-inventory rows** for the report path, the output-word path and the
+   preamble-exit decode, with every class's claim about each (R-DISC-2), and
+   **cross-class gate facts tabulated** — every term two classes both touch,
+   named before delivery.
+4. **All seven disclosures answered in your own words**: **D-A1**, **D-A2**,
+   **D-B1**, **D-B2**, **D-D2**, **D-DF1**, **D-E1**.
+5. **The §6 pre-ship check result** for IC-C, IC-B(R) and IC-E.
+6. **The base SHA you applied to**, quoted, and confirmation that it matches §8's.
+7. **Anything the packet made you guess.** Per the `WO-0063B` precedent, a
+   question about this packet comes to me as a committed **pre-run reading note**
+   **before** the run, and I answer it in the same form. A question answered after
+   a scorecard exists is not a question, it is a negotiation.
+
+---
+
+## 8. The base SHA, and the adjudicator-ordering rule
+
+**One base SHA for the whole round** — all six classes, the control run and every
+MUST-STAY-GREEN sweep. `BUG-0003` §V.9's *"one round cannot carry two base SHAs in
+its evidence"* governs.
+
+**The base SHA is the commit that this packet's own commit immediately
+follows** — i.e. the commit carrying the `tools/dv_checks.sh` boundary-matched
+row census (`J-dv_lead-0114`), which is the **parent** of the commit staging this
+packet and its seal. I cannot state its hash: I never run git (PROTOCOL §2), and
+it has none until the orchestrator creates it. **The orchestrator verifies that
+identity at commit time and records the hash in its own trailer**; the auditor
+quotes the hash it applied to (§7 item 6), and any disagreement is a finding
+**before** the campaign runs, not after.
+
+**Why the base carries a `tools/` commit and not a `test/**` one.** The census fix
+was commissioned at `RV-0065B-VERDICT` §7.1 and had to land somewhere. It is under
+`tools/`, so it moves **no byte the campaign scores against** — which is exactly
+why it may ride the parent commit, and why the two `test/**` debts that were
+commissioned with it do **not** (§10).
+
+**The adjudicator-ordering rule, stated because it is what makes any of this
+evidence.** **The bench must be frozen strictly earlier in history than any mutant
+RTL it judges.** Concretely:
+
+- Every `test/**` byte this campaign scores against is at or before the base SHA.
+  The last `test/**` edit was `RV-0065B-VERDICT`'s comment-only repair to
+  `test_m03_n.ml` at `fa91964`; **nothing under `test/**` moves again until the
+  campaign scores.**
+- The seal is frozen in this packet's own commit — **after** the last bench edit
+  and **before** the first mutant diff exists.
+- If any `test/**` file is edited between this commit and the scorecard, **the
+  round is adjudicated as having no valid base** and re-runs from a fresh seal.
+  **That includes edits by me**, and §10 is where I hold myself to it.
+
+**Why the rule is not ceremony**: a bench edited after a mutant exists can be tuned
+to it, and no reader downstream can distinguish a bench that always would have
+convicted from one that was taught to.
+
+---
+
+## 9. Mutant-owned quantities, and how they are sealed
+
+A quantity is **mutant-owned only if the specification does not fix it**. Every
+such quantity is sealed as an **inequality with a named direction**, never as a
+value; a seal that pins a rendering's own arithmetic scores a correct rendering as
+a finding.
+
+| quantity | sealed as | direction, and why |
+|---|---|---|
+| the observed pulse **count** at a sub-case under IC-A, IC-B(R), IC-E | `≠ 2`, with the derived value stated | the classes add or remove a report; the exact tail integer is the rendering's |
+| the deferred pulse's **cycle** under IC-C | `observed ≠ the pinned cycle` | **later** — IC-C defers, it never advances. An earlier pulse is not this class |
+| the observed **word count** for frame A under IC-A, IC-B(W) | `≠ 1`, with the derived value stated | fewer under IC-A(E) (the frame is suppressed), more under IC-B(W) (a second frame emits) |
+| **which** strobe names appear at a sub-case | **not mutant-owned** — `{error_start_without_terminate, error_runt}` | §9's closure list and ruling 9's sub-5 class fix both names. A third name is a finding, not a rendering fact |
+| frame B's **output words** at every sub-case | **not mutant-owned** — `= 0` | §0.7. Nonzero is IC-B(W) by definition and out of specification for every other class |
+| `error_bad_fcs` at any sub-case | **not mutant-owned** — **absent** | REQ-103/REQ-110: no FCS removal is attempted on a frame with nothing to remove it from. Its appearance under any class is a finding |
+| units reddening under a class | `⊆` the seal's own predicted set for the disclosed branch | a red **outside** it is a finding: either my enumeration was incomplete or the diff reaches further than the class it names |
+
+Four of the seven are specification-fixed and are sealed as **equalities on
+purpose**; calling them mutant-owned would be buying an unfalsifiable seal.
+
+---
+
+## 10. What this round does NOT close, and where the two carried debts land
+
+**Named before the result, so no omission is invisible.**
+
+1. **`bench.mli`'s `_frame`/`_piece` naming axis has no cell** for a genuine
+   `Arrival.frame` whose received extent is shorter than its declared array —
+   every REQ-110-aborted declared frame, which is most of `M03-N2`. It is a
+   documentation debt and it is **mine**. **It does NOT land in this round, and
+   the reason is §8**: `bench.mli` is under `test/**`, and moving one comment
+   there would cost the sentence *"nothing under `test/**` moves again until the
+   campaign scores"* for zero measurement gain. **Carrier, named and dated: the
+   family-J bench-capability round**, which must open `bench.mli` anyway to give
+   `cfg_rx_enable` a schedule, and which `RV-0065B-VERDICT` §7.2 dates to the
+   round immediately following this seal.
+2. **Fold-in 3 — cross-checking frame A's delivered *content*, not only its
+   count, at `M03-N2`'s four delivering sub-cases.** A standing undischarged
+   strengthening, correctly declined at `RV-0065B` because §12 marked it
+   *"optionally"*. **It does not land here either**, and for the same §8 reason.
+   **Carrier, named with a dated fallback**: the first round that opens
+   `test/xgmii_rx_64/test_m03_n.ml` — which is the `M03-N1`/`M03-N4` bench round,
+   both still outstanding ASSERT rows whose home that file is; **and if no such
+   round is scheduled by the time family J's capability round returns, it is
+   commissioned as a rider on that round's `RV-`.** An undated carrier is how a
+   debt becomes a habit.
+3. **No `SO-xgmii_rx_64.md` issues and none is offered.** This round scores six
+   classes against eleven members. Nineteen ASSERT rows are still outstanding and
+   the module sign-off's mutation clause (`N/N`, charter §3) is not what a
+   single-family campaign discharges.
+4. **A kill proves the assertion convicts, never that the bench is a general
+   detector of the class.** Several classes below are already caught outside the
+   new eleven — §3's table says which — and §11 prices it.
+5. **SPEC-M03 §6.3 item 8 stays untested and is a CLOSED question, not an open
+   coverage item** (`RV-0065B-VERDICT` §6 item 3). All three coincidences in
+   `M03-N2` are **different-name**; the carve-out forbids the same-name stimulus
+   in terms (*"DV SHALL NOT produce one"*). No result of this round may be read as
+   touching it.
+6. **`WO-0061` §8 bound 1's `tkeep` half** at an injected run stays unmeasured.
+7. **`run_i2_member`'s deliberate citation exception** stays as it is: its string
+   is quoted verbatim in a scored campaign's frozen seal.
+
+---
+
+## 11. Weighting, discounted in advance
+
+**In favour of this round, and it is the strongest weighting any campaign in this
+programme has had**: none of the eleven members was authored with a mutation class
+known. `WO-0063B`'s discount — *"the first unit in this programme written with its
+mutation class known"* — **does not apply to a single cell here**. The classes were
+derived from the specification's own report path and routing rules; the members
+were derived from the plan's rows months of packets earlier.
+
+**Against it, three ways, all stated before the scorecard:**
+
+1. **IC-B and IC-E are detected outside family N.** §3's eighteen-unit table is
+   the measure: under **D-B2 = wide** IC-B is caught at eight units that predate
+   the new eleven. **No verdict may imply the bench was blind to it.**
+2. **IC-C is the only class whose entire convicting set lies inside the new
+   eleven**, because no other unit in this bench pins two reports to one cycle
+   (`M03-H4`'s two land at `c + 2` and `c + 3`; `M03-G7`'s at the truncation cycle
+   and ~10 cycles later). **IC-C is therefore the round's own measurement**, and
+   it is also the class most exposed to a datapath-perturbing rendering — which is
+   why §6 exists in the form it does.
+3. **IC-A's value is bounded by D-A1 and the bound is not mine to set.** Under
+   **F** the campaign buys two of bound 7's three instances. That is a real result
+   and a partial one, and §4 rule 2 forbids reporting it as anything else.
+
+---
+
+## 12. What comes back
+
+1. The **six manifests** per §7.
+2. **All seven disclosures**, in the auditor's own words.
+3. The **§6 pre-ship check** result for the three datapath-silent classes.
+4. The **full scorecard**: every unit red or green under each class, at the base
+   SHA, with the **raised message at every red — the message, not a summary of
+   it**, because the seal's cells are message-level. Where a unit raises inside a
+   `List.iter` over lanes, the **row prefix** distinguishes the lane and must be
+   reproduced.
+5. The **control run**: the unmutated base SHA green, with its **CI run id and
+   conclusion**. **CI is the authority** (ADR-0005); *"passes locally"* is not
+   admissible from the auditor, the orchestrator or me.
+6. Anything judged rather than followed, and why.
+
+**Adjudication is mine**, against the sealed file, which is opened **only after
+the scorecard is in hand**.
+
+---
+
+## 13. Not to be told
+
+The sealed companion in its entirety: its matrix and its MUST-STAY-GREEN
+denominators, its verbatim message cells, the assertion order inside
+`run_subcase` and `run_b2_new`, its UNWORKED adjudication rules, its
+disclosure-branch tables, and its bound-7 scoring cell.
+
+**Freely told, and told above**: the six classes and why two of the five foreseen
+were split; the seven mandatory disclosures; §2's denominator and its blast-radius
+correction; §3's measured convicting sets; §4's bound-7 scoring rule and the
+three instances' state split; §5's reachability standard; §6's signature, its
+domain and its five datapath messages; §7's allowlist and manifest bars; §8's base
+SHA and the ordering rule; §9's mutant-owned inequalities; §10's non-closures and
+carriers; §11's weighting; §12's return format.
+
+---
+
+## Return / verdict log
+
+*(empty — the auditor appends its return here, and dv_lead its verdict.)*

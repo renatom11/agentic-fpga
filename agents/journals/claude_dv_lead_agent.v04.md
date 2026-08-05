@@ -1283,3 +1283,274 @@ round:
 ### Files-in-this-commit
 - tools/dv_checks.sh
 
+## [J-dv_lead-0115] 2026-08-06T01:20Z | task:WO-0066 | Six classes sealed against eleven never-scored members — and the coincidence that makes three sub-cases the round's best instrument is what makes two of them blind, which I found by deriving the seal instead of recalling my own plan
+
+### Trigger
+Orchestrator dispatch, item 1: the family-B/N mutation campaign packet **and its
+SEALED companion in ONE commit**, redeeming `RV-0065B-VERDICT` §7.1's forward
+commitment under R-SEAL-1. Sixth campaign of the programme, the practiced
+`WO-0055`/`WO-0058`/`WO-0063B` form.
+
+### Inputs
+- `agents/handoffs/WO-0065_tb-m03-family-b-completion-and-n2.md` — the whole
+  packet, and **`RV-0065B-VERDICT` §5, §6 and §7.1** in particular (the
+  commissioning that is this round's contract).
+- `agents/handoffs/WO-0063B_m03-i2-report-path-campaign.md` and
+  `agents/handoffs/WO-0063B_m03-i2-report-path-campaign-SEALED-predictions.md` —
+  the practiced form, and the seal whose §0 blast-radius sentence this round
+  corrects.
+- `agents/PROTOCOL.md` §3, §4, §5, §6, §10 (**R-SEAL-1** in full).
+- `agents/charters/dv_lead.md` §3, §5, §8.
+- `test/xgmii_rx_64/test_m03_n.ml` — **the whole file**: the six sub-case
+  records, `run_subcase`'s complete source order, and every `fail` literal.
+- `test/xgmii_rx_64/test_m03_b.ml` — `run_b2_new` (`:1157`–`:1329`), `run_b2`'s
+  row prefix (`:940`), `run_b4b`'s (`:501`), and every `Strobe_monitor.expect`
+  site in the file.
+- `test/xgmii_rx_64/test_m03_g.ml`, `test_m03_h.ml`, `test_m03_i.ml`,
+  `test_m03_e.ml`, `test_m03_f.ml`, `test_m03_c.ml`, `test_m03_d.ml` —
+  registration sites and their `cycle` fields only.
+- `test/xgmii_rx_64/bench.ml` `:226`–`:240` (`delivered_samples`,
+  `error_pulses`) and `bench.mli`'s `[Before]` view.
+- `test/attack_plans/AP-xgmii_rx_64.md` §4.B, §4.N, and its row-id declarations.
+- `tools/dv_checks.sh` at the base SHA — run, for the denominator.
+- `docs/specs/requirements.md` REQ-102, REQ-103, REQ-104, REQ-105, REQ-107,
+  REQ-110, REQ-113, REQ-011, REQ-008, REQ-101, §0.3, §0.5, §0.6, §0.7, §2, §12;
+  `docs/specs/modules/xgmii_rx_64.md` §6.1, §6.2, §6.3 items 3 and 8, §7, §9,
+  §10.
+- **No `libs/**`, `top/**` or `rtl_snapshots/**` path was opened** (PROTOCOL
+  §10, charter §3).
+
+### Reasoning
+**The five classes I foresaw were a plan, and the freeze derivation broke two of
+them.** My own commissioning said so in terms — *"what you seal is what you
+derive at freeze"* — and it was right to.
+
+- **IC-B as foreseen named two renderings in one sentence** (*emits a `tkeep`=0
+  word* **or** *suppresses `error_runt` below a floor*). They redden the same six
+  cells through **different assertions with different messages**. Sealing one
+  string for both would have scored a correct rendering as a finding at six
+  cells. It stays one class with a **mandatory rendering disclosure**, and the
+  seal carries both branches.
+- **IC-D as foreseen put `/I/` and `/Q/` in one `R!` set.** They are **two
+  different defects**: the bench's own row text says `/I/` kills a REQ-113
+  ignore-rule design and `/Q/` kills a **closed code table**. Scoring them as one
+  class would have left the `/Q/` member — the whole reason §3.2.1's ruling
+  drove it rather than declaring it — unscored on the only class it was built
+  for. **IC-F is minted**, and the addition is named in the packet rather than
+  smuggled.
+
+**The thing I did not foresee, and it is the round's own discovery.**
+`error_pulses` (`bench.ml:237`) maps each sample's `errors_high` to
+`(cycle, name)` pairs. A strobe is a **signal, not a counter**: two logical
+reports of the same name on the same cycle are **one observation** — §0.6's C-23
+convention doing exactly what it says. Sub-cases 3, 4 and 6 pin frame A's and
+frame B's reports to **one cycle**. So under **IC-E** — T8's own class, where a
+spurious `error_runt` is *added* to frame A — the added report at sub-case 4
+lands on the same cycle and under the same name as frame B's genuine one, and
+`error_pulses` returns exactly the two pairs the assertion requires. **Sub-case 4
+passes. It asserts T8 and cannot detect its violation.**
+
+That collapses IC-E's `R!` set from the two members I foresaw to **one**
+(sub-case 2, whose reports are a cycle apart), and it is a **real coverage
+limitation of the landed bench, mine, on the record before the campaign runs**.
+Had I written the seal from my plan instead of from the runner, the campaign
+would have recorded a MUST-STAY-GREEN violation at sub-case 4 as a finding
+against the auditor's manifest — for a green that is structurally correct.
+
+**The same coincidence cuts the other way at IC-B(W)**: at sub-case 4 frame A's
+`tlast` word and frame B's spurious word are owed on one cycle, and the stream
+carries one word per cycle, so the sub-case cannot distinguish *B emitted a word*
+from *B's word displaced A's*. Marked **UNWORKED with adjudication pre-fixed in
+both directions** — a red buys nothing, and **a green is not a coverage finding
+either**, because it is a property of the observation convention, not of the
+bench. Recording it as a gap would be recording the instrument as the defect.
+
+**The portable form, and it is the sharpest thing this round taught**: *a
+stimulus that pins two events to one instant is an instrument for a defect that
+moves an event in time and a blindfold for a defect that duplicates one.* The
+same design property produces both, so a coverage claim naming the first without
+the second has counted its instrument twice. Sub-cases 3/4/6 are IC-C's entire
+convicting set **and** IC-E's and IC-B(W)'s blind spots, for one reason.
+
+**Bound 7's scoring, built so a partial catch cannot be rounded up.** The three
+instances split on frame A's state **on entry to W**: sub-cases 4 and 5 in
+`Frame`, sub-case 6 in `Preamble` — derived from the lane mapping, because at a
+lane-4 start A's SFD lands at lane 3 of W itself while at a lane-0 start it lands
+at lane 7 of the preceding word. **D-A1** is the disclosure that decides which
+instances a rendering reaches, and §4 rule 2 fixes that a rendering reaching only
+the `Frame` pair scores **2 of 3, SHORT**, naming the unscored instance. A count
+without that split is not a coverage, and my own §7.1 said so.
+
+**Why the two carried `test/**` debts do not land in this round.** The
+adjudicator-ordering rule's whole force is the sentence *nothing under `test/**`
+moves again until the campaign scores*. `bench.mli`'s naming-axis cell and
+fold-in 3 are both `test/**` edits. Landing either would cost that sentence for
+**zero measurement gain** — a comment does not change a verdict, and the reader
+downstream cannot tell a bench frozen before the mutants from one edited beside
+them without it. Both get **named, dated carriers** in the packet §10: the
+naming-axis cell rides the **family-J capability round** (which must open
+`bench.mli` anyway, and which §7.2 dates to the round immediately after this
+seal); fold-in 3 rides the first round that opens `test_m03_n.ml` — the
+`M03-N1`/`M03-N4` bench round — **with a dated fallback**: if none is scheduled
+by the time family J returns, it is commissioned as a rider on that round's
+`RV-`. An undated carrier is how a debt becomes a habit, which is the failure
+family J is one deferral away from.
+
+**A correction against my own prior seal.** `WO-0063B`'s seal §0 said only
+`test/xgmii_rx_64/dune` declares `hardcaml_ethernet` among the bench libraries
+with `%expect_test`s. Measured at this tree that is **wrong**:
+`test/hardcaml_ethernet/` declares it too and holds **one** unit. It names no M03
+module, so a red there is a **build** finding — the mutant did not compile — and
+never a behavioural one. The old sentence would have scored a build failure as a
+scope violation. The non-M03 80 therefore splits **79 behavioural + 1
+build-level**, and the seal says so.
+
+**What I decline to derive, and why declining is cheaper than guessing.** Eight
+blast-radius units across four classes are marked `r` — predicted red, zero
+kills, red is not a finding and green is. Eight worked derivations would be eight
+chances to repeat FINDING G-1's error at cells that score nothing. And IC-A's
+**D-A2 = P** branch (the unrecognised `/S/` consumed as data rather than routed
+to REQ-105) is sealed as `U` over an **enumerated message set**, because deriving
+its exact first-speaker would require me to invent how the design strips REQ-103's
+FCS from a frame whose length the mutation itself changed. The predicted-red
+*set* is unchanged at P, so **bound 7 is still scored there** — the set is what
+the bound turns on, not the string.
+
+### Actions
+- Wrote `agents/handoffs/WO-0066_family-bn-mutation-campaign.md`: six intent
+  classes with **seven mandatory disclosures** (D-A1, D-A2, D-B1, D-B2, D-D2,
+  D-DF1, D-E1); the denominator with its blast-radius correction; the measured
+  eighteen-unit no-output-word set; **bound 7's scoring rule with the three
+  instances' state split**; R-DISC-1/2 binding per class, per sub-case, per lane;
+  the `BUG-0003` datapath signature as a pre-ship check **that has a domain this
+  round** plus the five datapath messages that discriminate structurally; the
+  allowlist; the base SHA and the adjudicator-ordering rule; the mutant-owned
+  inequality table; the non-closures with named carriers; the weighting; the
+  return format; and the `WO-0063B` pre-run-reading-note precedent restated.
+- Wrote `agents/handoffs/WO-0066_family-bn-mutation-campaign-SEALED-predictions.md`:
+  row prefixes; assertion orders for `run_subcase` and `run_b2_new`; the
+  eight-number derivation table; the branch-by-branch matrix with
+  MUST-STAY-GREEN denominators; **the REQUIRED cells verbatim, derived from the
+  runners at the base SHA**; the UNWORKED cells with adjudication pre-fixed;
+  **§6 GREEN BY BLINDNESS**; seven dispositions; the inequality table; the
+  reasoning; the bounds; the pass criteria.
+- **No `test/**` byte was edited in this round**, deliberately (§8's ordering
+  rule). No git command was run (PROTOCOL §2).
+
+### Evidence
+- **Denominator, re-measured at the freeze** by `bash tools/dv_checks.sh` at the
+  base SHA: **48** M03 units, **128** repository-wide, therefore **80** non-M03 —
+  the figure `RV-0065B-VERDICT` §7.1 predicted, confirmed rather than inherited.
+  Per-directory split re-measured: `monitors` 37, `xgmii` 25, `golden` 11,
+  `axi64_probe` 3, `xgmii_probe` 3, `hardcaml_ethernet` **1**, `xgmii_rx_64` 48
+  — 128 exactly, and **79 + 1** outside M03.
+- **Row census at the base SHA**, from the block landed at `J-dv_lead-0114`:
+  78 plan rows, **44** naive, **43** boundary; over-discharged: `M03-M1`.
+- **Every sealed string was read out of the runner, not recalled.** The six N row
+  prefixes are `run_subcase`'s `~row:` arguments at `test_m03_n.ml:652`, `:662`,
+  `:672`, `:683`, `:693`, `:704`; the bodies are the `fail` literals at `:541`,
+  `:556–557`, `:562–563`, `:586–587`, `:616–617`, `:622–623` with their
+  line-continuation whitespace folded. The B2 prefixes are composed at
+  `test_m03_b.ml:1158` (`/I/`, `/Q/`) and `:940` (the landed `/E/`); the bodies
+  are the literals at `:1299–1301` and `:1320–1323`.
+- **The eight numbers per sub-case**, re-derived here from `requirements.md` §0.5
+  and §0.6 and checked against the file's own records: `(W, /S/ lane, /T/ lane,
+  A delivered, A's cycle, B's cycle)` = (3,0,2,8,4,5), (3,0,2,4,4,5),
+  (2,0,2,0,4,4), (2,4,6,4,4,4), (3,4,6,8,4,5), (2,4,6,0,4,4) for sub-cases 1…6;
+  §0.6 windows [3,5]/[3,6], [3,5]/[3,6], [2,5]/[2,5], [2,5]/[2,5], [3,6]/[3,6],
+  [2,5]/[2,5]. **Sub-cases 3, 4 and 6 coincide; 1, 2 and 5 do not.**
+- **The blindness claim is read off the source, not assumed**: `error_pulses`
+  (`bench.ml:237–240`) is `List.concat_map samples ~f:(fun s -> List.map
+  s.errors_high ~f:(fun name -> s.cycle, name))` — one pair per *name high at a
+  cycle*, so a same-name same-cycle duplicate is unobservable by construction.
+- **M03-H4's two reports are `c + 2` and `c + 3`** (`test_m03_h.ml:939`, `:951`,
+  `expected_cycle_a`/`expected_cycle_b`), never equal — which is why IC-C's whole
+  convicting set is inside M03-N2. M03-G7's two are the truncation cycle
+  (`start_cycle + 3 + 189`, `test_m03_g.ml:1363`) and a runt pin after the whole
+  1600-octet frame (`:1375`).
+- **CI green at `eb1e06a`**, run **`30963617198`**, job `92172708172` (step 6
+  `dune runtest`, step 8 `git add -A; git diff --cached --exit-code`) —
+  the last measured green of the bench this seal freezes against. The control run
+  at the base SHA is the auditor's to quote (`WO-0066` §12 item 5); **CI is the
+  authority** (ADR-0005) and I do not claim a local run: this seat has no
+  Hardcaml toolchain.
+- **The seal is a file in this commit's own `Files-in-this-commit` list**, which
+  is what R-SEAL-1 requires and what `J-dv_lead-0113` Open-question 1 said would
+  be the whole of the redemption.
+
+### Outcome
+**DoD met.** `RV-0065B-VERDICT` §7.1's forward commitment is **REDEEMED**: the
+packet and its seal are staged in one commit, before any diff exists. Six
+classes, seven disclosures, `R!` sets spanning eleven never-scored members, and
+**bound 7 scored with its three instances distinguished**. The base SHA is the
+`J-dv_lead-0114` commit this one immediately follows. Handoff: `WO-0066` to the
+**auditor** via the orchestrator, blinded under §7's allowlist; the seal stays
+sealed until the scorecard is in hand.
+
+### Open-questions
+1. **The seal is now a committed artefact and no longer a promise.** If any
+   `test/**` file is edited between this commit and the scorecard — **including
+   by me** — the round has no valid base and re-runs from a fresh seal
+   (`WO-0066` §8).
+2. **T8 is instrumented at two members and detectable at one** (seal §6.1). That
+   is a coverage limitation of the landed bench, it survives any outcome of this
+   round, and the repair — a per-frame strobe attribution the current `(cycle,
+   name)` observation cannot express — is a **bench-machinery** question, not a
+   member question. Not commissioned here; recorded so it is not rediscovered
+   from a scorecard.
+3. **IC-D and IC-F are indistinguishable by any observation this bench makes.**
+   Their separation is carried entirely by which diff was applied, and
+   disposition 6 is the whole of the protection. If the auditor renders them in
+   one change, both are unscoreable.
+4. **`bench.mli`'s naming-axis cell** rides the **family-J capability round**;
+   **fold-in 3** rides the first round that opens `test_m03_n.ml`, with the
+   family-J `RV-` as its dated fallback (packet §10). Both are now carried with
+   dates rather than with intentions.
+5. **Family J is one deferral from an E2.** `RV-0065B-VERDICT` §7.2 dated it to
+   the round immediately following this seal; a third deferral goes up naming the
+   cost, not as a footnote.
+6. Carried unchanged: `run_i2_member`'s citation exception; `WO-0061` §8 bound
+   1's `tkeep` half; **N-1**; the auditor's ledger disposition on `BUG-0003`;
+   **B-4**'s stale forward reference in `test_m03_h.ml`'s docstring.
+
+**Harvest (ADR-0018, PROTOCOL §7).** **Not due** — no `SO-`, no gate. Span since
+`J-dv_lead-0114`'s note: **J-dv_lead-0115** (this entry); cumulative untiled span
+**J-dv_lead-0001 … 0115**, first harvest still firing at `SO-M03`. Inventory
+carries at **~12 LH2-g candidates plus the war stories** (`J-dv_lead-0114` banked
+the twelfth). Yield this round:
+
+- **The strongest candidate this arc has produced.** *"A stimulus that pins two
+  events to one instant is an instrument for a defect that moves an event in time
+  and a blindfold for a defect that duplicates one; the same property produces
+  both, so a coverage claim naming the first without the second has counted its
+  instrument twice."* **LH1**: this commit — sub-cases 3, 4 and 6 are the
+  serialisation class's entire convicting set and the duplication class's blind
+  spot, because the observation is *which signals are high at a cycle* and a
+  duplicate is not a second signal. **LH2-g** — no proper noun in the rule
+  statement; it binds any observation channel that reports presence rather than
+  count. **LH3**: without it, a bench's most-cited stimulus is credited with
+  coverage it structurally cannot have, and the gap is found by whoever seeds the
+  duplicating defect years later.
+- **`J-dv_lead-0113`'s ground-selection candidate gains a confirming use, in the
+  direction it was banked for.** *"When a repair is defended on a property of the
+  objects it handles, check whether the same site handles an object lacking that
+  property."* Applied here to a **prediction** rather than a repair: my foreseen
+  IC-E cell was defended on *frame A delivers fewer than five octets*, which is
+  true at sub-cases 2 **and** 4 — and hid that only one of them can report it.
+  The candidate found it. Observable unchanged; second incident, different
+  artefact class.
+- **`J-dv_lead-0111`'s conjunction candidate gains a third instance.** *"A bound
+  stated as a conjunction is discharged only by a stimulus containing every
+  conjunct."* **D-A1** exists because bound 7's second conjunct (*already open on
+  entry*) has two state shapes, and a rendering may satisfy one; the packet's
+  §4 scoring rule is the candidate turned into an adjudication.
+- **One war story, not promoted.** `WO-0063B`'s seal §0 blast-radius sentence was
+  wrong at this tree and would have mis-classed a build failure as a scope
+  violation. The lesson — *a claim about what a test suite depends on must be
+  re-measured, not carried, when the suite grows* — is true and reads as project
+  hygiene rather than as a portable rule. Recorded, not banked.
+- **No war story retired.**
+
+### Files-in-this-commit
+- agents/handoffs/WO-0066_family-bn-mutation-campaign-SEALED-predictions.md
+- agents/handoffs/WO-0066_family-bn-mutation-campaign.md
