@@ -989,19 +989,25 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
      one-term union and is written as one. *)
   let strobe s = consume &: s &: ~:(i.clear) in
   let q_strobe k = bit q2 k &: ~:(i.clear) in
+  (* MUTATION IC-L2 (branch U) -- never merge.
+     The reserve is spent: one further register level on the whole output
+     surface puts output word m on cycle m + 4 and ΔC at 4, uniformly, with
+     every octet, every [tkeep], every [tlast] placement and every strobe's
+     coincidence with its [tlast] word unchanged relative to the frame. *)
+  let d1 x = reg spec x in
   { O.rx =
-      { Axi64.Source.tvalid
-      ; tdata = al_data_d
-      ; tkeep = keep_of_count keep_count
+      { Axi64.Source.tvalid = d1 tvalid
+      ; tdata = d1 al_data_d
+      ; tkeep = d1 (keep_of_count keep_count)
       ; tstrb = zero 8 (* REQ-014 *)
-      ; tlast = emit_tlast &: ~:(i.clear)
-      ; tuser = emit_tlast &: abort
+      ; tlast = d1 (emit_tlast &: ~:(i.clear))
+      ; tuser = d1 (emit_tlast &: abort)
       }
-  ; error_bad_fcs = strobe sel_bad_fcs
-  ; error_bad_frame = strobe sel_error |: q_strobe 0
-  ; error_runt = strobe sel_runt |: q_strobe 1
-  ; error_oversize = strobe sel_oversize
-  ; error_start_without_terminate = strobe sel_start |: q_strobe 2
+  ; error_bad_fcs = d1 (strobe sel_bad_fcs)
+  ; error_bad_frame = d1 (strobe sel_error |: q_strobe 0)
+  ; error_runt = d1 (strobe sel_runt |: q_strobe 1)
+  ; error_oversize = d1 (strobe sel_oversize)
+  ; error_start_without_terminate = d1 (strobe sel_start |: q_strobe 2)
   }
 ;;
 
