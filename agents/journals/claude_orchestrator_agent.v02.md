@@ -2762,3 +2762,20 @@ file + its journal. Named here per the rule.
 
 ### Files-in-this-commit
 - .github/workflows/site-deploy.yml
+
+## [J-orchestrator-0217] 2026-08-09T23:50Z | task:none | The deploy lane gains a manual trigger - and this push is the token's first live test
+
+### Trigger
+Sponsor reports CLOUDFLARE_API_TOKEN is now set as the repository
+secret. This commit adds workflow_dispatch to site-deploy.yml (manual
+deploys from the Actions tab, independent of landings) and its push
+is the first live test of the automated deploy.
+
+### Commit-timing rule compliance
+AP-batch-9 (dv's post-campaign AP round) is OPEN. Disjointness
+verified first: this commit touches only .github/workflows/
+site-deploy.yml; dv's scope is the AP file + its journal. Named per
+the rule.
+
+### Files-in-this-commit
+- .github/workflows/site-deploy.yml
