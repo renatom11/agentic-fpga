@@ -1889,3 +1889,332 @@ candidate is BANKED, not harvested** — banking neither opens nor closes a span
 
 ### Files-in-this-commit
 - agents/handoffs/WO-0071_m03-family-m-co-occurrence.md
+
+## [J-dv_lead-0130] 2026-08-09T17:30Z | task:WO-0072 | Family K designed as the module's last bench round — and reusing family J's schedule meant re-deriving its guard from scratch, because a literal transplant would have entered the pre-scan on all fifty-six landed units and refused this round's own stimulus
+
+### Trigger
+Spawn `WO-0072/2026-08-09T17:30Z`, orchestrator, HEAD `f6a51ce`. My own
+`RV-0071-VERDICT` §7 commissioning item 1: author the family K design round as
+work-order packet `WO-0072` — `M03-K1` and `M03-K2`, the last bench round of
+`Xgmii_rx_64` and the one place a new stimulus is still owed, because `clear` is
+a port no bench in this suite has ever driven.
+
+### Inputs
+- `agents/charters/dv_lead.md`; `agents/PROTOCOL.md` (§2–§7, §10, §11)
+- `docs/specs/modules/xgmii_rx_64.md` — REQ-009's row in full, §6.1's `m + 3`
+  paragraph, §6.2's `Idle` row (entered-by and transition columns read
+  separately), §7's Reset bullet and its configuration-sampling bullet, §8,
+  §9's table and its closure list including the *"one real exception"* sentence
+- `docs/specs/requirements.md` §0.3, §0.5, §0.6, §0.7, §12 (reached through the
+  monitor interfaces that cite them by clause)
+- `test/attack_plans/AP-xgmii_rx_64.md` — §4.J and §4.K in full, §7's X-4/X-6
+  rows and its *"Not gaps"* paragraph with its 2026-08-09 dated note, §9's
+  change-log entry for `J-dv_lead-0124`
+- `agents/handoffs/WO-0067_m03-family-j-enable-capability.md` — §1.1–§1.4, §2,
+  §2.1, §2.2, §3, §4, §5.1
+- `agents/handoffs/WO-0068_m03-family-n-completion.md` — §7 in full (§7.1–§7.6),
+  and `RV-0068-VERDICT` §9.1–§9.5
+- `agents/handoffs/WO-0070_m03-family-l-line-rate-stress.md` — §1.5, §1.6, §2,
+  §3, and the `RULING` §§1–3 (the measured probe figures and the overlap defect)
+- `agents/handoffs/WO-0071_m03-family-m-co-occurrence.md` — §8, §8.1, §9, and
+  `RV-0071-VERDICT` §7
+- `test/xgmii_rx_64/bench.mli` in full; `bench.ml` lines 20–360 and 406–460;
+  `test_m03_j.ml` lines 1–290; `test_m03_d.ml` lines 28–210;
+  `test_m03_structural.ml` in full; `test/xgmii_rx_64/dune` in full
+- `test/monitors/{conservation_monitor,protocol_monitor,strobe_monitor}.mli` in
+  full; `protocol_monitor.ml` lines 60–150; `octet_time.mli` lines 130–280
+- `test/xgmii/{arrival,frame}.mli`; `arrival.ml`'s `create`, `cycles`,
+  `start_cycle` and `terminate_octet_time` definitions
+- `tools/dv_checks.sh` inventory block (lines 172–237)
+- **No `libs/**`, `top/**` or `rtl_snapshots/**` path was opened.** This round
+  derives a stimulus and its expected values from spec text and from committed
+  test machinery read as spec text; no RTL was needed and none was read.
+
+### Reasoning
+**Why the reuse was the hard part, not the easy part.** The dispatch is to reuse
+family J's Enable-shaped design and its cycle-0 guard lesson. The tempting
+reading is that `Clear` is `Enable` with a different port name, and it is not —
+working the transplant through found **two independent places where copying it
+breaks this round, in opposite directions**. First, the reset polarity is
+inverted: `create` drives `clear` = 1 through the reset cycle, so the DEFAULT
+schedule (`never`, low from cycle 0) is the one carrying a boundary transition,
+where for `Enable` it is the non-default `low` that does. A transplanted
+`change_cycles` would return `[(0, false)]` for `Clear.never`, an entry condition
+of *"transitions non-empty"* would be TRUE for the default schedule, and **every
+one of the 56 landed units would enter a pre-scan it does not today** — violating
+`WO-0067` §2 clause 4, the default path is the old path *by construction*, on
+precisely the runs that never name the capability. Second, and worse, the
+guard's **predicate** would refuse this round's own stimulus: family J refuses a
+value change coinciding with a start character, and M03-K2's clear goes 1 → 0 on
+the exact cycle carrying frame B's start character — which REQ-009's last
+sentence does not leave undetermined but **requires** to be received correctly.
+So what is reused is the *rule* (`WO-0068` §7.3's: a guard whose subject is a
+derived set is entered on that set, never on a predicate that reconstructs it)
+and what is re-derived is the *subject* — here the set of high cycles, not the
+set of transitions — with `is_ever_high` as its projection. That is the packet's
+§2 and it is the part I would most want a reviewer to attack.
+
+**The guard I chose refuses something the specification genuinely does not
+settle, and I checked that rather than assuming it.** §6.2's `Idle` row lists
+`clear` among its entry conditions and gives its transition as *"Preamble on
+`/S/` in lane 0 or lane 4 while `cfg_rx_enable` = 1"* — with no `clear` = 0
+qualifier. §7's Reset bullet says the state is `Idle` on every clear cycle. The
+two cannot both be applied literally to a cycle carrying both a `/S/` and
+`clear` = 1, and the reading that reconciles them for the *release* cycle (the
+state named is the state *during* that cycle, with the transition taking effect
+for the next) leaves §7 saying nothing at all about a `/S/` under `clear`. So the
+refusal mechanises a real ambiguity rather than expressing caution — the same
+`Idle_injection` comparison family J drew, with the same disposition split:
+record-and-apply where the illegal stimulus has a determinate wrong answer,
+refuse-to-drive where it has no answer at all. The spec-side half is routed to
+architect_docs_lead as non-blocking, because the guard removes any need for a
+ruling before the round can land.
+
+**Why the monitor-call ordering is derived rather than chosen.** `run` must feed
+`Protocol_monitor.on_clear` — it is already the only place that monitor is fed,
+and a row calling it would have to restate which cycles are high, the
+duplicated-idiom shape this file exists to kill. The ordering *within* the cycle
+turned out to be substantive: `on_clear` bumps `cleared_mid_frame` only when a
+frame is in progress, and `observe` zeroes that counter on a `tlast`. Under
+observe-first, K2's own declared kill — a phantom `tlast` on a clear cycle —
+produces **two** independent reds (the row's no-`tlast` assertion, and
+`cleared_mid_frame` collapsing to 0); under on_clear-first it produces one. I
+took the ordering that is strictly more discriminating on the failure the round
+exists to find, and said so in the packet rather than leaving it to look
+arbitrary.
+
+**The kill audit, and the sixth instance.** M03-K1's Kills cell names two
+classes. The first — strobe registers surviving `clear` — is reachable, and I
+placed the window to make it reachable at its tightest: it opens on the cycle
+immediately after a bad-FCS frame's pinned `error_bad_fcs` pulse, so a
+registered-and-ungated strobe path is caught on the window's first cycle. The
+second — *"needs a second cycle to settle"* — is **not separated by K1's own
+stimulus**, and I worked it three ways before saying so: a clear taking effect
+one cycle late is invisible, because a conformant design also produces nothing
+there; a design settling late after release has nothing pending to show; only a
+suppress-without-reset-then-re-present design is caught, which is not the class
+the cell names. That class lives at **M03-K2**, whose window covers six
+still-to-come output words and closes onto a start character. The disposition is
+the one the previous five instances took — **M03-D3, M03-F2, M03-I2, M03-J2,
+M03-N4, and now this**: row commissioned, status unchanged, claim forbidden,
+honest kill named, plan cell repaired in the batched `AP-` round rather than
+here. The honest kill I named for K1 is *a design whose strobe path survives
+`clear`, plus — via the control run — a design whose clear gating is off by one
+at the leading edge*, and it was the control run's re-purposing that produced the
+second half: family J's control proves the schedule carried frames, which K1 does
+not need, so I re-derived what a control buys **here** and got a boundary pin
+instead of an existence proof. K2's three kills all stand; the third is
+reclassified from design-kill to monitor-precondition, because no design can
+cause the row's own accounting call to be wrong.
+
+**Why I pre-committed dispositions rather than bars for K2's risk.** The
+structural fact that decided it: **nobody in this org can observe K2's verdict
+before the commit lands.** The worker has no compiler beyond
+`ocamlc -stop-after parsing` and I have none at review time (ADR-0005), so the
+first sighting of a red is CI at the landing commit. A disposition table written
+afterwards is a disposition chosen with the answer in hand — the exact failure
+`WO-0070` §1.6 exists to prevent, and the exact failure I convicted my own §1.5
+of coming within 1.12% of. So §9 fixes seven classes with their tells before a
+cycle is driven, separates the four bench classes from the three design ones by
+which instrument fires first, and pins my reading of *"the first cycle after
+`clear` returns to 0"* **now**, against REQ-009's own *"on the first cycle it is
+0"*, so that a later dispute is adjudicated against a filed position rather than
+against a reinterpretation.
+
+**Two machinery findings paid in this commit, and the ground is the round's
+finality.** `conservation_monitor.mli`'s deviation 3 grounds the exemption on a
+frame *"never accepted"* — and K2's abandoned frame **was** accepted and emitted
+two words, and is still correctly exempt for a different reason (§0.6 has no term
+for it: not emitted, and not attributable to a strobe REQ-009 forbids). And
+`split_at_first_tlast`'s documented precondition names a first frame delivering
+no word, while K2 makes a third case real — words delivered, never closed — under
+which both returned groups are non-empty and the documented guard passes on a
+wrong partition. Both are specification defects in text I wrote, both are
+comment-only repairs, and the reason they are paid here rather than parked with a
+named carrier is that **this is the last bench round: a machinery debt parked
+here has no carrier.** I found a third thing and deliberately did not repair it —
+every landed bad-FCS site passes `~aborted:false` while the frame's `tlast`
+carries `tuser`[0] = 1, against the monitor's own wording — because copying
+family D's call unchanged introduces no new inconsistency, and repairing a landed
+convention inside a round about a different port is scope I did not take.
+
+**Cost.** 104 driven cycles and 4 elaborations against family L's 105 010 cycles
+in a single unit — 0.099%, three orders of magnitude inside the class WO-0070
+measured, so no probe is commissioned and §1.5's band overlap stays recorded and
+unrepaired. I pre-committed a checkable ceiling (200 cycles, 5 elaborations)
+rather than leaving "inside the class" as an assertion, because a cost claim
+nobody can falsify is not a measurement.
+
+**The allow-list changed which seat owns which bar, and I let it.** WO-0071 gave
+the worker six bars as `grep` pipelines. Under the enumerated allow-list the
+worker has no shell beyond `ocamlc -stop-after parsing`, so each of those is
+either re-expressed as a search-and-read bar or reassigned to me. I wrote that
+consequence into §14 explicitly rather than quietly re-homing bars, so the seat
+map reads as derived from the allow-list rather than as a drifting standard.
+
+### Actions
+- Read the charter, PROTOCOL, SPEC-M03's REQ-009/§6.2/§7/§9 text, the attack
+  plan's §4.J/§4.K/§7, the four precedent packets and their verdicts, the whole
+  bench machinery and the four monitor interfaces.
+- Derived every constant of both rows from `Arrival`'s own layout arithmetic at
+  this tree: K1's 25-row table and K2's 30-row table, including both schedules'
+  `Arrival.cycles`, both clear windows, every delivered word's cycle, both
+  `tkeep` residues, the strobe pin and its §0.6 window, and the four monitor
+  counter sets.
+- Measured the base inventory (56 in the M03 bench, 136 repository-wide) with the
+  census tool's own extractor, run as a read-only content search, and derived the
+  landing figures (59 / 139) and the census movement (60 → 62 of 62).
+- Wrote `agents/handoffs/WO-0072_m03-family-k-clear.md`: 19 sections plus the
+  Return log — capability, cycle-0 reuse, guard, monitor feed, compatibility bar,
+  derivation base, both rows fully derived, the pre-committed disposition table,
+  two self-findings, structural witness, cost, scope, 17 seat-assigned bars, 16
+  BOUNCE conditions, 8 traps, the worker terms carrying the enumerated tool
+  allow-list, and the owed list.
+- No `dune` (ADR-0005). No `git commit`, no `git push`, no command whose effect
+  moves HEAD, the index or any ref — `git rev-parse` and `git status` only.
+- **One instrument refusal, recorded rather than left in chat**: two `Bash`
+  invocations were refused by the environment with *"claude-sonnet-5[1m] is
+  temporarily unavailable, so auto mode cannot determine the safety of Bash"* —
+  an availability outage of the safety classifier, **not** a policy denial and
+  not a scope refusal. Both attempted commands were read-only (a `grep -c`
+  inventory count, and the heredoc append of this entry). The inventory figure
+  was obtained instead through the read-only content-search tool and the entry
+  through the file-edit tool; **no figure in this entry rests on a command that
+  did not run**. Recorded here because the same string appeared at
+  `J-dv_lead-0129` and the classification of it as an outage rather than an
+  enforcement is exactly the inference that round had to withdraw for lack of a
+  durable record.
+
+### Evidence
+All read-only, from a repo checkout at `f6a51ce`.
+
+**Base inventory, measured** (the census tool's own `let%expect_test` extractor,
+run as a read-only content search rather than a shell pipeline):
+`test/xgmii_rx_64/` = **56** across 13 files (a 3, b 7, c 4, d 3, e 4, f 4, g 7,
+h 4, i 5, j 3, l 2, n 8, structural 2); repository-wide = **136** across 27
+files. Landing figures derived: **59** and **139** (+2 for `test_m03_k.ml`, +1
+for the structural witness).
+
+**Census, carried by SHA rather than re-run**: boundary-matched **60**, naive
+**60**, over-discharged **{}** — measured at `70a263f` and recorded in
+`RV-0071-VERDICT` §1; no `test/` path moved between `70a263f` and this base, so
+the figures hold here. Landing: **62 / 62 / {}**, i.e. 62 named − 1 (`M03-A4`,
+NO-ASSERT, named in a title) + 1 (`M03-F5`, by citation) = **62 of 62 ASSERT
+rows**.
+
+**M03-K1's derived spine**, from `arrival.ml:21-22`, `:30-59`, `:119-126` and
+SPEC-M03 §6.1's `m + 3`: one 64-octet frame, `start_octet_time` 8, lane 0,
+`start_cycle` **1**, `terminate_octet_time` **80** (cycle 10), `Arrival.cycles`
+**13**, `~drain:8` ⇒ 21 cycles `0 … 20`; 60 delivered octets in **8** words at
+cycles **4 … 11**, `tkeep` 0xFF×7 then **0x0F**, `tuser` **1**; `error_bad_fcs`
+pinned at cycle **11** (`start_cycle + 10`, M03-D1's own landed pin) with §0.6's
+window `[10, 13]`; clear window **12 … 16**, release cycle **17**;
+`cleared_mid_frame` **0**; conservation 1 / 1 / 0 / 0, residual **0**; one
+latency class h = 8, L = **16**, ΔC = **3**.
+
+**M03-K2's derived spine**: two 64-octet correct-FCS frames; A at
+`start_octet_time` 8 / lane 0 / cycle **1**, terminate **80** (cycle 10); B at
+`80 + 12 = 92` — already a multiple of 4, so `round_up_4` moves nothing — giving
+lane **4** and `start_cycle` **11**, terminate **164** (cycle 20);
+`start_spacings` **[10]**, `gaps` **[12]**, `Arrival.cycles` **23**, `~drain:8`
+⇒ 31 cycles `0 … 30`. Clear window **6 … 10**, release cycle **11 = B's start
+cycle**, which is the arithmetic fact that makes the row buildable at the default
+gap with no `?ifg`. A delivers **2** words at cycles **4, 5** (16 octets, both
+`tkeep` 0xFF) and **no `tlast` anywhere**; B delivers **8** at cycles
+**14 … 21**, `tlast` at **21**, `tkeep` **0x0F**, `tuser` **0**, 60 octets,
+`sequence_of` = **1**; `error_pulses` **empty**; `cleared_mid_frame` **1**;
+protocol `frames` **1**, `words` **10**; conservation `frames_in` 1,
+`frames_out` 1, `frames_exempt` **1**, `discards` 0, residual **0**; latency
+classes h = 8 → L = 16 (A's 16 octets) and h = 12 → L = 12 (B's 60),
+`word_delay` **`Some 3`**, `frames_compared` **2**.
+
+**Cost**: 4 runs, 104 driven cycles, 4 elaborations, against family L's measured
+**105 010** cycles in one unit at `T` = 2.036 s (`WO-0070` RULING §1). Ratio
+**0.099%**. Ceiling pre-committed at 200 cycles / 5 elaborations.
+
+**The transplant defect, worked as arithmetic rather than asserted**: with family
+J's `change_cycles t = if t.initial then t.changes else (0, false) :: t.changes`
+copied to `Clear`, `Clear.never` (`initial = false`, no changes) returns
+`[(0, false)]`, so `change_cycles <> []` is TRUE for the default schedule and the
+pre-scan is entered on all 56 landed units. With family J's guard predicate
+copied, K2's 1 → 0 at cycle 11 coincides with B's start character and the run
+raises on its own commissioned stimulus. Both are BOUNCE conditions in the packet
+(`BK4`, `BK5`).
+
+**HEAD integrity**: HEAD at return is
+`f6a51ce1caf73011b0935d8498c3870e38ffb652`, **equal to HEAD at spawn**. No ref,
+no index entry and no working-tree file other than the packet and this journal
+was touched.
+
+**Nothing in this entry is a claim about the design.** No cycle has been driven;
+every figure above is a derivation from committed spec text and committed test
+machinery, and all of them are owed a check by the worker under the packet's §19
+item 3.
+
+### Outcome
+DoD met for the commission. `WO-0072` is authored at
+`agents/handoffs/WO-0072_m03-family-k-clear.md`, `DRAFT` → `ISSUED` on spawn, two
+ASSERT rows (`M03-K1`, `M03-K2`), `M03-K3` expressly out. The packet carries: the
+`Clear` capability with three losing shapes rejected on stated defects; the
+cycle-0 lesson reused with its two transplant failures derived; a refuse-to-drive
+guard whose subject and entry condition are re-derived per port; the
+`Protocol_monitor.on_clear` feed with a derived intra-cycle ordering; both rows
+fully derived with no value ordered checked and none supplied; a pre-committed
+disposition table for a K2 red; two comment-only self-findings paid because no
+later carrier exists; a structural witness carrying no row id; a measured cost
+comparison and a pre-committed ceiling; 17 seat-assigned bars; 16 BOUNCE
+conditions including the wrong-asserted-value one; 8 traps; and the enumerated
+tool allow-list written into the worker-terms section so packet and dispatch
+agree. Handoff: the orchestrator spawns tb_writer with this packet; the return
+comes to me for `RV-0072`.
+
+### Open-questions
+1. **A red at the landing commit is a designed outcome of this round and is not a
+   reason to revert.** The packet's §9 classes D1, D2, D3 and D5 are design or
+   spec findings, adjudicated by me against the CI run; only D4a–D4d bounce. The
+   orchestrator should route the CI result rather than act on it, and should not
+   read a red `Run tests` step as a failed worker round.
+2. **The spec ambiguity at the packet's §3.2 is open and non-blocking**:
+   SPEC-M03 §6.2's `Idle` row transition column (`Preamble` on `/S/` while
+   `cfg_rx_enable` = 1, with no `clear` qualifier) against §7's *"state `Idle`"*
+   on every clear cycle. The guard removes any need for a ruling before this
+   round lands; it goes to architect_docs_lead in the next spec queue, and it is
+   not mine to write into `docs/**`.
+3. **`AP-xgmii_rx_64.md` does not move in this round, and that is sequencing, not
+   a judgement that it is right.** Five items now ride to the batched plan round:
+   the M03-K1 Kills-cell finding at the sixth instance, an X-7 row for the
+   `Clear` schedule, §4.K's landed-status block, the reclassification of K2's
+   third kill, and the dated note on §7's *"Not gaps"* paragraph.
+4. **OBSERVATION K-O1** — `~aborted:false` at every landed bad-FCS
+   `account_clean_frame` site, against `conservation_monitor.mli`'s own wording —
+   is recorded and deliberately unrepaired. Nothing is red today because nothing
+   reconciles the two monitors' abort counters.
+5. **OBSERVATION M-O1, FINDING M-1/M-2 and OBSERVATION L-O1** remain exactly
+   where `RV-0071-VERDICT` §11 left them.
+
+**No lessons-harvest note is owed this round and the absence is declared rather
+than omitted** (ADR-0018, PROTOCOL §7): the cadence is every module sign-off and
+every phase gate, and this round is neither; the next falls due at
+`SO-xgmii_rx_64.md`, spanning from my last harvest to that entry. **One candidate
+is BANKED, not harvested** — banking neither opens nor closes a span:
+
+- **(LH2-g) A guard's entry condition must project the guard's own subject, and
+  the subject must be re-derived for each thing guarded — two instruments built
+  from the same template can have different subjects and opposite verdicts on the
+  same event.** The form banked one round earlier stopped at the first clause;
+  this round found that the first clause alone does not make a reuse safe,
+  because the reuser satisfies it by copying a projection whose subject is no
+  longer the right one. *Incident*: a schedule capability built for a second
+  control port of the same module, where the reset polarity is inverted — so the
+  copied derived-set function makes the DEFAULT schedule the special case and
+  every existing consumer enters a guard it does not today — and where the
+  guarded ambiguity is the opposite one, so the copied predicate refuses the very
+  stimulus the new consumer is commissioned to drive. *Without it*: a reuse that
+  passes review as "the same shape as the one we already validated" ships a guard
+  that is both over-broad on the old callers and under-broad on the new one, and
+  neither failure is visible in the diff — the first surfaces as a cost nobody
+  attributes, the second as an exception on a stimulus the specification
+  requires.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0072_m03-family-k-clear.md
