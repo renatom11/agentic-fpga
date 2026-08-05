@@ -828,7 +828,13 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
      for them and [emit_last_b] needs [nc] <= [strip] with [nc] >= 1. *)
   let fcs_tail_pending = wire 1 in
   let fcs_tail_now = reg spec fcs_tail_pending in
-  let have_word = (pc <>:. 0) &: ~:fcs_tail_now in
+  (* MUTATION IC-L4 (branch S) -- never merge.
+     The tail word is lost to the next frame's start character: on a cycle
+     whose XGMII word hands a new frame forward, the completed word standing in
+     the emission register is not emitted. [hold] is low on that cycle for the
+     same reason, so the word is not deferred — it is overwritten and lost,
+     and with it the frame's [tlast]. *)
+  let have_word = (pc <>:. 0) &: ~:fcs_tail_now &: ~:begins in
   (* ---- what makes an emitted word the frame's *last* one (BUG-0002) ----
      [nc] = 0 says "no octet of this frame sits behind the emitted word in the
      pipeline". On a gapless stimulus that is the same statement as "the frame
