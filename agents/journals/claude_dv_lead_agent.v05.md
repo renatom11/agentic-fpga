@@ -3521,3 +3521,354 @@ harvested** — banking neither opens nor closes a span:
 
 ### Files-in-this-commit
 - agents/handoffs/WO-0073_family-l-mutation-campaign.md
+
+## [J-dv_lead-0135] 2026-08-09T23:10Z | task:none | The seventh campaign is absorbed into the plan — and deriving the three rule-versus-instance greens per row, which the verdict deliberately did not claim, found one line of §0.3 arithmetic behind all three: with the default gap a start word succeeds a terminate word iff that terminate character sits in lane 0
+
+### Trigger
+
+Orchestrator dispatch, spawn short-id `AP-batch-9/2026-08-09T22:45Z`, HEAD at
+spawn `33871b8`. **HEAD moved once while this round was open, lawfully and
+disjointly**: `f6a1d2b` and `9e90c8b` landed under `Agent: orchestrator`
+(`J-orchestrator-0216`, `J-orchestrator-0217`), touching
+`.github/workflows/site-deploy.yml` and that agent's own journal and **nothing
+else** — verified rather than assumed, `git diff --stat 33871b8 9e90c8b
+--name-only` naming exactly those two paths, and
+`git diff --stat bbd4122 9e90c8b -- test/ libs/ tools/ docs/specs/` still
+**empty**. Every measurement in this entry therefore stands at both SHAs, and
+this commit's parent is `9e90c8b`. The commission is my own — `WO-0073-VERDICT` §12 item 1, the
+post-campaign `AP-` round — and it is due rather than pending: the campaign has
+scored, so §8's ordering window, which barred any commit to
+`test/attack_plans/**` while the seal was live, is closed. The dispatch also
+relays the ruling I asked for at `J-dv_lead-0134` Open-question 1
+(`J-orchestrator-0215`: option (a) adopted) and carries two items my own verdict
+listed, `WO-0073-D3`'s carrier and `WO-0073-D4`'s scope correction.
+
+### Inputs
+
+Read at `33871b8`, all read-only:
+
+- `agents/charters/dv_lead.md`; `agents/PROTOCOL.md` (§3, §4.1–4.2, §6, §7, §10).
+- `agents/handoffs/WO-0073_family-l-mutation-campaign.md` — §4 (what the campaign
+  structurally cannot score), §5, §11, and `WO-0073-VERDICT` §4–§12 in full — and
+  its sealed companion `WO-0073_family-l-mutation-campaign-SEALED-predictions.md`
+  §2.2, §3.3, §3.4, §3.5, §4.1–§4.5, §6.1–§6.6, §8.1. These are the round's
+  contract; everything the plan now asserts about the campaign comes from them.
+- `test/attack_plans/AP-xgmii_rx_64.md` at `33871b8` — the target, read whole in
+  the sections it touches: §0.1, §1, §4.G, §4.I, §4.L, §4.M, §7, §9.
+- `agents/journals/claude_dv_lead_agent.v05.md` — my own `J-dv_lead-0133` and
+  `J-dv_lead-0134`.
+- `tasks/BOARD.md` at `33871b8` — for the D2 ruling's own wording.
+- `tools/dv_checks.sh` — the census block's commands (lines 275–322), read so the
+  figures below are that block's and not a hand variant of it.
+- **DV machinery and DV benches, read to derive §5.1's owed per-row
+  divergences**: `test/xgmii/arrival.ml` (`create`, lines 30–61 — the schedule
+  layout arithmetic), `test/xgmii_rx_64/test_m03_f.ml`,
+  `test/xgmii_rx_64/test_m03_g.ml`, `test/xgmii_rx_64/test_m03_i.ml`.
+- **No RTL. `libs/**` was not opened in this round, at this commit or any
+  earlier one**, and nothing here needs it: every derivation below is about what
+  the *link-partner schedule* puts on the wire and when the *bench* asserts, both
+  of which are mine.
+
+### Reasoning
+
+**What this round is, and the one thing it must not become.** A campaign
+verdict is a packet; a plan is the standing document a later `SO-` and a later
+campaign read. The verdict has said five classes were killed. The only question
+this round decides is **what the plan is now entitled to say**, and the danger
+throughout is the same one the era's first packet was written against: a
+scorecard read as coverage. So the round's shape is five qualifications and
+**six explicit refusals**, and the refusals took more words than the
+qualifications.
+
+**(1) History kept, ground replaced — and the replaced sentence is mine.** The
+landed-status block written at `J-dv_lead-0132` says *"landed-and-green is NOT
+qualified: family L is unscored by any mutation campaign … the campaign is owed
+before any `SO-`."* That was true when written and is now false for three rows.
+The plan's own practice (§7's banner, four times over) is that a summary
+sentence left standing while the world moves is this document's most expensive
+recurring defect — and its fix is a **dated note beside it, never a tense change
+inside it**. So the old block is untouched and a second, dated block states
+which of two dispositions each row now takes. A reader who arrives at the
+qualification can still read the argument that preceded it, which is the only
+reason to keep superseded text at all.
+
+**(2) Qualification goes in the Kills cell and the Status stays `ASSERT`.** Not
+re-decided here: `J-dv_lead-0109`'s divergence ruling settled it (§1's status
+vocabulary is closed at six values; `QUALIFIED` is not one of them, and M03-I2's,
+M03-E5's and M03-F2's qualifications already sit in their Kills cells).
+Following it costs nothing and re-opening it would fragment a convention three
+rows already follow.
+
+**(3) `M03-L3` and `M03-L4` needed a disposition word that does not exist yet,
+and inventing one was the right call.** They are not GAP rows — a GAP is an
+attack the plan cannot mount, and these are mounted, landed and green. They are
+not unqualified-because-unscored either; they were **scored** and the scoring
+established that no outcome could qualify them. `SCORED AND UNQUALIFIABLE` says
+exactly that and says it in the cell a future scorecard reads. It is a Kills-cell
+phrase and not a seventh status value, so §1's closed vocabulary survives intact.
+**The alternative I rejected** was to leave both cells silent and let the
+campaign packet carry it: rejected because the packet is where a reader goes
+*after* forming an expectation, and the expectation forms at the row.
+
+**(4) Why the two unreachabilities went to §7 and deliberately NOT as X-rows.**
+§7 is *machinery this plan requires and does not have*, and an X-row's claim is
+*a row cannot be asserted until machinery exists*. U-1 and U-2 make a narrower
+and worse claim: **the assertion exists, is landed, is green, and no mutation can
+make it speak.** Minting them as X-8 and X-9 would say the rows are blocked on
+capability, which is false and would commission a build. Filing them beside the
+X-rows says what is true — this is a statement about an instrument's reach — and
+lets §6.6's portable form travel with them, which is the part that outlives this
+module. I named the *shape* of a repair (an assertion whose subject is not
+already compared earlier in the same unit) and commissioned **nothing**, because
+`WO-0073-VERDICT` §12 records that no bench change is owed by that result and a
+plan round that quietly commissions a bench round is a plan round that has
+changed the scope it was given.
+
+**(5) `WO-0073-D2` became a third bar rather than a footnote, and the framing is
+the content.** §7's co-sim banner already carries two bars, and the temptation
+was to append D2 to bar 1 or bar 2. It belongs to neither. Bar 1 is per **row**
+(which rows take an expected value from X-1's computed outcome model); bar 2 is
+per **requirement** (REQ-901's classes (e) and (f), which the lane may never
+anchor). D2 is per **quantity**: the lane compares *what* is delivered and not
+*when*, for every row and every requirement at once. Getting that axis right is
+what stops a future `SO-` from satisfying bars 1 and 2 and believing it has
+satisfied this one. The ruling (option (a), `J-orchestrator-0215`) is recorded
+with its priced alternative beside it, and the `WO-` is explicitly **not**
+drafted here — a plan round is not where machinery lands, which is my own rule
+from `J-dv_lead-0112` and applies to me.
+
+**(6) The derivation work, and it produced one genuine finding about my own
+first answer.** `WO-0073-VERDICT` §5.1 named three greens where the seal's
+instance lists pointed and its rules did not, and deliberately deferred the
+per-row derivations to this round rather than claiming them under time pressure.
+Doing them properly found that **one line of §0.3 arithmetic governs all three**.
+`Arrival.create` lays each next start at `round_up_4(terminate_octet_time +
+ifg)`; with the 12-octet default and no banked credit, writing the terminate
+character's lane as `r` and its word as `k`, the next start lands at `8k + 12`
+when `r = 0` and at `8k + 16` or `8k + 20` otherwise — so **a start word succeeds
+a terminate word iff that terminate character occupies lane 0**, which is
+`N ≡ 0 (mod 8)` at a lane-0 start and `N ≡ 4 (mod 8)` at a lane-4 one. §8's
+64-octet stress frames satisfy it at exactly the lane-0-started half: the 5 000
+the seal derived and the campaign confirmed at `5000`.
+
+**And my first pass at M03-F4 got it wrong in the direction that would have
+convicted the rule instead of the instance list.** Working the lane-4 case
+without `round_up_4`, I had the terminate at octet time 83 (word 10) and the next
+start at 95 (word 11) — adjacent, which would have made `test_m03_f.ml`'s green a
+finding against IC-L1's rule rather than against the instance list. The rounding
+to lane 0 or lane 4 is what moves it to 96 (word 12). **The lesson is not that I
+made an arithmetic slip; it is that the slip was only caught by reading the
+constructor rather than the row's prose**, and the row's prose is precisely what
+made the instance list plausible in the first place: M03-F4's own text calls
+adjacency its stimulus, and it *is* adjacent — in **octet times**, at §0.3's
+minimum gap, which is a different adjacency from the one IC-L1 keys on.
+
+**(7) Family G's green is the sharpest of the three and is worth stating as a
+mechanism.** IC-L4 needs a frame's last output word to land on the cycle of an
+input word carrying a start character. REQ-108 pins the truncated frame's last
+output word to the truncation point — 82 octet times **before** the frame's own
+terminate character, which is where §0.3 begins measuring the gap. So **the
+oversize condition is itself what forbids the coincidence**, and the further a
+frame overruns the bound, the further its last output word retreats from every
+start character that follows. That also disposes of M03-G7's *injected* start
+character without an exemption: the rule says an input word carrying a start
+character, not a frame's start, and at content index 1588 it is still seven
+cycles clear.
+
+**(8) What I refused, listed because the refusals are the round's content.** No
+row added, none converted, no status moved. **§6's coverage map untouched** — it
+maps requirements to rows, not rows to kill evidence, and unqualifiability is a
+property of an instrument; recording it there would make the map a status report
+and it would go stale the same way §7's banner did. **`OBSERVATION L-O1` not
+repaired and `WO-0073-D3` not repaired** — both are one-line bench diagnostics
+with named carriers, and improving a carrier inside a plan round is exactly the
+move this plan's own trap list forbids. **No family-M row qualified**, which is
+the first live test of §4.M's own pre-recorded rule and it held: IC-L2 and IC-L5
+reddened `M03-G3`, `G4`, `G7` and `G8`, the carriers M6 and M7 bind to, and a
+carrier kill and its bound row are never two kills. **No `SO-` opened.**
+
+**(9) §0.1 binds my own new prose, and it bit twice.** Two sentences I wrote for
+this round quantify over sets — the 79-behavioural/1-build-level MUST-STAY-GREEN
+denominator, and the per-file schedule censuses behind the three derivations. The
+first I re-measured rather than quoting the verdict; the second I turned into a
+named command with its eight hits enumerated. Both now carry the command at the
+citation site. This is the third round in which that rule has caught something
+before a packet rested on it, and the first in which it caught something in text
+being written rather than text being quoted.
+
+**Attacks considered and rejected this round (charter §8; the list is short and
+the shortness is the point).** A plan round that adds rows to a family whose
+campaign has just closed is a plan round rewriting its own contract after the
+score, so the bar was high and nothing cleared it. **(a) A row making M03-L4's
+sequence check reachable** — a unit whose sequence read-back is not preceded by a
+positional octet comparison. Rejected: it is an assertion-ordering change, not a
+new attack, and the campaign that measured the problem explicitly owes no bench
+change; the shape is recorded at §7 so a later round can decide it with the
+argument in hand. **(b) A row making M03-L3's ΔC assertion reachable** — same
+disposition, same reason. **(c) A row for the co-sim lane's timing blindness.**
+Rejected as a category error: the blindness is in an **instrument**, not in the
+design's behaviour, so it belongs to §7's bars and to the cosim-lane round's
+`WO-`, and a plan row asserting *the anchor should compare cycles* attacks
+nothing the specification says about M03. **(d) A row for the `test bug --`
+mislabel class** (L-O1, D3). Rejected: a mislabelled message can misdirect a
+reader and can never flip a verdict, so it is a diagnostic defect with a named
+carrier, not an adversarial attack on the design.
+
+**Lessons harvest — NOT OWED this round, and the absence is declared rather than
+omitted** (ADR-0018, PROTOCOL §7). The harvest falls due at every `SO-` and every
+phase gate; a plan round is neither, and the span still runs to the `SO-`
+entry. The two candidates banked at `J-dv_lead-0134` stay banked and unopened.
+**One further candidate is BANKED, not harvested** — banking neither opens nor
+closes a span:
+
+- *(LH2-g candidate)* **A prediction of which tests will detect a defect must be
+  keyed on the condition the defect fires on, never on the category the tests
+  belong to.** A category list is a superset of the rule every time, and the
+  gap between them is charged to whoever wrote the list. **LH1**: `bbd4122` (the
+  seal's §3.4 rules and §3.5 category-derived instance lists) and `7bedc30` (the
+  verdict scoring three of those instances green). **LH3**: without it, a
+  campaign's own author is convicted of misses the rule never predicted, and the
+  fix — abandoning enumerations for rules — is unavailable because nobody can
+  tell a wrong rule from a wrong list.
+
+### Actions
+
+- Read the charter, the protocol, the campaign packet, its seal and the verdict;
+  re-read the plan's §0.1, §1, §4.G, §4.I, §4.L, §4.M, §7 and §9.
+- Derived the three rule-versus-instance divergences per row from
+  `test/xgmii/arrival.ml`'s layout arithmetic and the three benches' own schedule
+  constructions. No RTL, no `dune`, no simulation.
+- Edited `test/attack_plans/AP-xgmii_rx_64.md` in one coherent set: five
+  family-L Kills cells (three QUALIFIED, two SCORED AND UNQUALIFIABLE); a new
+  dated FAMILY L POST-CAMPAIGN block beneath the untouched landed block; §7's
+  co-sim banner gains BAR 3 with the ruling; §7 gains U-1, U-2 and §6.6's
+  portable form beside the X-rows; §9 gains the change-log row.
+- Re-measured the plan's counts and the discharge census at this commit, before
+  and after the edits, by a status-cell pass rather than by carrying forward.
+- **No `git` command that moves HEAD, the index or any ref was run.** Verification
+  was `rev-parse`, `status --porcelain`, `log`, `show`, `diff --stat`.
+
+### Evidence
+
+**HEAD, and it moved once — disjointly, and by the other seat.**
+`git rev-parse HEAD` → `33871b8…` at entry, `9e90c8b334182d99c40afc14b4ae2fe7de41504a`
+at exit; the two intervening commits are the orchestrator's own
+(`.github/workflows/site-deploy.yml` and its journal, `git diff --stat 33871b8
+9e90c8b --name-only`). **No `git` command run from this seat moved HEAD, the
+index or any ref**, and none could have: the only mutating operations of this
+round were two file writes. `git status --porcelain` → exactly two modified
+paths, `test/attack_plans/AP-xgmii_rx_64.md` and this journal.
+`git diff --stat` on the plan → **297 insertions(+), 5 deletions(-)**; the five
+deletions are the five family-L row lines, each replaced by itself plus its
+appended cell text.
+
+**The campaign base is still the tree these derivations are made against.**
+`git diff --stat bbd4122 33871b8 -- test/ libs/ tools/ docs/specs/` → **empty**,
+and `git diff --stat bbd4122 9e90c8b -- test/ libs/ tools/ docs/specs/` →
+**empty** as well, so the statement survives the two commits that landed
+mid-round. Not one byte of `test/**` has moved between the seal, the verdict and
+this round.
+
+**Plan counts, measured from the file at this commit, before and after the
+edits, identical both times:**
+
+```
+grep -oE '^\|[^|]*M03-[A-Z]+[0-9]+' test/attack_plans/AP-xgmii_rx_64.md \
+  | grep -oE 'M03-[A-Z]+[0-9]+' | sort -u | wc -l
+  -> 78
+
+awk -F'|' '/^\| \*\*M03-/ { st=$(NF-1); gsub(/^[ \t]+|[ \t]+$/,"",st);
+                            gsub(/\*/,"",st); print st }' \
+  test/attack_plans/AP-xgmii_rx_64.md | sort | uniq -c
+  -> 62 ASSERT, 7 NO-ASSERT, 4 NO-STIMULUS, 4 STRUCTURAL, 1 GAP
+```
+
+**Table integrity**: `awk -F'|' '/^\| \*\*M03-/ {if (NF!=8) print "BAD "NF}'`
+prints nothing — every row line still has its six cells, so no pipe leaked into
+the text I appended.
+
+**Discharge census, `tools/dv_checks.sh`'s own commands run against this tree**:
+78 row ids declared, **62** named in a committed unit title under the
+trailing-digit boundary matcher and **62** under the naive one (the two agree at
+this tree), over-discharge list **empty**; − `M03-A4` (NO-ASSERT, named in a
+title) + `M03-F5` (by citation) = **62 of 62**. Unmoved by this round, which adds
+no unit and no title.
+
+**MUST-STAY-GREEN denominator, re-measured rather than quoted** (§0.1):
+`grep -rc '^let%expect_test' --include=*.ml test/` → **139** repo-wide, **59**
+under `test/xgmii_rx_64/`, so **80** non-M03, splitting `monitors` 37 + `xgmii`
+25 + `golden` 11 + `axi64_probe` 3 + `xgmii_probe` 3 = **79 behavioural** +
+`hardcaml_ethernet` **1 build-level**. Figure for figure what the seal froze.
+
+**The schedule census behind the three derivations**:
+`grep -nE '(one_frame|frames_at|Arrival\.create|Injection\.create)[^;]*\['` over
+`test_m03_f.ml`, `test_m03_g.ml`, `test_m03_i.ml` → exactly **eight** two-frame
+schedules: `test_m03_f.ml:686`; `test_m03_g.ml:431`, `:741`, `:881`, `:1064`,
+`:1264`, `:1546`; `test_m03_i.ml:1112`. Everything else in the three files is a
+`Bench.one_frame` call or a one-element list.
+
+**The geometry, worked at the two lanes that matter** (from
+`test/xgmii/arrival.ml:30–61`, `terminate_octet_time = start + 8 + N`,
+`next = round_up_4(terminate + ifg)`, DIC floor 9):
+
+```
+M03-F4, ifg 12, N = 63
+  lane 0: start 8  -> terminate 79 (lane 7, word 9)  -> next 92  (word 11)  gap 2
+  lane 4: start 12 -> terminate 83 (lane 3, word 10) -> next 96  (word 12)  gap 2
+§8 stress, ifg 12, N = 64
+  lane 0: start 8  -> terminate 80 (lane 0, word 10) -> next 92  (word 11)  gap 1  ADJACENT
+  lane 4: start 92 -> terminate 164 (lane 4, word 20)-> next 176 (word 22)  gap 2
+family G, N = 1600, truncation at received octet 1519 (delivered 1514, 190 words)
+  last output word  = start_cycle + 3 + 189 = start_cycle + 192
+  earliest next start = start_cycle + 202 (lane 0) / + 203 (lane 4), at ifg 12
+M03-I3, ifg 824: terminate cycle 10, tlast cycle 11, next start cycle 113
+```
+
+The M03-I3 numbers are the unit's **own** pre-run stimulus guards
+(`test_m03_i.ml:1120` and `:1126`), which fail the run if the schedule does not
+land there — so they are asserted at every execution, not computed here.
+
+**No `dune` was run and no simulation was executed in this round.** Every figure
+above is a text measurement over committed files or arithmetic over the
+constructor's own committed source; nothing here claims a fresh CI result, and
+the five run ids and the control id are the campaign's, transcribed from
+`WO-0073-VERDICT` §1 and re-checked against `tasks/BOARD.md`.
+
+### Outcome
+
+**DoD met.** `WO-0073-VERDICT` §12 item 1's five sub-items are all discharged in
+one commit, plus the two carried items: (1) §4.L's status gains the campaign
+score, the five branch/commit/run ids and the control id; (2) `M03-L1`, `M03-L2`
+and `M03-L5` → **QUALIFIED** in their own Kills cells with the class each was
+convicted on, `M03-L3` and `M03-L4` → **SCORED AND UNQUALIFIABLE** with §6.1/§6.2's
+arguments in their own cells; (3) §7 gains U-1, U-2 and §6.6's portable form
+beside the X-rows; (4) `WO-0073-D2` is recorded against §7's co-sim banner as
+**BAR 3** with the adopted ruling; (5) §5.1's three divergences are derived per
+row and the change-log row is written; plus `WO-0073-D4`'s scope correction and
+`WO-0073-D3`'s carrier, both in the post-campaign block.
+
+**Nothing moved that should not have**: 78 rows, 62/7/4/4/1, census 62 of 62,
+coverage map untouched, no bench change, no `SO-` opened or offered. Handoff:
+the file, for the orchestrator to commit. Next in the commissioned order is the
+**family M campaign packet**; the cosim-lane round (`WO-0073-D2`'s `WO-`,
+`WO-0073-D5` and `test/cosim/dune`'s dangling reference) is item 3 and comes
+after it.
+
+### Open-questions
+
+1. **Whether either unreachable instrument is worth a unit of its own is
+   deliberately left open, and named so it cannot be closed by silence.** §7's
+   note states the repair shape for U-1 and U-2 and commissions nothing. The
+   decision belongs to the round that opens `test/xgmii_rx_64/test_m03_l.ml` or
+   to the `SO-`, and it needs a cost that this round has no way to price.
+2. **Three carriers remain named and unpaid, unchanged in substance**:
+   `OBSERVATION L-O1` and `WO-0073-D3`'s `M03-I4` mislabel ride the next commits
+   that open `test_m03_l.ml` and `test_m03_i.ml`; `test/cosim/dune`'s dangling
+   `test/cost_probe/` reference and `WO-0073-D5` ride the cosim-lane round with
+   `WO-0073-D2`.
+3. **Nothing is escalated, and no `BUG-` is opened.** This round observed no
+   divergence of the design from its specification — it observed no design at
+   all. **No spec-queue addition: a nil addition, declared rather than omitted.**
+
+### Files-in-this-commit
+- test/attack_plans/AP-xgmii_rx_64.md
