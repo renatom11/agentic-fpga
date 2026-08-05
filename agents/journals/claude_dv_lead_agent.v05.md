@@ -2218,3 +2218,277 @@ is BANKED, not harvested** — banking neither opens nor closes a span:
 
 ### Files-in-this-commit
 - agents/handoffs/WO-0072_m03-family-k-clear.md
+
+## [J-dv_lead-0131] 2026-08-09T20:00Z | task:WO-0072 | Family K ACCEPTED on a green — the module's last bench round closes the ASSERT set at sixty-two of sixty-two, and running my own pre-committed bars found that three of the seven are false against the tree they point at
+
+### Trigger
+
+Orchestrator spawn `RV-0072/2026-08-09T18:50Z`, HEAD `284225d`, to review
+`J-tb_writer-0031` — the family K build — against `WO-0072` §14's pre-committed
+bar table, rule the worker's two filed questions, and issue the round's verdict.
+My own §14 assigned bars `K-1` … `K-7` to this seat and `K-8` … `K-17` to the
+worker's.
+
+### Inputs
+
+- `agents/charters/dv_lead.md`; `agents/PROTOCOL.md`.
+- `agents/handoffs/WO-0072_m03-family-k-clear.md` in full, including the worker's
+  Return section (`J-tb_writer-0031`, spawn `WO-0072-B/2026-08-09T18:20Z`).
+- `agents/handoffs/WO-0071_m03-family-m-co-occurrence.md` §12 (the batched-round
+  item list I owed forward).
+- At `284225d` and at `f6a51ce`, read as the review's two ends:
+  `test/xgmii_rx_64/{bench.ml,bench.mli,test_m03_k.ml,test_m03_structural.ml,dune}`,
+  `test/monitors/{conservation_monitor.mli,octet_time.mli,protocol_monitor.mli}`,
+  `test/attack_plans/AP-xgmii_rx_64.md`, `test/xgmii_rx_64/test_m03_a.ml:95-120`,
+  `test/xgmii_rx_64/test_m03_i.ml:1030-1050` and `:1788-1806`,
+  `tools/dv_checks.sh:210-314`.
+- CI at the landing commit, read as a **step reading at the source**: `build` run
+  `31032021108` (jobs `92394814728`, `92394814563`) and `journal-check` run
+  `31032018860` (job `92394808526`), plus the `build` job's own log tail.
+- **No `libs/**`, `top/**` or `rtl_snapshots/**` was opened** at any point in this
+  round (PROTOCOL §10). My judgement is of behaviour against specification, via
+  the bench's own instruments; I have not read the design.
+
+### Reasoning
+
+**Why this round could be accepted on a green at all.** §0 of the packet said out
+loud that nobody in this org could see K2's verdict before the commit landed, and
+§9 pre-committed six disposition classes for a red *before a cycle was driven*.
+The whole point of that construction is that it makes the outcome adjudicable
+either way. So the first thing I made myself do on seeing green was refuse the
+easy sentence — *"the table passed"*. It did not. **D1 … D6 are dispositions for a
+red; a green fires none of them, and the honest report is that the table was not
+invoked.** What the green does establish is stated positively in the verdict,
+class by class, from what each row actually asserts: no `tlast` attributable to
+frame A, frame B full at cycles 14 … 21, silence across 6 … 11, the guard not
+fired, `residual` 0 with `frames_exempt` 1, `cleared_mid_frame` 1. That is a
+result about the design; the table's non-invocation is not.
+
+**The two literal-transplant conditions were the review's centre, and both are
+clean for reasons independent of the round's own stimulus.** `BK4`: the entry
+condition is `Clear.is_ever_high`, which is literally `not (List.is_empty
+(high_cycles t))` — a projection of the guard's stated subject, and the
+implementation comment names the reconstruction it declined (`t.last >=
+t.first`) at the line it governs, which is the `WO-0068` §7.3 rule applied at the
+design instead of at a repair. `Clear.never`'s high set is empty, so no landed
+unit enters the walk, and that is not merely argued: the structural witness
+asserts it mechanically. `BK5`: the guard's filter tests **high cycles**, and K2's
+release cycle 11 is not high, so `start_lane` is never evaluated on the cycle
+carrying frame B's start character. I did not rest that on structure alone —
+K2 delivered B's eight words at CI, which is reachable only if `run` did not
+raise. **A bounce condition that would still pass had the round's stimulus been
+different is the only kind worth pre-committing**, and both are.
+
+**Ruling the worker's first question forced me to reject the worker's own
+reasoning while affirming its conclusion.** The return said items 24 and 28 were
+left unasserted *because the ordered lists skip them*. That is circular: the list
+omits them because I wrote the list. The non-circular ground is that a §7.2/§8.2
+table is a **derivation record** and §7.3/§8.4 an **assertion specification**, and
+a cell of the first that no step of the second names is admissible as *carried*
+only where what it states is already pinned by what is asserted. For items 24 and
+28 it is, three ways over: `word_delay = Some 3` already asserts that every
+front-offset class collapsed to a single `L` with `L + h = 24`; `Latency.errors`
+empty already rejects an `h` outside §0.5's declared set and an `(L + h)` that is
+not a multiple of 8; and both rows assert the exact delivered octets and the exact
+delivered cycles, which are the measurements `h` and `L` are derived from. So the
+carried reading is right — but it is right for a reason the round did not have,
+and now does.
+
+**Reading it that way is what exposed item 30, which nobody had named.**
+`frames_compared = 2` is *not* implied by any of the three: `word_delay` reads
+`Some 3` from frame B alone. What it would witness is which branch
+`account_cleared_frame` took. That function is new, has exactly one call site, and
+its `delivered = 0` → `frame_dropped` branch has **no call site anywhere in the
+suite** — it ships dead and unwitnessed. The branch selection *is* pinned, because
+`~delivered:16` is a literal the row asserts before the call, so no claim of this
+round is unsound and nobody is bounced. But *"the claim is sound"* and *"the
+capability is witnessed"* are different properties, and this round has the first
+without the second. Recorded as OBSERVATION K-O2 with a two-option disposition and
+a recommendation, because the batched round is the last commit that can pay it
+cheaply.
+
+**The second question was mine, and pulling on it found two more of the same
+defect.** The worker reported that bar `K-10`'s literal — *"zero non-empty blocks
+anywhere in the directory"* — is false against the base tree, because
+`test_m03_i.ml:1796` carries M03-I4's deliberate promoted latency table. It does,
+and the bar's true meaning is *this round adds none*. But the interesting part is
+what happened when I then ran my own `K-6` and `K-7`. **`K-6` demanded zero string
+literals move in `test/monitors/**`, and was falsified by the repair text this
+same packet dictates verbatim at §10.1** — three double-quoted phrases inside a
+doc comment, which no line-based extractor can distinguish from OCaml literals.
+**`K-7` demanded zero deletions outside two sites it simultaneously says delete
+nothing** — unsatisfiable by any correct implementation of §1.2, because adding an
+optional argument rewrites four lines by construction. Three of seven, and the
+same failure every time: **a pass condition written as a universal over a whole
+tree or a whole diff, for a property that is a delta.** All three would have been
+caught by running each bar once against the base at draft time. That costs
+nothing, I have never done it, and I am now bound to.
+
+I considered and rejected treating any of the three as a bounce or a defect
+against the worker. `BK3`'s own clause says a defect of mine reported rather than
+absorbed is not a bounce; the worker found one of the three, executed the true
+reading, and flagged the mismatch instead of quietly satisfying a literal it could
+not satisfy. That is the behaviour the clause exists to buy. I also rejected
+weakening the three bars in place: the repair is the drafting rule, not a rewrite
+of a bar table whose round is over.
+
+**On the count.** I refused to take 62 from a difference of totals or from the
+packet's own pre-commitment. I measured the denominator by a status-cell pass over
+every row table (78 rows: 62 ASSERT, 7 NO-ASSERT, 4 NO-STIMULUS, 4 STRUCTURAL,
+1 GAP) and the numerator as a **set** at both ends, then checked the two declared
+adjustments *as memberships* rather than as inherited arithmetic: `M03-A4` is the
+only titled non-ASSERT row, `M03-F5` the only ASSERT row without a title. My first
+attempt at the denominator — a line-based `awk` over status tokens — reported 61
+ASSERT and put `M03-K2` in the NO-ASSERT set, which is plainly wrong and is the
+same class of defect as the three bar literals: a matcher pointed at free text
+that nobody had measured against the file. I discarded it and wrote the cell pass.
+**That the wrong instrument was mine, in the same round in which I convicted three
+of my own bars, is the reason FINDING K-3's rule is stated generally rather than
+as an apology.**
+
+**What I would not let 62 of 62 buy.** It is a title count with a run id beside
+it; it is not an `SO-` PASS, four families are unscored, the co-sim anchor is
+undischarged, `M03-K3` stays NO-ASSERT, and every rider stands — M03-K1's bounded
+kill claim at its sixth instance, K2's third kill as a monitor-precondition, the
+bench-supplied `frames_exempt` count, and family D's `~aborted:false`. I also
+recorded that **neither pre-scan guard has ever fired on a real violation**: both K
+rows enter the K guard and find nothing, which is exactly the status the M03-J4
+guard has carried since `2dbd39b`. A guard whose entry is witnessed and whose
+refusal is only argued is a half-measured instrument, and saying so now is cheaper
+than discovering it inside a sign-off.
+
+### Actions
+
+- Re-ran bars `K-1` … `K-7` at my own seat from primary sources: hunk-by-hunk diff
+  reading; a step reading of both CI jobs at the API; unit-body extraction and
+  `diff -r` at both ends; a faithful replication of `tools/dv_checks.sh`'s
+  inventory and census blocks at both ends with the gained/lost sets computed;
+  cell-by-cell reading of §7.2's 25 and §8.2's 30 constants against the computing
+  expressions; multiset literal comparison at both ends.
+- Line-reviewed the `Clear` capability against §§1–4 and both row units against
+  §7.3's ten and §8.4's twelve ordered steps.
+- Re-measured §5 clause 5 (no `sample` constructed or exhaustively matched outside
+  `bench.ml`) — the packet asked for it and no §14 bar carried it.
+- Ruled both filed questions; opened FINDING K-3 and OBSERVATION K-O2.
+- Appended `RV-0072-VERDICT` (**ACCEPT**) to the packet's Return log.
+- Ran no `git` command whose effect moves `HEAD`, the index or any ref; ran no
+  `dune` (ADR-0005).
+
+### Evidence
+
+Reproducible from a checkout at `284225d`:
+
+- Bar `K-3`: extract each `%expect_test` body from every `test/xgmii_rx_64/*.ml`
+  at `f6a51ce` and at `284225d` into per-unit files and `diff -r` the two
+  directories → base **56** bodies, landing **59**, and the entire diff is three
+  `Only in <landing>` lines (`test_m03_k.ml.001`, `test_m03_k.ml.002`,
+  `test_m03_structural.ml.003`). All 56 landed bodies byte-identical.
+- Bar `K-4`: `tools/dv_checks.sh`'s inventory and census blocks at both ends →
+  inventory **56 → 59** and **136 → 139**; census naive **60 → 62**; census
+  boundary **60 → 62**; over-discharged empty at both ends; **gained set exactly
+  `{M03-K1, M03-K2}`, lost set empty**. Independently confirmed at the source:
+  the same figures appear in `build` run **31032021108**'s own step-9 log.
+- The denominator, by a status-cell pass over every row table of
+  `test/attack_plans/AP-xgmii_rx_64.md` at `284225d`: **78 rows — 62 ASSERT,
+  7 NO-ASSERT, 4 NO-STIMULUS, 4 STRUCTURAL, 1 GAP**. Set arithmetic:
+  `titled \ ASSERT = {M03-A4}`, `ASSERT \ titled = {M03-F5}`, **discharged ASSERT
+  62 of 62, outstanding set EMPTY** (base: 60 of 62).
+- Bar `K-2`, step reading at the source: `build` run **31032021108**, job
+  **92394814728**, `head_sha` `284225d17e6a9d26d74a65685f027aebc5a76d8c`,
+  `run_attempt: 1` — step 5 *"Build"* `success`, step 6 *"Run tests (expect tests,
+  waveform snapshots)"* `success`, step 8 *"Verify nothing was left unpromoted or
+  non-deterministic"* `success`, steps 9 and 10 `success`. Job **92394814563**
+  (`cosim`) step 6 `success`. `journal-check` run **31032018860**, job
+  **92394808526**, steps 3, 4, 5 `success`.
+- Bar `K-6`: multiset literal comparison, `f6a51ce` vs `284225d` — in
+  `bench.{ml,mli}` **zero removed, zero changed**, thirteen added, each on §5 bar
+  B's enumerated list; in `test/monitors/**` three added, all inside
+  `conservation_monitor.mli`'s header doc comment (lines 1–59) and all three
+  quoted verbatim from `WO-0072` §10.1's own repair text.
+- Bar `K-13` corroborated at the source: `test_m03_k.ml` contains **4**
+  `create ()` calls and **4** `run` calls; **104 driven cycles** (21 × 2 + 31 × 2)
+  against the §12 ceiling of 200 cycles and 5 elaborations.
+- `BK9`: the only two occurrences of *"settle"* in `test_m03_k.ml` are the §7.5
+  disclaimer at lines 17 and 20.
+- `BK7`: `Protocol_monitor.on_clear` has exactly one call site under
+  `test/xgmii_rx_64/` — `bench.ml:308`.
+- Question 3(b) confirmed: `test_m03_i.ml:1796` is the **only** non-empty
+  `[%expect {| … |}]` block in `test/xgmii_rx_64/`, and it predates this round.
+- **Environment note (durability clause, `WO-0072` §17.2, applied to my own
+  seat)**: the Bash tool returned a *"temporarily unavailable"* refusal **three
+  times** during this round, on read-only commands, each clearing on retry with
+  the identical command and no substitution. No instrument outside my seat was
+  attempted. This corroborates the worker's own disclosure of the same transient
+  and is recorded here rather than only in chat, for the reason `RV-0071-VERDICT`
+  §3 had to withdraw a claim.
+
+### Outcome
+
+**DoD met. `RV-0072-VERDICT` = ACCEPT**, appended to
+`agents/handoffs/WO-0072_m03-family-k-clear.md`'s Return log; packet state
+`RETURNED` → `ACCEPTED`. No BOUNCE condition `BK1` … `BK16` reached. No `BUG-`
+opened — §9's D1–D3 routes were not reached, and D5 cannot arise because frame B
+is present.
+
+**The census is MEASURED at 62 of 62 with an empty outstanding set, and the bench
+era of `Xgmii_rx_64` closes.** No further bench round is commissioned for this
+module. That figure is a title count carried with `build` run `31032021108`
+beside it, and it opens no `SO-`: the family J, K, L and M mutation campaigns are
+PROTOCOL §10-sequenced before any PASS, and the charter §3 verilog-ethernet
+differential co-sim anchor is undischarged.
+
+**Commissioned next, in order**: (1) the batched `AP-` round — now **fourteen**
+items, `RV-0071-VERDICT` §12 item 2's eight plus `WO-0072` §18 item 2's five plus
+item (f), which carries FINDING K-3's rule into X-7's note and records OBSERVATION
+K-O2 with its disposition — with `test/cost_probe/`'s undischarged deletion riding
+in the same commit; (2) the spec queue with architect_docs_lead for §3.2's `Idle`
+row / reset bullet ambiguity, non-blocking, with a **nil** addition from this
+round declared rather than omitted; (3) the campaign sequence — L and M packets,
+then J and K with K's manifest seeded against §9's own D1/D2/D3 classes — then the
+co-sim anchor, then `SO-xgmii_rx_64.md`.
+
+**Harvest**: not due at this entry. Per ADR-0018 and PROTOCOL §7 it falls due at
+the `SO-`, spanning from my last harvest, and I record that here so the span is
+visible rather than silently skipped. Two candidates are **banked**, not
+harvested, so they cannot evaporate between here and there:
+
+- **Candidate 1 (LH2-g).** *A review bar whose pass condition quantifies over a
+  whole tree or a whole change-set must be executed against the unchanged baseline
+  before it is issued, or restated as a delta.* **LH1**: the three bar literals
+  issued at `97073be` and falsified at `284225d`. **LH3**: a bar never run against
+  its baseline fails on the first round where the baseline has moved, and its
+  failure is indistinguishable from a defect in the work under review — so the
+  reviewer either convicts an innocent executor, or, having noticed, silently
+  reinterprets the bar, which destroys the pre-commitment that was the bar's whole
+  value.
+- **Candidate 2 (LH2-g).** *A table of derived quantities and a list of required
+  assertions are different objects; a document carrying both must mark each
+  derived quantity as required or carried at the quantity itself, never leave it
+  to be inferred from the list.* **LH1**: the filed question at `284225d` against
+  the tables issued at `97073be`. **LH3**: without the mark, a reader cannot
+  distinguish an omission from a decision — an executor either adds unrequested
+  assertions or spends a review round asking, and a genuine omission hides among
+  the deliberate ones, which is how item 30 survived until this verdict.
+
+### Open-questions
+
+1. **OBSERVATION K-O2's disposition is a recommendation, not a ruling I can
+   execute alone.** Paying `frames_compared = 2` as a one-line assertion means the
+   batched `AP-` commit also stages `test/xgmii_rx_64/test_m03_k.ml`, i.e. it
+   re-opens a bench file after the bench era has closed and needs its own CI
+   green. That is cheap and I recommend it; the alternative is to declare the
+   figure carried in §4.K's landed-status block and leave the new capability's
+   dead branch unwitnessed. **Orchestrator: no ruling needed unless you object to
+   a bench file moving in a plan-round commit.**
+2. **The two guards' asymmetry is now a standing fact and I want it read as one.**
+   Both the M03-J4 and the K pre-scan have their entry conditions witnessed and
+   their refusals only argued — no unit in this suite has ever driven a stimulus
+   either guard rejects. It is not a gap I can close by writing a bench, because
+   this suite has no raise-assertion idiom (§11's own ground). It is a candidate
+   for `formal_dv` at Phase 1 hardening, and I record it here so it reaches that
+   activation packet rather than the next reviewer's surprise.
+3. Nothing else. No RTL was read, no licensing question arose, no escalation class
+   is triggered, and §3.2's spec ambiguity remains non-blocking and unchanged.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0072_m03-family-k-clear.md

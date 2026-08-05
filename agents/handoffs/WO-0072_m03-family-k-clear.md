@@ -1729,3 +1729,390 @@ record.
    ambiguity beyond the one §3.2 already resolves for me (the guard removes
    any need for a ruling before this round lands, per the packet's own
    text) — nothing further to escalate.
+
+---
+
+## RV-0072-VERDICT (dv_lead, 2026-08-09) — **ACCEPT**
+
+**Reviewed**: `J-tb_writer-0031` at `284225d`, against base `f6a51ce`.
+**Journal**: `J-dv_lead-0131`.
+**CI**: `build` run **31032021108**, `journal-check` run **31032018860**, both at
+`head_sha` `284225d17e6a9d26d74a65685f027aebc5a76d8c`, both `run_attempt: 1`.
+
+**The count, MEASURED: 62 of 62 ASSERT rows discharged, outstanding set EMPTY.**
+The bench era of `Xgmii_rx_64` closes. §4 below states what that does and does
+not mean, and every rider that survives it.
+
+---
+
+### 1. My seat's bars, K-1 … K-7
+
+| Bar | Result | Working |
+|---|---|---|
+| **K-1** | **PASS** | `git diff f6a51ce..284225d` read hunk by hunk. Eleven paths in the range; the three-commit range carries the packet, this Return log, `BOARD.md` and two journals from the two orchestrator commits between base and landing (`97073be`, `5ac5baf`). The **worker commit's own** name-status (`5ac5baf..284225d`) is exactly §13.2's six + the Return log + `claude_tb_writer_agent.v02.md` — no seventh source file, no hunk in `test/xgmii/**`, `test/monitors/*.ml`, `docs/**`, `libs/**`, `top/**`, `rtl_snapshots/**`. Every hunk maps to a mechanism this packet specifies |
+| **K-2** | **PASS** | **Step reading at the source, never the badge.** `build` run 31032021108, job `build` (id **92394814728**): step **5** *"Build"* `success`; step **6** *"Run tests (expect tests, waveform snapshots)"* `success`; step **8** *"Verify nothing was left unpromoted or non-deterministic"* `success`; steps 9 and 10 `success`. Job `cosim` (id 92394814563) step 6 `success`. `journal-check` run 31032018860, job id **92394808526**: steps 3, 4 and 5 (*"Verify commit range"*) all `success`. `run_attempt: 1` on all three jobs — **no re-run; both rows passed on first drive** |
+| **K-3** | **PASS** | Every `%expect_test` unit **body** extracted from every `test/xgmii_rx_64/*.ml` at both ends and `diff -r`'d. Base **56** bodies, landing **59**. The complete diff is three `Only in <landing>` lines: `test_m03_k.ml.001`, `test_m03_k.ml.002`, `test_m03_structural.ml.003`. **All 56 landed bodies byte-identical** — §5 clause 3 in its mechanical form. The structural file's new unit is index `.003`, i.e. appended below both existing units, so nothing above it moved |
+| **K-4** | **PASS** | Measured **as a set**, at both ends, by a faithful replication of `tools/dv_checks.sh` lines 214–314 — and **independently confirmed at the source** by CI's own step 9 output inside run 31032021108. Inventory `test/xgmii_rx_64/` **56 → 59**; repository-wide **136 → 139**; census naive **60 → 62**; census boundary **60 → 62**; over-discharged **empty at both ends**. **Gained set = exactly `{M03-K1, M03-K2}`; lost set = empty.** Per-file counts agree with the worker's K-9 raw figures cell for cell. `AP-xgmii_rx_64.md` is byte-identical at both ends, so the denominator did not move |
+| **K-5** | **PASS** | §7.2's 25 cells and §8.2's 30 cells read against the **computing expression**, never against a comment. Every constant the ordered lists call for is present at the site the packet places it, and is **derived from a previously-asserted quantity rather than written as a literal** where the packet's own derivation does so — `expected_pulse_cycle = start_cycle + 10` after `start_cycle` is asserted `= 1`; `clear_first = expected_pulse_cycle + 1`, `clear_last = clear_first + 4`, `release_cycle = clear_last + 1`, then pinned by an explicit `12 / 16 / 17` check. I re-derived §6's layout independently: `s = 8`, `terminate = s + 72 = 80`, `target = s + 84 = 92`, `round_up_4 92 = 92` (the DIC path is never taken), `92 mod 8 = 4`, `92 / 8 = 11`, `cycles = ((164 + 12 + 7) / 8) + 1 = 23`. **No disagreement with any cell.** Three cells are derived and not asserted — §3 rules them |
+| **K-6** | **PASS on substance; MY LITERAL IS DEFECTIVE** | Line-based literal extraction, base vs landing, compared as a **multiset**. `bench.{ml,mli}`: **zero literals removed, zero changed** — `BK8` not reached. Thirteen added, each on §5 bar B's enumerated list (enumerated at §2 below). `test/monitors/**`: **three added** — `"was it accepted"`, `"does §0.6 have a term for it"`, `"one real exception"` — which falsifies my own pass condition and does **not** convict the work: all three sit inside the `(** … *)` header block of `conservation_monitor.mli` (lines 1–59), and **all three are text I dictated verbatim in §10.1's own repair paragraph**. See FINDING K-3 |
+| **K-7** | **PASS on substance; MY LITERAL IS DEFECTIVE** | `git diff --stat`: twelve deletions, `bench.mli` 8 + `bench.ml` 4. All eight in `bench.mli` are docstring lines re-wrapped with their text preserved (`*)` moving down at `create`; the `(c)` sentence re-flowed to admit `(d)`; `*)` moving down at the M03-J4 paragraph). All four in `bench.ml` are the signature and record-literal lines the `?clear` plumbing necessarily rewrites: `sample_cycle`'s parameter list, its returned record literal, `run`'s parameter list, and the `sample_cycle` call inside `drive`. **No landed content is removed anywhere.** The literal "zero deletions" is unsatisfiable by any correct implementation of §1.2 — see FINDING K-3 |
+
+**§5 clause 5, re-measured at this tree** (the packet asked for it and no §14 bar
+carried it, so I ran it at my seat): **no counter-example.** No file outside
+`bench.ml` constructs a `sample` or matches one exhaustively. Every consumer
+outside it — in `test_m03_{a,d,f,g,i,j,k}.ml` — is a type annotation
+`(s : sample)` plus field reads. `tuple_of_sample` (`test_m03_a.ml:100`) and
+`outputs_equal` (`test_m03_i.ml:1033`), the two candidates that looked like
+destructuring, both project fields and destructure nothing. And this is now more
+than argued: CI step 5 *"Build"* is green, so the compiler has type-checked the
+whole `test/**` tree against the new field.
+
+---
+
+### 2. The `Clear` capability, line-reviewed against §§1–4
+
+**§1.2 / §1.4, the shape.** `Clear` is a private `{ first; last }` record with
+`last < first` encoding `never` (`{ first = 0; last = -1 }`), which `window`
+cannot construct because it refuses `last < first`. `value_at` is total.
+`high_cycles` is `List.range first (last + 1)`, ascending, `[]` for `never`.
+`report` is deterministic. `run` gains `?clear` **after `?enable` and before the
+terminal `unit`** as a pure insertion (T7); `sample` gains `clear` **after
+`enable`** as a pure insertion. `create`'s type is untouched and its reset drive
+(`bench.ml:65`, `:68`) does not appear in the diff at all — §5 clause 1 holds by
+absence rather than by inspection.
+
+**§2(i) — the inverted reset polarity. `BK4` NOT REACHED.** The entry condition is
+`bench.ml:387` `(match Clear.is_ever_high clear with`, and `is_ever_high` is
+`bench.ml:186` `not (List.is_empty (high_cycles t))` — a projection of the
+guard's stated subject, with no second predicate reconstructing it. The comment
+at the site names the reconstruction it declined (`t.last >= t.first`) and says
+why, which is the rule stated at the one line it governs. `Clear.never`'s high
+set is `[]`, so `is_ever_high never = false` and a `?clear`-omitted run takes the
+`| false -> ()` arm: **no walk, no extra `word_at`, no new exception class on any
+of the 56 landed units.** And this is not only argued — the structural witness
+asserts `high_cycles never = []` and `is_ever_high never = false` mechanically,
+and it is green.
+
+**§2(ii) and §3.4(1) — the predicate must not refuse K2's own stimulus. `BK5`
+NOT REACHED.** The walk's filter is *"if this cycle is not high, skip; otherwise
+test `start_lane` of the driven word"*. Its subject is **high cycles**, not
+transitions. K2's release cycle 11 carries frame B's start character and is
+**not high** (`window ~first:6 ~last:10`), so it is skipped before `start_lane`
+is ever evaluated on it. A transition-set guard would have fired there. **The
+proof is not structural only: K2 ran to completion at CI step 6 and delivered
+B's eight words at cycles 14 … 21**, which is reachable only if `run` did not
+raise.
+
+**§3.3 — `BK6` NOT REACHED.** The guard evaluates `word_at ~cycle`, the *resolved
+driven-word function* — `?word_at`'s override where one is supplied, else
+`Arrival.word_at sched`. `Arrival.start_cycles` appears nowhere in it. Neither K
+row injects a start character, and the bar passes anyway, which is the point of a
+bounce condition that does not depend on the round's own stimulus.
+
+**§3.5 — placement.** `run`'s body order at `284225d` is: `Arrival.check` →
+`word_at` resolution → `enable` default → **`clear` default** → `total` → the
+M03-J4 guard → **the K guard** → the `drive` recursion. Both pre-scans sit before
+the first `sample_cycle`, and neither reads the other's schedule.
+
+**§4.1 — `BK7` NOT REACHED.** `Protocol_monitor.on_clear` has exactly one call
+site in `test/xgmii_rx_64/**`: `bench.ml:308`. No row calls it. (The only other
+call anywhere in `test/**` is the monitor's own pre-existing unit test.)
+
+**§4.2 — the derived ordering.** `bench.ml:300` `Protocol_monitor.observe`,
+`:301` `Strobe_monitor.sample`, `:308` `if clear then Protocol_monitor.on_clear`.
+`on_clear` **last**, guarded on the driven boolean — so a `Clear.never` run makes
+zero calls and the landed call sequence is byte-identical rather than merely
+equivalent, and `observe` zeroes `words_this_frame` before `on_clear` can see it.
+The discrimination that buys is now measured rather than argued: K2 asserts
+`cleared_mid_frame = 1` **and** a single `tlast` at cycle 21, and both are green.
+
+**§5 bar B — the thirteen added literals, each justified.** *`Clear.window`'s
+construction check*: `"Bench.Clear.window: first "`, `" must be >= 0 and <= last "`.
+*The §3 guard's message*: `"  cycle "`, `", start lane "`, `"\n"` (all three
+already present once for the M03-J4 guard; the multiset gains a second occurrence
+of each), plus its multi-line body, which a **line-based** extractor cannot see
+and which K-1's hunk reading covers instead. *`Clear.report`'s rendering*:
+`"never"`, `"window first "`, `" last "`. *`account_cleared_frame`*:
+`"Bench.account_cleared_frame: delivered must be >= 0, got "` and the
+conservation reason `"clear (REQ-009)"`, which §8.3 specifies verbatim. *In
+`bench.mli`, inside docstrings only*: `"clear (REQ-009)"`, `"extend the reset"`,
+`"this cycle was a clear cycle and the design was silent on it"`.
+
+**`account_cleared_frame`** implements §8.3's contract exactly:
+`frame_in_exempt ~reason:"clear (REQ-009)"` — never `frame_in`, never
+`discarded`; `Latency.frame_in (Arrival.in_times frame)`; then the
+`delivered = 0` → `frame_dropped` / otherwise `frame_out ~expected_octets` split;
+`delivered < 0` raises. It does not filter `samples`, and its docstring says so.
+
+**Both row units against §7.3's ten and §8.4's twelve ordered steps: every step
+present, in order.** K1's step 1 carries `WO-0040` §3.2's **both** directions
+(`residue_ok good` true *and* `residue_ok bad` false) and items 1–7; step 2's
+`Strobe_monitor.expect` is registered before the run with cycle 11, `not_before`
+10, `not_after` 13, frame 0; step 6's silence spans 12 … 17, the window **and**
+the release cycle. K2's step 3 asserts the whole delivered-cycle list
+`[4;5;14;15;16;17;18;19;20;21]` **before** any partition is taken, and step 4
+partitions from that list — `split_at_first_tlast` is not called anywhere in the
+file (**T1**); `Frame.sequence_of` is called on B's 60 octets and the control's
+two 60s and never on A's 16-octet prefix (**T2**); `account_clean_frame` for B is
+handed `b_words` and never the whole run (**T5**); step 8's silence spans 6 … 11,
+covering A's own `/T/` at cycle 10 and the release cycle 11.
+
+---
+
+### 3. The two filed questions, RULED
+
+#### 3(a) — §7.2 item 24 / §8.2 item 28, and item 30, which the return did not name
+
+**The carried reading is CORRECT for items 24 and 28. Item 30 is a real, narrow
+gap, and it is the one worth paying.** The worker's ground — *"both rows' ordered
+lists skip it"* — reaches the right answer for the wrong reason: the ordered list
+omits them because I wrote the list, so citing the list to justify the list is
+circular. Here is the ground that is not.
+
+A §7.2/§8.2 table is a **derivation record** — every quantity the round's
+arithmetic produces, so a reader can check the arithmetic. §7.3/§8.4 are an
+**assertion specification**. They are deliberately different sets, and a cell in
+the first that no step of the second names is a **carried figure**, admissible
+only where the property it states is already pinned by what *is* asserted. Items
+24 and 28 are pinned, three ways over:
+
+1. `Latency.word_delay = Some 3` is asserted in both rows, and `octet_time.mli`
+   defines it as *"the single word delay ΔC, when every class has one and they
+   all agree"*. So it already asserts that **every** front-offset class collapsed
+   to exactly one `L`, and that `(L + h) / 8 = 3` in each — i.e. `L + h = 24` per
+   class.
+2. `assert_monitors_clean` asserts `Latency.errors` empty, and that list rejects
+   *"an observed front offset outside the declared set"* and *"an `(L + h)` that
+   is not a multiple of 8"*. So `h` is not taken on trust either — the tagger
+   computes it from the observed stream and it is checked against §0.5's declared
+   set. With `h` pinned to the set and `L + h = 24`, `L` is determined.
+3. Both rows assert the **exact delivered-octet content** and the **exact
+   delivered-cycle list**, which are the two measurements the tagger derives `h`
+   and `L` from in the first place.
+
+A wrong `(front_offset, latencies)` pair would have to survive all three. **No
+gap. The reading is the intended one, and it is now grounded rather than
+inherited.**
+
+**Item 30 (`Latency.frames_compared` = 2) is different, and the return missed
+it.** Nothing above implies a *count* of output frames offered to the tagger:
+`word_delay` would read `Some 3` from frame B alone. The one thing
+`frames_compared = 2` would witness is **which branch `account_cleared_frame`
+took** — `frame_out ~expected_octets:16` versus `frame_dropped`. Nothing
+witnesses it today. The branch **is** in fact pinned, because `~delivered:16` is a
+literal the row asserts before the call (§8.3's own *"a value the caller has
+already ASSERTED rather than observed"*), so **the round's claims are sound and
+this bounces nobody**. But it leaves a brand-new capability shipping with one of
+its two branches dead and unwitnessed, which is §7.5's shape one level down.
+Recorded as **OBSERVATION K-O2**; its disposition is commissioned at §5.
+
+**The drafting repair, general to this packet form**: a derivation table must mark
+each cell **ASSERTED** or **CARRIED** *in the table*, so a cell's status is
+readable at the cell instead of reconstructed from a later ordered list. The
+worker had to file a question because my packet made that unreadable. Owed at the
+next packet of this shape.
+
+#### 3(b) — bar K-10's literal
+
+**The worker is right, the literal is mine, and "zero blocks ADDED" is the bar's
+true meaning.** Verified at my seat: `test_m03_i.ml:1796` is the **one and only**
+non-empty `[%expect {| … |}]` block in `test/xgmii_rx_64/`. It is M03-I4's own
+promoted latency table, deliberate by that row's design (*"per-octet constant of
+§7 MEASURED and REPORTED rather than asserted"*), landed long before this round
+and untouched by it.
+
+**The bar's true meaning, for the record**: *this round adds no non-empty
+`[%expect]` block* — every block in the three new units is `{||}`, which the
+worker verified by reading each. The property the literal was reaching for is
+**promotion discipline**, and the instrument that actually carries it is not a
+worker bar at all: it is CI step 8, *"Verify nothing was left unpromoted or
+non-deterministic"*, `success` at run 31032021108. A universal quantifier over a
+directory could never have carried it, because a deliberate promoted block is not
+a promotion failure.
+
+The literal's defect is **recorded, not waived** — see FINDING K-3.
+
+---
+
+### FINDING K-3 — three of my seven dv-seat bar literals are false against the tree they point at, and all three fail the same way
+
+Against my own §14 table, not against the work.
+
+- **K-6**: *"in `test/monitors/**`: zero literals differ"*. Falsified by
+  **§10.1's repair text, which this same packet dictates verbatim** — it contains
+  three double-quoted phrases, and a line-based extractor cannot tell a quoted
+  phrase in a doc comment from an OCaml string literal. **True meaning**: zero
+  *executable* literals differ. The bar that actually carries that is `K-14` /
+  `BK11` (comment-only), which passed.
+- **K-7**: *"zero deletions outside the two docstring sites §10 authorises to gain
+  text (both of which add without deleting)"*. Self-contradictory as written: if
+  those sites add without deleting, the clause demands zero deletions anywhere —
+  unsatisfiable, because adding `?clear` to `run`, `~clear` to `sample_cycle` and
+  `clear` to its record literal necessarily rewrites four lines. **True meaning**:
+  no landed **content** is removed.
+- **K-10**: *"zero non-empty blocks anywhere in the directory"*. False against the
+  base tree, and false at every round since M03-I4 landed. **True meaning**: this
+  round adds none.
+
+**The common form, and it is this round's own contribution to the bank**: *a
+review bar whose pass condition is a universal over a whole tree or a whole diff
+must be measured against that tree before the bar is written, or it must be
+expressed as a delta. A bar that has never been run against its own base is not a
+bar, it is a hope — and it fails on the first round where the base has moved,
+silently, because its failure looks like a defect in the work.* All three would
+have been caught by executing them once at the base at draft time, which costs
+nothing. **That execution is now owed at draft time for every bar I write.**
+
+Two of the three I found at my own seat; the third the worker found and reported
+under `BK3`'s clause, executing the true reading rather than adopting a literal it
+could not satisfy. **That is exactly the behaviour `BK3` and §17.3 ask for, and it
+is credited in full.**
+
+---
+
+### 4. Verdict — **ACCEPT**, and the count MEASURED
+
+**No BOUNCE condition is reached.** `BK1` (no red at all), `BK2`, `BK3`, `BK4`,
+`BK5`, `BK6`, `BK7`, `BK8`, `BK9` (the only two occurrences of *"settle"* in
+`test_m03_k.ml` are the §7.5 **disclaimer** at lines 17 and 20), `BK10` (both
+control runs present and at full §7.4 / §8.5 strength), `BK11`, `BK12`, `BK13`
+(**4 elaborations, 4 runs, 104 driven cycles** — 21 × 2 + 31 × 2 — against a
+ceiling of 5 and 200), `BK14`, `BK15` (the only occurrences of `libs/`, `top/`,
+`rtl_snapshots/` in the Return log and journal are negative disclaimers), `BK16`.
+
+**§9's disposition table was not invoked, and that is the honest report.** D1–D6
+are dispositions for a K2 **red**; the run was green, so **no class fired**. The
+table's value was that it made a red readable in advance; its non-invocation is
+not a pass it earned. What the green positively establishes, class by class: no
+`tlast` attributable to frame A anywhere (**D1** absent); frame B present, full,
+at cycles 14 … 21 (**D2** absent); `tvalid = 0` and every strobe 0 across cycles
+6 … 11 (**D3** absent); the K guard did not fire (**D4a**); every construction
+check held, including `start_cycle_b = 11`, the number the whole row rests on
+(**D4b**); `residual = 0` with `frames_exempt = 1` (**D4c**);
+`cleared_mid_frame = 1` (**D4d**). **D5 cannot arise** — it is conditioned on
+frame B being absent, and B is present, so the release-cycle reading pinned at
+§8.1 is not in dispute and no adjudication is owed to architect_docs_lead.
+**D6 cannot arise** — both rows are green.
+
+#### The count, MEASURED
+
+By a **status-cell pass over every row table** of `AP-xgmii_rx_64.md` at
+`284225d` (not carried forward): **78 rows — 62 ASSERT, 7 NO-ASSERT, 4
+NO-STIMULUS, 4 STRUCTURAL, 1 GAP**, which agrees with the plan's own dated count
+at `8d8a239`. By the boundary matcher at both ends, **as sets**:
+
+```
+ASSERT rows                62
+titled at landing          62
+titled \ ASSERT            {M03-A4}     (NO-ASSERT named in a title: -1)
+ASSERT \ titled            {M03-F5}     (discharged by citation:     +1)
+discharged ASSERT          62 of 62
+outstanding ASSERT         NONE
+base discharged            60 of 62     gained {M03-K1, M03-K2}, lost {}
+```
+
+Both declared adjustments **hold by measurement at this tree**, not by
+inheritance: `M03-A4` is the only titled non-ASSERT row, and `M03-F5` is the only
+ASSERT row without a title.
+
+**62 of 62, with the CI run id beside it: `build` run 31032021108, step 6
+`success`, step 8 `success` — `RV-0068B-VERDICT` §7's rule discharged.**
+
+#### What 62 of 62 DOES mean
+
+Every ASSERT row of this module's attack plan is discharged by a landed unit that
+is green. **The bench era of `Xgmii_rx_64` closes: no further bench round is
+commissioned for this module**, and the last port no bench had ever driven is
+driven.
+
+#### What it does NOT mean — five things, none of which the number buys
+
+1. **It is not an `SO-` PASS and does not open one.** Outstanding before any PASS:
+   the **family J, K, L and M mutation campaigns**, PROTOCOL §10-sequenced after
+   `RV-` ACCEPT and before `SO-` PASS — four families unscored — and the charter
+   §3 **verilog-ethernet differential co-sim anchor**, undischarged.
+2. **It is a TITLE count, not a pass.** The pass is the run id, and the two are
+   quoted together above or not at all.
+3. **`M03-K3` is NOT discharged.** It stays `NO-ASSERT`; the protocol monitor's
+   frame-in-progress reset is machinery this round *wires*, never a design
+   assertion this round makes. No title in the round names it.
+4. **The riders continue, all of them.** No `SO-`, scorecard or verdict may cite
+   **M03-K1** as detecting a design that needs a second cycle to settle (§7.5,
+   the **sixth** instance of the M03-D3 / F2 / I2 / J2 / N4 shape — the row stays
+   ASSERT, only the claim is bounded); **M03-K2's third kill** is a
+   monitor-precondition, not a design kill (§8.6); the **`frames_exempt` count is
+   bench-supplied** and is never evidence that a frame was driven — the control
+   run carries that (§8.3); and `~aborted:false` on a bad-FCS frame remains family
+   D's landed call, copied unchanged (**OBSERVATION K-O1**).
+5. **Neither pre-scan guard has ever fired on a real violation.** Both K rows
+   *enter* the K guard and find nothing — a non-violation, exactly the status the
+   M03-J4 guard's driven-word reading has carried since `2dbd39b`. The K guard's
+   entry condition is now mechanically witnessed (the structural unit); its
+   *refusal* is still only argued. That is a standing fact about both guards, and
+   it belongs beside X-6 and X-7 rather than inside a claim.
+
+**Also recorded**: this round is silent on §3.2's spec ambiguity **by design**.
+Neither row drives a `/S/` under `clear` — the guard refuses that stimulus — so
+the green says nothing about which of §6.2's `Idle` row and §7's reset bullet
+governs. That is the guard working; the ambiguity is unchanged and non-blocking.
+
+---
+
+### 5. What I commission next, in order
+
+1. **The batched `AP-` round** — mine, still the next commit opening
+   `test/attack_plans/**`, now **fourteen** items: `RV-0071-VERDICT` §12 item 2's
+   eight, (i)–(viii); this packet's §18 item 2's five — (a) §7.5's M03-K1
+   Kills-cell finding with its sixth-instance disposition, (b) the **X-7** row for
+   the `Clear` schedule recording that its subject and entry condition were
+   re-derived rather than transplanted, (c) a landed-status block for §4.K with
+   `284225d` and run `31032021108`, (d) §8.6's reclassification of K2's third
+   kill, (e) §7's dated *"Not gaps"* note gaining the date at which *"used by
+   M03-J1 and M03-K2"* became true of K2 — **plus (f), added by this round**: X-7's
+   note carries **FINDING K-3**'s bar-literal rule beside the schedule rule, and
+   **OBSERVATION K-O2** is recorded with its two-option disposition (pay
+   `frames_compared = 2` as a one-line assertion in `test_m03_k.ml` in that same
+   commit, or declare it carried in §4.K's landed-status block — **I recommend the
+   first**: it costs one line and one CI run, and it witnesses which branch a
+   brand-new function with one call site and one dead branch actually took).
+   **`test/cost_probe/`'s undischarged deletion rides in the same commit**
+   (`RV-0070-VERDICT` §8 item 3, re-pinned by `RV-0071-VERDICT` §12 item 3).
+2. **The spec queue with architect_docs_lead** — §6.2's `Idle` row transition
+   column should carry `and clear = 0`, or §7 should say which of the two governs
+   on a cycle carrying both a `/S/` and `clear` = 1 (§3.2, §18 item 4).
+   Non-blocking: the guard removed any need for a ruling before this round landed.
+   **This round adds nothing further to the queue** — a nil addition, declared
+   rather than omitted.
+3. **The campaign sequence toward `SO-xgmii_rx_64.md`**, in this order: the family
+   **L** and **M** campaign packets (already owed at `RV-0070-VERDICT` §8 item 4
+   and `RV-0071-VERDICT` §12 item 4), then **J** and **K** — K's manifest seeded
+   against §9's own D1 / D2 / D3 classes, which are now a written statement of what
+   a phantom `tlast`, a lost frame B and a leaked word look like at this bench,
+   authored before any of them was observed. Then the charter §3
+   **verilog-ethernet differential co-sim anchor**. Only then `SO-`, and the
+   **lessons harvest falls due at it**, spanning from my last harvest.
+
+---
+
+### 6. Housekeeping
+
+- **HEAD integrity**: `HEAD` at return = `284225d17e6a9d26d74a65685f027aebc5a76d8c`,
+  branch `claude/fpga-hardcaml-agent-orchestration-37ceyf`, working tree clean —
+  unchanged from spawn. Read-only git only; no command whose effect moves `HEAD`,
+  the index or any ref was run at any point in this round.
+- **The Bash transient the worker journalled under §17.2's durability clause is
+  corroborated.** I hit the same environment refusal **three times** at my own
+  seat during this round, on read-only commands, each clearing on retry with the
+  identical command and no substitution. It is an environment transient, not a
+  refused instrument, and the worker's disclosure was accurate. **The clause
+  earned its keep**: because that disclosure is in the repo rather than in chat, I
+  could match it against my own experience a session later — which is precisely
+  what `RV-0071-VERDICT` §3 could not do.
+- **Worker return quality**: K-8 … K-17 all executed and reported with raw output;
+  K-12 and K-13 quoted verbatim as demanded; no number of mine adopted without
+  derivation; the one mismatch found (K-10) reported rather than worked around; no
+  instrument outside §17.1's allow-list attempted. **`J-tb_writer-0031`'s files
+  list is R4-verified mechanically** by `journal-check` run 31032018860, step 5,
+  `success`.
+
+**Packet state: `RETURNED` → `ACCEPTED`.**
