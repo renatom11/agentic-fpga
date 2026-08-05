@@ -1,0 +1,25 @@
+; THROWAWAY — WO-0070 §1. NEVER committed to the working branch: the
+; orchestrator materialises this directory on a throwaway ref, runs CI once,
+; records the COST-PROBE-L lines and discards the ref (PROTOCOL §10's
+; transient model; the BUG-0003 §V.2/§V.10.1 precedent).
+;
+; An executable on the runtest alias rather than an expect test, because the
+; result is a timing figure and a timing figure can never live in a promoted
+; snapshot — the determinism step's `git diff --cached --exit-code` would fail
+; on every run forever. The shape is test/cost_probe/dune's, which is proven
+; in CI at run 30729880948.
+;
+; (deps (universe)) disables dune's cache for this action: a cache hit could
+; replay a stale figure, which is worse than no figure.
+
+(executable
+ (name l_cost_probe)
+ (modules l_cost_probe)
+ (libraries dv_xgmii dv_monitors test_xgmii_rx_64))
+
+(rule
+ (alias runtest)
+ (deps
+  (universe))
+ (action
+  (run %{exe:l_cost_probe.exe})))
