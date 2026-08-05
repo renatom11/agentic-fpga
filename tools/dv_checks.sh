@@ -235,6 +235,92 @@ printf 'These are UNIT COUNTS, not a per-unit classification: runner -> unit is\
 printf 'MANY-TO-MANY here, so any per-unit or per-row set must be built from CALL\n'
 printf 'SITES, never from enclosing definitions (see the note above this block).\n\n'
 
+# ---- row-discharge census: BOUNDARY-MATCHED, and a REPORT, never a check ----
+#
+# Why this exists (RV-0065B-VERDICT §5, J-dv_lead-0113; commissioned into the
+# family-B/N campaign packet). The discharge figure "N of 62" is the number a
+# sign-off packet quotes and a campaign denominator is built from, and until
+# now it was measured by hand at each round. Twice now the hand measurement had
+# to be defended against a matcher defect that is invisible in its output:
+#
+#   A ROW ID THAT IS A PREFIX OF ANOTHER ROW ID IS DISCHARGED BY THE LONGER
+#   ROW'S OWN TEXT UNDER A PLAIN SUBSTRING MATCH. Here `M03-M1` is a prefix of
+#   `M03-M10`, and `M03-M10` shares a unit title with `M03-B3`; a substring
+#   matcher therefore reports `M03-M1` discharged by a unit that has never
+#   driven it, and reports one row too many with no visible symptom.
+#
+# The fix is a TRAILING-DIGIT BOUNDARY: a row id counts as named only where the
+# character following it is not a digit (or the id ends the line). Both
+# matchers are run below and both figures printed, because the naive figure is
+# the one every reader's own `grep` would produce and the difference is the
+# whole point of the block. The rows the naive matcher over-discharges are
+# named, so the discrepancy is readable rather than merely counted.
+#
+# The mechanical form, portable past this bench: WHEN A SET OF IDENTIFIERS IS
+# MATCHED INTO FREE TEXT, THE MATCH NEEDS A BOUNDARY WHENEVER ANY IDENTIFIER IS
+# A PREFIX OF ANOTHER. Check the id set for prefix pairs before trusting a
+# substring pass; a pass with no prefix pairs is correct by accident, and stays
+# correct only until an id is added.
+#
+# Deliberately no pass/fail semantics and no effect on $status, for the same
+# reason as the inventory block above: an asserted census goes stale every
+# packet and would redden the suite for doing its job. This block cannot
+# manufacture a green and cannot redden one.
+#
+# WHAT IT DOES NOT DO. It counts rows NAMED IN UNIT TITLES. It does not know
+# which plan rows are ASSERT and which are NO-ASSERT, and it does not see a row
+# discharged by a CITATION rather than a title. Both adjustments are judgements
+# and are printed as DECLARED, with their provenance, so a reader checks them
+# rather than inherits them.
+census_plan='test/attack_plans/AP-xgmii_rx_64.md'
+printf '=== row-discharge census (REPORT only — no check, no verdict) ===\n'
+if [ ! -f "$census_plan" ]; then
+  printf '  plan not found at %s — census skipped, NOT coverage\n\n' "$census_plan"
+else
+  census_titles="$(
+    awk 'FNR==1{inh=0} /let%expect_test/{inh=1} inh{print} inh && /=[ \t]*$/{inh=0}' \
+      test/xgmii_rx_64/*.ml 2>/dev/null
+  )"
+  census_rows="$(
+    grep -oE '^\|[^|]*M03-[A-Z]+[0-9]+' "$census_plan" 2>/dev/null \
+      | grep -oE 'M03-[A-Z]+[0-9]+' | sort -u
+  )"
+  census_total=0
+  census_naive=0
+  census_bound=0
+  census_over=''
+  for census_r in $census_rows; do
+    census_total=$((census_total + 1))
+    if printf '%s' "$census_titles" | grep -q -- "$census_r"; then
+      census_naive=$((census_naive + 1))
+      if printf '%s' "$census_titles" | grep -qE -- "${census_r}([^0-9]|\$)"; then
+        census_bound=$((census_bound + 1))
+      else
+        census_over="$census_over $census_r"
+      fi
+    fi
+  done
+  printf '  %3s  row ids declared in the plan\n' "$census_total"
+  printf '  %3s  named in a unit title — NAIVE substring match\n' "$census_naive"
+  printf '  %3s  named in a unit title — TRAILING-DIGIT BOUNDARY match (use this one)\n' \
+    "$census_bound"
+  if [ -n "$census_over" ]; then
+    printf '  over-discharged by the naive matcher:%s\n' "$census_over"
+    printf '  (each is a PREFIX of a longer row id that a unit title does name)\n'
+  else
+    printf '  the two matchers agree at this tree — no row id is a prefix of a\n'
+    printf '  named longer one TODAY. That is a property of the current id set,\n'
+    printf '  not of the method: adding one id can reintroduce the divergence.\n'
+  fi
+  printf '  DECLARED adjustments, judgements and not measurements — check them:\n'
+  printf '    - M03-A4 is a NO-ASSERT row and is named in a title: subtract 1.\n'
+  printf '    - M03-F5 is discharged BY CITATION, not by a title\n'
+  printf '      (test/xgmii_rx_64/test_m03_f.ml, the M03-F5 block): add 1.\n'
+  printf '  Quote the BOUNDARY figure with this command as its provenance, apply\n'
+  printf '  the two declared adjustments in the open, and state the ASSERT-row\n'
+  printf '  denominator from the plan rather than from this block.\n\n'
+fi
+
 
 if [ "$status" -ne 0 ]; then
   printf 'dv_checks: at least one check FAILED\n'

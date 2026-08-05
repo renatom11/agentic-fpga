@@ -1141,3 +1141,145 @@ including `J-dv_lead-0112`'s pre-commitment-list candidate. Yield this round:
 - agents/handoffs/WO-0065_tb-m03-family-b-completion-and-n2.md
 - test/attack_plans/AP-xgmii_rx_64.md
 - test/xgmii_rx_64/test_m03_n.ml
+
+## [J-dv_lead-0114] 2026-08-05T23:55Z | task:WO-0066 | The census that had to stop being a hand measurement — and the boundary defect reproduces at a third SHA, so the tool now prints both matchers and names the row the naive one steals
+
+### Trigger
+Orchestrator dispatch opening the family-B/N campaign round, item 1's carried
+obligation: the `tools/dv_checks.sh` trailing-digit boundary match commissioned
+at `RV-0065B-VERDICT` §7.1 and left standing at `J-dv_lead-0113`
+Open-question 3. It lands as its **own commit, before** the campaign packet's,
+because it is under `tools/` and therefore moves no byte the campaign scores
+against — which is exactly what makes it eligible to ride the base SHA.
+
+### Inputs
+- `agents/handoffs/WO-0065_tb-m03-family-b-completion-and-n2.md`
+  **`RV-0065B-VERDICT` §5** (the 48/43/44 measurement and the naive matcher's
+  defect) and **§7.1** (the commission itself).
+- `tools/dv_checks.sh` at HEAD — the whole file, and the **bench-inventory
+  block's own header comment** in particular, because the new block has to be a
+  REPORT under the same rules and I wrote it against that block rather than
+  against my memory of it.
+- `test/attack_plans/AP-xgmii_rx_64.md` — read for its **row-id declarations
+  only**, to derive the id set the matcher ranges over.
+- `test/xgmii_rx_64/*.ml` — `%expect_test` titles only.
+- `agents/PROTOCOL.md` §5 (R2, R4, R7), §6 (write scope: `tools/**` is mine).
+- `agents/charters/dv_lead.md` §3, §8.
+
+### Reasoning
+**Why a REPORT and not a check, decided the same way the inventory block was.**
+An asserted census goes stale every packet and would redden the suite for doing
+its job. The block therefore has no pass/fail semantics and does not touch
+`$status` — verified by running the script and confirming exit 0 with the
+OBLIGATION-OPEN line unchanged. What it buys is **provenance**: a figure a
+sign-off or a campaign denominator quotes now has a command behind it.
+
+**Why print BOTH matchers rather than only the correct one.** The naive figure
+is what any reader's own `grep` produces. A tool that silently prints the right
+number teaches nothing and is re-derived wrongly by the next person with a
+shell. Printing 44 beside 43 **and naming `M03-M1` as the row the naive matcher
+steals from `M03-M10`'s title** makes the discrepancy readable rather than
+merely counted — the same move `J-dv_lead-0109` §6 made when it put a rule in
+the tool instead of in a journal.
+
+**The general shape, written into the comment because it is not about this
+bench.** *When a set of identifiers is matched into free text, the match needs a
+boundary whenever any identifier is a prefix of another.* The block says so, and
+says the corollary that matters more: **a pass with no prefix pairs is correct by
+accident and stays correct only until an id is added** — so the "the two matchers
+agree" branch prints that caveat rather than a clean bill.
+
+**What I deliberately did NOT mechanise.** Two adjustments stand between the
+boundary figure and the discharge count: `M03-A4` is a **NO-ASSERT** row that is
+named in a title, and `M03-F5` is discharged **by citation** and appears in no
+title. Both are **judgements**. Encoding them would let a later reader inherit
+two rulings as if they were measurements, and would silently go wrong the day a
+third such row appears. They are printed as **DECLARED**, with their provenance,
+so a reader checks them. The ASSERT-row denominator (62) is likewise left to the
+plan rather than computed, because the plan is where ASSERT/NO-ASSERT is ruled.
+
+**One thing I found while testing the extractor and did not build on.** A regex
+that harvests `M03-[A-Z]+[0-9]+` tokens straight out of the titles returns
+**44** as well — but for an entirely different reason: it picks up `M03-R1`, a
+**defect** id named in sub-case 4's title, which is not a plan row at all. Two
+different methods, two different 44s, one right answer. That is precisely why
+the block matches the **plan's declared id set** into the titles rather than
+harvesting tokens: a census must range over the thing being discharged, not over
+whatever happens to look like it.
+
+### Actions
+- `tools/dv_checks.sh`: appended one block, **row-discharge census
+  (REPORT only)**, after the bench inventory and before the status summary.
+  Extracts the plan's row ids from its own table rows; extracts `%expect_test`
+  titles from `test/xgmii_rx_64/*.ml`; runs the **naive substring** and the
+  **trailing-digit boundary** matcher side by side; prints both counts, the
+  over-discharged rows, and the two declared adjustments. No `$status` effect,
+  no new check, no workflow edit (`.github/**` is not mine, PROTOCOL §6).
+- Guarded the missing-plan case so the block announces `census skipped, NOT
+  coverage` rather than printing a zero that could be read as a measurement.
+
+### Evidence
+- `bash -n tools/dv_checks.sh` → exit 0.
+- `bash tools/dv_checks.sh` at this tree, the new block's own output:
+  **78** row ids declared in the plan; **44** named in a unit title under the
+  NAIVE substring match; **43** under the TRAILING-DIGIT BOUNDARY match;
+  `over-discharged by the naive matcher: M03-M1`.
+- **The defect reproduces at a third SHA** and its cause is now printed rather
+  than argued: `M03-M1` is a prefix of `M03-M10`, and `M03-M10` shares
+  `M03-B3`'s `%expect_test` title in `test_m03_b.ml`.
+- `bash tools/dv_checks.sh >/dev/null 2>&1; echo $?` → **0**. The block cannot
+  manufacture a green and cannot redden one; the run still ends with
+  `every check that COULD run passed, and 1 obligation is still OPEN` (the
+  RFC 1071 fetch, blocked here for the sixth time, `curl (56) CONNECT tunnel
+  failed, response 403`).
+- Inventory block unchanged and re-read at this tree: **48**
+  `test/xgmii_rx_64/`, **128** `test/`, therefore **80** non-M03.
+- `dune runtest` is not runnable from this seat (ADR-0005: no Hardcaml
+  toolchain in this container). Nothing in this commit is OCaml, so no compile
+  evidence is owed; CI's `build` is the authority as always.
+
+### Outcome
+**DoD met** for the first of the round's two commits. `RV-0065B-VERDICT` §7.1's
+census commission is **DISCHARGED**, and `J-dv_lead-0113` Open-question 3 is
+**closed**. This commit is the **base SHA** the campaign packet and its seal
+freeze against (`WO-0066` §8): it is under `tools/`, so the sentence *"nothing
+under `test/**` moves again until the campaign scores"* survives it intact.
+Handoff: the campaign packet, next commit.
+
+### Open-questions
+1. The two declared adjustments (`M03-A4` out, `M03-F5` in by citation) are
+   printed, not computed, **on purpose**. If a third such row appears the block
+   will not know, and the reader who quotes it must still read the plan. Stated
+   as a known limit of the instrument rather than left to be discovered.
+2. Carried unchanged from `J-dv_lead-0113`: the `bench.mli` `_frame`/`_piece`
+   naming-axis cell; fold-in 3; `run_i2_member`'s citation exception; `WO-0061`
+   §8 bound 1's `tkeep` half; **N-1**; the auditor's ledger disposition on
+   `BUG-0003`; **B-4**'s stale forward reference in `test_m03_h.ml`.
+
+**Harvest (ADR-0018, PROTOCOL §7).** **Not due** — no `SO-`, no gate. Span since
+`J-dv_lead-0113`'s note: **J-dv_lead-0114** (this entry); cumulative untiled span
+**J-dv_lead-0001 … 0114**, first harvest still firing at `SO-M03`. Inventory
+carries unchanged at **~11 LH2-g candidates plus the war stories**. Yield this
+round:
+
+- **One candidate banked.** *"When a set of identifiers is matched into free
+  text, require a boundary wherever one identifier is a prefix of another; a
+  matcher with no prefix pairs in its current set is correct by accident, and
+  stops being correct the moment an id is added."* **LH1**: this commit, and the
+  two SHAs before it where the same prefix pair produced a discharge count one
+  too high with no visible symptom. **LH2-g** — no proper noun in the rule
+  statement. **LH3**: without it, a census over a growing id set silently
+  over-counts, and the over-count is invisible precisely because the matcher
+  runs cleanly.
+- **A second candidate, weaker, banked as a war story rather than a rule.** Two
+  different methods returned the same wrong number here for two unrelated
+  reasons (a prefix collision; a defect id that looks like a row id). The
+  observation — *agreement between two methods is not corroboration when neither
+  was checked against the thing being counted* — is real but I could not state
+  it without leaning on the coincidence, so it fails LH2 as written and goes no
+  further this round.
+- **No war story retired, none promoted.**
+
+### Files-in-this-commit
+- tools/dv_checks.sh
+
