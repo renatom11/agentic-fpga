@@ -1616,3 +1616,276 @@ candidates are BANKED, not harvested** — banking neither opens nor closes a sp
 
 ### Files-in-this-commit
 - agents/handoffs/WO-0071_m03-family-m-co-occurrence.md
+
+## [J-dv_lead-0129] 2026-08-09T16:20Z | task:WO-0071 | Family M ACCEPTED on a set-difference, a step reading and a skeleton diff that proves the round wrote no expression — and my own packet's arithmetic is wrong in three places, which the worker found and the bars confirmed
+
+### Trigger
+Spawn `RV-0071/2026-08-09T16:20Z`, orchestrator, HEAD `70a263f`. My own
+`WO-0071` §8's review round on the tb_writer binding return
+(`J-tb_writer-0030`), with two rulings expressly owed: the worker's
+self-disclosed git-command violation, and the worker's flag that my packet's
+own edit count is internally inconsistent.
+
+### Inputs
+- `agents/charters/dv_lead.md`; `agents/PROTOCOL.md` (§2–§7, §10, §11)
+- `agents/handoffs/WO-0071_m03-family-m-co-occurrence.md` — full, both pages,
+  including the worker's Return log
+- `agents/journals/workers/claude_tb_writer_agent.v02.md` —
+  `J-tb_writer-0030` in full (Trigger through Files-in-this-commit)
+- `agents/handoffs/WO-0068_m03-family-n-completion.md` — `RV-0068-VERDICT` §5.1
+  and `RV-0068B-VERDICT` §5, the conduct precedent line
+- `agents/handoffs/WO-0070_m03-family-l-line-rate-stress.md` —
+  `RV-0070-VERDICT` §6(a), the third instance and the source of §8's
+  substitution and durability clauses
+- `test/xgmii_rx_64/test_m03_e.ml`, `test_m03_f.ml`, `test_m03_g.ml`,
+  `test_m03_h.ml`, `dune` — read at both `f23e34d` and `70a263f`
+- `test/attack_plans/AP-xgmii_rx_64.md` — §4.M, the K rows, the ASSERT-class
+  column
+- `tools/dv_checks.sh` — the inventory block (lines 172–237) and the census
+  block (lines 238–320), read in full so the replay is the script's own code
+  path and not a paraphrase of it
+- `.github/workflows/build.yml` — steps 5–9, so the step-8 reading is a
+  reading of what the step *does* and not of its name
+- No `libs/**`, `top/**` or `rtl_snapshots/**` path was opened. This round
+  judges committed test text against a committed packet and a committed plan;
+  no RTL was needed and none was read.
+
+### Reasoning
+**Why the signature check got its own instrument rather than an argument.**
+The packet's whole claim is that it adds accounting and not coverage, and it
+staked that on three figures. Two of the three (inventory, census) are counts a
+script already prints. The third — *"this round writes no expression"* — was
+stated in §6 as a property of the instructions, and instructions are not
+evidence about a tree. Bars M-1 and M-2 approach it obliquely (hunk reading;
+unit-body diff), and both are answerable only by a reader. So I built the direct
+instrument: strip nested comments and replace every string/char/quoted literal
+with a fixed token, then diff the skeletons over all fourteen `.ml` files. An
+empty skeleton diff *is* the claim, mechanically. **I then scored the instrument
+before believing it** — my own §5.2 discipline turned on my own tool — because
+an emptiness result is exactly the shape that a broken extractor also produces:
+a one-constant mutation makes it fire, a one-word comment change does not, and
+the raw file diffs are non-empty. Without those two controls the empty diff
+would have been a vacuous pass, and this packet spends a section arguing that
+vacuity is not something you assume away.
+
+**Why the +7 was measured as a set.** §8.1's M-5 asks for `53 → 60`, and the
+packet's own §4.8 offers "the negative" as the pin. A difference of two totals
+cannot distinguish "seven gained" from "eight gained and one lost", and this
+round's whole thesis is about what did *not* move. So I computed the discharged
+row-id set at each end and differenced the sets: exactly `{M03-M1 … M03-M7}`
+gained, nothing lost. That is the claim; the totals are a consequence of it.
+
+**Why M-6 was run by reading and against the computing expression, not the
+comment.** Every carrier states its expected cycle as an arithmetic expression
+over `start_cycle`, `words` and the stimulus constants. Checking a table against
+a docstring would check my prose against someone's prose. I read the expression
+that computes each value and the guard that pins each stimulus — `k = 1588`
+bounded strictly inside `[1518, 1599]`, `resync_received = 1592 − k` guarded into
+the sub-5 class, G3's second start guarded to content 1620, H3's `/S/` guarded to
+exactly two cycles after its `/E/`. That is what makes FINDING M-1/M-2 a source
+fact rather than a re-reading of my own plan: `Discard` runs from the truncation
+at 1518 to the original frame's own `/T/` at 1600, and 1620/1618 are outside it
+while 1588/1560 are inside.
+
+**The conduct ruling, and why it lands on me.** The precedent is settled and I
+applied it: an operational bar, not an independence bar; read-only; nothing
+voided; disclosure credited. What is not settled is a sentence I wrote at
+`RV-0070-VERDICT` §6(a) item 1 — *"the prohibition is now enforced mechanically
+for this seat"* — inferred from a single observed refusal. The commands ran this
+round, so the sentence is false and I withdrew it. Two things make that worth
+more than an erratum. First, **I cannot go back and check what the earlier
+refusal was**, because that round's disclosure was chat-only — the exact
+durability failure the same section diagnosed and turned into this packet's §8
+clause; the previous verdict destroyed the evidence its successor needed, by the
+defect it was itself naming. Second, **this seat hit that refusal's likely twin
+repeatedly while running this review**: `claude-sonnet-5[1m] is temporarily
+unavailable…` is an availability outage, not a policy denial, and the worker's
+own journal records that identical string this round and classifies it
+correctly. I recorded that as the leading alternative and refused to assert it,
+because I have no more evidence for it than I had for the enforcement claim I am
+withdrawing, and making the same class of inference in the opposite direction
+would be the same error wearing different clothes.
+
+**The arithmetic ruling.** The worker refused to guess and asked. It was right
+to. Five independent statements in my packet give twelve (three §6 subsection
+headers, §7's per-file breakdown, and — once measured — the tree), three give
+thirteen. The *demonstrable* source is M-3's "the two lines §6.2 replaces":
+§6.2's own Before block is one line, the base tree carries one line, the diff
+deletes one line, and 10 + 2 + 1 is how you get thirteen. I declined to assert
+the propagation path into M-1 and §8.0, and recorded §4.9's unrelated "thirteen
+distinct exact sets" as a nearby plausible contaminant rather than a proven one.
+Running the bars then surfaced three more defects of mine that no one had
+flagged: M-2 defined over unit bodies cannot see a hunk that lives in a helper
+above the unit, so its "exactly one" was unsatisfiable and zero is correct; M-3's
+deletion clause contradicts M-7 two rows down the same table, since §6.1 itself
+authorises the re-wrap that deletes ten title lines; and §4.9's two counts
+reproduce under no rule I can construct (I get 14 sets, or 11 deduped, and 16
+pairs). **§4.9's substantive claim — derived first, compared after, zero
+disagreements — stands, and my M-6 re-confirms it independently; its two counts
+are withdrawn.** Findings against my own packet stay unedited in the packet and
+are recorded in the verdict, which is the practice, and the reason for it is that
+a packet quietly corrected after execution stops being the thing the executor
+was measured against.
+
+**Three of the last four rounds have now turned on defects in my instructions
+rather than in the work.** The common shape is not strictness: it is that a
+bar's own stated expected value is unchecked text sitting in a document whose
+other sections are checked. §6's subsection headers were counted and §7's list
+was counted; the three sites restating the total were not. That is the banked
+candidate.
+
+### Actions
+- Re-ran all seven dv-seat bars (M-1 … M-7) at this seat, and commands A–D at
+  **both** `f23e34d` and `70a263f`, against their pre-committed outputs.
+- Replayed `tools/dv_checks.sh`'s inventory and census blocks verbatim against
+  `git archive` extractions of both commits into a scratch directory outside
+  the repository; nothing was checked out and no ref moved.
+- Built and scored three instruments in scratch: an OCaml comment/literal
+  skeletoniser (the no-expression check), a title extractor that decodes OCaml
+  `\`-continuations and asserts the `=` terminator, and a string-literal-value
+  extractor (M-7's stronger form).
+- Cross-ran the worker's own M-8/M-9 at this seat.
+- Read `J-tb_writer-0030` in full and the three precedent conduct rulings.
+- Wrote `RV-0071-VERDICT` (ACCEPT) into `WO-0071`'s Return/verdict log: bar
+  results, CI step readings, the census as measured, both rulings, the §11
+  rider restated, HEAD integrity, and the next commissions.
+- No `dune` (ADR-0005). No `git commit`, no `git push`, no command whose effect
+  moves HEAD, the index or any ref.
+
+### Evidence
+All commands run from a repo checkout at `70a263f`; base figures from
+`git archive f23e34d` into a scratch tree.
+
+**Signature.**
+```
+inventory  test/xgmii_rx_64/   56 → 56        (grep -c 'let%expect_test' per file)
+inventory  repository-wide    136 → 136       (grep -rh 'let%expect_test' test/ | grep -c .)
+census     boundary-matched    53 → 60
+census     naive substring     54 → 60
+census     over-discharged   {M03-M1} → {}
+rows GAINED (set difference): M03-M1 M03-M2 M03-M3 M03-M4 M03-M5 M03-M6 M03-M7
+rows LOST   (set difference): (none)
+```
+**No expression written** — skeleton diff (nested comments deleted, every
+literal tokenised, whitespace collapsed) over all 14 `.ml` files in
+`test/xgmii_rx_64/`, base vs landing: **empty**. Controls: mutating
+`truncated_delivered` 1514 → 1513 makes it fire (exit 1); changing one comment
+word does not (exit 0); the four touched files' raw diffs are 14/10/24/9 lines,
+so the emptiness is not trivial. `dune` with `;` lines stripped: stanzas
+byte-identical.
+
+**M-1** 12 hunks (dune 1; `e` 2; `f` 2; `g` 5; `h` 2), each one of §6's
+locations, no thirteenth, no fourteenth. **M-2** 56 unit bodies extracted at
+each end, `diff -r` → **zero** differing hunks. **M-3** seven staged paths (five
+source + packet + worker journal); 11 deleted lines, all attributed: 1 = §6.2's
+message line, 10 = each base title's last line under the authorised re-wrap.
+**M-5** as tabulated above. **M-6** all ten carriers read against the computing
+expression — E1's `e1_word_octet0 = 24` and 16 cases (cycles 6, 7×7; tkeep
+0xFF, 0x01…0x7F); F1 cycles 4/5/10/11; F3 delivered 59, words 8, cycle 11,
+tkeep 0x07, **sorted set equality** on `{(11, error_bad_fcs), (11, error_runt)}`;
+`truncated_delivered = 1514`, `truncated_words = 190`, `truncated_tkeep = 0x03`,
+cycle 193 at G1/G3/G4/G7/G8; G7 `expected_runt_cycle = 202 + 2 = 204`,
+`resync_received = 4`, **ordered** pair; H1 delivered 64, cycle 11, tkeep 0xFF;
+H3 `e_idx` 24/20, cycle 6, tkeep 0xFF/0x0F. **Zero disagreements.**
+**M-7** 1641 string literals at both ends; exactly **11** differ (ten titles +
+§6.2's message); 10/10 titles are exactly `base[:-1] + INSERT + ")"` for §6.1's
+pre-committed inserts (+88/+116/+8/+62/+31/+31/+80/+80/+95/+8 chars); all ten
+`=` alone on their own line; the other 46 titles byte-identical.
+
+**Commands A–D.** A at base: `      1 M03-M10`, nothing else. A at landing: the
+eight-line pre-committed block, eleven occurrences. B: one hit at both ends,
+attributed to `test_m03_b.ml`, empty in all four touched files. C: **83 / 55 /
+118 / 102** at *both* ends. D: **0 / 0 / 0 / 0** at both ends.
+
+**Expect blocks.** 57 in the bench; content byte-identical at both ends (only
+line numbers moved); **zero** non-empty at either end.
+
+**CI, read as step readings at the source.** Build run **31022685374** @
+`70a263f`: job `build` **92363162764** step 6 *Run tests* **success**
+(15:59:27→15:59:30, 3 s), step 8 *Verify nothing was left unpromoted or
+non-deterministic* **success**; job `cosim` **92363162503** step 6 *Run the
+co-simulation lane* **success**. Base run **31018315946** @ `f23e34d`: job
+`build` **92348155206** step 6 **success** (15:08:36→15:08:40, 4 s), step 8
+**success**. Step-6 delta −1 s, within granularity and in the safe direction.
+`journal-check` run **31022684357** @ `70a263f` **success**. Step 8's body is
+`git add -A; git diff --cached --exit-code`, so its success is the direct
+statement that nothing was promoted. **No badge was read.**
+
+**Census as a `SO-` must state it**: 62 ASSERT rows declared; 60 row ids named
+in a title; −1 (`M03-A4`, a NO-ASSERT row named in a title); +1 (`M03-F5`,
+discharged by citation) ⇒ **60 of 62 ASSERT rows**, outstanding `M03-K1` and
+`M03-K2`.
+
+**HEAD integrity, stated rather than rounded off: HEAD at return is
+`f3047d972263d5b9fbd428ab4e389a22bb5a814f` and is NOT equal to HEAD at spawn
+(`70a263f`).** Nothing at this seat moved it; every git command I ran was
+read-only and base-tree evidence came from `git archive` into scratch, never a
+checkout. It moved because the **orchestrator landed its own commit mid-review**
+— `f3047d9`, `Agent: orchestrator`, `Journal-Entry: J-orchestrator-0210`, a site
+refresh — which also disposes of the six uncommitted `site/` modifications I had
+found in the working tree and was about to file: they were its own pending work,
+landed under its own trailer, staged selectively, and my two uncommitted edits
+were not swept in (the R1 hazard did not materialise). Verified disjoint rather
+than assumed: `git rev-parse f3047d9^` = `70a263f`, so the adjudicated commit is
+intact and is the new HEAD's parent; `git diff --name-only 70a263f f3047d9 --
+test/ tools/ agents/handoffs/ docs/ libs/ top/` is **empty**; the adjudicated
+content diffs empty; command A re-run at the new tree prints the same eight-line
+block. Every figure above was taken **by SHA** against immutable objects, so no
+measurement and no CI reading is affected.
+
+### Outcome
+**ACCEPT.** `WO-0071` `RETURNED` → `ACCEPTED`; verdict appended to its
+Return/verdict log. Family M closes whole (M1–M7 bound, M8 `NO-STIMULUS`, M9
+`STRUCTURAL`, M10 discharged at WO-0062). Both owed rulings delivered: the
+conduct disclosure draws no sanction and the credit, and the withdrawal of
+`RV-0070-VERDICT` §6(a) item 1 is mine; the edit count is **twelve** and the
+three "thirteen" sites are my packet's defect, joined by three further defects
+of mine that running the bars surfaced (M-2's mislocated subject, M-3's
+self-contradicting deletion clause, §4.9's unreproducible counts). Next, in
+order: family K (`M03-K1`, `M03-K2` — the last bench round, and the only place
+a new stimulus is still owed); the batched `AP-` round carrying FINDING M-1/M-2's
+repointing; then the family L and family M mutation campaigns, PROTOCOL
+§10-sequenced before any `SO-` PASS.
+
+### Open-questions
+1. **HEAD moved during the review** and my base commit for the next round is
+   `f3047d9`, not `70a263f`. Resolved and disjoint (see Evidence), but the
+   orchestrator should know its site commit interleaved with an open review
+   round: had it staged with `git add -A` instead of selectively, it would have
+   swept this verdict and this journal entry into an `Agent: orchestrator`
+   commit, which is an R1 violation CI's build step 8 cannot see (the runner
+   works from a clean checkout) and which `journal-check` would have caught only
+   as a files-list mismatch after the fact. **Selective staging is what saved
+   it, not a rule.**
+2. **The enumerated tool allow-list at the head of the worker spawn prompt**
+   (`RV-0068B-VERDICT` §5 observation (a)) is now the only unaddressed half of
+   the recurring tool-scope collision, the substitution and durability clauses
+   having both held on first outing. It is the orchestrator's to write.
+3. **`RV-0070-VERDICT` §6(a) item 1 is withdrawn** and the record of what that
+   round's refusal actually was is unrecoverable. No action is possible; noted
+   so a later reader does not rely on the withdrawn sentence.
+4. **OBSERVATION M-O1** and **FINDING M-1/M-2** remain open exactly as §11
+   states; **OBSERVATION L-O1** stays carried with its named carrier.
+
+**No lessons-harvest note is owed this round and the absence is declared rather
+than omitted** (ADR-0018, PROTOCOL §7): the cadence is every module sign-off and
+every phase gate, and this round is neither; the next falls due at
+`SO-xgmii_rx_64.md`, spanning from my last harvest to that entry. **One
+candidate is BANKED, not harvested** — banking neither opens nor closes a span:
+
+- **(LH2-g) A review instrument's stated expected value is a claim, and it must
+  be derived from the same source the work is, not restated from memory beside
+  it.** Where a specification enumerates a change set in parts and *also* states
+  the total, the total is the part nobody re-derives — the enumeration gets
+  executed and checked, the summary gets copied — so it drifts silently and
+  first surfaces as a discrepancy the executor must either guess at or refuse.
+  *Incident*: three sites restating a twelve-item edit list as thirteen, against
+  five independent statements of twelve in the same document, plus a bar whose
+  expected "one differing hunk" named a subject its own extraction rule could
+  not reach. *Without it*: an executor facing a self-inconsistent instruction
+  either guesses — and the guess enters the record wearing the clothes of a
+  measurement — or stops, costing a round trip; and the reviewer, having written
+  both halves, is the party least able to see it.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0071_m03-family-m-co-occurrence.md
