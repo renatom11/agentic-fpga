@@ -517,8 +517,10 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
      recursive through one cycle of register, so the wire is declared here. *)
   let consume = wire 1 in
   (* MUTATION IC-L3 -- never merge. Declared here, driven at the output
-     decision below, because the deferral it renders must hold the closure
-     record for the one extra cycle the deferred word waits. *)
+     decision below, because the deferral it renders must hold the frame's
+     closure record at whatever age it has reached for the one extra cycle the
+     deferred word waits: at a lane-0 start that age is 2, at a lane-4 start it
+     is 1, so both stages are held and neither is enough alone. *)
   let l3_block = wire 1 in
   let r1 = wire 7 in
   let r2 = wire 7 in
@@ -527,7 +529,7 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
   let sel_is_r1 = valid_of r1 &: ~:sel_is_r2 in
   let sel_is_r0 = ~:sel_is_r2 &: ~:sel_is_r1 in
   let sel = mux2 sel_is_r2 r2 (mux2 sel_is_r1 r1 r0) in
-  r1 <== reg spec (r0 &: ~:(repeat (consume &: sel_is_r0) 7));
+  r1 <== reg spec ~enable:(~:l3_block) (r0 &: ~:(repeat (consume &: sel_is_r0) 7));
   r2 <== reg spec ~enable:(~:l3_block) (r1 &: ~:(repeat (consume &: sel_is_r1) 7));
   let sel_valid = valid_of sel in
   let sel_terminate = bit sel 1 in
@@ -961,11 +963,12 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
   let closure_aligned = closed &: (~:sel_is_r0 |: off4) in
   (* MUTATION IC-L3 -- never merge.
      The delay varies with the final word's residue: when the word about to be
-     emitted is the frame's [tlast] word and its DELIVERED extent (the [tkeep]
-     extent, [pc] - [strip]) is 2 modulo 8, the deciding evidence is withheld
-     for exactly one cycle. The word waits in the emission register, its
-     closure record is held at its own age, and it leaves complete on the next
-     cycle with its strobes still on its own [tlast] cycle. *)
+     emitted is the frame's [tlast] word and its DELIVERED extent -- the [tkeep]
+     extent [pc] - [strip], which is the delivered octet count modulo 8 -- is 2,
+     the deciding evidence is withheld for exactly one cycle. The word waits in
+     the emission register, its closure record is held at its own age, and it
+     leaves complete on the next cycle with its strobes still on its own [tlast]
+     cycle. R = {2}; 4 is not in R, so a 60-octet delivery is untouched. *)
   let l3_block_d = reg spec l3_block in
   l3_block
   <== (have_word
