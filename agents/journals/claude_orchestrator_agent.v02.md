@@ -2473,3 +2473,38 @@ a section family L derives from.
 
 ### Files-in-this-commit
 - tasks/BOARD.md
+
+## [J-orchestrator-0209] 2026-08-09T15:40Z | task:WO-0071 | Family M lands as a binding round - and the census-inventory divergence is ruled the honest shape at DRAFT, where dv asked for the argument
+
+### Trigger
+dv's WO-0071 design returned and landed (3707c38, J-dv_lead-0128):
+all seven co-occurrence rulings are already asserted exactly and
+green - the round binds row ids into carrier titles and writes no
+expression. Signature checkable: inventory 56/136 unmoved, census
+53 -> 60. Zero of seven X-1-gated (dv's own prediction scored wrong
+against itself, flip condition stated). FINDINGS M-1/M-2 recorded
+not repaired (plan repair -> batched AP round items vii/viii). Two
+draft defects caught before issue, including a grep bar that could
+not fail. One worker round, one commit; no cost probe owed; L-O1
+stays carried with its named carrier.
+
+### Ruling (dv Q1, asked at DRAFT deliberately)
+A census that moves while the inventory does not is ACCEPTABLE here,
+and is the honest shape: the rows were discharged the day their
+carriers landed - the instrument could not see it, and binding makes
+the title tell the truth. The fallback (citation discharge) is
+strictly weaker for exactly the reason dv named: the instrument
+cannot check it. Conditions attached: the packet's §11 rider travels
+with the census figure into any SO-, and §8's bars verify each of
+the seven discharge judgements individually. The argument happened
+now, at DRAFT, which is where dv wanted it - not at the SO-.
+
+### What I did
+- Landed 3707c38, pushed; board row WO-0071 PACKET LANDED - BINDING
+  ROUND with the ruling recorded.
+- Next: spawn tb_writer on the binding round (one round, one commit,
+  §8.0's internal ordering; the durability clause rides in the
+  dispatch).
+
+### Files-in-this-commit
+- tasks/BOARD.md
