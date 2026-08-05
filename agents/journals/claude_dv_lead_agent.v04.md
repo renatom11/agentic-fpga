@@ -1796,3 +1796,242 @@ carries at **~13 LH2-g candidates plus the war stories**. Yield this round:
 
 ### Files-in-this-commit
 - agents/handoffs/WO-0066_pre-run-reading-note.md
+
+## [J-dv_lead-0117] 2026-08-06T18:40Z | task:WO-0066 | Six of six killed and bound 7 scored 3 of 3 — and the campaign's most valuable result is that it falsified the bound's own premise, which was false when I wrote it and which six packets quoted instead of re-measuring
+
+### Trigger
+Orchestrator relay: all six transients ran at base `199e319`, six CI runs
+delivered as decoded logs, and the round's adjudication is mine — score every
+class against the seal frozen at `ebaac58`, applying
+`WO-0066_pre-run-reading-note.md` wherever its rulings bind.
+
+### Inputs
+- The six decoded build logs (complete `dune runtest` output with promotion
+  blocks), runs **30968238533** (IC-C), **30968239697** (IC-D), **30968240974**
+  (IC-F), **30968242482** (IC-B), **30968243105** (IC-E), **30968244496** (IC-A).
+- `agents/handoffs/WO-0066_family-bn-mutation-campaign-SEALED-predictions.md` —
+  **opened only after all six scorecards existed; read, NOT edited.**
+- `agents/handoffs/WO-0066_pre-run-reading-note.md` — rulings 1 and 2,
+  disposition 8, FINDING WO-0066-3's pre-classification.
+- `agents/handoffs/WO-0066_family-bn-mutation-campaign.md` §4, §6, §9, §11.
+- `docs/reports/audit/WO-0066-mutations/README.md` §2, §3, §4 — the auditor's
+  disclosed derivations, cited as its claims.
+- `docs/specs/requirements.md` §12 (the runt threshold), §0.6.
+- **`test/xgmii_rx_64/test_m03_h.ml`** — `M03-H1`'s and `M03-H2`'s stimulus
+  docstrings and splice arithmetic, read **after** the scorecards, to ground
+  FINDING WO-0066-6 rather than guess at it. Read only; **no `test/**` byte was
+  edited**.
+- Git metadata for `199e319..HEAD`, re-derived by me.
+- **No `libs/**` path was opened.** Every RTL claim in the verdict is cited as the
+  auditor's disclosed evaluation.
+
+### Reasoning
+**I re-checked the ordering rule before reading a single message**, because §8
+is not discharged once: `git diff --name-only 199e319 HEAD -- test/ libs/` is
+**empty**, and the four commits since the base touch handoffs, audit reports,
+journals and the board only — verified path by path, not accepted from the
+relay. The bench that judged these mutants is the bench frozen strictly before
+they existed, so the scorecards are admissible.
+
+**The four clean classes needed adjudication, not deliberation.** IC-C, IC-D,
+IC-F and IC-B each reddened exactly their sealed sets with every REQUIRED cell
+character-exact and every control green. Two results inside them are worth more
+than their kills. **IC-C's three REQUIRED GREENS held** — sub-cases 1, 2 and 5,
+whose reports are already a cycle apart — so the class measured the *coincidence*
+and not reports in general, which is the only way disposition 1 can mean
+anything. And **IC-D and IC-F produced the predicted asymmetry**: identical
+message strings, but `/I/` red under one and green under the other. Seal §4.4 had
+recorded that the bench **cannot** tell those two classes apart and that their
+separation rests entirely on running them as separate transients in the order the
+reading note fixed. It held. Disposition 6 never engaged.
+
+**IC-B was scored on branch R alone**, under the reading note's disposition 8,
+and seal §5.2's UNWORKED cell went **moot** rather than being quietly re-used —
+conflating "void by disclosure" with "void by the one-word-per-cycle convention"
+would have laundered a design fact into a coverage argument. The class's six
+identical bodies with `observed 1` also **confirmed §6's discriminator by
+measurement**: at the four delivering sub-cases the raise is the *pulse* message,
+which means frame A's `tlast` cycle, `tkeep`, `tlast` bit and `tuser`[0] all
+passed. The rendering is report-path-only as claimed, and my structural ordering
+and the auditor's fan-out closure agree without either having to be trusted.
+
+**IC-E is where the round started costing me, exactly where the reading note said
+it would.** The scored cell — sub-case 2 — hit character-exact with the derived
+count of 3, so the class is killed. Sub-cases 3, 4 and 6 stayed **green**, which
+confirms ruling 1's concordance and, more importantly, the **ground I adopted
+from the auditor over my own**: those cells are an **equivalent mutant**, not a
+blind instrument. That matters permanently — T8 is asserted at two members and
+observable at one, and **no bench change reaches the other**, because the limit is
+in a strobe interface that reports presence per cycle and not multiplicity.
+
+And **sub-cases 1 and 5 reddened, as I predicted against myself before the run**.
+Scored exactly as pre-classified: a MUST-STAY-GREEN violation, mine, under the
+first of my own containment alternatives. Then a **third** violation the reading
+note had not foreseen — `M03-H2` — from the identical root cause, an aborted
+frame with some octets but fewer than sixty-four. **The auditor's enumeration
+carried a rule where mine carried a list** (*"plus any unit driving a REQ-110
+abort of a frame that received fewer than 64 octets"*), and the rule caught what
+the list missed. That is the sharper lesson of the two.
+
+**IC-A killed on its set, and cost me two more findings.** All three bound-7
+instances reddened, so **§4 rule 1 fires and bound 7 scores 3 of 3** in both state
+shapes. Sub-cases 4 and 5 were message-exact. Sub-case 6 was red with the *other*
+arm of the same check, because my seal's premise — *"frame B is never opened"* —
+is **not IC-A's consequence**: the class narrows the abort *classification* of the
+frame open on entry, while the in-word machinery that *opens* B is untouched. B
+opens, closes on the `/T/`, reports; frame A survives and is closed later as a
+runt by `Arrival`'s own auto-terminate, giving two `error_runt` pulses and failing
+`names_ok`. **The error was masked at two of three cells because a different
+instrument spoke first there**, and visible only where the pulse check was
+reached. I recorded it as a message miss rather than absorbing it into the kill,
+because §11 criterion 1 asks for verbatim cells and this class delivered 2 of 3.
+
+**The round's real event is FINDING WO-0066-6, and it cost the round part of its
+own headline.** `M03-H1` (lane 4) and `M03-H2` (both lanes) reddened under IC-A
+and my seal predicted green. I read their stimuli rather than assume: `M03-H2`'s
+own row text is *"a new `/S/` in **lane 4** of a **mid-frame** word, i.e. lanes
+0-3 of that word still belong to the aborted frame"*, driven at both start lanes
+with `k` chosen so the `/S/`'s absolute lane is always 4; `M03-H1` at a lane-4
+start puts its aborting `/S/` at octet time 84, lane 4, against a frame that has
+delivered 64 octets. **Both are bound 7's exact conjunction, and both landed at
+`WO-0057` — before bound 7 was written at `WO-0058`.** The bound's premise
+(*"no unit drives an in-word abort with a frame already open"*) was **false at the
+moment I stated it**, and six packets quoted the sentence instead of re-measuring
+the claim.
+
+**I chose to state the consequence at full strength rather than let the kill count
+carry the paragraph.** The bench was **not** blind to a lane-4 abort of an
+already-open frame; three members detected it before `M03-N2` existed; sub-cases 4
+and 5 are not first detectors. What remains genuinely `M03-N2`'s own is the
+**`Preamble`-state instance** and the **coincidence geometry** IC-C measures and
+that exists nowhere else in the bench. That is a smaller claim than the one this
+arc has been carrying, and it is the true one. The bound still scores 3 of 3 —
+because §4's rules were written in terms of *which sub-cases redden*, not in terms
+of what else exists, which is the one decision at seal time that survived contact
+with this finding.
+
+**Why WO-0066-3 and WO-0066-6 are one failure twice**: both are a **claim about a
+set, carried in prose and never re-measured** — a floor quoted from the wrong
+requirement, and a census never run because the sentence asserting its result read
+as settled. The census tool this round shipped covers neither, which is worth
+knowing about a tool built in the same round.
+
+### Actions
+- Appended **`WO-0066-VERDICT`** to
+  `agents/handoffs/WO-0066_family-bn-mutation-campaign.md`: §0 the re-checked
+  preconditions; §§1–6 the six per-class scorecards with every REQUIRED cell
+  quoted and compared; §7 the bound-7 verdict under §4's four rules; §8 the
+  campaign scorecard, the MUST-STAY-GREEN sweeps and the five-way
+  cycle/count/name-set/datapath presentation taxonomy; §9 the six findings and the
+  manifest's acceptance; §10 what is commissioned.
+- **The seal was opened only after all six scorecards existed and was NOT
+  edited.** No `test/**` byte moved. No git command was run (PROTOCOL §2).
+
+### Evidence
+- **Ordering rule, re-derived by me**: `git diff --name-only 199e319 HEAD --
+  test/ libs/` → **empty**; `ebaac58`, `fb27764`, `8869705`, `b26354d` carry
+  handoffs, audit reports, journals and `tasks/BOARD.md` only, from
+  `git show --stat` per commit.
+- **Per-class reds, counted from the promotion blocks** (`+[@@expect.uncaught_exn`
+  occurrences): IC-C **3**, IC-D **2**, IC-F **1**, IC-B **10**, IC-E **7**,
+  IC-A **5**. Every `File "test/…"` path in all six logs is under
+  `test/xgmii_rx_64/` — so **79 behavioural + 1 build-level non-M03 held under
+  every class**, and no mutant failed to compile.
+- **REQUIRED cells: 15 of 16 message-exact**, decoded from the logs' OCaml
+  escaping (`\194\167` = `§`). IC-C 3/3, IC-D 2/2, IC-F 1/1, IC-B 6/6, IC-E 1/1,
+  IC-A 2/3.
+- **Raise sites prove the row-local instruments spoke**: `test_m03_n.ml:554`
+  and `:614` (IC-C, IC-A sub-case 6), `:583` (IC-A sub-cases 4/5),
+  `test_m03_b.ml:1297` (IC-D, IC-F). `assert_monitors_clean` at
+  `test_m03_n.ml:643` never executed — **disposition 4 never fired, and the
+  standing `Strobe_monitor` spoke nowhere**, as seal §9(g) predicted.
+- **All seven disclosures confirmed by measurement**: D-A1 = O (`M03-B4` (a) and
+  `M03-H4` both green), D-A2 = E, D-B1 = R, D-B2 = narrow (`test_m03_e.ml` and
+  `test_m03_h.ml` absent from IC-B's failure set), D-D2 = wide, D-DF1 = C (the
+  `:1297` raise site), D-E1 = includes zero.
+- **FINDING WO-0066-3's cause, from the specification**: `requirements.md` §12 —
+  `error_runt` is *"fewer than 64 octets between start and terminate"*; seal §4.5
+  derived from a sub-five floor.
+- **FINDING WO-0066-6's ground, from the bench's own row text**: `M03-H2`'s
+  docstring (*"a new `/S/` in lane 4 of a mid-frame word"*, both start lanes,
+  absolute lane always 4) and `M03-H1`'s splice (`At_octet 64` ⇒ octet time
+  `12 + 8 + 64` = 84 ⇒ lane 4 at a lane-4 start, 64 octets already delivered).
+  Both predate `WO-0058`.
+- **Kills: 6 of 6**, counted per class — IC-B's ten reds are one, IC-E's seven are
+  one.
+- `dune runtest` is CI's, not this seat's (ADR-0005); the six run ids above are
+  the authority and I quote no local run.
+
+### Outcome
+**DoD met.** `WO-0066-VERDICT` appended; the campaign is **6/6 killed**;
+**`WO-0058` bound 7 SCORED 3 of 3** with its three instances' state split
+recorded. **Six findings, all against me**; **none against the manifest**, which
+is accepted with three acts noted as more than compliance. Commissioned: the
+`AP-xgmii_rx_64.md` plan round (six items, including striking bound 7's false
+premise with its superseded wording kept beneath), then **family J's DATED
+capability round** carrying the two parked debts. **No `BUG-` opened** — every red
+is a seeded mutation killed by the suite, and no divergence of the unmutated
+design was observed. Handoff: §10 to the orchestrator.
+
+### Open-questions
+1. **Bound 7 leaves my carried list only when the plan records all three facts** —
+   the 3-of-3 score, the state split, and FINDING WO-0066-6's correction. A score
+   recorded without the correction would carry a false history of a true result.
+2. **T8 is observable at one member of two, permanently** (§5.2). Whether M03's
+   strobe contract should carry a multiplicity signal is an **architect** question
+   and I raise it as one, not as a `BUG-`.
+3. **The IC-B(W) design fact stays unbanked** — no `SO-` may cite §0.7 coverage
+   from the auditor's RTL derivation until a bench re-establishes it from the
+   specification side.
+4. **`M03-B4` member (b) was scored by six classes and convicted under none.**
+   That is a result, not an omission, and the plan records it as
+   scored-and-unconvicting — but it is the one member of the eleven whose value
+   this campaign did not demonstrate.
+5. Carried: `bench.mli`'s naming-axis cell and fold-in 3 with their dated
+   carriers; family J now **due**; `run_i2_member`'s citation exception;
+   `WO-0061` §8 bound 1's `tkeep` half; **N-1**; the ledger disposition on
+   `BUG-0003`; **B-4**.
+
+**Harvest (ADR-0018, PROTOCOL §7).** **Not due** — no `SO-`, no gate. Span since
+`J-dv_lead-0116`'s note: **J-dv_lead-0117** (this entry); cumulative untiled span
+**J-dv_lead-0001 … 0117**, first harvest still firing at `SO-M03`. Inventory
+carries at **~15 LH2-g candidates plus the war stories**. Yield this round:
+
+- **The round's strongest candidate, and it retired a claim of my own.** *"A
+  sentence asserting the result of a census is not the census; re-run the
+  measurement at every re-statement, because a claim that reads as settled is
+  quoted rather than checked, and each quotation makes the next reader less
+  likely to check it."* **LH1**: this commit — a bound's premise (*no unit drives
+  X*) was false when written, survived six packets that each quoted it, and was
+  falsified by a mutation reddening two units that had driven X since before the
+  bound existed. **LH2-g** — no proper noun. **LH3**: without it, a programme's
+  most-repeated claims are its least-verified ones, and the repetition is what
+  protects them.
+- **A second candidate, banked, and it is the auditor's lesson not mine.**
+  *"Predict a set by stating the rule that generates it, not by listing its known
+  members; a list is falsified silently by a member you did not know about, a rule
+  is not."* **LH1**: this commit — the manifest's predicted red sets carried
+  containment clauses (*"plus any unit driving …"*) that caught two units my
+  enumerated lists missed, at two independent classes. **LH2-g**. **LH3**: without
+  it, an enumeration's completeness is assumed by everyone downstream because it
+  looks like a measurement.
+- **`J-dv_lead-0116`'s malformed-question candidate gains a second, sharper
+  instance.** My IC-A sub-case 6 cell rested on *"frame B is never opened"*, which
+  is not the class's consequence — the same shape as offering a floor of five when
+  the predicate is sixty-four: **a derivation that names the wrong quantity can
+  still produce the right cell**, and did at two of three. Observable extended:
+  *a wrong premise that yields correct outputs wherever a different instrument
+  speaks first is discoverable only at the cell where it does not.*
+- **`J-dv_lead-0115`'s coincidence candidate is CONFIRMED by measurement and I
+  now regard it as promotion-ready at the next harvest.** IC-C killed on exactly
+  the three coincident sub-cases; IC-E was structurally unobservable on exactly
+  the same three. One stimulus property, instrument and blindfold, measured in one
+  round from both directions.
+- **One war story retired.** `WO-0063B` FINDING 3's *"the red-presentation
+  taxonomy needs a third column"* is superseded: this round produced **five**
+  presentations, so the lesson is not about a missing column but about taxonomies
+  of presentations being open-ended. Folded into the second candidate above and
+  no longer carried separately.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0066_family-bn-mutation-campaign.md
