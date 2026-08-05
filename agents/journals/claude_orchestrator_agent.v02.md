@@ -2857,3 +2857,25 @@ present. Zero loss: everything was pushed. Cost: one lead round.
 
 ### Files-in-this-commit
 - (none)
+
+## [J-orchestrator-0220] 2026-08-10T05:20Z | task:WO-0074 | Seven of seven and an honest fourth column - era two of four closes
+
+### Trigger
+WO-0074-VERDICT landed 70cf13c (J-dv_lead-0137 opening v06; chain
+header verified independently both sides): 7/7 killed character-
+exact, 21 reds all strobe-set messages, zero violations, seven M
+rows qualified through their rulings, 14 of 21 reds honest blast
+radius. IC-M5 = the era's first VOID BY DECLARATION. Era tally 49
+sealed / 47 killed / 1 survived / 1 void. Auditor's collision
+prediction refuted by measurement and scored. Four MINOR findings
+all against dv's own seal.
+
+### Rulings
+- dv Q1: the auditor CONFIRMS D-1's source-side half at its own
+  quoted lines - carrier: the auditor's next round.
+- dv Q3: accepted - anti-vacuity risk at M2/M4 is fixed not random,
+  no repair owed.
+- Board flipped with the verdict, tally, and commissioning order.
+
+### Files-in-this-commit
+- tasks/BOARD.md
