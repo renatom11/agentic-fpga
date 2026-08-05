@@ -36,9 +36,16 @@ AGENTS = [
     ('auditor', 'auditor'),
 ]
 jcounts = {}
+jdir = os.path.join(ROOT, 'agents', 'journals')
 for a, _ in AGENTS:
-    p = os.path.join(ROOT, 'agents', 'journals', f'claude_{a}_agent.md')
-    jcounts[a] = len(re.findall(r'^## \[J-', open(p).read(), re.M))
+    # A journal is a volume chain (ADR-0017): claude_X_agent.md is volume 01,
+    # rotations append .v02, .v03, … — count entries across every volume, or
+    # the figure freezes at each rotation (the v01-only bug this replaces).
+    vols = [f for f in os.listdir(jdir)
+            if re.fullmatch(rf'claude_{a}_agent(\.v\d+)?\.md', f)]
+    jcounts[a] = sum(
+        len(re.findall(r'^## \[J-', open(os.path.join(jdir, v)).read(), re.M))
+        for v in vols)
 n_entries = sum(jcounts.values())
 head_sha = sh('git', 'rev-parse', '--short', 'HEAD').strip()
 gen_date = sh('git', 'log', '-1', '--format=%ad', '--date=format:%Y-%m-%d').strip()

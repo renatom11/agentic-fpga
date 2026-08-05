@@ -2508,3 +2508,37 @@ now, at DRAFT, which is where dv wanted it - not at the SO-.
 
 ### Files-in-this-commit
 - tasks/BOARD.md
+
+## [J-orchestrator-0210] 2026-08-09T16:40Z | task:none | The site refreshed at 70a263f - a volume-counting bug fixed in its builder, and the deploy blocked on a credential this container does not hold
+
+### Trigger
+Sponsor asked for the website to be brought up to date. The builder
+(site/build.py) read only each agent's volume-01 journal file, so
+every rotated chain froze its count at rotation (dv showed 72 where
+the chain holds 128). The page's numbers were stale in exactly the
+way ADR-0017's rotations predict.
+
+### What I did
+- Fixed the builder: each agent's count now sums across its full
+  volume chain (claude_X_agent.md + .vNN.md), with the bug named in
+  the comment. The five-lead framing of the strip is unchanged - it
+  was the review panel's design choice, not mine to widen in a
+  refresh.
+- Rebuilt: 427 commits, 394 entries (was 263), 73 WOs, 141 attack
+  rows; HEAD stamp fab31de -> 70a263f; the module matrix's M03 cell
+  reads 60/62 off the same title census the program uses - the
+  binding round visible to the site's own derivation with no hand
+  edit.
+- Deploy attempted per site/README.md (wrangler): FAILED for want of
+  CLOUDFLARE_API_TOKEN - no credential in env and no wrangler OAuth
+  config in this container. The refreshed pages are committed, so
+  the deploy is one command from any machine holding the token;
+  sponsor informed.
+
+### Files-in-this-commit
+- site/build.py
+- site/public/index.html
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html
