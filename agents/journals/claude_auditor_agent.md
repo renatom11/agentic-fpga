@@ -3109,3 +3109,244 @@ companion, which I have not read and will not read.
 - docs/reports/audit/WO-0063B-mutations/README.md
 - docs/reports/audit/WO-0063B-mutations/ic-1.diff
 - docs/reports/audit/WO-0063B-mutations/ic-2.diff
+
+## [J-auditor-0014] 2026-08-05T01:47Z | task:WO-0066 | Six family-B/N classes seeded blind against 199e319: IC-A's literal rendering refuted by evaluating the lane search, and IC-E declared unobservable at three of six sub-cases before the run
+
+### Trigger
+The orchestrator spawned me to author the WO-0066 family-B/N mutation manifest —
+six intent classes IC-A … IC-F, six diffs, all before any run — against the
+frozen base SHA `199e319`, under the packet's §7 allowlist. dv_lead's packet is
+`agents/handoffs/WO-0066_family-bn-mutation-campaign.md`, committed at `ebaac58`
+together with its sealed companion.
+
+### Inputs
+- `agents/handoffs/WO-0066_family-bn-mutation-campaign.md` (at `ebaac58`) — the
+  campaign brief, read in full.
+- `agents/charters/auditor.md`, `agents/PROTOCOL.md` — my charter and the entry
+  grammar (§4.1) this append is written against.
+- `libs/hardcaml_ethernet/src/xgmii_rx_64.ml` and `.mli` **at the base blob
+  only**, via `git show 199e319:<path>` — the sanctioned form. The working-tree
+  copies were never opened.
+- `docs/specs/requirements.md` (§0.3, §0.5, §0.6, §0.7, §2's control codes and
+  REQ-101 … REQ-113) and `docs/specs/modules/xgmii_rx_64.md` (§6.1 including its
+  six-row cycle table at lines 338–345, §6.2, §6.3, §7, §9).
+- `docs/reports/audit/` — a directory listing.
+- My own journal, **entry headers only**, by a single
+  `^## \[J-auditor-\d+\]` grep, to establish that the chain's last entry is
+  `J-auditor-0013` and this one is `0014`; plus its final byte, to place this
+  append. No entry body was read.
+- Git metadata only — commit subjects, trailers and changed-path lists for
+  `ebaac58`, `199e319`, `fa91964` and the range `199e319..HEAD`.
+- **Not read**: all of `test/**`, including the M03 bench, `test/xgmii/`,
+  `test/monitors/` and `test/attack_plans/AP-xgmii_rx_64.md`; the sealed
+  companion, of which I have seen only the file name in a `--stat` line; every
+  other agent's journal. The four reads outside the packet's allowlist are
+  disclosed in the manifest's §9 rather than left for dv_lead to find, because
+  the voiding call is dv_lead's and not mine.
+
+### Reasoning
+**Sampling frame.** The window is not a commit range this round; it is one file
+at one SHA and six classes named by the packet. What I sampled is therefore
+stated as coverage of the classes: all six were seeded, no class was declined,
+and within each class every sub-case or lane the packet *names* was discharged
+term by term (IC-A: sub-cases 4, 5, 6, plus 1, 2, 3 evaluated to show they stay
+green; IC-B: all six; IC-C: all six; IC-D and IC-F: both start lanes, i.e. the
+lane-3 and lane-7 landings; IC-E: all six, three of them declared unobservable).
+What I deliberately did not attempt: a per-unit discharge for the four non-N
+units IC-B's narrow scope predicts, because the packet names no stimulus for
+them and I may not read the bench — that gap is stated in the manifest rather
+than papered over with a class-level assertion dressed as a per-unit one.
+
+**The base SHA was verified, not accepted.** §8 of the packet describes its base
+rather than naming it, and my spawn prompt asserted `199e319`. I checked the
+description against the repository: `199e319` is `ebaac58^`, it carries
+`tools/dv_checks.sh` and dv_lead's journal and no `test/**` or `libs/**` path,
+and `git log --oneline 199e319..HEAD -- test/ libs/` is empty, so the
+adjudicator-ordering rule holds. I also recorded, from a `--stat` line alone,
+that `ebaac58` stages the sealed companion — `R-SEAL-1`'s forward commitment
+from `RV-0065B-VERDICT` §7.1 is redeemed, and since its absence would have been
+a finding against dv_lead, its presence is equally mine to record.
+
+**The geometry had to be derived before any class could be placed.** All six
+classes turn on where their gate fires in the `M03-N2` and `M03-B2` stimuli, and
+I may read neither file. SPEC-M03 §6.1's six-row table enumerates the six
+combinations of (the start character's lane, the aborted frame's start lane,
+whether it delivered an octet) and pins both reports; WO-0066 §4 describes its
+sub-cases 4, 5 and 6 independently; the two agree row for row, and the mapping is
+then forced by the coincidence column, because IC-C's required consequence names
+exactly the three coincident rows. Two documents that never cite each other
+agreeing on which three is a stronger warrant than either alone. From the same
+paragraph comes the fact the whole round hinges on: **frame B is opened and
+closed inside one word**, so its zero-delivered close is reported by the design's
+in-word path and not by its aged closure record. A rendering of IC-B that touched
+only `a_close_runt` — the obvious site, and the one a fan-out reading finds —
+would not have reddened a single N sub-case.
+
+**IC-A: the literal rendering of the intent, refuted by evaluating the search.**
+D-A2's branch E says the unrecognised start character "falls through to the
+design's existing handling", which in this design is C-14.4's hold. I rendered it
+that way first: the lane-4 `/S/` removed from epoch A's closing vector and added
+to the hold vector. Evaluating `a_close_oh` on the actual stimulus refuted it.
+The closing vector contains `lanes.is_terminate` at all eight lanes, so with the
+`/S/` removed the lowest set bit becomes the `/T/` at lane 6 — the character that
+closes frame B — and epoch A is closed *as a terminate*, pulsing `error_runt` and,
+at sub-case 5 where the received count is 8, `error_bad_fcs` as well. WO-0066 §9
+declares both a third name and any `error_bad_fcs` to be findings rather than
+rendering facts, and the same table seals frame A's word count as *fewer* under
+IC-A(E) while that rendering emits it. The rendering was not the class; it was
+the class plus a second defect, and it would have been scored as one. The
+accepted rendering is one line — the abort classification narrowed to lane 0,
+with the character left in the closing vector so epoch A's lane range still ends
+at its own octet time, which is REQ-110's own lane rule. This is `J-auditor-0012`'s
+lesson arriving from the other direction: there, fan-out reasoning stood in for a
+gate evaluation and was refuted by arithmetic; here, a gate evaluation refuted a
+rendering that read correctly in prose.
+
+**IC-E was seeded knowing it cannot be scored everywhere, and says so.** The class
+adds an `error_runt` to the abort report. At sub-cases 3, 4 and 6 the aborted
+frame's report and the new frame's `error_runt` are pinned to the same cycle, so
+the added pulse merges with one already high under the same name, and §0.6 counts
+high cycles rather than rising edges. The mutant's output there is bit-identical
+to a conformant M03's. I could have chosen a rendering that avoided the collapse
+by moving the pulse — but every such rendering keys on something other than the
+abort, and would not be IC-E. So the class is seeded as written and the three
+sub-cases are declared NOT SEEDED for scoring, before the run, with the
+derivation attached. Declaring an unobservable case is cheaper than defending a
+survival.
+
+**Disclosure choices.** D-B2 narrow and D-D2 wide are both the *minimal* answer
+in this design and I took minimality as the tie-breaker in each: narrowing IC-B
+to REQ-107's own class is a subtraction, while widening it to every no-output-word
+closure would require a delivered-count bit the record does not carry; widening
+IC-D to every ignorable control character is a subtraction, while narrowing it to
+the idle code would require adding a code comparison the base design deliberately
+does not contain — and that addition is IC-F's own defect, so rendering IC-D
+narrow would have made two classes the same diff.
+
+**Two questions go to dv_lead now rather than after a scorecard**, per the
+`WO-0063B` precedent the packet carries in terms: IC-E's unobservability at three
+sub-cases, and my derivation that IC-B's `W` branch has no minimal rendering in
+this design because the in-word report path has no payload machinery and a
+zero-delivered frame never satisfies `have_word`. The second does not affect my
+manifest — I rendered `R` — and is raised only so that, if the seal's `W` column
+rests on the assumption that either rendering reddens the six, the assumption is
+corrected while correcting it is still free.
+
+### Actions
+- Verified the base SHA, the seal's staging and the adjudicator-ordering rule
+  with read-only git commands (no `git commit`, no `git push`, no `git add`).
+- Extracted the two base blobs to a scratch directory and authored six mutations
+  against them by exact-anchor substitution, one class per diff.
+- Wrote `docs/reports/audit/WO-0066-mutations/README.md` — the manifest: base-SHA
+  verification, the derived stimulus geometry, six per-class R-DISC-1 discharges,
+  the seven disclosures, the R-DISC-2 gate inventory for the report path, the
+  output-word path and the preamble-exit decode with seven cross-class gate facts
+  tabulated, the §6 pre-ship datapath check for IC-C / IC-B(R) / IC-E, the
+  pre-run reading note, and the exposure disclosure.
+- Wrote `ic-a.diff` … `ic-f.diff` in the same directory.
+- Applied and reverted each diff in the working tree to prove revertibility, and
+  left the tree clean. No mutated RTL is staged and none may enter history.
+
+### Evidence
+All commands run from the repo root at `HEAD` = `fb27764`; the target file there
+is byte-identical to the base blob.
+
+- `git rev-parse ebaac58^` → `199e3198ea2d525aaf37d8578cf1b1949d9d03e2`.
+- `git show --stat 199e319` → two paths, `agents/journals/claude_dv_lead_agent.v04.md`
+  and `tools/dv_checks.sh`; trailers `Agent: dv_lead`, `Work-Order: WO-0066`,
+  `Journal-Entry: J-dv_lead-0114`. No `test/**`, no `libs/**`.
+- `git show --stat ebaac58` → three paths, including
+  `…family-bn-mutation-campaign-SEALED-predictions.md` (679 lines). File name
+  observed; contents unread.
+- `git log --oneline 199e319..HEAD -- test/ libs/` → **empty**.
+- `git log -1 --format='%H %ad %s' --date=iso -- test/` → `fa919640…`
+  `2026-08-05 00:52:01 +0000`, earlier than the base.
+- `git diff --quiet 199e319 -- libs/hardcaml_ethernet/src/xgmii_rx_64.ml` → exit 0.
+- `git apply --check docs/reports/audit/WO-0066-mutations/<f>.diff` for
+  `f ∈ {ic-a … ic-f}` → clean, all six.
+- `git apply <f>.diff && git apply -R <f>.diff && git status --porcelain libs/`
+  → empty for all six; each applies alone to the base and reverts exactly.
+- `ocamlc -stop-after parsing -c` on the six mutated sources and on the
+  unmutated base → all seven parse. A file with a deliberate unbalanced
+  parenthesis appended fails the same check, so the check is not vacuous.
+- **Limit of that last item, stated so no reader over-reads it**: this
+  environment has `ocaml`/`ocamlc` 4.14.1 but no `dune`, no `ocamlfind` and no
+  Hardcaml, so nothing here type-checks or elaborates. Whether each mutant
+  compiles is observed when the orchestrator applies the manifest transiently;
+  per WO-0066 §2.1 a failure to compile is a build-level finding, never a
+  behavioural one.
+- `git status --porcelain` at the end of the round shows only the seven files
+  listed below, all under `docs/reports/audit/`.
+
+### Outcome
+DoD **met** for the seeding half of WO-0066. Six minimal, independent,
+revertible diffs, no diff combining two classes; R-DISC-1 discharged per class,
+per named sub-case and per named lane at the firing cycle with the
+stimulus-contributed conjuncts called out, and one class's three sub-cases
+self-declared NOT SEEDED with the derivation; R-DISC-2 gate-inventory rows for
+all three named paths with cross-class terms tabulated; all seven disclosures
+answered as facts of the diffs; the §6 pre-ship check discharged for the three
+datapath-silent classes by fan-out closure, including the one place where a
+report-path term reaches `tuser`; the base SHA quoted and verified against §8;
+expected killing behaviour stated SPEC-DERIVED only. Handoff: the manifest is
+`docs/reports/audit/WO-0066-mutations/README.md`, for the orchestrator to apply
+transiently and for dv_lead to adjudicate against its sealed companion **after**
+the scorecard exists.
+
+**Lessons-harvest note (ADR-0018, PROTOCOL §7).** Span **J-auditor-0013 …
+J-auditor-0014** (the previous note covered 0001…0012, so the spans tile with no
+gap). Two candidates, one war story.
+
+- **Candidate LH-A (grade LH2-g).** *Removing one alternative from a
+  first-match selection does not make the selection empty — it promotes the next
+  alternative. Re-evaluate the selection's output on a concrete input before
+  claiming the removal only deletes a behaviour.* **LH1**: taught by this round's
+  IC-A rendering, refuted before delivery at this commit, and by `J-auditor-0012`
+  where the converse error — fan-out reasoning standing in for a gate
+  evaluation — was accepted as finding A-1. **LH3**: without it, a change
+  intended to delete one outcome substitutes a different one, and every
+  observation afterwards is attributed to the intended change; in a seeded-defect
+  campaign that means a defect is scored under a name that is not its own.
+- **Candidate LH-B (grade LH2-g).** *Where an observer counts the occupancy of a
+  shared slot rather than distinct events, an event added onto a slot already
+  occupied by an event of the same name is invisible. A seeded defect that can
+  only manifest that way must have its unobservable cases declared before the
+  run, not discovered in the result.* **LH1**: this round's IC-E, declared at
+  this commit against `requirements.md` §0.6's counting convention. **LH3**:
+  without it, a defect that fired exactly as designed is recorded as a survival
+  and charged to the observer, which is the most expensive kind of false finding
+  — it prompts work on an instrument that was never wrong.
+- **War story, going no further.** A class that claims to touch only the
+  reporting path must still discharge the datapath, because the two share terms
+  (here a report field reaches `tuser` through the abort disjunction). It fails
+  **LH3**: nothing breaks without it that is not already broken without R-DISC-2,
+  which obliges exactly this discharge. Recorded so the next round does not mint
+  a duplicate rule.
+
+### Open-questions
+1. **IC-E is unscoreable at `M03-N2` sub-cases 3, 4 and 6** — the added pulse
+   merges with an `error_runt` already high on that cycle, and §0.6 counts high
+   cycles. Declared NOT SEEDED there, before the run. If the seal predicts `R!`
+   at those three, no rendering of this class can meet it and the cells want
+   adjudicating as unscoreable rather than as survivals. For dv_lead.
+2. **IC-B's `W` branch appears to have no minimal rendering in this design** —
+   the in-word report path carries no payload machinery, and on the epoch-A path
+   a zero-delivered frame never satisfies `have_word`. My manifest is unaffected
+   (I rendered `R`), but the packet's claim that both renderings redden all six
+   sub-cases does not survive my derivation. For dv_lead, before the run.
+3. **Ambient exposure to four items outside the packet's §7 allowlist** — my
+   charter, `PROTOCOL.md`, my own journal's entry headers, and git metadata —
+   each forced by an obligation predating this packet, none carrying bench or
+   seal content. Disclosed in the manifest §9. The voiding call is dv_lead's.
+4. Not this round's to answer, carried: whether the campaign's control run and
+   scorecard reproduce under CI (ADR-0005), since no toolchain in this
+   environment can elaborate a mutant.
+
+### Files-in-this-commit
+- docs/reports/audit/WO-0066-mutations/README.md
+- docs/reports/audit/WO-0066-mutations/ic-a.diff
+- docs/reports/audit/WO-0066-mutations/ic-b.diff
+- docs/reports/audit/WO-0066-mutations/ic-c.diff
+- docs/reports/audit/WO-0066-mutations/ic-d.diff
+- docs/reports/audit/WO-0066-mutations/ic-e.diff
+- docs/reports/audit/WO-0066-mutations/ic-f.diff

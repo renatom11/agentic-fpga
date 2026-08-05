@@ -1,0 +1,28 @@
+--- a/libs/hardcaml_ethernet/src/xgmii_rx_64.ml
++++ b/libs/hardcaml_ethernet/src/xgmii_rx_64.ml
+@@ -499,7 +499,13 @@
+      word at W + 3, while the record born at W is consumed at W + 2 at the
+      latest. Consumptions therefore never contend, and each record is at age 2
+      exactly when its turn comes. *)
+-  let a_close_runt = a_close_terminate &: (count_next <:. runt_threshold) in
++  (* IC-E: the runt check is sequenced on the abort path as well as on
++     REQ-106's terminate exit, so an aborted frame below the floor pulses
++     `error_runt` in addition to `error_start_without_terminate`. The floor is
++     the design's own threshold and includes zero. *)
++  let a_close_runt =
++    (a_close_terminate |: a_close_start) &: (count_next <:. runt_threshold)
++  in
+   let record_fields ~valid ~terminate ~error ~start ~oversize ~fcs ~runt =
+     concat_lsb [ valid; terminate; error; start; oversize; fcs; runt ]
+   in
+@@ -578,7 +584,9 @@
+        bit alone: the frame is under REQ-107's 64-octet threshold and under
+        [fcs_min_octets], and it is the second of those that keeps
+        `error_bad_fcs` out of this vector entirely (above). *)
+-    concat_lsb [ error; terminate; start ]
++    (* IC-E: the same runt check on the in-word abort path. Every frame on
++       this path delivers zero octets, which is below the floor. *)
++    concat_lsb [ error; terminate |: start; start ]
+   in
+   let q2 =
+     reg

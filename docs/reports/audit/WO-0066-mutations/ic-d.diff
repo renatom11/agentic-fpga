@@ -1,0 +1,39 @@
+--- a/libs/hardcaml_ethernet/src/xgmii_rx_64.ml
++++ b/libs/hardcaml_ethernet/src/xgmii_rx_64.ml
+@@ -309,9 +309,10 @@
+   (* Epoch A is open from lane 0 of this word, so its search covers all eight
+      lanes. An other-control character closes it only in a preamble position
+      (REQ-102 → REQ-105); elsewhere it is the REQ-016 hold, below. *)
+-  let a_closing_v =
+-    lanes.is_terminate |: lanes.is_error |: lanes.is_start |: (other_ctl &: a_pre_mask)
+-  in
++  (* IC-D: REQ-113's ignore rule is carried into a preamble position. An
++     other-control character standing in one of epoch A's own preamble
++     positions is ignored rather than routed to REQ-105. *)
++  let a_closing_v = lanes.is_terminate |: lanes.is_error |: lanes.is_start in
+   let a_close_oh = lowest_set a_closing_v in
+   let a_char_end =
+     mux2 (any a_closing_v) (index_of_onehot a_close_oh) (of_int ~width:4 8)
+@@ -369,9 +370,7 @@
+      epoch A's preamble positions — `/I/` and `/Q/` included (§6.2's [Preamble]
+      row as revised at 541ea43). Outside a preamble position the same character
+      is the hold above and closes nothing. *)
+-  let a_close_error =
+-    a_closes_with (lanes.is_error |: (other_ctl &: a_pre_mask))
+-  in
++  let a_close_error = a_closes_with lanes.is_error in
+   let a_close_start = a_closes_with lanes.is_start in
+   let a_close_char = a_close_terminate |: a_close_error |: a_close_start in
+   let a_close_now = (a_close_char |: a_close_oversize) &: ~:(i.clear) in
+@@ -415,8 +414,10 @@
+      (REQ-803) and its REQ-110 abort is still reported, because the abort
+      belongs to a frame that was accepted — which is why [a_closing_v] above
+      tests [lanes.is_start] ungated while the two epochs below are gated. *)
++  (* IC-D: the same carried-in ignore rule in the preamble positions of an
++     epoch opened by this word — every lane above its own start character. *)
+   let inword_closing above =
+-    (lanes.is_terminate |: lanes.is_error |: lanes.is_start |: other_ctl) &: above
++    (lanes.is_terminate |: lanes.is_error |: lanes.is_start) &: above
+   in
+   let b_exists = bit lanes.is_start 0 &: i.cfg_rx_enable &: ~:(i.clear) in
+   let c_exists = bit lanes.is_start 4 &: i.cfg_rx_enable &: ~:(i.clear) in
