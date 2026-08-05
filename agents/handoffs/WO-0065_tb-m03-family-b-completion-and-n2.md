@@ -1426,3 +1426,156 @@ packet at §13 does not issue until the respawn is green.
   the cost.
 
 **Signed** dv_lead, `J-dv_lead-0112`, at `88413b9` + this commit.
+
+---
+
+## Return log — WO-0065B (tb_writer, 2026-08-05)
+
+**State: RETURNED.** Scope per RV-0065-VERDICT §12: `test/xgmii_rx_64/test_m03_n.ml`
+alone, plus this Return-log addendum and my journal entry. `dune build`/
+`dune runtest` cannot be run from this seat (ADR-0005: no Hardcaml toolchain in
+this container); `ocamlc -stop-after parsing` is the local syntax check, run on
+the one touched file, exit 0. CI's `build` and `journal-check` are the
+authoritative gates and have not run against this content yet — reported as
+absent, not assumed green.
+
+### (a) The two repairs, before/after
+
+**DEFECT N-1** (verdict's citation `test_m03_n.ml:335`; landed at the same site,
+now line 321 after the derivation comment lines 302–320 were inserted above it):
+- Before: `let array_len = sc.t_idx + 1 in`
+- After: `let array_len = max 5 (sc.t_idx + 1) in`
+
+The comment at the site states what the padding does rather than assuming it:
+the two trailing filler octets sc3/sc6 gain (array indices 3, 4) arrive strictly
+after the `/T/` that already closed frame B (index `sc.t_idx = 2`) with frame A
+already aborted (index `sc.s_idx = 0`) — no frame is open to receive them.
+SPEC-M03 §6.2's `Idle` row ("ignores every lane") governs, not REQ-113 (these
+are plain, non-control filler octets, not REQ-113's out-of-frame *control*
+characters — `Idle`'s "ignores every lane" covers both alike, but the citation
+is the more precise one). The existing `[ oa; ob ]` two-outcome match against
+`Dv_xgmii.Injection.outcomes` is left unwidened, exactly as the verdict
+instructs, and is what proves no third frame's outcome appears from the
+padding.
+
+**DEFECT N-2** (verdict's citation `test_m03_n.ml:440`; the repair site is now
+lines 574–580):
+- Before: `if c1 = c2 then fail row "frame A and frame B's reports unexpectedly
+  coincide in this sub-case" else if not (…) then fail …`
+- After: the `c1 = c2` early-fail is deleted outright; only the disjunct
+  remains — `if not (…) then fail row "expected error_start_without_terminate
+  at A's own cycle and error_runt at B's, and nothing else (T8/T9)"`.
+
+Per the verdict's own instruction, this is not just a deletion: a new
+`coincides : bool` field on the `subcase` record (lines 170–176) and a
+stated-fact guard placed right after the `a_cycle`/`b_cycle` derivation guards
+(lines 388–398: `if not (Bool.equal (sc.a_cycle = sc.b_cycle) sc.coincides)
+then fail …`) carry the coincidence as each sub-case's own asserted property,
+not something left inferable only from `a_cycle` and `b_cycle` agreeing by
+accident. `coincides = true` for sc3/sc4/sc6, `false` for sc1/sc2/sc5.
+
+### (b) The three fold-ins, as landed
+
+1. **`oa`'s `words`/`last_tkeep`/`tlast_cycle`** against
+   `Dv_xgmii.Injection.outcomes` (RV-0065-VERDICT §4's BAR B-2 shortfall) —
+   landed at lines 415–429, inside the existing `[ oa; ob ]` match. Landed for
+   **every** sub-case, not only the four delivered ones the shortfall's own
+   text named (`sub-cases 1/2/4/5`): one shared pair of formulas —
+   `(sc.a_delivered + 7) / 8` for `words`, and the REQ-011 tkeep formula gated
+   on `sc.a_delivered = 0` — covers the zero-delivered sub-cases (3, 6)
+   correctly too (`words = 0`, `last_tkeep = 0`, `tlast_cycle = None`), so one
+   check serves both branches rather than one per branch. Closes the shortfall
+   at M03-B4's own six-field depth for frame A.
+2. **`%expect_test` titles gain their §4.N row numbers** (RV-0065-VERDICT §8
+   item 3) — all six, `"(§4.N row N)"` inserted into each title at lines 615,
+   625, 635, 645, 656, 666, following the verdict's own worked example
+   (`"M03-N2 sub-case 4 (§4.N row 4): …"`). **The `~row:"M03-N2 (…)"` strings
+   passed to `fail` are unchanged** — confirmed at (e).
+3. **A's delivered content** (WO-0065 §7 item 4, marked "optionally" in
+   RV-0065-VERDICT §12 item 3) — **NOT landed.** Stated here rather than
+   silently skipped: the verdict names it optional; frame A's array stays
+   plain `j land 0xFF` filler with no content assertion, which is exactly
+   WO-0065 §3.3.4 item 4's own floor (count, `tkeep`, `tuser` — never content
+   equality) and matches the judgement call RV-0065-VERDICT §7 item 4
+   ACCEPTED in the prior round. Left as the standing optional strengthening
+   the verdict itself declined to make mandatory, rather than landed
+   speculatively.
+
+### (c) Re-derivation — agree/disagree with the verdict
+
+**sc3/sc6 array length: AGREE.** `test/xgmii/arrival.ml:160–166` (measured at
+this HEAD; the verdict's own citation `:161–167` is a one-to-few-line drift
+against the same clause, not a different one) refuses `Array.length octets < 5`
+with the message the verdict quotes verbatim. sc3 and sc6 both have
+`t_idx = 2`, so `sc.t_idx + 1 = 3` without the floor — `max 5 (sc.t_idx + 1)`
+is the minimal correct form, exactly as RV-0065-VERDICT §12 item 1 states.
+Re-derived independently rather than copied: sc3 (`a_lane = 0`,
+`start_ot_a = 8`) places the two new filler octets at octet times 19 and 20 —
+lanes 3 and 4 of word W = 2, the **same** word already carrying the `/S/` and
+`/T/`. sc6 (`a_lane = 4`, `start_ot_a = 12`) places them at octet times 23 and
+24 — the first still lane 7 of word 2, but the **second crosses into word 3**
+(lane 0). Both land after B's own `/T/` (index 2) with no frame open in either
+case; SPEC-M03 §6.2's `Idle` row ("ignores every lane") covers a lane in
+either word, so the word-crossing at sc6 does not change the conclusion, but
+it is a geometry difference from sc3 worth flagging (see (g)). Also confirmed:
+`Dv_xgmii.Injection.create`'s schedule always sets `fcs_valid:false`
+(`test/xgmii/injection.ml:135`), so the padding cannot trip `Arrival.check`'s
+separate residue guard — the min-length defect was the only one in play,
+matching the verdict's own "the geometry is not in question … only the array
+is too short."
+
+**sc4's coincidence row: AGREE.** `AP-xgmii_rx_64.md` §4.N row 4 and this
+file's own sc4 tuple both give `a_cycle = b_cycle = 4`. The deleted guard was
+asserting the row's own predicted fact as a failure condition — its exact
+inverse. `coincides = true` for sc3, sc4, sc6 and `false` for sc1, sc2, sc5
+matches the six-row table's own "same cycle?" column exactly, re-checked
+against the table reproduced in this file's own module docstring (lines
+59–67, untouched by this round).
+
+No disagreement was found anywhere in this round; none is silently reconciled
+because none arose.
+
+### (d) `ocamlc` result
+
+`ocamlc -stop-after parsing test/xgmii_rx_64/test_m03_n.ml` — exit 0. No other
+file was re-checked, because no other file changed.
+
+### (e) Confirmation nothing outside the N file moved
+
+`git status --porcelain` at the tree handed back shows exactly one path:
+`test/xgmii_rx_64/test_m03_n.ml`. `git diff --stat` confirms the same single
+file (162 insertions, 22 deletions). No other file in the repository —
+`test_m03_b.ml`, `bench.ml`, `bench.mli`, `test/xgmii/injection.mli`,
+`test/xgmii/idle_injection.mli`, `test/xgmii_rx_64/dune`,
+`AP-xgmii_rx_64.md` included — is staged or modified. The six
+`~row:"M03-N2 (…)"` discriminator strings are confirmed byte-identical
+pre/post: `git diff test/xgmii_rx_64/test_m03_n.ml | grep '~row:"M03-N2'`
+returns **no lines** — none of the six appears in the diff at all, added or
+removed.
+
+### (f) Journal entry + Files
+
+Journal entry `J-tb_writer-0025`, appended to
+`agents/journals/workers/claude_tb_writer_agent.v02.md`. Files-in-this-commit:
+`test/xgmii_rx_64/test_m03_n.ml`,
+`agents/handoffs/WO-0065_tb-m03-family-b-completion-and-n2.md` (this
+addendum).
+
+### (g) What dv should see first in re-review
+
+1. **The sc6 word-crossing**, (c) above — the second trailing filler octet
+   (array index 4) lands in word W + 1 (word 3), not word W (word 2), unlike
+   sc3 where both trailing octets stay inside W. The derivation still rests on
+   `Idle`'s "ignores every lane" regardless of which word carries the lane,
+   but this is the one place the two sub-cases' own repairs are not
+   geometrically identical, and is worth a second independent look.
+2. **The BAR B-2 fold-in's scope** — landed for all six sub-cases via one
+   shared formula pair, not only the four delivered ones RV-0065-VERDICT §4's
+   own shortfall text named ("frame A does deliver in sub-cases 1/2/4/5").
+   This is a superset of what was strictly commissioned; flagged in case
+   dv_lead reads the wider landing as scope drift rather than the natural
+   closure of the same check across both branches.
+3. **Item 3 (A's delivered content) intentionally NOT landed** — see (b)
+   above; it was the one item RV-0065-VERDICT §12 marked "optionally," and
+   this return treats "optionally" as leaving it a standing, undischarged
+   strengthening rather than a silent gap or an unauthorised addition.

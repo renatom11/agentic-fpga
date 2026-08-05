@@ -1982,3 +1982,208 @@ catch early. **Domain pack**: n/a (LH2-g, general).
 - test/xgmii/injection.mli
 - test/xgmii/idle_injection.mli
 - agents/handoffs/WO-0065_tb-m03-family-b-completion-and-n2.md
+
+## [J-tb_writer-0025] 2026-08-05T09:00Z | task:WO-0065B | Bounce repaired — DEFECT N-1 (sub-case array floor) and DEFECT N-2 (inverted coincidence guard) fixed, sole file test_m03_n.ml, three fold-ins landed
+
+### Trigger
+Orchestrator, spawn `WO-0065B/2026-08-05T09:00Z`: dv_lead's RV-0065-VERDICT
+(§12, appended to `agents/handoffs/
+WO-0065_tb-m03-family-b-completion-and-n2.md`, dv_lead signature
+`J-dv_lead-0112`) BOUNCED `J-tb_writer-0024`'s own commit (`88413b9`) on
+pre-committed condition 12 (unpromoted expect drift): three of
+`test_m03_n.ml`'s six `M03-N2` sub-cases raised against a conforming design.
+Family B (`run_b4b`, `run_b2_new`'s four members) and the four riding bench
+debts are ACCEPTED and FROZEN by the same verdict — only `test_m03_n.ml`
+respawns, designated `WO-0065B`.
+
+### Inputs
+`agents/handoffs/WO-0065_tb-m03-family-b-completion-and-n2.md`
+§RV-0065-VERDICT in full (§§1-13: the two defects, the trap/bar table, the
+sub-case-6 split re-derivation, the judgement-call adjudications, §12's
+respawn scope); `agents/charters/tb_writer.md`; `agents/PROTOCOL.md` §2-6,
+§10; `test/xgmii_rx_64/test_m03_n.ml` (the pre-bounce commit, read in full
+before any edit); `test/xgmii/arrival.ml:130-189` (`Arrival.check`'s
+standing obligation 5, the five-octet floor DEFECT N-1 cites); `test/xgmii/
+injection.mli` in full (the `outcome` record's field list — `words`,
+`last_tkeep`, `tlast_cycle` — for the BAR B-2 fold-in); `test/xgmii/
+injection.ml` (grep only, confirming `fcs_valid:false` at `:135` for every
+`Injection`-built schedule); `test/xgmii_rx_64/bench.mli` in full (the
+accounting-helper docstrings, unchanged, read to confirm the fold-in touches
+no machinery); `test/xgmii_rx_64/test_m03_b.ml:280-340` (`run_b4b`'s own
+BAR B-2 cross-check idiom, read for house style, not edited);
+`test/xgmii_rx_64/dune` (read only, confirming the header line is untouched
+by this round); `docs/specs/requirements.md` §2 (REQ-101…REQ-113, control
+character codes); `docs/specs/modules/xgmii_rx_64.md` §6.2's state table
+(the `Idle` row, "ignores every lane" — DEFECT N-1's re-grounded citation)
+and §6.3 item 8; `agents/journals/workers/claude_tb_writer_agent.v02.md`
+(this file's own tail, for the last entry id and grammar; file size, for the
+rotation check). No `libs/**`, `top/**` or `rtl_snapshots/**` path was
+opened at any point in this spawn.
+
+### Reasoning
+Both defects are pre-committed as encoding errors on top of correct
+arithmetic, and the verdict's own re-derivation already agreed with every
+number in the prior round — so this respawn's job was to re-derive the two
+narrow affected tuples independently (not copy the verdict's own repair
+text), confirm agreement, and encode the fix so the property each defect
+broke becomes impossible to break silently again.
+
+**DEFECT N-1.** `array_len = sc.t_idx + 1` gives 3 octets at sc3/sc6
+(`t_idx = 2`), below `Arrival.check`'s own 5-octet floor. The minimal
+correct form is `max 5 (sc.t_idx + 1)`, which the verdict states and this
+spawn re-derived rather than took: re-computing sc3's and sc6's own trailing
+octets' octet times independently (sc3: 19, 20 — both lane 3/4 of the SAME
+word W = 2; sc6: 23, 24 — the SECOND crosses into the NEXT word, W = 3) shows
+both fall strictly after B's own `/T/` (which already closed B at index 2,
+zero delivered) with A also already aborted (index 0) — no frame open to
+receive them, so SPEC-M03 §6.2's `Idle` row ("ignores every lane") is the
+governing clause, not REQ-113 (these are plain, non-control filler octets,
+not REQ-113's out-of-frame control characters — a citation correction
+against my own first draft of the comment, caught before landing it: `Idle`'s
+"ignores every lane" covers both alike, and is the more precise authority).
+The `[ oa; ob ]` two-outcome match against `Dv_xgmii.Injection.outcomes`,
+already present, is left unwidened per the verdict's own instruction — it is
+the model-side proof that no third frame's outcome appears from the
+padding, and if my derivation about "no frame open" were wrong, that guard
+is what would catch it (an `Injection`-model check, not an RTL claim; CI's
+actual run against `Xgmii_rx_64` is what makes the claim about the design,
+per the bounce's own instruction that CI is authoritative).
+
+Also confirmed, because a residue-check false-positive from the padding
+would be a worse defect than the one being fixed: `Injection.create`'s
+schedule always sets `fcs_valid:false` (`injection.ml:135`), so
+`Arrival.check`'s separate FCS-residue guard is inert for every
+`Injection`-built case, padding included — the min-length defect really was
+the only one in play, matching the verdict's own "the geometry is not in
+question."
+
+**DEFECT N-2.** The `if c1 = c2 then fail …` guard asserted the ABSENCE of a
+coincidence sub-case 4's own tuple (`a_cycle = b_cycle = 4`) predicts,
+inverted relative to the file's own §3.3.4 item 6 obligation and T10's rule.
+Re-derived sc4's coincidence independently against `AP-xgmii_rx_64.md` §4.N
+row 4 (agrees: same cycle, `yes`) before touching the code. Repair is two
+parts, both the verdict's own instruction: delete the early-fail (the
+disjunct beneath it already pins `(cycle, name)` for both pulses in either
+order, correct whether or not the cycles coincide — confirmed by re-reading
+it as a standalone check, not merely trusting the verdict's claim that it is
+"redundant"), and add a `coincides : bool` field to the `subcase` record
+plus a guard asserting `(sc.a_cycle = sc.b_cycle) = sc.coincides` as each
+sub-case's own stated fact, so the property the table's own "same cycle?"
+column carries is no longer inferable only from `a_cycle`/`b_cycle` agreeing
+by accident (T10's rule stands unchanged throughout: same cycle, DIFFERENT
+strobe names, never a SPEC-M03 §6.3 item 8 instance, and no sentence added
+or removed claims otherwise).
+
+**Fold-ins.** RV-0065-VERDICT §12 item 3 commissions three: (1) `oa`'s
+`words`/`last_tkeep`/`tlast_cycle` against `Injection.outcomes` (BAR B-2's
+own shortfall, §4); (2) `%expect_test` titles gaining their §4.N row
+numbers (§8 item 3), with the `~row:"M03-N2 (…)"` discriminator strings held
+fixed because campaign seals are written against them; (3) "optionally," A's
+delivered content (§7 item 4). Landed (1) and (2); declined (3) as a
+judgement call, stated in the Return log rather than silently skipped — the
+verdict itself marks it optional and the prior round's own judgement call 4
+(no delivered-count check needs strengthening into a provenance check to
+satisfy any commissioned bar) was ACCEPTED at RV-0065-VERDICT §7 item 4, so
+leaving it undone is not a new gap, it is the same accepted gap persisting.
+
+For (1), a design choice beyond the letter of the shortfall: the verdict's
+own B-2 row names the shortfall against "sub-cases 1/2/4/5" (the delivered
+ones), but `words = ceil(delivered/8)` and the REQ-011 `last_tkeep` formula,
+written with a `sc.a_delivered = 0` guard clause, correctly return
+`words = 0`, `last_tkeep = 0`, `tlast_cycle = None` for the zero-delivered
+sub-cases (3, 6) too — so one shared check in the existing `[ oa; ob ]`
+match, covering all six sub-cases, closes the same shortfall more completely
+than a delivered-branch-only check would, at no extra derivation cost (the
+formula is the same one the existing structural check's own `expected_tkeep`
+already uses, independently re-derived rather than factored out, to avoid
+touching that pre-accepted line). Flagged in the Return log §(g) in case
+dv_lead reads the wider landing as scope drift.
+
+### Actions
+Edited `test/xgmii_rx_64/test_m03_n.ml` only: added `coincides : bool` to
+the `subcase` record and to all six `scN` literals; changed `array_len` to
+`max 5 (sc.t_idx + 1)` with a derivation comment; added the
+`(sc.a_cycle = sc.b_cycle) = sc.coincides` stated-fact guard; deleted the
+inverted `c1 = c2` early-fail, keeping only the disjunct; added the `oa`
+`words`/`last_tkeep`/`tlast_cycle` cross-check inside the existing
+`[ oa; ob ]` match; inserted `"(§4.N row N)"` into all six `%expect_test`
+titles without touching the `~row:` argument strings, `[%expect]` blocks, or
+any other line. Appended a WO-0065B Return-log section to
+`agents/handoffs/WO-0065_tb-m03-family-b-completion-and-n2.md`. No other
+file was opened for writing.
+
+### Evidence
+`ocamlc -stop-after parsing test/xgmii_rx_64/test_m03_n.ml` — exit 0
+(reproducible from this checkout; observed this session, not a CI run).
+`git status --porcelain` at the tree handed back — one non-journal,
+non-packet path: `test/xgmii_rx_64/test_m03_n.ml`. `git diff --stat` —
+`test/xgmii_rx_64/test_m03_n.ml | 184 ++++++++++++++++++++++++++++++++++++-----`,
+`1 file changed, 162 insertions(+), 22 deletions(-)`.
+`git diff test/xgmii_rx_64/test_m03_n.ml | grep '~row:"M03-N2'` — no output
+(none of the six discriminator strings appears in the diff, added or
+removed). `dune build`/`dune runtest` NOT run — no Hardcaml toolchain in
+this container (ADR-0005); CI's `build` and `journal-check` are the
+authoritative gates and have not run against this commit yet.
+
+### Outcome
+DoD status vs RV-0065-VERDICT §12: both named defects repaired at their
+cited sites; the three fold-ins addressed (two landed, one declined as the
+verdict's own "optionally" and stated as such, not silently dropped); the
+`row` discriminator strings held fixed per the verdict's CRITICAL
+constraint; independence held (no `libs/**`/`top/**`/`rtl_snapshots/**`
+opened); scope held to `test_m03_n.ml` alone, confirmed by `git status`/
+`git diff --stat`. NOT yet met: CI green (`build`, `journal-check`) —
+reported as absent per the verdict's own standard ("CI is what will say
+they worked"), not assumed. Handoff: the RETURNED packet, back to dv_lead
+via the orchestrator for the next `RV-0065B` review; the Return log's §(g)
+names three items for dv_lead to look at first, including the one place
+(sc6) where the two array-padding repairs are not geometrically identical.
+
+### Open-questions
+- None from the spec: every re-derivation in this round agreed with the
+  verdict's own (sc3/sc6 array floor, sc4's coincidence row), and no REQ-
+  text underdetermined an observable this round needed. No RTL leak:
+  `libs/**`/`top/**`/`rtl_snapshots/**` were never opened. No licensing
+  concern. No untestable requirement. No effort anomaly against this
+  bounce's own (small) scope.
+- Recorded, not escalated (Return log §(g) item 2): whether landing the BAR
+  B-2 fold-in's `words`/`last_tkeep`/`tlast_cycle` check for ALL six
+  sub-cases, rather than only the four the shortfall text named, reads as
+  the natural closure of the same check or as scope drift beyond what §12
+  item 3 commissioned. dv_lead's call, not mine to guess at.
+
+**Harvest note (PROTOCOL §7 / ADR-0018), this round's own span**:
+`J-tb_writer-0025 .. J-tb_writer-0025` (tiling with the prior entry's own
+`0024..0024` span — no gap). **One candidate, LH2-g (general).** *Rule*: a
+guard written to assert a NEGATIVE property ("this coincidence does not
+happen") is at its highest risk of silently encoding the inverse of the
+truth table it was built from, at exactly the row where that table predicts
+the positive case — because a negative guard has no natural place to
+display the row it is checking against, while a positive, table-keyed field
+(here, a boolean asserted equal to the derived condition) makes the same
+property visible at the point of failure and hard to invert without a
+reviewer or the type system noticing the field simply reads the wrong way.
+*Observable*: a negative guard and its positive counterpart can both
+compile, both run, and both look locally reasonable in isolation — only one
+of them is consistent with the row of the table it claims to enforce, and
+nothing at the call site or in the guard's own text signals which; the
+distinguishing evidence is external (the table), not internal (the code).
+*LH1*: taught by this round's own DEFECT N-2 — `if c1 = c2 then fail …`
+compiled, ran, and even looked like a reasonable defensive check in
+isolation; only comparing it against the table's own "same cycle? yes" cell
+for the specific row it was meant to guard revealed it asserted that row's
+opposite. *LH2-g*: no project noun, no domain noun — "guard", "negative
+property", "table", "row" are the vocabulary; a stranger to hardware
+verification could apply this to any test suite whose oracle is a derived
+table and whose checks are written as "if bad-thing then fail". *LH3*:
+without it, a negative guard silently encodes its own table's inverse at
+exactly the row meant to exercise the positive case, and nothing short of
+re-deriving that row against the guard's own literal predicate — not merely
+running the suite, since the failure reads as "correctly rejecting a broken
+design" until someone checks which design it actually rejects — surfaces
+the inversion, which is why this defect reached a bounce rather than a
+review comment. **Domain pack**: n/a (LH2-g, general).
+
+### Files-in-this-commit
+- test/xgmii_rx_64/test_m03_n.ml
+- agents/handoffs/WO-0065_tb-m03-family-b-completion-and-n2.md

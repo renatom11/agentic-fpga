@@ -167,6 +167,12 @@ type subcase =
   ; w : int (* the shared input word carrying both characters *)
   ; a_cycle : int (* frame A's own report cycle *)
   ; b_cycle : int (* frame B's own report cycle *)
+  ; coincides : bool
+      (* DEFECT N-2 (RV-0065-VERDICT §2): whether A's and B's own report
+         cycles coincide -- a STATED fact of this sub-case's own §4.N
+         table cell, asserted below against (a_cycle = b_cycle) rather
+         than left inferable only from those two fields agreeing by
+         accident. *)
   }
 
 (* Sub-case 1: /S/ lane 0, A lane 0, A delivered >= 1. Lane-0 landings occur
@@ -176,7 +182,17 @@ type subcase =
    granularity, not chosen. /T/ two lanes higher, index 10, octet time 26,
    B's own preamble position 2. Derived tuple: (W=3, /S/ lane 0, /T/ lane
    2, A delivered 8, A's cycle 4, B's cycle 5). *)
-let sc1 = { s_lane = 0; a_lane = 0; s_idx = 8; t_idx = 10; a_delivered = 8; w = 3; a_cycle = 4; b_cycle = 5 }
+let sc1 =
+  { s_lane = 0
+  ; a_lane = 0
+  ; s_idx = 8
+  ; t_idx = 10
+  ; a_delivered = 8
+  ; w = 3
+  ; a_cycle = 4
+  ; b_cycle = 5
+  ; coincides = false
+  }
 
 (* Sub-case 2: /S/ lane 0, A lane 4, A delivered >= 1. A's own first frame
    octet is octet time 20, lane 4 (frame octets 0 .. 3 occupy lanes 4 .. 7
@@ -185,7 +201,17 @@ let sc1 = { s_lane = 0; a_lane = 0; s_idx = 8; t_idx = 10; a_delivered = 8; w = 
    delivered. /T/ at index 6, octet time 26, B's own preamble position 2.
    Derived tuple: (W=3, /S/ lane 0, /T/ lane 2, A delivered 4, A's cycle 4,
    B's cycle 5). *)
-let sc2 = { s_lane = 0; a_lane = 4; s_idx = 4; t_idx = 6; a_delivered = 4; w = 3; a_cycle = 4; b_cycle = 5 }
+let sc2 =
+  { s_lane = 0
+  ; a_lane = 4
+  ; s_idx = 4
+  ; t_idx = 6
+  ; a_delivered = 4
+  ; w = 3
+  ; a_cycle = 4
+  ; b_cycle = 5
+  ; coincides = false
+  }
 
 (* Sub-case 3: /S/ lane 0, A delivered 0 (built at A lane 0 -- the lane-4
    instance is B4 member (b)'s own geometry exactly, At_preamble 4, and is
@@ -197,7 +223,17 @@ let sc2 = { s_lane = 0; a_lane = 4; s_idx = 4; t_idx = 6; a_delivered = 4; w = 3
    /T/ at index 2, octet time 18, B's own preamble position 2. Derived
    tuple: (W=2, /S/ lane 0, /T/ lane 2, A delivered 0, A's cycle 4, B's
    cycle 4 -- coincide, different names, T10). *)
-let sc3 = { s_lane = 0; a_lane = 0; s_idx = 0; t_idx = 2; a_delivered = 0; w = 2; a_cycle = 4; b_cycle = 4 }
+let sc3 =
+  { s_lane = 0
+  ; a_lane = 0
+  ; s_idx = 0
+  ; t_idx = 2
+  ; a_delivered = 0
+  ; w = 2
+  ; a_cycle = 4
+  ; b_cycle = 4
+  ; coincides = true
+  }
 
 (* Sub-case 4 -- the plan's own minimal witness for defect M03-R1 (AP
    §4.N): /S/ lane 4, A lane 0, A delivered >= 1. A's own first frame
@@ -207,7 +243,17 @@ let sc3 = { s_lane = 0; a_lane = 0; s_idx = 0; t_idx = 2; a_delivered = 0; w = 2
    lands in, so this pays bound 7. /T/ at index 6, octet time 22, B's own
    preamble position 2. Derived tuple: (W=2, /S/ lane 4, /T/ lane 6, A
    delivered 4, A's cycle 4, B's cycle 4 -- coincide, T10; pays bound 7). *)
-let sc4 = { s_lane = 4; a_lane = 0; s_idx = 4; t_idx = 6; a_delivered = 4; w = 2; a_cycle = 4; b_cycle = 4 }
+let sc4 =
+  { s_lane = 4
+  ; a_lane = 0
+  ; s_idx = 4
+  ; t_idx = 6
+  ; a_delivered = 4
+  ; w = 2
+  ; a_cycle = 4
+  ; b_cycle = 4
+  ; coincides = true
+  }
 
 (* Sub-case 5: /S/ lane 4, A lane 4, A delivered >= 1. A's own first frame
    octet is octet time 20, lane 4 -- that IS a lane-4 landing, but at
@@ -217,7 +263,17 @@ let sc4 = { s_lane = 4; a_lane = 0; s_idx = 4; t_idx = 6; a_delivered = 4; w = 2
    pays bound 7. /T/ at index 10, octet time 30, B's own preamble position
    2. Derived tuple: (W=3, /S/ lane 4, /T/ lane 6, A delivered 8, A's
    cycle 4, B's cycle 5; pays bound 7). *)
-let sc5 = { s_lane = 4; a_lane = 4; s_idx = 8; t_idx = 10; a_delivered = 8; w = 3; a_cycle = 4; b_cycle = 5 }
+let sc5 =
+  { s_lane = 4
+  ; a_lane = 4
+  ; s_idx = 8
+  ; t_idx = 10
+  ; a_delivered = 8
+  ; w = 3
+  ; a_cycle = 4
+  ; b_cycle = 5
+  ; coincides = false
+  }
 
 (* Sub-case 6, the LANE-4-START instance of the split derived above: /S/
    lane 4, A delivered 0, built at A lane 4. The aborting /S/ replaces A's
@@ -230,10 +286,39 @@ let sc5 = { s_lane = 4; a_lane = 4; s_idx = 8; t_idx = 10; a_delivered = 8; w = 
    22, B's own preamble position 2. Derived tuple: (W=2, /S/ lane 4, /T/
    lane 6, A delivered 0, A's cycle 4, B's cycle 4 -- coincide, T10; pays
    bound 7 at this instance only). *)
-let sc6 = { s_lane = 4; a_lane = 4; s_idx = 0; t_idx = 2; a_delivered = 0; w = 2; a_cycle = 4; b_cycle = 4 }
+let sc6 =
+  { s_lane = 4
+  ; a_lane = 4
+  ; s_idx = 0
+  ; t_idx = 2
+  ; a_delivered = 0
+  ; w = 2
+  ; a_cycle = 4
+  ; b_cycle = 4
+  ; coincides = true
+  }
 
 let run_subcase ~row sc =
-  let array_len = sc.t_idx + 1 in
+  (* DEFECT N-1 repair (RV-0065-VERDICT §2): test/xgmii/arrival.ml's own
+     standing obligation 5 refuses any declared frame under five octets
+     ("a frame below five octets delivers nothing (REQ-107) and is an
+     injection case, not a schedule case"), so sc3/sc6's own t_idx = 2
+     (giving array_len 3 without the floor) must be padded to it; every
+     other sub-case's own t_idx (6 or 10) already clears the floor and is
+     left untouched by the [max]. Derived, not assumed: the two trailing
+     filler octets this padding adds at sc3/sc6 (array indices 3 and 4)
+     arrive strictly AFTER the /T/ that closes frame B with zero
+     delivered octets at index sc.t_idx = 2 -- by which point A is
+     already aborted (at index sc.s_idx = 0) and B is already closed, so
+     no frame is open to receive them. SPEC-M03 §6.2's `Idle` row governs
+     what M03 does with them: it "ignores every lane" regardless of
+     value, so Arrival's own auto-terminate simply lands with nothing
+     open -- these are plain (non-control) filler octets, not REQ-113's
+     out-of-frame control characters, but `Idle`'s "ignores every lane"
+     covers both alike. The [ oa; ob ] two-outcome match below is what
+     PROVES no third frame's outcome appears from this padding -- left
+     unwidened to absorb one, per the verdict's own instruction. *)
+  let array_len = max 5 (sc.t_idx + 1) in
   let octets = List.init array_len ~f:(fun j -> j land 0xFF) in
   let case =
     Dv_xgmii.Injection.corrupt
@@ -300,6 +385,17 @@ let run_subcase ~row sc =
   let expected_b_cycle = (t_ot / 8) + 2 in
   if expected_b_cycle <> sc.b_cycle
   then fail row "test bug -- frame B's own derived report cycle disagrees with this sub-case's stated one";
+  (* DEFECT N-2, the coincidence half (RV-0065-VERDICT §2): whether A's and
+     B's own report cycles coincide is this sub-case's own STATED fact
+     (sc.coincides), checked here against the two derived cycles rather
+     than left inferable only from them agreeing by accident -- the
+     property the table at AP §4.N / WO-0065 §3.3.2 lists in its own
+     "same cycle?" column. *)
+  if not (Bool.equal (sc.a_cycle = sc.b_cycle) sc.coincides)
+  then
+    fail
+      row
+      "test bug -- this sub-case's own coincides flag disagrees with a_cycle = b_cycle";
   (* Two derivations, in this order (WO-0062 §2 bar 2): the figures above
      are derived from the spec text; here they are cross-checked against
      Dv_xgmii.Injection.outcomes, never taken from it. *)
@@ -307,6 +403,30 @@ let run_subcase ~row sc =
    | [ oa; ob ] ->
      if oa.Dv_xgmii.Injection.received <> sc.a_delivered then fail_cross row "frame A received";
      if oa.Dv_xgmii.Injection.delivered <> sc.a_delivered then fail_cross row "frame A delivered";
+     (* BAR B-2 fold-in (RV-0065-VERDICT §4/§12 item 3): the suite's
+        standing cross-check depth for a piece that delivers is
+        received/delivered/words/last_tkeep/tlast_cycle/reports (M03-B4's
+        own depth, `run_b4b`); frame A here had received/delivered/reports
+        only. [words] = ceil(delivered / 8) and [last_tkeep] follow
+        REQ-011 (0 when no word is emitted; 1 .. 8 contiguous ones from
+        bit 0 otherwise) -- one shared pair of formulas that covers the
+        zero-delivered sub-cases (3, 6) exactly as well as the delivered
+        ones (1, 2, 4, 5), rather than one check per branch. *)
+     let expected_a_words = (sc.a_delivered + 7) / 8 in
+     let expected_a_last_tkeep =
+       if sc.a_delivered = 0
+       then 0
+       else if Int.rem sc.a_delivered 8 = 0
+       then 0xFF
+       else (1 lsl Int.rem sc.a_delivered 8) - 1
+     in
+     if oa.Dv_xgmii.Injection.words <> expected_a_words then fail_cross row "frame A words";
+     if oa.Dv_xgmii.Injection.last_tkeep <> expected_a_last_tkeep
+     then fail_cross row "frame A last_tkeep";
+     (match oa.Dv_xgmii.Injection.tlast_cycle with
+      | Some c when sc.a_delivered > 0 && c = sc.a_cycle -> ()
+      | None when sc.a_delivered = 0 -> ()
+      | _ -> fail_cross row "frame A tlast_cycle");
      (match oa.Dv_xgmii.Injection.reports with
       | [ r ]
         when String.equal r.Dv_xgmii.Injection.strobe "error_start_without_terminate"
@@ -387,6 +507,10 @@ let run_subcase ~row sc =
   then (
     if not (List.is_empty words_out)
     then fail row "expected NO output word at all (both frames zero-delivered, §0.7), got some";
+    (* Both zero-delivered sub-cases (3, 6) have sc.coincides = true --
+       already asserted against a_cycle = b_cycle above -- so both pulses
+       are required to land on sc.a_cycle here by construction, not by a
+       fresh derivation. *)
     (match error_pulses samples with
      | [ (c1, n1); (c2, n2) ] ->
        let names_ok =
@@ -433,17 +557,27 @@ let run_subcase ~row sc =
     (* T8: error_start_without_terminate ALONE for A, even at four
        delivered octets (sub-cases 2 and 4) -- REQ-107's runt check is
        sequenced at REQ-106's own /T/ exit, which an /S/-aborted frame
-       never takes. *)
+       never takes.
+
+       DEFECT N-2 repair (RV-0065-VERDICT §2): this branch used to
+       fail(!) when c1 = c2 -- the exact inverse of sub-case 4's own
+       table row (a_cycle = b_cycle = 4, sc.coincides = true), asserting
+       the ABSENCE of the same-cycle coincidence its own tuple predicts.
+       The disjunct below is the whole check: it pins (cycle, name) for
+       both pulses in either order and is correct whether or not the
+       cycles coincide, so a coinciding sub-case (4, if ever built with
+       a_delivered > 0) is SUPPOSED to hit c1 = c2 here, not be failed by
+       it. Whether the cycles coincide is now sc.coincides's own asserted
+       fact, above -- T10's rule stands unchanged: same cycle, DIFFERENT
+       strobe names, never a SPEC-M03 §6.3 item 8 instance (never a
+       same-NAME coincidence, and no sentence here claims one). *)
     (match error_pulses samples with
      | [ (c1, n1); (c2, n2) ] ->
-       if c1 = c2
-       then fail row "frame A and frame B's reports unexpectedly coincide in this sub-case"
-       else if
-         not
-           ((c1 = sc.a_cycle && String.equal n1 "error_start_without_terminate" && c2 = sc.b_cycle
-             && String.equal n2 "error_runt")
-            || (c2 = sc.a_cycle && String.equal n2 "error_start_without_terminate" && c1 = sc.b_cycle
-                && String.equal n1 "error_runt"))
+       if not
+            ((c1 = sc.a_cycle && String.equal n1 "error_start_without_terminate" && c2 = sc.b_cycle
+              && String.equal n2 "error_runt")
+             || (c2 = sc.a_cycle && String.equal n2 "error_start_without_terminate" && c1 = sc.b_cycle
+                 && String.equal n1 "error_runt"))
        then
          fail
            row
@@ -478,7 +612,8 @@ let run_subcase ~row sc =
 ;;
 
 let%expect_test
-  "M03-N2 sub-case 1: /S/ lane 0, A lane 0, A delivered -- error_start_without_terminate \
+  "M03-N2 sub-case 1 (§4.N row 1): /S/ lane 0, A lane 0, A delivered -- \
+   error_start_without_terminate \
    at A's own cycle, error_runt at B's, on different cycles (REQ-102, REQ-105, REQ-107, \
    REQ-110, WO-0065 §3.3)"
   =
@@ -487,7 +622,8 @@ let%expect_test
 ;;
 
 let%expect_test
-  "M03-N2 sub-case 2: /S/ lane 0, A lane 4, A delivered -- error_start_without_terminate \
+  "M03-N2 sub-case 2 (§4.N row 2): /S/ lane 0, A lane 4, A delivered -- \
+   error_start_without_terminate \
    at A's own cycle, error_runt at B's, on different cycles; A's four delivered octets \
    are NOT classified as a runt (T8) (REQ-102, REQ-105, REQ-107, REQ-110, WO-0065 §3.3)"
   =
@@ -496,7 +632,8 @@ let%expect_test
 ;;
 
 let%expect_test
-  "M03-N2 sub-case 3: /S/ lane 0, A zero-delivered -- both frames' reports coincide, \
+  "M03-N2 sub-case 3 (§4.N row 3): /S/ lane 0, A zero-delivered -- both frames' reports \
+   coincide, \
    different names (T10); does NOT pay WO-0058 bound 7 (a word-boundary landing) \
    (REQ-102, REQ-105, REQ-107, REQ-110, WO-0065 §3.3)"
   =
@@ -505,7 +642,8 @@ let%expect_test
 ;;
 
 let%expect_test
-  "M03-N2 sub-case 4 -- the plan's own minimal witness for defect M03-R1: /S/ lane 4, A \
+  "M03-N2 sub-case 4 (§4.N row 4) -- the plan's own minimal witness for defect M03-R1: \
+   /S/ lane 4, A \
    lane 0, A delivered -- both frames' reports coincide, different names (T10); A's four \
    delivered octets are NOT classified as a runt (T8); PAYS WO-0058 bound 7 for the first \
    time (REQ-102, REQ-105, REQ-107, REQ-110, WO-0065 §3.3.3)"
@@ -515,7 +653,8 @@ let%expect_test
 ;;
 
 let%expect_test
-  "M03-N2 sub-case 5: /S/ lane 4, A lane 4, A delivered -- error_start_without_terminate \
+  "M03-N2 sub-case 5 (§4.N row 5): /S/ lane 4, A lane 4, A delivered -- \
+   error_start_without_terminate \
    at A's own cycle, error_runt at B's, on different cycles; PAYS WO-0058 bound 7 \
    (REQ-102, REQ-105, REQ-107, REQ-110, WO-0065 §3.3.3)"
   =
@@ -524,7 +663,8 @@ let%expect_test
 ;;
 
 let%expect_test
-  "M03-N2 sub-case 6 (lane-4-start instance of the derived split, WO-0065 §3.3.2): /S/ \
+  "M03-N2 sub-case 6 (§4.N row 6; lane-4-start instance of the derived split, WO-0065 \
+   §3.3.2): /S/ \
    lane 4, A zero-delivered -- both frames' reports coincide, different names (T10); \
    PAYS WO-0058 bound 7, a THIRD instance, in the zero-delivered form (REQ-102, REQ-105, \
    REQ-107, REQ-110, WO-0065 §3.3.2/§3.3.3)"
