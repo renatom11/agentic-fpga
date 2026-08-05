@@ -317,7 +317,39 @@ let run_subcase ~row sc =
      out-of-frame control characters, but `Idle`'s "ignores every lane"
      covers both alike. The [ oa; ob ] two-outcome match below is what
      PROVES no third frame's outcome appears from this padding -- left
-     unwidened to absorb one, per the verdict's own instruction. *)
+     unwidened to absorb one, per the verdict's own instruction.
+
+     The post-closure geometry in full, re-derived at RV-0065B-VERDICT §2
+     from requirements.md §0.3/§0.5's lane mapping (octet time t lies at
+     lane t mod 8 of word t / 8) -- because TWO characters cross the word
+     boundary at sc6, not the one the return flagged, and the second of
+     them is a CONTROL character the "plain filler octets" sentence above
+     does not reach:
+
+       sc3 (a_lane 0, start_ot 8): /S/ at ot 16 = W(2) lane 0; /T/ at 18 =
+       W lane 2; filler at 19, 20 = W lanes 3, 4; then Arrival's own
+       auto-terminate at start_ot + 8 + array_len = 21 = W lane 5, and
+       /I/ from 22. Everything stays inside W.
+
+       sc6 (a_lane 4, start_ot 12): /S/ at ot 20 = W(2) lane 4; /T/ at 22 =
+       W lane 6; filler at 23 = W lane 7 and at 24 = W+1(3) lane 0; then
+       the auto-terminate at 25 = W+1 lane 1, and /I/ from 26. The second
+       filler octet AND the auto-terminate both land in W+1.
+
+     The crossing changes nothing, on three properties of §6.2's `Idle`
+     row and not on the filler octets' plainness: (i) the row states its
+     behaviour PER LANE, with no word index and no lane index -- lane 0 of
+     W+1 is the same case as lane 3 of W; (ii) it states it over EVERY
+     lane, so it covers the control characters (the auto-terminate, the
+     trailing /I/) exactly as it covers data -- which is the citation that
+     actually carries the auto-terminate, since REQ-113 and the
+     plain-octet distinction do not; (iii) `Idle` holds no state a word
+     boundary could disturb (tvalid = 0, CRC register held), and its ONLY
+     exit is /S/ in lane 0 or lane 4 -- none of the crossing characters is
+     a /S/. What is genuinely new at sc3/sc6 is therefore only the
+     crossing: all four delivered sub-cases already put the auto-terminate
+     in `Idle` one octet after the injected /T/ (t_idx = array_len - 1 at
+     each), and were green at 88413b9 before this floor existed. *)
   let array_len = max 5 (sc.t_idx + 1) in
   let octets = List.init array_len ~f:(fun j -> j land 0xFF) in
   let case =

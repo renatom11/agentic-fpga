@@ -1579,3 +1579,421 @@ addendum).
    above; it was the one item RV-0065-VERDICT §12 marked "optionally," and
    this return treats "optionally" as leaving it a standing, undischarged
    strengthening rather than a silent gap or an unauthorised addition.
+
+---
+
+## RV-0065B-VERDICT (dv_lead, 2026-08-05) — **ACCEPT**
+
+**State: ACCEPTED.** Both defects are repaired, both repairs are correct on a
+re-derivation I performed before reading the return's §(c), the two fold-ins
+landed and the third is properly declined, nothing outside the N file moved, and
+**CI is green at `eb1e06a` with the promotion gate clean** — which is the landing
+evidence `RV-0065-VERDICT` §12 made the condition of this acceptance.
+
+**The eleven members are 11/11 green.** The three that failed a conforming design
+at `88413b9` (sub-cases 3, 4, 6) are green; the eight that were green stayed
+green. `WO-0065` §10's two standing prohibitions on M03-N2 are **STRUCK** by this
+verdict, and `AP-xgmii_rx_64.md` §4.N's closing note and §6's two no-coverage
+marks are struck with them — the condition those marks named themselves as
+waiting for ("a green respawn and a verdict, nothing else") is met.
+
+### 1. CI — the landing evidence, checked at the source
+
+| Workflow | Run | Job | Conclusion |
+|---|---|---|---|
+| `build` | **`30963617198`** | `build` **`92172708172`** | **success** |
+| `build` | `30963617198` | `cosim` `92172708206` | **success** |
+| `journal-check` | **`30963617180`** | — | **success** |
+
+Two steps carry the verdict, and I read their commands out of
+`.github/workflows/build.yml` rather than trusting their names:
+
+- **Step 6, `Run tests (expect tests, waveform snapshots)` — success.** Runs
+  `opam exec -- dune runtest`; on any failure it promotes, prints the
+  `PROMOTION BLOCK` and exits 1. It printed no block. A `run_subcase` defect
+  raises `failwith`, which is an `expect.uncaught_exn` correction, which fails
+  this step — so **silence here is a positive result, not an absence of one**.
+- **Step 8, `Verify nothing was left unpromoted or non-deterministic` — success.**
+  Runs `git add -A; git diff --cached --exit-code`. This is the DoD's
+  *"`dune runtest` green AND `git diff --exit-code` clean"* in its committed
+  form. **`BOUNCE 12` is clear**: there is no `.corrected` file anywhere and no
+  unpromoted drift.
+
+**Per member.** Step 8's clean exit means every one of the 128 repository-wide
+units produced exactly its committed output. All six N members carry
+`[%expect {||}]` — verified unchanged, and no `expect.unreachable` or
+`expect.uncaught_exn` appears anywhere in the file — so each of the six ran and
+each was silent. Against the eleven:
+
+| Member | At `88413b9` | At `eb1e06a` |
+|---|---|---|
+| M03-B4 member (b) (`run_b4b`) | green | **green** |
+| M03-B2 `/I/`, `/Q/` × 2 lanes (`run_b2_new`, 4 members) | green | **green** |
+| M03-N2 sub-case 1 (`sc1`) | green | **green** |
+| M03-N2 sub-case 2 (`sc2`) | green | **green** |
+| M03-N2 sub-case 5 (`sc5`) | green | **green** |
+| **M03-N2 sub-case 3 (`sc3`)** | **RED** (`Arrival.check`, 3 octets) | **GREEN** |
+| **M03-N2 sub-case 4 (`sc4`)** | **RED** (inverted coincidence guard) | **GREEN** |
+| **M03-N2 sub-case 6 (`sc6`)** | **RED** (`Arrival.check`, 3 octets) | **GREEN** |
+
+**The new BOUNCE condition I minted against myself at `RV-0065-VERDICT` §4 —
+*"a member that fails a conforming design"* — is checked in both directions
+here, and that is the point of it**: three previously-failing members are now
+green *and* eight previously-green members stayed green. A repair that traded one
+for the other would have passed a naive "is CI green" read at `88413b9` and
+fails this one.
+
+### 2. The two repairs — line-reviewed, re-derived independently
+
+Every figure below was derived from `requirements.md` §0.3/§0.5's lane mapping
+(octet time `t` lies at lane `t mod 8` of word `t / 8`), SPEC-M03 §6.2's state
+table and §7's per-octet constant, **before** the return's §(c) was read, then
+compared. **No disagreement arose anywhere.**
+
+#### 2.1 DEFECT N-1 — the floor, and what the padding actually does
+
+`max 5 (sc.t_idx + 1)` is minimal and correct. `test/xgmii/arrival.ml:160–166`
+at this HEAD refuses `Array.length f.octets < 5` with the quoted message; the
+return's citation drift (`:161–167` → `:160–166`) is my line numbers going stale
+against the same clause, and the return is right to say so. The `[max]` moves
+**only** sc3 and sc6 (3 → 5); sc1/sc5 (`t_idx` 10 → 11) and sc2/sc4 (`t_idx` 6 →
+7) already clear it and are untouched — checked at all six.
+
+**The floor disturbs no derived figure.** `a_cycle`, `b_cycle` and both §0.6
+windows are functions of `start_ot_a`, `s_ot`, `t_ot` and `a_delivered` alone;
+`array_len` enters none of them. Re-derived at both padded sub-cases: sc3
+`s_ot` 16, `t_ot` 18 → `a_cycle` = `b_cycle` = 4, both windows `[2, 5]`; sc6
+`s_ot` 20, `t_ot` 22 → `a_cycle` = `b_cycle` = 4, both windows `[2, 5]`. The
+`W` guard, the lane guards and the `1 .. 7` preamble-position guard all hold at
+both.
+
+**And it disturbs no accounting.** `account_dropped_frame` (`bench.ml:263`) feeds
+`Latency.frame_in` the declared array's `in_times` and then calls
+`Latency.frame_dropped`, which (`test/monitors/octet_time.ml:85`) does
+`Queue.take_opt` and discards the value unexamined. Growing the declared array
+therefore changes the size of a popped, never-read array and nothing else. I
+checked this rather than assumed it, because it is the one place a length change
+could have reached the monitors.
+
+#### 2.2 The sc6 word crossing — **RULED, and it is larger than the return reported**
+
+The return flagged one crossing. There are **two**, and the second is a **control
+character** that the return's own "plain (non-control) filler octets" sentence
+does not reach:
+
+- **sc3** (`a_lane` 0, `start_ot` 8, `n` = 5): `/S/` at ot 16 = **W(2) lane 0**;
+  `/T/` at 18 = W lane 2; filler at 19, 20 = W lanes 3, 4; **`Arrival`'s own
+  auto-terminate** at `start_ot + 8 + n` = 21 = W lane 5 (`arrival.ml:110–112`);
+  `/I/` from 22. Everything stays inside W. Agrees with the return.
+- **sc6** (`a_lane` 4, `start_ot` 12, `n` = 5): `/S/` at ot 20 = **W(2) lane 4**;
+  `/T/` at 22 = W lane 6; filler at 23 = W lane 7 **and at 24 = W+1(3) lane 0**;
+  **the auto-terminate at 25 = W+1 lane 1**; `/I/` from 26. **Both the second
+  filler octet and the auto-terminate land in W+1.**
+
+**Ruling: immaterial, and the ground is the `Idle` row's form, not the filler
+octets' plainness.** SPEC-M03 §6.2's `Idle` row reads *"ignores every lane;
+`tvalid` = 0; CRC register held"*, leaving to `Preamble` only *"on `/S/` in lane 0
+or lane 4 while `cfg_rx_enable` = 1"*. Three properties decide it:
+
+1. The behaviour is stated **per lane**, with no word index and no lane index —
+   lane 0 of W+1 is the same case as lane 3 of W. A word boundary is not a term
+   in the rule.
+2. It is stated over **every** lane, so it covers control characters exactly as
+   it covers data. **This is the citation that actually carries the
+   auto-terminate**; REQ-113 and the plain-octet distinction do not, and the
+   return's comment is therefore *correct but incomplete* at the one site it
+   flagged as least certain.
+3. `Idle` holds **no state a boundary could disturb** — `tvalid` = 0, CRC
+   register held — and its only exit is `/S/` in lane 0 or 4. None of the
+   crossing characters is a `/S/`.
+
+**What is genuinely new at sc3/sc6 is only the crossing.** All four delivered
+sub-cases have `t_idx = array_len − 1`, so each already put the auto-terminate in
+`Idle` one octet after the injected `/T/`, and all four were green at `88413b9`
+before this floor existed. The Idle-state auto-terminate is an exercised shape;
+the boundary is the increment, and it is a non-case by (1).
+
+**Reviewed repair made, comment-only** (§6).
+
+#### 2.3 DEFECT N-2 — the coincidence, re-derived at sc4 and checked at all six
+
+sc4 (`a_lane` 0, `start_ot` 8, `s_idx` 4, `t_idx` 6): `s_ot` = 20 = **W(2) lane
+4**; `t_ot` = 22 = W lane 6; `a_delivered` = 4 (indices 0…3 at ot 16…19). A's
+report: §7's per-octet constant `L` = 16 at a lane-0 start, last received octet
+at ot 19, so `(19 + 16) / 8` = **4**. B delivers nothing, so `(t_ot / 8) + 2` =
+**4**. **`a_cycle` = `b_cycle` = 4 — they coincide**, and the deleted guard
+asserted their *non*-coincidence. The deletion is right and the disjunct beneath
+it is the whole check, correct in either pulse order and whether or not the
+cycles coincide.
+
+The `coincides` field, checked row by row against **`AP-xgmii_rx_64.md` §4.N's
+own table** (not against the file's docstring copy of it):
+
+| sub-case | `a_cycle` vs W | `b_cycle` vs W | derived coincide | `coincides` | AP §4.N "Same cycle?" |
+|---|---|---|---|---|---|
+| 1 | W+1 (4) | W+2 (5) | no | `false` | no |
+| 2 | W+1 (4) | W+2 (5) | no | `false` | no |
+| 3 | W+2 (4) | W+2 (4) | yes | `true` | **yes** |
+| 4 | W+2 (4) | W+2 (4) | yes | `true` | **yes** |
+| 5 | W+1 (4) | W+2 (5) | no | `false` | no |
+| 6 | W+2 (4) | W+2 (4) | yes | `true` | **yes** |
+
+Six for six. The guard is placed **after** both cycle-derivation guards, so a
+wrong tuple raises the specific message before the coincidence one — the
+guard-ordering discipline `WO-0065` §6.1 debt 3 commissions, correctly carried.
+And the zero-delivered branch now *cites* `sc.coincides` for why both pulses may
+be pinned to `sc.a_cycle`, converting a silent coupling into a stated one.
+
+### 3. The fold-ins
+
+**Fold-in 1 — the superset. RULED: NOT scope drift. It is the correct reading,
+and the narrow version would have been the defect.** Four grounds:
+
+1. **The commission names the object, not a subset.** §12 item 3 reads *"`oa`'s
+   `words`/`last_tkeep`/`tlast_cycle` against `Injection.outcomes`"*; §4's BAR B-2
+   row reads *"fold the missing `words`/`last_tkeep`/`tlast_cycle` on `oa` into
+   the respawn"*. The phrase *"frame A does deliver in sub-cases 1/2/4/5"* is the
+   **diagnosis of where the shortfall was visible**, not a scope limit on the
+   repair.
+2. **`oa` is bound in the shared `[ oa; ob ]` match**, which runs for all six.
+   Restricting to four would have required **adding** an exclusion branch — a
+   positive act of narrowing, not the default.
+3. **The narrow version would be weakest where it matters most.** At sc3/sc6,
+   `words` = 0, `last_tkeep` = 0, `tlast_cycle` = `None` is the **model-side**
+   statement that A's zero-delivery is real. Omitting them would have left A's
+   zero-delivery pinned on two fields model-side — the two-field standing depth
+   `BOUNCE 10` sets a floor against — with the no-output-word fact carried
+   DUT-side only.
+4. **It cost no branch.** One shared formula pair gated on `sc.a_delivered = 0`.
+   Both are correct at both branches, re-derived: `words` = `(d + 7) / 8` gives
+   0, 1, 1 at d = 0, 4, 8; REQ-011's `last_tkeep` gives 0, 0x0F, 0xFF. The 0xFF
+   case (`Int.rem d 8 = 0` with `d > 0`) is handled, which is the arm this
+   formula shape usually gets wrong.
+
+The `tlast_cycle` match is total and correct in both directions (`Some c` only
+when `d > 0` and `c = a_cycle`; `None` only when `d = 0`; everything else
+`fail_cross`). The worker was right to flag the width and right not to narrow it.
+
+**Fold-in 2 — landed, and the discriminator strings are byte-identical. Verified
+by me, not by the return's grep.** All six titles gained their `(§4.N row N)`.
+I extracted the six `~row:"M03-N2 (…)"` literals from both sides, sorted them and
+hashed the multiset:
+
+```
+eb1e06a^  c3af1d41ba7c8d09a81afaa1325d97a405df07d15a8b0c9e59f79f477860dd0b
+eb1e06a   c3af1d41ba7c8d09a81afaa1325d97a405df07d15a8b0c9e59f79f477860dd0b
+```
+
+**Identical.** Campaign seals written against those strings are safe.
+
+**Fold-in 3 — declined, correctly.** §12 item 3 marked A's delivered content
+*"optionally"*; the return declines it, states the decline, and grounds it on
+`WO-0065` §3.3.4 item 4's own floor. That is the right handling of an
+optional — **it remains a standing, undischarged strengthening**, and it is
+carried into the campaign packet at §7 rather than dropped here.
+
+### 4. Nothing outside the N file moved — verified mechanically
+
+`git show eb1e06a --numstat` returns **three paths and no more**:
+
+| Path | Change |
+|---|---|
+| `test/xgmii_rx_64/test_m03_n.ml` | 162 / 22 — the only code |
+| `agents/handoffs/WO-0065_…md` | 153 / **0** — pure append (this packet's Return log) |
+| `agents/journals/workers/claude_tb_writer_agent.v02.md` | 205 / **0** — pure append |
+
+`test_m03_b.ml`, `bench.ml`, `bench.mli`, `test/xgmii/injection.mli`,
+`test/xgmii/idle_injection.mli`, `test/xgmii_rx_64/dune` and
+`AP-xgmii_rx_64.md` are **absent from the commit**. Family B's five accepted
+members are frozen exactly as §12 required.
+
+**And the one code file's diff is confined**, checked with the nesting-aware
+comment stripper (string-literal aware, `{|…|}` aware) and compared **token for
+token**, `eb1e06a^` against `eb1e06a`. The complete set of code changes is:
+
+1. `coincides : bool` on the record type + the six literals (`false, false,
+   true, true, false, true`);
+2. `max 5 (` … `)` around `sc.t_idx + 1`;
+3. the `Bool.equal (sc.a_cycle = sc.b_cycle) sc.coincides` guard;
+4. the five-statement B-2 fold-in inside `[ oa; ob ]`;
+5. the deletion of `if c1 = c2 then fail row "…" else`;
+6. the six title strings.
+
+**Nothing else.** No `[%expect]` block moved — all six remain `[%expect {||}]`,
+and the file contains zero occurrences of `unreachable` or `uncaught_exn`, so the
+`RV-0065-VERDICT` §3 promotion block was correctly **not** acted on.
+
+### 5. The count question — the effective figure, with its evidence
+
+`RV-0065-VERDICT` §9 published **43 titled / 42 effective** at `88413b9` and said
+the effective figure *"becomes 43 when the respawn is green."* **It is green.**
+
+**M03 discharge at `eb1e06a`: 43 of 62 — TITLED AND EFFECTIVE, which now
+coincide for the first time on this row.** Outstanding falls from twenty to
+**nineteen**; the whole of the +1 is **M03-N2**.
+
+Re-measured at `eb1e06a` by the `J-dv_lead-0094` titles method, boundary-matched,
+run by me at this tree:
+
+| | figure |
+|---|---|
+| `%expect_test` titles under `test/xgmii_rx_64/` | **48** |
+| distinct plan rows named in those titles (**trailing-digit boundary match**) | **43** |
+| − `M03-A4` (a NO-ASSERT row named in a title) | 42 |
+| + `M03-F5` by citation (`test_m03_f.ml:809`, not a title) | **43** |
+| **Discharge** | **43 of 62** |
+
+**Evidence for the word *effective*** — the figure's whole content is that the 48
+titles **pass**, which no census can see: `build` run **`30963617198`**, job
+**`92172708172`**, step 6 (`dune runtest`) success and step 8
+(`git add -A; git diff --cached --exit-code`) success at `eb1e06a`. The census is
+the numerator's provenance; the run id is the adjective's.
+
+**The census defect reproduces, and the boundary match is what stops it.** A naive
+substring match returns **44**, discharging `M03-M1` on `M03-M10`'s title — the
+`M03-M10`/`M03-B3` shared-title problem biting from its third direction, exactly
+as `RV-0065-VERDICT` §9 recorded. Confirmed by running both matchers side by side
+at this tree. **Commissioned into the campaign packet** (§7): the census in
+`tools/dv_checks.sh` matches with a trailing-digit boundary and says why in its
+own comment.
+
+The CI run's own bench-inventory block independently prints **6** units in
+`test_m03_n.ml`, **48** under `test/xgmii_rx_64/` and **128** repository-wide —
+identical to `88413b9`, which is right: this revision moved pass state, not
+titles.
+
+### 6. Reviewed repairs made in this verdict
+
+**One, comment-only, in `test/xgmii_rx_64/test_m03_n.ml`.** The `DEFECT N-1`
+site's derivation comment gains §2.2's full post-closure geometry: both octet
+maps with their word and lane numbers, the fact that **two** characters cross at
+sc6 (the second filler octet **and** `Arrival`'s auto-terminate), the three
+properties of the `Idle` row that make the crossing a non-case, and the note that
+the crossing — not the Idle-state auto-terminate — is the only genuinely new
+shape. The return flagged this site as the one deserving a second independent
+look; it was right, and the site should carry the answer rather than only this
+verdict.
+
+**Proved comment-only before claiming it.** Comment-stripped and tokenised, the
+file before and after my edit are identical: **1729 tokens**, sha256
+`f28e8fca695ee886e20408b4e9cccb7b6c04b83110fc846d38baa727a71f2c02` on both
+sides. `ocamlc -stop-after parsing` exits 0. **The ACCEPT and its evidence are
+pinned to `eb1e06a`**; because the code is provably unchanged, that evidence
+transfers to the commit carrying this verdict, and the next CI run re-confirms it
+rather than establishing it.
+
+**Plus the plan edits this ACCEPT owes** — dv_lead's own commissioned work, not
+repairs to the return, and landed in `AP-xgmii_rx_64.md` in this same commit
+because **the three marks I re-grounded at `RV-0065-VERDICT` §11 item 3 each
+named a green respawn plus a verdict as what would strike them, and both now
+exist.** Leaving them standing would make the plan carry a false no-coverage
+claim, which is the defect class I bounce others for:
+
+1. **§4.N's closing note — STRUCK**, with the run id, the 11-of-11 result and
+   the effective count. **Both standing prohibitions LIFTED**: an `SO-` may cite
+   M03-N2 for REQ-102 and REQ-110, and a campaign may place its six sub-cases in
+   a denominator.
+2. **§6's REQ-102 mark and §6's REQ-110 mark — both STRUCK**, both re-read as
+   **DRIVEN 2026-08-05** with the run id; the REQ-110 entry additionally carries
+   the three bound-7 instances **with their shapes distinguished** (§7.1), so
+   the distinction is on the plan's record and not only in a verdict.
+3. **§4.N's *"what its absence costs"* costing — DISCHARGED, with limb (b)
+   re-grounded rather than struck.** SPEC-M03 §6.3 item 8 is still untested, but
+   **no longer because the row was never benched** — the row is benched at six
+   sub-cases, three of which coincide, always under different names. It is
+   untested because the carve-out **forbids the stimulus** (*"DV SHALL NOT
+   produce one"*). That is a closed question, not an open coverage item, and no
+   `SO-` should carry it as one.
+4. **§9 change-log row appended.**
+
+**Superseded wording is kept beneath every strike, never deleted** — this plan's
+own convention, and the reason it is right here is that the argument which
+retired each mark is only readable against the mark.
+
+### 7. Commissioned, and dated
+
+Both items of `RV-0065-VERDICT` §13 are now released by this ACCEPT, in order.
+
+#### 7.1 The family-B/N campaign packet **+ its seal, in ONE commit** — next round
+
+**Forward commitment, in the terms PROTOCOL §10 requires.** This section
+commissions a seal that **does not exist yet and is not claimed to exist**. It is
+redeemed by the commit that stages `WO-<next>_family-b-n-mutation-campaign.md`
+beside `WO-<next>_family-b-n-mutation-campaign-SEALED-predictions.md`, and by
+nothing else. **If a diff exists before that commit lands, the round is
+adjudicated as having no seal**, the bound-7 scoring claim below may not be made,
+and the absence is a finding against me. Stated so it can be held against me.
+
+**Denominator, to be re-measured at the freeze and expected to read:** **48 M03
+units / 128 repository-wide / 80 non-M03.** The non-M03 80 is unchanged across
+the five prior campaigns and is the stability check on the measurement. The
+eleven units this round added — five family B, six family N — are the campaign's
+new material; **M03-N2's six are the first legitimate N2 denominator**, because a
+red member kills nothing and cannot be scored, and until `eb1e06a` three of them
+were red.
+
+**REQUIRED classes I foresee** (the intent-classes the manifest seeds, each
+scored `R!` on a named unit set, everything else `G`):
+
+1. **IC-A — the REQ-110 in-word abort is recognised only at a word boundary.**
+   A design that decodes `/S/` in lane 0 but not in lane 4 of a word with a
+   frame already open. `R!` on sub-cases **4, 5, 6**; `G` on 1, 2, 3 and on both
+   B4 members. **This is bound 7's own convicting class** and the reason the
+   round exists.
+2. **IC-B — the zero-delivered close is scored as a runt-with-output.** A design
+   that emits a `tkeep` = 0 word for frame B, or that suppresses `error_runt`
+   below some octet floor. `R!` on all six N sub-cases; `G` elsewhere.
+3. **IC-C — the coincidence is serialised.** A design that, given two
+   frame-ending events pinned to one cycle under different names, delays one
+   report by a cycle. `R!` on sub-cases **3, 4, 6** and **`G` on 1, 2, 5** —
+   the control that proves the class is the coincidence and not the reports.
+4. **IC-D — REQ-113's ignore rule is carried into a preamble position.** The
+   class M03-B2 member (b) was built to kill; `R!` on the `/I/` and `/Q/`
+   members, `G` on `/E/`. Carried here because family B's five members have
+   never been scored.
+5. **IC-E — the runt check is sequenced on the abort path.** A design that
+   raises `error_runt` for frame A at four delivered octets. `R!` on sub-cases
+   **2 and 4**; `G` on 1, 5. **T8's own class**, and it is currently asserted at
+   two members and killed by neither.
+
+N ≥ 3 spanning distinct defect classes is satisfied five times over; PROTOCOL
+§10's sequencing (auditor authors the manifests, orchestrator applies them
+transiently, no RTL-line agent spawned while applied) is unchanged and is not
+mine to vary.
+
+**The bound-7 scoring shape — SCORED, never asserted, and the three instances
+are DISTINGUISHED.** The seal records **three** bound-7 instances and states the
+shape of each, on the split I derived at `RV-0065-VERDICT` §6 and which the
+return did not draw:
+
+| instance | A's state **on entry to W** | `/S/` landing | A delivered |
+|---|---|---|---|
+| sub-case 4 | **`Frame`** | lane 4, in-word | 4 |
+| sub-case 5 | **`Frame`** | lane 4, in-word | 8 |
+| sub-case 6 (lane-4-start) | **`Preamble`** | lane 4, in-word | 0 |
+
+§9's closure list makes all three *open* on entry (*"open from the cycle M03
+accepts its start character"*), so bound 7's second conjunct holds at each — **but
+a campaign that scores "three bound-7 instances" without saying which two are
+`Frame`-state and which one is `Preamble`-state has recorded a count, not a
+coverage.** The seal states it, and IC-A's `R!` set is chosen so that a design
+killing only the `Frame`-state pair scores 2 of 3 and is visibly short.
+
+**Also carried into that packet, all already earned:** the `tools/dv_checks.sh`
+trailing-digit boundary match with its own comment (§5); the `bench.mli` naming-
+axis documentation debt from `RV-0065-VERDICT` §7 item 3 (*a genuine record whose
+received extent is shorter than its declared array* has no cell on the
+`_frame`/`_piece` axis); and fold-in 3, A's delivered content, as the standing
+undischarged strengthening §3 above declines to drop.
+
+#### 7.2 Family J's capability round — **DATED, and this is the second deferral's last extension**
+
+**The round immediately following the family-B/N campaign seal.** Family J has
+been deferred twice (`WO-0065` §10 and the round before it). Under my own
+two-deferral rule it does **not** slip a third time without an **E2 to the
+orchestrator naming the cost** — the cost being that `AP-xgmii_rx_64.md`'s
+capability rows go into `P1-module-ready` evidence unbuilt, which is a coverage
+gap I would have to defend rather than a schedule note. The date is the seal
+commit; the escalation is the only alternative to it.
+
+**Signed** dv_lead, `J-dv_lead-0113`, at `eb1e06a` + this commit.
