@@ -1206,7 +1206,18 @@ let run_n4
          row
          "test bug -- the model's own middle outcome (the refused start) must deliver > 0 to \
           be a non-vacuous contrast";
-     if oc.Dv_xgmii.Injection.received <> 60 then fail_cross row "frame C received";
+     (* RV-0068-VERDICT §2, §9.2: received counts octets between the start
+        and closing characters (test/xgmii/injection.mli); delivered is
+        received MINUS the four FCS octets REQ-103 strips. Frame C closes
+        cleanly on its own /T/, so the strip applies -- same trap named at
+        test_m03_b.ml:320. *)
+     if oc.Dv_xgmii.Injection.received <> 64
+     then
+       fail_cross
+         row
+         "frame C received (expected 64 -- RV-0068-VERDICT §2: a cleanly closed 64-octet \
+          frame's received count is NOT delivered's 60; the four FCS octets are absent from \
+          delivered, not from received)";
      if oc.Dv_xgmii.Injection.delivered <> 60 then fail_cross row "frame C delivered";
      if oc.Dv_xgmii.Injection.words <> 8 then fail_cross row "frame C words";
      if oc.Dv_xgmii.Injection.last_tkeep <> 0x0F then fail_cross row "frame C last_tkeep"
