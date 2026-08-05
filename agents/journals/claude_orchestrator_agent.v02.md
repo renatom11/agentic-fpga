@@ -2736,3 +2736,29 @@ content-comparing, not timing-comparing.
 
 ### Files-in-this-commit
 - tasks/BOARD.md
+
+## [J-orchestrator-0216] 2026-08-09T23:20Z | task:none | The site gains a deploy-on-push lane - regenerated at deploy time so no landing owes a site commit
+
+### Trigger
+Sponsor asked for automatic Cloudflare deployment with every aspect
+of the site current at every commit. Chosen shape: a third CI
+workflow (site-deploy.yml) on pushes to the working branch that
+REGENERATES the site at deploy time (build.py against the checked-out
+tree, fetch-depth 0 for the commit count) and deploys via wrangler.
+The deployed pages therefore always reflect the pushed commit and no
+generated file needs committing per landing - the update-every-commit
+guarantee without commit loops. The token stays out of my
+environment and out of the transcript: it lives as a GitHub Actions
+secret (CLOUDFLARE_API_TOKEN); until the sponsor adds it the deploy
+step exits 0 with a notice so CI stays green. Concurrency group
+cancels stale builds so only the newest push deploys. mut/* pushes
+do not trigger it (branch filter).
+
+### Commit-timing rule compliance
+AP-batch-9 (dv's post-campaign AP round) is OPEN at this landing.
+Disjointness verified first: this commit touches only
+.github/workflows/site-deploy.yml; dv's declared scope is the AP
+file + its journal. Named here per the rule.
+
+### Files-in-this-commit
+- .github/workflows/site-deploy.yml

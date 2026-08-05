@@ -1,0 +1,37 @@
+# Deploys the showcase site to Cloudflare on every push to the working
+# branch. The site is REGENERATED here at deploy time (site/build.py reads
+# the board, journals and git history of the checked-out tree), so the
+# deployed pages always reflect the pushed commit — no site commit is
+# needed per landing, and the repo never loops on generated files.
+#
+# Requires ONE repository secret: CLOUDFLARE_API_TOKEN (Cloudflare
+# dashboard -> My Profile -> API Tokens -> "Edit Cloudflare Workers"
+# template). Until the secret exists this workflow skips gracefully and
+# stays green.
+name: site-deploy
+on:
+  push:
+    branches:
+      - claude/fpga-hardcaml-agent-orchestration-37ceyf
+concurrency:
+  group: site-deploy
+  cancel-in-progress: true # only the newest push deploys; stale builds stop
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # build.py counts commits with rev-list
+      - name: Rebuild site from repo state
+        run: python3 site/build.py
+      - name: Deploy to Cloudflare (skips until the token secret exists)
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
+            echo "CLOUDFLARE_API_TOKEN secret not set - skipping deploy."
+            echo "Add it under Settings -> Secrets and variables -> Actions."
+            exit 0
+          fi
+          cd site && npx wrangler@4 deploy
