@@ -855,3 +855,519 @@ format.
 ## Return / verdict log
 
 *(empty — the auditor appends its return here, and dv_lead its verdict.)*
+
+---
+
+## WO-0073-VERDICT — dv_lead, `J-dv_lead-0134`
+
+**Five classes seeded, five adjudicated, five KILLED. No class SURVIVED, no
+class VOID. Campaign total 5 of a sealed maximum of 5.** Every one of the seven
+REQUIRED red cells raised the sealed string **character-for-character**, every
+mutant-owned integer matched its derived value and satisfied its sealed
+direction, and all three load-bearing REQUIRED greens held. The manifest is
+convicted of nothing. The five findings this round produces are **four against
+me and one against an instrument I own**; none is against the auditor.
+
+**And the round did what §4 said it would do rather than what a scorecard would
+have preferred**: `M03-L3` and `M03-L4` are **NOT QUALIFIED** and cannot be, on
+their own instruments, by any outcome here.
+
+---
+
+### 0. Preconditions re-checked rather than assumed
+
+| precondition | how checked | result |
+|---|---|---|
+| HEAD at adjudication | `git rev-parse HEAD` | `e5c0b11` — the auditor's manifest commit, one commit past the base, touching only `docs/reports/audit/**` and the auditor's journal |
+| the bench is strictly earlier than every mutant | `git diff --stat bbd4122 e5c0b11 -- test/ libs/ tools/ docs/specs/` | **empty.** Not one `test/**` byte moved between the seal and this verdict. §8's ordering rule holds as written |
+| every branch is cut from the base | `git rev-parse <branch>^` ×5 | all five parents are `bbd4122`; `60ed49c`'s parent is `c66565d`, itself off `bbd4122` |
+| IC-L2 and IC-L5 are not one change | `git merge-base --is-ancestor` both ways | neither is an ancestor of the other; common base `bbd4122`. **Two diffs, not one** |
+| each diff touches one file | `git diff --stat bbd4122 <branch>` ×5 | `libs/hardcaml_ethernet/src/xgmii_rx_64.ml` only, in all five |
+| the denominator | `grep -c '^let%expect_test'` over `test/**` at the base tree | **59 M03 / 139 repo / 80 non-M03**; non-M03 splits **37 + 25 + 11 + 3 + 3 = 79** behavioural **+ 1** build-level. Seal §0 confirmed figure for figure |
+| the control | CI, not a badge | run **`31039283863`**, `build` job **`92419315774`** — steps 5–10 all `success`; `cosim` job `92419315692` `success`; `journal-check` run `31039283809` `success` |
+
+**Every score below is read from the `build` job's own step readings and from the
+`.corrected` hunks in its step-6 output** — never from a run badge. The
+`journal-check` red on all five transients is the known and expected noise of a
+mutation commit that carries no journal entry; it scores nothing.
+
+---
+
+### 1. The runs
+
+| class | branch | commit | `build` run | `build` job | step 5 | step 6 | `cosim` job |
+|---|---|---|---|---|---|---|---|
+| **IC-L1** | `mut/wo-0073-l1` | `8fe0251` | `31044630489` | `92437034170` | `success` | **`failure`** | `92437033946` `success` |
+| **IC-L2** | `mut/wo-0073-l2` | `e24e523` | `31044675210` | `92437186602` | `success` | **`failure`** | `92437186512` `success` |
+| **IC-L3** | `mut/wo-0073-l3` | `60ed49c` **(TIP)** | `31045274017` | `92439137615` | `success` | **`failure`** | `92439137645` `success` |
+| **IC-L4** | `mut/wo-0073-l4` | `22b538f` | `31044835612` | `92437700672` | `success` | **`failure`** | `92437700545` `success` |
+| **IC-L5** | `mut/wo-0073-l5` | `806d3d5` | `31044870620` | `92437812542` | `success` | **`failure`** | `92437812511` **`failure`** |
+| *(superseded)* | `mut/wo-0073-l3` | `c66565d` | `31044805815` | `92437603958` | — | — | **DISCARDED, Q2** |
+
+**Step 5 `Build` is `success` in all five.** No mutant failed to compile, so the
+**build-finding class never fired** — neither at `test/hardcaml_ethernet/`'s
+single unit nor at `test/cosim/`'s `(executables)` stanza. §2.1's two-home split
+is confirmed as correct and confirmed as not needed this round.
+
+---
+
+### 2. The REQUIRED cells — seven red, three green, all ten hit
+
+Compared character-for-character by script against §4's literals, with `<n>` and
+`<ℓ>` matched as capture groups and every other character required exact.
+
+| class | unit | sealed cell | observed | mutant-owned |
+|---|---|---|---|---|
+| **IC-L1(D)** | 1 | §4.1 | `M03-L1/L2/L3/L4: 10 000 frames presented, 5000 tlast words observed` | `5000` — sealed `< 10 000`, **derived 5 000** ✓ |
+| **IC-L1(D)** | 2 | §3.1 `G` | **GREEN** ✓ | — |
+| **IC-L2(U)** | 1 | §4.2 | `M03-L1/L2/L3/L4 (h = 8): latencies is not the single value this front-offset class must carry (§0.5 Start lanes)` | fixed string, no value printed ✓ |
+| **IC-L2(U)** | 2 | §4.2 | `M03-L5 (lane 0, length 64): latencies = [24], expected [16]` | `24` — sealed `> 16`, **derived 24** ✓ |
+| **IC-L3** | 1 | §3.1 `G` (4 ∉ R) | **GREEN** ✓ | — |
+| **IC-L3** | 2 | §4.3 | `M03-L5 (lane 0, length 70): latencies = [16; 24], expected [16]` | `<ℓ>` = `70`, `<n>` = `24` ✓ |
+| **IC-L4(S)** | 1 | §4.4 | `M03-L1/L2/L3/L4: 10 000 frames presented, 5000 tlast words observed` | `5000` — sealed `< 10 000`, **derived 5 000** ✓ |
+| **IC-L4(S)** | 2 | §3.1 `G` | **GREEN** ✓ | — |
+| **IC-L5** | 1 | §4.5 | `M03-L1/L2/L3/L4: 10 000 frames presented, 20000 tlast words observed` | `20000` — sealed **`> 10 000`**, **derived 20 000** ✓ |
+| **IC-L5** | 2 | §4.5 | `M03-L5 (lane 0, length 64): latency tagger errors:`⏎`frame 0: 72 input octets less 8 stripped from the front and 4 from the back is 60, but 64 octets were emitted` | `64` — sealed `> 60`, **derived 64** ✓ |
+
+**10 / 10.** The `§` in IC-L2's unit-1 cell arrives through `ppx_expect`'s
+backtrace dump as the decimal escapes `\194\167`, i.e. UTF-8 `U+00A7`; decoded,
+the string is the seal's byte for byte. `<ℓ>` = 70 is not mutant-owned in §9's
+sense — it is the disclosed `R = {2}` read through §2.4's residue map, which both
+sides held, and the map put the first-speaking member at the **seventh** of
+eighteen runs exactly as tabulated.
+
+**How deep each unit got before it spoke**, which is the §6 adjudication check
+executed rather than asserted:
+
+| class | unit 1 first speaker | items that ran | unit 2 first speaker |
+|---|---|---|---|
+| IC-L1(D) | **item 3** | 1–3 | — (green) |
+| IC-L2(U) | **item 7**, h = 8 arm | 1–7 | `latencies`, member 1 |
+| IC-L3 | **none — green** | **1–9, all** | `latencies`, member 7 |
+| IC-L4(S) | **item 3** | 1–3 | — (green) |
+| IC-L5 | **item 3** | 1–3 | **`Latency.errors`**, member 1 |
+
+---
+
+### 3. The three greens that carry the measurement
+
+1. **IC-L1 and IC-L4 leave unit 2 GREEN.** Sealed at §10(e) from the stimulus:
+   every L5 run is `one_frame`, so there is no preceding terminate for a start
+   word to be adjacent to and no following start for a tail word to collide with.
+   Both classes' conditions are empty sets there and both units stayed green.
+   **§8.1's IC-L1 rule 2 is satisfied by measurement.**
+2. **IC-L3 leaves unit 1 GREEN.** The stress frame delivers 60 octets, residue
+   **4**; `R = {2}`, so `4 ∉ R` and `l3_block` is identically 0 across 10 000
+   frames. **This is the single most valuable green in the campaign** — see §4.
+3. **IC-L2's `Latency.errors` is EMPTY, and it is observed rather than hoped.**
+   `assert_l5_run` reads `Latency.errors` **first** (§2.3); under IC-L2 the
+   message that spoke was the `latencies` comparison, four checks later. So the
+   tagger's error list, `frames_compared`, the single-class test and
+   `front_offset` **all passed** under a uniform ΔC 3 → 4. **§4.2's three
+   arithmetic facts — closure at (L + h) = 32, the ceiling test `4 > 4` false,
+   and the pair rule admitting (4,4) — are confirmed by measurement.** REQ-019's
+   entire machinery is silent on a one-cycle regression that spends the reserve
+   SPEC-M03 §7 deliberately left, and the **only** assertion in this bench that
+   convicts it is REQ-005/REQ-111's pinned constant.
+
+---
+
+### 4. IC-L3 — the one result this campaign existed to get
+
+**§8.1's IC-L3 scoring rule 1 is the rule in play**: red at the L5 rows whose
+delivered residue ∈ R, **with unit 1 GREEN**. Both halves observed.
+
+> **`M03-L5` detects what `M03-L2` cannot.** A pipeline whose delay varies with
+> the final `tkeep` residue is invisible to a 10 000-frame fixed-length stress
+> run — measured, not argued — and is convicted by the directed-length set at the
+> first member whose delivered residue lies in the varying set.
+
+`WO-0070` §3.4 wrote the row on the argument that the derivation cancels the
+octet position entirely. This class asked the **design** instead of the
+specification, and the row earned its existence. It is the only class in the
+campaign whose entire convicting set lies outside the stress run, and it is the
+only class that qualifies `M03-L5`.
+
+**Q5 is thereby answered by the result and not only by the reasoning** — see §7.
+
+---
+
+### 5. Blast radius — counted, ruled, and not reported as coverage
+
+| class | M03 units red | M03 files red | M03 green | non-M03 |
+|---|---|---|---|---|
+| **IC-L1** | **15** | 8 — b, d, e, g, j, k, l, n | 44 / 59 | **0 red — 79 + 1 held** |
+| **IC-L2** | **49** | 13 — all but `structural` | 10 / 59 | **0 red — 79 + 1 held** |
+| **IC-L3** | **14** | 6 — a, c, e, g, i, l | 45 / 59 | **0 red — 79 + 1 held** |
+| **IC-L4** | **10** | 7 — d, e, f, h, j, k, l | 49 / 59 | **0 red — 79 + 1 held** |
+| **IC-L5** | **51** | 13 — all but `structural` | 8 / 59 | **0 red — 79 + 1 held** |
+
+**Every failing path in all five step-6 outputs is under
+`test/xgmii_rx_64/`** — verified from each run's own `git diff --name-only`
+promotion list, which `git` emits sorted, so any non-M03 red would have appeared
+**before** every M03 file and could not have been missed. **The 79 behavioural
+non-M03 units and the 1 build-level unit held under every class.**
+
+**None of these reds is coverage.** Kills are counted **per class** (§11):
+IC-L5's 51 reds are **one** kill, IC-L2's 49 are **one**. `test_m03_structural.ml`
+never reddened under any class, which is correct — it asserts structure, not
+behaviour.
+
+#### 5.1 Standing rule 5 was exercised, in both directions, and it absorbed the divergence
+
+`FINDING WO-0066-3` cost me three MUST-STAY-GREEN violations because my seal
+carried an **enumeration** where the auditor's manifest carried a **rule**. This
+round the seal carried rules with instances beneath them, and the rule and the
+instances **did** disagree:
+
+- **`test_m03_f.ml` stayed GREEN under IC-L1**, though §3.5's IC-L1(A) instance
+  list named family F through `Dv_xgmii.Injection`.
+- **`test_m03_g.ml` and `test_m03_i.ml` stayed GREEN under IC-L4**, though §3.5
+  pointed IC-L4 at the same site list.
+
+Under `WO-0066`'s regime these are three violations against me. **Under the rule
+form they are none**: IC-L1's rule requires a start word whose *immediate
+predecessor* carries a terminate character, and IC-L4's requires a frame's last
+output word to fall on a cycle carrying an accepted start — conditions those
+schedules' geometries do not produce. The **RULE governs** (standing rule 5) and
+the instance lists were supersets. **The lesson held under test, which is the
+first time it has been tested.** The per-row derivations are owed to the
+post-campaign `AP-` round and are named there, not claimed here.
+
+#### 5.2 The two worked instances both paid
+
+- **WORKED GREEN.** §3.5 marked `test_m03_i.ml:1112` (`~ifg:824`, a gap of 824
+  octet times) as the one instance predicted **GREEN** under IC-L1, on the ground
+  that no start word can be adjacent to a terminate word at that gap. **`test_m03_i.ml`
+  did not redden under IC-L1.** That is the discrimination the worked instance
+  was bought for, and it is the difference between a rule and a slogan.
+- **WORKED RED, branch-dependent.** §3.5 predicted `test_m03_c.ml:511` red under
+  IC-L2 with the body *"the single output word did not arrive on start_cycle + 3
+  (REQ-019)"*, and **green under IC-L3 unless 1 ∈ R**. Observed under IC-L2:
+  `M03-C4 (lane 0): the single output word did not arrive on start_cycle + 3 (REQ-019)`
+  — the sealed body with its row prefix. Observed under IC-L3 with `R = {2}`:
+  `test_m03_c.ml` reddened at **C1 and C3 and not at C4**. Both directions hit.
+
+---
+
+### 6. The three named collisions, adjudicated by their sealed discriminators
+
+**Collision 1 — IC-L1(D) ≡ IC-L4(S), unit 1 item 3. INSTANTIATED, and resolved.**
+Both raised `M03-L1/L2/L3/L4: 10 000 frames presented, 5000 tlast words observed`,
+**character-for-character including the integer**, exactly as sealed. The
+protection was the whole of §10's operational demand and it was honoured: two
+diffs, two branches, two commits off the base, two CI runs. Disposition 6 has no
+purchase. **Both classes are scoreable and both are scored.**
+
+**FINDING WO-0073-D4 (mine, MINOR).** The seal recorded collision 1's
+discriminator as *"NONE that this bench produces"*. That is **exact at the cell
+and too strong at campaign scope.** The campaign produces a measured
+discriminator at a carrier outside family L:
+
+| unit | IC-L1(D) | IC-L4(S) |
+|---|---|---|
+| **M03-K2** | `expected 16 delivered words, got 8` | `expected 16 delivered words, got 15` |
+| **M03-J1** | `51 tlast words, expected 101` | `51 tlast words, expected 101` |
+| files / units red | 8 / **15** | 7 / **10** |
+
+**`M03-K2` separates them completely**: a dropped frame loses eight words, a
+suppressed tail word loses one. The seal's claim should have been scoped —
+*"none that this **cell** produces"* — and the campaign-scope discriminator
+should have been sealed alongside it, since the auditor derived exactly that
+separation independently at its §6 (*"they differ in every quantity beyond the
+count"*). **No cell moves and no score changes**; the correction is to the
+seal's phrasing and to how I scope such a claim next time.
+
+**Collision 2 — IC-L3(4 ∈ R) ≡ IC-L2(U) at unit 1's h = 8 cell. NOT
+INSTANTIATED**, because the disclosed `R = {2}` puts `4 ∉ R` and leaves unit 1
+green. Its sealed discriminator is nonetheless **confirmed by measurement**:
+IC-L2 reddens unit 2 at **length 64** with `latencies = [24]`; IC-L3 at **length
+70** with `latencies = [16; 24]`. Both the length and the printed list separate
+them, as sealed.
+
+**Collision 3 — IC-L2(U) ≡ IC-L4(F) at unit 1's h = 8 cell. NOT INSTANTIATED**,
+because IC-L4 was rendered at branch **S**, which speaks at item 3 and not at
+item 7. Its sealed discriminator — *unit 2's state* — is confirmed in the one
+direction the round could reach: IC-L2 reddens unit 2, IC-L4 leaves it green.
+
+**Near-collision — IC-L5 against the pair, at the same item-3 string.
+INSTANTIATED, and separated by §9's sealed DIRECTION**: `20000` where the
+direction is `> 10 000`, against `5000` where it is `< 10 000`. **This is what
+sealing mutant-owned quantities as inequalities with named directions is for**,
+and it is the first round in which that device carried a discrimination by
+itself.
+
+---
+
+### 7. Rulings on the auditor's questions, and on the base identity
+
+**Q1 / base identity — FINDING WO-0073-M1 CONFIRMED as MINOR and materially
+void. The campaign base reads `bbd4122`.** Verified independently at this seat:
+`git rev-parse bbd4122^` = `8acd28d`; `git diff --stat 8acd28d bbd4122 -- libs/
+test/ tools/ docs/specs/` is **empty**; the only differences are the packet, the
+seal, and my own journal — **none of them a path this campaign scores**. §8's
+purpose is the adjudicator-ordering rule, and that rule holds identically under
+either reading. Every §8 and seal reference to "the base SHA" reads **`bbd4122`**,
+and the control run is `bbd4122`'s own.
+
+> **The drafting defect is mine and is recorded as such.** §8 defined the base as
+> *"the parent of the commit staging this packet and its seal"*. That is wrong,
+> and it was wrong at the moment it was written: the packet and the seal are not
+> scored paths, so the correct base is **the commit that stages them**, which is
+> also the only commit an operator can be dispatched against. **Corrective rule
+> for every future campaign packet**: define the base SHA as *the commit that
+> stages this packet and its seal*, never as its parent. The auditor filed this
+> before the first branch was cut, exactly as §8 demanded, and that is the clause
+> working.
+
+**Q2 / `mut/wo-0073-l3` carries two commits — RULED.** IC-L3 is scored from the
+**tip `60ed49c`**, run `31045274017`. `c66565d`'s run `31044805815` is
+**DISCARDED and scores nothing**, per the auditor's own request and my
+independent reading of the two diffs. Two facts are worth more than the ruling:
+
+- **The defect was found by R-DISC-1's per-lane obligation, before any scorecard
+  existed.** Holding only `r2` suffices for the lane-0 members of R (closure
+  record at age 2) and strands the lane-4 members (age 1) — word loss, not a
+  one-cycle delay, and therefore **not the class**. This is the first round in
+  which the per-lane discharge burden has visibly paid for itself, and it paid by
+  catching a rendering that would have scored as an out-of-specification class
+  under disposition 7. **The burden is retained, and this is its citation.**
+- **`git push --force-with-lease` was refused by repository rules on a transient
+  ref.** PROTOCOL R9's no-force-push guarantee holds on `mut/**` as well as on
+  `main` and the working branch. Recorded as a fact about the enforcement
+  surface, and a welcome one.
+
+**Q3 / IC-L2 registers the five strobes with the datapath — RULED: the
+auditor's reading is CORRECT and is the reading the seal assumed.** Ground:
+SPEC-M03 §9 pins every strobe to its frame's own `tlast` cycle, and the seal's §9
+carries *"the strobe set over either unit = ∅, not mutant-owned"*. A rendering
+that delayed `rx` alone would have produced a **strobe/`tlast` skew** — a second
+defect no class here names, and precisely disposition 7's "the class plus a
+defect" territory. **The evidence confirms the rendering behaved as read**:
+`M03-F2 (lane 0, 0 octets received): error_runt pulsed on cycle 5, expected 4`
+and `M03-E2 (lane 0): error_bad_frame pulsed on cycle 5, expected 4` show the
+strobes moved by **exactly one cycle, with the datapath**, while family L's own
+strobe set stayed **∅** (item 5 passed under IC-L2 — proven by item 7 speaking
+after it). No cell branched the other way; no cell moves.
+
+**Q4 / IC-L2 and IC-L5 edit the same site — RULED: §7 item 1 is NOT read against
+them.** §7 item 1 bars a **diff** that combines two classes. These are two diffs,
+on two branches, each applying alone to `bbd4122` and reverting cleanly, neither
+an ancestor of the other, with two CI runs — verified at this seat by
+`git merge-base --is-ancestor` in both directions. **A shared hunk header is a
+fact about the file's layout, not about the diffs' contents.** Disposition 6 has
+no purchase, and the flag was the right call: it is exactly the kind of
+coincidence that would otherwise be discovered from a scorecard.
+
+**Q5 / `R = {2}` — RULED: accepted, and it was the better choice than
+`{1, 2, 3}`.** Three grounds, the first decisive:
+
+1. **`4 ∉ R` is what makes §8.1 rule 1 available**, and rule 1 is the only route
+   by which the length-dependence claim can be **earned** rather than merely
+   seeded. A set containing 4 would have reddened unit 1 too and forfeited the
+   claim under rule 2 — the campaign would have kept its kill and lost its
+   result.
+2. **Four members worked completely beat eight worked thinly** — and the
+   completeness is not decorative: it is what found the lane-4 stranding defect
+   (Q2).
+3. **`|R| = 1` at residue 2 minimises §5.3's shadowing loss and, uniquely,
+   converts it into measurement.** The map puts residue 2's first lane-0 member
+   at length **70**, the **seventh** of eighteen runs — so members 1–6 (lengths
+   64–69 at lane 0) were **observed GREEN**, not shadowed. §5.3's bound bit
+   exactly as sealed under IC-L2 (one of eighteen observed, seventeen unobserved)
+   and cost six fewer members under IC-L3. **The shadowing cost is a function of
+   where R's first member falls, and a narrow R placed late is cheaper than a
+   wide R placed early** — which the seal did not say and which this round
+   measured.
+
+---
+
+### 8. GREEN BY BLINDNESS — scored as declarations, because a green there is not vigilance
+
+| § | declaration | outcome | what may be said |
+|---|---|---|---|
+| **6.1** | `M03-L4`'s item 6 (sequence read-back) is **structurally unreachable**: item 4 compares the same octets positionally and earlier | Under IC-L1/L4/L5 item 6 never ran; under IC-L2 it **ran and passed**; under IC-L3 it **ran and passed**. Its greenness is evidence that item 4 ran | **`M03-L4` is NOT QUALIFIED and cannot be.** No kill here is evidence about REQ-020's order preservation |
+| **6.2** | `M03-L3`'s item 8 is **unreachable term by term** | Never reached under four classes; under IC-L3 it ran and passed on operands item 7 and item 4 had already fixed | **`M03-L3` is NOT QUALIFIED and cannot be.** Its ΔC content remains discharged by `WO-0070` §6's derivation and by no run |
+| **6.3** | item 9's only reachable residue is REQ-014's `tstrb` half | No class touched `tstrb`; IC-L2 left it the constant `zero 8` deliberately | Untouched, and a standing-monitor question |
+| **6.4** | REQ-020's **reordering** half has no renderable mutant | The auditor **independently agreed from the design side**, blind to the seal (manifest §8) | **Upgraded from my claim to a two-party agreed bound.** The strongest form this bound can take short of a proof |
+| **11.4** | item 5's empty-strobe-set check has **no seeded class** | Green under all five | **A green there means nothing and this verdict cites it as nothing** |
+| **5.3** | seventeen of eighteen unit-2 members are shadowed | Bit exactly under IC-L2; **six members observed green** under IC-L3 | Every unobserved member is recorded **unobserved** — never a miss, never a pass |
+
+**§12's pass criterion 6 is discharged**: the two unreachability findings are
+stated whatever the score is, and the score does not soften them.
+
+---
+
+### 9. Campaign scorecard
+
+| class | branch | disclosed | `R!` hit | cells message-exact | `G` / `G✱` held | MUST-STAY-GREEN | kills |
+|---|---|---|---|---|---|---|---|
+| **IC-L1** | `l1` | **A / D** | 1 / 1 | **1 / 1** | 1 / 1 | M03 44/44 · non-M03 **79 + 1** | **1** |
+| **IC-L2** | `l2` | **U** | 2 / 2 | **2 / 2** | — | M03 10/10 · non-M03 **79 + 1** | **1** |
+| **IC-L3** | `l3` | **R = {2}** | 1 / 1 | **1 / 1** | 1 / 1 | M03 45/45 · non-M03 **79 + 1** | **1** |
+| **IC-L4** | `l4` | **S** | 1 / 1 | **1 / 1** | 1 / 1 | M03 49/49 · non-M03 **79 + 1** | **1** |
+| **IC-L5** | `l5` | **once** | 2 / 2 | **2 / 2** | — | M03 8/8 · non-M03 **79 + 1** | **1** |
+| **total** | **5 / 5** | **6 / 6 disclosures** | **7 / 7** | **7 / 7** | **3 / 3** | **zero violations** | **5 / 5** |
+
+**Disposition 1 at all five.** No class met disposition 2 (a control reddened),
+3 (not seeded), 4 (a monitor or `test bug --` red inside family L), 5 (neither
+branch), 6 (a combined diff) or 7 (a datapath message at a datapath-silent
+class). **Disposition 7 has no instance and that is a measured result**: IC-L2's
+unit-1 message is item 7's, which requires items 3, 4 and 5 to have passed —
+frame count 10 000, every word's `tkeep`, every `tlast` placement, every `tuser`,
+every octet positionally, and an empty strobe set; and IC-L3 left unit 1 green
+across all 10 000 frames. **The auditor's §7 pre-ship claim that IC-L2 and IC-L3
+produce no component of the `BUG-0003` §V.10.2 signature is confirmed by
+measurement, not accepted on assertion.**
+
+**How the reds present**, continuing the taxonomy `WO-0063B` FINDING 3 opened:
+
+| presentation | classes |
+|---|---|
+| **count** difference — marks removed | IC-L1(D), IC-L4(S) at item 3 |
+| **count** difference — marks added | IC-L5 at item 3 and at the tagger's octet extent |
+| **cycle** difference, uniform | IC-L2 at both units |
+| **cycle** difference, **content-keyed** | **IC-L3** — new this round, and the only class whose convicting set lies wholly outside the stress run |
+
+---
+
+### 10. Findings
+
+| id | class | finding | effect |
+|---|---|---|---|
+| **WO-0073-M1** | MINOR, auditor-filed, **against me** | §8's base-SHA definition names the parent of the packet's commit; the operating base is the packet's commit itself | **Materially void** — trees byte-identical at every scored path. Base reads `bbd4122`. **Corrective drafting rule adopted** (§7) |
+| **WO-0073-D1** | MINOR, **against my seal** | The seal declared `test/cosim/` a **build-finding home only**. It is also a **behavioural** detector, and it reddened under IC-L5 | **Not a MUST-STAY-GREEN violation** (that set is defined over units; `test/cosim/` has none) and **not a scope finding against the manifest** (the red is selected by IC-L5's own §3.4 rule). **The denominator's exposure statement was one level too shallow** — the same shape as the correction the seal itself made at §0, made one level short |
+| **WO-0073-D2** | **MATERIAL**, against an instrument I own | The Phase-1 differential co-sim lane is **content-comparing, not timing-comparing**: it passed under IC-L2, a uniform ΔC 3 → 4 on every output word **and** every strobe | **No `SO-` may cite the co-sim anchor as timing coverage.** Combined with §3.3's measured silence of `Latency.errors`, **the pinned per-octet constant is the programme's only detector of a one-cycle word-delay regression** |
+| **WO-0073-D3** | MINOR, against the bench, **mine** | `OBSERVATION L-O1`'s shape exists **outside family L**: under IC-L2 and IC-L3, `M03-I4` raised `... test bug -- the baseline's own tlast cycle does not match the gapless m + 3 formula` — a **design** red wearing a bench-bug prefix | Same disposition as §5.5: **a design red mislabelled by the bench**, never read as a bench defect or a stimulus problem. **Carrier: the next commit that opens `test/xgmii_rx_64/test_m03_i.ml`** |
+| **WO-0073-D4** | MINOR, against my seal's phrasing | Collision 1's discriminator sealed as *"NONE that this bench produces"* — exact at the cell, too strong at campaign scope (§6) | No cell moves. **Scope such claims to the cell, and seal the campaign-scope discriminator beside them** |
+| **WO-0073-D5** | MINOR, against `tools/`, **mine** | `run_cosim.sh` reported `FAILED CHECK: BUILD (ours_run failed in run1, rc=2)` for a **runtime raise inside check 1**, on a run whose build succeeded (`dune build: ok`) | A diagnostic that names the wrong check sends a reader to the wrong file. **Carrier: the cosim-lane round commissioned at §12** |
+
+#### 10.1 What is NOT a finding — the manifest
+
+**No scope violation**: every diff touches `libs/hardcaml_ethernet/src/xgmii_rx_64.ml`
+and nothing else, and no red appeared at any of the 79 behavioural non-M03 units.
+**No combined diff.** **No class, lane, length or parity self-declared NOT
+SEEDED**, and every required consequence's own lane, length and parity was
+discharged term by term at the firing cycle. **All six disclosures answered
+before the run**, in the auditor's own words, in a committed manifest that reached
+me only at `e5c0b11` — after all five diffs were committed on their branches
+(`8fe0251` 20:33:25Z … `60ed49c` 20:41:27Z, manifest commit 20:54:37Z). **The
+pre-run reading note was delivered as a note and not as a negotiation**, and it
+answered my `J-dv_lead-0133` Open-question 4 in the form and at the time
+`WO-0063B`'s precedent requires. This is the cleanest manifest of the ten
+campaigns.
+
+#### 10.2 The IC-L5 co-sim red, adjudicated
+
+`cosim` job `92437812511`, check 1 of 3:
+
+```
+Fatal error: exception Failure("ours_run: M03 produced an output word with no admitted frame open")
+  ... test/cosim/ours_run.ml, line 119
+run_cosim: FAILED CHECK: BUILD (ours_run failed in run1, rc=2)
+```
+
+The lane's own driver refused the duplicated word on a single 64-octet
+good-FCS lane-0 frame. **This is selected by IC-L5's §3.4 rule in substance** —
+the guard is an assertion about what the cycle after a `tlast` carries — so it is
+**predicted blast radius, contributing zero additional kills**. It is a finding
+against **the seal's declared universe** (WO-0073-D1), not against the manifest,
+and not a MUST-STAY-GREEN violation. **The other four classes' `cosim` jobs
+passed**, which is what makes WO-0073-D2 a measurement rather than a suspicion:
+the lane sees a duplicated word and does not see a uniformly delayed one.
+
+---
+
+### 11. What is QUALIFIED, and what is not
+
+| row | status | on what |
+|---|---|---|
+| **`M03-L1`** | **QUALIFIED** | IC-L1(**D**), IC-L4(**S**), IC-L5 — three classes convicting through **one** instrument, item 3's `tlast` count. §8 check 1 (frames out = frames in) is scored |
+| **`M03-L2`** | **QUALIFIED** | IC-L2(**U**) — both front-offset class records; the L5 members corroborate at `latencies = [24]` |
+| **`M03-L5`** | **QUALIFIED** | IC-L3 (`R = {2}`) — **and the length-dependence claim is EARNED** under §8.1 rule 1 |
+| **`M03-L3`** | **NOT QUALIFIED** | its instrument is structurally unreachable (§6.2). Scored-and-unqualifiable, which is a result and not an omission |
+| **`M03-L4`** | **NOT QUALIFIED** | its instrument is structurally unreachable (§6.1). Same |
+
+**A kill here qualifies a row on the class it was seeded against and on nothing
+else** (§13.7). Consequences stated so they are not invented later:
+
+- **No family-M row is qualified by this campaign.** IC-L2 and IC-L5 reddened
+  `M03-G3`, `M03-G4`, `M03-G7` and `M03-G8` — the carriers `FINDING M-1`/`M-2`
+  bound `M03-M6` and `M03-M7` to. **Those reds are blast radius under the
+  classes' own rules and contribute zero kills**, so they qualify neither the
+  carrier's row nor the row bound to it. §11's rule and the plan's own
+  pre-recorded note (*"a scorecard must not report that as two kills"*) both
+  point the same way, and this verdict counts neither.
+- **No family B, C, D, E, F, G, H, I, J, K or N row is qualified**, for the same
+  reason.
+- **The `P1-module-ready` line-rate-stress line is not signed by any outcome
+  here** (`RV-0070-VERDICT` §4, packet §0.1).
+- **No `SO-xgmii_rx_64.md` is opened or offered.** Families **M**, **J** and
+  **K** are unscored and the charter §3 co-sim anchor is undischarged per class —
+  and WO-0073-D2 has now made that second item sharper rather than smaller.
+
+---
+
+### 12. What is commissioned
+
+**In this order:**
+
+1. **The post-campaign `AP-xgmii_rx_64.md` round. The §8 window is closed — the
+   campaign has scored — and this is the round that opens `test/attack_plans/**`.**
+   Its items, all named in advance at §13.1 and §13.3:
+   1. §4.L's landed-status block gains the campaign score, the five branch/run
+      ids and the control run id.
+   2. **`M03-L1`, `M03-L2`, `M03-L5` → QUALIFIED**, citing this verdict and the
+      class each was convicted on; **`M03-L3` and `M03-L4` recorded
+      scored-and-unqualifiable** with §6.1/§6.2's arguments, in their own cells,
+      where a future scorecard will look.
+   3. §7 gains the §4 unreachability findings beside the X-rows, plus §6.6's
+      portable form: *an assertion whose subject is already compared,
+      positionally and earlier, by a sibling assertion in the same unit is
+      unreachable, and its greenness is evidence about the sibling.*
+   4. **WO-0073-D2 recorded against §7's co-sim banner** — the lane's per-class
+      obligation now has a **named blindness**, not only a named gap.
+   5. §5.1's three rule-versus-instance divergences derived per row, and the
+      change-log row.
+2. **The family M campaign packet** — next of the four, carrying `OBSERVATION
+   M-O1` and the `M03-M2` residue-comparison class §4.M's own note commissions.
+3. **The cosim-lane round** (`test/cosim/**`, `tools/cosim/**`), which pays three
+   debts at once: **WO-0073-D2** (add an explicit timing comparison to the
+   differential lane, or record the bound in `CD-xgmii_rx_64_cosim.md` and in
+   every `SO-` that cites the anchor); **WO-0073-D5** (`run_cosim.sh`'s
+   wrong-check label); and `test/cosim/dune`'s dangling `test/cost_probe/`
+   reference, open since `J-dv_lead-0132` Open-question 1 with this exact
+   carrier.
+4. **The family J and family K campaign packets**, closing the era's four.
+5. **`OBSERVATION L-O1`'s one-line repair and WO-0073-D3's `M03-I4` mislabel**
+   ride the next commits that open `test_m03_l.ml` and `test_m03_i.ml`
+   respectively — unchanged carriers, now with a measured instance behind each.
+
+**Not commissioned, and named so the omission is visible:**
+
+- **No bench change is owed by this result.** Every unit behaved correctly,
+  including all five that stayed green where the instance lists said they would
+  redden. The two mislabelled-prefix items are diagnostics, not verdicts, and
+  neither changed a score.
+- **No `BUG-` is opened, and the reason is stated.** Every red in this campaign
+  is a seeded mutation killed by the suite. **No divergence of the unmutated
+  design from its specification was observed** — the control is green at every
+  step of both jobs. There is nothing to report to rtl_lead.
+- **No revert of anything.** No class killed the bench rather than the mutant.
+
+---
+
+### 13. What this campaign does and does not qualify — the one-paragraph form
+
+**It qualifies three of family L's five rows, on five classes, at one bench, on
+one stimulus each.** It establishes by measurement that a fixed-length
+line-rate stress run cannot see a residue-keyed latency defect and that the
+directed-length set can; that a one-cycle word-delay regression is invisible to
+REQ-019's entire error machinery **and** to the differential co-simulation lane,
+leaving REQ-005/REQ-111's pinned constant as its only detector; and that
+`M03-L3`'s and `M03-L4`'s own assertions cannot speak under any mutation. **It
+does not qualify `M03-L3` or `M03-L4`; it signs no gate line; it opens no
+`SO-`; it says nothing about families J, K or M; and a kill proves the assertion
+convicts, never that the bench is a general detector of the class.** IC-L2 and
+IC-L5 are detected across most of the M03 bench — this bench was not blind to
+either, and nothing here should be read as saying it was.

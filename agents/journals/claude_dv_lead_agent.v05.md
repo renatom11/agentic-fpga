@@ -3239,3 +3239,285 @@ not harvested** — banking neither opens nor closes a span:
 ### Files-in-this-commit
 - agents/handoffs/WO-0073_family-l-mutation-campaign.md
 - agents/handoffs/WO-0073_family-l-mutation-campaign-SEALED-predictions.md
+
+## [J-dv_lead-0134] 2026-08-09T22:40Z | task:WO-0073 | Family L scored 5 of 5 with every sealed string exact — and the campaign's most valuable result is a green: the co-simulation anchor and REQ-019's whole error machinery are both blind to the one-cycle regression that only the pinned constant catches
+
+### Trigger
+
+Orchestrator, spawn short-id `WO-0073-ADJ/2026-08-09T21:50Z`, HEAD `e5c0b11`. My
+own `WO-0073` returns for adjudication: the auditor's manifest landed at
+`e5c0b11` with all five classes seeded on transient branches and every diff
+committed **before** any body reached me, so the ordering rule that makes the
+seal evidence held. This is the round that opens
+`WO-0073_family-l-mutation-campaign-SEALED-predictions.md` and scores it.
+
+### Inputs
+
+- `agents/charters/dv_lead.md`; `agents/PROTOCOL.md` (§3, §4.1–4.2, §5, §6, §10).
+- `agents/handoffs/WO-0073_family-l-mutation-campaign.md` and its **sealed
+  companion**, both at `bbd4122` — opened for the first time this round, after
+  every scorecard was in hand, per the packet's §15 closing line.
+- `docs/reports/audit/WO-0073-mutations/README.md` at `e5c0b11`, **in full**
+  (1208 lines): the five diffs, the R-DISC-1 per-lane/length/parity discharges,
+  the R-DISC-2 gate inventory, the §7 pre-ship check, the §9 pre-run reading note
+  and the five questions.
+- `test/attack_plans/AP-xgmii_rx_64.md` §4.M's pre-recorded scorecard note and
+  the `M03-M6`/`M03-M7` carrier bindings — read to settle the carrier-versus-row
+  counting question, not to author anything.
+- `.github/workflows/build.yml` at `bbd4122` (the step map).
+- CI, via the GitHub API: five `build` jobs and their `cosim` siblings, the
+  control at `bbd4122`, and the superseded `c66565d` run. **No RTL was read at
+  any point**; the mutation diffs were read only as quoted in the manifest and as
+  `git diff` output, and only after every cell was scored, which is the same
+  discipline the packet imposes on the auditor in the other direction.
+
+### Reasoning
+
+**Where I chose to spend the round.** Five classes at ten worked cells is a
+small scoring job; the real work was three things the commission named and one it
+could not have.
+
+**(1) Scoring at the source, not the badge.** Every one of the five transients
+shows `failure` at both workflows, and the `journal-check` red is noise by
+construction — a mutation commit carries no journal entry. Scoring from run
+conclusions would have said "five reds, five kills" and would have been *right by
+accident*. What matters is which **step** failed and which **assertion** spoke:
+step 5 `Build` is `success` in all five, which is what retires the build-finding
+class; step 6 is the only failure, which is what makes every red behavioural. I
+took every message from the `.corrected` hunks in step 6's own output and
+compared them by script against §4's literals with `<n>` and `<ℓ>` as capture
+groups — because "matches the seal" asserted by eye is exactly the claim a seal
+exists to stop being asserted by eye.
+
+**(2) The greens, which are where the campaign's value actually sat.** Three
+`G` cells were load-bearing and all three held: IC-L1 and IC-L4 leaving unit 2
+green (no L5 run has a preceding frame, so both classes' conditions are empty
+sets there), and IC-L3 leaving unit 1 green at `4 ∉ R`. The third is the one the
+round was built for: it is what converts `M03-L5` from a row that exists into a
+row that **detects what `M03-L2` cannot**, and it is the only class in the
+campaign whose entire convicting set lies outside the stress run.
+
+**(3) The green I did not plan for, and it is the round's biggest result.**
+IC-L2 moves every output word to `m + 4` — and `Latency.errors` stayed **empty**,
+observed rather than inferred, because `assert_l5_run` reads that list *first*
+and the message that spoke was four checks later. So the seal's three arithmetic
+facts (closure at `(L + h) = 32`, the ceiling test `4 > 4` false, the pair rule
+admitting `(4,4)`) are confirmed by measurement. **Then the co-simulation lane
+passed under IC-L2 as well.** Two independent instruments, both blind to a
+uniform one-cycle word-delay regression on every output word and every strobe.
+That leaves REQ-005/REQ-111's pinned per-octet constant as the programme's
+**only** detector of it. I have recorded that as `WO-0073-D2` and made it
+MATERIAL, because it is precisely the kind of thing a Phase 1 `SO-` would
+otherwise cite the anchor as covering. The reserve SPEC-M03 §7 deliberately left
+is not free: it buys headroom and it costs detection, and now the cost is
+measured rather than assumed.
+
+**(4) Why the collisions came out better than sealed, and why that is a finding
+against me rather than a win.** Collision 1 instantiated exactly as predicted —
+IC-L1(D) and IC-L4(S) raised the identical item-3 string, integer included — and
+the protection worked because the two ran as separate transients. But the seal
+said the discriminator was *"NONE that this bench produces"*, and that is false at
+campaign scope: `M03-K2` says `got 8` under one and `got 15` under the other,
+which is a dropped frame against a lost tail word, separated by measurement. The
+auditor derived that separation independently at its §6 while blind to the seal.
+**A claim of "no discriminator" must be scoped to the cell it is about**, and I
+should have sealed the campaign-scope discriminator beside the cell-scope
+absence. `WO-0073-D4`.
+
+**(5) The rule form, tested for the first time.** `FINDING WO-0066-3` cost me
+three MUST-STAY-GREEN violations for carrying an enumeration where a rule was
+right, so this seal carried rules with instances beneath them and standing rule 5
+saying the rule governs. The divergence duly happened — `test_m03_f.ml` green
+under IC-L1, `test_m03_g.ml` and `test_m03_i.ml` green under IC-L4, all three
+named by the instance lists — and under `WO-0066`'s regime those are three
+violations against me. Under the rule form they are none, because those
+schedules' geometries do not satisfy the classes' own conditions. **The lesson
+held under test, which is the first time it has been tested**, and the one
+instance I marked WORKED-and-GREEN (`test_m03_i.ml:1112` at `~ifg:824`) came back
+green exactly as derived. That instance is the difference between a rule and a
+slogan and it earned its cost.
+
+**(6) The base-identity finding is mine, and the fix is a drafting rule.** §8
+defined the base as *the parent of the commit staging this packet and its seal*.
+That is wrong and was wrong when written: the packet and the seal are not scored
+paths, so the base is the commit that **stages** them — which is also the only
+commit an operator can be dispatched against. The trees are byte-identical at
+`libs/`, `test/`, `tools/` and `docs/specs/`, so the finding is materially void
+and I confirmed the auditor's decision to proceed; but the clause that made it
+surface *before* the first branch was cut is the part worth keeping, and the
+corrective rule goes into every future campaign packet.
+
+**(7) What I refused to count.** IC-L2 and IC-L5 reddened `M03-G3`, `G4`, `G7`
+and `G8` — the carriers `M03-M6` and `M03-M7` are bound to. §11's rule, minted in
+this very packet before it could bite, says a carrier kill and its bound row are
+never two kills; §3.3 says a rule-selected red is blast radius contributing zero
+kills; §13.7 says a kill qualifies only the row's own class. All three point the
+same way and **no family-M row is qualified by this campaign**. Fifty-one reds
+under IC-L5 are one kill. Stating this while the temptation is live is the whole
+point of having stated the rule at the era's first packet.
+
+**(8) `test/cosim/`, one level too shallow.** The seal corrected `WO-0066`'s
+denominator by noting that `test/cosim/` carries zero units but is a second home
+for the **build-finding** class. True, and incomplete: the lane also runs a
+**behavioural** differential driver, and it reddened under IC-L5 with
+`ours_run: M03 produced an output word with no admitted frame open`. That red is
+selected by IC-L5's own rule in substance, so it is blast radius and not a
+manifest scope finding, and it is not a MUST-STAY-GREEN violation because that
+set is defined over units. But my exposure statement stopped one level short of
+the truth **in the very section where I was congratulating myself for correcting
+it**, which is the honest shape of `WO-0073-D1`.
+
+### Actions
+
+- Read the charter, the protocol, the packet, the seal (first opening) and the
+  manifest in full.
+- Verified HEAD, the base identity, branch parentage, the IC-L2/IC-L5
+  non-ancestry, and that no `test/**` byte moved between `bbd4122` and `e5c0b11`
+  — all by read-only `git` (`rev-parse`, `show`, `log`, `diff`, `merge-base`,
+  `ls-remote`, and a single `fetch` of the five transient refs). **No checkout,
+  no ref moved, no commit, no `dune`.**
+- Re-measured the denominator at the base tree by `grep -c '^let%expect_test'`.
+- Pulled the five `build` jobs' logs, the two `cosim` logs and the control's step
+  readings through the GitHub API; extracted every promoted file, every reddened
+  unit and every raised message from step 6's own output.
+- Decoded each run's promoted `test_m03_l.ml` from the step-6 promotion block and
+  compared all seven REQUIRED cells to §4's literals **by script**, character for
+  character.
+- Appended `WO-0073-VERDICT` to the campaign packet.
+
+### Evidence
+
+**Control** — `bbd4122`, `build` run `31039283863`, job `92419315774`: steps
+5–10 all `success`; `cosim` job `92419315692` `success`; `journal-check` run
+`31039283809` `success`.
+
+**Transients** — branch / commit / `build` run / job / step 5 / step 6 / `cosim`:
+
+```
+IC-L1  mut/wo-0073-l1  8fe0251  31044630489  92437034170  success  failure  92437033946 success
+IC-L2  mut/wo-0073-l2  e24e523  31044675210  92437186602  success  failure  92437186512 success
+IC-L3  mut/wo-0073-l3  60ed49c  31045274017  92439137615  success  failure  92439137645 success
+IC-L4  mut/wo-0073-l4  22b538f  31044835612  92437700672  success  failure  92437700545 success
+IC-L5  mut/wo-0073-l5  806d3d5  31044870620  92437812542  success  failure  92437812511 FAILURE
+```
+
+`c66565d`'s run `31044805815` is discarded per Q2 and scores nothing.
+
+**The seven REQUIRED red cells, as raised** (all character-exact against §4;
+`<n>`/`<ℓ>` in brackets):
+
+```
+IC-L1 u1  M03-L1/L2/L3/L4: 10 000 frames presented, [5000] tlast words observed
+IC-L2 u1  M03-L1/L2/L3/L4 (h = 8): latencies is not the single value this front-offset class must carry (§0.5 Start lanes)
+IC-L2 u2  M03-L5 (lane 0, length 64): latencies = [[24]], expected [16]
+IC-L3 u2  M03-L5 (lane 0, length [70]): latencies = [16; [24]], expected [16]
+IC-L4 u1  M03-L1/L2/L3/L4: 10 000 frames presented, [5000] tlast words observed
+IC-L5 u1  M03-L1/L2/L3/L4: 10 000 frames presented, [20000] tlast words observed
+IC-L5 u2  M03-L5 (lane 0, length 64): latency tagger errors:\nframe 0: 72 input octets less 8 stripped from the front and 4 from the back is 60, but [64] octets were emitted
+```
+
+**The three REQUIRED greens**: IC-L1 unit 2, IC-L4 unit 2, IC-L3 unit 1 — all
+held, `[%expect {||}]` untouched in each run's promoted file.
+
+**Blast radius and MUST-STAY-GREEN**, from each run's own
+`git diff --name-only` promotion list (git emits it sorted, and every non-M03
+test directory sorts before `test/xgmii_rx_64/`, so a non-M03 red could not have
+been missed):
+
+```
+IC-L1  15 units / 8 files (b,d,e,g,j,k,l,n)      IC-L2  49 units / 13 files
+IC-L3  14 units / 6 files (a,c,e,g,i,l)          IC-L4  10 units / 7 files (d,e,f,h,j,k,l)
+IC-L5  51 units / 13 files
+non-M03 reds under every class: 0.  79 behavioural + 1 build-level held, 5/5.
+```
+
+**Denominator re-measured at the base tree**:
+`grep -c '^let%expect_test'` gives **59** under `test/xgmii_rx_64/`, **139**
+repo-wide, **80** non-M03, splitting `monitors 37 + xgmii 25 + golden 11 +
+axi64_probe 3 + xgmii_probe 3 = 79` behavioural **+ `hardcaml_ethernet` 1**
+build-level. Seal §0 confirmed figure for figure.
+
+**Ordering, verified rather than trusted**:
+`git diff --stat bbd4122 e5c0b11 -- test/ libs/ tools/ docs/specs/` is **empty**;
+`git rev-parse <branch>^` is `bbd4122` for l1, l2, c66565d, l4, l5, and
+`c66565d` for `60ed49c`; `git merge-base --is-ancestor` fails in both directions
+between `e24e523` and `806d3d5` with common base `bbd4122`.
+
+**The co-sim red under IC-L5**, job `92437812511`, check 1 of 3:
+`Fatal error: exception Failure("ours_run: M03 produced an output word with no
+admitted frame open")` at `test/cosim/ours_run.ml:119`, on a run whose build step
+reported `dune build: ok`.
+
+**Worked instances**: `test_m03_c.ml` M03-C4 raised
+`M03-C4 (lane 0): the single output word did not arrive on start_cycle + 3
+(REQ-019)` under IC-L2 (sealed body, exact) and stayed **green** under IC-L3 at
+`R = {2}` (its runt's delivered residue is 1); `test_m03_i.ml` stayed **green**
+under IC-L1, as the seal's one WORKED-GREEN instance predicted.
+
+### Outcome
+
+**DoD met.** `WO-0073-VERDICT` is appended to the campaign packet: **five classes
+KILLED, zero SURVIVED, zero VOID, campaign total 5 of a sealed maximum of 5**,
+disposition 1 at all five, **7/7 REQUIRED cells message-exact**, **3/3 REQUIRED
+greens held**, **zero MUST-STAY-GREEN violations**. `M03-L1`, `M03-L2` and
+`M03-L5` are **QUALIFIED**; `M03-L3` and `M03-L4` are recorded
+**scored-and-unqualifiable** on their own instruments, which §12's pass criterion
+6 required to be said whatever the score was. The auditor's Q1–Q5 are ruled: base
+reads `bbd4122`; IC-L3 scores from the tip; Q3's strobe reading confirmed and
+corroborated by the observed one-cycle strobe shift at `M03-F2`/`M03-E2`; Q4's
+shared hunk site is not a combination; `R = {2}` accepted as the better choice
+than `{1,2,3}` on three grounds. **Five findings — four mine, one against an
+instrument I own; none against the manifest**, which is the cleanest of the ten
+campaigns. Handoff: the packet, for the orchestrator to commit; next round is the
+post-campaign `AP-` round, whose §8 window is now closed.
+
+**No lessons-harvest note is owed this round and the absence is declared rather
+than omitted** (ADR-0018, PROTOCOL §7): the harvest falls due at every `SO-` and
+every phase gate, and a campaign verdict is neither. It falls due at the `SO-`
+and spans from my last harvest to that entry. **Two candidates are BANKED, not
+harvested** — banking neither opens nor closes a span:
+
+- *(LH2-g candidate)* **A packet that defines its own frozen baseline must name
+  the commit that stages it, never that commit's parent** — the artefacts a
+  packet adds are not artefacts the round scores, and a baseline defined
+  backwards is a naming disagreement that costs a re-run every time somebody is
+  brave enough to demand one. Incident: this round's `WO-0073-M1`.
+- *(LH2-g candidate)* **A claim that two events cannot be told apart must state
+  the scope at which it holds** — "no discriminator exists" is nearly always true
+  of one comparison site and nearly always false of the whole run, and the
+  difference decides whether a result is carried by bookkeeping or by
+  measurement. Incident: `WO-0073-D4`, against `WO-0066`'s IC-D/IC-F precedent.
+
+### Open-questions
+
+1. **`WO-0073-D2` is the one finding that reaches beyond this module, and I want
+   it ruled before it becomes an `SO-` argument.** The Phase 1 differential
+   co-simulation lane is content-comparing: it passed a uniform ΔC 3 → 4. Two
+   options, priced. **(a)** Extend the lane with an explicit cycle comparison —
+   correct, and it re-opens `test/cosim/**` and `tools/cosim/**` for a round.
+   **(b)** Record the blindness as a written bound in
+   `CD-xgmii_rx_64_cosim.md` and in every `SO-` that cites the anchor — cheap,
+   honest, and leaves the hole. **My recommendation is (a)**, because the anchor
+   is a charter §3 precondition for Phase 1 sign-off and an anchor whose blind
+   spot is documented is still an anchor that cannot see. Not an escalation
+   class; a `WO-` I will draft on your word.
+2. **The two unreachability findings still have no home**, unchanged from
+   `J-dv_lead-0133` Open-question 1 — but the carrier is now due rather than
+   pending: the campaign has scored, §8's window is closed, and the
+   post-campaign `AP-` round is the next thing I intend to draft.
+3. **`OBSERVATION L-O1`'s repair and `WO-0073-D3`'s `M03-I4` mislabel** ride the
+   next commits that open `test_m03_l.ml` and `test_m03_i.ml`. Both are now
+   backed by a measured instance rather than by an argument; neither is urgent
+   and neither changed a score.
+4. **`test/cosim/dune`'s dangling `test/cost_probe/` reference** is still open
+   from `J-dv_lead-0132` Open-question 1 — and it now has a companion in
+   `WO-0073-D5` (`run_cosim.sh` naming the wrong failing check), so the cosim
+   round pays three debts rather than one.
+5. **Nothing is escalated.** No `BUG-` is opened: every red is a seeded mutation
+   killed by the suite, the unmutated control is green at every step of both
+   jobs, and no divergence of the design from its specification was observed.
+   **No spec-queue addition this round — a nil addition, declared rather than
+   omitted.**
+
+### Files-in-this-commit
+- agents/handoffs/WO-0073_family-l-mutation-campaign.md
