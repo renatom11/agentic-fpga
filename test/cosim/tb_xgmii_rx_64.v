@@ -52,6 +52,25 @@ accepted outright. See each guard's own comment for which shape it used to
 produce and why the sentinel closes it; test/cosim/canonical.ml's own `"E"`
 grammar note documents the reader's side of this contract.
 
+WO-0078 §14, FINDING RV-0078-S2-1 (the C2 repair round): frame_open used
+to test ONE piece of state for BOTH the REQ-110 refusal (a second start
+character) and the orphan-output refusal (an output word with nothing
+admitted) — its own span ran from the input start character to the
+OUTPUT m_axis_tlast, which at SPEC-M03 section 6.1's DeltaC = 3 outlives
+the input frame's own terminate character by exactly the pipeline
+latency, so a lawful minimum-inter-frame-gap second frame landed its
+start character on precisely the cycle the first frame's UNION span was
+still open and was refused as REQ-110's abort case, which it is not (see
+ours_run.ml's own header comment and this packet's §14, RV-C1C2 §4 for
+the full measurement). The repair below is two spans, each tested by
+exactly one guard — admission_open, closed at THIS frame's OWN input
+terminate character (never at its output tlast), and a small FIFO of
+frames admitted-but-not-yet-delivered, tested by the orphan-output
+guard's emptiness check alone — implemented identically to ours_run.ml's
+own accumulate, from REQ-110's own condition and SPEC-M03 section 6.1's
+DeltaC, never from ours_run.ml's or the reference's own CODE. See each
+guard's own comment below for the mirrored reasoning.
+
 */
 
 // Language: Verilog 2001, matching the vendored reference's own dialect.
@@ -139,10 +158,38 @@ module tb_xgmii_rx_64;
   // `m_axis_tlast` word is observed for it before the stimulus (which
   // already carries its own drain margin, stimulus_gen.ml) is exhausted,
   // and `discard` otherwise (WO-0046 §2.3's "no output word at all" case).
-  // A second start character while a frame is open is out of Phase 1's
-  // authorised stimulus (WO-0046 §9, REQ-110's abort case) and is not
-  // handled here -- this testbench $finishes loudly rather than guess, the
-  // same choice ours_run.ml makes.
+  // A second start character while a frame's ADMISSION span is open is out
+  // of Phase 1's authorised stimulus (WO-0046 §9, REQ-110's abort case) and
+  // is not handled here -- this testbench $finishes loudly rather than
+  // guess, the same choice ours_run.ml makes.
+  //
+  // WO-0078 §14, FINDING RV-0078-S2-1: two spans, tracked separately,
+  // exactly as ours_run.ml's own `accumulate` now does (see that file's
+  // header comment for the full derivation).
+  //
+  //   admission_open -- true from the cycle a start character is
+  //   recognised on the INPUT word to the cycle that SAME frame's own
+  //   terminate character is recognised on the INPUT word (or forever, if
+  //   the stimulus ends first). The REQ-110 guard below tests ONLY this.
+  //
+  //   A FIFO (delivery_index / delivery_head / delivery_tail /
+  //   delivery_count), admission order, of frames admitted but not yet
+  //   closed by their OUTPUT m_axis_tlast -- an output word always
+  //   attaches to delivery_head (the oldest not-yet-closed frame), and
+  //   m_axis_tlast pops it. The orphan-output guard (FI-7) tests ONLY this
+  //   FIFO's emptiness (delivery_count == 0), never admission_open, which
+  //   may already be closed for the very frame still occupying the FIFO's
+  //   head (its own admission span closed at its own /T/, cycles before
+  //   its last output word is delivered, at SPEC-M03 §6.1's DeltaC = 3).
+  //
+  //   DELIVERY_DEPTH bounds how many frames may be admitted-but-
+  //   undelivered at once -- a Verilog-2001 fixed-size array needs a
+  //   bound where ours_run.ml's OCaml list does not. 8 is generous
+  //   headroom over anything this lane's stimulus (case 0 through C4, one
+  //   or two frames) presents; exceeding it is a NEW harness-defect
+  //   refusal this file introduces (flagged here, in the same spirit as
+  //   the WO-0078 §2.3 sentinel guards above, rather than silently added),
+  //   inert for every fixture and every case this repair round ships.
   // ------------------------------------------------------------------
 
   integer stim_fd, out_fd, meta_fd;
@@ -151,9 +198,34 @@ module tb_xgmii_rx_64;
   reg [7:0]  rxc_line;
   integer stimulus_lines;
 
-  reg        frame_open;
-  integer    frame_index;
+  localparam DELIVERY_DEPTH = 8;
+
+  reg        admission_open;
+  integer    admission_index;   // the currently-admitting frame's own index -- report-only
+
+  reg [31:0] delivery_index [0:DELIVERY_DEPTH-1];
+  integer    delivery_head;
+  integer    delivery_tail;
+  integer    delivery_count;
   integer    next_index;
+
+  function has_terminate;
+    // WO-0078 §14, FINDING RV-0078-S2-1: the admission span's own closing
+    // condition -- a terminate character anywhere in the CURRENT stimulus
+    // line, scanned across all eight lanes exactly as the admission check
+    // below scans lane 0 and lane 4 for the start character (same shape,
+    // different target character: 8'hFD, not 8'hFB), never derived from
+    // the reference's own output.
+    input [63:0] d;
+    input [7:0]  c;
+    integer k;
+    begin
+      has_terminate = 1'b0;
+      for (k = 0; k < 8; k = k + 1)
+        if (c[k] && d[8*k +: 8] == 8'hFD)
+          has_terminate = 1'b1;
+    end
+  endfunction
 
   task write_word;
     // One "W" line for the CURRENT m_axis_t* outputs (WO-0046 §2.3; cycle
@@ -210,11 +282,30 @@ module tb_xgmii_rx_64;
     // below calls this task, so the `- 1` converts that 1-based running
     // count back to the 0-based line index `ours_run.ml`'s `List.mapi`
     // produces for the identical line.
+    //
+    // WO-0078 §14, FINDING RV-0078-S2-1: opens the ADMISSION span
+    // (admission_open) and pushes onto the delivery FIFO (delivery_tail) --
+    // the two are set together here because admission and delivery both
+    // begin at the same event (the start character), even though they
+    // close independently below.
     begin
-      frame_open  = 1'b1;
-      frame_index = next_index;
-      next_index  = next_index + 1;
-      $fwrite(out_fd, "F %0d %0d\n", frame_index, stimulus_lines - 1);
+      if (delivery_count >= DELIVERY_DEPTH) begin
+        $display(
+          "tb_xgmii_rx_64: FAIL delivery FIFO exhausted (DELIVERY_DEPTH=%0d) -- more frames admitted-but-undelivered than this bench's headroom allows",
+          DELIVERY_DEPTH);
+        $fwrite(out_fd, "E delivery-fifo-exhausted\n");
+        $fclose(out_fd);
+        $fclose(stim_fd);
+        $fclose(meta_fd);
+        $finish;
+      end
+      admission_open  = 1'b1;
+      admission_index = next_index;
+      delivery_index[delivery_tail % DELIVERY_DEPTH] = next_index;
+      delivery_tail   = delivery_tail + 1;
+      delivery_count  = delivery_count + 1;
+      $fwrite(out_fd, "F %0d %0d\n", next_index, stimulus_lines - 1);
+      next_index = next_index + 1;
     end
   endtask
 
@@ -224,26 +315,37 @@ module tb_xgmii_rx_64;
   // risks landing in the written line as trailing whitespace, which
   // WO-0046 §2.3's grammar forbids. Two literal $fwrite format strings
   // sidestep the question entirely.
-  task close_frame_accept;
+  //
+  // WO-0078 §14, FINDING RV-0078-S2-1: both now close the DELIVERY FIFO's
+  // head, never admission_open -- the frame being closed here may have had
+  // its own admission span closed cycles ago (its own /T/, at SPEC-M03
+  // §6.1's DeltaC = 3 before its last output word), which is exactly the
+  // scenario the repair makes lawful.
+  task close_delivery_accept;
     begin
-      $fwrite(out_fd, "D %0d accept\n", frame_index);
-      frame_open = 1'b0;
+      $fwrite(out_fd, "D %0d accept\n", delivery_index[delivery_head % DELIVERY_DEPTH]);
+      delivery_head  = delivery_head + 1;
+      delivery_count = delivery_count - 1;
     end
   endtask
 
-  task close_frame_discard;
+  task close_delivery_discard;
     begin
-      $fwrite(out_fd, "D %0d discard\n", frame_index);
-      frame_open = 1'b0;
+      $fwrite(out_fd, "D %0d discard\n", delivery_index[delivery_head % DELIVERY_DEPTH]);
+      delivery_head  = delivery_head + 1;
+      delivery_count = delivery_count - 1;
     end
   endtask
 
   reg not_done;
 
   initial begin
-    frame_open  = 1'b0;
-    frame_index = 0;
-    next_index  = 0;
+    admission_open  = 1'b0;
+    admission_index = 0;
+    delivery_head   = 0;
+    delivery_tail   = 0;
+    delivery_count  = 0;
+    next_index      = 0;
     stimulus_lines = 0;
 
     stim_fd = $fopen("stimulus.txt", "r");
@@ -292,34 +394,37 @@ module tb_xgmii_rx_64;
 
         // Admission check on the word ABOUT TO BE driven this cycle,
         // exactly as ours_run.ml checks Xgmii_word.start_lane before
-        // driving the same word.
+        // driving the same word. WO-0078 §14, FINDING RV-0078-S2-1: tests
+        // ONLY admission_open -- the ADMISSION span, never the delivery
+        // FIFO's state.
         if ((rxc_line[0] && rxd_line[7:0] == 8'hFB)
             || (rxc_line[4] && rxd_line[39:32] == 8'hFB)) begin
-          if (frame_open) begin
+          if (admission_open) begin
             $display(
-              "tb_xgmii_rx_64: FAIL a second start character arrived while frame %0d was open -- REQ-110 abort handling is out of Phase 1's authorised stimulus (WO-0046 section 9)",
-              frame_index);
+              "tb_xgmii_rx_64: FAIL a second start character arrived while frame %0d's admission span was open -- REQ-110 abort handling is out of Phase 1's authorised stimulus (WO-0046 section 9)",
+              admission_index);
             // WO-0078 §2.3 / FINDING WO-0078-1: a bare $finish here is a
             // NORMAL simulation termination (exit status 0 under Icarus,
             // measured by dv_lead at RV-0049-VERDICT §4's own toolchain
             // note) -- tools/cosim/run_cosim.sh's run_pipeline (FI-8) checks
             // only `$rc -ne 0` and file existence, neither of which this
             // refusal trips on its own. This guard's OWN shape happens to
-            // leave frame_index's frame open in theirs.canon (no D line was
-            // ever written for it), which Canonical.read already rejects at
-            // end-of-file ("frame N still open") -- but that is the
-            // ACCIDENT of this particular guard's placement, not something
-            // this file arranges on purpose, and the finding's own text is
-            // explicit that a refusal reaching a distinct code must hold BY
-            // CONSTRUCTION, not by inference from one guard's happenstance
-            // shape (the other guard, immediately below, has no such luck).
-            // This sentinel line is written into theirs.canon itself, which
-            // Canonical.read (test/cosim/canonical.ml) now recognises and
-            // rejects explicitly regardless of what state it finds the
-            // parser in. $fclose is explicit, ahead of $finish, rather than
-            // relying on $finish's own flush behaviour -- for the identical
-            // "by construction, not by inference" reason.
-            $fwrite(out_fd, "E second-start-while-open frame=%0d\n", frame_index);
+            // leave admission_index's frame open in theirs.canon (no D line
+            // was ever written for it), which Canonical.read already
+            // rejects at end-of-file ("frame N still open") -- but that is
+            // the ACCIDENT of this particular guard's placement, not
+            // something this file arranges on purpose, and the finding's
+            // own text is explicit that a refusal reaching a distinct code
+            // must hold BY CONSTRUCTION, not by inference from one guard's
+            // happenstance shape (the other guard, immediately below, has
+            // no such luck). This sentinel line is written into
+            // theirs.canon itself, which Canonical.read
+            // (test/cosim/canonical.ml) now recognises and rejects
+            // explicitly regardless of what state it finds the parser in.
+            // $fclose is explicit, ahead of $finish, rather than relying on
+            // $finish's own flush behaviour -- for the identical "by
+            // construction, not by inference" reason.
+            $fwrite(out_fd, "E second-start-while-open frame=%0d\n", admission_index);
             $fclose(out_fd);
             $fclose(stim_fd);
             $fclose(meta_fd);
@@ -328,17 +433,31 @@ module tb_xgmii_rx_64;
           open_frame;
         end
 
+        // The admission span's own closing condition -- THIS SAME
+        // stimulus line's terminate character (WO-0078 §14, FINDING
+        // RV-0078-S2-1). Checked after the start-character arm above,
+        // mirroring ours_run.ml's own fold order; under requirements.md
+        // §0.3's minimum IFG (12 octets, more than one 8-lane word) a
+        // terminate character and a later start character can never land
+        // in the same word for conformant stimulus, so this ordering is
+        // never actually exercised both ways at once.
+        if (admission_open && has_terminate(rxd_line, rxc_line))
+          admission_open = 1'b0;
+
         xgmii_rxd = rxd_line;
         xgmii_rxc = rxc_line;
         @(posedge clk);
         #1; // let the reference's combinational outputs settle post-edge
 
         if (m_axis_tvalid) begin
-          if (!frame_open) begin
+          // WO-0078 §14, FINDING RV-0078-S2-1: tests ONLY the delivery
+          // FIFO's emptiness -- never admission_open, which by design may
+          // already be closed for the very frame this word belongs to.
+          if (delivery_count == 0) begin
             $display("tb_xgmii_rx_64: FAIL the reference produced an output word with no admitted frame open");
             // WO-0078 §2.3 / FINDING WO-0078-1: THIS is the guard whose
             // pre-existing failure mode was the worse of the two named in
-            // the finding (FI-7). frame_open is false BY DEFINITION at this
+            // the finding (FI-7). delivery_count is 0 BY DEFINITION at this
             // point, so every PRIOR frame was already closed with its own D
             // line -- theirs.canon, at this exact moment, is a WELL-FORMED
             // (merely truncated) canonical file. Without this sentinel,
@@ -351,6 +470,10 @@ module tb_xgmii_rx_64;
             // sentinel line makes the file fail to parse ON PURPOSE, by
             // construction, closing that gap; see the other guard above for
             // the identical mechanism and the explicit $fclose ordering.
+            // The sentinel TEXT is unchanged by this repair round --
+            // test/cosim/compare.ml's own self-test
+            // (`reference_refusal_canon_text`) reproduces it by value and
+            // must keep matching.
             $fwrite(out_fd, "E word-with-no-open-frame\n");
             $fclose(out_fd);
             $fclose(stim_fd);
@@ -358,15 +481,17 @@ module tb_xgmii_rx_64;
             $finish;
           end
           write_word;
-          if (m_axis_tlast) close_frame_accept;
+          if (m_axis_tlast) close_delivery_accept;
         end
       end
     end
 
     // End of stimulus (which already includes Phase 1's drain margin,
-    // stimulus_gen.ml): a frame still open here was admitted but never
-    // produced a tlast word -- REQ-901's discard case.
-    if (frame_open) close_frame_discard;
+    // stimulus_gen.ml): any frame(s) still in the delivery FIFO were
+    // admitted but never produced a tlast word -- REQ-901's discard case,
+    // closed oldest first (FIFO order), which is admission order
+    // (WO-0078 §14, FINDING RV-0078-S2-1).
+    while (delivery_count > 0) close_delivery_discard;
 
     // Best-effort sidecar (WO-0046 §2.3: "never compared"). This process
     // can determine the reference pin (fixed, from PROVENANCE.md) and the

@@ -33,11 +33,60 @@
    describe. This turned out to be a SYMMETRIC rule rather than one derived
    differently per side, because both M03 and the reference present an
    AXI-Stream-shaped [tvalid]/[tlast] output; see the Return log for the
-   scope this does not cover (a second start character while a frame is
-   still open — REQ-110's abort case — is out of Phase 1's authorised
-   stimulus, WO-0046 §9, and is deliberately not implemented: this file
-   [failwith]s rather than guess at it, so a future phase that needs it
-   is told to write it rather than silently mishandling it).
+   scope this does not cover (a second start character while a frame's
+   ADMISSION span is still open — REQ-110's abort case — is out of Phase
+   1's authorised stimulus, WO-0046 §9, and is deliberately not implemented:
+   this file [failwith]s rather than guess at it, so a future phase that
+   needs it is told to write it rather than silently mishandling it).
+
+   {2 Two spans, tracked separately (WO-0078 §14, `FINDING RV-0078-S2-1`'s
+   repair)}
+
+   [accumulate] used to test ONE piece of state — [open_frame] — for BOTH
+   the REQ-110 refusal (a second start character) and the orphan-output
+   refusal (an output word with nothing admitted). That state's own span ran
+   from the input start character to the OUTPUT [tlast], which at SPEC-M03
+   §6.1's ΔC = 3 outlives the input frame's own terminate character by
+   exactly the pipeline latency — so a lawful minimum-inter-frame-gap
+   second frame (requirements.md §0.3's own minimum IFG) landed its start
+   character on precisely the cycle the first frame's UNION span was still
+   open, and was refused as if it were REQ-110's abort case, which it is
+   not: on the INPUT side a full cycle separates the two frames and
+   [Arrival.check] returns [[]] on the schedule that trips it (measured at
+   `WO-0078` §14, `RV-C1C2` §4, against CD §10.2's frozen C2 instance).
+
+   The repair is two spans, each tested by exactly one guard, derived from
+   REQ-110's own condition and SPEC-M03 §6.1's ΔC, and from no RTL and no
+   reference behaviour (REQ-901's closing sentence):
+
+   - [admission_open]: true from the cycle a start character is recognised
+     on the INPUT word to the cycle that SAME frame's own terminate
+     character is recognised on the INPUT word (or forever, if the
+     stimulus ends first). REQ-110's guard below tests ONLY this span —
+     narrowed to REQ-110's own condition, not implementing abort handling,
+     which stays out of Phase 1's authorised stimulus and is owed to a
+     future co-sim Phase 3 (C9, `WO-0078` §6.3).
+   - a FIFO of frames admitted but not yet closed by their OUTPUT [tlast],
+     in admission order: an output word always attaches to the OLDEST
+     not-yet-closed admitted frame, and [tlast] closes it. The
+     orphan-output guard (FI-5) tests ONLY this FIFO's emptiness — never
+     [admission_open], which may already be closed for the very frame
+     still occupying the FIFO's head (its own admission span closed at its
+     own [/T/], cycles before its last output word is delivered, at
+     ΔC = 3).
+
+   A second start character AFTER the first frame's own input terminate is
+   therefore lawful (the FIFO carries the overlap); a second start
+   character WHILE the first frame's admission span is still open —
+   REQ-110's actual condition — still refuses, with the same message. Both
+   producers implement this identically, from this text, never from each
+   other's code and never from the reference's behaviour
+   ([tb_xgmii_rx_64.v]'s own comment on its mirrored guard says so in
+   terms). The two regression fixtures this repair owes — a passing
+   minimum-IFG two-frame trace and a still-refusing genuine-REQ-110-shape
+   trace — are [self_test] below, exercising [accumulate] directly rather
+   than through any canonical file, since the guard fires (or does not)
+   BEFORE either canonical file exists.
 
    {2 The idle-count sidecar (WO-0078 §5.2, FINDING RV-0075-2)}
 
@@ -135,6 +184,23 @@ let word_of_stream_word ~cycle (w : Stream_word.t) : Canonical.word =
   }
 ;;
 
+(* WO-0078 §14, `FINDING RV-0078-S2-1`'s successor rule: the admission
+   span's own closing condition -- a terminate character anywhere in the
+   INPUT word currently being driven, scanned across all eight lanes
+   exactly as [Xgmii_word.start_lane] scans for the start character (same
+   shape, different target character), never derived from the DUT's own
+   output. Only one frame's admission span can be open at a time (the
+   guard below enforces it), so any terminate character seen while one is
+   open belongs to that frame by construction; a terminate character with
+   no admission span open is a no-op, since conformant idle/gap traffic
+   never carries one. *)
+let has_terminate (w : Xgmii_word.t) =
+  let rec find k =
+    k < 8 && (Xgmii_word.lane w k = Xgmii_word.Control Xgmii_word.terminate_char || find (k + 1))
+  in
+  find 0
+;;
+
 (* The bookkeeping half of WO-0046 §6 question 4, pulled out of the Cyclesim
    driving loop below so it is a plain function over [Xgmii_word.t] and
    [Stream_word.t] -- neither of which carries a Hardcaml dependency -- and
@@ -148,57 +214,232 @@ let word_of_stream_word ~cycle (w : Stream_word.t) : Canonical.word =
    SAME cycle (the [~clock_edge:Side.Before] view [run] samples below).
    [tb_xgmii_rx_64.v] implements the identical algorithm independently in
    Verilog, over its own per-cycle input/output/line-index triple
-   ([stimulus_lines - 1]). *)
+   ([stimulus_lines - 1]).
+
+   WO-0078 §14, `FINDING RV-0078-S2-1`: two spans, tracked separately (see
+   this file's own header comment for the full derivation).
+   [admission_open] is REQ-110's guard's own state, closed at THIS frame's
+   own input terminate character, never at its output [tlast].
+   [delivery_queue] is a FIFO, admission order, of frames admitted but not
+   yet closed by their OUTPUT [tlast] -- the orphan-output guard (FI-5)
+   tests ONLY its emptiness, and an output word always attaches to its
+   head (the oldest not-yet-closed frame). *)
 let accumulate (trace : (int * Xgmii_word.t * Stream_word.t) list) : Canonical.transaction =
   let frames_rev = ref [] in
   let next_index = ref 0 in
-  (* (frame-index, admit_cycle, words-so-far in reverse) *)
-  let open_frame = ref None in
-  let close_frame ~decision =
-    match !open_frame with
-    | None -> ()
-    | Some (index, admit_cycle, words_rev) ->
+  let admission_open = ref false in
+  (* FIFO, admission order: (frame-index, admit_cycle, words-so-far in
+     reverse), oldest at the head (list front). *)
+  let delivery_queue = ref [] in
+  let close_head ~decision =
+    match !delivery_queue with
+    | [] -> ()
+    | (index, admit_cycle, words_rev) :: rest ->
       frames_rev
       := { Canonical.index; admit_cycle; decision; words = List.rev words_rev }
          :: !frames_rev;
-      open_frame := None
+      delivery_queue := rest
   in
   List.iter
     (fun (line_index, word, out) ->
+       (* Admission side: REQ-110's guard, testing ONLY [admission_open] --
+          narrowed to the ADMISSION span, never the delivery FIFO. *)
        (match Xgmii_word.start_lane word with
         | Some (0 | 4) ->
-          (match !open_frame with
-           | Some _ ->
-             failwith
-               "ours_run: a second start character arrived while a frame was open \
-                -- REQ-110 abort handling is out of Phase 1's authorised stimulus \
-                (WO-0046 section 9)"
-           | None ->
-             (* WO-0075 §2: [admit_cycle] is recorded at the exact point
-                [Xgmii_word.start_lane] recognises the start character --
-                this SAME [line_index], the stimulus line carrying it. *)
-             open_frame := Some (!next_index, line_index, []);
-             next_index := !next_index + 1)
+          if !admission_open
+          then
+            failwith
+              "ours_run: a second start character arrived while a frame's \
+               admission span was open \
+               -- REQ-110 abort handling is out of Phase 1's authorised stimulus \
+               (WO-0046 section 9)"
+          else (
+            (* WO-0075 §2: [admit_cycle] is recorded at the exact point
+               [Xgmii_word.start_lane] recognises the start character --
+               this SAME [line_index], the stimulus line carrying it. *)
+            admission_open := true;
+            delivery_queue := !delivery_queue @ [ !next_index, line_index, [] ];
+            next_index := !next_index + 1)
         | Some _ | None -> ());
+       (* The admission span's own closing condition -- THIS SAME input
+          word's terminate character (WO-0078 §14, `FINDING RV-0078-S2-1`).
+          Checked after the start-character arm, mirroring that arm's own
+          fold order (the start check runs before the output word is
+          attached, this file's own established convention); under
+          requirements.md §0.3's minimum IFG (12 octets, more than one
+          8-lane word) a terminate character and a later start character
+          can never land in the same word for conformant stimulus, so this
+          ordering is never actually exercised both ways at once. *)
+       if !admission_open && has_terminate word then admission_open := false;
+       (* Delivery side: FI-5's guard, testing ONLY [delivery_queue]'s
+          emptiness -- unchanged in meaning from before this repair. *)
        if out.Stream_word.tvalid
        then (
-         (match !open_frame with
-          | None ->
-            failwith "ours_run: M03 produced an output word with no admitted frame open"
-          | Some (index, admit_cycle, words_rev) ->
-            open_frame
-            := Some
-                 ( index
-                 , admit_cycle
-                 , word_of_stream_word ~cycle:line_index out :: words_rev ));
-         if out.tlast then close_frame ~decision:Canonical.Accept))
+         match !delivery_queue with
+         | [] -> failwith "ours_run: M03 produced an output word with no admitted frame open"
+         | (index, admit_cycle, words_rev) :: rest ->
+           delivery_queue
+           := (index, admit_cycle, word_of_stream_word ~cycle:line_index out :: words_rev)
+              :: rest;
+           if out.tlast then close_head ~decision:Canonical.Accept))
     trace;
   (* End of trace (which already includes Phase 1's drain margin,
-     stimulus_gen.ml): a frame still open here was admitted but never
-     produced a [tlast] word -- REQ-901's discard case. A no-op if no frame
-     is open. *)
-  close_frame ~decision:Canonical.Discard;
+     stimulus_gen.ml): any frame(s) still in the delivery FIFO were
+     admitted but never produced a [tlast] word -- REQ-901's discard case,
+     closed oldest first (FIFO order), which is admission order. *)
+  let rec drain () =
+    if !delivery_queue <> []
+    then (
+      close_head ~decision:Canonical.Discard;
+      drain ())
+  in
+  drain ();
   List.rev !frames_rev
+;;
+
+(* WO-0078 §14, `FINDING RV-0078-S2-1` §4 item 5: the fixture PAIR the
+   repair owes, run directly against [accumulate] -- the exact function the
+   finding convicts -- never against a canonical file, since the guard
+   fires (or does not) BEFORE either canonical file exists. Every word
+   below is built through [Xgmii_word.of_lanes]/[Stream_word.of_octets] and
+   [Stream_word.idle], none of which carries a Hardcaml dependency (both
+   modules' own header comments), so this mode needs no DUT, no simulator
+   and no [Cyclesim.create] -- runnable with the bare system [ocamlc],
+   exactly as [compare.ml --self-test] is. Content (octets, tuser) is
+   arbitrary, as it is for every fixture in that self-test (its own
+   [sample_transaction] comment: "this is a comparator self-test, not a
+   co-simulation vector") -- this proves the ADMISSION/DELIVERY
+   bookkeeping, never a REQ-901 observable. *)
+
+let self_test_start_word lane =
+  Xgmii_word.of_lanes
+    (List.init 8 (fun k ->
+       if k = lane
+       then Xgmii_word.Control Xgmii_word.start_char
+       else Xgmii_word.Control Xgmii_word.idle_char))
+;;
+
+let self_test_terminate_word lane =
+  Xgmii_word.of_lanes
+    (List.init 8 (fun k ->
+       if k = lane
+       then Xgmii_word.Control Xgmii_word.terminate_char
+       else Xgmii_word.Control Xgmii_word.idle_char))
+;;
+
+let self_test_idle_out = Stream_word.idle ()
+let self_test_tlast_out octets = Stream_word.of_octets ~tlast:true octets
+
+(* (i) — the minimum-IFG two-frame shape `RV-0078-S2-1` names: frame 0's
+   OWN input terminate character (line 1) closes its admission span BEFORE
+   frame 1's start character (line 3); frame 0's own OUTPUT [tlast] is not
+   delivered until line 3 -- the SAME line frame 1's start character is
+   driven, the exact one-cycle union-span overlap the finding measured at
+   C2. Under the repaired rule this is lawful: [admission_open] tests only
+   the INPUT side and is already false by line 3, and the delivery FIFO
+   attaches line 3's output word to frame 0 (its head) before frame 1 is
+   ever pushed onto it in the same iteration. Must NOT raise; must produce
+   two [Accept] frames. *)
+let min_ifg_two_frame_trace =
+  [ 0, self_test_start_word 0, self_test_idle_out
+  ; 1, self_test_terminate_word 0, self_test_idle_out
+  ; 2, Xgmii_word.idle, self_test_idle_out
+  ; 3, self_test_start_word 4, self_test_tlast_out [ 0; 1; 2; 3; 4; 5; 6; 7 ]
+  ; 4, self_test_terminate_word 4, self_test_idle_out
+  ; 5, Xgmii_word.idle, self_test_tlast_out [ 8; 9; 10; 11; 12; 13; 14; 15 ]
+  ]
+;;
+
+(* (ii) — the genuine REQ-110 abort shape: a second start character while
+   frame 0's admission span is STILL OPEN (no terminate character has been
+   seen on the input side at all). Must still refuse, with the same guard
+   and the same reason, under the repaired rule -- the negative control
+   without which the narrowing in (i) would be unfalsifiable in the
+   direction that matters (`RV-C1C2` §4 item 5's own words). *)
+let req110_abort_trace =
+  [ 0, self_test_start_word 0, self_test_idle_out
+  ; 1, self_test_start_word 0, self_test_idle_out
+  ]
+;;
+
+let self_test_check ~title ~pass ~detail =
+  Printf.printf "ours_run --self-test: %s\n" title;
+  Printf.printf "  %s: %s\n" (if pass then "PASS" else "FAIL") detail;
+  pass
+;;
+
+let self_test () =
+  let ok1 =
+    match accumulate min_ifg_two_frame_trace with
+    | [ { Canonical.index = 0; decision = Canonical.Accept; _ }
+      ; { Canonical.index = 1; decision = Canonical.Accept; _ }
+      ] ->
+      self_test_check
+        ~title:
+          "(FINDING RV-0078-S2-1, i) minimum-IFG two frames -- second start AFTER \
+           frame 0's own input terminate"
+        ~pass:true
+        ~detail:
+          "accumulate did not raise; both frames closed Accept -- a lawful \
+           minimum-IFG schedule is admitted, and the FIFO correctly attributes the \
+           overlapping output word to frame 0"
+    | frames ->
+      self_test_check
+        ~title:
+          "(FINDING RV-0078-S2-1, i) minimum-IFG two frames -- second start AFTER \
+           frame 0's own input terminate"
+        ~pass:false
+        ~detail:
+          (Printf.sprintf
+             "accumulate did not raise, but produced %d frame(s) instead of two Accepts \
+              -- the delivery FIFO mis-attributed the overlapping output word"
+             (List.length frames))
+    | exception Failure msg ->
+      self_test_check
+        ~title:
+          "(FINDING RV-0078-S2-1, i) minimum-IFG two frames -- second start AFTER \
+           frame 0's own input terminate"
+        ~pass:false
+        ~detail:
+          (Printf.sprintf
+             "accumulate raised %S -- a lawful minimum-IFG schedule must NOT refuse \
+              (this IS the finding's own defect, unrepaired)"
+             msg)
+  in
+  let ok2 =
+    match accumulate req110_abort_trace with
+    | _ ->
+      self_test_check
+        ~title:
+          "(FINDING RV-0078-S2-1, ii) genuine REQ-110 abort -- second start WHILE \
+           frame 0's admission span is open"
+        ~pass:false
+        ~detail:
+          "accumulate did NOT raise -- a second start character while frame 0's \
+           admission span was open must still refuse (the negative control: the \
+           narrowing must not have deleted the guard)"
+    | exception Failure msg ->
+      let needle = "admission span was open" in
+      let contains =
+        let n = String.length msg
+        and m = String.length needle in
+        let rec find i = i + m <= n && (String.sub msg i m = needle || find (i + 1)) in
+        find 0
+      in
+      self_test_check
+        ~title:
+          "(FINDING RV-0078-S2-1, ii) genuine REQ-110 abort -- second start WHILE \
+           frame 0's admission span is open"
+        ~pass:contains
+        ~detail:(Printf.sprintf "accumulate raised %S" msg)
+  in
+  if ok1 && ok2
+  then (
+    Printf.printf "ours_run --self-test: OK\n";
+    0)
+  else (
+    Printf.printf "ours_run --self-test: FAILED\n";
+    1)
 ;;
 
 let run ~stimulus_path ~output_path =
@@ -277,14 +518,22 @@ let run ~stimulus_path ~output_path =
 ;;
 
 let () =
-  let stimulus_path, output_path =
-    match Sys.argv with
-    | [| _ |] -> "stimulus.txt", "ours.canon"
-    | [| _; s |] -> s, "ours.canon"
-    | [| _; s; o |] -> s, o
-    | _ ->
-      prerr_endline "usage: ours_run [stimulus.txt] [ours.canon]";
-      exit 2
-  in
-  run ~stimulus_path ~output_path
+  match Sys.argv with
+  (* WO-0078 §14, `FINDING RV-0078-S2-1` §4 item 5: [self_test] needs no
+     Hardcaml toolchain and elaborates no DUT (it calls [accumulate]
+     directly on a hand-built trace), so it is dispatched BEFORE [run] --
+     which does need both -- rather than folded into [run]'s own argument
+     handling. Mirrors [compare.ml --self-test]'s own CLI convention. *)
+  | [| _; "--self-test" |] -> exit (self_test ())
+  | _ ->
+    let stimulus_path, output_path =
+      match Sys.argv with
+      | [| _ |] -> "stimulus.txt", "ours.canon"
+      | [| _; s |] -> s, "ours.canon"
+      | [| _; s; o |] -> s, o
+      | _ ->
+        prerr_endline "usage: ours_run [stimulus.txt] [ours.canon] | ours_run --self-test";
+        exit 2
+    in
+    run ~stimulus_path ~output_path
 ;;

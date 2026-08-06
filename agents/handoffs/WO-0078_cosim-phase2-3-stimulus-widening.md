@@ -3499,3 +3499,246 @@ the finding set is honoured and checkable in the diff:
 carries it.**
 
 ---
+
+### tb_writer — `FINDING RV-0078-S2-1` repair round (the C2 refusal-guard repair), RETURNED
+
+**Abort-first head check**: `git rev-parse HEAD` = `b221232d9b3e69c9a8ed6476bfcc569163ab69dd`,
+exactly the dispatch's stated spawn-head ("Settled before the run, never in its
+reading..."). `git status --porcelain` empty. Proceeded without the mismatch
+procedure.
+
+**Scope, read against the finding's own terms before a line was written.**
+`FINDING RV-0078-S2-1` (`RV-C1C2` §4, §6; `RV-C1C2-SETTLEMENT` §4 item 1) names
+the repair as **mine**, in `test/cosim/ours_run.ml` (`accumulate`) **and**
+`test/cosim/tb_xgmii_rx_64.v` (its mirrored driving loop), **one round, one
+rule**. Both, and only both, are touched: `git status --porcelain` at return
+shows exactly `test/cosim/ours_run.ml` and `test/cosim/tb_xgmii_rx_64.v`, no
+third file. `test/cosim/stimulus_gen.ml` was not opened (§4 item 6's own bar —
+"the stimulus may not move"); `test/cosim/compare.ml` was not opened either —
+the fixture pair the finding demands exercises `accumulate` directly, and
+`compare.ml` has no path to that function at all (it depends only on
+`canonical.ml` and the standard library, by its own header comment, precisely
+so it never needs the Hardcaml-dependent producers): the guard fires, or does
+not, **before** either canonical file exists, so a canonical-file-level
+self-test structurally cannot exercise it. `tools/cosim/` and
+`test/attack_plans/CD-xgmii_rx_64_cosim.md` were read (CD §10.2/§10.2-bis, for
+the frozen C2 instance and the falsification annotation) but not staged.
+
+**The rule, one sentence**: an ADMISSION span (opens at a frame's own input
+`/S/`, closes at that SAME frame's own input `/T/`, or at end-of-stimulus)
+governs the REQ-110 refusal alone, and a separate FIFO of admitted-but-
+undelivered frames (an output word always attaches to the oldest, and its own
+`tlast` pops it) governs the orphan-output refusal alone — where the old code
+tested one conflated span (input `/S/` to OUTPUT `tlast`) for both.
+
+**Applied identically in both producers, from this text, never from either
+producer's own code and never from the reference's behaviour** (REQ-901's
+closing sentence; §4 item 4's own bar):
+
+- `ours_run.ml`'s `accumulate`: `open_frame : (int * int * word list) option
+  ref` (one variable, two jobs) is replaced by `admission_open : bool ref`
+  (REQ-110's guard's own state, closed by a new `has_terminate` scan — the
+  same eight-lane scan shape `Xgmii_word.start_lane` already uses, targeting
+  `/T/` instead of `/S/`) and `delivery_queue` (a FIFO, admission order, of
+  `(index, admit_cycle, words_rev)` triples — an output word always attaches
+  to the head via `close_head`, which is what the orphan-output guard (FI-5)
+  now tests the emptiness of). The two are set together in the start-character
+  arm (admission and delivery both begin at the same event) and closed
+  independently: `admission_open` by `has_terminate` on the SAME input word,
+  checked immediately after the start-character arm, before the word is
+  driven; the FIFO's head by the frame's own output `tlast`, exactly as
+  before.
+- `tb_xgmii_rx_64.v`'s driving loop: `frame_open`/`frame_index` (the same
+  one-variable, two-job conflation, in Verilog) are replaced by
+  `admission_open`/`admission_index` and a small fixed-depth FIFO
+  (`delivery_index`/`delivery_head`/`delivery_tail`/`delivery_count`,
+  `DELIVERY_DEPTH = 8` — a Verilog-2001 array needs a bound where
+  `ours_run.ml`'s OCaml list does not; generous headroom over anything this
+  lane's case set presents, and its own overflow guard is a new,
+  by-construction-unreachable-here refusal, flagged per this file's own
+  established §2.3 disclosure convention rather than added silently). A new
+  `has_terminate` function scans the current stimulus line's eight lanes for
+  `8'hFD`, the identical shape the admission check already uses for `8'hFB`.
+  `open_frame` now pushes onto the FIFO and opens `admission_open` together;
+  `close_frame_accept`/`close_frame_discard` are renamed
+  `close_delivery_accept`/`close_delivery_discard` and now pop the FIFO's
+  head, never touching `admission_open`. The REQ-110 guard's `$display`
+  message and its "E second-start-while-open" sentinel are updated to say
+  "admission span" but the sentinel's literal text is otherwise unchanged;
+  the orphan-output guard's own sentinel text ("E word-with-no-open-frame")
+  is untouched **by value**, because `compare.ml`'s own self-test
+  (`reference_refusal_canon_text`) reproduces it by value and must keep
+  matching — confirmed by inspection, not edited.
+
+**Not a bare reordering.** The two guards now consult genuinely different
+state (`admission_open` vs. `delivery_queue`/FIFO-emptiness), not the same
+flag read at two different points — the shape §4 item 6 names as the one
+thing that would still leave the spans conflated and fail at the first
+schedule whose overlap is more than one cycle.
+
+**The fixture pair — both mandatory, in a new `ours_run.ml --self-test` mode
+(mirroring `compare.ml --self-test`'s own CLI convention), because that is
+where the finding's own subject — `accumulate` — actually lives; there is
+nowhere in `compare.ml`'s self-test this pair could exercise the guard
+itself, only its downstream consequences on an already-produced canonical
+file, which is not what the finding convicts.**
+
+1. **(i) minimum-IFG two frames, must NOT refuse.** Six-line hand-built trace:
+   frame 0's own input `/T/` (line 1) closes its admission span **before**
+   frame 1's `/S/` (line 3); frame 0's own OUTPUT `tlast` is not delivered
+   until line 3 — the SAME line frame 1's start character is driven, the
+   exact one-cycle union-span overlap `RV-C1C2` §4 measured at C2. Asserts
+   `accumulate` does not raise and both frames close `Accept`.
+2. **(ii) genuine REQ-110 abort, must STILL refuse.** Two-line trace: a second
+   `/S/` on line 1 while frame 0's admission span is still open (no `/T/` seen
+   at all). Asserts `accumulate` raises, and that the message contains
+   "admission span was open" — the negative control without which (i)'s
+   narrowing would be unfalsifiable in the direction that matters (`RV-C1C2`
+   §4 item 5's own words).
+
+**Local checks, verbatim** (this environment has no `dune`, no Hardcaml
+switch, no `iverilog`/`vvp` — ADR-0005; confirmed again this round,
+`which iverilog vvp` → not found). `ours_run.ml` as a whole needs Hardcaml
+(`Sim.create`, `Cyclesim`) to build, but `has_terminate`, `accumulate` and
+`self_test` do not — they touch only `Xgmii_word.t`, `Stream_word.t` and
+`Canonical.transaction`, none of which carries a Hardcaml dependency (both
+modules' own header comments; `canonical.ml`/`.mli` are plain stdlib, per
+`compare.ml`'s own header claim). Following the plain-`ocamlc` path
+`J-tb_writer-0035` established: copied `xgmii_word.{ml,mli}`
+(`test/xgmii/`), `stream_word.{ml,mli}` (`test/monitors/`), and
+`canonical.{ml,mli}` (`test/cosim/`, unedited by this round) verbatim into
+scratchpad, plus two one-line wrapper files reproducing dune's own
+library-wrapping (`dv_xgmii.ml`: `module Xgmii_word = Xgmii_word`;
+`dv_monitors.ml`: `module Stream_word = Stream_word`), then extracted the
+pure-logic span of the edited `ours_run.ml` (everything except `open
+Hardcaml`, the `Xgmii_probe`/`Axi64_probe`/`Sim` module aliases and `run`) —
+copied byte-for-byte, not re-derived — into a standalone driver ending in
+`let () = exit (self_test ())`:
+
+```
+$ ocamlc -c xgmii_word.mli && ocamlc -c xgmii_word.ml     -> exit 0 (each)
+$ ocamlc -c stream_word.mli && ocamlc -c stream_word.ml   -> exit 0 (each)
+$ ocamlc -c canonical.mli && ocamlc -c canonical.ml       -> exit 0 (each)
+$ ocamlc -c dv_xgmii.ml && ocamlc -c dv_monitors.ml        -> exit 0 (each)
+$ ocamlc -c ours_run_pure.ml                               -> exit 0, no warnings
+    (genuinely type-checked: has_terminate, accumulate's admission_open/
+     delivery_queue split, and both self-test fixtures, against the REAL
+     Xgmii_word/Stream_word/Canonical, not a stub)
+$ ocamlc -o ours_run_pure.exe xgmii_word.cmo stream_word.cmo canonical.cmo \
+    dv_xgmii.cmo dv_monitors.cmo ours_run_pure.cmo          -> exit 0 (genuinely LINKED)
+$ ./ours_run_pure.exe
+ours_run --self-test: (FINDING RV-0078-S2-1, i) minimum-IFG two frames -- second start AFTER frame 0's own input terminate
+  PASS: accumulate did not raise; both frames closed Accept -- a lawful
+  minimum-IFG schedule is admitted, and the FIFO correctly attributes the
+  overlapping output word to frame 0
+ours_run --self-test: (FINDING RV-0078-S2-1, ii) genuine REQ-110 abort -- second start WHILE frame 0's admission span is open
+  PASS: accumulate raised "ours_run: a second start character arrived while a
+  frame's admission span was open -- REQ-110 abort handling is out of Phase
+  1's authorised stimulus (WO-0046 section 9)"
+ours_run --self-test: OK
+$ echo $?
+0
+```
+
+**The fixture pair is load-bearing, demonstrated rather than asserted**: I
+built `old_accumulate_check.ml`, `accumulate` copied byte-for-byte from
+`git show HEAD~:test/cosim/ours_run.ml` (diffed against that exact span to
+confirm the copy is faithful before running it — see below), and ran it
+against fixture (i)'s own trace:
+
+```
+$ ocamlc -c old_accumulate_check.ml && ocamlc -o old_accumulate_check.exe \
+    xgmii_word.cmo stream_word.cmo canonical.cmo dv_xgmii.cmo dv_monitors.cmo \
+    old_accumulate_check.cmo
+$ ./old_accumulate_check.exe
+old_accumulate: RAISED "ours_run: a second start character arrived while a
+frame was open -- REQ-110 abort handling is out of Phase 1's authorised
+stimulus (WO-0046 section 9)"
+
+$ git show HEAD:test/cosim/ours_run.ml | sed -n '152,202p' > head_accumulate_extract.txt
+    # (diffed by eye against old_accumulate_check.ml's copied span -- identical
+    # modulo comments; confirms the negative control reproduces the actual
+    # pre-repair code, not a hand-waved re-derivation)
+```
+
+The OLD `accumulate` refuses the exact schedule the finding says it wrongly
+refuses; the NEW `accumulate` admits it. This is the finding's own defect,
+reproduced and then closed by the same fixture, not merely a fixture that
+happens to pass.
+
+**Case 0 and C1 invariance — argued, not merely asserted, since neither was
+executed this round (both need Hardcaml, ADR-0005).** Case 0 and C1 are each
+**one** 64-octet frame; neither's stimulus ever presents a second start
+character, so the REQ-110 guard's two branches (`admission_open` true/false)
+are never both exercised for them — the only branch either case can reach is
+the `else` arm on their one and only `/S/`. From there, the observable
+sequence of writes (`Canonical.write_file`'s `F`/word/`D` triple in
+`ours_run.ml`; the `$fwrite` `F`/`W`/`D` lines in `tb_xgmii_rx_64.v`) is
+produced by **exactly the same call sites** under old and new code:
+
+- the `F` line / frame record's `admit_cycle`: written from `next_index` /
+  `line_index` at the SAME point (the start-character arm), unmoved by this
+  repair in either file;
+- the `W` lines / accumulated words: attached to the (sole) admitted frame on
+  every `tvalid` cycle exactly as before — the FIFO's head **is** that one
+  frame for the whole of case 0's or C1's run, so `close_head`/pop-on-`tlast`
+  observes the identical sequence `close_frame`/`open_frame := None` did;
+- the `D` line / decision: `Accept`, written at the SAME `tlast` event by the
+  SAME renamed function (`close_head` calls the identical
+  `frames_rev := {...} :: !frames_rev` construction `close_frame` did; in
+  Verilog, `close_delivery_accept` writes the identical `"D %0d accept\n"`
+  format string `close_frame_accept` did, reading `delivery_index[...]` which
+  holds the one frame's own index — the same value `frame_index` held).
+
+`admission_open`'s own lifecycle (open at `/S/`, closed early at the frame's
+own `/T/`, well before its output `tlast`) is never consulted again for
+either case, because neither presents a second `/S/` for it to gate — so its
+earlier closing is a change with no observer, not a change with no effect by
+luck. The two cases' outputs are therefore bit-identical **by construction**
+(every write site unmoved, same inputs, same call order), not merely
+"unlikely to differ" — the same standard `RV-C1C2` §10's own "C3 is not
+blocked in principle" argument used for a single-frame stimulus's inability
+to trip a second-start guard, applied here to prove invariance rather than
+non-blocking.
+
+**What is CI-deferred, and why**: identical reasoning to every prior round in
+this lane (ADR-0005/§10 item 12). `tb_xgmii_rx_64.v`'s own repair is
+self-reviewed, line by line, against `ours_run.ml`'s own (locally executed)
+repair — never executed, exactly as this file's own header has said of every
+line in it since `WO-0046`. The `cosim` job at the C2 re-run is the first and
+only real execution of either producer's repaired guard against real
+Hardcaml/Icarus elaboration, and the first and only place `FINDING
+RV-0078-S1-4`'s still-standing reference-emission gap could be closed (it is
+not closed by this round, and is not owed by it — C9, per `RV-C1C2` §6 item
+4). Case 0's and C1's own stimulus was not re-executed this round (neither
+`stimulus_gen.ml` nor `ours_run.ml`'s Hardcaml-dependent `run` was opened or
+run); the invariance argument above is structural, not a reproduced hash.
+
+**`FINDING WO-0078-1`'s own repair (Stage 1, already landed) is unmoved by
+this round**: neither guard's own `E`-sentinel-then-`$fclose`-then-`$finish`
+shape changed, only the CONDITION each guard tests and (for the REQ-110
+guard) the variable named in its message and sentinel line.
+
+**Refused or blocked**: nothing. No spec ambiguity was met (REQ-110's own
+condition and SPEC-M03 §6.1's ΔC fully determine the two spans; the finding's
+own §4 already derives the rule, leaving no open design choice); no RTL
+leaked into context (`libs/**`, `top/**`, `rtl_snapshots/**` opened at no
+point — confirmed by this entry's own Inputs list in the journal, and by
+direct recollection); no untestable requirement; no licensing-taint
+suspicion; no effort anomaly (one round, as the finding's own carrier names).
+
+**Files changed**: `test/cosim/ours_run.ml`, `test/cosim/tb_xgmii_rx_64.v`.
+No third file (`git status --porcelain` confirms) — not `stimulus_gen.ml`
+(§4 item 6's bar), not `compare.ml` (structurally the wrong venue for this
+fixture pair, per above), not `canonical.{ml,mli}`, not `tools/cosim/**`, not
+`test/attack_plans/**`.
+
+— tb_writer, spawn `WO-0078/2026-08-06T~12:00Z` (no explicit "work-order id +
+spawn UTC timestamp" token was present in this round's own dispatch prompt;
+recorded honestly per `J-data_wrangler-0001`'s and this packet's own prior
+tb_writer entries' precedent for the identical situation, rather than
+presented as one copied verbatim — the timestamp is this entry's own UTC
+header time, `date -u` read at the start of this round, matching the
+environment's own `currentDate` context, 2026-08-06).
+
+---
