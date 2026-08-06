@@ -972,7 +972,13 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
   let keep_count =
     mux2 emit_last_a (pc -: strip) (mux2 emit_last_b (pc -: strip +: nc) pc)
   in
-  let abort = sel_bad_fcs |: sel_error |: sel_start |: sel_oversize |: sel_runt in
+  let touched =
+    reg_fb spec ~width:1 ~f:(fun d ->
+      mux2 begins gnd (d |: (a_open &: ~:(i.cfg_rx_enable))))
+  in
+  let abort =
+    sel_bad_fcs |: sel_error |: sel_start |: sel_oversize |: sel_runt |: touched
+  in
   let tvalid = (emit_full |: emit_tlast) &: ~:(i.clear) in
   consume <== (sel_valid &: (emit_tlast |: sel_is_r2));
   (* Three of the five strobes are the union of the two report paths: epoch A's,
