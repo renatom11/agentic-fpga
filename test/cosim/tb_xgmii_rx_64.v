@@ -71,6 +71,39 @@ own accumulate, from REQ-110's own condition and SPEC-M03 section 6.1's
 DeltaC, never from ours_run.ml's or the reference's own CODE. See each
 guard's own comment below for the mirrored reasoning.
 
+WO-0078 §14, FINDING RV-0078-S2-6 (the C2 repair round, second layer): the
+guards above decide which schedules a producer ADMITS; they say nothing
+about the FILE the producer then writes. This file used to $fwrite each F/W/D
+record at the instant of its own event -- admission, each output word,
+delivery close -- so two frames whose admission and delivery spans overlap
+(lawful since the S2-1 repair above, and guaranteed at SPEC-M03 section
+6.1's DeltaC = 3 under the minimum inter-frame gap) produced an
+INTERLEAVED file: frame N+1's own F line landed between frame N's own W
+lines and its D line, which canonical.mli's pinned grammar (one F line,
+then that frame's W lines, then its D line, contiguous) does not admit --
+Canonical.read (a single-frame-open state machine) correctly refused it.
+The repair chosen here, against RV-C2RERUN section 6's seven preserved
+properties (this packet's §14 Return log states the reasoning against each):
+buffer each admitted-but-not-yet-closed frame's own F-line fields and
+captured W-line fields in the delivery FIFO's own per-slot storage below,
+and write that frame's ENTIRE block -- F line, every buffered W line in
+emission order, D line -- CONTIGUOUSLY, at the moment the frame CLOSES
+(close_delivery_accept/close_delivery_discard), never streamed across real
+time. Closure always happens in admission order by construction of this
+FIFO (an output word always attaches to delivery_head, and m_axis_tlast
+always pops it), so this needs no separate ordering decision. The grammar
+itself (canonical.mli) is UNCHANGED -- this is a producer-side buffering
+fix, never a grammar amendment, precisely because a W-record frame-index
+field would change every single-frame file's own bytes too (property 2:
+case 0 and C1 stay byte-identical) and because teaching the READER to
+attribute an interleaved W line to "the oldest open frame" would install a
+behavioural assumption about the design under test inside the comparator
+(property 1, this finding's own words). The per-frame word buffer is
+bounded (MAX_WORDS_PER_FRAME below) and its own exhaustion is a NEW
+refusal with its own E sentinel, in the same spirit as DELIVERY_DEPTH's
+own guard above (property 5) -- never an unbounded accumulation in a
+Verilog testbench.
+
 */
 
 // Language: Verilog 2001, matching the vendored reference's own dialect.
@@ -192,6 +225,29 @@ module tb_xgmii_rx_64;
   //   inert for every fixture and every case this repair round ships.
   // ------------------------------------------------------------------
 
+  // ------------------------------------------------------------------
+  // WO-0078 §14, FINDING RV-0078-S2-6: each delivery-FIFO slot ALSO buffers
+  // its own frame's F-line fields (admit_cycle) and captured W-line fields
+  // (tkeep/tlast/tuser0/cycle/tdata, up to MAX_WORDS_PER_FRAME of them) --
+  // see the top-of-file comment for the full derivation and the seven
+  // preserved properties this buffering is measured against. Nothing here
+  // is $fwrite'n to theirs.canon until the frame CLOSES (accept or
+  // discard); the old write_word's immediate-$fwrite role is now split
+  // into capture_word (stores) and write_word_line (formats and $fwrites
+  // one buffered word, called only from a frame's own close_delivery_*
+  // flush).
+  //
+  //   MAX_WORDS_PER_FRAME bounds how many output words one admitted frame
+  //   may buffer before its own D line closes it -- the same kind of bound
+  //   DELIVERY_DEPTH above is, for the same Verilog-2001 fixed-size-array
+  //   reason. 16 is generous headroom over the 8 words every case this
+  //   lane drives today produces (case 0 through C2: one 64-octet frame is
+  //   exactly 8 64-bit words, stimulus_gen.ml's own stress_frame); its own
+  //   exhaustion is a NEW refusal, with its own E sentinel, in the same
+  //   spirit as DELIVERY_DEPTH's guard and inert for every fixture and
+  //   case this repair round ships.
+  // ------------------------------------------------------------------
+
   integer stim_fd, out_fd, meta_fd;
   integer scan_ret;
   reg [63:0] rxd_line;
@@ -199,6 +255,7 @@ module tb_xgmii_rx_64;
   integer stimulus_lines;
 
   localparam DELIVERY_DEPTH = 8;
+  localparam MAX_WORDS_PER_FRAME = 16;
 
   reg        admission_open;
   integer    admission_index;   // the currently-admitting frame's own index -- report-only
@@ -208,6 +265,21 @@ module tb_xgmii_rx_64;
   integer    delivery_tail;
   integer    delivery_count;
   integer    next_index;
+
+  // WO-0078 §14, FINDING RV-0078-S2-6: per-slot buffered F-line field and
+  // word count (indexed exactly as delivery_index above, slot = FIFO
+  // position modulo DELIVERY_DEPTH); per-word buffered W-line fields,
+  // flattened to one dimension (slot*MAX_WORDS_PER_FRAME + word-index)
+  // rather than declared as a true 2-D array, so indexing stays explicit
+  // and reviewable against the $fwrite call sites it replaces.
+  reg [31:0] delivery_admit_cycle [0:DELIVERY_DEPTH-1];
+  integer    delivery_word_count  [0:DELIVERY_DEPTH-1];
+
+  reg [7:0]  delivery_word_tkeep  [0:DELIVERY_DEPTH*MAX_WORDS_PER_FRAME-1];
+  reg        delivery_word_tlast  [0:DELIVERY_DEPTH*MAX_WORDS_PER_FRAME-1];
+  reg        delivery_word_tuser0 [0:DELIVERY_DEPTH*MAX_WORDS_PER_FRAME-1];
+  reg [31:0] delivery_word_cycle  [0:DELIVERY_DEPTH*MAX_WORDS_PER_FRAME-1];
+  reg [63:0] delivery_word_tdata  [0:DELIVERY_DEPTH*MAX_WORDS_PER_FRAME-1];
 
   function has_terminate;
     // WO-0078 §14, FINDING RV-0078-S2-1: the admission span's own closing
@@ -227,61 +299,98 @@ module tb_xgmii_rx_64;
     end
   endfunction
 
-  task write_word;
-    // One "W" line for the CURRENT m_axis_t* outputs (WO-0046 §2.3; cycle
-    // field added WO-0075 §2): tkeep, tlast, tuser0, cycle, then the
-    // tkeep-selected octets of m_axis_tdata in ascending position order
-    // (bit 0 of tkeep is octet 0 = tdata[7:0]).
-    //
-    // WO-0075 section 2/3.0: `cycle` is `stimulus_lines - 1`, the 0-based
-    // index of the CURRENT stimulus line -- the same line whose driving
-    // produced this very output word, per the `~clock_edge:Side.Before`-
-    // equivalent ordering below (drive, `@(posedge clk); #1`, then check
-    // `m_axis_tvalid` and call this task, all before `stimulus_lines` is
-    // next incremented). This is the SAME 0-based index `open_frame`'s
-    // `admit_cycle` uses and the same one `ours_run.ml`'s `List.mapi`
-    // produces, so both producers write the identical time base for the
-    // identical input line (WO-0075 section 3.0). `%0d`, decimal, per
-    // WO-0049 section 3's own lesson about `%x` field widths being set by
-    // the ARGUMENT's bit width -- restated here because it is exactly why
-    // this field is decimal in the first place (canonical.mli section 2).
-    integer k;
+  task capture_word;
+    // WO-0078 §14, FINDING RV-0078-S2-6: stores the CURRENT m_axis_t*
+    // outputs into the delivery FIFO's HEAD slot's own word buffer, rather
+    // than $fwrite'ing a "W" line immediately (which is what produced the
+    // interleaved file the finding names). Every field this used to format
+    // directly is stored UNCHANGED -- tkeep, tlast, tuser0 & 1'b1, cycle
+    // (stimulus_lines - 1, the SAME 0-based index -- WO-0075 section 3.0's
+    // shared time base -- this always used), and the full m_axis_tdata
+    // word, so write_word_line below can reproduce the identical formatted
+    // line, byte for byte, at flush time. See the top-of-file comment for
+    // the full derivation and the properties this buffering preserves.
+    integer slot, w;
     begin
+      slot = delivery_head % DELIVERY_DEPTH;
+      w    = delivery_word_count[slot];
+      if (w >= MAX_WORDS_PER_FRAME) begin
+        $display(
+          "tb_xgmii_rx_64: FAIL word buffer exhausted for frame %0d (MAX_WORDS_PER_FRAME=%0d) -- more output words captured for this frame than this bench's headroom allows",
+          delivery_index[slot],
+          MAX_WORDS_PER_FRAME);
+        $fwrite(out_fd, "E word-buffer-exhausted\n");
+        $fclose(out_fd);
+        $fclose(stim_fd);
+        $fclose(meta_fd);
+        $finish;
+      end
+      delivery_word_tkeep[slot*MAX_WORDS_PER_FRAME + w]  = m_axis_tkeep;
+      delivery_word_tlast[slot*MAX_WORDS_PER_FRAME + w]  = m_axis_tlast;
+      delivery_word_tuser0[slot*MAX_WORDS_PER_FRAME + w] = m_axis_tuser & 1'b1;
+      delivery_word_cycle[slot*MAX_WORDS_PER_FRAME + w]  = stimulus_lines - 1;
+      delivery_word_tdata[slot*MAX_WORDS_PER_FRAME + w]  = m_axis_tdata;
+      delivery_word_count[slot] = w + 1;
+    end
+  endtask
+
+  task write_word_line;
+    // One "W" line for a BUFFERED output word (WO-0046 §2.3; cycle field
+    // added WO-0075 §2), read from capture_word's own stored fields at
+    // slot [slot], word [w] rather than from the live m_axis_t* wires --
+    // tkeep, tlast, tuser0, cycle, then the tkeep-selected octets of the
+    // stored tdata in ascending position order (bit 0 of tkeep is octet 0
+    // = tdata[7:0]), IDENTICAL in format to what this file used to
+    // $fwrite directly (WO-0078 §14, FINDING RV-0078-S2-6). Called only
+    // from a frame's own close_delivery_accept/close_delivery_discard, in
+    // ascending word order, so the file's own per-word emission order is
+    // unchanged by this repair -- only WHEN each line reaches disk moved,
+    // never the order the words appear in relative to each other.
+    //
+    // WO-0049 §3's own lesson about `%x` field widths being set by the
+    // ARGUMENT's bit width still applies, reproduced verbatim on the
+    // STORED reg rather than the live wire: the Verilog-2001 indexed
+    // part-select below is exactly 8 bits wide BY CONSTRUCTION (its width
+    // is the literal after `+:`, not derived from any operand), which is
+    // what pins the printed octet field at two hex digits regardless of
+    // which reg it slices.
+    input integer slot;
+    input integer w;
+    integer k, idx;
+    begin
+      idx = slot * MAX_WORDS_PER_FRAME + w;
       $fwrite(
         out_fd,
         "W %02x %0d %0d %0d",
-        m_axis_tkeep,
-        m_axis_tlast,
-        m_axis_tuser & 1'b1,
-        stimulus_lines - 1);
+        delivery_word_tkeep[idx],
+        delivery_word_tlast[idx],
+        delivery_word_tuser0[idx],
+        delivery_word_cycle[idx]);
       for (k = 0; k < 8; k = k + 1) begin
-        if (m_axis_tkeep[k])
-          // WO-0049 §3: a `%x` field's printed digit count is set by its
-          // ARGUMENT's bit width, not by the directive -- a numeric field
-          // width (the "02" here) is a MINIMUM, not a truncation. The old
-          // `(m_axis_tdata >> (8*k)) & 8'hff` was 64 bits wide (a shift's
-          // result keeps its left operand's width; `&` against an 8-bit
-          // mask is context-determined to the WIDER operand, so the mask
-          // does not narrow it) and printed sixteen hex digits in run
-          // 30825741565, not two. The Verilog-2001 indexed part-select
-          // below is exactly 8 bits wide BY CONSTRUCTION (its width is the
-          // literal after `+:`, not derived from any operand), which is
-          // what pins the printed field at two digits regardless of value.
-          $fwrite(out_fd, " %02x", m_axis_tdata[8*k +: 8]);
+        if (delivery_word_tkeep[idx][k])
+          $fwrite(out_fd, " %02x", delivery_word_tdata[idx][8*k +: 8]);
       end
       $fwrite(out_fd, "\n");
     end
   endtask
 
   task open_frame;
-    // WO-0075 section 2: the "F" line gains admit_cycle, `stimulus_lines -
-    // 1` -- the 0-based index (section 3.0's shared time base) of the
-    // CURRENT stimulus line, the one carrying the start character that
-    // triggered this call. `stimulus_lines` was already incremented for
-    // this line by the top of the reading loop, before the admission check
-    // below calls this task, so the `- 1` converts that 1-based running
-    // count back to the 0-based line index `ours_run.ml`'s `List.mapi`
-    // produces for the identical line.
+    // WO-0075 section 2: the "F" line's fields -- frame index and
+    // admit_cycle (`stimulus_lines - 1`, the 0-based index, section 3.0's
+    // shared time base, of the CURRENT stimulus line carrying the start
+    // character that triggered this call; `stimulus_lines` was already
+    // incremented for this line by the top of the reading loop, before the
+    // admission check below calls this task, so the `- 1` converts that
+    // 1-based running count back to the 0-based line index `ours_run.ml`'s
+    // `List.mapi` produces for the identical line) -- are captured HERE,
+    // exactly as before.
+    //
+    // WO-0078 §14, FINDING RV-0078-S2-6: the "F" LINE ITSELF is no longer
+    // $fwrite'n here -- only its fields are stored, into this frame's own
+    // delivery-FIFO slot, for close_delivery_accept/close_delivery_discard
+    // to write CONTIGUOUSLY with the rest of the frame's block when it
+    // closes (see the top-of-file and Stimulus-+-capture comments for the
+    // full derivation).
     //
     // WO-0078 §14, FINDING RV-0078-S2-1: opens the ADMISSION span
     // (admission_open) and pushes onto the delivery FIFO (delivery_tail) --
@@ -301,10 +410,11 @@ module tb_xgmii_rx_64;
       end
       admission_open  = 1'b1;
       admission_index = next_index;
-      delivery_index[delivery_tail % DELIVERY_DEPTH] = next_index;
+      delivery_index[delivery_tail % DELIVERY_DEPTH]       = next_index;
+      delivery_admit_cycle[delivery_tail % DELIVERY_DEPTH] = stimulus_lines - 1;
+      delivery_word_count[delivery_tail % DELIVERY_DEPTH]  = 0;
       delivery_tail   = delivery_tail + 1;
       delivery_count  = delivery_count + 1;
-      $fwrite(out_fd, "F %0d %0d\n", next_index, stimulus_lines - 1);
       next_index = next_index + 1;
     end
   endtask
@@ -321,17 +431,38 @@ module tb_xgmii_rx_64;
   // its own admission span closed cycles ago (its own /T/, at SPEC-M03
   // §6.1's DeltaC = 3 before its last output word), which is exactly the
   // scenario the repair makes lawful.
+  //
+  // WO-0078 §14, FINDING RV-0078-S2-6: both now write the closing frame's
+  // ENTIRE block -- F line (from delivery_index/delivery_admit_cycle), then
+  // every word write_word_line's caller buffered for this slot, in order,
+  // then the D line -- CONTIGUOUSLY, here, rather than the F line having
+  // already been $fwrite'n at admission (real time) and the W lines as each
+  // arrived (also real time). Frame closure always happens in admission
+  // order by construction of this FIFO (an output word always attaches to
+  // delivery_head, and only delivery_head ever closes), so this needs no
+  // separate ordering decision: whichever frame is at the head is the next
+  // (and only) one whose block may legally be written.
   task close_delivery_accept;
+    integer slot, w;
     begin
-      $fwrite(out_fd, "D %0d accept\n", delivery_index[delivery_head % DELIVERY_DEPTH]);
+      slot = delivery_head % DELIVERY_DEPTH;
+      $fwrite(out_fd, "F %0d %0d\n", delivery_index[slot], delivery_admit_cycle[slot]);
+      for (w = 0; w < delivery_word_count[slot]; w = w + 1)
+        write_word_line(slot, w);
+      $fwrite(out_fd, "D %0d accept\n", delivery_index[slot]);
       delivery_head  = delivery_head + 1;
       delivery_count = delivery_count - 1;
     end
   endtask
 
   task close_delivery_discard;
+    integer slot, w;
     begin
-      $fwrite(out_fd, "D %0d discard\n", delivery_index[delivery_head % DELIVERY_DEPTH]);
+      slot = delivery_head % DELIVERY_DEPTH;
+      $fwrite(out_fd, "F %0d %0d\n", delivery_index[slot], delivery_admit_cycle[slot]);
+      for (w = 0; w < delivery_word_count[slot]; w = w + 1)
+        write_word_line(slot, w);
+      $fwrite(out_fd, "D %0d discard\n", delivery_index[slot]);
       delivery_head  = delivery_head + 1;
       delivery_count = delivery_count - 1;
     end
@@ -480,7 +611,7 @@ module tb_xgmii_rx_64;
             $fclose(meta_fd);
             $finish;
           end
-          write_word;
+          capture_word;
           if (m_axis_tlast) close_delivery_accept;
         end
       end

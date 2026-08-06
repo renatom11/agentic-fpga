@@ -4394,3 +4394,314 @@ the case set inside DV stays barred.**
 carries it.**
 
 ---
+
+### tb_writer — `FINDING RV-0078-S2-6` repair round (the C2 writer-order repair), `FINDING RV-0078-S2-8`'s golden-file fixture riding, RETURNED
+
+**Abort-first head check**: `git rev-parse HEAD` = `2a54bd392edb1ddbf1f23b79450f462874d1d799`,
+exactly the dispatch's stated spawn-head `2a54bd3`. `git status --porcelain`
+empty. Proceeded without the mismatch procedure.
+
+**Scope, read against the finding's own terms before a line was written.**
+`FINDING RV-0078-S2-6` (MATERIAL; `RV-C2RERUN` §4, §6) names the repair as
+mine, in `test/cosim/tb_xgmii_rx_64.v`, and in `canonical.{ml,mli}` /
+`ours_run.ml` **only if** the chosen route amends the pinned grammar. It does
+not: the route below is producer-side buffering, so neither file was opened
+for editing. `git status --porcelain` at return shows exactly two files:
+`test/cosim/tb_xgmii_rx_64.v` and `test/cosim/compare.ml` (the latter for
+`FINDING RV-0078-S2-8`'s golden-file fixture, which rides this round per
+`RV-C2RERUN` §10 item 1). `test/cosim/stimulus_gen.ml` was not opened at any
+point — the sha bind `cc1e85a4c5f871226f07b4792446d63c523577dcf172d6c4a80b8a3e845b44a7`
+is untouched by construction, not merely by intent. `tools/cosim/run_cosim.sh`
+was read (for the static enumeration dv's new instruction requires, below)
+but not staged — it is data_wrangler's write scope, not mine.
+
+**The route, one sentence, against the seven preserved properties.** Buffer
+each admitted-but-not-yet-closed frame's own `F`-line fields and captured
+`W`-line fields inside the delivery FIFO's own per-slot storage (already
+present for frame bookkeeping; extended here to carry record content too),
+and write that frame's entire block — `F`, every buffered `W` in emission
+order, `D` — contiguously at the moment the frame closes
+(`close_delivery_accept`/`close_delivery_discard`), never streamed across
+real time; the grammar (`canonical.mli`) is left **unamended**. Measured
+against each of `RV-C2RERUN` §6's seven properties:
+
+1. **No false green/differential.** Untouched by construction: the reader
+   (`canonical.ml`) is not edited at all, so its refusal-on-ambiguity
+   behaviour (raise on an `F` while a frame is open) is exactly what it was.
+   This route removes the AMBIGUITY at the source (no interleaved file is
+   ever produced) rather than teaching the reader to resolve one — the
+   alternative route (a `W`-record frame-index field) is exactly the
+   heuristic-adjacent path this property warns against, since it would move
+   the burden onto a reader taught to attribute across an intervening `F`,
+   which `RV-C2RERUN` §4 item 3 already names as installing a behavioural
+   assumption about the design under test.
+2. **Byte-exactness for single-frame files.** Case 0 and C1 each admit
+   exactly one frame; no second frame is ever pushed while the first is
+   in-flight, so the buffering machinery is exercised at its trivial
+   (single-occupant) case for both — see the invariance argument below,
+   which is structural, not measured (ADR-0005 bars local execution of this
+   file). The grammar itself is unedited, so no possible byte in a
+   single-frame file's format changes for any other reason either.
+3. **The `E`-sentinel contract, whole.** All three existing sentinel
+   `$fwrite` call sites (`E delivery-fifo-exhausted`, `E
+   second-start-while-open frame=%0d`, `E word-with-no-open-frame`) are
+   untouched **by value** — confirmed by inspection, none of their string
+   arguments was edited. Each remains the LAST thing written before its own
+   `$fclose`-then-`$finish`, unchanged in placement. The buffering repair
+   changes what MAY already be sitting in the file, unflushed, at the moment
+   one of these guards fires (an admitted-but-not-yet-closed frame's `F`
+   line is no longer already on disk when a guard trips, because writing it
+   is now deferred to closure) — this is a WEAKER precondition than before
+   (theirs.canon may now be even simpler at the moment of refusal — fewer
+   partial records, not more), and `Canonical.read`'s `"E" :: rest, _ -> ...`
+   arm already matches regardless of parse state (`No_frame_open` included),
+   so the reader's behaviour at every guard is unchanged: refuse, exit 3.
+4. **The old-format trap.** Untouched by construction: no edit reaches
+   `canonical.{ml,mli}`, so the decimal-field / old-format-file rejection is
+   bit-for-bit what it was.
+5. **Bounded buffering with its own refusal.** The per-frame word buffer is
+   bounded by a new `MAX_WORDS_PER_FRAME = 16` localparam (generous headroom
+   over the 8 words every case this lane drives today produces — one
+   64-octet frame, `stimulus_gen.ml`'s own `stress_frame`, at the 64-bit
+   datapath), and its own exhaustion is a new refusal (`E
+   word-buffer-exhausted`) in the same shape `DELIVERY_DEPTH`'s own guard
+   already established — checked, not silently unbounded.
+6. **Determinism.** Unaffected: the buffering logic is a pure, deterministic
+   function of the DUT's own deterministic output (no `$random`, no
+   time-of-write dependence in the emitted CONTENT, only in when it reaches
+   disk), so run1/run2 byte-identity is preserved by construction; also
+   confirmed structurally at `tools/cosim/run_cosim.sh`'s own determinism
+   check below (item 6 of the enumeration), which treats both canonical
+   files as opaque byte streams regardless of how many frames either
+   contains.
+7. **Non-loss.** Preserved: `F` still carries `admit_cycle` (now stored per
+   slot, `delivery_admit_cycle`, rather than written immediately, but the
+   VALUE is captured at the identical point — inside `open_frame`, from
+   `stimulus_lines - 1` at admission) and every `W` still carries its own
+   `cycle` (stored per word, `delivery_word_cycle`, captured at the identical
+   point `capture_word` runs, the same point `write_word` used to run).
+   Nothing is dropped; only WHEN each line reaches `theirs.canon` moved.
+
+**The alternative route (amending the grammar to add a `W`-record frame
+index) was considered and rejected**, primarily on property 2: any new token
+in every `W` line changes every single-frame file's own bytes too, which
+`RV-C2RERUN` §6 item 2 states outright is "out of its own scope" for a
+repair that changes a single-frame canonical file by one byte — and
+secondarily on property 1's own language, since the grammar amendment's
+whole point (letting a reader attribute an interleaved `W` line to the frame
+it belongs to) requires either a NEW token carrying that fact (touching both
+producers, and the pinned interface, for no gain the buffering route does
+not already provide) or a heuristic the finding names by name as the thing
+not to build.
+
+**Implementation.** `open_frame` now stores `admit_cycle` into
+`delivery_admit_cycle[slot]` and resets `delivery_word_count[slot]` to 0,
+but no longer `$fwrite`s the `F` line. `write_word` (immediate-`$fwrite`) is
+split into `capture_word` (stores `tkeep`/`tlast`/`tuser0 & 1`/`cycle`/full
+`tdata` into `delivery_word_*[slot][word]`, guarded by the new
+`MAX_WORDS_PER_FRAME` bound) and `write_word_line` (formats and `$fwrite`s
+ONE buffered word from stored fields, reproducing `write_word`'s own format
+string and WO-0049 §3's digit-width trick verbatim, now applied to the
+stored `reg`s rather than the live wires — same width, same output).
+`close_delivery_accept`/`close_delivery_discard` now write the closing
+frame's entire block (`F` from the stored fields, every buffered `W` line in
+ascending word order via `write_word_line`, then `D`) contiguously; frame
+closure already happens strictly in admission order by construction of this
+FIFO (an output word always attaches to `delivery_head`, and only
+`delivery_head` ever closes), so this needed no new ordering decision.
+
+**The static one-frame-assumption enumeration**, dv's new instruction for
+this round — every remaining place in `test/cosim/**` and `tools/cosim/**`
+where a one-frame assumption could still be load-bearing, one-line
+disposition each:
+
+1. **The reader's state machine** (`canonical.ml`'s `read`,
+   `No_frame_open | Frame_open`). **SAFE** — the single-frame-open-at-a-time
+   model is the grammar's OWN per-frame-contiguity requirement, not a
+   cardinality assumption; it already reads any number of frames correctly
+   as long as each is written contiguous (verified locally this round: the
+   two-frame golden fixture below reads clean).
+2. **`ours_run.ml`'s writer** (`Canonical.write`/`write_file`, invoked once
+   over the whole accumulated `frame list`). **SAFE, unchanged** — already
+   frame-count-agnostic by construction (`List.iter` over every frame this
+   run produced); this is the exact reason `FINDING RV-0078-S2-1`'s repair
+   alone never tripped this finding on our own side.
+3. **`tb_xgmii_rx_64.v`'s writer** (record emission order). **REPAIRED
+   HERE** — was the one genuinely one-frame-shaped component (each record
+   `$fwrite`n at its own real-time event); now buffers per delivery-FIFO
+   slot and flushes each frame's block contiguously at closure, per the
+   route above.
+4. **The idle-count sidecar's per-frame indexing**
+   (`stimulus_gen.ml` → `ours_run.ml` → `compare.ml`, line order = 0-based
+   frame admission index). **SAFE** — already exercised at two entries in
+   production (C2's own `idle_counts = [0; 0]`) and mechanically
+   cross-checked (`ours_run.ml`'s length check against every admitted frame,
+   Accept and Discard alike); none of the three hops assumes a cardinality
+   of one.
+5. **`check_timing`'s per-frame maps** (T0/T1/T2: `Int_map`-keyed, built via
+   `List.filter_map`/`List.map` over the WHOLE `ours`/`theirs`/
+   `common_indices`). **SAFE** — Map- and whole-list-based throughout; the
+   one place this WAS fragile (`own_profile`'s print gated on the whole
+   transaction's divergence list, hiding a clean frame behind an unrelated
+   sibling's) was already found and fixed at `FINDING RV-0078-S1-2` limb
+   (b), and is re-verified green by this round's own local self-test run
+   (the two-frame golden fixture below prints both frames' own profiles
+   correctly).
+6. **The determinism check** (`tools/cosim/run_cosim.sh`, `diff -u` between
+   run1's and run2's canonical files, that file's own comment: "opaque byte
+   streams for the determinism diff"). **SAFE** — never parses a record,
+   never counts a frame; it inherits only whatever the producers wrote,
+   which is exactly where this round's repair lives.
+7. **`run_cosim.sh`'s `dump_run`/case dispatch/exit-code interpretation**
+   (read this round for the enumeration, not staged). **SAFE** — `dump_run`
+   `cat`s whole files regardless of content; case dispatch and the
+   `EXIT_*`/`tier=` branches operate on `compare`'s integer exit code and
+   the case label, never on canonical-file text.
+8. **`DELIVERY_DEPTH`** (`tb_xgmii_rx_64.v`, bounds simultaneously
+   in-flight frames). **SAFE, unchanged** — already N-frame-capable by
+   design (= 8, already exercises 2 for C2); this round only added a
+   cross-reference to `MAX_WORDS_PER_FRAME` in its own comment.
+9. **`MAX_WORDS_PER_FRAME`** (`tb_xgmii_rx_64.v`, new this round, bounds
+   words buffered per single frame before its own `D` line closes it).
+   **REPAIRED HERE / introduced as part of this repair** — bounded (= 16),
+   with its own `E`-sentinel refusal on exhaustion (property 5), inert for
+   every case this lane ships today (max 8 words/frame).
+10. **`canonical.mli`'s grammar text** (the pinned "per frame: `F`, then
+    `W`s, then `D`" contract). **SAFE, unedited** — the grammar was always
+    frame-count-generic by its own wording; the defect was one producer's
+    non-conformance to it, never the grammar's own definition (property 2
+    forbids touching it without cause, and none arose).
+
+**`FINDING RV-0078-S2-8`'s golden-file fixture**, riding this round per
+`RV-C2RERUN` §10 item 1, in `test/cosim/compare.ml`:
+`reference_two_frame_golden_canon_text` is hand-authored raw text (never
+generated through `Canonical.write`, the same reasoning
+`reference_refusal_canon_text`/`old_format_canon_text`/
+`defect_shape_canon_text` already use) representing the repaired writer's
+INTENDED buffered output for a two-frame, minimum-IFG, overlapping-spans
+schedule shaped exactly like CD §10.2's C2 instance: frame 0 admit_cycle 0,
+frame 1 admit_cycle 10 (`RV-C2RERUN` §4: "at C2 frame 1 is admitted on cycle
+10"), eight full 64-bit words each (a 64-octet frame at REQ-102's own
+minimum length), both `Accept`, each frame's block `F`/8×`W`/`D` fully
+contiguous. Cycles follow SPEC-M03 §6.1's own gapless `admit_cycle + m + 3`
+formula for both frames, so the fixture is diffable, by a reviewer, against
+`tb_xgmii_rx_64.v`'s own `$fwrite`/`write_word_line` call sites — the check
+`FINDING RV-0078-S2-8` says would have caught `S2-6` statically, with no
+simulator, had it existed before this repair. `two_frame_golden_transaction`
+is the identical content constructed through `Canonical.write_file` (the
+"ours" side, built the same way every other fixture in this self-test
+builds its own-side file), so the check is case (a)'s own shape — "construct
+a known-good pair, assert agreement" — applied to this two-frame content:
+it proves both that the hand-authored file reads at all (the core `S2-8`
+check) and that it matches this packet's own two-frame case's intended
+content and timing, not merely that it is well-formed. It does not execute
+`tb_xgmii_rx_64.v` (ADR-0005) and does not discharge `FINDING RV-0078-S1-4`,
+which needs a real reference-side guard trip (C9).
+
+**Local checks, verbatim** (this environment has no `dune`, no Hardcaml
+switch, no `iverilog`/`vvp` — ADR-0005; `tb_xgmii_rx_64.v` is therefore
+CI-deferred in full, as it has been since `WO-0046`, self-reviewed line by
+line against its own `$fwrite`/task call sites and never executed).
+`compare.ml` and `canonical.{ml,mli}` need only the standard library
+(`compare.ml`'s own header claim), so the full self-test — every existing
+case plus the new `FINDING RV-0078-S2-8` case — builds and runs with the
+bare system `ocamlc` against the REAL files, not stubs:
+
+```
+$ ocamlc -o compare_selftest canonical.mli canonical.ml compare.ml
+    -> exit 0, no warnings
+$ ./compare_selftest --self-test
+...
+frames compared: 2
+frames matching: 2
+divergences: none
+--- T0: admit-cycle equality (calibration; asserts nothing about either design) ---
+T0: aligned -- every frame index present on both sides shares one admit-cycle
+  frame 0: admit_cycle = 0
+  frame 1: admit_cycle = 10
+--- T1: our side against SPEC-M03 section 6.1 (asserting; a red is a defect against OUR spec, never a differential finding) ---
+T1: clean -- every accepted frame's output words landed on their SPEC-M03 section 6.1 (admit_cycle + m + 3) cycles
+  frame 0:
+    word 0: expected 3, observed 3
+    ...
+    word 7: expected 10, observed 10
+  frame 1:
+    word 0: expected 13, observed 13
+    ...
+    word 7: expected 20, observed 20
+--- T2: the reference's own cycles -- RECORDED, NEVER ADJUDICATED (REQ-901's exclusion, applied to time) ---
+  frame 0: theirs cycles = [3 4 5 6 7 8 9 10]
+  frame 1: theirs cycles = [13 14 15 16 17 18 19 20]
+  frame 0: theirs - ours per word = [0 0 0 0 0 0 0 0]
+  frame 1: theirs - ours per word = [0 0 0 0 0 0 0 0]
+compare --self-test: (FINDING RV-0078-S2-8) the reference writer's intended two-frame, minimum-IFG buffered output (hand-authored golden file)
+  PASS: the golden file's per-frame CONTIGUOUS blocks (F, its 8 W lines, D) read cleanly and agree with our own side's identical content and gapless SPEC-M03 section 6.1 cycles (exit 0)
+compare --self-test: OK
+$ echo $?
+0
+```
+
+Every pre-existing case (a)–(f), T0, `idle_carried`, `refusal`,
+`two_idle_positions`, `two_frame` (`FINDING RV-0078-S1-2` limb (b)) also
+printed `PASS` in this same run — 13/13 cases, `compare --self-test: OK`,
+exit 0. Total counted: `grep -c 'PASS:'` = 13, `grep -c 'FAIL:'` = 0.
+
+**Case 0 and C1 invariance — argued structurally, not measured (ADR-0005,
+no `iverilog`).** Case 0 and C1 each admit exactly one frame; no second
+frame is ever pushed onto the delivery FIFO while the first occupies it, so
+`close_delivery_accept`'s buffered flush for that lone frame is reached with
+nothing else EVER buffered in any other slot — `delivery_admit_cycle`/
+`delivery_word_count` for every other slot stay at their init values,
+unused. The flush therefore emits, as one contiguous burst at the frame's
+own `tlast`: the SAME `F` line (same index, same `admit_cycle`, same
+`%0d %0d` format), the SAME eight `W` lines (`write_word_line` reproduces
+`write_word`'s own format string and WO-0049 §3's digit-width trick
+verbatim, over stored `reg`s of the identical widths the live wires had —
+`reg[7:0]` for `tkeep`, matching `wire[7:0]`; `reg[63:0]` for `tdata`,
+matching `wire[63:0]`), and the SAME `D` line — merely relocated in TIME
+(to the moment of `tlast`, rather than streamed as each event occurred),
+never in CONTENT, FORMAT or ORDER. Since the pre-repair streaming writer
+already emitted these three record types back-to-back for an uncontested
+single frame (nothing else was EVER written between its own `F` and `D`,
+there being no second frame to interleave), the post-repair buffered
+emission is bit-for-bit the same file. This is the same standard
+`RV-C1C2` §10's and the prior repair round's own case-0/C1 invariance
+arguments used — every write site's CONTENT unmoved, only WHEN it reaches
+disk moved — applied here to the second layer of the same finding.
+
+**What is CI-deferred, and why**: identical reasoning to every prior round
+in this lane (ADR-0005). `tb_xgmii_rx_64.v`'s own repair is self-reviewed,
+line by line, against `write_word`'s own pre-repair format strings (to
+confirm `write_word_line` reproduces them verbatim) and against
+`open_frame`'s/`close_delivery_*`'s own pre-repair `$fwrite` call sites (to
+confirm no field's VALUE changed, only its write TIME) — never executed.
+The landing `cosim` job at the next C2 re-run remains the first and only
+real execution of the repaired writer through the actual Icarus reference,
+and the first place this repair's own correctness is checked against a real
+simulator rather than against hand-reasoning and the golden-file fixture
+above.
+
+**Refused or blocked**: nothing. No spec ambiguity was met (the finding's
+own §6 fully states the seven properties any route must preserve, and the
+choice between the two visible routes is decided by property 2 alone,
+leaving no open design question); no RTL leaked into context (`libs/**`,
+`top/**`, `rtl_snapshots/**` opened at no point — confirmed by this round's
+journal Inputs list); no untestable requirement; no licensing-taint
+suspicion; no effort anomaly (one round, as `RV-C2RERUN` §10 item 1's own
+"Carrier: a tb_writer repair round" names it).
+
+**Files changed**: `test/cosim/tb_xgmii_rx_64.v`, `test/cosim/compare.ml`.
+No third file (`git status --porcelain` confirms) — not
+`test/cosim/canonical.{ml,mli}` or `test/cosim/ours_run.ml` (the chosen
+route does not amend the grammar), not `test/cosim/stimulus_gen.ml` (§1's
+own bar), not `tools/cosim/**` (data_wrangler's write scope; read only, for
+the enumeration), not `test/attack_plans/**` (dv_lead's write scope).
+
+— tb_writer, spawn `WO-0078/2026-08-06T12:56Z` (no explicit "work-order id +
+spawn UTC timestamp" token was present in this round's own dispatch prompt;
+recorded honestly per this packet's own prior tb_writer entries' precedent
+for the identical situation — the timestamp is this entry's own UTC header
+time, `date -u` read at the start of this round, matching the environment's
+own `currentDate` context, 2026-08-06).
+
+---

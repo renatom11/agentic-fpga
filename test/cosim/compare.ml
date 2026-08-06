@@ -20,8 +20,13 @@
                                             further cases (`FINDING
                                             RV-0078-S1-1`'s regression fixture,
                                             `FINDING RV-0078-S1-2` limb (b)'s
-                                            two-frame case), all through this
-                                            same production path (below).
+                                            two-frame case), and the C2-repair
+                                            round's `FINDING RV-0078-S2-8`
+                                            golden-file fixture (the reference
+                                            writer's own intended two-frame
+                                            buffered output, hand-authored),
+                                            all through this same production
+                                            path (below).
 
    [<ours.canon>.idle] (WO-0078 §5.2, FINDING RV-0075-2, read if present, an
    optional SIDECAR never part of the pinned canonical grammar): one decimal
@@ -424,6 +429,83 @@ let two_frame_transaction () : Canonical.transaction =
   [ frame0; frame1 ]
 ;;
 
+(* `FINDING RV-0078-S2-8` (rides with the `S2-6` repair, WO-0078 §14): the
+   golden-file fixture -- the canonical file tb_writer INTENDS
+   [tb_xgmii_rx_64.v]'s repaired (buffered) writer to emit for a two-frame,
+   minimum-IFG, overlapping-spans schedule shaped exactly like CD §10.2's C2
+   instance -- frame 0 admit_cycle 0, frame 1 admit_cycle 10 (`RV-C2RERUN`
+   §4: "at C2 frame 1 is admitted on cycle 10"), eight full 64-bit words
+   each (a 64-octet frame at REQ-102's own minimum length, 8 octets/word,
+   `RV-C2RERUN` §1: "two frames, eight words each, both Accept"), both
+   [Accept]. [reference_two_frame_golden_canon_text] below is written BY
+   HAND, as raw text, deliberately never through [Canonical.write] -- the
+   same reasoning [reference_refusal_canon_text]/[old_format_canon_text]/
+   [defect_shape_canon_text] above use: this simulates what an INDEPENDENT
+   VERILOG producer writes, and the entire point of a golden file per
+   `FINDING RV-0078-S2-8` is that it is diffable, by a reviewer, against
+   [tb_xgmii_rx_64.v]'s own $fwrite call sites -- generating it through
+   [Canonical.write] instead would only prove the OCaml writer agrees with
+   itself, never say anything about the Verilog writer's intended shape.
+   Each frame's block is F, then its eight W lines in emission order, then
+   D, CONTIGUOUS -- exactly the grouping the pinned grammar requires and the
+   pre-repair real-time writer violated (`FINDING RV-0078-S2-6`). Cycles are
+   SPEC-M03 §6.1's own gapless [admit_cycle + m + 3] formula for both
+   frames (word m of frame 0: [m + 3]; word m of frame 1: [10 + m + 3]),
+   because a golden file exercising only [Canonical.read]'s grammar
+   acceptance while carrying self-inconsistent timing would be a weaker
+   artefact than one a T1-clean comparison can also certify.
+   [two_frame_golden_transaction] is the SAME content, constructed through
+   [Canonical.write_file] as every other "ours" fixture in this self-test
+   is, so the check below is (b)'s own shape -- "construct a known-good
+   pair, assert agreement" -- applied to this two-frame shape: it proves
+   BOTH that the hand-authored file reads (the core `S2-8` check, converting
+   the writer's record order from an unstated assumption into a stated,
+   diffable artefact) AND that it is byte-for-byte the content and cycles
+   this packet's own two-frame case intends, not merely well-formed. It does
+   NOT execute [tb_xgmii_rx_64.v] (ADR-0005; this environment has no
+   iverilog) and is only as good as the hand that wrote the text below --
+   it does not discharge `FINDING RV-0078-S1-4`, which needs a real
+   reference-side guard trip (C9). *)
+let two_frame_golden_transaction () : Canonical.transaction =
+  let word ~cycle ~tlast octets =
+    { Canonical.tkeep = 0xff; tlast; tuser0 = false; cycle; octets }
+  in
+  let frame0_words =
+    List.init 8 (fun m ->
+      word ~cycle:(m + 3) ~tlast:(m = 7) (List.init 8 (fun k -> (m * 8) + k)))
+  in
+  let frame1_words =
+    List.init 8 (fun m ->
+      word ~cycle:(10 + m + 3) ~tlast:(m = 7) (List.init 8 (fun k -> 64 + (m * 8) + k)))
+  in
+  [ { Canonical.index = 0; admit_cycle = 0; decision = Canonical.Accept; words = frame0_words }
+  ; { Canonical.index = 1; admit_cycle = 10; decision = Canonical.Accept; words = frame1_words }
+  ]
+;;
+
+let reference_two_frame_golden_canon_text =
+  "F 0 0\n\
+   W ff 0 0 3 00 01 02 03 04 05 06 07\n\
+   W ff 0 0 4 08 09 0a 0b 0c 0d 0e 0f\n\
+   W ff 0 0 5 10 11 12 13 14 15 16 17\n\
+   W ff 0 0 6 18 19 1a 1b 1c 1d 1e 1f\n\
+   W ff 0 0 7 20 21 22 23 24 25 26 27\n\
+   W ff 0 0 8 28 29 2a 2b 2c 2d 2e 2f\n\
+   W ff 0 0 9 30 31 32 33 34 35 36 37\n\
+   W ff 1 0 10 38 39 3a 3b 3c 3d 3e 3f\n\
+   D 0 accept\n\
+   F 1 10\n\
+   W ff 0 0 13 40 41 42 43 44 45 46 47\n\
+   W ff 0 0 14 48 49 4a 4b 4c 4d 4e 4f\n\
+   W ff 0 0 15 50 51 52 53 54 55 56 57\n\
+   W ff 0 0 16 58 59 5a 5b 5c 5d 5e 5f\n\
+   W ff 0 0 17 60 61 62 63 64 65 66 67\n\
+   W ff 0 0 18 68 69 6a 6b 6c 6d 6e 6f\n\
+   W ff 0 0 19 70 71 72 73 74 75 76 77\n\
+   W ff 1 0 20 78 79 7a 7b 7c 7d 7e 7f\n\
+   D 1 accept\n"
+;;
+
 (* WO-0078 §5.2 / FINDING RV-0075-2: [sample_transaction ()], UNMODIFIED --
    its cycles (3, 4) are already perfectly gapless, zero broken deltas, and
    would be reported CLEAN (exit 0) by cycle evidence alone. The point of
@@ -536,6 +618,12 @@ let self_test () =
     Filename.temp_file "cosim_compare_selftest_two_idle_positions" ".canon"
   in
   let two_frame_path = Filename.temp_file "cosim_compare_selftest_two_frame" ".canon" in
+  let two_frame_golden_ours_path =
+    Filename.temp_file "cosim_compare_selftest_two_frame_golden_ours" ".canon"
+  in
+  let two_frame_golden_reference_path =
+    Filename.temp_file "cosim_compare_selftest_two_frame_golden_reference" ".canon"
+  in
   let cleanup () =
     List.iter
       (fun path ->
@@ -555,6 +643,8 @@ let self_test () =
       ; refusal_path
       ; two_idle_positions_path (* FINDING RV-0078-S1-1 *)
       ; two_frame_path (* FINDING RV-0078-S1-2 limb (b) *)
+      ; two_frame_golden_ours_path (* FINDING RV-0078-S2-8 *)
+      ; two_frame_golden_reference_path (* FINDING RV-0078-S2-8 *)
       ]
   in
   Fun.protect ~finally:cleanup (fun () ->
@@ -586,6 +676,17 @@ let self_test () =
        (fun () -> output_string oc reference_refusal_canon_text));
     Canonical.write_file two_idle_positions_path (two_idle_positions_transaction ());
     Canonical.write_file two_frame_path (two_frame_transaction ());
+    (* `FINDING RV-0078-S2-8`: the golden-file fixture. [ours] is the SAME
+       content constructed through [Canonical.write_file], like every other
+       "ours" side in this self-test; [theirs] is the hand-authored text
+       simulating the repaired reference writer's intended buffered output
+       -- see [reference_two_frame_golden_canon_text]'s own comment for the
+       full reasoning. *)
+    Canonical.write_file two_frame_golden_ours_path (two_frame_golden_transaction ());
+    (let oc = open_out_bin two_frame_golden_reference_path in
+     Fun.protect
+       ~finally:(fun () -> close_out_noerr oc)
+       (fun () -> output_string oc reference_two_frame_golden_canon_text));
     let check ~title ~expect ~expect_label exit_code =
       let ok = exit_code = expect in
       Printf.printf "compare --self-test: %s\n" title;
@@ -752,6 +853,35 @@ let self_test () =
            hidden behind frame 1's unrelated divergence"
         (run_comparison ~ours_path:two_frame_path ~theirs_path:two_frame_path)
     in
+    (* `FINDING RV-0078-S2-8`: the reference writer's own golden file (hand-
+       authored, diffable against tb_xgmii_rx_64.v's $fwrite call sites --
+       never generated through [Canonical.write]) fed to [Canonical.read]
+       via the exact production path [run_comparison] uses for a real run.
+       Two frames, eight words each, both Accept, gapless SPEC-M03 section
+       6.1 cycles on both sides (matching this packet's own C2 shape:
+       frame 0 admit_cycle 0, frame 1 admit_cycle 10) -- expect a fully
+       clean comparison (exit 0), which certifies both that the CONTIGUOUS,
+       per-frame-grouped shape the `S2-6` repair now writes reads at all
+       (the core check this finding exists for) and that its content and
+       timing are what this packet's own two-frame case intends, not merely
+       well-formed. Not marked optional: this is the sole exerciser of a
+       hand-authored two-frame reference-side file in this self-test, and
+       the check `FINDING RV-0078-S2-8` says would have caught `S2-6`
+       statically, with no simulator, had it existed before this repair. *)
+    let two_frame_golden_ok =
+      check
+        ~title:
+          "(FINDING RV-0078-S2-8) the reference writer's intended two-frame, \
+           minimum-IFG buffered output (hand-authored golden file)"
+        ~expect:0
+        ~expect_label:
+          "the golden file's per-frame CONTIGUOUS blocks (F, its 8 W lines, D) read \
+           cleanly and agree with our own side's identical content and gapless \
+           SPEC-M03 section 6.1 cycles"
+        (run_comparison
+           ~ours_path:two_frame_golden_ours_path
+           ~theirs_path:two_frame_golden_reference_path)
+    in
     if a_ok
        && b_ok
        && c_ok
@@ -764,6 +894,7 @@ let self_test () =
        && refusal_ok
        && two_idle_positions_ok
        && two_frame_ok
+       && two_frame_golden_ok
     then (
       Printf.printf "compare --self-test: OK\n";
       0)

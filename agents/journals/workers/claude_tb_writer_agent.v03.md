@@ -837,3 +837,323 @@ any input this round); no effort anomaly (one round, as `RV-C1C2` §6's own
 - test/cosim/ours_run.ml
 - test/cosim/tb_xgmii_rx_64.v
 - agents/handoffs/WO-0078_cosim-phase2-3-stimulus-widening.md
+
+## [J-tb_writer-0037] 2026-08-06T12:56Z | task:WO-0078 | `FINDING RV-0078-S2-6` repair — the reference writer buffers per-frame and flushes contiguous blocks at closure; `FINDING RV-0078-S2-8`'s golden-file fixture riding; the static one-frame-assumption enumeration
+
+### Trigger
+Orchestrator, dispatching the `FINDING RV-0078-S2-6` (MATERIAL, blocks C2)
+repair round per `WO-0078` §14's `RV-C2RERUN` §6 (the finding's full text and
+seven preserved properties) and §10 item 1 (the sequencing and the riding
+`FINDING RV-0078-S2-8` golden-file fixture). No explicit "work-order id +
+spawn UTC timestamp" token was present in this round's own dispatch prompt —
+recorded honestly here per `J-tb_writer-0035`'s and `J-tb_writer-0036`'s own
+precedent for the identical situation, rather than presented as a token
+copied verbatim: the timestamp above is this entry's own UTC header time,
+`date -u` read at the start of this round, matching the environment's own
+`currentDate` context (2026-08-06).
+
+### Inputs
+- **Abort-first head check**: `git rev-parse HEAD` = `2a54bd392edb1ddbf1f23b79450f462874d1d799`,
+  exactly the dispatch's stated spawn-head `2a54bd3`. `git status --porcelain`
+  empty. Proceeded without the mismatch procedure.
+- `agents/charters/tb_writer.md` (full read, this round).
+- `agents/PROTOCOL.md` §2–6, §10 (full read, this round).
+- `agents/handoffs/WO-0078_cosim-phase2-3-stimulus-widening.md`, read in full
+  (4396 lines at spawn) — §§1–14 for context, with particular weight on
+  `RV-C2RERUN` §0–§4 (the mechanism: the reference writer's real-time
+  `$fwrite`s against the pinned single-frame-open reader; the record-order
+  table for `ours.canon`/`theirs.canon` at C2), §5 (the `+1` T2 offset's
+  own adjudicative status — out of domain, a hand reading, not a target this
+  repair owes), §6 (the three findings, `S2-6`'s full statement, owner and
+  the seven preserved properties, `S2-8`'s golden-file recommendation), §8
+  (criterion 3/5/7's dispositions, read for why the reference producer
+  "failed without refusing" is a failure mode criterion 7 does not reach —
+  context for why the reader, not the writer, was already correct), §10
+  item 1 (this round's own carrier text, the enumeration instruction, the
+  case set staying `{0, C1, C2}`, `stimulus_gen.ml` staying shut) and §12
+  (the verdict, restating the finding and the sha bind).
+- `test/cosim/tb_xgmii_rx_64.v` (the file this round edits) — read in full
+  before editing, then re-read after each edit via the Edit tool's own diff,
+  then read in full once more at the end to check task/endtask and
+  begin/end balance and the complete call graph.
+- `test/cosim/canonical.mli` — read in full, NOT edited. Read to confirm the
+  grammar's own wording (per-frame contiguity) is genuinely frame-count-generic
+  and that no repair route needed to touch it, and to derive the
+  `FINDING RV-0078-S2-8` fixture's exact expected token layout.
+- `test/cosim/canonical.ml` — read in full, NOT edited. Read to confirm
+  `read`'s parse-state machine, `write`'s format strings, and
+  `check_timing`'s per-frame `Int_map`-based logic, for the static
+  enumeration (items 1 and 5) and to derive the golden fixture's cycles
+  against `word_profile`'s own `admit_cycle + m + 3` formula.
+- `test/cosim/ours_run.ml` — read in full, NOT edited. Read to confirm
+  `accumulate`'s writer-side behaviour (`Canonical.write_file` called once
+  over the whole accumulated transaction) is already frame-count-agnostic
+  (enumeration item 2), and that no repair route needed to touch it.
+- `test/cosim/compare.ml` — read in full before editing (the file this round
+  also edits, for the `FINDING RV-0078-S2-8` fixture), then re-read after
+  each edit via the Edit tool's own diff. Read specifically to find the
+  existing convention for hand-authored raw-text fixtures simulating an
+  independent Verilog producer (`reference_refusal_canon_text`,
+  `old_format_canon_text`, `defect_shape_canon_text`) and to confirm the
+  self-test's own `check`/cleanup/AND-condition structure so the new case
+  slots in without disturbing any existing one.
+- `test/cosim/stimulus_gen.ml` — read (NOT edited; not staged; not among
+  this round's write scope — dv's own "NOT stimulus_gen.ml" instruction),
+  specifically to confirm case 0/C1/C2's actual frame size (64-octet
+  `Dv_xgmii.Frame.stress_frame`, 8 words at the 64-bit datapath) before
+  sizing `MAX_WORDS_PER_FRAME` and before choosing the golden fixture's own
+  word count.
+- `tools/cosim/run_cosim.sh` — read (NOT edited; data_wrangler's write
+  scope, not mine), specifically for the static enumeration dv's new
+  instruction names (`tools/cosim/**` explicitly in scope for the reading,
+  never for the writing): the determinism check (`diff -u` between run1's
+  and run2's canonical files, `grep`ped and read at its own definition,
+  lines ~1467–1496) and `dump_run`/case-dispatch (read at lines ~864–905 and
+  the case loop) to confirm neither parses canonical-file text or assumes a
+  frame count.
+- **No `libs/**`, no `top/**`, no `rtl_snapshots/**` — opened at no point, by
+  any means, this round.** Every file listed above is `agents/**`, `test/**`
+  (DV-side or `test/cosim/`, my own write scope) or read-only inspection of
+  `tools/cosim/run_cosim.sh` (data_wrangler's, not staged). No RTL reached
+  this seat's context at any point.
+
+### Reasoning
+**The route, against the seven preserved properties, and why the
+grammar-amendment alternative loses on property 2 (and property 1's own
+language).** Full reasoning in the WO-0078 §14 Return-log entry this
+journal entry's own commit carries alongside it (property-by-property).
+Summary: buffer each frame's own record fields in the delivery FIFO's
+existing per-slot storage (extended to carry content, not only bookkeeping)
+and flush a frame's entire `F`/`W`*/`D` block contiguously at closure —
+`canonical.mli` stays unamended, so properties 1 (no reader heuristic —
+untouched by construction), 4 (old-format trap — untouched by construction)
+and 6 (determinism — a pure function of deterministic DUT output, WHEN not
+WHAT changed) hold trivially; properties 3 (the `E`-sentinel contract) and 7
+(non-loss) hold because no sentinel `$fwrite` call site's string argument
+moved and every field is still captured at its original event, only its
+WRITE deferred; property 5 (bounded buffering) is met by a new
+`MAX_WORDS_PER_FRAME` bound with its own refusal, in `DELIVERY_DEPTH`'s own
+established shape; property 2 (single-frame byte-exactness) is the property
+that DECIDES the route — a grammar amendment adding a `W`-record frame index
+would change every single-frame file's own bytes too, which `RV-C2RERUN` §6
+item 2 states outright is out of scope for any repair.
+
+**Why closure order needed no new decision.** An output word always attaches
+to `delivery_head` (the oldest not-yet-closed admitted frame), and
+`m_axis_tlast` always pops it — this FIFO invariant predates this round
+(`FINDING RV-0078-S2-1`'s own repair) and is untouched by this one. Frame
+closure therefore always happens in admission order by construction, so
+"flush at closure" and "flush in admission order" are the same instruction,
+not two.
+
+**Why `write_word_line` reproduces `write_word`'s format string verbatim
+rather than reformatting from the stored fields differently.** WO-0049 §3's
+own lesson (a `%x` field's printed digit count is set by the ARGUMENT's bit
+width, not the directive) is reproduced exactly: the stored `reg[63:0]
+delivery_word_tdata` is sliced with the SAME `[8*k +: 8]` indexed
+part-select `write_word` used on the live `m_axis_tdata` wire — identical
+width by construction regardless of which register it slices — so the
+printed octet field stays pinned at two hex digits for the identical
+reason. This is what makes the case-0/C1 invariance argument a STRUCTURAL
+one rather than a hope: every stored register has the identical bit width
+the corresponding live wire had, so every format directive produces the
+identical text.
+
+**The golden fixture's own content, chosen to mirror C2's actual shape
+rather than an arbitrary two-frame case.** `RV-C2RERUN` §4 states C2's own
+record-order table (`F 0 0`, frame 0's eight `W` lines, `D 0 accept`, `F 1
+10`, frame 1's eight `W` lines, `D 1 accept` — `ours.canon`'s own shape,
+which is exactly what the repaired reference writer must now also produce)
+and §1 states C2's own admit cycles (frame 0 at 0, frame 1 at 10 — "both
+sides print F 1 10, so the admit cycles agree"). The golden fixture uses
+these exact admit cycles and this exact eight-word-per-frame shape (a
+64-octet frame at REQ-102's own minimum length, confirmed against
+`stimulus_gen.ml`'s `stress_frame`) rather than an arbitrary shape, so a
+future reviewer can diff it directly against C2's own dispatch, not merely
+against the grammar in the abstract. Cycles follow SPEC-M03 §6.1's gapless
+formula (never the actual C2 run's own `+1`-offset reference cycles,
+`RV-C2RERUN` §5's own out-of-domain, hand-read datum) because the golden
+file states the writer's INTENDED output, and intended timing is gapless
+by the same spec both producers are built from — reproducing a hand-read,
+non-adjudicated defect datum into a fixture that is supposed to certify
+correctness would conflate two different things `RV-C2RERUN` §5 itself
+keeps carefully apart.
+
+**Why the fixture pairs a hand-authored `theirs` against a
+`Canonical.write_file`-built `ours`, not two hand-authored files.** The
+`ours` side needs no independent hand-authoring — `Canonical.write` is
+already the trusted, tested reference writer for the OCaml side (every other
+"ours" fixture in this self-test uses it) — so building it that way isolates
+the ONE thing genuinely under test: whether the hand-authored TEXT, standing
+in for the repaired Verilog writer's intended output, reads and agrees.
+Two hand-authored files would test only that they agree with EACH OTHER,
+never that either matches what the grammar or the spec actually requires.
+
+**The static enumeration's method.** For each of the six locations dv named
+plus four more found while reading (`run_cosim.sh`'s dispatch/dump,
+`DELIVERY_DEPTH`, the new `MAX_WORDS_PER_FRAME`, and the grammar text
+itself, added for completeness rather than left as an implicit "everything
+else is fine"), the question asked was the same: does this component's own
+logic branch, index, or format on an assumption that AT MOST ONE frame will
+ever exist, or is it built over a data structure (`Int_map`, a whole list,
+an opaque byte diff) that is already generic in frame count? Nine of the ten
+are SAFE by that test (three of them — `check_timing`'s printer, the idle
+sidecar, `ours_run.ml`'s writer — already exercised at two-or-more frames in
+production or in this self-test, not merely reasoned about); one
+(`tb_xgmii_rx_64.v`'s writer) was not, and is this round's own repair; one
+(`MAX_WORDS_PER_FRAME`) is new load-bearing machinery this round itself
+introduces, disclosed as such rather than silently added, per this file's
+own established §2.3 convention.
+
+### Actions
+- Read `test/cosim/tb_xgmii_rx_64.v` in full; edited it: added
+  `MAX_WORDS_PER_FRAME` and the per-slot buffered-field arrays
+  (`delivery_admit_cycle`, `delivery_word_count`,
+  `delivery_word_{tkeep,tlast,tuser0,cycle,tdata}`); split `write_word` into
+  `capture_word` (stores, with its own new bounded-overflow guard and `E
+  word-buffer-exhausted` sentinel) and `write_word_line` (formats and
+  `$fwrite`s one buffered word); removed the immediate `F`-line `$fwrite`
+  from `open_frame` (fields now stored only); rewrote
+  `close_delivery_accept`/`close_delivery_discard` to flush a closing
+  frame's entire block (`F`, buffered `W`s, `D`) contiguously; updated the
+  one call site (`write_word;` → `capture_word;`); added WO-0078 §14
+  `FINDING RV-0078-S2-6` documentation at the top-of-file comment, the
+  Stimulus-+-capture comment block, and each touched task's own comment.
+- Read `test/cosim/compare.ml` in full; edited it: added
+  `two_frame_golden_transaction` (the "ours" side, via `Canonical.write_file`)
+  and `reference_two_frame_golden_canon_text` (the hand-authored "theirs"
+  side) as `FINDING RV-0078-S2-8`'s golden-file fixture; wired both into
+  `self_test`'s temp-file list, cleanup list, write calls, a new `check`
+  invocation and the final AND-condition; updated the module's own top
+  `--self-test` usage-doc comment to name the new case.
+- Appended the WO-0078 §14 Return-log entry (route, seven-property
+  reasoning, the ten-item static enumeration, the golden-fixture
+  description, fixture results, the case-0/C1 invariance argument,
+  CI-deferred checks, files-changed).
+- Appended this journal entry.
+
+### Evidence
+Local checks (this environment has no `dune`, no Hardcaml switch, no
+`iverilog`/`vvp` — ADR-0005, reconfirmed this round: `which iverilog vvp` →
+not found; `tb_xgmii_rx_64.v` is therefore CI-deferred in full and was never
+executed, only self-reviewed line by line against its own pre-repair
+`$fwrite` call sites). `compare.ml` and `canonical.{ml,mli}` need only the
+standard library, so the plain-`ocamlc` path `J-tb_writer-0035` established
+applies directly, against the REAL repo files (not stubs, not stale copies —
+compiled twice, once mid-round and once from a fresh copy of the actual
+files at the end):
+
+```
+$ ocamlc -o compare_selftest canonical.mli canonical.ml compare.ml
+    -> exit 0, no warnings
+$ ./compare_selftest --self-test > selftest_stdout.log 2> selftest_stderr.log
+$ echo $?
+0
+$ grep -c 'PASS:' selftest_stdout.log
+13
+$ grep -c 'FAIL:' selftest_stdout.log
+0
+$ grep 'self-test: OK\|self-test: FAILED' selftest_stdout.log
+compare --self-test: OK
+$ grep -A2 'FINDING RV-0078-S2-8' selftest_stdout.log
+compare --self-test: (FINDING RV-0078-S2-8) the reference writer's intended two-frame, minimum-IFG buffered output (hand-authored golden file)
+  PASS: the golden file's per-frame CONTIGUOUS blocks (F, its 8 W lines, D) read cleanly and agree with our own side's identical content and gapless SPEC-M03 section 6.1 cycles (exit 0)
+```
+
+Full T0/T1/T2 output for the new case, eyeballed against SPEC-M03 §6.1's
+`admit_cycle + m + 3` formula clause by clause: T0 prints `frame 0:
+admit_cycle = 0` and `frame 1: admit_cycle = 10`, matching the fixture's own
+construction and C2's own recorded admit cycles (`RV-C2RERUN` §1); T1 prints
+"clean" and, for frame 0, `word 0: expected 3, observed 3` through `word 7:
+expected 10, observed 10` (`0 + m + 3` for `m = 0..7`), and for frame 1,
+`word 0: expected 13, observed 13` through `word 7: expected 20, observed
+20` (`10 + m + 3` for `m = 0..7`) — both frames' full eight-word profiles
+present and correct, which is exactly `FINDING RV-0078-S1-2` limb (b)'s own
+repair being re-exercised at a SECOND independent two-frame fixture, not
+merely re-run at the one it was built against; T2 prints both frames'
+`theirs cycles` identical to `ours`'s own (`offsets` all-zero,
+`[0 0 0 0 0 0 0 0]` both frames) because the golden file's hand-typed cycles
+were chosen to match the gapless formula exactly, confirming the fixture
+carries no accidental typo in sixteen hand-typed decimal fields. `frames
+compared: 2`, `frames matching: 2`, `divergences: none` — full REQ-901
+content agreement between the hand-typed text and the `Canonical.write`-built
+transaction, confirming every one of the 128 hand-typed octet tokens (two
+frames × eight words × eight octets) and all sixteen hand-typed cycle
+fields matches its OCaml-constructed counterpart exactly.
+
+Every pre-existing self-test case also printed `PASS` in this same run —
+(a) through (f), the optional T0 case, `idle_carried`, `refusal`,
+`two_idle_positions`, and `two_frame` (`FINDING RV-0078-S1-2` limb (b)) —
+confirming this round's edits did not disturb any prior case; the 13/0
+PASS/FAIL count above is the mechanical confirmation, not merely a visual
+scan.
+
+`git status --porcelain` at return: exactly two files,
+`test/cosim/compare.ml` and `test/cosim/tb_xgmii_rx_64.v`. No third file —
+in particular, `test/cosim/canonical.ml`, `test/cosim/canonical.mli`,
+`test/cosim/ours_run.ml` and `test/cosim/stimulus_gen.ml` are all absent,
+confirming the chosen route never amended the grammar and never touched the
+stimulus.
+
+**What is CI-deferred, and why.** `tb_xgmii_rx_64.v`'s own repair was not
+executed locally or in CI by this round (ADR-0005) and is self-reviewed line
+by line: each touched task's new body was checked against its own pre-repair
+`$fwrite` call site to confirm no field's VALUE or FORMAT changed, only its
+write TIME; `task`/`endtask` and `begin`/`end` counts were checked
+mechanically (`grep -c`) after every edit and balance at the end (5
+`task`/5 `endtask`, 21/21 `begin`/`end`). The landing `cosim` job at the next
+C2 re-run remains the first and only real execution of the repaired writer
+against the actual Icarus reference, and the first place this repair's own
+correctness is checked against a real simulator rather than against
+hand-reasoning and the golden-file fixture. Case 0's and C1's own stimulus
+was not re-executed this round (neither `stimulus_gen.ml` nor
+`ours_run.ml`'s Hardcaml-dependent `run` was opened or run); the invariance
+argument in the Return log is structural, not a reproduced hash.
+
+### Outcome
+DoD met, against `RV-C2RERUN` §6's seven preserved properties and §10 item
+1's own instructions:
+- [x] The route stated and justified against all seven properties
+      (Reasoning above; full text in the WO-0078 §14 Return-log entry).
+- [x] The alternative (grammar amendment) route considered and rejected,
+      with the specific property (2) that decides against it.
+- [x] `FINDING RV-0078-S2-8`'s golden-file fixture built and landed
+      alongside this repair, in the same round, per `RV-C2RERUN` §10 item 1.
+- [x] The static one-frame-assumption enumeration, ten items, one-line
+      disposition each, in the WO-0078 §14 Return-log entry.
+- [x] Sentinel texts byte-exact (confirmed by inspection — no `$fwrite`
+      sentinel string argument was edited).
+- [x] Case 0 / C1 invariance argued structurally (Reasoning / Return log),
+      since neither is locally executable here.
+- [x] `stimulus_gen.ml` untouched (confirmed by `git status --porcelain`).
+- [x] `canonical.{ml,mli}` and `ours_run.ml` untouched (the chosen route
+      does not amend the grammar).
+- [x] Local checks run and green: 13/13 self-test cases PASS, exit 0,
+      against the real repo files.
+- [x] CI-deferred checks named explicitly (Evidence), per ADR-0005.
+- [x] Journal entry (this one) + WO-0078 §14 Return-log entry appended.
+
+Not commissioned by this round and not attempted: any file under
+`test/attack_plans/**` (dv_lead's own); any file under `tools/cosim/**`
+(data_wrangler's own — read for the enumeration, not staged); a real
+`iverilog` execution of `tb_xgmii_rx_64.v` (ADR-0005; owed to the next
+`cosim` job, not to this round).
+
+Handoff: WO-0078 §14, this round's own Return-log entry, appended alongside
+this journal entry's own commit — for dv_lead's review, via the
+orchestrator, as the precondition for the next C2 re-run.
+
+### Open-questions
+None. No spec ambiguity was met (`RV-C2RERUN` §6 fully states the seven
+properties and names the route as the assignee's own call, which this entry
+makes and justifies); no RTL leaked into context (confirmed: `libs/**`,
+`top/**`, `rtl_snapshots/**` opened at no point, by this entry's own Inputs
+list and by direct recollection); no untestable requirement; no
+licensing-taint suspicion (no Essenceia-derived material in any input this
+round); no effort anomaly (one round, as `RV-C2RERUN` §10 item 1's own
+"Carrier: a tb_writer repair round" names it).
+
+### Files-in-this-commit
+- test/cosim/tb_xgmii_rx_64.v
+- test/cosim/compare.ml
+- agents/handoffs/WO-0078_cosim-phase2-3-stimulus-widening.md
