@@ -1000,7 +1000,7 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
   ; error_bad_fcs = strobe sel_bad_fcs
   ; error_bad_frame = strobe sel_error |: q_strobe 0
   ; error_runt = strobe sel_runt |: q_strobe 1
-  ; error_oversize = strobe sel_oversize
+  ; error_oversize = strobe sel_oversize |: (a_open &: i.clear)
   ; error_start_without_terminate = strobe sel_start |: q_strobe 2
   }
 ;;
