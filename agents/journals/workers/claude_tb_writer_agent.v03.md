@@ -1531,3 +1531,271 @@ per-landing estimate of one worker round).
 ### Files-in-this-commit
 - test/cosim/stimulus_gen.ml
 - agents/handoffs/WO-0078_cosim-phase2-3-stimulus-widening.md
+
+## [J-tb_writer-0039] 2026-08-06T14:34Z | task:WO-0078 | Stage 2's C4 landing — the construction surface checked against `Arrival`, `Frame` and `Injection` in turn and found to lack any lawful hook for arbitrary preamble/SFD data values; STOPPED per the dispatch's own instruction, no row built, `stimulus_gen.ml` left byte-identical to HEAD, all four existing binds reproduced as evidence of that
+
+### Trigger
+Orchestrator, dispatching "the stimulus half of WO-0078 STAGE 2's LAST
+LANDING — case C4 ALONE," directing CD §10.4's frozen instance be read FIRST,
+its own quoted sequencing ruling ("X4 excludes the octet *values*; it does
+NOT exclude the decision those octets cause") read as a block rather than
+paraphrased, and its §2 naming the exact fork this round resolves: use a
+lawful construction hook if one exists, or "say so and STOP that path —
+report the gap rather than modifying shared machinery." No explicit
+"work-order id + spawn UTC timestamp" token (PROTOCOL §4.1's literal form)
+was present in this round's own dispatch prompt — recorded honestly here per
+this packet's own §14 precedent for the identical situation
+(`J-tb_writer-0035` through `-0038`) rather than presented as a token copied
+verbatim: the timestamp above is this entry's own UTC header time, `date -u`
+read at the start of this round, matching the environment's own `currentDate`
+context (2026-08-06).
+
+### Inputs
+- **Abort-first head check**: `git rev-parse HEAD` = `dac98c0d6b5dfd1fb4b795bd28d1e34c96e3afdb`,
+  matching the dispatch's stated spawn-head ("The one to watch was
+  watched…"). `git status --porcelain` empty. Proceeded without the mismatch
+  procedure.
+- `agents/charters/tb_writer.md` (full read, this round).
+- `agents/PROTOCOL.md` §2–6, §10 (full read this round; §1, §7–9, §11 also
+  read for surrounding context).
+- `agents/handoffs/WO-0078_cosim-phase2-3-stimulus-widening.md` — read via
+  its section headers (`grep -n '^#'`, the file exceeds the single-read size
+  limit at ~453 KB), then in full at: §6.2 (the case table, C4's row and the
+  three-landing split), §7 (the frozen predicted dispositions, C4's row and
+  the α/β/γ branch definitions), §14 in full from `RV-C3ALPHA` §0 through its
+  §12 ("Sequencing: C4 alone, CONFIRMED, unamended") and §14 verdict — the
+  section this round's own dispatch quotes from directly — plus the three
+  prior tb_writer Return-log entries (C1+C2, the S2-1 repair, the S2-6/S2-8
+  repair, C3) for construction-idiom precedent.
+- `test/attack_plans/CD-xgmii_rx_64_cosim.md`, read in full (976 lines) —
+  §10.0 (what binds every Stage-2 instance: the empty permitted-divergence
+  set at 64 octets, branch β's unreachability, "nothing may be moved from
+  inside the domain to outside it after a run has shown a difference there"),
+  §10.4 (**C4's frozen instance — this round's construction target**, read
+  word for word before any code was considered), §10.5 (`FINDING CD-P2-1`,
+  the blank branch cell C4 shares with C3).
+- `test/xgmii/arrival.mli` — full re-read. Module doc's *"What the model does
+  not decide"* section: preamble filler 0x55, SFD 0xD5, stated as a design
+  choice ("REQ-102 forbids M03 from validating those values, so no bench may
+  assert on them"), not a gap. `create`'s complete optional-argument set:
+  `?ifg`, `?first_start`, `?fcs_valid` — no preamble parameter.
+- `test/xgmii/arrival.ml` — full re-read, for the actual emission logic
+  behind the `.mli`'s prose (lines 17, 101-107): `preamble_octets = 8`;
+  `lane_at` hardcodes `Xgmii_word.Data (if d = preamble_octets - 1 then 0xD5
+  else 0x55)` for every `d` in the preamble range, unconditionally — no
+  branch a caller can steer.
+- `test/xgmii/frame.mli` — full re-read: *"The preamble, the terminate
+  character and the gap are never part of the length; they belong to the
+  schedule, which is [Arrival]'s business"* — confirms `Frame` carries no
+  preamble affordance to check.
+- `test/xgmii/injection.mli` — full re-read, because its `At_preamble of int`
+  constructor is the one candidate that looked, on the docstring alone, close
+  to a usable hook. `Place`'s own doc: *"put an XGMII control character
+  ([Xgmii_word.start_char], [terminate_char] or [error_char]) at
+  [placement]… An `/I/` or `/Q/` is accepted only at [At_preamble]"* — five
+  characters total, all control.
+- `test/xgmii/injection.ml` — full re-read (not merely the `.mli`), because a
+  negative construction finding is exactly the kind of claim §0's real-closure
+  standard says must be checked at the source, not inferred from a comment.
+  `is_control_char` (lines 60-66): exactly the same five characters.
+  `check`'s `Place` arm (lines 96-101): any other `character` value is
+  refused as a construction error (`errors t`, which `injection.mli` itself
+  documents as *"a bench must treat a non-empty list as a construction
+  failure, not as a result"*). The override-application arm (line 175):
+  even a valid `character` is written as `Xgmii_word.Control character`,
+  never `Data`.
+- `test/xgmii/idle_injection.mli` — read for completeness (its own doc
+  mentions `word_at`), dismissed on its own terms: a timing wrapper whose own
+  contract forbids touching preamble positions at all, orthogonal to octet
+  values.
+- `test/xgmii_rx_64/test_m03_e.ml` lines 1-90 — read for the M03-E4 precedent
+  this dispatch names by name (`Bench.run`'s own `?word_at` hook, a
+  pre-existing shared-machinery affordance the M03-E4 author used, not
+  invented) — read to confirm what "a lawful construction hook" means by the
+  dispatch's own example, and that no analogue of it exists on the
+  stimulus-generation side (`Arrival`/`stimulus_gen.ml`) rather than only on
+  the bench-driving side.
+- For local verification only, read (not staged, not part of any
+  deliverable): `test/golden/crc32_ref.ml`/`.mli`, `test/xgmii/xgmii_word.ml`/`.mli`,
+  `test/cosim/stimulus_gen.ml` at HEAD in full (the file this round considered
+  editing and then did not). `test/golden/dune` and `test/xgmii/dune` headers
+  re-read to reconfirm neither `dv_golden` nor `dv_xgmii` carries a Hardcaml
+  dependency.
+- **No `libs/**`, no `top/**`, no `rtl_snapshots/**` — opened at no point, by
+  any means, this round.** Every file listed above is `agents/**`, `test/**`
+  (DV-side: `test/cosim/`, `test/xgmii/`, `test/golden/`, `test/xgmii_rx_64/`
+  — read-only, for the M03-E4 precedent — and `test/attack_plans/`, read-only,
+  dv_lead's own) or the packet itself. No RTL reached this seat's context at
+  any point.
+
+### Reasoning
+**The fork the dispatch named, resolved by checking rather than assuming.**
+§2's own text offered two branches: use a lawful hook if one exists, cite it;
+or find the machinery genuinely incapable and stop rather than route around
+it. Three modules were checked in turn, each at the source rather than only
+at its interface comment, because a negative finding ("this cannot be done")
+is exactly the kind of claim this lane's own established discipline (§0's
+real-closure standard, otherwise used to promote positive expect results)
+requires be checked, not inferred:
+
+1. **`Arrival`** — the module `stimulus_gen.ml` actually calls to emit the
+   schedule. Its own doc names the fixed preamble content under a heading
+   that reads as a design decision, not an omission: *"What the model does
+   not decide."* `create`'s complete signature has three optional arguments
+   and none of them touch preamble content; the implementation confirms the
+   two literals (0x55, 0xD5) are unconditional, not defaulted.
+2. **`Frame`** — explicitly disclaims the preamble as outside its own
+   business, by its own doc, closing that avenue rather than leaving it open.
+3. **`Injection`** — the one module with a preamble-*position* constructor,
+   which made it worth checking past the `.mli` alone. Its actual validation
+   logic restricts the *payload* at that position to five named control
+   characters and rejects anything else as a construction error, and even a
+   valid choice is written as a control lane, never a data lane. This is a
+   mechanism for a categorically different stimulus (an early control
+   character — REQ-105's family, `/E/`/`/T/`/`/S/`/`/I/`/`/Q/` substituted
+   into the preamble) than CD §10.4's ("arbitrary, nonstandard **data**
+   values" in the filler and SFD positions, "otherwise clean"). Reading only
+   the `.mli`'s prose (*"put an XGMII control character… at [placement]"*)
+   would have been enough to rule this out without opening the `.ml` at all;
+   the `.ml` was opened anyway because a claim this round makes — "no lawful
+   hook exists" — is a negative result this lane treats with the same
+   standard as a positive one, not a lower one.
+
+**Why the M03-E4 comparison the dispatch itself invites cuts against building
+one, not for it.** `Bench.run`'s `?word_at` hook, which M03-E4 used, is a
+pre-existing, already-reviewed affordance on shared bench-driving machinery,
+built by whoever wrote `bench.mli` for exactly the purpose of letting a
+caller override a driven word. Nothing analogous exists on the
+stimulus-*generation* side this round works on (`Arrival`, `stimulus_gen.ml`)
+— `Arrival.word_at` is a pure reader, and no override parameter sits beside
+it. The dispatch's own citation of M03-E4 is therefore read as defining the
+STANDARD a hook must meet (pre-existing, purpose-built, already reviewed) —
+not as license to build a same-shaped mechanism fresh this round and call it
+"using a hook."
+
+**Two workarounds considered and both rejected, for a shared reason.** (a)
+Adding a `?preamble` parameter to `Arrival.create` — refused outright:
+`test/xgmii/**` is shared machinery, outside this WO's named file
+(`test/cosim/stimulus_gen.ml`) and outside this charter's write scope (§6).
+(b) Hand-splicing `Xgmii_word.of_lanes` inside `stimulus_gen.ml` itself, after
+calling `Arrival.word_at`, to patch cycle 0's preamble lanes for C4 alone —
+considered seriously because it is technically reachable from this file's own
+write scope, and rejected because it would re-derive `Arrival`'s own private
+preamble geometry (`preamble_octets`, the filler/SFD lane split) a second
+time, outside `Arrival`'s own abstraction — the identical "a second literal
+is a second thing that can drift" hazard CD §10.0 states for its own bind
+literal, here applied to geometry — and because it would produce a stimulus
+file that visibly disagrees with what `Arrival.report`/`Arrival.check` would
+say about the same schedule, breaking the one invariant every prior case's
+own comment states explicitly (the file written out IS `Arrival.create`'s own
+schedule, nothing hand-patched on top). The dispatch's instruction — "report
+the gap rather than modifying shared machinery" — is read to bar this route
+too, not only literal edits to `test/xgmii/**`: the capability creep it warns
+against is the same capability creep, relocated to a file where a reviewer
+would have a harder time spotting it, which makes it the worse place to put
+it, not a safer one.
+
+**Idle sidecar, answered as far as it can be without a fabricated
+measurement.** The value is a pure function of admitted-frame count and
+whether any injection mechanism is used — independent of the preamble-content
+question — so it is answerable in the abstract (`[ 0 ]`, matching case 0/C1/
+C3's own single-frame, no-injection idiom) without pretending a run produced
+it. Stated as an inference in the Return log, explicitly not as C4's actual
+measured value, because no C4 schedule exists to measure.
+
+### Actions
+No file under `test/cosim/**` or any shared `test/xgmii/**` module was
+edited. `test/cosim/stimulus_gen.ml` was read in full and left
+byte-for-byte as at HEAD. A standalone scratch build (outside the checkout,
+under this session's scratchpad) was assembled to re-run the existing four
+cases as evidence, not to construct C4: `crc32_ref.{mli,ml}` and
+`xgmii_word.{mli,ml}` and `frame.{mli,ml}` and `arrival.{mli,ml}` copied
+verbatim from their real paths, a one-line `dv_golden.ml` aliasing
+`Crc32_ref` and a one-line `dv_xgmii.ml` aliasing `Xgmii_word`/`Frame`/
+`Arrival` (dune's own library-wrapping, reproduced by hand in the absence of
+`dune` per ADR-0005 — the same method every prior round in this lane used),
+and `stimulus_gen.ml` copied unedited from HEAD. `agents/handoffs/WO-0078_cosim-phase2-3-stimulus-widening.md`'s
+§14 Return log received one new entry, appended at EOF, reporting the gap
+per the dispatch's own instruction.
+
+### Evidence
+```
+$ ocamlc -c crc32_ref.mli && ocamlc -c crc32_ref.ml     -> exit 0 (each)
+$ ocamlc -c dv_golden.ml                                 -> exit 0
+$ ocamlc -c xgmii_word.mli && ocamlc -c xgmii_word.ml    -> exit 0 (each)
+$ ocamlc -c frame.mli && ocamlc -c frame.ml              -> exit 0 (each)
+$ ocamlc -c arrival.mli && ocamlc -c arrival.ml          -> exit 0 (each)
+$ ocamlc -c dv_xgmii.ml                                  -> exit 0
+$ ocamlc -c stimulus_gen.ml                              -> exit 0   (the UNEDITED HEAD file)
+$ ocamlc -o stimulus_gen.exe crc32_ref.cmo dv_golden.cmo xgmii_word.cmo \
+    frame.cmo arrival.cmo dv_xgmii.cmo stimulus_gen.cmo   -> exit 0   (genuinely LINKED)
+
+$ ./stimulus_gen.exe stim_0.txt  0    -> 36 lines; idle sidecar: 0
+    sha256 = c675517176922d42bca42ec3def182cb3536861f1acaa8384116f33a5c4cc051   (case 0, REPRODUCED)
+$ ./stimulus_gen.exe stim_C1.txt C1   -> 36 lines; idle sidecar: 0
+    sha256 = 5ae9e4f501251c38d0c2d386bd792e07cbcf9cf107cf7e75c378e21b1ce3bd7c    (C1, REPRODUCED)
+$ ./stimulus_gen.exe stim_C2.txt C2   -> 46 lines; idle sidecar: 0, 0
+    sha256 = cc1e85a4c5f871226f07b4792446d63c523577dcf172d6c4a80b8a3e845b44a7    (C2, REPRODUCED)
+$ ./stimulus_gen.exe stim_C3.txt C3   -> 36 lines; idle sidecar: 0
+    sha256 = 1512d30b6aa186ca89d55ce40fbcfdee01590a5a47e2a497eb4389c2bc6c4dce    (C3, REPRODUCED)
+$ ./stimulus_gen.exe stim_C4.txt C4
+    Fatal error: exception Failure("stimulus_gen: unknown case id \"C4\" (known: 0, C1, C2, C3)")
+    exit code 2   (confirms the file is genuinely unedited, not merely reported as such)
+```
+`injection.ml:60-66` (`is_control_char`), `:96-101` (the `Place` validation
+arm), `:175` (`Hashtbl.replace overrides octet_time (Xgmii_word.Control
+character)`), and `arrival.ml:17,101-107` (`preamble_octets`, the
+unconditional 0x55/0xD5 emission) — quoted verbatim in the Return log entry,
+read at these exact lines this round, not paraphrased from memory of the
+`.mli`s.
+
+`git status --porcelain` at return: clean except this journal file and the
+WO-0078 Return-log append (`git diff --stat` confirms exactly those two
+paths).
+
+### Outcome
+DoD (WO-0078 §11, "Stage 2, per landing — tb_writer") — **PARTIALLY MET, by
+declared gap rather than by omission**:
+- [ ] No C4 row was added — the case-table row could not be honestly
+      constructed with this round's own reachable machinery.
+- [x] The gap is stated as a declared gap, not a silent skip, with the exact
+      modules checked and the exact lines that rule each one out (charter §3:
+      "each assigned row maps to a named test or a declared gap in your
+      Return log — never a silent skip").
+- [x] Case 0/C1/C2/C3 untouched — proven by `git status --porcelain` (no
+      diff at all under `test/cosim/`) AND by re-executing all four builders
+      and reproducing all four exact CI-pinned/bound hashes.
+- [x] Idle sidecar addressed — stated as an inference (`[ 0 ]`), explicitly
+      not as a measured value, since no C4 schedule was built.
+- [x] Journal entry (this one) + WO-0078 §14 Return-log entry appended.
+- [ ] No promotion event this round (nothing to promote; no expect block, no
+      waveform) — charter §3's promotion-discipline obligation does not apply
+      here for lack of a promotion, not because it was skipped.
+
+Not commissioned by this round and not attempted: any edit to
+`test/xgmii/**` (shared machinery, outside this WO's file list); any file
+under `tools/cosim/**` (data_wrangler's own half); any file under
+`test/attack_plans/**` (dv_lead's own; CD read in full, not staged).
+
+Handoff: WO-0078 §14, this round's own Return-log entry, appended below
+`RV-C3ALPHA`'s own verdict — for dv_lead's review, via the orchestrator, as
+the adjudication of whether Stage 2's fourth case is BLOCKED as reported, or
+whether one of the two named remediation paths is authorised in a follow-on
+dispatch.
+
+### Open-questions
+One, carried into the Return log rather than guessed past: **which of the two
+named remediation paths, if either, dv_lead authorises** — extending
+`Arrival.create` with a preamble-override affordance (shared-machinery
+change, its own work order), or a narrowly-scoped, explicitly-authorised
+word-level override confined to a new `build_c4` inside
+`test/cosim/stimulus_gen.ml`. Neither is chosen by this round; both are named
+so the choice is dv_lead's to make with the tradeoff stated rather than
+discovered later. No RTL leaked into context (confirmed: `libs/**`, `top/**`,
+`rtl_snapshots/**` opened at no point this round, by direct recollection of
+every file read and cross-checked against this entry's own Inputs list); no
+licensing-taint suspicion; no effort anomaly (one seat, ending at the
+investigation rather than tracking past a single landing's estimate).
+
+### Files-in-this-commit
+- agents/handoffs/WO-0078_cosim-phase2-3-stimulus-widening.md

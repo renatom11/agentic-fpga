@@ -6836,3 +6836,262 @@ carries this verdict and by that entry** — no calendar literal is asserted and
 adjudication here rests on one (`FINDING CD-P2-2`).
 
 ---
+
+### tb_writer — Stage 2, C4 landing (§6.2) — construction surface gap, NO ROW BUILT, RETURNED
+
+**Abort-first head check**: `git rev-parse HEAD` = `dac98c0d6b5dfd1fb4b795bd28d1e34c96e3afdb`,
+exactly this dispatch's stated spawn-head ("The one to watch was watched…").
+`git status --porcelain` empty at spawn. Proceeded without the mismatch procedure.
+
+**Scope, read against §6.2's table and `RV-C3ALPHA` §12 before a line was
+considered.** C4 alone — "C4 alone, next; CONFIRMED, not amended" (`RV-C3ALPHA`
+§12) — the last of Stage 2's four cases. `test/cosim/stimulus_gen.ml` is the
+only file this dispatch names; `tools/cosim/**` (data_wrangler's own half, the
+case-array amendment) and `test/attack_plans/**` (dv_lead's own) were read for
+context, never for staging.
+
+**CD §10.4's frozen instance, quoted rather than paraphrased, per this round's
+own hardened obligation:**
+
+> **Stimulus** (`WO-0078` §6.2): one **64-octet** good-FCS frame whose six preamble
+> filler octets and SFD octet carry **arbitrary, nonstandard data values**;
+> otherwise clean; lane-0 start on cycle 0, sighted placement preserved. This is
+> REQ-102's own commissioned stimulus — *"a frame whose six preamble filler octets
+> and SFD octet are arbitrary data values"*.
+>
+> **INSIDE the domain**: the four REQ-901 observables — and **the accept-or-discard
+> decision is the observable this case is about.**
+>
+> **OUTSIDE — X4, with its scope recorded so it cannot be over-read.** §5.2's X4
+> excludes *"preamble and SFD octet values"*. Those octets are **stripped by
+> REQ-102 and appear in no delivered stream on either side**, so **X4 removes
+> nothing from C4's delivered-octet comparison**; what it removes is the *stimulus*
+> octets as a source of expected values… **X4 does NOT exclude the decision those
+> octets cause.** If the reference validates the preamble and rejects the frame,
+> that is a divergence in REQ-901's **accept-or-discard decision**, inside the
+> domain, outside every declared class — **γ**.
+
+And RV-C3ALPHA §12's own restatement, read as the dispatch's own quoted source
+before mine: *"§5.2's X4 excludes 'preamble and SFD octet values', but those
+octets are stripped by REQ-102/REQ-103 and appear in no delivered stream on
+either side, so X4 removes nothing from C4's delivered-octet comparison… X4
+does NOT exclude the DECISION those octets cause."*
+
+**The construction surface, checked before a line was written — not assumed —
+against the three modules that could plausibly carry it.**
+
+1. **`test/xgmii/arrival.mli`/`.ml` — the emitter `stimulus_gen.ml` actually
+   calls.** `arrival.mli`'s own module doc, under the heading *"What the model
+   does not decide"*: *"The preamble filler octets are 0x55 with an 0xD5 SFD, as
+   SPEC-M03 §6.1's cycle table writes them, but REQ-102 forbids M03 from
+   validating those values, so no bench may assert on them at the receiver."*
+   `create`'s full optional-argument set is `?ifg`, `?first_start`, `?fcs_valid`
+   — no `?preamble`, no octet-value parameter of any kind. Read at the
+   implementation (`arrival.ml:101-107`), the emission is unconditional:
+   ```
+   else if d < preamble_octets
+   then
+     (* SPEC-M03 §6.1's cycle table: six 0x55 then the 0xD5 SFD. REQ-102
+        forbids the receiver from validating these values, so no bench may
+        assert on them; they are written correctly because a link partner
+        that is wrong for no reason is a bench that fails for no reason. *)
+     Xgmii_word.Data (if d = preamble_octets - 1 then 0xD5 else 0x55)
+   ```
+   Hardcoded, not defaulted — there is no branch, table, or closure anywhere in
+   `create`'s call graph a caller can reach to change these two literals. `word_at`
+   is a pure reader (`t -> cycle:int -> Xgmii_word.t`), not a settable override.
+2. **`test/xgmii/frame.mli`** — confirms the boundary rather than closing it:
+   *"The preamble, the terminate character and the gap are never part of the
+   length; they belong to the schedule, which is [Arrival]'s business."* `Frame`
+   carries no preamble affordance to check.
+3. **`test/xgmii/injection.mli`/`.ml`** — the one module with a
+   position-addressable preamble constructor, `At_preamble of int`, checked in
+   full because it looked, on the docstring alone, like the closest candidate to
+   "a `?preamble`-like parameter." It is not one, on inspection of the actual
+   code, not merely its comment: `Place`'s `character` field is validated by
+   `is_control_char` (`injection.ml:60-66` — exactly the five REQ-102/§2
+   characters, `/S/ /T/ /E/ /I/ /Q/`) and any other value is refused as a
+   **construction error**, per `injection.ml:96-101`:
+   ```
+   if not (is_control_char character)
+   then
+     add
+       "frame %d: Place character 0x%02X is not one of requirements.md §2's five"
+       i character;
+   ```
+   and even a *valid* character is written into the schedule as
+   `Xgmii_word.Control character` (`injection.ml:175`), never `Data` — so `Place`
+   at `At_preamble` can only substitute one of five named **control** characters
+   for a preamble octet (a REQ-105-class early-error stimulus, family B's own
+   subject), never an arbitrary **data** byte at a filler or SFD position. This
+   is confirmed by running the actual validation logic's source, not inferred
+   from `injection.mli`'s prose alone (§0's real-closure standard, applied to a
+   negative finding rather than a positive one).
+4. **`test/xgmii/idle_injection.mli`** — checked for completeness and
+   dismissed on its own terms: it is a timing wrapper (idle-cycle insertion)
+   and its own contract explicitly forbids touching preamble positions at all
+   (*"REQ-016's idle-injection wrapper… SHALL NOT place an injected idle cycle
+   between a frame's start character and its first octet"*) — orthogonal to
+   octet **values**, not a candidate.
+
+**Conclusion: no lawful construction hook exists.** Every module in the
+reachable DV-side link-partner model that touches preamble content —
+`Arrival` (the emitter `stimulus_gen.ml` calls), `Frame` (which disclaims the
+preamble outright), `Injection` (which has a preamble-position constructor but
+restricts its payload to five control characters, enforced by a runtime
+check, not merely undocumented) — either hardcodes the two literals CD §10.4
+needs varied, or categorically cannot express a **data** octet there. This is
+not the `?word_at`/`?preamble`-style hook M03-E4 used (a pre-existing,
+already-reviewed affordance on the shared bench-driving machinery, built for
+exactly that purpose); it is the other branch this dispatch's §2 named in
+advance: *"if the existing Frame/Arrival machinery cannot express nonstandard
+preamble octets… say so and STOP that path."*
+
+**STOPPED at that line, per the dispatch's own instruction.** No C4 row was
+added to `test/cosim/stimulus_gen.ml`. Two ways around the gap were considered
+and both rejected, for the same reason: (a) editing `arrival.ml`/`arrival.mli`
+to add a `?preamble` parameter — refused outright: `test/xgmii/**` is shared
+machinery, outside this WO's file list and this charter's write scope (§6),
+and the change would be un-reviewed capability creep into a module three other
+files' own doc comments treat its current fixed content as a stated design
+choice, not an oversight; (b) hand-splicing `Xgmii_word.of_lanes` inside
+`stimulus_gen.ml` itself to patch cycle 0's lanes 1–7 after calling
+`Arrival.word_at` — technically reachable from *this* file's own write scope,
+and considered seriously before being rejected: it would silently re-derive
+`Arrival`'s own preamble-position geometry (`preamble_octets = 8`, filler at
+`d = 1…6`, SFD at `d = preamble_octets - 1`) a second time, outside `Arrival`'s
+own abstraction, which is the same "a second literal is a second thing that
+can drift" hazard CD §10.0 names for its own bind literal, applied here to
+geometry instead of a hash; and it would produce, from a reader's standpoint,
+a schedule whose own emitter (`Arrival`) disagrees with what the stimulus file
+actually contains — no longer "`Arrival.create`'s own schedule, written out,"
+which is the invariant every case 0/C1/C2/C3 comment states and this round
+would be the first to break silently. Both routes are within the
+letter of "my file, my scope" for (b) and refused for (a); the dispatch's own
+instruction — "report the gap rather than modifying shared machinery" — is
+read here to bar the *spirit* of (b) as well, since a bypass that reaches
+around `Arrival`'s public contract from outside it is the same capability
+creep the instruction names, only relocated to a file where it would be
+easier to miss in review.
+
+**Idle sidecar for C4: no actual value — none was produced, because no
+schedule was built.** Stated for the record rather than left silent: *if* a
+`build_c4` existed matching every other case's own construction idiom (a
+single frame, `~first_start:0`, no `Injection`/`Idle_injection` machinery in
+its call graph), the idle-count sidecar would be `[ 0 ]` by the same
+construction argument case 0's, C1's and C3's own comments already make — but
+this is an inference from the established idiom, not a measurement, and is
+not asserted as C4's actual value because C4 does not exist as a runnable
+case in this file.
+
+**Local verification, per this lane's established real-closure method — run
+against the real `Dv_xgmii` model, not a stub, to confirm the file is
+genuinely untouched rather than merely unedited by report.** This environment
+has no `dune`, no Hardcaml switch, no `iverilog`/`vvp` (ADR-0005). A standalone
+build was assembled in scratch (`crc32_ref.{mli,ml}`, a one-line `dv_golden.ml`
+aliasing `Crc32_ref`, `xgmii_word.{mli,ml}`, `frame.{mli,ml}`,
+`arrival.{mli,ml}`, a one-line `dv_xgmii.ml` aliasing `Xgmii_word`/`Frame`/
+`Arrival`, and `stimulus_gen.ml` copied byte-for-byte from HEAD) — the same
+method this round's own prior C1/C2/C3 landings established:
+
+```
+$ ocamlc -c crc32_ref.mli && ocamlc -c crc32_ref.ml     -> exit 0 (each)
+$ ocamlc -c dv_golden.ml                                 -> exit 0
+$ ocamlc -c xgmii_word.mli && ocamlc -c xgmii_word.ml    -> exit 0 (each)
+$ ocamlc -c frame.mli && ocamlc -c frame.ml              -> exit 0 (each)
+$ ocamlc -c arrival.mli && ocamlc -c arrival.ml          -> exit 0 (each)
+$ ocamlc -c dv_xgmii.ml                                  -> exit 0
+$ ocamlc -c stimulus_gen.ml                              -> exit 0   (the UNEDITED file,
+                                                                        genuinely type-checked
+                                                                        against the real
+                                                                        Arrival/Frame/Xgmii_word)
+$ ocamlc -o stimulus_gen.exe crc32_ref.cmo dv_golden.cmo xgmii_word.cmo \
+    frame.cmo arrival.cmo dv_xgmii.cmo stimulus_gen.cmo   -> exit 0   (genuinely LINKED)
+```
+
+All four existing binds reproduced byte for byte, real execution, before any
+claim about C4 was made:
+
+```
+$ ./stimulus_gen.exe stim_0.txt  0    -> 36 lines; idle sidecar: 0
+    sha256 = c675517176922d42bca42ec3def182cb3536861f1acaa8384116f33a5c4cc051   (case 0's pin, REPRODUCED)
+$ ./stimulus_gen.exe stim_C1.txt C1   -> 36 lines; idle sidecar: 0
+    sha256 = 5ae9e4f501251c38d0c2d386bd792e07cbcf9cf107cf7e75c378e21b1ce3bd7c    (C1's bind, REPRODUCED)
+$ ./stimulus_gen.exe stim_C2.txt C2   -> 46 lines; idle sidecar: 0, 0
+    sha256 = cc1e85a4c5f871226f07b4792446d63c523577dcf172d6c4a80b8a3e845b44a7    (C2's bind, REPRODUCED)
+$ ./stimulus_gen.exe stim_C3.txt C3   -> 36 lines; idle sidecar: 0
+    sha256 = 1512d30b6aa186ca89d55ce40fbcfdee01590a5a47e2a497eb4389c2bc6c4dce    (C3's bind, REPRODUCED)
+$ ./stimulus_gen.exe stim_C4.txt C4
+    Fatal error: exception Failure("stimulus_gen: unknown case id \"C4\" (known: 0, C1, C2, C3)")
+    exit code 2   (CONFIRMS the file is genuinely unedited — "C4" is not yet a known case id,
+                    not merely reported as such)
+```
+
+The fifth line is not a defect; it is the evidence this round did what it says
+it did — left the file alone. **No `git diff` exists for `test/cosim/stimulus_gen.ml`**
+(`git status --porcelain` at return shows nothing under `test/`), confirmed
+directly rather than inferred from the round's own narrative.
+
+**What is CI-deferred, and why**: nothing new. This round adds no file to
+build or run in CI — `ours_run.ml`, `tb_xgmii_rx_64.v`, `canonical.{ml,mli}`,
+`compare.ml`, `tools/cosim/**` were not opened for edit and carry no change
+from this round to defer. ADR-0005 governs the local-verification method
+above exactly as it governed every prior round's.
+
+**Refused or blocked.** BLOCKED, not merely refused: CD §10.4's instance
+cannot be constructed from the current DV-side link-partner model
+(`Arrival`, `Frame`, `Injection`, `Idle_injection` — the full set reachable
+without touching `libs/**`/`top/**`/`rtl_snapshots/**`) without either editing
+shared machinery outside this WO's file list (out of write-scope, §6) or
+building an ad hoc word-level patch inside `stimulus_gen.ml` that re-derives
+`Arrival`'s own private preamble geometry from outside its own abstraction —
+which this round declines on the grounds stated above, reading the dispatch's
+"report the gap rather than modifying shared machinery" instruction as
+reaching that route too. No RTL leaked into context; no licensing-taint
+suspicion; no effort anomaly (this round is one seat, in line with a single
+landing's estimate, and ends at the investigation rather than tracking past
+it). This is the escalation the charter's §7 "untestable requirement" clause
+is the closest existing shape for, even though the requirement itself (REQ-102)
+is testable in principle — what is blocked is this lane's own stimulus
+generator's *capability* to produce the input REQ-102's own commissioned
+stimulus needs, which is dv_lead's freeze/CD authority to extend, not mine to
+route around.
+
+**Two remediation paths, named for dv_lead's ruling, decided by neither of
+them here:**
+1. **Extend `Arrival.create` with a preamble-override affordance** (e.g. an
+   optional `?preamble:(int -> int)` filler/SFD map, mirroring `Frame
+   .stress_frame`'s own `?filler` idiom already in this codebase) — a change
+   to `test/xgmii/arrival.mli`/`.ml`, shared machinery outside this WO's scope,
+   requiring its own review and its own work order.
+2. **A narrowly-scoped, explicitly-authorised word-level override inside
+   `test/cosim/stimulus_gen.ml`** — e.g. a `?preamble_override:int array`
+   argument to a new `build_c4` that patches exactly the six filler lanes and
+   the SFD lane of the frame's own start word after `Arrival.create`, stated
+   and reviewed as a deliberate one-case exception rather than assumed by a
+   worker unilaterally. If dv_lead selects this path, the exact octet values,
+   the check that confirms they land on the wire where CD §10.4 says they
+   must, and the residual risk stated above (a stimulus file that visibly
+   disagrees with what `Arrival.report`/`Arrival.check` would say about the
+   same schedule) belong in the amending dispatch, not invented here.
+
+Neither is chosen by this round. C4 is returned **NOT BUILT**, a declared gap
+rather than a silent skip, per this charter's own "no test dv_lead or the
+auditor cannot trace is a defect against me" standard applied to its inverse:
+a test that cannot honestly be traced to the instance it claims is worse than
+no test.
+
+**Files changed**: none under `test/cosim/**` — `git status --porcelain`
+confirms `test/cosim/stimulus_gen.ml` is byte-identical to HEAD. This packet's
+own Return log (this entry) and this round's journal entry are the only
+staged paths.
+
+— tb_writer, spawn `WO-0078-TB-STAGE2-C4/2026-08-06T14:34Z` (no explicit
+"work-order id + spawn UTC timestamp" token was present in this round's own
+dispatch prompt; recorded honestly per this packet's own §14 precedent for
+the identical situation — `J-tb_writer-0035` et seq. — rather than presented
+as one copied verbatim: the timestamp above is this entry's own UTC header
+time, `date -u` read at the start of this round, matching the environment's
+own `currentDate` context of 2026-08-06).
+
+---
