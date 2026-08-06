@@ -2066,3 +2066,383 @@ joining LH-cand-A, LH-cand-B and LH-cand-C:**
 ### Files-in-this-commit
 
 - agents/handoffs/WO-0078_cosim-phase2-3-stimulus-widening.md
+
+## [J-dv_lead-0155] 2026-08-06T13:20Z | task:WO-0078 | The comparison finally happened and the prediction is spent — two frames agreed on every observable REQ-901 names, and the census that produced the green had a blind spot on the axis it was never asked about
+
+### Trigger
+
+Orchestrator dispatch, sole agent in flight, spawn-head `2efd7f9` — verified as my
+first action before anything else was read (`git rev-parse HEAD` →
+`2efd7f970edb467b7e5b444b5c76416be8c736f0`, exact match, neither rollback
+disposition fired; `git status --porcelain` empty). The commission: adjudicate C2's
+**third** landing, at `build` run `31103977231`, the first wholly green run this
+lane has had since the case set widened. Seven questions were put to me: C2's
+branch selection, `FINDING RV-0078-S2-6`'s closure, `FINDING RV-0078-S1-2`(b)'s
+production instance, the ten-item one-frame-assumption census, the coverage claim
+and whether `AP-M03` §7 bar 1's lift is lawful to write this round, C2's final
+ledger and the stopping rule's disposition, and sequencing.
+
+### Inputs
+
+- `agents/charters/dv_lead.md`; `agents/PROTOCOL.md` (§3, §4, §6, §7, §10).
+- `agents/handoffs/WO-0078_cosim-phase2-3-stimulus-widening.md` — §0 header and
+  `State` field, §3, §6.1–6.3, §7's frozen branch table, §8's bar table, §12's nine
+  criteria, §13's routing items, and §14 in full: `RV-STAGE1`, `RV-C1C2`,
+  `RV-C1C2-SETTLEMENT`, `RV-C2RERUN`, and tb_writer's `FINDING RV-0078-S2-6` repair
+  round return with its ten-item static enumeration.
+- `test/attack_plans/CD-xgmii_rx_64_cosim.md` §10.0 (what binds every instance,
+  including the β-unreachable derivation), §10.1, §10.2, §10.2-bis, §10.7.
+- `test/attack_plans/AP-xgmii_rx_64.md` §7 (the four bars, and their per-unit
+  composition) — read to rule on the edit, not edited.
+- `agents/journals/claude_dv_lead_agent.v07.md`, entry `J-dv_lead-0154` in full,
+  including its open question 2, which predicted this round's criterion-3 problem.
+- **CI, at the API**: `build` run `31103977231` metadata; `cosim` job
+  `92624287637`'s complete log, fetched through the server-side GitHub logs tool and
+  read end to end (800 lines; the co-simulation output occupies lines 396–775, the
+  remainder being the opam solve and install).
+- **Source, at `2efd7f9`, all DV-side and all in my own scope**:
+  `test/cosim/tb_xgmii_rx_64.v` (`capture_word`, `write_word_line`, `open_frame`,
+  `close_delivery_accept`, `close_delivery_discard`, both `localparam` bounds, all
+  five `E`-sentinel call sites), `test/cosim/canonical.mli` (the `divergence` type
+  and the grammar block), `test/cosim/canonical.ml` (the `"E"` arm),
+  `test/cosim/compare.ml` (fixture construction only).
+- **No `libs/**`, no `top/**`, no `rtl_snapshots/**` was opened at any point in this
+  round.** PROTOCOL §10's independence rule is intact: every expected value I
+  adjudicated against comes from `docs/specs/` text quoted in the packet and the CD,
+  or from the comparator's own pinned interface.
+
+### Reasoning
+
+**1. The branch selection, and why "green" is not the argument.** The temptation at
+a wholly green run is to read the colour and write α. The colour is the weakest
+evidence in the log. What makes C2's α a **branch selection** rather than a green
+light is a three-step chain I checked rather than assumed. First, CD §10.0's INSIDE
+list for this instance — payload octets, each word's `tkeep` extent, `tuser`[0] on
+each `tlast`, and the accept-or-discard decision per input frame. Second, that the
+instrument actually compares **all** of it: `canonical.mli`'s `divergence` type has
+exactly four constructors (`Missing_frame` keyed by index, `Decision_mismatch`,
+`Word_count_mismatch`, `Word_mismatch` over `tkeep|tlast|tuser0|octets`), which
+covers the INSIDE list item for item — so `divergences: none` is agreement across
+the whole domain, not across a subset a reader might hope is the whole. Third,
+CD §10.0's own derivation that β is **unreachable** at 64 octets, which makes the
+outcome space two-valued before the run. Only with all three does `compare_exit=0`
+select a branch.
+
+**2. What spends a prediction.** The through-line of C2's whole saga is that a
+prediction survived two landings. I have said twice that it was unspent; I had to
+say **why** the third time spends it, in terms that generalise. A prediction is
+spent by **a comparison that could have falsified it** — not by a dispatch, not by a
+run, not by both producers producing. C2's first landing had a refusal, its second
+had an unreadable file, and each of those is a fact about the instrument, not about
+the two designs. **Count comparisons, not runs.** That is why criterion 8's
+measurement mattered so much this round: `5c01af0` an ancestor, 129 insertions and
+**zero** deletions in the CD across the span, and no CD movement at all in the
+repair commit — so the text that could have been falsified is provably the text that
+was frozen, and α is a selection under it rather than beside it.
+
+**3. Where the branch's record lives — the CD refused a third time.** I refused a
+CD addition at `RV-C1C2` and again at `RV-C2RERUN`, both times on §10.7 item 3
+(*"This document freezes the questions; it answers none of them"*). The temptation
+this round is stronger, because what I would be adding is a **success**, and a
+success feels like it belongs beside the prediction it vindicates. It does not: a
+result is a result whichever way it falls, and a freeze document that accumulates
+outcomes stops being a freeze. The record lives in §14 and in the `State` field.
+Consistency here is not pedantry — a rule I keep only when the answer disappoints me
+is not a rule.
+
+**4. The AP edit — earned, and still not owed here.** The bar movement is real: bar
+1 lifts for C2's class. I nonetheless did not open `AP-xgmii_rx_64.md`, on §13 item
+2's routing (*"owed to the `AP-` round that follows each landed stage"*) and on
+`J-dv_lead-0112`'s rule about plan rounds. **Stage 2 is not landed** — C3 and C4 are
+not issued — so a bar cell written now must be reopened twice more, and a cell
+reopened twice is the left-standing-summary drift `AP-M03` §7 has itself paid for
+four times. What I did instead is write the coverage table in the verdict in the
+exact form the AP round can lift verbatim, including the class the compound case
+does **not** separately anchor. That is the useful half of the work, done in the
+document where a result belongs.
+
+**5. The one over-read I had to bar in my own favour.** C2's frame 1 lands in lane 4
+at a non-zero admit cycle, so it is tempting to bank a fourth class. CD §10.2 says
+in terms that a red at C2 *"could not be attributed between the start lane and the
+re-arm path"* — and a **green** cannot be attributed within a case any better than a
+red can. Per-case reporting attributes a result **to** a case, never **within** one.
+So C2 anchors the compound class as driven and nothing finer. I barred this shape of
+claim twice when the runs were red; barring it when the run is green is the only
+version of the bar that counts.
+
+**6. The census — adjudicated, not adopted, and the one cell that failed.** Both of
+my MATERIAL findings came from this census being incomplete, so accepting its ten
+dispositions on the assignee's word would have reproduced the exact failure the
+census exists to prevent. Eight items I adopted, one I corrected (item 4's *"already
+exercised at two entries in production"* was true of two hops and false of the
+third — `compare` never read C2's sidecar at `9de61f1`, which my own criterion-5 row
+last round recorded; it is true of all three as of this run, and the evidence is
+dated here), and **one I amended, with a finding**. Item 9 introduces
+`MAX_WORDS_PER_FRAME = 16` and dispositions it *"inert for every case this lane
+ships today"*. That sentence is true and it is the wrong test. 16 words is **128
+delivered octets**; REQ-102's range runs to **1518**, a maximum frame delivering
+**190 words**; and §6.3's own C7 drives an oversize frame by construction. **This is
+the third instance in three rounds of one species: a quantity fixed against today's
+stimulus, inside an instrument whose entire purpose is to widen the stimulus.** The
+defect is mine — `RV-C2RERUN` §6 property 5 demanded a bound and never stated the
+range it must cover, and a worker given a bound with no range picks the range it can
+see. What is different this time, and worth more than the finding: **it cost a
+reading rather than a landing.**
+
+**7. Completeness, and the axis nobody asked about.** The census answers *where
+could a one-frame assumption still be load-bearing*, and it answers it well. C3 and
+C4 drive one 64-octet frame, so against that shape every item is inert or already
+exercised across three landings; they are authorised. **Stage 3 does not break the
+frame-count axis at all** — it breaks **frame length** (C5, C7) and **admission
+legality** (C9). `S2-9` is the first hit on the length axis and it was found by
+putting a different question to the same code, which is precisely the evidence that
+a second census will find more. I converted that from a worry into a **gate
+condition** — §6.3 gains (d) a second census and (e) the bound's own repair with its
+covering range stated beside it — because a worry recorded in a verdict is a worry
+and a condition on a gate is a stop.
+
+**8. `S1-2`(b) — closing a debt that cannot be paid in the currency it was
+denominated in.** The finding has two limbs and I separated them rather than ruling
+on the pair. Limb (i), per-frame profiles printed for a multi-frame transaction in
+production, is discharged here for the first time. Limb (ii), a clean frame's
+numbers surviving a divergent sibling, **cannot** be produced in production by any
+case in the designed set: C2 is the only multi-frame case and both its frames are
+clean by prediction and by observation; every other case drives one frame. The
+options were to leave a standing debit that no planned work can pay, or to mint a
+stimulus case purely to exercise an instrument property. I took neither: I closed
+limb (ii) **on the fixture**, which passed again this run, and attached two things
+to the closure — the `SO-` must **say** the limb rests on a fixture rather than on
+production evidence, and the closure **re-arms automatically** if a case that could
+produce it ever exists. A debit that no work can discharge decays into decoration;
+a closure with its residue named and its re-arm stated is a real disposition.
+
+**9. `S2-10` — ruling on my own property against myself.** The repair attributes
+every observed output word to `delivery_head`, the oldest open frame. That is
+**verbatim** the rule I named one round ago as an unacceptable heuristic. I could
+have let it pass unremarked, since the property as written names the reader and the
+reader is byte-unchanged. Letting it pass would have been the comfortable reading
+and the wrong one. The honest ruling is that the rule is **lawful in a probe and
+unlawful in a parser**, and the distinction is epistemic rather than verbal: a
+writer at the AXI-Stream boundary reads its attribution off the interface's own
+`tlast` framing contract, where a parser downstream of a file in which that framing
+was never recorded is guessing. Same rule, different position, and only one position
+has a contract behind it. The residue — that head-attribution additionally assumes
+in-order delivery, and that a reordering reference would surface as a content
+divergence attributable to our RTL — is real, is unstated anywhere pinned, and gets
+a **reading rule that binds from this verdict** rather than a repair that would
+delay C3.
+
+**10. The stopping rule.** It never fired. The lazy dispositions are to let it lapse
+silently or to keep it armed forever. Neither is right: its **question** is answered
+— the pinned transaction form **can** express two frames whose admission and
+delivery spans overlap, at the grammar unamended — so it is retired **on an answer,
+not on a timeout**, which is the only honest way to retire a pre-registered rule.
+Its **form** is re-armed for C3 and C4 at the same threshold, written down before
+those runs and with the answer not in hand, because the value of pre-registration is
+entirely in its date.
+
+**11. Sequencing, and the one amendment that closes a thrice-deferred criterion.**
+C3 alone, per §6.2, unchanged. But criterion 3's plural property has now been
+deferred **three** times, every time for the same accident — the only not-clean case
+was last in the array — and my own open question last round predicted that a green
+C2 would leave it unexercised indefinitely. The fix costs one line in the runner:
+**the case array becomes `0 C1 C3 C2`**. If C3 diverges as §7 predicts it may, a
+not-clean case is followed by another case for the first time in this lane's
+history; if C3 is clean, nothing is lost. I checked it is lawful: case 0 stays
+first (its sha gate is precedence 1), no stimulus moves so no sha bind is touched
+(a bind is per case, never per position), and per-case isolation was established at
+`RV-C1C2` §5. A side effect worth having: **C2 becomes a standing regression case**
+at every later landing.
+
+**12. What I did not do.** No code. No CD edit. No AP edit. No `SO-` opened. And I
+declined a cheap instrument improvement I nonetheless think is right — printing a
+`theirs.canon` sha256 per case, which would turn producer-side invariance from a
+two-part argument into a measurement — because the existing prints already pin every
+field of the record and the format strings are diff-checkable, and because landing
+an instrument change inside an adjudication round is the habit this lane has been
+paying for. It is recorded as a one-line recommendation for the next round that
+opens the runner for its own reasons.
+
+### Actions
+
+- Verified HEAD against the spawn-head before reading anything; proceeded on match.
+- Read the charter, PROTOCOL, the work order in full, the CD's §10 instances, and
+  `AP-M03` §7's bar table.
+- Fetched `build` run `31103977231`'s metadata and `cosim` job `92624287637`'s
+  complete log through the server-side GitHub tool; read the co-simulation output
+  end to end.
+- Ran four mechanical checks on the checkout (below) and one source-level
+  spot-check of the repaired writer **against the diff**, which is my charter §3
+  review obligation discharged in the only form ADR-0005 permits for this file.
+- Appended verdict `RV-C2ALPHA` to `WO-0078` §14 (fourteen sections) and updated
+  the packet's `State` field, preserving the superseded text as a quoted historical
+  block per the field's own rule.
+- Wrote this entry. **Committed nothing and pushed nothing** (PROTOCOL §2).
+
+### Evidence
+
+**All commands run from a repo checkout at `2efd7f9`; all CI references are a run
+id and a job id with their conclusions, per PROTOCOL §4.1(b).**
+
+- `git rev-parse HEAD` → `2efd7f970edb467b7e5b444b5c76416be8c736f0`.
+- `git merge-base --is-ancestor 5c01af0 2efd7f9` → **true**.
+- `git diff --numstat 5c01af0 2efd7f9 -- test/attack_plans/CD-xgmii_rx_64_cosim.md`
+  → `129  0` (**zero deletions**).
+- `git diff --name-only 9de61f1 2efd7f9` → seven paths; the only code paths are
+  `test/cosim/compare.ml` and `test/cosim/tb_xgmii_rx_64.v`. **`canonical.ml`,
+  `canonical.mli`, `ours_run.ml` and `stimulus_gen.ml` are absent**, so *the grammar
+  is unamended* and *the stimulus did not move* are measurements here.
+- `git diff --numstat 53fa1de 2efd7f9 -- test/cosim/stimulus_gen.ml` → **empty**.
+- `git diff --numstat 9de61f1 2efd7f9 -- test/cosim/tb_xgmii_rx_64.v test/cosim/compare.ml`
+  → `179 48` and `133 2`.
+- `git diff 9de61f1 2efd7f9 -- test/cosim/tb_xgmii_rx_64.v | grep -E '^[-+].*"E '`
+  → **one line, an addition**: `+ $fwrite(out_fd, "E word-buffer-exhausted\n");`.
+  No pre-existing sentinel changed by value; I checked all **four** that exist,
+  one more than the Return log's own property-3 accounting names.
+- The same diff filtered on `$fwrite` shows the `F`, `W` and `D` format strings
+  unchanged in **format**; the only in-string edits move an argument from a live
+  wire to a stored `reg` of identical declared width, preserving WO-0049 §3's
+  `[8*k +: 8]` fixed-width part-select.
+- **CI**: `build` run **`31103977231`**, `head_sha` `2efd7f9…`, run number 508,
+  event `push`, conclusion **`success`**; `cosim` job **`92624287637`** green.
+  Decisive lines, quoted in `RV-C2ALPHA` §1 with their context:
+  `CASE 0: stimulus_sha256=c675517…4cc051 compare_exit=0 tier=CLEAN`;
+  `CASE C1: stimulus_sha256=5ae9e4f5…3bd7c compare_exit=0 tier=CLEAN`;
+  `CASE C2: stimulus_sha256=cc1e85a4…5b44a7 compare_exit=0 tier=CLEAN`, with
+  `frames compared: 2` / `frames matching: 2` / `divergences: none`, `T0: aligned`
+  (`frame 0: admit_cycle = 0`, `frame 1: admit_cycle = 10`), `T1: clean` with
+  frame 0 at `3 … 10` and frame 1 at `13 … 20`, `T2` `frame 0: [0 × 8]` and
+  `frame 1: [1 × 8]`, and `case C2: ours.canon/theirs.canon byte-identical between
+  run1 and run2`. Aggregate: *"every case in the set reached a verdict and every
+  verdict was clean."* Invocation wall time **`9.665s`**.
+- Self-test in the same job: `grep -c 'PASS:'` = **13**, `grep -c 'FAIL:'` = **0**,
+  `compare --self-test: OK`, including the new `FINDING RV-0078-S2-8` golden-file
+  case (exit 0) and `FINDING RV-0078-S1-2` limb (b)'s case (exit 4).
+- **`S2-9`, at source**: `test/cosim/tb_xgmii_rx_64.v` line 258,
+  `localparam MAX_WORDS_PER_FRAME = 16`; its guard at lines 317–327 writes
+  `E word-buffer-exhausted` last before `$fclose`/`$finish`. 16 words × 8 octets =
+  **128 delivered octets**; REQ-102's range is 64 … 1518, a maximum frame delivering
+  **190 words** after REQ-103's FCS strip.
+- **`S2-10`, at source**: `capture_word` opens `slot = delivery_head % DELIVERY_DEPTH`
+  (line 315); only `delivery_head` is closed by `close_delivery_accept`/`_discard`
+  (lines 448, 461).
+- **Comparator coverage, at source**: `test/cosim/canonical.mli` lines 159–181 —
+  four `divergence` constructors covering index presence, decision, word count, and
+  `tkeep|tlast|tuser0|octets`.
+- **`Canonical.read`'s E arm**: `test/cosim/canonical.ml` line 226,
+  `| "E" :: rest, _ ->` — any reason, **regardless of parse state**.
+- **I executed no simulation** (ADR-0005) and ran no case. **No CI run exists for
+  this commit** and none is claimed: this round lands documents only and dispatches
+  nothing.
+
+### Outcome
+
+**DoD vs the dispatch: met, all seven items.**
+
+1. **C2 — ACCEPTED, branch α**, under CD §10.2 unamended, with the three-step chain
+   (INSIDE list → the comparator's own four constructors → β unreachable) checked
+   rather than assumed. **The prediction is CONFIRMED and SPENT**, and *what spends a
+   prediction* is stated generally: a comparison that could have falsified it.
+2. **`FINDING RV-0078-S2-6` — CLOSED**, on four independent grounds including a
+   diff-level check of the sentinel and format-string contract that goes past what
+   the Return log asserted.
+3. **`FINDING RV-0078-S1-2`(b) — CLOSED**, limbs separated: (i) discharged in
+   production, (ii) closed on the fixture with the reason stated, an `SO-` obligation
+   attached, and an automatic re-arm.
+4. **The census — eight ADOPTED, one ADOPTED WITH CORRECTION, one AMENDED**, the
+   amendment carrying `FINDING RV-0078-S2-9`. **Complete enough for C3 and C4;
+   NOT complete for Stage 3**, whose axes it never asked about — converted into
+   §6.3 gate conditions (d) and (e).
+5. **Coverage — three anchored classes, tabulated per class at per-run ids**, with
+   the compound sub-class C2 does **not** separately anchor stated. **Bar 1's lift
+   is earned and recorded; the `AP-M03` cell is NOT written this round** (§13 item
+   2), the third consecutive refusal of the same edit on the same ground. **No CD
+   edit** (§10.7 item 3), also the third.
+6. **C2's ledger, corrected**: dispatched **three** times, driven three times,
+   `compare` invoked twice, **compared once, agreed once**. **The stopping rule is
+   RETIRED on an answer, not a timeout**, and its form is re-armed for C3/C4.
+7. **Sequencing — C3 alone, confirmed**, with `S2-7`'s runner repair riding and
+   **one amendment: the case array becomes `0 C1 C3 C2`**, closing a criterion
+   deferred three times at the cost of one line.
+
+**Two new MINOR findings raised beyond the dispatch's ask** (`S2-9`, `S2-10`), both
+with dv_lead as owner of the defect. **That is the third consecutive round in which
+the findings I raise are mostly against my own prior work** — see Open-questions.
+
+**Handoff**: the file below goes to the orchestrator for commit under
+`Agent: dv_lead`, `Work-Order: WO-0078`, `Journal-Entry: J-dv_lead-0155`.
+
+**Lessons harvest**: **not due at this round** — PROTOCOL §7 places it at every
+`SO-` and every phase gate, and this is neither. **The span stays open** (open since
+`J-dv_lead-0148`, declared rather than skipped). **Three candidates banked, joining
+LH-cand-A through LH-cand-E:**
+
+- **LH-cand-F (LH2-g)**: *"A bound introduced to make a buffer finite is sized
+  against the workload in front of its author. In a component whose purpose is to
+  widen that workload, state the range the bound must cover in the same change that
+  introduces it — the number is not the defect, the missing range is."* **LH1**:
+  this round — a per-frame buffer bound landed with its headroom argued against
+  today's eight-word frame, in a lane whose own scoped next stage drives a frame
+  twenty times longer. **LH3**: without it, every headroom constant is correct until
+  the first widening and then costs a full integration round to find, at exactly the
+  moment the widening's own result is what everyone is trying to read.
+- **LH-cand-G (LH2-g)**: *"The same attribution rule can be sound in a probe and
+  unsound in a parser. Judge it by what the component can still see: a probe at an
+  interface reads the rule off that interface's own framing contract; a parser
+  downstream of a record in which the framing was never written down is guessing.
+  When a format loses a fact, move the fix upstream to where the fact is still
+  observable, never downstream into a reader taught to infer it."* **LH1**: this
+  round — a repair moved per-record attribution out of an ambiguous file and into
+  the producer at the interface, and the very rule that had been named unacceptable
+  for the reader is the interface's own framing contract for the writer. **LH3**:
+  without the distinction a team either forbids a sound repair or permits an unsound
+  one, deciding on the rule's wording instead of on its position.
+- **LH-cand-H (LH2-g)**: *"A frozen prediction is spent by a comparison that could
+  have falsified it — never by a run happening, a job going green, or both sides
+  producing output. Count comparisons, not runs; a coverage claim that cites a run
+  id instead of a comparison is citing the wrong thing."* **LH1**: this round and
+  the two before it — one prediction survived two landings that produced complete
+  artefacts on both sides and compared nothing, and was spent by the third. **LH3**:
+  without it, an instrument defect is quietly scored as a test of the design, and a
+  case's coverage rests on the fact that something ran.
+
+### Open-questions
+
+1. **Criterion 3's plural property is now addressed by an ordering amendment rather
+   than discharged, and it may still never fire.** If C3 agrees with the reference,
+   no case in the set is ever not-clean and the property stays unexercised through
+   the whole of Stage 2. The `SO-` must then state it as a **harness property CI has
+   never run** rather than let it lapse — and I would rather the auditor rule on
+   whether an unexercised aggregate-continuation path is acceptable in a sign-off
+   than assert the convenient answer myself.
+2. **`FINDING RV-0078-S2-9` is the third instance of one species and the first found
+   by reading.** That is the census working. It is also, read the other way, three
+   consecutive rounds in which a quantity sized against the current stimulus was
+   found inside an instrument built to widen the stimulus — **by me, in properties I
+   wrote.** The second census I have gated Stage 3 on will find more or it will not,
+   and either result is informative about my instrument-design review rather than
+   about the assignee.
+3. **Three of the last five findings I have raised are against my own prior work,
+   and this is the third consecutive round with that shape.** I said last round I
+   could not tell from inside whether that is the process working or a signal that
+   my instrument design is running ahead of my instrument review. **A green run does
+   not settle it** — this round's green was produced by an instrument whose own new
+   code carried the next defect. The concern is unchanged and I still want the
+   auditor's ruling on it rather than my own charitable reading.
+4. **`FINDING RV-0078-S1-4` now stands over five never-fired reference-side guards**
+   rather than four, and its only discharge point is C9, in a stage that is not
+   authorised. A sentinel contract that grows faster than it is exercised is worth
+   the auditor's eye before the `SO-` cites the self-test's synthesised fixtures as
+   though they were the guards.
+5. **`FINDING RV-0078-S2-3`'s §7 repair still has exactly one carrier** (the co-sim
+   Phase 3 CD instance round, `SCOPED, NOT AUTHORISED`), unchanged and unscheduled;
+   this round adds no third species of the fourth outcome, which is the first round
+   that has not made it worse.
+6. **The date drift is unchanged and unrepaired.** This entry uses the machine clock
+   (2026-08-06), as `J-dv_lead-0151` through `0154` did; `FINDING CD-P2-2` records
+   the underlying inconsistency, and no adjudication in this round rests on any
+   calendar literal — the verdict is dated by its commit and by this entry.
+
+### Files-in-this-commit
+
+- agents/handoffs/WO-0078_cosim-phase2-3-stimulus-widening.md
