@@ -2964,3 +2964,70 @@ round, (3) family K campaign LAST with a clean freeze window - the
 
 ### Files-in-this-commit
 - tasks/BOARD.md
+
+## [J-orchestrator-0224] 2026-08-11T03:30Z | task:WO-0077 | The era's last landing: nine of nine, the ceiling reached exactly - and the board learns its inventory had gone stale
+
+### Trigger
+WO-0077-VERDICT landed d6fdf92 (J-dv_lead-0147): nine of nine
+killed, all four rows qualified, zero survived / zero
+green-by-blindness / zero void; era tally 63 sealed / 61 killed /
+1 survived / 0 GBB / 1 void - section 14's ceiling of 61 reached
+exactly. M03-N1 and M03-N4 gain the first qualifications in either
+row's history, discharging FINDING AP-3 affirmatively. Two MAJOR
+findings, both dv against its own artefacts: WO-0077-A1 (the co-sim
+anchor NOT blind - IC-K3/IC-K5 reddened cosim because ours_run.ml
+presents a start character on cycle 0; kills stand under seal
+section 9 disposition 8; the FIRST anchor conviction of a mutant in
+the programme; pass criterion 2 PARTIALLY UNMET, the only one) and
+WO-0077-N2 (IC-N1's rule wrong in both directions; the kill stands).
+K-1 strengthened to a byte-identical promoted file across four
+classes. THE CAMPAIGN ERA CLOSES.
+
+### The round's conduct, verified at the landing
+1. Nine transients operator-cut fresh from aced7b4 per the manifest's
+   table (WO-0074-A1 regime), pushed in manifest order; all nine
+   build runs concluded run-level failure with the control
+   (31072617706) green at the base. Run ids recorded on the board row.
+2. dv returned with both deliverables uncommitted per protocol;
+   files-list = the packet alone, R4-consistent (journal never lists
+   itself); both files pure appends by numstat (894/324 lines, zero
+   deletions); HEAD at spawn-head 04078fd throughout.
+3. Landed via agent_commit.sh as d6fdf92 after the round closed -
+   the commit-timing rule holds: no orchestrator commit rode the open
+   round; this board flip lands after it.
+4. Durability clause exercised inside the round: the job-logs blob
+   endpoint 403s at the proxy; dv read the same content via the
+   server-side logs tool. No cell scored on unreadable evidence.
+
+### Incident note: a false-positive stall signal, heuristic corrected
+At 06:27Z the subagent transcript file showed 21 minutes untouched at
+123 bytes - the exact silent-death signature that justified a
+TaskStop once before. The deliverable files showed the agent alive
+and mid-verdict (packet +894 lines, written seconds earlier): the
+harness now buffers the transcript instead of streaming it. The
+stall heuristic is corrected in the standing heartbeat: liveness is
+read from DELIVERABLE-file mtimes, never the transcript file. No
+TaskStop was issued; nothing was lost.
+
+### Board corrections carried in this commit
+1. WO-0077 row (full arc, verdict, findings, run ids) and WO-0075 row
+   (CLOSED - ACCEPT at 981331f, the anchor sees time, my withdrawn
+   option-(a) and my dispatch paraphrase error both on the row) - the
+   two rows owed since their landings.
+2. Transient-ref inventory RE-MEASURED: 85 mut/* refs across 17
+   families, replacing a stale 59-with-six-families line whose
+   updates had stopped riding the per-campaign pushes. Mine to
+   disclose: the board rule says the inventory updates when a
+   transient is pushed, and I let campaigns L through K pass without
+   it. Corrected by measurement, not arithmetic.
+
+### Owed and routed
+Verdict sections 9.1/9.2 to the auditor UNEDITED at its next spawn.
+The post-K AP round (RV-0075's three section-7 placements + K-1
+carrier + WO-0077-K2's D3 repair + K/N qualifications) is next; then
+the error-class sweep; the co-sim Phases 2-3 WO gains WO-0077-A1 as
+a named input (the anchor's sighted class is now measured, not
+argued); then SO-xgmii_rx_64 = the first lessons harvest.
+
+### Files-in-this-commit
+- tasks/BOARD.md
