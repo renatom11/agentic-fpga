@@ -987,7 +987,7 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
      no octet (REQ-108's count never advances there, and §9's ninth ruling
      leaves such a frame with no FCS to check). Their union is therefore a
      one-term union and is written as one. *)
-  let strobe s = consume &: s &: ~:(i.clear) in
+  let strobe s = (consume &: s &: ~:(i.clear)) |: (reg spec (consume &: s) &: i.clear) in
   let q_strobe k = bit q2 k &: ~:(i.clear) in
   { O.rx =
       { Axi64.Source.tvalid
