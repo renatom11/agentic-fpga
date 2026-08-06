@@ -1546,3 +1546,304 @@ written against it is unfalsifiable in both directions.
 
 ### Files-in-this-commit
 - agents/handoffs/WO-0076_family-j-mutation-campaign.md
+
+## [J-dv_lead-0142] 2026-08-10T11:10Z | task:WO-0076 | The ninth campaign adjudicated: five of five killed with every sealed direction and derived integer exact, the honest-kill withdrawal established from a run instead of an argument at last — and the only two cells the seal got wrong are both mine, both in the parts I wrote from memory rather than measured
+
+### Trigger
+
+Orchestrator spawn, short-id `WO-0076-ADJ-2/2026-08-10T11:10Z`, to adjudicate the
+family-J campaign against my sealed companion **as frozen at `8346a5c`**, under the
+pre-run note's own §0.3 clause: where a reading in that note and a sealed cell
+disagree, **the cell governs and the round scores it against me**. My predecessor
+spawn stopped on incident four — a 129-commit container rollback, since restored
+losslessly and journalled at `J-orchestrator-0222`. First action this spawn was the
+direction-checked HEAD comparison; `HEAD` was `cbc2765` and matched, so no incident
+disposition fired.
+
+### Inputs
+
+- `agents/charters/dv_lead.md`, `agents/PROTOCOL.md` — mandatory first actions.
+- `agents/handoffs/WO-0076_family-j-mutation-campaign-SEALED-predictions.md`
+  **at `8346a5c`**, verified byte-identical to the working-tree copy
+  (`git diff 8346a5c HEAD -- <seal>` → empty) before a single cell was read.
+- `agents/handoffs/WO-0076_family-j-mutation-campaign.md` in full — the packet
+  (`8346a5c`) and the pre-run reading note (`5ac62b5`, `J-dv_lead-0141`: RN-1
+  scoped/affirmed, RN-2 output-side + whole-extent, RN-3 inventory unaffected,
+  RN-4 this-note-is-the-carrier, `FINDING WO-0076-A1` adopted and widened).
+- `docs/reports/audit/WO-0076-mutations/README.md` at `2fbcf0d`
+  (`J-auditor-0017`) in full — five manifests, nine disclosures, both discharges,
+  the §6 positive-form check, four exposures, four pre-run questions.
+- **CI, at the source**: the five `build` jobs' step readings and `dune runtest`
+  output (`92498074622`, `92498077419`, `92498080573`, `92498083901`,
+  `92498087940`), and the control (`92491537453`). Fetched through the GitHub API;
+  the log-download redirect target is blocked by this container's proxy, so the
+  scoring evidence is the job-log content itself, retrieved and filtered locally.
+- `test/xgmii_rx_64/bench.ml:599–639 @ 8346a5c` — **read post-verdict, and only to
+  characterise a finding against my own seal** (§10's `FINDING WO-0076-S1`). It is
+  bench source, not RTL; **no `libs/**` path was opened at any point in this
+  round**, and every design-side fact in the verdict is the auditor's, cited as its
+  claim.
+- Transient metadata via the API only: five branch heads, their sole parents and
+  their diffstats. **No `git fetch`, no ref, index or `HEAD` movement.**
+
+### Reasoning
+
+**Why the seal was opened only after every scorecard was in hand, and why that
+matters more this round than last.** Three of this campaign's five classes were
+*permitted* to move the datapath — the first campaign in the programme where a
+global "nothing may move" check would have failed a conformant rendering. The
+protection against tuning an adjudication to a mutant was therefore not the check
+but the ordering: bench frozen at `c109c08`, seal at `8346a5c`, first diff text at
+`2fbcf0d`, and §0.3's promise that a disagreement scores against me. I re-verified
+the freeze at scorecard time rather than treating §0.1 as discharged once, which
+was my own Open-question 2: `git diff --name-only 8346a5c HEAD -- test/ libs/` is
+empty, so not one bench byte moved between the seal and the verdict, mine included.
+
+**Why the promotion block is the right scoring instrument and the badge is not.**
+A run-level conclusion says only that something failed. The `build` job's step
+readings separate a **build** finding from a **behavioural** one — step 5 `Build`
+is `success` under all five classes, so every red this campaign scores was raised
+by an assertion inside a mutant that compiled. And the promotion block's
+`--- FILE` list is a *file-level scorecard*: a file appears iff at least one unit
+in it changed its expect output. That is what lets me state MUST-STAY-GREEN as a
+measurement rather than an inference — under every class the only files promoted
+are `test_m03_j.ml` and `test_m03_n.ml`, and under IC-J5 only the first. Fifty-five
+enable-free M03 units and seventy-nine non-M03 behavioural units green, by
+construction and not by care, exactly as **D-J1b** claimed structurally.
+
+**What I got right, and it is the part that was measured.** All five `R!` cells are
+character-exact. Every mutant-owned integer landed inside its sealed inequality
+with its sealed direction, and three hit their derived values on the nose (1, 0, 1)
+with the fourth on a named endpoint of its span (1 of {1, 11}). Both *ordering*
+claims — that `tvalid` is read before the strobe list within a sample under IC-J1,
+and that no output word can precede the strobe message under IC-J2 — were
+falsifiable and were not falsified. The two collisions the cross-product method
+found both fired, and **the sealed integer directions separated them on the first
+reading with no residue**: `> 8` derived 808 against `< 8` derived 0 at `M03-J2`,
+`> 8` derived 16 against `< 8` derived 1 at `M03-J3`. Without those two rows, two
+of five scored cells would have had no bench-side discriminator at all, because the
+colliding class's own cell sits at a different unit. `FINDING WO-0074-S4` was
+carried in as a bar on precedent; it is now a bar on evidence.
+
+**What I got wrong, and it is the part I wrote from memory.** Two defects, both
+mine, both in the seal, both in sections where I stated a *class of forms* instead
+of measuring the source:
+
+- §5.4 enumerated four monitor-arm messages. `assert_monitors_clean` has **five**,
+  and the one I omitted — `": latency tagger errors:\n"` at `bench.ml:632`, which
+  **precedes** `": latency tagger unclean:\n"` at `:638` — is precisely the arm the
+  campaign's only `M` cell raised. §5.6 outcome 1 quoted the fifth arm's string for
+  an event raised by the fourth. Standing rule 2 says every message is derived from
+  committed control flow and source order at the base SHA. I honoured it for the
+  five cells I worked and not for the arms I listed.
+- §3.1 says the `G!` cells number **six** and its bullets describe six; the matrix
+  marks **five**, because `M03-J2 × IC-J5` is plain `G`. A table and its own count
+  disagreeing is `FINDING WO-0066-3`'s defect one artefact over.
+
+**Both cost nil, and I refuse to treat that as exoneration.** S1 costs nothing only
+because §5.4, §5.6, standing rule 7 and §9's UNREAD row all key on *which
+instrument spoke* rather than on what it printed — had that cell been sealed `R!`
+instead of `M`, this round would have scored a correct rendering as off-pattern on
+a string the bench never emits. S2 costs nothing only because the cell is green
+under both readings; had it reddened, I would have been deciding whether a
+load-bearing measurement was lost with no rule to decide by and the answer already
+visible. **The near-miss is the finding.** Recording them as costless would be
+recording the luck rather than the defect, which is the failure mode the whole
+seal-before-diff discipline exists to prevent.
+
+**Why `M03-J2`'s green under IC-J3 is the round's centrepiece and not a
+formality.** `WO-0067` §6 withdrew a Kills cell from `M03-J2` on an argument from
+the stimulus: the enable is 1 for the whole of frame 100's admitted extent, so a
+continuously-sampling design truncates nothing there. IC-J3 **is** a
+continuously-sampling design. It reddened `M03-J3` at its own cell and left
+`M03-J2` green, so §8.1 rule 1 fires and the withdrawal is established **from a
+run** rather than from an argument. A bench cannot make that measurement about
+itself; a campaign can, and this is the one that did.
+
+**Where I refused to let a green say more than it earned.** `DECLARATION J-D1`
+claims an absence-shaped observable cannot separate *never admitted* from
+*admitted and muted*. IC-J3 came back as D-J3a's **`add`** branch — admission
+retained, emission gated — so the rendering *refuses and also mutes*. `M03-J1`'s
+green under it measures directly only that the silence scan cannot see an emission
+gate; the *admitted-and-muted* design is the `move` branch, which was not rendered,
+and its green follows from the seal's own pre-run derivation that this bench
+produces no discriminator between the branches. So J-D1 stands and is measured **on
+the add branch**, with its strongest form still derived. Writing it stronger would
+have been the exact move §0.3 was written to forbid.
+
+**A new protection, banked because it is the first time it has existed.** Collision
+3's whole guard is the disclosure, at its fourth instance in this programme. This
+round the disclosure is **corroborated by an artefact**: `2296840` is `+1/−1` at a
+single site, and a `move` rendering is not expressible as a one-line substitution.
+A branch pair whose members differ in edit *shape* can therefore be checked against
+the transient's diffstat without reading a diff body — which is a protection that
+survives an author who answers a disclosure carelessly.
+
+**The auditor's conduct, and the item that deserved a ruling rather than a nod.**
+All four exposures are metadata, none is content, and each is disclosed at the
+point of use with what was taken and what was not. The one worth the ruling is the
+allowlist narrowing: the spawn prompt's enumerated allowlist omitted `ADR-0014`,
+which my §7 item 4 admits by name, and the spawn deferred to the packet — so the
+ADR *was* readable and the auditor read it under neither name, honouring the
+narrower of two disagreeing instruments. That is the correct disposition: a
+disagreement between normative instruments is a defect in the instruments, and
+resolving it by intersection leaves the disagreement visible instead of consuming
+it. The auditor then proved the cost was nil instead of asserting it. **And the
+by-product is the round's cheapest finding** — listing `docs/adr/` to check the
+path it had been handed is what exposed that my allowlist cites a filename which
+has never existed. An error in my instrument, found by a reader honouring it.
+
+**Harvest note (ADR-0018, PROTOCOL §7).** **Not due this round** — the harvest falls
+at the `SO-`, and the span from my last harvest **stays open and is declared rather
+than skipped**. Two candidates are banked against it from this round's own defects,
+both stated with the provenance hidden:
+**(D)** *An artefact that quotes a component's diagnostic message derives it from
+that component's own source at the frozen revision, enumerating every branch that
+can emit one.* **LH1**: this round, `FINDING WO-0076-S1` — a four-item list where
+the source has five, and the omitted branch is the one that fired. **LH2-g** — no
+proper noun of any kind. **LH3**: without it, a prediction keyed to a message string
+scores a correct implementation as an anomaly, and the error stays invisible until
+the rare branch fires.
+**(E)** *When a document asserts a count of its own marked cells, the count is
+re-derived from the table rather than written beside it.* **LH1**: this round,
+`FINDING WO-0076-S2`. **LH2-g**. **LH3**: without it, an adjudication reaching a
+cell the two readings classify differently has no rule to decide by, and will
+invent one after the result is known.
+
+### Actions
+
+- Verified `HEAD` = `cbc2765` = spawn HEAD before reading anything; re-verified at
+  return. Tree clean throughout; no commit, no fetch, no ref/index/`HEAD` movement.
+- Confirmed the seal byte-identical to its frozen form at `8346a5c` before opening
+  it; read it, the packet, the pre-run note and the manifest in full.
+- Scored the five classes from the `build` jobs' step readings and `dune runtest`
+  output at the source — never from a run-level badge — including the file-level
+  promotion lists that carry MUST-STAY-GREEN.
+- Verified through the API that each of the five transients is a single commit whose
+  **sole parent is `8346a5c`**, touching one file with the manifest's own edit size:
+  the shared-anchor hazard I flagged at the pre-run note §3 did not fire.
+- Re-verified §8's freeze at scorecard time (`git diff --name-only 8346a5c HEAD --
+  test/ libs/` → empty), discharging my own Open-question 2.
+- Read `test/xgmii_rx_64/bench.ml:599–639` **after** scoring, solely to characterise
+  `FINDING WO-0076-S1` against my own seal.
+- Appended `WO-0076-VERDICT` to the campaign packet: fifteen sections, five sealed
+  cells scored character-for-character, six `G!` cells and the one `M` cell, three
+  collisions with the direction discriminator's performance, per-class
+  KILLED/SURVIVED/VOID, the qualified rows, the era tally, four findings (two
+  against me), the eight declarations, and the next commissions with their
+  sequencing hazard.
+
+### Evidence
+
+```
+control       8346a5c  run 31061945377  build job 92491537453  success, 10/10 steps
+IC-J1 8aaa0dd run 31064102925 job 92498074622 Build=success tests=failure
+IC-J2 f61157b run 31064103812 job 92498077419 Build=success tests=failure
+IC-J3 2296840 run 31064104902 job 92498080573 Build=success tests=failure
+IC-J4 1c1bfb1 run 31064106060 job 92498083901 Build=success tests=failure
+IC-J5 8589bfd run 31064107507 job 92498087940 Build=success tests=failure
+cosim: success under all five and at the control -- evidence of nothing (seal 6.1)
+```
+
+The five scored cells, observed verbatim in the `dune runtest` output at each
+transient:
+
+```
+IC-J1  M03-J1: cycle 4: tvalid high during the disabled window
+IC-J2  M03-J1: cycle 1: an error strobe pulsed during the disabled window
+IC-J3  M03-J3 (lane 0): disabled run: expected exactly 8 delivered words (frame 0 only), got 1
+IC-J4  M03-J2: expected 8 delivered words for frame 100, got 0
+IC-J5  M03-J3 (lane 0): frame 0's delivered (octets, tkeep, tlast, tuser) tuples differ between the disabled and reference runs
+```
+
+The two collision cells, separated by their sealed directions:
+
+```
+IC-J1  M03-J2: expected 8 delivered words for frame 100, got 808     (sealed > 8, derived 808)
+IC-J4  M03-J2: expected 8 delivered words for frame 100, got 0       (sealed < 8, derived 0)
+IC-J1  M03-J3 (lane 0): disabled run: expected exactly 8 delivered words (frame 0 only), got 16  (sealed > 8, derived 16)
+IC-J3  M03-J3 (lane 0): disabled run: expected exactly 8 delivered words (frame 0 only), got 1   (sealed < 8, derived 1)
+```
+
+MUST-STAY-GREEN, from the promotion lists: under every class the only files
+promoted are `test/xgmii_rx_64/test_m03_j.ml` and `test/xgmii_rx_64/test_m03_n.ml`,
+and under IC-J5 only the first. **55 enable-free M03 units, 79 non-M03 behavioural
+units, the 1 build-level unit and `test/cosim/` green under all five.**
+
+Freeze and integrity, at return:
+
+```
+git rev-parse HEAD                                -> cbc2765 (spawn HEAD, unmoved)
+git status --porcelain | wc -l                    -> 0
+git diff --name-only 8346a5c HEAD -- test/ libs/  -> (empty)
+five branches: 1 commit each, sole parent 8346a5c, 1 file each,
+  +2/-2, +5/-1, +1/-1, +5/-2, +7/-1
+```
+
+Finding S1's basis: `test/xgmii_rx_64/bench.ml:599-639 @ 8346a5c` carries **five**
+monitor arms, `:632` `"latency tagger errors:"` preceding `:638`
+`"latency tagger unclean:"`; the seal's §5.4 lists four and omits the former.
+
+### Outcome
+
+**DoD met.** `WO-0076-VERDICT` is appended to the campaign packet: **five classes
+seeded of five sealed, five KILLED, zero survived, zero void**; all five `R!` cells
+character-exact; every mutant-owned quantity inside its sealed inequality with its
+sealed direction; every worked blast-radius cell exact; six `G!` cells green
+(five on the matrix reading — see `FINDING WO-0076-S2`); the one `M` cell resolved
+as §5.6 outcome 1 in substance; no MUST-STAY-GREEN violation, no build finding, no
+red outside a class's own rule, no class out of specification.
+
+**Rows QUALIFIED**: `M03-J1` (IC-J1, IC-J2), `M03-J2` (IC-J4, **on its honest kill
+only**), `M03-J3` (IC-J3, IC-J5). `M03-J4` unqualifiable by specification.
+**`M03-N4` is qualified by nothing here** — four reds, all blast radius.
+
+**Era tally: 49/47/1/1 → 54 sealed / 52 killed / 1 survived / 1 void.**
+
+**Auditor conduct: CLEAN** on all four disclosed exposures, and its allowlist
+narrowing at the ADR discrepancy is ruled **CORRECT** — the intersection of two
+disagreeing normative instruments, taken without cost and without consuming the
+disagreement.
+
+**Findings**: `FINDING WO-0076-S1` and `FINDING WO-0076-S2`, both MINOR and both
+**against me**, carried to the family-K seal; `FINDING J-1` and `FINDING J-2` raised
+before the run and surviving it, carried to the post-campaign `AP-` round.
+**Nothing against the manifest.**
+
+**Handoff**: `agents/handoffs/WO-0076_family-j-mutation-campaign.md`
+(`WO-0076-VERDICT`), to the orchestrator.
+
+### Open-questions
+
+1. **Question 1 — the sequencing of the last three rounds, and it is §8.0's hazard
+   one family over.** The commissioned order is family K, then `WO-0075`'s build
+   round, then the post-campaign `AP-` round. Items 2 and 3 both open `test/**`,
+   and family K's campaign needs the same freeze this one had — so running item 1
+   first puts two `test/**`-opening rounds **inside** family K's window, and by my
+   own rule the round re-seals. **My recommendation is 3 → 2 → 1**, which is Q1's
+   disposition (b) — the one that worked this round — and costs nothing, since both
+   are one commit each and family K's seal is not yet drafted. **The choice is the
+   operator's.**
+2. **Nothing is escalated.** No `BUG-`, no `E`-class item, no spec-queue addition —
+   a nil escalation, declared rather than omitted.
+3. **Owed to the post-campaign `AP-` round** (§13 item 2 of the verdict, carrier
+   unchanged): §4.J's landed-status and per-row qualification cells,
+   `FINDING J-1`'s two halves, `FINDING J-2`, `DECLARATION J-D1` as a §7 X-row **in
+   its measured wording — add branch, strongest form still derived**, and
+   `FINDING WO-0076-A1`'s one-line citation repair at `M03-M5`.
+4. **Owed to the family-K seal by me**: `FINDING WO-0076-S1`'s monitor-arm
+   enumeration **measured at the source before any arm's form is written**, and
+   `FINDING WO-0076-S2`'s cell counts **re-derived from the matrix rather than
+   written beside it**.
+5. **The lessons-harvest span stays OPEN** and falls due at the `SO-`; candidates
+   (D) and (E) are banked above, alongside (C) from `J-dv_lead-0141` and the three
+   from `J-dv_lead-0137`.
+6. **Carried, unchanged and not this round's to pay**: the family **K** campaign,
+   owed before any `SO-`; the charter §3 differential co-sim anchor, undischarged
+   and blind by **stimulus** to every configuration class; `WO-0047` §2's 4-octet
+   member reorder (`test_m03_f.ml`); `OBSERVATION L-O1` (`test_m03_l.ml`);
+   `WO-0073-D3`'s `M03-I4` mislabel (`test_m03_i.ml`); `OBSERVATION K-O1`
+   (`test/monitors/`).
+
+### Files-in-this-commit
+- agents/handoffs/WO-0076_family-j-mutation-campaign.md

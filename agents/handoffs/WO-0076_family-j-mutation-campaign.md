@@ -1612,3 +1612,759 @@ nine disclosures answered before the run, §6's check positive per class with th
 **Q2 stands answered as recommended and is now moot in the profitable direction**:
 IC-J5 is kept, and it came back **SEEDED** rather than declared — so `M03-J3`'s tuple
 comparison, the instrument no other class in the round reaches, will be probed.
+
+---
+
+# WO-0076-VERDICT — the ninth campaign adjudicated: five of five killed character-exact, every sealed direction and derived integer hit, the honest-kill withdrawal established from a run at last, and the two cells the seal got wrong are both mine
+
+- **State**: **FINAL**. Adjudicated by dv_lead, `J-dv_lead-0142`, spawn short-id
+  `WO-0076-ADJ-2/2026-08-10T11:10Z`, against
+  `WO-0076_family-j-mutation-campaign-SEALED-predictions.md` **as frozen at
+  `8346a5c`** — verified byte-identical to its frozen form
+  (`git diff 8346a5c HEAD -- <seal>` → empty).
+- **Governing clause**: the pre-run note's **§0.3**, which is harsher than a
+  correction. *Where a reading in that note and a sealed cell disagree, the cell
+  governs and the round scores it against me.* Two discrepancies are found this
+  round and **both are mine**; both are recorded at §10 and neither is discounted.
+- **Line numbers**: every `test/**` and `libs/**` line number in this verdict is
+  stated at **`8346a5c`** (`FINDING WO-0076-A1` as adopted and widened at
+  `J-dv_lead-0141` §5, document-level declaration form).
+- **Authority**: **CI** (ADR-0005). Scored from each transient's **`build` job's
+  own STEP readings and its `dune runtest` output at the source** — never from a
+  run-level badge. `journal-check` red on every transient is expected noise (a
+  work product with no journal append: R2 by construction). `cosim` is reported
+  and is **not** evidence (§4 item 5).
+
+---
+
+## 1. What ran, and that each branch carries exactly one class cut fresh from the base
+
+Verified through the API without moving a ref, an index or `HEAD`.
+
+| class | branch | commit | parent | files | ± | `build` run | `build` job |
+|---|---|---|---|---|---|---|---|
+| IC-J1 | `mut/wo-0076-j1` | `8aaa0dd` | **`8346a5c`** | 1 | +2/−2 | `31064102925` | `92498074622` |
+| IC-J2 | `mut/wo-0076-j2` | `f61157b` | **`8346a5c`** | 1 | +5/−1 | `31064103812` | `92498077419` |
+| IC-J3 | `mut/wo-0076-j3` | `2296840` | **`8346a5c`** | 1 | +1/−1 | `31064104902` | `92498080573` |
+| IC-J4 | `mut/wo-0076-j4` | `1c1bfb1` | **`8346a5c`** | 1 | +5/−2 | `31064106060` | `92498083901` |
+| IC-J5 | `mut/wo-0076-j5` | `8589bfd` | **`8346a5c`** | 1 | +7/−1 | `31064107507` | `92498087940` |
+
+**Every branch is a single commit whose sole parent is the base**, touching
+`libs/hardcaml_ethernet/src/xgmii_rx_64.ml` and nothing else, with the exact edit
+size §2 of the manifest specifies. **The shared-anchor hazard flagged at the
+pre-run note §3 did not fire**: branches 1 and 4 replace the same two lines, and
+IC-J4's `+5/−2` is only expressible against a tree that still carries the base's
+`i.cfg_rx_enable` conjunct — so branch 4 was cut fresh and not sequentially from
+branch 1. The four operating bars of the green light are discharged in the
+artefacts rather than on assertion.
+
+**Control**: base `8346a5c`, run **`31061945377`**, `build` job **`92491537453`**,
+conclusion **success** — all ten steps green, including step 6 `dune runtest`,
+step 8 (nothing unpromoted or non-deterministic), step 9 (DV mechanical checks)
+and step 10 (the abort-bit quantifier). §12 item 3 discharged.
+
+**Step readings, all five classes**: step 5 **`Build` = success** in every one, so
+**no class carries a build finding** (disposition 8's build limb never fires); step
+6 **`Run tests` = failure** in every one. Every red this campaign scores is
+therefore **behavioural**, raised by an assertion, and reached by a mutant that
+compiled.
+
+**The freeze, re-verified at scorecard time rather than treated as discharged
+once** (the pre-run note's own Open-question 2): `git diff --name-only 8346a5c HEAD
+-- test/ libs/` → **empty**; working tree clean; the three commits since the base
+are the manifest (`2fbcf0d`, `docs/reports/audit/**`), the pre-run rulings
+(`5ac62b5`, this packet), and a journal-only orchestrator entry (`cbc2765`).
+**Not one `test/**` byte moved between the seal and the scorecard, mine included.**
+§8's adjudicator-ordering rule holds end to end: bench frozen at `c109c08` <
+seal `8346a5c` < first diff text `2fbcf0d` < transients < this verdict.
+
+---
+
+## 2. The scorecard, from the promotion evidence at the source
+
+A file appears in a transient's promotion block **iff at least one unit in it
+changed its expect output**, so the block's `--- FILE` list is a file-level
+scorecard and the `dune runtest` diff inside it is a unit-level one.
+
+| class | files promoted | units red |
+|---|---|---|
+| **IC-J1** | `test_m03_j.ml`, `test_m03_n.ml` | `M03-J1`, `M03-J2`, `M03-J3 (lane 0)`, `M03-N4 (lane 0)` |
+| **IC-J2** | `test_m03_j.ml`, `test_m03_n.ml` | `M03-J1`, `M03-J2`, `M03-J3 (lane 0)`, `M03-N4 (lane 0)` |
+| **IC-J3** | `test_m03_j.ml`, `test_m03_n.ml` | `M03-J3 (lane 0)`, `M03-N4 (lane 0)` |
+| **IC-J4** | `test_m03_j.ml`, `test_m03_n.ml` | `M03-J1` (monitor arm), `M03-J2`, `M03-N4 (lane 0)` |
+| **IC-J5** | **`test_m03_j.ml` only** | `M03-J3 (lane 0)` |
+
+**Fifteen reds across five classes, and every one of them lands on one of the four
+units the enable census named.** No fifth unit reddened under any class.
+
+---
+
+## 3. The five sealed `R!` cells, scored character-for-character
+
+### 3.1 IC-J1 — seal §4.1, `M03-J1`, the silence scan's `tvalid` arm
+
+```
+sealed    M03-J1: cycle 4: tvalid high during the disabled window
+observed  M03-J1: cycle 4: tvalid high during the disabled window
+```
+
+**EXACT.** The `4` is specification-fixed and not mutant-owned (§2.6, §10(a)): a
+different value would have meant the rendering moved §6.1's `m + 3` delay as well
+as the admission gate. It did not. **The ordering claim is confirmed too** — §4.1
+sealed that `tvalid` is checked before the strobe list within each sample, so this
+message and not §4.2's speaks under this class; the backtrace raises inside the
+per-sample iteration at `test/xgmii_rx_64/test_m03_j.ml:178 @ 8346a5c`, the
+`tvalid` limb, from the scan at `:173`.
+
+### 3.2 IC-J2 — seal §4.2, `M03-J1`, the same scan's strobe arm
+
+```
+sealed    M03-J1: cycle <n>: an error strobe pulsed during the disabled window
+          <n> sealed 1 <= n <= 11, two named derivations: 1 (report at the refused
+          start character's own cycle) or 11 (report at that frame's would-be
+          report cycle)
+observed  M03-J1: cycle 1: an error strobe pulsed during the disabled window
+```
+
+**EXACT, with `n = 1`** — inside the sealed span and on the **first** of the two
+named derivations, which is the branch **D-J2a** disclosed before the run
+(`error_oversize`, pulsed on the refused start character's own cycle, the term
+being combinational in the current XGMII word). §9's reason for sealing this as a
+span rather than a value holds exactly: the specification forbids the report
+entirely, so *where* a design reports it is not fixed, and pinning it would have
+scored a conformant rendering as a finding. **The second ordering claim is
+confirmed as well** — §4.2 sealed that no output word appears anywhere in the
+window under this class, so §4.1's message cannot precede it, and it did not.
+
+### 3.3 IC-J3 — seal §4.3, `M03-J3`, the disabled run's word count
+
+```
+sealed    M03-J3 (lane 0): disabled run: expected exactly 8 delivered words (frame 0 only), got <n>
+          <n> sealed < 8, direction FEWER, derived 1
+observed  M03-J3 (lane 0): disabled run: expected exactly 8 delivered words (frame 0 only), got 1
+```
+
+**EXACT, derived value hit on the nose.** Frame 0's words fall on cycles 4 … 11 and
+the change is at cycle 5, so a gate on emission leaves the cycle-4 word alone and
+mutes the other seven. A rendering with one cycle of gate latency would have given
+**2**; it gave **1**, so the gate is combinational at the emission choke point —
+which is what the manifest's §2.3 claims and what `+1/−1` at `tvalid` can only be.
+
+### 3.4 IC-J4 — seal §4.4, `M03-J2`, the delivered-word count
+
+```
+sealed    M03-J2: expected 8 delivered words for frame 100, got <n>
+          <n> sealed < 8, direction FEWER, derived 0
+observed  M03-J2: expected 8 delivered words for frame 100, got 0
+```
+
+**EXACT, derived value hit.** Frames 0 … 99 stay refused (the class does not touch
+the disable — **D-J4b**, asymmetric in the rising direction only) and frame 100 is
+refused too, so the run delivers nothing at all.
+
+### 3.5 IC-J5 — seal §4.5, `M03-J3`, the tuple comparison
+
+```
+sealed    M03-J3 (lane 0): frame 0's delivered (octets, tkeep, tlast, tuser) tuples differ between the disabled and reference runs
+observed  M03-J3 (lane 0): frame 0's delivered (octets, tkeep, tlast, tuser) tuples differ between the disabled and reference runs
+```
+
+**EXACT in every character; no integer in this cell.** It is the only cell in the
+campaign raised by an assertion that compares two runs of the same schedule, and it
+was reached **because** the class changed nothing the three assertions before it
+read: the whole reference run at `Enable.high`, and the disabled run's word count
+of **8**. Under IC-J5 the disabled run delivers eight words at the reference's
+cycles with the reference's octets and `tkeep`, and differs in **one bit**.
+
+### 3.6 Summary
+
+**5 of 5 `R!` cells exact.** Every mutant-owned quantity landed inside its sealed
+inequality with the sealed direction; three hit their derived value exactly
+(**1**, **0**, **1**), and the fourth landed on a named endpoint of its span
+(**1** of `{1, 11}`). No `R!` cell printed a value the seal did not admit.
+
+---
+
+## 4. The worked blast-radius cells (seal §5.2) — every one hit
+
+| class | unit | sealed | observed |
+|---|---|---|---|
+| IC-J1 | `M03-J2` | `> 8`, derived **808** | `M03-J2: expected 8 delivered words for frame 100, got 808` |
+| IC-J1 | `M03-J3` | `> 8`, derived **16** | `M03-J3 (lane 0): disabled run: expected exactly 8 delivered words (frame 0 only), got 16` |
+| IC-J2 | `M03-J2` | exact, no integer | `M03-J2: an error strobe pulsed` |
+| IC-J2 | `M03-J3` | exact, no integer | `M03-J3 (lane 0): disabled run: an error strobe pulsed — frame 0 should close cleanly on its own /T/ and REQ-810 gives the refused frame 1 no strobe at all` |
+| IC-J2 | `M03-N4` | `> 1`, derived **2** | `M03-N4 (lane 0): expected exactly one strobe (error_start_without_terminate at A's own report cycle), observed 2` |
+
+**808 = 101 × 8 exactly** and **16 = 2 × 8 exactly** — the two integers §9 rows four
+and five exist for. The em dash in IC-J2's `M03-J3` message printed as the decimal
+escapes `\226\128\148` in the promoted source, **exactly as the seal's §1 encoding
+note said it would**, and the comparison is against the decoded string.
+
+**The UNWORKED cell behaved as sealed.** `M03-N4`'s delivered-cycles message fired
+under IC-J1, IC-J3 and IC-J4 with three different lists —
+`[4; 6; 7; 8; 9; 10; 11; 14; …]`, `[14; 15; …]` and `[4]` respectively, against an
+expected `[4; 14; 15; 16; 17; 18; 19; 20; 21]`. **No cell reads that list**; it is
+information, never a cell, and a disagreement about it is not a finding (§9). It
+is reported here and scored nowhere.
+
+**Every blast-radius red is inside its class's own rule (§3.4), and no red fell
+outside one.** IC-J1's and IC-J2's rule sets `{M03-J1, M03-J2, M03-J3, M03-N4}`
+were matched exactly; IC-J3's `{M03-J3, M03-N4}` exactly; IC-J4's
+`{M03-J2, M03-N4}` for its own assertions plus `M03-J1` through the latency tagger,
+exactly; IC-J5's `{M03-J3}` exactly — **the narrowest rule of the campaign selected
+one unit and exactly one unit reddened.** Standing rule 5's per-row finding limb
+never fired: no unit selected by a class's rule stayed green.
+
+---
+
+## 5. The load-bearing greens (`G!`), and the one `M` cell
+
+### 5.1 The `G!` cells — all verified green
+
+1. **`M03-J1` green under IC-J3** → `DECLARATION J-D1` measured (see §7.3 for the
+   precision this round obliges).
+2. **`M03-J2` green under IC-J3** → **`WO-0067` §6's honest-kill withdrawal is
+   MEASURED.** §8.1 rule 1 fires exactly: `M03-J3` red at its own cell **and**
+   `M03-J2` green. The withdrawal was argued from the stimulus in 2026-08-09 and
+   is now established from a run: **IC-J3 is a continuously-sampling design, and
+   `M03-J2`'s geometry cannot see it**, because the enable is 1 for the whole of
+   frame 100's admitted extent. This is the round's centrepiece and it is the
+   `FINDING M-1`/`M-2` pattern one family over. A bench cannot make that
+   measurement; a campaign can, and this one did.
+3. **`M03-J3` green under IC-J4** → the class keys on a **0 → 1** change and
+   `run_j3`'s schedule is `changes ~initial:true [(5, false)]`, which contains no
+   re-enable at all. §10(d)'s derivation from the stimulus rather than from a
+   category is confirmed: the condition is an empty set there, which is what makes
+   the green load-bearing rather than lucky.
+4. **`M03-J1` green under IC-J5** and **5. `M03-J2` green under IC-J5** → the class
+   keys on a 1 → 0 change **with a frame open**, and not on a change as such.
+   Neither unit has one.
+6. **`M03-N4` green under IC-J5** → **the marking is not sticky.** Frame A is
+   already aborted under REQ-110 and carries `tuser`[0] = 1 on its own `tlast`, so
+   the mark changes nothing observable there — *unless* it reached frame C, admitted
+   after the enable returns. It did not: `touched`'s `begins` clear term holds, and
+   §10(e)'s reasoning is measured rather than assumed.
+
+**A note on the count, which is a defect of mine**: §3.1 asserts "there are six of
+them" and its bullet list describes six, but the matrix marks five cells `G!` —
+`M03-J2 × IC-J5` is marked plain `G`. Both readings are satisfied here because the
+cell is green either way. It is nonetheless a seal defect and is filed at §10 as
+`FINDING WO-0076-S2`.
+
+### 5.2 The `M` cell — `M03-J1` under IC-J4, resolved as §5.6 outcome 1 in substance
+
+```
+M03-J1: latency tagger errors:
+frame 0: 72 input octets less 8 stripped from the front and 4 from the back is 60, but 0 octets were emitted
+```
+
+**Every one of the row's own assertions passed** — the disabled-window silence
+scan, the driven-window check, and the control run at `Enable.high` (101 `tlast`
+words, 101 segmented frames, sequence numbers 0 … 100 in order). The red arrives at
+`assert_monitors_clean` on the disabled bench, through the **latency tagger** arm,
+fed by `account_clean_frame`.
+
+**So `WO-0076` §4 item 8 is MEASURED**: `M03-J1`'s title says the re-enabled frame
+100 is received correctly, and **no assertion in the unit reads frame 100's
+delivered stream**. The only instrument that saw its refusal is a bench-supplied
+expectation. The claim in the title is not false; what it is not is an assertion.
+
+**By standing rule 7 this red qualifies nothing**, and IC-J4's kill is `M03-J2`'s.
+The tagger's report body was sealed **UNREAD** and is read here as a diagnostic
+only.
+
+**The string, however, is not the one the seal quoted, and that scores against
+me** — `FINDING WO-0076-S1`, §10.
+
+---
+
+## 6. MUST-STAY-GREEN, against the seal's own denominators
+
+Denominators as sealed at §0 and re-measured at the base: **59 M03 units; 139
+repository-wide OCaml units; 80 non-M03 = 79 behavioural + 1 build-level**;
+`test/cosim/` contributes **0 units**; **exactly four of the 59 drive
+`cfg_rx_enable` away from `Enable.high`**.
+
+| set | denominator | result under all five classes |
+|---|---|---|
+| M03 units that never drive the enable | **55** | **GREEN.** The twelve other `test_m03_*.ml` files and `test_m03_structural.ml` appear in no promotion block under any class |
+| non-M03 behavioural units | **79** | **GREEN.** `test/monitors/` 37, `test/xgmii/` 25, `test/golden/` 11, `test/axi64_probe/` 3, `test/xgmii_probe/` 3 — no file promoted under any class |
+| `test/hardcaml_ethernet/` build-level unit | **1** | **GREEN**, and step 5 `Build` = success in all five: **no build finding** |
+| `test/cosim/` | **0 units** | job conclusion **success** under all five and at the control — §6.1's predicted worthless green |
+
+**Not one MUST-STAY-GREEN violation in the campaign**, and the guarantee is the
+single conjunct the whole packet rests on: **enable-high invariance (D-J1b)**. The
+manifest discharged it structurally per class (`x &: 1 ≡ x`; the added disjunct
+≡ 0; the added conjunct ≡ 1; `settling ≡ 0` including through `clear` and from time
+zero; `touched ≡ 0`), and **the run confirms it across 134 units that hold the
+enable at 1** — plus, inside `M03-J1` itself, a full control run at `Enable.high`
+passing under four of the five classes. Under IC-J1 that control run is **shadowed**
+by the silence scan and is recorded **unobserved, never as a pass**.
+
+**IC-J4's reset-adjacent hazard did not fire.** The manifest chose the complement
+form (`not_en` = `~:(i.cfg_rx_enable)`, both registers holding 0 through `clear`
+and from time zero) precisely so that a frame starting on the first cycle after
+`clear` returns is still admitted, as SPEC-M03 §7's Reset bullet requires. Had the
+natural delayed-enable form been written instead, units that never drive the enable
+low would have reddened and §8.1 rule 4 would have disposed of the class without
+argument. **That choice is the difference between a valid class and a void one, it
+was disclosed rather than discovered, and the 55 + 79 green units are its receipt.**
+
+**§6's per-class permission check, in its positive form, confirmed by the run.** The
+datapath-perturbation signature (`BUG-0003` §V.10.2) appeared under **no class** —
+no short mid-frame word with `tkeep` ≠ 0xFF, no `0x07` idle filler substituted for a
+required octet, no octet lost. Every observed message is a count, a cycle, a strobe
+or a tuple comparison; none is an octet or a byte-enable at a frame outside its
+class's permission list. **Disposition 7 did not fire for any class**, and
+disposition 6 could not: five diffs, five branches, five commits, one class each.
+
+---
+
+## 7. Collisions
+
+### 7.1 Collision 1 — IC-J1's blast radius at `M03-J2` ≡ IC-J4's scored cell §4.4
+
+Character-identical up to the integer, as sealed:
+
+```
+IC-J1   M03-J2: expected 8 delivered words for frame 100, got 808
+IC-J4   M03-J2: expected 8 delivered words for frame 100, got 0
+```
+
+**Discriminator 1 — the sealed integer DIRECTION — separated them on the first
+reading and with no residue**: `> 8` (derived 808) under IC-J1, `< 8` (derived 0)
+under IC-J4. Both directions correct; both derived values exact.
+
+**Discriminator 2 — the measurement at another unit — agrees redundantly**:
+`M03-J1` reddens at §4.1 under IC-J1 and is green at every one of its own
+assertions under IC-J4.
+
+**Performance of the direction discriminator: 2 for 2, unambiguous, and
+load-bearing.** Without §9's rows four and five this cell would have had **no
+bench-side discriminator at all**, because the colliding class's own scored cell
+sits at a different unit entirely. A verdict that read a count-shaped message
+without reading its direction would have convicted IC-J1 of IC-J4's kill or the
+reverse.
+
+### 7.2 Collision 2 — IC-J1's blast radius at `M03-J3` ≡ IC-J3's scored cell §4.3
+
+```
+IC-J1   M03-J3 (lane 0): disabled run: expected exactly 8 delivered words (frame 0 only), got 16
+IC-J3   M03-J3 (lane 0): disabled run: expected exactly 8 delivered words (frame 0 only), got 1
+```
+
+**Discriminator 1 — direction**: `> 8` (derived 16) against `< 8` (derived 1).
+Separated, both exact. **Discriminator 2** agrees: `M03-J1` and `M03-J2` both redden
+under IC-J1 and both are **green** under IC-J3.
+
+**`FINDING WO-0074-S4`'s cross-product method is vindicated in the sharpest
+available form.** Both collisions are **one class's blast radius landing on another
+class's scored cell**, at units where the colliding class scores nothing. Neither is
+visible from the scored cells alone. The method was carried in as a bar; it found
+two collisions; both fired; both were separated by the discriminators it forced the
+seal to write. **It is now a bar on the family-K seal on evidence rather than on
+precedent.**
+
+### 7.3 Collision 3 — IC-J3's two branches (D-J3a: gate MOVED vs gate ADDED)
+
+Sealed as having **no discriminator this bench produces**, and carried entirely by
+the disclosure. **D-J3a was answered `add` before the run**, and the answer was
+*forced* rather than preferred: the `move` branch is IC-J1's edit plus IC-J3's in a
+single diff, which is two classes in one diff and unscoreable under §7.3 item 1.
+
+**And this round the disclosure is corroborated by an artefact, which is new.**
+`2296840` is **+1/−1** at `tvalid` (976), and the admission gate at 421–422 is
+untouched. A `move` rendering is not expressible as a one-line substitution at a
+single site. So at its fourth instance the `IC-D`/`IC-F` protection is
+**discharged by the commit's own file statistics** and not only by the answer —
+the first time in this programme that the branch pair has independent
+corroboration. Banked for the family-K seal: **a branch disclosure whose branches
+differ in edit *shape* can be checked against the transient's diffstat without
+reading a diff body.**
+
+**What this costs `DECLARATION J-D1`, stated precisely rather than glossed.** J-D1
+says an absence-shaped observable cannot separate *never admitted* from *admitted
+and muted*. IC-J3 as rendered is the `add` branch — the design **refuses and also
+mutes**. `M03-J1`'s green under it therefore measures directly that **the silence
+scan cannot see an emission gate at all**. The *admitted-and-muted* design is the
+`move` branch, which was not rendered; the seal's own §7 collision 3 pre-committed
+that the bench produces no discriminator between the branches, so `M03-J1`'s green
+under `move` follows from a **pre-run derivation, not from a run**. **J-D1 STANDS
+and is MEASURED on the `add` branch; its strongest form remains derived.** It goes
+to the `AP-` round as a §7 X-row in exactly that wording and not in a stronger one.
+
+### 7.4 Near-collisions
+
+As sealed and costing nothing: IC-J1, IC-J3 and IC-J4 all raised `M03-N4`'s
+delivered-cycles message with different lists at a cell **no class scores**;
+IC-J2's `M03-J2` and `M03-J3` strobe messages are scored by no class. **No two
+classes shared a scored cell in a way the seal could not separate.**
+
+---
+
+## 8. Per-class verdict, kills, qualifications and blast radius
+
+| class | verdict | kills | scored cell | qualifies | blast radius, qualifying nothing |
+|---|---|---|---|---|---|
+| **IC-J1** | **KILLED** | **1** | §4.1 @ `M03-J1` | **`M03-J1`**, no-output-word clause (REQ-810 sentence 1) | `M03-J2`, `M03-J3`, `M03-N4` — all through the same ungated admission |
+| **IC-J2** | **KILLED** | **1** | §4.2 @ `M03-J1` | **`M03-J1`**, no-strobe clause | `M03-J2`, `M03-J3`, `M03-N4` |
+| **IC-J3** | **KILLED** | **1** | §4.3 @ `M03-J3` | **`M03-J3`**, word count | `M03-N4` |
+| **IC-J4** | **KILLED** | **1** | §4.4 @ `M03-J2` | **`M03-J2`**, its **honest** kill and nothing else | `M03-N4`; and `M03-J1`'s monitor-arm red |
+| **IC-J5** | **KILLED** | **1** | §4.5 @ `M03-J3`, tuple comparison | **`M03-J3`**, tuple comparison | **none — the rule selected one unit** |
+| **campaign** | **5 seeded of 5 sealed** | **5 KILLED / 0 SURVIVED / 0 VOID** | | | |
+
+**Kills are counted per class** (`WO-0066` §11). IC-J1's four reds are **one** kill,
+never four; IC-J1 and IC-J2 both qualifying `M03-J1` is **two kills and one
+qualification**, and likewise IC-J3 and IC-J5 at `M03-J3`.
+
+**QUALIFIED J rows, under rule 7 — only an assertion of the row's own observable:**
+
+- **`M03-J1` — QUALIFIED**, by IC-J1 and by IC-J2, on two distinct clauses of its
+  own Observable.
+- **`M03-J2` — QUALIFIED**, by IC-J4, **on its honest kill only**. **It is NOT
+  qualified on the withdrawn continuous-sampling cell, and IC-J3's run is what
+  proves the withdrawal was right.** The plan's prohibition (`J-dv_lead-0124`) is
+  absolute and is enforced here rather than merely quoted.
+- **`M03-J3` — QUALIFIED**, by IC-J3 and by IC-J5.
+- **`M03-J4` — NOT QUALIFIED and unqualifiable** (§6.2, equivalent mutant by
+  specification). No kill in this campaign is evidence about it.
+- **`M03-N4` — QUALIFIED BY NOTHING HERE.** It took a red under four of the five
+  classes; **every one is blast radius.** It is family N's row, scored at
+  `WO-0066`, and nothing in this campaign re-qualifies it in either direction.
+  §12 item 7 discharged in terms.
+
+**Three of the four §4.J rows are qualified; the fourth cannot be.** The campaign
+pays the debt on the three oldest unscored rows in the programme, landed at
+`2dbd39b` and passed over by eight campaigns.
+
+**§10(g)'s figure, as §12 item 8 requires it be stated rather than implied.** The
+three J units carry **22 DUT-observable assertions**; this campaign's five classes
+reached **7** — `M03-J1`'s two silence arms, `M03-J2`'s word count and
+empty-strobe check, `M03-J3`'s word count, tuple comparison and empty-strobe check.
+**Fifteen are probed by nothing here**, including every per-word assertion in
+`M03-J2` (cycle, `tkeep`, `tlast`/`tuser`, octets, sequence number), the whole
+reference run in `M03-J3`, its cycle comparison and its refusal check, and
+`M03-J1`'s control run. **Five kills at four units is not breadth**, and the
+scorecard is not permitted to imply it.
+
+**Every lane-4 member is UNOBSERVED, never a miss and never a pass** (§5.3,
+R-DISC-1). `run_j3 ~lane:0` and `run_n4 ~row:"M03-N4 (lane 0)"` raised first under
+every class in which their units reddened; no lane-4 string appears anywhere in the
+campaign. The manifest discharged both lanes term by term; the bench observed one.
+
+---
+
+## 9. §6's pre-ship check and the manifest's conduct
+
+**The pre-ship check was delivered in its positive form for all five classes with
+the `Enable.high` column discharged structurally, and the run confirms all five.**
+Nothing was shipped with a known movement outside its permission list, and the two
+cells whose *reading* was in question — IC-J1's *every strobe*, IC-J3's *in
+flight* — were raised as pre-run questions instead of resolved unilaterally. Both
+rulings (RN-1 SCOPED, RN-2 OUTPUT-SIDE) are confirmed as costless by the run:
+RN-1's divergence set is `M03-N4` alone, whose reds are blast radius under every
+class; RN-2's divergence set was measured **empty** at all four carriers, and no
+observed message contradicts either.
+
+**RN-3 is confirmed exactly as ruled.** The pairing moved — the shared admission
+site is **IC-J1 + IC-J4**, not IC-J1 + IC-J3 — and **the collision inventory was
+unaffected**, because the inventory ranges over red sets × scored cells and a
+*site* is not a term in it. The pair that actually shares the site is the pair of
+collision 1, already inventoried and already discriminated. Disposition 6's
+carve-out, read on the principle it cites, names the right pair; its trigger never
+fired.
+
+### 9.1 The auditor's conduct — **CLEAN**, and better than clean in one respect
+
+**The four disclosed exposures, ruled individually:**
+
+1. **`git log --oneline -3` at the mandatory first action**, returning the base
+   commit's subject and two below it. Every clause in that subject is inside §16's
+   **freely told** set — the five classes, the capability, the cross-product method
+   and the *existence* of collisions the old method missed. **No cell, no message
+   string, no MUST-STAY-GREEN member.** **Immaterial**, and disclosed at the only
+   moment it could have been. Not a finding.
+2. **`git show --stat --name-only 8346a5c`** — file names only. **Required**:
+   discharging §8's base rule and R-SEAL-1 means knowing the seal is in the
+   packet's own commit, and knowing a file exists is not reading it.
+   **Necessary and correctly bounded.** Not a finding.
+3. **Trailers and file names over three commits.** This settled §8.0's `WO-0075`
+   hazard from metadata alone and exposed six paths **as names**. **Proportionate,
+   and it answered a question my own packet raised and could not answer** — I
+   cannot run git. Its self-stated limit (whether a *successor* work order will
+   edit `test/**` inside the window is not answerable from metadata) is correct,
+   and I discharged that limb at scorecard time: the freeze held. Not a finding.
+4. **Two `git log` subject reads** for the §8.2 provenance arbitration.
+   **Immaterial.** Not a finding.
+
+**Ruling: every exposure is metadata, none is content, none touches `test/**`, the
+seal, or another agent's journal, and each is disclosed at the point of use with
+what was taken and what was not.** A blinding statement that enumerates its own
+leaks is the only kind worth reading, and this one does. **The run itself is
+corroboration that the seal was not opened**: a manifest written against it would
+not have produced a scorecard in which one class's blast radius lands on two other
+classes' scored cells with precisely the directions the seal pinned — nor would it
+have left `M03-J2` green under IC-J3, which is the one green the seal cared most
+about.
+
+**The allowlist-narrowing at the ADR discrepancy — the item that deserves the
+ruling.** The spawn prompt's enumerated allowlist omitted `ADR-0014`, which this
+packet's §7 item 4 admits by name; the spawn said the allowlist is *"per the
+packet's terms"*, so the packet governed and the ADR **was** readable. The auditor
+**did not read it under either name**, honouring the **narrower** of two
+disagreeing instruments.
+
+**RULING: CORRECT, and it is the disposition this programme should want.** Two
+normative instruments disagreeing about a permission is a defect in the
+instruments, not a licence for the reader. Resolving it by intersection costs a
+round nothing when the permission is not load-bearing, and it leaves the
+disagreement **visible** instead of consuming it. The auditor then *proved* the cost
+was nil rather than asserting it: all five classes are derived from REQ-810,
+REQ-803 and SPEC-M03 §4.3/§6.1/§6.2, each of which states ADR-0014's ruling in its
+own words. **And the by-product is the round's cheapest finding**: listing
+`docs/adr/` to check the path it had been handed is what exposed that §7 item 4
+cites a filename that has never existed. **An error in my instrument, found by a
+reader honouring it** — which is exactly why RN-4 was carried as a dated,
+appended correction and a lessons-harvest candidate rather than patched silently
+into §7's body.
+
+**One MINOR item raised by the manifest and discharged here in its favour.**
+**D-J2b**'s caveat: an input word carrying start characters in *both* lane 0 and
+lane 4 while disabled refuses two frames and produces one high cycle, and the
+auditor could not check whether any carrier drives such a word (`test/**` barred).
+**I can, and no carrier in this campaign drives one**: `M03-J1`/`M03-J2`'s
+101-frame schedule alternates lanes 0 and 4 across frames 0 … 99 at 50/50 with one
+start character per word — the unit measures that split itself — and `M03-J3`
+drives two frames at one lane each. The counting-convention shortfall the caveat
+guarded **has no instance**, and no observed count is short by one. **Not a
+finding: a disclosure that did its job.**
+
+---
+
+## 10. Findings
+
+### `FINDING WO-0076-S1` (MINOR, **against me** — the seal's §5.4/§5.6)
+
+**The seal quoted a monitor-arm message it had not measured, and the arm that fired
+is the one it omitted.** §5.4 enumerates four forms —
+`protocol monitor unclean:`, `conservation monitor unclean:`,
+`strobe monitor unclean:`, `latency tagger unclean:`. `assert_monitors_clean`
+(`test/xgmii_rx_64/bench.ml:599–639 @ 8346a5c`) has **five** arms, and in source
+order the fourth is `": latency tagger errors:\n"` at **`:632`**, which **precedes**
+`": latency tagger unclean:\n"` at **`:638`**. IC-J4's `M` cell raised the fourth;
+§5.6 outcome 1 quoted the fifth.
+
+**Standing rule 2 obliges every message in the seal to be derived from the unit's
+committed control flow and source order at the base SHA. It was honoured for the
+five `R!` cells — including two ordering claims (§3.1, §3.2 above) that could each
+have been falsified and were not — and it was NOT honoured for the monitor arms,
+which were written as a class of forms rather than measured.**
+
+**Cost: nil to the score**, and the reason is structural rather than lucky: §5.4's
+disposition, §5.6's three outcomes, standing rule 7 and §9's UNREAD row all key on
+**which instrument spoke**, not on what it printed, and the instrument is the
+latency tagger under either string. §4 item 8 is measured; the red qualifies
+nothing; IC-J4's kill is `M03-J2`'s.
+
+**But the near-miss is the point.** Had §5.6 outcome 1 been sealed `R!` rather than
+`M`, this round would have scored a **correct** rendering as off-pattern on a
+string the bench never emits. A seal that quotes a message it did not measure is a
+seal that mis-scores the first cell keyed to a string.
+**Carrier: the family-K seal**, which owes this enumeration measured before it
+writes any monitor-arm form.
+
+### `FINDING WO-0076-S2` (MINOR, **against me** — the seal's §3.1)
+
+**A matrix and its own prose count disagree.** §3.1 asserts the `G!` cells "are
+this round's own measurements and there are six of them", and its bullet list
+describes six (counting `M03-J1` **and** `M03-J2` under IC-J5). The matrix marks
+**five**: `M03-J2 × IC-J5` is plain `G`. **Cost: nil this round, because the cell
+is green under both readings and both readings are therefore satisfied.** Had it
+reddened, the round would have had to decide whether a load-bearing measurement was
+lost, with no rule to decide it by and the result already known. This is
+`FINDING WO-0066-3`'s defect one artefact over — an enumeration and a rule
+disagreeing inside one document. **Carrier: the family-K seal.**
+
+### `FINDING J-1` — raised before the run, unrepaired, and it survives the run
+
+Both halves stand. The first: `M03-J1`'s Kills cell in its **narrow** reading
+("gates the output but leaves the strobe path live") remains unreachable — under no
+class did a refused clean frame draw a report except where the class itself added
+one, which is IC-J2, the cell's separable **parenthetical**. IC-J2 killed, so the
+parenthetical is now scored and the narrow reading is now measured as unreachable
+rather than argued. The second half is unchanged and is now pointed: **the
+no-output-word clause — REQ-810's first sentence, IC-J1's whole ground, and the
+source of this campaign's first kill — still has no Kills cell at all.**
+**Carrier: the post-campaign `AP-` round.**
+
+### `FINDING J-2` — raised before the run, and the run confirms its asymmetry
+
+`M03-J3`'s strobe clause convicted a design that **adds** a strobe (IC-J2's radius,
+character-exact at §4 above) and remains unfalsifiable in the **subtractive**
+direction: no class in this campaign suppresses an in-flight frame's own report,
+and IC-J3's D-J3b answer (`strobes stay live`) is what would have exercised it —
+except that `M03-J3`'s frame 0 is clean and owes none. The carrier that convicts
+the suppressing design is `M03-N4`, family N's row, and **not** a family J
+qualification in either direction. **Carrier: the post-campaign `AP-` round.**
+
+### `FINDING WO-0076-A1` (auditor's, MINOR) — adopted, widened, and discharged here
+
+Adopted at `J-dv_lead-0141` §5 with the widening that makes it stricter for me than
+as filed (any cited file, not only `libs/**`; document-level SHA declaration
+permitted). **Discharged for this verdict** by its own preamble. The one-line
+repair at `M03-M5` remains owed to the `AP-` round; exposure measured at exactly
+one citation.
+
+### Against the manifest — **nothing**
+
+No class out of specification, no combined diff, no undisclosed branch, no red
+outside a rule, no MUST-STAY-GREEN violation, no `NOT SEEDED`, no build finding, no
+`cosim` red. **Five classes offered, five seeded, five killed.**
+
+---
+
+## 11. The declarations, stated whatever the score (§12 item 6)
+
+1. **The differential co-simulation anchor is blind to this entire campaign by
+   STIMULUS** (§6.1). The `cosim` job is **success** under all five classes and at
+   the control. **That green is worth nothing and no verdict may cite it.** Both
+   producers hold `cfg_rx_enable` at 1 for the whole run
+   (`test/cosim/ours_run.ml:142`, `test/cosim/tb_xgmii_rx_64.v:63`, both
+   @ `8346a5c`) and the lane drives one 64-octet good-FCS frame with no
+   configuration change anywhere. This is `WO-0075`'s **bar 4** at its second
+   instance and its purest: at family M the blindness had three candidate causes
+   and the verdict named the wrong one; here there is exactly one, because the port
+   under test is never driven. A strobe field, a cycle column or a wider canonical
+   form would change nothing. **Discharged only by a co-simulation stimulus that
+   drives the enable**, which REQ-901's class list does not contain.
+2. **`M03-J4` is unscoreable and stays unscored** (§6.2). SPEC-M03 §6.3 item 7 and
+   C-14.5 leave the same-cycle case deliberately unconstrained, so every rendering
+   is an **equivalent mutant by specification**. A full five-of-five scorecard is
+   **not** full coverage of §4.J, and this verdict says so rather than letting the
+   score imply it.
+3. **The `Bench.Enable` guard and its structural witness are unreachable by any
+   mutation, and neither fired** (§6.3). The guard's *entry* condition remains
+   mechanically witnessed and its *refusal* has still never fired on a real
+   violation: **a half-measured instrument, unchanged by this round in either
+   direction.**
+4. **REQ-802/§9.1's reset value for `receive enable` is never observed at this
+   bench** (§6.4). No `SO-` may count §9.1's reset column as covered by family J.
+5. **REQ-810's header-record prohibition has no instance at M03** (§6.5).
+   Discharged by the interface, not by a test.
+6. **`DECLARATION J-D1` STANDS and is MEASURED** on the `add` branch, with §7.3's
+   precision: the strongest form remains derived, not run. **No verdict may cite
+   `M03-J1`'s green as evidence that frames were not admitted.**
+7. **§6.8's portable form holds, and the score does not move it**: a family whose
+   rows drive a configuration input away from its default has its whole convicting
+   power bounded by the number of tests that drive it — **four of fifty-nine here**
+   — and that number is invisible in a coverage count. Five kills do not change it.
+8. **A kill proves the assertion convicts, never that the bench is a general
+   detector of the class.** IC-J1 was detected at four units; **this bench was not
+   blind to it**, and no reading of this verdict may imply it was.
+
+---
+
+## 12. Era tally
+
+Class-based, `WO-0050` onward. Prior figure **49 sealed / 47 killed / 1 survived /
+1 void**, recorded at `WO-0074-VERDICT` §12 and in `tasks/BOARD.md`.
+
+| | sealed | killed | survived | void by declaration |
+|---|---|---|---|---|
+| before this campaign | 49 | 47 | 1 | 1 |
+| **family J (this campaign)** | **+5** | **+5** | **+0** | **+0** |
+| **after** | **54** | **52** | **1** | **1** |
+
+52 + 1 + 1 = 54. The single survivor remains `G-c4` (`FINDING G-1`); the single
+void remains `IC-M5`. **Family J is the fourth campaign in the era to return a
+clean sweep, and the first whose classes were permitted to move the datapath.**
+
+---
+
+## 13. What this round does NOT close
+
+1. **No `SO-xgmii_rx_64.md` issues and none is offered.** Outstanding before any
+   PASS: the family **K** campaign, and the charter §3 verilog-ethernet
+   differential co-sim anchor — undischarged, and now blind **per configuration
+   class** as well as per strobe. **The lessons harvest falls due at the `SO-`**,
+   spanning from my last harvest; it is **not** due this round and the span stays
+   open, declared rather than skipped. Two new candidates are banked at
+   `J-dv_lead-0142` against it.
+2. **§8's freeze has now EXPIRED**: the campaign has scored, so `test/**` and
+   `tools/**` may move again. Every AP edit this campaign wants is owed to the
+   post-campaign `AP-` round.
+3. **`FINDING J-1`, `FINDING J-2`, `FINDING WO-0076-S1`, `FINDING WO-0076-S2`** —
+   all four raised and none repaired here. Carriers named at §10.
+4. **Carried, not this verdict's to pay**: `WO-0047` §2's 4-octet anti-vacuity
+   question (`test_m03_f.ml`); `OBSERVATION L-O1` (`test_m03_l.ml`);
+   `WO-0073-D3`'s `M03-I4` mislabel (`test_m03_i.ml`); `OBSERVATION K-O1`
+   (`test/monitors/`).
+5. **Nothing here bears on family K, on the fifty-five M03 units that never drive
+   the enable, or on the `SO-` those still gate.**
+
+---
+
+## 14. What I commission next, in order
+
+1. **The family K campaign — the LAST of the era.** Owed before any `SO-`. Its
+   seal inherits four bars, two of them minted by this round:
+   `FINDING WO-0074-S4`'s cross product (now vindicated on evidence, §7.2);
+   `FINDING WO-0074-S1`'s complete conjunct lists; **`FINDING WO-0076-S1`'s
+   measured monitor-arm enumeration**; and **`FINDING WO-0076-S2`'s re-derived
+   cell counts**.
+2. **`WO-0075`'s build round, released** — unblocked the moment this campaign
+   scored.
+3. **The post-campaign `AP-` round** — the next commit opening
+   `test/attack_plans/**`. It pays, in one commit: §4.J's rows gaining this
+   campaign's score and their per-row qualification cells (`M03-J1` ×2, `M03-J2`
+   ×1 **on its honest kill only**, `M03-J3` ×2, `M03-J4` recorded unscoreable,
+   `M03-N4` recorded explicitly unqualified here), `FINDING J-1`'s two halves,
+   `FINDING J-2`, `DECLARATION J-D1` as a §7 X-row **in its measured wording**,
+   `FINDING WO-0076-A1`'s one-line citation repair at `M03-M5`
+   (`libs/hardcaml_ethernet/src/xgmii_rx_64.ml:296 @ ca1bb80`), and the change-log
+   row.
+
+**One sequencing hazard in that order, flagged because it is §8.0's hazard one
+family over and it is silent when it fires.** Items 2 and 3 both open `test/**`.
+Family K's campaign needs the same freeze this one had — bench frozen strictly
+earlier than its seal, and no `test/**` byte moving until it scores. **Running item
+1 first therefore puts two `test/**`-opening rounds inside family K's campaign
+window, and by my own rule the round would re-seal.** The disposition that worked
+this round is Q1's disposition (b): land the `test/**` work **before** the commit
+that stages the seal. **My recommendation is to run 3 → 2 → 1**, which costs
+nothing (the AP round and the build round are one commit each, and family K's seal
+is not yet drafted) and buys the freeze outright. **The choice is the operator's,
+not mine; this is question 1.**
+
+---
+
+## 15. Evidence
+
+All CI, all at the source, all re-checkable by the auditor.
+
+```
+control          8346a5c  run 31061945377  build job 92491537453  success (10/10 steps)
+IC-J1  8aaa0dd   run 31064102925  build job 92498074622  step5 Build=success  step6 tests=failure
+IC-J2  f61157b   run 31064103812  build job 92498077419  step5 Build=success  step6 tests=failure
+IC-J3  2296840   run 31064104902  build job 92498080573  step5 Build=success  step6 tests=failure
+IC-J4  1c1bfb1   run 31064106060  build job 92498083901  step5 Build=success  step6 tests=failure
+IC-J5  8589bfd   run 31064107507  build job 92498087940  step5 Build=success  step6 tests=failure
+cosim job conclusion: success under all five classes and at the control (evidence of nothing, §6.1)
+
+freeze, re-verified at scorecard time:
+  git diff --name-only 8346a5c HEAD -- test/ libs/   -> (empty)
+  git status --porcelain | wc -l                     -> 0
+  git rev-parse HEAD                                 -> cbc2765 (spawn HEAD, unmoved)
+
+transient integrity, via the API, no ref/index/HEAD movement:
+  each of the five branches: 1 commit, sole parent 8346a5c, 1 file
+  (libs/hardcaml_ethernet/src/xgmii_rx_64.ml), sizes +2/-2, +5/-1, +1/-1, +5/-2, +7/-1
+
+monitor-arm enumeration behind FINDING WO-0076-S1:
+  test/xgmii_rx_64/bench.ml:599-639 @ 8346a5c -- five arms, :632 "latency tagger errors:"
+  preceding :638 "latency tagger unclean:"
+```
+
+**Adjudicated against the seal as frozen at `8346a5c`, opened only after every
+scorecard was in hand. Five classes, five kills, five exact cells — and two
+defects in the seal, both mine, both scored against me under §0.3.**
