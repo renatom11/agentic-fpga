@@ -67,15 +67,95 @@
 # See "EXIT CODES" below for the full, current table, and "THE PINNED ENTRY
 # POINTS" for the compare.exe entry's updated note.
 #
-# THE THREE CHECKS (WO-0046 §4, order followed exactly)
+# ROUND 5 (`WO-0078` §6.1 Stage 1, data_wrangler's own round; companion to
+# tb_writer's landed `test/cosim/**` half at `3ec0efe`, which is what makes
+# case iteration and `compare`'s new exit `6` real): this file goes from
+# driving ONE stimulus to iterating a CASE SET. Stage 1 authorises exactly
+# one member, case 0, byte-identical to what this script has always driven
+# (`WO-0078` §3.1/§6.1) -- nothing here adds a stimulus class. What changes
+# is the machinery around it, so that a case set of more than one member
+# (Stage 2, a separate, not-yet-authorised round) has somewhere to land
+# without a redesign:
+#   (1) `stimulus_gen.exe` is now invoked with its SECOND, optional,
+#       argument -- the case id (`test/cosim/stimulus_gen.ml`'s own header:
+#       "the case id is therefore the SECOND, optional, argument, never the
+#       first," landed against exactly this round's own use of it). Every
+#       case gets its own stimulus, generated fresh, in its own working
+#       directory.
+#   (2) Checks 4.1 and 4.3 now run PER CASE (each case gets its own
+#       differential-plus-timing comparison and its own two-run determinism
+#       check, in its own directory); check 4.2 (the self-test) does not
+#       depend on any case's stimulus at all -- it exercises `compare`'s own
+#       fixed, hand-built fixtures -- so it still runs exactly ONCE, in the
+#       same relative position WO-0046 §4 always put it: after the first
+#       case's own check 4.1 and before that case's own check 4.3. At Stage
+#       1's one-case cardinality this reproduces the pre-existing execution
+#       order (4.1, 4.2, 4.3) byte-for-byte; at a future N > 1 the self-test
+#       simply does not repeat, which is a documented choice of THIS round
+#       (`WO-0078` §6.1 names case iteration as data_wrangler's own item; it
+#       does not pin the self-test's position relative to a case loop that
+#       does not exist yet), not an inference.
+#   (3) NEITHER check dies on the first red any more. A producer refusal
+#       inside one case's own pipeline (any of the six census entries
+#       `WO-0078` §2.2 enumerates, plus a determinism mismatch) is recorded
+#       against THAT case and the loop moves on to the next one -- `WO-0078`
+#       §12 criterion 3, quoted here because it is the reason the control
+#       flow changed shape: "A case that is skipped, or whose result is
+#       folded into an aggregate without its own line, fails -- including
+#       when the aggregate is 0." The ONE exception is case 0's own
+#       stimulus_sha256 check (next item): that one aborts the whole run
+#       before any case's pipeline has executed, by `WO-0078` §3.3 item 1's
+#       own explicit instruction, and is not part of this "never die
+#       mid-loop" rule.
+#   (4) Case 0's `stimulus_sha256`, generated fresh by THIS run, is compared
+#       against the value the last GREEN pre-widening `cosim` job printed --
+#       CI run `31084252734`, job `cosim` (job id `92559876482`), commit
+#       `3ec0efe` (fetched via GitHub's REST API, jobs-then-logs, read-only;
+#       see the Return log for the one blocked leg of that fetch and how it
+#       was worked around without retrying a policy denial). A mismatch
+#       exits the new `EXIT_CASE0_MOVED` (`13`) immediately, reported before
+#       any case's own pipeline runs; a match is reported too (`WO-0078` §12
+#       criterion 1's read side never goes unstated, whichever way it comes
+#       out).
+#   (5) Two new exit codes, both allocated by this round: `EXIT_
+#       TIMING_UNASSERTABLE` (`12`, required by `WO-0075`/`WO-0078` §5.3 the
+#       moment any case can carry an injected idle -- `compare`'s own exit
+#       `6`, landed by tb_writer at `3ec0efe`, is what this maps) and
+#       `EXIT_CASE0_MOVED` (`13`, `WO-0078` §3.3 item 1, allocated "above
+#       12" per the packet's own instruction). See "EXIT CODES" below for
+#       both, in this round's own words, and where each sits on the
+#       did-the-lane-reach-a-verdict axis `WO-0049` §8 built this table
+#       around.
+#   (6) The per-case aggregate precedence (`WO-0078` §3.3, implemented here
+#       in the exact order the packet pins it): case-0-moved, then any
+#       producer refusal in any case, then content divergence in any case,
+#       then T0-unaligned in any case, then T1-unassertable in any case,
+#       then T1-negative in any case, then `EXIT_OK`. `compare`'s own exit
+#       code and precedence, per invocation, are UNCHANGED (`WO-0078` §3.3's
+#       own framing: "`compare` runs per case and keeps its own exit
+#       contract unchanged. The harness aggregates.") -- this script only
+#       adds the layer that folds N per-case results into ONE process exit.
+#   (7) A cost probe (`WO-0078` §9): two wall-time numbers, printed as plain
+#       lines rather than left to CI's own step-timing UI -- the per-case
+#       pipeline wall time (the `run_pipeline` call that will scale with the
+#       case count Stage 2/3 add) and this whole script's own wall time
+#       ("the `cosim` job's own duration" `WO-0078` §9 names as unmeasured;
+#       scoped explicitly to this script's invocation, not the surrounding
+#       CI job's opam/checkout time, which this script has no visibility
+#       into and does not claim to measure).
 #
-#   4.1  DIFFERENTIAL COMPARISON  — one 64-octet good-FCS frame, lane-0 start,
-#        driven into both `Xgmii_rx_64` (ours, via ours_run) and
-#        `axis_xgmii_rx_64` (theirs, via the vendored reference under
-#        `iverilog`/`vvp`), reduced to canonical transaction files and
-#        compared under REQ-901. For the FRAME THIS SCRIPT DRIVES the
-#        permitted-divergence set is EMPTY, so any divergence is a defect
-#        and `compare` exits nonzero.
+# THE THREE CHECKS (WO-0046 §4, order followed exactly; `WO-0078` §6.1
+# widens 4.1 and 4.3 from ONE stimulus to a CASE SET -- see ROUND 5 above)
+#
+#   4.1  DIFFERENTIAL COMPARISON  — run PER CASE in the case set (`WO-0078`
+#        §6.1; Stage 1's set has exactly one member, case 0, byte-identical
+#        to the single 64-octet good-FCS frame, lane-0 start, this script
+#        has always driven). Each case's stimulus is driven into both
+#        `Xgmii_rx_64` (ours, via ours_run) and `axis_xgmii_rx_64` (theirs,
+#        via the vendored reference under `iverilog`/`vvp`), reduced to
+#        canonical transaction files and compared under REQ-901. For the
+#        FRAME THIS SCRIPT DRIVES the permitted-divergence set is EMPTY, so
+#        any divergence is a defect and `compare` exits nonzero.
 #
 #        CORRECTED 2026-08-09 (dv_lead, J-dv_lead-0132; CD-xgmii_rx_64_cosim.md
 #        §0-ter, the dated annotation beside §0-bis). This comment used to say
@@ -106,10 +186,11 @@
 #   4.2  DELIBERATE-MISMATCH SELF-TEST — `compare --self-test`, in the SAME
 #        binary as 4.1, so the self-test exercises the production comparison
 #        path rather than a parallel harness that proves nothing about it.
-#   4.3  TWO-RUN DETERMINISM — the whole pipeline (ours_run + vvp against the
-#        SAME recorded stimulus and the SAME built simulator) runs a second
-#        time in this job, and both canonical files (ours.canon, theirs.canon)
-#        are diffed byte-for-byte between the two runs. This exercises the
+#   4.3  TWO-RUN DETERMINISM — run PER CASE, immediately after that case's own
+#        4.1 (`WO-0078` §6.1): the whole pipeline (ours_run + vvp against the
+#        SAME recorded per-case stimulus and the SAME built simulator) runs a
+#        second time, and both canonical files (ours.canon, theirs.canon) are
+#        diffed byte-for-byte between the two runs. This exercises the
 #        "pinned-input reproducibility" guarantee named in ADR-0015 D3 and
 #        CD-xgmii_rx_64_cosim.md §4 — explicitly NOT REQ-902, which does not
 #        extend to this lane.
@@ -179,7 +260,11 @@
 #                        actually invoked.
 #   runner image         `$ImageOS`/`$RUNNER_NAME` in CI; a well-defined
 #                        LOCAL descriptor otherwise — see next section.
-#   stimulus identifier  sha256 of the one `stimulus.txt` both runs share.
+#   stimulus identifier  sha256 of the one `stimulus.txt` both runs of a
+#                        GIVEN CASE share (`WO-0078` §6.1: a case set means a
+#                        distinct stimulus per case; the sidecar's own
+#                        `stimulus_sha256` field is per-case, recomputed and
+#                        re-validated before each case's own two runs).
 # Additionally recorded, best-effort and explicitly NOT gated — advisory
 # only, R-CI-3's extra forensic detail, not part of the antecedent above —
 # the distro package version via `dpkg-query`. Applying the same "no marker
@@ -220,10 +305,25 @@
 # `test/cosim/` SOURCES (round 2; round 1 built this section from an
 # assumption, flagged as such, before these files existed)
 #
-#   stimulus_gen.exe   ONE optional positional arg: the output path (default
-#                      "stimulus.txt", cwd-relative, if omitted) —
+#   stimulus_gen.exe   TWO optional positional args, filled left to right:
+#                      output path (default "stimulus.txt", cwd-relative, if
+#                      omitted), case id (default "0") —
 #                      `test/cosim/stimulus_gen.ml`'s own `Sys.argv` match.
-#                      This script always passes an explicit absolute path.
+#                      ROUND 5 (`WO-0078` §6.1, this round): this script now
+#                      passes BOTH explicitly, an absolute output path and
+#                      the case id being iterated, for every case in the set
+#                      — the landing-order affordance
+#                      `test/cosim/stimulus_gen.ml`'s own header names
+#                      ("the case id is therefore the SECOND, optional,
+#                      argument, never the first") is exercised here for the
+#                      first time. `stimulus_gen.exe` also writes a
+#                      `<output_path>.idle` sidecar unconditionally
+#                      alongside `stimulus.txt` (`WO-0078` §5.2,
+#                      tb_writer's own mechanism) — this script does not
+#                      read, copy, or otherwise touch that file directly; it
+#                      rides along through `ours_run.exe`'s own relay to
+#                      `<ours.canon>.idle`, which `compare.exe` reads on its
+#                      own.
 #   ours_run.exe       TWO optional positional args, filled left to right:
 #                      stimulus path (default "stimulus.txt"), output path
 #                      (default "ours.canon") — `ours_run.ml`'s own
@@ -296,6 +396,49 @@
 # REQ-005/REQ-111) or about this harness's own time base — never about the
 # MIT reference, whose cycles `compare` records and never adjudicates (T2,
 # REQ-901's exclusion, `WO-0075` §3.3).
+#
+# ROUND 5 (`WO-0078` §5.3/§3.3, data_wrangler's own round): one more code
+# joins the did-not-reach side, and one more joins it beside it for a
+# different reason.
+#
+# `12` (TIMING-UNASSERTABLE) is the mapping of `compare`'s own exit `6`
+# (`Unassertable`, landed by tb_writer at `3ec0efe`) — T1 DECLINING to
+# certify a frame rather than certifying it and finding it wrong. That is
+# "did not reach a verdict" in exactly the sense `2`/`3`/`8`/`11` already are
+# — a defect in neither our RTL nor the reference, but in what the stimulus
+# permits T1 to assert — so `12` joins that same enumerated set: `2`, `3`,
+# `8`, `11`, `12`. It ranks ABOVE `10` (a reached-and-negative T1 verdict) in
+# this script's own per-case classification and in `WO-0078` §3.3's
+# aggregate precedence, for the identical reason `8` outranks `4` and `11`
+# outranks `10` — a refusal is not a verdict, so it cannot be a NEGATIVE
+# verdict either.
+#
+# `13` (CASE0-MOVED) is not a `compare` exit mapping at all — it fires
+# before `compare` is ever invoked for any case, indeed before any case's
+# own `ours_run`/`vvp` pipeline runs at all (`WO-0078` §3.3 item 1). It
+# belongs on the did-not-reach-a-verdict side for the strongest form of the
+# same reason `2` (PREREQ) and `7` (PROVENANCE) do: this is not a report
+# that some case's comparison went badly, it is a report that the frozen
+# baseline this whole lane's history is anchored to (`WO-0078` §3.1) no
+# longer exists in the form every prior result assumed, so there is nothing
+# for ANY case in the set to be compared against yet. Grouped here, in this
+# round's own words, with `2`, `3`, `7`, `8`, `11`, `12` — the whole
+# did-not-reach-a-verdict family — rather than invented as some fourth axis:
+# a run that never got as far as a baseline never got as far as reaching or
+# missing a verdict either.
+#
+# A further note this round adds, since checks 4.1 and 4.3 now iterate a
+# case set (`WO-0078` §6.1) rather than driving one stimulus: `4`
+# (DIFFERENTIAL), `10` (TIMING), `11` (TIMING-NO-VERDICT) and `12`
+# (TIMING-UNASSERTABLE) below are now AGGREGATE codes — "at least one case in
+# the set produced this outcome," per `WO-0078` §3.3's own precedence, which
+# this script implements in the order that section pins (case-0-moved, then
+# any producer refusal, then content, then T0, then T1-unassertable, then
+# T1-negative, then OK). WHICH case, and every OTHER case's own outcome, is
+# always in the per-case `CASE <id>: …` lines printed during the run — the
+# aggregate code alone never says which case, on purpose (`WO-0078` §3.3's
+# own rule: "the per-case lines say which case, and they are printed for
+# every case whatever the aggregate is").
 #
 #   0  PASS         — all three checks (4.1, 4.2, 4.3) passed.
 #   2  PREREQ       — iverilog, vvp or dune is not on PATH. The lane DID NOT
@@ -419,12 +562,81 @@
 #                     NEITHER a claim about our design NOR about the MIT
 #                     reference; nothing about either side's cycles was ever
 #                     compared.
+#  12  TIMING-        — check 4.1's `compare` REFUSED to certify T1 for at
+#      UNASSERTABLE     least one frame in at least one case (`compare`'s own
+#                     exit 6, `WO-0078` §5.3/§5.4, landed by tb_writer at
+#                     `3ec0efe`): either the stimulus itself CARRIED a
+#                     nonzero injected-idle count for that frame (FINDING
+#                     RV-0075-2 — the antecedent SPEC-M03 §6.1's gapless
+#                     formula does not survive), or the frame's own recorded
+#                     cycles carry exactly one broken inter-word delta,
+#                     structurally indistinguishable from a legitimate
+#                     single idle injection. NOT a defect against our own
+#                     spec (that is `10`, TIMING) and NOT a differential
+#                     finding — it is T1 declining to compute a number it
+#                     was not built to assert past, which is a DIFFERENT
+#                     thing from computing one and getting it wrong. Ranks
+#                     ABOVE `10` in this script's own aggregate precedence
+#                     (`WO-0078` §3.3): a tier that declined to certify has
+#                     not certified, so it cannot be read as a negative
+#                     certification either. Before this code existed
+#                     (`RV-0075-VERDICT` §4.1(b)/(c)), `Unassertable` mapped
+#                     to `10` — putting a stimulus/harness condition on the
+#                     design-defect axis, which is exactly the
+#                     misclassification hazard `WO-0049` §8 built this whole
+#                     table to prevent, applied here to a third axis. `12`
+#                     is required, not optional, from the first case this
+#                     lane ever drives that CAN carry an injected idle or a
+#                     boundary-shifted timing shape (`RV-0075-VERDICT`
+#                     §4.1(c)) — Stage 1 ships the machinery; the case that
+#                     actually exercises this code end-to-end in this
+#                     script's own execution is `compare --self-test`'s own
+#                     fixtures (e)/(e′), not case 0, which carries zero idles
+#                     by construction (`WO-0078` §4.2 item 2) and is
+#                     therefore never expected to produce `12` on a green run.
+#  13  CASE0-MOVED    — case 0's `stimulus_sha256`, generated fresh by THIS
+#                     run, does not equal the value the last GREEN
+#                     pre-widening `cosim` job printed (`WO-0078` §3.3 item
+#                     1; the pinned value and its own source are recorded
+#                     where `CASE0_PINNED_SHA256` is set, below). Checked,
+#                     and reported either way, BEFORE any case's own
+#                     `ours_run`/`vvp` pipeline runs — a run whose frozen
+#                     reference case has moved has no baseline, so NOTHING
+#                     else in that run is reported: not a per-case line for
+#                     case 0, not a per-case line for any other case in the
+#                     set, nothing. PREREQ/PROVENANCE/BUILD still run first
+#                     (this check needs a built `stimulus_gen.exe` to even
+#                     produce case 0's stimulus to hash), but among
+#                     everything CASE-related this is the very first thing
+#                     checked — before case 0's own `ours_run`/`vvp`
+#                     pipeline, before any other case in the set gets a
+#                     turn. `13` sorts last among the codes by number but
+#                     first among the case-related checks by construction,
+#                     because every later check in this script assumes case
+#                     0 is what `WO-0078` froze it as, and that assumption
+#                     is exactly what this code exists to verify before it
+#                     is spent.
 #
 # USAGE
 #   tools/cosim/run_cosim.sh        run all three checks, no arguments
 #   tools/cosim/run_cosim.sh --help print this header and exit 0
 
 set -uo pipefail
+
+# WO-0078 §9 -- the cost probe's second number (the whole `cosim` job's own
+# wall time). Captured as the very first thing this script does, so the
+# number printed at the end covers everything this script itself spends,
+# not merely the case loop. Nanosecond epoch, GNU `date` (`%N`); integer
+# bash arithmetic only, no `bc`/`awk` dependency.
+JOB_START_NS="$(date +%s%N)"
+elapsed_since() {
+  # $1 = a %s%N start value from this same `date`; prints "N.NNNs".
+  local start="$1" end elapsed_ns elapsed_ms
+  end="$(date +%s%N)"
+  elapsed_ns=$((end - start))
+  elapsed_ms=$((elapsed_ns / 1000000))
+  printf '%d.%03ds' "$((elapsed_ms / 1000))" "$((elapsed_ms % 1000))"
+}
 
 HERE="$(cd "$(dirname "$0")" && pwd)"
 REPO="$(cd "$HERE/../.." && pwd)"
@@ -451,6 +663,33 @@ EXIT_NO_VERDICT=8
 EXIT_INTERNAL=9
 EXIT_TIMING=10
 EXIT_TIMING_NO_VERDICT=11
+EXIT_TIMING_UNASSERTABLE=12
+EXIT_CASE0_MOVED=13
+
+# WO-0078 §6.1 Stage 1 -- the case SET. Exactly one member authorised
+# (case 0, byte-identical to what this script has always driven, §3.1); the
+# array exists as a real loop target rather than a hardcoded single case, so
+# Stage 2/3 (separately authorised) add a member here without a redesign of
+# the machinery below. Case 0 is always processed first -- everything this
+# script does with it (the frozen-baseline check, JOB below) depends on
+# that ordering, not on searching the array for "0".
+CASES=("0")
+
+# WO-0078 §3.3 item 1 -- the last GREEN pre-widening `cosim` job's own
+# printed value, fetched read-only (GitHub REST API, jobs endpoint then that
+# job's own logs endpoint) and pinned here rather than re-derived: CI run
+# `31084252734` ("build" workflow), job `cosim` (job id `92559876482`),
+# commit `3ec0efe` -- the commit this round's own spawn head is measured
+# against. Printed twice in that job's log, identically: the STIMULUS
+# section's "[ok] stimulus.txt sha256: …" and the final SUMMARY's "stimulus
+# sha256: …". The direct `curl` route the dispatch named hit an organisation
+# egress policy denial partway through (GitHub's own logs endpoint 302s to
+# Azure blob storage, and that host is not on this session's allow-list);
+# read via `mcp__github__get_job_logs` instead, which is a read of the same
+# public log through a different transport, not a retry of the denied one
+# and not a decision this script depends on being reachable at run time --
+# see the Return log for the full account.
+CASE0_PINNED_SHA256="c675517176922d42bca42ec3def182cb3536861f1acaa8384116f33a5c4cc051"
 
 say() { printf '%s\n' "$*"; }
 hdr() { printf '\n=== %s ===\n' "$*"; }
@@ -498,6 +737,13 @@ dump_run() {
 die() {
   # $1 = exit code, $2 = check name — printed exactly once, so "the failing
   # check named on stdout" (WO-0046 §2.1) is never ambiguous.
+  #
+  # WO-0078 §9's cost probe (this round): the whole job's own wall time is
+  # printed on EVERY exit path, not only the happy one -- a run that fails
+  # is exactly the run whose cost a reader most wants to see (was this
+  # slow, or did it fail fast?), so it is printed here rather than only in
+  # the final success-path summary.
+  say "  [cost] run_cosim.sh wall time (this invocation): $(elapsed_since "$JOB_START_NS")"
   printf '\nrun_cosim: FAILED CHECK: %s\n' "$2"
   exit "$1"
 }
@@ -730,79 +976,176 @@ fi
 say "  iverilog compile: ok -> $SIMBIN"
 
 # ------------------------------------------------------------------ #
-# STIMULUS — generated once, the SAME recorded stimulus reused by      #
-# both runs (the determinism guarantee's antecedent names "the         #
-# recorded stimulus", singular — not "a freshly generated one").       #
+# run_pipeline — drives one case's stimulus through both sides ONCE.   #
+# WO-0078 §6.1 (this round): no longer calls `die` on its own account —  #
+# see the CASE LOOP below for why (pass criterion 3: a producer refusal  #
+# in one case's pipeline must not silently cost every OTHER case in the  #
+# set its own reported line). Callers read the return status and        #
+# `$PIPE_FAIL_REASON`.                                                   #
 # ------------------------------------------------------------------ #
 
-hdr "STIMULUS (recorded once, WO-0046 §3: one 64-octet good-FCS frame, lane-0 start)"
-mkdir -p "$WORK/stim"
-# stimulus_gen.ml: one optional positional arg, the output path (confirmed
-# against the landed source — see header). Passed explicitly, absolute, so
-# no cwd juggling is needed for this call at all.
-STIM_OUT="$("$STIMULUS_GEN_BIN" "$WORK/stim/stimulus.txt" 2>&1)"
-STIM_RC=$?
-if [ "$STIM_RC" -ne 0 ] || [ ! -e "$WORK/stim/stimulus.txt" ]; then
-  say "$STIM_OUT"
-  # PRODUCE, not BUILD: stimulus_gen compiled (the BUILD block above printed
-  # `dune build: ok`) and then failed at run time — `WO-0073-D5`, see
-  # produce_reason's note. Its most likely raise is its own `Arrival.check`
-  # assertion, which is a stimulus defect and not a compilation one.
-  die "$EXIT_BUILD" "PRODUCE (stimulus_gen: $(produce_reason "$STIM_RC" "$WORK/stim/stimulus.txt"))"
-fi
-[ -n "$STIM_OUT" ] && say "$STIM_OUT"
-STIMULUS_SHA="$(sha256sum "$WORK/stim/stimulus.txt" | cut -d' ' -f1)"
-require_field "stimulus_sha256" "$STIMULUS_SHA"
-say "  [ok]   stimulus.txt sha256: $STIMULUS_SHA"
-
 run_pipeline() {
-  # $1 = run directory (created by the caller). Drives our side with
-  # explicit absolute paths (ours_run.ml takes two optional positional
-  # args, confirmed against the landed source), then drives the reference
-  # side via vvp, which has NO argv support at all and hardcodes
+  # $1 = run directory (created by the caller), $2 = label, $3 = this
+  # case's own stimulus.txt path. Drives our side with explicit absolute
+  # paths (ours_run.ml takes two optional positional args, confirmed
+  # against the landed source), then drives the reference side via vvp,
+  # which has NO argv support at all and hardcodes
   # "stimulus.txt"/"theirs.canon"/"theirs.canon.meta" relative to its own
   # cwd (tb_xgmii_rx_64.v's own "WORKING DIRECTORY CONTRACT" comment) — so
   # only that invocation needs a cwd change and a copied-in stimulus file.
   # Writes both sidecars last, overwriting whatever tb_xgmii_rx_64.v wrote.
-  local dir="$1" label="$2" out rc
+  #
+  # Returns 0 on success. On failure, prints the failing producer's own
+  # output (unchanged from before this round) and returns 1 with
+  # `$PIPE_FAIL_REASON` set to the same human-readable string this script
+  # used to hand straight to `die` — the caller decides what to do with a
+  # failure now, this function no longer decides FOR it.
+  local dir="$1" label="$2" stim="$3" out rc
+  PIPE_FAIL_REASON=""
 
-  out="$("$OURS_RUN_BIN" "$WORK/stim/stimulus.txt" "$dir/ours.canon" 2>&1)"
+  out="$("$OURS_RUN_BIN" "$stim" "$dir/ours.canon" 2>&1)"
   rc=$?
   if [ "$rc" -ne 0 ] || [ ! -e "$dir/ours.canon" ]; then
     say "$out"
-    die "$EXIT_BUILD" "PRODUCE (ours_run, our side, $label: $(produce_reason "$rc" "$dir/ours.canon"))"
+    PIPE_FAIL_REASON="PRODUCE (ours_run, our side, $label: $(produce_reason "$rc" "$dir/ours.canon"))"
+    return 1
   fi
   [ -n "$out" ] && say "  [$label] ours_run: $out"
 
-  cp "$WORK/stim/stimulus.txt" "$dir/stimulus.txt"
+  cp "$stim" "$dir/stimulus.txt"
   out="$(cd "$dir" && vvp "$SIMBIN" 2>&1)"
   rc=$?
   if [ "$rc" -ne 0 ] || [ ! -e "$dir/theirs.canon" ]; then
     say "$out"
-    die "$EXIT_BUILD" "PRODUCE (vvp, the reference side, $label: $(produce_reason "$rc" "$dir/theirs.canon"))"
+    PIPE_FAIL_REASON="PRODUCE (vvp, the reference side, $label: $(produce_reason "$rc" "$dir/theirs.canon"))"
+    return 1
   fi
   [ -n "$out" ] && say "  [$label] vvp: $out"
 
   write_sidecar "$dir/ours.canon.meta" ours "$label"
   write_sidecar "$dir/theirs.canon.meta" theirs "$label"
+  return 0
+}
+
+# record_case_refusal — WO-0078 §3.3 item 2 ("any producer refusal, any
+# case, → its own code, on the did-not-reach-a-verdict side"). First
+# refusal recorded across the whole case set wins the AGGREGATE exit code
+# (a process returns exactly one exit status; every case's own line is
+# printed regardless, so no information is lost by this choice — only
+# which single code the aggregate reports when more than one case has a
+# refusal, a situation Stage 1's one-case set cannot itself produce).
+AGG_REFUSAL_CODE=""
+AGG_REFUSAL_LABEL=""
+record_case_refusal() {
+  # $1 = harness exit code, $2 = human-readable label (already case-scoped
+  # by the caller).
+  if [ -z "$AGG_REFUSAL_LABEL" ]; then
+    AGG_REFUSAL_CODE="$1"
+    AGG_REFUSAL_LABEL="$2"
+  fi
 }
 
 # ------------------------------------------------------------------ #
-# CHECK 1/3 — DIFFERENTIAL COMPARISON (§4.1)                          #
+# CASE LOOP — WO-0078 §6.1: checks 4.1 and 4.3, iterated per case, in    #
+# a per-case working directory. Check 4.2 (self-test) does not depend    #
+# on any case's stimulus and runs exactly once, in-line, immediately     #
+# after the FIRST case's own check 4.1 — reproducing WO-0046 §4's        #
+# original 4.1/4.2/4.3 order exactly at Stage 1's one-case cardinality.  #
+# Nothing in this loop calls `die` for a per-case producer refusal,      #
+# content divergence, or timing outcome (WO-0078 §12 criterion 3): every #
+# case gets its own printed line and its own attempt, and the AGGREGATE  #
+# section after the loop is the only place that exits non-zero for any   #
+# of those reasons. The one exception is case 0's own frozen-baseline    #
+# check, immediately below, which is instructed by WO-0078 §3.3 item 1   #
+# to abort the ENTIRE run before any case's pipeline executes.           #
 # ------------------------------------------------------------------ #
 
-hdr "CHECK 1/3 — DIFFERENTIAL COMPARISON (WO-0046 §4.1)"
-mkdir -p "$WORK/run1"
-run_pipeline "$WORK/run1" "run1"
+hdr "CASE SET (WO-0078 §6.1 Stage 1: ${#CASES[@]} case(s) — ${CASES[*]})"
+
+# WO-0078 §6.1's OWN "per-case working directory" instruction meets a second,
+# equally explicit instruction from the same section head-on for exactly as
+# long as the case set has ONE member: "the `*)` fail-closed wildcard
+# untouched -- zero +/- lines inside it" (repeated verbatim in §11's DoD).
+# Renaming the working directories to a genuinely per-case scheme
+# (case_<id>/run1, case_<id>/run2) would force the wildcard's own
+# `dump_run "$WORK/run1" "run1"` line to change too, since its path would
+# have to become case-parameterized -- which is exactly the kind of edit
+# the wildcard is pinned against. Resolution, stated rather than silently
+# picked: Stage 1's case set has EXACTLY one member (case 0), so `$WORK/stim`,
+# `$WORK/run1` and `$WORK/run2` -- the SAME paths this script has used since
+# WO-0046 -- already ARE that one case's own, dedicated working directory;
+# nothing about "per-case" requires a NEW naming scheme when there is only
+# one case to name. Stage 2 (separately authorised, not this round) is where
+# these paths genuinely need to become case-indexed, and at that point the
+# wildcard's own text will have to be revisited deliberately -- a fact worth
+# flagging now rather than at the moment it is discovered by a broken diff.
+mkdir -p "$WORK/stim"
+
+AGG_CONTENT=0
+AGG_T0=0
+AGG_T1_UNASSERTABLE=0
+AGG_T1_NEG=0
+SELFTEST_DONE=0
+
+for CASE_ID in "${CASES[@]}"; do
+  hdr "CASE $CASE_ID"
+  mkdir -p "$WORK/run1" "$WORK/run2"
+
+  # ---- stimulus, this case's own (case 0's construction expression is
+  #      tb_writer's and is unedited by this round — this script only
+  #      NAMES the case id it wants, per stimulus_gen.ml's own dispatch) ----
+  CASE_STIM="$WORK/stim/stimulus.txt"
+  CASE_PIPE_START="$(date +%s%N)"
+  GEN_OUT="$("$STIMULUS_GEN_BIN" "$CASE_STIM" "$CASE_ID" 2>&1)"
+  GEN_RC=$?
+  if [ "$GEN_RC" -ne 0 ] || [ ! -e "$CASE_STIM" ]; then
+    say "$GEN_OUT"
+    GEN_REASON="$(produce_reason "$GEN_RC" "$CASE_STIM")"
+    record_case_refusal "$EXIT_BUILD" "PRODUCE (stimulus_gen, case $CASE_ID: $GEN_REASON)"
+    say "CASE $CASE_ID: stimulus_sha256=N/A compare_exit=N/A tier=PRODUCE-REFUSAL ($GEN_REASON)"
+    continue
+  fi
+  [ -n "$GEN_OUT" ] && say "$GEN_OUT"
+  STIMULUS_SHA="$(sha256sum "$CASE_STIM" | cut -d' ' -f1)"
+  require_field "stimulus_sha256 (case $CASE_ID)" "$STIMULUS_SHA"
+  say "  [ok]   case $CASE_ID stimulus.txt sha256: $STIMULUS_SHA"
+
+  # ---- WO-0078 §3.3 item 1 — case 0's frozen-baseline gate. Checked BEFORE
+  #      case 0's own pipeline runs, and case 0 is always first in $CASES,
+  #      so this fires before any case in the set has a pipeline run at
+  #      all. A mismatch aborts the WHOLE script here: "nothing else is
+  #      reported... only a defect in itself" — no per-case line, for case
+  #      0 or for anything after it. ----
+  if [ "$CASE_ID" = "0" ]; then
+    say "  case 0 stimulus_sha256 (this run):                                 $STIMULUS_SHA"
+    say "  case 0 stimulus_sha256 (pinned — last GREEN pre-widening cosim job,"
+    say "    CI run 31084252734, job 92559876482, commit 3ec0efe):            $CASE0_PINNED_SHA256"
+    if [ "$STIMULUS_SHA" != "$CASE0_PINNED_SHA256" ]; then
+      say "  MISMATCH — case 0 has moved (WO-0078 §3.1 / §10 item 7 says it never"
+      say "  should). WO-0078 §3.3 item 1: this is reported and nothing else is —"
+      say "  a moved reference case has no baseline, so no case's pipeline runs."
+      die "$EXIT_CASE0_MOVED" "CASE0-MOVED (case 0's stimulus_sha256 no longer matches the last green pre-widening run)"
+    fi
+    say "  [ok]   case 0's stimulus is byte-identical to the last green pre-widening run"
+  fi
+
+  # ---- check 4.1: differential + timing comparison, this case's run1 ----
+  if ! run_pipeline "$WORK/run1" "case $CASE_ID run1" "$CASE_STIM"; then
+    record_case_refusal "$EXIT_BUILD" "PRODUCE ($PIPE_FAIL_REASON)"
+    say "  [cost] case $CASE_ID pipeline wall time (run1): $(elapsed_since "$CASE_PIPE_START")"
+    say "CASE $CASE_ID: stimulus_sha256=$STIMULUS_SHA compare_exit=N/A tier=PRODUCE-REFUSAL ($PIPE_FAIL_REASON)"
+    continue
+  fi
+  say "  [cost] case $CASE_ID pipeline wall time (run1): $(elapsed_since "$CASE_PIPE_START")"
 
 # compare.ml REQUIRES exactly two positional args -- no cwd-default, unlike
 # ours_run (confirmed against the landed source; see header). Round 1 called
 # this with zero arguments under the assumption it defaulted like ours_run
 # does; it does not, and that call would always have hit compare's own
 # usage branch (exit 2) without comparing anything. Fixed in round 2.
-DIFF_OUT="$("$COMPARE_BIN" "$WORK/run1/ours.canon" "$WORK/run1/theirs.canon" 2>&1)"
-DIFF_RC=$?
-say "$DIFF_OUT"
+  DIFF_OUT="$("$COMPARE_BIN" "$WORK/run1/ours.canon" "$WORK/run1/theirs.canon" 2>&1)"
+  DIFF_RC=$?
+  say "$DIFF_OUT"
 
 # ROUND 3 (WO-0049 §8, ACCEPTED at RV-0049-VERDICT): classify compare's exit
 # code along the "did the lane reach a verdict?" axis instead of collapsing
@@ -829,52 +1172,60 @@ say "$DIFF_OUT"
 # anything else outside {0,1,3,4,5}) is still fail-closed as INTERNAL(9),
 # never as DIFFERENTIAL(4), never as a TIMING code, and never read as
 # "usage".
-case "$DIFF_RC" in
-  0)
-    say "  CHECK 1/3: PASSED"
-    ;;
-  1)
-    # A verdict WAS reached, and it was negative: compare actually read and
-    # compared both canonical files and found a real divergence.
-    dump_run "$WORK/run1" "run1"
-    die "$EXIT_DIFFERENTIAL" "DIFFERENTIAL COMPARISON (compare reported a divergence, exit 1)"
-    ;;
-  3)
-    # NO VERDICT: compare could not even read one of the two canonical
-    # files (a grammar violation or an I/O failure -- WO-0049 §5). This is
-    # NOT a claim that the reference and our implementation agree or
-    # disagree -- neither was established. WO-0049 §8: "a broken harness
-    # must never be reportable as an anchor finding" -- this is the class
-    # that keeps that claim from ever being made under DIFFERENTIAL's name
-    # again (run 30825741565 is the case this exists for).
-    dump_run "$WORK/run1" "run1"
-    die "$EXIT_NO_VERDICT" "NO-VERDICT (compare could not read a canonical file, exit 3)"
-    ;;
-  4)
-    # T1 REACHED a verdict and it was negative (WO-0075 §3.2, §6): our M03
-    # emitted an output word at a cycle other than the one SPEC-M03 §6.1
-    # pins for it, on a stimulus whose CONTENT both implementations already
-    # agree on -- compare's own precedence checks content first, so this
-    # code is only reachable when content did NOT diverge. This is a defect
-    # against OUR OWN spec (REQ-005/REQ-111) -- a `BUG-` candidate -- decided
-    # by re-reading SPEC-M03 §6.1, never by editing the expected constant to
-    # match what was observed. It is NEVER a disagreement with the MIT
-    # reference: the reference's own cycles are recorded and never
-    # adjudicated (T2, REQ-901's exclusion).
-    dump_run "$WORK/run1" "run1"
-    die "$EXIT_TIMING" "TIMING (compare's T1 assertion failed against SPEC-M03 §6.1, exit 4)"
-    ;;
-  5)
-    # T0 (admit-cycle equality) did NOT align, so T1 and T2 were withheld
-    # rather than computed on an unaligned base (WO-0075 §3.1, §6: "a timing
-    # verdict computed on unaligned bases is worse than no verdict"). This is
-    # a defect in the co-simulation harness's own timekeeping -- the two
-    # producers not deriving the shared 0-based stimulus-line time base the
-    # same way -- and it is NEITHER a claim about our design NOR about the
-    # MIT reference.
-    dump_run "$WORK/run1" "run1"
-    die "$EXIT_TIMING_NO_VERDICT" "TIMING-NO-VERDICT (compare's T0 base did not align, exit 5)"
-    ;;
+#
+# ROUND 5 (WO-0078 §5.3/§3.3, this round): a `6` arm joins the set below --
+# `Unassertable`, landed by tb_writer at `3ec0efe`, previously unreachable
+# and therefore previously (correctly, for its time) falling to the
+# wildcard. And EVERY arm except the wildcard stops calling `die` directly:
+# a case's own outcome is now RECORDED (`record_case_refusal`/the AGG_*
+# flags) and its own required line is printed regardless (WO-0078 §12
+# criterion 3), and the AGGREGATE section after this loop is what actually
+# exits non-zero. THE WILDCARD ARM ITSELF, IMMEDIATELY BELOW, IS THE ONE
+# EXCEPTION AND IS BYTE-FOR-BYTE UNCHANGED FROM BEFORE THIS ROUND (WO-0078
+# §6.1/§11's own explicit requirement) -- including its own immediate `die`,
+# which means a case that trips it does NOT get its own printed line. That
+# is a deliberate, narrow exception to criterion 3, made because the
+# wildcard's contract (WO-0075 §11) is pinned even more explicitly than
+# criterion 3 is, and because this specific branch is, by this file's own
+# extensive commentary above, unreachable under any call this script itself
+# ever makes -- a defensive belt over an already-impossible state, not a
+# path a real case set run is expected to exercise.
+  case "$DIFF_RC" in
+    0)
+      CASE_TIER="CLEAN"
+      ;;
+    1)
+      CASE_TIER="DIFFERENTIAL (REQ-901 content divergence)"
+      AGG_CONTENT=1
+      dump_run "$WORK/run1" "case $CASE_ID run1"
+      ;;
+    3)
+      CASE_TIER="NO-VERDICT (compare could not read a canonical file/idle sidecar, exit 3)"
+      record_case_refusal "$EXIT_NO_VERDICT" "NO-VERDICT (case $CASE_ID: compare could not read a canonical file, exit 3)"
+      dump_run "$WORK/run1" "case $CASE_ID run1"
+      ;;
+    4)
+      CASE_TIER="TIMING (T1 negative against SPEC-M03 §6.1, exit 4)"
+      AGG_T1_NEG=1
+      dump_run "$WORK/run1" "case $CASE_ID run1"
+      ;;
+    5)
+      CASE_TIER="TIMING-NO-VERDICT (T0 unaligned, exit 5)"
+      AGG_T0=1
+      dump_run "$WORK/run1" "case $CASE_ID run1"
+      ;;
+    6)
+      # WO-0078 §5.3's own new arm: T1 REFUSED to certify (Canonical.
+      # Unassertable, landed by tb_writer at 3ec0efe) -- a carried nonzero
+      # idle count or a single-broken-delta shape indistinguishable from
+      # one. A refusal outranks a reached-and-negative T1 verdict (4) in
+      # WO-0078 §3.3's own aggregate precedence, on the same "did the lane
+      # reach a verdict?" axis WO-0049 §8 built this whole table around --
+      # see EXIT_TIMING_UNASSERTABLE's header note for the full argument.
+      CASE_TIER="TIMING-UNASSERTABLE (T1 declined to certify, exit 6)"
+      AGG_T1_UNASSERTABLE=1
+      dump_run "$WORK/run1" "case $CASE_ID run1"
+      ;;
   *)
     # Ambiguous or unrecognized -- most notably compare's own 2, which this
     # call site's fixed, always-correct two-argument invocation can never
@@ -884,59 +1235,104 @@ case "$DIFF_RC" in
     dump_run "$WORK/run1" "run1"
     die "$EXIT_INTERNAL" "INTERNAL (compare exited ambiguous/unrecognized code $DIFF_RC)"
     ;;
-esac
+  esac
+
+  # WO-0078 §3.2/§12 criterion 3's own required line: case id,
+  # stimulus_sha256, compare's own exit code, the tier that produced it.
+  # Printed unconditionally, whatever the tier -- this is the line that
+  # keeps a case that is not clean from ever being silently absorbed into
+  # the aggregate (§12 criterion 3: "A case that is skipped, or whose
+  # result is folded into an aggregate without its own line, fails --
+  # including when the aggregate is 0."). Unreachable when the wildcard
+  # above fired (it exits directly), which is that arm's own documented
+  # exception.
+  say "CASE $CASE_ID: stimulus_sha256=$STIMULUS_SHA compare_exit=$DIFF_RC tier=$CASE_TIER"
+
+  # ---- check 4.2: DELIBERATE-MISMATCH SELF-TEST — does not depend on any
+  #      case's stimulus; runs exactly ONCE, in the same relative position
+  #      WO-0046 §4 always put it (after the first case's own 4.1, before
+  #      that case's own 4.3). Unaffected by the case set: still an
+  #      immediate, whole-run die on failure, because a comparator that
+  #      cannot be trusted on its own hand-built fixtures cannot be trusted
+  #      on any case's real output either. ----
+  if [ "$SELFTEST_DONE" -eq 0 ]; then
+    hdr "CHECK — DELIBERATE-MISMATCH SELF-TEST (WO-0046 §4.2, run once)"
+    SELFTEST_OUT="$("$COMPARE_BIN" --self-test 2>&1)"
+    SELFTEST_RC=$?
+    say "$SELFTEST_OUT"
+    if [ "$SELFTEST_RC" -ne 0 ]; then
+      die "$EXIT_SELFTEST" "SELF-TEST (compare --self-test exited $SELFTEST_RC)"
+    fi
+    say "  SELF-TEST: PASSED — the production comparison path was confirmed to"
+    say "  report a difference when one is seeded, via the same binary as check 4.1."
+    SELFTEST_DONE=1
+  fi
+
+  # ---- check 4.3: two-run determinism, THIS case's own run2 ----
+  if ! run_pipeline "$WORK/run2" "case $CASE_ID run2" "$CASE_STIM"; then
+    record_case_refusal "$EXIT_BUILD" "PRODUCE ($PIPE_FAIL_REASON)"
+    say "  case $CASE_ID determinism: NOT CHECKED -- run2 did not produce a comparable pair ($PIPE_FAIL_REASON)"
+    continue
+  fi
+  DET_STATUS=0
+  OURS_DIFF="$(diff -u "$WORK/run1/ours.canon" "$WORK/run2/ours.canon" 2>&1)" || DET_STATUS=1
+  THEIRS_DIFF="$(diff -u "$WORK/run1/theirs.canon" "$WORK/run2/theirs.canon" 2>&1)" || DET_STATUS=1
+  if [ "$DET_STATUS" -ne 0 ]; then
+    say "  case $CASE_ID: ours.canon differs between run1 and run2:"
+    say "$OURS_DIFF"
+    say "  case $CASE_ID: theirs.canon differs between run1 and run2:"
+    say "$THEIRS_DIFF"
+    dump_run "$WORK/run1" "case $CASE_ID run1"
+    dump_run "$WORK/run2" "case $CASE_ID run2"
+    record_case_refusal "$EXIT_DETERMINISM" "DETERMINISM (case $CASE_ID: canonical files differ between run1 and run2)"
+  else
+    say "  case $CASE_ID: ours.canon/theirs.canon byte-identical between run1 and run2"
+  fi
+
+  # WO-0078 §3.2's own instruction: "the existing per-run SUMMARY block is
+  # retained per case." Reference pin/simulator/runner image are shared
+  # across the whole case set (one build, one provenance); the stimulus
+  # sha256 and the timing caveat are this case's own.
+  hdr "SUMMARY (case $CASE_ID)"
+  say "  reference pin: $REF_SHA"
+  say "  simulator: $IVERILOG_VERSION_BANNER / $VVP_VERSION_BANNER"
+  say "  runner image: $RUNNER_IMAGE"
+  say "  stimulus sha256: $STIMULUS_SHA"
+  say "  timing: OUR side asserted against SPEC-M03 §6.1 (T1); the reference's own"
+  say "          cycles are RECORDED AND NOT ADJUDICATED (T2, REQ-901's exclusion)."
+  say "          This case's own result is timing evidence for the ONE stimulus"
+  say "          class it drives and for no other (WO-0078 §12 criterion 9)."
+done
 
 # ------------------------------------------------------------------ #
-# CHECK 2/3 — DELIBERATE-MISMATCH SELF-TEST (§4.2)                    #
+# AGGREGATE — WO-0078 §3.3's precedence, implemented in that order.     #
+# Item 1 (case 0 moved) is handled inside the loop above, because it     #
+# aborts before any case runs; items 2-7 are decided here, once, after   #
+# every case in the set has had its own attempt and its own line.       #
 # ------------------------------------------------------------------ #
 
-hdr "CHECK 2/3 — DELIBERATE-MISMATCH SELF-TEST (WO-0046 §4.2)"
-SELFTEST_OUT="$("$COMPARE_BIN" --self-test 2>&1)"
-SELFTEST_RC=$?
-say "$SELFTEST_OUT"
-if [ "$SELFTEST_RC" -ne 0 ]; then
-  die "$EXIT_SELFTEST" "SELF-TEST (compare --self-test exited $SELFTEST_RC)"
+hdr "AGGREGATE (WO-0078 §3.3)"
+if [ -n "$AGG_REFUSAL_LABEL" ]; then
+  # item 2: any producer refusal, any case -> its own code.
+  die "$AGG_REFUSAL_CODE" "$AGG_REFUSAL_LABEL"
+elif [ "$AGG_CONTENT" -eq 1 ]; then
+  # item 3: content divergence, any case.
+  die "$EXIT_DIFFERENTIAL" "DIFFERENTIAL COMPARISON (a content divergence was reported by at least one case -- see its own CASE line above)"
+elif [ "$AGG_T0" -eq 1 ]; then
+  # item 4: T0 unaligned, any case.
+  die "$EXIT_TIMING_NO_VERDICT" "TIMING-NO-VERDICT (T0 did not align for at least one case -- see its own CASE line above)"
+elif [ "$AGG_T1_UNASSERTABLE" -eq 1 ]; then
+  # item 5: T1 unassertable, any case.
+  die "$EXIT_TIMING_UNASSERTABLE" "TIMING-UNASSERTABLE (T1 declined to certify for at least one case -- see its own CASE line above)"
+elif [ "$AGG_T1_NEG" -eq 1 ]; then
+  # item 6: T1 negative, any case.
+  die "$EXIT_TIMING" "TIMING (T1 reached a negative verdict for at least one case -- see its own CASE line above)"
 fi
-say "  CHECK 2/3: PASSED — the production comparison path was confirmed to"
-say "  report a difference when one is seeded, via the same binary as check 1."
 
-# ------------------------------------------------------------------ #
-# CHECK 3/3 — TWO-RUN DETERMINISM (§4.3)                              #
-# ------------------------------------------------------------------ #
-
-hdr "CHECK 3/3 — TWO-RUN DETERMINISM (WO-0046 §4.3 / ADR-0015 D3)"
-mkdir -p "$WORK/run2"
-run_pipeline "$WORK/run2" "run2"
-
-DET_STATUS=0
-OURS_DIFF="$(diff -u "$WORK/run1/ours.canon" "$WORK/run2/ours.canon" 2>&1)" || DET_STATUS=1
-THEIRS_DIFF="$(diff -u "$WORK/run1/theirs.canon" "$WORK/run2/theirs.canon" 2>&1)" || DET_STATUS=1
-
-if [ "$DET_STATUS" -ne 0 ]; then
-  say "  ours.canon differs between run1 and run2:"
-  say "$OURS_DIFF"
-  say "  theirs.canon differs between run1 and run2:"
-  say "$THEIRS_DIFF"
-  dump_run "$WORK/run1" "run1"
-  dump_run "$WORK/run2" "run2"
-  die "$EXIT_DETERMINISM" "DETERMINISM (canonical files differ between run1 and run2)"
-fi
-say "  ours.canon:   byte-identical between run1 and run2"
-say "  theirs.canon: byte-identical between run1 and run2"
-say "  CHECK 3/3: PASSED"
-
-# ------------------------------------------------------------------ #
-# SUMMARY                                                              #
-# ------------------------------------------------------------------ #
-
-hdr "SUMMARY"
-say "  run_cosim: ALL THREE CHECKS PASSED"
-say "  reference pin: $REF_SHA"
-say "  simulator: $IVERILOG_VERSION_BANNER / $VVP_VERSION_BANNER"
-say "  runner image: $RUNNER_IMAGE"
-say "  stimulus sha256: $STIMULUS_SHA"
-say "  timing: OUR side asserted against SPEC-M03 §6.1 (T1); the reference's own"
-say "          cycles are RECORDED AND NOT ADJUDICATED (T2, REQ-901's exclusion)."
-say "          This run's green is timing evidence for the ONE stimulus class it"
-say "          drives and for no other."
+# item 7: otherwise, EXIT_OK.
+say "  every case in the set reached a verdict and every verdict was clean."
+say "  [cost] run_cosim.sh wall time (this invocation): $(elapsed_since "$JOB_START_NS")"
+say "  WO-0078 §12 criterion 9: this run's green is co-simulation coverage for"
+say "  the classes the landed case set drives, and for no other -- see the"
+say "  per-case CASE lines above for exactly which cases those were."
 exit "$EXIT_OK"
