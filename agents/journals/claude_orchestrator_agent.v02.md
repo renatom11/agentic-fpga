@@ -2945,3 +2945,22 @@ file was the known superseded draft; discarded with evidence kept.
 
 ### Files-in-this-commit
 - (none)
+
+## [J-orchestrator-0223] 2026-08-10T12:00Z | task:WO-0076 | Five of five and the direction rows earn their seal - era three of four closes
+
+### Trigger
+WO-0076-VERDICT landed a8d6140 (J-dv_lead-0142): 5/5 killed
+character-exact; S4's direction discriminator 2/2 and load-bearing;
+J1/J2/J3 qualified (J2 on the honest kill its own campaign proved
+right); era tally 54 sealed / 52 killed / 1 survived / 1 void;
+auditor conduct CLEAN with the allowlist-narrowing ruled correct;
+two MINOR findings dv filed against its own seal. Honest breadth
+stated: 7 of 22 DUT-observable assertions reached.
+
+### Ruling
+dv's resequencing ADOPTED: (1) post-J AP round, (2) WO-0075 build
+round, (3) family K campaign LAST with a clean freeze window - the
+§8.0 hazard one family over, caught before it fired.
+
+### Files-in-this-commit
+- tasks/BOARD.md
