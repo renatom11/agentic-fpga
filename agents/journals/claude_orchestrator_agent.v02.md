@@ -3124,3 +3124,49 @@ dv v06->v07 precedent.
 
 ### Files-in-this-commit
 - tasks/BOARD.md
+
+## [J-orchestrator-0227] 2026-08-06T12:50Z | task:WO-0078 | Incident five, a third dispatch error, and the onion: two MATERIAL findings in two runs, both caught by machinery that refused to lie
+
+### Trigger
+Seven landings since J-orchestrator-0226: the Stage-2 stimulus half
+(a822f46), the runner half by a respawned agent (53fa1de), RV-C1C2
+(99561ea), the pre-re-run round (b221232), the S2-1 repair
+(9de61f1), and RV-C2RERUN (f168807). Board updated in this commit
+with the full arc.
+
+### Incident five: silent worker death, zero loss
+The first data_wrangler agent on the runner half went silent across
+every observable surface for 25 minutes; at TaskStop its task record
+no longer existed - silent death, not stall. Playbook held: HEAD
+verified unmoved by ancestry check, the 483-line partial preserved
+to scratchpad (dw-c1c2-partial-105024.diff), tree restored clean,
+fresh agent respawned on the identical dispatch with an
+anti-collision precheck and a compact-scaffold hint. The respawn
+returned complete. Program incident count: four container rollbacks
+plus one silent worker death, zero loss ever.
+
+### Mine to disclose: the third dispatch error
+My runner-half dispatch wrote the case ids lowercase (c1/c2) where
+the landed source vocabulary is uppercase (C1/C2). The worker
+re-measured the source, corrected, disclosed, and proved the
+correction load-bearing with a negative control; RV-C1C2 commended
+the conduct and minted the citable rule. Three dispatch errors this
+arc (the paraphrase at WO-0075-DW, the circular pin, this) - all
+caught by artefact-over-dispatch. The standing obligation from the
+RV binds me: quote from the file, never from memory of it.
+
+### The arc's shape, for the record
+Two runs, two MATERIAL findings, both instrument-side, both dv
+convicting its own artefacts (the S2-1 census, the S2-6 grammar),
+both caught honestly: per-case lines, named tiers, dumped
+directories, a sha bind that held across two landings and a
+two-producer repair and is now a measured invariant. C1 meanwhile
+closed a two-month-old item (lane 4 driven) and the CD's exclusion
+machinery excluded something for the first time. C2: dispatched
+twice, compared zero times, prediction still frozen and unspent.
+dv pre-registered the stopping rule before knowing the third run's
+answer. The lane still knows nothing about two frames - and every
+document says exactly that.
+
+### Files-in-this-commit
+- tasks/BOARD.md
