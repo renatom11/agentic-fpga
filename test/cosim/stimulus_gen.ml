@@ -103,7 +103,120 @@ let case0_meta : case_meta =
   }
 ;;
 
-let known_cases = [ case0_meta ]
+(* WO-0078 §6.2's Stage-2 C1/C2 landing -- a shared conformance-check helper,
+   factored so C1's and C2's own builders below do not each re-inline case
+   0's own [Arrival.check] boilerplate line for line. Case 0's own [build]
+   above is UNEDITED and does not call this: duplicating three lines once,
+   rather than routing case 0 through a shared helper too, is what keeps
+   case 0's construction expression exactly as WO-0078 §3.1/§10 item 7
+   require -- untouched, not merely equivalent after a refactor. *)
+let check_conformant ~case_label sched =
+  match Dv_xgmii.Arrival.check sched with
+  | [] -> sched
+  | problems ->
+    failwith
+      (String.concat
+         "\n"
+         (Printf.sprintf
+            "stimulus_gen: Arrival.check found an unconformant schedule (case %s):"
+            case_label
+          :: problems))
+;;
+
+(* WO-0078 §6.2 C1 (CD §10.1) -- "lane-4 start on cycle 0 -- ~first_start:4,
+   otherwise case 0's frame." Same [Frame.stress_frame ~sequence:0] as case
+   0, same default [?ifg] (12, requirements.md §0.3's minimum), only
+   [~first_start] moves from case 0's 0 to 4.
+
+   [Arrival.create]'s own contract (arrival.mli) requires [?first_start] be a
+   multiple of 4; 4 is therefore a lane-4 start ON CYCLE 0 -- the SIGHTED
+   PLACEMENT WO-0078 §4.2 item 2 requires preserved ("a placement
+   the M03 bench does not contain at all"), where the naive [~first_start:12]
+   would have been a lane-4 start on cycle 3 (REQ-101's other start lane, but
+   off the reset-release cycle) and silently traded the one measured
+   capability this lane has ever had (§3.1) for the lane-4 coverage alone.
+   CD §10.1 states the same reasoning and freezes the same instance; this is
+   that instance, constructed.
+
+   No idle is injected before this frame's own D(0) -- this schedule uses no
+   injection mechanism at all, only [Arrival.create] directly, exactly as
+   case 0 does -- so [idle_counts] below is [ [ 0 ] ], the same construction
+   argument case 0's own comment makes for its own single frame. *)
+let build_c1 () =
+  let octets = Dv_xgmii.Frame.stress_frame ~sequence:0 () in
+  let sched = Dv_xgmii.Arrival.create ~first_start:4 [ octets ] in
+  check_conformant ~case_label:"C1" sched
+;;
+
+let c1_meta : case_meta =
+  { id = "C1"
+  ; describe =
+      "WO-0078 §6.2 C1 (CD §10.1) -- lane-4 start on cycle 0, otherwise case 0's frame; \
+       sighted placement preserved"
+  ; idle_counts = [ 0 ]
+  }
+;;
+
+(* WO-0078 §6.2 C2 (CD §10.2) -- "two clean frames, minimum IFG, frame 0 at
+   ~first_start:0." Two [Frame.stress_frame] calls, [~sequence:0] and
+   [~sequence:1] -- two DISTINCT frames rather than one repeated, the same
+   idiom already landed at [test/xgmii/test_tx_decoder.ml:215]
+   ([Arrival.create ~ifg:8 [ Frame.stress_frame ~sequence:0 (); Frame.stress_frame
+   ~sequence:1 () ]]), not a pattern invented here -- passed to
+   [Arrival.create] as a two-entry frame list, exactly the affordance FI-2
+   names ("[create] takes an [int list list] -- a frame LIST -- so a second
+   clean frame needs no new machinery").
+
+   [~ifg:12] is passed EXPLICITLY rather than left to [Arrival.create]'s own
+   default (which is also 12) -- CD §10.2's instance is stated in terms of
+   "the minimum inter-frame gap of requirements.md §0.3: 12 octets", and
+   writing the figure into this call ties the constant to that spec citation
+   directly in the source, rather than resting on a library default a later
+   reader would have to go read [arrival.mli] to recover. It is not a
+   behavioural change from case 0's own style (which leaves [?ifg] implicit)
+   -- both resolve to 12 -- only a documentation choice for the one case
+   whose entire subject is that figure.
+
+   [~first_start:0] on frame 0 preserves the sighted placement for frame 0,
+   per CD §10.2's own instance ("the sighted placement preserved for frame
+   0"). WO-0078 §4.2 item 2's multiple-of-4 preservation applies to frame 0
+   only, by construction: [Arrival.create] places every later frame from the
+   gap arithmetic in [arrival.mli]'s own header, not from a second
+   [~first_start], so there is exactly one placement decision made here, not
+   two -- frame 1's own start lane (lane 4, a consequence of the 84-octet
+   spacing not dividing 8, CD §10.2's own recorded consequence) falls out of
+   that arithmetic rather than being chosen.
+
+   Needs NO accumulator change (WO-0078 §2.2's own finding, restated in this
+   packet's own dispatch): both refusal guards this lane's two producers
+   carry (FI-4, FI-6) fire only on a second start character arriving WHILE A
+   FRAME IS OPEN, and this schedule's second frame starts only after
+   [Arrival.create]'s own gap arithmetic has closed the first -- confirmed by
+   construction here (this builder calls nothing but [Arrival.create] and
+   [Frame.stress_frame], exactly as case 0 and C1 do), not merely asserted.
+
+   Neither frame has an idle injected before its own D(0) -- no injection
+   mechanism is used here either -- so [idle_counts] is [ [ 0; 0 ] ], one
+   entry per admitted frame in admission order (WO-0078 §5.2's own ordering
+   rule), both zero for the same reason case 0's and C1's single entries
+   are. *)
+let build_c2 () =
+  let octets0 = Dv_xgmii.Frame.stress_frame ~sequence:0 () in
+  let octets1 = Dv_xgmii.Frame.stress_frame ~sequence:1 () in
+  let sched = Dv_xgmii.Arrival.create ~ifg:12 ~first_start:0 [ octets0; octets1 ] in
+  check_conformant ~case_label:"C2" sched
+;;
+
+let c2_meta : case_meta =
+  { id = "C2"
+  ; describe =
+      "WO-0078 §6.2 C2 (CD §10.2) -- two clean frames, minimum IFG, frame 0 at lane-0 start \
+       on cycle 0; sighted placement preserved for frame 0"
+  ; idle_counts = [ 0; 0 ]
+  }
+;;
+
+let known_cases = [ case0_meta; c1_meta; c2_meta ]
 
 let find_case_meta id =
   match List.find_opt (fun c -> String.equal c.id id) known_cases with
@@ -123,6 +236,8 @@ let find_case_meta id =
 let build_case id =
   match id with
   | "0" -> build ()
+  | "C1" -> build_c1 ()
+  | "C2" -> build_c2 ()
   | _ ->
     failwith
       (Printf.sprintf

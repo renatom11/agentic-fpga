@@ -2056,3 +2056,207 @@ dispatch prompt; recorded honestly per `J-data_wrangler-0001`'s precedent for
 the identical situation, rather than presented as one copied verbatim — the
 timestamp above is this entry's own UTC header time, not a token minted by
 the dispatch).
+
+---
+
+### tb_writer — Stage 2, C1+C2 landing (§6.2), RETURNED
+
+**Abort-first head check**: `git rev-parse HEAD` = `8427b12bf5c1e169ddb1cb98d48cfd6be2c0f491`,
+exactly the dispatch's stated spawn-head. Both of `RV-STAGE1` §9's
+preconditions on this dispatch — `FINDING RV-0078-S1-2`'s printer repair
+(both limbs) and CD §10.1/§10.2's committed domain instances — are already
+landed in this history: `8427b12` itself is the printer-repair round's own
+commit ("admit_cycle prints unconditionally, clean frames keep their
+numbers beside a diverging sibling …"), and `5c01af0`, its immediate
+parent, is the commit that froze CD §10's four instances. Verified rather
+than assumed: `git log --oneline 5c01af0..8427b12` shows exactly the
+printer-repair commit, and `git show HEAD:test/attack_plans/CD-xgmii_rx_64_cosim.md`
+carries `### 10.1 C1` and `### 10.2 C2` with no uncommitted changes on top
+(`git status --porcelain` on that file is empty). Proceeded.
+
+**Scope, read against the dispatch and §6.2's table before a line was
+written.** Two cases only — C1 and C2, "the clean pair that lands
+together" — not C3, not C4 (each of those lands alone, per §6.2's own
+split, since either may resolve to REQ-901 branch γ and force a spec-diff
+conversation this dispatch does not commission). One file touched:
+`test/cosim/stimulus_gen.ml`. No `tools/cosim/**` (data_wrangler's own
+Stage-2 half, which extends `run_cosim.sh`'s `CASES` array to include
+`"C1"`/`"C2"` and is not this round's to touch or to wait on — §6.1's
+landing-order affordance this file's own `main` already carries, unedited
+this round, is what makes that ordering safe either way). No
+`test/attack_plans/**` (CD and AP are dv_lead's; both were read in full,
+neither staged). Case 0's construction (`build ()`, `write_stimulus`,
+`drain_cycles`) is not opened for editing: `git diff` shows every `+` line
+landing strictly after `case0_meta`'s own closing `;;`, and — a stronger
+check than a diff read — `build ()` was re-executed this round (see
+Evidence) and reproduces the exact CI-pinned hash `RV-STAGE1` §1 anchored
+to run `31080871169` at `55e16ae`, byte for byte.
+
+**Re-measurement of the frozen inputs this half rests on, at this seat's
+own base (`8427b12`), before a line was written.** FI-1/FI-2
+(`test/xgmii/arrival.mli`'s `create` and its defaults) re-read in full:
+`?ifg` default 12, `?first_start` default 8 must be a multiple of 4,
+`?fcs_valid` default `true`, `create` taking an `int list list` — all
+UNCHANGED from the packet's own citation and from Stage 1's own
+re-measurement. `test/xgmii/frame.mli`'s `stress_frame` re-read: 64 octets
+DA-through-FCS, 60 delivered (REQ-103), confirming both new cases' own
+"60 delivered octets" claim before construction, not merely trusting CD's
+restatement of it. Neither had moved. CD §10.1's and §10.2's own text
+re-read directly (not only §6.2's one-line table cells) — both freeze
+exactly the constructions built below, and neither carries a discrepancy
+against §6.2 to adjudicate.
+
+**Per case, what was built and how it was checked against its CD
+instance.**
+
+1. **C1 — lane-4 start on cycle 0 (CD §10.1).** `build_c1` calls
+   `Frame.stress_frame ~sequence:0 ()` — the SAME content as case 0's own
+   frame, confirmed identical by a local check rather than merely reused by
+   assertion (Evidence: `case0 delivered = C1 delivered: true`) — and
+   `Arrival.create ~first_start:4 [ octets ]`, changing only
+   `~first_start` from case 0's `0` to `4`. `4` is a multiple of 4
+   (`arrival.mli`'s own contract) and is therefore a lane-4 start ON CYCLE
+   0, not cycle 3 — the sighted placement WO-0078 §4.2 item 2 and CD §10.1
+   both require preserved, confirmed directly by a local diagnostic read of
+   `Arrival.start_lanes`/`.start_cycles` on the constructed schedule:
+   `start_lanes: 4`, `start_cycles: 0` (Evidence). `check_conformant`
+   (a new shared helper, NOT used by case 0's own unedited `build`, so
+   case 0's construction expression stays untouched rather than merely
+   equivalent after a refactor) confirms `Arrival.check` returns `[]` —
+   no accumulator or schedule-conformance issue. `idle_counts = [ 0 ]`:
+   no injection mechanism is used (only `Arrival.create` directly, exactly
+   as case 0), so no idle can be injected before this frame's own D(0).
+2. **C2 — two clean frames, minimum IFG, frame 0 at lane-0 start on cycle
+   0 (CD §10.2).** `build_c2` calls `Frame.stress_frame` twice
+   (`~sequence:0`, `~sequence:1` — two DISTINCT frames, the same idiom
+   already landed at `test/xgmii/test_tx_decoder.ml:215`, not invented
+   here) and `Arrival.create ~ifg:12 ~first_start:0 [ octets0; octets1 ]`
+   — `~ifg:12` passed EXPLICITLY (equal to `Arrival.create`'s own default,
+   so no behavioural change from leaving it implicit; written explicitly
+   so CD §10.2's own "minimum inter-frame gap … 12 octets" figure is
+   legible in the source next to the call it governs) and `~first_start:0`
+   on frame 0, preserving the sighted placement for frame 0 per CD §10.2's
+   own instance. `Arrival.create` itself places frame 1 from its own gap
+   arithmetic — confirmed directly: `start_lanes: 0,4`,
+   `start_cycles: 0,10`, `gaps: 12` (Evidence), matching CD §10.2's own
+   recorded consequence ("frame 1's start character lands in lane 4") and
+   `arrival.mli`'s own documented 10/11-cycle alternation. Needs NO
+   accumulator change: per WO-0078 §2.2's own finding, both of this lane's
+   refusal guards fire only on a second start character arriving while a
+   frame is open, and this construction calls nothing but `Arrival.create`
+   and `Frame.stress_frame` — the same call shape case 0 and C1 both use —
+   so no path exists on which the dispatch's own stop-rule could have
+   engaged, and it did not. `idle_counts = [ 0; 0 ]`: neither frame uses
+   an injection mechanism, so neither has an idle injected before its own
+   D(0).
+
+**Case ids: `"C1"`/`"C2"`**, matching WO-0078 §6.2's table and CD §10's own
+vocabulary exactly (both capitalized, never a bare digit for these two),
+rather than a translated scheme this file would invent. `known_cases`
+becomes `[ case0_meta; c1_meta; c2_meta ]`; `build_case` gains `"C1"` and
+`"C2"` match arms. `tools/cosim/run_cosim.sh` was read (not staged): its
+own `stimulus_gen.exe` calling convention (output path, then case id, both
+optional, case id defaulting to `"0"`) is unchanged by this round and
+already supports passing `"C1"`/`"C2"` as the second argument — that
+affordance was built at Stage 1 and needed no edit here.
+
+**Local test results, verbatim** (this environment has no `dune`, no
+Hardcaml switch, no `iverilog`/`vvp` — ADR-0005/§10 item 12):
+
+```
+$ ocamlc -stop-after parsing test/cosim/stimulus_gen.ml; echo "exit: $?"
+exit: 0
+```
+
+**Beyond parse-only, and further than either Stage-1 round's own disclosed
+bound**: `stimulus_gen.ml`'s own dependency closure — `dv_xgmii`, which
+depends only on `dv_golden` and `dv_monitors` — carries NO Hardcaml
+dependency at all (confirmed by reading `test/xgmii/dune`'s,
+`test/golden/dune`'s and `test/monitors/dune`'s own header comments; the
+`hardcaml`/`hardcaml_ethernet` libraries in `test/cosim/dune`'s
+`(executables …)` stanza are needed only by `ours_run.ml`, a different name
+in the same stanza). This is narrower than Stage 1's own disclosed
+"could not type-check or run beyond parse-only… did not attempt to
+reconstruct their dependency closure by hand" — that bound was stated at
+the stanza's aggregate dependency list, not this file's own. So, in
+scratchpad, outside the repository checkout, nothing staged from there: I
+copied the REAL `crc32_ref.{ml,mli}`, `xgmii_word.{ml,mli}`,
+`frame.{ml,mli}`, `arrival.{ml,mli}` (all DV-side, `test/golden/` and
+`test/xgmii/`, none of it RTL) plus two two-line wrapper files reproducing
+dune's own library-wrapping by hand, and fully type-checked, LINKED and
+RAN the edited `stimulus_gen.ml` against them with the bare system
+`ocamlc`:
+
+```
+$ ocamlc -c crc32_ref.mli && ocamlc -c crc32_ref.ml    -> exit 0 (each)
+$ ocamlc -c dv_golden.ml                                -> exit 0
+$ ocamlc -c xgmii_word.mli && ocamlc -c xgmii_word.ml   -> exit 0 (each)
+$ ocamlc -c frame.mli && ocamlc -c frame.ml             -> exit 0 (each)
+$ ocamlc -c arrival.mli && ocamlc -c arrival.ml         -> exit 0 (each)
+$ ocamlc -c dv_xgmii.ml                                 -> exit 0
+$ ocamlc -c stimulus_gen.ml                             -> exit 0
+$ ocamlc -o stimulus_gen.exe crc32_ref.cmo dv_golden.cmo xgmii_word.cmo \
+    frame.cmo arrival.cmo dv_xgmii.cmo stimulus_gen.cmo  -> exit 0
+```
+
+Then ran the built binary for real, for all three case ids:
+
+```
+$ ./stimulus_gen.exe stim_0.txt 0
+  36 lines; idle sidecar: 0
+  sha256: c675517176922d42bca42ec3def182cb3536861f1acaa8384116f33a5c4cc051
+```
+
+**This is the EXACT literal `RV-STAGE1` §1 anchored to CI run
+`31080871169` at `55e16ae`** — reproduced today by genuinely re-executing
+`build ()`, the strongest form of "case 0 untouched" available without a
+CI run of my own.
+
+```
+$ ./stimulus_gen.exe stim_C1.txt C1
+  36 lines; idle sidecar: 0
+  sha256: 5ae9e4f501251c38d0c2d386bd792e07cbcf9cf107cf7e75c378e21b1ce3bd7c
+
+$ ./stimulus_gen.exe stim_C2.txt C2
+  46 lines; idle sidecar: 0, 0
+  sha256: cc1e85a4c5f871226f07b4792446d63c523577dcf172d6c4a80b8a3e845b44a7
+```
+
+Both new hashes are distinct from case 0's and from each other, as
+expected of genuinely different schedules. Diagnostic drivers (also
+scratchpad-only, never staged) confirmed the placements directly against
+CD's own frozen text — reproduced in full in this round's journal entry
+`J-tb_writer-0035` Evidence, not repeated a third time here: C1 at
+lane 4/cycle 0; C2's frame 0 at lane 0/cycle 0, frame 1 at lane 4/cycle 10,
+gap 12; both cases' every frame delivering 60 octets with `Arrival.check`
+returning `[]`; C1's delivered octets byte-identical to case 0's.
+
+**What is CI-deferred, and why**: identical reasoning to every prior round
+in this lane (ADR-0005/§10 item 12). `ours_run.ml`, `tb_xgmii_rx_64.v`,
+`canonical.{ml,mli}`, `compare.ml` were not opened this round (confirmed:
+`git status --porcelain` shows one file changed) and were not exercised
+locally or in CI by this round. The landing `cosim` CI job is the first and
+only real execution of C1's and C2's stimulus through the actual Hardcaml
+M03 design and the actual Icarus reference — this round's local
+verification confirms the STIMULUS this file will hand that run is exactly
+what CD §10.1/§10.2 freeze, not what that run itself will observe.
+
+**Refused or blocked**: nothing refused, nothing blocked. No spec
+ambiguity was met (CD §10.1/§10.2 and WO-0078 §6.2 agree word for word on
+both constructions); no RTL leaked into context; no licensing-taint
+suspicion.
+
+**Files changed** (exactly one, plus this packet's own Return log and this
+round's journal — `git status --porcelain` confirms; no `ours_run.ml`, no
+`canonical.{ml,mli}`, no `compare.ml`, no `tb_xgmii_rx_64.v`, no
+`tools/cosim/**`, no `test/attack_plans/**`): `test/cosim/stimulus_gen.ml`.
+
+— tb_writer, spawn `WO-0078-TB-STAGE2-C1C2/2026-08-06T10:10Z` (no explicit
+"work-order id + spawn UTC timestamp" token was present in this round's own
+dispatch prompt; recorded honestly per `J-data_wrangler-0001`'s and
+`J-data_wrangler-0003`'s precedent for the identical situation, rather than
+presented as one copied verbatim — the timestamp above is this entry's own
+UTC header time, `date -u` read at the start of this round, matching the
+environment's own `currentDate` context of 2026-08-06 rather than the
+2026-08-11 dates several entries above this one carry, a discrepancy
+`FINDING CD-P2-2` already records).
