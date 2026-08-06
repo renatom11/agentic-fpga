@@ -4005,3 +4005,286 @@ not a PASS/FAIL of my own.
 - test/cosim/ours_run.ml
 - test/cosim/tb_xgmii_rx_64.v
 - agents/handoffs/WO-0078_cosim-phase2-3-stimulus-widening.md
+
+## [J-tb_writer-0034] 2026-08-11T13:15Z | task:WO-0078 | Stage-1 repair round: RV-0078-S1-2's printer prints admit_cycle unconditionally and own_profile per-frame regardless of a sibling frame's divergence, and RV-0078-S1-1's successor rule replaces the broken-delta count that asserted a legitimate two-idle schedule as a defect
+
+### Trigger
+Orchestrator-relayed repair round against `agents/handoffs/
+WO-0078_cosim-phase2-3-stimulus-widening.md` §14's `RV-STAGE1` verdict, which
+raised `FINDING RV-0078-S1-2` as BLOCKING for Stage 2's C1+C2 dispatch (both
+limbs: criterion 2's printed `admit_cycle`, criterion 4's per-frame `own_profile`
+coverage) and `FINDING RV-0078-S1-1` as riding conditionally — only if the
+S1-2 repair opens `test/cosim/canonical.ml`, which it does. No explicit
+"work-order id + spawn UTC timestamp" token (PROTOCOL §4.1's described form)
+was present in this round's own dispatch prompt; recorded honestly here
+rather than fabricated, per `J-data_wrangler-0001`'s precedent for the
+identical situation — the header timestamp above is this entry's own,
+placed after `RV-STAGE1`'s `J-dv_lead-0150` (`2026-08-11T11:30Z`) in the
+packet's own narrative order.
+
+**Abort-first head check**: `git rev-parse HEAD` = `965f6ee39382a3fa991c8a87783eceab79f1dd45`,
+exactly the expected spawn-head (`RV-STAGE1` landed, both Stage-1 halves
+already committed). Proceeded — no rollback disposition fired. **Mid-round
+drift, checked rather than ignored**: partway through this round the
+sibling dv_lead round's commit landed on top (`5c01af0`, `J-dv_lead-0151`,
+"the Phase-1 freeze discharged..."), moving HEAD forward one commit. Applied
+this round's own mismatch procedure retroactively as a sanity check rather
+than assuming a same-branch sibling commit is automatically safe:
+`git merge-base 5c01af0 965f6ee` = `965f6ee` (my spawn-head is an ancestor,
+not a rollback), and `git show --stat 5c01af0` names exactly two paths —
+`test/attack_plans/CD-xgmii_rx_64_cosim.md` and
+`agents/journals/claude_dv_lead_agent.v07.md` — both disjoint from every
+path this round touches. Safe to continue; nothing here re-based, reverted,
+or re-read as a result.
+
+### Inputs
+`agents/charters/tb_writer.md`; `agents/PROTOCOL.md` §2–6 and §10 (full text
+read, not only the named sections); `agents/handoffs/
+WO-0078_cosim-phase2-3-stimulus-widening.md` in full, with §14's `RV-STAGE1`
+verdict (all of §0–10 of that verdict, both findings `FINDING RV-0078-S1-1`
+and `FINDING RV-0078-S1-2` verbatim, and §7's per-criterion disposition
+table) read closely before writing a line, per this round's own instruction
+to read the finding verbatim before acting. The three files this repair
+touches, read in full before editing: `test/cosim/canonical.ml`,
+`test/cosim/canonical.mli`, `test/cosim/compare.ml`. `test/cosim/dune`, read
+to confirm the executables stanza and its implied warnings-as-errors profile
+(no unused bindings could be left behind). Git history: `git log --oneline
+-15` and `git status`/`git diff --stat` at the start and end of the round, to
+confirm scope (and to notice the sibling dv_lead round's own concurrent,
+untouched edit to `test/attack_plans/CD-xgmii_rx_64_cosim.md`, which I did
+not open, read the contents of, or stage). No `libs/**`, no `top/**`, no
+`rtl_snapshots/**`, no `docs/reports/audit/**`, no `test/attack_plans/**`,
+no `tools/cosim/**` path opened at any point. `stimulus_gen.ml`,
+`ours_run.ml`, and `tb_xgmii_rx_64.v` were NOT opened this round — the
+repair does not touch them and re-reading them would have been scope creep
+against a round whose own dispatch named exactly which limbs to fix.
+
+### Reasoning
+**Why both limbs land in the printer, not in `own_profile`'s own
+population.** Re-reading `RV-STAGE1` §6's two limbs against the Stage-1
+diff: limb (a) (admit_cycle only printed on the T0-RED path) and limb (b)
+(own_profile only printed when the WHOLE transaction's `spec_divergences` is
+empty) are both printer-gating defects, not data defects. `own_profile`
+already carried, per WO-0078 §5.1's own contract, an entry for every
+accepted frame the guard did not refuse — the Stage-1 code populated it
+correctly; `timing_report_to_string` just never showed it except behind a
+whole-transaction gate. Confirming this before touching anything mattered
+because the alternative reading (own_profile itself under-populated) would
+have meant a `check_timing` bug, not a `timing_report_to_string` bug, and
+the fix would have been in a different function with different failure
+modes. I traced the actual OCaml value flow (not just the doc comments) and
+confirmed `own_profile`'s `List.filter_map` already ran over every frame
+regardless of sibling frames' divergences — the gate was purely in the
+`match r.spec_divergences with [] -> ... print own_profile ... | ds -> (no
+own_profile print at all)` shape in the printer. So the repair for limb (b)
+is: hoist the `own_profile` print out of the `[] ->` branch into its own,
+always-executed block after the verdict-sentence/divergence-list match. Limb
+(a)'s repair needed one new datum `check_timing` did NOT already carry
+(admit_cycle, per common frame index, on the aligned path) — I added
+`timing_report.admit_cycles`, populated once per `check_timing` call rather
+than recomputed at print time, so the printer stays a pure formatter over
+already-computed data, consistent with every other field in the record.
+
+**Why `FINDING RV-0078-S1-1` rides, and why I did not treat it as
+optional-if-inconvenient.** The dispatch's own rule was conditional: ride
+only if my repair opens `canonical.ml`. It does — both limbs' fixes live in
+`canonical.ml` (the `admit_cycles` field and its population; the
+`own_profile` print's gating, which is in `canonical.ml`'s
+`timing_report_to_string`, not `compare.ml`). Once that file is open for
+other reasons, `FINDING RV-0078-S1-1`'s own guard — `broken_deltas` and its
+two call sites — sits a few dozen lines away from `admit_cycles`'s new
+field, in the same file, addressing the same tier (T1). Declining to fix a
+known-unsound guard in a file already open for an unrelated repair, on the
+theory that "the dispatch didn't literally command it this time," would be
+exactly the kind of scope-minimalism the WO's own conditional rule exists to
+prevent — the condition is stated in terms of the FILE, not the LINE RANGE,
+precisely so a repair round cannot thread a needle between two defects sharing
+one function's neighborhood.
+
+**Implementing the successor rule "verbatim," and what that discipline ruled
+out.** The dispatch gave the rule in closed form: `d_m = o_m - (admit_cycle +
+m + 3)`; refuse if `c > 0`; pass if `d ≡ 0`; refuse if `d_0 = 0` and `d`
+non-decreasing and non-zero; else assert. I resisted two temptations while
+coding it. First, folding the "non-zero somewhere" clause into an explicit
+check: it is redundant once the `d ≡ 0` branch is checked first (whatever
+reaches the third branch is already known non-identically-zero), and adding
+a redundant check would have been an unstated strengthening of the rule
+text, not a faithful transcription of it — I left it implicit and said so in
+a comment, rather than silently adding logic the dispatch did not ask for.
+Second, reusing `broken_deltas`'s COUNT as an input to the new rule (e.g. "if
+exactly one broken delta, ALSO require d_0 = 0" as a belt-and-suspenders
+check): the dispatch's rule is complete and self-contained on `d` alone: a
+count-based check re-admits the same class of unsoundness (a rule keyed on
+COUNTING breaks rather than on the DIRECTION of departure) that the finding
+diagnosed as the root cause. I deleted `broken_deltas` entirely rather than
+leave it as an unused, and therefore stale, alternative implementation
+someone could be tempted to resurrect.
+
+**Why I combined `t1_divergences` and `own_profile`'s construction into one
+`List.filter_map` pass (`t1_and_profile`) rather than keeping two separate
+walks as Stage 1 had.** Stage 1's code called `broken_deltas fr.words` twice
+per frame — once inside `t1_divergences`'s fold, once inside `own_profile`'s
+— on the (correct, at the time) assumption that the two would always agree
+because they read the same function. That assumption is exactly the kind of
+implicit coupling that let a rule change in one place silently need a
+matching change in the other; combining them into one classification per
+frame, consumed by both output lists via `fst`/`snd`, makes that coupling
+structural (checked by the type checker: `t1_and_profile : (timing_divergence
+list * (int * (int * int) list) option) list`) rather than a comment asking
+a future editor to remember to update both sites.
+
+**Two self-test fixtures added, and why I judged them in-scope rather than
+scope creep.** Neither finding named a specific new self-test case by name;
+both named a SHAPE that had to work. `FINDING RV-0078-S1-1` closes with "and
+refuses the two-idle stimulus the landed rule asserts" — a specific,
+falsifiable claim about a shape with no landed fixture. Asserting my own
+hand-derivation matched that sentence without ever constructing the shape
+and running it would have been exactly the "promoted, looks right" vacuity
+the charter's promotion-discipline clause warns against, applied to a
+guard-logic change rather than a waveform — I built
+`two_idle_positions_transaction` and ran it rather than trust arithmetic done
+only on paper. `FINDING RV-0078-S1-2` limb (b) is, by definition, about a
+MULTI-FRAME case; the only two authorised runners of multi-frame stimulus in
+this whole programme are Stage 2's C2 (not yet dispatched) and this
+self-test — so without `two_frame_transaction`, limb (b)'s repair would ship
+having been exercised by neither a CI run nor a local run, which is a
+materially weaker evidentiary position than limb (a) enjoys (limb (a) is
+proven by this landing's own case-0 CI run, named as such by the dispatch).
+I flagged both as disclosed additions in the Return log rather than folding
+them in silently, per the durability clause, since neither the packet's §11
+DoD nor this round's own dispatch named them.
+
+### Actions
+Edited exactly three files. `test/cosim/canonical.mli`: added the
+`admit_cycles` field to `timing_report` (with doc); rewrote the
+`Unassertable` constructor's doc block to state `FINDING RV-0078-S1-1`'s
+successor rule in place of the retired broken-delta-count description;
+rewrote `timing_report_to_string`'s doc to describe both limbs' fix.
+`test/cosim/canonical.ml`: added `admit_cycles` to the `timing_report` type
+and to both `check_timing` return sites (`[]` on T0-RED, populated on
+aligned); deleted `broken_deltas` and its comment; added `deltas`,
+`non_decreasing`, `frame_timing_verdict`, `classify_frame`; rewrote the T1
+body as `t1_and_profile` (one `List.filter_map` over `classify_frame`'s four
+verdicts, `t1_divergences`/`own_profile` derived via `fst`/`snd`); rewrote
+`timing_report_to_string`'s aligned branch to print `admit_cycles`
+unconditionally and to print `own_profile` unconditionally and separately
+from the verdict-sentence/divergence-list match. `test/cosim/compare.ml`:
+updated two comments that named the retired `broken_deltas`/
+`first_broken_delta` identifiers; added `two_idle_positions_transaction` and
+`two_frame_transaction` plus their temp-file plumbing (paths, cleanup list,
+`write_file` calls) and two new mandatory `self_test` checks (neither marked
+optional), folded into the final `&&`-chain; updated the file's own header
+usage comment to name the two new cases.
+
+### Evidence
+```
+$ ocamlc -version
+4.14.1
+$ cd test/cosim && for f in canonical.mli canonical.ml compare.ml; do
+    ocamlc -stop-after parsing "$f"; echo "$f: exit $?"
+  done
+canonical.mli: exit 0
+canonical.ml: exit 0
+compare.ml: exit 0
+```
+Beyond parsing, copied the three changed files to my scratchpad (outside the
+repo, nothing staged from there) and fully type-checked and linked them with
+the bare system `ocamlc`:
+```
+$ ocamlc -c canonical.mli && ocamlc -c canonical.ml && ocamlc -c compare.ml \
+  && ocamlc -o compare_check.exe canonical.cmo compare.cmo
+(all exit 0)
+$ ./compare_check.exe --self-test
+[twelve cases, all PASS, aggregate "compare --self-test: OK", exit code 0]
+```
+This is a genuine type-check of `timing_report.admit_cycles` (both files
+agree), `classify_frame`'s four-way return type, and `t1_and_profile`'s
+tuple-list shape — not merely a syntax check. **Read the full printed
+report for every case, not only exit codes**, per the promotion-discipline
+obligation applied to this repair's own subject (a printer). Verbatim, case
+(a)'s T0 section: `T0: aligned -- every frame index present on both sides
+shares one admit-cycle` / `  frame 0: admit_cycle = 0` — limb (a), on the
+clean path. Verbatim, the new two-frame case's full T1 section:
+```
+T1: 2 divergence(s)
+  frame 1 word 0: SPEC-M03 section 6.1's admit_cycle + m + 3 pins cycle 11, observed 12
+  frame 1 word 1: SPEC-M03 section 6.1's admit_cycle + m + 3 pins cycle 12, observed 13
+  frame 0:
+    word 0: expected 3, observed 3
+    word 1: expected 4, observed 4
+  frame 1:
+    word 0: expected 11, observed 12
+    word 1: expected 12, observed 13
+```
+— frame 0's clean numbers print in full despite frame 1's two divergences
+listed immediately above them: limb (b), proven, not merely asserted.
+Verbatim, the new two-idle-positions case: `frame 0: T1 UNASSERTABLE -- the
+per-word departure from SPEC-M03 section 6.1's admit_cycle + m + 3 formula
+is [0; 1; 2] -- zero at word 0 and never decreasing across the frame ...` at
+exit 6 (the retired rule would have read this frame's two broken
+inter-word deltas as "two or more -> assert," exit 4 — `FINDING
+RV-0078-S1-1`'s regression, closed and demonstrated, not merely argued).
+The five previously-landed timing fixtures ((a), (d), (e), (e′),
+idle-carried) all re-ran to their SAME exit codes as `RV-STAGE1` observed in
+CI (0, 4, 4, 6, 6 respectively) — the successor rule is a behavior-preserving
+generalisation on every case this lane has ever shipped, and a
+behavior-CHANGING fix exactly and only on the shape the finding named. All
+temp files, including both new fixtures', confirmed removed after the run
+(`ls /tmp/cosim_compare_selftest_*` → 0 files).
+
+`stimulus_gen.ml`/`ours_run.ml` (Hardcaml-dependent) and `tb_xgmii_rx_64.v`
+(no local Verilog toolchain) were not touched this round and so carry no new
+CI-deferred obligation beyond Stage 1's own standing one (ADR-0005/§10 item
+12). The landing `cosim` CI job remains the only real execution of case 0's
+actual stimulus through the repaired printer — which is what limb (a)'s "the
+printer must print for case 0 in this landing's CI run" is a claim about,
+not about this self-test.
+
+### Outcome
+DoD read against `RV-STAGE1` §6's own repair commission (not §11, which
+predates these findings): `FINDING RV-0078-S1-2` limb (a) MET — admit_cycle
+now prints unconditionally on the T0-aligned path, mechanism identical to
+what will run for case 0 in this landing's CI. Limb (b) MET — own_profile
+now prints unconditionally, proven against a genuine multi-frame local
+fixture standing in for Stage 2's C2 ahead of C2's own authorisation.
+`FINDING RV-0078-S1-1` RODE (canonical.ml opened by limb (a)/(b) above) and
+its successor rule is implemented verbatim per the finding's closed-form
+statement; all six fixtures the finding hand-checked re-verified, five by
+unchanged exit code and one (the two-idle shape) by a newly-added fixture
+proving the regression closed. Case 0's construction is untouched — I never
+opened `stimulus_gen.ml`. Journal Inputs lists no `libs/**`/`top/**`/
+`rtl_snapshots/**` path. Diff touches exactly `test/cosim/canonical.ml`,
+`test/cosim/canonical.mli`, `test/cosim/compare.ml`, plus this journal and
+the WO's own Return log — confirmed by `git status --porcelain` (the sibling
+dv_lead round's own concurrent edit to
+`test/attack_plans/CD-xgmii_rx_64_cosim.md` is present in the working tree
+but is not mine, was not opened by me, and is not in this entry's
+Files-in-this-commit). No sign-off claimed: this is a returned repair for
+dv_lead's next `RV-`, not a PASS/FAIL of my own, and Stage 2's own dispatch
+still additionally requires the CD domain instance per §6.2/§13 item 1,
+which is dv_lead's, not discharged here.
+
+### Open-questions
+1. None blocking. Both repair limbs and the riding finding are implemented
+   and locally verified to the extent this environment allows (ADR-0005);
+   the landing `cosim` CI job is the only real execution of case 0's actual
+   stimulus through the repaired code and remains dv_lead's own check per
+   §11's evidence rule.
+2. The two disclosed self-test additions
+   (`two_idle_positions_transaction`, `two_frame_transaction`) are flagged,
+   not settled: dv_lead's `RV-` may rule either in-scope-and-kept or
+   surplus-and-reverted; I have not treated either as final.
+3. No RTL leak, no forbidden tool run or attempted (durability clause): the
+   only local execution this round performed was `ocamlc` (parsing,
+   type-checking, and running the resulting `compare` binary's own
+   `--self-test`) against the two files that need no Hardcaml — never
+   `dune`, never `iverilog`/`vvp`, both absent regardless (ADR-0005). I did
+   not open, read the contents of, or reason from the sibling dv_lead
+   round's concurrent edit to `test/attack_plans/CD-xgmii_rx_64_cosim.md`,
+   consistent with this round's own concurrency instruction.
+
+### Files-in-this-commit
+- test/cosim/canonical.ml
+- test/cosim/canonical.mli
+- test/cosim/compare.ml
+- agents/handoffs/WO-0078_cosim-phase2-3-stimulus-widening.md

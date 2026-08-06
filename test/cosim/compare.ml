@@ -14,8 +14,13 @@
                                             check, WO-0049 §5.4's
                                             malformed-canonical-file check,
                                             WO-0075 §7's timing-tier cases,
-                                            and WO-0078 §5.4/§2.3's rebuilt
-                                            and added cases, all through this
+                                            WO-0078 §5.4/§2.3's rebuilt and
+                                            added cases, and the WO-0078
+                                            Stage-1-repair round's two
+                                            further cases (`FINDING
+                                            RV-0078-S1-1`'s regression fixture,
+                                            `FINDING RV-0078-S1-2` limb (b)'s
+                                            two-frame case), all through this
                                             same production path (below).
 
    [<ours.canon>.idle] (WO-0078 §5.2, FINDING RV-0075-2, read if present, an
@@ -244,9 +249,11 @@ let perturbed_transaction () : Canonical.transaction =
    [cycle]s move, both by the same +1, which is exactly IC-L2's "a uniform
    one-cycle word delay ... on every output word" (WO-0075 §0) and exactly
    the shape that "preserves every inter-word delta" (WO-0075 §7) and so
-   must NOT trip the guard in canonical.ml's [broken_deltas] (named
-   [first_broken_delta] before WO-0078 §5.4's generalisation) -- it must
-   fall through to a genuine, asserted [Spec_cycle_mismatch] on both words.
+   must NOT trip the guard in canonical.ml's [classify_frame] (`FINDING
+   RV-0078-S1-1`'s successor rule, replacing the broken-inter-word-delta
+   COUNT WO-0078 §5.4 built; [d_0 = 1 <> 0] here, so this shape is asserted
+   under the successor rule too) -- it must fall through to a genuine,
+   asserted [Spec_cycle_mismatch] on both words.
    This is the case WO-0075 §7 calls "the most important test in this
    packet," and per its own instruction it was reasoned through, by hand,
    against SPEC-M03 §6.1's formula BEFORE the tier that must catch it was
@@ -341,6 +348,82 @@ let shifted_boundary_transaction () : Canonical.transaction =
   | _ -> failwith "compare.ml: sample_transaction_3w does not have exactly one frame"
 ;;
 
+(* `FINDING RV-0078-S1-1`: TWO idles injected at two DISTINCT interior
+   positions of a >= 3-word frame -- word 1 delayed by one idle (before it),
+   word 2 delayed by a SECOND, cumulative idle (before it) -- produces a
+   per-word departure sequence [d = (0; 1; 2)] (SPEC-M03 section 6.1's
+   [admit_cycle + m + 3] formula gives 3/4/5; observed here is 3/5/7): zero
+   at word 0 (no idle before D(0), consistent with a carried count of 0) and
+   NON-DECREASING (delay only ever accumulates). This is EXACTLY the shape a
+   legitimate two-idle injection schedule produces, and EXACTLY the shape
+   WO-0078 §5.4's own broken-inter-word-delta COUNT got wrong: TWO broken
+   deltas (word0->word1 is 2 cycles apart, not 1; word1->word2 is likewise 2,
+   not 1) read as "two or more -> assert" under the retired rule, reddening
+   a conformant design at [Spec_cycle_mismatch] -- exit 4 -- for a property
+   of the stimulus. `FINDING RV-0078-S1-1`'s successor rule reads the SAME
+   frame as [Unassertable] -- exit 6 -- instead, which is the regression this
+   fixture exists to prove closed. *)
+let two_idle_positions_transaction () : Canonical.transaction =
+  match sample_transaction_3w () with
+  | [ frame ] ->
+    (match frame.words with
+     | [ w0; w1; w2 ] ->
+       [ { frame with
+           Canonical.words =
+             [ w0
+             ; { w1 with Canonical.cycle = w1.cycle + 1 } (* 4 -> 5: d_1 = 1 *)
+             ; { w2 with Canonical.cycle = w2.cycle + 2 } (* 5 -> 7: d_2 = 2 *)
+             ]
+         }
+       ]
+     | _ ->
+       failwith "compare.ml: sample_transaction_3w's frame does not have exactly three words")
+  | _ -> failwith "compare.ml: sample_transaction_3w does not have exactly one frame"
+;;
+
+(* `FINDING RV-0078-S1-2` limb (b): a TWO-FRAME transaction -- frame 0
+   byte-for-byte [sample_transaction]'s own clean, gapless frame
+   (admit_cycle 0, cycles 3/4, [d = (0; 0)]); frame 1 a SEPARATE accepted
+   frame (admit_cycle 8) whose own cycles are shifted +1 on both words, the
+   exact IC-L2 shape ([d = (1; 1)]), so it asserts a T1 timing defect. This
+   is the shape unreachable at Stage 1's one-frame case 0 and reachable for
+   the first time at Stage 2's C2 (two clean frames): before this repair,
+   [Canonical.timing_report_to_string] gated [own_profile]'s ENTIRE print on
+   the whole transaction's [spec_divergences] being empty, so frame 1's
+   unrelated divergence hid frame 0's own clean numbers along with it. Both
+   sides of the comparison use this SAME transaction (as case (a) does with
+   [good_path] twice): [compare_transactions] never looks at [cycle], and T0
+   only needs the two sides' [admit_cycle]s to agree, which they trivially
+   do against themselves. *)
+let two_frame_transaction () : Canonical.transaction =
+  let frame0 =
+    match sample_transaction () with
+    | [ f ] -> f
+    | _ -> failwith "compare.ml: sample_transaction does not have exactly one frame"
+  in
+  let frame1 =
+    { Canonical.index = 1
+    ; admit_cycle = 8
+    ; decision = Canonical.Accept
+    ; words =
+        [ { Canonical.tkeep = 0xff
+          ; tlast = false
+          ; tuser0 = false
+          ; cycle = 12 (* expected 8 + 0 + 3 = 11: d_0 = 1 *)
+          ; octets = [ 20; 21; 22; 23; 24; 25; 26; 27 ]
+          }
+        ; { Canonical.tkeep = 0x0f
+          ; tlast = true
+          ; tuser0 = false
+          ; cycle = 13 (* expected 8 + 1 + 3 = 12: d_1 = 1 *)
+          ; octets = [ 28; 29; 30; 31 ]
+          }
+        ]
+    }
+  in
+  [ frame0; frame1 ]
+;;
+
 (* WO-0078 §5.2 / FINDING RV-0075-2: [sample_transaction ()], UNMODIFIED --
    its cycles (3, 4) are already perfectly gapless, zero broken deltas, and
    would be reported CLEAN (exit 0) by cycle evidence alone. The point of
@@ -431,9 +514,12 @@ let defect_shape_canon_text = "F 0 0\nW 0f 1 0 3 0000000000000002\nD 0 accept\n"
    formula and [shifted_all_transaction]'s +1 shift before
    [Canonical.check_timing] was written, confirming the shift must read as a
    [Spec_cycle_mismatch] on both words (not fall through the guard) before
-   the guard's own [broken_deltas] logic was drafted to make sure it would
-   not — the ordering this note claims, not a red run this environment
-   cannot produce. *)
+   the guard's own logic was drafted to make sure it would not — the
+   ordering this note claims, not a red run this environment cannot produce.
+   (The guard's own implementation has since been replaced wholesale by
+   `FINDING RV-0078-S1-1`'s successor rule, [Canonical.classify_frame]; this
+   note describes WO-0075's original derivation and is left as history, not
+   updated to name the current function.) *)
 let self_test () =
   let good_path = Filename.temp_file "cosim_compare_selftest_good" ".canon" in
   let bad_path = Filename.temp_file "cosim_compare_selftest_bad" ".canon" in
@@ -446,6 +532,10 @@ let self_test () =
   let misaligned_path = Filename.temp_file "cosim_compare_selftest_misaligned" ".canon" in
   let idle_carried_path = Filename.temp_file "cosim_compare_selftest_idle_carried" ".canon" in
   let refusal_path = Filename.temp_file "cosim_compare_selftest_refusal" ".canon" in
+  let two_idle_positions_path =
+    Filename.temp_file "cosim_compare_selftest_two_idle_positions" ".canon"
+  in
+  let two_frame_path = Filename.temp_file "cosim_compare_selftest_two_frame" ".canon" in
   let cleanup () =
     List.iter
       (fun path ->
@@ -463,6 +553,8 @@ let self_test () =
       ; idle_carried_path
       ; idle_carried_path ^ ".idle" (* WO-0078 §5.2 -- the sidecar, cleaned up alongside *)
       ; refusal_path
+      ; two_idle_positions_path (* FINDING RV-0078-S1-1 *)
+      ; two_frame_path (* FINDING RV-0078-S1-2 limb (b) *)
       ]
   in
   Fun.protect ~finally:cleanup (fun () ->
@@ -492,6 +584,8 @@ let self_test () =
      Fun.protect
        ~finally:(fun () -> close_out_noerr oc)
        (fun () -> output_string oc reference_refusal_canon_text));
+    Canonical.write_file two_idle_positions_path (two_idle_positions_transaction ());
+    Canonical.write_file two_frame_path (two_frame_transaction ());
     let check ~title ~expect ~expect_label exit_code =
       let ok = exit_code = expect in
       Printf.printf "compare --self-test: %s\n" title;
@@ -617,6 +711,47 @@ let self_test () =
            short-but-valid, and never a false differential finding"
         (run_comparison ~ours_path:good_path ~theirs_path:refusal_path)
     in
+    (* `FINDING RV-0078-S1-1`: the regression this repair round exists to
+       close -- a >= 3-word frame with TWO broken inter-word deltas from TWO
+       idles injected at two distinct interior positions ([d = (0; 1; 2)],
+       zero at word 0, non-decreasing) used to ASSERT under WO-0078 §5.4's
+       broken-delta COUNT ("two or more -> assert"); the successor rule
+       reads the SAME shape as consistent with a legitimate injection
+       schedule and refuses instead. Not marked optional: this is the sole
+       exerciser of the regression this finding names. *)
+    let two_idle_positions_ok =
+      check
+        ~title:
+          "(FINDING RV-0078-S1-1) two idles at two distinct interior positions of a \
+           >= 3-word frame (d = 0, 1, 2 -- zero at word 0, non-decreasing)"
+        ~expect:6
+        ~expect_label:
+          "a non-decreasing, D(0)-anchored departure sequence is consistent with a \
+           legitimate two-idle injection schedule, so T1 refuses (Unassertable) rather \
+           than asserting past it -- WO-0078 section 5.4's retired rule asserted this \
+           exact shape (exit 4), reddening a conformant design"
+        (run_comparison
+           ~ours_path:two_idle_positions_path
+           ~theirs_path:two_idle_positions_path)
+    in
+    (* `FINDING RV-0078-S1-2` limb (b): a two-frame case, frame 0 clean and
+       frame 1 asserting -- frame 0's own numbers must still print (verified
+       by eyeball against the printed report below, not by this exit-code
+       check alone: see the journal entry's Evidence). Not marked optional:
+       this is the sole exerciser of a multi-frame case in this self-test,
+       and it is the exact shape Stage 2's C2 (two clean frames) will land. *)
+    let two_frame_ok =
+      check
+        ~title:
+          "(FINDING RV-0078-S1-2 limb b) a two-frame case: frame 0 clean, frame 1 \
+           asserting a uniform +1 shift"
+        ~expect:4
+        ~expect_label:
+          "T1 reaches a negative verdict from frame 1's own divergence; frame 0's own \
+           clean per-word numbers must still be present in the printed report, not \
+           hidden behind frame 1's unrelated divergence"
+        (run_comparison ~ours_path:two_frame_path ~theirs_path:two_frame_path)
+    in
     if a_ok
        && b_ok
        && c_ok
@@ -627,6 +762,8 @@ let self_test () =
        && t0_ok
        && idle_carried_ok
        && refusal_ok
+       && two_idle_positions_ok
+       && two_frame_ok
     then (
       Printf.printf "compare --self-test: OK\n";
       0)

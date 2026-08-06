@@ -232,8 +232,11 @@ val is_clean : report -> bool
       formula pins [expected]. A defect against OUR spec (REQ-005/REQ-111),
       never a differential finding against [theirs] (WO-0075 §3.2/§4).
     - [Unassertable]: **T1**'s guard, now with TWO triggers, one carried and
-      one inferred (WO-0075 §3.2; extended WO-0078 §5.2/§5.4). Refused rather
-      than computed, for frame [index], whenever EITHER:
+      one inferred (WO-0075 §3.2; extended WO-0078 §5.2/§5.4; trigger (2)'s
+      RULE replaced by `FINDING RV-0078-S1-1`'s successor rule, landed in the
+      WO-0078 Stage-1-repair round, superseding §5.4's own broken-delta
+      COUNT — see below). Refused rather than computed, for frame [index],
+      whenever EITHER:
       (1) [check_timing]'s [injected_idle_before_d0] reports a nonzero
       count for this frame — the stimulus itself recorded idle word(s)
       injected at or before this frame's D(0) (SPEC-M03 §6.1's own
@@ -242,19 +245,36 @@ val is_clean : report -> bool
       every word uniformly and preserves every inter-word delta — the
       defect that made the pre-WO-0078 guard blind in exactly this
       direction); or
-      (2) the frame's own recorded word cycles carry EXACTLY ONE broken
-      inter-word delta — a shape structurally indistinguishable, from cycle
-      evidence alone, from a single legitimate idle injected at that
-      position (a single injection can only ever break one delta, wherever
-      it sits): the shape T1's gapless formula assumes and is not designed
-      to assert past. TWO OR MORE broken deltas is NOT this shape (no single
-      injection produces it) and is asserted normally instead (WO-0078 §5.4).
-      [why] names the words and cycles, or the carried count, that tripped
-      the guard. A tier that silently asserted a constant on a stimulus it
-      was not built for, or on an antecedent it could have been told about
-      but chose to infer instead, is the failure this refusal exists to
-      avoid (WO-0075 §3.2, citing `RV-0057-VERDICT` Finding 1 and `RV-0062`
-      FINDING B-1; WO-0078 §5.2/§5.4 for the two extensions). *)
+      (2) with the carried count at 0, the frame's own per-word DEPARTURE
+      from SPEC-M03 §6.1's gapless formula — [d_m = observed_m -
+      (admit_cycle + m + 3)], one per word in emission order — is NOT
+      identically zero, AND [d_0 = 0], AND [d] is non-decreasing across the
+      frame (each word's departure at least its predecessor's). This is
+      exactly the shape a LEGITIMATE idle-injection schedule that places
+      nothing before D(0) (already ruled out by trigger (1)) but
+      zero-or-more idle words at or after each LATER word's own admission
+      would also produce — delay only ever accumulates across a frame, it
+      never retreats, so a non-decreasing, D(0)-anchored departure sequence
+      is structurally indistinguishable from such a schedule by cycle
+      evidence alone. `FINDING RV-0078-S1-1`: WO-0078 §5.4's original rule
+      here — "exactly one broken inter-word delta refuses; two or more
+      asserts" — is UNSOUND, because two (or more) idles injected at two (or
+      more) DISTINCT interior positions break two (or more) deltas while
+      still producing exactly this non-decreasing, D(0)-anchored shape, and
+      §5.4's rule asserted it — reddening a conformant design as a
+      [Spec_cycle_mismatch] for a property of the stimulus, verbatim the
+      REQ-016 §10 failure the original WO-0075 guard existed to avoid. Any
+      OTHER nonzero [d] (a nonzero [d_0], or a departure sequence that ever
+      DECREASES) cannot be produced by any legitimate injection schedule
+      under a zero carried count, and is asserted normally instead, word by
+      word. [why] names the departure sequence, or the carried count, that
+      tripped the guard. A tier that silently asserted a constant on a
+      stimulus it was not built for, or on an antecedent it could have been
+      told about but chose to infer instead, is the failure this refusal
+      exists to avoid (WO-0075 §3.2, citing `RV-0057-VERDICT` Finding 1 and
+      `RV-0062` FINDING B-1; WO-0078 §5.2/§5.4 for the two original
+      extensions; `FINDING RV-0078-S1-1` for trigger (2)'s successor rule).
+      *)
 type timing_divergence =
   | Admit_cycle_mismatch of
       { index : int
@@ -280,6 +300,21 @@ type timing_divergence =
       [Spec_cycle_mismatch] and [Unassertable] findings, and never a mix of
       T0 with T1 — the two never coexist in one report (WO-0075 §3.1's
       withholding rule).
+    - [admit_cycles] (`FINDING RV-0078-S1-2`, limb (a)): **T0**, printed
+      alongside the "aligned" verdict rather than left inferable from T1's
+      own numbers. For every frame index common to both sides when
+      [base_aligned = true], its shared [admit_cycle] — [ours]'s and
+      [theirs]'s values are equal by construction of [base_aligned], so one
+      value per index suffices. This is what makes pass criterion 2 ("the
+      harness prints that case's frame-0 [admit_cycle] as 0") checkable on a
+      GREEN run without inferring it from T1's [word 0] entry: inference
+      sufficed only while every landed case shared case 0's one placement,
+      itself verified only by a strictly-stronger instrument (the frozen
+      stimulus's byte-identical hash, pass criterion 1) — a genuinely NEW
+      stimulus (WO-0078 Stage 2's C1) carries no such instrument and needs
+      this printed directly. Empty when [base_aligned = false] (a T0-RED
+      report already names both sides' [admit_cycle] values per mismatched
+      frame).
     - [own_profile] (WO-0078 §5.1, FINDING RV-0075-1): **T1**. For every
       accepted frame this tier did NOT refuse (i.e. not [Unassertable] under
       either of its two triggers above), its per-word [(expected, observed)]
@@ -301,6 +336,7 @@ type timing_divergence =
 type timing_report =
   { base_aligned : bool
   ; spec_divergences : timing_divergence list
+  ; admit_cycles : (int * int) list
   ; own_profile : (int * (int * int) list) list
   ; reference_profile : (int * int list) list
   ; offsets : (int * int list) list
@@ -331,12 +367,23 @@ val check_timing
   -> timing_report
 
 (** Prints, in this order (WO-0075 §5.1; WO-0078 §5.1 adds the per-word
-    numbers on the clean path): T0's verdict; then, on [base_aligned =
-    false], T0's own divergences and the sentence that T1 and T2 are withheld
-    and why — never an empty section, which reads as a pass; otherwise T1's
-    expected-vs-observed findings for every divergence (or, when there are
-    none, an explicit "clean" sentence FOLLOWED BY [own_profile]'s per-word
-    expected/observed table for every accepted frame — not a sentence alone)
-    followed by T2 under a heading containing the words RECORDED, NEVER
-    ADJUDICATED. *)
+    numbers on the clean path; `FINDING RV-0078-S1-2` fixes two gaps found in
+    that repair's own printer, both bounded to a multi-frame case a
+    one-frame transaction cannot reach): T0's verdict; on [base_aligned =
+    true] ALSO [admit_cycles], one line per common frame index, printed
+    UNCONDITIONALLY rather than left inferable from T1's own numbers (limb
+    (a)); on [base_aligned = false] instead, T0's own divergences and the
+    sentence that T1 and T2 are withheld and why — never an empty section,
+    which reads as a pass. Then, on alignment, T1's own verdict sentence
+    (clean, or its divergence list), FOLLOWED, UNCONDITIONALLY AND
+    SEPARATELY (limb (b)), by [own_profile]'s per-word expected/observed
+    table for every accepted, non-refused frame it carries — printed WHETHER
+    OR NOT some OTHER frame in the SAME case's transaction diverged or was
+    refused, because [own_profile] already excludes only the frames the
+    guard itself refused, and gating the print on the whole transaction's
+    [spec_divergences] (as the pre-repair printer did) hid a clean frame's
+    own numbers behind an unrelated sibling frame's divergence —
+    unreachable at one frame, reachable from Stage 2's first multi-frame
+    case (C2) onward. Finally T2 under a heading containing the words
+    RECORDED, NEVER ADJUDICATED. *)
 val timing_report_to_string : timing_report -> string

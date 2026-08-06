@@ -484,6 +484,7 @@ type timing_divergence =
 type timing_report =
   { base_aligned : bool
   ; spec_divergences : timing_divergence list
+  ; admit_cycles : (int * int) list
   ; own_profile : (int * (int * int) list) list
   ; reference_profile : (int * int list) list
   ; offsets : (int * int list) list
@@ -502,32 +503,64 @@ let timing_divergence_to_string = function
   | Unassertable { index; why } -> Printf.sprintf "frame %d: T1 UNASSERTABLE -- %s" index why
 ;;
 
-(* WO-0075 §3.2's guard, over one accepted frame's own words in emission
-   order: on a gapless stimulus SPEC-M03 section 6.1's [admit_cycle + m + 3]
-   formula gives every pair of consecutive output words exactly ONE cycle of
-   separation (word m+1's cycle minus word m's cycle), because m advances by
-   exactly 1 between them. A uniform shift (WO-0073's IC-L2, this packet's
-   own motivating class) preserves that separation -- "a uniform shift
-   preserves every inter-word delta" (WO-0075 section 7) -- so this guard
-   does NOT catch it and does not need to: IC-L2 is meant to fall through to
-   the ordinary [Spec_cycle_mismatch] walk below, on every word.
+(* `FINDING RV-0078-S1-1` (WO-0078 Stage-1 repair round): T1's inferred-
+   trigger guard, replacing WO-0078 §5.4's own broken-inter-word-delta
+   COUNT, which `RV-STAGE1`'s review found fail-open in exactly the
+   direction §5.4 did not consider -- two or more idles injected at two or
+   more DISTINCT interior positions break two or more deltas, and §5.4's own
+   rule ("two or more -> assert") reddened that conformant shape as a
+   [Spec_cycle_mismatch] against a design that never violated SPEC-M03 §6.1
+   at all (REQ-016 §10's own named failure: "a wrapper asserting it fails a
+   conformant design, and one did").
 
-   WO-0078 §5.4 / RV-0075-VERDICT §4.1: renamed from [first_broken_delta] and
-   generalised to return EVERY broken position, not just the first, because
-   the COUNT of broken deltas -- not merely their presence -- is what now
-   decides the tier's disposition (see [check_timing] below). Returns each
-   broken pair's earlier word's 0-based index in this frame, and the two
-   cycles either side of the break, in ascending word-index order. *)
-let broken_deltas (words : word list) =
-  let rec walk word_index acc = function
-    | (w0 : word) :: (w1 : word) :: rest ->
-      let acc =
-        if w1.cycle - w0.cycle <> 1 then (word_index, w0.cycle, w1.cycle) :: acc else acc
-      in
-      walk (word_index + 1) acc (w1 :: rest)
-    | [ _ ] | [] -> List.rev acc
-  in
-  walk 0 [] words
+   The successor rule works on the per-word DEPARTURE from the gapless
+   formula directly, never on a count of broken pairwise deltas: for a frame
+   with per-word observed cycles [o_m] (m = 0 .. length - 1, emission
+   order), [deltas] computes [d_m = o_m - (admit_cycle + m + 3)] -- SPEC-M03
+   §6.1's own formula, word by word. A LEGITIMATE injection schedule that
+   places nothing before D(0) (ruled out separately by the CARRIED count,
+   below) but zero-or-more idle words at or after each LATER word's own
+   admission can only ever produce a [d] that starts at 0 and never
+   decreases -- delay accumulates across a frame, it does not retreat. That
+   is what [non_decreasing] tests. *)
+let deltas ~admit_cycle (words : word list) =
+  List.mapi (fun word_index (w : word) -> w.cycle - (admit_cycle + word_index + 3)) words
+;;
+
+let non_decreasing = function
+  | [] | [ _ ] -> true
+  | d0 :: rest ->
+    let rec go prev = function
+      | [] -> true
+      | d :: tl -> d >= prev && go d tl
+    in
+    go d0 rest
+;;
+
+(* The four-way classification [check_timing] below dispatches on, per
+   accepted frame: [Refuse_carried] and [Refuse_ambiguous] both refuse
+   (Unassertable -- WO-0075 §3.2's guard, extended WO-0078 §5.2 and now
+   `FINDING RV-0078-S1-1`); [Clean] and [Assert] both carry an [own_profile]
+   entry (WO-0078 §5.1) because both are frames the guard did NOT refuse,
+   whatever [Assert]'s own per-word mismatches separately report about
+   them. *)
+type frame_timing_verdict =
+  | Clean
+  | Refuse_carried
+  | Refuse_ambiguous
+  | Assert
+
+let classify_frame ~carried ~admit_cycle (words : word list) : frame_timing_verdict =
+  if carried > 0
+  then Refuse_carried
+  else (
+    let ds = deltas ~admit_cycle words in
+    if List.for_all (fun d -> d = 0) ds
+    then Clean
+    else (
+      match ds with
+      | d0 :: _ when d0 = 0 && non_decreasing ds -> Refuse_ambiguous
+      | _ -> Assert))
 ;;
 
 (* WO-0078 §5.1 / FINDING RV-0075-1: SPEC-M03 §6.1's own [admit_cycle + m + 3]
@@ -591,6 +624,7 @@ let check_timing
        T2 rather than report them." *)
     { base_aligned = false
     ; spec_divergences = admit_cycle_mismatches
+    ; admit_cycles = []
     ; own_profile = []
     ; reference_profile = []
     ; offsets = []
@@ -611,83 +645,77 @@ let check_timing
        3.2). Iterates [ours] only, and only frames [ours] itself reports
        [Accept]; [theirs] is not consulted here at all.
 
-       WO-0078 §5.2/§5.4's two-part guard, checked in this order per frame:
-       (1) a nonzero CARRIED idle count refuses outright -- it cannot be
-           contradicted by the frame's own cycles, which is exactly the point
-           (FINDING RV-0075-2: a uniform shift from an idle at D(0) preserves
-           every inter-word delta and would otherwise read as clean or as an
-           ordinary [Spec_cycle_mismatch], never as what it is);
-       (2) otherwise, EXACTLY ONE broken inter-word delta refuses (ambiguous
-           with a single legitimate idle injection, which can only ever break
-           one delta, wherever it sits -- WO-0075's original guard, unchanged
-           in this branch); TWO OR MORE broken deltas is NOT that shape (no
-           single injection produces it -- RV-0075-VERDICT §4.1's own
-           diagnosis of why the old 2-word fixture could not tell the two
-           apart) and is asserted normally, word by word, via
-           [spec_cycle_mismatches]. *)
-    let t1_divergences =
-      List.concat_map
-        (fun (fr : frame) ->
-           if fr.decision <> Accept
-           then []
-           else (
-             let carried = idle_before_d0 fr.index in
-             if carried > 0
-             then
-               [ Unassertable
-                   { index = fr.index
-                   ; why =
-                       Printf.sprintf
-                         "the stimulus recorded %d idle word(s) injected at or before this \
-                          frame's first octet D(0) (SPEC-M03 section 6.1's own antecedent for \
-                          the admit_cycle + m + 3 formula) -- carried from the stimulus side \
-                          (WO-0078 section 5.2, FINDING RV-0075-2), never inferred from output \
-                          spacing, which a shift of exactly this shape would otherwise leave \
-                          looking clean or ordinarily mismatched rather than unassertable"
-                         carried
-                   }
-               ]
-             else (
-               match broken_deltas fr.words with
-               | [ (word_index, c0, c1) ] ->
-                 [ Unassertable
-                     { index = fr.index
-                     ; why =
-                         Printf.sprintf
-                           "output words %d and %d are %d cycle(s) apart (cycle %d then %d) \
-                            -- exactly one broken inter-word delta, indistinguishable from \
-                            cycle evidence alone from a single legitimate idle injected at \
-                            that position (WO-0075 section 3.2's guard; WO-0078 section 5.4 \
-                            narrows it to exactly this count rather than any broken delta)"
-                           word_index
-                           (word_index + 1)
-                           (c1 - c0)
-                           c0
-                           c1
-                     }
-                 ]
-               | _ (* zero, or two-or-more, broken deltas: assertable *) ->
-                 spec_cycle_mismatches ~index:fr.index ~admit_cycle:fr.admit_cycle fr.words)))
-        ours
-    in
-    (* WO-0078 §5.1 / FINDING RV-0075-1: the per-word (expected, observed)
-       profile for every accepted frame this guard did NOT refuse -- the data
-       [timing_report_to_string] prints on the clean path so a green run
-       carries its own numbers rather than requiring [offsets] and
-       [reference_profile] to be subtracted against each other. *)
-    let own_profile =
+       [classify_frame] (`FINDING RV-0078-S1-1`, superseding WO-0078 §5.4's
+       broken-inter-word-delta COUNT) dispatches each accepted frame to
+       exactly one of four verdicts; [t1_divergences] and [own_profile] are
+       both built from the SAME classification, in one pass, so the two can
+       never disagree about which frames the guard refused. *)
+    let t1_and_profile =
       List.filter_map
         (fun (fr : frame) ->
            if fr.decision <> Accept
            then None
-           else if idle_before_d0 fr.index > 0
-           then None
            else (
-             match broken_deltas fr.words with
-             | [ _ ] -> None
-             | _ -> Some (fr.index, word_profile ~admit_cycle:fr.admit_cycle fr.words)))
+             let carried = idle_before_d0 fr.index in
+             match classify_frame ~carried ~admit_cycle:fr.admit_cycle fr.words with
+             | Refuse_carried ->
+               Some
+                 ( [ Unassertable
+                       { index = fr.index
+                       ; why =
+                           Printf.sprintf
+                             "the stimulus recorded %d idle word(s) injected at or before \
+                              this frame's first octet D(0) (SPEC-M03 section 6.1's own \
+                              antecedent for the admit_cycle + m + 3 formula) -- carried \
+                              from the stimulus side (WO-0078 section 5.2, FINDING \
+                              RV-0075-2), never inferred from output spacing, which a shift \
+                              of exactly this shape would otherwise leave looking clean or \
+                              ordinarily mismatched rather than unassertable"
+                             carried
+                       }
+                   ]
+                 , None )
+             | Refuse_ambiguous ->
+               Some
+                 ( [ Unassertable
+                       { index = fr.index
+                       ; why =
+                           Printf.sprintf
+                             "the per-word departure from SPEC-M03 section 6.1's \
+                              admit_cycle + m + 3 formula is [%s] -- zero at word 0 and \
+                              never decreasing across the frame, exactly the shape a \
+                              legitimate idle-injection schedule (nothing before D(0), \
+                              zero-or-more idle words at or after each later word's own \
+                              admission) would also produce, so cycle evidence alone \
+                              cannot convict (FINDING RV-0078-S1-1's successor rule; \
+                              WO-0078 section 5.4's own broken-delta COUNT superseded, \
+                              having asserted this exact shape whenever it carried two or \
+                              more broken deltas)"
+                             (String.concat
+                                "; "
+                                (List.map
+                                   string_of_int
+                                   (deltas ~admit_cycle:fr.admit_cycle fr.words)))
+                       }
+                   ]
+                 , None )
+             | Clean ->
+               Some ([], Some (fr.index, word_profile ~admit_cycle:fr.admit_cycle fr.words))
+             | Assert ->
+               Some
+                 ( spec_cycle_mismatches ~index:fr.index ~admit_cycle:fr.admit_cycle fr.words
+                 , Some (fr.index, word_profile ~admit_cycle:fr.admit_cycle fr.words) )))
         ours
     in
+    (* WO-0078 §5.1 / FINDING RV-0075-1, extended by `FINDING RV-0078-S1-2`
+       limb (b): [own_profile] carries every accepted frame [classify_frame]
+       did NOT refuse -- [Clean] AND [Assert] alike, because both are
+       frames the guard let through, whatever [Assert]'s own per-word
+       mismatches separately say about them. [timing_report_to_string]
+       prints this UNCONDITIONALLY, never gated on whether some OTHER frame
+       in the same case's transaction diverged or was refused. *)
+    let t1_divergences = List.concat_map fst t1_and_profile in
+    let own_profile = List.filter_map snd t1_and_profile in
     (* T2 -- the reference's own cycles, recorded and never adjudicated
        (WO-0075 section 3.3). *)
     let reference_profile =
@@ -709,7 +737,17 @@ let check_timing
              Some (index, zip (ows, tws)))
         common_indices
     in
-    { base_aligned = true; spec_divergences = t1_divergences; own_profile; reference_profile; offsets })
+    { base_aligned = true
+    ; spec_divergences = t1_divergences
+    ; admit_cycles =
+        (* `FINDING RV-0078-S1-2` limb (a): ours's and theirs's [admit_cycle]
+           are equal by construction of [base_aligned], so one value per
+           common frame index suffices. *)
+        List.map (fun index -> index, (Int_map.find index om).admit_cycle) common_indices
+    ; own_profile
+    ; reference_profile
+    ; offsets
+    })
 ;;
 
 let cycles_to_string cycles = String.concat " " (List.map string_of_int cycles)
@@ -735,6 +773,20 @@ let timing_report_to_string (r : timing_report) =
   else (
     add
       "T0: aligned -- every frame index present on both sides shares one admit-cycle\n";
+    (* `FINDING RV-0078-S1-2` limb (a): print each frame's admit_cycle
+       directly on the ALIGNED path, rather than leaving it inferable from
+       T1's own [word 0] entry below -- inference sufficed only while every
+       landed case shared case 0's one placement, itself verified by a
+       strictly-stronger instrument (the frozen stimulus's byte-identical
+       hash, pass criterion 1); a genuinely new stimulus (Stage 2's C1) has
+       no such instrument and needs this printed directly, which is what
+       pass criterion 2 actually asks for. *)
+    (match r.admit_cycles with
+     | [] -> add "  (no frame index common to both sides)\n"
+     | acs ->
+       List.iter
+         (fun (index, admit_cycle) -> add "  frame %d: admit_cycle = %d\n" index admit_cycle)
+         acs);
     add
       "--- T1: our side against SPEC-M03 section 6.1 (asserting; a red is a defect \
        against OUR spec, never a differential finding) ---\n";
@@ -742,26 +794,31 @@ let timing_report_to_string (r : timing_report) =
      | [] ->
        add
          "T1: clean -- every accepted frame's output words landed on their \
-          SPEC-M03 section 6.1 (admit_cycle + m + 3) cycles\n";
-       (* WO-0078 §5.1 / FINDING RV-0075-1: print the numbers on the clean
-          path too -- the pre-WO-0078 lane printed only the sentence above,
-          so a green run's own T1 numbers were recoverable only by
-          subtracting [offsets] from [reference_profile] below, a different
-          tier's data standing in for this one's. *)
-       (match r.own_profile with
-        | [] -> add "  (no accepted frame in this case carries an assertable T1 profile)\n"
-        | profile ->
-          List.iter
-            (fun (index, pairs) ->
-               add "  frame %d:\n" index;
-               List.iteri
-                 (fun word_index (expected, observed) ->
-                    add "    word %d: expected %d, observed %d\n" word_index expected observed)
-                 pairs)
-            profile)
+          SPEC-M03 section 6.1 (admit_cycle + m + 3) cycles\n"
      | ds ->
        add "T1: %d divergence(s)\n" (List.length ds);
        List.iter (fun d -> add "  %s\n" (timing_divergence_to_string d)) ds);
+    (* WO-0078 §5.1 / FINDING RV-0075-1, extended by `FINDING RV-0078-S1-2`
+       limb (b): [own_profile]'s per-word numbers are printed for EVERY
+       accepted, non-refused frame this case carries, UNCONDITIONALLY --
+       never gated on whether [r.spec_divergences] is empty. [own_profile]
+       itself already excludes only the frames [check_timing]'s guard
+       refused; gating the PRINT on the whole transaction's divergence list
+       (as this printer did before this repair) hid a clean frame's own
+       numbers whenever some OTHER frame in the same case diverged or was
+       refused -- unreachable at Stage 1's one-frame case 0, reachable from
+       Stage 2's first multi-frame case (C2) onward. *)
+    (match r.own_profile with
+     | [] -> add "  (no accepted frame in this case carries an assertable T1 profile)\n"
+     | profile ->
+       List.iter
+         (fun (index, pairs) ->
+            add "  frame %d:\n" index;
+            List.iteri
+              (fun word_index (expected, observed) ->
+                 add "    word %d: expected %d, observed %d\n" word_index expected observed)
+              pairs)
+         profile);
     add
       "--- T2: the reference's own cycles -- RECORDED, NEVER ADJUDICATED \
        (REQ-901's exclusion, applied to time) ---\n";

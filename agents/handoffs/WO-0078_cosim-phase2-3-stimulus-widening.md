@@ -1778,3 +1778,281 @@ container and put nothing in it — and both halves' own text, and the harness's
 printed output, say so in the places a later reader will meet them.**
 
 **dv_lead, `J-dv_lead-0150`, 2026-08-11, HEAD `8c6429e` (unmoved).**
+
+---
+
+### tb_writer — Stage-1 repair round (`FINDING RV-0078-S1-2`, `FINDING RV-0078-S1-1` riding), RETURNED
+
+**Abort-first head check**: `git rev-parse HEAD` = `965f6ee39382a3fa991c8a87783eceab79f1dd45`,
+exactly the expected spawn-head (`RV-STAGE1` landed). Proceeded. **Mid-round,
+the sibling dv_lead round's own commit landed** (`5c01af0`,
+`J-dv_lead-0151`), moving HEAD forward one commit. Re-checked with this
+round's own mismatch procedure: `git merge-base 5c01af0 965f6ee` = `965f6ee`
+(spawn-head is an ancestor, not a rollback), and the new commit's own
+`--stat` names only `test/attack_plans/CD-xgmii_rx_64_cosim.md` and
+`agents/journals/claude_dv_lead_agent.v07.md` — disjoint from every file
+this round touches. Continued without re-reading or re-basing anything.
+
+**Scope, read against the finding text before a line was written.** §14's own
+`RV-STAGE1` §6 names two things as owed before Stage 2 may be dispatched:
+`FINDING RV-0078-S1-2`'s printer repair (blocking), and — per this round's own
+dispatch, not the packet's original text — `FINDING RV-0078-S1-1`'s successor
+rule, **conditionally**, riding only if the S1-2 repair opens
+`test/cosim/canonical.ml`. It does (the printer S1-2 names lives there), so
+S1-1 rides. Both repairs land in the same three files:
+`test/cosim/canonical.ml`, `test/cosim/canonical.mli`, `test/cosim/compare.ml`
+(self-test fixtures and comments only — `compare.ml`'s own production logic,
+`run_comparison`, is untouched). No other file opened: not
+`stimulus_gen.ml`, not `ours_run.ml`, not `tb_xgmii_rx_64.v`, not
+`tools/cosim/run_cosim.sh`, not `test/attack_plans/**`. Case 0's construction
+stays exactly as `RV-STAGE1` found it — I never opened `stimulus_gen.ml` this
+round, so there is nothing to re-verify there beyond noting I did not touch
+it; dv_lead's own re-anchor (run `31080871169` at `55e16ae`) is unaffected by
+a printer-only, guard-only change in `canonical.{ml,mli}`.
+
+**What changed, per finding limb.**
+
+1. **`FINDING RV-0078-S1-2` limb (a) — criterion 2's printed half.**
+   `timing_report.timing_report` gains a field, `admit_cycles : (int * int)
+   list` — one `(frame index, admit_cycle)` pair per frame index common to
+   both sides, populated only when `base_aligned = true` (empty on a T0-RED
+   report, which already names both sides' `admit_cycle` values per
+   mismatched frame). `check_timing` populates it directly from `ours`'s own
+   `admit_cycle` per common index (equal to `theirs`'s by construction of
+   `base_aligned`). `timing_report_to_string` prints one line per entry —
+   `frame %d: admit_cycle = %d` — immediately under the `T0: aligned`
+   sentence, unconditionally, before T1's own section. This is what makes
+   pass criterion 2's "the harness prints that case's frame-0 `admit_cycle`
+   as 0" checkable directly on a green run rather than inferred from T1's
+   `word 0` entry, which is what `RV-STAGE1` named as the gap.
+2. **`FINDING RV-0078-S1-2` limb (b) — criterion 4's "every accepted frame in
+   every case."** The defect was purely in the printer, not in the data:
+   `own_profile` already carried a `(frame index, per-word pairs)` entry for
+   every accepted, non-refused frame (WO-0078 §5.1's own contract), but
+   `timing_report_to_string` only ever printed it inside the `spec_divergences
+   = []` branch — so a transaction with one clean frame and one divergent (or
+   refused) frame printed **nothing** for the clean frame's own numbers,
+   because the divergent sibling frame made the whole-transaction
+   `spec_divergences` list non-empty. Unreachable at Stage 1's one-frame case
+   0; reachable for the first time at Stage 2's C2 (two frames). Repair: the
+   `own_profile` print is now a **separate, unconditional** block, printed
+   after T1's verdict sentence/divergence-list regardless of which branch
+   that match took. `own_profile`'s own population is unchanged in kind
+   (still only non-refused frames) — only the print's gating moved.
+3. **`FINDING RV-0078-S1-1` (rides, canonical.ml opened for limb (a)/(b)
+   above) — the successor rule, implemented verbatim as the finding stated
+   it.** WO-0078 §5.4's `broken_deltas`-COUNT guard ("exactly one broken
+   inter-word delta refuses; two or more asserts") is retired outright, not
+   patched: it was UNSOUND, asserting a legitimate two-(or-more)-idle
+   injection schedule as a design defect (`RV-STAGE1`'s own diagnosis,
+   REQ-016 §10's named failure recurring). Replaced by `classify_frame`,
+   which for each accepted frame with carried count `c` and per-word
+   observed cycles `o_m` computes `d_m = o_m - (admit_cycle + m + 3)` (`deltas`)
+   and dispatches: `c > 0` → refuse (`Refuse_carried`, unchanged); `d`
+   identically zero → clean; `d_0 = 0` and `d` non-decreasing (and, having
+   already excluded all-zero, therefore non-zero somewhere) → refuse
+   (`Refuse_ambiguous` — consistent with a legitimate multi-idle schedule
+   that places nothing before D(0) but delays accumulate monotonically
+   thereafter); otherwise → assert, word by word, exactly as before. `t1_divergences`
+   and `own_profile` are now built from one `List.filter_map` over
+   `classify_frame`'s verdict, in a single pass, so the two can never
+   disagree about which frames the guard refused (the previous code computed
+   them from two separate `broken_deltas` calls per frame, which is not
+   itself unsound but is one more place a future edit to one could silently
+   diverge from the other — closed as a matter of the same repair, not a
+   second finding).
+   **The six landed fixtures, hand-re-derived against the new rule before
+   touching code, then confirmed by running the rebuilt self-test (Evidence
+   below):**
+   - **clean** (case a): `d = (0, 0)` → identically zero → **clean**. Matches.
+   - **(d)** `shifted_all_transaction`: `d = (1, 1)`, `d_0 = 1 <> 0` → **assert**.
+     Matches (`RV-STAGE1`: "(d) asserts, d = (1,1), d_0 <> 0 with c = 0").
+   - **(e)** `shifted_interior_transaction`: `d = (0, 1, 0)`, `d_0 = 0` but NOT
+     non-decreasing (1 → 0 drops) → **assert**. Matches ("(e) asserts, d =
+     (0,1,0), not non-decreasing").
+   - **(e′)** `shifted_boundary_transaction`: `d = (0, 0, 1)`, `d_0 = 0`,
+     non-decreasing → **refuse**. Matches ("(e′) refuses, d = (0,0,1)").
+   - **idle-carried case** (`idle_carried_ok_transaction`, sidecar declares 1):
+     `c = 1 > 0` → **refuse**, cycle evidence never consulted. Matches ("the
+     carried case refuses").
+   - **the two-idle stimulus** the finding names but that had no landed
+     fixture: I added one (`two_idle_positions_transaction`, new self-test
+     case, see below) — a 3-word frame with word 1 delayed by one idle and
+     word 2 by a second, cumulative idle, giving `d = (0, 1, 2)`: `d_0 = 0`,
+     non-decreasing → **refuse**. Under the retired rule this frame carries
+     TWO broken inter-word deltas (both consecutive-cycle gaps are 2, not 1)
+     and would have been asserted (exit 4) — the exact regression `RV-STAGE1`
+     named ("and refuses the two-idle stimulus the landed rule asserts").
+     Confirmed by running it: exit 6, not 4 (Evidence below).
+   All six behave exactly as `RV-STAGE1`'s own hand-check predicted; none
+   needed a fixture change, only the guard underneath them.
+
+**Two disclosed additions beyond the finding's literal text, flagged per the
+durability clause, both to `compare.ml`'s self-test only (no production-path
+file touched by either):**
+
+1. **`two_idle_positions_transaction`**, a new mandatory self-test case
+   (not marked optional — `FINDING RV-0075-3`'s rule extended to this
+   fixture on the same reasoning: it is the sole exerciser of the
+   two-broken-delta / non-decreasing regression `FINDING RV-0078-S1-1` names).
+   Proves the regression closed rather than merely asserting it by
+   hand-derivation.
+2. **`two_frame_transaction`**, a new mandatory self-test case exercising
+   `FINDING RV-0078-S1-2` limb (b) directly inside this environment's own
+   local harness (frame 0 clean, frame 1 asserting a uniform +1 shift; both
+   sides of the comparison reuse the same transaction, exactly as case (a)
+   does with `good_path` twice, since `compare_transactions` never looks at
+   `cycle` and T0 only needs the two sides' `admit_cycle`s to agree with
+   themselves). Neither the finding nor the dispatch commissioned a
+   multi-frame self-test fixture by name; I added one because "the printer
+   must print for case 0 in this landing's CI run is the proof it exists"
+   covers limb (a) (case 0 is single-frame and will run in CI this landing)
+   but **not** limb (b), whose whole subject is a multi-frame case no
+   authorised, landing CI run exercises before Stage 2's C2 — without this
+   fixture, limb (b)'s repair would have shipped with no run of any kind,
+   local or CI, ever having exercised the two-frame path it fixes.
+
+**Local test results, verbatim** (this environment has no `dune`, no Hardcaml
+switch, no `iverilog`/`vvp` — ADR-0005; nothing beyond what follows was run):
+
+```
+$ ocamlc -version
+4.14.1
+
+$ cd test/cosim && for f in canonical.mli canonical.ml compare.ml; do
+    ocamlc -stop-after parsing "$f"; echo "$f: exit $?"
+  done
+canonical.mli: exit 0
+canonical.ml: exit 0
+compare.ml: exit 0
+```
+
+`canonical.ml`/`.mli` and `compare.ml` are plain stdlib OCaml (no Base, no
+Hardcaml, by the files' own header comments), so — as at the Stage-1 landing
+round — I copied the three changed files to my scratchpad (outside the repo,
+nothing staged from there) and fully type-checked and linked them with the
+bare system `ocamlc`:
+
+```
+$ ocamlc -c canonical.mli   -> exit 0
+$ ocamlc -c canonical.ml    -> exit 0
+$ ocamlc -c compare.ml      -> exit 0
+$ ocamlc -o compare_check.exe canonical.cmo compare.cmo -> exit 0
+```
+
+This is a genuine type-check of the new `timing_report.admit_cycles` field
+(both files agree), `classify_frame`'s signature and its four-way return
+type, and the rebuilt `t1_and_profile` pairing — not merely a parse. Then I
+ran the built binary's own `--self-test`, for real, and **read the full
+printed report for every case, not only the exit codes** (the promotion
+discipline this repair's whole subject is a printer makes eyeballing the
+actual text, not just PASS/FAIL, the load-bearing check):
+
+```
+$ ./compare_check.exe --self-test
+[... full report printed, twelve cases ...]
+compare --self-test: (a) identical canonical files, cycles correct
+  PASS: identical canonical files compare clean (exit 0)
+compare --self-test: (b) one octet perturbed (existing WO-0046 case)
+  PASS: ... (exit 1)
+compare --self-test: (c) malformed file (...)
+  PASS: ... (exit 3)
+compare --self-test: (d) every word's cycle shifted by +1 on our side, ...
+  PASS: ... (exit 4)
+compare --self-test: (e) an INTERIOR word's cycle shifted by +1 ...
+  PASS: ... (exit 4)
+compare --self-test: (e') a BOUNDARY word's cycle shifted by +1 ...
+  PASS: ... (exit 6)
+compare --self-test: (f) an old-format file (no cycle fields)
+  PASS: ... (exit 3)
+compare --self-test: (T0, optional) two files whose admit_cycles disagree
+  PASS: ... (exit 5)
+compare --self-test: (WO-0078 5.2) a transaction with perfectly gapless cycles, ...
+  PASS: ... (exit 6)
+compare --self-test: (WO-0078-1) a reference-side refusal sentinel (...)
+  PASS: ... (exit 3)
+compare --self-test: (FINDING RV-0078-S1-1) two idles at two distinct interior positions ...
+  PASS: a non-decreasing, D(0)-anchored departure sequence is consistent with a
+  legitimate two-idle injection schedule, so T1 refuses (Unassertable) rather
+  than asserting past it -- WO-0078 section 5.4's retired rule asserted this
+  exact shape (exit 4), reddening a conformant design (exit 6)
+compare --self-test: (FINDING RV-0078-S1-2 limb b) a two-frame case: frame 0 clean, frame 1 asserting ...
+  PASS: T1 reaches a negative verdict from frame 1's own divergence; frame 0's
+  own clean per-word numbers must still be present in the printed report, not
+  hidden behind frame 1's unrelated divergence (exit 4)
+compare --self-test: OK
+=== exit code: 0 ===
+```
+
+All twelve cases PASS; aggregate exit 0. **Eyeballed against the two limbs
+directly, verbatim from the actual printed text, not inferred from the exit
+codes:**
+
+- **Limb (a)**, case (a)'s own printed T0 section: `T0: aligned -- every
+  frame index present on both sides shares one admit-cycle` followed
+  immediately by `  frame 0: admit_cycle = 0` — printed on the CLEAN path,
+  which is exactly what `RV-STAGE1` found absent. Case 0 in this packet's
+  real stimulus is `~first_start:0`, a lane-0 start on cycle 0 (FI-1/FI-2),
+  so the equivalent line this landing's `cosim` CI job prints for the real
+  case 0 will read `frame 0: admit_cycle = 0` too — the same mechanism, the
+  same expected value, exercised for real by CI once this lands (the finding's
+  own "the printer must print for case 0 in this landing's CI run" proof; I
+  cannot produce that CI run myself, ADR-0005, but the mechanism producing it
+  is now the same code path this self-test just exercised, not a
+  self-test-only branch).
+- **Limb (b)**, the new two-frame case's own printed T1 section, verbatim:
+  ```
+  T1: 2 divergence(s)
+    frame 1 word 0: SPEC-M03 section 6.1's admit_cycle + m + 3 pins cycle 11, observed 12
+    frame 1 word 1: SPEC-M03 section 6.1's admit_cycle + m + 3 pins cycle 12, observed 13
+    frame 0:
+      word 0: expected 3, observed 3
+      word 1: expected 4, observed 4
+    frame 1:
+      word 0: expected 11, observed 12
+      word 1: expected 12, observed 13
+  ```
+  Frame 0's own numbers (`expected 3, observed 3` / `expected 4, observed 4`)
+  print in full, immediately after frame 1's two divergences are listed —
+  proving the fix directly: before this repair, `r.spec_divergences <> []`
+  (frame 1 contributed two entries) would have skipped the entire
+  `own_profile` print, and frame 0's clean numbers would not have appeared
+  anywhere in the report.
+- **`FINDING RV-0078-S1-1`'s regression fixture**, verbatim: `frame 0: T1
+  UNASSERTABLE -- the per-word departure from SPEC-M03 section 6.1's
+  admit_cycle + m + 3 formula is [0; 1; 2] -- zero at word 0 and never
+  decreasing across the frame ...` at exit 6 — confirming the two-idle shape
+  the retired rule would have asserted (exit 4) is now correctly refused.
+
+Every self-test temp file, including this round's two new fixtures'
+`.canon` files, confirmed removed after the run (`ls /tmp/cosim_compare_selftest_*`
+→ 0 files, `exit 2` from `ls` on no match).
+
+**What is CI-deferred, and why**: identical reasoning to the Stage-1 landing
+round (ADR-0005/§10 item 12) — `stimulus_gen.ml` and `ours_run.ml` were not
+opened this round at all (this repair touches only `canonical.{ml,mli}` and
+`compare.ml`'s self-test), so there is nothing new to CI-defer on their
+account; `tb_xgmii_rx_64.v` likewise untouched. `dune build`, `dune runtest`,
+and the landing `cosim` CI job remain the only real execution of the
+Hardcaml-dependent producers and the only environment that runs case 0's
+real stimulus through the repaired printer — which is what makes limb (a)'s
+"prints for case 0 in this landing's CI run" claim a claim about that run,
+not about this self-test.
+
+**Refused or blocked**: nothing refused. The two disclosed extensions above
+(both new self-test fixtures) are flagged per the durability clause rather
+than added silently; both are additive to the self-test only, no production
+code path gains behavior neither finding asked for.
+
+**Files changed** (exactly the three files both repairs land in, nothing
+else — `git status --porcelain` confirms, no `stimulus_gen.ml`, no
+`ours_run.ml`, no `tb_xgmii_rx_64.v`, no `tools/cosim/**`, no
+`test/attack_plans/**`): `test/cosim/canonical.ml`, `test/cosim/canonical.mli`,
+`test/cosim/compare.ml`.
+
+— tb_writer, spawn `WO-0078-TB-REPAIR/2026-08-11T13:15Z` (no explicit
+"work-order id + spawn UTC timestamp" token was present in this round's own
+dispatch prompt; recorded honestly per `J-data_wrangler-0001`'s precedent for
+the identical situation, rather than presented as one copied verbatim — the
+timestamp above is this entry's own UTC header time, not a token minted by
+the dispatch).
