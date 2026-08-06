@@ -3031,3 +3031,45 @@ argued); then SO-xgmii_rx_64 = the first lessons harvest.
 
 ### Files-in-this-commit
 - tasks/BOARD.md
+
+## [J-orchestrator-0225] 2026-08-11T09:00Z | task:none | Two landings after the era: the plan absorbs its last campaign, the longest-lead packet is designed - and two rulings the rounds asked for are given
+
+### Trigger
+Two dv landings since the era close: the post-campaign AP round
+(beb9c2a, J-dv_lead-0148) and the WO-0078 draft (94f0b34,
+J-dv_lead-0149 - the entry that opens journal v07). Both verified
+before staging: files-lists exact against git status, the AP round's
+journal byte-prefix-preserved, dv_checks.sh re-run by me with
+identical censuses, and the v07 chain header verified BOTH SIDES -
+I recomputed sha256 3b452395... and 268356 bytes from
+git show HEAD:v06 myself before dispatch and again at the landing;
+they match the header character for character. v06 is FROZEN.
+
+### Rulings given here
+1. OQ4 (J-dv_lead-0149): whether a cheaper instrument than Stage 1's
+   self-test can settle FINDING WO-0078-1. RULED NO: ADR-0005 makes
+   CI the only execution surface - there is no local iverilog to
+   observe the reference side's $finish path, so any cheaper check
+   would be a second derivation, and a derivation cannot settle a
+   derivation. Stage 1's self-test is the settling instrument.
+2. FINDING K-1's message repair: dv's §13 recommendation ADOPTED -
+   the repair rides the SO- round, because the SO- owns the next
+   commit that opens test_m03_k.ml and the carrier rule names the
+   next opener, not a manufactured one. My earlier inclination to
+   commission a dedicated payment round is withdrawn: a commit whose
+   only purpose is to open a file to pay a carrier is the kind of
+   motion the carrier rule exists to prevent.
+3. The CD-instance precondition (WO-0078 §13 item 1) stands as dv
+   wrote it: a case that runs before its domain instance is
+   committed is void. The dv_lead round that commits the instances
+   sits between Stages 1 and 2.
+
+### Next
+WO-0078 Stage 1 dispatch (machinery, case 0 only, both worker
+halves per the packet's §6/§9), then the stage-1 RV, then the CD
+round, then Stage 2's three landings. The error-class sweep and the
+SO- follow. Verdict §9.1/§9.2 still ride the next auditor spawn,
+unedited.
+
+### Files-in-this-commit
+- tasks/BOARD.md
