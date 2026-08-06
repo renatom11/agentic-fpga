@@ -1,0 +1,995 @@
+# WO-0078: the co-simulation lane widens its stimulus — a FROZEN case 0, a case SET beside it, and the four repairs that become material the moment the one-frame bound is lifted
+
+- **State**: **DRAFT.** Nothing in this packet is commissioned by the round that
+  writes it; no worker is spawned against it here, no file in `test/**` or
+  `tools/**` moves in the commit that carries it. It becomes `ISSUED` per stage,
+  by the orchestrator, on the authorisations in §6.
+- **Packet number**: `0078` is written here for citability; **the orchestrator
+  allocates the number at first commit** (PROTOCOL §3) and a different one is not
+  a defect in this packet, only a rename.
+- **Dating**: **this packet asserts no date of its own. It is dated by the commit
+  that carries it** — `WO-0077-VERDICT` §13 item 7's own rule, which commissioned
+  it. Every figure in it is stated **at a named base SHA** (§1) and is a finding
+  against this packet if it has moved when an assignee re-measures it.
+- **From** / **To**: dv_lead → **tb_writer** (`test/cosim/**`) and
+  **data_wrangler** (`tools/cosim/**`). Two halves, one packet — the `WO-0046`
+  and `WO-0075` precedent, at its third use. **Landing order per stage is
+  constrained here** and no longer free: §6.1's fail-closed argument holds only
+  in one direction now that a case set exists.
+- **Spec basis**: `docs/specs/requirements.md` **REQ-901** (its declared
+  divergence classes **(a)–(f)**, its *"transactional, not cycle-by-cycle"*
+  sentence, its cycle-alignment exclusion and its closing
+  never-a-licence sentence), **REQ-005**, **REQ-111**, **REQ-107**, **REQ-108**,
+  **REQ-102**, **REQ-104**, **REQ-110**, **REQ-016**, REQ-013, REQ-902;
+  `docs/specs/modules/xgmii_rx_64.md` **§6.1** (the `admit_cycle + m + 3` gapless
+  formula, its injected-idle clause and its own cycle-by-cycle worked table),
+  **§7**, **§9**, **§10**.
+- **Governing lane documents** (mine, not the assignees'):
+  `test/attack_plans/CD-xgmii_rx_64_cosim.md` (the comparison domain — §5's
+  inside/outside tables, §6's frozen V1–V7 predictions, §8's Phase-1 domain
+  instance, §9's change discipline) and `test/attack_plans/AP-xgmii_rx_64.md` §7
+  (bars 1–4 and the standing census repair). **§13 routes both; neither is an
+  assignee deliverable and neither moves in this packet's own commit.**
+- **Deliverables**: per stage, in §6. `test/cosim/canonical.{ml,mli}`,
+  `test/cosim/stimulus_gen.ml`, `test/cosim/ours_run.ml`,
+  `test/cosim/tb_xgmii_rx_64.v`, `test/cosim/compare.ml` (tb_writer);
+  `tools/cosim/run_cosim.sh` (data_wrangler). **No other file in either scope,
+  in any stage.**
+- **Definition of done**: §11. **Pass criteria**: §12 — nine, numbered, each
+  with the observation that fails it.
+- **Context provided**: this packet in full; `test/cosim/**` and
+  `tools/cosim/**` as they stand (each assignee's own prior deliverables); the
+  spec sections named above **by path and section number, to be read from
+  `docs/specs/` directly**; `test/third_party/verilog-ethernet/`'s **published
+  port list and its `PROVENANCE.md` pin**, which `tb_xgmii_rx_64.v` already
+  instantiates against. **No `libs/**`. No `rtl_snapshots/**`.** Neither half
+  needs our RTL and neither may open it (PROTOCOL §10): every expected value in
+  every stage is derived from frozen spec text, and a diff that reads otherwise
+  is a finding against the assignee.
+- **Out of scope**: §10 — a list of things this packet **forbids** as much as a
+  list of things it does not ask for. **The strobe record stays refused, and §10
+  item 4 states the one precondition that changes and the two that do not.**
+
+---
+
+## Section map
+
+| § | what it settles |
+|---|---|
+| 0 | what this packet is for, and the naming collision it clears before anything else |
+| 1 | frozen inputs — every figure, at `beb9c2a`, with the re-measurement rule |
+| 2 | the measurement this packet is priced from — a census over **two** producers, and `FINDING WO-0078-1` |
+| 3 | the design: a case **SET**, not a widened stimulus, and case 0 frozen |
+| 4 | `FINDING WO-0077-A1`, both halves, as constraints this packet is built under |
+| 5 | the four `RV-0075` repairs, and where each lands |
+| 6 | the stages — Stage 1 and Stage 2 **AUTHORISED**, Stage 3 **SCOPED, NOT AUTHORISED** |
+| 7 | the frozen predicted dispositions, written in the open before any case runs |
+| 8 | what each stage does to `AP-M03` §7's four bars — per case, never per module |
+| 9 | cost, with the unmeasured part named and a pre-committed band |
+| 10 | what this packet does NOT do — prohibitions |
+| 11 | definition of done, per half, per stage |
+| 12 | pass criteria — falsifiable, numbered |
+| 13 | owed elsewhere — what this packet routes rather than absorbs |
+| 14 | return / verdict log |
+
+---
+
+## 0. What this packet is for, and the naming collision it clears first
+
+### 0.1 The collision, cleared before it can mislead anyone
+
+**"Phase 2" and "Phase 3" name two different things in this programme's own
+documents, and this packet is about one of them.**
+
+- **The programme's** Phase 2 is MoldUDP64/ITCH 5.0 and the order book; its
+  Phase 3 is the 10GBASE-R PCS stretch goal. `RV-0075-VERDICT` §6 item 4 says of
+  those: *"Phases 2 and 3 are untouched by all of the above … Phase 2's anchor is
+  a different instrument entirely."*
+- **The co-simulation lane's** Phase 2 and Phase 3 are `WO-0044` §4's phasing of
+  the lane itself: **Phase 2 — the clean-frame spine**; **Phase 3 — the error
+  paths, and the actual anchoring**.
+
+**This packet is the lane's Phases 2 and 3 and touches neither of the
+programme's.** Throughout, the words are written **co-sim Phase 2** and **co-sim
+Phase 3**, never bare. §10 item 11 restates the separation as a prohibition,
+because a packet that clears a collision in its first section and then relies on
+the reader's memory has not cleared it.
+
+### 0.2 What the packet is for, in one paragraph
+
+The differential co-simulation lane drives **one** 64-octet good-FCS frame at a
+lane-0 start and has driven nothing else since it opened. That single fact is the
+binding constraint on every claim the lane can make: `RV-0075-VERDICT` §6 item 1
+records it as the first of four standing bars — *"the lane drives **one**
+frame … No `SO-` may cite this lane as coverage of any stimulus class it does not
+drive"* — and `WO-0046`'s adjudication §5 item 3 calls co-sim Phases 2 and 3
+*"the longest-lead item in this module's sign-off."* **This packet is those two
+phases, designed.** It is also the named carrier for four repairs that
+`RV-0075-VERDICT` dated to *"the work order that lifts `WO-0075` §8 item 1"* —
+which is this one — and it is the first artefact drafted under
+`FINDING WO-0077-A1`'s standing census repair, which it obeys in §2 and
+demonstrates in §2.3.
+
+**What it is not**: it is not a request to compare more things. REQ-901's
+comparison content is untouched, the barred cross-side timing quantity stays
+barred, and the strobe record stays refused. **The only thing that widens is the
+stimulus, and the whole difficulty of this packet is that widening it in place
+would destroy the one capability this anchor has ever been measured to have
+(§3.1, §4.2).**
+
+---
+
+## 1. Frozen inputs — measured at `beb9c2a`, and re-measured before a line is written
+
+**Every figure below was measured at base SHA `beb9c2a` by the seat that wrote
+this packet.** They are inputs, not decoration: §3's design, §6's staging, §7's
+predictions and §9's pricing each rest on specific ones.
+
+| # | input | what was measured, and what rests on it |
+|---|---|---|
+| **FI-1** | `test/cosim/stimulus_gen.ml` | **One** frame — `Frame.stress_frame ~sequence:0 ()` — via `Arrival.create ~first_start:0 [octets]`, plus `drain_cycles = 24`. `Arrival.check` asserted empty before write. §3, §6, §7 |
+| **FI-2** | `test/xgmii/arrival.mli`, `create`'s signature | `?ifg` default **12**; `?first_start` default **8** (*"lane 0 of cycle 1, so that a bench sees one idle word before any frame"*), **must be a multiple of 4**; `?fcs_valid` default **true**, with `check` verifying the REQ-304 residue when set. **`create` takes `int list list` — a frame LIST — so a second clean frame needs no new machinery.** §3.2, §4.2, §6.2, §9 |
+| **FI-3** | `test/cosim/ours_run.ml` `:159–162` | one `clear` cycle driven, then released; the stimulus trace begins at index **0** immediately after. **Our side presents its start character on cycle 0.** §4 |
+| **FI-4** | `test/cosim/ours_run.ml` `:118` | `failwith` — *"a second start character arrived while a frame was open — REQ-110 abort handling is out of Phase 1's authorised stimulus"*. **A refusal guard in a producer, not in the stimulus.** §2.2, §6.3 |
+| **FI-5** | `test/cosim/ours_run.ml` `:133` | `failwith` — *"M03 produced an output word with no admitted frame open"*. The guard that caught `IC-L5`, which REQ-901's comparison did not. §2.2 |
+| **FI-6** | `test/cosim/tb_xgmii_rx_64.v` `:274–276` | `$display` + `$finish` — the same second-start refusal, **independently implemented in Verilog**. §2.2, §2.3, §6.3 |
+| **FI-7** | `test/cosim/tb_xgmii_rx_64.v` `:288–289` | `$display` + `$finish` — the reference's own no-open-frame guard. §2.2, §2.3 |
+| **FI-8** | `tools/cosim/run_cosim.sh` `run_pipeline` | our side's rc **is** checked and maps to `EXIT_BUILD`; the reference side is invoked as `vvp` and **its rc is checked the same way**. §2.3 |
+| **FI-9** | `tools/cosim/run_cosim.sh` `:443–453` | exit constants `EXIT_OK=0 … EXIT_TIMING_NO_VERDICT=11`. **12 is unallocated.** §5.3 |
+| **FI-10** | `tools/cosim/run_cosim.sh`, sidecar | the sidecar carries a `stimulus_sha256` field and the run prints it. **This is what makes §12 criterion 1 checkable with no new machinery.** §3.2, §12 |
+| **FI-11** | `test/cosim/canonical.mli` | the pinned grammar, amended **once** (`WO-0075` §2, adding `admit-cycle` and `cycle`, decimal on purpose). `compare_words` does not carry `cycle`; `compare_transactions` does not carry `admit_cycle`. §5, §10 item 7 |
+| **FI-12** | `test/third_party/verilog-ethernet/PROVENANCE.md` | pin `77320a9471d19c7dd383914bc049e02d9f4f1ffb`; two vendored files, `axis_xgmii_rx_64.v` and `lfsr.v`. **Not bumped by any stage of this packet** (§10 item 5) |
+| **FI-13** | `docs/specs/requirements.md` REQ-901 | classes **(a)–(f)**; *"Classes (e) and (f) exclude **nothing** in the 64-to-1518-octet range, which is where this boundary still anchors"*; *"an exclusion is never a licence to take an expected value from the reference"*. §7, §8 |
+| **FI-14** | `docs/specs/modules/xgmii_rx_64.md` §6.1 | `admit_cycle + m + 3`; *"word `m` is emitted as many cycles later as there are idles injected at or before D(m)"*; *"Injection begins at the frame's first octet"*. §5.2, §7 |
+
+**The re-measurement rule, and it is a bar on the assignee, not a courtesy.**
+Every figure above is stated at `beb9c2a`. **Each assignee re-measures the ones
+its own half rests on at its own base before writing a line**, and reports the
+result in its Return log whether or not it moved. **A figure that has moved is a
+finding against this packet and a reason to stop**, not a reason to proceed with
+a corrected number: this packet's staging and its predictions were derived from
+these values, and a moved value may have moved the derivation with it. This is
+`FINDING K-3`'s rule — *a bar that has never been run against its own base is not
+a bar, it is a hope* — applied to a work order's inputs rather than to a review's
+bars.
+
+---
+
+## 2. The measurement this packet is priced from — a census over TWO producers
+
+### 2.1 What the lane drives today, and what twenty-one seeded classes did with it
+
+`WO-0075` §1 measured twelve seeded classes (families L and M) against this
+lane's stimulus and found **two rendered, zero reported by REQ-901's comparison**.
+`WO-0077-VERDICT` §9.1 added nine more (families K and N-completion) and found
+**two rendered and two reported** — the first mutant convictions this anchor has
+ever produced. **Twenty-one seeded classes, four rendered, two reported.**
+
+The four that were rendered are the whole of the lane's demonstrated reach:
+
+| class | campaign | rendered because | reported by |
+|---|---|---|---|
+| `IC-L2` | L | a uniform ΔC shift needs only one frame | **nothing, then** — it is what `WO-0075`'s T1 was built for |
+| `IC-L5` | L | a duplicated last word needs only one frame | `ours_run`'s own no-open-frame guard (**FI-5**), never the comparison |
+| `IC-K3` | K | the defect lands on a start character at a reset-release cycle | **`compare`, exit 1** — `DEFECT: frame 0: decision mismatch (ours=discard, theirs=accept)` |
+| `IC-K5` | K | same placement | **`compare`, exit 1** — same message |
+
+**Seventeen of twenty-one were unreachable at one clean frame.** They needed a
+second frame, an error character, a bad FCS, a runt, an oversize or a `Discard`
+— which is the list this packet exists to supply.
+
+### 2.2 The refusal guards, enumerated per producer — the census done the way the standing repair requires
+
+`FINDING WO-0077-A1`'s repair (§4.1) requires a universal over "the bench" to be
+measured over **every producer that drives the DUT**. Applied here the direction
+reverses: this packet's universals are about **the lane**, and the lane has three
+producers plus a sequencer. **What bounds the lane's stimulus space is not only
+`stimulus_gen.ml`.** Measured at `beb9c2a`, over every file in the lane:
+
+| producer | refusal | tripped by | effect today |
+|---|---|---|---|
+| `stimulus_gen.ml` | `Arrival.check` non-empty → `failwith` | an unconformant schedule | rc ≠ 0 → `EXIT_BUILD` |
+| `ours_run.ml` **FI-4** | second start character while a frame is open | **REQ-110 abort stimulus (V5)** | rc ≠ 0 → `EXIT_BUILD` |
+| `ours_run.ml` **FI-5** | output word with no admitted frame open | a design defect | rc ≠ 0 → `EXIT_BUILD` |
+| `ours_run.ml` `:63` | malformed stimulus line | a harness defect | rc ≠ 0 → `EXIT_BUILD` |
+| `tb_xgmii_rx_64.v` **FI-6** | second start character while a frame is open | **REQ-110 abort stimulus (V5)** | `$display` + `$finish` |
+| `tb_xgmii_rx_64.v` **FI-7** | reference produced a word with no open frame | reference behaviour we do not model | `$display` + `$finish` |
+
+**The load-bearing result of this census, and it was not visible from
+`stimulus_gen.ml` alone: two of the six refusals name REQ-110's abort case and
+sit in two independently written accumulators.** `ours_run.ml`'s own header says
+so in terms — *"deliberately not implemented: this file `failwith`s rather than
+guess at it, so a future phase that needs it is told to write it rather than
+silently mishandling it"* — and the Verilog says the same in its own words.
+**So co-sim Phase 3's V5 is not a stimulus change. It is a change to the
+admission algorithm in two producers at once, and those two must agree or the
+comparison compares nothing.** That is priced in §9 and gated in §6.3, and it is
+the single largest item in this packet.
+
+**A second result, cheaper and worth stating: a second frame is NOT blocked.**
+Both guards fire only on a start character arriving **while a frame is open**.
+A second frame after the first closes passes both, and `Arrival.create` already
+takes a frame list (**FI-2**). **Co-sim Phase 2 therefore needs no accumulator
+change at all** — which is why §6.2 authorises it and §6.3 does not authorise
+Phase 3.
+
+### 2.3 `FINDING WO-0078-1` (MINOR today, **MATERIAL the moment any case can trip a reference-side guard**) — the two producers' refusals do not reach the same place
+
+**Our side's refusals are `failwith` and produce a non-zero exit status, which
+`run_pipeline` checks and maps to `EXIT_BUILD`. The reference side's refusals are
+`$display` followed by `$finish`, and `$finish` is a normal simulation
+termination.** The harness's own check on that invocation is
+`if [ "$rc" -ne 0 ] || [ ! -e "$dir/theirs.canon" ]` (**FI-8**), and a `$finish`
+after the file has been opened satisfies neither disjunct: the file exists, and
+the message goes to the log through `say` rather than to an exit code.
+
+**What this packet claims and what it does not.** It does **not** claim to have
+observed this: ADR-0005 puts no `iverilog` in the development container and this
+seat executed nothing. **What it claims is that the harness's rc check cannot be
+*assumed* to catch a reference-side refusal, and that the assumption has never
+been tested because no stimulus has ever tripped one.** Today that is harmless —
+no landed case can trip **FI-6** or **FI-7**. **It stops being harmless at the
+first case that can**, and V5 is exactly such a case.
+
+**The repair, and it is Stage 1's, not Phase 3's** — a guard whose failure mode
+is discovered in the round that needs the guard is a guard that failed twice:
+
+> **Every refusal in every producer SHALL reach a distinct non-zero harness exit
+> code, by construction and not by inference**, and the self-test SHALL trip at
+> least one reference-side refusal deliberately and observe the code. Whether
+> that is `$finish` replaced by a non-zero-status termination, a sentinel line in
+> `theirs.canon` the parser rejects, or a separate status file, is the
+> assignees' design choice to make jointly and to state; **what is not a choice
+> is a refusal that prints and lets the run proceed to a comparison.**
+
+**Class**: MINOR at `beb9c2a`, against my own `WO-0046` design and both landed
+halves; no result already claimed by this lane is affected, because no landed
+case reaches either guard. **It is recorded here rather than in a verdict because
+this is the packet whose whole subject is making those guards reachable.**
+
+---
+
+## 3. The design: a case SET, not a widened stimulus — and case 0 is FROZEN
+
+### 3.1 Why widening in place would destroy the only capability this anchor has ever demonstrated
+
+The obvious shape for this work is: edit `stimulus_gen.ml` until it drives more.
+**It is the wrong shape, and the reason is a measurement rather than a
+preference.**
+
+`FINDING WO-0077-A1`'s positive half established that this anchor is *"blind to
+seven of nine, and **sighted** for exactly the two whose defect lands on a start
+character sitting on a reset-release cycle."* That sighted condition is not a
+property of the design under test and not a property of the comparator. **It is a
+property of the current stimulus**: `stimulus_gen.ml` passes `~first_start:0`
+where `Arrival.create`'s default is **8** (**FI-1**, **FI-2**), so the co-sim
+lane admits its frame on cycle 0 and the whole of `test/xgmii_rx_64/` does not.
+
+**Every natural widening move destroys that placement.** A prologue idle word
+moves the start off cycle 0. A lane-4 start written as `~first_start:12` moves it
+to cycle 3. A two-frame schedule written with the default `first_start` moves it
+to cycle 1. **Each would silently trade the only measured capability this anchor
+has for coverage, and the trade would be invisible: the `cosim` job would stay
+green, and the next campaign would find the lane blind again with nothing in the
+record to say when it stopped being sighted.**
+
+**Therefore**: the lane goes from one stimulus to a **stimulus set**. **Case 0 is
+the exact stimulus landed at `beb9c2a`, byte-identical, and it is frozen for the
+life of this lane.** Every new class is a **new case beside it**, never an edit
+to it. Three things fall out and all three are worth more than the file they cost:
+
+1. **Every result this lane has ever produced stays citable.** Phase 1's
+   discharges, `WO-0075`'s T1 cycles `3 … 10`, and `FINDING WO-0077-A1`'s two
+   convictions are all statements about case 0, and case 0 does not move.
+2. **The `WO-0075` §8 item 1 hazard is answered rather than accepted.** That
+   clause barred stimulus change because *"folding it in here would make a
+   failing CI run un-diagnosable between two independent changes."* **With a case
+   set and per-case reporting (§3.2), a red is attributed to a case by
+   construction**, which is what makes §6.2 able to land two cases in one commit
+   where `WO-0075` could land none.
+3. **The sighted placement is preserved deliberately** (§4.2), and §12 criterion
+   2 makes its loss a failure rather than a discovery.
+
+### 3.2 The case record, and what the harness reports per case
+
+A **case** is: an identifier, a one-line statement of the stimulus class it
+drives, a `stimulus.txt`, and — per §7 — a **frozen predicted disposition
+committed before the case first runs**.
+
+**tb_writer's half.** `stimulus_gen.ml` gains a case table and emits one
+`stimulus.txt` per case, selected by argument; **case 0's construction expression
+is not edited** — its `Arrival.create ~first_start:0 [ octets ]` call and its
+`drain_cycles = 24` stay exactly as they are, and the case table names it rather
+than rebuilding it.
+
+**data_wrangler's half.** `run_cosim.sh` iterates the case set, running the
+existing pipeline per case in its own working directory, and prints **one line
+per case** naming: the case id, its `stimulus_sha256`, `compare`'s own exit code,
+and the tier that produced it. The existing per-run SUMMARY block is retained
+per case.
+
+**The check that costs nothing and catches the worst failure**: `run_cosim.sh`
+already computes and prints `stimulus_sha256` (**FI-10**). **Case 0's value is
+therefore comparable, without new machinery, against the value the last green
+pre-widening run printed.** §12 criterion 1 is that comparison, and it is the
+criterion that fails the whole run when it fails.
+
+### 3.3 The aggregate exit precedence, pinned here so it is not invented
+
+`compare` runs per case and keeps its own exit contract unchanged. The harness
+aggregates. **Precedence, in this order:**
+
+1. **Case 0's `stimulus_sha256` mismatch** → a new `EXIT_CASE0_MOVED`, allocated
+   by the assignee above 12, reported before any case runs. Nothing else is
+   reported: a run whose frozen reference case has moved has no baseline and
+   therefore no findings, only a defect in itself.
+2. **Any producer refusal, any case** (§2.3) → its own code, on the
+   *did-not-reach-a-verdict* side.
+3. **Content divergence in any case** → `EXIT_DIFFERENTIAL(4)`. Content wins over
+   timing, exactly as `WO-0075` §6 pinned it for one case.
+4. **T0 unaligned in any case** → `EXIT_TIMING_NO_VERDICT(11)`.
+5. **T1 unassertable in any case** → `EXIT_TIMING_UNASSERTABLE(12)` (§5.3).
+6. **T1 negative in any case** → `EXIT_TIMING(10)`.
+7. Otherwise **`EXIT_OK(0)`**.
+
+**And the rule that makes an aggregate honest**: the aggregate code says which
+*class* of thing went wrong; **the per-case lines say which case, and they are
+printed for every case whatever the aggregate is.** A harness that stops at the
+first red and reports nothing about the remaining cases fails §12 criterion 3.
+`WO-0049` §8's separation — *reached a verdict and it was negative* versus *did
+not reach one* — is the axis this whole ordering is built on and it is preserved
+at every level.
+
+---
+
+## 4. `FINDING WO-0077-A1`, both halves, as constraints this packet is built under
+
+`WO-0077-VERDICT` §13 item 7 rides this packet with `RV-0075-1/-2/-3`'s repairs.
+**`FINDING WO-0077-A1` rides it too, and both halves do**, because both are about
+the instrument this packet modifies.
+
+### 4.1 The negative half — the census repair, obeyed here and demonstrated in §2.2
+
+The repair, as landed at `AP-M03` §7 and quoted from it:
+
+> **ANY UNIVERSAL QUANTIFIED OVER "THE BENCH" IN A SEAL, A CAMPAIGN PACKET OR AN
+> `SO-` IS MEASURED OVER EVERY PRODUCER THAT DRIVES THE DUT — `test/cosim/`
+> INCLUDED — OR IT IS QUOTED WITH THE PRODUCER SET IT WAS MEASURED OVER.**
+
+**This packet is the first artefact drafted under it, and it is a work order
+rather than the campaign seal the repair anticipated.** Two consequences, both
+discharged rather than promised:
+
+1. **Obeyed.** §2.2's census ranges over **every** producer in the lane —
+   `stimulus_gen.ml`, `ours_run.ml`, `tb_xgmii_rx_64.v` and `run_cosim.sh` — and
+   not over the stimulus generator alone. §1's frozen-input table names the file
+   and line each figure came from, so the domain of every claim is legible
+   without trusting this packet's prose.
+2. **It paid immediately, which is the argument for the repair rather than a
+   restatement of it.** A census scoped to `stimulus_gen.ml` would have concluded
+   that the lane's stimulus space is bounded by the generator. **It is not**: two
+   accumulator guards (**FI-4**, **FI-6**) bound it independently, and they are
+   the reason co-sim Phase 3 is scoped-not-authorised in §6.3 while co-sim Phase 2
+   is authorised. **The staging of this packet is a direct product of obeying the
+   repair.**
+
+**The repair's ownership is not discharged here.** `J-dv_lead-0148`
+Open-question 3 recommended the `SO-` round own it explicitly; that recommendation
+stands and §13 routes it. **This packet obeys the rule; it does not become its
+owner.**
+
+### 4.2 The positive half — the sighted class is a **capability**, and it is preserved by construction
+
+The positive half, quoted from the same source:
+
+> **The lane is not blind: it is blind to seven of nine, and SIGHTED for exactly
+> the two whose defect lands on a start character sitting on a reset-release
+> cycle** — a placement the M03 bench does not contain at all.
+
+**This packet treats that as a measured capability to be widened deliberately,
+which is the opposite of what a widening round would do to it by default (§3.1).**
+Three concrete instructions follow, and each is checkable:
+
+1. **Case 0 is frozen** (§3.1). The configuration in which the capability was
+   measured is never edited.
+2. **Every new case preserves the placement where the stimulus class permits
+   it.** `Arrival.create`'s `?first_start` must be a multiple of 4 (**FI-2**), so
+   **`~first_start:0` is a lane-0 start on cycle 0 and `~first_start:4` is a
+   lane-4 start on cycle 0** — the lane-4 case (§6.2, C1) therefore closes
+   `WO-0046`-adj §5 item 2 **and** keeps the sighted placement, where the obvious
+   `~first_start:12` would have closed the first and silently lost the second.
+   §12 criterion 2 is written against this.
+3. **The one class that cannot preserve it declares so.** `FINDING RV-0075-2`'s
+   idle-injection case (§5.2) exists precisely to place idles before D(0), and an
+   idle before the frame's first octet moves the admit cycle. **That case
+   therefore carries an explicit statement that it does not carry the sighted
+   placement and that frame 0 of case 0 still does** — a declaration, not an
+   omission.
+
+**And the bound on all three, stated so the positive half is not oversold.**
+`WO-0077-VERDICT` §9.1 says it and this packet repeats it rather than softening
+it: *"It does not discharge the anchor: REQ-901's class list still contains no
+mid-frame `clear`, one 64-octet good-FCS frame is still the whole stimulus, and a
+green there still means nothing."* **The capability is that a defect landing on a
+reset-release start character is visible to this lane. It is not that the lane is
+sighted.**
+
+---
+
+## 5. The four owed `RV-0075` repairs, and where each lands
+
+`RV-0075-VERDICT` §7.2: *"`FINDING RV-0075-1` (T1 prints its numbers on the clean
+path); `FINDING RV-0075-2` (T1's idle antecedent **carried**, not inferred); and
+§4.1(b)/(c)'s `EXIT_TIMING_UNASSERTABLE(12)` plus §4.1's case-(e) fixture
+rebuild. **None is owed before that work order** …"* — **this is that work order.
+All four land in Stage 1, before any new case runs**, and the ordering is not
+cosmetic: three of the four are about reading a result correctly, and a widening
+round that lands them after the widening reads its first widened result with the
+instrument unrepaired.
+
+### 5.1 `FINDING RV-0075-1` — T1 prints its numbers on the clean path
+
+**Defect**: `timing_report_to_string` prints a sentence rather than a table on the
+clean path, so a green run carries **no printed record of the cycles T1
+asserted**; they are recoverable only by subtracting T2's offset from T2's
+profile — that is, *our side's asserted numbers are legible only through the tier
+that may never be adjudicated.*
+
+**Repair**: on `base_aligned = true` and `spec_divergences = []`, print the
+per-word `expected`/`observed` pairs for every accepted frame, per case. About
+ten lines; no logic change. **Under a case set the defect is worse than it was at
+one case, which is why it leads**: without it, a run over N cases prints N
+sentences and no numbers, and an `SO-` citing the lane's timing evidence would be
+quoting prose.
+
+### 5.2 `FINDING RV-0075-2` — T1's antecedent is **CARRIED**, not inferred
+
+**Defect**: `WO-0075` §3.2 asked for a guard on the **stimulus** carrying an
+injected idle inside a frame. `check_timing` sees only the two canonical files,
+so `first_broken_delta` guards on **our own output-word spacing** — a different
+predicate, blind in exactly one direction. SPEC-M03 §6.1: *"word `m` is emitted
+as many cycles later as there are idles injected at or before D(m)"*, so **an idle
+at or before D(0) shifts every word uniformly, preserves every inter-word delta,
+and falls through to `Spec_cycle_mismatch` on every word — indistinguishable from
+`IC-L2` from the canonical files alone.**
+
+**It is MINOR today and MATERIAL the moment this packet's §8 item 1 lift lands**,
+in `RV-0075`'s own words: *"the first work order that gives this lane an
+idle-injecting stimulus makes a **conformant** M03 red at `EXIT_TIMING(10)`,
+reading as a `BUG-` candidate against REQ-005/REQ-111 when the cause is the
+stimulus."*
+
+**Repair, and its shape is fixed by the finding rather than open**: the
+injected-idle count is **not recoverable from the two canonical files**, so it
+must **reach the comparator from the stimulus side** — a grammar field, a third
+argument, or a sidecar the comparator is permitted to read. **The assignee
+chooses the mechanism and states the choice; it does not choose whether the
+antecedent is carried.** Bounded, not open-ended: SPEC-M03 §6.1's *"Injection
+begins at the frame's first octet"* keeps the blind window narrow, and it is not
+empty.
+
+**Note the shared root with `AP-M03` §7 bar 4**, and it is a constraint on the
+mechanism: with no idle record and no strobe record in the grammar, an antecedent
+the specification states in terms is unrecoverable at the comparator. **Bar 4's
+three ordered preconditions — stimulus, then mapping, then grammar — apply
+unchanged to an idle record**, so a grammar field is the *last* resort here, not
+the first, and a sidecar or an argument that carries the count is preferred
+precisely because it does not pretend the grammar knows something it does not.
+
+### 5.3 `EXIT_TIMING_UNASSERTABLE(12)` — now REQUIRED, not optional
+
+`RV-0075-VERDICT` §4.1(b) ruled that mapping `Unassertable` to exit 4 puts a
+**stimulus/harness** condition on the **design-defect** axis, and §4.1(c) dated
+the successor: *"It becomes **REQUIRED, not optional**, in the same work order
+that gives this lane a second frame or an injected idle, because from that commit
+onward an `Unassertable` is reachable, and a reader who meets `EXIT_TIMING(10)`
+will open a `BUG-` against M03 for a property of the stimulus."*
+
+**Allocated**: `compare` exit **6** → `EXIT_TIMING_UNASSERTABLE(12)`, on the
+*did-not-reach-a-verdict* side with 2, 3, 8 and 11. **12 is free at `beb9c2a`**
+(**FI-9**). The header's exit-code table gains it in the table's own voice,
+carrying the sentence that distinguishes it from 10: **10 is a defect against our
+own specification; 12 is a statement that the stimulus falls outside the
+formula's antecedents and no verdict was reached.** The `EXIT CODES` partition
+paragraph places it with 2/3/8/11. §3.3's precedence puts 12 above 10, because a
+tier that declined to certify has not certified.
+
+### 5.4 The case-(e) rebuild, and case (e′)
+
+`RV-0075-VERDICT` §4.1 closing: *"§7 case (e) was specified against a two-word
+sample frame in which a last-word shift breaks the only delta there is, so the
+case cannot distinguish the two constructors by construction … **my packet's
+defect, not the worker's**."*
+
+**Repair**: **case (e)** rebuilt on a **≥ 3-word frame with the shift in the
+interior**, asserting `Spec_cycle_mismatch`; **case (e′)** added, a shift at the
+boundary, asserting `Unassertable` → exit 6 → `EXIT_TIMING_UNASSERTABLE(12)`.
+**The two constructors become separately testable, which they are not today.**
+Case (d) — every word shifted by +1, the `IC-L2` shape — is unchanged and stays
+the most important case in the suite. **`FINDING RV-0075-3` applies to both new
+cases**: neither may be marked optional, because *a self-test case that is the
+sole exerciser of a branch may not be marked optional* — and (e′) is the sole
+exerciser of exit 12's entire path.
+
+---
+
+## 6. The stages, and what each is authorised to do
+
+### 6.1 Stage 1 — machinery only, case 0 only. **AUTHORISED.**
+
+**No stimulus class is added. The case set has exactly one member and it is case
+0.** What moves is the harness around it.
+
+**tb_writer** — `stimulus_gen.ml`, `canonical.{ml,mli}` (only if §5.2's mechanism
+requires it), `compare.ml`, `ours_run.ml`, `tb_xgmii_rx_64.v`:
+
+- the case table (§3.2), with case 0's construction expression **unedited**;
+- `FINDING RV-0075-1`'s printer repair (§5.1);
+- `FINDING RV-0075-2`'s carried antecedent (§5.2), with the mechanism stated;
+- `compare` exit **6** for `Unassertable` (§5.3);
+- the case-(e) rebuild and case (e′) (§5.4);
+- `FINDING WO-0078-1`'s repair: every producer refusal reaches a distinct
+  non-zero code, with **at least one reference-side refusal tripped deliberately
+  in the self-test** (§2.3).
+
+**data_wrangler** — `tools/cosim/run_cosim.sh`:
+
+- iterate the case set; per-case working directory; **one line per case** (§3.2);
+- `EXIT_TIMING_UNASSERTABLE=12` and `EXIT_CASE0_MOVED` (§3.3) allocated,
+  documented in the header table in its own voice, placed on the correct side of
+  the `EXIT CODES` partition;
+- §3.3's aggregate precedence, implemented in that order;
+- **case 0's `stimulus_sha256` compared against the last green pre-widening run's
+  printed value**, and the comparison reported whether it matches or not;
+- the `*)` fail-closed wildcard **untouched**;
+- **the cost probe**: report per-case wall time for the pipeline and for the whole
+  `cosim` job, as printed lines (§9).
+
+**Landing order is constrained, and this is the change from `WO-0075` §11.**
+With one case the two halves were order-free. With a case set they are not:
+**data_wrangler's half must not land before tb_writer's.** A harness that
+iterates a case set the generator cannot produce fails at the first case and
+reports a machinery problem for a state that is merely mid-landing. **tb_writer
+first; if data_wrangler lands first, its case loop must degenerate to case 0 and
+be indistinguishable from today's behaviour** — which is the property to design
+for and to state, not to hope for.
+
+**Stage 1's green means**: the machinery moved and the one measured configuration
+is bit-identical to what it was. **It means nothing about any stimulus class**,
+and no `SO-` may cite Stage 1 for coverage of anything.
+
+### 6.2 Stage 2 — co-sim Phase 2, the clean-frame spine plus the two predicted-divergence cases. **AUTHORISED.**
+
+`WO-0044` §4: *"Phase 2 — the clean-frame spine. Family A/C's stimulus classes
+across both start lanes and the directed lengths, inside the domain."* CD §6
+distributes **V6** and **V7** here. **Four cases, three landings.**
+
+| case | stimulus | preserves the sighted placement? | why it is here |
+|---|---|---|---|
+| **C1** | **lane-4 start on cycle 0** — `~first_start:4`, otherwise case 0's frame | **YES**, deliberately (§4.2) | closes `WO-0046`-adj §5 item 2: *"lane 4 has never been driven at this boundary … where every quantity SPEC-M03 §7 pins takes its other value"* |
+| **C2** | **two clean frames**, minimum IFG, frame 0 at `~first_start:0` | **YES** for frame 0 | closes the one-frame bound. Needs **no accumulator change** (§2.2) |
+| **C3** | **one 64-octet frame, bad FCS** — `~fcs_valid:false` plus a corrupted octet | **YES** | **CD §6's V7, "the one to watch"** |
+| **C4** | **nonstandard preamble**, otherwise clean | **YES** | **CD §6's V6.** REQ-102 forbids M03 from validating it; CD §5.2's **X4** already excludes preamble octet *values* from the comparison, so C4's observables are the decision and the delivered octets |
+
+**Landings**: **C1 + C2 together** (both clean, neither predicted to diverge, and
+per-case reporting attributes any red immediately — §3.1 consequence 2); **C3
+alone**; **C4 alone**. Each predicted-divergence case lands by itself because its
+result may force a REQ-901 spec diff (§7), and a spec-diff conversation held
+about two cases at once is a conversation about neither.
+
+**The hard precondition on every case in this stage, and it is a stop rule.**
+CD §0's own bar — *nothing may be moved from inside the domain to outside it after
+a run has shown a difference there* — and CD §9's change discipline mean **the
+domain instance for a case must be committed before the case first runs.**
+CD §9 currently reads *"This document is frozen for Phase 1 as written."*
+**No case in this stage may run before CD carries its own domain instance and its
+frozen prediction.** That document is dv_lead's, not the assignees' — §13 routes
+it, with a date.
+
+### 6.3 Stage 3 — co-sim Phase 3, the error paths. **SCOPED, NOT AUTHORISED.**
+
+`WO-0044` §4: *"Phase 3 — the error paths, and the actual anchoring … where the
+SO-blocking obligation is discharged."* **This packet designs it and does not
+commission it**, on `WO-0044` §4's own precedent (*"Nothing past Phase 1 is
+authorised by this packet"*) and for a measured reason: **V5 requires the same
+change to two independently written accumulators (§2.2), which is a different
+risk class from everything in Stage 2.**
+
+| case | CD §6 | REQ-901 status | what it costs |
+|---|---|---|---|
+| **C5** | **V1** runt 5–63 octets | class **(e)**: `tuser`[0] excluded, **payload octets and `tkeep` still compared** | cheap. **REQ-103's FCS removal on a runt remains anchorable** — CD §2-bis, on the reference's length-gate-free residue array |
+| **C6** | **V2** below 5 octets | class **(e)**: **excluded entirely, decision included** | **record-only.** REQ-901's own disposition: *"the reference's actual disposition of it is recorded as data on the first run that drives one, never adjudicated"* |
+| **C7** | **V3** oversize > 1518 | class **(f)**: **excluded entirely** | **record-only**, same disposition |
+| **C8** | **V4** `/E/` mid-frame | no class — a divergence here is a defect or a spec diff | moderate. Family E's rows are the hand-derived reference |
+| **C9** | **V5** `/S/` before `/T/` (REQ-110) | no class | **the largest item in this packet.** Both **FI-4** and **FI-6** must be lifted, and the two replacements must implement the *same* admission rule, derived from REQ-110 and SPEC-M03 §9 — **never from the reference's behaviour** (REQ-901's closing sentence) |
+
+**Re-authorisation gate.** Stage 3 opens on a separate `WO-` or a dated
+amendment to this one, and only after: (a) Stage 2 has landed with all four cases
+green or with every divergence adjudicated to a named branch of §7; (b) CD carries
+a co-sim Phase 3 domain instance; and (c) **C9's admission rule is written as spec
+text before either producer is opened** — because two producers implementing the
+same rule from one written derivation is a review problem, and two producers
+implementing it from each other is a circularity that would make the comparison
+compare a shared assumption.
+
+**And the honest note about what Stage 3 buys, stated before it is scheduled.**
+Two of its five cases are **record-only by specification** (C6, C7), and one more
+has its marking half excluded (C5's `tuser`[0]). **REQ-901 classes (e) and (f)
+bound what co-sim Phase 3 can return, and `AP-M03` §7 bar 2 already bars REQ-107
+and REQ-108 from ever being co-sim-anchored.** Phase 3 is the stage that
+*"discharges the SO-blocking obligation"* in `WO-0044`'s words, and it discharges
+it for **C5's payload half, C8 and C9** — not for the length-derived marking, which
+rests on family F's and family G's mutation-qualified benches and must be said to
+in the `SO-` rather than implied away.
+
+---
+
+## 7. The frozen predicted dispositions — written in the open, before any case runs
+
+CD §6 is this programme's precedent and its discipline: *"an unpredicted
+divergence is a finding against **this document**, exactly as an unnamed reddening
+unit is a finding against a sealed mutation matrix."* **Every case added by this
+packet ships with its predicted disposition frozen before it runs, and with the
+branch its result selects.**
+
+**R-SEAL-1 is not engaged and the reason is stated rather than assumed
+(ADR-0016).** Nothing is withheld here: these predictions are written in the open
+in this packet, and the CD instances §6.2 requires are committed artefacts before
+the runs they govern. **There is no sealed prediction in this packet, so there is
+no seal to ship** — the rule reaches a claim that a result exists and is being
+withheld, and this packet makes none.
+
+**The three branches, and every case's result resolves to exactly one:**
+
+- **(α) AGREEMENT** — the observable agrees inside the domain. The case's class
+  becomes co-sim-anchored **for that class and no wider**.
+- **(β) DECLARED-CLASS DIVERGENCE** — the divergence falls inside a REQ-901
+  declared class (a)–(f). **Excluded, not reported as a failure**, and the run's
+  report names the class. No packet may cite the anchor for the excluded
+  requirement.
+- **(γ) UNDECLARED DIVERGENCE** — the divergence falls outside every declared
+  class. **REQ-901: "Any divergence outside the declared classes is a defect."**
+  It resolves as **a `BUG-` against our RTL**, or as **a REQ-901 spec diff routed
+  to architect_docs_lead**, and **never** by amending an expectation to agree:
+  *"an exclusion is never a licence to take an expected value from the
+  reference."* **The choice between the two is dv_lead's adjudication, made after
+  the run and recorded in an `RV-`; the branch itself is fixed here, before it.**
+
+| case | our side, by spec | prediction | branch if the prediction holds | branch if it fails |
+|---|---|---|---|---|
+| **C1** lane-4 start | SPEC-M03 §6.1 gives the **same absolute output cycles** at a lane-0 and a lane-4 start; delivered octets identical to case 0 | agreement; **T1's expected set is unchanged from case 0's `{3 … 10}`** | **α** | **γ** — and it would be a large one, because it would mean the two designs disagree on a clean frame at the other start lane |
+| **C2** two clean frames | two accepted frames, indices 0 and 1, eight words each | agreement on both | **α** | **γ** — the re-arm path, which no seeded class has ever reached at this lane |
+| **C3** bad FCS | **forwarded in full, marked `tuser`[0] = 1** (§9 row 1, REQ-005 forbids store-and-forward) | **the reference may DROP it** — CD §6: *"the commonest store-and-forward instinct"* | — | **γ**, and the **expected** resolution is **a REQ-901 spec diff adding a class**, not a `BUG-`: our behaviour is pinned by REQ-005 and the reference's is its own. **If it drops, family D's entire subject matter is outside the comparison domain and REQ-104 rests on family D's bench alone — which the `SO-` must SAY, not imply away** |
+| **C4** nonstandard preamble | forwarded; **REQ-102 forbids M03 from validating preamble octets** | the reference may reject the frame | — | **γ** on the *decision*; the preamble octet values themselves are **CD §5.2 X4**, already outside the domain, so a divergence in the octets alone is **data** |
+| **C5** runt 5–63 | 1–59 octets delivered, `tuser`[0] = 1, `error_runt` | **payload and `tkeep` agree; `tuser`[0] diverges** | **β**, class **(e)** — declared, expected, excluded | **γ** on the payload half, which **is** anchorable |
+| **C6** below 5 octets | **no output word at all**, `error_runt` alone | reference behaviour undefined | **β**, class **(e)**, **recorded as data, never adjudicated** | n/a — the class excludes it entirely, decision included |
+| **C7** oversize > 1518 | truncated to **exactly 1514**, marked | reference forwards it whole | **β**, class **(f)**, recorded | n/a — excluded entirely |
+| **C8** `/E/` mid-frame | truncated at the octet before the `/E/`, marked, **no FCS removal** (REQ-103) | reference may drop, or may strip the FCS anyway | — | **γ** |
+| **C9** `/S/` before `/T/` | REQ-110's abort disposition | reference behaviour unknown | — | **γ**. **And the prior question is not the comparison but the admission rule** (§6.3) |
+
+**§12 criterion 8 makes this table load-bearing**: a case adjudicated by a
+disposition written after its run is void whatever its colour, and the voiding is
+not a formality — a disposition chosen with the answer in hand is the mechanism
+CD §0 was written to prevent.
+
+---
+
+## 8. What each stage does to `AP-M03` §7's four bars — per case, never per module
+
+| bar | kind | Stage 1 | Stage 2 | Stage 3 | after all three |
+|---|---|---|---|---|---|
+| **1** — no `SO-` row may take an expected value from X-1(ii) for a class the co-sim has not driven | per **row** | unchanged | **lifts for C1–C4's classes only** | lifts for C5–C9's classes only, minus the (e)/(f) exclusions | **still standing for every class not in the case set** |
+| **2** — REQ-107 and REQ-108 are never co-sim-anchorable | per **requirement** | unchanged | unchanged | **unchanged — by specification.** C5's `tuser`[0] and C7 entirely are REQ-901 (e)/(f) | **standing, permanently** |
+| **3** — a cross-side timing comparison is BARRED | per **quantity** (time) | unchanged | unchanged | unchanged | **standing.** The only route is a REQ-901 spec diff through architect_docs_lead; a comparator does not grant itself one |
+| **4** — no `SO-` may cite the anchor as strobe coverage, **and the reason is the stimulus** | per **quantity** (strobes) | unchanged | **precondition (1) becomes MET for `error_bad_fcs` at C3, for the first time** | more classes pulse strobes; preconditions (2) and (3) still unmet | **standing** until a committed mapping and then a grammar field exist |
+
+**Bar 4's movement at C3 is the one that must not be over-read, and this packet
+refuses to pay it.** `WO-0075` §9's refusal rests on **three ordered
+preconditions — stimulus, then mapping, then grammar** — and records that they
+were unmet at the **first**. **C3 is the first stimulus in this lane's history
+that makes `error_bad_fcs` pulse on our side**, so precondition (1) is met for
+that one strobe. **Preconditions (2) and (3) remain unmet and this packet does not
+meet them**: there is no committed mapping, `error_bad_frame` on the reference is
+*a different signal* (it also raises on a bad FCS, where SPEC-M03 §9 gives that
+event to `error_bad_fcs` alone, so a name-keyed comparison would **red a
+conformant M03**), and adding a field before a mapping exists is the all-zero
+column §9 refused. **The strobe record stays refused. What changes is that the
+refusal's first precondition is now discharged and a future packet can start at
+the second** — which is the whole point of writing preconditions in order.
+
+**And bar 1's lifts are per class and are stated per case.** A stage that lands
+four cases lifts bar 1 for four classes. **No `SO-` may write a sentence of the
+form "the co-simulation anchors this module"**; the form it may write is "the
+co-simulation anchors these named classes, at these run ids, and the following
+classes it does not drive."
+
+---
+
+## 9. Cost — priced before anything is built, with the unmeasured part named
+
+**Worker rounds, authorised part:**
+
+| stage | landings | worker rounds | dv rounds |
+|---|---|---|---|
+| Stage 1 | 1 (tb_writer, then data_wrangler) | 2 | 1 `RV-` |
+| Stage 2 | 3 (C1+C2 / C3 / C4) | 3 | 3 `RV-` |
+| **authorised total** | **4** | **5** | **4** |
+
+Stage 3, if re-authorised: **3–5 further landings**, of which C9 alone is priced
+above every other case in this packet combined, because it is the only one that
+changes an algorithm in two producers.
+
+**The alternative was priced and rejected.** Landing co-sim Phase 2's four cases
+in one commit costs one landing instead of three and saves two review rounds.
+**Rejected for C3 and C4** on `WO-0075` §8 item 1's reasoning — a failing CI run
+must be diagnosable — and specifically because each of them may resolve to
+branch **γ** and force a spec diff. **Accepted for C1 + C2**, and the thing that
+makes it safe is per-case reporting (§3.2), which did not exist when `WO-0075`
+wrote that clause. **The saving is real and it is bought by a mechanism, not by
+optimism.**
+
+**CI cost — UNMEASURED, and that is the honest statement.** The one measured
+anchor available to this seat is the whole `build` run at **326 s** (run
+`30988038809`); **the `cosim` job's own duration and the marginal cost of a second
+case have never been measured**, and this seat cannot measure them (ADR-0005). A
+case set multiplies a cost nobody has written down. **So Stage 1 carries a cost
+probe** — the `WO-0070` precedent, where the first bench whose runtime was not
+trivially bounded opened its packet with a measurement rather than an estimate —
+and the probe reports two numbers: the per-case pipeline wall time and the whole
+`cosim` job's wall time, as printed lines in the log.
+
+**The band, pre-committed here so it is not negotiated with the answer in hand:**
+
+- **Band A** — the full authorised case set fits inside a `cosim` job under
+  **300 s**, and per-case cost is **linear** in the number of cases (each added
+  case costs no more than 2× the single-case measurement). **Proceed as written.**
+- **Band B** — per-case cost is **superlinear**. **This is a machinery finding,
+  not a budget question**: something in the harness is re-doing per case what it
+  should do once (the `dune build`, the `iverilog` compile, the provenance
+  checks). Repair the harness; do not reduce the case set.
+- **Band C** — Band A's absolute bound is exceeded with a linear per-case cost.
+  **Then and only then is the case set a scope question, and it goes up as
+  E2 — options, recommendation and cost — never a silent narrowing** (charter §7,
+  which names attack-plan coverage explicitly and reaches this by the same
+  reasoning). **The case set is not reduced inside DV under any circumstances.**
+
+---
+
+## 10. What this packet does NOT do — prohibitions, not omissions
+
+1. **It does not discharge the charter §3 external anchor.** The anchor is
+   per class; a case set of nine classes anchors nine classes. `AP-M03` §7's
+   standing limit and `RV-0075-VERDICT` §6's four bars survive this packet, and
+   §8 says exactly what moves.
+2. **It does not lift bar 2, and cannot.** REQ-107 and REQ-108 are excluded by
+   REQ-901 classes (e) and (f) — *"a co-simulation result is not an admissible
+   external anchor for it, and a sign-off packet SHALL NOT offer one."*
+3. **It does not lift bar 3.** No cross-side cycle comparison, in any stage.
+   `compare_words` does not gain `cycle`; `compare_transactions` does not gain
+   `admit_cycle`. The route to a cross-side timing comparison is a REQ-901 spec
+   diff through architect_docs_lead and nothing else.
+4. **It does not add a strobe record.** §8 states the one precondition that moves
+   at C3 and the two that do not. **A strobe field added by any stage of this
+   packet is a defect against it.**
+5. **It does not edit a vendored file and does not bump the pin.** ADR-0015 D2's
+   no-edit rule; `axis_xgmii_rx_64.v` and `lfsr.v` are read-only at
+   `77320a9471d19c7dd383914bc049e02d9f4f1ffb`. A pin bump is its own commit, by
+   ADR-0015's own rule, and is not this packet's business.
+6. **It does not change either sampling convention.** `~clock_edge:Side.Before`
+   on our side and `@(posedge clk); #1` on the reference's stay exactly as they
+   are. *"If they were wrong, every result this lane has ever produced is wrong,
+   and that is not a thing to discover by accident inside a stimulus change."*
+7. **It does not edit case 0.** §3.1. Case 0's construction expression, its
+   `~first_start:0`, its frame content and its 24 drain cycles are frozen, and
+   §12 criterion 1 checks it by sha256 rather than by inspection.
+8. **It does not amend a specification.** Where a result requires one (branch γ),
+   the route is a spec diff to architect_docs_lead. **A comparator does not amend
+   REQ-901 and neither does a work order.**
+9. **It does not touch `test/attack_plans/**`.** CD and AP are dv_lead's; §13
+   routes both. An assignee that edits either has left its scope.
+10. **It does not open, advance or offer `SO-xgmii_rx_64.md`.** No stage of this
+    packet produces a sign-off and none may be inferred from a green stage.
+11. **It touches neither of the programme's Phase 2 and Phase 3.** §0.1. The
+    MoldUDP64/ITCH golden book model and its external reference agreement are a
+    **different instrument entirely**, not one line of it exists, and nothing in
+    this lane advances it. The 10GBASE-R PCS has no anchor commissioned at all.
+12. **No `dune`, no `git`, no `iverilog` is run by either assignee.** None is
+    available (ADR-0005); a claim that one was run is a finding. **The landing CI
+    run is the check, and it is the only one.**
+
+---
+
+## 11. Definition of done
+
+**Stage 1 — tb_writer:**
+- [ ] The case table exists; case 0's construction expression is **unedited** and
+      the diff shows it.
+- [ ] `FINDING RV-0075-1`'s printer repair: per-word expected/observed pairs
+      printed on the clean path, per accepted frame, per case.
+- [ ] `FINDING RV-0075-2`: the injected-idle antecedent reaches the comparator
+      **from the stimulus side**, mechanism stated and justified against bar 4's
+      stimulus → mapping → grammar ordering.
+- [ ] `compare` exit **6** for `Unassertable`, and exit 4 no longer carries it.
+- [ ] Case **(e)** rebuilt on a ≥ 3-word frame with an interior shift
+      (`Spec_cycle_mismatch`); case **(e′)** added at the boundary
+      (`Unassertable`). Case **(d)** unchanged.
+- [ ] `FINDING WO-0078-1`: every producer refusal reaches a distinct non-zero
+      code; **at least one reference-side refusal is tripped deliberately in the
+      self-test** and its code observed.
+- [ ] Every §1 figure this half rests on **re-measured at the assignee's own
+      base** and the result reported in the Return log.
+- [ ] Journal entry appended, spawn short-id in Trigger, `Inputs` naming spec
+      paths and REQ ids and **listing no `libs/**` path**.
+- [ ] **Return-log entry appended to this packet's §14** — named as a
+      deliverable, not left implied (`RV-0075-VERDICT` §3's repair).
+
+**Stage 1 — data_wrangler:**
+- [ ] Case iteration, per-case working directory, **one line per case** carrying
+      case id, `stimulus_sha256`, `compare` exit code and the tier.
+- [ ] `EXIT_TIMING_UNASSERTABLE=12` and `EXIT_CASE0_MOVED` allocated and
+      documented in the header table in its own voice, on the correct side of the
+      `EXIT CODES` partition.
+- [ ] §3.3's aggregate precedence implemented in that order.
+- [ ] Case 0's `stimulus_sha256` compared against the last green pre-widening
+      run's printed value; result reported either way.
+- [ ] The `*)` fail-closed wildcard **untouched** — zero `+`/`-` lines inside it.
+- [ ] The cost probe's two numbers printed.
+- [ ] Every §1 figure this half rests on re-measured at its own base.
+- [ ] Journal entry appended; **Return-log entry appended to §14**.
+
+**Stage 2, per landing — tb_writer:**
+- [ ] The case(s) added, each with its `stimulus_sha256` printed.
+- [ ] **Case 0 untouched**, proven by its unchanged sha256 in the same run.
+- [ ] Expected values derived from `docs/specs/` with the derivation shown in a
+      comment beside each constant. **No expected value taken from the reference,
+      from a prior run, or from `libs/**`.**
+- [ ] Journal entry + §14 Return-log entry.
+
+**Both, every stage:**
+- [ ] No file outside the deliverable list is staged.
+- [ ] No `dune`, `git` or `iverilog` run locally.
+- [ ] **A precondition, checked before the round is spawned rather than by the
+      assignee**: the CD domain instance for every case in the landing is
+      committed (§6.2). **A case that runs before its domain instance is
+      committed is void and is re-run, not adjudicated.**
+
+**Evidence, and what CI's colours mean.** As at `WO-0075` §10: neither assignee
+nor dv_lead can execute this change, and **the landing CI run is the check**.
+Per stage, on the landing commit:
+
+- **`cosim` green** = every case in the set reached a verdict and every verdict
+  was clean. **It is evidence for the classes in the case set and for nothing
+  else**, and the per-case lines are what an `SO-` quotes.
+- **red at `EXIT_CASE0_MOVED`** = the frozen reference case moved. Nothing else
+  in the run is readable; fix the case, re-run, and the round's other results are
+  discarded rather than salvaged.
+- **red at `EXIT_DIFFERENTIAL(4)`** = a content divergence, in the case the
+  per-case line names. **Adjudicated by §7's branch table**, never by editing an
+  expectation.
+- **red at `EXIT_TIMING(10)`** = our side missed a cycle SPEC-M03 §6.1 pins. A
+  `BUG-` candidate against REQ-005/REQ-111, **or** an error in a constant this
+  packet or the assignee derived. Decided by re-reading §6.1.
+- **red at `EXIT_TIMING_UNASSERTABLE(12)`** = the stimulus falls outside T1's
+  antecedents. **Not a defect in the design**, and the whole reason 12 exists.
+- **red at `EXIT_TIMING_NO_VERDICT(11)`** = the two producers disagree about the
+  time base. A harness defect, and nothing about the design.
+- **red at a producer-refusal code** = a case reached a guard. In Stage 1 that
+  means the self-test worked. In Stage 2 it means a case drove something the
+  authorised stimulus does not cover, which is a defect in the case.
+
+---
+
+## 12. Pass criteria
+
+**Nine, numbered, each with the observation that fails it. They are written to be
+checkable against a CI log by a reader who was not in the round.**
+
+1. **Case 0 is byte-identical.** The `stimulus_sha256` the widened harness prints
+   for case 0 equals the value printed by the last green pre-widening run.
+   **A different value fails this criterion whatever else is green, and no other
+   criterion may be read while it fails.**
+
+2. **The sighted placement survives.** Every landed case set contains at least one
+   case presenting a start character on the reset-release cycle, and the harness
+   prints that case's frame-0 `admit_cycle` as **0**. **A case set in which no
+   frame is admitted at cycle 0 fails, and it fails even if every case is green.**
+
+3. **Every case reaches a verdict or names why not.** For every case in the set
+   the run prints one line carrying the case id, its `stimulus_sha256`,
+   `compare`'s own exit code and the tier that produced it. **A case that is
+   skipped, or whose result is folded into an aggregate without its own line,
+   fails — including when the aggregate is 0.**
+
+4. **T1 prints its numbers on the clean path.** For every accepted frame in every
+   case, the report prints the per-word expected and observed cycles. **A green
+   run whose T1 numbers are recoverable only by subtracting T2's offset from T2's
+   profile fails.**
+
+5. **T1's antecedent is carried, not inferred.** The injected-idle count reaches
+   the comparator from the stimulus side, and a case carrying an idle inside a
+   frame exits `EXIT_TIMING_UNASSERTABLE(12)`. **A conformant design reported at
+   `EXIT_TIMING(10)` for a property of the stimulus fails, and it fails as a
+   defect in this instrument rather than as a finding about the design.**
+
+6. **The two timing constructors are separately testable.** Self-test case (e) is
+   built on a ≥ 3-word frame with an interior shift and asserts
+   `Spec_cycle_mismatch`; case (e′) shifts at the boundary and asserts
+   `Unassertable`. **A suite in which one fixture satisfies both fails**, and so
+   does one in which either case is marked optional.
+
+7. **Every producer's refusal reaches an exit code.** Each refusal guard in each
+   producer — ours and the reference's — produces a distinct non-zero harness
+   exit when tripped, and at least one reference-side refusal is tripped
+   deliberately and observed. **A refusal that prints and lets the run proceed to
+   a comparison fails.**
+
+8. **Every case's disposition was frozen before it ran.** For each case, §7's
+   table (or the CD instance that carries it) names the predicted disposition and
+   the branch its result selects, in a commit earlier than the case's first run.
+   **A result adjudicated by a disposition written after the run is void whatever
+   its colour**, and the case is re-run under a committed prediction.
+
+9. **No claim outside the driven set.** No text in any deliverable of this packet,
+   and no `SO-` citing them, states co-simulation coverage of a stimulus class not
+   in the landed case list. `AP-M03` §7's four bars are unchanged except where a
+   named case discharges bar 1 for a named class, **and every discharge is stated
+   per case, never per module.** **A sentence of the form "the co-simulation
+   anchors this module" fails this criterion wherever it appears.**
+
+---
+
+## 13. Owed elsewhere — what this packet routes rather than absorbs
+
+**Absorbed** (they are in §§5–6 and land in Stage 1): `FINDING RV-0075-1`,
+`FINDING RV-0075-2`, `EXIT_TIMING_UNASSERTABLE(12)`, the case-(e)/(e′) rebuild,
+`FINDING RV-0075-3`'s no-optional-sole-exerciser rule as a bar on both new
+self-test cases, and `FINDING WO-0078-1`'s repair, minted here.
+
+**Routed, with the reason each is routed rather than folded in:**
+
+1. **`CD-xgmii_rx_64_cosim.md`'s co-sim Phase 2 and Phase 3 domain instances.**
+   **dv_lead's own**, and a **hard precondition** on §6.2 and §6.3: CD §9 reads
+   *"This document is frozen for Phase 1 as written"*, and CD §0 bars moving an
+   entry after a run has probed it. **Owed before Stage 2's first case runs, in a
+   dv_lead round of its own.** Not written here because the round that drafts this
+   packet writes one file, and not delegable because CD is a verification-scope
+   judgement and freezing it is the same discipline as a sealed prediction
+   (`WO-0044` §6).
+2. **`AP-M03` §7's per-case bar cells.** dv_lead's, owed to the `AP-` round that
+   follows each landed stage. §8 is the specification of what those cells say;
+   writing them into the plan is a plan round's job, not a work order's
+   (`J-dv_lead-0112`'s own rule: a plan round is not where machinery lands, and
+   its converse holds too).
+3. **`FINDING K-1`'s message repair** — the assertion at `test_m03_k.ml:468` that
+   names its expected list and prints nothing it observed. **It does NOT ride
+   here**: its carrier is the next commit that opens `test_m03_k.ml`, and **no
+   stage of this packet opens any file under `test/xgmii_rx_64/`.** It remains the
+   oldest unpaid carrier in this module and remains unscheduled; recommend the
+   `SO-` round own it, since the `SO-` will cite the scorecard the defect makes
+   unreadable.
+4. **`RN-6`'s `docs/**` path resolve-check in `tools/dv_checks.sh`.** Considered
+   for absorption into Stage 1's data_wrangler half — which does open `tools/` —
+   and **routed instead**, for two reasons: `tools/dv_checks.sh` is a
+   governance instrument over `agents/handoffs/**`, which is dv_lead's own to
+   write rather than a data-preparation worker's; and RN-6's ruling already names
+   its practical carrier — *"in practice the `SO-` round's own accounting, which
+   re-runs that script anyway."* **Recommend the `SO-` round own it explicitly.**
+5. **`FINDING WO-0077-A1`'s census-repair ownership.** This packet **obeys** the
+   standing repair (§4.1) and is the first artefact to do so. **It does not become
+   its owner**: `J-dv_lead-0148` Open-question 3 recommended the `SO-` round own
+   it explicitly rather than by default, and that recommendation is unchanged.
+6. **The lessons harvest.** Not due at a work-order draft — PROTOCOL §7 places it
+   at every `SO-` and every phase gate. **The span stays open**, declared rather
+   than skipped, and this round banks one candidate rather than minting it (see
+   the accompanying journal entry).
+
+---
+
+## 14. Return / verdict log
+
+*Participants append here directly — PROTOCOL §3 makes the packet's Return log the
+participants' own instrument, and `RV-0075-VERDICT` §3's process repair makes the
+append a named deliverable rather than an implied courtesy. The `State` field at
+the head of this file is flipped by dv_lead's `RV-`, per stage.*
+
+*(empty — no stage has been issued)*
