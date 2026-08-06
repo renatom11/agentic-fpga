@@ -2910,3 +2910,38 @@ shipped as blind to IC-L2.
 
 ### Files-in-this-commit
 - (none)
+
+## [J-orchestrator-0222] 2026-08-10T11:00Z | task:WO-0076 | Incident four: the abort-first check pays for itself in one command - and gains a direction test
+
+### Trigger
+WO-0076-ADJ stopped on its FIRST ACTION: HEAD 310a33d, a strict
+ancestor of spawn HEAD 5ac62b5 by 129 commits - the fourth container
+rollback, same snapshot signature as incidents two and three, caught
+this time by the abort-first check in one command instead of a round
+of investigation. dv verified the remote intact (seal, manifest,
+five transients, runs), wrote nothing, guessed nothing, moved
+nothing; the journal obligation reported BLOCKED not waived ("v06
+does not exist here; creating it would fabricate a volume missing
+its 141 predecessors"). It also declined to read the run logs with
+the seal unreadable - a verdict argued backward from results is the
+failure the seal exists to prevent.
+
+### Recovery (fourth execution, per J-orchestrator-0205)
+My tree confirmed rolled back too; the stale WO-0060 dirty diff
+preserved (scratchpad incident4_wo0060.diff - the same superseded
+draft as incidents two and three, landed long ago at 2b10741,
+discarded); fetch + reset --hard to origin; HEAD verified 5ac62b5;
+tree clean; all WO-0076 artifacts present. Zero loss. Cost: one
+spawn round.
+
+### Ruling (dv Q3, adopted)
+The abort-first HEAD check UPGRADES to an ancestry-direction test:
+on mismatch, run git merge-base HEAD <spawn-head> - if HEAD is the
+merge-base (a strict ancestor), it is a ROLLBACK, stop and say so;
+a bare not-equal reading invites proceeding into a truncated tree
+as if it were a disjoint descendant. Enters every future dispatch.
+dv Q1: confirmed - respawn below at the restored tip. Q2: the dirty
+file was the known superseded draft; discarded with evidence kept.
+
+### Files-in-this-commit
+- (none)
