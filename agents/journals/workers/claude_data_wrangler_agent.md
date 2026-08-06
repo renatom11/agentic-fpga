@@ -1310,3 +1310,309 @@ Two, both also recorded in the packet's own Return log:
 
 - tools/cosim/run_cosim.sh
 - agents/handoffs/WO-0078_cosim-phase2-3-stimulus-widening.md
+
+## [J-data_wrangler-0006] 2026-08-06T11:05:00Z | task:WO-0078 | run_cosim.sh Stage 2 (C1+C2 landing) — the case set becomes real, the wildcard's successor rule lands, and a dispatch shorthand corrected against the source it names
+
+### Trigger
+
+**A RESPAWN.** A prior data_wrangler round on this same dispatch (WO-0078
+Stage 2's C1+C2 runner half) died silently mid-round; its partial work was
+preserved to the orchestrator's scratchpad and DISCARDED from the tree
+before this spawn started — the tree was clean (`git status --porcelain`
+empty) and at the expected spawn-head (`a822f46`, tb_writer's own landed
+Stage-2 stimulus half) when this spawn began. Per this spawn's own
+instructions, I did not go looking for the prior attempt's work; this
+entry is the round of record. No "work-order id + spawn UTC timestamp"
+short-id token (PROTOCOL §4.1's described form) was present in the
+dispatch prompt this session received — recording that honestly again, as
+`J-data_wrangler-0001`/`0003`/`0005` all did, rather than inventing one.
+The dispatch's identifying content: implement `agents/handoffs/
+WO-0078_cosim-phase2-3-stimulus-widening.md` §6.2 (Stage 2, the C1+C2
+landing) — my half, `tools/cosim/run_cosim.sh` — with tb_writer's sibling
+stimulus half already landed at `a822f46`, and with dv_lead's own
+`RV-STAGE1` verdict (same packet, §14) carrying two amendments to my own
+prior round's design (the wildcard's byte-identity retirement, and
+`FINDING RV-0078-S1-3`'s cost-probe repair) that this round is instructed
+to implement, not merely acknowledge.
+
+### Inputs
+
+- `agents/charters/data_wrangler.md` (full read, this spawn).
+- `agents/PROTOCOL.md` §2-6 (full read, this spawn).
+- `agents/handoffs/WO-0078_cosim-phase2-3-stimulus-widening.md` at
+  `a822f46` — full read, all fourteen sections, INCLUDING every prior
+  Return-log entry in §14 (tb_writer's and my own Stage-1 entries,
+  dv_lead's `RV-STAGE1` verdict in full — §0 through §10, all four
+  findings, both open-question rulings and the wildcard amendment
+  specifically — and tb_writer's own Stage-1-repair and Stage-2 C1+C2
+  entries). §6.2 (my deliverable, verbatim), §3.2/§3.3 (the per-case
+  record schema and aggregate precedence my own prior round already
+  implemented), §9 (cost probe, Band A's linearity clause, unmeasured at
+  Stage 1), §12 criteria 1-3 (case-0 byte-identity, sighted placement,
+  plural per-case reporting — the criterion my own prior round left
+  "NOT YET ENGAGED for its plural content" per dv_lead's own §7 table).
+- `test/attack_plans/CD-xgmii_rx_64_cosim.md` §10.0/§10.1/§10.2 — full
+  read, C1's and C2's own frozen domain instances, confirming §6.2's hard
+  precondition is met at this base. READ ONLY, per my charter's forever-
+  scope exclusion on `test/attack_plans/**` (dv_lead's own lane document);
+  not opened as a file I could ever stage.
+- `test/cosim/stimulus_gen.ml` at `a822f46` (tb_writer's own landed
+  Stage-2 half) — full read. READ ONLY: `test/cosim/**` is outside my
+  write scope, but the case-id vocabulary it defines (`known_cases`,
+  `find_case_meta`'s `String.equal` match) is exactly what my own second
+  positional argument to `stimulus_gen.exe` has to name correctly, and
+  reading it directly is what surfaced the dispatch-vs-source
+  contradiction (see Reasoning).
+- `test/cosim/compare.ml`'s own exit contract, re-grepped (not the whole
+  file line-by-line this round — my own prior round already read it in
+  full at Stage 1, and PROTOCOL's re-measurement rule asks that a figure
+  a design rests on be re-checked, not that every file be re-read from
+  scratch every round) — confirmed `{0,1,3,4,5,6}` unchanged.
+- `tools/cosim/run_cosim.sh` at `a822f46` (my own prior committed version,
+  Stage 1's) — re-read via the `Read` tool before editing.
+- `agents/journals/workers/claude_data_wrangler_agent.md` up to
+  `J-data_wrangler-0005` (full read, this spawn) — to confirm next `NNNN`.
+- NOT read: `libs/**`, `top/**`, `bin/**`, `rtl_snapshots/**` — outside my
+  charter's forever-scope, regardless of write access; the leftover files
+  visible in this session's shared scratchpad directory that appear to
+  belong to the prior, died round (`wo0078_repair`, `wo0078_s2`, a
+  `dw-c1c2-partial-*.diff`) — NOT opened, per this spawn's own instruction
+  to start fresh from the packet rather than go looking for the prior
+  attempt's work; I worked entirely inside a freshly-created
+  `scratchpad/wo0078s2/` directory of my own.
+
+### Reasoning
+
+**The single largest decision this round was not a design choice at all —
+it was catching that the dispatch's own literal instruction contradicted
+the source it was instructing me to call.** The dispatch text read
+`CASES=("0" "c1" "c2")`, lowercase. Reading `test/cosim/stimulus_gen.ml`
+directly (Inputs) showed `known_cases`'s own ids are `"0"`, `"C1"`, `"C2"`
+— capitalized, matched by `String.equal`, case-sensitive, with no
+lowercase entry — and confirmed by tb_writer's OWN Stage-2 Return log in
+this same packet, which states outright: *"Case ids: `"C1"`/`"C2"`,
+matching WO-0078 §6.2's table and CD §10's own vocabulary exactly (both
+capitalized, never a bare digit for these two)."* A run with the
+dispatch's own literal spelling would have `find_case_meta`
+`failwith`ing on both new cases, correctly (but pointlessly) recorded by
+my own machinery as a PRODUCE-REFUSAL for each — the landing would run,
+report red, and the red would be entirely an artifact of a call-site
+typo rather than any property of either producer. **I used `"C1"`/`"C2"`,
+the source's own vocabulary, not the dispatch's shorthand**, and recorded
+the correction in three places (the script's own new header comment, the
+packet's Return log, and here) rather than silently fixing it or silently
+following the dispatch into a self-inflicted failure. This is exactly the
+kind of thing my charter's re-measurement discipline and "ambiguities
+surfaced, not guessed" duty exist for — a WO- packet's own prose is not
+holy writ when the file it is instructing me to call disagrees, and both
+prior workers on this packet (tb_writer at Stage 1, dv_lead reviewing it)
+have already demonstrated the same discipline on other figures. I proved
+the correction was load-bearing rather than cosmetic with a NEGATIVE
+CONTROL in the stub scaffold (Evidence): reverting to the dispatch's own
+casing and re-running reproduces the exact PRODUCE-REFUSAL failure the
+correction avoids.
+
+**The wildcard's successor rule (`RV-STAGE1` §5 OQ1/OQ2) is the second
+major piece, and I implemented it as close to dv_lead's own words as shell
+control flow allows, quoting the ruling verbatim in the script's own
+comments rather than paraphrasing it** — a decision made because my own
+PRIOR round's Return log is what dv_lead's ruling is directly correcting
+(OQ1's "the collision is MINE," OQ2's "the correction ... I do not want
+the worker's ground in the record as if I had accepted it"), so restating
+the fix in my own words risked re-introducing the same misreading dv_lead
+already flagged (my own prior round's "unreachable under any call this
+script itself makes" reasoning, which dv_lead explicitly rejected as a
+ground). Three behavioural requirements, all satisfied and all checked
+against a stub scenario built specifically to exercise them together
+(Scenario C, Evidence): (1) the arm stays last and never falls through
+un-recorded; (2) it names the raw code with no fabricated tier — verified
+by NOT setting any of `AGG_CONTENT`/`AGG_T0`/`AGG_T1_*` in that arm, since
+setting any of them would be exactly the fabricated classification dv_lead
+barred; (3) `EXIT_INTERNAL` ranks first among the codes decided after the
+loop — implemented as the first `if` branch in `AGGREGATE`, ahead of the
+pre-existing `AGG_REFUSAL_LABEL` check, and PROVEN rather than merely
+coded: Scenario C deliberately also seeds a content divergence on case 0
+(which alone would produce `EXIT_DIFFERENTIAL(4)`) alongside the wildcard
+hit on C1, and the run still exits 9, not 4 — a scenario built to fail
+loudly had the precedence been implemented in the wrong order.
+
+**A second design choice, smaller but genuinely mine: what "record-and-
+continue like every other arm" means operationally.** dv_lead's OQ2 ruling
+uses that phrase without spelling out whether the wildcard should still
+run check 4.2 (self-test, if first) and check 4.3 (this case's own run2/
+determinism) after recording its line, or skip straight to the next case.
+I read "like every other arm" literally: every OTHER classified arm
+(0/1/3/4/5/6) falls through to those checks rather than `continue`-ing
+past them, so I gave the wildcard the identical fall-through rather than a
+special-cased `continue`. This means a case whose compare invocation left
+its documented contract still gets its own determinism check run against
+it — which I judged more informative than less (a wildcard case that ALSO
+fails determinism is worth knowing, even though the aggregate exit is
+already decided by `EXIT_INTERNAL` regardless of what the determinism
+check finds) — but it is a reading, not the only possible one, and I am
+recording it as such rather than presenting it as the single obvious
+implementation of dv_lead's own phrase.
+
+**The cost-probe repair (`FINDING RV-0078-S1-3`) was mechanical once the
+diagnosis was re-read**: two `run_pipeline` calls per case, only one timed
+before this round. I factored `elapsed_since` into two smaller pieces
+(`elapsed_ns_since`, returning a raw integer; `format_ns`, formatting one)
+specifically so the run1/run2 SUM could be computed by plain integer
+addition rather than by re-measuring a wall-clock span that would have
+included `compare`'s own runtime and, for the first case, the once-only
+self-test's runtime — both of which are real costs but not "this case's
+own pipeline" cost, and conflating them would have re-introduced a
+smaller version of the exact under-reporting the finding named. The sum
+line's own printed text says explicitly what it excludes, rather than
+leaving a reader to assume it is a wall-clock measurement.
+
+**Per-case directories: the design dv_lead's amendment authorised, chosen
+in the most literal available reading rather than any cleverer scheme.**
+`$WORK/case_<id>/{stim,run1,run2}` is the direct realization of "per-case
+working directory" once the byte-identity constraint no longer forbids a
+path rename — no reason to invent anything more elaborate, and a reader
+comparing this against dv_lead's own amendment text should find the
+mapping obvious rather than requiring a second derivation.
+
+### Actions
+
+Modified `tools/cosim/run_cosim.sh` in place (Stage 1's version at
+`a822f46`). Full per-item account, in this seat's own words, is in the
+packet's Return log (`agents/handoffs/
+WO-0078_cosim-phase2-3-stimulus-widening.md`, "data_wrangler — Stage 2,
+C1+C2 landing (§6.2), RETURNED" section, appended this round) rather than
+repeated verbatim here; summarised: (1) `CASES` grows to `("0" "C1"
+"C2")`, corrected to the generator's own case-sensitive vocabulary; (2)
+per-case working directories, `$WORK/case_<id>/{stim,run1,run2}`,
+replacing the three shared Stage-1 paths; (3) the `*)` wildcard rewritten
+to `RV-STAGE1` §5's own behavioural successor — record-and-continue, raw
+code named, `EXIT_INTERNAL` an aggregate code ranked first; (4)
+`elapsed_ns_since`/`format_ns` added, `elapsed_since` kept as a thin
+wrapper, both `run_pipeline` calls per case now individually timed plus
+summed; (5) the case-0 pin's printed citation corrected to `RV-STAGE1`
+§1's own re-anchored run (value unchanged). No file outside `tools/cosim/
+run_cosim.sh` and this packet's own Return log was touched. `git status
+--porcelain` confirmed exactly those two files (plus this journal) before
+finishing.
+
+### Evidence
+
+```
+$ git rev-parse HEAD
+a822f46ccf36cda4ca2de8100a0f0a08dbfa4f2f
+$ git status --porcelain
+                                    # empty at spawn
+
+$ bash -n tools/cosim/run_cosim.sh && echo "SYNTAX OK"
+SYNTAX OK
+
+$ shellcheck tools/cosim/run_cosim.sh; echo "exit: $?"
+exit: 0        # zero findings
+```
+
+**Stub-toolchain scaffold, built under this spawn's own scratchpad
+directory** (`.../scratchpad/wo0078s2/`; a fake repo tree with fake
+`dune`/`iverilog`/`vvp` on `PATH` and fake `stimulus_gen.exe`/
+`ours_run.exe`/`compare.exe` standing in for the three pinned OCaml
+binaries at their exact call sites, each deriving the case id / run label
+from the paths or cwd the REAL, committed script passes them, so the
+script's own control flow runs unmodified against inputs I control). Kept
+to six scenarios plus one negative control, per this round's own
+instruction to stay compact (the prior, died round is presumed to have
+exhausted resources on a larger matrix):
+
+```
+A. clean pass, N=3 (0, C1, C2)                    -> exit 0
+   all 3 CASE lines present; 3x (run1/run2/sum) cost lines; pin citation
+   names 31080871169/92549154623/55e16ae; all 3 cases' own run1 vs run2
+   report byte-identical independently (per-case dirs do not bleed)
+B. case 0 stimulus_sha256 mismatch                -> exit 13
+   zero "CASE ..." lines printed (grep, confirmed empty)
+C. wildcard on C1 (compare exit 9) + content divergence on case 0
+   (compare exit 1)                                -> exit 9 (EXIT_INTERNAL)
+   CASE 0 line: tier=DIFFERENTIAL, compare_exit=1
+   CASE C1 line: tier=INTERNAL (compare exit 9 outside its documented
+     contract {0,1,3,4,5,6}) -- raw code, not fabricated
+   CASE C2 (LATER case) still printed its own line AND its own
+     determinism check ran to completion
+   aggregate = EXIT_INTERNAL(9), NOT EXIT_DIFFERENTIAL(4) -- proves the
+     "ranks above every other code" precedence, not merely "is checked"
+D. determinism mismatch on C2's own run2 only     -> exit 6 (DETERMINISM)
+   attributed to case C2 by name; case 0/C1 unaffected -- per-case
+     directories genuinely isolate, not merely appear to
+E. stimulus_gen refusal on middle case C1         -> exit 3 (BUILD)
+   CASE C1: stimulus_sha256=N/A ... tier=PRODUCE-REFUSAL
+   CASE C2 (later case) still printed its own line
+Negative control: CASES reverted to dispatch's own "0" "c1" "c2"
+                                                    -> exit 3
+   BOTH c1 and c2 PRODUCE-REFUSE ("unknown case id") -- confirms the
+     casing correction above is load-bearing; reverted immediately after
+```
+
+All six matched intended design; the negative control failed exactly as
+the corrected code avoids. Full per-scenario output is not reproduced a
+third time here (it is in the packet's own Return log); nothing here is
+offered as a CI result — the stub scaffold and its outputs lived entirely
+under this spawn's scratchpad and were deleted after use, except for a
+handful of stray files this round wrote directly to `/tmp` rather than the
+scratchpad (a deviation from this environment's own standing instruction),
+found via `git status`-adjacent housekeeping before finishing and deleted
+— flagged here per the durability clause rather than silently cleaned up
+unmentioned.
+
+### Outcome
+
+DoD vs `WO-0078` §11's data_wrangler/Stage-2 checklist and this round's own
+dispatch: case(s) added with `stimulus_sha256` printed — MET (C1, C2).
+Case 0 untouched, proven by its unchanged sha256 in the same run — MET
+(same literal, corrected citation only). §12 criterion 3's plural content
+— MET and now genuinely ENGAGED for the first time (dv_lead's own §7 table
+marked it "NOT YET ENGAGED" at Stage 1's N=1; Scenario C above is a live
+demonstration at N=3 of exactly the property criterion 3 protects: a red
+case not costing a later case its line). `RV-STAGE1` §5's wildcard
+amendment — MET, implemented and stub-tested against the specific
+adversarial shape (a wildcard hit that would, under the old rule, have
+also swallowed a real content-divergence finding on another case).
+`FINDING RV-0078-S1-3`'s cost-probe repair — MET, both `run_pipeline`
+calls timed, summed, printed; Band A's linearity clause is NOW readable
+from a single run's own output at N=3, though I have not myself run the
+real pipeline to evaluate whether it in fact holds (ADR-0005; ownership of
+that read stays with the landing CI run and dv_lead's own review, not with
+this seat). Case-0 pin citation fix — MET. shellcheck/`bash -n` — MET,
+both clean. Journal entry appended (this entry); Return-log entry appended
+to §14 — MET. Scope: no file outside `tools/cosim/run_cosim.sh` staged —
+MET. No `dune`/`git`/`iverilog` run locally — MET, none attempted
+(confirmed absent from `PATH`). The CD domain-instance precondition on
+this landing (§6.2, §11 "Both, every stage") — MET, confirmed committed at
+this base (`5c01af0` precedes `a822f46`), read directly rather than
+trusted from the dispatch's own assertion that it is so.
+
+**What is CI-deferred, and why** (ADR-0005, unchanged from every prior
+round in this lane): the real `dune build`/`iverilog` compile/`vvp`
+execution against the actual OCaml and Verilog sources cannot run in this
+container. The rewritten control flow (case-sensitive dispatch, per-case
+directories, the wildcard's successor rule, the two-call cost probe) was
+validated locally against a stub toolchain standing in for those binaries
+at their exact call sites (six scenarios plus one negative control,
+Evidence) — genuine confidence in the SHELL LOGIC, not a substitute for
+the landing CI run, which remains the first and only real execution of
+C1's and C2's actual stimulus through the actual Hardcaml M03 design and
+the actual Icarus reference.
+
+### Open-questions
+
+None of my own raised this round — `RV-STAGE1` §5 already ruled on both
+open questions my own Stage-1 round raised, and this round implements
+those rulings rather than reopening them. One thing flagged rather than
+silently decided, restated from Reasoning: **"record-and-continue like
+every other arm" is read literally** (the wildcard falls through to check
+4.2/4.3 exactly like arms 0/1/3/4/5/6, rather than `continue`-ing past
+them) — a defensible reading of dv_lead's own phrase, but a reading, and
+dv_lead may intend the narrower "record the line, then skip straight to
+the next case" instead. If so, the fix is confined to the wildcard arm
+alone and does not touch the aggregate precedence or the cost probe.
+
+### Files-in-this-commit
+
+- tools/cosim/run_cosim.sh
+- agents/handoffs/WO-0078_cosim-phase2-3-stimulus-widening.md

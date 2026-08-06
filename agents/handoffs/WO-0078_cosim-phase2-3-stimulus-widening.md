@@ -2260,3 +2260,260 @@ UTC header time, `date -u` read at the start of this round, matching the
 environment's own `currentDate` context of 2026-08-06 rather than the
 2026-08-11 dates several entries above this one carry, a discrepancy
 `FINDING CD-P2-2` already records).
+
+---
+
+### data_wrangler — Stage 2, C1+C2 landing (§6.2), RETURNED
+
+**This is a RESPAWN.** A prior data_wrangler round on this exact dispatch
+died silently mid-round; its partial work was preserved to the
+orchestrator's scratchpad and DISCARDED from the tree before this spawn
+started — the tree was clean at spawn, and this round did not go looking
+for the prior attempt's work. This entry is the round of record for
+data_wrangler's Stage-2 C1+C2 half.
+
+**Abort-first head check**: `git rev-parse HEAD` = `a822f46ccf36cda4ca2de8100a0f0a08dbfa4f2f`,
+exactly the dispatch's stated spawn-head — tb_writer's own Stage-2 C1+C2
+stimulus half. `git status --porcelain` was EMPTY at spawn (confirmed before
+reading anything else). Proceeded.
+
+**Scope, read against the dispatch before a line was written.** One file:
+`tools/cosim/run_cosim.sh`. No `test/**`, no `test/attack_plans/**`. Both
+`CD-xgmii_rx_64_cosim.md` §10.1/§10.2 (C1's and C2's frozen domain
+instances) and `test/cosim/stimulus_gen.ml` (tb_writer's landed Stage-2
+half) were read in full, read-only, to confirm what my own half has to
+interoperate with rather than trusting the dispatch's paraphrase of either.
+
+**Re-measurement of the frozen inputs this half rests on, at this seat's
+own base (`a822f46`), before a line was written:**
+
+- **`test/cosim/stimulus_gen.ml`**, re-read in full. `known_cases =
+  [case0_meta; c1_meta; c2_meta]`, `find_case_meta` matching by
+  `String.equal`, `build_case`'s own `match` arms — the case ids are the
+  bare digit `"0"` and the CAPITALIZED `"C1"`/`"C2"`, case-sensitively, with
+  no lowercase entry. **This directly contradicts the dispatch's own
+  shorthand** (`CASES=("0" "c1" "c2")`, lowercase) — see Reasoning for the
+  correction made and why it was made against the source rather than the
+  dispatch text.
+- **`compare.ml`**'s own exit contract, re-read (`grep`, Evidence) — still
+  exactly `{0,1,3,4,5,6}`, unchanged since Stage 1's landing. This is what
+  the wildcard's own `{0,1,3,4,5,6}` documented set continues to rest on;
+  had it moved, the wildcard's own precondition would have needed
+  re-derivation, not merely a successor-rule implementation.
+- **`CD-xgmii_rx_64_cosim.md` §10.0/§10.1/§10.2**, re-read in full (not
+  only WO-0078 §6.2's own one-line table cells) — both C1's and C2's domain
+  instances are committed at this base, satisfying §6.2's own hard
+  precondition ("no case in this stage may run before CD carries its own
+  domain instance"); neither carries a discrepancy against §6.2 to
+  adjudicate. Confirmed via `git log --oneline` that CD's freeze commit
+  (`5c01af0`) precedes this spawn-head.
+- **`RV-STAGE1` §5** (this same packet, §14, the "data_wrangler's two open
+  questions — ruled" section), re-read in full rather than the dispatch's
+  own paraphrase of it — the wildcard's successor rule and the
+  `EXIT_INTERNAL`-ranks-first amendment are both quoted VERBATIM in the
+  script's own comments (see Actions) precisely so a later reader can check
+  my implementation against dv_lead's own words rather than my restatement
+  of them.
+- **`FINDING RV-0078-S1-3`** (same section), re-read — confirmed the
+  under-timed-by-half diagnosis (`run_pipeline` invoked twice per case,
+  only the first timed) and the "make the printed lines sufficient to read
+  [linearity] at N=3" instruction, which is what this round's case set
+  (N=3: 0, C1, C2) now actually exercises for the first time.
+
+None of these had moved from what §14's own prior entries described, except
+the one contradiction named above (dispatch shorthand vs. generator source),
+which is not a "moved figure" in §1's sense but a paraphrase this round
+declined to trust uncritically.
+
+**Per packet item, what changed in `tools/cosim/run_cosim.sh`:**
+
+1. **`CASES=("0" "C1" "C2")`** — the case set grows from Stage 1's one
+   member to three, C1+C2 landing together per §6.2's own split (C3, C4 not
+   this round). **The ids are `"C1"`/`"C2"`, uppercase, not the dispatch's
+   own `"c1"`/`"c2"`.** Corrected against `test/cosim/stimulus_gen.ml`'s own
+   source (re-measured above), not against the dispatch's literal text: a
+   lowercase id is not in `known_cases`, `find_case_meta` `failwith`s on it
+   ("unknown case id ... known: 0, C1, C2"), and this script would have
+   correctly, but pointlessly, recorded that as a PRODUCE-REFUSAL for both
+   new cases — the whole landing would have run and reported RED for a
+   defect that does not exist in either producer, only in the call site.
+   Verified by NEGATIVE CONTROL in the stub scaffold (Evidence): reverting
+   the array to the dispatch's own lowercase spelling and re-running
+   reproduces exactly that failure, confirming the correction is load-
+   bearing rather than cosmetic.
+2. **Per-case working directories, genuinely per-case**:
+   `$WORK/case_<id>/{stim,run1,run2}`, replacing the three shared paths
+   every case used to overwrite in turn. This is the rename `RV-STAGE1` §5
+   OQ1 named as colliding with Stage 1's byte-identity-pinned wildcard, and
+   its own amendment ("the byte-identity requirement is RETIRED as of
+   Stage 2's first landing") is what makes the rename lawful here rather
+   than a defect against §6.1/§11's original text.
+3. **The `*)` wildcard arm, rewritten to `RV-STAGE1` §5 OQ1/OQ2's own
+   behavioural successor**, implemented as close to verbatim as shell
+   control flow allows and quoted at the arm itself: it no longer `die`s
+   inside the loop; it sets the per-case tier to the RAW, unclassified
+   compare exit code with NO fabricated classification ("a fabricated tier
+   is worse than an absent line" — dv_lead's own words, quoted in the
+   script); it dumps the case's own run directory (`$CASE_DIR/run1`, not a
+   bare, unlabelled `run1` as Stage 1's exception did); and it
+   record-and-continues exactly like every classified arm above it — the
+   case's own required line prints, check 4.2/4.3 still run for it, and the
+   for-loop proceeds to later cases. `EXIT_INTERNAL` becomes an AGGREGATE
+   code, decided once after the full loop and checked FIRST among the
+   post-loop precedence — ahead of a producer refusal, content divergence,
+   T0, T1-unassertable and T1-negative — per dv_lead's own instruction
+   ("ranking ABOVE every other code ... a comparator outside its contract
+   invalidates every case's verdict, not merely its own"). `record_case_
+   internal()` mirrors `record_case_refusal()`'s own "first case across the
+   set wins the aggregate's own label" pattern, for the identical reason.
+4. **`FINDING RV-0078-S1-3`'s repair** — the cost probe now brackets BOTH
+   `run_pipeline` calls per case individually (`RUN1_START_NS`/`RUN2_START_NS`,
+   both via the new `elapsed_ns_since`/`format_ns` helper pair, with
+   `elapsed_since` kept as a thin formatting wrapper so no pre-existing call
+   site needed to change), prints each, and prints their arithmetic SUM
+   (excluding whatever time `compare`/the once-only self-test spend between
+   the two calls, stated as such in the printed line's own label so a
+   reader does not mistake it for a wall-clock span). Three cost lines per
+   case now (`run1`, `run2`, `run1+run2` sum), plus the pre-existing
+   whole-job wall time — sufficient, at N=3, to actually READ Band A's
+   linearity clause from a single run's own printed output rather than
+   merely assert it holds by construction, which is all Stage 1's own
+   one-case probe could ever do.
+5. **Case 0's pin-provenance CITATION corrected, value unchanged.** The
+   printed line and `CASE0_PINNED_SHA256`'s own comment now name `RV-STAGE1`
+   §1's own re-anchored, genuinely pre-widening run — build run
+   `31080871169`, job `92549154623`, commit `55e16ae` — never the run this
+   literal was originally fetched from at Stage 1 (`31084252734`, job
+   `92559876482`, commit `3ec0efe`), which dv_lead's own Stage-1 review
+   found circular by construction (that run post-dates tb_writer's own
+   Stage-1 landing, so a moved case 0 could have been pinned right back to
+   itself with nothing in the log to say so). The literal string
+   (`c67551717...4cc051`) is UNCHANGED — dv_lead's own re-fetch against the
+   correct run already confirmed it byte-for-byte identical; only the
+   citation printed alongside it moves. History is kept in the comment
+   (not erased) so the citation rule stays checkable against why it exists.
+
+**Only case 0 gets the pinned-sha comparison, unchanged.** C1 and C2 print
+their own `stimulus_sha256` as part of their own required per-case line
+(§3.2/§12 criterion 3) with no baseline comparison attempted — they have no
+pre-widening run to compare against, and their FIRST green run is what
+DEFINES their own stimulus record, exactly as the dispatch states. No line
+of this round's diff adds a pinned-sha check for C1 or C2.
+
+**The aggregate precedence otherwise unchanged; determinism (run1 vs run2
+byte-identity) still applies per case**, now genuinely exercised at N=3
+rather than N=1 for the first time (confirmed: Scenario A below shows all
+three cases' own `ours.canon`/`theirs.canon` reported byte-identical between
+their own `run1`/`run2`, in their own per-case directories, with no
+cross-case interference).
+
+**shellcheck, run on the changed script, reported verbatim:**
+
+```
+$ shellcheck tools/cosim/run_cosim.sh; echo "exit: $?"
+exit: 0
+```
+
+Zero findings. `bash -n tools/cosim/run_cosim.sh` also exits 0.
+
+**Stub-toolchain scaffold testing, disclosed as scaffold testing, kept
+COMPACT per this round's own dispatch instruction** (the prior, died round
+is presumed to have exhausted resources on an exhaustive matrix; this round
+built five decisive scenarios plus one negative control, not eight-plus).
+`iverilog`/`vvp`/`dune` are not on this container's `PATH` (confirmed:
+`which dune iverilog vvp` — no output), so the real Hardcaml/Icarus
+pipeline is CI-deferred per ADR-0005, exactly as every prior round in this
+lane has disclosed. To gain confidence in the REWRITTEN control flow beyond
+code review alone, a stub toolchain was built entirely under this spawn's
+scratchpad (`.../scratchpad/wo0078s2/`, never written into the repository) —
+fake `dune`/`iverilog`/`vvp` plus fake `stimulus_gen.exe`/`ours_run.exe`/
+`compare.exe`, each deriving the case id and run label from the file paths
+or cwd the COMMITTED script itself passes them (so it is the real script's
+own control flow under test, not a re-implementation of it), each
+controllable via environment variables. Six scenarios run against a plain
+copy of the committed script (`CASE0_PINNED_SHA256` overridden once, to a
+value matching the stub generator's own deterministic case-0 output — the
+stub's content, not the real one, since the real generator needs
+Hardcaml/ADR-0005-blocked here):
+
+```
+A. clean pass, N=3 (0, C1, C2)                 -> exit 0
+   - all three case-sensitive ids resolved correctly by the stub generator
+   - 3x [cost] run1 / run2 / run1+run2-sum lines, one set per case, plus
+     the whole-job wall time line
+   - pin-citation line names run 31080871169 / job 92549154623 / commit
+     55e16ae, matching the corrected text exactly
+   - per-case directories: all three cases' own run1/run2 determinism
+     checks report byte-identical independently, no cross-case bleed
+B. case 0 stimulus_sha256 mismatch              -> exit 13
+   - NO "CASE ..." line for case 0 or for C1/C2 -- confirmed via grep,
+     zero matches -- matching "nothing else is reported"
+C. wildcard hit on the MIDDLE case (C1, compare exit 9), case 0 ALSO
+   carrying a content divergence (compare exit 1)
+                                                 -> exit 9 (EXIT_INTERNAL)
+   - CASE 0's own line prints (tier=DIFFERENTIAL, compare_exit=1)
+   - CASE C1's own line prints the RAW code, un-fabricated
+     (tier=INTERNAL (compare exit 9 outside its documented contract
+     {0,1,3,4,5,6}))
+   - CASE C2 (the LATER case) still gets its own line AND its own
+     determinism check runs to completion -- directly demonstrates the
+     "a die there would cost every subsequent case its line" bound
+     RV-STAGE1 added is now closed
+   - the aggregate exits EXIT_INTERNAL(9), NOT EXIT_DIFFERENTIAL(4) even
+     though case 0's own content divergence would, alone, have produced
+     the latter -- directly demonstrates "ranks ABOVE every other code"
+D. determinism mismatch on C2's own run2 (C1, case 0 clean)
+                                                 -> exit 6 (DETERMINISM)
+   - correctly attributed to case C2 by name; case 0 and C1 unaffected --
+     confirms per-case directories genuinely isolate each case's own
+     artifacts rather than merely appearing to
+E. stimulus_gen producer refusal on the MIDDLE case (C1)
+                                                 -> exit 3 (BUILD/PRODUCE)
+   - CASE C1: stimulus_sha256=N/A ... tier=PRODUCE-REFUSAL
+   - CASE C2 (the later case) still gets its own line -- the pre-existing
+     "never die mid-loop" property, confirmed to still hold with
+     genuinely per-case directories, not merely with the old shared ones
+Negative control: CASES array reverted to the dispatch's own lowercase
+"c1"/"c2" spelling, otherwise identical script    -> exit 3
+   - BOTH new cases PRODUCE-REFUSE ("unknown case id") -- confirms the
+     item-1 correction above is load-bearing, not cosmetic; reverted
+     immediately after this one confirmatory run
+```
+
+All six matched the intended design exactly; the negative control failed
+in exactly the way the corrected code avoids. This is NOT a claim that the
+real `dune`/`iverilog`/`vvp`/Hardcaml pipeline was executed — it was not —
+and nothing here is offered as a substitute for the landing CI run, which
+remains the only real check on the Hardcaml-dependent and Verilog-dependent
+halves (WO-0046 §10, this packet's §10 item 12). The stub scaffold and its
+outputs lived entirely under this spawn's scratchpad and were never staged;
+stray files this round wrote directly to `/tmp` (outside the scratchpad, a
+deviation from this environment's own standing instruction) were found
+before finishing and deleted — flagged here per the durability clause
+rather than silently cleaned up unmentioned.
+
+**Refused or blocked**: nothing refused. One disclosed correction beyond
+the dispatch's own literal text — the case-id casing (item 1 above) —
+made against the re-measured source rather than silently followed or
+silently overridden; recorded here, in the journal, and demonstrated by
+both a positive scenario (A, C1/C2 resolve correctly) and a negative
+control (the lowercase spelling reproduces the failure it would have
+caused). No RTL was opened at any point; `test/attack_plans/**` was read
+only where the packet's own §14 already quotes it (CD §10.1/§10.2, via
+this packet's own text and the re-measurement above), never opened
+directly by this seat as a separate file read beyond confirming CD's own
+freeze commit precedes this spawn-head in `git log`.
+
+**Files changed** (exactly the packet's named file for my half, nothing
+else — `git status --porcelain` confirms one file, `tools/cosim/
+run_cosim.sh`; no `test/**`, no `test/attack_plans/**`): `tools/cosim/
+run_cosim.sh`.
+
+— data_wrangler, spawn `WO-0078-DW-STAGE2-C1C2/2026-08-06T11:05Z` (no
+explicit "work-order id + spawn UTC timestamp" token, PROTOCOL §4.1's
+described form, was present in this spawn's own dispatch prompt — recorded
+honestly per `J-data_wrangler-0001`/`0003`/`0005`'s own precedent for the
+identical situation, rather than presented as one copied verbatim; the
+timestamp above is this entry's own UTC header time, `date -u` read at the
+start of this round, matching the environment's own `currentDate` context
+of 2026-08-06).

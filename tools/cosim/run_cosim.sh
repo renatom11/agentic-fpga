@@ -144,8 +144,71 @@
 #       CI job's opam/checkout time, which this script has no visibility
 #       into and does not claim to measure).
 #
-# THE THREE CHECKS (WO-0046 §4, order followed exactly; `WO-0078` §6.1
-# widens 4.1 and 4.3 from ONE stimulus to a CASE SET -- see ROUND 5 above)
+# ROUND 6 (`WO-0078` §6.2 Stage 2, the C1+C2 landing, data_wrangler's own
+# round; companion to tb_writer's landed `test/cosim/stimulus_gen.ml` half at
+# `a822f46`, which is what makes C1 and C2 real stimulus rather than unknown
+# case ids -- and to `RV-STAGE1` §5's own amendment to §6.1/§11, landed at
+# `965f6ee`/`8427b12`, which is what makes items (2) and (3) below lawful
+# rather than a defect against the Stage-1 DoD). The case set grows from
+# Stage 1's one member to three, and the machinery that only had to work for
+# one case is repaired everywhere it assumed that:
+#   (1) `CASES` gains `"C1"` and `"C2"`, in `WO-0078` §6.2's own landing order
+#       (C1+C2 together, this round; C3 and C4 each alone, not this round).
+#       **The ids are the generator's own, confirmed by reading
+#       `test/cosim/stimulus_gen.ml`'s `known_cases`/`find_case_meta`
+#       directly rather than assumed from this round's own dispatch text**,
+#       which named them lowercase ("c1"/"c2") -- `find_case_meta` matches
+#       by `String.equal` against `known_cases`' own ids `"0"`, `"C1"`,
+#       `"C2"`, case-sensitively, and has no entry for a lowercase form; a
+#       run with the lowercase ids would have `failwith`n on both new cases
+#       ("unknown case id ... known: 0, C1, C2"), correctly recorded by this
+#       script as a PRODUCE-REFUSAL for each, but wrongly -- the generator
+#       was never broken, the dispatch's own shorthand just was not this
+#       file's contract. Corrected here against the source rather than
+#       against the dispatch; see the Return log for the full account.
+#   (2) Per-case working directories become GENUINELY per-case:
+#       `$WORK/case_<id>/{stim,run1,run2}`, replacing the three shared paths
+#       (`$WORK/stim`, `$WORK/run1`, `$WORK/run2`) every case used to
+#       overwrite in turn. This is what `RV-STAGE1` §5 OQ1 named as the
+#       rename Stage 1's own byte-identity-pinned wildcard could not survive,
+#       and what its amendment (below) exists to permit.
+#   (3) The `*)` wildcard arm changes from Stage 1's byte-identical,
+#       immediate-`die` form to `RV-STAGE1` §5 OQ1/OQ2's own behavioural
+#       successor, quoted in full at the arm itself in the CASE LOOP below.
+#       In one sentence: it no longer dies mid-loop (a die there costs every
+#       LATER case in the set its own line, `RV-STAGE1`'s own added bound on
+#       top of the original OQ2 acceptance); it records-and-continues like
+#       every classified arm above it, printing the RAW unclassifiable code
+#       rather than a fabricated tier; and `EXIT_INTERNAL` becomes an
+#       AGGREGATE code, decided after the loop and ranking ABOVE every other
+#       aggregate code -- see the AGGREGATE section below for where that
+#       precedence is implemented, and EXIT CODES 9's own entry for the
+#       restated rule.
+#   (4) `FINDING RV-0078-S1-3`'s repair: the cost probe now times BOTH
+#       `run_pipeline` calls per case (run1 AND run2, not run1 alone, which
+#       Stage 1's own probe under-reported the true per-case marginal by
+#       roughly half by only ever timing) -- three lines per case now
+#       (`run1`, `run2`, and their sum), so that Band A's linearity clause
+#       (`WO-0078` §9: "each added case costs no more than 2x the
+#       single-case measurement") is actually READABLE from this run's own
+#       printed output at N=3, not merely satisfiable by construction as
+#       Stage 1's green could only claim.
+#   (5) The case-0 pin's printed CITATION is corrected, value unchanged
+#       (`RV-STAGE1` §1's own standing note, dv_lead's Stage-1 review,
+#       `8c6429e`): the printed provenance line and `CASE0_PINNED_SHA256`'s
+#       own comment now name the re-anchored, genuinely pre-widening run --
+#       `build` run `31080871169`, job `92549154623`, commit `55e16ae` --
+#       never the run this literal was originally fetched from at Stage 1
+#       (`31084252734`/`92559876482`/`3ec0efe`), which dv_lead's own review
+#       found CIRCULAR by construction (that run post-dates tb_writer's own
+#       Stage-1 landing, so a moved case 0 could have been pinned right back
+#       to itself with nothing in the log to say so). See
+#       `CASE0_PINNED_SHA256`'s own comment, below, for the full account,
+#       kept rather than erased so the citation rule is checkable against
+#       its own history.
+#
+# THE THREE CHECKS (WO-0046 §4, order followed exactly; `WO-0078` §6.1/§6.2
+# widen 4.1 and 4.3 from ONE stimulus to a CASE SET -- see ROUND 5/6 above)
 #
 #   4.1  DIFFERENTIAL COMPARISON  — run PER CASE in the case set (`WO-0078`
 #        §6.1; Stage 1's set has exactly one member, case 0, byte-identical
@@ -429,16 +492,23 @@
 #
 # A further note this round adds, since checks 4.1 and 4.3 now iterate a
 # case set (`WO-0078` §6.1) rather than driving one stimulus: `4`
-# (DIFFERENTIAL), `10` (TIMING), `11` (TIMING-NO-VERDICT) and `12`
+# (DIFFERENTIAL), `9` (INTERNAL, Stage 2 amendment — see `9`'s own entry
+# above), `10` (TIMING), `11` (TIMING-NO-VERDICT) and `12`
 # (TIMING-UNASSERTABLE) below are now AGGREGATE codes — "at least one case in
-# the set produced this outcome," per `WO-0078` §3.3's own precedence, which
-# this script implements in the order that section pins (case-0-moved, then
-# any producer refusal, then content, then T0, then T1-unassertable, then
-# T1-negative, then OK). WHICH case, and every OTHER case's own outcome, is
-# always in the per-case `CASE <id>: …` lines printed during the run — the
-# aggregate code alone never says which case, on purpose (`WO-0078` §3.3's
-# own rule: "the per-case lines say which case, and they are printed for
-# every case whatever the aggregate is").
+# the set produced this outcome," per `WO-0078` §3.3's own precedence AS
+# AMENDED by `RV-STAGE1` §5 OQ1/OQ2 (`WO-0078` §6.2, this round): this script
+# implements case-0-moved first (it fires inside the loop, before any case's
+# pipeline runs, so it is not really competing with the rest), THEN `9`
+# (INTERNAL — a comparator outside its own documented contract invalidates
+# every case's verdict, not merely its own, so it is checked before anything
+# decided from a verdict compare DID reach), then any producer refusal, then
+# content, then T0, then T1-unassertable, then T1-negative, then OK. WHICH
+# case, and every OTHER case's own outcome, is always in the per-case
+# `CASE <id>: …` lines printed during the run — the aggregate code alone
+# never says which case, on purpose (`WO-0078` §3.3's own rule: "the per-case
+# lines say which case, and they are printed for every case whatever the
+# aggregate is") — and that rule now covers the wildcard's own outcome too,
+# which Stage 1's version of this script could not print at all.
 #
 #   0  PASS         — all three checks (4.1, 4.2, 4.3) passed.
 #   2  PREREQ       — iverilog, vvp or dune is not on PATH. The lane DID NOT
@@ -534,6 +604,29 @@
 #                     "compare crashed internally", so this script never
 #                     guesses which — it reports INTERNAL, never
 #                     DIFFERENTIAL and never "usage" (WO-0049 §8).
+#                     STAGE 2 AMENDMENT (`RV-STAGE1` §5 OQ1/OQ2, `WO-0078`
+#                     §6.2, this round): per-invocation this code's meaning
+#                     above is UNCHANGED. What is new is that `9` now also
+#                     exists as an AGGREGATE outcome, decided once after the
+#                     per-case loop, exactly like `4`/`10`/`11`/`12` below —
+#                     "at least one case in the set hit the wildcard." dv_lead's
+#                     own words, quoted rather than paraphrased: "EXIT_INTERNAL
+#                     SHALL become an aggregate code decided after the loop,
+#                     ranking ABOVE every other code in §3.3's precedence — a
+#                     comparator outside its contract invalidates every case's
+#                     verdict, not merely its own." So among everything decided
+#                     AFTER the loop, `9` is checked FIRST — ahead of a producer
+#                     refusal, content, T0, T1-unassertable and T1-negative —
+#                     because a case whose own `compare` invocation left its
+#                     documented `{0,1,3,4,5,6}` contract has told this script
+#                     nothing trustworthy about ANY case's verdict, including
+#                     the cases that ran cleanly. (`13`, CASE0-MOVED, still
+#                     fires earlier still when it fires at all — it aborts
+#                     before any case's pipeline runs, which is a stronger
+#                     precondition than "after the loop" — so the two never
+#                     compete for the same run.) See the AGGREGATE section in
+#                     the script body for where this precedence is implemented,
+#                     and the CASE LOOP's own `*)` arm for what triggers it.
 #  10  TIMING       — check 4.1's `compare` REACHED a timing verdict (T1,
 #                     `WO-0075` §3.2) and it was negative: our M03 emitted an
 #                     output word at a cycle other than the one SPEC-M03
@@ -629,13 +722,34 @@ set -uo pipefail
 # not merely the case loop. Nanosecond epoch, GNU `date` (`%N`); integer
 # bash arithmetic only, no `bc`/`awk` dependency.
 JOB_START_NS="$(date +%s%N)"
+
+# FINDING RV-0078-S1-3's repair (WO-0078 §6.2 Stage 2, this round): the
+# per-case cost probe must time BOTH `run_pipeline` calls (run1 AND run2),
+# not run1 alone -- Stage 1's own probe under-reported the true per-case
+# marginal by roughly half. Callers that need to ADD two durations (a run1
+# time and a run2 time, to print their sum) need the raw nanosecond count,
+# not only a formatted string, so `elapsed_since` below is now a thin
+# formatting wrapper around two smaller pieces rather than one function that
+# did both at once.
+elapsed_ns_since() {
+  # $1 = a %s%N start value from this same `date`; prints the raw elapsed
+  # nanosecond count as an integer.
+  local start="$1"
+  printf '%d' "$(($(date +%s%N) - start))"
+}
+
+format_ns() {
+  # $1 = a nanosecond count (from elapsed_ns_since, or a sum of several);
+  # prints "N.NNNs" -- the exact format elapsed_since has always printed.
+  local ns="$1" ms
+  ms=$((ns / 1000000))
+  printf '%d.%03ds' "$((ms / 1000))" "$((ms % 1000))"
+}
+
 elapsed_since() {
-  # $1 = a %s%N start value from this same `date`; prints "N.NNNs".
-  local start="$1" end elapsed_ns elapsed_ms
-  end="$(date +%s%N)"
-  elapsed_ns=$((end - start))
-  elapsed_ms=$((elapsed_ns / 1000000))
-  printf '%d.%03ds' "$((elapsed_ms / 1000))" "$((elapsed_ms % 1000))"
+  # $1 = a %s%N start value from this same `date`; prints "N.NNNs". Every
+  # call site written before this round keeps working unchanged.
+  format_ns "$(elapsed_ns_since "$1")"
 }
 
 HERE="$(cd "$(dirname "$0")" && pwd)"
@@ -666,29 +780,57 @@ EXIT_TIMING_NO_VERDICT=11
 EXIT_TIMING_UNASSERTABLE=12
 EXIT_CASE0_MOVED=13
 
-# WO-0078 §6.1 Stage 1 -- the case SET. Exactly one member authorised
-# (case 0, byte-identical to what this script has always driven, §3.1); the
-# array exists as a real loop target rather than a hardcoded single case, so
-# Stage 2/3 (separately authorised) add a member here without a redesign of
-# the machinery below. Case 0 is always processed first -- everything this
-# script does with it (the frozen-baseline check, JOB below) depends on
-# that ordering, not on searching the array for "0".
-CASES=("0")
+# WO-0078 §6.2 Stage 2 (the C1+C2 landing) -- the case SET grows from Stage
+# 1's one authorised member to three: case 0 (frozen baseline, §3.1,
+# unedited), C1 (lane-4 start on cycle 0, CD §10.1) and C2 (two clean frames
+# at minimum IFG, CD §10.2). C3 and C4 are NOT here -- WO-0078 §6.2's own
+# landing order lands each of those alone, in its own round, and this round
+# is only the C1+C2 landing.
+#
+# The ids below are `test/cosim/stimulus_gen.ml`'s OWN case-sensitive
+# vocabulary (`known_cases`), confirmed by reading that file directly rather
+# than copied from this round's own dispatch text, which named them
+# lowercase -- see ROUND 6's header note above for the full account of why
+# that matters (a lowercase id is not in `known_cases` and would PRODUCE-
+# REFUSE both new cases rather than run either). Case 0 is always processed
+# first -- everything this script does with it (the frozen-baseline check,
+# below) depends on that ordering, not on searching the array for "0".
+CASES=("0" "C1" "C2")
 
 # WO-0078 §3.3 item 1 -- the last GREEN pre-widening `cosim` job's own
-# printed value, fetched read-only (GitHub REST API, jobs endpoint then that
-# job's own logs endpoint) and pinned here rather than re-derived: CI run
-# `31084252734` ("build" workflow), job `cosim` (job id `92559876482`),
-# commit `3ec0efe` -- the commit this round's own spawn head is measured
-# against. Printed twice in that job's log, identically: the STIMULUS
-# section's "[ok] stimulus.txt sha256: …" and the final SUMMARY's "stimulus
-# sha256: …". The direct `curl` route the dispatch named hit an organisation
-# egress policy denial partway through (GitHub's own logs endpoint 302s to
-# Azure blob storage, and that host is not on this session's allow-list);
-# read via `mcp__github__get_job_logs` instead, which is a read of the same
-# public log through a different transport, not a retry of the denied one
-# and not a decision this script depends on being reachable at run time --
-# see the Return log for the full account.
+# printed value, pinned here rather than re-derived. The VALUE below is
+# UNCHANGED since Stage 1; only its CITATION moves, this round, and the
+# reason is recorded in full because a citation rule that hides why it
+# exists cannot be checked.
+#
+# CITATION, per `RV-STAGE1` §1's own standing note (dv_lead's Stage-1
+# review, `8c6429e`, read in full rather than paraphrased from memory) --
+# **CITE BUILD RUN `31080871169`, JOB `92549154623`, COMMIT `55e16ae`
+# whenever this freeze is claimed, never the literal alone and never the run
+# below.** dv_lead's own words: "From `8c6429e` forward, criterion 1 is
+# checked against a literal inside the file it constrains. That literal is
+# now the single point of failure for the entire freeze, and an edit to it
+# would defeat the freeze silently and greenly. The freeze's independent
+# anchor is run `31080871169` / job `92549154623` at `55e16ae`. Cite that
+# run, never the literal, whenever the freeze is claimed -- including in
+# `SO-xgmii_rx_64.md`."
+#
+# HISTORY, kept rather than erased: this value was ORIGINALLY fetched
+# (Stage 1, this file's own prior round) from CI run `31084252734` ("build"
+# workflow), job `cosim` (job id `92559876482`), commit `3ec0efe` -- the last
+# GREEN `cosim` job at the time, read via `mcp__github__get_job_logs` after
+# the dispatch's own named `curl` route hit an organisation egress policy
+# denial (GitHub's own logs endpoint 302s to Azure blob storage, not on this
+# session's allow-list; worked around by a different transport onto the same
+# public log, not a retry of the denial). dv_lead's `RV-STAGE1` review found
+# THAT citation circular by construction -- `3ec0efe` is the very commit
+# tb_writer's own Stage-1 half had already landed at, so "had the case table
+# moved case 0, the pin would have recorded the moved value and criterion 1
+# would have passed vacuously, green, with nothing in the log to say so" --
+# and closed the circularity independently against the genuinely
+# pre-widening run named above, finding the two values IDENTICAL. This
+# round's printed pin-provenance line therefore cites the re-anchored run;
+# the value itself needed no change.
 CASE0_PINNED_SHA256="c675517176922d42bca42ec3def182cb3536861f1acaa8384116f33a5c4cc051"
 
 say() { printf '%s\n' "$*"; }
@@ -1046,40 +1188,40 @@ record_case_refusal() {
 }
 
 # ------------------------------------------------------------------ #
-# CASE LOOP — WO-0078 §6.1: checks 4.1 and 4.3, iterated per case, in    #
-# a per-case working directory. Check 4.2 (self-test) does not depend    #
-# on any case's stimulus and runs exactly once, in-line, immediately     #
-# after the FIRST case's own check 4.1 — reproducing WO-0046 §4's        #
-# original 4.1/4.2/4.3 order exactly at Stage 1's one-case cardinality.  #
-# Nothing in this loop calls `die` for a per-case producer refusal,      #
-# content divergence, or timing outcome (WO-0078 §12 criterion 3): every #
-# case gets its own printed line and its own attempt, and the AGGREGATE  #
-# section after the loop is the only place that exits non-zero for any   #
-# of those reasons. The one exception is case 0's own frozen-baseline    #
-# check, immediately below, which is instructed by WO-0078 §3.3 item 1   #
-# to abort the ENTIRE run before any case's pipeline executes.           #
+# CASE LOOP — WO-0078 §6.1/§6.2: checks 4.1 and 4.3, iterated per case, #
+# in a GENUINELY per-case working directory (`RV-STAGE1` §5 OQ1's own    #
+# amendment, this round -- see below). Check 4.2 (self-test) does not    #
+# depend on any case's stimulus and runs exactly once, in-line,          #
+# immediately after the FIRST case's own check 4.1 — reproducing         #
+# WO-0046 §4's original 4.1/4.2/4.3 order exactly at Stage 1's one-case  #
+# cardinality, and still first-case-only now that there is more than     #
+# one. Nothing in this loop calls `die` for a per-case producer          #
+# refusal, content divergence, timing outcome, or (as of this round)     #
+# unclassifiable compare exit (WO-0078 §12 criterion 3, `RV-STAGE1` §5   #
+# OQ2): every case gets its own printed line and its own attempt, and    #
+# the AGGREGATE section after the loop is the only place that exits      #
+# non-zero for any of those reasons. The one exception is case 0's own   #
+# frozen-baseline check, immediately below, which is instructed by       #
+# WO-0078 §3.3 item 1 to abort the ENTIRE run before any case's          #
+# pipeline executes.                                                     #
 # ------------------------------------------------------------------ #
 
-hdr "CASE SET (WO-0078 §6.1 Stage 1: ${#CASES[@]} case(s) — ${CASES[*]})"
+hdr "CASE SET (WO-0078 §6.2 Stage 2: ${#CASES[@]} case(s) — ${CASES[*]})"
 
-# WO-0078 §6.1's OWN "per-case working directory" instruction meets a second,
-# equally explicit instruction from the same section head-on for exactly as
-# long as the case set has ONE member: "the `*)` fail-closed wildcard
-# untouched -- zero +/- lines inside it" (repeated verbatim in §11's DoD).
-# Renaming the working directories to a genuinely per-case scheme
-# (case_<id>/run1, case_<id>/run2) would force the wildcard's own
-# `dump_run "$WORK/run1" "run1"` line to change too, since its path would
-# have to become case-parameterized -- which is exactly the kind of edit
-# the wildcard is pinned against. Resolution, stated rather than silently
-# picked: Stage 1's case set has EXACTLY one member (case 0), so `$WORK/stim`,
-# `$WORK/run1` and `$WORK/run2` -- the SAME paths this script has used since
-# WO-0046 -- already ARE that one case's own, dedicated working directory;
-# nothing about "per-case" requires a NEW naming scheme when there is only
-# one case to name. Stage 2 (separately authorised, not this round) is where
-# these paths genuinely need to become case-indexed, and at that point the
-# wildcard's own text will have to be revisited deliberately -- a fact worth
-# flagging now rather than at the moment it is discovered by a broken diff.
-mkdir -p "$WORK/stim"
+# `RV-STAGE1` §5 OQ1's own amendment (dv_lead, `965f6ee`), quoted rather
+# than paraphrased: Stage 1's "per-case working directory" instruction and
+# its "`*)` fail-closed wildcard untouched" instruction collided head-on the
+# moment the case set grew past one member, because the wildcard's own body
+# named `$WORK/run1` LITERALLY. dv_lead's own ruling retired the
+# byte-identity form of the wildcard's pin and replaced it with a
+# BEHAVIOURAL one that survives a path rename: "The `*)` arm SHALL remain
+# the last arm; it SHALL dump the case's own run directory; it SHALL report
+# EXIT_INTERNAL and never a differential or timing code; and it SHALL never
+# fall through." That successor is implemented at the wildcard arm itself,
+# below. What it PERMITS, exercised here for the first time: working
+# directories that are genuinely per-case, `$WORK/case_<id>/{stim,run1,run2}`,
+# rather than the three shared paths every case used to overwrite in turn.
+# `mkdir -p` is called per case, inside the loop, rather than once here.
 
 AGG_CONTENT=0
 AGG_T0=0
@@ -1087,15 +1229,32 @@ AGG_T1_UNASSERTABLE=0
 AGG_T1_NEG=0
 SELFTEST_DONE=0
 
+# WO-0078 §6.2/`RV-STAGE1` §5's own amendment (this round) -- see the `*)`
+# arm below for what sets this and the AGGREGATE section for how it is
+# read. "First one across the set wins the aggregate's own label" for the
+# identical reason `record_case_refusal` already works this way: a process
+# exits exactly one status; every case's own line is printed regardless, so
+# no information is lost, only which single label backs the aggregate
+# EXIT_INTERNAL when more than one case trips the wildcard.
+AGG_INTERNAL_HIT=0
+AGG_INTERNAL_LABEL=""
+record_case_internal() {
+  # $1 = the case id, $2 = the raw, unclassifiable compare exit code.
+  if [ "$AGG_INTERNAL_HIT" -eq 0 ]; then
+    AGG_INTERNAL_HIT=1
+    AGG_INTERNAL_LABEL="INTERNAL (compare exited ambiguous/unrecognized code $2 for case $1 -- outside its documented contract {0,1,3,4,5,6})"
+  fi
+}
+
 for CASE_ID in "${CASES[@]}"; do
   hdr "CASE $CASE_ID"
-  mkdir -p "$WORK/run1" "$WORK/run2"
+  CASE_DIR="$WORK/case_$CASE_ID"
+  mkdir -p "$CASE_DIR/stim" "$CASE_DIR/run1" "$CASE_DIR/run2"
 
   # ---- stimulus, this case's own (case 0's construction expression is
   #      tb_writer's and is unedited by this round — this script only
   #      NAMES the case id it wants, per stimulus_gen.ml's own dispatch) ----
-  CASE_STIM="$WORK/stim/stimulus.txt"
-  CASE_PIPE_START="$(date +%s%N)"
+  CASE_STIM="$CASE_DIR/stim/stimulus.txt"
   GEN_OUT="$("$STIMULUS_GEN_BIN" "$CASE_STIM" "$CASE_ID" 2>&1)"
   GEN_RC=$?
   if [ "$GEN_RC" -ne 0 ] || [ ! -e "$CASE_STIM" ]; then
@@ -1115,11 +1274,16 @@ for CASE_ID in "${CASES[@]}"; do
   #      so this fires before any case in the set has a pipeline run at
   #      all. A mismatch aborts the WHOLE script here: "nothing else is
   #      reported... only a defect in itself" — no per-case line, for case
-  #      0 or for anything after it. ----
+  #      0 or for anything after it. Citation per `RV-STAGE1` §1's own
+  #      standing note (this round's own repair; value unchanged since
+  #      Stage 1 -- see CASE0_PINNED_SHA256's own comment for the full
+  #      account): cite the re-anchored, genuinely pre-widening run, never
+  #      the run this literal happened to be read off originally. ----
   if [ "$CASE_ID" = "0" ]; then
     say "  case 0 stimulus_sha256 (this run):                                 $STIMULUS_SHA"
-    say "  case 0 stimulus_sha256 (pinned — last GREEN pre-widening cosim job,"
-    say "    CI run 31084252734, job 92559876482, commit 3ec0efe):            $CASE0_PINNED_SHA256"
+    say "  case 0 stimulus_sha256 (pinned -- freeze's own independent anchor,"
+    say "    RV-STAGE1 §1, build run 31080871169, job 92549154623,"
+    say "    commit 55e16ae):                                                 $CASE0_PINNED_SHA256"
     if [ "$STIMULUS_SHA" != "$CASE0_PINNED_SHA256" ]; then
       say "  MISMATCH — case 0 has moved (WO-0078 §3.1 / §10 item 7 says it never"
       say "  should). WO-0078 §3.3 item 1: this is reported and nothing else is —"
@@ -1130,20 +1294,29 @@ for CASE_ID in "${CASES[@]}"; do
   fi
 
   # ---- check 4.1: differential + timing comparison, this case's run1 ----
-  if ! run_pipeline "$WORK/run1" "case $CASE_ID run1" "$CASE_STIM"; then
+  # FINDING RV-0078-S1-3's repair (this round): Stage 1's own probe timed
+  # ONLY this call, under-reporting the true per-case marginal by roughly
+  # half (run_pipeline runs twice per case, once here and once at check
+  # 4.3, below). `RUN1_START_NS`/`RUN2_START_NS` below bracket each call
+  # individually now, and their sum is also printed, so Band A's linearity
+  # clause is actually readable from this run's own output at N=3.
+  RUN1_START_NS="$(date +%s%N)"
+  if ! run_pipeline "$CASE_DIR/run1" "case $CASE_ID run1" "$CASE_STIM"; then
+    RUN1_NS="$(elapsed_ns_since "$RUN1_START_NS")"
     record_case_refusal "$EXIT_BUILD" "PRODUCE ($PIPE_FAIL_REASON)"
-    say "  [cost] case $CASE_ID pipeline wall time (run1): $(elapsed_since "$CASE_PIPE_START")"
+    say "  [cost] case $CASE_ID pipeline wall time (run1): $(format_ns "$RUN1_NS")"
     say "CASE $CASE_ID: stimulus_sha256=$STIMULUS_SHA compare_exit=N/A tier=PRODUCE-REFUSAL ($PIPE_FAIL_REASON)"
     continue
   fi
-  say "  [cost] case $CASE_ID pipeline wall time (run1): $(elapsed_since "$CASE_PIPE_START")"
+  RUN1_NS="$(elapsed_ns_since "$RUN1_START_NS")"
+  say "  [cost] case $CASE_ID pipeline wall time (run1): $(format_ns "$RUN1_NS")"
 
 # compare.ml REQUIRES exactly two positional args -- no cwd-default, unlike
 # ours_run (confirmed against the landed source; see header). Round 1 called
 # this with zero arguments under the assumption it defaulted like ours_run
 # does; it does not, and that call would always have hit compare's own
 # usage branch (exit 2) without comparing anything. Fixed in round 2.
-  DIFF_OUT="$("$COMPARE_BIN" "$WORK/run1/ours.canon" "$WORK/run1/theirs.canon" 2>&1)"
+  DIFF_OUT="$("$COMPARE_BIN" "$CASE_DIR/run1/ours.canon" "$CASE_DIR/run1/theirs.canon" 2>&1)"
   DIFF_RC=$?
   say "$DIFF_OUT"
 
@@ -1173,23 +1346,38 @@ for CASE_ID in "${CASES[@]}"; do
 # never as DIFFERENTIAL(4), never as a TIMING code, and never read as
 # "usage".
 #
-# ROUND 5 (WO-0078 §5.3/§3.3, this round): a `6` arm joins the set below --
+# ROUND 5 (WO-0078 §5.3/§3.3): a `6` arm joins the set below --
 # `Unassertable`, landed by tb_writer at `3ec0efe`, previously unreachable
 # and therefore previously (correctly, for its time) falling to the
-# wildcard. And EVERY arm except the wildcard stops calling `die` directly:
-# a case's own outcome is now RECORDED (`record_case_refusal`/the AGG_*
-# flags) and its own required line is printed regardless (WO-0078 §12
-# criterion 3), and the AGGREGATE section after this loop is what actually
-# exits non-zero. THE WILDCARD ARM ITSELF, IMMEDIATELY BELOW, IS THE ONE
-# EXCEPTION AND IS BYTE-FOR-BYTE UNCHANGED FROM BEFORE THIS ROUND (WO-0078
-# §6.1/§11's own explicit requirement) -- including its own immediate `die`,
-# which means a case that trips it does NOT get its own printed line. That
-# is a deliberate, narrow exception to criterion 3, made because the
-# wildcard's contract (WO-0075 §11) is pinned even more explicitly than
-# criterion 3 is, and because this specific branch is, by this file's own
-# extensive commentary above, unreachable under any call this script itself
-# ever makes -- a defensive belt over an already-impossible state, not a
-# path a real case set run is expected to exercise.
+# wildcard. Every arm stops calling `die` directly: a case's own outcome is
+# RECORDED (`record_case_refusal`/the AGG_* flags) and its own required
+# line is printed regardless (WO-0078 §12 criterion 3), and the AGGREGATE
+# section after this loop is what actually exits non-zero.
+#
+# ROUND 6 (`WO-0078` §6.2 Stage 2, `RV-STAGE1` §5 OQ1/OQ2's amendment, this
+# round): AT STAGE 1 the wildcard arm was the ONE exception to the rule
+# above -- byte-identity-pinned, dying immediately, printing no per-case
+# line for the case that tripped it -- because it was, by this file's own
+# then-current commentary, unreachable under any call this script itself
+# made. dv_lead's own Stage-1 review (`RV-STAGE1` §5 OQ2) accepted that
+# narrow exception but added a bound this round now closes: "At N > 1 the
+# wildcard's immediate `die` also loses EVERY SUBSEQUENT case's line --
+# cases with no connection to the comparator's misbehaviour." With three
+# cases landing in this round, N > 1 is no longer hypothetical. The
+# wildcard's successor, quoted from `RV-STAGE1` §5 OQ1/OQ2 verbatim: "it
+# SHALL record-and-continue like every other arm, printing a line that
+# names the raw code without classifying it ... and EXIT_INTERNAL SHALL
+# become an aggregate code decided after the loop, ranking ABOVE every
+# other code in §3.3's precedence -- a comparator outside its contract
+# invalidates every case's verdict, not merely its own." Implemented below:
+# the arm sets `CASE_TIER` to the RAW code (never a fabricated
+# classification -- "a fabricated tier is worse than an absent line",
+# `RV-STAGE1` §5), calls `record_case_internal` (first case across the set
+# to trip it wins the aggregate's own label, same pattern as
+# `record_case_refusal`), and FALLS THROUGH to the same per-case print,
+# self-test and determinism check every classified arm above it reaches --
+# it is not a special case any more, it is the last case, which is what
+# "record-and-continue like every other arm" means literally.
   case "$DIFF_RC" in
     0)
       CASE_TIER="CLEAN"
@@ -1197,22 +1385,22 @@ for CASE_ID in "${CASES[@]}"; do
     1)
       CASE_TIER="DIFFERENTIAL (REQ-901 content divergence)"
       AGG_CONTENT=1
-      dump_run "$WORK/run1" "case $CASE_ID run1"
+      dump_run "$CASE_DIR/run1" "case $CASE_ID run1"
       ;;
     3)
       CASE_TIER="NO-VERDICT (compare could not read a canonical file/idle sidecar, exit 3)"
       record_case_refusal "$EXIT_NO_VERDICT" "NO-VERDICT (case $CASE_ID: compare could not read a canonical file, exit 3)"
-      dump_run "$WORK/run1" "case $CASE_ID run1"
+      dump_run "$CASE_DIR/run1" "case $CASE_ID run1"
       ;;
     4)
       CASE_TIER="TIMING (T1 negative against SPEC-M03 §6.1, exit 4)"
       AGG_T1_NEG=1
-      dump_run "$WORK/run1" "case $CASE_ID run1"
+      dump_run "$CASE_DIR/run1" "case $CASE_ID run1"
       ;;
     5)
       CASE_TIER="TIMING-NO-VERDICT (T0 unaligned, exit 5)"
       AGG_T0=1
-      dump_run "$WORK/run1" "case $CASE_ID run1"
+      dump_run "$CASE_DIR/run1" "case $CASE_ID run1"
       ;;
     6)
       # WO-0078 §5.3's own new arm: T1 REFUSED to certify (Canonical.
@@ -1224,17 +1412,25 @@ for CASE_ID in "${CASES[@]}"; do
       # see EXIT_TIMING_UNASSERTABLE's header note for the full argument.
       CASE_TIER="TIMING-UNASSERTABLE (T1 declined to certify, exit 6)"
       AGG_T1_UNASSERTABLE=1
-      dump_run "$WORK/run1" "case $CASE_ID run1"
+      dump_run "$CASE_DIR/run1" "case $CASE_ID run1"
       ;;
-  *)
-    # Ambiguous or unrecognized -- most notably compare's own 2, which this
-    # call site's fixed, always-correct two-argument invocation can never
-    # legitimately produce via compare's usage branch (see the comment
-    # above). Fails closed as INTERNAL rather than guessing which of
-    # "usage" or "compare crashed internally" occurred.
-    dump_run "$WORK/run1" "run1"
-    die "$EXIT_INTERNAL" "INTERNAL (compare exited ambiguous/unrecognized code $DIFF_RC)"
-    ;;
+    *)
+      # `RV-STAGE1` §5 OQ1/OQ2's successor rule (this round) -- see the
+      # ROUND 6 note above for the finding text in full. Ambiguous or
+      # unrecognized -- most notably compare's own 2, which this call
+      # site's fixed, always-correct two-argument invocation can never
+      # legitimately produce via compare's usage branch (see the comment
+      # above `case "$DIFF_RC"`). The RAW code is named, never classified:
+      # no `AGG_CONTENT`/`AGG_T0`/`AGG_T1_*` flag is set, because none of
+      # those tiers is what happened here -- a comparator outside its own
+      # documented contract has not reached ANY of REQ-901's, T0's, or
+      # T1's verdicts, reached-and-negative or otherwise, and asserting one
+      # of those labels over it would be exactly the fabricated
+      # classification the finding bars.
+      CASE_TIER="INTERNAL (compare exit $DIFF_RC outside its documented contract {0,1,3,4,5,6})"
+      record_case_internal "$CASE_ID" "$DIFF_RC"
+      dump_run "$CASE_DIR/run1" "case $CASE_ID run1"
+      ;;
   esac
 
   # WO-0078 §3.2/§12 criterion 3's own required line: case id,
@@ -1243,9 +1439,9 @@ for CASE_ID in "${CASES[@]}"; do
   # keeps a case that is not clean from ever being silently absorbed into
   # the aggregate (§12 criterion 3: "A case that is skipped, or whose
   # result is folded into an aggregate without its own line, fails --
-  # including when the aggregate is 0."). Unreachable when the wildcard
-  # above fired (it exits directly), which is that arm's own documented
-  # exception.
+  # including when the aggregate is 0."). As of this round the wildcard's
+  # own outcome reaches this line too (`RV-STAGE1` §5 OQ2) -- no arm is
+  # exempt any more.
   say "CASE $CASE_ID: stimulus_sha256=$STIMULUS_SHA compare_exit=$DIFF_RC tier=$CASE_TIER"
 
   # ---- check 4.2: DELIBERATE-MISMATCH SELF-TEST — does not depend on any
@@ -1269,21 +1465,32 @@ for CASE_ID in "${CASES[@]}"; do
   fi
 
   # ---- check 4.3: two-run determinism, THIS case's own run2 ----
-  if ! run_pipeline "$WORK/run2" "case $CASE_ID run2" "$CASE_STIM"; then
+  # FINDING RV-0078-S1-3's repair (this round, continued from run1 above):
+  # this is the SECOND run_pipeline call Stage 1's own probe never timed.
+  # Timed the same way run1 is, plus the two summed, so a reader can see
+  # BOTH halves of what "this case's own pipeline" actually costs.
+  RUN2_START_NS="$(date +%s%N)"
+  if ! run_pipeline "$CASE_DIR/run2" "case $CASE_ID run2" "$CASE_STIM"; then
+    RUN2_NS="$(elapsed_ns_since "$RUN2_START_NS")"
     record_case_refusal "$EXIT_BUILD" "PRODUCE ($PIPE_FAIL_REASON)"
+    say "  [cost] case $CASE_ID pipeline wall time (run2): $(format_ns "$RUN2_NS")"
     say "  case $CASE_ID determinism: NOT CHECKED -- run2 did not produce a comparable pair ($PIPE_FAIL_REASON)"
     continue
   fi
+  RUN2_NS="$(elapsed_ns_since "$RUN2_START_NS")"
+  say "  [cost] case $CASE_ID pipeline wall time (run2): $(format_ns "$RUN2_NS")"
+  say "  [cost] case $CASE_ID pipeline wall time (run1+run2, sum -- excludes this"
+  say "    case's own compare/self-test time in between): $(format_ns "$((RUN1_NS + RUN2_NS))")"
   DET_STATUS=0
-  OURS_DIFF="$(diff -u "$WORK/run1/ours.canon" "$WORK/run2/ours.canon" 2>&1)" || DET_STATUS=1
-  THEIRS_DIFF="$(diff -u "$WORK/run1/theirs.canon" "$WORK/run2/theirs.canon" 2>&1)" || DET_STATUS=1
+  OURS_DIFF="$(diff -u "$CASE_DIR/run1/ours.canon" "$CASE_DIR/run2/ours.canon" 2>&1)" || DET_STATUS=1
+  THEIRS_DIFF="$(diff -u "$CASE_DIR/run1/theirs.canon" "$CASE_DIR/run2/theirs.canon" 2>&1)" || DET_STATUS=1
   if [ "$DET_STATUS" -ne 0 ]; then
     say "  case $CASE_ID: ours.canon differs between run1 and run2:"
     say "$OURS_DIFF"
     say "  case $CASE_ID: theirs.canon differs between run1 and run2:"
     say "$THEIRS_DIFF"
-    dump_run "$WORK/run1" "case $CASE_ID run1"
-    dump_run "$WORK/run2" "case $CASE_ID run2"
+    dump_run "$CASE_DIR/run1" "case $CASE_ID run1"
+    dump_run "$CASE_DIR/run2" "case $CASE_ID run2"
     record_case_refusal "$EXIT_DETERMINISM" "DETERMINISM (case $CASE_ID: canonical files differ between run1 and run2)"
   else
     say "  case $CASE_ID: ours.canon/theirs.canon byte-identical between run1 and run2"
@@ -1305,14 +1512,21 @@ for CASE_ID in "${CASES[@]}"; do
 done
 
 # ------------------------------------------------------------------ #
-# AGGREGATE — WO-0078 §3.3's precedence, implemented in that order.     #
-# Item 1 (case 0 moved) is handled inside the loop above, because it     #
-# aborts before any case runs; items 2-7 are decided here, once, after   #
-# every case in the set has had its own attempt and its own line.       #
+# AGGREGATE — WO-0078 §3.3's precedence, AS AMENDED by `RV-STAGE1` §5     #
+# OQ1/OQ2 (this round). Case 0 moved is handled inside the loop above,   #
+# because it aborts before any case runs. Of what remains, EXIT_INTERNAL #
+# is now checked FIRST -- dv_lead's own words: "EXIT_INTERNAL SHALL      #
+# become an aggregate code decided after the loop, ranking ABOVE every   #
+# other code in §3.3's precedence -- a comparator outside its contract   #
+# invalidates every case's verdict, not merely its own." Everything else #
+# is decided in WO-0078 §3.3's own original order, unchanged.            #
 # ------------------------------------------------------------------ #
 
-hdr "AGGREGATE (WO-0078 §3.3)"
-if [ -n "$AGG_REFUSAL_LABEL" ]; then
+hdr "AGGREGATE (WO-0078 §3.3, RV-STAGE1 §5 OQ1/OQ2 amendment)"
+if [ "$AGG_INTERNAL_HIT" -eq 1 ]; then
+  # RV-STAGE1 §5 OQ2's amendment: ranks above everything else decided here.
+  die "$EXIT_INTERNAL" "$AGG_INTERNAL_LABEL"
+elif [ -n "$AGG_REFUSAL_LABEL" ]; then
   # item 2: any producer refusal, any case -> its own code.
   die "$AGG_REFUSAL_CODE" "$AGG_REFUSAL_LABEL"
 elif [ "$AGG_CONTENT" -eq 1 ]; then
