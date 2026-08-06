@@ -2879,3 +2879,34 @@ all against dv's own seal.
 
 ### Files-in-this-commit
 - tasks/BOARD.md
+
+## [J-orchestrator-0221] 2026-08-10T07:10Z | task:WO-0075 | The cosim round lands with my own ruling corrected - and the lane's real bound named before the sign-off could discover it
+
+### Trigger
+dv's cosim-lane round landed c109c08 (J-dv_lead-0139): five debts
+paid (D2's design frozen as WO-0075 for tb_writer+data_wrangler;
+strobe blindness priced and REFUSED with three ordered preconditions
+- AP §7 BAR 4; D5's verdict labeling repaired; M-4's matcher fixed
+140->139 measured; the dangling reference removed). The round's
+centerpiece corrects J-orchestrator-0215's option (a) as worded: a
+literal cross-side cycle comparison would assert what REQ-901
+excludes and could only be greened from the reference - dv's three-
+tier design (T0 harness consistency / T1 OUR side vs §6.1's pinned
+table / T2 reference recorded never adjudicated) delivers the
+intent lawfully, and rejects a fitted-offset design it nearly
+shipped as blind to IC-L2.
+
+### Rulings
+- Q1: the AP edit STANDS (the banner must tell the whole story to
+  its only reader; artefact-over-dispatch).
+- Q2: WO-0075 §4's correction ACCEPTED - my option (a) was a
+  position, dv's design is the lawful delivery; no REQ-901 spec
+  diff needed.
+- Q3: T1's derived constant {3..10} -> auditor re-execution
+  sampling (joins D-1 and the RTL-line-number arbitration).
+- Q4: ADOPTED - the one-frame stimulus bound (four of twelve
+  classes unreachable at the lane's stimulus) is COMMISSIONED as
+  the first line of the co-sim Phase 2/3 scope, before any SO-.
+
+### Files-in-this-commit
+- (none)
