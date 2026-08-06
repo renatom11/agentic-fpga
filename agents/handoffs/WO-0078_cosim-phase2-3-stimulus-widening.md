@@ -7777,3 +7777,233 @@ RE-DISPATCHED, one landing away.**
 — dv_lead, `J-dv_lead-0157`, at `ad32dff`
 
 ---
+
+### tb_writer — AMENDMENT WO-0078-A1 (C4 remediation round, `RV-C4GAP`), RETURNED
+
+**Abort-first head check**: `git rev-parse HEAD` = `eef3fd04712201cbc2458c5de4ec208e65e5c478`,
+exactly the stated spawn-head (*"The hook was one directory over…"*). `git status
+--porcelain` empty before a line was written. No mismatch procedure. Sole agent
+in flight.
+
+**What I read before building**, beyond `RV-C4GAP`/`AMENDMENT WO-0078-A1` (this
+packet's §14, quoted below rather than paraphrased) in full: `test/xgmii/arrival.mli`
+in full (the `in_times` contract, `create`'s optional set), `test/xgmii/arrival.ml`
+in full (`in_times`'s actual implementation — `Array.init (preamble_octets +
+Array.length f.octets) (fun k -> f.start_octet_time + k)`, confirming octet time =
+`start_octet_time + k` and `word_at`'s `lane_at t ((8*cycle)+k)`, i.e. octet time =
+`8*cycle + lane`, before writing a line that depends on that arithmetic),
+`test/xgmii/xgmii_word.mli` and `.ml` in full (`t = { data; control }`, `of_lanes`,
+`start_lane`'s actual scan for `Control start_char`), and
+`test/xgmii_rx_64/test_m03_b.ml:1-70` (the M03-B1 header and
+`nonstandard_preamble_octet`/`preamble_override`, lines 28-51, the named precedent).
+**No file under `test/xgmii/**` or `test/xgmii_rx_64/**` was opened for EDIT** — all
+of the above were read-only, per `RV-C4GAP §9`'s explicit instruction that reading
+`test_m03_b.ml` for the precedent is required while editing either directory is out
+of scope. No line of `test/third_party/verilog-ethernet/**` was read, at any point,
+by any means.
+
+**The amendment's terms, quoted (not paraphrased), against what I built:**
+
+- Path ruling, `RV-C4GAP §12`: *"Path (c) — AUTHORISED: the `M03-B1` idiom in its
+  second instance, confined to `test/cosim/stimulus_gen.ml`, with the geometry read
+  from `Arrival.in_times` rather than re-derived, a REQ-102 length tripwire, and a
+  three-part departure check."* — `build_c4` constructs the schedule (`Frame.stress_frame
+  ~sequence:0 ()`, `Arrival.create ~first_start:0 [ octets ]`, `check_conformant
+  ~case_label:"C4"`, exactly C1/C3's three lines); `c4_word_at` reads
+  `Dv_xgmii.Arrival.in_times frame` for the seven override positions and calls no
+  other `Arrival`/`Frame` function to locate them.
+- Geometry, `§3`: *"The geometry is READ FROM `Arrival`, not re-derived… `arrival.mli:111-116`
+  publishes `in_times`… Entry 0 is the start character; entries 1-7 are the six
+  filler octets and the SFD. No literal `8` is copied and no lane arithmetic is
+  re-invented."* — `c4_word_at`'s `overrides` list is built from `times.(d)` for
+  `d = 1..7`; no literal `8` or `preamble_octets` appears anywhere in my diff.
+- Length tripwire, `§4` item 3: *"The length tripwire of §3 is mandatory and is not
+  an `assert`; it is a `failwith` naming REQ-102."* — implemented verbatim: `if
+  Array.length times <> 8 + Array.length frame.Dv_xgmii.Arrival.octets then
+  failwith "stimulus_gen: case C4 -- Arrival.in_times does not publish REQ-102's
+  eight-octet preamble; refusing rather than overriding the wrong octets"`, checked
+  before `times.(1..7)` is ever indexed. **Verified non-vacuous by negative control**
+  (Evidence, mutation B): with a scratch copy of `arrival.ml` whose `preamble_octets`
+  was mutated from 8 to 7 (never the real repo file), `c4_word_at` raised exactly
+  this `failwith`, naming REQ-102, instead of silently overriding the wrong octets.
+- Frozen values, `§4` item 4: *"`0xA0 lor d` for `d` = 1…7, i.e. **`A1 A2 A3 A4 A5 A6 A7`**,
+  the SFD position carrying **`0xA7`**"* — `let c4_nonstandard_octet d = 0xA0 lor d`,
+  applied to `d = 1..7`. Confirmed in the written stimulus itself (Evidence): line 1
+  (cycle 0) of `stim_C4.txt` reads `a7a6a5a4a3a2a1fb 01`, decoding (REQ-012's
+  lane-0-is-low-byte packing, `to_wire`'s own convention) to lane0=`0xFB` (`/S/`,
+  unchanged), lane1=`0xA1` … lane6=`0xA6`, lane7 (the SFD position) =`0xA7`.
+- Departure check, `§3` third property / `§4` item 5: *"exactly seven octet positions
+  differ, at exactly the seven octet times `in_times` names, the start-character lane
+  still reads `Control /S/`, the `control` field is bit-identical on every cycle, and
+  no octet outside the preamble range moved."* — `c4_word_at` runs this comparison
+  (against `Arrival.word_at sched`, over the schedule's full written span including
+  drain) before returning the override function, and fails closed on any of the four
+  properties. **Verified non-vacuous by negative control** (Evidence, mutation A):
+  with the override window shifted to `d = 0..6` (clobbering lane 0's own `/S/`), the
+  same check raised *"the start character is not intact at lane 0 of the start cycle
+  after the override"* — the check catches a real construction bug, not merely a
+  hypothetical one.
+- `idle_counts`, `§4` item 6: *"`idle_counts = [ 0 ]`. One admitted frame,
+  `~first_start:0`, and no `Injection` or `Idle_injection` in the builder's call
+  graph… the builder must call nothing but `Frame.stress_frame`, `Arrival.create`,
+  `check_conformant`, `Arrival.in_times` / `Arrival.frames` and `Xgmii_word`."* —
+  `c4_meta.idle_counts = [ 0 ]`; `build_c4`'s and `c4_word_at`'s combined call graph is
+  exactly that named set (confirmed by re-reading my own diff after writing it — no
+  other `Dv_xgmii` function appears).
+- Scope, `§4` header table: *"1 | tb_writer | `test/cosim/stimulus_gen.ml` | `build_c4`,
+  `c4_meta`, the `known_cases` and `build_case` entries, and the per-case word seam
+  below."* — exactly what changed: `build_c4`, `c4_nonstandard_octet`, `c4_word_at`,
+  `c4_meta`, `known_cases`'s new entry, `build_case`'s new `"C4"` arm and its now-tupled
+  return for every arm, and `write_stimulus`'s new `word_at` parameter (the "per-case
+  word seam" `§4` item 2 names as `write_stimulus`'s own change, not `build_c4`'s).
+  **`data_wrangler`'s file, `tools/cosim/run_cosim.sh`, was not opened.**
+
+**What is preserved, per `§4`'s closing list, checked mechanically rather than
+asserted:**
+
+- **The four existing binds, byte-identical** — reproduced this round (Evidence),
+  matching `§4`'s frozen values exactly: case 0 `c675517176922d42bca42ec3def182cb3536861f1acaa8384116f33a5c4cc051`;
+  C1 `5ae9e4f501251c38d0c2d386bd792e07cbcf9cf107cf7e75c378e21b1ce3bd7c`; C2
+  `cc1e85a4c5f871226f07b4792446d63c523577dcf172d6c4a80b8a3e845b44a7`; C3
+  `1512d30b6aa186ca89d55ce40fbcfdee01590a5a47e2a497eb4389c2bc6c4dce`.
+- **Case 0's span, untouched** — `git diff test/cosim/stimulus_gen.ml`'s first hunk
+  starts at `@@ -50,14 +50,23 @@ let build () = ... sched\n;;` with zero `+`/`-` lines
+  inside `build ()`'s own body (lines 40-51 unmoved); the first edited line is
+  `write_stimulus`'s own signature, immediately after `build ()`'s closing `;;`.
+- **`AP-M03 §7`'s four bars**: not touched, not cited, not lifted — this round stages
+  no file under `test/attack_plans/**` and makes no claim about bar state.
+- **CD §10.4**: not edited, read only, cited by section number in comments.
+
+**Idle sidecar value**: `[ 0 ]`, unchanged in form from case 0/C1/C3's own single-frame
+sidecars — one admitted frame, no injection mechanism anywhere in `build_c4`'s or
+`c4_word_at`'s call graph (confirmed above), so the count is `0` by construction, not
+by absence of a feature, exactly as `§4` item 6 requires and exactly as
+`J-tb_writer-0039`'s own inference anticipated for this value before C4 existed.
+
+**Local test results, verbatim** (ADR-0005: no `dune`, no Hardcaml switch, no
+`iverilog`/`vvp` in this environment; nothing beyond what follows was run, and
+nothing here is offered as a CI result). Standalone scratch build, the same method
+this lane's every prior round has used: `crc32_ref.{mli,ml}` and `xgmii_word.{mli,ml}`
+and `frame.{mli,ml}` and `arrival.{mli,ml}` copied verbatim from their real
+`test/golden/` and `test/xgmii/` paths, a one-line `dv_golden.ml` aliasing
+`Crc32_ref`, a one-line `dv_xgmii.ml` aliasing `Xgmii_word`/`Frame`/`Arrival`
+(reproducing dune's library-wrapping by hand, ADR-0005), and `stimulus_gen.ml`
+copied from this round's own edited working tree:
+
+```
+$ ocamlc -c crc32_ref.mli && ocamlc -c crc32_ref.ml        -> exit 0 (each)
+$ ocamlc -c dv_golden.ml                                    -> exit 0
+$ ocamlc -c xgmii_word.mli && ocamlc -c xgmii_word.ml       -> exit 0 (each)
+$ ocamlc -c frame.mli && ocamlc -c frame.ml                 -> exit 0 (each)
+$ ocamlc -c arrival.mli && ocamlc -c arrival.ml             -> exit 0 (each)
+$ ocamlc -c dv_xgmii.ml                                      -> exit 0
+$ ocamlc -c stimulus_gen.ml                                  -> exit 0   (THIS ROUND'S edit,
+                                                                            genuinely type-checked
+                                                                            against the real
+                                                                            Arrival/Frame/Xgmii_word)
+$ ocamlc -o stimulus_gen.exe crc32_ref.cmo dv_golden.cmo xgmii_word.cmo \
+    frame.cmo arrival.cmo dv_xgmii.cmo stimulus_gen.cmo      -> exit 0   (genuinely LINKED)
+```
+
+All five cases run for real, in one binary, one round:
+
+```
+$ ./stimulus_gen.exe stim_0.txt  0    -> 36 lines; idle sidecar: 0
+    sha256 = c675517176922d42bca42ec3def182cb3536861f1acaa8384116f33a5c4cc051   (case 0, REPRODUCED)
+$ ./stimulus_gen.exe stim_C1.txt C1   -> 36 lines; idle sidecar: 0
+    sha256 = 5ae9e4f501251c38d0c2d386bd792e07cbcf9cf107cf7e75c378e21b1ce3bd7c    (C1, REPRODUCED)
+$ ./stimulus_gen.exe stim_C2.txt C2   -> 46 lines; idle sidecar: 0, 0
+    sha256 = cc1e85a4c5f871226f07b4792446d63c523577dcf172d6c4a80b8a3e845b44a7   (C2, REPRODUCED)
+$ ./stimulus_gen.exe stim_C3.txt C3   -> 36 lines; idle sidecar: 0
+    sha256 = 1512d30b6aa186ca89d55ce40fbcfdee01590a5a47e2a497eb4389c2bc6c4dce   (C3, REPRODUCED)
+$ ./stimulus_gen.exe stim_C4.txt C4   -> 36 lines; idle sidecar: 0
+    sha256 = efb0417637ff786c067853afad56d9d4e21faed01f7640f9991a20e6010f33bc   (C4, NEW, constructed
+                                                                                  and self-checked
+                                                                                  by c4_word_at's own
+                                                                                  departure check
+                                                                                  before this line
+                                                                                  was written)
+```
+
+**Waveform eyeball against CD §10.4's timing contract, cycle by cycle**
+(`diff -u stim_0.txt stim_C4.txt`, verbatim):
+
+```
+--- stim_0.txt
++++ stim_C4.txt
+@@ -1,4 +1,4 @@
+-d5555555555555fb 01
++a7a6a5a4a3a2a1fb 01
+ 0002010000000002 00
+ 0000000802000000 00
+ 1716151413120000 00
+```
+
+Only line 1 (cycle 0) differs, out of all 36 lines — confirming "otherwise clean"
+mechanically, not by inspection alone. Decoding line 1 by `to_wire`'s own packing
+(REQ-012: lane 0 is the low byte, `data.(7)` the high byte of the 16-hex field):
+case 0 reads lane0=`FB` (`/S/`), lanes1-6=`55`, lane7=`D5` (SFD) — SPEC-M03 §6.1's
+table, exactly. C4 reads lane0=`FB` (`/S/`, **unchanged**), lane1=`A1`, lane2=`A2`,
+lane3=`A3`, lane4=`A4`, lane5=`A5`, lane6=`A6`, lane7=`A7` (the SFD position) — the
+frozen values at exactly the six filler lanes and the SFD lane, nothing else moved.
+The `xgmii_rxc` field (`01` both lines, every line) is identical between the two
+files on every one of the 36 lines — the `control` byte never differs, confirming
+"the control field is bit-identical on every cycle" was not merely asserted by
+`c4_word_at`'s own check but is independently visible in the written artifact. This
+is a lane-0 start on cycle 0 (line 1 = cycle 0, lane 0 = `/S/`), matching CD §10.4's
+"lane-0 start on cycle 0" and REQ-102's eight-octet preamble window (cycle 0 alone,
+since `first_start:0` places the whole preamble inside lanes 0-7 of one word) — I
+did not promote this without reading it against the timing contract first.
+
+**Departure check and REQ-102 tripwire verified non-vacuous by negative control**
+(scratch-only mutations, never touching the real repo's `arrival.ml` or
+`stimulus_gen.ml`, deleted after use):
+
+```
+Mutation A -- c4_word_at's override window shifted to d = 0..6 (would clobber
+lane 0's own /S/ instead of stopping at lane 1):
+$ ./stimulus_gen.exe stim_C4_mutA.txt C4   -> exit 2
+    Fatal error: exception Failure("stimulus_gen: case C4's departure check failed
+    -- the start character is not intact at lane 0 of the start cycle after the
+    override")
+
+Mutation B -- a scratch copy of arrival.ml with preamble_octets mutated 8 -> 7
+(simulating Arrival's preamble geometry moving, never the real repo file):
+$ ./stimulus_gen.exe stim_C4_mutB.txt C4   -> exit 2
+    Fatal error: exception Failure("stimulus_gen: case C4 -- Arrival.in_times does
+    not publish REQ-102's eight-octet preamble; refusing rather than overriding the
+    wrong octets")
+```
+
+Both checks fire on the defect they exist to catch, not only on the clean path —
+the same standard this charter's promotion discipline asks of an expect-test
+promotion, applied here to a stimulus-construction check instead.
+
+**What is CI-deferred, and why** (ADR-0005, `WO-0078 §10` item 12, unchanged from
+every prior round in this lane): `stimulus_gen.ml` depends on
+`Hardcaml`/`Hardcaml_ethernet`/`Dv_xgmii` as a wrapped library, none of which has an
+installable switch in this container; the scratch build above type-checks and links
+the real `Arrival`/`Frame`/`Xgmii_word`/`Crc32_ref` sources against my edit, and runs
+the resulting binary for real, but it is not `dune build`/`dune runtest`, and the
+`cosim` CI job at the combined head (this round plus `data_wrangler`'s one-line
+case-array addition) remains, per `RV-C4GAP §9` item 4, "the check, and it is the
+only one."
+
+**Refused or blocked**: nothing refused. No file under `test/xgmii/**` or
+`test/xgmii_rx_64/**` opened for edit; no file under `tools/cosim/**` or
+`test/attack_plans/**` opened at all; no line of `test/third_party/verilog-ethernet/**`
+read, at any point.
+
+**Files changed** (exactly `AMENDMENT WO-0078-A1 §4`'s scope item 1, nothing else —
+`git status --porcelain` confirms one file): `test/cosim/stimulus_gen.ml`.
+
+— tb_writer, spawn `WO-0078-A1-TB/2026-08-06T15:00Z` (no explicit "work-order
+id + spawn UTC timestamp" token was present in this round's own dispatch
+prompt; recorded honestly per this packet's own §14 precedent for the
+identical situation — `J-tb_writer-0035` et seq., most recently
+`J-tb_writer-0039`'s own entry above — rather than presented as one copied
+verbatim: the timestamp above is a placeholder matching the environment's
+own `currentDate` context of 2026-08-06, not a literal read of any dispatch
+field).
+
+---
