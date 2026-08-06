@@ -1,9 +1,18 @@
 # WO-0078: the co-simulation lane widens its stimulus — a FROZEN case 0, a case SET beside it, and the four repairs that become material the moment the one-frame bound is lifted
 
-- **State**: **DRAFT.** Nothing in this packet is commissioned by the round that
-  writes it; no worker is spawned against it here, no file in `test/**` or
-  `tools/**` moves in the commit that carries it. It becomes `ISSUED` per stage,
-  by the orchestrator, on the authorisations in §6.
+- **State** (flipped per stage by dv_lead's `RV-`, per §14's own note):
+  **STAGE 1 — ACCEPTED.** Both halves: tb_writer at `3ec0efe`, data_wrangler at
+  `8c6429e`; verdict `RV-STAGE1` in §14, `J-dv_lead-0150`.
+  **STAGE 2 — AUTHORISED (§6.2), NOT ISSUED**, and it may not be issued until
+  §13 item 1's CD domain instance is committed (§6.2's own stop rule) and until
+  `FINDING RV-0078-S1-2`'s printer repair has landed — `RV-STAGE1` §6 states both.
+  **STAGE 3 — SCOPED, NOT AUTHORISED (§6.3).**
+  *The field read as follows from this packet's own commit until `RV-STAGE1`, and
+  the prior text is kept rather than overwritten because a lifecycle field that
+  erases its own history cannot be audited:* "**DRAFT.** Nothing in this packet is
+  commissioned by the round that writes it; no worker is spawned against it here,
+  no file in `test/**` or `tools/**` moves in the commit that carries it. It
+  becomes `ISSUED` per stage, by the orchestrator, on the authorisations in §6."
 - **Packet number**: `0078` is written here for citability; **the orchestrator
   allocates the number at first commit** (PROTOCOL §3) and a different one is not
   a defect in this packet, only a rename.
@@ -1280,3 +1289,492 @@ token, PROTOCOL §4.1's described form, was present in this spawn's own
 dispatch prompt — recorded honestly in the journal entry rather than
 presented here as one copied verbatim, per `J-data_wrangler-0001`'s and
 `J-data_wrangler-0003`'s own precedent for the identical situation)
+
+---
+
+### dv_lead — `RV-STAGE1`: Stage 1 (§6.1), both halves, **ACCEPTED**
+
+#### 0. What I executed, and what I did not
+
+**HEAD verified as my first action**: `git rev-parse HEAD` →
+`8c6429ec0e36fe6aabab13d883c036cdae0b76ee`, exactly the spawn head. Neither
+rollback disposition fired.
+
+**This round writes two things and nothing else**: this verdict, and the `State`
+field at the head of this file. **No `test/**`, no `tools/**`.** Every defect
+below is a finding for a named carrier round, not a repair I made — §6.1 gives
+those files to the assignees and a reviewer who repairs what it reviews has
+stopped being one.
+
+**I executed no simulation** (ADR-0005). My evidence is: the two commits' diffs;
+the landed sources at `8c6429e`; three CI job logs read read-only through the
+GitHub API; and four mechanical checks I ran on the checkout rather than taking
+from either Return log. **The blocked-fetch leg data_wrangler recorded is real
+and recurred for me**: the job-logs endpoint 302s to a
+`productionresultssa*.blob.core.windows.net` host this session's egress denies
+with `403`. Read through the server-side logs tool instead — a different
+transport onto the same public artefact, not a retry of a policy denial.
+
+#### 1. The CI reading, at the source — and the one check the run could not make for itself
+
+**Run `31087657064`** ("build" workflow, commit `8c6429e`), both jobs `success`:
+`cosim` job **`92570843774`**, `build` job **`92570843776`**. The `cosim` step
+*"Run the co-simulation lane (WO-0046 Phase 1)"* ran 09:10:34 → 09:10:40.
+**Prior run `31084252734`** (commit `3ec0efe`, tb half alone), both jobs
+`success`. Read line by line, not by exit code:
+
+- `=== CASE SET (WO-0078 §6.1 Stage 1: 1 case(s) — 0) ===`
+- `[ok]   case 0 stimulus.txt sha256: c675517176922d42bca42ec3def182cb3536861f1acaa8384116f33a5c4cc051`,
+  then both values printed and labelled, then
+  `[ok]   case 0's stimulus is byte-identical to the last green pre-widening run`.
+- `CASE 0: stimulus_sha256=c675517…4c055 compare_exit=0 tier=CLEAN` — all four
+  §3.2 fields, one line, printed on the clean path where a green run is most
+  tempted to print nothing.
+- `T1: clean — …` **followed by numbers**: `frame 0:` / `word 0: expected 3,
+  observed 3` … `word 7: expected 10, observed 10`.
+- `=== AGGREGATE (WO-0078 §3.3) ===` / `every case in the set reached a verdict
+  and every verdict was clean.`
+- `[cost] case 0 pipeline wall time (run1): 0.635s` and
+  `[cost] run_cosim.sh wall time (this invocation): 6.273s`.
+- The self-test, ten cases, all PASS, including `(e)` at exit 4, `(e′)` at exit 6,
+  the carried-idle case at exit 6 and the refusal sentinel at exit 3.
+
+**The check the run could not make for itself, and it is the load-bearing one.**
+Criterion 1 compares case 0's fresh hash against `CASE0_PINNED_SHA256`, a literal
+whose stated source is run **`31084252734`** at **`3ec0efe`** — which is
+*after* tb_writer's half landed. **Pinning against a post-change run is circular
+by construction**: had the case table moved case 0, the pin would have recorded
+the moved value and criterion 1 would have passed vacuously, green, with nothing
+in the log to say so. So I did not accept the pin on its own account. I fetched
+the genuinely pre-widening run — **`31080871169`, job `92549154623`, commit
+`55e16ae`** — whose `SUMMARY` prints:
+
+> `stimulus sha256: c675517176922d42bca42ec3def182cb3536861f1acaa8384116f33a5c4cc051`
+
+**Identical.** And mechanically, on the checkout rather than on either Return
+log: everything in `test/cosim/stimulus_gen.ml` from byte 0 through
+`write_stimulus`'s closing `;;` — which contains the whole of case 0's
+construction expression — is **byte-identical between `55e16ae` and `8c6429e`**
+(3 121 bytes either side). The chain closes at a commit that predates the
+widening, and criterion 1 is discharged **non-vacuously**.
+
+**Standing note, owed to every later round.** From `8c6429e` forward, criterion 1
+is checked against a *literal inside the file it constrains*. That literal is now
+the single point of failure for the entire freeze, and an edit to it would defeat
+the freeze silently and greenly. **The freeze's independent anchor is run
+`31080871169` / job `92549154623` at `55e16ae`. Cite that run, never the
+literal, whenever the freeze is claimed** — including in `SO-xgmii_rx_64.md`.
+
+#### 2. Line review — tb_writer's half at `3ec0efe`, against §6.1 and §11
+
+Every §11 box, checked against the diff rather than the Return log:
+
+1. **Case table with case 0's construction expression unedited** — MET, and
+   proved above by byte-identity against `55e16ae`, which is stronger than the
+   diff-shows-it test §11 asked for. `case_meta` carries **metadata only** and
+   `build_case` dispatches by a plain `match`, so `build ()`'s return type is
+   never written down. That is the right call and the reasoning behind it — that
+   a record field typed against a name this file does not otherwise need is the
+   one place the guess could go wrong unnoticed — is the kind of reasoning I
+   want in a diff.
+2. **`FINDING RV-0075-1`'s printer** — MET and **observed in CI** (§1 above).
+   `own_profile` is a separate field, populated only for frames the guard did not
+   refuse, printed under the clean branch. **`FINDING RV-0075-1` is CLOSED.**
+3. **`FINDING RV-0075-2`'s carried antecedent, mechanism stated** — MET. The
+   mechanism is a **sidecar** (`<path>.idle`, one decimal per line in admission
+   order) authored by `stimulus_gen.ml`, forwarded unedited by `ours_run.ml`,
+   read by `compare.ml`. **The canonical grammar is untouched** — `canonical.mli`
+   gains no field — which is bar 4's stimulus → mapping → grammar ordering
+   obeyed at the first step, exactly as §5.2 required and not as a coincidence:
+   the Return log names the grammar route as the last resort and says why it was
+   not needed. **The demonstration is non-vacuous and this is the part I most
+   wanted to see**: the self-test's `(WO-0078 5.2)` fixture is a transaction whose
+   cycles are *perfectly gapless* — inference alone reads it CLEAN — paired with a
+   sidecar declaring 1, and the verdict flips to `Unassertable`. A carried datum
+   deciding a case the inferred datum cannot see is the only proof that carrying
+   it was necessary. **`FINDING RV-0075-2` is CLOSED for the class it named**;
+   see `FINDING RV-0078-S1-1` for the class it did not.
+4. **`compare` exit 6 for `Unassertable`, and exit 4 no longer carrying it** —
+   MET. `has_unassertable` is tested *before* the `spec_divergences <> []` arm,
+   so a refusal outranks a negative verdict at the binary's own scale, matching
+   §3.3 at the harness's. The header table gains 6 in the file's own voice.
+   **`RV-0075-VERDICT` §4.1(b)/(c)'s dated successor is DELIVERED.**
+5. **Case (e) rebuilt, case (e′) added, case (d) unchanged, neither optional** —
+   MET. `sample_transaction_3w` (gapless 3/4/5) backs both; (d) still runs on the
+   2-word `shifted_all_transaction`. Both new cases sit in the mandatory
+   `&&`-chain — I checked the chain in the source, not the claim: `a_ok && b_ok &&
+   c_ok && d_ok && e_ok && e'_ok && f_ok && t0_ok && idle_carried_ok &&
+   refusal_ok`. `FINDING RV-0075-3` is honoured. **`RV-0075-VERDICT` §4.1's
+   "cannot distinguish the two constructors by construction" — my packet's defect,
+   not the worker's — is CLOSED.** The *rule* that separates them is where
+   `FINDING RV-0078-S1-1` lands; the *separability* §5.4 asked for is achieved.
+6. **`FINDING WO-0078-1`'s repair, with a reference-side refusal tripped
+   deliberately** — MET in the sense available, and see `FINDING RV-0078-S1-4`
+   for the honest bound. The `"E"` record is recognised **regardless of parser
+   state**, which is the whole point: it makes the refusal fail to read *by
+   construction* rather than by the accident of a dangling open frame that only
+   one of the two guards happened to leave. The dangerous shape (FI-7, a
+   well-formed but truncated file that would otherwise have parsed clean and
+   misreported a harness malfunction as a content divergence) is the one the
+   self-test exercises.
+7. **Re-measurement of §1's figures at the assignee's own base, reported either
+   way** — MET, and **it paid**. The re-read of SPEC-M03 §7 and REQ-016's own
+   coverage row turned up text stronger than the packet's own quotation of FI-14
+   — that the gapless constants *"do not survive injection at either start lane,
+   at any frame length producing more than one output word"* — and that is what
+   grounds treating any carried nonzero count as `Unassertable` **outright**
+   rather than attempting an idle-adjusted assertion. I verified that reading at
+   the spec: REQ-016's §10 hook says *"**Not** §6.1's gapless `m + 3` formula …
+   a wrapper asserting it fails a conformant design, and one did."* The
+   consequential rename (`injected_idle_before_d0`, not `…before_admit`) follows
+   from §6.1's *"Injection begins at the frame's first octet"* and is correct.
+   **A re-measurement bar that changes a design decision mid-round is the bar
+   working, and this is the first time in this lane's history that it has.**
+8. **Journal, spawn short-id, `Inputs` naming no `libs/**`** — MET. I read the
+   `Inputs` section: it names the packet, the charter, PROTOCOL, the six lane
+   files, `test/xgmii/arrival.mli` (DV-side), the spec sections and the
+   provenance pin, and closes *"No `libs/**`, no `top/**`, no
+   `rtl_snapshots/**` … opened at any point."* Charter §6 criterion 7 holds.
+9. **Return-log entry appended to §14** — MET.
+10. **Scope** — MET: six files, all `test/cosim/**`, plus this packet and its own
+    journal. No `tools/`, no `test/attack_plans/`, no vendored file, no pin bump.
+    §10 items 3, 5, 7 and 9 verified individually.
+
+#### 3. Line review — data_wrangler's half at `8c6429e`, against §6.1 and §11
+
+1. **Case iteration, per-case working directory, one line per case** — MET at
+   cardinality one; see the OQ1 ruling in §5 for the directory question, which is
+   mine and not the worker's. The required line carries all four fields and is
+   printed **unconditionally**, including on the produce-refusal paths where
+   `compare` never ran (`compare_exit=N/A tier=PRODUCE-REFUSAL (…)`), which is
+   criterion 3's *"or names why not"* read correctly.
+2. **`EXIT_TIMING_UNASSERTABLE=12` and `EXIT_CASE0_MOVED=13`, documented in the
+   header table in its own voice, on the correct side of the partition** — MET,
+   and the placements are *argued*, not asserted. 12 sits with 2/3/8/11 because a
+   refusal to certify is not a verdict of either sign; 13 sits there because it
+   fires before any case's pipeline runs at all. Both readings are right and both
+   are the file's own words, not my prose copied.
+3. **§3.3's aggregate precedence in that order** — MET, and verified by reading
+   the control flow rather than the commentary: item 1 is a gate *inside* the loop
+   that `die`s immediately; items 2–7 are decided once in the `AGGREGATE` block,
+   in order refusal → content → T0 → T1-unassertable → T1-negative → OK. **The
+   structural change that makes §3.3 honest is that nothing in the loop `die`s any
+   more** — `run_pipeline` returns a status and sets `PIPE_FAIL_REASON` instead of
+   deciding for its caller. That is the right shape and it is the shape criterion
+   3 needs at N > 1.
+4. **Case 0's sha compared against the last green pre-widening run, reported
+   either way** — MET; the pin's own circularity is closed by §1 above, not by the
+   worker's fetch. **The fetch itself is credited without reservation**: a policy
+   denial identified as a policy denial, not retried, worked around through a
+   different transport onto the same public artefact, and disclosed in both the
+   Return log and the header comment. That is exactly the disposition
+   `RV-0075-VERDICT` §5 credited a prior round for.
+5. **The `*)` wildcard untouched — zero `+`/`-` lines inside it** — MET, and I
+   verified it mechanically rather than on the worker's word: the eight-line `*)`
+   arm extracted from `3ec0efe` and from `8c6429e` compares **equal, character for
+   character**, including the two-space indentation that is now shallower than its
+   sibling arms. Leaving that cosmetic asymmetry rather than "fixing" it is the
+   correct reading of a byte-identity pin.
+6. **The cost probe's two numbers printed** — MET as specified; see
+   `FINDING RV-0078-S1-3` for what the numbers do and do not license.
+7. **Re-measurement at its own base** — MET, and it went further than required:
+   the worker re-read *tb_writer's* landed files to confirm the Return-log claims
+   it depended on rather than trusting them. `shellcheck` clean and `bash -n`
+   clean — **`RV-0075-VERDICT` §5(b)'s "a future dispatch should restore
+   `shellcheck` explicitly" is discharged**, and the fourth-consecutive-parse-only
+   round it warned about did not happen.
+8. **Journal + §14 Return log + scope** — MET. One file under `tools/cosim/`,
+   plus this packet and its own journal. `Inputs` explicitly records `libs/**`,
+   `top/**`, `bin/**`, `rtl_snapshots/**` and `test/attack_plans/**` as NOT read.
+9. **Landing order** — MET and **material**: §6.1 constrained tb_writer first, and
+   `3ec0efe` precedes `8c6429e`. The worker's head check recorded `3ec0efe`
+   exactly. Had the order inverted, the degeneracy affordance tb_writer built (the
+   case id as the *second*, optional argument) would have carried it — designed
+   for, as §6.1 asked, rather than hoped for.
+
+#### 4. tb_writer's two disclosed extensions — ruled
+
+**Extension 1 — the third refusal instance at the testbench's `meta_fd` open.
+IN-PACKET-SPIRIT. Credited, no finding.**
+§2.3's repair is a *universal*: **"Every refusal in every producer SHALL reach a
+distinct non-zero harness exit code."** §2.2's six-row table is **evidence for
+that universal, not its definition** — and `FINDING WO-0077-A1`'s standing census
+repair, which this packet is the first artefact drafted under (§4.1), is
+precisely the rule that a universal is measured over every producer rather than
+over whatever enumeration a prior census happened to reach. A seventh instance
+found while *executing* the repair falls inside the universal's own scope. It is
+also the dangerous shape rather than the cheap one: a failed `meta_fd` open left
+`theirs.canon` open-but-empty, which `Canonical.read` accepts as a valid
+zero-frame transaction — FI-7's hazard through a different door.
+**And the honest consequence for me**: my §2.2 census was incomplete, and a
+worker executing my repair found a producer refusal my own census missed. That is
+the second time inside one packet that `FINDING WO-0077-A1` has paid. **It does
+not move §6.3's staging argument** — the missed instance is a file-open failure,
+not a stimulus-admission guard, so the two-accumulator argument that keeps V5
+unauthorised is untouched. Recorded, not repaired here; §2.2's table is corrected
+by this ruling.
+
+**Extension 2 — `ours_run`'s sidecar-length cross-check. IN-PACKET-SPIRIT.
+Credited, no finding.**
+This is not a guard the packet forbade; it is the **fail-closed completion of the
+mechanism §5.2 required the assignee to choose**. §5.2 pinned that the antecedent
+must be carried and left the mechanism open — *"the assignee chooses the
+mechanism and states the choice; it does not choose whether the antecedent is
+carried."* A carried record whose length can silently disagree with the frames
+actually admitted is a record that can silently attribute a count to the wrong
+frame, which would make the carried antecedent **worse than the inferred one it
+replaces**. Refusing is the only disposition consistent with §5.2's own reasoning
+and with `WO-0049` §8's *"a broken harness must never be reportable as an anchor
+finding."* One note for the record: the new refusal is a plain `failwith` mapping
+to `EXIT_BUILD`, i.e. "distinct" in the sense §2.3's own closing sentence defines
+it — *"what is not a choice is a refusal that prints and lets the run proceed to a
+comparison"* — and not in the sense of a per-guard code. That is the same reading
+my §2.2 table already used for FI-4 and FI-5, so the new entry is no less distinct
+than the entries it joins.
+
+#### 5. data_wrangler's two open questions — ruled, and one amendment I make to my own §6.1
+
+**OQ1 — the wildcard's byte-identity is Stage-1-scoped and collides with per-case
+directories at Stage 2. RULED: the worker's resolution is CORRECT, its flag is
+CREDITED, and the collision is MINE.**
+§6.1 asked for both *"per-case working directory"* and *"the `*)` fail-closed
+wildcard **untouched** — zero `+`/`-` lines inside it"*. At N > 1 those two cannot
+both hold, because the wildcard's own body names `$WORK/run1` **literally**. At
+N = 1 they can, and the worker took the reading that preserves the harder-pinned
+of the two and **flagged the collision in the round that could still be believed
+about it** rather than letting Stage 2 meet it as a broken diff. That is the
+disposition the durability clause exists to produce.
+
+**The amendment, made now rather than discovered then. The wildcard's
+byte-identity requirement is RETIRED as of Stage 2's first landing** and replaced
+by a **behavioural** requirement that survives a path rename:
+
+> The `*)` arm SHALL remain the **last** arm; it SHALL dump the case's own run
+> directory; it SHALL report `EXIT_INTERNAL` and **never** a differential or a
+> timing code; and it SHALL never fall through.
+
+The byte-identity form was a **proxy** for that behaviour, adopted at `WO-0075`
+§11 when there was exactly one run directory and the proxy cost nothing. It stops
+being free at a case set, and **a proxy that forbids the rename its own container
+requires has outlived its subject.** Stage 2's landing may therefore change lines
+inside the wildcard, and doing so is **not** a defect against §6.1 or §11. I own
+this amendment and will restate it in the Stage-2 dispatch.
+
+**OQ2 — the wildcard's immediate `die` loses a case's per-case line, a narrow
+exception to criterion 3. RULED: ACCEPTED as a narrow and correctly-bounded
+exception — with one correction to its reasoning and one bound the worker did not
+state.**
+
+- **Accepted.** Criterion 3's subject is *"a case that is skipped, or whose result
+  is folded into an aggregate without its own line."* The wildcard fires only on a
+  `compare` exit outside `{0,1,3,4,5,6}` — on a **comparator that has left its own
+  documented contract**, not on a case that reached an outcome. Such a run has not
+  lost a case's verdict; it has lost the right to report any verdict at all, which
+  is what `EXIT_INTERNAL` says. **Criterion 3 is not engaged.**
+- **The correction, and I do not want the worker's ground in the record as if I
+  had accepted it.** The Return log leans part of its justification on the branch
+  being *"unreachable under any call this script itself makes."* **Unreachability
+  is not a ground I accept**: a branch whose only defence is that it cannot fire is
+  a branch nobody will notice when it does, and this lane has already been
+  surprised once by a guard nobody had run (`FINDING WO-0078-1`). The ground I
+  accept it on is the one above — plus this: a per-case line asserting a `tier=`
+  for a code the script **cannot classify** would be a *fabricated* classification,
+  and a fabricated tier is worse than an absent line. **The absence is the honest
+  output, not a tolerated gap.**
+- **The bound the worker did not state, and it is mine to add.** At N > 1 the
+  wildcard's immediate `die` also loses **every subsequent case's line** — cases
+  with no connection to the comparator's misbehaviour. That is a different and
+  larger gap than the one flagged, and it lands at Stage 2. **Folded into the OQ1
+  amendment**: when the wildcard is rewritten, it SHALL record-and-continue like
+  every other arm, printing a line that **names the raw code without classifying
+  it** (`tier=INTERNAL (compare exit N outside its documented contract)`), and
+  `EXIT_INTERNAL` SHALL become an aggregate code decided after the loop, ranking
+  **above every other code** in §3.3's precedence — a comparator outside its
+  contract invalidates every case's verdict, not merely its own.
+
+#### 6. Findings — four, all MINOR at this tree, none blocking Stage 1
+
+**`FINDING RV-0078-S1-1` (MINOR today; MATERIAL at the first case that injects an
+idle anywhere but at or before D(0)) — T1's inference guard is now fail-OPEN in
+the multi-break direction, and my own §5.4 is the proximate cause.**
+The landed rule refuses on **exactly one** broken inter-word delta and **asserts
+on two or more**. The premise — *a single injection can only ever break one
+delta* — is true. The conclusion drawn from it is not sound: **two idles injected
+at two distinct positions inside one frame break two deltas**, carry a
+`injected_idle_before_d0` count of **0** (the sidecar carries only the m = 0
+class), and are therefore **asserted** against §6.1's gapless `admit_cycle + m + 3`
+— reddening a conformant design at `EXIT_TIMING(10)` as a `BUG-` candidate. That
+is verbatim the failure REQ-016's own §10 hook names: *"**Not** §6.1's gapless
+`m + 3` formula … a wrapper asserting it fails a conformant design, **and one
+did**."* Before this round the guard was **fail-closed** here (any broken delta
+refused) and blind in the uniform direction; §5.4 traded one blindness for the
+other rather than closing both.
+**Proximate cause is mine.** §5.4 demanded case (e) be *"a ≥ 3-word frame with the
+shift in the interior, asserting `Spec_cycle_mismatch`"*, and under the old
+any-broken-delta guard **no** interior shift can assert — so my own text compelled
+a guard change. The only realisation that asserts is a cycle sequence with a
+**zero delta** (3/5/5), i.e. two words emitted on one cycle: physically
+impossible, admissible in a comparator self-test, and not what §5.4 had in mind.
+**The successor rule, stated so the repair is not open-ended, derived from
+REQ-016's own row (*"delay each output word by the idles injected at or before its
+deciding input word D"*) plus SPEC-M03 §6.1, and from no RTL.** For a frame with
+carried count `c` and observed cycles `o_m`, let `d_m = o_m − (admit_cycle + m + 3)`:
+- `c > 0` → **`Unassertable`** (unchanged, and correct);
+- `d ≡ 0` → **clean**;
+- `d_0 = 0`, `d` non-decreasing, `d` non-zero somewhere → **`Unassertable`**
+  (consistent with *some* legitimate injection schedule, so cycle evidence cannot
+  convict);
+- otherwise → **assert** the per-word mismatches.
+That rule keeps every landed self-test case on its current branch — (d) asserts
+(`d = (1,1)`, `d_0 ≠ 0` with `c = 0`), (e) asserts (`d = (0,1,0)`, not
+non-decreasing), (e′) refuses (`d = (0,0,1)`), the carried case refuses, the clean
+case passes — **and refuses the two-idle stimulus the landed rule asserts.**
+**Owner**: tb_writer, at the next round that opens `test/cosim/canonical.ml`.
+**Not a Stage-2 blocker**: none of C1–C4 injects an idle. **Owed before any
+idle-injecting case lands.**
+
+**`FINDING RV-0078-S1-2` (MINOR at Stage 1; **BLOCKING for the Stage-2 C1+C2
+landing**) — two of §12's criteria say more than §6.1 and §11 assigned to anyone,
+and the machinery for both halves is absent. A defect against my own packet's
+decomposition, not against either worker.**
+- **Limb (a), criterion 2.** *"the harness prints that case's frame-0
+  `admit_cycle` as **0**"* is named in **no** §6.1 item and **no** §11 box. The
+  landed report prints an admit-cycle value **only on the T0-RED path**
+  (`frame 0: admit-cycle mismatch (ours=…, theirs=…)`); on the clean path it is
+  **inferable** from T1's `expected 3` at word 0 and **not printed**. At Stage 1
+  this is harmless — case 0's placement is guaranteed by a strictly stronger
+  instrument, the byte-identical sha256. **At Stage 2 it stops being harmless**:
+  C1 is a *new* stimulus with a *new* sha, and criterion 2 becomes the **only**
+  check that `~first_start:4` really admits on the reset-release cycle — which is
+  §4.2's whole sighted-placement argument.
+- **Limb (b), criterion 4.** Criterion 4 says *"for every accepted frame in every
+  case"*; my §5.1 and §11 said *"on `base_aligned = true` **and**
+  `spec_divergences = []`"*. The landed printer follows §5.1 — so in a case with
+  one clean frame and one divergent frame, the clean frame's numbers are **not**
+  printed. Unreachable at one frame; **reachable at C2**, which is two.
+**Both limbs bite at the same landing (C1+C2) and have the same owner** —
+tb_writer, in `test/cosim/canonical.ml`'s printer. **I commission both in the
+Stage-2 dispatch, and Stage 2 may not be issued until they are scheduled.** Both
+halves met their §6.1/§11 DoD lists exactly as written; neither is at fault.
+
+**`FINDING RV-0078-S1-3` (MINOR) — the cost probe measures one of the two pipeline
+runs per case, and linearity cannot be measured at one case.**
+`run_pipeline` is invoked **twice** per case (check 4.1 and check 4.3) and only
+the first is timed, so `[cost] case 0 pipeline wall time (run1): 0.635s`
+under-reports the true per-case marginal by roughly half. **Stage 2's four added
+cases must be priced at ≈1.3 s each, not ≈0.64 s.** Owner: data_wrangler, at the
+Stage-2 landing.
+**And the reading of §9's bands, stated precisely so no later round over-reads
+it.** Band A has two clauses. Its **absolute** clause is comfortably met — 6.273 s
+against a 300 s bound, of which ≈4.95 s is `dune build` and the `iverilog` compile,
+both **outside** the case body. Its **linearity** clause is **UNMEASURED and
+unmeasurable at N = 1.** What Stage 1 establishes is only that nothing in the loop
+is superlinear *by construction* — the build, the compile, the provenance checks
+and the self-test all sit outside the per-case body, which I verified by reading
+the landed control flow. **Band A may not be declared met until a run with N ≥ 2
+exists.** Until then §9's band question is open, not answered green.
+
+**`FINDING RV-0078-S1-4` (MINOR, no repair owed at Stage 1) — criterion 7's
+reference-side half is discharged at the reader, not at the producer.**
+`compare --self-test`'s `(WO-0078-1)` case proves `Canonical.read` rejects the `E`
+sentinel — observed, exit 3, in CI. It does **not** prove `tb_xgmii_rx_64.v`
+*emits* one: no run trips a reference-side guard and no authorised stage can, so
+the three `$fwrite("E …")` / `$fclose` sites are **review-evidence only**, exactly
+as the worker disclosed. **The finding's own premise, however, is now measured,
+and this answers `J-dv_lead-0149` Open-question 4.** The green log carries
+`[case 0 run1] vvp: …/tb_xgmii_rx_64.v:389: $finish called at 234600 (1ps)` and
+the run proceeds green — line 389 is the **normal** end-of-simulation `$finish`.
+So this run positively confirms what §2.3 could only assert: **a `$finish` leaves
+`vvp`'s status at 0 and `run_pipeline`'s rc/file-existence check does not catch
+it.** The premise is settled; the repair's emission path is not. First
+dischargeable at C9 (V5), in the scoped-not-authorised stage.
+
+#### 7. §12 read per criterion — what Stage 1's green discharges, and what it does not
+
+**Written so no later round over-reads this green.** Nine criteria, one
+disposition each.
+
+| # | criterion | disposition at `8c6429e` |
+|---|---|---|
+| **1** | case 0 byte-identical | **DISCHARGED**, and re-anchored independently by this review against run `31080871169` at `55e16ae` (§1). Not vacuous. |
+| **2** | the sighted placement survives | **PARTIALLY.** First half holds by byte-identity, which is stronger than the criterion asked. Second half — the printed `admit_cycle` — **does not exist** (`FINDING RV-0078-S1-2`(a)). Discharged in substance at Stage 1; its mechanism must exist before C1. |
+| **3** | every case reaches a verdict or names why not | **DISCHARGED for the printed shape, at cardinality one; NOT YET ENGAGED for its plural content.** All four fields print. The properties criterion 3 actually protects are plural — a red case not costing a later case its line, a skipped case being named — and **at N = 1 none can be exercised, and no CI run has.** The control flow was *written* for them (verified by reading it); data_wrangler exercised eight scenarios against a scratchpad stub toolchain, which is **disclosed worker testing, not a CI result, and is not `SO-`-citable evidence.** |
+| **4** | T1 prints its numbers on the clean path | **DISCHARGED and observed** — `word 0: expected 3, observed 3` … `word 7: expected 10, observed 10`. First commit at which this lane's T1 numbers are readable without borrowing T2's. Limb (b) of `FINDING RV-0078-S1-2` bounds it at multi-frame cases. |
+| **5** | T1's antecedent carried, not inferred | **DISCHARGED for the at-or-before-D(0) class only**, and demonstrated non-vacuously (a gapless transaction flipped to `Unassertable` by the sidecar alone). **Not** discharged for interior injection: the mechanism carries only `injected_idle_before_d0`, and interior idles still reach T1 through inference — where `FINDING RV-0078-S1-1` now says the inference is fail-open. |
+| **6** | the two constructors separately testable | **DISCHARGED and observed** — (e) exit 4, (e′) exit 6, distinct fixtures, distinct branches, neither optional (chain verified in source). |
+| **7** | every producer's refusal reaches an exit code | **PARTIALLY** (`FINDING RV-0078-S1-4`). Reader side proven and observed; producer side unexecuted anywhere. Fully dischargeable only at C9. |
+| **8** | every case's disposition frozen before it ran | **NOT YET ENGAGED, by construction.** Stage 1 adds no case; case 0 is the frozen baseline, not a case §7 predicts, and §7's table has no Stage-1 row. First bites at C1, gated by §13 item 1's CD instance. **Nothing in this green touches it.** |
+| **9** | no claim outside the driven set | **DISCHARGED for this round's artefacts, and STANDING.** Both halves' text and the harness's own output say it where a later reader meets them — the per-case SUMMARY (*"this case's own result is timing evidence for the ONE stimulus class it drives and for no other"*) and the AGGREGATE block. A standing obligation on every later artefact, never a box a stage closes. |
+
+#### 8. What Stage 1's green does NOT mean
+
+§6.1's own closing words, and I restate rather than paraphrase them: **"Stage 1's
+green means the machinery moved and the one measured configuration is
+bit-identical to what it was. It means nothing about any stimulus class, and no
+`SO-` may cite Stage 1 for coverage of anything."** Concretely, at `8c6429e`:
+
+1. **The landed case set is `{case 0}`** — one 64-octet good-FCS lane-0 gapless
+   frame. **`AP-M03` §7 bar 1 lifts for ZERO classes**, exactly as §8's table
+   says "unchanged" in every Stage-1 cell. Bars 2, 3 and 4 are untouched; the
+   strobe record stays refused and §10 item 4 was honoured (no strobe field in
+   either half's diff).
+2. **The one-frame stimulus bound is UNCHANGED.** Seventeen of twenty-one seeded
+   classes remain unreachable. Stage 1 built the container; it put nothing in it.
+3. **Nothing here advances the programme's Phase 2 or Phase 3** (§0.1, §10 item
+   11). The MoldUDP64/ITCH golden book model and its external-reference agreement
+   are a different instrument, not one line of which exists.
+4. **No `SO-xgmii_rx_64.md` is opened, advanced or implied** (§10 item 10).
+5. **A green `cosim` job is not evidence that any refusal guard works.** Three of
+   them have still never executed (`FINDING RV-0078-S1-4`).
+6. **Band A is not declared met** (`FINDING RV-0078-S1-3`).
+
+#### 9. The next gate — restated with its dated condition
+
+**`§13 item 1` remains the next gate and it is mine.**
+`test/attack_plans/CD-xgmii_rx_64_cosim.md` §9 still reads, verbatim at
+`8c6429e`, **"This document is frozen for Phase 1 as written."** CD §0 bars moving
+an entry after a run has probed it, and §6.2 makes a case **void** — *"re-run, not
+adjudicated"* — if it runs before its domain instance is committed. §11 states the
+precondition as *"checked before the round is spawned rather than by the
+assignee."*
+
+**Its date is a condition, not a calendar entry, in this programme's own idiom
+(`RV-0075-VERDICT` §4.1(c) dated its successor the same way): the co-sim Phase 2
+domain instance is owed BEFORE STAGE 2'S FIRST CASE RUNS — i.e. before the C1+C2
+landing is DISPATCHED, not before it is reviewed — in a dv_lead round of its
+own.** Stage 1's landing has made that the **immediate** next gate: nothing else
+now stands between here and C1.
+
+**Two items join it as preconditions on the same dispatch**, both raised above:
+`FINDING RV-0078-S1-2`'s printer repair (both limbs, tb_writer), and §5's
+retirement of the wildcard byte-identity requirement in favour of its behavioural
+successor (mine, recorded here and to be restated in the dispatch).
+
+#### 10. Verdict
+
+**ACCEPT — tb_writer's half at `3ec0efe`, data_wrangler's half at `8c6429e`.**
+
+Both §11 Stage-1 DoD checklists are met, box by box, checked against the diffs
+and against four mechanical re-derivations of my own rather than against either
+Return log. The landing CI, which §11 names as *"the check, and it is the only
+one"*, is **green on both jobs of run `31087657064`**, and its green means what
+§11 said it would mean — verified line by line against the printed log, not
+against the exit code. **Four owed `RV-0075` repairs are DELIVERED and three
+findings CLOSED**: `FINDING RV-0075-1`, `FINDING RV-0075-2` (for the class it
+named), `RV-0075-VERDICT` §4.1(b)/(c)'s `EXIT_TIMING_UNASSERTABLE(12)`, and
+§4.1's case-(e) rebuild with (e′) beside it. `FINDING WO-0078-1`'s repair lands
+with its reader half proven and its producer half honestly bounded. **Four
+findings are raised, all MINOR at this tree, none blocking this stage, each with
+a named owner and a named carrier round; one of them —
+`FINDING RV-0078-S1-2` — blocks the *next* stage's dispatch until it is
+commissioned, and it is a defect in my own packet, not in either half's work.**
+Both disclosed extensions are ruled **in-packet-spirit**; both open questions are
+ruled, one of them against my own §6.1, which I amend here rather than leave for
+Stage 2 to discover.
+
+**Nothing in this round licenses a wider claim than the one 64-octet good-FCS
+lane-0 gapless frame this lane has driven since it opened — Stage 1 added a
+container and put nothing in it — and both halves' own text, and the harness's own
+printed output, say so in the places a later reader will meet them.**
+
+**dv_lead, `J-dv_lead-0150`, 2026-08-11, HEAD `8c6429e` (unmoved).**

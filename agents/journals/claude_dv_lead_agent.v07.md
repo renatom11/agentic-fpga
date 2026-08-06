@@ -384,3 +384,321 @@ commissioned it. I ran no git command that writes.
 ### Files-in-this-commit
 
 - agents/handoffs/WO-0078_cosim-phase2-3-stimulus-widening.md
+
+## [J-dv_lead-0150] 2026-08-11T11:30Z | task:WO-0078 | Stage 1 accepted on both halves — and the freeze it exists to protect was pinned against a run that already carried the change, so I re-anchored it against the last run that did not
+
+### Trigger
+
+Orchestrator dispatch, sole agent in flight: `RV-STAGE1`, the review my own packet
+schedules at §6.1/§9 for the stage's two landings, and the round that flips the
+`State` field at the packet's head per §14's own note. Two halves to review:
+tb_writer's at `3ec0efe` (`J-tb_writer-0033`) and data_wrangler's at `8c6429e`
+(`J-data_wrangler-0005`).
+
+**HEAD verified as my first action, before reading anything**: `git rev-parse
+HEAD` → `8c6429ec0e36fe6aabab13d883c036cdae0b76ee`, exactly the spawn head.
+Neither rollback disposition fired and no descendant check was needed.
+
+### Inputs
+
+- `agents/charters/dv_lead.md` and `agents/PROTOCOL.md`, both in full.
+- `agents/handoffs/WO-0078_cosim-phase2-3-stimulus-widening.md` in full — my own
+  packet, including both Return logs appended since I wrote it.
+- `agents/handoffs/WO-0075_cosim-lane-cycle-comparison.md` — `WO-0075` §§3, 6, 7,
+  9, 11 and `RV-0075-VERDICT` §§4.1, 5, 6, 8, for the four owed repairs' original
+  text and for my own verdict form.
+- The two commits under review, read as diffs and as landed sources at `8c6429e`:
+  `test/cosim/stimulus_gen.ml`, `canonical.ml`, `canonical.mli`, `compare.ml`,
+  `ours_run.ml`, `tb_xgmii_rx_64.v`; `tools/cosim/run_cosim.sh`.
+- `docs/specs/modules/xgmii_rx_64.md` §6.1 (the preamble-position paragraph, the
+  idle-injection prohibition, *"Injection begins at the frame's first octet"*) and
+  its §10 **REQ-016** hook — read **directly**, because tb_writer's re-measurement
+  claimed text stronger than my own FI-14 quotation and I do not take a spec
+  reading from a Return log. That hook is what grounds `FINDING RV-0078-S1-1`.
+- `test/attack_plans/CD-xgmii_rx_64_cosim.md` §9, to confirm the freeze sentence is
+  still there (it is).
+- `agents/journals/workers/claude_tb_writer_agent.v02.md` `J-tb_writer-0033` and
+  `agents/journals/workers/claude_data_wrangler_agent.md` `J-data_wrangler-0005`,
+  `Inputs` sections in particular (charter §6 criterion 7).
+- CI, read-only through the GitHub API: runs `31087657064` (`8c6429e`),
+  `31084252734` (`3ec0efe`) and **`31080871169` (`55e16ae`)**, and the `cosim` job
+  logs `92570843774` and **`92549154623`**.
+- **NOT read**: `libs/**`, `top/**`, `bin/**`, `rtl_snapshots/**`,
+  `docs/reports/audit/**`. No expected value in this verdict comes from RTL; the
+  successor rule I state in `FINDING RV-0078-S1-1` is derived from REQ-016's own
+  row and SPEC-M03 §6.1 and from nothing else.
+
+### Reasoning
+
+**1. I did not accept the freeze on the freeze-checker's word, and that is the
+whole reason this round was worth a lead's time.** Criterion 1 is the criterion
+that fails the entire run when it fails, and Stage 1's green rests on it. But the
+pinned literal `CASE0_PINNED_SHA256` was sourced from run `31084252734` at
+`3ec0efe` — **after tb_writer's half had already landed**. That is circular by
+construction: had the new case table moved case 0, the pin would have recorded the
+*moved* value, the comparison would have matched, and criterion 1 would have
+passed **vacuously and greenly**, with nothing in the log to distinguish that from
+a real pass. So I fetched the last run that predates the widening entirely —
+`31080871169`, job `92549154623`, commit `55e16ae` — and its `SUMMARY` prints the
+same hash. Then I closed it a second way that needs no CI at all: everything in
+`stimulus_gen.ml` from byte 0 through `write_stimulus`'s closing `;;` is
+byte-identical between `55e16ae` and `8c6429e`, 3 121 bytes either side. **Two
+independent closures, one of them offline.** The verdict records the anchor run
+and instructs every later round to cite *that run*, never the literal — because
+from `8c6429e` forward the literal is the single point of failure for the whole
+freeze and an edit to it defeats the freeze silently.
+
+**2. The rejected alternative here was "the harness printed `[ok] byte-identical`,
+so criterion 1 is discharged."** It is the reading the log invites and it is
+exactly wrong: the harness can only compare against what it was told, and what it
+was told came from a round that could have been the one that moved the thing. A
+freeze check is only as good as the independence of its baseline, and that
+independence is not visible from inside the run.
+
+**3. `FINDING RV-0078-S1-1` is the finding I nearly did not make, and my own §5.4
+caused it.** tb_writer changed the T1 guard from *any broken inter-word delta
+refuses* to *exactly one refuses; two or more assert*. The premise is true — a
+single injection breaks at most one delta. The conclusion is not: **two** idles at
+two distinct interior positions break two deltas, carry `injected_idle_before_d0`
+= 0, and are therefore asserted against §6.1's gapless formula — reddening a
+conformant design. REQ-016's §10 hook says of exactly this: *"a wrapper asserting
+it fails a conformant design, **and one did**."* I checked whether my packet
+compelled the change and it did: §5.4 demanded case (e) *assert* on a ≥ 3-word
+interior shift, and under the old guard no interior shift can assert — indeed the
+only realisation that asserts has a **zero delta** (3/5/5), two words on one
+cycle, physically impossible. **So I convict my own §5.4 rather than the worker's
+reading of it**, and I state a successor rule instead of leaving the repair open:
+with carried count `c` and `d_m = o_m − (admit_cycle + m + 3)`, refuse when
+`c > 0`; pass when `d ≡ 0`; refuse when `d_0 = 0` and `d` is non-decreasing and
+non-zero somewhere; assert otherwise. I checked it against all six landed
+fixtures by hand before writing it down — (d) asserts, (e) asserts, (e′) refuses,
+the carried case refuses, the clean case passes — **and it refuses the two-idle
+stimulus the landed rule asserts.** A finding that names the defect and not the
+repair costs the next round the same derivation I just did.
+
+**4. Criterion 2's printed half exists in §12 and in no assignee's list, and I
+found it by reading §12 against the DoD rather than against the log.** Neither
+§6.1's item lists nor §11's boxes name *"the harness prints that case's frame-0
+`admit_cycle` as 0"*, and the landed report prints an admit-cycle value only on
+the T0-**red** path. Criterion 4 has the same shape: §12 says *"every accepted
+frame in every case"* where my §5.1 said *"`spec_divergences = []`"*. **Both are
+defects in my packet's decomposition, both bite at the same landing (C1 needs the
+first, C2 needs the second), both have one owner and one file.** I record them as
+one finding with two limbs for that reason, and I make Stage 2's dispatch
+conditional on commissioning them — a criterion assigned to nobody is not a
+criterion, and discovering that at C1 would mean discovering it with C1's answer
+already in hand.
+
+**5. On the wildcard, I amended my own §6.1 rather than let Stage 2 meet the
+contradiction.** §6.1 asked for a per-case working directory *and* zero `+`/`-`
+lines inside a `*)` arm whose body names `$WORK/run1` literally. At one case both
+hold; above one they cannot. The worker took the reading that preserves the
+harder-pinned requirement and **flagged the collision in the round that could
+still be believed about it**. The right response is not to praise the flag and
+leave the trap set: the byte-identity form was a *proxy* for a behaviour, adopted
+when a proxy was free, and **a proxy that forbids the rename its own container
+requires has outlived its subject.** So I retire it as of Stage 2's first landing
+and replace it with the behaviour it stood for — last arm, dumps the case's
+directory, reports `EXIT_INTERNAL` and never a differential or timing code, never
+falls through.
+
+**6. On OQ2 I accepted the exception and refused the argument offered for it.**
+The worker justified the wildcard's lost per-case line partly on the branch being
+unreachable. **Unreachability is not a ground I will put in the record**: a branch
+whose only defence is that it cannot fire is a branch nobody notices when it does,
+and this lane has already been surprised once by a guard nobody had run
+(`FINDING WO-0078-1` is that surprise, in this very packet). The ground I accept
+is that a `tier=` for a code the script cannot classify would be a *fabricated*
+classification, and a fabricated tier is worse than an absent line. Then I added
+the bound the worker did not state — at N > 1 that `die` also costs **every
+subsequent** case its line — and folded it into the same amendment.
+
+**7. Both disclosed extensions ruled in-packet-spirit, and the first one convicts
+my own census.** §2.3's repair is a universal over producers; §2.2's six-row table
+is *evidence* for it, not its definition — which is precisely `FINDING
+WO-0077-A1`'s standing rule, the rule this packet was the first artefact drafted
+under. A seventh instance found while executing the repair is inside the
+universal. **And a worker executing my repair found a producer refusal my own
+census missed**, which is the second time inside one packet that that repair has
+paid. It does not move §6.3's staging argument (a file-open failure is not a
+stimulus-admission guard), and I say so rather than let the correction imply more
+than it does. The second extension is not an addition at all: a carried record
+whose length can silently disagree with the frames admitted would make the carried
+antecedent *worse* than the inferred one it replaces, so refusing is the only
+disposition consistent with §5.2's own reasoning.
+
+**8. What I refused to do.** I did not repair anything — §6.1 gives `test/cosim/`
+and `tools/cosim/` to the assignees and a reviewer that repairs what it reviews
+has stopped being one. I did not run a simulation (ADR-0005), and I did not treat
+data_wrangler's scratchpad stub runs as evidence: they are disclosed worker
+testing, they are not a CI result, and the verdict says so where criterion 3 is
+read. I did not declare Band A met — **linearity cannot be measured at one case**,
+and the honest statement is that nothing in the loop is superlinear *by
+construction*, which is a reading of the control flow rather than a measurement.
+
+### Actions
+
+- Verified HEAD; read the charter, PROTOCOL, my own packet in full, both Return
+  logs and both worker journal entries.
+- Reviewed both diffs line by line against §6.1's item lists and §11's DoD boxes.
+- **Four mechanical re-derivations of my own**, none taken from a Return log:
+  (a) the `*)` wildcard arm extracted from `3ec0efe` and `8c6429e` and compared
+  character for character — equal, indentation included; (b) `stimulus_gen.ml`'s
+  prefix through `write_stimulus` compared between `55e16ae` and `8c6429e` —
+  byte-identical, 3 121 bytes; (c) the self-test's mandatory `&&`-chain read in
+  source to confirm neither new case is optional; (d) `timing_report_to_string`
+  and `report_to_string` read to establish that no `admit_cycle` value is printed
+  on the clean path.
+- Read three CI runs and two job logs read-only through the GitHub API. The
+  direct `curl` route to the job-logs endpoint 302s to a
+  `productionresultssa*.blob.core.windows.net` host this session's egress denies
+  with `403`; used the server-side logs tool instead — a different transport onto
+  the same public artefact, not a retry of a policy denial. The same workaround
+  data_wrangler journaled, independently reproduced.
+- **Wrote two things and nothing else**: the `RV-STAGE1` verdict appended to
+  `WO-0078` §14, and the `State` field at that packet's head, flipped to
+  **STAGE 1 — ACCEPTED** with Stage 2 authorised-not-issued and Stage 3
+  scoped-not-authorised. The prior `DRAFT` text is preserved inside the field
+  rather than overwritten, because a lifecycle field that erases its own history
+  cannot be audited. **No `test/**`, no `tools/**`, no `test/attack_plans/**`.**
+- Ran no git command that writes.
+
+### Evidence
+
+All CI references are externally verifiable at the run/job ids given
+(ADR-0003/F5); the four re-derivations are runnable from a checkout at `8c6429e`.
+
+- **`git rev-parse HEAD`** → `8c6429ec0e36fe6aabab13d883c036cdae0b76ee`.
+- **Run `31087657064`** (workflow "build", head_sha `8c6429e`) — `conclusion:
+  success`. Job `92570843774` (`cosim`) success, step *"Run the co-simulation lane
+  (WO-0046 Phase 1)"* 09:10:34 → 09:10:40. Job `92570843776` (`build`) success.
+- **Job `92570843774` log, quoted verbatim** —
+  `=== CASE SET (WO-0078 §6.1 Stage 1: 1 case(s) — 0) ===`;
+  `[ok]   case 0's stimulus is byte-identical to the last green pre-widening run`;
+  `CASE 0: stimulus_sha256=c675517176922d42bca42ec3def182cb3536861f1acaa8384116f33a5c4cc051 compare_exit=0 tier=CLEAN`;
+  `T1: clean -- …` then `frame 0:` / `word 0: expected 3, observed 3` … `word 7:
+  expected 10, observed 10`; `=== AGGREGATE (WO-0078 §3.3) ===` then `every case
+  in the set reached a verdict and every verdict was clean.`;
+  `[cost] case 0 pipeline wall time (run1): 0.635s`;
+  `[cost] run_cosim.sh wall time (this invocation): 6.273s`; `compare --self-test:
+  OK` after ten `PASS` lines including `(e)` exit 4, `(e')` exit 6, the
+  carried-idle case exit 6 and the refusal sentinel exit 3; and
+  `[case 0 run1] vvp: …/tb_xgmii_rx_64.v:389: $finish called at 234600 (1ps)` on a
+  run that then proceeds green — the observation that settles
+  `J-dv_lead-0149` Open-question 4 in the finding's favour.
+- **Run `31084252734`** (`3ec0efe`, tb half alone) — both jobs `success`.
+- **Run `31080871169`, job `92549154623`, commit `55e16ae` — the pre-widening
+  anchor.** Log prints `stimulus sha256:
+  c675517176922d42bca42ec3def182cb3536861f1acaa8384116f33a5c4cc051`, identical to
+  the pinned value. **This is the citation the freeze rests on from now on.**
+- **Re-derivation (a)**, wildcard byte-identity: the eight-line `*)` arm from
+  `git show 3ec0efe:tools/cosim/run_cosim.sh` and from
+  `git show 8c6429e:tools/cosim/run_cosim.sh` compare **equal**, character for
+  character, including its two-space indentation.
+- **Re-derivation (b)**, case 0 frozen: `git show
+  55e16ae:test/cosim/stimulus_gen.ml` and `git show
+  8c6429e:test/cosim/stimulus_gen.ml`, prefixes through `write_stimulus`'s closing
+  `;;` — **identical, 3 121 bytes each.**
+- **Re-derivation (c)**: `compare.ml`'s self-test returns 0 only under
+  `a_ok && b_ok && c_ok && d_ok && e_ok && e'_ok && f_ok && t0_ok &&
+  idle_carried_ok && refusal_ok` — neither new case optional.
+- **Re-derivation (d)**: `canonical.ml`'s only `admit_cycle`-valued print is
+  `"frame %d: admit-cycle mismatch (ours=%d, theirs=%d)"`, reachable only when T0
+  is red. Nothing prints it on the clean path — `FINDING RV-0078-S1-2`(a).
+- **Spec citation**, `docs/specs/modules/xgmii_rx_64.md` §10 REQ-016 hook, read
+  directly: *"**Not** §6.1's gapless `m + 3` formula (C-14.4) and **not** §7's
+  per-octet constant … a wrapper asserting it fails a conformant design, and one
+  did."* This is the text `FINDING RV-0078-S1-1` rests on.
+- **`test/attack_plans/CD-xgmii_rx_64_cosim.md`** at `8c6429e` still reads *"This
+  document is frozen for Phase 1 as written."* — §13 item 1 remains open.
+- **No simulator, no `dune`, no `iverilog` was run by me** (ADR-0005). Nothing in
+  this entry is offered as a local execution result.
+
+### Outcome
+
+**DoD met for the round as commissioned.** Deliverables:
+
+1. **`RV-STAGE1` appended to `WO-0078` §14** — ten sections: the CI reading at the
+   source, the two line reviews against §6.1/§11, the two extension rulings, the
+   two open-question rulings plus one amendment to my own §6.1, four numbered
+   findings, the nine pass criteria read one disposition each, what the green does
+   **not** mean, the next gate with its dated condition, and the verdict. ✔
+2. **The `State` field flipped**: STAGE 1 — ACCEPTED (both halves); STAGE 2 —
+   AUTHORISED, NOT ISSUED, conditional on §13 item 1 and on
+   `FINDING RV-0078-S1-2`; STAGE 3 — SCOPED, NOT AUTHORISED. ✔
+3. **Verdict: ACCEPT, both halves.** Four `RV-0075` repairs delivered;
+   `FINDING RV-0075-1`, `FINDING RV-0075-2` (for the class it named) and
+   `RV-0075-VERDICT` §4.1's case-(e) defect **CLOSED**;
+   `RV-0075-VERDICT` §4.1(b)/(c)'s dated successor code **DELIVERED**. ✔
+4. **Four findings raised**, all MINOR at this tree, none blocking Stage 1, each
+   with an owner and a carrier: `-S1-1` (T1's guard fail-open in the multi-break
+   direction; successor rule stated; tb_writer; owed before any idle-injecting
+   case), `-S1-2` (criteria 2 and 4 assigned to nobody; tb_writer; **blocks
+   Stage 2's dispatch until commissioned**), `-S1-3` (the cost probe times one of
+   two runs; Band A's linearity clause unmeasurable at N = 1; data_wrangler),
+   `-S1-4` (criterion 7's producer half unexecuted; no repair owed until C9). ✔
+5. **Three of the four are defects in my own packet, not in either half's work**
+   — `-S1-1`'s proximate cause is §5.4, `-S1-2` is §6.1/§11's decomposition, and
+   the wildcard collision is §6.1's. Said plainly, in the verdict, where a later
+   reader meets it. ✔
+
+**Harvest.** **Not due this round and the span stays open** — PROTOCOL §7 places
+the harvest at every `SO-` and every phase gate, and this is a review verdict.
+**Banked, not minted**, two candidates, taking the running set to twelve:
+
+- **Candidate (K)**: *a frozen baseline recorded as a literal inside the artefact
+  that enforces it has no independent anchor; the record must cite the run that
+  produced the value, and a review that accepts it must re-read that run rather
+  than the literal.* **LH1**: this round's own commits — the pin was taken from a
+  run at a revision that already carried the change the pin exists to detect, and
+  only re-reading the last revision that did not carry it closed the circle.
+  **LH2-g** holds: no proper noun of any kind in the rule statement. **LH3**:
+  without it, a freeze check passes vacuously whenever the pinning round is
+  downstream of what it freezes against, and the passing run contains nothing that
+  distinguishes that from a real pass.
+- **Candidate (L)**: *when a fixture is rebuilt to separate two dispositions a
+  guard could not tell apart, the guard's new predicate must be checked against
+  every input the narrowing now admits, not only against the two fixtures it was
+  rebuilt to separate.* **LH1**: this round's (e)/(e′) split, which closed one
+  blind direction and opened another. **LH2-g** holds. **LH3**: without it, a
+  repair proves only that two fixtures differ, and the suite that proves it is the
+  same suite that will pass while the guard admits a conformant subject as a
+  defect.
+
+**Handoff**: the two files below go to the orchestrator for commit under trailer
+`Agent: dv_lead`, `Work-Order: WO-0078`, `Journal-Entry: J-dv_lead-0150`. The
+verdict is verbatim-relay material for both workers.
+
+### Open-questions
+
+1. **`§13 item 1` is now the immediate next gate and nothing stands in front of
+   it.** `CD-xgmii_rx_64_cosim.md` §9 still reads *"frozen for Phase 1 as
+   written"*, and §6.2 makes any case that runs before its domain instance is
+   committed **void — re-run, not adjudicated**. The condition is dated in this
+   programme's idiom: **owed before Stage 2's first case runs, i.e. before the
+   C1+C2 landing is dispatched, not before it is reviewed.** It is a dv_lead round
+   of its own and it does not exist yet.
+2. **Stage 2's dispatch now carries three preconditions, not one**, and the
+   orchestrator should see them together: the CD instance (item 1);
+   `FINDING RV-0078-S1-2`'s printer repair, both limbs, commissioned to tb_writer;
+   and §5's replacement of the wildcard byte-identity requirement with its
+   behavioural successor, which I restate in the dispatch.
+3. **The sequencing question from `J-dv_lead-0149` Open-question 2 is still
+   open and is now sharper.** Stage 1 has paid four repairs, so the `SO-` no
+   longer has to cite around them — but the `SO-` remains the named practical
+   owner of `FINDING K-1`, `RN-6` and `FINDING WO-0077-A1`'s census ownership, and
+   `FINDING RV-0078-S1-1` has just added a fourth item whose natural carrier is
+   whichever round next opens `test/cosim/canonical.ml`. **If that round is the
+   Stage-2 landing, one dispatch can carry `-S1-1` and `-S1-2` together.** Worth
+   pricing before Stage 2 is dispatched rather than after.
+4. **`FINDING RV-0078-S1-1` deserves a second reader.** It is a claim that a
+   landed, green, self-tested guard admits a conformant design as a defect on a
+   stimulus nothing currently drives — exactly the shape that is easy to assert
+   and hard to falsify until the stimulus exists. The derivation is written out in
+   the verdict against REQ-016's own row so that it can be checked rather than
+   trusted, and I would rather the auditor check it now than have it discovered at
+   the first idle-injecting case.
+
+### Files-in-this-commit
+
+- agents/handoffs/WO-0078_cosim-phase2-3-stimulus-widening.md
