@@ -418,8 +418,9 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
   let inword_closing above =
     (lanes.is_terminate |: lanes.is_error |: lanes.is_start |: other_ctl) &: above
   in
-  let b_exists = bit lanes.is_start 0 &: i.cfg_rx_enable &: ~:(i.clear) in
-  let c_exists = bit lanes.is_start 4 &: i.cfg_rx_enable &: ~:(i.clear) in
+  let settled = reg spec vdd in
+  let b_exists = bit lanes.is_start 0 &: i.cfg_rx_enable &: ~:(i.clear) &: settled in
+  let c_exists = bit lanes.is_start 4 &: i.cfg_rx_enable &: ~:(i.clear) &: settled in
   let b_closing = inword_closing (of_int ~width:8 0xfe) in
   let c_closing = inword_closing (of_int ~width:8 0xe0) in
   (* The epoch that carries past this word, if any. At most one can: a [/S/] in
