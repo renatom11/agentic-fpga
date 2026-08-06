@@ -655,6 +655,135 @@ frames, a case carrying one clean frame and one divergent frame prints no number
 for the clean one. Commissioned in the same dispatch; it bounds the *readability*
 of C2's timing evidence, not this instance's freeze.
 
+### 10.2-bis. DATED ANNOTATION beside §10.2 — the "needs no accumulator change" clause is MEASURED FALSE, and NOTHING ELSE IN §10.2 MOVES (`J-dv_lead-0153`)
+
+**This is an annotation beside §10.2, never an edit inside it** — §0-ter's form at
+its third use. It discharges `FINDING RV-0078-S2-4` (`WO-0078` §14, `RV-C1C2` §6),
+which raised the defect, named dv_lead its owner, routed it to this round, and
+bounded in advance what it may touch.
+
+**The authority for making it, stated because I refused a different addition to
+this document one round ago and the two must be told apart.** This note is made
+under **§9's four-item change discipline**, which binds every change to this
+document and is not a lift: §0-ter was written under §9 while the whole document
+was still frozen for Phase 1, which is what proves §9 reaches an annotation
+without one. It is **not** made under §9-bis's addition-only lift, whose scope is
+its own words — *"co-sim Phase 2's domain instances"* — and which `RV-C1C2` §3
+ruled may not be borrowed for content it did not name. **The distinction that
+decides it: this note records a defect in THIS DOCUMENT'S OWN TEXT, which is
+exactly what §9 exists for; what I refused to add last round was a RESULT about
+the two implementations, which §10.7 item 3 bars outright** — *"This document
+freezes the questions; it answers none of them."* **This note answers none of
+them either**, and item 4 below is where that is checked rather than asserted.
+
+§9's four items follow, in §9's own order.
+
+**1. The section.** §10.2's *"Why this case exists"* rationale, its second clause
+— **and nothing else in §10.2, and nothing anywhere else in this document**:
+
+> *"and it needs **no accumulator change** — `WO-0078` §2.2 measured both refusal
+> guards and both fire only on a start character arriving *while a frame is
+> open*."*
+
+The clause appears **once** in this document. Its instances at `WO-0078` §2.2 and
+§6.2 are that packet's and are convicted there (`RV-C1C2` §4); they are not this
+document's to repair. **Its subject does not reach §10.1, §10.3 or §10.4**, whose
+stimuli are single frames — one frame cannot present a second start character, so
+the defect is inert at all three (`RV-C1C2` §10).
+
+**2. What moved. NOTHING — not in this document, not in the requirement it rests
+on, not in the domain.** What changed is the world the clause describes:
+
+- **The clause is measured false.** `build` run **`31096150983`** at `53fa1de`,
+  `cosim` job **`92598555141`**: case C2 printed
+  `compare_exit=N/A tier=PRODUCE-REFUSAL`, preceded by `ours_run`'s FI-4 refusal
+  at `test/cosim/ours_run.ml` line 172.
+- **The mechanism, which is not the one the guard's message names** (`RV-C1C2`
+  §4): both producers' guards test a state spanning the input start character to
+  the **OUTPUT** `tlast` — the union of the admission and delivery spans — which
+  at SPEC-M03 §7's ΔC = 3 outlives frame 0's input-side terminate by exactly one
+  cycle, and requirements.md §0.3's minimum inter-frame gap places frame 1's start
+  character on precisely that cycle. **So the guards do NOT "fire only on a start
+  character arriving while a frame is open" in REQ-110's sense.** They fire on a
+  start character arriving while a *bookkeeping* span is open, and the two differ
+  by the pipeline latency the specification itself pins. **C2's stimulus never
+  presents REQ-110's condition**: on the input side a full cycle separates frame
+  0's `/T/` at octet 72 from frame 1's `/S/` at octet 84, and `Arrival.check`
+  returns `[]`.
+- **No entry moves, in either direction.** No observable crosses between §5.1's
+  INSIDE list and §5.2's OUTSIDE list. No permitted-divergence entry is created —
+  §0-bis bars this document from creating one and that bar is untouched. §10.0's
+  empty-permitted-set statement for these four instances, and its scope, are
+  unchanged.
+- **§10.2's INSIDE list, its expected values, its FROZEN PREDICTION and both of
+  its branch cells are untouched, byte for byte**, and this note does not quote
+  them (see item 5 of the closing list).
+- **The repair the falsified clause implies is not in this document and is not
+  this document's to specify** — §10.7 item 6: this document *"touches no file
+  under `test/cosim/` or `tools/cosim/`, and names no deliverable in either."*
+  The successor rule for the two producers is stated at `WO-0078` §14,
+  `RV-C1C2` §4, and is owned by tb_writer. **This note cites it and specifies
+  nothing.**
+
+**3. The clause that justifies it.** Four, quoted rather than paraphrased:
+
+1. **§9 itself**: *"Every change to this document carries: the section, what
+   moved, the clause that justifies it, and whether any run has already probed
+   the area being changed."* This note is an instance of that discipline, not an
+   exception to it.
+2. **§0's move rule**: *"Moving an entry outward is legitimate only before a run
+   has probed it, and only with the clause that justifies it recorded here."*
+   **Nothing is moved outward by this commit**, so the rule's condition is never
+   reached — recorded here rather than left to a reader's inference (§9-bis item
+   3's own form).
+3. **§0's bar**: *"Nothing may be moved from inside the domain to outside it
+   after a run has shown a difference there."* **The bar's antecedent is not
+   satisfied and cannot be: no difference inside the domain was shown, because no
+   comparison happened.** `RV-C1C2` §5 item 2 rules it in terms, and that same
+   ruling is why the prediction stays live rather than spent.
+4. **§0-ter's precedent, at its own subject**: a sentence measured false inside a
+   frozen section is **annotated beside it, never edited inside it** — and it is
+   annotated *because* a run has probed it. **The probe removes the option of a
+   silent edit; it does not remove the obligation to record.**
+
+**4. Whether a run has already probed the area being changed. Two answers, and
+they are different — which is why they are given separately** (§9-bis's form).
+
+- **The rationale clause's own area: YES, and the probe is what falsified it.**
+  `build` run `31096150983` at `53fa1de`, `cosim` job `92598555141`, case C2.
+  **That is precisely why the clause is annotated and not edited.**
+- **The instance's area — the INSIDE list, the expected values, the frozen
+  prediction and both branch cells: NO. C2 has been driven once and compared
+  ZERO times.** `compare_exit=N/A`; the domain was never evaluated; α, β and γ
+  are dispositions of a **comparison** and C2 produced none. **The prediction is
+  UNSPENT and stays frozen**, and the re-run happens under §10.2's text
+  **unamended** (`RV-C1C2` §5). `AP-M03` §7 bar 1 has **not** lifted for the
+  two-clean-frames-at-minimum-IFG class, and this note does not lift it: the lane
+  still knows nothing whatever about that class.
+
+**What this annotation does NOT do.**
+
+1. **It permits no divergence, changes no expected value, sharpens no prediction
+   and fills no branch cell.** §0-bis's ruling stands unqualified and REQ-901's
+   (a)–(f) remain the only permitted set at this boundary.
+2. **It does not re-freeze §10.2 and does not move its freeze forward.** §10.2's
+   instance is frozen **from `5c01af0`** and remains frozen from `5c01af0` — not
+   from this commit. `WO-0078` §12 criterion 8's ancestry check for the C2 re-run
+   resolves against `5c01af0` exactly as it did for the run this note reports.
+3. **It asserts no calendar date of its own** — §9-bis's dating rule and
+   `FINDING CD-P2-2` (§10.6). It is dated by the commit that carries it and by
+   `J-dv_lead-0153`.
+4. **It does not restate the C2 re-run's stimulus-hash bind.** The bind is
+   `RV-C1C2` §5 item 4's and is cited **by reference, never by value** — §10.0's
+   own reason, in its own words: *"a second literal is a second thing that can
+   drift."* The adjudicator of the re-run reads the bind where it was set.
+5. **It quotes no part of §10.2's frozen prediction**, for the same reason: a
+   second copy of a frozen text beside the original is a second thing that can
+   drift, and §10.5 already had to carry one blank cell forward verbatim to avoid
+   exactly that.
+6. **It touches no file under `test/cosim/` or `tools/cosim/`, names no
+   deliverable in either, and dispatches nothing** (§10.7 item 6, unchanged).
+
 ### 10.3 C3 — one 64-octet frame, bad FCS (this document's §6 **V7**)
 
 **Stimulus** (`WO-0078` §6.2): one **64-octet** frame, `~fcs_valid:false` plus a

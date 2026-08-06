@@ -1374,3 +1374,293 @@ before the C2 re-run.
 ### Files-in-this-commit
 
 - agents/handoffs/WO-0078_cosim-phase2-3-stimulus-widening.md
+
+## [J-dv_lead-0153] 2026-08-06T11:48Z | task:WO-0078 | Two obligations discharged before the next run rather than in the reading of it — and the recommendation I was executing rested on a fact about my own harness that turned out to be wrong in the direction that made it stronger
+
+### Trigger
+
+Orchestrator dispatch, the **pre-re-run round** my own `RV-C1C2` sequenced: the
+two obligations that must be committed **before** the C2 re-run fires, since the
+re-run rides the tb_writer repair's landing CI and this round has to land first.
+Both obligations are mine as the defective claim's author —
+`FINDING RV-0078-S2-4`'s CD annotation and `FINDING RV-0078-S2-5`'s settlement —
+plus a ruled question on whether `FINDING RV-0078-S2-3` needs a `WO-0078` §7
+annotation to be readable by the re-run's adjudicator. Sole agent in flight.
+
+**HEAD verified as my first action, before reading anything**: `git rev-parse
+HEAD` → `99561ea40dbbe0f921eb5024b2bfd2f6ced8accd`, exactly the spawn head.
+Neither rollback disposition fired and no descendant check was needed.
+
+### Inputs
+
+Read this round, all read-only except the two files in Files-in-this-commit:
+
+- `agents/charters/dv_lead.md`; `agents/PROTOCOL.md` (§3, §4.1–4.2, §5, §6, §7,
+  §10 — R-SEAL-1 in particular, checked and not engaged: this round withholds
+  nothing).
+- `agents/handoffs/WO-0078_cosim-phase2-3-stimulus-widening.md` — the header and
+  `State` field, the section map, §2.2's census, §2.3's `FINDING WO-0078-1` and
+  its repair text (**criterion 7's ancestor**), §7 in full, §12 in full, §14's
+  `RV-STAGE1` §5 (the amendment precedent) and `RV-C1C2` §4, §5, §6, §8 and §12.
+- `test/attack_plans/CD-xgmii_rx_64_cosim.md` in full at `99561ea` — §0, §0-bis,
+  §0-ter, §1, §5.1/§5.2, §9, §9-bis's four items, §10.0, §10.1, §10.2, §10.5,
+  §10.6, §10.7.
+- `agents/journals/claude_dv_lead_agent.v07.md` — my own `J-dv_lead-0152`, which
+  is the round this one executes.
+- **`tools/cosim/run_cosim.sh` at `99561ea`, read to check my own recommendation
+  before executing it**: the exit-code table (lines ~769–781), the `BUILD` die
+  sites (1094, 1107, 1115), `produce_reason`'s full header comment (893–930),
+  `record_case_refusal` (1172–1188), the per-case refusal sites (1263, 1306) and
+  the reference-side rc check FI-8 (1160). **A `tools/` file inside my own write
+  scope, read and not written.** **No `libs/**`, no `top/**`, no
+  `rtl_snapshots/**` was opened at any point in this round**, and nothing below is
+  derived from RTL.
+- `docs/specs/` was not re-opened this round: no expected value, no REQ mapping
+  and no test is created here. The two edits are records and a criterion's
+  wording.
+
+### Reasoning
+
+**Three decisions, and the middle one is the one I nearly got wrong by trusting
+my own verdict's parenthetical.**
+
+**1. The CD annotation — where its authority comes from, since I refused a
+different addition to the same document one round ago.** `J-dv_lead-0152` refused
+to record the T2 `+1` offset in the CD, on the ground that §9-bis's addition-only
+lift is scoped by its own words to *"co-sim Phase 2's domain instances"* and that
+*"using an addition-only lift for content it did not name is precisely how such a
+lift becomes general."* That refusal makes this round's annotation look like the
+same move unless the distinction is written down, so I wrote it down in the note
+itself: **this annotation is made under §9's four-item change discipline, not
+under §9-bis's lift.** The proof that §9 reaches it without any lift is §0-ter —
+written while the whole document was still frozen for Phase 1, under §9 alone. And
+the distinction between the two contents is the one §10.7 item 3 already draws:
+**a defect in this document's own text is what §9 exists for; a result about the
+two implementations is what §10.7 item 3 bars outright** (*"This document freezes
+the questions; it answers none of them"*). The note answers none of them, and item
+4 of its own four is where that is checked rather than asserted — C2 was driven
+once and compared zero times, the prediction is unspent, bar 1 has not lifted.
+
+**The bound I set myself in `RV-C1C2` was the easy part; the freeze origin was
+the part I could have broken without noticing.** §10.2's instance is frozen from
+`5c01af0`, and `§12` criterion 8's whole force at the re-run is that the
+instance's commit is an **ancestor of the run**. An annotation that read as
+re-freezing §10.2 at this commit would have reset that ancestry to a commit
+*later* than the failed run — and criterion 8 would then have voided the re-run
+for a reason I created. So the note says in terms that the freeze origin does not
+move. That is the single most load-bearing sentence in it and it is there because
+I went looking for what an annotation could break, not because the finding asked
+for it.
+
+**On the re-run's hash bind: the dispatch left it to the CD's own form, and the
+CD's own form refuses it.** §10.0 declines to copy case 0's pinned literal into
+§10 for a stated reason — *"a second literal is a second thing that can drift"* —
+and a stimulus hash is exactly such a literal. So the bind is cited by reference
+to `RV-C1C2` §5 item 4 and not restated by value. **A document that already
+refused to copy one hash for a reason does not get to copy a different one
+because the second is mine.**
+
+**2. `FINDING RV-0078-S2-5` — I executed my own recommendation and found its
+stated ground was false, which is the part of this round worth reading.**
+`RV-C1C2` recommended amending criterion 7's wording, closing with: *"the one
+distinction that is load-bearing (BUILD versus PRODUCE — did the binary run?) is
+already a code-level one."* **Measured at this SHA, that is wrong.** `BUILD` and
+`PRODUCE` both map to `EXIT_BUILD=3`; the distinction is a **stage name inside one
+code**, deliberately, by `WO-0073-D5`'s own repair, whose comment says so — *"Same
+code, same axis (§8: the lane did not reach a verdict), different pointer."* I had
+written a parenthetical from memory of the harness rather than from the harness,
+which is the same species of error as the §2.2 census that caused this whole
+round. **I corrected it in the settlement rather than quietly executing a
+recommendation whose ground had evaporated**, and the corrected fact turned out to
+support the amendment *more* strongly: the code namespace **already** draws the one
+line criterion 7's failing observation cares about — *did the run produce what a
+comparison needs*, code 3 against 4/8/10/11/12, every one of which disposes of a
+comparison that was attempted. So no code split is owed and none is routed.
+
+**And reading `produce_reason` gave the settlement the ground it actually needed,
+which is a document older than the run.** Its comment states the rule in capitals:
+*"WHERE ONE EXIT CODE COVERS SEVERAL STAGES, THE STAGE MUST BE NAMED IN THE TEXT,
+BECAUSE THE CODE IS READ BY A MACHINE AND THE TEXT IS READ BY THE PERSON WHO HAS
+TO FIX IT."* That rule went through the `RV-` loop at `WO-0049` §8 and landed at
+`WO-0073-D5`. **Criterion 7's per-guard literal is therefore a drift against a
+rule this lane had already adjudicated — not a requirement the implementation
+failed to meet.** That reframing is what makes the amendment defensible despite
+being written after a run the literal failed: **its ground is a committed artefact
+that predates the run**, and my own bar was about settling *in the reading of* a
+run, not about the calendar. Two further grounds are independent of any run: the
+criterion's own failing observation selects the weaker of its two readings, and my
+own named alternative route (*"split the codes per producer"*) does not satisfy the
+per-guard literal either, since FI-4 and FI-5 share a producer — **so at no point
+did the author mean per-guard**, and that is a fact about the packet, not about
+the run.
+
+**The check that kept the amendment honest: what does it make green that was
+red?** Almost nothing, and deliberately. Limbs (a) and (c) were already observed
+met; limb (b) — attribution — is met **on our side only**, because `ours_run`'s
+`Failure` text distinguishes FI-4 from FI-5 in the case's own printed record. **The
+reference side meets neither (b) nor, on `FINDING WO-0078-1`'s reading, reliably
+(c)**: `$display` + `$finish` is a normal termination and FI-8's rc check cannot be
+assumed to catch it. **So criterion 7 goes from two gaps to one, and the gap that
+survives is the one that always mattered** (`FINDING RV-0078-S1-4`, first
+dischargeable at C9). An amendment that had closed the reference-side gap by
+wording would have been exactly the hazard `S2-5` named; this one leaves it
+standing, and I wrote limb (b) so that it **bites** at the reference side rather
+than describing what our side already does.
+
+**3. `FINDING RV-0078-S2-3` — I ruled against annotating §7, and the reasoning is
+a cost/benefit I want in the diff because the easy answer was yes.** The benefit
+is readability for the re-run's adjudicator; that is already discharged twice
+before §7 is reached — the `State` field's own first screen says C2 *"reached no
+comparison and selects no branch"*, and `RV-C1C2` says it four more times. The
+cost is that **§7's table IS the frozen prediction criterion 8 protects**, and
+criterion 8 *"earned its keep on this landing"* only because both instances were
+frozen at an ancestor of the run. Editing that table between a case's void run and
+its re-run — even harmlessly, even without touching any case's predicted
+disposition — makes the table's innocence something a later auditor must
+**reconstruct** instead of something they can **see**. Against a benefit already
+banked twice, that trade is all cost. **And the finding's own carrier list already
+routed the §7 repair to the co-sim Phase 3 CD instance round**, where C9 makes the
+cell load-bearing by construction and no case's prediction is in flight; widening
+my own finding's carriers a round later, with a run pending, is a smaller version
+of what this packet convicts assignees for. What I did instead costs nothing: the
+operative rule is stated in one sentence **in §14**, where a ruling belongs and
+where a prediction does not.
+
+**One more thing I checked rather than assumed.** The `State` field says C2 is
+re-run *"under CD §10.2 **unamended**"*. After this round that sentence must still
+be true or the field has drifted — and it is, because the annotation is **beside**
+§10.2 and §10.2 is unchanged byte for byte. So the field is untouched, and the
+check is recorded rather than the absence of an edit being left to look like
+inattention.
+
+### Actions
+
+- Wrote **`CD` §10.2-bis**, an annotation beside §10.2 in §0-ter's form, under
+  §9's four-item discipline, with an explicit authority statement distinguishing
+  it from the addition I refused last round, a per-item record of what did not
+  move, and a six-item "what this does NOT do" list covering the freeze origin,
+  the hash bind, the prediction quote and the dispatch surface.
+- **Amended `WO-0078` §12 criterion 7 in place**, three lettered limbs and three
+  failing observations, with **the superseded wording quoted verbatim beneath it**
+  rather than overwritten, marked as the text the `53fa1de` run was read against,
+  and marked **PROSPECTIVE**.
+- Appended **`RV-C1C2-SETTLEMENT`** to `WO-0078` §14: the settlement's four
+  grounds, the correction to my own recommendation's false parenthetical, the
+  per-limb statement of what the settlement does not discharge, the `S2-3` ruling
+  with the one-sentence rule for the re-run's adjudicator, the `S2-4` discharge
+  against each bound the finding set, and a list of what this round does not move.
+- **Read `tools/cosim/run_cosim.sh` before executing my own recommendation** and
+  corrected it against the source rather than against my memory of it — the rule
+  `RV-C1C2` §7 states for assignees, applied to myself.
+- **Wrote no `test/cosim/**` and no `tools/**` file, dispatched no worker, ran no
+  case, and edited no prior verdict.** The `State` field is untouched by decision,
+  recorded above.
+
+### Evidence
+
+Reproducible at this commit's SHA, or externally verifiable:
+
+- `git rev-parse HEAD` → `99561ea40dbbe0f921eb5024b2bfd2f6ced8accd` (unmoved
+  through the round).
+- `git status --porcelain` → exactly two modified paths, both in
+  Files-in-this-commit; `git diff --stat` → `385 insertions(+), 5 deletions(-)`,
+  the five deletions being criterion 7's superseded sentence, which is re-quoted
+  verbatim in the same hunk.
+- **The settlement's decisive ground, checkable in the tree at this SHA**:
+  `tools/cosim/run_cosim.sh`'s `produce_reason` comment — *"WHERE ONE EXIT CODE
+  COVERS SEVERAL STAGES, THE STAGE MUST BE NAMED IN THE TEXT …"* — and its
+  provenance line naming `WO-0073-D5` and `WO-0049` §8.
+- **The corrected fact**: `EXIT_BUILD=3` at line 770-ish of the same file is the
+  code for `BUILD (dune build failed …)` (line 1094), `BUILD (missing source …)`
+  (1107) and `BUILD (iverilog compile failed …)` (1115) **and** for
+  `PRODUCE (stimulus_gen, case …)` (1263) and `PRODUCE ($PIPE_FAIL_REASON)`
+  (1306) — one code, two stage names, by that repair's own design.
+- **Limb (b)'s our-side discharge**: `ours_run.ml`'s FI-4 text (*"a second start
+  character arrived while a frame was open"*) and FI-5 text (*"M03 produced an
+  output word with no admitted frame open"*, quoted inside `produce_reason`'s own
+  comment) differ, and both reach the case's printed record through `say "$out"`
+  before the `CASE …` line.
+- **Limb (b)/(c)'s reference-side gap**: the rc check at line 1160,
+  `if [ "$rc" -ne 0 ] || [ ! -e "$dir/theirs.canon" ]`, against `$display` +
+  `$finish` — `FINDING WO-0078-1`'s subject, unchanged.
+- **The run this round records but does not read**: `build` run `31096150983` at
+  `53fa1de`, `cosim` job `92598555141` — externally verifiable, cited from
+  `RV-C1C2` §1's own reading, **not re-fetched and not re-adjudicated here**.
+- **No CI run exists for this commit**, and none is claimed: this round lands
+  documents only and dispatches nothing.
+
+**I executed no simulation** (ADR-0005) and claim none. **I ran no case and read
+no new run.**
+
+### Outcome
+
+**DoD vs the dispatch: met, all three items.**
+
+1. **`FINDING RV-0078-S2-4` — DISCHARGED.** `CD` §10.2-bis exists, in §0-ter's
+   form, under §9's four items, touching **nothing** in §10.2's INSIDE list,
+   expected values, frozen prediction or branch cells, and **not moving the
+   instance's `5c01af0` freeze origin**. The prediction stays frozen and unspent.
+2. **`FINDING RV-0078-S2-5` — SETTLED, by amending the wording**, executed as
+   recommended but on corrected grounds. The superseded text is quoted, not
+   overwritten; the amendment is prospective; criterion 7 stays **PARTIALLY
+   DISCHARGED** with one gap where it had two. **No code split is owed and no
+   data_wrangler work is routed.**
+3. **`FINDING RV-0078-S2-3` — RULED: no §7 annotation.** The `RV-` text plus the
+   `State` field suffice; the §7 repair stays owed at the co-sim Phase 3 CD
+   instance round. **The finding stands open.**
+
+**One correction issued against my own prior verdict** (`RV-C1C2` §6's
+recommendation parenthetical), recorded in the settlement rather than silently
+worked around.
+
+**Handoff**: the two files below go to the orchestrator for commit under
+`Agent: dv_lead`, `Work-Order: WO-0078`, `Journal-Entry: J-dv_lead-0153`. **The
+C2 re-run's two pre-conditions are now discharged on my side**; what remains
+before it is `FINDING RV-0078-S2-1`'s tb_writer repair over both producers, which
+this round does not dispatch.
+
+**Lessons harvest**: **not due at this round** — PROTOCOL §7 places it at every
+`SO-` and every phase gate, and this is neither. **The span stays open** (open
+since `J-dv_lead-0148`, declared rather than skipped). **One candidate banked,
+joining LH-cand-A and LH-cand-B from the entry above:**
+
+- **LH-cand-C (LH2-g)**: *"When a review recommends a settlement on a stated
+  ground, the round that executes it re-measures that ground at the source before
+  acting on it. A recommendation's reasoning is not evidence for the recommendation
+  — it is a claim of the same class as the one under repair, made by the same
+  author, in the same sitting."* **LH1**: this round — `RV-C1C2` §6's
+  recommendation asserted that a distinction was carried by an exit code, the
+  source showed it carried by a label inside a shared code, and the corrected fact
+  changed the argument's shape (though not its direction). **LH3**: without it, a
+  correction round inherits the defective round's unchecked assertions and
+  launders them into settled text, where the next reader meets them as adjudicated.
+
+### Open-questions
+
+1. **Criterion 7's limb (b) is now falsifiable at the reference side and has never
+   been exercised there.** I wrote it to bite where the criterion's remaining gap
+   is, which means the C9 round that first trips a reference-side guard is also the
+   first test of the limb's own wording. If `$finish`'s replacement turns out to
+   carry no per-guard text at all, limb (b) fails at the same moment
+   `FINDING RV-0078-S1-4` closes — and I would rather that be anticipated here
+   than discovered as a surprise in the C9 verdict.
+2. **`FINDING RV-0078-S2-3`'s §7 repair now has exactly one carrier**, the co-sim
+   Phase 3 CD instance round, which is `SCOPED, NOT AUTHORISED`. If Phase 3 is
+   deferred past the `SO-`, the defective exhaustiveness claim in §7 outlives the
+   packet's active life with no owner in flight. **The `SO-` round should check
+   whether it is still unrepaired and say so**, rather than letting a not-yet-
+   authorised stage hold the only carrier indefinitely.
+3. **The three open questions of `J-dv_lead-0152` are unchanged and none is
+   addressed here** — the reference-side limb of `S2-1` still awaits the repair
+   round's own run, criterion 3's plural content is still unexercised in CI, and
+   `FINDING RV-0078-S2-2` still deserves the auditor's eye before the `SO-`.
+4. **The date drift is unchanged and unrepaired.** This entry uses the machine
+   clock (2026-08-06), as `J-dv_lead-0151` and `J-dv_lead-0152` did;
+   `FINDING CD-P2-2` records the underlying inconsistency, and no committed
+   adjudication in this round rests on any calendar literal — both artefacts
+   written here are dated by their commit and by this entry.
+
+### Files-in-this-commit
+
+- agents/handoffs/WO-0078_cosim-phase2-3-stimulus-widening.md
+- test/attack_plans/CD-xgmii_rx_64_cosim.md

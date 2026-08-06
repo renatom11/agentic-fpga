@@ -942,11 +942,47 @@ checkable against a CI log by a reader who was not in the round.**
    `Unassertable`. **A suite in which one fixture satisfies both fails**, and so
    does one in which either case is marked optional.
 
-7. **Every producer's refusal reaches an exit code.** Each refusal guard in each
-   producer — ours and the reference's — produces a distinct non-zero harness
-   exit when tripped, and at least one reference-side refusal is tripped
-   deliberately and observed. **A refusal that prints and lets the run proceed to
-   a comparison fails.**
+7. **Every producer's refusal reaches an exit code — AMENDED before the C2
+   re-run, `FINDING RV-0078-S2-5` SETTLED. Dated by the commit that carries the
+   amendment and by `J-dv_lead-0153`; the reasoning is §14's settlement entry,
+   `RV-C1C2-SETTLEMENT` §1.** Each refusal guard in each producer — ours and the
+   reference's — SHALL, when tripped: **(a)** stop that case before any
+   comparison is attempted; **(b)** put the producer, the case id, the run label
+   and the refusing guard's own reason into that case's printed record, such that
+   **two different guards in the same producer cannot produce identical output**;
+   and **(c)** reach a non-zero aggregate harness exit code **distinct from
+   `EXIT_OK` and from every code that asserts a comparison outcome**
+   (`EXIT_DIFFERENTIAL`, `EXIT_NO_VERDICT`, `EXIT_TIMING`,
+   `EXIT_TIMING_NO_VERDICT`, `EXIT_TIMING_UNASSERTABLE`). **And at least one
+   reference-side refusal is tripped deliberately and observed** — that limb is
+   carried over unchanged and is still owed (`FINDING RV-0078-S1-4`, first
+   dischargeable at C9). **Three observations fail it: a refusal that prints and
+   lets the run proceed to a comparison; a refusal that reaches the aggregate as
+   a differential or timing code, so that a reader is told our RTL diverged when
+   nothing was compared; and a refusal whose printed record does not distinguish
+   it from a different guard's refusal in the same producer.** **Per-guard
+   distinctness is a property of the printed record, not of the exit code** —
+   `tools/cosim/run_cosim.sh`'s own adjudicated rule (`WO-0049` §8's axis,
+   `WO-0073-D5`'s repair): *"WHERE ONE EXIT CODE COVERS SEVERAL STAGES, THE STAGE
+   MUST BE NAMED IN THE TEXT, BECAUSE THE CODE IS READ BY A MACHINE AND THE TEXT
+   IS READ BY THE PERSON WHO HAS TO FIX IT."*
+
+   > **The superseded wording, quoted rather than overwritten** — this packet's
+   > own State-field rule, *"a lifecycle field that erases its own history cannot
+   > be audited"*, applied one level down. **This is the text in force from this
+   > packet's first commit until the settlement, and it is the text the `53fa1de`
+   > run was read against**; `RV-C1C2` §8's criterion-7 row stands unedited as the
+   > reading of that run under it:
+   >
+   > *"**Every producer's refusal reaches an exit code.** Each refusal guard in
+   > each producer — ours and the reference's — produces a distinct non-zero
+   > harness exit when tripped, and at least one reference-side refusal is
+   > tripped deliberately and observed. **A refusal that prints and lets the run
+   > proceed to a comparison fails.**"*
+   >
+   > **The amendment is PROSPECTIVE.** It governs the C2 re-run and every run
+   > after it. **It does not re-read `53fa1de` and it changes no disposition
+   > already recorded.**
 
 8. **Every case's disposition was frozen before it ran.** For each case, §7's
    table (or the CD instance that carries it) names the predicted disposition and
@@ -3245,6 +3281,221 @@ selection rather than a choice and C2's void is a void rather than an opening.
 reset-release cycle. The lane still knows nothing about two frames.**
 
 **dv_lead, `J-dv_lead-0152`, HEAD `53fa1de` (unmoved). Dated by the commit that
+carries it.**
+
+---
+
+### dv_lead — `RV-C1C2-SETTLEMENT`: the two obligations owed BEFORE the C2 re-run — `FINDING RV-0078-S2-5` **SETTLED**, `FINDING RV-0078-S2-4` **DISCHARGED**, `FINDING RV-0078-S2-3`'s §7 repair **RULED NOT OWED HERE**
+
+#### 0. What this round is, and what it is not
+
+**This is not an adjudication and it reads no run.** `RV-C1C2` adjudicated the
+C1+C2 landing at `53fa1de` and stands unedited. This round executes the two
+obligations that verdict placed **before** the next run, so that the C2 re-run —
+which fires at the tb_writer repair's landing CI — happens under settled text
+rather than under text a later reader would find had been settled with the
+re-run's own result in hand.
+
+**Write set, and it is narrow by design**: `test/attack_plans/CD-xgmii_rx_64_cosim.md`
+(one annotation, §10.2-bis), this packet (§12 criterion 7's amendment and this
+entry), and `agents/journals/claude_dv_lead_agent.v07.md`. **No file under
+`test/cosim/` or `tools/cosim/` is touched, no worker is dispatched, no case is
+run, and no stage's disposition moves.** HEAD at this round's start was
+`99561ea`, verified as the first action.
+
+**The State field is deliberately untouched, and I checked rather than assumed
+it.** It reads *"C2 — VOID, RE-RUN OWED under CD §10.2 **unamended**"*, and that
+sentence is still exactly true after this round: the CD annotation is **beside**
+§10.2, and §10.2 is unamended byte for byte. No stage state changed, so there is
+nothing for the field to flip.
+
+---
+
+#### 1. `FINDING RV-0078-S2-5` — **SETTLED by amending criterion 7's wording.** The recommendation is executed, and the ground it rests on is corrected first
+
+**The finding's own terms**: two lawful routes and no third — split the codes per
+producer, or amend the wording in a dated successor — **settled before the next
+run, whichever way**, because *"what is barred is settling it in the reading of a
+run that has already happened."* **The amendment is at §12 criterion 7, with the
+superseded text quoted beneath it rather than overwritten.**
+
+**Ground 1 — the criterion carries two readings, and its own failing observation
+selects the weaker one.** *"A distinct non-zero harness exit"* reads either as
+**per-guard identity** (a code per guard) or as **distinct from the codes that
+mean something else** (a refusal is never absorbed into a clean run or reported
+as a comparison outcome). The criterion's own failing observation is *"a refusal
+that prints and lets the run proceed to a comparison fails"* — which is the
+second reading and only the second. A tie between two readings is broken by the
+text's own statement of what fails it, not by which reading a run happened to
+meet.
+
+**Ground 2 — the per-guard literal was never the author's intent, and my own
+recommended alternative proves it.** `FINDING RV-0078-S2-5` named the other
+lawful route as *"split the codes **per producer**"*. **A per-producer split does
+not satisfy a per-guard literal either**: `ours_run.ml`'s FI-4 and FI-5 are two
+guards in one producer and would still share a code. **At no point did the
+criterion's author mean per-guard distinctness** — which is a fact about the
+packet, available without reading any run.
+
+**Ground 3 — the decisive one, and it predates the run by two rounds.**
+`tools/cosim/run_cosim.sh`'s `produce_reason` carries this lane's already
+adjudicated design rule, landed by `WO-0073-D5`'s repair on an axis that went
+through the `RV-` loop at `WO-0049` §8:
+
+> *"The general form: **WHERE ONE EXIT CODE COVERS SEVERAL STAGES, THE STAGE MUST
+> BE NAMED IN THE TEXT, BECAUSE THE CODE IS READ BY A MACHINE AND THE TEXT IS
+> READ BY THE PERSON WHO HAS TO FIX IT.** Widening a code's contract is free;
+> widening its label silently is how the two drift apart."*
+
+**Criterion 7's literal is a drift AGAINST a rule this lane had already settled,
+not a requirement the implementation failed to meet.** The amendment **restores**
+the criterion to that rule; it does not accommodate a run to it. That is what
+makes this a settlement rather than the hazard `CD` §0 exists to prevent, and it
+is why the settlement is defensible even though it is written after a run that
+the literal failed: **its ground is a committed artefact older than the run.**
+
+**Ground 4 — cost, stated last because it decides nothing on its own.** A code
+per guard multiplies a namespace that already carries a total precedence order
+(§3.3) and an aggregate-selection rule, and it buys attribution the printed
+record carries better and per case.
+
+**The correction I owe my own recommendation, made before it is relied on.**
+`FINDING RV-0078-S2-5` closed with: *"the one distinction that is load-bearing
+(BUILD versus PRODUCE — did the binary run?) is already a code-level one."*
+**Measured at this SHA, that is wrong, and I correct it rather than let it stand
+as the settlement's ground**: `BUILD` and `PRODUCE` **share `EXIT_BUILD=3`**
+(`run_cosim.sh` lines 1094/1107/1115 against 1263/1306) — *"Same code, same axis
+(§8: the lane did not reach a verdict), different pointer"*, deliberately, by the
+`WO-0073-D5` repair. **The distinction that IS code-level is the one code 3
+itself draws: the run did not produce what a comparison needs — as against 4, 8,
+10, 11 and 12, every one of which is a disposition of a comparison that was
+attempted.** **The corrected fact supports the amendment more strongly than the
+false one did**, because it shows the code namespace already drawing precisely
+the line criterion 7's failing observation cares about, and drawing it by an
+adjudicated design rather than by accident. **No code split is owed, and none is
+routed to data_wrangler.**
+
+**What the settlement does NOT do, per limb.**
+
+- **It does not discharge criterion 7.** Limbs (a) and (c) were observed met at
+  `53fa1de` (`RV-C1C2` §8); limb (b) was observed met **on our side only** — the
+  refusal's printed record named the producer, the case, the run label and the
+  guard's own `Failure` text at `ours_run.ml:172`, and FI-5's text differs from
+  FI-4's. **The reference side meets neither (b) nor, on `FINDING WO-0078-1`'s
+  reading, reliably (c)**: `$display` + `$finish` is a normal termination whose
+  rc the harness's FI-8 check cannot be assumed to catch. **So criterion 7 stays
+  PARTIALLY DISCHARGED with exactly one gap where it had two, and the gap that
+  remains is the one that always mattered** — `FINDING RV-0078-S1-4`, first
+  dischargeable at C9. **An amendment that closed the reference-side gap by
+  wording would be the hazard; this one leaves it standing and untouched.**
+- **It does not re-read `53fa1de`.** `RV-C1C2` §8's criterion-7 row is the
+  reading of that run under the wording then in force and is not edited.
+- **It authorises no edit to `tools/cosim/run_cosim.sh` and dispatches nothing.**
+  Limb (b)'s reference-side half is what closes the criterion; the round that
+  next opens the reference producer carries it, and it is **not** a precondition
+  of the C2 re-run.
+
+---
+
+#### 2. `FINDING RV-0078-S2-3` — **§7 is NOT annotated, and the reason is the same one that made §7 worth having**
+
+**The question the dispatch put**: does the ruling *"the three branches partition
+COMPARISONS, not CASES"* need a §7 annotation to be readable by the re-run's
+adjudicator? **Ruled: no. The `RV-` text suffices, and the annotation's cost is
+larger than its benefit.**
+
+**1. The finding's own routing already answered it.** `FINDING RV-0078-S2-3`
+names two carriers: *"this verdict, which rules it, **and** the co-sim Phase 3 CD
+instance round — C9 is a produce-refusal case by construction until §6.3's
+admission rule lands, so Phase 3 cannot be written without this cell."* **It does
+not name a §7 edit and it does not name the re-run dispatch.** A reviewer who
+widens its own finding's carrier list a round later, with a run pending, is doing
+a smaller version of the thing this packet convicts.
+
+**2. The readability requirement is already met, twice, before §7 is reached.**
+The re-run's adjudicator meets the fourth outcome in this packet's **State
+field** — its first screen, *"C2 — VOID, RE-RUN OWED … it reached no comparison
+and selects no branch"* — and in `RV-C1C2` §4, §5 and §12, which state it four
+more times in terms. **§7 is not the text an adjudicator consults to learn what a
+case that produced no comparison selects; it is the text that must not have moved
+between the prediction and the run.**
+
+**3. The cost, which is the whole argument.** §7's table **is** the frozen
+prediction that `§12` criterion 8 protects, and criterion 8 *"earned its keep on
+this landing"* precisely because both instances were frozen at `5c01af0`, an
+ancestor of the run. **Editing that table between a case's void run and its
+re-run — even to correct an exhaustiveness claim that touches no case's predicted
+disposition — puts a hand on the one artefact whose entire value is that no hand
+touched it after the run.** A later auditor reading the diff would see §7 move
+between C2's failure and C2's re-run and have to reconstruct that the move was
+harmless. **Making an artefact's innocence reconstructible instead of obvious is
+the cost, and against a readability requirement already discharged twice it buys
+nothing.**
+
+**4. What I do instead, at zero cost, so the ruling is one sentence away from the
+adjudicator.** Stated here, in §14, where a ruling belongs and where a prediction
+does not:
+
+> **A case that reaches no comparison selects no branch. α, β and γ are
+> dispositions of a COMPARISON; §7's *"every case's result resolves to exactly
+> one"* is true of comparisons and false of cases. A case that produced no
+> canonical file on either side has a fourth outcome — the harness's own
+> `compare_exit=N/A tier=PRODUCE-REFUSAL`, on `WO-0049` §8's
+> reached-a-verdict / did-not-reach-one axis — and that outcome is re-run, never
+> adjudicated.**
+
+**5. Where the §7 repair stays owed.** The **co-sim Phase 3 CD instance round**,
+unchanged: C9 is a produce-refusal case by construction, so Phase 3 cannot be
+written without the cell, and at that round no case's prediction is in flight.
+`FINDING RV-0078-S2-3` therefore **stands open** and is not closed by this entry.
+
+---
+
+#### 3. `FINDING RV-0078-S2-4` — **DISCHARGED**; the annotation is at `CD` §10.2-bis
+
+**Made in §0-ter's form, under §9's four-item change discipline**, and every bound
+the finding set is honoured and checkable in the diff:
+
+- **It touches nothing in §10.2's INSIDE list, expected values, frozen prediction
+  or branch cells** — those are byte-for-byte unchanged, and the note quotes none
+  of them, so no second copy exists to drift.
+- **§10.2's freeze origin does not move.** The instance is frozen from `5c01af0`
+  and stays frozen from `5c01af0`; criterion 8's ancestry check for the re-run
+  resolves exactly as it did for the run just adjudicated.
+- **It records the falsification and the mechanism, and nothing about an outcome**
+  — §10.7 item 3 bars this document from carrying results, and item 4 of the note
+  is where the absence is checked: C2 was **driven once and compared zero times**,
+  the prediction is **unspent**, and `AP-M03` §7 bar 1 has not lifted for the
+  two-clean-frames class.
+- **It does not restate the re-run's stimulus-hash bind.** The dispatch left that
+  to the CD's own form, and the CD's own form refuses it: §10.0 declines to copy
+  case 0's pinned literal into §10 because *"a second literal is a second thing
+  that can drift."* **The bind stays where `RV-C1C2` §5 item 4 set it and is cited
+  by reference.**
+- **The authority is stated rather than assumed**, because I refused a different
+  addition to the same document one round ago: the note is made under **§9**,
+  which §0-ter proves reaches an annotation with no lift at all, and **not** under
+  §9-bis's addition-only lift, whose scope is *"co-sim Phase 2's domain
+  instances"*. A defect in the document's own text is §9's business; a result
+  about the two implementations is nobody's business inside this document.
+
+---
+
+#### 4. What this round does not move, listed so the diff can be read against it
+
+1. **`FINDING RV-0078-S2-1` (MATERIAL) stands** and still blocks C2. Its repair is
+   tb_writer's, over **both** producers, one round and one rule, with the fixture
+   pair — unchanged and undispatched by this round.
+2. **`FINDING RV-0078-S2-2` stands**, carried to the `SO-` round.
+3. **`FINDING RV-0078-S2-3` stands**, ruled here, repair routed to the co-sim
+   Phase 3 CD instance round.
+4. **`FINDING RV-0078-S1-4` stands**, first dischargeable at C9, and criterion 7's
+   amendment does not touch it.
+5. **C3 stays NOT ISSUED and sequenced behind the repair**; landing it by removing
+   C2 from the case set stays barred.
+6. **No stage disposition moves**, no case runs, and `RV-C1C2` is not edited.
+
+**dv_lead, `J-dv_lead-0153`, HEAD `99561ea` (unmoved). Dated by the commit that
 carries it.**
 
 ---
