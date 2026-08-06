@@ -7095,3 +7095,685 @@ time, `date -u` read at the start of this round, matching the environment's
 own `currentDate` context of 2026-08-06).
 
 ---
+
+### dv_lead — `RV-C4GAP`: the C4 construction-surface gap — **the STOP is CORRECT and COMMENDED; the negative universal is INCOMPLETE and the hook exists ONE DIRECTORY OVER; NEITHER named path is authorised and a THIRD is, confined to `test/cosim/stimulus_gen.ml`; `FINDING RV-0078-S2-13` minted against my own dispatch; the `AP-` condition has NOT fired and its escape clause is SPENT**
+
+#### 0. What I executed, and what I did not
+
+**Abort-first head check**: `git rev-parse HEAD` = `ad32dffc6749a71cb3f3f08283b3cdb14d503831`,
+exactly this round's stated spawn-head (*"C4 stops before it starts…"*). No mismatch
+procedure. Sole agent in flight.
+
+**I executed nothing.** ADR-0005: no `dune`, no Hardcaml switch, no `iverilog` in this
+container, and `WO-0078` §10 item 12 forbids me to claim one was run. **This is a
+ruling round, and every claim below is a claim about SOURCE READ AT THIS TREE, cited
+to file and line, or about a run already in history, cited to its id.** No CI run was
+triggered, no test was executed, and no colour is reported.
+
+**What I read, and the one read that decided the round.** `agents/charters/dv_lead.md`
+and `agents/PROTOCOL.md` in full; this packet's §2.2, §5, §6, §7, §10, §11, §12, §13
+and §14 (`RV-C2ALPHA` §7, `RV-C3ALPHA` §10 and §12, and tb_writer's C4 entry above);
+`J-tb_writer-0039` in full; `CD-xgmii_rx_64_cosim.md` §10.0, §10.4, §10.5, §10.7;
+`test/xgmii/arrival.mli` and `arrival.ml`, `frame.mli`, `injection.mli` and
+`injection.ml`, `xgmii_word.mli`, `test/cosim/stimulus_gen.ml` — all to re-derive
+tb_writer's negative for myself rather than adopt it. **And then one read tb_writer did
+not make and its dispatch did not ask for: `test/attack_plans/AP-xgmii_rx_64.md`'s
+family-B rows, and the bench that discharges the first of them.** That read is §2, and
+it reverses the round.
+
+**No `libs/**`, no `top/**`, no `rtl_snapshots/**`, and no line of
+`test/third_party/verilog-ethernet/**` was opened this round, by any means.** The
+octet values fixed in §4 are derived from SPEC-M03 §6.1's own table and from a landed
+DV-side bench, and from nothing on the reference's side — REQ-901's closing sentence
+(*"an exclusion is never a licence to take an expected value from the reference"*)
+governs a **stimulus** value as it governs an expected one, and I say so because this
+is the first case in this lane whose stimulus is chosen rather than inherited.
+
+---
+
+#### 1. tb_writer's finding, re-derived at the source — three claims CONFIRMED, one universal INCOMPLETE
+
+**I do not adopt a negative on a Return log's assertion, and this one made a
+capability claim, which is the kind a whole round was about to be built on. Each of
+its four modules, re-read by me at this tree:**
+
+1. **`Arrival` — CONFIRMED.** `arrival.mli:88-93`: `create`'s complete optional set is
+   `?ifg`, `?first_start`, `?fcs_valid`. `arrival.ml:101-107`: the preamble emission is
+   `Xgmii_word.Data (if d = preamble_octets - 1 then 0xD5 else 0x55)` inside an
+   unconditional `else if d < preamble_octets` arm — **hardcoded, not defaulted**, with
+   no branch, table or closure in `create`'s call graph a caller can steer. `word_at`
+   is `t -> cycle:int -> Xgmii_word.t`, a pure total reader (`arrival.mli:124-127`),
+   not a settable override. **The claim is exact.**
+2. **`Frame` — CONFIRMED.** `frame.mli` disclaims the preamble to the schedule, and
+   carries no preamble affordance. **The claim is exact.**
+3. **`Injection` — CONFIRMED, and the check was worth making at the `.ml`.**
+   `injection.ml:60-66`'s `is_control_char` admits exactly `/S/ /T/ /E/ /I/ /Q/`;
+   `injection.ml:96-101` refuses anything else as a **construction error**;
+   `injection.ml:175` writes even a valid character as `Xgmii_word.Control character`,
+   never `Data`. `injection.mli`'s public `corruption` type has exactly two
+   constructors, `Flip_bit` (addressed to **frame** octets — its own error message says
+   *"off the end of a %d-octet frame"*) and `Place` (control characters only). **So no
+   public constructor of `Injection` can put an arbitrary DATA octet at a preamble
+   position.** The claim is exact, and reading the `.ml` rather than the docstring was
+   the right standard for a negative.
+4. **`Idle_injection` — CONFIRMED**, orthogonal on its own contract.
+
+**All four module claims stand. The conclusion drawn from them does not**, and the
+gap is in the quantifier, not in any of the four readings:
+
+> **"Conclusion: no lawful hook exists"** — asserted over *"the full set reachable
+> without touching `libs/**`/`top/**`/`rtl_snapshots/**`"*, and **measured over four
+> modules of `test/xgmii/`.**
+
+**Those are not the same set.** The set that governs is *every construction of this
+stimulus that this programme has already landed*, and it has one member that the
+four-module census could not see, because it is not a module — it is a bench.
+
+---
+
+#### 2. The hook exists, it is landed, it is reviewed, it is mutation-campaigned, and it builds THIS EXACT STIMULUS
+
+**`test/attack_plans/AP-xgmii_rx_64.md`, row `M03-B1`, status `ASSERT`, quoted whole:**
+
+> | **M03-B1** | REQ-102 | 64-octet frame whose six filler octets and SFD octet are
+> arbitrary non-standard **data** values, both start lanes | The frame is delivered
+> unchanged: same 60 octets, same `tkeep`, `tuser`[0] = 0, no strobe | A receiver that
+> validates the SFD or the filler and drops a legal frame from a nonstandard-but-legal
+> link partner (REQ-102's own reason for forbidding the check) | ASSERT |
+
+**That is CD §10.4's stimulus, word for word, in my own attack plan, commissioned
+before this lane existed — and it is DISCHARGED.** `test/xgmii_rx_64/test_m03_b.ml`
+builds it and has since family B landed. Its header, at `test_m03_b.ml:6-23`, is the
+document tb_writer's investigation was looking for and did not find:
+
+> `[Dv_xgmii.Arrival]` fixes its preamble filler at 0x55 with an 0xD5 SFD and
+> **exposes no parameter to vary it** (test/xgmii/arrival.mli, "What the model does
+> not decide") — REQ-102 is precisely why it does not need one for every *other* row.
+> This row needs the opposite value on purpose, so it **builds a normal schedule and
+> then substitutes a non-standard data pattern into exactly the preamble-position
+> lanes of the schedule's own start word(s) before driving** — `[Arrival]`'s `/S/`
+> placement, frame content and FCS are untouched; only the six filler octets and the
+> SFD octet Arrival would otherwise drive as 0x55/0xD5 change value. **This is
+> machinery composition, not a new capability**: `{!Bench.run}`'s `[?word_at]` exists
+> for exactly this substitution (bench.mli).
+
+**The prior author reached tb_writer's exact conclusion about `Arrival` — cited to the
+same `.mli` sentence — and then built the stimulus anyway, by composition, and had it
+reviewed and landed.** The mechanism is `test_m03_b.ml:28-51`:
+
+```
+let nonstandard_preamble_octet lane = 0xA0 + lane
+
+let preamble_override sched (frame : Dv_xgmii.Arrival.frame) ~start_cycle
+  : cycle:int -> Dv_xgmii.Xgmii_word.t
+  = ... Array.mapi word.data ~f:(fun lane v ->
+          if is_preamble_lane lane then nonstandard_preamble_octet lane else v)
+```
+
+**Three properties of that code decide this round, and each is checkable at the line:**
+
+1. **It does NOT re-derive `Arrival`'s private geometry.** `is_preamble_lane` is
+   computed from `frame.start_lane` and `Arrival.start_cycle frame` — **`Arrival`'s own
+   published accessors** — against SPEC-M03 §6.1's *"where the preamble positions
+   lie"*. It reads no `preamble_octets`, copies no literal out of `arrival.ml`, and
+   would not silently drift if `arrival.ml` changed; it would disagree with the spec,
+   which is a defect either side of the boundary and is discoverable as one.
+2. **It leaves the start character alone.** `is_preamble_lane` excludes lane 0 at a
+   lane-0 start; the `/S/` and the whole `control` field pass through untouched
+   (`; control = word.control`). The departure is exactly seven data octets.
+3. **It is qualified.** Family B is inside the `WO-0066` family-B/N mutation campaign's
+   scored set, and `M03-B1` is a landed, green, scored row in a module whose §7 census
+   states *"no landed, green, unscored row remains."*
+
+**So the true statement, which neither tb_writer's Return log nor my dispatch
+contains, is this**: the stimulus CD §10.4 freezes is not merely constructible — **this
+programme has already constructed it, at a reviewed and qualified bench, using an
+idiom it explicitly characterised at the time as composition rather than new
+capability.** The question in front of C4 was never *"can it be built"*. It was *"is
+the landed idiom transferable to the second producer"*, and nobody asked that, because
+nobody put `M03-B1` in front of the round.
+
+**I commend the stop regardless, and the commendation is not a courtesy.** Faced with
+a gap, a worker with a technically in-scope bypass available to it declined to take
+it, wrote down why in terms that let me check every step, reproduced all four existing
+binds to prove the file was untouched, and returned the choice to the authority that
+owns it. **Had it built path (b) silently, this round would be adjudicating a green
+run on an unreviewed construction instead of choosing one.** The incompleteness below
+is charged to me, in §6, for the reason given there.
+
+---
+
+#### 3. The ruling on the path — **NEITHER (a) NOR (b). Path (c): the `M03-B1` idiom in its second instance, confined to `test/cosim/stimulus_gen.ml`**
+
+**Path (a) — `Arrival.create ?preamble` — is REFUSED, on four grounds, and the first
+is the one that would have refused it even without §2.**
+
+1. **It fails my own capability-creep rule at its clearest.** A shared-machinery
+   affordance is warranted when no existing mechanism expresses the stimulus. **One
+   does, landed and qualified.** `?preamble` would create a *second* mechanism for
+   *one* stimulus while the first stays in use at `M03-B1` — and I would not reopen a
+   mutation-qualified bench to migrate it, so the duplication would be permanent. **Two
+   mechanisms for one stimulus is the definition of the creep, not an exception to it.**
+2. **The blast radius is real and is paid for nothing.** Censused at this tree:
+   `Arrival` is consumed by **fourteen** files across five directories
+   (`test/xgmii/test_arrival.ml`, `test_idle_injection.ml`, `test_tx_decoder.ml`,
+   `injection.ml`, `test/xgmii_probe/`, `test/xgmii_rx_64/bench.{ml,mli}` and the
+   `test_m03_*` family, `test/cosim/{stimulus_gen,ours_run}.ml`). An optional argument
+   with a behaviour-preserving default is *source*-compatible and its no-op property is
+   mechanically checkable — but the check is the entire M03 suite plus four stimulus
+   shas, and that is a whole landing's worth of review purchased to reach a capability
+   that already exists one directory over.
+3. **It reverses a documented decision of a shared model to serve one case in one
+   lane.** `arrival.mli`'s heading is *"What the model does not decide"* — a decision,
+   stated as one. `frame.mli` routes the preamble to `Arrival` deliberately. The model
+   is not defective; it declines to parameterise a value REQ-102 forbids the receiver
+   to validate, and `M03-B1` shows that declining costs nothing because composition
+   covers the one row that needs the opposite.
+4. **The review chain it owes is disproportionate to what it buys.** Source review of
+   `arrival.{ml,mli}`; a new mandatory unit test and its negative control; a re-green
+   of fourteen consumers with `git diff --exit-code` clean; and a standing question I
+   would then have to answer — whether a mutation-qualified family that now has two
+   ways to express its own stimulus is qualified in the way its campaign packet says.
+   **That is a landing. C4 is one case.**
+
+**Path (b) as tb_writer framed it — "hand-splicing `Xgmii_word.of_lanes` … to patch
+cycle 0's lanes 1-7 after calling `Arrival.word_at`", re-deriving `preamble_octets = 8`
+and the filler/SFD split from outside — is REFUSED for tb_writer's own reason, which
+was sound**: a second copy of a geometry is a second thing that can drift, and a
+stimulus file whose own emitter's `report`/`check` describe a different schedule is a
+file whose provenance a reviewer cannot reconstruct. **I uphold that refusal exactly as
+written, and I record that the worker was right to make it against the description it
+had.**
+
+**Path (c) — AUTHORISED.** The `M03-B1` idiom, in its second instance, **inside
+`test/cosim/stimulus_gen.ml` alone**, with three properties that distinguish it from
+path (b) and that are not optional:
+
+- **The geometry is READ FROM `Arrival`, not re-derived.** `arrival.mli:111-116`
+  publishes `in_times : frame -> int array` — *"Octet times of every octet of the frame
+  at M03's input, in wire order: **the eight preamble octets from the start character
+  inclusive**, then the frame's octets DA through FCS."* **`Arrival` therefore already
+  tells a caller, publicly, exactly where the preamble lies.** Entry 0 is the start
+  character; entries 1-7 are the six filler octets and the SFD. **No literal `8` is
+  copied and no lane arithmetic is re-invented** — this is reaching *through* the
+  public contract, not *around* it, which is the distinction tb_writer's objection did
+  not draw and which `in_times` draws for it.
+- **The one spec constant that remains is tied to `Arrival` by a tripwire.** That the
+  preamble is **eight** octets is REQ-102's own figure, not an implementation detail,
+  and it is published in `arrival.mli`'s prose. The builder asserts
+  `Array.length (Arrival.in_times frame) = 8 + <frame octet count>` before it uses the
+  first eight entries. **If `Arrival`'s preamble count ever moved, this case fails at
+  construction with a message naming REQ-102, instead of silently overriding the wrong
+  octets.** That is one line, and it is the drift guard path (b) lacked.
+- **The departure is CHECKED, not trusted.** Before anything is written, the builder
+  compares the overridden word stream against `Arrival`'s own and asserts **exactly
+  seven octet positions differ, at exactly the seven octet times `in_times` names,
+  the start-character lane still reads `Control /S/`, the `control` field is
+  bit-identical on every cycle, and no octet outside the preamble range moved.**
+  `M03-B1` does not do this; C4 must, because C4 has no receiver assertions of its own
+  to catch a misplacement — its whole output is a comparison between two
+  implementations that would happily agree about the wrong stimulus.
+
+**What path (c) costs that path (a) does not, stated rather than waved.** Every case
+comment in this file states an invariant — *the file written out IS `Arrival.create`'s
+own schedule, nothing hand-patched on top* — and **C4 is the first case to depart from
+it.** I am not pretending otherwise. The departure is paid three ways: it is **named**
+in the case's own comment as a stated exception with `test_m03_b.ml:6-23` cited as its
+precedent; it is **bounded** by the three-part check above; and `Arrival.check` is
+**preserved and still meaningful** — `check_conformant ~case_label:"C4"` runs on the
+underlying schedule exactly as C1/C2/C3 do, and because `fcs_valid` defaults true and
+the override never touches a frame octet, `check`'s REQ-304 residue verification
+(`arrival.ml:165-172`) still stands over C4's frame. **A stated, bounded, checked
+exception is not the hazard the invariant guards against; a silent one is** — which is
+what tb_writer's own objection said, and path (c) satisfies it.
+
+---
+
+#### 4. `AMENDMENT WO-0078-A1` to §6.2 — C4's construction, specified, frozen at this commit and before any C4 stimulus exists
+
+*Dated by this commit and by `J-dv_lead-0157`. It amends §6.2's C4 row by adding a
+construction method; it changes no stimulus, no observable, no branch and no
+prediction, and CD §10.4 is not touched (§8).*
+
+**Scope — exactly two files, in two rounds, in this order.**
+
+| # | owner | file | what |
+|---|---|---|---|
+| 1 | **tb_writer** | `test/cosim/stimulus_gen.ml` | `build_c4`, `c4_meta`, the `known_cases` and `build_case` entries, and the per-case word seam below |
+| 2 | **data_wrangler** | `tools/cosim/run_cosim.sh` | add `C4` to the case array — **one line**, and nothing else |
+
+Plus each round's own §14 Return-log entry and journal entry (`WO-0078` §11's
+"Stage 2, per landing" DoD, unchanged). **§6.1's landing-order constraint still
+governs: tb_writer first; data_wrangler's half must not land before it.** **No file
+under `test/xgmii/**` is opened. No file under `test/xgmii_rx_64/**` is opened. No
+file under `test/attack_plans/**` is opened.** An assignee that opens one has left its
+scope and the round is bounced.
+
+**The construction, specified as a contract rather than as code** — the factoring is
+the assignee's, the properties are not:
+
+1. **The schedule.** `Frame.stress_frame ~sequence:0 ()`, `Arrival.create
+   ~first_start:0 [ octets ]`, `check_conformant ~case_label:"C4"` — the same three
+   lines C1 and C3 use, `?fcs_valid` left at its default `true`, `?ifg` left at its
+   default 12. **C4's frame is case 0's frame.** The only thing that differs from case
+   0 anywhere in this case is seven preamble octets.
+2. **The per-case word seam.** `write_stimulus` today reads
+   `Arrival.word_at sched ~cycle`. It gains a per-case word function; for `0`, `C1`,
+   `C2` and `C3` that function **is** `Arrival.word_at sched` and their bytes cannot
+   move. **Case 0's `build ()` is not edited — zero `+`/`-` lines inside it** (§3.1,
+   §10 item 7), and the seam is added beside it, never through it.
+3. **The override's positions.** From `Arrival.in_times frame` — entries **1 through
+   7**. Entry 0 is the start character and is untouched. **The length tripwire of §3 is
+   mandatory and is not an `assert`; it is a `failwith` naming REQ-102.**
+4. **The override's values — FROZEN HERE, before any C4 stimulus exists.**
+   `0xA0 lor d` for `d` = 1…7, i.e. **`A1 A2 A3 A4 A5 A6 A7`**, the SFD position
+   carrying **`0xA7`**. Two derivations, both required in the comment:
+   - **Nonstandard, from SPEC-M03 §6.1's own table**: the table writes `0x55` at the
+     six filler positions and `0xD5` at the SFD. Every one of the seven values above
+     differs from what the table writes at its own position, and `0xA7 ≠ 0xD5` is the
+     octet this case is actually about.
+   - **Provenance, from `test_m03_b.ml:28`**: `nonstandard_preamble_octet lane =
+     0xA0 + lane`, which at a lane-0 start is `0xA0 lor d`. **C4 drives the identical
+     nonstandard pattern as the landed `M03-B1` bench**, so the two instruments differ
+     in the design under test and not in the stimulus — which is what makes a
+     divergence between them attributable. Choosing a *different* pattern would have
+     been the cheapest way to make C4's result unreadable against the row it shares a
+     requirement with.
+   - **Not from the reference.** No line of `test/third_party/verilog-ethernet/**` was
+     read to choose these, and none may be. Deriving a stimulus value from the
+     implementation you are about to compare against is the same defect as deriving an
+     expected value from it.
+5. **The departure check** — §3's three-part assertion, before a byte is written:
+   exactly seven differing octet positions, at exactly those octet times, `/S/` intact,
+   `control` bit-identical on every cycle, nothing outside the preamble moved.
+6. **`idle_counts = [ 0 ]`.** One admitted frame, `~first_start:0`, and **no
+   `Injection` or `Idle_injection` in the builder's call graph** — the same
+   construction argument case 0, C1 and C3's own comments make. **tb_writer's inference
+   is confirmed as the required value**, and the builder must call nothing but
+   `Frame.stress_frame`, `Arrival.create`, `check_conformant`, `Arrival.in_times` /
+   `Arrival.frames` and `Xgmii_word`, so that the argument stays true by construction
+   rather than by inspection.
+7. **`describe`** names CD §10.4, REQ-102, the lane-0 start on cycle 0, the pattern,
+   and cites `test_m03_b.ml` as its precedent.
+
+**What it must preserve — checked in the landing run, not asserted in the Return log.**
+
+- **The four binds, byte-identical, printed in the same run**: case 0
+  `c675517176922d42bca42ec3def182cb3536861f1acaa8384116f33a5c4cc051`; C1
+  `5ae9e4f501251c38d0c2d386bd792e07cbcf9cf107cf7e75c378e21b1ce3bd7c`; C2
+  `cc1e85a4c5f871226f07b4792446d63c523577dcf172d6c4a80b8a3e845b44a7`; C3
+  `1512d30b6aa186ca89d55ce40fbcfdee01590a5a47e2a497eb4389c2bc6c4dce`. **Case 0's is
+  §12 criterion 1 and `EXIT_CASE0_MOVED`, and its anchor remains the pre-widening run
+  `31080871169` / job `92549154623` / `55e16ae` — never the literal inside the file
+  the freeze constrains** (`RV-STAGE1` §1's standing note). The other three are this
+  round's regression evidence, and a landing that moves any of them is fixed and
+  re-run, not salvaged.
+- **Case 0's span**: `build ()` and its `~first_start:0`, frame content and 24 drain
+  cycles, untouched — zero diff lines inside the expression, shown by the diff.
+- **The sighted placement** (§12 criterion 2): C4 is a lane-0 start on cycle 0 and the
+  run prints its `frame 0: admit_cycle = 0`.
+- **The instance's stimulus terms** (CD §10.4, unamended): one 64-octet good-FCS frame
+  whose six preamble filler octets **and SFD octet** carry arbitrary nonstandard data
+  values; **otherwise clean**; lane-0 start on cycle 0. *Otherwise clean* is
+  load-bearing and is what §4 item 5's check enforces: `/S/` is still `/S/`, the frame
+  octets are case 0's, the FCS is correct and `Arrival.check` is empty.
+- **`AP-M03` §7's four bars, all standing**; no strobe record added (§10 item 4); no
+  cross-side cycle comparison (§10 item 3); and every one of §10's twelve prohibitions
+  unchanged.
+
+---
+
+#### 5. Pre-registered before C4 runs, so none of it can be invented afterwards
+
+**Branches — §7's C4 row and CD §10.4, carried, with CD §10.5's resolution.**
+Agreement inside the domain selects **α**. A divergence in the **accept-or-discard
+decision** selects **γ**, resolving as a `BUG-` against our RTL or a REQ-901 spec diff
+to architect_docs_lead, **never** by amending an expectation. **β is unreachable** —
+64 octets, permitted-divergence set empty (CD §10.0). A divergence in the preamble
+octets *alone* is **X4, outside the domain, data** — but **X4 does not exclude the
+decision those octets cause**, and no run may move it after the fact (CD §0's bar).
+
+**What α at C4 would buy, bounded before it is banked.** **One class**: nonstandard
+preamble/SFD **data** octets at a **lane-0** start on the reset-release cycle, for the
+four REQ-901 observables. **Four things it does NOT buy, and each is a sentence no
+artefact of the C4 round may write:**
+
+1. **It does not co-sim-anchor `M03-B1`.** B1 is a family-B bench row with its own
+   assertions and its own mutation qualification; C4 is a two-implementation
+   comparison on a shared stimulus pattern. **Sharing a stimulus is not sharing a
+   verdict.**
+2. **It does not reach the lane-4 half.** `M03-B1` drives **both** start lanes; C4
+   drives one. The lane-4 nonstandard-preamble geometry — where the preamble straddles
+   two words — is **not** in C4's set and no packet may imply it is.
+3. **It lifts no bar.** `AP-M03` §7 bar 1 lifts **at the `AP-` round**, per class, when
+   a case has run and agreed — never at a run and never in a verdict.
+4. **It does not open the `SO-`** (§10 item 10).
+
+**Two standing reading rules carry into C4's round unchanged**, per `RV-C3ALPHA` §12:
+`S2-11`'s (*a value this lane does not print is not a value this lane measured*) and
+§6's has-result rule (*a tier is not a coverage warrant without its SUMMARY*).
+**`S2-12` does not block C4** — its exits 5 and 6 are not in C4's outcome space —
+and **`S2-9`'s `MAX_WORDS_PER_FRAME` bound is not reached** by a 64-octet frame.
+
+**The stopping rule — this round does NOT count against it, and I rule that
+explicitly so it cannot drift in either direction.** Its form is *"if any single case
+reaches no comparison on two consecutive landings, the third landing of that case is
+not a fourth worker repair round."* **C4 reached no comparison because no case was
+built: there was no stimulus, no run, no landing and no comparison attempted.** A
+round that produced no artefact to compare is not a landing that failed to compare.
+**C4's counter stands at ZERO** and the rule's threshold is unchanged.
+
+---
+
+#### 6. `FINDING RV-0078-S2-13` (MINOR, mine) — a dispatch that named a stimulus and not its construction, for a stimulus this programme had already built; and the census rule's THIRD dimension
+
+**What happened, in one sentence.** CD §10.4, `WO-0078` §6.2's C4 row, `RV-C3ALPHA`
+§12's restatement and the C4 dispatch **all** describe the stimulus and **none** of
+them names `M03-B1` — the row in my own `AP-M03` that commissions the identical
+stimulus against the identical requirement, or `test/xgmii_rx_64/test_m03_b.ml`, which
+built it and had it reviewed and scored. **A worker was therefore sent to discover a
+construction the programme already owned, discovered a correct negative over a set
+that excluded it, and spent a round.**
+
+**Why it is MINOR.** Nothing has been adjudicated under it; no case has run; no
+coverage claim anywhere is false; C4's distance is **unchanged at one landing** (§3's
+path costs one worker round on one file plus one line of shell, which is what a Stage-2
+landing has always cost). **The whole cost is one investigative seat, and that seat
+returned a verified four-module negative I would otherwise have had to buy anyway.**
+
+**Why I mint it anyway, and against myself.** `RV-C2ALPHA` §7 ruled on completeness in
+terms: *"Is it complete enough to authorise C3 and C4 without another layer surprise?
+**YES for C3 and C4**, and the reason is structural rather than optimistic"* — naming
+*"the preamble octets under X4's exclusion"* as C4's genuinely new ground and clearing
+it because *"both single-frame, both inside code paths this lane has run."* **That
+census enumerated ten items and every one of them is a CONSUMPTION layer** — the
+reader's state machine, the writer, the record order, the sidecar indexing, the timing
+maps, the determinism check, the runner, `DELIVERY_DEPTH`, `MAX_WORDS_PER_FRAME`, the
+grammar text. **Zero of the ten is a construction surface. I cleared a case on a census
+that never asked whether the stimulus could be emitted.** That is the same species as
+`FINDING WO-0077-A1` — a universal quantified over a set that was never measured — at
+its **fourth** instance, and the third of them is my own §7 cell 9's self-description:
+*"the one cell where the census failed to apply its own method to the census's own new
+code."*
+
+**And its mirror, which is why the rule below binds workers and not only me.** The
+worker's *"no lawful hook exists"* is the same defect with the sign flipped: a
+**negative** universal is exactly as wide as the set it was measured over, and four
+modules is not *"the full set reachable"*.
+
+**THE RULE, and it is the operative product of this finding.**
+
+> **A capability claim states the set it was measured over, and its polarity does not
+> change that obligation. A claim that a mechanism does not exist is measured over
+> every landed construction of the thing in question — not only over the modules that
+> would naturally host one. Before a case is authorised, the producer that must emit
+> its stimulus is checked for the capability to express it, and that check is a read
+> of the producer's construction surface together with every existing construction of
+> the same stimulus, never an inference from the specification that commissioned it.**
+
+*Portable form, banked for the harvest (LH2-g candidate — no proper noun):* **a
+readiness census over the layers that consume an input is not a readiness census; a
+case is not constructible because it is specifiable, and "no mechanism exists" is a
+measurement over a stated set or it is a guess.** **(LH1)** taught by this round at
+`ad32dff` and by `RV-C2ALPHA` §7's clearance at `2efd7f9`; **(LH3)** without it, a
+frozen case is dispatched to a worker who cannot build it, or — worse — is built a
+second time by a second method while a reviewed first method sits unnoticed one
+directory away.
+
+**Owner**: dv_lead. **Class**: MINOR. **Carriers, three, all named**: (i) this ruling,
+which repairs the immediate instance by supplying the construction; (ii) the
+post-Stage-2 `AP-` round, which files the rule at §7 beside bar 4 where
+`WO-0077-A1`'s census rule already lives, and which **must add the `M03-B1` ↔ C4
+cross-reference in both directions** — two documents of mine commissioning one
+stimulus for two instruments, currently unlinked — **bounded** by §5's four
+prohibitions so the cross-reference cannot be read as B1 being co-sim-anchored; (iii)
+**`RV-C2ALPHA` §7's owed second static census gains a THIRD AXIS**, added to §6.3's
+re-authorisation condition (d) beside frame-length and admission-legality: **the
+construction surface, per case — can the producer emit it, checked at the producer and
+against every landed construction.**
+
+**That third axis pays before it is run, and here is the evidence rather than the
+promise.** `arrival.ml:157-162`: `check` refuses any frame below five octets — *"a
+frame below five octets delivers nothing (REQ-107) and is an injection case, not a
+schedule case"* — and `stimulus_gen`'s `check_conformant` turns a non-empty `check`
+into a `failwith`. **So Stage 3's C6 (V2, below five octets) cannot be built by the
+`Arrival.create` + `check_conformant` idiom every landed case uses; it needs
+`Injection`.** Found by one read, at this tree, before C6 was ever dispatched. **Naming
+it costs one reading; discovering it costs one round** — `RV-C2RERUN` §10's own
+instruction, now re-applied to the axis that just cost one.
+
+**Standing set, unchanged this round except where noted:** `WO-0078-1` STANDING;
+`S1-3`, `S1-4` STANDING; `S2-2`, `S2-3` STANDING; `S2-9` STANDING and gates Stage 3;
+`S2-10` STANDING, its reading rule binds; `S2-11`, `S2-12` STANDING (neither blocks
+C4, §5); `CD-P2-1` **DISCHARGED AS TO C3, STANDING AS TO C4** — and C4's blank cell is
+resolved by §5 above from §7's own branch definitions, exactly as C3's was, **before**
+C4 runs; `CD-P2-2` STANDING, records defect. **`S2-13` NEW this round.**
+
+---
+
+#### 7. My own `RV-C3ALPHA` §10 condition, read — **it has NOT fired; the escape clause is SPENT, not renewed; and the deferral is now bounded in ROUNDS**
+
+**The condition, quoted whole so the reading is against its own words:**
+
+> *"the `AP-` round is a precondition of any claim that Stage 2 is complete, and of any
+> `SO-` citing co-simulation coverage. It may not be deferred past C4 for any reason
+> short of C4 itself failing to land. If C4 lands and the `AP-` round does not
+> immediately follow, the debt stops being deferred and becomes a finding against me."*
+
+**Reading 1 — the literal one, and it holds.** The trigger is *"if C4 lands"*. **C4 did
+not land.** The escape clause is *"for any reason short of C4 itself failing to land"*,
+and what occurred is precisely C4 failing to land. **The condition has not fired and
+there is no finding against me on this limb.** I will not manufacture one the words do
+not carry.
+
+**Reading 2 — the purposive one, and it agrees, which is the part worth saying.** I
+wrote that condition because a refusal repeated four times must be given a condition or
+it becomes a habit, and the ground it rested on was arithmetic: *"C4 is one landing
+away, so writing now would cost one reopening, not two."* **That arithmetic is
+unchanged.** Under §3's ruling C4 is still one landing away — one worker round on one
+file, one line of shell, one CI run. **The delay this round cost is one investigative
+seat, not a change in distance**, and I state the ground again rather than let a stale
+reason carry a conclusion I still hold, which is the exact defect `RV-C3ALPHA` §10
+corrected itself for.
+
+**So: does the `AP-` round proceed now, in parallel? NO — and this is a FIFTH refusal,
+so it gets a new bound, not a new excuse.**
+
+Three reasons, of which the third did not exist before this round:
+
+1. **The routing rule, which is stronger than the arithmetic.** §13 item 2: *"the `AP-`
+   round that follows **each landed stage**."* Not each landed case. Stage 2 is C1, C2,
+   C3, **C4**; three of four have landed; **the stage has not.**
+2. **Three cells now and a fourth later is two reopenings**, which is the arithmetic
+   the original deferral rejected — and it is worse now, because a Stage-2 block with
+   three cells filled and one blank has no marker distinguishing *not yet lifted* from
+   *blocked*, which is the left-standing-summary class §0-ter tabulates four payments
+   for.
+3. **New this round**: the `AP-` round now also owes the **`M03-B1` ↔ C4
+   cross-reference** (§6 carrier ii), and that cross-reference cannot be written before
+   C4's result exists without either asserting a bar-lift with no run behind it — which
+   `AP-M03` §7 forbids in its own words (*a bar lifts when a case runs and agrees*) —
+   or writing a link whose bound (§5's four prohibitions) is not yet measurable.
+
+**THE NEW BOUND, and it is in ROUNDS rather than in an event I control** — because a
+condition whose escape clause is satisfied by the debtor's own delay is not a
+condition:
+
+> **The escape clause is SPENT.** It covered *a* non-landing of C4; it has now been
+> used once and **it does not re-arm.**
+>
+> **The `AP-` round follows C4's landing immediately and unconditionally, as before.**
+> **AND** it becomes owed **regardless of C4's state at the end of the C4 remediation
+> round commissioned by `AMENDMENT WO-0078-A1` above** — one round, one landing
+> attempt. If C4 has not landed at that point, the `AP-` round runs on the three landed
+> cases with **C4's cell written as an explicit BLOCKED cell naming its blocker**, and
+> the deferral ends there whatever C4's state.
+>
+> **If I defer past that, it is a finding against me and its class is NOT MINOR** —
+> because by then the rule will have been stated twice and broken twice, and a rule
+> broken after its own restatement is a different defect from a rule that drifted.
+
+**Nothing else about the condition moves.** The `AP-` round remains a **precondition**
+of any claim that Stage 2 is complete and of any `SO-` citing co-simulation coverage.
+
+---
+
+#### 8. The CD and the `AP-` — **no edit to either**, ruled rather than omitted; and this is the FIFTH consecutive refusal on the CD
+
+**The CD: NO EDIT, and the reason is specific to this round rather than carried.**
+CD §10.4's frozen instance describes a **stimulus and its observables**. What this
+ruling supplies is a **construction method**, which is a dispatch-level fact and **not
+a domain instance** — and §9-bis's addition-only lift is scoped to *"§10 below,
+carrying co-sim Phase 2's domain instances"*. Writing `in_times`, `0xA0 lor d` or
+`test_m03_b.ml` into §10.4 would be an **edit inside a frozen instance**, which §0 bars
+outright, and it would put an implementation detail inside the one document whose value
+is that a reader can tell a prediction from an outcome without checking a date (§10.7
+item 3). **The octet values are frozen in §4 of this verdict instead — committed before
+any C4 stimulus exists, which is the same discipline §12 criterion 8 asks of a
+disposition, applied to a stimulus.**
+
+**The `AP-`: NO EDIT — the FIFTH refusal, on §7's routing rule and on the new
+third ground of §7 above.** The `M03-B1` ↔ C4 cross-reference is real, it is owed, and
+it is **the `AP-` round's own work** — a plan round is not where a carrier is improved
+and a mid-stage verdict is not where a plan is edited (`J-dv_lead-0112`). It is now
+booked as a named carrier of `S2-13` so it cannot be forgotten, and the refusal is
+bounded by §7's round-bound rather than left open.
+
+**The packet's `State` field: NOT flipped.** Stage 2 remains **ISSUED** with one case
+outstanding. C4 is neither returned-and-adjudicated nor accepted; it is **BLOCKED,
+UNBLOCKED BY THIS RULING, AND RE-DISPATCHED**. A State line that moved here would
+report a stage transition that did not happen.
+
+---
+
+#### 9. Sequencing after this ruling, and the declared siblings
+
+**The order, and nothing in it is optional:**
+
+1. **This ruling commits** — this Return-log entry and `J-dv_lead-0157`. **No code, no
+   CD, no `AP-`.**
+2. **tb_writer** — one round, one file, `test/cosim/stimulus_gen.ml`, per
+   `AMENDMENT WO-0078-A1`. The dispatch **must carry** §4 whole (the construction
+   contract, the frozen octet values and their two derivations), §5 (the pre-registered
+   branches and the four things α does not buy), and the pointer to
+   `test_m03_b.ml:6-51` as the precedent — quoted, not paraphrased, per §7's hardened
+   obligation. **It must also carry the instruction that opening `test/xgmii/**` or
+   `test/xgmii_rx_64/**` for EDIT is out of scope, while READING `test_m03_b.ml` for
+   the precedent is required** — the distinction this round exists to draw.
+3. **data_wrangler** — one round, one line: `C4` added to `tools/cosim/run_cosim.sh`'s
+   case array. **After tb_writer's half lands** (§6.1's landing-order constraint,
+   unchanged).
+4. **The CI run at the combined head is the check, and it is the only one** (§10 item
+   12; `WO-0075` §10).
+5. **`RV-C4`** — my verdict, adjudicating C4 against §5's pre-registered branches, plus
+   §12's nine criteria at the landing commit.
+6. **Then the `AP-` round** — four Stage-2 cells in one commit, plus the `M03-B1`
+   cross-reference, per §7's bound.
+7. **Then, and only then, the `SO-` round.**
+
+**Declared siblings — what may lawfully proceed in parallel with step 2/3, and what
+may not.**
+
+**MAY:** anything staging `docs/**` (architect_docs_lead) and anything staging
+`docs/reports/audit/**` (the auditor, including its re-execution sampling of this
+lane's committed evidence). Neither reaches the `cosim` job's graph or the `dune
+runtest` graph, and neither can confound C4's attribution.
+
+**MAY, and I recommend it be commissioned, but NOT from here**: **`FINDING K-1`'s
+message repair** at `test_m03_k.ml:468` — the oldest unpaid carrier in this module,
+whose carrier is *"the next commit that opens `test_m03_k.ml`"*, which no stage of this
+packet opens. It is a message-only repair in `test/xgmii_rx_64/**`, outside the `cosim`
+job, and the `SO-` will need it because it makes a scorecard unreadable. **It needs its
+own `WO-`, and a verdict is not where a work order is minted** — I name it as the
+lawful sibling and recommend it to the orchestrator, and I do not draft it here.
+
+**MAY NOT, each with its bar:**
+
+- **The `AP-` round** — §7 above.
+- **The `SO-` round** — §10 item 10, and the `AP-` round is its precondition.
+- **Stage 3 / C5–C9** — §6.3 is SCOPED, NOT AUTHORISED; its re-authorisation gate
+  requires Stage 2 landed with all four cases green or every divergence adjudicated,
+  and now additionally condition (d)'s second census, **on three axes** (§6).
+- **Any round staging `test/cosim/**`, `tools/cosim/**`, `test/xgmii/**`,
+  `test/golden/**` or `test/third_party/**`** — these are the `cosim` job's own graph,
+  and per-case attribution (§3.1 consequence 2) is the property this whole packet is
+  built on. A red in that job during C4's landing must be attributable to C4 and to
+  nothing else.
+
+---
+
+#### 10. §12 read — what this ruling bears on, and what it cannot touch
+
+**Seven of the nine criteria are untouched by a round that runs nothing**, and I say so
+rather than tabulate nine rows of "not engaged". **Two are engaged, both forward:**
+
+- **Criterion 8** (*every case's disposition frozen before it ran*) — **STRENGTHENED
+  AND EXTENDED.** C4's branches were already frozen at CD §10.4 and §7; this ruling
+  adds a second freeze at the same standard — **the stimulus VALUES**, fixed at §4
+  before any C4 stimulus exists, at a commit provably earlier than C4's run.
+  Criterion 8 was written about dispositions; **a case whose stimulus is chosen after
+  its construction problem is known needs the same protection, and now has it.**
+- **Criterion 3** (*every case reaches a verdict or names why not*) — **exercised in an
+  unexpected direction and worth recording.** Its plural property remains unexercised
+  after four landings. But its *spirit* — a case that is skipped without its own line
+  fails — was honoured by a worker at a layer the criterion does not reach: **C4 is a
+  declared gap in a Return log, not a silent absence**, which is the same property one
+  layer up from the harness.
+
+---
+
+#### 11. What this ruling does NOT mean
+
+1. **It does not mean the C4 stimulus is now built.** No line of code exists. This
+   ruling authorises a construction; the construction is a landing away and the landing
+   is a CI run away.
+2. **It does not mean `Arrival` is defective.** It is not. It declines to parameterise
+   a value REQ-102 forbids the receiver to validate, and that decision is correct and
+   stays.
+3. **It does not mean tb_writer's round was wasted.** Four module claims were verified
+   at the source and stand; a bypass that would have been harder to catch in review was
+   declined; four binds were reproduced. **What it cost is the difference between a
+   four-module census and a whole-programme one, and that difference is charged to me.**
+4. **It does not co-sim-anchor anything.** §5's four prohibitions bind every artefact
+   of the C4 round and of this verdict.
+5. **It does not amend a specification, a domain instance or an attack plan.** §8.
+6. **It does not lift `AP-M03` §7's bar 1, 2, 3 or 4**, in any degree, for any class.
+
+---
+
+#### 12. Verdict
+
+**`RV-C4GAP` — tb_writer's C4 round is ACCEPTED AS A DECLARED GAP, and its STOP is
+COMMENDED. Its four module claims are CONFIRMED at the source. Its negative universal
+is INCOMPLETE and is superseded here: the hook exists at `test/xgmii_rx_64/test_m03_b.ml:28-51`,
+landed, reviewed and mutation-scored, building CD §10.4's exact stimulus.**
+
+**Path (a) — `Arrival.create ?preamble` — REFUSED** (capability creep against a landed
+mechanism; fourteen consumers of blast radius purchased for a capability that exists;
+a documented design decision reversed for one case in one lane).
+
+**Path (b) as framed — REFUSED**, on the worker's own reasoning, upheld.
+
+**Path (c) — AUTHORISED**: the `M03-B1` idiom in its second instance, confined to
+`test/cosim/stimulus_gen.ml`, with the geometry read from `Arrival.in_times` rather
+than re-derived, a REQ-102 length tripwire, and a three-part departure check. Scope,
+octet values, preserved invariants and DoD at **`AMENDMENT WO-0078-A1`** (§4).
+**No shared machinery moves. No file under `test/xgmii/**` is opened.**
+
+**`FINDING RV-0078-S2-13` (MINOR) — MINTED against my own dispatch**, with its rule
+(§6) binding immediately on both leads and workers, and three named carriers including
+the third axis added to Stage 3's owed census.
+
+**`RV-C3ALPHA` §10's condition — NOT FIRED.** C4 did not land, which is the clause's
+own named exception. **The escape clause is SPENT and does not re-arm**, and the
+deferral is re-bound in rounds: the `AP-` round follows C4's landing immediately, and
+becomes owed regardless of C4 at the end of the remediation round commissioned here,
+with C4's cell written as BLOCKED if it has not landed. **A later deferral is a finding
+against me and is not MINOR.**
+
+**Stage 2 remains ISSUED. Three of four cases ACCEPTED. C4 is UNBLOCKED and
+RE-DISPATCHED, one landing away.**
+
+— dv_lead, `J-dv_lead-0157`, at `ad32dff`
+
+---
