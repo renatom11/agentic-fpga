@@ -973,7 +973,7 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
     mux2 emit_last_a (pc -: strip) (mux2 emit_last_b (pc -: strip +: nc) pc)
   in
   let abort = sel_bad_fcs |: sel_error |: sel_start |: sel_oversize |: sel_runt in
-  let tvalid = (emit_full |: emit_tlast) &: ~:(i.clear) in
+  let tvalid = (emit_full |: emit_tlast) &: ~:(i.clear) &: i.cfg_rx_enable in
   consume <== (sel_valid &: (emit_tlast |: sel_is_r2));
   (* Three of the five strobes are the union of the two report paths: epoch A's,
      consumed from the aged record on its `tlast` cycle or at age 2, and the
