@@ -966,3 +966,307 @@ then family **K**, then the `SO-`.
 - test/cosim/dune
 - tools/cosim/run_cosim.sh
 - tools/dv_checks.sh
+
+---
+
+## [J-dv_lead-0140] 2026-08-10T07:20Z | task:WO-0076 | The ninth campaign frozen against the era's oldest unscored rows — and the two things that made it different from its eight predecessors are that its classes are PERMITTED to move the datapath, and that the collision method I was made to carry found both of its collisions in another class's blast radius
+
+### Trigger
+
+Orchestrator dispatch, spawn short-id `WO-0076/2026-08-10T07:20Z`, HEAD
+`b112e47` — verified as my first action, before reading anything, and matching
+the expected SHA exactly.
+
+The commission is my own: `WO-0074-VERDICT` §14 item 3, **the family J campaign
+packet**, with its SEALED companion in the same commit under R-SEAL-1
+(freeze-first, base = the staging commit). Family J's three ASSERT rows —
+`M03-J1`, `M03-J2`, `M03-J3` — landed at `2dbd39b` and have been passed over by
+eight campaigns. **They are the oldest unscored rows in this programme** and this
+packet is the debt.
+
+### Inputs
+
+Read at `b112e47`, all read-only. **No `libs/**`, `top/**` or
+`rtl_snapshots/**` was opened at any point in this round.**
+
+- `agents/charters/dv_lead.md`; `agents/PROTOCOL.md` — mandatory first actions.
+- `docs/specs/modules/xgmii_rx_64.md` — **§4.3** entire (the sampling sentence,
+  the three-clause "What the enable gates", "The case that forced the ruling"),
+  **§6.1**'s *"When `cfg_rx_enable` is 0"* paragraph, **§6.2**'s four rows at
+  their enable conditions, **§6.3 item 7** (C-14.5), **§7**'s
+  configuration-sampling and reset bullets, **§9**'s closure list and clause (b),
+  **§10**'s REQ-802/REQ-810 and REQ-110 hooks, §4.1/§4.2's port table.
+- `docs/specs/requirements.md` — **REQ-810** in full, **REQ-803**, **REQ-802**,
+  **§9.1**'s `receive enable` row, §13's REQ-810 change-log rows (C-46, ADR-0014).
+- `test/attack_plans/AP-xgmii_rx_64.md` — **§4.J** entire (all four rows, with
+  `M03-J2`'s **withdrawn** cell and the honest kill that replaced it read at
+  their own words), §4.K's landed-status block, §4.M's post-campaign block item 4
+  and §9's 2026-08-10 row item 8 (**`FINDING WO-0074-S4`'s method, banked as a
+  bar on this seal**), §4.I's `M03-I2` cell, §4.L's `M03-L1` cell, `FINDING K-3`.
+- `test/xgmii_rx_64/test_m03_j.ml` in full; `test_m03_n.ml`'s `run_n4` and its
+  two members; `test_m03_structural.ml`'s `Enable.change_cycles` witness;
+  `bench.mli`'s `Enable`, `Clear` and `sample` docstrings; `bench.ml`'s
+  `run` pre-scan guards, `account_clean_frame`, `delivered_samples`,
+  `error_pulses` and `assert_monitors_clean`; `test_m03_a.ml`'s
+  `tuple_of_sample`/`tuple_equal`; `test/monitors/octet_time.ml`'s
+  `Latency.frame_out` and `of_words`; `test/cosim/ours_run.ml:138–142` and
+  `test/cosim/tb_xgmii_rx_64.v:63`; `tools/dv_checks.sh`'s inventory block.
+- `agents/handoffs/WO-0074_family-m-mutation-campaign.md` and its SEALED
+  companion, both in full (the template this packet is built against, and the
+  four findings against my own seal that it must not repeat);
+  `agents/handoffs/WO-0075_cosim-lane-cycle-comparison.md` (§8.0's hazard).
+- `agents/journals/claude_dv_lead_agent.v06.md` — `J-dv_lead-0137`, `0138`,
+  `0139`; `claude_dv_lead_agent.v05.md`'s `FINDING K-3` statement.
+
+### Reasoning
+
+**Family J is not family M, and the first hour went on establishing exactly how
+far that goes.** Family M's campaign could carry one global rule — *nothing may
+move but the strobe set* — because every M row's observable was a strobe set, and
+that rule was simultaneously the qualification criterion and the datapath check.
+**Family J's observables ARE the datapath.** `M03-J1` asserts that no word
+appears, `M03-J2` that eight do, `M03-J3` that eight appear byte- and
+cycle-identical to a reference run. A class that moved nothing would be
+invisible; a check that forbade movement would fail a correct rendering of three
+of the five classes. **So §6 is written as a per-class permission list instead of
+a global prohibition** — each class declares in advance the exact set of
+delivered-stream facts it may move, and everything else must be identical. That
+inversion is this round's own methodological content, and I would rather have
+written it before the run than discovered it in a scorecard the way `WO-0063B`
+discovered the signature had no domain.
+
+**The number that decides the round is four.** I measured, rather than recalled
+(`FINDING K-3`), how many units in the repository drive `cfg_rx_enable` away from
+`Enable.high`: `grep -rn --include=*.ml '~enable' test/` returns eight sites, of
+which two are the capability's own plumbing and two are explicit
+`~enable:Enable.high`. **Four units drive it low** — J1, J2, J3 and family N's
+N4 — and fifty-five of the fifty-nine M03 units never touch it. That single fact
+does three jobs: it makes the MUST-STAY-GREEN guarantee mechanical (one conjunct,
+*enable-high invariance*, protects all 134 other behavioural units), it bounds
+what the round may claim (four units is the narrowest instrument footprint of any
+campaign in this era), and it turns a wide rendering into an immediately
+disposable finding rather than an argument.
+
+**Two of my own plan cells are convicted before a diff exists, and both were
+found the same way the six before them were — by working the row's own arithmetic
+while authoring the packet that commissions it.** `FINDING J-1`: `M03-J1`'s Kills
+cell names *"a design that gates the output but leaves the strobe path live"*,
+and the hundred refused frames in that row's own schedule are clean, 64-octet,
+good-FCS frames that **owe no strobe under any rendering that merely leaves the
+detection machinery running**. The narrow reading is unreachable; only the cell's
+own parenthetical — a design that *reports* refusal — is separable, and that is
+IC-J2. Its second half is worse and quieter: the row's Observable has three
+clauses and its Kills cell attacks one, so REQ-810's **first sentence** — no
+output word — has no Kills cell at all, which is IC-J1's whole ground.
+`FINDING J-2`: `M03-J3`'s promise that the in-flight frame's *"strobes are
+exactly those of the same frame with the enable held at 1"* is unfalsifiable in
+the **subtractive** direction, because that frame is clean and owes none; the row
+can convict a design that *adds* a strobe and not one that *suppresses* one, and
+the carrier that convicts the suppressor is `M03-N4`, family N's. Both rows stay
+`ASSERT` — their observables are REQ-810's and REQ-803's own — and what the
+findings change is the claim a round may make about them. That disposition is the
+M03-D3 / M03-F2 / M03-I2 / M03-J2 / M03-K1 / M03-N4 precedent at its seventh
+instance and I applied it unchanged rather than inventing a status for it.
+
+**The round's centrepiece is a green, and it measures a correction this
+programme argued and never ran.** `WO-0067` §6 withdrew *"a design that samples
+the enable continuously and truncates the frame it just admitted"* from
+`M03-J2`'s Kills cell on a derivation — the enable is 1 for the whole of frame
+100's admitted extent, so such a design truncates nothing there — and re-pointed
+it at `M03-J3`. **IC-J3 is that design.** If it reddens `M03-J3` and leaves
+`M03-J2` green, the withdrawal stops being an argument, exactly as `FINDING M-1`
+and `FINDING M-2` did one family over. I sealed `M03-J2` green under IC-J3 as a
+load-bearing `G!` and pre-fixed all three outcomes, including the one that runs
+*in the row's favour*: a red there would mean the withdrawn cell was reachable
+after all, which is a restoration question for the plan and not a bench defect.
+And I wrote the prohibition into the seal's own qualification table rather than
+into prose: **no cell may qualify `M03-J2` on the withdrawn class, whatever a
+scorecard shows.**
+
+**`FINDING WO-0074-S4`'s method changed the seal in a place I could not have
+reached without it, and this is the report the commission asked for.** The old
+method — enumerate collisions from the cells you have marked — would have found
+**none** here, because each of the five scored cells is owned by exactly one
+class. The cross product of every class's *predicted red set* against every
+*scored cell* finds **two**, and both come from the same place: **IC-J1's blast
+radius**. IC-J1 is the widest class in the round (it reddens all four
+enable-driving units) and its own scored cell is at `M03-J1`; its reds at
+`M03-J2` and `M03-J3` land character-for-character on IC-J4's and IC-J3's scored
+cells, because all three are the same count-shaped message with a different
+integer. **The concrete change**: §9's inequality table gained two rows it would
+not otherwise have had — `> 8, derived 808` at `M03-J2` and `> 8, derived 16` at
+`M03-J3` — and the *direction* is now the discriminator of record at both
+collisions, with a second-unit measurement behind it. Without those rows a
+scorecard reading `got 16` at `M03-J3` would have been read against IC-J3's
+`< 8` cell and could have been scored as its kill. That is precisely the shape
+S4 named: *the classes that collide with a cell are usually not the class that
+owns it.* I also applied `FINDING WO-0074-S1`'s method — every rule in §3.4
+carries its complete conjunct list, including the gates the rendering may not
+remove — which is what stops IC-J3's rule from silently describing IC-J1 ∧ IC-J3.
+
+**Where I chose to stop.** Five classes, not eight. A sixth was available — the
+unscoped reading of REQ-810's three prohibitions, a design that suppresses an
+**in-flight** frame's own strobe, which ADR-0014 prices and rejects — and I
+declined to seed it, because `FINDING J-2` shows it is invisible at every family
+J unit and visible only at `M03-N4`, whose row is family N's and was scored at
+`WO-0066`. Seeding it would have bought a red that qualifies nothing, at 344 s.
+**It is declared instead of seeded**, which is the honest disposition and the one
+`WO-0074` used for `M03-M8`/`M03-M9`.
+
+**One symbol in the matrix is new, and inventing it was the alternative to
+guessing.** `M03-J1` contains **no assertion that reads frame 100's delivered
+stream** — its title says the re-enabled frame is received correctly, and the
+only instrument that would see it refused is the latency tagger, reached through
+`account_clean_frame` and reported by `assert_monitors_clean`. Sealing that cell
+`R!` would pin a prediction on an instrument the row does not have; sealing it
+`G` would claim a refusal is invisible when the tagger contradicts it. I sealed
+it **`M`** — a monitor-arm red that qualifies nothing under standing rule 7 —
+and pre-fixed all three outcomes at §5.6. Whichever fires is a measurement about
+the row's own instruments, and none of them is a kill.
+
+**On the hazard I would rather name than discover.** `WO-0075` is outstanding
+and its return edits `test/cosim/**`. §8's freeze binds *all* of `test/**` by its
+own words, so landing it inside this campaign's window invalidates the base. I
+considered writing myself a carve-out — `test/cosim/` contributes zero units and
+is blind to every class here by stimulus — and refused it: a freeze with an
+exception invented for the author's convenience is exactly the "hope" shape
+`FINDING K-3` names. It goes up as **question 1 for ruling** with a
+recommendation (hold `WO-0075` for the ≈ 29 minutes this campaign costs) and a
+priced alternative (land it before the base commit and re-freeze).
+
+**On the anchor, one line, because the correction is recent and mine.**
+`WO-0075` established that the co-simulation lane's blindness is **stimulus-bound
+first**. Here there is no second candidate at all: both producers hold
+`cfg_rx_enable` at 1 for the whole run, measured at
+`test/cosim/ours_run.ml:142` and `tb_xgmii_rx_64.v:63`, so no class in this
+campaign is *rendered* at that stimulus and a green `cosim` job is evidence of
+nothing. Bar 4's second instance, and its purest.
+
+### Actions
+
+- Authored `agents/handoffs/WO-0076_family-j-mutation-campaign.md` — five intent
+  classes with nine mandatory disclosures; the enable census; enable-high
+  invariance as the campaign's structural fact; ten declarations of what the
+  round cannot score; R-DISC-1/2 terms with a three-path gate inventory
+  (admission, emission, report); §6's **per-class permission lists**; the
+  blinded allowlist with the **manifest-only** rule (`FINDING WO-0074-A1`: the
+  operator cuts the transients, not the auditor) and the **abort-first HEAD
+  check**; the base-SHA and adjudicator-ordering rules with §8.0's `WO-0075`
+  hazard; §8.1's pre-fixed scoring rules for the three bounded measurements;
+  price (5 × 344 s ≈ 28.7 min, zero added stimulus); non-closures with carriers;
+  weighting; return format and two questions for ruling.
+- Authored `agents/handoffs/WO-0076_family-j-mutation-campaign-SEALED-predictions.md`
+  — **frozen in the same commit, before any diff exists** (R-SEAL-1): seven
+  standing rules; the denominator and the enable census re-measured at this tree;
+  row prefixes; the per-unit assertion orders; the matrix (four units × five
+  classes) with six `G!` cells and one `M`; kills, qualification and
+  blast-radius tables; per-class rules **with complete conjunct lists**; five
+  verbatim `R!` cells; the blast-radius cells worked; §6's eight
+  green-by-blindness declarations including `DECLARATION J-D1`; **three
+  collisions derived by the cross product**; nine pre-committed dispositions;
+  the mutant-owned inequality table; the reasoning; the bounds; the pass
+  criteria.
+- Ran **no** `dune` command (standing bar) and **no** git command that moves
+  HEAD, the index or a ref. Every git call was `rev-parse`, `log`, `show --stat`,
+  `status`.
+
+### Evidence
+
+Reproducible at this commit; CI is the authority (ADR-0005).
+
+```
+git rev-parse HEAD                                                        -> b112e47
+grep -c 'let%expect_test' test/xgmii_rx_64/test_m03_j.ml                  -> 3
+grep -rh --include=*.ml 'let%expect_test' test/xgmii_rx_64/ | grep -c .   -> 59
+grep -rh --include=*.ml 'let%expect_test' test/ | grep -c .               -> 139
+grep -rh 'let%expect_test' test/ | grep -c .                              -> 141
+grep -rn --include=*.ml '~enable' test/                                   -> 8 sites
+grep -rln --include=*.ml 'Enable\.' test/                                 -> 4 files
+```
+
+The **141** is the old directory-scoped matcher, kept as a running measurement
+rather than a quotation: `FINDING M-4` was repaired in `tools/dv_checks.sh` at
+`c109c08`, the repaired matcher reports **139**, and the contamination the repair
+removed has already grown from 140 to 141 because the plan absorbed the family-M
+campaign. The eight `~enable` sites are: `bench.ml:229`, `bench.ml:429` (the
+capability's plumbing), `test_m03_j.ml:223` and `:457` (explicit `Enable.high`
+control and reference runs), and the four disabled runs `test_m03_j.ml:169`,
+`:279`, `:488` and `test_m03_n.ml:1256`.
+
+Cell derivations an auditor can re-execute from a checkout, since they are the
+seal's own arithmetic and no test asserts them today: frame 0 of the 101-frame
+schedule starts at octet time **8** → cycle **1** → its first output word at
+`start_cycle + 3` = **4** (§4.1's sealed integer); frame 99 closes at cycle
+**1049**, the change is at **1050** and frame 100 starts at **1051**, so
+`M03-J1`/`M03-J2` carry **no frame in flight across their change**;
+`M03-J3`'s frame 0 delivers on cycles **4 … 11** with its change at **5**;
+`101 × 8 = 808` and `2 × 8 = 16` are the two blast-radius integers of §5.2.
+
+No CI run is claimed for this round: **it stages no code and no test**, and its
+own campaign has not run. The control run will be the base commit's own `build`
+job, quoted by the verdict.
+
+### Outcome
+
+**DoD met.** The commission — `WO-0074-VERDICT` §14 item 3, the family J campaign
+packet with its SEALED companion in the same commit — is delivered as two files,
+frozen against the commit that stages them.
+
+- **Handoff**: `agents/handoffs/WO-0076_family-j-mutation-campaign.md` (DRAFT,
+  dv_lead → auditor via the orchestrator) and its sealed companion, to be issued
+  once the orchestrator lands them and records the base SHA.
+- **Not delivered and not owed this round**: no `SO-`, no `RV-`, no `BUG-`, no
+  `test/**` byte, no plan edit. §8's freeze is the reason for the last of those
+  and it is stated in the packet rather than assumed.
+- **Lessons harvest**: **not due this round** — it falls due at the `SO-`, and
+  the span since my last harvest stays open and declared rather than skipped.
+  **Two candidates banked against it here**, beside the three at `J-dv_lead-0137`
+  and the two at `J-dv_lead-0139`. **(A)** *An observable expressed as an absence
+  cannot distinguish a component that never produced the event from one that
+  produced it and suppressed it; only a positive comparison against a reference
+  run separates them, and a coverage claim over such a requirement must say which
+  of the two it excludes.* LH1: this round's `DECLARATION J-D1`, pending IC-J3's
+  measurement. LH2-**g** — no proper noun. LH3: without it, a green silence
+  assertion is read as evidence of a mechanism it never observed. **(B)** *A test
+  harness's own refusal guard — a check that declines to drive a stimulus the
+  specification leaves unconstrained — is evaluated before the component under
+  test is read, so no mutation of that component can score it; a campaign that
+  reports such a guard as covered is reporting its own scaffolding.* LH1: this
+  round's §6.3 and family K's identical finding about its `clear` guard. LH2-**g**.
+  LH3: without it, a suite's guards inflate its measured coverage by exactly the
+  number of things it refuses to test.
+
+### Open-questions
+
+1. **The `WO-0075` sequencing hazard (packet §8.0), for the orchestrator's
+   ruling.** `WO-0075`'s return edits `test/cosim/**`; §8's freeze binds all of
+   `test/**`. **Recommendation: hold that return until this campaign scores** —
+   the campaign costs ≈ 29 minutes of CI and the cosim lane is blind to every
+   class in it. The alternative is to land `WO-0075` **before** the commit
+   staging this packet, moving the base forward one commit and re-freezing the
+   seal against it. **If it lands inside the window, the round re-seals**, and I
+   have deliberately not written myself a `test/cosim/**` carve-out.
+2. **IC-J5's price against its risk (packet §15 Q2).** It is the only class
+   reaching `M03-J3`'s tuple comparison — the row's own instrument — and the
+   likeliest of the five to come back NOT SEEDED, since a design whose `tuser`[0]
+   is not separable from its abort term cannot render it. **Recommendation: keep
+   it**; a NOT SEEDED declaration there is a result in the register `WO-0074`
+   used for `M03-M5`, not a wasted job.
+3. **Owed to the post-campaign `AP-` round, with this packet as the named
+   carrier of the findings**: `FINDING J-1`'s two halves (the `M03-J1` Kills
+   cell's unreachable narrow reading; REQ-810's first sentence having no Kills
+   cell), `FINDING J-2` (`M03-J3`'s subtractive strobe clause), and
+   `DECLARATION J-D1` as a §7 X-row if it survives the run. **No AP byte moves
+   until the campaign scores.**
+4. **Carried, unchanged and not this round's to pay**: the family **K** campaign,
+   owed before any `SO-`, whose seal owes the same two methods this one applies;
+   the charter §3 anchor, undischarged and now blind per configuration class;
+   `WO-0047` §2's 4-octet member reorder (`test_m03_f.ml`); `OBSERVATION L-O1`
+   (`test_m03_l.ml`); `WO-0073-D3`'s `M03-I4` mislabel (`test_m03_i.ml`);
+   `OBSERVATION K-O1` (`test/monitors/`).
+5. **Nothing is escalated.** No `BUG-`, no `E`-class item, no spec-queue
+   addition — a nil escalation, declared rather than omitted.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0076_family-j-mutation-campaign.md
+- agents/handoffs/WO-0076_family-j-mutation-campaign-SEALED-predictions.md
