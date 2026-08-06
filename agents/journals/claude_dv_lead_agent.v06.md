@@ -3403,3 +3403,327 @@ is **extended, not enlarged**.
 
 ### Files-in-this-commit
 - agents/handoffs/WO-0077_family-k-mutation-campaign.md
+
+## [J-dv_lead-0147] 2026-08-11T02:40Z | task:WO-0077 | The era's last campaign adjudicated: nine of nine killed and all four rows qualified — and the round's largest result is that the anchor my own seal declared blind convicted the two classes the bench places no stimulus for
+
+### Trigger
+
+Orchestrator dispatch, spawn short-id `WO-0077-ADJ/2026-08-11T00:00Z`, expected
+spawn-head `04078fd5e9e3e6fc666900bce8ae2840f7305ccc`. **Abort-first head check run
+as the first action, before reading anything**: `git rev-parse HEAD` → `04078fd`,
+an exact match, so no direction test was needed and `git log --oneline 04078fd..HEAD`
+is empty. This is the check that caught incident four in one command and it is
+still the cheapest instrument in the programme.
+
+The commission: adjudicate `WO-0077`, the family-K mutation campaign with its
+declared N-completion section, against the seal frozen at `aced7b4` — the tenth and
+last campaign of the class-based era. I was the sole agent in flight.
+
+### Inputs
+
+- `agents/charters/dv_lead.md` and `agents/PROTOCOL.md`, in full, as my mandatory
+  first reads.
+- `agents/handoffs/WO-0077_family-k-mutation-campaign.md` in full at `04078fd`,
+  including my own pre-run rulings `RN-1 … RN-6`, the conduct ruling on the five
+  disclosed exposures and the green-light bars (landed as the entry preceding this
+  one, `J-dv_lead-0146`).
+- `agents/handoffs/WO-0077_family-k-mutation-campaign-SEALED-predictions.md` **as
+  frozen at `aced7b4`** — verified as the sole commit touching that path before I
+  opened it, and opened only after every scorecard was in hand.
+- `docs/reports/audit/WO-0077-mutations/README.md` at `f9232c2` — the auditor's
+  nine manifests, §2's diff blocks (which govern over the escaped tables, by the
+  green light's bar 4), §4's R-DISC-1 discharges, §5's nineteen disclosures and §11's
+  summary table.
+- **CI, read-only, via `api.github.com`**: the ten runs' job lists and step
+  readings, and the `build` job logs for all nine transients plus both failing
+  `cosim` jobs. Nothing was re-run, cancelled, triggered or pushed; no `mut/*`
+  branch was checked out; no git state changed.
+- **At the base tree, read only AFTER every scorecard was in hand**, to attribute
+  raised messages to raise sites and to ground two findings:
+  `test/xgmii_rx_64/test_m03_k.ml`, `test_m03_n.ml` (the `M03-N1` per-word block at
+  `:925–960` and the count arm at `:900–915`), `test_m03_e.ml` (`run_e4`'s
+  construction), `test_m03_b.ml` (row names only) and `test/cosim/ours_run.ml`
+  (`:140–190`). **No `libs/**` path was opened at any point; every design-side fact
+  in the verdict is the auditor's own claim, cited as its claim.** Not one byte
+  under `test/**`, `libs/**` or `tools/**` moved.
+
+### Reasoning
+
+**The evidence channel had to be built before anything could be judged, and the
+constraint shaped what I could claim.** The organisation's egress policy blocks the
+Azure blob host GitHub redirects job logs to, so `curl` to the logs endpoint returns
+a proxy `403` on the redirect. **I record the refused attempt here under the
+durability clause**: `curl -sSL .../actions/jobs/<id>/logs` → `CONNECT tunnel
+failed, response 403` for host `productionresultssa2.blob.core.windows.net`, and the
+proxy's own status endpoint confirms it as a policy denial. Per the proxy's
+instructions I did not retry or route around it. The server-side GitHub tool
+returns the same log content without traversing that host, so the evidence was
+obtained in full and **no cell in this verdict is scored on unreadable evidence**;
+the seal's unreadable-evidence disposition therefore has no instance and was not
+improvised around.
+
+**What the logs contain is better than a scorecard, and I chose it deliberately.**
+Rather than accept a summary, I took each `build` job's own `dune` diff — the
+`(Failure "…")` string with its backtrace, printed in plaintext before the
+workflow's base64 promotion block — so every message in the verdict is the raised
+string and not a paraphrase of it. The seal's cells are message-level and §12 item 4
+made a paraphrase inadjudicable; this is the form that honours that. The **step**
+readings are the second half: step 5 `Build` is `success` on all nine, which is what
+retires the build-finding branch of disposition 8 for every class, and step 6 `Run
+tests` is the only failing step.
+
+**The K section adjudicated itself, and the four-class collision resolved exactly as
+sealed — with one detail sharper than the seal's own prediction.** IC-K1, IC-K3,
+IC-K5 and IC-K6 each raised `test_m03_k.ml:468`'s message, character for character.
+But `dune`'s diff header prints the promoted file's blob hash, and all four are
+`373f32a` — **one byte-identical artefact from four distinct defects against four
+distinct REQ-009 clauses.** `FINDING K-1` said the disposition table cannot
+discriminate; the run says the *suite's emitted artefact* cannot either. I could have
+left that at "the message is identical" and been correct; recording the blob is what
+makes the finding checkable by someone who does not trust my reading, and that is the
+difference between a finding and an assertion.
+
+**Two `G!` greens carried the round's real content and both held.** `M03-K1` green
+under IC-K5 establishes `WO-0072` §7.5's *"invisible here"* withdrawal **from a
+run** after four rounds of arguing it from a stimulus; `M03-J3` green under IC-N4b
+establishes `FINDING J-2`'s asymmetry the same way and confirms `M03-N4` as its sole
+carrier. Both were the sole-exerciser classes `FINDING RV-0075-3` forbade me to mark
+optional. **The bar cost 688 s of CI and bought the two measurements this campaign
+will be remembered for**, which is the argument for the bar stated in figures rather
+than defended in prose.
+
+**The hardest decision in the round was `IC-K3`'s and `IC-K5`'s `cosim` reds, and I
+want the reasoning preserved because the tempting answer was the wrong one.** Seal
+§6.1 declared, before the run, that the differential co-simulation anchor was blind
+to all nine classes by stimulus — bar 4's third instance and, in the packet's own
+words, "its purest yet". Two classes reddened it, with the same divergence:
+`ours=discard, theirs=accept`, our side emitting no word at all.
+
+The tempting answer was disposition 7: the §7 permission list for both classes
+requires "the reset pulse's own response" to be identical, the cosim lane's only
+`clear` **is** a reset pulse, so the rendering moved something it was forbidden to
+move — out of specification, reported not scored, both kills gone. **I rejected it,
+and on three grounds I want on the record.** First, the seal's own §9 disposition 8
+pre-classified exactly this event — "a red in `test/cosim/` → a finding against
+§6.1's derivation, and a very interesting one" — deliberately separately from its
+scope-finding and build-finding branches, and a pre-committed disposition written
+before any diff existed is precisely what I am not allowed to renegotiate after one
+exists. Second, `test/cosim/` contributes **zero units**, and the rules at §3.4
+quantify over units, so the classes' reddening sets are still `{M03-K2}` over the
+domain those rules range over — the rules are not falsified, the *blindness
+declaration* is. Third, and decisively: the manifest **disclosed the deviation in the
+open**, in its own words, and cited **my** census as its ground — IC-K3's discharge
+says "admission is therefore refused on cycle 0 of every unit in the repository — and
+no unit presents a start character on cycle 0 (packet §4.2, measured at this tree)",
+and `D-K5b` answers "the shift pushes the reset's effect onto cycle 0 and never onto
+cycle 1". Both answered the question I asked. **The question was scoped to a bench
+and the DUT has two producers.** Scoring the manifest for that would reproduce, one
+instrument over, exactly the failure I ruled out at `RN-3` §3.2 when I refused to
+punish a disclosure more precise than its question.
+
+**So I traced the root cause rather than assigning blame, and it is one measurement
+wide.** Seal §0.2 and packet §4.2 measured that no unit presents a start character on
+cycle 0 — true of `test/xgmii_rx_64/`, whose schedules come from `Bench.frames_at`
+and three direct `Arrival.create` sites. `test/cosim/ours_run.ml` is a **second
+producer outside that census**: it drives one `clear` cycle, releases, and begins its
+trace at index 0, so the co-simulation lane presents its start character on **cycle
+0** — the one placement the whole `(κ2)` argument assumed did not exist. The
+reference's first output word at cycle 3, against SPEC-M03 §6.1's
+`admit_cycle + m + 3`, puts the admit cycle at 0 and confirms it from the run. That
+is `FINDING WO-0077-A1`, and it is MAJOR and mine.
+
+**And it has a positive half I nearly under-weighted.** This is the **first time in
+this programme that the co-simulation anchor has convicted a mutant.** The lane is
+not blind; it is blind to seven of nine and **sighted for exactly the two whose
+defect lands on a start character sitting on a reset-release cycle** — a placement
+the M03 bench does not contain at all. That is the first positive statement about
+the anchor's coverage this programme has been able to make from a run, and it
+belongs in the `SO-`'s accounting beside the bar that says the anchor is
+undischarged. It does **not** discharge the anchor and I said so in terms.
+
+**The N section produced the round's second finding, and the seal's own two-direction
+check is what caught it.** IC-N1's blast radius came back neither as predicted nor as
+a scope violation: all five family-B units the instance list named are **green**,
+both of `M03-N2`'s zero-delivered sub-cases are **green**, and a unit the list never
+named — `M03-E4 (lane 0)` — is **red**. Reading `run_e4` at the base tree explains
+both halves at once: its `/E/` lands at octet time 85, cycle 10 lane 5, in the same
+input word as that frame's own `/T/` at octet time 80, cycle 10 lane 0 — **bit for
+bit `M03-N1`'s geometry**, built by a `?word_at` hook instead of an overlay. **The
+rule as written selects it; my worked-instance list, derived from stimulus titles,
+did not, because `M03-E4`'s title advertises a gap and not an in-word double-event.**
+Standing rule 5 makes the RULE govern over the instance list, so `M03-E4`'s red is
+inside the rule and inside §7's permission list, and IC-N1's kill stands. The
+over-selection is the mirror image: my rule asserted a **removal** direction at
+family B on an assumed symmetry between the two state transitions, and the rendering
+is asymmetric, so no removal was produced anywhere. **The check §11.4 built —
+"a scorecard showing only additions or only removals is a finding against this rule"
+— fired against the rule that carries it, which is the best possible outcome for a
+self-check and the worst possible one for my rule.** That is `FINDING WO-0077-N2`.
+
+**Three cells were scored against me and each was pre-declared before a transient
+existed.** The sealed `IC-N1` cell missed in **both** its branches — α was not
+reached because the `tuser` arm speaks first, β was not reached because the
+delivered-word count never moved — exactly as I pre-declared at the pre-run note
+§0.3, and `RN-3`'s five-branch table decided the kill without my touching a cell
+after the fact. `FINDING WO-0077-N1` is confirmed by the run. The seal's own breadth
+figure — "six raise sites, seven if `D-N1c` returns β" — is numerically right and
+structurally wrong, since `D-N1c` did return β and the site reached is neither of the
+two the seal enumerated; I corrected it against itself rather than quietly reporting
+six. **In every one of the three, the harsher reading was available and I took it,
+which is the whole content of the pre-run note's §0.2 rule.**
+
+**On the tally, I resisted one inflation and one deflation.** Nine of nine killed is
+the number, and §14 fixed the ceiling at 61 era kills before the round, so the
+ceiling is reached exactly and cannot be read as a surprise. But a clean sweep is
+the moment a verdict is most tempted to imply breadth, so §12 of the verdict restates
+the packet's own §16 weighting **unretracted**: four units of fifty-nine, four of six
+K classes at one cell with one identical file, one window placement, and the round's
+largest finding found before it ran against my own artefact. The GREEN-BY-BLINDNESS
+column is empty, and I said explicitly that this is not the same as no blindness
+being found — the round's blindness result runs the other way.
+
+**What I did not do**: I did not repair `FINDING K-1`'s bench message, did not touch
+the attack plan, did not open `tools/dv_checks.sh` for `RN-6`'s resolve-check, and
+did not issue an `SO-`. Every one is owed with a named carrier; repairing an
+instrument inside the window that scores it would void the round by its own rule, and
+§10's freeze is worth more than a tidier bench, a tidier plan or a tidier script.
+
+### Actions
+
+- Ran the abort-first head check; verified the seal's sole commit `aced7b4` before
+  opening it; re-verified the freeze at scorecard time
+  (`git diff --name-only 22ffe13 HEAD -- test/ libs/ tools/` → empty;
+  `git status --porcelain` → 0 lines), discharging the pre-run note's §0.1 promise
+  that the check is not discharged once.
+- Fetched, read-only, the ten runs' job lists and step readings and the eleven job
+  logs (nine `build`, two failing `cosim`); extracted every raised message verbatim
+  with its raise-site line number and every promoted file with its blob hash.
+- Adjudicated all nine classes against the sealed cells, the eighteen cross-product
+  greens, the seven `G!` cells, the MUST-STAY-GREEN sets and the ten pass criteria.
+- Read four bench files and one co-simulation driver at the base tree, after the
+  scorecards, to attribute messages to sites and to ground the two new findings.
+- Appended `WO-0077-VERDICT` to the campaign packet: per-class adjudication, the
+  four-column tally, row qualifications, the cross product reported cell by cell,
+  the breadth figures in the seal's own form, five numbered findings (two minted,
+  three confirmed plus four instrument bars discharged), the nine declarations
+  restated whatever the score, the pass-criteria table, the era tally and the owed
+  list with carriers.
+- Staged nothing outside `agents/handoffs/`. Ran no `git commit`, no `git push`, no
+  branch operation of any kind.
+
+### Evidence
+
+**CI is the authority (ADR-0005); every figure below is externally verifiable by run
+or job id in `renatom11/agentic-fpga`.**
+
+- **Control**: run `31072617706` at `aced7b41` — `build` job `92523513062`
+  **success**, `cosim` job `92523513034` **success**.
+- **Nine transients, `build` job step readings** — step 5 `Build` **success** and
+  step 6 `Run tests (expect tests, waveform snapshots)` **failure** on all nine:
+  IC-K1 run `31075090344` job `92531252043`; IC-K2 `31075091506` / `92531255298`;
+  IC-K3 `31075093097` / `92531260680`; IC-K4 `31075094473` / `92531264342`;
+  IC-K5 `31075095600` / `92531267692`; IC-K6 `31075096955` / `92531271948`;
+  IC-N1 `31075098067` / `92531275432`; IC-N4a `31075099649` / `92531280124`;
+  IC-N4b `31075100851` / `92531283874`.
+- **`cosim` conclusions**: `success` under IC-K1, IC-K2, IC-K4, IC-K6, IC-N1, IC-N4a,
+  IC-N4b; **`failure` under IC-K3 (job `92531261066`) and IC-K5 (job
+  `92531267799`)**, both at step 6 with
+  `DEFECT: frame 0: decision mismatch (ours=discard, theirs=accept)` and
+  `run_cosim: FAILED CHECK: DIFFERENTIAL COMPARISON`.
+- **The six scored messages, verbatim** (row prefix and raise site):
+  `M03-K2: the delivered-cycle list is not [4;5;14;15;16;17;18;19;20;21] -- the precondition every partition below depends on`
+  at `test_m03_k.ml:468` under IC-K1, IC-K3, IC-K5 and IC-K6;
+  `M03-K2: error_pulses is not empty -- A vanishes with no strobe (REQ-009) and B is clean`
+  at `:511` under IC-K2;
+  `M03-K1: expected exactly one strobe pulse (error_bad_fcs only), observed 2`
+  at `:257` under IC-K4;
+  `M03-N1 (lane 0): the frame's own tlast word unexpectedly carries tuser[0] = 1 -- a clean frame is not aborted`
+  at `test_m03_n.ml:936–941` under IC-N1;
+  `M03-N4 (lane 0): delivered-sample cycles are [4; 5; 6; 7; 8; 9; 10; 11; 14; 15; 16; 17; 18; 19; 20; 21], expected [4; 14; 15; 16; 17; 18; 19; 20; 21]`
+  at `:1302` under IC-N4a;
+  `M03-N4 (lane 0): expected exactly one strobe (error_start_without_terminate at A's own report cycle), observed 0`
+  at `:1421` under IC-N4b.
+- **`FINDING K-1` mechanised**: the promoted `test_m03_k.ml` blob is `373f32a` on
+  the IC-K1, IC-K3, IC-K5 and IC-K6 branches, `dd13100` on IC-K2 and `a851663` on
+  IC-K4 — four classes, one byte-identical artefact, from `dune`'s own
+  `git diff --no-index` header in each job log.
+- **Failing-unit counts, from the promoted-file list and hunk count per run**: one
+  unit each under IC-K1, IC-K2, IC-K3, IC-K4, IC-K5, IC-K6, IC-N4a and IC-N4b; six
+  under IC-N1 (`M03-N2` ×4 in `test_m03_n.ml`, `M03-N1 (lane 0)`, and
+  `M03-E4 (lane 0)` in `test_m03_e.ml`). **No file outside `test/xgmii_rx_64/` was
+  promoted in any run**, and `test_m03_b.ml` and `test_m03_j.ml` were promoted in
+  none.
+- **Freeze and ordering, at this tree**: `git log --oneline -- agents/handoffs/WO-0077_family-k-mutation-campaign-SEALED-predictions.md`
+  → `aced7b4` (sole commit); `git diff --name-only 22ffe13 HEAD -- test/ libs/ tools/`
+  → empty; `git status --porcelain | wc -l` → 0; `git log --oneline 04078fd..HEAD`
+  → empty.
+- **Refused fetch, recorded under the durability clause**:
+  `curl -sSL --cacert /root/.ccr/ca-bundle.crt "https://api.github.com/repos/renatom11/agentic-fpga/actions/jobs/<id>/logs"`
+  → `curl: (56) CONNECT tunnel failed, response 403` on the redirect host
+  `productionresultssa2.blob.core.windows.net`, confirmed by
+  `curl -sS "$HTTPS_PROXY/__agentproxy/status"` as an egress-policy denial. Not
+  retried, not routed around. **The same log content was obtained through the
+  server-side GitHub logs tool, so no cell was scored on unreadable evidence and the
+  seal's unreadable-evidence disposition has no instance this round.**
+- **The era tally**: 54 sealed / 52 killed / 1 survived / 1 void entering; **+9
+  sealed and +9 killed**; closing at **63 sealed / 61 killed / 1 survived / 0 green
+  by blindness / 1 void**, and 61 + 1 + 0 + 1 = 63.
+
+### Outcome
+
+**DoD met.** The campaign is adjudicated in a committed packet, not in chat.
+`WO-0077-VERDICT` is appended to
+`agents/handoffs/WO-0077_family-k-mutation-campaign.md` with the per-class
+adjudication, the four-column tally (**9 killed / 0 survived / 0 green by blindness
+/ 0 void**), the row qualifications (`M03-K1`, `M03-K2`, `M03-N1`, `M03-N4` — all
+four, with `M03-N1`'s and `M03-N4`'s the first in either row's history), the
+findings, and the era tally. `RN-5`'s pre-committed outcome 1 governed and §13's
+UNQUALIFIABLE declaration did not fire. **The last campaign debt on this module is
+discharged; no landed, green, unscored row remains in it.**
+
+**Handoff**: this verdict, for verbatim relay to the sponsor and, for §9.1 and §9.2
+specifically, to the auditor — both are findings against my own artefacts arising
+from manifests the auditor authored correctly, and its record should carry that in my
+words.
+
+**Harvest note (ADR-0018, PROTOCOL §7)**: **not due this round; the span stays
+open** and is declared rather than skipped. It falls at the `SO-` and spans from my
+last harvest. The bank now holds **nine** candidates — the three at
+`J-dv_lead-0137`, (C) at `J-dv_lead-0141` (second incident gained at `RN-6`), (D) and
+(E) at `J-dv_lead-0142`, (F) at `J-dv_lead-0143`, (G) and (H) at `J-dv_lead-0144`,
+and **(I) banked here**: *a universal asserted over one stimulus producer is measured
+over every producer that drives the unit under test, or the invisibility argument it
+grounds is true only where it was measured.* **LH1**: this round's IC-K3 and IC-K5
+co-simulation reds against a blindness declaration grounded in a bench-scoped census.
+**LH2-g**: no proper noun. **LH3**: without it, a blindness declaration is
+indistinguishable from an unmeasured hope, and the round that would have caught it is
+the round that relied on it. Banked, not minted.
+
+### Open-questions
+
+1. **The post-campaign `AP-` round is now the largest carrier this programme holds
+   and should be scheduled BEFORE the `SO-`, not with it.** It owes: §4.K's and
+   §4.N's four rows their first qualification cells; the records of `FINDING K-1`,
+   `FINDING WO-0077-K2`, `FINDING WO-0077-N1`, **`FINDING WO-0077-A1`** and
+   **`FINDING WO-0077-N2`**; `DECLARATION K-D1`'s measured outcome; and the newly
+   found fact that `M03-E4` is a second, independently constructed carrier of
+   `M03-N1`'s in-word geometry. Riding all of that on the `SO-`'s own round would
+   make the `SO-` the largest single-commit plan edit of the era.
+2. **`FINDING WO-0077-A1`'s census repair needs a home and I name one rather than
+   leave it undated**: the next campaign seal measures every universal over every
+   producer that drives the DUT, `test/cosim/` included; if no campaign seal is
+   drafted, the `SO-` round's own accounting carries it. `WO-0075`'s bar 4 must also
+   be reworded to carry both halves — the anchor is blind to most classes and
+   sighted for one placement — and its `RV-0075` §7 placement is the natural site.
+3. **Q3 remains with the orchestrator, now with a third reason.** `WO-0072` §9's
+   pre-committed disposition table carried two independent under-discriminations,
+   both found before the run, and the run demonstrated both. Whether that warrants
+   surfacing to the sponsor rather than filing is the operator's call and not mine.
+4. **`FINDING J-1`'s second half remains carrier-less** — REQ-810's first sentence
+   still has no `Kills` cell at `M03-J1` — and rides the `SO-`'s round if no `AP-`
+   round is scheduled. An undated carrier is how a debt becomes a habit, and this one
+   is now three rounds old.
+
+### Files-in-this-commit
+
+- agents/handoffs/WO-0077_family-k-mutation-campaign.md
