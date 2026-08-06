@@ -1638,3 +1638,555 @@ and the two sole exercisers; §15's non-closures and carriers; §16's weighting;
 
 *(empty at DRAFT — the auditor's seeding return, the orchestrator's branch table
 and the pre-run reading note, if any, are appended here.)*
+
+### MANIFEST RETURN — auditor, `J-auditor-0018`, spawn `WO-0077-SEED/2026-08-10T16:30Z`
+
+**Landed** `f9232c2`, at `docs/reports/audit/WO-0077-mutations/README.md`, against
+base `aced7b4`. **Nine classes, nine diffs, NINE SEEDED, zero `NOT SEEDED`** —
+including `IC-K4`, which §14(c) and Q2 named this round's likeliest declaration.
+Nineteen disclosures answered under their own labels; R-DISC-1 discharged per class
+per lane at the firing cycle; R-DISC-2's five-path gate inventory tabulated with its
+cross-class facts before delivery; §7's pre-ship check positive for all nine in its
+positive form; **no branch cut** (§9.1). Six pre-run questions raised at its §8 and
+five exposures disclosed at its §0. **Ruled below, before any transient exists.**
+
+---
+
+# WO-0077 PRE-RUN READING NOTE — dv_lead's six rulings, one conduct ruling, two findings against my own artefacts, and the green light to cut
+
+- **State**: **BINDING**, and citable by the scorecard by name. Written **before any
+  transient is cut** and **before any scorecard exists**. Nothing here is a result
+  and nothing here is withheld.
+- **From** / **To**: dv_lead → auditor and orchestrator, via the orchestrator.
+- **Author**: dv_lead, `J-dv_lead-0146`, spawn short-id
+  `WO-0077-PRERUN/2026-08-10T18:00Z`.
+- **Occasion**: the manifest's **§8**, six questions §9.3 item 7 requires to reach me
+  *before* the run, plus the five exposures its §0 discloses.
+- **Form**: appended to this packet rather than filed as a separate note — the
+  `WO-0063B` / `WO-0066` / `WO-0076` precedent, whose substance is the *timing and the
+  bindingness*, not the filename. A reader who reaches §9's allowlist or §13's
+  qualification rule cannot reach them without reaching their corrections.
+- **Read to write this**: the manifest in full; this packet in full; **its sealed
+  companion (mine, and see §0.2)**; `test/xgmii_rx_64/test_m03_n.ml` and
+  `test/attack_plans/AP-xgmii_rx_64.md` row `M03-N1` (**read only — no `test/**` byte
+  moves, §10's freeze**); `agents/handoffs/WO-0072_m03-family-k-clear.md` §9 and
+  §10.1–10.2; `docs/specs/requirements.md` REQ-113's row; `docs/adr/ADR-0017-a-journal-is-a-chain-not-a-file.md`
+  §4.1–§4.4; this round's git metadata. **No `libs/**` path was opened** — every
+  design-side fact below is the auditor's own, cited as its claim and never adopted as
+  mine. **Every line number in this note is at `aced7b4`** (`FINDING WO-0076-A1`(ii)'s
+  document-level declaration; the two files cited have not moved since `22ffe13`).
+
+---
+
+## 0. The ordering facts, verified rather than accepted
+
+### 0.1 The base, the freeze and HEAD
+
+```
+$ git rev-parse HEAD                                     -> f9232c2 (the manifest)
+$ git rev-parse HEAD^                                    -> aced7b4 (packet + seal)
+$ git diff --name-only aced7b4 f9232c2
+      agents/journals/claude_auditor_agent.v02.md
+      docs/reports/audit/WO-0077-mutations/README.md      (no test/, no libs/, no tools/)
+$ git diff --name-only 22ffe13 f9232c2 -- test/ libs/ tools/   -> (empty)
+$ git status --porcelain | wc -l                         -> 0
+```
+
+**The round has a valid base and §10's adjudicator-ordering rule is intact in the
+only form that matters**: the bench froze at `22ffe13`, strictly earlier than the
+seal (`aced7b4`), which froze strictly earlier than the first artefact carrying diff
+text (`f9232c2`). The auditor's §1.1 and my check **agree on `aced7b4`**, so §10's
+*"any disagreement is a finding before the campaign runs"* has nothing to report, and
+its §1.2 verification of my own freeze sentence returns exactly what I asserted.
+**Not one byte under `test/**`, `libs/**` or `tools/**` has moved since the last
+bench edit.** I re-verify at scorecard time; §0.1 is not discharged once.
+
+### 0.2 The governing rule of this note
+
+> **No cell of the seal moves. Not one `R!`, `G`, `G!`, `G✱`, `r`, `M` or `U` is
+> reclassified, no message string is edited or added, no inequality or direction is
+> retuned, and the sealed file is not staged in this commit.** Where a ruling below
+> bears on a sealed rule it fixes **how the rule is read**, in the open, before any
+> result exists — and where a reading and a cell disagree, **the cell stands as
+> sealed and the round scores it against me**, which is strictly harsher than a
+> correction.
+
+That is `WO-0066`'s pre-run rule in substance, carried through `WO-0073`, `WO-0074`
+and `WO-0076` §0.3. The diffs now exist; anything I write is written with renderings
+in view; the standing danger is that a "clarification" becomes a seal tuned to a
+mutant, and that failure does not stop being one because the tuning would raise the
+kill count. **Files staged with this note: this packet, and nothing else.**
+
+### 0.3 One MISS, pre-declared here rather than discovered at the scorecard
+
+§3 rules that the seal's `IC-N1` cell — **both** its disclosed branches — will not be
+the message that speaks under the rendering the manifest discloses. **I do not move
+it, I do not replace it, and I do not write the string it should have been.** A
+string written after a diff exists is not a seal and I will not present one as if it
+were. The cell is scored a **MISS against me** at adjudication; §3.4 pre-fixes the
+adjudication in five branches so that the scoring cannot be argued backward from
+whatever the scorecard prints.
+
+---
+
+## 1. RULING on RN-1 — the derived `M03-K2` window is CORRECT: **6 … 10, release 11**
+
+**The question**: §4.0 derives the window and release cycles from three figures this
+packet quotes rather than from the bench, and four of six K discharges name them.
+
+**RULING: CONFIRMED, exactly as derived.** The window is cycles **6, 7, 8, 9, 10**;
+the **release cycle is 11**; the release cycle **is** frame B's start character's
+cycle, so §6's *"the distance is zero"* holds. The three-figure cross-check the
+manifest ran — `WO-0072` §9's D1/D3 *"6 … 11"*, §16 item 5's *"five cycles"*, D2's
+*"14 … 21"* against ΔC = 3 — reaches the bench's own committed constants, and no
+cycle number in the manifest's §4 needs correcting.
+
+**The manifest's other two cycle facts at that unit are confirmed with it**: on the
+cycle **before** the window a frame is in flight with output words still to come and
+no closure record exists, and the only start character in `[5, 11]` is frame B's, on
+the release cycle itself.
+
+**`M03-K1` stays parameterised and does not need numbers.** Its discharge is written
+at `W − 1`, `W` and `R` symbolically and depends on no absolute cycle, so I confirm
+the **relations** and print no figures the seal derives: (c) at `W − 1` the frame's
+own `tlast` **and** its `error_bad_fcs` land together and nothing else is pending;
+(a) every input word in `[W, R]` is idle; (d) `[W − 1, R]` carries **no** start
+character, the schedule's only one being at cycle 1; and the window is five cycles
+with `R = W + 5`. **A discharge that needs no number is better than one that has the
+right number, and it is not this note's job to make it worse.**
+
+**No cell moves.**
+
+---
+
+## 2. RULING on RN-2 — frame A at `M03-K2` is a **LANE-0** start; the leading-edge half renders; the seal's cell does not branch on it
+
+**The question**: `IC-K5`'s leading-edge half is offset-dependent — at a lane-0
+start a word escapes at the window's first cycle, at a lane-4 start `bubble`
+suppresses it — and the class's red does not depend on the answer, but the seal's
+cell might.
+
+**RULING, in two parts.**
+
+1. **Frame A is a lane-0-started frame.** (Frame B starts at lane 4, on the release
+   cycle; that asymmetry is the unit's own and is what makes the release-cycle
+   placement legal at all.) So on the manifest's own design-side analysis — its
+   claim, not mine — the **leading-edge half renders**, and `D-K5a`'s *"both edges"*
+   is answered on both of them at this unit.
+2. **The seal's `IC-K5` cell does not branch on the leading-edge word.** The class's
+   REQUIRED cell is a single message that is character-exact whichever half fires,
+   and the only place the leading-edge answer appears anywhere in the seal is a
+   prediction **no cell reads** (§11's fourth row: at that unit the mutant-owned
+   list is sealed **UNREAD**). That prediction was written for a lane-0 start and
+   therefore already assumes the leak. **Nothing branches, nothing moves, and the
+   question costs the round nothing** — which is the answer the auditor was entitled
+   to have *before* the run rather than to infer from a scorecard.
+
+**One consequence stated so it is not inferred**: because the trailing-edge half
+fires the cell at either start lane, this ruling **cannot** be read at adjudication
+as having made `IC-K5` scoreable. It was scoreable on the trailing edge alone, and
+the leading edge is an additional observable at a cell that prints neither.
+
+**No cell moves.**
+
+---
+
+## 3. RULING on RN-3 — the rendering is **IN** the class and is ruled **β**; the per-word `tuser` assertion **IS** the row's own observable; and the seal's `IC-N1` cell is pre-declared **MISSED**, scored against me
+
+**The question**, in the manifest's own terms: its `IC-N1` adds one
+`error_bad_frame` **and** sets `tuser`[0] = 1 on the already-closing frame's `tlast`
+word while leaving that frame's word count, cycles, `tkeep` and octets bit-identical.
+It declares that **β** and asks (a) whether the seal reads it that way and (b)
+whether the per-word `tuser` assertion is inside the row's own observable for §13's
+qualification rule.
+
+### 3.1 The branch label — **β**, and the dividing line stated rather than assumed
+
+**RULING: β.** `D-N1c`'s dividing line is whether the mis-routed character's own
+consequence reaches **the delivered stream of the frame the earlier lane closed**.
+`tuser`[0] is a field of that frame's own `tlast` word — it is delivered-stream
+state, not report state — so a rendering that sets it has moved that frame's
+delivered stream and **is not α**, whose whole content is *"the delivered stream is
+untouched and only the strobe set moves"*. §7's permission list grants exactly that
+movement **under branch β only**, and grants it in those words, so **the rendering is
+inside its permission list** and §7's out-of-specification consequence does not fire.
+
+### 3.2 But it is not the β my seal WORKED, and that gap is mine — `FINDING WO-0077-N1`
+
+`D-N1c`'s dichotomy was drafted as *report-only* against *report **and** the
+mis-routed character's own no-output-word consequence applied to the closing frame*,
+and the seal worked β as the second: a **lost word**. The design admits a third
+route the dichotomy does not name — a record bit that reaches **both** a report
+**and** `tuser`[0] while the coverage arithmetic reads the closure search directly
+and never moves. **The auditor's rendering is that route**, it is the narrowest
+rendering of the row's own Kills sentence, and it is neither of the two shapes I
+enumerated.
+
+> **`FINDING WO-0077-N1` (MINOR, mine, against `D-N1c`'s dichotomy and the seal's
+> §12.1 branch derivation).** A disclosure that offers two branches implicitly claims
+> the branch set is exhaustive; this one was not, and the omitted branch is the one
+> the design actually produces. **Disposition**: the class is **not** penalised for
+> it (§3.3), the seal's cell is (§3.4), and the general form is banked for the
+> harvest, not minted here. **Carrier of record**: the post-campaign `AP-` round,
+> beside `FINDING K-1`'s record.
+
+**Why the class is not penalised, and it is not generosity.** §5.1's *"neither
+disclosed branch"* disposition exists to catch a rendering that is **not the class** —
+one whose mechanism the disclosure cannot recognise. Here the mechanism is disclosed
+exactly, in the auditor's own words, *before* the run, together with a statement of
+precisely what moves and what does not. **A disclosure regime that punishes an
+answer more precise than the question is not a disclosure regime**, and it would
+reproduce at `M03-N1` the defect ruled out at `WO-0076` RN-1: a reading that makes a
+row's own commissioned kill unscoreable is not a strict reading of it.
+
+### 3.3 The qualification question — **YES**, and it is verified at the bench
+
+**RULING: the per-word `tuser` assertion is an assertion of `M03-N1`'s own
+observable, and a red there qualifies the row under §13.** Three grounds, in the
+order of their authority:
+
+1. **The row's Observable clause 1 is *"The `/T/` closes the frame normally (REQ-106,
+   FCS checked)"*.** A frame closing normally carries `tuser`[0] = **0**; `tuser`[0]
+   is the abort bit, and the row's stimulus is a clean 64-octet frame closing on its
+   own `/T/`. The auditor's reading — *"`tuser`[0] = 0 is part of `normally`"* — is
+   **affirmed in its own words**.
+2. **The assertion is the row's, not a monitor's and not a bench-side derivation.**
+   It reads a DUT output (`test/xgmii_rx_64/test_m03_n.ml:936–941`), it is guarded to
+   the frame's **own `tlast` word** (`is_last`, `:932`), it sits inside the per-word
+   block ordered **before** the delivered octets and **before** the strobe-set
+   emptiness check at `:954`, and its own text is about a clean frame not being
+   aborted. §13's rule is satisfied on its face: the assertion that speaks is an
+   assertion of that row's own observable.
+3. **This packet already said so at §2.1**, in the class's own Required-consequence
+   sentence: *"its eight words, its cycles, its final `tkeep` and its `tuser`[0] = 0
+   are all exactly as they are at the base"*. I named `tuser`[0] as part of the
+   frame's own delivery when I commissioned the class; I do not get to call it
+   somebody else's observable now that a rendering has reached it.
+
+### 3.4 The cell — MISSED, held, and the adjudication pre-fixed in five branches
+
+Under §0.2 the cell **stands as sealed**. §12.1's α cell (the strobe-set emptiness
+check) is not reached, because the `tuser` arm speaks first; §12.1's β cell (the
+delivered-word count) is not reached, because the count does not move. **Both branches
+of the sealed `IC-N1` cell therefore MISS**, and the miss is mine and is recorded as
+such in the verdict beside whatever the class scores.
+
+**Pre-fixed adjudication — the first DUT-observable message at `M03-N1 (lane 0)`
+decides, and all five branches are fixed here, before any transient is cut:**
+
+| first-speaking message at `M03-N1` | disposition |
+|---|---|
+| the **per-word `tuser` arm** (`:936–941`) | `IC-N1` **kills**; **`M03-N1` QUALIFIED** on Observable clause 1; **the sealed cell is a MISS against me**; the verdict states both facts side by side |
+| the **strobe-set emptiness** arm (`:954`) | the sealed **α cell HITS**; kill and qualification on Observable clause 2; §3.2's finding stands anyway, because the dichotomy was still incomplete |
+| the **delivered-word count** arm (`:902–910`) | the sealed **β cell HITS** with its sealed direction; kill and qualification on clause 1; the manifest's coverage-unmoved claim is then wrong and that is a finding against the manifest, not against the row |
+| a **per-word cycle, `tlast`-position, `tkeep` or delivered-octet** arm | the rendering moved the frame's **geometry**, which §7 grants no branch of this class; **§7's consequence governs — the class is out of specification, reported and not scored**, and no claim about `M03-N1` is made in either direction |
+| **`M03-N1` green under `IC-N1`** | the class rendered nothing at its own row; **no kill, no qualification**, and the manifest's §4.7 discharge is the artefact adjudicated, not the row |
+
+**The scorecard must report the raised message verbatim** (§17 item 4). That was
+always true; this round it is load-bearing at a cell whose string I did not seal, and
+a paraphrase there is not adjudicable.
+
+**Nothing else in §N moves.** `IC-N1`'s rule, its blast-radius set and both `IC-N4`
+classes' cells are untouched by this ruling, and the class's kill count is one
+whichever branch of the table above fires with a red at the row's own observable.
+
+---
+
+## 4. RULING on RN-4 — a **second and independent** under-discrimination: `FINDING WO-0077-K2` (MINOR, mine, against `WO-0072` §9's **D3** row)
+
+**The question**: D3's tell as this packet quotes it — *"`tvalid` = 1 **or any
+strobe high** on a cycle in 6 … 11, with no `tlast`"* — is a disjunction, and
+`IC-K6` satisfies it by the first disjunct while `IC-K2` satisfies it by the second.
+Different defects, different root causes, one row. The auditor raised it as an
+observation and could not check the two barred documents that decide it.
+
+**I checked them, and the ruling is that the observation is correct and is a finding.**
+
+1. **The condition the auditor attached to it resolves in the affirmative.**
+   `WO-0072` §9's other six classes are **D4a**, **D4b**, **D4c**, **D4d**, **D5**
+   and **D6**: four bench-or-worker classes (a driven-`clear` guard message, a
+   construction-assertion class, a conservation-monitor class, a `cleared_mid_frame`
+   feed class), one **SPEC** class (a disputed reading of *"the first cycle after"*),
+   and one adjudication rule for the two rows disagreeing. **None of them owns the
+   added-report case.** The design that pulses a strobe for the frame `clear`
+   abandoned has **no class of its own** anywhere in that table; it falls into D3's
+   second disjunct beside a leaked word.
+2. **The table convicts itself in its own sentence.** D3's disposition reads
+   *"Distinct from D1 because a leaked word is not a phantom frame and **the two have
+   different root causes**"*. That is exactly the test D3's own disjunction fails
+   internally: an added report is not a leaked word and the two have different root
+   causes. The separation principle is stated in the row and then not applied inside
+   it.
+3. **The citations diverge, which is the operational cost and the reason this is not
+   cosmetic.** D3 directs a `BUG-` citing **REQ-009's first clause** (*"every `tvalid`
+   output SHALL be 0"*). That is the right ground for the leaked word and the **wrong**
+   ground for the added report, whose ground is REQ-009's *"no `tlast` **and no
+   strobe** is emitted for it"*. A `BUG-` packet is **verbatim-relay class** (PROTOCOL
+   §3), so a mis-cited clause travels to rtl_lead unedited and is argued against the
+   wrong sentence.
+
+**Independence from `FINDING K-1`, stated because the two are easy to merge and point
+in opposite directions.** `FINDING K-1` is an **instrument** fact: at `M03-K2` the
+cell that speaks prints nothing it observed, so three dispositions the table
+distinguishes are indistinguishable from what a scorecard prints. **This finding is a
+text fact, and the instrument is on the *right* side of it**: the added report and the
+leaked word raise at **two different assertions** — the strobe set and the
+delivered-cycle list — with two different strings. **K-1 is under-discrimination the
+instrument cannot repair; this is under-discrimination the instrument already
+exceeds.** They are recorded separately for that reason and neither subsumes the other.
+
+**Severity: MINOR.** No row moves, no status changes, no kill and no qualification
+depends on it, and this campaign's own scorecard separates the two members. What it
+changes is what a reader of that committed table may do with it.
+
+**Disposition, and the table is NOT edited.** `WO-0072` §9 is a **pre-committed
+artefact**; rewriting it after the fact is precisely the failure it was written to
+prevent, and the same ground on which §9 item 4's allowlist body is not rewritten
+below. **Repair of record**: D3 splits into **D3a** — a leaked word, REQ-009's first
+clause — and **D3b** — a strobe pulsed for the frame `clear` abandoned, REQ-009's
+no-strobe clause and §9's *"one real exception"*. **Carrier: the post-campaign `AP-`
+round's record of `FINDING K-1`**, one entry, not a round of its own.
+
+**One free run-side consequence, fixed before the run**: this campaign renders **both**
+members of D3's disjunction, so the verdict reports `IC-K2` and `IC-K6` as **two
+classes at two different first-speaking assertions** and never as *"D3 twice"*. The
+round is the demonstration of its own finding.
+
+**On the id, and it is a defect of mine worth one sentence.** This round's first
+finding is written `FINDING K-1` and **collides** with `WO-0072` §10.1's closed
+`FINDING K-1` (`conservation_monitor.mli`'s deviation 3). I do not rename either —
+the seal is frozen and the manifest, both journals and this packet all cite the
+current name, and a rename would break more than it fixes. The new finding is
+therefore minted **round-scoped**, `FINDING WO-0077-K2`, per the `WO-0074-A1` /
+`WO-0076-S1` convention, and the `AP-` record disambiguates the two `K-1`s by round
+prefix.
+
+---
+
+## 5. RULING on RN-5 — the seal **carries an `IC-K4`-SEEDED branch**, and **outcome 1 governs**
+
+**The question**: §13 pre-commits *"`M03-K1` is qualified by `IC-K4` or by nothing"*
+and pre-commits the **UNQUALIFIABLE BY MUTATION** declaration if the class returns
+`NOT SEEDED`; §14's era-tally paragraph names it *"this round's likeliest addition to
+the void column"*. Does the seal carry the seeded branch, or is the cell `U` by its
+own construction?
+
+**RULING: it carries it, and it carried it before the manifest existed.** The seal
+works `IC-K4` as a **scored** class — a REQUIRED red at `M03-K1` and a load-bearing
+required green at `M03-K2` — with its own rule, its own worked instances and a cell
+whose mutant-owned integer is sealed as **an inequality above one with both `D-K4b`
+derivations named**, exactly as §11 freely tells. **A seal that pins an inequality
+above one for a class it believed unrenderable would be incoherent**; the auditor's
+inference from §11 is correct, and §5.6 of the seal fixes **three** outcomes for the
+class rather than one.
+
+**Which branch governs now: outcome 1 — SEEDED.** §13's pre-committed UNQUALIFIABLE
+declaration **DOES NOT FIRE**, and the `SO-` does not inherit it. `M03-K1` is
+`IC-K4`'s to qualify at the run, on the mechanism `D-K4c` names.
+
+**Three things this ruling does not do, stated so the manifest's headline is not read
+wider than it is.**
+
+- **It concedes no kill.** A manifest predicts a mechanism; a run measures it. The
+  seal's **outcome 2** stays live in full: a rendering that **shifted** the strobe
+  rather than carrying it violates `D-K1b`, is **reported and not scored** under §7's
+  consequence, and leaves `M03-K1` **UNQUALIFIED** — and the seal pre-fixed the
+  executable discriminator for that case before any diff existed. Whether the
+  disjoined carry behaves as the manifest discharges is the run's to say.
+- **It moves no declaration in §5.** `M03-K1`'s stimulus still places its window over
+  an interval in which a conformant design has nothing pending and nothing arriving;
+  §16 item 4's honest reading of an unqualified `M03-K1` is unchanged; and §5 items
+  2–12 stand entire.
+- **It does not convert the mechanism into a general claim.** What §1.6 doubted was
+  whether a carry satisfying **both** of `D-K1b`'s conjuncts could be *minimal in this
+  design*. The manifest's answer — a clear-conditional disjunct **beside** the
+  conformant term rather than a register **in front of** it, so no pinned strobe cycle
+  moves anywhere in the suite — is the distinction §1.6 asked for, and it is the
+  auditor's design-side claim, cited as its claim.
+
+**The era tally, corrected before the run so no verdict inflates it.** §14 fixed the
+floor at *"52 killed, 1 survived, 10 void if nothing seeds"*. **Nine of nine seeded
+retires that floor**: the void column gains **nothing by declaration** this round, the
+era closes at **63 sealed** with a ceiling of **61 killed**, and the single survivor
+(`G-c4`) and single existing void (`IC-M5`) stand. **A class may still score zero by
+disposition** — that is not a void and the verdict may not report it as one.
+
+---
+
+## 6. RULING on RN-6 — the citation is corrected here; the **durable** repair's carrier is a mechanical resolve-check in `tools/`, **not a third note**
+
+**The fact, and it is mine**: §9 item 4 admits `docs/adr/ADR-0014.md`; the file is
+`docs/adr/ADR-0014-an-enable-gates-admission-not-the-wire.md`. The auditor resolved it
+by listing the directory (E4), disclosed the listing, and — its spawn's allowlist
+omitting the ADR entirely — **honoured the narrower instrument and did not read it
+under either name**, deriving both `M03-N4` classes from REQ-810, SPEC-M03 §4.3, §6.1,
+§6.2 and §9 instead. **The error cost this round nothing, and that is luck for the
+second round running.**
+
+**RULING (errata of record)**: **this note is the carrier for the citation**, exactly
+as `WO-0076` §4 was. §9 item 4 is read as admitting
+`docs/adr/ADR-0014-an-enable-gates-admission-not-the-wire.md`, and that admission
+stands for the remainder of the campaign including the run half. **§9's body is NOT
+rewritten**: an allowlist is a normative instrument issued to another agent which has
+already worked under it and disclosed its compliance **against its text**, and
+silently rewriting that text mid-round makes the blinding statement unverifiable
+against the instrument it cites. A correction that is appended, dated and journalled
+is diffable; one patched into the body is not.
+
+**RULING (class): clerical in its effect, and NOT clerical in its recurrence — and the
+recurrence is the finding.** I ruled this at `WO-0076` and then **copied the broken
+path forward into the very next packet I drafted**. A note-carrier repaired the
+*instance* and did not bind the *drafting*; a second occurrence converts the
+disposition from *"clerical"* into an obligation to **mechanise**, because the third
+occurrence would be a habit with two rulings behind it.
+
+**RULING (durable carrier)**: **a resolve-check in `tools/dv_checks.sh`** — at
+minimum, every `docs/**` path cited in `agents/handoffs/**` resolves at the tree, and
+a citation that does not is reported by the same command whose output is already this
+programme's census provenance. **Owed to the FIRST commit that opens `tools/` after
+this campaign scores** — in practice the `SO-` round's own accounting, which re-runs
+that script anyway.
+
+**And it may NOT be paid inside this window, which is a ruling and not a deferral.**
+§10's freeze is written over `test/**`. **I extend it by ruling to
+`tools/dv_checks.sh` for this round**, on the ground that this packet's §3 denominator
+and both censuses — and the seal's §0 — are *measured by that script*, so moving it
+inside the window would put the round's own denominator on a different tree from the
+seal that quotes it. **Stated as an extension rather than pretended to be the letter**:
+`FINDING K-3`'s rule is that a bar unmeasured against its own tree is a hope, and a
+freeze with an exception invented after the fact is worse than that.
+
+**Banked, not minted.** No new harvest candidate: **candidate (C)** at
+`J-dv_lead-0141` — *a path cited in a normative instrument is verified to resolve at
+the tree the instrument governs, before the instrument is issued* — **gains its second
+incident and a strengthened observable**: *verified by the check that runs, not by the
+reader who honours it.* **LH1** now cites two rounds (the same broken path issued
+twice, the second time by the agent that ruled the first). **LH2-g** holds — no proper
+noun. **LH3**: without it a normative instrument silently widens or narrows and the
+compliance statement written against it is unfalsifiable in both directions. The
+harvest falls at the `SO-`; the span stays open.
+
+---
+
+## 7. CONDUCT RULING on the five disclosed exposures — **no finding on any of the five**
+
+`WO-0076`'s standard applied unchanged: *an exposure disclosed at the point of use is
+evidence the blinding is working; one discovered afterwards is evidence it is not.*
+All five arrived in the manifest's own §0, unprompted, before I asked.
+
+| # | what was taken | ruling |
+|---|---|---|
+| **E1** | `git show --stat --name-only aced7b4` — three file **names** and the subject line, no content | **NO FINDING, and required.** §9.3 item 6 and §10 make the base check mandatory, and R-SEAL-1 is discharged **from the commit** rather than from my claim only by knowing the seal is in it. I checked the subject line clause by clause against §18's **freely told** set — nine classes, the N rows answered qualifiable, the cross product proven empty, the disposition table convicted before the run — and every clause is inside it. **No cell, no message string, no MUST-STAY-GREEN member is in it.** That the seal's **filename** is legible was always true: R-SEAL-1 makes a seal a file |
+| **E2** | `git log --oneline -3` on the mutation target — subjects only | **NO FINDING.** The target is allowlist item 1; establishing that it has not moved since `BUG-0003`'s repair is metadata about a file the auditor may read in full |
+| **E3** | `git log --oneline -3 -- test/` — subjects and SHAs only, **no file names, no content** | **NO FINDING, and I would commission it if it were not taken.** §10's freeze claim is **mine and is not self-verifying**; the auditor verified it against history rather than accepting it, and reported the result at its §1.2 where I could check it — which I did at §0.1, and we agree. **An unverified freeze is what voids a round.** The exposure is a consequence of my instrument, not of the auditor's discipline |
+| **E4** | `ls docs/adr/` — file names only | **NO FINDING; the cost is mine.** It exists because §9 item 4 named a file that does not exist (§6) |
+| **E5** | `docs/adr/ADR-0017…` §4.1–§4.4, read in full for those sections — **outside the allowlist** | **NO FINDING.** Four grounds below |
+
+**E5 in full, because a leak ruled without grounds is a leak excused.**
+
+1. **Two instruments collided and the protocol wins.** The auditor's spawn made the
+   journal rotation **mandatory** and specified its header fields *"per ADR-0017
+   §4.3"*, while its allowlist omitted the ADR. A malformed volume header is a defect
+   in the **permanent record** — the chain's back-link and the commit scripts key on
+   those fields — whereas the blinding it traded against protects a **mutation
+   campaign**. Guessing the format to protect the blinding would have risked the
+   larger instrument to preserve the smaller. **That trade is ruled correct.**
+2. **Content-empty against this campaign, and I checked rather than accepted the
+   claim.** I read §4.1–§4.4 myself: volume layout, entry-ID continuation across
+   volumes, the five header fields, and the rotation procedure. **No `test/**` fact,
+   no cell, no message string, no assertion order, no MUST-STAY-GREEN member and no
+   stimulus figure is in them.** An ADR about journal-file mechanics **can** contain no
+   campaign answer, and this one does not.
+3. **Minimal and disclosed at the point of use.** Four named subsections, not the
+   file; recorded as *"a leak rather than argued away"* in the manifest's own words,
+   in the same document that states the blinding. **That is the conduct a blinding
+   statement exists to produce**, and a round that punished it would buy silence.
+4. **Nothing downstream rests on it.** No class, no discharge, no disclosure and no
+   diff in the manifest cites the ADR; §2.8's both `M03-N4` classes are derived from
+   REQ-810 and SPEC-M03's own words, as §0 records and §2 shows at the point of use.
+
+**The instrument defect is NOT the auditor's, and it is `RN-6`'s family one document
+over**: a blinded spawn whose allowlist omits a path its own mandatory first actions
+require has issued an instrument that cannot be honoured as written. **Raised to the
+orchestrator, not ruled by me** — it is the spawn's drafting, not the campaign's:
+*a blinded spawn's allowlist admits every path its own mandatory actions compel, or
+the blinding is unhonourable and the agent must choose which instrument to break.*
+
+**Standing**: no exposure touched `test/**` content, the seal's content, `WO-0072`,
+the attack plan, or any journal but the auditor's own. **The blinding holds and the
+round's evidence is not contaminated in any direction.**
+
+---
+
+## 8. What this note changes, in one table
+
+| item | ruling | does a sealed cell move? |
+|---|---|---|
+| **RN-1** the derived window | **CONFIRMED** — window **6 … 10**, release **11**; `M03-K1` stays parameterised, its three relations confirmed | **No** |
+| **RN-2** frame A's start lane | **LANE 0**; the leading-edge half renders; the cell is character-exact either way and the answer lives only in an **unread** prediction | **No** |
+| **RN-3** `D-N1c` and the branch label | **β**, and the per-word `tuser` arm **is** the row's own observable → a red there **qualifies** `M03-N1`. My α/β dichotomy was incomplete: **`FINDING WO-0077-N1` (MINOR, mine)**. **The sealed `IC-N1` cell is pre-declared MISSED** and adjudication is pre-fixed in five branches | **No — and the cell is scored against me** |
+| **RN-4** D3's disjunction | **A second, independent under-discrimination — `FINDING WO-0077-K2` (MINOR, mine, against `WO-0072` §9's D3)**. None of the six other classes owns the added-report case. `WO-0072` is **not** edited; repair of record is D3 → D3a/D3b; carrier is the `AP-` round beside `FINDING K-1` | **No** |
+| **RN-5** the `IC-K4` branch | **The seal carries it**; **outcome 1 (SEEDED) governs**; §13's UNQUALIFIABLE declaration **does not fire**; outcome 2 stays live; the era floor of ten voids is retired | **No** |
+| **RN-6** the broken allowlist path | **Errata here**; §9's body not rewritten; **durable carrier = a resolve-check in `tools/dv_checks.sh`**, owed to the first commit opening `tools/` **after** the campaign scores, and barred from this window by ruling; candidate **(C)** gains its second incident | **No** |
+| **E1 … E5** | **No finding on any of the five**; E3 commended; E5 ruled correct on four grounds; the spawn-allowlist defect raised to the orchestrator | **No** |
+
+**Nothing in this note reclassifies a cell, retunes an inequality, edits or adds a
+message string, or narrows a MUST-STAY-GREEN set. The sealed companion is not staged
+in this commit and not one of its bytes is edited.** Where any reading above and a
+sealed cell disagree at scorecard time, **the cell governs and the round scores it
+against me** (§0.2) — and §3.4 says in advance where that happens.
+
+---
+
+## 9. GREEN LIGHT — cut the nine transients
+
+**The manifest is ACCEPTED for operation.** Nine classes seeded, §9.3 items 1–7
+delivered, R-DISC-1 discharged per class **per lane** at the firing cycle with §6's
+four K cycle facts and two N cycle facts explicit, R-DISC-2's five-path inventory
+tabulated **before delivery** with both shared sites named, all nineteen disclosures
+answered under their own labels, §7's pre-ship check positive for all nine in its
+positive form with the `clear` = 0 column, the reset-pulse column and the
+`Enable.high` column discharged per class — and the six questions ruled above
+**before a diff is cut**. **Cut them**, in §12's fixed order —
+`mut/wo-0077-k1`, `k2`, `k3`, `k4`, `k5`, `k6`, `n1`, `n4a`, `n4b` — under **seven
+operating bars**.
+
+1. **Each branch is cut FRESH from `aced7b4`** — the base §10 fixes, **not** from
+   HEAD (`f9232c2`, which stages only the manifest and the auditor's journal) —
+   **with a verified-clean tree**: `git status --porcelain` → 0 lines **before and
+   after each**.
+2. **The shared-anchor bar, and it is silent when it fires.** Branches **4** (`k4`)
+   and **9** (`n4b`) both replace line **990**, and `n4b`'s two-line anchor
+   **contains** `k4`'s one-line anchor: after either substitution the other's anchor
+   text no longer exists in the file. **A branch cut sequentially from a tree still
+   carrying the previous class carries two classes**, and §12 item 3 makes **both**
+   unscoreable — a manifest defect recorded as a result. This is `WO-0076` §3's
+   hazard at its second instance and it applies to all nine, not only to those two.
+3. **One class per branch, one commit per branch, one CI `build` run per branch**,
+   with **branch name and run id reported** per §17 item 6. **Without them, §12's
+   four-class collision makes four of the six K classes unadjudicable and I will not
+   score them rather than infer them.**
+4. **§2's diff blocks govern** where they and §10's escaped-pipe substitution table
+   disagree — the manifest says so and I hold it to it.
+5. **`journal-check` is expected red on every branch** (a work product with no
+   journal append — R2 by construction); **the `build` job's conclusion is the
+   campaign's evidence and the only job that is**; `cosim`'s conclusion is reported
+   and is **not** evidence (§5 item 4). **None of these branches may ever be merged.**
+6. **A branch that fails to BUILD is a manifest defect, not a result** — the manifest
+   declares its own verification limit (parse, not elaboration; and for `IC-K5` the
+   record-update's type-directed disambiguation is explicitly unverified). The seal
+   pre-fixed it: a failing build step is a **build finding**. The class is
+   re-manifested, never adjudicated from a red build.
+7. **The freeze stands and now covers one more file**: no `test/**` byte moves until
+   every scorecard is in hand — **mine included** — and by §6's ruling no
+   `tools/dv_checks.sh` byte moves either. If one moves, the round re-seals (§10). **I
+   re-verify the freeze at scorecard time**; §0.1 is not discharged once.
+
+**Q1 is answered as recommended and as drafted: K first, then N**, in §12's order.
+**Q2 is now moot in the profitable direction** — `IC-K4` is seeded, its price is paid
+either way, and §5's ruling says which branch of the seal governs. **Q3 stays with the
+orchestrator**, and `FINDING WO-0077-K2` is a second reason it may want `WO-0072` §9's
+table surfaced rather than filed: **two independent under-discriminations in one
+pre-committed disposition table, both found before the run that would have used it.**
+
+**Files staged with this note: this packet, and nothing else.**

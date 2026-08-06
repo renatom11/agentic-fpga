@@ -3118,3 +3118,288 @@ the eight already held.
 ### Files-in-this-commit
 - agents/handoffs/WO-0077_family-k-mutation-campaign.md
 - agents/handoffs/WO-0077_family-k-mutation-campaign-SEALED-predictions.md
+
+## [J-dv_lead-0146] 2026-08-10T18:00Z | task:WO-0077 | The era's last pre-run round: nine of nine seeded including the class I predicted would not be, six questions ruled before a branch exists — and the one that mattered pre-declares my own seal's cell missed rather than let a scorecard find it
+
+### Trigger
+
+Orchestrator dispatch, spawn short-id `WO-0077-PRERUN/2026-08-10T18:00Z`, HEAD
+`f9232c2` — verified as my first action per the dispatch's own abort-first bar, and
+it matches the spawn HEAD, so no `git merge-base` direction test was needed.
+
+The occasion is the auditor's seeding return for `WO-0077`, the tenth and last
+campaign of the class-based era: `docs/reports/audit/WO-0077-mutations/README.md`
+(`J-auditor-0018`, opening the auditor's volume 02), landed at `f9232c2` against base
+`aced7b4`. Its **§8 raises six pre-run questions** and its **§0 discloses five
+exposures**. My own packet's §9.3 item 7 requires both to reach me **before** the run
+and to be answered in the same form: *"a question answered after a scorecard exists is
+not a question, it is a negotiation."* This entry rules all six, rules the conduct of
+all five exposures, and gives or withholds the green light for the nine transients.
+
+### Inputs
+
+Read at `f9232c2`, all read-only. **No `libs/**` path was opened**; every design-side
+fact in the note is the auditor's, cited as its claim and never adopted as mine.
+
+- `agents/charters/dv_lead.md`, `agents/PROTOCOL.md` — mandatory first actions.
+- `docs/reports/audit/WO-0077-mutations/README.md` — **in full**, all 1474 lines: the
+  nine diffs, R-DISC-1's per-class per-lane discharges, R-DISC-2's five-path
+  inventory, the nineteen disclosures, §6's pre-ship check, §7's blast-radius rules,
+  §8's six questions, §10's operator table.
+- `agents/handoffs/WO-0077_family-k-mutation-campaign.md` — in full (my own packet).
+- `agents/handoffs/WO-0077_family-k-mutation-campaign-SEALED-predictions.md` —
+  **mine**, opened deliberately: RN-2, RN-3 and RN-5 are questions *about the seal*
+  and cannot be ruled without reading it. Nothing from it is disclosed in the note
+  beyond what §18 already tells freely.
+- `agents/handoffs/WO-0076_family-j-mutation-campaign.md` §§1193–1612 — the pre-run
+  precedent whose §0.3 rule this note carries.
+- `agents/handoffs/WO-0072_m03-family-k-clear.md` §9 (the pre-committed disposition
+  table, D1 … D6) and §10.1–§10.2 (its own two closed findings) — the documents RN-4
+  turns on and the auditor is barred from.
+- `test/xgmii_rx_64/test_m03_n.ml:895–960` and `test/attack_plans/AP-xgmii_rx_64.md`
+  row `M03-N1` — **read only; no `test/**` byte moves** (§10's freeze).
+- `docs/specs/requirements.md` REQ-113's row; `docs/adr/ADR-0017-a-journal-is-a-chain-not-a-file.md`
+  §4.1–§4.4 (read to rule exposure E5 on evidence rather than on the auditor's
+  assurance); `ls docs/adr/` for RN-6's filename.
+- Git metadata only: `rev-parse`, `diff --name-only`, `log --oneline`, `status`.
+
+### Reasoning
+
+**RN-1 and RN-2 are confirmations and cost nothing.** The derived window `6 … 10` and
+release `11` reach the bench's own committed constants exactly, so the manifest's four
+cycle-naming discharges stand unedited; frame A is a lane-0 start, so the offset-
+dependent leading-edge half of `IC-K5` renders. I confirmed `M03-K2`'s numbers and
+deliberately did **not** print `M03-K1`'s: that discharge is symbolic and needs none,
+and a note that volunteers figures a seal derives is spending blinding for nothing.
+
+**RN-3 is the round's real question and it goes against me.** The manifest's `IC-N1`
+adds one `error_bad_frame` **and** sets `tuser`[0] = 1 on the already-closing frame's
+`tlast` word, while leaving that frame's word count, cycles, `tkeep` and octets
+bit-identical. My `D-N1c` offered two branches — α (report only) and β (report **and**
+the mis-routed character's own no-output-word consequence applied to the closing
+frame) — and the seal worked β as a **lost word**. The delivered rendering is neither:
+it is a record bit reaching both a report and `tuser`[0] with the coverage arithmetic
+untouched, because that arithmetic reads the closure search directly.
+
+Three ways to rule it, and I rejected two.
+
+1. *Neither disclosed branch → the class is `U`, zero kills, `M03-N1` unqualified.*
+   Rejected. §5.1's disposition exists to catch a rendering whose mechanism the
+   disclosure cannot **recognise**; here the mechanism was disclosed exactly, before
+   the run, with a statement of what moves and what does not. Ruling it out would
+   punish an answer more precise than the question and would reproduce at `M03-N1`
+   the defect I ruled out at `WO-0076` RN-1 — a reading that makes a row's own
+   commissioned kill unscoreable is not a strict reading of it.
+2. *Move the cell to the assertion that will actually speak.* Rejected, and this is
+   the one that matters. The diffs exist; a string I write now is not a seal, and a
+   "clarification" that becomes a seal tuned to a mutant does not stop being a failure
+   because it would raise the kill count. §0.2's rule is carried verbatim in substance
+   from `WO-0066`/`WO-0076` §0.3 and it binds hardest exactly when obeying it costs me
+   a cell.
+3. **Adopted**: the rendering is **β** (the dividing line is whether the consequence
+   reaches the closed frame's delivered stream, and `tuser`[0] is delivered-stream
+   state, which §7's permission list grants under β **only**); the per-word `tuser`
+   arm **is** an assertion of the row's own Observable clause 1, verified at the bench
+   rather than argued (`test_m03_n.ml:936–941`, guarded to the frame's own `tlast`
+   word at `:932`, ordered before the octets and before the strobe-set check at
+   `:954`, its own text about a clean frame not being aborted) — **and my dichotomy
+   was incomplete, which is `FINDING WO-0077-N1`, MINOR, mine.** The sealed cell is
+   **pre-declared MISSED**, both branches, and the adjudication is pre-fixed in five
+   branches so it cannot be argued backward from whatever prints.
+
+The packet's own §2.1 settled the qualification half before I got there: the class's
+Required-consequence sentence names `tuser`[0] = 0 as part of the frame's own
+delivery. Having commissioned it as the frame's observable, I do not get to call it
+somebody else's now that a rendering has reached it.
+
+**RN-4 resolves a conditional the auditor could not check.** Its observation was that
+`WO-0072` §9's **D3** tell is a disjunction satisfied by `IC-K6` (a leaked word) and
+by `IC-K2` (an added report) — different defects, one row — and it asked whether one
+of the table's six other classes already owns the added-report case. It does not:
+D4a–D4d are bench-or-worker classes, D5 is a spec class and D6 is an adjudication rule
+for the two rows disagreeing. So the added-report design has **no class of its own**
+in a table I pre-committed. The table convicts itself in its own sentence — D3's
+disposition separates itself from D1 on *"different root causes"*, which is exactly
+the test its own disjunction fails internally — and the operational cost is a
+**mis-cited requirement clause in a verbatim-relay `BUG-` packet**, which is why it is
+recorded rather than shrugged off. It is **independent of `FINDING K-1` and points the
+other way**: K-1 is under-discrimination the instrument cannot repair (the cell prints
+nothing it observed); this is under-discrimination the instrument already **exceeds**
+(the two members raise at two different assertions with two different strings).
+MINOR; `WO-0072` is **not** edited, because rewriting a pre-committed table after the
+fact is the failure it exists to prevent; repair of record is D3 → D3a/D3b with the
+`AP-` round as carrier, beside `FINDING K-1`'s record. Minted round-scoped as
+`FINDING WO-0077-K2` because this round's `FINDING K-1` already collides with
+`WO-0072` §10.1's closed finding of that name and a rename would break the frozen seal
+and both journals.
+
+**RN-5 is a confirmation with a correction attached.** The seal carries `IC-K4` as a
+**scored** class with its own rule, worked instances and a cell whose mutant-owned
+integer is sealed as an inequality above one with both `D-K4b` derivations named — so
+the auditor's inference from §11 is right, and §5.6's **outcome 1 (SEEDED)** governs.
+§13's pre-committed **UNQUALIFIABLE BY MUTATION** declaration **does not fire** and the
+`SO-` does not inherit it. What I refused to let the confirmation buy: the seal's
+**outcome 2** stays live in full (a rendering that shifted rather than carried is
+reported and not scored, `M03-K1` unqualified), §5's declarations are untouched, and
+the mechanism is the auditor's design-side claim measured by the run and not by this
+ruling. The era floor stated at §14 (*"10 void if nothing seeds"*) is **retired**: nine
+of nine seeded, so the void column gains nothing by declaration, the era closes at 63
+sealed with a ceiling of 61 killed, and the single survivor and single existing void
+stand.
+
+**RN-6 is my own defect at its second round.** I ruled the broken `ADR-0014` path at
+`WO-0076` §4 with the note as carrier — and then copied the broken path into the very
+next packet I drafted. The instance was repaired; the **drafting** was not bound.
+A second occurrence converts *"clerical"* into an obligation to mechanise, so the
+durable carrier is **not** a third note: it is a resolve-check in `tools/dv_checks.sh`
+over the `docs/**` paths cited in `agents/handoffs/**`, owed to the first commit
+opening `tools/` **after** the campaign scores. It may **not** be paid inside the
+window, and I ruled that as an **extension** of §10's freeze rather than pretending
+the letter reaches it: this packet's denominator, both censuses and the seal's §0 are
+measured by that script, so moving it inside the window would put the round's own
+denominator on a different tree from the seal that quotes it. No new harvest candidate
+— candidate (C) at `J-dv_lead-0141` gains its second incident and a strengthened
+observable (*verified by the check that runs, not by the reader who honours it*).
+
+**The five exposures: no finding on any.** E1, E2 and E4 are metadata; E3 verified
+**my** freeze claim from history rather than accepting it, and I would commission it if
+it were not taken — an unverified freeze is what voids a round, and the exposure is a
+property of my instrument, not of the auditor's discipline. **E5** is the one that
+needed grounds rather than goodwill: the auditor read `ADR-0017` §4.1–§4.4 outside its
+allowlist because its spawn made the journal rotation mandatory and specified the
+header fields *"per ADR-0017 §4.3"* while the allowlist omitted the ADR. Two
+instruments collided and the **protocol** wins — a malformed volume header is a defect
+in the permanent record that the chain's back-link and the commit scripts key on,
+while the blinding it traded against protects a mutation campaign. I discharged the
+content half **by reading those sections myself** rather than accepting the claim:
+layout, entry-ID continuation, the five header fields, the rotation procedure — no
+`test/**` fact, no cell, no message string, no MUST-STAY-GREEN member. Minimal, and
+disclosed at the point of use in the same document that states the blinding, which is
+the conduct a blinding statement exists to produce. The **instrument** defect is not
+the auditor's and I did not rule it: a blinded spawn whose allowlist omits a path its
+own mandatory actions compel has issued an instrument that cannot be honoured as
+written, and that is the orchestrator's drafting to fix — `RN-6`'s family one document
+over.
+
+**Green light, not hold.** The one ruling that would have moved a sealed cell was held
+at the cell and scored against me instead, which is the lawful pre-run disposition and
+is what §0.2 is for; nothing in the manifest justifies withholding nine transients
+whose only remaining risk is operational. The fresh-cut bar is the sharpest of the
+seven and it is `WO-0076` §3's hazard at its second instance: branches `k4` and `n4b`
+both replace line 990 and `n4b`'s anchor **contains** `k4`'s, so a sequential cut from
+an unclean tree carries two classes and makes both unscoreable.
+
+### Actions
+
+- Verified HEAD and the ordering facts read-only: `f9232c2` (manifest), `HEAD^` =
+  `aced7b4` (packet + seal), the manifest commit touching only the audit report and
+  the auditor's journal, and **no `test/**`, `libs/**` or `tools/**` byte moved since
+  `22ffe13`**. Clean tree throughout. No ref, index or HEAD movement; no `dune`.
+- Read the manifest in full, my packet in full and my own sealed companion; read the
+  two barred documents RN-4 turns on; read the `M03-N1` assertion block and the AP row
+  at the source; read `ADR-0017` §4.1–§4.4 to rule E5 on evidence.
+- Appended to `agents/handoffs/WO-0077_family-k-mutation-campaign.md`: the auditor's
+  manifest-return row in the Return log, and the **`WO-0077` PRE-RUN READING NOTE** —
+  six rulings, one conduct ruling over five exposures, two findings against my own
+  artefacts, a one-table summary, and the **GREEN LIGHT** under seven operating bars.
+- **Minted**: `FINDING WO-0077-N1` (MINOR, mine — an incomplete disclosure dichotomy)
+  and `FINDING WO-0077-K2` (MINOR, mine — a second under-discrimination in
+  `WO-0072` §9's D3 row). Both carried to the post-campaign `AP-` round.
+- **Not done, deliberately**: the sealed companion is not staged and not one byte of it
+  is edited; §9's allowlist body is not rewritten; `WO-0072` §9's table is not edited;
+  no replacement message string is written for the missed cell; no `test/**` or
+  `tools/**` byte moves.
+
+### Evidence
+
+Commands run at `f9232c2`, all read-only, reproducible at this SHA:
+
+```
+$ git rev-parse HEAD                                    -> f9232c2  (== spawn HEAD)
+$ git rev-parse HEAD^                                   -> aced7b4  (packet + seal; §10's base)
+$ git diff --name-only aced7b4 f9232c2
+      agents/journals/claude_auditor_agent.v02.md
+      docs/reports/audit/WO-0077-mutations/README.md
+$ git diff --name-only 22ffe13 f9232c2 -- test/ libs/ tools/   -> (empty)
+$ git status --porcelain | wc -l                        -> 0
+```
+
+Facts checked at the source rather than recalled:
+
+- **RN-1**: the seal's own clear census and `M03-K2` order give window `6 … 10`,
+  release `11`, and the release-cycle identity `start_cycle_b = clear_last + 1` — the
+  manifest's three-figure derivation agrees in every figure.
+- **RN-2**: `M03-K2`'s frame A is lane **0** (frame B lane **4**, admitted on the
+  release cycle); the seal's `IC-K5` REQUIRED cell is one message either way and its
+  leading-edge prediction is sealed **UNREAD**.
+- **RN-3**: `test/xgmii_rx_64/test_m03_n.ml` @ `aced7b4` — the `M03-N1` per-word block
+  runs cycle → `tlast` position → (`is_last` at `:932`) final `tkeep` `:934–935` →
+  **`tuser` `:936–941`**, then the delivered octets, then the strobe-set emptiness
+  check at **`:954`**; the delivered-word count is at `:902–910`. The `tuser` arm reads
+  a DUT output, fires only on the frame's own `tlast` word, and prints no observed
+  data. `AP-xgmii_rx_64.md` row `M03-N1` Observable clause 1 reads *"The `/T/` closes
+  the frame normally (REQ-106, FCS checked)"*.
+- **RN-4**: `WO-0072` §9 carries **D1, D2, D3, D4a, D4b, D4c, D4d, D5, D6**; D4a–D4d
+  are bench-or-worker classes, D5 is SPEC, D6 is an adjudication rule. **No class owns
+  the added-report case.** D3's disposition text separates itself from D1 on *"the two
+  have different root causes"*.
+- **RN-5**: the seal works `IC-K4` as a scored class with three pre-fixed outcomes;
+  outcome 1 is SEEDED and governs.
+- **RN-6**: `ls docs/adr/` → the file is
+  `ADR-0014-an-enable-gates-admission-not-the-wire.md`; `docs/adr/ADR-0014.md` does not
+  exist.
+- **E5**: `ADR-0017-a-journal-is-a-chain-not-a-file.md` §4.1–§4.4 read in full —
+  volume layout, entry-ID continuation, the five header fields, the rotation
+  procedure. No campaign-bearing fact of any kind.
+
+**No test suite was run and none is claimed**: this round stages a packet and moves no
+executable byte. **CI is the authority** for everything the campaign measures
+(ADR-0005), and the campaign's evidence is the nine `build` runs the operator now
+cuts, reported per §17 item 6.
+
+### Outcome
+
+**DoD met** against the spawn's commission. Six rulings appended to the packet's
+pre-run section with their grounds; the conduct of all five disclosed exposures ruled
+(no finding on any, E3 commended, E5 ruled correct on four grounds); **GREEN LIGHT**
+given for the nine transients under seven operating bars, of which the fresh-cut
+shared-anchor bar (`k4` and `n4b` at line 990, one anchor containing the other) is the
+one that fires silently if it is missed. **No sealed cell moved**; the one ruling that
+would have moved one is held at the cell and **pre-declared a MISS against me**, with
+adjudication pre-fixed in five branches. **Files list is the packet alone**, as the
+commission required.
+
+**Handoff**: the orchestrator cuts `mut/wo-0077-k1 … k6, n1, n4a, n4b` from `aced7b4`
+in §12's fixed order and returns §17's eight items; adjudication against the sealed
+companion is mine, and the seal is opened only when every scorecard is in hand.
+
+**Harvest**: **not due this round** — it falls at the `SO-`, the span since
+`J-dv_lead-0137` stays open, and no candidate is minted here. Candidate (C) at
+`J-dv_lead-0141` gains a second incident and a strengthened observable; the banked set
+is **extended, not enlarged**.
+
+### Open-questions
+
+1. **The spawn-allowlist defect is the orchestrator's to fix, not mine to rule.** A
+   blinded spawn whose allowlist omits a path its own mandatory actions compel forces
+   the agent to choose which instrument to break. The auditor chose correctly and
+   disclosed; the next one may not. Raised, not decided.
+2. **`FINDING WO-0077-K2` is a second reason Q3 may deserve surfacing.** Two
+   independent under-discriminations in one pre-committed disposition table, both
+   found before the run that would have used it. My reading is still that neither is a
+   `BUG-`-class escalation — both are my artefacts, not the design's — but the
+   operator now has two, not one.
+3. **`M03-N1`'s qualification will rest on a cell I did not seal.** §3.4 pre-fixes the
+   five branches, and I will hold to that table whichever way it goes; but the honest
+   statement for the verdict is that the row's first qualification, if it comes,
+   arrives at an assertion my seal predicted wrongly.
+4. **The nine-branch cut is 51.6 minutes of CI wall in one freeze window** and the
+   shared-anchor hazard makes a sequential cut silently wrong. If a container incident
+   interrupts it, the surviving branches are still valid — each is cut fresh from
+   `aced7b4` — but the round re-seals if any `test/**` or `tools/dv_checks.sh` byte
+   moves in the meantime.
+5. **Nothing is escalated.** No `BUG-`, no `E`-class item, no spec-queue addition — a
+   nil escalation, declared rather than omitted.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0077_family-k-mutation-campaign.md
