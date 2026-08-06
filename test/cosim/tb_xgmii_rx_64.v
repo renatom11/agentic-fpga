@@ -40,6 +40,18 @@ line against axis_xgmii_rx_64.v's module header — never executed, and
 nothing below is offered as a result of having been executed. dv_lead's
 review is expected to be its first simulation.
 
+WO-0078 §2.3 / FINDING WO-0078-1 (Stage 1): every guard that used to
+`$display` then bare `$finish` now ALSO writes a reserved "E ..." sentinel
+line into theirs.canon and explicitly `$fclose`s it before finishing —
+`$finish` alone is a normal termination (exit status 0 under Icarus,
+RV-0049-VERDICT §4's measured note) that tools/cosim/run_cosim.sh's rc/
+file-existence check (FI-8) cannot be assumed to catch, and one of the two
+guards named in the finding left a WELL-FORMED, merely truncated
+theirs.canon that test/cosim/canonical.ml's [Canonical.read] would have
+accepted outright. See each guard's own comment for which shape it used to
+produce and why the sentinel closes it; test/cosim/canonical.ml's own `"E"`
+grammar note documents the reader's side of this contract.
+
 */
 
 // Language: Verilog 2001, matching the vendored reference's own dialect.
@@ -247,6 +259,20 @@ module tb_xgmii_rx_64;
     meta_fd = $fopen("theirs.canon.meta", "w");
     if (meta_fd == 0) begin
       $display("tb_xgmii_rx_64: FAIL cannot open theirs.canon.meta for writing");
+      // WO-0078 §2.3 / FINDING WO-0078-1: at this point out_fd is already
+      // open and theirs.canon exists but is EMPTY -- Canonical.read (an
+      // empty file, zero frames) parses that as a VALID, if vacuous,
+      // transaction, which a divergence against ours.canon would then
+      // misreport as a genuine content finding rather than a harness
+      // malfunction (a third instance of the exact shape the finding names
+      // for FI-6/FI-7 below, found while repairing those and fixed the same
+      // way for consistency -- flagged in the Return log as an extension
+      // beyond the packet's own §2.2 census, not silently added or silently
+      // left). See the sentinel comment at the two guards below for the
+      // full reasoning.
+      $fwrite(out_fd, "E cannot-open-metadata-sidecar\n");
+      $fclose(out_fd);
+      $fclose(stim_fd);
       $finish;
     end
 
@@ -273,6 +299,30 @@ module tb_xgmii_rx_64;
             $display(
               "tb_xgmii_rx_64: FAIL a second start character arrived while frame %0d was open -- REQ-110 abort handling is out of Phase 1's authorised stimulus (WO-0046 section 9)",
               frame_index);
+            // WO-0078 §2.3 / FINDING WO-0078-1: a bare $finish here is a
+            // NORMAL simulation termination (exit status 0 under Icarus,
+            // measured by dv_lead at RV-0049-VERDICT §4's own toolchain
+            // note) -- tools/cosim/run_cosim.sh's run_pipeline (FI-8) checks
+            // only `$rc -ne 0` and file existence, neither of which this
+            // refusal trips on its own. This guard's OWN shape happens to
+            // leave frame_index's frame open in theirs.canon (no D line was
+            // ever written for it), which Canonical.read already rejects at
+            // end-of-file ("frame N still open") -- but that is the
+            // ACCIDENT of this particular guard's placement, not something
+            // this file arranges on purpose, and the finding's own text is
+            // explicit that a refusal reaching a distinct code must hold BY
+            // CONSTRUCTION, not by inference from one guard's happenstance
+            // shape (the other guard, immediately below, has no such luck).
+            // This sentinel line is written into theirs.canon itself, which
+            // Canonical.read (test/cosim/canonical.ml) now recognises and
+            // rejects explicitly regardless of what state it finds the
+            // parser in. $fclose is explicit, ahead of $finish, rather than
+            // relying on $finish's own flush behaviour -- for the identical
+            // "by construction, not by inference" reason.
+            $fwrite(out_fd, "E second-start-while-open frame=%0d\n", frame_index);
+            $fclose(out_fd);
+            $fclose(stim_fd);
+            $fclose(meta_fd);
             $finish;
           end
           open_frame;
@@ -286,6 +336,25 @@ module tb_xgmii_rx_64;
         if (m_axis_tvalid) begin
           if (!frame_open) begin
             $display("tb_xgmii_rx_64: FAIL the reference produced an output word with no admitted frame open");
+            // WO-0078 §2.3 / FINDING WO-0078-1: THIS is the guard whose
+            // pre-existing failure mode was the worse of the two named in
+            // the finding (FI-7). frame_open is false BY DEFINITION at this
+            // point, so every PRIOR frame was already closed with its own D
+            // line -- theirs.canon, at this exact moment, is a WELL-FORMED
+            // (merely truncated) canonical file. Without this sentinel,
+            // Canonical.read would ACCEPT it as a short-but-valid
+            // transaction, and compare would silently report the resulting
+            // Missing_frame/Word_count_mismatch as a genuine content
+            // divergence (exit 1) -- exactly the harness-malfunction-read-
+            // as-an-anchor-finding hazard WO-0049 §8 was written about, now
+            // recurring on the reference side rather than ours. The
+            // sentinel line makes the file fail to parse ON PURPOSE, by
+            // construction, closing that gap; see the other guard above for
+            // the identical mechanism and the explicit $fclose ordering.
+            $fwrite(out_fd, "E word-with-no-open-frame\n");
+            $fclose(out_fd);
+            $fclose(stim_fd);
+            $fclose(meta_fd);
             $finish;
           end
           write_word;

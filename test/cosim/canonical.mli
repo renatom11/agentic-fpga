@@ -89,6 +89,24 @@ type transaction = frame list
     version string, tool name, path, timestamp or host identifier (those are
     the sidecar's business, WO-0046 §2.3, and the sidecar is never compared).
 
+    {3 [E] — a reserved, always-rejected record kind (WO-0078 §2.3,
+    FINDING WO-0078-1)}
+
+    An [E] line is never emitted by [write] and never valid input: [read]
+    recognises it explicitly and raises immediately, regardless of whether a
+    frame is open, naming it as a PRODUCER REFUSAL rather than reporting the
+    generic "unrecognised record kind" a stray [E] line would otherwise draw.
+    [tb_xgmii_rx_64.v] writes one deliberately, as the last thing it writes to
+    [theirs.canon] before a guard-triggered [$finish] (WO-0046 §9's REQ-110
+    abort guard, and the reference's own no-open-frame guard) — this is what
+    makes a reference-side refusal fail to read **by construction** rather
+    than by the accident of a dangling open frame, which only one of the two
+    guards happened to produce (WO-0078 §2.3's own finding: the other guard
+    left a well-formed, merely truncated file that would otherwise parse
+    clean and risk being read as a genuine content divergence). No producer
+    on the [ours] side ever needs to emit one: [ours_run.ml]'s own refusals
+    are plain [failwith]s that never reach [Canonical.write] at all.
+
     {3 [admit-cycle] and [cycle] — decimal, on purpose (WO-0075 §2)}
 
     Both fields are **DECIMAL, unpadded, no [0x], no leading zeros beyond the
@@ -213,14 +231,30 @@ val is_clean : report -> bool
       [docs/specs/modules/xgmii_rx_64.md] §6.1's gapless [admit_cycle + m + 3]
       formula pins [expected]. A defect against OUR spec (REQ-005/REQ-111),
       never a differential finding against [theirs] (WO-0075 §3.2/§4).
-    - [Unassertable]: **T1**'s guard (WO-0075 §3.2). Refused rather than
-      computed, for frame [index], because its own recorded word cycles are
-      not the constant 1-cycle-apart spacing a gapless stimulus produces —
-      the shape T1's formula assumes and is not designed to assert past. [why]
-      names the words and cycles that tripped the guard. A tier that
-      silently asserted a constant on a stimulus it was not built for is the
-      failure this refusal exists to avoid (WO-0075 §3.2, citing
-      `RV-0057-VERDICT` Finding 1 and `RV-0062` FINDING B-1). *)
+    - [Unassertable]: **T1**'s guard, now with TWO triggers, one carried and
+      one inferred (WO-0075 §3.2; extended WO-0078 §5.2/§5.4). Refused rather
+      than computed, for frame [index], whenever EITHER:
+      (1) [check_timing]'s [injected_idle_before_d0] reports a nonzero
+      count for this frame — the stimulus itself recorded idle word(s)
+      injected at or before this frame's D(0) (SPEC-M03 §6.1's own
+      antecedent), which the CARRIED count rules out directly (FINDING
+      RV-0075-2: this shape is invisible to (2) below, because it shifts
+      every word uniformly and preserves every inter-word delta — the
+      defect that made the pre-WO-0078 guard blind in exactly this
+      direction); or
+      (2) the frame's own recorded word cycles carry EXACTLY ONE broken
+      inter-word delta — a shape structurally indistinguishable, from cycle
+      evidence alone, from a single legitimate idle injected at that
+      position (a single injection can only ever break one delta, wherever
+      it sits): the shape T1's gapless formula assumes and is not designed
+      to assert past. TWO OR MORE broken deltas is NOT this shape (no single
+      injection produces it) and is asserted normally instead (WO-0078 §5.4).
+      [why] names the words and cycles, or the carried count, that tripped
+      the guard. A tier that silently asserted a constant on a stimulus it
+      was not built for, or on an antecedent it could have been told about
+      but chose to infer instead, is the failure this refusal exists to
+      avoid (WO-0075 §3.2, citing `RV-0057-VERDICT` Finding 1 and `RV-0062`
+      FINDING B-1; WO-0078 §5.2/§5.4 for the two extensions). *)
 type timing_divergence =
   | Admit_cycle_mismatch of
       { index : int
@@ -246,6 +280,16 @@ type timing_divergence =
       [Spec_cycle_mismatch] and [Unassertable] findings, and never a mix of
       T0 with T1 — the two never coexist in one report (WO-0075 §3.1's
       withholding rule).
+    - [own_profile] (WO-0078 §5.1, FINDING RV-0075-1): **T1**. For every
+      accepted frame this tier did NOT refuse (i.e. not [Unassertable] under
+      either of its two triggers above), its per-word [(expected, observed)]
+      cycle pairs — [expected] is SPEC-M03 §6.1's own [admit_cycle + m + 3],
+      [observed] is [ours]'s recorded [cycle] — in emission order, list
+      position [=] word index. Populated and PRINTED whether or not any
+      mismatch was found: the pre-WO-0078 lane printed a sentence on the
+      clean path and no numbers at all, recoverable only by subtracting
+      [offsets] from [reference_profile] — a green run quoting a different
+      tier's data for its own numbers. Empty when [base_aligned = false].
     - [reference_profile]: **T2**. Every frame present on [theirs], with its
       own observed per-word cycles, in emission order. Printed, never
       adjudicated (WO-0075 §3.3) — empty when [base_aligned = false].
@@ -257,6 +301,7 @@ type timing_divergence =
 type timing_report =
   { base_aligned : bool
   ; spec_divergences : timing_divergence list
+  ; own_profile : (int * (int * int) list) list
   ; reference_profile : (int * int list) list
   ; offsets : (int * int list) list
   }
@@ -265,13 +310,33 @@ type timing_report =
     (WO-0075 §3.1). Otherwise runs T1 over [ours] alone — "T1 runs on the
     [ours] transaction alone. It takes no argument from [theirs]" (WO-0075
     §3.2), only over frames [ours] itself reports [Accept] — and records T2
-    from [theirs] alone plus the two sides' per-word offsets. *)
-val check_timing : ours:transaction -> theirs:transaction -> timing_report
+    from [theirs] alone plus the two sides' per-word offsets.
 
-(** Prints, in this order (WO-0075 §5.1): T0's verdict; then, on
-    [base_aligned = false], T0's own divergences and the sentence that T1 and
-    T2 are withheld and why — never an empty section, which reads as a pass;
-    otherwise T1's expected-vs-observed findings (or an explicit "clean"
-    sentence when there are none) followed by T2 under a heading containing
-    the words RECORDED, NEVER ADJUDICATED. *)
+    [injected_idle_before_d0] (WO-0078 §5.2, FINDING RV-0075-2): an
+    association, frame index to the count of idle XGMII words the STIMULUS
+    recorded as injected at or before that frame's D(0) — never derived from
+    [ours] or [theirs]'s own cycles, which is exactly what the finding rules
+    out (a uniform shift from an idle at D(0) is indistinguishable from a
+    genuine timing defect by inspection of cycles alone). A frame index
+    absent from the list, or the argument omitted entirely, reads as a count
+    of 0 for that frame — the gapless case, and every case this packet's
+    Stage 1 ships (including case 0, unedited). Still "no argument from
+    [theirs]": the count concerns [ours]'s own admitted frames only, sourced
+    from the stimulus side rather than from either canonical file. *)
+val check_timing
+  :  ours:transaction
+  -> theirs:transaction
+  -> ?injected_idle_before_d0:(int * int) list
+  -> unit
+  -> timing_report
+
+(** Prints, in this order (WO-0075 §5.1; WO-0078 §5.1 adds the per-word
+    numbers on the clean path): T0's verdict; then, on [base_aligned =
+    false], T0's own divergences and the sentence that T1 and T2 are withheld
+    and why — never an empty section, which reads as a pass; otherwise T1's
+    expected-vs-observed findings for every divergence (or, when there are
+    none, an explicit "clean" sentence FOLLOWED BY [own_profile]'s per-word
+    expected/observed table for every accepted frame — not a sentence alone)
+    followed by T2 under a heading containing the words RECORDED, NEVER
+    ADJUDICATED. *)
 val timing_report_to_string : timing_report -> string

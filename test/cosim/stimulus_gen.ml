@@ -63,7 +63,103 @@ let write_stimulus path sched =
        done)
 ;;
 
+(* WO-0078 §3.2/§6.1 — the case SET, Stage 1: exactly one member, case 0,
+   its construction expression ([build] above) UNEDITED — the diff of
+   [build] and [write_stimulus] above shows nothing touched; what follows
+   only NAMES case 0 and dispatches to it. Every later stage adds a case
+   BESIDE this one, never edits it (§3.1's whole argument for why a case set
+   exists at all rather than a widened single stimulus).
+
+   The table below deliberately carries METADATA only ([id], [describe],
+   [idle_counts]) and never a schedule-building function value: [build]'s
+   own return type is never named anywhere in this file (it is whatever
+   [Dv_xgmii.Arrival.create] returns, inferred structurally), and a record
+   field typed against a name this file does not otherwise need to know
+   would be the one place that guess could go wrong unnoticed. [build_case]
+   below dispatches by a plain [match] instead, so [build ()]'s type is
+   inferred locally from its own unedited definition, never written down.
+
+   [idle_counts]: one entry per frame this case's schedule admits, in
+   admission order — WO-0078 §5.2 / FINDING RV-0075-2's carried antecedent,
+   authored HERE because this is the one place in the lane that actually
+   constructs the schedule and so is the only place that can state the
+   count from first-hand knowledge rather than inference. Case 0 admits
+   exactly one frame with its start character at [~first_start:0] (FI-1),
+   the very first driven word — there is no room before it for an injected
+   idle, so its count is exactly 0, by construction of case 0 itself, not
+   by absence of a feature. *)
+type case_meta =
+  { id : string
+  ; describe : string
+  ; idle_counts : int list
+  }
+
+let case0_meta : case_meta =
+  { id = "0"
+  ; describe =
+      "WO-0046 §3 -- one 64-octet good-FCS frame, lane-0 start (frozen, byte-identical, \
+       never edited, WO-0078 §3.1)"
+  ; idle_counts = [ 0 ]
+  }
+;;
+
+let known_cases = [ case0_meta ]
+
+let find_case_meta id =
+  match List.find_opt (fun c -> String.equal c.id id) known_cases with
+  | Some c -> c
+  | None ->
+    failwith
+      (Printf.sprintf
+         "stimulus_gen: unknown case id %S (known: %s)"
+         id
+         (String.concat ", " (List.map (fun c -> c.id) known_cases)))
+;;
+
+(* Dispatches to the case's own schedule-builder. Never called on an id
+   [find_case_meta] has not already validated (see [main] below), so the
+   final arm is unreachable in normal use and names that explicitly rather
+   than silently returning a wrong schedule. *)
+let build_case id =
+  match id with
+  | "0" -> build ()
+  | _ ->
+    failwith
+      (Printf.sprintf
+         "stimulus_gen: case %S is listed in known_cases but build_case has no rule for it \
+          -- a bug in this file, not in the caller"
+         id)
+;;
+
+(* WO-0078 §5.2: the idle-count sidecar this case's [idle_counts] authors,
+   forwarded by [ours_run.ml] to [compare.ml] -- see ours_run.ml's own header
+   note for the full three-file relay. One decimal integer per line, line
+   order = frame admission order, matching [Canonical]'s own [F]-line
+   ordering convention. *)
+let write_idle_sidecar path idle_counts =
+  let oc = open_out_bin path in
+  Fun.protect
+    ~finally:(fun () -> close_out_noerr oc)
+    (fun () -> List.iter (fun n -> Printf.fprintf oc "%d\n" n) idle_counts)
+;;
+
 let () =
-  let path = match Sys.argv with [| _; p |] -> p | _ -> "stimulus.txt" in
-  write_stimulus path (build ())
+  (* WO-0078 §6.1's landing-order constraint, honoured here rather than
+     merely stated: [tools/cosim/run_cosim.sh] (not this packet's to touch
+     in Stage 1) invokes this binary with exactly ONE positional argument
+     today, the output path -- that call keeps working unchanged, defaulting
+     to case 0, for exactly as long as data_wrangler's own round has not yet
+     landed a case argument. The case id is therefore the SECOND, optional,
+     argument, never the first. *)
+  let output_path, case_id =
+    match Sys.argv with
+    | [| _ |] -> "stimulus.txt", "0"
+    | [| _; p |] -> p, "0"
+    | [| _; p; c |] -> p, c
+    | _ -> failwith "usage: stimulus_gen [output_path] [case_id]"
+  in
+  let meta = find_case_meta case_id in
+  let sched = build_case case_id in
+  write_stimulus output_path sched;
+  write_idle_sidecar (output_path ^ ".idle") meta.idle_counts
 ;;

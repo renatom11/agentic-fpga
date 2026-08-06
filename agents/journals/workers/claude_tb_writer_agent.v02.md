@@ -3758,3 +3758,250 @@ asked about.
 - test/cosim/tb_xgmii_rx_64.v
 - test/cosim/compare.ml
 - agents/handoffs/WO-0075_cosim-lane-cycle-comparison.md
+
+## [J-tb_writer-0033] 2026-08-11T09:00Z | task:WO-0078 | Stage 1 machinery: RV-0075-1's numbers print, RV-0075-2's antecedent is carried via a new sidecar relay, exit 6 allocated, cases (e)/(e') separated by counting broken deltas, and a reference-side refusal now fails to read by construction
+
+### Trigger
+Spawned by the orchestrator, spawn short-id `WO-0078-TB/2026-08-11T09:00Z`,
+against `agents/handoffs/WO-0078_cosim-phase2-3-stimulus-widening.md` §6.1
+("Stage 1 — machinery only, case 0 only. AUTHORISED."), the tb_writer half of
+a two-assignee packet (data_wrangler's `tools/cosim/run_cosim.sh` half lands
+after mine, per §6.1's own landing-order constraint, and I did not touch
+`tools/cosim/**`). Spawn-head verified `55e16aee` before anything else, per
+the dispatch's own abort-first check.
+
+### Inputs
+`agents/handoffs/WO-0078_cosim-phase2-3-stimulus-widening.md` in full.
+`agents/charters/tb_writer.md`, `agents/PROTOCOL.md` §2–6/§10. The five
+`test/cosim/**` files this half owns, read in full before editing:
+`stimulus_gen.ml`, `canonical.ml`, `canonical.mli`, `compare.ml`,
+`ours_run.ml`, `tb_xgmii_rx_64.v`. `tools/cosim/run_cosim.sh`, read-only, to
+understand FI-8/FI-9/FI-10's exit-code contract and the working-directory
+layout the new `.idle` sidecars have to survive — never staged. `test/xgmii/
+arrival.mli`, DV-side (REQ-018's link-partner model, not RTL), to re-measure
+FI-2 directly rather than trust the packet's quotation. `docs/specs/
+requirements.md` REQ-901, REQ-005, REQ-104, REQ-107, REQ-108, REQ-110,
+REQ-013, REQ-016, REQ-111, REQ-102, and `docs/specs/modules/xgmii_rx_64.md`
+§6.1, §7, §9, §10, all read directly. `test/third_party/verilog-ethernet/
+PROVENANCE.md`, re-read for FI-12. No `libs/**`, no `top/**`, no
+`rtl_snapshots/**`, no `docs/reports/audit/**` path opened at any point.
+
+### Reasoning
+**The design question every other decision this round hangs off**: how does
+FINDING RV-0075-2's antecedent (the count of idle words the stimulus injected
+at or before a frame's D(0)) reach `compare.ml`, given canonical.mli's
+grammar is shared between two independently-written producers and T1 only
+ever evaluates `ours`? §5.2 names three options — grammar field, third
+argument, sidecar — and states the grammar is the *last* resort. I chose a
+sidecar plus a third argument together: `stimulus_gen.ml` (the only place
+that constructs the schedule, hence the only place that can state the count
+from first-hand knowledge) writes `<path>.idle`; `ours_run.ml` forwards it,
+unedited, to `<output>.idle`; `compare.ml` reads it and passes it to
+`check_timing`'s new optional argument. This keeps the pinned canonical
+grammar untouched entirely — no F/W/D line gains a field — because the
+count is never needed by `theirs`'s own producer at all (T1 excludes
+`theirs` by contract), so forcing `tb_xgmii_rx_64.v` to also emit a count it
+structurally cannot derive would have been exactly the "grammar pretending
+to know something it does not" the packet warns against. The sidecar's path
+is *derived*, never a new CLI argument, at every hop (`<given-path>.idle`),
+so `tools/cosim/run_cosim.sh`'s existing calls to `stimulus_gen.exe`,
+`ours_run.exe` and `compare.exe` (one, two and two positional arguments
+respectively, all unchanged) keep working with zero edits to that file —
+this is what makes Stage 1's landing-order constraint satisfiable without a
+joint round.
+
+**Renaming `injected_idle_before_admit` to `injected_idle_before_d0` mid-round.**
+While re-reading SPEC-M03 §6.1 and §7 directly (Inputs above) rather than
+trusting the packet's own quotation, I found the precise mechanism: REQ-016's
+own hook and §6.1 both state, in terms, that an injected idle **cannot** sit
+between a frame's start character and its first octet ("Injection begins at
+the frame's first octet"; a control character there is routed to REQ-105's
+abort instead). So the antecedent this round carries is never a change to
+`admit_cycle` — `admit_cycle` is recorded at the start character and is
+unaffected by any legal idle placement — it is idle cycles delaying D(0)'s
+own presentation, which is REQ-016's general "delay each output word by the
+idles injected at or before its deciding input word" rule applied at m = 0.
+My first identifier, `…before_admit`, read as though the count could move
+`admit_cycle` itself, which it cannot and must not; T0 stays a pure
+admit-cycle-equality check regardless of this antecedent. Renamed everywhere
+(`canonical.mli`, `canonical.ml`, `compare.ml`, `ours_run.ml`) before this
+entry was written, to `…before_d0`, matching FI-14's own phrase.
+
+**Why a carried nonzero count refuses outright rather than computing an
+idle-adjusted formula.** §7 and REQ-016's own coverage row state that the
+gapless per-octet constants "do not survive injection... at any frame length
+producing more than one output word" — not merely that they are hard to
+verify under injection, but that the simple `admit_cycle + m + 3` formula is
+spec-stated not to apply once an idle lands inside a multi-word frame at all
+(the true rule involves each word's own D(m) "evidence" object, §6.1, which
+in the landed module also involves an internal alignment view the spec
+itself marks "non-normative... not a DV observable" — I read that paragraph,
+noted it, and used none of it: my guard does not attempt to reconstruct that
+view). Pass criterion 5 pins the required behaviour anyway (`Unassertable`,
+never an adjusted assertion), so this is confirmation rather than a free
+choice, but it is confirmation from the spec text, not merely a rule I
+adopted on the packet's say-so.
+
+**Why cases (e)/(e') needed a 3-word rebuild, and why the guard itself had to
+change, not just the fixture.** RV-0075-VERDICT's own diagnosis — "the case
+cannot distinguish the two constructors by construction" — is about a
+counting fact: a 2-word frame has exactly one inter-word delta, so it can
+only ever produce zero or one broken deltas, never two. I worked out, before
+writing either fixture, what a genuine single-word DEFECT shift does to a
+3-word frame's deltas versus what a genuine single legitimate idle injection
+does: a defect shift at an INTERIOR word breaks the delta on BOTH sides of
+it (two breaks); an idle injected at any position shifts a contiguous SUFFIX
+of the frame uniformly, breaking exactly ONE delta (the one straddling the
+injection point) however far into the frame it sits, including at the last
+word (a "boundary" shift). This means the discriminator is the broken-delta
+COUNT, not the position — count = 1 is genuinely ambiguous with an
+injection wherever it occurs; count ≥ 2 cannot come from a single injection
+and is safe to assert word-by-word. So `first_broken_delta` (which returned
+only the first break) became `broken_deltas` (returns all of them), and the
+guard's condition became "match on the LIST", not "match on Option.is_some".
+Case (e) shifts the interior word (count 2, asserts); case (e′) shifts the
+boundary word (count 1, refuses) — the same discriminator the carried-idle
+guard uses conceptually (count-based ambiguity), applied to the inferred
+path.
+
+**Exit-code precedence, restated at `compare.ml`'s own scale.** §3.3 pins the
+harness-level ordering (content, then producer refusal, then T0, then
+Unassertable, then T1-negative, then clean) for the aggregate across a case
+set. Within one `compare` invocation the same "did the lane reach a
+verdict?" axis applies to T1 alone: if any accepted frame in the same
+transaction is `Unassertable` while another is cleanly asserted or
+`Spec_cycle_mismatch`, the refusal must win the exit code, because a
+refusal is a stronger "did not reach a verdict" statement than a reached
+verdict, whatever its sign. I implemented this as `has_unassertable` checked
+before `spec_divergences <> []` in `run_comparison`, and documented the
+mapping I intend at the harness level (`compare`'s 6 → `run_cosim.sh`'s
+future `EXIT_TIMING_UNASSERTABLE(12)`) without editing `run_cosim.sh` itself
+— that edit is data_wrangler's, named as such in the header comment I added.
+
+**The `meta_fd`-failure sentinel and the sidecar-length-mismatch refusal**:
+both are extensions beyond the packet's own §2.2 census, found and fixed
+while implementing the two named refusals (FI-6, FI-7), and both flagged in
+the Return log rather than folded in silently or left as a known gap once
+spotted — the charter's honesty rule on out-of-scope findings, applied to a
+finding discovered mid-repair of the very thing it resembles rather than
+discovered independently.
+
+### Actions
+Edited exactly the five `test/cosim/**` files this half owns (plus this
+journal and the WO's Return log). `stimulus_gen.ml`: added `case_meta`,
+`case0_meta`, `known_cases`, `find_case_meta`, `build_case`,
+`write_idle_sidecar`; `build`/`write_stimulus`/`drain_cycles` untouched
+(confirmed by `git diff` showing zero changed lines above `write_stimulus`'s
+closing `;;`). `canonical.mli`/`canonical.ml`: added the `"E"` grammar arm to
+`read`; renamed `first_broken_delta` to `broken_deltas` (returns every break,
+not just the first); added `word_profile`; added `timing_report.own_profile`;
+changed `check_timing`'s signature to
+`~ours ~theirs ?injected_idle_before_d0 ()`; rewrote the T1 body per the
+two-part guard above; extended `timing_report_to_string`'s clean branch to
+print `own_profile`. `compare.ml`: added `read_idle_sidecar`; changed
+`run_comparison` to read it and compute the new exit-6 precedence; retired
+`shifted_one_transaction`, added `sample_transaction_3w`,
+`shifted_interior_transaction`, `shifted_boundary_transaction`,
+`idle_carried_ok_transaction`, `reference_refusal_canon_text`; extended
+`self_test` with cases (e), (e′), the idle-carried case and the
+reference-refusal case, all mandatory (no optional flag on any). `ours_run.ml`:
+added `read_idle_sidecar`/`write_idle_sidecar` and the forwarding tail of
+`run`, plus the length cross-check `failwith`. `tb_xgmii_rx_64.v`: the two
+named guards (FI-6, FI-7) and the `meta_fd`-open-failure path now `$fwrite`
+an `"E ..."` sentinel and explicitly `$fclose` all open file descriptors
+before `$finish`.
+
+### Evidence
+```
+$ ocamlc -version
+4.14.1
+$ cd test/cosim && for f in canonical.mli canonical.ml ours_run.ml compare.ml stimulus_gen.ml; do
+    ocamlc -stop-after parsing "$f"; echo "$f: exit $?"
+  done
+canonical.mli: exit 0
+canonical.ml: exit 0
+ours_run.ml: exit 0
+compare.ml: exit 0
+stimulus_gen.ml: exit 0
+```
+Beyond parsing: `canonical.ml`/`.mli` and `compare.ml` need no Hardcaml (their
+own header comments say so), so I copied the three files to my scratchpad
+(outside the repo) and fully type-checked and linked them with the bare
+system `ocamlc` — no dune, no opam package, nothing staged:
+```
+$ ocamlc -c canonical.mli && ocamlc -c canonical.ml && ocamlc -c compare.ml \
+  && ocamlc -o compare_check.exe canonical.cmo compare.cmo
+(all exit 0)
+$ ./compare_check.exe --self-test
+[ten cases, all PASS, aggregate "compare --self-test: OK", exit code 0]
+```
+This is a genuine local type-check of the new `check_timing` signature
+against both files' agreement, `own_profile`'s field shape, and the new `"E"`
+arm — not merely a syntax check — plus a genuine run of the rebuilt
+self-test, including the two new WO-0078 cases and the two rebuilt WO-0075
+cases. Verbatim, the clean-path print for case (a): `frame 0: word 0:
+expected 3, observed 3` / `word 1: expected 4, observed 4` (FINDING
+RV-0075-1's own numbers). Verbatim, the idle-carried case's line: `frame 0:
+T1 UNASSERTABLE -- the stimulus recorded 1 idle word(s) injected at or
+before this frame's first octet D(0) ... carried from the stimulus side ...
+never inferred from output spacing` — on a transaction whose own cycles are
+perfectly gapless, proving the antecedent really is carried and not
+recoverable from cycle evidence. Verbatim, the refusal-sentinel case's
+stderr: `Canonical.read: line 4: producer refusal recorded by the reference
+testbench: word-with-no-open-frame` — the named message, not "unrecognised
+record kind". All self-test temp files, including the new `.idle` sidecar,
+confirmed removed after the run. Full transcript and the re-measurement of
+every §1 frozen input this half rests on (FI-1/2/3/4/5/6/7/8/9/10/11/12/13/14,
+none moved) are in the WO's own Return log under this entry's spawn short-id,
+not duplicated here in full.
+
+`stimulus_gen.ml` and `ours_run.ml` depend on `Hardcaml`/`Hardcaml_ethernet`/
+`Dv_xgmii`, which have no installable switch in this container (ADR-0005);
+parsed only, not type-checked, here. `tb_xgmii_rx_64.v` has no local
+toolchain at all (no `iverilog`/`vvp`); reviewed by hand only. `dune build`,
+`dune runtest`, and the landing `cosim` CI job are CI-deferred and are the
+first/only real execution of those two halves.
+
+### Outcome
+DoD met against WO-0078 §11's Stage 1 tb_writer checklist: case table
+present, case 0's construction expression unedited and shown so by diff;
+RV-0075-1's printer repair implemented and observed printing real numbers;
+RV-0075-2's antecedent carried from the stimulus side via a stated,
+implemented, and locally-run mechanism (sidecar + third argument), justified
+against bar 4's stimulus→mapping→grammar ordering (grammar untouched); exit
+6 allocated for `Unassertable` and exit 4 no longer carries it; case (e)
+rebuilt on a ≥ 3-word frame with an interior shift, case (e′) added at the
+boundary, both asserted/refused correctly and neither optional; every §1
+figure this half rests on re-measured at this seat's own base and reported;
+FINDING WO-0078-1's repair implemented for both named guards plus one
+disclosed extension, with a reference-side refusal tripped deliberately in
+the self-test (hand-built fixture, since iverilog is unavailable) and its
+code observed. Journal Inputs lists no `libs/**`/`top/**`/`rtl_snapshots/**`
+path. Diff touches exactly the five named `test/cosim/**` files plus this
+journal and the WO's own Return log — confirmed by `git status --porcelain`.
+No sign-off claimed: this is a returned Stage-1 packet for dv_lead's `RV-`,
+not a PASS/FAIL of my own.
+
+### Open-questions
+1. None blocking. The `meta_fd`-failure sentinel and the sidecar-length
+   mismatch refusal (Reasoning above) are disclosed extensions, not
+   questions — dv_lead's `RV-` may rule either in-scope-and-kept or
+   out-of-scope-and-reverted; I have not treated either as settled.
+2. No RTL leak, no forbidden tool run or attempted (durability clause): the
+   only local execution this round performed was `ocamlc` (parsing,
+   type-checking, and running the resulting `compare` binary's own
+   `--self-test`) against the two files that need no Hardcaml — never `dune`,
+   never `iverilog`/`vvp`, both absent regardless (ADR-0005).
+3. Whether `run_cosim.sh`'s eventual `EXIT_TIMING_UNASSERTABLE(12)` mapping
+   from `compare`'s exit 6 needs anything beyond the direct 6→12 mapping I
+   assumed in `compare.ml`'s own header comment is data_wrangler's call, not
+   mine; flagged there for its round rather than guessed at here.
+
+### Files-in-this-commit
+- test/cosim/stimulus_gen.ml
+- test/cosim/canonical.ml
+- test/cosim/canonical.mli
+- test/cosim/compare.ml
+- test/cosim/ours_run.ml
+- test/cosim/tb_xgmii_rx_64.v
+- agents/handoffs/WO-0078_cosim-phase2-3-stimulus-widening.md

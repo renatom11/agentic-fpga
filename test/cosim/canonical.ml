@@ -223,6 +223,21 @@ let read ic =
          loop (line_no + 1) No_frame_open (frame :: frames_rev)
        | "D" :: _, No_frame_open -> parse_error ~line_no ~line "D line with no open frame"
        | "D" :: _, Frame_open _ -> parse_error ~line_no ~line "malformed D line"
+       | "E" :: rest, _ ->
+         (* WO-0078 §2.3 / FINDING WO-0078-1: reserved, never valid input,
+            recognised REGARDLESS of [state] (open frame or not) so a
+            reference-side refusal fails to read by construction rather than
+            by the accident of which guard happened to leave a frame open.
+            [tb_xgmii_rx_64.v] writes this line, and only this line, as the
+            last thing it writes before a guard-triggered [$finish]; no
+            producer on the [ours] side ever emits one (its own refusals are
+            plain [failwith]s that never reach [write] at all). *)
+         parse_error
+           ~line_no
+           ~line
+           (Printf.sprintf
+              "producer refusal recorded by the reference testbench: %s"
+              (String.concat " " rest))
        | kind :: _, _ ->
          parse_error ~line_no ~line (Printf.sprintf "unrecognised record kind %S" kind))
     | exception End_of_file ->
@@ -469,6 +484,7 @@ type timing_divergence =
 type timing_report =
   { base_aligned : bool
   ; spec_divergences : timing_divergence list
+  ; own_profile : (int * (int * int) list) list
   ; reference_profile : (int * int list) list
   ; offsets : (int * int list) list
   }
@@ -494,22 +510,34 @@ let timing_divergence_to_string = function
    own motivating class) preserves that separation -- "a uniform shift
    preserves every inter-word delta" (WO-0075 section 7) -- so this guard
    does NOT catch it and does not need to: IC-L2 is meant to fall through to
-   the ordinary [Spec_cycle_mismatch] walk below, on every word. What this
-   guard exists for is the shape T1 is not designed to assert past at all --
-   a stimulus whose frame carries an idle word between its start and
-   terminate characters (section 3.2) -- which breaks that constant
-   1-cycle spacing. Returns the first broken pair, if any: the earlier
-   word's 0-based index in this frame, and the two cycles either side of the
-   break. *)
-let first_broken_delta (words : word list) =
-  let rec walk word_index = function
+   the ordinary [Spec_cycle_mismatch] walk below, on every word.
+
+   WO-0078 §5.4 / RV-0075-VERDICT §4.1: renamed from [first_broken_delta] and
+   generalised to return EVERY broken position, not just the first, because
+   the COUNT of broken deltas -- not merely their presence -- is what now
+   decides the tier's disposition (see [check_timing] below). Returns each
+   broken pair's earlier word's 0-based index in this frame, and the two
+   cycles either side of the break, in ascending word-index order. *)
+let broken_deltas (words : word list) =
+  let rec walk word_index acc = function
     | (w0 : word) :: (w1 : word) :: rest ->
-      if w1.cycle - w0.cycle <> 1
-      then Some (word_index, w0.cycle, w1.cycle)
-      else walk (word_index + 1) (w1 :: rest)
-    | [ _ ] | [] -> None
+      let acc =
+        if w1.cycle - w0.cycle <> 1 then (word_index, w0.cycle, w1.cycle) :: acc else acc
+      in
+      walk (word_index + 1) acc (w1 :: rest)
+    | [ _ ] | [] -> List.rev acc
   in
-  walk 0 words
+  walk 0 [] words
+;;
+
+(* WO-0078 §5.1 / FINDING RV-0075-1: SPEC-M03 §6.1's own [admit_cycle + m + 3]
+   formula, word by word, paired with what was actually observed -- the data
+   [own_profile] carries so a clean T1 run prints numbers, not only a
+   sentence. Computed over the SAME words [spec_cycle_mismatches] below
+   walks, and only ever called where that walk is meaningful (i.e. never for
+   a frame the guard below found [Unassertable]). *)
+let word_profile ~admit_cycle (words : word list) =
+  List.mapi (fun word_index (w : word) -> admit_cycle + word_index + 3, w.cycle) words
 ;;
 
 (* SPEC-M03 section 6.1's gapless formula, word by word, over one accepted
@@ -529,7 +557,13 @@ let spec_cycle_mismatches ~index ~admit_cycle (words : word list) =
   walk 0 [] words
 ;;
 
-let check_timing ~(ours : transaction) ~(theirs : transaction) : timing_report =
+let check_timing
+      ~(ours : transaction)
+      ~(theirs : transaction)
+      ?(injected_idle_before_d0 = [])
+      ()
+  : timing_report
+  =
   let om = index_map ours and tm = index_map theirs in
   let common_indices =
     Int_map.fold (fun k _ acc -> if Int_map.mem k tm then k :: acc else acc) om []
@@ -557,38 +591,101 @@ let check_timing ~(ours : transaction) ~(theirs : transaction) : timing_report =
        T2 rather than report them." *)
     { base_aligned = false
     ; spec_divergences = admit_cycle_mismatches
+    ; own_profile = []
     ; reference_profile = []
     ; offsets = []
     }
   else (
+    (* WO-0078 §5.2 / FINDING RV-0075-2: the CARRIED antecedent, looked up per
+       frame index. A frame absent from [injected_idle_before_d0] (every
+       frame in every case this packet's Stage 1 ships) reads as 0, exactly
+       today's behaviour. *)
+    let idle_map =
+      List.fold_left
+        (fun acc (idx, n) -> Int_map.add idx n acc)
+        Int_map.empty
+        injected_idle_before_d0
+    in
+    let idle_before_d0 index = Option.value (Int_map.find_opt index idle_map) ~default:0 in
     (* T1 -- our side alone, against SPEC-M03 section 6.1 (WO-0075 section
        3.2). Iterates [ours] only, and only frames [ours] itself reports
-       [Accept]; [theirs] is not consulted here at all. *)
+       [Accept]; [theirs] is not consulted here at all.
+
+       WO-0078 §5.2/§5.4's two-part guard, checked in this order per frame:
+       (1) a nonzero CARRIED idle count refuses outright -- it cannot be
+           contradicted by the frame's own cycles, which is exactly the point
+           (FINDING RV-0075-2: a uniform shift from an idle at D(0) preserves
+           every inter-word delta and would otherwise read as clean or as an
+           ordinary [Spec_cycle_mismatch], never as what it is);
+       (2) otherwise, EXACTLY ONE broken inter-word delta refuses (ambiguous
+           with a single legitimate idle injection, which can only ever break
+           one delta, wherever it sits -- WO-0075's original guard, unchanged
+           in this branch); TWO OR MORE broken deltas is NOT that shape (no
+           single injection produces it -- RV-0075-VERDICT §4.1's own
+           diagnosis of why the old 2-word fixture could not tell the two
+           apart) and is asserted normally, word by word, via
+           [spec_cycle_mismatches]. *)
     let t1_divergences =
       List.concat_map
         (fun (fr : frame) ->
            if fr.decision <> Accept
            then []
            else (
-             match first_broken_delta fr.words with
-             | Some (word_index, c0, c1) ->
+             let carried = idle_before_d0 fr.index in
+             if carried > 0
+             then
                [ Unassertable
                    { index = fr.index
                    ; why =
                        Printf.sprintf
-                         "output words %d and %d are %d cycle(s) apart (cycle %d then %d), \
-                          not the constant 1-cycle spacing SPEC-M03 section 6.1's gapless \
-                          admit_cycle + m + 3 formula produces; T1 assumes a gapless \
-                          stimulus (WO-0075 section 3.2's own guard) and refuses to assert \
-                          against a frame whose recorded cycles do not have that shape"
-                         word_index
-                         (word_index + 1)
-                         (c1 - c0)
-                         c0
-                         c1
+                         "the stimulus recorded %d idle word(s) injected at or before this \
+                          frame's first octet D(0) (SPEC-M03 section 6.1's own antecedent for \
+                          the admit_cycle + m + 3 formula) -- carried from the stimulus side \
+                          (WO-0078 section 5.2, FINDING RV-0075-2), never inferred from output \
+                          spacing, which a shift of exactly this shape would otherwise leave \
+                          looking clean or ordinarily mismatched rather than unassertable"
+                         carried
                    }
                ]
-             | None -> spec_cycle_mismatches ~index:fr.index ~admit_cycle:fr.admit_cycle fr.words))
+             else (
+               match broken_deltas fr.words with
+               | [ (word_index, c0, c1) ] ->
+                 [ Unassertable
+                     { index = fr.index
+                     ; why =
+                         Printf.sprintf
+                           "output words %d and %d are %d cycle(s) apart (cycle %d then %d) \
+                            -- exactly one broken inter-word delta, indistinguishable from \
+                            cycle evidence alone from a single legitimate idle injected at \
+                            that position (WO-0075 section 3.2's guard; WO-0078 section 5.4 \
+                            narrows it to exactly this count rather than any broken delta)"
+                           word_index
+                           (word_index + 1)
+                           (c1 - c0)
+                           c0
+                           c1
+                     }
+                 ]
+               | _ (* zero, or two-or-more, broken deltas: assertable *) ->
+                 spec_cycle_mismatches ~index:fr.index ~admit_cycle:fr.admit_cycle fr.words)))
+        ours
+    in
+    (* WO-0078 §5.1 / FINDING RV-0075-1: the per-word (expected, observed)
+       profile for every accepted frame this guard did NOT refuse -- the data
+       [timing_report_to_string] prints on the clean path so a green run
+       carries its own numbers rather than requiring [offsets] and
+       [reference_profile] to be subtracted against each other. *)
+    let own_profile =
+      List.filter_map
+        (fun (fr : frame) ->
+           if fr.decision <> Accept
+           then None
+           else if idle_before_d0 fr.index > 0
+           then None
+           else (
+             match broken_deltas fr.words with
+             | [ _ ] -> None
+             | _ -> Some (fr.index, word_profile ~admit_cycle:fr.admit_cycle fr.words)))
         ours
     in
     (* T2 -- the reference's own cycles, recorded and never adjudicated
@@ -612,7 +709,7 @@ let check_timing ~(ours : transaction) ~(theirs : transaction) : timing_report =
              Some (index, zip (ows, tws)))
         common_indices
     in
-    { base_aligned = true; spec_divergences = t1_divergences; reference_profile; offsets })
+    { base_aligned = true; spec_divergences = t1_divergences; own_profile; reference_profile; offsets })
 ;;
 
 let cycles_to_string cycles = String.concat " " (List.map string_of_int cycles)
@@ -645,7 +742,23 @@ let timing_report_to_string (r : timing_report) =
      | [] ->
        add
          "T1: clean -- every accepted frame's output words landed on their \
-          SPEC-M03 section 6.1 (admit_cycle + m + 3) cycles\n"
+          SPEC-M03 section 6.1 (admit_cycle + m + 3) cycles\n";
+       (* WO-0078 §5.1 / FINDING RV-0075-1: print the numbers on the clean
+          path too -- the pre-WO-0078 lane printed only the sentence above,
+          so a green run's own T1 numbers were recoverable only by
+          subtracting [offsets] from [reference_profile] below, a different
+          tier's data standing in for this one's. *)
+       (match r.own_profile with
+        | [] -> add "  (no accepted frame in this case carries an assertable T1 profile)\n"
+        | profile ->
+          List.iter
+            (fun (index, pairs) ->
+               add "  frame %d:\n" index;
+               List.iteri
+                 (fun word_index (expected, observed) ->
+                    add "    word %d: expected %d, observed %d\n" word_index expected observed)
+                 pairs)
+            profile)
      | ds ->
        add "T1: %d divergence(s)\n" (List.length ds);
        List.iter (fun d -> add "  %s\n" (timing_divergence_to_string d)) ds);

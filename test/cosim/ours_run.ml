@@ -37,7 +37,24 @@
    still open — REQ-110's abort case — is out of Phase 1's authorised
    stimulus, WO-0046 §9, and is deliberately not implemented: this file
    [failwith]s rather than guess at it, so a future phase that needs it
-   is told to write it rather than silently mishandling it). *)
+   is told to write it rather than silently mishandling it).
+
+   {2 The idle-count sidecar (WO-0078 §5.2, FINDING RV-0075-2)}
+
+   This file is the middle hop of a three-file relay: [stimulus_gen.ml]
+   authors, per case, how many idle XGMII words its own schedule injected at
+   or before each frame's first octet D(0) (only it knows this, by
+   construction of the schedule); this file reads that record from
+   [<stimulus_path>.idle] (absent for every case this packet's Stage 1
+   ships, read as "0 for every frame") and forwards it, unchanged, to
+   [<output_path>.idle]; [compare.ml] reads it from there and passes it to
+   [Canonical.check_timing] as the antecedent FINDING RV-0075-2 requires be
+   CARRIED rather than inferred from either canonical file's own cycles.
+   This file performs no computation on the counts beyond a length
+   cross-check against the number of frames it actually admitted — it does
+   not, and structurally cannot, derive the count itself, since nothing
+   about the DUT's own cycles reveals how many idle words the SCHEDULE
+   chose to inject before a frame started. *)
 
 open Hardcaml
 module Xgmii_word = Dv_xgmii.Xgmii_word
@@ -66,6 +83,43 @@ let read_stimulus path =
   let words = loop [] in
   close_in ic;
   words
+;;
+
+(* WO-0078 §5.2 / FINDING RV-0075-2: [<stimulus_path>.idle], read here if
+   present -- [stimulus_gen.ml]'s own per-case record of how many idle
+   XGMII words its schedule injected at or before each frame's first octet
+   D(0), one decimal integer per line, line order = frame ADMISSION order
+   (0-based) -- the same order this file's own [accumulate] discovers
+   frames in, since both walk the identical stimulus in the identical
+   direction. Absent for every case this packet's Stage 1 ships (including
+   case 0): [None] then, read by [run] below as "0 for every frame",
+   unchanged from before this sidecar existed. *)
+let read_idle_sidecar path =
+  if not (Sys.file_exists path)
+  then None
+  else (
+    let ic = open_in_bin path in
+    let rec loop acc =
+      match input_line ic with
+      | line -> loop (int_of_string (String.trim line) :: acc)
+      | exception End_of_file -> List.rev acc
+    in
+    let counts = loop [] in
+    close_in ic;
+    Some counts)
+;;
+
+(* Forwards [idle_counts] (one per frame, admission order) to
+   [<output_path>.idle], for [compare.ml] to pick up as [check_timing]'s
+   carried antecedent -- the second hop of the same relay ([stimulus_gen.ml]
+   authors it; this file only forwards what it read, or an all-zero default
+   it manufactures itself when nothing was to forward, never inventing a
+   nonzero value on its own account). *)
+let write_idle_sidecar path idle_counts =
+  let oc = open_out_bin path in
+  Fun.protect
+    ~finally:(fun () -> close_out_noerr oc)
+    (fun () -> List.iter (fun n -> Printf.fprintf oc "%d\n" n) idle_counts)
 ;;
 
 (* [cycle] (WO-0075 §2): the shared time base's (§3.0) index of the
@@ -189,7 +243,37 @@ let run ~stimulus_path ~output_path =
          idx, word, out)
       stimulus
   in
-  Canonical.write_file output_path (accumulate trace)
+  let transaction = accumulate trace in
+  Canonical.write_file output_path transaction;
+  (* WO-0078 §5.2 / FINDING RV-0075-2: forward the idle-count sidecar,
+     frame for frame. [frame_count] is EVERY frame [accumulate] recorded
+     (Accept or Discard alike, admission order) -- the same count
+     [stimulus_gen.ml]'s sidecar was written against, since both walk the
+     identical stimulus. A sidecar present but of the WRONG length is a NEW
+     harness-defect refusal (WO-0078 §2.3's census is about producer
+     refusals reaching a distinct non-zero code; this extends that census
+     by one entry this file itself introduces, flagged as such in the
+     Return log rather than silently folded into the original six) --
+     `failwith`, exactly like this file's existing refusals, rather than
+     silently truncating or padding a count that no longer corresponds to
+     the frames actually admitted. *)
+  let frame_count = List.length transaction in
+  let idle_counts =
+    match read_idle_sidecar (stimulus_path ^ ".idle") with
+    | None -> List.init frame_count (fun _ -> 0)
+    | Some counts ->
+      if List.length counts <> frame_count
+      then
+        failwith
+          (Printf.sprintf
+             "ours_run: stimulus idle sidecar %s declares %d frame(s) but %d were admitted \
+              -- the sidecar and the stimulus it accompanies have drifted apart"
+             (stimulus_path ^ ".idle")
+             (List.length counts)
+             frame_count);
+      counts
+  in
+  write_idle_sidecar (output_path ^ ".idle") idle_counts
 ;;
 
 let () =
