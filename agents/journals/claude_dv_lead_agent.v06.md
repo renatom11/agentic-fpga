@@ -3727,3 +3727,391 @@ the round that relied on it. Banked, not minted.
 ### Files-in-this-commit
 
 - agents/handoffs/WO-0077_family-k-mutation-campaign.md
+
+## [J-dv_lead-0148] 2026-08-11T05:30Z | task:none | The era's last campaign absorbed into the plan: four rows take their qualification cells, two of them for the first time ever — and the round commissioned to record nine kills spent its sharpest hour deriving, from the bench's own constants, that a row whose title advertises a gap has been driving my other row's geometry all along
+
+### Trigger
+
+The **post-campaign `AP-` round**, commissioned by my own verdict at
+`WO-0077-VERDICT` §13 item 6 — *"the largest single carrier this programme is
+holding … should be scheduled before the `SO-`, not with it"* — and spawned by
+the orchestrator as the sole agent in flight. Not a campaign, not a review, not a
+sign-off: an **absorption round**, whose whole product is one plan file plus this
+entry.
+
+**HEAD verified as the first action, before reading anything**: `git rev-parse
+HEAD` → `19de5dd`, the spawn head, with `d6fdf92` (*"Nine of nine killed…"*) as
+its parent. No rollback and no descendant disposition fired.
+
+### Inputs
+
+- `agents/charters/dv_lead.md`, `agents/PROTOCOL.md` — mandatory, both in full.
+- `agents/handoffs/WO-0077_family-k-mutation-campaign.md` in full at `19de5dd`:
+  the packet (§1's six K classes, §2's three N classes, §3's clear/enable
+  censuses and their **empty intersection**, §5's twelve declarations, §13's
+  qualification rule, §15's owed list), the pre-run reading note `RN-1 … RN-6`
+  (`J-dv_lead-0146`, landed `04078fd`), and **`WO-0077-VERDICT`**
+  (`J-dv_lead-0147`, landed `d6fdf92`) end to end.
+- `agents/handoffs/WO-0077_family-k-mutation-campaign-SEALED-predictions.md` at
+  `aced7b4` — read for **§6.6 alone**, which is `DECLARATION K-D1`'s actual home;
+  see Reasoning item 6, where quoting it from the wrong section was caught before
+  it landed.
+- `agents/handoffs/WO-0075_cosim-lane-cycle-comparison.md` — `RV-0075-VERDICT`
+  (`J-dv_lead-0144`, landed `981331f`), §2's `FINDING RV-0075-1` and
+  `FINDING RV-0075-2` verbatim, §6's *"what the anchor NOW measures"*, §7's three
+  placements.
+- `test/attack_plans/AP-xgmii_rx_64.md` in full — §0.1's re-measurement rule, §1's
+  status vocabulary, §4.J's post-campaign block as the structural template, §4.K's
+  and §4.N's landed-status blocks, §7's four bars and U-1 … U-4, §9's change log.
+- `docs/specs/requirements.md` §9 — **REQ-810's row read at the source**, for
+  `FINDING J-1`'s second half. The new `Kills` cell is derived from its first
+  sentence and from nothing else.
+- `docs/adr/ADR-0017-a-journal-is-a-chain-not-a-file.md` §4.3–§5.1, for the
+  rotation decision recorded under Outcome.
+- **Bench sources read, and disclosed because independence discipline (charter §8)
+  requires it**: `test/xgmii_rx_64/test_m03_e.ml` (`run_e4`),
+  `test/xgmii_rx_64/bench.ml` (`frames_at`), `test/xgmii/arrival.ml` /
+  `.mli` (`terminate_octet_time`, `preamble_octets`),
+  `test/xgmii_rx_64/test_m03_n.ml` and `test_m03_k.ml` (raise-site line
+  verification only), `test/cosim/ours_run.ml:150–168`. These are **tests, in my
+  own write scope, read to re-derive an arithmetic claim rather than to author
+  one**. **No file under `libs/**` was opened in this round, at this commit or at
+  any earlier one in this task.**
+
+### Reasoning
+
+**1. What the round is for, and the one thing it must not become.** The verdict
+left eleven distinct obligations pointed at an `AP-` round that did not exist yet.
+The failure mode of an absorption round is not omission — the list is written
+down — it is **laundering**: carrying a quantity forward because a verdict says
+it, into a document a later `SO-` will read as measured. Candidate (F) at
+`J-dv_lead-0143` was banked against exactly that, one round after three false
+prose claims came out of two documents in a single absorption. So the operating
+rule for this round was: **re-derive what can be re-derived at this tree; carry
+the rest with the SHA it was measured at and say that is what I am doing.** Three
+things were re-derived rather than copied (the censuses, the `M03-E4` geometry,
+the status-cell distribution); two were deliberately carried with provenance and
+marked as carried (the campaign's instrument-footprint comparison, the verdict's
+breadth figures).
+
+**2. Where each result goes, and why the answer is not "one block".** §4.J's
+round put a family's whole campaign into one block beneath its rows. This campaign
+scored **two** families from **one** seal, so the same shape would have produced
+two blocks each carrying the era tally, the run table and the census — **two
+copies of five numbers, which is how two counts drift apart** (`FINDING
+WO-0076-S2`, and `FINDING AP-2` at its second instance in one document). Ruled:
+**§4.K's block carries the campaign's shared accounting once** — it is the
+campaign's own family and the packet's title — **and §4.N's block carries only the
+N section's own results and cites §4.K's for everything shared**, saying so in
+terms. Neither block restates the other's numbers.
+
+**3. The qualification cells, and the discipline that keeps them honest.** Four
+rows gained cells: `M03-K1` (1 class, 1 kill), `M03-K2` (5 classes, 5 kills, **one**
+qualification — `WO-0066` §11's per-class rule), `M03-N1` and `M03-N4` (**first
+qualifications in either row's history**). Every cell was appended, never
+rewritten over its predecessor, and every one carries the class, the assertion, the
+verbatim message, the raise site with its SHA, and the CI run id. **Status cells
+stayed `ASSERT` at all four** — §1's vocabulary is a closed set of six values and
+`QUALIFIED` is not one of them.
+
+**What I refused to let the cells say is the part worth the round.** At `M03-K1`
+the honest kill names **three** wrong designs; the campaign rendered **one**
+(member α, the pre-clear strobe presented inside the window). Member β and the
+control-run clause were rendered by **nothing**, and the cell now says so, because
+a qualification recorded without its scope reads as coverage of the whole cell.
+Same at `M03-K2`: kill 1 is *"reachable at THREE distinct sites"* and exactly one
+site — the opening edge — was rendered.
+
+**4. The centrepiece is a green, and it belongs to `M03-K1` even though `M03-K1`
+did not detect it.** `IC-K5` is the design `WO-0072` §7.5 withdrew from that row on
+an argument from the stimulus, and the programme repeated the withdrawal for four
+rounds without ever running it. It reddened `M03-K2` and left `M03-K1` green.
+**The prohibition is therefore not softened by this row's own kill — it is enforced
+on evidence**, and the cell says IC-K5's green is *evidence for* the prohibition
+rather than an exception to it. The identical shape paid one family over at
+`M03-N4`, where `IC-N4b` measured `FINDING J-2` and confirmed that row from a run
+as the **sole** carrier for the suppressing design. **Two rows in this plan now
+have a green whose meaning was established by a campaign rather than argued by a
+packet, and neither would exist if `FINDING RV-0075-3`'s bar had let either class
+be marked optional.**
+
+**5. `FINDING J-1`'s second half — paid, and the reason it was safe to pay.** My
+verdict said it stays carrier-less *"until an `AP-` round is scheduled, and it
+rides the `SO-`'s own round if none is"*. One is scheduled: this one. Two questions
+had to be answered before writing the cell. **(a) Can a `Kills` cell be written for
+a clause whose only kill is already on file as a landed mutation?** Yes — but only
+if the cell is derived from the requirement and the mutation is cited as
+**retrospective corroboration**, never as the derivation. A `Kills` cell
+reverse-engineered from a diff is precisely what this plan forbids itself, so the
+cell states its derivation (REQ-810's first sentence, read at
+`docs/specs/requirements.md` §9) and labels `IC-J1`'s kill as corroboration in
+those words. **(b) Does paying it enlarge the row past what `DECLARATION J-D1`
+(U-4) says its silence can see?** It would, if written loosely. The new cell names
+the **un-gated** design — admitted **and** delivered — and explicitly **not** the
+admitted-and-muted one, which U-4 says this scan cannot see in any of its three
+clauses and which only `M03-J3`'s positive comparison separates. **`FINDING J-1` is
+closed in both halves and U-4 is untouched.**
+
+**6. The round's own error, caught before it landed, and it is the one this plan
+mints findings for.** I first cited `DECLARATION K-D1`'s provenance as *"`WO-0077`
+§5 item 1 and its seal §6.1"*. **Both are wrong**: §5 item 1 is `FINDING K-1` and
+seal §6.1 is the co-simulation blindness. The declaration's home is the **seal's
+§6.6**. I found it by opening the seal to check the citation instead of trusting
+the shape of it — the same move that produced `FINDING AP-1`, `AP-2` and `AP-4` in
+earlier rounds, applied to my own draft before it became a fifth. **Repaired in
+both places before the file was handed over**, and recorded here rather than
+silently fixed, because a citation that was wrong for twenty minutes and a
+citation that ships are separated by exactly one check.
+
+**7. Two set claims I wrote and then withdrew from my own draft.** *(i)* "Six
+classes, six reds, six kills, zero blast radius — **the first campaign in this
+plan of which that is true**". That is a claim quantified over nine campaigns and
+I had measured none of them; §4.E's and §4.D's change-log rows suggest it is
+probably **false**. Struck, and replaced with the measurement that actually
+grounds the zero — **the clear census: exactly two units in the repository drive
+`clear` high, and they are the two K rows.** *(ii)* An enumeration of "the declared
+unscoreables" that silently added four rows from earlier campaigns to the
+verdict's own seven. Replaced with the verdict's list quoted as the verdict's,
+plus a sentence declining to assert completeness. **§0.1 caught two of my own
+sentences inside the round that absorbs a campaign whose largest finding was a
+census I did not scope — which is the argument for the rule and not against it.**
+
+**8. `M03-E4`, and this is the result I did not expect to be writing.** The verdict
+recorded that `M03-E4 (lane 0)` carries `M03-N1`'s geometry, built by `?word_at`
+rather than by an overlay, and named it *"worth a plan row and worth nothing if it
+is only in a verdict"*. Rather than transcribe that, I re-derived it from the
+bench's own constants — `frames_at`'s lane→`first_start` map, `Arrival`'s
+`preamble_octets` and `terminate_octet_time`, and `run_e4`'s
+`e_octet_time = terminate0 + 5`. **The derivation returns more than the verdict
+claimed.** At lane 0 the `/T/` is at octet time 80 (cycle 10, lane 0) and the `/E/`
+at 85 (cycle 10, lane **5**) — the same input word. **At lane 4 they are at 84
+(cycle 10, lane 4) and 89 (cycle 11, lane 1) — different words.** So the row drives
+**two different geometries, one per member**, only the lane-4 member is the
+separate-word gap its Stimulus cell advertises, **and that is exactly why only the
+lane-0 member reddened under `IC-N1` while the lane-4 member's green was REQUIRED
+rather than a miss** — a per-lane fact the verdict reported as a single unit and
+did not derive. Recorded in the **Stimulus** cell, because the defect is in the
+cell that advertises the stimulus (the `M03-N4` precedent: the finding goes in the
+cell the defect lives in), with the coverage consequence in the Kills cell.
+**Consequence for the other row, and it is a narrowing rather than a widening:
+`M03-N1` is no longer the sole instance of its geometry in this bench, and no
+packet may claim it is.**
+
+**9. Where `FINDING WO-0077-A1` goes, and why not into §4.K.** It is a statement
+about the **anchor**, not about a row: nothing in §4.K changes because
+`test/cosim/` reddened, since `test/cosim/` contributes zero units and both kills
+and both qualifications stand. §7's bar 4 is where every per-campaign blindness
+declaration in this programme has been recorded, so the fourth instance — **the
+first that did not hold** — goes beside them, together with the census repair
+(*any universal over "the bench" is measured over every producer that drives the
+DUT*) and with the positive half, which is the larger half: **the first time this
+programme's differential co-simulation anchor has convicted a mutant.** §4.K's
+block points at it in one sentence and does not restate it.
+
+**10. `DECLARATION K-D1` as U-5, and the row kind was chosen rather than
+defaulted.** U-1/U-2 are bench-side ordering, U-3 design-side grammar, U-4 the
+shape of the observable. K-D1 is none: **the assertion is reachable, it speaks, it
+killed — and what bounds it is the interval the row's stimulus chose to look at.**
+That is a fourth kind and it earns its own table rather than a row in someone
+else's, on the same reasoning `J-dv_lead-0138` used to keep U-3 out of the U-1/U-2
+table. And unlike U-4, the separating instrument is **inside the same family**:
+`M03-K2`'s window covers a frame with six words still to come, which is why five
+of six classes convicted there and none at `M03-K1`. **U-5 names a division of
+labour between two rows of one family that a scorecard counting both as "family K
+coverage" would erase.**
+
+**11. What I did not do, and each is a routing rather than an omission.**
+`FINDING K-1`'s message repair (owed to the next commit opening `test_m03_k.ml`),
+`RN-6`'s `docs/**` resolve-check (owed to the first commit opening `tools/`), and
+`FINDING RV-0075-1`'s printer repair (owed to the next commit opening
+`test/cosim/**`) are **recorded at their sites and paid nowhere**: a plan round is
+not where a carrier is improved (`J-dv_lead-0112`, applied to its author for the
+fourth time). I also considered and rejected a per-row annotation on the five
+family-B rows the seal's IC-N1 instance list named and the run left green: **the
+correct record is that my RULE over-selected, which is a fact about the seal and
+not about those rows**, and it is recorded where the rule is — at `M03-N2`'s cell
+and in §4.N's block. Writing it into five row cells would have implied five rows
+had a campaign result. They did not.
+
+**Harvest note (ADR-0018, PROTOCOL §7): NOT DUE, declared rather than skipped.**
+The harvest falls at the `SO-` and at phase gates; this is a plan round. The span
+since my last harvest stays **open**, and the nine candidates banked against it are
+untouched and unadmitted — the three at `J-dv_lead-0137`, (C) at
+`J-dv_lead-0141`, (D) and (E) at `J-dv_lead-0142`, (F) at `J-dv_lead-0143`, (G) and
+(H) at `J-dv_lead-0144`, (I) at `J-dv_lead-0147`. **Two further candidates are
+banked from this round, stated with the provenance hidden, and neither is minted.**
+**(J)** *A set enumerated from how its members are NAMED is a different set from
+the one a rule selects, and the difference is invisible until something measures
+both.* **LH1**: this round — an instance list derived from stimulus titles both
+over-selected seven cases that stayed green and under-selected the one case that
+shared the geometry the rule names, and the omitted case was found only by working
+the arithmetic the titles hid. **LH2-g** — no proper noun of any kind. **LH3**:
+without it, a selection rule ships with a hand list that looks like its extension,
+and the first measurement that disagrees is read as a defect in the work rather
+than in the list. **(K)** *A silence assertion over an interval in which a
+conformant component is already silent measures only defects that ADD, never
+defects that FAIL TO REMOVE — and a coverage claim that does not say which of the
+two it bought has reported the size of the window instead of the size of the
+evidence.* **LH1**: this round — five defects that fail to suppress left the
+silence assertion green and the one that carries an observable into the interval
+reddened it, measured across six seeded classes at one assertion. **LH2-g** — no
+proper noun. **LH3**: without it, a green silence scan is cited as coverage of
+suppression it is structurally incapable of seeing, and the citation is
+indistinguishable from a real one.
+
+### Actions
+
+- Verified `HEAD` **before reading anything**: `19de5dd`, the spawn head; parent
+  `d6fdf92`. Working tree clean at entry.
+- Read the charter, the protocol, the `WO-0077` packet and verdict in full, the
+  seal's §6.6, `RV-0075-VERDICT`, and this plan in full including §4.J's
+  post-campaign block as the structural template.
+- **Re-measured before writing, rather than quoting**: the row-discharge census and
+  unit inventory (`bash tools/dv_checks.sh`), the plan's status-cell distribution
+  by direct count, the bench-tree freeze from `22ffe13` to `HEAD`, every raise-site
+  line number cited, and the `M03-E4` octet-time arithmetic from the bench's own
+  constants.
+- **Edited seven row lines**, all by **appending to a cell**, none by rewriting one:
+  `M03-K1` (Observable — `DECLARATION K-D1`; Kills — QUALIFIED ×1 with its scope,
+  and the withdrawal established from a run), `M03-K2` (Kills — QUALIFIED ×5 on
+  five REQ-009 clauses, plus `FINDING K-1` measured with its blob ids and
+  `FINDING WO-0077-K2`'s D3→D3a/D3b repair), `M03-N1` (Kills — QUALIFIED ×1, first
+  in its history, plus `FINDING WO-0077-N1` and the second-carrier narrowing),
+  `M03-N4` (Kills — QUALIFIED ×2, first in its history, plus `FINDING J-2` measured
+  and paid), `M03-N2` (Kills — reds recorded as blast radius,
+  `FINDING WO-0077-N2`'s over-selection half), `M03-E4` (Stimulus — the two-geometry
+  correction derived here; Kills — the IC-N1 red as blast radius), and `M03-J1`
+  (Kills — `FINDING J-1`'s second half **paid**, bounded against U-4).
+- **Inserted two post-campaign blocks**: `FAMILY K` after §4.K's landed-status block
+  (the campaign's shared accounting — identifiers, the ten-row class/run table, the
+  row-status table, blast radius, the K × N cross product, MUST-STAY-GREEN, the
+  breadth figures, the five-column era tally closing at 63/61/1/0/1, the findings
+  list, and ten does-not-buy clauses) and `FAMILY N` after §4.N's (the N section's
+  own results, its per-class radius, both N findings, six does-not-buy clauses, and
+  an explicit pointer to §4.K's block for everything shared).
+- **Extended §7 in two places**: beside bar 4, `RV-0075`'s three owed placements plus
+  `FINDING WO-0077-A1`'s record, its standing census repair and its positive half;
+  after U-4, **U-5** with its table, its separating instrument, its
+  not-an-X-row/not-a-GAP reasoning and its portable form.
+- **Appended one §9 change-log row** (eleven numbered clauses, `J-dv_lead-0148`).
+- **Struck two of my own set claims from the draft** before handover (Reasoning
+  item 7) and **repaired one mis-cited provenance** (item 6).
+- Ran no test suite: **no file under `test/**` other than this plan moved**, so
+  there is nothing for a suite to re-verify that CI has not already verified at
+  `19de5dd`.
+
+### Evidence
+
+Commands run at `19de5dd` with only `test/attack_plans/AP-xgmii_rx_64.md` modified.
+
+- `git rev-parse HEAD` → `19de5dd4bcbbaf294aa21c4496944a71799c993c`;
+  `git log --oneline -3` → `19de5dd`, `d6fdf92`, `04078fd`.
+- `git status --porcelain` → `M test/attack_plans/AP-xgmii_rx_64.md`, and nothing
+  else, before and after every edit.
+- **The bench freeze still holds**: `git diff --name-only 22ffe13 HEAD -- test/
+  libs/ tools/` → **empty**, so every raise site cited `@ 22ffe13` is equally true
+  at `19de5dd`, and the plan says so once rather than per citation.
+- **Raise sites verified individually**, by reading the cited line at `HEAD`:
+  `test_m03_k.ml:257`, `:468`, `:511`; `test_m03_n.ml:603`, `:635`, `:932`,
+  `:936`, `:1302`, `:1421`; `test_m03_e.ml:584`; `ours_run.ml:150–168` (the
+  `clear := vdd` / `cycle` / `clear := gnd` block). Every one is the construct the
+  verdict attributes to it.
+- **The `M03-E4` arithmetic, re-derived rather than quoted.** From
+  `test/xgmii_rx_64/bench.ml:559–566` (`first_start` = 8 at lane 0, 12 at lane 4),
+  `test/xgmii/arrival.ml:17` (`preamble_octets = 8`) and `:22`
+  (`terminate_octet_time = start_octet_time + preamble_octets + |octets|`), with
+  `test/xgmii_rx_64/test_m03_e.ml:543` (`e_octet_time = terminate0 + 5`) and a
+  64-octet first frame:
+  `lane 0 -> /T/ at 80 = cycle 10 lane 0, /E/ at 85 = cycle 10 lane 5  (SAME word)`
+  and
+  `lane 4 -> /T/ at 84 = cycle 10 lane 4, /E/ at 89 = cycle 11 lane 1  (different words)`.
+- **Census, re-measured before and after the edits** — `bash tools/dv_checks.sh`:
+  **78** row ids declared, **62** naive, **62** trailing-digit boundary, inventory
+  **59** under `test/xgmii_rx_64/` and **139** repository-wide, `dv_checks: every
+  check that COULD run passed`. **Identical in both passes**; the round moved no
+  unit and no title.
+- **Status-cell distribution, counted directly** —
+  `grep -oE '\| (ASSERT|NO-ASSERT|NO-STIMULUS|RULING|GAP|STRUCTURAL) \|$' … | sort |
+  uniq -c` → **62 ASSERT, 7 NO-ASSERT, 4 NO-STIMULUS, 4 STRUCTURAL, 1 GAP**, summing
+  to **78**. **Identical before and after the edits.**
+- **Table integrity checked mechanically, not by eye**: every edited row line still
+  carries exactly **7** pipes (six cells) — `M03-E4`, `M03-J1`, `M03-K1`, `M03-K2`,
+  `M03-N1`, `M03-N2`, `M03-N4`; the U-5 row carries **5** (four cells) against a
+  four-column separator; the new change-log row carries **4** (three cells); and a
+  scripted scan of both new blocks reports **zero** non-`>`-prefixed lines between
+  their headers and the next section heading, so neither blockquote is broken.
+- **`FINDING WO-0077-A1`'s two `cosim` jobs, quoted from the verdict's own reading
+  and marked as carried**: jobs `92531261066` (IC-K3) and `92531267799` (IC-K5),
+  message `DEFECT: frame 0: decision mismatch (ours=discard, theirs=accept)`. **I
+  re-executed nothing on `api.github.com` this round**; those are the adjudicating
+  verdict's readings at `d6fdf92` and the plan carries them as such.
+- Journal size before this append: `242163` bytes (measured
+  `git show HEAD:agents/journals/claude_dv_lead_agent.v06.md | wc -c`).
+
+### Outcome
+
+**DoD met for the round as commissioned** (`WO-0077-VERDICT` §13 item 6 plus the
+riders that named an `AP-` round as carrier). All seven items of the spawn's list
+are landed in one file:
+
+1. §4.K's two rows and §4.N's two rows have their first qualification cells, with
+   classes, verbatim messages, raise sites at their SHA, and CI run ids. ✔
+2. `FINDING K-1` (measured, blob ids), `FINDING WO-0077-K2`, `FINDING WO-0077-N1`,
+   `FINDING WO-0077-A1`, `FINDING WO-0077-N2` — all five recorded, each at the site
+   its subject lives at. ✔
+3. `DECLARATION K-D1`'s measured outcome — at `M03-K1`'s Observable and as **U-5**
+   at §7. ✔
+4. `M03-E4`'s carriage of `M03-N1`'s geometry — **re-derived here**, with the
+   per-lane split the verdict did not carry. ✔
+5. `RV-0075`'s three §7 placements — landed beside bar 4, owed since `981331f`. ✔
+6. `FINDING J-1`'s second half — **paid**, as a `Kills` cell, bounded against U-4;
+   the finding is closed in both halves. ✔
+7. The era tally block (63 / 61 / 1 / 0 / 1) and the change-log row, with the four
+   campaign qualifications named and `FINDING AP-3` discharged in the affirmative. ✔
+
+**No row moved, no status moved, no count moved, and no §6 coverage cell moved.**
+**No `SO-xgmii_rx_64.md` is opened and none is offered.**
+
+**Journal volume**: this entry takes `claude_dv_lead_agent.v06.md` past ADR-0017
+§5.1's soft threshold `S` (262 144 bytes). Per §5.1's own semantics — `S` **warns**
+and the script's message is *"rotate to volume NN at your next entry"* — and per
+this chain's established practice (v05 was frozen at 263 428 bytes, one entry past
+`S`), **I do not rotate here: this entry appends to v06 and `J-dv_lead-0149` opens
+v07** with the §4.3 chain header. Declared rather than left for the warning to
+raise.
+
+**Handoff**: the file set below goes to the orchestrator for commit under trailer
+`Agent: dv_lead`, `Work-Order: none`, `Journal-Entry: J-dv_lead-0148`. I ran no
+git command that writes.
+
+### Open-questions
+
+1. **`FINDING K-1`'s message repair is now the oldest unpaid carrier in this
+   module** and it is three rounds old: the assertion at `test_m03_k.ml:468` names
+   its expected list and prints nothing it observed, which is why four classes
+   produced one byte-identical file. Its carrier is unchanged — the next commit that
+   opens `test_m03_k.ml` — and **no such commit is scheduled.** If the `SO-` round
+   is the next thing to open that file, the repair rides it; if nothing does, the
+   `SO-` ships citing a scorecard that cannot tell four defect classes apart. **A
+   carrier without a dated round is how a debt becomes a habit** — my own words at
+   `WO-0077` §15 item 3, now pointing at me.
+2. **`RN-6`'s `docs/**` resolve-check in `tools/dv_checks.sh` is unbarred and
+   unscheduled.** The verdict lifted the bar this round was supposed to clear it
+   under; nothing has opened `tools/` since. It is one grep and it prevents the
+   class of defect that admitted a path which has never existed.
+3. **`FINDING WO-0077-A1`'s census repair now has two homes and needs one owner.**
+   It is filed at §7 as a standing rule and named in the verdict as owed to the next
+   campaign seal — **but the era of campaigns has closed**, so on current plans the
+   next artefact that could obey it is the `SO-` itself. Recommend the orchestrator
+   treat the `SO-` round as its owner explicitly rather than by default.
+4. **Whether `M03-E4` should gain a second row rather than a corrected cell.** The
+   lane-0 member drives a geometry the row's own title does not describe, and it is
+   the second carrier of `M03-N1`'s discrimination. A new row would make that
+   coverage visible to the census; a corrected cell keeps the id set stable and the
+   count unmoved. **I chose the cell** — a plan round that adds a row moves the
+   denominator every earlier campaign was scored against — but the question is a
+   real one and belongs to whoever writes the `SO-`'s coverage section.
+
+### Files-in-this-commit
+
+- test/attack_plans/AP-xgmii_rx_64.md
