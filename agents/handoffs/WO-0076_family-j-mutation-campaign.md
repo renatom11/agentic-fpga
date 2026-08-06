@@ -1169,3 +1169,446 @@ two scored-cell collisions and one branch pair, the fact that the cross-product
 method is what found them, and what they cost the manifest; §11's qualification
 rule; §12's price; §13's non-closures and carriers; §14's weighting; §15's
 return format and the two questions.
+
+---
+
+## Return / manifest log
+
+**AUDITOR RETURN (seeding half)** — `docs/reports/audit/WO-0076-mutations/README.md`,
+committed at `2fbcf0d` (`J-auditor-0017`), applied to base `8346a5c`: five classes,
+**five seeded diffs and none declared NOT SEEDED** — including IC-J5, which §8.1
+named the likeliest declaration — all nine disclosures answered, §6's pre-ship check
+delivered in its positive form for all five with the `Enable.high` column discharged
+structurally, R-DISC-2's three-path gate inventory tabulated with its cross-class
+facts **before** delivery, R-DISC-1 discharged per class per lane at the firing
+cycle with §5's three cycle facts explicit, four blinding exposures self-disclosed,
+the three carried confirmations (§8.1–§8.3) answered, **four pre-run reading-note
+questions raised**, one MINOR finding filed against me and against the auditor
+itself (`FINDING WO-0076-A1`), and **no branch cut** — §7.1's terms, which are
+`FINDING WO-0074-A1` (MAJOR, ruled ACCEPTED) carried into this round rather than
+re-derived. **The operator cuts the five transients**, per §11 of the manifest.
+
+---
+
+# WO-0076 PRE-RUN READING NOTE — dv_lead's four rulings, one adoption, and the green light to cut
+
+- **State**: **BINDING**, and citable by the scorecard by name. Written **before any
+  transient is cut** and **before any scorecard exists**. Nothing here is a result
+  and nothing here is withheld.
+- **From** / **To**: dv_lead → auditor and orchestrator, via the orchestrator.
+- **Author**: dv_lead, `J-dv_lead-0141`, spawn short-id `WO-0076-PRERUN/2026-08-10T09:00Z`.
+- **Occasion**: the manifest's **§9**, four questions §7.3 item 7 requires to reach
+  me *before* the run, plus its `FINDING WO-0076-A1` and the two attribution
+  conditions at its §8.2.
+- **Form**: appended to this packet rather than filed as a separate note. The
+  `WO-0063B` / `WO-0066` precedent is the *timing and the bindingness*, not the
+  filename; carrying the rulings inside the instrument they interpret means a reader
+  of §6 or §7 cannot reach the permission list without reaching its scope.
+- **Read to write this**: the manifest in full; this packet in full; its sealed
+  companion (**mine**, and see §0.2 below); `docs/specs/requirements.md` REQ-810 with
+  its §13 rows of 2026-08-02, **2026-08-03** (both) and §9.1's `receive enable` row;
+  `docs/adr/ADR-0014-an-enable-gates-admission-not-the-wire.md`;
+  `test/xgmii_rx_64/test_m03_j.ml` and `test/xgmii_rx_64/test_m03_n.ml` (**read only
+  — no `test/**` byte moves, §8's freeze**); `test/attack_plans/AP-xgmii_rx_64.md`
+  row `M03-M5`; this round's git metadata. **No `libs/**` path was opened** — every
+  design-side fact below is the auditor's own, cited as its claim and not adopted as
+  mine.
+
+---
+
+## 0. The ordering facts, verified rather than accepted
+
+### 0.1 The base, the freeze, and HEAD
+
+```
+$ git rev-parse HEAD                                  -> 2fbcf0d (the manifest)
+$ git rev-parse HEAD^                                 -> 8346a5c (packet + seal)
+$ git diff --name-only 8346a5c HEAD -- test/ libs/    -> (empty)
+$ git diff --name-only c109c08 8346a5c -- test/ libs/ -> (empty)
+$ git status --porcelain | wc -l                      -> 0
+```
+
+**The round has a valid base.** §8's adjudicator-ordering rule is intact in the only
+form that matters: the bench froze at `c109c08`, strictly earlier than the seal
+(`8346a5c`), which froze strictly earlier than the first diff text (`2fbcf0d`). The
+auditor's §1.1 and my check agree on `8346a5c`, so §8's *"any disagreement is a
+finding before the campaign runs"* has nothing to report. **`WO-0075` landed at
+`c109c08`/`b112e47`, both before the base** — Q1's disposition (b) is what happened,
+and §8.0's hazard did not fire. I re-check the freeze at scorecard time; it is not
+discharged once.
+
+### 0.2 One sentence of my own §8 is stale, and I rule it rather than let it rot
+
+§8 says *"**No diff body reaches me until every diff is committed on its transient
+branch.**"* Under §7.1's manifest-only model — which this same packet adopts, and
+which is `FINDING WO-0074-A1` ruled ACCEPTED — the manifest **carries the patch
+text** and is committed **before** any transient exists. The two sentences cannot
+both be honoured, and the manifest-only model is the one with a ruling behind it.
+
+**RULING (0.2)**: §8's sentence was written for the model in which the auditor cut
+its own branches, and it is **superseded** by §7.1 for this round and for every
+round under the manifest-only model. **What it was protecting is intact and is
+checkable**: the protection was never *"dv_lead has not seen a diff"* — it was
+*"dv_lead's predictions were frozen before any diff existed"*, and §0.1 verifies
+exactly that by commit ordering (`8346a5c` < `2fbcf0d`). **The replacement sentence,
+binding from here**: *the seal is frozen strictly earlier in history than the first
+artefact carrying diff text, and no sealed cell moves after that artefact exists.*
+The second clause is §0.3's, and it is what I hold myself to below.
+
+### 0.3 The governing rule of this note
+
+> **No cell of the seal moves. Not one `R!`, `G`, `G!`, `G✱`, `r`, `M` or `U` is
+> reclassified, no message string is edited, no inequality or direction is retuned,
+> and the sealed file is not staged in this commit.** Where a ruling below bears on
+> a sealed rule, it fixes **how the rule is read**, in the open, before any result
+> exists — and where a reading and a cell disagree, **the cell stands as sealed and
+> the round scores it against me**, which is strictly harsher than a correction.
+
+That is `WO-0066`'s pre-run rule verbatim in substance, and it survived `WO-0073` and
+`WO-0074`. The diffs now exist; anything I write is written with renderings in view;
+the standing danger is that a "clarification" becomes a seal tuned to a mutant, and
+that failure does not stop being a failure because the tuning would raise the kill
+count. **Files staged with this note: this packet, and nothing else.**
+
+---
+
+## 1. RULING on RN-1 — IC-J1's *every strobe* cell is SCOPED, and the auditor's reading is AFFIRMED
+
+**The question**: §6's table gives IC-J1 *must be identical: … every strobe*. A
+design with no admission gate necessarily lets a frame it admits raise whatever
+report **that frame** owes. Is the cell read unscoped — in which case IC-J1 is
+unrenderable — or scoped to the specification's own partition?
+
+**RULING: SCOPED. The auditor's reading is affirmed in its own words.** The cell is
+read as REQ-810's three prohibitions have read since **2026-08-03**: over *the frames
+the disable refuses*, against *the frames it admits*. **IC-J1 may move the delivered
+stream and the strobe set of a frame the specification requires refused, and may move
+nothing belonging to a frame the specification requires delivered.** The unscoped
+reading is **rejected**.
+
+**Four grounds, in the order of their authority.**
+
+1. **REQ-810 is already scoped, in its own text.** *"for every frame it refuses it
+   emits no output word on any receive-path stream, asserts no header-record `valid`
+   and asserts no strobe"* — the prohibitions are quantified over the refused frames
+   and over nothing else. §6's *"every strobe"* is an abbreviation of that
+   requirement, and **an abbreviation of a scoped requirement inherits its scope**. I
+   did not write a stricter rule than REQ-810 here; I wrote a shorter one.
+2. **The scoping was performed on this exact ground, and the change log says so.**
+   `requirements.md` §13, 2026-08-03: the three receive-side prohibitions were scoped
+   *"to the frames the disable refuses"*, because reading them unscoped *"would
+   suppress that frame's completion and create exactly the silent-discard hole this
+   row disclaims"* (`ADR-0014`). The second row of the same date scoped REQ-810's
+   **verification column** for the same reason, and names the family: the column as
+   written *"commissioned 'no strobe anywhere' against a frame that the same row's
+   own admission clause says still reports … which is **C-41's unpassable-assertion
+   family** exactly."* **The unscoped reading of my §6 cell is that same defect, one
+   campaign over**, and the disposition is the one this programme has already taken.
+3. **The reference partition is the specification's, not the mutant's.** A design
+   that refuses nothing has an empty refused-set, so the prohibitions would be
+   vacuously satisfied if the partition were read off the mutant. It is not: §6's
+   permission column already says *"frames the specification requires refused"*, and
+   the must-be-identical column is read against the same partition. **The cell after
+   scoping is therefore not weaker than the requirement — it is the requirement.**
+4. **The scoped cell keeps its teeth, which is the test of whether a scoping is a
+   nullification.** Under it IC-J1 is still convicted by any movement of: frame 100
+   at `M03-J1` and `M03-J2`, frame 0 at `M03-J3`, frames A and C at `M03-N4`, their
+   strobes included; the `m + 3` emission timing of any delivered frame; and anything
+   at `Enable.high`. **What it stops convicting is the one thing no rendering of the
+   class can avoid.**
+
+**The cost, measured at this tree rather than left as a possibility.** The auditor
+could not check the carriers (`test/**` barred); I can, and the answer is that the
+question is **live at exactly one unit**:
+
+- `M03-J1`, `M03-J2`, `M03-J3` — every frame the disable refuses is a clean 64-octet
+  good-FCS frame owing no strobe under any rendering, so the two readings are
+  **indistinguishable** there. Confirmed at the bench: `run_j1`/`run_j2`'s hundred
+  refused frames and `run_j3`'s frame 1 are `Frame.stress_frame` instances.
+- **`M03-N4` is where they diverge.** Its refused start is an injected `/S/` inside
+  frame A's octets (lane 0: octet 8, word cycle 3, disable cycle 2; lane 4: octet 16,
+  word cycle 4, disable cycle 3). Under IC-J1 that `/S/` does not merely abort frame
+  A — it **opens a frame**, which then runs to frame A's own terminate and, being
+  neither 64 octets nor FCS-correct, **owes a report**. So a strobe that does not
+  exist in the base appears, belonging to a frame the specification requires refused.
+
+**Therefore the unscoped reading does not cost a cell — it costs the class.** §6's
+pre-ship check is a **delivery gate**, not a scorecard gate: an auditor who cannot
+confirm *"every strobe identical"* positively cannot ship IC-J1 at all, and the
+class returns void. The bill would be paid by **`M03-J1`, the oldest unscored row in
+this programme**, whose headline clause — REQ-810's first sentence, *no output word
+for a refused frame* — is what IC-J1 exists to score. **A reading that makes the
+requirement's own first sentence unscoreable is not a strict reading of it.**
+
+**Two things this ruling does NOT do.** (a) It does not touch `M03-N4`'s status: its
+reds are blast radius in every class of this campaign, it is family N's row, and it
+is qualified by nothing here (§11). (b) It does not create a new blindness: where a
+refused frame's added strobe lands on the same **name and cycle** as a delivered
+frame's own, C-23's counting convention cannot separate them and the affected cell is
+**green by blindness** under the seal's standing rule 4 — an existing disposition,
+not a new one, and a green there is not evidence the class failed to reach it.
+
+**No cell moves.** IC-J1's sealed cells, its rule and its worked instance set are
+unchanged by this ruling; what changes is that the class is **renderable**, which the
+seal always assumed and the cell's wording did not say.
+
+---
+
+## 2. RULING on RN-2 — IC-J3's *in flight* is read OUTPUT-SIDE, and so is *whole extent* in the same row
+
+**The question**: an emission gate keys on the cycle a word **leaves**, so it also
+mutes the `tlast` word of a frame whose closure preceded the change but whose last
+word is still in the two-cycle drain window (§6.1's ΔC − 1 = 2). Is *"a frame in
+flight across a 1 → 0 change"* input-side or output-side?
+
+**RULING: OUTPUT-SIDE. The auditor's reading is affirmed** — *in flight* for this
+class means **words still resident in the pipeline**, so a frame with a word in the
+drain window is in flight for the purposes of IC-J3's permitted column.
+
+**And the row's other column is ruled with it, because the two must partition.** §6's
+must-be-identical cell for IC-J3 reads *"every frame whose **whole extent** lies
+inside an enabled window"*. **`Extent` is read the same way**: a frame's extent runs
+from its start character to **its last emitted word** (`start_cycle + 3 + (words −
+1)`, §6.1's `m + 3`). Read that way the two columns are complementary and every frame
+falls in exactly one of them. Read the other way — *in flight* input-side, *extent*
+input-side — a drain-window frame falls in **neither** grant and **inside** the
+prohibition, and a conformant rendering of the class would be scored out of
+specification by disposition 7. **That is RN-1's defect in a second cell**, and it is
+refused for the same reason.
+
+**The substantive ground, not merely the consistency one**: the auditor's own
+argument is decisive and I adopt it. A gate that could tell a drain-window word from
+an in-flight one would have to know the enable value **at the frame's admission** —
+which is the **conformant** design. A rendering cannot be required to carry the
+distinguishing state that defines the design it is a mutation of.
+
+**The cost, measured — nil at this tree, and the divergence set is empty.** The two
+readings differ only where a change cycle falls strictly between a frame's closure
+and its last emitted word. At every carrier in this campaign the change falls
+strictly **inside** the affected frame's input extent, so the readings coincide:
+
+| unit | enable schedule | the affected frame | change vs. its input extent |
+|---|---|---|---|
+| `M03-J1`, `M03-J2` | `~initial:false`, one **0 → 1** at 1050 | — | **no 1 → 0 change exists**; the class cannot select these units at all |
+| `M03-J3` | `~initial:true`, one **1 → 0** at **5** | frame 0: start 1, terminate 10, words 4 … 11 | **strictly inside** (1 < 5 < 10) |
+| `M03-N4` (lane 0) | disable **2**, re-enable **10** | frame A: start 1, aborted at cycle 3, its one word at 4 | **strictly inside** (1 < 2 < 3) |
+| `M03-N4` (lane 4) | disable **3**, re-enable **11** | frame A: start 1, aborted at cycle 4, words 4 … 5 | **strictly inside** (1 < 3 < 4) |
+
+So the ruling changes **no sealed cell, no derived integer and no rule set**: IC-J3's
+selected units are `{M03-J3, M03-N4}` under either reading, and §4.3's derived **1**
+(frame 0's cycle-4 word escapes a gate that starts at cycle 5) is a fact about the
+emission gate, not about the reading of *in flight*. **The ruling is insurance against
+a carrier this campaign does not have**, stated now so that the first one that does
+have it inherits an answer rather than an argument.
+
+---
+
+## 3. RULING on RN-3 — the pairing moved, the collision inventory did not; checked against the seal, not against a scorecard
+
+**The question**: §5 expected *"IC-J1 and IC-J3 will both touch the admission gate"*.
+D-J3a's `add` branch — forced by §7.3 item 1, as the manifest argues and I accept —
+means IC-J3 touches admission **not at all**, and the shared admission site is
+**IC-J1 and IC-J4**. If the seal's collision inventory was derived against the
+expected pairing, this is the sentence to check it against.
+
+**I checked it. RULING: the inventory is UNAFFECTED, and the reason is the method,
+not luck.**
+
+1. **The inventory is derived from red sets × scored cells, never from diff sites.**
+   `FINDING WO-0074-S4`'s cross product ranges over *every class's predicted red set*
+   and *every scored cell*; a **site** is not a term in it. A change in which classes
+   share a line of RTL therefore cannot add, remove or re-pair a collision. §5's
+   expectation was a prediction about the **diffs**; the seal's inventory is about
+   **messages**. They were never coupled, and this is the round that shows it.
+2. **The pair that actually shares the site is the pair of collision 1.** IC-J1's
+   blast radius at `M03-J2` and IC-J4's scored cell are the same string up to the
+   integer — already inventoried, already discriminated by **the direction of that
+   integer** (`> 8` against `< 8`) and by **a measurement at another unit**. The
+   shared admission site adds no new indistinguishability, because two diffs at one
+   site are still two diffs and **which diff was applied is recorded per branch**.
+3. **The expected pair's collision also stands, on its own footing.** IC-J1's blast
+   radius at `M03-J3` and IC-J3's scored cell (collision 2) collide because both
+   print a delivered-word count at the same unit — a fact about the *bench*, entirely
+   independent of whether IC-J3 touches admission.
+4. **Collision 3 is strengthened, not weakened, by the disclosure.** Its whole
+   protection is D-J3a, and D-J3a is now answered **`add`, before the run**, with the
+   reason (`move` would be two classes in one diff). The seal's own text says the
+   protection *"is the same and is the whole of it"*; that protection is now
+   discharged rather than promised.
+
+**One sentence of the seal names the superseded pair, and I correct its instance
+without moving a byte of it.** Seal §8 disposition 6 ends: *"A shared admission term
+across **IC-J1 and IC-J3** is NOT this case (`WO-0073-VERDICT` §7 Q4)."* **RULING**:
+that carve-out is read on the **principle it cites** — *a shared site is not a
+combined diff* — which is class-agnostic; the pair named in it was carried from §5's
+expectation and is **superseded by the manifest's §3.4 measurement**, so the
+disposition is read as *"a shared admission term across **IC-J1 and IC-J4** is NOT
+this case"*. **Nothing in disposition 6 fires either way**: its trigger is
+delivery-shaped — *"two classes delivered in one diff"* — and the manifest delivers
+**five diffs**, each verified to apply alone at the base, touch one file, parse and
+revert clean. The carve-out is a clarifier, not the trigger, and correcting a
+clarifier's instance changes no cell, no matrix entry and no discriminator.
+
+**One operational hazard the shared site creates, flagged to the operator because it
+is silent when it fires.** Branches 1 and 4 replace the **same two lines**, and the
+manifest's substitution table relies on each old text occurring **exactly once** in
+the file. **After branch 1's substitution, branch 4's anchor text no longer exists.**
+Each branch must therefore be cut **fresh from `8346a5c` with a verified-clean tree**
+(`git status --porcelain` → 0 lines before and after each), never sequentially from a
+tree that still carries the previous class. A branch cut from a dirty tree carries two
+classes, and §10 item 3 makes both unscoreable — a manifest defect that would be
+recorded as a result. The manifest's own §11 evidence (`applied=… revert=OK
+clean-after=yes`) shows the auditor trialled them exactly this way.
+
+---
+
+## 4. RULING on RN-4 — the broken allowlist path: this note is the carrier, and §7 item 4 is not rewritten
+
+**The fact, and it is mine**: §7 item 4 admits `docs/adr/ADR-0014.md`. That file does
+not exist and never did; the ADR is
+`docs/adr/ADR-0014-an-enable-gates-admission-not-the-wire.md`. The auditor found it by
+listing the directory to check the path it had been given, disclosed the listing as an
+exposure, and **did not read the ADR under either name** — so the error cost this
+round nothing, which is luck and not design.
+
+**RULING (carrier)**: **this note is the carrier, and the repair is made here.** §7
+item 4 is read as admitting
+`docs/adr/ADR-0014-an-enable-gates-admission-not-the-wire.md`, and that admission
+stands for the remainder of the campaign, including the run half. **The body of §7 is
+deliberately NOT edited.** An allowlist is a normative instrument issued to another
+agent, which has already worked under it and disclosed its compliance against its
+text; silently rewriting that text mid-round would make the auditor's blinding
+statement unverifiable against the instrument it cites. **A correction that is
+appended, dated and journalled is diffable; one that is patched into the body is
+not.** (Same principle as the gate-signature and packet-Return-log transcription
+rules: authority lives in a dated artefact, not in an edited one.)
+
+**RULING (class)**: **clerical, and the round is unaffected in both directions.** No
+class below §2 of the manifest is derived from the ADR — the auditor derived all five
+from REQ-810, REQ-803, SPEC-M03 §4.3/§6.1/§6.2 and this packet's §1 — and the ADR's
+ruling is stated in its own words in each of those. Nothing is re-derived and nothing
+is re-blinded.
+
+**Banked, not repaired here**: the general bar this earns is a **lessons-harvest
+candidate**, not a rule minted mid-round, and the harvest falls due at the `SO-`
+(§13 item 7). Candidate **(C)**: *a path cited in a normative instrument — an
+allowlist, a scope, a permission — is verified to resolve at the tree the instrument
+governs, before the instrument is issued.* **LH1**: this round (§7 item 4 named a
+file that has never existed, and the reader who honoured the instrument could not
+distinguish a typo from a deliberate exclusion). **LH2-g** — no proper noun. **LH3**:
+without it a normative instrument can admit or bar nothing, and the compliance
+statement written against it is unfalsifiable in both directions.
+
+---
+
+## 5. `FINDING WO-0076-A1` — ADOPTED, with one amendment that widens it against me
+
+**The finding**: *a bare RTL line number is a decaying citation — true only at a SHA;
+an RTL line number carried in any artifact outside `libs/**` is written
+`<path>:<line> @ <SHA>` or it is not a citation.* Filed MINOR, against the auditor's
+own manifests and against the AP's carrier round.
+
+**ADOPTED**, and I do not contest a word of its substance. **One amendment, and it
+makes the rule stricter for me than as filed:**
+
+- **(i) The decay is a property of the line number, not of the language the file is
+  written in.** A citation of `test/cosim/ours_run.ml:142` decays exactly as
+  `xgmii_rx_64.ml:296` does. **The rule is therefore restated over any file cited
+  from outside itself**, not over `libs/**` only. This convicts **this packet** —
+  §2's enable census cites six `test/**` line numbers and §4 item 5 cites two — and
+  the widening is proposed because a rule I would fail is the only kind worth
+  adopting from a finding filed against me.
+- **(ii) The SHA may be carried per-citation *or* declared once, document-wide.**
+  `<path>:<line> @ <SHA>` per sentence is one discharge; *"every line number in this
+  document is at `<SHA>`"*, stated explicitly, with every number measured there, is
+  an equally good one and is cheaper in a document that cites forty. The manifest
+  itself discharges it that way (§1.1 + *"every line number above is stated at
+  `8346a5c`"*), and **this packet discharges it too**: §2 measures at *"the base
+  tree"* and §8 fixes the base as the commit staging this packet, which resolves to
+  **`8346a5c`** — recorded here, since I could not state the hash when I wrote it.
+  **A document-level declaration is a citation; an undeclared number is not.**
+
+**The AP's `a_open` citation — the two conditions ACCEPTED, and both already hold.**
+
+- **Condition A (attribution) — ACCEPTED, and SATISFIED.** `M03-M5`'s cell already
+  reads: *"Provenance disclosed, because it is a design-side fact and I do not read
+  RTL … the auditor's, published before the run in
+  `docs/reports/audit/WO-0074-mutations/README.md` at `adac5ca` and quoted here from
+  the committed artefact; **this plan verified none of it at the source**."* The
+  direction of derivation is named, the artefact is named, and its SHA is named.
+- **Condition B (no assertion rests on it) — ACCEPTED, and SATISFIED, measured two
+  ways.** (1) `grep -rn a_open test/ --include=*.ml --include=*.mli` → **zero hits**:
+  no bench, no expect-test and no monitor reads the term or the number. (2) `git show
+  6f0fd5b -- test/attack_plans/AP-xgmii_rx_64.md`: in the commit that introduced the
+  line number, `M03-M5`'s **Observable** (*"Exactly one `error_bad_frame`; no
+  `error_start_without_terminate`"*) and its **Status** (`ASSERT`) are byte-identical
+  before and after; only the Kills cell gained the campaign-result prose. **The
+  auditor's own diffable test returns clean.**
+- **One clarification I attach to B, because the citation does sit inside a Kills
+  cell** and B's text bars a Kills cell from being *keyed to* the number. **The
+  operational test is the strike test**: delete the number and ask whether any cell
+  changes meaning. Here nothing does — the cell's claim rests on the **existence** of
+  exactly one open-frame term, an attributed design fact, and the number is a
+  **locator for falsification**, which is the direction the finding wants citations
+  to point. **A locator is not a key.** If a future cell's meaning would change when
+  its number is struck, B is violated and this reading does not shelter it.
+
+**Repair and carrier.** The AP's exposure is **exactly one citation**, measured now:
+one RTL line number (`M03-M5`, the `a_open` cell) and two path-only mentions that
+cannot decay. The repair — restating it as
+`libs/hardcaml_ethernet/src/xgmii_rx_64.ml:296 @ ca1bb80` (the SHA at which the
+auditor read it; the target has not moved since `b848d56`, so it is still true at
+`8346a5c`) — is **owed to the post-campaign `AP-` round**, the carrier §13 item 1
+already names for every AP edit this campaign wants. **No AP byte moves until the
+campaign scores**; §8's freeze is worth more than a tidier plan, and this repair is
+one line. **I did not open the RTL to verify 296**, and deliberately: the row's own
+sentence says the plan verified none of it at the source, and verifying it now would
+falsify that sentence to buy a fact the auditor has already published and held itself
+to.
+
+---
+
+## 6. What this note changes, in one table
+
+| item | ruling | does a sealed cell move? |
+|---|---|---|
+| **RN-1** IC-J1's *every strobe* | **SCOPED** — refused-set against delivered-set, as REQ-810 has read since 2026-08-03; unscoped reading rejected as C-41's unpassable-assertion family | **No** |
+| **RN-2** IC-J3's *in flight* | **OUTPUT-SIDE**, and *whole extent* in the same row is read output-side with it, so the two columns partition | **No** — divergence set measured **empty** at all four units |
+| **RN-3** the pairing | **Inventory unaffected**; disposition 6's carve-out instance reads **IC-J1 + IC-J4**; its trigger does not fire on five diffs | **No** |
+| **RN-4** the broken path | **This note is the carrier**; §7 item 4 admits the full ADR filename; §7's body not rewritten | **No** |
+| **A1** decaying citations | **ADOPTED**, widened to any cited file and allowing a document-level SHA declaration; conditions A and B **accepted and verified satisfied** | **No** |
+| **§0.2** §8's stale sentence | **Superseded** by §7.1's manifest-only model; the protection it named is re-stated as a commit-ordering fact and verified | **No** |
+
+**Nothing in this note reclassifies a cell, retunes an inequality, edits a message
+string or narrows a MUST-STAY-GREEN set. The sealed companion is not staged in this
+commit and not one of its bytes is edited.** Where any reading above and a sealed
+cell disagree at scorecard time, **the cell governs and the round scores it against
+me** (§0.3).
+
+---
+
+## 7. GREEN LIGHT — cut the five transients
+
+**The manifest is ACCEPTED for operation.** All five classes seeded, §7.3 items 1–7
+delivered, R-DISC-1 and R-DISC-2 discharged in the forms this packet demands, the
+nine disclosures answered before the run, §6's check positive per class with the
+`Enable.high` column discharged structurally, and the four questions ruled above
+**before** a diff was cut. **Cut them**, in §10's fixed order — `mut/wo-0076-j1`,
+`j2`, `j3`, `j4`, `j5` — under four operating bars:
+
+1. **Each branch is cut fresh from `8346a5c` with a verified-clean tree** (§3's
+   shared-anchor hazard: branches 1 and 4 replace the same two lines).
+2. **One class per branch, one commit per branch, one CI `build` run per branch**,
+   with the branch name and run id reported per §15 item 6. **`journal-check` is
+   expected red on every one** (a work product with no journal append — R2 by
+   construction); **the `build` job's conclusion is the campaign's evidence and the
+   only job that is.** **None may ever be merged.**
+3. **§2's diff blocks govern** where they and §11's escaped-pipe table disagree — the
+   manifest says so and I hold it to it.
+4. **The freeze stands: no `test/**` byte moves until the scorecards are in hand**,
+   mine included. If one moves, the round re-seals (§8), and I re-verify the freeze
+   at scorecard time rather than treating §0.1 as discharged once.
+
+**Q2 stands answered as recommended and is now moot in the profitable direction**:
+IC-J5 is kept, and it came back **SEEDED** rather than declared — so `M03-J3`'s tuple
+comparison, the instrument no other class in the round reaches, will be probed.

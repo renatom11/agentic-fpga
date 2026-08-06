@@ -1270,3 +1270,279 @@ frozen against the commit that stages them.
 ### Files-in-this-commit
 - agents/handoffs/WO-0076_family-j-mutation-campaign.md
 - agents/handoffs/WO-0076_family-j-mutation-campaign-SEALED-predictions.md
+
+## [J-dv_lead-0141] 2026-08-10T09:00Z | task:WO-0076 | The pre-run round pays for itself a third time: the manifest's four questions ruled before a branch exists, and the one that mattered would have made the era's oldest unscored row unscoreable by its own permission list
+
+### Trigger
+
+Orchestrator dispatch, spawn short-id `WO-0076-PRERUN/2026-08-10T09:00Z`, with an
+abort-first HEAD check against `2fbcf0d` — run as my first action and matching, so
+the round proceeds. The occasion is the auditor's `WO-0076` manifest
+(`docs/reports/audit/WO-0076-mutations/README.md`, `J-auditor-0017`), whose §9
+raises four questions that `WO-0076` §7.3 item 7 requires to reach me **before** the
+run, plus `FINDING WO-0076-A1` and two attribution conditions at its §8.2. **The five
+transients are not cut**; the deliverable is rulings, and the round is the
+`WO-0063B` pre-run reading-note precedent at its third instance.
+
+### Inputs
+
+- `agents/charters/dv_lead.md`, `agents/PROTOCOL.md` — mandatory first reads.
+- `docs/reports/audit/WO-0076-mutations/README.md` — in full (1088 lines, two reads),
+  at `2fbcf0d`.
+- `agents/handoffs/WO-0076_family-j-mutation-campaign.md` — in full, my own packet.
+- `agents/handoffs/WO-0076_family-j-mutation-campaign-SEALED-predictions.md` — in
+  full, **my own seal**, read as its author to answer RN-3's demand that the
+  collision inventory be checked now rather than off a scorecard. **Not one byte of
+  it was edited and it is not staged in this commit.**
+- `docs/specs/requirements.md` — REQ-810 in full with §9.1's `receive enable` row and
+  the §13 change-log rows of 2026-08-02 and **both** of 2026-08-03 (lines 978, 988,
+  990).
+- `docs/adr/ADR-0014-an-enable-gates-admission-not-the-wire.md` — Context, Decision
+  items 1–5, Alternatives head.
+- `test/xgmii_rx_64/test_m03_j.ml` (`j1_j2_stimulus`, `run_j1`, `run_j2`, `run_j3`)
+  and `test/xgmii_rx_64/test_m03_n.ml` (`run_n4` and both member call sites) —
+  **read only**, to measure RN-2's divergence set and RN-1's cost at the carriers.
+  No `test/**` byte moves in this commit; §8's freeze holds.
+- `test/attack_plans/AP-xgmii_rx_64.md` row `M03-M5` — the `a_open` citation A1
+  names.
+- `agents/handoffs/WO-0063B_pre-run-reading-note.md`, `WO-0066_pre-run-reading-note.md`,
+  `WO-0074_family-m-mutation-campaign.md` (§7's rulings, the Return/verdict log form)
+  — the precedent's form and its governing rule.
+- Git metadata only: `rev-parse HEAD`/`HEAD^`, two `diff --name-only` freeze checks,
+  `status --porcelain`, `show --stat 6f0fd5b`, `log -S`.
+- **No `libs/**` path was opened.** Every design-side fact in the note is the
+  auditor's, cited as its claim and not adopted as mine — including `a_open` at 296,
+  which I deliberately did not verify at the source (see Reasoning).
+
+### Reasoning
+
+**The ruling that decides the round is RN-1, and it is not a wording question.** §6's
+permission table gives IC-J1 *must be identical: … every strobe*. Read unscoped, no
+rendering of the class can satisfy it: a design with no admission gate necessarily
+lets a frame it admits raise whatever report that frame owes, and one that admitted
+frames while suppressing their reports would be two defects rather than the class.
+The auditor read it scoped to REQ-810's 2026-08-03 prohibitions and asked me to rule.
+**I affirm the scoped reading**, on four grounds in authority order: REQ-810 is
+already quantified over *"every frame it refuses"*, and my §6 cell is an abbreviation
+of it — an abbreviation of a scoped requirement inherits its scope; the 2026-08-03
+change log performed that scoping **on this exact ground** and named the family in
+terms (*"C-41's unpassable-assertion family exactly"*); the partition is the
+specification's, not the mutant's, so the cell after scoping **is** the requirement
+rather than a weakening of it; and the scoped cell keeps its teeth at every frame the
+specification requires delivered, which is the test of whether a scoping is a
+nullification.
+
+**What made the ruling worth an hour is that I could price it and the auditor could
+not.** `test/**` is barred to it; it is mine. Measured at the bench: at `M03-J1`,
+`M03-J2` and `M03-J3` every refused frame is a clean 64-octet good-FCS
+`Frame.stress_frame` owing no strobe under any rendering, so the two readings are
+**indistinguishable** there — the question is live at exactly one unit. At `M03-N4`
+the refused start is an injected `/S/` **inside frame A's octets** (lane 0: octet 8 →
+word cycle 3, disable 2; lane 4: octet 16 → word cycle 4, disable 3), so under IC-J1
+that character does not merely abort frame A, it **opens** a frame which runs to
+frame A's own terminate and, being neither 64 octets nor FCS-correct, owes a report.
+A strobe absent from the base therefore appears — belonging to a frame the
+specification requires refused. **Under the unscoped reading that is not a lost cell
+but a lost class**: §6's check is a *delivery* gate, so an auditor unable to confirm
+*"every strobe identical"* positively cannot ship IC-J1 at all, and the bill is paid
+by `M03-J1` — the oldest unscored row in this programme — whose headline clause,
+REQ-810's first sentence, is the only thing IC-J1 exists to score. A reading that
+makes a requirement's own first sentence unscoreable is not a strict reading of it.
+
+**RN-2 is the same defect one cell over, and I ruled it the same way but had to rule
+its complement with it.** Affirming *in flight* output-side is easy on the auditor's
+own argument — a gate that could separate a drain-window word from an in-flight one
+would need the enable value **at admission**, which is the conformant design, and a
+rendering cannot be required to carry the state that defines the design it mutates.
+The part the manifest did not ask about is the same row's other column, *"every frame
+whose whole extent lies inside an enabled window"*. If *in flight* is output-side and
+*extent* stays input-side, a drain-window frame falls in **neither** grant and
+**inside** the prohibition, and disposition 7 scores a conformant rendering out of
+specification. So I ruled `extent` output-side with it, and the two columns partition
+again. Then I measured the divergence set and it is **empty**: `M03-J1`/`M03-J2` have
+no 1 → 0 change at all (`Enable.changes ~initial:false [(1050, true)]`), and at
+`M03-J3` (change 5, frame 0 spanning 1 … 10) and both `M03-N4` members (disable 2
+with frame A aborted at 3; disable 3 with frame A aborted at 4) the change falls
+**strictly inside** the affected frame's input extent. The ruling is insurance
+against a carrier this campaign does not have.
+
+**RN-3 asked me to check the seal, and checking it is what showed the method was
+doing its job.** §5 expected IC-J1 and IC-J3 to share the admission gate; D-J3a's
+`add` branch — forced, since `move` is IC-J1's edit plus IC-J3's in one diff — means
+IC-J3 touches admission not at all and the shared site is **IC-J1 + IC-J4**. The
+inventory is untouched, and the reason is structural rather than lucky: the cross
+product ranges over **red sets × scored cells**, and a *site* is not a term in it.
+Better than untouched — the pair that actually shares the site **is** the pair of
+collision 1, already discriminated by the direction of its integer and by a
+measurement at another unit, so the sharing adds no indistinguishability that the
+seal does not already separate. One sentence does name the superseded pair:
+disposition 6's carve-out. I ruled its **instance** corrected and its **principle**
+(a shared site is not a combined diff) untouched, and noted that the disposition does
+not fire either way because its trigger is delivery-shaped and five diffs were
+delivered.
+
+**The rejected option, and it is the one the commission explicitly left open**: edit
+the seal. I refused. `WO-0066`'s pre-run rule — *no cell of the seal moves; where the
+manifest shows a cell wrong, the cell stands and the round scores it against me* —
+has held through two campaigns, and it is strictly harsher than a correction, which
+is exactly why it is credible. The seal's evidential value is a **byte-freeze at a
+commit earlier than any diff text**; editing it now, with five renderings in view,
+would convert every later "the seal said so" into a claim requiring a byte-level
+diff to believe, and it would do so to fix a clarifier's instance and two readings
+that move no cell. Publishing the readings in a dated, committed, binding note buys
+the same clarity at none of that cost. **No seal cell moved and the seal file is not
+staged.**
+
+**RN-4: the carrier is the note, not a patch of §7's body.** The allowlist named a
+file that has never existed. The temptation is to fix §7 item 4 in place — it is one
+word, in my own scope, in the same commit. I refused for the reason gate signatures
+and Return logs are transcribed rather than authored: the auditor has already written
+a compliance statement **against that instrument's text**, and silently rewriting the
+text makes its statement unverifiable against the thing it cites. An appended, dated
+correction is diffable; a patched body is not. The general bar is banked as a harvest
+candidate rather than minted mid-round.
+
+**A1 I adopted and widened against myself.** The decay is a property of the line
+number, not of the language the cited file is written in — `test/cosim/ours_run.ml:142`
+decays exactly as `xgmii_rx_64.ml:296` does, and this packet cites eight such numbers.
+So I restated the rule over any file cited from outside itself, and added the
+discharge the auditor's own manifest uses: a **document-level SHA declaration** is a
+citation, and cheaper than forty per-sentence ones. Conditions A and B I accepted and
+then verified rather than asserting: zero `a_open` hits anywhere under `test/**`'s
+OCaml, and `M03-M5`'s Observable and Status byte-identical across `6f0fd5b`, the
+commit that introduced the number. The one clarification B needs is that the citation
+sits **inside** a Kills cell: I fixed the operational test as the **strike test** —
+delete the number and ask whether any cell changes meaning. Here nothing does, because
+the cell's claim rests on the *existence* of one open-frame term, an attributed design
+fact; the number is a locator for falsification, and a locator is not a key. **I did
+not verify 296 at the source**, deliberately: the AP row's own sentence says the plan
+verified none of it there, and confirming it would have falsified that sentence to buy
+a fact already published and held to by its author.
+
+**One inconsistency of my own I judged rather than followed.** §8 says *"no diff body
+reaches me until every diff is committed on its transient branch"*, which cannot hold
+under §7.1's manifest-only model — the model this same packet adopts, and the one with
+a ruling behind it — because the manifest carries the patch text and is committed
+before any transient exists. I ruled §8's sentence superseded and restated what it was
+actually protecting as a checkable commit-ordering fact: **the seal froze at
+`8346a5c`, strictly before the first artefact carrying diff text at `2fbcf0d`**. The
+protection is intact; only the mechanism sentence was stale. Stopping on it would have
+cost the round five jobs to repair a sentence that guards nothing the ordering does not
+already guarantee.
+
+**Value added beyond the four questions**: the shared-anchor hazard. Branches 1 and 4
+replace the same two lines, and the substitution table relies on each old text
+occurring exactly once. Cut sequentially from a tree that still carries branch 1, the
+branch-4 substitution finds no anchor — or worse, finds a tree carrying two classes,
+which §10 item 3 makes unscoreable and which would be recorded as a result rather than
+as a manifest defect. Stated as an operating bar with a mechanical check
+(`git status --porcelain` → 0 before and after each cut).
+
+### Actions
+
+- Verified HEAD `2fbcf0d`, parent `8346a5c`, clean tree — first action, before reading.
+- Read the manifest, the packet and the seal in full; the REQ-810 rows; ADR-0014; the
+  two bench files' enable geometry; the AP's `M03-M5` row; the two prior pre-run notes.
+- Re-verified the adjudicator-ordering rule read-only:
+  `git diff --name-only c109c08 8346a5c -- test/ libs/` and
+  `git diff --name-only 8346a5c HEAD -- test/ libs/`, both empty.
+- Measured RN-1's cost at all four carriers and RN-2's divergence set at all four;
+  cross-checked the seal's collision inventory against the delivered pairing.
+- Appended the pre-run reading note (§§0–7, 443 lines) to
+  `agents/handoffs/WO-0076_family-j-mutation-campaign.md`, with the auditor's return
+  recorded in a new Return/manifest log above it. **Pure EOF append**; nothing above
+  line 1171 is touched.
+- **Not done, deliberately**: no seal edit, no `test/**` edit, no AP edit, no §7-body
+  patch, no branch, no commit, no ref/index movement, no `dune`.
+
+### Evidence
+
+Commands run at this tree, with their observed results:
+
+```
+$ git rev-parse HEAD                                  -> 2fbcf0d3318d65be4a4896864abc0f58beca1bf5
+$ git rev-parse HEAD^                                 -> 8346a5ca11883381ea738cf1efa5f0dcd67d6907
+$ git diff --name-only 8346a5c HEAD -- test/ libs/    -> (0 lines)
+$ git diff --name-only c109c08 8346a5c -- test/ libs/ -> (0 lines)
+$ git status --porcelain | wc -l                      -> 0   (before the append)
+$ git diff --stat                                     -> 1 file changed, 443 insertions(+)
+$ git diff -U0 … | grep '^@@'                         -> @@ -1171,0 +1172,443 @@   (single EOF hunk)
+$ grep -rn a_open test/ --include=*.ml --include=*.mli -> (no hits)
+$ git show 6f0fd5b -- test/attack_plans/AP-xgmii_rx_64.md
+      -> M03-M5's Observable "Exactly one `error_bad_frame`; no
+         `error_start_without_terminate`" and Status `ASSERT` byte-identical
+         across the commit; only the Kills cell gained campaign-result prose
+$ grep -rn 'xgmii_rx_64\.ml' test/ --include=*.md
+      -> 3 hits: one line-number citation (AP:1054, the a_open cell), two path-only
+```
+
+Bench geometry, read from the committed sources at `8346a5c` (unchanged at HEAD):
+
+```
+test_m03_j.ml:156   M03-J1/J2  Enable.changes ~initial:false [ (1050, true) ]   (no 1->0 change)
+test_m03_j.ml:442-452 M03-J3   change_cycle 5; Enable.changes ~initial:true [ (5, false) ]
+                               start_cycle0 1, terminate_cycle0 10, start_cycle1 11 (lane 0)
+test_m03_n.ml:1459-1470 M03-N4 (lane 0) s_idx 8,  w cycle 3, disable 2, re-enable 10, C start 11
+                        M03-N4 (lane 4) s_idx 16, w cycle 4, disable 3, re-enable 11, C start 12
+```
+
+**No suite was run and none is claimed**: this round elaborates nothing, and ADR-0005
+makes CI the authority for the five branches that follow. **No `%expect` block, no
+RTL and no test byte moves in this commit.**
+
+### Outcome
+
+**DoD met for the commissioned unit of work.** Four rulings delivered before any
+transient exists (RN-1 scoped/affirmed; RN-2 output-side/affirmed, with *extent* ruled
+with it; RN-3 inventory unaffected, disposition 6's carve-out instance corrected;
+RN-4 carriered to this note), `FINDING WO-0076-A1` **adopted** with one widening
+amendment, its conditions **A and B accepted and verified satisfied**, one stale
+sentence of my own §8 ruled superseded, one operational hazard flagged, and the
+**green light given** to cut `mut/wo-0076-j1 … j5` in §10's fixed order under four
+operating bars.
+
+**No sealed cell moved and the seal is not staged.** Handoff: the packet's appended
+pre-run section, `agents/handoffs/WO-0076_family-j-mutation-campaign.md` §§0–7 of the
+note — binding, citable by name at scorecard time, and the instrument the verdict
+reads §6's permission lists through.
+
+**Not delivered and not owed this round**: no `SO-`, no `RV-`, no `BUG-`, no
+scorecard, no `test/**` byte, no AP edit, no seal byte.
+
+**Lessons harvest**: **not due this round** — it falls due at the `SO-`, and the span
+since my last harvest stays open and declared rather than skipped. **One candidate
+banked here**, beside the three at `J-dv_lead-0137`, the two at `J-dv_lead-0139` and
+the two at `J-dv_lead-0140`. **(C)** *A path cited in a normative instrument — an
+allowlist, a scope, a permission — is verified to resolve at the tree the instrument
+governs, before the instrument is issued.* LH1: this round's RN-4 (§7 item 4 named a
+file that has never existed; the reader who honoured the instrument could not
+distinguish a typo from a deliberate exclusion) together with `FINDING WO-0076-A1`'s
+decaying line numbers, of which it is the degenerate case — a citation that was never
+true rather than one that stopped being true. LH2-**g** — no proper noun. LH3: without
+it a normative instrument can admit or bar nothing, and every compliance statement
+written against it is unfalsifiable in both directions.
+
+### Open-questions
+
+1. **Nothing is escalated.** No `BUG-`, no `E`-class item, no spec-queue addition — a
+   nil escalation, declared rather than omitted.
+2. **Owed at the scorecard, by me**: re-verify §8's freeze rather than treating §0.1
+   as discharged once, and adjudicate against the seal **as frozen**, with §0.3's
+   harsher clause standing — where a reading in this note and a sealed cell disagree,
+   the cell governs and the round scores it against me.
+3. **Owed to the post-campaign `AP-` round**, carrier unchanged (§13 item 1):
+   `FINDING J-1`'s two halves, `FINDING J-2`, `DECLARATION J-D1` as a §7 X-row if it
+   survives, and now **`FINDING WO-0076-A1`'s one-line citation repair** at `M03-M5`
+   (`libs/hardcaml_ethernet/src/xgmii_rx_64.ml:296 @ ca1bb80`). Exposure measured:
+   exactly one citation.
+4. **Owed by me prospectively, not repaired here**: A1's widened form applies to my
+   own future packets' `test/**` line numbers. This packet discharges it document-wide
+   via §2 + §8, whose base now resolves to `8346a5c` and is recorded in the note.
+5. **Carried, unchanged and not this round's to pay**: the family **K** campaign, owed
+   before any `SO-`; the charter §3 anchor, undischarged and blind per configuration
+   class; `WO-0047` §2's 4-octet member reorder (`test_m03_f.ml`); `OBSERVATION L-O1`
+   (`test_m03_l.ml`); `WO-0073-D3`'s `M03-I4` mislabel (`test_m03_i.ml`);
+   `OBSERVATION K-O1` (`test/monitors/`).
+
+### Files-in-this-commit
+- agents/handoffs/WO-0076_family-j-mutation-campaign.md
