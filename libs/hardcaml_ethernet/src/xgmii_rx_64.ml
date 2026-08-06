@@ -310,7 +310,10 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
      lanes. An other-control character closes it only in a preamble position
      (REQ-102 → REQ-105); elsewhere it is the REQ-016 hold, below. *)
   let a_closing_v =
-    lanes.is_terminate |: lanes.is_error |: lanes.is_start |: (other_ctl &: a_pre_mask)
+    lanes.is_terminate
+    |: lanes.is_error
+    |: (lanes.is_start &: repeat i.cfg_rx_enable 8)
+    |: (other_ctl &: a_pre_mask)
   in
   let a_close_oh = lowest_set a_closing_v in
   let a_char_end =
