@@ -144,12 +144,32 @@ module tb_xgmii_rx_64;
   integer    next_index;
 
   task write_word;
-    // One "W" line for the CURRENT m_axis_t* outputs (WO-0046 §2.3): tkeep,
-    // tlast, tuser0, then the tkeep-selected octets of m_axis_tdata in
-    // ascending position order (bit 0 of tkeep is octet 0 = tdata[7:0]).
+    // One "W" line for the CURRENT m_axis_t* outputs (WO-0046 §2.3; cycle
+    // field added WO-0075 §2): tkeep, tlast, tuser0, cycle, then the
+    // tkeep-selected octets of m_axis_tdata in ascending position order
+    // (bit 0 of tkeep is octet 0 = tdata[7:0]).
+    //
+    // WO-0075 section 2/3.0: `cycle` is `stimulus_lines - 1`, the 0-based
+    // index of the CURRENT stimulus line -- the same line whose driving
+    // produced this very output word, per the `~clock_edge:Side.Before`-
+    // equivalent ordering below (drive, `@(posedge clk); #1`, then check
+    // `m_axis_tvalid` and call this task, all before `stimulus_lines` is
+    // next incremented). This is the SAME 0-based index `open_frame`'s
+    // `admit_cycle` uses and the same one `ours_run.ml`'s `List.mapi`
+    // produces, so both producers write the identical time base for the
+    // identical input line (WO-0075 section 3.0). `%0d`, decimal, per
+    // WO-0049 section 3's own lesson about `%x` field widths being set by
+    // the ARGUMENT's bit width -- restated here because it is exactly why
+    // this field is decimal in the first place (canonical.mli section 2).
     integer k;
     begin
-      $fwrite(out_fd, "W %02x %0d %0d", m_axis_tkeep, m_axis_tlast, m_axis_tuser & 1'b1);
+      $fwrite(
+        out_fd,
+        "W %02x %0d %0d %0d",
+        m_axis_tkeep,
+        m_axis_tlast,
+        m_axis_tuser & 1'b1,
+        stimulus_lines - 1);
       for (k = 0; k < 8; k = k + 1) begin
         if (m_axis_tkeep[k])
           // WO-0049 §3: a `%x` field's printed digit count is set by its
@@ -170,11 +190,19 @@ module tb_xgmii_rx_64;
   endtask
 
   task open_frame;
+    // WO-0075 section 2: the "F" line gains admit_cycle, `stimulus_lines -
+    // 1` -- the 0-based index (section 3.0's shared time base) of the
+    // CURRENT stimulus line, the one carrying the start character that
+    // triggered this call. `stimulus_lines` was already incremented for
+    // this line by the top of the reading loop, before the admission check
+    // below calls this task, so the `- 1` converts that 1-based running
+    // count back to the 0-based line index `ours_run.ml`'s `List.mapi`
+    // produces for the identical line.
     begin
       frame_open  = 1'b1;
       frame_index = next_index;
       next_index  = next_index + 1;
-      $fwrite(out_fd, "F %0d\n", frame_index);
+      $fwrite(out_fd, "F %0d %0d\n", frame_index, stimulus_lines - 1);
     end
   endtask
 

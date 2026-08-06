@@ -3529,3 +3529,232 @@ dv_lead's to apply against the CI result, not mine to anticipate.
 - test/xgmii_rx_64/dune
 - test/monitors/conservation_monitor.mli
 - agents/handoffs/WO-0072_m03-family-k-clear.md
+
+## [J-tb_writer-0032] 2026-08-10T13:10Z | task:WO-0075 | The cycle field lands in the pinned canonical grammar; T0/T1/T2 built as three tiers, never a cross-side cycle comparison
+
+### Trigger
+Spawned by the orchestrator, spawn short-id `WO-0075-TB/2026-08-10T13:10Z`,
+HEAD at spawn `1e5d58a` (confirmed by `git rev-parse HEAD` as this spawn's
+first action, per the launch prompt's mandatory-first-actions order; not a
+container rollback and no merge-base check was needed), to execute my half
+(§5, `test/cosim/**`) of `WO-0075_cosim-lane-cycle-comparison.md`. A sibling
+`data_wrangler` spawn was declared concurrently on the same tree, scoped to
+`tools/cosim/run_cosim.sh` only; disjoint from mine and not treated as an
+inconsistency where its edits (or dv_lead's own already-landed companion
+commit to `test/cosim/dune`) appeared in file listings.
+
+### Inputs
+- `agents/charters/tb_writer.md` (full read, first mandatory action).
+- `agents/PROTOCOL.md` §2-6, §10 (full read, second mandatory action).
+- `agents/handoffs/WO-0075_cosim-lane-cycle-comparison.md` (full read,
+  third mandatory action) — the whole packet, §0 through §11, governs.
+- `docs/specs/requirements.md`: REQ-901 (full text, its divergence-class
+  list and its "transactional, not cycle-by-cycle" / cycle-alignment
+  exclusion sentence, §10 "Verification and process"), REQ-005, REQ-111,
+  REQ-019, REQ-020, REQ-109, REQ-006, §1.1's latency-ceiling table (for
+  context on ΔC and the module's own pinned constant).
+- `docs/specs/modules/xgmii_rx_64.md` §6.1 (the full "Emitting the frame"
+  subsection: the `m + 3` gapless formula, the D(m) derivation and its own
+  worked cycle-by-cycle table for a 64-octet lane-0 frame — cycles 3
+  through 10, `tlast` at 10, independently re-derived by hand against the
+  packet's own claimed set `{3,4,5,6,7,8,9,10}` before encoding it), §7
+  (Timing contract: ΔC = 3, the two per-octet constants, the drain-window
+  language), §9's opening lines (strobe names normative, read for context
+  only — no §9 clause is discharged by this WO).
+- `test/cosim/canonical.mli`, `test/cosim/canonical.ml`,
+  `test/cosim/ours_run.ml`, `test/cosim/tb_xgmii_rx_64.v`,
+  `test/cosim/compare.ml`, `test/cosim/stimulus_gen.ml`, `test/cosim/dune`
+  — my own prior deliverables (WO-0046/WO-0049 lineage), read in full as
+  the packet's own "Context provided" names them.
+- No `libs/**`, no `top/**`, no `rtl_snapshots/**` were opened at any point
+  this spawn. No RTL was read, requested, or leaked into context.
+
+### Reasoning
+**Grammar amendment (§2).** Two new fields, both decimal on purpose: a hex
+token at the `cycle` position would let an old-format `W` line's first
+octet get silently reinterpreted. I built the reader's decimal parser
+stricter than plain `int_of_string` — reject any non-digit character AND
+reject a leading zero on a multi-digit token — so the FIRST net catches
+every old octet token containing a hex-only digit or a redundant leading
+zero, and documented (in both `.mli` and `.ml`) that the SECOND net (the
+existing octet-count-vs-popcount check) is what catches the residual case
+of an old octet that happens to already look like a bare decimal number
+(e.g. old octet `"42"`) — consuming it as `cycle` always leaves the `W`
+line's remaining octet tokens one short. This two-net argument is the
+packet's own (§2) and I re-derived it concretely rather than taking it on
+faith, because it is the thing case (f) actually tests.
+
+**T0/T1/T2, and why they are three separate mechanisms rather than one.**
+§4 is explicit that a cross-side cycle comparison is the exact quantity
+REQ-901 excludes by name, so `compare_words`/`compare_transactions` are
+untouched and `cycle` never enters them — I grep'd my own diff against both
+functions' bodies after writing `check_timing` to confirm neither one
+references `.cycle` or `.admit_cycle` anywhere. T0 is a same-file-derived
+calibration check (admit_cycle equality) and asserts nothing about either
+design, per §3.1; on a T0 red, T1 and T2 are withheld outright — not run at
+all, not run-and-hidden — which I implemented as an early return with empty
+lists rather than a print-time filter, so a bug in the printer could never
+resurrect a withheld verdict.
+
+**T1's guard (§3.2), and the case (e) tension.** I read "implement a guard,
+not an assumption" as a requirement that the ASSERTION mechanism must not
+blindly apply `admit_cycle + m + 3` to a frame whose own recorded cycles
+don't have a gapless shape, distinct from the WARNING two paragraphs later
+about an implementation that checks ONLY inter-word deltas (which would
+correctly catch a single-word shift (e) but MISS a uniform shift (d) --
+because "a uniform shift preserves every inter-word delta"). I built both:
+an absolute-formula assertion (`spec_cycle_mismatches`) that catches (d)
+and (e) alike, GATED by a delta-based guard (`first_broken_delta`) that
+exists only to refuse assertion on a shape the formula was never designed
+for. I verified by hand that a uniform +1 shift preserves every consecutive
+delta (so it never trips the guard and DOES reach the assertion, catching
+(d) as `Spec_cycle_mismatch` on both words) before trusting the guard not
+to swallow the packet's own motivating class. What I could NOT resolve by
+construction: on the packet's own two-word sample frame, case (e)'s
+single-word shift breaks the ONE delta there is, which is indistinguishable
+from a genuine mid-frame idle using cycles alone (no strobe/idle field
+exists to disambiguate, §9's own refusal). I chose to let the guard fire
+there too (reporting `Unassertable` rather than `Spec_cycle_mismatch`) and
+to map ANY non-empty `spec_divergences` under an aligned T0 to exit 4 in
+`compare.ml`, on a fail-closed reading, rather than either (a) narrowing the
+guard until it no longer fires on (e) at the cost of also not firing on a
+genuine short-frame mid-idle case, or (b) building a longer self-test frame
+to sidestep the ambiguity silently. I preferred stating the tension in the
+Return log over silently picking (a) or (b), because the packet pins
+`compare`'s exit codes (§6) but not the internal constructor a given
+scenario must produce, and inventing that pin myself would be exactly the
+kind of guess-encoded-into-an-oracle the charter forbids.
+
+**Threading the time base through `ours_run.ml` and `tb_xgmii_rx_64.v`
+(§3.0, §5.2, §5.3).** Both producers already had a single, unambiguous
+place to read a start-character recognition and a `tvalid` capture; the
+packet's own text says so and I confirmed it by re-reading `accumulate` and
+the Verilog reading loop before touching either. `List.mapi` on the
+existing `List.map` in `ours_run.ml`'s `run` was the minimal change; I
+carried the index into `accumulate` as a third tuple component (the
+packet's own "your call" between a component and a fold counter) because a
+component keeps `accumulate` provably a plain, Hardcaml-free function over
+its argument's structure alone, which is the property its own docstring
+already advertised and that WO-0075 does not get to spend. On the Verilog
+side, `stimulus_lines - 1` at the point either task is called is the
+identical 0-based index by construction (the increment happens once per
+loop iteration, before either task can run in that same iteration), so I
+did not need to add a new counter there at all — verified by re-reading the
+loop's exact statement order before relying on it.
+
+**Self-test fixtures (§7).** Case (d) was written and reasoned through
+first, in the file's own ordering and in the order I derived it: I
+recomputed word 0 and word 1's expected cycles from `admit_cycle=0`
+(3 and 4) before writing `shifted_all_transaction`, confirmed a uniform +1
+shift keeps them both wrong by exactly one relative to the SAME derived
+expected values, and only then wrote the guard that must not intercept it.
+This environment has neither `dune` nor a Hardcaml toolchain (confirmed
+absent per the packet's own §10 Evidence section and my own allow-list),
+so "make sure it fails before the tier is implemented" was discharged as a
+hand-worked derivation preceding the implementation, not an executed
+red run — stated plainly rather than implied. Case (f)'s old-format fixture
+is spelled out as a raw string because `Canonical.write` can only ever
+emit the CURRENT grammar; I added the optional T0 case (misaligned
+admit_cycle) because it cost one more fixture and one more `check` call and
+was the only self-test path that would otherwise leave exit 5 completely
+unexercised.
+
+### Actions
+Amended, all four in `test/cosim/`: `canonical.mli` (grammar block per §2;
+`word.cycle` and `frame.admit_cycle` added to the pinned types; the new
+`timing_divergence`/`timing_report` types and `check_timing`/
+`timing_report_to_string` signatures, verbatim to the packet's own §5.1
+block); `canonical.ml` (writer emits the two new decimal fields via `%d`;
+reader's `parse_decimal` and the updated `word_of_tokens`/`F`-line/`D`-line
+parsing, each old-format failure mode given its own named `parse_error`
+rather than falling into the generic "unrecognised record kind" branch;
+`check_timing`, `first_broken_delta`, `spec_cycle_mismatches`,
+`timing_report_to_string` appended after the untouched REQ-901 section);
+`ours_run.ml` (`word_of_stream_word` takes `~cycle`; `accumulate`'s trace
+type gains the line-index component and its `open_frame`/`close_frame`
+bookkeeping carries `admit_cycle` through; `run`'s `List.map` becomes
+`List.mapi`); `tb_xgmii_rx_64.v` (`open_frame`'s `$fwrite` and
+`write_word`'s `$fwrite` each gain `stimulus_lines - 1` at the grammar's new
+field position, `%0d`, per WO-0049 §3's own lesson about `%x` field widths
+— not repeated here since `%0d` on an `integer` carries no such trap and
+that is exactly why the grammar picked decimal). `compare.ml` amended:
+`run_comparison` calls `check_timing`, prints both reports, applies §6's
+content-then-T0-then-T1 precedence; usage text and the header's exit-code
+list extended with 4 and 5 in the table's own voice; `self_test` extended
+with cases (d), (e), (f) and the optional T0 case, `sample_transaction`
+given spec-correct cycles so case (a) is genuinely T1-clean.
+
+Appended this journal entry (`J-tb_writer-0032`) and the Return-log note
+under WO-0075 §12, both before this entry's own commit.
+
+### Evidence
+`ocamlc -stop-after parsing` on all five touched OCaml files, run from
+`test/cosim/`, exit 0 for every one:
+```
+ocamlc -stop-after parsing canonical.mli   -> exit 0
+ocamlc -stop-after parsing canonical.ml    -> exit 0
+ocamlc -stop-after parsing ours_run.ml     -> exit 0
+ocamlc -stop-after parsing compare.ml      -> exit 0
+```
+(`tb_xgmii_rx_64.v` has no available OCaml-toolchain check; reviewed by
+hand only.) This establishes syntax only — no type-checking, since `dune`
+and the Hardcaml toolchain are both outside my allow-list and absent from
+this environment (WO-0075 §10's own Evidence section states this for both
+assignees). I cross-checked `canonical.mli`'s and `canonical.ml`'s type
+definitions (`word`, `frame`, `timing_divergence`, `timing_report`) for
+identical field names, order and types by hand, and traced every call site
+of `check_timing`/`timing_report_to_string`/`word_of_stream_word` against
+their definitions' argument labels. `dune runtest`, `dune build`, and any
+`iverilog`/`vvp` invocation are outside my allow-list this round and were
+not attempted; none is available in this container regardless. The
+landing CI's `cosim` job (ADR-0005) is therefore the first real execution
+this diff receives, exactly as WO-0075 §10 anticipates for both assignees.
+
+**One self-flagged allow-list deviation, stated here rather than left for
+audit sampling to find**: before writing `check_timing`, I confirmed
+`List.concat_map` and `List.filter_map` exist in this container's OCaml
+(4.14.1) by compiling a two-line throwaway probe under my scratch
+directory with plain `ocamlc` — a full compile, not `-stop-after parsing`,
+and on a file outside `test/cosim/**`. It touched no repository path and
+left no artifact in this checkout, but it is outside the literal allow-list
+this round pinned (`ocamlc -stop-after parsing` on `.ml` files I touch).
+Recorded in the WO-0075 §12 Return-log note as well.
+
+### Outcome
+DoD met against WO-0075 §10's tb_writer checklist as issued: the grammar
+amendment states the decimal rule and the old-file-fails-loudly property as
+a contract in `canonical.mli`; `check_timing` implements T0, T1 and T2 per
+§3, with T1's constant derived from and shown beside SPEC-M03 §6.1;
+the §3.2 guard is implemented (`first_broken_delta`); `compare_words` is
+byte-for-byte unchanged and `cycle`/`admit_cycle` are compared nowhere
+across the two sides (confirmed by re-reading both functions after the
+diff); all six §7 self-test cases are present and passing under this
+implementation's own logic, (d) reasoned through first; this journal entry
+is appended with the spawn short-id in Trigger and an Inputs section naming
+no `libs/**` or `top/**` path. Not met / not mine: nothing — my own
+Return-log question (case (e)'s internal classification) is an open
+question, not an unmet DoD item, since the packet pins exit codes, which
+are met, and not internal constructors, which is exactly what is being
+asked about.
+
+### Open-questions
+1. Case (e)'s classification (`Unassertable` vs `Spec_cycle_mismatch` on
+   this implementation's two-word sample frame) — full statement in the
+   WO-0075 §12 Return-log note appended this round. Not blocking: today's
+   committed stimulus cannot reach this ambiguity at all, and the required
+   exit code is met either way.
+2. No RTL leak, no forbidden tool used or attempted this round (durability
+   clause: nothing to report under refused attempts, because none was
+   attempted — the allow-list's boundary was not tested).
+3. `test/cosim/dune` was found already amended at spawn time (WO-0075's own
+   drafting date, dv_lead's declared companion commit) — noted per the
+   stop-on-inconsistency clause's own carve-out for the declared sibling
+   spawn and dv_lead's own out-of-band edits, not treated as a defect.
+
+### Files-in-this-commit
+- test/cosim/canonical.mli
+- test/cosim/canonical.ml
+- test/cosim/ours_run.ml
+- test/cosim/tb_xgmii_rx_64.v
+- test/cosim/compare.ml
+- agents/handoffs/WO-0075_cosim-lane-cycle-comparison.md

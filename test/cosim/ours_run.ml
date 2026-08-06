@@ -68,10 +68,15 @@ let read_stimulus path =
   words
 ;;
 
-let word_of_stream_word (w : Stream_word.t) : Canonical.word =
+(* [cycle] (WO-0075 §2): the shared time base's (§3.0) index of the
+   stimulus line whose driving produced this word -- the SAME [line_index]
+   [accumulate] below is folding over, passed in by its one caller rather
+   than re-derived here. *)
+let word_of_stream_word ~cycle (w : Stream_word.t) : Canonical.word =
   { Canonical.tkeep = w.tkeep
   ; tlast = w.tlast
   ; tuser0 = w.tuser land 1 = 1
+  ; cycle
   ; octets = Stream_word.octets w
   }
 ;;
@@ -81,25 +86,31 @@ let word_of_stream_word (w : Stream_word.t) : Canonical.word =
    [Stream_word.t] -- neither of which carries a Hardcaml dependency -- and
    is therefore exercisable on a hand-built trace with no DUT, no simulator
    and no elaboration, same as every DUT-independent model in dv_xgmii and
-   dv_monitors. [trace] is one entry per driven cycle, in order: the input
-   word driven that cycle, paired with the DUT's own [rx] stream reading for
-   that SAME cycle (the [~clock_edge:Side.Before] view [run] samples below).
+   dv_monitors. [trace] is one entry per driven cycle, in order: the
+   stimulus line's own 0-based index (WO-0075 §3.0's shared time base --
+   carried here from [run]'s [List.mapi] below rather than re-derived, so
+   this stays "a third component ... your call", WO-0075 §5.2), the input
+   word driven that cycle, and the DUT's own [rx] stream reading for that
+   SAME cycle (the [~clock_edge:Side.Before] view [run] samples below).
    [tb_xgmii_rx_64.v] implements the identical algorithm independently in
-   Verilog, over its own per-cycle input/output pair. *)
-let accumulate (trace : (Xgmii_word.t * Stream_word.t) list) : Canonical.transaction =
+   Verilog, over its own per-cycle input/output/line-index triple
+   ([stimulus_lines - 1]). *)
+let accumulate (trace : (int * Xgmii_word.t * Stream_word.t) list) : Canonical.transaction =
   let frames_rev = ref [] in
   let next_index = ref 0 in
+  (* (frame-index, admit_cycle, words-so-far in reverse) *)
   let open_frame = ref None in
   let close_frame ~decision =
     match !open_frame with
     | None -> ()
-    | Some (index, words_rev) ->
+    | Some (index, admit_cycle, words_rev) ->
       frames_rev
-      := { Canonical.index; decision; words = List.rev words_rev } :: !frames_rev;
+      := { Canonical.index; admit_cycle; decision; words = List.rev words_rev }
+         :: !frames_rev;
       open_frame := None
   in
   List.iter
-    (fun (word, out) ->
+    (fun (line_index, word, out) ->
        (match Xgmii_word.start_lane word with
         | Some (0 | 4) ->
           (match !open_frame with
@@ -109,7 +120,10 @@ let accumulate (trace : (Xgmii_word.t * Stream_word.t) list) : Canonical.transac
                 -- REQ-110 abort handling is out of Phase 1's authorised stimulus \
                 (WO-0046 section 9)"
            | None ->
-             open_frame := Some (!next_index, []);
+             (* WO-0075 §2: [admit_cycle] is recorded at the exact point
+                [Xgmii_word.start_lane] recognises the start character --
+                this SAME [line_index], the stimulus line carrying it. *)
+             open_frame := Some (!next_index, line_index, []);
              next_index := !next_index + 1)
         | Some _ | None -> ());
        if out.Stream_word.tvalid
@@ -117,8 +131,12 @@ let accumulate (trace : (Xgmii_word.t * Stream_word.t) list) : Canonical.transac
          (match !open_frame with
           | None ->
             failwith "ours_run: M03 produced an output word with no admitted frame open"
-          | Some (index, words_rev) ->
-            open_frame := Some (index, word_of_stream_word out :: words_rev));
+          | Some (index, admit_cycle, words_rev) ->
+            open_frame
+            := Some
+                 ( index
+                 , admit_cycle
+                 , word_of_stream_word ~cycle:line_index out :: words_rev ));
          if out.tlast then close_frame ~decision:Canonical.Accept))
     trace;
   (* End of trace (which already includes Phase 1's drain margin,
@@ -143,8 +161,13 @@ let run ~stimulus_path ~output_path =
   Cyclesim.cycle sim;
   i.clear := Bits.gnd;
   let trace =
-    List.map
-      (fun word ->
+    (* WO-0075 §2/§3.0: [List.mapi] rather than [List.map] -- the ONLY change
+       this WO makes to this loop -- so each entry carries the 0-based
+       stimulus-line index of the word it drives, the shared time base both
+       producers now write into the pinned grammar. Sampling itself
+       (convention and order below) is untouched (WO-0075 §8 item 2). *)
+    List.mapi
+      (fun idx word ->
          (* RV-0038-R6/R6-1's [Before] convention (this file's own header
             comment): obtain the ref before driving the next word and
             stepping the clock, dereference it (inside [Axi64_probe.of_refs])
@@ -163,7 +186,7 @@ let run ~stimulus_path ~output_path =
              ~tuser:o_before.rx.tuser
              ()
          in
-         word, out)
+         idx, word, out)
       stimulus
   in
   Canonical.write_file output_path (accumulate trace)

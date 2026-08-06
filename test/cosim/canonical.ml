@@ -9,6 +9,7 @@ type word =
   { tkeep : int
   ; tlast : bool
   ; tuser0 : bool
+  ; cycle : int
   ; octets : int list
   }
 
@@ -18,6 +19,7 @@ type decision =
 
 type frame =
   { index : int
+  ; admit_cycle : int
   ; words : word list
   ; decision : decision
   }
@@ -41,7 +43,11 @@ let decision_to_string = function
 let write oc (t : transaction) =
   List.iter
     (fun (frame : frame) ->
-       Printf.fprintf oc "F %d\n" frame.index;
+       (* WO-0075 §2: [admit_cycle] and [cycle] are decimal ([%d]), never hex
+          — [%d] on a non-negative OCaml [int] is already unpadded with no
+          leading zero beyond the digit [0] itself, so no separate
+          zero-stripping step is needed to meet the grammar's own rule. *)
+       Printf.fprintf oc "F %d %d\n" frame.index frame.admit_cycle;
        List.iter
          (fun (w : word) ->
             let expected = popcount w.tkeep in
@@ -56,10 +62,11 @@ let write oc (t : transaction) =
                    (List.length w.octets));
             Printf.fprintf
               oc
-              "W %02x %d %d"
+              "W %02x %d %d %d"
               w.tkeep
               (if w.tlast then 1 else 0)
-              (if w.tuser0 then 1 else 0);
+              (if w.tuser0 then 1 else 0)
+              w.cycle;
             List.iter (fun o -> Printf.fprintf oc " %02x" o) w.octets;
             Printf.fprintf oc "\n")
          frame.words;
@@ -103,12 +110,41 @@ let parse_int ~line_no ~line what s =
   | _ -> parse_error ~line_no ~line (Printf.sprintf "%s is not a valid integer" what)
 ;;
 
+(* WO-0075 §2: [admit_cycle] and [cycle] are the grammar's one deliberate
+   decimal field, chosen exactly so an old (pre-WO-0075) producer's file
+   fails here rather than being silently misread. Stricter than plain
+   [int_of_string]: every character SHALL be a decimal digit (no leading
+   [-], no [0x], nothing an old HEX octet token like "0f" or "a3" could ever
+   be), and a value of two or more digits SHALL NOT begin with ['0'] (the
+   "no leading zeros beyond the digit 0 itself" clause) -- which additionally
+   rejects an old HEX octet token that happens to consist only of decimal
+   digits with a leading zero, such as "07" or "00". A token this net does
+   not catch (an old octet like "42" or "99": two decimal digits, no leading
+   zero) still cannot produce a false green: it is consumed as this field,
+   leaving the W line's remaining octet-token count one short of its
+   [tkeep]'s popcount, which [word_of_tokens]'s existing count check below
+   catches as the second net (canonical.mli's own commentary on this). *)
+let parse_decimal ~line_no ~line what s =
+  let is_digit c = c >= '0' && c <= '9' in
+  let all_digits = String.length s > 0 && String.for_all is_digit s in
+  if not all_digits
+  then
+    parse_error
+      ~line_no
+      ~line
+      (Printf.sprintf "%s must be a decimal, unpadded, non-negative integer" what);
+  if String.length s > 1 && s.[0] = '0'
+  then parse_error ~line_no ~line (Printf.sprintf "%s must not carry a leading zero" what);
+  int_of_string s
+;;
+
 let word_of_tokens ~line_no ~line tokens =
   match tokens with
-  | tkeep_s :: tlast_s :: tuser_s :: octet_toks ->
+  | tkeep_s :: tlast_s :: tuser_s :: cycle_s :: octet_toks ->
     let tkeep = parse_hex2 ~line_no ~line "tkeep" tkeep_s in
     let tlast = parse_bit ~line_no ~line "tlast" tlast_s in
     let tuser0 = parse_bit ~line_no ~line "tuser0" tuser_s in
+    let cycle = parse_decimal ~line_no ~line "cycle" cycle_s in
     let octets = List.map (parse_hex2 ~line_no ~line "an octet") octet_toks in
     let expected = popcount tkeep in
     if List.length octets <> expected
@@ -121,14 +157,21 @@ let word_of_tokens ~line_no ~line tokens =
            tkeep
            expected
            (List.length octets));
-    { tkeep; tlast; tuser0; octets }
-  | _ -> parse_error ~line_no ~line "a W line needs at least tkeep, tlast and tuser0"
+    { tkeep; tlast; tuser0; cycle; octets }
+  | _ ->
+    parse_error
+      ~line_no
+      ~line
+      "a W line needs at least tkeep, tlast, tuser0 and cycle (an old-format \
+       file predating WO-0075's grammar amendment has no cycle field and is \
+       rejected here rather than misread)"
 ;;
 
 type parse_state =
   | No_frame_open
   | Frame_open of
       { index : int
+      ; admit_cycle : int
       ; words_rev : word list
       }
 
@@ -139,19 +182,30 @@ let read ic =
       let tokens = split_ws line in
       (match tokens, state with
        | [], _ -> parse_error ~line_no ~line "blank line not permitted"
-       | [ "F"; idx_s ], No_frame_open ->
+       | [ "F"; idx_s; admit_s ], No_frame_open ->
          let index = parse_int ~line_no ~line "frame-index" idx_s in
-         loop (line_no + 1) (Frame_open { index; words_rev = [] }) frames_rev
+         let admit_cycle = parse_decimal ~line_no ~line "admit-cycle" admit_s in
+         loop (line_no + 1) (Frame_open { index; admit_cycle; words_rev = [] }) frames_rev
+       | [ "F"; _ ], No_frame_open ->
+         parse_error
+           ~line_no
+           ~line
+           "F line is missing its admit-cycle token (an old-format file predating \
+            WO-0075's grammar amendment carries only a frame-index here and is \
+            rejected rather than misread)"
        | "F" :: _, Frame_open { index; _ } ->
          parse_error
            ~line_no
            ~line
            (Printf.sprintf "F line while frame %d is still open (missing its D line)" index)
-       | "W" :: rest, Frame_open { index; words_rev } ->
+       | "W" :: rest, Frame_open { index; admit_cycle; words_rev } ->
          let w = word_of_tokens ~line_no ~line rest in
-         loop (line_no + 1) (Frame_open { index; words_rev = w :: words_rev }) frames_rev
+         loop
+           (line_no + 1)
+           (Frame_open { index; admit_cycle; words_rev = w :: words_rev })
+           frames_rev
        | "W" :: _, No_frame_open -> parse_error ~line_no ~line "W line with no open frame"
-       | [ "D"; idx_s; decision_s ], Frame_open { index; words_rev } ->
+       | [ "D"; idx_s; decision_s ], Frame_open { index; admit_cycle; words_rev } ->
          let d_index = parse_int ~line_no ~line "D frame-index" idx_s in
          if d_index <> index
          then
@@ -165,7 +219,7 @@ let read ic =
            | "discard" -> Discard
            | _ -> parse_error ~line_no ~line "decision must be exactly accept or discard"
          in
-         let frame = { index; words = List.rev words_rev; decision } in
+         let frame = { index; admit_cycle; words = List.rev words_rev; decision } in
          loop (line_no + 1) No_frame_open (frame :: frames_rev)
        | "D" :: _, No_frame_open -> parse_error ~line_no ~line "D line with no open frame"
        | "D" :: _, Frame_open _ -> parse_error ~line_no ~line "malformed D line"
@@ -390,3 +444,230 @@ let report_to_string (r : report) =
 ;;
 
 let is_clean (r : report) = match r.divergences with [] -> true | _ :: _ -> false
+
+(* ------------------------------------------------------------------ *)
+(* WO-0075 §3 — the three timing tiers                                 *)
+(* ------------------------------------------------------------------ *)
+
+type timing_divergence =
+  | Admit_cycle_mismatch of
+      { index : int
+      ; ours : int
+      ; theirs : int
+      }
+  | Spec_cycle_mismatch of
+      { index : int
+      ; word_index : int
+      ; expected : int
+      ; observed : int
+      }
+  | Unassertable of
+      { index : int
+      ; why : string
+      }
+
+type timing_report =
+  { base_aligned : bool
+  ; spec_divergences : timing_divergence list
+  ; reference_profile : (int * int list) list
+  ; offsets : (int * int list) list
+  }
+
+let timing_divergence_to_string = function
+  | Admit_cycle_mismatch { index; ours; theirs } ->
+    Printf.sprintf "frame %d: admit-cycle mismatch (ours=%d, theirs=%d)" index ours theirs
+  | Spec_cycle_mismatch { index; word_index; expected; observed } ->
+    Printf.sprintf
+      "frame %d word %d: SPEC-M03 section 6.1's admit_cycle + m + 3 pins cycle %d, observed %d"
+      index
+      word_index
+      expected
+      observed
+  | Unassertable { index; why } -> Printf.sprintf "frame %d: T1 UNASSERTABLE -- %s" index why
+;;
+
+(* WO-0075 §3.2's guard, over one accepted frame's own words in emission
+   order: on a gapless stimulus SPEC-M03 section 6.1's [admit_cycle + m + 3]
+   formula gives every pair of consecutive output words exactly ONE cycle of
+   separation (word m+1's cycle minus word m's cycle), because m advances by
+   exactly 1 between them. A uniform shift (WO-0073's IC-L2, this packet's
+   own motivating class) preserves that separation -- "a uniform shift
+   preserves every inter-word delta" (WO-0075 section 7) -- so this guard
+   does NOT catch it and does not need to: IC-L2 is meant to fall through to
+   the ordinary [Spec_cycle_mismatch] walk below, on every word. What this
+   guard exists for is the shape T1 is not designed to assert past at all --
+   a stimulus whose frame carries an idle word between its start and
+   terminate characters (section 3.2) -- which breaks that constant
+   1-cycle spacing. Returns the first broken pair, if any: the earlier
+   word's 0-based index in this frame, and the two cycles either side of the
+   break. *)
+let first_broken_delta (words : word list) =
+  let rec walk word_index = function
+    | (w0 : word) :: (w1 : word) :: rest ->
+      if w1.cycle - w0.cycle <> 1
+      then Some (word_index, w0.cycle, w1.cycle)
+      else walk (word_index + 1) (w1 :: rest)
+    | [ _ ] | [] -> None
+  in
+  walk 0 words
+;;
+
+(* SPEC-M03 section 6.1's gapless formula, word by word, over one accepted
+   frame already cleared by the guard above. *)
+let spec_cycle_mismatches ~index ~admit_cycle (words : word list) =
+  let rec walk word_index acc = function
+    | [] -> List.rev acc
+    | (w : word) :: rest ->
+      let expected = admit_cycle + word_index + 3 in
+      let acc =
+        if w.cycle <> expected
+        then Spec_cycle_mismatch { index; word_index; expected; observed = w.cycle } :: acc
+        else acc
+      in
+      walk (word_index + 1) acc rest
+  in
+  walk 0 [] words
+;;
+
+let check_timing ~(ours : transaction) ~(theirs : transaction) : timing_report =
+  let om = index_map ours and tm = index_map theirs in
+  let common_indices =
+    Int_map.fold (fun k _ acc -> if Int_map.mem k tm then k :: acc else acc) om []
+    |> List.sort_uniq Int.compare
+  in
+  (* T0 -- admit-cycle equality, calibration only (WO-0075 section 3.1): no
+     claim about either design, only about whether the two producers indexed
+     the same stimulus the same way. *)
+  let admit_cycle_mismatches =
+    List.filter_map
+      (fun index ->
+         let ofr = Int_map.find index om and tfr = Int_map.find index tm in
+         if ofr.admit_cycle <> tfr.admit_cycle
+         then
+           Some
+             (Admit_cycle_mismatch
+                { index; ours = ofr.admit_cycle; theirs = tfr.admit_cycle })
+         else None)
+      common_indices
+  in
+  let base_aligned = admit_cycle_mismatches = [] in
+  if not base_aligned
+  then
+    (* WO-0075 section 3.1: "On a T0 red the comparator SHALL withhold T1 and
+       T2 rather than report them." *)
+    { base_aligned = false
+    ; spec_divergences = admit_cycle_mismatches
+    ; reference_profile = []
+    ; offsets = []
+    }
+  else (
+    (* T1 -- our side alone, against SPEC-M03 section 6.1 (WO-0075 section
+       3.2). Iterates [ours] only, and only frames [ours] itself reports
+       [Accept]; [theirs] is not consulted here at all. *)
+    let t1_divergences =
+      List.concat_map
+        (fun (fr : frame) ->
+           if fr.decision <> Accept
+           then []
+           else (
+             match first_broken_delta fr.words with
+             | Some (word_index, c0, c1) ->
+               [ Unassertable
+                   { index = fr.index
+                   ; why =
+                       Printf.sprintf
+                         "output words %d and %d are %d cycle(s) apart (cycle %d then %d), \
+                          not the constant 1-cycle spacing SPEC-M03 section 6.1's gapless \
+                          admit_cycle + m + 3 formula produces; T1 assumes a gapless \
+                          stimulus (WO-0075 section 3.2's own guard) and refuses to assert \
+                          against a frame whose recorded cycles do not have that shape"
+                         word_index
+                         (word_index + 1)
+                         (c1 - c0)
+                         c0
+                         c1
+                   }
+               ]
+             | None -> spec_cycle_mismatches ~index:fr.index ~admit_cycle:fr.admit_cycle fr.words))
+        ours
+    in
+    (* T2 -- the reference's own cycles, recorded and never adjudicated
+       (WO-0075 section 3.3). *)
+    let reference_profile =
+      List.map
+        (fun (fr : frame) -> fr.index, List.map (fun (w : word) -> w.cycle) fr.words)
+        theirs
+    in
+    let offsets =
+      List.filter_map
+        (fun index ->
+           let ofr = Int_map.find index om and tfr = Int_map.find index tm in
+           match ofr.words, tfr.words with
+           | [], _ | _, [] -> None
+           | ows, tws ->
+             let rec zip = function
+               | (oa : word) :: ra, (ta : word) :: rb -> (ta.cycle - oa.cycle) :: zip (ra, rb)
+               | _ -> []
+             in
+             Some (index, zip (ows, tws)))
+        common_indices
+    in
+    { base_aligned = true; spec_divergences = t1_divergences; reference_profile; offsets })
+;;
+
+let cycles_to_string cycles = String.concat " " (List.map string_of_int cycles)
+
+let timing_report_to_string (r : timing_report) =
+  let buf = Buffer.create 256 in
+  let add fmt = Printf.ksprintf (Buffer.add_string buf) fmt in
+  add "--- T0: admit-cycle equality (calibration; asserts nothing about either design) ---\n";
+  if not r.base_aligned
+  then (
+    add
+      "T0: RED -- the two producers are not indexing the same stimulus the same way; \
+       this is a harness defect, not a design finding\n";
+    List.iter
+      (fun d -> add "  %s\n" (timing_divergence_to_string d))
+      r.spec_divergences;
+    add
+      "--- T1: WITHHELD -- a timing verdict computed on unaligned time bases is worse \
+       than no verdict (WO-0075 section 3.1) ---\n";
+    add
+      "--- T2: WITHHELD -- RECORDED, NEVER ADJUDICATED under ordinary alignment, \
+       withheld here alongside T1 because T0 is red ---\n")
+  else (
+    add
+      "T0: aligned -- every frame index present on both sides shares one admit-cycle\n";
+    add
+      "--- T1: our side against SPEC-M03 section 6.1 (asserting; a red is a defect \
+       against OUR spec, never a differential finding) ---\n";
+    (match r.spec_divergences with
+     | [] ->
+       add
+         "T1: clean -- every accepted frame's output words landed on their \
+          SPEC-M03 section 6.1 (admit_cycle + m + 3) cycles\n"
+     | ds ->
+       add "T1: %d divergence(s)\n" (List.length ds);
+       List.iter (fun d -> add "  %s\n" (timing_divergence_to_string d)) ds);
+    add
+      "--- T2: the reference's own cycles -- RECORDED, NEVER ADJUDICATED \
+       (REQ-901's exclusion, applied to time) ---\n";
+    (match r.reference_profile with
+     | [] -> add "T2: no reference frames recorded\n"
+     | profile ->
+       List.iter
+         (fun (index, cycles) ->
+            add "  frame %d: theirs cycles = [%s]\n" index (cycles_to_string cycles))
+         profile);
+    (match r.offsets with
+     | [] ->
+       add
+         "T2 offsets: none computed (no frame index common to both sides carries \
+          output words on both)\n"
+     | offs ->
+       List.iter
+         (fun (index, deltas) ->
+            add "  frame %d: theirs - ours per word = [%s]\n" index (cycles_to_string deltas))
+         offs));
+  Buffer.contents buf
+;;
