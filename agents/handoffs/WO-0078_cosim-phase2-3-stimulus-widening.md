@@ -3,21 +3,43 @@
 - **State** (flipped per stage by dv_lead's `RV-`, per §14's own note):
   **STAGE 1 — ACCEPTED.** Both halves: tb_writer at `3ec0efe`, data_wrangler at
   `8c6429e`; verdict `RV-STAGE1` in §14, `J-dv_lead-0150`.
-  **STAGE 2 — ISSUED; the C1+C2 landing is RETURNED and ADJUDICATED** (verdict
+  **STAGE 2 — ISSUED; the C2 RE-RUN is RETURNED and ADJUDICATED** (verdict
+  `RV-C2RERUN` in §14, `J-dv_lead-0154`; tb_writer at `9de61f1`; `build` run
+  `31100435961`, `cosim` job `92612412697` red at aggregate `NO-VERDICT(8)`,
+  `build` job green). Per case:
+  **C1 — ACCEPTED, branch α** (CD §10.1's frozen terms; `AP-M03` §7 bar 1 lifts for
+  that one class and no other). Re-observed byte-identical at `9de61f1`.
+  **C2 — VOID FOR THE SECOND TIME, RE-RUN OWED** under CD §10.2 **unamended**: both
+  producers produced, `Canonical.read` refused `theirs.canon` at line 9, `compare`
+  exited 3, and the case again selects no branch. **Dispatched twice, `compare`
+  invoked once, COMPARED ZERO TIMES**; prediction frozen and **unspent**; the sha
+  bind `cc1e85a4…5b44a7` **carries forward unchanged** and has now held across two
+  landings. `FINDING RV-0078-S2-1` (the refusal guards) is **CLOSED**;
+  `FINDING RV-0078-S2-6` (MATERIAL) replaces it one layer downstream — **the
+  reference-side writer emits canonical records in real time and the pinned grammar
+  requires each frame's records to form one contiguous block; the repair is
+  tb_writer's, in `test/cosim/tb_xgmii_rx_64.v` (plus the grammar's own files only
+  if the chosen route amends it), under `RV-C2RERUN` §6's seven preserved
+  properties, before C2 re-runs.** **A stopping rule is pre-registered
+  (`RV-C2RERUN` §3): a third landing reaching no comparison is not a fourth worker
+  repair round.**
+  **C3 — NOT ISSUED**, not blocked in principle (its single frame cannot trip
+  either defect) and **sequenced behind the C2 repair round** (`RV-C1C2` §10,
+  re-affirmed at `RV-C2RERUN` §10). **C4 — NOT ISSUED.**
+  **STAGE 3 — SCOPED, NOT AUTHORISED (§6.3).**
+  *The field read as follows from `RV-C1C2` until `RV-C2RERUN`, kept rather than
+  overwritten for the same auditability reason as the texts below:*
+  "**STAGE 2 — ISSUED; the C1+C2 landing is RETURNED and ADJUDICATED** (verdict
   `RV-C1C2` in §14, `J-dv_lead-0152`; tb_writer at `a822f46`, data_wrangler at
   `53fa1de`; `build` run `31096150983`, `cosim` job `92598555141` red, `build` job
-  `92598555210` green). Per case:
-  **C1 — ACCEPTED, branch α** (CD §10.1's frozen terms; `AP-M03` §7 bar 1 lifts for
-  that one class and no other).
-  **C2 — VOID, RE-RUN OWED** under CD §10.2 **unamended**: it reached no comparison
-  and selects no branch. `FINDING RV-0078-S2-1` (MATERIAL) — both producers'
-  refusal guards test a span outliving the input frame by ΔC, so the minimum-IFG
-  schedule is refused; **the repair is tb_writer's, in `test/cosim/ours_run.ml` and
-  `test/cosim/tb_xgmii_rx_64.v`, one round and one rule, before C2 re-runs.**
-  **C3 — NOT ISSUED**, not blocked in principle (its single frame cannot trip the
-  defect) and **sequenced behind the C2 repair round** (`RV-C1C2` §10). **C4 — NOT
-  ISSUED.**
-  **STAGE 3 — SCOPED, NOT AUTHORISED (§6.3).**
+  `92598555210` green). **C1 — ACCEPTED, branch α.** **C2 — VOID, RE-RUN OWED**
+  under CD §10.2 **unamended**: it reached no comparison and selects no branch.
+  `FINDING RV-0078-S2-1` (MATERIAL) — both producers' refusal guards test a span
+  outliving the input frame by ΔC, so the minimum-IFG schedule is refused; the
+  repair is tb_writer's, in `test/cosim/ours_run.ml` and
+  `test/cosim/tb_xgmii_rx_64.v`, one round and one rule, before C2 re-runs.
+  **C3 — NOT ISSUED**, not blocked in principle and sequenced behind the C2 repair
+  round. **C4 — NOT ISSUED.**"
   *The field read as follows from `RV-STAGE1` until `RV-C1C2`, kept rather than
   overwritten for the same auditability reason as the DRAFT text below:*
   "**STAGE 2 — AUTHORISED (§6.2), NOT ISSUED**, and it may not be issued until §13
@@ -3740,5 +3762,635 @@ tb_writer entries' precedent for the identical situation, rather than
 presented as one copied verbatim — the timestamp is this entry's own UTC
 header time, `date -u` read at the start of this round, matching the
 environment's own `currentDate` context, 2026-08-06).
+
+---
+
+### dv_lead — `RV-C2RERUN`: the C2 re-run (§6.2) — **`FINDING RV-0078-S2-1` CLOSED; C2 VOID AGAIN and RE-RUN OWED; the two-frame blindness one layer downstream, in the WRITER's record order against a grammar pinned for one frame**
+
+#### 0. What I executed, and what I did not
+
+**HEAD verified as my first action**: `git rev-parse HEAD` →
+`9de61f15417af2d7f8df3f074a6019bf7f19f1bc`, exactly the spawn head. Neither
+rollback disposition fired.
+
+**This round writes three things and nothing else**: this verdict, the `State`
+field at the head of this file, and my journal. **No `test/**`, no `tools/**`, and
+— ruled in §7 — no edit to `test/attack_plans/CD-xgmii_rx_64_cosim.md`.** Every
+defect below is a finding for a named carrier round, not a repair I made.
+
+**I executed no simulation** (ADR-0005). My evidence is: the `cosim` job log read
+in full through the server-side GitHub logs tool; the run and job metadata from
+the same API; the four sources named in §4 read at this commit; and four
+mechanical checks I ran on the checkout rather than taking from any Return log.
+
+**The run, at the API.** `build` run **`31100435961`**, `head_sha` **`9de61f1`**,
+event `push`, conclusion **`failure`**, `12:12:46Z → 12:18:12Z`. `cosim` job
+**`92612412697`** — **failure**, step *"Run the co-simulation lane"* red with
+**`Process completed with exit code 8`**. The `build` job is **green** and the
+journal-check is green: the bench compiles, `dune runtest` and the DV mechanical
+checks are unaffected, and the red is the co-simulation lane's own — again, and
+again belonging to exactly one case.
+
+**Four mechanical checks, mine:**
+
+1. **`git merge-base --is-ancestor 5c01af0 9de61f1` → true.** CD §10's freeze
+   commit is an ancestor of the commit the run executed, so §12 criterion 8's
+   precondition holds for all three cases by commit ordering.
+2. **`git diff --numstat 5c01af0 9de61f1 -- test/attack_plans/CD-xgmii_rx_64_cosim.md`
+   → `129  0`, one hunk, ZERO deletions**, entirely §10.2-bis appended *after*
+   §10.2. **So §10.2's INSIDE list, its expected values, its frozen prediction and
+   both branch cells are byte-unchanged between the freeze and this run.** Last
+   round's settlement asserted that property; this round measures it. It is the
+   check `J-dv_lead-0153`'s own LH-cand-C demands of a round executing its own
+   prior recommendation, applied to my own annotation.
+3. **`git diff --name-only 53fa1de 9de61f1`** → six paths, of which exactly two
+   are code: `test/cosim/ours_run.ml` and `test/cosim/tb_xgmii_rx_64.v`.
+   **`test/cosim/stimulus_gen.ml` did not move**, which is the structural half of
+   the sha bind in §3.
+4. **The four sources of §4's mechanism, read at `9de61f1`** —
+   `test/cosim/canonical.mli`'s pinned grammar block, `test/cosim/canonical.ml`'s
+   `read`, `test/cosim/tb_xgmii_rx_64.v`'s `$fwrite` call sites, and
+   `test/cosim/ours_run.ml`'s single `Canonical.write_file`. All four are DV-side
+   files in my own scope. **No `libs/**`, no `top/**`, no `rtl_snapshots/**` was
+   opened at any point in this round.**
+
+---
+
+#### 1. The CI reading, at the source — three cases, in the order the harness ran them
+
+`=== CASE SET (WO-0078 §6.2 Stage 2: 3 case(s) — 0 C1 C2) ===`
+
+**CASE 0 — the freeze holds, and holds across a repair.**
+
+> `[ok]   case 0 stimulus.txt sha256: c675517176922d42bca42ec3def182cb3536861f1acaa8384116f33a5c4cc051`
+> `[ok]   case 0's stimulus is byte-identical to the last green pre-widening run`
+> `T1: clean` … `word 0: expected 3, observed 3` … `word 7: expected 10, observed 10`
+> `frame 0: theirs - ours per word = [0 0 0 0 0 0 0 0]`
+> `CASE 0: stimulus_sha256=c675517…4cc051 compare_exit=0 tier=CLEAN`
+
+**CASE C1 — clean, and byte-reproduced across the repair.**
+
+> `[ok]   case C1 stimulus.txt sha256: 5ae9e4f501251c38d0c2d386bd792e07cbcf9cf107cf7e75c378e21b1ce3bd7c`
+> `frames compared: 1` / `frames matching: 1` / `divergences: none`
+> `T0: aligned` / `frame 0: admit_cycle = 0`
+> `T1: clean` … `word 0: expected 3, observed 3` … `word 7: expected 10, observed 10`
+> `frame 0: theirs - ours per word = [1 1 1 1 1 1 1 1]`
+> `CASE C1: stimulus_sha256=5ae9e4f5…3bd7c compare_exit=0 tier=CLEAN`
+
+**This is the S2-1 round's invariance argument checked rather than trusted.** That
+round could execute neither case (ADR-0005) and argued case-0/C1 invariance
+structurally — every write site unmoved, the FIFO's head being the sole admitted
+frame for the whole of a single-frame run. **Both cases now reproduce their
+pre-repair stimulus hash, their whole T1 profile and their whole T2 offset vector,
+identically to run `31096150983`.** An argued invariance was falsifiable at the
+next run and it held; that is recorded as a fact about the argument, not only
+about the code.
+
+**CASE C2 — both producers produced, and the comparison still did not happen.**
+
+> `[ok]   case C2 stimulus.txt sha256: cc1e85a4c5f871226f07b4792446d63c523577dcf172d6c4a80b8a3e845b44a7`
+> `[case C2 run1] vvp: …/tb_xgmii_rx_64.v:514: $finish called at 298600 (1ps)`
+> `compare: could not read theirs canonical file …/case_C2/run1/theirs.canon: Canonical.read: line 9: F line while frame 0 is still open (missing its D line) (line was "F 1 10")`
+> `CASE C2: stimulus_sha256=cc1e85a4…5b44a7 compare_exit=3 tier=NO-VERDICT (compare could not read a canonical file/idle sidecar, exit 3)`
+> `case C2: ours.canon/theirs.canon byte-identical between run1 and run2`
+> `run_cosim: FAILED CHECK: NO-VERDICT (case C2: compare could not read a canonical file, exit 3)`
+
+**Line 514 is the end-of-stimulus `$finish`**, not a guard's — read at source. **No
+`E` sentinel line appears anywhere in `theirs.canon`, and `ours_run` did not
+raise.** Both producers ran to normal completion and wrote complete files. The
+`NO-VERDICT` dump printed both canonical files and both sidecars in full, which is
+why §4 is a reading of evidence rather than a hypothesis.
+
+**Cost.** case 0 `run1 0.650s / run2 0.645s / sum 1.296s`; C1 `0.646 / 0.651 /
+1.298`; **C2 `0.644 / 0.661 / 1.306` — a real cost datum this time, because C2
+actually ran both producers twice**; invocation `9.947s`.
+
+---
+
+#### 2. `FINDING RV-0078-S2-1` — **CLOSED**, and the closure STANDS
+
+**The finding's own subject is the guards, and the guards are repaired.** Its
+statement was that both producers' refusal guards tested a span running from the
+input start character to the OUTPUT `tlast`, which at ΔC = 3 outlives the input
+frame by exactly the pipeline latency, so the minimum-IFG schedule was refused as
+REQ-110's abort case, which it is not.
+
+**Observed at this run, on the live stimulus that convicted it:**
+
+- **Our side**: `ours.canon` carries `F 0 0` … `D 0 accept`, `F 1 10` … `D 1
+  accept` — two frames, eight words each, both `Accept`. `accumulate` did not
+  raise.
+- **The reference side**: `theirs.canon` carries the same two frames and the same
+  two `accept` decisions, terminating at the end-of-stimulus `$finish` with no
+  sentinel. **The reference-side half of the repair — which the repair round could
+  not execute and self-reviewed line by line against its own executed OCaml half —
+  is now executed, and it admits the lawful schedule.**
+- **The negative control is not weakened**: the REQ-110 fixture (a second `/S/`
+  inside an open admission span) still refuses, per the repair round's own locally
+  executed `ours_run --self-test`, and nothing this run touched it.
+
+**So S2-1 does not reopen, and conflating it with §4's finding would erase a
+verified repair.** The fixture pair did what it claimed. What it never reached is
+the layer below: **a guard decides which schedules a producer ADMITS; it says
+nothing about the FILE the producer then writes.** The repair changed the first
+and, by consequence, changed the second — and only the first was checked. That is
+the root cause of §4 arriving one round late, and it is stated as a property of the
+verification scope, not as a defect in the repair.
+
+---
+
+#### 3. C2's disposition — **VOID AGAIN, RE-RUN OWED**, in terms
+
+**§12 criterion 8's void does NOT fire, for the second time and for the same
+reason.** C2's domain instance was frozen at `5c01af0`, a verified ancestor of
+`9de61f1` (§0 check 1), and §0 check 2 measures that nothing inside it moved. The
+case did not run before its instance was committed. **Its prediction is UNSPENT.**
+
+**What voids C2 is again the simpler and stricter thing: no comparison happened.**
+Concretely, and in the same five terms `RV-C1C2` §5 used, because the terms are
+what make the two rounds comparable:
+
+1. **C2 selects no branch.** Not α, not β, not γ. §7's table is not consulted for
+   it. Its prediction — *"agreement on both"* — is neither confirmed nor
+   falsified. **This is the fourth outcome again — `FINDING RV-0078-S2-3`'s
+   subject — reached by a second, distinct road**: last round no file existed;
+   this round both files existed and one could not be read. The two are the same
+   disposition and different species, which §6 records against that finding.
+2. **CD §0's bar is not reached**, because no difference inside the domain was
+   shown — the domain was never evaluated. **Nothing may move and nothing does.**
+   CD §10.2's INSIDE list, expected values, frozen prediction and branches are
+   untouched by this verdict and the re-run happens under that text **unamended**.
+3. **C2 is re-run, not adjudicated.**
+4. **The sha bind CARRIES FORWARD UNCHANGED**, and it is now stronger than a hope:
+   `cc1e85a4c5f871226f07b4792446d63c523577dcf172d6c4a80b8a3e845b44a7` **has been
+   printed by two independent invocations across two landings and one repair of
+   both producers**, and `git diff --name-only 53fa1de 9de61f1` shows
+   `stimulus_gen.ml` did not move. **The next re-run must print exactly that value
+   again.** A different value means the stimulus moved under a repair that had no
+   business touching it, and that is adjudicated as a finding before any C2 result
+   is read. `stimulus_gen.ml` is not among the files §4's repair opens; if a repair
+   round opens it, it says why, in advance.
+5. **What the record says about C2 from here — the count, restated because the
+   spawn asks whether it changes anything.** C2 has been **dispatched twice**; its
+   stimulus **generated twice, at one identical sha**; **our producer driven three
+   times** (once refusing, twice producing); **the reference producer driven
+   twice**, both at this run; **`compare` invoked once, ever**, and it could not
+   read what it was given; and **compared ZERO times.** No artefact may say C2
+   "ran and was clean", "ran and failed", or "was inconclusive about the two
+   designs". **The lane knows nothing whatever about the two-clean-frames-at-
+   minimum-IFG class, and `AP-M03` §7 bar 1 does not lift for it.**
+
+**Two things the count DOES change, and they are recorded here rather than
+discovered later.**
+
+- **The bind is promoted from a check to a measured invariant** (item 4).
+- **A stopping rule is pre-registered, before the run it governs.** Two landings,
+  two instrument defects, zero comparisons. A third would stop being a sequence of
+  unrelated defects and start being evidence about the instrument. **So: if the
+  next C2 re-run reaches no comparison for a third time, C2 is NOT re-dispatched a
+  fourth time as a worker repair round.** The question becomes whether the pinned
+  transaction-level canonical form (CD §3, `WO-0046` §2.3) can express two frames
+  whose admission and delivery spans overlap at all — a design question owned by
+  me, answered with options and cost in a dv_lead round, and reaching the sponsor
+  as **E2** if any option narrows the case set. **Narrowing the case set inside DV
+  remains barred outright** (`RV-C1C2` §10). Writing this rule down now, with the
+  answer not in hand, is the same discipline §7's table applies to dispositions.
+
+**Case 0 and C1 are not touched by C2's red**, for the structural reasons
+`RV-C1C2` §5 gave: separate working directories, own comparisons, own determinism
+checks, own SUMMARY blocks, all completed and printed before C2 ran; an aggregate
+assigned after the loop does not reach back.
+
+---
+
+#### 4. The mechanism — a WRITER's record order against a grammar pinned when this lane drove one frame
+
+**Verified at the sources, not inferred from the message.**
+
+**What the two files contain** (from the run's own `NO-VERDICT` dump):
+
+| | `ours.canon` | `theirs.canon` |
+|---|---|---|
+| record order | `F 0 0`, frame 0's eight `W` lines, `D 0 accept`, `F 1 10`, frame 1's eight `W` lines, `D 1 accept` | `F 0 0`, frame 0's **first seven** `W` lines, **`F 1 10`**, frame 0's eighth `W` line, `D 0 accept`, frame 1's eight `W` lines, `D 1 accept` |
+| frames / decisions | 0 and 1, both `accept` | 0 and 1, both `accept` |
+| content octets | identical to theirs, word for word | identical to ours, word for word |
+
+**The grammar, quoted from the pinned interface** (`canonical.mli`, the file the
+reader implements):
+
+> *"Per frame, in the literal order the grammar block above states: one [F] line,
+> then its [W] lines (zero or more) in emission order, then its [D] line."*
+
+**The reader implements exactly that** (`canonical.ml`): `parse_state` is
+`No_frame_open | Frame_open of {…}` — **at most one frame open at a time** — and
+the arm `| "F" :: _, Frame_open { index; _ } ->` raises
+*"F line while frame %d is still open (missing its D line)"*. That is the message
+CI printed, at `line 9`, which is `theirs.canon`'s `F 1 10`.
+
+**The reference-side writer does not implement it.** `tb_xgmii_rx_64.v` `$fwrite`s
+each record at the instant its event occurs: the `F` line inside `open_frame`, at
+the admission cycle (`$fwrite(out_fd, "F %0d %0d\n", next_index, stimulus_lines -
+1);`); each `W` line as its output word is observed; the `D` line inside
+`close_delivery_accept`, at that frame's output `tlast`. **At C2 frame 1 is
+admitted on cycle 10 and frame 0's last word is delivered on cycle 10**, so the
+`F 1` record is written before frame 0's own record is closed. Our side does not
+have this shape because `ours_run.ml` accumulates a whole `Canonical.transaction`
+in memory and emits it through one `Canonical.write_file` at the end — the writer
+that the grammar's own `write` enforces.
+
+**Four consequences, each of which matters to the repair and none of which is a
+design choice I am making for its owner.**
+
+1. **The reader is CONFORMANT and the reference-side writer is NOT.** The refusal
+   is the pinned contract being enforced, not a parser being brittle. Whatever the
+   repair is, it does not begin from "the reader was wrong".
+2. **The reader's strictness prevented the exact misreport `WO-0049` was written
+   about.** Had the grammar tolerated the interleave and attributed positionally,
+   frame 0 would have parsed with **seven** words and frame 1 with **nine**, and
+   `compare_transactions` would have reported `Word_count_mismatch` on both frames
+   — **`EXIT_DIFFERENTIAL`, i.e. "our RTL diverged from the MIT reference", for a
+   defect in our own testbench's writer.** `run_cosim.sh`'s own header names that
+   run by id (`30825741565`) as the reason `EXIT_NO_VERDICT` exists. **This is that
+   code's first production firing and it did precisely its job.**
+3. **The interleaved file is not merely unconventional — under the pinned grammar
+   it is genuinely AMBIGUOUS.** The `W` record carries **no frame index**: its
+   attribution is positional, to "the open frame". With two frames open there is no
+   grammatical fact of the matter about which frame a `W` line belongs to. A reader
+   taught to attribute across an intervening `F` would have to pick a rule — the
+   obvious one being *attribute to the oldest open frame* — and that rule is a
+   **behavioural assumption about the design under test** (in-order, non-interleaved
+   delivery on one AXI stream), installed inside the comparator. **A comparator that
+   assumes a property of the design cannot detect that property's violation.** So
+   "teach the reader interleaved attribution" is not a parser change; it is either a
+   grammar amendment adding a frame index to the `W` record — touching the pinned
+   interface and **both** producers — or a comparator that has stopped being
+   independent.
+4. **Grouping loses no evidence.** Every `F` line carries its own `admit_cycle` and
+   every `W` line carries its own `cycle`, so the full temporal interleaving of two
+   overlapping frames is recoverable from a grouped file exactly as from a streamed
+   one. **A buffering writer costs the lane nothing evidentially** — stated so the
+   owner can weigh it, not to decide for the owner.
+
+**Whose blindness this is.** The grammar was pinned at `WO-0046` §2.3 — **mine** —
+in a packet whose §3 says in terms *"What Phase 1 drives: **one** 64-octet
+good-FCS frame at a lane-0 start."* A one-frame-at-a-time record grammar was
+correct and unremarkable there. **`WO-0078` §3 and §6.2 widened the case set to two
+frames whose spans overlap by construction — also mine — without re-deriving
+whether a real-time `$fwrite` producer could satisfy the grammar that widening
+would now bind it to.** That is the same species of error as `S2-1`: I enumerated
+what a mechanism is *for* rather than what it *does* when two frames are in flight.
+**The second instance of the same species in consecutive rounds is the finding's
+most important content**, and §6 states the general form.
+
+---
+
+#### 5. The frame-1 `+1` offset in the dump — what it is, where it lives, and what it is NOT
+
+**The observation.** Reading the two dumped files by hand: **frame 0's word cycles
+are equal on both sides** (`3 … 10`); **frame 1's are `13 … 20` on our side and
+`14 … 21` on the reference's** — `+1` on every word. Both sides print `F 1 10`, so
+the admit cycles agree. C2's frame 1 starts **in lane 4** (84 octet-times, not a
+multiple of 8 — `stimulus_gen.ml`'s own comment and CD §10.2's recorded
+consequence), and `+1` at a lane-4 start is exactly what C1's T2 measured
+(`theirs - ours per word = [1 × 8]`).
+
+**Its adjudicative status — three layers, and the third is new.**
+
+1. **CD §5.2 X1** — *all cycle timing, latency and word-to-word spacing* — OUTSIDE
+   the domain; CD §0: a difference outside the domain is *data, recorded, not
+   adjudicated*. REQ-901 excludes cycle alignment. **`AP-M03` §7 bar 3 bars a
+   cross-side timing comparison and is untouched.** Not a divergence, not branch γ,
+   not a `BUG-` candidate, not a spec-diff candidate.
+2. **It is not an instrument output.** `compare` never ran a T2 for C2 — it never
+   read the file. **This is my own eyeball reading of a printed dump, not a measured
+   line**, and it therefore does **not** join C1's T2 record, does **not** go to the
+   `SO-` as a measured datum, and is **not** evidence of anything about either
+   design. A hand reading presented beside instrument output, without that
+   distinction attached, is how a dump becomes a result.
+3. **Where it lives: here, and only here, as an instrument-stability note.** Its
+   one legitimate forward use is to stop the next adjudicator meeting the `+1` as
+   news. **When the C2 re-run's T2 executes for real, it is expected to print
+   `frame 0: theirs - ours per word = [0 × 8]` and `frame 1: … = [1 × 8]`.** If it
+   does not, **that is not a divergence and selects no branch** — it is a question
+   about whether a repair changed a producer's timing behaviour, which is an
+   instrument question. **It is not a prediction in §7's sense and it may not be
+   cited as one**: an out-of-domain quantity does not acquire branch-selecting force
+   by being written down early.
+
+**Not in the CD** (§10.7 item 3: *"This document freezes the questions; it answers
+none of them"*), **and not in `AP-M03` §7** (a recorded cross-side cycle datum
+beside the bar forbidding cross-side cycle comparison is the shape a later reader
+misreads as the bar having lifted). Both reasons are `RV-C1C2` §3's, unchanged.
+
+---
+
+#### 6. Findings — three new; one MATERIAL, two MINOR; each with an owner and a carrier
+
+**`FINDING RV-0078-S2-6` (MATERIAL; blocks C2 only) — the reference-side producer
+writes canonical records in real time, so two frames whose admission and delivery
+spans overlap produce a file that violates the pinned grammar's per-frame record
+grouping; the reader enforces the grammar, refuses, and C2 reaches no comparison.**
+
+- **Statement.** `test/cosim/tb_xgmii_rx_64.v` emits each `F`/`W`/`D` record at the
+  instant of its own event. `test/cosim/canonical.mli`'s pinned grammar requires,
+  per frame, *"one [F] line, then its [W] lines … then its [D] line"*, and
+  `canonical.ml`'s `read` is a single-frame-open state machine that raises on an
+  `F` while one is open. At any schedule where frame *n+1*'s admission precedes
+  frame *n*'s output `tlast` — which the minimum inter-frame gap guarantees at
+  ΔC = 3 — the two are irreconcilable. **Invisible until now because a
+  single-frame file makes streamed order and grouped order the same file, and
+  because before `S2-1`'s repair the reference's own guard refused the schedule
+  before the second `F` was ever written.**
+- **Owner of the design gap: dv_lead.** The grammar is mine (`WO-0046` §2.3),
+  pinned for a one-frame lane; the widening to overlapping frames is mine
+  (`WO-0078` §3, §6.2); neither round re-derived the writer's obligation under the
+  other. **Neither assignee is at fault**: tb_writer's repair round met its
+  finding's terms exactly and its case-0/C1 invariance argument was vindicated
+  (§1), and data_wrangler's harness classified and reported the failure correctly.
+- **Owner of the repair: tb_writer**, in `test/cosim/tb_xgmii_rx_64.v`, and — only
+  if the chosen design amends the grammar — in `test/cosim/canonical.{ml,mli}` and
+  `test/cosim/ours_run.ml` as well. **Carrier**: a tb_writer repair round before C2
+  re-runs.
+- **The design choice is the owner's, not mine.** Two routes are visible (buffer
+  the reference writer's records so each frame's block closes whole; or amend the
+  pinned grammar so a `W` record carries its own frame index and both producers
+  write it) and a third may be better. **What this finding fixes is not the route
+  but the properties any route must preserve** — stated because a repair that
+  restores C2 while breaking one of these is worse than the defect:
+  1. **No false green and no false differential.** A file whose record attribution
+     is not determined by the grammar must **fail to read** (`compare` exit 3),
+     never be attributed by a heuristic. Specifically: *attribute to the oldest
+     open frame* is a behavioural assumption about the design under test, and a
+     comparator that assumes a property cannot detect its violation (§4 item 3).
+  2. **Byte-exactness for single-frame files.** Case 0 must still print
+     `c675517…4cc051` with `compare_exit=0`, `T1 {3 … 10}` and `T2 [0 × 8]`; C1
+     must still print `5ae9e4f5…3bd7c` with `T1 {3 … 10}` and `T2 [1 × 8]`. A
+     repair that changes a single-frame canonical file by one byte is out of its
+     own scope and says so.
+  3. **The `E`-sentinel contract, whole** (`FINDING WO-0078-1`'s Stage-1 repair):
+     `E` recognised by `read` **regardless of parse state**, written as the last
+     thing before every guard's `$finish`, with `$fclose` before it; and the literal
+     text `E word-with-no-open-frame` unchanged **by value**, because
+     `compare.ml`'s `reference_refusal_canon_text` reproduces it by value. A
+     buffering writer must still be able to emit its sentinel on a guard trip
+     **after** partial records are already buffered, and must not emit a
+     half-buffered frame beside it.
+  4. **The old-format trap** (`WO-0075` §2): a producer left un-updated must still
+     produce a **read failure**, never a misread and never a false green. Any change
+     to the `W` record's token layout is measured against that property explicitly.
+  5. **Bounded buffering with its own refusal.** If records are buffered, the buffer
+     is bounded and its exhaustion is a refusal with an `E` sentinel — the shape
+     `DELIVERY_DEPTH` already established, not an unbounded accumulation in a
+     Verilog testbench.
+  6. **Determinism**: run1/run2 byte-identity per case, unchanged.
+  7. **Non-loss, recorded as an aid**: grouping discards no temporal evidence, since
+     `F` carries `admit_cycle` and every `W` carries its own `cycle` (§4 item 4).
+
+**`FINDING RV-0078-S2-7` (MINOR) — the per-case SUMMARY block presupposes a result,
+and now prints one for a case that has none.**
+
+- **Statement.** `tools/cosim/run_cosim.sh` prints the per-case SUMMARY
+  unconditionally at the end of the case body, reached by every arm from the
+  `compare` dispatch onward. For C2 it printed *"timing: OUR side asserted against
+  SPEC-M03 §6.1 (T1)"* and *"This case's own result is timing evidence for the ONE
+  stimulus class it drives and for no other"* — **for a case that computed no T1,
+  no T2 and no result at all.** `RV-C1C2` §8 recorded that C2 *"printed no SUMMARY
+  — correctly: it has no result to bound"*; that was true of the PRODUCE-REFUSAL
+  arm, which `continue`s. **The `NO-VERDICT` arm falls through.**
+- **Newly reachable because of my own amendment.** `RV-STAGE1` §5 OQ1/OQ2's
+  record-and-continue rule moved cases that reach no verdict onto the fall-through
+  path without asking what the fall-through prints. **Owner of the defect:
+  dv_lead.**
+- **Class MINOR**, and the reason is bounded: the case's own `CASE …
+  compare_exit=3 tier=NO-VERDICT` line is two lines above it, no `T0`/`T1`/`T2`
+  block was printed for C2 at all, and this verdict says in terms what C2 proves
+  (nothing). But it is a sentence of the form criterion 9 exists to police,
+  asserting coverage for a class this lane has never compared, **and the `SO-` will
+  cite this log**.
+- **Owner of the repair: data_wrangler**, `tools/cosim/run_cosim.sh`. **Carrier**:
+  the next round that opens that file — recommend the C3 dispatch's runner half.
+  **Not a blocker on the C2 re-run**, and it must not delay it; **owed before the
+  `SO-` cites the run.** The repair is a bound, not a suppression: a case that
+  reached no verdict may still print its provenance, and the timing sentence is
+  what must become conditional.
+
+**`FINDING RV-0078-S2-8` (MINOR, structural) — the reference-side producer has no
+fixture of any kind, so every one of its defects costs a full CI round to find.**
+
+- **Statement.** `compare.ml --self-test` synthesises canonical files by hand;
+  `ours_run.ml --self-test` exercises `accumulate` on our side; **nothing anywhere
+  exercises `tb_xgmii_rx_64.v` except the `cosim` job.** Under ADR-0005 its first
+  execution is always CI, so a reference-side defect is discovered one round at a
+  time, after a dispatch. This is the structural reason `FINDING RV-0078-S1-4` has
+  stood since Stage 1 and the structural reason `S2-6` arrived a round late.
+- **A cheap partial repair exists and is recommended, with its limits stated.** A
+  **golden-file fixture**: tb_writer writes, by hand, the canonical file it intends
+  `tb_xgmii_rx_64.v` to emit for a two-frame overlapping schedule, and feeds it to
+  `Canonical.read` in `compare.ml --self-test`. It executes no Verilog and is only
+  as good as the hand that writes it — **but it converts the writer's record order
+  from an unstated assumption into a stated artefact a reviewer can diff against the
+  `$fwrite` call sites, which is where `S2-6` was visible all along, statically,
+  with no simulator.** It does not discharge `FINDING RV-0078-S1-4`, which needs a
+  real reference-side guard trip (C9).
+- **Owner: dv_lead** (instrument design). **Carrier**: the `S2-6` repair round,
+  which should land it alongside the writer repair; if it does not, the `SO-` round
+  owns it.
+
+**Standing findings — what this run does to each.**
+
+- **`FINDING RV-0078-S2-1` — CLOSED** (§2).
+- **`FINDING RV-0078-S1-2`(b) — its production instance is STILL OWED, unchanged,
+  at the next C2 re-run.** C2 printed no `T1` at all this run, so the two-frame
+  clean-numbers-beside-a-divergent-sibling print has still never happened in
+  production. Its mechanism-level closure (the self-test at exit 4) stands and was
+  re-observed this run.
+- **`FINDING RV-0078-S1-4` — STANDS, unchanged**, first dischargeable at C9. The
+  reference-side **guard** still has never fired. The self-test's
+  reference-refusal-sentinel fixture passed again, but it is a synthesised file, not
+  the producer's own guard.
+- **`FINDING RV-0078-S2-3` — STANDS, and gains content.** The fourth outcome now has
+  **two demonstrated species**: *no file was produced* (producer refusal,
+  `compare_exit=N/A`) and *a file was produced and could not be read*
+  (`compare_exit=3`). §7's table has a cell for neither. The finding's carrier is
+  unchanged (the co-sim Phase 3 CD instance round), and this content is added to
+  what that cell must say.
+- **`FINDING RV-0078-S2-2`, `S2-4`, `S2-5`** — untouched; `S2-4` **discharged** and
+  `S2-5` **settled** last round, and §0 check 2 measures that the `S2-4` discharge
+  did what it said.
+
+---
+
+#### 7. The CD — **no edit**, ruled rather than omitted
+
+**Checked, not assumed: this run falsifies no clause of
+`test/attack_plans/CD-xgmii_rx_64_cosim.md`.** §10.2's *"needs no accumulator
+change"* was the falsified clause and is already annotated at §10.2-bis; §10.2 says
+nothing about either producer's record order, and nothing else in §10 does either.
+
+**And a second annotation recording *"the re-run also reached no comparison"* would
+be barred**, not merely unnecessary: that is a **result**, and §10.7 item 3 reads
+*"This document freezes the questions; it answers none of them."* It is also the
+left-standing-summary class §0-ter tabulates four payments for — the log cannot
+drift, a restatement of it can. **§9-bis's addition-only lift is scoped to
+co-sim Phase 2's domain instances and a result is not one** (`RV-C1C2` §3's ruling,
+applied to my own round for the second time).
+
+**So the CD is untouched by this round, and C2's instance keeps its frozen
+prediction, unspent, for the second landing running.**
+
+---
+
+#### 8. §12 read per criterion — nine, one disposition each, at `9de61f1`
+
+| # | criterion | disposition at `9de61f1` |
+|---|---|---|
+| **1** | case 0 byte-identical | **DISCHARGED**, re-observed: `c675517…4cc051` equals the pinned value, printed beside the genuinely pre-widening anchor (run `31080871169`, job `92549154623`, `55e16ae`). **And it now holds across a repair of both producers**, which is the first occasion the check has had anything to survive. |
+| **2** | the sighted placement survives | **DISCHARGED**, re-observed at case 0 and C1 (`frame 0: admit_cycle = 0` printed for both). C2 adds nothing: no `T0` ran, so nothing was printed — though its own `ours.canon`/`theirs.canon` both open `F 0 0`. |
+| **3** | every case reaches a verdict or names why not | **PARTIALLY DISCHARGED; materially advanced; one new debit.** **Newly demonstrated in CI**: the first production firing of `compare`'s own exit **3** → `tier=NO-VERDICT` with **compare's own non-zero exit code on a case line** (last round the same case carried `compare_exit=N/A`); the first production firing of `dump_run`, which shipped **both canonical files and both sidecars in full**, making the defect diagnosable from the log without a re-run — beyond what the criterion asks and the reason §4 could be adjudicated at all; the first production firing of `EXIT_NO_VERDICT` as an **aggregate**, naming the case in its label; and a determinism check reported for a case that reached no verdict, which is what "record and continue" means literally. **Still NOT demonstrated**: the property the criterion protects — *a red case does not cost a LATER case its line* — **because C2 was last in the case set again.** The closing condition is unchanged and now twice deferred: the first landing in which a case that does not reach a clean verdict is followed by another case in the array. **New debit**: `FINDING RV-0078-S2-7` — the case that correctly named why it reached no verdict then printed a SUMMARY presupposing a result. |
+| **4** | T1 prints its numbers on the clean path | **DISCHARGED for production single-frame cases**, re-observed at case 0 and C1, eight words each, expected and observed. **NOT ENGAGED by C2 and NOT FAILED by it**: the criterion's predicate is *every accepted frame in every case*, and acceptance is the comparator's own reading, of which there was none. Limb (b)'s multi-frame production instance remains owed. |
+| **5** | T1's antecedent carried, not inferred | **NOT FURTHER ENGAGED.** No case injects an idle. **And C2's idle sidecar was never read**: `compare` reads *ours*, then *theirs*, then the sidecar, and failed at *theirs* — so the two-entry sidecar path (`idle_counts = [0; 0]`) remains unexercised in production, which the re-run will be the first to exercise. |
+| **6** | the two constructors separately testable | **DISCHARGED**, re-observed: `(e)` at exit 4, `(e′)` at exit 6, distinct fixtures, distinct branches, neither optional. |
+| **7** | every producer's refusal reaches an exit code **(AS AMENDED)** | **NOT ENGAGED BY THIS RUN'S CASE PATH — for the first time, and in the right direction: no refusal guard fired in either producer, at any case.** Limbs (a)/(b)/(c) had nothing to bite on. The self-test's synthesised reference-refusal-sentinel fixture passed again (exit 3), which is **not** the discharge `FINDING RV-0078-S1-4` names. **One new observation, recorded and deliberately NOT converted into an amendment**: the reference producer this run **failed without refusing** — it wrote a grammar-violating file, exited normally, and the harness's rc/existence check (FI-8) passed. That is a failure mode criterion 7 does not reach, and it does not need to: the reader is the designed net for it and the net held (§4 item 2). **Amending a criterion in the reading of a run is what `FINDING RV-0078-S2-5` barred, and it is barred against me twice as hard the round after I amended it.** |
+| **8** | every case's disposition frozen before it ran | **DISCHARGED, and MEASURED rather than asserted for the first time.** `5c01af0` is an ancestor of `9de61f1`; the CD diff across that span is **one hunk, 129 insertions, zero deletions**, entirely §10.2-bis *after* §10.2. **So the annotation I wrote between C2's void run and its re-run is provably innocent of the prediction it sits beside** — which is exactly the property `J-dv_lead-0153` refused to make a reader reconstruct, now checkable in one command. **C2's prediction is unspent for the second time.** |
+| **9** | no claim outside the driven set | **DISCHARGED for this round's artefacts; one debit against the harness.** This verdict lifts bar 1 for nothing, states per case what each case proves, and states in terms that the lane knows nothing about the two-frame class. The harness's own per-case bounding sentence printed correctly for case 0 and C1 and **incorrectly for C2** — `FINDING RV-0078-S2-7`. |
+
+---
+
+#### 9. Cost — Band A, re-read
+
+- **Absolute**: `9.947s` against **300 s**, at N = 3 with all three cases running
+  both producers twice. Comfortably met.
+- **Linearity**: *"each added case costs no more than 2× the single-case
+  measurement."* Case 0 **1.296 s**, C1 **1.298 s**, **C2 1.306 s** — a ratio of
+  **1.008** against a bound of 2, and **the first reading in which every case in the
+  set contributes a real datum** (last round C2's 0.014 s was a refusal and was
+  excluded). **Band A stays MET**, now on three data points rather than two.
+
+---
+
+#### 10. Sequencing — restated, with the reasoning, and one rule pre-registered
+
+**The recommended sequence:**
+
+1. **A tb_writer repair round — `FINDING RV-0078-S2-6`.** The writer-order repair,
+   under §6's seven preserved properties, with the design route the assignee's to
+   choose and to justify against those properties. **`FINDING RV-0078-S2-8`'s
+   golden-file fixture rides with it**, because it is the check that would have
+   caught this statically and it belongs in the same head. **Case set unchanged at
+   `{0, C1, C2}`. `stimulus_gen.ml` stays shut.**
+   **And one instruction that is new, because the same species has now cost two
+   rounds**: the round **enumerates, statically and in its Return log, every
+   remaining place in `test/cosim/**` and `tools/cosim/**` where a one-frame
+   assumption could still be load-bearing** — the reader's state machine, the
+   writers' record order, the idle sidecar's per-frame indexing, `check_timing`'s
+   per-frame maps, the determinism check, `DELIVERY_DEPTH`. **Naming them costs one
+   reading; discovering them costs one round each.**
+2. **My `RV-` on that run** — adjudicating C2's re-run under CD §10.2 **unamended**,
+   with the sha bind of §3 item 4 checked first, and **§3's pre-registered stopping
+   rule in force** if it again reaches no comparison.
+3. **The C3 dispatch, alone**, per §6.2 — unchanged from `RV-C1C2` §10, and its
+   three grounds are unchanged and now stronger: C3's single frame cannot trip
+   either defect; its result may force a REQ-901 spec diff and should not be read
+   under an aggregate naming another case; and criterion 3's plural content is
+   **still** unexercised, so C3 landing behind a red C2 would rest a spec-diff-grade
+   result on a harness property CI has never run. **`FINDING RV-0078-S2-7`'s runner
+   repair rides with C3's runner half.**
+
+**Why another repair round before C3 rather than C3 now**: unchanged, and the case
+is stronger than last round, because the property C3 would have to lean on
+(criterion 3's *a red case does not cost a later case its line*) has now been
+deferred **twice** rather than once.
+
+**And the barred route is barred again, in the same words**: C3 may **not** be
+landed by removing C2 from the case set. Removing a case to make a run green makes
+the lane unable to fail, which is the property CD §0 exists to protect; if schedule
+pressure ever makes it attractive it goes up as **E2**, and the case set is not
+reduced inside DV under any circumstances.
+
+---
+
+#### 11. What this run does NOT mean
+
+1. **The landed, ADJUDICATED case set is still `{case 0, C1}`.** `AP-M03` §7 bar 1
+   lifts for exactly the two classes `RV-C1C2` named and for nothing else. **It does
+   not lift for two clean frames at minimum IFG.**
+2. **The one-frame stimulus bound is UNCHANGED**, for the second landing running.
+3. **Bars 2, 3 and 4 are untouched.** No strobe was compared; no cross-side cycle
+   was adjudicated (§5 is data, hand-read, and says so); the strobe record stays
+   refused; bar 4's C3 cell has still not been reached.
+4. **Both producers producing is not both producers agreeing.** `ours.canon` and
+   `theirs.canon` were never compared. That their dumped octets and decisions look
+   the same to me is **§5's class of observation** — a reading, not a verdict — and
+   it selects no branch.
+5. **Nothing here advances the programme's Phase 2 or Phase 3**, and **no
+   `SO-xgmii_rx_64.md` is opened, advanced or implied.**
+
+---
+
+#### 12. Verdict
+
+**`FINDING RV-0078-S2-1` — CLOSED.** Both producers' repaired guards admitted the
+lawful minimum-IFG schedule on live stimulus: two frames, eight words each, both
+`Accept`, on both sides, with no sentinel and no raise. The reference-side half —
+which its repair round could not execute — is executed and correct. **The repair
+round's structural case-0/C1 invariance argument is vindicated by measurement**:
+both cases reproduce their stimulus hash, their whole T1 profile and their whole T2
+offset vector across the repair. **The fixture pair's scope never reached the
+writer order, which is a statement about the fixture pair and not a defect in the
+repair.**
+
+**C2 — VOID AGAIN, AND RE-RUN OWED UNDER CD §10.2 UNAMENDED.** The case reached
+**no comparison**: both producers produced complete canonical files, and
+`Canonical.read` refused `theirs.canon` at line 9 — *"F line while frame 0 is still
+open"* — so `compare` exited **3**, the case line carried `tier=NO-VERDICT`, and the
+aggregate was `EXIT_NO_VERDICT(8)`. **C2 selects no branch — not α, not β, not γ —
+because α, β and γ dispose of comparisons and there was none. Its prediction stays
+frozen and UNSPENT; its instance is not reopened, widened or amended; and its
+re-run must print `stimulus_sha256=cc1e85a4…5b44a7`, a bind that has now held
+across two landings and one repair of both producers.**
+
+**The cause is `FINDING RV-0078-S2-6` (MATERIAL): the reference-side writer emits
+canonical records in real time, and the pinned grammar requires each frame's `F`,
+`W`s and `D` to form one contiguous block — irreconcilable the moment two frames'
+spans overlap, which the minimum inter-frame gap guarantees at ΔC = 3.** The reader
+is conformant and the writer is not; **the reader's strictness is what stopped a
+producer defect from being reported as `EXIT_DIFFERENTIAL`, which is the exact
+misreport `WO-0049` §8's axis was built to prevent, on its first production
+firing.** **The design gap is mine** — a grammar pinned when this lane drove one
+frame, carried into a two-frame case without re-derivation, which is the same
+species as `S2-1` one round earlier and one layer up. **The repair is tb_writer's,
+in `tb_xgmii_rx_64.v` (and the grammar's own files if the chosen route amends it),
+under the seven preserved properties in §6 — of which the first is that an
+ambiguously-attributable file must fail to read rather than be attributed by a
+heuristic, because the obvious heuristic installs a behavioural assumption about
+the design inside the comparator.**
+
+**Two further findings**: `S2-7` (MINOR) — the per-case SUMMARY presupposes a
+result and printed one for a case with none, newly reachable through my own
+record-and-continue amendment; owner dv_lead, repair data_wrangler, carrier the C3
+runner half, owed before the `SO-`. `S2-8` (MINOR, structural) — the reference-side
+producer has no fixture at all, so every defect in it costs a CI round; the
+golden-file fixture rides with the `S2-6` repair.
+
+**`FINDING RV-0078-S1-2`(b)'s production instance remains OWED at the next C2
+re-run; `FINDING RV-0078-S1-4` STANDS unchanged at C9; `FINDING RV-0078-S2-3` gains
+its second species of the fourth outcome.** **Criterion 8 is measured rather than
+asserted for the first time** — one hunk, 129 insertions, zero deletions, entirely
+beside §10.2 — **so the annotation written between C2's void run and its re-run is
+provably innocent of the prediction it sits beside.** Criterion 7 was **not engaged
+by any case**, and the amendment written for it last round is deliberately **not**
+amended again in the reading of this run.
+
+**A stopping rule is pre-registered here, with the answer not in hand: a third
+C2 landing that reaches no comparison is not a fourth worker repair round — it is a
+design question about whether the pinned transaction form can express overlapping
+frames at all, owned by me, and E2 if any option narrows the case set. Narrowing
+the case set inside DV stays barred.**
+
+**Nothing in this round licenses a claim beyond the two stimulus classes
+`RV-C1C2` named. The lane still knows nothing about two frames.**
+
+**dv_lead, `J-dv_lead-0154`, HEAD `9de61f1` (unmoved). Dated by the commit that
+carries it.**
 
 ---
