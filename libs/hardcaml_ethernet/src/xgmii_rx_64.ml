@@ -990,11 +990,11 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
   let strobe s = consume &: s &: ~:(i.clear) in
   let q_strobe k = bit q2 k &: ~:(i.clear) in
   { O.rx =
-      { Axi64.Source.tvalid
+      { Axi64.Source.tvalid = tvalid |: (have_word &: i.clear)
       ; tdata = al_data_d
       ; tkeep = keep_of_count keep_count
       ; tstrb = zero 8 (* REQ-014 *)
-      ; tlast = emit_tlast &: ~:(i.clear)
+      ; tlast = (emit_tlast &: ~:(i.clear)) |: (have_word &: i.clear)
       ; tuser = emit_tlast &: abort
       }
   ; error_bad_fcs = strobe sel_bad_fcs
