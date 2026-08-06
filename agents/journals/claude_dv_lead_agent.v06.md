@@ -2633,3 +2633,488 @@ reassurance from the path of the `SO-`.
 ### Files-in-this-commit
 - agents/handoffs/WO-0075_cosim-lane-cycle-comparison.md
 - agents/handoffs/WO-0076_family-j-mutation-campaign.md
+
+## [J-dv_lead-0145] 2026-08-10T15:10Z | task:WO-0077 | The era's last campaign sealed: nine classes across two separately-sealed sections, the K × N cross product measured EMPTY before it runs — and the round's largest finding is that my own pre-committed disposition table asks a scorecard to tell three defect classes apart at an assertion that prints nothing it observed
+
+### Trigger
+
+Orchestrator dispatch, spawn short-id `WO-0077/2026-08-10T15:10Z`, HEAD `981331f`
+— verified as my **first action**, before reading anything, per the dispatch's own
+bar and matching the expected SHA exactly, so no rollback or divergence
+disposition fired.
+
+The commission is my own, adopted from `RV-0075`'s Q2 answer: the **family-K
+mutation campaign** as packet `WO-0077`, freeze-first, with its SEALED companion
+in the same commit — **one campaign carrying a declared, separately-sealed
+N-completion section**, not a separate mini-campaign. My own stated terms bind
+the shape: the seal SHALL enumerate the K × N cross product **before it runs** and
+pre-declare every K-class red at an N row as blast radius; and **the falsifiable
+half** — if N-classes asserting `M03-N1`'s and `M03-N4`'s own observables cannot
+be authored, those rows are unqualifiable by mutation at this bench and that SHALL
+be declared before any `SO-`, never discovered by a sixth unqualifying red.
+
+### Inputs
+
+Read at `981331f`, all read-only. **No RTL was opened in this round, at all.**
+
+- `agents/charters/dv_lead.md`; `agents/PROTOCOL.md` §§1–11 — mandatory first
+  actions.
+- `agents/handoffs/WO-0076_family-j-mutation-campaign.md` §0–§16 in full, its
+  pre-run reading note, `WO-0076-VERDICT` §10 (`FINDING WO-0076-S1`, `S2`,
+  `FINDING J-1`, `FINDING J-2`) and §12–§14, and my own appended correction — read
+  as the template this packet follows and as the source of two of the five
+  inherited bars.
+- `agents/handoffs/WO-0076_family-j-mutation-campaign-SEALED-predictions.md` in
+  full — the seal whose form this one takes and whose §5.4 defect I am carrying a
+  bar against.
+- `agents/handoffs/WO-0072_m03-family-k-clear.md` **§9** (the pre-committed D1–D6
+  disposition table, verbatim), §7.5 and §8.6 — the ground for four of six K
+  classes and the subject of `FINDING K-1`.
+- `agents/handoffs/WO-0058_m03-g7-h-mutation-campaign.md` section map — the
+  two-family precedent, read for its structure and not for its content.
+- `test/attack_plans/AP-xgmii_rx_64.md`: **§4.K** in full (both rows, the
+  withdrawn class, the honest kill, the reclassified third kill, the landed-status
+  block), **§4.N**'s `M03-N1`, `M03-N2`, `M03-N3` and `M03-N4` rows in full
+  including `FINDING AP-3`'s correction as it now reads there, and §7's banner.
+- `docs/specs/requirements.md` **REQ-009** and **REQ-015** in full;
+  `docs/specs/modules/xgmii_rx_64.md` **§7**'s Reset bullet, **§6.2**'s state
+  table in full, **§9**'s *"one real exception"* paragraph and its *"When a frame
+  is open"* list, and **§4.1**'s `clear` port row.
+- `test/xgmii_rx_64/test_m03_k.ml` in full (661 lines, both units);
+  `test_m03_n.ml`'s `run_n1` and `run_n4` in full; `test_m03_b.ml`'s seven unit
+  titles; `bench.ml`'s `create` (lines 49–83), `sample_cycle`, `run` (both
+  pre-scan guards, the `?clear` plumbing), `assert_monitors_clean` (599–639),
+  `frames_at`/`one_frame` and `delivered_samples`.
+- `test/cosim/ours_run.ml` (lines 150–170) and `test/cosim/tb_xgmii_rx_64.v`
+  (`rst` at `:62`/`:257`, `cfg_rx_enable` at `:63`) — for §5 item 4's stimulus
+  claim, read at the source rather than carried from `WO-0076`.
+- `agents/journals/claude_dv_lead_agent.v06.md`: `J-dv_lead-0143` (the family-J
+  absorption and `FINDING AP-3`), `J-dv_lead-0144` (my own `RV-0075` round, whose
+  Q2 answer this packet executes).
+- **Not opened**: `libs/**`, `top/**`, `rtl_snapshots/**`, `docs/reports/audit/**`,
+  `scripts/**`, any worker journal.
+
+Independence (PROTOCOL §10, charter §8): every class in this packet is derived
+from a REQ- or SPEC- sentence or from a plan cell that was itself derived from
+one. **No RTL was read, and no class describes a mechanism I have seen.** Where a
+rendering's internal shape is under-determined by the specification, the packet
+asks the auditor for it as a disclosure rather than guessing (`D-K4c`,
+`D-N4a-1`), which is the honest form of not having looked.
+
+### Reasoning
+
+**The round's first real decision was to stop trusting my own class list and work
+the bench's assertion order instead, and that is where everything else came
+from.** I could have written six K classes from `WO-0072` §9's D1/D2/D3 and §4.K's
+Kills cells in an hour. Instead I traced both K units' `fail` sites in source order
+and asked, per class, *which assertion speaks first*. **The answer is that
+`M03-K2`'s FIRST DUT-observable assertion is the whole run's delivered-cycle list,
+and its message names the expected list and prints nothing it observed
+(`test_m03_k.ml:470`).** Every class that moves which cycles carry a delivered word
+— a phantom closure (D1), a lost or late frame B (D2), a leaked word (D3), a
+shifted window — raises **that** assertion, **character for character**, and
+nothing after it.
+
+**`FINDING K-1`, and it is against my own artefact rather than the bench's.**
+`WO-0072` §9 pre-committed D1, D2 and D3 as three *distinct* dispositions with
+three *distinct* `BUG-` citations — D1 citing REQ-009's truncation sentence, D2 its
+last sentence, D3 its first clause — to be applied *"against the CI `build` run at
+the landing commit"*. **That table asks the adjudicator to tell three classes apart
+from what a scorecard prints, and at this row a scorecard prints one identical
+sentence for all three.** Reachable is not separable. And the finding has a second
+half from the same reading: `M03-K2`'s Kills cell says kill 1 is *"reachable at
+THREE distinct sites"*, and measured against the row's own instrument the three
+sites produce **one message** and **two** distinct observed lists. **The clinching
+evidence is inside the same bench**: `M03-N4`'s equivalent assertion, the same
+shape at `test_m03_n.ml:1305`, **prints its observed list**. So this is a defect in
+one message, not a limitation of the form — which is what makes it repairable and
+what makes leaving it unrepaired a choice with a named carrier rather than a
+shrug.
+
+**I refused to repair it here and the refusal is the ordering rule, not
+squeamishness.** §10's freeze says every `test/**` byte this campaign scores
+against is at or before the base SHA and nothing moves until it scores. **Editing
+the assertion that scores four of six classes, inside the window that scores them,
+would void the round by its own rule** — and it would do it while making the seal
+look better. Carrier named: the next commit opening `test_m03_k.ml`.
+
+**The falsifiable half came back AFFIRMATIVE, and the derivation is what matters
+rather than the answer.** I worked both N rows' Observables against their units'
+assertion orders. `M03-N1`'s second clause (*"produces nothing and pulses
+nothing"*) is asserted by a strobe-set emptiness check at `:954`, and its own Kills
+cell names the design that breaks it. `M03-N4`'s four Observable clauses split
+across **two** assertions: clauses 1 and 3 at the delivered-cycle list, clause 2 at
+the exact-strobe-set check — and **neither is the admission gate**. That is the
+whole reason the rows are qualifiable: every one of `M03-N4`'s five historical reds
+came through admission, which is why all five were family-J blast radius, and the
+two classes I authored come through the **abort geometry** and the **report path**
+instead. **I recorded the counterfactual in the packet** — had both assertable
+clauses been reachable only through admission, no class asserting the row's own
+observable could have been authored without being a family-J class, and the row
+would have been unqualifiable — because a falsifiable claim that cannot say what
+would have falsified it is not one.
+
+**`IC-N4b` is the class I am most pleased with and it is not mine.** `FINDING J-2`
+named `M03-N4` as the sole carrier that convicts a design **suppressing** an
+in-flight frame's own report, and recorded that no campaign had ever seeded one.
+That debt has been open across two verdicts. **`IC-N4b` is that design**, it
+reddens `M03-N4` alone, and its green at `M03-J3` measures `FINDING J-2`'s
+subtractive asymmetry from a run rather than from an argument. A finding raised in
+one campaign and paid in the next is the shape this programme is supposed to have
+and rarely achieves.
+
+**Where each inherited bar changed what I sealed, stated concretely because "the
+bar was applied" is not evidence.**
+
+- **`FINDING WO-0074-S1` (complete conjunct lists) changed the seal from
+  incomplete to correct, and it was the largest single correction of the round.**
+  My first rule for every K class had one conjunct: *the unit drives `clear` high
+  during its schedule*. That selects two units and is **false as a complete
+  statement**, because `Bench.create` drives `clear` = 1 for one cycle with an idle
+  word before **every one of the fifty-nine** M03 schedules (`bench.ml:64–68`). A
+  class mishandling a clear with nothing pending would have reddened fifty-nine
+  units against a seal predicting two, and the seal would have scored a correct
+  scope finding as an unnamed-unit finding. **The seal now carries (κ1) ∧ (κ2), and
+  the protecting fact is measured rather than assumed**: every schedule's
+  `first_start` is ≥ 8 octet times, so the earliest start character anywhere in
+  this bench is cycle **1** and no unit presents one on cycle **0**, which is the
+  reset pulse's release cycle. `D-K5b` exists solely to make the auditor discharge
+  that.
+- **`FINDING WO-0074-S4` (the cross product) yielded three different things and
+  one of them is a negative.** It found the fourth member of the four-class
+  collision — `IC-K1`'s arrival at `M03-K2`'s choke point is *branch-dependent*
+  under `D-K1a`, so the scored-cells-only method would not have had it in the
+  inventory at all. It found collision 3 (IC-K1 site (i) and IC-K6's one-leaked-
+  cycle rendering produce the **same observed list** as well as the same message).
+  **And it proved the K × N and N × K cross products EMPTY — eighteen predicted
+  greens — which is the machinery the one-campaign ruling rests on.** At family J
+  the same enumeration cost four blast-radius cells at `M03-N4`; here the census
+  intersection is empty and the price I named before the ruling is discharged by
+  measurement rather than by promise.
+- **`FINDING WO-0076-S1` (arms from the file, never memory) is discharged in the
+  OPEN as well as in the seal.** Five arms at `bench.ml:604`, `:610`, `:616`,
+  `:632`, `:638`, in source order, with arm 4 (`latency tagger errors:`)
+  **preceding** arm 5 (`latency tagger unclean:`) and arm 5 gated on
+  `frames_compared > 0` — the exact ordering `WO-0076`'s seal got wrong from
+  memory. It changed something: `M03-K2` asserts `frames_compared = 2` before
+  reaching the function, so arm 5's gate is satisfiable at every unit this
+  campaign scores, which a seal written from memory would not have checked.
+- **`FINDING WO-0076-S2` (matrix counts re-derived) caught me mid-draft.** The
+  `G!` count is stated as **5 + 1 = 6** in §K and **1** in §N with the arithmetic
+  beside the matrix at both places, and all seven are enumerated with the
+  measurement each carries. **And it caught a worse one**: I had written
+  "the two K units carry 34 DUT-observable assertion sites" and "3 of 34" — a
+  denominator I had not counted. `grep -cE` gives **95** matching `fail` lines in
+  that file, of which 3 carry `test bug`; classifying the rest is a judgement over
+  assertion bodies and not a grep. **So the seal states the numerator exactly (six
+  distinct raise sites, seven under `D-N1c` branch β) and the denominator only as
+  a measured upper bound, and says so.** That is `J-dv_lead-0143`'s own
+  §0.1 conviction applied to me before publication instead of after.
+- **`FINDING RV-0075-3` (no sole-exerciser marked optional) bound §14 and it bound
+  it against a real temptation.** Nine transients is 51.6 minutes and the obvious
+  economy is to drop a class. **`IC-K5` is the only class in the campaign that
+  measures `WO-0072` §7.5's *"invisible at `M03-K1`"* derivation, and `IC-N4b` is
+  the only class that reaches a strobe-set assertion at a frame the enable did not
+  refuse.** Both are named as sole exercisers, both are MANDATORY, and the trade is
+  stated in figures. **No class, cell or lane in this packet is hedged with "if it
+  costs you nothing."**
+
+**One thing I minted rather than inherited, and it is the finding turned into a
+rule.** **Standing rule 8**: where a scored cell's message contains no observed
+data, the seal SHALL say so at the cell, name every other class that reaches the
+same cell, and state what — other than the branch identity — distinguishes them,
+**including "nothing"**. Four of §K's six cells now carry that sentence. A previous
+seal would have written them as exact strings and called them predictions; they
+are predictions about **which assertion speaks at which unit** and about
+eighty-four other units staying green, and about nothing the mutant computed.
+Saying so at the cell is the difference between a weak seal and a seal that
+conceals its weakness.
+
+**What I considered and declined, each with the reason, because the declined list
+is what an auditor mines.**
+
+(a) **Dropping `IC-K6` (D3) to shrink the collision cluster from four classes to
+three** — declined. It lands on an already-crowded cell and adds nothing to
+discrimination, which is the case *for* dropping it; but `WO-0072` §9 committed D3
+as a disposition class in writing, and an `SO-` claiming family K is
+mutation-scored while a named pre-committed class went unseeded is exactly the
+unearned reassurance I spent `RV-0075` correcting out of two documents.
+
+(b) **Inventing an "early leading edge" class to give `M03-K1` a second chance at
+qualification** — declined, and the declining is a real result. I worked it: to
+act *early* the gate would have to see `clear` a cycle ahead, which is not
+physical under the bench's `Before` sampling. The physical off-by-one is **late**,
+and `WO-0072` §7.5 already derived that it is invisible at `M03-K1`. **So the
+honest position is that `M03-K1` has exactly one convicting surface — a carry —
+and `IC-K4` is it.** §5.6 outcome 3 pre-commits what a `NOT SEEDED` there means:
+the row is declared **UNQUALIFIABLE BY MUTATION at its own stimulus**, with the
+derivation, in the verdict and in the `SO-`. That is the N1/N4 falsifiable-half
+discipline applied to a K row, and I would rather declare it than let a seventh
+campaign discover it.
+
+(c) **Specifying `IC-K4`'s carry mechanism myself** — declined absolutely. I have
+not read the RTL and a plain registered strobe would move every pinned strobe
+cycle in the suite, which is a scope violation and not a class. **`D-K4c` asks the
+auditor to name the mechanism or declare NOT SEEDED**, and §4.4 pre-fixes an
+executable discriminator: if the message that speaks is the *cycle* arm rather than
+the *count* arm, the rendering re-timed instead of carrying and disposition 7
+governs. That is a prediction I can be wrong about, which is the point.
+
+(d) **Enumerating `IC-N1`'s blast radius exhaustively** — declined, and the
+narrowing is disclosed. I measured the family-B unit titles and derived that
+`M03-B2`, `M03-B2 /I/`, `M03-B2 /Q/`, `M03-B3` and `M03-B4` are selected by the
+rule alongside `M03-N2`'s six sub-cases; `M03-B4 (b)` is marked **UNWORKED**
+because its two start characters are in different input words. **Standing rule 5
+governs: the RULE governs where rule and instance list disagree.** And working it
+produced something better than a list: **the class runs in two directions** — it
+ADDS a strobe at `M03-N1` (the word starts in `Frame`) and REMOVES one at every
+selected family-B unit (the word starts in `Idle`), so a scorecard showing only
+one direction is a finding against my rule.
+
+(e) **Repairing `FINDING J-1`'s second half, `OBSERVATION L-O1`, the `M03-I4`
+mislabel or `WO-0047` §2 while I was here** — declined; all are `test/**` and all
+are inside the freeze. Carriers unchanged.
+
+(f) **Opening `libs/**` to check whether `IC-K4` is renderable at all** — declined
+absolutely. Charter §8 and PROTOCOL §10, and a packet that reaches for RTL to
+decide whether its own class exists has stopped being spec-derived. The question
+goes to the auditor as a disclosure, which is where it belongs.
+
+**Harvest note (ADR-0018, PROTOCOL §7): NOT DUE, declared rather than skipped.**
+The harvest falls at the `SO-` and at phase gates; this is a campaign-drafting
+round. The span since my last harvest stays **open** and the eight candidates
+banked against it are untouched and unadmitted: the three at `J-dv_lead-0137`, (C)
+at `J-dv_lead-0141`, (D) and (E) at `J-dv_lead-0142`, (F) at `J-dv_lead-0143`, (G)
+and (H) at `J-dv_lead-0144`. **One further candidate is banked from this round**,
+stated with the provenance hidden: **(I)** *An assertion that names its expected
+value without reporting the observed one collapses every distinct cause into one
+indistinguishable effect; a disposition table written against such an assertion is
+a taxonomy rather than a discriminator, and SHALL be checked against the message
+its own tell will produce before the run that applies it.* **LH1**: this round —
+`FINDING K-1`, where three pre-committed disposition classes with three distinct
+remedies all resolve to one character-exact sentence, and a sibling assertion of
+the same shape in the same suite reports its observation. **LH2-g** — no proper
+noun of any kind. **LH3**: without it, a team writes its adjudication rules against
+what it believes the failure means rather than against what the failure will say,
+and discovers the gap in the round that most needs the distinction.
+
+### Actions
+
+- Verified `HEAD` as the **first action, before reading anything**: `981331f`, the
+  spawn SHA, so no rollback or divergence disposition fired.
+- Read the charter, the protocol, `WO-0076`'s packet, seal, reading note and
+  verdict, `WO-0072` §9/§7.5/§8.6, `WO-0058`'s section map, `AP-M03` §4.K and
+  §4.N, REQ-009/REQ-015 and SPEC-M03 §6.2/§7/§9, and both bench files in full.
+- **Traced every `fail` site in `run_k1`, `run_k2`, `run_n1` and `run_n4` in
+  source order** and classified each as bench-side, driven-port or DUT-observable
+  — the trace that produced `FINDING K-1`.
+- **Re-measured at this tree rather than carrying forward**: the unit denominators
+  (59 / 139, `bash tools/dv_checks.sh`); the **clear census** (2 units); the
+  **enable census** (4 units); their **empty intersection**; `create`'s reset pulse
+  and its cycle-0 release; every schedule's `first_start` (all ≥ 8 octet times);
+  `assert_monitors_clean`'s five arms with line numbers; the last `test/**` edit
+  (`22ffe13`); and both cosim producers' `clear`/`cfg_rx_enable` stimulus.
+- **Read back every sealed message literal from its own source line** after
+  drafting, and recorded the line numbers in the seal's §4.0.
+- **Wrote `agents/handoffs/WO-0077_family-k-mutation-campaign.md`** — eighteen
+  sections, nine classes, nineteen disclosures, twelve declarations of what the
+  campaign cannot score, the cross-product enumeration, the per-class permission
+  lists, the allowlist, the ordering rule, the price and three questions.
+- **Wrote `agents/handoffs/WO-0077_family-k-mutation-campaign-SEALED-predictions.md`**
+  — eight standing rules including one minted this round, two separately-sealed
+  sections, both matrices with their arithmetic shown, every rule with its complete
+  conjunct list, the verbatim cells with their raise-site line numbers, the
+  eighteen-cell cross product, three collisions with their discriminators, ten
+  pre-committed dispositions, the mutant-owned table, eleven bounds and ten pass
+  criteria.
+- Ran **no `dune`**, no command that moves `HEAD`, the index or any ref, and no
+  `git` verb outside `rev-parse`, `log`, `status` and `diff`. Committed nothing.
+  **No file under `test/**`, `tools/**` or `libs/**` was written, and the attack
+  plan was not touched.**
+
+### Evidence
+
+Reproducible at this commit.
+
+```
+git rev-parse HEAD          -> 981331f90c66d6269b7f91e77cedebce89480b1c  (spawn HEAD, unmoved)
+git status --porcelain      -> ?? agents/handoffs/WO-0077_family-k-mutation-campaign.md
+                               ?? agents/handoffs/WO-0077_family-k-mutation-campaign-SEALED-predictions.md
+                               M  agents/journals/claude_dv_lead_agent.v06.md
+git log -1 --format=%h -- test/   -> 22ffe13   (the last test/** edit; this commit adds none)
+```
+
+**Denominators and censuses, measured at this tree and not carried forward:**
+
+```
+bash tools/dv_checks.sh
+  -> 59 test/xgmii_rx_64/ | 139 test/**/*.ml | 78 row ids | 62 naive | 62 boundary
+     every check that COULD run passed; 1 obligation OPEN (RFC 1071)
+
+clear census   grep -rn --include=*.ml '~clear\|Clear\.' test/
+  -> test_m03_k.ml:228 (M03-K1), :459 (M03-K2)          TWO units of 59
+     bench.ml (plumbing, K guard, create's reset pulse); test_m03_structural.ml (witness)
+
+enable census  grep -rn --include=*.ml '~enable' test/
+  -> test_m03_j.ml:169, :279, :488 ; test_m03_n.ml:1256  FOUR units of 59
+
+intersection { M03-K1, M03-K2 } ∩ { M03-J1, M03-J2, M03-J3, M03-N4 } = EMPTY
+```
+
+**The reset-pulse conjunct, measured rather than assumed:**
+
+```
+bench.ml:64-68   create () drives an idle word, clear := vdd, cfg_rx_enable := vdd,
+                 one Cyclesim.cycle, then clear := gnd
+                 -> ALL 59 M03 units drive clear high once; release cycle = 0
+first_start      Bench.frames_at -> 8 (lane 0) / 12 (lane 4); the three direct
+                 Arrival.create sites use 8, 12 or 8 + 8k (test_m03_i.ml:285)
+                 -> earliest start character anywhere in this bench is CYCLE 1
+```
+
+**`assert_monitors_clean`'s arms, enumerated from the file at this tree**
+(`FINDING WO-0076-S1`'s bar discharged, not recalled):
+
+```
+bench.ml:599  let assert_monitors_clean t ~row =
+        :604    ": protocol monitor unclean:\n"
+        :610    ": conservation monitor unclean:\n"
+        :616    ": strobe monitor unclean:\n"
+        :632    ": latency tagger errors:\n"          <- arm 4, PRECEDES arm 5
+        :638    ": latency tagger unclean:\n"         <- gated on frames_compared > 0
+```
+
+**Every sealed message literal read back from its own source line at this tree**
+— the seal's §4.0 table, verified after drafting rather than before:
+
+```
+test_m03_k.ml:470  M03-K2 delivered-cycle list   no integer, NO OBSERVED DATA
+test_m03_k.ml:511  M03-K2 error_pulses empty     no integer
+test_m03_k.ml:260  M03-K1 strobe count arm       one mutant-owned integer
+test_m03_k.ml:251  M03-K1 strobe cycle arm       prints observed and expected cycles
+test_m03_k.ml:232  M03-K1 delivered-word count   reached by no class
+test_m03_n.ml:954  M03-N1 strobe emptiness       no integer
+test_m03_n.ml:906  M03-N1 delivered-word count   one mutant-owned integer
+test_m03_n.ml:1305 M03-N4 delivered-cycle list   PRINTS THE OBSERVED LIST
+test_m03_n.ml:1424 M03-N4 exact strobe count     one mutant-owned integer
+```
+
+**`FINDING K-1`'s ground, stated as the two measurements that produced it:**
+
+```
+test_m03_k.ml:470  is M03-K2's FIRST DUT-observable assertion, and its message is
+                   "the delivered-cycle list is not [...] -- the precondition every
+                    partition below depends on"  -- the EXPECTED list, nothing observed.
+                   IC-K1, IC-K3, IC-K5 and IC-K6 all raise it, character-identical.
+test_m03_n.ml:1305 is the SAME assertion shape in the SAME bench and it prints
+                   "delivered-sample cycles are [<observed>], expected [<expected>]".
+=> a defect in one message, not a limitation of the form.
+```
+
+**The breadth figure, with its limit stated** (`FINDING WO-0076-S2`'s discipline
+applied to a denominator I had written and not counted):
+
+```
+grep -cE '(^|[^_a-zA-Z])fail($| )' test/xgmii_rx_64/test_m03_k.ml -> 95  (3 carry "test bug")
+grep -cE '(^|[^_a-zA-Z])fail($| )' test/xgmii_rx_64/test_m03_n.ml -> 94  (33 carry "test bug")
+```
+
+Numerator counted exactly: **six distinct raise sites reached across four units of
+fifty-nine, seven if `D-N1c` returns branch β**. The denominator is quoted only as
+that measured upper bound; the DUT-observable classification is a judgement over
+assertion bodies and **not** a grep, and both artefacts say so.
+
+**Nothing in this round is a test result**: no bench ran, no `dune` was invoked, no
+transient exists, and every claim in both files is either a citation of committed
+text at this tree or a measurement shown above.
+
+### Outcome
+
+**DoD met.** Two files staged, and they are exactly the two the R4 files list
+names: the packet and its SEALED companion, in one commit, base = the staging
+commit (freeze-first, `WO-0073-VERDICT` §7's corrective drafting rule at its
+fourth application). **R-SEAL-1 is satisfied by construction**: the seal is a file
+in this commit's own `Files-in-this-commit` list, so no claim in the packet is a
+withheld result without an artefact.
+
+**The campaign, in one table:**
+
+| section | classes | scored cells | qualifies |
+|---|---|---|---|
+| **§K** | IC-K1 … IC-K6 (six) | 3 distinct raise sites | `M03-K2` (five classes, one qualification); `M03-K1` (IC-K4 alone, or nothing) |
+| **§N** | IC-N1, IC-N4a, IC-N4b (three) | 3 sites, 4 under branch β | `M03-N1` (IC-N1); `M03-N4` (IC-N4a and IC-N4b) |
+
+**The falsifiable half is ANSWERED, affirmatively, with its derivation and its
+counterfactual in the packet** (§2.1): `M03-N1` and `M03-N4` **are** qualifiable
+by mutation at this bench, because clause 2 of `M03-N4`'s Observable is a
+report-path observable and clause 1 an abort-geometry one, and **neither is the
+admission gate** through which all five of the row's historical reds arrived.
+**What remains unqualifiable is declared instead**: `M03-N4`'s zero-delivered
+branch (no legal stimulus), `M03-N3` (`NO-STIMULUS`), `M03-K3` (`NO-ASSERT`), and
+— conditionally and pre-committed — `M03-K1` if `IC-K4` returns `NOT SEEDED`.
+
+**The K × N cross product is enumerated before the run and predicted EMPTY of
+reds** — eighteen cells, twelve K-against-N and six N-against-K — on a measured
+census intersection rather than an argument. **The price I named when I
+recommended one campaign is therefore discharged by measurement**, and pass
+criterion 9 obliges the verdict to report all eighteen individually so the ruling
+that adopted this shape is scored rather than assumed.
+
+**One MAJOR finding raised before the run, against my own artefacts**:
+`FINDING K-1`, in two halves, with two carriers and neither paid here.
+**One declaration**: `DECLARATION K-D1`, on a row whose window contains nothing a
+conformant design acts on. **Nine more declarations** of what the campaign cannot
+score, at §5.
+
+**Not done, deliberately, each with its carrier named**: `FINDING K-1`'s message
+repair (the next commit opening `test_m03_k.ml` — repairing it inside the window
+would void the round); the AP's own edits including `RV-0075`'s three §7 placements
+(the post-campaign `AP-` round, carried by ruling); `FINDING J-1`'s second half;
+`RV-0075-1/2/3`'s repairs (the Phase-2/3 stimulus-widening work order I draft
+**after** this campaign scores, dated by the commit that carries it).
+
+**No `SO-` is opened or offered**, and the lessons harvest is **not due**: it falls
+at the `SO-`, the span stays open, and candidate **(I)** is banked above alongside
+the eight already held.
+
+**Handoff**: both files to the orchestrator for commit in one commit, trailer
+`Agent: dv_lead`, `Work-Order: WO-0077`.
+
+### Open-questions
+
+1. **`FINDING K-1` is a correction to a committed, pre-committed disposition table
+   and the table is not edited.** `WO-0072` §9 still reads as three separable
+   dispositions in history, and it should — a dated artefact is a dated artefact.
+   **Q3 of the packet asks whether that warrants an escalation of its own.** My
+   reading is no: it is a defect in a bench message and in my own table, not in the
+   design, and PROTOCOL §10 mints no `R`-rule for it. **But it changes what a
+   committed table may be used for, and that is the operator's to surface or file.**
+2. **`M03-K1` may end this campaign unqualified**, and §5.6 outcome 3 pre-commits
+   what that means: **UNQUALIFIABLE BY MUTATION at its own stimulus**, declared in
+   the verdict and carried into the `SO-`. **I raise it now rather than at the
+   gate**, because whether an `SO-` may PASS with one landed green `ASSERT` row in
+   that state is the same question `J-dv_lead-0143` raised about `M03-N1` and
+   `M03-N4` — and this campaign answers that one and may open this one.
+3. **Q1 of the packet (K first or N first) is a real choice and I recommended
+   rather than ruled it.** Nine transients is 51.6 minutes of wall in one freeze
+   window; a container incident inside it costs less if the older debt has already
+   scored. I recommend K first for the reasons stated; the operator has the figures.
+4. **The nine-diff manifest is the largest this programme has commissioned** and
+   the delivery order is load-bearing in a way it has not been before: §8 collision
+   1 makes four of six K classes unadjudicable without their branch identity.
+   **Pass criterion 10 says so in terms**, and if a scorecard arrives without run
+   ids I will not score those four rather than infer them.
+5. **Nothing is escalated.** No `BUG-`, no `E`-class item, no spec-queue addition —
+   a nil escalation, declared rather than omitted.
+6. **Carried, unchanged and not this round's to pay**: the charter §3 differential
+   co-sim anchor, undischarged and now blind by **stimulus** per reset class as
+   well as per configuration class and per strobe; `FINDING J-1`'s second half;
+   `WO-0047` §2's 4-octet anti-vacuity question; `OBSERVATION L-O1`;
+   `WO-0073-D3`'s `M03-I4` mislabel; `OBSERVATION K-O1`; AP-M14's §6 invariant; the
+   `precompile_check.sh` side-effect lane; the RFC 1071 anchor; X-7, X-10, X-11
+   deferred; L1–L5 as a separate packet. **The lessons harvest falls at the `SO-`;
+   the span stays open with nine candidates banked.**
+
+### Files-in-this-commit
+- agents/handoffs/WO-0077_family-k-mutation-campaign.md
+- agents/handoffs/WO-0077_family-k-mutation-campaign-SEALED-predictions.md
