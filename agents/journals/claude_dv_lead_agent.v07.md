@@ -702,3 +702,350 @@ verdict is verbatim-relay material for both workers.
 ### Files-in-this-commit
 
 - agents/handoffs/WO-0078_cosim-phase2-3-stimulus-widening.md
+
+## [J-dv_lead-0151] 2026-08-06T09:42Z | task:WO-0078 | The Phase-1 freeze discharged by the per-run clause it was always a special case of — four domain instances frozen before any is dispatched, and my own §7 convicted of leaving the likelier of two outcomes with no branch at all at C3 and C4
+
+### Trigger
+
+Orchestrator dispatch, CD-INSTANCE round. The commission is `WO-0078` §13 item 1
+— *"`CD-xgmii_rx_64_cosim.md`'s co-sim Phase 2 and Phase 3 domain instances …
+**dv_lead's own**, and a **hard precondition** on §6.2 … Owed before Stage 2's
+first case runs, in a dv_lead round of its own"* — restated by my own
+`RV-STAGE1` §9 as the **immediate** next gate with nothing standing in front of
+it, and by that verdict's Open-question 1. `WO-0078` §6.2's stop rule makes a
+case that runs before its instance is committed **void — re-run, not
+adjudicated**, so this round is what stands between the programme and a Stage-2
+dispatch whose result could not be used.
+
+**HEAD verified as my first action, before reading anything**: `git rev-parse
+HEAD` → `965f6ee39382a3fa991c8a87783eceab79f1dd45`, exactly the spawn head
+(`RV-STAGE1` landed). Neither rollback disposition fired and no descendant check
+was needed.
+
+**A declared sibling was in flight** (tb_writer, repairing `FINDING
+RV-0078-S1-2` in `test/cosim/**`). I opened no file in `test/cosim/`, no worker
+journal and **not the `WO-0078` packet** — which is the one restriction that cost
+this round something, and §5 of Outcome below says what and where it is routed.
+
+### Inputs
+
+Read this round, all read-only, none of it RTL:
+
+- `agents/charters/dv_lead.md`; `agents/PROTOCOL.md` (§3, §4.1–4.2, §6, §7, §10).
+- `test/attack_plans/CD-xgmii_rx_64_cosim.md` **in full** at `965f6ee` — the
+  document this round writes into: §0's freeze discipline and its move rule,
+  §0-bis's ruling that REQ-901 governs the permitted set, §0-ter's three-scope
+  table, §1's governing clause, §2/§2-bis, §3's transaction form, §4, §5.1/§5.2,
+  §6's V1–V7, §7, §8's Phase-1 instance, §9's four-item change discipline.
+- `agents/handoffs/WO-0078_cosim-phase2-3-stimulus-widening.md` — §0.1, §1
+  (FI-1/-2/-9/-10/-13/-14), §2.2, §3.1–3.3, §4.2, §6.1–6.3, **§7 in full**, §8,
+  §13, and my own `RV-STAGE1` in §14 (§1's citation rule, §6's four findings, §7's
+  criterion table, §8, §9). **Read, not written** — the sibling holds §14.
+- `docs/specs/requirements.md` — **§0.3** (gap convention, the 84-octet budget),
+  **REQ-005**, **REQ-101**, **REQ-102**, **REQ-103**, **REQ-104**, **REQ-107**,
+  **REQ-108**, **REQ-901** (classes (a)–(f) and the 64-to-1518 sentence).
+- `docs/specs/modules/xgmii_rx_64.md` — **§6.1** (start lanes, preamble
+  positions, the injection clause), **§7** (the ΔC table at both start lanes),
+  **§9** (the error table, row 1).
+- `test/xgmii/arrival.mli` header only — DV-side (REQ-018's link-partner model),
+  for the `?ifg`/`?first_start` contract `WO-0078` FI-2 states. **Not RTL.**
+- `agents/journals/claude_dv_lead_agent.v07.md` — `J-dv_lead-0149` and
+  `J-dv_lead-0150` (the banked-candidate set and the open questions this round
+  inherits).
+
+**No `libs/**`, no `top/**`, no `rtl_snapshots/**`, no `test/cosim/**`.** Every
+expected value written into §10 is derived from frozen spec text named above.
+
+### Reasoning
+
+**1. The lift had to come from the document's own text, and it did — from §0, not
+from §9.** §9's sentence is *"This document is frozen for Phase 1 as written."*
+The tempting reading is that lifting it is a governance act needing an ADR or an
+architect ruling. It is not, and the reason is one clause earlier: **§0 says *"The
+domain is frozen **before each run**"* — a **per-run** obligation.** §9's sentence
+is that obligation's instance for Phase 1's run, not a bar on later instances.
+Read as a bar it would make this lane unable to **advance** rather than unable to
+**fail**, which inverts the property §0 exists to protect. So the lift is: §8's
+instance becomes permanently frozen (it has been probed — `30988038809` at
+`2dbd39b`), and the document opens **for addition only**. I wrote it as §9's own
+four items in §9's own order, in an annotation **beside** §9 rather than an edit
+inside it, which is §0-ter's form at its second use.
+
+**2. Rejected: editing §9's sentence to say "for Phase 1 and Phase 2".** It is one
+character-count cheaper and it is the exact failure this document has already paid
+for twice — §0-ter's left-standing summary and `run_cosim.sh`'s propagated
+"EMPTY" comment. A frozen sentence that gets re-scoped in place leaves no record
+of what it meant when the run that probed it happened. **Rejected: a new file.**
+The stop rule names *this* document; splitting the domain across two files is how
+a comparison ends up with two answers.
+
+**3. Freezing all four instances in one commit, when the stop rule is per case.**
+`WO-0078` §6.2 lands C1+C2, then C3, then C4, and requires only that each case's
+instance precede *that* case. I froze all four now anyway, and the argument is not
+convenience: **C3's and C4's predictions written after C1+C2 had run would be
+predictions written with partial knowledge of the reference's behaviour.** §7's
+own discipline — *"an unpredicted divergence is a finding against **this
+document**"* — is only worth something if the prediction predates every result it
+could have been fitted to. One commit, four instances, none of them run.
+
+**4. The finding I did not expect to make, and it is against my own packet.**
+Writing C3's instance I went to copy §7's branch structure verbatim and found the
+*"branch if the prediction holds"* cell is **"—"**. C1 and C2 are coherent — their
+prediction column asserts **agreement**, so holds → α and fails → γ. C3's and C4's
+prediction column asserts a **divergence** (*"the reference may DROP it"*, *"the
+reference may reject the frame"*), so the same two column headings now say that
+the divergence is the prediction **failing** and that the prediction **holding**
+selects nothing at all. **Agreement at C3 or C4 has no branch**, against §7's own
+opening sentence *"every case's result resolves to exactly one"*.
+
+**Why I graded it material rather than a typo.** §10.0's own arithmetic makes it
+one: every frame in this stage is 64 octets, REQ-901's (e) and (f) *"exclude
+nothing in the 64-to-1518-octet range"*, and (a)–(d) have no instance at this
+boundary — so **branch β is unreachable in co-sim Phase 2** and C3's outcome space
+is exactly two-valued. **A table that names a branch for one of two possible
+outcomes leaves the adjudicator to pick the other after the run**, which is
+verbatim what §12 criterion 8 voids a case for and what §0 exists to prevent. The
+blank is not a missing decoration; it is the half of the table a green result
+would land in.
+
+**How I resolved it without amending anything.** §7's branch **definitions** —
+not its table — already decide it: α is *"the observable agrees inside the
+domain"*. So the agreement outcome **is** α by §7's own words, and §10.3/§10.4
+read it so while carrying §7's γ text and its blank **verbatim**, with the blank
+labelled as the finding rather than silently filled. No expected value moves and
+no prediction is rewritten. **And I bounded the reading in the document**: naming
+α does **not** predict agreement — §7's frozen prediction says the reference may
+drop the frame, and a prediction may not be sharpened after it is frozen. The
+branch is a home for an outcome, not a forecast of one. Recorded as
+`FINDING CD-P2-1`, MINOR, mine, carrier the Stage-2 dispatch; noted as reaching
+§7's C8 and C9 rows too, where no repair is owed because Phase 3 is
+scoped-not-authorised and this document carries no Phase-3 instance.
+
+**5. Three things I checked against spec rather than carrying from my own packet,
+because a domain instance that quotes its own work order is not an instance.**
+(a) **C1's absolute cycles.** SPEC-M03 §7's table pins ΔC = **3 at both start
+lanes** — (L + h) = 24 in both rows — so §6.1's gapless `admit_cycle + m + 3` with
+`admit_cycle` = 0 gives `{3 … 10}` at a lane-4 start exactly as at lane 0. §7's
+C1 cell survives its own re-derivation. I also wrote down the trap beside it:
+**REQ-101's verification column permits a one-cycle difference between our own two
+start lanes and SPEC-M03 §7 pins it tighter**, so a T1 red at C1 is adjudicated
+against §7's table on the ours-vs-spec axis and is **never** a co-simulation
+divergence. (b) **C3's delivered count.** §9 row 1 forwards the frame; REQ-104's
+verification column says *"the same octet count is delivered"*; REQ-103's
+no-FCS-removal exceptions are REQ-105, REQ-108 and REQ-110 aborts and **a bad FCS
+is not among them** — so 60 delivered octets, marked, not 64. (c) **C2's second
+start lane.** §0.3's own budget arithmetic — 8 + 64 + 12 = **84 octet times =
+10.5 cycles** — puts frame 1's start character in **lane 4**. That matters: C2
+drives a lane-4 start as a by-product, and I wrote into §10.2 why that does
+**not** make C1 redundant (C2's lane-4 frame is the second frame at a non-zero
+admit cycle, so a red there could not be attributed between the start lane and the
+re-arm path).
+
+**6. X4 at C4 — recorded, not moved.** C4's whole observable is the
+accept-or-discard decision, and §5.2's X4 excludes *"preamble and SFD octet
+values"*. The trap is reading X4 as covering C4's result: it does not. **Those
+octets are stripped by REQ-102 and appear in no delivered stream on either side**,
+so X4 removes nothing from the delivered-octet comparison — and **it does not
+exclude the decision those octets cause**. If the reference validates the preamble
+and rejects the frame, that is a decision divergence inside REQ-901's list and
+outside every declared class: **γ**, exactly as §7's C4 cell says. I recorded that
+scope beside the instance and recorded, per §9 item 4, that **no run has probed
+X4** — family B's stimulus has never been driven here — so even had this been a
+narrowing it would have been lawful. It is not one: no entry moves.
+
+**7. The citation rule from my own `RV-STAGE1` §1 binds and is written into
+§10.0.** The freeze's anchor is **run `31080871169`, job `92549154623`, at
+`55e16ae`** — the last green run predating the widening — **never the
+`CASE0_PINNED_SHA256` literal inside the file the freeze constrains**. I
+deliberately did **not** copy the hash value into the CD: a second literal is a
+second thing that can drift, and `RV-STAGE1` §1 already carries it with its
+provenance.
+
+**8. Dating, and a records defect I found while deciding it.** §0-ter is headed
+*"(2026-08-09 …)"*; the commits carrying this document's history are dated
+**2026-08-06** by git, and this journal volume heads `J-dv_lead-0149`/`0150`
+**2026-08-11** against commits (`beb9c2a` … `965f6ee`) all dated 2026-08-06. **A
+calendar literal that disagrees with its own commit is not a date but a second,
+weaker record of one.** I had three options: copy the drifted convention (writes a
+known-false field), silently reconcile it (an edit inside frozen sections, barred),
+or **assert no calendar date and let the commit date the annotation** — which is
+`WO-0078`'s own dating rule, written for exactly this. I took the third, said so
+in §9-bis, and recorded the drift as `FINDING CD-P2-2` (MINOR, records defect,
+nothing adjudicated rests on it). **This entry's own header carries the machine
+clock (`date -u`), not the drifted convention**, and the resulting apparent
+backwards jump from the previous entry's header is the drift becoming visible
+rather than a new error — which is why it is flagged here and in Open-question 3
+rather than smoothed over.
+
+### Actions
+
+- Verified HEAD; read the charter, the protocol, the CD in full, `WO-0078`
+  (§§0–13 and §14's `RV-STAGE1`), and the spec sections listed in Inputs.
+- **Appended two sections to `test/attack_plans/CD-xgmii_rx_64_cosim.md`, a pure
+  end-of-file append — 467 lines added, 0 removed, nothing above the previous EOF
+  touched:**
+  - **§9-bis** — the Phase-1 freeze discharged, written as §9's four items in
+    §9's own order (the section; what moved — *no entry, in either direction*; the
+    four justifying clauses, §0's per-run sentence first; and the probe question
+    answered **separately for the freeze sentence's area (YES, Phase 1 ran) and
+    for §10's area (NO, nothing has ever been driven)**), plus the dating rule and
+    a four-item *what this lift does NOT do*.
+  - **§10** — co-sim Phase 2's domain instances. §10.0 (what binds every instance:
+    §0's bar restated verbatim per case, the empty permitted set **at the scope of
+    these four instances**, β shown unreachable, the run-`31080871169` citation
+    rule, the void rule); **§10.1 C1**, **§10.2 C2**, **§10.3 C3**, **§10.4 C4**,
+    each with its stimulus, its spec-derived inside-domain expectation, its named
+    exclusions and its **frozen prediction and branch carried verbatim from
+    `WO-0078` §7**; **§10.5 `FINDING CD-P2-1`**; **§10.6 `FINDING CD-P2-2`**;
+    **§10.7 what §10 does not do** (seven prohibitions, including that it lifts
+    `AP-M03` §7 bar 1 for **nothing** by itself).
+- Opened no file in `test/cosim/`, no worker journal, and not the `WO-0078`
+  packet — the sibling holds all three this round.
+- Ran no git command that writes. **Executed no simulation** (ADR-0005).
+
+### Evidence
+
+Every command below is runnable from a checkout at this commit; the CI references
+are externally verifiable at the run/job ids given (ADR-0003/F5).
+
+- **`git rev-parse HEAD`** → `965f6ee39382a3fa991c8a87783eceab79f1dd45` — the
+  spawn head, unmoved.
+- **`git diff --numstat test/attack_plans/CD-xgmii_rx_64_cosim.md`** →
+  `467  0  test/attack_plans/CD-xgmii_rx_64_cosim.md`. **Zero deletions: the edit
+  is a pure EOF append and no frozen section is touched.**
+- **`git status --short`** → my one file, plus `test/cosim/canonical.ml`,
+  `canonical.mli` and `compare.ml` **modified by the declared sibling in the same
+  working tree**. I staged nothing and touched none of those three; the commit
+  carrying this entry must contain **only** the file listed below (PROTOCOL §5
+  R1/R4).
+- **`grep -n '^## ' test/attack_plans/CD-xgmii_rx_64_cosim.md`** → the previous
+  section list unchanged through `## 9. Change discipline` at line 381, then
+  `## 9-bis …` at 390 and `## 10. …` at 469.
+- **Spec citations, each re-read directly this round** —
+  `docs/specs/modules/xgmii_rx_64.md` §7: *"| lane 0 | 8 | **16** | **3** cycles
+  | 4 |"* and *"| lane 4 | 12 | **12** | **3** cycles | 4 |"*, with *"(L + h) = 24
+  in both rows"*; §9 row 1: *"Received FCS does not match the computed residue |
+  `error_bad_fcs` | frame forwarded in full, `tuser`[0] = 1 on `tlast` |
+  REQ-104"*; `docs/specs/requirements.md` REQ-104: *"the same octet count is
+  delivered"*; REQ-103: *"a frame aborted under REQ-105, truncated under REQ-108
+  or cut short under REQ-110 delivers every octet decoded up to its abort point,
+  with no FCS removal attempted"* (a bad FCS is in none of the three); REQ-101:
+  *"SHALL produce identical output streams for the same frame received at either
+  alignment"* and its verification column's *"The absolute cycle of the first
+  output word may differ by one cycle between the start lanes"*; REQ-102's
+  verification column: *"Drive a frame whose six preamble filler octets and SFD
+  octet are arbitrary data values"*; §0.3: *"8 octets of preamble and SFD, 64
+  octets of frame and 12 octets of gap = **84 octets = 10.5 cycles**"*; REQ-901:
+  *"Classes (e) and (f) exclude **nothing** in the 64-to-1518-octet range"* and
+  *"an exclusion is never a licence to take an expected value from the
+  reference"*.
+- **The freeze anchor, cited as `RV-STAGE1` §1 requires and not from the
+  literal**: `build` run **`31080871169`**, job **`92549154623`**, commit
+  **`55e16ae`** — the last green run predating the widening. **Not re-quoted as a
+  hash value anywhere in the CD**, deliberately.
+- **The Phase-1 probe, for §9-bis item 4**: `build` run **`30988038809`** at
+  `2dbd39b`, `cosim` job **`92247281222`** (as §0-ter records).
+- **The no-run claim for §10's area** rests on `RV-STAGE1` §8 items 1–2 at
+  `8c6429e` — *"The landed case set is `{case 0}`"*, *"The one-frame stimulus
+  bound is UNCHANGED"* — and on run `31087657064`'s log line
+  `=== CASE SET (WO-0078 §6.1 Stage 1: 1 case(s) — 0) ===`.
+- **No simulator, no `dune`, no `iverilog`, no `git` write command was run by
+  me.** Nothing in this entry is offered as a local execution result.
+
+### Outcome
+
+**DoD met for the round as commissioned.** Five items:
+
+1. **The freeze lifted lawfully and dated by this commit** — §9-bis, written as
+   §9's own four items, in an annotation beside §9 rather than an edit inside it,
+   with the probe question answered separately for the two areas it covers. ✔
+2. **Four co-sim Phase 2 domain instances committed — C1, C2, C3, C4 — each with
+   its spec-derived inside-domain expectation and its frozen prediction and branch
+   carried verbatim from `WO-0078` §7.** All four before any is dispatched, which
+   is stronger than the per-case stop rule requires. ✔
+3. **§0's bar is the operative rule for every instance, restated verbatim and
+   per case**, with the two γ routes (a `BUG-` or a REQ-901 spec diff) named as
+   the only resolutions and an entry here excluded explicitly. ✔
+4. **Two findings raised against my own artefacts, neither against any
+   assignee's work**: `FINDING CD-P2-1` (§7's branch table leaves C3's and C4's
+   agreement outcome unbranched and its holds/fails polarity reads backwards;
+   MINOR; mine; carrier the Stage-2 dispatch and the first C3/C4 `RV-`) and
+   `FINDING CD-P2-2` (§0-ter's calendar literal disagrees with its commit; MINOR,
+   records defect). ✔
+5. **`WO-0078` §13 item 1 is discharged for co-sim Phase 2 and DECLARED OPEN for
+   co-sim Phase 3.** §6.3's re-authorisation gate (b) stays unmet and §9-bis and
+   §10.7 both say so rather than omitting it. ✔
+
+**The one thing this round could not do, routed rather than done.** The sibling
+holds the `WO-0078` packet, so I did not open it. **Owed to the next round that
+may write it**: the `State` field's Stage-2 precondition *"it may not be issued
+until §13 item 1's CD domain instance is committed"* is **discharged by this
+commit** for co-sim Phase 2, and §13 item 1 should be marked so with this entry's
+id. **This is a record, not a permission**: Stage 2's dispatch still carries its
+other two preconditions (`FINDING RV-0078-S1-2`'s printer repair, both limbs, and
+§5's wildcard successor), and neither moves here.
+
+**Harvest.** **Not due this round and the span stays open** — PROTOCOL §7 places
+the harvest at every `SO-` and every phase gate, and this is neither. **Banked,
+not minted**, two candidates, taking the running set from twelve to fourteen:
+
+- **Candidate (M)**: *a decision table keyed on whether a prediction "holds" or
+  "fails" must enumerate a branch for every outcome the subject can physically
+  produce, not for every way the prediction can be graded; where the prediction
+  asserts a difference, its two gradings are not the two outcomes.* **LH1**: this
+  round's `FINDING CD-P2-1` — two rows whose prediction was of a divergence left
+  the agreement outcome with no branch, in a table whose own prose says every
+  result resolves to exactly one. **LH2-g** holds: no proper noun of any kind in
+  the rule statement. **LH3**: without it the unbranched outcome is adjudicated
+  after the run, and the adjudication is invisible because the table looks
+  complete — which is the failure a frozen prediction exists to prevent.
+- **Candidate (N)**: *a document that must be frozen before each use should state
+  its freeze per use, not per era; a freeze stated as an era ends by argument, a
+  freeze stated per use ends by the next use existing.* **LH1**: this round — the
+  same document carried both forms, and the per-use sentence discharged the
+  per-era one without an amendment. **LH2-g** holds. **LH3**: without it every
+  later use pays a governance round to prove it is allowed to add, and the
+  cheapest way through that round is to edit the frozen text in place rather than
+  add beside it.
+
+**Handoff**: the two files below go to the orchestrator for commit under trailer
+`Agent: dv_lead`, `Work-Order: WO-0078`, `Journal-Entry: J-dv_lead-0151`. The
+sibling's `test/cosim/**` changes are a **separate commit under its own agent**
+(PROTOCOL §5 R1) and are not mine to stage.
+
+### Open-questions
+
+1. **`FINDING CD-P2-1` wants the second reader `FINDING RV-0078-S1-1` also
+   wanted.** It is a claim that a table I wrote is incomplete in the half a green
+   result would land in, and I resolved it from the same document's prose. If the
+   auditor reads §7's C3/C4 cells and concludes the *"—"* meant something I have
+   not seen — for instance that agreement at C3 was thought impossible — then my
+   §10.3/§10.4 have named a branch the packet deliberately withheld, and that is a
+   different and worse defect than the one I recorded. **I would rather that be
+   checked before C3 runs than after.**
+2. **The Stage-2 dispatch now carries two preconditions, not three.** This commit
+   discharges §13 item 1 for co-sim Phase 2. Outstanding:
+   `FINDING RV-0078-S1-2`'s printer repair (both limbs — and limb (a) is what
+   makes §12 criterion 2 checkable at C1, which is §10.1's own note), and §5's
+   replacement of the wildcard byte-identity requirement. `J-dv_lead-0150`
+   Open-question 3's pricing question — whether one dispatch carries
+   `-S1-1` and `-S1-2` together — is unchanged and still worth answering **before**
+   the dispatch.
+3. **The date drift is real and is now recorded in two places.** This journal's
+   entries and the CD's §0-ter carry calendar literals (2026-08-11, 2026-08-09)
+   that disagree with the commits carrying them (2026-08-06 by git). **This entry
+   uses the machine clock**, so its header appears to move backwards from the
+   previous entry's — deliberately, and flagged here so it is not read as a
+   transcription error. Whether the convention is corrected going forward, and by
+   whom, is the orchestrator's call; **no committed adjudication rests on any of
+   these literals**, which is why I recorded it as MINOR and repaired nothing.
+4. **Co-sim Phase 3's domain instance is owed and unwritten**, and `WO-0078`
+   §6.3's gate (b) will block Stage 3's re-authorisation until it exists. It is
+   deliberately not written here: C5–C9's predictions should be frozen against
+   whatever co-sim Phase 2's four results turn out to be **only** in the sense that
+   the round writing them will know more about the harness — **not** about the
+   reference's dispositions on those classes, which §7 has already frozen.
+
+### Files-in-this-commit
+
+- test/attack_plans/CD-xgmii_rx_64_cosim.md
