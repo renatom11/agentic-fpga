@@ -5667,3 +5667,269 @@ time, `date -u` read at the start of this round, matching the environment's
 own `currentDate` context of 2026-08-06).
 
 ---
+
+### data_wrangler — Stage 2, C3 landing (§6.2), the runner half, `FINDING
+RV-0078-S2-7`'s repair riding, RETURNED
+
+**Abort-first head check**: `git rev-parse HEAD` =
+`b10546c5eb513f77fd666e6e6071bdd208abd10e`, exactly the dispatch's stated
+spawn-head ("C3 constructed: one payload bit flipped against a correct FCS
+…") — tb_writer's own stimulus half of this same landing. `git status
+--porcelain` empty at spawn. Proceeded without the mismatch procedure.
+
+**Scope, read against §6.2's table, `RV-C2ALPHA` §9 and §14's own C3-landing
+entries before a line was written.** One file: `tools/cosim/run_cosim.sh`.
+Not `test/cosim/stimulus_gen.ml` (tb_writer's own half, landed above at this
+same spawn-head — read for the case ids it defines, `"C3"` confirmed present
+in `known_cases`/`build_case`, never opened for edit: outside this seat's
+write scope). Not `test/attack_plans/**` (dv_lead's; CD §10.3 read in full
+for C3's predicted disposition, never staged). Two items, per the dispatch:
+(1) the case-array reorder `RV-C2ALPHA` §9 item 2 amends Stage 2's landing
+order to, and (2) `FINDING RV-0078-S2-7`'s repair, which that same item
+names as riding this round's runner half unchanged.
+
+**Item 1 — the case array becomes `("0" "C1" "C3" "C2")`.** `RV-C2ALPHA` §9
+item 2's own reasoning (quoted in full in the script's own new ROUND 7
+header comment, not paraphrased there or here): case 0 stays first (its
+frozen-baseline gate is precedence 1, unmoved — `WO-0078` §3.3 item 1); C3
+moves to third, C2 to last, so that a not-clean C3 is followed by C2 in the
+same run — the first time the §12 criterion 3 plural property ("a red case
+does not cost a LATER case its line") has ever been exercised at zero cost
+in this lane's three landings on it. **Lawful, checked directly against the
+source rather than assumed**: binds are per case, not per position — C1's
+and C2's own stimulus shas are printed by `stimulus_gen.exe` itself, inside
+each case's own SUMMARY, never recomputed or re-pinned by this script — so
+reordering the array changes only the ORDER the loop visits ids in, and
+touches no literal this script owns except the array itself. Case 0's own
+`CASE0_PINNED_SHA256` literal — the one sha this script DOES own and check —
+is untouched, and case 0 is still visited first, so its frozen-baseline gate
+still fires before any other case's pipeline runs, exactly as before the
+reorder. Stub Scenario 1 (Evidence) demonstrates the reorder mechanically: a
+clean N=4 run prints `CASE 0`, `CASE C1`, `CASE C3`, `CASE C2` in exactly
+that order, and the `hdr "CASE SET …"` line's own `${CASES[*]}` expansion
+confirms it independently. I did not implement any enforcement of
+`RV-C2ALPHA` §9 item 3's "C2 is now a standing regression case" beyond what
+already exists: C2's own CASE line and SUMMARY print exactly as any other
+case's do, at its new position; the regression judgement itself is dv_lead's
+at the RV-, per that item's own words ("adjudicated as a regression"), never
+this script's — I record this as a design choice rather than an omission,
+since inventing a same-value comparison inside the harness would be exactly
+the kind of unrequested mechanism `WO-0078` §10 bars.
+
+**Item 2 — `FINDING RV-0078-S2-7`'s repair.** The defect, restated from the
+finding rather than from the dispatch's own summary of it: the per-case
+SUMMARY block was printed unconditionally at the tail of the loop body, so
+any case that reached that point without an earlier `continue` — NO-VERDICT,
+TIMING-NO-VERDICT, TIMING-UNASSERTABLE, or the wildcard's own INTERNAL —
+printed the T1-assertion sentence and the §12 criterion 9 coverage sentence
+for a comparison that was never computed. This is exactly what happened to
+C2 in production at `RV-C2RERUN` (compare exit 3, tier NO-VERDICT, no T0/T1
+anything printed above it). **Repair**: a new function, `print_case_summary`
+(defined immediately above the CASE LOOP), is now the single call site
+every per-case exit path reaches — the three PRODUCE-REFUSAL sites that used
+to `continue` past any SUMMARY at all (stimulus_gen, run1's own pipeline,
+run2's own pipeline) now call it too, with an honest "no result" content,
+before their own `continue`; the tail-of-loop-body site that used to BE the
+unconditional SUMMARY block now calls it, keyed by a new `CASE_HAS_RESULT`
+flag set alongside `CASE_TIER` in every arm of the `case "$DIFF_RC"`
+statement (1 for CLEAN/DIFFERENTIAL/TIMING — WO-0049 §8's reached-a-verdict
+family, exactly as the file's own EXIT CODES section already documents that
+axis; 0 for NO-VERDICT/TIMING-NO-VERDICT/TIMING-UNASSERTABLE/INTERNAL — the
+did-not-reach-a-verdict family, the identical enumeration). Every call site
+prints the same provenance lines (reference pin, simulator versions, runner
+image, stimulus sha256 or `N/A`) and only the timing sentence's PRESENCE
+depends on the flag — "the timing sentence is what must become conditional,"
+the finding's own words, implemented literally rather than by inventing a
+different mechanism.
+
+**A design decision beyond the finding's own narrow text, made and recorded
+rather than silently taken**: the finding's own repair was diagnosed against
+the NO-VERDICT fall-through specifically; the dispatch's own instruction
+named a wider set — "PRODUCE-REFUSAL / NO-VERDICT / any did-not-reach-a-
+verdict tier" — as all owed the same honest, non-claiming SUMMARY. I
+implemented the wider set, which means the three PRODUCE-REFUSAL sites
+(previously printing NO SUMMARY at all, which `RV-C1C2` §8 had called
+"correct" for that era's narrower repair) now also get a SUMMARY, with a "NO
+RESULT" content rather than none. I judge this consistent with, not a
+departure from, the finding's own general statement ("a case that reached no
+verdict may still print its provenance") and with this file's own standing
+discipline that every case gets a printed record (§12 criterion 3, extended
+here from the CASE line to the SUMMARY beside it) — but it is a reading
+beyond the finding's literal diagnosis, and I record it as such rather than
+presenting it as the only possible implementation. One further decision
+inside that: a case whose run1 comparison reached a real result (say CLEAN)
+but whose run2 (the determinism check's own second pipeline run) then
+PRODUCE-REFUSES is treated as NO RESULT for SUMMARY purposes — `has_result`
+is forced to 0 there regardless of run1's own tier — because ADR-0015 D3's
+reproducibility guarantee is exactly what an unconfirmed run2 leaves
+unestablished, so citing run1's result alone would overclaim what was
+actually verified; the CASE line itself is untouched and still reports
+run1's own tier honestly (Stub Scenario 4, Evidence, demonstrates both
+halves of this in one run).
+
+**One wording correction, made against the packet rather than silently
+followed.** The dispatch that carried this repair to this seat cited it as
+resting on *"the amended criterion 7."* Reading `WO-0078` §12 directly
+(Inputs) rather than trusting the paraphrase: criterion 7 (amended at
+`RV-C1C2-SETTLEMENT` §1) governs refusal-code distinctness — a different,
+unrelated property (per-guard identity in the printed record). It is
+criterion 9, "No claim outside the driven set," that `FINDING RV-0078-S2-7`'s
+own text actually invokes: *"this verdict says in terms what C2 proves
+(nothing). But it is a sentence of the form criterion 9 exists to police,
+asserting coverage for a class this lane has never compared."* The script's
+own new comments and this entry cite 9, not 7, for that reason. This is the
+same discipline my own prior round (Stage 2 C1+C2) and tb_writer's own
+Stage-2 rounds have each already demonstrated on other figures in this
+packet — a dispatch's own shorthand is not read as authoritative when the
+packet it is summarizing says otherwise.
+
+### Evidence
+
+```
+$ git rev-parse HEAD
+b10546c5eb513f77fd666e6e6071bdd208abd10e
+$ git status --porcelain
+                                    # empty at spawn, and again just before finishing
+
+$ bash -n tools/cosim/run_cosim.sh && echo "SYNTAX OK"
+SYNTAX OK
+
+$ shellcheck tools/cosim/run_cosim.sh; echo "exit: $?"
+exit: 0        # zero findings, both before and after this round's edits
+```
+
+**Stub-toolchain scaffold** (built under this spawn's own scratchpad
+directory, deleted after use per the durability clause below): a fake repo
+tree with fake `dune`/`iverilog`/`vvp` on `PATH` and fake
+`stimulus_gen.exe`/`ours_run.exe`/`compare.exe` standing in for the three
+pinned OCaml binaries at their exact call sites, each deriving the case id
+and run label from the paths or cwd the REAL, committed script passes them,
+so the script's own control flow runs unmodified against inputs I control.
+Case 0's stub stimulus content is fixed and its sha256 is pre-computed;
+`CASE0_PINNED_SHA256` is overridden to that value **in the stub copy only**
+(never in the committed file) so the frozen-baseline gate — a real,
+unmodified check in every scenario below — passes without needing a
+preimage of the real committed pin. Five scenarios, kept compact per this
+round's own instruction, targeted specifically at the reorder and the S2-7
+no-result SUMMARY path:
+
+```
+1. clean pass, N=4 (0, C1, C3, C2), all CLEAN         -> exit 0
+   CASE lines in exactly this order: 0, C1, C3, C2 (confirms the reorder;
+     `hdr "CASE SET …"` line's own ${CASES[*]} expansion agrees)
+   case 0's own SUMMARY timing sentence BYTE-FOR-BYTE identical to the
+     pre-round (b10546c) text (diffed directly, Reasoning) -- "a case WITH
+     a result keeps today's SUMMARY byte-for-byte" confirmed, not assumed
+
+2. C3 forced to compare-exit 3 (NO-VERDICT) -- reproduces the EXACT
+   production shape FINDING RV-0078-S2-7 was written about, at C3's own
+   new (third) position                                 -> exit 8
+   CASE C3: tier=NO-VERDICT; its own SUMMARY: "NO RESULT ... claims
+     nothing about timing, content, or coverage" -- no T1-assertion text
+   CASE C2 (the LATER case, per the new order): still printed its own
+     CASE line AND its own full-result SUMMARY, unaffected -- this is
+     `RV-C2ALPHA` §9 item 2's plural property, exercised live in the same
+     run that also exercises the S2-7 repair
+
+3. C1's stimulus_gen forced to refuse (rc=2)             -> exit 3
+   CASE C1: stimulus_sha256=N/A, tier=PRODUCE-REFUSAL; its own SUMMARY now
+     PRINTS ("NO RESULT ...") where the pre-round code printed nothing at
+     all for this site (a `continue` before any SUMMARY call existed)
+   CASE C3, CASE C2 (later cases): unaffected, own lines and summaries
+
+4. C3's run1 CLEAN, C3's run2 (determinism check) vvp refused (rc=4)
+                                                          -> exit 3
+   CASE C3 line: tier=CLEAN (run1's own result, correctly unaltered)
+   case C3 determinism: NOT CHECKED (run2 refusal reason printed)
+   C3's own SUMMARY: "NO RESULT ... run1's own tier was CLEAN, unconfirmed
+     reproducible" -- demonstrates the CASE line and the SUMMARY can
+     legitimately disagree in what they report, by design (Reasoning)
+
+Negative control: `print_case_summary`'s own `has_result` conditional
+patched to `if true` (ignore the flag) on a throwaway copy, Scenario 2
+re-run                                                   -> exit 8 (same)
+   C3's own SUMMARY REVERTS to printing "timing: OUR side asserted against
+     SPEC-M03 §6.1 (T1) ... this case's own result is timing evidence" for
+     a case whose own compare invocation never ran a comparison at all --
+     the EXACT defect FINDING RV-0078-S2-7 describes, reproduced on demand.
+     Confirms the repair is load-bearing, not cosmetic; copy discarded
+     immediately after this one run.
+```
+
+All four scenarios plus the negative control matched the intended design;
+the negative control failed exactly as the repair avoids. Full per-scenario
+output is not reproduced a third time here (captured during the round, not
+retained); nothing here is offered as a CI result — the stub scaffold and
+every fake binary it used lived entirely under this spawn's own scratchpad
+subdirectory and were deleted in full before finishing, including the
+negative-control copy.
+
+**What is CI-deferred, and why** (ADR-0005, unchanged from every prior round
+in this lane): the real `dune build`/`iverilog` compile/`vvp` execution
+against the actual OCaml and Verilog sources, and against C3's own real
+stimulus (constructed by tb_writer's sibling half at this same spawn-head),
+cannot run in this container. The rewritten control flow (the reorder,
+`print_case_summary` and its four call sites, the `CASE_HAS_RESULT` flag
+threaded through all seven `DIFF_RC` arms) was validated locally against a
+stub toolchain standing in for the three pinned binaries at their exact call
+sites (four scenarios plus one negative control, Evidence above) — genuine
+confidence in the SHELL LOGIC, not a substitute for the landing `cosim` CI
+run, which remains the first and only real execution of C3's actual
+stimulus through the actual Hardcaml M03 design and the actual Icarus
+reference, and the first place either producer's own disposition of a
+bad-FCS frame (`WO-0078` §7's C3 row, CD §10.3: "the reference may DROP it")
+becomes an observed fact. This script does not special-case C3 anywhere —
+confirmed by re-reading the diff after finishing: no string `"C3"` appears
+in any conditional this round added, only in the new header commentary — so
+whatever C3's real run reports (agreement, or the predicted DROP-and-diverge
+branch γ), the same per-case machinery every prior case already used is what
+surfaces it, exactly as `RV-C2ALPHA` §9 item 1 requires.
+
+**Durability clause**: this round's scratchpad work lived entirely under
+this spawn's own subdirectory of the shared session scratchpad
+(`.../scratchpad/wo0078c3/`, distinct from the leftover directories of prior
+data_wrangler rounds already present there — `wo0078_repair`, `wo0078_s2`,
+`wo0078s2`, `wo0078_localcheck` — none of which were opened or touched this
+round) and was removed in full (`rm -rf`) before this entry was written; no
+file was left behind outside the repository checkout, and nothing was
+written to `/tmp` directly this round (the deviation flagged in my own prior
+round's entry did not recur).
+
+### §12 criteria this round bears on
+
+Criterion 3 ("every case reaches a verdict or names why not... a case that
+is skipped... fails") — unchanged mechanically by this round, but now
+DEMONSTRATED at N=4 with a not-clean case NOT last in the array (Scenario 2)
+for the first time in this lane's history, per `RV-C2ALPHA` §9 item 2's own
+observation that the property had gone unexercised for three landings.
+Criterion 9 ("No claim outside the driven set") — this round's entire
+Item-2 repair exists to serve this criterion for the SUMMARY block
+specifically, per the finding's own citation (see the wording correction
+above); Scenario 2 and the negative control together are the check that the
+repair actually does what criterion 9 requires. No other criterion is
+touched by this round's own two items.
+
+### Files changed
+
+Exactly one, plus this packet's own Return log and this round's journal
+(`git status --porcelain` confirms; no `test/cosim/**`, no
+`test/attack_plans/**`): `tools/cosim/run_cosim.sh`.
+
+**Refused or blocked**: nothing refused, nothing blocked. No spec ambiguity
+was met beyond the wording correction recorded above (criterion 7 vs 9),
+which was resolved by reading the packet directly rather than escalated; no
+RTL leaked into context (`libs/**`, `top/**`, `bin/**`, `rtl_snapshots/**`
+were not read); no licensing-taint suspicion; no untestable requirement; no
+effort anomaly (one round, in line with `WO-0078` §9's per-landing
+estimate).
+
+— data_wrangler, spawn `WO-0078-DW-STAGE2-C3/2026-08-06T13:53Z` (no explicit
+"work-order id + spawn UTC timestamp" token was present in this round's own
+dispatch prompt; recorded honestly per this packet's own §14 precedent for
+the identical situation — my own `J-data_wrangler-0001`/`0003`/`0005`/`0006`
+and tb_writer's `J-tb_writer-0035` et seq. — rather than presented as one
+copied verbatim: the timestamp above is this entry's own UTC header time,
+`date -u` read at the start of this round, matching the environment's own
+`currentDate` context of 2026-08-06).
+
+---

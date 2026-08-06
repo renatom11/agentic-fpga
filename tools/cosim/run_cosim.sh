@@ -207,6 +207,101 @@
 #       kept rather than erased so the citation rule is checkable against
 #       its own history.
 #
+# ROUND 7 (`WO-0078` §6.2 Stage 2, the C3 landing, data_wrangler's own round;
+# companion to tb_writer's landed `test/cosim/stimulus_gen.ml` half at
+# `b10546c`, which is what makes C3 real stimulus rather than an unknown case
+# id -- and to `RV-C2ALPHA` §9, dv_lead's own sequencing verdict on the C2
+# re-run, which is what makes item (1) below a lawful amendment rather than
+# an invented reorder). Two changes:
+#   (1) `CASES` becomes `("0" "C1" "C3" "C2")` -- C3 THIRD, C2 LAST, not the
+#       order the ids were introduced in. `RV-C2ALPHA` §9 item 2, quoted
+#       rather than paraphrased: "the reason is §12 criterion 3's plural
+#       content: a red case does not cost a LATER case its line. It is
+#       unexercised after three landings -- twice deferred because the only
+#       not-clean case was last in the array, and a third time because
+#       nothing was not-clean at all ... Placing C3 third makes a not-clean
+#       C3 be followed by C2 in the same run, which exercises the property
+#       at zero cost the first time C3 diverges -- and costs nothing if it
+#       does not." **Lawful, checked, restated here rather than re-derived**:
+#       case 0 stays FIRST -- its frozen-baseline gate is precedence 1 and
+#       reports before any case runs, untouched by this round (`WO-0078`
+#       §3.3 item 1, see the array's own comment below, unmoved). **Binds
+#       are per case, never per position** (`RV-C2ALPHA` §9 item 2): no
+#       stimulus moves, so C1's and C2's own shas (printed by
+#       `stimulus_gen.exe` itself via each case's own SUMMARY, not
+#       recomputed or re-pinned by this script) are untouched by the
+#       reorder -- this script only changed the ORDER the loop below visits
+#       ids in, not what any id names.
+#       `RV-C2ALPHA` §9 item 3's own consequence, restated here because it
+#       changes what a reader should expect of EVERY FUTURE run of this
+#       file, not just this one: **"C2 is now a standing regression case.
+#       Every subsequent landing re-runs it, so the two-frame class, the sha
+#       bind and the re-arm path are re-checked at C3, at C4, and at every
+#       landing after them. The first landing that fails to reproduce
+#       [C2's stimulus sha] with two matching frames is adjudicated as a
+#       regression before any new case's result is read."** This script
+#       does nothing special to enforce that -- C2's own CASE line and
+#       SUMMARY carry it exactly as every other case's do; the adjudication
+#       is dv_lead's, at the RV-, never this script's own.
+#   (2) `FINDING RV-0078-S2-7`'s repair, riding this round's runner half per
+#       `RV-C2ALPHA` §9 item 1 ("FINDING RV-0078-S2-7's runner repair rides
+#       C3's runner half, unchanged"): the per-case SUMMARY block used to be
+#       printed UNCONDITIONALLY at the tail of the loop body, so a case that
+#       reached the tail without hitting a `continue` first (NO-VERDICT,
+#       TIMING-NO-VERDICT, TIMING-UNASSERTABLE, INTERNAL) printed
+#       T1-assertion language and the WO-0078 §12 criterion 9 coverage
+#       sentence for a comparison that was never computed -- observed in
+#       production for C2 at `RV-C2RERUN` (compare exit 3, tier NO-VERDICT,
+#       no T0/T1/T2 anything printed above it). Quoted from the finding
+#       rather than paraphrased: **"The repair is a bound, not a
+#       suppression: a case that reached no verdict may still print its
+#       provenance, and the timing sentence is what must become
+#       conditional."** `print_case_summary` (defined below, immediately
+#       before the CASE LOOP) is now the single call site every per-case
+#       exit path reaches -- the three PRODUCE-REFUSAL sites (stimulus_gen,
+#       run1's own pipeline, run2's own pipeline) that used to `continue`
+#       straight past any SUMMARY at all, and the tail-of-loop-body site
+#       that used to be the old unconditional block. It prints the same
+#       provenance lines (reference pin, simulator versions, runner image,
+#       stimulus sha256 where one was ever computed) for EVERY case, and
+#       prints the timing sentence only when the case's own tier is one of
+#       WO-0049 §8's reached-a-verdict family (CLEAN, DIFFERENTIAL, or
+#       TIMING -- exactly the family the EXIT CODES section below already
+#       documents that axis by). Every other tier -- PRODUCE-REFUSAL at any
+#       of the three pipeline stages, NO-VERDICT, TIMING-NO-VERDICT,
+#       TIMING-UNASSERTABLE, or INTERNAL (the did-not-reach-a-verdict
+#       family, the identical enumeration) -- gets a SUMMARY that says so,
+#       names the reason, and claims nothing else. **A case WITH a result
+#       keeps today's SUMMARY byte-for-byte**: this round changes no line
+#       printed for CLEAN, DIFFERENTIAL or TIMING (confirmed by `diff`
+#       against the pre-round text, Return log).
+#       ONE WORDING NOTE, recorded rather than silently corrected: the
+#       dispatch that carried this repair to this seat cited it against
+#       "the amended criterion 7." Read directly against `WO-0078` §12
+#       rather than copied from the dispatch, criterion 7 governs
+#       refusal-code distinctness (a different, unrelated property) and it
+#       is criterion 9, "No claim outside the driven set," that the
+#       finding's own text actually invokes ("this verdict says in terms
+#       what C2 proves (nothing). But it is a sentence of the form
+#       criterion 9 exists to police"). This comment and the Return log
+#       cite 9, not 7, for that reason -- the same "read the source, not
+#       the shorthand" discipline ROUND 6's item (1) above already
+#       established for this file.
+#
+# C3 lands ALONE this round (`RV-C2ALPHA` §9 item 1: "the C3 dispatch,
+# alone, per §6.2 -- CONFIRMED"), not C4 (a separate, future round). C3's
+# own predicted disposition (`WO-0078` §7 row 3, CD §10.3): our side
+# ACCEPTS and MARKS the bad-FCS frame in full (60 delivered octets,
+# `tuser`[0] = 1 -- REQ-005 forbids store-and-forward); the reference MAY
+# DROP it entirely -- "the commonest store-and-forward instinct." If it
+# does, `compare` legitimately reports a divergence and this run's
+# aggregate reds with C3's own CASE line naming it. This script does NOT
+# special-case C3 anywhere: the same per-case machinery every prior case
+# already used -- the DIFF_RC case statement, the aggregate precedence, the
+# SUMMARY repair above -- is what lets that divergence surface cleanly, and
+# the disposition it resolves to (a REQ-901 spec diff versus a `BUG-`) is
+# dv_lead's adjudication at the RV-, never this file's.
+#
 # THE THREE CHECKS (WO-0046 §4, order followed exactly; `WO-0078` §6.1/§6.2
 # widen 4.1 and 4.3 from ONE stimulus to a CASE SET -- see ROUND 5/6 above)
 #
@@ -795,7 +890,17 @@ EXIT_CASE0_MOVED=13
 # REFUSE both new cases rather than run either). Case 0 is always processed
 # first -- everything this script does with it (the frozen-baseline check,
 # below) depends on that ordering, not on searching the array for "0".
-CASES=("0" "C1" "C2")
+#
+# ROUND 7 amendment (`WO-0078` §6.2 Stage 2, the C3 landing, `RV-C2ALPHA` §9
+# item 2, this round): the array becomes `("0" "C1" "C3" "C2")` -- C3 THIRD,
+# C2 LAST, not the order the ids were introduced in. See ROUND 7's own
+# header note above for the full reasoning (the §12 criterion 3
+# plural-property argument) and for why the reorder is lawful (case 0 stays
+# first; binds are per case, never per position; no stimulus moves, only
+# the order this loop visits ids in). From this round on C2 is a STANDING
+# REGRESSION CASE -- re-run and re-checked at every landing after this one,
+# not merely the case this landing happens to add (`RV-C2ALPHA` §9 item 3).
+CASES=("0" "C1" "C3" "C2")
 
 # WO-0078 §3.3 item 1 -- the last GREEN pre-widening `cosim` job's own
 # printed value, pinned here rather than re-derived. The VALUE below is
@@ -1246,6 +1351,54 @@ record_case_internal() {
   fi
 }
 
+# print_case_summary -- FINDING RV-0078-S2-7's repair (`WO-0078` §6.2 Stage
+# 2, the C3 landing, `RV-C2ALPHA` §9 item 1; ROUND 7's own header note above
+# has the full account). The single call site every per-case exit path now
+# reaches, replacing the old unconditional SUMMARY block that used to sit
+# only at the tail of the loop body -- the defect that let a case which
+# reached the tail without a `continue` first (NO-VERDICT,
+# TIMING-NO-VERDICT, TIMING-UNASSERTABLE, INTERNAL) print T1-assertion
+# language and the §12 criterion 9 coverage sentence for a comparison that
+# was never computed (observed in production for C2 at `RV-C2RERUN`:
+# compare exit 3, tier NO-VERDICT, no T0/T1/T2 anything printed above it).
+# Quoted from the finding: "The repair is a bound, not a suppression: a
+# case that reached no verdict may still print its provenance, and the
+# timing sentence is what must become conditional."
+#
+# $1 = case id.
+# $2 = "1" if this case reached a comparison verdict -- compare exit 0/1/4,
+#      i.e. CLEAN, DIFFERENTIAL, or TIMING-negative, WO-0049 §8's own
+#      reached-a-verdict family, exactly as the EXIT CODES section above
+#      already documents that axis -- "0" otherwise: PRODUCE-REFUSAL at any
+#      of the three pipeline stages (stimulus_gen, run1, run2), NO-VERDICT,
+#      TIMING-NO-VERDICT, TIMING-UNASSERTABLE, or INTERNAL, the identical
+#      did-not-reach-a-verdict enumeration.
+# $3 = this case's own stimulus_sha256, or the literal "N/A" if generation
+#      itself never produced one to hash.
+# $4 = a short human-readable reason; printed only when $2 is "0".
+#
+# A case WITH a result ($2 = 1) keeps today's SUMMARY byte-for-byte -- this
+# function changes no line printed for CLEAN, DIFFERENTIAL or TIMING.
+print_case_summary() {
+  local cid="$1" has_result="$2" stim_sha="$3" reason="$4"
+  hdr "SUMMARY (case $cid)"
+  say "  reference pin: $REF_SHA"
+  say "  simulator: $IVERILOG_VERSION_BANNER / $VVP_VERSION_BANNER"
+  say "  runner image: $RUNNER_IMAGE"
+  say "  stimulus sha256: $stim_sha"
+  if [ "$has_result" -eq 1 ]; then
+    say "  timing: OUR side asserted against SPEC-M03 §6.1 (T1); the reference's own"
+    say "          cycles are RECORDED AND NOT ADJUDICATED (T2, REQ-901's exclusion)."
+    say "          This case's own result is timing evidence for the ONE stimulus"
+    say "          class it drives and for no other (WO-0078 §12 criterion 9)."
+  else
+    say "  timing: NO RESULT for this case -- it did not reach a comparison verdict"
+    say "          ($reason). FINDING RV-0078-S2-7: a case with no result claims"
+    say "          nothing about timing, content, or coverage; see this case's own"
+    say "          CASE line above for the exit code and tier that produced this."
+  fi
+}
+
 for CASE_ID in "${CASES[@]}"; do
   hdr "CASE $CASE_ID"
   CASE_DIR="$WORK/case_$CASE_ID"
@@ -1262,6 +1415,7 @@ for CASE_ID in "${CASES[@]}"; do
     GEN_REASON="$(produce_reason "$GEN_RC" "$CASE_STIM")"
     record_case_refusal "$EXIT_BUILD" "PRODUCE (stimulus_gen, case $CASE_ID: $GEN_REASON)"
     say "CASE $CASE_ID: stimulus_sha256=N/A compare_exit=N/A tier=PRODUCE-REFUSAL ($GEN_REASON)"
+    print_case_summary "$CASE_ID" 0 "N/A" "PRODUCE-REFUSAL (stimulus_gen, case $CASE_ID: $GEN_REASON)"
     continue
   fi
   [ -n "$GEN_OUT" ] && say "$GEN_OUT"
@@ -1306,6 +1460,7 @@ for CASE_ID in "${CASES[@]}"; do
     record_case_refusal "$EXIT_BUILD" "PRODUCE ($PIPE_FAIL_REASON)"
     say "  [cost] case $CASE_ID pipeline wall time (run1): $(format_ns "$RUN1_NS")"
     say "CASE $CASE_ID: stimulus_sha256=$STIMULUS_SHA compare_exit=N/A tier=PRODUCE-REFUSAL ($PIPE_FAIL_REASON)"
+    print_case_summary "$CASE_ID" 0 "$STIMULUS_SHA" "PRODUCE-REFUSAL ($PIPE_FAIL_REASON)"
     continue
   fi
   RUN1_NS="$(elapsed_ns_since "$RUN1_START_NS")"
@@ -1378,27 +1533,41 @@ for CASE_ID in "${CASES[@]}"; do
 # self-test and determinism check every classified arm above it reaches --
 # it is not a special case any more, it is the last case, which is what
 # "record-and-continue like every other arm" means literally.
+  # ROUND 7 (`WO-0078` §6.2 Stage 2, the C3 landing, `FINDING RV-0078-S2-7`'s
+  # repair, this round): every arm below now also sets `CASE_HAS_RESULT` --
+  # "1" for the WO-0049 §8 reached-a-verdict family (CLEAN, DIFFERENTIAL,
+  # TIMING), "0" for the did-not-reach-a-verdict family (NO-VERDICT,
+  # TIMING-NO-VERDICT, TIMING-UNASSERTABLE, INTERNAL) -- the same
+  # enumeration the EXIT CODES section above already partitions this exact
+  # axis by. `print_case_summary` (defined above the CASE LOOP) reads this
+  # flag at the loop body's tail to decide whether the timing sentence
+  # prints; nothing else in this arm's own behaviour changes.
   case "$DIFF_RC" in
     0)
       CASE_TIER="CLEAN"
+      CASE_HAS_RESULT=1
       ;;
     1)
       CASE_TIER="DIFFERENTIAL (REQ-901 content divergence)"
+      CASE_HAS_RESULT=1
       AGG_CONTENT=1
       dump_run "$CASE_DIR/run1" "case $CASE_ID run1"
       ;;
     3)
       CASE_TIER="NO-VERDICT (compare could not read a canonical file/idle sidecar, exit 3)"
+      CASE_HAS_RESULT=0
       record_case_refusal "$EXIT_NO_VERDICT" "NO-VERDICT (case $CASE_ID: compare could not read a canonical file, exit 3)"
       dump_run "$CASE_DIR/run1" "case $CASE_ID run1"
       ;;
     4)
       CASE_TIER="TIMING (T1 negative against SPEC-M03 §6.1, exit 4)"
+      CASE_HAS_RESULT=1
       AGG_T1_NEG=1
       dump_run "$CASE_DIR/run1" "case $CASE_ID run1"
       ;;
     5)
       CASE_TIER="TIMING-NO-VERDICT (T0 unaligned, exit 5)"
+      CASE_HAS_RESULT=0
       AGG_T0=1
       dump_run "$CASE_DIR/run1" "case $CASE_ID run1"
       ;;
@@ -1411,6 +1580,7 @@ for CASE_ID in "${CASES[@]}"; do
       # reach a verdict?" axis WO-0049 §8 built this whole table around --
       # see EXIT_TIMING_UNASSERTABLE's header note for the full argument.
       CASE_TIER="TIMING-UNASSERTABLE (T1 declined to certify, exit 6)"
+      CASE_HAS_RESULT=0
       AGG_T1_UNASSERTABLE=1
       dump_run "$CASE_DIR/run1" "case $CASE_ID run1"
       ;;
@@ -1428,6 +1598,7 @@ for CASE_ID in "${CASES[@]}"; do
       # of those labels over it would be exactly the fabricated
       # classification the finding bars.
       CASE_TIER="INTERNAL (compare exit $DIFF_RC outside its documented contract {0,1,3,4,5,6})"
+      CASE_HAS_RESULT=0
       record_case_internal "$CASE_ID" "$DIFF_RC"
       dump_run "$CASE_DIR/run1" "case $CASE_ID run1"
       ;;
@@ -1475,6 +1646,13 @@ for CASE_ID in "${CASES[@]}"; do
     record_case_refusal "$EXIT_BUILD" "PRODUCE ($PIPE_FAIL_REASON)"
     say "  [cost] case $CASE_ID pipeline wall time (run2): $(format_ns "$RUN2_NS")"
     say "  case $CASE_ID determinism: NOT CHECKED -- run2 did not produce a comparable pair ($PIPE_FAIL_REASON)"
+    # ROUND 7: run1's own tier ($CASE_TIER, printed on the CASE line above)
+    # is not asserted as a claim here -- ADR-0015 D3's reproducibility
+    # guarantee is precisely what run2's own failure leaves unconfirmed, so
+    # this case's SUMMARY reports NO RESULT (has_result=0) regardless of
+    # what run1's compare returned, same as the other two PRODUCE-REFUSAL
+    # sites above.
+    print_case_summary "$CASE_ID" 0 "$STIMULUS_SHA" "PRODUCE-REFUSAL (determinism check's own second run, case $CASE_ID: $PIPE_FAIL_REASON; run1's own tier was $CASE_TIER, unconfirmed reproducible)"
     continue
   fi
   RUN2_NS="$(elapsed_ns_since "$RUN2_START_NS")"
@@ -1497,18 +1675,18 @@ for CASE_ID in "${CASES[@]}"; do
   fi
 
   # WO-0078 §3.2's own instruction: "the existing per-run SUMMARY block is
-  # retained per case." Reference pin/simulator/runner image are shared
-  # across the whole case set (one build, one provenance); the stimulus
-  # sha256 and the timing caveat are this case's own.
-  hdr "SUMMARY (case $CASE_ID)"
-  say "  reference pin: $REF_SHA"
-  say "  simulator: $IVERILOG_VERSION_BANNER / $VVP_VERSION_BANNER"
-  say "  runner image: $RUNNER_IMAGE"
-  say "  stimulus sha256: $STIMULUS_SHA"
-  say "  timing: OUR side asserted against SPEC-M03 §6.1 (T1); the reference's own"
-  say "          cycles are RECORDED AND NOT ADJUDICATED (T2, REQ-901's exclusion)."
-  say "          This case's own result is timing evidence for the ONE stimulus"
-  say "          class it drives and for no other (WO-0078 §12 criterion 9)."
+  # retained per case." FINDING RV-0078-S2-7's repair (ROUND 7, this round):
+  # this call site used to BE the SUMMARY block, printed here
+  # unconditionally -- exactly the defect this round fixes; see
+  # `print_case_summary`'s own definition, above the CASE LOOP, for the
+  # reasoning in full. Every OTHER per-case exit path (stimulus_gen
+  # refusal, run1 refusal, run2 refusal) now calls the same function before
+  # its own `continue`, so this call site is reached only by a case that
+  # ran its whole loop body to the end without one -- but it is
+  # `print_case_summary` itself, not this call site, that decides whether
+  # the timing sentence prints, keyed off `$CASE_HAS_RESULT` set in the
+  # `case "$DIFF_RC"` statement above.
+  print_case_summary "$CASE_ID" "$CASE_HAS_RESULT" "$STIMULUS_SHA" "$CASE_TIER"
 done
 
 # ------------------------------------------------------------------ #
