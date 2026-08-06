@@ -358,3 +358,256 @@ against LH1–LH3 at the harvest.
 
 ### Files-in-this-commit
 - agents/handoffs/WO-0074_family-m-mutation-campaign.md
+
+## [J-dv_lead-0138] 2026-08-10T05:30Z | task:none | The eighth campaign is absorbed into the plan — and writing the blast-radius table row by row is what shows that the plan's own "kills its M row by construction" sentence is the difference between seven kills and twenty-one
+
+### Trigger
+
+Orchestrator dispatch, spawn short-id `AP-batch-10/2026-08-10T05:30Z`, HEAD
+`bb81fe5` — verified as my first action, per the dispatch's own bar, and matching
+the expected SHA exactly. The commission is my own: `WO-0074-VERDICT` §14 item 1,
+the post-campaign `AP-` round, named there as *the next commit opening
+`test/attack_plans/**`, and the first thing that should run*. `WO-0074` §8's
+ordering rule froze this file for the campaign's whole window; the campaign has
+scored, so the window has reopened and this is that round.
+
+### Inputs
+
+Read at `bb81fe5`, all read-only. **No RTL was opened in this round, at all.**
+
+- `agents/charters/dv_lead.md`; `agents/PROTOCOL.md` — mandatory first actions.
+- `agents/handoffs/WO-0074_family-m-mutation-campaign.md`, the whole
+  `WO-0074-VERDICT` section (§1–§15) plus §8's ordering rule, §10's collision
+  inventory, §11's carrier/bound-row rule and §12's pass criteria — this round's
+  entire source material.
+- `test/attack_plans/AP-xgmii_rx_64.md` in full: §0.1's set-claim rule, §1's
+  closed status vocabulary, §2's obligation 4 inventory, §4.M's rows and its
+  landed-status block, §4.B/E/F/G/H/N's carrier rows, §7's X-rows and its U-1/U-2
+  block, §9's change log — and §4.L's post-campaign block **as the template this
+  round follows**.
+- `agents/journals/claude_dv_lead_agent.v06.md`, `J-dv_lead-0137` — my own
+  adjudication entry, for the figures and the three banked harvest candidates.
+- `tasks/BOARD.md` and `agents/journals/claude_orchestrator_agent.v02.md` — for
+  the era tally's prior figure (41 sealed / 40 killed / 1 survived).
+- **Quoted, not verified**: `docs/reports/audit/WO-0074-mutations/README.md` is
+  cited at two places in the plan text for design-side facts (`a_open` at line
+  296; the in-word report vector's missing FCS-report member). I did **not** open
+  it in this round and I did not open the RTL either; both are quoted from the
+  committed artefact with the provenance and the non-verification stated **in the
+  plan text itself**, at `M03-M5` and at §7's U-3.
+
+Independence (PROTOCOL §10, charter §8): this round derives nothing from RTL.
+The one bounded RTL read in this thread was the seven one-line transient patches
+at `J-dv_lead-0137`, disclosed there; nothing read then reaches a test, and
+nothing is read now.
+
+### Reasoning
+
+**Why one commit and not several.** The verdict enumerated nine debts against
+this file and every one of them is a statement about the *same* eight classes and
+the *same* twenty-one reds. Splitting them would have produced a plan in which a
+row says QUALIFIED before the block that defines what qualification excludes
+exists — which is the failure family L's round was built to avoid. One coherent
+edit set, history kept and ground replaced, exactly as `J-dv_lead-0135` did it.
+
+**The keep-and-replace discipline, and why it is not cosmetic here.** §4.M's
+landed-status block made four closing claims. Two were promises to a future
+round: item (3) carried `OBSERVATION M-O1` *to* the campaign, item (4) declared
+the family unscored. Both are now paid, and the honest way to record that is to
+**leave both sentences standing** and say beside them what the world did — never
+to edit a dated claim into its own outcome. The third is different in kind and
+worse: item (4)'s second sentence says a class killing a carrier kills its M row
+*"by construction"*. That is `FINDING M-3`, and this round is where it is
+convicted for the second time.
+
+**The blast-radius table is the round's real work, and writing it out is what
+made the number visible.** Twenty-one reds, seven kills. Fourteen reds — two
+thirds of the campaign's whole output — qualify nothing. Every one of those
+fourteen landed on a **bound carrier**, which is precisely the population the
+"by construction" sentence quantifies over. So the sentence is not merely loose:
+under it this family reports **twenty-one** kills instead of seven, and the only
+thing standing between those two numbers is §11's corrected rule. I wrote the
+per-class table into the plan rather than the summary figure, because the
+summary figure is the thing a later scorecard would quote and the table is the
+thing that survives §0.1.
+
+**Where each item landed, and why there rather than elsewhere.** Qualification is
+a property of an **instrument**, so it belongs in the row whose instrument it is —
+which is why the seven M rows *and* their seven carriers each carry it, each
+saying in terms that the kill is **one** kill shared, never two. The two
+permanent negatives (`M03-M8`, `M03-M9`) belong in their own cells because a
+scorecard reader meets them there and nowhere else. `DECLARATION WO-0074-D1` is a
+statement about what **no mutation class can reach**, which is exactly what §7's
+U-1/U-2 block is for — so it lands there as **U-3**, with its row-level bars at
+`M03-B3`, `M03-N2` and `M03-M10`. The four seal findings land in the
+post-campaign block, where family L's `WO-0073-D3`/`D4` are, because they are
+findings about **how a seal is written** and the next seal's author reads the
+plan, not the packet.
+
+**Why U-3 is written beside the U-table's heading rather than inside it.** The
+heading says *"TWO INSTRUMENTS"* and the block is dated. U-1 and U-2 are
+**bench-side** unreachabilities — an assertion closed by a sibling in the same
+unit. U-3 is **design-side**: the report grammar has no member for the defect to
+displace. Same consequence class, different cause, and folding the second into
+the first would have destroyed the distinction while silently falsifying a
+committed count. So the heading and its table are left unedited and the third is
+recorded beneath with the difference stated — this section's own standing
+disposition, the one it paid for at `RV-0039-VERDICT` F-2.
+
+**Three precision errors I made and caught before finishing, recorded because
+they are the same error each time.** (a) I first wrote `M03-E1`'s shadowed
+members as *"the remaining fifteen, and every lane-4 member"* — double-counting,
+since the lane-4 members are inside the sixteen. (b) I first wrote `M03-F2`'s as
+*"every lane-4 member of this file"*, a claim about a file I had not measured.
+(c) I first called the co-simulation lane's strobe blindness *"the third
+recorded blindness of that lane"*, an ordinal I had not counted; there are two.
+All three are set claims asserted in prose without measurement — §0.1's own
+failure mode, committed by §0.1's author while writing a block that cites §0.1.
+They cost nothing because they were caught, and I record them because the rate at
+which they appear is the argument for the rule.
+
+**What I declined to do, and it was commissioned as conditional.** The verdict
+says `WO-0047` §2's 4-octet member reorder *"should ride this round **if** it
+opens `test_m03_f.ml`"*. This round does not open it, and it should not: the
+dispatch scopes me to the plan file, and a plan round does not improve a carrier
+(`J-dv_lead-0112`, applied to `OBSERVATION L-O1` and to `WO-0073-D3` before it).
+The condition is unmet, so the item is **recorded at `M03-F2` with its carrier
+named** — the next commit opening that file — rather than evaporating into a
+good intention. Same disposition for `FINDING M-4` (carrier: the cosim-lane
+round, which opens `tools/`) and for the co-simulation lane's strobe blindness,
+whose §7 banner entry is that round's to write, not this one's.
+
+**The fourth column, and why the plan carries the era tally at all.** A void
+class is not a kill and not a survivor. The tally lives in `tasks/BOARD.md`,
+which is the orchestrator's; but the *argument* for the fourth column is a
+statement about what a mutation class can and cannot establish, and that argument
+belongs where the classes are argued. So the plan carries the line — 49 sealed,
+47 killed, 1 survived, 1 void by declaration, 47 + 1 + 1 = 49 — with the reason
+beside it: collapsing the void into *killed* overstates coverage, and collapsing
+it into *survived* libels a bench that was never given anything to catch.
+
+### Actions
+
+- Verified HEAD as the first action, before reading anything: `bb81fe5`, the
+  expected SHA.
+- Read the charter, the protocol, the whole `WO-0074-VERDICT`, and this plan in
+  full including §4.L's post-campaign block as the template.
+- Edited **twenty row lines** in one file, adding to their `Kills` cells (and, at
+  `M03-M6`/`M03-M7`, a pointer clause in the `Stimulus` cell where each finding
+  is stated): the seven M rows QUALIFIED with carrier and run id; `M03-M5` SCORED
+  AND UNQUALIFIABLE at this design on the narrow form; `M03-M8`/`M03-M9`
+  unscoreable and unscored; the seven carrier rows (`M03-F3`, `M03-G1`,
+  `M03-E1`, `M03-H1`, `M03-G7`, `M03-G8`, `M03-F2`) each recording that its kill
+  is the **same single kill** as its bound row; and the three declared negatives
+  (`M03-H3`, `M03-B3`, `M03-N2`).
+- Inserted the **FAMILY M — POST-CAMPAIGN STATUS** block after the landed-status
+  block, keeping the latter whole: campaign identifier table with all seven
+  branch heads and run ids, the verified ordering rule, re-measured denominators,
+  MUST-STAY-GREEN per class, the twelve-row status table, the blast-radius
+  accounting, §4(c)'s result, the four seal findings, the era tally with its
+  fourth column, and nine "what this does and does not buy" refusals.
+- Added **`DECLARATION WO-0074-D1` as U-3** at §7, beside U-1/U-2, leaving their
+  heading and table unedited and stating the bench-side/design-side distinction.
+- Appended the §9 change-log row.
+- Re-measured the plan's status counts by a status-cell pass **before and after**
+  the edits, and re-ran `tools/dv_checks.sh`'s census.
+- Ran no `dune`. Ran no command whose effect moves HEAD, the index or any ref.
+  Committed nothing. `test/**` outside this file is untouched.
+
+### Evidence
+
+Reproducible at this commit.
+
+```
+git rev-parse HEAD                                     -> bb81fe5   (spawn HEAD, unchanged)
+git status --porcelain                                 -> M test/attack_plans/AP-xgmii_rx_64.md   (one path)
+git diff --stat ca1bb80 HEAD -- test/ libs/ tools/ docs/specs/   -> empty  (the campaign base's tree)
+grep -rh --include=*.ml 'let%expect_test' test/xgmii_rx_64/ | grep -c .   -> 59
+grep -rh --include=*.ml 'let%expect_test' test/ | grep -c .               -> 139
+grep -rh 'let%expect_test' test/ | grep -c .                              -> 140   (FINDING M-4, unrepaired)
+bash tools/dv_checks.sh                                -> 78 declared / 62 boundary / 62 naive; every check that COULD run passed
+```
+
+**Plan counts, measured from this file by a status-cell pass over every row
+table, before AND after the edits — not carried forward:**
+
+```
+before:  78 rows | ASSERT 62 | NO-ASSERT 7 | NO-STIMULUS 4 | STRUCTURAL 4 | GAP 1
+after:   78 rows | ASSERT 62 | NO-ASSERT 7 | NO-STIMULUS 4 | STRUCTURAL 4 | GAP 1
+```
+
+**Unmoved, and that is the rule rather than an oversight**: qualification measures
+an instrument, discharges no row and moves no count. Every one of the 78 row lines
+still parses to exactly six cells after the edits, verified mechanically; the
+diff removes 20 lines and re-adds them modified, and removes nothing else.
+
+**Discharge census, re-measured rather than quoted (§0.1)**: 78 row ids declared,
+**62** named in a committed unit title under the trailing-digit boundary matcher
+and 62 under the naive one, − `M03-A4` (NO-ASSERT, named in a title) + `M03-F5`
+(by citation) = **62 of 62**. No unit and no title moved in this round.
+
+Externally verifiable references carried into the plan — CI run ids and their
+conclusions, all quoted at the rows and in the block: control `31052415338`
+(`success`, `ca1bb80`); IC-M1 `31054172382`, IC-M2 `31054177436`, IC-M3
+`31054174810`, IC-M4 `31054177858`, IC-M6 `31054177532`, IC-M7 `31054179722`,
+IC-M10 `31054180874` — each `failure` at the `build` job's step 6, `success` at
+step 5, `success` at its `cosim` job.
+
+**Nothing in this round is a test result**: no bench ran, no `dune` was invoked,
+and the plan's claims are all citations of runs already in history at
+`70cf13c`'s verdict.
+
+### Outcome
+
+**DoD met**, against `WO-0074-VERDICT` §14 item 1's enumeration, item by item:
+
+| commissioned | where it landed |
+|---|---|
+| Seven M rows QUALIFIED with carriers and run ids | `M03-M1`…`M03-M4`, `M03-M6`, `M03-M7`, `M03-M10` Kills cells, **and** the seven carrier rows' own Kills cells, each stating the kill is one kill shared |
+| `M03-M5` SCORED AND UNQUALIFIABLE at this design | `M03-M5`'s Kills cell, narrow form, with the design-side fact quoted and its non-verification disclosed |
+| `M03-M8`/`M03-M9` unscoreable | their own Kills cells, with the consequence that a full scorecard is not full coverage of §4.M |
+| `FINDING M-3`'s correction of item 4 | the post-campaign block's blast-radius accounting: 21 reds, 7 kills, 14 qualifying nothing |
+| `FINDING M-1`/`M-2` MEASURED | `M03-M6`/`M03-M7` Kills cells + a pointer in each Stimulus cell where the finding is stated, and at `M03-G7`/`M03-G8` |
+| `OBSERVATION M-O1` / `FINDING M-O1a` CLOSED in both rows' favour | `M03-M2` and `M03-M4` Kills cells, and the block; the second-content repair is **not** commissioned |
+| `DECLARATION WO-0074-D1` | §7 as **U-3**, beside U-1/U-2, plus row-level bars at `M03-B3`, `M03-N2` and `M03-M10` |
+| `FINDING WO-0074-S1`/`S2`/`S3`/`S4` | the post-campaign block, with S4's corrected method banked as a bar on the family J and K seals |
+| Era tally, fourth column named | the post-campaign block: 49 / 47 / 1 / 1 |
+| Change-log row | §9, thirteen numbered items, counts stated before and after |
+
+**Not done, deliberately, each with its carrier named in the plan**: `WO-0047`
+§2's 4-octet member reorder (condition unmet — this round does not open
+`test_m03_f.ml`); `FINDING M-4`'s matcher repair (cosim-lane round); the
+co-simulation lane's strobe-blindness §7 banner entry (cosim-lane round);
+`WO-0073-D3`'s `M03-I4` mislabel and `OBSERVATION L-O1` (their own carriers,
+unchanged).
+
+**No `SO-` is opened or offered**, and the lessons harvest is **not due this
+round**: ADR-0018 and PROTOCOL §7 place it at every `SO-` and every phase gate,
+`WO-0074` §13 item 1 named the `SO-` as its carrier, and this is a plan round.
+The span since my last harvest stays **open and declared, never skipped**, with
+the three candidates banked at `J-dv_lead-0137` untouched and unadmitted here.
+
+**Handoff**: `test/attack_plans/AP-xgmii_rx_64.md`, to the orchestrator for
+commit. Commissioned next, unchanged in order: the cosim-lane round (five items
+from one measurement), then the family J campaign packet, then family K, then the
+`SO-`.
+
+### Open-questions
+
+1. **`DECLARATION WO-0074-D1`'s source-side half is adopted in the plan, not
+   verified by me**, and the plan says so at U-3 in terms. Carried forward from
+   `J-dv_lead-0137` Open-question 1 because it is now written into a standing
+   declaration rather than a verdict: confirming at the source that the in-word
+   report vector carries no FCS-report member is cheap, and I recommend the
+   auditor's re-execution sampling take it.
+2. **`M03-M5`'s `a_open` line reference is a design-side citation inside a DV
+   artefact.** I judge it admissible — it is quoted from a committed audit
+   artefact, attributed, and marked unverified — but it is the first line number
+   of RTL this plan has carried, and if the auditor reads that as an
+   independence smell I will replace it with a citation to the audit README
+   without the line.
+3. **Nothing is escalated.** No `BUG-`, no `E`-class item, no spec-queue
+   addition — a nil escalation, declared rather than omitted.
+
+### Files-in-this-commit
+- test/attack_plans/AP-xgmii_rx_64.md
