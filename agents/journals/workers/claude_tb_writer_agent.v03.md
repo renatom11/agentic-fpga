@@ -1157,3 +1157,377 @@ round); no effort anomaly (one round, as `RV-C2RERUN` §10 item 1's own
 - test/cosim/tb_xgmii_rx_64.v
 - test/cosim/compare.ml
 - agents/handoffs/WO-0078_cosim-phase2-3-stimulus-widening.md
+
+## [J-tb_writer-0038] 2026-08-06T13:35Z | task:WO-0078 | Stage 2's C3 landing — one 64-octet bad-FCS frame constructed as the case-table's fourth row, the corrupted octet's position and identity measured directly against case 0's own frame, verified by genuine local compile-and-run against the real DV-side link-partner model
+
+### Trigger
+Orchestrator, dispatching WO-0078 Stage 2's C3 landing — "the stimulus half
+of WO-0078 STAGE 2's SECOND LANDING — case C3 ALONE, per §6.2 and dv's
+RV-C2ALPHA sequencing." No explicit "work-order id + spawn UTC timestamp"
+token (PROTOCOL §4.1's literal form) was present in this round's own dispatch
+prompt — recorded honestly here per this packet's own §14 precedent for the
+identical situation (`J-tb_writer-0035`, `J-tb_writer-0036`, `J-tb_writer-0037`)
+rather than presented as a token copied verbatim: the timestamp above is this
+entry's own UTC header time, `date -u` read at the start of this round,
+matching the environment's own `currentDate` context (2026-08-06).
+
+### Inputs
+- **Abort-first head check**: `git rev-parse HEAD` = `50983b17938a4cb2901e8780a7d54d4443112d8a`,
+  exactly the dispatch's stated spawn-head ("C2 compared agreed and accepted
+  on branch alpha…"). `git status --porcelain` empty. Proceeded without the
+  mismatch procedure.
+- `agents/charters/tb_writer.md` (full read, this round).
+- `agents/PROTOCOL.md` §2–6, §10 (full read, this round; §1, §7–9, §11 also
+  read for the surrounding gate/escalation/amendment context).
+- `agents/handoffs/WO-0078_cosim-phase2-3-stimulus-widening.md` — read via
+  its section headers (`grep -n '^#'`, the file exceeds the single-read size
+  limit at 364.7 KB) and then in full at the sections load-bearing for this
+  round: §6.2 (the case table and the Stage-2 landing split), §7 (the frozen
+  predicted dispositions, C3's row and the three branches α/β/γ), §8 (bar
+  4's C3-specific movement), §9 (the pre-committed cost band), §11 (the
+  Stage-2 per-landing DoD), §12 (all nine pass criteria, with particular
+  weight on criteria 1, 2, 3 and 8), and §14 in full from `RV-C1C2` through
+  `RV-C2ALPHA`'s own §9 (the C3-alone confirmation, the `0 C1 C3 C2` case-
+  array amendment, the re-armed stopping rule) and §14's verdict (§14 of
+  `RV-C2ALPHA`) — the section this round's own dispatch quotes directly.
+- `test/attack_plans/CD-xgmii_rx_64_cosim.md`, read in full (976 lines) —
+  §10.0 (what binds every Stage-2 instance, in particular the empty
+  permitted-divergence set at 64 octets and branch β's unreachability),
+  §10.1/§10.2 (C1's and C2's own frozen instances, re-confirmed unmoved),
+  §10.3 (**C3's frozen instance — this round's construction target**, read
+  word for word before any code was written), §10.5/§10.6/§10.7 (the two
+  findings against CD's own text and what §10 does not do — neither bears on
+  stimulus construction).
+- `test/cosim/stimulus_gen.ml` at HEAD (the file this round edits) — read in
+  full before editing.
+- `test/xgmii/arrival.mli` — re-read in full this round (DV-side, REQ-018's
+  link-partner model, not RTL). `?ifg` default 12, `?first_start` default 8
+  (must be a multiple of 4), `?fcs_valid` default `true`, and `check`'s own
+  documented scope — "and, when `fcs_valid` is set, a frame whose REQ-304
+  residue is wrong" — all UNCHANGED from every prior round's citation.
+- `test/xgmii/frame.mli` — read in full (DV-side): `stress_frame`,
+  `residue_ok`, `with_fcs`, `delivered` — the 64-octets-DA-through-FCS /
+  60-octets-delivered convention, UNCHANGED.
+- `test/xgmii_rx_64/test_m03_d.ml` lines 1–115 — read (DV-side,
+  `test/attack_plans/AP-xgmii_rx_64.md`'s own family D, WO-0040) for the
+  **already-reviewed technique** this round reuses rather than invents: a
+  64-octet good/bad-FCS pair built by flipping bit 0 of the octet at index
+  20 (inside the payload) AFTER `Frame.with_fcs` is applied, with
+  `Frame.residue_ok` asserted BY HAND in both directions because
+  `Arrival.create ~fcs_valid:false`'s own `check` does not verify the
+  residue when `fcs_valid` is false. Read to justify this round's own
+  corrupted-octet choice by reuse of prior art rather than by invention —
+  CD §10.3 pins the SHAPE of the corruption ("`~fcs_valid:false` plus a
+  corrupted octet") but not its position, leaving that a construction
+  choice this round owns.
+- `test/xgmii/injection.mli` — read (DV-side), to confirm `build_c3` uses
+  none of its machinery (only `Arrival.create` and `Frame.stress_frame`
+  directly, the same call shape case 0/C1/C2 already use), which is what the
+  idle-count sidecar's `[0]` value rests on.
+- For local verification only, read (not staged, not part of any
+  deliverable): `test/golden/crc32_ref.ml`/`.mli`, `test/xgmii/xgmii_word.ml`/`.mli`,
+  `test/xgmii/frame.ml`, `test/xgmii/arrival.ml` (the concrete DV-side
+  implementations behind the interfaces above, read to build a standalone
+  local compile-and-link-and-run of the edited `stimulus_gen.ml` against the
+  REAL DV-side model, not a hand-written stub — the same method this round's
+  own prior C1/C2 landing established and disclosed, `J-tb_writer-0035`).
+  `test/golden/dune` and `test/xgmii/dune`'s own header comments re-read to
+  reconfirm neither `dv_golden` nor `dv_xgmii` carries a Hardcaml dependency.
+- **No `libs/**`, no `top/**`, no `rtl_snapshots/**` — opened at no point, by
+  any means, this round.** Every file listed above is `agents/**`, `test/**`
+  (DV-side: `test/cosim/`, `test/xgmii/`, `test/golden/`, `test/xgmii_rx_64/`
+  — read-only for the family-D technique — and `test/attack_plans/`, read-
+  only, dv_lead's own) or the packet itself. No RTL reached this seat's
+  context at any point.
+
+### Reasoning
+**Scope, read against §6.2's table, `RV-C2ALPHA` §9's confirmation and the
+dispatch before a line was written.** C3 alone — `RV-C2ALPHA` §9 item 1's own
+words, "the C3 dispatch, alone, per §6.2 — CONFIRMED," and the dispatch's own
+framing ("C3 ALONE"). Not C4 (a separate future landing); not
+`tools/cosim/**` (data_wrangler's own half — the case array becoming
+`0 C1 C3 C2` and the S2-7 SUMMARY repair, `RV-C2ALPHA` §9 items 1 and 2 —
+read, not touched); not `test/attack_plans/**` (dv_lead's; CD read in full,
+not staged, and CD §10.3's own instance is what this round's construction is
+checked against, never edited by it). Case 0's, C1's and C2's own
+constructions are not opened for editing: confirmed both by `git diff`
+(every `+` line lands strictly after `c2_meta`'s own closing `;;`) and, more
+strongly, by re-executing `build ()`, `build_c1 ()` and `build_c2 ()`
+themselves this round and reproducing all three prior hashes byte for byte —
+case 0's `c675517…`, C1's `5ae9e4f…`, and C2's own `cc1e85a4…5b44a7`, the
+exact bind `RV-C2ALPHA` §9 item 3 names as "a standing regression case" at
+every landing after C2's own acceptance (see Evidence).
+
+**Why `build_c3` is built the way it is, checked against CD §10.3's own
+frozen instance rather than against the packet's own summary of it.** CD
+§10.3 states the construction as "one 64-octet frame, `~fcs_valid:false`
+plus a corrupted octet; lane-0 start on cycle 0, sighted placement
+preserved," and WO-0078 §6.2's table cell agrees word for word — no
+discrepancy to adjudicate between the two documents. `build_c3` therefore
+reuses `Frame.stress_frame ~sequence:0 ()` — the literal same content as
+case 0's own frame, exactly as C1's and C2's own constructions do — and
+passes `~first_start:0 ~fcs_valid:false` to `Arrival.create`. `~first_start:0`
+preserves the sighted placement (lane-0 start on the reset-release cycle,
+CD §10.3's own words); `~fcs_valid:false` is required because C3 IS a
+deliberately corrupt frame, and leaving `Arrival.create`'s own default
+(`true`) would make its own `check` reject the stimulus as nonconformant
+before a single cycle is driven — `test_m03_d.ml`'s own header comment names
+this trap explicitly, and this round avoids it by the same route that file
+already established.
+
+**The corrupted octet: what CD §10.3 pins, and what it leaves to this
+round.** CD §10.3 pins the SHAPE ("a corrupted octet") but not its POSITION
+or its METHOD (which bit, which octet index). Two options were weighed:
+inventing a new corruption for this file, or reusing the technique
+`test/xgmii_rx_64/test_m03_d.ml`'s family D already used and had reviewed
+for the IDENTICAL shape (a 64-octet frame, bad FCS, otherwise clean,
+WO-0040 §6's M03-D1) — bit 0 of the octet at index 20, chosen there because
+index 20 sits inside the payload (offsets 14-59 in that file's own frame
+layout; offsets 18-59 of `stress_frame`'s own filler region here, since
+`stress_frame`'s 4-octet sequence number occupies 14-17 where family D's
+frame has no equivalent field), leaving DA, SA, ethertype and (for this
+round's frame) the sequence number completely untouched. Reusing the
+already-reviewed technique is the smaller bet — the same reasoning
+`stimulus_gen.ml`'s own header comment already gives for reusing
+`stress_frame` itself rather than hand-deriving a frame a second time — and
+it is disclosed here as a construction CHOICE this round owns, not read
+from CD §10.3 as a pinned value, so a reader does not mistake "index 20" for
+something the CD instance itself freezes.
+
+**WO-0040 §3.2's "both directions" residue check, asserted by hand, and
+why it is not optional here.** `Arrival.create`'s own `check` verifies the
+REQ-304 residue only when `fcs_valid` is `true` (`arrival.mli`'s own
+documented scope, re-read this round); C3 sets it `false` ON PURPOSE, so
+nothing else in this generator would ever detect (a) a base frame whose own
+FCS was wrong for an unrelated reason, or (b) a bit flip that silently
+failed to land, leaving a frame that is accidentally still good. `build_c3`
+therefore asserts `Frame.residue_ok` on the uncorrupted frame (must be
+`true`) and on the corrupted frame (must be `false`) before ever handing
+either to `Arrival.create` — the same anti-vacuity discipline
+`test_m03_d.ml`'s own `good_and_bad_64` helper already applies, reused here
+in kind rather than by direct code sharing (that file is `test/xgmii_rx_64/`,
+a different module boundary from `test/cosim/`, and `stimulus_gen.ml`
+already has its own `check_conformant` for the affordance it actually
+needs).
+
+**Why the FCS field itself is untouched, checked rather than assumed.** A
+diagnostic run this round (Evidence) compares C3's full 64-octet frame
+against case 0's own, octet by octet: the ONLY difference is index 20
+(`0x14 -> 0x15`); indices 60-63 (the FCS field) are byte-identical between
+the two. This confirms `Frame.with_fcs`'s own append happens BEFORE the bit
+flip is applied — the FCS is not recomputed after corruption, which is what
+makes C3 a genuinely bad-FCS frame rather than a frame with a good FCS for
+different (corrupted) content. Measured directly, not merely argued from
+the code's own control flow.
+
+**Idle-count sidecar: `[0]`, and why zero is not an assumption.** `build_c3`
+calls nothing but `Arrival.create` and `Frame.stress_frame` — no
+`test/xgmii/injection.ml` machinery at all, confirmed by re-reading
+`injection.mli` this round — so there is no mechanism present that could
+inject an idle cycle strictly between the frame's start character and its
+first octet. The count is zero by the same construction argument case 0's,
+C1's and C2's own comments already make for their own single-frame(s)
+construction, restated here per this file's own documentation style rather
+than assumed to carry over silently.
+
+**Promotion discipline, applied to what this round can promote.** This round
+produces no `[%expect]` block and eyeballs no waveform — its output is a
+stimulus generator's fourth case, not a test that observes a design, so
+charter §3's "never promote expect output without eyeballing the waveform"
+does not apply to a promotion event here; there is none. What stands in its
+place is reading the actual printed/computed values from the real local run
+against CD §10.3's own frozen instance text, word for word (Evidence),
+including the direct octet-by-octet diagnostic against case 0's own frame
+that neither CD §10.3 nor WO-0078 §6.2 asked for by name but that this
+round's own construction choice (the corrupted octet's position) made worth
+measuring rather than trusting.
+
+**What this round does NOT do, stated because C3 is a predicted-divergence
+case.** This round constructs the STIMULUS only. It asserts nothing about
+what either producer does with C3's frame — that is `ours_run.ml`,
+`tb_xgmii_rx_64.v`, `canonical.ml` and `compare.ml`'s business (none opened
+this round), and WO-0078 §7's own frozen prediction ("the reference may DROP
+it") is read against the landing `cosim` CI run, not against anything this
+round can execute. Whether that run selects branch α or branch γ, and — if
+γ — whether γ resolves as a REQ-901 spec diff or a `BUG-`, is dv_lead's
+adjudication after the run (WO-0078 §7's own words: "The choice between the
+two is dv_lead's adjudication, made after the run and recorded in an `RV-`;
+the branch itself is fixed here, before it"), never this round's to
+pre-empt.
+
+### Actions
+- Read the WO-0078 packet's section map and the sections named in Inputs
+  above, the charter, PROTOCOL §1–11, and CD-xgmii_rx_64_cosim.md in full.
+- Re-read `test/xgmii/arrival.mli`, `test/xgmii/frame.mli`,
+  `test/xgmii/injection.mli` (DV-side) to re-measure the frozen inputs C3's
+  own construction rests on at this seat's own base; none had moved.
+- Read `test/xgmii_rx_64/test_m03_d.ml` lines 1–115 (DV-side, AP-xgmii_rx_64
+  family D) for the already-reviewed bad-FCS corruption technique this round
+  reuses.
+- Edited `test/cosim/stimulus_gen.ml`: added `flip_bit0_at`, `build_c3`,
+  `c3_meta`, extended `known_cases` to
+  `[ case0_meta; c1_meta; c2_meta; c3_meta ]`, and extended `build_case`'s
+  match with a `"C3"` arm.
+- Verified byte-identity of case 0's construction span mechanically:
+  `git show HEAD:test/cosim/stimulus_gen.ml | head -c 3121 | sha256sum`
+  against the same on the edited file — equal.
+- Confirmed the diff touches only the span after `c2_meta`'s own closing
+  `;;` (one contiguous insertion) plus one new `build_case` match arm.
+- Built a local, non-stub compile-and-link-and-run environment in
+  scratchpad from real DV-side sources (`crc32_ref`, `xgmii_word`, `frame`,
+  `arrival`, plus two hand-written wrapper files reproducing dune's own
+  library-wrapping, the same method `J-tb_writer-0035` established),
+  compiled the edited `stimulus_gen.ml` against it with the bare system
+  `ocamlc`, linked an executable, and ran it for all four case ids
+  (`0`, `C1`, `C2`, `C3`), then wrote a diagnostic driver (scratchpad-only,
+  never staged) calling `Stimulus_gen.build` and `.build_c3` directly and
+  comparing `Arrival.frames.(0).octets`/`.delivered` and
+  `Frame.residue_ok` octet by octet between case 0 and C3 — see Evidence.
+- Confirmed `git status --porcelain` shows exactly one changed file,
+  `test/cosim/stimulus_gen.ml`, and nothing else in the repository checkout.
+- Verified this round's Stage-2 precondition (§11 "Both, every stage"): CD
+  §10.3 is committed at an ancestor of my spawn-head `50983b1` (landed with
+  the rest of §10 at `5c01af0`, unedited since — confirmed via
+  `git status --porcelain` on the CD file, empty) — C3's own domain instance
+  was committed before this round began.
+- Appended a Return-log entry to `WO-0078` §14 (see Files-in-this-commit).
+- No `dune`, no `git`, no `iverilog` run against the repository checkout
+  itself (only the bare system `ocamlc`, and only inside scratchpad, on
+  copied files). No `git commit`, no `git push` — I never run git.
+
+### Evidence
+```
+$ git rev-parse HEAD
+50983b17938a4cb2901e8780a7d54d4443112d8a        # exact spawn-head, matched
+
+$ git status --porcelain
+                                                 # (empty, before any edit)
+
+$ git show HEAD:test/cosim/stimulus_gen.ml | head -c 3121 | sha256sum
+ed4e47f36482a463c528a3dea3fccb27238c3e2b27b155dcb80e908709d6fbea  -
+
+$ head -c 3121 test/cosim/stimulus_gen.ml | sha256sum      # after this round's edit
+ed4e47f36482a463c528a3dea3fccb27238c3e2b27b155dcb80e908709d6fbea  -   # IDENTICAL
+```
+
+**The real-source local build, genuinely type-checking and linking the new
+code (not a stub):**
+```
+$ ocamlc -c crc32_ref.mli && ocamlc -c crc32_ref.ml    -> exit 0 (each)
+$ ocamlc -c dv_golden.ml                                -> exit 0
+$ ocamlc -c xgmii_word.mli && ocamlc -c xgmii_word.ml   -> exit 0 (each)
+$ ocamlc -c frame.mli && ocamlc -c frame.ml             -> exit 0 (each)
+$ ocamlc -c arrival.mli && ocamlc -c arrival.ml         -> exit 0 (each)
+$ ocamlc -c dv_xgmii.ml                                 -> exit 0
+$ ocamlc -c stimulus_gen.ml                             -> exit 0   (the edited file, genuinely
+                                                                       type-checked against the
+                                                                       real Arrival/Frame/Xgmii_word)
+$ ocamlc -o stimulus_gen.exe crc32_ref.cmo dv_golden.cmo xgmii_word.cmo \
+    frame.cmo arrival.cmo dv_xgmii.cmo stimulus_gen.cmo  -> exit 0   (genuinely LINKED)
+```
+
+**Run for all four case ids, real execution:**
+```
+$ ./stimulus_gen.exe stim_0.txt  0    -> exit 0; 36 lines; idle sidecar: 0
+    sha256 = c675517176922d42bca42ec3def182cb3536861f1acaa8384116f33a5c4cc051   (case 0's pin, REPRODUCED)
+$ ./stimulus_gen.exe stim_C1.txt C1   -> exit 0; 36 lines; idle sidecar: 0
+    sha256 = 5ae9e4f501251c38d0c2d386bd792e07cbcf9cf107cf7e75c378e21b1ce3bd7c    (C1's bind, REPRODUCED)
+$ ./stimulus_gen.exe stim_C2.txt C2   -> exit 0; 46 lines; idle sidecar: 0, 0
+    sha256 = cc1e85a4c5f871226f07b4792446d63c523577dcf172d6c4a80b8a3e845b44a7   (C2's bind, REPRODUCED)
+$ ./stimulus_gen.exe stim_C3.txt C3   -> exit 0; 36 lines; idle sidecar: 0
+    sha256 = 1512d30b6aa186ca89d55ce40fbcfdee01590a5a47e2a497eb4389c2bc6c4dce   (NEW, distinct from all three above)
+```
+All three prior hashes reproduced byte for byte, confirming case 0/C1/C2
+untouched by re-execution (not merely by diffing source text) — the same
+strength of check `J-tb_writer-0035` established for case 0 alone, extended
+here to all three prior cases since C3 lands after them in this round.
+
+**Diagnostic driver, `Arrival.frames`/`.delivered`/`.check`, case 0 vs C3:**
+```
+case 0: start_octet_time=0  start_lane=0  start_cycle=0  delivered_len=60  cycles=12  check=[]
+C3:     start_octet_time=0  start_lane=0  start_cycle=0  delivered_len=60  cycles=12  check=[]
+delivered lengths equal: true (both 60)
+delivered-octet diffs (case0 vs C3), index:case0->C3: 20:0x14->0x15
+full frame length: case0=64 C3=64
+full-frame diffs (case0 vs C3), index:case0->C3: 20:0x14->0x15
+case0 frame residue_ok (should be TRUE): true
+C3    frame residue_ok (should be FALSE, i.e. a bad FCS): false
+C3 fcs octets (60..63) equal case0's fcs octets (60..63): true
+```
+`start_lane=0`, `start_cycle=0` — the sighted placement CD §10.3 requires,
+MEASURED off the constructed schedule, not merely produced by passing
+`~first_start:0` and trusting the argument. `delivered_len=60` on both —
+REQ-103's directed length. `check=[]` on C3 — no OTHER schedule-conformance
+issue is masked by `~fcs_valid:false`'s own bypass of the residue check.
+The single index-20 diff, identical on both the 60-octet delivered
+comparison and the full 64-octet comparison, IS CD §10.3's "otherwise clean"
+half, measured rather than asserted; indices 60-63 (the FCS field) being
+byte-identical between case 0 and C3 confirms the corruption never touches
+the FCS octets themselves — only the payload, with the FCS left exactly as
+case 0's own correct one, now wrong for the corrupted content.
+
+```
+$ git status --porcelain
+ M test/cosim/stimulus_gen.ml
+```
+Exactly one file changed; nothing from local testing leaked in (all scratch
+files remained under scratchpad, outside the checkout).
+
+**What is CI-deferred, and why.** The Hardcaml-dependent producer
+(`ours_run.ml`) and the Verilog reference (`tb_xgmii_rx_64.v`) were not
+touched this round and were not exercised locally or in CI by this round —
+neither needed to be, since neither file changed. The landing `cosim` job
+(case array `0 C1 C3 C2`, data_wrangler's own half) remains the first and
+only real execution of C3's stimulus through the actual Hardcaml design and
+the actual Icarus reference, and the first place either producer's own
+disposition of a bad-FCS frame becomes an observed fact — the branch-α/
+branch-γ selection WO-0078 §7's C3 row and CD §10.3 both name as unresolved
+until that run. What this round's local verification adds, beyond that CI
+run, is a genuine (non-stub) confirmation that `stimulus_gen.ml` itself —
+the file this round actually edits — compiles, links, and produces exactly
+the stimulus CD §10.3 freezes, including reproducing all three prior cases'
+own CI-pinned hashes exactly, before any CI run of this landing exists.
+
+### Outcome
+DoD (WO-0078 §11, "Stage 2, per landing — tb_writer") met:
+- [x] The case added (C3), with its `stimulus_sha256` computed locally
+      (`1512d30b…`, distinct from case 0's and C1's and C2's) — the
+      harness's own printing of this value at landing time is
+      `run_cosim.sh`'s job, data_wrangler's own Stage-2 half, not
+      commissioned by this dispatch.
+- [x] Case 0 untouched — proven by byte-identity of the construction span
+      AND by re-executing `build ()`, `build_c1 ()` and `build_c2 ()` and
+      reproducing all three exact CI-pinned/bound hashes.
+- [x] Construction parameters (`~first_start`, `~fcs_valid`, `~sequence`,
+      the corrupted octet's index) each tied to a spec/CD citation or to an
+      already-reviewed prior-art technique in an adjacent comment; no
+      expected value taken from the reference, from a prior run, or from
+      `libs/**` — none was needed, since this round's own deliverable is
+      the stimulus construction itself, not a comparator expectation.
+- [x] Journal entry (this one) + WO-0078 §14 Return-log entry appended.
+
+Not commissioned by this round and not attempted: C4 (a separate future
+landing per §6.2); any file under `tools/cosim/**` (data_wrangler's own
+half — the case-array amendment and the S2-7 SUMMARY repair; read where
+cited, not staged); any file under `test/attack_plans/**` (dv_lead's own;
+CD read in full, not staged).
+
+Handoff: WO-0078 §14, this round's own Return-log entry, appended below this
+journal entry's own commit — for dv_lead's review, via the orchestrator, as
+the precondition for the C3 run.
+
+### Open-questions
+None. No spec ambiguity was met (CD §10.3 and WO-0078 §6.2/§7 agree word for
+word on C3's stimulus and its predicted disposition; the corrupted-octet
+POSITION was a construction choice this round owns and justified by reuse of
+already-reviewed prior art, not an ambiguity requiring escalation); no RTL
+leaked into context (confirmed: `libs/**`, `top/**`, `rtl_snapshots/**`
+opened at no point, by grep of this entry's own Inputs list as well as by
+direct recollection of every file read); no untestable requirement; no
+licensing-taint suspicion (no Essenceia-derived material in any input this
+round); no effort anomaly (the round tracked in line with §9's own
+per-landing estimate of one worker round).
+
+### Files-in-this-commit
+- test/cosim/stimulus_gen.ml
+- agents/handoffs/WO-0078_cosim-phase2-3-stimulus-widening.md

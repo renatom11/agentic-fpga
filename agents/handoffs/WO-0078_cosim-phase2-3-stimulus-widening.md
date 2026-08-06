@@ -5480,3 +5480,190 @@ frames that it did not know this morning, and it knows exactly that much.**
 carries it.**
 
 ---
+
+### tb_writer — Stage 2, C3 landing (§6.2), RETURNED
+
+**Abort-first head check**: `git rev-parse HEAD` = `50983b17938a4cb2901e8780a7d54d4443112d8a`,
+exactly the dispatch's stated spawn-head ("C2 compared agreed and accepted on
+branch alpha…"). `git status --porcelain` empty at spawn. Proceeded without
+the mismatch procedure.
+
+**Scope, read against §6.2's table, `RV-C2ALPHA` §9's confirmation, and CD
+§10.3 before a line was written.** C3 alone — "the C3 dispatch, alone, per
+§6.2 — CONFIRMED" (`RV-C2ALPHA` §9 item 1) — not C4 (lands separately, its
+own future round), not `tools/cosim/**` (data_wrangler's own half: the case
+array `0 C1 C3 C2` and the S2-7 SUMMARY repair, per `RV-C2ALPHA` §9 item 2 —
+read there, not touched here), not `test/attack_plans/**` (dv_lead's; CD read
+in full, not staged). One file touched: `test/cosim/stimulus_gen.ml`. Case
+0's construction (`build ()`, `write_stimulus`, `drain_cycles`) and C1's/C2's
+own rows (`build_c1`/`c1_meta`, `build_c2`/`c2_meta`) are not opened for
+editing — confirmed by `git diff` (every `+` line lands strictly after
+`c2_meta`'s own closing `;;`, before the old `let known_cases = […]` line)
+and, independently, by re-executing `build ()`, `build_c1 ()` and
+`build_c2 ()` themselves this round and reproducing all three CI-pinned
+hashes byte for byte (Evidence): case 0's `c675517…`, C1's `5ae9e4f…`, and
+C2's `cc1e85a4…5b44a7` — the exact bind `RV-C2ALPHA` §9 item 3 requires held
+at every future landing as a standing regression case.
+
+**Re-measurement of the frozen inputs this half rests on, at this seat's own
+base (`50983b1`), before a line was written.** `test/xgmii/arrival.mli`'s
+`create`: `?ifg` default 12, `?first_start` default 8 (must be a multiple of
+4), `?fcs_valid` default `true`, `check`'s own documented scope — "and, when
+`fcs_valid` is set, a frame whose REQ-304 residue is wrong" — UNCHANGED from
+every prior round's citation. `test/xgmii/frame.mli`'s `stress_frame`,
+`residue_ok`: UNCHANGED. Neither had moved. CD §10.3's own text re-read
+directly (not only §6.2's one-line table cell): both agree word for word on
+C3's stimulus, so there was no discrepancy to adjudicate.
+
+**What was built, and how it was checked against CD §10.3's frozen
+instance.** `build_c3` calls `Frame.stress_frame ~sequence:0 ()` — the SAME
+base content as case 0/C1/C2, confirmed identical to case 0's own delivered
+octets outside the one corrupted index (Evidence) rather than merely reused
+by assertion — asserts `Frame.residue_ok` on it BY HAND (must be `true`: the
+base frame's own FCS checks out before corruption), flips bit 0 of the octet
+at index 20 (inside the payload — stress_frame's filler region, offsets
+18-59 — the identical technique `test/xgmii_rx_64/test_m03_d.ml`'s family D
+already established and had reviewed for this exact shape, WO-0040 §6's
+M03-D1), asserts `Frame.residue_ok` on the corrupted frame BY HAND a second
+time (must be `false`: the bit flip actually changed the residue — WO-0040
+§3.2's "both directions" requirement, load-bearing here because
+`Arrival.create ~fcs_valid:false`'s own `check` does NOT verify the residue
+when `fcs_valid` is `false`, on purpose, so nothing else in this generator
+would ever catch a corruption that silently failed to land), then calls
+`Arrival.create ~first_start:0 ~fcs_valid:false [ bad ]` — `~first_start:0`
+preserving the sighted placement (lane-0 start on cycle 0, CD §10.3's own
+instance), `~fcs_valid:false` because C3 IS a deliberately bad-FCS frame, not
+a stimulus-generator bug. `check_conformant` confirms `Arrival.check` returns
+`[]` — no accumulator or schedule-conformance issue (a single frame opens
+and closes within its own admission span; the dispatch's C2-only stop-rule
+was never in play for a one-frame case). `idle_counts = [ 0 ]`: no injection
+mechanism is used (only `Arrival.create` and `Frame.stress_frame`, exactly as
+case 0/C1's own single-frame constructions), so no idle can be injected
+before this frame's own D(0) — the same construction argument case 0's,
+C1's and C2's own comments already make, restated here rather than assumed
+to carry over silently.
+
+**The corrupted octet: WHAT and WHERE, measured directly rather than
+asserted from the source.** A diagnostic run (Evidence) compares C3's full
+64-octet frame array against case 0's, octet by octet: the ONLY index that
+differs is **20** (`0x14 -> 0x15`, the bit-0 flip), on BOTH the delivered
+60-octet comparison and the full 64-octet (DA-through-FCS) comparison. The
+four FCS octets (indices 60-63) are IDENTICAL between case 0 and C3 — the
+corruption is purely a payload bit flip; the FCS itself is not touched,
+which is exactly what makes the frame's now-wrong residue a genuine "bad
+FCS" rather than a resigned one. `Frame.residue_ok` on case 0's own full
+frame: `true` (sanity). `Frame.residue_ok` on C3's own full frame: `false` —
+the corrupted frame's CRC genuinely does not check out, confirming C3 is a
+bad-FCS stimulus in fact, not merely in the code's own intent.
+
+**Case id: `"C3"`**, matching WO-0078 §6.2's table and CD §10.3's own
+vocabulary exactly. `known_cases` becomes
+`[ case0_meta; c1_meta; c2_meta; c3_meta ]`; `build_case` gains a `"C3"`
+match arm. `tools/cosim/run_cosim.sh`'s own case-id calling convention is
+unedited and unread for change this round beyond the prior rounds' own
+confirmation that it already accepts an arbitrary case-id string as its
+second positional argument.
+
+**Local test results, verbatim** (this environment has no `dune`, no
+Hardcaml switch, no `iverilog`/`vvp` — ADR-0005):
+
+```
+$ ocamlc -c crc32_ref.mli && ocamlc -c crc32_ref.ml    -> exit 0 (each)
+$ ocamlc -c dv_golden.ml                                -> exit 0
+$ ocamlc -c xgmii_word.mli && ocamlc -c xgmii_word.ml   -> exit 0 (each)
+$ ocamlc -c frame.mli && ocamlc -c frame.ml             -> exit 0 (each)
+$ ocamlc -c arrival.mli && ocamlc -c arrival.ml         -> exit 0 (each)
+$ ocamlc -c dv_xgmii.ml                                 -> exit 0
+$ ocamlc -c stimulus_gen.ml                             -> exit 0   (the edited file, genuinely
+                                                                       type-checked against the
+                                                                       real Arrival/Frame/Xgmii_word)
+$ ocamlc -o stimulus_gen.exe crc32_ref.cmo dv_golden.cmo xgmii_word.cmo \
+    frame.cmo arrival.cmo dv_xgmii.cmo stimulus_gen.cmo  -> exit 0   (genuinely LINKED)
+```
+
+Run for all four case ids, real execution:
+
+```
+$ ./stimulus_gen.exe stim_0.txt  0    -> 36 lines; idle sidecar: 0
+    sha256 = c675517176922d42bca42ec3def182cb3536861f1acaa8384116f33a5c4cc051   (case 0's pin, REPRODUCED)
+$ ./stimulus_gen.exe stim_C1.txt C1   -> 36 lines; idle sidecar: 0
+    sha256 = 5ae9e4f501251c38d0c2d386bd792e07cbcf9cf107cf7e75c378e21b1ce3bd7c    (C1's bind, REPRODUCED)
+$ ./stimulus_gen.exe stim_C2.txt C2   -> 46 lines; idle sidecar: 0, 0
+    sha256 = cc1e85a4c5f871226f07b4792446d63c523577dcf172d6c4a80b8a3e845b44a7   (C2's bind, REPRODUCED)
+$ ./stimulus_gen.exe stim_C3.txt C3   -> 36 lines; idle sidecar: 0
+    sha256 = 1512d30b6aa186ca89d55ce40fbcfdee01590a5a47e2a497eb4389c2bc6c4dce   (NEW, distinct from all three above)
+```
+
+Diagnostic driver, `Arrival.frames`/`.delivered`/`.check`, case 0 vs C3, read
+directly off the constructed schedules:
+
+```
+case 0: start_octet_time=0  start_lane=0  start_cycle=0  delivered_len=60  cycles=12  check=[]
+C3:     start_octet_time=0  start_lane=0  start_cycle=0  delivered_len=60  cycles=12  check=[]
+delivered lengths equal: true (both 60)
+delivered-octet diffs (case0 vs C3), index:case0->C3: 20:0x14->0x15
+full frame length: case0=64 C3=64
+full-frame diffs (case0 vs C3), index:case0->C3: 20:0x14->0x15
+case0 frame residue_ok (should be TRUE): true
+C3    frame residue_ok (should be FALSE, i.e. a bad FCS): false
+C3 fcs octets (60..63) equal case0's fcs octets (60..63): true
+```
+
+`start_lane=0`, `start_cycle=0` — lane-0 start on cycle 0, the sighted
+placement CD §10.3 requires preserved, measured directly, not merely
+constructed by argument (`~first_start:0`). `delivered_len=60` — REQ-103's
+own directed length (64 minus the 4 FCS octets), matching CD §10.3's "60
+delivered octets" claim (from which its "8 output words" follows, a
+downstream/comparator-side quantity this round's own file does not compute
+and does not need to — that is `ours_run.ml`/`compare.ml`'s business,
+untouched this round). `check=[]` — no schedule-conformance issue, confirming
+`~fcs_valid:false`'s own bypass of the residue check inside `Arrival.check`
+did not silently mask a DIFFERENT problem. The single index-20 diff (both on
+the 60-octet delivered comparison and the full 64-octet comparison) IS the
+"otherwise clean" half of CD §10.3's own stimulus description — every other
+octet, including the FCS field itself, is byte-identical to case 0's.
+
+**What is CI-deferred, and why**: identical reasoning to every prior round in
+this lane (ADR-0005). `ours_run.ml`, `tb_xgmii_rx_64.v`,
+`canonical.{ml,mli}`, `compare.ml` were not opened this round (confirmed:
+`git status --porcelain` shows exactly one file changed) and were not
+exercised locally or in CI by this round. The landing `cosim` CI job — case
+array `0 C1 C3 C2` per `RV-C2ALPHA` §9 item 2, data_wrangler's own half — is
+the first and only real execution of C3's stimulus through the actual
+Hardcaml M03 design and the actual Icarus reference, and the first place
+either producer's own disposition of a bad-FCS frame (the predicted branch-γ
+divergence WO-0078 §7's C3 row and CD §10.3 both name — "the reference may
+DROP it") becomes an observed fact rather than a frozen prediction. This
+round's local verification confirms only the STIMULUS that run will be
+handed, byte for byte against CD §10.3's own text; it makes no claim about
+what either producer will do with it.
+
+**Idle sidecar for C3**: `[ 0 ]` — one entry, the case's single admitted
+frame, zero because no injection mechanism (`test/xgmii/injection.ml`) is
+used anywhere in `build_c3`; confirmed both by construction (only
+`Arrival.create` and `Frame.stress_frame` are called) and by the printed
+sidecar itself (`idle sidecar: 0`, Evidence above).
+
+**Refused or blocked**: nothing refused, nothing blocked. No spec ambiguity
+was met (CD §10.3 and WO-0078 §6.2/§7 agree word for word on C3's stimulus
+and its predicted disposition; the corrupted-octet POSITION is this round's
+own construction choice, not something either document pins, and it is
+justified above by reuse of an already-reviewed technique rather than by
+invention); no RTL leaked into context; no licensing-taint suspicion; no
+untestable requirement; no effort anomaly (one round, in line with §9's own
+per-landing estimate).
+
+**Files changed** (exactly one, plus this packet's own Return log and this
+round's journal — `git status --porcelain` confirms; no `ours_run.ml`, no
+`canonical.{ml,mli}`, no `compare.ml`, no `tb_xgmii_rx_64.v`, no
+`tools/cosim/**`, no `test/attack_plans/**`): `test/cosim/stimulus_gen.ml`.
+
+— tb_writer, spawn `WO-0078-TB-STAGE2-C3/2026-08-06T13:35Z` (no explicit
+"work-order id + spawn UTC timestamp" token was present in this round's own
+dispatch prompt; recorded honestly per this packet's own §14 precedent for
+the identical situation — `J-tb_writer-0035` et seq. — rather than presented
+as one copied verbatim: the timestamp above is this entry's own UTC header
+time, `date -u` read at the start of this round, matching the environment's
+own `currentDate` context of 2026-08-06).
+
+---

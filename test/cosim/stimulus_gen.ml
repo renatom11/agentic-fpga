@@ -216,7 +216,60 @@ let c2_meta : case_meta =
   }
 ;;
 
-let known_cases = [ case0_meta; c1_meta; c2_meta ]
+(* WO-0078 §6.2 C3 (CD §10.3) -- "one 64-octet frame, bad FCS -- `~fcs_valid:false`
+   plus a corrupted octet"; lane-0 start on cycle 0, sighted placement
+   preserved. CD §6 names this V7, "the one to watch": REQ-005 forbids
+   store-and-forward, so our side, by spec, forwards the frame in full with
+   tuser[0] = 1 on tlast (CD §10.3's own frozen instance, §9 row 1, REQ-104)
+   -- while the reference may DROP it (CD §6: "the commonest store-and-forward
+   instinct"), the predicted branch-gamma divergence WO-0078 §7's C3 row
+   names, whose expected resolution -- if the prediction fails -- is a
+   REQ-901 spec diff adding a class, never a `BUG-` (WO-0078 §7; CD §10.3's
+   closing paragraph). This builder constructs the STIMULUS that prediction
+   is read against; it asserts nothing about what either producer does with
+   it -- that is `compare.ml`'s job, untouched this round.
+
+   Same base content as case 0/C1/C2 -- [Frame.stress_frame ~sequence:0 ()]
+   -- corrupted by ONE bit flip AFTER the correct FCS is appended, reusing
+   the identical technique test/xgmii_rx_64/test_m03_d.ml's family D already
+   established and had reviewed for this exact shape (a 64-octet frame, bad
+   FCS, otherwise clean, WO-0040 §6's M03-D1): bit 0 of the octet at index
+   20, inside the payload (stress_frame's filler region, offsets 18-59), so
+   DA, SA, ethertype and the sequence number are all untouched and only the
+   one corrupted octet and the now-wrong FCS distinguish this frame from
+   case 0's own. WO-0040 §3.2's "both directions" residue check is asserted
+   here BY HAND, for the reason test_m03_d.ml's own header states:
+   [Arrival.create]'s own [check] verifies the REQ-304 residue only when
+   [fcs_valid] is set, and this case sets it [false] ON PURPOSE (it IS a
+   bad-FCS frame) -- so nothing else in this generator would ever catch a
+   corruption that silently failed to land, or a base frame whose own FCS
+   was wrong for an unrelated reason. *)
+let flip_bit0_at ~idx octets =
+  List.mapi (fun i v -> if i = idx then v lxor 1 else v) octets
+;;
+
+let build_c3 () =
+  let good = Dv_xgmii.Frame.stress_frame ~sequence:0 () in
+  if not (Dv_xgmii.Frame.residue_ok good)
+  then failwith "stimulus_gen: case C3's base 64-octet frame's own FCS does not check out";
+  let bad = flip_bit0_at ~idx:20 good in
+  if Dv_xgmii.Frame.residue_ok bad
+  then failwith "stimulus_gen: case C3's bit flip did not change the frame's FCS residue";
+  let sched = Dv_xgmii.Arrival.create ~first_start:0 ~fcs_valid:false [ bad ] in
+  check_conformant ~case_label:"C3" sched
+;;
+
+let c3_meta : case_meta =
+  { id = "C3"
+  ; describe =
+      "WO-0078 §6.2 C3 (CD §10.3) -- one 64-octet frame, bad FCS (~fcs_valid:false plus a \
+       corrupted octet), lane-0 start on cycle 0; sighted placement preserved; predicted \
+       branch-gamma divergence, WO-0078 §7"
+  ; idle_counts = [ 0 ]
+  }
+;;
+
+let known_cases = [ case0_meta; c1_meta; c2_meta; c3_meta ]
 
 let find_case_meta id =
   match List.find_opt (fun c -> String.equal c.id id) known_cases with
@@ -238,6 +291,7 @@ let build_case id =
   | "0" -> build ()
   | "C1" -> build_c1 ()
   | "C2" -> build_c2 ()
+  | "C3" -> build_c3 ()
   | _ ->
     failwith
       (Printf.sprintf
