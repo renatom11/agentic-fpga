@@ -3837,3 +3837,232 @@ round is neither; declared rather than omitted.
    correction, and this is now the second consecutive round it has recurred.
 ### Files-in-this-commit
 - docs/reports/audit/WO-0074-mutations/README.md
+
+## [J-auditor-0017] 2026-08-10T08:10Z | task:WO-0076 | Five family-J configuration classes seeded blind at 8346a5c: all five SEEDED including the one predicted unrenderable, and the complement form of one gate is what keeps a reset-adjacent side effect out of the class
+### Trigger
+Spawn short-id `WO-0076-SEED/2026-08-10T08:10Z`, the orchestrator, commissioning the
+**manifest-only** seeding half of the family-J campaign against
+`agents/handoffs/WO-0076_family-j-mutation-campaign.md` (dv_lead's draft, frozen with
+its seal at the base commit). Three read-only confirmations were carried into the
+same spawn, ruled at `J-orchestrator-0220/0221`. Per `FINDING WO-0074-A1` (mine,
+ruled ACCEPTED) and the packet's own §7.1, I author manifests and **cut no branch**.
+### Inputs
+`agents/charters/auditor.md`, `agents/PROTOCOL.md` (mandatory first actions);
+`agents/handoffs/WO-0076_family-j-mutation-campaign.md` in full (1172 lines);
+`libs/hardcaml_ethernet/src/xgmii_rx_64.ml` in full at `8346a5c`, and its `.mli`
+in full (45 lines) to confirm no rendering needs an interface edit;
+`docs/specs/modules/xgmii_rx_64.md` §4.2, §4.3, §5, §6.1, §6.2, §6.3, §7, §9;
+`docs/specs/requirements.md` REQ-802/REQ-803/REQ-810, §9.1's `receive enable` row and
+the §13 rows that moved REQ-810; `docs/reports/audit/WO-0074-mutations/README.md`
+(my own tree — form, and the `a_open` provenance question); my own journal for the
+id chain and the harvest span. **Not read**: the sealed companion (not opened, not
+grepped, not `git show`n, no line count), **all of `test/**`** including the attack
+plan by name, **all of `agents/**`** bar the packet and my two charter documents,
+and `docs/adr/ADR-0014` — which the packet's §7 item 4 admits and my spawn's
+enumeration omits, so I honoured the narrower list and derived every class from
+REQ-810, REQ-803 and SPEC-M03 §4.3/§6.1/§6.2/§9 instead. Four exposures outside the
+allowlist (a `git log --oneline -3` that returned the base commit's subject; two
+name-only `git show --stat`s; two subject-only `git log`s for the provenance
+arbitration) are itemised in the manifest's §0 with what each carried.
+### Reasoning
+**Sampling frame.** The window is one file: the mutation target at one SHA. What I
+sampled is **every read of `cfg_rx_enable` in the design** — there are exactly two,
+both the admission gate (421, 422) — and then, per class, the complete fan-out of
+the term each rendering moves. What I deliberately skipped: the four carrier units,
+the bench, the attack plan and the seal, all barred; and elaboration, which this
+environment cannot do (no `dune`, no compiler libraries). What I substituted for
+elaboration is stated rather than glossed: a **parse** check of all five mutants with
+`ocamlc -stop-after parsing`, and a `-dsource` reprint of each parse tree to verify
+operator grouping, because OCaml puts `|:` and `&:` on **one** left-associative
+precedence level and an unparenthesised mix would have meant something other than
+what the manifest claims. That check is not a type check and the manifest says so.
+
+**The one design fact the whole round rests on, measured before any class was
+written.** `grep -n '\bcfg_rx_enable\b'` returns the port declaration and two code
+sites. So SPEC-M03 §4.3's *"gates the admission of a frame, and nothing else"* is a
+two-line fact in this design, and it decides three things at once: IC-J1's removal is
+**total** (after it the enable is read nowhere in `create`); IC-J2, IC-J3 and IC-J5
+must each **introduce** a read at a path the enable does not reach, which is the
+packet's §5 expected shape confirmed rather than assumed; and the enable-high
+invariance every class owes (D-J1b) is decidable by constant folding rather than by
+sweeping a bench I cannot see.
+
+**Two renderings were rejected on evaluation, not on taste, and both rejections are
+the round's own content.**
+
+*First — IC-J4's register sense.* The natural rendering of "admission needs more
+settling" is a delayed **enable**, `reg spec i.cfg_rx_enable`. Evaluating it through
+`clear` refutes it: `spec` carries the synchronous clear, so the delayed enable reads
+0 on the first cycle after `clear` returns to 0, and the design would refuse a frame
+whose start character arrives there — which SPEC-M03 §7's Reset bullet requires to be
+**received correctly**. That refusal is visible to a unit holding `Enable.high`,
+which is a §3.2 violation and disposes of the class without argument under §8.1
+rule 4. The repair is to delay the **complement**: `not_en = ~:(i.cfg_rx_enable)`,
+whose registers hold the *non-blocking* value at time zero and through `clear`, so
+`settling ≡ 0` at `Enable.high` on every cycle of every run. The general shape is
+worth naming: **when a mutation adds state to a gate, the added state's power-on and
+reset value must be the one that makes the mutation invisible, or the class acquires
+a reset-adjacent second defect that convicts it at units it was never aimed at.**
+
+*Second — IC-J3's site.* Gating `emit_full`/`emit_tlast` instead of `tvalid` looks
+equivalent and is not: `emit_tlast` feeds `consume` (977), so that edit would strand
+or move the strobes of frames **admitted while the enable was 1**, outside the
+class's permission list — and it would make D-J3b's answer an accident of the site
+rather than a disclosed choice. `tvalid` (976) is read at exactly one place, the
+output record, so gating there is the emission path and nothing else.
+
+**D-J3a's branch was forced rather than preferred, and it moves the packet's own
+expected shape.** The *move* branch (remove the admission gate, add an output gate)
+is IC-J1's edit plus IC-J3's in one diff — two classes, both unscoreable under §7.3
+item 1. So *add* is the only branch under which these are five independent diffs, and
+the consequence is that IC-J3 does not touch admission at all: the shared admission
+site is **IC-J1 and IC-J4**, not IC-J1 and IC-J3 as §5 expected. I tabulated the real
+pairing in the gate inventory **before** delivery and raised the divergence as a
+reading-note question, because a collision inventory derived against the expected
+pairing should be checked against this sentence and not against a scorecard.
+
+**The class the packet expected to come back NOT SEEDED is seeded, and a grep is the
+whole of the reason.** IC-J5 needs `tuser`[0] separable from every strobe; `abort`
+(975) is read at **exactly one** site, `tuser` (998). Where `WO-0074`'s IC-M5 met its
+declaration test with a genuinely shared term (`a_open`, 296), this one fails it, so
+the honest answer is a diff and not a declaration. Its rule is also the narrowest of
+the five: it needs a 1 → 0 change *while a frame is open* and a unit that asserts that
+frame's `tuser`, and a frame already aborted under REQ-110 carries the bit anyway.
+
+**Two permission-cell readings I refused to settle unilaterally.** IC-J1's *every
+strobe* must-be-identical cell, read unscoped, cannot be satisfied by **any**
+rendering of IC-J1's own class — a design with no admission gate necessarily lets an
+admitted frame raise the report that frame owes, and one that suppressed it would be
+two defects. IC-J3's *in flight* is ambiguous between the input-side sense §4.3 uses
+and the output-side sense an emission gate can actually key on (the drain window).
+Both are pre-run questions with my reading offered, both cost nothing at the three
+family-J rows, and both belong before a scorecard exists — the `WO-0063B` precedent
+the packet carried in terms, which paid for itself twice last round.
+### Actions
+- Ran the §7.2 abort-first HEAD check **first**: `8346a5c`, matching the operator's
+  base; discharged §8's base rule and R-SEAL-1 by a name-only `git show --stat`
+  (the commit stages the packet **and** its seal); confirmed the target has not moved
+  since `b848d56`.
+- Authored five minimal independent diffs against `libs/hardcaml_ethernet/src/xgmii_rx_64.ml`
+  — IC-J1 (421–422), IC-J2 (1003), IC-J3 (976), IC-J4 (421–422), IC-J5 (975) —
+  each verified single-anchor, `git apply --check` clean at the base, applied,
+  round-trip reverted, and parse-checked with grouping verified.
+- Discharged R-DISC-1 per class, per lane, term by term at the firing cycle with the
+  three cycle facts explicit and each conjunct marked stimulus- or mutation-
+  contributed; built R-DISC-2's three-path gate inventory (admission / emission /
+  report) with cross-class facts tabulated before delivery; answered all nine
+  disclosures; ran §6's pre-ship check in its positive form for all five classes
+  against each class's own permission list, `Enable.high` column included.
+- Answered the three carried confirmations (§8 of the manifest) and raised four
+  pre-run reading-note questions (§9).
+- Wrote `docs/reports/audit/WO-0076-mutations/README.md`. **Cut no branch, ran no
+  `git commit`, ran no `git push`, ran no `dune`.** Working tree left clean and HEAD
+  unmoved.
+### Evidence
+At `8346a5c`, `git status --porcelain` empty before and after every patch trial:
+
+```
+IC-J1  anchors=1 line=421  apply-check=OK applied=[M libs/hardcaml_ethernet/src/xgmii_rx_64.ml] revert=OK clean-after=yes parse=OK
+IC-J2  anchors=1 line=1003 apply-check=OK applied=[M …] revert=OK clean-after=yes parse=OK
+IC-J3  anchors=1 line=976  apply-check=OK applied=[M …] revert=OK clean-after=yes parse=OK
+IC-J4  anchors=1 line=421  apply-check=OK applied=[M …] revert=OK clean-after=yes parse=OK
+IC-J5  anchors=1 line=975  apply-check=OK applied=[M …] revert=OK clean-after=yes parse=OK
+$ git rev-parse HEAD -> 8346a5ca11883381ea738cf1efa5f0dcd67d6907   (unmoved)
+```
+
+Grouping verified by reprinting each parse tree (`ocamlc -stop-after parsing
+-dsource`), e.g. IC-J2 reprints as
+`error_oversize = ((strobe sel_oversize) |: ((((bit lanes.is_start 0) |: (bit
+lanes.is_start 4)) &: (~: (i.cfg_rx_enable))) &: (~: (i.clear))))` — the grouping the
+manifest claims, and not the left-associative reading an unparenthesised mix would
+have produced. **Parse is not elaboration**: no `dune` and no compiler library exist
+here, so CI's `build` job remains the authority (ADR-0005).
+
+Reads of the enable per mutant (comments and the port declaration excluded):
+IC-J1 **none** (the port becomes unread); IC-J2 421, 422 + 1006; IC-J3 421, 422 +
+976; IC-J4 421 (`not_en`), 424, 425; IC-J5 421, 422 + 977.
+
+The three carried confirmations, each falsifiable at the lines quoted:
+1. **`DECLARATION WO-0074-D1`, source side — CONFIRMED.** `inword_strobes` (570–582)
+   returns `concat_lsb [ error; terminate; start ]` — **three** members, no FCS
+   member; `q2` (583–590) is that vector registered twice, so `bit q2 k` for
+   k ∈ {0,1,2} exhausts it and no fourth bit exists; `error_bad_fcs` (1000) and
+   `error_oversize` (1003) carry **no** `q_strobe` term. The absence is structural,
+   not a gated-low bit, and the design's own comment (545–554) says so. **Limit**: I
+   confirmed the proposition as quoted in my commission, not D1's text, which lives
+   outside this campaign's allowlist.
+2. **`a_open` 296 — the number is right and the citation is acceptable as
+   attributed.** Line 296 at `8346a5c` is `let a_open = in_preamble |: in_frame in`.
+   Its provenance is **my own** committed manifest (`WO-0074-mutations/README.md`
+   lines 226 and 1075, first committed `adac5ca`), not a DV read of RTL, and the
+   direction of travel is checkable: family J's rows landed at `2dbd39b`, an ancestor
+   of `adac5ca` with 35 commits between, so no family-J row can have been derived
+   from it. Two conditions attach (attribution in the AP; no assertion keyed to the
+   number), and one standing hazard is filed as **FINDING WO-0076-A1 (MINOR)** — a
+   bare line number is a decaying citation, true only at a SHA, and the rule
+   `<path>:<line> @ <SHA>` binds my own manifests as well as the plan's.
+3. **`T1`'s {3 … 10} — AGREES**, twice over: SPEC-M03 §6.1's worked table (658–674)
+   puts word 0 at cycle 3, words 1–6 at 4–9 and word 7 at 10, and §6.1's `m + 3`
+   (399) gives the same set for m = 0…7. Four scope conditions carried: the 64-octet
+   length, the **gapless** qualifier (the set does not survive REQ-016 injection —
+   §6.1's D(m) and §0.5 govern there), cycle 0 = the **start word** and not the run's
+   cycle 0, and cross-lane absolute-cycle identity being a property of §7's pinned
+   constants that a bench SHALL NOT generalise. **Limit**: I checked the constant
+   against the specification, not `T1`'s own text, which is barred.
+
+**Freeze check at the base** (metadata only): `WO-0075`'s return landed at `c109c08`
+and its rulings at `b112e47`, **both before** `8346a5c`, so the packet's §8 sentence
+about the last `test/**` edit is verified and its §8.0 hazard was resolved by
+disposition (b) before the round opened. Whether a successor work order edits
+`test/**` inside the window is not answerable from metadata and is the operator's.
+### Outcome
+**DoD met for the seeding half.** Packet §15 items 1–3 delivered: five manifests
+(§7.3's six sub-items each), all nine disclosures in my own words, and §6's pre-ship
+check for all five classes in positive form with the `Enable.high` column. Items 4–7
+(scorecard, control run, per-class run ids, `cosim` conclusions) are the run half's
+and are **not** claimed here. **Five classes, five diffs, five SEEDED — none NOT
+SEEDED**, including IC-J5, which the packet named the likeliest declaration.
+`FINDING WO-0074-A1`'s remedy is in force: the branches are the operator's to cut
+from §11's table in §10's fixed order, and **that is absorption rather than a repeat
+finding** — last round the instrument was missing and I withheld seven branches; this
+round the packet carries the rule in its own terms and nothing was withheld.
+Handoff: the manifest to the orchestrator for commit, and to dv_lead as this
+campaign's manifest **and** its pre-run reading note (§9, four questions, all before
+the run). **No lessons harvest is due** — my charter fixes harvests at every `SO-`
+and every phase gate and this round is neither; the open span is **`J-auditor-0015`
+… (open)**, declared so a skipped harvest stays a visible gap.
+### Open-questions
+1. **RN-1 — IC-J1's *every strobe* permission cell is unsatisfiable read unscoped.**
+   No rendering of "the enable does not gate admission" can stop an admitted frame
+   from raising the report it owes. My reading: the cell is scoped the way REQ-810's
+   three prohibitions were scoped on 2026-08-03 (refused frames vs admitted ones).
+   Costs nothing at the three family-J rows; possibly something at `M03-N4`, whose
+   reds are blast radius in every class. If the unscoped reading is affirmed, IC-J1
+   is unrenderable and **the cell** is the defect.
+2. **RN-2 — is IC-J3's *"in flight"* input-side or output-side?** An emission gate
+   also mutes a `tlast` word still in the two-cycle drain window of a frame that
+   closed before the change. My reading: output-side, because a gate that could
+   distinguish them would have to know the enable value at admission, which is the
+   conformant design.
+3. **RN-3 — the packet's §5 expected pairing does not survive D-J3a's `add` branch**
+   (which §7.3 item 1 forces). The shared admission site is IC-J1 and IC-J4. If the
+   seal's collision inventory was derived against the expected pairing, check it
+   against this sentence now rather than off a scorecard.
+4. **RN-4 — the packet's allowlist item 4 cites `docs/adr/ADR-0014.md`, which does
+   not exist**; the file is `ADR-0014-an-enable-gates-admission-not-the-wire.md`.
+   Clerical, cost this round nothing, worth one line in the carrier round — an
+   allowlist is a normative instrument.
+5. **FINDING WO-0076-A1 (MINOR), against the AP's carrier round and against my own
+   prior manifests equally**: an RTL line number carried outside `libs/**` without a
+   SHA is a decaying citation that the next RTL commit silently falsifies, with no
+   mechanical check anywhere. Rule proposed: `<path>:<line> @ <SHA>` or it is not a
+   citation. This manifest is written to it.
+6. **The clock discrepancy, recorded for the third consecutive round because I audit
+   rather than tidy**: my spawn short-id is minted `2026-08-10T08:10Z` while this
+   session's environment reports 2026-08-06 (it reported 2026-08-05 at
+   `J-auditor-0016`, and the base commit's own author date is 2026-08-06). I take the
+   spawn mint as authoritative for this entry's timestamp, as at `J-auditor-0015` and
+   `J-auditor-0016`. Entry-id monotonicity is unaffected; the correction is the
+   orchestrator's to own, and a third recurrence is no longer an anomaly.
+### Files-in-this-commit
+- docs/reports/audit/WO-0076-mutations/README.md
