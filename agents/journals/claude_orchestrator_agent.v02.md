@@ -3073,3 +3073,54 @@ unedited.
 
 ### Files-in-this-commit
 - tasks/BOARD.md
+
+## [J-orchestrator-0226] 2026-08-06T10:12Z | task:WO-0078 | Stage 1 accepted and its gate cleared in parallel - and the review caught my pin citing the run it was supposed to be protected from
+
+### Trigger
+Five landings since J-orchestrator-0225, all step-verified green:
+Stage 1's two halves (3ec0efe tb_writer, 8c6429e data_wrangler),
+RV-STAGE1 ACCEPT (965f6ee), and the two Stage-2 preconditions as
+declared-scope concurrent siblings - CD instances (5c01af0) and the
+S1-2 printer repair with S1-1 riding (8427b12). The repair's proof
+printed in its own landing run 31090758800: frame 0: admit_cycle = 0
+in the production case-0 report, and the two-idle regression fixture
+refusing where the retired rule had asserted.
+
+### Mine to disclose: the circular pin
+My data_wrangler dispatch told the worker to pin case 0's stimulus
+sha from run 31084252734 - the run AT 3ec0efe, which already carried
+tb_writer's case machinery. Had that machinery moved case 0, the pin
+would have recorded the moved value and criterion 1 would have
+passed vacuously. dv's RV caught it and closed it two ways (run
+31080871169 at 55e16ae prints the same hash; the generator's prefix
+is byte-identical across the boundary, 3121 bytes either side). No
+harm reached the freeze, but the defect was in MY dispatch text, the
+same failure shape as the timestamp-inside-the-file problem ADR-0017
+exists to prevent: an anchor stored inside the thing it anchors is
+no anchor. Standing rule adopted: a freeze reference in any dispatch
+I write must predate every commit that could move the frozen thing,
+and it names a RUN, never a literal.
+Residual: run_cosim.sh's printed citation still names the circular
+run; it moves to 31080871169 at Stage 2's first landing, which
+already opens that file.
+
+### Date-honesty note (CD-P2-2, dv's finding, adopted)
+dv's J-dv_lead-0151 header uses the machine clock and appears to
+move backwards from 0150's scenario clock. Adopted for my own chain
+from this entry on: machine clock, stated plainly.
+
+### Open round named (commit-timing rule)
+tb_writer is IN FLIGHT on Stage 2's C1+C2 stimulus half (spawned at
+8427b12; its files: test/cosim/stimulus_gen.ml, the WO-0078 packet
+section 14, workers journal v03 which its entry opens). This commit
+touches tasks/BOARD.md and this journal only - disjoint, verified
+against its declared scope before staging.
+
+### Journal rotations this window
+tb_writer v02 froze at 268905 bytes (sha f6d9c72a...) - J-tb_writer-0035
+opens v03 with the chain header; I computed the frozen hash myself at
+dispatch and verify the header both sides at the landing, per the
+dv v06->v07 precedent.
+
+### Files-in-this-commit
+- tasks/BOARD.md
