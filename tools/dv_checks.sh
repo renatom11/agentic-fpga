@@ -226,9 +226,44 @@ for inv_f in test/xgmii_rx_64/*.ml; do
   printf '  %3s  %s\n' "$inv_n" "$inv_f"
   inv_total=$((inv_total + inv_n))
 done
-inv_repo=$(grep -rh 'let%expect_test' test/ 2>/dev/null | grep -c . || printf '0')
+# FINDING M-4, REPAIRED HERE (raised `WO-0074` §2, carried unrepaired through
+# the whole family-M campaign, carrier declared as "the next commit that opens
+# tools/**" at `WO-0074-VERDICT` §13 item 3 — this one).
+#
+# The matcher below used to read a DIRECTORY and not a FILE TYPE:
+#
+#   grep -rh 'let%expect_test' test/          -> 140
+#   grep -rh --include=*.ml 'let%expect_test' test/  -> 139
+#
+# The extra unit is not a unit. It is line 865 of
+# `test/attack_plans/AP-xgmii_rx_64.md`, where the plan QUOTES a matcher in
+# prose — so this report counted a sentence about counting as a thing counted.
+# The per-file loop above was never affected (it globs `*.ml` explicitly); only
+# the repository-wide figure was, and that is the figure a campaign packet's
+# denominator is built from. It over-reported by exactly one for eight
+# campaigns.
+#
+# THE GENERAL FORM, which is why this is a comment and not a silent one-word
+# diff: AN INVENTORY OF A LANGUAGE CONSTRUCT MUST BE SCOPED BY FILE TYPE, NEVER
+# BY DIRECTORY. A directory-scoped matcher counts every artefact that talks
+# ABOUT the construct — plans, packets, journals, review notes — and a project
+# whose discipline is to write about its own instruments generates exactly that
+# contamination in proportion to how well it is documented. The symptom is
+# invisible in the output: the count is a plausible integer either way.
+#
+# AND A SECOND, DISTINCT REPAIR ON THE SAME LINE, DECLARED RATHER THAN FOLDED
+# IN SILENTLY: the trailing `|| printf '0'` was the exact double-zero bug this
+# file's own comment eighteen lines above forbids by name ("fixed once at
+# WO-0034 and reintroduced here — left commented so it is not a third time").
+# It was a third time. `grep -c .` already prints `0` and then exits 1 on no
+# match, so the `||` appended a SECOND zero and this report would have printed
+# a two-line field. Latent, never fired (the true figure has never been 0), and
+# removed here because the line was open and the warning it violates is four
+# inches above it.
+inv_repo=$(grep -rh --include=*.ml 'let%expect_test' test/ 2>/dev/null | grep -c .)
+inv_repo="${inv_repo:-0}"
 printf '  ---\n  %3s  test/xgmii_rx_64/ (the M03 bench)\n' "$inv_total"
-printf '  %3s  test/ (repository-wide)\n' "${inv_repo:-0}"
+printf '  %3s  test/**/*.ml (repository-wide, FILE-TYPE scoped — FINDING M-4)\n' "$inv_repo"
 printf 'Quote these figures with this command as their provenance, or measure\n'
 printf 'your own. Do not quote a unit count nobody has counted.\n'
 printf 'These are UNIT COUNTS, not a per-unit classification: runner -> unit is\n'

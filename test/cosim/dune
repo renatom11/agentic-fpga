@@ -8,9 +8,33 @@
 ; absent. `dune build @default` builds these three binaries wherever a real
 ; Hardcaml toolchain is present (which `ours_run` genuinely needs, to
 ; elaborate M03); `dune runtest` never touches them, because nothing here is
-; wired to the `runtest` alias — no `(rule (alias runtest) ...)`, unlike
-; test/cost_probe/dune's throwaway probe. The main suite's fifteen
-; %expect_test units are therefore untouched by this stanza either way.
+; wired to the `runtest` alias — no `(rule (alias runtest) ...)` anywhere in
+; this file. The main suite's %expect_test units are therefore untouched by
+; this stanza either way.
+;
+; TWO STALE CLAIMS REPAIRED HERE, 2026-08-10 (`WO-0075`, the cosim-lane round;
+; the first was open since `J-dv_lead-0132` Open-question 1 with this exact
+; carrier — "the next commit that opens test/cosim/", which this is):
+;
+;   (1) The sentence above used to end "…, unlike test/cost_probe/dune's
+;       throwaway probe". THAT DIRECTORY NO LONGER EXISTS. It was deleted at
+;       `1702f0f`, under its own declared condition, and this comment kept
+;       pointing at it — a contrast drawn against a file a reader cannot open,
+;       which is worse than no contrast: it sends them looking for the
+;       counter-example that would explain the rule. The rule stands on its
+;       own and is now stated positively (no `runtest` alias in this file at
+;       all), so it needs no second file to be legible.
+;
+;   (2) "the main suite's FIFTEEN %expect_test units" was a measured figure
+;       when it was written and has been wrong for months. Measured at this
+;       tree by `grep -rh --include=*.ml 'let%expect_test' test/ | grep -c .`
+;       -> 139 repository-wide, of which 59 are the M03 bench
+;       (`tools/dv_checks.sh`'s inventory block prints both, and its own
+;       matcher was repaired in this same commit — `FINDING M-4`). The number
+;       is REMOVED rather than updated: it is load-bearing for nothing in this
+;       file, the claim it supports ("this stanza touches none of them") is
+;       true at every value, and a count restated where it is not needed is a
+;       standing invitation to the exact staleness it just demonstrated.
 ;
 ; iverilog is not invoked from here at all: tools/cosim/run_cosim.sh
 ; (data_wrangler, WO-0046 §5) is the only thing that calls `iverilog`/`vvp`,

@@ -271,17 +271,31 @@
 #                     PASS." This code exists so nothing can read exit-
 #                     nonzero-therefore-ran-and-found-a-defect from a run
 #                     that never started.
-#   3  BUILD        — `dune build` of the three pinned executables, or the
-#                     `iverilog` compile of the testbench + vendored
-#                     reference, failed; or one of the pinned executables
-#                     (stimulus_gen, ours_run, vvp against the compiled
-#                     reference) ran but did not exit 0 / did not produce
-#                     its named output file. Also DID NOT RUN a comparison,
-#                     but distinguished from PREREQ because the tools were
-#                     present and something else (a missing file, a syntax
-#                     error, a driver crash) is the story — the failing
-#                     command's own output is printed immediately above the
-#                     "FAILED CHECK: BUILD" line.
+#   3  BUILD /      — TWO STAGE NAMES, ONE CODE (`WO-0073-D5`, repaired
+#      PRODUCE        2026-08-10; the code's contract is UNCHANGED and is the
+#                     one `WO-0049` §8 accepted). Both mean the lane DID NOT
+#                     RUN a comparison, and both are distinguished from PREREQ
+#                     because the tools were present. They differ in where they
+#                     send the reader, which is the whole of what a label is
+#                     for:
+#                       BUILD   — `dune build` of the three pinned executables,
+#                                 the `iverilog` compile of the testbench +
+#                                 vendored reference, or a required source file
+#                                 that does not exist. Nothing has run yet.
+#                       PRODUCE — one of the pinned executables (stimulus_gen,
+#                                 ours_run, or vvp against the compiled
+#                                 reference) BUILT, RAN, and then exited
+#                                 nonzero or exited 0 without writing the file
+#                                 it owed. The build succeeded; a driver did
+#                                 not. The line names which producer, which
+#                                 side, which run, and which of the two failure
+#                                 modes it was.
+#                     In both cases the failing command's own output is printed
+#                     immediately above the "FAILED CHECK:" line.
+#                     WHY THE CODE IS NOT SPLIT TOO: §8's axis is "did the lane
+#                     reach a verdict?", both answer no, and the exit-code table
+#                     is a contract that went through the RV- loop. A label is
+#                     free to become more precise; a code is not.
 #   4  DIFFERENTIAL — check 4.1: `compare` REACHED a verdict (its own exit 1)
 #                     and it was negative — a real disagreement between the
 #                     reference and our implementation. As of WO-0049 §8
@@ -423,6 +437,44 @@ die() {
   # check named on stdout" (WO-0046 §2.1) is never ambiguous.
   printf '\nrun_cosim: FAILED CHECK: %s\n' "$2"
   exit "$1"
+}
+
+produce_reason() {
+  # $1 = the producer's exit code, $2 = the output file it owed. Names WHICH of
+  # the two PRODUCE failure modes occurred, because they send a reader to
+  # different places and the old wording named neither.
+  #
+  # `WO-0073-D5` (MINOR, against `tools/`, mine; measured `J-dv_lead-0134`,
+  # `WO-0073-VERDICT` §10, carrier declared as this round): under IC-L5 the lane
+  # printed
+  #
+  #   Fatal error: exception Failure("ours_run: M03 produced an output word
+  #     with no admitted frame open")
+  #     ... test/cosim/ours_run.ml, line 119
+  #   run_cosim: FAILED CHECK: BUILD (ours_run failed in run1, rc=2)
+  #
+  # on a run whose build had already printed `dune build: ok` eight lines
+  # earlier. The exit CODE was right — 3's contract has always covered "one of
+  # the pinned executables ran but did not exit 0", and that contract went
+  # through the RV- loop at `WO-0049` §8, so it is not changed here. The LABEL
+  # was wrong, and a label is what a reader acts on: "BUILD" sends them to dune
+  # and iverilog, and the story was a guard raising inside a driver.
+  #
+  # Repair: code 3 keeps its meaning and gains a second STAGE NAME. `BUILD` now
+  # means compilation and its inputs (dune, iverilog, a missing source file);
+  # `PRODUCE` means a pinned executable that BUILT, RAN, and then failed or did
+  # not write the file it owed. Same code, same axis (§8: the lane did not reach
+  # a verdict), different pointer.
+  #
+  # The general form: WHERE ONE EXIT CODE COVERS SEVERAL STAGES, THE STAGE MUST
+  # BE NAMED IN THE TEXT, BECAUSE THE CODE IS READ BY A MACHINE AND THE TEXT IS
+  # READ BY THE PERSON WHO HAS TO FIX IT. Widening a code's contract is free;
+  # widening its label silently is how the two drift apart.
+  if [ "$1" -ne 0 ]; then
+    printf 'ran and exited %d -- the build had already succeeded' "$1"
+  else
+    printf 'ran and exited 0 but did not write %s' "$2"
+  fi
 }
 
 require_field() {
@@ -629,7 +681,11 @@ STIM_OUT="$("$STIMULUS_GEN_BIN" "$WORK/stim/stimulus.txt" 2>&1)"
 STIM_RC=$?
 if [ "$STIM_RC" -ne 0 ] || [ ! -e "$WORK/stim/stimulus.txt" ]; then
   say "$STIM_OUT"
-  die "$EXIT_BUILD" "BUILD (stimulus_gen failed, rc=$STIM_RC)"
+  # PRODUCE, not BUILD: stimulus_gen compiled (the BUILD block above printed
+  # `dune build: ok`) and then failed at run time — `WO-0073-D5`, see
+  # produce_reason's note. Its most likely raise is its own `Arrival.check`
+  # assertion, which is a stimulus defect and not a compilation one.
+  die "$EXIT_BUILD" "PRODUCE (stimulus_gen: $(produce_reason "$STIM_RC" "$WORK/stim/stimulus.txt"))"
 fi
 [ -n "$STIM_OUT" ] && say "$STIM_OUT"
 STIMULUS_SHA="$(sha256sum "$WORK/stim/stimulus.txt" | cut -d' ' -f1)"
@@ -651,7 +707,7 @@ run_pipeline() {
   rc=$?
   if [ "$rc" -ne 0 ] || [ ! -e "$dir/ours.canon" ]; then
     say "$out"
-    die "$EXIT_BUILD" "BUILD (ours_run failed in $label, rc=$rc)"
+    die "$EXIT_BUILD" "PRODUCE (ours_run, our side, $label: $(produce_reason "$rc" "$dir/ours.canon"))"
   fi
   [ -n "$out" ] && say "  [$label] ours_run: $out"
 
@@ -660,7 +716,7 @@ run_pipeline() {
   rc=$?
   if [ "$rc" -ne 0 ] || [ ! -e "$dir/theirs.canon" ]; then
     say "$out"
-    die "$EXIT_BUILD" "BUILD (vvp failed in $label, rc=$rc)"
+    die "$EXIT_BUILD" "PRODUCE (vvp, the reference side, $label: $(produce_reason "$rc" "$dir/theirs.canon"))"
   fi
   [ -n "$out" ] && say "  [$label] vvp: $out"
 

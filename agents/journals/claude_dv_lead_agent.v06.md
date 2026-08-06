@@ -611,3 +611,358 @@ from one measurement), then the family J campaign packet, then family K, then th
 
 ### Files-in-this-commit
 - test/attack_plans/AP-xgmii_rx_64.md
+
+## [J-dv_lead-0139] 2026-08-10T06:20Z | task:WO-0075 | Five debts paid from one round — and the round's own measurement corrects the declaration that commissioned it: the anchor's strobe blindness is bound by its STIMULUS, not by its grammar, so the field I was asked to price would have bought nothing
+
+### Trigger
+
+Orchestrator dispatch, spawn short-id `WO-0075/2026-08-10T06:20Z`, HEAD
+`6f0fd5b` — verified as my first action, before reading anything, and matching
+the expected SHA exactly. Working tree clean at that verification.
+
+The commission is my own: `WO-0074-VERDICT` §14 item 2, **the cosim-lane
+round**, which pays five items measured across two campaigns —
+`WO-0073-D2` (the lane is content-comparing, not timing-comparing; option (a)
+ADOPTED at `J-orchestrator-0215`), `WO-0074-VERDICT` §11 item 1's strobe
+blindness with the decision the packet named, `FINDING M-4`, `WO-0073-D5`, and
+`test/cosim/dune`'s dangling `test/cost_probe/` reference. The dispatch left the
+scoping call to me: one `WO-` packet, or a direct dv round.
+
+### Inputs
+
+Read at `6f0fd5b`, all read-only. **No `libs/**` and no `rtl_snapshots/**` were
+opened at any point in this round.**
+
+- `agents/charters/dv_lead.md`; `agents/PROTOCOL.md` — mandatory first actions.
+- `docs/specs/requirements.md` — **REQ-901** in full (the *"transactional, not
+  cycle-by-cycle"* sentence, the cycle-alignment exclusion, the lettered class
+  list including **(e)** and **(f)**, and the closing "never a licence to take an
+  expected value from the reference"); **REQ-107**, **REQ-108**, REQ-005,
+  REQ-111, §0.2's strobe definition.
+- `docs/specs/modules/xgmii_rx_64.md` — §4.1's output record, §6.1's `m + 3`
+  formula, its D(m) paragraph and its **cycle-by-cycle worked table**, §7's drain
+  bound, §9's strobe table.
+- `agents/handoffs/WO-0074_family-m-mutation-campaign.md` — §11 items 1–10, §12's
+  tally, §13, §14, the IC-M class definitions and §11's branch/run table;
+  `agents/handoffs/WO-0073_family-l-mutation-campaign.md` — §10's findings table
+  (D1–D5), §10.2's adjudicated co-sim red, the IC-L class definitions, §12.
+- `test/cosim/**` in full: `canonical.mli`, `canonical.ml`, `compare.ml`,
+  `ours_run.ml`, `stimulus_gen.ml`, `tb_xgmii_rx_64.v`, `dune`;
+  `tools/cosim/run_cosim.sh` and `tools/dv_checks.sh` in the regions touched.
+- `test/attack_plans/AP-xgmii_rx_64.md` §7's banner in full (bars 1, 2, 3 and the
+  X-table), §9's tail.
+- `test/third_party/verilog-ethernet/axis_xgmii_rx_64.v` — **its published port
+  list and the six assignment sites of `error_bad_frame`/`error_bad_fcs`**, read
+  under charter §9's MIT permission and used only to establish that the
+  reference's `error_bad_frame` is raised on a bad FCS as well as on an error
+  character. This is the differential oracle, not our design; nothing derived
+  from it enters an expectation (REQ-901's own last sentence, ADR-0015 D2).
+- `agents/journals/claude_dv_lead_agent.v06.md`, `J-dv_lead-0137` and
+  `J-dv_lead-0138`; `agents/journals/claude_orchestrator_agent.v02.md`,
+  `J-orchestrator-0215` (the ruling itself, read rather than quoted from my own
+  verdict).
+
+### Reasoning
+
+**The scoping call, and it is a split rather than a choice between the two
+offered shapes.** Three of the five items are one-line defects in shipped
+instruments — a matcher that reads a directory, a label that names the wrong
+stage, a comment that points at a deleted directory. Sending those through a
+worker loop would cost two rounds each to change eleven characters of behaviour,
+and one of them (`test/cosim/dune`) has a declared carrier that is *this commit
+by definition*: "the first commit to open `test/cosim/`". **They land directly.**
+The other two are not small: the D2 extension changes a **pinned grammar** across
+two independent producers, one OCaml and one Verilog, in a lane that **cannot be
+executed anywhere in this programme's development environment** — no Hardcaml
+toolchain, no iverilog, ADR-0005. A change nobody can run is a change whose only
+review is the `RV-` loop, and writing it myself would make me sole author and
+sole reviewer of exactly the artefact class where that is least defensible.
+**Those two go out as `WO-0075`**, which is also what §7's own banner already
+ruled ("the `WO-` is dv_lead's to draft in the cosim-lane round"). The decision
+content — what is compared, what is refused, what a red means — is mine and is
+frozen **in** the packet rather than left to a worker to invent.
+
+**The round's real finding is against my own declaration, and I found it by
+reading the stimulus generator instead of my own verdict.** `WO-0074-VERDICT`
+§11 item 1 states that the anchor is blind to the family-M campaign **"by
+grammar"** — the canonical form has no strobe field. That sentence is true and it
+is not the binding constraint. The lane drives **one 64-octet good-FCS lane-0
+frame**: no second frame, no error character, no bad FCS, no runt, no oversize,
+no abort. I walked all seven seeded classes against that stimulus and **not one
+is rendered**: IC-M1 needs a runt with a wrong FCS, IC-M2 an oversize frame, IC-M3
+an error character, IC-M4 a second start character, IC-M6 and IC-M7 the `Discard`
+state, IC-M10 differs only below five octets. **A strobe field added today would
+be an all-zero column on every line of every run, under every one of the seven.**
+The blindness is **stimulus-bound first, mapping-bound second, grammar-bound
+third**, and I named the third.
+
+**So the decision the packet asked for is NO, and it is a refusal rather than a
+deferral, because the deferral would have been the more comfortable answer and
+the wrong one.** Three grounds, all measured. (a) Zero of twelve — a strobe field
+buys detection of no class either campaign has seeded. (b) The comparable set is
+bounded above by **one** of M03's five strobes, and the bound is in the **frozen
+spec**: `error_runt` is REQ-901's class (e) and `error_oversize` its class (f),
+both of which bar 2 already reaches; `error_start_without_terminate` has no
+counterpart output at all; and `error_bad_frame` exists on both sides **and is a
+different signal** — the reference raises it on a bad FCS too, where §9's table
+gives that event to `error_bad_fcs` alone, so a name-keyed comparison would red a
+**conformant** M03. (c) An all-zero column would make the lane *look*
+strobe-aware to every future reader, turning §11 item 1's *"that green is
+evidence of nothing"* from **true** into **invisible** — this programme's
+catalogued failure at its fifth instance. A refusal with three ordered
+preconditions is checkable; a deferral is not.
+
+**And the D2 extension collides with the ruling that commissioned it, which is
+the hardest thing in this round and the thing I will not paper over.**
+`J-orchestrator-0215` adopted option (a) in the words *"the lane gains an
+explicit cycle comparison"*. **REQ-901 says, in terms: "Cycle alignment, internal
+pipelining and latency constants are deliberately not compared: ours are pinned
+by REQ-005 and REQ-111, the reference's are its own."** A cross-side cycle
+comparison would assert the one quantity the frozen requirement excludes **by
+name** — and it would be wrong on the merits too, since two independently
+designed receivers owe each other no pipeline depth, so the assertion would red a
+conformant design and the only way to green it would be to take an expected value
+from the reference, which REQ-901's own closing sentence and ADR-0015 D2 both
+forbid outright.
+
+**I therefore implemented the ruling's intent and not its wording, and recorded
+the divergence rather than resolving it quietly.** The intent is *the anchor must
+be able to see time*. The packet delivers exactly that in three tiers: **T0**
+asserts that the two producers index the same stimulus identically — a
+cross-side check whose subject is the *stimulus file*, not either design, so the
+exclusion does not reach it; **T1** asserts **our** side against **SPEC-M03
+§6.1's own `m + 3` formula and its worked cycle table** — spec-derived, taking
+nothing from the reference, and reddening on all eight words under IC-L2's
+uniform ΔC 3 → 4; **T2** records the reference's cycles and reports them as
+data, *never adjudicated* — which is not an invention but REQ-901's own
+disposition for the sub-5-octet frame, applied to time.
+
+**Two design choices inside that shape are load-bearing and I record why each
+survived, because both had an attractive wrong version.** *First*, I nearly
+specified the cross-side offset as a fitted constant K, required equal across the
+run. **That design is blind to IC-L2 and I nearly shipped it**: a *uniform* shift
+moves K uniformly, so "K is constant" still holds and the class that motivated
+the whole finding walks straight through. The blindness of the fix would have
+reproduced the blindness it was fixing, one level up. *Second*, the cycle token is
+**decimal, not hex**, and that is not a style choice: it sits immediately before
+the variable-length octet list, so a decimal token makes an old-format file
+**unparseable rather than misparseable** — feed today's writer's output to the new
+reader and `0f` fails at the cycle position, `compare` exits 3, NO-VERDICT, loud.
+**A half-landed grammar change can therefore never produce a false green**, which
+is the property that makes either landing order safe (§11 of the packet) and is
+the reason for the choice rather than a consequence of it.
+
+**On the `AP` moving, against the dispatch's line.** The dispatch says the plan
+does not move this round and pre-resolves the conflict in favour of my artefacts.
+My artefacts do say otherwise — `WO-0074-VERDICT` §14 item 2 and `J-dv_lead-0138`
+both name this round as the §7 banner entry's carrier — but the decisive argument
+is not precedence, it is **that the home already holds half the statement**. §7's
+banner carries bar 3, the timing blindness, in full. A second blindness of the
+same instrument recorded anywhere else leaves the banner telling half the story
+to the one reader it exists for: the author of the next sign-off packet, who
+checks bars and not journals. **So bar 4 lands beside bar 3, and the edit is
+confined to §7's banner plus one §9 row** — no cell, no status, no count, so the
+plan's own numbers are untouched and re-measured to prove it.
+
+**What I declined.** I did not add `EXIT_TIMING` to `run_cosim.sh` while I was in
+that file. It would be a code with no producer — dead contract shipped ahead of
+its use — and the exit-code table went through the `RV-` loop at `WO-0049` §8, so
+it moves with its half and not with a convenience. I did not touch the stimulus,
+the two sampling conventions, or `compare_words`; the packet forbids all three
+explicitly, and the reason for the first is that a second frame folded into a
+grammar change makes a failing CI run un-diagnosable between two independent
+causes.
+
+**One repair I made that was not commissioned, declared rather than folded in.**
+`tools/dv_checks.sh`'s repaired line also carried `|| printf '0'` — the exact
+double-zero bug the same file's comment eighteen lines above forbids by name,
+recording that it was *"fixed once at WO-0034 and reintroduced here — left
+commented so it is not a third time"*. It was a third time. Latent, never fired,
+and removed here because the line was open and the warning it violates is four
+inches above it. Same disposition for `test/cosim/dune`'s stale *"the main
+suite's fifteen %expect_test units"*: **removed rather than updated**, because the
+claim it supports is true at every value and a count restated where nothing needs
+it is a standing invitation to the staleness it had just demonstrated.
+
+### Actions
+
+- Verified HEAD **first**, before any read: `6f0fd5b`, the expected SHA.
+- **`FINDING M-4` repaired** — `tools/dv_checks.sh`'s repository-wide inventory
+  matcher gains `--include=*.ml`; **140 → 139**. Comment records the finding, the
+  contaminating line, and the portable form. Second, distinct repair on the same
+  line declared in the comment (the `|| printf '0'` double-zero). Report label
+  now names the scope it measures.
+- **`WO-0073-D5` repaired** — `tools/cosim/run_cosim.sh` gains a `produce_reason`
+  helper and a second **stage name** under exit code 3: `BUILD` for compilation
+  and its inputs, **`PRODUCE`** for a pinned executable that built, ran, and then
+  failed or did not write its file. Three call sites relabelled (`ours_run`,
+  `vvp`, `stimulus_gen`), each now naming the producer, the side, the run and
+  which of the two failure modes occurred. **The exit code and its contract are
+  unchanged** — that contract went through the `RV-` loop.
+- **`test/cosim/dune`'s dangling `test/cost_probe/` reference removed** and the
+  rule restated positively (no `runtest` alias in the file at all), plus the
+  stale "fifteen units" count removed with its measurement recorded.
+- **`agents/handoffs/WO-0075_cosim-lane-cycle-comparison.md` drafted** — twelve
+  sections: the twelve-class measurement, the amended grammar, the three tiers
+  with what each red means, the REQ-901 argument, tb_writer's half,
+  data_wrangler's half, the six-case self-test with the uniform-shift case named
+  as the most important test in the packet, the prohibitions, the strobe refusal
+  with its price, the DoD with CI's colours spelled out, and the landing-order
+  safety proof.
+- **`test/attack_plans/AP-xgmii_rx_64.md` §7 gains BAR 4** (the strobe blindness,
+  priced, with the corrected diagnosis and the three preconditions) and a **note
+  on bar 3** recording that its draft exists and corrects the ruling's wording;
+  §9 gains one change-log row. **No row line, no status cell, no count, no §6
+  cell touched.**
+- Ran no `dune`. Ran no `iverilog`. Ran no command whose effect moves HEAD, the
+  index, or any ref. Committed nothing.
+
+### Evidence
+
+Reproducible at this commit.
+
+```
+git rev-parse HEAD                      -> 6f0fd5b   (spawn HEAD, unchanged)
+git status --porcelain                  -> 4 modified + 1 untracked, exactly the Files list
+
+grep -rh 'let%expect_test' test/ | grep -c .                 -> 140   (the old matcher)
+grep -rh --include=*.ml 'let%expect_test' test/ | grep -c .  -> 139   (the repaired one)
+bash tools/dv_checks.sh | grep repository-wide
+    ->  139  test/**/*.ml (repository-wide, FILE-TYPE scoped — FINDING M-4)
+bash tools/dv_checks.sh ; echo $?       -> "every check that COULD run passed" ; 0
+
+bash -n tools/dv_checks.sh              -> clean
+bash -n tools/cosim/run_cosim.sh        -> clean
+tools/cosim/run_cosim.sh --help ; echo $?  -> header renders, PRODUCE present ; 0
+ls test/cost_probe                      -> No such file or directory
+git log --oneline --diff-filter=D -- test/cost_probe -> 1702f0f  (the deletion)
+```
+
+**Plan counts, re-measured at this tree by a status-cell pass over the last cell
+of every row line, before AND after the edit — not carried forward:**
+
+```
+before:  78 rows | ASSERT 62 | NO-ASSERT 7 | NO-STIMULUS 4 | STRUCTURAL 4 | GAP 1
+after:   78 rows | ASSERT 62 | NO-ASSERT 7 | NO-STIMULUS 4 | STRUCTURAL 4 | GAP 1
+```
+
+Sum 78 both times. Every row line still parses to exactly six cells (an
+eight-field `awk -F'|'` pass reports no exception). **Discharge census unmoved at
+62 of 62**: 78 declared, 62 boundary-matched, 62 naive, − `M03-A4` + `M03-F5` —
+re-measured by `tools/dv_checks.sh`'s own census block, not quoted.
+
+**The twelve-class measurement, derived per class at this tree from
+`test/cosim/stimulus_gen.ml` (one 64-octet good-FCS lane-0 frame, 12-octet gap,
+24 drain cycles) against each campaign's own class definitions:** rendered at the
+lane's stimulus — **IC-L2** (uniform ΔC 3 → 4) and **IC-L5** (last word
+duplicated) — **two of twelve**. Not rendered — IC-L1 and IC-L4 (need a second
+frame), IC-L3 (`R = {2}`; the lane delivers 60 octets, 60 mod 8 = 4), and all
+seven family-M classes (each needs a condition this stimulus never creates).
+**The comparison reported a divergence in zero of the twelve**; IC-L5's red came
+from `ours_run.ml:119`'s own guard, quoted at `WO-0073-VERDICT` §10.2, and not
+from REQ-901's comparison.
+
+**Reference-side fact, established by reading the vendored MIT source's
+assignment sites (`axis_xgmii_rx_64.v` lines 248, 265–266, 293–294) and used only
+to bound what could ever be compared**: the reference raises `error_bad_frame`
+**together with** `error_bad_fcs` at a bad-FCS terminate, where SPEC-M03 §9's
+table gives that event to `error_bad_fcs` alone.
+
+**Nothing in this round is a test result.** No bench ran, no `dune` was invoked,
+no simulator exists here. `WO-0075`'s own §10 states what the landing CI's green
+and red will each mean, per exit code, and that the landing run is the only check
+either half will ever get before it is cited.
+
+### Outcome
+
+**DoD met.** Five commissioned items, five dispositions:
+
+| item | disposition |
+|---|---|
+| **`WO-0073-D2`** — explicit cycle comparison | **DRAFTED as `WO-0075`**, design frozen: three tiers, T1 asserting our side against SPEC-M03 §6.1, T2 recording the reference's cycles and never adjudicating them. **The ruling's wording is corrected on REQ-901's own text and the divergence is recorded, not papered over** |
+| **The strobe blindness** (`WO-0074-VERDICT` §11 item 1) | **PRICED AND DECIDED: NO strobe record, as a refusal with three ordered preconditions.** `AP` §7 **BAR 4** carries it, with the corrected diagnosis — **stimulus-bound, not grammar-bound** — and the comparable-set bound of one strobe in five |
+| **`FINDING M-4`** | **REPAIRED**, 140 → 139, with the portable form recorded and a second latent defect on the same line declared |
+| **`WO-0073-D5`** | **REPAIRED**: exit code 3 keeps its contract and gains the stage name `PRODUCE`; three call sites now name producer, side, run and failure mode |
+| **`test/cosim/dune`'s dangling reference** | **REPAIRED**, plus a stale unit count removed rather than updated |
+
+**The seal-method bar's home**: `FINDING WO-0074-S4`'s method — *derive the
+collision inventory from the cross product of every class's predicted red set
+with every scored cell, and state every rule's complete conjunct list* — is
+recorded as a bar on the **family J and family K seals** in
+`AP-xgmii_rx_64.md` §9's row for this round (item 8) **and** in §4.M's
+post-campaign block, which is where `J-dv_lead-0138` banked it and where the next
+seal's author reads it. **It is not restated in `WO-0075`**, which commissions no
+seal and no campaign; a bar written into a packet that closes is not a home.
+
+**No `SO-xgmii_rx_64.md` is opened or offered.** Families **J** and **K** are
+unscored, the charter §3 anchor is undischarged per stimulus class, blind per
+strobe (bar 4) and blind per quantity until `WO-0075` lands (bar 3). **The
+lessons harvest is not due this round** — ADR-0018 and PROTOCOL §7 place it at
+every `SO-` and every phase gate, and this is neither. The span since my last
+harvest stays **open and declared, never skipped**: three candidates banked at
+`J-dv_lead-0137`, and **two added here**, both LH1-cited and both stated for a
+stranger to this project — *(i) an inventory of a language construct must be
+scoped by file type, never by directory, because a project that documents its own
+instruments contaminates a directory-scoped count in proportion to how well it is
+documented, and the symptom is a plausible integer* (incident: `FINDING M-4`,
+raised `WO-0074` §2, repaired this commit); *(ii) where one exit code covers
+several stages, the stage must be named in the text, because the code is read by
+a machine and the text is read by the person who has to fix it — widening a
+code's contract is free, widening its label silently is how the two drift apart*
+(incident: `WO-0073-D5`, `cosim` job `92437812511`). Neither is admitted here.
+
+**Handoff**: the four modified files plus `WO-0075` to the orchestrator for
+commit; `WO-0075` to tb_writer and data_wrangler for the two halves, in either
+order (its §11). Commissioned next, unchanged: the family **J** campaign packet,
+then family **K**, then the `SO-`.
+
+### Open-questions
+
+1. **The one disagreement with this dispatch, stated plainly: the `AP` moved.**
+   The dispatch says it does not, and pre-resolves the conflict in favour of my
+   artefacts; my artefacts (`WO-0074-VERDICT` §14 item 2, `J-dv_lead-0138`) name
+   this round as the §7 banner entry's carrier, and §7's banner already holds
+   bar 3, so a second blindness recorded elsewhere would leave the banner telling
+   half the story to the only reader it exists for. **The edit is confined to §7's
+   banner and one §9 row; no cell, status, count or §6 entry moves**, so it is
+   droppable as a single file if the orchestrator disagrees — but the journal's
+   Files list would then need rewriting before commit, and I would rather be told
+   than guess.
+2. **`WO-0075` corrects a ruling I asked for, and the orchestrator should read
+   that as a position rather than as compliance.** `J-orchestrator-0215`'s option
+   (a) as worded commissions a cross-side cycle comparison; REQ-901 excludes cycle
+   alignment by name. I have delivered the intent under the constraint and said so
+   in the packet's §4 and in the plan's banner. **If the orchestrator reads the
+   correction as a refusal of the ruling, the packet is a position paper and the
+   ruling stands until re-ruled.** I do not escalate it: it is a drafting
+   correction inside my own scope, on evidence the ruling did not have, and it is
+   not E5.
+3. **T1's constant is derived and unverified by execution, and it cannot be
+   verified here.** `admit + m + 3` is SPEC-M03 §6.1's formula and the lane's
+   expected set is `{3 … 10}` from §6.1's own worked table. If the landing CI reds
+   at `EXIT_TIMING`, the packet says in terms that the resolution is a `BUG-` or a
+   finding against my derivation — **never a constant edited to match an
+   observation**. I recommend the auditor's re-execution sampling take that
+   derivation, since it is the one number in this round that no test has touched.
+4. **The lane drives one frame, and four of twelve classes are unreachable for
+   that reason alone.** That bound was never stated when `WO-0046` chose the
+   stimulus and it is now measured. **It is not commissioned here** — a second
+   frame is a different work order with a different risk profile — but it is the
+   single largest thing standing between this lane and the charter §3 anchor, and
+   it should be commissioned before the `SO-` rather than discovered at it.
+5. **Carried, unchanged**: `DECLARATION WO-0074-D1`'s source-side half is adopted
+   and not verified by me; `M03-M5`'s `a_open` line reference is a design-side
+   citation inside a DV artefact; `WO-0047` §2's 4-octet member reorder
+   (`test_m03_f.ml`); `OBSERVATION L-O1` (`test_m03_l.ml`); `WO-0073-D3`'s
+   `M03-I4` mislabel (`test_m03_i.ml`); `OBSERVATION K-O1` (`test/monitors/`);
+   AP-M14's §6 invariant; the `precompile_check.sh` side-effect-in-combinator
+   lane; the RFC 1071 anchor on the next fetching run; X-7, X-10, X-11 deferred.
+6. **Nothing is escalated.** No `BUG-`, no `E`-class item, no spec-queue addition
+   — a nil escalation, declared rather than omitted.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0075_cosim-lane-cycle-comparison.md
+- test/attack_plans/AP-xgmii_rx_64.md
+- test/cosim/dune
+- tools/cosim/run_cosim.sh
+- tools/dv_checks.sh
