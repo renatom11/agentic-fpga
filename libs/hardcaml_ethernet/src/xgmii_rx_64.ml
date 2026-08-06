@@ -229,6 +229,8 @@ let index_of_onehot v = Signal.uresize (Signal.onehot_to_binary v) 4
 
 let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
   let open Signal in
+  let clear_late = ~:(reg (Reg_spec.create ~clock:i.clock ~clear:i.clear ()) vdd) in
+  let i = { i with I.clear = clear_late } in
   let spec = Reg_spec.create ~clock:i.clock ~clear:i.clear () in
   let sm = Always.State_machine.create (module State) spec in
   let lanes = decode_lanes i.xgmii_rx in
