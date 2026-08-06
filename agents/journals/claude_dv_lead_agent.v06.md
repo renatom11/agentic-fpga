@@ -1847,3 +1847,376 @@ before the run and surviving it, carried to the post-campaign `AP-` round.
 
 ### Files-in-this-commit
 - agents/handoffs/WO-0076_family-j-mutation-campaign.md
+
+## [J-dv_lead-0143] 2026-08-10T12:10Z | task:none | The ninth campaign is absorbed into the plan — and the round commissioned to record five kills spent most of its value convicting three prose claims in my own campaign artefacts, one of which had been telling every reader that a row no campaign has ever qualified was already scored
+
+### Trigger
+
+Orchestrator dispatch, spawn short-id `AP-batch-11/2026-08-10T12:10Z`, HEAD
+`acfe0a0` — verified as my first action, per the dispatch's own bar, and matching
+the expected SHA exactly, so no incident disposition fired. The commission is my
+own: `WO-0076-VERDICT` §14 item 3, the post-campaign `AP-` round, run **first**
+under the adopted **3 → 2 → 1** resequencing — the disposition I recommended at
+`J-dv_lead-0142` Open-question 1 and the operator took. `WO-0076` §8's ordering
+rule froze this file for the campaign's whole window; the campaign has scored, the
+freeze has expired, and this is the round that spends it.
+
+### Inputs
+
+Read at `acfe0a0`, all read-only. **No RTL was opened in this round, at all.**
+
+- `agents/charters/dv_lead.md`; `agents/PROTOCOL.md` — mandatory first actions.
+- `agents/handoffs/WO-0076_family-j-mutation-campaign.md` — the whole
+  `WO-0076-VERDICT` (§1–§15), plus §2's denominator and enable census, §4's ten
+  declared non-scoreables, §6.2, §7's allowlist, §8's ordering rule, §11's
+  qualification rule and §13–§14's owed list; and the **pre-run reading note**
+  (`5ac62b5`) §4 (RN-4) and §5 (`FINDING WO-0076-A1`, adopted and widened).
+- `agents/handoffs/WO-0076_family-j-mutation-campaign-SEALED-predictions.md`
+  §6.6 (`FINDING J-1`, `FINDING J-2`), §6.7 (`DECLARATION J-D1`) and §6.8 — the
+  declarations' frozen wording, read so this plan carries the sealed text rather
+  than a paraphrase of it.
+- `agents/handoffs/WO-0066_family-bn-mutation-campaign.md` — §13 item 2 and its
+  qualification list, **opened specifically to re-measure a claim rather than to
+  quote it**; this is the read that produced `FINDING AP-3`.
+- `agents/handoffs/WO-0074_family-m-mutation-campaign.md` — its four `M03-N4`
+  mentions, to measure that row's whole campaign history rather than this
+  campaign's slice of it.
+- `test/attack_plans/AP-xgmii_rx_64.md` in full: §0.1's set-claim rule, §1's
+  closed status vocabulary, §4.J's four rows, §4.M's `M03-M5`, §4.N's rows and its
+  landed-status block, §6's coverage map, §7's banner, X-table and U-1/U-2/U-3
+  block, §9's change log — and **§4.M's post-campaign block as the template this
+  round follows**.
+- `agents/journals/claude_dv_lead_agent.v06.md`: `J-dv_lead-0138` (the family-M
+  absorption, as method), `J-dv_lead-0141` and `J-dv_lead-0142` (my own pre-run
+  and adjudication entries, for figures and banked candidates).
+- **Not opened**: `libs/**`, `docs/reports/audit/**`, `scripts/**`, any worker
+  journal. The one design-side fact this plan carries (`M03-M5`'s `a_open` term)
+  is the auditor's, quoted from its committed artefact with its non-verification
+  stated in the plan text, exactly as `J-dv_lead-0138` left it.
+
+Independence (PROTOCOL §10, charter §8): this round derives nothing from RTL and
+writes no test. Every figure in it is either re-measured at this tree or carried
+with the SHA it was measured at, and the one figure that is carried rather than
+re-derived is **flagged as such in the plan itself**.
+
+### Reasoning
+
+**Why one commit and not several, and it is the same argument as last time because
+the situation is the same.** The verdict enumerated six debts against this file and
+every one is a statement about the *same* five classes and the *same* fourteen
+reds. Splitting them would produce a plan in which a row says QUALIFIED before the
+block that defines what qualification **excludes** exists — the failure family L's
+round was built to avoid and family M's round repeated the fix for. One coherent
+edit set, history kept and ground replaced.
+
+**The commissioned work took about a third of the round. The rest was
+re-measurement, and the re-measurement is what the round is worth.** §0.1 says a
+claim about a set carried in prose must be re-measured at citation or carry the SHA
+it was measured at. I was carrying nine such claims out of two documents I had
+written myself six hours earlier. **Three of them are false**, and all three came
+out of measuring instead of quoting:
+
+- **`FINDING AP-2`** — the verdict's §2 says *"fifteen reds across five classes"*;
+  its own scorecard table in the same section enumerates **fourteen**, and fourteen
+  is what the per-class blast-radius rows sum to (4 + 4 + 2 + 3 + 1). **This is
+  `FINDING WO-0076-S2`'s defect at its second instance inside the same document,
+  one section from where I filed the first** — precisely what harvest candidate
+  (E), banked one entry earlier, says will happen without the rule. The
+  blast-radius figure is the number a later scorecard quotes, so the plan carries
+  **fourteen reds, five kills, nine reds that qualify nothing**, and the correction
+  is stated rather than the number quietly changed.
+- **`FINDING AP-3`, and it is the one with teeth.** `WO-0076` §2 and the verdict §8
+  both call `M03-N4` *"already scored at `WO-0066`"* — a clause whose entire
+  function is to soften **QUALIFIED BY NOTHING HERE** into *qualified elsewhere*.
+  Measured against `WO-0066` itself: that campaign qualified `M03-N2`, `M03-B2` and
+  `M03-B4` member (b), and its own §13 item 2 calls `M03-N1`/`M03-N4` *"both still
+  outstanding ASSERT rows"* whose bench **had not been written**. The row could not
+  have been scored there and was not. Widened to the whole era: `M03-N4` has taken
+  **five** reds across **two** campaigns — one under `IC-M4` at `WO-0074`, four
+  here — and has been **qualified by none of them**, and `M03-N1` is qualified by
+  nothing at all. **Two of family N's four rows are landed, green, and
+  mutation-scored by nothing**, and until this round the plan's own text told a
+  reader otherwise. That is not a scoring error; it is an unearned reassurance
+  sitting directly in the path of an `SO-`.
+- **`FINDING AP-4`** — clerical, and recorded anyway because the rate is the
+  argument. `WO-0076` §2 blames the naive matcher's step from 140 to 141 on *this
+  file* gaining *"two further prose quotations"* during the family-M absorption.
+  Measured at all six SHAs it names, this file carries **exactly one** occurrence
+  throughout and already carried it **before** that absorption; the file that grew
+  is `test/cosim/dune`, at `c109c08`, inside a comment quoting the **corrected**
+  command. The conclusion — a directory-scoped counting instrument counts its own
+  documentation — is unaffected and better supported than it was, because the
+  instrument now counts two separate quotations of its own repair.
+
+**All three are mine, all three are §0.1's shape, and all three were caught at the
+point of citation.** `FINDING AP-1` was that rule's first conviction; this round
+produced three more in one sitting. **The honest reading is not that my prose is
+deteriorating but that the rule is finally being executed** — a claim quoted
+forward is invisible, and a claim re-measured at citation is either confirmed or
+convicted. It cost about twenty minutes and it stopped a false coverage statement
+from reaching an `SO-`.
+
+**The one figure I did NOT re-derive, and I flagged it rather than quietly carrying
+it.** The honest-breadth line — 22 DUT-observable assertions across the three J
+units, 7 reached — is a judgement over assertion bodies rather than a grep, and
+§0.1 permits carrying it with the SHA it was measured at. I carried it with
+`a8d6140` **and said in the plan that it is the one figure of this round not
+re-derived, with the `SO-` named as its carrier**. Having just convicted three
+figures from the same two documents, quoting a fourth without marking it would have
+been the exact failure I was convicting.
+
+**Where each commissioned item landed, and why there rather than elsewhere.**
+Qualification is a property of an **instrument**, so it belongs in the row whose
+instrument it is — hence three J rows carrying their own kills with carriers and
+run ids, and `M03-J4` and `M03-N4` carrying their **negatives** in their own cells,
+because a scorecard reader meets those there and nowhere else. A finding about a
+**Kills** cell goes in that cell (`FINDING J-1`); a finding about an **Observable**
+goes in that one (`FINDING J-2`, `DECLARATION J-D1`'s bar) — the plan's own
+disposition, stated at `M03-N4` and applied here without exception. `FINDING
+WO-0076-S1` and `S2` are findings about **how a seal is written**, and the next
+seal's author reads the plan rather than the packet, so they land in the
+post-campaign block where family M's four sit.
+
+**The one place I narrowed a commission, and the narrowing is disclosed rather than
+absorbed.** The verdict asks for `DECLARATION J-D1` *"as a §7 X-row"*. §7's own
+taxonomy makes that impossible to honour literally without damage: **an X-row says
+a row cannot be asserted until machinery exists**, and here nothing is missing —
+the assertion is landed, it is green, **it has killed twice**, and the separating
+instrument is landed too at another row. So J-D1 lands in §7 **beside** the X-rows
+as **U-4**, exactly the disposition `J-dv_lead-0138` took for `DECLARATION
+WO-0074-D1` and for the same reason. **And U-4 is a third kind again**, which is
+why it is not folded into the U-1/U-2 table either: U-1 and U-2 are bench-side (a
+sibling assertion already compared the subject), U-3 is design-side (the report
+grammar has no member to displace), and **U-4 is the shape of the observable
+itself** — an absence cannot distinguish never-produced from produced-and-
+suppressed. The instrument speaks; what it cannot do is **mean what its green looks
+like it means**. Folding that into either table would have destroyed the
+distinction the section exists to keep.
+
+**Why `M03-J2` is the row this campaign vindicated and `M03-J1` is the row it
+embarrassed.** On 2026-08-09 I withdrew `M03-J2`'s stated kill as unreachable under
+its own stimulus, from arithmetic, before a bench existed. **IC-J3 rendered exactly
+the design the withdrawn cell named, reddened `M03-J3` at that row's own cell, and
+left `M03-J2` green.** A bench cannot make that measurement about itself; a
+campaign can, and this is the one that did — the prohibition is now enforced **on
+evidence** rather than quoted. `M03-J1` went the other way: `FINDING J-1`'s second
+half says REQ-810's **first sentence**, which is IC-J1's whole ground and this
+campaign's **first kill**, has **no Kills cell at all**. The kill landed against a
+clause my own cell never claimed. I recorded it as **owed** with a named carrier
+rather than repairing it here, because writing a Kills cell is authoring an attack
+and this round is not commissioned to author one — the same line `J-dv_lead-0112`
+draws around improving a carrier inside a plan round.
+
+**What I considered and declined, each with the reason, because the declined list
+is what an auditor mines.** (a) **Repairing `FINDING J-1`'s second half in this
+commit** — declined: a new Kills cell is a new attack, it wants the derivation
+discipline a bench packet gives it, and slipping one into an absorption round is
+how an unreviewed attack enters a plan. (b) **Annotating §6's coverage map** with
+the REQ-802 reset-column bar — declined on the family-M precedent: §6's row set is
+unchanged by this round, a refusal about what a coverage line does **not** buy
+belongs where the classes are argued, and the block carries it as item 4. (c)
+**Editing §4.N's landed-status block item (1)** into its own outcome — declined
+absolutely; it is annotated beside itself, and while I was there I flagged item
+(3)'s separately-stale census clause rather than leave a known-stale sentence
+unmarked next to a freshly-paid one. (d) **Converting any status** — declined, and
+it is the rule rather than a choice: §1's vocabulary is closed at six values,
+`QUALIFIED` is not one of them, and qualification measures an instrument without
+discharging a row (`J-dv_lead-0109`). (e) **Opening any carrier under `test/**`** —
+declined: `WO-0047` §2's member reorder, `OBSERVATION L-O1`, the `M03-I4` mislabel
+and `OBSERVATION K-O1` all stay at their own carriers.
+
+**One deliberate authorial constraint worth recording because it is measurable.**
+The new block discusses the contaminated matcher without ever **quoting** the
+unit-declaration literal, so the naive figure is still **141** after this commit —
+stated in the block and checkable in one command. A document that discusses a
+counting bug and then feeds it is not describing the bug, it is participating in
+it.
+
+**Harvest note (ADR-0018, PROTOCOL §7): NOT DUE, declared rather than skipped.**
+The harvest falls at the `SO-` and at phase gates; this is a plan round. The span
+since my last harvest stays **open**, and the candidates banked against it are
+untouched and unadmitted: (C) at `J-dv_lead-0141`, (D) and (E) at
+`J-dv_lead-0142`, and the three at `J-dv_lead-0137`. **One further candidate is
+banked from this round's own three findings**, stated with the provenance hidden:
+**(F)** *A document that absorbs another document's result re-derives every
+quantity it carries forward, and marks in its own text any quantity it could not
+re-derive.* **LH1**: this round — `FINDING AP-2`, `AP-3` and `AP-4`, three false
+prose claims carried out of two documents in one absorption, against one figure
+carried with its provenance and marked. **LH2-g** — no proper noun of any kind.
+**LH3**: without it, an absorbing document launders an unmeasured claim into a
+durable one, and the later artefact resting on it has no way to tell a measured
+figure from a copied one.
+
+### Actions
+
+- Verified `HEAD` as the **first action, before reading anything**: `acfe0a0`, the
+  expected SHA, so no rollback or divergence disposition fired.
+- Read the charter, the protocol, the whole `WO-0076` packet, its seal, its pre-run
+  note and its verdict, and this plan in full including §4.M's post-campaign block
+  as the template.
+- **Re-measured before writing**, rather than quoting: the campaign's per-class red
+  sets and their sum; `M03-N4`'s and `M03-N1`'s whole campaign history across every
+  campaign packet in `agents/handoffs/`; the naive-matcher contamination at six
+  named SHAs; the plan's status-cell census before and after the edits; the unit
+  inventory and row-discharge census; the seal-to-verdict freeze.
+- **Edited six row lines** in one file, all by appending to a cell and never by
+  rewriting one: `M03-J1` (Observable — `DECLARATION J-D1`'s bar; Kills —
+  QUALIFIED ×2 with carriers and run ids, plus `FINDING J-1`'s two halves),
+  `M03-J2` (Kills — QUALIFIED on the honest kill only, plus the withdrawal now
+  measured from a run), `M03-J3` (Observable — `FINDING J-2`; Kills — QUALIFIED ×2
+  at two instruments), `M03-J4` (Observable — unqualifiable by specification),
+  `M03-N4` (Kills — qualified by nothing here **or anywhere**, plus `FINDING
+  AP-3`), and `M03-M5` (Kills — the `a_open` citation repaired into
+  `<path>:<line> @ <SHA>` form, discharging `FINDING WO-0076-A1`).
+- **Inserted the FAMILY J — POST-CAMPAIGN STATUS block** after §4.J's row table:
+  the five-class identifier table with branch heads and run ids, the control, the
+  verified ordering rule, re-measured denominators and the enable census, the
+  corrected contamination note, MUST-STAY-GREEN from the promotion lists, the
+  five-row status table, the blast-radius accounting with `FINDING AP-2`, the
+  collision method's first vindication on evidence, the third collision's new
+  diffstat protection, the honest-breadth line with its provenance flagged, seven
+  findings, the era tally and eleven refusals.
+- **Added `DECLARATION J-D1` as U-4** at §7 beside U-1/U-2/U-3, with the
+  three-kinds distinction stated and the X-row narrowing disclosed.
+- **Annotated §4.N's landed-status block** item (1) as paid and item (3) as
+  separately stale, **editing neither sentence**.
+- Appended the **§9 change-log row**, thirteen numbered items, counts stated before
+  and after.
+- Ran **no `dune`**, no command that moves `HEAD`, the index or any ref, and no
+  `git` verb outside `rev-parse`, `status`, `diff`, `log`, `show` and `grep`.
+  Committed nothing. **`test/**` outside this one file is untouched.**
+
+### Evidence
+
+Reproducible at this commit.
+
+```
+git rev-parse HEAD                                 -> acfe0a0  (spawn HEAD, unmoved)
+git status --porcelain                             -> M test/attack_plans/AP-xgmii_rx_64.md
+git diff --stat                                    -> 1 file, 384 insertions(+), 6 deletions(-)
+git diff --name-only 8346a5c HEAD -- test/ libs/   -> (empty)   the campaign freeze, re-verified
+```
+
+**Plan counts, measured from this file by a status-cell pass over every row table,
+before AND after the edits — not carried forward:**
+
+```
+before:  78 rows | ASSERT 62 | NO-ASSERT 7 | NO-STIMULUS 4 | STRUCTURAL 4 | GAP 1
+after:   78 rows | ASSERT 62 | NO-ASSERT 7 | NO-STIMULUS 4 | STRUCTURAL 4 | GAP 1
+```
+
+**Unmoved, and that is the rule rather than an oversight**: qualification measures
+an instrument, discharges no row and moves no count. All 78 row lines still parse
+to exactly six cells (seven pipes) after the edits, verified mechanically; the six
+deleted lines in the diff are exactly the six rows edited, and every other change
+is a pure insertion.
+
+```
+bash tools/dv_checks.sh   -> 78 declared / 62 naive / 62 boundary; inventory 59 and 139
+                             every check that COULD run passed; 1 obligation OPEN (RFC 1071)
+naive whole-tree matcher over test/            -> 141  (unchanged by this commit)
+```
+
+**The three findings this round minted, each with the measurement that produced
+it:**
+
+```
+AP-2  WO-0076-VERDICT §2 says "Fifteen reds"; its own table enumerates
+      4 + 4 + 2 + 3 + 1 = 14.  Fourteen reds, five kills, nine qualifying nothing.
+
+AP-3  grep -c 'M03-N4' agents/handoffs/WO-00*mutation-campaign.md
+        -> WO-0066: 1 (a forward reference to an unwritten bench, its §13 item 2)
+           WO-0074: 4 (IC-M4 blast radius, qualifying nothing)
+           WO-0076: 40
+      WO-0066's qualification list: M03-N2, M03-B2, M03-B4 member (b). No N4, no N1.
+      => M03-N4: 5 reds / 2 campaigns / 0 qualifications.  M03-N1: 0 of everything.
+
+AP-4  git show <sha>:test/attack_plans/AP-xgmii_rx_64.md piped to a count of the
+      unit-declaration literal -> 1 at ca1bb80, bb81fe5, 6f0fd5b, c109c08,
+      8346a5c and HEAD (unchanged);  git grep -c ... 8346a5c -- test/ shows the
+      added file is test/cosim/dune, which gained it at c109c08.
+```
+
+**Externally verifiable references carried into the plan** — CI run ids and their
+conclusions, quoted at the rows and in the block: control `31061945377`
+(`success`, `8346a5c`); IC-J1 `31064102925`, IC-J2 `31064103812`, IC-J3
+`31064104902`, IC-J4 `31064106060`, IC-J5 `31064107507` — each `failure` at the
+`build` job's step 6 and `success` at step 5, each branch one commit with sole
+parent `8346a5c` touching one file.
+
+**Nothing in this round is a test result**: no bench ran, no `dune` was invoked,
+and every claim in the plan is either a citation of a run already in history at
+`a8d6140`'s verdict or a measurement re-run at this tree and shown above.
+
+### Outcome
+
+**DoD met**, against `WO-0076-VERDICT` §14 item 3's enumeration, item by item:
+
+| commissioned | where it landed |
+|---|---|
+| §4.J's rows gaining the campaign's score and per-row qualification cells | `M03-J1` (2 classes), `M03-J2` (1, honest kill only), `M03-J3` (2), `M03-J4` (unqualifiable), each in its own cell with carriers and run ids |
+| `M03-N4` recorded explicitly unqualified | `M03-N4`'s own Kills cell — and, measured, unqualified by **every** campaign, which is `FINDING AP-3` |
+| `FINDING J-1`'s two halves | `M03-J1`'s Kills cell, half one MEASURED and half two OWED with a named carrier |
+| `FINDING J-2` | `M03-J3`'s Observable cell, with the convicting carrier named and its own unqualified state disclosed |
+| `DECLARATION J-D1` as a §7 X-row in its measured wording | §7 as **U-4**, beside U-1/U-2/U-3, in the verdict's exact wording; the row-**kind** narrowing disclosed |
+| `FINDING WO-0076-A1`'s citation repair at `M03-M5` | `M03-M5`'s Kills cell, `libs/hardcaml_ethernet/src/xgmii_rx_64.ml:296 @ ca1bb80` |
+| `RN-4`'s ADR filename repair | the post-campaign block, item 6, with this plan's own exposure **measured at nil** |
+| `FINDING WO-0076-S1` / `S2` | the post-campaign block, where a later seal's author reads them, with the family-K seal named as carrier for both |
+| the honest-breadth line | the block, 7 of 22, carried with its SHA and **flagged as the one figure not re-derived** |
+| era tally 54 / 52 / 1 / 1 | the block's tally table, with 52 + 1 + 1 = 54 shown |
+| the change-log row | §9, thirteen numbered items, counts stated before and after |
+
+**Beyond the commission**: `FINDING AP-2`, `FINDING AP-3` and `FINDING AP-4`, all
+three against my own campaign text, all three minted by §0.1 at the point of
+citation — and **AP-3 is the one that mattered**, because it removes a false
+statement that a landed green row was mutation-scored when no campaign has ever
+qualified it.
+
+**Not done, deliberately, each with its carrier named in the plan**: `FINDING
+J-1`'s second half (a new Kills cell is a new attack); the 22-assertion breadth
+figure's re-derivation (carrier: the `SO-`); `WO-0047` §2's member reorder,
+`OBSERVATION L-O1`, `WO-0073-D3`'s `M03-I4` mislabel and `OBSERVATION K-O1` (all at
+their own carriers — a plan round is not where a carrier is improved).
+
+**No `SO-` is opened or offered**, and the lessons harvest is **not due this
+round**: it falls at the `SO-`, the span stays open and declared, and one further
+candidate **(F)** is banked above alongside the five already held.
+
+**Handoff**: `test/attack_plans/AP-xgmii_rx_64.md`, to the orchestrator for commit.
+Commissioned next, in the adopted order: `WO-0075`'s build round, then the family
+**K** campaign — which now has the clean freeze window the resequencing was chosen
+to buy.
+
+### Open-questions
+
+1. **`FINDING AP-3` is a correction to a committed verdict, and the verdict is not
+   edited.** `WO-0076-VERDICT` §8 still reads *"already scored at `WO-0066`"* in
+   history, and it should — a verdict is a dated artefact. The correction lives in
+   the plan, at the row the claim was about, which is where a later reader meets
+   it. **If the operator judges that a verbatim-class packet carrying a convicted
+   sentence needs an appended correction of its own, that is a second commit and
+   the orchestrator's call; I would take it, and it is not in this one.**
+2. **`M03-N4` and `M03-N1` are landed, green, `ASSERT`, and mutation-scored by
+   nothing** — the first time this plan has been able to say that about two rows at
+   once. Family K's campaign is the last of the era and is not aimed at them.
+   **Whether the `SO-` may issue with two rows in that state is a question I raise
+   now rather than at the gate**, because the answer changes what family K's packet
+   should carry.
+3. **`FINDING J-1`'s second half is OWED and its carrier is a round that is not yet
+   scheduled** — the next one opening §4.J. If none is scheduled before the `SO-`,
+   it must ride the `SO-`'s own round, and an undated carrier is how a debt becomes
+   a habit.
+4. **Nothing is escalated.** No `BUG-`, no `E`-class item, no spec-queue addition —
+   a nil escalation, declared rather than omitted.
+5. **The lessons-harvest span stays OPEN** and falls due at the `SO-`; candidate
+   (F) is banked above, alongside (C), (D), (E) and the three from
+   `J-dv_lead-0137`.
+6. **Carried, unchanged and not this round's to pay**: the family **K** campaign,
+   owed before any `SO-`; the charter §3 differential co-sim anchor, undischarged
+   and blind by **stimulus** per configuration class; `WO-0047` §2's 4-octet member
+   reorder (`test_m03_f.ml`); `OBSERVATION L-O1` (`test_m03_l.ml`);
+   `WO-0073-D3`'s `M03-I4` mislabel (`test_m03_i.ml`); `OBSERVATION K-O1`
+   (`test/monitors/`).
+
+### Files-in-this-commit
+- test/attack_plans/AP-xgmii_rx_64.md
