@@ -40,6 +40,30 @@
 #       never read as "usage" here. It maps to `EXIT_INTERNAL(9)`, the same
 #       code any other code `compare`'s documented contract does not name
 #       also gets.
+# ROUND 4 (`WO-0075` §6, dv_lead's request, drafted this round; companion to
+# tb_writer's `test/cosim/**` half of the same packet, which is what makes
+# `compare`'s two new exit codes real): `compare` gains a timing comparison
+# on top of its unchanged content comparison — `WO-0075` §3's T0 (admit-cycle
+# base alignment, cross-side but asserts nothing about either design), T1
+# (our own M03's output cycles against SPEC-M03 §6.1, asserting), and T2
+# (the reference's own cycles, recorded and never adjudicated, REQ-901's
+# exclusion). `compare`'s own precedence (`WO-0075` §6, pinned there so it is
+# not invented here): content wins (its own exit 1 outranks everything);
+# otherwise T0 (exit 5); otherwise T1 (exit 4); otherwise clean (exit 0). Two
+# changes here as a result:
+#   (1) Check 4.1's classification of `compare`'s exit code gains two more
+#       cases, `4` -> the new `EXIT_TIMING(10)` and `5` -> the new
+#       `EXIT_TIMING_NO_VERDICT(11)`, inserted before the unchanged `*)`
+#       fail-closed branch (`WO-0075` §11 depends on that branch being
+#       unchanged, so it is).
+#   (2) The SUMMARY block gains one line stating what a green run is, and is
+#       not, timing evidence for.
+# Both new codes carry the same distinction WO-0049 §8 built the rest of this
+# table around, applied to a third axis: a TIMING code is a defect against
+# OUR OWN spec (SPEC-M03 §6.1, REQ-005/REQ-111) or against this harness's own
+# timekeeping — never a disagreement with the MIT reference, whose cycles
+# `compare` records and never adjudicates (T2). See "EXIT CODES" below for
+# the full, current table.
 # See "EXIT CODES" below for the full, current table, and "THE PINNED ENTRY
 # POINTS" for the compare.exe entry's updated note.
 #
@@ -264,6 +288,15 @@
 # testbench wrote a malformed file'." A broken harness must never be
 # reportable as an anchor finding.
 #
+# `WO-0075` §6 (dv_lead's request, drafted this round): two more codes join
+# the same axis, both keyed off `compare`'s own timing tiers (`WO-0075` §3).
+# `10` (TIMING) joins the reached-a-verdict/negative side beside `4`, `5` and
+# `6`; `11` (TIMING-NO-VERDICT) joins the did-not-reach side beside `2`, `3`
+# and `8`. Both are about OUR OWN M03 against OUR OWN spec (SPEC-M03 §6.1,
+# REQ-005/REQ-111) or about this harness's own time base — never about the
+# MIT reference, whose cycles `compare` records and never adjudicates (T2,
+# REQ-901's exclusion, `WO-0075` §3.3).
+#
 #   0  PASS         — all three checks (4.1, 4.2, 4.3) passed.
 #   2  PREREQ       — iverilog, vvp or dune is not on PATH. The lane DID NOT
 #                     RUN. Per ADR-0015 D1's standing rule: "A skipped,
@@ -358,6 +391,34 @@
 #                     "compare crashed internally", so this script never
 #                     guesses which — it reports INTERNAL, never
 #                     DIFFERENTIAL and never "usage" (WO-0049 §8).
+#  10  TIMING       — check 4.1's `compare` REACHED a timing verdict (T1,
+#                     `WO-0075` §3.2) and it was negative: our M03 emitted an
+#                     output word at a cycle other than the one SPEC-M03
+#                     §6.1 pins for it, on a stimulus whose CONTENT both
+#                     implementations already agree on (`compare`'s own exit
+#                     4, `WO-0075` §6 — content is checked first, so a
+#                     content divergence is never masked as a timing one).
+#                     This is a defect against OUR OWN specification
+#                     (REQ-005/REQ-111), a `BUG-` candidate — decided by
+#                     re-reading SPEC-M03 §6.1, never by editing the expected
+#                     constant to match what was observed (`WO-0075` §3.2).
+#                     It is NEVER a disagreement with the MIT reference: the
+#                     reference's own cycles are recorded and never
+#                     adjudicated (T2, REQ-901's exclusion) and contribute to
+#                     no exit code at all.
+#  11  TIMING-NO-    — check 4.1's `compare` could NOT reach a timing verdict
+#      VERDICT         at all: T0 (admit-cycle equality — the harness's own
+#                     two producers indexing the same stimulus the same way)
+#                     failed to align, so T1 and T2 were withheld rather than
+#                     computed on an unaligned base (`compare`'s own exit 5,
+#                     `WO-0075` §3.1/§6 — "a timing verdict computed on
+#                     unaligned bases is worse than no verdict"). This is a
+#                     defect in the co-simulation harness's own timekeeping —
+#                     the two producers not deriving the shared 0-based
+#                     stimulus-line time base the same way — and it is
+#                     NEITHER a claim about our design NOR about the MIT
+#                     reference; nothing about either side's cycles was ever
+#                     compared.
 #
 # USAGE
 #   tools/cosim/run_cosim.sh        run all three checks, no arguments
@@ -388,6 +449,8 @@ EXIT_DETERMINISM=6
 EXIT_PROVENANCE=7
 EXIT_NO_VERDICT=8
 EXIT_INTERNAL=9
+EXIT_TIMING=10
+EXIT_TIMING_NO_VERDICT=11
 
 say() { printf '%s\n' "$*"; }
 hdr() { printf '\n=== %s ===\n' "$*"; }
@@ -753,9 +816,19 @@ say "$DIFF_OUT"
 # compare.ml chose (dv_lead, RV-0049-VERDICT §4, measured: a bare `failwith`
 # alone exits 2 under the system OCaml toolchain). A bare 2 cannot
 # distinguish "usage" from "compare crashed internally", so this script
-# never guesses which -- an unrecognized/ambiguous code (2, or anything else
-# outside {0,1,3}) is fail-closed as INTERNAL(9), never as DIFFERENTIAL(4)
-# and never read as "usage".
+# never guesses which.
+#
+# ROUND 4 (WO-0075 §6, drafted this round): compare's contract grows by two
+# more codes, both keyed off its new timing tiers (WO-0075 §3) and both
+# ranked BELOW its own content comparison (WO-0075 §6's pinned precedence:
+# content first, then T0, then T1, then clean) -- 4 = T1 reached a verdict
+# and it was negative, 5 = T0 did not align so T1/T2 were withheld. Both are
+# now REAL, DOCUMENTED codes with their own case arms below, not part of the
+# unrecognized set any more. The wildcard's own contract is UNCHANGED by this
+# round (WO-0075 §11 depends on that): an unrecognized/ambiguous code (2, or
+# anything else outside {0,1,3,4,5}) is still fail-closed as INTERNAL(9),
+# never as DIFFERENTIAL(4), never as a TIMING code, and never read as
+# "usage".
 case "$DIFF_RC" in
   0)
     say "  CHECK 1/3: PASSED"
@@ -776,6 +849,31 @@ case "$DIFF_RC" in
     # again (run 30825741565 is the case this exists for).
     dump_run "$WORK/run1" "run1"
     die "$EXIT_NO_VERDICT" "NO-VERDICT (compare could not read a canonical file, exit 3)"
+    ;;
+  4)
+    # T1 REACHED a verdict and it was negative (WO-0075 §3.2, §6): our M03
+    # emitted an output word at a cycle other than the one SPEC-M03 §6.1
+    # pins for it, on a stimulus whose CONTENT both implementations already
+    # agree on -- compare's own precedence checks content first, so this
+    # code is only reachable when content did NOT diverge. This is a defect
+    # against OUR OWN spec (REQ-005/REQ-111) -- a `BUG-` candidate -- decided
+    # by re-reading SPEC-M03 §6.1, never by editing the expected constant to
+    # match what was observed. It is NEVER a disagreement with the MIT
+    # reference: the reference's own cycles are recorded and never
+    # adjudicated (T2, REQ-901's exclusion).
+    dump_run "$WORK/run1" "run1"
+    die "$EXIT_TIMING" "TIMING (compare's T1 assertion failed against SPEC-M03 §6.1, exit 4)"
+    ;;
+  5)
+    # T0 (admit-cycle equality) did NOT align, so T1 and T2 were withheld
+    # rather than computed on an unaligned base (WO-0075 §3.1, §6: "a timing
+    # verdict computed on unaligned bases is worse than no verdict"). This is
+    # a defect in the co-simulation harness's own timekeeping -- the two
+    # producers not deriving the shared 0-based stimulus-line time base the
+    # same way -- and it is NEITHER a claim about our design NOR about the
+    # MIT reference.
+    dump_run "$WORK/run1" "run1"
+    die "$EXIT_TIMING_NO_VERDICT" "TIMING-NO-VERDICT (compare's T0 base did not align, exit 5)"
     ;;
   *)
     # Ambiguous or unrecognized -- most notably compare's own 2, which this
@@ -837,4 +935,8 @@ say "  reference pin: $REF_SHA"
 say "  simulator: $IVERILOG_VERSION_BANNER / $VVP_VERSION_BANNER"
 say "  runner image: $RUNNER_IMAGE"
 say "  stimulus sha256: $STIMULUS_SHA"
+say "  timing: OUR side asserted against SPEC-M03 §6.1 (T1); the reference's own"
+say "          cycles are RECORDED AND NOT ADJUDICATED (T2, REQ-901's exclusion)."
+say "          This run's green is timing evidence for the ONE stimulus class it"
+say "          drives and for no other."
 exit "$EXIT_OK"
