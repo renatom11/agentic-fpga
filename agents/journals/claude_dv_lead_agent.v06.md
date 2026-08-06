@@ -2220,3 +2220,416 @@ to buy.
 
 ### Files-in-this-commit
 - test/attack_plans/AP-xgmii_rx_64.md
+
+## [J-dv_lead-0144] 2026-08-10T14:20Z | task:WO-0075 | The anchor's first real execution read at the source: T1's eight cycles are legible only through the tier that may never be adjudicated, and the guard that catches a uniform shift is blind to the one idle placement that produces one
+
+### Trigger
+
+Orchestrator dispatch, spawn short-id `RV-0075/2026-08-10T14:20Z`, HEAD `22ffe13`
+— verified as my first action, matching the dispatch's expected SHA exactly, so no
+rollback or divergence disposition fired. The commission is my own `WO-0075` §7:
+review both landed halves of the cosim-lane cycle round; rule tb_writer's two
+stated disagreements and the round's conduct disclosures; and, in the same round,
+append the correction to `WO-0076-VERDICT` that `J-dv_lead-0143`'s re-measurement
+made owing.
+
+### Inputs
+
+Read at `22ffe13`, all read-only. **No RTL was opened in this round, at all.**
+
+- `agents/charters/dv_lead.md`; `agents/PROTOCOL.md` §§1–11 — mandatory first
+  actions.
+- `agents/handoffs/WO-0075_cosim-lane-cycle-comparison.md` in full, §0–§12,
+  including tb_writer's RETURNED note — my own packet, as the thing being
+  measured against.
+- `agents/handoffs/WO-0076_family-j-mutation-campaign.md` §2 (line 424), §4 item 7
+  (line 609), §11 (line 991) and `WO-0076-VERDICT` §2 (the scorecard table and its
+  "Fifteen reds" sentence) and §8 — the four sentences the correction addresses.
+- `agents/handoffs/WO-0066_family-bn-mutation-campaign.md` **§13 item 2** and its
+  §1126 qualification list — **re-opened and re-measured rather than quoted from
+  `J-dv_lead-0143`**, which is the whole point of `FINDING AP-3`'s own rule.
+- `docs/specs/modules/xgmii_rx_64.md` **§6.1** in full — the `m + 3` sentence, its
+  worked 64-octet lane-0 table, the preamble/idle-injection paragraph (*"Injection
+  begins at the frame's first octet"*) and the *"as many cycles later as there are
+  idles injected at or before D(m)"* clause, which is what `FINDING RV-0075-2`
+  rests on.
+- The two commits' diffs at the source: `5705e3a` (`tools/cosim/run_cosim.sh`,
+  `J-data_wrangler-0004`) and `22ffe13` (`canonical.mli`, `canonical.ml`,
+  `ours_run.ml`, `tb_xgmii_rx_64.v`, `compare.ml`, `J-tb_writer-0032`).
+- Current `test/cosim/ours_run.ml` (the `run`/`accumulate` bodies),
+  `test/cosim/tb_xgmii_rx_64.v` (the reading loop's statement order),
+  `test/cosim/compare.ml` (`perturbed_transaction`, the seven `check` calls),
+  `test/cosim/canonical.ml` (`index_map`, `Int_map`, `compare_words`),
+  `test/cosim/dune`, `.github/workflows/build.yml`.
+- `test/attack_plans/AP-xgmii_rx_64.md` §7's banner — bars 1–4, to confirm bar 4
+  landed in the companion commit and to place this round's carriers.
+- `agents/handoffs/WO-0072_m03-family-k-clear.md` §17.2 (the durability clause's
+  frozen wording) and §17.3.
+- `agents/journals/workers/claude_tb_writer_agent.v02.md` `J-tb_writer-0032` and
+  `agents/journals/workers/claude_data_wrangler_agent.md` `J-data_wrangler-0004`
+  — **the only worker journals opened, and both are returns I am commissioned to
+  review.**
+- `agents/journals/claude_dv_lead_agent.v06.md`: `J-dv_lead-0139` (this packet's
+  drafting round and its companion commits) and `J-dv_lead-0143` (`FINDING AP-2`,
+  `AP-3`, `AP-4`).
+- **CI at the source**, GitHub Actions API: run `31069799617` @ `22ffe13`, both
+  jobs, and the `cosim` job's **full printed log**.
+- **Not opened**: `libs/**`, `top/**`, `rtl_snapshots/**`, `docs/reports/audit/**`,
+  `scripts/**`.
+
+Independence (PROTOCOL §10, charter §8): every expected value in this round is
+derived from `docs/specs/`, never from RTL and never from the reference. I
+re-derived SPEC-M03 §6.1's `{3 … 10}` set **before** reading tb_writer's
+implementation of it, so that agreeing with the worker was a check and not an
+inheritance.
+
+### Reasoning
+
+**The round's first decision was to refuse to read the green as the verdict, and
+that decision is where everything else came from.** `run_cosim.sh` exiting 0 says
+three checks passed. It does not say T0 aligned, it does not say eight words
+landed on cycles 3 … 10, and it does not say the seeded shift reddened — those are
+three separate claims my own §10 pinned as the meaning of the colour, and a
+verdict that reads the colour instead of the log is the failure this programme
+has paid for repeatedly. So I pulled the `cosim` job's printed output and
+discharged §10's green condition term by term.
+
+**Two of the three terms printed themselves. The second did not, and that is
+`FINDING RV-0075-1`.** T0 printed `aligned`. Case (d) printed both
+`Spec_cycle_mismatch` lines with their expected and observed cycles, which is the
+tier doing exactly the job `WO-0073-D2` said it could not do. But **T1's clean
+path prints a sentence, not a table** — so the eight cycles the tier asserted are
+recoverable at this run **only** by subtracting T2's offset line from T2's
+reference profile. `theirs = [3 4 5 6 7 8 9 10]`, `theirs − ours = [0 …]`, hence
+`ours = [3 … 10]`; eight words, `tlast` at 10, and word-count equality is
+independently guaranteed by the content comparison having found no
+`Word_count_mismatch`. **The arithmetic is sound and the claim is established.
+What is wrong is that our side's ASSERTED numbers are legible only through the
+tier that MAY NEVER BE ADJUDICATED.** §5.1 asked for an expected-vs-observed
+*table*; a clean run got a sentence. That is a real defect in a lane whose entire
+purpose is to produce a number a sign-off packet can cite, and it is against my
+own §5.1 as much as against the printer. MINOR, non-blocking, carrier named.
+
+**`FINDING RV-0075-2` is the round's real find, and it came from taking the
+worker's disagreement seriously instead of just ruling it.** tb_writer asked a
+narrow question about an exit code. Working out *why* the question was hard
+exposed something neither of us had stated: **§3.2 asked for a guard on the
+STIMULUS carrying an injected idle; `check_timing` cannot see the stimulus, so
+the landed guard tests OUR OWN OUTPUT-WORD SPACING instead.** Those predicates
+are not the same, and their difference is asymmetric. §6.1: *"word m is emitted
+as many cycles later as there are idles injected at or before D(m)."* An idle
+before D(0) is before every D(m), so it delays every word **uniformly** — and a
+uniform shift preserves every inter-word delta, which is the exact property §7
+case (d) is built on. **The guard is therefore blind to precisely the idle
+placements that produce a uniform delay, and T1 would report them as
+`Spec_cycle_mismatch` on every word: a conformant M03 reading as `EXIT_TIMING(10)`
+and thence as a `BUG-` candidate.**
+
+**I checked whether the spec closes the hole and it closes only part of it**,
+which is why the finding is bounded rather than either dismissed or alarming.
+§6.1 forbids REQ-016's wrapper from placing an injected idle between a frame's
+start character and its **first octet** (*"Injection begins at the frame's first
+octet"*), so the blind window is narrower than it first looks — but an idle at or
+after octet 0 and at or before D(0) is **both conformant and invisible**, and
+§10 commissions that wrapper at 0, 1 and 7 cycles. The window is not empty.
+
+**And the implementation could not have done better**, which is why this is a
+finding against the *design of the tier* and not against the worker. A guard wide
+enough to catch the uniform case would swallow IC-L2, the class the whole packet
+exists to make visible. The antecedent is simply **not recoverable from the two
+canonical files** — which is the same absence §9 refused a strobe record for,
+seen from the other side. §9's refusal and this finding share one root: a
+grammar that records neither idles nor strobes cannot carry an antecedent the
+spec states in terms. I said so rather than treating them as unrelated.
+
+**On the exit-code disagreement I affirmed the landed behaviour and still gave
+the worker's question its win, because both halves are true.** Fail-closed to 4
+is right today: 0 is the one unacceptable answer (a tier that declines to certify
+is not clean), 5 would falsely claim T0 was unaligned, and inventing a third
+bucket the packet does not have is exactly the improvisation the charter forbids.
+**But mapping an `Unassertable` to 4 puts a STIMULUS condition on the
+DESIGN-DEFECT axis**, and §6's own words for code 10 are *"a defect against OUR
+OWN specification … a `BUG-` candidate"*. By §6's own partition a refusal belongs
+on the *did-not-reach* side beside 11. So the successor code is owed —
+**conditionally, on a dated trigger**: it becomes required in the same work order
+that gives the lane a second frame or an injected idle, because from that commit
+onward the path is reachable and the mislabelling becomes live. Not before: a
+dead exit code is a summary sentence a machine writes, which is §9(c)'s own
+argument turned on my own proposal.
+
+**I also conceded the fixture defect the worker declined to resolve, because it
+is mine.** §7 case (e) was specified against a two-word frame in which shifting
+the last word breaks the only delta there is — so the case **cannot** separate
+the two constructors, by construction. The worker was right to report that and
+right not to silently lengthen the fixture; rebuilding it to test a distinction
+that has no exit code yet would be work in the wrong order.
+
+**The optional T0 case is the item where the worker's judgement beat my packet's,
+and I recorded it that way round.** §7 hedged it as *"if it costs you nothing"*.
+The log settles it: it is the **only** self-test path exercising exit 5, T0's red
+branch, and `timing_report_to_string`'s withholding paragraph — a paragraph §5.1
+made **normative** (*"never an empty section, which reads as a pass"*). Had the
+worker taken the hedge, a normative print requirement would have shipped
+unexecuted on the lane's first real run. **A case that is the sole exerciser of a
+branch is not optional**, and a packet that marks it optional is inviting the
+branch to ship dark. Minted as `FINDING RV-0075-3` against my own drafting and
+banked as a harvest candidate.
+
+**Conduct: three disclosures, no finding against either worker, and one repair
+that is mine.** tb_writer's scratch `ocamlc` probe engages **no** PROTOCOL rule —
+§6 constrains *staged* paths and nothing was staged; §10 constrains independence
+and a stdlib-availability probe carries no design information; §8 item 6 names
+`dune`, `git` and `iverilog`, none of which ran. The deviation is against a
+**spawn-level allow-list phrased as a command string** where it meant an
+**effect**. The worker disclosed it in its journal **and** its Return log — twice
+in the repo — when the durability clause (`WO-0072` §17.2) binds only on
+*refused* attempts and therefore did not even reach this act. **That is the
+behaviour the clause exists to produce**, and `RV-0071-VERDICT` §3 is the entry
+that had to withdraw a claim because a prior disclosure was chat-only. The repair
+is mine and the orchestrator's: **state a worker's allow-list by effect, not by
+literal command string**, because a string-shaped list turns an obviously
+harmless act into a disclosable deviation and taxes the honesty it depends on.
+
+**data_wrangler went narrower than its own precedent and said so, which is the
+right direction of error and the right disclosure.** Round 3 used `shellcheck`, a
+stub harness and `bash -n`; this round used `bash -n` alone, because this spawn's
+list was narrower and its instruction was *"flag, never improvise"*. All three
+choices ruled correct. **The honest consequence, recorded rather than smoothed**:
+`bash -n` establishes syntax only, and §1 item 2 of the verdict confirms the CI
+did not exercise the new arms either — so a fourth consecutive round has landed a
+shell change whose only check is a parse. A future dispatch for that seat should
+restore `shellcheck` explicitly.
+
+**The `*)`-paragraph edit is the round's best worker act and I said so rather
+than merely permitting it.** §6 says the `*)` branch *"stays exactly as it is"*;
+data_wrangler left the arm byte-identical and edited the **paragraph above the
+`case`**, which asserted that anything outside `{0,1,3}` is unrecognised — false
+the instant `4)` and `5)` exist two lines below. Leaving it would have planted a
+comment contradicting the code beneath it: §9(c)'s failure mode inside the very
+packet that names it. Intent read correctly against letter, disclosed, and round
+3's attribution preserved by appending rather than rewriting.
+
+**Two clerical notes recorded against tb_writer's journal, and the reason they
+are recorded is that I convicted three of my own prose claims one entry ago.**
+`J-tb_writer-0032` says *"all five touched OCaml files"* and lists four; and its
+Open-question 2 says *"no forbidden tool used or attempted"* three lines after
+its own Evidence discloses one. Cost nil, no repair owed — but the rule that
+convicted `FINDING AP-2` is an enumeration-versus-prose-count rule, and it does
+not get to apply only to me.
+
+**Why the `WO-0076` correction is APPENDED and lists four sites rather than the
+two I was sent for.** `J-dv_lead-0143` convicted the "already scored at
+`WO-0066`" clause; measuring it at this tree shows it standing in **four** places
+across the packet and its verdict, not two. **A correction that repairs two of
+four instances of one false claim is itself a false reassurance** — the exact
+shape of the defect being corrected. So the block names all four, quotes each,
+and edits none. **I re-verified the ground at the source rather than inheriting
+it**: `WO-0066` §13 item 2 does say `M03-N1`/`M03-N4` are *"both still outstanding
+ASSERT rows"* whose bench had not been written, and its qualification list is
+`M03-N2`, `M03-B2`, `M03-B4` member (b). Re-measuring a conviction before
+publishing it is the same rule that produced it.
+
+**Q2, and the answer costs something either way so I priced it.** Family K's
+campaign should carry the N-completion classes as a **declared, separately-sealed
+section** rather than a separate pre-`SO-` mini-campaign. Both families' benches
+are landed, so a second campaign buys only a second seal, a second pre-run round
+and a second `test/**` freeze window — and two freeze windows before the `SO-` is
+`WO-0076` §14's own silent hazard doubled. The machinery to keep two families
+apart inside one campaign exists and is now vindicated on evidence (§11's
+qualification rule; `FINDING WO-0074-S4`'s cross product, which found both of
+`WO-0076`'s collisions in another class's blast radius), and `WO-0058` is the
+two-family precedent. **The price, stated before the round rather than discovered
+inside it**: four of five family-J classes reddened `M03-N4` through the admission
+path, and a K class touching admission will do the same — so the seal must
+enumerate the K × N cross product **before it runs** and pre-declare every K-class
+red at an N row as blast radius.
+
+**And the falsifiable half, which matters more than the sequencing.** `M03-N1`
+and `M03-N4` have taken five reds across two campaigns and been qualified by none
+— every one through the admission path rather than through an assertion of the
+row's own observable. **If N-classes asserting those rows' own observables cannot
+be authored, the rows are unqualifiable by mutation at this bench and that SHALL
+be declared before the `SO-`.** A declared unqualifiable row is an honest gap; an
+undeclared one is precisely the unearned reassurance I spent this round
+correcting out of two documents.
+
+**What I considered and declined.** (a) **Opening `libs/**` to check whether T1's
+green is a coincidence of the implementation** — declined absolutely; charter §8
+and PROTOCOL §10, and a verdict that reaches for RTL to explain a spec-derived
+green has stopped being spec-derived. (b) **Editing the four `WO-0076` sentences
+in place** — declined; a correction that rewrites its own subject destroys the
+evidence that the error occurred, and the rate of these errors is the argument.
+(c) **Filing `FINDING RV-0075-2` as MATERIAL today** — declined: §8 item 1 bars
+the stimulus from changing, so the path is unreachable at this tree, and inflating
+an unreachable latent defect is the mirror of the reassurance I am correcting.
+Filed MINOR-today with a dated escalation. (d) **Amending `AP-M03` §7 in this
+round** — declined: `test/attack_plans/**` is not this commit's business, the
+carrier is the next `AP-` round, and my own R4 files list is the two packets. (e)
+**Withholding ACCEPT until the producer half's new arms are exercised** —
+declined: they are fail-paths, a green run cannot exercise them by definition,
+and the correct response is to say so in the verdict rather than to hold a
+correct half hostage to a colour it cannot produce.
+
+**Harvest note (ADR-0018, PROTOCOL §7): NOT DUE, declared rather than skipped.**
+The harvest falls at the `SO-` and at phase gates; this is a review round. The
+span since my last harvest stays **open** and the candidates banked against it are
+untouched and unadmitted: the three at `J-dv_lead-0137`, (C) at `J-dv_lead-0141`,
+(D) and (E) at `J-dv_lead-0142`, (F) at `J-dv_lead-0143`. **One further candidate
+is banked from this round**, stated with the provenance hidden: **(G)** *A test
+case that is the only exerciser of a branch may not be specified as optional; a
+specification that marks it optional is specifying that the branch may ship
+unexecuted.* **LH1**: this round — the optional base-alignment case was the sole
+exerciser of one exit code, one refusal branch and one normative print
+requirement, and was written as optional. **LH2-g** — no proper noun of any kind.
+**LH3**: without it, the branch a specification most wants proven is the one its
+own hedge invites the implementer to skip, and the first execution that would
+have proven it passes silently instead. **A second candidate is banked**: **(H)**
+*A guard specified against a condition of the input cannot be implemented by a
+detector reading the output, unless the mapping from that condition to the output
+is injective; where it is not, the specification must carry the condition
+forward as data rather than expect it to be inferred.* **LH1**: this round —
+`FINDING RV-0075-2`, where two different causes produce one identical output
+signature. **LH2-g** — no proper noun. **LH3**: without it, a guard looks
+implemented, tests green, and is blind in exactly the direction its
+specification cared about.
+
+### Actions
+
+- Verified `HEAD` as the **first action, before reading anything**: `22ffe13`,
+  the spawn SHA, so no rollback disposition fired.
+- Read the charter, the protocol, `WO-0075` in full, both workers' commits and
+  journals, SPEC-M03 §6.1 in full, `WO-0066` §13 item 2 at the source, and
+  `AP-M03` §7's banner.
+- **Re-derived SPEC-M03 §6.1's expected cycle set independently** (`{3 … 10}`,
+  `tlast` at 10, from `admit_cycle + m + 3` at `admit_cycle = 0` over eight
+  delivered words) **before** reading the landed constant.
+- **Verified the shared time base at both producers by reading the code**, not by
+  accepting the claim: `List.mapi`'s index against the `Side.Before` sampling
+  order on our side; `stimulus_lines`'s single increment at the top of the loop
+  body, before both tasks, on the reference's.
+- **Traced all seven self-test fixtures by hand through `run_comparison`** and
+  predicted each exit code before reading the CI log; all seven matched.
+- **Pulled run `31069799617`'s two job results and the `cosim` job's full printed
+  log from the GitHub API**, and discharged §10's green condition term by term
+  against the log rather than the exit code.
+- **Appended `RV-0075-VERDICT`** to `WO-0075` (§1 the CI reading with its three
+  terms and its three non-claims; §2/§3 the two line reviews; §4 the two
+  disagreement rulings; §5 the conduct rulings; §6 what the anchor now measures
+  versus what remains; §7 the commissions including Q2's answer; §8 the verdict),
+  and updated that packet's `State` header field `DRAFT` → `ACCEPTED` — the only
+  line of the original packet this round edits.
+- **Appended the dated correction block** to `WO-0076`, naming **four** sites of
+  the `M03-N4` claim and the one site of the red count, quoting each and editing
+  none.
+- Ran **no `dune`**, no command that moves `HEAD`, the index or any ref, and no
+  `git` verb outside `rev-parse`, `log`, `show`, `status` and `diff`. Committed
+  nothing. **No file under `test/**`, `tools/**` or `libs/**` was written.**
+
+### Evidence
+
+Reproducible at this commit.
+
+```
+git rev-parse HEAD          -> 22ffe136fd53b5d90b86770410b1272acac69538  (spawn HEAD, unmoved)
+git status --porcelain      -> M agents/handoffs/WO-0075_cosim-lane-cycle-comparison.md
+                               M agents/handoffs/WO-0076_family-j-mutation-campaign.md
+git diff --stat             -> 2 files, 677 insertions(+), 1 deletion(-)
+git log -1 --format=%H -- test/cosim/dune   -> c109c08  (Agent: dv_lead, J-dv_lead-0139, WO-0075)
+```
+
+**CI at the source — GitHub Actions run `31069799617` @ `22ffe13`, both jobs
+`success`** (externally verifiable per ADR-0003/F5):
+
+```
+build  job 92515154870  success   step5 dune build @default = success
+                                   step6 dune runtest       = success
+                                   steps 7,8,9,10           = success
+cosim  job 92515154840  success   step6 run_cosim.sh        = success (all three checks)
+```
+
+`cosim` job printed output, quoted from the log:
+
+```
+CHECK 1/3   frames compared: 1 / frames matching: 1 / divergences: none
+            T0: aligned -- every frame index present on both sides shares one admit-cycle
+            T1: clean -- ... (admit_cycle + m + 3) cycles
+            frame 0: theirs cycles = [3 4 5 6 7 8 9 10]
+            frame 0: theirs - ours per word = [0 0 0 0 0 0 0 0]
+              => ours = [3 4 5 6 7 8 9 10], eight words, tlast at 10   (derived)
+self-test   (a) exit 0   (b) exit 1   (c) exit 3   (d) exit 4   (e) exit 4
+            (f) exit 3   (T0, optional) exit 5      -> "compare --self-test: OK"
+(d) printed frame 0 word 0: pins cycle 3, observed 4
+            frame 0 word 1: pins cycle 4, observed 5
+(e) printed frame 0: T1 UNASSERTABLE -- output words 0 and 1 are 2 cycle(s) apart
+(f) printed line 1: F line is missing its admit-cycle token
+(T0) printed T0: RED ... / T1: WITHHELD ... / T2: WITHHELD ...
+CHECK 3/3   ours.canon and theirs.canon byte-identical between run1 and run2
+```
+
+**Not exercised by this run, stated so no later packet may cite it**:
+`EXIT_TIMING(10)`, `EXIT_TIMING_NO_VERDICT(11)` and `run_cosim.sh`'s `*)` arm.
+`compare` returned 0 from check 1/3 and 0 from the self-test aggregate; the
+self-test's internal 4s and 5s never reach `case "$DIFF_RC"`.
+
+**Correction ground, re-measured rather than inherited**:
+`WO-0066` §13 item 2 (line 563–564) — `M03-N1`/`M03-N4` *"both still outstanding
+ASSERT rows"*, bench unwritten; `WO-0066` §1126 qualification list — `M03-N2`,
+`M03-B2`, `M03-B4` member (b), no `M03-N4`. `WO-0076-VERDICT` §2's own table sums
+4 + 4 + 2 + 3 + 1 = **14**.
+
+### Outcome
+
+**`WO-0075` ACCEPTED, both halves** — data_wrangler at `5705e3a`, tb_writer at
+`22ffe13`. Both §10 checklists met; the landing CI, which §10 names as the only
+check, is green on both jobs and its green means what §10 said it would, verified
+against the printed log. **`FINDING WO-0073-D2` is CLOSED**: the lane can see
+time, asserted against SPEC-M03 and never against the reference.
+
+Three findings raised, all MINOR at this tree, none blocking, all with named
+carriers: **`RV-0075-1`** (T1 prints no numbers on the clean path — my §5.1 and
+the printer); **`RV-0075-2`** (the guard is a proxy and is blind to the uniform
+idle placement — latent false positive, escalates the moment §8 item 1 lifts);
+**`RV-0075-3`** (a sole-exerciser case may not be marked optional — my drafting).
+Both disagreements ruled; three conduct disclosures ruled with **no finding
+against either worker**; the `test/cosim/dune` sighting verified as my own
+companion commit and the worker's disposition credited.
+
+**`WO-0076` carries a dated appended correction** covering `FINDING AP-2`'s red
+count (fourteen, not fifteen) and `FINDING AP-3`'s coverage claim at **all four**
+of its sites. Neither correction moves the score; the second removes an unearned
+reassurance from the path of the `SO-`.
+
+`SO-xgmii_rx_64.md` does not issue and none is offered.
+
+### Open-questions
+
+- **`FINDING RV-0075-2`'s escalation is dated, not open-ended, and the date is a
+  commit rather than a clock**: the first work order giving this lane a second
+  frame or an injected idle must carry the antecedent repair, the
+  `EXIT_TIMING_UNASSERTABLE(12)` code and the case-(e) fixture rebuild **in the
+  same round**. If that work order is drafted without them, a conformant M03
+  reddens as a `BUG-` candidate.
+- **Q2 is answered but the answer is a recommendation, not a ruling I own alone**:
+  one campaign with a separately-sealed N section. If the operator prefers a
+  separate mini-campaign, the falsifiable condition (N1/N4 declared unqualifiable
+  if their own observables cannot be asserted) transfers unchanged and is the part
+  that must not be dropped.
+- **`AP-M03` §7 owes three placements from this round** — `RV-0075-1`'s and
+  `RV-0075-2`'s carriers beside bar 4, and bar 4's own reconfirmation at the
+  anchor's first timing execution. Owed to the next `AP-` round, not to this
+  commit.
+- **The producer half has now landed four consecutive rounds whose only check is
+  a parse.** Not a finding this round; it becomes one if a fifth lands the same
+  way.
+- **Still owed, carried forward unchanged**: the family-K campaign (the last of
+  the era, and the `SO-`'s remaining gate alongside the `N/N` mutation clause);
+  `FINDING J-1`'s second half (REQ-810's first sentence has no `Kills` cell);
+  `FINDING J-2`; `WO-0047` §2's 4-octet anti-vacuity question; `OBSERVATION L-O1`;
+  `WO-0073-D3`'s `M03-I4` mislabel; `OBSERVATION K-O1`; AP-M14's §6 invariant; the
+  `precompile_check.sh` side-effect lane; the RFC 1071 anchor; X-7, X-10, X-11
+  deferred; L1–L5 as a separate packet. **The lessons harvest falls at the `SO-`;
+  the span stays open with eight candidates banked.**
+
+### Files-in-this-commit
+- agents/handoffs/WO-0075_cosim-lane-cycle-comparison.md
+- agents/handoffs/WO-0076_family-j-mutation-campaign.md

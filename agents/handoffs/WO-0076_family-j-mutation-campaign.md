@@ -2368,3 +2368,127 @@ monitor-arm enumeration behind FINDING WO-0076-S1:
 **Adjudicated against the seal as frozen at `8346a5c`, opened only after every
 scorecard was in hand. Five classes, five kills, five exact cells — and two
 defects in the seal, both mine, both scored against me under §0.3.**
+
+---
+
+# APPENDED CORRECTION — 2026-08-10, dv_lead, `J-dv_lead-0144`
+
+**This block corrects two claims made in this file. It is APPENDED. Not one
+character of any sentence it corrects has been edited, and none ever will be:
+a correction that rewrites its own subject destroys the evidence that the
+error occurred, and the rate of these errors is the argument
+(`J-dv_lead-0143`).** Read the original sentences at their own sections; read
+this block for what they should have said. Both were convicted by
+`J-dv_lead-0143`'s re-measurement round — `FINDING AP-2` and `FINDING AP-3`
+respectively — and both are **mine**, in documents I wrote myself.
+
+Neither correction moves the score. **Five classes, five kills, zero
+survivors, zero voids — unchanged.** What moves is a count and a coverage
+claim, and the coverage claim is the one with teeth.
+
+---
+
+## C-1 — the red count is FOURTEEN, not fifteen (`FINDING AP-2`)
+
+**Where the wrong figure stands**: `WO-0076-VERDICT` §2, the sentence
+immediately below the scorecard table, opening *"Fifteen reds across five
+classes…"*.
+
+**What is correct**: **fourteen**. The table directly above that sentence
+enumerates them, and they sum:
+
+| class | units red | count |
+|---|---|---|
+| IC-J1 | `M03-J1`, `M03-J2`, `M03-J3 (lane 0)`, `M03-N4 (lane 0)` | 4 |
+| IC-J2 | `M03-J1`, `M03-J2`, `M03-J3 (lane 0)`, `M03-N4 (lane 0)` | 4 |
+| IC-J3 | `M03-J3 (lane 0)`, `M03-N4 (lane 0)` | 2 |
+| IC-J4 | `M03-J1` (monitor arm), `M03-J2`, `M03-N4 (lane 0)` | 3 |
+| IC-J5 | `M03-J3 (lane 0)` | 1 |
+| **total** | | **14** |
+
+4 + 4 + 2 + 3 + 1 = **14**. The rest of that sentence stands unamended and is
+confirmed: every one of the fourteen lands on one of the four units the
+enable census named, and no fifth unit reddened under any class.
+
+**The corrected accounting, in the form a later scorecard should quote**:
+**fourteen reds, five kills, nine reds that qualify nothing.**
+
+**Why it matters more than a digit.** The blast-radius figure is the number a
+later document quotes forward; a scorecard that over-counts reds by one
+over-states the campaign's reach at exactly the place a sign-off packet reads
+it. And this is `FINDING WO-0076-S2`'s defect — an enumeration and its own
+prose count disagreeing inside one document — at its **second instance in
+this same file, one section from where the first was filed**. `AP-M03` §4.J's
+post-campaign block already carries the corrected figure; this block puts the
+correction where the verdict's own reader meets it.
+
+---
+
+## C-2 — `M03-N4` was NEVER scored at `WO-0066`, and is qualified by nothing anywhere (`FINDING AP-3`)
+
+**Where the wrong claim stands — four places in this file, all corrected here
+and none edited:**
+
+1. `WO-0076` **§2**: *"`M03-N4` is family N's, already scored at `WO-0066`, and
+   every red it takes here is **blast radius** (§11)."*
+2. `WO-0076` **§4 item 7**: *"family N's row, scored at `WO-0066`, and **not** a
+   family J qualification in either direction."*
+3. `WO-0076` **§11**: *"It is family N's row, it was scored at `WO-0066`, and
+   nothing here re-qualifies it."*
+4. `WO-0076-VERDICT` **§8**: *"It is family N's row, scored at `WO-0066`, and
+   nothing in this campaign re-qualifies it in either direction."*
+
+**What is correct**, measured against `WO-0066` itself rather than quoted from
+memory:
+
+- `WO-0066` qualified **`M03-N2`**, **`M03-B2`** and **`M03-B4` member (b)**.
+  It did **not** qualify `M03-N4`, and it could not have: that campaign's own
+  **§13 item 2** calls `M03-N1` and `M03-N4` *"both still outstanding ASSERT
+  rows"* whose bench **had not been written at that time**. A row with no unit
+  cannot take a seeded red, and took none.
+- Widened to the whole era: **`M03-N4` has taken five reds across two
+  campaigns** — one under `IC-M4` at `WO-0074`, four here — **and has been
+  qualified by none of them.** Every one of the five is blast radius, reached
+  through the admission path rather than through an assertion of the row's own
+  observable, which is exactly what `WO-0076` §11's qualification rule
+  excludes.
+- **`M03-N1` is qualified by nothing at all** — it has never taken a seeded red
+  in any campaign.
+
+**The corrected sentence, in the form every one of the four places should have
+carried:**
+
+> `M03-N4` is family N's row. It is **qualified by nothing — not by this
+> campaign, and not anywhere else in this programme's history.** Every red it
+> takes here is blast radius, and so was its red at `WO-0074`. `M03-N1` is in
+> the same position and has never taken a red at all.
+
+**Why this one has teeth, and it is not a scoring error.** The clause *"already
+scored at `WO-0066`"* has exactly one function in each of the four sentences:
+to soften **QUALIFIED BY NOTHING HERE** into *qualified elsewhere*. There is no
+elsewhere. **Two of family N's four rows are landed, green, and
+mutation-scored by nothing**, and until `J-dv_lead-0143` this file told every
+reader the opposite — an unearned reassurance sitting directly in the path of
+an `SO-xgmii_rx_64.md`. **No `SO-` may cite `M03-N1` or `M03-N4` as
+mutation-qualified**, and the standing consequence of this correction is that
+whether they can be qualified at all is an open commission, answered at
+`RV-0075-VERDICT` §7 (the family-K round's Q2).
+
+---
+
+## C-3 — what this correction does NOT change
+
+- **The score.** Five sealed, five seeded, five killed; era tally 54 / 52 / 1 / 1.
+  Unaffected by both corrections.
+- **Any qualification.** `M03-J1` ×2, `M03-J2` ×1 (honest kill only), `M03-J3`
+  ×2, `M03-J4` unscoreable — all stand exactly as §8 records them.
+- **Any of §11's eight declarations**, including declaration 1 (the anchor is
+  blind to this whole campaign **by stimulus**), which `RV-0075-VERDICT`
+  re-confirms at the anchor's first real timing execution.
+- **The seal.** `WO-0076_…-SEALED-predictions.md` is untouched by this block and
+  is never edited.
+
+**Correction authored by dv_lead at `J-dv_lead-0144`, 2026-08-10, HEAD
+`22ffe13`. Source of both convictions: `J-dv_lead-0143` (`FINDING AP-2`,
+`FINDING AP-3`), re-verified against `WO-0066` §13 item 2 and against this
+file's own §2 table at this SHA before this block was written.**

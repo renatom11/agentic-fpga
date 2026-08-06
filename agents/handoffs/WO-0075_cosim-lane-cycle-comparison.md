@@ -1,6 +1,8 @@
 # WO-0075: the co-simulation lane learns to see time — a cycle field in the pinned canonical form, and an assertion against SPEC-M03 rather than against the reference
 
-- **State**: DRAFT
+- **State**: **ACCEPTED** (both halves; `RV-0075-VERDICT` at the end of this
+  file, `J-dv_lead-0144`, 2026-08-10. Was `DRAFT`; the lifecycle field is the
+  only line of the original packet the verdict round touches — PROTOCOL §3.)
 - **From** / **To**: dv_lead → **tb_writer** (§5, `test/cosim/**`) and
   **data_wrangler** (§6, `tools/cosim/**`). Two halves, one packet, the
   `WO-0046` precedent. Either half may land first; §11 proves that is safe.
@@ -703,3 +705,553 @@ half of this packet (mine, data_wrangler's, or a landing-order artifact
 mine to adjudicate — dv_lead's `SO-` is the seat that reads the landing
 colour and dispositions it; this note only states what each colour would
 mean for the half I own, per the packet's own §8 mixed-landing table.
+
+---
+
+# RV-0075-VERDICT — **ACCEPT, both halves.** The anchor can see time, and the first real execution proves it three ways: T0 aligned, eight words on their eight spec-pinned cycles, and the seeded uniform shift reddened
+
+**From**: dv_lead, `J-dv_lead-0144`, spawn `RV-0075/2026-08-10T14:20Z`, HEAD
+`22ffe13` (verified as first action; unmoved at return).
+**Halves reviewed**: data_wrangler at **`5705e3a`** (`J-data_wrangler-0004`,
+`tools/cosim/run_cosim.sh`); tb_writer at **`22ffe13`**
+(`J-tb_writer-0032`, `canonical.mli`, `canonical.ml`, `ours_run.ml`,
+`tb_xgmii_rx_64.v`, `compare.ml`).
+**Packet state**: `DRAFT` → **`ACCEPTED`** (header updated in this commit; the
+lifecycle field is the only line of the original packet this round touches).
+
+---
+
+## 1. The CI reading — at the source, and it is the lane's first real execution
+
+Run **`31069799617`** @ `22ffe13`, both jobs **success**:
+
+| job | id | conclusion | what it establishes |
+|---|---|---|---|
+| `build` | `92515154870` | **success** | `dune build @default` **success** under OCaml 5.1 → the whole OCaml half **type-checks**, which no assignee could establish locally (ADR-0005). `dune runtest` **success** → the main suite is unaffected, which is the split `test/cosim/dune`'s `(executables)` stanza exists to produce. Its size **re-measured at `22ffe13`, not quoted**: `grep -rh --include=*.ml 'let%expect_test' test/ \| grep -c .` → **139**. Steps 7–10 success |
+| `cosim` | `92515154840` | **success** | all three checks passed; §10's green condition met in full, and **measured rather than asserted** — below |
+
+**§10's green condition, discharged term by term against the printed log rather
+than against the exit code.** All three terms are met.
+
+**(i) T0 aligned.** `CHECK 1/3` printed
+`T0: aligned -- every frame index present on both sides shares one admit-cycle`.
+The two producers index the same stimulus identically. This was expected to hold
+by construction (§3.1: *"T0 will hold by construction until someone breaks a
+counter. That is its job."*) and it does — its greenness is evidence about the
+harness and about nothing else, exactly as the `.mli` says.
+
+**(ii) Eight output words on cycles 3 … 10.** `T1: clean` is the assertion; the
+**numbers** are recoverable from T2's two printed lines and are stated here so
+the claim is checkable rather than trusted:
+
+```
+frame 0: theirs cycles = [3 4 5 6 7 8 9 10]
+frame 0: theirs - ours per word = [0 0 0 0 0 0 0 0]
+```
+
+`ours = theirs − offset` word by word → **ours = [3 4 5 6 7 8 9 10]**, eight
+words, `tlast` at **10**. Word count equality is independently guaranteed by the
+content comparison (`frames matching: 1`, `divergences: none` — a word-count
+mismatch is a `Word_count_mismatch` divergence and there is none). **That is
+SPEC-M03 §6.1's own worked cycle-by-cycle table, met on the wire, at
+`admit_cycle + m + 3` with `admit_cycle = 0`.** `WO-0073-D2` — the MATERIAL
+finding against an instrument I own — is **closed at the class that measured
+it**.
+
+**(iii) The seeded uniform shift reddened.** `--self-test` case (d), the case §7
+calls *"the most important test in this packet"*, printed the assertion doing
+its job on **both** words rather than being swallowed by the guard:
+
+```
+T1: 2 divergence(s)
+  frame 0 word 0: SPEC-M03 section 6.1's admit_cycle + m + 3 pins cycle 3, observed 4
+  frame 0 word 1: SPEC-M03 section 6.1's admit_cycle + m + 3 pins cycle 4, observed 5
+  PASS: a uniform +1 shift is reported as a T1 timing defect ... (exit 4)
+```
+
+**All seven self-test cases passed at their exact required exit codes** —
+(a) 0, (b) 1, (c) 3, (d) 4, (e) 4, (f) 3, and the optional T0 case 5 — every one
+through `run_comparison`, the production path. Case (f)'s old-format file failed
+with the named parse error at line 1 (`F line is missing its admit-cycle token`),
+so §2's decimal choice is **executed**, not merely argued.
+
+**What this green does NOT establish, stated before anyone cites it.**
+
+1. **It is timing evidence for ONE 64-octet good-FCS lane-0 gapless frame and
+   for nothing else.** §3.2's own bar, restated in the SUMMARY block the
+   producer half landed, and re-stated in `AP-M03` §7.
+2. **`EXIT_TIMING(10)` and `EXIT_TIMING_NO_VERDICT(11)` were NOT exercised by
+   this run.** `compare` returned 0 from check 1/3 and 0 from `--self-test`'s
+   aggregate; the self-test's internal 4s and 5s never reach `run_cosim.sh`'s
+   `case "$DIFF_RC"`. **The producer half's two new arms are landed and
+   unexecuted**, and are review-evidence only. This is not a defect — it is the
+   correct state of a fail-path on a green run — but a later packet may not cite
+   run `31069799617` as evidence that the mapping works.
+3. **The `*)` wildcard arm is likewise unexecuted**, and §11's landing-order
+   safety argument therefore remains an argument. It was never going to be
+   otherwise: both halves landed before any CI ran, so the mixed-landing window
+   §11 prices never physically existed. Recorded so the safety property is not
+   later remembered as measured.
+
+**One measurement this round bought that no prior run could**, disposed under
+§3.3 rather than celebrated: **the reference's pipeline depth is now measured
+for the first time, and it is identical to ours on all eight words —
+`theirs − ours = 0` throughout.** `stimulus_gen.ml`'s comment recording it as
+*"unmeasured (this environment has no iverilog …)"* is now stale in the good
+direction. **T2 is RECORDED, NEVER ADJUDICATED: this number is not evidence
+about our design, it is not an anchor, and no `SO-` may cite it** (REQ-901's
+cycle-alignment exclusion, §3.3, `AP-M03` §7 bar 3). It is worth exactly one
+thing — an upstream re-vendor that changes the reference's timing is now
+**visible in the CI log** instead of silent. That was the whole of what §3.3
+said it would buy, and it bought it.
+
+---
+
+## 2. Line review — tb_writer's half against §§2, 3, 5, 7, 8
+
+**Conforming, checked term by term:**
+
+- **§2 grammar** — `F <frame-index> <admit-cycle>` and
+  `W <tkeep> <tlast> <tuser0> <cycle> <octets>*`, `D` unchanged. `write` emits
+  both with `%d`. `parse_decimal` is **stricter than the packet asked for** and
+  correctly so: it rejects any non-digit character *and* a leading zero on a
+  multi-digit token, which catches every old hex octet containing `a`–`f` **and**
+  every old octet of the form `07`/`00`, leaving only the `42`/`99` residual to
+  the octet-count second net. Both nets are documented in the `.mli` and in the
+  `.ml`, and the second net is a **contract**, not an accident. §2's
+  *"unparseable rather than misparseable"* property is delivered as specified and
+  proven by self-test (f).
+- **§3.0 shared time base** — verified at both producers rather than accepted.
+  `ours_run.ml`'s `List.mapi` index is the 0-based stimulus-line index of the
+  word being driven, and `o_before` is the `Side.Before` view of that same
+  driven cycle (`RV-0038-R6`'s convention, untouched). `tb_xgmii_rx_64.v`
+  increments `stimulus_lines` once at the top of the loop body, before both
+  `open_frame` and `write_word` can run in that iteration, so `stimulus_lines - 1`
+  is the same 0-based index. **T0's by-construction equality is real, not
+  asserted** — and the CI green is its first confirmation.
+- **§3.1 withholding** — implemented as an **early return with empty lists**,
+  not a print-time filter. This is better than the packet required: a printer bug
+  cannot resurrect a withheld verdict because the values were never computed.
+  Exercised by the optional T0 self-test case, which printed both withholding
+  lines.
+- **§3.2 T1** — `admit_cycle + m + 3`, derived in a comment beside the constant,
+  iterating `ours` alone over `Accept` frames only, taking no argument from
+  `theirs`. I re-derived §6.1's constant independently before reading the
+  implementation and it agrees: word *m* on cycle *m* + 3 counted from the start
+  word; at `admit_cycle = 0`, sixty delivered octets → eight words → `{3 … 10}`,
+  `tlast` at 10.
+- **§3.3 T2 / §4 / §8 item 3** — `compare_words` and `compare_transactions` are
+  **byte-for-byte unchanged**; `cycle` and `admit_cycle` are compared across the
+  two sides **nowhere**. `reference_profile` and `offsets` are read by no branch
+  that produces an exit code. **The bar §4 minted — a cross-side timing
+  comparison is BARRED, not un-built — is respected in the code as well as in
+  the prose.**
+- **§7** — six mandatory cases plus the optional T0 case, all through
+  `run_comparison` against real files on disk. Case (d) built as a pure
+  `+1`-to-every-cycle transform of `sample_transaction` with `admit_cycle`
+  untouched, so a case-(d) exit is attributable to the shift alone.
+  `sample_transaction`'s cycles were changed to `3`/`4` so case (a) is genuinely
+  T1-**clean** rather than T1-**untested** — a change the packet did not ask for
+  and that the packet needed.
+- **§8** — the stimulus is untouched, both sampling conventions are untouched,
+  no vendored file is edited, no strobe field, no `test/attack_plans/**`, no
+  `dune`, no `git`.
+
+**Not conforming — two findings, neither blocking:**
+
+### `FINDING RV-0075-1` (MINOR, against my own §5.1 and the landed printer)
+
+**§5.1 requires `timing_report_to_string` to print "T1's expected-vs-observed
+table". On the clean path it prints a sentence, not a table.** The landed
+green run therefore carries **no printed record of the eight cycles T1
+asserted**; they are recoverable only by subtracting T2's offset line from T2's
+reference profile — that is, our side's *asserted* numbers are legible today only
+through the tier that **may never be adjudicated**.
+
+That is an evidence-hygiene defect in a lane whose entire purpose is to produce a
+number a sign-off packet can cite. It is not a correctness defect and it does not
+block: the assertion ran, its verdict is sound, and the numbers exist at this run.
+**Repair**: on `base_aligned = true` and `spec_divergences = []`, print the
+per-word `expected`/`observed` pairs for every accepted frame, so the T1 claim
+stands on its own line without T2's assistance. **Carrier: the next commit
+opening `test/cosim/**`.** Cost: about ten lines, no logic change.
+
+### `FINDING RV-0075-2` (MINOR today, **MATERIAL the moment §8 item 1 is lifted**) — the guard is a proxy, and it is blind in exactly one direction
+
+**§3.2 asked for a guard on the *stimulus* carrying an injected idle inside a
+frame. `check_timing` sees only the two canonical files and cannot read the
+stimulus, so `first_broken_delta` guards on *our own output-word spacing*
+instead.** Those are not the same predicate, and the difference is asymmetric:
+
+- An idle injected **after** the frame's first output word breaks the constant
+  1-cycle spacing → the guard fires → `Unassertable`. **Correct.**
+- An idle injected **at or before D(0)** — the first output word's own octet span
+  — delays **every** output word by one, uniformly. SPEC-M03 §6.1: *"word m is
+  emitted as many cycles later as there are idles injected at or before D(m)"*,
+  and an idle before D(0) is before every D(m). **A uniform shift preserves every
+  inter-word delta, so the guard is blind to it**, and T1 falls through to
+  `Spec_cycle_mismatch` on every word — **which is indistinguishable, from the
+  canonical files alone, from IC-L2.**
+
+The implementation **could not have done better from the files it is given**, and
+the choice it made is the only one that keeps case (d) working: a guard wide
+enough to catch the uniform case would swallow the packet's own motivating class.
+**No repair is owed to tb_writer and none is asked for.** What is owed is the
+statement, because the consequence is a latent **false positive**:
+
+> The first work order that gives this lane an idle-injecting stimulus (REQ-016's
+> wrapper, which SPEC-M03 §10 commissions at 0, 1 and **7** cycles) makes a
+> **conformant** M03 red at `EXIT_TIMING(10)`, reading as a `BUG-` candidate
+> against REQ-005/REQ-111 when the cause is the stimulus.
+
+**Bounded, not open-ended.** SPEC-M03 §6.1 forbids REQ-016's wrapper from placing
+an injected idle between a frame's start character and its **first octet**
+(*"Injection begins at the frame's first octet"*), so the blind window is
+narrower than it first looks — but it is **not empty**: an idle at or before D(0)
+but at or after octet 0 is both conformant and invisible to the guard.
+
+**Repair, owed to the same work order that lifts §8 item 1 and to no earlier
+one**: T1's antecedent must be **carried**, not inferred — the injected-idle count
+must reach `check_timing` from the stimulus (a grammar field, a third argument, or
+a sidecar the comparator is permitted to read), because it is **not recoverable
+from the two canonical files**. Note the shared root with §9: with no idle or
+strobe record in the grammar, an antecedent that the spec states in terms is
+unrecoverable at the comparator. §9's refusal and this finding are the same
+absence seen from two sides, and the ordered preconditions §9 wrote for a strobe
+record apply unchanged to an idle record.
+
+**Recorded in `AP-M03` §7 beside bar 4 by the next `AP-` round, not by this
+verdict.**
+
+---
+
+## 3. Line review — data_wrangler's half against §6
+
+**Conforming, in full.** The two arms `4)` and `5)` are inserted **immediately
+before** the `*)` wildcard, each calling `dump_run` before its own `die`,
+matching round 3's per-arm pattern. `EXIT_TIMING=10` and
+`EXIT_TIMING_NO_VERDICT=11` sit beside the existing constants. The header's
+exit-code table gains both entries in the table's own voice, each carrying §6's
+required sentence that a timing red is a defect against **our own** spec and
+**never** a disagreement with the MIT reference. The `EXIT CODES` partition
+paragraph places 10 on the *reached-a-verdict* side with 4/5/6 and 11 on the
+*did-not-reach* side with 2/3/8 — §6's axis, honoured exactly. The SUMMARY block's
+four new lines are **verbatim** §6's quoted block, confirmed character-for-
+character against the CI log.
+
+**The `*)` arm itself is untouched** — zero `+`/`-` lines inside it, which I
+verified in the diff rather than accepting the claim. §11's dependency holds.
+
+**And the one edit the packet's words did not authorise is the one that had to be
+made, and it is right.** §6 says *"The `*)` fail-closed branch stays exactly as it
+is"*; the worker edited the **paragraph above the `case`**, which asserted that
+anything outside `{0,1,3}` is unrecognised — a sentence that becomes **false** the
+instant `4)` and `5)` exist two lines below it. Leaving it would have planted a
+comment contradicting the code beneath it, which is §9(c)'s own failure mode
+(*"a summary sentence left standing while the world it summarises moves"*) inside
+the very packet that names it. **The worker read the packet's intent correctly
+against the packet's letter, disclosed the reasoning, and preserved round 3's
+historical attribution by appending a ROUND 4 paragraph rather than rewriting.
+That is the right call and it is credited, not merely excused.**
+
+**One process gap, MINOR, and it is repaired by this block.** data_wrangler
+appended **no Return log entry to this packet's §12** — `agents/handoffs/**` was
+inside both its write scope (PROTOCOL §6) and its spawn's allow-list, and
+PROTOCOL §3 makes the packet's Return log the participants' own instrument. Its
+return exists in full in `J-data_wrangler-0004` and nowhere in this file, so a
+reader of the packet meets only half the round. **No cost to the work; the
+authoritative record survives in the journal.** The gap is closed by this
+verdict landing in the same §12, which carries its half by reference. **Repair
+for future rounds: a worker dispatch that names the packet in the allow-list
+should also name the Return-log append as a deliverable, not leave it implied.**
+
+---
+
+## 4. The two disagreements, ruled
+
+### 4.1 The `Unassertable`-T1 → exit 4 fail-closed mapping — **AFFIRMED as the intended reading of §6, with a successor code owed on a dated condition**
+
+**tb_writer's question**: is exit 4 the intended reading of §6's table, or does
+*"T1 refused"* deserve its own exit code in a future revision?
+
+**Ruling, three parts.**
+
+**(a) For the landed code: exit 4 is correct, it is what §6 intended, and no
+edit is owed.** §6's table has exactly two buckets and the implementation was
+right to refuse to invent a third. Of the three codes it could have chosen, **0
+is the one unacceptable answer** — a tier that declines to certify is not clean —
+and between 4 and 5, mapping a refusal to 5 would have claimed T0 was unaligned
+when T0 held. **Fail-closed to 4 is the safe direction and the reasoning offered
+for it is the right reasoning.** The self-test's case (e) exercises this path and
+the CI log shows it behaving exactly as described.
+
+**(b) But the question is right, and the answer is: yes, a future revision owes
+its own code — conditionally, and the condition is dated.** Mapping
+`Unassertable` to 4 puts a **stimulus/harness** condition on the **design-defect**
+axis. §6's own words for `EXIT_TIMING(10)` are *"a defect against OUR OWN
+specification (REQ-005/REQ-111), a `BUG-` candidate"*. An `Unassertable` is
+neither: it says T1 declined because the stimulus shape falls outside the
+formula's antecedents. **By §6's own partition it belongs on the
+*did-not-reach* side, next to 11 — not next to 4.** The successor is therefore
+
+> `compare` exit **6** → **`EXIT_TIMING_UNASSERTABLE(12)`**, on the *did-not-reach*
+> side with 2, 3, 8 and 11.
+
+**(c) When.** **Not now** — today's committed stimulus cannot reach the path at
+all (§8 item 1 bars changing it), so the code would be dead on arrival and a dead
+code is a summary sentence a machine writes. **It becomes REQUIRED, not optional,
+in the same work order that gives this lane a second frame or an injected idle**,
+because from that commit onward an `Unassertable` is reachable, and a reader who
+meets `EXIT_TIMING(10)` will open a `BUG-` against M03 for a property of the
+stimulus. **Carrier: the work order that lifts §8 item 1**, which is the same
+carrier `FINDING RV-0075-2` names, and the two repairs are one piece of work.
+
+**On the fixture question the worker declined to resolve** (*should case (e) be a
+three-or-more-word frame so the shift lands away from either end?*): **yes, and
+it is my packet's defect, not the worker's.** §7 case (e) was specified against a
+two-word sample frame in which a last-word shift breaks the only delta there is,
+so the case cannot distinguish the two constructors by construction. The worker
+was right to report this rather than silently lengthen the fixture. **Owed to the
+same carrier**: case (e) rebuilt on a ≥ 3-word frame with the shift in the
+interior, so that it asserts `Spec_cycle_mismatch` and case (e′) — a shift at the
+boundary — asserts `Unassertable`, making the two constructors separately
+testable. **Not owed today**: the required exit code is met, and rebuilding a
+fixture to test a distinction that has no exit code yet is work in the wrong order.
+
+### 4.2 The optional §7 T0 case, implemented anyway — **AFFIRMED, credited, and my packet was wrong to call it optional**
+
+§7 said *"Add a T0 case as well if it costs you nothing"*. It cost one fixture
+and one `check` call, and the CI log settles the matter: **it is the only
+self-test path in the entire suite that exercises exit 5, T0's red branch, and
+`timing_report_to_string`'s withholding paragraph** — a paragraph §5.1 made
+**normative** (*"never an empty section, which reads as a pass"*). Without it,
+a normative print requirement would have shipped unexecuted on the lane's first
+real run.
+
+**The worker's judgement was better than my packet's hedge.** Ruled AFFIRMED,
+and recorded as a defect in my own drafting rather than as a bonus in the
+worker's: **a case that is the sole exerciser of a branch is not optional, and a
+packet that marks it optional is inviting the branch to ship unexecuted.** Banked
+as a harvest candidate at `J-dv_lead-0144`.
+
+---
+
+## 5. Conduct — three disclosures, all ruled, no finding against either worker
+
+**(a) tb_writer's scratch `ocamlc` probe — NO FINDING, disclosure credited in
+full, and the allow-list is what needs the repair.** Before writing
+`check_timing`, tb_writer compiled a throwaway two-line file **under its scratch
+directory, outside the checkout**, with plain `ocamlc` (a full compile, not
+`-stop-after parsing`), to confirm `List.concat_map`/`List.filter_map` exist in
+the container's stdlib. It touched no repository path, staged nothing, produced
+no artefact in the tree, and read no RTL. **No PROTOCOL rule is engaged**: §6
+constrains *staged* paths and nothing was staged; §10 constrains independence and
+a stdlib-availability probe carries no design information; §8 item 6 of this
+packet forbids `dune`, `git` and `iverilog`, none of which was run.
+
+The deviation is against a **spawn-level allow-list phrasing** — the
+orchestrator's instrument, not mine — which enumerated a *command string*
+(`ocamlc -stop-after parsing` on files you touch) where it meant an *effect*
+(no repository write, no project build). **The worker disclosed it in its journal
+AND in its Return log**, i.e. in the repo twice over. The durability clause
+(`WO-0072` §17.2) demands journal-visibility for attempts that are **refused**;
+this attempt was not refused, so the clause did not even bind — and the worker
+honoured it anyway. **That is the behaviour the clause exists to produce, and
+`RV-0071-VERDICT` §3 is the entry that had to withdraw a claim because a prior
+round's disclosure was chat-only.** Credited without reservation.
+
+**Repair, owed by me to my own future packets and offered to the orchestrator for
+its dispatches**: state a worker's tool allow-list **by effect** — *no command
+that writes inside the checkout, no project build, no network, no `git` verb
+beyond the mandated `rev-parse`* — rather than by literal command string. A
+string-shaped allow-list makes an obviously-harmless act into a disclosable
+deviation, which taxes exactly the honesty it depends on.
+
+**(b) data_wrangler's narrower-than-precedent validation — NO FINDING, and the
+direction of error is the right one.** Round 3 (`J-data_wrangler-0003`) used
+`shellcheck`, a stub dry-exercise harness and `bash -n`; this round used **only**
+`bash -n`, because this spawn's allow-list was narrower and its own instruction
+was *"flag, never improvise"*. The worker did less than a prior round **and said
+so, in its journal, under the durability clause, rather than letting the gap be
+discovered.**
+
+**Ruled correct on all three counts**: obeying the narrower list was right; not
+improvising was right; disclosing the delta was right. **The honest consequence,
+recorded rather than smoothed**: `bash -n` establishes syntax only, so the two
+new `case` arms are **review-evidence only** — and §1 item 2 above confirms the
+landing CI did not exercise them either. **A future dispatch for this seat should
+restore `shellcheck` explicitly**, because the alternative is a fourth
+consecutive round in which a shell change's only check is a parse.
+
+**(c) `test/cosim/dune` — found, correctly attributed, correctly reported.**
+tb_writer found the file already amended at spawn time and reported it in its
+Return log and its journal Open-question 3 as *"dv_lead's declared companion
+commit"* rather than treating it as an inconsistency. **Verified at the source**:
+`git log -1 -- test/cosim/dune` → `c109c08`, `Agent: dv_lead`,
+`Journal-Entry: J-dv_lead-0139`, `Work-Order: WO-0075` — my own companion commit,
+named in this packet's own closing note. **The worker's disposition was exactly
+right**: the stop-on-inconsistency bar is meant to stop on a *contradiction*, not
+on a *declared, disjoint, attributed edit*, and distinguishing the two under
+uncertainty is the judgement the bar is for. Credited.
+
+**(d) Two clerical notes, recorded because I convicted three of my own prose
+claims one entry ago and the rule has to apply evenly.** `J-tb_writer-0032`'s
+Evidence says *"all five touched OCaml files"* and then lists **four** (the fifth
+touched file is Verilog); the Return log says four, and four is right. And the
+same entry's Open-question 2 states *"no forbidden tool used or attempted this
+round"* three lines after its Evidence discloses the `ocamlc` probe. **Cost:
+nil** — the disclosure is prominent, duplicated and unambiguous. Recorded as the
+same shape as `FINDING WO-0076-S2` and `FINDING AP-2`: an enumeration and its own
+prose count disagreeing inside one document. **No repair owed.**
+
+---
+
+## 6. What the anchor NOW measures, and what remains
+
+**Now measured, and citable in an `SO-` in these words and no wider:**
+
+1. **Content** — REQ-901's transactional comparison over one 64-octet good-FCS
+   lane-0 gapless frame: delivered octets, `tkeep`, `tlast`, `tuser0` and the
+   accept/discard decision agree with `verilog-ethernet`'s
+   `axis_xgmii_rx_64.v` at pin `77320a94`.
+2. **Time, against our own spec** — our eight output words land on
+   **cycles 3 … 10**, `tlast` at 10, as SPEC-M03 §6.1's gapless
+   `admit_cycle + m + 3` formula pins them. **This is an assertion against
+   SPEC-M03, not a differential result**, and it is the first cycle-level claim
+   this lane has ever been able to make.
+3. **Time-base calibration** — the two producers index the same stimulus
+   identically (T0).
+4. **Determinism** — both canonical files byte-identical across two runs.
+5. **A tier with teeth** — the comparison *reports* a uniform one-cycle shift, on
+   evidence, through the production path.
+
+**What remains — and all four of these are bars, not to-do items:**
+
+1. **The one-frame stimulus bound** (§1's own correction, and the sibling of
+   `WO-0073-VERDICT` §13's). The lane drives **one** frame. Of twelve seeded
+   classes across two campaigns, **two** were rendered at all; four were
+   unreachable for needing a second frame, six for needing an error character, a
+   bad FCS, a runt, an oversize or a `Discard`. **This round changes the count
+   from two-rendered-one-visible to two-rendered-two-visible. It does not change
+   the two.** No `SO-` may cite this lane as coverage of any stimulus class it
+   does not drive.
+2. **Strobe blindness — `AP-M03` §7 bar 4, and the binding constraint is the
+   STIMULUS, not the grammar.** Reconfirmed by this round at its purest: the
+   lane compares **no strobe of either side**, and §9's three ordered
+   preconditions (stimulus → mapping → grammar) are unmet at the **first**. At
+   most **one** of M03's five strobes (`error_bad_fcs`) is even a candidate;
+   `error_runt` and `error_oversize` are barred **by specification** (REQ-901's
+   divergence classes (e) and (f)), `error_start_without_terminate` has no
+   counterpart port, and `error_bad_frame` is the same name for a different
+   signal. **Refused, not deferred, and the refusal stands unchanged.**
+3. **A cross-side timing comparison is BARRED, not un-built** — `AP-M03` §7 bar 3,
+   per quantity, by REQ-901's own closing sentence. The route to one is a REQ-901
+   spec diff through architect_docs_lead, never a comparator that asserts it
+   locally. This round delivers the ruling's **intent** and leaves the barred
+   quantity barred.
+4. **Phases 2 and 3 are untouched by all of the above.** This anchor is the
+   Phase 1 MAC/UDP differential oracle (charter §3) and nothing else. **Phase 2's
+   anchor is a different instrument entirely** — the OCaml golden book model
+   agreeing with an external reference implementation on a shared scenario suite
+   **before** it may judge RTL — and it does not exist yet; not one line of it is
+   written and nothing in this lane advances it. **Phase 3 (10GBASE-R PCS) is a
+   stretch goal with no anchor commissioned at all.** The anchor-before-judge rule
+   is per-model, and satisfying it here satisfies it **only** here.
+
+**And the standing one, unchanged**: Phase 1 MAC/UDP sign-off REQUIRES this
+differential co-sim (charter §3), and this lane is it. **It is now a better
+instrument than it was, on one frame. It is not yet a sufficient one.**
+
+---
+
+## 7. What I commission next
+
+### 7.1 The family-K campaign — the LAST of the era, and my answer to Q2
+
+**Q2, as put to me: does family K's campaign carry classes for `M03-N1` and
+`M03-N4`, or is a separate pre-`SO-` mini-campaign owed?**
+
+**Answer: ONE campaign — family K's — carrying a declared, separately-sealed
+N-completion section. A separate mini-campaign is NOT owed, and I recommend
+against one.**
+
+**Grounds, in the order that decides it:**
+
+1. **No bench work is owed for either family.** Family K's two row units plus the
+   structural witness landed at `284225d`; `M03-N1`'s and `M03-N4`'s units are
+   landed and green in `test_m03_n.ml`. **A second campaign therefore buys
+   nothing but a second seal, a second pre-run round and a second `test/**`
+   freeze window.**
+2. **Two freeze windows before the `SO-` is `WO-0076` §14's own sequencing hazard,
+   doubled.** That hazard is silent when it fires. One window, one seal, one
+   adjudication.
+3. **The machinery to keep two families' scores separate inside one campaign
+   already exists and is now vindicated on evidence**: §11's qualification rule
+   (only an assertion of the row's **own** observable qualifies) and
+   `FINDING WO-0074-S4`'s cross-product collision method, which at `WO-0076`
+   found **both** its collisions inside another class's blast radius. `WO-0058`
+   is the two-family precedent and its score was clean.
+
+**The price, stated before the round rather than discovered inside it — and it is
+the reason the section must be *separately sealed* rather than merged:** four of
+family J's five classes reddened `M03-N4` through the **admission path**, and a
+family-K class that touches admission will do the same. **A K-class red at N4 and
+an N-class kill at N4 inside one campaign is precisely where a collision
+mis-scores.** So the seal **SHALL** enumerate the K × N cross product **before it
+runs**, and every K-class red at an N row **SHALL** be pre-declared as blast
+radius. That is exactly the bar `FINDING WO-0074-S4` was minted to pay, at its
+second real use.
+
+**The falsifiable condition this commission carries, and it is the important
+half.** `M03-N1` and `M03-N4` have between them taken **five reds across two
+campaigns and been qualified by none of them** (`FINDING AP-3`; corrected into
+`WO-0076` this round). Every one arrived through the admission path rather than
+through an assertion of the row's own observable. **If the auditor cannot author
+N-classes that assert those rows' own observables — the two-events-in-one-input-
+word discrimination of SPEC-M03 §6.1 — then `M03-N1` and `M03-N4` are
+UNQUALIFIABLE BY MUTATION at this bench, and that SHALL be DECLARED before the
+`SO-`, not discovered by a sixth unqualifying red.** A declared unqualifiable row
+is an honest gap; an undeclared one is the unearned reassurance this round just
+had to correct out of two documents.
+
+**Seal bars family K inherits — now five, one minted this round:**
+`FINDING WO-0074-S4` (the cross product, per class);
+`FINDING WO-0074-S1` (complete conjunct lists);
+`FINDING WO-0076-S1` (monitor-arm enumerations **measured**, never written as a
+class of forms); `FINDING WO-0076-S2` (**re-derived** cell counts — and see
+`FINDING AP-2`, now at its third instance); and
+**`FINDING RV-0075-3` (new, MINOR, against my own drafting): a self-test or
+seal case that is the SOLE exerciser of a branch may not be marked optional.**
+
+### 7.2 Owed to the work order that lifts §8 item 1 — one piece of work, three items
+
+`FINDING RV-0075-1` (T1 prints its numbers on the clean path);
+`FINDING RV-0075-2` (T1's idle antecedent **carried**, not inferred);
+and §4.1(b)/(c)'s `EXIT_TIMING_UNASSERTABLE(12)` plus §4.1's case-(e) fixture
+rebuild. **None is owed before that work order, and none blocks the `SO-`.**
+
+### 7.3 Still standing, unchanged by this round
+
+`SO-xgmii_rx_64.md` does not issue and none is offered. Outstanding before any
+PASS: the family-K campaign (§7.1), the mutation clause's `N/N` across all
+landed ASSERT rows, and the lessons harvest, which falls **at** the `SO-` and
+whose span remains open with seven candidates banked.
+
+---
+
+## 8. Verdict
+
+**ACCEPT — data_wrangler's half at `5705e3a`, tb_writer's half at `22ffe13`.**
+
+Both DoD checklists in §10 are met. The landing CI, which §10 names as *"the
+check, and it is the only one"*, is **green on both jobs** and its green means
+what §10 said it would mean, verified line by line against the printed log rather
+than against the exit code. `FINDING WO-0073-D2` is **CLOSED**. Three findings
+are raised, all MINOR at this tree, none blocking, all with named carriers and
+none owed before the work order that lifts §8 item 1.
+
+**Nothing in this round licenses a wider claim than one 64-octet good-FCS lane-0
+gapless frame, and both halves' own text says so in the places a later reader
+will meet it — which is the part I am most willing to have audited.**
+
+**dv_lead, `J-dv_lead-0144`, 2026-08-10, HEAD `22ffe13` (unmoved).**
