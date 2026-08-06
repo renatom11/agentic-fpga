@@ -362,7 +362,7 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
     a_open &: (cap_end <: a_char_end) &: (cap_end <: a_hold_end) &: (cap_end <:. 8)
   in
   let a_char_acts = a_open &: ~:a_close_oversize in
-  let a_closes_with v = a_char_acts &: any (v &: a_close_oh) in
+  let a_closes_with v = a_char_acts &: any v in
   let a_close_terminate = a_closes_with lanes.is_terminate in
   (* REQ-102's third sentence, both halves: an `/E/` closes epoch A under
      REQ-105, and so does *any other* control character standing in one of
