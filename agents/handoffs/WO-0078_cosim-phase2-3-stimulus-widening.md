@@ -3,7 +3,75 @@
 - **State** (flipped per stage by dv_lead's `RV-`, per §14's own note):
   **STAGE 1 — ACCEPTED.** Both halves: tb_writer at `3ec0efe`, data_wrangler at
   `8c6429e`; verdict `RV-STAGE1` in §14, `J-dv_lead-0150`.
-  **STAGE 2 — ISSUED; the C2 THIRD LANDING is RETURNED and ADJUDICATED; C1 and C2
+  **STAGE 2 — ISSUED; the C3 LANDING is RETURNED and ADJUDICATED; C1, C2 and C3
+  are all ACCEPTED and the stage is THREE-QUARTERS LANDED — ONE CASE REMAINS**
+  (verdict `RV-C3ALPHA` in §14, `J-dv_lead-0156`; tb_writer at `b10546c`,
+  data_wrangler at `9685c52`; `build` run `31108528759`, run number 511, conclusion
+  **success — the whole run green**, `cosim` job `92639903296` green). Per case:
+  **C1 — ACCEPTED, branch α** (CD §10.1's frozen terms). Re-observed byte-identical
+  at `9de61f1`, `2efd7f9` and `9685c52`.
+  **C2 — ACCEPTED, branch α** (CD §10.2 unamended). **Its standing-regression
+  designation is DISCHARGED AS A MEASUREMENT at its first opportunity**: its entire
+  per-case record — sha, 2/2 frames, T0 `0` and `10`, T1 `3…10` and `13…20`, T2
+  `[0 × 8]` and `[1 × 8]`, determinism byte-identical — reproduced **identically at a
+  different position in the case array** (third, then fourth) and on a different
+  runner image, so per-case isolation now holds across a **reordering**.
+  **C3 — ACCEPTED, branch α**, under CD §10.3 **unamended**: `frames compared: 1`,
+  `frames matching: 1`, `divergences: none`, `compare_exit=0`, `tier=CLEAN`,
+  run1/run2 byte-identical, at the pre-committed sha bind `1512d30b…c4dce`.
+  **α is SELECTED from §7's branch definitions via CD §10.5's resolution, frozen at
+  `5c01af0` and measurably unmoved (one hunk, 129 insertions, zero deletions) — not
+  chosen with the answer in hand.** **CD §6's V7 — "the one to watch" — is ANSWERED
+  and its prediction is FALSIFIED and SPENT: the reference did NOT drop the bad-FCS
+  frame.** It produced eight output words at index 0 with an agreeing decision and
+  word count. **The measured fact in the two halves it is actually made of**: the
+  reference **forwards** a 64-octet bad-FCS frame — measured on its own side of the
+  record — **and marks it invalid**, which follows from this run's agreement on the
+  `tuser0` field **together with** family D's independent, mutation-qualified M03-D1,
+  and **not from the co-simulation alone** (`FINDING RV-0078-S2-11`). **REQ-104's
+  model is what both implementations do.** **Bar 4 stays standing** and no strobe was
+  compared. `FINDING CD-P2-1` **DISCHARGED AS TO C3**, standing as to C4, C8, C9,
+  with C4's agreement outcome recorded as **α** before C4 runs.
+  `FINDING RV-0078-S2-7` **CLOSED at the limb it repairs**, on **production**
+  byte-identity of the has-result SUMMARY across the repair (three cases, two CI
+  runs, one differing field and it belongs to the runner) plus the negative control;
+  **its residue is named** — the no-result branch has never executed in CI, the `SO-`
+  must say so, and the closure re-arms at the first production case that reaches no
+  result. **The worker's disclosed WIDENING is ADOPTED** (it can only ever subtract a
+  claim), its run2-refusal sub-decision **ruled CORRECT**, and one reading rule now
+  binds: **a tier is not a coverage warrant without its SUMMARY and its determinism
+  line.** **§12 criterion 3's plural property is UNEXERCISED after FOUR landings** —
+  the `0 C1 C3 C2` order armed it and C3's cleanness meant it did not fire, exactly
+  as `J-dv_lead-0155` Open-question 1 predicted; the `SO-` must state it as a harness
+  property CI has never run. **Two new MINOR findings, both against dv_lead's own
+  instrument design**: `S2-11` (the clean-path comparison record is **relational,
+  never absolute** — `divergences: none` never prints what was agreed) and `S2-12`
+  (`CASE_HAS_RESULT` is one bit over two questions and under-reports a content
+  verdict at exits 5 and 6). **Both under-inform; neither can over-claim.**
+  **Coverage: FOUR anchored classes**, tabulated per class at run ids
+  (`RV-C3ALPHA` §9), with five things class 4 does **not** anchor stated beside it.
+  **`AP-M03` §7 bar 1's owed lifts number THREE.** **No CD edit and no `AP-` edit —
+  the fourth refusal of each**; the `AP-` refusal now rests on **§13 item 2's own
+  routing rule** (the `AP-` round follows a landed **stage**, and C4 has not landed)
+  rather than on the cost argument that expired when C4 became one landing away, and
+  **a condition is attached: the `AP-` round may not be deferred past C4, and if it
+  is, that is a finding against dv_lead.** **The stopping rule's re-armed form needs
+  no re-arming** — C3 reached a comparison on its first landing, so its counter is
+  zero and C4's has not opened.
+  **C4 — NOT ISSUED, and NEXT, ALONE** (§6.2, CONFIRMED unamended at `RV-C3ALPHA`
+  §12): one 64-octet **good-FCS** frame whose six preamble filler octets **and SFD
+  octet** carry arbitrary nonstandard data values, lane-0 start on cycle 0, sighted
+  placement preserved (CD §10.4, §6's **V6**). **Its observables are the
+  accept-or-discard DECISION and the delivered octets** — §5.2's **X4** excludes the
+  preamble/SFD octet **values**, which are stripped and appear in no delivered stream
+  on either side, and **does NOT exclude the decision those octets cause.**
+  **STAGE 3 — SCOPED, NOT AUTHORISED (§6.3)**, and its re-authorisation gate keeps
+  **(d)** a second static census on the frame-length and admission-legality axes and
+  **(e)** `MAX_WORDS_PER_FRAME` raised to cover the longest frame either producer can
+  deliver, with the covering range stated beside the bound (`RV-C2ALPHA` §7, §9).
+  *The field read as follows from `RV-C2ALPHA` until `RV-C3ALPHA`, kept rather than
+  overwritten for the same auditability reason as the texts below:*
+  "**STAGE 2 — ISSUED; the C2 THIRD LANDING is RETURNED and ADJUDICATED; C1 and C2
   are both ACCEPTED and the stage is HALF LANDED** (verdict `RV-C2ALPHA` in §14,
   `J-dv_lead-0155`; tb_writer at `2efd7f9`; `build` run `31103977231`, conclusion
   **success — the whole run green**, `cosim` job `92624287637` green, `build` job
@@ -44,7 +112,7 @@
   **STAGE 3 — SCOPED, NOT AUTHORISED (§6.3)**, and its re-authorisation gate gains
   **(d)** a second static census on the frame-length and admission-legality axes and
   **(e)** `MAX_WORDS_PER_FRAME` raised to cover the longest frame either producer can
-  deliver, with the covering range stated beside the bound (`RV-C2ALPHA` §7, §9).
+  deliver, with the covering range stated beside the bound (`RV-C2ALPHA` §7, §9)."
   *The field read as follows from `RV-C2RERUN` until `RV-C2ALPHA`, kept rather than
   overwritten for the same auditability reason as the texts below:*
   "**STAGE 2 — ISSUED; the C2 RE-RUN is RETURNED and ADJUDICATED** (verdict
@@ -5931,5 +5999,840 @@ and tb_writer's `J-tb_writer-0035` et seq. — rather than presented as one
 copied verbatim: the timestamp above is this entry's own UTC header time,
 `date -u` read at the start of this round, matching the environment's own
 `currentDate` context of 2026-08-06).
+
+---
+
+### dv_lead — `RV-C3ALPHA`: Stage 2's C3 landing (§6.2) — **C3 COMPARED, AGREED ON EVERY REQ-901 OBSERVABLE, and SELECTS BRANCH α under CD §10.3 UNAMENDED; the reference did NOT drop the bad-FCS frame, so `WO-0078` §7's C3 prediction is FALSIFIED and SPENT; `FINDING CD-P2-1` DISCHARGED AS TO C3; `FINDING RV-0078-S2-7` CLOSED at the limb it repairs**
+
+#### 0. What I executed, and what I did not
+
+**I ran no simulation and no case** (ADR-0005: this container has no `dune`, no
+Hardcaml switch, no `iverilog`). Every result below is read from `build` run
+**`31108528759`** at `9685c52` and its `cosim` job **`92639903296`**, fetched whole
+through the server-side GitHub tool and read end to end — 699 lines after
+de-escaping, not sampled. Everything else is a `git` measurement on the checkout at
+`9685c52` or a source read of files inside `test/**` and `tools/**`.
+
+**Head check first, per the dispatch.** `git rev-parse HEAD` =
+`9685c521f689dee3f9136f931655d79efbda984b` — exactly the stated spawn-head. No
+mismatch procedure was entered.
+
+**What I did NOT do**, listed so the diff can be read against it: **no code edit of
+any kind**; **no CD edit**; **no AP edit** (§10, and it is the fourth refusal — on a
+different ground from the previous three, stated there); **no `SO-` opened and none
+offered**; **no case re-dispatched**. This round lands **one file**: this packet.
+
+**Independence.** I read no RTL. My Inputs are the specs (`requirements.md`
+REQ-104, REQ-005, REQ-103, REQ-901), `CD-xgmii_rx_64_cosim.md`, `AP-xgmii_rx_64.md`
+§7, this packet, the two Return-log halves, and — inside my own scope — the
+harness, comparator, grammar and stimulus generator under `test/cosim/` and
+`tools/cosim/`, plus `test/xgmii_rx_64/test_m03_d.ml` and `test/xgmii/arrival.mli`,
+both of which are DV's own and are cited for what they assert, never as a source of
+an expected value.
+
+---
+
+#### 1. The CI reading, at the source — four cases, in the amended order, and all four reached a verdict
+
+**The run, at the API.** `build` run **`31108528759`**, `head_sha`
+`9685c521f689dee3f9136f931655d79efbda984b`, run number **511**, event `push`,
+`13:58:54Z → 14:04:36Z`, conclusion **`success` — the whole run green**. `cosim` job
+**`92639903296`**.
+
+**The case set line, first, because it is the amendment's own receipt:**
+
+```
+=== CASE SET (WO-0078 §6.2 Stage 2: 4 case(s) — 0 C1 C3 C2) ===
+```
+
+**`RV-C2ALPHA` §9 item 2's one-line amendment landed exactly as written**, and the
+four `CASE` lines below appear in that order in the log, not merely in the header.
+
+| case | stimulus sha256 | frames cmp / match | T0 | T1 | T2 theirs − ours | compare_exit | tier | determinism |
+|---|---|---|---|---|---|---|---|---|
+| **0** | `c675517…4cc051` (**= the pin**) | 1 / 1, divergences none | aligned, `admit_cycle = 0` | clean, words 3…10 | `[0 × 8]` | **0** | **CLEAN** | byte-identical |
+| **C1** | `5ae9e4f5…3bd7c` | 1 / 1, none | aligned, `admit_cycle = 0` | clean, 3…10 | `[1 × 8]` | **0** | **CLEAN** | byte-identical |
+| **C3** | `1512d30b…c4dce` | **1 / 1, none** | **aligned, `admit_cycle = 0`** | **clean, 3…10** | **`[0 × 8]`** | **0** | **CLEAN** | byte-identical |
+| **C2** | `cc1e85a4…5b44a7` | 2 / 2, none | aligned, `0` and `10` | clean, 3…10 and 13…20 | f0 `[0 × 8]`, f1 `[1 × 8]` | **0** | **CLEAN** | byte-identical |
+
+**Aggregate**: *"every case in the set reached a verdict and every verdict was
+clean."* Invocation wall time **`8.965s`** (down from `9.665s` at the three-case
+landing, with a fourth case added — the cost line is Band A and is not re-argued).
+
+**Self-test, in the same job**: `compare --self-test: OK`, `grep -c 'PASS:'` = **13**,
+`grep -c 'FAIL:'` = **0**, including `(e)` at exit 4, `(e′)` at exit 6, the carried-idle
+case at exit 6, the reference-refusal sentinel at exit 3, `S1-2` limb (b) at exit 4
+and `S2-8`'s golden-file fixture at exit 0.
+
+**C3's decisive line, verbatim:**
+
+```
+CASE C3: stimulus_sha256=1512d30b6aa186ca89d55ce40fbcfdee01590a5a47e2a497eb4389c2bc6c4dce compare_exit=0 tier=CLEAN
+```
+
+**And the sha bind held.** `1512d30b…c4dce` is the value tb_writer computed by real
+execution of `stimulus_gen.exe` at `b10546c` and recorded in its Return log **before
+this run existed**. Its first CI print equals it exactly. C3 therefore joins case 0,
+C1 and C2 as a case whose stimulus is pinned by a value committed earlier than the
+run that consumed it — which is what makes this verdict a statement about a known
+stimulus rather than about whatever the generator happened to emit.
+
+**Six mechanical checks on the checkout, all run at `9685c52`:**
+
+1. `git merge-base --is-ancestor 5c01af0 9685c52` → **true**. CD §10.3's instance
+   predates this run.
+2. `git diff --numstat 5c01af0 9685c52 -- test/attack_plans/CD-xgmii_rx_64_cosim.md`
+   → **`129  0`** — one hunk, 129 insertions, **zero deletions**, and it is §10.2-bis,
+   after §10.2. **Not one byte of §10.3 or §10.5 has moved since the freeze.** C3's
+   prediction and its branch resolution are provably innocent of its result.
+3. `git diff --numstat 50983b1 9685c52` → five paths; the **only two code paths** are
+   `test/cosim/stimulus_gen.ml` (`55 1`) and `tools/cosim/run_cosim.sh` (`191 13`).
+4. `git diff --numstat b10546c 9685c52 -- test/cosim/stimulus_gen.ml` → **empty**. The
+   runner half did not touch the stimulus half's file; the two seats' scopes held.
+5. **`git diff --numstat 2efd7f9 9685c52 -- test/cosim/compare.ml test/cosim/canonical.ml
+   test/cosim/canonical.mli test/cosim/ours_run.ml test/cosim/tb_xgmii_rx_64.v` →
+   EMPTY.** **The comparator, the grammar, our producer and the reference testbench
+   are byte-unchanged from the tree that produced C2's α.** This is the single most
+   load-bearing check in this verdict and I state why: C3 was judged by an instrument
+   that had already agreed on C2 under adjudication and that passes thirteen seeded
+   self-test cases, and **nothing in the comparison path was touched in the commit
+   that produced C3's green.** A green produced by a freshly-edited comparator would
+   be worth much less.
+6. `grep -n '"C3"' tools/cosim/run_cosim.sh` → the literal appears in the `CASES`
+   array (line 903) and in header commentary, and **in no conditional**. The runner
+   does not special-case C3, so whatever C3 reported, it reported through the same
+   machinery every prior case used — `RV-C2ALPHA` §9 item 1's own requirement,
+   measured rather than accepted from the Return log that claims it.
+
+---
+
+#### 2. C3's branch selection — **α**, and the polarity resolved before the run rather than after it
+
+**The chain, in four steps, each checkable.**
+
+**Step 1 — what the domain contains here.** CD §10.3: *"INSIDE the domain: all four
+REQ-901 observables, `tuser`[0] on the `tlast` word and the accept-or-discard decision
+included. Class (e) does not reach this case — (e) is 5-to-63 octets and this frame is
+64."* CD §10.0: the permitted-divergence set for these four instances is **empty**, so
+**β is unreachable** and C3's outcome space is exactly two-valued.
+
+**Step 2 — what the comparator actually compares.** `test/cosim/canonical.mli` lines
+159–181, four `divergence` constructors: `Missing_frame` (index presence, per side),
+`Decision_mismatch` (the accept-or-discard decision), `Word_count_mismatch`, and
+`Word_mismatch` whose `field` is `"tkeep" | "tlast" | "tuser0" | "octets"`. **The
+`tuser`[0] marking and the decision are both inside the compared tuple**, by index,
+not by list position. Nothing REQ-901 names is outside the comparator's reach.
+
+**Step 3 — what the run observed.** `frames compared: 1`, `frames matching: 1`,
+`divergences: none`, `compare_exit=0`. **Agreement on every observable inside the
+domain**, with the only two-valued alternative being an undeclared divergence, and
+none was reported.
+
+**Step 4 — the branch.** `WO-0078` §7's branch **definitions**: **α** is *"the
+observable agrees inside the domain. The case's class becomes co-sim-anchored for
+that class and no wider."* **C3 selects α.**
+
+**And the polarity has to be addressed rather than stepped over, because this is the
+cell `FINDING CD-P2-1` convicted.** §7's C3 row predicts a **divergence** ("the
+reference may DROP it"), puts **γ** under *"branch if it fails"*, and leaves *"branch
+if the prediction holds"* as **"—"**. Read literally against those column headings,
+this run — in which the prediction **failed** — would select **γ**. **That reading is
+wrong and CD §10.5 said so before the run.** γ is *defined* as *"the divergence falls
+outside every declared class"*. **There is no divergence.** A branch whose definition
+has no instance cannot be selected by a table's column heading. The table's polarity
+is backwards for a prediction of divergence — which is precisely the second of
+CD-P2-1's two defects — and **the branch definitions govern the table**, as §10.5
+ruled at `5c01af0`, ten commits and three landings before C3 ran.
+
+**So the selection is α, and it is *selectable* rather than *chosen*.** Criterion 8's
+test is not "was a branch named" but "was it named before the run": CD §10.5's
+resolution — *"the agreement outcome of C3 and C4 **is α** by that definition"* — is
+in the tree at `5c01af0`, a verified ancestor, in a section measurably unmoved since
+(check 2). **I did not decide C3's branch this round. I read the decision a
+pre-committed document made and checked that the run's observation matches its
+antecedent.** That distinction is the whole value of §7 and CD §0, and this is the
+first case in this lane where it did real work: without the pre-committed resolution,
+an adjudicator holding a green C3 and a table whose only named branch is γ would have
+been free to write the branch now, with the answer in hand — the exact mechanism
+criterion 8 voids a case for.
+
+**C3 is ACCEPTED, branch α.**
+
+---
+
+#### 3. What the run MEASURED, what it INFERRED, and the sentence it does not license
+
+This is the section that matters most, and it is where I bar an over-read in my own
+favour for the second landing running.
+
+**MEASURED, directly and on the reference's own side of the record.** The reference
+produced **eight output words** for the bad-FCS frame — T2 prints `frame 0: theirs
+cycles = [3 4 5 6 7 8 9 10]`, which is an **absolute, per-side** record, not a
+relational one — and the frame is present at index 0 on both sides with agreeing
+decision and agreeing word count. **The reference did NOT drop the frame.** That is a
+measurement, it is on the theirs side, and it needs nothing from our side to stand.
+
+**Therefore: `WO-0078` §7's C3 prediction — *"the reference may DROP it"*, CD §6's
+*"the commonest store-and-forward instinct"* — is FALSIFIED, and it is SPENT.** It is
+spent for the reason `RV-C2ALPHA` fixed generally and `LH-cand-H` states: **a
+comparison that could have falsified it took place.** Here the comparison could have
+gone the other way in the most visible manner available to it — a missing frame on
+the theirs side, reported by `Missing_frame` as a divergence at index 0 — and it did
+not. **CD §6's V7 row, "the one to watch", is watched and answered.** The programme
+predicted its reference would behave like a store-and-forward MAC on a bad FCS. It
+does not. Predictions in §6 are graded, and this one graded **wrong** — which is the
+outcome that makes §6 worth having, since a prediction section that is never wrong is
+a section nobody was risking anything on.
+
+**INFERRED, and the inference is sound but is two-source, so it is written as one.**
+The dispatch asks me to say plainly that *"the pinned reference passes bad-FCS frames
+through marked, as REQ-104's model does."* **The "passes through" half is measured
+above. The "marked" half is not measured by this run, and I will not write it as
+though it were.**
+
+The reason is structural and it is a defect in my own instrument (`FINDING
+RV-0078-S2-11`, §8). `Canonical`'s clean-path report prints **counts and a verdict**,
+never the agreed values: `canonical.ml:447–451` emits `frames compared`, `frames
+matching`, and `divergences: none`. **`divergences: none` says the two sides are
+equal. It never says what they are equal to.** For case 0, C1 and C2 that cost
+nothing, because agreement *was* the interesting fact. **C3 is the first case in this
+lane whose subject is a VALUE** — REQ-104's mark — and for it, agreement alone is
+consistent with two worlds:
+
+- **W1**: both sides deliver 60 octets and set `tuser`[0] = 1. The reference forwards
+  and marks.
+- **W2**: both sides deliver 60 octets and both leave `tuser`[0] = 0. The reference
+  forwards and does not mark — **and our RTL violates REQ-104.**
+
+**This run does not distinguish W1 from W2.** W2 is excluded by a different
+instrument: `test/xgmii_rx_64/test_m03_d.ml`'s **M03-D1**, which drives a 64-octet
+frame with one payload bit flipped **at both start lanes** and asserts
+`tuser[0] <> 1 → fail` at line 140–141 with the message *"tuser[0] is not set on a
+bad-FCS frame (REQ-104)"*, plus exactly one `error_bad_fcs` pulse — a
+mutation-qualified bench under the family-D campaign (`WO-0041`), whose anti-vacuity
+partner asserts `tuser`[0] = 0 on a good-FCS frame at line 381–382 so that the
+assertion is not satisfiable by a constant.
+
+**So the honest statement, and the only form any later document may use:**
+
+> **The reference forwards a 64-octet bad-FCS frame rather than dropping it** —
+> measured at run `31108528759` / job `92639903296`, eight words on the reference's
+> own side, decision and word count agreeing. **And it marks the frame invalid** —
+> which follows from that run's agreement on the `tuser0` field **together with**
+> family D's independent, mutation-qualified assertion that our side sets it, and
+> **not from the co-simulation alone.** REQ-104's own verification column — *"the
+> same octet count is delivered, `tuser`[0] = 1 on the last word"* — is satisfied by
+> the pair, one clause each.
+
+**And the thing this must not be allowed to do.** CD §10.3's closing paragraph:
+*"Whatever it returns, `AP-M03` §7 **bar 4 stays standing**."* It does. C3 makes
+`error_bad_fcs` pulse on our side, so precondition (1) is discharged for that one
+strobe and no more; preconditions (2) a committed mapping and (3) a grammar field are
+untouched by this round. **REQ-901 compares no strobe, this run compared no strobe,
+and no `SO-` may cite this green as strobe coverage.**
+
+**One more sentence the run does not license, and it is the interesting one.** C3's
+α does **not** make REQ-104 co-sim-anchored. What is anchored is a **stimulus class**
+— one 64-octet bad-FCS lane-0 frame — on the four REQ-901 observables. REQ-104's
+requirement text spans the FCS computation, the mark, and the strobe; the strobe is
+barred (bar 4) and the mark is anchored only in the relational sense just described.
+**CD §6's own warning was conditional on the reference dropping** — *"if the reference
+drops, family D's entire subject matter is outside the comparison domain and REQ-104
+rests on family D's bench alone, which the `SO-` must SAY"*. It did not drop, so that
+sentence is not owed. **What IS owed, and I put it on the `SO-` here: family D's
+bench remains the sole asserting authority on the mark's VALUE; the co-simulation
+contributes agreement on it, which is a different and weaker thing.**
+
+---
+
+#### 4. `FINDING CD-P2-1` — **DISCHARGED AS TO C3**; standing as to C4, C8 and C9
+
+**The finding, restated from CD §10.5**: `WO-0078` §7's C3 and C4 rows leave the
+**agreement** outcome unbranched ("—") and put γ under *fails* for a prediction of
+divergence — two defects in one cell pair, material because β is unreachable and the
+outcome space is two-valued, so a table naming one of two outcomes *"leaves the
+adjudicator to choose the other after the run."*
+
+**Its own carrier, in its own words**: *"the `RV-` that adjudicates the first C3 or
+C4 result."* **This is that `RV-`.**
+
+**Ruling: DISCHARGED AS TO C3.** The mechanism the finding feared — an adjudicator
+filling the blank with the answer in hand — **did not occur, and its non-occurrence
+is measurable, not asserted**: the resolution is at `5c01af0` (check 1), the section
+carrying it has zero deletions across the span to this run (check 2), and §2 above
+selects α by quoting that resolution rather than by reasoning from the result. **The
+defective cell was used exactly once, and the repair that preceded it held.**
+
+**It STANDS as to C4** — the same cell pair, the same blank, and C4 has not run. It
+is discharged there by the same route at the C4 verdict, and I am recording now, with
+C4's answer not in hand, that **C4's agreement outcome is α on §7's own definition and
+its rejection outcome is γ on the decision** — which is CD §10.4's text, not a new
+ruling, restated here so that C4's adjudicator (me) is bound before its run and not
+after.
+
+**It STANDS as to C8 and C9** — co-sim Phase 3, `SCOPED, NOT AUTHORISED`, no
+instance committed. §10.5's own scope paragraph anticipated this and no repair is
+owed there yet.
+
+**Nothing is amended to close it.** No expected value moved, §7's γ text is carried
+verbatim, the prediction is not rewritten, and the finding is not deleted — it is
+**discharged at one of its four cells** and the other three are named. A finding that
+disappears when its first instance goes well was never a finding.
+
+---
+
+#### 5. `FINDING RV-0078-S2-7` — **CLOSED at the limb it repairs**, on production evidence; its structural residue named, and its closure re-arms
+
+**The defect**: the per-case SUMMARY was printed unconditionally at the tail of the
+loop body, so a case that reached no verdict still printed the T1-assertion sentence
+and the criterion-9 coverage sentence for a comparison that never happened — observed
+in production at `RV-C2RERUN`, where C2 exited 3 with no T0/T1 anything above it.
+
+**The repair, checked at source rather than accepted from the Return log**
+(`tools/cosim/run_cosim.sh`): `print_case_summary` at line **1382**, defined above
+the case loop, with **four call sites** — 1418 (stimulus_gen refusal), 1463 (run1
+pipeline refusal), 1655 (run2 determinism refusal), 1689 (tail of loop body) — and
+`CASE_HAS_RESULT` set in **all seven** `DIFF_RC` arms: `1` at exits 0, 1 and 4; `0` at
+3, 5, 6 and the wildcard. Every call site prints the same four provenance lines; only
+the timing sentence's presence is conditional. **This is the finding's own words —
+*"the timing sentence is what must become conditional"* — implemented literally.**
+
+**The evidence I can produce that the worker could not, and it is production
+evidence, not a stub.** I fetched the **previous** landing's log (job `92624287637`,
+run `31103977231`, at `2efd7f9` — the tree *before* the repair) and diffed its
+per-case SUMMARY blocks against this run's, field by field:
+
+| field | at `2efd7f9` (pre-repair) | at `9685c52` (post-repair) |
+|---|---|---|
+| `reference pin` | `77320a94…f1ffb` | **identical** |
+| `simulator` | `Icarus Verilog version 12.0 (stable) () / …runtime…` | **identical** |
+| `runner image` | `ci:ubuntu24 (GitHub Actions 1000001556)` | `…(GitHub Actions **1000001569**)` |
+| `stimulus sha256` | per case | **identical per case** |
+| `timing:` block | four lines | **identical, all four lines, all three cases** |
+
+**The has-result SUMMARY is byte-identical across the repair in production, on three
+cases, with exactly one field differing — the runner image build number, which is a
+property of the GitHub runner and not of this script.** The worker asserted this
+byte-identity from a stub scaffold that no longer exists; **it is now measured, in CI,
+on both sides of the change.** That is a materially stronger basis than the Return log
+offered, and it is the check that matters, because the risk in a repair that
+introduces a shared printer is that it silently reformats the path that was already
+correct.
+
+**Ruling: CLOSED at the limb it repairs.** Two independent grounds: the production
+byte-identity above, and the worker's negative control (patching the conditional to
+`if true` reproduces the exact defect on demand) which — though ephemeral and
+uncitable as evidence — is the right *shape* of check and its absence would have been
+a bounce.
+
+**The residue, named rather than glossed, because it is real.** **No production case
+exercised the no-result path this run.** All four cases had results. The
+`has_result = 0` branch of `print_case_summary` has **never executed in CI**, in any
+run, at any commit. So this closure rests on: the repaired path's *complement* being
+provably unchanged, plus a scaffold that no longer exists.
+
+**Why I close rather than hold open, and the rule I apply is my own from
+`RV-C2ALPHA` §8.** A debit that no planned work can discharge decays into decoration;
+a debit that planned work *can* discharge stays open. This one is neither: a
+production no-result instance **can** occur, but only if something goes wrong, and the
+only way to *schedule* one is to deliberately red a production case — which is the
+"mint a stimulus purely to exercise an instrument property" move I refused at `S1-2`
+limb (ii) and refuse again. **So: closed, with the residue stated in the closure
+itself, and with an automatic re-arm** — the first production case that reaches no
+result must have its SUMMARY read against this closure in the `RV-` that adjudicates
+it, and **the `SO-` must state that the no-result branch is a path CI has never run**,
+in the same sentence that cites the repair.
+
+**And one prediction of mine came true, in the direction I said I did not want.**
+`J-dv_lead-0155` Open-question 1: *"If C3 agrees with the reference, no case in the
+set is ever not-clean and the property stays unexercised through the whole of Stage
+2."* **C3 agreed.** So `§12` criterion 3's plural property — *a red case does not cost
+a LATER case its line* — is, after **four** landings, still never exercised in CI. The
+`0 C1 C3 C2` amendment bought the *capability* and C3's cleanness meant it did not
+fire. **The amendment was still right** (it cost one line, it is lawful, and it is
+armed for C4), but I record plainly that it has not yet paid, that I said in advance
+it might not, and that the `SO-` must state criterion 3's plural property as **a
+harness property CI has never run** rather than let it lapse. I repeat last round's
+request that the **auditor**, not I, rule on whether an unexercised
+aggregate-continuation path is acceptable in a sign-off.
+
+---
+
+#### 6. The worker's DISCLOSED WIDENING — **ADOPTED**, on four grounds; one sub-decision ruled separately; one reading rule now binds
+
+**What was disclosed.** `FINDING RV-0078-S2-7` diagnosed the defect against the
+NO-VERDICT fall-through. The dispatch named a wider set. **The worker implemented the
+wider set** — every did-not-reach-a-verdict tier including the three PRODUCE-REFUSAL
+sites, which previously printed **no** SUMMARY at all and which `RV-C1C2` §8 had
+called *"correct"* for that era's narrower repair — **and flagged the gap between the
+finding's literal diagnosis and what it built, as an open question for me.** That
+disclosure is exactly what §14 exists for and it is what makes this a ruling rather
+than an archaeology.
+
+**Ruling: LAWFUL and ADOPTED, on four grounds, in ascending order of weight.**
+
+1. **It is inside the instruction.** The dispatch named *"PRODUCE-REFUSAL /
+   NO-VERDICT / any did-not-reach-a-verdict tier"*. The worker measured that against
+   the **finding's** own narrower text and reported the discrepancy rather than
+   resolving it silently in either direction — the correct third thing.
+2. **The partition is not invented.** `CASE_HAS_RESULT` keys on **WO-0049 §8's own
+   reached-a-verdict axis**, which this file's EXIT CODES section already documents
+   and which `WO-0078` §3.3's aggregate precedence already uses. A flag keyed on an
+   existing documented distinction is a reading of the file; a flag keyed on a new one
+   would be a change to it.
+3. **It keys on "reached a verdict", NOT on "was clean" — and that is the correct
+   axis.** Exits **1** (DIFFERENTIAL) and **4** (TIMING-negative) both set
+   `has_result = 1`, so a case that reached a *red* verdict still prints its full
+   SUMMARY. Had the flag been keyed on cleanness, the repair would have silently
+   suppressed the coverage sentence for exactly the cases whose results matter most.
+   I checked all seven arms at source for this and it holds in all seven.
+4. **The widening can only ever SUBTRACT a claim.** Every case it newly reaches loses
+   a sentence asserting timing evidence and coverage, and gains one asserting neither.
+   **A widening whose only possible effect is to remove assertions cannot manufacture
+   a false coverage claim**, which is the sole direction criterion 9 polices. A
+   widening that could add claims would have needed a much harder look; this one is
+   safe by construction, not by inspection.
+
+**The sub-decision, ruled separately because it is the one that could have gone
+wrong.** A case whose **run1** comparison reached a real result (say CLEAN) but whose
+**run2** determinism pipeline then refuses is forced to `has_result = 0`, while its
+CASE line still reports run1's tier honestly. The worker's ground: ADR-0015 D3's
+reproducibility guarantee is exactly what an unconfirmed run2 leaves unestablished.
+
+**I rule it CORRECT, and it is the same epistemic move I made at `S2-10`**: judge a
+claim by what the component can still see. A result whose reproducibility was never
+confirmed is not a result this lane may bank — CD §4's reproducibility guarantee is
+part of what a "verdict" means here, not an optional extra step after one.
+
+**Its residue is real and I convert it into a rule that binds from this verdict.**
+The CASE line and the SUMMARY can now **legitimately disagree** about the same case —
+`tier=CLEAN` above, `NO RESULT` below. That is by design and it is honest, but it
+means **a tier alone is no longer a coverage warrant.** The rule, binding from here:
+
+> **No `SO-`, `AP-` cell or coverage table may cite a case's tier without its
+> SUMMARY's has-result. A case is co-sim-anchored when its CASE line reports a
+> reached verdict AND its SUMMARY prints the timing sentence AND its determinism
+> line says byte-identical. All four cases in this run satisfy all three; the rule
+> exists for the first case that will not.**
+
+---
+
+#### 7. Worker conduct — the criterion-7-vs-9 catch, and the orchestrator's fourth dispatch-citation error
+
+**The facts.** The dispatch carrying `FINDING RV-0078-S2-7` to data_wrangler cited it
+as resting on *"the amended criterion 7."* data_wrangler read `WO-0078` §12 directly,
+found that criterion 7 governs **refusal-code and per-guard-record distinctness** — a
+different property entirely — and that the finding's own text invokes **criterion 9**
+(*"No claim outside the driven set"*), quoting the finding's own sentence to prove it.
+It wrote **9** into the script's comments and into its Return log, and flagged the
+discrepancy explicitly rather than following the dispatch or silently overriding it.
+
+**Ruling: CORRECT, and commended.** It is the third thing again, and this instance is
+harder than the first: the lowercase-case-id catch produced a mechanical failure a
+negative control could reproduce, whereas **this one produces nothing observable at
+all**. A script commented with the wrong criterion number runs identically; the damage
+is entirely downstream, in a reader who follows the citation to a criterion that does
+not say what the comment claims — which, in a lane whose entire output is documents
+that cite each other, is the more expensive of the two failures and the one nobody is
+forced to notice. **A worker that re-derives a citation it could have copied, on a
+round where copying it would have cost nothing and shown nothing, is doing the thing
+the packet's whole citation discipline is for.**
+
+**My standing rule already binds me, and it is quoted rather than restated**
+(`RV-C1C2` §7): *"a dispatch's restatement of a committed artefact is evidence about
+the dispatch, not about the artefact; where they disagree the artefact governs, the
+assignee corrects to it, discloses the correction, and — where the correction is
+behavioural — demonstrates it with a control."* The correction here is **not**
+behavioural, so no control was owed and none is missing.
+
+**Does this instance need more than the record? Ruling: NO, and the reason is
+specific rather than lenient.** The obligation that would repair it already exists —
+*"a dispatch that quotes a case id, an exit code, a hash or a section number quotes it
+from the file"* — and this is a section number, squarely inside it. **Minting a second
+rule for the fourth instance of a species the first rule already covers would make the
+rule set larger without making it stronger**, and this programme has paid four times
+for documents that grew a restatement instead of an enforcement.
+
+**But the count is now load-bearing and I record it as such.** Four dispatch-citation
+errors this arc (a case-id spelling, and now a section number, with two between), each
+caught by an assignee, none by me before dispatch, **and all four are mine.** Three
+observations follow. **(i)** The catch rate is 4/4, which is the compensating control
+working. **(ii)** The control is a *worker's* diligence on a *lead's* defect, which is
+the wrong direction for a control to run and cannot be relied on as the design. **(iii)
+The failure mode is not carelessness but a structural one**: a dispatch prompt is not
+a committed artefact, so nothing checks it and nothing can annotate it afterwards.
+**The obligation therefore hardens, from a rule about quoting to a rule about
+composing**: a dispatch that carries a finding SHALL carry the finding's own text as a
+block quotation rather than a paraphrase with citations, so that the assignee reads
+the source and the dispatch cannot disagree with it. That is not a new rule — it is the
+existing one stated in a form that removes the opportunity rather than policing it,
+and it costs the dispatching round nothing.
+
+**tb_writer's half is likewise ruled sound.** It re-measured `arrival.mli` and
+`frame.mli` at its own base before writing a line, built C3 from **CD §10.3's own
+text** rather than §6.2's table cell, reproduced **all three** prior binds by real
+execution before C3's own sha existed — the strongest available form of *nothing else
+moved* — asserted `Frame.residue_ok` in **both directions** by hand (true before the
+flip, false after), and measured the corruption **octet-by-octet against case 0**
+rather than asserting it from the source, establishing that index 20 is the only
+difference on both the 60-octet delivered and the 64-octet full-frame comparisons and
+that **the four FCS octets are byte-identical to case 0's** — which is what makes this
+a genuinely bad FCS rather than a resigned frame. The both-directions check is
+load-bearing precisely because `Arrival.create ~fcs_valid:false` deliberately does not
+verify the residue, so nothing else in the generator would have caught a bit flip that
+silently failed to change it. **Neither assignee's DoD has a gap, and for the third
+consecutive landing the defects I am recording are in my own artefacts.**
+
+---
+
+#### 8. Findings — two new, both MINOR, both against my own instrument; and the standing set
+
+**`FINDING RV-0078-S2-11` (MINOR) — the clean-path comparison record is RELATIONAL,
+never ABSOLUTE, and at a case whose subject is a value that is a gap.**
+`canonical.ml:447–451` prints `frames compared` / `frames matching` /
+`divergences: none`. **It never prints an agreed value.** For case 0, C1 and C2 that
+cost nothing. **C3 is the first case in this lane whose interesting fact is a VALUE**
+— REQ-104's `tuser`[0] = 1 — and for it the record establishes equality without
+establishing what was equal, so *"the reference marks it"* requires a second,
+external instrument (family D) to become true (§3, W1-versus-W2). **The defect is
+mine**: I specified a comparator that reports a verdict about a relation and never the
+relatum, and I did not notice until the first case arrived whose adjudication needed
+the relatum. **Direction: it under-informs, it cannot over-claim** — no false
+divergence and no false agreement can arise from it — which is why it is MINOR and not
+MATERIAL. **Repair shape (not commissioned here)**: print, per frame, the agreed
+decision and the agreed `tuser`[0], on the clean path, beside T1's numbers — the same
+argument criterion 4 made for T1's numbers, applied to content. **Owner**: dv_lead.
+**Carrier**: the next round that opens `test/cosim/compare.ml` or `canonical.ml` —
+and if none opens before the `SO-`, the `SO-` round, which will need exactly this
+value to write REQ-104's row honestly. **Binding immediately, without waiting for the
+repair**: no document may state a co-simulated value that the log does not print; a
+value established by pairing this lane's agreement with another instrument's assertion
+is written as the pair, with both cited.
+
+**`FINDING RV-0078-S2-12` (MINOR) — `CASE_HAS_RESULT` is ONE bit spanning TWO
+questions, and at exits 5 and 6 it under-reports a content verdict that was reached.**
+`compare` reaches a content verdict (`frames compared` / `matching` / `divergences`)
+**before** T0 and T1 run. At exit **5** (T0 unaligned) and exit **6**
+(TIMING-UNASSERTABLE) the content comparison has therefore already reached a verdict
+and only the timing tiers were withheld — yet `print_case_summary` prints *"NO RESULT
+for this case — it did not reach a comparison verdict"*, which is stronger than the
+truth. **The direction is safe** (it discards a claim, never invents one), so nothing
+adjudicated to date is affected and it is MINOR. **The cost is real and future**: a
+case that agrees on every REQ-901 observable but whose T1 declines to certify has
+genuinely anchored its class for content, and a `SO-` reading the SUMMARY as the
+authority would throw that anchor away. **The defect is mine, twice over** — the axis
+is WO-0049 §8's, which I ruled, and `S2-7`'s own text asked for a single conditional.
+**Repair shape**: two bits (content-verdict-reached, timing-verdict-reached) or one
+re-worded sentence naming which verdict was not reached. **Owner**: dv_lead.
+**Carrier**: the next round that opens `tools/cosim/run_cosim.sh`. **It does not block
+C4**, whose predicted outcomes are agreement or a decision divergence, neither of which
+lands at exit 5 or 6.
+
+**The standing set, carried unchanged and listed so nothing rots quietly:**
+
+| finding | class | status at this commit |
+|---|---|---|
+| `WO-0078-1` | MINOR (MATERIAL when a case can trip a reference guard) | STANDING; unchanged |
+| `RV-0078-S1-1` | — | CLOSED; successor rule landed and re-observed in the self-test |
+| `RV-0078-S1-2` (a), (b) | — | CLOSED; (b) limb (ii) on the fixture, re-arming |
+| `RV-0078-S1-3` | MINOR | STANDING |
+| `RV-0078-S1-4` | MINOR | **STANDING over five never-fired reference-side guards**; first dischargeable at C9, unauthorised. Unchanged this round |
+| `RV-0078-S2-1` | — | CLOSED (`RV-C2RERUN` §2), closure stands |
+| `RV-0078-S2-2` | MINOR | STANDING |
+| `RV-0078-S2-3` | MINOR | STANDING; §7 repair still has exactly one carrier, unscheduled |
+| `RV-0078-S2-4`, `S2-5` | — | DISCHARGED / SETTLED (`RV-C1C2-SETTLEMENT`) |
+| `RV-0078-S2-6` | — | CLOSED (`RV-C2ALPHA` §4) |
+| `RV-0078-S2-7` | — | **CLOSED this round**, §5, with residue and re-arm |
+| `RV-0078-S2-8` | MINOR | CLOSED at its recommended limb; structural condition STANDING |
+| `RV-0078-S2-9` | MINOR | **STANDING; gates Stage 3** (`MAX_WORDS_PER_FRAME = 16` = 128 octets against REQ-102's 1518). Not reached by C4 |
+| `RV-0078-S2-10` | MINOR | STANDING; its reading rule binds |
+| `RV-0078-S2-11`, `S2-12` | MINOR | **NEW this round** |
+| `CD-P2-1` | MINOR | **DISCHARGED AS TO C3**; standing as to C4, C8, C9 |
+| `CD-P2-2` | MINOR | STANDING; records defect, unrepaired, nothing rests on it |
+
+---
+
+#### 9. Coverage after this run — **FOUR anchored classes**, per class, at run ids, with what is NOT anchored stated beside it
+
+**Written in the exact form the `AP-` round can lift verbatim, and in no wider form.**
+`WO-0078` §8: *"No `SO-` may write a sentence of the form 'the co-simulation anchors
+this module'."*
+
+| # | stimulus class, stated as a class | anchored at | branch |
+|---|---|---|---|
+| 1 | one 64-octet **good-FCS** frame, **lane-0** start on the reset-release cycle, gapless, no injected idle | `31108528759` / `92639903296` (re-observed; anchored since Phase 1 at `30988038809`) | α |
+| 2 | one 64-octet good-FCS frame, **lane-4** start on the reset-release cycle | `31096150983` / `92598555141` (`RV-C1C2`); re-observed at `31100435961`, `31103977231`, **`31108528759`** | α |
+| 3 | **two** 64-octet good-FCS frames at the **minimum inter-frame gap**, frame 0 lane-0 on the reset-release cycle, both accepted, across the re-arm path | `31103977231` / `92624287637` (`RV-C2ALPHA`); **re-observed byte-identical at `31108528759`** | α |
+| 4 | **one 64-octet BAD-FCS frame** (one payload bit flipped at index 20 against an untouched, correct-for-original-content FCS), **lane-0** start on the reset-release cycle, **delivered rather than dropped** | **`31108528759` / `92639903296`** | **α — NEW** |
+
+**What class 4 does NOT anchor, stated with it so it is never lifted alone:**
+
+- **Not the mark's VALUE** — `S2-11`, §3. The pair (this run's `tuser0` agreement +
+  family D's M03-D1) establishes it; this lane alone does not.
+- **Not the strobe.** Bar 4 stands; preconditions (2) and (3) unmet.
+- **Not bad FCS at a lane-4 start** — C3 is lane-0 only; no case crosses the two axes.
+- **Not bad FCS at any other length.** 64 octets exactly. Class (e) does not reach it.
+- **Not REQ-104 as a requirement.** A class is anchored; a requirement is not.
+
+**Bar 1's owed lifts now number THREE** (classes 2, 3, 4 — class 1 was lifted at
+Phase 1), and **C4 will make it four**. All three are **owed to the `AP-` round, not
+written here** (§10).
+
+**And the class C2 still does not separately anchor**, carried forward unchanged from
+`RV-C2ALPHA` §5 because a green does not retire a bar I imposed on a red: C2's frame 1
+is a lane-4 start at a **non-zero** admit cycle, but per-case reporting attributes a
+result **to** a case, never **within** one, so C2 anchors the compound class as driven
+and nothing finer.
+
+---
+
+#### 10. The CD and the `AP-` — **no edit to either**, ruled rather than omitted; and the AP refusal now rests on a different ground
+
+**The CD: NO EDIT.** Three reasons, all carried from `RV-C1C2` §3 and `RV-C2ALPHA` §8
+and none weakened by C3's result. **(i)** §10.7 item 3: *"This document freezes the
+questions; it answers none of them."* A result inside the frozen-question document
+destroys the one property that makes a frozen prediction worth anything — that a
+reader can tell a prediction from an outcome without checking a date. **(ii)**
+§9-bis's addition-only lift is scoped to *"§10 below, carrying co-sim Phase 2's domain
+instances"*, and **a result is not a domain instance.** **(iii)** A second record of a
+run's outcome in a document later rounds read as authoritative is the
+left-standing-summary class §0-ter tabulates four payments for.
+
+**This is the fourth consecutive round in which I decline to write a result into the
+CD, and C3's result is the most tempting one yet** — CD §6 calls V7 *"the one to
+watch"*, and the temptation is to annotate that sentence with its answer. **Refused.**
+§6 is a **frozen prediction** section; the honest record that V7 graded wrong is this
+verdict and the run, and CD §6's value comes entirely from a reader being able to read
+it as it was written before anyone knew.
+
+**The `AP-`: NO EDIT — and this is the FOURTH refusal, on a ground I have not used
+before, because the previous ground has expired.**
+
+**The previous three refusals rested on cost**: a bar cell written now must be
+reopened twice more, and a cell reopened twice is the left-standing-summary drift
+§7 has paid for four times. **That arithmetic no longer holds.** C4 is **one** landing
+away, so writing now would cost **one** reopening, not two. **I state that plainly
+rather than letting a stale reason carry a conclusion I still hold — which is exactly
+the defect §7's own banner was corrected for.**
+
+**The ruling stands on the packet's own routing rule instead, which is stronger.**
+`WO-0078` §13 item 2: *"`AP-M03` §7's per-case bar cells. dv_lead's, owed to the
+`AP-` round that follows **each landed stage**."* **Not each landed case.** Stage 2 is
+C1, C2, C3, **C4**; three of four have landed; **the stage has not.** The post-Stage-2
+`AP-` round consolidates all four lifts at once, in one cell, at one commit, which is
+also the shape §7's cells are written in.
+
+**And a refusal repeated four times must be given a condition or it becomes a
+habit.** So: **the `AP-` round is a precondition of any claim that Stage 2 is
+complete, and of any `SO-` citing co-simulation coverage.** It may not be deferred
+past C4 for any reason short of C4 itself failing to land. If C4 lands and the `AP-`
+round does not immediately follow, **the debt stops being deferred and becomes a
+finding against me** — recorded here, before C4, so that it is checkable rather than
+remembered.
+
+---
+
+#### 11. The lane-4 delivery offset — **five recordings across three runs and two distinct geometries**, and the vessel question re-answered rather than re-opened
+
+**The dispatch calls this the "fourth consistent recording". Measured, it is the
+fifth**, and I correct the count against the logs for the same reason I commend a
+worker for correcting a citation against the file:
+
+| # | run / job | case | line |
+|---|---|---|---|
+| 1 | `31096150983` / `92598555141` | C1, frame 0 | `theirs - ours per word = [1 1 1 1 1 1 1 1]` (quoted at `RV-C1C2` §3) |
+| 2 | `31103977231` / `92624287637` | C1, frame 0 | `[1 1 1 1 1 1 1 1]` |
+| 3 | `31103977231` / `92624287637` | C2, frame 1 | `[1 1 1 1 1 1 1 1]` |
+| 4 | **`31108528759` / `92639903296`** | C1, frame 0 | `[1 1 1 1 1 1 1 1]` |
+| 5 | **`31108528759` / `92639903296`** | C2, frame 1 | `[1 1 1 1 1 1 1 1]` |
+
+Four of the five I measured myself this round from the two job logs; the first is
+quoted from my own prior verdict. (A sixth may exist at `31100435961`; C1 ran clean
+there, but I did not fetch its T2 line and I do not claim what I did not read.)
+
+**And the recordings are not five repetitions of one observation — they span two
+different geometries of a lane-4 start**, which is what makes the consistency worth
+remarking on. C1's is a lane-4 start on the **reset-release cycle** with
+`admit_cycle = 0`; C2 frame 1's is a lane-4 start **mid-stream**, at
+`admit_cycle = 10`, after the re-arm path, arriving there because `arrival.mli`'s own
+contract puts consecutive starts 84 octets apart and *"84 is not a multiple of 8, so
+the start lane alternates 0, 4, 0, 4"*. **The reference delivers one cycle later at a
+lane-4 start, at both geometries, in every run that has driven one. Our side's T1 is
+`{3 … 10}` at both lanes**, SPEC-M03 §7's pin holding under measurement.
+
+**Ruling on the vessel: UNCHANGED, and the reasoning is the point.** Accumulation
+changes how well-established a datum is; **it does not change what the datum is.**
+The offset is CD §5.2 **X1** — all cycle timing, latency and word-to-word spacing —
+**outside the domain**, so it is *data: recorded, not adjudicated*, five times over
+exactly as it was once. `RV-C1C2` §3's three vessels stand: the **runs** are the
+primary record and cannot drift; **this verdict** is the adjudicative record and
+carries the status beside the number; the **`SO-`** is the forward carrier, stating it
+as an observed property **of the reference** in the sentence that also says this lane
+compares no cross-side cycle. **Not the CD** (§10.7 item 3). **Not the `AP-`** — a
+recorded cross-side cycle datum sitting beside bar 3, which forbids comparing
+cross-side cycles, is the exact shape a later reader misreads as the bar having
+lifted.
+
+**The one thing accumulation DOES earn, and the trap beside it.** Five reproductions
+make the offset a usable **provenance tripwire**: if a future run at this reference pin
+printed `[0 × 8]` at C1, that would be evidence the reference build changed, not
+evidence about our RTL. **That is a reading aid and it may never become a harness
+assertion.** Asserting it would be a cross-side timing comparison arriving through the
+back door of a regression check, and bar 3 forbids it whichever door it uses. **The
+general form, which I bank rather than legislate**: *a datum whose comparison is barred
+does not become assertable by reproducing; reproduction earns confidence, never
+jurisdiction.*
+
+**And one fact worth stating because it was measured and not merely hoped.** C2's
+entire per-case record — sha, 2/2 frames, T0 `0` and `10`, T1 `3…10` and `13…20`, T2
+`[0 × 8]` and `[1 × 8]`, determinism byte-identical — is **identical between
+`31103977231` and `31108528759`, at a different position in the case array** (third,
+then fourth) and on a different runner image. **`RV-C2ALPHA` §9 item 3's "standing
+regression case" is therefore not a designation, it is a discharged measurement at its
+first opportunity**, and per-case isolation (`RV-C1C2` §5) now holds across a
+**reordering**, which no prior run could show.
+
+---
+
+#### 12. Sequencing — **C4 alone, next; CONFIRMED, not amended**
+
+**§6.2's order is C1+C2, then C3 alone, then C4 alone.** C3 has landed and is
+accepted. **C4 alone is next, and I confirm it without amendment** — the one-line
+reorder that rode C3's landing was the only sequencing change Stage 2 needed, it has
+landed, and adding a second amendment to a stage with one case left would be change
+for its own sake.
+
+**What C4 is, restated from CD §10.4 so the dispatch quotes rather than paraphrases**
+(§7's hardened obligation, applied to my own next dispatch): one **64-octet good-FCS**
+frame whose six preamble filler octets **and SFD octet** carry **arbitrary,
+nonstandard data values**; otherwise clean; **lane-0 start on cycle 0, sighted
+placement preserved**. It is CD §6's **V6**, and REQ-102 **forbids** M03 from
+validating those octet values.
+
+**The observables that decide it, and the exclusion that does not reach them.**
+CD §10.4 is explicit and it is the part a dispatch must not compress: §5.2's **X4**
+excludes *"preamble and SFD octet values"*, but those octets are **stripped by
+REQ-102/REQ-103 and appear in no delivered stream on either side**, so **X4 removes
+nothing from C4's delivered-octet comparison**. What X4 excludes is the *stimulus*
+octets as a source of expected values. **X4 does NOT exclude the DECISION those octets
+cause.** So C4's observables are **the accept-or-discard decision and the delivered
+octets** — exactly as the dispatch states — and if the reference validates the
+preamble and rejects the frame, that is a divergence in REQ-901's decision, inside the
+domain, outside every declared class: **γ**, on the decision.
+
+**Its branches are already frozen** (§7's C4 row, carried verbatim at CD §10.4) and
+**its agreement outcome is α**, recorded in §4 above **before** C4 runs.
+
+**The stopping rule's re-armed form covers C4 unchanged**, quoted rather than
+restated: *"if any single case reaches no comparison on two consecutive landings, the
+third landing of that case is not a fourth worker repair round."* It has **not fired
+and is not near firing** — C3 reached a comparison on its first landing, so its counter
+is zero and C4's has not opened. **No re-arming is needed and none is done**; the form
+carries into C4 at the same threshold, still pre-registered with C4's answer not in
+hand, which is where all its value lives.
+
+**Two things C4's round must carry, both cheap:** `S2-11`'s reading rule (a value this
+lane does not print is not a value this lane measured) and §6's has-result rule (a tier
+is not a coverage warrant without its SUMMARY).
+
+---
+
+#### 13. §12 read per criterion — nine, one disposition each, at `9685c52`
+
+| # | criterion | disposition at `9685c52` |
+|---|---|---|
+| **1** | case 0 byte-identical | **DISCHARGED.** `c675517…4cc051` printed for this run equals the pinned value and the run cited as its independent anchor (`31080871169` / `92549154623` / `55e16ae`) is genuinely pre-widening. The standing note survives: the run is the anchor, never the literal inside the file the freeze constrains. |
+| **2** | the sighted placement survives | **DISCHARGED, and at its widest yet.** `frame 0: admit_cycle = 0` is printed for **case 0, C1, C3 and C2's frame 0** — four cases, four distinct shas, one of them brand new. A property that holds across a new stimulus with a new hash is measured, not inherited. |
+| **3** | every case reaches a verdict or names why not | **DISCHARGED at N = 4** — four `CASE` lines, all four fields on each, four independent determinism checks, no case folded into the aggregate. **The plural property remains UNEXERCISED**: the `0 C1 C3 C2` order arms it and C3's cleanness meant it did not fire. **Now unexercised after FOUR landings**; the `SO-` must say so (§5). |
+| **4** | T1 prints its numbers on the clean path | **DISCHARGED, broadly.** Per-word expected and observed for **five frames across four cases** on the clean path — including C3's, where a green run is most tempted to print nothing. |
+| **5** | T1's antecedent carried, not inferred | **NOT FURTHER ENGAGED.** No case in this landing injects an idle; sidecars carried `0`, `0`, `0`, and `0, 0`. The class stands where the self-test's carried-count fixture (exit 6) leaves it. |
+| **6** | the two constructors separately testable | **DISCHARGED**, re-observed: `(e)` exit 4, `(e′)` exit 6, distinct fixtures, distinct branches, neither optional. |
+| **7** | every producer's refusal reaches an exit code (as amended) | **PARTIALLY DISCHARGED, unchanged this round — no refusal fired.** Nothing regressed and nothing advanced: the amended text has now governed two runs and has been contradicted by neither. The two standing gaps are unmoved — the reference-side **emission** path is still unexecuted (`S1-4`, first dischargeable at C9) and per-guard distinctness lives in the printed record (`S2-5`, settled). |
+| **8** | every case's disposition frozen before it ran | **DISCHARGED, and it does its HARDEST work yet.** `5c01af0` is an ancestor of `9685c52`; the CD diff across the span is one hunk, 129 insertions, **zero deletions**, entirely §10.2-bis. **So C3's prediction, C3's γ text and — decisively — CD §10.5's resolution of the blank cell are all provably older than C3's result.** On the case where the table's own polarity read backwards, the criterion is what makes α a reading rather than a choice. |
+| **9** | no claim outside the driven set | **DISCHARGED for this round's artefacts, and STANDING.** The one-class SUMMARY sentence printed for all four cases; the aggregate's own criterion-9 sentence printed and points at the CASE lines. **This verdict lifts bar 1 for exactly four classes, states them per case at run ids, and names five things class 4 does NOT anchor** (§9). No sentence of the form *"the co-simulation anchors this module"* appears in any artefact of this round. |
+
+---
+
+#### 14. Verdict
+
+**`RV-C3ALPHA` — Stage 2's C3 landing is ACCEPTED, both halves.**
+
+At `build` run **`31108528759`**, `cosim` job **`92639903296`**, commit `9685c52`,
+**wholly green**:
+
+1. **C3 — ACCEPTED, branch α**, under CD §10.3 **unamended**: `frames compared: 1`,
+   `frames matching: 1`, `divergences: none`, `compare_exit=0`, `tier=CLEAN`,
+   run1/run2 byte-identical, at the pre-committed sha bind
+   `1512d30b…c4dce`. **α is selected from `WO-0078` §7's branch definitions via CD
+   §10.5's resolution, frozen at `5c01af0` and measurably unmoved — not chosen with
+   the answer in hand.**
+
+2. **CD §6's V7 — "the one to watch" — is ANSWERED, and the prediction is
+   FALSIFIED and SPENT.** **The reference did NOT drop the bad-FCS frame.** It
+   produced eight output words, at index 0, with an agreeing decision and an agreeing
+   word count. The prediction is spent because a comparison that could have falsified
+   it took place and did not. **The measured fact, stated in the two halves it is
+   actually made of**: the reference **forwards** a 64-octet bad-FCS frame — measured
+   on its own side of the record — **and marks it invalid**, which follows from this
+   run's agreement on the `tuser0` field **together with** family D's independent,
+   mutation-qualified M03-D1, and **not from the co-simulation alone** (`S2-11`).
+   REQ-104's model is what both implementations do; **this lane measured the pass-through
+   and only compared the mark.**
+
+3. **`FINDING CD-P2-1` — DISCHARGED AS TO C3**; **STANDING as to C4, C8, C9**, with
+   C4's agreement outcome recorded as α here, before C4 runs.
+
+4. **`FINDING RV-0078-S2-7` — CLOSED at the limb it repairs**, on **production**
+   byte-identity of the has-result SUMMARY across the repair (three cases, two CI runs,
+   one field differing and it belongs to the runner) plus the negative control. **Its
+   structural residue is named**: the no-result branch has never executed in CI, the
+   `SO-` must say so, and the closure re-arms at the first production case that reaches
+   no result. **§12 criterion 3's plural property is unexercised after four landings**,
+   as I predicted a green C3 would leave it.
+
+5. **The worker's disclosed WIDENING — ADOPTED**, on four grounds, the strongest being
+   that it can only ever subtract a claim; the run2-refusal sub-decision **ruled
+   CORRECT**; and one **reading rule now binds**: a tier is not a coverage warrant
+   without its SUMMARY and its determinism line.
+
+6. **Worker conduct — the criterion-7-vs-9 catch: CORRECT and COMMENDED**, and harder
+   than the first catch because it produced nothing observable. **The orchestrator's
+   fourth dispatch-citation error this arc needs no new rule** — the existing one covers
+   it — **but the existing obligation hardens in form**: a dispatch carrying a finding
+   quotes the finding's own text as a block, so the assignee reads the source and the
+   dispatch cannot disagree with it. All four errors are mine; all four were caught by
+   assignees; that is the control working in the wrong direction.
+
+7. **Coverage: FOUR anchored classes**, tabulated per class at run ids (§9), with
+   **five things class 4 does not anchor** stated beside it. **`AP-M03` §7 bar 1's
+   owed lifts number three; bar 4 stays standing;** bars 2 and 3 untouched.
+
+8. **NO CD EDIT and NO `AP-` EDIT** — the fourth refusal of each, and the `AP-`
+   refusal now rests on **§13 item 2's own routing rule** (the `AP-` round follows a
+   landed **stage**, and C4 has not landed) rather than on the cost argument that
+   expired when C4 became one landing away. **A condition is attached**: the `AP-`
+   round may not be deferred past C4, and if it is, that is a finding against me.
+
+9. **Two new MINOR findings, both against my own instrument design** — `S2-11` (the
+   clean-path record is relational, never absolute) and `S2-12` (`CASE_HAS_RESULT` is
+   one bit over two questions and under-reports a content verdict at exits 5 and 6).
+   Both under-inform; neither can over-claim.
+
+10. **Sequencing: C4 alone, CONFIRMED, unamended.** Its stimulus and observables are
+    quoted from CD §10.4 in §12 above; its branches are frozen; the stopping rule's
+    re-armed form covers it at the same threshold and needs no re-arming, C3 having
+    reached a comparison on its first landing.
+
+**What this run does NOT mean.** It is not a `SO-`. It is not module coverage. It
+does not anchor REQ-104, or any requirement — it anchors four **stimulus classes** on
+four **observables**. It compares no strobe and no cross-side cycle. It does not
+establish, by itself, the value of the invalid mark on either side. And **a green
+aggregate is not evidence that the harness reports reds correctly** — the paths that
+would do so remain the self-test's thirteen seeded fixtures and, for the aggregate's
+continuation property, nothing at all.
+
+**dv_lead, `J-dv_lead-0156`, HEAD `9685c52` (unmoved). Dated by the commit that
+carries this verdict and by that entry** — no calendar literal is asserted and no
+adjudication here rests on one (`FINDING CD-P2-2`).
 
 ---
