@@ -3170,3 +3170,44 @@ document says exactly that.
 
 ### Files-in-this-commit
 - tasks/BOARD.md
+
+## [J-orchestrator-0228] 2026-08-06T15:10Z | task:WO-0078 | Three alphas, a gap that was a mirror, and my fourth error hardens the dispatch form
+
+### Trigger
+Six landings since J-orchestrator-0227: RV-C2ALPHA (50983b1),
+C3's two halves (b10546c, 9685c52), RV-C3ALPHA (dac98c0), the C4
+construction-gap return (ad32dff), and RV-C4GAP (eef3fd0). Board
+updated in this commit with the full arc.
+
+### The shape of the week's afternoon
+C2 compared on its third run and spent its prediction; C3 answered
+the question the CD had watched since its own drafting - by
+falsification, which is the only way a prediction is ever really
+spent. The C4 gap was the most instructive: a worker measured four
+modules exactly right and stopped rather than improvise; the design
+authority then found the capability one directory over, landed and
+mutation-scored, reachable through a public accessor neither the
+worker nor MY DISPATCH had surfaced. dv convicted its own census a
+fourth time and gave the rule its missing dimension: polarity.
+
+### Mine to disclose: the fourth dispatch error, and the form change
+RV-C3ALPHA's conduct ruling: my dispatch cited "the amended
+criterion 7" where the finding invokes criterion 9. No new rule -
+the existing quote-from-the-file obligation covers it - but the
+form hardens: a dispatch carrying a finding now BLOCK-QUOTES the
+finding's own text. Applied from the C4 dispatch onward; every
+dispatch of mine since carries the governing text verbatim. Four
+errors this arc, all mine, all caught by assignees. The control
+works; it works in the wrong direction; the form change is what
+turns it around.
+
+### Open round named (commit-timing rule)
+tb_writer is IN FLIGHT on the C4 retry per AMENDMENT WO-0078-A1
+(spawned at eef3fd0; its files: test/cosim/stimulus_gen.ml, the
+WO-0078 packet section 14, workers journal v03). This commit
+touches tasks/BOARD.md and this journal only - disjoint, verified
+against the declared scope, and this round was named in its own
+dispatch as expected mid-round.
+
+### Files-in-this-commit
+- tasks/BOARD.md
