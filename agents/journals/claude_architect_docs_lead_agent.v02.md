@@ -2984,3 +2984,487 @@ Reproducible at this commit's SHA from a repo checkout at the repo root.
 - agents/handoffs/WO-0069_spec-queue-3-m03-hook-and-strobe-multiplicity.md
 - docs/specs/modules/xgmii_rx_64.md
 - docs/specs/requirements.md
+
+## [J-architect_docs_lead-0032] 2026-08-10T23:40Z | task:none | Two divergence classes ruled IN and both amended — the reference aborts one input word EARLY, so lane 0 still anchors and an "every aborted frame" exclusion would have thrown away the only abort the co-simulation can judge; and the operator rule finally gets its ADR, fifteen campaigns after the practice began
+
+### Trigger
+
+Orchestrator spawn carrying two items, both mine by charter §3, with a declared
+concurrent dv_lead sibling drafting the `SO-` packet — so `agents/handoffs/**`
+and every dv journal were out of bounds for this round even though they are
+normally inside my write scope.
+
+1. **The REQ-901 spec-diff request.** dv_lead's `RV-SWEEP` — the error-class
+   sweep over families E–H in `WO-0078` §14 — surfaced two candidate divergence
+   classes from the reference's own source and routed them to me as a spec-diff
+   request **before Stage 3 is authorised**: `FINDING ECS-4` (MATERIAL,
+   candidate class (g), abort-truncation extent) and `FINDING ECS-5` (MATERIAL,
+   candidate class (h), the zero-delivered abort's decision). The class list is
+   requirements.md's and the ruling is mine; dv's own §3.5 says so in terms and
+   calls its routing *"a recommendation, not a ruling"*.
+2. **The operator-rule ADR**, owed since `FINDING WO-0074-A1` (MAJOR, auditor)
+   was ruled ACCEPTED at `J-orchestrator-0218`, which routed the ADR to me with
+   *"carrier: the next architect round"*. This is that round.
+
+**Abort-first head check, before anything else.** `git rev-parse HEAD` →
+`49d87af799c03ae49ff5e79f05d46f6ffc41dcc2`, byte-equal to the spawn-head
+`49d87af`. No divergence, no rollback, no merge-base call needed. Proceeded.
+
+**Entry-id correction, recorded because it is the kind of thing that silently
+breaks a chain.** The spawn instructed me to continue from
+`J-architect_docs_lead-0021` and write entry **0022**. That is a stale reading of
+volume 01's tail: volume 01 ends at `-0021`, volume 02 **opens** with `-0022`
+(ADR-0017's chain, entry ids continue across volumes) and its last entry at HEAD
+is `-0031`. Writing 0022 would have collided with an existing header and failed
+R5 outright. **This entry is `-0032`**, which is the only id R5 admits.
+
+### Inputs
+
+- `agents/charters/architect_docs_lead.md` (whole) and `agents/PROTOCOL.md`
+  (whole) — §2, §6, §10 and §11 are load-bearing for item B; §3's packet table
+  and §6's write scopes for the sibling bound.
+- `agents/handoffs/WO-0078_cosim-phase2-3-stimulus-widening.md`, **read, never
+  written**: §14's `RV-SWEEP` — the per-class table at `##### 2.3` (seventeen
+  classes, rows E-1 … H-5), the findings block carrying `ECS-3` … `ECS-8`
+  (`FINDING ECS-4` and `FINDING ECS-5` in full), §3.4 (class H-3, the
+  frame-loss question left open on a static read) and §3.5 (branch γ, C8/C9
+  and the sequencing recommendation). Also §6.3's Stage-3 gate conditions and
+  §7's branch table for what γ means.
+- `test/third_party/verilog-ethernet/axis_xgmii_rx_64.v` — **the reference,
+  read directly at the cited lines and around them rather than through dv's
+  quotation**, verbatim vendored per ADR-0015: `:100-171` (declarations and
+  output assigns), `:193-200` (the input mask), `:203-306` (the whole
+  combinational block: `STATE_IDLE`, `STATE_PAYLOAD` with the framing-error and
+  terminate branches, `STATE_LAST`), `:311-372` (the sequential block, lane swap
+  and terminate detection), `:374-391` (start detection, both lanes),
+  `:404-445` (the delay chain, `framing_error_d0_reg` at `:412`,
+  `xgmii_rxd_d1`/`xgmii_start_d1` at `:422-423`).
+- `docs/specs/requirements.md` at HEAD: REQ-901's row (the whole class list),
+  REQ-102, REQ-103, REQ-105, REQ-106, REQ-107, REQ-108, REQ-110, REQ-011,
+  REQ-013, §0.7 and §13's change log — in particular the three 2026-08-03 rows
+  that established the (e)/(f) precedent this diff is written on.
+- For item B: `docs/reports/audit/WO-0074-mutations/README.md` §2 (the finding,
+  in full); `agents/journals/claude_orchestrator_agent.v02.md`
+  `J-orchestrator-0159`, `-0177`, `-0218`, `-0223`, `-0224`;
+  `agents/journals/claude_auditor_agent.md` `J-auditor-0013`, `-0014`, `-0015`,
+  `-0016`; `agents/charters/auditor.md` §3, §4, §5; `docs/adr/ADR-0005`,
+  `ADR-0016` §7.4-adjacent enforcement notes and `ADR-0018` §7.4 (the "no
+  R-rule, so no §11(3) case" form I reuse); the remote's `mut/*` refs.
+
+### Reasoning
+
+#### Item A — I read the reference before ruling, and the reading changed both classes
+
+dv's two findings are grounded on three cited lines: `:235` (the all-ones `tkeep`
+default), `:244-250` (the abort branch) and `:236` (the unconditional `tvalid`).
+**All three facts are correct.** The abort branch assigns `tlast`, `tuser`[0],
+`error_bad_frame` and the state transition, and assigns **no** `tkeep`, so the
+aborted word carries `STATE_PAYLOAD`'s all-ones default; the lane-indexed
+narrowing that implements the FCS strip exists only on the two terminate paths
+(`:255`, `:280`). `STATE_PAYLOAD` does assert `tvalid` unconditionally at `:236`
+before any branch.
+
+**What dv did not read is the alignment, and it decides both classes.** The abort
+condition at `:244` is a disjunction of two registers that are *not* the same
+word:
+
+- `framing_error_reg` is registered in the same clocked block that produces
+  `xgmii_rxd_d0` (`:362` for the general case; `:382` and `:390` in the
+  start-detection override), so it is the framing status of the word **one ahead**
+  of the one being emitted.
+- The emitted word is `xgmii_rxd_d1` (`:234`), one further delayed (`:422`), and
+  `framing_error_d0_reg` is `framing_error_reg` delayed to match (`:412`).
+
+So `:244` reads *fe(next word) OR fe(this word)*. **I did not assume this
+alignment; I validated it against the one path whose arithmetic is independently
+checkable** — the terminate path. `term_present_reg`/`term_lane_reg` register
+beside `xgmii_rxd_d0` exactly as `framing_error_reg` does (`:360-371`), and
+`:255` keeps `4 + term_lane` octets of the emitted word. For a terminate at lane
+`tl ≤ 4` of the *next* word, the frame's octets in that word are lanes `0..tl-1`,
+i.e. `tl` octets, and stripping four FCS octets leaves the last payload octet at
+index `4 + tl` of the **preceding** word. `:255` computes exactly that, and
+`STATE_LAST`'s `:280` computes `tl − 4` for `tl ≥ 5`, which is the complementary
+case. The FCS strip is only correct under the one-word-lookahead reading, so the
+reading is forced by code that is known to work rather than by my inference.
+
+**Consequence, and it is the whole ruling.** The reference's abort fires on the
+cycle that emits the word *before* the one carrying the aborting character, so
+that character's word is **never emitted**; the exception is the frame's first
+payload word, where the lookahead term was consumed during `STATE_IDLE` and the
+`framing_error_d0_reg` term catches it one cycle later. Writing `W_k` for the
+word carrying the aborting character at lane `L`:
+
+| case | ours (REQ-105) | reference | extent | decision |
+|---|---|---|---|---|
+| `k = 1`, `L = 0` | 0 octets, no output word (§0.7) | 8 octets, marked | — | **diverges** |
+| `k = 1`, `L ≥ 1` | `L` octets, `tlast` on `W_1` | 8 octets, `tlast` on `W_1` | diverges | agrees |
+| `k ≥ 2`, `L = 0` | `(k−1)·8`, `tlast` on `W_{k−1}` full | `(k−1)·8`, `tlast` on `W_{k−1}` full | **agrees exactly** | agrees |
+| `k ≥ 2`, `L ≥ 1` | `(k−1)·8 + L`, `tlast` on `W_k` | `(k−1)·8`, `tlast` on `W_{k−1}` | diverges | agrees |
+| aborting character in the start word | 0 octets, no output word | the **whole frame**, unmarked | — | **diverges** |
+
+**Amendment 1 — (g) is bounded, because "every aborted frame" is false.** At an
+aborting character in lane 0 of any word after the first payload word, REQ-105's
+own lane-0 clause ("*an error character in lane 0 means the previous word carried
+the last octet*") puts our `tlast` on exactly the word the reference closes on,
+whole. Payload octets, `tkeep` extent, `tlast` placement, `tuser`[0] **and** the
+decision all agree. That is not a coincidence to be excluded; it is the one place
+this boundary can still judge an abort, and `M03-E1` has two such members (lane 0
+at each start lane) out of sixteen. Declaring (g) as filed would have excluded
+them — the over-wide exclusion `J-dv_lead-0057` refused when it countersigned (e)
+narrower than it was asked for, which is the precedent dv's own `ECS-5` cites
+against itself and then does not apply to `ECS-4`. So (g) excludes three
+observables (octet count, `tkeep` extent, `tlast` position) on an aborting
+character **not** in lane 0, and leaves `tuser`[0] and the decision compared even
+there. Three anchors preserved instead of zero.
+
+**Amendment 2 — (h)'s ground reaches one of the two cases it was filed for.**
+`:236` is the right ground for "at least one word", and it is airtight: the
+reference emits a word on the first `STATE_PAYLOAD` cycle of every frame it
+opens, so on every case where §0.7 requires ours to emit none, the decision
+diverges. But dv writes that the reference *"emits a marked word"* and grounds
+the preamble case on the framing error being latched at `:382`. **It is latched
+and then thrown away.** The `STATE_IDLE` cycle that admits the frame is the cycle
+on which `framing_error_d0_reg` holds the start word's status, and that branch
+reads only `xgmii_start_d1`; by the next cycle the register has moved on. This is
+not an oversight in the reference — at a lane-4 start the realigned start word's
+own control lane is the start character (`:346` sets `framing_error_reg` from
+`{xgmii_rxc[3:0], swap_rxc}`, and `swap_rxc` carries the `/S/` bit), so the
+reference **must** discard a start word's framing error or no swapped frame would
+ever be received. Consequence: for an `/E/` in a preamble position the reference
+delivers the frame **whole and unmarked**, which is a larger divergence than the
+one filed, through a different path. (h) is therefore stated on the **decision**,
+which both paths reach, and excludes such a frame **entirely** — the disposition
+(e) already gives a sub-5-octet frame, including its "recorded as data, never
+adjudicated" clause. One class, two paths, both named in the text so a reader
+cannot mistake the mechanism.
+
+**Amendment 3 — (g) does not reach family H, and I decline to declare a class
+for it.** `ECS-4` claims (g) *"reaches both families, because the reference's
+branch is keyed on `framing_error`, which any control lane sets."* The cited
+lines refute it: `:382` computes the start word's framing error from
+`xgmii_rxc[7:1]` and `:390` from `xgmii_rxc[7:5]` — **the start character's own
+control lane is excluded in both**. A start character arriving inside an open
+frame with data in the remaining lanes therefore raises no framing error at all;
+the reference does not abort, does not close the frame, and merges the two frames
+ours emits into one. That is a divergence in the **ordered sequence of output
+frames**, which no exclusion stated on one frame's extent or one frame's decision
+covers — folding it into (g) would under-exclude and a run would file the
+divergence anyway.
+
+I considered declaring a third class for it (excluded entirely, recorded as
+data), and rejected it on three grounds: it buys no anchoring, since an
+entirely-excluded frame anchors nothing either way; neither producer can build
+the stimulus today (`FI-4` at `ours_run.ml:245-257`, `FI-6` at
+`tb_xgmii_rx_64.v:531-562` both refuse it), so it would be a class declared
+against a stimulus that cannot exist; and dv's own §3.4 leaves the outcome open
+on a static read — my derivation settles the mechanism but is still a static
+read of a path no run has driven, and a class is a commitment I would be making
+on the strength of my own unexecuted reading. **What I did instead is the
+class-(a) move**: REQ-901 already restricts stimulus for a declared class
+("*co-simulation stimulus is restricted to datagrams with correct header
+checksums*"), so the list now bars a start character inside an open frame that
+has already delivered an octet **until a class is declared for it**. That keeps
+"*any divergence outside the declared classes is a defect*" intact by ensuring no
+such divergence is produced, instead of creating a third status between excluded
+and defect. It costs nothing today — both producers already refuse the stimulus —
+and it names the carrier: the round that lifts `FI-4`/`FI-6` is the only round
+that can construct the case, and it owes the class request.
+
+**One boundary sentence added because two class families could otherwise both
+claim a frame**: (e) and (f) are keyed on the octet count between a frame's start
+and terminate characters; an aborted frame has no terminate character and so no
+such count, and falls under (g) or (h) and never under (e) or (f).
+
+**Class and countersignature.** This is **normative**: it moves a verdict rule
+from *defect* to *excluded* inside DV's own instrument, which is exactly what the
+2026-08-03 (e)/(f) row was, so it carries the same discipline — **dv_lead's
+countersignature is owed and the diff is NOT IN FORCE until it is transcribed**.
+Recorded in §13's Class column, where that precedent put it, not in the
+requirement text. **No ADR**, on the same precedent and for the same two reasons:
+REQ-901 authorises its own amendment in terms (*"SHALL be added here by spec diff
+before any sign-off packet may cite it"*), and no design choice is being made —
+the divergence was read off the reference, not chosen, and REQ-105 and REQ-110
+already decided our side. A missing ADR here is not a gap, and I say so rather
+than leaving the absence to be discovered.
+
+**Verification columns.** REQ-105 and REQ-110 get the pointer their bench reader
+needs, on REQ-107/REQ-108's established form but with the opposite content: (e)
+and (f) took whole requirements out of the comparison, (g) and (h) do not.
+REQ-105's column now says which of its eight-lane sweep members survives
+(lane 0, where the injected word is not the frame's first payload word) and that
+the other seven and both zero-delivered cases rest on their directed assertions.
+REQ-110's says its zero-delivered half is (h) and its other half is barred from
+stimulus.
+
+#### Item B — the ADR, and the question nobody had filed
+
+The finding is about **who** operates git. Writing only that would have produced
+a true but shallow ADR, because reading PROTOCOL §10 against the practice turns
+up a second gap that is fourteen campaigns older and that no finding names: §10
+says the orchestrator *"applies each manifest transiently in an uncommitted
+working tree"*, and **no campaign has ever been run that way**. It cannot be:
+ADR-0005 establishes that the toolchain cannot be installed locally and that CI
+is the authoritative build environment, and CI runs on pushed refs. A mutation
+that is never pushed is never executed. The choice was never branch-versus-tree;
+it was branch-versus-no-mutation-testing, and mutation testing is a
+`P<n>-module-ready` precondition. So the ADR authorises **two** things and says
+so: the operator rule the finding asked for, and the vehicle nobody had asked
+about.
+
+The vehicle needed a reading, not a wave-through. I read §10's *"never lets
+mutated RTL enter history"* as binding on the **lineage** — the working branch R9
+serialises and the `main` it merges into — because that is the object every
+traceability guarantee in §5 is stated over, and a never-merged `mut/*` leaf is
+outside it: `git log` on the working branch is unchanged by 85 such refs. That
+reading is what makes the practice lawful rather than tolerated, and it is stated
+in the ADR as a reading so that a future reader can reject it on the record
+instead of discovering it as an assumption.
+
+**Separation is the rationale, and I wrote it as the property being bought rather
+than as a slogan**: the seeder cannot make a mutation land differently from its
+manifest (it does not push, and every ref is derivable from a committed manifest
+by a published command), and the operator cannot choose which mutations exist (it
+executes a table it did not compose). That is PROTOCOL §1's independence read in
+the direction nobody usually reads it.
+
+**Bounds (§4) are where an ADR like this earns its keep**, because the practice
+has three features that look like violations and are not: a plain `git commit`
+instead of `agent_commit.sh`, no journal entry per transient, and a red
+`journal-check` on every transient ref. Each is declared with its reason. The
+journal one is the one I thought hardest about: R2 couples a journal entry to a
+commit **that carries work**, and a throwaway ref carries none — the campaign's
+reasoning lives in three permanent chains (seeding, operating, adjudicating).
+Requiring an entry per transient would put fifteen campaigns of throwaway entries
+into those chains to describe nothing. The red-`journal-check` bound is written
+with both edges: it is *never a verdict* **and never a clearance**, because a
+declared-noise signal that quietly starts being cited as evidence of health is
+the failure mode of every such declaration.
+
+**One correction to the finding's recital (§1.3), made deliberately and bounded.**
+The finding says the practice was *"three campaigns deep"* and cites
+`J-auditor-0014` (WO-0066) as an instance of auditor operation. That entry's own
+Actions say the opposite, in terms. Sweeping both auditor volumes, exactly one
+entry records a git write (`J-auditor-0015`, WO-0073); every other seeding entry
+records its absence explicitly. So the verified deviation is **one** campaign,
+with WO-0074's dispatch the second instruction and the one refused. I recorded
+this because an ADR that repeats an overcount makes the record worse where it is
+supposed to make it durable — **and I stated in the same paragraph that the
+finding's substance is untouched**, because what it found was a missing
+instrument, not a frequency, and that is as true of one instance as of three. My
+spawn also carried a "five campaigns without incident" figure; the measured
+figure since the ruling is **three** (WO-0074's seven transients, WO-0076's five,
+WO-0077's nine), and the ADR states the measurement rather than the figure.
+
+**§11(3) owes no test case**, and I say why rather than omitting it: no `R`-rule
+is minted or amended and no script changes, so the condition ("*if the change
+alters enforcement semantics*") is not met. Inventing a case would assert
+coverage the scripts do not have. The ADR names the three real controls instead —
+the seeder's own refusal (demonstrated: the constrained party filed the finding),
+attribution through the round's journals, and derivability of every ref from a
+committed table. That is ADR-0018 §7.4's form, reused because it fits.
+
+**§10 is what this ADR does not decide**, and the list is deliberately long:
+campaign content, the seal discipline, any other mutated-RTL commit, and whether
+`journal-check` should learn to skip `mut/*` refs — that last one *would* be an
+enforcement-semantics change and would owe §11(3) a case, so this ADR leaves the
+red visible and declares its meaning instead of silencing it.
+
+### Actions
+
+- Read the reference at the cited lines and around them; derived the alignment
+  and validated it against the terminate path's own arithmetic (Evidence 2, 3).
+- `docs/specs/requirements.md`, **four sites, no others** (Evidence 5):
+  REQ-901's class list gains (g) and (h) plus three bound sentences and the
+  (g)/(h) half of the "what an excluded class costs" clause; REQ-105's and
+  REQ-110's verification columns gain their class pointers; §13 gains one row
+  carrying the ruling, its three amendments, its class and the countersignature
+  condition.
+- `docs/adr/ADR-0019-the-seeder-never-operates-the-repo.md`, new: the operator
+  rule as practised, its two-gap context, the decision, seven bounds, the
+  rationale as a property, five rejected alternatives, the PROTOCOL §10 and
+  auditor-charter diffs written for the orchestrator to apply, the §11(3)
+  answer, consequences, and what it does not decide.
+- Wrote nothing in `agents/handoffs/**` and read no dv journal for writing —
+  the declared sibling's bound, honoured by construction: my file set contains
+  neither.
+- Ran no build and no simulation. ADR-0005: the toolchain is unavailable and CI
+  is the only authority; this round is textual and commissions nothing, so
+  there is no run to cite and none is implied.
+
+### Evidence
+
+Every command below runs from a checkout at this commit.
+
+1. **Head check.** `git rev-parse HEAD` →
+   `49d87af799c03ae49ff5e79f05d46f6ffc41dcc2`; spawn-head `49d87af`. Match.
+
+2. **The three facts dv cited, at the source.**
+   `awk 'NR>=232 && NR<=256' test/third_party/verilog-ethernet/axis_xgmii_rx_64.v`
+   shows `:235` `m_axis_tkeep_next = {KEEP_WIDTH{1'b1}};`, `:236`
+   `m_axis_tvalid_next = 1'b1;`, the branch at `:244-250` assigning `tlast`,
+   `tuser[0]`, `error_bad_frame`, `reset_crc` and `state_next` **and no
+   `tkeep`**, and the terminate branch's narrowing at `:255`. Confirmed as
+   filed.
+
+3. **The alignment, and the check that forces it.**
+   `grep -n 'framing_error_reg\|framing_error_d0_reg' …` → assignments at
+   `:346`, `:352`, `:362`, `:368`, `:382`, `:390` (all beside `xgmii_rxd_d0`)
+   and `:412` (`framing_error_d0_reg <= framing_error_reg`), with
+   `xgmii_rxd_d1 <= xgmii_rxd_d0` at `:422` and `m_axis_tdata_next =
+   xgmii_rxd_d1` at `:234`. The independent check is arithmetic, not
+   assertion: `:255` keeps `4 + term_lane_reg` octets of the emitted word and
+   `:280` keeps `term_lane_d0_reg − 4`, which are the correct FCS-strip
+   residues **only** if `term_present_reg`/`framing_error_reg` describe the
+   word after the emitted one. The two branches are in the same `case` arm, so
+   one alignment governs both.
+
+4. **The start character is excluded from its own framing error.** `:382`
+   `framing_error_reg <= xgmii_rxc[7:1] != 0;` (lane-0 start) and `:390`
+   `framing_error_reg <= xgmii_rxc[7:5] != 0;` (lane-4 start). This is the line
+   that refutes `ECS-4`'s extension of (g) to the start-character family, and
+   it is the line `ECS-4` cites for the opposite claim.
+
+5. **The diff's shape, checked rather than asserted.**
+   `git diff --numstat docs/specs/requirements.md` → `4  3`, i.e. three lines
+   modified and one appended; `git diff -U0 … | grep '^@@'` → exactly four
+   hunks, at `-696 +696` (REQ-105), `-701 +701` (REQ-110), `-883 +883`
+   (REQ-901) and `-1003,0 +1004` (the §13 row). No other line of the document
+   moves.
+
+6. **Table integrity, checked because a malformed row is a live hazard here**
+   (the `J-dv_lead-0094` literal pipe, and my own `-0031` check). Pipe counts
+   via `awk 'NR==<n>{print gsub(/\|/,"|")}' docs/specs/requirements.md`:
+   `NR==696` → **5**, `NR==701` → **5**, `NR==883` → **5** — each equal to its
+   own value at HEAD (`git show HEAD:docs/specs/requirements.md` measured the
+   same three at 5) and to their neighbouring rows; `NR==1004` (the new §13
+   row) → **7**, equal to `NR==1003`. **This check caught a real defect**: my
+   first draft of the (g) text quoted the reference's condition as
+   `framing_error_reg || framing_error_d0_reg`, whose two literal pipes took
+   `NR==883` from 5 to 7 and would have split one table cell into three. The
+   text now names the disjunction instead of writing it.
+
+7. **The transient-ref census behind the ADR §1.1.**
+   `git ls-remote --heads origin | grep -c 'refs/heads/mut/'` → **85**.
+   Per-prefix, via
+   `git ls-remote --heads origin | sed 's#.*refs/heads/mut/##' | sed -E 's/^(wo-?[0-9]+[bB]?).*/\1/' | sort | uniq -c`:
+   `wo-0039` 7, `wo-0041` 5, `wo-0042` 1, `wo-0045` 5, `wo-0050` 8, `wo-0055` 5,
+   `wo-0056` 1, `wo-0058` 7, `wo-0061` 10, `wo-0063b` 2, `wo-0066` 6,
+   `wo-0073` 5, `wo-0074` 7, `wo-0076` 5, `wo-0077` 9 (= 83), plus
+   `bug3-sev` 1 and `wo70-cost-probe` 1 = **85**. Fifteen campaign families,
+   two probes. **This is a live network read** (`ls-remote`), and it is
+   reproducible only against the same remote — it is cited as the measurement
+   it is, not as a repository fact.
+
+8. **The one auditor git write, and the negatives around it.**
+   `grep -n 'Cut, committed\|git push' agents/journals/claude_auditor_agent*.md`
+   returns thirteen lines, of which **exactly one** is a write record —
+   `J-auditor-0015` line 3458, *"Cut, committed (plain
+   `git commit`, never `agent_commit`) and pushed five transient branches"* —
+   against explicit no-write statements at lines 748, 1272, 1325, 1536, 1756,
+   2001, 2315, 3237 (`J-auditor-0014`, WO-0066: *"with read-only git commands
+   (no `git commit`, no `git push`, no `git add`)"*) and 3718
+   (`J-auditor-0016`, WO-0074: *"Cut, committed and pushed nothing"*). The
+   finding's *"three campaigns deep"* recital is not borne out; its substance is
+   untouched, and ADR-0019 §1.3 says both.
+
+9. **The regime's practice, quoted from the operator's own entries.**
+   `J-orchestrator-0159` (WO-0058): *"plain `MUTATION RUN <id> -- never merge`
+   commits, never merged. journal-check red on those branches is plain-commit
+   noise"*. `J-orchestrator-0218` (WO-0074): *"WO-0074-A1: ACCEPTED against my
+   own dispatches. I cut the seven branches myself from the manifest §11 table
+   … working branch verified unmoved after each"*. `J-orchestrator-0224`
+   (WO-0077): *"Nine transients operator-cut fresh from aced7b4 per the
+   manifest's table (WO-0074-A1 regime), pushed in manifest order"*. Three
+   campaigns since the ruling: 7 + 5 + 9 = 21 transients.
+
+10. **`git status --porcelain` at the end of this round** reports exactly
+    ` M docs/specs/requirements.md` and
+    `?? docs/adr/ADR-0019-the-seeder-never-operates-the-repo.md`. Nothing in
+    `agents/handoffs/`, no dv journal, nothing outside my write scope. The
+    declared concurrent sibling's files had not appeared in the tree at any
+    point I observed it; if they appear before the commit they are dv_lead's and
+    are excluded from the files list below.
+
+11. **No build, no simulation, no CI figure quoted.** ADR-0005 governs; this
+    round is textual and commissions nothing.
+
+### Outcome
+
+**DoD met, both items.**
+
+- **Item A — RULED: both classes IN, both AMENDED.** (g) and (h) are appended to
+  REQ-901's list, which grows only by appending, so no letter already cited
+  positionally anywhere moves. Three amendments carried against the filing, each
+  grounded at a line dv itself cited: (g) bounded away from a lane-0 aborting
+  character, where the two designs agree exactly; (h) restated on the decision
+  because its filed ground reaches only one of its two reference paths; and the
+  start-character family removed from (g) with a stimulus restriction in place of
+  a class. **Class: normative — dv_lead's countersignature is owed and this diff
+  is NOT IN FORCE until it is transcribed.** No ADR, on REQ-901's own
+  self-amendment clause and the 2026-08-03 precedent.
+- **Consequence for Stage 3, stated because dv asked for it explicitly.** dv's
+  position was *"until the classes are declared, C8 and C9 select branch γ and
+  anchor nothing."* Half of that is discharged and half is not. **C8** gains a
+  declared class on countersignature and gains something better than an
+  exclusion: at an aborting character in lane 0 of a word after the first payload
+  word the comparison **still anchors REQ-105 fully**, and a divergence there is
+  a defect — two of `M03-E1`'s sixteen members. **C9 is not unblocked.** Neither
+  class reaches a start character aborting a frame that has already delivered an
+  octet; that case is barred from stimulus until a class is declared, and its
+  class request belongs to the round that lifts `FI-4`/`FI-6` and writes C9's
+  admission rule (gate condition (c)) — the only round that can build the
+  stimulus at all. Stage 3 may therefore be authorised for C8 on this ruling; C9
+  needs one more spec round, and this ruling does not supply it.
+- **Item B — ADR-0019 written**, `PROPOSED`, recording a rule already in force
+  since `J-orchestrator-0218`. It authorises two things (the operator rule and
+  the pushed-transient vehicle), bounds them in seven clauses, supplies the
+  PROTOCOL §10 and auditor-charter diffs for the orchestrator to apply, answers
+  §11(3) with "no case owed" and its reason, and corrects one factual recital of
+  the finding without disturbing the finding.
+- **Handoff**: to the orchestrator for commit; then item A to dv_lead for the
+  countersignature its own class discipline requires, and item B's §7 diffs to
+  the orchestrator as its own scope.
+- **Staging note.** Stage exactly the two paths listed below plus this journal.
+  A declared concurrent dv_lead spawn is drafting the `SO-` packet in
+  `agents/handoffs/` and its own journal; those are dv_lead's to commit under
+  dv_lead's trailer, and staging any of them under this entry would fail R4 and,
+  for the journal, R8.
+
+### Open-questions
+
+- **The countersignature is owed and the diff is not in force until it is
+  transcribed.** Until then, no sign-off packet and no Stage-3 authorisation may
+  cite (g) or (h). If dv contests either bound — most likely (g)'s lane-0
+  carve-out, since it is the sentence that keeps two members inside a comparison
+  dv predicted would exclude them — the contest is a narrow round, and the
+  derivation at Evidence 3 is the thing to attack: if the terminate path's
+  residue arithmetic is read differently, my alignment falls and (g)'s bound
+  falls with it.
+- **The REQ-110 delivered-octets case has no class and now has a stimulus bar.**
+  My reading says the reference merges the two frames; dv's §3.4 says the
+  consequence is not settleable by a static read. Both can be true — I settled
+  the mechanism, not the run — and the case stays undeclared deliberately. The
+  round that lifts `FI-4`/`FI-6` owes the class request, and it is the only round
+  that can produce the evidence to write it on.
+- **One sentence flagged against myself**, as at `-0031`: the new stimulus bar
+  ("*co-simulation stimulus SHALL NOT present a start character inside an open
+  frame that has already delivered an octet*") is a normative constraint on DV's
+  stimulus that I wrote into DV's own instrument. It costs nothing today because
+  both producers already refuse that stimulus, but if dv reads it as reaching
+  further than co-simulation — into the directed benches, which it does not —
+  that is a fresh finding and takes its own narrow round.
+- **ADR-0019 is PROPOSED, not accepted.** Its §7 diffs are orchestrator-scope and
+  unapplied; until they land, PROTOCOL §10 and the auditor charter still say the
+  uncommitted-working-tree form, and a stateless auditor spawn reading only its
+  charter would still find the old text. That gap is real and is the reason the
+  §7 texts are supplied verbatim rather than described.
+- **No lessons harvest is due at this entry.** PROTOCOL §7 places it at every
+  `SO-` and every phase gate; the span since my last harvest stays open and is
+  declared rather than skipped. The concurrent `SO-` round is the one that will
+  close it.
+- No escalation. Nothing else.
+
+### Files-in-this-commit
+
+- docs/adr/ADR-0019-the-seeder-never-operates-the-repo.md
+- docs/specs/requirements.md
