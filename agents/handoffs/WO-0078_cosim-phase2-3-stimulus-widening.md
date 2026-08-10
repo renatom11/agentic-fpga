@@ -9042,3 +9042,770 @@ gate conditions are unmet (§10 item 1).
 — dv_lead, `J-dv_lead-0158`, at `3d9b44d`
 
 ---
+
+### dv_lead — `RV-SWEEP`: the error-class sweep over families E–H, MERGED with Stage 3's gate condition (d) — **the REQ-901 declared-class question answered once per class over SEVENTEEN classes; TWO candidate divergence classes surfaced from the reference's own source and routed to a spec diff; gate condition (d) MET; Stage 3 still REFUSED on (b), (c) and (e); the `SO-` unblocked and NEXT**
+
+#### 0. What this round is, and what it is not
+
+**It is a reading. Nothing ran.** No `dune`, no `iverilog`, no `vvp`, no CI trigger, no
+stimulus written, no case built, no line of `test/**`, `tools/**` or `libs/**` moved.
+Every figure below is either lifted from a landed verdict at its own run and job id, or
+re-measured at this tree by a static read whose command reproduces from a checkout at
+`c1f98ff`.
+
+**It is TWO obligations discharged in one reading, and the merger is mine.** `RV-C4`
+§13 item 3 scoped the error-class sweep — *"the REQ-901 declared-class question asked
+once per error class families E through H assert"* — and recommended it be merged with
+Stage 3's gate condition **(d)**, the second static census on three axes, *"since (d)'s
+three axes and the sweep's per-class question are answered from the same reading."*
+They are. The reading is one pass over four artefact sets (§1) and it answers both.
+
+**What it is NOT.** It does not open the `SO-`. It does not authorise Stage 3 — three of
+five gate conditions remain unmet after it. It does not amend the CD (§7, the **eighth**
+consecutive refusal). It does not edit `AP-M03` (§7). It does not touch the `State`
+field: no stage transitions here. It commissions no work order and dispatches nobody.
+**It stages one file besides my journal**, which is the file you are reading.
+
+**And one thing it deliberately does that needs its permission stated before it is
+read.** §3 reports a **source reading of the reference**,
+`test/third_party/verilog-ethernet/axis_xgmii_rx_64.v` (MIT, charter §9: *"read and
+co-simulate freely"*), on the error-character and start-character paths. The precedent
+is exact and it is this document's own: **CD §2-bis** corrected V1–V3's mechanism from a
+source reading and recorded why that was lawful — *"Corrected on a source reading, not a
+run result … so §0's bar on moving an entry after a run has probed it does not bite."*
+No case has probed C8 or C9, so the bar does not bite here either. **The sweep's
+precedent — the length sweep that produced classes (e) and (f) and a countersignature
+from one question — was itself a source reading of this same file** (requirements.md
+§13's 2026-08-03 row: *"a length-identifier sweep over all 449 lines"*). **What §3 does
+NOT do is take an expected value from the reference** (REQ-901's closing sentence,
+ADR-0015 D2): it reports the *fact and kind* of a divergence, never a figure our side is
+then expected to match, and every prediction it makes stays a prediction until a run
+spends it.
+
+---
+
+#### 1. The reading, and the four sets every claim below is measured over
+
+**`FINDING RV-0078-S2-13`'s polarity rule binds this round more than any other**, because
+a sweep is nothing but capability claims and half of them are negative. The rule, as
+filed at `AP-M03` §7:
+
+> *"A capability claim states the set it was measured over, and its polarity does not
+> change that obligation. A claim that a mechanism does not exist is measured over every
+> landed construction of the thing in question — not only over the modules that would
+> naturally host one."*
+
+**So the sets are declared once, here, at the top, and every claim below names which one
+it was measured over rather than leaving a reader to guess:**
+
+- **SET-SPEC** — `docs/specs/requirements.md` (REQ-901's whole class list, REQ-105,
+  REQ-107, REQ-108, REQ-110, §0.3, §0.7) and `docs/specs/modules/xgmii_rx_64.md` §10.
+  **Read at `c1f98ff`.** This is the sole basis for what OUR side does; no RTL was
+  opened.
+- **SET-PLAN** — `test/attack_plans/AP-xgmii_rx_64.md` §4.E, §4.F, §4.G, §4.H **in
+  full**, including both family notes, and §7's bars; `test/attack_plans/CD-xgmii_rx_64_cosim.md`
+  §1, §2, §2-bis, §3, §5, §6, §10.0, §10.7.
+- **SET-PRODUCERS** — **every file of the co-simulation lane**: `test/cosim/stimulus_gen.ml`
+  (all 525 lines), `test/cosim/ours_run.ml`, `test/cosim/tb_xgmii_rx_64.v`,
+  `test/cosim/canonical.ml`'s reader grammar, `tools/cosim/run_cosim.sh`'s exit-code
+  block and `CASES` array — **plus** the DV libraries the lane can reach:
+  `test/xgmii/arrival.ml`, `arrival.mli`, `injection.mli`, `injection.ml`'s construction
+  arms, `frame.mli`.
+- **SET-CONSTRUCTIONS** — **every landed construction in the repository of a control
+  character placed at a chosen octet time, and of a frame of a chosen length**, measured
+  by call-site census over `test/**` (§4.3). This is the set the polarity rule names, and
+  it is the set the C4 gap was missed by not measuring.
+
+**Nothing outside those four sets was opened.** No `libs/**`, no `top/**`, no
+`rtl_snapshots/**`, no `docs/reports/audit/**`.
+
+---
+
+#### 2. THE SWEEP — the REQ-901 declared-class question, once per class, families E–H
+
+##### 2.1 The unit, and why it is not the family and not the row
+
+**A family is not the unit** — `AP-M03` §7 already convicted that unit once, in terms:
+*"It was wrong in its **unit** (a family is not the thing that is gated)."* Family F
+straddles two answers and family G straddles two; a per-family answer would have to lie
+about one of them.
+
+**A row is not the unit either.** Twenty-two rows sit in §4.E–§4.H, and several assert
+the same class at different alignments or with different observables (M03-E2 and M03-E3
+drive an identical stimulus; M03-G3, G4, G6, G7 and G8 all assert about one interval).
+A per-row answer would repeat itself nine times and still not say what the SO- needs.
+
+**The unit is the CLASS, and a class is defined by the axes REQ-901's own exclusions are
+written in**: the character that closes the frame, the delivered extent, and the frame's
+length band. Two rows are in one class when those three agree, because that is exactly
+when REQ-901 gives them one answer. **Seventeen classes fall out of §4.E–§4.H on that
+definition**, and every row of those four families lands in exactly one of them.
+
+##### 2.2 The three answers, and the rule for choosing between them
+
+The dispatch names three: **inside a declared divergence class (a)–(f)**, **outside every
+declared class**, or **unreachable at the comparison**. The first two are a question
+about the *specification*; the third is a question about the *instrument*, and they are
+orthogonal — a class can be outside every declared class and also unreachable. **Collapsing
+them into one column would lose the more useful half**, so the table carries both, and
+the rule I used is stated here rather than inferred from the rows:
+
+- **INSIDE (x)** — the class falls within declared divergence class (x). The comparison
+  excludes it, wholly or on the named observable. **Inside an exclusion the comparison
+  anchors nothing** (REQ-901's own sentence) and no `SO-` may offer a co-simulation
+  result as the external anchor for the excluded requirement.
+- **OUTSIDE** — the class falls in no declared class. By REQ-901, *"any divergence
+  outside the declared classes is a defect"*, resolving as a `BUG-` against our RTL or as
+  a REQ-901 spec diff — **never** by amending an expectation to agree.
+- **UNREACHABLE(<reason>)** — the class cannot be presented to the comparison at this
+  tree, and the reason is named and is one of three: `admission` (a producer refuses the
+  stimulus), `capture-bound` (a producer's fixed-capacity buffer overflows), or
+  `construction` (no landed construction can emit it). **A named bound that a chartered
+  gate condition already owns is still UNREACHABLE today** — the gate condition is the
+  route out, not a reason to call it reachable.
+
+**Reachability is stated per class and never per family**, and the "needs" column names
+exactly what a Stage-3 builder must acquire, so nobody re-derives it.
+
+##### 2.3 THE PER-CLASS TABLE
+
+**Read the disposition column as the answer to the REQ-901 declared-class question, and
+the two right-hand columns as what the instrument can do about it today.** Every citation
+resolves at `c1f98ff`.
+
+| # | class | rows asserting it | our side, by spec | **REQ-901 disposition** | reachable at the comparison today | citation |
+|---|---|---|---|---|---|---|
+| **E-1** | error character mid-frame, **≥ 1 delivered octet**, 64-octet frame | `M03-E1` (16 members: 8 lanes × 2 start lanes) | truncate at the octet immediately preceding the `/E/`; `tkeep` marks exactly those octets; `tuser`[0] = 1 on the `tlast` word; **no FCS removal** | **OUTSIDE every declared class** — (a)–(d) are other modules' (M14, M12/M13, M15/M13, M18); (e) and (f) are length-derived and **exclude nothing in the 64-to-1518-octet range**, which is where this frame sits | **YES** — needs an `Injection` construction (§4.3); admission clean (§4.2); 8 words, inside the capture bound | requirements.md REQ-901 class list and REQ-105; `AP-M03` §4.E `M03-E1`. **Divergence PREDICTED — `FINDING ECS-4`** |
+| **E-2** | error character **at or before the frame's first octet**, multi-word, **zero delivered** | `M03-E2`, `M03-E3` | **no output word at all**; exactly one `error_bad_frame` on §9's no-output-word pin | **OUTSIDE every declared class** — same ground as E-1; §0.7's no-output disposition has no length component | **YES** — same needs as E-1 | requirements.md REQ-105, §0.7; `AP-M03` §4.E. **Divergence PREDICTED in the DECISION — `FINDING ECS-5`** |
+| **E-3** | error character **inside the preamble at a lane-0 start** — a frame opened and closed inside **one** input word, zero delivered | `M03-E5` | no output word; exactly one `error_bad_frame`; nothing asserted about `tuser`[0], which has no `tlast` word to live on | **OUTSIDE every declared class** | **YES** — same needs as E-1; `Injection`'s `At_preamble` constructor is the landed route | `AP-M03` §4.E `M03-E5`; `injection.mli:93-96`. **Divergence PREDICTED in the DECISION, through a DIFFERENT reference path — `FINDING ECS-5`** |
+| **E-4** | error character **outside any open frame**, in the inter-frame gap | `M03-E4` (2 members; at lane 0 an in-word double event) | the character falls outside a frame; the next frame is received intact | **OUTSIDE every declared class** | **YES** — admission clean: frame 0's own terminate character closes the span before the `/E/` arrives (§4.2) | `AP-M03` §4.E `M03-E4`, REQ-113. **Divergence PREDICTED, magnitude NOT settleable by a static read — §3.3** |
+| **F-1** | **5-to-63 octets**, correct FCS | `M03-F1` (5, 16, 60, 63), `M03-F4`'s 63-octet member, **`M03-F5` (5 octets)** | 1, 12, 56 and 59 delivered octets; `tuser`[0] = 1; one `error_runt` | **INSIDE (e), on `tuser`[0] ALONE.** The delivered octets and the `tkeep` extent **stay inside the comparison domain**, so REQ-103's FCS-removal half is anchorable and REQ-107's marking half is not | **YES** — needs only `Frame.with_fcs`, already in the producer's own import set (§4.3); ≤ 8 words | requirements.md REQ-901 (e) *"`tuser`[0] alone is excluded on frames below 64 octets, and the payload octets and `tkeep` extent are still compared"*; `J-dv_lead-0057`. **`M03-F5`'s membership here is a CORRECTION — `FINDING ECS-1`** |
+| **F-2** | **below five octets** (0, 1, 4) | `M03-F2` | **no output word at all**; one `error_runt`; `error_bad_fcs` barred | **INSIDE (e), excluded ENTIRELY, the accept-or-discard decision INCLUDED.** The reference's own disposition is *"recorded as data on the first run that drives one, never adjudicated"* | **YES, but NOT by the landed co-sim idiom**: `arrival.ml:160-166` refuses the frame and `check_conformant` turns that into `EXIT_BUILD`. `Injection.create` filters **exactly** that complaint and nothing else (`injection.ml:136-149`), so the class is constructible through it — §4.3 | requirements.md REQ-901 (e); `arrival.ml:160-166`; `injection.ml:136-149`; `test_m03_f.ml:56-63` |
+| **F-3** | **runt with a wrong FCS** — 63 octets, corrupted | `M03-F3` | both `error_runt` and `error_bad_fcs` pulse once; `tuser`[0] is set **once** | **INSIDE (e) on `tuser`[0]** — **and the exclusion is VACUOUS at this class**: the reference sets `tuser`[0] = 1 for its own reason (a failed CRC, `axis_xgmii_rx_64.v:263-266`), so the two sides agree on the one observable (e) excludes. Delivered octets and `tkeep` are compared; the strobes are outside the domain campaign-wide (CD §5.2 **X2**) | **YES** — C3's landed bad-FCS technique plus F-1's length construction | requirements.md REQ-901 (e); CD §5.2 X2; `axis_xgmii_rx_64.v:251-267` |
+| **F-4** | **exactly 64 octets**, correct FCS — the anti-vacuity partner | `M03-F4`'s 64-octet member | 60 delivered; no strobe; `tuser`[0] = 0 | **OUTSIDE every declared class** — (e) and (f) exclude nothing in 64–1518, and this is the exclusion's own boundary | **YES — and ALREADY ANCHORED**, at case 0 (class 1, `30988038809` / `92247281222`) and C1 (class 2, `31096150983` / `92598555141`) | requirements.md REQ-901's *"Classes (e) and (f) exclude nothing in the 64-to-1518-octet range"*; `AP-M03` §7's lift cells |
+| **G-1** | frame **exceeding 1518 octets** — truncation to 1514 and marking | `M03-G1`'s first frame, `M03-G2`'s 1519-octet member | exactly 1514 delivered; `tuser`[0] = 1; one `error_oversize`; no `error_bad_fcs` | **INSIDE (f), excluded ENTIRELY** — payload, `tkeep`, `tlast` placement and `tuser`[0] all diverge, so the whole frame is out | **NO — UNREACHABLE(capture-bound)**: the reference forwards an oversize frame whole, and `MAX_WORDS_PER_FRAME = 16` (`tb_xgmii_rx_64.v:258`) bounds capture at 16 output words | requirements.md REQ-901 (f); `tb_xgmii_rx_64.v:258`, `:317-326` |
+| **G-2** | **the resynchronisation window** — a `/S/` or `/E/` strictly between the truncation point and the next start character | `M03-G3`, `M03-G4`, `M03-G6`, `M03-G7`, `M03-G8` (`M03-G5` structural) | no output word and **no strobe of any kind** in the window, whatever arrives (C-12) | **INSIDE (f)** — (f) excludes the window **by name**: *"including the disposition of the octets between our truncation point and the next start character"* | **NO — UNREACHABLE(capture-bound)**, same bound: the window only exists past an oversize frame | requirements.md REQ-901 (f); `AP-M03` §4.G family note |
+| **G-3** | **exactly 1518 octets**, correct FCS — the legal boundary member | `M03-G2`'s 1518-octet member | 1514 delivered; no strobe; `tuser`[0] = 0 | **OUTSIDE every declared class** — and this is the sharp point: REQ-901 says in terms that this is *"where this boundary still anchors"* | **NO — UNREACHABLE(capture-bound)**: 1514 delivered octets = **190 output words** against a 16-word buffer | `tb_xgmii_rx_64.v:258`. **`FINDING ECS-2`** |
+| **G-4** | a **legal frame immediately following** an oversize frame | `M03-G1`'s second frame | received intact, correctly aligned | **OUTSIDE every declared class** (64 octets) | **NO in `M03-G1`'s own stimulus** — the preceding frame's overflow terminates the reference run before this frame is captured (`tb_xgmii_rx_64.v:317-326`). **Reachable as its own stimulus**, where it is class 1's | `tb_xgmii_rx_64.v:317-326` |
+| **H-1** | start character **replacing the terminate character**, lane 0, ≥ 1 delivered octet | `M03-H1` | last delivered octet is the one preceding the new `/S/`; `tuser`[0] = 1; one `error_start_without_terminate`; **no FCS removed**; the second frame received intact | **OUTSIDE every declared class** | **NO — UNREACHABLE(admission)**: `ours_run.ml:245-257` (**FI-4**) and `tb_xgmii_rx_64.v:531-562` (**FI-6**) both refuse a start character arriving while a frame's admission span is open | `WO-0078` §2.2; `ours_run.ml:245-257`; `tb_xgmii_rx_64.v:531-562`. **Divergence PREDICTED — `FINDING ECS-4`** |
+| **H-2** | start character in **lane 4 of a mid-frame word** — partial-word delivery of the aborted frame | `M03-H2` | those four octets delivered as part of the aborted frame; one strobe; the new frame begins at lane 4, intact | **OUTSIDE every declared class** | **NO — UNREACHABLE(admission)**, same two guards | as H-1. **Divergence PREDICTED — `FINDING ECS-4`** |
+| **H-3** | **the frame an aborting start character opens** | the later frames of `M03-H1`, `M03-H2`, `M03-H4` | opened at the `/S/` and received normally (REQ-110) | **OUTSIDE every declared class** — and it is the **ordered sequence of output frames**, REQ-901's own top-level comparison content | **NO — UNREACHABLE(admission)**, same two guards | requirements.md REQ-901's *"the same ordered sequence of output frames"*. **Divergence PREDICTED, mechanism named, outcome NOT settleable by a static read — §3.4** |
+| **H-4** | a start character arriving **after an error character has already closed the frame** | `M03-H3` | exactly one `error_bad_frame` and **no** `error_start_without_terminate`; the frame the `/S/` opens is received normally | **OUTSIDE every declared class** | **NO — UNREACHABLE(admission)**, **and the reason is NOT REQ-110's abort**: the closing character here is an `/E/`, but the admission span is closed **only** by a terminate character (`ours_run.ml:273`), so the later `/S/` trips FI-4 regardless | `ours_run.ml:273`; `AP-M03` §4.H `M03-H3`. **`FINDING ECS-3`** |
+| **H-5** | **two start characters aborting strictly inside preambles**, one per word, consecutive | `M03-H4` | two zero-delivered aborts; two `error_start_without_terminate` on consecutive cycles; the final frame intact | **OUTSIDE every declared class** | **NO — UNREACHABLE(admission)**, same two guards, twice | as H-1 |
+
+##### 2.4 The tally, stated so it can be checked rather than trusted
+
+**Seventeen classes.** Of them:
+
+- **INSIDE a declared divergence class: five** — F-1, F-2 and F-3 inside **(e)**; G-1 and
+  G-2 inside **(f)**. **No class of families E or H is inside any declared class**, and
+  that negative is measured over every row of §4.E and §4.H, not inferred from the
+  families' subject matter.
+- **OUTSIDE every declared class: twelve** — E-1, E-2, E-3, E-4, F-4, G-3, G-4 and all
+  five of H.
+- **Reachable at the comparison today: seven** — E-1, E-2, E-3, E-4, F-1, F-3, F-4;
+  **plus F-2**, reachable only through a construction the co-sim producer does not yet
+  use. **Nine are unreachable**: four on the capture bound (all of G), five on admission
+  (all of H).
+- **Anchored today: one** — F-4, and it is anchored because it is the clean 64-octet
+  frame case 0 and C1 already drove. **Every other class in this table is unanchored**,
+  and eight of the seventeen would still be unanchored after a fully successful Stage 3,
+  because they are inside an exclusion or blocked by a bound Stage 3 does not raise.
+
+**The sentence this table licenses, and the one it does not.** It licenses: *"of the
+seventeen error classes families E–H assert, five are inside a declared REQ-901
+divergence class, twelve are outside every declared class, and nine cannot be presented
+to the comparison at this tree."* **It does not license any sentence of the form "the
+co-simulation covers family E"** — no class in this table is anchored except F-4, and
+`AP-M03` §7's rule that a class is anchored and a requirement is not applies here
+unchanged.
+
+##### 2.5 One class the sweep surfaced that families E–H do NOT assert
+
+**S-1 — an ordered-set character (`/I/` or `/Q/`) inside an open frame.** REQ-102's third
+sentence routes it to REQ-105, so it is REQ-105 stimulus by the specification's own
+routing — and **no row of §4.E asserts it**. It is not a gap in the plan: `Injection`
+refuses to build it **deliberately** (`injection.mli:120-125`: *"An `/I/` or `/Q/` is
+accepted only at `At_preamble` … inside an open frame it is outside the specified space
+and is refused"*), which is the same considered-refusal shape §4.O records elsewhere.
+
+**Its declared-class answer, for completeness: OUTSIDE every declared class, and
+UNREACHABLE(construction) BY DESIGN on our side.** **Routed, not opened**: family I owns
+ordered sets (§4.I, REQ-109/REQ-113/REQ-016) and the question of whether the catalogue's
+refusal should stand is that family's, not this sweep's. Recorded here so a later reader
+does not mistake its absence from the table for an oversight.
+
+---
+
+#### 3. THE TWO CANDIDATE DIVERGENCE CLASSES — read from the reference's own source, before any Stage-3 run
+
+**This is the sweep's yield, and it is the same yield the length sweep produced from one
+question: two classes.** Both are read from `test/third_party/verilog-ethernet/axis_xgmii_rx_64.v`
+at the pin, on paths no run of this lane has ever driven. **Both are predictions until a
+run spends them**, and both are stated as *kind* of divergence, never as a figure.
+
+##### 3.1 Candidate class (g) — the ABORT-TRUNCATION EXTENT
+
+**Our side, by specification.** On an aborting character mid-frame the receiver truncates
+at the octet immediately preceding it, `tkeep` marks exactly those octets, `tuser`[0] = 1
+on the `tlast` word, and **no FCS removal is attempted** (REQ-105 with REQ-106's rule and
+REQ-103's no-removal clause; `AP-M03` `M03-E1`, `M03-H1`, `M03-H2`).
+
+**The reference, read at the source.** Its abort path is the `framing_error` branch of
+`STATE_PAYLOAD` (`axis_xgmii_rx_64.v:244-250`). That branch sets `m_axis_tlast_next` and
+`m_axis_tuser_next[0]` and **leaves `m_axis_tkeep_next` at the value assigned three lines
+earlier** — `{KEEP_WIDTH{1'b1}}`, all eight lanes (`:235`). **It does not narrow `tkeep`
+to the octets preceding the aborting character.** Nor does it strip an FCS on that path:
+the strip is the lane-indexed shift inside the *`term_present`* branch (`:255`), which the
+abort branch does not take.
+
+**So the delivered octet count and the `tkeep` extent diverge on every aborted frame** —
+and both are named in REQ-901's own comparison content (*"payload octets, the `tkeep`
+extent of each word, and `tuser`[0] on each `tlast`"*). **This is squarely inside the
+comparison domain and outside every declared class**, exactly the position classes (e)
+and (f) were in before they were declared.
+
+**It reaches BOTH families.** The reference's abort branch is keyed on `framing_error`,
+which is set by **any** control lane inside a frame (`:346`, `:362`, `:382`), so it is the
+same branch whether the aborting character is an `/E/` (family E, classes E-1/E-2/E-3) or
+a `/S/` (family H, classes H-1/H-2). **One class covers both**, which is why it is one
+candidate and not two.
+
+**The resolution REQ-901 itself names.** Our behaviour is pinned by REQ-105, REQ-106 and
+REQ-103; the reference's is its own; neither is a defect against the other. So the
+expected resolution is **a REQ-901 spec diff appending a class (g)**, routed to
+architect_docs_lead — *"A divergence class discovered later SHALL be added here by spec
+diff before any sign-off packet may cite it"* — on the exact precedent of (e) and (f).
+**The narrowest exclusion that covers it** is the one the spec diff will have to argue,
+and this round does not pre-empt that argument: the delivered-octet and `tkeep` halves
+diverge, `tuser`[0] agrees (both sides mark), and whether the decision agrees is class
+(h)'s question, not this one's.
+
+##### 3.2 Candidate class (h) — the ZERO-DELIVERED ABORT's DECISION
+
+**Our side, by specification.** Where the aborting character arrives at or before the
+frame's first octet, the receiver emits **no output word at all** and reports by strobe
+alone (requirements.md §0.7; `AP-M03` `M03-E2`, `M03-E5`, `M03-H5`'s two aborts). There is
+no `tlast` word for a mark to live on, and §0.6 accounts for the frame by its strobe.
+
+**The reference, read at the source.** `STATE_PAYLOAD` asserts `m_axis_tvalid_next = 1'b1`
+**unconditionally** (`:236`) before the `framing_error` branch is evaluated, so a frame the
+reference opens and immediately finds in framing error still produces **at least one
+output word**, carrying `tlast`, `tuser`[0] = 1 and `tkeep` = all-ones. For E-3's geometry
+the framing error is latched at the **start word itself** (`:382`, `framing_error_reg <=
+xgmii_rxc[7:1] != 0` — an `/E/` in a preamble lane sets it), so the reference enters
+`STATE_PAYLOAD` already in error and emits its word there.
+
+**So the two designs disagree on the accept-or-discard decision per input frame** — ours
+discards, the reference accepts — and REQ-901 names that decision as comparison content in
+the same sentence as the octets. **It is the divergence `compare` already reports in
+production**, in the string `WO-0078` §2.1 records from `IC-K3` and `IC-K5`: `DEFECT:
+frame 0: decision mismatch (ours=discard, theirs=accept)`.
+
+**This is a SECOND class and not the first one restated**, and the distinction is
+load-bearing: (g)'s excluded observable is the *extent*, (h)'s is the *decision*. A single
+class written wide enough to cover both would exclude the decision on frames where the
+decision agrees — which is the over-wide exclusion `J-dv_lead-0057` refused when it
+countersigned (e) narrower than it was asked for.
+
+##### 3.3 What the static read does NOT settle — class E-4
+
+**E-4's mechanism is named and its magnitude is not.** `framing_error_d0_reg` carries the
+previous cycle's `framing_error_reg` (`:412`) and `STATE_PAYLOAD` tests **both**
+(`:244`), so a control character in the inter-frame gap can still be visible one cycle
+into the *following* frame's payload state — while our side, by REQ-113 and REQ-105's
+closure clause, ignores it entirely and receives the next frame intact. **Whether it
+actually reaches the next frame depends on the start-word re-initialisation at `:375-390`
+racing the one-cycle carry, which a static read of a pipelined design cannot settle.** It
+is recorded as a **predicted divergence with its mechanism named and its outcome open** —
+the honest form, and the form CD §6 is written in.
+
+##### 3.4 What the static read does NOT settle — class H-3
+
+**The asymmetry is real and the consequence is not derivable.** `STATE_PAYLOAD`'s
+framing-error branch transitions to `STATE_IDLE` **without examining `xgmii_start_d1`**
+(`:244-250`), where `STATE_LAST`'s own exit **does** examine it and re-enters
+`STATE_PAYLOAD` on a start condition (`:297-301`). **So the frame that a mid-frame start
+character opens may be lost by the reference where ours receives it** — a divergence in
+the ordered sequence of output frames, the largest kind this comparison can report.
+**Whether it is lost depends on where the start pulse sits in the delay chain**, which,
+again, a static read does not settle. **Predicted, mechanism named, outcome open.**
+
+##### 3.5 What §3 costs the programme, stated before it is welcomed
+
+**It is not good news for Stage 3's value and it should not be reported as if it were.**
+`WO-0078` §7's branch table gives C8 and C9 branch **γ** on any divergence, and §7's rule
+is that γ *"lifts nothing"*. **So if (g) and (h) hold, C8 and C9 anchor nothing until the
+spec diff lands** — REQ-901 forbids citing a class before it is declared, and branch γ
+forbids taking an expected value from the reference to make the divergence go away.
+**The run is not blocked; the citation is.** The useful consequence is therefore
+**sequencing**: the spec-diff request should be routed to architect_docs_lead *before*
+Stage 3 is authorised, so C8's and C9's results have a declared class to land in rather
+than becoming an unbranched finding against the packet that ran them. **That is a
+recommendation, not a ruling** — the class list is requirements.md's and the
+countersignature discipline is the architect's to invoke.
+
+---
+
+#### 4. THE MERGED GATE-(d) CENSUS — the second static census, on its three axes
+
+`WO-0078` §6.3's gate condition **(d)**, as stated at `RV-C4` §10: *"a **second static
+census**, now on **THREE axes** — frame length, admission legality, **and construction
+surface** (`RV-C4GAP` §6 carrier iii)."* Measured at `c1f98ff` over **SET-PRODUCERS** and
+**SET-CONSTRUCTIONS**. **Every claim states the set it was measured over, per
+`FINDING RV-0078-S2-13`, and the negatives state it twice.**
+
+##### 4.1 Axis 1 — FRAME LENGTH
+
+| bound | where | value | what it admits | what it refuses |
+|---|---|---|---|---|
+| sub-five-octet gate | `arrival.ml:160-166` | `Array.length f.octets < 5` | frames of **5 octets and up** — the predicate is REQ-107's own boundary, *strictly* fewer than five | a frame below five octets, as *"an injection case, not a schedule case"* |
+| the same gate, bypassed | `injection.ml:136-149` | filters **that one complaint and nothing else** | frames of **any length ≥ 0** through `Injection.create` | every other `Arrival.check` violation, which is propagated |
+| **per-frame capture buffer** | `tb_xgmii_rx_64.v:258` | `MAX_WORDS_PER_FRAME = 16` | **≤ 16 output words per frame = ≤ 128 delivered octets** | the 17th word, via `E word-buffer-exhausted` (`:317-326`) |
+| in-flight frame buffer | `tb_xgmii_rx_64.v:257` | `DELIVERY_DEPTH = 8` | ≤ 8 frames admitted-but-undelivered | the 9th, via `E delivery-fifo-exhausted` (`:405`) |
+| our side's equivalents | `ours_run.ml` | **none** | any length, any count — the accumulator is list-based | nothing on length or count |
+
+**The measured window, and it is the census's headline.** A frame of `n` octets DA
+through FCS delivers `n − 4` and occupies `ceil((n − 4) / 8)` output words. That is ≤ 16
+iff `n ≤ 132`. **So the co-simulation lane can compare frames of 64 to 132 octets and no
+others** — against REQ-901's own statement that classes (e) and (f) *"exclude nothing in
+the 64-to-1518-octet range, which is where this boundary still anchors."* **The
+exclusions do not reach that range; the instrument reaches one twelfth of it.** The
+specification is not falsified — it is a claim about exclusions, not about capacity — but
+**no packet may write "the co-simulation anchors the 64-to-1518-octet range"**, and a
+`SO-` that lifts REQ-901's sentence without this one beside it would be doing exactly
+that. **`FINDING ECS-2`.**
+
+**And the bound is ONE-SIDED**, which is worth more than its size: our producer has no
+counterpart bound, so an overflow reddens **one** producer through a refusal sentinel, not
+the comparison. A reader of a red run would see `E word-buffer-exhausted` and not a
+divergence — correct behaviour, and only correct because `FINDING WO-0078-1`'s Stage-1
+repair landed (`canonical.ml:226` rejects the `E` line *"REGARDLESS of state"*).
+
+**Per Stage-3 case, on this axis**: C5 (5–63 octets) **inside**; C6 (0–4 octets)
+**inside**; C7 (> 1518) **outside by a factor of twelve** — and gate condition **(e)** is
+precisely the route out; C8 and C9 (64 octets) **inside**.
+
+##### 4.2 Axis 2 — ADMISSION LEGALITY
+
+**`WO-0078` §2.2's census listed six refusals plus `FI-8`. That census is INCOMPLETE at
+this tree**, and I state the increment concretely rather than quoting a new total, because
+a total is a set claim and "refusal" and "guard site" do not count the same way (two of the
+rows below cover two guard sites each). **Two refusals postdate §2.2's six, and one of them
+says so in its own source**: `ours_run.ml:495-497` records that it *"extends that census by
+one entry this file itself introduces."* The rows are the refusal *kinds*, and each names
+its sites:
+
+| # | producer | refusal | closing condition / trigger | reaches |
+|---|---|---|---|---|
+| 1 | `stimulus_gen.ml:122-133` | `Arrival.check` non-empty → `failwith` | an unconformant schedule | rc ≠ 0 → `EXIT_BUILD` |
+| 2 | `ours_run.ml:245-257` (**FI-4**) | second start character **while a frame's admission span is open** | span opened at the start character, **closed only by a terminate character** (`:273`) | rc ≠ 0 → `EXIT_BUILD` |
+| 3 | `ours_run.ml:279` (**FI-5**) | output word with no admitted frame open | a design defect | rc ≠ 0 → `EXIT_BUILD` |
+| 4 | `ours_run.ml:129` | malformed stimulus line | a harness defect | rc ≠ 0 → `EXIT_BUILD` |
+| 5 | **`ours_run.ml:501-515`** — **NEW since §2.2** | `.idle` sidecar declares a frame count ≠ the number **admitted** | a sidecar/stimulus drift | rc ≠ 0 → `EXIT_BUILD` |
+| 6 | `tb_xgmii_rx_64.v:531-562` (**FI-6**) | second start character while the admission span is open | mirrors FI-4, same closing condition | `E second-start-while-open` → `Canonical.read` rejects |
+| 7 | `tb_xgmii_rx_64.v:588-612` (**FI-7**) | reference produced a word with no admitted frame open | reference behaviour we do not model | `E word-with-no-open-frame` |
+| 8 | **`tb_xgmii_rx_64.v:317-326`, `:405`** — **NEW since §2.2** | capture buffers exhausted | axis 1's bounds | `E word-buffer-exhausted` / `E delivery-fifo-exhausted` |
+
+**`FINDING WO-0078-1` is DISCHARGED and I say so here rather than leave it implied.** Its
+repair — *"every refusal in every producer SHALL reach a distinct non-zero harness exit
+code, by construction and not by inference"* — landed: **five** reference-side guards now
+write a reserved `E` sentinel before `$fclose` and `$finish`
+(`tb_xgmii_rx_64.v:322, :405, :506, :558, :608`), and `canonical.ml:226` rejects that line
+*"REGARDLESS of `state`, so a reference-side refusal fails to read by construction rather
+than by the accident of which guard happened to leave a frame open."* **Measured over
+every `$finish` site in the file**: 14 sites, of which the five guard sites carry the
+sentinel and the remainder are normal termination or pre-open file failures.
+
+**The census's load-bearing correction, and it is against `WO-0078` §2.2's own reading.**
+§2.2 attributes FI-4 and FI-6 to *"REQ-110 abort stimulus (V5)"*. **The guards are wider
+than their attribution**, because the span they protect is closed by a **terminate
+character and by nothing else** (`ours_run.ml:273`; the Verilog mirrors it). **So the
+guards fire on any stimulus that presents a start character before the open frame's
+terminate character**, whatever closed the frame on the DUT's side. Measured over families
+E–H:
+
+- **All FIVE family-H classes trip it** — H-1, H-2, H-3, H-5 for REQ-110's own reason, and
+  **H-4 for a different one**: `M03-H3`'s aborting character is an `/E/`, the frame it
+  closes never presents a terminate character, and the `/S/` two cycles later trips the
+  guard anyway. **`FINDING ECS-3`.**
+- **NO family-E class trips it.** *Measured over every row of §4.E, not inferred from the
+  family's subject*: `Injection`'s `At_octet` and `At_preamble` placements **replace** an
+  octet (`injection.mli:97-103`) and leave the frame's own terminate character on the wire
+  at `Arrival.terminate_octet_time`, so the admission span closes normally at every
+  family-E geometry, `M03-E4`'s gap character included (its `/E/` arrives *after* frame
+  0's terminate character, by that row's own arithmetic).
+
+**Consequence for Stage 3, stated per case**: C5, C6, C7 and **C8** need **no** admission
+change in either producer; **C9 alone** does, and it is the whole of gate condition (c)'s
+subject. **`WO-0078` §6.3's pricing survives the census** — V5 is still *"a change to the
+admission algorithm in two producers at once"* and still the packet's largest item — but
+its **scope widens from one case to the whole of family H's five classes**, and its
+**necessary condition narrows**: what must be written as spec text is not "REQ-110's abort
+rule" but **the span-closing rule** — what closes an admission span, given that a
+conformant M03 closes frames on three different characters and the accumulators close
+theirs on one.
+
+##### 4.3 Axis 3 — CONSTRUCTION SURFACE
+
+**The axis `RV-C4GAP` §6 added, applied for the first time as a census rather than as a
+post-mortem.** Two questions, in the order the polarity rule puts them: what can the
+co-sim producer **emit**, and what landed constructions of the same stimulus exist
+**anywhere**.
+
+**(i) What `test/cosim/` can emit — measured over its WHOLE construction surface**, which
+is `build`, `build_c1`, `build_c2`, `build_c3`, `build_c4`, `c4_word_at`, `check_conformant`
+and `write_stimulus` (`stimulus_gen.ml`, all 525 lines):
+
+| capability | present? | evidence |
+|---|---|---|
+| a clean frame of the frozen 64-octet content | **yes** | `Frame.stress_frame`, four call sites |
+| a **second** frame, minimum IFG | **yes** | `Arrival.create`'s frame list, `build_c2:212-217` |
+| a **lane-4** start on cycle 0 | **yes** | `~first_start:4`, `build_c1:154-158` |
+| a **bad FCS** | **yes** | `~fcs_valid:false` + `flip_bit0_at`, `build_c3:256-269` |
+| a **data** octet override at a chosen octet time | **yes** | `c4_word_at:372-432`, seven positions |
+| a frame of a **chosen length** | **not used, but reachable** — `Frame.with_fcs` is public (`frame.mli:29`) and `Dv_xgmii.Frame` is already this file's own dependency | no call site today |
+| a **control character** at a chosen octet time | **NO** | `c4_word_at:402-408` **`failwith`s if the control field moves** — *"the departure must be data-only"*. It is the file's only per-word override and it is barred by its own check |
+| a frame **below five octets** | **NO** | `check_conformant:122-133` propagates `arrival.ml:160-166`'s complaint to `failwith` |
+
+**(ii) Every landed construction of a placed control character — measured over `test/**`,
+which is the set the polarity rule names, and NOT over the modules that would naturally
+host one:**
+
+1. **`Dv_xgmii.Injection`'s `Place { placement; character }`** (`injection.mli:113-125`),
+   with `At_preamble`, `At_octet` and `At_terminate`. **Consumed in seven bench files** —
+   `test/xgmii_rx_64/test_m03_{b,e,f,g,h,i,n}.ml` — by 35 `Injection.create` /
+   `Injection.corrupt` / `Injection.clean` call sites.
+2. **`Bench.run`'s `?word_at` hook** — a per-octet-time wire override with no control-field
+   restriction. **Consumed by `run_e4` (a stray `/E/` in a gap) and `run_g6` (an idle
+   character at a frame's own would-be terminate position)**, and by `M03-B1`'s preamble
+   override.
+3. **`test/cosim/stimulus_gen.ml`'s `c4_word_at`** — data-only by its own check, above.
+
+**So the capability exists, twice, and neither instance is in `test/cosim/`.** That is the
+C4 gap's shape a second time, found this time **before** a worker was dispatched to
+discover it — which is the entire point of the axis.
+
+**(iii) The route, and it is already built.** `AMENDMENT WO-0078-A1`'s seam
+(`stimulus_gen.ml:62`, `write_stimulus path sched word_at`, with `build_case` returning the
+pair) takes a schedule and a word function as separate arguments. **`Injection` publishes
+exactly that pair** — `schedule : t -> Arrival.t` and `word_at : t -> cycle:int ->
+Xgmii_word.t` (`injection.mli:158-159`) — so an `Injection`-built case slots into the seam
+with **no change to `write_stimulus`, no change to any frozen case, and no second
+`?word_at` override**. **This was not the amendment's stated purpose** (it was authorised
+for C4's seven data octets) and it should be recorded as a dividend rather than
+re-derived by a Stage-3 packet. **`FINDING ECS-7`.**
+
+**(iv) The one thing the route costs, and it is a claim's wording, not a bar.** An
+`Injection`-built case makes `test/cosim/` depend on **X-1(i)**, the placement machinery.
+**Bar 1 is untouched**: it gates a row *iff its expected values come from X-1(ii)'s
+computed outcome model*, this lane asserts no expected value at all, and
+`test/xgmii_rx_64/test_m03_i.ml` is the landed precedent for consuming X-1(i) and nothing
+else. **But `AP-M03` §7's re-measurement records its evidence partly in a MENTION-COUNT
+form** — *"the co-sim producer's single mention of the model is a docstring saying it is
+absent"* — and that sentence goes stale at the first such case while the claim it supports
+does not. **`FINDING ECS-6`.**
+
+**(v) Per Stage-3 case, on this axis:**
+
+| case | class(es) | construction needed | present in `test/cosim/`? |
+|---|---|---|---|
+| **C5** | F-1 | a frame of chosen length: `Frame.with_fcs` + the landed `Arrival.create` + `check_conformant` idiom | **the idiom is; the call is not.** No new dependency |
+| **C6** | F-2 | `Injection.create` (to pass the sub-five gate) + `Injection.schedule` / `word_at` | **no** — new dependency on `Dv_xgmii.Injection`, through the A1 seam |
+| **C7** | G-1, G-3 | trivial (a long frame); **blocked at capture, not at construction** | n/a — gate (e) owns it |
+| **C8** | E-1, E-2, E-3 | `Injection.create` with `Place { At_octet \| At_preamble; error_char }` | **no** — same new dependency as C6 |
+| **C9** | H-1 … H-5 | `Injection.create` with `Place { At_terminate \| At_octet; start_char }` **and** the axis-2 admission change in both producers | **no** — plus gate (c) |
+
+---
+
+#### 5. GATE CONDITION (d) — **MET**. And what Stage 3's re-authorisation still lacks
+
+**(d) is MET at this commit.** The second static census exists, it is on all three axes,
+each axis is measured over a declared set, and each negative states its set twice per the
+polarity rule. It is written where the gate that owes it lives, in this packet, and it
+required no run — which is what made it mergeable with the sweep in the first place.
+
+**The gate re-read in full, per condition, at `c1f98ff`:**
+
+| | condition | state | owner |
+|---|---|---|---|
+| **(a)** | Stage 2 landed, all four cases green or every divergence adjudicated to a named branch of §7 | **SATISFIED** — four cases, four at branch α, and Stage 2's completion written at `c1f98ff`'s parent (`J-dv_lead-0159`) | closed |
+| **(b)** | CD carries a co-sim **Phase 3** domain instance | **UNMET** — CD §10.7 item 4 declares it open; not one instance exists, and this round did not write one (§7) | dv_lead |
+| **(c)** | C9's **admission rule** written as spec text before either producer is opened | **UNMET — and this round SHARPENS it**: what must be written is the **span-closing rule**, not "REQ-110's abort rule", because the guards close on a terminate character alone while a conformant M03 closes frames on three different characters (§4.2). **And its scope is the whole of family H — five classes, not one case** | architect_docs_lead, routed by dv_lead |
+| **(d)** | a **second static census** on **three axes** | **MET — this round** (§4) | closed |
+| **(e)** | `MAX_WORDS_PER_FRAME` raised to cover the longest frame either producer can deliver, with the covering range stated beside the bound (`FINDING RV-0078-S2-9`) | **UNMET — and this round MEASURES it**: 16 words = 128 delivered octets = frames to **132 octets** DA through FCS, against a 64-to-1518-octet requirement range (§4.1) | dv_lead |
+
+**Three of five unmet. Stage 3 remains REFUSED**, and the refusal is a reading of its own
+gate rather than a judgement about appetite — the same form `RV-C4` §10 used, with one
+condition moved.
+
+**And one item the gate does not list, which this round puts in front of two of its
+cases.** §3's candidate classes (g) and (h) mean **C8 and C9 would select branch γ and
+anchor nothing** until REQ-901's class list grows — *"A divergence class discovered later
+SHALL be added here by spec diff before any sign-off packet may cite it."* **That is not a
+sixth gate condition and I do not mint one**: the gate governs whether Stage 3 may be
+*authorised*, and a run that reports a γ divergence into a spec-diff request is a
+perfectly good run. **It is a sequencing recommendation**: route the class-(g)/(h) spec
+diff to architect_docs_lead **before** Stage 3 is authorised, so those two cases have a
+declared class to land in. **The recommendation is dv_lead's; the class list is
+requirements.md's; the countersignature discipline is the architect's to invoke** — and
+this round asserts none of it, it routes.
+
+**What (d)'s meeting does NOT do**, stated so a green box is not over-read:
+
+1. **It does not authorise Stage 3.** Three conditions remain.
+2. **It anchors nothing.** A census is a reading; no class in §2.3's table moved from
+   unanchored to anchored on it.
+3. **It lifts no bar.** `AP-M03` §7's bars 1, 2, 3 and 4 stand exactly as they did at
+   `J-dv_lead-0159`; no lift cell is added, amended or implied.
+4. **It does not open the `SO-`**, and no sentence here may be read as opening it.
+
+---
+
+#### 6. FINDINGS — eight; four MATERIAL, four MINOR; each with an owner and a carrier
+
+**`FINDING ECS-1` (MATERIAL, mine, against `AP-M03` §4.F's own family note).** The note's
+second bullet reads *"**M03-F2 and M03-F5's frames** — **below five octets**, where (e)
+excludes the frame **entirely, its accept-or-discard decision included**."* **`M03-F5`'s
+frame is FIVE octets** — its own row says *"The 5-octet frame of M03-F1"* and its declared
+kill is *"a design that treats 'fewer than 5' as 'fewer than or equal to 5'"*, i.e. the
+boundary is the row's entire subject. Five octets is inside (e)'s **5-to-63** band, where
+the exclusion is `tuser`[0] **alone** and the delivered octet and the `tkeep` extent
+(0x01) stay **inside** the comparison domain. **The note therefore excludes from the
+comparison a class REQ-901 leaves inside it**, and it does so in the one document a `SO-`
+would lift the answer from. **The same looseness is already on the record one layer down,
+convicted by the bench that had to measure it**: `test/xgmii_rx_64/test_m03_f.ml:42-55`
+records that `injection.ml`'s comment naming *"F2 and F5"* is *"LOOSE, not the
+predicate"*, that `5 < 5` is false, and that *"the sub-five complaint is never raised for
+it in the first place."* **The AP's note repeats the loose form the bench convicted, one
+document up.** **Owner**: dv_lead. **Carrier**: the `SO-` round writes F-1's disposition
+from **this table**, citing this sweep and **not** the note; the note's own repair rides
+the next commit that opens `AP-xgmii_rx_64.md`, whichever round that is. **Bound**: no
+packet may lift the stale bullet in the meantime, and a lift without the repair is a
+finding whose class is **NOT MINOR**. **Not repaired here, deliberately**: this round's
+write set is one file, and a reviewer who widens its own write set mid-round has done the
+thing it convicts (`RV-C4` §12).
+
+**`FINDING ECS-2` (MATERIAL, mine, against an instrument I own).** `MAX_WORDS_PER_FRAME =
+16` (`tb_xgmii_rx_64.v:258`) bounds the reference-capture side at **128 delivered octets**,
+i.e. frames to **132 octets DA through FCS** (`ceil((n−4)/8) ≤ 16 ⟺ n ≤ 132`). REQ-901
+states that classes (e) and (f) *"exclude nothing in the 64-to-1518-octet range, which is
+where this boundary still anchors."* **The exclusions do not reach that range and neither
+does the instrument**: the lane's reachable window is **64 ≤ n ≤ 132**, and the legal
+maximum-length frame — class G-3, which REQ-901 says the boundary anchors — needs **190**
+words. **The bound is one-sided**: `ours_run.ml` carries no per-frame or per-count bound at
+all, so an overflow reddens one producer through a refusal sentinel rather than the
+comparison. **Owner**: dv_lead. **Carrier**: gate condition **(e)** already owns raising
+the bound (`FINDING RV-0078-S2-9`); this finding adds two obligations to whatever round
+raises it — **state the covering range beside the new bound**, and **state whether our side
+gains a matching bound or is deliberately left unbounded** — and adds one to the `SO-`:
+its per-class table states the reachable window and never lifts REQ-901's 64-to-1518
+sentence without it.
+
+**`FINDING ECS-3` (MATERIAL, mine, against `WO-0078` §2.2's own reading).** §2.2
+attributes both admission refusals to *"REQ-110 abort stimulus (V5)"*. The guards are
+wider than their attribution: the admission span is closed by a **terminate character and
+by nothing else** (`ours_run.ml:273`; `tb_xgmii_rx_64.v` mirrors it), so **they fire on any
+stimulus presenting a start character before the open frame's terminate character**,
+whatever closed the frame on the DUT's side. Measured over families E–H: **all five
+family-H classes trip it**, `M03-H3` included **although its aborting character is an
+`/E/` and REQ-110's abort is not its subject**; **no family-E class trips it**, measured
+over every row of §4.E, because `Injection`'s placements replace an octet and leave the
+frame's terminate character on the wire. **Consequence**: gate condition (c)'s spec-text
+obligation is about **the span-closing rule**, not about REQ-110's abort rule, and its
+scope is **five classes, not one case**. **Owner**: dv_lead (the packet is mine).
+**Carrier**: the Stage-3 re-authorisation packet, whose (c) this reshapes; recorded here
+so it cannot be discovered by the round that needs it.
+
+**`FINDING ECS-4` (MATERIAL, mine — the sweep's first candidate class).** The reference's
+abort path (`axis_xgmii_rx_64.v:244-250`) sets `tlast` and `tuser`[0] and **leaves
+`m_axis_tkeep` at `STATE_PAYLOAD`'s all-ones default** (`:235`), performing no `tkeep`
+narrowing and no FCS strip; SPEC-M03 requires ours to truncate at the octet preceding the
+aborting character with `tkeep` marking exactly those octets. **The delivered octet count
+and the `tkeep` extent therefore diverge on every aborted frame — both named in REQ-901's
+comparison content — and the class is outside every declared divergence class.** It reaches
+**both** families, because the reference's branch is keyed on `framing_error`, which any
+control lane sets. **Owner**: dv_lead raises it; the class list is architect_docs_lead's.
+**Carrier**: a REQ-901 spec-diff request, routed **before** Stage 3 is authorised (§5).
+**Bound**: a source reading, not a run result; no expected value is taken from the
+reference; the prediction stays a prediction until a run spends it.
+
+**`FINDING ECS-5` (MATERIAL, mine — the sweep's second candidate class).**
+`STATE_PAYLOAD` asserts `m_axis_tvalid_next = 1'b1` **unconditionally** (`:236`) before its
+framing-error branch, and for a preamble-position error the framing error is latched at the
+**start word itself** (`:382`) — so a frame the reference opens and immediately finds in
+error still emits **at least one** output word, where §0.7 requires ours to emit **none**.
+**That is a divergence in the accept-or-discard decision per input frame**, REQ-901
+comparison content by name, and the divergence `compare` already reports in production as
+`decision mismatch (ours=discard, theirs=accept)`. **A second class and not the first
+restated**: (g)'s excluded observable is the extent, (h)'s is the decision, and one class
+wide enough for both would exclude the decision where it agrees — the over-wide exclusion
+`J-dv_lead-0057` refused when it countersigned (e) narrower than asked. **Owner and
+carrier**: as ECS-4.
+
+**`FINDING ECS-6` (MINOR, mine, against my own re-measurement's wording).** `AP-M03` §7
+records part of bar 1's set-claim evidence in a **mention-count** form — *"the co-sim
+producer's single mention of the model is a docstring saying it is absent"* — and
+`J-dv_lead-0159` Open-question 2 dates the claim's expiry at *"the moment a row takes an
+expected value from X-1(ii)."* **This census finds that C6, C8 and C9 are constructible
+only through `Dv_xgmii.Injection`, i.e. X-1(i)** (§4.3). **Bar 1 is untouched** — the lane
+asserts no expected value and `test_m03_i.ml` is the landed X-1(i)-only precedent — **but
+the mention-count sentence goes stale at the first such case while the claim it supports
+does not.** **Owner**: dv_lead. **Carrier**: the round landing the first `Injection`-built
+co-sim case re-states the evidence in its **mechanism** form — no `Injection.outcomes` and
+no `Injection.expected_strobes` call site in `test/cosim/` — and never in its mention-count
+form. **A conclusion that survives on a ground its author never had is what §0.1 exists to
+catch**, and this is the same defect one round earlier than usual.
+
+**`FINDING ECS-7` (MINOR, mine — a dividend, recorded so it is not re-derived).**
+`AMENDMENT WO-0078-A1`'s word-function seam (`stimulus_gen.ml:62`; `build_case` returning a
+`(schedule, word_at)` pair) is **general enough to carry every Stage-3 construction this
+census finds constructible**, because `Injection` publishes `schedule : t -> Arrival.t` and
+`word_at : t -> cycle:int -> Xgmii_word.t` in exactly the shapes `write_stimulus` consumes
+(`injection.mli:158-159`). **That was not the amendment's stated purpose** — it was
+authorised for C4's seven data octets. **And the seam's one landed override is data-only by
+its own departure check** (`stimulus_gen.ml:402-408` `failwith`s if the control field
+moves), so **no landed co-sim construction can place a control character** and every
+Stage-3 error case must come through `Injection` rather than a second override. Polarity
+stated: the negative is measured over `test/cosim/**`'s whole construction surface, the
+positive over every landed construction of a placed control character in `test/**`.
+**Owner**: dv_lead. **Carrier**: the Stage-3 re-authorisation packet's construction
+section.
+
+**`FINDING ECS-8` (MINOR, mine — a Stage-3 trap named before it is stepped in).**
+`ours_run.ml:501-515` refuses when the `.idle` sidecar's line count differs from the number
+of frames **admitted**. For every landed case the two are trivially equal, because every
+admitted frame is a catalogue entry. **At C9 they are not**: a mid-frame start character
+opens a frame **no case entry describes** — `injection.mli:29-31` says so in terms, *"a
+frame the stimulus opens — an injected `/S/` mid-frame opens one — gets an outcome even
+though no entry of the catalogue describes it, which is exactly the frame a hand-written
+table forgets"* — so a C9 builder writing one `idle_counts` entry per catalogue frame
+**refuses at the sidecar and never reaches the comparison**. **The rule, stated so nobody
+discovers it**: `idle_counts` carries one entry per frame **the receiver admits**, in
+admission order — catalogue frames **plus** every frame an injected start character opens.
+**Owner**: dv_lead. **Carrier**: the Stage-3 re-authorisation packet, beside gate condition
+(c), which is the same case.
+
+**The standing set is unchanged and grew nowhere here**: `FINDING RV-0078-S2-2`, `S2-7`'s
+residue, `S2-11`'s binding rule, `S2-9` (gate (e)), `S2-15`, criterion 3's unexercised
+plural property, `RN-6`, `FINDING WO-0077-A1`'s census-repair ownership, `FINDING K-1`
+(terminal carrier the `SO-`, paid **before** the family-K rows), `FINDING CD-P2-1`
+(standing as to C8 and C9 — **and §3 is the first evidence either limb has ever had**),
+`FINDING CD-P2-2`, and the programme's first lessons harvest.
+
+---
+
+#### 7. What this round does NOT do — three refusals, stated rather than omitted
+
+**The CD gets nothing, and this is the EIGHTH consecutive refusal.** The temptation this
+round is the largest yet: §3 answers CD §6's **V4** (*"`/E/` mid-frame … reference may
+drop, or may remove the FCS anyway"*) and speaks to **V5**, and the obvious move is to
+annotate both with what the source says. **Refused, on §10.7 item 3's own ground** — *"This
+document freezes the questions; it answers none of them"* — and on the ground the previous
+seven refusals rest on: **a reading is not a domain instance**, §9-bis's addition-only lift
+is scoped to domain instances, and a second record of an answer inside the document later
+rounds read as authoritative is the left-standing-summary class §0-ter tabulates four
+payments for. **§6's value is that a reader can read it as it was written, before anyone
+knew** — and V4 is about to be graded, which is exactly when that value is highest.
+
+**`AP-xgmii_rx_64.md` gets nothing**, although `FINDING ECS-1` is a defect in it and I
+could repair it in three characters. **Refused on write-set discipline**: this round's
+write set is this entry and my journal, and `RV-C4` §12 convicted the reviewer who widens
+its own write set mid-round. The finding carries a bound instead (§6), which is the
+mechanism that makes the deferral safe.
+
+**The `State` field is untouched.** No stage transitions here: Stage 2 is complete, Stage 3
+is refused, and a census meeting one of five gate conditions is not a state change. A field
+edit would be the only thing in this commit a reader could mistake for a stage moving.
+
+---
+
+#### 8. SEQUENCING — the `SO-` is next, and the sweep did not change that
+
+1. **This entry commits** — this Return-log entry and `J-dv_lead-0160`. **No code, no CD,
+   no `AP-`, no `State` field.**
+2. **The `SO-xgmii_rx_64.md` round** — next, and **not blocked on co-sim Stage 3**:
+   `AP-M03` §7's bar-1 set-claim was re-measured at citation at `e51ca52` and survived
+   (`J-dv_lead-0159`), and **nothing this round measured disturbs it** — every construction
+   §4.3 finds reaches X-1(i), never X-1(ii)'s outcome model. The `SO-` carries everything
+   `RV-C4` §10 item 2 lists, plus **this sweep's per-class table** (§2.3), plus **ECS-1's
+   corrected F-1 disposition**, plus **ECS-2's reachable-window sentence beside any
+   citation of REQ-901's 64-to-1518 range**, plus `FINDING K-1` paid **before** the
+   family-K rows, plus **the programme's first lessons harvest**.
+3. **The REQ-901 spec-diff request** for candidate classes (g) and (h) — routed to
+   architect_docs_lead, **before** Stage 3 is authorised, so C8 and C9 have a declared
+   class to land in (§5). It is cheap, it is a routing rather than a ruling, and it may
+   ride the `SO-` round or precede it — **the orchestrator's call, not mine**, because it
+   is a dispatch question and the two documents do not collide.
+4. **Stage 3's gate** — still **REFUSED**, on (b), (c) and (e). (c) is architect_docs_lead's
+   spec-text obligation, **reshaped by `FINDING ECS-3` from "REQ-110's abort rule" to "the
+   span-closing rule" and widened from one case to five classes**; (b) and (e) are mine and
+   neither moved here.
+
+---
+
+#### 9. VERDICT
+
+**`RV-SWEEP` — the error-class sweep is COMPLETE and gate condition (d) is MET.**
+
+**THE SWEEP.** The REQ-901 declared-class question is answered **once per class, over
+SEVENTEEN classes**, covering **every row of `AP-M03` §4.E, §4.F, §4.G and §4.H** — 22 rows,
+none unassigned. **Five classes are INSIDE a declared divergence class** (F-1, F-2, F-3
+inside (e); G-1, G-2 inside (f)); **twelve are OUTSIDE every declared class**; **nine are
+UNREACHABLE at the comparison today** — four on `MAX_WORDS_PER_FRAME`, five on the
+admission guards. **Exactly one of the seventeen is anchored today**, F-4, and it is
+anchored because it is the clean 64-octet frame case 0 and C1 already drove. **No class of
+families E or H is inside any declared class**, measured over every row of both.
+
+**THE YIELD — TWO CANDIDATE DIVERGENCE CLASSES, from one question, exactly as the length
+sweep produced two.** **(g)** the abort-truncation extent: the reference does not narrow
+`tkeep` on its abort path and performs no FCS strip there, so the delivered octet count and
+the `tkeep` extent diverge on every `/E/`-aborted and every `/S/`-aborted frame — REQ-901
+comparison content, outside every declared class. **(h)** the zero-delivered abort's
+decision: the reference emits at least one marked output word where §0.7 requires ours to
+emit none, so the accept-or-discard decision diverges. **Both are source readings on the CD
+§2-bis precedent, both take no expected value from the reference, and both stay predictions
+until a run spends them.** **Their expected resolution is a REQ-901 spec diff**, routed to
+architect_docs_lead, **before** Stage 3 is authorised — because until the classes are
+declared, C8 and C9 select branch γ and anchor nothing.
+
+**THE CENSUS.** Gate condition **(d) is MET**: the second static census is performed on all
+three axes at `c1f98ff`, each measured over a declared set, each negative stating its set
+per `FINDING RV-0078-S2-13`'s polarity rule. **Axis 1** — the lane's reachable frame-length
+window is **64 to 132 octets**, one twelfth of the range REQ-901 says this boundary
+anchors, and the bound is one-sided. **Axis 2** — `WO-0078` §2.2's six-refusal census is
+**incomplete at this tree** by two, one of which `ours_run.ml:495-497` declares in its own
+source; and the two admission guards are **wider than their REQ-110 attribution**, closing
+on a terminate character alone, so they bar **all five family-H classes** and **no family-E class**.
+**Axis 3** — the co-sim producer **cannot emit a control character** (its only override is
+data-only by its own check) and **cannot emit a sub-five-octet frame**; both capabilities
+are landed **elsewhere in `test/**`**, and `AMENDMENT WO-0078-A1`'s seam already accepts
+them unchanged.
+
+**GATE STATUS.** **(a) SATISFIED. (d) MET at this entry. (b), (c) and (e) UNMET.**
+**STAGE 3 REMAINS SCOPED, NOT AUTHORISED, and REFUSED** — three of five conditions unmet,
+and (c) is reshaped by `FINDING ECS-3` into a wider and more precisely stated obligation
+than the gate's own text carries.
+
+**FINDINGS — EIGHT**: `ECS-1` (MATERIAL, `AP-M03` §4.F's family note misclassifies
+`M03-F5`), `ECS-2` (MATERIAL, the lane's frame-length reach is 64–132, one-sided),
+`ECS-3` (MATERIAL, the admission guards are wider than their attribution), `ECS-4` and
+`ECS-5` (MATERIAL, the two candidate classes), `ECS-6` (MINOR, a mention-count claim with a
+dated expiry), `ECS-7` (MINOR, the A1 seam's unstated dividend), `ECS-8` (MINOR, the
+`idle_counts` trap at C9). Each carries an owner and a carrier; **none is repaired here**,
+and the reason is write-set discipline rather than deferral.
+
+**NOTHING RAN. NOTHING WAS ANCHORED. NO BAR MOVED.** `AP-M03` §7's bars 1–4 stand exactly
+as they did at `J-dv_lead-0159`; no lift cell is added, amended or implied; **no CD edit —
+the eighth consecutive refusal, and the most tempting of the eight**; **no `AP-` edit**;
+**no `State` field change**; **no `SO-` opened and none inferable from a met gate
+condition.**
+
+**THE `SO-xgmii_rx_64.md` IS NEXT, and it is still not blocked on co-sim Stage 3** — the
+bar-1 set-claim re-measured at `e51ca52` survives everything this round measured, because
+every Stage-3 construction the census finds reaches **X-1(i)** and never X-1(ii)'s outcome
+model.
+
+— dv_lead, `J-dv_lead-0160`, at `c1f98ff`
+
+---
