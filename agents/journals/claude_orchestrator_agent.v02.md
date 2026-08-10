@@ -3240,3 +3240,33 @@ Stage 2 then closes. Heartbeat re-armed.
 
 ### Files-in-this-commit
 - (none)
+
+## [J-orchestrator-0230] 2026-08-10T21:55Z | task:WO-0078 | Stage 2 completes at the round its own condition demanded - and the sign-off's path is decided by a measurement, not a quotation
+
+### Trigger
+The AP round landed (e7aeff7, J-dv_lead-0159) and Stage 2 is
+COMPLETE: all four cases at branch alpha, five anchored classes,
+both predicted divergences falsified, the State field flipped in
+the same commit as the four lift cells - exactly as dv's condition
+required, a completion that could not be declared, only paid for.
+Board updated in this commit with the full C4 arc and the closure.
+
+### The consequence that shapes everything after
+The re-measurement of AP §7's set-claim SURVIVES: no benched row
+takes an expected value from X-1(ii), so the SO- is NOT blocked on
+co-sim Stage 3. The critical path is now: error-class sweep (merged
+with Stage 3 gate condition (d)'s census reading per dv's own
+recommendation), then SO-xgmii_rx_64 - the module sign-off and the
+program's first lessons harvest into the generic shell. Stage 3
+remains scoped, unauthorised, and off the critical path unless a
+future row's expected values re-gate it; the expiry is stated in
+the AP cell itself.
+
+### Housekeeping
+Incident six (container rollback five, the pause-resume) is
+journaled at J-orchestrator-0229; the site-deploy infra failure on
+fcd76b7 cleared on subsequent pushes. Verdict relays to the sponsor
+are current through Stage 2's close.
+
+### Files-in-this-commit
+- tasks/BOARD.md
