@@ -3211,3 +3211,32 @@ dispatch as expected mid-round.
 
 ### Files-in-this-commit
 - tasks/BOARD.md
+
+## [J-orchestrator-0229] 2026-08-06T20:45Z | task:WO-0078 | Incident six: the pause proved the discipline - a five-hour hold, a container reclaimed, and a three-command recovery because nothing was ever left uncommitted
+
+### Trigger
+The sponsor paused development at ~15:15Z ("pause development until i
+say resume") and resumed at ~20:39Z ("ok, keep it going!"). On
+resume, HEAD read 310a33d - a WO-0060-era commit weeks old - with
+fcd76b7 unknown to the local repository and one stale WO-0060
+partial dirty in the tree. The fifth container rollback, incident
+six overall.
+
+### The recovery, and why it was trivial
+The pause protocol had landed and pushed tb_writer's C4 round
+(fcd76b7) as its last act precisely so the ephemeral container held
+nothing unique. Recovery: stale partial preserved to scratchpad
+(rollback6-stale-wo0060-partial.diff, 445 lines of ancient WO-0060
+draft), fetch, reset --hard to origin, integrity verified (clean
+tree, key files present, journal chains intact). Zero loss - the
+program's record across six incidents remains zero loss ever.
+
+### Resume point, executed after this entry
+Exactly as the board and packet recorded it at the pause: (1)
+data_wrangler's one-line case-array addition (J-data_wrangler-0008)
+- C4's first execution rides its landing CI; (2) dv's RV-C4; (3)
+the AP round, hard-bound by RV-C4GAP's spent escape clause;
+Stage 2 then closes. Heartbeat re-armed.
+
+### Files-in-this-commit
+- (none)
