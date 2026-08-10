@@ -479,3 +479,399 @@ here or there.**
 ### Files-in-this-commit
 
 - agents/handoffs/SO-xgmii_rx_64.md
+
+## [J-dv_lead-0162] 2026-08-10T22:52Z | task:none | Countersigned at the line the architect nominated — the lookahead held under three checks, not one; and the same delay chain that held it shows the reference DOES abort at a lane-4 mid-frame start, so the ruling's own reason for declining a class is false for half the family it declines it for
+
+### Trigger
+
+Orchestrator spawn: the **countersignature round** on the ECS-4/ECS-5 spec-diff
+request, ruled at `3526e79` (`J-architect_docs_lead-0032`) — both classes IN,
+both AMENDED. Per the 2026-08-03 precedent the diff is **NOT IN FORCE until my
+countersignature is transcribed**, so this round decides whether REQ-901's class
+list grows. Sole agent on my files; a declared disjoint orchestrator commit
+(board + its own journal) may land mid-round.
+
+**Abort-first head check, before anything else.** `git rev-parse HEAD` →
+`3526e792d5bfcc1265e9764e96936f861d397f78`, byte-equal to the spawn-head
+`3526e79`. No divergence, no rollback, no merge-base call needed. Proceeded.
+
+**The attack point was named for me, which is the only reason this round could be
+short.** The ruling's Open-questions say: *"the derivation at Evidence 3 is the
+thing to attack: if the terminate path's residue arithmetic is read differently,
+my alignment falls and (g)'s bound falls with it."* I attacked exactly there.
+
+### Inputs
+
+- `agents/charters/dv_lead.md` (whole) and `agents/PROTOCOL.md` (whole) — §4.1,
+  §4.2, §6 and §10 load-bearing; §6 is what decides the deliverable's *location*
+  (see Reasoning).
+- `agents/journals/claude_architect_docs_lead_agent.v02.md`
+  `J-architect_docs_lead-0032` in full (lines 2988-3470) — the ruling, its three
+  amendments, its Evidence 2-6, its Outcome and its Open-questions.
+- `git diff 49d87af..3526e79 -- docs/specs/requirements.md` — all four sites read
+  as added text: REQ-105's row, REQ-110's row, REQ-901's row, and §13's new row
+  at `:1004`. Plus `docs/specs/requirements.md` `:986-994` at HEAD — the seven
+  2026-08-03 rows, of which `:992` (the (e)/(f) diff) and **`:993` (the
+  countersignature transcription)** are the precedent this round is written on.
+- **`test/third_party/verilog-ethernet/axis_xgmii_rx_64.v` at pin `77320a9`, read
+  directly at `:100-171`, `:193-201`, `:203-307` and `:311-445`** — the whole
+  combinational block and the whole clocked block, not the cited lines alone.
+  This is the MIT reference, my Phase-1 differential oracle (charter §9), not our
+  RTL: **no independence rule is touched by reading it**, and it is the same
+  artefact `RV-SWEEP` §3 read to file `ECS-4`/`ECS-5`.
+- `agents/handoffs/WO-0046_cosim-phase-1.md` `:969-1050` — `J-dv_lead-0057`'s
+  COUNTERSIGNATURE block, read **for its form**, which is the thing my spawn's
+  instruction and the actual precedent disagree about.
+- `agents/handoffs/WO-0078_cosim-phase2-3-stimulus-widening.md` — my own
+  `RV-SWEEP` at §14: `##### 2.3` (the seventeen-class table), `§3.1`, `§3.2`,
+  `§3.4`, `§3.5`, `§4.3`'s per-case construction table, `§5` (the gate re-read in
+  full), `§6`'s findings block for the naming convention, `§9`'s verdict.
+- `agents/handoffs/SO-xgmii_rx_64.md` `:990-1030` — §8's UNSET verdict, §9's
+  five prohibitions (item 2 records the (g)/(h) dependency as **pending**), and
+  the §10 log row.
+- `test/cosim/stimulus_gen.ml:185-215` — read to settle whether `FINDING CSG-2`
+  is live or theoretical.
+- `agents/journals/claude_dv_lead_agent.v08.md` header and `J-dv_lead-0161`'s
+  tail, for the entry id and the open-questions I inherit.
+
+### Reasoning
+
+#### 1. Where the deliverable goes — my spawn and the precedent disagree, and the precedent wins
+
+My spawn says *"Your files: `docs/specs/requirements.md` ONLY for the
+countersignature transcription per the 2026-08-03 precedent's form."* **The
+2026-08-03 precedent's form is the opposite of that**, and it says so in its own
+text. `J-dv_lead-0057`'s block opens: *"`docs/specs/**` is outside my write
+scope, so this is the signature of record and the orchestrator transcribes it."*
+requirements.md `:993` — the transcription row itself — carries journal-ref
+**`J-orchestrator-0126`**, not a dv id, and states that *"the signature's
+authority rests on its text and on `J-dv_lead-0057`, not on the carrying
+commit."*
+
+So the precedent is: **the signature lives in the handoff packet and my journal;
+the §13 row is clerical and lands under `Agent: orchestrator`.** Writing
+`docs/specs/` myself would have failed **R7** outright (PROTOCOL §6 gives me
+`test/`, `tools/`, `docs/reports/latency/`, `agents/handoffs/`) and, worse, would
+have been a *misreading of the very precedent it invoked*. My spawn's own
+alternative — *"the WO-0078 packet §14 ONLY if your conventions put the
+countersignature record there"* — is the lawful branch, and it is where every
+countersignature this programme has produced already lives (`WO-0046:969`,
+`WO-0057:985`, `WO-0059:1876`, `BUG-0002:660`). **Taken, deliberately, and stated
+in the block's first paragraph so the orchestrator knows what it is transcribing.**
+
+#### 2. The attack point, and why one check was not enough
+
+The ruling rests the whole of Amendment 1 on one arithmetic check: `:255` keeps
+`4 + term_lane` octets of the emitted word, which is the correct FCS-strip
+residue **only** under a one-word lookahead. I re-derived the alignment from the
+clocked block first (`:357`/`:341` → `xgmii_rxd_d0 = W_{c−1}`; `:422` →
+`xgmii_rxd_d1 = W_{c−2}`; `:234` emits `xgmii_rxd_d1`; `:362`/`:346` →
+`framing_error_reg = fe(W_{c−1})`; `:412` → `framing_error_d0_reg = fe(W_{c−2})`),
+then tested it.
+
+**Check 1 confirms and, better, the competing reading is nonsense rather than
+merely unattractive**: if `term_lane_reg` described the emitted word, `:255`
+would keep `4 + tl` octets of a word holding only `tl` frame octets — four past
+the terminate character at every lane, and four octets of a word holding none at
+`tl = 0`. **Check 2** — `:280`'s complementary `tl − 4`, reached through
+`term_lane_d0_reg`, the *delayed* copy — is consistent only if the undelayed one
+leads by a word. **Check 3, which the ruling does not cite and which I went
+looking for precisely because a single check is a single point of failure**: the
+CRC residue selection. `crc_next` is CRC over `xgmii_rxd_d0`, and at the
+terminate cycle `:257-261` pick `crc_valid[tl−1]` for `tl = 1…4` (last octet in
+the word just absorbed) but **`crc_valid_save[7]`** at `tl = 0` (last octet in
+the *preceding* word); `:287-289` then pick `crc_valid_save[tl−1]` for
+`tl = 5,6,7`. Three registers, three delays, one alignment.
+
+**Why this matters and is not ceremony.** A countersignature is the instrument by
+which a verdict rule moves from *defect* to *excluded* inside my own comparison.
+If the alignment were wrong, (g) would exclude the wrong set and either convict
+our design for a reference difference or hide a real one. **One check is a
+prediction; three independent ones are a measurement.** I record the third
+because the next round to doubt this should not have to re-find it.
+
+**One slip found and deliberately not made a finding.** The ruling's prose calls
+`4 + tl` an *index*; it is a *count* (last index `3 + tl`). Nothing in the
+derivation turns on it. Recording a wording slip as a numbered finding would
+debase the register I use for things that change verdicts.
+
+#### 3. Where I nearly filed a contest on an off-by-one of my own
+
+Tracing Amendment 2's preamble path for a **lane-4** start, I first read `:329`
+(`xgmii_start_d0 <= xgmii_start_swap`) as sampling the value `:386` assigns in
+the same cycle. That puts the admitting `STATE_IDLE` cycle one earlier, leaves
+`fe(R_0)` — the realigned start word's framing error from `:346`, which carries
+the `/S/` bit in `swap_rxc` and is therefore unconditionally true — sitting in
+`framing_error_d0_reg` at the *first payload* cycle, and produces a spurious
+abort on every lane-4-started frame. **That would have been a contest filed
+against a correct ruling**, and the only thing that stopped it was noticing that
+the reference would then be unable to receive any swapped frame at all, which
+contradicts a lane the programme has already run green.
+
+Correcting the sampling restores the ruling exactly, and it also supplies the
+reason the ruling asserts rather than derives: the reference **must** discard a
+start word's framing error, because at a lane-4 start `:346` sets it
+unconditionally. **I journal my own error because the discipline that caught it —
+"if my reading implies a landed green lane cannot work, my reading is wrong" — is
+worth more than the appearance of a clean derivation.**
+
+#### 4. What the same delay chain then showed, which the ruling got wrong
+
+Having the chain traced, I ran it on the case Amendment 3 declines to declare a
+class for: a start character inside an open frame that has already delivered an
+octet. **The ruling says the reference "does not abort at all" and merges the two
+frames.** That is right at a **lane-0** mid-frame start — `:375` sets
+`lanes_swapped <= 0`, so `:346` is never reached, the error is never recomputed,
+and `xgmii_start_d1` rises while `STATE_PAYLOAD` is ignoring it, so the pulse is
+lost and the frames merge.
+
+**It is wrong at a lane-4 mid-frame start.** `:390`'s exclusion holds for one
+cycle; the next cycle the swapped branch recomputes the framing error from
+`{xgmii_rxc[3:0], swap_rxc}` and `swap_rxc` **is** the `/S/` lane. The reference
+aborts, emitting the word carrying the masked start character with `tkeep`
+all-ones — and **the second frame is received**, because the abort drops the
+state into `STATE_IDLE` exactly one cycle before `xgmii_start_d1` rises. **The
+abort the ruling says does not happen is what saves the second frame from being
+eaten.**
+
+**Why this is MATERIAL and not a footnote.** The ruling's stated reason for
+declining a class is that the divergence is *"in the ordered sequence of output
+frames, which no exclusion stated on one frame's extent covers"* and that a class
+*"buys no anchoring"*. At a lane-4 mid-frame start the sequence **agrees** and the
+divergence is a **four-octet extent** divergence — the exact shape (g) is stated
+on. A class widened by four words would cover `H-2` and keep `tuser`[0] **and the
+decision** compared: the same two anchors Amendment 1 was written to preserve in
+family E. **The reason fails where the disposition still holds.**
+
+**And I chose not to let that hold the diff out of force.** Three grounds. The bar
+is what operates and the bar is wide enough — *"a start character inside an open
+frame that has already delivered an octet"* catches `H-2` as squarely as `H-1`.
+The stimulus is unreachable at this tree (`FI-4`, `FI-6`), so no run can hit it
+and no anchor is lost today. And refusing a ruling over a recital that changes no
+verdict is the over-wide refusal `J-dv_lead-0057` exists against — I would be
+doing to the architect precisely what the architect correctly refused to let me
+do to family E. **Rejected alternative: contest Amendment 3.** It would have cost
+a round, unblocked nothing, and the carrier for the repair (the round that lifts
+`FI-4`/`FI-6`) is already named in the ruling itself.
+
+**Yield I did not go looking for**: this settles `RV-SWEEP` §3.4, which I had
+recorded as *"outcome not settleable by a static read."* It is settleable — `H-3`
+is **lost** at a lane-0 mid-frame start and **received** at a lane-4 one. My
+"not settleable" was too pessimistic: it needed the delay chain traced, not the
+state graph inspected. **Declaring a question unanswerable is a claim like any
+other, and it can be wrong in the direction that costs coverage.**
+
+#### 5. The finding that decided how much of the ruling I could take on trust
+
+(g)'s carve-out is stated on *"lane 0 of **its word**"*. Two readings exist and
+they select different members. Within (g)'s own paragraph, "its word" refers back
+to *"the word carrying the aborting character"* in the sentence above — the
+**reference's** word, i.e. the realigned/output word — and on that reading the
+exclusion covers exactly the diverging set. But **this document's lane convention
+is XGMII lanes** (REQ-110's *"a start character in lane 4"*; REQ-105's *"each of
+the eight lanes of a mid-frame word"*), and REQ-105's amended verification column
+projects the bound onto that sweep as *"the **lane-0** member."*
+
+Derived per start lane: in a lane-4-started frame the reference's words are
+`R_j = {W_{j+1}[0-3], W_j[4-7]}`, so the **agreeing** member is the `/E/` at
+**XGMII lane 4** and the **XGMII lane 0** member **diverges** by four octets and
+one output word. **The verification column is therefore false for half of
+`M03-E1`**, and it is the sentence a bench writer reads.
+
+**I checked whether it was live rather than assuming.** `stimulus_gen.ml:185-202`
+records that case C2's frame 1 *"start lane (lane 4 …) falls out of that
+arithmetic rather than being chosen."* Any C8 schedule built on `Arrival.create`
+places later frames at whatever lane the gap arithmetic yields. **`M03-E1` is
+C8's class. It is live.** Left alone, REQ-901's *"any divergence outside the
+declared classes is a defect"* would convict our design for the reference's
+word-boundary truncation — the exact failure mode the ruling exists to prevent,
+reappearing in the ruling's own projection.
+
+**Disposition chosen: countersign, bind the reading, file the repair as
+editorial.** The class text in REQ-901 is correct on its own reading, so the
+normative object I am asked to countersign is sound; the defect is in a
+*verification column*, which §13's own test puts in the concurrence class the
+2026-08-03 REQ-107/REQ-108 pointer row closed under — repairable without a fresh
+countersignature. **Rejected alternative: contest (g).** It would hold C8 hostage
+to a wording that (g)'s own paragraph already resolves in the safe direction, and
+my block binds the reading my instrument uses in the meantime.
+
+#### 6. One correction of record, made because the next dispatch will read it
+
+The ruling's Outcome says *"Stage 3 may therefore be authorised for C8."* Against
+the gate as `RV-SWEEP` §5 states it, that is one condition too strong: **(b) —
+the CD's co-sim Phase-3 domain instance — is UNMET and is a stage condition, not
+a per-case one.** What the ruling discharges for C8 is the **class** blocker,
+which `RV-SWEEP` §5 said in terms was *"not a sixth gate condition"*. C8 no
+longer selects branch γ; Stage 3 is still unauthorised on (b), which is **mine**.
+Recorded in the block rather than as a finding: a finding needs a repairable
+artefact and a carrier, and the claim lives in an append-only journal. **What
+matters is that my instrument's gate reading is the correct one, and it is.**
+
+### Actions
+
+- Head check; read charter, protocol, the ruling in full, the four diff sites,
+  and the 2026-08-03 precedent rows.
+- **Re-derived the one-word-lookahead alignment from the reference's clocked
+  block** and tested it against `:255`, `:280` and the CRC lane selection at
+  `:257-261`/`:287-289` — three independent checks.
+- Traced `STATE_IDLE` admission cycle-exactly for a lane-4 start (`:329`'s
+  old-value sampling, `:346`'s `swap_rxc`), confirming Amendment 2's
+  consumed-at-admission mechanism after correcting my own off-by-one.
+- Traced the mid-frame start-character cases at both start lanes; found the
+  lane-4 abort (`FINDING CSG-1`) and settled `RV-SWEEP` §3.4.
+- Derived the realigned-word geometry for `M03-E1` at both start lanes; found the
+  verification-column projection defect (`FINDING CSG-2`) and confirmed it live
+  against `test/cosim/stimulus_gen.ml:185-202`.
+- **Appended one COUNTERSIGNATURE block** to §14 of
+  `agents/handoffs/WO-0078_cosim-phase2-3-stimulus-widening.md`: the signature,
+  the three-check derivation, per-amendment dispositions, the bound reading, two
+  findings, the correction of record, the restated `RV-SWEEP` §2.3 dispositions,
+  and the verdict.
+- **Wrote no `docs/` path.** Edited no `SO-`, no `AP-`, no CD, no `State` field.
+- Ran no build and no simulation. ADR-0005: the toolchain is unavailable and CI
+  is the only authority; this round is a source reading and a signature, and
+  commissions nothing.
+
+### Evidence
+
+Every command below runs from a checkout at this commit.
+
+1. **Head check.** `git rev-parse HEAD` →
+   `3526e792d5bfcc1265e9764e96936f861d397f78`; spawn-head `3526e79`. Match.
+
+2. **The alignment, from the registers.**
+   `sed -n '311,445p' test/third_party/verilog-ethernet/axis_xgmii_rx_64.v`
+   shows `:357` `xgmii_rxd_d0 <= xgmii_rxd_masked`, `:362`
+   `framing_error_reg <= xgmii_rxc != 0`, `:412`
+   `framing_error_d0_reg <= framing_error_reg`, `:422`
+   `xgmii_rxd_d1 <= xgmii_rxd_d0`; with `:234`
+   `m_axis_tdata_next = xgmii_rxd_d1`. Emitted word at cycle `c` is `W_{c−2}`;
+   `framing_error_reg` is `fe(W_{c−1})`; `:244` reads *fe(next) OR fe(this)*.
+
+3. **Check 1 — `:255`.** `{KEEP_WIDTH{1'b1}} >> (CTRL_WIDTH-4-term_lane_reg)`
+   with `CTRL_WIDTH = 8` has `4 + tl` ones. For a terminate at lane `tl ≤ 4` of
+   `W_m`, the surviving payload in `W_{m−1}` after a four-octet FCS strip is
+   `8 − (4 − tl) = 4 + tl`. Exact. Under the same-word reading it would keep four
+   octets past the terminate character at every lane and four octets of an empty
+   word at `tl = 0` — **arithmetically impossible, not merely unlikely.**
+
+4. **Check 2 — `:280`.** `>> (CTRL_WIDTH+4-term_lane_d0_reg)` has `tl − 4` ones,
+   taken with the **delayed** lane register in `STATE_LAST`, which is the
+   complementary `tl ≥ 5` case and consistent only under the same alignment.
+
+5. **Check 3 — the CRC lane selection, not cited in the ruling.** `:187`
+   `.data_in(xgmii_rxd_d0)`; `:257-261` select `crc_valid[tl−1]` for `tl = 1…4`
+   and **`crc_valid_save[7]`** at `tl = 0`; `:287-289` select
+   `crc_valid_save[tl−1]` for `tl = 5,6,7`. Coherent only under the one-word
+   lookahead.
+
+6. **Amendment 3's control-lane exclusions, at the source.** `:382`
+   `framing_error_reg <= xgmii_rxc[7:1] != 0;` (lane-0 start) and `:390`
+   `framing_error_reg <= xgmii_rxc[7:5] != 0;` (lane-4 start) — both confirmed,
+   both landing after `:362`'s unconditional `xgmii_rxc != 0` and overriding it.
+
+7. **`FINDING CSG-1`, the line that falsifies the recital.** `:346`
+   `framing_error_reg <= {xgmii_rxc[3:0], swap_rxc} != 0;` in the
+   `if (lanes_swapped)` branch, with `:325` `swap_rxc <= xgmii_rxc[7:4]`. At a
+   lane-4 start `swap_rxc = 4'b0001` — the `/S/` control bit — so the cycle after
+   `:390`'s exclusion the framing error is **true**. In `STATE_IDLE` that is
+   consumed (Amendment 2); in `STATE_PAYLOAD` it **aborts**.
+
+8. **`FINDING CSG-2` is live, not theoretical.**
+   `sed -n '185,202p' test/cosim/stimulus_gen.ml` →
+   *"frame 1's own start lane (lane 4, a consequence of the 84-octet spacing not
+   dividing 8, CD §10.2's own recorded consequence) falls out of that arithmetic
+   rather than being chosen."* `M03-E1` is C8's class (`RV-SWEEP` §4.3's table).
+
+9. **Table integrity in what I wrote**, on the check the ruling's own Evidence 6
+   shows catching a real defect. Pipe counts via
+   `awk 'NR>9815 && /^\|/ {print NR": "gsub(/\|/,"|")}'
+   agents/handoffs/WO-0078_cosim-phase2-3-stimulus-widening.md` → `9919-9922`
+   all **5**; `10095-10101` all **4**; `10125-10134` all **3**. Three tables,
+   each internally uniform; no literal pipe splits a cell.
+
+10. **`git status --porcelain` at the end of this round** reports exactly
+    ` M agents/handoffs/WO-0078_cosim-phase2-3-stimulus-widening.md` and
+    ` M agents/journals/claude_dv_lead_agent.v08.md`. **Nothing in `docs/`.** A
+    declared disjoint orchestrator commit (`tasks/BOARD.md` + its journal) may
+    land beside this; those are the orchestrator's and are excluded below.
+
+11. **No build, no simulation, no CI figure quoted.** ADR-0005 governs.
+
+### Outcome
+
+**DoD met. COUNTERSIGNED — all three amendments. The (g)/(h) diff is IN FORCE on
+transcription.**
+
+- **AMENDMENT 1 — COUNTERSIGNED.** The one-word-lookahead alignment holds under
+  three independent checks; the lane-0 carve-out is right and preserves three
+  anchors my own `ECS-4` filing would have destroyed. **Bound reading**: the
+  carve-out is on **lane 0 of the output word** — XGMII lane 0 at a lane-0 start,
+  XGMII lane **4** at a lane-4 start. Two anchorable members of `M03-E1`'s
+  sixteen; the ruling's count is right and its identification needs the gloss.
+- **AMENDMENT 2 — COUNTERSIGNED.** `:236` is airtight; the start word's framing
+  error is consumed on the admitting `STATE_IDLE` cycle, traced cycle-exactly.
+- **AMENDMENT 3 — DISPOSITION COUNTERSIGNED, RECITAL FALSIFIED.** The bar is
+  right and wide enough; the "reference does not abort at all" ground holds for
+  `H-1`/`H-5` and **not** for `H-2`. `FINDING CSG-1`.
+- **`FINDING CSG-1`** (MATERIAL, mine): the reference **aborts** at a lane-4
+  mid-frame start via `:346`'s `swap_rxc`, and the second frame is received — so
+  the sequence agrees and the divergence is a four-octet extent, which a widened
+  (g) would cover and would keep two anchors. Owner dv_lead (reading) /
+  architect_docs_lead (text); carrier the round that lifts `FI-4`/`FI-6`. Costs
+  nothing today; bound against being cited as covering family H generally.
+- **`FINDING CSG-2`** (MATERIAL, mine, **editorial class**): REQ-105's amended
+  verification column projects (g)'s bound onto the wrong member of the
+  lane-4-started half of `M03-E1`. Live at C8. Repair named; no
+  re-countersignature owed; bound until repaired.
+- **`RV-SWEEP` §3.4 DISCHARGED**: `H-3` is lost at a lane-0 mid-frame start and
+  received at a lane-4 one.
+- **CORRECTION OF RECORD**: C8's **class** blocker is discharged; **Stage 3
+  remains unauthorised on gate condition (b)**, a stage condition and mine.
+- **`SO-xgmii_rx_64.md` §6.3's pending marker resolves** to *ruled, both classes
+  IN, both amended, countersigned here* — **noted for the SO- execution round;
+  the draft was NOT edited**, per its own §9 items 1 and 5.
+- **Nothing ran, nothing was anchored, no bar moved.** `AP-M03` §7's bars 1-4
+  stand exactly as at `J-dv_lead-0160`.
+- **Handoff**: to the orchestrator, for commit and for **transcription of the
+  §13 countersignature row** under its own trailer (the `:993` precedent); then
+  `CSG-1` and `CSG-2` to architect_docs_lead as spec-diff requests.
+- **No lessons harvest is due at this entry.** PROTOCOL §7 and charter §8 place
+  it at every `SO-` and every phase gate; this is neither. The span since my last
+  harvest stays **open** and is declared rather than skipped — the `SO-`
+  execution round designed at `J-dv_lead-0161` is the one that closes it.
+
+### Open-questions
+
+1. **`FINDING CSG-1`'s repair has a named carrier and that carrier is
+   unscheduled.** The round that lifts `FI-4`/`FI-6` owes the `H-2` class request
+   on its own merits now, not the open-ended request the ruling anticipated. If
+   family H stays unreachable indefinitely, the recital outlives its repair with
+   no round in flight — the same shape as `FINDING RV-0078-S2-3`'s orphaned
+   carrier, and I record it rather than manufacture a round, on
+   `J-orchestrator-0225`'s standing ruling.
+2. **`FINDING CSG-2` is bound but not repaired, and the bound lives in a packet
+   rather than in the document a bench writer opens.** Until the column is fixed,
+   a reader who opens `requirements.md` and not `WO-0078` §14 gets the wrong
+   member. **This is exactly the "one document up" hazard `FINDING ECS-1`
+   convicted `AP-M03` for**, and I am now on the other side of it.
+3. **The architect flagged one sentence against himself and I answer it here**:
+   the new stimulus bar reads on **co-simulation stimulus only** and does **not**
+   reach the directed benches. I read it as he intended and nothing in my
+   instrument treats it otherwise. **No fresh finding.**
+4. **My spawn's file-scope instruction was wrong and I did not follow it**
+   (Reasoning §1). If the orchestrator's convention has genuinely moved and
+   `docs/specs/` transcription is now expected from signers, that needs an ADR
+   amending PROTOCOL §6, not a spawn-prompt sentence — and until it exists R7
+   would refuse the commit anyway.
+5. **Date drift**: this entry uses the machine clock (2026-08-10T22:52Z), later
+   than my `J-dv_lead-0161` (22:21Z) and than the spawn-head commit
+   (22:38:39Z), and **earlier** than the ruling entry it countersigns
+   (`J-architect_docs_lead-0032`, stamped 23:40Z). `FINDING CD-P2-2` records the
+   underlying inconsistency; nothing here rests on a calendar literal, and the
+   countersignature's authority is its text and this entry, not its timestamp.
+
+### Files-in-this-commit
+
+- agents/handoffs/WO-0078_cosim-phase2-3-stimulus-widening.md

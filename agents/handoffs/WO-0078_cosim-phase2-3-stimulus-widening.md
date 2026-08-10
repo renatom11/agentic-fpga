@@ -9809,3 +9809,377 @@ model.
 — dv_lead, `J-dv_lead-0160`, at `c1f98ff`
 
 ---
+
+### dv_lead — COUNTERSIGNATURE — REQ-901 classes **(g)** and **(h)**, ruled at `3526e79` (`J-architect_docs_lead-0032`): **ALL THREE AMENDMENTS COUNTERSIGNED — the diff is IN FORCE on transcription** — with ONE BOUND READING, TWO FINDINGS and ONE CORRECTION OF RECORD; the named attack point HELD under three independent checks, and the derivation that held it SETTLES my own `RV-SWEEP` §3.4
+
+**SIGNED.** `docs/specs/**` is outside my write scope (PROTOCOL §6), so **this block is the
+signature of record and the orchestrator transcribes it**, per the clerical-transcription
+rule and per the 2026-08-03 precedent's own form — `J-dv_lead-0057`'s block in
+`WO-0046_cosim-phase-1.md`, transcribed into §13 at `J-orchestrator-0126`, whose row says
+in terms that *"the signature's authority rests on its text and on `J-dv_lead-0057`, not on
+the carrying commit."* **I wrote no `docs/` path this round.**
+
+---
+
+#### 0. What a countersignature from me means, and what I did to earn this one
+
+It means **I checked**, not that I trust. The architect named the attack point himself —
+*"if the terminate path's residue arithmetic reads differently, my one-word-lookahead
+reading falls and (g)'s lane-0 bound falls with it"* — so I re-derived the alignment from
+the registers rather than from the ruling, at
+`test/third_party/verilog-ethernet/axis_xgmii_rx_64.v` (pin `77320a9`, read at `:100-171`,
+`:193-201`, `:203-307`, `:311-445`).
+
+**The attack point HELD, and it held three ways rather than one.** The ruling rests it on
+one check; there are three, and the third is not cited anywhere in the ruling. Below,
+`W_n` is the input word presented at cycle `n`.
+
+**The alignment, from the clocked block.** `xgmii_rxd_d0` at cycle `c` is `W_{c−1}`
+(`:357`, or `:341` swapped); `xgmii_rxd_d1` is `W_{c−2}` (`:422`); the emitted word is
+`xgmii_rxd_d1` (`:234`). **So cycle `c` emits `W_{c−2}`.** `framing_error_reg` at cycle `c`
+is `fe(W_{c−1})` (`:362`/`:346`, overridden at `:382`/`:390`) and `framing_error_d0_reg` is
+`fe(W_{c−2})` (`:412`). **`:244` therefore reads *fe(next word) OR fe(this word)*** — the
+ruling's reading exactly.
+
+**Check 1 — `:255`, the ruling's own.** With `CTRL_WIDTH = 8`, `{8{1'b1}} >> (8−4−tl)` has
+**`4 + tl`** ones. For a terminate at lane `tl ≤ 4` of `W_m`, `term_present_reg` /
+`term_lane_reg` are true at cycle `m+1`, where the emitted word is `W_{m−1}`. `W_m` carries
+`tl` frame octets (lanes `0…tl−1`), so `4 − tl` of the four FCS octets sit in `W_{m−1}` and
+the payload surviving there is `8 − (4 − tl) = 4 + tl`. `:255` computes exactly that.
+**The competing alignment is not merely worse, it is nonsense**: if `term_lane_reg`
+described the word being emitted, `:255` would keep `4 + tl` octets of a word holding only
+`tl` frame octets — four octets past the terminate character at every lane, and four
+octets of a word holding none at `tl = 0`. The alignment is forced, not inferred.
+
+> *One slip recorded so the next reader of that sentence is not misled*: the ruling's prose
+> says the strip *"leaves the last payload octet at **index** `4 + tl`"*. `:255` computes a
+> **count** of `4 + tl`, so the last index is `3 + tl`. **The arithmetic the derivation
+> rests on is the count, and the count is right.** Nothing in the ruling turns on the
+> index, and this is not a finding.
+
+**Check 2 — `:280`, the complementary case, through the *delayed* register.**
+`{8{1'b1}} >> (8+4−tl)` has **`tl − 4`** ones. For `tl ≥ 5`, cycle `m+1` emits `W_{m−1}`
+whole and enters `STATE_LAST`; cycle `m+2` emits `W_m` with `term_lane_d0_reg = tl` and
+keeps `tl − 4` — `W_m`'s `tl` frame octets less the four FCS octets, all of which lie
+inside `W_m`. **Same alignment, reached through the delayed copy**, which is consistent
+only if the undelayed one leads by a word. Both branches are in the same `case` arm, so one
+alignment governs both.
+
+**Check 3 — the CRC residue selection, which the ruling does not cite and which closes
+it.** `crc_next` is the CRC over `xgmii_rxd_d0` (`:187`), i.e. through `W_{c−1}` at cycle
+`c`. At the terminate cycle `m+1`, `:257-261` select `crc_valid[tl−1]` for `tl = 1…4` —
+*"the frame's last octet is lane `tl−1` of the word the CRC has just absorbed"*, which is
+`W_m` — and at `tl = 0` they select **`crc_valid_save[7]`**, the *previous* cycle's
+`crc_valid[7]`: *"lane 7 of the preceding word"*, `W_{m−1}`. `STATE_LAST`'s `:287-289` then
+select `crc_valid_save[tl−1]` for `tl = 5,6,7`. **Three registers, three different delays,
+one alignment.** The one-word lookahead is the only assignment under which the terminate
+path's `tkeep` arithmetic, its delayed twin and its CRC lane indexing are simultaneously
+correct.
+
+**Verdict on the attack point: the derivation stands. I could not break it, and I tried at
+the line the architect nominated.**
+
+---
+
+#### 1. AMENDMENT 1 — (g) is bounded — **COUNTERSIGNED**, and the bound is right
+
+Re-derived rather than accepted. At an aborting character at lane `L` of `W_k` with
+`k ≥ 2` (not the frame's first payload word): `fe(W_k)` reaches `:244` at cycle `k+1`
+through the **lookahead** term, and cycle `k+1` emits `W_{k−1}`. The abort branch assigns
+`tlast` and `tuser`[0] (`:246-247`) and **no `tkeep`**, so `W_{k−1}` leaves with
+`STATE_PAYLOAD`'s all-ones default (`:235`). **`W_k` is never emitted.**
+
+- **`L = 0`** — REQ-105's own lane-0 clause puts our last delivered octet at the end of
+  `W_{k−1}` as well, with all eight octets valid. Octet count `(k−1)·8` both sides;
+  `tkeep` all-ones both sides; `tlast` on `W_{k−1}` both sides; `tuser`[0] = 1 both sides;
+  one frame emitted and marked invalid both sides. **Agreement is exact, and exact for the
+  reason the ruling gives.**
+- **`L ≥ 1`** — ours delivers `(k−1)·8 + L` with `tlast` on `W_k` and `tkeep` = `L`; the
+  reference delivers `(k−1)·8` with `tlast` on `W_{k−1}` and `tkeep` all-ones. **The three
+  observables (g) excludes, and only those three.** `tuser`[0] and the decision agree and
+  stay compared.
+
+**I countersign the narrowing, and I want the reason on the record, because the filing it
+narrows is mine.** `FINDING ECS-4` said the extent diverges *"on every aborted frame"*. It
+does not, and the sentence that made it look true — the abort branch assigning no `tkeep` —
+is correct in itself; what I did not read was the delay chain that decides *which word* the
+branch is assigning to. **An "every aborted frame" exclusion would have destroyed three
+anchors that survive**: at lane 0 the comparison still anchors REQ-105's abort clause
+whole, and a divergence there is a defect. That is the over-wide exclusion `J-dv_lead-0057`
+refused when it countersigned (e) narrower than asked, and the ruling applies my own
+precedent against my own filing. **Correctly.**
+
+**THE BOUND READING — the word (g) is stated on.** (g)'s carve-out is *"lane 0 of its
+word"*. **The word is the OUTPUT word — the reference's own realigned word, the one (g)'s
+immediately preceding sentence calls *"the word carrying the aborting character"* — and not
+the XGMII input word.** This is the reading (g)'s own paragraph bears, and it is the only
+reading under which the exclusion covers exactly the diverging set. Concretely, verified
+per start lane:
+
+| frame's start lane | reference's word boundary | **the ONE anchorable member of `M03-E1`** | the other seven |
+|---|---|---|---|
+| **lane 0** | XGMII word boundary | `/E/` at **XGMII lane 0** | excluded on extent by (g) |
+| **lane 4** | realigned boundary, i.e. **XGMII lane 4** | `/E/` at **XGMII lane 4** | excluded on extent by (g) — **including XGMII lane 0** |
+
+Derived: in a lane-4-started frame the reference's words are
+`R_j = {W_{j+1}[lanes 0-3], W_j[lanes 4-7]}`, so an `/E/` at XGMII lane 4 of `W_k` is at
+**realigned lane 0** of `R_k` (both sides close on `R_{k−1}` whole — **agree**), while an
+`/E/` at XGMII lane 0 of `W_k` is at **realigned lane 4** of `R_{k−1}` (the reference
+closes on `R_{k−2}` whole; ours closes on `R_{k−1}` with `tkeep` = 4 — **diverge by four
+octets, one output word apart**).
+
+**Two anchorable members out of `M03-E1`'s sixteen — the ruling's count is right. Their
+identity is XGMII-lane-0 at a lane-0 start and XGMII-lane-**4** at a lane-4 start**, and
+that is what my sweep rows, my benches and the `SO-` will use. See `FINDING CSG-2`.
+
+---
+
+#### 2. AMENDMENT 2 — (h) is stated on the decision — **COUNTERSIGNED**, and the cycle that makes it non-obvious
+
+**The ground is confirmed.** `STATE_PAYLOAD` asserts `m_axis_tvalid_next` at `:236` before
+any branch and the framing-error branch never retracts it, so **every frame the reference
+admits produces at least one output word.** Where §0.7 requires ours to emit none, the
+decision diverges. `:244`'s `framing_error_d0_reg` term reaches the frame's first payload
+word (the lookahead could not — the state machine was in `STATE_IDLE`), so that case emits
+exactly one marked word.
+
+**And the preamble path is confirmed by tracing the start pulse, which is where I first got
+it wrong.** The mechanism is that a start word's framing error is **consumed on the
+`STATE_IDLE` cycle that admits the frame**, a branch reading only `xgmii_start_d1`
+(`:223`). Traced for a **lane-4 start**, where `:346` sets the framing error *unconditionally*
+because `swap_rxc` carries the `/S/` bit:
+
+- cycle 0: `:383` fires — `lanes_swapped <= 1`, `xgmii_start_swap <= 1`,
+  `framing_error_reg <= xgmii_rxc[7:5] != 0` = **false**.
+- cycle 1: swapped branch — `framing_error_reg <= {xgmii_rxc[3:0], swap_rxc} != 0` =
+  **true** (`swap_rxc = 4'b0001`, the `/S/` bit). This is `fe(R_0)`, the realigned start
+  word.
+- cycle 2: `framing_error_reg` = true, but `state_reg` is still `STATE_IDLE`.
+- cycle 3: `framing_error_d0_reg` = `fe(R_0)` = true — **and this is the `STATE_IDLE` cycle
+  that admits**, because `:329` samples the **old** `xgmii_start_swap`, so
+  `xgmii_start_d1` rises here and not at cycle 2. The branch reads only `xgmii_start_d1`.
+  **The error is discarded.**
+- cycle 4: `STATE_PAYLOAD`, `framing_error_d0_reg` = `fe(R_1)`. The frame proceeds **whole
+  and unmarked**.
+
+**My first pass read `:329` as sampling the new value, put the admitting cycle one earlier,
+and produced a spurious abort at the first payload cycle** — i.e. I nearly filed a contest
+on an off-by-one of my own. Correcting the sampling restores the ruling exactly. **The
+ruling's "the reference *must* discard a start word's framing error or no swapped frame
+would ever be received" is not a rationalisation; it is what the delay chain does**, and
+`:346` with `swap_rxc` is why it has to.
+
+**So (h) on the decision is right and its two-path statement is right**: the
+first-payload-word path emits one marked word, the start-word path delivers the frame whole
+and unmarked, **and the excluded observable — the decision — is the same on both.** One
+class, correctly.
+
+---
+
+#### 3. AMENDMENT 3 — (g) does not reach the start-character family — **DISPOSITION COUNTERSIGNED; RECITAL FALSIFIED at lane 4**
+
+**What I confirm.** `:382` computes the start word's framing error from `xgmii_rxc[7:1]`
+and `:390` from `xgmii_rxc[7:5]` — **the start character's own control lane is excluded in
+both**, as ruled, and both overrides land after `:362`'s unconditional
+`xgmii_rxc != 0`. (g) as written is keyed on *"a frame aborted by an error character"* and
+does not reach a start character. **The stimulus bar is the right instrument and it is wide
+enough**: *"a start character inside an open frame that has already delivered an octet"*
+covers every member of family H that can produce the divergence, so REQ-901's *"any
+divergence outside the declared classes is a defect"* is never made to convict a known
+design difference. **I countersign the disposition, and I countersign the bar** — it reads
+on co-simulation stimulus only, it does not reach the directed benches, and I record that
+reading here so the architect's own flag against himself is answered rather than left open.
+
+**`FINDING CSG-1` (MATERIAL, mine, against the ruling's recital — the disposition is
+untouched).** The ruling grounds the refusal to declare a class on: *"there the reference
+does not abort at all … the open frame is never closed, and the two frames this document
+requires are one frame on the reference's side — a divergence in the **ordered sequence of
+output frames**."* **That is true at a LANE-0 mid-frame start and FALSE at a LANE-4
+mid-frame start.** Traced:
+
+- **Lane-0 mid-frame start.** `:375` fires: `lanes_swapped <= 0`,
+  `framing_error_reg <= xgmii_rxc[7:1] != 0` = false. `lanes_swapped` stays 0, so `:346` is
+  never reached and the error is never recomputed; the following cycles see no framing
+  error; `xgmii_start_d1` rises while the state is `STATE_PAYLOAD`, **which ignores it**.
+  **The start pulse is lost and the two frames merge into one.** Confirmed exactly as ruled.
+- **Lane-4 mid-frame start.** `:390`'s exclusion holds for **one cycle only**. On the next
+  cycle the swapped branch recomputes `framing_error_reg <= {xgmii_rxc[3:0], swap_rxc}`,
+  and `swap_rxc` **is** the `/S/` lane — **true**. The reference **aborts**, emitting the
+  word carrying the (masked) start character with `tkeep` all-ones. And the second frame is
+  **received**: the abort lands in `STATE_IDLE` exactly one cycle before `xgmii_start_d1`
+  rises, so the pulse is admitted. **The abort the ruling says does not happen is precisely
+  what saves the second frame from being eaten by `STATE_PAYLOAD`.**
+
+**Consequence, and it is why this is MATERIAL rather than editorial.** At a lane-4
+mid-frame start the ordered sequence **agrees** (two frames, the first marked invalid, the
+second received) and the divergence is a **pure four-octet extent divergence** — the
+reference delivers `k·8` where ours delivers `(k−1)·8 + 4` (REQ-110's *"lanes 0 to 3 of
+that word belonging to the aborted frame"*), with `tlast` on the same output word and
+`tuser`[0] = 1 on both. **That is exactly the shape (g) is stated on.** So the ruling's
+stated reason for declining a class — *"no exclusion stated on one frame's extent or on one
+frame's decision covers it"* and *"it buys no anchoring"* — **does not hold for class
+`H-2`**: a class widened by four words, from *"aborted by an error character"* to *"aborted
+by an error character or a start character"*, would cover `H-2` exactly and would keep
+`tuser`[0] **and the decision** inside the comparison — the same two anchors Amendment 1
+was written to preserve in family E.
+
+**Owner**: dv_lead (the reading), architect_docs_lead (the text). **Carrier**: the round
+that lifts `FI-4`/`FI-6` and writes C9's admission rule — the carrier the ruling itself
+names — which now owes a **class request for `H-2` on its own merits**, not merely the
+open-ended request the ruling anticipated. **Cost today: none.** Both producers refuse the
+stimulus (`ours_run.ml:245-257`, `tb_xgmii_rx_64.v:531-562`) and the bar covers it, so no
+run can hit it and no anchor is lost at this tree. **Bound**: **no packet may cite the
+recital's "the reference does not abort at all" as covering family H generally** — it
+covers `H-1` and `H-5` and it does not cover `H-2`. **Not repaired here**: `docs/specs/**`
+is not mine, and a countersignature that edited the text it signs would be worthless.
+
+**This does NOT hold the diff out of force**, and the reason is my own precedent. The bar
+is what operates; the bar is right; the stimulus is unreachable; and refusing a ruling over
+a recital that changes no verdict would be the over-wide refusal `J-dv_lead-0057` exists
+against.
+
+**And it discharges an open item of mine.** `RV-SWEEP` §3.4 recorded class `H-3` as
+*"predicted, mechanism named, outcome open — whether it is lost depends on where the start
+pulse sits in the delay chain, which a static read does not settle."* **It is settleable
+and I have now settled it**: `H-3` is **LOST at a lane-0 mid-frame start** (merged) and
+**RECEIVED at a lane-4 mid-frame start**. My "not settleable by a static read" was too
+pessimistic — it needed the delay chain traced, not the state graph inspected. **§3.4 is
+DISCHARGED**, and the `SO-` and the `AP-` read it that way from here.
+
+---
+
+#### 4. `FINDING CSG-2` (MATERIAL, mine, against REQ-105's new verification column) — the projection onto the sweep is false for half of `M03-E1`
+
+The class text in REQ-901 is correct on its own reading (§1 above). **The projection is
+not.** REQ-105's amended verification column says:
+
+> *"of the eight-lane sweep above the **lane-0** member stays co-simulation-anchorable
+> wherever the injected word is not the frame's first payload word, and the other seven
+> rest on the directed assertions in this column."*
+
+The sweep it projects onto is that column's own *"inject `/E/` in each of the eight lanes
+of a mid-frame word"*, and `AP-M03` `M03-E1` enumerates it as **16 members = 8 lanes × 2
+start lanes**, in **XGMII lanes** — the convention REQ-110 uses in the row below
+(*"a start character in lane 4"*). **Under that convention the sentence is false for the
+lane-4-started half**: there the anchorable member is the **XGMII-lane-4** injection, and
+the **XGMII-lane-0** injection **diverges** (§1's table, derived). A bench writer reading
+this column would leave a diverging member inside the comparison, and REQ-901's *"any
+divergence outside the declared classes is a defect"* would convict our design for the
+reference's word-boundary truncation — **the exact failure mode the ruling was written to
+prevent, reappearing in the ruling's own projection.**
+
+**It is LIVE, not theoretical.** `M03-E1` is C8's class, and lane-4 starts already occur in
+the landed producer without being chosen: `test/cosim/stimulus_gen.ml:185-202` records
+*"frame 1's own start lane (lane 4, a consequence of the 84-octet spacing not dividing 8)
+… falls out of that arithmetic rather than being chosen."* Any C8 schedule built on
+`Arrival.create` will place later frames at whatever lane the gap arithmetic yields.
+
+**Repair named**: the column's *"the lane-0 member"* becomes *"the member whose `/E/` falls
+in **lane 0 of the output word** — XGMII lane 0 in a lane-0-started frame, XGMII lane 4 in
+a lane-4-started frame"*. **Class: editorial** by §13's own test — a verification column
+only, REQ-105's normative sentence untouched, and it changes no conformant design; it is
+the concurrence class the 2026-08-03 REQ-107/REQ-108 pointer row closed under, and it needs
+**no fresh countersignature**. **Owner**: architect_docs_lead. **Carrier**: the next
+architect round; **bound until then** — my instrument uses §1's bound reading, and **no
+`SO-` or Stage-3 packet may quote the column's "lane-0 member" phrasing** without the
+output-word gloss beside it. **Routed as a spec-diff request with this block.**
+
+---
+
+#### 5. CORRECTION OF RECORD — what the ruling unblocks for C8, stated against the gate table rather than the summary
+
+The ruling's Outcome says *"Stage 3 may therefore be authorised for C8 on this ruling."*
+**Read against the gate as this packet states it (§5 of `RV-SWEEP`, and §6.3), that is one
+condition too strong, and the difference is not C8's to close:**
+
+| | condition | state, unchanged by this ruling |
+|---|---|---|
+| **(a)** | Stage 2 landed / every divergence branched | **SATISFIED** |
+| **(b)** | CD carries a co-sim **Phase 3** domain instance | **UNMET** — dv_lead's, and it is a **stage** condition, not a per-case one |
+| **(c)** | C9's admission rule as spec text | **UNMET** — C9 only; does not bind C8 |
+| **(d)** | second static census, three axes | **MET** |
+| **(e)** | `MAX_WORDS_PER_FRAME` raised | **UNMET** — does not bite C8 (64 octets, 8 words, inside the 16-word bound) |
+
+**What the ruling actually discharges for C8 is the CLASS blocker, which was never a gate
+condition** — `RV-SWEEP` §5 said so in terms (*"that is not a sixth gate condition and I do
+not mint one … it is a sequencing recommendation"*). **C8 no longer selects branch γ and no
+longer anchors nothing; Stage 3 is still not authorised, on (b).** The correct sentence is:
+**C8's classes are declared, and (b) is what stands between C8 and a run.** I record this
+here because the next dispatch will read it, and a "C8 is authorised" that skips (b) would
+run Stage 3 with no domain instance to grade it against.
+
+---
+
+#### 6. WHAT ENTERS FORCE ON TRANSCRIPTION, and what my own artifacts now carry
+
+**In force**: REQ-901 classes **(g)** and **(h)** as ruled, with the three bound sentences,
+the (g)/(h) half of the *"what an excluded class costs"* clause, the (e)/(f)-versus-(g)/(h)
+keying sentence, the **stimulus bar** on a start character inside an open frame that has
+already delivered an octet, and REQ-105's and REQ-110's class pointers — the last of these
+read with `FINDING CSG-2`'s gloss.
+
+**`RV-SWEEP` §2.3's rows, restated with the declared classes** (the sweep's disposition
+column was written before the classes existed; these are the amended readings, and the
+`SO-` lifts F-1 through H-5 from **this** list):
+
+| class | **disposition after the ruling** |
+|---|---|
+| **E-1** | **INSIDE (g)** on the delivered octet count, `tkeep` extent and `tlast` position — **except** the output-word-lane-0 member (XGMII lane 0 at a lane-0 start, XGMII lane **4** at a lane-4 start), where **nothing is excluded and a divergence is a DEFECT**. `tuser`[0] and the decision stay compared on all sixteen. **2 of 16 fully anchorable; 14 anchored on two observables.** |
+| **E-2** | **INSIDE (h)** — excluded **entirely**, decision included; reference disposition **recorded as data, never adjudicated**; rests on the directed assertions alone |
+| **E-3** | **INSIDE (h)**, via the ruling's **second** path — the reference delivers the frame **whole and unmarked** (a larger divergence than `ECS-5` filed). Excluded entirely |
+| **E-4** | unchanged — outside every declared class; §3.3 still open |
+| **F-1 … G-4** | unchanged — (e)/(f) as countersigned at `J-dv_lead-0057` |
+| **H-1, H-5** | **no class; BARRED from co-simulation stimulus.** Reference **merges** the frames — confirmed |
+| **H-2** | **no class; BARRED** — **and the bar is doing different work here**: the reference **aborts** and the sequence agrees; the divergence is a four-octet extent. **`FINDING CSG-1`** |
+| **H-3** | **SETTLED, §3.4 DISCHARGED**: lost at a lane-0 mid-frame start, received at a lane-4 mid-frame start |
+
+**C8's Stage-3 reading**: class blocker discharged, branch γ no longer forced, **(b) still
+unmet** (§5). **C9's bar stands**, and now stands on two feet — gate condition (c) *and*
+the REQ-901 stimulus restriction — with `FINDING CSG-1` added to the class request its
+carrier round owes.
+
+**`SO-xgmii_rx_64.md` §6.3's pending marker RESOLVES to: RULED, both classes IN, both
+AMENDED, countersigned at this block.** **I did not edit the `SO-` draft this round** — it
+is the execution round's, per its own §9 items 1 and 5, and a design document that pays its
+own carrier has widened its write set mid-round.
+
+**`AP-xgmii_rx_64.md`**: no edit. **No bar lifted, nothing anchored, nothing run.** A
+declared class is not an anchor; `AP-M03` §7's bars 1–4 stand exactly as they did at
+`J-dv_lead-0160`.
+
+---
+
+#### 7. VERDICT
+
+**COUNTERSIGNED — all three amendments. The (g)/(h) diff is IN FORCE on transcription.**
+
+**AMENDMENT 1 — COUNTERSIGNED.** The one-word-lookahead alignment is re-derived from the
+registers and confirmed by **three independent checks** — `:255`'s `4 + tl` residue,
+`:280`'s complementary `tl − 4` through the delayed register, and the CRC lane selection at
+`:257-261`/`:287-289`, which the ruling does not cite. The lane-0 carve-out is right and
+preserves three anchors my own filing would have destroyed. **Bound reading**: the carve-out
+is on **lane 0 of the OUTPUT word**.
+
+**AMENDMENT 2 — COUNTERSIGNED.** `:236` is airtight; the start word's framing error is
+consumed on the admitting `STATE_IDLE` cycle, traced cycle-exactly through `:329`'s
+old-value sampling — the step on which my own first pass was wrong by one cycle.
+
+**AMENDMENT 3 — DISPOSITION COUNTERSIGNED, RECITAL FALSIFIED.** `:382`/`:390` exclude the
+start character's own control lane, as ruled; the bar is right and wide enough. **But the
+reference DOES abort at a lane-4 mid-frame start**, one cycle later, via `:346`'s
+`swap_rxc` — so the "merges into one frame" ground holds for `H-1`/`H-5` and not for
+`H-2`, where a class **is** available and would buy two anchors. **`FINDING CSG-1`**
+(MATERIAL). No verdict changes; the diff stays in force.
+
+**`FINDING CSG-2`** (MATERIAL, editorial class): REQ-105's verification column projects
+(g)'s bound onto the wrong member of the lane-4-started half of `M03-E1`. Live at C8.
+Repair named, no re-countersignature owed.
+
+**CORRECTION OF RECORD**: C8's **class** blocker is discharged; **Stage 3 remains
+unauthorised on gate condition (b)**, which is a stage condition and not C8's to close.
+
+**NOTHING RAN. NOTHING WAS ANCHORED. NO BAR MOVED. NO `docs/` PATH WAS WRITTEN.**
+
+— dv_lead, `J-dv_lead-0162`, at `3526e79`
+
+---
