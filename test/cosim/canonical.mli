@@ -194,10 +194,66 @@ val class_of : divergence -> string option
 
 val divergence_to_string : divergence -> string
 
+(** {2 [FINDING RV-0078-S2-11] — WHAT the two sides agreed on, not merely THAT
+    they agreed}
+
+    The record below was RELATIONAL and never ABSOLUTE: it printed [frames
+    compared], [frames matching] and [divergences: none], and never one value
+    the two sides agreed on. That is sufficient while the interesting fact
+    about a case is a RELATION — "two independent implementations did the same
+    thing" — and insufficient the moment it is a VALUE. It became a value at
+    the bad-FCS case, whose entire point is REQ-104's [tuser0] = 1 on the
+    delivering word: for that case the record established equality without
+    establishing what was equal, so a packet writing "the co-simulation agreed
+    [tuser0] = 1" would have been quoting a number no log contains.
+
+    The rule that finding minted binds whether or not this repair exists:
+    {e no document may state a co-simulated value that the log does not print;
+    a value established by pairing this lane's agreement with another
+    instrument's assertion is written as the pair, with both cited.} These
+    types discharge it on the PRODUCING side, so the pair form becomes a
+    choice rather than the only lawful wording.
+
+    ONLY THE COMPARED OBSERVABLES APPEAR HERE, and the omission is the point.
+    [word.cycle] is deliberately absent: WO-0075 §4 bars a cross-side cycle
+    comparison as the exact quantity REQ-901's closing sentence excludes by
+    name, so [cycle] is never compared by [compare_transactions] — and a
+    quantity that was never compared may not appear inside a record of what
+    was agreed, where a reader would take it for one. That is why this is a
+    type of its own rather than the [word list] it would otherwise be. *)
+type agreed_word =
+  { a_tkeep : int
+  ; a_tlast : bool
+  ; a_tuser0 : bool
+  ; a_octets : int list
+  }
+
+(** One frame both sides carried at the same index, on which they agreed about
+    everything REQ-901 compares: the accept-or-discard decision, and — where
+    that decision is [Accept] — every word, field for field. [a_words] is
+    empty iff [a_decision = Discard], the same invariant [frame] carries. *)
+type agreed_frame =
+  { a_index : int
+  ; a_decision : decision
+  ; a_words : agreed_word list
+  }
+
 type report =
   { frames_compared : int
   ; frames_matching : int
   ; divergences : divergence list
+  ; agreed : agreed_frame list
+        (** the [frames_matching] frames, ascending by index, carrying the
+            values they agreed on.
+
+            Populated PER FRAME and never gated on the transaction's
+            divergence list: a frame that matched has agreed values whatever
+            some OTHER frame in the same case did. Gating a per-frame print on
+            the whole transaction's divergence list is the exact defect
+            [FINDING RV-0078-S1-2] limb (b) repaired in
+            [timing_report_to_string] — unreachable at a one-frame case,
+            reachable from the first multi-frame case onward — and it is not
+            reintroduced here. *)
   }
 
 (** REQ-901's own comparison. *)
@@ -205,7 +261,18 @@ val compare_transactions : ours:transaction -> theirs:transaction -> report
 
 (** REQ-901's Verification-column report, verbatim in shape: "frames
     compared, frames matching, and every divergence with the class it falls
-    in or the defect it is." *)
+    in or the defect it is" — followed by the agreed values of every frame
+    that matched ([FINDING RV-0078-S2-11]).
+
+    BOUNDED, and the bound is stated here rather than discovered later: the
+    agreement block prints one line per agreed word, and the reference side
+    captures at most [MAX_WORDS_PER_FRAME] words per frame, so the block is
+    bounded by that constant times the number of frames the case array drives.
+    The case arrays this lane has carried are single-digit frame counts, which
+    is the workload this print is sized against. A stage that drives frames in
+    the thousands — a fuzz or replay lane — needs a bound here BEFORE it runs,
+    not a discovery afterwards: state the range a bound must cover in the same
+    change that introduces it. *)
 val report_to_string : report -> string
 
 (** [true] iff [report] carries no divergences. What [compare.ml]'s exit code

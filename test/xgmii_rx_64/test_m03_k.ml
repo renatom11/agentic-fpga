@@ -460,15 +460,52 @@ let run_k2 () =
   in
   (* WO-0072 §8.4 step 3: the delivered-cycle list of the whole run, asserted
      BEFORE any partition is taken -- the precondition every partition below
-     depends on. *)
+     depends on.
+
+     FINDING K-1 (MAJOR, raised at WO-0077 §6.6 against WO-0072 §9's own
+     pre-committed disposition table; carrier ruled at J-orchestrator-0225
+     ruling 2 to be the SO- round, as the next commit opening this file) is
+     paid here. The defect: WO-0072 §9 pre-commits D1, D2 and D3 as three
+     DISTINCT disposition classes with three distinct BUG- citations, and all
+     three move which cycles carry a delivered word -- so all three raise THIS
+     assertion, whose message named the expected list and printed nothing it
+     observed. Measured under run, four injected classes (IC-K1, IC-K3, IC-K5,
+     IC-K6) produced one BYTE-IDENTICAL promoted file (blob 373f32a), leaving
+     the adjudicator no way to tell the three dispositions apart from what the
+     scorecard prints. M03-N4's equivalent assertion in the same bench
+     (test_m03_n.ml:1305) already prints its observed list, so this was a
+     defect in one message and never a limitation of the form.
+
+     The repair is to the MESSAGE only: the verdict, its condition and this
+     row's status are unchanged (M03-K2 stays ASSERT, and FINDING K-1 moved no
+     row when it was raised). The expected list is now bound once and read by
+     both the comparison and the message, so the two can never drift -- the
+     hazard the old hardcoded message text carried.
+
+     WHAT THIS REPAIR DOES NOT DO, stated here so a later reader does not
+     over-read it. It removes the "names its expected value and reports no
+     observed one" defect. It does NOT make all four classes distinguishable:
+     WO-0077's seal §8 collision 3 pre-committed, and the run confirmed, that
+     IC-K1 at site (i) and IC-K6 with one leaked cycle produce the SAME
+     observed list, separated only by a tlast bit no assertion in this unit
+     reaches. So the repair turns one message into several, not into four, and
+     the residual collision is a stimulus/assertion question rather than a
+     message one. It is also PROSPECTIVE: the four campaign runs are historical
+     artefacts at their own SHAs and are not improved by this edit. *)
   let delivered = delivered_samples samples in
   let delivered_cycles = List.map delivered ~f:(fun s -> s.cycle) in
-  if not (List.equal Int.equal delivered_cycles [ 4; 5; 14; 15; 16; 17; 18; 19; 20; 21 ])
+  let expected_delivered_cycles = [ 4; 5; 14; 15; 16; 17; 18; 19; 20; 21 ] in
+  if not (List.equal Int.equal delivered_cycles expected_delivered_cycles)
   then
     fail
       row
-      "the delivered-cycle list is not [4;5;14;15;16;17;18;19;20;21] -- the precondition every \
-       partition below depends on";
+      (String.concat
+         [ "the delivered-cycle list is ["
+         ; String.concat ~sep:"; " (List.map delivered_cycles ~f:Int.to_string)
+         ; "], expected ["
+         ; String.concat ~sep:"; " (List.map expected_delivered_cycles ~f:Int.to_string)
+         ; "] -- the precondition every partition below depends on"
+         ]);
   (* T1: partition by this asserted cycle list, NEVER by
      {!Bench.split_at_first_tlast} -- frame A delivers words and never
      closes, so "the first tlast" would be B's own and the function would

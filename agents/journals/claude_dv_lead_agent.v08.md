@@ -875,3 +875,529 @@ transcription.**
 ### Files-in-this-commit
 
 - agents/handoffs/WO-0078_cosim-phase2-3-stimulus-widening.md
+
+## [J-dv_lead-0163] 2026-08-10T23:19Z | task:none | Four carriers paid in the order my own draft fixed — the message gains its relatum, the citation bar gains teeth proved by two negative controls, the comparator learns to print what was agreed, and a "not yet" is priced by the instrument that would measure it rather than by the change
+
+### Trigger
+
+Orchestrator dispatch: **SO- EXECUTION, ROUND 1** — §7.1 steps **1–5** of my own
+draft's twelve-step order, `agents/handoffs/SO-xgmii_rx_64.md` (landed `b80fef1`,
+drafted at `49d87af`, `J-dv_lead-0161`). The dispatch states, and I accept, that
+**the draft governs over the dispatch**. Steps 6–12 follow in a second round because
+step 7's CI run needs steps 2–3 landed first — the draft's own 3→6 edge.
+
+The dispatch also declares a **sibling in flight**: architect_docs_lead repairing
+`CSG-1`/`CSG-2`'s recitals in `docs/specs/requirements.md`. I touched no `docs/**`
+path.
+
+### Inputs
+
+- `agents/charters/dv_lead.md`; `agents/PROTOCOL.md` (§3, §4, §5, §6, §7, §10).
+- `agents/handoffs/SO-xgmii_rx_64.md` — the whole draft; §0.2, §3.1, §3.2, §3.5,
+  §3.8, §3.9, §5, §7.1 load-bearing here.
+- `agents/handoffs/WO-0077_family-k-mutation-campaign.md` §6 (**`RN-6`'s ruling in
+  full**), §6.6 (**`FINDING K-1` in full**); `WO-0077_..._SEALED-predictions.md`
+  §6.6-adjacent text.
+- `agents/handoffs/WO-0075_cosim-lane-cycle-comparison.md` (`FINDING RV-0075-1`,
+  `-2` at their source); `agents/handoffs/WO-0078_cosim-phase2-3-stimulus-widening.md`
+  §5, §5.1, §5.2.
+- `agents/journals/claude_orchestrator_agent.v02.md` — `J-orchestrator-0225` ruling 2
+  (`FINDING K-1`'s carrier).
+- `agents/journals/claude_dv_lead_agent.v06.md` (`FINDING K-1`'s two measurements),
+  `.v07.md` (Stage-1 absorption of `RV-0075-1`/`-2`), `.v08.md` (tail, for the id).
+- `test/attack_plans/AP-xgmii_rx_64.md` §7 — `U-1`, `U-2`, and the paragraph pricing
+  them.
+- My own artefacts, opened to change them: `test/xgmii_rx_64/test_m03_k.ml`,
+  `test/xgmii_rx_64/test_m03_n.ml` (read only, for the repair's model at `:1305`),
+  `tools/dv_checks.sh`, `test/cosim/canonical.ml`, `test/cosim/canonical.mli`,
+  `test/cosim/compare.ml` (read only), `test/cosim/dune`, `tools/cosim/run_cosim.sh`
+  (grepped only, to confirm nothing parses the comparator's log text).
+
+**Independence (PROTOCOL §10, charter §8).** **No RTL source was opened.** No file
+under `libs/**`, `top/**` or `rtl_snapshots/**` was read. `libs/` appears in this
+round exactly once, inside `git diff --name-only … -- libs/`, which prints **paths
+and no content** and is the freeze verification my own draft's step 1 names.
+
+### Reasoning
+
+**1. Step 1 — the base, and a head that moved under me.**
+
+The abort-first check passed: HEAD was the spawn-head `4e7331b` at the round's
+opening. I declare the **base = `4e7331b`**, and the draft's freeze verification:
+
+- `git diff --name-only 49d87af HEAD -- test/ libs/ tools/` → **empty**. Every figure
+  the draft quotes was measured on this tree.
+- `git diff --name-only e51ca52 HEAD -- libs/ tools/` → **empty**; over `test/`, one
+  path, `test/attack_plans/AP-xgmii_rx_64.md` — the `AP-` round's own lift cells
+  (`3526e79`, `J-dv_lead-0159`). So bar 1's set claim, measured at `e51ca52` over both
+  producers, has had no producer change under it.
+
+**Mid-round, HEAD advanced to `ce5674d`.** I applied the dispatch's own disjointness
+test rather than treating a moved head as a stop: `git merge-base HEAD 4e7331b` =
+`4e7331b`, so the spawn-head is an **ancestor**; the single new commit is the
+**declared sibling's** and touches `docs/specs/requirements.md` and
+`agents/journals/claude_architect_docs_lead_agent.v02.md` — **disjoint from all five
+of my files**. I re-ran both freeze verifications and the whole of `dv_checks.sh` at
+the new head; every result above is stated **at `ce5674d`**, not inherited from the
+opening tree. A denominator measured against a tree that has since moved is the thing
+step 1 exists to prevent, and it nearly happened here by accident rather than by
+error.
+
+**2. Step 2 — `FINDING K-1`, and why the repair is smaller than the defect.**
+
+The finding, at its source (`WO-0077` §6.6), quoted rather than paraphrased:
+
+> **`FINDING K-1` (MAJOR, against my own `WO-0072` §9 and, secondarily, against a
+> bench message).** `WO-0072` §9 pre-committed **D1**, **D2** and **D3** as three
+> distinct disposition classes with three distinct `BUG-` citations, to be applied
+> *"against the CI `build` run at the landing commit"*. **All three move which cycles
+> carry a delivered word, so all three raise `M03-K2`'s first DUT-observable
+> assertion, whose message names the expected list and prints nothing it observed.**
+> Four of this section's six classes land there. The same bench contains the same
+> assertion shape at `M03-N4` **printing its observed list**
+> (`test_m03_n.ml:1300–1311`), so this is a defect in one message and not a limitation
+> of the form.
+
+Carrier ruled at `J-orchestrator-0225` ruling 2: *the repair rides the `SO-` round,
+because the `SO-` owns the next commit that opens `test_m03_k.ml` and the carrier rule
+names the next opener, not a manufactured one.* **This round is its terminal carrier**
+and it is paid at `test_m03_k.ml:466–500`.
+
+Two choices inside the repair, neither cosmetic. **First**, I bound the expected list
+to a name and let both the comparison and the message read it. The old message
+hard-coded the literal in prose beside a literal in code — two copies of one fact,
+which is the drift hazard that produced `FINDING M-4` and the `dune` header's own
+staleness. **Second**, and this is the part a repair like this usually gets wrong: I
+wrote **what the repair does not do** into the comment. `WO-0077`'s seal §8 collision
+3 pre-committed, and the run confirmed, that IC-K1 at site (i) and IC-K6 with one
+leaked cycle produce the **same observed list**, separated only by a `tlast` bit no
+assertion in this unit reaches. **So the repair turns one message into several, not
+into four.** A comment claiming the classes are now distinguishable would have been a
+second `K-1` in the same file. The residual is a stimulus/assertion question, not a
+message one, and it is recorded as an observation below rather than repaired here —
+repairing it would widen this round's write set mid-round, which is the move `RV-C4`
+§12 convicts.
+
+**3. Step 3 — `RN-6`, and the one design decision that mattered: gate or report.**
+
+`RN-6`'s ruling names the carrier exactly: *"a resolve-check in `tools/dv_checks.sh`
+— at minimum, every `docs/**` path cited in `agents/handoffs/**` resolves at the tree,
+and a citation that does not is reported by the same command whose output is already
+this programme's census provenance."*
+
+`tools/dv_checks.sh` already sorts its blocks into two classes, and the file argues
+the distinction in its own comments: **CHECKS gate**, **REPORTS cannot manufacture a
+green and cannot redden one**. The inventory and the row census are reports *because
+an asserted count goes stale every packet and would redden the suite for doing its
+job*. **A path either resolves or it does not — that is an invariant, not a count**,
+so it belongs in the check class. And the decisive argument is `RN-6`'s own history:
+a note-carrier repaired the instance at `WO-0076` and did not bind the drafting, and
+the same broken path was copied into the very next packet **by the agent that ruled
+it**. A non-gating disposition has now been tried once and failed once. **It gates.**
+
+Four sub-decisions, each against a way this could have been theatre:
+
+- **Scope is the ruled minimum: `agents/handoffs/**/*.md`, not widened to journals.**
+  Journals are append-only by PROTOCOL §4, so a broken citation in one is unrepairable
+  by construction and a bar over them could only ever accumulate exceptions. **A bar
+  whose only possible response to a finding is to grow its exception list is not a
+  bar.**
+- **Three non-failure classes, each printed so the judgement is checkable rather than
+  inherited.** `GLOB` for an **interior** `*` — trailing `*`s are stripped first,
+  because markdown bold is emphasis and not a pattern, and that strip is exactly why a
+  **bolded** broken path is still caught. `PREFIX` for a citation by id
+  (`docs/adr/ADR-0001`) that is a **unique** filename prefix — with uniqueness as the
+  whole guard: an **ambiguous** prefix is reported `MISSING`, never quietly accepted.
+  Each accepted prefix is listed with what it resolved to.
+- **The errata table, and why it is a table and not a cleverer regex.** The check
+  cannot tell a **citation** from a **quotation-to-convict** — my own draft §3.2 quotes
+  the broken `ADR-0014` path in order to state the defect. That is the same distinction
+  PROTOCOL §10's R-SEAL-1 draws between making a claim and quoting one, and it says in
+  terms that *distinguishing a claim from a quotation is not a lexical test*. So it is
+  a signed, diffable disposition, not a pattern. The bodies of the three issued packets
+  are **not rewritten**: `RN-6` ruled that editing an instrument another agent has
+  already worked under makes its compliance statement unverifiable against the text it
+  cites.
+- **Staleness is a failure.** A declared erratum that stops firing reddens. An
+  allowlist with no staleness check is how a bar decays into a comment, and I would
+  rather be forced to delete an entry deliberately than let one rot.
+
+**And the anti-vacuity, which I owed to myself.** My draft §3.2 said *"expect the check
+to report failures on first run… a check whose first run is green tells you nothing
+about the check"* — `FINDING K-3`'s rule applied to its author's own new bar. **What
+actually happened is worth stating precisely, because the honest version is less
+flattering than the planned one**: I extracted the citation set with the same regex
+**before** wiring the gate, found the seven unresolved tokens, dispositioned them, and
+**then** wired the check — so the gating check's first run was **green**, and that
+green is evidence of nothing. The teeth come from two places instead: an **inline
+self-test** with six classifier assertions (four of them negative) plus two extractor
+assertions, all on fixtures because nothing in this tree can demonstrate that an
+ambiguous prefix is refused; and **two negative controls run against the real tree** —
+delete one erratum entry and the check reddens with an undeclared broken citation;
+add a key that never fires and it reddens on staleness. **Both directions, on real
+data.** The self-test is invoked directly rather than through `run_and_label`, for two
+reasons stated in the file: it has no gate it can stand down at, so the `SKIPPED`
+branch would be unreachable and misleading; and an indirectly-invoked function reads
+to a static analyser as dead code, and the file was `shellcheck`-clean before this
+block.
+
+**4. Step 4 — `FINDING RV-0078-S2-11`: I opened the comparator. And the cost I was
+carrying for that decision was wrong.**
+
+The choice the draft fixed: open `test/cosim/**` and print the agreed value on the
+clean path, **or** decline and write REQ-104's row as the pair. My own `LH-cand-I`
+says *where the interesting fact is a value rather than a relation, print the agreed
+value on the passing path*, so the burden was on declining.
+
+The price I expected to pay for opening was a second carrier: my draft §3.9 lists
+`FINDING RV-0075-1` (T1's printer) in the standing set with carrier *"the next commit
+opening `test/cosim/**`"*. **It is closed.** `WO-0078` §5.1 absorbed it into Stage 1;
+the repair is landed in `canonical.ml`'s `timing_report_to_string`, which cites the
+finding by name and was further extended by `FINDING RV-0078-S1-2` limb (b); the
+Stage-1 verdict records it **CLOSED**. **My draft carried a discharged debt as
+standing, and that mispricing sat directly under a decision this round had to make.**
+It is raised as a finding against §3.0 of my own packet. I did **not** rewrite §3.9:
+`FINDING RV-0075-2` is closed only *for the class it named* and its residual limb is a
+separate question, and correcting a standing set from one spot-check is the defect this
+packet convicts elsewhere. §3.9 is `RE-MEASURE` at step 9.
+
+Three properties of the repair, each chosen against a defect already paid for here:
+
+- **`cycle` is absent from the agreed record.** `WO-0075` §4 bars a cross-side cycle
+  comparison as the quantity REQ-901's closing sentence excludes by name, so
+  `compare_words` never reads it. **A quantity that was not compared may not sit inside
+  a record of what was agreed**, where a reader would take it for one — which is why
+  `agreed_word` is its own type and not a `word list`. Bar 3 is untouched.
+- **Per frame, never gated on the transaction's divergence list.** Gating a per-frame
+  print on the whole transaction is precisely `FINDING RV-0078-S1-2` limb (b)'s defect
+  in the sibling printer in this same file — unreachable at a one-frame case,
+  reachable from the first multi-frame case on. Not reintroduced.
+- **`agreed` accumulates in the same branch, off the same predicate, that increments
+  `frames_matching`**, so count and values cannot drift, and it is taken from *ours*,
+  which **is** *theirs* on every compared field by that very predicate.
+
+**What it is not.** Not a lift (§5.1 item 4): no row status, no coverage-map line, no
+discharge count moves. No new anchored class. The lane still asserts **no figure of its
+own** — the absolute half stays with an X-1 bench row (`FINDING RV-0078-S2-2`). And it
+does **not** improve the landed logs: the five lift runs were produced by the old
+printer and are not re-run, so the agreed value becomes quotable **only** from step 7's
+own `cosim` job at the sign-off SHA, where a re-observation is not a lift and renews
+none. If that job does not produce the line, REQ-104's row **falls back to the pair
+form**. §5.5 binds either way, and I wrote that consequence into §3.5 now, before the
+row exists, precisely so it cannot be worded loosely later.
+
+**One thing I deliberately did not do.** I did not add a self-test case to
+`compare.ml` for the ungated property. The established precedent in this file for a
+**printer** repair is `RV-0075-1`'s own, whose comment says the property is *"verified
+by eyeball against the printed report below, not by this exit-code check alone: see
+the journal entry's Evidence"* — a printer asserts nothing and cannot redden anything,
+so `FINDING K-3`'s rule about bars does not reach it. I followed that precedent and
+produced the eyeball evidence as a declared transient. **The committed self-test does
+not exercise "a matched frame beside a content-diverged frame"**, and that gap is named
+below with a carrier rather than left for someone to discover.
+
+**5. Step 5 — `U-1`/`U-2`: refused, and the refusal is priced by the measurement, not
+by the change.**
+
+`AP-M03` §7 records that neither is blocked on machinery: *"both of them changes to
+assertion ordering or stimulus separation, not new capability"*. So the implementation
+is cheap — one `WO-` to tb_writer, two units, one bench round. **The implementation is
+not the price.**
+
+The price is the **campaign**. What the change buys is that two assertions become
+**reachable by mutation**, and reachability is a *measurement* whose only instrument is
+a seeded campaign. **The class-based era closed at `WO-0077`; no seal is drafted and
+none is scheduled** — my own §3.7 owns that measurement. So a unit landed now arrives
+**unqualified**, and the packet's claim moves from *"this assertion is unreachable,
+MEASURED under five classes"* — which is what `U-1`'s cell records today — to *"this
+assertion should now be reachable, DERIVED from an ordering argument."* **That is a
+worse position for a sign-off, not a better one**: it trades a measured blindness for
+an unmeasured hope, which is `FINDING K-3`'s rule and `LH-cand-J`'s
+(*reproduction earns confidence, never jurisdiction*) pointing the same way. `SC-8`
+exists to **publish** the register, not to empty it.
+
+**So: form (b), refused — with the bound intact and an expiry that is not a date.**
+The bound is `AP-M03` §7's dispositions unchanged: `M03-L4` is qualified by citation to
+`M03-L1`'s pairing or not at all; `M03-L3`'s ΔC content is discharged by `WO-0070` §6's
+derivation and by no run; and no packet may count a `U-`-marked assertion and its
+preceding sibling as two observations. The expiry has **three triggers, whichever fires
+first**: (1) the next seeded campaign commissioned against this module — the separation
+rides *that* order, so the new units are qualified by the campaign that measures them;
+(2) the next round that opens `test_m03_l.ml` for any other reason — the same carrier
+logic `J-orchestrator-0225` ruling 2 used on `FINDING K-1`; (3) `P1-phase-accept` as a
+backstop, where the refusal **expires and is re-decided in the open**. Trigger 3 is the
+one that matters: it is what stops this becoming, in `LH-cand-K`'s words, *a permanent
+"no" that nobody decided.*
+
+**6. On touching the packet at all this round.** The draft writes §3 at step 9, and I
+have not written §3 — I appended two clearly-delimited `RULED` blocks to the §3.5 and
+§3.8 that already exist, a §3.0 execution record, a header Execution bullet and a
+change-log row. Nothing in §1, §2, §5, §6 or §8 moved. **State stays DRAFT, §8 stays
+UNSET, and a carrier payment adjudicates no criterion of §1** — the draft's §9 item 5
+says a *draft* pays no carrier, and this is the executing round, which does.
+
+### Actions
+
+- Step 1: abort-first head check; base declared `4e7331b`; freeze verified; head
+  movement to `ce5674d` detected mid-round, tested for disjointness, all measurements
+  re-taken at the new head.
+- Step 2: `test/xgmii_rx_64/test_m03_k.ml` — `FINDING K-1` paid at `M03-K2`'s first
+  DUT-observable assertion.
+- Step 3: `tools/dv_checks.sh` — `RN-6`'s gating resolve-check, its self-test, its
+  errata table and its staleness guard; script re-run; every unresolved citation
+  dispositioned.
+- Step 4: `test/cosim/canonical.ml` + `canonical.mli` — `FINDING RV-0078-S2-11`'s
+  repair; built and self-tested locally with plain `ocamlc`.
+- Step 5: `U-1`/`U-2` answered, form (b).
+- Packet: `agents/handoffs/SO-xgmii_rx_64.md` — §3.0, the two `RULED` blocks, the
+  header Execution bullet, the change-log row.
+
+### Evidence
+
+**All commands run from a clean checkout at `ce5674d` with this round's five files
+modified in the working tree. Nothing below is a `dune runtest` result: steps 6–7 take
+those, in round 2.**
+
+**(a) Base and freeze — step 1.**
+
+```
+$ git rev-parse HEAD                                    (at the round's opening)
+4e7331b609a40763394822405e09fb170cc2e5e9                 == the spawn-head
+$ git diff --name-only 49d87af HEAD -- test/ libs/ tools/
+                                                         (empty)
+$ git diff --name-only e51ca52 HEAD -- libs/ tools/
+                                                         (empty)
+$ git diff --name-only e51ca52 HEAD -- test/
+test/attack_plans/AP-xgmii_rx_64.md
+$ git merge-base HEAD 4e7331b                            (after HEAD moved)
+4e7331b609a40763394822405e09fb170cc2e5e9
+$ git log --oneline 4e7331b..HEAD
+ce5674d Both findings verified and both corrected by the deeper trace: …
+$ git diff --name-only 4e7331b HEAD
+agents/journals/claude_architect_docs_lead_agent.v02.md
+docs/specs/requirements.md
+```
+
+**(b) `RN-6`'s check — step 3.** `bash tools/dv_checks.sh` → **exit 0**. Its two new
+blocks, observed:
+
+```
+=== docs/** citation resolve-check --self-test (RN-6) ===
+  ok    a resolving path is OK             docs/adr/ADR-0001-org-design.md -> OK
+  ok    RN-6 shape is caught               docs/adr/ADR-0001.md -> MISSING …
+  ok    a bolded broken path is caught     docs/adr/ADR-0001.md -> MISSING …
+  ok    an interior glob is a pattern      docs/reports/*/x.md -> GLOB
+  ok    a unique id prefix resolves        docs/adr/ADR-0001 -> PREFIX docs/adr/ADR-0001-org-design.md
+  ok    an AMBIGUOUS prefix is refused     docs/adr/ADR-0090 -> MISSING AMBIGUOUS prefix — 2 names …
+  ok    extractor finds and attributes the broken citation
+  ok    extractor strips markdown bold from a good citation
+=== docs-citation resolve-check self-test: OK ===
+…
+  302  docs/** citations in agents/handoffs/**/*.md (file x path, unique)
+  293  resolve at the tree
+    0  patterns (interior glob) — not citations, not checked
+    5  resolve by UNIQUE id prefix (listed above)
+    4  declared errata (listed above; each ruled, none rewritten)
+    0  UNDECLARED broken citations
+    0  stale errata (declared, did not fire)
+=== docs/** citation resolve-check: OK ===
+```
+
+**The seven unresolved tokens the first extraction found, each dispositioned**
+(`302 = 293 + 5 + 4`):
+
+| token | citing packet(s) | disposition |
+|---|---|---|
+| `docs/adr/ADR-0001`, `ADR-0006`, `ADR-0007`, `ADR-0010`, `ADR-0017` | `WO-0002`, `WO-0008` ×2, `WO-0019`, `WO-0077` | **RESOLVED BY UNIQUE PREFIX** — citation by ADR id; each is a unique filename prefix and the check prints what it resolved to. Not the `RN-6` defect and not an erratum |
+| `docs/adr/ADR-0006/0007` | `WO-0008` | **ERRATUM** — compressed prose shorthand for two ADRs, both of which resolve and both of which the same packet cites in full in its own return table. Body not rewritten. No carrier: the targets exist |
+| `docs/adr/ADR-0014.md` | `WO-0076`, `WO-0077` | **ERRATUM OF RECORD** — `RN-6`'s two instances, ruled at `WO-0076` §4 and `WO-0077` §6. Target `docs/adr/ADR-0014-an-enable-gates-admission-not-the-wire.md`. Bodies not rewritten, by ruling |
+| `docs/adr/ADR-0014.md` | `SO-xgmii_rx_64.md` | **ERRATUM — quotation-to-convict**, not a citation: §3.2 quotes the broken path in order to state the defect. Not lexically separable from a citation, hence a disposition and not a pattern |
+
+**The two negative controls, run against the real tree in a symlinked scratch copy —
+ephemeral, deleted, and declared as such (ADR-0003/F5):**
+
+```
+NEGCTL A — one erratum entry deleted:
+  BROKEN   agents/handoffs/WO-0077_family-k-mutation-campaign.md
+    3  declared errata …
+    1  UNDECLARED broken citations
+=== docs/** citation resolve-check: FAILED ===
+
+NEGCTL B — a key added that never fires:
+  STALE ERRATUM — declared and did not fire: agents/handoffs/NOSUCH.md|docs/adr/NOSUCH.md
+    1  stale errata (declared, did not fire)
+=== docs/** citation resolve-check: FAILED ===
+```
+
+`bash -n tools/dv_checks.sh` → clean. `shellcheck tools/dv_checks.sh` → **exit 0**,
+matching the file's pre-round baseline (`shellcheck` on `git show HEAD:tools/dv_checks.sh`
+→ exit 0). CI does not run `shellcheck`; this is a local property I chose not to
+regress.
+
+**(c) `test/cosim` — step 4, the plain-`ocamlc` path.** `canonical.ml`/`.mli` and
+`compare.ml` need nothing beyond the standard library, by the `dune` stanza's own
+design note, so they build outside the Hardcaml toolchain:
+
+```
+$ ocamlc -version
+4.14.1
+$ ocamlc -w @1..3@5..28@30..39@43@46..47@49..57@61..62@67@69-40-41-42-44-45-48-58-59-60-66-68-70 \
+    -strict-sequence -strict-formats -short-paths -g \
+    -c canonical.mli && … -c canonical.ml && … -c compare.ml && … -o compare canonical.cmo compare.cmo
+   (clean; no warning, no error)
+$ ./compare --self-test
+   … 13 cases …
+compare --self-test: OK                                  (exit 0)
+```
+
+**All thirteen existing self-test cases pass unchanged**, including (a) exit 0, (b)
+exit 1, (c)/(f)/`WO-0078-1` exit 3, (d)/(e)/`S1-1` exit 4, T0 exit 5, (e′)/`5.2` exit
+6, `S1-2` limb (b) exit 4 and `S2-8` exit 0.
+
+**The new block, observed on the clean path** (self-test case (a)):
+
+```
+frames compared: 1
+frames matching: 1
+divergences: none
+agreed values (what REQ-901's comparison found EQUAL; this lane asserts no figure of its own -- FINDING RV-0078-S2-11)
+  frame 0: decision = accept, 2 word(s), 12 octet(s)
+    word 0: tkeep = ff  tlast = 0  tuser0 = 0  octets = 00 01 02 03 04 05 06 07
+    word 1: tkeep = 0f  tlast = 1  tuser0 = 0  octets = 08 09 0a 0b
+```
+
+**The property the committed self-test does NOT exercise, demonstrated as a declared
+transient** (hand-authored two-frame canonical pair in a scratch directory, **deleted;
+ephemeral, ADR-0003/F5**): frame 1's last word perturbed by one octet on the `theirs`
+side —
+
+```
+frames compared: 2
+frames matching: 1
+divergences: 1
+  DEFECT: frame 1 word 1: octets mismatch (ours=18 19 1a 1b, theirs=18 19 1a bb)
+agreed values (…)
+  frame 0: decision = accept, 2 word(s), 12 octet(s)
+    word 0: tkeep = ff  tlast = 0  tuser0 = 0  octets = 00 01 02 03 04 05 06 07
+    word 1: tkeep = 0f  tlast = 1  tuser0 = 0  octets = 08 09 0a 0b
+                                                          (exit 1)
+```
+
+— the matched frame's agreed values print **beside** a diverged frame, and the diverged
+frame contributes **no** agreed entry. And the same pair compared against itself
+prints the REQ-104 shape this repair exists for: `frame 1 … word 1: tkeep = 0f
+tlast = 1  tuser0 = 1 …` on the clean path, exit 0. **This is a transient
+demonstration and not committed evidence**; the committed evidence is step 7's own
+`cosim` job at the sign-off SHA.
+
+**(d) `test_m03_k.ml` — step 2. CI-DEFERRED, and named as such.** This directory is
+Hardcaml-dependent; `tools/precompile_check.sh`'s STUBBABLE set does not cover
+`hardcaml_ethernet`, so the directory is **excluded from that harness by
+construction** (`test/xgmii_rx_64/dune`'s own header, `WO-0038` §6 rule 2), and **CI's
+`dune build @default` / `dune runtest` is the only compiler that reaches it**
+(ADR-0005). The only local check available is a parser pass, and it is weak evidence
+which I do not dress up as more:
+
+```
+$ ocamlc -stop-after parsing -c test_m03_k.ml
+                                                         (exit 0 — parses; type-check NOT performed)
+```
+
+**The type-check, the expect promotion and the suite verdict for this file are owed to
+CI at the sign-off SHA, and per §3.1 the run id quoted at `SC-3` must be a run taken
+AFTER this repair — not an earlier green.**
+
+**(e) What did not change.** `git status --porcelain` lists exactly five modified
+paths and no untracked file. No `docs/**` path, no `libs/**`, `top/**` or
+`rtl_snapshots/**` path, no `docs/gates/**`, no `.github/**`. No `git commit`, no
+`git push`, no `dune`, no `iverilog`, no `vvp`, no CI trigger.
+
+### Outcome
+
+**Steps 1–5 met. Steps 6–12 owed to round 2, unchanged.**
+
+Ledger items **1** (`FINDING K-1`), **2** (`RN-6`), **5** (`S2-11`'s repair) and **10**
+(`U-1`/`U-2` pricing) are **PAID** — recorded in the packet at §3.0. Items 3, 4, 6, 7,
+8, 9, 11 and 12 are untouched and stay owed. The packet's **State remains DRAFT and §8
+remains UNSET**; no criterion of §1 is adjudicated, no bar lifted, no count asserted,
+no anchor claimed, no harvest taken.
+
+**Handoff**: the five files below, staged-ready, to the orchestrator, trailer
+`Agent: dv_lead`. **One consequence the orchestrator should relay rather than absorb**:
+`tools/dv_checks.sh` is a `build.yml` step, so from this commit on **a new `docs/**`
+citation in ANY `agents/handoffs/**` packet that does not resolve at the tree reddens
+CI for every agent, not only for me.** That is the bar working as ruled, and it is
+also a coordination fact every packet-writing agent now needs.
+
+**Harvest — status, not the harvest.** `SC-12` and my draft's §4 place the programme's
+first dv_lead harvest at **step 10**, in the **signing** entry, over the span
+`J-dv_lead-0001 … <signing entry>`. **The span stays OPEN and is not tiled here.** What
+this round owes the walk is its own candidates, banked **at this entry** so the
+step-10 walk finds them rather than reconstructing them; ids continue regime 1's
+sequence (which ended at `LH-cand-K`) and **will be re-labelled once**, with the old
+label recorded beside, when step 10 re-labels the whole bank into one `LC-`/`LD-`
+sequence:
+
+- **`LH-cand-L`** — *a bar over a corpus whose entries may not be edited needs a
+  declared exception list, and an exception that no longer fires must fail: an
+  exception list with no staleness check is how a bar decays into a comment.*
+  **LH1**: this round's `RN-6` check, and the two rounds that carried the same broken
+  citation under a non-gating disposition. **LH2-g**: no proper noun. **LH3**: without
+  it the list grows silently and the bar stops measuring anything, while still printing
+  a green.
+- **`LH-cand-M`** — *a carried-obligation list is a claim about the present and goes
+  stale like any other measurement; re-measure an obligation's state at its source
+  before pricing a decision on it.* **LH1**: this round found a discharged debt listed
+  as standing, directly under the decision it mispriced. **LH2-g**: holds. **LH3**:
+  without it a round pays twice, or declines a cheap thing believing it expensive.
+- **`LH-cand-N`** — *a record of what two implementations agreed on may contain only
+  the quantities that were compared; admitting an uncompared quantity into it converts
+  a non-comparison into an apparent agreement.* **LH1**: this round's agreed-value
+  record and the excluded time field. **LH2-g**: holds. **LH3**: without it a reader
+  cites, in good faith, a value no comparison ever established.
+- **`LH-cand-O`** — *when a change is cheap but the instrument that would give it
+  meaning is expensive, the refusal is priced by the instrument, not by the change —
+  and a measured blindness is worth more to a verdict than an unmeasured repair.*
+  **LH1**: this round's `U-1`/`U-2` answer. **LH2-g**: holds. **LH3**: without it a
+  programme buys cheap changes that move a claim from *measured* to *derived* and
+  reports the trade as progress.
+
+**One war story, kept and not offered**: my own anti-vacuity plan for the `RN-6` check
+said its first run would be red; I dispositioned the findings before wiring the gate,
+so the first gating run was green and proved nothing. The lesson generalises only into
+`LH-cand-L`, which already carries it; as a rule of its own it fails **LH2** by being a
+restatement of *test your test*.
+
+### Open-questions
+
+1. **The residual `K-1` collision.** After the repair, IC-K1 at site (i) and IC-K6 with
+   one leaked cycle still produce identical messages, because their **observed lists are
+   equal** and the separating fact is a `tlast` bit no assertion in this unit reaches
+   (`WO-0077` seal §8 collision 3, sealed before the run and confirmed by it).
+   **Carrier: step 8's family-K rows**, which must state it rather than let the repair
+   imply four-way discrimination.
+2. **`compare.ml`'s self-test does not exercise the agreed block's ungated property** —
+   a matched frame beside a **content**-diverged frame. The existing multi-frame case
+   diverges in T1, not in content. Demonstrated transiently above; **carrier: the next
+   round that opens `test/cosim/compare.ml`.** I declined to widen this round's write
+   set for it, on this file's own precedent for a printer repair.
+3. **§3.9's standing set is `RE-MEASURE` at step 9**, not corrected here.
+   `FINDING RV-0075-1` is closed; `FINDING RV-0075-2` is closed only for the class it
+   named. **The whole list needs walking at its sources**, and the count is a product of
+   that walk.
+4. **The sibling's commit `ce5674d` moves `docs/specs/requirements.md`**, whose title
+   line reads *"the widening withdrawn on sign"*. **REQ-901's class list and the
+   (g)/(h) recitals are inputs to §2.4, §5.6 and §6.3**, all of which round 2 writes.
+   Round 2 must re-read that file at the sign-off SHA rather than inherit this draft's
+   reading; §6.3 records the ruling as **PENDING** and I have not anticipated it.
+5. **Criterion 3's unexercised plural property** (`§3.6`) is unchanged and still routed
+   to the auditor, unanswered — I have not self-adjudicated it in the packet that
+   benefits from the answer.
+
+### Files-in-this-commit
+
+- agents/handoffs/SO-xgmii_rx_64.md
+- test/cosim/canonical.ml
+- test/cosim/canonical.mli
+- test/xgmii_rx_64/test_m03_k.ml
+- tools/dv_checks.sh

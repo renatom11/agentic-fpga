@@ -13,6 +13,12 @@
 - **From / To**: dv_lead → orchestrator (merge precondition; **verbatim** relay class,
   PROTOCOL §3 — *when it is issued*; a DRAFT is not yet in that class).
 - **Drafted at**: `49d87af`, 2026-08-10. **Drafting entry**: `J-dv_lead-0161`.
+- **Execution — round 1 of 2**: §7.1 steps **1–5** executed at `J-dv_lead-0163`,
+  base `4e7331b`. Steps **6–12** follow in a second round (step 7's CI run needs
+  steps 2–3 landed first — §7.1's own 3→6 edge). **The State field above is
+  unchanged and §8's verdict is still UNSET.** What round 1 paid are §3 ledger
+  items — carriers — and **a carrier payment adjudicates no criterion of §1**.
+  The execution record is §3.0.
 - **Signed**: *(unsigned — the executing round signs `J-dv_lead-NNNN` here)*
 
 ---
@@ -448,6 +454,32 @@ each is and *how* it is paid.
 | **11** | the 22-assertion breadth figure | figure carried unre-derived | this round | §2.1 |
 | **12** | the programme's first lessons harvest | gate precondition | this round | §4 |
 
+### 3.0 EXECUTION RECORD — round 1, §7.1 steps 1–5 (`J-dv_lead-0163`, base `4e7331b`)
+
+**Four of the twelve are PAID. The other eight are untouched and stay owed.** Nothing
+below adjudicates a criterion; each is a carrier discharged in the order §7.1 fixes.
+
+| # | item | state after round 1 | where |
+|---|---|---|---|
+| **1** | `FINDING K-1` — message repair | **PAID**, step 2 | `test/xgmii_rx_64/test_m03_k.ml` — the expected list is bound once and read by both the comparison and the message, and the message now prints the **observed** list beside it. Verdict, condition and `M03-K2`'s `ASSERT` status unchanged |
+| **2** | `RN-6` — `docs/**` resolve-check | **PAID**, step 3 | `tools/dv_checks.sh` — a gating check over every `docs/**` path cited in `agents/handoffs/**/*.md`, with a self-test, a declared-errata table and a staleness guard. §3.2's ordering consequence stands: **every SC-1 and SC-10 census quote is taken with THIS script**, at step 6 |
+| **5** | `FINDING RV-0078-S2-11` — the repair | **RULED and EXECUTED**, step 4 | §3.5's `RULED` block below — the comparator was opened |
+| **10** | `U-1`/`U-2` pricing | **ANSWERED**, step 5 | §3.8's `RULED` block below — refused, with a bound and a three-trigger expiry |
+| 3, 4, 6, 7, 8, 9, 11, 12 | — | **OWED, unchanged** | round 2, §7.1 steps 6–12 |
+
+**AND ONE FINDING AGAINST THIS PACKET'S OWN §3.9, raised by the round that needed the
+answer.** §3.9 lists `FINDING RV-0075-1` (T1's printer) in the standing set with
+carrier *"the next commit opening `test/cosim/**`"*. **It is CLOSED**, and was closed
+before this document was drafted: `WO-0078` §5.1 absorbed it into **Stage 1**, the
+repair is landed in `test/cosim/canonical.ml`'s `timing_report_to_string` — which
+cites it by name, extended by `FINDING RV-0078-S1-2` limb (b) — and the Stage-1
+verdict records it **CLOSED** (`J-dv_lead-0155` era, `WO-0078` Return log). Carrying it
+as standing mispriced step 4: opening the comparator looked as though it would fire a
+second carrier, and it fires none. **`FINDING RV-0075-2` is closed only *for the class
+it named*** and its residual limb is a separate question; §3.9 is **RE-MEASURE at step
+9**, not corrected here, because rewriting a standing set from one spot-check is the
+defect this packet convicts elsewhere.
+
 ### 3.1 `FINDING K-1` — the repair, and why its position in the round is load-bearing
 
 **The defect**: `WO-0072` §9 fixes three *distinct* dispositions (D1, D2, D3) with three
@@ -554,6 +586,49 @@ the clean path, or it writes REQ-104's row **as the pair** and says which instru
 supplies the relatum. **Both are lawful; silently doing the second while wording it
 like the first is not.**
 
+> **RULED, step 4 (`J-dv_lead-0163`): THE COMPARATOR IS OPENED. The first limb.**
+>
+> `test/cosim/canonical.ml` + `.mli`: `compare_transactions` now carries an `agreed`
+> field and `report_to_string` prints, **on the passing path**, the values REQ-901's
+> comparison found equal — per frame the agreed decision, per word the agreed `tkeep`,
+> `tlast`, **`tuser0`** and octets. This is `LH-cand-I` applied to its own author:
+> *where the interesting fact is a value rather than a relation, print the agreed value
+> on the passing path.*
+>
+> **Three properties of the repair, each chosen against a defect this programme has
+> already paid for, and each checkable in the diff:**
+>
+> 1. **`cycle` is absent from the agreed record, deliberately.** `WO-0075` §4 bars a
+>    cross-side cycle comparison as the quantity REQ-901's closing sentence excludes by
+>    name, so `compare_words` never reads it — and **a quantity that was not compared may
+>    not appear inside a record of what was agreed**, where a reader would take it for
+>    one. That is why `agreed_word` is a type of its own and not a `word list`. **Bar 3
+>    is untouched and this repair does not approach it.**
+> 2. **The block prints PER FRAME and is never gated on the transaction's divergence
+>    list.** Gating a per-frame print on the whole transaction is exactly
+>    `FINDING RV-0078-S1-2` limb (b)'s defect in the sibling printer — unreachable at a
+>    one-frame case, reachable from the first multi-frame case on. It is not
+>    reintroduced.
+> 3. **`agreed` is accumulated in the same branch, off the same predicate, that
+>    increments `frames_matching`**, so the count and the values cannot drift; and it is
+>    taken from *ours*, which **is** *theirs* on every compared field by that predicate.
+>
+> **WHAT THIS DOES NOT DO, and the packet obeys all four.** It is **not a lift** (§5.1
+> item 4): no row's status, no coverage-map line and no discharge count moves. It
+> creates **no anchored class**. It makes this lane assert **no figure of its own** —
+> the absolute half of any claim about these values is still discharged by an X-1 bench
+> row asserting them at the receiver and never by this block (`FINDING RV-0078-S2-2`).
+> And it **does not retroactively improve the landed logs**: the five lift runs were
+> produced by the old printer and are not re-run, so **the agreed value becomes
+> quotable only from step 7's own `cosim` job at the sign-off SHA**, and a
+> re-observation there is **not a lift and renews none** (§5.1 item 5).
+>
+> **Consequence for §2.3's REQ-104 row at step 8, stated now so the row cannot be
+> written loosely later**: the row may cite the printed agreed `tuser`[0] **only** at
+> step 7's own run and job ids, quoted together; if that job does not produce the line,
+> **the row falls back to the pair form** — this lane's agreement together with
+> `M03-D1`'s absolute assertion, both cited. §5.5 binds either way.
+
 ### 3.6 Criterion 3's unexercised plural property
 
 `WO-0078` §12 criterion 3 — *every case reaches a verdict or names why not* — is
@@ -599,6 +674,63 @@ or **(b) refused with a stated reason and a bound** — the two rows keep their 
 dispositions, no packet may count both assertions as two observations, and the refusal
 carries an expiry condition. **`LH-cand-K`'s own rule applies to me here: a repeated
 "not yet" with no condition attached becomes a permanent "no" that nobody decided.**
+
+> **RULED, step 5 (`J-dv_lead-0163`): FORM (b) — REFUSED, PRICED, BOUNDED, AND WITH AN
+> EXPIRY THAT IS NOT A DATE.**
+>
+> **The price, stated so the refusal is checkable rather than merely asserted.** Neither
+> is blocked on machinery; both are assertion-ordering or stimulus-separation changes.
+> The bench half is small — a `WO-` to tb_writer for two units, one whose sequence
+> read-back is **not preceded** by a positional octet comparison of the same octets, one
+> whose latency-record assertion is **not preceded** by the per-class records that fix
+> its operands — call it one bench round: one worker spawn, one `RV-`, one landing.
+> **The bench half is not the price.**
+>
+> **The price is the campaign, and it is what decides this.** The value of the change is
+> that the two assertions become **reachable by mutation**. Reachability is a
+> **measurement**, and the only instrument that takes it is a seeded campaign. **The
+> class-based campaign era CLOSED at `WO-0077`; no seal is drafted and none is
+> scheduled** (§3.7 measures this and owns it). So a unit landed now would arrive
+> **unqualified**, and the packet's claim would move from
+>
+> - *"this assertion is unreachable, MEASURED under five classes"* — which is what
+>   `U-1`'s own cell records today — to
+> - *"this assertion should now be reachable, DERIVED from an ordering argument."*
+>
+> **That is a worse position for a sign-off, not a better one**, and it is the exact
+> trade this programme convicts elsewhere: `FINDING K-3`'s rule that a bar unmeasured
+> against its own tree is a hope, and `LH-cand-J`'s that reproduction earns confidence
+> and never jurisdiction. **A published, measured blindness is more useful to a reader
+> than an unmeasured repair** — which is why `SC-8` publishes the register instead of
+> emptying it.
+>
+> **THE BOUND, which rides with the refusal and is not softened by it.** `U-1` and `U-2`
+> keep their dispositions exactly as `AP-M03` §7 states them, and §5.7 carries them as
+> prohibitions: **`M03-L4` is qualified by citation to `M03-L1`'s pairing or not at
+> all**; **`M03-L3`'s ΔC content is discharged by `WO-0070` §6's derivation — a statement
+> about the specification — and by no run**; and **no packet, campaign or scorecard may
+> count a `U-`-marked assertion and its preceding sibling as two observations**, because
+> a coverage claim that counts both has counted one observation twice.
+>
+> **THE EXPIRY — three triggers, whichever fires first, none of them a date.**
+>
+> 1. **The next seeded-mutation campaign commissioned against this module.** The
+>    separation is commissioned **in that order**, not after it, so the new units are
+>    qualified by the campaign that measures them rather than waiting for a later one.
+>    This is the trigger the refusal's own reasoning creates: the refusal rests entirely
+>    on there being no instrument in flight, so the instrument's return revokes it.
+> 2. **The next round that opens `test/xgmii_rx_64/test_m03_l.ml` for any other
+>    reason.** The marginal cost of an ordering change collapses when the file is already
+>    open — the same carrier logic `J-orchestrator-0225` ruling 2 used to make
+>    `FINDING K-1` ride this round rather than a commit manufactured to carry it.
+> 3. **`P1-phase-accept`, as a backstop.** If neither of the first two has fired by that
+>    gate, **the refusal expires there and is re-decided in the open**, with this block
+>    cited as the prior decision. **This is the trigger that stops a "not yet" becoming a
+>    "no" nobody decided** — it does not let the question lapse into silence, which is
+>    the failure mode `AP-M03` §7 recorded the question against in the first place.
+>
+> **This answer is given, not passed on.** No later artefact inherits the question by
+> default; a later round that wants a different answer overturns this one in writing.
 
 ### 3.9 The standing set, carried with carriers named (NOT paid here)
 
@@ -1027,4 +1159,5 @@ writes one token in this section and signs it with its journal entry.**
 
 | date | change | by |
 |---|---|---|
+| 2026-08-10 | **EXECUTION ROUND 1 — §7.1 steps 1–5, at base `4e7331b`.** Header gains an Execution bullet; §3.0 records the four ledger items paid (`FINDING K-1`'s message repair in `test_m03_k.ml`; `RN-6`'s gating `docs/**` resolve-check in `tools/dv_checks.sh`, with a self-test, a declared-errata table and a staleness guard; `FINDING RV-0078-S2-11` ruled and executed; `U-1`/`U-2` answered) and raises one finding against this packet's own §3.9 — `FINDING RV-0075-1` is listed as standing and is CLOSED. §3.5 and §3.8 gain their `RULED` blocks: the comparator is opened and prints the agreed values on the passing path; the `U-1`/`U-2` pricing is refused with a price, a bound and a three-trigger expiry. **State still DRAFT, §8 still UNSET, no criterion of §1 adjudicated, no bar lifted, no count asserted, no harvest taken.** | dv_lead, `J-dv_lead-0163` |
 | 2026-08-10 | **Document created as a DRAFT at `49d87af`.** Fourteen sign-off criteria (`SC-1` … `SC-14`); the evidence map over the bench era with its five riders, the ten-campaign mutation era in five columns, the anchor's five classes at run and job ids, the seventeen-class error table, the four bars and the five unreachable instruments; a twelve-item owed ledger with `FINDING K-1` positioned before the family-K rows; the first lessons harvest designed — span opened at `J-dv_lead-0001`, the bank enumerated at its sources across four labelling regimes with three accounting defects named, and a re-labelling method rather than a total; the prohibition register; the Stage-3 statement with its expiry and its (g)/(h) dependency recorded as pending; a twelve-step execution order and the sponsor's gate. **No verdict, no lift, no carrier paid, nothing run.** | dv_lead, `J-dv_lead-0161` |

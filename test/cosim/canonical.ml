@@ -331,10 +331,37 @@ let all_indices om tm =
   add_keys om (add_keys tm []) |> List.sort_uniq Int.compare
 ;;
 
+(* `FINDING RV-0078-S2-11`, repaired here. The record below was RELATIONAL and
+   never ABSOLUTE — it printed "frames compared / frames matching /
+   divergences: none" and never one value the two sides agreed on. That is
+   enough while a case's interesting fact is a relation, and not enough the
+   moment it is a value: the bad-FCS case's whole point is REQ-104's
+   [tuser0] = 1 on the delivering word, and for it the record established
+   equality without establishing what was equal.
+
+   [cycle] is absent from [agreed_word] on purpose. WO-0075 §4 bars a
+   cross-side cycle comparison as the quantity REQ-901's closing sentence
+   excludes by name, so [compare_words] never looks at it — and a quantity
+   that was not compared may not sit inside a record of what was agreed, where
+   a reader would take it for one. *)
+type agreed_word =
+  { a_tkeep : int
+  ; a_tlast : bool
+  ; a_tuser0 : bool
+  ; a_octets : int list
+  }
+
+type agreed_frame =
+  { a_index : int
+  ; a_decision : decision
+  ; a_words : agreed_word list
+  }
+
 type report =
   { frames_compared : int
   ; frames_matching : int
   ; divergences : divergence list
+  ; agreed : agreed_frame list
   }
 
 let compare_words ~index ~word_index (a : word) (b : word) divergences_rev =
@@ -388,6 +415,12 @@ let compare_transactions ~(ours : transaction) ~(theirs : transaction) : report 
   let indices = all_indices om tm in
   let frames_compared = List.length indices in
   let matching = ref 0 in
+  (* Accumulated in the SAME branch that increments [matching], off the SAME
+     predicate, so the two can never drift: a frame is agreed iff it added no
+     divergence of its own. Taken from [ofr] — which is [tfr] on every compared
+     field, by that predicate — so the block reports a value both sides
+     produced, never one side's reading of the other. *)
+  let agreed_rev = ref [] in
   let divergences_rev =
     List.fold_left
       (fun divergences_rev index ->
@@ -434,12 +467,32 @@ let compare_transactions ~(ours : transaction) ~(theirs : transaction) : report 
                  walk 0 divergences_rev (ow, tw)))
              else divergences_rev
            in
-           if divergences_rev == before then incr matching;
+           if divergences_rev == before
+           then (
+             incr matching;
+             agreed_rev
+             := { a_index = index
+                ; a_decision = ofr.decision
+                ; a_words =
+                    List.map
+                      (fun (w : word) ->
+                         { a_tkeep = w.tkeep
+                         ; a_tlast = w.tlast
+                         ; a_tuser0 = w.tuser0
+                         ; a_octets = w.octets
+                         })
+                      ofr.words
+                }
+                :: !agreed_rev);
            divergences_rev)
       []
       indices
   in
-  { frames_compared; frames_matching = !matching; divergences = List.rev divergences_rev }
+  { frames_compared
+  ; frames_matching = !matching
+  ; divergences = List.rev divergences_rev
+  ; agreed = List.rev !agreed_rev
+  }
 ;;
 
 let report_to_string (r : report) =
@@ -455,6 +508,52 @@ let report_to_string (r : report) =
           let label = match class_of d with Some c -> c | None -> "DEFECT" in
           Buffer.add_string buf (Printf.sprintf "  %s: %s\n" label (divergence_to_string d)))
        ds);
+  (* `FINDING RV-0078-S2-11`'s repair: the values, on the passing path.
+     Printed for every frame that matched, UNCONDITIONALLY -- never gated on
+     [r.divergences], because gating a per-frame print on the whole
+     transaction's divergence list is `FINDING RV-0078-S1-2` limb (b)'s exact
+     defect and it is not reintroduced here.
+
+     What this block IS: the values REQ-901's own comparison found equal. What
+     it IS NOT, and no packet may read it as: a lift, a new anchored class, or
+     an assertion of any figure. This lane asserts NO figure of its own -- it
+     asserts that two independent implementations produced the same REQ-901
+     observables. The absolute half of any claim about these values is
+     discharged by a bench row asserting them at the receiver, never by this
+     block (`FINDING RV-0078-S2-2`). *)
+  Buffer.add_string
+    buf
+    "agreed values (what REQ-901's comparison found EQUAL; this lane asserts no figure of \
+     its own -- FINDING RV-0078-S2-11)\n";
+  (match r.agreed with
+   | [] ->
+     Buffer.add_string
+       buf
+       "  none -- no frame index was compared and found equal on every REQ-901 observable\n"
+   | frames ->
+     List.iter
+       (fun f ->
+          Buffer.add_string
+            buf
+            (Printf.sprintf
+               "  frame %d: decision = %s, %d word(s), %d octet(s)\n"
+               f.a_index
+               (decision_to_string f.a_decision)
+               (List.length f.a_words)
+               (List.fold_left (fun n w -> n + List.length w.a_octets) 0 f.a_words));
+          List.iteri
+            (fun word_index w ->
+               Buffer.add_string
+                 buf
+                 (Printf.sprintf
+                    "    word %d: tkeep = %02x  tlast = %d  tuser0 = %d  octets = %s\n"
+                    word_index
+                    w.a_tkeep
+                    (if w.a_tlast then 1 else 0)
+                    (if w.a_tuser0 then 1 else 0)
+                    (octets_to_string w.a_octets)))
+            f.a_words)
+       frames);
   Buffer.contents buf
 ;;
 

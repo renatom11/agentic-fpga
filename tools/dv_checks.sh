@@ -121,10 +121,206 @@ run_and_label() { # $1 = human label, $2… = command
   fi
 }
 
+# ---- RN-6's resolve-check: extractor, classifier, errata, self-test ----
+#
+# WHY THIS EXISTS, and why it is a tool and not a third note (RULING, RN-6,
+# WO-0077 §6; the instance was first ruled at WO-0076 §4).
+#
+# WO-0077 §9 item 4 admitted `docs/adr/ADR-0014.md`. The file is
+# `docs/adr/ADR-0014-an-enable-gates-admission-not-the-wire.md`. The auditor
+# resolved the citation by listing the directory, disclosed the listing, and —
+# its spawn allowlist omitting the ADR entirely — honoured the narrower
+# instrument and did not read it under either name. The error cost that round
+# nothing, and that was luck for the second round running: I had ruled the SAME
+# broken path at WO-0076 and then copied it forward into the very next packet I
+# drafted. The ruling that followed is the reason for this block:
+#
+#   A note-carrier repaired the INSTANCE and did not bind the DRAFTING. A second
+#   occurrence converts the disposition from "clerical" into an obligation to
+#   MECHANISE, because the third occurrence would be a habit with two rulings
+#   behind it.
+#
+# The durable carrier RN-6 named, quoted: "a resolve-check in tools/dv_checks.sh
+# — at minimum, every docs/** path cited in agents/handoffs/** resolves at the
+# tree, and a citation that does not is reported by the same command whose
+# output is already this programme's census provenance."
+#
+# SCOPE IS THE RULED MINIMUM AND IS NOT WIDENED. agents/handoffs/**, *.md.
+# Journals are deliberately OUT: they are append-only by PROTOCOL §4, so a
+# broken citation in one is unrepairable by construction and a check over them
+# could only ever accumulate an allowlist — a bar that can only grow an
+# exception list is a bar nobody reads.
+#
+# THE THREE CLASSES, and the two that are NOT failures — each printed, so a
+# reader checks the judgement rather than inheriting it:
+#
+#   OK      the path resolves at the tree.
+#   GLOB    the token carries an INTERIOR `*` — a pattern, not a citation
+#           (`docs/reports/*/x.md`). Trailing `*`s are stripped first, because
+#           markdown bold (`**docs/x.md**`) is emphasis and not a pattern; that
+#           strip is why a bolded broken path is still caught.
+#   PREFIX  the token does not resolve, but is a UNIQUE filename prefix inside
+#           an existing directory — a citation BY ID (`docs/adr/ADR-0001`),
+#           which a reader resolves in one `ls`. Uniqueness is the whole guard:
+#           an AMBIGUOUS prefix is reported MISSING, never quietly accepted.
+#   MISSING everything else. This is the class RN-6 is about.
+#
+# WHAT THIS CHECK CANNOT DO, stated rather than papered over: it cannot tell a
+# CITATION from a QUOTATION-TO-CONVICT. `SO-xgmii_rx_64.md` quotes the broken
+# ADR-0014 path in order to convict it, exactly as PROTOCOL §10's R-SEAL-1 notes
+# that quoting a claim is not making it — and that distinction is not a lexical
+# test. So it is not a regex here; it is a dispositioned entry in the errata
+# table below, where the judgement is signed and diffable.
+#
+# ERRATA ARE DECLARED, NOT SILENT, AND THEY CANNOT ROT. A known-broken citation
+# does not redden — RN-6 ruled the bodies of already-issued instruments are NOT
+# rewritten, because silently editing an instrument another agent has already
+# worked under makes its compliance statement unverifiable against the text it
+# cites. But a declared erratum that NO LONGER FIRES reddens: an allowlist with
+# no staleness check is how a bar decays into a comment.
+
+docs_cit_norm() { # $1 = raw token -> trailing markdown/sentence punctuation stripped
+  local t="$1" last
+  while [ -n "$t" ]; do
+    last="${t: -1}"
+    case "$last" in
+      '.'|','|';'|':'|'!'|'?'|')'|']'|'*'|'_') t="${t%?}" ;;
+      *) break ;;
+    esac
+  done
+  printf '%s' "$t"
+}
+
+docs_cit_pairs() { # $1 = handoffs dir -> "<citing file>\t<normalised path>", unique
+  local line f tok
+  grep -rHoE '(^|[^[:alnum:]_./-])docs/[A-Za-z0-9_./*-]+' "$1" --include='*.md' 2>/dev/null \
+    | while IFS= read -r line; do
+        f="${line%%:*}"
+        tok="${line#*:}"
+        case "$tok" in
+          *docs/*) tok="docs/${tok#*docs/}" ;;
+          *) continue ;;
+        esac
+        tok="$(docs_cit_norm "$tok")"
+        [ -n "$tok" ] || continue
+        printf '%s\t%s\n' "$f" "$tok"
+      done | sort -u
+}
+
+docs_cit_classify() { # $1 = tree root, $2 = path -> "OK" | "GLOB" | "PREFIX <hit>" | "MISSING <why>"
+  local root="$1" p="$2" d b n=0 hit='' cand
+  case "$p" in *'*'*) printf 'GLOB'; return 0 ;; esac
+  if [ -e "$root/$p" ]; then printf 'OK'; return 0; fi
+  d="$(dirname "$p")"
+  b="$(basename "$p")"
+  if [ -d "$root/$d" ]; then
+    for cand in "$root/$d/$b"*; do
+      [ -e "$cand" ] || continue
+      n=$((n + 1))
+      hit="${cand#"$root/"}"
+    done
+  fi
+  case "$n" in
+    0) printf 'MISSING nothing resolves, and no name in %s/ begins with "%s"' "$d" "$b" ;;
+    1) printf 'PREFIX %s' "$hit" ;;
+    *) printf 'MISSING AMBIGUOUS prefix — %s names in %s/ begin with "%s"' "$n" "$d" "$b" ;;
+  esac
+}
+
+# The declared errata, keyed "<citing file>|<cited path>". Every key here MUST
+# still fire; a key that stops firing is a FAILURE (staleness), not a saving.
+DOCS_CIT_ERRATA_KEYS='agents/handoffs/WO-0008_batch-b-specs.md|docs/adr/ADR-0006/0007
+agents/handoffs/WO-0076_family-j-mutation-campaign.md|docs/adr/ADR-0014.md
+agents/handoffs/WO-0077_family-k-mutation-campaign.md|docs/adr/ADR-0014.md
+agents/handoffs/SO-xgmii_rx_64.md|docs/adr/ADR-0014.md'
+
+docs_cit_erratum() { # $1 = key -> prints the disposition, returns 0 iff declared
+  case "$1" in
+    'agents/handoffs/WO-0008_batch-b-specs.md|docs/adr/ADR-0006/0007')
+      printf 'compressed prose shorthand for TWO ADRs. Both targets resolve — docs/adr/ADR-0006-crc32-finished-value-ports.md and docs/adr/ADR-0007-octet-count-encoding.md — and the SAME packet cites both in full in its own return table. Body not rewritten (RN-6). Carrier: none; the shorthand is legible and the targets exist.' ;;
+    'agents/handoffs/WO-0076_family-j-mutation-campaign.md|docs/adr/ADR-0014.md')
+      printf 'RN-6 first instance. Target is docs/adr/ADR-0014-an-enable-gates-admission-not-the-wire.md. Ruled ERRATUM OF RECORD at WO-0076 §4: the allowlist body is NOT rewritten, because an instrument another agent has already worked under cannot be silently edited without making its compliance statement unverifiable.' ;;
+    'agents/handoffs/WO-0077_family-k-mutation-campaign.md|docs/adr/ADR-0014.md')
+      printf 'RN-6 second instance — the same broken path copied forward by the agent that ruled the first. Ruled ERRATUM OF RECORD at WO-0077 §6, same ground. THIS BLOCK IS THAT RULING DISCHARGED: the recurrence is what converted the disposition from clerical into an obligation to mechanise.' ;;
+    'agents/handoffs/SO-xgmii_rx_64.md|docs/adr/ADR-0014.md')
+      printf 'QUOTATION-TO-CONVICT, not a citation: SO-xgmii_rx_64.md §3.2 quotes the broken path in order to state the defect this check exists for. A reader is not being sent there. Not lexically separable from a citation, which is why it is dispositioned here rather than pattern-matched away.' ;;
+    *) return 1 ;;
+  esac
+  return 0
+}
+
+# THE SELF-TEST. A check whose first run is green tells you nothing about the
+# check (FINDING K-3's rule, applied to its author's own new bar) — so this bar
+# proves it can still fail, and fail for each of five distinct reasons, before
+# it is allowed to say anything passed. Fixtures, not the repository: nothing in
+# this tree can demonstrate that an AMBIGUOUS prefix is refused, because no such
+# ambiguity exists here today.
+docs_cit_self_test() {
+  local ft rc=0 got
+  ft="$(mktemp -d)" || return 1
+  mkdir -p "$ft/docs/adr" "$ft/docs/reports/latency" "$ft/agents/handoffs"
+  : > "$ft/docs/adr/ADR-0001-org-design.md"
+  : > "$ft/docs/adr/ADR-0090-alpha.md"
+  : > "$ft/docs/adr/ADR-0090-beta.md"
+
+  expect() { # $1 = label, $2 = expected class, $3 = path
+    got="$(docs_cit_classify "$ft" "$3")"
+    if [ "${got%% *}" = "$2" ]; then
+      printf '  ok    %-34s %s -> %s\n' "$1" "$3" "$got"
+    else
+      printf '  FAIL  %-34s %s -> %s (expected %s)\n' "$1" "$3" "$got" "$2"
+      rc=1
+    fi
+  }
+
+  expect 'a resolving path is OK'        OK      'docs/adr/ADR-0001-org-design.md'
+  expect 'RN-6 shape is caught'          MISSING 'docs/adr/ADR-0001.md'
+  expect 'a bolded broken path is caught' MISSING "$(docs_cit_norm 'docs/adr/ADR-0001.md**')"
+  expect 'an interior glob is a pattern' GLOB    'docs/reports/*/x.md'
+  expect 'a unique id prefix resolves'   PREFIX  'docs/adr/ADR-0001'
+  expect 'an AMBIGUOUS prefix is refused' MISSING 'docs/adr/ADR-0090'
+
+  # The extractor's own teeth: it must find the broken citation in a file, and
+  # must attribute it to that file. Backticks and bold are in the fixture on
+  # purpose — both are how this programme's packets actually write a path.
+  cat > "$ft/agents/handoffs/FIXTURE.md" <<'DOCS_CIT_FIXTURE'
+see `docs/adr/ADR-0001.md` and **docs/adr/ADR-0001-org-design.md**.
+DOCS_CIT_FIXTURE
+  if docs_cit_pairs "$ft/agents/handoffs" | grep -qF $'FIXTURE.md\tdocs/adr/ADR-0001.md'; then
+    printf '  ok    extractor finds and attributes the broken citation\n'
+  else
+    printf '  FAIL  extractor did not find/attribute the broken citation\n'
+    rc=1
+  fi
+  if docs_cit_pairs "$ft/agents/handoffs" | grep -qF $'FIXTURE.md\tdocs/adr/ADR-0001-org-design.md'; then
+    printf '  ok    extractor strips markdown bold from a good citation\n'
+  else
+    printf '  FAIL  extractor did not strip markdown bold\n'
+    rc=1
+  fi
+
+  unset -f expect
+  rm -rf "$ft"
+  return "$rc"
+}
+
 for st in check_emitted_verilog precompile_check check_rfc1071_anchor; do
   printf '=== %s.sh --self-test ===\n' "$st"
   run_and_label "$st self-test" bash "$HERE/$st.sh" --self-test
 done
+
+# Invoked directly rather than through run_and_label, for two reasons: this
+# self-test has no gate it can stand down at (so the SKIPPED branch would be
+# unreachable and misleading), and an indirectly-invoked function reads to a
+# static analyser as dead code — the file was shellcheck-clean before this block
+# and stays so.
+printf '=== docs/** citation resolve-check --self-test (RN-6) ===\n'
+if docs_cit_self_test; then
+  printf '=== docs-citation resolve-check self-test: OK ===\n\n'
+else
+  printf '=== docs-citation resolve-check self-test: FAILED ===\n\n'
+  status=1
+fi
 
 # ---- the checks ------------------------------------------------------
 
@@ -168,6 +364,96 @@ case "$rfc_rc" in
     status=1
     ;;
 esac
+
+# ---- RN-6: the docs/** citation resolve-check — a CHECK, and it gates ----
+#
+# Why this one GATES where the two blocks below only REPORT: an asserted count
+# goes stale every packet and would redden the suite for doing its job, which is
+# why the inventory and the census cannot manufacture a green or redden one. A
+# path either resolves or it does not. That is an invariant, not a count, so it
+# belongs in the check class — and RN-6's own second occurrence is the evidence
+# that a non-gating disposition does not bind the next drafting.
+printf '=== docs/** citation resolve-check (RN-6) ===\n'
+docs_cit_root="$(cd "$HERE/.." && pwd)"
+docs_cit_dir="$docs_cit_root/agents/handoffs"
+if [ ! -d "$docs_cit_dir" ]; then
+  printf '  agents/handoffs/ not found at %s — check FAILED (it cannot stand down)\n\n' "$docs_cit_dir"
+  status=1
+else
+  dc_total=0; dc_ok=0; dc_glob=0; dc_prefix=0; dc_errata=0; dc_new=0
+  dc_fired=''
+  dc_prefix_lines=''
+  while IFS=$'\t' read -r dc_file dc_path; do
+    [ -n "${dc_path:-}" ] || continue
+    dc_total=$((dc_total + 1))
+    dc_rel="${dc_file#"$docs_cit_root/"}"
+    dc_class="$(docs_cit_classify "$docs_cit_root" "$dc_path")"
+    case "$dc_class" in
+      OK) dc_ok=$((dc_ok + 1)) ;;
+      GLOB) dc_glob=$((dc_glob + 1)) ;;
+      PREFIX*)
+        dc_prefix=$((dc_prefix + 1))
+        dc_prefix_lines="$dc_prefix_lines  PREFIX   $dc_rel
+             cites $dc_path -> ${dc_class#PREFIX }
+"
+        ;;
+      MISSING*)
+        dc_key="$dc_rel|$dc_path"
+        if dc_reason="$(docs_cit_erratum "$dc_key")"; then
+          dc_errata=$((dc_errata + 1))
+          dc_fired="$dc_fired$dc_key
+"
+          printf '  ERRATUM  %s\n           cites %s\n           %s\n           %s\n' \
+            "$dc_rel" "$dc_path" "${dc_class#MISSING }" "$dc_reason"
+        else
+          dc_new=$((dc_new + 1))
+          printf '  BROKEN   %s\n           cites %s\n           %s\n' \
+            "$dc_rel" "$dc_path" "${dc_class#MISSING }"
+        fi
+        ;;
+    esac
+  done <<EOF
+$(docs_cit_pairs "$docs_cit_dir")
+EOF
+
+  # Citations by id, accepted on a UNIQUE prefix and listed so the acceptance is
+  # checkable rather than inherited.
+  [ -n "$dc_prefix_lines" ] && printf '%s' "$dc_prefix_lines"
+
+  # Staleness: a declared erratum that no longer fires is a FAILURE. Either the
+  # path was repaired (delete the entry) or the packet stopped citing it (delete
+  # the entry) — both are edits somebody must make deliberately.
+  dc_stale=0
+  while IFS= read -r dc_k; do
+    [ -n "$dc_k" ] || continue
+    case "$dc_fired" in
+      *"$dc_k"$'\n'*) ;;
+      *)
+        dc_stale=$((dc_stale + 1))
+        printf '  STALE ERRATUM — declared and did not fire: %s\n' "$dc_k"
+        ;;
+    esac
+  done <<EOF
+$DOCS_CIT_ERRATA_KEYS
+EOF
+
+  printf '  ---\n'
+  printf '  %3s  docs/** citations in agents/handoffs/**/*.md (file x path, unique)\n' "$dc_total"
+  printf '  %3s  resolve at the tree\n' "$dc_ok"
+  printf '  %3s  patterns (interior glob) — not citations, not checked\n' "$dc_glob"
+  printf '  %3s  resolve by UNIQUE id prefix (listed above)\n' "$dc_prefix"
+  printf '  %3s  declared errata (listed above; each ruled, none rewritten)\n' "$dc_errata"
+  printf '  %3s  UNDECLARED broken citations\n' "$dc_new"
+  printf '  %3s  stale errata (declared, did not fire)\n' "$dc_stale"
+  if [ "$dc_new" -ne 0 ] || [ "$dc_stale" -ne 0 ]; then
+    printf '=== docs/** citation resolve-check: FAILED ===\n'
+    printf 'A docs/** path cited in a handoff packet must resolve at the tree, or be a\n'
+    printf 'declared erratum with its ruling. RN-6, WO-0077 §6.\n\n'
+    status=1
+  else
+    printf '=== docs/** citation resolve-check: OK ===\n\n'
+  fi
+fi
 
 # ---- bench inventory: a REPORT, never a check --------------------------
 # Why this exists (J-dv_lead-0042). The M03 bench's unit count circulated
