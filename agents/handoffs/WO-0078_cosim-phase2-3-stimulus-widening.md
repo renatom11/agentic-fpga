@@ -8007,3 +8007,160 @@ own `currentDate` context of 2026-08-06, not a literal read of any dispatch
 field).
 
 ---
+
+### data_wrangler — Stage 2, C4 landing (§6.2), the runner half, `AMENDMENT
+WO-0078-A1` item 2, RETURNED
+
+**Abort-first head check**: `git rev-parse HEAD` =
+`d3bd455a9da89fce052a746c9c16f9a34bf3d67f`, exactly the dispatch's stated
+spawn-head (the orchestrator's journal-only commit "Incident six…"; its
+parent `fcd76b7` carries tb_writer's landed C4 construction). `git status
+--porcelain` empty at spawn. Proceeded without the mismatch procedure.
+
+**Scope, per `AMENDMENT WO-0078-A1 §4`'s own header table, row 2, quoted
+verbatim rather than paraphrased** (§7's hardened obligation): *"data_wrangler
+| `tools/cosim/run_cosim.sh` | add `C4` to the case array — **one line**, and
+nothing else."* And `RV-C4GAP §9` item 3, quoted: *"data_wrangler — one
+round, one line: `C4` added to `tools/cosim/run_cosim.sh`'s case array. After
+tb_writer's half lands (§6.1's landing-order constraint, unchanged)."*
+
+**The change, exactly one line** (`git diff --stat`: `tools/cosim/run_cosim.sh
+| 2 +-`, `1 file changed, 1 insertion(+), 1 deletion(-)`):
+
+```
+-CASES=("0" "C1" "C3" "C2")
++CASES=("0" "C1" "C3" "C2" "C4")
+```
+
+**Placement — appended, not reordered.** Neither `AMENDMENT WO-0078-A1 §4`
+nor `RV-C4GAP §9` item 3 names a position. `RV-C4GAP §12`'s own sequencing
+note is the governing text on this point, quoted: *"the one-line reorder that
+rode C3's landing was the only sequencing change Stage 2 needed... C4 alone
+is next, and I confirm it without amendment... adding a second amendment to
+a stage with one case left would be change for its own sake."* No reorder is
+directed anywhere in the packet for C4, so C4 is appended after C2, the
+array's current last member — the plain reading of "C4 added to the case
+array" absent any instruction to move an existing member.
+
+**tb_writer's construction confirmed landed before this edit.** `fcd76b7`'s
+own diff (`test/cosim/stimulus_gen.ml`) carries `build_c4`/`c4_word_at`/
+`c4_meta`/the `known_cases` and `build_case` `"C4"` arms, and its own
+Return-log entry above reports `sha256 =
+efb0417637ff786c067853afad56d9d4e21faed01f7640f9991a20e6010f33bc` for case
+C4's stimulus, generated for real against the actual
+`Arrival`/`Frame`/`Xgmii_word` sources (scratch-linked binary, that entry's
+own Evidence). §6.1's landing-order constraint (tb_writer first,
+data_wrangler not before it) is satisfied: this edit lands at a head whose
+parent, `fcd76b7`, already carries tb_writer's construction.
+
+**Nothing else moves, checked against the diff rather than asserted**: the
+wildcard's successor rule, the aggregate precedence, the per-case working
+directories, the two-run determinism check, the cost probe, and `FINDING
+RV-0078-S2-7`'s SUMMARY-honesty repair are all byte-identical to the C3
+landing — `git diff` shows exactly the one `CASES` line changed, nothing
+above or below it.
+
+**shellcheck, run on the changed script, reported verbatim:**
+
+```
+$ shellcheck tools/cosim/run_cosim.sh; echo "exit: $?"
+exit: 0
+```
+
+Zero findings. `bash -n tools/cosim/run_cosim.sh` also exits 0.
+
+**Stub-toolchain scaffold check, kept COMPACT per this round's own dispatch
+instruction** — one scenario, not a matrix, sufficient to answer the one
+question this round's edit raises: does the five-member loop iterate
+correctly with `C4` appended? `iverilog`/`vvp`/`dune` are absent from this
+container's `PATH` (confirmed: `which dune iverilog vvp` — no output), so the
+real Hardcaml/Icarus pipeline is CI-deferred per ADR-0005, exactly as every
+prior round in this lane has disclosed. Built entirely under this spawn's
+scratchpad (`.../scratchpad/wo0078_c4_stub/`, never written into the
+repository): fake `dune`/`iverilog`/`vvp` on a prepended `PATH`, plus fake
+`stimulus_gen.exe`/`ours_run.exe`/`compare.exe` under a scratch
+`_build/default/test/cosim/`, each deriving the case id from the arguments or
+the per-case directory name the COMMITTED script itself passes/creates (so
+it is the real script's own control flow under test, not a
+re-implementation of it) — the same method the Stage-1, C1+C2 and C3 landing
+rounds used (§14 above). A verbatim copy of the just-edited committed script
+was run against this scaffold, with exactly one line of the COPY overridden
+— `CASE0_PINNED_SHA256`, to the stub generator's own deterministic case-0
+output's sha256 (the stub's content, not the real one, since the real
+generator needs Hardcaml, ADR-0005-blocked here) — never staged, never in
+the repo, and not touching the committed file (confirmed: the repo's own
+`CASE0_PINNED_SHA256` line re-`grep`ped unchanged after the scaffold run,
+still `c675517176922d42bca42ec3def182cb3536861f1acaa8384116f33a5c4cc051`).
+
+```
+$ PATH="$STUB/stubbin:$PATH" bash "$STUB/stub_repo/tools/cosim/run_cosim.sh"
+exit: 0
+
+=== CASE SET (WO-0078 §6.2 Stage 2: 5 case(s) — 0 C1 C3 C2 C4) ===
+...
+CASE 0: stimulus_sha256=02abe827f43e2a35295ee7b1cc2200344a1b33c826cb4dcd5d7fdb762d720adc compare_exit=0 tier=CLEAN
+CASE C1: stimulus_sha256=b127bbbd7ebd66be0ecf4013ee95e220b3d5545c0f3738336756514804a716e8 compare_exit=0 tier=CLEAN
+CASE C3: stimulus_sha256=164d1d51f0371e74cbcb1fd157938dce9ebf757cc2f8b6188e546a0d4518472d compare_exit=0 tier=CLEAN
+CASE C2: stimulus_sha256=5e0ee54bd95f0a2b9e2d0588f894d000f35861b33f68caea4fb72cba5f4e30ab compare_exit=0 tier=CLEAN
+CASE C4: stimulus_sha256=1deb5822edef91a2d7c71aaac1ac673a9a68ebbf3f21dedfc4bb2014fa41fa71 compare_exit=0 tier=CLEAN
+...
+  every case in the set reached a verdict and every verdict was clean.
+```
+
+Five `CASE <id>:` lines (`grep -c '^CASE [0-9A-Za-z]*:'` = 5), in exactly the
+array's own order — 0, C1, C3, C2, C4, matching `${CASES[*]}`'s own
+expansion in the `CASE SET` header line — each with a DISTINCT
+`stimulus_sha256` (confirming per-case isolation: no case's stub
+stimulus/output bled into another's, five independent
+`case_<id>/{stim,run1,run2}` directories genuinely used), five `SUMMARY (case
+<id>)` blocks, and a clean aggregate exit 0. **This demonstrates the loop
+mechanics for the new N=5 array — iteration order, per-case directory
+naming, the CASE-line/SUMMARY pairing, the aggregate's "all clean" path —
+all still function with C4 appended; it demonstrates NOTHING about C4's
+actual stimulus, RTL behaviour, or REQ-901/CD §10.4's disposition**, which
+the stub's fake producers cannot speak to and which remains entirely the
+landing CI run's to establish. No stray files: `ls -d /tmp/run_cosim.*` after
+the run reports none (the script's own `trap … EXIT` cleaned its `mktemp -d`
+normally); the scaffold tree lived under this spawn's scratchpad throughout
+and was never staged.
+
+**CI-deferred, named explicitly, per `RV-C4GAP §9` item 4**: *"The CI run at
+the combined head is the check, and it is the only one."* This round's edit,
+on top of tb_writer's already-landed `fcd76b7`, is what makes that combined
+head exist; the real `dune build`/`iverilog` compile/`vvp` execution against
+C4's actual stimulus (sha `efb04176…`, tb_writer's own local-run figure)
+through the actual Hardcaml M03 design and the actual Icarus reference has
+not run anywhere in this round, and nothing above is offered as a substitute
+for it. Per `RV-C4GAP §5`'s pre-registered branches (carried, not amended, by
+this round): agreement inside the domain is **α**; a divergence in the
+accept-or-discard decision is **γ** (a `BUG-` against our RTL or a REQ-901
+spec diff, dv_lead's adjudication, never mine); **X4 excludes the
+preamble/SFD octet VALUES as a source of expected values but does not
+exclude the DECISION those octets cause** — a decision divergence is real
+and reports. The disposition of whatever the landing CI run shows is
+dv_lead's, at `RV-C4`, never this seat's and never the harness's own.
+
+**Refused or blocked**: nothing refused, nothing blocked. No file under
+`test/**` opened, at any point, by any means (`test/cosim/stimulus_gen.ml`,
+`test/xgmii/**`, `test/xgmii_rx_64/**`, `test/attack_plans/**` all outside
+this round's scope per `AMENDMENT WO-0078-A1 §4`'s own bar and this seat's
+charter). No RTL leaked into context (`libs/**`, `top/**`, `bin/**`,
+`rtl_snapshots/**` not read). No licensing-taint suspicion. No untestable
+requirement. No effort anomaly (one round, one line, in line with the
+amendment's own estimate).
+
+**Files changed**: exactly one, plus this packet's own Return log and this
+round's journal (`git status --porcelain` confirms; no `test/**` staged):
+`tools/cosim/run_cosim.sh`.
+
+— data_wrangler, spawn `WO-0078-A1-DW-C4/2026-08-10T20:52Z` (no explicit
+"work-order id + spawn UTC timestamp" token was present in this round's own
+dispatch prompt; recorded honestly per this packet's own §14 precedent for
+the identical situation — my own `J-data_wrangler-0001`/`0003`/`0005`/`0006`/
+`0007` and tb_writer's `J-tb_writer-0035` et seq., most recently the C4
+entry above — rather than presented as one copied verbatim: the timestamp
+above is this entry's own UTC header time, `date -u` read at the start of
+this round, matching the environment's own `currentDate` context of
+2026-08-10).
+
+---

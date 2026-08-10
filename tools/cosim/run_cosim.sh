@@ -900,7 +900,7 @@ EXIT_CASE0_MOVED=13
 # the order this loop visits ids in). From this round on C2 is a STANDING
 # REGRESSION CASE -- re-run and re-checked at every landing after this one,
 # not merely the case this landing happens to add (`RV-C2ALPHA` §9 item 3).
-CASES=("0" "C1" "C3" "C2")
+CASES=("0" "C1" "C3" "C2" "C4")
 
 # WO-0078 §3.3 item 1 -- the last GREEN pre-widening `cosim` job's own
 # printed value, pinned here rather than re-derived. The VALUE below is

@@ -1862,3 +1862,228 @@ alone and the three `print_case_summary` calls added at the PRODUCE-REFUSAL
 
 - tools/cosim/run_cosim.sh
 - agents/handoffs/WO-0078_cosim-phase2-3-stimulus-widening.md
+
+## [J-data_wrangler-0008] 2026-08-10T20:52:00Z | task:WO-0078 | run_cosim.sh Stage 2 (C4 landing) — the case array gains its fifth and final Stage-2 member, one line, per AMENDMENT WO-0078-A1
+
+### Trigger
+
+A fresh spawn for `WO-0078` Stage 2's C4 landing, the runner half of
+`AMENDMENT WO-0078-A1` (`RV-C4GAP`'s remediation amendment) — the one-line
+case-array addition that makes C4 run. No explicit "work-order id + spawn
+UTC timestamp" token was present in this round's own dispatch prompt —
+recorded honestly, as `J-data_wrangler-0001`/`0003`/`0005`/`0006`/`0007` all
+did, rather than invented; `WO-0078-A1-DW-C4/2026-08-10T20:52Z` is what I
+minted for the packet's own Return-log signature, built the same way those
+five rounds built theirs (this entry's own UTC header time). The dispatch's
+identifying content: land `AMENDMENT WO-0078-A1`'s data_wrangler half —
+`tools/cosim/run_cosim.sh`'s case array gains `C4` — with tb_writer's
+sibling stimulus half already landed at this same spawn-head's parent
+(`fcd76b7`, "C4 built by the B1 idiom's second instance…"), spawn-head
+`d3bd455` (the orchestrator's intervening journal-only commit).
+
+### Inputs
+
+- `agents/charters/data_wrangler.md` (full read, this spawn).
+- `agents/PROTOCOL.md` §2-6 (full read, this spawn).
+- `agents/handoffs/WO-0078_cosim-phase2-3-stimulus-widening.md` at
+  `d3bd455` — §14 read for this landing's own chain: `RV-C4GAP` §0-12 in
+  full (dv_lead's ruling authorizing C4's construction, and `AMENDMENT
+  WO-0078-A1`'s own scope table at §4), tb_writer's C4 Return-log entry
+  above (`build_c4`/`c4_word_at` mechanism, the frozen octet values, the
+  five-sha binary run reporting C4's `efb04176…` sha), and `RV-C3ALPHA` §12
+  (C4's sequencing, "C4 alone, next; CONFIRMED, not amended", and CD §10.4's
+  restated stimulus terms). Also §6.2's own landing-order table and §9's own
+  five-step sequencing list (this round is step 3).
+- `test/attack_plans/CD-xgmii_rx_64_cosim.md` §10.4 — NOT opened directly
+  this round; its stimulus terms were read only as quoted inside `RV-C4GAP`
+  §12 and tb_writer's own entry, per this seat's forever-scope exclusion on
+  `test/attack_plans/**` and `AMENDMENT WO-0078-A1 §4`'s own bar on opening
+  it this round.
+- `test/cosim/stimulus_gen.ml` — NOT opened. `git show --stat fcd76b7`
+  confirmed tb_writer's landing touched exactly that file (plus its own
+  journal and this packet); the case id `"C4"` and its stimulus sha were
+  taken from tb_writer's own committed Return-log entry, never verified by
+  reading the OCaml source directly — outside my write scope and outside
+  what this one-line round needed to open.
+- `tools/cosim/run_cosim.sh` at `d3bd455` (my own prior committed version,
+  Stage 2 C3 landing's) — full re-read via `Read` before editing.
+- `agents/journals/workers/claude_data_wrangler_agent.md` up to
+  `J-data_wrangler-0007` (full read, this spawn) — to confirm next `NNNN`.
+- NOT read: `libs/**`, `top/**`, `bin/**`, `rtl_snapshots/**` — outside my
+  charter's forever-scope regardless of write access. `test/xgmii/**` and
+  `test/xgmii_rx_64/**` — outside this round's scope per `AMENDMENT
+  WO-0078-A1 §4`'s own bar.
+
+### Reasoning
+
+**The amendment's own text governs the placement, and I read it rather than
+default to my own dispatch's suggested array literal.** `AMENDMENT
+WO-0078-A1 §4`'s header table and `RV-C4GAP §9` item 3 both say "C4 added to
+the case array" and neither names a position. I treated `RV-C4GAP §12`'s own
+sequencing note — "the one-line reorder that rode C3's landing was the only
+sequencing change Stage 2 needed... adding a second amendment to a stage
+with one case left would be change for its own sake" — as the governing
+absence-of-instruction: no reorder is directed for C4, so the plain reading
+of "added to the case array" is append, after C2, the array's current last
+member. This happens to match my own dispatch's own suggested literal
+(`CASES=("0" "C1" "C3" "C2" "C4")`), but I did not adopt it on that basis
+alone — I derived the placement from the amendment's own text first and
+confirmed the dispatch's suggestion agreed, in that order, per the hardened
+"the amendment governs" instruction.
+
+**"One line, and nothing else" was read literally, as a deliberate departure
+from Rounds 5-7's own practice.** Every prior data_wrangler round in this
+lane (`WO-0078` §6.1's Stage 1, §6.2's C1+C2 and C3 landings) added a full
+"ROUND N" header-comment block narrating that round's own changes, in
+addition to the mechanical edit. `AMENDMENT WO-0078-A1 §4`'s scope row for
+this seat says "one line, and nothing else" — no such block this round. I
+took that at face value: `git diff` shows exactly the one `CASES` line
+changed, no header comment added, no stale text corrected (the Round 7
+header note's own "C3 lands ALONE this round... not C4" sentence is left
+as-is — it correctly describes what Round 7 landed, and correcting it would
+itself be a second line). The alternative I considered and rejected: adding
+a short "ROUND 8" note for consistency with prior rounds' documentation
+practice — rejected because the amendment's own text is explicit and more
+specific than the pattern of practice, and a remediation round following a
+construction-surface gap (`RV-C4GAP`) has its own reason to want the
+smallest possible footprint, checkable in one line rather than read against
+a paragraph.
+
+**The stub-toolchain scaffold check was scoped to the one question this
+round's edit actually raises, not re-run as a full regression matrix.**
+Rounds 6 and 7 built five-to-six scenario matrices because those rounds
+changed CONTROL FLOW (per-case directories, the wildcard's successor rule,
+the SUMMARY repair) whose correctness under failure modes was exactly what
+was in question. This round changes one array literal; the control flow
+itself is untouched (confirmed: `git diff` shows nothing else moved). The
+one question worth a scaffold run is mechanical: does the loop still iterate
+correctly, in order, over all five members, with the new one included and
+isolated from the other four? One clean-pass scenario answers that
+directly — five distinct `CASE <id>:` lines in array order, five distinct
+per-case `stimulus_sha256` values (proving isolation), a clean aggregate.
+I did not build a wildcard/refusal/determinism-mismatch scenario for C4
+specifically, because those code paths are unchanged by this round and were
+already demonstrated against the same shared machinery at Rounds 6/7 — this
+round's own edit cannot plausibly reintroduce a defect in code it does not
+touch, and re-proving that would be exactly the "eight-plus" over-testing
+the Stage-1 round's own header flagged as the failure mode to avoid.
+
+### Actions
+
+- Edited `tools/cosim/run_cosim.sh`: `CASES=("0" "C1" "C3" "C2")` →
+  `CASES=("0" "C1" "C3" "C2" "C4")`. One line, confirmed by `git diff --stat`
+  (`1 file changed, 1 insertion(+), 1 deletion(-)`) and `git diff` (full,
+  read back before this entry was written).
+- Ran `shellcheck tools/cosim/run_cosim.sh` and `bash -n
+  tools/cosim/run_cosim.sh` against the edited file.
+- Built a compact stub toolchain under this spawn's scratchpad
+  (`.../scratchpad/wo0078_c4_stub/`) — fake `dune`/`iverilog`/`vvp` on PATH,
+  fake `stimulus_gen.exe`/`ours_run.exe`/`compare.exe` under a scratch
+  `_build/default/test/cosim/`, a scratch `PROVENANCE.md` and empty
+  placeholder Verilog sources — and ran a verbatim copy of the just-edited
+  committed script against it, with only `CASE0_PINNED_SHA256` overridden in
+  the copy (never the committed file) to match the stub generator's own
+  deterministic case-0 output.
+- Appended this packet's §14 Return log entry (data_wrangler, Stage 2 C4
+  landing) before writing this journal entry, in the same working tree, per
+  PROTOCOL §4.1's ordering rule.
+- Deleted no scratchpad artefacts this round — they are diagnostic-only,
+  never staged, and left in the scratchpad per this environment's own
+  instruction to use that directory for temporary files (unlike Rounds 6/7,
+  which reported deleting a `/tmp`-rooted scratch tree; this round's
+  scaffold was built under the scratchpad from the start and produced no
+  stray `/tmp` files, confirmed: `ls -d /tmp/run_cosim.*` after the run
+  reports none).
+
+### Evidence
+
+```
+$ git rev-parse HEAD
+d3bd455a9da89fce052a746c9c16f9a34bf3d67f
+$ git status --porcelain
+(empty)
+```
+
+```
+$ git diff --stat tools/cosim/run_cosim.sh
+ tools/cosim/run_cosim.sh | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+$ git diff tools/cosim/run_cosim.sh
+-CASES=("0" "C1" "C3" "C2")
++CASES=("0" "C1" "C3" "C2" "C4")
+```
+
+```
+$ shellcheck tools/cosim/run_cosim.sh; echo "exit: $?"
+exit: 0
+$ bash -n tools/cosim/run_cosim.sh; echo "exit: $?"
+exit: 0
+```
+
+```
+$ PATH="$STUB/stubbin:$PATH" bash "$STUB/stub_repo/tools/cosim/run_cosim.sh"
+exit: 0
+=== CASE SET (WO-0078 §6.2 Stage 2: 5 case(s) — 0 C1 C3 C2 C4) ===
+CASE 0: stimulus_sha256=02abe827f43e2a35295ee7b1cc2200344a1b33c826cb4dcd5d7fdb762d720adc compare_exit=0 tier=CLEAN
+CASE C1: stimulus_sha256=b127bbbd7ebd66be0ecf4013ee95e220b3d5545c0f3738336756514804a716e8 compare_exit=0 tier=CLEAN
+CASE C3: stimulus_sha256=164d1d51f0371e74cbcb1fd157938dce9ebf757cc2f8b6188e546a0d4518472d compare_exit=0 tier=CLEAN
+CASE C2: stimulus_sha256=5e0ee54bd95f0a2b9e2d0588f894d000f35861b33f68caea4fb72cba5f4e30ab compare_exit=0 tier=CLEAN
+CASE C4: stimulus_sha256=1deb5822edef91a2d7c71aaac1ac673a9a68ebbf3f21dedfc4bb2014fa41fa71 compare_exit=0 tier=CLEAN
+  every case in the set reached a verdict and every verdict was clean.
+$ grep -c '^CASE [0-9A-Za-z]*:' run.out
+5
+$ ls -d /tmp/run_cosim.* 2>/dev/null || echo "(none)"
+(none)
+$ grep -n '^CASE0_PINNED_SHA256=' /home/user/agentic-fpga/tools/cosim/run_cosim.sh
+939:CASE0_PINNED_SHA256="c675517176922d42bca42ec3def182cb3536861f1acaa8384116f33a5c4cc051"
+```
+
+(The committed file's own pinned literal is unchanged from the C3 landing;
+only the scratch copy's own literal was overridden, to the stub generator's
+deterministic output, never staged.)
+
+This is NOT a claim that the real `dune`/`iverilog`/`vvp`/Hardcaml pipeline
+was executed — it was not (`which dune iverilog vvp` returns no output in
+this container) — and nothing here substitutes for the landing CI run at
+the combined head, which `RV-C4GAP §9` item 4 names as "the check, and it is
+the only one." Every command above is reproducible from a checkout at this
+commit plus the scaffold steps recorded in the packet's own §14 Return-log
+entry for this round.
+
+### Outcome
+
+DoD vs `AMENDMENT WO-0078-A1 §4`'s data_wrangler row and `RV-C4GAP §9` item
+3: `C4` added to the case array, exactly one line, nothing else — MET,
+confirmed by `git diff`. Landing-order constraint (tb_writer's half first)
+— MET: this round's spawn-head parent, `fcd76b7`, already carries
+tb_writer's C4 construction. shellcheck/`bash -n` — MET, both clean,
+verbatim. Compact stub-toolchain check demonstrating the five-case loop
+iterates correctly with C4 included — MET (Evidence). No `test/**` file
+opened, at any point — MET. Journal entry appended (this entry); Return-log
+entry appended to §14 — MET. Scope: no file outside `tools/cosim/
+run_cosim.sh` staged — MET (`git status --porcelain` confirms one file).
+No `dune`/`iverilog`/`vvp` run for real — MET, none attempted (confirmed
+absent from `PATH`); the stub scaffold's own fake binaries stood in for
+them, disclosed as such throughout.
+
+**What is CI-deferred, and why**: the real `dune build`/`iverilog`
+compile/`vvp` execution against C4's actual stimulus, through the actual
+Hardcaml M03 design and the actual Icarus reference, cannot run in this
+container (ADR-0005) and has not run anywhere in this round. `RV-C4GAP §9`
+item 4 names the CI run at the combined head (this commit, on top of
+`fcd76b7`) as the only real check; the disposition of whatever it shows —
+α (agreement) or γ (a decision divergence, per §5's pre-registered
+branches, X4 excluding the octet values but not the decision they cause) —
+is dv_lead's, at `RV-C4`, never mine.
+
+### Open-questions
+
+None of my own raised this round. Nothing was ambiguous enough to return
+against: the amendment's own text named the file, the exact edit, and the
+"nothing else" bound explicitly, and §12's sequencing note settled the one
+point (placement) the scope table itself left implicit.
+
+### Files-in-this-commit
+
+- tools/cosim/run_cosim.sh
+- agents/handoffs/WO-0078_cosim-phase2-3-stimulus-widening.md
