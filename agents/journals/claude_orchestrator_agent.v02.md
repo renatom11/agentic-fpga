@@ -3270,3 +3270,39 @@ are current through Stage 2's close.
 
 ### Files-in-this-commit
 - tasks/BOARD.md
+
+## [J-orchestrator-0231] 2026-08-11T00:05Z | task:none | The sign-off drafted, the classes ruled, the seeder's rule written - and my fifth dispatch error is a journal id I quoted from one volume behind
+
+### Trigger
+Three landings: the SO- draft (b80fef1, J-dv_lead-0161 opening v08),
+the architect's ruling + ADR-0019 (3526e79, J-architect_docs_lead-0032),
+riding on the sweep (49d87af). Board updated in this commit. The
+countersignature round is in flight and named below.
+
+### Mine to disclose: the fifth dispatch error
+My architect dispatch said continue from J-architect_docs_lead-0021
+and write 0022. Volume 01 ends at 0021 - but volume 02 OPENS with
+0022 and stands at 0031. Writing my number would have collided with
+an existing header and failed R5. The architect read its own chain
+and wrote 0032. Same species as the other four: I quoted state from
+memory of one volume behind instead of from the file. The hardened
+form (block-quote the governing text) does not cover journal-chain
+state; the repair that does: a dispatch that names a journal entry
+id derives it from git show HEAD:<journal> at dispatch time, the
+same way I derive rotation hashes. Adopted from this entry on.
+
+### Owed to me, from ADR-0019
+The ADR ships PROTOCOL §10 and auditor-charter diffs written for the
+orchestrator to apply. They ride my next enforcement commit after
+the ADR is accepted (its status is PROPOSED; acceptance is the
+architect's normal ADR lifecycle with dv's countersign where it
+touches DV instruments).
+
+### Open round named (commit-timing rule)
+dv_lead is IN FLIGHT on the countersignature round (spawned at
+3526e79; its files: docs/specs/requirements.md, possibly the WO-0078
+packet section 14, dv journal v08). This commit touches
+tasks/BOARD.md and this journal only - disjoint, verified.
+
+### Files-in-this-commit
+- tasks/BOARD.md
