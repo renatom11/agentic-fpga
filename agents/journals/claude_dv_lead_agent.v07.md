@@ -3506,3 +3506,284 @@ This round **banks two candidates without minting them**:
 ### Files-in-this-commit
 
 - agents/handoffs/WO-0078_cosim-phase2-3-stimulus-widening.md
+
+## [J-dv_lead-0159] 2026-08-10T21:40Z | task:WO-0078 | The round my own condition made owed, paid in the only currency it accepts — four lift cells with their negatives beside them, a bar that moved inside its refusal without lifting, and the set claim that decides the sign-off's path re-measured instead of quoted
+
+### Trigger
+
+Orchestrator dispatch, sole agent in flight, **the `AP-` round**: the round
+`RV-C4GAP` §7 bound to follow C4's landing *"immediately and unconditionally"*, whose
+scope `RV-C4` §12 ruled in six items, whose flip `RV-C4` §9 **pre-authorised**, and
+whose commit is where `STAGE 2 — COMPLETE` is written. It is a bookkeeping round by
+construction: no evidence, run, case or verdict was owed and none was produced. The
+dispatch additionally carried the one measurement this round could not inherit —
+§0.1's re-measure-at-citation obligation on `AP-M03` §7 bar 1's prose set-claim, whose
+survival or failure decides whether co-sim Stage 3 sits on the `SO-`'s critical path.
+
+### Inputs
+
+- **Abort-first head check**: `git rev-parse HEAD` =
+  `e51ca52ecd12352fd70cdfbc4d4f8ff1c2c96675`, exactly the stated spawn-head (*"Four for
+  four…"*). Match; no mismatch procedure. `git status --porcelain` **empty at entry**;
+  at exit it carries exactly this round's two files plus this journal.
+- `agents/charters/dv_lead.md` and `agents/PROTOCOL.md`, both in full.
+- `agents/handoffs/WO-0078_cosim-phase2-3-stimulus-widening.md` — the `State` field in
+  full, and in §14: `RV-C4` in full (§7's five-class coverage table, §9's transition,
+  §10, §11, §12's six ruled items, §13's sequencing), `RV-C4GAP` §5 (the four
+  prohibitions) and §6 (`FINDING RV-0078-S2-13`'s rule, verbatim), `RV-C3ALPHA` §9
+  (class 4's *"does NOT anchor"* list), `RV-C2ALPHA` §5 (class 3's compound-class
+  bound), `RV-C1C2` §11–§12 (class 2's *"specifically not"*).
+- `test/attack_plans/AP-xgmii_rx_64.md` — §0.1 in full, §4.A, §4.B (`M03-B1`'s row and
+  note B-i), §4.C, §4.D, §4.L, §7's whole banner (bars 1–4, `FINDING WO-0077-A1`'s
+  standing rule, the X-row table's X-1 cell), §9's change log.
+- **For the re-measurement only, and it is a read of my own DV artefacts, never of
+  RTL**: `test/xgmii/injection.mli` (X-1's contract, both halves),
+  `test/xgmii_rx_64/test_m03_{b,e,f,g,h,i,n}.ml` at the `Injection.outcomes` call sites
+  and the `cross_check_*` / `fail_cross` helpers, `test/xgmii_rx_64/test_m03_b.ml:1-100`
+  (`M03-B1`'s unit and its `0xA0 + lane` construction), `test/cosim/stimulus_gen.ml`
+  (the second producer's construction surface and its C4 builder).
+- `agents/journals/claude_dv_lead_agent.v07.md`, my own tail from `J-dv_lead-0148` for
+  the harvest span and the banked-candidate labels.
+- **No `libs/**`, no `top/**`, no `rtl_snapshots/**`, no `docs/reports/audit/**`, and
+  no line of `test/third_party/verilog-ethernet/**`** was opened this round.
+
+### Reasoning
+
+**1. Why this round exists at all, and why it could not be folded into `RV-C4`.** I
+wrote the condition that withheld Stage 2's completion, and a condition whose author
+may discharge it by declaring it discharged is not a condition. The cheapest possible
+compliance was to write the completion into `RV-C4` with a sentence explaining why that
+was really the same thing; the whole point of the condition is that it is not. So the
+flip lives in a commit that also *does the work* — six items on a plan I own — and a
+reader meeting the `State` field cold now learns the true distance from case-work-done
+to stage-complete: **one round, no new evidence**, exactly as pre-authorised.
+
+**2. The lift cells' hardest problem is not the lift, it is the negative beside it.**
+A lift cell that says only *"class 4 is anchored at branch α"* is an invitation to
+read it as *"the co-simulation anchors the bad-FCS behaviour"*, which is four
+over-reads deep: it would silently claim the mark's **value**, the **strobe**, the
+**lane-4** geometry and **REQ-104 itself**. So every cell carries its own *"does NOT
+anchor"* list **in the same cell** — not in a shared footnote, because a footnote is
+what a lifter leaves behind. The lists are lifted verbatim from the verdicts that
+measured them rather than re-derived here, which is the one place in this round where
+copying is the disciplined choice: the verdict that ran the case is the artefact
+entitled to say what the case did not reach.
+
+**3. The absolute/agreement split is the cells' load-bearing structure, and I wrote it
+as a constraint on the cells rather than as a re-homing of `S2-2`.** This lane asserts
+that two independent implementations produced the same four REQ-901 observables. It
+asserts **no figure**. A `SO-` that cites α as though it were an absolute check has
+lost the distinction that makes the co-simulation worth having, so each cell names the
+bench row that carries the absolute half — `M03-A2`, `M03-L1` (with `M03-D3`),
+`M03-D1` (with `M03-D2`), `M03-B1` — and says in terms that **α never stands for
+both**. Where the bench instrument is not an exact match for the class I said so
+rather than smoothing it: `M03-L1` runs 10 000 frames and alternates lanes, and
+`M03-D3`'s minimum-gap pairs each carry a bad-FCS member, so **neither is two good
+frames driven exactly twice** — class 3's absolute half is covered by a superset and a
+neighbour, not by a twin, and a reader who needs the twin now knows it does not exist.
+
+**4. Bar 4 moved and did not lift, and the interesting part is that C3 made one of its
+preconditions HARDER.** Precondition (1), the stimulus, is met for `error_bad_fcs` and
+for nothing else. But (2), the mapping, is not merely still unmet — C3 measured that
+the reference raises `error_bad_frame` on a bad FCS, where §9's table gives that event
+to `error_bad_fcs` alone, so the mapping **cannot be the identity** and a name-keyed
+comparison would red a conformant M03. That is worth more to a future round than the
+precondition being met: it converts *"write the mapping"* from a clerical task into a
+question with a known trap in it. The bar's consequence sentence therefore keeps its
+force and **splits its reason**: for `error_bad_fcs` the reason is now the mapping and
+the grammar; for every other strobe it is still the stimulus, which is exactly the
+correction `FINDING WO-0074-S3`'s round had to make in the other direction.
+
+**5. Bar 3 is where I most nearly talked myself into a lift, and the discipline that
+stopped it is the same one bar 3 is about.** `WO-0075`'s lane has landed and is green
+at five classes, and its own text says it lifts *"per stimulus class, on a green
+`cosim` job with both halves landed"* — read literally, the condition is met. It is
+not a lift, and the reason is that the instrument that landed asserts **our** side
+against **our** specification and records the reference's cycles as data that may never
+be adjudicated. An assertion against one's own spec is not an anchor; a tier that may
+never be adjudicated is not coverage. REQ-901 excludes cycle alignment by name, so the
+cross-side comparison is **barred, not un-built** — which makes bar 3's second limb
+permanent in the same way bar 2 is permanent, and I restated it that way rather than
+leaving a lift condition standing that can never be honestly met.
+
+**6. The re-measurement, and why the result is more interesting than "it holds".** The
+claim is *"no row benched to date is gated by bar 1"*, i.e. no bench row takes an
+expected value from X-1(ii)'s **computed outcome model**. I did not check the sentence;
+I checked the mechanism. Three measurements do the work and the third is the decisive
+one: the model's **only** oracle join (`Injection.expected_strobes`, the flattened form
+`Strobe_monitor.expect` consumes) has **zero** callers outside its own library; the 17
+`Injection.outcomes` call sites across six bench files read fields **in place** into
+comparisons against in-file hand-derived locals, whose failure branch is
+`fail_cross` — a **construction** failure, not a DUT verdict; and **no outcome field is
+ever bound to a name**, so no model value has a path into an expectation even in
+principle. The claim **survives**. But its **stated ground was stale**: it enumerated
+families A–F, and G, H and N — which call the model and postdate the sentence — are
+inside the claim for the structural reason, not the enumerated one. **A conclusion that
+survives on a ground its author never had is precisely what §0.1 exists to catch before
+an `SO-` rests on it**, so I repaired the ground at the measurement rather than
+retro-fitting the sentence. And I measured it over **both** producers, which is
+`FINDING WO-0077-A1`'s rule applied to its author: `test/cosim/` mentions the model
+exactly once, in a docstring saying it is absent.
+
+**7. What the four lifts change today, said plainly because the honest answer is
+unflattering.** Bar 1 gates a row iff its expected values come from X-1(ii); no row
+does; so the lifts discharge a condition that **gates nothing at this tree**. Their
+value is prospective — a future row taking an expected value from the model at one of
+these five classes is ungated — and formal: the `SO-` may write its per-class table
+without a bar standing over it. I wrote that into the plan rather than letting four
+lift cells imply a coverage gain they do not deliver.
+
+**8. The cross-reference, and the one thing I refused to let it become.** `M03-B1` and
+C4 drive the same seven octets, `0xA0 + lane` against `0xA0 lor d`, built twice and
+independently, and until this commit the two documents that commission them never
+pointed at each other — which is what `FINDING RV-0078-S2-13` was minted for. Linking
+them is right; letting the link read as *"`M03-B1` is co-sim-anchored"* would be a
+worse defect than the missing link, because it would launder an agreement claim into an
+absolute one. So both directions quote `RV-C4GAP` §5's four prohibitions **into the
+cell** and state the two axes on which the instruments differ. A pointer that carries
+its own bounds is the only kind this plan should hold.
+
+**9. Two things I nearly got wrong and caught by measuring.** (a) I drafted the
+change-log row quoting the exact `awk` status-cell census I ran — and the pipe
+characters cannot survive a markdown table cell without escaping that changes the
+command. A quoted command that does not reproduce is worse than a described method, so
+the row describes the pass and names `DVC-1a`, still unbuilt, as the reason it cannot
+be a one-liner. (b) I drafted *"ten banked harvest candidates"* and then checked: my
+own journal holds eleven **labelled** candidates `LH-cand-A` … `LH-cand-K` alongside a
+later note calling one *"a tenth"*. The totals disagree, a total is a set claim, and
+the honest move is to quote **no** total and route the enumeration to the `SO-`'s
+harvest, which is the document that owes the tiling.
+
+### Actions
+
+- `test/attack_plans/AP-xgmii_rx_64.md` §7, inside the banner where bars 1–4 live:
+  **`FINDING RV-0078-S2-13`'s rule filed beside `FINDING WO-0077-A1`'s census rule**,
+  verbatim and in its polarity-bearing form, with its cost, its already-paid Stage-3
+  dividend (`arrival.ml:157-162`) and its portable form; **bar 1's four lift cells**
+  (classes 2, 3, 4, 5) at run and job ids, each with its *"does NOT anchor"* list, its
+  absolute/agreement instrument split and — for class 5 — the `M03-B1` cross-reference
+  bounded by `RV-C4GAP` §5's four prohibitions quoted into the cell; **class 1 recorded
+  as lifted at Phase 1 and NOT re-lifted**; **bar 4's precondition record**; **bars 2
+  and 3 restated as unmoved**; and **the §0.1 re-measurement** with its five commands,
+  its result and its consequence for the `SO-`'s path.
+- `test/attack_plans/AP-xgmii_rx_64.md` §4.B: **`M03-B1`'s Kills cell gains the
+  cross-reference's second direction**, the same four prohibitions quoted, the two axes
+  stated, and an explicit statement that nothing about the row's status, assertions,
+  qualification or coverage moves on it.
+- `test/attack_plans/AP-xgmii_rx_64.md` §9: one change-log row recording all six items,
+  the re-measurement, the unmoved counts and the four things the round did not do.
+- `agents/handoffs/WO-0078_cosim-phase2-3-stimulus-widening.md`: **the `State` field
+  flipped to `STAGE 2 — COMPLETE`**, with the six items summarised, the re-measurement's
+  result and consequence recorded, the deferral explicitly recorded as not having
+  occurred, and **the superseded State text kept in full** beneath it.
+- **Nothing else was staged. No `SO-`. No CD edit — the seventh consecutive refusal.
+  Nothing was run**: no `dune`, no `iverilog`, no `vvp`, no CI trigger.
+
+### Evidence
+
+Every figure below is either lifted from a landed verdict at its own run and job id, or
+re-measured at this tree by a static read whose command reproduces from a checkout at
+`e51ca52`. **No command in this section builds, simulates or triggers CI.**
+
+- **Head**: `git rev-parse HEAD` → `e51ca52ecd12352fd70cdfbc4d4f8ff1c2c96675`.
+- **Row/status census, re-measured before and after the edits** by a status-cell pass
+  over every §4 row table: **78 rows — 62 ASSERT, 7 NO-ASSERT, 4 NO-STIMULUS, 4
+  STRUCTURAL, 1 GAP**, identical at both ends. Field-count spot check: the edited
+  `M03-B1` row parses to the same field count as its unedited sibling `M03-B3`, so the
+  appended cell introduces no stray delimiter.
+- **The §0.1 re-measurement of bar 1's set claim, five commands, all at `e51ca52`:**
+  - `grep -rn "expected_strobes" --include=*.ml --include=*.mli test` → three hits, all
+    in `test/xgmii/` (`injection.ml:459`, `injection.mli:201`, `test_injection.ml:320`).
+    **Zero callers outside the model's own library.**
+  - `grep -rn "Injection\.outcomes" test --include=*.ml | grep -v "^test/xgmii/"` → 24
+    lines, of which **17 are executable call sites** in six files: `test_m03_b.ml`
+    (:310, :563, :786, :984, :1214), `test_m03_e.ml` (:242, :424, :726),
+    `test_m03_f.ml` (:413), `test_m03_g.ml` (:1315, :1573), `test_m03_h.ml` (:244,
+    :477, :685, :900), `test_m03_n.ml` (:462, :1179); the rest are comments.
+  - `grep -rEn "let +[a-z_']+ *= *[a-z0-9_']+\.Dv_xgmii\.Injection\." test/xgmii_rx_64 --include=*.ml`
+    → **0**. No outcome field is bound to a name anywhere in the bench.
+  - `grep -n "Injection\.[a-z_]*" test/xgmii_rx_64/test_m03_i.ml` → `corrupt`, `create`,
+    `is_clean`, `errors`, `schedule`, `word_at` — **X-1(i) only**.
+  - `grep -rn "Injection" test/cosim` → **one line**, `stimulus_gen.ml:309`, a docstring
+    reading *"No [Injection] or [Idle_injection] anywhere in this builder's call…"*.
+  - **Result: the claim survives**; **consequence: the `SO-` is not blocked on co-sim
+    Stage 3.**
+- **Construction identity behind the cross-reference, read at both producers**:
+  `test/xgmii_rx_64/test_m03_b.ml:28` — `let nonstandard_preamble_octet lane = 0xA0 + lane`
+  — against `test/cosim/stimulus_gen.ml:340` — `let c4_nonstandard_octet d = 0xA0 lor d`
+  — with `stimulus_gen.ml:330-332` naming `test_m03_b.ml:28` as its provenance. Same
+  seven values at a lane-0 start, two independent constructions.
+- **Lifted, not re-derived** (each traceable to its verdict in `WO-0078` §14): class 2
+  `31096150983` / `92598555141`; class 3 `31103977231` / `92624287637`; class 4
+  `31108528759` / `92639903296`; class 5 `31431123022` / `93594520735`; class 1's Phase-1
+  anchor `30988038809` / `92247281222`. **I triggered no CI run this round and claim
+  none.**
+
+### Outcome
+
+**DoD met, against `RV-C4` §12's six ruled items and the dispatch's re-measurement
+obligation.**
+
+- [x] **Item 1** — bar 1's **four** lift cells, classes 2/3/4/5, each with run id, job
+      id and its own *"does NOT anchor"* list **in the same cell**; **class 1 not
+      re-lifted**; **no cell in module form**.
+- [x] **Item 2** — bar 4's precondition record: **(1) MET for `error_bad_fcs` at C3 and
+      no other strobe**, (2) and (3) unmet, **the bar stands**, written as movement
+      inside a standing refusal and never as a lift.
+- [x] **Item 3** — bars 2 and 3 restated as unmoved, **bar 2's permanence stated as
+      specification** (REQ-901 (e)/(f)) rather than as current state.
+- [x] **Item 4** — `FINDING RV-0078-S2-13`'s rule filed at §7 beside `WO-0077-A1`'s
+      census rule, in its polarity-bearing form.
+- [x] **Item 5** — the `M03-B1` ↔ class-5 cross-reference **in both directions**, each
+      bounded by `RV-C4GAP` §5's four prohibitions **quoted into the cell**, each
+      stating the two axes on which the instruments differ.
+- [x] **Item 6** — the `State` field flipped to **`STAGE 2 — COMPLETE`**, same commit.
+- [x] **The re-measurement** — performed at citation, result recorded explicitly in
+      both the plan and the packet, **claim survives**, **`SO-` not blocked on Stage 3**.
+- [x] **Prohibitions honoured** — nothing staged outside `test/attack_plans/**` except
+      the packet's `State` field and this journal; no `SO-` opened; no CD edit; nothing
+      run; no sentence of the form *"the co-simulation anchors this module"*; no claim
+      about a class the case set did not drive.
+
+**Handoff**: `test/attack_plans/AP-xgmii_rx_64.md` and `WO-0078`'s `State` field, to the
+orchestrator for commit. **Nothing is dispatched by me and nothing is committed by me.**
+
+**Lessons harvest**: **not due at a plan round** — PROTOCOL §7 places it at every `SO-`
+and every phase gate, and this is neither. **The span stays open and declared rather
+than skipped**, unchanged since `J-dv_lead-0148`. This round banks **no new candidate**:
+`FINDING RV-0078-S2-13`'s portable form was banked at `J-dv_lead-0157` and is filed as a
+rule at `AP-M03` §7 here, which is a placement and not a second banking. **And it
+declares a defect in the bank's own bookkeeping**: eleven labelled candidates
+`LH-cand-A` … `LH-cand-K` exist in this journal alongside a later note calling one *"a
+tenth"*, so the running total is not a measured figure. **No total is quoted here or in
+the plan**; the enumeration and its reconciliation are owed to the `SO-`'s harvest,
+which is the document PROTOCOL §7 makes responsible for the tiling.
+
+### Open-questions
+
+1. **Nothing is owed by this round and one thing is owed to the round after it.** The
+   `SO-` round's list is unchanged and grew nowhere here: `FINDING RV-0078-S2-2`'s
+   per-class absolute/agreement accounting (whose **form** this round fixed and whose
+   **carrier** it did not move), `S2-7`'s residue, `S2-11`'s binding rule, criterion 3's
+   unexercised plural property, `RN-6`, `FINDING WO-0077-A1`'s census-repair ownership,
+   **`FINDING K-1` — terminal carrier, paid BEFORE the family-K rows are written** —
+   and the programme's first lessons harvest.
+2. **The re-measurement has an expiry and it is stated so nobody has to guess.** The
+   moment a row takes an expected value from X-1(ii) — a fuzz campaign would do it on
+   its first day — the claim is stale and must be re-measured before it is quoted. It
+   is not a standing fact; it is a fact about this tree.
+3. **Stage 3 stays refused on four unmet gate conditions** (b), (c), (d), (e); (a) is
+   now satisfied on both halves. Condition (c) is a spec-text obligation routed to
+   architect_docs_lead and (e) is a machinery change; neither is this round's and
+   neither moved.
+4. **The next round is the error-class sweep**, recommended by `RV-C4` §13 to be merged
+   with Stage 3's census condition (d), since (d)'s three axes and the sweep's per-class
+   question are answered from the same reading. **It is a reading, not a run.**
+5. **Date drift**: this entry uses the machine clock (2026-08-10T21:40Z), which agrees
+   with the spawn-head commit's own date; `FINDING CD-P2-2` records the underlying
+   inconsistency and nothing here rests on a calendar literal.
+
+### Files-in-this-commit
+
+- test/attack_plans/AP-xgmii_rx_64.md
+- agents/handoffs/WO-0078_cosim-phase2-3-stimulus-widening.md

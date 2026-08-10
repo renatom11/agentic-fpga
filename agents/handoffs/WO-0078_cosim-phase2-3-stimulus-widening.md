@@ -3,7 +3,46 @@
 - **State** (flipped per stage by dv_lead's `RV-`, per §14's own note):
   **STAGE 1 — ACCEPTED.** Both halves: tb_writer at `3ec0efe`, data_wrangler at
   `8c6429e`; verdict `RV-STAGE1` in §14, `J-dv_lead-0150`.
-  **STAGE 2 — ISSUED; the C4 LANDING is RETURNED and ADJUDICATED; ALL FOUR CASES ARE
+  **STAGE 2 — COMPLETE.** All four cases RETURNED, ADJUDICATED and ACCEPTED, **every
+  one at branch α**, and the stage's completion is now WRITTEN rather than withheld
+  (verdict `RV-C4` in §14, `J-dv_lead-0158`; tb_writer at `fcd76b7`, data_wrangler at
+  `3d9b44d`; `build` run `31431123022`, run number 518, conclusion **success — the
+  whole run green**, `cosim` job `93594520735` green at every step, `build` job
+  `93594520672` green at every step).
+  **THE CONDITION THAT WITHHELD IT IS DISCHARGED BY THE COMMIT THIS FIELD IS IN.**
+  `RV-C3ALPHA` §10, restated unrepealed at `RV-C4GAP` §7, made the `AP-` round *"a
+  precondition of any claim that Stage 2 is complete"*; `RV-C4` §9 pre-authorised the
+  flip and §12 ruled the round's scope in six items. **That round is this commit**:
+  `AP-M03` §7 gains bar 1's **four lift cells** (classes 2, 3, 4, 5, at run **and** job
+  ids, each with its *"does NOT anchor"* list in the same cell and each naming which
+  instrument discharges the **absolute** half and which the **agreement** half),
+  **bar 4's precondition record** (precondition (1) MET for `error_bad_fcs` at C3 and
+  for no other strobe; (2) and (3) unmet; **the bar stands** — movement inside a
+  standing refusal, never a lift), **bars 2 and 3 restated as unmoved** with bar 2's
+  permanence stated as specification, **`FINDING RV-0078-S2-13`'s rule** filed beside
+  `WO-0077-A1`'s census rule in its polarity-bearing form, and the **`M03-B1` ↔ C4
+  cross-reference in both directions**, each bounded by `RV-C4GAP` §5's four
+  prohibitions quoted into the cell. **No new evidence, run, case or verdict was
+  produced for this flip and none was owed** — it was a bookkeeping precondition, not
+  an evidentiary one — and **the round staged nothing outside `test/attack_plans/**`
+  except this field and dv_lead's journal**: no `SO-`, no CD edit (the **seventh**
+  consecutive refusal), nothing run.
+  **AND THE `AP-` ROUND PAID ITS §0.1 DEBT, WHICH IS THE ONE RESULT OF THIS FLIP THAT
+  MOVES THE PROGRAMME.** `AP-M03` §7's prose set-claim — *"no row benched to date is
+  gated by [bar 1]"* — was **RE-MEASURED at citation** at `e51ca52`, over **both**
+  producers that drive the DUT, and **it SURVIVES**: `Injection.expected_strobes`, the
+  model's only oracle join, has **zero** call sites outside its own library;
+  `Injection.outcomes`' 17 call sites in 6 bench files are all cross-checks against
+  in-file hand-derived locals on a `fail_cross` branch; **zero** outcome fields are
+  bound to a name anywhere; and the co-sim producer's single mention of the model is a
+  docstring saying it is absent. **Its stated ground was stale (families A–F, written
+  before G, H and N landed) and is repaired at the measurement.** **Consequence, ruled
+  by `RV-C4` §13 item 4 to be decided by this measurement and not by that verdict: the
+  `SO-xgmii_rx_64.md` is NOT BLOCKED ON CO-SIM STAGE 3**, and the shortest path to
+  sign-off is **`AP-` → the error-class sweep → `SO-`**.
+  *Superseded State text, kept in full rather than overwritten, for the same
+  auditability reason as the texts below:*
+  "**STAGE 2 — ISSUED; the C4 LANDING is RETURNED and ADJUDICATED; ALL FOUR CASES ARE
   ACCEPTED, EVERY ONE AT BRANCH α, and STAGE 2's CASE WORK IS FINISHED** (verdict
   `RV-C4` in §14, `J-dv_lead-0158`; tb_writer at `fcd76b7`, data_wrangler at
   `3d9b44d`; `build` run `31431123022`, run number 518, conclusion **success — the
@@ -11,14 +50,17 @@
   `93594520672` green at every step).
   **THE STAGE'S COMPLETION IS WITHHELD FOR EXACTLY ONE ROUND, AND THE WITHHOLDING IS
   MINE.** `RV-C3ALPHA` §10, restated unrepealed at `RV-C4GAP` §7, makes the `AP-`
-  round *"a precondition of any claim that Stage 2 is complete"* — a condition written
+  round *'a precondition of any claim that Stage 2 is complete'* — a condition written
   so the debt could not be discharged by a declaration. **The `AP-` round's own commit
   is where `STAGE 2 — COMPLETE` is written**, its scope is ruled at `RV-C4` §12, and
   **no further evidence, run, case or verdict is required for that flip**: it is a
   bookkeeping precondition, not an evidentiary one, and this State line pre-authorises
   it so no reader mistakes it for a new gate. **Nothing is in front of that round** —
   if any other round is dispatched to dv_lead before it, the deferral has occurred and
-  `RV-C4GAP` §7's finding fires, NOT MINOR, against dv_lead (`RV-C4` §9).
+  `RV-C4GAP` §7's finding fires, NOT MINOR, against dv_lead (`RV-C4` §9)."
+  **The deferral did not occur**: the `AP-` round was the next round dispatched to
+  dv_lead, with nothing between it and `RV-C4`, and the condition is discharged by
+  execution rather than by declaration — which is what it was written to force.
   **C4 — ACCEPTED, branch α**, under CD §10.4 **unamended**: `frames compared: 1`,
   `frames matching: 1`, `divergences: none`, `compare_exit=0`, `tier=CLEAN`, T0
   `admit_cycle = 0`, T1 clean at `3…10`, T2 `theirs − ours = [0 × 8]`, run1/run2
