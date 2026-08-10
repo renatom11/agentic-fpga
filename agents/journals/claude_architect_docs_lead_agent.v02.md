@@ -3468,3 +3468,438 @@ Every command below runs from a checkout at this commit.
 
 - docs/adr/ADR-0019-the-seeder-never-operates-the-repo.md
 - docs/specs/requirements.md
+
+## [J-architect_docs_lead-0033] 2026-08-10T23:12Z | task:none | Both of dv's findings verified at the source before repair, and the verification corrected them both — the lane-4 abort is not uniform across its half and its extent divergence runs the OPPOSITE WAY to (g)'s, so the case still needs a class of its own rather than a widened one
+
+### Trigger
+
+Orchestrator spawn routing the two MATERIAL findings from dv_lead's
+countersignature round (`J-dv_lead-0162`, landed `b5688ec`; transcribed at
+`4e7331b`) to me as spec-diff requests **against the recitals of my own ruling**
+at `J-architect_docs_lead-0032`. The (g)/(h) diff itself is **IN FORCE** — dv
+countersigned all three amendments and deliberately declined to hold the diff
+out of force over a recital that changes no verdict. So this round repairs
+reasons and one verification column; it does not reopen the classes.
+
+- **`FINDING CSG-1`** (MATERIAL) — Amendment 3's ground ("*the reference does not
+  abort at all*") is false at a lane-4 mid-frame start: `:346` recomputes the
+  framing error from `swap_rxc`, which carries the `/S/` bit, so the reference
+  aborts and the second frame is still received. dv's disposition: the bar
+  catches both, so the ruling survives.
+- **`FINDING CSG-2`** (MATERIAL, editorial class) — REQ-105's new verification
+  column projects (g)'s carve-out onto the wrong member of the lane-4-started
+  half: the anchorable member is XGMII lane **4**, not lane 0. Live at C8.
+
+**Abort-first head check, before anything else.** `git rev-parse HEAD` →
+`4e7331b609a40763394822405e09fb170cc2e5e9`, byte-equal to the spawn-head
+`4e7331b`. No divergence, no rollback, no merge-base call needed. Proceeded.
+
+**Entry id derived from the file, not from the spawn.** The spawn nominated
+`-0033` and also told me to derive it myself, its prior stale-id error being on
+the record. Volume 02's tail at HEAD is `-0032`; the next id R5 admits is
+**`-0033`**, which is what the spawn said. Checked rather than trusted, because
+the check costs one `grep` and the failure mode is a refused commit.
+
+**Sibling in flight, declared.** dv_lead is concurrently executing the `SO-`
+draft's steps 1-5 in `test/**`, `agents/handoffs/**` and its own journal. Those
+are out of bounds for this round even though `agents/handoffs/**` is normally
+inside my write scope. My file set contains neither, by construction.
+
+### Inputs
+
+- `agents/charters/architect_docs_lead.md` (whole) and `agents/PROTOCOL.md`
+  (whole) — §4.1, §4.2 and §6 load-bearing for the sibling bound and the files
+  list.
+- `agents/journals/claude_dv_lead_agent.v08.md` `J-dv_lead-0162` in full
+  (lines 483-900) — **read, never written**: the three-check re-derivation, the
+  self-caught off-by-one at Reasoning §3, `FINDING CSG-1` and `FINDING CSG-2`
+  with their evidence items 7 and 8, the correction of record on C8, and the
+  Open-questions.
+- `agents/journals/claude_architect_docs_lead_agent.v02.md`
+  `J-architect_docs_lead-0032` in full — my own ruling, its Amendment 3, its
+  verification-column paragraph and its Open-questions (which nominated the
+  attack point dv took).
+- `docs/specs/requirements.md` at HEAD: REQ-101, REQ-102, REQ-103, REQ-105,
+  REQ-106, REQ-110, REQ-901's whole class list, and §13's rows at `:1004` (my
+  ruling) and `:1005` (the transcription, which already carries dv's C8
+  correction).
+- `test/third_party/verilog-ethernet/axis_xgmii_rx_64.v` at pin `77320a9`,
+  **read directly and traced cycle by cycle rather than taken from dv's
+  quotation**: `:193-201` (the input mask), `:203-260` (`STATE_IDLE`,
+  `STATE_PAYLOAD`, the abort branch at `:244-250` and the terminate narrowing at
+  `:255`), `:311-400` (the whole lane-swap and start-detection block:
+  `:324-325`, `:329`, `:340-346`, `:353`, `:362`, `:369`, `:375-390`) and
+  `:400-445` (`:412`, `:422-423`).
+- `test/cosim/stimulus_gen.ml:180-215` — **read, never written**: the C2 comment
+  recording that frame 1's start lane is 4 by arithmetic rather than by choice,
+  which is what makes `CSG-2` live rather than theoretical.
+
+### Reasoning
+
+#### 0. I re-derived both findings before repairing either, and both moved under the derivation
+
+dv's findings are routed to me because the recitals are mine. Transcribing a
+correction I have not verified would put a second unverified sentence where the
+first one was — and the first one is exactly what is being repaired. So I traced
+the reference's clocked block myself, cycle by cycle, at **four** stimulus cases,
+not the one dv filed. Both findings survive. **Both also needed correcting**, and
+the corrections are the substance of this round rather than a garnish on it.
+
+#### 1. `FINDING CSG-1` — the abort is real, and it is neither uniform nor the same sign as (g)
+
+Writing `W_n` for the input word carrying the mid-frame start character, and
+using the register alignment already established at `-0032` (emitted word at
+cycle `c` is `W_{c-2}`; `framing_error_reg` is `fe(W_{c-1})`; `framing_error_d0_reg`
+is `fe(W_{c-2})`), the four cases are:
+
+| new `/S/` at | open frame started | reference | ours (REQ-110) | outcome |
+|---|---|---|---|---|
+| XGMII lane 0 | lane 0 | `:382` excludes its own lane, `:376` clears `lanes_swapped`, `:362` recomputes nothing — **no abort**; `xgmii_start_d1` rises inside `STATE_PAYLOAD` and is ignored | two frames | **frames merge** — a sequence divergence |
+| XGMII lane 0 | lane 4 | `:346` sets the error that cycle, but `:382` **overrides it** in the same block and `:376` clears the swap — **no abort** | two frames | **frames merge** |
+| XGMII lane 4 | lane 0 | `:390` suppresses for one cycle while `:384` sets the swap; next cycle `:346` recomputes from `{xgmii_rxc[3:0], swap_rxc}` and `swap_rxc` (`:325`) holds the `/S/` bit — **aborts**, emitting masked `W_n` **whole** (8 octets, `tkeep` all-ones) | `tlast` on `W_n`, 4 octets | **two frames both sides**; extent diverges, reference **+4 octets** |
+| XGMII lane 4 | lane 4 | same abort, but the emitted word is the realigned `R_{n-1}` = `W_{n-1}` lanes 4-7 then `W_n` lanes 0-3, whole | `tlast` on `R_{n-1}`, 8 octets | **agree exactly** |
+
+Three things follow, and only the first is dv's.
+
+**(i) The recital is false for the lane-4 half.** dv is right, and the mechanism
+is right as filed. `:390`'s exclusion is a one-cycle suppression, not a
+disposition, because the same branch sets `lanes_swapped` and hands the next
+cycle to a recompute that includes the start character's own lane. The abort then
+returns the state to `STATE_IDLE` at cycle `n+3`, and `xgmii_start_d1` rises at
+`n+3` (`:386` → `:329` → `:423`, two delays from `xgmii_start_swap`), so the
+second frame is admitted on the very cycle the first frame's abort vacated the
+state. **The abort is what saves the second frame**, which is the part of this
+that reads as luck and is not: it is the same one-word lookahead that makes the
+FCS strip correct.
+
+**(ii) The lane-4 half is not uniform, and dv did not distinguish it.** The
+extent divergence obeys **(g)'s own geometry**: where the start character falls
+in lane 0 of the *output* word — which at a lane-4 start is XGMII lane 4 — the
+two designs agree exactly, because REQ-110's "the octet immediately preceding the
+start character" lands on the output word's last octet and the reference closes
+on that same word whole. So of the family's four cases, **one agrees exactly, one
+diverges by four octets, and two merge frames**. A repair that wrote dv's finding
+in verbatim would have replaced one false generalisation with another.
+
+**(iii) The sign is the opposite of (g)'s, which is why a widened (g) will not
+do.** (g)'s mechanism sentence is *"the reference does not emit the word carrying
+the aborting character"* — true of an error character, because nothing suppresses
+`:362`'s framing error and the abort fires one cycle earlier. **A start character
+suppresses it for exactly one cycle**, so the abort fires one cycle *later* and
+the reference emits the word carrying the (masked) start character whole:
+the reference delivers **four octets more** than we do, where under (g) it
+delivers fewer. dv's *"a class widened by four words would cover H-2"* is
+therefore not available as written — widening (g) would import a mechanism
+sentence that is false of the case it was widened to cover, which is the same
+defect class as the recital I am repairing. **The case needs its own class or
+none.** I chose none, for the reason `-0032` chose none and dv upheld: no
+producer can build the stimulus (`FI-4`, `FI-6`), the class would rest on an
+unexecuted static read, and a class is a commitment about a run.
+
+**The disposition survives — verified, not inherited.** dv asserts it; I checked
+it against the bar's own text. The bar reads *"co-simulation stimulus SHALL NOT
+present a start character inside an open frame that has already delivered an
+octet"* — keyed on the **situation**, with no lane qualifier and no mechanism
+term. All four cases above are inside it. Nothing can be produced, so nothing can
+be misjudged, and the class list does not move. That is the whole reason a
+falsified recital did not falsify a ruling: **the operative sentence was never
+written on the mechanism that turned out to be wrong.** I record that as the
+lesson of the round rather than as luck — writing bars on situations rather than
+on mechanisms is what made this repairable in a recital round instead of a
+re-countersignature round.
+
+**Second site, which the finding did not name.** REQ-110's verification column
+carried the same sentence (*"where the reference does not abort at all"*). A
+recital repaired in REQ-901 and left standing in the row a bench writer opens is
+not repaired. Both are fixed.
+
+#### 2. `FINDING CSG-2` — the projection, and why I repaired the class text too
+
+The geometry, derived rather than quoted: `:341` forms the output word as
+`{xgmii_rxd_masked[31:0], swap_rxd}` with `swap_rxd` (`:324`) holding the
+previous word's upper half, so the output word takes octets 0-3 from XGMII lanes
+4-7 of one word and octets 4-7 from XGMII lanes 0-3 of the next. **Output lane 0
+is XGMII lane 4 at a lane-4 start.** Checking both members of the lane-4-started
+half against REQ-105: an `/E/` at XGMII lane 4 of `W_m` sits at output lane 0 of
+`R_m`, so the reference closes on `R_{m-1}` whole and REQ-105's lane-0 clause
+puts our last octet at the end of `R_{m-1}` — **agree**; an `/E/` at XGMII lane 0
+of `W_m` sits at output lane 4 of `R_{m-1}`, so the reference drops `R_{m-1}` and
+we truncate inside it — **diverge by four octets and one word**. dv's
+identification is exactly right and the ruling's count of two anchorable members
+in sixteen is untouched.
+
+**Live, not theoretical**, and I checked that independently too:
+`stimulus_gen.ml:185-202` records frame 1's start lane as *"lane 4 … falls out of
+that arithmetic rather than being chosen"*, and `M03-E1` is C8's class. A bench
+built on the column as written would have asserted anchoring on the diverging
+member and reported the reference's word-boundary truncation as a defect in our
+design — the precise failure the class exists to prevent, reappearing one level
+down in my own projection of it.
+
+**I repaired the class text as well as the column, and the reason is dv's own
+Open-question 2.** dv bound the reading in the `WO-0078` packet and recorded that
+*"a reader who opens `requirements.md` and not `WO-0078` §14 gets the wrong
+member"* — the "one document up" hazard its own `FINDING ECS-1` convicted
+`AP-M03` for. A repair that left the ambiguous phrase in the normative row and
+fixed only the column would leave the bound one document up **again**. So (g) now
+says in its own text that every lane it names is an output-word lane and that
+this document's XGMII-lane convention does not govern inside it, and the two
+later restatements of the bound say "output word" in their own words.
+
+**Why that is a gloss and not a change of set**, stated because it is the load-
+bearing classification: within (g)'s paragraph "its word" already referred back
+to *"the word carrying the aborting character"* — the reference's word — which is
+the reading dv countersigned; and the competing XGMII reading is independently
+refuted, because **REQ-101 requires the same frame to produce an identical output
+stream at either start lane**, which anchors our output-word grouping to the
+frame's first octet and makes it the same grouping the reference forms. An XGMII
+reading of REQ-105's own lane-0 clause would put our `tlast` in a different place
+at the two start lanes and break REQ-101 outright. So the gloss writes down a
+reading that was already forced, and selects the same frames.
+
+#### 3. Classes, stated per repair because the spawn asked and because they differ
+
+- **`CSG-1`'s repair: recital correction, non-normative.** The honest test, the
+  one the `-0027` and `-0031` rows established: no conformant design changes, no
+  letter is added or removed, no excluded set moves, no verification rule
+  changes, no strobe or window or pin moves, and no landed test changes meaning
+  (no co-simulation case has driven an abort). What changes is a **reason**, at
+  the two sites that stated it. **No countersignature owed** — the countersigned
+  objects are the classes, the boundary sentence and the stimulus bar, and all
+  three are untouched.
+- **`CSG-2`'s repair: editorial.** dv classed it so; I adopt the class with the
+  test restated rather than on dv's say-so, because a class taken on trust is the
+  same defect as a recital taken on trust. The test is whether the excluded set
+  moves; it does not, per §2 above. **No re-countersignature owed and the diff
+  stays in force.** I state the honest converse in the row itself: the repair
+  *does* change what a future bench asserts — that is what makes it worth doing
+  — but changing a projection is not changing a class.
+- **The standing clause, so it is not assumed**: if dv_lead reads any sentence I
+  added as normative, that is a **fresh finding** and takes a narrow round of its
+  own. That is the same standing `-0031` wrote against itself, and it is the
+  cheap half of the countersignature discipline.
+
+#### 4. dv's correction of my C8 statement — accepted, and no document change is owed
+
+My ruling's Outcome said *"Stage 3 may therefore be authorised for C8 on this
+ruling."* dv is right that this is one condition too strong: what the ruling
+discharges is C8's **class** blocker, and Stage-3 gate condition (b) — the CD's
+co-sim Phase-3 domain instance — is **unmet and is a stage condition, not a
+per-case one**, so Stage 3 remains unauthorised on a condition that is dv's and
+was never mine to discharge. **Accepted without reservation.** The distinction is
+the same one my own charter §3 draws between a ruling and a gate: an adjudication
+removes an objection, it does not pass a checklist.
+
+**No requirements.md change is owed for it**, and I checked rather than assumed:
+the claim lives in my journal, which is append-only and cannot be edited, and the
+document's own §13 transcription row at `:1005` **already carries the
+correction** in the orchestrator's transcription of dv's block. Manufacturing a
+second row to restate it would put the same correction in the change log twice.
+Recorded here, which is where the overclaim was made.
+
+#### 5. What I deliberately did not do
+
+- **Did not declare a class for family H.** It would be normative, would carry
+  the countersignature discipline again, and would rest on a static read of a
+  path no run has driven — and after correction (ii) above it would need to be
+  written on a *different* mechanism sentence from (g)'s, which is more than a
+  recital round should be deciding. The carrier stays the round that lifts
+  `FI-4`/`FI-6`, and that round's request is now sharper than the one `-0032`
+  anticipated: it must cover four cases with three different outcomes.
+- **Did not touch `test/**`, `agents/handoffs/**` or any dv journal** — the
+  declared sibling's bound. Reading dv's journal and `stimulus_gen.ml` is
+  verification of a finding routed to me, not a write.
+- **Did not re-open (g), (h) or the bar.** They are in force and the findings
+  were filed against recitals, not against them.
+- **Ran no build and no simulation.** ADR-0005: the toolchain is unavailable and
+  CI is the only authority; this round is textual and commissions nothing.
+
+### Actions
+
+- Head check; read charter, protocol, dv's `J-dv_lead-0162` in full, my own
+  `-0032` in full, and the four requirements.md sites.
+- **Traced the reference's clocked block cycle by cycle at four stimulus cases**
+  (two mid-frame start lanes x two open-frame start lanes), and separately at the
+  two `/E/` members of a lane-4-started frame, deriving the output-word geometry
+  from `:324`/`:341` rather than taking it from the finding.
+- `docs/specs/requirements.md`, **four sites, no others** (Evidence 6):
+  - REQ-901's (g) — the carve-out bound to the output word, with the
+    per-start-lane projection and the REQ-101 derivation of our own grouping;
+    the two later restatements of the bound made explicit.
+  - REQ-901's Amendment-3 sentence — the recital split into its two shapes with
+    the lane-4 abort, its two sub-cases, its opposite sign, and the verified
+    survival of the stimulus bar.
+  - REQ-105's verification column — the projection repaired to XGMII lane 0 at a
+    lane-0 start and XGMII lane 4 at a lane-4 start, with the superseded reading
+    named.
+  - REQ-110's verification column — the same false recital repaired.
+  - §13 — **two rows, one per repair**, each with its class, its test and its
+    countersignature standing.
+- Wrote nothing in `test/**`, `agents/handoffs/**`, `docs/adr/**` or any other
+  agent's journal.
+
+### Evidence
+
+Every command below runs from a checkout at this commit; the reference is pinned
+at `77320a9` and vendored per ADR-0015.
+
+1. **Head check.** `git rev-parse HEAD` →
+   `4e7331b609a40763394822405e09fb170cc2e5e9`; spawn-head `4e7331b`. Match.
+   `git log --oneline -3` → `4e7331b`, `b5688ec`, `6138d00`, i.e. the
+   countersignature and its transcription are both in history.
+
+2. **`CSG-1`'s mechanism, at the source.**
+   `sed -n '311,400p' test/third_party/verilog-ethernet/axis_xgmii_rx_64.v`
+   shows `:325` `swap_rxc <= xgmii_rxc[7:4]`, `:340` `if (lanes_swapped)`,
+   `:346` `framing_error_reg <= {xgmii_rxc[3:0], swap_rxc} != 0`, `:362`
+   `framing_error_reg <= xgmii_rxc != 0`, `:375-382` (lane-0 start:
+   `lanes_swapped <= 1'b0`, `xgmii_start_d0 <= 1'b1`,
+   `framing_error_reg <= xgmii_rxc[7:1] != 0`) and `:383-390` (lane-4 start:
+   `lanes_swapped <= 1'b1`, `xgmii_start_swap <= 1'b1`,
+   `framing_error_reg <= xgmii_rxc[7:5] != 0`). At a lane-4 start `swap_rxc`
+   holds `4'b0001` on the following cycle, so `:346` is unconditionally true
+   there. **Confirmed as dv filed it.**
+
+3. **The second frame's admission, which decides "the sequence agrees".**
+   `:386` sets `xgmii_start_swap`; `:329` `xgmii_start_d0 <= xgmii_start_swap`
+   and `:423` `xgmii_start_d1 <= xgmii_start_d0` are two further delays, so a
+   lane-4 start at cycle `n` raises `xgmii_start_d1` at `n+3`. The abort at
+   `n+2` sets `state_next = STATE_IDLE` (`:244-250`), so `state_reg` is
+   `STATE_IDLE` at `n+3` and `STATE_IDLE`'s `if (xgmii_start_d1 && cfg_rx_enable)`
+   fires on that cycle. **One cycle, exactly.**
+
+4. **The two corrections I carried against the finding.** (ii) At a lane-4 start
+   into an already-swapped frame, `:341` gives the emitted word as
+   `{W_n lanes 0-3, W_{n-1} lanes 4-7}` — every octet of it precedes the start
+   character at `W_n` lane 4, and REQ-110 gives us the same eight, so the two
+   agree exactly. (iii) At a lane-4 start into an unswapped frame the emitted
+   word is masked `W_n` **whole** with `STATE_PAYLOAD`'s all-ones `tkeep`
+   (`:235`, the abort branch assigning none), i.e. four octets **more** than
+   REQ-110's four; under (g) the reference emits the word *before* the aborting
+   character's and delivers **fewer**. Opposite signs from the same code, because
+   `:390` delays the abort by exactly the one cycle `:362` does not.
+
+5. **`CSG-2`'s geometry and its liveness.** `:341`
+   `xgmii_rxd_d0 <= {xgmii_rxd_masked[31:0], swap_rxd}` with `:324`
+   `swap_rxd <= xgmii_rxd_masked[63:32]` gives output octets 0-3 from the
+   previous word's XGMII lanes 4-7 — so output lane 0 is XGMII lane 4 at a
+   lane-4 start. `sed -n '180,215p' test/cosim/stimulus_gen.ml` confirms C2's
+   frame 1 lands at start lane 4 *"rather than being chosen"*, so the
+   lane-4-started half of `M03-E1` is reachable by C8's own schedule.
+   **`CSG-2` is live.**
+
+6. **The diff's shape, checked rather than asserted.**
+   `git diff --numstat docs/specs/requirements.md` → `5  3`; `git diff -U0 |
+   grep '^@@'` → exactly four hunks, at `-696 +696` (REQ-105), `-701 +701`
+   (REQ-110), `-883 +883` (REQ-901) and `-1005,0 +1006,2` (the two §13 rows).
+   No other line of the document moves.
+
+7. **Table integrity, on the check my own `-0032` Evidence 6 shows catching a
+   real defect.** Pipe counts via
+   `awk 'NR==<n>{print gsub(/\|/,"|")}' docs/specs/requirements.md`: `NR==696` →
+   **5**, `NR==701` → **5**, `NR==883` → **5**, each equal to its value at HEAD;
+   `NR==1006` and `NR==1007` (the new §13 rows) → **7** each, equal to `NR==1005`
+   and to the §13 header. No literal pipe splits a cell — the abort condition is
+   named rather than written, as at `-0032`.
+
+8. **No stale phrasing left.** `grep -n "lane 0 of its word\|the other seven
+   rest\|does not abort at all, because" docs/specs/requirements.md` returns
+   **one** line, `:1007`, which is my own §13 row **quoting** the superseded
+   text in order to record what it replaced. No normative sentence retains it.
+
+9. **`git status --porcelain` at the end of this round**, recorded as observed
+   rather than as predicted, because the declared sibling landed files in the
+   tree while I worked: ` M docs/specs/requirements.md`,
+   ` M agents/journals/claude_architect_docs_lead_agent.v02.md` — **mine** — and
+   ` M test/xgmii_rx_64/test_m03_k.ml`, ` M tools/dv_checks.sh` — **dv_lead's**,
+   both inside dv_lead's write scope (PROTOCOL §6) and neither touched by me.
+   `git diff --numstat` attributes them: `5 3` and `427 0` to my two paths,
+   `30 4` and `286 0` to dv_lead's. I wrote nothing in `test/`, `tools/` or
+   `agents/handoffs/` and no dv journal, so the sibling's two paths are
+   **excluded from the files list below** and belong to dv_lead's own commit
+   under dv_lead's trailer. Staging them here would fail R4 and R7's attribution
+   both.
+
+10. **No build, no simulation, no CI figure quoted.** ADR-0005 governs.
+
+### Outcome
+
+**DoD met. Two repairs, two §13 rows, neither normative, no countersignature
+owed.**
+
+- **`FINDING CSG-1` — REPAIRED, and corrected in two respects while being
+  repaired.** Amendment 3's ground is narrowed to an XGMII-lane-0 mid-frame
+  start; the lane-4 abort is recorded with its mechanism (`:390`'s one-cycle
+  suppression, `:346`'s recompute through `swap_rxc`), its consequence (the
+  second frame is received, so the ordered sequence agrees), its **non-uniformity**
+  (a lane-4 start inside a lane-4-started frame agrees exactly, on (g)'s own
+  output-word geometry) and its **opposite sign** (the reference delivers four
+  octets more, where (g)'s error character makes it deliver fewer — so widening
+  (g) would import a false mechanism sentence and the case needs its own class or
+  none). **The disposition survives, verified against the bar's text**: the bar is
+  keyed on the situation and carries no lane qualifier, so it bars all four cases
+  and no run can produce any of them. **Class: recital correction,
+  non-normative. No countersignature owed.** Sites: REQ-901's Amendment-3
+  sentence and REQ-110's verification column.
+- **`FINDING CSG-2` — REPAIRED, at both ends.** REQ-105's verification column now
+  names **XGMII lane 0 at a lane-0 start and XGMII lane 4 at a lane-4 start** as
+  the anchorable members (two of sixteen — the ruling's count was right, its
+  identification needed the gloss), and says which reading it replaced. (g)'s own
+  text now binds every lane it names to the **output** word and disclaims this
+  document's XGMII-lane convention inside the class, with the per-start-lane
+  projection spelled out and our own grouping derived from REQ-101 rather than
+  assumed — repaired in the normative row and not only in the column, because
+  leaving the bound in a packet is dv's own Open-question 2. **Class: editorial,
+  dv_lead's own class, adopted with the set-does-not-move test restated. No
+  re-countersignature owed; the (g)/(h) diff stays in force.**
+- **dv's correction of my C8 statement — ACCEPTED.** What `-0032` discharged for
+  C8 is the **class** blocker; **Stage 3 remains unauthorised on gate condition
+  (b)**, which is a stage condition and dv's. No document change is owed: §13's
+  transcription row at `:1005` already carries it.
+- **Nothing else moved.** No class declared, no letter added, no bar widened or
+  narrowed, no ADR (no design choice among live alternatives — a reading of the
+  reference corrected against the reference).
+- **Handoff**: to the orchestrator for commit; then to dv_lead for information —
+  **not** for signature — with the two corrections at §1(ii) and §1(iii) flagged,
+  since they modify a finding dv wrote and one of them withdraws an option dv
+  named ("*a class widened by four words*").
+- **Staging note.** Stage exactly the one path below plus this journal. The
+  declared concurrent dv_lead spawn is executing the `SO-` draft in `test/**`,
+  `agents/handoffs/**` and its own journal; those are dv_lead's to commit under
+  dv_lead's trailer, and staging any of them under this entry would fail R4 and,
+  for the journal, R8.
+
+### Open-questions
+
+- **`FINDING CSG-1`'s class request now has a sharper shape and the same
+  unscheduled carrier.** The round that lifts `FI-4`/`FI-6` owes a request
+  covering **four cases with three outcomes** — merge, exact agreement, and a
+  four-octet extent divergence of the opposite sign to (g)'s — and it cannot be
+  discharged by widening (g). dv recorded the carrier as unscheduled and declined
+  to manufacture a round for it; I concur and record the same, with the request
+  now specified enough that whoever picks it up is not re-deriving this.
+- **Two of my repairs correct dv's finding rather than my own text, and dv has
+  not seen them.** §1(ii) (non-uniformity) and §1(iii) (opposite sign) are mine,
+  derived after the countersignature was written. They do not disturb the
+  countersignature — the disposition and the classes are untouched — but they do
+  withdraw an option dv's finding offered. If dv disputes either, the argument is
+  the trace at Evidence 4, and the thing to attack is whether `:390`'s
+  suppression really delays the abort by one cycle relative to `:362`'s.
+- **The standing clause is live**: if dv_lead reads any sentence added this round
+  as normative, that is a fresh finding and takes its own narrow round. I have
+  applied the honest test to both repairs and stated it in the rows, which is the
+  most a repairing round can do about its own class.
+- **No lessons harvest is due at this entry.** PROTOCOL §7 places it at every
+  `SO-` and every phase gate; this is neither. The span since my last harvest
+  stays **open** and is declared rather than skipped — the concurrent `SO-` round
+  is the one that closes it.
+- **Date drift, declared as dv declared it.** This entry uses the machine clock
+  (2026-08-10T23:12Z), which is **earlier** than my own previous entry's stamp
+  (`-0032`, 23:40Z) and later than the spawn-head commit (22:57:13Z).
+  `FINDING CD-P2-2` records the underlying inconsistency; nothing here rests on a
+  calendar literal, and R5 orders this chain by entry id, which is monotonic.
+- No escalation. Nothing else.
+
+### Files-in-this-commit
+
+- docs/specs/requirements.md
