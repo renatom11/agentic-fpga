@@ -3306,3 +3306,27 @@ tasks/BOARD.md and this journal only - disjoint, verified.
 
 ### Files-in-this-commit
 - tasks/BOARD.md
+
+## [J-orchestrator-0232] 2026-08-11T00:30Z | task:none | The transcription is mine by the precedent dv quoted back at my own dispatch - classes (g) and (h) enter force with two findings outstanding against the recitals they entered under
+
+### Trigger
+dv_lead COUNTERSIGNED all three amendments (b5688ec,
+J-dv_lead-0162) - and corrected my dispatch's form error: I had
+assigned the requirements.md transcription to dv, whose write scope
+excludes docs/specs/** by the 2026-08-03 precedent's own words
+(J-dv_lead-0057). The signature of record went to the packet; the
+transcription row is the orchestrator's, under its own trailer, per
+the J-orchestrator-0126/0161/0165/0167 lineage. This commit is that
+transcription: the sixth dispatch error acknowledged in the same
+motion as the row it mislocated.
+
+### What enters force
+REQ-901 classes (g) and (h) as amended, the aborted-frame boundary
+sentence, and the stimulus restriction on the merged-frame case.
+CSG-1 and CSG-2 stand outstanding against the ruling's recitals
+(the F-1-outstanding precedent) and route to the architect. C8's
+class blocker is discharged; Stage-3 gate (b) remains a stage
+condition; C9 still owes one spec round.
+
+### Files-in-this-commit
+- docs/specs/requirements.md
