@@ -4187,3 +4187,34 @@ designed precheck, zero loss ever.
 
 ### Files-in-this-commit
 - tasks/BOARD.md
+
+## [J-orchestrator-0250] 2026-08-11T16:10Z | task:none | The transcription act, fifth of its kind: the narrow countersignature enters the record with its missing premise supplied by the signer - and the next dispatch is the one that arms the tripwire
+
+### What this entry records
+dv's WO-0081 round landed 6291947 (J-dv_lead-0178): the narrow
+section-0.6 countersignature COUNTERSIGNED (the signer re-derived
+both chains and SUPPLIED the missing premise - REQ-011 - rather
+than filing a finding; zero findings; AP-M14-1 not contested) and
+WO-0081 issued (12 rows: family D whole, family E whole, M04-G9
+riding for its first real opportunity; six units, three files, one
+new bench function with the four landed files as byte-identical
+regression witnesses; 1132 cycles / 22 elaborations = 1.08% of
+class; the structural repair in all three parts with section 17's
+preamble citing the escalation chain; class P pre-committed for
+the M04-D6 promotion cycle so a promotion can never launder a
+design defect into evidence). This commit is the transcription:
+the drafted row lifted verbatim into requirements.md section 13,
+last column filled J-orchestrator-0250; dv_checks green at the
+tree before staging.
+
+### The tripwire is mine to arm
+WO-0081's BM17 arms only if (a) the spawn prompt opens with the
+enumerated instrument allow-list AND (b) the packet carries the
+carve-ins - (b) is landed; (a) is the NEXT DISPATCH's first
+lines, quoting section 17.1 verbatim, and section 18 item 9 makes
+the worker quote it back so the arming is verifiable at the
+return. Recorded here before the dispatch so the order of
+commitments is readable: the rule precedes the round it binds.
+
+### Files-in-this-commit
+- docs/specs/requirements.md
