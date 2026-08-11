@@ -2392,3 +2392,341 @@ performed here.
 
 ### Files-in-this-commit
 - (none)
+
+## [J-dv_lead-0191] 2026-08-11T22:57Z | task:WO-0082 | RV-0082 ACCEPT on twenty-three bars — the anchor law measured at eight terminate lanes where it was only derived, the discriminating member of the gap convention driven and green, and both worker disclosures ruled against my own packet rather than against the seat that made them
+
+### Trigger
+
+Orchestrator dispatch, **one round, my seat**: the review my loop owes on
+`WO-0082` stage one, returned by tb_writer at `65ba148` and unblocked by the
+orchestrator's CI classification. Write allowance this round: `agents/handoffs/`
+and this journal — **not** `test/**` (a review repairs nothing) and not
+`docs/PROCESS.md`/`docs/SPONSOR.md` (architect_docs_lead's declared in-flight
+lane). Precheck: `git rev-parse HEAD` → `d502aa1` as the dispatch expects, branch
+`claude/fpga-hardcaml-agent-orchestration-37ceyf`. **`git status --porcelain -uall`
+returned empty** — the dispatch declared the architect's paths as dirty and none
+was present. A clean tree is not the abort condition (an *undeclared* dirty path
+is), so I proceeded, and I record the absence rather than smoothing it: if that
+lane's work is still uncommitted somewhere, it is not in this tree.
+
+### Inputs
+
+`agents/charters/dv_lead.md` and `agents/PROTOCOL.md`, both in full, first.
+`agents/handoffs/WO-0082_tb-m04-two-frame-presenter-and-g10.md` **in full** —
+all 2 092 lines across three reads, §0 through §19 plus the Return log
+tb_writer appended at `65ba148` — my standing rule and the only way §12's bars
+and §13's bounce conditions can be executed as pre-committed rather than as
+remembered. My own `J-dv_lead-0189` §1.9 (the `date -u` adjudication whose
+carve-out I owe) and the `J-dv_lead-0190` header (the frozen head I increment
+from). `agents/journals/workers/claude_tb_writer_agent.v03.md`, the whole of
+`J-tb_writer-0045` — Trigger, Inputs, Reasoning, Actions, Evidence, Outcome,
+Open-questions, Files-in-this-commit. The landing diff at `65ba148` **hunk by
+hunk** across all seven source paths, and the landed files themselves at that
+SHA: `test/xgmii_tx_64/bench.ml`, `bench.mli`, `dune`, `test_m04_f.ml`, and the
+appended spans of `test_m04_a.ml`, `test_m04_b.ml`, `test_m04_g.ml`. GitHub
+Actions run **31539904673** job **93939708019** and run **31539904725**
+(`journal-check`), read from the job records by step name, number and status.
+
+**Not read**: `libs/**`, `top/**`, `bin/**`, `rtl_snapshots/**` — not at this
+commit and not at any earlier one. I judged behaviour against the specification
+and against the packet's own derived constants, never against the module. Also
+not read as authority: `docs/PROCESS.md`, `docs/SPONSOR.md` (the sibling's
+in-flight lane), and `docs/reports/audit/**`.
+
+### Reasoning
+
+**Why the review re-executed the worker's own censuses instead of reading them.**
+Seven of §12's twenty-three bars are worker-seat counts. A count in a return is a
+**report**, and §9.1 — the packet's own SHA rule — says a claim quantifying over
+a set is re-measured at the point of citation or quoted with the SHA and command
+it was measured at. So I re-ran six of the seven at `65ba148` myself: the
+`let%expect_test` census per file (21, matching), the `[%expect` block census (21
+blocks, exactly one non-empty and it is U13's landed promotion), the `tready`
+census (11 hits, one read site, both new hits comment prose), the infix ` mod `
+census (6 hits, zero in expression position), the print census (10, all in
+`test_m04_d.ml`, one call site), and the `^val` count in `bench.mli` (16). All
+six agree with the return. **That agreement is the point**: a worker whose seven
+independent counts all survive re-execution at the reviewer's seat has reported,
+not estimated.
+
+**One method correction I owe against myself.** My first `M-3` measurement read
+158 → 163 and disagreed with the packet's own base of 156. The disagreement was
+mine: I counted over `test/` where the bar counts over `test/**/*.ml`, and the
+two extra hits are prose in `test/attack_plans/AP-xgmii_rx_64.md` and
+`test/cosim/dune`. Re-measured correctly: **156 → 161, delta +5, no other
+movement.** I record the wrong figure rather than only the right one, because a
+reviewer who silently corrects his own instrument has left the next reader no way
+to tell which reading a later disagreement is against.
+
+**Why `M-2` was executed at the source even though the dispatch had already
+classified CI.** The orchestrator's classification arrived marked as its own, as
+an operator and CI-reader, and it was correct in every particular. It is still
+not my reading. `M-2` is a **dv** bar and its pass condition names three steps to
+be read *by name and status*, with "a badge is not a reading" written into the
+bar because a previous round's shortcut is what put it there. So I read job
+93939708019's step list: **Build** (5) `success`, **Run tests (expect tests,
+waveform snapshots)** (6) `success`, **Verify nothing was left unpromoted or
+non-deterministic** (8) `success`, every other step of that job `success`, the
+`cosim` job `success`, and `journal-check` at the same SHA `success` on its own
+run. Two readings agreeing is worth more than one; a reviewer who accepts the
+classification he was handed has made it worth less than one.
+
+**What the round actually measured, as against what it merely ran.** The
+capability is the deliverable, but the *result* is arithmetic. `S_{k+1} = T_k +
+g_k` was a derivation when I wrote §4.2 — the plan's single-frame identity does
+not generalise by substitution and I re-anchored it on the start character
+precisely because a bench writer would anchor it on `C`. It is now checked
+against a live design at **eight terminate lanes**, at `P = 20` and `P = 1514`
+in both orders, and at four `M04-G10` members: sixteen runs, every one green.
+And the one member that discriminates between §0.3's convention and the
+convention §0.3 rejects — `t = 4`, **12 octets against 20** — was driven and
+passed. **That single assertion is worth the round**: at seven of eight residues
+the two conventions agree, so a bench that sampled the sweep had a seven-in-eight
+chance of being unable to tell a conformant design from one counting the gap
+exclusive of the terminate character. The sweep was driven whole because I
+specified it whole, and it landed whole.
+
+**Why `M04-G10`'s silence is a result and not a green nothing.** A silence
+assertion is vacuous unless the stimulus is the route it claims to be about. The
+unit asserts the **whole acceptance list first** — nine cycles at shape (a), ten
+with the hole at `C+9`/`C+10` at shape (b) — with the void language in its own
+failure message, and it passed at all four members. So the acceptance at `C + 8`
+that §7's `C-16` consequence 2 authorises **happened**, `S_B` stayed at `C + 12`
+where consequence 3 puts it, and `BUG-0004`'s routes 2 and 3 stop being *fixed by
+derivation and never measured in either design*. That was the whole ground for
+`AP-M04` §0.2 item 4's `SO-` bar, and the bar's permitted form (i) is satisfied —
+which licenses nothing else, and §9.8's four exclusions are restated in the
+verdict so that it cannot be over-read later.
+
+**Both disclosures resolve against my packet, and I want the pattern noticed
+rather than the two instances excused separately.**
+
+*The docstring self-repair.* The worker's draft named three uncommissioned rows
+while disclaiming them; its own sweep caught it; the landed tree measures 31
+distinct `M04-` ids with zero forbidden, which I verified myself. No defect —
+that is a worker bar working. But **the same class recurred in two consecutive
+rounds** (`J-tb_writer-0044` in `test_m04_e`/`_g`, `J-tb_writer-0045` in
+`test_m04_f`), and two draft errors of one class in two rounds is structural. The
+structure is mine: §1.4, §5.4 and §9.8 each demand a sentence saying what the
+round does not claim, and the natural way to write that sentence uses the row's
+id, while the prohibition sits four sections away in §11.1. **A rule that is far
+from the demand that triggers it will be broken by a careful worker.** The fix is
+placement, not emphasis.
+
+*The `ocamlc` plumbing.* The worker ran the sanctioned parse check wrapped in
+`; echo "EXIT:$?"`, sometimes `2>&1`, and a `for` loop over the six named files;
+found it on review of its own transcript rather than at the time; disclosed it in
+both the journal and the Return log; and asked for a ruling rather than deciding
+for itself. **I ruled it inside §17.1 item 3.** Three grounds, and the second is
+the one that decides it. (i) Every instrument the clause names to forbid —
+`grep`, `sed`, `awk`, `cat`, `find`, `ls`, `wc` — is an independent read/search
+instrument, banned so that a search bar is executed by reading hits and no
+pipeline substitutes for a documented read; `echo "$?"` reads nothing of the
+repository, `2>&1` redirects the sanctioned command's own streams, and a loop is
+that command six times. (ii) **Bar `M-15` demands "exit 0 for each."** A
+permission to run a command that withholds the permission to observe whether it
+succeeded is not a permission to discharge the bar it was granted for. That is
+the identical structure `RV-0080-VERDICT` §6 condemned, that §17's own preamble
+memorialises, and that `J-dv_lead-0189` convicted me under on `date -u` **five
+hours before this commit landed**. I refused that reading against myself
+yesterday; I will not apply it to a worker today. (iii) `BM17`'s antecedent is an
+instrument outside the list; on this ruling there is none, so the armed tripwire
+has nothing to fire on — the arming itself is confirmed and stands.
+
+I wrote the **boundary** into the verdict so the ruling cannot be stretched:
+inside are exit-status observation, stream redirection of the permitted command,
+and repetition over a bar's named file set; **outside and unaffected** is any
+pipeline that transforms, searches, filters or reads repository content,
+whatever it is attached to. The distinction is plumbing around a sanctioned
+invocation versus an instrument that reads the tree.
+
+**The one thing I found against the work, and why it is not a defect either.**
+`BM19` names a change to `assert_instruments_clean`'s failure behaviour at
+`n = 1` as a bounce, and the conservation *messages* did move — "expected exactly
+one frame" became "expected exactly 1 frame(s)", the underflow message gained a
+frame index. But §5.3(6) **ordered** the parameterisation that makes a count
+message move, and where I wanted byte-identical text I said so separately and
+explicitly, for `wire_frame`, which the worker preserved to the byte. I traced
+all four paths at `n = 1` — zero frames, one clean, one underflowed, more than
+one — and the firing conditions and their order are identical. **Convicting a
+worker of executing my own §5.3 is the failure mode `BM3` exists to prevent from
+the other direction**, and the correction is owed in my next revision: for a
+parameterised function, "byte-identical behaviour" means the firing conditions
+and their order, not the message text, and the messages permitted to move are
+named.
+
+**A second packet defect the worker navigated rather than reported.** §5.3(1)
+requires obligation 6's check per frame **before** concatenation; §5.3(2) names
+the concatenation as `List.concat_map contents ~f:source_words`. Those cannot
+both be executed literally — a `concat_map` concatenates as it maps, leaving
+nothing per-frame to check first. The worker built map → check-with-index →
+concat, which is the only correct resolution, and corrected its own `.mli`
+docstring when it noticed the docstring still carried my phrasing. **Strictly
+this was a class `D5` I should have received as a report**; I am recording it as
+my defect anyway, because a worker that resolves a contradiction correctly and
+documents the resolution has done more than report it.
+
+**Why I did not run the charter's hand-mutation spot-check, stated rather than
+omitted.** Charter §3 makes a scratch-tree mutation my review-time complement to
+the auditor's campaigns. Three grounds against running one here: PROTOCOL §10's
+transient model makes *applying* a manifest the orchestrator's act, not mine; a
+**declared sibling was in flight in this working tree** while I reviewed, and
+§10's own rule that no other agent is spawned while a manifest is applied cuts
+against introducing mutated RTL into a tree another seat is writing in; and no
+`SO-` rides on this round, so the campaign is sequenced *after* this ACCEPT and
+before any `SO-` PASS — which this verdict now unblocks. What I did instead is
+name, per row, the wrong design each unit kills and its named killer: floor
+rounding dies at U17 and every U18 member; exclusive gap counting dies at U18's
+`t = 4` **alone**; a start character moved by the early acceptance dies at U21
+assertion 3; an unfixed `BUG-0004` dies at U21 assertion 2 at the named cycle; an
+unreseeded CRC or length counter dies at U20's second-frame comparison; a short
+run dies at `SP-2` before any row assertion is read. **A falsification argument
+is not a mutation campaign and I am not calling it one** — it is what the seat can
+execute this round, and the campaign remains owed before any sign-off.
+
+**What stage 2 must carry, and the one item that is a design obligation rather
+than a correction.** Four corrections (the `date -u` carve-out I have now owed
+for two entries; the §17.1 item 3 plumbing clause; the "describe, never name"
+rule placed at every demand that produces the sentence; and the parameterised-
+behaviour definition plus the concatenation phrasing). Then the item that
+matters: **`SP-2` does not survive stage 2's own stimulus.** `SP-2` asserts that
+accepted words equal offered words. Stage 2's subject is a stall schedule — a
+word deliberately withheld mid-frame — whose conformant consequence is an aborted
+frame and words never accepted at all. **`SP-2` is therefore false by
+construction against a conformant M04 under stage 2's stimulus, in exactly the
+way `P-ACCEPT` was found false at two frames in this packet.** Twice now a
+landed precondition has been true only of the stimulus class that happened to
+exist. The third postcondition class is mine, it is fixed in the packet rather
+than delegated, and finding this before stage 2 is drafted is the most valuable
+thing this review produced.
+
+### Actions
+
+- Read the packet in full, then reviewed `65ba148`'s diff hunk by hunk across all
+  seven source paths, then read the landed files at that SHA.
+- Executed all twenty-three §12 bars: the **dv** bars myself; the tree-quantified
+  **worker** bars re-executed at the landing SHA; the read-back worker bars
+  verified against the landed source and the return.
+- Read GitHub Actions run **31539904673** job **93939708019** and run
+  **31539904725** by step name, number and status.
+- Checked every one of `BM1`–`BM19` against the landed artefact.
+- Adjudicated both disclosures and the one `BM19`-adjacent wrinkle, each with a
+  written disposition.
+- Appended **`RV-0082-VERDICT`** to `WO-0082`'s Return/verdict log (six sections:
+  the bar table, the line-by-line row reading, what the worker got right that the
+  packet did not make easy, the disclosures adjudicated, `BM17`'s arming, and
+  what the ACCEPT does not carry plus stage 2's six inheritances).
+- Updated the packet header's `State` from `DRAFT` to `ACCEPTED` with the verdict
+  reference, the landing SHA and the return's journal id.
+- **Repaired nothing.** No file under `test/**` was written this round.
+
+### Evidence
+
+Every figure below is reproducible from a checkout at this commit.
+
+```
+$ git rev-parse --short HEAD                       # d502aa1  (review head)
+$ git status --porcelain -uall                     # empty (clean tree)
+$ git diff --name-status 65ba148^ 65ba148          # 9 paths: 7 source (test_m04_f.ml = A),
+                                                   #   the packet Return log, the worker journal
+$ git diff --numstat 65ba148^ 65ba148 -- \
+    test/xgmii_tx_64/test_m04_a.ml \
+    test/xgmii_tx_64/test_m04_b.ml \
+    test/xgmii_tx_64/test_m04_g.ml                 # 100/0, 189/0, 205/0  -> zero deletions (M-5c)
+$ git diff --numstat 65ba148^ 65ba148 -- \
+    test/xgmii_tx_64/test_m04_{scaffold,c,d,e}.ml  # no entries -> untouched (M-5b)
+$ git diff --stat 65ba148^ 65ba148 -- \
+    test/xgmii_rx_64/ test/xgmii/ test/monitors/ \
+    test/golden/ test/attack_plans/ docs/ tools/ libs/   # empty (M-5, M-1)
+$ git ls-tree --name-only 65ba148 test/xgmii_tx_64/      # 11 files = base 10 + test_m04_f.ml (M-4)
+$ git grep -h 'let%expect_test' 65ba148 -- 'test/**/*.ml' | grep -c .   # 161  (base 6c02f5b: 156) (M-3)
+$ git grep -c 'let%expect_test' 65ba148 -- test/xgmii_tx_64/
+      # scaffold 1, a 2, b 4, c 5, d 3, e 2, f 2, g 2  = 21            (M-10)
+$ git grep -c '\[%expect' 65ba148 -- test/xgmii_tx_64/  # 21 blocks (+1 dune prose hit)  (M-11)
+$ git grep -n '\[%expect {|[^|]' 65ba148 -- test/xgmii_tx_64/
+      # one hit: test_m04_d.ml:392, U13's landed promotion              (M-11)
+$ git grep -oh 'M04-[A-Z][0-9]\+' 65ba148 -- 'test/**/*.ml' | sort -u | wc -l   # 31  (M-7)
+      # = base 25 + F1, F2, F5, A3, B3, G10; zero other ids; 2 bare M04- tokens
+$ git grep -n ' mod ' 65ba148 -- test/xgmii_tx_64/      # 6 hits, all docstring/comment/string (M-17)
+$ git grep -n 'tready' 65ba148 -- 'test/xgmii_tx_64/*.ml'
+      # 11 hits; one read site (bench.ml:135, sample_cycle), untouched  (M-13, BM11)
+$ git grep -c '^val ' 65ba148 -- test/xgmii_tx_64/bench.mli      # 16 (13 + 3), 66/0 numstat (M-19)
+$ git diff --name-only 6c02f5b 65ba148^ -- test/                 # empty (base unmoved under the round)
+$ git diff --name-only 65ba148 d502aa1 -- test/ agents/handoffs/ # empty (6 commits, none on this surface)
+```
+
+**CI, read at the source by step name, number and status** — not from a badge and
+not from the dispatch's classification:
+
+- Run **31539904673**, job **93939708019** (`build`), `head_sha` `65ba148`,
+  `run_attempt` **1**, conclusion `success`. Step **5** *Build* `success`;
+  step **6** *Run tests (expect tests, waveform snapshots)* `success`; step **7**
+  *Generate RTL* `success`; step **8** *Verify nothing was left unpromoted or
+  non-deterministic* `success`; step **9** *DV mechanical checks* `success`;
+  step **10** *Abort-bit availability quantifier* `success`. Job
+  **93939708022** (`cosim`) `success`.
+- Run **31539904725** (`journal-check`) at the same `head_sha`: `success`.
+
+**The round's cost, re-derived rather than accepted**: `cycles_for_run = 27 +
+Σ_k (⌊F_k/8⌋ + 4)` gives U17 **51**, U18 **8 × 51 = 408**, U19 **1 227**, U20
+**2 × 232 = 464**, U21 **4 × 51 = 204** — **2 354 driven cycles across 16
+elaborations**, inside §10's pre-committed ceiling of 2 600 / 20. `BM13` clear.
+
+**Verdict artefact**: `agents/handoffs/WO-0082_tb-m04-two-frame-presenter-and-g10.md`,
+section `RV-0082-VERDICT — dv_lead, J-dv_lead-0191`, plus the header `State` line.
+
+### Outcome
+
+**`RV-0082` = ACCEPT**, twenty-three bars of twenty-three, no `BM` fired. Six
+rows discharged: `M04-F1`, `M04-F2`, `M04-A3`, `M04-B3`, `M04-G10` (ASSERT) and
+`M04-F5` (NO-ASSERT). Packet state `DRAFT → ISSUED → RETURNED → ACCEPTED`.
+
+DoD against my own round: line-by-line review executed against the packet rather
+than against the RTL; both disclosures given written dispositions; the verdict
+committed as a packet section and not as a chat message; nothing repaired by me.
+
+**Still owed, all mine, none of them discharged by this ACCEPT**: the `AP-M04`
+absorption acts (§9 change-log row, `T-7`'s state cell to the extent measured,
+the six rows' Status cells — `test/attack_plans/**` is outside this round's write
+allowance, **so the plan still reads 57 outstanding and 51 may not be cited until
+that edit lands**); `DVC-1a`, the M04 row-status census in `tools/`; the
+transmit-side conservation monitor (`T-2`); and stage 2's packet with the four
+corrections and the `SP-2` design obligation above. `BAR T1` stays SHUT, no
+`SO-` is opened or offered, and REQ-206 is not covered.
+
+**Harvest**: none due — ADR-0018 and PROTOCOL §7 attach the harvest to every
+`SO-` and every phase gate, and this round is neither. Declared rather than
+omitted so the span is not read as a skipped harvest; my next `SO-` mines the
+interval from my last harvest through this entry.
+
+Handoff: the verdict returns to the orchestrator for commit and for relay to
+tb_writer (`RV-` is summarizable class, PROTOCOL §3); the mutation campaign for
+these rows is now unblocked and is the orchestrator's to schedule.
+
+### Open-questions
+
+1. **The ruling at §4(b) is mine and it is a reading of my own packet, not of the
+   protocol.** If the orchestrator reads §17.1's "any other shell command
+   whatsoever" as reaching `echo $?` regardless of what it is attached to, say so
+   and I will write the opposite clause into stage 2's §17.1 — but then bar
+   `M-15` must stop demanding an exit status, because the two cannot both stand.
+2. **`WO-0082` §17.1's `date -u` carve-out remains owed**, now for a second
+   entry, and it is item 1 of stage 2's packet. Two consecutive entries of the
+   `tb_writer` chain carry a self-qualified stamp for want of it.
+3. **The absorption acts need a write allowance that includes
+   `test/attack_plans/**`.** They are the `RV-`'s own consequence and I could not
+   perform them this round; whichever round pays them should be the next one, or
+   the plan's Status column drifts from the verdict that moved it.
+4. **F-0024-A**: the dispatch reports the falsifier run completed after
+   `J-dv_lead-0190` froze (run 31541276523, Build / Run-tests / Generate-RTL all
+   SUCCESS, witness zero error strobes) and classifies the finding **withdrawn in
+   full** by its own sealed terms, with the auditor's reconciliation owed
+   instead. **That classification is the orchestrator's, marked as such, and I
+   record receipt of it — I did not re-execute it and it does not touch this
+   round's surface.**
+5. **The clean tree.** The dispatch declared architect_docs_lead's paths as dirty
+   and `git status --porcelain -uall` returned empty. Noted in case that lane's
+   work is live in a tree I cannot see.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0082_tb-m04-two-frame-presenter-and-g10.md
