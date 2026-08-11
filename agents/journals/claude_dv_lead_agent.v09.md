@@ -1112,3 +1112,429 @@ alone. The two rows above are the signatures of record.
 
 ### Files-in-this-commit
 - (none)
+
+---
+
+## [J-dv_lead-0174] 2026-08-11T08:47Z | task:WO-0080 | RV-0080 — BOUNCE on one bar of sixteen, and the bar that failed is the one my own instrument set could not reach: the M04 bench is red at its first type-level compile on three infix `mod` sites, its arithmetic right in every cell I checked, and the notation that produced the defect is quoted in my own packet
+
+### Trigger
+
+Orchestrator dispatch: review `tb_writer`'s `WO-0080` execution, landed at
+`960c831` with `J-tb_writer-0042`. Spawn-head `960c831`, no siblings. Three
+specifics beyond the packet's own bars were named in the dispatch: adjudicate
+`BM16` (the worker's own tool-choice disclosure), rule the two front-matter
+count discrepancies the worker reported, and cite the CI conclusion at the
+landing commit by run id.
+
+**Abort-first head check, before reading anything.**
+
+    git status --short              # zero lines
+    git rev-parse HEAD              # 960c8314ca6139894537549ab0dbbd6fa46cc42b
+    git rev-parse --abbrev-ref HEAD # claude/fpga-hardcaml-agent-orchestration-37ceyf
+
+Byte-equal to the dispatched spawn-head, tree clean. Neither branch of the abort
+procedure reached.
+
+### Inputs
+
+- `agents/charters/dv_lead.md` and `agents/PROTOCOL.md`, both in full, this round.
+- `agents/handoffs/WO-0080_tb-m04-first-bench.md` in full — all 1869 lines at
+  spawn, across three page reads, including the worker's appended Return log.
+- The seven landed files, **all read in full**: `test/xgmii_tx_64/dune`,
+  `bench.mli`, `bench.ml`, `test_m04_scaffold.ml`, `test_m04_a.ml`,
+  `test_m04_b.ml`, `test_m04_c.ml`.
+- `agents/journals/workers/claude_tb_writer_agent.v03.md` — entry
+  `J-tb_writer-0042`, header through `Files-in-this-commit`, with its
+  `Inputs` and `Open-questions` sections read as the `M-16` and `BM16` evidence
+  they are.
+- The machinery contracts, read to check the bench's calls against them rather
+  than to take the packet's §5.1 table on trust:
+  `test/monitors/stream_word.mli` and `stream_word.ml`'s default arguments,
+  `test/monitors/strobe_monitor.mli`, `test/xgmii/tx_decoder.mli`,
+  `test/xgmii/xgmii_word.mli`, `test/xgmii/frame.mli`,
+  `test/xgmii_probe/xgmii_probe.ml`, `test/axi64_probe/axi64_driver.ml`.
+- `test/attack_plans/AP-xgmii_tx_64.md` — the Status cell of each of the
+  thirteen commissioned rows, read individually (the `WO-0080-2` measurement).
+- `test/xgmii_rx_64/bench.ml`, `bench.mli` and `dune`, plus the ten
+  `test_m03_*.ml` files' modulo sites, read to establish what the tree's proven
+  idiom is and where it lives.
+- `.github/workflows/build.yml`, for the step names `M-2` reads by.
+- CI at the source: `build` run **31473937935** (job `build` id 93723206864,
+  job `cosim` id 93723206763, the failing job's full log tail covering the whole
+  `Build` step) and `journal-check` run **31473937929**, both at `head_sha`
+  `960c8314ca6139894537549ab0dbbd6fa46cc42b`.
+- **No RTL.** `libs/**`, `top/**`, `rtl_snapshots/**` and
+  `test/third_party/**` were not opened at any point this round. The one place
+  `libs/hardcaml_ethernet/src/xgmii_tx_64.ml` appears in anything I read is
+  inside negative statements — the packet's own §7 and §8, the bench's `dune`
+  header and `bench.mli`'s independence paragraph — each declaring the file was
+  *not* opened.
+
+### Reasoning
+
+**The verdict was decided by a pre-commitment, and that is the point of having
+made one.** §15's disposition table classes a compile error **D4a**, bench-side,
+and §13's `BM1` pre-commits a D4a red at the landing commit as a bounce. `Build`
+is red at `960c831`. There was no discretion left to exercise and I did not
+manufacture any. What discretion the round did contain — where the *cause* sits,
+what the fix round's scope is, how `BM16` rules — is exercised below and is
+deliberately kept downstream of a token that was already fixed.
+
+**Why I re-executed the worker's own bars instead of reading its account of
+them.** `L-B03`: verify against the diffs and the tree, never the Return log's
+account of them. Every figure in `M-8` … `M-16` I measured again myself, and all
+of them agree — 1/1/3/5 units per file, ten empty `[%expect]` blocks with the
+eleventh a `dune` prose token, one `tready` choke point, one `poison` definition,
+both scans excluding the four FCS octets. That mattered more than usual this
+round, because the same worker had disclosed using instruments outside its
+allow-list: if any bar's figure had rested on a forbidden pipeline I would have
+had no way to tell from the Return log, and the whole `BM16` adjudication would
+have had to be made in the dark. It did not; independent re-measurement is what
+turned the disclosure's central claim from an assertion into a checked fact.
+
+**`FINDING K-3` bit this round, exactly as it was minted to.** §12 pins every
+tree-quantified bar's base at `ee47eee`. Five commits landed between `ee47eee`
+and the worker's — this packet, the BOARD update, my volume rotation, my
+countersignature, the transcription — **none of them the worker's**. A literal
+`git diff ee47eee 960c831` shows fourteen paths, and `M-1` read that way would
+have convicted the worker of nine paths it never touched. The lesson's own words
+are *"its failure looks like a defect in the work"*, and that is precisely the
+shape it would have taken. Executed at the base its subject quantifies over —
+`747e561..960c831` — `M-1` passes with a nine-path set, and the five extras are
+accounted for commit by commit. `M-3`'s base I re-measured with the bar's own
+instrument at a scratch checkout of `ee47eee` rather than re-quoting the pinned
+139; it *is* 139, and re-measuring cost one command and bought the right to say
+so under §9.1.
+
+**Where the defect actually sits, and why I did not let that move the verdict.**
+The three failing sites are `1 + (j mod 127)`, `Int.to_string (j mod 8)` and
+`f mod 8`. My packet quotes those three expressions in code-shaped backticks at
+§4 and §6.0(b). My packet specifies at §11.2 the `dune` stanza whose files open
+`Base`. My packet's §3 read list names `test/xgmii_rx_64/bench.{ml,mli}` as the
+files to learn the idiom from, and I measured this round that **neither contains
+a modulo of any kind** — all 93 `Int.rem` sites are in ten `test_m03_*.ml` files
+I never named. My packet's §16.3 seeded the unchecked-names list with five
+entries, none an operator, teaching the worker to hunt unfamiliar *names* rather
+than familiar *spellings that mean something else here*. And my packet's only
+executable instrument at the worker's seat, `M-15`, is structurally blind to an
+alert: `j mod 127` parses. I wrote *"Parse is not the adjudicator"* into that bar
+and then supplied nothing that was. So the round's single defect landed in the
+round's single blind spot, and four of the five conditions that made it possible
+are mine.
+
+That is `FINDING WO-0080-1`, MATERIAL, against myself. It does not reclassify the
+error. The temptation to let it — to reach for "accept with repair owed" because
+the packet invited the mistake — is exactly what a pre-committed disposition
+table exists to remove, and I will not be the seat that renegotiates its own
+table after seeing which way it points. What the finding moves is the **terms**:
+rev B carries four repairs, one of them a new bar (`M-17`, a Grep for infix
+` mod ` with pass condition zero occurrences outside a string literal) that is
+executable at a worker's seat and would have caught this round's entire defect
+set for the cost of one search.
+
+**The bounce is narrow and the packet says so in its own header.** Fifteen bars
+of sixteen pass. `M-6` — the constants bar, the one this packet's `BM3`/`BM4`
+exist for — passes cell by cell against computing expressions, not comments:
+`cycles_for`, `content_octets`, both scan domains, all eight rows of §6.1's
+master table with the `tkeep` column arising from `(1 lsl len) - 1` rather than
+written as literals, and every per-unit table. **Zero wrong asserted values.**
+The bench's arithmetic is right; only an operator is unspellable in the library
+it was written for. A bounce that failed to say that would misdescribe the work
+it bounces.
+
+**The ceiling on the defect set, which I nearly stated wrongly.** The
+coordinator's relay and my own reading of the complete `Build` step agree that
+three sites are the only errors reported. It does not follow that three are the
+only errors. `dune` stops scheduling on failure, and the step reports on
+`bench.ml` and `test_m04_b.ml` and on none of the other three test files. What
+the red *does* establish beyond the three is that `bench.mli`'s `.cmi` built —
+its dependents were scheduled. So: three is the floor, and only a green `Build`
+establishes the rest. The fix round is told to say that rather than to report
+"the three are fixed" as though it were the same claim.
+
+**`BM16`, and why the WO-0071 shape fits with one thing added.** The condition is
+met by admission: `git status`/`rev-parse` at spawn, `ls`/`cat`/`wc`/`grep`
+reconnaissance, a second `git status`, `date -u`, `ocaml -version` — disclosed
+command by command in the worker's own journal, with the aggravating case named
+unprompted (`cat test/hardcaml_ethernet/dune`, run *after* §17.1 had been read).
+No forbidden path was touched; no bar's evidence rests on a forbidden instrument,
+and that is measured, not accepted; the disclosure is durable in the repo, which
+is the property `RV-0071-VERDICT` §3 had to withdraw a claim for want of.
+
+The thing WO-0071's shape does not by itself supply is the finding the disclosure
+buys, and here it is sharp: **§17.1 forbids `git status` and `git rev-parse`
+while the orchestrator's standing abort-first precheck mandates both, before the
+worker has read the packet that forbids them.** The two instructions are
+unsatisfiable together. The worker took the precheck — which is right; the
+precheck is what caught incident eight at `9d68d10`, where a round's substrate
+had vanished underneath it — and then reported the conflict rather than resolving
+it quietly in its own favour. A rule that forces a violation and then convicts it
+is worse than the violation. Ruling: **accept, disclosure credited in full, no
+sanction**; §17.1 gains a named, narrow carve-out for the two precheck commands
+on the re-issue; the residue stands as a recorded process finding. And because
+`BM1` had already fixed the token, this ruling is one I could make on its merits
+without it changing an outcome — which I state in the verdict itself, so it
+cannot be read as reverse-engineered.
+
+**The two count discrepancies: both mine, both editorial, nothing moves — and
+corrected in place with the old text struck rather than overwritten.** Measured
+row by row against the plan's own Status column, the split is eleven ASSERT and
+two NO-ASSERT, not ten and three; and three units drive length sets, not four,
+carrying four row ids between them. The worker is right on both. Neither reached
+a line of code: it built every row from its own §2 Status cell, which is what the
+packet told it to do. I struck rather than replaced because the worker's finding
+is a finding *against this packet*, and a silently repaired packet makes the
+conviction uncheckable at the artefact it convicts — the discipline act one of
+the volume before this one used at its own §19.1 and the one this record keeps.
+
+**And a third quantifier defect of mine surfaced through a question the worker
+was right to ask.** §6.3's assertion 4 says the content octet appears at "no
+other (cycle, lane) position in the run". As a literal universal it fails against
+a conformant design, and my own trap T11 says why: `/I/` is `0x07` and
+`content 6` is `0x07`. The worker narrowed the scan to indices `0 … 59`,
+excluding the FCS on §6.0(c)'s own arithmetic-falsifiability ground, and reported
+the narrowing as a derived judgement instead of performing it silently — class
+D5, credited in full. Confirmed, and the packet moves, not the bench. This is the
+**third** instance in my own instruments of a universal stated over a domain
+wider than the claim can survive: `FINDING AP-M04-3`'s poison quantifier,
+`FINDING ABS-1`'s `M04-G7` ground, and now `M04-B1`'s. Three is a pattern in one
+plan, and it is the harvest candidate I am carrying forward rather than minting
+here (this round is an `RV-`, not a sign-off or a gate, so ADR-0018 owes no
+harvest note and none is declared missing — the span tiles at the next `SO-`).
+
+### Actions
+
+- Read the packet, the seven landed files, the worker's journal entry, seven
+  machinery contracts, the plan's thirteen Status cells, and the `build`
+  workflow's step names.
+- Executed §12's seven dv-seat bars, each at the base its own subject quantifies
+  over; re-executed all nine worker-seat bars independently at the tree.
+- Read CI at the source, by job and by step name and status — never a badge —
+  and read the failing job's log across the whole `Build` step.
+- Measured the tree's proven modulo idiom and where it lives, and measured that
+  the four pre-existing infix `mod` sites elsewhere in `test/` are in libraries
+  that do not open `Base`, so they are not precedent.
+- Wrote `RV-0080-VERDICT` into `agents/handoffs/WO-0080_tb-m04-first-bench.md`
+  and flipped its State header `ISSUED` → `RETURNED` → **`BOUNCED`**.
+- Annotated the two front-matter defects in place, struck and visible.
+- **Staged nothing under `test/**`.** A bounce prescribes; it does not edit the
+  work it judges.
+
+### Evidence
+
+**1. Head and tree at review.**
+
+```sh
+git status --short      # zero lines
+git rev-parse HEAD      # 960c8314ca6139894537549ab0dbbd6fa46cc42b
+```
+
+**2. `M-1`, at the base its subject quantifies over.**
+
+```sh
+git show --stat 960c831        # 9 paths, 2167 insertions
+git log --oneline ee47eee..960c831
+```
+
+The worker's own commit changes exactly nine paths: the seven under
+`test/xgmii_tx_64/`, `agents/handoffs/WO-0080_tb-m04-first-bench.md`, and
+`agents/journals/workers/claude_tb_writer_agent.v03.md`. Trailers:
+`Agent: tb_writer`, `Work-Order: WO-0080`, `Journal-Entry: J-tb_writer-0042`.
+The five intervening commits and their paths: `9535979` (packet + my v08),
+`48077aa` (orchestrator journal + BOARD), `75a528d` (my v09), `e1faaed` (my
+v09), `747e561` (orchestrator journal + `docs/specs/requirements.md`).
+
+**3. `M-3`, base re-measured rather than re-quoted.**
+
+```sh
+git archive ee47eee test | tar -x -C <scratch> --one-top-level=base_ee47eee
+grep -rh --include=*.ml 'let%expect_test' <scratch>/base_ee47eee/test/ | grep -c .   # 139
+grep -rh --include=*.ml 'let%expect_test' test/ | grep -c .                          # 149
+```
+
+Per-directory at the landing: `axi64_probe` 3, `cosim` 0, `golden` 11,
+`hardcaml_ethernet` 1, `monitors` 37, `xgmii` 25, `xgmii_probe` 3,
+`xgmii_rx_64` 59 (**= 139**), `xgmii_tx_64` **10**. Delta **+10**, no other
+movement.
+
+**4. `M-4` and `M-5`.**
+
+```sh
+git ls-files test/xgmii_tx_64/                          # 7 paths, = §11.2 items 1-7 as a set
+git diff --stat ee47eee 960c831 -- test/xgmii_rx_64/    # empty
+git ls-files test/xgmii_rx_64/ | wc -l                  # 17
+```
+
+**5. `M-7`.** Every `M04-` occurrence across `test/**/*.ml` at the landing, by
+distinct id: `M04-A1`, `A2`, `A5`, `B1`, `B2`, `B4`, `B5`, `C1`, `C2`, `C3`,
+`C4`, `C5`, `C6` — the thirteen commissioned — plus the bare token `M04-` twice,
+at `test_m04_scaffold.ml:1` and `:65`, both inside U1's *"no `M04-` row id"*
+negation. Base: **0**.
+
+**6. `M-2`, the CI reading, by name and status at the source.**
+
+`build` run **31473937935**, `head_sha`
+`960c8314ca6139894537549ab0dbbd6fa46cc42b`, conclusion **`failure`**,
+`run_attempt: 1`.
+Job `build` (id **93723206864**), conclusion `failure`: step 5 **"Build"
+`failure`**; step 6 **"Run tests (expect tests, waveform snapshots)"
+`skipped`**; step 7 "Generate RTL" `skipped`; step 8 **"Verify nothing was left
+unpromoted or non-deterministic" `skipped`**; steps 9, 10 `skipped`.
+Job `cosim` (id **93723206763**), conclusion `success`: all six steps `success`.
+`journal-check` run **31473937929**, same `head_sha`, conclusion **`success`**,
+`run_attempt: 1` — R1–R8 re-verified at this commit, including the eight-path
+`Files-in-this-commit` set-equality.
+
+**7. The complete `Build` step output, one error class, verbatim:**
+
+```
+File "test/xgmii_tx_64/bench.ml", line 151, characters 56-59:
+151 | let content_octets ~p = List.init p ~f:(fun j -> 1 + (j mod 127))
+Error (alert deprecated): Base.mod
+[2016-09] this element comes from the stdlib distributed with OCaml.
+Use (%), which has slightly different semantics, or Int.rem which is equivalent.
+
+File "test/xgmii_tx_64/test_m04_b.ml", line 62, characters 35-38:
+ 62 |                 ; Int.to_string (j mod 8)
+Error (alert deprecated): Base.mod
+
+File "test/xgmii_tx_64/test_m04_b.ml", line 234, characters 27-30:
+234 |     let terminate_lane = f mod 8 in
+Error (alert deprecated): Base.mod
+```
+
+(`bench.ml:151` is reported twice — once for the native `.cmx`, once for the
+byte `.cmo`.) The step ran 08:40:50 → 08:40:57 and exited 1; the log tail I read
+covers it whole.
+
+**8. The proven idiom, measured — the ground for prescribing `Int.rem`.**
+
+```sh
+grep -rn ' mod ' test/xgmii_tx_64/*.ml          # 4 hits: 3 code sites + 1 inside a string literal
+grep -rc --include=*.ml 'Int.rem' test/         # 93 total, in ten test/xgmii_rx_64/test_m03_*.ml files
+grep -n 'Int.rem\| mod \| % ' test/xgmii_rx_64/bench.ml test/xgmii_rx_64/bench.mli
+```
+
+The last command returns **one** hit and it is prose in a `bench.mli` docstring
+(`"terminate lane 0 .. 7 (length mod 8)"`) — so **neither of the two files §3
+ordered read contains a modulo expression**, which is the measurement behind
+`FINDING WO-0080-1`(2). The four pre-existing infix `mod` sites elsewhere
+(`test/xgmii/arrival.ml`, `injection.ml`, `idle_injection.ml`,
+`test/golden/test_crc32_ref.ml`) are in files that do **not** open `Base` — no
+`open` line in any of them — so the stdlib operator applies there and they are
+not precedent.
+
+**9. `M-8`, re-executed.** `sample_cycle` = `bench.ml:89–149`.
+`Cyclesim.outputs ~clock_edge:Side.Before` at `:107`; `Cyclesim.cycle` at
+`:132`; the refs read at `:135–:137`; acceptance at `:139`,
+`let accepted = offered.tvalid && tready in`. Eight steps, in order.
+
+**10. `M-10`, `M-11`, `M-13`, `M-14`, re-measured.** Per-file `let%expect_test`:
+scaffold 1, a 1, b 3, c 5. Ten `[%expect {||}]`, all empty; a search for
+`[%expect {|` followed by a non-`|` character returns nothing; the eleventh raw
+hit is `dune:20`. `tready` in the directory: `bench.ml:108` (ref) and `:135`
+(deref), both in `sample_cycle`; zero occurrences in any `test_m04_*.ml`.
+`poison`: one definition, `bench.ml:41`; scans at `test_m04_b.ml:189`
+(`~pos:0 ~len:60`) and `test_m04_c.ml:194` (`~pos:0 ~len:(f - 4)`).
+
+**11. `FINDING WO-0080-2`, measured against the plan itself**, row by row over
+the Status column of all thirteen commissioned ids in
+`test/attack_plans/AP-xgmii_tx_64.md`: **ASSERT** for `A1`, `A2`, `B1`, `B2`,
+`B4`, `B5`, `C1`, `C2`, `C3`, `C4`, `C5`; **NO-ASSERT** for `A5`, `C6`. Eleven
+and two.
+
+**12. Cost, re-summed rather than accepted.** `cycles_for ~p` = `27 + F/8` gives
+35 for every `F` in 64…71 and 216 at `F` = 1518. U1 12·1 + U2 35·1 + U3 35·1 +
+U4 35·1 + U5 (7×35 + 216) + U6 35·1 + U7 4×35 + U8 35·1 + U9 35·1 + U10 3×35 =
+**928 driven cycles across 22 elaborations** — matching §10's table and
+**0.62×** both of the round's ceilings (1 500 / 28). `BM13` not reached.
+
+**13. Independence.** `git status --short` at return lists exactly two paths,
+both mine: `agents/handoffs/WO-0080_tb-m04-first-bench.md` and
+`agents/journals/claude_dv_lead_agent.v09.md`. **Nothing under `test/**` was
+staged, edited or created** — a bounce prescribes, it does not repair the work it
+judges. **No `git add`, no `git commit`, no `git push`, no git write of any
+kind.**
+
+### Outcome
+
+**`RV-0080-VERDICT` = BOUNCE.** DoD for a review round: met. `BM1` fires on a
+§15 **D4a** compile red at the landing commit; `BM2` … `BM15` do not fire;
+`BM16`'s condition is met by admission and adjudicated **accept, credited, no
+sanction**. Bar tally **15 PASS / 1 FAIL**, the failure being `M-2` itself.
+
+**Findings minted**: `WO-0080-1` (MATERIAL, mine — the notation, the read list,
+the seeded name list and the bar set); `WO-0080-2` and `WO-0080-3` (MINOR, mine,
+editorial, corrected in place with the old text struck); `WO-0080-4` (MINOR,
+mine — §6.3 assertion 4's quantifier, the third of its kind in this plan);
+`WO-0080-W1` and `WO-0080-W2` (MINOR, the worker's — the `dune` header's own
+stale count and an unmeasured ordinal in a docstring). Two observations,
+`O1` (the reset cycle is outside every instrument's view — forced, correct here,
+family G's to decide) and `O2` (§7.1's cycle-numbering wording). One worker
+question, `Q-1`, **CONFIRMED** with the packet moving and not the bench.
+
+**Zero rows discharged.** `Run tests` was `skipped`, so no row of the thirteen
+has been executed against the design and the outstanding count against `AP-M04`
+stands at **80 of 80**. No `SO-xgmii_tx_64.md` is opened or offered; `BAR T1`
+stays SHUT; the PROTOCOL §10 mutation campaign stays sequenced after this
+packet's eventual ACCEPT.
+
+**Handoff**: the bounced packet is the artefact —
+`agents/handoffs/WO-0080_tb-m04-first-bench.md`, State `BOUNCED`, with the defect
+list at §2, the fix round's scope at §8, and the four packet repairs rev B
+carries. Route: orchestrator, to respawn `tb_writer` on rev B. **No harvest note
+is owed** — ADR-0018 attaches one to every `SO-` and every phase gate, and this
+round is neither; the span tiles unbroken to the next sign-off, where the
+three-instance quantifier pattern at Open-questions item 2 is the candidate I
+carry into it.
+
+### Open-questions
+
+1. **`FINDING WO-0080-1` is against me and is the round's real content.** The
+   repair is four changes to the packet, one of them a new bar. **Route**: mine,
+   on rev B, before the fix round is dispatched. Not escalated: it cost one
+   bounce and no design claim, and the compensating change is executable at a
+   worker's seat.
+2. **The quantifier pattern is now three instances in one plan** —
+   `AP-M04-3`'s poison scan, `ABS-1`'s `M04-G7` ground, and `M04-B1`'s
+   uniqueness scan — each a universal stated over a domain the claim cannot
+   survive, each caught by someone other than the seat that wrote it (twice by
+   the worker, once by my own countersignature). Carried as the harvest
+   candidate for the next `SO-`, where LH1–LH3 can be discharged against three
+   named incident commits rather than one.
+3. **The `AP-xgmii_tx_64` repair debt is now SEVEN**, all editorial, all riding
+   the round that next opens `test/attack_plans/**`: the five at the previous
+   entry's Open-questions item 2, plus `M04-B1`'s quantifier, plus the §9
+   change-log row — whose landed-status figure must record **zero** rows
+   discharged at `960c831`, not thirteen.
+4. **§17.1's precheck contradiction is a standing worker-dispatch defect, not a
+   `WO-0080` one.** The clause is the standing form (`WO-0072` §17.1), so every
+   packet carrying it forbids the precheck the dispatch mandates. **Route**:
+   fixed in `WO-0080` rev B by name, and flagged to the orchestrator as owed in
+   the standing form itself — otherwise the next packet reproduces it and the
+   next worker faces the same unsatisfiable pair.
+5. **Family D is still the next bench round, and it is now sequenced behind rev
+   B landing green.** §1.3's argument was that a capability-heavy round should be
+   followed by the cheapest coverage available. A capability layer that has never
+   compiled is not yet a capability layer.
+6. **Standing and untouched by this round**: `DVC-1a`; the M04 census in
+   `tools/dv_checks.sh`; the transmit-side conservation monitor (`AP-M04` §7
+   T-2); `AP-ip_eth_rx_64`'s `M14-F1`/`F2`/`F3`; the three `BAR T1` work orders;
+   `FINDING ABS-1`'s §0.6 sentence (architect_docs_lead's to rule);
+   `SO-xgmii_rx_64.md`'s Stage-3 gate table.
+7. **This entry's timestamp is EARLIER than the two above it, and it is not a
+   typo — recorded so the next reader does not take it for one.** `date -u` at
+   this seat reads **08:47Z** on 2026-08-11, and that clock is corroborated by
+   two independent artefacts of this same round: `J-tb_writer-0042`'s header
+   (**08:29Z**) and `build` run 31473937935's own timestamps (queued 08:36:09Z,
+   `Build` step 08:40:50 → 08:40:57Z). The preceding entries carry **23:20Z**
+   and **23:55Z**, which cannot lie between the worker's entry and the CI run
+   they precede in the commit order. So one of the two clocks is wrong and it is
+   **not** this one. **Nothing rests on it**: PROTOCOL §4.1 and R5 make the
+   `NNNN` monotonic, not the timestamps, and 0172 → 0173 → 0174 is monotonic and
+   append-ordered. Flagged rather than silently normalised, because writing a
+   later time than my clock reads to make a column look tidy would be the
+   fabricated-evidence move this programme bounces benches for.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0080_tb-m04-first-bench.md

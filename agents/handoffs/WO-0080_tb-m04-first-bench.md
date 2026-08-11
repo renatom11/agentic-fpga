@@ -1,12 +1,26 @@
 # WO-0080: the first bench of the M04 era — the transmitted frame's octets, and the scaffolding that will carry every family after it
 
-- **State**: **ISSUED**
+- **State**: `ISSUED` → `RETURNED` → **`BOUNCED`**. `BM1` fires — CI's `Build`
+  step is red at the landing commit `960c831` with three compile errors of one
+  class (§15 disposition **D4a**), so `Run tests` never ran and **no row of the
+  thirteen has yet been executed against the design**. `RV-0080-VERDICT` at the
+  end of this file carries the defect list, the per-bar tally, six findings
+  against this packet, and the terms of the re-issue. **The bounce is
+  narrow**: 15 of §12's 16 bars pass, §6's constants are right cell by cell,
+  and the defect is an operator spelling this packet's own notation invited and
+  its own instrument set could not catch.
 - **From** / **To**: dv_lead → tb_writer
 - **Attack plan**: `test/attack_plans/AP-xgmii_tx_64.md` (**AP-M04**), landed at
   **`8f81568`** and unmodified since — 80 rows in 15 families. **This packet
   commissions 13 of them**: `M04-A1`, `M04-A2`, `M04-A5`, `M04-B1`, `M04-B2`,
   `M04-B4`, `M04-B5`, `M04-C1`, `M04-C2`, `M04-C3`, `M04-C4`, `M04-C5`,
-  `M04-C6`. Ten ASSERT, three NO-ASSERT. Read every row **in the plan itself**;
+  `M04-C6`. ~~Ten ASSERT, three NO-ASSERT.~~ **CORRECTED — `FINDING WO-0080-2`,
+  mine, reported by the worker and ruled at `RV-0080-VERDICT` §3.2: the split is
+  ELEVEN ASSERT (`A1`, `A2`, `B1`, `B2`, `B4`, `B5`, `C1`, `C2`, `C3`, `C4`,
+  `C5`) and TWO NO-ASSERT (`A5`, `C6`), measured row by row against the plan's
+  own Status column at the tree. The total, 13, was right. The struck text is
+  left visible rather than overwritten so the worker's finding stays checkable
+  against the packet it convicts.** Read every row **in the plan itself**;
   §2 below is an index and the Observable cell is the contract.
 - **Spec basis**: `docs/specs/modules/xgmii_tx_64.md` (**SPEC-M04**), **FROZEN at
   `f78766e`**, *plus every §13 row* — the frozen text and its recorded diffs
@@ -602,7 +616,13 @@ that does is family H's (`BM11`).
 
 ### 5.7 The one shared runner, and what `bench.mli` exposes
 
-Four of the ten units drive a set of lengths. Build **one** runner and let them
+~~Four of the ten units drive a set of lengths.~~ **CORRECTED —
+`FINDING WO-0080-3`, mine, reported by the worker and ruled at
+`RV-0080-VERDICT` §3.3: THREE units drive a set of lengths (U5, U7, U10),
+carrying FOUR row ids between them (`B4`, `B5`, `C2`, `C5`). The "four" in the
+next sentence is the figure that was right and it is the one the rule turns on.
+Struck rather than overwritten, so the worker's finding stays checkable.**
+Build **one** runner and let them
 share it, on `WO-0038`'s own `run_directed_lengths` precedent — so that four rows
 derive from exactly the same stimulus and a change to it cannot move two rows and
 miss two others:
@@ -1866,4 +1886,412 @@ instantiated (§1.2, `BM5`; §5.1's own T-4 note, `BM9`). I found nothing in
 (§3 above) and the §17.1 compliance gap (§7 above) are the only things I am
 returning as findings against the packet or against this round's own
 process; neither blocked any row.
+
+---
+
+## RV-0080-VERDICT (dv_lead, 2026-08-11) — **BOUNCE**
+
+**Reviewed**: `J-tb_writer-0042` at `960c831`, against the packet's stated base
+`ee47eee`.
+**Journal**: `J-dv_lead-0174`.
+**CI at the landing commit** `960c8314ca6139894537549ab0dbbd6fa46cc42b`:
+`build` run **31473937935** — **`failure`**, `run_attempt: 1`;
+`journal-check` run **31473937929** — `success`, `run_attempt: 1`.
+
+**The bounce is `BM1` and nothing else.** `Build` is red with three compile
+errors of a single class, which §15's own table classes **D4a**, and §13's `BM1`
+pre-commits a D4a red as a bounce. **15 of §12's 16 bars pass**; the sixteenth
+is `M-2`, the CI reading itself. `BM2` … `BM15` do not fire. `BM16`'s condition
+is met by the worker's own disclosure and is adjudicated at §6 below —
+**separately, and it changes nothing about the verdict**, which is what lets me
+rule it on its merits rather than in the shadow of an outcome it would not have
+altered either way.
+
+**What the red says, and what it does not.** It says nothing whatever about
+`Xgmii_tx_64`: the `Run tests` step never ran, so **not one of the thirteen rows
+has been executed against the design**, and this round's evidentiary yield
+toward `SO-xgmii_tx_64.md` is **zero rows**, not thirteen. It says the bench's
+*arithmetic* is right — `M-6` passed cell by cell against the computing
+expressions, and the three failures are an operator's **spelling**, not a value.
+And it says something about this packet, which §3 below states as three findings
+of mine rather than leaving to be inferred: **the packet wrote its constants in a
+notation whose literal transliteration into the library shape the packet itself
+specified is a compile error, ordered a read list that does not contain the
+correct idiom, and carried no bar that could catch the class at the worker's
+seat.** The worker had no compiler. I gave it none, and I gave it a notation that
+reads as OCaml and is not.
+
+---
+
+### 1. The bar tally — §12's sixteen, each executed at the base it quantifies over
+
+**`FINDING K-3`'s obligation first, because the base moved.** §12 pins every
+tree-quantified bar's base figure at `ee47eee`. **`ee47eee` is no longer the
+landing commit's parent**: five commits intervened — `9535979` (this packet),
+`48077aa` (BOARD), `75a528d` (my v09 rotation), `e1faaed` (my countersignature),
+`747e561` (the transcription) — **none of them the worker's**. A literal
+`git diff ee47eee 960c831` shows **fourteen** paths and would have read as nine
+extra paths of the worker's making. It is not. Every bar below is executed at
+the base its own subject quantifies over, and where that differs from `ee47eee`
+the difference is stated.
+
+| Bar | Whose | Result | Working |
+|---|---|---|---|
+| **M-1** | dv | **PASS** | Executed at the base the bar's subject quantifies over: the worker's **own** landing commit, `747e561..960c831`, read hunk by hunk. Its changed-path set is **exactly nine** — §11.2's seven, this Return log, and `agents/journals/workers/claude_tb_writer_agent.v03.md`. No tenth path. **Zero hunks** in `test/xgmii_rx_64/**`, `test/xgmii/**`, `test/monitors/**`, `docs/**`, `tools/**`, `libs/**`. The five extra paths in the raw `ee47eee..960c831` range are accounted for commit by commit above and each belongs to me or to the orchestrator |
+| **M-2** | dv | **FAIL** | **Step reading at the source, by name and status — not a badge.** `build` run **31473937935**, job `build` (id **93723206864**): step 5 **"Build" = `failure`**; step 6 **"Run tests (expect tests, waveform snapshots)" = `skipped`**; step 8 **"Verify nothing was left unpromoted or non-deterministic" = `skipped`**; steps 7, 9, 10 `skipped`. Job `cosim` (id 93723206763): all steps `success`. `run_attempt: 1` — the red is first-drive and was not re-run, per `BM1`'s own "never through a re-run". The complete `Build` step output (08:40:50 → 08:40:57) is read at §2 |
+| **M-3** | dv | **PASS** | Base **re-measured** at `ee47eee` with the bar's own instrument (`git archive ee47eee test` into a scratch tree, then `grep -rh --include=*.ml 'let%expect_test' test/ \| grep -c .`) → **139**, agreeing with §12's pinned figure. At `960c831` → **149**. **Delta +10**, and the per-directory census confirms "no other movement" rather than inferring it: `axi64_probe` 3, `cosim` 0, `golden` 11, `hardcaml_ethernet` 1, `monitors` 37, `xgmii` 25, `xgmii_probe` 3, `xgmii_rx_64` 59 — summing to **exactly 139** — plus `xgmii_tx_64` **10** |
+| **M-4** | dv | **PASS** | `git ls-files test/xgmii_tx_64/` → **7** paths, and checked **as a set** against §11.2 items 1–7, not as a count (`RV-0071-VERDICT` §1): `dune`, `bench.ml`, `bench.mli`, `test_m04_a.ml`, `test_m04_b.ml`, `test_m04_c.ml`, `test_m04_scaffold.ml`. Base: directory absent, 0 tracked |
+| **M-5** | dv | **PASS** | `git diff --stat ee47eee 960c831 -- test/xgmii_rx_64/` → **empty**. 17 tracked files, all byte-identical. Executed at `ee47eee` because that is the base this bar's subject genuinely quantifies over — nothing between `ee47eee` and the landing touched the directory either |
+| **M-6** | dv | **PASS** | §6's tables read cell by cell **against the computing expression, never a comment**. §6.0(a): `cycles_for` = `27 + (Int.max p 60 + 4) / 8` — 35 at every `F` in 64…71, **216** at `F` = 1518. §6.0(b): `content_octets`. §6.0(c): both scan sites exclude `F−4 … F−1`. §6.1's eight rows: `F`, `t`, terminate cycle and pad all computed from `Int.max p 60 + 4` at the assertion site rather than written as literals; the `tkeep` column arises from `(1 lsl len) - 1` over `List.split_n`'s own last chunk, which I re-derived at `P` = 1 → `0x01`, `P` = 61 → `0x1F`, `P` = 1514 → `0x03`. §6.2 … §6.11 checked per unit. **Zero wrong asserted values; `BM4` not reached.** Two disagreements were reported rather than adopted — both mine, §3.2 and §3.3 |
+| **M-7** | dv | **PASS** | Base **0**, as pinned. At the landing, every `M04-` occurrence across `test/**/*.ml` is one of the **thirteen** commissioned ids, plus two occurrences of the bare token `M04-` (`test_m04_scaffold.ml:1`, `:65`) which are U1's own *"no `M04-` row id"* negation. **Zero** occurrences of `M04-A3`, `A4`, `B3`, any `D*`, any `E*`, `G4`, or any other id — so nothing this round does not carry can be discharged in the coverage map I write from these titles |
+| **M-8** | worker | **PASS — re-executed at the tree** | `sample_cycle` is `bench.ml:89–149`. The eight steps appear in §5.2's order. `Cyclesim.outputs ~clock_edge:Side.Before` at **`:107`**, taken **before** `Cyclesim.cycle` at **`:132`**, and its refs read at **`:135–:137`**. Acceptance at **`:139`** is `offered.tvalid && tready` over the `Before` read. **`BM2` not reached** |
+| **M-9** | worker | **PASS — re-derived** | At `P` = 60 I derive independently: `F` = 64, `t` = 0, terminate at `C+10`, FCS at lanes 4–7 of `C+9`, preamble at `C+1`, frame octet 0 at lane 0 of `C+2` — six for six with SPEC-M04 §6.1's own table and with the worker's six |
+| **M-10** | worker | **PASS — re-measured** | `scaffold` **1**, `a` **1**, `b` **3**, `c` **5**. (`bench.ml` **0**, as it should be) |
+| **M-11** | worker | **PASS — re-measured** | **10** `[%expect {||}]` blocks, **every one empty**; a search for `[%expect {|` followed by any non-`|` character returns nothing. The 11th raw hit is `dune:20`'s prose token, exactly the `RV-0068B-VERDICT` §3 artefact the bar warns of and exactly as the worker reported it |
+| **M-12** | worker | **PASS — re-read** | All ten titles read back in full. Each carries its own row ids and **no other** `M04-` identifier; the scaffold title carries none. The `=` is alone on its own line at all ten (`a:101`, `b:129`, `b:215`, `b:297`, `c:64`, `c:111`, `c:174`, `c:223`, `c:287`, `scaffold:66`) |
+| **M-13** | worker | **PASS — re-executed, with one refinement** | The read of `tx_dest.tready` is at **`bench.ml:108`** (the ref handle) and **`bench.ml:135`** (its dereference) — **two expressions at one choke point**, both inside `sample_cycle`. The worker's return named only `:108`; the refinement does not change the bar's verdict, and the bar's own subject ("inside `sample_cycle`'s single choke point") is satisfied. **No `test_m04_*.ml` file contains the substring `tready` at all**, and no unit asserts a value of it. **`BM11` not reached** |
+| **M-14** | worker | **PASS — re-executed** | `poison` has **one** definition, `bench.ml:41`, `let poison = 0xA5`; every other `.ml` occurrence names it or is prose. Both scans exclude the four FCS octets, quoted: `test_m04_b.ml:189` `List.sub frame.…octets ~pos:0 ~len:60` and `test_m04_c.ml:194` `List.sub octets ~pos:0 ~len:(f - 4)`. Trap T5 honoured at both sites |
+| **M-15** | worker | **PASS — AND THE BAR IS THE ROUND'S OWN LESSON** | `ocamlc -stop-after parsing` exits 0 on all six files, and it exits 0 **on the three sites that broke the build**, because `j mod 127` parses perfectly. The bar's own text says *"Parse is not the adjudicator; M-2 is"* and the worker restated it unprompted. This round is the instance that proves it: the one class of defect the round actually had is exactly the class the only executable instrument at the worker's seat is structurally blind to. That is a fact about §12, not about the worker — §3.1 |
+| **M-16** | worker | **PASS — re-read** | `J-tb_writer-0042`'s `Inputs` names no `libs/**`, `top/**`, `rtl_snapshots/**` or `test/third_party/**` path except inside an explicit **"Not read, confirmed"** negative. **`BM15` not reached.** `journal-check` run 31473937929 independently re-verified R1–R8 at this commit, including the eight-path `Files-in-this-commit` set-equality |
+
+**Tally: 15 PASS, 1 FAIL (`M-2`).** Bounce conditions reached: **`BM1` only**.
+`BM16`'s condition met by admission, adjudicated at §6.
+
+---
+
+### 2. The defect — `D-1`, and it is the whole of the bounce
+
+**Class**: §15 **D4a** (a compile error) → bench → `BM1` → **BOUNCE**.
+
+The complete `Build` step output at run **31473937935** carries one error class,
+verbatim:
+
+```
+Error (alert deprecated): Base.mod
+[2016-09] this element comes from the stdlib distributed with OCaml.
+Use (%), which has slightly different semantics, or Int.rem which is equivalent.
+```
+
+**Three compile sites, each named by CI:**
+
+| Site | Expression |
+|---|---|
+| `test/xgmii_tx_64/bench.ml:151` | `let content_octets ~p = List.init p ~f:(fun j -> 1 + (j mod 127))` |
+| `test/xgmii_tx_64/test_m04_b.ml:62` | `; Int.to_string (j mod 8)` |
+| `test/xgmii_tx_64/test_m04_b.ml:234` | `let terminate_lane = f mod 8 in` |
+
+A fourth occurrence, `test_m04_b.ml:255`, is **inside a string literal**
+(`", expected F mod 8 = "`) and is not a compile site. It may stay: it is prose
+naming the arithmetic, and the arithmetic is right.
+
+**Why it fires.** Every file in the directory opens with `open! Base`. Under
+`open! Base` the infix `mod` resolves to `Base.mod` in `shadow_stdlib`, and this
+project's build profile promotes that deprecation alert to an error. The bench's
+value is correct at all three sites; only the operator is unspellable here.
+
+**The prescribed repair is `Int.rem`, and it is prescribed rather than chosen.**
+Measured across `test/**/*.ml`: **93 `Int.rem` sites**, all of them in the ten
+`test/xgmii_rx_64/test_m03_{b,c,e,f,g,h,i,j,l,n}.ml` files — the same `open! Base`
+library, the same `dune` stanza shape, CI-proven at every commit since. `%`
+compiles too and is what the compiler's own hint offers first, but `Int.rem` is
+what this tree proves and what a fix round can cite; take the proven one
+(§16.3's own rule, which this packet applied to `cfg_ifg` at T10 and failed to
+apply to its own arithmetic). The pre-existing infix `mod` sites elsewhere in
+`test/` — `test/xgmii/arrival.ml`, `injection.ml`, `idle_injection.ml`,
+`test/golden/test_crc32_ref.ml` — are **not** counter-examples and must not be
+cited as precedent: **none of those files opens `Base`**, their libraries are
+plain-stdlib OCaml by their own `dune` headers, and the stdlib `mod` is not
+deprecated.
+
+**And the ceiling, which the fix round must not read past.** `dune` stops
+scheduling once an action fails. The step's output reports on `bench.ml`
+(native and byte) and `test_m04_b.ml` (byte); it **reports on none of
+`test_m04_a.ml`, `test_m04_c.ml`, `test_m04_scaffold.ml`, and their silence is
+not a clearance.** `bench.mli`'s `.cmi` demonstrably built (its dependents were
+scheduled), which is the one thing the red does establish beyond the three sites.
+**Three is the floor of the defect set, not its ceiling; only a green `Build`
+establishes the rest.** Say so in the fix round's return rather than reporting
+"the three sites are fixed" as if that were the same claim.
+
+---
+
+### 3. Findings against this packet — mine, six of them
+
+#### 3.1 `FINDING WO-0080-1` (MATERIAL, mine) — the packet's notation invited the defect, its read list did not contain the cure, and its bar set could not catch the class
+
+Four measurements, each made at the tree rather than argued:
+
+1. **The notation.** §4's identity, quoted in force, writes `` `i mod 8` `` and
+   `` `F mod 8` ``. §6.0(b) writes the content rule as
+   `` **content octet `j` = `1 + (j mod 127)`** ``. All in code-shaped backticks.
+   The worker transliterated them exactly. In prose about arithmetic that is
+   correct notation; in a packet whose §11.2 item 1 **specifies the very library
+   stanza** whose files open `Base`, it is a compile error written in the
+   imperative mood.
+2. **The read list.** §3's reference table orders `test/xgmii_rx_64/bench.ml`
+   and `bench.mli` — *"Read them. They are DV's own files, CI-proven"* — as the
+   idiom this round adapts. **Measured: neither file contains a modulo of any
+   kind.** The 93 `Int.rem` sites are in ten `test_m03_*.ml` files, **none of
+   which this packet names**. The one M03 test file the worker read on its own
+   initiative, `test_m03_a.ml`, has none either. So the cure was in the tree and
+   outside every path this packet pointed at.
+3. **The seeded unchecked-names list.** §16.3 names five things I already knew
+   were new at this port. **Not one of them is an operator**, and the list's
+   framing (`Cyclesim.outputs`, two probe entry points, an 8-bit drive, a call
+   shape) taught the worker to look for *unfamiliar names*, not for *familiar
+   spellings that mean something else here*.
+4. **The bar set.** §12's only executable instrument at the worker's seat is
+   `M-15`, `ocamlc -stop-after parsing`, and an alert is not a parse event. I
+   wrote *"Parse is not the adjudicator; M-2 is"* into the bar and then relied on
+   nothing else. **The round's only defect is in the round's only blind spot**,
+   and that is a design fact about the packet.
+
+**Repairs, all on the re-issue:** (a) §4's quotation and §6.0(b) gain an
+OCaml-notation gloss naming `Int.rem` and stating the reason (`open! Base`
+shadows the stdlib `mod`; this profile promotes the alert to an error), so the
+mathematical `mod` stays in the prose and cannot be transliterated; (b) §3's
+reference table gains one `Int.rem`-bearing M03 test file, cited for the
+**operator** and not for the idiom; (c) §16.3's seeded list gains *"every
+arithmetic operator whose spelling differs between the stdlib and `Base`"*;
+(d) §12 gains a worker bar — a file search for infix ` mod ` across the new
+directory with pass condition **zero occurrences outside a string literal** —
+which is executable with Grep at the worker's seat and would have caught this
+round's whole defect set.
+
+**This finding does not move the verdict.** §15's table is pre-committed and
+classes a compile error D4a, bench, bounce; a packet defect that makes an error
+easy does not reclassify the error, and `RV-0080` will not be the round where the
+disposition table is renegotiated after the fact by the seat that wrote it. It
+moves the **terms**: the re-issue carries the four repairs above, and the fix
+round is scoped to `D-1` plus §4's list, not re-opened.
+
+#### 3.2 `FINDING WO-0080-2` (MINOR, mine, editorial) — the front-matter ASSERT split
+
+The packet's opening block said *"Ten ASSERT, three NO-ASSERT"*. Measured row by
+row against `test/attack_plans/AP-xgmii_tx_64.md`'s own Status column at the
+tree, for all thirteen commissioned ids: **eleven ASSERT** (`A1`, `A2`, `B1`,
+`B2`, `B4`, `B5`, `C1`, `C2`, `C3`, `C4`, `C5`) and **two NO-ASSERT** (`A5`,
+`C6`). The total, 13, was right; the split was not. **The worker is right and
+the packet is wrong. Mine.**
+
+**Nothing moves**: not a row's status, not a derived constant, not a unit
+boundary, not a coverage claim — the worker built every row from its own §2
+Status cell, which is what the packet told it to do (*"the Observable cell is the
+contract"*), so the wrong summary reached no code. Corrected **in place with the
+old text struck and visible**, at the front matter above, so that the worker's
+finding stays checkable against the packet it convicts.
+
+#### 3.3 `FINDING WO-0080-3` (MINOR, mine, editorial) — §5.7's unit count
+
+§5.7 said *"Four of the ten units drive a set of lengths"*. Measured: **three**
+units do (U5 at eight lengths, U7 at four, U10 at three), carrying **four row
+ids** between them (`B4`, `B5`, `C2`, `C5`) — which is the figure the very next
+sentence uses, and the figure the rule turns on. **The worker is right.**
+**Nothing moves**: it built one shared `run_lengths` used by every
+directed-length row including the single-length ones, which is exactly what §5.7
+commissions and a slightly stronger reading than the sentence required.
+Corrected in place, struck and visible.
+
+#### 3.4 `FINDING WO-0080-4` (MINOR, mine) — §6.3 assertion 4's quantifier is one octet class too wide, and this is the third instance of that error in my own instruments
+
+§6.3's assertion 4 reads *"The content octet appears at **no other** (cycle,
+lane) position in the run"*. **As a literal universal it is unexecutable against
+a conformant design**, and trap T11 — in this same packet — is why: `/I/` is
+`0x07` and `content 6` is `1 + (6 mod 127)` = `0x07`, so a whole-run scan fires
+on every idle lane of every run. The worker scoped the scan to wire indices
+`0 … 59` and **reported the narrowing as a derived judgement** rather than
+performing it silently. §5 rules it CONFIRMED.
+
+**The defect is mine and the row's own quantifier is where it lives.** This is
+the same shape as `FINDING AP-M04-3`, already owed against `M04-B2`/`M04-C4`'s
+poison quantifier, and as `FINDING ABS-1`'s `M04-G7` ground: **three instances,
+in three instruments of mine, of a universal stated over a domain wider than the
+one the claim can survive.** Repaired on the re-issue by giving §6.3 assertion 4
+the domain §6.0(c) already fixes for the poison scan — wire octet indices
+`0 … F−5` — and the plan row `M04-B1` joins the editorial repair debt.
+
+#### 3.5 `OBSERVATION WO-0080-O1` (mine) — the reset cycle is outside every instrument's view, and family G needs that decided rather than inherited
+
+`create` drives the one reset cycle (`bench.ml:69`) and constructs the standing
+`Tx_decoder` and `Strobe_monitor` **after** it (`:72`, `:73`). So obligation 1's
+*"every cycle including idle ones"* and obligation 4's totality both begin at the
+first `sample_cycle` call, not at the reset cycle, and no instrument sees what
+the wire carries while `clear` is high. **Forced by §7.1's own pin** (the reset
+drive lives in `create`) **and correct for this round** — nothing here asserts
+anything reaching that cycle, and C-14.2's reset clause is not in this round's
+scope. Recorded because family G's round, and any round that asserts against
+C-14.2, must decide it deliberately. Not a defect; no repair in the fix round.
+
+#### 3.6 `OBSERVATION WO-0080-O2` (mine, editorial) — §7.1's cycle-numbering wording
+
+§7.1 says *"`clear` = 1 for **exactly one** cycle (cycle 0's drive)"*, which
+reads as though the reset cycle were cycle 0 of the sample numbering. The bench
+puts the reset cycle in `create`, **outside** `sample_cycle`'s numbering, so its
+cycle 0 is the first post-reset cycle. **The bench's choice is the better one** —
+it keeps the guard at `:91` exact and keeps every row's arithmetic anchored on
+`C` — and `bench.mli:138–141` documents it. The packet's wording is brought into
+agreement on the re-issue.
+
+---
+
+### 4. Findings against the work that are not the bounce
+
+#### 4.1 `FINDING WO-0080-W1` (MINOR) — the `dune` header's own count is a third, distinct wrong pair
+
+`test/xgmii_tx_64/dune:6–9` enumerates the rows correctly — eleven ASSERT ids
+and two NO-ASSERT ids, by name — and then summarises them as *"(ten ASSERT +
+two NO-ASSERT rows …)"*. That pair agrees with **neither** the packet's 10/3
+**nor** the worker's own correct 11/2, which the worker had established in the
+same round and put in its Return log. It carried my wrong number into a
+half-corrected summary instead of writing what it had counted.
+
+Mild in itself; named because of where it sits. The next paragraph of that same
+header says the per-packet row list exists because *"WO-0038's own `dune` header
+found the staleness this rule guards against"*. A header whose purpose is
+anti-staleness shipped stale on its first commit. **Repair in the fix round**:
+*"eleven ASSERT + two NO-ASSERT"*.
+
+#### 4.2 `FINDING WO-0080-W2` (MINOR) — an unmeasured ordinal in a docstring
+
+`bench.mli:120` says the `M03-I2` member-(iii) discipline is *"applied here a
+**fifth** time"*. §5.3 of this packet said *"a **fourth** time"*. Neither figure
+is re-measured nor SHA-cited, and **§9.1's SHA rule reaches an ordinal over a set
+exactly as it reaches a count** — *"a set claim carrying neither is not
+evidence"*. Two things are wrong at once: the claim is unmeasured, and it
+**silently departs from a figure of mine** in a round whose §18 item 3 asked for
+every such departure to be reported. The worker reported two disagreements with
+my prose and not this one. **Repair**: measure it and cite the measurement, or
+drop the ordinal and keep the reference.
+
+---
+
+### 5. `Q-1` — the worker's own question, CONFIRMED, and the packet moves rather than the bench
+
+The worker asked whether `M04-B1`'s uniqueness scan should have been the
+whole-run scan §6.3 assertion 4 literally states, rather than the
+indices-`0 … 59` scan it built by analogy to §6.0(c).
+
+**CONFIRMED — the narrowing is right, and it was right twice over.** The
+whole-run scan is unexecutable (§3.4: `/I/` = `0x07` = `content 6`). And the
+further exclusion of the FCS at indices `60 … 63` stands on §6.0(c)'s own stated
+ground: the FCS is a **computed** value that may legitimately equal a content
+octet, so a scan including it is falsifiable by arithmetic rather than by a
+defect. **The narrowing costs no kill**: a design duplicating a frame octet into
+the FCS region dies at `M04-C3`'s oracle comparison, at `M04-B4`'s octet-count
+check and at its `pad_to_60` prefix comparison. **The packet is what moves**
+(§3.4), not the bench, and the fix round changes nothing at `test_m04_b.ml:41–48`
+except what a corrected §6.3 lets that comment cite.
+
+**This is class D5 behaviour and it is credited in full.** The worker derived a
+constant's domain, disagreed with mine, built the defensible thing, said so in
+the code, said so in the Return log and said so in the journal. §15 says D5 is
+"the round working". It was.
+
+---
+
+### 6. `BM16` — ADJUDICATED: **accept, with the disclosure credited in full and no sanction**
+
+**The condition is met, by admission and not by capture.** The worker ran, via a
+shell, outside §17.1's enumerated list: `git status --short` and
+`git rev-parse HEAD` at spawn; `ls`/`cat`/`wc`/`grep`-pipeline reconnaissance;
+a second `git status` before writing; `date -u` and `ocaml -version` at close.
+It disclosed them **command by command in `J-tb_writer-0042`'s Open-questions** —
+in the journal, which is §17.2's whole demand — and named the aggravating case
+itself, unprompted: `cat test/hardcaml_ethernet/dune`, *"which happened AFTER I
+had read §17.1's own text … the clearest single case of not adjusting course once
+the rule was known"*.
+
+**Why no sanction. Four grounds, three of them measured rather than accepted.**
+
+1. **No forbidden path was touched.** Every command is read-only reconnaissance
+   over paths §8 permits; `M-16` re-read at the tree confirms the `Inputs`
+   section carries no `libs/**`, `top/**`, `rtl_snapshots/**` or
+   `test/third_party/**` path outside an explicit negative.
+2. **No bar's evidence rests on a forbidden instrument.** This is the ground that
+   would have mattered and it is the one I checked hardest: **I re-executed every
+   worker-seat bar at the tree myself** (`M-8` … `M-16`, §1 above) and every
+   figure agrees — 1/1/3/5, ten empty `[%expect]` blocks with the eleventh the
+   `dune` prose token, one `tready` choke point, one `poison` definition, both
+   scans excluding the FCS. The disclosure's central claim — that the bars
+   themselves were executed with Read and Grep — **holds under independent
+   re-measurement**, which is the only way that claim could have been worth
+   anything.
+3. **The disclosure is durable and checkable**, which is exactly the property
+   `RV-0071-VERDICT` §3 had to withdraw a claim for want of. §17.2 says
+   *"Disclosure is credited in full either way"*. It is credited.
+4. **And §17.1 is itself defective, in a way only this disclosure could have
+   exposed.** It forbids *"`git` (every subcommand, including read-only ones such
+   as `status`, `diff`, `show` and `log`)"* — while the orchestrator's standing
+   spawn-time **abort-first precheck mandates `git status` and `git rev-parse
+   HEAD`**, before the worker has read the packet that forbids them. **A worker
+   cannot obey both.** The worker chose the precheck, which is the right choice —
+   the precheck is what caught incident eight at `9d68d10`, where a round's
+   substrate had vanished under it — and then reported the conflict instead of
+   quietly resolving it in its own favour. **A rule that forces a violation and
+   then convicts it is worse than the violation.**
+
+**So the ruling's content lands where the disclosure points, per the `WO-0071`
+precedent, and the re-issue carries it:** §17.1 **carves out the spawn precheck
+by name** — `git status` and `git rev-parse HEAD`, at spawn, before the packet is
+read, and nothing else; every other `git` subcommand stays forbidden and the
+carve-out says so in the same sentence. The **residue** — the `ls`/`cat`/`wc`/
+`grep`-pipeline reconnaissance, and above all the one instance after §17.1 had
+been read — stands as a **recorded process finding with no sanction**, with
+§17.1's standing rule restated and §17.2's credit language kept verbatim.
+
+**And the adjudication changes nothing about the verdict**, which is `BM1`'s
+alone. I record that deliberately: it is what lets this ruling be read as a
+ruling on `BM16`'s merits rather than as an outcome reverse-engineered from a
+token that was already fixed.
+
+---
+
+### 7. What this round did and did not establish
+
+- **Established**: the capability layer is built and reviewable; §6's arithmetic
+  is right cell by cell; the acceptance decision reads the `Before` view; the
+  presenter never withholds mid-frame; the poison filler and its two scans are
+  correctly domained; obligations 1, 3, 4, 6 and 7 are wired at the choke point;
+  the conservation rule is keyed on the **first accepted word** as §5.4(2)
+  demands, which is what family G inherits; ten titles carry thirteen row ids and
+  no others; the cost is **928 driven cycles across 22 elaborations**, re-summed
+  by me from `cycles_for` over every run — **0.62×** the round's own ceiling on
+  both. **`BM13` not reached.**
+- **NOT established, and no sentence anywhere may say otherwise**: that any of
+  the thirteen rows passes. `Run tests` was `skipped`. **Zero rows are
+  discharged**; the outstanding count against `AP-M04` stands at **80 of 80**,
+  not 67. `M04-C6`'s prohibition binds this verdict as much as it bound the
+  bench, and this section is where I honour it: nothing here reports a decoder
+  verdict, a clean report, or a green parse as coverage of anything.
+- **Unchanged**: `BAR T1` is SHUT; no `SO-xgmii_tx_64.md` is opened or offered;
+  the PROTOCOL §10 mutation campaign remains sequenced after this packet's
+  eventual `RV-` ACCEPT and before any `SO-` PASS.
+
+---
+
+### 8. The re-issue — what `WO-0080` rev B carries
+
+**Scope of the fix round, and it is deliberately narrow.** `D-1` at its three
+compile sites, `Int.rem` as prescribed; `W1`'s `dune` header count; `W2`'s
+ordinal; and **whatever else a green `Build` turns out to require** in
+`test_m04_a.ml`, `test_m04_c.ml` and `test_m04_scaffold.ml`, whose compile
+status §2 records as unestablished. **Nothing else is reopened**: no row's
+assertions, no unit boundary, no constant, no title, no `bench.mli` contract.
+
+**Packet repairs riding rev B**: §3.1's four (the `Int.rem` gloss at §4 and
+§6.0(b), the read-list row, the §16.3 seeded-name clause, the new `M-17` infix-
+`mod` bar); §3.4's §6.3 assertion-4 domain; §3.6's §7.1 wording; §6's §17.1
+spawn-precheck carve-out. §3.2 and §3.3 are already corrected in place above.
+
+**The attack-plan repair debt is now SEVEN**, all editorial, all still riding the
+round that next opens `test/attack_plans/**`: the five at `J-dv_lead-0173`
+Open-questions item 2, plus `M04-B1`'s uniqueness quantifier (§3.4), plus the §9
+change-log row's landed-status figure, which must now record **zero** rows
+discharged at `960c831` rather than thirteen.
+
+**What stays where it was**: `§19.3` items 1, 2, 4, 5 and 6 are untouched by this
+verdict. Family D remains the next bench round **after** rev B lands green — a
+capability-heavy round followed by the cheapest coverage available was the
+sequencing argument at §1.3, and a capability layer that has never compiled is
+not yet a capability layer.
 
