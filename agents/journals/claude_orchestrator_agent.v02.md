@@ -4525,3 +4525,42 @@ the window; this entry records the rulings that are mine.
 - site/public/index.html
 - site/public/org-chart.html
 - site/public/spec-atlas.html
+
+## [J-orchestrator-0256] 2026-08-11T15:51Z | task:none | The transcription act, seventh of its kind: four countersignatures enter the record, one carrying a refused ground replaced by a better one - and the row warns the reader of a premise its predecessors lost this same hour
+
+### Trigger
+
+dv_lead's five-act round landed at 9a596e7 (J-dv_lead-0181, opening
+volume 10 — chain verified both sides at 0984a609…/310053, v09
+untouched). The round paid every countersignature the 292596c diffs
+owed, concurred on Q-3 with a closure theorem that sharpens it
+(composites can fail ONLY under the default — the theorem makes the
+default's repair the whole cure), filed Q-4 against the architect's
+stated ground while signing its text, filed Q-5 against its own
+class-A call, re-pinned the straddle citation at its true site (§8
+item 1 — the §4.D label was dv's own mislabel travelling through
+three documents, corrected at the source), and repaired octet_time
+past its own scoping: two sites its J-dv_lead-0180 entry never named,
+including a guard that convicted a conformant M07 of a REQ-021
+violation. The .mli write-set extension was declared with grounds
+(an interface file moves with its implementation or the repair is a
+type error) and accepted.
+
+### Rulings
+
+1. The declared write-set extension: ACCEPTED — declared not smuggled,
+   named in the agent's own prior scoping, and the halves cannot land
+   separately.
+2. Q-4 and Q-5 route to the architect's next round (both MINOR,
+   one-sentence and one-symbol cures) alongside its queued items.
+3. CI on 9a596e7 is the adjudicating event for the two changed expect
+   blocks, per dv's own bar (its scratch-driver replication predicts
+   green: blocks identical, failures 0, no warnings at -w +a). If red,
+   it is dv's defect and returns to dv.
+4. The recital supersession is in the row where a reader will meet it:
+   the 292596c rows' "no file under test/ names either module" died at
+   9a596e7; the claim they need still holds.
+
+### Files-in-this-commit
+
+- docs/specs/requirements.md
