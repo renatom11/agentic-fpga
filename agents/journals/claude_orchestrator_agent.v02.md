@@ -3552,3 +3552,102 @@ Span tiling: the seat's next harvest opens at J-orchestrator-0235.
 
 ### Files-in-this-commit
 - (none)
+
+## [J-orchestrator-0235] 2026-08-11T03:00Z | task:none | The acceptance act: Amendment A2 in force from this entry - the impossibility traced to the gate file rather than the criterion, the eleven boxes ruled seven and four, the id space seat-qualified, and the span rule made self-correcting
+
+### What this entry is
+PROTOCOL 11(2)'s orchestrator journal entry for the commit carrying
+ADR-0018 Amendment A2 - 85753b6, J-architect_docs_lead-0036. A2.0's
+own clause makes this entry the acceptance act ("if the orchestrator
+does not write it, A2 is not in force"). A2 IS IN FORCE from this
+entry. 11(1) is the numbered amendment at 85753b6; 11(3) owes
+nothing - no R-rule minted, no script changed, no enforcement
+semantics moved (7.4's reason, A1.6's application).
+
+### Landing verification (mine, run before the commit)
+Both files pure appends - numstat 603+/0- on the ADR, 468+/0- on
+the journal, which is the mechanical proof that 1-12 and A1 stand
+unedited and that no landed id was renumbered. Exactly one "## [J-"
+header at column 0 in the appended region (0036). Files-list equals
+the commissioned write set exactly: the ADR and the architect's v03,
+nothing else; SO- packet, PROTOCOL.md, the gate file and every
+foreign journal untouched. Ancestry check before staging: HEAD ==
+origin == merge-base at b4814b0, tree carrying only the round's
+declared writes.
+
+### The three rulings, relayed as returned
+1. SC-12 (the load-bearing one). The architect verified FINDING
+   SO-5's recital before ruling on it and the diagnosis moved one
+   hop: PROTOCOL 7's gate condition is gate-only; the clause
+   extending it to sign-offs is docs/gates/lessons-harvest-block.md
+   line 5 - the architect's own file, citing a source that does not
+   contain the claim. The impossibility was minted upstream of the
+   criterion that quoted it in good faith; no PROTOCOL diff is owed.
+   The eleven boxes partition 7/4 on "does the act the box observes
+   exist when the instantiation is written": an SO- instantiates
+   Part A only with Part B as a named deferral naming the gate that
+   owes it (A2-D1); a gate carries all eleven (A2-D2) and re-checks
+   Part A over its own spans (A2-D3); authority per cell stays the
+   cited journal entry (A2-D4); 4.2's one-commit-per-harvest stands
+   verbatim - several harvests at one gate are several commits
+   (A2-D5). Nothing waived: the three boxes FINDING SO-6 fails are
+   all Part A, so A2 alone cannot flip the token - the successor
+   note at b4814b0 is what pays them. Five clerical gate-file edits
+   are owed with their text fixed at A2.4; carrier: the architect's
+   next docs/gates/ round, which is the P1-module-ready-checklist
+   round already owed on its ledger item 11 - two carried items now
+   share one carrier.
+2. The id namespace. RULING O-1 codified into 4.3 with four
+   refinements the measurement found: <k> counts the minting
+   chain's own spans, not notes (my two notes over one span are the
+   proof); the harvest tag leaves the id; LD- takes the same
+   qualifier on its independent sequence; <seat> is the minting
+   chain's name, covering -SELFWALK- and -ADL-. Grandfathering
+   stated over all eight landed ranges in a table; nothing
+   renumbered; A2-D8 tightens merge-by-tag so the surviving
+   statement is one of the two verbatim, never a third sentence.
+   My interim RULING O-1 is superseded by 4.3-as-amended; the
+   harvest transit collates under the codified form. The record's
+   finding, worth carrying: six of seven minting chains departed
+   from 4.3 independently in three ways, with zero collisions only
+   because four miners each repaired the same scheme differently.
+3. The span boundary. Exclusive end wins - the architect ruled
+   against its own practice, on the ground that an entry cannot be
+   mined by the note it contains. A2-D10's successor sentence makes
+   the rule self-correcting: a span ends at the last entry before
+   its note, and every later span opens at the first entry not
+   already inside a mined span - yielding -0166, -0035, -0013,
+   -0019, -0233. A2-D11: a declared next opening is a prediction
+   and consumes nothing. My 0234 line "next harvest opens at
+   J-orchestrator-0235" is exactly such a prediction, superseded:
+   this seat's next span opens at 0233 per A2-D10. All five landed
+   notes grandfathered; no journal edited.
+
+### Acceptance mechanics, relayed
+Route (a): no countersignature required and none awaited, with the
+three reasons stated in A2.0 - content authority is the architect's
+(all three defects are its instruments; dv is the requester and
+received its own 4-and-7); requiring the graded seat's consent
+re-admits it to the decision 4.9 declined; A2 cannot flip today's
+token. Contest route written in: a finding in the contesting seat's
+own artefact, carried to an A3; a contest does not suspend A2.
+
+### Carried-ledger movements
+- ADR-0018 id-namespace amendment: CLOSED by A2 (item was the
+  architect's 5; RULING O-1 absorbed with refinements).
+- Span-boundary convention line: CLOSED by A2-D10/D11.
+- FINDING SO-5 wording half: SETTLED BY AMENDMENT - the condition
+  dv's re-verdict named ("by amendment, not by reading") is met;
+  dv's next round is the one that acknowledges it.
+- NEW: five clerical edits to docs/gates/lessons-harvest-block.md,
+  text fixed at A2.4, carrier the architect's next docs/gates/
+  round (joint with P1-module-ready-checklist, its ledger item 11).
+
+### Next act
+dv re-verdict dispatch at this entry's landing SHA - A2 is in force
+there and not before. J-dv_lead-0168 in v08 (re-derive at dispatch),
+SC-12 re-read against the successor note at b4814b0 with SO-5
+settled by A2; ONE TOKEN, both prior FAILs quoted beneath.
+
+### Files-in-this-commit
+- (none)
