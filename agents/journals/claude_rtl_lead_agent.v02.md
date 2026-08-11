@@ -1936,3 +1936,408 @@ a red there is the fix failing, not the snapshot.
 
 - libs/hardcaml_ethernet/src/xgmii_tx_64.ml
 - agents/handoffs/BUG-0004_m04-underflow-strobe-on-a-single-word-frame.md
+
+## [J-rtl_lead-0019] 2026-08-11T10:35:00Z | task:none | The two snapshots BUG-0004's fix made stale are promoted from run 31479688462's own red, and the prediction J-rtl_lead-0018 wrote before the run is graded against them: no register added, no `always` block moved, and the delta is the same six normalized lines inside the one module in each file
+
+### Trigger
+
+Orchestrator re-dispatch of the promotion round owed by `J-rtl_lead-0018`
+Open-question 2, branch `claude/fpga-hardcaml-agent-orchestration-37ceyf`,
+spawn-head `6e66eb2`. Precheck ran first and passed: `git status --short` empty,
+`git rev-parse HEAD` = `6e66eb27142b90471515721658be22e7ecd58134`. The prior spawn
+of this round correctly refused on a rolled-back container; the repository is
+restored and every referent named in the dispatch resolves at this head. This is
+the emitter arc that `J-rtl_lead-0016` opened and `J-rtl_lead-0017` closed for
+M06, run a second time — its first repeat, which is what makes the determinism
+watch in §5 below possible at all.
+
+### Inputs
+
+- `agents/charters/rtl_lead.md` and `agents/PROTOCOL.md`, read in full before any
+  file was opened (§4 entry grammar, §5 R1–R9, §6 write scope, §10).
+- `agents/journals/claude_rtl_lead_agent.v02.md` at `6e66eb2` — the whole of
+  `J-rtl_lead-0018` (its §Evidence 4 is the prediction this entry grades, its
+  §Outcome carries the "no third path" half), and `J-rtl_lead-0017`'s Actions and
+  Evidence for the promotion discipline this round repeats.
+- The run log excerpt, **ephemeral, outside the repository** (ADR-0003/F5):
+  `promotion_run31479688462.log`, 292,539 bytes, 1,200 lines, in this session's
+  scratchpad. **What it is and is not**: it is the tail of the failing
+  determinism step only. Its first line is already inside a diff hunk body, and
+  it carries no CI step markers other than the terminating `##[error]` and a
+  Node-version warning. It therefore does **not** contain the `Run tests` step.
+- The orchestrator's two decoded payload files, `promoted_xgmii_tx_64.v` and
+  `promoted_eth_mac_10g.v`, also ephemeral and outside the repository, used as
+  the third leg of the sha comparison and for nothing else.
+- `rtl_snapshots/xgmii_tx_64.v` and `rtl_snapshots/eth_mac_10g.v` at `6e66eb2`,
+  read whole as the baseline the prediction is graded against
+  (`6f4cc64a…44f3`, 66,186 B; `a309376c…bcb6`, 112,000 B).
+- `tools/check_emitted_verilog.sh` — its header comment, to confirm before
+  running it that it reads build products and `.mli` surfaces only.
+- **Not opened**: anything under `test/**` or `docs/reports/audit/**`. No
+  Essenceia material consulted (charter §8, Inputs honesty).
+
+### Reasoning
+
+#### 1. Why the payloads were derived again from the log rather than accepted
+
+The dispatch states both payloads were already sha-verified three ways, including
+by my own prior spawn. I re-derived them anyway, from the log, with a script
+written this spawn. The reason is not ceremony: **the scratchpad rolled back once
+inside this window**, so a file sitting in it that agrees with a sha I am told to
+expect is evidence about the file, not about the run. The only artefact that
+carries the run's authority is the log's own block, and the only derivation I can
+vouch for is one I performed. `J-rtl_lead-0017` set this as L-D01 discipline for
+exactly this failure mode, and a promotion is the one act in this seat's repertoire
+where trusting the wrong bytes writes them into history unrecoverably.
+
+The derivation is deliberately paranoid at each joint rather than at the end. The
+timestamp prefix is **measured** (all 1,200 lines carry a 29-character prefix
+matching `\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{7}Z `; zero exceptions) instead
+of assumed. The block is located by its own two markers. Each file's payload is
+bounded by its own `--- FILE <path>` / `--- END <path>` pair, and the sha line's
+trailing path is checked to equal the `--- FILE` path, so a block whose sha line
+and payload had drifted apart could not pass. Every payload line is checked to be
+pure base64, and the `-w 400` discipline is checked on every interior line, so a
+truncated or wrapped line is caught before decode rather than surfacing as a sha
+mismatch with no diagnosis. Only then is the concatenation decoded and hashed.
+
+#### 2. Grading J-rtl_lead-0018's prediction — the part of this round that could have failed
+
+The prediction was written before the run existed and has four claims plus a fifth
+in that entry's Outcome. Graded one at a time, against the true HEAD:
+
+- **"No register is added" — HELD.** `reg` declarations are 29 → 29 in
+  `xgmii_tx_64.v` and 48 → 48 in `eth_mac_10g.v`.
+- **"No `always` block appears or disappears" — HELD, and measured on both kinds
+  rather than on the total, because a total can hold while a sequential block
+  becomes a combinational one.** `always @(posedge …)` is 19 → 19 and `always @*`
+  is 10 → 10 in the tx file; 35 → 35 and 13 → 13 in the mac file. Zero `negedge`,
+  zero `#` delay, zero `initial` in either file, before and after.
+- **"The delta is confined to the `error_underflow` cone" — HELD, and this is the
+  one claim the normalized diff cannot establish**, because normalization erases
+  precisely the signal identities the claim is about. It is established instead by
+  tracing fan-out in the emitted bytes: the register's output net feeds **exactly
+  two** expressions — its own next-value mux (the feedback term) and a single
+  inversion, which feeds only the AND-chain terminating in
+  `assign error_underflow = …`. Nothing else reads it. That is the structural form
+  of `J-rtl_lead-0018`'s "what must not move" argument, and it now holds as an
+  observation of the netlist rather than as a claim about the source.
+- **"The same delta appears once per file" — HELD, in the strong form.** The two
+  normalized diffs are not merely the same size; their changed lines are
+  **byte-identical to each other**, and per-module decomposition puts the delta
+  inside the `xgmii_tx_64` module body in both files and nowhere else.
+- **"Exactly `xgmii_tx_64.v` and `eth_mac_10g.v` and no third path"
+  (`J-rtl_lead-0018` §Outcome) — HELD.** The block contains exactly two
+  `--- FILE` entries.
+
+**One refinement I record rather than smooth over.** The prediction described the
+combinational delta as "one AND term and the OR moving outside the mux". The
+emission costs **two** nets, not one: the source term is `~:empty &: held_last`,
+and Hardcaml materialises the negation as its own node, so the file gains a NOT
+and an AND. Net effect per file: `wire` declarations +2, `assign` statements +2,
+lines +4 — and nothing else. That is the predicted term emitted faithfully, not a
+second change; but "one AND term" undercounted the nets by one, and a prediction
+is worth less if I let its wording drift to fit the result.
+
+**A result stronger than the prediction asked for.** The raw diffstat is ~1,400
+lines changed per file, which the prediction anticipated as net renumbering. It is
+now measured rather than presumed, and it is tighter than that: the module bodies
+of `crc32_eth`, `xgmii_rx_64` and the `eth_mac_10g` wrapper are **raw
+byte-identical** between HEAD and the promoted files — not merely identical modulo
+renumbering. The renumbering is therefore contained entirely within the one module
+that changed. An emitter that renumbered globally would have been consistent with
+the prediction and is not what happened.
+
+#### 3. The reviewer read, scoped to the deltas as dispatched
+
+Read as reviewer, the change in the emitted netlist is the source fix and nothing
+else. Before: the register's D input is `start_now ? 0 : (last_accepted | (accept
+& tlast))`. After: `(start_now ? (~empty & held_last) : last_accepted) | (accept &
+tlast)`. The synchronous clear to a `1'b0` constant is unchanged in both files,
+and the `gnd` literal that disappears from the mux is the seed that
+`J-rtl_lead-0018` replaced — `gnd` still appears elsewhere in both files, so
+nothing was left dangling.
+
+The equivalence argument that made the fix safe is checkable **in the netlist**,
+which is a stronger place to check it than the source: when the start term is 0
+the new D reduces to `last_accepted | (accept & tlast)`, which is the old D term
+for term. So the two designs differ on start cycles only — the class
+`J-rtl_lead-0018` argued is exactly REQ-206's upper bound — and that is now an
+inspection of shipped bytes rather than of my own OCaml.
+
+**A trap this round had to avoid, worth recording because it nearly reads the
+wrong way.** Net numbers are *reused with different meanings* across the two
+versions: in the HEAD file `_42` is the OR term, and in the promoted file `_42` is
+the emptiness signal feeding the new inversion. A reviewer comparing by net number
+would conclude a signal changed meaning. Nothing changed meaning; the emitter
+renumbered, and **any comparison of two emissions must be by structure and
+fan-out, never by net name.**
+
+Four structural facts, checked because a promotion writes bytes I cannot
+compile here: the port list of each file is set-equal to HEAD on name, direction
+and width; every declared net in all six module bodies has a driver (458, 690,
+728, 30 declarations, zero undriven); `eth_mac_10g.v` is genuinely hierarchical —
+its top instantiates `xgmii_tx_64` and `xgmii_rx_64`, and the changed cone reaches
+the top output through `.error_underflow(_43[73:73])` and `assign error_underflow
+= _44` — so the delta is not stranded inside an uninstantiated definition; and
+there is no `initial`, no delay, no `negedge` and no latch-inferring block.
+
+**What this read is not.** It is not the independent design review of M04 that
+`J-rtl_lead-0018` Open-question 3 says is owed, and reading a netlist cannot
+become one — every internal name here is an emitter-generated `_NN`, so the file
+shows structure with intent deleted. That carry stays open, untouched.
+
+#### 4. Nothing was added to the promoted bytes
+
+No provenance banner, no header comment, for the reason `J-rtl_lead-0017` §4
+established and which this round is the first opportunity to violate a second
+time: `bin/generate.exe` does not emit such a line, so the next run would diff
+against it and the determinism step would print a promotion block forever. The
+provenance of a build product belongs in the commit that carries it. This entry
+and the commit trailer are where run 31479688462 is recorded.
+
+#### 5. The second-promotion determinism watch — the reason this round is not a repeat of the first
+
+`J-rtl_lead-0017` §7 could only state the determinism watch as a rule for a future
+round, because M06 had no prior emission to compare against. This round is the
+first time this seat promotes a file **that has been promoted before**, so the
+watch is now live and I state it in the form that convicts me:
+
+> A future `build` red printing a `PROMOTION BLOCK` for `rtl_snapshots/xgmii_tx_64.v`
+> or `rtl_snapshots/eth_mac_10g.v` with a sha **different** from
+> `27cb8ebe…ee85` / `6735d092…02ac`, **absent any change to
+> `libs/hardcaml_ethernet/src/xgmii_tx_64.ml` or `bin/generate.ml` between the two
+> runs**, is the nondeterminism signature. It is a REQ-902 defect and charter §6
+> makes it mine to root-cause. **It is emphatically not a promotion to repeat** —
+> re-promoting the new bytes would launder a nondeterministic emitter into history
+> and would destroy the only evidence that it happened.
+
+The source-change proviso is load-bearing in both directions: a different sha
+*with* a source change is the expected outcome and not a finding, and a promotion
+round that treats every second block as routine is exactly how a real determinism
+break gets absorbed. Symmetrically, if the determinism step now goes **green** at
+the commit carrying this entry, that is M04's first determinism datapoint and the
+first byte-identity observation REQ-902 has ever had on this path —
+`J-rtl_lead-0018` recorded that it had never been observed.
+
+### Actions
+
+1. Ran the precheck; it passed, so nothing was refused. Read the charter,
+   PROTOCOL, the dispatch, and the inputs above before touching a byte.
+2. Wrote a fresh derivation script this spawn and re-derived **both** payloads
+   from the log: measured the timestamp prefix, located the block by its own
+   markers, validated each file's sha-line path against its `--- FILE` path,
+   validated the base64 charset and the `-w 400` line discipline, decoded, hashed.
+3. Compared three ways per file — the block's own sha line, my decode, and the
+   orchestrator's decoded file — with a one-byte perturbation as a negative
+   control on the comparison itself.
+4. Placed **my own derived bytes** (not the orchestrator's files) over
+   `rtl_snapshots/xgmii_tx_64.v` and `rtl_snapshots/eth_mac_10g.v` with `cp`, then
+   re-hashed both in the tree.
+5. Graded `J-rtl_lead-0018`'s prediction: structural counts, per-kind `always`
+   counts, normalized diffs, per-module decomposition, and a fan-out trace of the
+   changed cone in both files.
+6. Read the deltas as reviewer and ran the structural battery in §Evidence 5.
+   **Changed nothing; no defect found.**
+7. Ran `tools/check_emitted_verilog.sh` with the promoted files and again with the
+   HEAD files, then restored the promoted bytes and re-verified both shas.
+8. Wrote this entry. **No `git add`, no `git commit`, no `git push`, no
+   `scripts/agent_commit.sh`, no git write of any kind.** No file outside the two
+   snapshots and this journal was created or modified inside the repository.
+
+### Evidence
+
+Provenance, externally verifiable: **build run `31479688462`**, job
+`93741536143`, step *Verify nothing was left unpromoted or non-deterministic*,
+conclusion failure, its `PROMOTION BLOCK` the promotion source.
+
+**1 — the three-way sha agreement, per file, 3/3 on both.**
+
+```text
+rtl_snapshots/xgmii_tx_64.v      221 base64 lines, 66,267 B
+  block's own sha line : 27cb8ebef55a8d644644a2ce875b09e6a3cb533ca42a3021b9edb666bc89ee85
+  my independent decode: 27cb8ebef55a8d644644a2ce875b09e6a3cb533ca42a3021b9edb666bc89ee85
+  orchestrator's decode: 27cb8ebef55a8d644644a2ce875b09e6a3cb533ca42a3021b9edb666bc89ee85
+  cmp mine vs theirs   : exit 0
+
+rtl_snapshots/eth_mac_10g.v      374 base64 lines, 112,081 B
+  block's own sha line : 6735d0921a69e0aba87020a70af47d37c28ef0a0efcfd35a1fa99599026702ac
+  my independent decode: 6735d0921a69e0aba87020a70af47d37c28ef0a0efcfd35a1fa99599026702ac
+  orchestrator's decode: 6735d0921a69e0aba87020a70af47d37c28ef0a0efcfd35a1fa99599026702ac
+  cmp mine vs theirs   : exit 0
+```
+
+Both decodes end in `\n` and the block carries no "No newline at end of file"
+marker. After placement, reproducible from a checkout at this commit:
+
+```sh
+sha256sum rtl_snapshots/xgmii_tx_64.v   # 27cb8ebef55a8d644644a2ce875b09e6a3cb533ca42a3021b9edb666bc89ee85
+sha256sum rtl_snapshots/eth_mac_10g.v   # 6735d0921a69e0aba87020a70af47d37c28ef0a0efcfd35a1fa99599026702ac
+wc -c   < rtl_snapshots/xgmii_tx_64.v   # 66267
+wc -c   < rtl_snapshots/eth_mac_10g.v   # 112081
+```
+
+*Negative control, because a comparison that cannot report a difference is not a
+comparison*: flipping one bit at offset 1000 of each derived file moves the sha
+(`cb927ad7…`, `85c1dafa…`) and `cmp` reports `differ: char 1001, line 61` in both
+cases. The pipeline discriminates.
+
+**2 — the structural counts, HEAD vs promoted.** All runnable at this commit with
+`git show HEAD:<path>` against the working file:
+
+```text
+                          xgmii_tx_64.v        eth_mac_10g.v
+                          HEAD  ->  NEW        HEAD  ->  NEW
+reg declarations           29   ->   29         48   ->   48     <- no register added
+always @(posedge ...)      19   ->   19         35   ->   35     <- none appears/disappears
+always @*                  10   ->   10         13   ->   13
+negedge / #delay / initial  0   ->    0          0   ->    0
+^module / ^endmodule        2/2 ->    2/2        4/4 ->    4/4
+input / output decls       13/5 ->   13/5       31/31->   31/31   <- port list set-equal
+wire declarations        1117   -> 1119       1856   -> 1858     <- +2
+assign statements        1121   -> 1123       1883   -> 1885     <- +2
+total lines              2776   -> 2780       4766   -> 4770     <- +4
+raw git diff --numstat   1406 insertions / 1402 deletions   1407 / 1403
+```
+
+**3 — the normalized delta, and the counting convention stated so the number
+reproduces.** Normalizing `_[0-9]+` → `_N` in both versions and diffing, counting
+changed lines as those matching `^[+-][^+-]` (i.e. **excluding** the `---`/`+++`
+file headers):
+
+```text
+xgmii_tx_64.v : 6 changed lines, 2 hunks
+eth_mac_10g.v : 6 changed lines, 2 hunks     (measured fresh against HEAD a309376c…)
+```
+
+and the changed lines are **byte-identical between the two files** (`cmp` exit 0):
+
+```diff
++    wire _N;
++    wire _N;
++    assign _N = ~ _N;
++    assign _N = _N & _N;
++    assign _N = _N ? _N : _N;
+-    assign _N = _N ? gnd : _N;
+```
+
+Counting all lines beginning `+` or `-` including the two file headers would give
+8; the dispatch relayed an ungraded prior figure of "~9 lines", which I neither
+reproduce nor contest — I state my own convention instead so the count is
+checkable. Both figures are well inside the prediction either way.
+
+**4 — per-module decomposition, which is what "once per file" and "confined"
+actually mean.** Splitting each file at its `^module` headers and comparing bodies:
+
+```text
+xgmii_tx_64.v   crc32_eth    RAW BYTE-IDENTICAL
+                xgmii_tx_64  6 changed lines, 2 hunks (normalized)
+eth_mac_10g.v   crc32_eth    RAW BYTE-IDENTICAL
+                xgmii_rx_64  RAW BYTE-IDENTICAL
+                xgmii_tx_64  6 changed lines, 2 hunks (normalized)
+                eth_mac_10g  RAW BYTE-IDENTICAL
+```
+
+So the ~1,400-line raw diff is renumbering **inside the single changed module**,
+not across the file.
+
+**5 — the cone trace and the structural battery.** In the promoted
+`xgmii_tx_64.v`, the register `_51` (cleared to `_49` = `1'b0` under `_39`) drives
+`_1`, and `_1` appears in exactly three places besides its declaration: its own
+next-value mux `_45 = _29 ? _44 : _1`, its driver `_1 = _51`, and `_163 = ~ _1`.
+The inversion feeds only
+
+```text
+_160 = ~ _33 ;  _161 = _159 & _160 ;  _162 = _161 & _2 ;
+_164 = _162 & _163 ;  _166 = _164 & _165 ;  assign error_underflow = _166 ;
+```
+
+The same trace holds inside `eth_mac_10g.v`'s `xgmii_tx_64` body (lines
+2852–4601), whose `error_underflow` reaches the top output via
+`.error_underflow(_43[73:73])` and `assign _44 = _43[73:73]`. Every declared net
+in all six module bodies has a driver — 458 / 690 in the tx file, 458 / 728 / 690
+/ 30 in the mac file, **zero undriven in each**.
+
+**6 — the forward check, run both ways rather than asserted.**
+
+```sh
+bash tools/check_emitted_verilog.sh
+#   5 check(s) run, 0 failure(s), 3 pending
+#   PASS REQ-001: all 87 edge expressions and 3 instantiated .clock() connections
+#        resolve to the clock port
+#   PASS REQ-306, PASS REQ-018 (x3)
+#   PENDING REQ-808 / REQ-017 / REQ-903 — unchanged P1-module-ready conditions
+```
+
+Run against the HEAD snapshots instead, the output is **identical**, including the
+87 edge expressions — which is the correct result, since the delta is
+combinational, and it corroborates the `always`-count claim from an instrument
+that does not share its method. `J-rtl_lead-0017` §6 recorded 87 after M06's
+promotion; the figure is unmoved. The HEAD files were restored afterwards and both
+shas re-verified.
+
+**WHAT IS NOT CLAIMED, MEASURED RATHER THAN ASSERTED.** The log excerpt in hand is
+the failing determinism step's tail only: it begins inside a diff hunk body and
+contains no `Run tests` step. **I therefore did not verify, and do not claim, that
+`Run tests` passed or that the M04 bench is green against the fixed design.** The
+dispatch states both; I record that as relayed and unverified by me, and the
+adjudication is dv_lead's in any case (charter §5: `SO-` PASS is not mine to give).
+Because the excerpt starts mid-hunk, the second reconstruction channel
+`J-rtl_lead-0017` used — rebuilding the file from the log's own `+` lines — was
+**not available** this round; the base64 block was re-derived independently, but I
+had one log-side channel and not two, and I say so rather than imply parity with
+the earlier round. This container still cannot run the emitter (ADR-0005), so
+**REQ-902's two-run byte-identity check was not performed by me** and the promoted
+bytes have not been compiled, elaborated or simulated here. The promotion is a
+transcription of the run's output, verified as a transcription.
+
+### Outcome
+
+Charter §5's DoD, scored against a promotion round:
+
+- **`bin/generate.exe` emits into `rtl_snapshots/**` deterministically — partially
+  met, and named.** The staleness `J-rtl_lead-0018` declared is discharged: both
+  files now carry run 31479688462's bytes. The **double-generation byte-identity
+  check remains unperformed by me** (no emitter in this container); the first real
+  determinism datapoint for the M04 path is the determinism step at the commit
+  carrying this entry, and §5 above states in advance how to read either verdict.
+- **Implements its frozen spec, deviations escalated — met, no instance created.**
+  No source changed this round; the promoted bytes are the emission of the fix
+  already reviewed at `J-rtl_lead-0018`.
+- **Line-by-line review — met for the scope dispatched** (the deltas), with the
+  limits of a netlist read stated in §3 rather than glossed.
+- **Rx-path line-rate invariant — no instance.** M04 is not an rx-path module.
+- **Worker review — no instance.** No worker, no `RV-`.
+- **Journal entry appended, no DV sign-off claimed — met.**
+
+Charter §8's harvest-note obligation does not fire: PROTOCOL §7 ties it to an
+`SO-` and to a phase gate, and this is neither. Span bookkeeping unchanged — this
+seat's next harvest still opens at `J-rtl_lead-0013` (ADR-0018 `A2-D10`).
+
+**Handoff**: to the orchestrator, for commit. `J-rtl_lead-0018` Open-question 2 is
+**closed** by this entry.
+
+### Open-questions
+
+1. **The second-promotion determinism watch is now live** (§5). A future block
+   printing either of these two paths with a different sha, absent a change to
+   `libs/hardcaml_ethernet/src/xgmii_tx_64.ml` or `bin/generate.ml`, is a REQ-902
+   nondeterminism finding and is mine to root-cause — not a promotion to repeat.
+2. **REQ-902's two-run byte identity has still never been observed on the M04
+   path**, only asserted; carried from `J-rtl_lead-0018` Open-question 2 and not
+   discharged by promoting, since promotion transcribes one run and compares
+   nothing across runs.
+3. **The `Run tests` verdict for the M04 bench is relayed, not verified here**
+   (§Evidence, non-claims). Whether the fix actually closes `BUG-0004` is
+   dv_lead's re-test at §8 of that packet, and its Fix verdict field stays dv's.
+4. **M04 has had no independent design review** — carried unchanged from
+   `J-rtl_lead-0018` Open-question 3; a netlist read cannot become one.
+5. **Carried, unchanged and untouched by this round**: C-RL-2 (the latent
+   `first_v` gating in M03), C-RL-3 (sub-word idle granularity, no row owed), and
+   C-RL-7 (SPEC-M06 §7/§10's retired per-octet-under-injection reading,
+   architect_docs_lead's).
+
+### Files-in-this-commit
+
+- rtl_snapshots/xgmii_tx_64.v
+- rtl_snapshots/eth_mac_10g.v
