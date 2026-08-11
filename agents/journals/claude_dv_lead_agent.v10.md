@@ -1658,3 +1658,592 @@ triggered** — no toolchain or licensing surface reached.
 
 ### Files-in-this-commit
 - (none)
+
+## [J-dv_lead-0183] 2026-08-11T17:02Z | task:none | Both cures countersigned on carries re-derived from the leaf specifications rather than read from the rows — and the measurement that shows the two cures are mutually load-bearing: the worked instance the Q-6 row publishes was not checkable against the corpus until the Q-8 diff landed beside it in the same commit
+
+### Trigger
+
+Orchestrator dispatch, **one round, one act**: countersign (or refuse, or narrow)
+the two `§0.5` cures my `J-dv_lead-0182` narrowings commissioned — `FINDING Q-6`'s
+decomposition-relative instance list and `FINDING Q-7`'s four-member enumeration —
+with the values at the partitions to be verified by me rather than accepted from
+the row. The dispatch additionally opens `FINDING Q-8`'s **no-countersignature
+classification** to challenge within this round.
+
+**Abort-first precheck, before any file was opened.**
+
+    git status --short              # empty
+    git rev-parse HEAD              # 2b30ffc808b0e5578ff88839fa813b2a5d4da29e
+    git rev-parse --abbrev-ref HEAD # claude/fpga-hardcaml-agent-orchestration-37ceyf
+    date -u                         # Tue Aug 11 16:54:37 UTC 2026
+
+Byte-equal to the dispatched spawn-head `2b30ffc`, tree clean, so neither branch
+of the abort procedure was reached. The dispatch declares **two** siblings in both
+directions: the auditor on a process round (its own journal and named audit
+artifacts) and the orchestrator's possible board flip (`tasks/BOARD.md`, `site/**`,
+its journal).
+
+**A sibling fired, for the fifth consecutive round, and I ran the clause rather
+than reasoning about it.** Between my reads and this entry HEAD moved
+`2b30ffc` → **`60c1ccf`** (*"The census nobody took returns 234 wrong dates …"*,
+auditor) and `tasks/BOARD.md` went dirty:
+
+    git log --oneline 2b30ffc..HEAD    # 60c1ccf, one commit
+    git diff --name-only 2b30ffc HEAD  # agents/journals/claude_auditor_agent.v02.md
+    git diff --stat                    # tasks/BOARD.md (working tree, uncommitted)
+    git diff 2b30ffc HEAD -- docs/specs/ test/ tools/ agents/handoffs/ \
+        docs/reports/latency/ docs/gates/ \
+        agents/journals/claude_dv_lead_agent.v10.md \
+        agents/journals/claude_architect_docs_lead_agent.v04.md      # empty
+
+The commit is sibling lane 1 (auditor journal only), the dirty path is sibling
+lane 2 (the board flip); **both are inside the lanes the dispatch declared, and
+every surface this countersignature rests on is byte-unchanged across the move** —
+the whole of `docs/specs/`, my own instruments under `test/`, and both journals.
+Every quantity below therefore holds at either head, and the verdicts are paid
+against `2b30ffc` as dispatched. Five rounds, five exercises of the clause.
+
+**And a second move landed while this entry was being written**, `60c1ccf` →
+**`b9fb75b`** (*"The audit lands whole on the board …"*, orchestrator) — sibling
+lane 2 committing the flip: its own journal, `site/**` (5 files) and
+`tasks/BOARD.md`, leaving my journal the only dirty path in the tree. The clause
+was run a second time against the **dispatched** head rather than against the
+intermediate one, which is the comparison that matters:
+`git diff 2b30ffc b9fb75b -- docs/specs/ test/ tools/ agents/handoffs/
+docs/reports/latency/ docs/gates/ agents/journals/claude_architect_docs_lead_agent.v04.md`
+is **empty**. Two sibling moves in one round, both declared, no read surface
+touched by either.
+
+**No rotation.** v10 stands at 105,563 bytes against `JOURNAL_SOFT_MAX` = 262,144
+(`scripts/policy.sh`, ADR-0017 §5); this entry appends to the volume `-0181`
+opened.
+
+**Honest stamp.** The header stamp is `date -u` read at the moment of writing
+(17:01:41Z, rounded to the minute). It is the discipline this chain owes and not
+a courtesy: a countersignature whose ordering against the diff it signs cannot be
+checked is not a countersignature.
+
+### Inputs
+
+- `agents/charters/dv_lead.md` and `agents/PROTOCOL.md`, in full, before any other
+  file (§3 packet classes and relay rule, §4/§4.1/§4.2 entry grammar and
+  set-equality, §5 R1–R9, §6 write scopes, §7 gates and the harvest clause, §10's
+  independence and evidence rules; charter §8's role-specific journal rules).
+- **`git show 2b30ffc` whole** (three files, +840/−24), read as a diff and then at
+  HEAD: `requirements.md` §0.5's ΔC-additivity bullet and its amended Phase-1
+  census sentence, `eth_mac_10g.md` §7 and §13, and the four new `requirements.md`
+  §13 rows (`Q-6`, `Q-7`, `Q-8`, and the `Q-4`-status row).
+- **`J-architect_docs_lead-0044`'s landed artefacts**, read at the source rather
+  than through the dispatch's summary — the four §13 rows in full and verbatim,
+  each read as the ruling it is rather than as a description of one.
+- **`docs/specs/requirements.md` at HEAD**: §0.4 whole (both the **Structural
+  modules** paragraph, which is the domain the `Q-7` cure is checked against, and
+  the line-rate-bench paragraph, which contains the near-collision recorded in
+  Reasoning 3), §0.5's q-paragraph group and **Word delay ΔC** bullet list whole,
+  the **Start lanes** paragraph, and the REQ-016 and REQ-206 rows in full.
+- **The five transmit-chain leaf §7s, read as the source of every figure below and
+  not as a check on the rows**: `xgmii_tx_64.md` (M04), `eth_axis_tx.md` (M07),
+  `eth_arb_mux.md` (M09), `ip_eth_tx_64.md` (M15), `udp_ip_tx_64.md` (M18); plus
+  `arp_eth_tx.md` (M11) as the leaf-clause completeness check.
+- **The four structural §7s**: `eth_mac_10g.md` (M05, the cured file — §7 whole
+  including its **Handshake rules** bullet), `ip_complete_64.md` (M16),
+  `udp_complete_64.md` (M19), `nic_top.md` (M20) — each read for its own
+  pins-nothing guard and its own statement of which children compose it.
+- **My own `J-dv_lead-0182` whole** — §5 (`Q-6` as filed, with the cure I
+  specified), §6 (`Q-7` as filed), §9 (`Q-8` as filed, with the cure I specified),
+  §10 (the `Q-4` concurrence) and its Open-questions 1–9.
+- **My own instruments and attack plans, read as their owner**:
+  `test/monitors/octet_time.{ml,mli}` and its test, `test/xgmii/idle_injection.ml`
+  and `.mli`, `test/attack_plans/AP-xgmii_tx_64.md` §5, §6's REQ-016 row and §5
+  item 11(a).
+- **Not read**: `libs/**`, `top/**`, `bin/**`, `rtl_snapshots/**`,
+  `test/third_party/**`, `site/**`, `tasks/BOARD.md`, the auditor's journal.
+  **No RTL reached this round.** Every quantity below is derived from a
+  specification, checked against a second specification, and re-checked by
+  arithmetic in a throwaway script whose output is in Evidence. **No
+  Essenceia/Nasdaq-HFT-FPGA material consulted.**
+
+### Reasoning
+
+#### 1. The standard this round is held to, which the dispatch set and I would have set anyway
+
+The dispatch says *verify the carried values at the partitions yourself*. That is
+the right instruction and it names the failure mode exactly: both cures were
+written from my own filings, both quote my own arithmetic back at me, and a signer
+who recognises his own numbers stops computing. So **no figure below is read from
+a §13 row or from my own prior entry**. The five leaf constants are taken from the
+five leaf §7s; the composite insertions are taken from the wrapper §7s; every carry
+is recomputed from those, in both forms of the formula, at **seven** partitions —
+the five the cure states or implies, plus two the cure does not name, because a
+claim about *which* partitions exist is only as good as the enumeration behind it.
+
+One consequence of computing rather than remembering is the measurement in
+Reasoning 2 that neither the filing nor the ruling contains: the `Q-6` cure's own
+worked instance was **not derivable from the corpus** until the `Q-8` cure landed
+beside it in the same commit.
+
+#### 2. `FINDING Q-6`'s cure — COUNTERSIGNED, on carries re-derived, plus one interlock and one seam
+
+The bullet now says the correction is *"a property of the decomposition summed
+over and not of the composite"*, that it is *"stated with the partition it is taken
+over or it is not stated at all"*, that it vanishes where Σ qᵢ < 8 **over the
+partition in hand**, and it names M19 as the worked instance with both of its
+values, M16 with its one, and M20 with both of its.
+
+**The five carried values, each re-derived from the leaf §7s** (the full table is
+in Evidence; q(composite) is the wrapper's own insertion mod 8, taken from its §7):
+
+| composite | partition | Σ qᵢ | Σ ΔCᵢ | carry | ΔC(composite) | text says |
+|---|---|---|---|---|---|---|
+| M19 | {M18, M16} | 2 | 7 | **0** | 7 | 0, *7 = 7 + 0* ✔ |
+| M19 | {M18, M15, M09, M07} | 10 | 6 | **1** | 7 | 1, *7 = 6 + 1* ✔ |
+| M20 | {M19, M05} | 2 | 9 | **0** | 9 | 0 ✔ |
+| M20 | five leaves | 10 | 8 | **1** | 9 | 1, *9 = 8 + 1* ✔ |
+| M16 | {M15, M09, M07} | 10 | 5 | **1** | 6 | 1, *5 against 6* ✔ |
+
+All five are correct, in both forms of the correction and against the direct
+(L + h − q)/8 of the composite. **M16's single value is right for a reason the text
+gets right by naming the partition rather than by luck**: M16's transmit chain
+contains no composite, so it has exactly one partition, and *"over its three
+leaves"* is the partition statement the cure's own rule demands. The two partitions
+the text does not name — M20 over {M18, M16, M05} (carry 0) and M20 over its four
+leaves with M05 standing in for M04 (carry 1) — both close at 9, so the enumeration
+is incomplete-by-choice and not wrong.
+
+**The interlock, which is this round's one new measurement.** The row
+*"M20 carries 0 over {M19, M05}"* asserts ΔC = 2 at M05's transmit port pair. Until
+this same commit, SPEC-M05 §7 pinned *"its transmit-port constant is M04's, 8 octet
+times"* — and a reader taking that as L computes ΔC = (8 + 0 − 0)/8 = **1**, so the
+partition returns **8** against the true 9 and the published instance contradicts
+its own components. Measured:
+
+    M20 <- {M19,M05}  with M05 read at the CURED §7 (L 16, dC 2):  9 = 9 + 0   OK
+    M20 <- {M19,M05}  with M05 read at the STRUCK §7 (L 8,  dC 1):  8 = 8 + 0   MISMATCH
+
+So the `Q-6` row's worked instance is **true independently of `Q-8`** — M05's
+constants are M04's as a matter of fact, because M05 adds zero — but it was **not
+checkable against the corpus** until `Q-8`'s cure landed. The two cures are
+mutually load-bearing and landing them in one commit was necessary, not tidy. I
+record it because the alternative — curing `Q-6` in one round and `Q-8` in the
+next — would have published, for the duration, a worked instance that a diligent
+reader could refute from a frozen module specification, which is the precise
+failure the whole `C-RL-8` arc exists to prevent.
+
+**One seam, recorded and deliberately NOT filed.** The cure's closing sentence says
+*"M16, M19 and M20 pin no constant in their own §7s … so the leaf partition is the
+only route the module specifications offer to their composites"*. I read all three
+§7s at this head and the premise holds in terms (M16: *"this section pins no
+per-octet constant across M16's transmit ports"*; M19 and M20 the same in their own
+words). But the **conclusion** is now one member loose, by the action of the
+`Q-8` cure in the same commit: M05 *does* pin its transmit constants from
+`2b30ffc`, so `{M18, M15, M09, M07, M05}` is a second buildable route to M20. It
+carries the **same** Σ qᵢ = 10, the same Σ ΔCᵢ = 8 and the same correction 1, because
+M05's transmit row is M04's relayed — so every buildable route to every composite
+still carries the correction, which is the sentence's whole point. Not a defect,
+not filed, and recorded here rather than swallowed so that a later reader who
+notices the second route does not mistake it for one the cure missed.
+
+**VERDICT — `FINDING Q-6`'s cure: COUNTERSIGNED**, narrowly and in every part: the
+decomposition-relative clause, the *stated-with-its-partition-or-not-stated* rule,
+the five carried values, and the today-clause. Nothing withheld.
+
+#### 3. `FINDING Q-7`'s cure — COUNTERSIGNED, with the method clause tested rather than accepted and the added distinction checked against the new table
+
+Three things were commissioned or added, and each is checked separately.
+
+**(a) The enumeration is §0.4's own set.** §0.4's **Structural modules** paragraph
+names *"M05 `Eth_mac_10g`, M16 `Ip_complete_64`, M19 `Udp_complete_64` and M20
+`Nic_top`"*. The amended sentence names those four, at those values (three at
+q = 2, M05 at 0), and states that all four carry 0 across their receive port pairs.
+Set-equal. ✔ **The leaf clause is re-checked for the same defect**, because a
+finding about one quantifier is worth nothing if the neighbouring quantifier has
+it too: the Phase-1 transmit leaves are M04, M07, M09, M11, M15 and M18, and
+*"every leaf transmit port pair except M07 and M15"* is correct at all six —
+M11 is the one I had not checked before, and SPEC-M11 §7 states in terms that its
+fourteen Ethernet header octets *"are **not** an insertion at this port … they
+leave on the `hdr` record"*, so its q is 0 and the exception list is complete. ✔
+
+**(b) Does the method clause actually make the sentence self-checking?** The clause
+is *"this enumeration is taken from §0.4's own list rather than from the modules
+whose q is non-zero"*. I take *self-checking* to mean the sentence carries the
+procedure that would refute it, and it does: it names the authority document
+section, it publishes a **cardinality** (*"§0.4's **four** structural modules"*)
+that a re-checker can compare before reading a single name, and it names the
+rejected key (the non-zero set) so that the next author cannot re-derive the
+enumeration the way both prior surveys did. That is the strongest form available in
+prose, and it is what my filing asked for. ✔
+
+**One suggestion, recorded and NOT filed as a finding.** §0.4 contains a *second*
+list of structural modules, in its line-rate-bench paragraph: *"Structural wrappers
+M05, M16 and M19 are covered by their children's benches"* — a **three**-member
+set. So *"§0.4's own list"* resolves to the right paragraph by the count "four"
+rather than by name. I do not file it, and the reason is the honest one rather than
+forbearance: the near-collision set is `{M05, M16, M19}`, which is **not** the
+`{M16, M19, M20}` the finding convicted, so a re-checker who lands on the wrong
+paragraph gets a visible discrepancy and is forced back, never a false
+confirmation. If the sentence is ever touched again, *"§0.4's **Structural
+modules** paragraph"* makes the self-check point-blank and costs two words.
+
+**(c) The added clause beyond my cure — M05's licensed pin — is TRUE against
+SPEC-M05 §7's new table, on two independent grounds.** The clause says M05 *"does
+pin its transmit-port constants, which is licensed and not an exception — they are
+its child's unchanged, its q is 0, and its §7 names the event delay and the latency
+separately"*. Checked limb by limb against the table `2b30ffc` landed: all four
+rows are attributed *"M04's, relayed"* ✔; q = 0 is stated in the table ✔; the event
+delay (8 octet times) and L (16) appear as separate named rows ✔. And **licensed**
+is right twice over, where the ruling states it once: §0.5's prohibition binds a
+specification pinning a constant *"across such a port pair"* — one whose insertion
+is **not** a whole number of words — and M05's insertion is eight octets, one whole
+word, so the prohibition **does not reach the port at all**; and even where it did,
+M05 states its q, which is the condition the prohibition attaches. The second
+ground matters because it is the one that survives if a later revision of M04
+changes its insertion.
+
+**VERDICT — `FINDING Q-7`'s cure: COUNTERSIGNED**, narrowly: the four-member
+enumeration is §0.4's own set, the method clause is self-checking in the operative
+sense, the leaf clause is re-verified complete at six leaves, and the added
+licensed-pin distinction is true against the new table on two grounds.
+
+#### 4. `FINDING Q-8`'s no-countersignature classification — UPHELD for the two elements it names, NARROWED at a third it does not reach, and the practice settled rather than assumed
+
+The row asks the question straight: *"If dv reads a post-freeze §7 diff as owing a
+countersignature **regardless** of whose figures it lands, this row is where to say
+so and the practice should be settled rather than assumed."*
+
+**I do not read it that way, and the classification is upheld as to what it names.**
+The `Q-5` precedent is correctly applied to the two-figure table and to the
+struck-reading quotation: every figure there is either my own derivation in the
+filing (8 as the event delay, 16 as L, the refutation from *"zero octet times
+added"*) or SPEC-M04 §7's already-countersigned text relayed unchanged (h = 0,
+ΔC = 2). A countersignature on my own arithmetic returned to me verifies nothing
+that the filing did not already verify, and manufacturing one would make the
+signature a formality — which is the thing that destroys it as an instrument.
+
+**But the diff landed a third element the classification does not reach, and I
+would not have signed the row without saying so.** The `Q-8` cure also added:
+
+> *"**Pinning L here is not an idle-injection licence.** REQ-016's idle tolerance
+> does not extend to this port … so no bench may build a REQ-016 injection wrapper
+> at M05's transmit source interface and measure L across it."*
+
+That is **not text I wrote** and it is **not a figure**: it is a prohibition
+binding on the DV line, in the normative basis my benches are derived from. The
+right rule is not about where a diff lands but about whom it binds, so I state it
+in the general form the architect asked for:
+
+> **A post-freeze §7 diff owes dv_lead no countersignature when every figure it
+> lands is the signer's own derivation or another specification's countersigned
+> figure relayed unchanged — that is `Q-5`'s precedent and it is right. It owes one
+> when the diff lands a clause that constrains a party other than its author: a
+> prohibition, a licence, or a scope on what a bench may assert. The value of the
+> countersignature there is not arithmetic, which the filing already did, but
+> whether the guard is *exactly* the rule rather than wider than it — and that is a
+> question only the constrained party can answer.**
+
+The test is on the clause's class, not on the file, not on post-freeze status and
+not on who filed the finding. This chain has convicted a guard for being too wide
+before (the W = 2 conversion rule, `J-dv_lead-0176`), which is why the distinction
+is worth minting rather than waving at.
+
+**And I sign the clause here, so the practice question and the clause do not need a
+further round between them.** Four checks:
+
+1. **It is narrower than its parent, never wider.** SPEC-M04 §7 states *"A bench
+   SHALL NOT build a REQ-016 idle-injection wrapper at this module's source
+   interface"* — unconditional. M05's adds *"and measure L across it"*. So it
+   excludes strictly less than M04's clause already excludes, and no conformant
+   bench is newly forbidden.
+2. **No gap opens under the narrowing**, because M05's own **Handshake rules**
+   bullet carries the unconditional half: *"`tx_tready` is M04's and REQ-016's idle
+   tolerance does not extend to it (SPEC-M04 §7)"*. The pair is coherent: the
+   general prohibition sits in the handshake bullet, and the latency bullet closes
+   the specific inference *L is pinned here, therefore I may assert it under
+   injection* — which is exactly the inference the newly-pinned L invites.
+3. **It does not collide with the one bench that is REQUIRED at that port.**
+   REQ-206's own verification column commissions *"Stall the source for exactly one
+   required cycle mid-frame"* — at the same interface. That is a REQ-206 directed
+   stimulus, not a REQ-016 wrapper, and it measures an error character and a strobe,
+   not L, so the clause misses it on both of its conjuncts. A DV reader's first fear
+   on meeting this clause is that his underflow bench was just prohibited; it was
+   not, and I record the check because the clause does not say so itself.
+4. **It closes a real under-determination rather than restating one.** REQ-016's
+   normative carve-out names the interface by **component**: *"This does not apply
+   to `Xgmii_tx_64`'s source interface"*. REQ-016's **verification column**
+   commissions an injection wrapper *"at each module boundary"* and does not repeat
+   the carve-out. M05's transmit source is M04's interface under a different port
+   name — so at that boundary the two columns under-determine each other, and a
+   bench author working from the column alone injects into an underflow and
+   measures a frame the injection destroyed. The clause is the carve-out read down
+   to the wrapper port. It is the most useful sentence in the diff for my own line.
+
+**VERDICT — `Q-8`'s classification: NOT BOUNCED, and NARROWED.** No countersignature
+was owed on the two-figure table or the struck-reading quotation, and none is paid
+for them. One was owed on the idle-injection clause, on the class test above; it is
+**COUNTERSIGNED here**, on the four checks, so nothing is left outstanding and the
+architect owes no further round on `Q-8`.
+
+#### 5. Nothing red, re-measured at this head rather than carried forward
+
+Both cures' *nothing was built on it* grounds rest on measurements of mine, and a
+measurement quoted from last round is a memory. Re-run at `2b30ffc`:
+
+- **No committed instrument computes a wrapper composite.** `word_cycles` has
+  **14** hits under `test/` and `tools/`, all inside `test/monitors/octet_time.ml`,
+  its `.mli` and its own test — unchanged in count and in location from `43c0087`.
+  `Octet_time.`'s only external customers remain M03's benches
+  (`test/xgmii/test_arrival.ml`, `test/xgmii/idle_injection.mli`), calling
+  `Latency.frame_in/frame_out/report` on a **leaf** with q = 0. ✔
+- **No committed test computes an M05 constant.** `eth_mac_10g` appears twice in
+  `test/`: `AP-xgmii_tx_64.md` §5 (a loopback candidate) and
+  `test/cosim/tb_xgmii_rx_64.v` (a comment naming the reference's own files).
+  Neither is a latency claim. ✔
+- **No committed bench builds an injection wrapper at any transmit source**, so
+  the new prohibition forbids nothing that exists: `test/xgmii/idle_injection.ml`'s
+  only customers are M03's family-I benches (a receive-side module), and
+  `AP-xgmii_tx_64.md` §6's REQ-016 row already records *"No instance at this
+  interface"* with §5 item 11(a) rejecting an injection wrapper at M04's source in
+  terms. **The bench side already agreed with the clause before the clause
+  existed**, which is the strongest evidence that it is the rule and not a
+  widening. ✔
+
+### Actions
+
+1. Ran the abort-first precheck; both outputs matched the dispatch exactly. Read
+   HEAD again before writing: moved to `60c1ccf` with `tasks/BOARD.md` dirty, both
+   inside declared sibling lanes; ran the re-verification clause, confirmed every
+   read surface byte-unchanged, proceeded against `2b30ffc` as dispatched.
+2. Read the charter and PROTOCOL in full, then `git show 2b30ffc` whole, then the
+   four §13 rows verbatim, then §0.4 and §0.5 at HEAD.
+3. **Re-derived all five leaf constants from the five leaf §7s** and both wrapper
+   insertions from the wrapper §7s, taking nothing from a §13 row or from my own
+   prior entry.
+4. **Recomputed the correction at seven partitions** in both forms of the formula
+   and against the composite's direct (L + h − q)/8 — the five the cure states, plus
+   the two it does not name — and **countersigned `FINDING Q-6`'s cure**.
+5. **Measured the interlock**: recomputed M20 over {M19, M05} with M05 read at its
+   struck §7, obtaining 8 against the true 9, establishing that the `Q-6` cure's
+   published instance was not corpus-checkable until the `Q-8` cure landed beside it.
+6. **Checked the `Q-7` enumeration against §0.4's own paragraph**, re-verified the
+   **leaf** clause at all six transmit leaves including M11 (which I had not checked
+   before), tested the method clause against an operational reading of
+   *self-checking*, verified the added licensed-pin distinction against SPEC-M05 §7's
+   new table on two grounds, and **countersigned the cure**.
+7. **Recorded two seams and filed neither** — the second buildable route to M20
+   created by the `Q-8` cure, and §0.4's three-member near-collision list — each
+   with the reason it is not a defect.
+8. **Answered `Q-8`'s classification question with a class test**, upheld the
+   no-countersignature ruling for the two elements it names, and **countersigned the
+   idle-injection clause** on four checks, including that it does not reach REQ-206's
+   own commissioned stimulus at the same port.
+9. **Re-measured all three *nothing red* grounds at this head** rather than quoting
+   them from `43c0087`.
+10. Re-derived every figure in a throwaway script (Evidence), outside the repository
+    and not staged.
+11. Wrote this entry. **No `docs/**` file touched** — transcription is the
+    orchestrator's clerical act. **No `git add`, no `git commit`, no `git push`, no
+    git write of any kind**, and no stop-hook commit demand was honoured.
+
+### Evidence
+
+Reproducible from a checkout at this commit unless stated otherwise.
+
+**Precheck, the head move, and the re-verification.**
+
+    git status --short              # at entry: empty; before writing: " M tasks/BOARD.md"
+    git rev-parse HEAD              # at entry: 2b30ffc808b0e5578ff88839fa813b2a5d4da29e
+    git rev-parse HEAD              # before writing: 60c1ccf48c4e7c3ba1b844f756ae8d6b8149467e
+    git log --oneline 2b30ffc..HEAD # 60c1ccf, one commit (auditor)
+    git diff --name-only 2b30ffc HEAD   # agents/journals/claude_auditor_agent.v02.md
+    git diff 2b30ffc HEAD -- docs/specs/ test/ tools/ agents/handoffs/ \
+        docs/reports/latency/ docs/gates/ \
+        agents/journals/claude_dv_lead_agent.v10.md \
+        agents/journals/claude_architect_docs_lead_agent.v04.md      # empty
+    date -u                         # Tue Aug 11 17:01:41 UTC 2026
+
+**The leaf constants, each read at its own §7 and not at a §13 row:**
+
+| leaf | insertion I | L | h | q = I mod 8 | ΔC | source |
+|---|---|---|---|---|---|---|
+| M04 `Xgmii_tx_64` | 8 | 16 | 0 | 0 | 2 | SPEC-M04 §7 table (event delay 8 octet times stated separately) |
+| M07 `Eth_axis_tx` | 14 | 22 | 0 | 6 | 2 | SPEC-M07 §7 table |
+| M09 `Eth_arb_mux` | 0 | 0 | 0 | 0 | 0 | SPEC-M09 §7 (*"zero cycles added"*, combinational datapath) |
+| M15 `Ip_eth_tx_64` | 20 | 28 | 0 | 4 | 3 | SPEC-M15 §7 table |
+| M18 `Udp_ip_tx_64` | 8 | 8 | 0 | 0 | 1 | SPEC-M18 §7 (1 cycle, both events at octet position 0; *"exactly one more word than it consumes — the UDP header"*) |
+| M11 `Arp_eth_tx` | 0 at this port | 8 | 0 | 0 | 1 | SPEC-M11 §7 table (*the 14 header octets "are **not** an insertion at this port"*) |
+
+Composite insertions from the wrapper §7s: M16 34, M19 42, M20 50 → q = 2 at all
+three. M05's transmit port pair: insertion 8 (its child's), q = 0, L 16, ΔC 2
+(SPEC-M05 §7 as cured at `2b30ffc`).
+
+**The correction at seven partitions, both forms, against the direct value:**
+
+    M16 <- {M15,M09,M07}         sum_q=10 sum_dC= 5 q(comp)=2 carry=1 form1=6 form2=6 direct=6 OK
+    M19 <- {M18,M16}             sum_q= 2 sum_dC= 7 q(comp)=2 carry=0 form1=7 form2=7 direct=7 OK
+    M19 <- {M18,M15,M09,M07}     sum_q=10 sum_dC= 6 q(comp)=2 carry=1 form1=7 form2=7 direct=7 OK
+    M20 <- {M19,M05}             sum_q= 2 sum_dC= 9 q(comp)=2 carry=0 form1=9 form2=9 direct=9 OK
+    M20 <- {M18,M16,M05}         sum_q= 2 sum_dC= 9 q(comp)=2 carry=0 form1=9 form2=9 direct=9 OK
+    M20 <- 5 leaves (w/ M04)     sum_q=10 sum_dC= 8 q(comp)=2 carry=1 form1=9 form2=9 direct=9 OK
+    M20 <- 4 leaves + M05        sum_q=10 sum_dC= 8 q(comp)=2 carry=1 form1=9 form2=9 direct=9 OK
+
+form1 = Σ ΔCᵢ + (Σ qᵢ − q(comp))/8, form2 = Σ ΔCᵢ + ⌊Σ qᵢ/8⌋, direct =
+(L + h − q)/8 of the composite. Rows 2 and 3 are one module at two partitions with
+different carries, which is `Q-6`'s whole content; rows 6 and 7 are the two
+buildable leaf routes to M20 and agree.
+
+**The interlock measurement** (Reasoning 2), the same script with M05 read at its
+struck §7 sentence:
+
+    M20 <- {M19,M05} with M05 at the CURED §7  (L 16, dC 2):  9 = 9 + 0   OK
+    M20 <- {M19,M05} with M05 at the STRUCK §7 (L  8, dC 1):  8 = 8 + 0   MISMATCH
+
+**The three pins-nothing guards, read at HEAD** (the premise of the cure's
+today-clause): SPEC-M16 §7 *"this section pins no per-octet constant across M16's
+transmit ports"*; SPEC-M19 §7 *"this section pins no per-octet constant across
+M19's transmit ports"*; SPEC-M20 §7 *"this section pins no per-octet constant
+across M20's transmit ports"*. All three present, all three in terms.
+
+**`Q-7`'s two domains, at the source**: §0.4's **Structural modules** paragraph
+names M05, M16, M19, M20 (four); §0.4's line-rate paragraph names M05, M16, M19
+(three) in a different quantifier — the near-collision of Reasoning 3. The amended
+census sentence names the first set.
+
+**`Q-8`'s clause and its parents, at the source**: SPEC-M04 §7 *"A bench SHALL NOT
+build a REQ-016 idle-injection wrapper at this module's source interface"*;
+REQ-016's normative row *"This does not apply to `Xgmii_tx_64`'s source interface,
+where a missing word after transmission has begun is an underflow (REQ-206)"*;
+REQ-016's verification column *"Idle-injection wrapper around any directed bench …
+at each module boundary"* (no carve-out repeated); REQ-206's verification column
+*"Stall the source for exactly one required cycle mid-frame"*; SPEC-M05 §7's
+**Handshake rules** *"`tx_tready` is M04's and REQ-016's idle tolerance does not
+extend to it"*.
+
+**The three *nothing red* measurements, re-run at this head:**
+
+    grep -rn "word_cycles" test/ tools/ --include=*.ml --include=*.mli | wc -l   # 14
+    grep -rln "word_cycles" test/ tools/ --include=*.ml --include=*.mli
+    # test/monitors/octet_time.ml, test/monitors/octet_time.mli, test/monitors/test_octet_time.ml
+    grep -rn "Octet_time\." test/ tools/ --include=*.ml --include=*.mli | grep -v test/monitors/
+    # test/xgmii/test_arrival.ml (Latency.create/frame_in/frame_out/report/observed/is_clean),
+    # test/xgmii/idle_injection.mli (a doc comment naming frame_in)
+    grep -rln "eth_mac_10g\|Eth_mac_10g" test/ tools/
+    # test/cosim/tb_xgmii_rx_64.v, test/attack_plans/AP-xgmii_tx_64.md
+    grep -rln "ip_complete\|udp_complete\|nic_top\|Nic_top" test/ tools/
+    # test/attack_plans/AP-ip_eth_rx_64.md (prose), tools/check_emitted_verilog.sh (REQ-017 ports)
+
+**Nothing in this entry is a verification result about any module**, and no `SO-`
+is opened or offered. No RTL, no bench and no `libs/**` file was read. `dune` was
+not invoked and no claim here depends on it (ADR-0005). Every arithmetic claim
+above is checkable by a reader with `requirements.md` §0.4/§0.5 and the six leaf
+§7s and four structural §7s named in Inputs, and no toolchain.
+
+**Journal size**: v10 stands at 105,563 bytes before this entry, against
+`JOURNAL_SOFT_MAX` 262,144 (ADR-0017 §5). No rotation.
+
+### Outcome
+
+**DoD met on the single act, and on the optional one the dispatch opened.**
+
+| item | verdict |
+|---|---|
+| **`FINDING Q-6`'s cure** — the decomposition-relative clause, the worked instance, the today-clause | **COUNTERSIGNED**, narrowly and whole. All five carried values re-derived from the leaf §7s at seven partitions in both forms; M19 {M18,M16} = 0 and four leaves = 1; M20 {M19,M05} = 0 and five leaves = 1; M16 = 1. The three pins-nothing guards re-read at HEAD |
+| **`FINDING Q-7`'s cure** — the four-member enumeration and its method clause | **COUNTERSIGNED**, narrowly. Set-equal to §0.4's **Structural modules** paragraph; the method clause is self-checking in the operative sense (named authority, published cardinality, named rejected key); the **leaf** clause re-verified complete at six leaves incl. M11 |
+| the added **M05 licensed-pin distinction** (beyond my cure) | **COUNTERSIGNED** — true against SPEC-M05 §7's new table limb by limb, and *licensed* on two independent grounds where the row states one |
+| **`FINDING Q-8`'s no-countersignature classification** | **UPHELD, not bounced**, for the two-figure table and the struck-reading quotation — `Q-5`'s precedent is correctly applied and I pay no signature there. **NARROWED**: it does not reach the diff's third element |
+| the **idle-injection clause** at SPEC-M05 §7 | **COUNTERSIGNED here**, on four checks — narrower than its parent, no gap under the narrowing, no collision with REQ-206's own commissioned stimulus, and it closes a real under-determination between REQ-016's two columns |
+
+**Both cures are IN FORCE without qualification**, as they were meanwhile. **No
+finding is filed this round** — a first for this arc, and worth saying plainly: two
+seams were found and both were adjudicated non-defects with their grounds recorded
+(the second buildable route to M20, §0.4's three-member near-collision), and one
+two-word suggestion is offered for whenever the census sentence is next touched.
+
+**One rule is minted and offered for the record**, answering the question the `Q-8`
+row asked: *a post-freeze §7 diff owes dv_lead no countersignature when every
+figure it lands is the signer's own derivation or another specification's
+countersigned figure relayed unchanged; it owes one when it lands a clause that
+constrains a party other than its author.* The test is the clause's class, not the
+file, not post-freeze status, and not who filed the finding.
+
+Handoff: **journal-only**. The verdicts above go to `requirements.md` §13 and, for
+the idle-injection clause, to `eth_mac_10g.md` §13, as the orchestrator's clerical
+transcription with this entry as their authority. **No file outside this journal is
+staged, and my mechanics require no handoff file** — a countersignature of this
+class is a journal-entry signature block, per `J-dv_lead-0180`, `J-dv_lead-0181`
+and `J-dv_lead-0182`, and `docs/**` transcription is not mine to write.
+
+**Lessons-harvest note** (ADR-0018, PROTOCOL §7). **Not owed this round** — §7
+attaches the harvest to an `SO-` and to a phase gate, and this round is neither;
+declared rather than omitted. The span opened after `J-dv_lead-0181` runs and this
+entry joins it; the thirteen candidates banked through `LH-0182-2` carry forward
+unchanged. **Three candidates banked, LH1–LH3 discharged:**
+
+- **`LH-0183-1`** — *When one round cures two coupled sites, re-check each cure's
+  worked instance at the head that carries them all rather than at the head it was
+  filed against: a statement about a composite is only checkable once the component
+  document it is checked against has itself been corrected.* **LH2-g**: no proper
+  noun; the observable is that a cure's evidence chain is re-run at the composite
+  head. **LH1**: this round — the published instance *"the correction is 0 over
+  {parent, child}"* returns the wrong total when the child's own document is read at
+  its pre-cure text, and both cures landed in one commit. **LH3**: without it, a
+  round can ship a cure whose worked instance a diligent reader refutes from a
+  frozen sibling document, and each cure looks right when checked alone.
+- **`LH-0183-2`** — *Where a requirement states a carve-out by naming a component
+  and states the corresponding verification duty by naming a port class, the two
+  under-determine each other at any wrapper port that is the named component's port
+  under another name; the guard belongs at the wrapper, not only at the component.*
+  **LH2-d** (domain pack: specification-and-verification practice — no project
+  noun, but *requirement*, *verification duty* and *port* are domain nouns).
+  **LH1**: this round's countersignature of the idle-injection clause, where the
+  normative carve-out names one component and the verification column commissions a
+  wrapper *at each module boundary*. **LH3**: without it, a bench author working
+  from the duty alone builds the exact stimulus the carve-out excludes, and measures
+  a frame the stimulus destroyed.
+- **`LH-0183-3`** — *Key a review obligation on whom a change binds, not on where it
+  lands: a location test exempts a prohibition that constrains a third party while
+  demanding signatures on figures the reviewer himself supplied.* **LH2-g**: no
+  proper noun; the observable is that the reviewing party is chosen by the class of
+  clause rather than by the document section. **LH1**: this round's `Q-8`
+  classification, upheld for two elements and narrowed at a third. **LH3**: without
+  it, review effort is spent re-checking one's own arithmetic while the clauses that
+  constrain other teams land unread.
+
+**No escalation.** **E5 not triggered** — no disagreement between leads survives
+this round; the classification question is answered with a rule rather than
+contested, and no finding is filed. **E2 not triggered** — no requirement, phase or
+role added or dropped; no value, ceiling, allocation or §1.1 row moves under either
+cure. **E3 not triggered** — no toolchain or licensing surface reached.
+
+### Open-questions
+
+1. **A two-word suggestion, offered and not filed**: when §0.5's census sentence is
+   next touched, *"§0.4's own list"* → *"§0.4's **Structural modules**
+   paragraph"*. §0.4 carries a second, three-member structural list in its
+   line-rate-bench paragraph, so the self-check currently resolves by the published
+   count rather than by name. Not a defect — the near-collision set differs from the
+   convicted set, so a mis-landing produces a discrepancy and not a false
+   confirmation. **Route**: architect_docs_lead, at its convenience.
+2. **The `Q-6` cure's today-clause is one member loose from `2b30ffc` onward**, by
+   the action of the `Q-8` cure in the same commit: M05 now pins its transmit
+   constants, so a second route to M20 exists beside the five-leaf one. Both carry
+   correction 1 and both close at 9, so the sentence's conclusion holds under every
+   buildable route. Recorded, not filed.
+3. **My recommendation on the wrapper composites stands and its precondition is now
+   met**: pin all three (L = 50/58/74, h = 0, q = 2, ΔC = 6/7/9) at the round that
+   closes ledger item 67. `Q-6`'s cure has landed, which was the condition I
+   attached at `J-dv_lead-0182` Open-question 4.
+4. **Ledger item 53's residue** is unchanged and still has exactly one live
+   instance — M05 at a lane-4 start — which the `Q-8` cure does not touch, its
+   table being the transmit port pair. Carried from `J-dv_lead-0182` item 5.
+5. **The insertions-add premise** remains unstated at what are now four statements
+   (the wrapper clause, the closure consequence, the additivity correction, and the
+   cure's decomposition clause). Still inherited, still unfalsifiable in Phase 1 by
+   construction, still item 50's. Carried from `J-dv_lead-0182` item 6.
+6. **`DVC-1a` remains unbuilt** and every attack-plan count I quote remains a hand
+   count with its method stated. It must land before any `SO-` quotes an M04
+   coverage fraction. Carried from `J-dv_lead-0181` item 7, unchanged.
+7. **The whole-suite verdict is still CI's** (ADR-0005). This round touched no file
+   under `test/`, so nothing in it can move a suite result; the `9a596e7` repair's
+   CI adjudication is still open.
+
+### Files-in-this-commit
+- (none)
