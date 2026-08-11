@@ -2329,3 +2329,237 @@ sharpened; it is simply right, and this round is the largest bill it has ever pr
 ### Files-in-this-commit
 
 - agents/handoffs/SO-xgmii_rx_64.md
+
+## [J-dv_lead-0166] 2026-08-11T01:24Z | task:none | The rows the sign-off was graded on are delivered — and building them found that the coverage map I wrote homes six of its own rows nowhere, two of them landed green units whose omission would have understated three cells
+
+### Trigger
+
+Orchestrator dispatch to clear **`FINDING SO-1` (MAJOR, mine)** — the finding my own
+`SO-xgmii_rx_64.md` raised against its own design round at §2.8, and named as act 1 of
+two at §8.2: **`SC-2`'s third clause, the test-side traceability rows delivered to
+architect_docs_lead, is paid by no step of the twelve-step execution order I wrote.**
+Four declared siblings in flight (auditor, architect_docs_lead, tb_writer,
+data_wrangler), each appending only to its own journal; my write set this round is one
+new packet and this entry.
+
+**Head check**: spawn-head `a851948` matched `git rev-parse HEAD` exactly. No rollback,
+no descendant reconciliation needed.
+
+### Inputs
+
+- `agents/charters/dv_lead.md` (§3 sign-off duties, §4's architect row — *"test-side rows
+  of the traceability matrix"*, §6 evaluation, §8 journaling); `agents/PROTOCOL.md` (§3
+  packet types and the lead-as-consumer cell, §4 grammar, §6 write scopes, §7 gates and
+  the harvest, §10 independence).
+- `agents/handoffs/SO-xgmii_rx_64.md` — §1's `SC-2`, §1.1's read-back row, **§2.8 in
+  full** (`FINDING SO-1` and its named carrier), §2.1/§2.1-M (the census and its five
+  riders), §2.3/§2.3-M (the anchor's five classes), §2.6 (`U-1` … `U-5`), §5 (the
+  prohibition register, bars 1–4), §8.2 (the two acts).
+- `docs/specs/modules/xgmii_rx_64.md` **§10** (the hook table — the whole spec side of
+  this delivery), with §4.1, §4.3, §6.1, §6.2, §6.3, §7, §8, §9 where a hook points.
+- `docs/specs/traceability.md` in full — its `How this matrix is used` rules, `Status`
+  vocabulary, `Counts` block and `Open dependencies` items 1–4.
+- `test/attack_plans/AP-xgmii_rx_64.md` — **§6** (the coverage map), §1 (the six-value
+  status vocabulary), §2 (standing obligations), §4's row tables (`Attacks` and `Status`
+  cells for all 78 rows), §0.1 (the set-claim rule).
+- The suite: every `let%expect_test` title in `test/xgmii_rx_64/` (59 units) and
+  `test/xgmii/test_idle_injection.ml`; `test/xgmii_rx_64/test_m03_f.ml:811` (the
+  discharge-by-citation comment); `tools/dv_checks.sh` and `tools/check_emitted_verilog.sh`
+  for the structural rows' instruments.
+- **No `libs/**`, `top/**` or `rtl_snapshots/**` path was opened.** The derivation is
+  spec → plan → suite throughout, and that is the standing proof PROTOCOL §10 asks the
+  `Inputs` section to carry.
+
+### Reasoning
+
+**1. The refusal that made this a separate round is the reason the round exists, so it is
+restated rather than assumed.** The `SO-` could have manufactured these rows inside itself
+at §2.8 and asserted its own clause discharged. It refused, on `RV-C4` §9's ground — *a
+condition whose author may discharge it by declaring it discharged is not a condition* —
+and named a carrier instead. **This round is that carrier, and the whole value of the
+refusal is that the mapping now has a reviewer who is not me.** So the packet is built for
+architect_docs_lead to *check*, not to accept: every cell carries a provenance column, and
+every citation is a `file:line` a reader can open.
+
+**2. Packet class: a `WO-`, not a new prefix.** PROTOCOL §3's table already makes a lead an
+admissible consumer of a work order (*"A worker **or lead**"*), and the act I need from
+architect_docs_lead is a transcription into a file only it can stage. Minting a fifth
+prefix for one delivery would need an ADR (§11) and buy nothing. **Rejected**: a `docs/`
+report (outside my scope except `docs/reports/latency/**`, and this is not latency data);
+an `SO-` addendum (the `SO-` is `ISSUED — EXECUTED` and is never amended in place); a
+chat-only return (PROTOCOL §3 forbids it, and it is precisely what `SC-2` was measuring
+the absence of).
+
+**3. What derives the mapping — and the choice here is the round's most consequential
+one.** Three candidate sources: (i) `AP-M03` §6's coverage map, (ii) the `Attacks` cells of
+§4's 78 rows, (iii) the union. **I measured all three and took a fourth position.** The
+`Attacks` relation is broader and reads worse: `M03-L5` names REQ-103 because directed
+lengths necessarily extract frames, `M03-I6` names REQ-107 and REQ-108 because an injected
+1518-octet frame is neither runt nor oversize — citing them under those requirements would
+make one observation look like three. **So the rule is: a row is cited in the cell of the
+REQ §6 homes it under, and its incidental attacks are not re-cited; §6's homing is the
+tie-break.** That rule is stated in the packet (§2.2) rather than applied silently,
+because a reader comparing a cell against the `Attacks` cells will otherwise find rows
+missing and cannot tell design from oversight.
+
+**4. And the rule immediately caught its own exception, which is `FINDING SO-1-A`.**
+Applying "cite what §6 homes" requires knowing that §6 homes everything. It does not.
+Measured over every declared row with §6's four ellipsis ranges expanded — the polarity
+dimension, since the claim is that a naming **does not exist** — **six rows are reachable
+by neither name nor range**: `M03-C5`, `M03-E5`, `M03-M8`, `M03-M9`, `M03-O4`, `M03-O5`.
+**Two of them are landed, green `ASSERT` units.** A mechanical transcription of §6 would
+have shipped REQ-103, REQ-011 and REQ-105 with landed evidence missing — **the exact
+failure the matrix exists to prevent, arriving through the instrument meant to prevent
+it.** The delivery homes `M03-C5` and `M03-E5` explicitly and says in the provenance
+column that the homing is this round's, so nobody looks it up in a plan that does not
+say it.
+
+**5. Why the `AP-M03` §6 repair does not ride this round.** `test/**` is my scope, so this
+is a choice and not a constraint. **A delivery round is not a plan round** (`J-dv_lead-0112`),
+and the `SO-` made the identical call two days ago for `FINDING SO-3`'s §4.J figure. A
+round that widens its own write set on discovering something is the move `RV-C4` §12
+convicts, and the discovery is recorded with a named carrier — the next `AP-` opener —
+which is what stops it becoming a habit. **The delivery is not blocked by the deferral**:
+the cells are correct *because* the finding was measured, not in spite of it.
+
+**6. The three tiers, and why 21 of the 34 rows stay `OPEN` with a populated cell.** The
+matrix's own text says programme-invariant rows record the **system-level** test and that
+*"the architect and dv_lead agree the split at the first module-ready gate"* (`Open
+dependencies` item 3). **So a `COVERED` on REQ-004 or REQ-011 would be a claim about the
+system that one module's bench cannot make.** Tier A (REQ-101 … REQ-113, the 13 rows M03
+owns whole) takes `COVERED`; tier B (16 invariants) and tier C (REQ-802, REQ-808, REQ-810,
+REQ-901, REQ-903) take `OPEN` with an `M03:`-prefixed cell. **Rejected**: inventing a
+`PARTIAL` status — the vocabulary is architect_docs_lead's and extending another agent's
+controlled vocabulary from inside a delivery is exactly the overreach the write scopes
+exist to prevent. The packet names the 21 rows as the candidate set if the architect wants
+one, and says either answer is acceptable to DV without a further round. **This packet is
+also `Open dependencies` item 3's occasion**: the split it defers to the gate is proposed
+here per row, so the gate ratifies a measured thing instead of negotiating one.
+
+**7. What a traceability cell must NOT be asked to carry.** A cell is a list of names. It
+cannot hold *"`M03-B3` is never ruling-9 coverage"*, *"REQ-112's zero-backpressure claim is
+structural, not observed"* or *"for REQ-107 and REQ-108 a co-simulation result is not an
+admissible anchor, permanently"*. **Eighteen such bounds ride with these 34 cells and every
+one is already published**, so the packet restates them in a register (§5) and points the
+cells at it, rather than letting a short cell be read as a wide claim. Bar 2's permanence
+is stated as a property of the frozen requirement, not as a current state; no sentence of
+the packet says the co-simulation anchors a requirement or this module. **`SC-7`'s
+discipline is not owed by a delivery packet — I applied it anyway**, because the cells will
+outlive the `SO-` in a reader's attention and they are what a later gate quotes.
+
+**8. Form over prose, deliberately.** Only columns 6 and 7 are delivered. Reproducing
+columns 1–5 would invite a paste that overwrites the architect's own cells, and a
+delivery whose failure mode is *corrupting the file it feeds* is badly built. The unit
+titles run to several lines each, so they are printed once in a register (§4) and the
+cells carry `row-id → file:line`; the register closes its own identity — **56 cited + 3
+bench-machinery units = 59** — so a reader can see nothing was dropped.
+
+**Harvest note (ADR-0018, PROTOCOL §7): none owed, and the span is declared so the tiling
+is visible.** This round is neither a module sign-off nor a phase gate. My last harvest
+was taken at `J-dv_lead-0165` over the interval `J-dv_lead-0001 … -0165`; **the next span
+opens at `J-dv_lead-0166` and this entry is its first member.** No candidate is banked
+and no war story is recorded this round.
+
+### Actions
+
+- Wrote `agents/handoffs/WO-0079_m03-traceability-test-rows.md` (placeholder id; next free
+  per prefix measured at `a851948`, highest landed `WO-0078`): the 34-row M03 slice as
+  transcribable `Test(s)` and `Status` cells in three tiers, a 57-row unit register (56
+  units plus the one discharge-by-citation comment) printing every cited title in full, an
+  18-item bound register, `FINDING SO-1-A` with its measurement and disposition, and a
+  four-item definition of done for architect_docs_lead.
+- Measured, rather than quoted: the matrix census, the §10 hook set, the M03-owner column,
+  the §6 reachability set with ranges expanded, the unit inventory, and the suite-identity
+  check between the sign-off SHA and this one.
+- **Touched no `docs/**` byte, no `AP-` row, no `SO-` sentence, no other agent's journal.**
+  Ran no simulation and no build.
+
+### Evidence
+
+**All commands run from a checkout at `a851948`; every figure below is the printed
+result.**
+
+```
+$ git rev-parse --short HEAD
+a851948
+
+$ awk -F'|' '/^\| REQ-/{n++; t=$7; gsub(/^[ \t]+|[ \t]+$/,"",t);
+             if(t=="") e++} END{print n, e}'  docs/specs/traceability.md
+110 110
+
+$ awk '/^## 10\./{f=1} f&&/^## 11\./{f=0} f' docs/specs/modules/xgmii_rx_64.md \
+    | awk -F'|' '/^\| REQ-/{print $2}' | grep -oE 'REQ-[0-9]+' | sort -u | wc -l
+34
+
+$ awk -F'|' '/^\| REQ-/{if ($5 ~ /M03/) c++} END{print c}' docs/specs/traceability.md
+14
+
+$ grep -c 'let%expect_test' test/xgmii_rx_64/*.ml | awk -F: '{s+=$2} END {print s}'
+59
+
+$ git diff --quiet 2183d71..a851948 -- test/ tools/ docs/specs/ ; echo $?
+0
+```
+
+**The §6 reachability measurement (`FINDING SO-1-A`), with ranges expanded** — the script
+is reproduced verbatim in the packet at §6.1:
+
+```
+78 72 ['M03-C5', 'M03-E5', 'M03-M8', 'M03-M9', 'M03-O4', 'M03-O5']
+```
+
+**Self-check on the packet's own citations, run against the tree rather than trusted**:
+every `file:line` in §3 resolves to a real `let%expect_test` site (58 distinct: 56 M03
+units, the `test_m03_f.ml:811` citation comment which the packet marks *"not a unit"*, and
+`test/xgmii/test_idle_injection.ml:168` which the packet cites as a **bound**, never as
+coverage). **Register entries not backed by a unit: exactly one, `test_m03_f.ml:811`, and
+it is labelled as such. M03 units absent from the register: exactly three, all in
+`test_m03_structural.ml` (lines 49, 78, 110), all bench machinery, all named in §4.**
+
+**The pass the `COVERED` recommendations rest on is an externally verifiable reference and
+is marked as one (ADR-0003/F5)**: `build` run **`31444471834`**, job **`93635620822`**,
+`head_sha` `2183d71`, conclusion **`success`**, all 13 steps `success`. **`opam exec --
+dune runtest` cannot execute in this container** (ADR-0005 — `ppx_hardcaml`/`hardcaml`
+absent), which is why the run id is the evidence; the suite-identity check above is what
+carries that run's authority forward to `a851948`.
+
+### Outcome
+
+**DoD met.** The delivery `FINDING SO-1` named exists as a committed-ready packet with
+the architect as its reviewer: `agents/handoffs/WO-0079_m03-traceability-test-rows.md`,
+34 rows, 13 recommended `COVERED` and 21 `OPEN` with an `M03:` cell, 56 units cited, one
+declared `GAP` carried in `traceability.md`'s own `GAP: <reason>` form (REQ-014), 18
+bounds restated, one finding raised against my own coverage map with a named carrier.
+
+**What this does NOT do, stated because it is the tempting reading**: **it does not make
+`SC-2` met and it does not clear the `FAIL`.** `SC-2` is adjudicated by a re-read of
+`SO-xgmii_rx_64.md` §1 at a later SHA (§8.2's closing paragraph), after **both** acts —
+and act 2, the other four agents' harvests, is the orchestrator's dispatch, not mine. A
+delivery is not a verdict on itself; that is the same rule this round exists because of.
+
+**Handoff**: to the orchestrator, for packet-number allocation and dispatch to
+architect_docs_lead. Return log is empty and is the architect's to fill.
+
+### Open-questions
+
+1. **The tier-B/tier-C `Status` question is genuinely open and I have deliberately not
+   pre-empted it.** 21 rows gain M03 content while staying `OPEN`; whether the matrix
+   wants a `PARTIAL` value is architect_docs_lead's vocabulary decision, and the packet
+   says either answer is acceptable to DV. **If it says no, the 21 cells read as populated
+   `OPEN` rows indefinitely, which is honest but invites a reader to ask why** — worth an
+   `Open dependencies` sentence in its file, which is also its to write.
+2. **`FINDING SO-1-A`'s repair has a carrier and no schedule** — the next round that opens
+   `AP-xgmii_rx_64.md`, and none is scheduled. **The bound holds meanwhile**: the delivery
+   homes the two landed rows itself and says so, so no cell is wrong while the map is.
+3. **Nineteen of the 34 rows will need a second delivery, from another seat, before they
+   can move.** The invariants need M20's system-level tests; REQ-810 needs M04, M18 and
+   M20; REQ-802 and REQ-808 need M20. **No mechanism currently tracks a partially
+   delivered row**, and the matrix's set-equality script checks row *existence*, not cell
+   completeness. Raised for the architect and the gate, not decided here.
+4. **`FINDING RV-0078-S2-3`, criterion 3's unexercised plural property, and `FINDING
+   SO-2`'s census-domain repair are all still carried unchanged** from `J-dv_lead-0165`
+   with no schedule; this round opened none of their carriers and closes none of them.
+
+### Files-in-this-commit
+
+- agents/handoffs/WO-0079_m03-traceability-test-rows.md
