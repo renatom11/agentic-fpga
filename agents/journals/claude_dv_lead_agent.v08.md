@@ -4763,3 +4763,653 @@ clerical and commit under `Agent: orchestrator`.**
 
 ### Files-in-this-commit
 - (none)
+
+## [J-dv_lead-0171] 2026-08-11T22:40Z | task:none | The M04 bench era opens with a work order whose hardest content is a negative — the receive era's schedule model has no counterpart at a handshaken port, so the acceptance cycle is observed rather than derived, and every constant in the packet hangs off that one observation
+
+### Trigger
+
+Orchestrator dispatch, with a **declared sibling** (`architect_docs_lead`, write
+set `docs/specs/**` plus its own journal, ruling `FINDING CSG-3` and `FINDING
+AP-M04-2` — both mine, both routed undecided at the entry before this one). The
+commission is the **first work-order packet of the M04 bench era**, under the
+attack plan `AP-xgmii_tx_64` that landed at `8f81568`: choose the round's scope,
+specify the bench capability layer, write the regime facts the worker must carry,
+and mark what the round does not carry.
+
+**Abort-first head check, before reading anything.** `git rev-parse HEAD` →
+`9d68d107bf88525980aaeaffc36cefba742f5d94`, byte-equal to the dispatched
+spawn-head `9d68d10`; `git status --short` returned **zero lines**; branch
+`claude/fpga-hardcaml-agent-orchestration-37ceyf`. Exact match, so neither branch
+of the abort procedure was reached.
+
+**Incident eight, and what I did about it: nothing, deliberately.** The dispatch
+records that a prior spawn of this round was stopped two minutes in when a
+container rollback was detected, and that the repo was restored and re-verified.
+I did not look for that spawn's partial and did not reconstruct from it. The tree
+at `9d68d10` is the whole of my input.
+
+**HEAD MOVED MID-ROUND, and the reconciliation is recorded rather than absorbed.**
+On my final state check — after the packet was written and this entry first
+drafted — `git rev-parse HEAD` returned **`ee47eee`**, not the spawn-head. The
+**declared sibling** had landed: `J-architect_docs_lead-0039`, touching
+`docs/specs/modules/xgmii_tx_64.md`, `docs/specs/requirements.md` and its own
+journal — **three paths, all outside my write set, none of them mine**. What I
+did, in order and before writing another line of the packet:
+
+1. **Re-verified R3 against the new HEAD.** `git show HEAD:…v08.md` is
+   **312,998 bytes** and is a byte-prefix of my staged file (`cmp` clean). The
+   sibling did not touch my journal, so the append-only property holds against
+   `ee47eee` exactly as it held against `9d68d10`.
+2. **Re-measured every base figure in the packet's §12** at the new HEAD:
+   `139`, `0`, `17`, `0` — **all four unchanged**, and `git diff --stat
+   9d68d10..HEAD -- test/` is **empty**, which is the reason rather than the
+   coincidence. The bars were then rebased to cite `ee47eee`.
+3. **Read the sibling's diff at the source** and reconciled the packet to it
+   (Reasoning 14). **Both findings the dispatch told me were being ruled were
+   ruled**, and both are mine: `FINDING AP-M04-2` **SUSTAINED and cured**, with
+   carry-forward **C-5 CLOSED** in the same diff, and `FINDING CSG-3`
+   **SUSTAINED and cured**.
+
+**The rule I applied, stated because the tempting alternative was to say
+nothing**: the packet is the worker's ground truth, so a packet that cites a
+specification SHA the tree has moved past is wrong in the one way this
+programme's honest-enforcement model cannot catch — it looks right. Rebasing it
+cost four edits. Leaving `9d68d10` in eight places would have cost a bounce and a
+finding.
+
+**Entry id checked at the file rather than taken from the dispatch.** The chain's
+tail at HEAD is `J-dv_lead-0170`; R5 admits `-0171` and that is what this is.
+
+**The journal-size report the dispatch asked for, and it is worse than the
+dispatch's estimate.** Measured, not recalled:
+
+- `agents/journals/claude_dv_lead_agent.v08.md` at HEAD: **312,998 bytes**
+  (`git cat-file -s` agrees with `stat`, so it is the blob and not a working-tree
+  artefact).
+- ADR-0017 §5's soft threshold `S` = 256 KiB = **262,144**. The file is
+  **50,854 bytes OVER `S`** — the margin is **negative**, not the ~40 KB of
+  headroom the dispatch's "~215KB" would have implied.
+- The hard threshold `H` = 512 KiB = **524,288**. Still **211,290 bytes under**
+  it, so R10's refusal does not fire and this commit is admissible.
+- **The WARN fired one entry ago, not this one.** Before the previous entry the
+  file was **256,934 bytes** — 5,210 *under* `S`. So `WARN-JOURNAL` first fired on
+  that entry's commit, and R10's remedy — *"rotate to volume 09 at your next
+  entry"* — names **this** entry. **Rotation is therefore not merely due, it is
+  one entry overdue.**
+- **I did not rotate, and the reason is scope rather than judgement**: the
+  dispatch's write set names `…v08.md` specifically, and a rotation creates a
+  **new path** (ADR-0017 §4.3) — outside the declared set. I say so rather than
+  rotate silently or leave the arithmetic unstated. **`v09` must open at
+  `J-dv_lead-0172`**, and the next dispatch should carry that path in its write
+  set. The `WARN-JOURNAL` will fire again on this commit and it will be correct
+  both times.
+
+### Inputs
+
+- `agents/charters/dv_lead.md` and `agents/PROTOCOL.md`, **in full, before any
+  edit** (§3's attack-plan and delegation mandates; §6's write scopes; §10's
+  independence rules).
+- **`test/attack_plans/AP-xgmii_tx_64.md` at `8f81568`, entire** — §0.1's three
+  standing rules, §0.2's prohibition register, §1's reading rules, §2's seven
+  standing obligations, §3's stimulus legality, §4's identity and all fifteen row
+  tables, §5's ten rejected attacks, §6/§6.1's coverage map and converse rule,
+  §7's machinery table and **§7.1's BAR T1**, §8's six open items, §9.
+- **`docs/specs/modules/xgmii_tx_64.md` at `816e187`** — the header (freeze SHA,
+  implementation path), §1–§3, §4.1/§4.2/§4.3, §5, §6.1 entire including the
+  cycle-by-cycle table and the storage paragraph, §6.2's state table, §6.3's five
+  unconstrained items, **§7 entire** (the repaired two-constant latency bullet,
+  the `tx_tready` bullet with C-14.1, the C-16 bullet with its four consequences,
+  the handshake bullet, the reset bullet), §8, §9 with its strobe pin and
+  co-occurrence bullets, §10's hook table, §13.
+- `docs/specs/requirements.md` §0.3, §0.5, §0.6, §9.1 and REQ-016's own text;
+  `docs/specs/ifc_check/xgmii_tx_64_ifc.ml` and `docs/specs/ifc_check/dune`.
+- **The machinery surfaces, read to answer §5.1's capability table by measurement
+  rather than by inference** (§0.1(iii)): `test/xgmii/tx_decoder.mli`,
+  `test/xgmii/frame.mli`, `test/xgmii/xgmii_word.mli`, `test/xgmii/dune`,
+  `test/xgmii_probe/xgmii_probe.ml` (header and every top-level `let`),
+  `test/axi64_probe/axi64_driver.ml` (header and every top-level `let` — it has
+  **no `.mli`**), `test/axi64_probe/dune`, `test/monitors/stream_word.mli`,
+  `test/monitors/strobe_monitor.mli`, `test/monitors/conservation_monitor.mli`
+  (val list), `test/monitors/dune`, `test/golden/crc32_ref.mli`,
+  `test/golden/dune`.
+- **`test/xgmii_rx_64/bench.mli` entire and `bench.ml`'s `create` and
+  `sample_cycle` bodies** — the landed `Cyclesim` idiom and the `Before`-view
+  reasoning, read as the thing the M04 loop adapts.
+- **The packet precedents**: `agents/handoffs/WO-0038_tb-m03-first-bench.md`
+  §§1–8 (the first-bench form); `WO-0072_m03-family-k-clear.md` §§12–19 (the
+  mature form: cost, bars by seat, bounces, traps, the allow-list, the two
+  standing clauses, the sequencing rule) and its `FINDING K-3`;
+  `WO-0071_m03-family-m-co-occurrence.md`'s section list.
+- **`tools/dv_checks.sh`** — the inventory and census blocks read in full, to
+  measure what they do and do not see (§9.7 of the packet).
+  `.github/workflows/build.yml`'s step names, read so bar M-2 names real steps.
+- **My own two prior entries**, `J-dv_lead-0169` (the plan round) and
+  `J-dv_lead-0170` (the countersignature round, its §(b) `AP-M04-2`, §(d)'s M14
+  rows, §(f) `CSG-3`, §(h)'s refusals).
+- `git show 816e187 -- docs/specs/modules/xgmii_tx_64.md` in full — the diff that
+  landed **after** the plan and that the packet must carry.
+- **No file under `libs/**`, `top/**`, `rtl_snapshots/**` or
+  `test/third_party/**` was opened.** One honest qualification: I ran `ls -la
+  libs/hardcaml_ethernet/src/` to confirm that
+  `libs/hardcaml_ethernet/src/xgmii_tx_64.ml` exists at this SHA (17,088 bytes) —
+  a **directory listing**, no file opened, and the fact I wanted from it is one
+  SPEC-M04's own header already states. Recorded because §0.1(i)'s discipline is
+  that the difference between a record and a measurement is marked, and because a
+  listing is the nearest I came to the boundary.
+- **No Essenceia/Nasdaq-HFT-FPGA material consulted.**
+
+### Reasoning
+
+**1. The round's real find, and it is structural rather than a defect: there is no
+`Arrival` at a handshaken port, and there cannot be.** `AP-M04` §7 item T-3
+answered the *placement* question — a driver exists, withholding a word is a bench
+presenting `tvalid` = 0 — but it did not ask the question this packet had to
+answer, which is what the **schedule** is. At M03 `test/xgmii/arrival.ml`
+precomputes the entire cycle table before a cycle is driven, because a wire has no
+handshake and the link partner's timing is the bench's to choose. **At M04 whether
+a word is accepted on a cycle depends on `tx_tready`, a DUT output.** So there is
+nothing to precompute: the presenter is reactive, and the first thing the bench
+learns from the design is `C`, the cycle its first word was accepted.
+
+Everything else in the packet follows from that one sentence, and I wrote it as
+§0's four numbered consequences rather than leaving it to be discovered:
+the `Before`-view read becomes load-bearing for **correctness** and not only for
+labelling (an `After` read shifts `C` and silently corrupts every derived
+constant); the source must never stop mid-frame, because at this port a withheld
+word is REQ-206's underflow and not REQ-016's gap; and the cycle after the `tlast`
+acceptance has `tready` = 1 with `tvalid` = 0 and means nothing at all, which
+every run in the round passes through.
+
+**2. `C` is observed, and that is what makes `M04-A5` executable rather than
+decorative.** SPEC-M04 §6.3 item 4 leaves the idle-word count before the first
+frame unconstrained, and §7's reset clause makes the first two cycles' `tready`
+zero. So no absolute start cycle is derivable and none may be asserted. The
+packet therefore states **every** expected value relative to `C` and adds two
+guards that are deliberately *not* assertions: a **liveness bound** (fail if no
+acceptance by cycle 16, with the message saying it is a liveness bound and not a
+timing claim) and **`P-ACCEPT`**, the acceptance-contiguity precondition.
+
+`P-ACCEPT` is the piece I spent longest on and it is the one I most expect to be
+argued with. Mid-frame acceptance contiguity **is** forced — §6.1's *"a source
+word accepted on cycle `C + m` is transmitted on cycle `C + m + 2`"* read with
+§7's *"one XGMII word emitted every cycle, always"* means the wire cannot gap
+mid-frame, so acceptance cannot either. Having derived it, I could have made it
+a row. **I refused**: it is REQ-207's territory, REQ-207 is family H's, and a
+round that asserts a requirement it did not commission has widened its own scope
+by arithmetic. So it ships as a **precondition of the packet's own arithmetic**,
+firing before any row assertion and disclaiming REQ-207 coverage in terms, with
+its failure routed to me as disposition class D3. The distinction — a guard whose
+failure invalidates the reading, versus an assertion about the design — is
+`Arrival.check`'s own shape one port over, and the packet says so.
+
+**3. Scope: thirteen rows, and the cut is principled rather than arithmetic.**
+The rule is one sentence and it is checkable: **every run drives exactly one frame
+into an idle transmitter from a source that presents every word.** That single
+rule excludes, without any further judgement, every row that is a property of a
+**run** (A3, B3, families F, I) and every row that **perturbs** the clean path
+(families G, H, K, L, M). What remains that the rule admits is A1/A2/A5, B1/B2/B4/
+B5, all of C, all of D, and E1–E4 — 23 rows. `WO-0038` took 11.
+
+So a further cut was needed and I made it at **D and E**, with grounds:
+
+- **Family D is deferred because it is the cheapest possible second round.** It
+  needs **no new capability at all** — every row of it runs on this round's
+  scaffolding and its directed-length runner. A capability-heavy first round
+  should be followed by the cheapest coverage available, not by another
+  capability. And the honest cost is stated rather than hidden: obligation 1's
+  decoder judges REQ-202 on **every** frame from unit one, so this round *depends
+  on* the FCS being right while *claiming* nothing about it — except at `M04-C3`,
+  which the plan's own coverage map homes under REQ-202 as *"the pad's coverage,
+  which is REQ-202's clause read at REQ-203's stimulus"*. The packet says that in
+  §1.3 and turns it into a bounce (`BM8`) so a clean decoder report can never be
+  written up as REQ-202 coverage.
+- **Family E is the closest call in the packet and I say so in it.** `M04-E1` is
+  the eight-lane terminate sweep — the plan's own centrepiece, *derived* from the
+  identity rather than sampled — and four of its eight members are already inside
+  `M04-B4`'s directed set, so the marginal stimulus is nearly nothing. It is held
+  back on size alone: 17 rows plus a from-scratch reactive presenter is the
+  overload the dispatch warned against and `RV-C4` §12 convicts. **The derivation
+  is banked rather than lost**: §6.1 tabulates `t` and the terminate cycle for
+  every length the round drives, so family E's round inherits a CI-exercised
+  arithmetic instead of a fresh derivation.
+
+**4. A derived fact that contradicts the intuition every bench author brings, and
+it would have been written wrong.** `⌊F/8⌋ = 8` for every `F` in 64 … 71, so
+**seven of the eight lengths in the directed set terminate in the same cycle,
+`C + 10`, at seven different lanes.** The lane moves and the cycle does not. I
+tabulated the terminate cycle for all eight members explicitly rather than giving
+the formula, because a formula is where an author's intuition substitutes itself
+for the arithmetic, and this is exactly the cell where it would.
+
+**5. `FINDING AP-M04-3` — MINOR, against my own plan, found while writing the
+instrument that would execute it.** `AP-M04` rows `M04-B2` and `M04-C4` state
+their observable as *"the poison value appears **nowhere** in the whole run"* and
+*"0xA5 appears **nowhere** on the wire"*. **Both universals are falsifiable by
+arithmetic**: the four FCS octets are a computed value that may legitimately equal
+any octet including the poison, at roughly a one-in-sixty-four chance per frame —
+not a theoretical objection, a coin flip a later content change would eventually
+lose. The rows' **substance** is right; their **quantifier** is one octet class
+too wide.
+
+The packet cures it operationally at §6.0(c): the poison scan's domain is wire
+octet indices `0 … F−5` — DA through the last pad octet — with the four FCS
+octets **excluded and the exclusion's reason stated**, because the FCS is judged
+against the oracle and never by a scan. **The plan's own text is not repaired
+here**: `test/attack_plans/**` is outside this round's write set, and the repair
+rides with the `M04-J3` quotation repair already owed at the next round that
+opens the plan. Class MINOR, mine, cured in the instrument before it was ever
+executed — which is the only reason it is a finding rather than an incident.
+
+**6. And the anti-vacuity ground for the poison scan is made *provable* rather
+than checked, which is the better half of the same repair.** The round's content
+builder is fixed at `content j = 1 + (j mod 127)`, range `0x01 … 0x7F`. Three
+properties fall out and each is load-bearing: no content octet is ever `0x00`, so
+*"wire octets 20 … 59 are all zero"* stays a claim about **padding** rather than
+one that happens to hold of the content; no content octet is ever `0xA5`
+(165 > 127), so the poison scan **cannot** be falsified by the stimulus; and the
+period 127 is coprime with 8, so a lane reversal, a byte swap and a rotation by 4
+all change the string. **The third property is stated with its bound rather than
+as a universal** — the smallest word-granular rotation the pattern cannot see is
+127 words, 1016 octets — because a claim of "any rotation" would have been the
+same over-wide quantifier I had just convicted two rows for.
+
+**7. The regime facts, written as numbered obligations because the packet is the
+propagation vehicle.** The first harvest's `L-F02` is that the worker reads its
+work order and not the org's history, so §9 restates rather than cites: the
+**SHA** rule (a sentence asserting a census is not the census — every count in the
+return is a raw measured figure), the **domain** rule (a universal over "the
+bench" is measured over every producer — and its instance here is favourable and
+stated, because BAR T1 means M04 has exactly **one** producer today and any
+universal must be re-measured, not re-quoted, the day a second lands), and the
+**polarity** rule from `RV-0078-S2-13`, which §5.1's capability table pays by
+naming the file read to establish each absence.
+
+**8. The underflow family does not ride this round, and answering the dispatch's
+conditional honestly meant carrying three of its facts anyway.** Family G is
+excluded, but REQ-206 is *why* M04's source interface has no idle tolerance, so:
+the presenter must never withhold mid-frame and **no idle-injection wrapper may be
+built at M04's source** (`BM6` — the condition I would most regret discovering
+late, because it manufactures aborted frames while looking like conformance
+stimulus); the post-`tlast` cycle is legal and not an underflow; and — the one I
+think most valuable — **the round's empty strobe set is NOT a discharge of
+`M04-G4`**. Every unit here incidentally satisfies G4's silence half, and G4
+additionally asserts `tx_tready` = 1 at that cycle, which this round asserts
+nowhere. Naming G4 anywhere is a bounce. The row is the highest-value row in its
+family precisely because the defect it kills is REQ-206 read to its first full
+stop, and letting it be discharged by accident would have cost the module its
+sharpest single test.
+
+**9. The census does not see M04, and I measured that rather than assuming it
+either way.** `tools/dv_checks.sh`'s row-discharge census is hard-keyed to
+`census_plan='test/attack_plans/AP-xgmii_rx_64.md'`, to the pattern
+`M03-[A-Z]+[0-9]+`, and to unit titles under `test/xgmii_rx_64/`; its bench
+inventory has a per-file loop over that same directory **and** a repository-wide
+figure over `test/**/*.ml`. So **no M04 row is countable by any committed
+instrument**, and the only figure that moves when this round lands is the
+repository-wide one, `139 → 149`. Two consequences went into the packet: the unit
+titles are read by **me** and by no script, which makes §11.1's title rule a real
+obligation rather than a mechanical one; and bar M-3 is stated as a **delta**
+against a measured base. Extending the census is mine and `tools/**` is outside
+this round's write set (§19.3 item 1).
+
+**10. Every tree-quantified bar was executed at the base before it was written,
+because my own finding says a bar that has not been is a hope.** `FINDING K-3`
+(`RV-0072-VERDICT`) convicted three of my seven bars at the previous first-bench-
+class round, all failing the same way. So: M-3's base is **139** measured; M-4's
+base is **the directory does not exist**, measured by `git ls-files`; M-5's base
+is **17 tracked files** under `test/xgmii_rx_64/`, enumerated; and M-7 — *"zero
+occurrences of any `M04-` id anywhere in `test/**/*.ml`"* — is stated as a genuine
+universal **only because I measured the base at zero**, which is the one condition
+under which such a bar is safe. M-4 is additionally stated as a **set** and not a
+count, on `RV-0071-VERDICT` §1's rule that a difference of totals cannot
+distinguish "seven gained" from "eight gained and one lost".
+
+**11. The two rulings that landed after the plan, carried rather than left for the
+worker to trip over.** `FINDING AP-M04-1` is **CURED and CLOSED** at `816e187`:
+SPEC-M04 §7 now pins two constants and names which is which. The packet's §3.1
+records it and draws the only consequence that matters at this scope — **no
+latency figure for M04 may appear anywhere in a round that measures none**. And
+§3.2 discloses that my own plan row `M04-J3` still quotes REQ-210's *retired*
+opening clause, so a worker who reads the row and cannot find the sentence in the
+specification knows why and does not report it as a defect in their own reading.
+That disclosure costs one paragraph and saves a bounce.
+
+**12. What I refused.** I did not open `libs/hardcaml_ethernet/src/xgmii_tx_64.ml`,
+which exists and would have made §5's loop specification easier to write and
+worthless. I did not commission families D or E although this round's own scope
+rule admits them — the size ground is stated and is the whole argument, and
+padding a first round with cheap rows is how a six-round review cycle starts. I
+did not build the M04 census while writing a packet that depends on measuring its
+absence, though `tools/**` is inside my charter scope: it is outside **this
+round's** write set and a lead who widens his own set while telling a worker not
+to has no standing to enforce `BM14`. I did not repair `AP-M04` for the finding I
+minted against it. I did not rotate the journal. And I decided neither
+`AP-M04-2` nor `CSG-3` — both are the architect's, both are marked in §19.1 with
+their carriers, and a filer who rules on his own findings is not a second key.
+
+**13. What the sibling's landing changed in the packet, and what it did not — and
+the asymmetry is the round's cheapest lesson.** `FINDING AP-M04-2` is
+**SUSTAINED**: SPEC-M04 §7's survival claim is struck and replaced by *"A bench
+SHALL NOT build a REQ-016 idle-injection wrapper at this module's source
+interface"*. **My packet had already forbidden that wrapper** — §9.4(1) and
+`BM6`, written from REQ-016's own carve-out and §3's REQ-016 row rather than
+from a ruling that did not exist. So the ruling did not change a rule; it changed
+a rule's **authority**, from a lead's judgement to normative text, and §3.3(a)
+now says so. **Not one derived constant, row status or bounce condition moved.**
+That is what marking a dependency instead of guessing one buys: the packet was
+correct under both outcomes and the landing was an edit rather than a rewrite.
+
+Carry-forward **C-5** closing in the same diff is the half that did move
+something, and it moved a **ground** and not a conclusion. `AP-M04` §2's
+obligation 5 forbids asserting §0.6's strobe window on `error_underflow` because
+the window *"has no reference word"* for a frame that never receives the octet.
+Since `ee47eee` **it has one** — §0.6's new fourth clause gives it the cycle the
+word was required and not presented, with a ceiling of `+ ΔC = 2`. **The
+prohibition survives and is now better founded**: §9's pin sits at the window's
+*near* edge, so §0.6 itself states the window carries no independent information
+there. I rewrote §5.4(3) to the new ground rather than deleting the obligation,
+and I did **not** re-derive §0.6's clause — reading a landed diff as text is not
+countersigning it, the packet says so in terms at §19.1's closing paragraph, and
+a countersignature is a round of its own.
+
+**The two documents now disagree, and the disagreement is mine.** `AP-M04` §2
+obligation 5 and §8 item 3 still describe `C-5` as an undischarged deferral. That
+is a third repair owed to my own plan, riding with the `M04-J3` quotation and
+`FINDING AP-M04-3` at the round that next opens `test/attack_plans/**`. Three
+repairs to one document, all editorial, all found by writing the instrument that
+would execute it — which is the argument for writing the work order before the
+bench rather than after.
+
+**14. On the harvest note: none is owed at this round, and I say so rather than
+leave silence to be read.** PROTOCOL §7 and charter §8 attach the note to **every
+module sign-off and every phase gate**. This is a work-order round and neither.
+Under ADR-0018 §A2's `A2-D10` the open span still begins at `J-dv_lead-0168`;
+`J-dv_lead-0169`, `J-dv_lead-0170` and **this entry** all join it, and all four
+are mined at the next `SO-` or gate. Recorded because a skipped harvest and a
+not-owed one are indistinguishable in silence, and the tiling rule is the only
+instrument that tells them apart.
+
+### Actions
+
+- **Created `agents/handoffs/WO-0080_tb-m04-first-bench.md`** — state **ISSUED**,
+  dv_lead → tb_writer, **99,870 bytes**, twenty sections plus a section map and an
+  empty Return log. It commissions **13 of `AP-M04`'s 80 rows** — `M04-A1`,
+  `A2`, `A5`, `B1`, `B2`, `B4`, `B5`, `C1`, `C2`, `C3`, `C4`, `C5`, `C6` (ten
+  ASSERT, three NO-ASSERT) — in **ten `%expect_test` units** across **seven new
+  files** under `test/xgmii_tx_64/`, on a **new reactive bench capability layer**
+  specified at §5 by behaviour and by per-cycle ordering. Frozen references are
+  named by SHA (`AP-M04` at `8f81568`, SPEC-M04 FROZEN `f78766e` with current
+  content at `816e187`); §4 **quotes** the plan's arithmetic identity rather than
+  citing it; §6 derives every expected cycle, lane, `tkeep`, `F`, `t` and pad
+  count for all eight lengths driven; §9 carries the regime facts as seven
+  numbered obligations including BAR T1; §12 carries **sixteen** review bars by
+  seat, every tree-quantified one with its base figure measured at `9d68d10`;
+  §13 carries **sixteen** pre-committed BOUNCE conditions, §14 twelve named
+  traps, §15 nine pre-committed disposition classes, §17 the standing allow-list
+  and its two clauses, §19 the sibling-ruling dependencies and six owed items.
+- **Reconciled the packet to `ee47eee`** after the declared sibling landed
+  mid-round (Trigger, Reasoning 13, Evidence 9): eight base-SHA citations rebased,
+  two specification pins moved, **§3.3 added** (the `AP-M04-2` ruling and `C-5`'s
+  closure, both halves stated for what they change at the bench), §5.4(3)'s
+  window-prohibition ground rewritten, §9.4(1) given the specification's own
+  normative sentence, §19.1 rewritten from *in flight* to *ruled*, and §19.3
+  item 3 widened from one owed plan repair to four.
+- **Nothing under `test/**`, `docs/**`, `libs/**`, `tools/**` or any other
+  journal was touched** — the dispatch's explicit out-of-scope list, verified
+  below.
+
+### Evidence
+
+All commands run from a checkout at this working tree. **No OCaml lands in this
+round**, so there is nothing for `dune runtest` to say about it; `dune` is absent
+from this container in any case (**ADR-0005**, the standing bound, re-checked:
+`which dune` returns nothing).
+
+```
+$ git rev-parse HEAD                       # at spawn, before reading anything
+9d68d107bf88525980aaeaffc36cefba742f5d94
+$ git status --short                       # at spawn
+                                           (empty)
+$ git rev-parse --abbrev-ref HEAD
+claude/fpga-hardcaml-agent-orchestration-37ceyf
+$ git status --short                       # at return
+?? agents/handoffs/WO-0080_tb-m04-first-bench.md
+```
+
+**1. The packet number, checked at the directory and not taken from the
+dispatch** (the dispatch said to verify with `ls`, and it was right to):
+
+```
+$ ls agents/handoffs/ | grep -oE '^WO-[0-9]{4}' | sort -u | tail -3
+WO-0077
+WO-0078
+WO-0079
+```
+
+**`WO-0079` is the highest landed number; this packet is `WO-0080`.**
+
+**2. The base figures every tree-quantified bar in §12 is stated against, each
+run at `9d68d10` before the bar was written** (`FINDING K-3`'s obligation):
+
+```
+$ grep -rh --include=*.ml 'let%expect_test' test/ | grep -c .
+139                                        # bar M-3 base
+$ ls -d test/xgmii_tx_64
+ls: cannot access 'test/xgmii_tx_64': No such file or directory
+                                           # bar M-4 base: 0 tracked files
+$ git ls-files test/xgmii_rx_64/ | wc -l
+17                                         # bar M-5 base
+$ grep -rn --include=*.ml 'M04-' test/ | grep -c .
+0                                          # bar M-7 base — the one condition
+                                           # under which M-7 may be a universal
+```
+
+**3. The census measurement behind packet §9.7** — read at the script, not
+recalled:
+
+```
+$ grep -n "census_plan=" tools/dv_checks.sh
+837:census_plan='test/attack_plans/AP-xgmii_rx_64.md'
+$ grep -n "for inv_f in" tools/dv_checks.sh
+743:for inv_f in test/xgmii_rx_64/*.ml; do
+```
+
+The census's row pattern is `M03-[A-Z]+[0-9]+` (`:847-848`) and its title source
+is that same directory. **No M04 row is countable by any committed instrument at
+this SHA.**
+
+**4. The CI step names bar M-2 reads by name** — taken from the workflow, so the
+bar points at steps that exist:
+
+```
+$ grep -n 'name:' .github/workflows/build.yml | sed -n '3,6p'
+27:      - name: Build
+30:      - name: Run tests (expect tests, waveform snapshots)
+54:      - name: Generate RTL
+57:      - name: Verify nothing was left unpromoted or non-deterministic
+```
+
+**5. The identity checked against SPEC-M04 §6.1's own cycle table at `P = 60`**
+— the cross-check bar M-9 asks the worker to redo independently. `F = max(60,60)
++ 4 = 64`; `t = 64 mod 8 = 0`; terminate cycle `= C + 2 + ⌊64/8⌋ = C + 10` against
+the table's *"C+10 · `/T/` in lane 0"* ✓; FCS octet indices `60 … 63` → lanes
+`4 … 7` of `C + 2 + ⌊60/8⌋ = C + 9` against the table's *"C+9 · octets 56–59 and
+the four FCS octets"* ✓; preamble at `C + 1` ✓; frame octet 0 at lane 0 of
+`C + 2` ✓; `g = ⌈12/8⌉ = 2`, next start at `C + 12`, gap 16 octets, spacing 11 ✓.
+**Six of six agree.**
+
+**6. The eight-length constant table of packet §6.1, spot-checked at the three
+members most likely to be wrong.** `P = 61`: `W = ⌈61/8⌉ = 8`, last-word octets
+`61 − 56 = 5` → `tkeep` `0x1F`, `F = 65`, `t = 1`, terminate `C + 2 + 8 = C + 10`,
+FCS indices `61 … 64` straddling **two words** (lanes 5,6,7 of `C+9` and lane 0
+of `C+10`). `P = 64`: `tkeep` `0xFF`, `F = 68`, `t = 4`, FCS whole in lanes 0–3 of
+`C+10` — the plan's `M04-D4` second member. `P = 1514`: `W = 190`, last-word
+octets `1514 − 1512 = 2` → `tkeep` `0x03`, `F = 1518`, `t = 1518 − 1512 = 6`,
+terminate `C + 2 + 189 = C + 191`. **And the fact the table exists to make
+unmissable**: `⌊F/8⌋ = 8` for every `F` in 64 … 71, so seven of the eight lengths
+terminate at the **same** cycle `C + 10` and at seven different lanes.
+
+**7. The cost derivation of packet §10**, against `WO-0070`'s measured class
+(`T` = 2.036 s at **105 010** cycles in one run): run length `= 27 + ⌊F/8⌋` gives
+**35** cycles for every `F` in 64 … 71 and **216** for `F` = 1518; summed over
+the ten units, **928 driven cycles and 22 elaborations**. `928 / 105 010` =
+**0.88%** — two orders of magnitude inside the class, so no probe is required and
+`WO-0070` §1.5's band overlap does not need closing here. Ceiling pre-committed
+at **≤ 1 500 cycles, ≤ 28 elaborations**, with `BM13` as its enforcement.
+
+**8. The packet's own row census, measured at the file rather than asserted:**
+
+```
+$ grep -o 'M04-[A-Z][0-9]*' agents/handoffs/WO-0080_tb-m04-first-bench.md \
+    | sort -u | wc -l
+25
+```
+
+Twenty-five distinct tokens appear; **thirteen are the commissioned ids** (§2's
+table) and the other twelve are, exactly and in the matcher's own order:
+`M04-A3`, `M04-A4`, `M04-B3` (deferred with grounds, §1.2), **`M04-D`**,
+`M04-D1`, **`M04-E`**, `M04-E1` (deferred with grounds, §1.3/§1.4), `M04-G4`
+(named in order to **forbid** claiming it, §9.4(3)), `M04-G8` (the
+conservation-key rule it justifies, §5.4(2)), `M04-J3` (my own stale quotation,
+§3.2), `M04-N4`, `M04-O5` (quoted prohibitions). **Every one of the twelve
+appears only in an exclusion, deferral, prohibition or owed-work context, and
+none appears in a title instruction.**
+
+**Two of the twenty-five are a matcher artefact and I name it rather than let the
+figure read as twenty-five rows.** `M04-D` and `M04-E` are not row ids: they are
+the prefixes the pattern `M04-[A-Z][0-9]*` extracts from the packet's own
+**family-wildcard** notation `M04-D*` and `M04-E*` at §13's `BM8`. The true
+distinct-id count is therefore **23**, of which 13 are commissioned and 10 are
+referenced. This is the same class as `FINDING AP-6-2` — *a document measured by
+a pattern must not write its annotations in that pattern* — met here in its
+mildest form, where the artefact inflates a count rather than a census: the
+wildcard is the clearest way to say "no row of family D", so the notation stays
+and the artefact is declared beside the figure instead.
+
+**9. The mid-round HEAD move, verified rather than assumed** (Trigger, Reasoning
+13). Run at the final state check, before any reconciling edit:
+
+```
+$ git rev-parse HEAD
+ee47eeecc04f2882821c67c1da0450590ab2bb7a          # NOT the spawn-head
+$ git log --oneline 9d68d10..HEAD
+ee47eee Both findings sustained and neither offered cure taken: …
+$ git diff --stat 9d68d10..HEAD
+ .../claude_architect_docs_lead_agent.v03.md | 655 +++++++++
+ docs/specs/modules/xgmii_tx_64.md           |  38 +-
+ docs/specs/requirements.md                  |  42 +-
+ 3 files changed, 721 insertions(+), 14 deletions(-)
+$ git diff 9d68d10..HEAD -- agents/journals/claude_dv_lead_agent.v08.md
+                                                  (empty — my journal untouched)
+$ git diff --stat 9d68d10..HEAD -- test/
+                                                  (empty — no test path moved)
+```
+
+**R3 re-checked against the NEW HEAD**, because an append-only proof against a
+superseded parent proves nothing:
+
+```
+$ git show HEAD:agents/journals/claude_dv_lead_agent.v08.md > /tmp/…/head_v08_new.md
+$ head -c 312998 agents/journals/claude_dv_lead_agent.v08.md \
+    | cmp - /tmp/…/head_v08_new.md
+                                                  (silent — PREFIX OK, 312,998 B)
+```
+
+**Every §12 base figure re-measured at `ee47eee`**, and all four are unchanged
+**because** the sibling touched no `test/` path — the reason, not the
+coincidence, is the line above:
+
+```
+$ grep -rh --include=*.ml 'let%expect_test' test/ | grep -c .   ->  139   (M-3)
+$ git ls-files test/xgmii_tx_64/ | wc -l                        ->    0   (M-4)
+$ git ls-files test/xgmii_rx_64/ | wc -l                        ->   17   (M-5)
+$ grep -rn --include=*.ml 'M04-' test/ | grep -c .              ->    0   (M-7)
+```
+
+The packet was then rebased: **eight** `9d68d10` citations became `ee47eee`
+(`grep -c '9d68d10'` → 0 after), SPEC-M04's current-content pin and
+requirements.md's pin were moved, §3.3 was added, §5.4(3)'s ground was rewritten,
+§9.4(1) gained the specification's own prohibition, §19.1 was rewritten from
+*in flight* to *ruled*, and §19.3 item 3 was widened from one repair to four.
+
+**10. Independence.** `git status --short` at return lists exactly one untracked
+path and one modified path — the packet and my own journal. **No `git add`, no
+`git commit`, no `git push`, no git write of any kind**; the sibling's commit is
+the sibling's and I neither made it nor merged it.
+
+### Outcome
+
+**DoD met.** The round's four commissioned calls are made and each is stated with
+its ground in the packet: **(1) scope** — 13 rows across families A, B and C plus
+a new reactive bench capability layer, with the one-frame-per-run rule as the
+checkable cut and families D and E deferred with their grounds written down;
+**(2) bench architecture constraints** — RTL source omitted and the three
+spec-named things (library, module, entry point) supplied instead (§7), SPEC-M04
+named by freeze SHA and current SHA with the post-plan diff carried (§3), the
+REQ-305 bit-serial oracle named as the FCS source with loopback forbidden (§9.5),
+and §4's identity **quoted** as the expected-value instrument; **(3) regime
+facts** — seven numbered obligations at §9 carrying the three standing rules, the
+underflow family's three binding facts, BAR T1, the FCS-oracle prohibition and
+the census measurement, plus the cost-probe expectation at §10 and the enumerated
+allow-list at §17 in the `WO-0072` standing form; **(4) what the round does not
+carry** — §19.1 marks both sibling-ruling dependencies with their carriers and
+records that no row moves on either, §9.6 shuts the co-simulation lane, and
+§19.2/§19.3 enumerate what is deferred and what I owe.
+
+**Handoff**: `agents/handoffs/WO-0080_tb-m04-first-bench.md`, state **ISSUED**,
+addressed to **tb_writer**, for the orchestrator to spawn against. The Return log
+is empty at issue, per PROTOCOL §3.
+
+### Open-questions
+
+1. **Journal rotation is one entry overdue.** `v08` is **312,998 bytes**, 50,854
+   over ADR-0017's soft threshold `S` and 211,290 under the hard threshold `H`.
+   The `WARN-JOURNAL` first fired on the previous entry's commit and R10's remedy
+   names **this** entry as the rotating one; I did not rotate because the
+   dispatch's write set names `…v08.md` and a rotation creates a new path.
+   **`v09` must open at `J-dv_lead-0172`** and the next dispatch should carry
+   `agents/journals/claude_dv_lead_agent.v09.md` in its write set. Not blocking —
+   `H` is not reached — but it should not slip a third entry.
+2. **`FINDING AP-M04-3` (MINOR, mine, against `AP-xgmii_tx_64` §4.B and §4.C).**
+   `M04-B2`'s and `M04-C4`'s observables state *"the poison value appears nowhere
+   in the whole run / on the wire"*, and both universals are falsifiable by
+   arithmetic because the four FCS octets are a computed value that may
+   legitimately equal the poison. Substance right, quantifier one octet class too
+   wide. **Cured operationally** in the packet at §6.0(c), which scopes the scan
+   to wire octet indices `0 … F−5` and states the exclusion's reason. **Plan text
+   not repaired** — outside this round's write set. **Carrier**: the round that
+   next opens `test/attack_plans/**`, which now owes **four** editorial repairs to
+   one document — this one, the `M04-J3` quotation (§3.2 of the packet), §2
+   obligation 5 and §8 item 3's superseded `C-5` deferral (§3.3(b)), and the §9
+   change-log row for families A/B/C's landed status. All four were found by
+   writing the instrument that would execute the plan, which is the argument for
+   drafting the work order before the bench rather than after it.
+3. **`FINDING AP-M04-2` and `FINDING CSG-3` were RULED mid-round, at `ee47eee`,
+   and both are SUSTAINED.** Marked at packet §19.1, rewritten from *in flight* to
+   *ruled*. **No row of this round moved on either**, before or after — `BM6` had
+   already forbidden the idle-injection wrapper on REQ-016's own carve-out, and
+   the ruling changed that rule's authority rather than its content. **What I owe
+   next and am not doing here**: neither ruling is countersigned, and a
+   countersignature is a round of its own. `C-5`'s closure in particular changes
+   the ground of a standing prohibition in my own plan and I read it as text
+   rather than re-deriving §0.6's fourth clause — if that reading is wrong the
+   packet says so and asks the worker to say so (§18 item 8), but the proper check
+   is a countersignature round against `J-architect_docs_lead-0039`, which I
+   request. My `FI-4`/`FI-6` binding is discharged by the `CSG-3` ruling rather
+   than by a work order, and I have **not** narrowed either guard in this round.
+4. **Owed by me, carried forward and countable**: the M04 census in
+   `tools/dv_checks.sh` (measured absent at §9.7; `DVC-1a` is now wanted by three
+   plans); the transmit-side conservation monitor (`AP-M04` §7 T-2); the
+   `AP-xgmii_tx_64` repairs of item 2 above; and `AP-ip_eth_rx_64`'s family-F rows
+   `M14-F1`/`F2`/`F3`, still asserting the retired per-octet-under-injection
+   reading and owed before any M14 bench.
+5. **For the orchestrator, as scheduling**: the three BAR T1 conditions need work
+   orders of their own — vendoring the transmit reference at a pin (its own
+   commit, ADR-0015 D2), a transmit harness and a canonical form for a lane pair,
+   and REQ-901's divergence classes at this boundary. Sequenced (c) → (a) → (b),
+   and **none of the three is a bench round's to do inside a bench round**.
+   Charter §3 makes differential co-sim a precondition of Phase 1 MAC sign-off,
+   so this is a gate condition on `SO-xgmii_tx_64`, not a nicety.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0080_tb-m04-first-bench.md
