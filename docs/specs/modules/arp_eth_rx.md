@@ -84,7 +84,7 @@ bench (§0.4, REQ-905).
 | REQ-013 | `payload_tuser`[0] is read by nothing here. M10 does not drop a packet because it is set, which is REQ-013's own sentence; §7 shows the bit arrives after the decision and §11.3 records what follows. |
 | REQ-014 | `payload_tstrb` is ignored. |
 | REQ-015 | One `tlast` per payload frame. M10 needs no upper bound on the word count — it stops reading at ARP octet 27 — but the input obeys REQ-015's 188-word bound (SPEC-M06 §7). |
-| REQ-016 | The payload input may carry idle cycles and M10 tolerates them: k idle cycles before a payload word delay every octet that word carries by exactly 8k octet times and change nothing else. §6.1's cycle formulas are stated on a gapless stimulus and §7's constant holds on every stimulus (§6.1). |
+| REQ-016 | The payload input may carry idle cycles and M10 tolerates them: k idle cycles before a payload word delay every octet that word carries by exactly 8k octet times and change nothing else on the input side. §6.1's cycle formulas are stated on a gapless stimulus, and so is §7's constant L = 32 — **M10's report is decided by a later input word than the one its latency is measured from, so L does not survive injection** (requirements.md §0.5's late-decision test, which names M10 as its worked instance). What survives is the delay from the report's **deciding input word**, pinned in §7. |
 | REQ-017, REQ-018 | No instance: M10 sees no lane, no control character and nothing below XGMII. |
 | REQ-019 | M10 is a receive-path module but is **not** on the application receive chain REQ-006 measures, so requirements.md §1.1 allocates it no ceiling and it consumes none of the architect's seven cycles of slack — §1.1 says so in its own words. Its constant is pinned in §7 and is bounded only by REQ-005. Storage is **four** payload words' worth of captured fields, which is 28 octets and not a buffer: M10 never re-emits an octet. |
 | REQ-020 | Packets are reported in the order they arrived; M10 holds one packet at a time (§6.2), so reordering is not expressible. |
@@ -367,10 +367,21 @@ decoding any field**: §6.1's rule names only word counts and closure events.
 
 **Gapped stimulus.** A cycle carrying no payload word holds every state and
 every register: it is not a condition, it advances no word index, and it delays
-every later octet by exactly 8 octet times per cycle (REQ-016). The cycle
-formulas above hold on a gapless stimulus; the **constant** of §7 holds on
-every stimulus, and that is what a bench asserts — the same distinction
+every later octet by exactly 8 octet times per cycle on the **input** side
+(REQ-016). The cycle formulas above hold on a gapless stimulus, and a bench
+asserting them under injection would fail a conformant design — the distinction
 carry-forward C-14.4 fixed in SPEC-M03 §6.1 and C-18 sharpened at WO-0014.
+
+*This paragraph said until 2026-08-11 that "the constant of §7 holds on every
+stimulus, and that is what a bench asserts". It does not, and §7's own
+measurement events are why: M10's report is decided by the payload word carrying
+ARP octet 27 while L is measured from ARP octet 0's octet time, so an idle
+injected between those two words moves the report and not the measurement's input
+event. That is requirements.md §0.5's **late-decision** test, which names M10 as
+its worked instance, and §0.5's closing paragraph forbids a monitor to demand a
+single per-octet L here. What a bench asserts instead is §7's per-output-event
+delay from the report's deciding input word — for M10 exactly one cycle, at every
+stimulus.*
 
 **When `hdr_valid` opens a packet with no payload frame.** M06 emits a header
 record with no payload frame for a 14-octet Ethernet frame (requirements.md
@@ -471,6 +482,15 @@ rely on it.
   clause carry-forward C-15 moved into §0.5's definition sentence — has no
   instance here.
 
+  **L is a gapless figure and does not survive REQ-016's idle injection.** M10
+  passes §0.5's straddle test trivially (h = 0, and there is no output word to
+  straddle) and **fails its late-decision test**: the report is decided by the
+  payload word carrying ARP octet 27 while L's input event is ARP octet 0's octet
+  time, four words earlier, so idles injected between them move the output event
+  and not the input one. §0.5 names M10 as the worked instance of exactly this.
+  The gap-invariant quantity is the delay from the report's deciding input word,
+  pinned in the handshake bullet below.
+
   **Four cycles is what the octet mapping produces, not a target.** ARP octet 27
   lies in payload word 3, which arrives at Cp + 3, and a registered output emits
   at Cp + 4. Nothing cheaper exists without making `arp_valid` a combinational
@@ -505,8 +525,23 @@ rely on it.
   `error_arp_unsupported` is high for exactly one cycle per rejected packet, on
   the cycle §6.1 pins.
 
-  Idle gaps on the payload input (REQ-016) delay everything by exactly 8 octet
-  times per cycle and change nothing else.
+  **Idle gaps on the payload input (REQ-016)** delay each **output event** by
+  exactly the number of idle cycles injected at or before its **deciding input
+  word** D (requirements.md §0.5) and change nothing else about the output.
+  M10 has exactly one output event per opened packet, so the table is one row —
+  and §6.1 already names D there, as the earliest of its own two conditions:
+
+  | Output event | Deciding input word D | Delay from D |
+  |---|---|---|
+  | the packet's single report — `arp_valid` with its five fields, or one `error_arp_unsupported` pulse, never both and never neither | the earliest of: the payload word carrying **ARP octet 27** (payload word 3), and the input word carrying **the event that closed the packet** — the payload `tlast` word, or the next `hdr_valid` pulse (§6.1) | **1** cycle |
+
+  On a gapless stimulus that reproduces §6.1's Cp + 4 exactly. A packet closed by
+  `clear` is reported by neither and has no output event to delay (§6.1's
+  exception, carry-forward **C-21**). **This is the quantity §10's REQ-016 hook
+  commissions; the per-octet constant L = 32 of the latency bullet above is a
+  gapless figure and a wrapper asserting it under injection fails a conformant
+  M10.** Per-octet latencies on an injected run may always be **reported** as
+  data.
 
 - **The inherited abort bit arrives after the decision, and this is where that
   is stated.** `payload_tuser`[0] is meaningful only on the payload `tlast`
@@ -703,7 +738,7 @@ output stream on which a `tuser`[0] could be set.
 | REQ-012 | every field decoded to a numeric value, first wire octet most significant | §6.1 | known-packet directed test comparing all five fields against hand-computed values, including the word-crossing sender protocol address |
 | REQ-014 | `payload_tstrb` ignored | §4.2 | protocol monitor; REQ-014's differential run |
 | REQ-015 | one `tlast` per payload frame; M10 needs no word bound | §3 | protocol monitor on the payload stream |
-| REQ-016 | idle cycles delay octets and change nothing else; §6.1's cycle formulas are gapless-only | §6.1, §7 | idle-injection wrapper at 0, 1 and 7 cycles, asserting the **constant** of §7 rather than §6.1's cycle formula, and asserting the report is still one per packet |
+| REQ-016 | idle cycles delay the report by the idles injected at or before its deciding input word and change nothing else; §6.1's cycle formulas are gapless-only | §6.1, §7 | idle-injection wrapper at 0, 1 and 7 cycles, asserting the report is still **exactly one per opened packet** with the same value, and that it falls exactly **one cycle** after its **deciding input word D** — the earliest of the payload word carrying ARP octet 27 and the word carrying the closing event (§7's table). **Not** §6.1's gapless `Cp + 4` formula and **not** §7's per-octet constant L = 32, which M10 cannot satisfy under injection: its report is late-decided, so a wrapper asserting a single per-octet L fails a conformant design (requirements.md §0.5, which names M10 as the worked instance; this hook commissioned that assertion until 2026-08-11, §13). Per-octet latencies on an injected run may be **reported** as data and SHALL NOT be asserted as a single constant |
 | REQ-019 | no §1.1 ceiling — M10 is off REQ-006's chain — and no buffering: 28 octets of captured fields, never re-emitted | §3, §7 | ΔC computed from the pinned L and h at freeze; measured parse latency from the stress run in the sign-off packet, quoted against "no ceiling" rather than against a number |
 | REQ-020 | one packet at a time; order not expressible otherwise | §6.2 | the sender-protocol-address sequence in the stress run |
 | REQ-021 | ARP octet 0 at `payload_tdata`[7:0] of payload word 0 at every frame length, so the nine offsets are fixed | §3, §6.1 | the directed packets, whose offsets are asserted against the table of §6.1 |
@@ -742,13 +777,18 @@ spec is DRAFT.
 
 ## 13. Change log
 
-Post-freeze changes only. This spec is DRAFT and has none: every diff made under
-WO-0017 — §2's abort row, §6.1's `clear` exception and its report-cycle
-qualifier, §6.3 item 4's constant, §8's idle-count and conservation notes,
-§10's REQ-007/REQ-013 hook, §11.1 and §11.3's closures and §12's evidence row —
-is a **pre-freeze correction on DRAFT text**, which is the cheap kind and is why
-dv_lead withheld the countersignature rather than freezing first.
+Post-freeze changes only. Every diff made under WO-0017 — §2's abort row,
+§6.1's `clear` exception and its report-cycle qualifier, §6.3 item 4's constant,
+§8's idle-count and conservation notes, §10's REQ-007/REQ-013 hook, §11.1 and
+§11.3's closures and §12's evidence row — is a **pre-freeze correction on DRAFT
+text**, which is the cheap kind and is why dv_lead withheld the countersignature
+rather than freezing first, and none of it is a row here. *This paragraph read
+"This spec is DRAFT and has none" until 2026-08-11, which §12 and the header have
+contradicted since the freeze at `3f6accc`; the sentence is repaired in the diff
+that opens the table.* **No row below is breaking**: §4.1's records are
+byte-for-byte unchanged since the freeze SHA, so §12's `ifc_check` evidence still
+witnesses this revision's interface.
 
 | Date | Change | Breaking? | ADR | Journal |
 |---|---|---|---|---|
-| — | — | — | — | — |
+| 2026-08-11 | **The per-octet-under-injection reading retired by requirements.md §0.5 is repaired at all four sites §13's 2026-08-04 row named for M10, and §7 now names D.** §7's handshake bullet: *"Idle gaps on the payload input (REQ-016) delay everything by exactly 8 octet times per cycle and change nothing else"* is replaced by §0.5's per-output-event rule, with a one-row table — M10 has exactly one output event per opened packet — naming the **deciding input word D** as *the earliest of the payload word carrying ARP octet 27 and the word carrying the event that closed the packet*, which is §6.1's own "earliest of" pair, at a delay of **1 cycle**. §7's latency bullet scopes L = 32 to a gapless stimulus and states the verdict: M10 **fails** §0.5's late-decision test and is that test's worked instance. §3's REQ-016 row and §6.1's gapped paragraph, which both asserted the retired claim in their own words, are repaired with them; §10's REQ-016 hook, which commissioned *"asserting the **constant** of §7"*, commissions the achievable observable instead. **The DRAFT sentence above this table is repaired in the same diff** | no — **no cycle this specification pins moves**: §6.1's table and its `Cp + 4`, §7's L = 32 / h = 0 / ΔC = 4, §9's report cycle and the interface records are untouched, and M10 has no RTL and no bench. What changes is what a bench may assert under injection | none — the retired reading is arithmetically unsatisfiable at a late-deciding module rather than rejected among live alternatives; `requirements.md` §13's 2026-08-04 row gives the same ground for the ruling this discharges | `J-architect_docs_lead-0038` |

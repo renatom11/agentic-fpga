@@ -253,10 +253,20 @@ The gapless qualifier is §0.5's own and is load-bearing (the same reading
 carry-forward C-14.4 fixed in SPEC-M03 §6.1): an input word covering no octet of
 this frame — an idle cycle under REQ-016, which §10 commissions against this
 module at 0, 1 and 7 cycles — **holds** the frame and advances nothing, delaying
-every later octet by exactly 8 octet times per cycle. The **per-octet** constant
-of §7 holds on every stimulus, gapped or not; the cycle formulas above hold only
-on the gapless one, and a bench asserting them under idle injection would fail a
-conformant design.
+every later octet by exactly 8 octet times per cycle on the **input** side. The
+cycle formulas above hold only on the gapless stimulus, and a bench asserting
+them under idle injection would fail a conformant design.
+
+*This paragraph said until 2026-08-11 that "the per-octet constant of §7 holds on
+every stimulus, gapped or not". It does not, and no straddling module's can:
+h = 14 is not a multiple of 8, so every payload word is assembled from two input
+words and an idle injected between them moves one part of the word and not the
+other, which REQ-011 forbids resolving by splitting the word (requirements.md
+§0.5's **straddle** test, ruled at `SCR-M03-I4`). What survives injection is the
+per-output-event delay from each event's deciding input word, and §7 names D and
+its delay for each of this module's four output events. This site was not on the
+list §13's 2026-08-04 row named for M06 — that row named §7 and §10 — and it is
+repaired with them.*
 
 **Cycle by cycle, the frame a minimum-length Ethernet frame produces.** M03
 delivers 60 octets for a 64-octet frame (four FCS octets stripped, REQ-103), so
@@ -375,7 +385,10 @@ rely on it.
 
   (L + h) = 24, a multiple of 8 as requirements.md §0.5 requires. There is one
   constant and not two: M06 sees no XGMII, so §0.5's start-lane pair has no
-  instance here and L is a single value.
+  instance here and L is a single value. **L is pinned on a gapless stimulus and
+  does not survive REQ-016's idle injection** — M06 fails §0.5's straddle test,
+  h = 14 being no multiple of 8 — so the quantity a bench asserts under injection
+  is the per-output-event delay of the handshake bullet below, not this figure.
 
   **The two measurement events**, named explicitly: the input event is the
   octet time, on the `rx` stream, of the octet being measured; the output event
@@ -419,8 +432,33 @@ rely on it.
   SHALL tolerate a header with no payload frame (requirements.md §0.7). The three
   field values are valid only on the pulse cycle (§6.3 item 2).
 
-  Idle gaps on the input (REQ-016) delay everything by exactly 8 octet times per
-  cycle and change nothing else.
+  **Idle gaps on the input (REQ-016)** delay each **output event** by exactly the
+  number of idle cycles injected at or before its **deciding input word** D
+  (requirements.md §0.5) and change nothing else about the output: the ordered
+  sequence of (`tdata`, `tkeep`, `tlast`, `tuser`) tuples is unchanged and every
+  octet keeps its byte position within its word. **D for this module's four
+  output events, and the delay from each — the quantity §10's REQ-016 hook
+  commissions**:
+
+  | Output event | Deciding input word D | Delay from D |
+  |---|---|---|
+  | payload word m, where the frame has an input word m + 2 | input word **m + 2** — the later of the two input words carrying its octets (§6.1), and the word whose own `tkeep` and `tlast` fix this word's `tkeep`, `tlast` and `tuser`[0] | **1** cycle |
+  | the frame's **last** payload word where the frame ends at input word m + 1 — the drain word, N ≡ 0 or 7 (mod 8), whose only octets are those that word carries at positions 6 and 7 (one octet at N ≡ 7, two at N ≡ 0) | the input **`tlast`** word, which is input word m + 1 | **2** cycles |
+  | `hdr_valid` | input word **1** — the word completing the ethertype and the word whose `tkeep` decides that the frame is not short | **1** cycle |
+  | `error_short_frame` | the input **`tlast`** word | **1** cycle |
+
+  On a gapless stimulus these reproduce §6.1's cycle table exactly, which is why
+  that table could be written before D was defined and is right. **M06's input
+  carries its framing in band** — `tkeep`, `tlast` and `tuser`[0] arrive on the
+  input word itself — so §0.5's **late-decision** test is passed at every output
+  event and D is never later than the last input word carrying the event's own
+  octets; that is the whole of what M06 owes from the `1f3c04c` re-ruling, and it
+  is why the drain word's D is its frame's `tlast` word rather than a word that
+  never arrives. **M06 fails §0.5's straddle test**, so the per-octet constant of
+  the latency bullet above is a gapless figure only: a REQ-016 wrapper asserting
+  L = 10 per octet under injection fails a conformant M06, which is the failure
+  mode `SCR-M03-I4` cost this programme once already. Per-octet latencies measured
+  on an injected run may always be **reported** as data.
 
 - **Reset.** While `clear` = 1 and on the first cycle after it returns to 0:
   `payload_tvalid` = 0, `hdr_valid` = 0, `error_short_frame` = 0, state `Idle`,
@@ -558,7 +596,7 @@ clears it.
 | REQ-012, REQ-409 | header fields decoded to numeric values, first wire octet most significant | §6.1 | known-frame directed test comparing a MAC field and the ethertype against hand-computed values (REQ-012's worked examples) |
 | REQ-014 | `tstrb` ignored in, driven 0 out | §4.2 | protocol monitor; REQ-014's differential run |
 | REQ-015 | one `tlast` per payload frame, the `tlast` word included; at most 188 words | §7 | protocol monitor |
-| REQ-016 | input idle cycles delay octets and change nothing else; §6.1's cycle formulas are gapless-only | §6.1, §7 | idle-injection wrapper at 0, 1 and 7 cycles, asserting the **per-octet** constant rather than the cycle formula |
+| REQ-016 | input idle cycles delay each output event by the idles injected at or before its deciding input word and change nothing else; §6.1's cycle formulas are gapless-only | §6.1, §7 | idle-injection wrapper at 0, 1 and 7 cycles, asserting the **output tuple sequence unchanged** and each output event delayed by exactly the idle cycles injected at or before its **deciding input word D** (§7's table names D and the delay for all four events). **Not** §6.1's gapless cycle formulas and **not** §7's per-octet constant L = 10: M06 fails requirements.md §0.5's straddle test (h = 14), so a wrapper asserting a single per-octet L under injection fails a conformant design — the `SCR-M03-I4` failure mode, and this hook commissioned exactly that assertion until 2026-08-11 (§13). Per-octet latencies on an injected run may be **reported** as data and SHALL NOT be asserted as a single constant |
 | REQ-019 | ΔC = 3 against a ceiling of 3; two words of payload storage | §7 | ΔC computed from the pinned L and h at freeze; measured ΔC from the stress run in the sign-off packet |
 | REQ-020 | one frame at a time; order not expressible otherwise | §6.2 | sequence numbers in the stress run |
 | REQ-021 | payload octet 0 at `payload_tdata`[7:0] at every frame length | §6.1 | directed lengths 14–22: 14–21 cover every residue modulo 8, and 22 is what covers the `0xFF` `tkeep` pattern (C-17(e)) |
@@ -607,3 +645,4 @@ interface.
 |---|---|---|---|---|
 | 2026-08-02 | §6.1 back-to-back paragraph: the inverted inequality `M + 2 ≤ Ci + K` replaced by `M + 2 ≤ K + 1`, with both directions derived and the failing stimulus named; §10's REQ-410 hook gains the matching prohibition (ledger **C-17(a)**) | no | none — the abort paragraph two paragraphs earlier already proved the governing inequality; this removes the contradiction | `J-architect_docs_lead-0006` |
 | 2026-08-02 | §8 directed set extended from 14–21 to **14–22** octets and its residue claim separated from its `tkeep`-pattern claim; §10's REQ-005 and REQ-021 hooks follow (ledger **C-17(e)**) | no | none — a coverage claim short by one length, not a behavioural statement; §6.1's payload mapping is unchanged | `J-architect_docs_lead-0006` |
+| 2026-08-11 | **The per-octet-under-injection reading retired by requirements.md §0.5 is repaired at all four of its sites in this file, and §7 now names D.** §7's handshake bullet: *"Idle gaps on the input (REQ-016) delay everything by exactly 8 octet times per cycle and change nothing else"* is replaced by §0.5's per-output-event rule, with a table naming the **deciding input word D** and the delay from it for each of M06's four output events — payload word m (D = input word m + 2, delay 1), the drain word (D = the input `tlast` word, delay 2), `hdr_valid` (D = input word 1, delay 1) and `error_short_frame` (D = the input `tlast` word, delay 1) — and with the two §0.5 verdicts stated: M06 **passes** the late-decision test because its input carries `tkeep`/`tlast`/`tuser` in band, and **fails** the straddle test because h = 14. §7's latency bullet scopes L = 10 to a gapless stimulus. §10's REQ-016 hook, which commissioned *"asserting the **per-octet** constant rather than the cycle formula"* — the assertion §0.5's closing paragraph forbids at a module failing either test — commissions the achievable observable instead. **And §6.1's gapped paragraph, which asserted the same retired reading in its own words and was *not* on the site list §13's 2026-08-04 row named for M06**, is repaired with them; the row named §7 and §10, and the list was short by one | no — **no cycle this specification pins moves**, at any section: §6.1's table, §7's L = 10 / h = 14 / ΔC = 3, §9's strobe offset and the interface record are untouched, and the M06 RTL landed at `0753735` was written to §0.5 as amended (`J-rtl_lead-0015` derives the same four D's independently, which is the check this row rests on rather than my own arithmetic alone). What changes is what a bench may assert under injection, and M06 has no bench | none — the retired reading is arithmetically unsatisfiable at a straddling module rather than rejected among live alternatives, so nothing is chosen; the 2026-08-04 row in `requirements.md` §13 gives the same ground for the ruling this discharges | `J-architect_docs_lead-0038` |

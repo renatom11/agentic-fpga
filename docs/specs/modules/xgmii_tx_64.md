@@ -349,20 +349,56 @@ rely on it.
 
 ## 7. Timing contract
 
-- **Latency.** REQ-210's constant, pinned: the delay from the first accepted
-  source word to the XGMII word carrying that frame's start character is
-  **1 cycle = 8 octet times**, measured with the transmitter idle and REQ-204's
-  gap obligation already satisfied. The two measurement events are the cycle on
-  which `tx_tvalid` and `tx_tready` are both 1 for the frame's first word, and
-  the cycle of the XGMII word whose lane 0 carries `/S/`. The figure is exactly
-  8 × 1 octet times because REQ-201 puts every start character in lane 0, so
-  both events sit at octet position 0 of their words.
+- **Latency. Two constants, and naming which is which is the requirement**
+  (`FINDING AP-M04-1`, §13). M04 inserts eight octets ahead of every frame and
+  removes none, so the delay between the two **events** REQ-210 names and the
+  **per-octet** latency requirements.md §0.5 defines are different quantities
+  with different values. Both are pinned here; neither may be measured against
+  the other's figure.
+
+  | Quantity | Value | Measured between |
+  |---|---|---|
+  | **REQ-210's event delay** | **1 cycle = 8 octet times** | the cycle on which `tx_tvalid` and `tx_tready` are both 1 for the frame's first word, and the cycle of the XGMII word whose lane 0 carries `/S/` |
+  | L (octet times), §0.5 | **16** | the octet time of a frame octet on the source stream, and the octet time of that same octet on the XGMII lane pair |
+  | h (octet times) | **0** | — |
+  | Word delay ΔC = (L + h)/8 | **2** cycles | the cycle of the source word carrying the frame's first octet, and the cycle of the first XGMII word carrying an octet **of the frame** |
+  | §1.1 ceiling | **none** — M04 is not on REQ-006's chain | — |
+
+  **Why h is 0 at a module that inserts.** requirements.md §0.5's front offset is
+  the offset to the first octet the module emits for that frame *at that same
+  input*; the preamble and SFD octets entered on no input, have no input octet
+  time and are not octets of the frame, so the first octet the definition reaches
+  is the frame's own first octet and h = 0. ΔC therefore counts to the first
+  output word carrying an octet **of the frame** — the word after the preamble
+  word — and not to the preamble word itself. (L + h) = 16, a multiple of 8 as
+  §0.5 requires.
+
+  **The two figures, derived both ways and shown to agree.** Frame octet `j` is
+  accepted in source word `⌊j/8⌋` at cycle `C + ⌊j/8⌋`, byte position `j mod 8`,
+  so its input octet time is `8C + j`. §6.1 transmits a word accepted at `C + m`
+  on cycle `C + m + 2`, lane = byte position (REQ-012, no rotation), so its
+  output octet time is `8C + 16 + j`: **L = 16 for every frame octet, of every
+  frame, at every length.** By the identity, ΔC = (16 + 0)/8 = 2, which is
+  (C + 2) − C — the first XGMII word carrying frame octets against the source
+  word carrying frame octet 0. REQ-210's 8 is the *other* pair of events, one
+  output word earlier, and it is exactly 8 × 1 octet times because REQ-201 puts
+  every start character in lane 0, so both of its events sit at octet position 0
+  of their words. **The two differ by exactly the preamble word.**
+
+  **A monitor asserting 8 per octet fails a conformant M04 at every octet of
+  every frame**, which is the bench `AP-xgmii_tx_64` row `M04-J3` forbids and the
+  finding this bullet answers. Both constants may be asserted — M04 passes both
+  of §0.5's tests, straddle (h ≡ 0 mod 8) and late decision (its output framing is
+  decided by the source word it is transmitting, never by a later one), so unlike
+  every straddling receive module its per-octet constant **does** survive REQ-016's
+  idle injection — but each against its own figure.
 
   M04 is not a receive-path module: requirements.md §1.1 allocates it no
   ceiling and REQ-006's budget does not contain it. No requirement constrains
-  the *value* of this constant — only that it is one. It is pinned at 1 cycle
-  because that is the minimum an inserted preamble word permits (§6.1), and
-  changing it later is an ordinary spec diff with no budget consequence.
+  the *value* of either constant — only that each is one. The event delay is
+  pinned at 1 cycle because that is the minimum an inserted preamble word
+  permits (§6.1), and changing it later is an ordinary spec diff with no budget
+  consequence; L moves with it, by 8 octet times per cycle.
 
   Back-to-back transmission legitimately delays a start character until the gap
   is served, and REQ-210 puts that outside its domain.
@@ -551,7 +587,7 @@ the other end of a loopback.
 | REQ-207 | an accepted word is always transmitted; `tready` low when it cannot accept | §6.1, §7 | drive a continuous source; assert the transmitted octet sequence equals the accepted-word octet sequence exactly once, in order |
 | REQ-208 | M04's `tready` reaches only the transmit chain; no path from here into the receive datapath exists | §3 | hold M04 busy with a maximum-length frame while driving the receive path at the REQ-004 rate; REQ-004 still holds |
 | REQ-209 | one minimum-length frame per 11 cycles at the default gap, which requires `tx_tready` = 1 on the gap's last cycle **and** on the cycle after the `tlast` word is accepted | §6.1, §7 | 10 000-frame sustained bench; mean 11 **and** no spacing differing from 11. A bench SHALL NOT assert `tx_tready` = 0 across the whole gap — §6.1's table asserts it at C+11 and REQ-209 needs it there (C-14.1) — and SHALL NOT assert it 0 at C+8, which §6.1's table also asserts and on which SPEC-M07's composed cadence turns (C-16). Driven from a continuous source, this bench accepts the next frame's first word at C+8 and its second at C+11; the start characters are 11 cycles apart either way (§7) |
-| REQ-210 | constant 8 octet times (1 cycle) from first accepted word to start character | §7 | latency measurement over several frame lengths, each into an idle transmitter after the gap has elapsed |
+| REQ-210 | **two constants, named**: an event delay of 8 octet times (1 cycle) from the first accepted word to the start-character word, and §0.5's per-octet latency L = 16 with h = 0 and ΔC = 2 | §7 | latency measurement over several frame lengths, each into an idle transmitter after the gap has elapsed: the **event** interval equals 1 cycle at every length. A bench **SHALL NOT** assert 8 octet times **per octet** — a conformant M04 delivers 16 at every octet of every frame, so that assertion fails every conformant design (`FINDING AP-M04-1`, `AP-xgmii_tx_64` row `M04-J3`). Where the per-octet latency is asserted at all it is asserted against **16**, and the tagger's domain is the **frame** octets only: pad and FCS octets entered on no input and have no input octet time (row `M04-J4`) |
 | REQ-802, REQ-810 | `cfg_ifg` and `cfg_tx_enable` sampled per §4.3 | §4.3 | `cfg_tx_enable` = 0 with a request pending: no start character, `tready` low; re-enable and check the frame goes out |
 | REQ-903, REQ-808 | `xgmii_tx_64` is a distinct emitted module with `create`, `hierarchical` and an `.mli` | §4.1 | repository surface check and the `rtl_snapshots/` name comparison |
 
@@ -594,3 +630,4 @@ interface.
 | 2026-08-02 | §4.3 and §6.3 item 5: a configuration change landing on its own sampling cycle is deliberately unconstrained (ledger **C-14.5**) | no | none — makes an implication explicit so no bench asserts on it | `J-architect_docs_lead-0005` |
 | 2026-08-02 | §7 throughput bullet completed for the cycle after the `tlast` word is accepted (C+8): the value is 1, a word presented there is the next frame's first and is accepted into the vacated slot, the start character stays at C+12 under REQ-204, and the C+8/C+11 pair cannot exceed the two-word depth. §6.2's `Idle` row gains the second entry condition and the table gains a paragraph; §10's REQ-209 hook gains the corresponding prohibition (ledger **C-16**) | no | none — §6.1's cycle table already asserted the governing value and §7's REQ-210 bullet already permitted a delayed start character; this states what a word presented there does, which nothing said. No §4 record, no strobe, no gap arithmetic and no latency constant moves | `J-architect_docs_lead-0006` |
 | 2026-08-02 | §9 co-occurrence bullet: `error_underflow` and `error_tx_length_mismatch` no longer "pulse **together**" — they are stated as **ordered and unpinned**, M18's first on the cycle it accepts the short `tlast` and M04's later by an unpinned number of cycles that depends on M15's drain, with a bench asserting **one pulse of each per under-delivered frame** and nothing about the separation (ledger **C-31**) | no — no strobe, port, record, state, cycle table or latency constant moves; the bullet is brought into agreement with what two committed documents already say of it | **ADR-0011**, whose Consequences bullet ("it now says ordered-and-unpinned") and whose Affects header both assert this diff and are the authority for its wording; dv_lead's owed item **C-31**, preferred repair (WO-0020 Return log, answer (7)) | `J-architect_docs_lead-0009` |
+| 2026-08-11 | §7's latency bullet and §10's REQ-210 hook: the **two** constants are separated and both pinned — REQ-210's **event delay** of 1 cycle (8 octet times) between the acceptance handshake and the start-character word, and requirements.md §0.5's **per-octet** latency **L = 16** with **h = 0** and **ΔC = 2**, derived both ways and shown to agree and to differ by exactly the preamble word. §7 states why h is 0 at a module that inserts (an inserted octet entered on no input and has no input octet time) and records that M04 passes both of §0.5's tests, so its per-octet constant survives idle injection. §10's hook forbids the assertion that fails a conformant design (`FINDING AP-M04-1`, dv_lead) | no — no port, record, state, cycle table, strobe, gap figure or pinned value moves; the 1-cycle event delay is the same number it has been since the freeze and L = 16 was always what §6.1's `C + m + 2` implied. What changes is that both quantities are named and neither can be measured against the other's figure | none — the reading the diff removes is arithmetically unsatisfiable rather than rejected, so nothing is chosen; the live alternative (repair §7's 8 to 16 instead of REQ-210's opening clause) is recorded and refused in `requirements.md` §13's row of the same date | `J-architect_docs_lead-0038` |

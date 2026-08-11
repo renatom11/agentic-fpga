@@ -97,7 +97,7 @@ bench (§0.4, REQ-905).
 | REQ-013 | `payload_tuser`[0] is read on the input `tlast` word and written on the payload `tlast` word **where §6.1's D ≤ 0 puts that word after the input `tlast`; on D ≥ 1 that word leaves on or before the input `tlast` is presented and carries a derived 0 (§6.2, §11.5)**. M14 never drops a datagram because it is set, which is REQ-013's own sentence, and it is not the ultimate consumer on this branch — the application is (REQ-707). |
 | REQ-014 | `payload_tstrb` is ignored on the input and driven to 0 on the payload output. |
 | REQ-015 | One `tlast` per payload frame, the `tlast` word included in the count; at most **185** words between two `tlast` words on the payload stream (1480 octets — the 1500-octet maximum total length less the 20-octet header — is 185 words, 184 full and a final eight-octet word), at least one. |
-| REQ-016 | The input may carry idle cycles inside a datagram and M14 tolerates them: k idle cycles before an input word delay every octet that word carries by exactly 8k octet times and change nothing else (§7). §6.1's cycle formulas are stated on a gapless stimulus; §7's **per-octet constant L = 12** holds on every stimulus, while §7's 3-cycle **parse latency** is scoped to a header delivered on consecutive cycles and grows by the injected count when idle lands inside it (carry-forward **C-27**). |
+| REQ-016 | The input may carry idle cycles inside a datagram and M14 tolerates them: k idle cycles before an input word delay every octet that word carries by exactly 8k octet times on the input side, and change nothing else (§7). §6.1's cycle formulas are stated on a gapless stimulus, **and so is §7's per-octet constant L = 12**: M14 fails requirements.md §0.5's straddle test (h = 20 is no multiple of 8), so that constant does not survive injection either. What survives is the **delay from each output event's deciding input word**, pinned in §7's table — of which §7's 3-cycle **parse latency**, scoped to a header delivered on consecutive cycles and growing by the injected count when idle lands inside it (carry-forward **C-27**), is the same fact stated from the other end. |
 | REQ-017, REQ-018 | No instance: M14 sees no lane, no control character and nothing below XGMII. |
 | REQ-019 | Word delay ΔC = (L + h)/8 = (12 + 20)/8 = **4** cycles against a ceiling of **5** (requirements.md §1.1) — M14 holds **one cycle of reserve inside its own allocation**, which §7 and §11.2 state as a decision rather than leave to be discovered. Payload storage is **two** datapath words: payload octets 0–7 span input words 2 and 3, which is the whole reason the depth is two rather than one (REQ-019 permits two). |
 | REQ-020 | Datagrams leave in the order they arrived; M14 holds one datagram's header at a time (§6.2), so reordering is not expressible. |
@@ -518,14 +518,24 @@ available to it, because M14 detects the condition at the input `tlast` itself.
 
 **Gapped stimulus.** A cycle carrying no payload word holds every state and every
 register: it is not a condition, it advances no word index, and it delays every
-later octet by exactly 8 octet times per cycle (REQ-016). The cycle formulas
-above hold on a gapless stimulus; the **per-octet constant L = 12** of §7 holds
-on every stimulus, and that is what a bench asserts — the same distinction
-carry-forward C-14.4 fixed in SPEC-M03 §6.1. **§7's *parse-latency* figure of 3
-cycles is not in that class**: its two events are an input word and an output
-pulse rather than one octet at two ports, so an idle cycle injected inside the
-header moves the pulse and not the word and the figure grows by exactly the
-injected count (§7, carry-forward **C-27**).
+later octet by exactly 8 octet times per cycle on the **input** side (REQ-016).
+The cycle formulas above hold on a gapless stimulus, and a bench asserting them
+under injection would fail a conformant design — the distinction carry-forward
+C-14.4 fixed in SPEC-M03 §6.1.
+
+*This paragraph said until 2026-08-11 that "the per-octet constant L = 12 of §7
+holds on every stimulus, and that is what a bench asserts". It does not: h = 20
+is not a multiple of 8, so every payload word is assembled from two input words
+(positions 4–7 of one and 0–3 of the next) and an idle injected between them moves
+one part and not the other, which REQ-011 forbids resolving by splitting the word
+— requirements.md §0.5's **straddle** test, ruled at `SCR-M03-I4`, with M14 named
+in its Phase-1 verdict. **§7's 3-cycle parse-latency figure was never in that
+class and its scoping stands** — its two events are an input word and an output
+pulse, so an idle inside the header moves the pulse and not the word and the
+figure grows by exactly the injected count (§7, carry-forward **C-27**). What
+changes is that C-27's growth rule is no longer the exception to a gap-invariant
+L: **it is one row of §7's per-output-event table, which is the gap-invariant
+quantity for every output event of this module**, `ip_hdr_valid` included.*
 
 **When `hdr_valid` opens a datagram with no payload frame.** M06 emits a header
 record with no payload frame for a 14-octet Ethernet frame (requirements.md
@@ -630,7 +640,10 @@ rely on it.
 
   (L + h) = 32, a multiple of 8 as requirements.md §0.5 requires. There is one
   constant and not two: M14 sees no XGMII, so §0.5's start-lane pair has no
-  instance here and L is a single value.
+  instance here and L is a single value. **L is pinned on a gapless stimulus and
+  does not survive REQ-016's idle injection** — M14 fails §0.5's straddle test,
+  h = 20 being no multiple of 8 — so the quantity a bench asserts under injection
+  is the per-output-event delay of the handshake bullet below, not this figure.
 
   **The two measurement events**, named explicitly: the input event is the octet
   time, on the `payload` stream, of the octet being measured; the output event is
@@ -666,25 +679,31 @@ rely on it.
   before payload word 0 (§6.1).
 
   **The parse-latency constant is scoped to a header delivered without internal
-  idle cycles, and REQ-611's gap clause is satisfied by L and not by this figure**
-  (carry-forward **C-27**, dv_lead). REQ-611 asks for the constant "counted per
-  §0.5 so that REQ-016's permitted idle gaps do not break the constant". §0.5's
-  device does that for a **per-octet** latency, where an injected idle cycle moves
-  the input event and the output event together: that is **L = 12**, and it is
-  gap-invariant. This figure's two events are the *input word* carrying IPv4
-  octet 0 and the `ip_hdr_valid` *pulse*, and an idle cycle **inside the header** —
-  between input words 0 and 2 — moves only the second: one such cycle puts input
-  word 2 at Ci + 3 and the pulse at Ci + 4, a parse latency of 4. So:
+  idle cycles** (carry-forward **C-27**, dv_lead). This figure's two events are
+  the *input word* carrying IPv4 octet 0 and the `ip_hdr_valid` *pulse*, and an
+  idle cycle **inside the header** — between input words 0 and 2 — moves only the
+  second: one such cycle puts input word 2 at Ci + 3 and the pulse at Ci + 4, a
+  parse latency of 4. So:
 
   > **3 cycles, on a header whose three input words are delivered on consecutive
   > cycles.** Under REQ-016's permitted idle injection inside the header the
-  > figure grows by exactly the number of injected cycles, and **L = 12 is the
-  > constant that does not move**.
+  > figure grows by exactly the number of injected cycles.
 
-  There are therefore two constants in this section and only one of them is
-  gap-invariant; §10's REQ-016 hook names **L** explicitly for that reason, and a
-  bench that injects idle inside the header and asserts 3 fails a conformant M14.
-  §6.1 states the same scoping from the other side.
+  **What discharges REQ-611's gap clause, restated 2026-08-11** (§13). REQ-611
+  asks for a constant that REQ-016's idle gaps do not break. Until 2026-08-11 both
+  this bullet and §10's hook answered *"L = 12, which is gap-invariant"* — and
+  requirements.md §0.5 has since retired that reading: M14 straddles (h = 20), so
+  **L does not survive injection either**, and the paragraph that named it as the
+  surviving constant was naming a quantity no straddling module has. The clause is
+  discharged instead by the quantity §0.5 does supply: **the delay from an output
+  event's deciding input word to the event**, which for `ip_hdr_valid` is input
+  word 2 — the word completing the 20-octet header — at a delay of exactly **one
+  cycle**, on every stimulus, gapped or not. That is the same fact as C-27's growth
+  rule seen from the other end: the figure measured from input word **0** grows by
+  the injected count precisely because the figure measured from input word **2**
+  does not move. REQ-611's own text now says so, and §10's REQ-016 and REQ-611
+  hooks commission that measurement. **Neither constant in this section is
+  gap-invariant, and the one that is belongs to the handshake bullet below.**
 
 - **Throughput.** One input word accepted every cycle, unconditionally and with
   no handshake (REQ-003). At most one payload word emitted per cycle, and never
@@ -716,8 +735,33 @@ rely on it.
   reports a defect that is not there — the third record to which that sentence
   applies, after `Eth_header` (SPEC-M06 §11.3) and `Arp_packet` (SPEC-M10 §7).
 
-  Idle gaps on the input (REQ-016) delay everything by exactly 8 octet times per
-  cycle and change nothing else.
+  **Idle gaps on the input (REQ-016)** delay each **output event** by exactly the
+  number of idle cycles injected at or before its **deciding input word**
+  (requirements.md §0.5) and change nothing else about the output: the ordered
+  sequence of (`tdata`, `tkeep`, `tlast`, `tuser`) tuples is unchanged and every
+  octet keeps its byte position within its word. **The deciding input word of each
+  of M14's output events, and the delay from it — the quantity §10's REQ-016 hook
+  commissions**:
+
+  | Output event | Deciding input word | Delay from it |
+  |---|---|---|
+  | payload word j, where the datagram has an input word j + 3 | input word **j + 3** — the later of the two input words carrying its octets (§6.1: positions 4–7 of input word j + 2 and 0–3 of input word j + 3) | **1** cycle |
+  | the **last** payload word where the frame ends at input word j + 2 | the input **`tlast`** word, which is input word j + 2 | **2** cycles |
+  | `ip_hdr_valid`, and each of §9's first six strobes | input word **2** — the word completing the 20-octet header, from which all seven header-decided conditions are decidable (§9) | **1** cycle |
+  | `error_ip_truncated` | the input word carrying **the event that closed the frame** — the input `tlast` word, or the next `hdr_valid` pulse where the frame carried no payload frame at all (§9) | **1** cycle |
+
+  On a gapless stimulus these reproduce §6.1's cycle table exactly, which is why
+  that table could be written before the rule was stated and is right.
+  **Nomenclature, because this specification already spends the letter D**:
+  §6.1's **D** is the copy-window cycle deficit K − M − 3 of ADR-0012 and is a
+  different object entirely; requirements.md §0.5's *deciding input word* is
+  written out in full here and never abbreviated, and no sentence relates the two.
+  **M14 passes §0.5's late-decision test** — its input carries `tkeep`, `tlast`
+  and `tuser`[0] in band, so the evidence fixing an output word's marks arrives
+  with the octets rather than after them — and **fails its straddle test** (h = 20),
+  which is why the per-octet constant L = 12 above is a gapless figure and a
+  REQ-016 wrapper asserting it under injection fails a conformant M14. Per-octet
+  latencies on an injected run may always be **reported** as data.
 
 - **Reset.** While `clear` = 1 and on the first cycle after it returns to 0:
   `ip_payload_tvalid` = 0, `ip_hdr_valid` = 0, all seven strobes 0, state `Idle`,
@@ -1028,7 +1072,7 @@ monitor counts high cycles per strobe.
 | REQ-012 | every header field decoded to a numeric value, first wire octet most significant | §6.1 | known-datagram directed test comparing all six fields against hand-computed values, including both addresses |
 | REQ-014 | `tstrb` ignored in, driven 0 out | §4.2 | protocol monitor; REQ-014's differential run |
 | REQ-015 | one `tlast` per payload frame, the `tlast` word included; at most 185 words | §3, §7 | protocol monitor |
-| REQ-016 | input idle cycles delay octets and change nothing else; §6.1's cycle formulas are gapless-only | §6.1, §7 | idle-injection wrapper at 0, 1 and 7 cycles, asserting the per-octet constant **L = 12** of §7 — **not** §6.1's cycle formulas and **not** §7's 3-cycle parse latency, which grows by the injected count when the idle lands inside the header (carry-forward **C-27**) |
+| REQ-016 | input idle cycles delay each output event by the idles injected at or before its deciding input word and change nothing else; §6.1's cycle formulas are gapless-only | §6.1, §7 | idle-injection wrapper at 0, 1 and 7 cycles, asserting the **output tuple sequence unchanged** and each output event delayed by exactly the idle cycles injected at or before its **deciding input word** (§7's table names it and the delay for all four event classes). **Not** §6.1's cycle formulas, **not** §7's 3-cycle parse latency (which grows by the injected count when the idle lands inside the header, carry-forward **C-27**), and **not** §7's per-octet constant L = 12: M14 fails requirements.md §0.5's straddle test (h = 20), so a wrapper asserting a single per-octet L under injection fails a conformant design — the `SCR-M03-I4` failure mode, and this hook named L as the thing to assert until 2026-08-11 (§13). Per-octet latencies on an injected run may be **reported** as data and SHALL NOT be asserted as a single constant |
 | REQ-019 | ΔC = 4 against a ceiling of 5, one cycle of reserve inside M14's own allocation; two words of payload storage | §7, §11.2 | ΔC computed from the pinned L and h at freeze; measured ΔC from the stress run in the sign-off packet, quoted against the ceiling of 5 |
 | REQ-020 | one datagram at a time; order not expressible otherwise | §6.2 | the sequence numbers in the stress run |
 | REQ-021 | payload octet 0 at `ip_payload_tdata`[7:0] at every datagram length | §6.1 | directed total lengths 20–28: 20–27 cover every residue modulo 8, and 28 is what covers the `0xFF` `tkeep` pattern (C-17(e)'s lesson) |
@@ -1041,7 +1085,7 @@ monitor counts high cycles per strobe.
 | REQ-605 | exactly total length − 20 octets delivered; padding beyond consumed and dropped; a frame ending early aborts the payload **iff at least one payload octet was delivered** and pulses the strobe either way (the extensional branch, C-26); declared total length 20 emits a header record and no payload frame | §6.1, §6.2, §9 | a 64-octet frame carrying total length 28 (18 octets of padding removed, 8 delivered), total length 20, a frame truncated 10 octets early, **the 21-to-27-delivered band** (one payload word, `tuser`[0] = 1, one strobe) and **exactly 20 delivered with total length 46** (no record, no word, one strobe) |
 | REQ-606 | six fields in a record whose `valid` is one cycle high, one cycle before the first payload word | §6.1, §7 | known-datagram test comparing every field and the `valid` timing |
 | REQ-607 | protocol checked against 17 on input word 1; ICMP is out of scope and gets no reply | §6.1, §9 | protocol 1 and protocol 6 datagrams; plus the two-condition datagram of §8, which is where §0.6's multiplicity rule is asserted |
-| REQ-611 | parse latency pinned at 3 cycles from input word 0 to the `ip_hdr_valid` pulse, one constant for every datagram length and every field content, **on a header delivered without internal idle cycles**; REQ-611's gap clause is discharged by the per-octet constant L = 12, which is the gap-invariant one (C-27) | §7 | §8 check 4: the interval equals 3 for all 10 000, one value not a mean — the stress stimulus delivers each header on three consecutive cycles (§8), so the scope condition holds by construction there. Under idle injection the hook is L, not this figure |
+| REQ-611 | parse latency pinned at 3 cycles from input word 0 to the `ip_hdr_valid` pulse, one constant for every datagram length and every field content, **on a header delivered without internal idle cycles**; REQ-611's gap clause is discharged by the **delay from the pulse's deciding input word** — input word 2, at exactly one cycle, on every stimulus (§7, restated 2026-08-11: L = 12 was named as the gap-invariant constant until then and M14's straddle makes it not one, §13) | §7 | §8 check 4: the interval equals 3 for all 10 000, one value not a mean — the stress stimulus delivers each header on three consecutive cycles (§8), so the scope condition holds by construction there. Under idle injection the hook is the **one-cycle delay from input word 2**, not this figure and not L |
 | REQ-612 | total length above 1500 rejected on input word 0 | §6.1, §9 | a total-length-1501 datagram |
 | REQ-802, REQ-803 | four configuration inputs, each sampled on input word 2; the same-cycle change unconstrained | §4.3, §6.3 item 6 | change `cfg_local_ip` between two datagrams and assert the destination filter follows it at the next datagram, not the one in flight |
 | REQ-810 | no instance: REQ-810's receive half is M03's (SPEC-M03 §4.3), and M14 reads no enable | §4.3 | none — stated so that no sign-off packet claims coverage here |
@@ -1104,3 +1148,4 @@ specification and a bench, not against a build.
 | 2026-08-03 | **BEHAVIOURAL — the declared total length below 20** (dv_lead, `AP-ip_eth_rx_64.md` row **M14-K7**, found by writing the attack plan). §6.1's field table asserted total length "≥ 20 by construction of REQ-601's IHL check", which is **false** — IHL fixes the header length and leaves the total-length field's sixteen bits to the sender — so a datagram declaring 0 … 19 with a correct checksum passed all six header conditions, reached §6.2's `Header` row and matched **neither** of its branches, with M = ⌈(N′ − 20)/8⌉ negative and D undefined. The class joins **REQ-601's** discard class: one `error_ip_bad_header`, no `ip_hdr_valid`, no payload word, decided on input word 0 and reported at Ci + 3. §6.1 gains the derivation and a **partition table** over the whole field domain, and states that every later use of M and D is scoped to N′ ≥ 20 *because* of it; §6.2's `Header` row names both bounds as word-0 decisions and its `Payload` entry condition is pinned at N′ ≥ 21; §9's first row and §4.2's strobe meaning carry the third condition; §2's in-scope bullet, §8's rejection-class set (total lengths 0, 5 and 19) and §10's REQ-601 hook follow | no — **behavioural, not breaking**: a design that implemented one of the three readings the class admitted changes; no record, port, width, strobe name or pinned constant moves, and no other module is affected (M14's producer M08 never reads the field and its consumer M17 sees no datagram for this class) | **ADR-0013** | `J-architect_docs_lead-0011` |
 | 2026-08-03 | §6.3 item 4 rewritten: the DF flag and the reserved bit are unconstrained in their **representation** only — M14 has no port and no record field for either, so no monitor may read them out — while the **outcome** of a datagram that sets one is now stated: DF (or reserved) set, more-fragments clear, offset 0 meets no §9 condition and **is accepted**, identically to the datagram with both bits clear and with no `error_ip_fragment`. §8 gains the flag-bit pair (checksums recomputed) and §10's REQ-603 hook names it (dv_lead, **M14-B5**) | no — **not behavioural either**: no conformant design changes, because acceptance was already a function of §9's conditions and those two bits are in none of them. What changes is what DV may assert: the previous blanket "DV SHALL assert nothing about a datagram that sets either" made a wrong-bit-position read of octet 6 **unkillable at M14**, since the only distinguishing stimulus was the one it forbade | none — REQ-603's own text ("DF and the reserved bit are deliberately unconstrained") and §9's condition list already said it between them; this row states it in the one place a bench reads | `J-architect_docs_lead-0011` |
 | 2026-08-03 | §12's dv countersignature row: the abort-bit inequality dv_lead proved at WO-0018 corrected from **M + 3 ≥ K** to **⌈(N − 20)/8⌉ + 3 ≥ K**, with the reason the two differ (ledger **C-42**, dv_lead's own self-report). §12's architect-signature row gains the ADR-0012 and ADR-0013 revisions and the row records dv's WO-0025 re-countersignature at `8641455` | no | none — editorial; a claim about what was proved, not about what is required. Landed here because C-42 is gated on "the next SPEC-M14 §12-touching diff" and this is one | `J-architect_docs_lead-0011` |
+| 2026-08-11 | **The per-octet-under-injection reading retired by requirements.md §0.5 is repaired at every site §13's 2026-08-04 row named for M14, and §7 now names the deciding input word of each output event.** §7's handshake bullet: *"Idle gaps on the input (REQ-016) delay everything by exactly 8 octet times per cycle and change nothing else"* is replaced by §0.5's per-output-event rule, with a table naming the deciding input word and the delay from it for all four event classes — payload word j (input word j + 3, delay 1), the last payload word where the frame ends at input word j + 2 (the input `tlast` word, delay 2), `ip_hdr_valid` and §9's six header-decided strobes (input word 2, delay 1) and `error_ip_truncated` (the closing event's word, delay 1) — plus the two §0.5 verdicts: M14 **passes** the late-decision test (its input carries `tkeep`/`tlast`/`tuser` in band) and **fails** the straddle test (h = 20). §7's latency bullet scopes L = 12 to a gapless stimulus. §3's REQ-016 row and §6.1's gapped paragraph are repaired with them. **And the load-bearing half: §7's parse-latency bullet and §10's REQ-611 hook discharged REQ-611's gap clause against "the per-octet constant L = 12, which is the gap-invariant one"** — a sentence that became false on 2026-08-04 and was the only thing standing under carry-forward **C-27**'s disposition. The clause is now discharged by the delay from `ip_hdr_valid`'s deciding input word, input word 2, at exactly one cycle on every stimulus; **C-27's conclusion is untouched** and is restated as the same fact from the other end. §10's REQ-016 hook, which named L as the thing to assert, commissions the achievable observable instead. A **nomenclature note** is added because §6.1 already spends the letter **D** on ADR-0012's copy-window deficit: §0.5's *deciding input word* is written out in full here and the two are never related. **§11.2 needed nothing** — it is about the ΔC reserve and states no gap claim — so the site list §13's 2026-08-04 row gave for M14 was one entry long, which is recorded rather than quietly dropped | no — **no cycle and no number this specification pins moves**: §6.1's table, §7's L = 12 / h = 20 / ΔC = 4, the 3-cycle parse latency and its growth rule, §9's strobe cycles, §11.5's and ADR-0012's copy rule and the interface records are all untouched, and M14 has no RTL and no bench. What changes is what a bench may assert under injection, and which sentence discharges REQ-611's gap clause | none — the retired reading is arithmetically unsatisfiable at a straddling module rather than rejected among live alternatives; `requirements.md` §13's 2026-08-04 row gives the same ground, and the REQ-611 half is recorded in that file's §13 under this date | `J-architect_docs_lead-0038` |
