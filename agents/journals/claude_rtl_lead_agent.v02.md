@@ -3001,3 +3001,640 @@ whenever the programme schedules it, with no test content from me.
 
 - libs/hardcaml_ethernet/src/eth_axis_tx.ml
 - libs/hardcaml_ethernet/src/eth_axis_tx.mli
+
+## [J-rtl_lead-0021] 2026-08-11T14:30:54Z | task:none | M07's emitter registered and `build` reddened on purpose against a wholly green parent: the promotion block predicted at exactly one FILE entry on a precedent that has already run once, the duplicate-port red ruled out by an emitted netlist rather than by reading, and the REQ-902 rider declined because the only check `bin/**` can hold is unsound for the property it would claim
+
+### Trigger
+
+Orchestrator dispatch **C-RL-6b**, branch
+`claude/fpga-hardcaml-agent-orchestration-37ceyf`, spawn-head `3951b05`. The
+abort-first precheck ran before any read of substance: `git status --short`
+printed nothing and `git rev-parse HEAD` returned
+`3951b052ea74c12d003045aa857b92f322883164`, an exact match with the dispatch, so
+neither the rollback path nor the descendant clause was reached.
+
+The dispatch declares dv_lead live in this same tree on a concurrent round over
+`agents/handoffs/WO-0081_tb-m04-families-d-e-g9.md`,
+`test/attack_plans/AP-xgmii_tx_64.md`, `docs/specs/requirements.md`
+(countersignature mechanics) and its own journal, and warns that its return may
+land mid-round and move HEAD under me. **Neither happened at my sitting**: the
+tree was clean at entry, so no sibling edit was in flight, and HEAD re-read at the
+end of the round is still `3951b052…` (§Evidence). Nothing of the sibling's five
+paths was opened for writing, and `docs/specs/requirements.md` was opened
+**read-only**, for REQ-902's row and §0.5's output-offset term.
+
+This round is the first half of my own carry **C-RL-6b**, raised one entry ago at
+`J-rtl_lead-0020` Open-questions item 2, and it runs the pattern this seat
+established at `J-rtl_lead-0016` → `J-rtl_lead-0017` and exercised a second time
+at `J-rtl_lead-0019`. The dispatch also offers a rider — the REQ-902
+one-datapoint follow-up — explicitly to my judgement. **I decline it, and §7 is
+the reason, which is not schedule.**
+
+### Inputs
+
+- `agents/charters/rtl_lead.md` and `agents/PROTOCOL.md` in full (mandatory first
+  actions; §5's DoD, §6's determinism criterion and PROTOCOL §6's write-scope row
+  are what this round is measured against and bounded by).
+- `bin/generate.ml` at `3951b05` **in full** — the one file edited, read whole
+  first because its two block comments are the record of the `word_counter_top`
+  lesson and a registration contradicting them would be a silent deviation.
+- `bin/dune` and `libs/hardcaml_ethernet/src/dune` — read to establish that
+  neither needs an edit (§3).
+- `libs/hardcaml_ethernet/src/eth_axis_tx.mli` **in full**, and the `I`/`O` record
+  definitions and header doc comment of `eth_axis_tx.ml` — **read only**. M07's
+  source is landed at `cddad51`; this round does not open `libs/**` for writing.
+- `libs/hardcaml_ethernet/src/axi64.mli`'s `Axi64` block — the sentence making
+  `Source` and `Dest` distinct records with no `tready` in the former
+  (REQ-003, REQ-010), which is §4's construction-side answer.
+- `.github/workflows/build.yml` **in full**, and the body of its
+  `Verify nothing was left unpromoted or non-deterministic` step compared byte
+  for byte against the same step at `e9f371b` (§Evidence).
+- **`J-architect_docs_lead-0041` and the `docs/specs/modules/eth_axis_tx.md` diff
+  at `0b7be1f` in full** — read *before* writing anything in this entry that
+  cites SPEC-M07 §7, per the dispatch. C-RL-8 UPHELD AND REFINED; §7 now carries
+  the two-constant table (event delay 1 cycle · L = 22 · h = 0 · q = 6 · ΔC = 2
+  counted to output word 1), the per-octet prohibition, and the idle-injection
+  survival table with its deciding-input-word D column; §0.5 gained the output
+  offset q. §8 below is what that ruling costs my own shipped source.
+- `docs/specs/architecture.md` §4's M07 row (which fixes both the emitted name and
+  the file name), SPEC-M07 §10's REQ-903/REQ-808 row, and
+  `docs/specs/requirements.md`'s REQ-902 row with its verification column.
+- `tools/check_emitted_verilog.sh` — the REQ-808 `extra`/`missing` branches and
+  the REQ-903 inventory parser, to establish what the *next* round's promoted
+  bytes will meet; `tools/dv_checks.sh` grepped for `generate` (three comment
+  hits, no invocation).
+- `rtl_snapshots/eth_mac_10g.v` and `rtl_snapshots/eth_axis_rx.v` — their
+  top-level port lists, as the emitted evidence in §4; and the unnamed-wire index
+  ranges of all five committed snapshots, as the measurement in §6.
+- `.gitignore`, plus a `git check-ignore` probe on a path that does not exist yet.
+- My own `J-rtl_lead-0016` (the pattern, and its §4–§6 which this round does not
+  re-derive), `-0017`, `-0019` and `-0020`.
+- `J-dv_lead-0176` §9 — the determinism datapoint and the sentence routing REQ-902
+  back to this seat.
+- GitHub Actions: runs **31500640010** (`3951b05`, the parent), **31495302673**
+  (`cddad51`, where M07's source landed) and the historical pair **31465181652** /
+  **31467035116** from the M06 arc. Job- and step-level conclusions read via the
+  API, quoted in Evidence.
+- **No `test/third_party/` material opened this round; no Essenceia/Nasdaq-HFT-FPGA
+  material consulted, for this or for anything in it** (charter §8, Inputs
+  honesty). Registering an emitter has no prior-art question in it.
+
+### Reasoning
+
+#### 1. The decision is not re-argued, only re-applied
+
+`J-rtl_lead-0016` §1 settled why the emitter and the snapshot cannot land in one
+commit: `rtl_snapshots/**` is a build product of a toolchain this container does
+not have (ADR-0005), so the only bytes that may enter a snapshot are bytes CI
+produced, and CI produces them by failing. The sequence is forced — register,
+redden at one named step, promote the printed bytes. That reasoning is landed and
+the mechanism has now run twice end to end (M06 at `e9f371b` → `f34d0e2`, and the
+BUG-0004 re-promotion at `J-rtl_lead-0019`). **I re-apply it and do not re-litigate
+it**; what is new this round is §4, §6 and §7, and nothing else here is novel.
+
+The refused alternatives are refused on the same ground and by the same sentence:
+a hand-authored snapshot is a machine-produced expectation authored by the party
+it grades, and a placeholder is worse than the absence, because the determinism
+step's failure would then read as *drift* rather than *never committed*. **The
+absence is legible; a placeholder is a lie with a diff.**
+
+#### 2. The registration, and the three sentences of comment it made false
+
+`emit_eth_axis_tx` is the M03/M04/M05/M06 shape, character for character in
+structure: own `Scope.create ~flatten_design:false ()`, `Circuit.With_interface
+(Eth_axis_tx.I) (Eth_axis_tx.O)`, top built with **`create`** under
+`~name:"eth_axis_tx"`, one `Rtl.output` to the channel. The list row
+`"rtl_snapshots/eth_axis_tx.v", emit_eth_axis_tx` is **appended after M06**, which
+is architecture.md §4's inventory order.
+
+`eth_axis_tx` and `eth_axis_tx.v` are not my choices: architecture.md §4's M07 row
+names the module and, in its own column, the file; SPEC-M07 §10's REQ-903/REQ-808
+row requires a distinct emitted module of that name; and it is the same string
+`eth_axis_tx.ml`'s own `hierarchical` registers, so M07 has one name in the
+netlist whether it is emitted standalone here or instantiated by a future parent.
+
+The `create`-not-`hierarchical` horn is M06's argument unchanged and it applies
+verbatim: SPEC-M07 §1 says M07 instantiates nothing, so the "supplies the
+children" half is vacuous, and the other half is not — emitting through
+`Eth_axis_tx.hierarchical` under a top of the same name reproduces the
+`word_counter_top` collision exactly and yields a shell instantiating a module
+that is not in the file, while the renaming escape is closed for a design module
+by REQ-808's `extra` branch.
+
+The comment repairs are **three, and all three are corrections of counts rather
+than new argument**: the spec list `M03/M04/M05/M06` → `M03/M04/M05/M06/M07`; the
+emitted-name list gains `` `eth_axis_tx` ``; "§12 of all four specs" → "all five".
+The childless-module paragraph, added last round for M06 alone, now names M06 and
+M07 together, because SPEC-M07 §1 says exactly what SPEC-M06 §1 says. **I did not
+add a paragraph.** M07 raises no new naming question, and a comment that grows a
+section per module stops being read, which defeats the reason it exists.
+
+#### 3. What did not need to change, established rather than assumed
+
+`libs/hardcaml_ethernet/src/dune` has no `(modules)` field, so the library already
+exports `Eth_axis_tx`, and `open Hardcaml_ethernet` at the top of `generate.ml`
+already brings it into scope; `bin/dune` already lists `hardcaml_ethernet`. **No
+dune file is touched**, which is worth stating because dune/opam project files are
+the orchestrator's scope (charter §7, E3) and a registration that had needed one
+would have been an escalation rather than an edit.
+
+**The dispatch's conditional `libs/hardcaml_ethernet/**` allowance was not
+exercised and no hook was required.** `eth_axis_tx.mli` already exports
+`val create : Scope.t -> Signal.t I.t -> Signal.t O.t` and modules `I` and `O`
+with `[@@deriving hardcaml]` — the same surface the four sibling emitters consume,
+at the same arity, in the same order. Not one byte under `libs/**` was opened for
+writing.
+
+**And nothing was created under `rtl_snapshots/`** — no snapshot, no placeholder,
+no empty file. The dispatch asked me to say so if the arc's first half turned out
+to touch it. It does not, and it must not: the snapshot arrives from CI's bytes in
+the second half, and a file placed here by me would be the hand-authored
+expectation §1 refuses.
+
+#### 4. The one failure mode M06's registration did not have to clear
+
+M06's every prefix serves one direction: `rx_` is a `Source` in, `payload_` a
+`Source` out, `hdr_` an output record. **M07 is the first module registered in
+this generator whose prefixes each span both stream directions** — `payload_` is
+an `Axi64.Source` **input** and an `Axi64.Dest` **output**; `tx_` is an
+`Axi64.Dest` **input** and an `Axi64.Source` **output**. `Circuit.create_exn`
+raises on a duplicate port name, so this is a real question about step 7 and not a
+formality. It is answered twice, and the second answer is the one that does not
+depend on my reading:
+
+**(a) By construction.** `axi64.mli` states that `Axi64.Source` and `Axi64.Dest`
+are distinct records and that this "is how a receive-path port is declared with no
+`tready` in it (REQ-003)". The two flattenings under one prefix are therefore
+disjoint by the record definition, not by luck.
+
+**(b) By an emitted netlist that already exists in this repository.**
+`rtl_snapshots/eth_mac_10g.v`'s top-level port list carries `tx_tvalid`,
+`tx_tdata`, `tx_tkeep`, `tx_tstrb`, `tx_tlast`, `tx_tuser` **and** `tx_tready` —
+one prefix, both records, one circuit, already emitted by this same generator
+through this same `create` horn. M07 reverses which side is input, and the
+duplicate-name question is blind to direction. The full 20-name port set for M07
+is enumerated in Evidence; no two of the twenty are equal.
+
+#### 5. Which step goes red, and the parent that makes the answer sharp
+
+Named exactly, because "the build will be red" is not a prediction anyone can
+falsify. The failing step is **`Verify nothing was left unpromoted or
+non-deterministic`**, job **`build`**, `.github/workflows/build.yml:57`, step 8 of
+10. Its body is **byte-identical** to the body I executed and verified at
+`J-rtl_lead-0016` §4 — `diff` against `e9f371b` reports no difference (§Evidence)
+— so that round's finding transfers rather than being re-asserted, and I re-ran it
+once against this round's new filename anyway because the filename is the only
+part of it that changed.
+
+**The discriminator this arc has and the M06 arc did not: the parent is wholly
+green.** Run **31500640010** at `3951b05` finished with all ten `build` steps
+`success` — including step 7 `Generate RTL` and step 8 itself — and with the
+`cosim` job green. So every step ahead of mine is known-passing on precisely the
+tree I am editing, and **a red at step 5, 6, 7, 9 or 10 is this commit's defect
+and not the schedule.**
+
+- **Step 5 `Build`** (`dune build @default`) — reached; my four new lines are the
+  only new code. A failure here prints a compiler error, not a promotion block.
+  What raises the odds it passes, stated precisely so it is not overclaimed: at
+  `cddad51`, `Build` concluded `success` (run 31495302673, job `build`, step 5),
+  and `@default` builds `libs/hardcaml_ethernet` — so `Eth_axis_tx`, its `I`, its
+  `O` and `create`'s arity **already type-check**. What has never been compiled is
+  the four lines in `generate.ml` that name them.
+- **Step 6 `Run tests`** — cannot see this change. Nothing under `test/` and no
+  `dune` file references `bin/` or `generate.exe` (measured), and the step runs
+  *before* `Generate RTL` regardless. Worth flagging because this is the step that
+  failed at `cddad51` — an expect-test promotion, dv's — and it is green again at
+  the parent, so a red here would be a new event and not a leftover.
+- **Step 7 `Generate RTL`** — reached, and **the one place a different red could
+  appear**: `Circuit.create_exn` on a duplicate port name. §4 rules it out two
+  ways. If it raises anyway, that is a **defect report to make, not a promotion to
+  harvest**, and the two are told apart by which step's name appears in the log.
+- **Steps 9 and 10 do not run at all** — a failed step skips the rest of the job.
+  Their silence this round is **not** a result, in either direction.
+- **`cosim`** is a separate job referencing neither `generate.exe` nor
+  `rtl_snapshots/**`, and should stay green. If it reddens on this commit, that is
+  not this commit's doing and must be investigated as such.
+
+#### 6. The shape of the block: exactly ONE `--- FILE` entry, on three independent grounds
+
+The dispatch asks for the expected shape, and the sharpest part of the shape is a
+negative — that the other four snapshots do **not** appear.
+
+**(a) Historical, and it is the very same mechanism.** `e9f371b` appended M06's
+emitter as the fifth entry in this list; `f34d0e2` promoted **exactly one file**,
+`rtl_snapshots/eth_axis_rx.v`, and run **31467035116** then went green. Had
+appending an emitter perturbed the four earlier files' bytes, that one-file
+promotion would have been insufficient and the next run would have reddened again
+listing them. It did not. The M07 append is the same act one position later.
+
+**(b) Measured, and it says *why*.** The unnamed-wire indices in the emitted
+Verilog are **file-local, not process-global**. Across the five committed
+snapshots in emission order the lowest index is 2, 2, 1, 1 and 3 — whereas a
+process-global monotonic counter would leave `eth_axis_rx.v`, emitted fifth,
+starting above the ~7,300 wire names `eth_mac_10g.v` alone consumes. So an
+emitter's *position* in the list does not reach any file's bytes. This is exactly
+what `generate.ml`'s own comment asserts ("this list's order cannot leak into any
+of them"); until now that was an assertion, and it is now a measurement.
+
+**(c) Trivially, from the diff.** The four earlier emitter functions are
+character-identical before and after this change, the four modules' sources are
+untouched, and step 8 was green at the parent — so those four regenerate
+byte-identically on the tree I am editing.
+
+Consequently the block's predicted shape is: one `--- FILE
+rtl_snapshots/eth_axis_tx.v`, its `sha256sum` line, its `base64 -w 400` payload,
+one matching `--- END`, no `--- DELETED` line anywhere, and **no test failure
+anywhere in the log** — the promotion block *is* the snapshot's bytes, and the red
+carries no other content. **I predict no byte count and no line count for the
+file**; M06's came out at 8,015 bytes and M07 has more datapath than M06, but a
+figure I cannot compute is a guess dressed as a prediction.
+
+What the promoted bytes will meet next round, checked now so the promotion is not
+a gamble: `Eth_axis_tx` is architecture.md §4 inventory row M07, so the snapshot
+arrives as an inventory name and **cannot** land in REQ-808's `extra` (`fail`)
+branch. **REQ-808 does not turn green either** — M08…M20 remain unemitted, so it
+stays `pend` with one fewer name, and a promotion round expecting green would read
+a correct `pend` as a regression. REQ-903's two parts were already satisfied when
+M07's source landed and are untouched by this registration. REQ-018's whitelist
+gains nothing to check, because M07 instantiates nothing.
+
+#### 7. The REQ-902 rider: declined, and the reason is not schedule
+
+`J-dv_lead-0176` §9 superseded my standing non-claim with one measured datapoint
+and routed the requirement back to me, recording that the workflow "generates
+**once** and compares against the committed tree, so this is cross-run identity
+between two commits and **not** a double-generation check". That reading is
+correct and I adopt it. Two corrections to the surrounding picture, then the
+refusal:
+
+**The datapoint is no longer one.** Run 31500640010's step 8 at the parent is a
+second instance of the same observable, and every green `build` on this branch is
+another. What none of them is, is a *double generation*.
+
+**The rider's premise — that the requirement needs exactly the `bin/**` +
+`rtl_snapshots/**` surface — is one file short.** Regeneration is a **process
+invocation**, and the only file in this repository that invokes `generate.exe` is
+`.github/workflows/build.yml`, whose scope is the orchestrator's exclusively
+(PROTOCOL §6). **Nothing I can stage under `bin/**` causes the executable to be
+run a second time.**
+
+**The only check that fits inside `bin/**` is a second emission within the same
+process, compared in memory — and it is unsound for this requirement.** The
+nondeterminism classes REQ-902 exists to catch are process-scoped: hash-seed
+randomisation, address- or allocation-order dependence, environment and locale.
+All are fixed once per process, so an in-process second call **cannot expose any
+of them** and would report clean in exactly the cases where the property fails. It
+is not free of the opposite error either: whether a second in-process emission of
+the same circuit even *should* produce identical text depends on whether
+Hardcaml's signal naming is process-global, and §6(b) measures that only *across
+files within one run*, which does not settle it. I have no toolchain here to
+settle it — `dune` is not on `PATH`, `opam list --installed | grep -ic hardcaml`
+returns 0, `ocamlformat` is absent (all three measured in Evidence). **A check
+that can pass while the property fails, and might fail while it holds, is worse
+than the absence it replaces**, and shipping it would let a later reader believe
+REQ-902 was instrumented when it was not.
+
+**And it cannot share this commit even if it were sound.** Any behaviour change to
+`generate.exe` adds a second candidate red site at steps 5 and 7, which destroys
+the single thing this two-commit pattern runs on: that a reader tells a scheduled
+red from a defect **by the failing step's name alone**. The rider and the arc want
+the same commit and cannot have it.
+
+**So it stays queued, and I name what would discharge it** so it is routed rather
+than carried indefinitely. One step in `.github/workflows/build.yml`, placed after
+`Generate RTL` and before the determinism step, that runs the already-built
+executable **a second time as a separate process from a different working
+directory** and diffs the two output trees — `_build/default/bin/generate.exe`
+executed with cwd in a scratch directory, then `diff -r` of its `rtl_snapshots`
+against the checkout's. That is a workflow edit and an orchestrator act. If the
+orchestrator would rather this seat hold the instrument, I can write the
+comparison script — but not in `bin/`, which by this repository's convention holds
+the OCaml executable and nothing else, and not in an arc commit; and the
+invocation would still not be mine. My part of the item is the derivation above
+and it is discharged here.
+
+#### 8. A finding I raise and deliberately do not repair: M07's doc comment now describes a closed defect
+
+`libs/hardcaml_ethernet/src/eth_axis_tx.ml`'s header comment ends with a section
+titled *"The constant, and the finding this module was written against"*, which
+states that what §7 calls the figure "is a **live spec defect** and is raised, not
+absorbed", and that "§0.5's identity L = 8·ΔC − h returns 16 for it". Both
+sentences were true when written at `cddad51`. **Neither is true at `0b7be1f`.**
+The architect UPHELD C-RL-8: §7 now carries the two-constant table — event delay
+**1 cycle** to output word 0, **L = 22** octet times per payload octet, **h = 0**,
+**q = 6**, **ΔC = 2** counted to output word 1 — §0.5 gained the output offset q so
+the identity reads 8·2 − 0 + 6 = 22 and agrees with the derivation instead of
+contradicting it, and SPEC-M07 §13's 2026-08-11 row records the repair. The defect
+is closed, so shipped source calling it live is now wrong.
+
+**I have not repaired it, and both reasons bind:**
+
+- **Scope.** The dispatch opens `libs/hardcaml_ethernet/**` only if the emitter
+  registration mechanically requires a hook. It does not (§3). A doc-comment
+  repair is not a hook, and taking it would be a silent widening of a declared
+  write set — the exact species of act my charter §6 scores as a finding.
+- **Preservation, which matters more here than it looks.** SPEC-M07 §13's row
+  rests its *editorial* classification on that very comment: it records that the
+  M07 RTL "was written to §6.1's table with this defect already named in its own
+  doc comment (`J-rtl_lead-0020` §5, which derived L = 22 independently — that
+  independence is what this row rests on rather than my arithmetic alone)". The
+  comment is a **cited evidentiary artefact**. It should be *updated* — to record
+  that the finding was raised, upheld and refined, with the ruling's commit named
+  — and never quietly rewritten to read as though it had always said the new
+  thing.
+
+One consequence worth stating because it makes the repair cheap and schedulable:
+**the repair is snapshot-neutral.** A doc comment reaches no signal, so
+regenerating over a repaired `eth_axis_tx.ml` emits identical Verilog and the
+determinism step stays green. It can therefore land in any later round **without**
+re-promoting `rtl_snapshots/eth_axis_tx.v` — and it specifically must **not** be
+folded into the promotion commit, whose write set is the snapshot alone. New carry
+**C-RL-9**.
+
+#### 9. What this entry deliberately does not claim
+
+**`bin/generate.ml` has not been compiled.** The parse check below sees syntax and
+nothing else — not a type, not `Eth_axis_tx.create`'s arity as I applied it, not a
+warning-as-error under the dev profile. **No run id is cited for this commit,
+because no run has executed it**; every run id in Evidence belongs to a commit at
+or before the parent.
+
+Equally not claimed: that `rtl_snapshots/eth_axis_tx.v` will contain a correct
+netlist (its correctness is dv_lead's and the co-sim lane's; its *existence* is the
+next round's); that REQ-902 holds for M07 (a property of bytes that do not exist);
+that REQ-808 turns green (§6 — it stays `pend`); that M07 has had an independent
+design review (it has not — registering an emitter reviews no logic and nothing
+here should be read as having done so); that the line-rate invariant is
+demonstrated (M07 is a transmit-path module and has no instance of it). **Nothing
+in this entry is a verification result and no DV sign-off is claimed** — `SO-` is
+dv_lead's to give.
+
+### Actions
+
+1. Ran the abort-first precheck (`git status --short`, `git rev-parse HEAD`) before
+   opening any file; tree clean, HEAD an exact match, no sibling edit in flight.
+2. Read the charter and PROTOCOL in full, then `J-architect_docs_lead-0041` and
+   the SPEC-M07 diff at `0b7be1f` **before writing any sentence citing §7**, then
+   the round's remaining inputs.
+3. Re-verified the promotion mechanism rather than assuming it transferred: diffed
+   the determinism step's body against `e9f371b` (identical), probed
+   `git check-ignore` on the not-yet-existing path (exit 1, not ignored), and ran
+   the step's body verbatim in a throwaway repo against an untracked
+   `rtl_snapshots/eth_axis_tx.v`.
+4. Established §4's duplicate-port answer from `axi64.mli` and, independently,
+   from `rtl_snapshots/eth_mac_10g.v`'s emitted port list; enumerated M07's twenty
+   port names and checked them pairwise distinct.
+5. Read the parent's CI run and `cddad51`'s at job and step granularity, and
+   established the green baseline and the fact that M07's own source already
+   type-checks.
+6. Measured §6(b)'s wire-index ranges across all five committed snapshots, and
+   read `f34d0e2`'s file list to confirm §6(a)'s precedent.
+7. Edited `bin/generate.ml` and nothing else: one new `emit_eth_axis_tx` in the
+   M03–M06 pattern, one list row appended after M06, three count corrections and
+   one paragraph generalisation in the block comments.
+8. **Created no file under `rtl_snapshots/`, and opened no file under `libs/**`
+   for writing.**
+9. Parse-checked the edit with two negative controls, one shaped like the edit
+   itself, and ran the line-width check against `.ocamlformat`'s margin.
+10. Re-ran the precheck at the end of the round to confirm HEAD had not moved
+    under me.
+11. Wrote this entry. **No `git add`, no `git commit`, no `git push`, no
+    `scripts/agent_commit.sh`, no git write of any kind.**
+
+### Evidence
+
+Reproducible from a checkout at this commit:
+
+```sh
+git status --short
+#    M bin/generate.ml            (plus this journal; nothing else)
+
+git diff bin/generate.ml
+#   one new emitter, one list row, two comment blocks updated
+
+# the library takes the new emitter with no dune edit: no (modules) field
+cat libs/hardcaml_ethernet/src/dune
+```
+
+**Parse check with two negative controls, because a check that cannot report
+failure is not a check:**
+
+```sh
+ocamlc -version                                        # 4.14.1
+ocamlc -stop-after parsing -c bin/generate.ml          # exit 0
+printf 'let x = (1 +\n' > bad.ml
+ocamlc -stop-after parsing -c bad.ml                   # exit 2, "Syntax error"
+printf 'let f o =\n  let module C = Circuit.With_interface (A.I) (A.O in\n  C.create_exn ~name:"x" o\n;;\n' > bad2.ml
+ocamlc -stop-after parsing -c bad2.ml                  # exit 2, "This '(' might be unmatched"
+
+awk 'length>90 {print FILENAME": "FNR}' bin/generate.ml   # (no output; janestreet margin)
+```
+
+The second control is the one that counts: a malformed `Circuit.With_interface`
+application, the exact construct this round added, and the parser rejects it — so
+the positive result discriminates over the edit's own shape.
+
+**The determinism step's body is unchanged since the M06 registration, so
+`J-rtl_lead-0016` §4's execution transfers:**
+
+```sh
+diff <(git show e9f371b:.github/workflows/build.yml | sed -n '57,84p') \
+     <(sed -n '57,84p' .github/workflows/build.yml)     # no output
+git check-ignore -v rtl_snapshots/eth_axis_tx.v ; echo "exit=$?"   # exit=1, not ignored
+```
+
+**Re-run once against this round's filename** (the step's body verbatim, in a
+throwaway repo staging one never-committed file under `rtl_snapshots/`):
+
+```text
+=== PROMOTION BLOCK: sha256 + base64 -w 400 of every staged path ===
+--- FILE rtl_snapshots/eth_axis_tx.v
+cc551c1603f5f0cb78cd9dd996df25f215e43db02fddf6cf596dbac0de43c368  rtl_snapshots/eth_axis_tx.v
+bW9kdWxlIGV0aF9heGlzX3R4OwplbmRtb2R1bGUK
+--- END rtl_snapshots/eth_axis_tx.v
+=== END PROMOTION BLOCK ===
+step-would-exit 1
+```
+
+The stand-in's contents are two lines of my own invention and prove nothing about
+M07's netlist; what they establish is the **shape of the step's behaviour on an
+untracked path under this filename**, which is the only thing in question.
+
+**§4's duplicate-port answer, from an emitted netlist rather than from reading:**
+
+```sh
+awk '/^module eth_mac_10g \(/,/^\);/' rtl_snapshots/eth_mac_10g.v
+#   ... tx_tuser, tx_tlast, tx_tstrb, tx_tkeep, tx_tdata, tx_tvalid ...
+#   ... tx_tready ...          <- one prefix, Source and Dest, one circuit
+```
+
+M07's twenty flattened port names, enumerated so the pairwise-distinct claim is
+checkable rather than asserted — 13 in, 7 out:
+
+| direction | names |
+|---|---|
+| in | `clock`, `clear`, `hdr_valid`, `hdr_dst_mac`, `hdr_src_mac`, `hdr_ethertype`, `payload_tvalid`, `payload_tdata`, `payload_tkeep`, `payload_tstrb`, `payload_tlast`, `payload_tuser`, `tx_tready` |
+| out | `payload_tready`, `tx_tvalid`, `tx_tdata`, `tx_tkeep`, `tx_tstrb`, `tx_tlast`, `tx_tuser` |
+
+**§6(b)'s measurement — wire numbering is file-local, so the list's order cannot
+reach any file's bytes:**
+
+```sh
+for f in word_counter xgmii_rx_64 xgmii_tx_64 eth_mac_10g eth_axis_rx; do
+  grep -oE '\b_[0-9]+\b' rtl_snapshots/$f.v | tr -d '_' | sort -n \
+    | awk -v F=$f 'NR==1{min=$1}{max=$1}END{printf "%-14s min=%-6s max=%-6s count=%s\n",F,min,max,NR}'
+done
+```
+
+observed, in emission order:
+
+| file | min | max | wire references |
+|---|---|---|---|
+| `word_counter.v` | 2 | 13 | 41 |
+| `xgmii_rx_64.v` | 2 | 873 | 4557 |
+| `xgmii_tx_64.v` | 1 | 834 | 4351 |
+| `eth_mac_10g.v` | 1 | 873 | 7305 |
+| `eth_axis_rx.v` | 3 | 149 | 430 |
+
+The fifth-emitted file starts at 3, not above 7,300 — the counter is per emission,
+not per process.
+
+**§6(a)'s precedent, read from history rather than recalled:**
+
+```sh
+git show --stat --oneline f34d0e2 | head -5
+#   rtl_snapshots/eth_axis_rx.v   +362      <- exactly one snapshot promoted
+#   (and my journal)                        <- and the next run, 31467035116, was green
+```
+
+**The CI baseline, at job and step granularity** (externally verifiable references
+per PROTOCOL §4.1(b); read via the Actions API, not from a local execution):
+
+| run | commit | job | outcome |
+|---|---|---|---|
+| **31500640010** | `3951b05` (the parent) | `build` | **all 10 steps `success`**, incl. step 7 `Generate RTL` and step 8 `Verify nothing was left unpromoted or non-deterministic` |
+| 31500640010 | `3951b05` | `cosim` | `success` |
+| **31495302673** | `cddad51` (M07 source) | `build` | step 5 `Build` **`success`** → M07 already type-checks; step 6 `Run tests` `failure`; steps 7–10 `skipped` |
+| 31465181652 / 31467035116 | M06 arc | `build` | the red and the green of the pattern this round repeats |
+
+**What does not build here, measured rather than asserted:** `dune` is not on
+`PATH` (`dune build …` → `No such file or directory`), `opam list --installed |
+grep -ic hardcaml` returns **0** (ADR-0005's documented condition), and
+`ocamlformat` is absent — so `.ocamlformat` conformance is **not** verified and
+line width is what is checked. This is also §7's evidence that the in-process
+question cannot be settled at this SHA.
+
+**THE PREDICTION THIS ENTRY EXISTS TO MAKE, stated so the next red is scheduled
+rather than discovered.** At the commit carrying this entry, the `build` workflow
+**WILL FAIL**, at the step named **`Verify nothing was left unpromoted or
+non-deterministic`** (job `build`, step 8, `.github/workflows/build.yml:57`),
+printing a `=== PROMOTION BLOCK ===` containing **exactly one `--- FILE` entry** —
+`rtl_snapshots/eth_axis_tx.v`, with its `sha256sum` line and its `base64 -w 400`
+payload — followed by one matching `--- END` and `=== END PROMOTION BLOCK ===`.
+**No `--- DELETED` line. No second `--- FILE` entry. No test failure anywhere in
+the log.** Those bytes are the snapshot, and committing them verbatim is the
+second commit of this arc. **A red at any other step of this workflow, or a block
+listing more than one file, is NOT this prediction coming true and must be read as
+a defect in this commit.**
+
+**Not claimed** (§9): that `bin/generate.ml` compiles; that `generate.exe` runs;
+that the emitted netlist is correct, deterministic, or reviewed; any DV result.
+
+### Outcome
+
+M07 is registered in the RTL emission path in the pattern this seat established at
+M06 and has now applied three times, and the scheduled red is named at one step,
+one job and one file in advance, against a parent whose every step is green.
+
+Charter §5's DoD, scored against what this round was actually for:
+
+- Implements its frozen spec, deviations escalated — **no instance this round**;
+  no `libs/**` file was opened for writing, and M07's conformance to SPEC-M07 is
+  `J-rtl_lead-0020`'s claim, unchanged and not re-asserted here. One *new* spec-
+  adjacent finding is raised rather than absorbed and it runs the other way (§8:
+  my own source now lags a ruling in my favour).
+- `bin/generate.exe` emits it into `rtl_snapshots/**` deterministically, two
+  consecutive runs byte-identical — **NOT met, deliberately and visibly.** The
+  emitter is registered; the snapshot does not exist; determinism is a property of
+  bytes not yet produced. This is the half of C-RL-6b that a second commit closes,
+  and the red between them is the mechanism, not a lapse. The *two-run* clause
+  specifically is §7's declined rider and remains owed.
+- House style / `.ocamlformat` clean — the edit follows the four sibling emitters
+  character for character in structure; **`ocamlformat` itself is NOT run** (not
+  installed here, measured), line width is checked.
+- Rx-path line-rate invariant — no instance; no RTL changed, and M07 is a
+  transmit-path module.
+- Worker review — no instance; no worker, no `RV-`.
+- Journal entry appended, no DV sign-off claimed — **met.**
+
+Charter §8's determinism-evidence rule fires (this entry touches
+`bin/generate.exe`) and is discharged **negatively and explicitly**: the
+double-generation byte-identity check **cannot be run at this SHA**, the reason is
+measured rather than asserted, and §7 says who can run it and how.
+
+Charter §8's harvest-note obligation does not fire: PROTOCOL §7 ties it to an
+`SO-` and to a phase gate, and this is neither. Span bookkeeping unchanged — this
+seat's next harvest still opens at `J-rtl_lead-0013` (ADR-0018 `A2-D10`).
+
+**Handoff**: to the orchestrator, for commit and for the board note — the red
+window on this branch opens the moment this lands, its expected shape is in
+Evidence line for line so the board entry and the CI log can be compared, and the
+promotion round should be the **next** commit on this branch (Open-questions 2).
+
+### Open-questions
+
+1. **C-RL-6b is half discharged.** The remainder — promoting
+   `rtl_snapshots/eth_axis_tx.v` verbatim from the `PROMOTION BLOCK` this commit's
+   run prints, in a round whose write set includes `rtl_snapshots/**` and whose
+   entry cites the run id it harvested — I label **C-RL-6b/2** rather than minting
+   a fresh top-level id: the M06 arc's `C-RL-6`/`C-RL-6a` pair showed that a new
+   id at the halfway point reads as a new obligation rather than a continuation.
+   Until it lands, `build` is red on this branch **by design** and every agent
+   reading CI should know why.
+2. **The red window is a real cost and I will not describe it as free.** While it
+   is open, `build` certifies nothing else on this branch: a genuine regression
+   landing in the same window is masked by a failure everyone has been told to
+   expect. The sibling round declared in my Trigger makes this concrete — if
+   dv_lead's return lands between this commit and the promotion, its CI signal is
+   inside my window. That is an argument for keeping the window to one round: the
+   promotion should be the **next** commit, not the next convenient one.
+3. **C-RL-9 — M07's doc comment describes a defect that has been closed** (§8).
+   `libs/hardcaml_ethernet/src/eth_axis_tx.ml`'s header calls the §7 conflation a
+   *live* spec defect and quotes §0.5's identity in its pre-`q` form; `0b7be1f`
+   upheld the finding and repaired both. Mine, needing a round with
+   `libs/hardcaml_ethernet/**` in its write set. **Snapshot-neutral** — a comment
+   reaches no signal, so it re-emits identically and must **not** ride the
+   promotion commit, whose write set is the snapshot alone. The repair updates the
+   comment to record that the finding was raised and upheld; it does not delete
+   it, because SPEC-M07 §13's row cites that comment as the independent derivation
+   its *editorial* classification rests on.
+4. **REQ-902's two-run byte identity is carried, not discharged, and this round
+   declined the offered rider on grounds, not on schedule** (§7). What is owed is
+   a **second process invocation** compared byte for byte; the only file that
+   invokes `generate.exe` is `.github/workflows/build.yml`, which is the
+   orchestrator's exclusive scope. The check that would fit in `bin/**` is
+   in-process and therefore blind to every nondeterminism class the requirement
+   exists to catch. **Route: the orchestrator**, as a one-step workflow addition;
+   my derivation of what that step must do is §7 and is complete. If the
+   orchestrator wants this seat to author the comparison script instead, that is a
+   round of its own and not an arc commit — and the invocation is still not mine.
+5. **C-RL-8 is discharged and leaves this ledger.** `0b7be1f`
+   (`J-architect_docs_lead-0041`) UPHELD the finding and refined it past what I
+   filed: I filed the event-delay/latency conflation and the §0.5 identity's
+   disagreement, and the architect added the ground I had **not** filed — that the
+   straddle test keyed on h alone licenses a wrapper assertion **every conformant
+   design fails** — and ruled §0.5's repair a **term (q), not a scope**. Recorded
+   here rather than dropped silently, so the closure has an entry to point at, and
+   noted as the second consecutive round in which a routed finding came back
+   larger than it went out.
+6. **M07 still has no independent design review**, and it is the seventh module in
+   a row. Carried alongside **the M06 independent design review, which remains
+   owed and was not done this round** — neither module was opened. Registering an
+   emitter reviews no logic.
+7. **Carried, unchanged and untouched by this round**: **C-RL-2** (the latent
+   `first_v` gating in M03) and **C-RL-3** (sub-word idle granularity, no row
+   owed). Neither is reachable from anything this round wrote; M03 was not opened.
+
+### Files-in-this-commit
+
+- bin/generate.ml
