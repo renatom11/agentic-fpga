@@ -1354,3 +1354,457 @@ orchestrator, for commit under `Agent: architect_docs_lead`.
 - docs/PROCESS.md
 - docs/adr/ADR-0020-the-gate-asks-the-suite-not-the-scoreboard.md
 - docs/specs/requirements.md
+
+## [J-architect_docs_lead-0049] 2026-08-11T21:37Z | task:none | Four enforcement subjects drafted as one rule about where a check runs — the offered constitution-staging warning REFUSED because it is loud where a refusal already fires and silent where the residue lives, that refusal's own tracing finding the existing guard conditional on an authoring order no script can see, and two script-enforced rules convicted of appearing nowhere in the constitution that is supposed to enumerate them
+
+### Trigger
+
+Orchestrator dispatch, **one round**: draft `ADR-0021`, the
+enforcement-hardening decision record, on the `ADR-0017` precedent — the
+orchestrator decides, this seat designs, dv_lead countersigns the design, the
+orchestrator implements the scripts. Four subjects, each arriving with its
+decision **already made** and to be recorded as the orchestrator's with its
+grounds: (1) the ±60-minute stamp-sanity warning accepted from the auditor's
+`R-0020-1`; (2) the journal-size check asymmetry; (3) `REQ-902`'s two-run
+determinism instrument; (4) the `REC-5` working-tree question. My work was
+specified as the mechanisms, the failure modes and the test scenarios — plus one
+open design question the dispatch handed me by name: evaluate or refuse a
+warning when `agents/PROTOCOL.md` is staged and the entry's body does not name
+it.
+
+**Abort-first precheck, run before any file was opened.**
+
+    git status --short              # zero lines
+    git rev-parse HEAD              # 6c02f5b2b21be63c1091e6b026be17aeb7159bbe
+    git rev-parse --abbrev-ref HEAD # claude/fpga-hardcaml-agent-orchestration-37ceyf
+    date -u                         # Tue Aug 11 21:13:27 UTC 2026
+
+HEAD byte-equal to the dispatched `6c02f5b`, tree clean, so neither branch of
+the abort procedure was reached at the open.
+
+**The sibling clause fired this time, and I record how it was discharged.**
+Three lanes were declared: the auditor on its claim-verification pass, dv_lead
+resuming `WO-0082`, and me. Partway through the measurement pass a census row
+came up missing against `git rev-list`, which is how I learned **HEAD had
+moved** to `b19ff91` (`Agent: dv_lead`, `J-dv_lead-0188`) — the declared dv
+lane, landing `agents/handoffs/WO-0082_tb-m04-two-frame-presenter-and-g10.md`
+and its `v11`. The dispatch's instruction is *re-verify read surfaces and
+proceed*, so I re-verified rather than re-read: for each of the ten files this
+ADR specifies against I compared **blob hashes** at `6c02f5b` and `b19ff91` —
+all ten identical (Evidence). Every number in the ADR was then re-measured at
+`b19ff91` and the file is pinned there.
+
+The tree at that point also carried ` M agents/journals/claude_auditor_agent.v02.md`
+and `?? docs/reports/audit/PROCESS-claims-posture.md` (the auditor lane, exactly
+as declared) and ` M test/xgmii_tx_64/bench.ml{,i}`. The bench pair was **not**
+named in the dispatch's file list. I did not stop on it and I say why rather
+than leaving the judgement implicit: `test/**` is dv_lead's write scope, dv_lead
+is a declared live lane, and `WO-0082`'s subject is an M04 bench — so it is a
+declared sibling's dirty path inside that sibling's own scope, which is the case
+the dispatch told me to treat as a sibling rather than as an unknown actor. Had
+it been a path in **no** declared lane's scope, the forensic refusal was the
+instruction and I would have taken it.
+
+**No rotation.** `v05` stands at 88,177 bytes against `JOURNAL_SOFT_MAX`
+= 262,144 (`ADR-0017` §5, `R10`), so this entry appends to the volume `-0046`
+opened.
+
+### Inputs
+
+- `agents/charters/architect_docs_lead.md` and `agents/PROTOCOL.md` **in full**,
+  before any other file.
+- `docs/adr/ADR-0017-a-journal-is-a-chain-not-a-file.md` — §1.2, §2, §3, §4,
+  §5.1–§5.3, §6 whole, §8 whole, §9, §10, §11. This is the form precedent the
+  dispatch named and I read it as a form, not only as content.
+- `docs/adr/ADR-0020-…md` §0 (the status-block form) and
+  `docs/adr/ADR-0015-…md`'s `R-CI-1`…`R-CI-8` table.
+- `scripts/agent_commit.sh`, `scripts/check_journals.sh`, `scripts/policy.sh`
+  **in full**, at `6c02f5b`; `scripts/test_protocol.sh` read for its harness
+  (`seed_journal`, `seed_volume`, `entry`, `expect_ok`, `expect_fail`) and for
+  `S27`, `S37`, `S38`, `S39`.
+- `.github/workflows/build.yml` and `.github/workflows/journal-check.yml`
+  **in full**; `bin/generate.ml`'s `let () =` block and its output-path
+  construction.
+- `agents/journals/claude_auditor_agent.v02.md`: `J-auditor-0020` Trigger,
+  Inputs, §1–§8 — §7 (the recommendation, the four bands, constraints (i)–(iii))
+  read twice.
+- `agents/journals/claude_orchestrator_agent.v02.md`: `J-orchestrator-0259`
+  whole (Act 2 item 1 is this round's commission) and `J-orchestrator-0265`
+  whole.
+- `agents/journals/claude_rtl_lead_agent.v02.md` `J-rtl_lead-0021` §7 **whole**,
+  plus its §8 and §9 for what that seat did and did not claim.
+- `agents/journals/claude_dv_lead_agent.v10.md` `J-dv_lead-0185` §10 (`REC-5`),
+  its harvest §11 lesson (e), its Evidence block for the measured revert, and
+  its Open-questions item 3.
+- `docs/reports/process-council/round-1/bob.md` §F1–F5 and its closing summary;
+  `docs/PROCESS.md` §2.5 and §6.2.
+- `docs/specs/requirements.md`'s `REQ-902` row and its neighbours.
+- **No `libs/**`, `top/**` or `test/**` source read for content**; the only
+  non-doc source opened was `bin/generate.ml`, read for one question — whether
+  the emitter's output path is relative to the working directory — because
+  subject 3's whole mechanism depends on the answer.
+- **No `Essenceia/Nasdaq-HFT-FPGA` material consulted.**
+
+### Reasoning
+
+#### 1. How the ADR came to be asked, which is not what it says
+
+Charter §8 forbids a Reasoning that restates the ADR, so this section is the
+provenance rather than the content. Four items reached one dispatch by four
+different routes and none of them was a design request:
+
+- Subject 1 is an **audit recommendation that survived its own scepticism**. The
+  auditor was routed a process item, re-measured the whole record rather than
+  adopting five spot samples, found 234 wrong dates where the record said
+  eighteen, isolated the transmission vector as `PROTOCOL` §4.1's spawn
+  short-id, and *then* declined to write a script — offering instead the one
+  number that decides whether a round is worth commissioning. The orchestrator
+  accepted it at `J-orchestrator-0259` and scheduled it with subject 3.
+- Subject 2 is a **finding against the record made by an outside reader**. The
+  council's record-checking reviewer found that `ADR-0017` applied the
+  both-surfaces corollary to the blob gate and never to its own new rule
+  (`bob.md` §F3) — landing verbatim at `J-orchestrator-0265` five hours before
+  this round opened.
+- Subject 3 is a **refusal**. rtl_lead was offered the requirement as a rider
+  and declined it on the ground that the only check its scope can hold is
+  unsound for the property, then named exactly what would discharge it. The item
+  arrives here because the instrument lives in a file its owner cannot write.
+- Subject 4 is a **self-disclosure**. dv_lead's own preview applier wrote the
+  constitution in the working tree during the round whose subject was that only
+  the orchestrator may write it, and dv reported it against itself, bounded it
+  honestly, and named its own guard as *"luck plus a status read — which is not
+  a guard"*.
+
+The through-line I found while trying to write four sections that were not one
+document: **all four are the same question about location.** Subjects 1 and 2
+ask which *surfaces* a rule runs on, subject 3 asks which *process* a check runs
+in, and subject 4 asks a question that has no answer because the failure happens
+where nothing runs. That reading is what made the file one ADR instead of four,
+and it is where the title came from.
+
+#### 2. What I actually designed, as distinct from what I recorded
+
+Recorded as the orchestrator's, with its grounds: the band, the posture, the two
+surfaces, the step's existence, and the procedure-not-mechanism disposition of
+`REC-5`. **Mine**, and each is contestable on its own terms:
+
+1. **The output rule** (§2.3). The both-surfaces corollary says *both surfaces
+   evaluate the same rule*; it does not say *both surfaces print the same way*,
+   and the subjects differ by three orders of magnitude — one entry against 600.
+   So: report per entry while the checked set is small, aggregate per chain once
+   it is large, and never let the line count grow with history. The thing that
+   made this cheap is that `journal-check.yml` **already** runs `--all` and
+   `--range` as separate steps, so the history view and the new-commits view are
+   already separate logs. The design's whole job was to not fight that.
+2. **`compliant-run`** (§2.4), which is the column that does the work. Zero-state
+   — no baseline file, nothing to decay — monotone while a chain stays honest,
+   and **reset to 0 by the first drifted entry**. At `b19ff91` six chains read
+   4–16 and one reads **0** (`data_wrangler`, whose latest entry is +797 min).
+   The counter earns its place on the day it lands, which is the strongest form
+   an argument for an advisory can take.
+3. **Report at the granularity of the seat that can act** (§3.3). A chain's
+   stamp drift is actionable at its owner's next entry, so the stamp summary is
+   per chain; a *frozen* volume's size is actionable by nobody, so it is one
+   aggregate; an *active* volume's size is actionable, so it is itemised. This is
+   what bounds both blocks by the **roster** rather than by history.
+4. **Why CI warns where the commit path refuses** (§3.4). Not deference: if the
+   full-history checker refused, one bypassed over-`H` append would fail **every
+   future push by every agent**, permanently, and the only remedy would be a
+   history rewrite — which `R9` forbids and which is the attack the append-only
+   property exists to prevent. **A rule whose only remedy is forbidden cannot be
+   a refusal in a full-history checker.** The blob gate does not share this,
+   because its harm persists in every future clone while an oversized volume's
+   harm is bounded and its cure is one rotation away in its owner's own hands.
+5. **The determinism step's failure semantics** (§4.4) — three `diff -r` output
+   classes with distinct dispositions, one of which (`Only in <checkout>`) is
+   **not** a `REQ-902` finding at all — and the sentence that must survive
+   implementation: **this step's output is never a promotion source**, because
+   when two runs disagree neither tree is authoritative. Every neighbouring step
+   in that workflow prints a `PROMOTION BLOCK` on failure and the reflex it
+   trains is exactly wrong here.
+6. **The in-step negative control** (§4.2). `ADR-0015`'s `R-CI-4` made the cosim
+   comparator prove it could fail, once. I made this one prove it every run: copy
+   the scratch tree, flip one byte, require `diff` to notice. A comparator that
+   cannot fail is indistinguishable from one that always passes, and this
+   instrument will spend its life green.
+7. **The capability table** (§4.5), which is the part I expect to be argued
+   with and the part I would defend hardest. rtl_lead named three process-scoped
+   classes; a second process exposes **two** of them (address/allocation order,
+   cwd dependence) and **not** the first (`Hashtbl` is not randomised under the
+   shipped runtime unless `OCAMLRUNPARAM=R`), and exposes **none** of
+   environment, toolchain or machine. Saying so is the difference between an
+   instrument and a claim, and it is why the honest form after N green runs is
+   *"N observations, zero divergences"* rather than *"`REQ-902` holds"*.
+
+#### 3. The offered warning: refused, and the refusal is the round's real work
+
+The dispatch handed me one open question — design the `agents/PROTOCOL.md`
+staging warning or refuse it with grounds — and the honest answer took the
+longest to reach because the first two answers were both wrong.
+
+My first answer was *yes, cheap, adopt it*. Then I traced the two cases it can
+reach and it collapsed:
+
+- **Accidental stage**: the entry's files list, written from the round's intent,
+  does not contain the path, so `R4`'s set-equality **already refuses the
+  commit** and prints the offending path. A warning is strictly weaker than what
+  happens today.
+- **Legitimate amendment** (`a76e485` is the live example): the entry's body is
+  *about* the constitution, so the proposed predicate is false and the warning is
+  **silent** — and this is precisely where the residue lives, because `R4` binds
+  **paths** and the hazard is a **hunk** riding inside a path that is legitimately
+  staged.
+
+So: loud where a refusal already fires, silent where the residue is. **Refused.**
+
+My second answer was *refuse the warning, adopt an unconditional staged-diffstat
+display instead* — no predicate, therefore no false positives, one line. I
+refused that too, and the ground is one this round is uniquely placed to see:
+this ADR is already spending `agent_commit.sh`'s advisory channel on new
+instances, and that script's output discipline today is *silence unless* `WARN-`
+*or* `PROTOCOL VIOLATION`. Routine chatter in the same round trains the operator
+to skim exactly the channel subjects 1 and 2 are investing in. **The value of a
+warning channel is the silence around it**, and I would rather refuse a cheap
+addition than devalue the two that were decided.
+
+**And the tracing produced something better than either.** `R4` catches the
+accidental stage **only because the files list has an independent source**.
+`PROTOCOL` §4.1 requires the entry before the **commit**, not before the
+**staging** — so a committer that stages first and transcribes its list from
+`git diff --cached --name-only` satisfies `R4` *tautologically*, carrying the
+stray path into the list with everything else, and **no script can tell the two
+authoring orders apart because the index looks identical either way**. That is a
+guard everyone believes is mechanical which is in fact conditional on a habit,
+and it is now stated as limb 2 of §5.4's evidence form. It cost no code and it is
+worth more than the warning I was asked to design.
+
+The residue that remains after all of it is prevented by procedure and detectable
+by audit — the commit's diff is in history and the entry's narrative either
+accounts for every hunk or does not, which is §4.1's vacuity standard — and
+mechanically refusable at neither end. **Why an evidence form rather than a
+habit**: `J-orchestrator-0226` adopted a habit five days before `-0251` had to
+adopt it again, and it decayed in three entries. That is this program's own
+best-documented failure and the reason subject 1 exists; adopting a second
+unmeasurable habit in the same document would have been a joke at the expense of
+its own subject 1.
+
+#### 4. `FINDING ADR21-1`, which I went looking for and did not expect to find
+
+Specifying subject 2 meant reading what the constitution says about the rule
+being extended. It says nothing:
+
+    $ grep -c -E 'R10|R11|volume|rotate' agents/PROTOCOL.md
+    0
+
+`ADR-0017` §8 wrote the `R3`/`R5`/`R10` PROTOCOL diffs and marked them *"written,
+NOT applied"* pending acceptance; §8.4 listed the constitution among the files a
+work order must touch. **The scripts landed and the constitution's half never
+did.** So `R10` and `R11` are enforced by two scripts and eleven self-test
+scenarios and are named in no rule — which makes subject 2's problem a
+**three**-surface problem, and makes `PROCESS` §2.5 false for a second reason
+nobody has stated. I raised it, drafted the text at §8, and routed it: the file
+is orchestrator scope and the amendment is a §11 act whose instrument already
+exists. It is deliberately **not** a precondition of this ADR, because an ADR
+that holds itself hostage to another seat's queue is an ADR that never lands.
+
+#### 5. What I refused to decide
+
+The band's symmetry. The measured defect population is **369 fast against 2
+slow**, and no honest stamp can be fast — authoring precedes committing — so an
+asymmetric band strictly dominates. But the ±60 symmetric band is the decision I
+was handed and the false-positive measurement behind it is the auditor's. So I
+exposed the two bounds as **separate parameters**, both defaulting to 3600, and
+recorded the asymmetry with a named review trigger: if the slow bound ever fires
+on a genuinely long round, **the bound moves, not the practice**. That keeps the
+decision where it was made and leaves the correction one policy edit away —
+which is `ADR-0017` §5.1's own device, borrowed deliberately.
+
+#### 6. Harvest
+
+**Not due, declared rather than skipped** (charter §8, `PROTOCOL` §7): this
+round is neither an `SO-` nor a phase gate. The span opened at my last harvest
+stays open and this entry joins it, continuous with `-0047`/`-0048`. **Three
+candidates banked**, all LH1–LH3 discharged, all **LH2-g** (no proper noun of
+any kind inside the rule statement):
+
+- **(i)** *A rule required on two enforcement surfaces must have its predicate
+  and its reporting form specified separately; where the surfaces' subjects
+  differ by orders of magnitude, identical reporting either buries the new signal
+  or emits one line per historical violation until someone turns the rule off.*
+  **LH1** `6c02f5b` (the finding that one surface lacked the check) against the
+  371-of-600 population measured this round. **LH3** without it, "both surfaces"
+  is implemented as identical printing and the check is removed within weeks by
+  whoever is reading the logs.
+- **(ii)** *A set-equality between an author's claim and a machine-derived set is
+  a check only while the claim has an independent source; deriving the claim from
+  the set converts the check into a tautology while changing no output, and no
+  inspection of the artefacts can detect it.* **LH1** `a76e485` and the working-
+  tree incident that made the guard's precondition visible. **LH3** without it a
+  guard everyone believes is mechanical is defeated by a change in authoring
+  order that leaves no trace anywhere.
+- **(iii)** *An advisory counter over a stream of testimony should report a
+  consecutive-compliant run beside the total: the total is dominated by history
+  and barely moves, while the run resets to zero on the first new violation.*
+  **LH1** `c06ae01`'s adopted remedy decaying within three entries, and `60c1ccf`
+  measuring the decay twenty-four entries later. **LH3** without it a new
+  violation is one increment in a large total, invisible on the very surface
+  built to make it visible.
+
+A fourth is **noted and not banked**: *a check whose only remedy is an operation
+the system forbids cannot be a refusal* (§3.4). I cannot yet state it without
+leaning on the specific pairing of an immutable history and a full-history
+checker, and I would rather re-test it at the next round that touches an
+enforcement surface than admit it on the round that invented it.
+
+### Actions
+
+- Ran the abort-first precheck; read charter and `PROTOCOL` in full; read the
+  three enforcement scripts, both workflows, `ADR-0017` whole and the four source
+  journal entries named in Inputs.
+- Ran a **program-wide stamp census** and an **active-volume size census** from
+  git alone (Evidence), first at `6c02f5b` and again at `b19ff91` after the
+  declared sibling moved HEAD.
+- Re-verified the ten specification-relevant files as byte-identical across the
+  HEAD move by blob hash, then re-pinned every number in the ADR to `b19ff91`.
+- **Wrote** `docs/adr/ADR-0021-a-check-is-only-where-it-runs.md` (60,439 bytes,
+  sha256 `f52d5121078f…`): four subjects, ten `test_protocol.sh` scenarios
+  (`S40`–`S49`), one `build.yml` step written out in full, one refusal with its
+  tracing, one finding, and a per-subject §11 route.
+- **Wrote nothing else.** The dispatch's write allowance was this file and this
+  journal, and three doc debts this ADR names — `PROCESS` §2.5, `REQ-902`'s
+  verification column, and `INDEX.md` — are recorded in §7.3 with owners rather
+  than paid here, though two of the three are mine to pay.
+- Ran no build, no test, no `dune`, no `opam`. **No RTL, no test source and no
+  spec text was written or modified.**
+
+### Evidence
+
+All read-only, all reproducible from a checkout at the pinned SHA. §7.4 of the
+ADR carries the same four commands so a reader need not come here for them.
+
+**Precheck and the sibling move:**
+
+    $ git rev-parse HEAD                       # at spawn
+    6c02f5b2b21be63c1091e6b026be17aeb7159bbe
+    $ git status --short                       # at spawn: zero lines
+    $ git rev-parse HEAD                       # mid-round
+    b19ff9148c536b614e72fca41e347fe1cae3f25c
+    $ git log --oneline 6c02f5b..HEAD
+    b19ff91 WO-0082 drafted: ...               # Agent: dv_lead, J-dv_lead-0188
+    $ git diff --name-status 6c02f5b..HEAD
+    A  agents/handoffs/WO-0082_tb-m04-two-frame-presenter-and-g10.md
+    M  agents/journals/claude_dv_lead_agent.v11.md
+
+**Read surfaces unchanged across the move** (blob hashes, not diffs) — ten files:
+`scripts/policy.sh`, `scripts/agent_commit.sh`, `scripts/check_journals.sh`,
+`scripts/test_protocol.sh`, `agents/PROTOCOL.md`, `.github/workflows/build.yml`,
+`.github/workflows/journal-check.yml`, `docs/PROCESS.md`,
+`docs/specs/requirements.md`, `docs/adr/ADR-0017-…md`:
+
+    $ for f in <the ten>; do
+        [ "$(git rev-parse 6c02f5b:$f)" = "$(git rev-parse HEAD:$f)" ] \
+          && echo "SAME  $f" || echo "MOVED $f"; done
+    SAME  (all ten)
+
+**Stamp census at `b19ff91`** (join is exact by `R2`: one append per commit):
+
+    600 commits, 0 merges, 600 entry appends, 0 unparseable stamps
+    371 outside +/-3600 s (61.8%)   fast 369   slow 2
+    stamp formats: 377 minute-precision, 222 second-precision,
+                   1 with a trailing "(estimated, see Open-questions)"
+    per chain (entries / out / compliant-run):
+      dv_lead 188/153/10   orchestrator 265/150/15   architect_docs_lead 48/36/8
+      tb_writer 44/18/10   rtl_lead 24/7/16   auditor 22/4/4   data_wrangler 9/3/0
+
+**Reference clock is single and monotone** (the instrument, checked not assumed):
+
+    $ git log --format='%at %ct' | awk '$1!=$2{d++} END{print NR, d+0}'
+    600 0
+
+**Active-volume size census at `b19ff91`:**
+
+    600 commits: 95 with an active volume over S (262,144), 48 over H (524,288)
+    18 distinct (agent, volume) pairs ever over S while active; 1 ever over H
+      (agents/journals/claude_dv_lead_agent.md, max 1,123,442 B, now frozen)
+    active volumes at HEAD: all within S
+
+**`FINDING ADR21-1`, and the gap subject 2 closes:**
+
+    $ grep -c -E 'R10|R11|volume|rotate' agents/PROTOCOL.md
+    0
+    $ grep -c -E 'JOURNAL_SOFT_MAX|JOURNAL_HARD_MAX' scripts/check_journals.sh
+    0
+
+**`bin/generate.ml`'s output path is cwd-relative** — the fact subject 3's whole
+mechanism rests on, read rather than assumed:
+
+    let dir = "rtl_snapshots" in
+    if not (Stdlib.Sys.file_exists dir) then Stdlib.Sys.mkdir dir 0o755;
+    ... "rtl_snapshots/xgmii_rx_64.v", emit_xgmii_rx_64 ...
+      -> a second process with cwd in a scratch directory writes a complete
+         second tree there and touches nothing in the checkout.
+
+**Journal chain integrity** (`ADR-0017` §4.3, checked at every append):
+
+    $ sha256sum agents/journals/claude_architect_docs_lead_agent.v04.md
+    31ed7d295e3dfeb86820642b8ec0f300b745750831c3717a9d1071f2895a5b5e
+      -> equal to this volume's Previous-volume-sha256 header field.
+    $ wc -c agents/journals/claude_architect_docs_lead_agent.v05.md   # before append
+    88177                        # vs JOURNAL_SOFT_MAX 262,144 — no rotation owed
+
+**Not claimed.** No CI run is cited because this round triggered none; no build,
+test or toolchain command was executed (`dune` and `opam` are absent from this
+container, as prior rounds of this seat have recorded). The `build.yml` step at
+§4.2 is **written and never executed** — its first green run is part of subject
+3's route precisely because nothing here can stand in for it.
+
+### Outcome
+
+**DoD met for the dispatched round.** `docs/adr/ADR-0021-a-check-is-only-where-it-runs.md`
+is drafted and **PROPOSED, NOT IN FORCE**; the route is stated per subject in §9
+rather than once for the file, because subject 3 waits on rtl_lead's factual
+check and the other three do not.
+
+- **Subject 1** — predicate, both surfaces, output rule, noise bound with a
+  measured summary block, seven failure modes, and `S40`–`S46`.
+- **Subject 2** — the active-volume predicate with its measured justification,
+  the posture asymmetry declared rather than hidden, and `S47`–`S49`.
+- **Subject 3** — the `build.yml` step in full with an in-step negative control,
+  placement forced twice, three failure classes, a capability table, and the
+  comparison script declined as a file while credited as a derivation.
+- **Subject 4** — the offered warning **REFUSED** with its two-case tracing, the
+  residue restated as hunk-granular, and a three-limb evidence form adopted in
+  its place with no number minted.
+
+**Handoff**: to the orchestrator, for the countersignature traffic named in §9
+(dv_lead on the design; auditor on subject 1; rtl_lead on subject 3) and then for
+implementation, which is entirely its own scope. **Nothing in this ADR is in
+force and no script, workflow or constitution text was changed by this round.**
+
+### Open-questions
+
+1. **`FINDING ADR21-1` is on no route and needs one.** `R10` and `R11` are
+   enforced by the scripts and named nowhere in `agents/PROTOCOL.md`; `ADR-0017`
+   §8's diffs were written and never applied. Draft text is at §8 of the new ADR.
+   Orchestrator's file, orchestrator's call — including the call to refuse it.
+2. **Two doc debts are mine and are unpaid by design.** `docs/PROCESS.md` §2.5's
+   blanket sentence (whose correction the council round already owns) and
+   `docs/specs/requirements.md`'s `REQ-902` verification column (owed at the
+   commit that lands the step). Both are inside my scope and outside this round's
+   write allowance; carried to my next round that opens `docs/**`.
+3. **The band's asymmetry is deliberately unexercised.** 369 fast against 2 slow,
+   and no honest stamp can be fast. The parameters are separated so a tightening
+   is a policy edit; whether to make it is the auditor's to advise, since the
+   0-of-16 measurement is its own.
+4. **Whether subject 4's evidence form should ever become constitutional text.**
+   It binds one seat's practice and is citable as `ADR-0021` §5.4, which is why
+   no `R`-number and no namespaced id was minted. If the auditor finds
+   ADR-citation insufficient at a later process round, §5.4's text is the draft
+   of a one-line `PROTOCOL` §10 addition — offered as text and claimed as
+   nothing.
+5. **Carried, unchanged**: `ADR-0020` §10's items 1–2 (the `G-1` row's closing
+   acts) remain the orchestrator's and the auditor's, untouched by this round.
+
+### Files-in-this-commit
+
+- docs/adr/ADR-0021-a-check-is-only-where-it-runs.md
