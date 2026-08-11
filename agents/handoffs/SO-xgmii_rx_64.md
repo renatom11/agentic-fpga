@@ -1,15 +1,18 @@
-# SO-xgmii_rx_64 — **ISSUED. VERDICT: FAIL.**
+# SO-xgmii_rx_64 — **RE-ISSUED (round 3). VERDICT: FAIL.**
 
-- **State**: **ISSUED — EXECUTED** at `2183d71`. §7.1's twelve steps are executed;
-  §8 carries one token; this document is a sign-off packet and is in the **verbatim**
-  relay class (PROTOCOL §3). *(Was `DRAFT` through `J-dv_lead-0161`, `-0163` and
-  `-0164`; every superseded statement is preserved where it was written and none is
-  rewritten into its own outcome.)*
-- **Verdict**: **FAIL** — §8. **Two criteria of §1 are not met: `SC-2` and `SC-12`.**
-  Neither is a defect in the module and **neither routes to rtl_lead**: both are
-  obligations of the DV seat and of the programme's harvest cadence, named at §8 with
-  the exact act each needs. **Everything else the fourteen ask for is met** and is
-  scored criterion by criterion at §1.1.
+- **State**: **RE-ISSUED — RE-VERDICT EXECUTED** at `14615f8`. §1 is read back a second
+  time, criterion by criterion, at the new SHA; §8 carries one token; this document is a
+  sign-off packet and is in the **verbatim** relay class (PROTOCOL §3). *(Was `DRAFT`
+  through `J-dv_lead-0161`, `-0163` and `-0164`, then `ISSUED — EXECUTED` at `2183d71`
+  through `J-dv_lead-0165`; every superseded statement is preserved where it was written
+  and none is rewritten into its own outcome.)*
+- **Verdict**: **FAIL** — §8. **One criterion of §1 is not met: `SC-12`.** *(Round 2's
+  verdict was `FAIL` on **two** — `SC-2` and `SC-12`; `SC-2` is **PAID and MET** at
+  `14615f8` and the round-2 row is preserved unedited at §1.1. The round-2 verdict text
+  is quoted beneath the re-issued token at §8.)* The remaining failure is **not** a defect
+  in the module and **does not route to rtl_lead**: it is the programme's harvest cadence,
+  named at §8 with the exact act it needs. **Everything else the fourteen ask for is met**
+  and is scored criterion by criterion at **§1.2**.
 - **Module / spec**: `libs/hardcaml_ethernet/src/xgmii_rx_64.ml` (M03) against
   `docs/specs/modules/xgmii_rx_64.md` (SPEC-M03) and `docs/specs/requirements.md`.
   **This seat does not read that RTL** (PROTOCOL §10); the path names the module the
@@ -43,7 +46,19 @@
   one whole tally** — §2.4's seventeen-class disposition moves from *five inside /
   twelve outside* to **nine inside / eight outside**, because the specification moved
   under it — and every difference is recorded as a finding, per §2's own rule.
-- **Signed**: **`J-dv_lead-0165`**, dv_lead, at `2183d71`.
+- **Execution — round 3, THE RE-VERDICT**: `J-dv_lead-0167`, base and **re-verdict SHA
+  `14615f8`**. Both acts §8.2 named are paid — act 1 at `a43ac00` (`WO-0079`,
+  `J-dv_lead-0166`) and `14615f8` (transcription, `J-architect_docs_lead-0035`); act 2
+  across `185ae66`, `d53d795`, `54b2553`, `c55c754` (four harvest notes). §1 is re-read
+  criterion by criterion at **§1.2**, the census producers re-measured rather than
+  carried (`test/`, `tools/`, `libs/`, `test/cosim/`, `docs/reports/audit/` and
+  `docs/specs/requirements.md` all **byte-identical** `2183d71..14615f8` — §1.2's
+  identity row), the delivery **verified at the matrix** at §2.8-R and the harvest
+  **verified at each seat's own journal** at §4.9. **`SC-2` moves NOT MET → MET.
+  `SC-12` stays NOT MET on a ground the previous round could not reach**, and one
+  finding is minted: **`FINDING SO-6`**, §4.9.
+- **Signed**: **`J-dv_lead-0165`**, dv_lead, at `2183d71` (round 2).
+  **Re-signed**: **`J-dv_lead-0167`**, dv_lead, at `14615f8` (round 3).
 
 ---
 
@@ -263,6 +278,76 @@ module has not earned — it is four other agents' spans, unmined. **Re-reading 
 administrative, after seeing that it is the thing standing between this packet and a
 `PASS`, would be the author discharging a condition by declaring it discharged** —
 `RV-C4` §9's defect, committed inside the document whose §0.0 quotes it.
+
+### 1.2 THE RE-READ — the fourteen again, at `14615f8` (round 3, `J-dv_lead-0167`)
+
+**§8.2 fixed the terms of this round in advance and they are honoured literally**:
+*"When both are done, this packet is re-issued with its verdict re-read against §1 —
+not amended in place. **Every** criterion is re-checked, because a criterion satisfied by
+a later act is satisfied at a later SHA."* So all fourteen are re-read here; §1.1's
+round-2 table is left **unedited** beside this one, including the two rows this round
+moves or re-affirms.
+
+**THE IDENTITY THIS RE-READ RESTS ON, MEASURED FIRST BECAUSE EVERY "UNMOVED" ROW BELOW
+DEPENDS ON IT.** Eleven paths changed `2183d71..14615f8` and **none of them is a census
+producer**:
+
+```
+$ git diff --name-only 2183d71..14615f8
+  agents/handoffs/SO-xgmii_rx_64.md · agents/handoffs/WO-0079_m03-traceability-test-rows.md
+  agents/journals/{architect_docs_lead.v02,.v03, auditor.v02, dv_lead.v08,
+                   orchestrator.v02, rtl_lead, workers/data_wrangler, workers/tb_writer.v03}
+  docs/specs/traceability.md
+$ for p in test tools libs test/cosim docs/reports/audit docs/specs/requirements.md \
+           docs/specs/modules/xgmii_rx_64.md test/attack_plans/AP-xgmii_rx_64.md; do
+      [ "$(git rev-parse 2183d71:$p)" = "$(git rev-parse 14615f8:$p)" ] && echo "$p IDENTICAL"; done
+  test IDENTICAL          tools IDENTICAL         libs IDENTICAL
+  test/cosim IDENTICAL    docs/reports/audit IDENTICAL
+  docs/specs/requirements.md IDENTICAL
+  docs/specs/modules/xgmii_rx_64.md IDENTICAL (333482659f8f)
+  test/attack_plans/AP-xgmii_rx_64.md IDENTICAL (03cc7e7da6f2)
+```
+
+**Three dimensions on that claim (§0.2, SC-10).** **SHA**: measured at `14615f8`, not
+carried. **DOMAIN**: `test/` includes `test/cosim/` and `test/attack_plans/`, so the
+identity covers **every producer that drives the DUT**, not the bench directory alone —
+`FINDING WO-0077-A1`'s rule applied to the identity itself. **POLARITY**: the negative
+half — *no RTL, no plan, no spec-of-record, no audit manifest moved* — is measured over
+the **complete** changed-path list above, not over the paths I expected to be stable.
+**Consequence, stated rather than left implicit**: every criterion whose subject is the
+suite, the plan, the module or the anchor is re-*measured* below at a new run id, and
+its **subject** is provably the same artefact the round-2 row scored.
+
+| # | criterion | round 2 at `2183d71` | **round 3 at `14615f8`** | what moved, and where it is measured |
+|---|---|---|---|---|
+| **SC-1** | attack-plan precedence + status inventory MEASURED | MET | **MET** | **Unmoved, and re-measured rather than carried.** `AP-M03` blob identical; `git merge-base --is-ancestor df3e474 026a71f` exits **0**, 49 commits. Status-cell pass re-run at `14615f8`: **78 / 62 `ASSERT` / 7 `NO-ASSERT` / 4 `NO-STIMULUS` / 4 `STRUCTURAL` / 1 `GAP`** — identical to §2.1-M cell for cell. Suite inventory **59** M03 units, **139** repo-wide file-type-scoped, **141** contaminated (`FINDING M-4` unmoved and unrepaired) |
+| **SC-2** | REQ hooks mapped; spec-derived; **test-side rows delivered** | **NOT MET** | **MET** | **THE ROW THIS ROUND MOVES. §2.8-R.** Clauses (a)/(b) unmoved on identical blobs (35 tokens in SPEC-M03 §10, 34 hooks, `REQ-010` the cross-reference). **Clause (c) is PAID and I measured it at the matrix, not at the dispatch**: `docs/specs/traceability.md` at `14615f8` carries **110 rows / 34 populated / 76 empty / 13 `COVERED` / 97 `OPEN`**; a cell-for-cell string comparison of `WO-0079` §3's 34 `(Test(s), Status)` pairs against the file returns **0 mismatches, 0 rows populated that were not delivered, 0 delivered rows absent**; the 34 rows whose cells changed are **exactly** the delivered set and **every one of them was empty and `OPEN` before**. Independence re-checked over the delivering round's own chain |
+| **SC-3** | suite green **and** tree clean at the sign-off SHA, **on a run id** | MET | **MET** | **Re-measured at the NEW sign-off SHA, because SC-3's subject is the SHA the verdict is signed at.** `build` run **`31449924111`**, job **`93651991502`**, `head_sha` `14615f8`, conclusion **`success`** — **all 13 steps `success`**, including step 6 *"Run tests"*, step 8 *"Verify nothing was left unpromoted or non-deterministic"* and step 9 *"DV mechanical checks"*. `cosim` job **`93651991568`**, `success`, **stated separately and load-bearing for nothing outside the classes it drove**. `journal-check` run **`31449924167`**, `success`. `git status --porcelain` at `14615f8`: **zero lines**. Bound unchanged: `dune runtest` cannot run in this container (ADR-0005), which is why the run id is the evidence. **And one red run is named rather than left for a reader to find — §2.9-R** |
+| **SC-4** | line-rate stress green, zero rx backpressure | MET | **MET** | **Subject byte-identical, evidence re-taken.** `M03-L1`'s 10 000 consecutive 64-octet frames are the same unit at the same bytes; green in run **`31449924111`** step 6. Backpressure discharge unchanged and still **structural** (`M03-L6`, no `tready` exists). Pinned constants `M03-L2` / `-L3` / `-L5` unchanged; `AP-M03` §7 bar 3 still makes them the only uniform-word-delay detector |
+| **SC-5** | mutations killed N/N, five columns, non-kills named | MET | **MET** | **Unmoved, and the negative half is measured**: `docs/reports/audit/` is **byte-identical** across the interval, so **no manifest was authored and no campaign ran** — there is no new class to kill and none to fold. Era tally stands at **63 sealed / 61 killed / 1 survived / 0 green-by-blindness / 1 void**, pre-class era **15 of 15**, survivor `G-c4` measured dead at run `30852220315` |
+| **SC-6** | the anchor stated **per class**, never per module | MET | **MET** | **Unmoved on an identical producer, re-observed on a new job.** `test/cosim/` byte-identical and `docs/specs/requirements.md` byte-identical, so REQ-901's class list and the lane's stimulus are the same; `cosim` job **`93651991568`** `success` at `14615f8`. §2.3-M's per-class cells stand; **the packet still states in terms that the charter §3 anchor is UNDISCHARGED as a module-level anchor**, and **no sentence of the form *"the co-simulation anchors this module"* appears anywhere in this file, round 3's text included** |
+| **SC-7** | the four bars restated and honoured in every sentence | MET | **MET** | §5 unchanged. **Round 3 adds text and the bars bind it too**: §5.8-R lists the four sentences this round declined to write and the bar that forbade each |
+| **SC-8** | unreachable-instrument register published | MET | **MET** | §2.6, unmoved: `U-1` … `U-5` and `DECLARATION WO-0074-D1`, each with its consequence |
+| **SC-9** | open `BUG-`s listed, or **none**, measured | MET | **MET** | Re-measured over `agents/handoffs/BUG-*.md` at `14615f8`: **three packets, three CLOSED, none open** (`BUG-0001` FIX CONFIRMED; `BUG-0002` **ACCEPT — CLOSED** at `fafb83d`; `BUG-0003` **FIX ACCEPTED — CLOSED**). **Recalled from nothing; the directory is the domain** |
+| **SC-10** | every set claim carries SHA, domain and polarity | MET | **MET** | The identity block above carries all three explicitly; §2.8-R's comparison states its domain (the 34 delivered pairs **and** the 76 undelivered rows, so the negative half is measured); §4.9 states the domain of the harvest claim as **the five persistent-journal chains**, and its polarity — *which boxes cannot be checked* — over **every** box, not the ones I expected to fail |
+| **SC-11** | the owed ledger paid in the declared order | MET | **MET** | **§3.11.** Both acts §8.2 named are paid **before** the criteria that read them, not inside the round that grades them — act 1 landed at `a43ac00`/`14615f8`, two and one commits before this read; act 2's four notes landed at `185ae66`, `d53d795`, `54b2553`, `c55c754`. **`FINDING SO-6` is minted by this round**, and SC-11's own remedy for a late-arriving obligation is *a finding*, recorded with a carrier — which §3.11 does |
+| **SC-12** | the first lessons harvest is **complete**, every box checked | **NOT MET** | **NOT MET** | **THE ROW THIS ROUND FAILS ON, and the ground is new. §4.9.** Round 2 failed it because four of five spans were unmined; **all four are now mined and three of the four notes are conformant**. It fails now because **the block's boxes 2, 3 and 4 cannot be checked at the orchestrator's row**: of its **18** banked candidates, **0** discharge **LH3**, **0** carry a stated LH2 grade, and the note nowhere states the classifier was run from the most general honest statement. PROTOCOL §7's own admissibility sentence makes LH1+LH2+LH3 the condition of a candidate being admissible at all. **Measured at the journal, not inferred from a dispatch** |
+| **SC-13** | evidence reproduces at the sign-off SHA | MET | **MET** | Every command in §1.2, §2.8-R and §4.9 runs from a clean checkout at `14615f8`; the four CI facts are **externally verifiable references** (run id, job id, conclusion) and are marked as such (ADR-0003/F5); `J-dv_lead-0167` carries all of them in Evidence |
+| **SC-14** | the verdict is one token | MET | **MET** | §8 carries **`FAIL`** and nothing else. The round-2 token is **quoted** beneath it, which is a retrospective reference to a verdict already in history and not a second live token |
+
+**THIRTEEN MET, ONE NOT MET.** The one is `SC-12`, and **§8's token is `FAIL` because
+of it and of nothing else**.
+
+**What this re-read refused to do, said here because it was available and cheap.**
+`SC-12`'s remaining failure could have been dissolved three ways: by reading the
+orchestrator's eighteen statements as *implying* their own failure modes; by ruling the
+harvest complete on a four-of-five substance and calling the fifth clerical; or by
+declaring — after a round in which two named acts were both delivered — that the
+criterion had been *substantially* met. **All three are the same move**, and it is the
+one §0.0 exists to refuse. **The bar that convicted nine of my own candidates into war
+stories, sixteen of rtl_lead's, nine of architect_docs_lead's and five of the auditor's
+is the bar the eighteen are read against**; applying a softer one to the seat that
+dispatches me would make the bar a function of who is being graded.
 
 ---
 
@@ -956,6 +1041,95 @@ declared `GAP` row `M03-O2` rather than dropped.**
 **names the module the verdict is about**; it is not a document this packet derives
 from, and no round of this packet's execution opened it.
 
+#### 2.8-R PAID AND MEASURED AT `14615f8` (round 3) — the rows delivered, transcribed, and checked against the file rather than against the report of it
+
+> **DATED ANNOTATION, 2026-08-11, `J-dv_lead-0167` — §2.8 above is round 2's measurement
+> and is left UNEDITED, `FINDING SO-1` included.** The finding is not falsified by this
+> block; it is **discharged by the carrier it named**. A dated claim is annotated beside
+> itself, never rewritten into its own outcome.
+
+**The carrier §2.8 named ran, and it ran outside the document graded by it — which was
+the whole point of the refusal.** `WO-0079_m03-traceability-test-rows.md`, drafted by
+dv_lead at `a851948` and landed at **`a43ac00`** (`J-dv_lead-0166`); transcribed into
+`docs/specs/traceability.md` by architect_docs_lead at **`14615f8`**
+(`J-architect_docs_lead-0035`), the only seat that may stage that file (PROTOCOL §6).
+**The mapping therefore had a reviewer who is not me, and the reviewer returned two
+precisions and refused nothing.**
+
+**MEASURED AT THE MATRIX, AT `14615f8`. Round 2's own command, re-run, plus the status
+column it did not need:**
+
+```
+$ awk -F'|' '/^\| REQ-/{n++; t=$7; gsub(/^[ \t]+|[ \t]+$/,"",t);
+             s=$8; gsub(/^[ \t]+|[ \t]+$/,"",s);
+             if(t=="") e++; else p++; c[s]++}
+     END{print n" rows: "p" populated, "e" empty"; for(k in c) print "  "k": "c[k]}' \
+    docs/specs/traceability.md
+110 rows: 34 populated, 76 empty
+  OPEN: 97
+  COVERED: 13
+```
+
+**And the check that matters is not the count — it is the string comparison, which I ran
+myself rather than accepting the transcriber's report of it.** Both files were parsed on
+the pipe character, the delivered `(Test(s), Status)` pair taken from `WO-0079` §3's
+columns 2–3 and the transcribed pair from `traceability.md`'s columns 6–7, and compared
+**exactly**:
+
+| check | domain | result at `14615f8` |
+|---|---|---|
+| delivered pairs vs transcribed pairs, **string equality** | the 34 rows of `WO-0079` §3.A/§3.B/§3.C | **0 mismatches** |
+| rows delivered but **absent** from the matrix | the same 34 | **0** |
+| rows **populated** in the matrix that no packet delivered | all 110 rows — *the negative half, measured* | **0** |
+| rows whose cells changed `c55c754 → 14615f8` | all 110 rows | **exactly the 34**, and **every one was `Test(s)`-empty and `Status` `OPEN` before** |
+| `COVERED` set | all 110 rows | `REQ-101 … REQ-113` — **exactly tier A**, the thirteen rows M03 owns whole |
+
+**The domain of the delivery, re-derived from the spec rather than from the packet
+that delivered it.** SPEC-M03 §10 yields **35** `REQ-` tokens; the delivered set is
+**34**; the symmetric difference is **`REQ-010` alone**, which §2.8 already explained as
+a cross-reference living inside REQ-014's cell and not a hook of its own. Independently:
+every row of `traceability.md` naming **M03** in `Owning module(s)` — **14** of them — is
+in the delivered set, none missing.
+
+**Every citation in the transcribed cells resolves, and the one exception declares
+itself.** Over the **49 distinct `test/**.ml:<line>` citations** the populated cells
+carry, **48 land on a `let%expect_test` line**; the single non-unit citation is
+`test/xgmii_rx_64/test_m03_f.ml:811`, which is the comment
+`(* ---- M03-F5 — DISCHARGED BY CITATION, not built (WO-0047 §3.3) ----------- *)` —
+**the cell says so in its own text rather than passing it off as a unit.**
+
+**THE TWO PRECISIONS THE TRANSCRIBER RETURNED, RE-MEASURED HERE RATHER THAN ACCEPTED.**
+
+- **`P-1` — UPHELD, and refined by my own measurement.** The transcriber found that
+  `M03-M10 → test_m03_f.ml:492` names a unit whose title carries `M03-F2` and not
+  `M03-M10`, against `WO-0079` §2.1's rule that a cited line names *"the unit whose title
+  carries that row id"*. **Verified**: line 492 is a `let%expect_test` whose title reads
+  *"M03-F2: 0, 1 and 4 octets between start and terminate …"*, and the string `M03-M10`
+  occurs in that file **exactly once, at line 324** — inside the **prose of a different
+  unit**, the one beginning at line 304. So the id is in the file and not in the cited
+  unit. **The cell is substantively right and stays unchanged**: `AP-M03` §6 homes
+  `M03-M10` on `M03-F2` *"ON `M03-F2` ALONE"*, and 492 **is** `M03-F2`'s unit. **What is
+  imprecise is `WO-0079` §2.1's generalisation, not the transcription** — and a reader
+  following §2.1 literally at that one entry will not find the id. **Carrier**: the same
+  round that repairs `AP-M03` §6's homing under `FINDING SO-1-A`.
+- **`P-2` — ACCEPTED, no cell affected.** `WO-0079` §1.2 grounded the tier-B/C `OPEN`
+  disposition on ranges that reach 19 of its 21 rows; `REQ-901` and `REQ-903` are process
+  rows in neither range and reach the same disposition on a different ground. **The
+  transcriber wrote the process-row ground into the file's own `Status` bullets.**
+  Correct, and the correction is in the file that owns the vocabulary rather than in a
+  cell.
+
+**WHAT THIS BLOCK DOES NOT CLAIM, and each omission is deliberate.** It does **not**
+claim the matrix is complete: **76 of 110 rows remain empty**, and they are other
+modules' sign-off rounds, not this one's gap. It does **not** claim a `COVERED` row is a
+gate signature: `P1-module-ready` reads the `SO-`, not the matrix. It does **not** claim
+the 13 `COVERED` cells rest on a run this round executed — they rest on run
+`31449924111` at `14615f8`, an **externally verifiable reference** (ADR-0003/F5), over a
+`test/` tree byte-identical to the one round 2 scored. And it does **not** upgrade
+`M03-L6` or the four other `STRUCTURAL` entries into behavioural coverage: they are
+compile-time and script checks, named as such **inside the cells**, which is `SC-4`'s own
+declared bound carried into the file that a later reader will quote.
+
 ### 2.9 THE CI EVIDENCE (SC-3, SC-13) — captured at `2183d71`, build and cosim separately
 
 **`build` run `31444471834`**, `head_sha` **`2183d71834b6cd5d077c6d7059de4bd7c8fc1f82`**,
@@ -990,6 +1164,38 @@ found` / `Library "hardcaml" not found` before any test runs. **This is exactly 
 `SC-3` makes the run id the evidence** (`WO-0072` §4: *"It is a TITLE count, not a pass.
 The pass is the run id"*), and it is an **externally verifiable reference** in
 ADR-0003/F5's sense, marked as such.
+
+#### 2.9-R THE CI EVIDENCE AT `14615f8` (round 3) — and the one red run between the two sign-off SHAs, named rather than left to be found
+
+**`build` run `31449924111`**, `head_sha` **`14615f8856918bfc97fe3408523f593c6d7f3467`**,
+run number 538, event `push`, conclusion **`success`**, started 2026-08-11T01:38:29Z.
+
+**Job `93651991502` (`build`) — conclusion `success`, all thirteen steps `success`**,
+including step 5 *Build*, step 6 *Run tests (expect tests, waveform snapshots)*, step 8
+*Verify nothing was left unpromoted or non-deterministic*, step 9 *DV mechanical checks*
+and step 10 *Abort-bit availability quantifier*. **Job `93651991568` (`cosim`) —
+conclusion `success`**, quoted **separately and deliberately** (§2.3-M(2), SC-6).
+**`journal-check` run `31449924167`** at the same `head_sha`, conclusion **`success`**.
+Locally at `14615f8`, `git status --porcelain` returns **zero lines**.
+
+> **THE RED RUN, DISCLOSED BECAUSE A READER WILL FIND IT AND MUST NOT MISREAD IT.**
+> **`build` run `31447385249` at `a851948` — the commit that CARRIES round 2's `FAIL`
+> — concluded `failure`.** Measured at the job: `build` job `93644410367` failed at
+> **step 4, *"Install dependencies"***, with steps **5–10 `skipped`**; the `cosim` job
+> `93644410325` of the same run concluded **`success`**. **So the suite did not fail:
+> it did not run.** This is a dependency-resolution failure in the runner's own setup,
+> not a test result, and it **did not recur** — runs 532 … 538 (`2d47871`, `185ae66`,
+> `a43ac00`, `d53d795`, `54b2553`, `c55c754`, `14615f8`) are all `success`.
+>
+> **What it does and does not touch.** It touches **no** criterion: `SC-3`'s subject is
+> the **sign-off SHA**, which was `2183d71` for round 2 (run `31444471834`, green) and is
+> `14615f8` for round 3 (run `31449924111`, green). `a851948` is neither. **But a packet
+> that quotes run ids as its evidence owes the reader the run ids that sit between
+> them**, including the ones that are red and the reason they are — otherwise the first
+> auditor to walk the branch finds a red conclusion at the packet's own carrying commit
+> and no sentence anywhere explaining it. **Polarity (§0.2): this is a claim that a red
+> run is NOT a suite failure, and it is measured over every step of both jobs of that
+> run, not over the run's summary line.**
 
 ### 2.10 THE LINE-RATE STRESS (SC-4) — at `2183d71`
 
@@ -1552,6 +1758,38 @@ figure superseded — carrier: the next `AP-` opener), `FINDING SO-4` (`AP-M03` 
 **Nothing on this ledger was discovered by the round that needed it.** **One obligation
 NOT on this ledger was** — SC-2's third clause — and that is `FINDING SO-1`, §2.8.
 
+### 3.11 EXECUTION RECORD — round 3, THE RE-VERDICT (`J-dv_lead-0167`, re-verdict SHA `14615f8`)
+
+**The round-2 ledger is closed and stays closed; this round has a two-item ledger of its
+own, and it is §8.2's own list.** Both items were paid **in commits that precede this
+read**, which is the ordering `SC-11` exists to enforce — neither was manufactured inside
+the document that grades it.
+
+| # | item (`§8.2`'s own words) | state at `14615f8` | evidence, measured |
+|---|---|---|---|
+| **A1** | *"Deliver the test-side traceability rows."* | **PAID, and TRANSCRIBED** | `WO-0079` at **`a43ac00`** (`J-dv_lead-0166`), transcribed at **`14615f8`** (`J-architect_docs_lead-0035`). §2.8-R: 34/34 cells string-identical, 0 rows populated that were not delivered, 34 changed rows = the delivered set. **`SC-2` moves NOT MET → MET, and `FINDING SO-1` is DISCHARGED by the carrier it named** |
+| **A2** | *"Commission the other four harvests."* | **COMMISSIONED, FOUR NOTES LANDED, ONE NOT ADMISSIBLE** | `J-auditor-0019` (`185ae66`, 54), `J-orchestrator-0233` (`d53d795`, 18), `J-architect_docs_lead-0034` (`54b2553`, 94), `J-rtl_lead-0013` (`c55c754`, 50). **Three of four conform; the orchestrator's does not discharge LH3 on any candidate** — §4.9, `FINDING SO-6`. **`SC-12` stays NOT MET, on this ground and not on round 2's** |
+
+**THE STANDING SET, RE-CHECKED RATHER THAN RECOPIED (§3.9-M's discipline, applied to
+this round).** Three entries move and the rest are unmoved on a byte-identical tree:
+
+| entry | state at `14615f8` | evidence |
+|---|---|---|
+| **`FINDING SO-1`** | **CLOSED**, struck from the standing set | §2.8-R; the delivery landed at `a43ac00` and was transcribed at `14615f8` |
+| **`FINDING SO-5`** | **HALF DISCHARGED, HALF STANDING** | its **substance** half — four unmined spans — is paid; its **wording** half is untouched: `SC-12` still imports a **gate** condition onto a **packet**, and four of the block's eleven boxes remain acts no `SO-` author can perform. **This round does not rule on that half** — see §4.9's closing note — because ruling it would decide, inside the graded document, a clause that is not load-bearing for today's token |
+| **`FINDING SO-1-A`** | **STANDING, and it gains a second instance** | `AP-M03` §6's homing gap now also carries `P-1` (§2.8-R): `WO-0079` §2.1's *"the unit whose title carries that row id"* is false at exactly one of 49 citations. **Same carrier: the next round opening `AP-M03`** |
+| **`FINDING SO-6`** | **MINTED HERE**, carrier named | §4.9. Carrier: **the orchestrator's own next harvest round**, which is the only seat that may append to that journal (PROTOCOL §4) |
+| `SO-2`, `SO-3`, `SO-4`, `M-4`, `RV-0078-S2-3`, `S2-9`, `S2-10`, `S2-12`, `S2-15`, `S1-3`, `S1-4`, `WO-0078-1`, `CD-P2-1`, `CD-P2-2`, `RV-0075-2`, `ECS-3`/`6`/`7`/`8`, `WO-0047` §2's 4-octet member, `OBSERVATION L-O1`, `WO-0073-D3`'s `M03-I4` mislabel, `OBSERVATION K-O1`, `DVC-1a`/`DVC-1b`, `AP-M14` §6, RFC 1071, X-10/X-11 | **carried unchanged, carriers as named at §3.9/§3.9-M** | none of their subjects moved: `test/`, `tools/`, `libs/`, `test/cosim/`, `docs/reports/audit/` and `docs/specs/requirements.md` are **byte-identical** `2183d71..14615f8` (§1.2) |
+
+**And the ordering claim this round must make about itself.** `FINDING SO-6` was
+**discovered by the round that reads the criterion it bears on** — which is the shape
+`SC-11`'s last sentence names. It is recorded as a **finding with a carrier**, exactly as
+`SC-11`'s §1.1 row ruled for `FINDING SO-1`, and it is **not** an obligation of mine that
+I failed to schedule: it is the measurement `SC-12` asks for, returning a result. **The
+distinction is load-bearing and is stated rather than assumed**: a criterion that says
+*"measure whether X is complete"* cannot be failed by the measurement discovering that X
+is not.
+
 ---
 
 ## 4. THE PROGRAMME'S FIRST LESSONS HARVEST
@@ -2036,6 +2274,154 @@ been asked for one.
 > complete at one agent of five**, in the packet that the gate reads to decide whether
 > the harvest happened.
 
+### 4.9 THE BLOCK RE-INSTANTIATED AT `14615f8` (round 3) — four notes landed, and the boxes read at each seat's own journal
+
+> **DATED ANNOTATION, 2026-08-11, `J-dv_lead-0167` — §4.8 above is round 2's
+> instantiation and is left UNEDITED, `FINDING SO-5` included.** Its four `NOT MINED`
+> rows were true when written and are false now; the correction is **beside** them, not
+> **over** them.
+
+**HOW I READ THESE FOUR, stated before the result, because the method is the only thing
+that makes the result checkable.** I opened each seat's journal at `14615f8` and read the
+harvest entry itself — not the dispatch's summary of it, not the commit subject line. For
+each I asked the block's own eleven boxes, in the block's own words, and I counted the
+things the boxes count: does the note state its span as an **entry-id interval**; does
+every banked candidate carry **LH1**, **LH3** and a stated **LH2 grade**; is the
+**classifier** stated as run from the most general honest statement; do **war stories**
+carry the criterion each failed; is a **nil** declared rather than omitted. **Where a note
+puts LH1/LH3 in table columns rather than in labelled prose, that discharges the box** —
+the box asks for the discharge, not for the token. **I graded notes, never seats**, and
+the finding below is written against a note's contents with the repair named.
+
+**THE FOUR, MEASURED AT THEIR OWN JOURNALS:**
+
+| seat | note | span, as stated | banked | LH1 per candidate | LH3 per candidate | LH2 grade stated | classifier stated as run | war stories with criterion | verdict on the note |
+|---|---|---|---|---|---|---|---|---|---|
+| **auditor** | `J-auditor-0019` (`185ae66`) | `J-auditor-0001 … -0018`, first harvest, opens at first entry | **54** | **yes** — SHA + entry, inline per candidate | **yes** — *"LH3 without it …"* per candidate | **yes**, all `LH2-g`, declared with its cause | **yes** — step 0 attempted for all 64, none reached step 2 | **yes**, 5, each with the criterion | **CONFORMANT** |
+| **architect_docs_lead** | `J-architect_docs_lead-0034` (`54b2553`) | `J-architect_docs_lead-0001 … -0034` | **94** | **yes** — an *"LH1: incident SHA(s) · entry"* column, populated on all 94 | **yes** — a *"what breaks without it"* column, populated on all 94 | **yes**, all tier 1, with the nil-`LD-` declared and its cause | **yes** — step 0 run on all 94, with the nine role-noun rewrites counted | **yes**, 9, each with the criterion | **CONFORMANT** |
+| **rtl_lead** | `J-rtl_lead-0013` (`c55c754`) | `J-rtl_lead-0001 … -0012`; next opens at `-0013` | **50** | **yes** — SHA column plus an (F)/(C) visibility grade the note defines and defends | **yes** — an *"LH3 — what breaks without it"* column on all 50 | **yes**, all `LH2-g`, `LD-` reserved and unused | **yes**, from the most general honest statement | **yes**, 16, each with the criterion | **CONFORMANT** |
+| **orchestrator** | `J-orchestrator-0233` (`d53d795`) | `J-orchestrator-0001 … -0232`, 232 entries, walk method declared | **18** | **partly** — every candidate carries an `LH1:` line, but most cite **entry ids** rather than commit SHAs (resolvable via `git log --grep`, so pinned indirectly) | **NO — 0 of 18** | **NO — none stated**; a blanket *"No `LD-`"* stands in for a grade | **NO — the note does not state the classifier was run**, and step 0 appears nowhere | **yes**, 2, each with the criterion it failed | **NOT ADMISSIBLE AS BANKED** |
+
+**The orchestrator row is the finding, and it is measured rather than characterised.**
+Across that entry the token `LH1` occurs **18** times — once per candidate — and the token
+`LH3` occurs **once**, inside a **war story** (*"Fails LH3: ordinary debugging
+judgement"*). So the seat knows the criterion and applies it to the two statements it
+**refused**, and to none of the eighteen it **banked**. At most three or four of the
+eighteen carry a consequence clause embedded in the rule itself (*"a buffered transcript
+is a known false-positive"*; *"so an ephemeral container never holds the only copy"*);
+the rest state a rule and its provenance and stop.
+
+> **`FINDING SO-6` (MAJOR, mine, against `J-orchestrator-0233` as an artefact — not
+> against the seat, and not against the dispatch that produced it).**
+> **PROTOCOL §7 states the admissibility test in one sentence**: *"A candidate rule is
+> admissible only if it **(LH1)** cites the incident commit(s) that taught it, **(LH2)**
+> states its observable in terms portable beyond this project, and **(LH3)** says what
+> breaks without it."* **Eighteen of eighteen banked candidates do not discharge LH3, and
+> none carries a stated LH2 grade.** The block's box — *"Every candidate in the Yield
+> table discharges LH1, LH3 and LH2 at its stated grade, **checked by the transcriber
+> against the note, not against the summary line**"* — cannot be checked at that row, and
+> box 3 (the classifier) and box 2 (the note carries its candidates with LH1–LH3
+> discharged) fail with it.
+>
+> **AND THE GRADE QUESTION IS NOT COSMETIC, which is why a blanket nil cannot stand in
+> for it.** `LH2-g` bars **every** proper noun. Read against that bar, several of the
+> eighteen carry nouns a stranger cannot resolve: one names a version-control command
+> outright, two more turn on push and merge-base semantics, and at least two name
+> artefacts that exist only in this repository. **Some of those are very likely `LD-`
+> candidates in a `version-control` pack** — the pack this programme has already opened —
+> and one is likely tier 3. **None of that can be decided from outside the note**: the
+> classifier is run by the miner, from the most general honest statement, and a reader
+> who re-grades another seat's statements has become the selector the block's §4 forbids
+> (*"You are not the selector … you may not improve one"*).
+>
+> **REPAIR, bounded and owned.** The orchestrator's own next harvest round appends a
+> successor note discharging **LH3** per candidate, running the classifier from step 0
+> and recording each candidate's **grade** — with `LD-` rows naming their pack — for the
+> same span. **No renumbering is needed**: `RULING O-1` (that entry's own ruling) already
+> fixes the id space, and the eighteen ids `LC-orchestrator-H1-1 … -18` are conformant to
+> it. **I cannot write that note** — PROTOCOL §4: no agent writes another agent's journal
+> — which is exactly why this is a finding with a carrier and not a repair I withheld.
+
+**THE BLOCK, RE-INSTANTIATED. Five of eleven boxes checked, six unchecked — the same
+count as round 2 and a different set, which is the informative part.**
+
+## Lessons harvest — SO-xgmii_rx_64 (RE-INSTANTIATED at `14615f8`, round 3)
+
+Per ADR-0018 / PROTOCOL §7. Spans are entry-id intervals over each agent's own
+journal chain and must tile with that agent's previous harvest. Transcribed by
+the orchestrator; each row's authority is the cited journal entry.
+
+### Spans mined
+
+| Agent | Span (entry-id interval) | Harvest note | T1 general | T2 domain | T3 |
+|---|---|---|---|---|---|
+| architect_docs_lead | **`J-architect_docs_lead-0001 … -0034`** | **`J-architect_docs_lead-0034`** (`54b2553`) | **94** | **0** (nil declared, with cause) | **9** |
+| rtl_lead | **`J-rtl_lead-0001 … -0012`** | **`J-rtl_lead-0013`** (`c55c754`) | **50** | **0** (reserved, unused) | **16** |
+| dv_lead | `J-dv_lead-0001 … J-dv_lead-0165` (first harvest; span opens at the first entry) | `J-dv_lead-0165` | **94** | **1** | **9** |
+| auditor | **`J-auditor-0001 … -0018`** | **`J-auditor-0019`** (`185ae66`) | **54** | **0** (nil declared, with cause) | **5** |
+| orchestrator | **`J-orchestrator-0001 … -0232`** | **`J-orchestrator-0233`** (`d53d795`) | **18 offered, 0 admissible as banked** — `FINDING SO-6` | **0** (undetermined: the classifier was not run) | **2** |
+| _(worker spans, by commissioning lead)_ | `J-tb_writer-0001 … -0040`; `J-data_wrangler-0001 … -0008`; `formal_dv` **nil (zero entries)** | in dv_lead's note (§4.7); **and, additionally, the workers' own notes `J-tb_writer-0041` and `J-data_wrangler-0009` landed this arc** | 8 + 1 merged (lead-mined) | 0 | 0 |
+
+### Checklist
+
+- [x] **Every persistent-journal agent has a row above**, and every span tiles —
+      **CHECKED at `14615f8`.** All five rows are populated and every span **opens at
+      its agent's first entry**, which is the block's own first-harvest rule; there is
+      no previous harvest for any of the five to tile against. **One forward
+      observation, recorded not charged**: the auditor's note declares its next span
+      opening at `-0020`, which would leave `-0019` — its own note entry — inside
+      neither interval. The other three place their note entry on one side or the
+      other. **A prospective one-entry gap, declared in its own note and therefore
+      visible, which is what the tiling rule is for.**
+- [ ] **Each row's harvest note exists** and carries its span, its candidates with
+      LH1–LH3 discharged, its war stories with the criterion each failed —
+      **UNCHECKABLE at one of five rows.** Four notes exist and carry all of it;
+      `J-orchestrator-0233` carries its span and its war stories but **not** its
+      candidates with LH3 discharged (`FINDING SO-6`).
+- [ ] **The classifier was run on every candidate** (§2.1), starting from the most
+      general honest statement — **UNCHECKABLE at one of five rows.** Stated and
+      evidenced in the dv, auditor, architect and rtl notes; **absent** from the
+      orchestrator's.
+- [ ] **Every candidate discharges LH1, LH3 and LH2 at its stated grade** —
+      **UNCHECKABLE at one of five rows**, for 18 candidates. **The other 293 — 54 +
+      94 + 50 + 95 across the four conformant notes — discharge all three.**
+- [x] **Every `LD-` row names a domain pack** — **one `LD-` across all five notes**
+      (dv's), pack `version-control`. The other four declare a nil `LD-` with a cause.
+- [x] **Pack names checked against those already in use** — one pack in use
+      (`version-control`); no second pack minted, so no near-duplicate is possible.
+      Normalisation: `none`.
+- [x] **No candidate was edited in transcription** — **and this round is where that box
+      earned its keep.** Re-grading the orchestrator's eighteen statements myself was
+      available and is refused at `FINDING SO-6`: a reader who repairs another miner's
+      statements has become the selector.
+- [ ] **Shell transcription: exactly one commit** — **NOT DONE.** No `L-` id exists in
+      any artefact at `14615f8`, and the shell is another repository. Commit: `—`
+- [ ] **`LC-`/`LD-` → `L-` pairs recorded** — **NOT DONE; there are no `L-` ids yet.**
+- [ ] **Sponsor-visible** — **NOT DONE. It happens at `P1-module-ready`.**
+- [ ] **Harvest declared complete by the orchestrator** — **NOT DONE.**
+
+**FIVE CHECKED, SIX UNCHECKED — and the split has moved, which is the measurement this
+round adds.** Round 2's six unchecked were *two* mining boxes (four seats had never
+harvested) and *four* collation boxes. Round 3's six are **three** mining boxes, all
+failing at **one** row for **one** reason, and the **same four** collation boxes.
+**Three seats' notes closed two boxes and opened none.**
+
+> **WHAT THIS ROUND DELIBERATELY DOES NOT RULE, and the refusal is the discipline, not
+> an evasion.** `FINDING SO-5`'s **wording** half stands: `SC-12` demands *"every box
+> checked"* in a **packet**, while §4.1 and the block's own §1 item 4 make the last four
+> boxes the **orchestrator's later acts** — so on a literal reading no `SO-` could ever
+> satisfy `SC-12`. **I do not resolve that here.** It is not load-bearing for today's
+> token: `SC-12` fails on `FINDING SO-6`, which is a box that **is** the packet's to
+> check and which fails on measurement. Ruling the four collation boxes out of the
+> criterion **while they are the only thing left standing** would be the author
+> discharging a condition by declaring it discharged — and ruling them *in* forever
+> would freeze an unmeetable criterion by the same unilateral act. **Both are amendments
+> to a criterion, and an amendment belongs in an ADR under PROTOCOL §11, raised by the
+> round that needs it, not asserted inside the packet the criterion grades.** Carrier:
+> an ADR-0018 amendment reconciling the block's gate condition with a packet
+> instantiation, raised at Open-questions in `J-dv_lead-0167`.
+
+
 ---
 
 ## 5. WHAT THE `SO-` MAY NOT CLAIM — the prohibition register
@@ -2134,6 +2520,21 @@ row below is a sentence the measured evidence would have supported in a looser p
 | *"`M03-L4` and `M03-L1` both confirm delivery order"* | **§5.7 (`U-1`).** A coverage claim counting both has counted one observation twice |
 | *"the family-J campaign probed 7 of 22 assertions"* | **§2.1-M.** The figure does not reproduce; the measured statement is **7 of 29** |
 | *"the harvest is complete"* | **§4.8.** One agent of five has mined its span |
+
+
+#### 5.8-R THE SENTENCES ROUND 3 DECLINED TO WRITE (SC-7 at `14615f8`)
+
+**Round 3 added text, so it owes this table too.** Each row is a sentence the material
+this round measured would have supported in a looser packet.
+
+| the sentence not written | forbidden by |
+|---|---|
+| *"the traceability rows are delivered, so the module's coverage is now traceable end to end"* | **§5.1 item 1's shape, applied to coverage.** A cell records which unit attacks which requirement; it anchors, proves and covers nothing on its own. **76 of 110 rows are still empty and 21 populated rows still read `OPEN`** |
+| *"the matrix carries 13 `COVERED` rows, so 13 requirements are signed off"* | **PROTOCOL §7 and §0.3.** `P1-module-ready` reads the `SO-`, never the matrix; and `COVERED` is a claim about a row's own subject, not a gate signature |
+| *"the transcription was verified by architect_docs_lead, so the cells are correct"* | **§0.2's SHA dimension.** A reviewer's report of a comparison is not the comparison. §2.8-R re-ran it at `14615f8` against the file, and **that** is the evidence |
+| *"the harvest is four-fifths complete, which is substantially complete"* | **SC-14 and §4.9.** A criterion has two values; *substantially* is the qualifier SC-14 names as the mark of an unadmitted `FAIL` |
+| *"the orchestrator's eighteen candidates are general, since none names a domain"* | **§4.9 and the block's §4.** The classifier is the miner's to run; a reader who grades another seat's statements has become the selector |
+| *"run `31447385249` shows the suite red at `a851948`"* | **§2.9-R.** The `build` job failed at *"Install dependencies"* with the test steps **skipped** — the suite did not fail, it did not run |
 
 ---
 
@@ -2345,13 +2746,109 @@ toolchain and licensing, org changes.** Concretely, at the end of this arc:
 
 ## 8. VERDICT
 
+### 8.0 RE-ISSUED at `14615f8` — round 3, the re-verdict
+
 # FAIL
 
 **One token. No qualifier, no reservation, no "subject to" (SC-14).**
 
-**Signed `J-dv_lead-0165`, dv_lead, at sign-off SHA `2183d71`.**
+**Re-signed `J-dv_lead-0167`, dv_lead, at re-verdict SHA `14615f8`.**
+**Thirteen of fourteen criteria MET; the one not met is `SC-12`** (§1.2).
 
-### 8.1 The ground, in one paragraph
+#### 8.0.1 The ground, in one paragraph
+
+**Both acts §8.2 required were performed, one of them completely.** **Act 1 is paid in
+full**: the test-side traceability rows were drafted as `WO-0079` at `a43ac00`, delivered
+to a reviewer who is not me, and transcribed into `docs/specs/traceability.md` at
+`14615f8`; measured at the file rather than at the report of it, **34 of 34 cells are
+string-identical to what was delivered, no row was populated that was not delivered, and
+the 34 rows that changed were every one of them empty and `OPEN` before** — so **`SC-2`
+moves NOT MET → MET** and `FINDING SO-1` is discharged by the carrier it named. **Act 2
+is performed and one of its four products does not meet the bar.** All four previously
+unmined spans are now mined — `J-auditor-0019`, `J-orchestrator-0233`,
+`J-architect_docs_lead-0034`, `J-rtl_lead-0013` — and **three of the four notes are
+conformant**, carrying their span as an interval, their candidates with LH1 and LH3
+discharged at a stated grade, their classifier run from the most general honest
+statement, and their war stories with the criterion each failed. **The fourth does not.**
+Of the eighteen candidates banked at `J-orchestrator-0233`, **zero discharge LH3**, none
+carries a stated LH2 grade, and the note nowhere states the classifier was run — while
+PROTOCOL §7 makes LH1 **and** LH2 **and** LH3 the condition of a candidate being
+*admissible at all*. **Three of the instantiated block's eleven boxes therefore cannot be
+checked, all three at that one row** (`FINDING SO-6`, §4.9), and `SC-12` is **NOT MET** on
+a ground round 2 could not reach, because round 2 had no note to read. **Every other
+criterion is re-measured at the new SHA and holds**: the suite and the tree are green and
+clean at `14615f8` on `build` run **`31449924111`** with all thirteen steps `success`, the
+`cosim` job green and quoted separately, the census unmoved at 78/62/7/4/4/1 over a
+byte-identical plan, the mutation era unmoved over a byte-identical audit directory, the
+line-rate stress green, no `BUG-` open. **And the thing that made this round hard is worth
+naming: with `SC-2` paid, `SC-12` became the only obstacle to a `PASS` — which is exactly
+the condition under which §0.0 predicted a packet would start reading its own clauses
+generously.** It did not.
+
+#### 8.0.2 What this `FAIL` routes to — one act, and it is not rtl_lead's and not mine
+
+**Still normal packet flow, still not an escalation** (charter §7, §0.3). **No `BUG-` is
+opened by this verdict and none is owed.** **One act clears it:**
+
+1. **The orchestrator's harvest note is completed for the span it already walked.** A
+   successor note over `J-orchestrator-0001 … -0232` that discharges **LH3** per
+   candidate, runs the classifier from step 0, and records each candidate's **grade** —
+   `LD-` rows naming their pack. **No renumbering**: `RULING O-1` already fixes the id
+   space and `LC-orchestrator-H1-1 … -18` conform to it. **It is a bounded round over a
+   chain already walked, and it is the only SUBSTANTIVE thing between this packet and a
+   `PASS`** — the qualifier is exact, because the wording question below must also be
+   settled, and by amendment rather than by anyone's reading.
+   **I cannot perform it** — no agent writes another agent's journal (PROTOCOL §4) — and
+   I spawn no one (charter §7), so it is the orchestrator's own round to run.
+
+**One thing this round refused to decide, and the refusal is named so it is not mistaken
+for an oversight.** `FINDING SO-5`'s wording half is unrepaired: `SC-12` demands *"every
+box checked"* of a **packet**, while four of the eleven boxes are the orchestrator's
+**later** acts by §4.1's own text — collation, `L-` pairs, sponsor-visibility, the
+completeness declaration. On a literal reading no `SO-` can ever satisfy `SC-12`. **This
+round does not rule on it, in either direction**, because it is not load-bearing for this
+token and because both possible rulings would amend a criterion inside the document the
+criterion grades. **Carrier: an ADR-0018 amendment (PROTOCOL §11), raised at
+Open-questions in `J-dv_lead-0167`.** **A re-verdict round that finds `SO-6` paid must
+settle it before it can write `PASS`, and it must settle it by amendment, not by
+reading.**
+
+#### 8.0.3 What a reader should NOT take from this token
+
+- **It is not a statement that `xgmii_rx_64` is defective.** Nothing in §2 convicts the
+  design; `libs/` is byte-identical to the tree round 2 scored, and thirteen of fourteen
+  criteria are met.
+- **It is not a finding against the orchestrator as a seat.** `FINDING SO-6` is written
+  against **a note's contents**, its repair is bounded, and the note it convicts is the
+  first harvest of a chain of 232 entries that had never been mined — mined, moreover,
+  because that same seat commissioned the round that convicts it.
+- **It is not a `P1-module-ready` decision, and it is not the sponsor's approval.** The
+  gate reads a `PASS`; on this verdict the DV rows are supplied as **not yet satisfied**.
+- **It does not lift, move or renew anything.** No bar lifted, no class anchored, no row
+  re-statused, no count carried. **The two things this round changed in the programme's
+  standing knowledge are `SC-2`'s status and the harvest's measured completeness**, and
+  both changed because an act was performed, not because this packet decided anything.
+
+---
+
+> ### THE ROUND-2 VERDICT, PRESERVED AND QUOTED — §8.1 … §8.3 below are round 2's text at `2183d71` and are left UNEDITED
+>
+> **`J-dv_lead-0165`, dv_lead, at sign-off SHA `2183d71`, wrote:**
+>
+> > # FAIL
+> >
+> > **One token. No qualifier, no reservation, no "subject to" (SC-14).**
+> >
+> > **Signed `J-dv_lead-0165`, dv_lead, at sign-off SHA `2183d71`.**
+>
+> **That token stood on TWO criteria — `SC-2` and `SC-12`. One of the two is paid.**
+> Quoting it here is a **retrospective reference to a verdict already in history**
+> (PROTOCOL §10's own carve-out), not a second live token: §8.0 carries the only live
+> verdict this packet has. **`SC-2`'s round-2 row at §1.1 and its measurement at §2.8 are
+> left standing exactly as written**, annotated beside themselves at §2.8-R, because a
+> dated claim is never rewritten into its own outcome.
+
+### 8.1 The ground, in one paragraph — *round 2's, at `2183d71`, unedited*
 
 **Twelve of the fourteen criteria at §1 are met and the module's behavioural evidence is
 complete**: the attack plan preceded the first test by forty-nine commits, all
@@ -2380,7 +2877,7 @@ between this packet and a `PASS`** — and that is precisely the move §0.0 was 
 refuse: *a condition whose author may discharge it by declaring it discharged is not a
 condition.*
 
-### 8.2 What this `FAIL` routes to — and it is not rtl_lead
+### 8.2 What this `FAIL` routes to — and it is not rtl_lead — *round 2's, at `2183d71`, unedited*
 
 **This is normal packet flow and it is not an escalation** (charter §7, §0.3). **But it
 does not route to rtl_lead**, because neither failure names anything rtl_lead can fix,
@@ -2405,7 +2902,7 @@ seat. **No `BUG-` is opened by this verdict and none is owed.**
 by a later act is satisfied at a later SHA, and §0.2's SHA dimension applies to this
 packet's own verdict as much as to its counts.
 
-### 8.3 What a reader should NOT take from this token
+### 8.3 What a reader should NOT take from this token — *round 2's, at `2183d71`, unedited*
 
 - **It is not a statement that `xgmii_rx_64` is defective.** Nothing in §2 convicts the
   design; the module's evidence is the strongest in the programme and §1.1 scores it.
@@ -2459,6 +2956,7 @@ packet's own verdict as much as to its counts.
 
 | date | change | by |
 |---|---|---|
+| 2026-08-11 | **RE-VERDICT ROUND 3 — §1 re-read criterion by criterion at `14615f8`; the packet is RE-ISSUED and §8.0 carries `FAIL` on ONE criterion.** State moves `ISSUED — EXECUTED` → **`RE-ISSUED — RE-VERDICT EXECUTED`**. **§1.2 reads the fourteen back a second time: THIRTEEN MET, ONE NOT MET (`SC-12`)** — round 2's §1.1 table left unedited beside it. The re-read rests on a measured identity: eleven paths moved `2183d71..14615f8` and **none is a census producer** — `test/`, `tools/`, `libs/`, `test/cosim/`, `docs/reports/audit/`, `docs/specs/requirements.md`, SPEC-M03 and `AP-M03` all **byte-identical** — stated with SHA, domain and polarity. **`SC-2` moves NOT MET → MET at §2.8-R**: `WO-0079` delivered at `a43ac00` (`J-dv_lead-0166`) and transcribed at `14615f8` (`J-architect_docs_lead-0035`); measured at the matrix rather than at the report of it — **110 rows / 34 populated / 76 empty / 13 `COVERED`**, a cell-for-cell **string comparison returning 0 mismatches**, 0 rows populated that were not delivered, the 34 changed rows every one of them previously empty and `OPEN`, the `COVERED` set exactly tier A, 48 of 49 citations landing on a `let%expect_test` with the one exception self-declaring; hook-set equality re-derived from the spec (35 tokens − `REQ-010` = the 34 delivered) and all 14 M03-owned rows present. **`FINDING SO-1` DISCHARGED by the carrier it named.** The transcriber's two precisions re-measured, not accepted: **`P-1` UPHELD and refined** (the cited unit at `test_m03_f.ml:492` carries `M03-F2`, and `M03-M10` occurs in that file only at line 324, inside a different unit — the cell stays, `WO-0079` §2.1's generalisation is what is imprecise), **`P-2` ACCEPTED**, neither changing a cell. **§2.9-R** captures the CI evidence at the new SHA — `build` run **`31449924111`**, job `93651991502`, **all 13 steps `success`**, `cosim` job `93651991568` `success` quoted separately, `journal-check` `31449924167` `success` — **and discloses the one red run between the two sign-off SHAs**: `31447385249` at `a851948`, the commit carrying round 2's own `FAIL`, failed at step 4 *Install dependencies* with the test steps **skipped**, so the suite did not fail, it did not run, and it did not recur across runs 532–538. **§3.11** records the round's two-item ledger — both of §8.2's acts paid in commits preceding this read — re-checks the standing set rather than recopying it, and closes `FINDING SO-1`. **§4.9 re-instantiates the harvest block at the new SHA, with every seat's note read at its own journal rather than from the dispatch**: `J-auditor-0019` (54), `J-architect_docs_lead-0034` (94), `J-rtl_lead-0013` (50) are **CONFORMANT** on span, LH1, LH3, grade, classifier and war stories; **`J-orchestrator-0233` (18) is NOT ADMISSIBLE AS BANKED** — **0 of 18 discharge LH3**, none carries a stated LH2 grade, and the classifier is nowhere stated as run, against PROTOCOL §7's own admissibility sentence. **`FINDING SO-6` (MAJOR) minted**, written against a note's contents and not against a seat, with a bounded repair owned by the only agent that may append to that journal. **Block: five boxes checked, six unchecked — the same count as round 2 and a different set**, three mining boxes now failing at one row for one reason plus the same four collation boxes. **`FINDING SO-5`'s wording half is left UNRULED in either direction**, with an ADR-0018 amendment named as its carrier, because both possible rulings would amend a criterion inside the document it grades. §5.8-R lists six further sentences the round declined to write with the bar that forbade each. **One finding minted, mine, against another agent's artefact with the repair named and no edit made to it. No bar lifted, no class anchored, no row re-statused, no `BUG-` opened, nothing outside `agents/handoffs/**` and my own journal written.** | dv_lead, `J-dv_lead-0167` |
 | 2026-08-11 | **EXECUTION ROUND 2 — §7.1 steps 6–12 EXECUTED; the packet is ISSUED and §8 carries `FAIL`.** State moves `DRAFT` → `ISSUED — EXECUTED` at sign-off SHA `2183d71`. **§1.1 reads the fourteen criteria back: twelve MET, two NOT MET (`SC-2`, `SC-12`).** §2 gains six measured blocks and four new sections, every figure re-measured with SHA, domain and polarity: **§2.1-M** the census (78/62/7/4/4/1 unmoved, 62 of 62 discharged) with **`FINDING SO-2`** — the census block's producer domain is undeclared and a wide-domain pass returns 63 — and **`FINDING SO-3`** — the 22-assertion breadth figure does **not** reproduce, the measured figure is **7 of 29**, ledger item 11 closed by re-measurement; `FINDING M-4` re-measured at **141** contaminated against 139 honest, the contaminated figure having moved while the honest one did not. **§2.2-M** re-walks the era tally to **63 / 61 / 1 / 0 / 1** over the **ten class-based campaigns**, states the four earlier campaigns' **15 of 15** separately with `D-M3`'s equivalent-mutant exclusion, and records the survivor `G-c4` **both ways**: the column stays 1, and the defect is measured dead at CI run **`30852220315`** with `M03-G8` the only failing unit of twenty-seven. **§2.3-M** re-observes the five classes at run `31444471834` / job `93635620959` (**not a lift**), **quotes the agreed-value print** the round-1 comparator repair produces — `word 7: tkeep = 0f tlast = 1 tuser0 = 1` at case C3 — and writes REQ-104's row **as the pair**; bar 1's set claim re-measured over both producers, surviving, with **`FINDING SO-4`** against `AP-M03` §7 row (b)'s command/figure mismatch (24 raw, 17 executable). **§2.4-M is the round's largest correction: the seventeen-class tally does NOT survive**, because REQ-901 gained classes **(g)** and **(h)** in force at `4e7331b` with `CSG-1`/`CSG-2` repaired at `ce5674d` — **five inside / twelve outside becomes NINE inside / EIGHT outside**, E-1 into (g), E-2/E-3/H-5 into (h), H-1/H-2 additionally **barred as stimulus**; anchored classes still **one**, F-4. **§2.8** measures SC-2's third clause **UNMET** — 110 rows, 110 empty `Test(s)` cells — and mints **`FINDING SO-1`**, refusing to manufacture the deliverable inside the document graded by it. §2.9–§2.11 carry the CI evidence, the stress row with its structural backpressure discharge, and the three-dimension record. **§3.10 closes the owed ledger, twelve of twelve.** **§4.4–§4.8 take the programme's first lessons harvest**: the chain walked from `J-dv_lead-0001`, **89 dv_lead bankings + 9 worker bankings = 98 walked, 3 merged, 95 distinct** (94 `LC-`, 1 `LD-` pack `version-control`), **9 war stories** with the criterion each failed, worker spans mined with a declared thirty-entry gap in the tb_writer chain, and **two further accounting defects found that no prior note names** — one rule banked twice across regimes, one banked as new that was already the set-claim rule. §4.8 instantiates the block: **five boxes checked, six unchecked**, and **`FINDING SO-5`** records that `SC-12` demands of this packet what its author cannot do **and** that the harvest is one-fifth complete on substance. §5.8 lists twelve sentences the packet declined to write with the bar that forbade each. **§6.4 re-measures Stage 3: still REFUSED on (b), (c), (e); (g)/(h) landing REDUCES what the lane can anchor and bars C9's stimulus outright.** **Five findings minted, all mine, all against my own artefacts.** No bar lifted, no class anchored, no row re-statused, no `BUG-` opened, nothing outside `agents/handoffs/**` and my own journal written. | dv_lead, `J-dv_lead-0165` |
 | 2026-08-10 | **EXECUTION ROUND 1R — the round-1 payment's own CI verdict, and its repair, at base `ee3da9c`.** `RN-6`'s check failed its first runner execution (`build` `31442295998`): 4 UNDECLARED broken citations, all citing `docs/reports/latency/`, **this packet among the four citers**, against 0 locally. **Two findings, both mine, both paid**: `FINDING RN-6-CI-1` — the catch is a TRUE POSITIVE, the directory existed only as an empty untracked directory that git cannot carry, so the path is absent from every fresh clone; `FINDING RN-6-CI-2` — the resolver measured the FILESYSTEM where the honest test is the TRACKED TREE. Repairs: the resolver is rebuilt on `git ls-files` over two universes (tracked / committable), neither of which can contain an empty directory, with `PENDING-COMMIT` printed for a citation resolving only through an uncommitted path; the four citations are dispositioned as **one tracked file, zero errata** (`docs/reports/latency/README.md`), so this packet's own citation ends the round RESOLVING rather than declared-broken (`SC-10`). Header gains an Execution bullet; §3.0.1 records the round; §3.2.1 carries the repair, the dispositions and seven evidence rows including a constructed fresh checkout and three negative controls. **No §7.1 step executed, no ledger item moved, State still DRAFT, §8 still UNSET, no criterion of §1 adjudicated.** | dv_lead, `J-dv_lead-0164` |
 | 2026-08-10 | **EXECUTION ROUND 1 — §7.1 steps 1–5, at base `4e7331b`.** Header gains an Execution bullet; §3.0 records the four ledger items paid (`FINDING K-1`'s message repair in `test_m03_k.ml`; `RN-6`'s gating `docs/**` resolve-check in `tools/dv_checks.sh`, with a self-test, a declared-errata table and a staleness guard; `FINDING RV-0078-S2-11` ruled and executed; `U-1`/`U-2` answered) and raises one finding against this packet's own §3.9 — `FINDING RV-0075-1` is listed as standing and is CLOSED. §3.5 and §3.8 gain their `RULED` blocks: the comparator is opened and prints the agreed values on the passing path; the `U-1`/`U-2` pricing is refused with a price, a bound and a three-trigger expiry. **State still DRAFT, §8 still UNSET, no criterion of §1 adjudicated, no bar lifted, no count asserted, no harvest taken.** | dv_lead, `J-dv_lead-0163` |

@@ -2563,3 +2563,510 @@ architect_docs_lead. Return log is empty and is the architect's to fill.
 ### Files-in-this-commit
 
 - agents/handoffs/WO-0079_m03-traceability-test-rows.md
+
+## [J-dv_lead-0167] 2026-08-11T02:55Z | task:none | The re-verdict: both acts paid, SC-2 moves to MET on a string comparison I ran against the file rather than against the report of it — and the token stays FAIL because the fifth harvest note banks eighteen rules and discharges LH3 on none of them
+
+### Trigger
+
+Orchestrator dispatch, sole agent in flight, no declared sibling. **The round the
+`SO-` itself scheduled**: `SO-xgmii_rx_64.md` §8.2 said, in the round-2 verdict's own
+words, *"When both are done, this packet is re-issued with its verdict re-read against
+§1 — not amended in place. **Every** criterion is re-checked, because a criterion
+satisfied by a later act is satisfied at a later SHA."* Both acts are now claimed paid:
+act 1 (the test-side traceability rows) at `a43ac00` + `14615f8`, act 2 (the other four
+lessons harvests) at `185ae66`, `d53d795`, `54b2553`, `c55c754`. This entry is the
+re-read and the re-signature.
+
+**Abort-first head check, before anything else.** `git rev-parse HEAD` →
+`14615f8856918bfc97fe3408523f593c6d7f3467`, byte-equal to the dispatched spawn-head
+`14615f8`. Exact match, so neither the `merge-base` ancestor branch nor the descendant
+branch was reached. Proceeded.
+
+**Entry id checked at the file, not taken from the dispatch.** The chain's tail at HEAD
+is `J-dv_lead-0166`; R5 admits `-0167` and that is what this is. The dispatch nominated
+the same id, and I checked it anyway — a stale id has been dispatched once before in
+this programme (`J-orchestrator-0231`'s own recorded error) and the check costs one
+`grep`.
+
+### Inputs
+
+- `agents/charters/dv_lead.md` in full (§3 sign-off duties and the external-anchor rule,
+  §5's DoD checklist, §6 evaluation criteria, §7 escalation, §8's sign-off-entry and
+  harvest-note clauses); `agents/PROTOCOL.md` in full (§3 packet classes, §4 grammar and
+  §4.2 files-list equality, §5 R1–R9, §6 write scopes, §7 **gates and the lessons-harvest
+  paragraph**, §10 independence and R-SEAL-1).
+- `docs/gates/lessons-harvest-block.md` **in full** — §1 instantiation (including item 4,
+  *"The orchestrator fills the table … and checks the boxes"*), §2's bar table with the
+  two LH2 grades, §2.1's classifier, §3's eleven-box block, §4's transcriber notes
+  (*"You are not the selector"*).
+- `agents/handoffs/SO-xgmii_rx_64.md` — my own packet: §0.0/§0.2 (the design/execution
+  separation and the three-dimension rule), §1's fourteen criteria **verbatim**, §1.1's
+  round-2 read-back, §2.1-M, §2.2-M, §2.3-M, §2.8 with `FINDING SO-1`, §2.9, §2.10,
+  §3.9-M, §3.10, §4.1–§4.8 with `FINDING SO-5`, §5 and §5.8, §7.2, §8.
+- `agents/handoffs/WO-0079_m03-traceability-test-rows.md` **in full** — §1's domain and
+  three tiers, §2.1's citation atom, §3.A/§3.B/§3.C's 34 rows (the delivered cells
+  themselves), §5's bounds, §6.1's `FINDING SO-1-A`, §7's DoD, and **§8.1's return log**
+  with `P-1` and `P-2`.
+- `docs/specs/traceability.md` **in full at `14615f8`** — the header, the `How this matrix
+  is used` rules as rewritten by the transcription, all 110 rows, `Open dependencies`.
+- `docs/specs/modules/xgmii_rx_64.md` §10 (the hook table, for the domain re-derivation);
+  `test/attack_plans/AP-xgmii_rx_64.md` §4's row tables (the status-cell pass).
+- **The four other seats' harvest notes, each read at its own journal, in full**:
+  `agents/journals/claude_auditor_agent.v02.md` `J-auditor-0019`;
+  `agents/journals/claude_orchestrator_agent.v02.md` `J-orchestrator-0233`;
+  `agents/journals/claude_architect_docs_lead_agent.v02.md` `J-architect_docs_lead-0034`;
+  `agents/journals/claude_rtl_lead_agent.md` `J-rtl_lead-0013`. Plus, for the worker row,
+  the heads of `workers/claude_tb_writer_agent.v03.md` `J-tb_writer-0041` and
+  `workers/claude_data_wrangler_agent.md` `J-data_wrangler-0009`.
+- `test/xgmii_rx_64/test_m03_f.ml` around lines 304–330 and 490–496 (the `P-1` check);
+  the `let%expect_test` lines of every file cited by a populated matrix cell.
+- CI, as **externally verifiable references** (ADR-0003/F5): `build` runs `31449924111`
+  (`14615f8`) and `31447385249` (`a851948`) with their job breakdowns, and
+  `journal-check` `31449924167`.
+- **No `libs/**`, `top/**` or `rtl_snapshots/**` path was opened.** No RTL was read in
+  this round or in the round that built the delivery it grades; the derivation chain is
+  spec → plan → suite → matrix throughout (PROTOCOL §10, charter §8's independence
+  clause).
+
+### Reasoning
+
+**1. What a re-verdict is for, and the trap it is walking into.** The previous round
+failed this packet on two criteria and named one bounded act for each. Both acts were
+performed. **The tempting shape of this round is therefore: confirm the two acts, flip
+two rows, write `PASS`.** That shape is wrong for a reason the packet's own §0.0 states
+better than I can restate it — *a condition whose author may discharge it by declaring it
+discharged is not a condition* — and the risk is at its maximum precisely now, because
+with `SC-2` paid there is only one obstacle left and it is cheap to argue away. So I
+fixed the method before measuring: **re-read all fourteen, re-measure anything whose
+subject could have moved, and verify each paid act at the artefact rather than at the
+report of it.**
+
+**2. The identity first, because it is what lets twelve rows say "unmoved" honestly.**
+Eleven paths changed between the two sign-off SHAs and I listed all eleven rather than
+the ones I expected. **Not one is a census producer**: `test/`, `tools/`, `libs/`,
+`test/cosim/`, `docs/reports/audit/`, `docs/specs/requirements.md`, SPEC-M03 and `AP-M03`
+are all byte-identical `2183d71..14615f8`. That is what makes "the census is unmoved"
+a measurement rather than an assumption, and I still re-ran the census pass, because
+identical inputs to a re-run cost nothing and a carried figure costs the packet its own
+§0.2 rule. **Domain note**: the identity is stated over `test/` **entire** — cosim and
+attack-plans included — so it is `FINDING WO-0077-A1`'s producer-domain rule applied to
+the identity claim itself, not only to the counts underneath it.
+
+**3. `SC-2`: I did not accept "34/34 transcribed, 0 refused" from anyone.** The
+transcriber's return log says the cells were transcribed verbatim and that it verified
+the hook set independently. **That is a report of a comparison, and a report of a
+comparison is not the comparison** — the same distinction the auditor's own `-AUD-8`
+banks. So I parsed both files myself on the pipe character, took the delivered
+`(Test(s), Status)` pair from the packet's columns 2–3 and the transcribed pair from the
+matrix's columns 6–7, and compared them as strings. **Zero mismatches.** Then the two
+checks a string comparison alone would miss, both stated with their polarity: **no row
+was populated that was not delivered** (measured over all 110 rows, not over the 34), and
+**every row whose cell changed was empty and `OPEN` before** (measured over the diff
+`c55c754 → 14615f8`, so a silently overwritten pre-existing cell could not hide). Then
+the domain: re-derived the hook set from SPEC-M03 §10 rather than from `WO-0079`'s claim
+about it — 35 tokens, minus `REQ-010` which lives only inside REQ-014's cell, equals the
+34 delivered — and cross-checked from the other side that all 14 rows naming M03 as an
+owner are present. Then the citations: 48 of 49 land on a `let%expect_test`, and the one
+that does not is the discharge-by-citation comment the cell itself declares.
+**`SC-2` is MET, and it is MET on five independent measurements rather than on one.**
+
+**4. The two precisions the transcriber returned, and why re-measuring them mattered.**
+`P-1` says one citation violates my own §2.1 rule. I checked it and it is **true**, and
+my check found something the return did not: the id `M03-M10` is in that file, at line
+324, inside the prose of a **different** unit. So the cell is substantively right (the
+plan homes `M03-M10` on `M03-F2` *"ON `M03-F2` ALONE"*, and 492 is `M03-F2`'s unit) and
+what is wrong is my own generalisation in `WO-0079` §2.1. **Recorded against my own text,
+carrier named, cell untouched.** `P-2` is a correction to a ground, not to a
+disposition, and it was written into the file that owns the vocabulary. Neither changes a
+cell — which is what the dispatch said, and I checked it rather than repeating it.
+
+**5. `SC-12`, and this is the decision the round exists to make.** Four notes landed. The
+criterion asks whether the harvest is **complete**, and the block defines completeness as
+eleven boxes. So I read each note at its own journal against the block's own words. Three
+— auditor, architect_docs_lead, rtl_lead — are conformant, and two of them are among the
+most disciplined artefacts this programme has produced: spans as intervals opening at the
+first entry, LH1 and LH3 discharged on every candidate (in columns, which discharges the
+box — the box asks for the discharge, not the token), grades stated, the classifier run
+from step 0 with its nil-`LD-` result declared **and its cause given**, war stories with
+the criterion each failed. **The fourth is not.** `J-orchestrator-0233` banks eighteen
+candidates; **`LH1` appears eighteen times and `LH3` appears once — inside a war story.**
+So the seat applies the criterion to the two statements it refused and to none of the
+eighteen it kept. No candidate carries a stated grade; a blanket *"No `LD-`"* stands in
+for eighteen classifications; the classifier is nowhere stated as run.
+
+**Why I am not treating that as clerical, having asked myself twice.** PROTOCOL §7 does
+not make LH3 a formatting preference: *"A candidate rule is **admissible only if** it
+(LH1) … (LH2) … and (LH3) says what breaks without it."* Admissibility is the whole bar.
+And the bar is not one I am inventing for this seat: it convicted **nine** of my own
+candidates into war stories, **sixteen** of rtl_lead's, **nine** of the architect's and
+**five** of the auditor's. A note that banks eighteen and refuses two, without ever
+stating what breaks without any of the eighteen, has not run the bar — and if I check
+that box anyway, then the bar is a function of **who** is being graded, which is the one
+property a bar may not have. **The seat being graded here is the seat that dispatched
+me.** That is a reason to state the finding more carefully, not a reason to soften it.
+
+**6. What I refused to do about it, which is the other half of the ruling.** I could have
+re-graded the eighteen myself: written the missing LH3 clauses, run the classifier, and
+routed two or three of them to a `version-control` pack. **Refused**, on the block's §4:
+*"You are not the selector … you may not improve one."* A reader who repairs another
+miner's statements has silently shaped the shell without any note showing it — and I am
+not even the collator. And I could not have done it anyway without writing another
+agent's journal, which PROTOCOL §4 forbids outright. **So it is a finding with a bounded
+repair, owned by the only seat that can perform it.**
+
+**7. The four collation boxes, and the ruling I deliberately did not make.**
+`FINDING SO-5`'s wording half stands: `SC-12` demands *"every box checked"* of a packet,
+while §4.1 and the block's §1 item 4 make shell transcription, `L-` pairing,
+sponsor-visibility and the completeness declaration the orchestrator's **later** acts. On
+a literal reading no `SO-` can ever satisfy `SC-12`. **I considered ruling it — in either
+direction — and refused both.** Ruling them *out* of the criterion while they are the
+only thing left standing is the discharge-by-declaration move; ruling them *in* forever
+freezes an unmeetable criterion by the same unilateral act. **Both are amendments, and an
+amendment belongs in an ADR (PROTOCOL §11), raised by the round that needs it.** It is
+not load-bearing today — `SC-12` fails on a box that *is* mine to check — so the honest
+act is to record the question with a carrier and leave it for the round where it decides
+something. **A re-verdict that finds `SO-6` paid must settle it before it can write
+`PASS`.**
+
+**8. The red run, disclosed because the packet's evidence is run ids.** Walking the runs
+between the two sign-off SHAs to re-measure `SC-3`, I found `build` `31447385249` at
+`a851948` — **the commit that carries round 2's own `FAIL`** — concluding `failure`. It
+failed at step 4 *Install dependencies* with the test steps **skipped**, and its `cosim`
+job passed. So the suite did not fail; it did not run. Nothing in the packet rests on it,
+and it touches no criterion, because `SC-3`'s subject is the sign-off SHA and `a851948`
+is neither round's. **But a document whose evidence is run ids owes the reader the runs
+between the ones it quotes.** Otherwise the first auditor to walk this branch finds a red
+conclusion at the packet's own carrying commit with no sentence anywhere explaining it,
+and has to choose between re-deriving the cause and distrusting the packet. §2.9-R states
+it, with its polarity: *this is a claim that a red run is not a suite failure*, measured
+over every step of both jobs, not over the run's summary line.
+
+**9. Options considered for the round's shape, and why the winner won.** (a) *Amend §1.1
+in place, flipping `SC-2`'s row* — rejected: §8.2 said "re-issued … not amended in place",
+and a read-back that overwrites its predecessor destroys the only evidence that the
+verdict moved for a reason. (b) *Write a new `SO-` packet* — rejected: the module,
+criteria and evidence map are the same, PROTOCOL §3 gives the module one `SO-` file, and
+a second file would fork the merge precondition. (c) *A short delta section saying "SC-2
+now MET, everything else unchanged"* — rejected: that is the carried-figure failure mode
+this packet spent a whole round convicting; §0.2's SHA dimension applies to the verdict
+as much as to the counts, so all fourteen are re-read at the new SHA. **(d) A `§1.2`
+re-read table beside the unedited `§1.1`, section-suffixed `-R` blocks beside the
+sections whose measurements moved, and one live token at `§8.0` with round 2's quoted
+beneath — chosen**, because it makes the two rounds diffable against each other and
+leaves every superseded sentence where its author wrote it.
+
+### Actions
+
+- Ran the head check; read the charter, the protocol, the harvest block, the packet, the
+  delivery packet and its return log, the matrix, the spec hook table, the attack plan
+  and the four seats' harvest notes.
+- **Re-measured** the identity, the census, the unit inventories, the matrix, the hook
+  set, the citations, the `BUG-` directory and the CI state at `14615f8`.
+- **Wrote, in `agents/handoffs/SO-xgmii_rx_64.md` and nowhere else**: the header's
+  State/Verdict fields and a round-3 Execution bullet; **§1.2** (the fourteen re-read,
+  with the identity block that licenses every "unmoved" row); **§2.8-R** (the delivery
+  and transcription, verified at the matrix, with `P-1`/`P-2` re-measured); **§2.9-R**
+  (the CI evidence at the new SHA and the red run between the two); **§3.11** (the
+  round's two-item ledger, the standing set re-checked, `FINDING SO-1` closed,
+  `FINDING SO-6` minted); **§4.9** (the block re-instantiated, the four notes graded at
+  their own journals, `FINDING SO-6`, and the refusal to rule the collation boxes);
+  **§5.8-R** (six sentences declined with the bar that forbade each); **§8.0** (the
+  re-issued token, its ground, its one routed act, and round 2's verdict quoted beneath
+  with §8.1–§8.3 left unedited); and the §10 change-log row.
+- **Wrote no `docs/**` byte, no `test/**` byte, no `tools/**` byte.** Opened no RTL.
+  Edited no other agent's journal and re-graded no other agent's candidate.
+
+### Evidence
+
+**All commands run from a clean checkout at `14615f8`; the CI facts are externally
+verifiable references (run id, job id, conclusion), marked as such per ADR-0003/F5.**
+
+1. **Head and tree.**
+```
+$ git rev-parse HEAD
+14615f8856918bfc97fe3408523f593c6d7f3467
+$ git status --porcelain          # before my own edits
+(zero lines)
+```
+
+2. **The identity the re-read rests on.**
+```
+$ git diff --name-only 2183d71..14615f8 | wc -l
+11                                  # 2 handoffs, 8 journals, docs/specs/traceability.md
+$ for p in test tools libs test/cosim docs/reports/audit docs/specs/requirements.md \
+           docs/specs/modules/xgmii_rx_64.md test/attack_plans/AP-xgmii_rx_64.md; do
+    [ "$(git rev-parse 2183d71:$p)" = "$(git rev-parse 14615f8:$p)" ] && echo "$p IDENTICAL"; done
+test IDENTICAL  tools IDENTICAL  libs IDENTICAL  test/cosim IDENTICAL
+docs/reports/audit IDENTICAL  docs/specs/requirements.md IDENTICAL
+docs/specs/modules/xgmii_rx_64.md IDENTICAL   test/attack_plans/AP-xgmii_rx_64.md IDENTICAL
+```
+
+3. **SC-1 — the census, re-run rather than carried.**
+```
+$ awk -F'|' '/^\| \*\*M03-[A-Z]+[0-9]+\*\* \|/ { id=$2; gsub(/[* ]/,"",id);
+      st=$(NF-1); gsub(/[* `]/,"",st); print id"\t"st }' \
+    test/attack_plans/AP-xgmii_rx_64.md | sort | cut -f2 | sort | uniq -c
+     62 ASSERT     1 GAP     7 NO-ASSERT     4 NO-STIMULUS     4 STRUCTURAL
+$ awk -F'|' '/^\| \*\*M03-[A-Z]+[0-9]+\*\* \|/' test/attack_plans/AP-xgmii_rx_64.md | wc -l
+78
+$ git merge-base --is-ancestor df3e474 026a71f ; echo $?
+0
+$ git rev-list --count df3e474..026a71f
+49
+```
+
+4. **Unit inventories (`FINDING M-4` re-measured, both domains).**
+```
+$ grep -rh 'let%expect_test' test/xgmii_rx_64/*.ml | wc -l          -> 59
+$ grep -rh --include=*.ml 'let%expect_test' test/ | wc -l           -> 139
+$ grep -rh 'let%expect_test' test/ | grep -c .                      -> 141   (contaminated)
+```
+
+5. **SC-2 clause (c) — the matrix, measured.**
+```
+$ awk -F'|' '/^\| REQ-/{n++; t=$7; gsub(/^[ \t]+|[ \t]+$/,"",t);
+             s=$8; gsub(/^[ \t]+|[ \t]+$/,"",s);
+             if(t=="") e++; else p++; c[s]++}
+     END{print n" rows: "p" populated, "e" empty"; for(k in c) print "  "k": "c[k]}' \
+    docs/specs/traceability.md
+110 rows: 34 populated, 76 empty
+  OPEN: 97
+  COVERED: 13
+```
+
+6. **The string comparison — the round's load-bearing check.** *Method, stated because it
+   is not honestly a one-liner: both files are parsed on `|`; the delivered pair is
+   `(col2, col3)` of every `| REQ-…` row in `WO-0079` §3, the transcribed pair is
+   `(col6, col7)` of every `| REQ-…` row in the matrix; both are compared with `==` after
+   whitespace-stripping only.*
+```
+$ python3 -c "<parse both files as above; print the four set/equality results>"
+WO-0079 §3 rows: 34      traceability rows: 110      populated in matrix: 34
+delivered-but-absent-from-matrix: []
+populated-but-not-delivered:      []
+CELL MISMATCHES: 0
+COVERED set: REQ-101 … REQ-113   (exactly tier A)
+$ python3 -c "<same parse over 'git show c55c754:docs/specs/traceability.md' vs HEAD>"
+rows old/new: 110 110      changed rows: 34      changed-but-not-in-WO-0079: []
+old statuses of changed rows: ['OPEN']      old test-cells all empty? True
+```
+
+7. **SC-2 domain — the hook set re-derived from the spec.**
+```
+$ awk '/^## 10\./{f=1} f&&/^## 11\./{f=0} f' docs/specs/modules/xgmii_rx_64.md \
+    | grep -oE 'REQ-[0-9]+' | sort -u | wc -l            -> 35
+$ comm -23 <hooks> <delivered>   -> REQ-010          (the cross-reference; nothing else)
+$ comm -13 <hooks> <delivered>   -> (empty)
+$ awk -F'|' '/^\| REQ-/{if ($5 ~ /M03/) print $2}' docs/specs/traceability.md | wc -l  -> 14
+$ comm -23 <M03-owned> <delivered>  -> (empty)
+```
+
+8. **Citations resolve.**
+```
+$ python3 -c "<extract every test/**.ml:<line> from populated cells; open each; test for
+              'let%expect_test' on that line>"
+distinct file:line citations in matrix: 49
+citations NOT landing on let%expect_test: 1
+    test/xgmii_rx_64/test_m03_f.ml:811
+    (* ---- M03-F5 — DISCHARGED BY CITATION, not built (WO-0047 §3.3) ----------- *)
+```
+
+9. **`P-1`, re-measured at the source.**
+```
+$ sed -n '492,495p' test/xgmii_rx_64/test_m03_f.ml
+let%expect_test
+  "M03-F2: 0, 1 and 4 octets between start and terminate, both start lanes …"
+$ grep -n 'M03-M10' test/xgmii_rx_64/test_m03_f.ml      -> 324:  (prose of the unit at :304)
+```
+
+10. **SC-9 — open defects, measured over the directory.**
+```
+$ ls agents/handoffs/BUG-*.md | wc -l    -> 3
+BUG-0001  FIX CONFIRMED (J-dv_lead-0034)
+BUG-0002  ACCEPT — CLOSED at fafb83d (J-dv_lead-0089)
+BUG-0003  FIX ACCEPTED — CLOSED (J-dv_lead-0103)
+→ three packets, three CLOSED, NONE OPEN.
+```
+
+11. **SC-3 / SC-4 / SC-6 / SC-13 — CI at the re-verdict SHA (externally verifiable).**
+    `build` run **`31449924111`**, `head_sha` `14615f8…`, run number 538, conclusion
+    **`success`**; job **`93651991502`** (`build`) **all 13 steps `success`**, including
+    step 5 *Build*, step 6 *Run tests*, step 8 *Verify nothing was left unpromoted or
+    non-deterministic*, step 9 *DV mechanical checks*, step 10 *Abort-bit quantifier*;
+    job **`93651991568`** (`cosim`) **`success`**, quoted separately and load-bearing for
+    nothing outside the classes it drove. `journal-check` run **`31449924167`**,
+    **`success`**. **Bound**: `opam exec -- dune runtest` cannot execute in this
+    container (ADR-0005), which is why `SC-3` makes the run id the evidence.
+
+12. **The red run between the two sign-off SHAs.** `build` run **`31447385249`** at
+    `a851948`, conclusion **`failure`**: job `93644410367` (`build`) failed at **step 4
+    *Install dependencies***, steps **5–10 `skipped`**; job `93644410325` (`cosim`)
+    **`success`**. Runs 532–538 (`2d47871`, `185ae66`, `a43ac00`, `d53d795`, `54b2553`,
+    `c55c754`, `14615f8`) are all `success`. **A dependency-resolution failure, not a
+    test result.**
+
+13. **SC-12 — the four notes, measured at their own journals.** Token counts within each
+    harvest entry (entry sliced at its own header to the next `## [J-` header):
+
+| note | banked | `LH1` occurrences | `LH3` occurrences | LH1/LH3 delivery form | classifier stated |
+|---|---|---|---|---|---|
+| `J-auditor-0019` | 54 | 59 | 57 | inline, per candidate | yes |
+| `J-architect_docs_lead-0034` | 94 | 94-row table column | 94-row table column | table columns, verified populated on **all 94 rows** | yes |
+| `J-rtl_lead-0013` | 50 | 50-row table column | 50-row table column | table columns | yes |
+| **`J-orchestrator-0233`** | **18** | **18** | **1 — and it is inside a WAR STORY** | `LH1:` lines only | **no** |
+
+```
+$ python3 -c "<slice each harvest entry; count tokens>"
+orchestrator (J-orchestrator-0233)  LH1=18  LH3=1  LH2-g=1  LH2-d=0  classifier=0
+auditor      (J-auditor-0019)       LH1=59  LH3=57 ...
+architect    (J-architect…-0034)    94-row bank table, 0 rows missing the LH1 or LH3 cell
+rtl_lead     (J-rtl_lead-0013)      50-row yield table with an explicit LH3 column
+```
+
+14. **The harvest artefacts that do NOT exist, measured (polarity).**
+```
+$ grep -rn 'LESSONS' --include=*.md docs/ tasks/ agents/PROTOCOL.md | grep -v 'harvest'
+(only ADR-0018's own description of the shell, which is another repository)
+$ grep -ln 'Lessons harvest —' docs/gates/*.md agents/handoffs/*.md
+docs/gates/lessons-harvest-block.md      agents/handoffs/SO-xgmii_rx_64.md
+→ no collation artefact, no `L-` id, no sponsor-visible record, no completeness
+  declaration exists at 14615f8. Boxes 8–11 are NOT DONE.
+```
+
+### Outcome
+
+**DoD vs the round's own charge: met.** §1 is re-read criterion by criterion at
+`14615f8`; §8 carries one token; the prior `FAIL` is preserved and quoted; the §1-readback
+and §3-ledger updates the re-read required are written.
+
+**THE VERDICT: `FAIL`. Thirteen of fourteen criteria MET; `SC-12` NOT MET.**
+
+- **`SC-2` — NOT MET → MET.** The rows are delivered (`a43ac00`) and transcribed
+  (`14615f8`), verified by string comparison at the file: 34/34 identical, 0 rows
+  populated that were not delivered, 34 changed rows all previously empty and `OPEN`,
+  hook set re-derived from the spec, 48 of 49 citations landing on a unit with the one
+  exception self-declaring. `FINDING SO-1` **DISCHARGED** by the carrier it named.
+- **`SC-12` — NOT MET, on a ground round 2 could not reach.** Four spans mined, three
+  notes conformant, and `J-orchestrator-0233` banks 18 candidates discharging **LH3 on
+  none**, with no stated grade and no classifier run — against PROTOCOL §7's own
+  admissibility sentence. Block boxes 2, 3 and 4 cannot be checked at that row.
+  **`FINDING SO-6` (MAJOR)** minted against the note, not the seat, with a bounded
+  repair owned by the only agent that may append to that journal.
+- **The other twelve** re-measured or re-affirmed on a byte-identical subject at a new
+  run id; nothing moved.
+
+**Handoff**: `agents/handoffs/SO-xgmii_rx_64.md`, **verbatim** relay class (PROTOCOL §3),
+to the orchestrator as the merge precondition. **One act clears the remaining failure**
+and it is the orchestrator's own: a successor harvest note over the span it already
+walked, discharging LH3 per candidate, running the classifier from step 0, and recording
+each candidate's grade. **No `BUG-` opened; nothing routes to rtl_lead; this is not an
+escalation** (charter §7).
+
+---
+
+**LESSONS HARVEST — `SO-xgmii_rx_64` re-verdict, dv_lead's second note (ADR-0018,
+PROTOCOL §7, charter §8).**
+
+**SPAN: `J-dv_lead-0166` … `J-dv_lead-0167`.** Two entries. **It tiles exactly with my
+first harvest**, whose span was `J-dv_lead-0001 … -0165` (recorded at that entry and at
+`SO-` §4.2/§4.8): no gap, no overlap. **Ids follow `RULING O-1`** (`J-orchestrator-0233`):
+seat-qualified, second harvest — `LC-dv_lead-H2-<n>`. My grandfathered first-harvest range
+`LC-SO-xgmii_rx_64-1 … -94` and `LD-SO-xgmii_rx_64-1` are untouched and not renumbered.
+
+**WORKER SPANS COMMISSIONED IN THIS SPAN: NIL, declared.** I commissioned no worker spawn
+at `-0166` or `-0167`; both rounds were mine alone. `J-tb_writer-0041` and
+`J-data_wrangler-0009` landed in this arc but are the workers' **own** first notes, taken
+under a dispatch I did not issue, over spans I already mined at `SO-` §4.7 — so they are
+recorded there and are not re-mined here. **A nil declared, not omitted.**
+
+**THE YIELD — three candidates, all tier 1, each with the classifier run from the most
+general honest statement.**
+
+- **`LC-dv_lead-H2-1`.** *A map from requirements to the artefacts that satisfy them
+  acquires orphans: artefacts land that the map was never updated to name. Before citing
+  the map as the coverage claim, re-derive it from the artefacts themselves; the map's own
+  last revision is not evidence about the artefacts.* **LH1** `a43ac00` — building the
+  delivery found six plan rows homed nowhere, two of them landed, green units whose
+  omission would have understated three cells (`FINDING SO-1-A`, `WO-0079` §6.1). **LH3**
+  without it the coverage claim is silently short by whatever landed since the map was
+  last edited, and the shortfall is invisible precisely because the map looks complete.
+- **`LC-dv_lead-H2-2`.** *When a record's evidence is references to external executions,
+  it accounts for the failed executions falling between the ones it cites, and says why
+  each failed. A failure at the record's own point in history, unexplained, is
+  indistinguishable from the failure the record exists to deny.* **LH1** `a851948` — the
+  commit carrying this packet's own verdict has a red run whose failure is at dependency
+  installation with the test steps skipped, disclosed at §2.9-R this round; the packet
+  quoted run ids as evidence for two rounds without ever walking the interval between
+  them. **LH3** without it, the first reader to walk the history finds a red result at the
+  record's own commit and must choose between re-deriving the cause and distrusting the
+  record — and the record's other citations lose their force with it.
+- **`LC-dv_lead-H2-3`.** *A party asked to judge whether another's work meets a bar reads
+  the work itself, grades the work and never the party, and — where it falls short —
+  names the shortfall and the bounded repair rather than performing the repair. A judge
+  who repairs the thing being judged has become its author and can no longer report on
+  it.* **LH1** `d53d795` + `14615f8` — this round graded four harvest notes against an
+  eleven-box bar, found one inadmissible, and refused to write the missing discharges
+  itself on the bar's own *"you are not the selector"* clause. **LH3** without it the
+  shortfall is absorbed silently by whoever noticed it, no record shows the bar ever
+  bit, and the next round inherits an artefact that looks conformant and is not.
+
+**MERGED, NOT BANKED — recorded so no duplicate enters the shell.** *"Verify a claim of
+delivered work at the artefact, never at the report of it"* is the rule this round leaned
+on hardest (§2.8-R's string comparison, and re-measuring `P-1` rather than accepting it).
+**It is already banked twice**: as the auditor's `-AUD-8` at `bd7fbcf`/`8d48084`, and in
+my own first harvest as the set-claim/SHA-dimension rule. **This round is a third
+provenance for an existing candidate, not a fourth candidate** — offered to the collator
+as a merge with both prior ids, per the merge rule that keeps every provenance.
+
+**WAR STORIES — one, with the criterion it failed.**
+
+| # | war story | provenance | criterion failed | why |
+|---|---|---|---|---|
+| **W-1** | when the last obstacle to a favourable verdict is a criterion you wrote yourself, do not rule on the criterion's wording in the same round | `14615f8` (§4.9's closing note) | **LH2-g**, marginally, and **LH3** | the honest general statement is *"do not amend a rule inside the artefact the rule grades"*, which is **already** the discharge-by-declaration rule my first harvest banked; what is left after removing the duplicate is a piece of situational judgement about timing, and nothing breaks without it that is not already broken without the parent rule. **Subsumed, kept re-offerable** |
+
+**THE COUNT — the product of the walk and of nothing else.** Entries walked: **2**
+(`-0166`, `-0167`). Candidate statements extracted: **5**. Merged into an existing
+candidate: **1**. War stories: **1**. **DISTINCT CANDIDATES BANKED: 3** — all `LC-`
+(tier 1, `LH2-g`), **`LD-`: 0**, no pack minted, no pack normalised. The one pack in use
+across the programme (`version-control`, from my first harvest) is unchanged.
+
+**The mirror line, applied to myself as the block's §4 requires.** A second consecutive
+all-`LC-`, zero-`LD-` yield from this seat deserves the same suspicion the block aims at
+an all-`LD-` one. My reading is that this round's subject matter was *conduct* — how a
+verdict is re-read, how another party's artefact is graded — which carries no protocol
+nouns to shed. **The place to attack this note is `LC-dv_lead-H2-2`**: if a reviewer
+judges *"external executions"* to be a domain noun dressed as a general one, the candidate
+belongs at tier 2 in a `continuous-integration` pack, and I would rather be told.
+
+### Open-questions
+
+1. **`SC-12`'s wording defect is unresolved and now blocks a future `PASS`, so it needs an
+   amendment rather than a reading (ESCALATION, E-class none — an ADR request via the
+   orchestrator, PROTOCOL §11).** `SC-12` demands *"every box checked"* of a **packet**;
+   four of the eleven boxes — shell transcription, `LC-`/`LD-` → `L-` pairing,
+   sponsor-visibility, the completeness declaration — are the orchestrator's acts **after**
+   the packet lands, by §4.1 and the block's §1 item 4. On a literal reading no `SO-` can
+   ever satisfy `SC-12`. **This round refused to rule it in either direction** (§4.9), and
+   a re-verdict round that finds `FINDING SO-6` paid **cannot avoid it**. **Requested**: an
+   ADR-0018 amendment stating which boxes a `SO-`-time instantiation must carry and which
+   belong to the gate-time collation, so the criterion becomes satisfiable without any
+   packet re-reading its own clause.
+2. **`FINDING SO-6`'s repair is owned by a seat I cannot write for.** The successor
+   harvest note over `J-orchestrator-0001 … -0232` — LH3 per candidate, the classifier
+   from step 0, a stated grade per candidate — is the last **substantive** thing between
+   this packet and a `PASS`; open question 1 is the other, and it is a wording defect
+   needing an amendment, not a measurement. I spawn no one (charter §7) and no agent writes another's journal (PROTOCOL §4),
+   so this is recorded as owed, with its content specified, and dispatched by the
+   orchestrator or not at all.
+3. **`P-1` leaves `WO-0079` §2.1's citation rule false at one of 49 entries.** The repair
+   rides the round that fixes `AP-M03` §6's homing under `FINDING SO-1-A`; until then a
+   reader following §2.1 literally at `M03-M10 → test_m03_f.ml:492` will not find the id
+   in the unit and must go to the plan. **Unclosed, carrier named, and stated here so it
+   is not discovered by whoever meets it.**
+4. **Standing and unchanged**: `FINDING SO-2` (census producer domain), `SO-3`, `SO-4`,
+   `M-4`, `RV-0078-S2-3` and the rest of §3.9's set — none of their subjects moved this
+   round and none of their carriers opened. **`FINDING J-1` remains closed.**
+
+### Files-in-this-commit
+
+- agents/handoffs/SO-xgmii_rx_64.md
