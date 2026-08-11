@@ -3448,3 +3448,107 @@ their own harvests are landed this arc).
 
 ### Files-in-this-commit
 - (none)
+
+## [J-orchestrator-0234] 2026-08-11T02:45Z | task:none | The successor harvest note: the same eighteen candidates, this time with the homework shown - a grade, a sharp failure, and the classifier run for every one
+
+### Standing of this note
+This is the successor note FINDING SO-6 demands: the harvest of
+record for the orchestrator seat over the same span
+(J-orchestrator-0001 ... -0232, the interval restated; the walk was
+0233's and is not repeated - what was missing was the discharge,
+not the walk). Ids LC-orchestrator-H1-1 ... -18 stand unrenumbered
+per RULING O-1. 0233's note remains in the chain as the walk's
+record; THIS note is the admissibility record. Classifier run from
+step 0 on every candidate: each is stated at its most general
+honest form; none carries a project or domain noun; all grade
+LH2-GENERAL (consistent with the seat's nil-LD declaration - this
+seat owns no domain artifact).
+
+### The eighteen, each with LH1 (kept from 0233) + LH2 grade + LH3
+1. LH2-g. LH3: committing mid-round attributes unsigned work to
+   its author - 0125's negative instance carried dv's
+   countersignature in my commit, and the signature's authority
+   had to be rebuilt on its text because the carriage was mine.
+2. LH2-g. LH3: an equality-only HEAD check cannot tell a rollback
+   from a sibling's landing - incident three's 120-commit
+   regression reads identically to legitimate descent until the
+   merge-base direction separates them.
+3. LH2-g. LH3: the transcript heuristic produced a false stall
+   that was one command from killing a healthy round mid-verdict
+   (the RV-STAGE1 near-TaskStop); the deliverable-mtime read
+   showed 894 fresh lines the transcript hid.
+4. LH2-g. LH3: a reset without the preserved diff destroys the
+   only evidence distinguishing rollback from corruption; every
+   incident's forensic record IS its scratchpad diff.
+5. LH2-g. LH3: incident six - unpushed work in a reclaimed
+   container is unrecoverable; pushed work made it three commands.
+   The same event with one unpushed round is permanent loss.
+6. LH2-g. LH3: the circular pin - a moved case 0 would have
+   recorded the moved value and passed the freeze check vacuously;
+   the check would have measured nothing while printing green.
+7. LH2-g. LH3: my 'amended criterion 7' citation - an assignee
+   following the dispatch would have keyed a repair to a criterion
+   that does not say what the dispatch claimed; the worker's
+   source-read is the only reason it did not ship.
+8. LH2-g. LH3: the 0022 collision - an entry id from stale memory
+   collides with an existing header and fails R5; undetected, it
+   forks the chain's numbering silently.
+9. LH2-g. LH3: the lowercase case-id error - uncaught, both new
+   cases PRODUCE-REFUSE on 'unknown case id' and the landing reds
+   for a defect in neither producer; eight instances of the
+   species, every one caught by an assignee reading the source.
+10. LH2-g. LH3: two rounds sharing an undeclared file interleave
+    writes; the landing attributes one author's lines to another,
+    and R4 set-equality breaks in a way no later reader can
+    untangle - the reason the packet's section 14 was never given
+    to two concurrent rounds.
+11. LH2-g. LH3: an orchestrator commit inside an open round moves
+    HEAD under the agent's feet; its spawn-head reasoning and its
+    landing diff both silently change meaning - the disjointness
+    verification is what makes the mid-round board flip lawful
+    rather than lucky.
+12. LH2-g. LH3: a chain header computed by one party can freeze
+    the wrong state - the bare-filename field would have failed
+    the verifier AFTER landing; a wrong sha breaks every future
+    verification at the worst possible time, silently until read.
+13. LH2-g. LH3: a paraphrased verdict drops the author's own
+    riders - the 62/62 quoted without its does-not-mean clauses
+    claims the PASS the verdict explicitly denies; verbatim
+    carriage is what makes relay safe.
+14. LH2-g. LH3: a reconstructed incident record is memory wearing
+    measurement's clothes - the reflog states and rollback counts
+    cannot be re-derived once the container is gone; only the
+    at-recovery record is evidence.
+15. LH2-g. LH3: the inventory drifted four campaigns on
+    ride-along updates; the arithmetic repair (59+9) would have
+    shipped a second wrong figure - the measurement said 85. A
+    stale count repaired by arithmetic compounds the drift it
+    hides.
+16. LH2-g. LH3: a respawn onto an unverified tree merges two
+    half-rounds' writes into one attribution; without the
+    compactness hint the successor dies the predecessor's death -
+    incident five's respawn survived on both provisions.
+17. LH2-g. LH3: an unrecorded refused attempt is
+    indistinguishable from an attempt never made - the proxy-403
+    workarounds are diligence only because journaled; unjournaled
+    they are omissions no audit can acquit.
+18. LH2-g. LH3: a stop condition written after seeing the run is
+    a choice wearing a rule's clothes - the C2 third-run
+    disposition is falsifiable only because the rule predates the
+    answer; post-hoc it would justify any outcome equally.
+
+### War stories (criterion named, unchanged from 0233)
+- The CLOUDFARE typo: fails LH3 - ordinary debugging judgement,
+  no rule with a sharp failure to state.
+- The heartbeat chain surviving six wakeups: fails LH2-g - its
+  general form is candidate 5 said smaller.
+
+### Classifier and box record
+Classifier run from step 0 on all 18: statements checked for
+generality (no project nouns; role nouns only), each with LH1 at
+its cited commits, LH2 graded, LH3 discharged above. Worker spans:
+nil, unchanged cause (this seat commissions leads, not workers).
+Span tiling: the seat's next harvest opens at J-orchestrator-0235.
+
+### Files-in-this-commit
+- (none)
