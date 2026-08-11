@@ -2247,3 +2247,495 @@ cure. **E3 not triggered** — no toolchain or licensing surface reached.
 
 ### Files-in-this-commit
 - (none)
+
+## [J-dv_lead-0184] 2026-08-11T17:17Z | task:none | The two surplus mut/ branches named and both benign — a voided class and a negative control, each ruled at the time in its own committed verdict — and the finding the reconciliation turns up is mine: the era tally's sealed column drops a SEEDED class and keeps an UNSEEDED one, on two grounds it never states, and G-1's amendment is written against the word that hides it
+
+### Trigger
+
+Orchestrator dispatch, **one round, one act**: reconcile the `mut/`-branch
+arithmetic the auditor could not close at `J-auditor-0020` Open-question 4, which
+names me as owner ("the score") and states the reconciliation is owed *before* the
+`P1-module-ready` gate reads the tally. The dispatch commissions naming the two
+surplus branches, classifying each, stating which figure the gate reads and why the
+two figures differ, and reconciling against my own campaign scorecards — with the
+instruction that an unrecorded seeding on a surplus branch is a finding against my
+own score at whatever severity the facts support, and that a benign result makes the
+reconciliation note itself the deliverable.
+
+**Abort-first head check, before reading anything.**
+
+    git status --short              # zero lines
+    git rev-parse HEAD              # de3c56059eee62fa6315fef0764d66e85e2cde78
+    git rev-parse --abbrev-ref HEAD # claude/fpga-hardcaml-agent-orchestration-37ceyf
+
+Byte-equal to the dispatched expectation `de3c560`, tree clean. Neither branch of
+the abort procedure was reached, and no dirty path in any lane had to be
+adjudicated against the declared siblings (architect_docs_lead drafting the §7/§10
+amendment; the orchestrator's own journal/board/site). HEAD did not move across the
+round: re-verified at authoring time, still `de3c560`, still clean.
+
+### Inputs
+
+- `agents/charters/dv_lead.md`; `agents/PROTOCOL.md` (§3, §4, §5, §6, §7, §10 —
+  §7's `P<n>-module-ready` row and §10's mutation-discipline clause are the two
+  texts the "which figure does the gate read" question turns on).
+- `agents/journals/claude_auditor_agent.v02.md` — `J-auditor-0020` **Open-question 4
+  read at the source, in full**, plus its Outcome section for the routing sentence.
+  Also `J-auditor-0018`, `-0019` headers for volume orientation, and volume 01
+  `J-auditor-0004 … -0017` headers for the per-campaign seeding stamps.
+- `tasks/BOARD.md` — the **Transient-ref inventory** block (line 84) and the campaign
+  rows for `WO-0050`, `0055`, `0058`, `0061`, `0063B`, `0066`, `0073`, `0074`,
+  `0076`, `0077` (lines 96–121).
+- `agents/handoffs/WO-0061_family-i-mutation-campaign.md` — the verdict's disposition
+  table (line 738) and its scoring summary (line 1139).
+- `agents/handoffs/WO-0063B_m03-i2-report-path-campaign.md` — §2 IC-2 control
+  sections (lines 458, 475, 562, 576, 779).
+- `agents/handoffs/WO-0073_family-l-mutation-campaign.md` (searched whole for an era
+  tally; there is none), `WO-0074_family-m-mutation-campaign.md` §12 (lines
+  1740–1758), `WO-0076_family-j-mutation-campaign.md` §12 (line 2274),
+  `WO-0077_family-k-mutation-campaign.md` (lines 1449, 2010).
+- `agents/handoffs/SO-xgmii_rx_64.md` §2.2-M (lines 763–800) — my own re-walk table
+  and its stated method.
+- `docs/gates/P1-module-ready-checklist.md` line 517 — the `G-1` row as written.
+- Auditor manifests: `docs/reports/audit/WO-0050-mutations/` … `WO-0077-mutations/`
+  READMEs and their committed `.diff` files, specifically
+  `WO-0063B-mutations/ic-2.diff` (compared byte-for-byte against a branch),
+  `WO-0061-mutations/README.md` (the I-c1 hunk, compared line-for-line against a
+  branch), `WO-0074-mutations/README.md` §3.5 and its branch table,
+  `WO-0077-mutations/README.md` §2.8/§2.9.
+- **The remote ref graph and the commit metadata of all 64 class-era `mut/`
+  branches** — this round's explicit commission and the one read I would otherwise
+  not have. **No branch was merged, checked out, or allowed to reach the working
+  tree**; every branch was fetched into a throwaway `refs/mutinspect/*` namespace,
+  read with `git diff`/`git log`, and the namespace was deleted before this entry was
+  written, so no mutated RTL is reachable from any local ref.
+- **No RTL source read for test derivation.** The only RTL bytes I read are the
+  mutation hunks themselves, read as *identity evidence* — "is this branch the diff
+  the manifest says it is" — never as a basis for a test, and the module is one
+  already signed off. Recorded here explicitly because §10's independence discipline
+  makes the disclosure, not the abstinence, the audit evidence.
+
+### Reasoning
+
+**The observation, restated precisely so the thing being reconciled is fixed.**
+`J-auditor-0020` Open-question 4 asserts three numbers and one location: the remote
+carries **87** `mut/` branches; the ten class-based campaigns account for **64**;
+the era walk reports **63 sealed / 62 seeded**; and the seven campaigns entering
+family M account for **43** branches against the walk's **41**, so the two-branch
+surplus sits in the older group. It offers two candidate explanations — a re-cut
+branch, or one class rendered on two branches — and files the whole thing as an
+observation because `G-1` is a question about a denominator.
+
+**Step 1 — I measured the ref population before adopting any of it, and the first
+number is wrong.** `git ls-remote --heads origin 'refs/heads/mut/*'` returns **85**,
+not 87. The board's inventory block says 85 and the board is right. The two-ref
+difference is not a mystery and not a third and fourth surplus branch: an
+unfiltered `git ls-remote --heads origin` returns **87** lines, of which the two
+non-`mut/` lines are `refs/heads/main` and the working branch. The auditor read the
+line count of the unfiltered listing as the `mut/` population. **This does not touch
+the auditor's other figures** — its per-campaign counts were taken by prefix and
+every one of the ten reproduces exactly against my own measurement, so 64 stands.
+I record the correction because a 2 in the total and a 2 in the surplus invite a
+reader to identify them, and they are unrelated.
+
+**Step 2 — I refused to reason about the surplus from names and measured all 64
+branches instead.** Both of the auditor's candidate explanations are testable
+without opening a single campaign packet: a re-cut branch shows up as two refs with
+the same or near-identical diff, and one class on two branches shows up as two refs
+with identical diffs. So for every branch in all ten class campaigns I took the tip,
+the merge-base against `de3c560`, the commit count over that base, the SHA-256 of
+the full diff, and the set of files the diff touches. The result kills both
+hypotheses outright:
+
+- **All 64 diffs are distinct.** Zero collisions in the hash column. There is no
+  duplicate render anywhere in the era, so no class is carried on two branches.
+- **Every base is its campaign's declared base**, matching the auditor's own seeding
+  entries one for one: `616686f` (`WO-0050`), `2e8994f` (`0055`), `a2d090d` (`0058`),
+  `42b9df3` (`0061`), `c0595f9` (`0063B`), `199e319` (`0066`), `bbd4122` (`0073`),
+  `ca1bb80` (`0074`), `8346a5c` (`0076`), `aced7b4` (`0077`). No branch is based off
+  another branch, off `main`, or off a stale tree. **There is no stale branch.**
+- **Sixty-three of 64 carry exactly one commit over their base.** The single
+  exception, `mut/wo-0073-l3` at two commits, is a within-branch re-cut *already
+  disclosed* by the auditor at `WO-0073-mutations/README.md` Q2 and named there with
+  both SHAs. It is one branch for one class either way and contributes nothing to a
+  branch surplus.
+- **All 64 touch exactly one file**, `libs/hardcaml_ethernet/src/xgmii_rx_64.ml`.
+  Not one branch touches `test/**`, `agents/**` or `docs/**`. This is the check that
+  matters most for the dispatch's finding condition: a seeding recorded nowhere would
+  most plausibly show up as a branch reaching a bench or a seal, and none does.
+
+So the surplus is **not a branch anomaly at all**. Every branch is a single-diff,
+correctly-based, uniquely-rendered transient. The 43-vs-41 gap therefore cannot be
+explained on the branch side, which means it must be explained on the *tally* side —
+the two figures are counting different things, and the question is what the tally
+declines to count.
+
+**Step 3 — I re-derived the older seven campaign by campaign, from each campaign's
+own verdict, and the gap closes exactly.** Branch counts against the sealed figure
+each campaign's own adjudication records:
+
+| campaign | branches | sealed classes in the tally | delta | why |
+|---|---|---|---|---|
+| `WO-0050` family F | 8 | 8 | 0 | `8/8` |
+| `WO-0055` family G | 5 | 5 | 0 | `4/5` + survivor `G-c4` |
+| `WO-0058` G7+H | 7 | 7 | 0 | `7/7` |
+| `WO-0061` family I | 10 | **9** | **−1** | `I-c1` **VOID** |
+| `WO-0063B` | 2 | **1** | **−1** | `IC-2` is a **control** |
+| `WO-0066` family B/N | 6 | 6 | 0 | `6/6` |
+| `WO-0073` family L | 5 | 5 | 0 | `5/5` |
+| **total** | **43** | **41** | **−2** | |
+
+Killed: 8 + 4 + 7 + 9 + 1 + 6 + 5 = **40**, survived **1**, and 40 + 1 = 41. Both
+columns of the carried figure reproduce to the unit. **The two surplus branches are
+named, and neither is a re-cut, a duplicate or a stale ref:**
+
+**Surplus branch 1 — `mut/wo-0061-i-c1`**, tip `a4c7a04`, base `42b9df3`, one commit,
+subject `MUTATION RUN i-c1 -- never merge`, diff `libs/hardcaml_ethernet/src/xgmii_rx_64.ml`
+only, +15/−1. **Classification: a seeded class VOIDED as unscoreable.** `WO-0061`'s
+verdict table rules it `VOID — NOT SEEDED AS SPECIFIED — scope report, 0 kills`, and
+its scoring summary states `Classes seeded: 10. Branches red: 10 of 10. Scoreable
+classes: 9`. The class shipped a real mutation, the branch ran, the suite went red on
+it — on `T-F1`, `T-F2`, `T-G7`, with **all five I units green**, which is precisely
+why it scores nothing: it reddened a bench, but not the bench the seal was written
+against. The ground of the void is `FINDING A-1`, the program's first
+disclosure-class finding against the auditor, accepted against itself at
+`DISP-0001`. **Every added and removed line of the branch diff appears verbatim in
+the committed manifest README**; the branch carries the recorded mutation and
+nothing else.
+
+**Surplus branch 2 — `mut/wo-0063b-ic2`**, tip `dbc4b0a`, base `c0595f9`, one commit,
+subject **`MUTATION RUN WO-0063B/ic-2 (control) -- base c0595f9 + one diff -- never
+merge`**, same single file. **Classification: a negative control, scoring zero by
+design.** The word `control` is in the branch's own commit subject, in the campaign
+packet's section heading, and in its scoring table: *"Kills: 0, by design. IC-2 is a
+control and scores none."* Its purpose was to demonstrate `M03-I2` stays **green**,
+which it did at all three members on both lanes. **The branch diff is
+character-identical to the committed manifest `ic-2.diff`** — hunk bodies compare
+with zero differences.
+
+**Neither branch carries an unrecorded seeding.** Both are recorded in their
+campaign's own committed verdict, both are byte- or line-identical to the auditor's
+committed manifest, both were adjudicated to zero score *at the time* and not
+retrospectively, and neither reaches a bench, a seal or a spec. The dispatch's
+finding condition is **not met on the branches**, and on the branch question the
+reconciliation note is the deliverable, exactly as the dispatch anticipated.
+
+**Step 4 — the whole era, so the statement is not half a reconciliation.** The same
+sweep over the newer three campaigns closes the auditor's other half, and in the
+*opposite* direction. `WO-0074` cut **7** branches for **8** sealed classes: the
+manifest states flatly *"No branch is cut for `IC-M5`, and no CI job is spent on
+it"*, because `IC-M5` was declared to have no datapath-silent rendering at this
+design. `WO-0076` is 5/5; `WO-0077` is 9/9 — and I checked the auditor's own
+"one class on two branches" hypothesis against its most suggestive instance,
+`n4a`/`n4b`: the manifest fixes the class list as nine including **`IC-N4a` and
+`IC-N4b` as separate classes at separate sites**, the abort path and the report path.
+Two classes, two branches. The complete identity:
+
+    branches cut          64
+      − I-c1  (void)      −1      seeded, red, unscoreable
+      − IC-2  (control)   −1      seeded, green by design, scores nothing
+      = seeded & scored   62      = 61 killed + 1 survived
+    sealed classes        63      = 62 + IC-M5 (sealed, never seeded, no branch)
+    and 61 + 1 + 0 + 1 =  63
+
+**Every number in `J-auditor-0020` Open-question 4 now has a name attached to it, and
+nothing is left over.**
+
+**Step 5 — which figure the gate reads, and why the two differ.** The gate reads
+**sealed classes with their disposition** — 63 / 61 / 1 / 0 / 1 — and **not**
+branches-cut. Three grounds, none of them a preference:
+
+1. **PROTOCOL §7's `P<n>-module-ready` row quantifies over *mutations*:** *"auditor's
+   seeded mutations all killed by the DV suite."* §10 quantifies over *classes*:
+   *"kills N/N (N ≥ 3, spanning distinct defect classes)."* Neither text mentions a
+   ref. The scoring unit the constitution names is the class, and the authority for a
+   class's disposition is its campaign verdict.
+2. **A branch is a delivery vehicle, not a scoring unit.** §10's transient model has
+   the orchestrator apply a manifest *in an uncommitted working tree*; the ref exists
+   only because that tree had to reach CI. The manifest is the artifact; the branch is
+   how it travelled.
+3. **The ref population is not even a faithful proxy, and cannot be made one.** Remote
+   ref deletion 403s at the proxy, so the population is monotone non-decreasing by an
+   accident of infrastructure — nothing that ever gets pushed can ever leave it. **A
+   denominator that can only grow, and only for reasons outside the program's
+   control, cannot be a denominator.** The 85-ref inventory is an asset register; the
+   tally is a score.
+
+And the two differ in **both** directions, which is the part worth having measured:
+a branch can exist without a scoring class (a control, or a class voided after it
+ran), and a class can exist without a branch (sealed but never seeded). Anyone who
+treats either count as a proxy for the other will be wrong, and will not know which
+way.
+
+**Step 6 — the finding the reconciliation actually produced, which is against me.**
+Having closed the arithmetic, two things about *how the 41 got into the record* do
+not survive the walk, and one of them bears directly on `G-1`.
+
+The first two are clerical and materially void, and I file them anyway because a
+correct number reached by an unearned method is exactly the thing my own harvest
+rules say to convict. **`SO-xgmii_rx_64` §2.2-M states its method as *"the tally is
+re-derived by walking the campaign verdicts, never quoted from the last one"* — and
+its own first row, the 41, is quoted, from `WO-0074` §12, which quotes it in turn.**
+The walk covered three campaigns of ten. Until this entry, **the seven-campaign
+figure had never been derived campaign by campaign anywhere in the record.** It is
+correct — I have now derived it — but the method claim was broader than the method
+(`FINDING REC-1`, MINOR). And **`WO-0074` §12 sources the 41 to *"`WO-0073-VERDICT`
+and `tasks/BOARD.md`"*, but the `WO-0073` packet contains no era tally at all**; the
+only occurrence of `41` in it is inside a timestamp. Its sole prior home is
+`tasks/BOARD.md` at `33871b8` (`Agent: orchestrator`, `J-orchestrator-0215`). A dv
+figure was sourced to a dv packet that does not carry it, and the seat that actually
+first wrote it was not credited (`FINDING REC-2`, MINOR). Both are mine.
+
+The third is substantive. **Two structurally mirror-image events are accounted in
+opposite directions, and neither treatment is stated as a rule anywhere.** `I-c1`
+was *sealed and seeded* — a diff shipped, a branch ran, the suite reddened — and it
+was **removed from the sealed denominator entirely**, appearing in none of the five
+columns. `IC-M5` was *sealed and never seeded* — no diff, no branch, no CI job — and
+it was **kept in the sealed denominator** and given a fifth column of its own, which
+`WO-0074` §12 introduces with the words *"the era's first VOID class"*. The class
+that was voided nine days earlier is not in that sentence, because it was voided
+under a different word with a different consequence. Each individual ruling was made
+at the time, in a committed packet, and disclosed there; what does not exist is any
+statement, at the tally or anywhere downstream, that the sealed column **excludes one
+seeded class on one ground and includes one unseeded class on another**. A reader of
+"63 sealed" cannot recover either treatment (`FINDING REC-3`, MAJOR).
+
+**Why that is MAJOR and not MINOR, stated with its materiality bounded.** It moves no
+kill, creates no escape, and does not touch a single PASS: 61 killed is 61 killed and
+`G-c4` is still the one survivor. What it moves is **the denominator the gate is about
+to read, and the wording of the amendment being drafted right now.** The auditor
+dissolved half of `G-1` on §7's own word — `IC-M5` was never *seeded*, so 63 sealed
+− 1 = 62 seeded = 61 killed + 1 survived — and specified `G1-a` as *"quantify over
+SEEDED with both numbers stated."* **Under a literal reading of `seeded`, `I-c1` is a
+seeded mutation that is in no column at all.** It was seeded; it was not killed; it
+did not survive; it is not the void. The identity 62 = 61 + 1 holds only because
+`I-c1` was removed from numerator and denominator together, on a ground — *the
+seeder's disclosure was falsified, so the class is unscoreable* — that appears in
+`WO-0061` and in no normative instrument. **An amendment that quantifies over
+`seeded` without a clause for the seeded-but-unscoreable class will be wrong at
+`I-c1` on the day it is ratified.** That is worth a MAJOR because the amendment is
+live in a sibling's hands this round, and because the defect is in my score, in my
+packet's own method sentence, and in a figure I carried three times without walking.
+
+**What I am not doing.** I am not touching the tally, the board, the `SO-`, or the
+gate file. The dispatch confines me to this journal and requires me to name and stop
+if my mechanics need more; my mechanics do not need more — the reconciliation is a
+note in my chain and the corrections it implies are three sentences in artifacts I do
+not own this round. They are routed in Open-questions with their owners named.
+
+**Harvest.** Not due — this is neither an `SO-` nor a phase gate, and the span from
+my last harvest stays **open**, declared rather than skipped. Two candidates banked
+against it, both LH2-g: *(a)* **a figure carried across rounds must be re-derived by
+the method its carrier claims, or the carrier must state that it was quoted** — LH1
+this round's 41; LH3 without it a method sentence launders a number's provenance and
+the first re-derivation happens after the number has been used to decide something.
+*(b)* **When a scored population and its delivery artifacts are counted separately,
+publish the reconciling identity, not just the score** — LH1 this round's 64/63/62;
+LH3 without it a reader who finds the two counts differ has no way to tell an
+accounting convention from a missing record, and files an observation nobody can
+close.
+
+### Actions
+
+- Ran the abort-first precheck; verified `de3c560` and a clean tree, and re-verified
+  both at authoring time after the round's reads.
+- Read `J-auditor-0020` Open-question 4 at the source, in full, plus its Outcome.
+- Measured the remote ref population by prefix and unfiltered; reconciled 87 to 85.
+- Fetched all **64** class-era `mut/` branches into a throwaway `refs/mutinspect/*`
+  namespace — **no merge, no checkout, no working-tree contact** — and recorded tip,
+  base, commit count, full-diff SHA-256 and touched-file set for each.
+- Compared `mut/wo-0063b-ic2` byte-for-byte against `WO-0063B-mutations/ic-2.diff`,
+  and `mut/wo-0061-i-c1` line-for-line against the I-c1 hunk in
+  `WO-0061-mutations/README.md`.
+- Re-derived the older seven campaigns' sealed and killed columns from each
+  campaign's own committed verdict, and reconciled 43 branches to 41 sealed.
+- Swept the newer three campaigns and confirmed the opposite-direction case
+  (`IC-M5`: 8 sealed classes, 7 branches) and the two-class reading of `n4a`/`n4b`.
+- Traced the 41's provenance through `git log -S` to `33871b8`.
+- **Deleted the entire `refs/mutinspect/*` namespace**, leaving zero local refs from
+  which mutated RTL is reachable; re-ran one comparison from the cleaned state to
+  prove the evidence reproduces without it.
+- Wrote this entry. **No file outside this journal was created, edited or staged. No
+  git commit or push was run, and no stop-hook commit demand was honoured.**
+
+### Evidence
+
+All commands run from a clean checkout at `de3c560`; all reads are of the remote and
+of committed files. Ref population:
+
+    $ git ls-remote --heads origin 'refs/heads/mut/*' | wc -l
+    85
+    $ git ls-remote --heads origin | wc -l
+    87
+    $ git ls-remote --heads origin | grep -v 'refs/heads/mut/'
+    de3c560...  refs/heads/claude/fpga-hardcaml-agent-orchestration-37ceyf
+    bd7fbcf...  refs/heads/main
+
+**85 `mut/` refs (board figure confirmed); the 87 is the unfiltered listing, whose
+two extra lines are `main` and the working branch.**
+
+The two surplus branches, fetched without merge or checkout:
+
+    $ git fetch --no-write-fetch-head origin refs/heads/mut/wo-0061-i-c1
+    $ git log -1 --format='%H %P %aI %s' a4c7a047a27679117bd3577fcc773542f2a25a5a
+    a4c7a047...  42b9df3fe648ea1735d24f1c629e402e409ef96c  2026-08-04T16:11:50+00:00
+      MUTATION RUN i-c1 -- never merge
+    $ git diff --stat 42b9df3 a4c7a047
+     libs/hardcaml_ethernet/src/xgmii_rx_64.ml | 16 +++++++++++++++-
+     1 file changed, 15 insertions(+), 1 deletion(-)
+
+    $ git fetch --no-write-fetch-head origin refs/heads/mut/wo-0063b-ic2
+    $ git log -1 --format='%H %P %aI %s' dbc4b0a8a4ffdff43512afbe97ebcf9055d36e1c
+    dbc4b0a8...  c0595f9e8026757cd4eed6e856d06555424437e0  2026-08-04T22:17:52+00:00
+      MUTATION RUN WO-0063B/ic-2 (control) -- base c0595f9 + one diff -- never merge
+
+Branch-vs-manifest identity (both re-run from a state with the inspection refs
+already deleted, so they reproduce standalone):
+
+    $ diff <(git diff c0595f9 dbc4b0a8 -- libs/hardcaml_ethernet/src/xgmii_rx_64.ml \
+             | sed -n '/^@@/,$p') \
+           <(sed -n '/^@@/,$p' docs/reports/audit/WO-0063B-mutations/ic-2.diff)
+    (no output — hunk bodies identical; 28 lines each)
+
+    # every +/- line of the i-c1 branch diff, checked verbatim against the manifest
+    $ while IFS= read -r l; do
+        grep -qF -- "$l" docs/reports/audit/WO-0061-mutations/README.md || echo "MISSING: $l"
+      done < <(git diff 42b9df3 a4c7a047 | sed -n '/^@@/,$p' | grep '^[+-]')
+    (no output — all present; only context lines differ, the README quoting a
+     narrower window)
+
+The 64-branch sweep — per branch: merge-base against `de3c560`, commit count over
+that base, SHA-256 of the full diff, touched files. Aggregate results:
+
+    distinct diff hashes                     64 of 64   (zero collisions)
+    branches whose base is the campaign base 64 of 64
+    branches with exactly one commit         63 of 64   (mut/wo-0073-l3 = 2,
+                                                         disclosed at its manifest Q2)
+    branches touching exactly one file       64 of 64
+    branches touching test/**, agents/**,
+      or docs/**                              0 of 64
+    bases observed: 616686f 2e8994f a2d090d 42b9df3 c0595f9 199e319 bbd4122
+                    ca1bb80 8346a5c aced7b4   — one per campaign, matching the
+                    auditor's seeding entries J-auditor-0008..-0018
+
+Primary-source dispositions of the two surplus branches:
+
+    $ grep -n 'I-c1' agents/handoffs/WO-0061_family-i-mutation-campaign.md
+    738: | **I-c1** | ... | **VOID** | **NOT SEEDED AS SPECIFIED — scope report, 0 kills** |
+    1139: - **Classes seeded: 10. Branches red: 10 of 10. Scoreable classes: 9**
+
+    $ grep -n 'IC-2' agents/handoffs/WO-0063B_m03-i2-report-path-campaign.md
+    576: - **Kills: 0, by design.** IC-2 is a control and scores none.
+    779: | **IC-2** (control) | yes, as specified | ... | **0, by design** |
+
+Opposite-direction case and the `n4a`/`n4b` check:
+
+    $ grep -n 'IC-M5' docs/reports/audit/WO-0074-mutations/README.md
+    288: **No branch is cut for IC-M5, and no CI job is spent on it.**
+    1075: | IC-M5 | ❌ **NOT SEEDED** | — | ... |
+    $ grep -n 'IC-N4a' docs/reports/audit/WO-0077-mutations/README.md
+    205: ... IC-K1..IC-K6, IC-N1, **IC-N4a**, **IC-N4b**   (nine classes, fixed)
+    241: IC-N4a at the abort path, IC-N4b at the report path
+
+Provenance of the carried 41:
+
+    $ grep -c '41 sealed\|40 killed' agents/handoffs/WO-0073_family-l-mutation-campaign.md
+    0
+    $ grep -on '\b41\b' agents/handoffs/WO-0073_family-l-mutation-campaign.md
+    1254:41            # inside the timestamp 20:41:27Z
+    $ git log --oneline -S'41 sealed' --all -- tasks/BOARD.md agents/handoffs/ | tail -2
+    70cf13c  The eighth campaign ...            # Agent: dv_lead,      J-dv_lead-0137
+    33871b8  Board: the seventh campaign ...    # Agent: orchestrator, J-orchestrator-0215
+
+Cleanup, so that no mutated RTL is reachable from a local ref:
+
+    $ git for-each-ref --format='%(refname)' refs/mutinspect | while read r; do
+        git update-ref -d "$r"; done
+    $ git for-each-ref refs/mutinspect | wc -l
+    0
+    $ git status --short && git rev-parse HEAD
+    (clean)  de3c56059eee62fa6315fef0764d66e85e2cde78
+
+**No suite was run and none is claimed.** This round touched no file under `test/`
+and can move no suite result; the whole-suite verdict remains CI's (ADR-0005).
+
+### Outcome
+
+**DoD met, and the round's act is complete.** The two surplus branches are named
+with tips, bases and commit subjects; each is classified from its own committed
+verdict — **`mut/wo-0061-i-c1` a voided seeded class, `mut/wo-0063b-ic2` a negative
+control** — and **neither is a re-cut, a duplicate render, a stale branch, or an
+unrecorded seeding**, each of those four being refuted by measurement rather than by
+argument. The figure the gate reads is stated (**sealed classes with disposition,
+63/61/1/0/1**, not branches-cut) with three grounds, and the two counts are shown to
+diverge in **both** directions. The reconciliation is exact end to end — 64 − 2 = 62
+seeded = 61 + 1, and 62 + 1 unseeded = 63 sealed — and it closes `J-auditor-0020`
+Open-question 4 with nothing left over. **The auditor's 87 is corrected to 85 and the
+cause identified**, without disturbing its 64, which reproduces.
+
+**Findings, all three against my own seat, per charter §8's adverse-party discipline:**
+
+- **`FINDING REC-1` (MINOR, materially void)** — `SO-xgmii_rx_64` §2.2-M claims the
+  tally is *"re-derived by walking the campaign verdicts, never quoted"*; its first
+  row is quoted. The walk covered three of ten campaigns. **The figure is correct** —
+  derived here for the first time — so nothing downstream moves; the method sentence
+  overstated its reach.
+- **`FINDING REC-2` (MINOR, materially void)** — `WO-0074` §12 attributes the 41 to
+  `WO-0073-VERDICT`, which contains no era tally. Sole prior home is `tasks/BOARD.md`
+  at `33871b8`, authored under `Agent: orchestrator`.
+- **`FINDING REC-3` (MAJOR, narrow)** — the sealed column **excludes a seeded class
+  (`I-c1`) and includes an unseeded one (`IC-M5`) on two grounds never stated
+  together**, and `WO-0074` §12 calls `IC-M5` *"the era's first VOID class"* nine days
+  after `I-c1` was voided under a different word. Moves no kill and no PASS; **moves
+  the denominator the gate reads and the amendment `G1-a` now being drafted**, which
+  quantifies over `seeded` and has no clause for the seeded-but-unscoreable class.
+
+**Handoff**: to the orchestrator for commit as a **journal-only** commit —
+`Files-in-this-commit` is `- (none)`, so `Journal-Only: true`, trailers
+`Agent: dv_lead`, `Work-Order: none`, `Journal-Entry: J-dv_lead-0184` (`R2`, `R6`).
+The reconciliation is returned verbatim in this round's return. **I staged nothing
+outside this journal, and I named no board row or packet annotation as required —
+because none is required for the reconciliation itself.** The corrections `REC-1`–
+`REC-3` imply edits to artifacts I do not own this round; they are routed below, not
+made.
+
+### Open-questions
+
+1. **`FINDING REC-3` should reach the architect before the §7/§10 amendment is
+   frozen, and this is the round it is being drafted in.** `G1-a` as specified
+   ("quantify over SEEDED with both numbers stated") is **correct and insufficient**:
+   it needs a third clause for the class that *was* seeded and is scoreable against
+   nothing, or it will be false at `I-c1` on the day it is ratified. The clause I
+   would propose, offered and not filed: *a seeded mutation whose seeding is found not
+   to render the sealed class is dispositioned as UNSCOREABLE, counted in neither
+   numerator nor denominator, and named at the tally with its ground.* **Route**:
+   orchestrator → architect_docs_lead, at its discretion, this round or the next.
+2. **Three artifacts carry a figure whose provenance sentence is wrong, and I own two
+   of them.** `SO-xgmii_rx_64` §2.2-M's method sentence and `WO-0074` §12's
+   attribution are mine to correct; the correction is two sentences and **must not
+   ride this round**, which is journal-only by dispatch. I name them and stop, per
+   the dispatch's instruction. **Carrier**: the next round that opens
+   `agents/handoffs/` for me.
+3. **The board's `G-1` row and the gate file's `G-1` row both predate this
+   reconciliation** and neither states which denominator the gate reads. **The board
+   is the orchestrator's and `docs/gates/**` is nobody's but the orchestrator's by
+   §7's transcription rule** — I neither edit nor draft either. If the orchestrator
+   wants the identity `64 − 2 = 62 = 61 + 1`, `62 + 1 = 63` transcribed into the
+   gate record, it is four lines and it is above, ready to lift verbatim.
+4. **The transient-ref inventory is a monotone artifact of a proxy limitation and
+   should be labelled as one.** Deletion 403s, so the count can only rise, and it now
+   sits two counts away from a figure someone reasoned with. Recommend the board's
+   inventory block gain one sentence: *this register is not a denominator*.
+   **Owner**: orchestrator. Recorded, not filed.
+5. **My reading of 64 mutation hunks is disclosed, not excused.** It was this round's
+   express commission and it was identity evidence on an already-signed module, but
+   §10's independence discipline is a habit and not a permission ledger. **No test,
+   plan row or spec claim in any future round of mine may cite this round's reads**,
+   and if one ever appears to, this sentence is the thing that convicts it.
+6. **Carried, unchanged**: `DVC-1a` remains unbuilt and every attack-plan count I
+   quote remains a hand count with its method stated — from `J-dv_lead-0183` item 6.
+   The whole-suite verdict is still CI's and the `9a596e7` repair's CI adjudication is
+   still open — from `J-dv_lead-0183` item 7.
+
+### Files-in-this-commit
+- (none)
