@@ -1,9 +1,15 @@
 # Phase-1 traceability matrix — REQ to specification to test
 
-- **Status**: DRAFT skeleton — test column pending dv_lead
+- **Status**: LIVE — the test column is populated for its first module. **34 of
+  110 rows** carry test-side cells (the M03 `Xgmii_rx_64` slice, WO-0079); the
+  other **76** are empty and await their own modules' sign-off rounds.
 - **Owner**: architect_docs_lead (matrix file) · **Work orders**: WO-0002
-  (original), WO-0004 (rows added and retitled for the D-1 … D-16 spec diffs)
-- **Test column owner**: dv_lead (charter §4: DV supplies the test-side rows)
+  (original), WO-0004 (rows added and retitled for the D-1 … D-16 spec diffs),
+  WO-0079 (the M03 test-side rows delivered and transcribed)
+- **Test column owner**: dv_lead (charter §4: DV supplies the test-side rows).
+  The cells are **transcribed** into this file by architect_docs_lead, the only
+  agent that may stage it (PROTOCOL §6) — which is why the test-side rows arrive
+  as a packet and not as an edit.
 - **Sources**: [`requirements.md`](requirements.md) (REQ text — normative),
   [`architecture.md`](architecture.md) §4 (module inventory)
 
@@ -92,13 +98,53 @@
   of the difference is whether a sign-off packet could show whole coverage
   without the other module's packet — for REQ-610 and REQ-807 it could not, and
   for REQ-707 `SO-udp_ip_rx_64.md` alone can.
-- **Test(s)** is filled by dv_lead with the test name and file, in the same
-  commit as the test. Multiple tests per REQ are listed comma separated. A REQ
-  covered only by a declared gap says `GAP: <reason>` and that gap must appear
-  in the module's sign-off packet.
+- **Test(s)** is derived by dv_lead from the attack plans and benches and
+  transcribed here by architect_docs_lead. **The citation atom is
+  `<row-id> → <path>:<line>`**, where `<path>:<line>` names the `let%expect_test`
+  unit discharging that attack-plan row. **Entries are separated by semicolons**;
+  a comma *inside* an entry groups row ids or line numbers sharing one unit, so
+  the separator is not the comma the WO-0002 draft of this bullet assumed. Unit
+  titles run to several lines and are therefore **not** repeated in the cell —
+  the delivering packet's unit register prints them in full, once, and a reader
+  checks a cell by reading the row id in the plan, the `file:line` in the suite,
+  and the register's title to see they name the same unit. Two entry forms are
+  not `file:line`, and both say so in the cell: **`— STRUCTURAL: <what checks
+  it>`**, discharged by a compile-time or script check rather than by a waveform,
+  named so no reader takes it for a behavioural test; and **`GAP: <reason>`**.
+- **Provenance of a filled cell is readable from the cell itself.** Every entry
+  carries its module's attack-plan row prefix — `M03-…` for `Xgmii_rx_64` — and
+  that prefix names the delivery it was transcribed from: the `M03-` cells are
+  **WO-0079**'s, measured by dv_lead at `a851948` and transcribed unchanged.
+  A **partial** cell — one module's contribution to a row that module does not
+  own whole — additionally opens with that module's prefix and a colon (`M03: …`),
+  which is what keeps a partial cell from reading as a whole one. Later modules
+  fill their own rows from their own sign-off rounds on this same form; **no cell
+  is ever back-filled from another module's packet**.
 - **Status** values: `OPEN` (no test yet) · `COVERED` (test exists and passes)
   · `GAP` (declared, with a reason) · `WITHDRAWN` (with the ADR that retired
-  the requirement).
+  the requirement). A REQ covered *only* by a declared gap says `GAP: <reason>`
+  and takes `Status` `GAP`. A gap named **inside an otherwise populated cell** is
+  a declared hole in that cell and **not** the row's status; either way the gap
+  must appear in the owning module's sign-off packet.
+- **What `OPEN` means on a row whose cell is populated** — the case a
+  multi-owner row reaches first, and the reason there is no `PARTIAL` value.
+  `Status` is a claim about **the row's own subject**, not a measure of how much
+  evidence its cell holds. That subject is: for a programme invariant, the
+  *system-level* test (next bullet); for a row owned by several modules, the
+  whole requirement; for a process row, the programme's own discharge, which no
+  module closes — pointing one at a module's evidence would be the same false
+  claim of coverage this file already refuses in the Spec-section column. **A
+  single module's bench can make none of those three claims, however much it puts
+  in the cell.** Such a row therefore reads `OPEN` beside a populated,
+  module-prefixed cell, and that is not a contradiction: it records that the
+  module-side contributions exist and that the row's own test does not, yet.
+  **Ruled at WO-0079 rather than answered with a new `Status` value**: a
+  `PARTIAL` would have to define when it becomes `COVERED`, which is precisely
+  the split `Open dependencies` item 3 defers to the first module-ready gate, so
+  minting the value now would freeze half that decision into the vocabulary
+  before the gate meets it. The **21** rows the rule currently governs are the M03
+  slice's programme-invariant and owned-elsewhere rows; should the gate later want
+  `PARTIAL`, they are its candidate set.
 - Programme invariants (REQ-001 … REQ-021) are owned by every module; their
   row records the *system-level* test, and each module spec restates the
   invariant in its own REQ-coverage table (SPEC-TEMPLATE §3, §10).
@@ -134,38 +180,38 @@ or withdrawn; ids remain permanent.
 |---|---|---|---|---|---|---|
 | REQ-001 | INV | Single clock domain | all modules (programme invariant) | SPEC-M20 §3, §6.1 | | OPEN |
 | REQ-002 | IFC | Datapath width | all modules (programme invariant) | SPEC-M01 §4.1, §5 | | OPEN |
-| REQ-003 | INV | No receive-path backpressure | all modules (programme invariant) | SPEC-M01 §4.2; SPEC-M03 §4.1 | | OPEN |
-| REQ-004 | PERF | Line-rate invariant | all modules (programme invariant) | SPEC-M03 §8 | | OPEN |
-| REQ-005 | INV | Cut-through, not store-and-forward | all modules (programme invariant) | SPEC-M03 §7 | | OPEN |
+| REQ-003 | INV | No receive-path backpressure | all modules (programme invariant) | SPEC-M01 §4.2; SPEC-M03 §4.1 | M03: M03-L6, M03-O1 — STRUCTURAL: interface compile check — the output carries `Axi64.Source` with no `Dest` and the input carries no `tready` (SPEC-M03 §4.1) | OPEN |
+| REQ-004 | PERF | Line-rate invariant | all modules (programme invariant) | SPEC-M03 §8 | M03: M03-L1 → test/xgmii_rx_64/test_m03_l.ml:258 (10 000 consecutive 64-octet frames, start lanes alternating, minimum spacing) | OPEN |
+| REQ-005 | INV | Cut-through, not store-and-forward | all modules (programme invariant) | SPEC-M03 §7 | M03: M03-L2 → test/xgmii_rx_64/test_m03_l.ml:258; M03-L5 → test/xgmii_rx_64/test_m03_l.ml:361 | OPEN |
 | REQ-006 | PERF | Receive latency budget | all modules (programme invariant) | SPEC-M20 §7 (the derivation: 13 cycles at both start lanes), §8 check 4 | | OPEN |
-| REQ-007 | INV | Abort propagation | all modules (programme invariant) | SPEC-M03 §9 | | OPEN |
-| REQ-008 | ERR | Every discard is observable | all modules (programme invariant) | SPEC-M03 §9; SPEC-M04 §9 | | OPEN |
-| REQ-009 | INV | Reset behaviour | all modules (programme invariant) | SPEC-M03 §7; SPEC-M04 §7 | | OPEN |
+| REQ-007 | INV | Abort propagation | all modules (programme invariant) | SPEC-M03 §9 | M03: M03-D1 → test/xgmii_rx_64/test_m03_d.ml:176; M03-E1 → test/xgmii_rx_64/test_m03_e.ml:353; M03-F1 → test/xgmii_rx_64/test_m03_f.ml:304; M03-G1 → test/xgmii_rx_64/test_m03_g.ml:534; M03-H1 → test/xgmii_rx_64/test_m03_h.ml:378; the zero-delivered cases, where the abort bit has no word to ride on — M03-B2 → test/xgmii_rx_64/test_m03_b.ml:1089, :1331, :1343; M03-B4 → test/xgmii_rx_64/test_m03_b.ml:459, :717; M03-F2 → test/xgmii_rx_64/test_m03_f.ml:492 | OPEN |
+| REQ-008 | ERR | Every discard is observable | all modules (programme invariant) | SPEC-M03 §9; SPEC-M04 §9 | M03: M03-B2 → test/xgmii_rx_64/test_m03_b.ml:1089, :1331, :1343; M03-B3 → test/xgmii_rx_64/test_m03_b.ml:907; M03-B4 → test/xgmii_rx_64/test_m03_b.ml:459, :717; M03-E2 → test/xgmii_rx_64/test_m03_e.ml:490; M03-F2 → test/xgmii_rx_64/test_m03_f.ml:492; M03-G6 → test/xgmii_rx_64/test_m03_g.ml:1186; M03-H4 → test/xgmii_rx_64/test_m03_h.ml:1047; plus the frame-conservation monitor standing on every M03 bench (AP-M03 §2 obligation 2) | OPEN |
+| REQ-009 | INV | Reset behaviour | all modules (programme invariant) | SPEC-M03 §7; SPEC-M04 §7 | M03: M03-K1 → test/xgmii_rx_64/test_m03_k.ml:371; M03-K2 → test/xgmii_rx_64/test_m03_k.ml:688 | OPEN |
 | REQ-010 | IFC | Typed stream fabric | all modules (programme invariant) | SPEC-M01 §4.1, §6.1 | | OPEN |
-| REQ-011 | IFC | tkeep semantics | all modules (programme invariant) | SPEC-M01 §6.1 | | OPEN |
-| REQ-012 | IFC | Byte and field order | all modules (programme invariant) | SPEC-M01 §6.1 | | OPEN |
+| REQ-011 | IFC | tkeep semantics | all modules (programme invariant) | SPEC-M01 §6.1 | M03: M03-C1 → test/xgmii_rx_64/test_m03_c.ml:338; M03-C3 → test/xgmii_rx_64/test_m03_c.ml:467; M03-C4 → test/xgmii_rx_64/test_m03_c.ml:556; M03-C5 → test/xgmii_rx_64/test_m03_c.ml:408; plus the protocol monitor standing on every M03 bench with `~max_words_per_frame:190` (AP-M03 §2 obligation 1) | OPEN |
+| REQ-012 | IFC | Byte and field order | all modules (programme invariant) | SPEC-M01 §6.1 | M03: M03-A5 → test/xgmii_rx_64/test_m03_a.ml:203 | OPEN |
 | REQ-013 | IFC | tuser semantics | all modules (programme invariant) | SPEC-M01 §6.1 | | OPEN |
-| REQ-014 | IFC | tstrb unused | all modules (programme invariant) | SPEC-M01 §6.1 | | OPEN |
-| REQ-015 | IFC | One frame at a time | all modules (programme invariant) | SPEC-M01 §6.1; SPEC-M03 §7 | | OPEN |
-| REQ-016 | IFC | Idle words permitted | all modules (programme invariant) | SPEC-M01 §6.1; SPEC-M04 §7 | | OPEN |
-| REQ-017 | INV | XGMII closure | all modules (programme invariant) | SPEC-M01 §4.1, §4.2; SPEC-M05 §4.2 | | OPEN |
-| REQ-018 | INV | XGMII boundary is simulation-only | all modules (programme invariant) | SPEC-M03 §2; SPEC-M05 §3 | | OPEN |
-| REQ-019 | INV | Bounded receive latency, no deep buffering | all modules (programme invariant) | SPEC-M03 §7; SPEC-M05 §7 | | OPEN |
-| REQ-020 | FUNC | Order preservation | all modules (programme invariant) | SPEC-M20 §3, §8 check 2 | | OPEN |
-| REQ-021 | IFC | Producer-side word alignment | all modules (programme invariant) | SPEC-M01 §6.1; SPEC-M03 §6.1 | | OPEN |
-| REQ-101 | FUNC | Start lanes | M03 `Xgmii_rx_64` | SPEC-M03 §6.1 | | OPEN |
-| REQ-102 | FUNC | Preamble handling | M03 `Xgmii_rx_64` | SPEC-M03 §6.1 | | OPEN |
-| REQ-103 | FUNC | Frame extraction | M03 `Xgmii_rx_64` | SPEC-M03 §6.1 | | OPEN |
-| REQ-104 | ERR | FCS check | M03 `Xgmii_rx_64` | SPEC-M03 §6.1, §9 | | OPEN |
-| REQ-105 | ERR | Error character inside a frame | M03 `Xgmii_rx_64` | SPEC-M03 §9 | | OPEN |
-| REQ-106 | FUNC | Terminate in any lane | M03 `Xgmii_rx_64` | SPEC-M03 §6.1 | | OPEN |
-| REQ-107 | ERR | Runt frames | M03 `Xgmii_rx_64` | SPEC-M03 §9 | | OPEN |
-| REQ-108 | ERR | Oversize frames | M03 `Xgmii_rx_64` | SPEC-M03 §6.2, §9 | | OPEN |
-| REQ-109 | FUNC | Idle between frames | M03 `Xgmii_rx_64` | SPEC-M03 §6.1 | | OPEN |
-| REQ-110 | ERR | Start without terminate | M03 `Xgmii_rx_64` | SPEC-M03 §9 | | OPEN |
-| REQ-111 | PERF | Constant receive latency | M03 `Xgmii_rx_64` | SPEC-M03 §7 | | OPEN |
-| REQ-112 | INV | No stall | M03 `Xgmii_rx_64` | SPEC-M03 §4.1 | | OPEN |
-| REQ-113 | FUNC | Ordered sets ignored | M03 `Xgmii_rx_64` | SPEC-M03 §6.1 | | OPEN |
+| REQ-014 | IFC | tstrb unused | all modules (programme invariant) | SPEC-M01 §6.1 | M03: producer half — the protocol monitor standing on every M03 bench asserts `tstrb` driven 0 on every output word (AP-M03 §2 obligation 1). GAP: REQ-014's differential run has no instance at M03 — the verification column commissions the same stimulus at `tstrb` = 0x00 and 0xFF, and M03's input is an XGMII lane pair, which has no `tstrb` to vary (SPEC-M03 §10 REQ-014 hook; AP-M03 M03-O2); the consumer half is M06's | OPEN |
+| REQ-015 | IFC | One frame at a time | all modules (programme invariant) | SPEC-M01 §6.1; SPEC-M03 §7 | M03: M03-C3 → test/xgmii_rx_64/test_m03_c.ml:467; M03-C4 → test/xgmii_rx_64/test_m03_c.ml:556; plus the protocol monitor's one-`tlast`-per-frame and 190-word rules on every M03 bench (AP-M03 §2 obligation 1) | OPEN |
+| REQ-016 | IFC | Idle words permitted | all modules (programme invariant) | SPEC-M01 §6.1; SPEC-M04 §7 | M03: M03-I4 → test/xgmii_rx_64/test_m03_i.ml:1781; M03-I6 → test/xgmii_rx_64/test_m03_i.ml:2106 | OPEN |
+| REQ-017 | INV | XGMII closure | all modules (programme invariant) | SPEC-M01 §4.1, §4.2; SPEC-M05 §4.2 | M03: M03-O3 — STRUCTURAL: the emitted-Verilog port names `xgmii_rxd` / `xgmii_rxc`, checked by `tools/check_emitted_verilog.sh` (run from `tools/dv_checks.sh`, CI `build` step 9) | OPEN |
+| REQ-018 | INV | XGMII boundary is simulation-only | all modules (programme invariant) | SPEC-M03 §2; SPEC-M05 §3 | M03: M03-O3 — STRUCTURAL: the emitted-module whitelist, `tools/check_emitted_verilog.sh` (run from `tools/dv_checks.sh`, CI `build` step 9) | OPEN |
+| REQ-019 | INV | Bounded receive latency, no deep buffering | all modules (programme invariant) | SPEC-M03 §7; SPEC-M05 §7 | M03: M03-L3 → test/xgmii_rx_64/test_m03_l.ml:258 (ΔC = 3 against the §1.1 ceiling of 4) | OPEN |
+| REQ-020 | FUNC | Order preservation | all modules (programme invariant) | SPEC-M20 §3, §8 check 2 | M03: M03-L4 → test/xgmii_rx_64/test_m03_l.ml:258 | OPEN |
+| REQ-021 | IFC | Producer-side word alignment | all modules (programme invariant) | SPEC-M01 §6.1; SPEC-M03 §6.1 | M03: M03-A2 → test/xgmii_rx_64/test_m03_a.ml:80; M03-A5 → test/xgmii_rx_64/test_m03_a.ml:203; M03-H2 → test/xgmii_rx_64/test_m03_h.ml:808 | OPEN |
+| REQ-101 | FUNC | Start lanes | M03 `Xgmii_rx_64` | SPEC-M03 §6.1 | M03-A1, M03-A2 → test/xgmii_rx_64/test_m03_a.ml:80; M03-A3 → test/xgmii_rx_64/test_m03_a.ml:153 | COVERED |
+| REQ-102 | FUNC | Preamble handling | M03 `Xgmii_rx_64` | SPEC-M03 §6.1 | M03-B1 → test/xgmii_rx_64/test_m03_b.ml:93; M03-B2 → test/xgmii_rx_64/test_m03_b.ml:1089, :1331, :1343; M03-B3 → test/xgmii_rx_64/test_m03_b.ml:907; M03-B4 → test/xgmii_rx_64/test_m03_b.ml:459, :717; M03-N2 → test/xgmii_rx_64/test_m03_n.ml:698, :708, :718, :728, :739, :749 | COVERED |
+| REQ-103 | FUNC | Frame extraction | M03 `Xgmii_rx_64` | SPEC-M03 §6.1 | M03-C1 → test/xgmii_rx_64/test_m03_c.ml:338; M03-C3 → test/xgmii_rx_64/test_m03_c.ml:467; M03-C5 → test/xgmii_rx_64/test_m03_c.ml:408; M03-E1 → test/xgmii_rx_64/test_m03_e.ml:353; M03-F1 → test/xgmii_rx_64/test_m03_f.ml:304; M03-G1 → test/xgmii_rx_64/test_m03_g.ml:534; M03-H1 → test/xgmii_rx_64/test_m03_h.ml:378 | COVERED |
+| REQ-104 | ERR | FCS check | M03 `Xgmii_rx_64` | SPEC-M03 §6.1, §9 | M03-D1 → test/xgmii_rx_64/test_m03_d.ml:176; M03-D2 → test/xgmii_rx_64/test_m03_d.ml:414; M03-D3 → test/xgmii_rx_64/test_m03_d.ml:468; M03-M2 → test/xgmii_rx_64/test_m03_g.ml:534; M03-M3 → test/xgmii_rx_64/test_m03_e.ml:353; M03-M4 → test/xgmii_rx_64/test_m03_h.ml:378; M03-M10 → test/xgmii_rx_64/test_m03_f.ml:492, test/xgmii_rx_64/test_m03_b.ml:907 | COVERED |
+| REQ-105 | ERR | Error character inside a frame | M03 `Xgmii_rx_64` | SPEC-M03 §9 | M03-B2 → test/xgmii_rx_64/test_m03_b.ml:1089, :1331, :1343; M03-E1 → test/xgmii_rx_64/test_m03_e.ml:353; M03-E2 → test/xgmii_rx_64/test_m03_e.ml:490; M03-E4 → test/xgmii_rx_64/test_m03_e.ml:609; M03-E5 → test/xgmii_rx_64/test_m03_e.ml:799; M03-G4 → test/xgmii_rx_64/test_m03_g.ml:1003; M03-G8 → test/xgmii_rx_64/test_m03_g.ml:1696; M03-M5 → test/xgmii_rx_64/test_m03_h.ml:609; M03-M7 → test/xgmii_rx_64/test_m03_g.ml:1003, :1696; M03-N1 → test/xgmii_rx_64/test_m03_n.ml:959 | COVERED |
+| REQ-106 | FUNC | Terminate in any lane | M03 `Xgmii_rx_64` | SPEC-M03 §6.1 | M03-C1, M03-C2 → test/xgmii_rx_64/test_m03_c.ml:338 | COVERED |
+| REQ-107 | ERR | Runt frames | M03 `Xgmii_rx_64` | SPEC-M03 §9 | M03-B3 → test/xgmii_rx_64/test_m03_b.ml:907; M03-F1 → test/xgmii_rx_64/test_m03_f.ml:304; M03-F2 → test/xgmii_rx_64/test_m03_f.ml:492; M03-F3 → test/xgmii_rx_64/test_m03_f.ml:653; M03-F4 → test/xgmii_rx_64/test_m03_f.ml:801; M03-F5 → discharged by citation to M03-C4 (test/xgmii_rx_64/test_m03_c.ml:556) and M03-F1's 5-octet member, recorded at test/xgmii_rx_64/test_m03_f.ml:811; M03-M1 → test/xgmii_rx_64/test_m03_f.ml:304, :653; M03-M10 → test/xgmii_rx_64/test_m03_f.ml:492, test/xgmii_rx_64/test_m03_b.ml:907 | COVERED |
+| REQ-108 | ERR | Oversize frames | M03 `Xgmii_rx_64` | SPEC-M03 §6.2, §9 | M03-G1 → test/xgmii_rx_64/test_m03_g.ml:534; M03-G2 → test/xgmii_rx_64/test_m03_g.ml:684; M03-G3 → test/xgmii_rx_64/test_m03_g.ml:834; M03-G4 → test/xgmii_rx_64/test_m03_g.ml:1003; M03-G6 → test/xgmii_rx_64/test_m03_g.ml:1186; M03-G7 → test/xgmii_rx_64/test_m03_g.ml:1490; M03-G8 → test/xgmii_rx_64/test_m03_g.ml:1696; M03-M2 → test/xgmii_rx_64/test_m03_g.ml:534; M03-M6 → test/xgmii_rx_64/test_m03_g.ml:834, :1490; M03-M7 → test/xgmii_rx_64/test_m03_g.ml:1003, :1696 | COVERED |
+| REQ-109 | FUNC | Idle between frames | M03 `Xgmii_rx_64` | SPEC-M03 §6.1 | M03-I1 → test/xgmii_rx_64/test_m03_i.ml:397; M03-I2 → test/xgmii_rx_64/test_m03_i.ml:977 | COVERED |
+| REQ-110 | ERR | Start without terminate | M03 `Xgmii_rx_64` | SPEC-M03 §9 | M03-B4 → test/xgmii_rx_64/test_m03_b.ml:459, :717; M03-G3 → test/xgmii_rx_64/test_m03_g.ml:834; M03-G7 → test/xgmii_rx_64/test_m03_g.ml:1490; M03-H1 → test/xgmii_rx_64/test_m03_h.ml:378; M03-H2 → test/xgmii_rx_64/test_m03_h.ml:808; M03-H3 → test/xgmii_rx_64/test_m03_h.ml:609; M03-H4 → test/xgmii_rx_64/test_m03_h.ml:1047; M03-M4 → test/xgmii_rx_64/test_m03_h.ml:378; M03-M5 → test/xgmii_rx_64/test_m03_h.ml:609; M03-M6 → test/xgmii_rx_64/test_m03_g.ml:834, :1490; M03-N2 → test/xgmii_rx_64/test_m03_n.ml:698, :708, :718, :728, :739, :749; M03-N4 → test/xgmii_rx_64/test_m03_n.ml:1450 | COVERED |
+| REQ-111 | PERF | Constant receive latency | M03 `Xgmii_rx_64` | SPEC-M03 §7 | M03-L2 → test/xgmii_rx_64/test_m03_l.ml:258; M03-L5 → test/xgmii_rx_64/test_m03_l.ml:361 | COVERED |
+| REQ-112 | INV | No stall | M03 `Xgmii_rx_64` | SPEC-M03 §4.1 | M03-L1 → test/xgmii_rx_64/test_m03_l.ml:258; M03-L6 → STRUCTURAL: no `tready` input exists on the stream under test (SPEC-M03 §4.1, interface compile check) | COVERED |
+| REQ-113 | FUNC | Ordered sets ignored | M03 `Xgmii_rx_64` | SPEC-M03 §6.1 | M03-E4 → test/xgmii_rx_64/test_m03_e.ml:609; M03-I3 → test/xgmii_rx_64/test_m03_i.ml:1266 | COVERED |
 | REQ-201 | FUNC | Preamble and start lane | M04 `Xgmii_tx_64` | SPEC-M04 §6.1 | | OPEN |
 | REQ-202 | FUNC | FCS generation | M04 `Xgmii_tx_64` | SPEC-M04 §6.1 | | OPEN |
 | REQ-203 | FUNC | Padding | M04 `Xgmii_tx_64` | SPEC-M04 §6.1 | | OPEN |
@@ -227,18 +273,18 @@ or withdrawn; ids remain permanent.
 | REQ-709 | ERR | Under-delivery of a declared length | M18 `Udp_ip_tx_64`, M04 `Xgmii_tx_64` | SPEC-M18 §6.2 (`Short`), §9 (the detection and `error_tx_length_mismatch`); SPEC-M04 §9 (the `/E/` + `/T/` remedy and `error_underflow`); **ADR-0011** (what the transmit path is left holding, and that `clear` recovers it) | | OPEN |
 | REQ-710 | ERR | Over-delivery of a declared length | M18 `Udp_ip_tx_64` | SPEC-M18 §6.2 (`Excess`), §9 | | OPEN |
 | REQ-801 | IFC | Top-level ports | M20 `Nic_top` | SPEC-M20 §4.1, §4.2 | | OPEN |
-| REQ-802 | IFC | Configuration record | M20 `Nic_top` | SPEC-M01 §4.1, §4.2 (the record); SPEC-M20 §4.1, §4.3 (its only port, and the decomposition) | | OPEN |
+| REQ-802 | IFC | Configuration record | M20 `Nic_top` | SPEC-M01 §4.1, §4.2 (the record); SPEC-M20 §4.1, §4.3 (its only port, and the decomposition) | M03 (the `cfg_rx_enable` sampling half): M03-J1 → test/xgmii_rx_64/test_m03_j.ml:259; M03-J2 → test/xgmii_rx_64/test_m03_j.ml:365; M03-J3 → test/xgmii_rx_64/test_m03_j.ml:574; M03-N4 → test/xgmii_rx_64/test_m03_n.ml:1450 | OPEN |
 | REQ-803 | IFC | Configuration stability | M20 `Nic_top` | SPEC-M20 §4.3 (M20 holds no configuration register, so every reader sees a change on the same cycle); the per-reader sampling rules are SPEC-M03 §4.3, SPEC-M04 §4.3, SPEC-M13 §4.3, SPEC-M14 §4.3, SPEC-M15 §4.3, SPEC-M17 §4.3, SPEC-M18 §4.3 | | OPEN |
 | REQ-804 | ERR | Status aggregation | M20 `Nic_top` | SPEC-M01 §4.1, §4.2 (the record); SPEC-M20 §6.1, §9 (six from M05 plus fifteen from M19 = twenty-one, a rename and not a reduction) | | OPEN |
 | REQ-805 | INV | Application must keep up | M20 `Nic_top`, M17 `Udp_ip_rx_64` | SPEC-M17 §4.1 (the producer's type, where the absence of `tready` originates); SPEC-M20 §4.1, §11.4 (the top-level port; the second sentence binds Phase 2 and has no Phase-1 observable) | | OPEN |
 | REQ-806 | PERF | End-to-end latency measurement | M20 `Nic_top` | SPEC-M20 §7, §8 check 5, §12's fifth row, §11.2 | | OPEN |
 | REQ-807 | FUNC | ARP connectivity | M20 `Nic_top`, M16 `Ip_complete_64` | SPEC-M16 §6.1, §8, §10 (the loop, closed structurally); SPEC-M20 §8, §10 (the XGMII-level observable: preamble, every ARP field, FCS, gap, and the REQ-502 interval measured from the terminate character) | | OPEN |
-| REQ-808 | PROC | Hierarchy and naming | M20 `Nic_top` | SPEC-M05 §4.1, §6.1; SPEC-M20 §4.1, §6.1, §10 (the root the module-name comparison walks) | | OPEN |
+| REQ-808 | PROC | Hierarchy and naming | M20 `Nic_top` | SPEC-M05 §4.1, §6.1; SPEC-M20 §4.1, §6.1, §10 (the root the module-name comparison walks) | M03: M03-O3 — STRUCTURAL: `.mli`, `create` and `hierarchical` present, and the module name appears in `rtl_snapshots/`; `tools/check_emitted_verilog.sh` (run from `tools/dv_checks.sh`, CI `build` step 9) | OPEN |
 | REQ-809 | FUNC | End-to-end datagram path | M20 `Nic_top` | SPEC-M20 §8, §10 | | OPEN |
-| REQ-810 | FUNC | Enable controls | M20 `Nic_top`, M03 `Xgmii_rx_64`, M04 `Xgmii_tx_64`, M18 `Udp_ip_tx_64` | SPEC-M20 §4.3, §6.1 (the configuration source, and the one field with two readers); SPEC-M03 §4.3 (the receive half); SPEC-M04 §4.3 (the XGMII transmit half); SPEC-M18 §4.3, §6.1 (the application-interface `tready` half); SPEC-M13 §11.2 (the ARP clause, which needs no enable) | | OPEN |
-| REQ-901 | PROC | Differential co-simulation | programme (process) | requirements.md REQ-901 (the declared divergence classes, lettered and appended-to, never renumbered); their module homes are SPEC-M14 header/§11.3 (a), SPEC-M12 §5 with SPEC-M13 §6.1 (b), SPEC-M15 header/§10 (c), SPEC-M18 header/§10 (d) and SPEC-M03 header/§10 (e), (f) | | OPEN |
+| REQ-810 | FUNC | Enable controls | M20 `Nic_top`, M03 `Xgmii_rx_64`, M04 `Xgmii_tx_64`, M18 `Udp_ip_tx_64` | SPEC-M20 §4.3, §6.1 (the configuration source, and the one field with two readers); SPEC-M03 §4.3 (the receive half); SPEC-M04 §4.3 (the XGMII transmit half); SPEC-M18 §4.3, §6.1 (the application-interface `tready` half); SPEC-M13 §11.2 (the ARP clause, which needs no enable) | M03 (the receive half): M03-J1 → test/xgmii_rx_64/test_m03_j.ml:259; M03-J2 → test/xgmii_rx_64/test_m03_j.ml:365; M03-J3 → test/xgmii_rx_64/test_m03_j.ml:574; M03-N4 → test/xgmii_rx_64/test_m03_n.ml:1450 | OPEN |
+| REQ-901 | PROC | Differential co-simulation | programme (process) | requirements.md REQ-901 (the declared divergence classes, lettered and appended-to, never renumbered); their module homes are SPEC-M14 header/§11.3 (a), SPEC-M12 §5 with SPEC-M13 §6.1 (b), SPEC-M15 header/§10 (c), SPEC-M18 header/§10 (d) and SPEC-M03 header/§10 (e), (f) | M03: no behavioural row, and none is owed — REQ-901 is a process obligation on the differential co-simulation lane, not a property of M03's ports. The lane's producer is `test/cosim/` (`stimulus_gen.ml`, `ours_run.ml`, `compare.ml`, `tb_xgmii_rx_64.v`), run as CI job `cosim`; its five **stimulus classes** and their per-class `build` / `cosim` run ids are listed in SO-xgmii_rx_64.md §2.3 and §2.3-M. Declared divergence classes (e) and (f) are homed at this module | OPEN |
 | REQ-902 | PROC | Deterministic emission | programme (process) | **no module spec pins it, by design** — it is a property of the build, fixed by the CI `build` workflow's determinism step and ADR-0005 | | OPEN |
-| REQ-903 | PROC | Module surface | programme (process) | SPEC-M01 §10; SPEC-M02 §4.1; SPEC-M03 §4.1 | | OPEN |
+| REQ-903 | PROC | Module surface | programme (process) | SPEC-M01 §10; SPEC-M02 §4.1; SPEC-M03 §4.1 | M03: M03-O3 — STRUCTURAL: `xgmii_rx_64` is a distinct emitted module with `create`, `hierarchical` and an `.mli`; repository-surface check plus the `rtl_snapshots/` name comparison, `tools/check_emitted_verilog.sh` (run from `tools/dv_checks.sh`, CI `build` step 9) | OPEN |
 | REQ-904 | PROC | Traceability currency | programme (process) | **this file**, plus the CI set-equality script requirements.md REQ-904's verification column commissions | | OPEN |
 | REQ-905 | PROC | Per-module stress | programme (process) | SPEC-M03 §8 | | OPEN |
 | REQ-906 | PROC | Evidence form | programme (process) | **no module spec pins it, by design** — ADR-0005 fixes it and every module spec's §12 `Interface compile check` row is an instance of it | | OPEN |
@@ -247,14 +293,26 @@ or withdrawn; ids remain permanent.
 
 ## Open dependencies
 
-1. **Test column**: empty by design at WO-0002 return. dv_lead fills it from
-   the attack plans and benches, in the commit that adds each test
-   (dv_lead charter §3).
+1. **Test column**: no longer empty, and no longer wholly filled either. It was
+   empty by design at WO-0002 return; the **first module slice landed at
+   WO-0079** — the 34 rows SPEC-M03 §10 hooks, delivered by dv_lead as `Test(s)`
+   and `Status` cells and transcribed here. **76 rows remain empty**, each
+   awaiting its own module's sign-off round on the same form; that count is the
+   live measure of how much of this column is owed. dv_lead derives the cells
+   from the attack plans and benches (dv_lead charter §3).
 2. **Spec section**: filled batch by batch as the twenty module specifications
    land (architecture.md §8).
 3. **System-level rows**: REQ-001 … REQ-021 and REQ-801 … REQ-810 are expected
    to be covered by `nic_top` system tests plus per-module restatements; the
    architect and dv_lead agree the split at the first module-ready gate.
+   **WO-0079 is this item's first occasion**: M03's half of the split is now on
+   the record per row — 16 programme-invariant rows and REQ-802, REQ-808,
+   REQ-810 carry an `M03:`-prefixed cell and stay `OPEN` — so the gate ratifies a
+   measured thing rather than negotiating one. The rows' `nic_top` half is
+   M20's to deliver and none of these cells claims it. **Two of the 21 rows sit
+   outside this item's ranges** — REQ-901 and REQ-903 are process rows, not
+   system-level ones — and they hold `OPEN` on the process-row ground stated in
+   the `Status` bullets above, not on this item's.
 4. **Partial coverage declared in advance (REQ-019)**: REQ-019's first sentence
    — the per-module latency ceiling of requirements.md §1.1 — is DV-verifiable
    and is what the row's test column must eventually name. Its second sentence

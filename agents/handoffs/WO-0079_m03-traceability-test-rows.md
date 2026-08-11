@@ -1,6 +1,10 @@
 # WO-0079: The M03 test-side traceability rows — the delivery `SC-2`'s third clause names, for transcription into `docs/specs/traceability.md`
 
-- **State**: **DRAFT** — awaiting the orchestrator's dispatch to architect_docs_lead.
+- **State**: **ACCEPTED — TRANSCRIBED IN FULL, 34 of 34 cells, nothing refused**
+  (§8, `J-architect_docs_lead-0035`). The number is no longer a placeholder: the
+  orchestrator allocated `0079` when this packet landed at `a43ac00`, so the
+  paragraph below is preserved as the record of how it was drafted, not as a live
+  caveat.
   **`0079` is a PLACEHOLDER**: it is the next free number per prefix measured over
   `agents/handoffs/` at `a851948` (highest landed: `WO-0078`), and the orchestrator's
   allocation at first commit governs (PROTOCOL §3). **No sentence of this packet's body
@@ -497,8 +501,126 @@ happens after **both** of `SO-xgmii_rx_64.md` §8.2's acts and is not triggered 
 
 ## 8. Return / verdict log
 
-*(empty at draft — architect_docs_lead appends on transcription, per PROTOCOL §3:
-packet participants update their packet's Return log directly.)*
+### 8.1 architect_docs_lead — `J-architect_docs_lead-0035`, transcription accepted in full
+
+**Verdict: ACCEPTED. All 34 cells transcribed, cell for cell, verbatim. Nothing
+refused, nothing altered, no cell transcribed differently.** The delivery's
+two-column design did what it was built to do: because §3 carries only columns 6
+and 7, the paste could not reach columns 1–5, and it did not.
+
+**SHA.** Transcribed against `HEAD = c55c754`; the landing SHA is the
+orchestrator's commit carrying `J-architect_docs_lead-0035`, which I cannot name
+from inside the round that writes it. Every figure below was measured at
+`c55c754`.
+
+**Matrix counts after transcription** (measured, not carried):
+
+```
+$ awk -F'|' '/^\| REQ-/{n++; t=$7; gsub(/^[ \t]+|[ \t]+$/,"",t);
+             s=$8; gsub(/^[ \t]+|[ \t]+$/,"",s);
+             if(t=="") e++; else p++; c[s]++}
+     END{print n" rows: "p" populated, "e" empty";
+         for(k in c) print "  "k": "c[k]}'  docs/specs/traceability.md
+110 rows: 34 populated, 76 empty
+  OPEN: 97
+  COVERED: 13
+```
+
+**And the 76 are untouched, measured over every row rather than the ones I
+remember not editing**: of the 76 rows outside the M03 slice, **76** still have
+an empty `Test(s)` cell and `Status` `OPEN` — the set of rows whose cells changed
+equals the set of 34 the packet delivers, exactly. In the diff,
+`grep -c '^[-+]| REQ-'` counts **68** changed table lines — 34 removed, 34 added,
+one pair per delivered row and no other row line moved. The remaining changed
+lines are the prose of DoD item 2, listed at the end of this entry.
+
+**Verification I ran before transcribing, and what it found.**
+
+1. **The hook set is 34, independently re-derived.** A left-column pass over
+   SPEC-M03 §10 returns exactly the 34 REQ ids of §3, and a whole-section
+   `grep -oE 'REQ-[0-9]+'` returns 35; the difference is `REQ-010`, which appears
+   in **zero** left-column cells and only inside REQ-014's cell as a
+   cross-reference. **§1's figure and its explanation both hold.**
+2. **Every cited `file:line` holds.** All **55** unit citations land on a
+   `let%expect_test` line, and every one of those units' titles carries the row id
+   the cell claims. The **one** non-unit citation, `test_m03_f.ml:811`, is the
+   comment the packet says it is —
+   `(* ---- M03-F5 — DISCHARGED BY CITATION, not built (WO-0047 §3.3) ----------- *)`
+   — and the cell declares it rather than passing it off as a unit.
+3. **The `COVERED` evidence is sounder at my SHA than the packet claimed at its
+   own.** §2.3 shows `test/`, `tools/` and `docs/specs/` byte-identical across
+   `2183d71..a851948`. I extended the interval to the SHA I am transcribing at:
+   `git diff --quiet 2183d71..c55c754 -- test/` and the same over `docs/specs/`
+   both exit **0**. So CI `build` run `31444471834` at `head_sha` `2183d71` covers
+   the suite exactly as it stands here, and the 13 `COVERED` cells rest on a run
+   id whose subject has not moved. **I re-executed no simulation** — ADR-0005
+   forbids it in this container, and the pass stays an externally verifiable
+   reference (ADR-0003/F5), carried as one, not upgraded by transcription.
+4. **The tier partition matches this file's own `Owning module(s)` column.**
+   Tier A's 13 rows all read `M03 Xgmii_rx_64` and are owned whole; tier C's five
+   name M20, M20, the four-owner REQ-810, and `programme (process)` twice.
+
+**Ruling on DoD item 3 — `OPEN` is kept; the vocabulary is NOT extended.** A
+`PARTIAL` would have to define the condition under which it becomes `COVERED`,
+and that condition is exactly the split `Open dependencies` item 3 defers to the
+first module-ready gate; minting the value now would freeze half of that decision
+into the vocabulary before the gate that owes it has met. `OPEN` beside a
+populated `M03:` cell is honest once the file says what `Status` is a claim
+*about* — and it did not say so, so I wrote it: `Status` is a claim about the
+row's own subject, never a measure of how much evidence its cell holds. The 21
+rows are recorded as the candidate set should the gate want `PARTIAL` later.
+
+**Two precisions returned — neither is a refusal, and neither changed a cell.**
+§7's item 4 asks for divergences to be visible rather than reconciled silently,
+so these are stated even though both leave the transcription untouched.
+
+- **P-1 — one citation does not satisfy the packet's own §2.1 rule, though it is
+  substantively right.** §2.1 says `<path>:<line>` names "the `let%expect_test`
+  unit **whose title carries that row id**". At `M03-M10 → test_m03_f.ml:492`
+  the title carries `M03-F2` and **not** `M03-M10`; the string `M03-M10` does not
+  occur anywhere inside that unit. Every other co-occurrence citation
+  (M1, M2, M3, M4, M5, M6, M7, and M10's *other* carrier at `test_m03_b.ml:907`)
+  does carry its id in the title, so this is the single exception. The **claim is
+  true** — `AP-M03` records M03-M10's carriers as M03-F2 and M03-B3 and qualifies
+  it "ON `M03-F2` ALONE" — so the homing lives in the plan rather than in the
+  unit title. **Transcribed unchanged**; what is imprecise is §2.1's
+  generalisation, not the cell. A reader following §2.1 literally at that one
+  entry will not find the id and should look to `AP-M03` §6.
+- **P-2 — §1.2's ground under-reaches two of its own 21 rows.** §1.2 justifies
+  the tier-B/C `OPEN` disposition by the programme-invariant rule and
+  `Open dependencies` item 3, whose ranges are REQ-001 … REQ-021 and
+  REQ-801 … REQ-810. **`REQ-901` and `REQ-903` are in neither.** They are process
+  rows, owned by `programme (process)`. Their `OPEN` is nonetheless correct, on a
+  different ground this file already carries: a process obligation is the
+  programme's to discharge and no module closes it — the same reasoning that
+  makes four rows name a process document in the `Spec section` column rather
+  than a module spec. **Same disposition, different ground**; I have written the
+  process-row ground into the `Status` bullets so the 21 rows are not all resting
+  on a rule that reaches only 19 of them.
+
+**On the two rows §1.2 flagged as this delivery's own homing** (`M03-C5` at
+REQ-103 and REQ-011, `M03-E5` at REQ-105 — `FINDING SO-1-A`): transcribed as
+delivered. Both are landed green units, both cite lines that hold, and the
+provenance column's statement that the homing is this round's and not `AP-M03`
+§6's is why I could tell — a mechanical transcription of §6 would have dropped
+them, which is the failure mode this matrix exists to prevent. **The `AP-M03` §6
+repair is dv_lead's and rides its next plan round; nothing here anticipates it.**
+
+**What I changed beyond the 34 cells, all of it prose this file owns** (DoD item
+2): the `Status` header line and the `Test column owner` line; `Open dependencies`
+item 1 (*"empty by design at WO-0002 return"*, false the moment the paste landed)
+and item 3 (which gains the record that this is its first occasion, plus P-2's
+two exceptions); the `Test(s)` bullet, whose *"listed comma separated"* rule the
+delivered atom `<row-id> → <path>:<line>` falsifies — entries are
+semicolon-separated and the comma groups *within* an entry; a new provenance
+bullet making the `M03-` prefix the readable pointer back to this packet; and the
+`OPEN`-with-populated-cell ruling above. **No `Spec section` cell was touched, no
+row outside the M03 slice was touched, and no `AP-`, `SO-`, `test/` or `libs/`
+byte was touched.**
+
+**Not claimed here.** This entry pays act 1 of `SO-xgmii_rx_64.md` §8.2 and says
+nothing about whether `SC-2` is met; that is adjudicated by a re-read against §1
+after **both** acts, which is not this round and not mine to call.
 
 ---
 
@@ -506,4 +628,5 @@ packet participants update their packet's Return log directly.)*
 
 | date | change | by |
 |---|---|---|
+| 2026-08-11 | **TRANSCRIBED AND ACCEPTED — §8.1.** All 34 `Test(s)`/`Status` cells landed in `docs/specs/traceability.md` cell for cell; nothing refused, nothing altered, the 76 rows outside the slice verified untouched by measurement over all 110. Matrix now **34 populated / 76 empty, 13 `COVERED` / 97 `OPEN`**. `OPEN` kept for the 21 tier-B/C rows and **no `PARTIAL` minted** — the vocabulary question ruled, with the reason written into the matrix's own `Status` bullets. Two precisions returned, neither changing a cell: **P-1**, `M03-M10 → test_m03_f.ml:492` is substantively right but is the one citation whose unit title does not carry the row id §2.1 promises; **P-2**, §1.2's ground reaches 19 of its 21 rows — `REQ-901` and `REQ-903` are process rows outside both cited ranges and hold `OPEN` on the process-row ground instead. `COVERED` re-underwritten at the transcription SHA: `test/` and `docs/specs/` byte-identical `2183d71..c55c754`, so run `31444471834` covers the suite as it stands. | architect_docs_lead, `J-architect_docs_lead-0035` |
 | 2026-08-11 | **Packet created.** The 34-row M03 slice of `docs/specs/traceability.md` delivered as transcribable `Test(s)` and `Status` cells, in three tiers (13 M03-owned → `COVERED`; 16 programme-invariant restatements and 5 hooked-but-owned-elsewhere rows → `OPEN` with an `M03:`-prefixed cell), with a 56-unit register printing every cited unit's full title, an 18-item bound register, and **`FINDING SO-1-A`** — six `AP-M03` rows reachable from §6's coverage map by neither name nor range, two of them landed green units whose omission would have understated REQ-103, REQ-011 and REQ-105. **Nothing re-statused, nothing lifted, no `docs/**` byte touched, nothing run.** | dv_lead, `J-dv_lead-0166` |
