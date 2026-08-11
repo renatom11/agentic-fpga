@@ -4820,3 +4820,32 @@ demonstrate.
 ### Files-in-this-commit
 
 - (none)
+
+## [J-orchestrator-0262] 2026-08-11T19:21Z | task:none | Act six: the hunks land in the constitution under the trailer the route named - applied from the ADR's own recipe, verified byte-clean before and after, sixty-nine lines in and three out
+
+### The application
+
+Per ADR-0020 §9.2 act 6, the amendment's three hunks are applied to
+agents/PROTOCOL.md in this commit, under Agent: orchestrator, from the
+ADR's own §4.1 recipe (extraction outside the repository, headers
+assembled per the recipe's printf lines). Verification chain:
+
+1. Pre-application: agents/PROTOCOL.md verified byte-identical to
+   HEAD (sha 72458857aa75… both sides) — REC-5's lesson made
+   procedure.
+2. The apply-check re-run independently by me before acceptance:
+   exit 0, zero offsets, 69 insertions / 3 deletions — the FOURTH
+   independent verification of the same hunks (architect at 7611b54,
+   dv at b6c8a2f, auditor at b6c8a2f, me at 6019846-era tree).
+3. The application: git apply, stat 69/3, no offsets reported.
+
+PROTOCOL §7's gate table row now reads dispositions per the Mutation
+record; §7 gains the Mutation record section (the two-column
+definition with its three itemised grounds, the survivor and
+frozen-kill evidence forms, the equivalence standard, the unreachable
+set); §10's reporting rule quantifies over dispositions. The clause
+G-1 measured the record against and found unwritten is written.
+
+### Files-in-this-commit
+
+- agents/PROTOCOL.md

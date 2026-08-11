@@ -252,7 +252,7 @@ journal-entry reference (`J-<agent>-NNNN`), so governance itself is diffable.
 |---|---|
 | `G0` (once) | Org ratified by sponsor; protocol self-test green; CI journal-check green; branch protection configured by sponsor. |
 | `P<n>-spec-freeze` | Architect's specs complete with REQ-### requirements; interface records compile; dv_lead countersigns testability. |
-| `P<n>-module-ready` | Per-module DV sign-off packets (`SO-*.md`) PASS; auditor's seeded mutations all killed by the DV suite; line-rate stress green for rx-path modules. |
+| `P<n>-module-ready` | Per-module DV sign-off packets (`SO-*.md`) PASS; the auditor's seeded mutations dispositioned per **Mutation record** below; line-rate stress green for rx-path modules. |
 | `P<n>-phase-accept` | System replay clean; latency report committed; audit report committed with no open CRITICAL findings; sponsor approval (escalation class E1). |
 
 **Signature transcription**: signers cannot stage `docs/gates/**` themselves
@@ -264,6 +264,70 @@ checklist edit is clerical and commits under `Agent: orchestrator`.
 **Phase hardening**: "P\<n\> hardening" means the window between
 `P<n>-module-ready` and `P<n>-phase-accept`. It is the activation window for
 `formal_dv` and the overlap trigger for the contingent `rtl_lead_md`.
+
+**Mutation record** (ADR-0020). Clause (b) of the `P<n>-module-ready` row asks
+whether the **DV suite as it stands at the gate SHA** kills what was seeded. It
+does not ask whether every past campaign scored perfectly: a campaign's score is
+a frozen measurement of what that campaign observed and is never retro-edited,
+so the score and the suite's present capability are different objects and only
+the second is this clause's subject. **(b.1) The set, and the two columns.** The
+clause quantifies over the **seeded** mutations. The gate record states two
+numbers and the difference between them: **sealed** is every class the manifest
+sealed, with nothing removed from it for any later reason, and **seeded** is the
+subset rendered against the module **as sealed** and run. The clause is read
+against the seeded number. **Every member of the difference is named at the tally
+with its ground**, and three grounds are known: a class **never rendered**, which
+is not a seeded mutation the suite failed to kill but a mutation that does not
+exist; a class whose rendering is found **not to render the class as sealed**,
+which is **UNSCOREABLE** — its run is a scope report rather than a bench result
+and supports no claim about any row in either direction; and a class seeded as a
+**negative control**, one whose seal predicts that a named assertion stays
+**green** and declares that the class scores nothing — its run supports the
+qualification it was cut for and no coverage claim in either direction. All three
+sit in `sealed`, none in `seeded`, each named at the tally with its ground. **The
+list of grounds is open and the duty is not**: a class excluded on any ground is
+named at the tally with it, where the gate reads that ground and may refuse it.
+**A ground that turns on what the seal disclosed — the second and the third are
+both of that kind — holds only where the disclosure was frozen in the seal
+before the run**, never on what the run returned. **The unit of this record is the
+class, not the branch, ref or file that delivered it**: a ref population is
+monotone by infrastructure accident and cannot be a denominator.
+**(b.2) The disposition.** Every seeded mutation is either killed by
+the suite at the gate SHA or is named individually with its disposition; no
+non-kill is folded into a kill, and no ratio stands in for the dispositions. A
+mutation **survived its own campaign** when its campaign's seal predicted a kill
+and no unit killed it. For such a mutation the disposition takes exactly this
+evidence form and no weaker one: the **unmodified** committed diff, replayed
+against the bench as it stands at the gate SHA, at a **run id**, with the
+**killing unit named** — anything weaker lets a survivor be argued dead. The
+campaign's own `survived` count keeps what it measured; the two facts are
+recorded side by side and never folded into one. **A campaign kill is a frozen
+measurement too**, and this clause's question is present-tense for both outcomes:
+a class killed in its own campaign is dispositioned by that campaign's record
+**together with the named killing unit, present and green at the gate SHA**. That
+form catches a killing unit deleted or disabled since its campaign; it does not
+catch one weakened, and it is not a re-run of the campaign — a rehabilitation
+reverses the record's own measurement and so needs a new one, while a kill's
+disposition preserves that measurement and needs only that its instrument still
+stands. **(b.3) Equivalent mutants.** A
+mutation that no conformant observation can distinguish from the unmutated
+design is an **equivalent mutant** and leaves the denominator — but only where
+the equivalence is **proven in a committed artefact**, the proof quantifying over
+the **specification's legal stimulus space** and never over a bench (an argument
+that a bench cannot reach the mutation is a coverage gap, and its disposition is
+(b.2)'s), and only once the **seeder records the exclusion in the seeder's own
+committed artefact**. §10's three-class floor is measured on the seeded set
+**before** any such exclusion. **(b.4) Unreachable assertions.** A landed
+assertion that **no mutation of the module can** reach — because the design's
+structure forecloses it, or because the specification leaves its case
+unconstrained — discharges its requirement row like any other assertion and
+contributes **nothing** to a mutation-coverage claim: counting it counts one
+observation twice. An assertion the seeded set merely **happened not to** reach
+is not unreachable; that is a **seeding gap**, and it may not be entered in the
+unreachable set. The gate record carries the
+**unreachable set beside the tally**, so that no `N/N` figure is read as
+coverage. *Enforcement*: review-enforced, like §10 — no `R`-rule is minted and
+no script changes, so §11(3) owes no test case.
 
 **Lessons harvest** (ADR-0018). Every module sign-off (`SO-`) and every phase
 gate carries one; it is a precondition of the gate, not a follow-up to it. Each
@@ -337,8 +401,10 @@ The org must survive the loss of any session, including the orchestrator's:
   working tree**, runs the DV suite against it, reverts fully, and never lets
   mutated RTL enter history. Sequencing: for each module, the campaign runs
   **after rtl_lead's `RV-` ACCEPT and before dv_lead may issue `SO-` PASS**,
-  so every PASS reports kills N/N (N ≥ 3, spanning distinct defect classes)
-  and `module-ready` merely re-checks it. No RTL-line or worker agent is
+  so every PASS reports **the disposition of every seeded mutation, each
+  non-kill named and dispositioned** — at least three seeded classes, spanning
+  distinct defect classes — and `module-ready` merely re-checks it against §7's
+  **Mutation record**. No RTL-line or worker agent is
   spawned while a manifest is applied; the "report, never repair a suspected
   seeded mutation" clauses in RTL-line charters are the safety net for a
   sequencing error, not the normal case.
