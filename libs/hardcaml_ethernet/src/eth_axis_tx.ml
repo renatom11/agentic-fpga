@@ -100,30 +100,87 @@
     And it instantiates nothing (§1), which is why [create] takes its scope and
     does not use it.
 
-    {2 The constant, and the finding this module was written against}
+    {2 The constant, and the finding this module was written against — UPHELD}
 
-    §7 pins {b 1 cycle}: output word 0 leaves on the cycle after M07 accepts the
-    frame's first payload word. This implementation is exactly that, and every
-    cycle of §6.1's table above is reproduced.
+    §7 pins the {b event delay} at {b 1 cycle}: output word 0 leaves on the
+    cycle after M07 accepts the frame's first payload word. This implementation
+    is exactly that, and every cycle of §6.1's table above is reproduced.
 
-    {b What §7 calls that figure is a live spec defect and is raised, not
-    absorbed} (charter §7; the C-RL-7 precedent). §7's bullet is titled
-    "Latency" and converts the figure to "exactly 8 octet times" on the ground
-    that both measurement events "sit at octet position 0 of their words". Under
-    requirements.md §0.5 as amended on 2026-08-11 (the inserting-module clause,
-    in force from its countersignature row at 816e187) that ground is precisely
-    what makes the figure {e not} a latency: output word 0 carries no octet that
-    entered at any input, so the delay pinned to it is an {b event delay}, and
-    "a specification pinning both SHALL name which is which". M07's per-octet
-    latency, by §0.5's own definition, is {b 22} octet times — payload octet k
-    enters at octet time 8C + k and leaves at 8C + k + 22, at every k and every
-    frame length — while §0.5's identity L = 8·ΔC − h returns 16 for it, because
-    that identity assumes an insertion which leaves the frame word-aligned and
-    M07 inserts 14. Three figures, one of them printed.
+    {b The finding raised from this file has been UPHELD.} It was raised here
+    and at [J-rtl_lead-0020] §5 — routed as [C-RL-8], raised and not absorbed
+    (charter §7; the [C-RL-7] precedent) — while this module was being written
+    against SPEC-M07 as frozen at 508eea2, and it was answered at 0b7be1f:
+    SPEC-M07 §13 carries its 2026-08-11 row, requirements.md §13 carries the
+    corresponding row, and §7 was repaired. {b What follows is a record of a
+    closed finding, not a live escalation.} It is kept rather than deleted
+    because SPEC-M07 §13 classifies that repair as {e editorial} and rests that
+    classification on the derivation below having been made here,
+    independently, before the specification carried it.
 
-    Nothing in the design turns on the repair: it is a naming and derivation
-    question and no cycle any section of SPEC-M07 pins moves under it, which is
-    why this module is built to §6.1's table and the question is routed. *)
+    {3 What was found — the pre-repair text, quoted so the record stays legible}
+
+    §7's bullet was titled "Latency", pinned {b 1 cycle}, and converted it to
+    "exactly 8 octet times" on the ground that both measurement events "sit at
+    octet position 0 of their words". Under requirements.md §0.5's
+    inserting-module clause (amended 2026-08-11, in force from its
+    countersignature row at 816e187) that ground is precisely what makes the
+    figure {e not} a latency: output word 0 carries no octet that entered at any
+    input, so the delay pinned to it is an {b event delay}, and "a specification
+    pinning both SHALL name which is which". Three figures were in play at M07
+    and one of them was printed: {b 8} — the event delay, printed as the
+    latency; {b 16} — what §0.5's identity returned in the form it had before
+    the output offset existed, L = 8·ΔC − h; and {b 22} — the per-octet
+    definition applied directly.
+
+    {b The derivation, which is this file's own and is what §13's editorial
+    classification rests on.} Payload octet k is accepted in payload word ⌊k/8⌋
+    at cycle C + ⌊k/8⌋ at byte position k mod 8, so its input octet time is
+    8C + k. It leaves as frame octet 14 + k, in output word ⌊(14 + k)/8⌋ at byte
+    position (14 + k) mod 8, and output word n leaves at C + 1 + n — so its
+    output octet time is 8·(C + 1 + ⌊(14 + k)/8⌋) + ((14 + k) mod 8) =
+    8C + 8 + 14 + k, and the difference is {b 22} at every k, at every frame
+    length and at every content. The identity returned 16 because, without the
+    output offset, it assumed an insertion leaving the frame word-aligned, and
+    M07 inserts 14.
+
+    {3 What the answer was}
+
+    §7 now states two constants in a table and names which is which: {b event
+    delay 1 cycle} (8 octet times), measured to output word 0; {b L = 22} octet
+    times per payload octet; {b h = 0}; {b q = 6}; and {b ΔC = 2} counted to
+    {b output word 1} — the first output word carrying an octet of the frame,
+    output word 0 carrying none. The instrument of the repair is §0.5's
+    {b output offset q}, which is the {e architect's} and not this seat's: q is
+    the position, within the output word ΔC counts to, of the frame's first
+    octet, and equals (the octets inserted ahead of the frame) mod 8 — 14 mod 8
+    = 6 here. The identity now reads
+
+    {v
+        L = 8·ΔC − h + q       at M07:   8·2 − 0 + 6 = 22
+    v}
+
+    and the form quoted above is this one at q = 0, which is why no figure
+    stated anywhere before the repair moved. Read without the term it still
+    returns 16 and still contradicts the derivation; ending that contradiction
+    is what the term is for.
+
+    Two later movements in §0.5 (43c0087) that a reader of this module needs.
+    The subject of q is the {b port pair} it is measured across — the input port
+    whose measurement event names the input word, and the output port whose word
+    ΔC counts to — and not the module, because one module can answer differently
+    at two of them. And q's silence default was {b halved}: silence assigns
+    q = 0 only at a port pair that inserts nothing, or a whole number of words,
+    and assigns {e nothing} anywhere else. M07's insertion is neither, so its q
+    is stated rather than defaulted — and SPEC-M07 §7 states it.
+
+    {3 What did not move: this design}
+
+    Nothing in the design turned on the finding and nothing in it turned on the
+    answer. No cycle any section of SPEC-M07 pins moved across 0b7be1f — §6.1's
+    C + 1 + n, the W − J + 1 stall count and §4.1's record are the same on both
+    sides of it — so this module is still built to §6.1's table exactly as it
+    was written at cddad51, and this comment is the only thing here that the
+    closure changes. *)
 
 open! Base
 open Hardcaml

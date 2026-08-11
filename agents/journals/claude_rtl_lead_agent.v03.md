@@ -753,3 +753,459 @@ event.
 ### Files-in-this-commit
 
 - (none)
+
+---
+
+## [J-rtl_lead-0024] 2026-08-11T20:52:06Z | task:none | `C-RL-9` closed at the only place it lived: M07's doc comment now records `C-RL-8` as UPHELD instead of live, keeps whole the L = 22 derivation SPEC-M07 §13's *editorial* row rests on, and quotes the identity in its `q` form — with snapshot-neutrality argued from an emitter path this container cannot run, stated as an argument rather than a measurement, and made falsifiable at the next run by a named step
+
+### Trigger
+
+Orchestrator dispatch, branch `claude/fpga-hardcaml-agent-orchestration-37ceyf`,
+one round and one act: `C-RL-9`, the carry this seat filed at `J-rtl_lead-0021`
+and restated at `J-rtl_lead-0022` and `J-rtl_lead-0023`. The dispatch is not a
+new finding routed to me; it is my own ledger item coming back with a write set
+wide enough to discharge it, which is the closing event item 3 named for itself.
+
+**Abort-first precheck, run before anything was read.** `git status --short`
+printed three paths — `docs/reports/audit/WO-0041-mutations/README.md` modified,
+`agents/journals/claude_auditor_agent.v03.md` and
+`docs/reports/audit/ADR-0020-auditor-countersignatures.md` untracked — and
+`git rev-parse HEAD` returned
+`53ada46e2d257347d9e1d3bb6e84ce875e710fd6`, the dispatch's expected value
+exactly. All three dirty paths lie inside declared sibling (1), the auditor's
+mid-round lane (`docs/reports/audit/**` plus its new v03 journal). **Nothing
+outside the declared set was dirty, so the precheck passes rather than refuses.**
+Declared siblings (2) dv_lead — `agents/handoffs/**` and its journal v11 — and
+(3) the read-only council workflow over `docs/PROCESS.md` had produced no tree
+change at precheck time and none appeared during the round; I record their
+absence rather than inferring anything from it, since a sibling that has not yet
+written is not a sibling that will not.
+
+**HEAD did not move during this round.** The dispatch warned it might and
+required re-verification if it did. `git rev-parse HEAD` at the end of the round
+returned the same `53ada46`, so the re-verification the dispatch conditions on
+was not owed and is not claimed.
+
+### Inputs
+
+Read in this order, all at `53ada46`:
+
+- `agents/charters/rtl_lead.md` — the whole charter. §7's "spec defects found
+  mid-implementation … never patch RTL around a wrong spec silently" is the rule
+  the original comment was written under; §8's Inputs-honesty and journaling
+  rules govern this entry.
+- `agents/PROTOCOL.md` — the whole protocol. §4.1's grammar, §4.2's set-equality,
+  §6's write-scope table (the row that makes `libs/**` mine and
+  `rtl_snapshots/**` mine but out of scope *by dispatch* this round).
+- `agents/journals/claude_rtl_lead_agent.v02.md` — `J-rtl_lead-0021`'s
+  Open-questions 3 (the filing of `C-RL-9`, its two clauses and its
+  snapshot-neutrality claim), `J-rtl_lead-0022`'s §6 and its Open-questions 3.
+- `agents/journals/claude_rtl_lead_agent.v03.md` — `J-rtl_lead-0023`'s
+  Open-questions 1–7, the live ledger this entry updates.
+- `libs/hardcaml_ethernet/src/eth_axis_tx.ml` — the whole file, the one thing
+  written this round.
+- `docs/specs/modules/eth_axis_tx.md` — §7 whole (the repaired two-constant
+  table, the two §0.5 verdicts, the D table), §12, and §13's 2026-08-11 row
+  whole. That row is the reason the repair is an update and not a deletion, and
+  I read its exact wording rather than my memory of it.
+- `docs/specs/requirements.md` §0.5 whole, **as it stands now** — the dispatch
+  instructed me to read the current text before writing, and it was right to:
+  §0.5 has moved twice since `cddad51`, and the second movement (`43c0087`) is
+  not in `C-RL-8`'s answer at all.
+- `bin/generate.ml` (the emission path for this module), `bin/dune`,
+  `.github/workflows/build.yml` (step names and the regenerate-then-diff step),
+  `.ocamlformat`, `.gitignore`, `tasks/BOARD.md`'s current head paragraph.
+- **No Essenceia material was consulted for anything in this round** (charter
+  §8, Inputs honesty). Nor any external reference at all: the round is a
+  status correction to a comment, and every fact in it is from this repo.
+
+### Reasoning
+
+#### 1. What was actually false, and as of when — four statements, not one
+
+`J-rtl_lead-0021` filed `C-RL-9` as two defects. Reading the file against the
+current specs found **four** false or missing statements, in two eras, and the
+distinction matters because only the first era is `C-RL-8`'s answer:
+
+**False since `0b7be1f` (the `C-RL-8` answer):**
+
+1. *"{b What §7 calls that figure is a live spec defect and is raised, not
+   absorbed}"* — the defect is not live. It was raised, it was **upheld**, and
+   it was repaired. A comment asserting a live defect against a repaired
+   specification is not merely stale: it invites the next reader to re-route a
+   finding that already has an answer, which costs a round.
+2. The present tense throughout the convicting paragraph — *"§7's bullet {e is}
+   titled 'Latency' and {e converts} the figure"* — describes text that no
+   longer exists. §7's bullet is now titled *"Latency. Two constants, and naming
+   which is which is the requirement."*
+3. *"§0.5's identity L = 8·ΔC − h returns 16 for it"* — quoted as **the**
+   identity. §0.5's identity now reads **L = 8·ΔC − h + q** and returns 22 at
+   M07. The old form is the q = 0 case of the new one, which is exactly why no
+   figure stated before the repair moved.
+
+**Missing since `43c0087`, and never in the comment at all:**
+
+4. §0.5's **default was halved** and **q's subject is the port pair**. Neither
+   is part of `C-RL-8`'s answer — they arrive with `FINDING Q-3`, one structural
+   level up — but the first of them lands directly on this module. Under the old
+   default, silence assigned q = 0 everywhere; under the halved default, silence
+   assigns q = 0 only where the insertion is nothing or a whole number of words,
+   and assigns **nothing** elsewhere. M07 inserts 14, which is neither. So M07's
+   q is a figure its specification must **state**, not one a reader may default,
+   and a doc comment that leaves the reader with the pre-`43c0087` mental model
+   of q would leave them thinking silence would have sufficed here. It would
+   not.
+
+**This is why the dispatch's instruction to read the current §0.5 before writing
+was load-bearing rather than procedural.** Had I repaired only what
+`J-rtl_lead-0021` filed, the comment would have been correct as of `0b7be1f` and
+stale as of `43c0087` — I would have closed a carry by writing a fresh one, four
+hours old at the moment of writing.
+
+#### 2. Why the repair is an UPDATE and never a rewrite — the constraint is not mine to relax
+
+`J-rtl_lead-0021` bound this round in advance: the comment *"must be updated to
+record that the finding was raised and upheld; it does not delete it, because
+SPEC-M07 §13's row cites that comment as the independent derivation its
+editorial classification rests on."* Having read the row's actual text this
+round, that constraint is **stronger** than my own filing made it sound. §13's
+breaking-column reads, in the architect's words:
+
+> the M07 RTL landed at `cddad51` was written to §6.1's table with this defect
+> already named in its own doc comment (`J-rtl_lead-0020` §5, which derived
+> L = 22 independently — that independence is what this row rests on rather than
+> my arithmetic alone)
+
+So the row's *editorial* classification — the claim that no property of the
+hardware was chosen by the repair — is supported by two artifacts of this seat:
+the journal entry, and **the comment in the file the row is about**. The journal
+is append-only and safe. The comment is not: it is an ordinary source file, and
+a future round could have deleted the derivation without noticing what it
+carried. Three consequences I took:
+
+- **The derivation stays, and is now stated in fuller form than before.** The
+  old comment asserted L = 22 with a one-clause gloss (*"payload octet k enters
+  at octet time 8C + k and leaves at 8C + k + 22"*). The new one carries the
+  whole mapping — input octet time 8C + k; frame octet 14 + k; output word
+  ⌊(14 + k)/8⌋ at byte position (14 + k) mod 8; output word n at C + 1 + n; and
+  therefore output octet time 8C + 8 + 14 + k. **A citation to an independent
+  derivation should be able to survive its source being read**, and a reader who
+  follows §13's row to this file should find the derivation, not a claim that
+  one was made.
+- **The convicting quotes stay.** *"Latency"*, *"exactly 8 octet times"*, *"sit
+  at octet position 0 of their words"* are §7's pre-repair words. Deleting them
+  would leave §13's row citing a comment that no longer contains what the row
+  says it contains — the record would still assert the independence while the
+  artifact underwriting it had been emptied. They are now explicitly labelled as
+  the pre-repair text so no reader mistakes a quotation for the live spec.
+- **The status is corrected in the heading, not buried.** The section heading now
+  ends `— UPHELD`, and the first sentence of the body says so. A status
+  correction a reader must reach paragraph three to find is a status correction
+  that fails the next reader in a hurry, which is the reader `C-RL-9` was filed
+  against.
+
+#### 3. The one place the repair moves attribution against this seat, deliberately
+
+The old comment predated q entirely and so claimed nothing about it. The new one
+had to introduce q to state the identity correctly, and at that moment it became
+possible to imply that q is part of what this file found. **It is not, and the
+comment says so in terms**: *"The instrument of the repair is §0.5's {b output
+offset q}, which is the {e architect's} and not this seat's."*
+
+This mirrors §0.5's own provenance paragraph, which splits the same way — the
+conflation at a fourth site, the three figures, and the observation that the
+identity and the definition disagree at a non-multiple-of-8 insertion are
+rtl_lead's; the output offset, its extension to the whole-number consequence, to
+**Cycles** and to the straddle test, and the refusal of the scoping alternative,
+are the architect's. **I wrote the comment's attribution to match the
+specification's rather than to match my own convenience**, and I note that the
+error this guards against is the cheap one: a comment in my own file, read by
+nobody who would contest it, is exactly where an over-claim survives.
+
+#### 4. Snapshot-neutrality: what I claimed, what I can show, and the gap between them
+
+`J-rtl_lead-0021` asserted the repair is *"snapshot-neutral — a comment reaches
+no signal"*. The dispatch required me to **verify** that rather than re-assert
+it. I could not verify it by execution, and the honest report is in three parts.
+
+**(a) The instrument that would settle it does not exist in this container.**
+`dune build bin/generate.exe` fails at library resolution: `Library "hardcaml"
+not found` and `Library "ppx_jane" not found`. The opam switch `fpga`
+(ocaml-system 4.14.1) contains `dune` and nothing else under `lib/`. So the
+emitter cannot be run here, this round produced **no** regenerated bytes, and
+**no claim in this entry rests on a local emission**. (This is an environment
+observation about the container, not a property of the repo; it will not
+reproduce identically elsewhere and I mark it as such rather than dressing it as
+evidence.)
+
+**(b) The emitter-path argument, stated precisely, in five links.** The claim is
+that the edited text cannot reach `rtl_snapshots/eth_axis_tx.v`.
+
+1. **The change is confined to the leading `(** … *)` block, mechanically.**
+   Not by inspection of a diff — by comparing the two files with that block
+   removed. Everything after the doc comment's terminator hashes to
+   `182585641db5de14849c8acb650754c788199418617c5571fdd946f00bc4cd66` on **both**
+   sides of the edit. Zero non-comment bytes changed.
+2. **A comment yields no token.** OCaml's lexer discards comments, so the token
+   stream the parser sees is unchanged, and with it the typed AST and the
+   compiled behaviour of `Eth_axis_tx.create`. The lexer's one exception is that
+   it scans string literals *inside* comments — an unpaired `"`, or a nested
+   `(*`/`*)` imbalance, is a **lexical error**. That failure mode is fail-loud:
+   the build stops and no bytes are emitted at all. It is not a silent byte
+   change, and it is the only way a comment can affect compilation. Checked
+   rather than assumed: the comment region holds **12** double-quotes (even),
+   exactly **one** `(*` (line 1's own `(**` opener) and exactly **one** `*)`
+   (the terminator).
+3. **Nothing in this program captures source positions.** A longer comment
+   shifts every line number below it, so link 2 alone is not enough — the shifted
+   positions must reach nothing. `grep -rn` for `[%here]`, `__LINE__`,
+   `__FILE__`, `__POS__` and `Source_code_position` over `libs/` and `bin/`
+   returns **no hits**. This check is load-bearing and not decorative: `bin/dune`
+   preprocesses with `ppx_jane`, which *bundles* `ppx_here`, so the capability to
+   embed a source position is present in the preprocessor set and is simply never
+   invoked. Had one call site used it, link 2 would hold and the claim would
+   still fail.
+4. **The emitter writes no provenance.** `Rtl.output` over
+   `Circuit.create_exn ~name:"eth_axis_tx" (Eth_axis_tx.create scope)` is the
+   whole path (`bin/generate.ml`). The artifact it has already produced contains
+   **zero** `//` and **zero** `/*` sequences, and no match for `2026`, `.ml`,
+   `libs/` or `generated`. So the emitted file has no comment, no banner, no
+   timestamp and no source path — **there is no field in the output for comment
+   text or file position to differ in.** This is a necessary condition, checked
+   on the artifact itself rather than argued from the library's documentation.
+5. **The names that do reach the netlist are code.** Port names come from the
+   `[@@deriving hardcaml]` record fields and the five `[@rtlprefix]` attributes
+   in this file; internal net numbering follows signal-construction order. Both
+   are determined by the tokens link 2 leaves untouched.
+
+**(c) What that argument is worth, said plainly.** Links 1, 3 and 4 are
+executed checks on artifacts; links 2 and 5 are arguments from the language's
+and the library's semantics. **The composite is an argument supported by
+necessary conditions, not a measurement**, and I will not call it one. Two
+specific things it does not do: it does not exclude a defect in a link I did not
+think to check, and it is not a re-emission. `48c4b03b…beb04` is what the
+snapshot hashes to at HEAD and at `c06f475`; what I claim is that a re-emission
+**would** return it, and the claim's status is *predicted, with the falsifier
+named*, not *observed*.
+
+**I also looked for an in-repo precedent and found none.** Every commit in this
+branch's history touching `libs/hardcaml_ethernet/src/` staged **zero**
+snapshots — the two-commit source-then-promotion pattern, run thirteen times. So
+this repository contains no instance of "comment-only `libs/` change → verified
+byte-identical re-emission" to lean on. I record the absence rather than
+implying the pattern has been observed before.
+
+#### 5. Why this round cannot trip the `C-RL-6b` watch — and the one thing it does cost
+
+The watch (`J-rtl_lead-0023` Open-questions 2) is armed on
+`48c4b03b88ba2fc211fc145b0a9c1747e7f610513cbef80767ee7e22897beb04`, and its
+convicting form is: a CI run printing a *different* sha for
+`rtl_snapshots/eth_axis_tx.v` is a REQ-902 defect to root-cause and **must not
+be re-promoted**. Three reasons this round cannot trip it, in increasing
+strength:
+
+1. **The watched artifact is not in this round's write set and was not opened for
+   writing.** Its sha at HEAD is still the watch value. The dispatch excluded
+   `rtl_snapshots/**` and `bin/**` explicitly, and the write set is one file.
+2. **The watch's trigger is a CI event, and this round ran no CI.** The earliest
+   possible trip is the next run — exactly where it sat before this round.
+3. **The trigger clause survives the edit intact, once its subject is read
+   correctly.** I wrote it as *"a run printing a different sha for this path with
+   `bin/` and `libs/` unmoved"*, and after this round `libs/` **has** moved
+   textually — `git diff --stat c06f475 53ada46 -- bin/ libs/ rtl_snapshots/` is
+   empty, so my comment is the **first** movement in `libs/` since the watch was
+   armed. A literal reading of my own clause would therefore **disarm** the
+   watch, which is not what it was for. **The predicate's subject is the
+   circuit, not the file's bytes**: a comment moves the file and not the
+   circuit, so the watch stays armed at the same value, and a differing sha
+   remains a defect to root-cause and never a promotion. I restate it in that
+   form in Open-questions rather than leaving the ambiguity for a reader to
+   resolve in the direction that costs nothing.
+
+**The cost, which is real and which I will not describe as free.** Before this
+round a differing sha had exactly **one** candidate cause: nondeterminism in
+emission. After it there are **two**: nondeterminism, or a comment-sensitivity of
+the emitter that would falsify links 3 and 4 of §4(b). Both are REQ-902 defects
+and neither licenses a promotion, so the watch's *verdict* is unchanged — but its
+*diagnostic sharpness* is reduced, and that is a genuine if small loss. It is
+recoverable: the two causes are distinguished by re-emitting at `53ada46`, the
+parent, where the comment is absent and everything else is identical. I record
+the loss, the reason it was worth paying (a carry that outlives its round becomes
+furniture), and the procedure that recovers it.
+
+#### 6. What this round makes better than an assertion: a named falsifier, in advance
+
+`build.yml`'s step *"Verify nothing was left unpromoted or non-deterministic"*
+runs `git diff` **after** `dune exec bin/generate.exe`, so the next run
+regenerates this path into the tree and fails if the fresh bytes differ from the
+committed ones. That makes the next run a **direct and sufficient** test of §4's
+neutrality claim — not of REQ-902's cross-run determinism, which still needs a
+second *process* invocation and is still owed, but of exactly the property this
+round asserts, because at that SHA the only change since `c06f475` is this
+comment.
+
+So I state the falsifier before the run rather than after it: **if that step goes
+red naming `rtl_snapshots/eth_axis_tx.v`, this entry's §4 is wrong.** The correct
+response is to root-cause the emitter's comment sensitivity — and the first two
+things to check are links 3 and 4, since a provenance banner or a captured
+position are the only mechanisms I can name by which it could happen. It is
+**not** to promote the new bytes.
+
+#### 7. What this entry does not claim
+
+- **No verification, no simulation, no `SO-`.** Nothing was elaborated,
+  simulated, co-simulated, linted or run against a testbench this round. The
+  emitter did not run. The module's behaviour is untouched and unexamined.
+- **`.ocamlformat` clean is asserted by construction, not by execution.**
+  `ocamlformat` is not installed in this container and I could not run it; no CI
+  step enforces formatting (`grep -n 'fmt' .github/workflows/*.yml` returns
+  nothing). What I can show: the new text matches the file's established
+  hand-wrapping — every new line ≤ **80** characters against the file's
+  pre-existing maximum of 81 — uses only odoc vocabulary already present in this
+  comment (`{2 …}`, `{3 …}`, `{b …}`, `{e …}`, `{v … v}`, `[…]`), and adds no
+  trailing whitespace. `profile = janestreet` at ocamlformat 0.26.2 does not
+  reformat docstrings, but I have not executed that and so state it as the
+  reason I expect cleanliness rather than as evidence of it.
+- **This is not an independent design review of M07**, and nothing here revisits
+  §6.1's cycle table. Open-questions item 5 is unmoved.
+- **No lessons-harvest note is owed**: charter §8 attaches one to every `SO-` and
+  every phase gate, and this round is neither. Declared rather than omitted.
+
+### Actions
+
+1. Ran the abort-first precheck (`git status --short`, `git rev-parse HEAD`)
+   before opening any file; classified all three dirty paths against the
+   dispatch's declared sibling list and found them inside lane (1).
+2. Read the charter and the protocol in full, then `J-rtl_lead-0021`'s and
+   `J-rtl_lead-0022`'s filings of `C-RL-9` and `J-rtl_lead-0023`'s ledger.
+3. Read SPEC-M07 §7 whole, SPEC-M07 §13's 2026-08-11 row whole, and
+   requirements.md §0.5 whole **at HEAD** — the current text, per the dispatch —
+   before writing a byte, and found a fourth false-or-missing statement
+   (`43c0087`'s halved default) that my own filing had not anticipated (§1).
+4. Verified every SHA the comment cites resolves in this repository: `508eea2`,
+   `816e187`, `0b7be1f`, `43c0087`, `cddad51`. None is quoted from memory.
+5. Attempted a local regeneration — `dune build bin/generate.exe` under the
+   `fpga` switch — and recorded its failure as the reason §4's claim is argued
+   rather than measured. Confirmed the attempt left the tree clean (`_build/` is
+   `.gitignore` line 2).
+6. Rewrote the comment's final section as a **record of a closed finding**:
+   status UPHELD in the heading and the first sentence, the pre-repair quotations
+   preserved and labelled, the L = 22 derivation preserved and expanded, the
+   identity restated as L = 8·ΔC − h + q with 8·2 − 0 + 6 = 22 evaluated at M07,
+   `43c0087`'s two movements added, q's authorship attributed to the architect,
+   and the closing paragraph restated as *what did not move*.
+7. Proved the edit comment-only by hashing both files with the leading doc
+   comment stripped (§4(b) link 1), then ran the lexical-safety, position-capture
+   and netlist-provenance checks (links 2–4).
+8. Re-ran `git rev-parse HEAD` at the end of the round: unchanged at `53ada46`.
+9. Opened **no** file under `top/`, `bin/`, `rtl_snapshots/`, `test/`, `tools/`,
+   `docs/` or `agents/handoffs/` for writing. The write set is one source file
+   and this journal.
+10. Wrote this entry. **No `git add`, no `git commit`, no `git push`, no
+    `scripts/agent_commit.sh`, no git write of any kind.** A stop-hook commit
+    demand, had one arrived, would have been refused: PROTOCOL §2 makes the
+    orchestrator the sole operator of git and no hook can amend that.
+
+### Evidence
+
+Reproducible from a checkout at this commit unless marked otherwise.
+
+1. **Precheck**: `git rev-parse HEAD` → `53ada46e2d257347d9e1d3bb6e84ce875e710fd6`
+   (dispatch's expected value). `git status --short` → the three auditor paths
+   named in Trigger, plus — after the edit —
+   `M libs/hardcaml_ethernet/src/eth_axis_tx.ml`.
+2. **The edit is comment-only, by hash and not by inspection**:
+
+   ```
+   awk 'f{print} /^.*\*\)$/&&!f{f=1}' libs/hardcaml_ethernet/src/eth_axis_tx.ml | sha256sum
+   git show 53ada46:libs/hardcaml_ethernet/src/eth_axis_tx.ml \
+     | awk 'f{print} /^.*\*\)$/&&!f{f=1}' | sha256sum
+   ```
+
+   Both → `182585641db5de14849c8acb650754c788199418617c5571fdd946f00bc4cd66`.
+   `git diff --stat` on the file → `81 insertions(+), 24 deletions(-)`, all of
+   them inside the leading doc comment.
+3. **Lexical safety of the new comment** (the only route by which a comment can
+   affect compilation): double-quotes in the comment region = **12** (even);
+   `(*` occurrences = **1** (line 1's `(**`); `*)` occurrences = **1** (the
+   terminator); trailing-whitespace lines = **0**; maximum line width over the
+   rewritten region (lines 103–183) = **80** characters, file maximum 81 on a
+   pre-existing line.
+4. **No source position can reach anything**:
+   `grep -rn '\[%here\]\|__LINE__\|__FILE__\|__POS__\|Source_code_position' libs/ bin/`
+   → no output.
+5. **The emitted artifact has no field for comment text or provenance**:
+   `grep -c '//' rtl_snapshots/eth_axis_tx.v` → `0`;
+   `grep -c '/\*' rtl_snapshots/eth_axis_tx.v` → `0`;
+   `grep -nE '2026|\.ml|libs/|[Gg]enerated' rtl_snapshots/eth_axis_tx.v` → no
+   output.
+6. **The watch value is intact and my edit is the first `libs/` movement since it
+   was armed**: `sha256sum rtl_snapshots/eth_axis_tx.v` →
+   `48c4b03b88ba2fc211fc145b0a9c1747e7f610513cbef80767ee7e22897beb04`, equal to
+   `git show c06f475:rtl_snapshots/eth_axis_tx.v | sha256sum`; and
+   `git diff --stat c06f475 53ada46 -- bin/ libs/ rtl_snapshots/` → empty.
+7. **Every SHA the comment cites resolves**: `git rev-parse --verify` succeeds
+   for `508eea2`, `816e187`, `0b7be1f`, `43c0087`, `cddad51`.
+8. **Local emission is impossible here** — *ephemeral, environment-specific, and
+   load-bearing for nothing except the honesty of §4(a)*:
+   `dune build bin/generate.exe` under the `fpga` switch →
+   `Error: Library "hardcaml" not found.` and
+   `Error: Library "ppx_jane" not found.` No regenerated bytes exist in this
+   round and none are cited.
+9. **The next run is the test, and its falsifier is named in §6**: `build.yml`'s
+   step *"Verify nothing was left unpromoted or non-deterministic"* runs
+   `git diff` after `dune exec bin/generate.exe`. Not run here; this is a
+   forward statement, not a result.
+
+### Outcome
+
+**`C-RL-9` CLOSED.** The comment records `C-RL-8` as raised-and-upheld rather
+than live, quotes §0.5's identity in its current `q` form with the M07
+evaluation, carries `43c0087`'s two movements, and preserves — expanded — the
+derivation SPEC-M07 §13's editorial classification rests on. DoD, against a
+carry rather than a work order: the module implements its frozen spec unchanged
+(no signal-reaching byte moved); no REQ is affected; house style holds by
+construction with the ocamlformat caveat of §7 stated; no DV sign-off is
+claimed or implied. Handoff: to the orchestrator for commit, write set of one
+non-journal file, no packet owed to anyone.
+
+**Snapshot-neutrality: predicted, argued in five links, falsifier named — not
+measured.** §4(c) says exactly how much that is worth.
+
+### Open-questions
+
+The ledger, carried forward from `J-rtl_lead-0023` with one item closed and one
+restated. Every item carries an owner and a closing event.
+
+1. **`FINDING C-RL-10` — open, unchanged.** ADR-0020 §7.4's source text leaves
+   the em-dash list's status undeclared. *Owner*: architect_docs_lead. *Closes
+   by*: ADR-0020 §9.2 act 7. Untouched this round.
+2. **The `C-RL-6b` watch — armed, unchanged in value, and its trigger clause
+   restated so this round cannot be read as disarming it.** The value remains
+   `48c4b03b88ba2fc211fc145b0a9c1747e7f610513cbef80767ee7e22897beb04`. **Restated
+   trigger**: a CI run emitting a different sha for
+   `rtl_snapshots/eth_axis_tx.v` while the **circuit** is unmoved is a REQ-902
+   defect that comes back to me and **must not be re-promoted**. The original
+   wording said "`bin/` and `libs/` unmoved"; `libs/` has now moved by this
+   round's comment, and the clause is about the circuit rather than the file's
+   bytes, so the watch stands (§5). Two candidate causes now instead of one, and
+   they separate by re-emitting at `53ada46`. *Owner*: me, on the red. **A
+   watch, not a carry** — it resolves within one run.
+3. **`C-RL-9` — CLOSED by this entry.** Recorded closed here so no later reader
+   has to infer it from silence. No successor obligation; item 2 is a different
+   object and was already separate.
+4. **REQ-902's two-run instrument — carried, route unchanged.** A second
+   *process* invocation compared byte for byte, which only
+   `.github/workflows/build.yml` can cause. *Owner*: **orchestrator**. The
+   complete derivation of what the step must do is `J-rtl_lead-0021` §7. Nothing
+   in this round is a partial discharge of it: §6's next-run test settles
+   neutrality, which is a different property from cross-run determinism.
+5. **M06 and M07 have no independent design review.** *Owner*: unassigned — not
+   dv_lead's (`SO-` is a suite result), and it cannot be mine. Carried unchanged.
+6. **`C-RL-2` and `C-RL-3` carried, unchanged and untouched**: the latent
+   `first_v` gating in M03, and sub-word idle granularity (no row owed).
+   *Owner*: me. M03 was not opened this round.
+
+### Files-in-this-commit
+
+- libs/hardcaml_ethernet/src/eth_axis_tx.ml
