@@ -1156,3 +1156,390 @@ the board entry and the CI log can be compared line for line.
 ### Files-in-this-commit
 
 - bin/generate.ml
+
+## [J-rtl_lead-0017] 2026-08-11T07:10:00Z | task:none | C-RL-6a discharged and the red window closed: `rtl_snapshots/eth_axis_rx.v` promoted from run 31465181652's own failure, re-derived from the log through two mutually independent channels before a byte was placed, and the emitted netlist read as reviewer without being touched
+
+### Trigger
+
+Orchestrator dispatch, branch `claude/fpga-hardcaml-agent-orchestration-37ceyf`,
+spawn-head `e9f371b`. Abort-first head check ran before any read of substance:
+`git status --short` printed nothing and `git rev-parse HEAD` returned
+`e9f371b34df806cbdcce3d1578465f748152e9e6`, an exact match with the dispatch, so
+no rollback path was reached. The dispatch declares no sibling rounds in flight.
+
+This round is **C-RL-6a**, the carry I split out of C-RL-6 one entry ago (the
+`J-rtl_lead-0016` Open-questions item that reads "`rtl_snapshots/eth_axis_rx.v`
+is owed, promoted verbatim from the `PROMOTION BLOCK` this commit's CI run
+prints"). The generator half landed at `e9f371b`; CI ran it and went red exactly
+where that entry said it would; this round carries the bytes it printed. The
+same item argued the promotion commit should be the *next* commit on this branch
+rather than the next convenient one, because a red `build` masks any genuine
+regression landing beside it — that argument is discharged here rather than
+merely repeated.
+
+### Inputs
+
+- `agents/charters/rtl_lead.md` and `agents/PROTOCOL.md` in full (mandatory first
+  actions; PROTOCOL §6's write-scope row bounds this round to one new file).
+- **The CI log of run 31465181652**, job `build`, step `Verify nothing was left
+  unpromoted or non-deterministic`. The orchestrator placed a copy at a
+  scratchpad path and a decode of the payload beside it; **both are ephemeral
+  container artifacts and neither is evidence** (ADR-0003/F5). The durable
+  references are the run id `31465181652` and the payload sha256
+  `0ab634e1628e40502dcb521c0be64b9975d59e28e252e007125902bfd5257564`, and the
+  bytes now in the tree carry that sha.
+- My own `J-rtl_lead-0016` in full — §6 (what the promoted bytes would meet) and
+  the Evidence prediction, both of which this round scores rather than restates.
+- `docs/specs/modules/eth_axis_rx.md` §4.1 (interface records) and §4.2 (the
+  nineteen-row port table), for the reviewer read.
+- `libs/hardcaml_ethernet/src/eth_axis_rx.mli` and the `[@rtlprefix]`-bearing
+  record declarations in `eth_axis_rx.ml`; `libs/hardcaml_ethernet/src/axi64.ml`
+  §`Axi64_config`/`Eth_header` for the field names and widths the prefixes act
+  on. **Read only** — `libs/**` was not opened for writing this round.
+- `tools/check_emitted_verilog.sh` — read at the REQ-808 branch, and **executed**
+  (§Evidence 4). It is dv_lead's script; running it read-only against a build
+  product is not authoring it, and no line of it was edited.
+- `.gitattributes` — probed and absent, so no eol/filter attribute can rewrite
+  the promoted bytes on staging (§Reasoning 2c).
+- **No `test/third_party/` material opened this round; no
+  Essenceia/Nasdaq-HFT-FPGA material consulted, for this or anything in it**
+  (charter §8, Inputs honesty). Transcribing a machine's output has no prior-art
+  question in it.
+
+### Reasoning
+
+#### 1. Why I re-derived bytes that had already been decoded for me
+
+The dispatch handed me a decoded file and its sha and asked me to derive the
+payload myself anyway. That instruction is the whole content of the round and I
+want to record why it is right rather than merely comply.
+
+The promotion discipline exists because `rtl_snapshots/**` is a build product of
+a toolchain this container does not have (ADR-0005), so the *only* defensible
+provenance for these bytes is "CI emitted them, and I moved them". A decode I did
+not perform breaks that sentence in the middle: the bytes would then be CI's as
+far as the orchestrator could tell, and the orchestrator's as far as I could tell.
+The failure this guards against is not dishonesty; it is an ordinary transcription
+accident — a truncated log fetch, a line-wrapped paste, a stripped prefix that ate
+one payload character — which produces a file that is *plausible Verilog* and
+wrong. **A hand-checked sha is what makes "verbatim" a claim rather than a
+courtesy**, and a sha I did not compute from bytes I did not assemble checks
+nothing.
+
+So: three quantities had to agree — the sha the block prints, the sha of the
+orchestrator's decode, and the sha of my own decode — plus a byte-level `cmp`
+between the two decodes, since two files can share nothing but a hash function's
+output only under an assumption I do not need to make when `cmp` is free. All
+four agreed (§Evidence 1).
+
+#### 2. What "derive from the log" had to survive, enumerated before doing it
+
+Three ways a log-to-bytes pipeline silently corrupts, each checked rather than
+assumed:
+
+**(a) The timestamp strip.** Every log line carries a `2026-08-11T06:33:08.xxxxxxxZ `
+prefix. A fixed-width `cut` is wrong the moment one line's fractional seconds
+differ in length; a greedy regex is wrong if it can match into base64 (it cannot —
+the alphabet has no `Z` followed by a space, but "cannot" is the kind of claim
+worth measuring). I measured the prefix width across all thirty lines of the block
+under an anchored regex: uniformly 29, no line unmatched. I also checked the block
+region for `CR` bytes and ANSI escapes — GitHub's log stream carries both
+elsewhere in this same file, on the step's *echoed body* at lines 1130–1191 — and
+found none inside the payload.
+
+**(b) The line set.** I extracted the block **by its own `--- FILE` / `--- END`
+markers**, not by the line numbers the dispatch gave me, so a mis-cited line range
+could not silently truncate the payload. The arithmetic then has to close, and it
+does: 27 base64 lines, 26 of them exactly 400 characters wide (`base64 -w 400`) and
+one of 288, is 10,688 characters, which is 2,672 quartets, which is 8,016 bytes
+less one `=` of padding — 8,015 bytes, the size the block's own file is. Nothing
+outside the base64 alphabet appears in those 27 lines.
+
+**(c) The write.** `cp` from my derived file, not a text editor and not a here-doc:
+an editor that appends a trailing newline, normalises line endings, or strips
+trailing whitespace would corrupt a build product in a way no reviewer would ever
+see. The absence of `.gitattributes` matters for the same reason — no `text=auto`
+or filter attribute can rewrite these bytes between the working tree and the index.
+The placed file was re-hashed *after* writing (§Evidence 1), which is the only
+check that covers the write itself.
+
+#### 3. The second channel, which is what turns agreement into corroboration
+
+Re-deriving the base64 twice would only prove my `sed` is deterministic. The log
+contains an **independent encoding of the same file**: the `git diff --cached`
+body printed above the promotion block, `@@ -0,0 +1,362 @@` followed by 362
+`+`-prefixed lines. That channel and the base64 channel fail in disjoint ways — a
+mis-stripped timestamp corrupts the diff reconstruction while leaving the base64
+decodable, and a dropped payload line corrupts the base64 while leaving the diff
+whole. Reconstructing the file from the `+` lines and `cmp`-ing it against the
+base64 decode is therefore a real check, and it passes byte-for-byte (§Evidence 2).
+With no `\ No newline at end of file` marker anywhere in the log and the derived
+file ending in `\n`, the 362-line diff and the 8,015-byte payload describe the same
+object with nothing left over.
+
+#### 4. Nothing was added to the file, and the reason is not tidiness
+
+No header comment, no provenance line, no `// generated by` banner. The temptation
+is real — a snapshot whose own first line named the run that produced it would be
+convenient — and it is a trap: `bin/generate.exe` does not emit such a line, so the
+next run's regeneration would diff against it, the determinism step would print a
+promotion block forever, and `build` would be permanently red for a comment. **The
+provenance of a build product belongs in the commit that carries it, never in its
+bytes.** This entry and the commit trailer are where run 31465181652 is recorded.
+
+#### 5. The reviewer read: what it establishes, and the larger thing it does not
+
+Charter §3's line-by-line duty attaches to shipped source and this snapshot ships,
+so I read all 362 lines. Findings are in §Evidence 3 and the observations below;
+**no defect was found and nothing was changed.** Three things are now established
+mechanically rather than by eye: the module is named `eth_axis_rx` and is the only
+module in the file; its nineteen ports set-equal SPEC-M06 §4.2's table on name,
+direction *and* width, with no port outside the table and no row of the table
+missing; and the file contains **no instantiation statement of any kind**, so the
+`word_counter_top` failure mode that `J-rtl_lead-0016` §2 chose the `create` horn
+to avoid — a shell instantiating a module absent from the file — did not occur.
+That last one is the check the round was really for, since it is the failure that
+passes a name check.
+
+Four further observations, recorded as observations and not as verdicts:
+
+- **`payload_tstrb` is tied to the constant 8'b0**, which is REQ-014's "reserved;
+  driven to 0" read literally.
+- **No `ready` or `tready` signal exists anywhere in the file**, in any direction.
+  REQ-003's structural argument — that M06 cannot stall M03 because the record has
+  nowhere to put a backpressure signal — survives emission, which is where a
+  structural argument would fail if it were going to.
+- **All sixteen sequential blocks are `always @(posedge _20)` with `_20 = clock`
+  and a synchronous `if (_18)`, `_18 = clear`.** No second edge expression, no
+  asynchronous reset, no latch-inferring block, no `initial`, no delay, no
+  simulation-only construct, and every one of the 103 declared internal nets has a
+  driver.
+- **A one-cycle output suppression out of clear.** A register `_46` loads 0 while
+  clear is asserted and `1'b1` otherwise, so `_48 = clear | ~_46` is high during
+  clear *and* for the first cycle after it releases; that term gates `hdr_valid`,
+  `payload_tvalid` and `error_short_frame` to 0. The behaviour is coherent for a
+  synchronously-cleared design and I flag it not as a defect but as a fact a
+  testbench author would otherwise discover as a surprise. Relatedly, the 2-bit
+  state register decodes three encodings and *holds* on the fourth; `2'b11` is
+  unreachable from the `2'b00` reset, and clear recovers it if it were ever
+  reached.
+
+**What this read is not**: it is not the independent design review of M06 that
+`J-rtl_lead-0015` item 3 says is owed, and it cannot become one. Every internal
+name in this file is an emitter-generated `_NN`; the file shows me structure with
+the intent deleted. Whether `_32`'s three states are SPEC-M06 §6's states, whether
+the ΔC = 3 pipeline holds, whether the `tkeep` realignment is the two positions
+the spec fixes — none of that is legible here, and reading a netlist is the wrong
+instrument for it. That carry stays open and this entry does not touch it.
+
+#### 6. The forward check, measured this time instead of predicted
+
+`J-rtl_lead-0016` §6 predicted that REQ-808 would remain `pend` with one fewer
+name and warned that "a promotion round that expected REQ-808 to go green would
+read a correct `pend` as a regression". I ran the check both ways rather than
+asserting it (§Evidence 4): with the file absent the pend list is fifteen names
+beginning `eth_axis_rx`; with it present the list is fourteen and `eth_axis_rx`
+has moved to the emitted set. It did not land as an `extra` and REQ-808 did not
+turn green. **That is the predicted correct `pend`, and it is a result, not a
+regression.** REQ-001 also now counts 87 edge expressions where M06 contributes
+16, all resolving to the clock port.
+
+#### 7. What I expect of CI, stated so a second red is not read as a repeat
+
+The determinism step should now pass, **conditional on something this branch has
+never tested**: it passes iff `generate.exe`, run at the commit carrying this
+entry, emits bytes equal to those it emitted at `e9f371b`. `bin/generate.ml` is
+untouched this round and the run built exactly `e9f371b`, so the generator input
+is identical and the only variable left is generation determinism itself — which
+is precisely REQ-902's claim and has never been observed for M06, because until
+now there was nothing to compare against. So: if the step goes green, that is
+M06's first determinism datapoint. **If it goes red again printing a `--- FILE
+rtl_snapshots/eth_axis_rx.v` block with a *different* sha, that is a determinism
+defect and a real finding — it is emphatically not a promotion to repeat**, and
+re-promoting the new bytes would launder a nondeterministic emitter into the tree.
+Charter §6 makes determinism my criterion, so that case is mine to root-cause.
+
+The two steps that were skipped last round — `DV mechanical checks` and
+`Abort-bit availability quantifier` — should now execute for the first time since
+`e9f371b`. Their verdicts are theirs and I predict neither; what I do claim is
+that their silence last round was a skip and their output this round is not a
+change of state in whatever they measure. `cosim` remains a separate job and this
+round adds nothing it reads.
+
+### Actions
+
+1. Ran the abort-first head check, then read the charter, PROTOCOL, the round's
+   dispatch and the inputs listed above.
+2. Re-derived the payload from the log independently: extracted the block by its
+   own markers, measured the timestamp prefix and payload charset, concatenated
+   the 27 base64 lines, decoded, and hashed — then compared against the block's
+   own sha and against the orchestrator's decode, with a one-byte perturbation as
+   a negative control on the comparison itself.
+3. Reconstructed the same file a second time from the log's `git diff` `+` lines
+   and `cmp`-ed the two reconstructions against each other.
+4. Placed **my own derived bytes** (not the orchestrator's file) at
+   `rtl_snapshots/eth_axis_rx.v` with `cp`, then re-hashed the placed file.
+5. Read all 362 emitted lines as reviewer and ran the structural checks in
+   §Evidence 3. **Changed nothing**; no defect found.
+6. Ran `tools/check_emitted_verilog.sh` with the snapshot present and absent, and
+   restored the file and re-verified its sha after the absent-case run.
+7. Wrote this entry. **No `git add`, no `git commit`, no `git push`, no
+   `scripts/agent_commit.sh`, no git write of any kind.** No file outside
+   `rtl_snapshots/eth_axis_rx.v` and this journal was created or modified.
+
+### Evidence
+
+Provenance, externally verifiable: **build run `31465181652`**, job `build`, step
+`Verify nothing was left unpromoted or non-deterministic`, conclusion failure.
+The run's log records the fetch of
+`e9f371b34df806cbdcce3d1578465f748152e9e6` — this branch's HEAD at this round —
+and its only `##[error]` is that step, with `dune build @default`, `dune runtest`
+and `dune exec bin/generate.exe` all having run ahead of it without error. That
+disposes of `J-rtl_lead-0016` §5's three alternatives by observation: the red is
+the scheduled one, at the named step, and not a compile failure or a
+`Circuit.create_exn` duplicate-port raise.
+
+**1. The three-way sha agreement and the write.** From the log's block, after
+stripping the uniform 29-character timestamp prefix:
+
+```text
+block's own sha line : 0ab634e1628e40502dcb521c0be64b9975d59e28e252e007125902bfd5257564
+my decode            : 0ab634e1628e40502dcb521c0be64b9975d59e28e252e007125902bfd5257564   (8015 bytes)
+orchestrator's decode: 0ab634e1628e40502dcb521c0be64b9975d59e28e252e007125902bfd5257564
+cmp mine vs theirs   : exit 0, no output
+```
+
+and after `cp` into the tree, `sha256sum rtl_snapshots/eth_axis_rx.v` reproduces
+`0ab634e1…7564` at 8,015 bytes, which is the check that covers the write itself.
+Reproducible at this commit:
+
+```sh
+sha256sum rtl_snapshots/eth_axis_rx.v   # 0ab634e1628e40502dcb521c0be64b9975d59e28e252e007125902bfd5257564
+wc -c    < rtl_snapshots/eth_axis_rx.v   # 8015
+```
+
+*Negative control, because a comparison that cannot report a difference is not a
+comparison*: perturbing one byte at offset 100 of my derived file moves the sha to
+`9b94f715e648…` and `cmp` reports the difference. The pipeline discriminates.
+
+**2. The second channel.** Reconstructing the file from the log's own
+`@@ -0,0 +1,362 @@` hunk by stripping the `+` prefixes yields 362 lines, and
+
+```text
+cmp  <diff-reconstruction>  <base64-derivation>   ->  exit 0
+```
+
+The log contains no `\ No newline at end of file` marker and the derived file's
+last byte is `\n`, so the two encodings agree on the terminator too.
+
+**3. The reviewer read, mechanised where it can be.** All commands runnable from a
+checkout at this commit:
+
+```sh
+grep -c '^module\|^endmodule' rtl_snapshots/eth_axis_rx.v      # 2 — one module, line 1 and line 362
+grep -nE '^\s+[A-Za-z_][A-Za-z0-9_]*\s+[A-Za-z_][A-Za-z0-9_]*\s*\(' rtl_snapshots/eth_axis_rx.v
+#   no match — no instantiation statement of any kind, so no self-instantiating shell
+grep -n 'tready\|ready'   rtl_snapshots/eth_axis_rx.v          # no match — REQ-003 survives emission
+grep -n 'always @' rtl_snapshots/eth_axis_rx.v | grep -v 'always @(posedge _20) begin'
+#   no match — all 16 sequential blocks are posedge clock, sync clear
+grep -n 'initial\|#[0-9]\|\$display\|\$finish' rtl_snapshots/eth_axis_rx.v   # no match
+```
+
+Port table conformance, by set comparison rather than by eye — the emitted
+`input`/`output` declarations rendered as `name|dir|width` and diffed against
+SPEC-M06 §4.2's nineteen rows rendered the same way:
+
+```text
+diff <emitted 19> <spec 19>  ->  empty
+```
+
+8 inputs, 11 outputs, each appearing exactly once, each driven by exactly one
+`assign`, and every one of the 103 declared internal nets has a driver (the
+difference `declared nets − driven names` is empty).
+
+**4. REQ-808's A/B, run both ways.** `tools/check_emitted_verilog.sh` at this
+commit:
+
+```text
+with    rtl_snapshots/eth_axis_rx.v present:
+  emitted modules: crc32_eth eth_axis_rx eth_mac_10g word_counter word_counter_top xgmii_rx_64 xgmii_tx_64
+  PASS     REQ-001 single clock domain: all 87 edge expression(s) ... resolve to the clock port
+  PENDING  REQ-808: inventory module(s) not yet emitted: eth_axis_tx eth_demux ... nic_top   (14 names)
+  5 check(s) run, 0 failure(s), 3 pending
+
+with it absent (the HEAD state):
+  PENDING  REQ-808: inventory module(s) not yet emitted: eth_axis_rx eth_axis_tx ... nic_top  (15 names)
+```
+
+— `eth_axis_rx` leaves the unemitted list and enters the emitted set; REQ-808 does
+not `fail` (it is an inventory name, never an `extra`) and does not turn green
+(M07…M20 remain). One fewer name, still `pend`, exactly as `J-rtl_lead-0016` §6
+said it would be. The file was restored and re-hashed after the absent-case run.
+
+**Ephemeral, and named as such** (ADR-0003/F5): the log copy and the
+orchestrator's decode live at container scratchpad paths that do not survive this
+session and are not citable evidence. Everything above either runs from a checkout
+at this commit or is the run id `31465181652`, whose conclusion GitHub holds.
+
+**Not claimed**: that the emitted netlist is *correct* — 362 lines of `_NN` nets
+cannot establish that and §5 says why; that determinism holds (§7: the next run is
+the first observation, not a foregone one); that the line-rate invariant is
+demonstrated; any DV result. `SO-` is dv_lead's to give and none is implied.
+
+### Outcome
+
+C-RL-6 is now fully discharged: the emitter landed at `e9f371b`, CI produced the
+bytes by failing, and those bytes are in the tree with their provenance recorded.
+The red window `J-rtl_lead-0016` opened by design was one commit wide, which is
+what that entry argued it had to be.
+
+Charter §5's DoD, scored against what this round was actually for:
+
+- Implements its frozen spec, deviations escalated — **no instance for authorship**
+  (no `libs/**` file was opened for writing); for the artifact, the emitted
+  interface set-equals SPEC-M06 §4.2 on all nineteen ports and no deviation was
+  found to escalate.
+- `bin/generate.exe` emits it into `rtl_snapshots/**` deterministically, two
+  consecutive runs byte-identical — **partially met, and the gap is named.** The
+  snapshot now exists and is CI's own output at a known run; the *two-run byte
+  identity* half is unobservable from this container (ADR-0005) and becomes
+  observable for the first time on the next CI run, per §7. I do not score a
+  criterion I cannot execute.
+- House style / `.ocamlformat` clean — **no instance**; no OCaml was written.
+- Rx-path line-rate invariant — **no instance this round**; no RTL logic changed.
+  The structural half of REQ-003 was *observed to survive emission* (§Evidence 3),
+  which is a check, not a demonstration of the invariant.
+- Worker review — no instance; no worker, no `RV-`.
+- Journal entry appended, no DV sign-off claimed — **met.**
+
+Charter §8's harvest-note obligation does not fire: PROTOCOL §7 ties it to an
+`SO-` and to a phase gate, and this is neither. Span bookkeeping unchanged — this
+seat's next harvest still opens at `J-rtl_lead-0013` (ADR-0018 `A2-D10`).
+
+**Handoff**: to the orchestrator, for commit. The one thing worth watching on the
+run this commit triggers is stated in §7 and is falsifiable: green at the
+determinism step is M06's first determinism datapoint; a second red printing a
+*different* sha for the same path is a determinism defect that comes back to me
+and must not be re-promoted.
+
+### Open-questions
+
+1. **M06's emission determinism is asserted by no one yet.** REQ-902's two-run
+   byte identity has never been observed for this module and cannot be observed
+   here. The next CI run is its first test; §7 states both branches and which of
+   them is mine to root-cause. This is a watch item, not a carry — it resolves on
+   its own within one run.
+2. **C-RL-7 — SPEC-M06 §7 and §10's retired per-octet-under-injection reading**,
+   carried unchanged from `J-rtl_lead-0015` item 2 and `J-rtl_lead-0016` item 3;
+   architect_docs_lead's, and untouched by this round.
+3. **M06 has still had no independent design review.** Carried from
+   `J-rtl_lead-0015` item 3 and restated here because this round could be
+   misread as having done it: reading the emitted netlist reviewed the *artifact*,
+   and §5 explains why a file of `_NN` nets cannot review the design. What M06's
+   logic does against SPEC-M06 §6 remains unreviewed by anyone but its author.
+4. **Carried, unchanged and untouched**: C-RL-2 (the latent `first_v` gating in
+   M03) and C-RL-3 (sub-word idle granularity, no row owed).
+
+### Files-in-this-commit
+
+- rtl_snapshots/eth_axis_rx.v
