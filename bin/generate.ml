@@ -22,7 +22,7 @@ let emit_word_counter out_channel =
     circuit
 ;;
 
-(* The three design modules take the other horn of that same naming problem.
+(* The design modules take the other horn of that same naming problem.
    [Word_counter] is emitted through [hierarchical], so its top had to be
    renamed to [word_counter_top]; a design module may not do that, because
    [word_counter_top] is only tolerated in rtl_snapshots/ by the explicit
@@ -32,15 +32,22 @@ let emit_word_counter out_channel =
    [create] instead: the module's own name is then free for its own logic, and
    the scope database still supplies every child that [create] instantiated
    through [hierarchical]. Nothing is flattened and no shell is emitted —
-   SPEC-M03/M04/M05 §10's REQ-808/REQ-903 rows ask for a distinct emitted
+   SPEC-M03/M04/M05/M06 §10's REQ-808/REQ-903 rows ask for a distinct emitted
    module per inventory name, which is exactly what this produces.
 
    Emitted top names are the module names those §10 rows and REQ-808 fix
-   (`xgmii_rx_64`, `xgmii_tx_64`, `eth_mac_10g`) — identical to the names each
-   module's own [hierarchical] already registers, so a module has one name in
-   the netlist whether it is emitted here or instantiated by a parent. Each
-   file is named after its top. §12 of all three specs is the freeze record and
-   says nothing about emission; see WO-0026's Return log. *)
+   (`xgmii_rx_64`, `xgmii_tx_64`, `eth_mac_10g`, `eth_axis_rx`) — identical to
+   the names each module's own [hierarchical] already registers, so a module has
+   one name in the netlist whether it is emitted here or instantiated by a
+   parent. Each file is named after its top. §12 of all four specs is the freeze
+   record and says nothing about emission; see WO-0026's Return log.
+
+   M06 takes the [create] horn for the same REQ-808 reason as M03–M05 and not
+   because it has children to supply: SPEC-M06 §1 says it instantiates nothing,
+   so its scope database is empty and [Rtl.output] emits exactly one module. The
+   choice still matters — through [hierarchical] under a top of the same name,
+   the word_counter_top failure mode returns and the file becomes a shell
+   instantiating a module that is not in it. *)
 
 let emit_xgmii_rx_64 out_channel =
   let scope = Scope.create ~flatten_design:false () in
@@ -75,6 +82,17 @@ let emit_eth_mac_10g out_channel =
     circuit
 ;;
 
+let emit_eth_axis_rx out_channel =
+  let scope = Scope.create ~flatten_design:false () in
+  let module Circuit = Circuit.With_interface (Eth_axis_rx.I) (Eth_axis_rx.O) in
+  let circuit = Circuit.create_exn ~name:"eth_axis_rx" (Eth_axis_rx.create scope) in
+  Rtl.output
+    ~database:(Scope.circuit_database scope)
+    ~output_mode:(Rtl.Output_mode.To_channel out_channel)
+    Verilog
+    circuit
+;;
+
 (* One scope per emitter, so a file's contents are a function of its own module
    and this list's order cannot leak into any of them. The order is fixed
    regardless: what a file is named and what it holds are both part of what
@@ -87,6 +105,7 @@ let () =
     ; "rtl_snapshots/xgmii_rx_64.v", emit_xgmii_rx_64
     ; "rtl_snapshots/xgmii_tx_64.v", emit_xgmii_tx_64
     ; "rtl_snapshots/eth_mac_10g.v", emit_eth_mac_10g
+    ; "rtl_snapshots/eth_axis_rx.v", emit_eth_axis_rx
     ]
     ~f:(fun (path, emit) ->
       Stdio.Out_channel.with_file path ~f:emit;
