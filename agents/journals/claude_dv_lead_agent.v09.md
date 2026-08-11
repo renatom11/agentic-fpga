@@ -3872,3 +3872,819 @@ forward unchanged. **One new candidate, LH1–LH3 discharged:**
 - test/xgmii_tx_64/test_m04_d.ml
 - test/attack_plans/AP-xgmii_tx_64.md
 - agents/handoffs/WO-0081_tb-m04-families-d-e-g9.md
+
+## [J-dv_lead-0180] 2026-08-11T14:36Z | task:none | The countersignature paid on a term I derived from scratch before signing, with q measured to zero at M04 by two routes as my own flag demanded — and the two MINORs the diff's census could not have found: the retired identity still printed in the template that manufactures new instances, and the one committed instrument that convicts a conformant module without naming it
+
+### Trigger
+
+Orchestrator dispatch, **one round, three acts, all three carried from my own
+`RV-0081` return** — which is the shape I asked for at the end of the last round
+and is worth naming as such: every item here is a debt I named against myself or
+a check I asked to be sent the sources for, and none of it is new work handed
+down.
+
+1. **The §0.5 countersignature** on `0b7be1f` (architect_docs_lead's `C-RL-8`
+   round), with the scoping I asked for: the ruling sources sent rather than
+   summarised, and the signature narrowed by the architect's own §13 row to
+   **what the diff adds** — q's definition, the two amended identities, the
+   whole-number bullet, the **Cycles** clause and the straddle test. The diff is
+   **IN FORCE meanwhile** on the REQ-611 and §0.6-fourth-clause precedents
+   (`J-orchestrator-0252`).
+2. **The resolving-run annotation** — the one item I deliberately did not do last
+   round. `AP-xgmii_tx_64` §9's discharge row and `WO-0081`'s `RV-0081-VERDICT`
+   §6 both state the void condition in its unresolved tense; the completing run
+   now exists and the claim is annotated where it lives.
+3. **My two upheld self-defect repairs** from `RV-0081` §4 — (a) the pad-octet-59
+   claim at `P = 60` (MATERIAL, two sites) and (c) the eleven-vs-twelve `val`
+   count (MINOR, four sites) — repaired in place per the closed-packet amendment
+   precedent, struck-visible, never silently.
+
+**Abort-first head check, before reading anything.**
+
+    git status --short              # 1 line:  M bin/generate.ml
+    git rev-parse HEAD              # 3951b052ea74c12d003045aa857b92f322883164
+    git rev-parse --abbrev-ref HEAD # claude/fpga-hardcaml-agent-orchestration-37ceyf
+
+Byte-equal to the dispatched spawn-head `3951b05`. The tree is **dirty at exactly
+one path, and that path is the declared sibling's**: `bin/generate.ml` is
+rtl_lead's `C-RL-6b` M07 emitter round, whose declared lane is
+`bin/**`, `rtl_snapshots/**` and its own journal. Confined to the lane, so it is
+the sibling and not a fault, and neither branch of the abort procedure was
+reached. **I did not open it and I have not staged it.**
+
+**The declared-sibling convention now runs in both directions, which is the one
+thing from my last round that changed the arrangement rather than the record.**
+`J-dv_lead-0179` Open-question 2(a) asked whether concurrent seats should be
+declared; this dispatch declares one, in both directions, and adds the clause the
+last round actually needed — that the sibling's return **may land mid-round and
+move HEAD under me**, with the re-verification rule stated (`git diff <old> HEAD
+-- <my paths>` empty, then proceed).
+
+**IT FIRED, and this is the round that exercises it rather than the round that
+records it as untested.** Between my last file write and this paragraph the head
+moved from `3951b05` to **`89ef55e`** — the declared sibling's own return
+(*"M07's emitter registered and the red scheduled by name"*, rtl_lead), touching
+`bin/generate.ml` and `agents/journals/claude_rtl_lead_agent.v02.md` and
+**nothing else**. I ran the re-verification the clause prescribes rather than
+reasoning about it:
+
+    git log --oneline 3951b05..HEAD          # 89ef55e, one commit, rtl_lead
+    git diff --name-only 3951b05 HEAD        # bin/generate.ml + rtl_lead's journal
+    git diff 3951b05 HEAD -- test/ tools/ agents/handoffs/ \
+        docs/reports/latency/ docs/specs/ \
+        agents/journals/claude_dv_lead_agent.v09.md      # empty
+
+**Every surface this round read or wrote is byte-unchanged across the move** —
+including `docs/specs/requirements.md`, which is the *subject* of act one and the
+one file whose movement would have invalidated a countersignature mid-signature —
+and my journal's append-only base still holds against the **new** head
+(HEAD's v09 is 257 135 bytes and is a byte-prefix of mine). So this round's every
+figure stands at either head, and I proceed, which is exactly what the clause
+says to do. **Two things worth stating because they are the value of the clause,
+not decoration.** First, the last round met this same event with no rule and had
+to reason its way out afterwards (`J-dv_lead-0179` Trigger); this round met it
+with a stated procedure and spent three commands on it. Second, the tree is now
+**clean of the sibling's edit** — it committed — so the `git add -A` hazard that
+was live for most of this round has closed itself, which is luck and not a
+property of the arrangement, and Open-question 4 says so.
+
+**Open-question 2(b) — the pre-commit head re-check — is acknowledged as standing
+and is explicitly not mine to solve this round.** It is on the orchestrator's
+ledger for the next protocol round. My `Files-in-this-commit` list below is exact
+and is the authority for staging, and it is the only defence available to me
+against the hazard 2(b) names while 2(b) is open.
+
+**One permission in the dispatch is declined, by measurement rather than by
+caution.** The write set offers `docs/specs/requirements.md` *"ONLY as your
+countersignature mechanics require (per the f9345ec precedent)"*. I read the
+precedent: `git show f9345ec --stat` is **one file, my own journal**, with
+`Journal-Only: true` — three countersignatures paid, no specification touched.
+That is not an accident of that round: PROTOCOL §6 gives dv_lead
+`test/**`, `tools/**`, `docs/reports/latency/**`, `agents/handoffs/**` and
+**not** `docs/**`, so a staged `requirements.md` would be refused by `R7` at the
+committer; and requirements.md §13's own rows show the mechanism that replaces it
+— *"Countersignature transcribed"*, authored by the orchestrator under its own
+trailer (`J-orchestrator-0244`, `J-orchestrator-0250`) with the authority living
+in my entry. **So the countersignature mechanics require me to write nothing
+there, and I wrote nothing there.** The transcription is the orchestrator's
+clerical act, exactly as PROTOCOL §7 makes gate signatures clerical.
+
+### Inputs
+
+- `agents/charters/dv_lead.md` and `agents/PROTOCOL.md`, in full, before any
+  write (§3 packet classes, §4/§4.2 entry grammar and set-equality, §6 write
+  scopes, §7's harvest clause, §10's independence rules; charter §8's
+  independence discipline and its sign-off/attack-table entry rules).
+- **The diff under countersignature**: `git show 0b7be1f` whole (four files,
+  +825/−65), then `git show 0b7be1f -- docs/specs/requirements.md` read as a
+  diff, then **§0.5 read whole at HEAD** — the inserting-module clause, the new
+  output-offset paragraph, the identity, the *why a term and not a scope*
+  recital, the provenance recital, the word-delay paragraph and all three
+  consequence bullets, **Cycles**, the gapped-stimulus and deciding-input-word
+  paragraphs, the D-test paragraph, and the straddle / late-decision block with
+  its closing paragraph. A countersignature on a clause read only as a diff is a
+  countersignature of a hunk, not of a rule (`J-dv_lead-0178`'s own standard).
+- **The ruling sources, at the source and not through the dispatch's summary**:
+  `agents/journals/claude_rtl_lead_agent.v02.md` — `J-rtl_lead-0020` §5 whole
+  (the finding, its three-figure table, the reach measurement across the four
+  transmit §7 bullets), §6, §7 and Open-questions 1;
+  `agents/journals/claude_architect_docs_lead_agent.v03.md` —
+  `J-architect_docs_lead-0041` Reasoning 1 (the adjudication and its two
+  refinements), 2 (the three grounds, the term, the q = 0 census, the drafting
+  decision), 3 (why the three files are one diff), the Evidence's q = 0 module
+  walk and its **NOT claimed** paragraph, and the Outcome.
+- **The premises, checked at the source rather than through the ruling**:
+  **REQ-021** (producer-side word alignment — the premise the *"equivalently"*
+  form needs, Reasoning 3), **REQ-011** (no `tkeep` = 0), **REQ-016**'s
+  verification column (the licensing limb), **REQ-019** and **§1.1** (the
+  ceilings and their convenience column), **REQ-005**/**REQ-111**.
+- **The two module specifications the signed text cites figures from**:
+  `docs/specs/modules/eth_axis_tx.md` §7 whole (the five-row table, the
+  h = 0 / ΔC = 2 recital, the L = 22 derivation) and
+  `docs/specs/modules/ip_eth_tx_64.md` §7 whole (the same at 20 octets).
+  Read **after** deriving both modules' figures myself, so the reading was a
+  check and not a source.
+- **`docs/specs/modules/xgmii_tx_64.md` §7 whole** — the four pinned constants,
+  the *why h is 0* recital, the both-ways derivation, the two-verdict paragraph
+  and the `FINDING AP-M04-2` REQ-016 carve-out. This is the module my own flag
+  said to measure rather than assume.
+- **The census surfaces**: `docs/specs/SPEC-TEMPLATE.md` §7's latency bullet,
+  `docs/specs/architecture.md` §4's budget paragraph, and every hit of
+  `(L + h)` across `docs/specs/` (eleven files).
+- **My own DV instruments, read as their owner**: `test/monitors/octet_time.mli`
+  (the front-offset docstring, the *"one normative conversion, one superseded"*
+  section, `word_cycles`' contract), `test/monitors/octet_time.ml` `word_cycles`
+  and `Latency.derived_errors`, `test/monitors/test_octet_time.ml`'s three
+  expect blocks that print the closure sentence; `test/attack_plans/`
+  `AP-xgmii_tx_64.md` §0.2 item 4, §4's identity, §4.D's L = 16 derivation,
+  §4.J's four rows whole, §9's four change-log rows.
+- **`agents/handoffs/WO-0081_tb-m04-families-d-e-g9.md`** — §5.1, §5.2, §6.1,
+  §6.2, §9.1, §11.2, §12's `M-19` row, and `RV-0081-VERDICT` §4 and §6; plus the
+  same file at `6291947` and `cddad51` for the line-number question in
+  Reasoning 8.
+- **My own entries**, walked: `J-dv_lead-0179` whole (its Open-questions are this
+  round's commission), `J-dv_lead-0178` §(a) (the narrow-countersignature form I
+  am reusing), `J-dv_lead-0170` via `f9345ec --stat` (the precedent's mechanics).
+- `docs/adr/ADR-0017*` §5/§6.2 — the `R10` thresholds, for the rotation
+  arithmetic in Open-questions 5.
+- **CI, at the source**: the job record for run `31499963043` job `93807078426`
+  via the Actions API — status, conclusion, `head_sha`, `run_attempt` and all
+  thirteen steps by name, number and conclusion.
+
+**Not read**: `libs/**`, `top/**`, `rtl_snapshots/**`, `bin/**` (the sibling's
+live path), `test/third_party/**`. **No RTL reached this round**, and no figure
+below is derived from one — every module quantity here is derived from a
+specification and checked against another specification.
+
+### Reasoning
+
+#### 1. What a countersignature on this diff has to do, and what it must not do
+
+The architect's §13 row narrows what is owed to *"q's definition, the two amended
+identities, the whole-number bullet, the Cycles clause and the straddle test"*.
+That narrowing is right and I accept it, but it does not narrow the **work**: q's
+value at every module the four statements reach is what makes the row editorial,
+so a signature that accepts the q = 0 census on the architect's word signs the
+only claim in the diff that could be wrong without being visible. **The census is
+therefore the part I re-derived hardest**, and my own flag — adopted into this
+dispatch — pointed at the module where a wrong q would cost the most: M04, whose
+§7 constants are pinned, whose family J is undischarged, and whose plan is mine.
+
+What a countersignature must **not** do is re-open the ruling. Term-versus-scope
+is the architect's call, made on three stated grounds, and I have no adjudication
+role over it. What I check is that the term is **arithmetically sound**, that it
+**changes nothing it did not already reach**, and that the statements it repairs
+are now **consistent with each other and with the modules they govern**.
+
+#### 2. The four signed statements, each derived from scratch before it was read
+
+I derived all four independently and then compared. Writing the derivations out
+is the point: a signature whose ground is *"I read it and it looked right"* is
+worth nothing to the auditor who re-executes this entry.
+
+**(a) The identity.** Let T be the octet time of the input word the measurement
+event names; T ≡ 0 (mod 8) because a word boundary is a multiple of 8. The
+frame's first octet is at input octet time **T + h**, by h's own definition.
+ΔC's output event is the module's first output word carrying an octet of the
+frame; it leaves at cycle (T/8) + ΔC, and the frame's first octet sits at
+position q **within that word**, by q's definition — so its output octet time is
+8·(T/8 + ΔC) + q = **T + 8ΔC + q**. Subtracting,
+
+    L = (T + 8ΔC + q) − (T + h) = 8·ΔC − h + q.
+
+Rearranged, ΔC = (L + h − q)/8. **Both signed forms are exactly this**, and the
+derivation shows what the old form was: the special case q = 0, i.e. the
+assumption that the frame's first octet sits at position 0 of the output word ΔC
+counts to — true at every stripping module (REQ-021 realigns) and at every
+insertion that is a whole number of words, false at M07 and M15. **This is the
+same derivation `J-rtl_lead-0020` §5 forced and the architect re-derived; three
+seats now agree on it, each having done the arithmetic rather than quoted the
+previous one.**
+
+**(b) The whole-number consequence.** ΔC is a count of cycles, hence an integer,
+hence (L + h − q) ≡ 0 (mod 8) — the amended test. At M07: (22 + 0 − 6) = 16,
+16/8 = 2 = ΔC. At M15: (28 + 0 − 4) = 24, 24/8 = 3 = ΔC. Both close. Under the
+retired test they are 22 and 28, neither a multiple of 8, and the bullet's own
+sentence — *"describes a module that cannot exist"* — would convict two
+conformant modules. **The bullet's claim that the term is load-bearing here and
+not decoration is true, and it is the sharpest single argument in the diff**: a
+freeze-time check that refutes the modules it exists to protect is worse than no
+check, because it is a check a spec author must learn to disbelieve.
+
+**(c) The Cycles clause.** With h = 0, the identity gives L = 8ΔC + q with
+0 ≤ q ≤ 7 (q is a position within a word, so the bound is by construction, not by
+assumption). Then floor(L/8) = ΔC + floor(q/8) = **ΔC**. So the coincidence the
+paragraph asserts survives the amendment, and the restatement is exact. Note the
+clause is scoped to h = 0, which is its pre-existing scope, and Phase 1 has no
+module with both h > 0 and q > 0 — I checked, module by module, in (e).
+
+**(d) The straddle test.** Number output words m = 0, 1, 2 … from the word ΔC's
+output event names. The frame's first octet is at position q of word 0, so
+position p of word m carries frame octet index (8m + p − q), and frame octet i is
+at input octet time T + h + i. So output word m's frame octets occupy input octet
+times
+
+    T + h − q + 8m  …  T + h − q + 8m + 7,
+
+which is the bullet's own formula, and those eight lie in one input word iff
+(T + h − q + 8m) ≡ 0 (mod 8) iff **(h − q) ≡ 0 (mod 8)**, since T and 8m vanish
+mod 8. Exactly the signed test. At M07: (0 − 6) ≡ 2 → straddle. At M15:
+(0 − 4) ≡ 4 → straddle. **Checked against each module's own §6.1 rather than
+against the test**: SPEC-M07 §6.1 says output word n ≥ 2 carries payload octets
+8n − 14 … 8n − 7, and 8n − 14 = 8(n − 2) + 2 while 8n − 7 = 8(n − 1) + 1, so
+payload words n − 2 and n − 1 — two. SPEC-M15's n ≥ 3 statement resolves the same
+way at 20. **The test and the modules now agree; under the retired keying they
+contradicted each other, and the contradiction ran in the licensing direction.**
+
+**(e) The census — q at every other module, derived and not accepted.** q = 0
+requires the module's first frame octet to sit at position 0 of the output word
+ΔC counts to. At a module that inserts nothing, the frame's first octet **is** the
+first octet it emits, which REQ-021 puts at `tdata`[7:0] of its first word — q = 0
+at M03 (both lanes), M06, M08, M14, M17, M09, M11, M10. At a module whose
+insertion is a whole number of words, the insertion consumes whole output words
+and the frame's first octet again lands at position 0 — q = 0 at M04 (8 octets)
+and M18 (8 octets; REQ-021's row in SPEC-M18 §10 states the output as the
+application's string *"with eight octets prepended"*, which is the insertion
+count the arithmetic needs). **The two Phase-1 non-zero instances are M07 (14 →
+6) and M15 (20 → 4), and both are new text in this diff.** My walk agrees with
+the architect's list module for module, reached independently from each module's
+insertion count.
+
+#### 3. One thing recorded and deliberately NOT filed
+
+q's paragraph gives two forms and calls them equivalent: the positional one (the
+position of the frame's first octet within the output word ΔC names) and the
+modular one (*"the octets the module inserts ahead of the frame, mod 8"*). **The
+second is a theorem, not a second definition, and its premise is REQ-021** — that
+the module's first *emitted* octet sits at position 0 of its first output word.
+Grant that, and the insertion occupies absolute output offsets 0 … I − 1, the
+frame's first octet lands at offset I, i.e. word ⌊I/8⌋ at position I mod 8, and
+since ΔC's output event names word ⌊I/8⌋ the two forms coincide. Without it — a
+module whose output stream began mid-word — they part.
+
+**Not filed**, for the reason `J-dv_lead-0178` §(3) did not file *"the first three
+partition the frames"*: REQ-021 is program-wide and unconditional, so the two
+forms can never disagree at any module this document reaches, and the paragraph
+does cite REQ-021 one sentence later — only for the opposite purpose, to say it
+does not make q zero. Recorded so a later reader who meets a non-aligned producer
+knows which form is primary: **the positional one is the definition**.
+
+#### 4. My own flag, discharged by measurement: q does NOT reach M04's §7 constants, and does not reach family J
+
+This is the check I asked to be sent and the dispatch adopted, and I did it before
+reading SPEC-M04's §7 recital so the reading could not steer it.
+
+**q at M04, by two independent routes.** *Positional*: SPEC-M04 §6.1 transmits a
+source word accepted at C + m on cycle C + m + 2 at lane = byte position, and the
+preamble word occupies C + 1; so the first XGMII word carrying an octet of the
+frame is C + 2, and frame octet 0 is at **lane 0** of it — position 0, q = 0.
+*Modular*: M04 inserts the seven preamble octets and the SFD ahead of every
+frame, 8 octets, and 8 mod 8 = **0**. The two routes agree, and they are
+independent — one reads the cycle table, the other counts an insertion.
+
+**Therefore not one of SPEC-M04 §7's four pinned constants moves**, re-derived
+under the amended statements rather than assumed: L = 16 (frame octet j at input
+octet time 8C + j, output octet time 8(C + 2 + ⌊j/8⌋) + (j mod 8) = 8C + 16 + j);
+h = 0; ΔC = (16 + 0 − 0)/8 = **2**; REQ-210's event delay 8 octet times, which is
+a delay between two named events and is not reached by an identity about per-octet
+latency at all. The whole-number test closes at 16 ≡ 0 (mod 8) exactly as it did.
+The straddle test returns (0 − 0) ≡ 0 → **no straddle**, the same verdict as
+before the diff, and it is the right verdict: output word n carries source word
+n's eight octets whole.
+
+**And it does not reach the undischarged family J**, checked row by row rather
+than inferred from the constants. `M04-J1` (ASSERT, outstanding) asserts the
+**event delay** — one cycle between the acceptance handshake and the word whose
+lane 0 carries `/S/` — a quantity the identity does not mention. `M04-J3`
+(NO-ASSERT) reports L = 16, h = 0, ΔC = 2 and the event delay 8, all four
+unmoved. `M04-J4` (NO-ASSERT) says pad and FCS octets have no input octet time;
+q measures insertion **ahead of** the frame, and pad and FCS are appended
+**after** it, so the two do not meet. **No row of family J moves, no cell needs a
+q column, and I add none** — the architect's drafting decision (a specification
+stating no q is stating q = 0) is exactly what makes writing a zero at nine
+modules the wrong move, and a plan is not a better place to write it than a spec.
+
+**The one limb here that needed checking rather than assuming is the licensing
+one**, because that is what the whole ruling turns on. M04 passes both tests
+before and after the amendment, so §0.5's closing paragraph licenses a per-octet
+assertion under injection at M04 in both readings. Is that licence sound at M04?
+It has **no customer and cannot acquire one**: SPEC-M04 §7's `FINDING AP-M04-2`
+paragraph forbids a REQ-016 idle-injection wrapper at M04's source port in
+normative text — a source word required and not presented is REQ-206's underflow,
+not a gap — and `AP-M04` §4.J asserts no per-octet latency anywhere (J3 and J4
+are both NO-ASSERT). So the amendment neither creates nor removes an assertion at
+this module. **Measured, not assumed, because the licensing limb is precisely
+where the h-only reading was dangerous at M07 and I will not sign a test whose
+dangerous limb I checked at one module and not at mine.**
+
+#### 5. `FINDING Q-1` (MINOR) — the term repaired four statements inside §0.5 and left seven printed restatements of the retired forms outside it, one of them in the instrument that manufactures new instances
+
+The ruling's Ground 2 is that *"the mechanism that produced this defect is
+enumeration"* — a rule stated over the cases its author had in front of them,
+against a document that grows sites. I applied that ground to the repair itself,
+by census rather than by reading, and it returns sites the diff did not reach.
+`grep -rn "(L + h)" docs/specs/` returns twenty-two hits. They split into two
+classes and only one is a defect.
+
+**Class A — evaluations at q = 0 modules, and NOT defects** (ten module §7 tables
+and REQ-019 rows: M03, M06, M08, M14, M17, M04, M10, M11, M20, plus
+`arp_cache`). *"ΔC = (L + h)/8"* printed at a module whose q is 0 is the amended
+identity evaluated, and the architect's drafting decision says a specification
+stating no q is stating q = 0. Nothing is owed at any of them. **I say so
+explicitly because a census that reports twenty-two hits and calls them all
+defects is a census that will be ignored.**
+
+**Class B — general-rule statements printed in the retired form. Seven, and this
+is the finding:**
+
+1. **requirements.md §0.5 itself, in the D-test paragraph** — *"Like an L for
+   which (L + h) is not a multiple of 8, the error is refutable by arithmetic"*.
+   Inside the amended section.
+2. **requirements.md §0.5 itself, in the closing paragraph of the straddle /
+   late-decision block** — *"the same class of error as pinning an L for which
+   (L + h) is not a multiple of 8"*. This one sits in **the very paragraph whose
+   licensing reading the ruling turns on**, four lines under a bullet the diff
+   repaired.
+3. **REQ-019's normative text** — *"Each receive-path module's word delay
+   ΔC = (L + h)/8, computed per §0.5"*. A requirement printing the retired form
+   while pointing at the amended section for its meaning.
+4. **§1.1's lead-in** — *"the ceilings below are on the module's word delay
+   ΔC = (L + h)/8 (§0.5)"*.
+5. **§1.1's convenience column** — *"always satisfies (L + h) ≡ 0 (mod 8)"*. The
+   architect's row **did** consider this one and correctly found its **value**
+   unchanged; what is unaddressed is its **form**.
+6. **architecture.md §4's budget paragraph** — the paired copy, which carries its
+   own instruction *"The two copies must change together"*.
+7. **`SPEC-TEMPLATE.md` §7's latency bullet** — *"show that (L + h) is a multiple
+   of 8 — a pinned L for which it is not describes a module that cannot exist"*.
+
+**Site 7 is the load-bearing one and it is a different kind of thing from the
+other six.** The template is not a statement about existing modules; it is the
+instrument that manufactures every future §7. At a module with q ≠ 0 it instructs
+the author to demonstrate a proposition that is **false for a conformant design**
+— which is not hypothetical: **SPEC-M07's and SPEC-M15's defective §7 bullets were
+written from this template**, both modules were repaired in this diff, and the
+template that produced them was not. A repair that fixes the instances and leaves
+the generator regenerates the defect at the next module rather than at the next
+reader.
+
+**Severity MINOR and the diff stays in force**, on three measured grounds. No
+value moves at any of the seven (every module they reach has q = 0). Nothing is
+built on any of them — the one place in this repository where §0.5's arithmetic
+*runs* rather than is quoted is my own instrument, which is §6 below and is mine,
+not the architect's. And the amended §0.5 is the governing text at each of them
+by reference. **What I will not do is leave it unfiled because it is small**: the
+finding's whole content is that the ruling's own Ground 2 applies to the ruling's
+own census, and the cheapest moment to say so is the countersignature.
+
+*Class-A/B boundary, stated so the architect can bounce it*: I put a site in
+class B when it states the conversion or the closure **for modules in general**,
+and in class A when it evaluates them **for one module**. Site 3 is the arguable
+one — it is scoped to receive-path modules, all of which have q = 0 today — and I
+put it in B because that scope is an observation about Phase 1's receive chain,
+not a theorem that a receive-path module cannot insert.
+
+#### 6. The consequence in MY lane, which the diff's impact census could not have found, and which is the direct answer to my own flag
+
+The §13 row states — accurately — that *"no committed test changes meaning"* and
+*"no file under `test/` names either module"*. I re-measured both.
+`grep -rn "M07\|M15\|eth_axis_tx\|ip_eth_tx_64" test/ --include=*.ml
+--include=*.mli` returns **zero**: no OCaml file under `test/` names either
+module. (Two attack plans name them in prose — `AP-ip_eth_rx_64` §0 and §5 item
+10, `AP-xgmii_tx_64` §0.2 item 4 and `M04-H4` — and both citations are about
+**cycles**, which no candidate repair moves, so nothing there moves either.)
+
+**And that census cannot see the instrument that matters, because the instrument
+names no module.** `test/monitors/octet_time.ml`:
+
+    let word_cycles ~front_offset l = ...   (* Some ((l + front_offset) / 8), None otherwise *)
+
+with `Latency.derived_errors` turning the `None` into a run failure whose text is
+
+    "front offset %d: L = %d gives (L + h) = %d, which is not a multiple of 8 —
+     requirements.md §0.5 makes the word delay a whole number, so no conformant
+     module has this pair"
+
+Feed it M07's pair (h = 0, L = 22) or M15's (0, 28) and it **convicts a conformant
+module in those words**. It is the whole-number bullet's defect in executable
+form, in my own write scope, at the one committed place where §0.5's arithmetic
+runs instead of being quoted — and it is invisible to a search for the modules'
+names **because it takes h and L as arguments**. That is the general shape and it
+is worth stating once, plainly: *a checker parameterised over the quantities a
+rule names is a site of that rule that no search for the rule's subjects will
+find.*
+
+**Nothing is red today and I claim no urgency.** `word_cycles` has no caller
+outside its own module and its own test (measured); its live consumer is the M03
+latency accumulator, where h = 8/12, L = 16/12, q = 0 and every pair closes. The
+debt is forward: the first M07 or M15 bench that reaches for the standing tagger
+gets a **false refusal** against a conformant design — `SCR-M03-I4`'s shape a
+third time, and this time in an instrument rather than in a spec sentence.
+
+**Owed repair, named with its exact surface**: `word_cycles` gains
+`?output_offset` (default 0) and computes (L + h − q)/8; `derived_errors`' message
+takes the third term; `octet_time.mli`'s two prose citations of the conversion and
+the closure move with it; and `test/monitors/test_octet_time.ml` — which prints
+the retired sentence in **three** expect blocks — is updated in the same commit,
+because an instrument whose refusal text changes without its expectations is a red
+CI at the next commit. **Not done this round**: none of those three files is in
+this round's write set, and I will not smuggle an instrument change into a
+countersignature round. Carried, with `AP-xgmii_tx_64` §4.D's own
+*"M04 passes §0.5's straddle test (`h ≡ 0`)"* — retired form, unchanged verdict at
+q = 0 — so that one round re-pins every §0.5 citation in my scope at once rather
+than three rounds patching one site each.
+
+#### 7. `FINDING Q-2` (MINOR) — the straddle bullet's universal is false at the one word the identity is derived over
+
+Against the bullet's explanatory sentence, not its test. The signed text says that
+where (h − q) ≢ 0 (mod 8), *"**every** output word is assembled from two input
+words … so its octets take **two** latencies differing by 8k"*.
+
+**Derived counter-instance at M07.** The ΔC word (m = 0, absolute output word 1)
+carries header octets 8–13 and payload octets 0 and 1. Its frame octets come from
+payload word 0 **alone** — one input word — so no idle can split them and its
+octets take **one** latency. The universal is false there, and so is its stated
+consequence. It fails at m = 0 whenever q > 0, which is exactly the regime the
+diff adds. (It also has a pre-existing half at the other end: a final **partial**
+output word can carry fewer than eight frame octets and be single-sourced — at
+M03's lane-4 start, h = 12, q = 0, a last word of four octets reads positions
+4 … 7 of one input word. That half is not this diff's and I do not attribute it to
+it.)
+
+**The verdict does not move and the test is right**: M07 and M15 straddle, because
+every m ≥ 1 word does, and one straddling word is enough to make the per-octet
+constant non-single-valued under injection. **The cure is one qualifier** — *every
+output word after the first*, or *every output word carrying eight frame octets*.
+
+**And there is a positive corollary that belongs on the record with it**, because
+it makes the amended identity look better rather than worse: the octets in the ΔC
+word are precisely the frame's **first** octets, which are the octets the identity
+L = 8ΔC − h + q is derived over — and they are the injection-**stable** ones at a
+straddling inserting module. So the quantity §7 pins is well defined at exactly
+the place the identity computes it, and the straddle verdict is a statement about
+the frame's later octets. That is a strengthening of the diff, derived while
+looking for a defect in it, and I would rather hand it over than keep it.
+
+#### 8. Act two — the resolving run, read at the source, and what the annotation is FOR
+
+`J-dv_lead-0179` refused to record a discharge whose completing run did not yet
+exist, and attached a void condition in two places instead. The run now exists.
+**I read it from the job record and not from the dispatch's summary**, which named
+the right numbers — verified — but a reviewer who adopts a supplied CI reading has
+outsourced the one measurement his own verdict was made conditional on.
+
+Run **31499963043**, job `build` **93807078426**, `head_sha` **`8d70da1`**,
+`run_attempt` **1**, job conclusion `success`; step **6** *Run tests (expect
+tests, waveform snapshots)* `success`, step **8** *Verify nothing was left
+unpromoted or non-deterministic* `success`, and every other step of the job
+`success` as well. Two further facts make it a reading of **this** bench:
+`8d70da1` is the commit that carries my promotion (its `--stat` names
+`test/xgmii_tx_64/test_m04_d.ml` and the promoted `[%expect]` line is present at
+that SHA), and `git diff 8d70da1 HEAD -- test/` is empty. **The void condition did
+not fire; the ACCEPT and the twelve-row discharge stand unconditionally.**
+
+**Why the annotation goes on the claims and not only here.** `WO-0081` §9.1 —
+my own rule, in the packet this all hangs off — says a set claim is *"re-measured
+at the point of citation, or quoted with the SHA and the command it was measured
+at"*. A conditional discharge whose resolution lives only in a journal entry makes
+every later reader of the plan re-derive whether the condition fired; the plan is
+the instrument a sign-off round reads, and it must be readable alone. So both
+sites take the resolution in place: `AP-M04` §9's discharge row and
+`RV-0081-VERDICT` §6's first bullet, each naming run, job, SHA, attempt, both
+steps by number and name, and each pointing at the other.
+
+**No new change-log row was minted for it.** A §9 row records work absorbed into
+the plan; this is a stamp on an existing row's own claim, and minting a row for it
+would make the plan's change log report a round that did not happen. The
+in-place-with-a-date form is this document's own (the `M04-J3` cell's struck
+quotation, 2026-08-11). Counts re-measured before and after: **82 rows, 82
+distinct ids, 58 ASSERT, 12 NO-ASSERT, 6 NO-STIMULUS, 5 STRUCTURAL, 1 GAP, 0
+RULING**, four change-log rows — unchanged in both directions.
+
+#### 9. Act three — repairing my own defects in a closed packet without erasing the evidence that convicts them
+
+`J-dv_lead-0179` Open-question 4 said these were for the next packet, on the
+ground that *"editing an issued packet's body to erase a defect the verdict
+convicts would remove the evidence the verdict rests on"*. The dispatch overrides
+the venue and keeps the ground — repair in place, annotated, struck-visible,
+original preserved. **That resolves my objection rather than overruling it**: my
+objection was to *erasure*, not to *repair*, and a strike leaves the convicted
+text readable while stopping the next reader from executing it. I record the
+change of position explicitly, because a seat that quietly reverses its own stated
+reason is harder to audit than one that argues with itself in public.
+
+**And the venue argument now cuts the other way, which is what actually changed my
+mind.** §6.1's master table is the source the **next** round of this chain copies
+its lengths and placements from; family G's round will read it. A defect left
+standing in a source table is executed by the round that reads it, not by the
+round that wrote it. Deferring the repair to a successor packet would have meant
+the successor being written **from** the defective table.
+
+**(a) MATERIAL, two sites, both repaired.** §6.1's prose and §6.2's assertion 6
+called wire octet 59 at `P = 60` a *"pad octet"* with value `0x00`. `P = 60` has
+**pad count zero** — the master table three paragraphs above says `pad = 0` on
+that row, so the packet contradicted itself inside one section — and that octet is
+the frame's **last content octet**, value `1 + Int.rem 59 127 = 60 = 0x3C` under
+this round's builder, which guarantees `0x01 … 0x7F` and never emits `0x00`
+*"because that is what keeps a padding claim honest"*. **The one value I specified
+is the one value it provably cannot hold.** The placement half (lane 3 of `C+9`)
+is correct, is unaffected, and is what the landed unit asserts. Struck with an
+adjacent amendment block carrying the grounds, the date, this entry's id and the
+fact that tb_writer reported it instead of adopting it — which is why this is an
+amendment to a record and not a bug in a bench.
+
+**(c) MINOR, four sites, all repaired, and the root cause struck as well as the
+numeral.** `git show 2a0a2b1:test/xgmii_tx_64/bench.mli | grep -c '^val '` returns
+**12**, re-measured at the moment of writing per `LH-0179-1`; the packet said
+eleven at §5.1's table cell, §5.2's bullet, §11.2 item 1 and `M-19` (prose and
+base-figure column). **I struck the slash in `decoder`/`strobes` too**, not just
+the four numerals, because the slash is the defect: the enumeration listed twelve
+items and counted eleven, and a repair that fixes four counts and leaves the
+construction that produced them repairs the symptom. One amendment note (§5.1n)
+carries the measurement, the command, the twelve names and the post-landing figure
+of **13**, so the next packet quotes a measured figure with its command instead of
+inheriting mine.
+
+**A fifth numeral, found while doing this, and it is instructive rather than
+embarrassing.** `RV-0081-VERDICT` §4(c) cites the four sites by line number — 348,
+360, 913, 981. Measured at `6291947`, `aabae58` and `cddad51`: **correct**.
+Measured at `8d70da1` and at HEAD: **351, 363, 916, 984** — off by three, because
+the same commit that carried the verdict also moved the packet's header state from
+`ISSUED` to `ACCEPTED` and that edit added three lines above them. So a numeral
+re-derived correctly at the moment of writing went stale **inside its own commit**,
+by the other act of the same round. I have **not** edited the verdict's line
+numbers: they are true at the SHA the verdict was measured at and say so; what I
+did instead is cite my amendments by **section anchor** (§5.1n) rather than by
+position. Banked as `LH-0180-3`.
+
+#### 10. The countersignature, stated so its scope cannot be read wider than it is
+
+**COUNTERSIGNED**, narrowly, at `3951b05` — the SHA every reading above was made
+at, and the signed text is byte-unchanged at `89ef55e`, the head this round
+finishes on (`git diff 3951b05 89ef55e -- docs/specs/` empty), so the signature
+holds at either and needs no re-reading — on what `0b7be1f` **adds** to §0.5:
+the output offset q (both forms, the positional one primary), the identity
+**L = 8·ΔC − h + q**, the word delay **ΔC = (L + h − q)/8**, the whole-number
+consequence **(L + h − q) ≡ 0 (mod 8)** with its M07 and M15 figures, the
+**Cycles** coincidence clause, and the straddle test **(h − q) ≡ 0 (mod 8)** with
+its receive- and transmit-path verdicts. Every one derived from scratch above and
+then checked against the two module specifications the figures come from.
+
+**This signature does NOT cover**: the term-versus-scope ruling as an
+adjudication (not mine to make); SPEC-M07 §7 and SPEC-M15 §7 as documents (the
+§13 row says no countersignature is owed on the module diffs, and I give none —
+I verified only the four figures §0.5 itself quotes from them); the *"Provenance
+and authority"* recital; or any claim about M07's or M15's **RTL**, which I have
+not read and which no DV instrument has yet touched.
+
+**Two MINOR findings filed, neither holding the diff out of force** — `Q-1`
+(§5, the seven unswept general-rule restatements, the template site load-bearing)
+and `Q-2` (§7, the straddle bullet's universal at the ΔC word). The in-force
+disposition follows the architect's own ground and I agree with it on the
+measurement: holding the amended text out of force would leave the **unrepaired**
+straddle test governing in the interim, and that one licenses an assertion no
+conformant M07 or M15 can pass. **A repair being read before it is signed is
+strictly better than its defect governing while it waits.**
+
+### Actions
+
+1. **Derived all four signed statements from first principles** (Reasoning 2)
+   before reading either module's §7 recital, then checked them against
+   SPEC-M07 §7, SPEC-M15 §7 and SPEC-M04 §7.
+2. **Measured q at M04 by two independent routes** and re-derived all four of
+   SPEC-M04 §7's pinned constants and all four family-J rows under the amended
+   statements (Reasoning 4). No figure and no row moves.
+3. **Ran the retired-form census** across `docs/specs/`, classified the
+   twenty-two hits, and filed `FINDING Q-1` on the seven class-B sites.
+4. **Derived the counter-instance to the straddle bullet's universal** and filed
+   `FINDING Q-2`, with the positive corollary recorded alongside it.
+5. **Measured the consequence in my own lane**: `test/monitors/octet_time`'s
+   `word_cycles` / `derived_errors`, its caller set, and the three expect blocks
+   that print the retired sentence. Repair named, scoped and **not** performed.
+6. **Read the completing CI run at the source** (job record, thirteen steps by
+   name, number and conclusion) and **annotated both void-condition sites in
+   place** — `AP-xgmii_tx_64` §9's discharge row and `WO-0081`
+   `RV-0081-VERDICT` §6 — with run, job, SHA, attempt and both steps.
+7. **Repaired my two upheld self-defects in `WO-0081`, struck-visible**: the
+   pad-octet-59 claim at two sites with an adjacent grounds block, and the
+   eleven-vs-twelve count at four sites plus the slash-joined enumeration that
+   caused it, with one amendment note (§5.1n) carrying the measurement.
+8. **Re-ran the plan's status-cell census** before and after every edit.
+9. **This entry.**
+
+**Not done, deliberately**: no `docs/**` file touched (Trigger — the precedent's
+mechanics require it); no `SO-` opened or offered; no row added, converted or
+statused in any attack plan; no instrument or bench edited; no RTL read; no
+`bin/**` path opened or staged; **no commit, no push**.
+
+### Evidence
+
+**Precheck and post-checks.**
+
+    git status --short   # at entry: " M bin/generate.ml" only (the declared sibling)
+    git rev-parse HEAD   # at entry: 3951b052ea74c12d003045aa857b92f322883164
+    git rev-parse HEAD   # at exit:  89ef55ee533ac54e4cd7fd8dcdc28ed418c0b164
+    git log --oneline 3951b05..HEAD   # one commit, rtl_lead's declared-lane return
+    git diff 3951b05 HEAD -- test/ tools/ agents/handoffs/ docs/reports/latency/ \
+        docs/specs/ agents/journals/claude_dv_lead_agent.v09.md   # empty
+    git status --short   # at exit: my three files only; the sibling's edit committed
+
+**The completing run, read from the job record** (GitHub-hosted, not reproducible
+from a checkout — ADR-0003/F5), API path
+`/repos/renatom11/agentic-fpga/actions/jobs/93807078426`:
+
+    id 93807078426 · run_id 31499963043 · name "build" · run_attempt 1
+    head_sha 8d70da17738e1eec084c8e56e758bc540a7772c1 · conclusion "success"
+    step 5  Build                                                        success
+    step 6  Run tests (expect tests, waveform snapshots)                  success
+    step 8  Verify nothing was left unpromoted or non-deterministic       success
+    (steps 1–4, 7, 9, 10 and the three post steps: success — all thirteen)
+
+and reproducible from a checkout at this SHA:
+
+    git show 8d70da1 --stat        # names test/xgmii_tx_64/test_m04_d.ml (+2/−1)
+    git show 8d70da1:test/xgmii_tx_64/test_m04_d.ml | sed -n '392p'
+    # -> the promoted [%expect] block: 0x08 0x89 0x12 0x04 = 0x04128908
+    git diff 8d70da1 HEAD -- test/   # empty
+
+**The `val` count, re-measured at the moment of writing** (`LH-0179-1`):
+
+    git show 2a0a2b1:test/xgmii_tx_64/bench.mli | grep -c '^val '   # 12
+    grep -c '^val ' test/xgmii_tx_64/bench.mli                      # 13
+
+**The retired-form census** (Reasoning 5), the command and its class-B residue:
+
+    grep -rn "(L + h)" docs/specs/
+    # 22 hits. Class A (per-module evaluations at q = 0): 10 module files.
+    # Class B (general-rule statements), 7:
+    #   docs/specs/requirements.md:358, :419      (§0.5's own two analogies)
+    #   docs/specs/requirements.md:753            (REQ-019, normative)
+    #   docs/specs/requirements.md:761, :790      (§1.1 lead-in, convenience column)
+    #   docs/specs/architecture.md:279            (the paired copy)
+    #   docs/specs/SPEC-TEMPLATE.md:211, :214     (the generator — one site, two lines)
+
+**The instrument census** (Reasoning 6):
+
+    grep -rn "M07\|M15\|eth_axis_tx\|ip_eth_tx_64" test/ --include=*.ml --include=*.mli
+    # zero hits — the architect's claim, verified
+    grep -rn "word_cycles" test/ --include=*.ml --include=*.mli
+    # 10 hits, all inside test/monitors/octet_time.{ml,mli} and its own test:
+    # no caller elsewhere in the suite
+
+**The attack plan's counts, by a status-cell pass over every row table, before
+and after this round's single-cell edit:**
+
+    82 rows · 82 distinct ids · 58 ASSERT · 12 NO-ASSERT · 6 NO-STIMULUS
+    · 5 STRUCTURAL · 1 GAP · 0 RULING · 4 change-log rows · outstanding 57 of 82
+
+unchanged in both directions. The M04 discharge count remains a **hand count**
+with its method stated: `tools/dv_checks.sh` still counts no M04 row (`DVC-1a`
+owed).
+
+**The arithmetic in Reasoning 2 and 4 is a derivation, not an execution**, and is
+checkable by a reader with requirements.md §0.5, SPEC-M04 §7, SPEC-M07 §6.1/§7 and
+SPEC-M15 §6.1/§7 and no toolchain. **Nothing in this entry is a verification result
+about any module**, and no `SO-` is opened or offered.
+
+**Journal size, for the rotation arithmetic** (Open-questions 5):
+`wc -c agents/journals/claude_dv_lead_agent.v09.md` was **257 135** bytes before
+this entry; `JOURNAL_SOFT_MAX` is 256 KiB = 262 144 (ADR-0017 §5/§6.2).
+
+### Outcome
+
+**DoD met on all three acts.**
+
+1. **Countersignature PAID**, narrowly and with its scope stated
+   (Reasoning 10): q, both identities, the whole-number bullet, **Cycles** and
+   the straddle test — each derived from scratch, each checked against the
+   modules whose figures the signed text quotes. **Two MINOR findings filed,
+   neither holding the diff out of force**; my own flag discharged by measurement
+   with the answer **q = 0 at M04, no constant moves, family J untouched**. The
+   transcription into requirements.md §13 is the orchestrator's clerical act and
+   **no `docs/**` file was written by me**.
+2. **The resolving run recorded on both claims in place.** The void condition did
+   not fire: `RV-0081` ACCEPT and the twelve-row discharge stand unconditionally,
+   and `J-dv_lead-0179`'s Open-question 1 is **CLOSED**.
+3. **Both upheld self-defects repaired**, struck-visible with grounds, at all six
+   sites plus the enumeration that caused four of them.
+
+Handoff: `agents/handoffs/WO-0081_tb-m04-families-d-e-g9.md` (three amendment
+sites and the §6 resolution) and `test/attack_plans/AP-xgmii_tx_64.md` (§9's
+discharge row) to the orchestrator for commit; `FINDING Q-1` and `FINDING Q-2` to
+architect_docs_lead through the orchestrator; the `octet_time` repair to my own
+next round.
+
+**Lessons-harvest note** (ADR-0018, PROTOCOL §7). Span `J-dv_lead-0179` …
+`J-dv_lead-0180`. The five candidates banked at `0178` items 7(a)–(e) and
+`LH-0179-1` are carried forward unchanged. **Three new candidates, LH1–LH3
+discharged:**
+
+- **`LH-0180-1`** — *A quantity added to a shared identity is not installed until
+  every restatement of that identity has been found by search rather than by
+  recall — including the template that generates new ones.* **LH1**: this round's
+  `FINDING Q-1`, where a term repaired four statements inside one section and left
+  seven printed restatements of the retired forms elsewhere in the same document
+  set, two of them inside the amended section and one in the authoring template
+  from which both defective instances had been written. **LH2-g**: no proper noun;
+  the observable is that after an identity changes, a search for its printed form
+  returns only the new one, or the sites returning the old one are classified in
+  writing as evaluations rather than rules. **LH3**: without it, the repaired rule
+  and its stale restatements coexist, the stale one is what the next author copies,
+  and the defect regenerates at the next instance instead of ending at this one.
+- **`LH-0180-2`** — *A checker parameterised over the quantities a rule names is a
+  site of that rule, and no search for the rule's subjects will find it.*
+  **LH1**: this round's Reasoning 6 — the amending seat's impact census correctly
+  found no test naming either affected module, while the one committed instrument
+  that would refuse both takes their constants as arguments and so names neither.
+  **LH2-g**: no proper noun; the observable is that a rule change's impact census
+  enumerates the machinery that *computes* the rule as well as the text that
+  *cites* it. **LH3**: without it, a specification repair passes a clean impact
+  census while leaving executable machinery that refutes the repaired
+  specification, and the contradiction surfaces later as a red test against
+  correct work — the most expensive shape a defect can take, because it is read as
+  a defect in the work.
+- **`LH-0180-3`** — *A citation by position is invalidated by any edit above it,
+  including one made in the same commit; cite an anchor that moves with the text.*
+  **LH1**: this round's Reasoning 9 — four line numbers re-derived correctly at
+  the moment of writing went stale inside their own commit, because the other act
+  of the same round inserted three lines above them. **LH2-g**: no proper noun.
+  **LH3**: without it, a numeral that satisfied the re-derivation rule still
+  misdirects the next reader, and the rule that was supposed to guarantee accuracy
+  is read as having failed when it did not — which is worse than an obviously
+  stale figure, because it discredits the discipline rather than the datum.
+  *Relation to `LH-0179-1`, stated rather than left implicit*: that rule says
+  re-derive the numeral; this one says a positional numeral is not repairable by
+  re-derivation at all, because its referent moves after the derivation is
+  correct.
+
+**Nil yield on war stories this span.**
+
+### Open-questions
+
+1. **`FINDING Q-1` (MINOR) and `FINDING Q-2` (MINOR)**, both against `0b7be1f`,
+   both architect_docs_lead's to rule, neither holding the diff out of force.
+   `Q-1`'s seven sites are listed with file and line in Evidence; **site 7,
+   `SPEC-TEMPLATE.md` §7, is the one I would rule first**, because it is the only
+   one that manufactures new instances. `Q-2`'s cure is one qualifier.
+2. **The `octet_time` repair is OWED, by me, and is named rather than deferred
+   silently**: `word_cycles` gains `?output_offset`, `derived_errors`' message
+   takes the third term, `octet_time.mli`'s two prose citations and
+   `test_octet_time.ml`'s three expect blocks move in the same commit, and
+   `AP-xgmii_tx_64` §4.D's `h ≡ 0` citation is re-pinned with them. Nothing is red
+   today and no bench is wrong; the debt is that the first M07/M15 bench reaching
+   for the standing tagger gets a false refusal.
+3. **The countersignature transcription into requirements.md §13 is the
+   orchestrator's**, per the `J-orchestrator-0244`/`0250` precedent. **My scope
+   forbids me to write it and this round did not.** The authority is this entry,
+   §10 of Reasoning.
+4. **The declared sibling wrote into this tree for most of this round and then
+   committed out of it** (`89ef55e`, Trigger). At exit the only modified paths are
+   my three, so the `git add -A` hazard is closed **by the sibling's timing and not
+   by any property of the arrangement** — had it finished ten minutes later, a
+   `-a` commit here would have violated R1, R4 and R7 in one act, exactly as it
+   would have last round. My `Files-in-this-commit` is exact and is the authority
+   for staging. This is `J-dv_lead-0179` Open-question 2(b) at its **second
+   consecutive occurrence**, acknowledged by the dispatch as standing on the
+   orchestrator's ledger; recorded again so the ledger item has two instances
+   behind it, and with the sharper form the second instance supplies: **the
+   precheck and the pre-commit check are different measurements, and this round
+   is the one where the interval between them contained a foreign commit.**
+5. **Rotation.** v09 was **257 135** bytes before this entry and this entry
+   carries it past `JOURNAL_SOFT_MAX` (262 144), so `agent_commit.sh` will emit
+   `WARN-JOURNAL` on this commit — expected, advisory, not a failure. **Rotation
+   to `agents/journals/claude_dv_lead_agent.v10.md` is owed at my NEXT entry**,
+   per ADR-0017 §4.4/§5's *"rotate to volume NN at your next entry"*, carrying the
+   chain header, `Continues-from: J-dv_lead-0180`, and v09's frozen sha256 and
+   byte count measured at that commit.
+6. **`DVC-1a` remains unbuilt** and every M04 count in this round is a hand count
+   with its method stated. It must land before any `SO-` quotes an M04 coverage
+   fraction. Carried from `J-dv_lead-0179` item 6, unchanged.
+7. **Considered and rejected, recorded so a later round does not re-open it as if
+   it were new**: adding a q row or a q citation to `AP-M04` §4.J or to any M04
+   row. q is 0 there, nothing moves, and writing a zero into a plan at a module
+   whose specification deliberately states none is the enumeration the ruling's own
+   Ground 2 warns against. The right place for q at M04 is nowhere.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0081_tb-m04-families-d-e-g9.md
+- test/attack_plans/AP-xgmii_tx_64.md

@@ -348,7 +348,7 @@ at this tree** (`AP-M04` §0.1(iii)'s polarity rule, §9.3).
 
 | What | Where | State | You use it for |
 |---|---|---|---|
-| The whole M04 bench layer | `test/xgmii_tx_64/bench.mli` (11 exported values) + `bench.ml` | **EXISTS, CI-green on ten units at `af06c62`, byte-identical since.** `create`, `sample_cycle`, `run_lengths`, `first_accepted_cycle`, `wire_frame`, `wire_octets`, `assert_instruments_clean`, `content_octets`, `source_words`, `poison`, `decoder`/`strobes` | Everything. **Read `bench.mli` in full first** |
+| The whole M04 bench layer | `test/xgmii_tx_64/bench.mli` (~~11~~ **12** exported values — AMENDMENT, §5.1n) + `bench.ml` | **EXISTS, CI-green on ten units at `af06c62`, byte-identical since.** `create`, `sample_cycle`, `run_lengths`, `first_accepted_cycle`, `wire_frame`, `wire_octets`, `assert_instruments_clean`, `content_octets`, `source_words`, `poison`, ~~`decoder`/`strobes`~~ **`decoder`, `strobes`** | Everything. **Read `bench.mli` in full first** |
 | The FCS oracle | `test/golden/crc32_ref.mli`, reached through `test/xgmii/frame.mli`'s `fcs` / `with_fcs` | **EXISTS**, anchored on REQ-303's published `0xCBF43926` in its own suite. **The one external-anchor obligation at M04 that is discharged today** | Every expected FCS in family D and in `M04-G9` |
 | `Frame.pad_to_60` | `test/xgmii/frame.mli` | **EXISTS** — REQ-203's own arithmetic, committed and unit-tested. Takes the DA-through-payload string and returns the padded DA-through-payload string. **It does not append an FCS** (trap **T8**) | The oracle's input at every `P < 60` |
 | `Frame.residue_ok` | `test/xgmii/frame.mli` | **EXISTS** — REQ-304's residue over a whole frame including its FCS | `M04-D2` only |
@@ -358,10 +358,28 @@ at this tree** (`AP-M04` §0.1(iii)'s polarity rule, §9.3).
 | A source-side stall scheduler | — | **NOT BUILT AND NOT COMMISSIONED.** Family G's own round builds it, with its first consumer. Building it here is `BM6`, and `M04-G9` does not need it (§1.4) | — |
 | A per-octet latency tagger | `test/monitors/octet_time.mli` | **NOT APPLICABLE AS BUILT** (`AP-M04` §7 item T-4). **Do not instantiate it** (`BM9`) | — |
 
+> **§5.1n — AMENDMENT, 2026-08-11, dv_lead, `J-dv_lead-0180`. MINOR, four sites:
+> this table's *Where* cell, §5.2's first bullet, §11.2 item 1 and bar `M-19`
+> (both its prose and its base-figure column). Struck, not deleted:
+> `RV-0081-VERDICT` §4(c) convicts the figure and the strike is what keeps that
+> conviction readable.** `git show 2a0a2b1:test/xgmii_tx_64/bench.mli | grep -c
+> '^val '` returns **12**, not eleven: `create`, `decoder`, `strobes`,
+> `sample_cycle`, `poison`, `content_octets`, `source_words`, `run_lengths`,
+> `first_accepted_cycle`, `wire_frame`, `wire_octets`,
+> `assert_instruments_clean`. **The root cause is legible in the row above**: the
+> enumeration slash-joined `decoder`/`strobes` as one item, so it listed twelve
+> values and counted eleven — which is why the slash is struck here too rather
+> than only the numeral. **Nothing rode on it**: the bar's substantive condition
+> is *every existing signature byte-identical*, which held, and tb_writer
+> reported the count instead of adopting it. The figure after `run_frames`
+> landed is **13** (`grep -c '^val ' test/xgmii_tx_64/bench.mli` at this tree),
+> and the next packet of this chain quotes **that** figure with its command, not
+> this one.
+
 ### 5.2 What you may NOT change in the landed layer
 
-- **The eleven existing values of `bench.mli` keep their signatures byte for
-  byte.** You add; you do not alter. Bar **M-19**.
+- **The ~~eleven~~ twelve existing values of `bench.mli` keep their signatures
+  byte for byte** (AMENDMENT, §5.1n). You add; you do not alter. Bar **M-19**.
 - **`sample_cycle`'s body is not touched at all.** Its eight-step ordering is
   `WO-0080` §5.2's, it is CI-proven, and the `Before`-view acceptance decision is
   what every constant in §6 is stated against (trap **T1**).
@@ -514,10 +532,30 @@ is the one definition.
 **the same cycle** and at **eight different lanes** — §4.2(a), trap T3.
 
 **Read the FCS-lanes column, because it is `M04-D4`'s whole claim.** At `P = 60`
-the last pad octet is at lane 3 of `C+9` and the FCS occupies lanes 4–7 of **that
+~~the last pad octet~~ **the last content octet** is at lane 3 of `C+9` and the
+FCS occupies lanes 4–7 of **that
 same word**; at `P = 64` the last frame octet is at lane 7 of `C+9` and the FCS
 occupies lanes 0–3 of the **next** word. A design that always begins the FCS on a
 word boundary is conformant-looking at the first and wrong at the second.
+
+> **AMENDMENT — 2026-08-11, dv_lead, `J-dv_lead-0180`. MATERIAL, two sites (this
+> one and §6.2 assertion 6). The struck words are struck and not deleted, because
+> `RV-0081-VERDICT` §4(a) convicts them and a packet that erases the text its own
+> verdict rests on destroys the evidence.** `P = 60` has **pad count zero** — the
+> master table three paragraphs above says `pad = 0` on that very row, so this
+> sentence contradicted its own section. Wire octet 59 at `P = 60` is the frame's
+> **last content octet**, and its value under this round's content builder is
+> `1 + Int.rem 59 127 = 60 = 0x3C`. It is the one value that octet **provably
+> cannot hold as `0x00`**: `bench.mli`'s `content_octets` guarantees the range
+> `0x01 … 0x7F` and says in its own words that never emitting `0x00` *"is what
+> keeps a padding claim honest"*. **The placement half is correct and does not
+> move** — lane 3 of `C+9` is right, and is what the landed unit asserts, against
+> a value derived from `content_octets` rather than from this text. **Nothing
+> landed on the defect**: tb_writer reported it instead of adopting it (`BM3`,
+> class **D5**), which is why this is an amendment to a record and not a bug in a
+> bench. It is repaired **in place** because §6.1's master table is what the next
+> round of this chain copies from, and a defect left standing in a source table is
+> executed by the round that reads it, not by the round that wrote it.
 
 **Check three `tkeep` values by hand before you trust the column** (`tkeep` =
 `0xFF` on words `0 … W−2` and `(1 << (P − 8(W−1))) − 1` on the `tlast` word):
@@ -544,7 +582,7 @@ worth more at eight lengths than at one.
 | 3 | **`M04-D1`**, stated as its own check so a length mismatch is not read as a value mismatch | `Frame.fcs …` returns exactly **4** octets |
 | 4 | **`M04-D2`**: `Frame.residue_ok` over the **whole** decoded frame (DA through FCS) | `true` |
 | 5 | **`M04-D4`**: for each of the four FCS octets, the `(cycle, lane)` it occupies on the wire | index `k` is at lane `Int.rem k 8` of the sample at cycle `C + 2 + k/8` — read the raw `sample.wire` at that cycle and compare that lane's data octet. The table's FCS-lanes column is the expansion, per length |
-| 6 | **`M04-D4`**'s contrast, asserted explicitly at the two named lengths | at `P = 60`: lane 3 of `C+9` carries pad octet 59 (`0x00`) and lanes 4–7 of `C+9` carry the FCS. At `P = 64`: lane 7 of `C+9` carries content octet 63 and lanes 0–3 of `C+10` carry the FCS |
+| 6 | **`M04-D4`**'s contrast, asserted explicitly at the two named lengths | at `P = 60`: lane 3 of `C+9` carries ~~pad octet 59 (`0x00`)~~ **content octet 59 (`0x3C` = `1 + Int.rem 59 127`) — `P = 60` has pad count zero; AMENDMENT 2026-08-11, `J-dv_lead-0180`, grounds at §6.1** and lanes 4–7 of `C+9` carry the FCS. At `P = 64`: lane 7 of `C+9` carries content octet 63 and lanes 0–3 of `C+10` carry the FCS |
 | 7 | The standing instruments | `assert_instruments_clean t ~row`, once per run |
 | 8 | **`M04-D5`** (NO-ASSERT), in the unit title and round-wide | nothing in this unit or anywhere in this round asserts the CRC **enable**, its `octet_count`, or any internal of the CRC path; §6.3 item 1 leaves the register placement and update mechanism unconstrained, and a design driving `octet_count` = 0 on a held cycle is convicted at **M02's own domain check**, not here |
 
@@ -913,8 +951,9 @@ family-G row where no family-G round would look for it.
 
 1. `test/xgmii_tx_64/bench.mli` — **extended**: one new value, `run_frames`,
    documented in the file's own docstring style (the landed `.mli` is a contract
-   document, not a signature list, and yours must match its register). The eleven
-   existing values keep their signatures byte for byte.
+   document, not a signature list, and yours must match its register). The
+   ~~eleven~~ twelve existing values keep their signatures byte for byte
+   (AMENDMENT, §5.1n).
 2. `test/xgmii_tx_64/bench.ml` — **extended**: `run_frames` implemented,
    `run_lengths` re-expressed over it (§5.3), the run-length formula left in
    exactly one place.
@@ -981,7 +1020,7 @@ of standard.
 | **M-16** | worker | your own journal `Inputs` section, read back | — | no `libs/**`, no `top/**`, no `rtl_snapshots/**`, no `test/third_party/**` path |
 | **M-17** | worker | file search for infix ` mod ` across `test/xgmii_tx_64/` | **2** occurrences, **both non-expression**: `bench.mli:151` (inside a docstring) and `test_m04_b.ml:255` (inside a string literal) | **zero occurrences in an expression position.** Stated as an expression bar and not as a count, because the base is 2 and both base hits are legitimate. **Read every hit** — this is the bar `FINDING WO-0080-1(d)` commissioned and it is the one that would have caught last round's entire defect set at your own seat |
 | **M-18** | worker | file search for `print`/`printf`/`print_s`/`Stdio` across `test/xgmii_tx_64/`, then Read every hit | **0** occurrences | **exactly one** printing site in the whole directory, in **U13**, and its argument is derived from **`Frame.fcs`** — never from `wire_octets`, never from a `sample`, never from a decoded frame. **Quote the call** (§6.0(d) rule 3, trap T13) |
-| **M-19** | worker + **dv** | Read `bench.mli`'s eleven landed values back and compare to the base file | 11 exported values | **every existing signature byte-identical**; the only change is the addition of `run_frames` and its docstring. dv re-checks by diff |
+| **M-19** | worker + **dv** | Read `bench.mli`'s ~~eleven~~ **twelve** landed values back and compare to the base file (AMENDMENT, §5.1n) | ~~11~~ **12** exported values | **every existing signature byte-identical**; the only change is the addition of `run_frames` and its docstring. dv re-checks by diff |
 
 ---
 
@@ -2096,6 +2135,27 @@ tripwire itself never had to fire.
   strong and measured (sixteen blocks, one changed, no exception text anywhere),
   but it is evidence about the run that happened, not about the one that has
   not.
+
+  > **RESOLVED — 2026-08-11, dv_lead, `J-dv_lead-0180`. The void condition did
+  > NOT fire; this ACCEPT stands unconditionally from this annotation.** The
+  > completing run is CI `build` run **31499963043**, job `build`
+  > **93807078426**, `head_sha` **`8d70da1`** — the commit that carries the
+  > promotion — `run_attempt` **1**, job conclusion `success`. Read by name,
+  > number and status from the job record itself and not from a badge or from a
+  > dispatch's summary: step **6** *Run tests (expect tests, waveform snapshots)*
+  > `success`, step **8** *Verify nothing was left unpromoted or
+  > non-deterministic* `success`; every other step of that job is `success` too,
+  > including *Build*, *Generate RTL*, *DV mechanical checks* and the
+  > *Abort-bit availability quantifier*. Two facts make the run a reading of
+  > **this** bench rather than of a neighbour: `git show 8d70da1 --stat` names
+  > `test/xgmii_tx_64/test_m04_d.ml` with the promoted `[%expect]` line present
+  > at that SHA, and `git diff 8d70da1 HEAD -- test/` is **empty**. The
+  > twelve-row discharge in `AP-M04` §9 carries the identical resolution, added
+  > in the same act. *The annotation is written on the claim and not only in the
+  > entry that read it, because §9.1 requires a claim to be re-measured at the
+  > point of citation or to carry the measurement it was made at — a void
+  > condition whose resolution lives only in a journal makes the next reader of
+  > this packet re-derive it.*
 - **No `SO-xgmii_tx_64.md`.** `BAR T1` stays **SHUT**; `AP-M04` §0.2 item 4's
   REQ-206 bar stays in force; the sign-off is not opened or offered.
 - **REQ-202 and REQ-305 are claimed; REQ-206 is not.** Family D discharges
