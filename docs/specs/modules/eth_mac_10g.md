@@ -238,12 +238,39 @@ Anything not listed here is constrained by this specification.
 
 ## 7. Timing contract
 
-- **Latency.** **Zero octet times added, in both directions.** M05's
-  receive-port constants are M03's exactly — L = 16 octet times at a lane-0
-  start, 12 at a lane-4 start, front offset h = 8 and 12, word delay ΔC = 3
-  (SPEC-M03 §7) — and its transmit-port constant is M04's, 8 octet times
-  (SPEC-M04 §7). The measurement events are M03's and M04's; M05 introduces
-  none of its own because a wire is not a measurement event.
+- **Latency. Zero octet times added, in both directions — and two constants on
+  the transmit side, because M04 pins two and naming which is which is the
+  requirement.** M05's receive-port constants are M03's exactly — L = 16 octet
+  times at a lane-0 start, 12 at a lane-4 start, front offset h = 8 and 12, word
+  delay ΔC = 3 (SPEC-M03 §7). Its transmit-port constants are M04's exactly, and
+  M04 inserts eight octets ahead of every frame, so the delay between the two
+  **events** REQ-210 names and the **per-octet latency** requirements.md §0.5
+  defines are different quantities with different values (SPEC-M04 §7,
+  `FINDING AP-M04-1`):
+
+  | Quantity, at M05's transmit port pair | Value | Whose |
+  |---|---|---|
+  | **REQ-210's event delay** | **1 cycle = 8 octet times** | M04's, relayed |
+  | **L (octet times), §0.5** | **16** | M04's, relayed |
+  | h, q | **0** and **0** — M05 removes nothing, and its child's insertion is a whole word | §0.5's default assigns q here |
+  | Word delay ΔC = (L + h − q)/8 | **2** cycles | M04's, relayed |
+
+  **Until 2026-08-11 this bullet said** *"its transmit-port constant is M04's,
+  8 octet times"* — one figure, unnamed, in a clause built in exact parallel with
+  the receive-side clause above it, which names L. Eight octet times is M04's
+  **event delay**; its L is 16, and this bullet's own *"zero octet times added"*
+  is what refutes the sentence, since a module adding zero has its child's L and
+  not its child's other figure. A composer of M20's transmit chain reading it
+  carried **8 where 16 belongs** — not a rounding but a factor of two in L
+  (**`FINDING Q-8`**, §13). The measurement events are M03's and M04's; M05
+  introduces none of its own because a wire is not a measurement event, and it
+  adds zero to **either** transmit figure.
+
+  **Pinning L here is not an idle-injection licence.** REQ-016's idle tolerance
+  does not extend to this port (**Handshake rules** below, and SPEC-M04 §7's
+  `FINDING AP-M04-2`): a source word required and not presented at this interface
+  is REQ-206's underflow, not a gap, so no bench may build a REQ-016 injection
+  wrapper at M05's transmit source interface and measure L across it.
 
   Consequently M05 consumes **none** of requirements.md §1.1's allocation: the
   4-cycle ceiling on `Xgmii_rx_64` is charged against M03's 3 and M05 adds 0.
@@ -342,12 +369,16 @@ Filled in at `P1-spec-freeze`. All four rows are required (charter §5).
 
 ## 13. Change log
 
-Post-freeze changes only. This spec has none. The WO-0011 diff cycle changed
-SPEC-M03 §6.1, §6.2, §6.3, §7 and §9 and SPEC-M04 §4.3, §6.2, §6.3 and §7;
-every one of those diffs is editorial and none moves a port, so §4.1's wiring,
-§6.1's connection table and §7's "zero octet times added" are unaffected. M05's
-receive-port constants remain M03's unchanged (L = 16 / 12, h = 8 / 12, ΔC = 3).
+Post-freeze changes only. The row below is this specification's **first**, and it
+moves no figure M05 itself produces: M05 adds zero octet times in both directions
+before it and after it, and every constant in §7 is a child's. The WO-0011 diff
+cycle changed SPEC-M03 §6.1, §6.2, §6.3, §7 and §9 and SPEC-M04 §4.3, §6.2, §6.3
+and §7; every one of those diffs is editorial and none moves a port, so §4.1's
+wiring, §6.1's connection table and §7's "zero octet times added" are unaffected.
+M05's receive-port constants remain M03's unchanged (L = 16 / 12, h = 8 / 12,
+ΔC = 3), and its transmit-port constants remain M04's unchanged — which is
+precisely what the row below makes the section say.
 
 | Date | Change | Breaking? | ADR | Journal |
 |---|---|---|---|---|
-| — | — | — | — | — |
+| 2026-08-11 | **`FINDING Q-8` (MINOR, dv_lead, `J-dv_lead-0182` §9) SUSTAINED — §7 named M04's *event delay* as M05's transmit-port latency constant, at the fifth site of the `C-RL-8` class and the first at a wrapper.** The **Latency** bullet read *"its transmit-port constant is M04's, **8 octet times** (SPEC-M04 §7)"*. SPEC-M04 §7 pins **two** constants and says in terms that naming which is which is the requirement: REQ-210's **event delay** is 1 cycle = 8 octet times, and §0.5's **per-octet latency** is L = **16** with h = 0 and ΔC = 2. M05's sentence pinned one figure, did not name which, and stood in exact parallel with a receive-side clause that names L — so it read as a latency, and requirements.md §0.5's inserting-module clause (*"a specification pinning both SHALL name which is which"*) is what it fails. **The bullet's own first sentence refutes it**: a module adding *zero octet times in both directions* has its child's L, and M04's L is 16. §7 now carries both figures in a table with h, q and ΔC, quotes the struck reading in place, and records that pinning L here is not an idle-injection licence (SPEC-M04 §7's `FINDING AP-M04-2`). **How it survived two complete censuses, which is the generalisable half** (the signer's `LH-0182-2`): the retired-form census was keyed on the string `(L + h)`, which this file does not contain, and the structural-wrapper survey was keyed on q = 2, which M05 is not — a site can survive two sweeps when each is keyed on a **symptom** of the class rather than on the class, and the survivors are systematically the members whose symptom is absent. M05 is the structural module whose q is benign | no — **editorial, and no value moves.** Both figures are M04's, unchanged, already pinned in SPEC-M04 §7 and countersigned there; no port, record, state, cycle or table cell of this module moves; §1.1 allocates M05 nothing and still does; no committed test computes an M05 constant. What changes is **which quantity the figure printed here is**, and that a reader composing M05's transmit chain now carries 16 rather than 8 — the error was in the reader's arithmetic, never in a design | none — the two-constants rule is requirements.md §0.5's, ruled under `C-RL-8`/`FINDING AP-M04-1` and applied here; this row chooses nothing | `J-architect_docs_lead-0044` |
