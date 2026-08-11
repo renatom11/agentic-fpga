@@ -2423,3 +2423,462 @@ this entry to the next sign-off, where three banked candidates now wait
 - agents/handoffs/BUG-0004_m04-underflow-strobe-on-a-single-word-frame.md
 - agents/handoffs/WO-0080_tb-m04-first-bench.md
 - test/attack_plans/AP-xgmii_tx_64.md
+
+## [J-dv_lead-0177] 2026-08-11T12:40Z | task:none | The repair round my own carrier named: the walk that was supposed to pay a debt of nine found the count had double-counted its own change-log row, and the sibling plan's stale ASSERT came with a third defective clause and a spec conflict nobody had reached
+
+### Trigger
+
+Orchestrator dispatch. **No siblings.** The commission is the round entry
+`J-dv_lead-0176` re-pinned this plan's debt to — *"the round commissioned to
+repair this plan"* — after finding that a carrier phrased over a **path** would
+have been discharged by accident by a round that opened `test/attack_plans/**`
+for one unrelated change-log row. This is that round: the accumulated editorial
+repairs to `AP-xgmii_tx_64`, `BUG-0004`'s routes 2 and 3 as plan representation,
+`FINDING BUG-0004-1`'s restatement, the §9 change-log discipline on every edit,
+and — my call, taken — the stale `AP-M14` family-F rows recorded at
+`J-dv_lead-0170`.
+
+**Abort-first head check, before reading anything.**
+
+    git status --short              # zero lines
+    git rev-parse HEAD              # 8ff1b20b965e7a79b5e6bc2eeef16b7dc6fb269e
+    git rev-parse --abbrev-ref HEAD # claude/fpga-hardcaml-agent-orchestration-37ceyf
+
+Byte-equal to the dispatched spawn-head `8ff1b20`, tree clean. Neither branch of
+the abort procedure was reached.
+
+### Inputs
+
+- `agents/charters/dv_lead.md` and `agents/PROTOCOL.md`, in full, before any write
+  (§3 packet classes, §4/§4.2 entry grammar and set-equality, §6 write scopes, §7's
+  harvest clause, §10's independence and evidence rules; charter §8's attack-table
+  rule, which is why §5 of the plan gains rejections in the same act as the rows).
+- **My own entries, walked rather than summarised** — this is the census the
+  dispatch asked for: `J-dv_lead-0171` (v08, its Reasoning items 5, 11, 13 and
+  Open-questions 2 and 4), and in v09 `J-dv_lead-0172` (Open-questions 2),
+  `J-dv_lead-0173` (§(c)'s three checks, the `ABS-1` filing, Open-questions 1–2),
+  `J-dv_lead-0174` (Reasoning on `M04-B1`, Open-questions 2–3), `J-dv_lead-0175`
+  (Open-questions 1–2), `J-dv_lead-0176` (Reasoning 4–7, Outcome, Open-questions
+  1–6). `J-dv_lead-0170` §(d) for the `AP-M14` rows.
+- **`test/attack_plans/AP-xgmii_tx_64.md`** whole, at the sites the walk names:
+  the header carry-forward bullet, §0.1's three standing rules, §0.2's register,
+  §1's status vocabulary and its permanence rule, §2's seven obligations, §4.B,
+  §4.C, §4.G, §4.J, §5, §6 and §6.1 (including running its own quoted homing
+  command), §7's machinery table, §7.2, §8, §9's two rows.
+- **`test/attack_plans/AP-ip_eth_rx_64.md`** §4.F, §6, §7, §8, §9.
+- **`agents/handoffs/BUG-0004_…md`** §6, §9.3, §9.4, §10.2, §10.3, §10.4 — read
+  for the two routes' exact cycles and for the carrier table's own terms.
+- **`agents/handoffs/WO-0080_tb-m04-first-bench.md`** §3.1, §3.2, §3.3, §6.0(c),
+  §6.3 — the operational cures whose plan-side text this round owes.
+- **Specifications, at the source and not through the packets that quote them**:
+  `docs/specs/requirements.md` §0.6 (all four reference-word clauses and both
+  closing notes), REQ-210 as repaired, and §13's rows for REQ-210, §0.5 and §0.6;
+  `docs/specs/modules/ip_eth_rx_64.md` §5's `ip_hdr_valid` record row, §6.1's
+  gapped paragraph and its lead paragraph, §7 entire (the latency bullet, the
+  parse-latency bullet, the handshake bullet **and its per-output-event table**),
+  §8's stress paragraph, §9's pinned strobe cycles, §10's REQ-016/REQ-606/REQ-611
+  hooks, §13's 2026-08-11 rows.
+- **Two files of my own DV tree, read post-verdict as a reviewer, for two
+  capability measurements and nothing else**: `test/xgmii_tx_64/bench.ml`
+  (`assert_instruments_clean` `:363–397`) and `test/xgmii_tx_64/test_m04_b.ml`
+  (`:225`). **No `libs/**`, `top/**` or `rtl_snapshots/**` file was opened at this
+  round, at all** — every expectation written below is spec-derived.
+
+### Reasoning
+
+**1. The walk is the census, and the walk corrects the census — which is the
+first thing I did not expect to find.** The dispatch said nine and told me to
+walk. Walking gives: four at `J-dv_lead-0171` (the poison quantifier, `M04-J3`'s
+quotation, `C-5`'s superseded deferral, the §9 landed-status row), a fifth at
+`J-dv_lead-0173` (`M04-G7`'s ground), **two** at `J-dv_lead-0174` (`M04-B1`'s
+quantifier **and "the §9 change-log row"**), an eighth at `J-dv_lead-0175` (the
+`W = 1` row) and a ninth at `J-dv_lead-0176` (the pre-loaded-handover row). **The
+§9 change-log row is in the list twice.** Its second appearance is followed by
+the clause *"whose landed-status figure must record **zero** rows discharged at
+`960c831`, not thirteen"* — which is a correction to the content of the row
+already in the list, not a second obligation. So the distinct census is **eight**,
+of which the landed-status row was paid at `J-dv_lead-0176`. I could have paid
+nine things and reported nine; instead the count is corrected in the plan's own
+change-log row with the quotation that convicts it, because **a debt total
+maintained across rounds is a claim like any other and my own `L-B01` says a count
+is quoted with its provenance or not at all**. And I checked the one place where
+being wrong would matter: `BUG-0004` §10.4's trip condition is *"a plan round that
+pays eight and not nine has missed this packet"*, and its item is the **two new
+family-G rows** — both land, so the condition is met on its own terms rather than
+on the arithmetic I just corrected.
+
+**2. One repair I paid that nobody enumerated, and the reason is a document-level
+one.** `M04-J3`'s stale quotation was the enumerated item; §8 item 1 — which still
+routed `FINDING AP-M04-1` as an **open** question to architect_docs_lead — was
+not. Curing the row and leaving the finding open two sections later leaves the
+document at odds with itself, and the next reader resolves that by trusting
+whichever site they read first. Both are the same finding's sites, so both move,
+and the change-log row says so rather than letting the extra edit look like scope
+drift. The same logic made `C-5` a **four**-site repair (header bullet, §0.2 item
+3, §2 obligation 5, §8 item 3) rather than the two the entries named: I found the
+other two by reading for the string, not by remembering.
+
+**3. Struck, never deleted — and this is the discipline the whole round runs on.**
+Every repaired ground keeps the sentence it replaces, marked struck and dated, in
+place. Two reasons, and the second is the one I would defend at audit: a reader
+who arrives with the old sentence in hand needs to find it and see it convicted,
+and **a document that silently repairs itself makes its own findings
+uncheckable** — `FINDING ABS-1` convicts `M04-G7`'s exact words, and deleting them
+would leave the finding pointing at nothing. This is `J-dv_lead-0171`'s §19.1
+discipline and `J-dv_lead-0174`'s strike-don't-replace ruling applied to my own
+plan instead of to a packet.
+
+**4. `ABS-1`, and the asymmetry I kept.** The plan row is **mine** and is repaired
+here; the same misreading in requirements.md §0.6's fourth clause is
+**architect_docs_lead's** and is not. So `M04-G7` now rests on what the clause
+*does* — it gives this strobe a reference word at the required-and-not-presented
+cycle, ceiling ΔC = 2, pin at the near edge, therefore *"no independent
+information"* — and §8 item 3 records the residue against the clause's *stated
+premise* with the route named. I repaired the instrument I own and filed against
+the text I do not, in the same act, which is the only shape in which a finding
+against a specification by its own DV lead is not also a unilateral edit of it.
+
+**5. The quantifier trio, and the scope I chose rather than the scope that was
+convenient.** Three rows of this plan stated a universal over a domain the claim
+cannot survive: `M04-B2`/`M04-C4`'s poison scan (the FCS is computed and may equal
+the poison), `M04-B1`'s uniqueness scan (`/I/` is `0x07` and the filler contains
+`0x07`), and `M04-G7`'s ground. The repair is one domain for all three — **the
+frame's own wire octets, indices `0 … F−5`, DA through the last pad octet** — and
+each exclusion carries its reason **in the cell**, because an exclusion without a
+reason is indistinguishable from a scan that was narrowed until it passed. The
+excluded classes are not unjudged: the FCS is judged against the REQ-305 oracle at
+`M04-D1`, the idle lanes by the decoder's REQ-205 judgement. **What I refused to
+write**: *"the poison appears nowhere except where it legitimately may"*, which is
+the same universal wearing a hedge.
+
+**6. Where the two new rows went, and why `ASSERT` rather than `GAP`.** Family G,
+appended after `M04-G8` (§1: ids are permanent, new rows append inside their
+family). `M04-G9` is the `W = 1` collapse — REQ-206's window is **provably empty**
+when the frame's `tlast` word is accepted at the cycle the frame starts — and
+`M04-G10` is the pre-loaded back-to-back handover at `C + 8` covering `BUG-0004`'s
+routes 2 and 3. **`GAP` was live and is rejected in writing** (§5 item 11):
+`GAP` says an attack *cannot* be mounted, and `M04-G10`'s obstacle is a capability
+**that has not been built**, not one that cannot be. Statusing it `GAP` would let
+a sign-off read the coverage as structurally unavailable — the opposite of the
+truth — where `ASSERT` + machinery **T-7** with an executor named is the form this
+plan already uses for `T-2`'s rows. **The other rejection recorded with them** is
+the inviting one: producing the handover with an idle-injection wrapper at M04's
+source, which SPEC-M04 §7 forbids in normative text because the first injected
+cycle on a required cycle **is** an underflow — a wrapper aimed at these rows would
+manufacture the very condition they assert is absent.
+
+**7. The `SO-` precondition is now readable from the plan, which was the point of
+the exercise.** `BUG-0004` is CLOSED; a closed packet carries nothing. So the bar
+lives at **§0.2 item 4** — the prohibition register, read before any row makes a
+claim — as *no `SO-xgmii_tx_64.md` may report REQ-206 coverage while `M04-G10` is
+neither measured nor declared a gap*, with §7's `T-7` naming the machinery, §8 item
+7 carrying it as a gate condition, and §6's REQ-206 line pointing at the bar from
+the coverage map. **Four sites, deliberately**, because a sign-off round reads the
+coverage map and the register, not the bug archive.
+
+**8. `FINDING BUG-0004-1` — the repair "where the rule lives", and the honest half
+of that answer.** The malformed sentence is `BUG-0004` §6's, and `agents/handoffs/**`
+is **explicitly out of this round's write set**; the packet is also CLOSED. I did
+not edit it, and it needs no edit: its own §10.2 already corrects it in place, in
+the same commit that closed it. What was owed — §10.4's carrier says *"the
+restatement rides the same round as the two new rows"* — is the rule's
+**forward-acting** form, in the document that will still be read when the packet is
+archive: §0.2 item 4 now states the conversion question over the **mechanism**
+(*can the chain present a frame whose `tlast` word is in this module's hands at or
+before the cycle the frame starts?*) rather than over a word count, with §7's
+`C + 8` note as the ground and route 3 as the counter-example to the old one. The
+old rule's conclusion survives; a reader re-deriving from its premise would
+conclude `W = 2` is safe, and route 3 disproves that.
+
+**9. A discharge I measured and deliberately did not claim.** `M04-G9`'s
+observable is **met today**: the landed bench's `assert_instruments_clean` fails
+any run in which `error_underflow` is high for more than 0 cycles, and
+`test_m04_b.ml`'s directed set contains `P = 1`, which is `W = 1`. I recorded the
+measurement with its provenance and **did not move the discharge count**, because
+that run was adjudicated by `RV-0080B-VERDICT` against the rows that existed at
+that verdict, and **a row written after a run is not discharged by it merely
+because the run would have passed it**. The alternative — writing the row and
+ticking it in the same act — is exactly how coverage gets manufactured backwards,
+and it would have been invisible in the diff. So the plan records 69 of 82
+outstanding and lets the next `SO-` round decide with the measurement in front of
+it. This is the same cut `J-dv_lead-0171` made for `M04-G4`'s incidental silence,
+applied where it costs me a row rather than where it costs the worker one.
+
+**10. Taking the `AP-M14` rows, and the three grounds.** The dispatch left the
+call to me. I took them. **(a) The class is worse than anything on the M04 list**:
+`M14-F1` is an **`ASSERT`** whose observable **fails a conformant design** at every
+`k ≥ 1` — the `SCR-M03-I4` shape in my own landed plan — where every M04 item is a
+ground or a quotation that misleads a reader without failing a design. **(b) The
+carrier is the failure mode I convicted last round**: *"the round that next opens
+`AP-ip_eth_rx_64.md`"* is phrased over a **path**, so declining would have re-pinned
+it to another accident. A round commissioned to repair plans is exactly the
+commissioning act such a carrier should have named. **(c) The derivation was
+already countersigned** at `J-dv_lead-0170` §(c) and the repaired specification
+supplies the observable directly (§7's per-output-event table, §10's REQ-016 hook),
+so this is a transcription of a ruling into rows and not a fresh adjudication of a
+module I have no bench for.
+
+**11. And taking them found a third stale clause and a live spec conflict, which
+is the argument for having taken them.** `J-dv_lead-0170` §(d) enumerated the L =
+12 clauses. Deriving `M14-F1`'s replacement off §7's table shows a **second**
+falsified clause in the same row: *"`ip_hdr_valid` still leads payload word 0 by
+one cycle"*. `ip_hdr_valid`'s deciding input word is input word **2**; payload word
+0's is input word **3**; so `k` idles injected **between input words 2 and 3** make
+the lead `1 + k`. Pushing on it further, the conflict is not only mine: SPEC-M14 §7's
+handshake bullet states that adjacency **unscoped**, and §6.1 says in terms that
+*"the lead is normative here and not incidental"* because M17 is written against
+it — while the per-event table in the same section puts the pulse at input word
+2 + 1. **Under injection at that one site the two cannot both hold.** Filed as
+`FINDING AP-M14-1` (MINOR, mine, against the specification), **not decided**, with
+a recommendation offered (scope the adjacency exactly as §7 already scopes its own
+parse latency under `C-27`; REQ-606 asks for the record *on or before* the first
+payload word, so a lead of `1 + k` satisfies it **a fortiori** and M17 gains time
+rather than losing it) and with the sites listed by grep so the ruling's site list
+is not one entry short. **`M14-F1` asserts neither lead**, so it is unmoved by the
+ruling in either direction — the discipline `AP-M04-1`, `AP-M04-2`, `CSG-3` and
+`ABS-1` all used. **Reachability, checked rather than assumed**: §8's stress run
+gaps *between* frames and delivers each datagram's words on consecutive cycles, so
+no committed stimulus reaches the conflict, which is why the 2026-08-11 repair that
+rewrote this very bullet did not trip over it.
+
+**12. One coverage-map line moved at M14, and it is a subtraction.** `M14-F1`
+homed under **REQ-005** for its *"L = 12 unchanged under injection"* clause. That
+clause is struck, so the row no longer attacks REQ-005 and is removed from its
+line — with the reason in the cell and with the note that REQ-005's substance is
+unweakened, `M14-I2` and `M14-I4` asserting the constant on the gapless stress run,
+which is the only stimulus on which the requirement has an instance here. **A
+coverage line that keeps a row after the row stopped asserting the thing is worth
+less than an honest one**, and this is the second time this programme has paid for
+a row homed by habit (`FINDING SO-1-A`).
+
+**13. Numbering hygiene, twice, and both times I caught myself doing the
+convenient thing first.** I first wrote the two new §5 rejections **as item 10**,
+pushing the existing item 10 down, and I first wrote the new §8 item **as item 6**;
+both were corrected to append at **11** and **7**. §5 and §8 items are cited by
+number across this repository (`§7.2` cites *"§5 item 1"* inside this very
+document), and a plan that keeps its **row** ids permanent while renumbering the
+prose its rows cite has only half a convention. The same rule put `M04-G9`/`G10`
+**after** `M04-G8` rather than beside their subject matter.
+
+**14. Every count in both documents is re-measured at this tree, and one was
+updated because it would otherwise have gone stale silently.** §6.1's homing check
+prints its own output; it read `80 80 []` and now reads `82 82 []`, re-run with the
+document's own quoted command. That figure is the one thing in the plan that
+**must** move when rows are added and would have been invisible if I had trusted
+the ranges — the check reaches the new ids only through §6's `M04-G1 … M04-G10`
+range and its expansion loop. Status-cell passes ran **before and after** every
+edit on both plans. `tools/dv_checks.sh` still cannot count an M04 row, so every
+M04 figure here is a **hand count with its method stated** (`DVC-1a`, still mine,
+still unbuilt, and outside this round's write set).
+
+**15. What I refused.** I did not touch `agents/handoffs/**`, `test/xgmii_tx_64/**`,
+`libs/**`, `docs/**` or `tools/**` — the dispatch's explicit outs, and two of them
+(the `BUG-0004` §6 sentence and the `dv_checks` census) were things I wanted. I did
+not open any RTL. I did not rule `ABS-1` or `AP-M14-1`, both of which are against
+specification text and neither of which a filer may decide. I did not move a single
+`Status` cell of a pre-existing row in either plan, and I did not move a discharge
+count. I did not open, offer or imply an `SO-`. I did not write the `M04-G10` bench
+or the `T-7` machinery that would let a row I just wrote be ticked in the same
+round. And I did not re-measure the four `BM16` instances from `RV-0071-VERDICT`
+that `J-dv_lead-0176` quoted with their provenance, so that count stands exactly as
+it was quoted.
+
+**16. On the harvest note: none is owed, and I say so rather than leave silence to
+be read.** ADR-0018 and PROTOCOL §7 attach a note to every module sign-off and
+every phase gate; this round is neither. Under `A2-D10` the open span still begins
+at `J-dv_lead-0174` and this entry joins it. **A fourth candidate is banked**
+(Open-questions item 6), and it is this round's own arithmetic: *a debt total
+carried across rounds drifts by counting the item that is discharged in the same
+act that records it; the census of record is a walk of the entries that minted the
+items, and a round that pays from the total pays the wrong set.*
+
+### Actions
+
+- Verified the spawn-head precheck; read the charter and PROTOCOL before writing.
+- **Walked `J-dv_lead-0171` … `J-dv_lead-0176`** and rebuilt the repair census from
+  their Open-questions and Reasoning, finding the duplicate.
+- **`test/attack_plans/AP-xgmii_tx_64.md`** — repaired: the header's `C-5`
+  carry-forward bullet; §0.2 item 3's ground and a **new item 4** (the REQ-206
+  sign-off bar and `FINDING BUG-0004-1`'s restated conversion rule); §2 obligation
+  5 (ground replaced, old text struck, `ABS-1`'s residue routed); rows **`M04-B1`**,
+  **`M04-B2`**, **`M04-C4`** (quantifiers scoped), **`M04-G7`** (ground repaired),
+  **`M04-J3`** (stale REQ-210 quotation struck, closure recorded); **added rows
+  `M04-G9` and `M04-G10`**; §5 **item 11** (the two rejections the new rows owe);
+  §6's REQ-206 line; §6.1's quoted homing figure; §7 machinery **T-7**; §8 items 1
+  and 3 closed and **item 7** added; **one appended §9 change-log row**.
+- **`test/attack_plans/AP-ip_eth_rx_64.md`** — repaired rows **`M14-F1`**,
+  **`M14-F2`**, **`M14-F3`** against §7's per-output-event table; §6's REQ-005 line;
+  **§8 item 3** minting `FINDING AP-M14-1`; **one appended §9 change-log row**.
+- Ran the §6.1 homing census and both status-cell passes before and after editing.
+- **No git write of any kind**: no `git add`, no `git commit`, no `git push`.
+
+### Evidence
+
+**1. Precheck and return state.**
+
+```sh
+git status --short   # zero lines at entry; at return, exactly three paths:
+                     #   test/attack_plans/AP-ip_eth_rx_64.md
+                     #   test/attack_plans/AP-xgmii_tx_64.md
+                     #   agents/journals/claude_dv_lead_agent.v09.md
+git rev-parse HEAD   # 8ff1b20b965e7a79b5e6bc2eeef16b7dc6fb269e (unchanged at return)
+```
+
+**2. `AP-M04` status-cell pass, before and after every edit** — the same command
+`J-dv_lead-0176` used, quoted with its output both times:
+
+```sh
+grep -oE '^\| \*\*(M04-[A-Z][0-9]+)\*\*.*\| (ASSERT|NO-ASSERT|NO-STIMULUS|RULING|GAP|STRUCTURAL) \|$' \
+  test/attack_plans/AP-xgmii_tx_64.md \
+  | grep -oE '\| (ASSERT|NO-ASSERT|NO-STIMULUS|RULING|GAP|STRUCTURAL) \|$' | sort | uniq -c
+# BEFORE: 80 rows — 56 ASSERT, 12 NO-ASSERT, 6 NO-STIMULUS, 5 STRUCTURAL, 1 GAP, 0 RULING
+# AFTER:  82 rows — 58 ASSERT, 12 NO-ASSERT, 6 NO-STIMULUS, 5 STRUCTURAL, 1 GAP, 0 RULING
+grep -cE '^\| \*\*M04-[A-Z][0-9]+\*\* \|' test/attack_plans/AP-xgmii_tx_64.md   # 82 (82 distinct ids)
+grep -cE '^\| \*\*M04-G[0-9]+\*\* \|'     test/attack_plans/AP-xgmii_tx_64.md   # 10  (family G, was 8)
+```
+
+**The delta is exactly the two new ASSERT rows**, and no pre-existing row's status
+cell moved.
+
+**3. `AP-M04` §6.1 homing census, run with the document's own quoted command.**
+Before the rows landed: `80 80 []`. After: **`82 82 []`** — no unhomed row, and the
+printed figure in §6.1 is updated in place rather than carried forward.
+
+**4. `AP-M14` status-cell pass, before and after — unchanged, which is the claim.**
+
+```sh
+grep -oE '\| (ASSERT|NO-ASSERT|NO-STIMULUS|RULING|STRUCTURAL|GAP) \|$' \
+  test/attack_plans/AP-ip_eth_rx_64.md | sort | uniq -c
+# BEFORE and AFTER, identically: 51 ASSERT, 4 NO-ASSERT, 2 NO-STIMULUS, 6 STRUCTURAL, 0 RULING
+grep -cE '^\| \*\*M14-[A-Z][0-9]+\*\* \|' test/attack_plans/AP-ip_eth_rx_64.md   # 63, unchanged
+```
+
+`M14-F1` remains an `ASSERT` **of a different observable**, which is the whole
+shape of that repair.
+
+**5. The two capability measurements behind `T-7` and behind `M04-G9`'s recorded
+(not claimed) coverage** — read at this tree, in my own DV tree, post-verdict:
+
+```sh
+grep -n 'assert_instruments_clean\|high_cycles\|expected 0\|expected exactly one' test/xgmii_tx_64/bench.ml
+#  345  match Tx_decoder.frames d with            (wire_frame: one frame per run)
+#  356  " completed frames decoded, expected exactly one …"
+#  363  let assert_instruments_clean t ~row =
+#  370  let high = Strobe_monitor.high_cycles t.strobes "error_underflow" in
+#  375  ": error_underflow high for … cycles, expected 0"
+#  382  match Tx_decoder.frames t.decoder with    (conservation: exactly one frame)
+grep -n 'directed_lengths' test/xgmii_tx_64/test_m04_b.ml
+#  225  let directed_lengths = [ 1; 20; 59; 60; 61; 64; 67; 1514 ]
+```
+
+So (a) **no committed producer can drive a second frame in one run**, which is
+`T-7`'s absence measured rather than inferred, and (b) `error_underflow` silence
+**is** asserted today on a `W = 1` frame (`P = 1`), which is `M04-G9`'s observable —
+recorded in the change log with this provenance and **not** counted as a discharge.
+
+**6. The `AP-M14` derivation, redone here from §7's table rather than quoted from
+`J-dv_lead-0170`.** With `Cw` the cycle of input word `w` and `k` idles injected
+between input words 2 and 3: `ip_hdr_valid` = `C₂ + 1` (deciding input word 2,
+delay 1); payload word 0 = `C₃ + 1` = `C₂ + k + 2` (deciding input word 3, delay 1);
+**lead = `1 + k`**, and `= 1` only at `k = 0`. Hence both struck clauses of
+`M14-F1`, and hence `FINDING AP-M14-1` against SPEC-M14 §7's unscoped adjacency
+(§5's record row, §6.1's lead paragraph, §7's handshake bullet, §10's REQ-606 hook;
+§8's stress paragraph is gapless by construction). The straddle half is
+`(h = 20) mod 8 = 4 ≠ 0`, requirements.md §0.5, ruled 2026-08-04.
+
+**7. No RTL was read.** `libs/**`, `top/**` and `rtl_snapshots/**` were not opened
+at this round. The only `test/**` files opened outside the two plans are the two
+named at Evidence 5, both my own line's artefacts, both read as a reviewer.
+
+**8. Not reproducible here, and said so**: `dune` is absent from this container
+(ADR-0005, the standing bound), and **no OCaml lands in this round** — nothing in
+either edited file is executable, so there is nothing for `dune runtest` to say
+about it. The CI figures quoted in the `AP-M04` change-log row (`build` run
+**31482795659** at `af06c62`) are `J-dv_lead-0176`'s, cited **by reference** and not
+re-measured here.
+
+### Outcome
+
+**DoD for a commissioned plan-repair round: met.**
+
+- **The census, corrected and paid.** Eight distinct carried items, not nine — the
+  §9 change-log row was counted twice, and the correction is recorded in the plan
+  with the quotation that convicts it. **Seven paid here**; the eighth (the
+  families A/B/C landed-status row) was paid at `J-dv_lead-0176` and is not
+  re-paid. `BUG-0004` §10.4's trip condition is met on its own terms: its item is
+  the two new family-G rows and both landed.
+- **`AP-xgmii_tx_64`**: five text repairs (`M04-B1`, `M04-B2`/`M04-C4`, `M04-G7`,
+  `M04-J3` + §8 item 1, `C-5` at four sites), **two new `ASSERT` rows**
+  (`M04-G9`, `M04-G10`), the sign-off bar at §0.2 item 4, machinery `T-7`, §5's two
+  rejections, §8 item 7, §6 and §6.1 re-measured, one §9 change-log row. **82 rows,
+  58 ASSERT; no pre-existing status cell moved; no discharge count moved.**
+- **`AP-ip_eth_rx_64`**: family F repaired against §7's per-output-event table
+  (`M14-F1`'s two struck clauses, `M14-F2`'s struck trailing clause plus the
+  REQ-611 gap-clause quantity added, `M14-F3`'s ground replaced), REQ-005's
+  coverage line corrected, `FINDING AP-M14-1` minted and routed, one §9 change-log
+  row. **63 rows and every status count unchanged.**
+- **`FINDING BUG-0004-1` discharged** — restated over the handover at §0.2 item 4,
+  in the document that outlives the packet. The packet itself is CLOSED, already
+  self-corrected at its §10.2, and out of write set: **not edited**.
+- **Two findings stand open against specification text, both routed, neither
+  decided**: `ABS-1` (§0.6's fourth clause's stated ground) and `AP-M14-1`
+  (SPEC-M14 §7's unscoped adjacency). Both are architect_docs_lead's.
+- **Handoff**: two files to the orchestrator for commit. **No packet, no `SO-`, no
+  bench, no `RV-`** — this round judged nothing and repaired the instruments that
+  will do the judging.
+
+**No harvest note is owed** (neither a sign-off nor a gate); the span tiles
+unbroken from `J-dv_lead-0174` through this entry to the next sign-off, where
+**four** banked candidates now wait.
+
+### Open-questions
+
+1. **`FINDING AP-M14-1` (MINOR, new, mine, against SPEC-M14 §7).** The
+   `ip_hdr_valid` adjacency is stated unscoped and normative (§6.1: *"the lead is
+   normative here and not incidental"*, M17 written against it) while §7's own
+   per-output-event table puts the pulse at input word 2 + 1 cycle; under `k ≥ 1`
+   idles between input words 2 and 3 the lead is `1 + k` and the two cannot both
+   hold. **Not reachable by any committed stimulus** (§8's stress run gaps between
+   frames). **Route**: architect_docs_lead, spec-diff request via the orchestrator,
+   recommendation offered at `AP-ip_eth_rx_64` §8 item 3. **Not blocking**:
+   `M14-F1` asserts neither lead and M14 has no bench.
+2. **`FINDING ABS-1`'s §0.6 sentence is still open and still the architect's.** My
+   own half — `M04-G7`'s ground — is paid here. The clause stays in force; the cure
+   is one sentence; nothing turns on it arithmetically.
+3. **`BUG-0004`'s routes 2 and 3 remain derived and unmeasured, and the bar is now
+   in the plan.** `M04-G10` is `ASSERT` and unmountable until machinery **T-7**
+   exists — a direct-drive continuous source with a controllable handover cycle,
+   **mine**, in the round that first opens a back-to-back bench at M04 (not family
+   D). §0.2 item 4 bars a REQ-206 coverage claim in any `SO-xgmii_tx_64.md` that
+   neither measures them nor declares them a gap citing `BUG-0004`.
+4. **`M04-G9` is measured but not discharged, deliberately.** The landed bench
+   asserts its observable at `P = 1`; the run that did so was adjudicated before the
+   row existed. **Route**: the next round that adjudicates rows — with the
+   provenance recorded in the change log, so the decision is made in front of the
+   measurement rather than instead of it.
+5. **`DVC-1a` still cannot count an M04 row**, so every M04 figure in this round is
+   a hand count with its method stated (three plans now want it). **Mine**,
+   `tools/**`, outside this round's write set, and it should land before any `SO-`
+   quotes an M04 coverage fraction.
+6. **Four harvest candidates banked for the next `SO-`.** (a)–(c) carried unchanged
+   from `J-dv_lead-0175`/`J-dv_lead-0176` (instrument placement over luck; a carrier
+   must name the commissioning act, not the artefact; a re-test proves a fix only if
+   the instrument is measurably unchanged). **(d) new, from this round**: *a debt
+   total carried across rounds drifts by counting the item that is discharged in the
+   same act that records it; the census of record is a walk of the entries that
+   minted the items, and a round that pays from the total pays the wrong set* — LH1
+   is this round's nine-to-eight correction; LH2/LH3 at the next sign-off. A fifth is
+   forming and is **not** banked yet because it has one instance: *three of one
+   plan's rows stated universals over domains their claims could not survive, and
+   every one was caught by someone other than the seat that wrote it.*
+7. **Standing and untouched by this round**: the transmit-side conservation monitor
+   (`AP-M04` §7 `T-2`); the three `BAR T1` work orders; `SO-xgmii_rx_64.md`'s
+   Stage-3 gate table (condition (c) still recorded UNMET, MET since `36e3a4d`);
+   family D as the next bench round; the six `WO-0080` packet repairs re-pinned to
+   the next packet this seat writes for the `tb_writer` chain, with the `BM16`
+   tripwire; and the orchestrator's enumerated tool allow-list at the head of the
+   spawn prompt, still unwritten since `RV-0071-VERDICT` §3.
+
+### Files-in-this-commit
+- test/attack_plans/AP-ip_eth_rx_64.md
+- test/attack_plans/AP-xgmii_tx_64.md

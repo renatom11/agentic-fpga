@@ -17,8 +17,12 @@
   ADR-0006/ADR-0007 (the finished-value convention and the 1-to-8 `octet_count`
   domain M04's CRC enable must never leave). Carry-forwards realised as rows:
   **C-14.1**, **C-14.2**, **C-14.5**, **C-16**, **C-31**, **C-2** (conservation
-  machinery, at its first *transmit* module), **C-5** (§0.6's window is vacuous
-  for this module's one strobe — SPEC-M04 §11.3, still DEFERRED).
+  machinery, at its first *transmit* module), **C-5** (§0.6's window carries no
+  independent information for this module's one strobe — SPEC-M04 §11.3;
+  **DISCHARGED 2026-08-11 at `ee47eee`** by §0.6's **fourth reference-word
+  clause**, dv countersignature `J-dv_lead-0173` §(c), transcription
+  `J-orchestrator-0247`. The prohibition it grounds survives with a better
+  ground and the sites are repaired at §9's 2026-08-11 repair row).
 - **Derivation (PROTOCOL §10)**: every row below is derived from specification
   text alone. `libs/**`, `top/**` and `rtl_snapshots/**` were **not opened** by
   the author of this plan, at this commit or at any earlier one; in particular
@@ -99,7 +103,10 @@ re-measured the day a second producer lands**, not merely re-quoted.
 after a claim had already been made too widely once. This plan opens with the
 three that are knowable at its first commit. They are **not** predictions about
 M04's quality; each is a statement about an **instrument** that does not exist
-yet.
+yet. **Item 4 was added on 2026-08-11** and carries its date in place: a register
+that grows silently cannot be read as a register, and the whole point of opening
+with one was that a later reader can tell which bars were foreseen and which were
+paid for.
 
 1. **No claim of differential-anchor support for any M04 behaviour.** See §7's
    **BAR T1**: the reference module this boundary would compare against is not in
@@ -110,8 +117,35 @@ yet.
    in the requirement rather than in a bar, which makes it stronger than anything
    this plan could add.
 3. **No claim about `error_underflow`'s conformance derived from §0.6's window.**
-   The window is vacuous for this strobe (C-5, SPEC-M04 §11.3) and a green check
-   against it carries no information (§2 obligation 5).
+   Since `ee47eee` the window **has** a reference word for this strobe — §0.6's
+   fourth clause makes it the cycle on which the word was required and not
+   presented — and the prohibition survives on the clause's **own** closing
+   statement: SPEC-M04 §9 pins the pulse on that same cycle, so the pin sits at
+   the window's **near** edge and the window *"carries no independent
+   information"* (§2 obligation 5, repaired 2026-08-11). **The change of ground
+   is the whole of the change**: a green window check said nothing about this
+   strobe when the window had no referent, and it says nothing now that it has
+   one, for a reason that is written down instead of derived.
+4. **No `SO-xgmii_tx_64.md` may report REQ-206 coverage while `M04-G10` is
+   neither measured nor declared a gap** (added 2026-08-11; `BUG-0004` §10.3
+   item 3, whose closure is `J-dv_lead-0176`). `BUG-0004`'s routes 2 and 3 — the
+   pre-loaded back-to-back handover — were fixed **by derivation** and have never
+   been measured in either design, so a sign-off that reports REQ-206 without
+   naming them absorbs an unmeasured fix by silence. The permitted forms are
+   exactly two: **(i)** `M04-G10` measured on the machinery §7 item **T-7**
+   commissions, or **(ii)** both routes declared in the `SO-` as an explicit gap
+   citing `BUG-0004`. **And the rule that decides whether the composed chain can
+   reach them is restated here over the mechanism rather than over a word count**
+   (`FINDING BUG-0004-1`, MINOR, mine, filed at that packet's §10.2 against its
+   own §6): the question is **not** *"can the chain produce a frame of `W = 2`
+   words?"* — it can — but ***"can the chain present a frame whose `tlast` word is
+   in this module's hands at or before the cycle the frame starts?"*** The answer
+   is no, on SPEC-M04 §7's own note that M07 presents nothing at `C + 8` (its
+   word 0 leaves at `C + 9` and is accepted at `C + 11`), which is why both routes
+   are reachable **only** by a bench driving M04 directly from a continuous
+   source. The conclusion of the original rule survives; its ground does not, and
+   a reader who re-derived the protection from the word count would conclude that
+   `W = 2` is safe, which route 3 disproves.
 
 ## 1. Reading a row
 
@@ -204,17 +238,46 @@ These attach to **every** M04 bench and are not repeated per row.
    that M03's five-strobe surface made expensive is cheap here, and a bench that
    asserts only "the expected pulse happened" and not "no other pulse happened"
    is leaving the cheaper half of its own instrument unused.
-5. **No bench asserts §0.6's strobe window on `error_underflow`.** SPEC-M04
-   §11.3 (carry-forward **C-5**, still DEFERRED at this commit) records that the
-   window's bound — *the module's latency in cycles after the input word carrying
-   the last octet of the offending frame* — **is not defined for a frame that
-   never receives that octet**, which is every underflowed frame by construction.
-   §9 pins the pulse to one exact cycle computable from the source trace alone,
-   and that pin is the whole of the assurance. **This is the M03 lesson arriving
-   before the bench instead of after it**: `RV-0057-VERDICT` Finding 2 established
-   that where a window's reference word and a module's own pin come from the same
-   word the window carries *no independent information*; here it carries none
-   because it has no reference word at all, which is strictly worse.
+5. **No bench asserts §0.6's strobe window on `error_underflow`.** The
+   prohibition is unchanged; **its ground was replaced on 2026-08-11 and the old
+   one is struck rather than quietly overwritten** (carry-forward **C-5**,
+   **DISCHARGED** at `ee47eee`; countersigned `J-dv_lead-0173` §(c)).
+
+   > ~~Struck 2026-08-11: *"the window's bound is not defined for a frame that
+   > never receives that octet, which is every underflowed frame by
+   > construction"*.~~ **False as stated, and it was false when written**:
+   > requirements.md §0.6's first clause names *"the last octet that frame
+   > **received while it was open**"*, not the frame's final octet, and an
+   > underflowed frame **has** received octets — row `M04-G5` asserts that source
+   > word 0's octets reach the wire, because REQ-207 forbids dropping an accepted
+   > word (`FINDING ABS-1`, MINOR, mine, `J-dv_lead-0173`).
+
+   **The standing ground.** §0.6's **fourth reference-word clause** gives this
+   strobe a reference word — *the cycle on which the word was required and not
+   presented* — with a ceiling of §0.5's word delay **ΔC = 2** and never REQ-210's
+   event delay (SPEC-M04 §7 pins both; a reader taking the other computes a
+   ceiling one cycle short). SPEC-M04 §9 pins the pulse on **that same cycle**, and
+   §0.6's floor — *not earlier than the cycle the condition first becomes
+   decidable* — is that cycle too. **Floor, reference word and pin coincide, the
+   ceiling sits ΔC beyond, and the clause therefore states in its own words that
+   here the window "carries no independent information".** §9's exact pin, with
+   obligation 4's exact strobe-event set, is the whole of the assurance — and
+   §0.6's *"a bound, never a licence"* note is why a pulse inside the window but
+   off the pin is non-conformant on §9's authority. **This is the M03 lesson
+   arriving before the bench instead of after it**: `RV-0057-VERDICT` Finding 2
+   established the same disposition where a window's reference word and a module's
+   own pin come from the same word, and this clause reaches this module for the
+   same reason rather than for a stronger one.
+
+   *One residue, filed and not decided here.* `FINDING ABS-1` also convicts the
+   **clause's own stated premise** — that the three earlier clauses "name no
+   word" — since the first clause does name one (the source word carrying the last
+   octet accepted), which makes the fourth clause an **override** that moves the
+   reference one cycle later rather than a hole-filler. Nothing in this plan turns
+   on it: with `A` the last accepted source word, the pin is at `A + 1`, the first
+   clause's ceiling `A + 2` and the fourth's `A + 3`, so the pin lies inside both
+   windows and the change can only loosen a bound already redundant against §9.
+   **Route**: architect_docs_lead (§8 item 3).
 6. **Every frame the source model presents is checked against §3's contract
    before it is presented.** A stimulus generator nobody has checked is an
    unverified assertion about the design — M03's obligation 5, unchanged, and it
@@ -301,8 +364,8 @@ assumed.
 
 | Row | Attacks | Stimulus | Observable | Kills | Status |
 |---|---|---|---|---|---|
-| **M04-B1** | REQ-012, REQ-021, §6.1's frame paragraph | One `P = 60` frame whose octets are **position-dependent** (`Frame.stress_frame`'s filler), not uniform | Frame octet `j` appears at `xgmii_txd`[8·(j mod 8)+7 : 8·(j mod 8)] of the word at cycle `C + 2 + ⌊j/8⌋`, and at no other position; `xgmii_txc` = 0x00 on every word carrying only frame octets | Lane reversal within a word, a byte-swapped word, and a rotation by 4 — **all three are invisible under uniform filler**, which is why the filler is position-dependent and why this is stated in the Stimulus cell rather than left to a bench writer's taste (`AP-M03` §4.A's M03-A5, the same defect class at the other port) | ASSERT |
-| **M04-B2** | REQ-011, §4.2's `tkeep` row, SPEC-M01 §6.1 | `P = 20`, so the `tlast` word carries `tkeep` = 0x0F, with positions 4–7 of that word driven with poison (obligation 7) | Exactly **4** octets of the `tlast` word appear on the wire, at frame octet indices 16–19; the poison value appears **nowhere** in the whole run | A design transmitting the whole final word, which is indistinguishable from correct behaviour whenever the source happens to zero its don't-care positions — and REQ-203's pad octets **are** zeros, so at exactly this module the accidental agreement is total. **What this row does NOT kill, stated because the temptation is real**: a design reading `tkeep` as a *count* rather than as a mask is **not** distinguishable here, because §3 forbids driving a non-contiguous `tkeep` and the two readings agree on every legal stimulus. A row claiming that kill would be claiming a stimulus this plan may not drive | ASSERT |
+| **M04-B1** | REQ-012, REQ-021, §6.1's frame paragraph | One `P = 60` frame whose octets are **position-dependent** (`Frame.stress_frame`'s filler), not uniform | Frame octet `j` appears at `xgmii_txd`[8·(j mod 8)+7 : 8·(j mod 8)] of the word at cycle `C + 2 + ⌊j/8⌋`, and **at no other position among the frame's own wire octets, indices `0 … F−5`** (DA through the last pad octet); `xgmii_txc` = 0x00 on every word carrying only frame octets. **Quantifier repaired 2026-08-11** — it read *"and at no other position"*, a universal over the **run**, which is falsifiable by arithmetic at this row's own stimulus: the idle character `/I/` is `0x07`, a position-dependent filler containing `0x07` collides with it on every idle lane of the run, and the four FCS octets are a computed value that may equal any octet. The excluded classes are judged where they belong — the FCS against the REQ-305 oracle (M04-D1), the idle lanes by the decoder's REQ-205 judgement (obligation 1) — and never by a content scan. Cured operationally before it was ever executed, at `WO-0080` §6.3 assertion 4, on the worker's own reading | Lane reversal within a word, a byte-swapped word, and a rotation by 4 — **all three are invisible under uniform filler**, which is why the filler is position-dependent and why this is stated in the Stimulus cell rather than left to a bench writer's taste (`AP-M03` §4.A's M03-A5, the same defect class at the other port) | ASSERT |
+| **M04-B2** | REQ-011, §4.2's `tkeep` row, SPEC-M01 §6.1 | `P = 20`, so the `tlast` word carries `tkeep` = 0x0F, with positions 4–7 of that word driven with poison (obligation 7) | Exactly **4** octets of the `tlast` word appear on the wire, at frame octet indices 16–19; the poison value appears at **no wire octet index `0 … F−5`** — DA through the last pad octet. **Quantifier repaired 2026-08-11** (`FINDING AP-M04-3`, MINOR, mine): it read *"the poison value appears **nowhere** in the whole run"*, and that universal is falsifiable by arithmetic — the four FCS octets are a computed value that may legitimately equal the poison, at roughly one chance in sixty-four per frame, so the row would eventually go red on a conformant design after a content change nobody connected to it. The scan's domain is therefore the frame's own octets, with the FCS **excluded and the exclusion's reason stated**: the FCS is judged against the REQ-305 oracle (M04-D1) and never by a scan. Cured operationally at `WO-0080` §6.0(c) before the row was first executed | A design transmitting the whole final word, which is indistinguishable from correct behaviour whenever the source happens to zero its don't-care positions — and REQ-203's pad octets **are** zeros, so at exactly this module the accidental agreement is total. **What this row does NOT kill, stated because the temptation is real**: a design reading `tkeep` as a *count* rather than as a mask is **not** distinguishable here, because §3 forbids driving a non-contiguous `tkeep` and the two readings agree on every legal stimulus. A row claiming that kill would be claiming a stimulus this plan may not drive | ASSERT |
 | **M04-B3** | REQ-015, §2's "knowing a frame's length" row | Two frames back to back, `P = 1514` then `P = 20` | Each frame's wire octet count is its own `F` — 1518 then 64 — and each terminate character is at its own `F mod 8` | A design that latches a length from the first frame, or that derives the second frame's padding decision from the first's octet counter without clearing it. The **order matters**: long-then-short is the direction in which a stale counter produces a *conformant-looking* short frame, and short-then-long the direction in which it produces a visible over-run, so a bench driving only one order tests one of the two | ASSERT |
 | **M04-B4** | REQ-011, REQ-015, §6.1 | The directed set `P ∈ {1, 20, 59, 60, 61, 64, 67, 1514}`, each into an idle transmitter | For each, the terminate character is at octet index `F` and cycle `C + 2 + ⌊F/8⌋`, and the wire carries exactly `F` octets between the preamble word and the terminate character | An off-by-one in the octet counter that only shows at one residue class — a defect that a single-length bench passes by construction. The set is chosen to cover the pad boundary (1, 59, 60, 61), every terminate lane through family E, and the maximum length | ASSERT |
 | **M04-B5** | REQ-011, REQ-012, §2's not-my-job table (*"nobody"* knows the length in advance) | `P = 1514` — the maximum frame, `F = 1518` | 1514 frame octets on the wire, **no pad octet**, 4 FCS octets, terminate character at lane `1518 mod 8` = **6** | A design with an 8-bit octet counter (1518 > 255 wraps at octet 256 and pads a maximum frame as if it were short); a design that truncates or marks at a length threshold — M04 **has** no length threshold, and a design that borrowed one from its receive-side sibling would be caught here and nowhere else in this plan | ASSERT |
@@ -314,7 +377,7 @@ assumed.
 | **M04-C1** | REQ-203, §10's REQ-203 hook | `P = 20` (the hook's own frame) | **60** octets before the first FCS octet; wire frame octets at indices **20 … 59** are all **0x00**; `F` = **64** octets DA through FCS | A design padding to **64** rather than 60 — the confusion between REQ-203's pad target and §0.3's frame length, and the single most likely arithmetic error in this module; a design padding **after** the FCS; a design padding with 0xFF or by holding the last payload octet | ASSERT |
 | **M04-C2** | REQ-203's "below 60" predicate | `P ∈ {1, 59, 60, 61}` | 59, 1, 0 and 0 pad octets respectively; `F` = 64, 64, 64, 65 | An off-by-one in the predicate: `≤ 60` pads a 60-octet frame to 61 and a strict `< 59` leaves a 59-octet frame short. **Both directions are driven**, because a bench holding only the short side passes a design that pads one octet too far | ASSERT |
 | **M04-C3** | REQ-203's "pad covered by the CRC", REQ-202, §6.1 item 3 | `P = 20` | The four wire FCS octets **equal** `Crc32_ref` over the **60-octet padded** frame, **and do not equal** `Crc32_ref` over the 20-octet unpadded one | A design that closes the CRC at `tlast` and pads afterwards — the most likely padding defect there is, and one that produces a perfectly well-formed 64-octet frame that every length, lane and terminate check in this plan passes. **Both halves of the observable are required**: the positive comparison alone is satisfied by a design that pads correctly, and the negative one is what proves the row could have failed | ASSERT |
-| **M04-C4** | REQ-203, SPEC-M01 §6.3 item 5, obligation 7 | `P = 20`, `tlast` word `tkeep` = 0x0F, positions 4–7 driven with **0xA5** | 0xA5 appears **nowhere** on the wire; wire octets 20 … 59 are 0x00 | A design that transmits its final word whole and lets the source's don't-care octets stand in for padding. **This is the row obligation 7 exists for**: under a zero-filled stimulus the defect and the conformant design are byte-identical on the wire, so the bench's own choice of filler is the entire instrument | ASSERT |
+| **M04-C4** | REQ-203, SPEC-M01 §6.3 item 5, obligation 7 | `P = 20`, `tlast` word `tkeep` = 0x0F, positions 4–7 driven with **0xA5** | 0xA5 appears at **no wire octet index `0 … F−5`** — DA through the last pad octet, `F − 5` = 59 at this row's `P` = 20; wire octets 20 … 59 are 0x00. **Quantifier repaired 2026-08-11** (`FINDING AP-M04-3`, the same finding as M04-B2's): *"0xA5 appears **nowhere** on the wire"* is falsifiable by arithmetic, the four FCS octets being a computed value that may equal the poison. The FCS is excluded from the scan and judged against the REQ-305 oracle (M04-D1) instead; cured operationally at `WO-0080` §6.0(c) | A design that transmits its final word whole and lets the source's don't-care octets stand in for padding. **This is the row obligation 7 exists for**: under a zero-filled stimulus the defect and the conformant design are byte-identical on the wire, so the bench's own choice of filler is the entire instrument | ASSERT |
 | **M04-C5** | REQ-203, REQ-011 | `P ∈ {1, 20, 59}` — one, three and eight source words, all padding to the same 60 | All three place the terminate character in **lane 0** and produce `F` = 64; the pad octet **count** is 59, 40 and 1 | A design whose pad counter is keyed on the **source word count** rather than on the transmitted octet count. The three members differ by a factor of eight in word count and not at all in target length, which is the only stimulus shape that separates the two counters | ASSERT |
 | **M04-C6** | REQ-203, obligation 1's bound | (any padded frame) | **The wire decoder's REQ-203 verdict is NOT reported as coverage of REQ-203.** `Dv_xgmii.Tx_decoder` judges *"fewer than 60 octets before the FCS"* — a **necessary** condition — and its own interface says which octets are pad *"is not decidable from the wire alone"*. The sufficient check is C1's and C3's, which know the source frame | — (a row that exists so that a clean decoder report is never read as REQ-203 discharged; the same shape as §0.6's note that a bound inside which a pin already lies carries no independent information) | NO-ASSERT |
 
@@ -360,8 +423,10 @@ assumed.
 | **M04-G4** | REQ-206's scope clause, §7's C-16 consequence 1 | `P = 60`; the source presents nothing at cycle **`C + 8`** — the cycle after the frame's `tlast` word is accepted — and `tx_tready` is 1 there | `error_underflow` is **0** on `C + 8` and on every cycle of the run; the frame transmits intact with its correct FCS and terminate lane | **A faithful implementation of a partial reading of REQ-206.** Its first clause — *"the transmitter asserts `tready`, requires a word, and no word is presented"* — is true at `C + 8`; what excludes it is the qualifier *"before it has accepted that frame's `tlast` word"*, and §7 needed the whole **C-16** diff to say so, ending with *"this is the one cycle in a frame's life where `tx_tready` = 1 with `tx_tvalid` = 0 means nothing at all."* **This is the highest-value row in the family**: the defect is not carelessness, it is the requirement read to its first full stop | ASSERT |
 | **M04-G5** | REQ-206's *"after the transmitter has emitted a frame's start character"* | `P = 60`; the source withholds the word required at cycle `C + 1` — the earliest cycle the condition can hold | Strobe at `C + 1`; `/E/` word at `C + 3`; **frame octets 0–7 (source word 0) are on the wire** at `C + 2`, because REQ-207 forbids dropping an accepted word | A design whose underflow detection arms one cycle late (nothing pulses, and the design stalls or emits a malformed frame); a design that discards word 0 on an abort, which produces a frame with a preamble, no octets and an `/E/` — well formed by §9's shape and wrong by REQ-207 | ASSERT |
 | **M04-G6** | REQ-206's *"and that the next frame transmits correctly"*, REQ-202, REQ-203 | An underflowed frame followed by a `P = 20` frame | The second frame carries the full preamble word, 40 pad octets, an FCS equal to the REQ-305 oracle over its own padded 60 octets, and its terminate character at lane 0 | A design whose CRC register is not re-seeded after an abort — the second frame's FCS then covers the first frame's octets too, and **every structural check in this plan passes it**: the length is right, the pad is right, the terminate lane is right, and only the oracle comparison of M04-D1 speaks. This row is why obligation 2's independence matters more than its convenience | ASSERT |
-| **M04-G7** | §0.6's strobe window, C-5, SPEC-M04 §11.3 | (any underflowed frame) | **§0.6's window is NOT asserted for `error_underflow`.** Its bound is *"the module's latency in cycles after the input word carrying the last octet of the offending frame"*, and an underflowed frame **never receives that octet** — the window has no reference word, so a check against it is not loose, it is undefined. §9's exact pin is the whole of the assurance, together with obligation 4's exact strobe-event set | — (obligation 5 restated at the row that would otherwise be the natural site for the assertion; the M03 precedent is `RV-0057-VERDICT` Finding 2, where a window whose reference word coincided with the module's own pin was found to carry *no independent information* — here it carries none for a stronger reason) | NO-ASSERT |
+| **M04-G7** | §0.6's strobe window and its **fourth** reference-word clause, C-5 (DISCHARGED), SPEC-M04 §11.3 | (any underflowed frame) | **§0.6's window is NOT asserted for `error_underflow`.** Its reference word for this strobe is §0.6's fourth clause's — *the cycle on which the word was required and not presented* — and its ceiling adds §0.5's **word delay ΔC = 2**, never REQ-210's event delay. SPEC-M04 §9 pins the pulse on **that same cycle**, which is also §0.6's floor, so **floor, reference word and pin are one event and the clause itself states that the window "carries no independent information" here**. §9's exact pin is the whole of the assurance, together with obligation 4's exact strobe-event set; §0.6's *"a bound, never a licence"* note is why a pulse inside the window but off the pin is non-conformant on §9's authority and not on the window's. **Ground repaired 2026-08-11 (`FINDING ABS-1`, MINOR, mine)** — this cell read *"an underflowed frame **never receives that octet** — the window has no reference word, so a check against it is not loose, it is undefined"*, which was **false when written**: §0.6's first clause names the last octet the frame *received while it was open*, and an underflowed frame has received octets, as M04-G5 asserts in this very family. The status and the conclusion do not move; only the ground does | — (obligation 5 restated at the row that would otherwise be the natural site for the assertion; the M03 precedent is `RV-0057-VERDICT` Finding 2, where a window whose reference word coincided with the module's own pin was found to carry *no independent information* — this module reaches the same disposition by the same route, not by a stronger one) | NO-ASSERT |
 | **M04-G8** | REQ-008, obligation 3, §0.6's conservation equation | (M04-G1's run) | The underflowed frame is counted **once** on the wire — as a frame that began and ended — and its `tlast` word is **never accepted**, so no bookkeeping keyed on `tlast` acceptance sees it at all | A conservation monitor keyed on `tlast` (which silently exempts the one class of frame this module can lose) and a design that neither terminates nor strobes an underflowed frame. **The monitor defect and the design defect produce the same green**, which is why obligation 3 states the counting rule in the plan rather than leaving it to the monitor's author | ASSERT |
+| **M04-G9** | REQ-206's qualifier clause (*"before it has accepted that frame's `tlast` word"*), §7's C-16 consequence 1, §9, §4's identity | **A single-word frame** — `W = 1`, i.e. `P ∈ 1 … 8`, the one source word carrying both the frame's first octet and its `tlast` — presented to an idle transmitter with the gap already served; nothing presented afterwards, the cycle after the acceptance being the post-`tlast` cycle §7 authorises | **`error_underflow` is 0 on every cycle of the run** — obligation 4's exact strobe-event set is **empty** — and the frame transmits intact: preamble word at `C + 1`, its `P` octets from `C + 2`, `60 − P` pad octets, four FCS octets equal to the REQ-305 oracle over the padded 60, terminate character at octet index `F` = 64, lane 0, cycle `C + 10`. **REQ-206's window is provably EMPTY at this shape**: its condition opens after the start character and closes at the `tlast` acceptance, and here the `tlast` word is accepted at the cycle the frame starts, so no cycle lies inside it | **A design that strobes `error_underflow` after a single-word frame's only acceptance — and this is not a hypothetical: it is the defect measured red at `fcf6f08` and green at `02f762a`** (`BUG-0004`, MAJOR, route 1, CLOSED at `af06c62`), found by a standing instrument on stimuli commissioned for the pad boundary rather than by any row, because **this plan had no row for the shape** (`J-dv_lead-0175`). The wider class: any design whose underflow condition is evaluated without REQ-206's qualifier at the one frame shape where the opening acceptance **is** the `tlast` acceptance. **`M04-G5` is the opposite-verdict neighbour** — it drives the earliest cycle at which the condition *can* hold and asserts a pulse, where this row drives the shape at which it *cannot* and asserts silence; a design passing either alone is not thereby right, and the pair is what separates *detects an underflow* from *detects the absence of a word* | ASSERT |
+| **M04-G10** | REQ-206's qualifier clause, §7's C-16 acceptance at `C + 8`, §9, `BUG-0004` §9.3's routes 2 and 3 | **Needs machinery T-7 and is not mountable at this commit.** A direct-drive continuous source with a **controllable handover cycle**: a frame accepted at `C`; the next frame's first word presented and accepted at **`C + 8`** — the acceptance §7's C-16 authorises — and that frame started from the held word at `C + 11`. Two shapes: **(a)** the held frame is `W = 1` (`BUG-0004` route 2); **(b)** the held frame is `W = 2`, **fully pre-loaded**, its `tlast` word accepted at `C + 11` (route 3) | **`error_underflow` is 0 on every cycle of both runs** — in particular **not** at `C + 12` in (a) and **not** at `C + 13` in (b), the two cycles at which the unfixed design strobes by `BUG-0004` §9.3's derivation — and both frames transmit intact with their own FCS and terminate lanes, with the second frame's start character where M04-H4 puts it (an acceptance at `C + 8` does not move it) | **The two routes `BUG-0004` §9.3 derives, which its own §1 stimulus cannot reach and which no committed bench can produce.** Both were fixed **by derivation** and **neither has ever been measured, in either design** — the class a sign-off absorbs by silence, which is why §0.2 item 4 bars a REQ-206 coverage claim that neither measures them nor declares them. The row also kills a **bench-side** defect: a suite reporting REQ-206 coverage on route 1 alone. **`M04-G5` is the opposite-verdict neighbour here too**, and (b) is the shape that refutes *"`W ≥ 2` is what the chain can produce, therefore the chain is safe"* — the ground `FINDING BUG-0004-1` withdraws (§0.2 item 4) | ASSERT |
 
 ### 4.H Backpressure and the no-drop rule — REQ-207, §7's throughput bullet, C-14.1, C-16
 
@@ -389,7 +454,7 @@ assumed.
 |---|---|---|---|---|---|
 | **M04-J1** | REQ-210, §7's REQ-210 bullet, §10's REQ-210 hook | Several lengths from M04-B4's set, **each issued into an idle transmitter after the previous gap has elapsed** — REQ-210's own measurement condition | (cycle of the word whose lane 0 carries `/S/`) − (cycle on which `tx_tvalid` and `tx_tready` both held for the frame's first word) = **1 cycle = 8 octet times**, at every length. §7 names both measurement events exactly, and both sit at octet position 0 of their words | A design whose preamble insertion costs a variable number of cycles — one that waits for a second source word before starting, for instance, which is conformant at every other row in this plan and adds one cycle at exactly one length class | ASSERT |
 | **M04-J2** | REQ-210's domain clause, §7 | A back-to-back run | **REQ-210 is NOT measured on a back-to-back run.** §7: *"Back-to-back transmission legitimately delays a start character until the gap is served, and REQ-210 puts that outside its domain."* A bench measuring the same two events there measures REQ-204's gap and reports it as a latency violation | — (the row exists to stop the measurement, and it is the cheapest of the three NO-ASSERT rows in this family to get wrong, because a sustained run is the most convenient place to take a statistic) | NO-ASSERT |
-| **M04-J3** | REQ-210's opening clause, requirements.md §0.5's per-octet definition, §7's pinned value — **`FINDING AP-M04-1`, §8 item 1** | (M04-J1's runs, read per octet) | **The per-octet latency is REPORTED and asserted nowhere.** Derived from §0.5 and §6.1 rather than measured: frame octet `j` is accepted in source word `⌊j/8⌋` at cycle `C + ⌊j/8⌋`, byte position `j mod 8`, so its input octet time is `8C + j`; it is transmitted at cycle `C + 2 + ⌊j/8⌋`, lane `j mod 8`, so its output octet time is `8C + 16 + j`. **L = 16 octet times for every frame octet, of every frame, at every length** — a constant, and **not** the 8 that §7 pins. §7's 8 is a delay between two *events*; REQ-210's sentence opens *"Measured per octet in octet times (§0.5)"* and then names those two events. **A monitor built from REQ-210's opening clause and §7's pinned value asserts 8 per octet and fails a conformant M04 at every octet of every frame** | **The bench this row forbids.** The kill here is a *test*, not a design: this is `SCR-M03-I4`'s shape at a new module — a monitor built from a specification sentence that no conformant design can satisfy — and it is reachable **by arithmetic on the specification before any RTL exists**, which is exactly what §0.5's own *"checkable at spec freeze"* clause promises. It was not caught at freeze, and this row is where the programme finds it the second time. The finding is routed to architect_docs_lead at §8 item 1 and **this row moves in neither direction on its resolution**: it reports 16 either way | NO-ASSERT |
+| **M04-J3** | REQ-210 **as repaired 2026-08-11**, requirements.md §0.5's per-octet definition, §7's two pinned values — **`FINDING AP-M04-1`, SUSTAINED, CURED and CLOSED, §8 item 1** | (M04-J1's runs, read per octet) | **The per-octet latency is REPORTED and asserted nowhere.** Derived from §0.5 and §6.1 rather than measured: frame octet `j` is accepted in source word `⌊j/8⌋` at cycle `C + ⌊j/8⌋`, byte position `j mod 8`, so its input octet time is `8C + j`; it is transmitted at cycle `C + 2 + ⌊j/8⌋`, lane `j mod 8`, so its output octet time is `8C + 16 + j`. **L = 16 octet times for every frame octet, of every frame, at every length** — a constant, and **not** the 8 that §7 pins. §7's 8 is a delay between two *events*. **The quotation this cell carried is STALE and is struck rather than deleted, 2026-08-11**: it read *"REQ-210's sentence opens ~~'Measured per octet in octet times (§0.5)'~~ and then names those two events"*, **and that opening clause no longer exists — striking it is what the ruling did.** REQ-210 now says in its own text that its constant is an **event delay** between two named events, names both, states that it is **not** §0.5's per-octet latency, requires both to be pinned in SPEC-M04 §7, and adds *"a monitor SHALL NOT assert either one per the other's measurement."* **The monitor this row forbids is therefore now forbidden by the requirement itself**, which is a stronger prohibition than a plan row can write. **Not one figure moves**: L = **16**, h = **0**, ΔC = **2**, event delay **8** octet times — SPEC-M04 §7's four pinned constants, re-derived off a materialised wire stream over **1501** frame lengths at the countersignature (`J-dv_lead-0170` §(a), in force at `816e187`, transcription `J-orchestrator-0244`) | **The bench this row forbids.** The kill here is a *test*, not a design: this is `SCR-M03-I4`'s shape at a new module — a monitor built from a specification sentence that no conformant design can satisfy — and it is reachable **by arithmetic on the specification before any RTL exists**, which is exactly what §0.5's own *"checkable at spec freeze"* clause promises. It was not caught at freeze, and this row is where the programme finds it the second time. **The finding is CLOSED** (§8 item 1) — routed to architect_docs_lead, SUSTAINED, and cured at `816e187` by pinning **both** constants rather than by renaming one; the alternative it rejected (repair §7's pinned 8 to 16, keep REQ-210's opening clause) would have invalidated `M04-J1`, whose two events are both named. **This row did move in neither direction on the resolution, as it said it would**: it reported 16 before the ruling and reports 16 after it | NO-ASSERT |
 | **M04-J4** | requirements.md §0.5's L, §6.1's padding and FCS paragraphs | (M04-J1's runs) | **Pad and FCS octets have no input octet time, so §0.5's L has no value for them.** The domain of any latency measurement at M04 is the **frame** octets — the ones that entered on the source stream — and a tagger that tries to match every wire octet to an input octet has no match for up to 59 pad octets and 4 FCS octets per frame | — (recorded because the committed tagger's stated correspondence is *"output octet j is input octet j + strip_octets"*, a front-strip **prefix** relation over an output that is a subset of the input; M04's wire stream is an input stream with 8 octets prepended and up to 63 appended, so the relation is not of that shape. §7 item T-4 carries what follows for machinery) | NO-ASSERT |
 
 ### 4.K Configuration — REQ-802, REQ-803, REQ-810, §4.3
@@ -510,6 +575,23 @@ verdict.
     conformant. Asserting a truncation would import M03's REQ-108 into a module
     that does not have it — and M04-B5, the maximum-length row, is precisely
     where that import would have landed.
+11. **Two rejections carried by `M04-G9` and `M04-G10`, recorded 2026-08-11 with
+    the rows** — this list is the auditor's mining ground and a row added later
+    owes its rejections just as much as one added at the first commit.
+    **(a) Producing the pre-loaded handover with an idle-injection wrapper at
+    M04's source.** Rejected, and it is the inviting error: SPEC-M04 §7 forbids
+    it in normative text (*"A bench SHALL NOT build a REQ-016 idle-injection
+    wrapper at this module's source interface"*, `FINDING AP-M04-2` as ruled),
+    because the first injected cycle on a required cycle **is** an underflow —
+    a wrapper aiming at routes 2 and 3 would manufacture the very condition the
+    rows assert is absent. The handover must come from a source that presents
+    early, never from one that withholds. **(b) Statusing the two new rows
+    `GAP`.** Rejected: `GAP` says an attack cannot be mounted and carries the
+    reason, and `M04-G10`'s reason is a **capability that has not been built**,
+    not one that cannot be. Writing it as a `GAP` would let a sign-off read the
+    coverage as structurally unavailable; writing it as `ASSERT` with T-7 named
+    and an executor attached is the form this plan already uses for T-2's rows
+    (`M04-G8`, `M04-L4`), and it is what keeps the debt countable.
 
 ---
 
@@ -545,7 +627,7 @@ cost it `FINDING SO-1-A` — every declared row appears somewhere in this sectio
 | REQ-203 | M04-C1 … M04-C6 |
 | REQ-204 | M04-F1 … M04-F6; M04-I4; M04-K3, M04-K4 (the sampling rules); M04-L5 (no instance for the first frame after `clear`) |
 | REQ-205 | M04-E1 … M04-E5 |
-| REQ-206 | M04-G1 … M04-G8; **M04-E5** (REQ-205 has no instance on an underflowed frame); M04-F6 (the gap after one); M04-L3 (the co-occurrence with REQ-009) |
+| REQ-206 | M04-G1 … M04-G10; **M04-E5** (REQ-205 has no instance on an underflowed frame); M04-F6 (the gap after one); M04-L3 (the co-occurrence with REQ-009). **`M04-G9` and `M04-G10` were added 2026-08-11** — the two shapes at which REQ-206's window is **empty** and the strobe must stay silent — and **§0.2 item 4 bars an `SO-` from reporting this REQ's coverage while `M04-G10` is neither measured nor declared a gap** |
 | REQ-207 | M04-H1, M04-H2, M04-H5, M04-H6; M04-G1 and M04-G5 (the accepted words that must still be transmitted on an abort) |
 | REQ-208 | **M04-M3 — GAP**, its verification hook needing a strobe (REQ-510) at a module that does not exist; **M04-M4** carries the half that is checkable today |
 | REQ-209 | M04-I1 … M04-I4; M04-H3 and M04-H4, the two `tx_tready` values the cadence turns on |
@@ -594,8 +676,15 @@ for m in re.finditer(r'M04-([A-Z]+)(\d+)\s*…\s*M04-\1(\d+)', s):
     named |= {f"M04-{m.group(1)}{k}" for k in range(int(m.group(2)), int(m.group(3))+1)}
 print(len(declared), len(named & declared), sorted(declared-named))
 PY
-80 80 []
+82 82 []
 ```
+
+**Re-measured 2026-08-11, after `M04-G9` and `M04-G10` landed** — the figure was
+`80 80 []` at the plan's first commit and is quoted here at its new value with the
+same command, because a census printed once and carried forward is the exact thing
+§0.1(i) forbids. The two new ids are reached through §6's REQ-206 range
+`M04-G1 … M04-G10`, which is why the range-expansion loop below is load-bearing for
+them and not only for the families it was written for.
 
 **The table above writes its row id in backticks and not in the row tables' bold
 notation, deliberately** — `FINDING AP-6-2`, minted at `AP-M03` §6.1 in this same
@@ -631,6 +720,7 @@ read to establish it.
 | **T-4** | **A per-octet latency tagger for a *prepending* module** | **NOT APPLICABLE AS BUILT, and the claim is about the documented interface only.** `test/monitors/octet_time.mli`'s `Latency` states its correspondence as *"output octet `j` is input octet `j + strip_octets`"* — a front-strip **prefix** relation, over an output that is a subset of the input taken from the front. M04's wire stream is the input stream with **8 octets prepended** and up to **63 appended** (pad and FCS), so the relation is not of that shape at any value of `strip_octets`. **No row is blocked**: M04-J3 reports the per-octet figure by direct arithmetic from the source trace and the decoded wire, and no tagger is instantiated | M04-J3, M04-J4 |
 | **T-5** | **An independent CRC-32 oracle** | **EXISTS**: `test/golden/crc32_ref.ml` / `.mli` — REQ-305's bit-serial reference, independent of `libs/**`, with `of_octets`, `fcs_octets` and the residue constants. **This is the one external-anchor obligation at M04 that is discharged today**, and obligation 2 rests on it | family D, M04-C3, M04-G6 |
 | **T-6** | **Frame construction helpers** | **EXIST**: `test/xgmii/frame.mli` carries `fcs`, `with_fcs`, **`pad_to_60`** (REQ-203's own arithmetic, already committed), `residue_ok` and `stress_frame` with a position-dependent filler — the last being what M04-B1 and M04-C4 turn on | families B, C, D |
+| **T-7** | **A direct-drive continuous source with a controllable handover cycle** — the machinery `M04-G10` needs, added 2026-08-11 | **DOES NOT EXIST, and T-3 is not it.** T-3's primitive drives one `Axi64.Source` record per call, which is enough to *withhold* a word on a chosen cycle; what is missing is the other polarity — presenting the **next** frame's first word while the previous frame is still transmitting, so that its acceptance lands on a **chosen** cycle (`C + 8`, §7's C-16 acceptance) and the frame it opens starts from a word the module already holds. **Measured at this commit, not inferred** (§0.1(iii)): T-3's own capability read establishes the withholding half, and the absence of the other half is read off the committed producer — `test/xgmii_tx_64/bench.ml`'s standing conservation check **fails unless exactly one frame is decoded per run** (`assert_instruments_clean`, the `| fs ->` branch), so no committed unit can drive a second frame at all, let alone hand one over on a chosen cycle. **Neither family D nor REQ-209's sustained run supplies it**: family D drives no handover, and REQ-209's frames are minimum-length, `W = 8`. **Executor: dv_lead**, in the round that first opens a back-to-back bench at M04 — and it is what §0.2 item 4's bar turns on, so it is a **sign-off dependency and not a nicety** | M04-G10 (and, on the same stimulus, the never-measured routes 2 and 3 of `BUG-0004`) |
 
 ### 7.1 BAR T1 — the differential anchor at this boundary is SHUT, and a bench cannot open it
 
@@ -721,7 +811,25 @@ read to establish it.
 
 ## 8. Open questions and rulings requested
 
-1. **`FINDING AP-M04-1` (MINOR against the text, MAJOR against any bench built
+1. **`FINDING AP-M04-1` — SUSTAINED, CURED and CLOSED at `816e187`** (recorded
+   2026-08-11; the derivation below is kept verbatim because it is the evidence
+   the ruling was checked against, and a closed finding whose argument is deleted
+   cannot be re-audited). **The repair is the opening clause and not the pinned
+   figure**: REQ-210 now states that its constant is an **event delay** between
+   two named events, names both, says it is not §0.5's per-octet latency,
+   requires **both** constants pinned in SPEC-M04 §7 (event delay 1 cycle = 8
+   octet times; L = **16**, h = **0**, ΔC = **2**), and adds *"a monitor SHALL
+   NOT assert either one per the other's measurement."* Countersigned by
+   re-derivation over **1501** frame lengths, `J-dv_lead-0170` §(a), in force at
+   `816e187` (transcription `J-orchestrator-0244`). **The rejected alternative,
+   recorded because it was live**: repair §7's pinned 8 to 16 and keep REQ-210's
+   opening clause — refused because `M04-J1` is an `ASSERT` against the event
+   delay, whose two events are both named, and pinning both is strictly more
+   informative than renaming one. **No row moved in either direction**, exactly
+   as the filing predicted: `M04-J1` asserts the event delay unchanged and
+   `M04-J3` reports 16 either way. *The original filing follows.*
+
+   **(MINOR against the text, MAJOR against any bench built
    from it; mine, against requirements.md REQ-210 read with SPEC-M04 §7).**
    **REQ-210 names a per-octet measurement and then pins an event delay, and the
    two quantities differ by 8 octet times at every octet of every frame.**
@@ -764,16 +872,40 @@ read to establish it.
      orchestrator. **Not decided here.** M04-J1 asserts §7's event delay (which is
      exact and unambiguous, both events being named) and M04-J3 reports 16;
      **neither moves in either direction on the ruling**, so nothing is blocked.
+   - *Closing note, 2026-08-11.* The finding's **second half** — §0.5's front
+     offset `h` at a module that **inserts** — was answered in the same diff:
+     §0.5 gained an inserting-module clause (an inserted octet entered on no
+     input and has no input octet time, so `h` = 0 and ΔC counts to the first
+     output word carrying an octet **of the frame**, never to a word the module
+     inserted ahead of it), which gives ΔC = 2 and L = 16 by the identity and
+     agrees with the per-octet route. Both halves are closed.
 2. **REQ-901 declares no divergence class at the M04 boundary**, and its own text
    forbids citing a class not listed there. Needed before any TX co-simulation
    result may be cited by a sign-off packet. **Route**: architect_docs_lead.
    §7.1(c).
-3. **C-5 is still DEFERRED** — §0.6's strobe window is vacuous for
-   `error_underflow` (SPEC-M04 §11.3, owner architect_docs_lead, *"lands at any
-   convenient work order"*). **This plan is the first document that depends on the
-   answer being written down**, because obligation 5 is a standing prohibition
-   derived from an undischarged deferral: a reader of §0.6 alone will find a
-   window, apply it, and get a green that means nothing.
+3. **`C-5` — DISCHARGED at `ee47eee`, 2026-08-11** (this item read *"C-5 is still
+   DEFERRED"* until then). §0.6 gained a **fourth reference-word clause**: for a
+   condition reported on the **non-arrival** of an input word — which in §12's
+   strobe appendix is REQ-206's `error_underflow` and nothing else — the reference
+   word is the cycle on which the word was required and not presented, the ceiling
+   adds §0.5's word delay **ΔC = 2** and never REQ-210's event delay, and the
+   window *"carries no independent information"* here because SPEC-M04 §9's pin
+   sits at its near edge. **This plan was the document the closure was written
+   for** — §0.6's own clause cites this item by name — and obligation 5's
+   prohibition survives on the clause's own statement rather than on an
+   undischarged deferral. Countersigned `J-dv_lead-0173` §(c) (transcription
+   `J-orchestrator-0247`); SPEC-M04 §11.3 closes on the same row.
+   **One residue is OPEN and is not mine to decide: `FINDING ABS-1` (MINOR),
+   against the clause's stated *ground* and not against its rule.** The clause
+   grounds itself on the three earlier clauses "naming no word", and the first
+   clause **does** name one here — *"the last octet that frame received while it
+   was open"*, and an underflowed frame has received octets (`M04-G5`). So the
+   clause is an **override**, moving the reference one cycle later to the
+   condition's own decidability cycle, rather than a hole-filler. Nothing turns on
+   it (the pin lies inside both candidate windows), the cure is one sentence, and
+   **the identical misreading was in this plan's own row `M04-G7`, repaired here
+   in the same act as the finding it convicts me under**. **Route**:
+   architect_docs_lead, spec-diff request via the orchestrator.
 4. **Machinery T-2** — the transmit-side conservation monitor. **Mine**, executor
    named, in the round that opens `test/monitors/`. Named with an executor
    precisely so it cannot evaporate into a good intention, which is the form
@@ -791,6 +923,18 @@ read to establish it.
    discovered**: (c) is architect work and gates what (b) may compare; (a) is a
    vendoring commit that gates (b) entirely; and none of the three is a bench
    round's to do inside a bench round.
+7. **Machinery T-7 and the two never-measured routes of `BUG-0004`** (added
+   2026-08-11). `M04-G10` needs a direct-drive continuous source with a
+   controllable handover cycle, and no such producer exists — the committed bench
+   cannot decode two frames in one run at all. **Mine**, executor named, in the
+   round that first opens a back-to-back bench at M04. **What makes this different
+   from T-2's kind of debt**: §0.2 item 4 **bars** an `SO-xgmii_tx_64.md` from
+   reporting REQ-206 coverage while `M04-G10` is neither measured nor declared a
+   gap, so this item is a **sign-off gate condition** rather than a wanted
+   convenience — the same class as §7.1's BAR T1 conditions, and it is stated here
+   before the sign-off round rather than discovered inside it. The routes were
+   fixed **by derivation** in the same edit that fixed route 1; a derivation is not
+   a class DV records a clearance on.
 
 ---
 
@@ -800,3 +944,4 @@ read to establish it.
 |---|---|---|
 | 2026-08-11 | **Created.** **80 rows** across 15 families (A 5, B 5, C 6, D 6, E 5, F 6, G 8, H 6, I 4, J 4, K 5, L 5, M 6, N 4, O 5) — **56 ASSERT, 12 NO-ASSERT, 6 NO-STIMULUS, 5 STRUCTURAL, 1 GAP, 0 RULING**, counted from this file by a status-cell pass over every row table at this commit and **not** carried forward from the draft. The skeleton is `AP-M03`'s and no section is dropped. **Three things this plan does that its predecessor learned to do only later, and each is a debt paid forward rather than an innovation**: (1) **§6.1's converse rule** — every declared row is homed, in §6's table or in §6.1 — which `AP-M03` lacked and which cost it `FINDING SO-1-A`; **the check was run on this document's own draft and returned five unhomed rows** (`M04-B5`, `M04-M5`, `M04-M6`, `M04-O3`, `M04-O4`), repaired before this commit, so the instrument's first act was to convict its author. (2) **§0.2's prohibition register opens with the plan** rather than accreting over nine campaigns, carrying the three bars knowable at commit time. (3) **§7.1's BAR T1 states the co-simulation posture as a gate condition before the first bench**, with the three blocking conditions measured at the tree — the reference module is not vendored, there is no transmit harness and no canonical form for a lane pair, and REQ-901 declares no divergence class at this boundary. **One finding is minted against the specification and routed, not decided**: `FINDING AP-M04-1` (§8 item 1) — REQ-210 names a per-octet measurement and pins an event delay, and a monitor built from the two together fails a conformant M04 at every octet, `L` being **16** octet times per octet against §7's **8** between events. **No row moves on its resolution.** | dv_lead, `J-dv_lead-0169` |
 | 2026-08-11 | **The first M04 bench round is ABSORBED INTO THE PLAN: THIRTEEN ROWS DISCHARGED at `af06c62` — eleven ASSERT by a green assertion and two NO-ASSERT by a prohibition that held.** `M04-A1`, `M04-A2` (U2, `P` = 60); `M04-A5` (**NO-ASSERT**, U2 title + round-wide — no unit anywhere asserts an absolute cycle measured from cycle 0, from reset, or from the release of `clear`; every cycle constant is computed from `C`, the first accepted cycle, stated at `test/xgmii_tx_64/test_m04_a.ml:8–11`); `M04-B1` (U3, `P` = 60, position-dependent content); `M04-B2` (U4, `P` = 20, poisoned `tlast` word); `M04-B4`, `M04-B5` (U5, the **full** directed set `P ∈ {1, 20, 59, 60, 61, 64, 67, 1514}`); `M04-C1` (U6, `P` = 20); `M04-C6` (**NO-ASSERT**, U6 title + round-wide — the decoder's REQ-203 verdict is not reported as REQ-203 coverage, in the bench or in the verdict; `M04-C1` and `M04-C3` are what discharge REQ-203); `M04-C2` (U7, `P ∈ {1, 59, 60, 61}`, both directions of the below-60 predicate); `M04-C3` (U8, `P` = 20, both halves of the oracle comparison); `M04-C4` (U9, `P` = 20, poison `0xA5`); `M04-C5` (U10, `P ∈ {1, 20, 59}`). Carrier `WO-0080` (`RV-0080-VERDICT` **BOUNCED** at `960c831` on `BM1`/D4a; rev B landed `cbbeb76`; the red that followed was a **design** defect, §15 class **D1** → `BUG-0004`, **CLOSED** at `af06c62`; `RV-0080B-VERDICT` **ACCEPT**, 16 of 16 bars, `J-dv_lead-0176`). Evidence: CI `build` run **31482795659**, job `build` **93751338432**, steps *Build*, *Run tests (expect tests, waveform snapshots)* and *Verify nothing was left unpromoted or non-deterministic* each `success`, read by name and status; `git diff cbbeb76 af06c62 -- test/` **empty**, so the green run reads the bench exactly as it landed. **NO ROW ADDED, NO ROW CONVERTED, NO STATUS MOVED, NO COVERAGE-MAP LINE CHANGED, NO CELL OF ANY ROW TOUCHED: 80 rows, 56 ASSERT, 12 NO-ASSERT, 6 NO-STIMULUS, 5 STRUCTURAL, 1 GAP, 0 RULING** — re-measured at this tree by a **status-cell pass** over every row table, before and after this edit, and **not** carried forward. **The discharge count is a HAND COUNT and carries its provenance**: `tools/dv_checks.sh` at this commit contains **zero** occurrences of `M04`, `xgmii_tx_64` or `AP-xgmii_tx`; its row-discharge census is hard-keyed to `AP-xgmii_rx_64.md`/`M03-`/`test/xgmii_rx_64/*.ml` and reports 78 rows (M03's), and only its repository-wide bench-inventory line moved, to **149**. **No committed instrument counts an M04 row** — §19.3 item 1's M04 census is owed and is now load-bearing for any coverage fraction. **67 of 80 rows remain outstanding**; `BAR T1` stays **SHUT**; **no `SO-xgmii_tx_64.md` is opened or offered**, and `M04-G4` is **not** discharged and is not described as such. **Two obligations are carried into the plan's debt by `BUG-0004` §10.3/§10.4** and are the plan's to absorb when it is next repaired: two new family-G rows (the `W = 1` collapse, and the pre-loaded-handover shape covering that bug's derived-but-never-measured routes 2 and 3, with `M04-G5` named as the opposite-verdict neighbour on both). **The editorial repair debt stands at NINE and NONE of it is paid here** — this round opened this file for this change-log row and nothing else; the carrier is re-pinned from *"the round that next opens `test/attack_plans/**`"* to *"the round commissioned to repair this plan"*, because a carrier phrased over a **path** is discharged by accident the first time a round opens that path for an unrelated reason. | dv_lead, `J-dv_lead-0176` |
+| 2026-08-11 | **THE REPAIR ROUND THIS PLAN'S DEBT WAS RE-PINNED TO: seven of eight carried items paid here, the eighth already paid, two rows added, no status cell moved on any pre-existing row.** The row above re-pinned the carrier from *"the round that next opens `test/attack_plans/**`"* to *"the round commissioned to repair this plan"*; **this is that round**, and the debt is paid by walking `J-dv_lead-0171` … `J-dv_lead-0176` rather than by trusting the running total. **The walk corrects the total, which is the first thing this row records.** The running count reached NINE by adding *"the §9 change-log row"* twice — once at `J-dv_lead-0171`, where it is the families A/B/C landed-status row, and again inside `J-dv_lead-0174`'s arithmetic, where the clause that follows it (*"whose landed-status figure must record **zero** rows discharged at `960c831`, not thirteen"*) is a correction to that same row's content and not a second obligation. **The distinct census is therefore EIGHT**, of which the landed-status row was **paid at `J-dv_lead-0176`** and the other seven are paid here. This round's own change-log row — the one you are reading — is the §9 discipline that attaches to any edit of this document, not a ninth debt item; counting it as one is what produced the ninth. **`BUG-0004` §10.4's trip condition is met on its own terms**: its item is *"two new family-G rows"*, and both are below. Enumerated, each with the entry that minted it: **(1)** `M04-B2`/`M04-C4`'s poison quantifier — `FINDING AP-M04-3`, `J-dv_lead-0171` — scoped to wire octet indices `0 … F−5` with the FCS excluded **and the exclusion's reason stated**, the four FCS octets being a computed value that may legitimately equal the poison; **(2)** `M04-J3`'s quotation of REQ-210's **struck** opening clause, `J-dv_lead-0171` — struck in place with its date, the repaired REQ-210's own separation stated, and §8 item 1 closed with it (`FINDING AP-M04-1` SUSTAINED/CURED/CLOSED at `816e187`), because a row cured while its finding still reads OPEN two sections later leaves the document at odds with itself; **(3)** carry-forward **C-5**'s superseded deferral, `J-dv_lead-0171` — repaired at **four** sites, the header's carry-forward bullet, §0.2 item 3, §2 obligation 5 and §8 item 3, C-5 having been **DISCHARGED at `ee47eee`** by §0.6's fourth reference-word clause; **(4)** the §9 landed-status row — **paid at `J-dv_lead-0176`**, not re-paid here; **(5)** `M04-G7`'s ground — `FINDING ABS-1`, `J-dv_lead-0173`, mine, and **wrong when written rather than made stale**: the row denied that §0.6's first clause reaches an underflowed frame, and it does, since that clause names the last octet the frame *received while it was open*. The NO-ASSERT status and the conclusion do not move; the ground is now the fourth clause's own *"carries no independent information"*; **(6)** `M04-B1`'s uniqueness quantifier, `J-dv_lead-0174` — *"at no other position"* was a universal over the **run**, falsifiable at this row's own stimulus because `/I/` is `0x07`; scoped to the frame's own wire octets; **(7)** and **(8)** the two new family-G rows below, owed since `J-dv_lead-0175` and `J-dv_lead-0176`. **Three of the eight are the same defect in three places** — a universal stated over a domain the claim cannot survive, twice caught by the worker executing my instrument and once by my own countersignature — which is why they are enumerated rather than summarised. **TWO ROWS ADDED, family G 8 → 10, both `ASSERT`, both `BUG-0004` §10.3's**: **`M04-G9`**, the `W = 1` collapse, the shape at which REQ-206's window is provably empty because the frame's `tlast` word is accepted at the cycle the frame starts — the defect measured red at `fcf6f08` and green at `02f762a`, which this plan had no row for and which a standing instrument caught on stimuli commissioned for the pad boundary; and **`M04-G10`**, the pre-loaded back-to-back handover at `C + 8`, covering that packet's routes 2 and 3 — **fixed by derivation and never measured in either design** — with `M04-G5` named as the opposite-verdict neighbour on both. **The `SO-` precondition is now readable from this plan and not only from a closed bug packet**: §0.2 item **4** bars any `SO-xgmii_tx_64.md` from reporting REQ-206 coverage while `M04-G10` is neither measured nor declared a gap, §7 item **T-7** names the missing machinery with an executor, §8 item **7** carries it as a gate condition, and §5 item **11** records the two rejections the new rows owe (an idle-injection wrapper at the source — forbidden by SPEC-M04 §7's own normative sentence, because the first injected cycle on a required cycle *is* an underflow; and statusing the rows `GAP`, which would read as structurally unavailable coverage rather than as unbuilt machinery). **`FINDING BUG-0004-1` is discharged here** — that packet's `W = 2` conversion rule is restated at §0.2 item 4 over the **mechanism** (*can the chain present a frame whose `tlast` word is in this module's hands at or before the cycle the frame starts?*) rather than over a word count; the malformed original sentence lives in `BUG-0004` §6, whose own §10.2 already corrects it in place, and that packet is **CLOSED and outside this round's write set**, so nothing there is edited. **COUNTS, re-measured at this tree by a status-cell pass before and after every edit, never carried forward: 82 rows (82 distinct ids), 58 ASSERT, 12 NO-ASSERT, 6 NO-STIMULUS, 5 STRUCTURAL, 1 GAP, 0 RULING** — the deltas are exactly the two new ASSERT rows, and **no `Status` cell of any pre-existing row moved**. §6.1's homing census re-run with its own quoted command: **82 82 []**, the printed figure updated in place because a census carried forward is what §0.1(i) forbids. **Outstanding moves from 67 of 80 to 69 of 82**: the two new rows are added **undischarged**, and the thirteen-row tally of the row above is untouched. **One measurement is recorded and deliberately NOT called a discharge**: `M04-G9`'s observable is met at `af06c62` by the landed bench's standing instruments — `test/xgmii_tx_64/bench.ml`'s `assert_instruments_clean` fails the run unless `error_underflow` is high for **0** cycles, and `test/xgmii_tx_64/test_m04_b.ml`'s directed set contains `P = 1`, which is `W = 1` — but that run was adjudicated by `RV-0080B-VERDICT` against the rows that existed at that verdict, and a row written afterwards is not discharged by it without an adjudicating instrument saying so. The measurement is recorded with its provenance so the next `SO-` round decides with it in front of them, and the discharge count is not moved by this row. **`BAR T1` stays SHUT; no `SO-` is opened or offered; `M04-G4` is still not discharged.** The same round repaired `AP-ip_eth_rx_64`'s family F on the same discipline (that plan's §9, same date). | dv_lead, `J-dv_lead-0177` |
