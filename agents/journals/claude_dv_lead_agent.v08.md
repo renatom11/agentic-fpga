@@ -3999,3 +3999,767 @@ three BAR T1 conditions are work-order requests, not silent to-dos.
 - test/attack_plans/AP-xgmii_tx_64.md
 - test/attack_plans/AP-xgmii_rx_64.md
 - agents/handoffs/WO-0079_m03-traceability-test-rows.md
+
+## [J-dv_lead-0170] 2026-08-11T20:55Z | task:none | Three countersignatures paid at the source and not at the summary — L = 16 re-derived over a wider sweep than the one it checks, the second half of my own C-27 signature withdrawn as false while its conclusion stands, and C9's licence signed with the closure its restriction does not reach filed against it
+
+### Trigger
+
+Orchestrator dispatch, spawn-head `816e187`, **no sibling round in flight**. The
+architect's three-item spec round (`J-architect_docs_lead-0038`, diff over
+`docs/specs/requirements.md` and four module specifications) states in terms that
+**dv's re-countersignature is owed** on the REQ-210 + §0.5 diff and on the REQ-611
+diff, and that the REQ-901 diff is **normative and NOT IN FORCE until dv's
+countersignature is transcribed**. My act is the one my `(g)`/`(h)` round took
+(`J-dv_lead-0162`): verify each derivation **at the source**, countersign or
+contest, and write the countersignature text the orchestrator transcribes.
+
+Precheck performed and passed before reading the diff and before any write:
+
+    git status --short              # empty
+    git rev-parse HEAD              # 816e187da118708505ce00e04cc72bf5bafebd14
+    git rev-parse --abbrev-ref HEAD # claude/fpga-hardcaml-agent-orchestration-37ceyf
+
+### Inputs
+
+- `agents/charters/dv_lead.md` and `agents/PROTOCOL.md`, in full, before any edit.
+- **The diff under review**: `git diff 8f81568..816e187` over
+  `docs/specs/requirements.md`, `docs/specs/modules/xgmii_tx_64.md` (M04),
+  `docs/specs/modules/eth_axis_rx.md` (M06), `docs/specs/modules/arp_eth_rx.md`
+  (M10), `docs/specs/modules/ip_eth_rx_64.md` (M14) — read hunk by hunk, and then
+  each repaired passage read **in place at HEAD** rather than only as a hunk.
+- **`docs/specs/requirements.md` at HEAD**: §0.5 entire (octet time, front offset h,
+  the new inserting-module clause, word delay ΔC, the deciding input word, the two
+  arithmetic tests, what a monitor may demand under injection, **Start lanes**);
+  REQ-011, REQ-012, REQ-016, REQ-110, REQ-206, REQ-210, REQ-611, REQ-901 entire;
+  §13's four new rows.
+- **`docs/specs/modules/xgmii_tx_64.md`**: §3 (the REQ-016 row), §6.1 entire (the
+  preamble, frame, padding, FCS, terminate and gap paragraphs, the cycle table and
+  the storage paragraph), §6.2, §6.3, §7 entire, §10's REQ-210 hook, §13.
+- **`docs/specs/modules/eth_axis_rx.md`**: §6.1 entire (the field table, the
+  where-the-fields-lie paragraph, the assembly rule, the gapless cycle formulas,
+  the repaired gapped paragraph, the minimum-frame cycle table, the abort-bit
+  inequality), §7's latency and handshake bullets with the new four-event table,
+  §9's pinned strobe cycle, §10's REQ-016 hook, §13.
+- **`docs/specs/modules/ip_eth_rx_64.md`**: §3's REQ-016 and REQ-019 rows, §6.1's
+  repaired gapped paragraph, §7's latency, parse-latency and handshake bullets with
+  the new four-event table, §10's REQ-016 and REQ-611 hooks, §13.
+- **`docs/specs/modules/xgmii_rx_64.md`** §9's *"When a frame is open, and what
+  closes it"* paragraph — the five-member closure list, read word for word against
+  REQ-901's new span rather than from the architect's citation of it.
+- **`docs/specs/modules/nic_top.md`** §7 and §10 and **`docs/specs/modules/udp_ip_rx_64.md`**
+  §7, read to test whether the retired per-octet-under-injection reading survives at a
+  site the round did not name.
+- **My own instruments**: `test/attack_plans/AP-xgmii_tx_64.md` §4.J (rows `M04-J1` …
+  `M04-J4`), §6, §7 item T-4, §8 items 1–6, §9; `test/attack_plans/AP-ip_eth_rx_64.md`
+  §4.C, §4.F (rows `M14-F1` … `M14-F4`), §4.I, §6, §9; `test/attack_plans/AP-xgmii_rx_64.md`
+  §4.H and family I.
+- **My own countersigned record**: `agents/handoffs/WO-0020_batch-f-countersign.md`'s
+  **C-27** disposition, quoted below verbatim; `agents/handoffs/WO-0078_…§6.3`'s
+  Stage-3 re-authorisation gate and §7's branch table; `WO-0078` §14's `RV-SWEEP`
+  entry carrying **`FINDING ECS-3`** and the H-4 row; `agents/handoffs/SO-xgmii_rx_64.md`'s
+  gate table at `2183d71`; `agents/journals/claude_dv_lead_agent.md`'s C-27 minting
+  entry; `claude_dv_lead_agent.v08.md` `J-dv_lead-0169` (the `AP-M04` round that filed
+  `FINDING AP-M04-1`, and its harvest-span paragraph).
+- **The co-simulation producers, as artefacts of my own line**: `test/cosim/ours_run.ml`
+  (the FI-4 admission guard at `:245-262` and the span-closing line `:273`) and
+  `test/cosim/tb_xgmii_rx_64.v` (FI-6's mirror). Read to test the diff's claim about
+  what today's guards refuse, not to derive a rule from them.
+- `agents/journals/claude_architect_docs_lead_agent.v03.md`, `J-architect_docs_lead-0038`
+  entire, **read last** — after my own derivations, so that agreement means agreement.
+
+**Independence.** No RTL was opened: `libs/**` was not read at any point in this
+round, and `test/third_party/` was not opened. **Every reference-side claim in this
+entry is carried from the `(g)`/`(h)` class text I countersigned at `J-dv_lead-0162`
+after deriving it from the reference's clocked block in that round** — it is a
+retrospective reference to a derivation already in history, not a new static read,
+and where I use it below I say so at the point of use.
+
+### Reasoning
+
+---
+
+#### (a) Diff 1 — REQ-210 + §0.5's front offset. **COUNTERSIGNED.**
+
+**What I verified, and it is a re-derivation and not a reading.** The architect's
+sweep is arithmetic over the closed form; mine is not. I materialised M04's XGMII
+wire stream from §6.1's **construction** rules — the preamble word at C+1 (`/S/`,
+0x55 ×6, 0xD5); source word m accepted at C+m transmitted at C+m+2 with lane =
+byte position (REQ-012, no rotation); then REQ-203's pad octets to 60, the four FCS
+octets, the terminate character — and read the octet times **off the stream**, so
+the check is independent of the algebra it tests (Evidence 1). Over **N = 14 …
+1514**, all 1501 lengths:
+
+- **L = 16 octet times at every frame octet of every frame**, one value in the set,
+  **zero** lengths with a non-single-valued L;
+- the **event delay** — acceptance handshake to the word whose lane 0 carries `/S/`,
+  both events at octet position 0 — is **8** octet times, one cycle;
+- **ΔC = 2**, taken as *(first output word carrying an octet **of the frame**) −
+  (source word carrying frame octet 0)*, which is the new clause's own definition
+  and not the identity's;
+- both identities close: **L = 8ΔC − h** gives 16 = 16 − 0, **ΔC = (L + h)/8** gives
+  2, and **(L + h) ≡ 0 (mod 8)**, which is §0.5's whole-number test;
+- **L − event delay = 8 octet times = exactly one word**, and the word is the
+  preamble word. That is the finding's whole content, arrived at from the other end.
+
+**My sweep is wider than the one it checks, and the extra region is the interesting
+one.** The architect swept **1455** lengths, N = 60 … 1514. Mine adds N = 14 … 59 —
+the **46 lengths at which REQ-203's padding runs** (1501 − 1455) — and L is still 16 at every
+frame octet there. That matters because the padded region is exactly where a
+per-octet tagger has wire octets with **no input octet to match**, which is my own
+row `M04-J4`'s subject; the sweep confirms that the *frame* octets' latency is
+untouched by the pad, and that the domain restriction is a property of the tagger
+and not of the constant.
+
+**M04-J1 and M04-J3 remain correctly statused against the repaired text**, checked
+row by row rather than asserted:
+
+- **`M04-J1` (ASSERT)** asserts *(cycle of the `/S/` word) − (cycle of the
+  acceptance handshake) = 1 cycle = 8 octet times*, citing §7's REQ-210 bullet and
+  §10's hook. The repaired §7 pins that same quantity at the same value under the
+  name **event delay**, and the repaired §10 hook says *"the **event** interval
+  equals 1 cycle at every length"*. **The row's basis survives verbatim and its
+  status does not move.**
+- **`M04-J3` (NO-ASSERT)** reports 16 and asserts nothing. The repaired §10 hook now
+  *permits* an assertion at 16 (*"Where the per-octet latency is asserted at all it
+  is asserted against **16**"*); a permission is not a commission, my row's choice to
+  report rather than assert is unaffected, and the row's own cell already said it
+  *"moves in neither direction on its resolution: it reports 16 either way"*. **Status
+  does not move.** What *is* now stale in that row is its **quotation**: it quotes
+  REQ-210's opening clause *"Measured per octet in octet times (§0.5)"* as the defect,
+  and that clause no longer exists. That is an editorial repair to my own plan, owned
+  below at (h).
+
+**The refused alternative, tested on my own ground rather than accepted on the
+ruling's.** The live alternative was to repair §7's pinned 8 to 16 and keep REQ-210's
+per-octet opening. Given REQ-201's fixed eight-octet preamble the two constrain the
+same hardware, so nothing about the design turns on it — which is why I agree there is
+no ADR to write. I agree with the refusal on a reason I can state without the ruling:
+**the event delay is the only one of the two quantities whose two events are both
+named**, and under the alternative it would have become an *unpinned* consequence of a
+per-octet figure, so a plan row asserting it (`M04-J1`) would have had no pinned
+sentence to derive from. Pinning both is the only repair under which **each of my two
+landed rows keeps a basis**. The alternative is recorded with its refusal in §13,
+which is the form the C-14 and C-16 repairs used, and that is the right place for it.
+
+**What I countersign, quoted so the transcription has a verbatim source.**
+
+1. `docs/specs/requirements.md` **§0.5**, the paragraph immediately after the front-offset
+   paragraph, opening:
+
+   > **A module that *inserts* octets ahead of the frame has h = 0, and ΔC counts to
+   > the first output word carrying an octet of the frame** (normative).
+
+   …through its closing sentence *"…refutable by arithmetic on the specification before
+   any RTL exists and refuted there (REQ-210, SPEC-M04 §7 and §10)."* — **the whole
+   paragraph, unamended.**
+
+2. `docs/specs/requirements.md` **REQ-210**, the repaired Requirement cell, and in
+   particular:
+
+   > **This is an event delay between two named events** — the cycle on which
+   > `tx_tvalid` and `tx_tready` are both 1 for the frame's first word, and the cycle
+   > of the XGMII word whose lane 0 carries the start character — **and it is not
+   > §0.5's per-octet latency**, which at M04 is a different constant with a different
+   > value. Both are pinned in SPEC-M04 §7 and each is measured in its own terms;
+   > **a monitor SHALL NOT assert either one per the other's measurement.**
+
+   and its repaired Verification cell, including *"§0.5's per-octet latency at this
+   module is SPEC-M04 §7's own pinned L and is measured against **that** figure or
+   reported as data — never against this one."*
+
+3. `docs/specs/modules/xgmii_tx_64.md` **§7**'s two-constant table (event delay 1 cycle
+   = 8 octet times; L = 16; h = 0; ΔC = 2; no §1.1 ceiling) and **§10**'s repaired
+   REQ-210 hook — **countersigned as the module-side pin of the above**, with the one
+   exception filed at (b).
+
+**Verdict: COUNTERSIGNED.** `FINDING AP-M04-1` is **SUSTAINED, CURED and CLOSED** as
+to REQ-210 and as to its second half (the ΔC-at-an-inserting-module question, which
+§0.5 now answers in the definition rather than at the module — the right site, because
+the ambiguity was in the definition's gloss and would have recurred at the next
+inserting module).
+
+---
+
+#### (b) `FINDING AP-M04-2` (MINOR against the text; the hazard is a bench) — filed **without** holding diff 1 out of force
+
+SPEC-M04 §7's repaired latency bullet closes:
+
+> Both constants may be asserted — M04 passes both of §0.5's tests, straddle
+> (h ≡ 0 mod 8) and late decision (its output framing is decided by the source word it
+> is transmitting, never by a later one), so unlike every straddling receive module its
+> per-octet constant **does** survive REQ-016's idle injection — but each against its
+> own figure.
+
+**The two test verdicts are right and I checked them**: h = 0 ≡ 0 (mod 8), so no output
+word straddles two source words; and M04's output framing is carried **in band** on the
+source word (`tkeep` and `tlast` on the word itself, REQ-011, §3's REQ-011 row), so no
+output event is decided by a later input word. **The conclusion drawn from them has no
+instance at this module.** REQ-016 says in its own text: *"This does not apply to
+`Xgmii_tx_64`'s source interface, where a missing word after transmission has begun is
+an underflow (REQ-206)."* SPEC-M04 §3's REQ-016 row says it a second time
+(*"REQ-016's idle tolerance **does not extend to this interface**"*), and §7's own
+handshake bullet a third. So the sentence asserts a property over a stimulus class
+that this specification twice declares empty — and the shape of the hazard is the one
+`FINDING AP-M04-1` just convicted a requirement for: **a bench writer reading §7's
+latency bullet is invited to build an idle-injection wrapper at M04's source, where
+one injected cycle on a required cycle is REQ-206's underflow — the frame aborts with
+`/E/`+`/T/` and no FCS, and no per-octet constant survives that at all.** My own plan
+already records the absence as structural (`AP-xgmii_tx_64` §6's REQ-016 row: *"No
+instance at this interface … `AP-M03`'s family I … has no counterpart here"*), so the
+two documents now disagree about whether the stimulus exists.
+
+**Class: MINOR against the text** — the claim is vacuous rather than false, no
+conformant design changes, and no committed test exists at M04. **It does not touch the
+countersigned objects**: the two constants, their values, h, ΔC and the prohibition on
+cross-measuring are unaffected, and diff 1 stays in force. **Route**: architect_docs_lead,
+as a spec-diff request via the orchestrator — the cure is one clause (scope the survival
+claim to the module's *gapless* domain, or state that REQ-016 has no instance here and
+the survival claim is recorded for the general reader only), and it takes a narrow round
+of its own. **Not decided here**, on the same discipline `FINDING AP-M04-1` used.
+
+---
+
+#### (c) Diff 2 — REQ-611, and the correction of record my own signature owes
+
+**The countersigned disposition is mine and I quote it before judging it.**
+`agents/handoffs/WO-0020_batch-f-countersign.md`, my batch-F countersignature:
+
+> **C-27 — REAFFIRMED.** L = 12 named as the gap-invariant constant is the right
+> discharge for REQ-611's gap clause. See **C-32**: M17's claim to be immune to C-27's
+> class is half right and half wrong.
+
+**That sentence carries two claims and only one of them survives.** C-27 as I minted it
+(`claude_dv_lead_agent.md`) is *"REQ-611's parse-latency constant is gap-sensitive while
+REQ-611 claims otherwise"*, and its disposition — §7 scopes the 3-cycle figure to a
+consecutively delivered header and states the growth rule — is **untouched**. The second
+claim, that **L = 12 is the gap-invariant constant that discharges REQ-611's gap clause**,
+became **false on 2026-08-04**, when §0.5's straddle test retired the per-octet-under-
+injection reading at every straddling module. So the architect's *"C-27's conclusion
+survives and is strengthened"* is **right about the conclusion and incomplete about my
+signature**: the conclusion survives, and **the second half of the sentence I signed is
+withdrawn as false**. I record that here rather than let a countersignature keep an
+unmarked false clause, which is the standing rule my own `FINDING CSG-1` applied to the
+architect's recitals.
+
+**Verified rather than accepted, three claims:**
+
+1. **M14 straddles.** h = 20, 20 mod 8 = 4 ≠ 0. Worked at the module rather than from
+   the predicate: payload word j takes payload octets 8j … 8j+7 = IPv4 octets 8j+20 …
+   8j+27, which lie in input words j+2 (positions 4–7) and j+3 (positions 0–3) — §6.1's
+   own assembly rule, reproduced. **Every payload word is assembled from two input
+   words.** Inject k idles between them: the output word leaves whole (REQ-011 forbids
+   splitting it) at its deciding input word's delay, so the four octets from word j+2
+   take L = 12 + 8k while the four from word j+3 keep L = 12. **Two latencies inside one
+   output word** — so no single per-octet L survives, at any k ≥ 1. ✓
+2. **REQ-611's old clause was unsatisfiable.** Its two events are *input word 0* and the
+   `ip_hdr_valid` *pulse*. One idle inside the header puts input word 2 at Ci+3 and the
+   pulse at Ci+4: the figure is 4, not 3. The requirement demanded that this **not**
+   happen. ✓ Same defect class as REQ-210's, reached from the other side.
+3. **The replacement is achievable and is the same fact from the other end.**
+   `ip_hdr_valid`'s deciding input word is **input word 2** — the 20-octet header ends at
+   IPv4 octet 19, which is input word 2 position 3, so all six header fields and the
+   checksum are decidable there and no later word is needed; causality holds (the pulse
+   is pinned at Ci+3, one cycle **after** its cause). With k idles injected at or before
+   input word 2, word 2 moves to Ci+2+k and the pulse to Ci+3+k: **the delay from the
+   deciding word is 1 on every stimulus**, and the figure measured from word 0 is 3+k.
+   *"Grows by exactly the injected count"* and *"is exactly one cycle, always"* are the
+   same statement, and the second is the one a monitor can assert. ✓
+
+**What I countersign**, `docs/specs/requirements.md` **REQ-611**, the repaired
+Requirement cell, in particular:
+
+> …**on a header whose input words are delivered on consecutive cycles**. Under
+> REQ-016's permitted idle injection inside the header that figure grows by exactly the
+> injected count, and what is invariant is §0.5's per-output-event delay: the header
+> record's `valid` is decided by the input word completing the header, and **the delay
+> from that deciding input word to the pulse SHALL be a fixed constant pinned in the
+> module spec** — that is the constant REQ-016 does not break, and it is the one a
+> monitor asserts on an injected run.
+
+together with its Verification cell (*"Under injection: the delay from the deciding input
+word named in the module spec to the pulse, at 0, 1 and 7 injected cycles"*), and — as the
+module-side pin — SPEC-M14 §7's parse-latency bullet as repaired and §10's REQ-611 hook.
+
+**Verdict: COUNTERSIGNED**, with the correction of record above: **C-27's conclusion is
+REAFFIRMED; the ground under it is replaced; and the second clause of my WO-0020
+countersignature is WITHDRAWN as falsified by §0.5's 2026-08-04 ruling.** The
+re-countersignature is better than the one it replaces, and it is better for the reason
+the architect gives — the discharge is now stated in the quantity §0.5 says survives,
+rather than in one it says does not.
+
+---
+
+#### (d) What diff 2 moves in my own bench obligations — and it is not nothing
+
+**`AP-ip_eth_rx_64.md`'s family F still asserts the retired reading, and one of its rows
+is `ASSERT`.** Measured at HEAD, not remembered:
+
+- **`M14-F1` (ASSERT)** — stimulus: the M14-D1 directed set through an idle-injection
+  wrapper at 0, 1 and 7 cycles between payload words. Observable, verbatim: *"the
+  **per-octet constant L = 12** is unchanged for every octet; every octet is delayed by
+  exactly 8 octet times per injected cycle"*. **That assertion fails a conformant M14** at
+  every k ≥ 1, by (c)'s straddle arithmetic — the exact `SCR-M03-I4` failure mode, in my
+  own landed plan, at a second module.
+- **`M14-F2` (ASSERT)** — its parse-latency half (*"the parse latency is 3 + k … and that
+  grown value is asserted"*) is **correct and is strengthened** by the repair; its trailing
+  clause *"L = 12 is unchanged"* carries the same defect as F1.
+- **`M14-F3` (NO-ASSERT)** — its ground sentence *"the gap-invariant quantity is L = 12 and
+  that is what M14-F1 asserts"* is the retired reading stated as the row's reason.
+
+**Provenance, stated honestly: this diff did not create the defect.** `AP-ip_eth_rx_64.md`
+was last touched at `60721cc` (2026-08-03) and §0.5 retired the reading on **2026-08-04**;
+the rows have been stale for a week, at a module with no bench, and **nothing in the repo
+records it** (`grep -rn "M14-F1"` outside the plan returns nothing). What this round did
+was make it visible, by making me read the requirement the rows derive from. **Owner: mine.
+Carrier: the round that next opens `AP-ip_eth_rx_64.md`, and it is owed before any M14
+bench** — the repair is F1's observable restated as §7's four-event table (output tuple
+sequence unchanged; each event delayed by the idles injected at or before its deciding input
+word), F2's trailing clause struck, F3's ground replaced, and a change-log row saying which
+reading it replaced. **No status count changes**; the plan's `ASSERT` at F1 stays an
+`ASSERT` of a different observable.
+
+I record this as a **finding against my own instrument**, not against the diff, and it is
+the second time in three rounds that the converse of a repaired requirement has convicted a
+landed plan of mine — which is the pattern worth carrying.
+
+---
+
+#### (e) Diff 3 — REQ-901: the admission rule, part (ii), the record-only licence, no class. **COUNTERSIGNED**, with one finding.
+
+**1. The span, checked against the two documents it claims to restate.** REQ-901's new
+sentence and SPEC-M03 §9's list are the same list, member for member and citation for
+citation — terminate character (REQ-106); an error character arriving while it is open
+(REQ-105); a later start character (REQ-110); REQ-108's truncation, on the cycle the
+received count passes 1518; `clear` (REQ-009) — differing only in *"a later start
+character"* against §9's *"a new start character"* and in REQ-901's module-neutral
+*"its start character is admitted"*. **Five members, no drift.** REQ-110's own new clause
+carries four of the five and points at SPEC-M03 §9 for the fifth by name, which is honest
+about where the whole list lives.
+
+**2. Condition (c) is discharged as `ECS-3` reshaped it, and I measured the reshaping
+myself.** `ECS-3` said the obligation is about the **span-closing rule**, not REQ-110's
+abort rule, and that its scope is **five classes and not one case**. REQ-901 now states
+the span, requires **both** producers to derive their admission logic **from this document,
+never from the reference and never from each other**, and records that *"a guard whose span
+is closed by the terminate character alone is **wider than this rule** and refuses stimulus
+the rule admits"*. **That last sentence is my measurement, and it is still true at HEAD**:
+`test/cosim/ours_run.ml:245-262` refuses any start character while `admission_open` is set,
+and `:273` clears `admission_open` **only** on `has_terminate word` — so an `/E/` does not
+close the span and `M03-H3`'s geometry trips a guard whose subject it is not. **And the
+spec text lands before either producer is opened**, which is the order `WO-0078` §6.3
+demands: the diff touches no byte of `test/**`. **Condition (c): MET on transcription.**
+
+**3. Part (ii) is necessary, and I checked the necessity rather than accepting it.** Writing
+the span down makes *"open"* determinate — and a determinate *"open"* puts the
+`/E/`-then-`/S/` geometry **outside** part (i), because the `/E/` closed the frame. Once the
+guards are narrowed to the rule (which is the point of writing it), that stimulus becomes
+**admissible**, and its reference-side outcome turns on the same one-word look-ahead race
+that decides `CSG-1`'s two shapes — where the reference does not close the frame, the frame
+that our side receives normally is **swallowed**, and a swallowed frame is a divergence in
+the **ordered sequence of output frames**. **No declared class excludes at the sequence
+level** — (a) is a stimulus restriction, (b), (c) and (d) are per-field or per-behaviour,
+(e) and (f) exclude *a frame*, (g) excludes three per-frame observables and (h) excludes a
+per-frame decision — so a merge has no home in the list. Part (ii) closes exactly that, on
+its own ground, and states that **neither part reaches a directed bench**, which keeps
+`AP-M03` row `M03-H3` (one `error_bad_frame`, **no** `error_start_without_terminate`)
+untouched and still assertable. **A clarification that quietly widened what may be driven
+would have been the worse half of this diff; it does not.**
+
+**4. No class declared — checked against my own `CSG-1`.** `CSG-1`'s family is four cases
+(start lane × the frame's own start lane) producing three outcomes, of which **two are frame
+merges** (both lane-0 mid-frame starts), one is exact agreement (a lane-4 start inside a
+lane-4-started frame) and one is a four-octet over-delivery with the **opposite sign** to
+(g)'s. A single class covering that family would have to exclude at the sequence level for
+half of it and at the extent level for a quarter, with a mechanism sentence false of the
+rest — which is why I wrote in the `(g)`/`(h)` countersignature that widening (g) would
+import a false mechanism. **Declining the class is the same disposition I countersigned,
+and the change is that its closing event is now reachable.** I agree, and I note for the
+record that the architect declined to mint a sequence-level exclusion *"in a round dv is
+not in, reversing a sentence dv countersigned"* — that restraint is the right one and I
+would have contested the alternative.
+
+**5. The record-only licence — what it permits and does not, in my own words, so the
+two-key record exists.**
+
+**IT PERMITS**, once a producer is authorised to narrow its guard for the case:
+
+- driving either restricted situation — a start character inside an open frame that has
+  already delivered an octet, and a start character between an `/E/` closure and that
+  frame's following terminate character — as **stimulus at both producers**;
+- **emitting both designs' observed dispositions** for the frames involved (words,
+  `tkeep` extents, `tlast` placement, `tuser`[0], strobes, and each side's
+  accept-or-discard outcome) into the run's report **as data**, in the form classes (e)
+  and (f) already use for the frames they exclude entirely;
+- using that recorded data as the **measured behaviour** on which a class is afterwards
+  declared **by spec diff** — which is the only route to a class that this document has
+  ever had, and the deadlock's release.
+
+**IT DOES NOT PERMIT — and each of these is a separate prohibition, not a restatement:**
+
+- **It compares nothing.** No agreement or disagreement verdict may be computed or
+  reported for the restricted frames; no `compare` exit code, tier, aggregate or pass
+  criterion may be derived from them. **A record-only run selects no branch**: it is not
+  an α, not a β and not a γ under `WO-0078` §7, and it is **not a `CD` §10 case instance**
+  — if one is ever built it needs its own `CD` instance saying on its face that it compares
+  nothing, because `CD` §6's discipline is that a disposition written after a run voids the
+  case, and a run with **no** disposition must be marked as such **before** it runs rather
+  than reclassified after.
+- **It adjudicates nothing.** Nothing observed in such a run may be resolved as a defect,
+  as a class, or as a spec diff **by the run**; no `BUG-` may be opened on its output; and
+  a divergence seen there is neither "outside the declared classes" nor inside one — it is
+  **not a divergence at all**, because nothing was compared.
+- **It anchors nothing and is citable by no packet.** No `SO-` may cite it as the external
+  anchor for any requirement — expressly not REQ-105's or REQ-110's delivered-octet
+  clauses, which continue to rest on their directed tests alone — and no gate evidence row
+  may count it as coverage.
+- **It licenses no expected value.** No bench expectation, oracle table, golden-model value
+  or comparator baseline may be taken from the reference's observed disposition in such a
+  run (ADR-0015 D2, and REQ-901's own closing sentence). This is the prohibition most
+  likely to be breached by accident, because the data will be sitting in a committed report.
+- **It is not self-executing.** It does not lift `FI-4` or `FI-6`: those are producer code
+  in my write scope, and narrowing them is a separate authorised act with its own review.
+  Until then no run can drive either situation, which is why nothing is blocked by
+  transcription and nothing is unblocked by it either.
+- **It does not make the two shapes comparable for any other purpose**, and it does not
+  narrow, widen or reletter any declared class.
+- **A report that omits the on-its-face statement is not a record-only run.** It is an
+  unadjudicated comparison, and it is a finding against the round that produced it.
+
+**Verdict: COUNTERSIGNED** — the admission rule, the derive-from-this-document obligation,
+the guard-width sentence, restriction parts (i) and (ii), the record-only licence, and
+no-class-declared. **IN FORCE on transcription**, with `FINDING CSG-3` filed against a gap
+in the restriction's coverage rather than against anything it says.
+
+---
+
+#### (f) `FINDING CSG-3` (MATERIAL, mine, against REQ-901's restriction coverage) — filed **without** holding diff 3 out of force
+
+**The restriction is stated over two of the five closure events, and the third is
+explicitly opened.** With the span written down, a frame is closed by any of five events;
+part (i) bars a start character **inside an open frame**, and part (ii) bars one after an
+**`/E/`** closure. **Neither bars a start character after REQ-108's *truncation* closure**
+— and the diff's own lift clause goes further:
+
+> Both parts are lifted for the frame class that class (f) already excludes entirely, where
+> nothing is compared in any case.
+
+**The geometry, and it is constructible.** Present a frame that receives more than 1518
+octets **with no terminate character**, then a start character in **XGMII lane 0**, then a
+normal 64-octet frame with its own terminate. On our side REQ-108 truncates at 1514
+delivered, marks the word, pulses `error_oversize`, emits nothing until the start character
+(REQ-108's own resynchronisation clause), and receives frame B intact: **two output frames**.
+On the reference side — carrying the `(g)`/`(h)` recital I derived and countersigned at
+`J-dv_lead-0162`, not a fresh read — there is **no frame-length logic of any kind**, so the
+oversize frame is still open, and **at a lane-0 start the reference does not abort at all**:
+frame B's octets are appended and the two frames are **one frame**.
+
+**Why class (f) does not cover it.** (f) excludes *"a frame exceeding 1518 octets (DA
+through FCS) … entirely at this boundary, including the disposition of the octets between
+our truncation point and the next start character"*. **Frame B is not that frame.** Its
+octets begin *at* the next start character, so they are outside the excluded region; ours
+accepts and delivers it, theirs produces no separate frame for it, and REQ-901's comparison
+content includes *"the same accept-or-discard decision **per input frame**"*. **The
+divergence is on input frame B, and it is a sequence-level divergence** — precisely the
+shape §4(d) of the ruling declines to mint a class for, and precisely what part (ii) was
+written to keep out.
+
+**Why the lift's stated reason does not reach it.** *"Where nothing is compared in any
+case"* is true of the **oversize** frame and false of the frame the reference merges into
+it. The lift is sound for (f)'s **intended** geometry — REQ-108's own verification column's
+*"1600-octet frame followed immediately by a valid frame"*, where the oversize frame has a
+terminate character, the reference forwards it whole, and both sides then receive the next
+frame, so the sequences agree with one excluded member. **It is unsound for the
+terminate-less form**, which the written rule newly admits because truncation is now a
+closure.
+
+**What this is and is not.** It is **not** a defect in any sentence I countersigned at (e):
+the admission rule is right, and it is right *because* truncation closes a frame. It is a
+**coverage gap in the restriction stated over that rule**, created by the same diff that
+made the rule determinate — the identical mechanism the architect caught for the `/E/`
+closure and wrote part (ii) for, at the one closure it did not carry through. **Not live
+today**: `FI-4`'s terminate-only span refuses every second start character regardless of
+what closed the frame, so no run can drive it, and the diff's own *"a guard wider than the
+rule is not a defect"* is what keeps that safe. **It becomes live the moment a producer is
+narrowed to the rule as written**, which is the next act this whole sequence is for.
+
+**Two cures, and choosing between them is the architect's, not mine.** Either extend the
+restriction to the truncation closure in part (ii)'s own shape (*no start character between
+REQ-108's truncation of a frame and that frame's following terminate character*), or narrow
+the lift so that it covers stimulus **within** an excluded frame and not stimulus that
+**opens a frame the exclusion does not reach**. **Route**: architect_docs_lead, spec-diff
+request via the orchestrator. **Bound**: it takes a narrow round of its own; nothing in the
+countersigned text moves for it.
+
+**And a binding on my own side, stated so it is not assumed.** `FI-4` and `FI-6` are mine.
+**I will not narrow either guard for the truncation-closure geometry until `CSG-3` is
+ruled**, whatever a later work order's convenience — the wide guard is the compensating
+control while the rule's coverage is short by one closure. The `clear` closure (REQ-009) is
+the fifth member and has **no instance** in the co-simulation lane today: `ours_run.ml:450-457`
+pulses `clear` once before the trace and never mid-run, and the reference-side testbench
+drives no counterpart at all. Recorded as an observation, not a finding.
+
+---
+
+#### (g) Item 1 of the round — the M06/M10/M14 stale-sentence repairs. **Spot-verified, bounded, and stated as such.**
+
+The round asked for a bounded independent check of M06's four-event table against
+SPEC-M06 §6.1's own arithmetic. I built the payload-octet-to-input-word map from §6.1's
+assembly rule (payload word m from input word m+1 positions 6–7 and input word m+2
+positions 0–5; payload octet j = input octet j+14) for **every frame length N = 14 …
+1514**, read the deciding input word **off the map** rather than from the closed form,
+and compared it with §6.1's gapless emission cycles (`hdr_valid` at Ci+2, payload word m
+at Ci+3+m). Results (Evidence 2):
+
+- **ordinary payload word m → D = input word m+2, delay 1 cycle**: single-valued over
+  **141 000** payload words, **zero** anomalies — a delay set with two members would have
+  convicted the table;
+- **the drain word → D = the input `tlast` word, delay 2 cycles**: it exists at exactly
+  **N ≡ 0 and N ≡ 7 (mod 8)** and nowhere else (376 of 141 376 words, and 376 is exactly
+  the count of those two residues in the range), takes its octets from **one** input word,
+  and carries **two** octets at N ≡ 0 and **one** at N ≡ 7 — the table's own claim, term
+  for term. The table's reason for stating this case separately is sound and is the sharp
+  part of the repair: at those two residues **there is no input word m+2**, so a rule
+  written as *"always the later of the two source words"* names a word that never arrives
+  and a monitor built from it waits forever at two of eight residues;
+- **`hdr_valid` → D = input word 1, delay 1 cycle** ✓ (input word 1 completes the
+  ethertype at positions 4–5 and its `tkeep` decides the frame is not short);
+- **`error_short_frame` → D = the input `tlast` word, delay 1 cycle** — checked against
+  §9's own pin, which is unmoved: *"one after the input word carrying that frame's
+  `tlast`"*;
+- **straddle**: 141 000 of 141 376 payload words (99.7%) are assembled from **two** input
+  words, h = 14 ≡ 6 (mod 8) — the §0.5 verdict the repair states, measured rather than
+  quoted. The 376 exceptions are exactly the drain words.
+
+**Scope of this check, stated because a bounded check that does not state its bound is a
+claim**: it verifies M06's four-event table and its two §0.5 verdicts. **It is not a check
+of M10 or M14's tables** (I checked M14's `ip_hdr_valid` row at (c) because REQ-611
+depends on it, and nothing else), and it is not a check of §6.1's field offsets, which I
+read but did not re-derive.
+
+**What moves for me at item 1: nothing at M06 and M10** — I hold no attack plan for either
+and no committed test drives either module. **At M14 it is (d)'s three rows**, and the
+mover there is §0.5's 2026-08-04 ruling rather than this diff.
+
+**Two sites the round did not name, checked and found sound.** `nic_top.md` §7/§10 pins
+end-to-end per-octet constants of 54 and 50 and commissions a whole-design tagger, but
+makes **no** gap-invariance claim and has no REQ-016 instance at its XGMII input, so it is
+not a fifth site. `udp_ip_rx_64.md` §7's *"Unlike SPEC-M14 §7's parse latency, this figure
+is gap-invariant"* is **true**: M17's header is one word, so its header-record latency is
+already a delay from its own deciding input word, and h = 8 does not straddle.
+
+---
+
+#### (h) What I refused, and what I am carrying rather than doing
+
+- **I refused to widen my write set.** This is a countersignature round: the signatures
+  live here, transcription into `docs/specs/**` is the orchestrator's clerical act
+  (PROTOCOL §6, the 2026-08-03 and 2026-08-10 precedents), and **not one byte of
+  `test/**` or `agents/handoffs/**` is touched** — including the three `AP-M14` rows at
+  (d) and the stale quotation in `AP-M04` row `M04-J3`, both of which I could have fixed
+  in the same tree and both of which belong to a round that opens those plans with a
+  change-log row.
+- **I refused to decide `FINDING AP-M04-2` and `FINDING CSG-3`.** Both are routed
+  undecided, as `AP-M04-1` was; a countersigner who rules on his own findings is not a
+  second key.
+- **I refused to read RTL or reference source.** The reference-side claim inside `CSG-3`
+  is carried from my own countersigned derivation and is labelled as carried at the point
+  of use; a fresh static read would have been the over-reach `RV-C4` §12 convicts.
+- **I refused to re-status any plan row from a ruling.** `M04-J1` and `M04-J3` stay where
+  my own filing said they would, which is the promise the filing made.
+- **Harvest: none owed and I say so rather than leave silence.** PROTOCOL §7 and charter §8
+  attach the note to every module sign-off and every phase gate; this is neither. The span
+  opened at `J-dv_lead-0168` stays open and **this entry joins it** with `J-dv_lead-0169`;
+  all three are mined at the next `SO-` or gate.
+
+### Actions
+
+1. Read the charter and PROTOCOL in full; ran the precheck; read the diff hunk by hunk and
+   then each repaired passage in place at HEAD.
+2. Wrote and ran the two independent check scripts of Evidence 1 and 2 **before** reading
+   `J-architect_docs_lead-0038`, so that agreement is agreement and not transcription.
+3. Measured the two co-simulation producers' admission guards at HEAD against the diff's
+   claim about them (Evidence 3).
+4. Read my own countersigned C-27 disposition, `FINDING ECS-3`, `WO-0078` §6.3 and §7, and
+   the `SO-` gate table, at their sources.
+5. Checked `AP-xgmii_tx_64` rows `M04-J1`/`M04-J3`/`M04-J4` and `AP-ip_eth_rx_64` rows
+   `M14-F1`/`F2`/`F3` against the repaired requirements (Evidence 4).
+6. Wrote this entry, carrying three countersignatures, two findings and one correction of
+   record. **No `git add`, no `git commit`, no `git push`, no git write of any kind.**
+
+### Evidence
+
+Reproducible from a checkout at this commit. The two scripts read no repo file and depend
+only on the specification rules quoted inside them, so they re-run anywhere.
+
+**1. M04, the wire stream materialised from SPEC-M04 §6.1's construction rules and the
+octet times read off it** (the check `FINDING AP-M04-1` is sustained by, done the long
+way rather than by the closed form):
+
+```python
+C = 100
+def build(n):                     # returns input/output octet times per frame octet
+    i_ot = {j: 8*(C + j//8) + j % 8 for j in range(n)}          # §0.5 Axi64 octet time
+    wire = [(C+1, l, "pre") for l in range(8)]                  # REQ-201 preamble word
+    o_ot = {}
+    for j in range(n):            # §6.1: word m accepted at C+m is sent at C+m+2,
+        m, b = divmod(j, 8)       #        lane = byte position (REQ-012, no rotation)
+        wire.append((C+m+2, b, ("F", j))); o_ot[j] = 8*(C+m+2) + b
+    return i_ot, o_ot, wire
+lat, evt, dcs, bad = set(), set(), set(), []
+for n in range(14, 1515):
+    i_ot, o_ot, wire = build(n)
+    ls = {o_ot[j] - i_ot[j] for j in range(n)}
+    lat |= ls
+    if len(ls) != 1: bad.append(n)
+    evt.add(8*(C+1) - 8*C)        # both events at octet position 0 of their words
+    dcs.add(min(c for (c, l, t) in wire if isinstance(t, tuple)) - C)
+print(sorted(lat), sorted(evt), sorted(dcs), len(bad))
+```
+
+Observed, re-run at this working tree (full script, with the pad/FCS/terminate tail
+materialised as well, at
+`/tmp/claude-0/-home-user-agentic-fpga/681e6e34-cd2f-5f3e-a4c3-42391e4d282b/scratchpad/m04_latency_check.py`
+— an **ephemeral** path, stated as such per ADR-0003/F5; the script above is the durable
+form and reproduces every number):
+
+```text
+lengths swept        : 1501 (N = 14..1514 octets, DA..payload)
+sub-sweep 60..1514   : 1455
+per-octet L values   : [16]
+frames with L not single-valued: [] count 0
+event delay (octet times): [8]
+Delta C (cycles)     : [2]
+identity check       : L = 8*dC - h  ->  16 == 16 True
+identity check       : dC = (L+h)/8  ->  2 == 2.0 True | (L+h) mod 8 = 0
+event delay vs L     : L - event = 8 octet times = exactly one word (the preamble word)
+```
+
+**What it buys, and what it does not.** `deviations: 0` over **1501** lengths sustains the
+finding independently of the architect's 1455-length sweep and **extends it over the 46
+padded lengths below 60** (1501 − 1455) that sweep excluded. It does **not** measure any design: M04 has
+no RTL bench in this repository and none was run.
+
+**2. M06, the four-event table checked against §6.1's assembly rule** (bounded independent
+check, `.../scratchpad/m06_event_check.py`, ephemeral path, durable logic below):
+
+```python
+for N in range(14, 1515):
+    K, P = -(-N//8), N-14
+    M, tlast_word = -(-P//8) if P > 0 else 0, K-1
+    for m in range(M):
+        src = {(8*m+pos+14)//8 for pos in range(8) if 8*m+pos < P}   # §6.1 assembly
+        later, emit = max(src), 3+m                                  # §6.1 gapless cycles
+        drain = (later == m+1)                                       # no input word m+2
+        D = tlast_word if drain else later
+        assert emit - D == (2 if drain else 1)                       # §7's table
+```
+
+Observed:
+
+```text
+N swept                : 1501 (14..1514)
+ordinary payload words : delay-from-D histogram: {1: 141000}
+drain words, keyed by N mod 8 -> {(delay, #src words, P mod 8)}:
+   N mod 8 = 0 -> [(2, 1, 2)]
+   N mod 8 = 7 -> [(2, 1, 1)]
+hdr_valid delay from input word 1: [1]
+payload words assembled from TWO input words: 141000 of 141376 (99.7%)  [h = 14, h mod 8 = 6]
+anomalies: [] count 0
+```
+
+**3. The two producers' admission guards, measured at HEAD** — the evidence for the diff's
+*"a guard closed by the terminate character alone is wider than this rule"*:
+
+```sh
+sed -n '245,262p' test/cosim/ours_run.ml   # FI-4: refuses any /S/ while admission_open
+sed -n '273p'     test/cosim/ours_run.ml   # span closes ONLY on has_terminate word
+grep -n "admission_open" test/cosim/tb_xgmii_rx_64.v | head
+grep -n "clear" test/cosim/ours_run.ml     # :450-457 one pulse before the trace, never mid-run
+```
+
+Observed: `ours_run.ml:249-255` raises *"a second start character arrived while a frame's
+admission span was open"*; `:273` is `if !admission_open && has_terminate word then
+admission_open := false;` — **terminate only**, so an `/E/` closure leaves the span open and
+`M03-H3`'s geometry is refused by a guard whose subject it is not (`FINDING ECS-3`,
+unchanged at HEAD). `clear` is pulsed once at `:454` and cleared at `:457`, never mid-trace.
+
+**4. The plan rows this round measured** (statuses read from the files, not remembered):
+
+```sh
+grep -n "M04-J1\|M04-J3\|M04-J4" test/attack_plans/AP-xgmii_tx_64.md
+grep -n "M14-F1\|M14-F2\|M14-F3" test/attack_plans/AP-ip_eth_rx_64.md
+grep -rn "M14-F1" --include=*.md agents docs test | grep -v AP-ip_eth_rx_64   # returns nothing
+git log --oneline -1 -- test/attack_plans/AP-ip_eth_rx_64.md                  # 60721cc, 2026-08-03
+```
+
+Observed: `M04-J1` ASSERT / `M04-J3` NO-ASSERT / `M04-J4` NO-ASSERT, all three consistent with
+the repaired text; `M14-F1` **ASSERT** asserting *"the per-octet constant L = 12 is unchanged
+for every octet"*; the cross-repository search for any record of that staleness returns
+**nothing**; and the plan's last commit predates §0.5's 2026-08-04 ruling.
+
+**5. The precheck**, as run — reproduced under Trigger.
+
+### Outcome
+
+**Three countersignatures, all COUNTERSIGNED; nothing contested.** DoD for a
+countersignature round: met.
+
+**THE COUNTERSIGNATURE TEXTS — written for the orchestrator to transcribe verbatim into
+`docs/specs/requirements.md` §13 (columns: Date | REQ | Change | Class | Commissioned by |
+Journal). The orchestrator fills its own journal id in the last column.**
+
+**Row A — REQ-210 + §0.5 (front offset h). IN FORCE from this row.**
+
+```
+| 2026-08-11 | REQ-210, §0.5 (**front offset h**) | **Countersignature transcribed — REQ-210's repaired opening clause and §0.5's inserting-module clause are IN FORCE from this row.** dv_lead COUNTERSIGNED at `816e187` by re-derivation and not by reading: M04's wire stream was materialised from SPEC-M04 §6.1's own construction rules — preamble word at C+1, source word m accepted at C+m transmitted at C+m+2 with lane = byte position, then REQ-203's pad, the FCS and the terminate character — and the octet times read **off the stream**, over **1501** frame lengths (N = 14 … 1514), which is the ruling's 1455-length sweep **plus the 46 padded lengths below 60 it excluded** (1501 − 1455), the region where a tagger has wire octets with no input octet to match. Result: **L = 16 at every frame octet of every frame, zero deviations**; event delay **8** octet times; **ΔC = 2** by the clause's own definition (first output word carrying an octet *of the frame*); both identities close and (L + h) ≡ 0 (mod 8); **L − event delay = 8 = exactly the preamble word**. `AP-xgmii_tx_64` rows `M04-J1` (ASSERT, the event delay) and `M04-J3` (NO-ASSERT, reports 16) are correctly statused against the repaired text and **neither moves**. The refused alternative is agreed on dv's own ground: repairing §7's pinned 8 would have left the **only** quantity whose two events are both named as an unpinned consequence, so pinning both is the sole repair under which each landed row keeps a basis. **One finding filed without holding the diff out of force**: `FINDING AP-M04-2` (MINOR) — SPEC-M04 §7's new closing sentence claims M04's per-octet constant *"does survive REQ-016's idle injection"*, a property over stimulus this same specification twice declares has no instance here (§3's REQ-016 row and §7's handshake bullet; REQ-016's own carve-out, REQ-206's underflow), routed to architect_docs_lead as a narrow spec-diff request | transcription — no normative text moves in this row; it records that the row above's condition ("not in force until transcribed") is discharged, with `AP-M04-2` outstanding against one sentence of SPEC-M04 §7 | dv_lead, `FINDING AP-M04-1` at `AP-xgmii_tx_64` §8 item 1; countersignature of record `J-dv_lead-0170` §(a) | `J-orchestrator-NNNN` |
+```
+
+**Row B — REQ-611. IN FORCE from this row.**
+
+```
+| 2026-08-11 | REQ-611 | **Countersignature transcribed — REQ-611's repaired scoping and its per-event invariant are IN FORCE from this row, and dv's own earlier signature is corrected in the same act.** dv_lead COUNTERSIGNED at `816e187` after verifying all three claims at the module: M14 **straddles** (h = 20; payload word j is assembled from input word j+2 positions 4–7 and input word j+3 positions 0–3, so k injected idles between them give one output word **two** latencies, 12 and 12 + 8k, which REQ-011 forbids resolving by splitting the word); REQ-611's old clause was **unsatisfiable** (one idle inside the header puts input word 2 at Ci+3 and the pulse at Ci+4, a figure of 4 where the requirement demanded 3); and the replacement is **achievable and equivalent** — `ip_hdr_valid`'s deciding input word is input word **2**, the word completing the 20-octet header, at a delay of **1 cycle on every stimulus**, which is the same fact as C-27's growth rule seen from the other end. **Correction of record, dv's own**: the countersigned disposition at `WO-0020` reads *"**C-27 — REAFFIRMED.** L = 12 named as the gap-invariant constant is the right discharge for REQ-611's gap clause"*, and that sentence carries two claims — **C-27's conclusion is REAFFIRMED and untouched**, while **the second clause is WITHDRAWN as falsified** by §0.5's 2026-08-04 straddle ruling. The re-countersignature is on better ground than the one it replaces | transcription — no normative text moves in this row; the pinned 3, the growth rule, L = 12, h = 20 and ΔC = 4 are all unchanged in value | dv_lead, carry-forward **C-27** (dv's own, minted at WO-0018 and countersigned at WO-0020); countersignature of record `J-dv_lead-0170` §(c) | `J-orchestrator-NNNN` |
+```
+
+**Row C — REQ-901. THE NORMATIVE ONE: IN FORCE from this row and not before.**
+
+```
+| 2026-08-11 | REQ-901 | **Countersignature transcribed — the admission rule, the derive-from-this-document obligation, restriction parts (i) and (ii), the record-only licence and no-class-declared are IN FORCE from this row.** dv_lead COUNTERSIGNED at `816e187` after four checks. **(1) The span** is SPEC-M03 §9's list member for member and citation for citation — five closures, no drift — and REQ-110's new clause carries four and names §9 for the fifth. **(2) Gate condition (c) is MET as `FINDING ECS-3` reshaped it**: the rule is spec text, both producers are required to derive admission from **this document and never from each other**, and it lands before either producer is opened — the diff touches no byte of `test/**`. The guard-width sentence is dv's own measurement and still holds at HEAD (`test/cosim/ours_run.ml:273` closes the span on a terminate character alone, so `M03-H3`'s `/E/` geometry is refused by a guard whose subject it is not). **(3) Part (ii) is necessary, checked and not accepted**: a determinate "open" puts the `/E/`-then-`/S/` geometry outside part (i), and its reference-side outcome is a frame **merge**, which is a divergence in the ordered sequence of output frames — and no declared class excludes at the sequence level, (e) and (f) excluding a frame, (g) three per-frame observables and (h) a per-frame decision. **(4) No class declared** is the same disposition dv countersigned at `4e7331b`, and `FINDING CSG-1`'s four cases/three outcomes/two merges is why. **What the record-only licence permits and does not, stated by dv in its own words so the record has two keys** (`J-dv_lead-0170` §(e)(5)): it permits driving either restricted situation and **emitting both designs' observed dispositions as data**, and it permits a later class to be declared by spec diff on that measurement; it **compares nothing** (no verdict, no exit code, no tier, and it selects **no branch** of `WO-0078` §7 and is **no `CD` §10 case instance**), **adjudicates nothing** (no defect, no class, no `BUG-`), **anchors nothing and is citable by no packet** (expressly not for REQ-105's or REQ-110's delivered-octet clauses, which rest on directed tests alone), **licenses no expected value** (ADR-0015 D2), **does not lift `FI-4`/`FI-6`** by itself, and a report omitting the on-its-face statement **is not a record-only run but an unadjudicated comparison**. **One MATERIAL finding filed without holding the diff out of force — `FINDING CSG-3`**: the restriction is stated over two of the five closure events, and **REQ-108's truncation closure is uncovered** while the lift clause for class (f)'s frames opens it; a >1518-octet frame with **no terminate character** followed by an XGMII-lane-0 start character closes on our side and stays open on the reference's, so the **following** frame — which class (f) does not exclude — is swallowed and its accept-or-discard decision diverges at the sequence level. Not live today (both guards refuse it), live the moment a producer is narrowed to the rule; routed to architect_docs_lead with two candidate cures and decided by neither. dv binds its own side meanwhile: **`FI-4` and `FI-6` are not narrowed for the truncation-closure geometry until `CSG-3` is ruled** | transcription — the normative diff of the row above enters force here; this row itself moves no text | dv_lead, `FINDING ECS-3` and `WO-0078` §6.3's gate condition (c); countersignature of record `J-dv_lead-0170` §(e) | `J-orchestrator-NNNN` |
+```
+
+**Handoff.** No packet is written this round (write set: this journal only). The
+countersignatures above are the signatures of record, in the form PROTOCOL §6 and the
+2026-08-03 / 2026-08-10 precedents use: **authority lives in this entry; the §13 rows are
+clerical and commit under `Agent: orchestrator`.**
+
+### Open-questions
+
+1. **`FINDING AP-M04-2`** (MINOR) — SPEC-M04 §7's REQ-016 survival claim over a stimulus
+   class this specification twice declares empty. **Route**: architect_docs_lead, narrow
+   spec-diff round. **Not blocking**: M04 has no bench, and `AP-xgmii_tx_64` §6's REQ-016
+   row already records the absence structurally.
+2. **`FINDING CSG-3`** (MATERIAL) — the restriction's coverage is short by the truncation
+   closure, and the lift clause opens it. **Route**: architect_docs_lead. **Becomes
+   blocking** at the round that narrows either producer's admission guard; until it is
+   ruled, dv keeps both guards wide for that geometry (§(f)).
+3. **Owed by me, at the round that next opens the plans**: `AP-ip_eth_rx_64` rows
+   `M14-F1` (ASSERT of a per-octet L under injection — it fails a conformant M14),
+   `M14-F2`'s trailing `L = 12` clause and `M14-F3`'s ground, all three stale since
+   §0.5's 2026-08-04 ruling and recorded nowhere until now; and `AP-xgmii_tx_64` row
+   `M04-J3`'s quotation of REQ-210's struck opening clause plus a §9 change-log row
+   recording `AP-M04-1` as sustained and cured.
+4. **Owed by me, in `agents/handoffs/`**: `SO-xgmii_rx_64.md`'s Stage-3 gate table records
+   condition **(c) UNMET**; on transcription it becomes **MET**, leaving **(b)** and **(e)**
+   as the two outstanding conditions. The table is dated evidence at its own SHA, so it is
+   not wrong — but it must be re-measured in the round that next opens the `SO-`, and
+   `WO-0078` §6.3's gate paragraph wants the same note.
+5. **The record-only run's machinery does not exist**, and it is mine. A run that
+   *"compares nothing"* needs a lane that lifts the guard for one case, does **not** invoke
+   the adjudicating comparator (or discards its verdict and labels the output), prints the
+   on-its-face statement, and registers as **no** `CD` case instance. That is a work-order
+   round, sequenced after `CSG-3` is ruled and after `WO-0078`'s conditions (b) and (e).
+6. **Standing and untouched by this round**: `DVC-1a` (still unbuilt, still wanted by two
+   plans); `AP-M04` §8 items 2–6; `SO-xgmii_rx_64.md` §3.9's carried set, none of whose
+   subjects moved.
+
+### Files-in-this-commit
+- (none)
