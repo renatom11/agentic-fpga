@@ -1,6 +1,6 @@
 # HT-01 — The first harvest transit (collation record)
 
-- **State**: COLLATION COMPLETE — §3/§4 filled; the shell PR is the remaining act (§5)
+- **State**: PACKET IN OUTBOX — §3/§4 done, packet at `docs/federation/outbox/SO-xgmii_rx_64.md`; the inbox PR is the remaining act (§5)
 - **Author**: orchestrator, as collator (ADR-0018 §4.1; Amendment A2 in force at
   `41fead6`, acceptance act `J-orchestrator-0235`)
 - **Feeds**: the programme's first shell write under ADR-0018 §4.2 — the generic
@@ -124,9 +124,50 @@ e.g. `LC-SO-xgmii_rx_64-7` ⇄ `L-H1-DV-7`, `LC-orchestrator-H1-5` ⇄
 | `LC-SO-xgmii_rx_64-AUD-10` | seeded `L-E06` | merge (§3.3) |
 | `LD-SO-xgmii_rx_64-1` | `L-H1-DV-D1` | domain tier (pack `version-control`) |
 
-The full 353-row pairing is enumerable from the rule plus this table, and every
-row is printed in the transit file itself (each entry's header carries both
-ids).
+The full 353-row pairing is enumerable from the rule plus this table.
+
+**Superseded in part by the shell's own landing law (2026-08-11, correction
+appended, not rewritten).** FETCH FIRST caught the shell 31 commits ahead of
+the census-time fetch: it now carries FEDERATION.md, an inbox perimeter, and a
+landing pipeline under which **final ids are allocated at the landing fence**
+(FEDERATION §4, §8.1 step 4 — thematic-section numbering, not a per-harvest
+scheme), and the maintainer returns the id-mapping table when the PR closes.
+The `L-H1-` scheme above is therefore demoted to this repo's **local
+provisional index** — it appears in no shell-bound artifact; the export packet
+carries `LC-`/`LD-` ids only. The four seeded merges and the `LD-` row stand
+as this collation's redundancy/tier pre-judgments, which the fence's screens
+re-run independently.
+
+## 5-pre. Conformance to the shell's landing law (discovered at transit time)
+
+The shell's law reshaped the delivery, and the reshape is recorded here:
+
+- **Form** (FEDERATION §6): export packet — header (source org, parent record,
+  date), tier-1 table under `LC-` ids, tier-2 row under its `LD-` id with
+  target pack named, war-story appendix. Committed in THIS repo at the fixed
+  path `docs/federation/outbox/SO-xgmii_rx_64.md` (§6's one-convention rule).
+- **Citations** (shell ADR-0017 A1): a citation base binds every bare SHA and
+  entry id to this repository's URL; section headers carry permalinks at the
+  notes' landed SHAs.
+- **Self-containment** (§9): stated honestly per section — 216 rows carry
+  per-row LH3 text; 137 rows (dv, tb_writer, data_wrangler) discharge at the
+  cited entry and the packet says so rather than papering over it; the fence
+  may bounce those rows individually.
+- **Delivery** (§7, inbox README): ONE PR adding exactly ONE file at
+  `docs/federation/inbox/agentic-fpga-nic-SO-xgmii_rx_64.md`; the PR touches
+  nothing else; it is a delivery vehicle, never a merge candidate — the
+  maintainer stages, screens (four screens per candidate), transcribes, and
+  merges by hand (§8's canonical-fence clause; §10 gives the origin program no
+  privileged lane).
+- **Transmission authority**: an `SO-` defers its outer hop to the next
+  sponsor-signed gate by default (§7). Authority here is the sponsor's own
+  standing in-session direction for this specific first harvest ("on a PASS:
+  the harvest transit — as inbox PR"), stated in the packet header — not a
+  default acted on.
+- **The earlier plan's shell-side file** (`docs/LESSONS-H1-…` + a pointer edit
+  to `docs/LESSONS.md`) is **withdrawn unsent** — the perimeter rejects any PR
+  touching outside the inbox directory, and transcription into LESSONS is the
+  maintainer's act, not the contributor's.
 
 ## 5. The shell commit
 

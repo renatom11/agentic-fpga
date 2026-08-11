@@ -3792,3 +3792,49 @@ section 5 and the State flip to EXECUTED.
 
 ### Files-in-this-commit
 - agents/handoffs/HT-01_first-harvest-transit.md
+
+## [J-orchestrator-0239] 2026-08-11T05:55Z | task:none | FETCH FIRST catches the shell thirty-one commits ahead: the transit reshapes to the shell's own federation law - an export packet in the outbox, one file through the inbox perimeter, and the origin program takes the same pipeline as any stranger
+
+### What this entry records
+Between the census fetch and the delivery fetch, the sponsor's
+second session advanced the shell C14..C44 (+6124 lines): a
+FEDERATION.md, an inbox perimeter (one PR = exactly one file under
+docs/federation/inbox/, anything else rejected unread), a four-
+screen landing pipeline with FINAL ids allocated at the fence, and
+an origin-honesty clause (section 10) that gives THIS program no
+privileged lane. The re-fetch before writing is the only reason the
+old delivery plan (a LESSONS-H1 file plus a LESSONS.md pointer
+edit) was not sent - the perimeter would have rejected it unread.
+LC-orchestrator-H1-3's rule fired in production: the fetch-first
+discipline exists for exactly this.
+
+### The reshape, executed
+The collated 353 re-emitted as a FEDERATION section-6 export
+packet: header (source org, parent record SO-xgmii_rx_64, date,
+citation base per shell ADR-0017 A1, transmission authority =
+the sponsor's standing in-session direction, stated explicitly
+because an SO-'s outer hop otherwise defers to the next sponsor-
+signed gate); tier-1 rows under LC- ids in seven seat sections;
+the one LD- row with target pack named (version-control - a pack
+the fence would have to create, said plainly); the four seeded-
+merge pre-judgments marked on their rows for the redundancy screen
+to re-run; the self-containment statement honest about the 137
+rows whose LH1/LH3 discharge at the cited entry; a 47-story war-
+story appendix. L-H1- provisional ids stripped from the packet -
+final ids are the fence's; HT-01 section 4 demoted to a local
+index with the correction appended, not rewritten. Packet
+committed at the fixed path docs/federation/outbox/
+SO-xgmii_rx_64.md (section 6's one-convention rule). HT-01 State:
+PACKET IN OUTBOX; new section 5-pre records the conformance.
+
+### Next
+The delivery: one shell branch adding exactly one file,
+docs/federation/inbox/agentic-fpga-nic-SO-xgmii_rx_64.md, byte-
+identical to the outbox packet; one inbox PR; PR number into
+HT-01 section 5, State to EXECUTED. The maintainer's screens,
+transcription, id mapping and hand merge are the shell side's,
+and this seat does not touch them.
+
+### Files-in-this-commit
+- agents/handoffs/HT-01_first-harvest-transit.md
+- docs/federation/outbox/SO-xgmii_rx_64.md
