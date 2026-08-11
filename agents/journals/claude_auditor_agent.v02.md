@@ -1230,3 +1230,621 @@ between §9.2's half one and `-AUD-40`, offered in dv_lead's §4.7 sense.
    and disposed of by their author.
 ### Files-in-this-commit
 - (none)
+
+## [J-auditor-0020] 2026-08-11T16:52Z | task:none | The census nobody took returns 234 wrong dates against the record's eighteen, the remedy that decayed in three entries proves the rule needs a counter rather than a ruling, and G-1 dissolves by half on a word PROTOCOL already contains — plus the debt Item 3 re-routed was paid a round ago
+### Trigger
+Orchestrator dispatch, one round, three items, all owed to this seat: (1) the
+timestamp-drift process item routed at `J-orchestrator-0251` and re-routed with its
+falsified half at `J-orchestrator-0255`; (2) gate item `G-1`, on my ledger since the
+`P1-module-ready` checklist authoring (`J-architect_docs_lead-0037`, `61e0c76`); (3) the
+`WO-0077` verdict's §9.1/§9.2, owed to me unedited at my next spawn. No spawn short-id was
+minted for this round, so the header stamp above is `date -u` read at authoring
+(`Tue Aug 11 16:52:25 UTC 2026`) — the second consecutive entry of this chain with no mint
+to quote, and the first written under the `-0251` ruling. **My seat is inside the item it
+audits, and this entry is the first datum of my own compliance.**
+
+**Abort-first precheck, before any file was opened.**
+
+    git status --short              # empty
+    git rev-parse HEAD              # b29d2ebf30278ad2a4f4689fa5e0f6b87825d773
+    git rev-parse --abbrev-ref HEAD # claude/fpga-hardcaml-agent-orchestration-37ceyf
+    date -u                         # Tue Aug 11 16:35:41 UTC 2026
+
+HEAD byte-equal to the dispatched `b29d2eb`, tree clean, so neither branch of the abort
+procedure was reached. Two siblings declared in both directions (architect on
+`docs/specs/**` + its v04; the orchestrator on a possible board flip). **Neither fired**:
+HEAD was `b29d2eb` at the first read and at the last, so the re-verification clause was
+armed and unused. I record the negative because a quiet sibling clause that is never
+reported reads, three rounds on, like a clause nobody armed.
+
+**No rotation.** v02 stands at 90,121 bytes against `JOURNAL_SOFT_MAX` = 262,144
+(ADR-0017 §5, `R10`), so this entry appends to the volume `-0018` opened. Volume 01 is
+untouched, checked below.
+
+### Inputs
+- `agents/charters/auditor.md` and `agents/PROTOCOL.md` **in full**, before any other file
+  (§3 packet classes and the verbatim relay class, §4/§4.1 entry grammar, §4.2
+  set-equality, §5 `R1`–`R9`, §6 write scopes, §7 gates, §8 escalation classes, §10
+  independence and mutation sequencing, §11 amendment procedure).
+- `agents/journals/claude_orchestrator_agent.v02.md`: `J-orchestrator-0251` and `-0255`
+  **in full**; `-0218`'s Rulings block; `-0226`'s *"Date-honesty note (CD-P2-2, dv's
+  finding, adopted)"*; the `-0250` and `-0252`…`-0258` headers.
+- `agents/journals/claude_architect_docs_lead_agent.v04.md`: `-0042` and `-0043` headers,
+  `-0043`'s Trigger (its abort-first precheck and its stamp-discipline paragraph) and
+  Inputs.
+- `agents/journals/claude_auditor_agent.md` (volume 01) — my own `-0015`/`-0016`/`-0017`
+  Open-questions; this volume's `-0018` Open-question 7 and `-0019` **whole**, including
+  its §9.1/§9.2 receipt at lines 978–1080 and its Open-questions 1–6.
+- `docs/specs/requirements.md` §13 preamble **and all 64 dated rows**.
+- `docs/gates/P1-module-ready-checklist.md` §0.2 rows, §3/§3.1 whole, §4.1, the §502 owner
+  table row, and the `G-1`/`G-9`/`G-10` rows of the open-items table.
+- `agents/handoffs/SO-xgmii_rx_64.md` §2.2-M whole (both the pre- and post-measurement
+  halves), the `SC-5` cells at rounds 2/3/4, and the `G-c4` bounds list.
+- `agents/handoffs/WO-0077_family-k-mutation-campaign.md` §9.1, §9.2, §9.3 (re-read at the
+  source, not through the dispatch) and §9's allowlist sections.
+- `docs/reports/audit/WO-0074-mutations/README.md` §3.5 (my own `IC-M5` non-seeding
+  declaration) and `docs/reports/audit/WO-0055-mutations/g-c4.diff` **whole**.
+- `docs/adr/ADR-0017-a-journal-is-a-chain-not-a-file.md` §4.3–§4.4, §5 (`S`/`H`), §6.
+- `scripts/agent_commit.sh`, `scripts/check_journals.sh`, `scripts/policy.sh` — read for
+  what they key on, specifically whether any stamp is validated anywhere (none is).
+- **No `libs/**`, `top/**`, `bin/**` or `test/**` source was read for content**; the only
+  RTL bytes I opened this round are the ten inserted lines of `g-c4.diff` and their
+  appearance on `origin/mut/wo-0056-gc4-replay`, read to check a diff for identity, not a
+  design for correctness.
+- **No `Essenceia/Nasdaq-HFT-FPGA` material consulted.**
+
+### Reasoning
+
+#### 1. Why I re-measured instead of adopting, and what the measurement frame had to be
+
+The dispatch gave me five per-seat drift figures and told me to verify them at the sources
+rather than adopt them. Every figure on offer was a **spot sample**: the architect measured
+its own 41 entries, `-0251` sampled one entry each at four other seats. A universal claim
+about dates — *"dates remain correct everywhere measured"* — had already been falsified
+once by widening a sample. **Falsifying a universal by widening the frame is evidence that
+the frame is the defect, not that the exception count is what the wider frame returned.**
+So the only measurement worth making was the whole one.
+
+I built it from the two clocks the repository actually holds: each commit's **author time**
+(the machine clock at commit) and each journal entry's **header stamp** (the authoring
+agent's testimony). One append per commit is a mechanical invariant (`R2`), so the join is
+exact and needs no judgement: for every commit, the entry-header lines it *adds* under
+`agents/journals/**`, each paired with that commit's own `%aI`. 577 commits, 577 entry
+appends, 577 distinct entry ids, zero duplicates — so no quoted-header artefact
+contaminates the count.
+
+**The reference clock is sound and I checked rather than assumed it.** Author time equals
+committer time on all 577 commits (zero divergence), and HEAD `b29d2eb`'s author time
+(16:34:49Z) sits 52 seconds before this session's own `date -u` at spawn (16:35:41Z). The
+machine clock is single, shared and monotone across the whole history. The header stamps
+are the thing under test; the commit clock is the instrument.
+
+#### 2. What the whole record says, against what the record says about itself
+
+| seat | entries | fast ≥ 60 s | within ±60 s | slow ≤ −60 s | **wrong DATE** | worst fast |
+|---|---|---|---|---|---|---|
+| dv_lead | 182 | 160 | 0 | 22 | **126** | **+431.9 h** |
+| orchestrator | 258 | 216 | 30 | 12 | **80** | +121.6 h |
+| tb_writer | 44 | 19 | 1 | 24 | 10 | +220.6 h |
+| architect_docs_lead | 43 | 38 | 1 | 4 | 10 | +94.9 h |
+| rtl_lead | 22 | 14 | 1 | 7 | 2 | +16.1 h |
+| auditor | 19 | 5 | 0 | 14 | 4 | +107.0 h |
+| data_wrangler | 9 | 3 | 1 | 5 | 2 | +121.2 h |
+| **total** | **577** | **455** | **34** | **88** | **234** | — |
+
+**The architect's own census reproduces exactly** and I say so before I say anything
+critical: 10 wrong dates in its chain (mine: 10), worst fast +94h56m (mine: +94.94 h), and
+its §13 note's eight misdated rows reproduce **row for row** — three citing `-0011` and
+three citing `-0013` off by one day, the `-0023` row by two, the `-0031` row by four, and no
+ninth. That measurement is sound and its author widened the frame further than anyone had
+been asked to.
+
+**And the record's own account of the defect is short by a factor of about twenty-three.**
+The two figures in the record at `b29d2eb` are *ten wrong dates* (architect chain) and
+*eight misdated §13 rows*. The measured program-wide figure is **234 entry headers carrying
+a date that is not the date of their own commit — 40.6% of the entire reasoning record.**
+`dv_lead` alone carries **126** of them, and fourteen consecutive entries there
+(`J-dv_lead-0048` … `-0061`, all committed 2026-08-03) are stamped **2026-08-12 through
+2026-08-21** — nine to eighteen days into a future that did not exist at commit time. None
+of that appears anywhere in the record. It is not in `-0251`, not in `-0255`, not in the
+§13 note, not in any dv artefact I read.
+
+#### 3. The mechanism, isolated at my own seat, and it is a protocol object rather than carelessness
+
+My chain is the clean experiment, and it convicts me before it convicts anything else:
+
+| entries | drift | note |
+|---|---|---|
+| `-0001` … `-0014` | **−2.7 to −6.0 min**, every one | stamp read from the session environment |
+| `-0015` … `-0018` | **+5865, +5987, +6155, +6422 min** (4.1–4.5 days), all wrong-DATE | *"I have taken the spawn mint as authoritative for this entry's timestamp"* |
+| `-0019` | **+12.8 min** | *"no spawn short-id was minted at all"* |
+
+Fourteen of fourteen true while I read my own clock; four of four false while I copied a
+minted token; true again within thirteen minutes the moment the token was absent. The
+match is character-exact and not statistical: `-0017`'s header reads `2026-08-10T08:10Z`
+and its Trigger reads spawn short-id `WO-0076-SEED/2026-08-10T08:10Z`; `-0018`'s header
+reads `2026-08-10T16:30Z` against `WO-0077-SEED/2026-08-10T16:30Z`.
+
+**So the transmission vector is `PROTOCOL` §4.1's spawn short-id.** §4.1 mints it as *"a
+unique token … work-order id + spawn UTC timestamp"* and requires it copied **verbatim**
+into Trigger. As an *identifier* it worked perfectly — 91 distinct short-ids across the
+worker and lead journals and **zero genuine collisions** (every apparent duplicate is a
+cross-reference to the same spawn, checked at both sites). What §4.1 never says is that the
+token is not a clock. I read a drifted identifier as a time source and said so in the open
+four times; the org ratified the reading; nobody's rule forbade it.
+
+#### 4. The ruling that is still in force and contradicts the one now in force
+
+`J-auditor-0016`'s Open-question 6 raised the clock and routed the correction. **2 minutes
+19 seconds later** the orchestrator ruled it, at `J-orchestrator-0218` (`319ed7f`,
+2026-08-05T22:50:03Z), in eight words:
+
+> `- Q6 (clock): the mint is authoritative, standing practice.`
+
+`-0017` and `-0018` then followed that ruling and are wrong-dated by 4.3 and 4.5 days.
+**Nothing in the record retires it.** `-0251` does not mention it; `-0255` does not mention
+it. A reader reconstructing the org's clock policy from the journals finds two rulings, four
+days apart, in flat contradiction, one of which explicitly calls itself *standing practice*.
+Its subject is the relaying party, so I state that plainly here per charter §7 and put it in
+the return unedited.
+
+#### 5. The finding that matters most is not the drift — it is the decay, and it is measurable
+
+`J-orchestrator-0226` adopted the cure **five days before `-0251` did**, on dv_lead's own
+`CD-P2-2` date-honesty finding: *"Adopted for my own chain from this entry on: machine
+clock, stated plainly."* Then:
+
+| entry | drift | |
+|---|---|---|
+| `-0226` | **+13.0 min** | the adoption |
+| `-0227` | +10.1 min | holds |
+| `-0228` | +8.7 min | holds |
+| `-0229` | **−5756 min** | reverts to the abandoned scenario clock, four days *behind* its commit |
+| `-0230` | +10.2 min | recovers |
+| `-0231` … `-0235` | +85, +93, +71, +36, +19 min | |
+| `-0236` … `-0243` | +42, +57, +96, +137, +155, +164, +163, +152 min | monotone re-accumulation |
+| `-0244` … `-0250` | +192, +195, +210, +247, +198, +203, **+204** min | back to +3h24m |
+
+**A review-enforced honesty rule about a per-commit quantity, adopted by the seat that
+wrote it, survived three entries and was back to three and a half hours wrong twenty-four
+entries later, inside one working day, with nobody noticing.** It was not caught by
+discipline, by review, or by the four times my own seat wrote it down. It was caught
+because one architect entry happened to be bounced for an unrelated read. That is the whole
+argument for the recommendation at §7 below, and it is an argument from measurement rather
+than from taste.
+
+#### 6. Whether the response to the falsification was adequate — three things right, two missing
+
+Right, and I will not discount them. **(a)** The falsification is stated by the ruling's own
+author, unprompted, in his own journal, naming his own clause: *"My 0251 ruling's second
+clause is falsified and I say so."* A seat that publishes the refutation of its own ruling
+in the entry after it is a seat whose record can be trusted about worse things. **(b)** The
+severance is correct: the first clause (honest stamps forward; entry-id order is the
+chain's true sequence) is untouched by a wrong-date census and survives, and `-0255` says
+exactly that. **(c)** The architect's §13 preamble note was accepted **whole** and in the
+same round, so the defect is now documented at the artefact that carries it, with *"no row
+is edited"* — which is the right call twice over: `R3` freezes committed stamps, and a
+frozen record repaired by rewriting is a worse record.
+
+Missing. **(d) The claim was corrected; the frame was not.** `-0255` restates the exception
+count as *"ten wrong dates among its 41 entries and the eight misdated §13 rows"* — the
+architect's numbers, i.e. the numbers from the sample that did the falsifying. But the
+clause that failed was a universal quantified over *everywhere measured*, and what its
+failure established is that *everywhere measured* was one seat wide. No program-wide
+re-measurement was performed or commissioned; the item was routed to me, which is correct
+routing, but between `-0255` and this entry the record's stated exception count stood at
+eighteen against a true 234. **(e) Neither `-0251` nor `-0255` retires `-0218`'s Q6** (§4
+above), so the superseded ruling is still the only ruling that calls itself standing.
+
+#### 7. Whether `check_journals` should gain a stamp-sanity warning — yes, and here is the number that decides it
+
+This is a **RECOMMENDATION**. Enforcement scripts are orchestrator scope (§6) and a change
+to them needs an ADR plus a `test_protocol.sh` case (§11(3)). **I write no script and
+propose no diff**; what I owe is the evidence that decides whether the round is worth
+commissioning.
+
+The design question is only whether a warning would separate compliance from drift. It
+would, decisively:
+
+| band | flags, over the 577-entry history | flags, over the 16 entries committed after the `-0251` ruling landed |
+|---|---|---|
+| ±30 min | 393 (68.1%) | **0** |
+| ±60 min | 371 (64.3%) | **0** |
+| ±120 min | 340 (58.9%) | **0** |
+| DATE-only (stamp date ≠ commit date) | 234 (40.6%) | **0** |
+
+Post-ruling compliant behaviour occupies **−18.8 to −0.3 minutes** — stamps read at
+authoring and therefore slightly *before* the commit, which is the honest signature and the
+one a band must not punish. A ±60-minute band has a **measured false-positive rate of 0 of
+16** against known-good behaviour and would have fired on nearly two thirds of the record.
+Concretely it would have fired at `J-orchestrator-0231` (+85 min) — **twenty entries and one
+working day before** the bounce that actually caught the decay.
+
+Three properties the commissioned round should preserve, offered as constraints rather than
+as code. **(i) Warning, never refusal.** `R3` freezes committed stamps; a blocking check
+would make a legitimate re-commit of an already-authored entry unfixable, and the defect it
+guards is testimony rather than structure. **(ii) The mechanism already exists.**
+`agent_commit.sh` emits `WARN-JOURNAL` for `R10`'s soft threshold and §10 contemplates an
+advisory `WARN-SEAL`; a `WARN-STAMP` needs no new class of thing, only a new instance of
+one. **(iii) Both surfaces or neither.** `check_journals.sh` has no blob check today and
+ADR-0017 §1.2 already convicts that asymmetry by name — *a rule and its check disagreeing
+about what compliance is*. A stamp warning in the commit path only would repeat it.
+
+I record one honest bound: **a warning is not a verdict and its absence is not a
+clearance** — §10's own words about `WARN-SEAL`, and they bind this recommendation
+identically. What the counter buys is not honesty. It is that the *next* decay is visible in
+three entries instead of twenty-four.
+
+#### 8. Whether any claim citing a TIME needs a per-claim re-verification sweep — no, and the three exceptions are named
+
+I looked for the failure this question fears: a load-bearing claim whose truth depends on
+comparing two wall-clock times. I searched every journal, every packet, the board and the
+gate files for a clock time used in a before/after, duration, or window claim, excluding
+spawn short-ids and entry headers. **The sweep returns essentially nothing**, and the reason
+is structural rather than lucky: this program anchors its orderings to objects with true
+clocks or no clocks at all — commit SHAs, entry ids (`R5`, mechanically enforced), CI run
+ids, and blob shas.
+
+I tested that on the highest-stakes ordering the program has, `WO-0077`'s blinded seal-then-
+seed chain, whose whole integrity is an ordering claim, and whose entries are from the worst
+drift era (my `-0018` stamped 2026-08-10T16:30Z for a manifest committed 2026-08-06T05:27Z,
+a 4.5-day error). At commit author times: seal `aced7b4` 04:55:39 → manifest `f9232c2`
+05:27:43 → pre-run rulings `04078fd` 05:44:46 → verdict `d6fdf92` 06:30:28. **Strictly
+increasing, and not one link of it passes through a header stamp.** The blinding property is
+untouched by the worst drift in the record. `R-SEAL-1` is likewise a same-commit test, and
+§10's campaign sequencing is a commit-order test.
+
+**So: no per-claim sweep. Three exceptions, each named rather than swept.**
+
+1. **The spawn short-id** (§3 above) — the one TIME the protocol requires copied verbatim,
+   load-bearing for attribution inside shared worker journals. **Attribution survived**: 91
+   distinct ids, zero collisions. **Its use as a clock did not**, and the cure is one clause
+   in §4.1 saying the token is an opaque identifier and the header stamp is `date -u` at
+   authoring. Routed to the orchestrator; §4.1 is not mine to edit.
+2. **The sponsor's `P1-spec-freeze` signature time.** `docs/gates/P1-spec-freeze-checklist.md`
+   :441 and :443 record *"Renato (sponsor), 2026-08-02T16:53Z"* and *"CLOSED
+   2026-08-02T16:53Z"*. The commit that transcribes it, `1af9e4c`, has author time
+   **2026-08-02T16:43:56Z**. **The recorded time of a human being's act postdates the commit
+   recording it by nine minutes** — it was written from the transcriber's clock, not from the
+   sponsor. The date is right, nothing decided turns on nine minutes, and no gate moves. It
+   is in the findings because it is the single place in the governance record where a TIME
+   attaches to a human act, and because a transcribed party's timestamp is not the
+   transcriber's to supply.
+3. **`tb_writer`'s own disclosure** — that seat was already marking stamps *"(estimated)"*
+   before any ruling. That is the correct behaviour under uncertainty and I flag it as the
+   pattern the other seats should have copied, not as an exception needing repair.
+
+#### 9. `G-1` adjudicated — the measured record does **not** satisfy §7 as written, and half of the question dissolves on a word §7 already contains
+
+`G-1` asks whether **61 killed / 1 survived / 1 void out of 63** satisfies §7's *"auditor's
+seeded mutations all killed by the DV suite"*. I take the two non-kills separately, because
+they are not the same kind of object and the checklist's framing — *"clause (b)'s wording
+against the measured column"* — compares the clause against a column it does not quantify
+over.
+
+**The void, `IC-M5`: outside §7's domain entirely, by §7's own word.** §7 says **seeded**.
+The tally's column says **sealed**. They are different acts and the difference is recorded
+in my own manifest, in my own words, before any run:
+`docs/reports/audit/WO-0074-mutations/README.md` §3.5, *"`IC-M5` — **NOT SEEDED**"*, with
+two attempted renderings shown to move the datapath, a third rejected because I could not
+positively confirm datapath-silence at a carrier the allowlist barred me from seeing, and
+the claim stated in its **narrow** form — *unrenderable at this design*, explicitly not
+inherently unrenderable. No branch was cut and no CI job was spent. **A class that was never
+seeded is not a seeded mutation the suite failed to kill; it is a mutation that does not
+exist.** So `IC-M5` needs no reading and no amendment: it is out of the clause by
+construction, and the arithmetic that follows is exact — **63 sealed − 1 never seeded = 62
+seeded = 61 killed + 1 survived.**
+
+**The survivor, `G-c4`: the substantive property holds; the clause as written does not.**
+`G-c4` survived all twenty-five units at `WO-0055`, because of a real coverage gap in my own
+`AP-M03` §4.G text (an injected character 100 octets past the truncation point, where
+REQ-108's first epoch is 82 octets wide — an overshoot of nineteen). `WO-0056` built
+`M03-G7`/`M03-G8`, and the repair was proved by replaying the **unmodified** diff.
+
+**I re-verified that replay this round rather than citing it, and it reproduces
+byte-for-byte.** `origin/mut/wo-0056-gc4-replay` = `c95c9f4`; `git diff e7657e3 c95c9f4` is
+one file, ten insertions, and is character-identical to the committed
+`docs/reports/audit/WO-0055-mutations/g-c4.diff` including its `NEVER MERGE` banner and its
+`|: (sm.is State.Discard &: any lanes.is_error)` conjunct. **The diff is unmodified, as
+claimed.** What I have **not** re-executed is CI run `30852220315` itself — the RED, and
+`M03-G8` as the only failing unit of twenty-seven. That is a CI act, not mine to run, and I
+name it as the one unverified link rather than let a verdict rest silently on it.
+
+**The reading, and why it is an amendment and not a construction.** §7's clause is a
+present-tense property of the suite, and §10 confirms it with the word *"`module-ready`
+merely **re-checks** it"* — a gate that re-checks is asking whether the property holds at the
+gate, not whether every historical campaign scored perfectly. On that reading `G-c4` is
+satisfied on the evidence, **conditional on the run above.** But the clause cannot be read
+that way without moving, for two independent reasons:
+
+1. **A campaign score is a frozen measurement and correctly is one.** dv_lead's rule — *"a
+   campaign's score is what that campaign measured, and it is never retro-edited"* — is
+   right, and it means the `survived` column stays 1 permanently. A frozen historical score
+   and a present suite capability are **different objects**, and no reading of *"all killed"*
+   can make one satisfy a test written for the other. Only an amendment can say which one the
+   gate asks about.
+2. **§10's *"every PASS reports kills N/N"* is falsified by the honest record, in the
+   direction of more information rather than less.** `SO-xgmii_rx_64` reports
+   63/61/1/0/1 with the survivor's fate stated both ways, on dv's own ground that *"collapsing
+   a never-rendered class into 'killed' would overstate coverage and into 'survived' would
+   libel a bench that was never given anything to catch."* **A rule demanding `N/N` from a
+   reporter whose honest answer has four columns is a rule that pressures its reporter to
+   fold columns** — the precise thing §2.2-M refuses to do. The rule is wrong here, not the
+   packet.
+
+**Verdict, routed to the orchestrator as a §11 question — I do not edit `PROTOCOL`.** The
+clause must move, and four defects should move with it, stated so the ADR has a
+specification rather than a mood:
+
+- **(G1-a)** §7 clause (b) must quantify over the **seeded** set explicitly, and the gate
+  record must state sealed and seeded as separate numbers. The word §7 needs is already in
+  §7; what is missing is the instruction to read the matching column.
+- **(G1-b)** The clause must say **when** it is measured — the suite as it stands at the gate
+  SHA — and must require, for any mutation that survived its own campaign, exactly the
+  evidence form `G-c4` already has: the **unmodified** committed diff replayed against the
+  current bench at a run id, with the killing unit named. Anything weaker lets a survivor be
+  argued dead.
+- **(G1-c)** §10's *"reports kills N/N"* must become *reports the disposition of every seeded
+  mutation, each non-kill named and dispositioned*. `SO-xgmii_rx_64` already meets the
+  better rule and fails the written one.
+- **(G1-d)** There is **no equivalent-mutant clause anywhere in `PROTOCOL`**, yet the record
+  already contains an exclusion made under one: `WO-0041`'s `D-M3`, *"ruled an equivalent
+  mutant and excluded from the denominator."* That exclusion is sound as mutation-testing
+  practice and **unauthorised as protocol**. The amendment must supply the clause, and must
+  require the exclusion to be **proven in a committed artefact** — the standard my own §3.5
+  `IC-M5` declaration meets and which is the reason `IC-M5` can be dissolved above rather
+  than argued.
+
+**And `G-9` rides this, as the checklist says it does.** Five landed green assertions are
+unreachable by any mutation (`U-1` … `U-5`, `DECLARATION WO-0074-D1`). Whatever `G-1`'s
+amendment says about the denominator, it must state whether an assertion no mutation can
+reach counts toward a coverage claim. My reading, offered and not imposed: it does not, and
+the gate record should carry the unreachable set beside the tally so that no N/N figure is
+ever read as coverage.
+
+#### 10. Item 3 — the debt was paid a round ago, and the board did not notice
+
+`WO-0077-VERDICT` §9.1 (`FINDING WO-0077-A1`) and §9.2 (`FINDING WO-0077-N2`) were relayed
+to me unedited and **disposed at `J-auditor-0019`**, this volume, lines 978–1080: both quoted
+at length in dv_lead's own words, with my disposition stated — *"I dispute neither. Neither
+is mine to dispose of"* — and the one thing that **is** mine carried forward as that entry's
+Open-question 4: §9.1's carrier (ii), that a universal quantified over *"the bench"* in a
+future seal is measured over **every producer that drives the DUT**, `test/cosim/` included.
+That binds my next manifest and it is why the finding is on my ledger although the finding is
+dv's.
+
+I re-read both sections at the source this round anyway, because the dispatch directed it and
+because a receipt written once is worth re-checking against the artefact. **They are
+unchanged at `b29d2eb` and my disposition is unchanged: acknowledged, not contested, and
+already filed.** I add one thing `-0019` did not say plainly enough: §9.1 states *"the
+manifest is not at fault"*, and I decline the acquittal in the only respect that matters
+forward. My `IC-K3` §4.3 discharge **cited dv's census by name** as the ground for an
+invisibility argument. Quoting another seat's census does not transfer its scope. **An
+inherited universal is a premise I own at the moment I rely on it**, and that — not the
+census defect, which is dv's — is my share of §9.1.
+
+The remaining fact is a board one: `tasks/BOARD.md`:90 still reads *"Verdict §9.1/§9.2 owed
+to the auditor unedited at its next spawn."* It was paid at the next spawn. The marker
+outlived the debt and cost this round a re-routed item.
+
+### Actions
+- Ran the abort-first precheck; read charter and `PROTOCOL` in full; read the eleven source
+  artefacts listed in Inputs.
+- **Built the program-wide drift census** from scratch (script in a scratchpad, not staged):
+  577 commits joined to 577 entry appends, header stamp against commit author time, per
+  seat, with wrong-DATE and non-monotonicity counts.
+- **Re-derived the architect's two published measurements independently** (its chain census
+  and its §13 row census) rather than adopting either.
+- **Isolated the transmission mechanism** at my own chain and confirmed it character-exact
+  against two spawn short-ids.
+- **Traced the two superseded clock rulings** (`J-orchestrator-0218` Q6,
+  `J-orchestrator-0226`'s adoption) and measured the second one's decay entry by entry.
+- **Sized the `WARN-STAMP` recommendation** with a false-positive measurement against
+  known-good post-ruling behaviour.
+- **Swept the record for load-bearing TIME claims** and tested the highest-stakes ordering
+  (`WO-0077`'s blinded chain) against commit author times.
+- **Adjudicated `G-1`** at the sources: my own `IC-M5` non-seeding declaration, the
+  `SO-`'s §2.2-M walk, and a byte-level re-verification of the `G-c4` replay diff.
+- **Discharged two mandatory charter §9 checks**: mutation-leak and the mechanical subset.
+- Wrote this entry. **Staged nothing outside my own journal; ran no `git commit` or
+  `git push`; wrote no file under `docs/reports/audit/`** (the dispatch directs findings
+  returned verbatim, and inventing a report file this round would put the same text in two
+  places with only one of them owed).
+
+### Evidence
+All commands run from a clean checkout at `b29d2eb`, tree empty at start and at finish.
+
+**Census construction and totals** (script at
+`/tmp/.../scratchpad/drift.sh`, throwaway, not staged; **ephemeral artefact, declared as
+such per ADR-0003/F5** — the derivation below is the reproducible part):
+
+```
+$ git log --reverse --format='%H|%at|%aI'        # 577 commits
+  for each: git show --format='' -U0 <sha> -- 'agents/journals/**' | grep '^+## \[J-'
+  → 577 added entry-header lines, 577 distinct ids, 0 duplicates
+$ observed: fast(≥60s)=455  within ±60s=34  slow(≤−60s)=88  wrong-DATE=234   (of 577)
+```
+
+**Reference-clock soundness:**
+
+```
+$ git log --format='%H %at %ct' | awk '$2!=$3' | wc -l
+0                                  # author time == committer time on all 577
+$ git rev-parse HEAD; git log -1 --format=%aI HEAD; date -u
+b29d2ebf30278ad2a4f4689fa5e0f6b87825d773
+2026-08-11T16:34:49+00:00
+Tue Aug 11 16:35:41 UTC 2026       # 52 s apart — one shared monotone clock
+```
+
+**The architect's census, independently re-derived (both halves reproduce):**
+
+```
+architect_docs_lead chain: 43 entries, 38 fast, 10 wrong-DATE, worst +94.94 h
+  (published: 37 of 41 fast at the -0043 era, TEN wrong dates, worst +94h56m)
+requirements.md §13, 64 dated rows joined to their cited entry's commit date:
+  J-architect_docs_lead-0011 ×3  row 2026-08-03  commit 2026-08-02   (+1 d)
+  J-architect_docs_lead-0013 ×3  row 2026-08-03  commit 2026-08-02   (+1 d)
+  J-architect_docs_lead-0023      row 2026-08-06  commit 2026-08-04   (+2 d)
+  J-architect_docs_lead-0031      row 2026-08-09  commit 2026-08-05   (+4 d)
+  → EIGHT rows, six by one day, one by two, one by four. No ninth. Exact match.
+```
+
+**The mechanism at my own chain** (`-0015` … `-0018` adopt the mint; `-0019` has none):
+
+```
+J-auditor-0014  stamp 2026-08-05T01:47  commit 2026-08-05T01:50   −3.8 min
+J-auditor-0015  stamp 2026-08-09T22:40  commit 2026-08-05T20:54  +5865.4 min  WRONG-DATE
+J-auditor-0016  stamp 2026-08-10T02:35  commit 2026-08-05T22:47  +5987.3 min  WRONG-DATE
+J-auditor-0017  stamp 2026-08-10T08:10  commit 2026-08-06T01:35  +6154.7 min  WRONG-DATE
+J-auditor-0018  stamp 2026-08-10T16:30  commit 2026-08-06T05:27  +6422.3 min  WRONG-DATE
+J-auditor-0019  stamp 2026-08-11T01:20  commit 2026-08-11T01:07    +12.8 min
+$ grep -n 'WO-0076-SEED/2026-08-10T08:10Z' agents/journals/claude_auditor_agent.md
+   → J-auditor-0017 Trigger; its header stamp is the same literal
+$ grep -n 'WO-0077-SEED/2026-08-10T16:30Z' agents/journals/claude_auditor_agent.v02.md
+   → J-auditor-0018 Trigger; its header stamp is the same literal
+```
+
+**Spawn short-id collision check** (the attribution property, which survives):
+
+```
+$ grep -rhoE 'WO-[0-9A-Za-z-]+/20[0-9]{2}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}Z' \
+    agents/journals/ | sort | uniq -c
+108 mentions, 91 distinct; every repeat resolved to a cross-reference to the SAME
+spawn (checked at both sites for WO-0072-B, WO-0059, WO-0038, WO-0012). Zero collisions.
+```
+
+**The two superseded rulings, at their commits:**
+
+```
+$ git log -1 --format='%h %aI' -S'Q6 (clock): the mint is authoritative' \
+    -- agents/journals/claude_orchestrator_agent.v02.md
+319ed7f 2026-08-05T22:50:03+00:00      # J-orchestrator-0218
+$ git log -1 --format='%h %aI' -- docs/reports/audit/WO-0074-mutations/README.md
+adac5ca 2026-08-05T22:47:44+00:00      # J-auditor-0016, which raised it — 2m19s earlier
+J-orchestrator-0226 "machine clock, stated plainly": drift +13.0 / +10.1 / +8.7 min
+  at -0226/-0227/-0228, then −5756 at -0229, then +85 → +204 min across -0231 … -0250
+```
+
+**Sponsor-signature time vs its own transcription commit:**
+
+```
+$ git log -1 --format='%h %aI %s' -S'2026-08-02T16:53Z' -- docs/gates/P1-spec-freeze-checklist.md
+1af9e4c 2026-08-02T16:43:56+00:00 P1-spec-freeze CLOSED - sponsor signature transcribed verbatim
+  → recorded signature time is 8m 04s AFTER the commit that records it
+```
+
+**`WO-0077` blinded chain, at commit author times (the ordering claim survives the drift):**
+
+```
+aced7b4 2026-08-06T04:55:39  seal      f9232c2 2026-08-06T05:27:43  manifest
+04078fd 2026-08-06T05:44:46  rulings   d6fdf92 2026-08-06T06:30:28  verdict
+  → strictly increasing; no link passes through a header stamp
+```
+
+**`G-c4` replay re-verified byte-for-byte (mine, this round):**
+
+```
+$ git diff --stat e7657e3 c95c9f4
+ libs/hardcaml_ethernet/src/xgmii_rx_64.ml | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+$ diff <(git diff e7657e3 c95c9f4) docs/reports/audit/WO-0055-mutations/g-c4.diff
+  → identical hunk, identical banner, identical conjunct
+    "+    |: (sm.is State.Discard &: any lanes.is_error)"
+    (index lines differ only in git's abbreviation: 81cd9ed7fc…/f5ea9d6b10… vs 81cd9ed/f5ea9d6)
+  NOT re-executed by me: CI run 30852220315 and its "M03-G8 alone of twenty-seven" RED.
+```
+
+**Mandatory charter §9 checks, both discharged:**
+
+```
+$ for b in $(git branch -r --list 'origin/mut/*'); do
+    git merge-base --is-ancestor $b HEAD && echo "LEAK: $b" || echo "clean: $b"; done
+  → 87 mutation branches, ALL clean. c95c9f4 is not an ancestor of HEAD.
+$ git grep -c "NEVER MERGE" HEAD -- libs/ top/ bin/
+  → no output. No mutated RTL anywhere in the working branch.
+$ bash scripts/check_journals.sh --all
+OK: 577 commit(s) satisfy the journal/commit protocol       (exit 0)
+```
+
+**Volume 01 untouched** (ADR-0017 §4.3's check at every append to volume 02):
+
+```
+$ git show HEAD:agents/journals/claude_auditor_agent.md | sha256sum
+c268ec132dac3e7506a8e2dda21b8abfe39b62e0710e547da6b49122340acedb
+$ sha256sum agents/journals/claude_auditor_agent.md
+c268ec132dac3e7506a8e2dda21b8abfe39b62e0710e547da6b49122340acedb   (equal, and equal to
+                                     this volume's Previous-volume-sha256 header field)
+```
+
+**Not evidence, and labelled so**: the `WARN-STAMP` band table at Reasoning §7 is a
+derivation over the census above, not a run of any proposed check — no such check exists and
+I wrote none.
+
+**Harvest**: not owed at this round. ADR-0018 / `PROTOCOL` §7 trigger the note at every `SO-`
+and every phase gate; this is a process-audit round and is neither. My open span is
+`J-auditor-0019` … (open), continuing from the harvest declared complete at `-0019` for
+`J-auditor-0001` … `-0018`. Declared so the spans tile and this round is a stated
+non-trigger rather than a silent gap.
+
+### Outcome
+**DoD met for all three dispatched items.** Item 1: both halves answered, six findings and
+one recommendation, with the census re-derived rather than adopted and the response-adequacy
+question answered in five parts (three right, two missing). Item 2: `G-1` adjudicated — **the
+measured record does not satisfy §7 as written, and the clause must move**; the void half
+dissolves on §7's own word `seeded`, the survivor half holds substantively on evidence I
+re-verified except for one CI run I name; four amendment defects specified and routed as a
+§11 question to the orchestrator, `G-9` riding it. Item 3: **already discharged at
+`J-auditor-0019`** — re-read at the source, disposition unchanged (acknowledged, not
+contested, filed), with one clarification about what I own of §9.1.
+
+**Severities: no CRITICAL is opened.** Nothing here is unreproducible Evidence, licensing
+taint, relay tampering, an append-only violation, or a missed human-reserved escalation.
+`R3` holds (no committed stamp edited), `R5` holds (entry-id order intact and mechanically
+enforced), and `check_journals --all` is green over all 577 commits. **`G-1` does not block
+the gate on my finding; it blocks it because it is an open gate item with no reading, and
+this entry supplies the auditor half of that reading.** Findings F-3 (subject: the
+orchestrator) and F-4 (subject: my own seat) are stated identically to the rest, per charter
+§8's adverse-party clause.
+
+**Handoff**: to the orchestrator for commit as a **journal-only** commit —
+`Files-in-this-commit` is `- (none)`, so `Journal-Only: true`, trailers `Agent: auditor`,
+`Work-Order: none`, `Journal-Entry: J-auditor-0020` (`R2`, `R6`). Findings returned verbatim
+in the round's return, which is the relay-class artefact; this entry is its tamper evidence.
+
+### Open-questions
+1. **Two findings await a decision that is not mine.** The `WARN-STAMP` recommendation is an
+   enforcement-script change (orchestrator scope, §6) needing an ADR and a
+   `test_protocol.sh` case (§11(3)); `G-1` is a `PROTOCOL` §7/§10 amendment. **I have written
+   neither diff and will not.** If the orchestrator declines either, the decline belongs in
+   the record beside the finding, because a recommendation that is silently dropped and a
+   recommendation that is considered and refused look identical to a later reader.
+2. **`J-orchestrator-0218`'s Q6 is still in force and I cannot retire it.** Two contradictory
+   clock rulings stand four days apart, the older one calling itself *standing practice*.
+   Whatever the org decides, one of the two must be marked superseded in a committed
+   artefact.
+3. **`G-1`'s survivor half rests on one CI run I did not execute** (`30852220315`). The
+   diff-identity link I verified; the RED I did not. If the gate wants the verdict
+   unconditional, that run must be re-executed or its logs read by a party that is not
+   dv_lead. **My verdict is conditional on it and says so.**
+4. **An arithmetic I could not close, offered as an observation and not a finding.** The
+   remote carries **87** `mut/` branches. Excluding `wo-0056-gc4-replay`, `wo70-cost-probe-l`
+   and `bug3-sev-probe`, the ten class-based campaigns account for **64** branches
+   (`wo-0050` 8, `wo-0055` 5, `wo-0058` 7, `wo-0061` 10, `wo-0063b` 2, `wo-0066` 6,
+   `wo-0073` 5, `wo-0074` 7, `wo-0076` 5, `wo-0077` 9), while the tally's walk reports **63
+   sealed** with `IC-M5` never seeded, i.e. **62 seeded**. The seven campaigns entering family
+   M account for 43 branches against the walk's **41** sealed. The two-branch surplus sits in
+   that older group and I could not resolve which reading is right without re-walking seven
+   campaign packets, which this round was not scoped for. **It may be entirely benign** — a
+   re-cut branch, or one class rendered on two branches. It is recorded because `G-1` is a
+   question about a denominator and the denominator has two candidate values. Owner:
+   dv_lead (the score), with the reconciliation owed before the gate reads the tally.
+5. **My own compliance is now a datum and should be checked against, not taken.** This entry
+   is stamped from `date -u` at authoring; if it lands more than an hour after 16:52Z the
+   drift is mine and the next auditor spawn should say so. `-AUD-52` is the rule that says to
+   record the clock; this is the first round where recording it means recording my own.
+6. **I am the sampler of a finding whose subject includes me.** F-4 convicts my seat for
+   adopting a token as a clock and for four rounds of observation without a finding. That is
+   not curable from inside the round; it is stated so a later spawn can grade it, exactly as
+   `-0019` Open-question 3 stated the same structural gap for the harvest.
+### Files-in-this-commit
+- (none)
