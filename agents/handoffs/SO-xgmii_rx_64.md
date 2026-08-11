@@ -765,6 +765,18 @@ of which the packet carries rather than buries:**
 **Method: the tally is re-derived by walking the campaign verdicts, never quoted from
 the last one.** Each campaign's own era table is read at its own packet:
 
+> **DATED ANNOTATION, 2026-08-11, `J-dv_lead-0187` — `FINDING REC-1`'s cure (MINOR,
+> materially void, mine, filed at `J-dv_lead-0184`). The method sentence above stands
+> UNEDITED and is corrected here, not rewritten.** **The claim is broader than the
+> method this block performed**: the walk covered **three campaigns of ten**, and the
+> table's own first row — the **41** entering family M — is **quoted**, from `WO-0074`
+> §12, which quotes it in turn, so the sentence's *"never quoted from the last one"* is
+> false of the row directly beneath it. **The seven-campaign figure was first derived
+> campaign by campaign at `J-dv_lead-0184`** — `8 + 5 + 7 + 9 + 1 + 6 + 5 = 41` sealed
+> and `8 + 4 + 7 + 9 + 1 + 6 + 5 = 40` killed, from each campaign's own committed
+> verdict — **after** this block was written; **the figure is correct and no column
+> moves**, so this corrects a method claim and not a number.
+
 | step | source | sealed | killed | survived | green-by-blindness | void |
 |---|---|---|---|---|---|---|
 | era entering family M | `WO-0073-VERDICT`, quoted at `WO-0074` §12 | 41 | 40 | 1 | 0 | 0 |
@@ -844,6 +856,193 @@ reader widens it:**
    not evidence about REQ-108.**
 3. **Family G may now be cited for REQ-108's first-epoch behaviour under an error
    character, and for nothing wider.**
+
+#### 2.2-D THE DISPOSITION TABLE — the `T-`/`M03-` naming-era mapping per class, measured at `49f04c0`
+
+> **DATED ANNOTATION, 2026-08-11, `J-dv_lead-0187`.** This section is **NEW** and is
+> written **beside** §2.2-M, which stands **UNEDITED**. **It is not a re-measurement of
+> the era tally and it moves no column**: §2.2-M's `63 / 61 / 1 / 0 / 1` is a frozen
+> measurement at `2183d71` and nothing here touches it. It discharges **one
+> precondition** of one clause, and §2.2-D.6 names what it does **not** discharge.
+
+**Why this table exists.** `ADR-0020` — **IN FORCE**, `PROTOCOL` §7 amended at `a76e485`,
+status flipped at `f67a57a` — disposes a class killed in its own campaign by *"that
+campaign's record **together with the named killing unit, present and green at the gate
+SHA**"*. **`FINDING REC-7` (MAJOR, `J-dv_lead-0186`, filed by me against the limb I
+myself offered)** measured that the unit names four of the ten class-era campaign
+records carry **do not exist at the gate SHA**: `WO-0050`, `WO-0055`, `WO-0058` and
+`WO-0061` name their killing units in the retired **`T-`** namespace, so a **literal**
+application of the limb fails at every class of those four campaigns — *not because an
+instrument was deleted, but because the record and the bench speak different
+namespaces*. The cure REC-7 named is this table, and REC-7's own rule governs it:
+**a class whose mapping cannot be established is a DISPOSITION FAILURE, not a
+footnote.**
+
+##### 2.2-D.1 Where this table lives, and why here rather than anywhere else
+
+**Named, per the three candidates put to me.** It lives **here, in `SO-xgmii_rx_64.md`,
+immediately beneath the tally it disposes** — not in a separate handoffs annex and not
+in my journal. Four grounds, in order of force:
+
+1. **`(b.1)` and `(b.2)` require the itemisation to sit *at the tally*** — *"each named
+   **at the tally** with its ground"*, a movement I signed for at `J-dv_lead-0186` and
+   which strengthens the clause precisely by refusing the split. A disposition table
+   filed away from the tally it disposes is the defect that clause was redrafted to
+   forbid.
+2. **`docs/reports/audit/**` was never available to me.** `PROTOCOL` §6 gives that path
+   to the auditor **exclusively** (`ADR-0003`); dv_lead may stage `test/**`, `tools/**`,
+   `docs/reports/latency/**` and `agents/handoffs/**`. A table of mine under the
+   auditor's tree is not a placement choice I could have made, and I record the ground
+   rather than let the option look declined on taste.
+3. **A new handoffs file would need a packet prefix and an orchestrator-allocated
+   number** (`PROTOCOL` §3). Minting a packet id for a table whose whole content is a
+   column of an existing packet's section buys a filename and costs the adjacency that
+   makes the column readable.
+4. **`J-dv_lead-0186` routed it to "my own packet"**, and this is it. **No file outside
+   `agents/handoffs/**` and my own journal is written for this table**, so no
+   confirmation was owed and none was sought.
+
+##### 2.2-D.2 The mapping rule, and the two measurements that ground it
+
+**The rule**: the retired label `T-<X><n>` and the present label `M03-<X><n>` denote the
+same bench unit; the three **composite** retired labels (`T-A12`, `T-A34`, `T-C12`)
+denote the three composite present units, each one `let%expect_test` head covering two
+plan rows. **The rule is not asserted — it is measured, twice, at `49f04c0`:**
+
+- **M1 — the `T-` namespace is not a bench namespace at this tree at all.** `grep -rn
+  '"T-' test/` returns **zero** string literals, and **zero** of the 59
+  `let%expect_test` heads under `test/xgmii_rx_64/` begin `T-`. **No mapping below can
+  be a collision between two live namespaces**, because only one of the two is live.
+  (**Four `T-` labels do survive as text under `test/`** — `T-A34`, `T-D2`, `T-D3`,
+  `T-I2`, on four lines — and **all four are historical prose**: three in
+  `test/attack_plans/AP-xgmii_rx_64.md`'s change log (`:3756`, `:3875`, `:3880`) and one
+  in a comment at `test/xgmii_rx_64/test_m03_i.ml:574` quoting `WO-0061`. **None is a
+  unit label.** Recorded because a careless grep returns them and would read as a
+  counter-example.)
+- **M2 — each campaign's own declared M03 denominator reproduces exactly from the tree
+  at that campaign's own base SHA.** This is the check that makes the mapping a
+  statement about *populations* and not about *spelling*:
+
+  | campaign | base SHA | `let%expect_test` heads at that base | `M03-`-labelled heads | the campaign's own declared figure |
+  |---|---|---|---|---|
+  | `WO-0050` | `616686f` | **20** | 19 | *"a frozen matrix of 21 REQUIRED and 139 MUST-STAY-GREEN over **20 units**"* (verdict §0) |
+  | `WO-0055` | `2e8994f` | **25** | 24 | 5 red + **20/20** MUST-STAY-GREEN = **25** (verdict §1) |
+  | `WO-0058` | `a2d090d` | **31** | 30 | *"M03-H4 **alone out of all 31 M03 units**"*; *"confirmed empirically at **30** M03 units"* (verdict §2) |
+  | `WO-0061` | `42b9df3` | **36** | **35** | I-c10's REQUIRED cell set = **35** (verdict §1, §11) |
+
+  Four campaigns, four exact reconciliations, no residue. **The set the record scores in
+  `T-` names and the set the tree carries in `M03-` names are the same set, at every
+  base**, and that is measured rather than inferred from the labels.
+
+##### 2.2-D.3 Evidence grades — stated so no row's strength is guessed
+
+- **`E1` — in-record, class-local.** The campaign packet's **own text for that class**
+  names the present unit — typically by quoting the observed failing message, which the
+  bench emits in the `M03-` namespace. **The record performs the mapping itself**; I
+  perform nothing.
+- **`E2` — in-record, campaign-level.** The packet's own scope or subject declaration
+  names the scored set in the present namespace, and it is the same set its scorecard
+  scores in `T-`. Still in-record, one level wider.
+- **`E3` — bench registry.** No present-namespace naming for that unit exists in that
+  packet; the unit is resolved at its `let%expect_test` head at `49f04c0` under the rule
+  of §2.2-D.2, with `M1` and `M2` carrying it.
+- **`D` — derived.** The mapping is computed, not transcribed. **The derivation and its
+  checks are stated in the row**, and if the derivation is ever falsified the row
+  becomes a **disposition failure** until re-derived. Exactly one row is `D`.
+
+##### 2.2-D.4 The table — thirty classes, four campaigns, plural where the record is plural
+
+`R→G` = a cell the seal made REQUIRED that **stayed green**: named beside the killing
+unit, **never folded into it**.
+
+| campaign | class | campaign verdict | the record's named killing unit(s), **verbatim in its own namespace** | present name(s) at `49f04c0` | evidence |
+|---|---|---|---|---|---|
+| `WO-0050` | **F-c1** | KILL, exact | **T-C4, T-F1, T-F3, T-F4** (4/4) | M03-C4, M03-F1, M03-F3, M03-F4 | **E1** — verdict §2 quotes all four observed messages, `M03-`-named |
+| `WO-0050` | **F-c2** | KILL; `F-1` | **T-A12, T-A34, T-A5, T-B1, T-C12, T-D1, T-D2, T-D3, T-F4** (9/9) | M03-A1 *(head "M03-A1, M03-A2")*, M03-A3 *(head "M03-A3 …; M03-A4 …")*, M03-A5, M03-B1, M03-C1 *(head "M03-C1, M03-C2")*, M03-D1, M03-D2, M03-D3, M03-F4 | **E1** for T-A34 (§3 quotes `M03-A3 (length 64) lane 0: strobe monitor unclean`); **E2** for T-F4; **E3** for the rest — the three composites at `test_m03_a.ml:80-82`, `:153-155`, `test_m03_c.ml:338-340` |
+| `WO-0050` | **F-c3** | KILL; `F-2` | **T-F2** | M03-F2 | **E1** — §4 quotes `M03-F2 (lane 0, 1 octets received): a tlast word was observed…` |
+| `WO-0050` | **F-c4** | KILL, exact | **T-F3** | M03-F3 | **E1** — §5 quotes `M03-F3 (lane 0): expected exactly {error_runt, error_bad_fcs}…` |
+| `WO-0050` | **F-c5** | KILL, exact | **T-F2** | M03-F2 | **E1** — §4 quotes `M03-F2 (lane 0, 0 octets received)…` |
+| `WO-0050` | **F-c6** | KILL, admissible | **T-F2** | M03-F2 | **E1** — §4, byte-identical corrected file to F-c3 |
+| `WO-0050` | **F-c7** | KILL, exact | **T-E5** | M03-E5 | **E1** — §5 quotes `M03-E5 (preamble position 1, lane 0): expected exactly one strobe pulse…` |
+| `WO-0050` | **F-c8** | KILL; `F-4` | **T-E5 alone** — 1 of 3 sealed; **T-E2 `R→G`, T-F2 `R→G`** | M03-E5 *(killing)*; M03-E2, M03-F2 *(named, not folded)* | **E1** — §6 quotes `M03-E5 (…): error_bad_frame pulsed on cycle 2, expected 3` |
+| `WO-0055` | **G-c1** | KILL, exact | **all five G rows: T-G1, T-G2, T-G3, T-G4, T-G6** (5/5) | M03-G1, M03-G2, M03-G3, M03-G4, M03-G6 | **E2** — the packet's own subject line: *"(`test_m03_g.ml`, rows **M03-G1, G2, G3, G4, G6**)"* |
+| `WO-0055` | **G-c2** | KILL, exact | **T-G2, T-C3** (2/2) | M03-G2, M03-C3 | **E2** for T-G2 (subject line); **E3** for T-C3 — `test_m03_c.ml:467`, head *"M03-C3: one 1518-octet frame, both lanes"* |
+| `WO-0055` | **G-c3** | KILL, exact | **all five G rows** (5/5) | as G-c1 | **E2** — subject line |
+| `WO-0055` | **G-c4** | **SURVIVED** | **none — no unit killed it.** T-G4 predicted, `R→G` | **n/a** | **NOT a frozen-kill row.** `(b.2)`'s **survivor** limb governs and is discharged at §2.2-M above: the **unmodified** `g-c4.diff`, branch `mut/wo-0056-gc4-replay` = `c95c9f4`, CI run **`30852220315`**, killing unit **`M03-G8`** — landed at `WO-0056`, **after** the rename, so already in the present namespace and present at `49f04c0`. **No mapping is owed and none is performed** |
+| `WO-0055` | **G-c5** | KILL, exact | **all five G rows** (5/5) | as G-c1 | **E2** — subject line |
+| `WO-0058` | **GH-c1** | KILL | **T-G7, T-G6** (2/2) | M03-G7, M03-G6 | **E2** for T-G7 (§1's scope table names it with its file); **E1** for T-G6 — §7 is titled *"The **M03-G6** disposition"* |
+| `WO-0058` | **GH-c2** | KILL | **T-H3** | M03-H3 | **E2** — §1 scope table |
+| `WO-0058` | **GH-c3** | KILL | **T-H1, T-H2** (2/2) | M03-H1, M03-H2 | **E1/E2** — §1 scope table; §2 speaks of *"the same `M03-H1` lane label"* for this very collision test |
+| `WO-0058` | **GH-c4** | KILL; `GH-1` | **T-H2 alone** — 1 of 2 sealed; **T-H1 `R→G`** | M03-H2 *(killing)*; M03-H1 *(named, not folded)* | **E1** — §2: *"GH-c4 speaks at **M03-H2** with `delivered octets differ…`"*; §3 quotes M03-H1's green |
+| `WO-0058` | **GH-c5** | KILL; `GH-2` | **T-H1, T-H2, T-H4** (3 red; T-H4 wrong message, still red) | M03-H1, M03-H2, M03-H4 | **E2** — §1 scope table; §4 quotes M03-H4's observed text |
+| `WO-0058` | **GH-c6** | KILL | **T-H1, T-H2, T-H4** (3/3) | M03-H1, M03-H2, M03-H4 | **E2** — §1 scope table |
+| `WO-0058` | **GH-c7** | KILL | **T-H4** | M03-H4 | **E1** — §2: *"GH-c7 reddened **M03-H4** alone out of all 31 M03 units"* |
+| `WO-0061` | **I-c1** | **VOID — NOT SEEDED AS SPECIFIED**, 0 kills | **none — no unit killed it.** Sealed wide cells T-I6, T-I4 both green; T-F1, T-F2, T-G7 red on a bench the seal was not written against | **n/a** | **NOT a frozen-kill row.** `(b.1)`'s **second ground** governs — a rendering found **not to render the class as sealed** is **UNSCOREABLE**, its run a scope report supporting no claim in either direction. Ground disclosed pre-run and ruled at `WO-0061` (`FINDING A-1`, `DISP-0001`). **No mapping is owed** |
+| `WO-0061` | **I-c2** | KILL | **T-I4, T-I6** (2/2) | M03-I4, M03-I6 | **E2** — §1's scope table names all five scored units `M03-` with their rows |
+| `WO-0061` | **I-c3** | KILL | **T-I4, T-I6** (2/2) | M03-I4, M03-I6 | **E2** — §1 scope table |
+| `WO-0061` | **I-c4** | KILL | **T-I4, T-I6** (2/2) | M03-I4, M03-I6 | **E2** — §1 scope table |
+| `WO-0061` | **I-c5** | KILL | **T-I4, T-I6** (2/2) | M03-I4, M03-I6 | **E2** — §1 scope table |
+| `WO-0061` | **I-c6** | KILL; `S-4` | **T-I4, T-I6** (2/2 rows; member field falsified) | M03-I4, M03-I6 | **E2** — §1 scope table |
+| `WO-0061` | **I-c7** | KILL | **T-I4, T-I6** (2/2) | M03-I4, M03-I6 | **E2** — §1 scope table |
+| `WO-0061` | **I-c8** | KILL; `S-1` | **T-I1 alone** — 1 of 2 sealed; **T-I6 `R→G`** | M03-I1 *(killing)*; M03-I6 *(named, not folded)* | **E2** — §1 scope table |
+| `WO-0061` | **I-c9** | KILL, monitor-caught, counted **once** | **T-I3** | M03-I3 | **E2** — §1 scope table |
+| `WO-0061` | **I-c10** | KILL; `S-2`, `S-3` | **28 of 35.** The record names the **35**-cell set and names the **seven greens individually** — **T-C4, T-E1, T-E2, T-E5, T-F1, T-F2, T-F3** (§11) — so **the killing units are the complement, and they are plural to a degree no other class in the era reaches** | the **28** `M03-` heads at `42b9df3` less those seven's counterparts: **M03-A1, A3, A5, B1, C1, C3, C5, D1, D2, D3, E4, F4, G1, G2, G3, G4, G6, G7, G8, H1, H2, H3, H4, I1, I2, I3, I4, I6** | **D** — derived. **Method**: enumerate the `M03-` heads at the campaign's own base `42b9df3` and subtract the seven the record names green. **Two independent checks, both exact**: the enumeration returns **35** heads, matching the record's 35-cell REQUIRED set; and `35 − 7 = 28`, matching the record's *"28 red, 7 green"*. **E1** for the seven greens (§11 names them). If the 35-cell set is ever shown to be a different population, **this row is a disposition failure until re-derived** |
+
+##### 2.2-D.5 The plural naming, discharged — and the shape it exposes
+
+`J-dv_lead-0186` sustained the auditor's construction of *"the named killing unit"*
+against my own withdrawn C3: **the phrase points at the campaign record's own naming,
+plural where the record is plural, never a gate-time selection** — both constrained
+parties signing under one reading, with the non-blocking cure *"the named killing unit
+**or units**"*. The column above is written to that construction and **not one row
+selects**. Three shapes appear, and the third is the one worth naming:
+
+1. **Plural sealed, plural killed** — **17** rows, from two units (I-c2…I-c7) to
+   twenty-eight (I-c10). Every unit the record names is carried; none is dropped for
+   being redundant.
+2. **Singular** — 8 rows (F-c3…F-c7, GH-c2, GH-c7, I-c9). Singular because the record is
+   singular, not because a set was narrowed.
+3. **Plural sealed, singular killed — three rows, and they are the reason C3 had to
+   go**: `F-c8` (1 of 3, T-E2 and T-F2 `R→G`), `GH-c4` (1 of 2, T-H1 `R→G`), `I-c8`
+   (1 of 2, T-I6 `R→G`). **Under C3 these would have been a gate-time pick from a set
+   the campaign never ranked; under the adopted reading the killing unit and the
+   sealed-but-green cells are both named, side by side, and the `R→G` cell is never
+   folded into the kill.** All three greens are falsified seal predictions standing
+   unedited in their SEALED files, which is where they belong.
+
+##### 2.2-D.6 Result, and the four things this table does NOT do
+
+**Result: thirty classes examined, twenty-eight take the frozen-kill form, twenty-eight
+mappings established, ZERO disposition failures.** The two that do not take that form
+are `G-c4` (survivor limb, discharged at §2.2-M by replay, killing unit `M03-G8`
+already in the present namespace) and `I-c1` (unscoreable under `(b.1)`'s second
+ground). **The remaining six class-era campaigns need no mapping at all**: `WO-0063B`,
+`WO-0066`, `WO-0073`, `WO-0074`, `WO-0076` and `WO-0077` carry **zero** `T-` names —
+measured, not assumed — and name their units in the present namespace throughout.
+
+**And what it does not do, named so nobody reads it wider:**
+
+1. **It does not measure GREEN.** `(b.2)` asks for the named unit **present *and* green
+   at the gate SHA**. This table measures **presence**, at `49f04c0`, which is the half
+   `REC-7` proved undischargeable. **Green is CI's verdict and is taken at the gate
+   SHA**, which does not yet exist — §8 of this packet carries `FAIL`. **A reader who
+   treats this table as half a disposition and stops has done the arithmetic
+   `REC-7` was filed to prevent.**
+2. **It does not cure `F-0022-1`.** The auditor's finding — that the kill form cannot
+   notice a class whose **rendering** no longer applies to the design — is the *same
+   hazard from the other end*, verified at two instances (`f-c3.diff` and `f-c6.diff`
+   **no longer apply** at HEAD, *patch failed … `xgmii_rx_64.ml:725`*; `f-c1.diff`
+   applies clean). **A name that resolves does not make a diff that applies.** Both
+   residues are routed to §12.8's narrative, and neither is cured by text.
+3. **It does not re-run, re-score or rehabilitate anything.** Every campaign score above
+   is quoted from its own committed verdict and stands unedited, including the five
+   falsified seal cells. **A kill's disposition preserves its campaign's measurement and
+   asks only that its instrument still stands** — that is the whole of what is done
+   here.
+4. **It does not move §2.2-M's columns**, which are frozen at `2183d71`, nor pre-empt
+   the movement `(b.1)` will make to the `sealed` figure (63 → 65) — a **definition
+   change with no measurement behind it**, which lands on its own carrier and must say
+   so in the same sentence.
 
 ### 2.3 The differential co-simulation anchor — five classes, at run and job ids
 

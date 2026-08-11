@@ -1744,6 +1744,20 @@ Program tally, class-based, `WO-0050` onward. The prior figure is **41 sealed,
 `WO-0073-VERDICT` and in `tasks/BOARD.md`, with family L's **5 sealed / 5
 killed** already inside it.
 
+> **DATED ANNOTATION, 2026-08-11, `J-dv_lead-0187` — `FINDING REC-2`'s cure (MINOR,
+> materially void, mine, filed at `J-dv_lead-0184`). The sourcing sentence above stands
+> UNEDITED and is corrected here, not rewritten.** **The 41 is not recorded at
+> `WO-0073-VERDICT`**: that packet carries no era tally — it has no `Era tally` or
+> `Program tally` section, and the string `41 sealed` does not occur in it. **The
+> figure's sole prior home is `tasks/BOARD.md` at `33871b8`** — *"Program tally,
+> class-based (WO-0050 onward): **41 sealed, 40 killed, 1 survived** (G-c4, FINDING
+> G-1)"* — committed under `Agent: orchestrator`, `Journal-Entry: J-orchestrator-0215`.
+> Measured: `git log -S'41 sealed' --reverse` returns `33871b8` (`tasks/BOARD.md`)
+> first and this packet's own landing `70cf13c` second, and no other commit. **A dv
+> figure was sourced to a dv packet that does not carry it, and the seat that first
+> wrote it went uncredited**; the arithmetic is unaffected and the tally below does not
+> move.
+
 | | sealed | killed | survived | void by declaration |
 |---|---|---|---|---|
 | before this campaign | 41 | 40 | 1 | 0 |
