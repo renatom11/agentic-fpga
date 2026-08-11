@@ -3346,3 +3346,342 @@ above is the transcribable act; this entry is its tamper evidence.
    forgotten.
 ### Files-in-this-commit
 - (none)
+
+## [J-auditor-0023] 2026-08-11T21:30Z | task:none | Every enforcement sentence in the process document re-executed against the machinery that is supposed to hold it: 128 claims, 34 machine-checked, 15 false — and the four the council did not find are the ones that tell an adopter it need not look
+
+### Trigger
+
+Orchestrator dispatch, one round, one deliverable: the process council's **One
+Thing to Do First** (`docs/reports/process-council/round-1/verdict.md`, closing
+section) — *"Commission the auditor — before any text is edited — to re-execute
+every sentence in PROCESS.md that asserts mechanical enforcement or a performed
+event, against policy.sh, the scripts, and the record, and return the per-claim
+verified posture list."* Commissioned before any text of `docs/PROCESS.md` is
+edited, so that the architect's revision consumes a measured list rather than a
+read one.
+
+The dispatch carried no work-order packet. That is not an aside: the round
+measuring whether *"everything that moves between seats is a versioned file"*
+was itself moved without one, and I have recorded it as an instance of its own
+claim rather than as a complaint (report row C-70).
+
+Context the dispatch supplied and I relied on: a prior round of mine was stopped
+by the sponsor mid-round, its uncommitted work — including a v03 rotation —
+preserved to the orchestrator's scratchpad as evidence and removed from the
+tree. I was told to derive everything fresh from the committed record and to
+trust no prior partial. I did, and I say so here because it is the only place a
+later reader can check that this round is a respawn.
+
+### Inputs
+
+- `agents/charters/auditor.md` (whole), `agents/PROTOCOL.md` (whole, 451 lines).
+- `docs/PROCESS.md` at `6c02f5b`, all 1,445 lines, read in three passes.
+- `docs/reports/process-council/round-1/verdict.md`, `.../bob.md`.
+- `scripts/policy.sh` (281), `scripts/agent_commit.sh` (231),
+  `scripts/check_journals.sh` (256), `scripts/test_protocol.sh` (644, structure
+  + the fixture helpers at 36–110), `scripts/verify_journal_chain.sh` (size only).
+- `.github/workflows/journal-check.yml`, `build.yml`, `site-deploy.yml`.
+- `docs/adr/ADR-0019-the-seeder-never-operates-the-repo.md` §1.1, §1.2, §7;
+  `ADR-0020-...md` §G1-c row and §704; `ADR-0016-...md`:484; status lines of
+  all twenty ADRs.
+- `docs/gates/G0-checklist.md`:17, `P1-module-ready-checklist.md`:1–14, 41–58,
+  `P1-spec-freeze-checklist.md`:21–31, `lessons-harvest-block.md`.
+- `docs/reports/audit/AUD-0001-g0-retro.md` (headings, §5, §6, :19, :186–187),
+  `AUD-0002-g0-reverification.md` (:168, :618).
+- `agents/handoffs/SO-xgmii_rx_64.md` (headings, :1–20),
+  `WO-0039_..._SEALED-predictions.md` §0 + header,
+  `WO-0077_..._SEALED-predictions.md` header + standing rules,
+  `WO-0040_tb-m03-family-d-fcs.md`:254.
+- `agents/journals/claude_auditor_agent.md`:248–256 and `.v02.md` (all 22 entry
+  headers; `J-auditor-0020` in full), `claude_orchestrator_agent.md`:362–373,
+  `.v02.md`:120, 4745, 4783; `claude_architect_docs_lead_agent.v02.md`:1181,
+  `.v03.md`:965, 1263; `claude_dv_lead_agent.v10.md`:2892;
+  `agents/journals/INDEX.md`.
+- `tasks/BOARD.md`:133, `docs/SPONSOR.md`, `.claude/agents/auditor.md`:10–12.
+
+### Reasoning
+
+**What kind of round this is.** My charter's subject is normally a commit range.
+Here the subject is a document, and the falsifiability standard has to be
+imported rather than assumed: a claim in `docs/PROCESS.md` is falsifiable if
+there is a script line, a CI step, a commit, a run id or a named artifact that
+decides it. Every claim that could not be decided that way is a claim the
+document should not be making in the indicative, and saying so *is* the audit.
+
+**Three ways to run it; I took the third.** (a) Read the document and judge it —
+the method that produced the false claims in the first place, since the author
+also read rather than executed. (b) Adopt the council's four proven-false claims
+and extrapolate the pattern. Cheap, and wrong for this seat: adopting a finding
+I did not verify would make my report testimony about someone else's testimony,
+which is the exact object my §1.5 write-scope restriction exists to prevent.
+(c) Execute every claim: run the policy function, read the script line, run the
+check where safe, or locate the record evidence. I took (c), and re-derived the
+council's four from the machinery rather than citing the council for them.
+
+That decision paid immediately. **Bob's F9 does not reproduce as quoted**: it
+cites `AUD-0001` as "1 CRITICAL, 5 MAJOR, 7 MINOR, **4 NOTE**", and the file
+reads "1 CRITICAL, 7 MAJOR, 7 MINOR, 2 NOTE" — Bob quoted the superseded
+pre-correction line, which the report itself flags as corrected at
+`J-auditor-0002`, my own entry. The finding survives (four grades, not three);
+the citation does not. Had I adopted, I would have shipped a decayed citation
+into the instrument the architect edits from — which is precisely the failure
+class the document narrates at its §3.1 and the one my own correction round was
+about. The council's four all reproduce.
+
+**Why 128 rows and not forty.** The architect's revision has to be citable per
+edit; a coarse list forces it to re-derive the mapping and re-derivation is where
+the reading rule slips. So the unit is the sentence that makes the claim, not
+the paragraph. Two granularity rulings inside that:
+
+- **§3.9's thirteen scoring bullets are one row (C-104).** They restate
+  `PROTOCOL` §7 (b.1)–(b.4) and share a single enforcement citation — §7's own
+  in-clause posture line, *"review-enforced … no `R`-rule is minted and no script
+  changes"*. Splitting them would produce thirteen rows with one evidence cell
+  copied thirteen times, which reads as thirteen measurements and is one.
+- **§2.6's nine table rows are nine rows (C-59…C-67).** Here the opposite holds:
+  each row names a different script surface, and the value of the sweep is
+  exactly that **one of the nine is false at the surface level** — C-67, where
+  the merge check lives in CI rather than in the commit script the row is
+  tabulated under, and the no-force-push clause lives outside the repository
+  altogether. Grouping would have hidden the one row that matters.
+
+**The posture taxonomy, and the one claim I refused to posture.** The five
+postures were fixed by the dispatch and I used them as given. One claim —
+§1.4(d)'s residual-risk-routing episode — I could not anchor to an ADR, packet
+or entry within this round's frame. The tempting move is to mark it FALSE, since
+an unlocatable exhibit looks like an invented one. That would be wrong twice: I
+did not exhaust the search, and **absence of a located anchor is not a
+contradiction** — FALSE, in this taxonomy, requires a named artifact that says
+otherwise. So it carries **NOT SAMPLED** and is counted separately, with the
+gap declared. A posture list whose author guessed one cell is a posture list a
+reader must re-check entirely.
+
+**What executing found that reading could not.** The council's four were all
+findable by a careful reader with the record open. Four more were not, and all
+four required running the policy function or diffing a script against the
+sentence that describes it:
+
+1. **C-40 — the scopes are not disjoint.** §2.1's honesty note says a commit
+   *"physically cannot mix two scoped agents' files"*, and that sentence is the
+   entire justification for R1 being emergent rather than audited for scoped
+   seats. `agent_may_write` grants `agents/handoffs/*` to the architect, both
+   RTL leads, dv_lead **and all four workers**; `libs/*`+`top/*` to two seats;
+   `test/*` to three; `tools/*` to two. A commit staging two leads' packets
+   passes R7 under either identity. This is the most consequential of the
+   fifteen because it is the sentence that tells an adopter — and tells every
+   stateless agent at every spawn — that attribution needs no audit here.
+2. **C-67** — the commit script credited with CI's work and with branch
+   protection's.
+3. **C-114** — "four commands" against a file that gives three.
+4. **C-123** — "each clause says whether it is machine-enforced or
+   review-enforced" against exactly three clauses that do.
+
+**What the shape of the result says, and I state it because it is not the
+headline anyone expected.** §2, the section describing the scripts, is 22
+machine-checked of 36 and every citation resolves. §3, the section describing
+artifacts, is 3 machine-checked, 19 review-enforced and 6 false. The document is
+accurate where it describes machinery and inaccurate where it describes its own
+practice — which is the same asymmetry as its §5.7 root class, one level up: the
+part nobody else could check is the part that is wrong.
+
+**The part that convicts my own seat, stated before anything else in this entry
+is read as a finding against others.** Six of the eight PLANNED rows route to one
+practice: audit sampling of Inputs, narrative vacuity, orchestrator splitting and
+relay fidelity. That practice ran once, on 2026-08-01, in `AUD-0001`, and has not
+run since; entries `J-auditor-0004` through `-0018` are all mutation seeding. Every
+non-mechanical control in `docs/PROCESS.md` routes its residue to a compensating
+control that spent the build phase seeding. I do not record this as a finding
+against the seat — the seeding rounds were commissioned and refusing them was not
+mine to do — but it is the mechanism by which the document's false claims survived
+ten days and roughly 85% of the record uncaught, and the revision must not restate
+any of those six in the present indicative. This report is the second time the
+practice has run.
+
+**No severities, deliberately.** The dispatch asked for postures, and grading
+these claims is the adjudicating round's act, not the measuring round's. Filing
+fifteen findings here would also fold two questions into one — *is the claim
+false* and *how bad is that* — and the second is exactly the kind of judgement
+the seat that measured should not also make.
+
+### Actions
+
+1. Abort-first precheck before opening any file: `git status --short` (empty),
+   `git rev-parse HEAD` = `6c02f5b`, branch as dispatched. Proceeded.
+2. Read the charter, `PROTOCOL`, the verdict, `bob.md`, then `docs/PROCESS.md`
+   in full; grepped the enforcement/event vocabulary over it as a guard on the
+   manual sweep (213 candidate lines → 128 claims after removing failure-class
+   narrative, which asserts nothing about this program).
+3. Read all four named scripts plus `verify_journal_chain.sh` and all three
+   workflows; ran the protocol self-test; probed `agent_may_write` fourteen
+   times by sourcing `policy.sh`; ran ~30 targeted `git log`/`grep` queries over
+   history, packets, ADRs, gates and journals; tested all 92 visible `mut/*`
+   refs for ancestry of HEAD.
+4. Wrote `docs/reports/audit/PROCESS-claims-posture.md` — 128 rows, per-section
+   tallies, the fifteen FALSE and eight PLANNED collected for the architect's
+   edits 1 and 2, the calibration table for the council's four, and a declared
+   sampling frame with six named omissions.
+5. Inward sibling re-verification after HEAD moved mid-round (below).
+6. Ran no `git` write command. Staged nothing. Committed nothing.
+
+### Evidence
+
+All commands run from a checkout at `6c02f5b`; re-verified identical at
+`b19ff91` (see the last item).
+
+- `git status --short` → empty. `git rev-parse HEAD` →
+  `6c02f5b2b21be63c1091e6b026be17aeb7159bbe`.
+- `bash scripts/test_protocol.sh` → **`protocol self-test: 51 passed, 0 failed`**.
+  (The council's `bob.md` says 42 cases; the suite is 51 as of `678948b`.)
+- `. scripts/policy.sh` then `agent_may_write <agent> <path>`, observed:
+  `architect_docs_lead docs/gates/P1-module-ready-checklist.md` → **ALLOW**;
+  `dv_lead`/`rtl_lead`/`auditor` same path → DENY; `auditor
+  agents/handoffs/WO-0001_x.md` → DENY; `auditor docs/reports/audit/x.md` →
+  ALLOW; `rtl_lead test/foo.ml` → DENY; `rtl_module_dev test/foo.ml` → DENY;
+  `dv_lead libs/foo.ml` → DENY; `tb_writer libs/foo.ml` → DENY;
+  `rtl_module_dev libs/anything/at/all.ml` → **ALLOW**; `orchestrator
+  docs/reports/audit/x.md` → ALLOW.
+- `grep -n "JOURNAL_HARD_MAX\|JOURNAL_SOFT_MAX" scripts/check_journals.sh` →
+  **no hit** (hits exist only in `agent_commit.sh`:178–181, `policy.sh`:13–14,
+  and the self-test).
+- `grep -rn "WARN-SEAL" scripts/ .github/ tools/` → **absent**; present only in
+  `agents/PROTOCOL.md`:431 and as proposed shell in `ADR-0016`:484.
+- `grep -rn "Previous-volume-bytes" scripts/` → only `test_protocol.sh`:71 (a
+  fixture generator). The field is written into every rotated volume header and
+  verified by nothing.
+- `grep -n "Reasoning\|Trigger\|Open-questions\|### Inputs\|Evidence"` over
+  `policy.sh`, `agent_commit.sh`, `check_journals.sh` → **no hit**. Only
+  `### Files-in-this-commit` is machine-checked (`policy.sh`:262–266).
+- `git log --all --oneline -- 'agents/handoffs/RV-*'` → **empty**; 0 `RV-` files
+  in tree. Same query for `WO-0048*`, `WO-0051*`, `WO-0052*`, `WO-0053*` →
+  **empty** each; `WO-0044*` → 1.
+- `ls agents/handoffs/ | grep -oE '^WO-[0-9]{4}[A-Z]?'` → includes `WO-0063A`,
+  `WO-0063B`; gaps at 0048, 0051, 0052, 0053.
+- `git ls-remote --heads origin 'mut/*' | wc -l` → **85**. Over all 92 `mut/*`
+  refs visible here, `git merge-base --is-ancestor <ref> HEAD` → **0 ancestors**.
+- Per-commit `Agent:` trailers for `docs/gates/`: four commits trailered
+  `architect_docs_lead` — `61e0c76` (stages `P1-module-ready-checklist.md`
+  itself), `43c0087`, `8734c10`, `ec5d906`; the remainder `orchestrator`.
+- `git log -1 -- agents/journals/INDEX.md` → `550df53`, 2026-08-01; the file
+  still reads "auditor … J-auditor-0003" and "dv_lead … Not yet activated".
+- Recovery drill: `grep -rniE "rehydrat|drill"` over `agents/journals/`,
+  `tasks/BOARD.md`, `docs/gates/` → **no performed instance**; `PROTOCOL`:387 is
+  future tense.
+- `docs/gates/G0-checklist.md`:17 → item 9 ✅, *"Sponsor configured 2026-08-01
+  … rejection verified by live fire on both branches — J-orchestrator-0011"*.
+  Second live fire at `ADR-0019` §1.2 (`git push --force-with-lease` refused,
+  `J-auditor-0015`).
+- `AUD-0001-g0-retro.md`:19 → *"Tally: 1 CRITICAL, 7 MAJOR, 7 MINOR, 2 NOTE"*.
+- `WO-0077_..._SEALED-predictions.md` header → *"I cannot state its hash: I never
+  run git (PROTOCOL §2), and it has none until the orchestrator creates it."*
+- Commit attribution: all 8 commits touching `agents/PROTOCOL.md`, all 7
+  touching `scripts/`, all 4 touching `agents/charters/` are `Agent:
+  orchestrator`. Last `scripts/` change `678948b`, 2026-08-04.
+- **Inward sibling check.** HEAD moved to `b19ff91` mid-round.
+  `git merge-base --is-ancestor 6c02f5b HEAD` → descendant confirmed. The
+  landing is `Agent: dv_lead`, touching only
+  `agents/handoffs/WO-0082_tb-m04-two-frame-presenter-and-g10.md` and
+  `agents/journals/claude_dv_lead_agent.v11.md` — declared sibling (1).
+  `git diff --stat 6c02f5b HEAD` over every read surface of this audit
+  (`docs/PROCESS.md`, `scripts/`, `.github/workflows/`, `agents/PROTOCOL.md`,
+  `docs/adr/`, `docs/gates/`, `agents/charters/`, `docs/SPONSOR.md`,
+  `agents/journals/INDEX.md`, both of my volumes,
+  `docs/reports/process-council/`) → **empty**. No measurement in the report was
+  taken against a state that has since moved; nothing needed re-running.
+- **A third concurrent lane, undeclared.** After the report was written the tree
+  showed `docs/adr/ADR-0021-a-check-is-only-where-it-runs.md` (untracked) plus
+  `test/xgmii_tx_64/bench.ml{,i}` modified. The latter is dv_lead's declared
+  lane. The former is an `architect_docs_lead` draft
+  (`J-architect_docs_lead-0049`) building instruments for the very residues I
+  had just measured — a ±60-minute stamp warning and the journal-size limb on
+  the CI surface. I verified rather than assumed: it is **PROPOSED, NOT IN
+  FORCE**, uncommitted, and by its own Deciders block carries **no diffs** to
+  `scripts/**` or `.github/**`; `git diff` over `scripts/`, `.github/`,
+  `agents/PROTOCOL.md` and `docs/PROCESS.md` in the worktree is **empty**. No
+  posture changes: postures are measured against the committed record. Recorded
+  in the report's header so the measurement can be dated against that instrument.
+- **Rotation arithmetic, computed from `git show HEAD:`** as the dispatch
+  required: `git show HEAD:agents/journals/claude_auditor_agent.v02.md | wc -c`
+  → **236,201**; last header in that volume → `J-auditor-0022`; soft threshold
+  262,144, hard 524,288; headroom to soft **25,943 bytes**. This entry fits
+  inside it, so this is an append to v02 and **no rotation is performed**. I did
+  not read, reference or rely on any prior uncommitted v03 content; my chain's
+  head at HEAD is `J-auditor-0022` in v02 and this entry is `-0023`.
+
+### Outcome
+
+**DoD met.** One deliverable, one new file, in my exclusive scope:
+`docs/reports/audit/PROCESS-claims-posture.md`. **128 rows: 34
+MACHINE-CHECKED, 44 REVIEW-ENFORCED, 26 PERFORMED-ONCE, 8 PLANNED, 15 FALSE, 1
+NOT SAMPLED.** Every row carries the section, the exact quote, the posture and a
+falsifiable citation — script path and line, commit, gate row, packet path, or
+the named absence. Handoff: to the orchestrator for commit under `Agent:
+auditor`; the architect consumes the list directly for verdict edits 1
+(correct the false claims by name) and 2 (stamp every enforcement claim).
+
+**Harvest**: **not owed at this round.** `PROTOCOL` §7 and charter §8 attach the
+note to an `SO-` and to a phase gate; this is an audit round and is neither. My
+open span is `J-auditor-0019` … (open), continuing from the harvest declared
+complete at `-0019`, and this entry joins it so the spans tile and a skipped
+harvest is a visible gap. **One candidate banked, LH1–LH3 discharged, LH2-g**:
+*a claim that a boundary is structural is decided by the boundary's own
+allow-list and by nothing else; where two roles share any writable path, every
+"cannot" and "forbids it" stated about that pair is false, and the check costs
+one call to the policy function.* **LH1** — this round's C-40 and C-93, where two
+structural prohibitions were written into a reference document while the policy
+function granted the very paths they forbade, both landing in one commit.
+**LH3** — without it a stateless agent is trained at every spawn that a boundary
+will refuse it, stops looking for the violation the boundary does not catch, and
+the first shared path becomes an attribution hole nobody audits, because the
+document said auditing it was unnecessary. **One war story, going no further**:
+Bob's F9 citing a superseded severity line that the same file marks as corrected
+— a good exhibit of citation decay, but it teaches a rule the record already
+holds (`J-auditor-0001` → `-0002`, and PROCESS §3.1's own pattern), so it is kept
+and binds nowhere.
+
+### Open-questions
+
+1. **C-24 is unanchored and I say so rather than guess.** The §1.4(d)
+   residual-risk episode, and the first of §5.7's six disguises, could not be
+   located in this round's frame. Either the architect can supply the anchor, or
+   the exhibit should come out — an anonymized pattern whose incident nobody can
+   find is indistinguishable, to a later reader, from one that did not happen.
+2. **This round did not discharge my charter's evidence-re-execution duty.**
+   Charter §6.6 wants ≥10% of a phase's journal Evidence sections re-executed
+   plus one manifest-driven replay. This round re-executed *the document's*
+   claims, not *the record's* evidence. The duty stands, and the eight PLANNED
+   rows are the measure of how long it has stood.
+3. **C-40 is a defect in the constitution, not only in the reference document.**
+   `PROTOCOL` §5 R1's honesty note carries the same "a commit cannot mix two
+   scoped agents' work" reasoning that the policy function contradicts. Fixing
+   `docs/PROCESS.md` alone would leave the constitution asserting the false half
+   — the rule/check disagreement PROCESS §2.4 names as worse than either alone.
+   This is an amendment question and it is the orchestrator's to route, not mine
+   to draft.
+4. **My act-2 debt is now three rounds old.** The `ADR-0020` §10 item 4 `D-M3`
+   note and the countersignature record are still owed. This round's dispatch
+   did give me a `docs/reports/audit/**` write for the first time in three
+   rounds, but confined it by name to the new posture file, so the debt still
+   could not be paid. It is recorded, accepted, and unchanged in size — and a
+   debt that only its owner can pay, whose owner is never spawned with the scope
+   to pay it, is indistinguishable at the gate from one that was forgotten.
+5. **My dispatch declared two concurrent lanes and there were three.** The
+   architect's ADR-0021 round was in flight and undeclared to me. Nothing was
+   contaminated — I verified every read surface byte-identical and the third
+   lane touches none of them — but §4.2's outward rule exists so that a
+   legitimate concurrent landing is distinguishable from contamination *without*
+   the receiving seat having to run the diff, and here I had to run the diff. I
+   did not abort: aborting a completed round whose surfaces are provably unmoved
+   would discard a verified measurement to honour the form of a rule against its
+   purpose. **The refusal must be the default, and this is the case where the
+   default is wrong** — which is worth one sentence in whatever revises §4.1, and
+   is offered to the orchestrator as a dispatch-hygiene note rather than a
+   finding.
+6. **The next entry on this chain will very likely need a v03 rotation.** After
+   this append the active volume stands at 258,341 bytes against a 262,144 soft
+   threshold — 3,803 bytes of headroom. The next spawn should expect
+   `WARN-JOURNAL` and should rotate; I flag it here because a rotation performed
+   under time pressure at the head of a round is exactly where the chain header
+   fields get copied wrong.
+
+### Files-in-this-commit
+- docs/reports/audit/PROCESS-claims-posture.md
