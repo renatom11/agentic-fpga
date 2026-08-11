@@ -148,7 +148,7 @@ let sample_cycle t ~cycle (offered : Stream_word.t) : sample =
   { cycle; offered; accepted; wire; underflow }
 ;;
 
-let content_octets ~p = List.init p ~f:(fun j -> 1 + (j mod 127))
+let content_octets ~p = List.init p ~f:(fun j -> 1 + Int.rem j 127)
 
 (* WO-0080 §5.5's presenter, obligation 6's own check, T6's poisoned-word
    construction. *)

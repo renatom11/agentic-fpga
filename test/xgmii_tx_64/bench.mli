@@ -117,7 +117,7 @@ val strobes : t -> Dv_monitors.Strobe_monitor.t
 (** One driven-and-sampled cycle. [offered] is the word this call actually
     drove, read back from what {!sample_cycle} resolved — never from a
     caller's memory of the presenter's own schedule (M03-I2 member (iii)'s
-    discipline, applied here a fifth time). [wire] and [underflow] are the
+    discipline, applied here). [wire] and [underflow] are the
     [Before]-view sample of [xgmii_tx] and [error_underflow] respectively.
     [accepted] is [offered.tvalid && (the Before-view tx_tready)] — the
     acceptance decision this whole round's arithmetic is stated against. *)

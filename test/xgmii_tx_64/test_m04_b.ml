@@ -59,7 +59,7 @@ let run_b1 () =
                 [ "frame octet "
                 ; Int.to_string j
                 ; " (predicted lane "
-                ; Int.to_string (j mod 8)
+                ; Int.to_string (Int.rem j 8)
                 ; " of cycle "
                 ; Int.to_string (c + 2 + (j / 8))
                 ; ") = "
@@ -231,7 +231,7 @@ let run_b4_b5 () =
     let c = first_accepted_cycle samples in
     let f = Int.max p 60 + 4 in
     let terminate_cycle = c + 2 + (f / 8) in
-    let terminate_lane = f mod 8 in
+    let terminate_lane = Int.rem f 8 in
     let frame = wire_frame samples in
     (* Assertions 1-3: the terminate character's octet index (F, implicit in
        the wire-octet-count check below), its cycle, and its lane. *)

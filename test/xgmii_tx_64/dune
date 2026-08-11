@@ -4,7 +4,7 @@
 ;
 ; AP-xgmii_tx_64.md rows live here, by packet:
 ;   WO-0080  A1, A2 ASSERT, A5 NO-ASSERT; B1, B2, B4, B5 ASSERT; C1, C2, C3,
-;            C4, C5 ASSERT, C6 NO-ASSERT (ten ASSERT + two NO-ASSERT rows,
+;            C4, C5 ASSERT, C6 NO-ASSERT (eleven ASSERT + two NO-ASSERT rows,
 ;            plus U1, the scaffolding smoke unit with no row id) — seven
 ;            files, ten %expect_test units
 ; When a packet adds rows, add its line — WO-0038's own dune header found
