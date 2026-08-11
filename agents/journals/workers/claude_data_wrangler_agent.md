@@ -2087,3 +2087,313 @@ point (placement) the scope table itself left implicit.
 
 - tools/cosim/run_cosim.sh
 - agents/handoffs/WO-0078_cosim-phase2-3-stimulus-widening.md
+
+## [J-data_wrangler-0009] 2026-08-11T14:20:00Z | task:none | The seat's first lessons harvest — fourteen candidates walked at their own source, three war stories, and a source-conflict flagged rather than acted around
+
+### Trigger
+
+A fresh spawn, dispatched directly (no `WO-` packet) as "data_wrangler's FIRST
+LESSONS HARVEST — owed under FINDING SO-5." No "work-order id + spawn UTC
+timestamp" short-id token (PROTOCOL §4.1's described form) was present in the
+dispatch — recording that honestly again, as every prior round in this file
+has, rather than inventing one. The dispatch's own text names its authority as
+`SO-xgmii_rx_64`'s `FINDING SO-5` and directs: walk this seat's own chain
+`J-data_wrangler-0001` through its head, bank every candidate at its own
+source, discharge LH1/LH2-g/LH3 per candidate, record war stories with the
+criterion each failed, declare nil if nil, quote no unwalked count. The
+dispatch's own §1 fixes write scope to this journal alone for this round — no
+`tools/**` file, no `agents/handoffs/**` Return log.
+
+### Inputs
+
+- `agents/charters/data_wrangler.md` (full read, this spawn).
+- `agents/PROTOCOL.md` §2-6 (full read, this spawn — §7's harvest paragraph
+  and §4's entry grammar both bear directly on this round).
+- `agents/journals/workers/claude_data_wrangler_agent.md`,
+  `J-data_wrangler-0001` through `-0008` (full re-read via the `Read` tool
+  this round, all eight entries, end to end — this IS the walk; no entry was
+  read from a summary or carried from memory).
+- `agents/handoffs/SO-xgmii_rx_64.md` — read in full across four passes
+  (`git status`/`Read` at offsets covering all 2466 lines): §0's four
+  prohibitions and §0.2's three-dimension census rule; §1's fourteen
+  criteria and the §1.1 read-back, specifically `SC-12`'s row and its
+  "PROTOCOL §7 makes the harvest a five-agent act... four of the five
+  persistent-journal agents have never harvested — `architect_docs_lead`,
+  `rtl_lead`, `auditor`, `orchestrator`" sentence; §4 in full (`4.1`-`4.8`,
+  dv_lead's own first harvest, its method, its walk, its yield table, its
+  worker-span mining at §4.7 — my own span mined there as "zero... NIL,
+  declared"); §8.1-8.2 (the verdict's ground and what clears it, specifically
+  item 2's list — `architect_docs_lead`, `rtl_lead`, `auditor` and
+  `orchestrator` — as the four harvests the packet commissions); `FINDING
+  SO-5`'s own text at both its citations (§4.8 and §8.1).
+- `docs/adr/ADR-0018-the-harvest-is-a-cadence-not-an-event.md` (full read,
+  including Amendment A1) — specifically D2/§3.2 (span discipline), §3.3
+  ("Workers do not self-mine... The commissioning lead mines the worker
+  spans it commissioned, and says in its note which spawn short-ids it
+  covered" — quoted here because it is the center of this round's flagged
+  tension, Reasoning below), §3.4 (LH1-LH3's operative tests, quoted below),
+  §3.5/§3.6 (war stories kept, why self-mining), A1.2-A1.3 (the two LH2
+  grades and the classifier procedure, run below).
+- `docs/gates/lessons-harvest-block.md` — NOT opened; not staged by me this
+  round (§6/orchestrator-scope) and its instantiation is the orchestrator's
+  act per ADR-0018 §4.1, not mine.
+- `git rev-parse HEAD` and `git merge-base HEAD a851948` — confirmed HEAD
+  equals the declared spawn-head exactly (Evidence).
+- `git log --all --grep 'Journal-Entry: J-data_wrangler-000N'` for N in
+  1-8 — the commit SHA each entry actually landed at, used as LH1's SHA
+  half beside the entry citation (Evidence).
+- NOT read: `libs/**`, `top/**`, `bin/**`, `rtl_snapshots/**`,
+  `test/**`, `agents/journals/claude_dv_lead_agent*.md` (dv_lead's own
+  chain — its yield is already published in `SO-xgmii_rx_64` §4.5 and
+  re-reading its raw journal was not needed to mine mine) — outside this
+  round's scope or unneeded for the task at hand.
+
+### Reasoning
+
+**The abort-first head check passed exactly**: `git rev-parse HEAD` =
+`a8519489aeef8a9505bfb44990fc4d525c0f3aec`, matching the declared spawn-head
+`a851948` on its stated prefix. No rollback, no ancestor/descendant branch to
+resolve — proceed.
+
+**The dispatch's own framing does not match what its cited authority actually
+says, and I am flagging that rather than either refusing the round or quietly
+proceeding as if the two agreed — the same discipline every dispatch-vs-source
+round in this file has applied to a packet's paraphrase of itself.** Three
+citable facts, all read at their own source this round, not carried:
+
+1. `ADR-0018` §3.3, verbatim: *"Workers do not self-mine. Worker journals are
+   shared per template with per-spawn entries... and no continuous identity,
+   so there is no 'span since my last harvest' for a worker to hold. The
+   commissioning lead mines the worker spans it commissioned."* This is the
+   accepted, sponsor-ratified design (ADR-0018's Status block), and it says
+   in terms that a worker seat does not hold its own harvest obligation —
+   the lead does, on the worker's behalf.
+2. `SO-xgmii_rx_64` §4.7 already did exactly that for this seat: *"`workers/
+   claude_data_wrangler_agent.md` — `J-data_wrangler-0001` … `-0008` — zero
+   [harvest notes] — NIL, declared"*, at `J-dv_lead-0165`, the same round
+   `FINDING SO-5` itself was minted in.
+3. `FINDING SO-5`'s own text (§4.8, §8.1) and `SO-xgmii_rx_64` §8.2 item 2
+   name the four harvests the verdict says are missing and commissions:
+   *"`architect_docs_lead`, `rtl_lead`, `auditor` and `orchestrator` each
+   mine their own span... The orchestrator then collates the five notes into
+   §4.8's block"* — **five total, with dv_lead as the fifth who already
+   fired.** Data_wrangler is not named in that list, in either §4.8's
+   checklist rows or §8.2's remedy — the checklist's *"(worker spans, by
+   commissioning lead)"* row is where this seat's yield already sits, filled
+   by dv_lead's own mining, not by a row of its own.
+
+**So the dispatch's own header claim — "the harvest is a five-agent act;
+yours never fired and was never asked for" — is not what either `ADR-0018` or
+`FINDING SO-5` states.** The five-agent act is `architect_docs_lead` +
+`rtl_lead` + `dv_lead` + `auditor` + `orchestrator`; this seat's span was
+already mined, inside that same five-agent act, by its commissioning lead,
+and came back **NIL**. I did not resolve this silently in either direction.
+**I performed the walk anyway**, for three reasons, stated so the choice is a
+reasoned one and not a default: (a) the dispatch is a direct, in-scope
+instruction — the write surface it asks for (this journal, append-only) is
+squarely inside my charter's write scope regardless of which ADR clause
+governs the obligation; (b) the work is harmless to the record even if
+ADR-0018's letter does not require it of a worker — a harvest note that
+exists is strictly more informative than one that does not, and nothing here
+contradicts or overwrites dv_lead's own NIL finding, which stands, dated, at
+its own entry; (c) refusing outright would leave the orchestrator's own stated
+intent — evidently to extend the harvest cadence to this seat, whatever its
+textual grounding — undischarged, and the charter's "ambiguities surfaced, not
+guessed" duty is about recording a disagreement, not about declining to work
+through it. **What follows is the walk and its yield; the disagreement is
+restated once more, compactly, in Open-questions, for the orchestrator or
+dv_lead to rule on.**
+
+**One further fact this round's walk surfaced, stated plainly because it
+bears on `ADR-0018` §3.6's own argument for why self-mining (not lead-mining)
+is the design.** §3.6 reason 1: *"Only the author knows which entries were
+load-bearing. A third-party miner reads the same prose without the model that
+produced it, and selects for what reads dramatically."* Dv_lead's own
+commissioned mining of this exact span, `J-data_wrangler-0001` … `-0008`,
+returned **zero** candidates. My own walk of the identical eight entries,
+this round, banks **fourteen**. I am not asserting dv_lead's pass was
+careless — a lead mining nine worker spans inside one already enormous
+sign-off round has a different cost-benefit than a worker mining its own
+eight — but the gap between **zero** and **fourteen** over the identical
+text is a large, measured number, and it is exactly the shape §3.6's own
+argument predicts for lead-mining versus self-mining. Recorded here as a
+data point for whoever weighs whether this seat's harvest obligation should
+be revisited as policy, not as a criticism of the round that found none.
+
+**The walk method, run exactly as `SO-xgmii_rx_64` §4.3/§4.4 specified it for
+dv_lead's own chain, applied here to mine's.** All eight entries read at
+their own source this round (Inputs); every candidate below is the most
+general honest statement of a decision, a correction, or an incident actually
+narrated in that entry — not a paraphrase of a paraphrase. `ADR-0018`
+Amendment A1's classifier (§A1.3) was run on every candidate from that
+statement: **step 0** (most general honest statement) is the wording banked
+below; **step 1** (does it contain a proper noun?) — all fourteen contain
+none — **all fourteen graded `LC-`, `LH2-g`, and none reached step 2.** Zero
+`LD-` (domain) candidates this round: this seat's whole record is shell
+harness / provenance / control-flow tooling, and nothing in it needed a
+domain noun to stay honest — declared, not omitted, per the block's own
+mirror-line discipline (`SO-xgmii_rx_64` §4.6's self-check, applied to
+myself: a yield of all `LC-` and no `LD-` is expected here, not suspicious,
+because the domain (Ethernet/MoldUDP64/ITCH) this programme's `LD-`
+candidate came from is dv_lead's spec-reading work, never mine — my charter
+bars me from that reading entirely).
+
+**Ids**: no id scheme exists for a worker self-harvest not tied to an
+`SO-`/gate tag (`ADR-0018` §4.3's `LC-<harvest-tag>-<n>` names the tag as
+"the gate name or `SO-<module>`", neither of which this round is). I minted
+`LC-data_wrangler-H1-<n>` (`H1` = this seat's first harvest), numbered in
+entry order, flagged as a judgment call rather than presented as an
+established convention — the collator may want a different tag.
+
+**Bar honesty, checked against myself the way `SO-xgmii_rx_64` §4.6 checked
+dv_lead against itself.** Fourteen candidates from eight entries is a denser
+yield than dv_lead's own ~0.58/entry average (95 over 165 entries), and my
+war-stories list is three, thin against that count. I looked for why rather
+than taking the density as self-evidently earned: this seat's entries are
+long, decision-dense rounds (each carries three-to-five explicitly numbered
+Reasoning items, most already stated as "a decision genuinely mine to make,
+recorded because it could plausibly have gone the other way" at the time of
+writing) rather than dv_lead's typical shorter per-incident entries, so a
+higher candidates-per-entry ratio is expected structurally and is not, by
+itself, evidence of a slack bar. But the thin war-story count is a real
+signal worth naming rather than explaining away: I discarded roughly half a
+dozen further decisions during this walk (numbering conventions, an ordering
+preference, a build-cache placement) as too thin to state a concrete failure
+for, and only three of those write-ups survived as citable war stories rather
+than being dropped silently — the other discards are not listed below
+because `ADR-0018` §3.5 requires only that what fails LH1-LH3 be recorded
+**as a candidate that was tried**, and a decision never phrased as a rule
+candidate in the first place was never banked to fail. Flagging this
+honestly: the boundary between "discarded before phrasing" and "phrased then
+failed" is not perfectly reconstructible after the fact, and an auditor
+sampling this note should read the density skeptically rather than take my
+own self-check as the last word on it.
+
+### Actions
+
+Read all eight entries of this seat's own chain at their own source (Inputs);
+read `SO-xgmii_rx_64.md` in full across the sections named in Inputs; read
+`ADR-0018` in full including Amendment A1; ran the abort-first head check;
+extracted commit SHAs for all eight entries via `git log --grep`; banked
+fourteen candidates, each run through the A1.3 classifier; identified and
+recorded three war stories with the criterion each failed; wrote this entry.
+No file outside this journal was opened for editing and none was staged —
+confirmed by `git status --porcelain` before and after (Evidence).
+
+### Evidence
+
+```
+$ git rev-parse HEAD
+a8519489aeef8a9505bfb44990fc4d525c0f3aec
+$ git merge-base HEAD a851948
+a8519489aeef8a9505bfb44990fc4d525c0f3aec        # HEAD IS a851948; exact match
+$ git status --porcelain
+                                                  # empty, before this edit
+```
+
+```
+$ grep -c '^## \[J-data_wrangler-' agents/journals/workers/claude_data_wrangler_agent.md
+8                                                 # the whole walked span, before this entry
+```
+
+```
+$ for i in 0001 0002 0003 0004 0005 0006 0007 0008; do
+    git log --all --grep "Journal-Entry: J-data_wrangler-$i$" --format="%h" ; done
+2c6a3ec  6181781  aa672c6  5705e3a  8c6429e  53fa1de  9685c52  3d9b44d
+```
+
+**THE YIELD — fourteen candidates, in entry order, LH1's SHA half beside the
+entry, LH2-g and step-0/1 disposition uniform (declared above rather than
+repeated fourteen times), LH3's failure stated per row:**
+
+| id | entry(s) / commit(s) | rule, abridged (LH2-g, no proper noun) | what fails without it (LH3) |
+|---|---|---|---|
+| `LC-data_wrangler-H1-1` | `-0001` (`2c6a3ec`), wrong-guess confirmed at `-0002` (`6181781`) | a caller invoking an interface that does not exist yet writes any unpinned calling-convention detail down as a flagged assumption in its own text | the guess ships silently and every real invocation fails without ever doing the thing it was meant to do |
+| `LC-data_wrangler-H1-2` | `-0002` (`6181781`) | a value composed from several independently-defaulting sources can look valid to a downstream presence check while partly fabricated; compose only from the sources that actually succeeded | a guard built to reject fabricated content lets a fabricated value through one layer beneath itself |
+| `LC-data_wrangler-H1-3` | `-0003` (`aa672c6`) | a code whose own documentation calls its meaning ambiguous is routed to the same branch as an unrecognized code, never given a dedicated branch | a later change reads a certainty into the code that its own issuer disclaims, invisibly, until the ambiguous case occurs |
+| `LC-data_wrangler-H1-4` | `-0003` (`aa672c6`) | a dump-before-exit step is kept textually beside each of several failure exits rather than factored into one shared call ahead of a branch | a later exit added to the branch can silently skip the dump, invisible until it fires for real with no evidence printed |
+| `LC-data_wrangler-H1-5` | `-0004` (`5705e3a`) | when an instruction summarising a task assigns work its own authoritative document places in another party's scope, the document's split governs and the discrepancy is recorded, not silently resolved either way | no one downstream can tell whether an executor over-reached or under-delivered, or why |
+| `LC-data_wrangler-H1-6` | `-0005` (`8c6429e`) | widening a check built for one instance into a loop over many converts every immediate-abort-on-failure branch to record-then-continue, or every case queued behind the first failure loses its own report | adding a set where a single check ran turns the first failure into a report-truncation for every later case, including a clean one |
+| `LC-data_wrangler-H1-7` | `-0005` (`8c6429e`), successor predicted then landed at `-0006` (`53fa1de`) | a design satisfying two stated constraints only because the current instance count makes them coincide is stated as scoped to that count, not presented as the general design | the next instance beyond that count forces the two constraints apart and nothing on record explains the break was ever conditional |
+| `LC-data_wrangler-H1-8` | `-0005` (`8c6429e`), self-judgment corrected by the reviewer's ruling, implemented at `-0006` (`53fa1de`) | an implementer's own judgment that a branch of their own code is unreachable is not, alone, grounds to exempt it from an invariant every other branch upholds | if the branch becomes reachable the exemption is exactly what fails, and its own author is the worst-positioned person to have caught it |
+| `LC-data_wrangler-H1-9` | `-0005` (`8c6429e`) | a read denied by a standing access-control policy is attempted again through a different transport reaching the same artifact, never by retrying the denied path with altered parameters | a denial meant to enforce a boundary is treated as an obstacle to route around, and the boundary stops meaning anything once it is inconvenient |
+| `LC-data_wrangler-H1-10` | `-0006` (`53fa1de`) | when a dispatched instruction's literal content contradicts the artifact it names to call, the artifact governs, proven load-bearing by reproducing the dispatch's own failure on a reverted, disposable copy before discarding it | a reader cannot tell whether a claimed "correction" fixed a real defect or was cosmetic, and a wrong fix can pass on confidence alone |
+| `LC-data_wrangler-H1-11` | `-0006` (`53fa1de`) | correcting your own prior reasoning that a reviewer explicitly rejected is done by quoting the reviewer's own words, not by restating the correction in your own | restating a rejection of your own mistake risks reintroducing the same mistake in different phrasing |
+| `LC-data_wrangler-H1-12` | `-0001` (`2c6a3ec`), refined at `-0005` (`8c6429e`), disclosed at `-0008` (`3d9b44d`) | a harness driving dependencies unavailable in its own environment is validated by substituting disclosed stand-ins at its exact call sites, exercising its real committed logic — never a re-implementation of it — with what this does and does not substitute for stated beside the result | a local check either silently overclaims it exercised the real dependency, or is skipped, forfeiting confidence a disclosed stand-in could honestly buy |
+| `LC-data_wrangler-H1-13` | `-0008` (`3d9b44d`), read against `-0005`/`-0006`/`-0007`'s own scenario counts | validation effort for a change is sized to the surface the change's own diff touches, not to the harness's total surface | re-exercising paths a change did not alter buys nothing the earlier validation of those paths did not already buy, at real cost |
+| `LC-data_wrangler-H1-14` | `-0007` (`9685c52`) | a remedy an instruction directs wider than the finding it cites diagnosed is implemented at the instructed width if so directed, with the widening attributed to the instruction, never folded silently into the finding's own authority | a later reader citing the finding inherits a scope the finding never earned and cannot separate the diagnosis from the instruction riding on it |
+
+**THE WAR STORIES — three, each with the criterion it failed:**
+
+| # | candidate, abridged | entry | criterion failed | why |
+|---|---|---|---|---|
+| **W1** | a build tool's own cache directory landing inside a checkout, judged acceptable because it is already ignored and matches existing precedent | `-0001` | **LH2** (both grades) | stripped of the tool and the ignore-file it names, the statement collapses to "leave an existing convention alone" — too thin to teach |
+| **W2** | a self-test's execution position inside a widened loop, preserved to match the pre-existing single-instance ordering | `-0005` | **LH3** | no concrete bad outcome is shown for the alternative ordering; continuity for its own sake, not a guard against a stated failure |
+| **W3** | an exit code's numeric value, taken from a reviewing party's own suggestion rather than picked independently | `-0003` | **LH3** | agreeing with an offered number nothing argued against prevents no stated failure; a convention followed, not a rule earned |
+
+**Nil is not the yield.** Fourteen candidates, zero `LD-`, three war stories,
+over the whole of this seat's span to date — `J-data_wrangler-0001` through
+`-0008` — walked in full this round, nothing carried from any prior summary
+or from dv_lead's own NIL finding over the identical span.
+
+### Outcome
+
+DoD vs. the dispatch: the chain walked end to end, `J-data_wrangler-0001`
+through the head at spawn (`-0008`) — MET, no unwalked count quoted (the
+span is exactly eight, stated as measured by `grep -c`, Evidence). Every
+candidate banked at its own source with LH1 (entry + commit SHA), LH2-g (the
+classifier run, provenance-hidden statement) and LH3 (a stated concrete
+failure) discharged — MET, fourteen rows, table above. War stories recorded
+with the criterion each failed — MET, three rows. Nil declared if nil — N/A,
+the yield is non-nil and stated as such rather than left ambiguous. Write
+scope: this journal only, no `tools/**` file and no `agents/handoffs/**`
+Return log touched this round, matching the dispatch's own §1 — MET,
+confirmed by `git status --porcelain`. The source-conflict between this
+dispatch's own framing and `ADR-0018` §3.3 / `FINDING SO-5`'s own text is
+recorded in Reasoning and restated in Open-questions rather than silently
+resolved either way.
+
+**What this entry is not**: it is not a claim that this seat's harvest
+obligation under `ADR-0018` is settled either way — that reading is the
+orchestrator's or dv_lead's to make, not mine, and nothing here overwrites or
+contradicts dv_lead's own NIL finding at `SO-xgmii_rx_64` §4.7, which stands,
+dated, at its own entry. It is not a claim about any other agent's unmined
+span — `architect_docs_lead`, `rtl_lead`, `auditor` and `orchestrator` are
+named in `FINDING SO-5` and `SO-xgmii_rx_64` §8.2 item 2, not here, and
+mining them is outside my charter regardless. It is not a transcription to
+any gate record or to the generic shell's `LESSONS` file — both are the
+orchestrator's collation act (`ADR-0018` §4.1/§4.2), not mine, and none of
+the fourteen `LC-` ids above exist anywhere but this entry until that act
+happens.
+
+### Open-questions
+
+Two, both substantive, both left for a ruling rather than resolved by me:
+
+1. **The dispatch's own framing of `FINDING SO-5` ("the harvest is a
+   five-agent act; yours never fired") does not match either `ADR-0018` §3.3
+   ("Workers do not self-mine... The commissioning lead mines the worker
+   spans it commissioned") or `FINDING SO-5`'s own cited text (`SO-xgmii_rx_64`
+   §4.8/§8.2 item 2, which names `architect_docs_lead`, `rtl_lead`, `dv_lead`,
+   `auditor` and `orchestrator` as the five, with this seat's span already
+   mined inside that act by dv_lead and returned NIL).** I performed the
+   walk anyway (Reasoning), because it is in-scope, harmless to the record,
+   and evidently intended by whoever authored this dispatch — but the
+   textual conflict is real and I did not paper over it. If this seat is
+   meant to hold a standing, per-`SO-` self-harvest obligation going forward,
+   that is a change to `ADR-0018` §3.3's design and, per `ADR-0018` §11 item
+   8's own precedent for changing who mines, belongs in an ADR amendment or
+   a charter edit (`agents/charters/data_wrangler.md` §8, orchestrator-scope),
+   not only in a dispatch prompt. If it is not meant to be standing — if
+   this round was a one-time act to close `FINDING SO-5`'s gap the fastest
+   available way — that too is worth stating in whatever record closes the
+   finding, so a future reader does not infer a cadence from one round.
+2. **The measured gap between dv_lead's commissioned mining of this exact
+   span (zero) and this round's self-mining of it (fourteen)** is recorded
+   in Reasoning as a data point, not a criticism — but it bears directly on
+   `ADR-0018` §3.6's own stated argument for self-mining over lead-mining,
+   and whoever rules on question 1 above may want to weigh it.
+
+### Files-in-this-commit
+
+- (none)
