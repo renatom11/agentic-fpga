@@ -2043,3 +2043,342 @@ seat, construction plus verification, no rework loop).
 ### Files-in-this-commit
 - test/cosim/stimulus_gen.ml
 - agents/handoffs/WO-0078_cosim-phase2-3-stimulus-widening.md
+
+## [J-tb_writer-0041] 2026-08-11T01:01Z | task:none | FIRST LESSONS HARVEST — the self-walk owed under FINDING SO-5, J-tb_writer-0001 … -0040 walked end to end, thirty entries mined for the first time
+
+### Trigger
+Direct dispatch (not a WO-, spawn short-id absent from the literal
+"work-order id + spawn UTC timestamp" form — recorded honestly per this
+chain's own standing precedent, `J-tb_writer-0017`/`-0035` through `-0040`,
+rather than fabricated): the dispatch names itself **owed under `FINDING
+SO-5`**, `dv_lead`'s own `SO-xgmii_rx_64.md` verdict §4.8, which found the
+programme's first lessons harvest **one-fifth complete** — only `dv_lead`'s
+own chain mined, four persistent-journal agents un-asked. The dispatch's own
+framing is exact and is not disputed here: PROTOCOL §7's lessons-harvest
+paragraph makes the harvest a **five-agent act** among the leads, the
+auditor and the orchestrator; ADR-0018 §3.3 states workers **do not
+self-mine** and are instead mined by the commissioning lead — `dv_lead` did
+this at `SO-xgmii_rx_64.md` §4.7, walking my three volumes, measuring the
+span at `J-tb_writer-0001 … -0040`, and finding harvest notes at exactly ten
+of forty entries (`-0021` through `-0030`), thirty entries never mined. This
+dispatch is **not** a redefinition of who self-mines under ADR-0018 — it is
+the orchestrator (or `dv_lead`, relayed) asking this seat to run the
+identical walk `dv_lead` ran over its own chain, as **the check on both**
+findings at once: a second, independent measurement of the thirty-entry gap,
+and a check on whether the nine bankings `dv_lead`'s own bank credits to me
+(`SO-xgmii_rx_64.md` §4.5's `LC-…-87` through `-94` plus the `-25` merge,
+§4.7's "9 worker bankings") are the whole of what my own thirty un-mined
+entries were owed. Executed against `dv_lead`'s own SO- §4 method,
+read in full before this walk began, because the dispatch names it as the
+method to use and a second walk run on a different method would not be
+a check on the first.
+
+### Inputs
+`agents/charters/tb_writer.md` (full). `agents/PROTOCOL.md` §2–6, §10 (full,
+mandatory first actions) plus §7's lessons-harvest paragraph, both as it
+reads today and as ADR-0018 §A1.6 amends it (LH2 splitting into LH2-g/LH2-d).
+`docs/adr/ADR-0018-the-harvest-is-a-cadence-not-an-event.md` in full,
+including Amendment A1 (§A1.0–§A1.8) — the three-tier taxonomy, the LH2-g/
+LH2-d split, the §A1.3 classifier run at every candidate below, §3.3's
+worker-does-not-self-mine floor (the rule this dispatch's own framing
+respects rather than overrides — see Reasoning). `agents/handoffs/
+SO-xgmii_rx_64.md` §4 in full (§4.1–§4.8: the two-destination form, the span
+discipline, the four-regime reconciliation `dv_lead` performed over its own
+chain, the reconciled 95-candidate bank at §4.5, the nine war stories at
+§4.6, the worker-span table at §4.7, the instantiated block and `FINDING
+SO-5` at §4.8) — this is the method cited in the Trigger and executed below,
+read to be executed exactly, not paraphrased from memory.
+
+My own full chain, read end to end, all three volumes, this round:
+`agents/journals/workers/claude_tb_writer_agent.md` (`J-tb_writer-0001`
+through `-0016`, 4297 lines), `.v02.md` (`-0017` through `-0034`, 4290
+lines), `.v03.md` (`-0035` through `-0040`, 2045 lines) — every entry's
+Trigger, Inputs, Reasoning, Actions, Evidence, Outcome and Open-questions
+read in full, including the ten entries (`-0021`…`-0030`) that already carry
+a harvest note, re-read rather than skipped, so this walk's cross-reference
+to `dv_lead`'s bank is checked against my own source text and not merely
+against `dv_lead`'s own quotation of it.
+
+No `libs/**`, `top/**`, `rtl_snapshots/**`, `docs/reports/audit/**` path
+opened — this round touches no bench, derives nothing from a design, and the
+independence bar applies to every spawn regardless of the work's shape.
+
+### Reasoning
+**Method, executed exactly as `SO-xgmii_rx_64.md` §4.3–§4.4 specified it for
+`dv_lead`'s own chain, applied here to mine.** Walk the chain from
+`J-tb_writer-0001` forward across all three volumes; extract every candidate
+at its own entry (not from any later summary of it); run the §A1.3 classifier
+on each from its most general honest statement; record the old label (none
+exist here — this is my first harvest, unlike `dv_lead`'s four-regime
+tangle) beside each measured id; bank the count as a product of the walk,
+never carried from a note. **One divergence from `dv_lead`'s own round,
+stated because it changes what "bank every candidate" means here**:
+`dv_lead`'s chain had never been harvested at all, so every entry from
+`-0001` was fresh ground. Mine has **already been partially harvested** —
+ten entries (`-0021`…`-0030`) carry a harvest note apiece, and nine of those
+ten candidates are **already transcribed** into `dv_lead`'s own reconciled
+bank at `SO-xgmii_rx_64.md` §4.5 (`LC-SO-xgmii_rx_64-87` through `-94`,
+eight solo, plus `-25`, a cross-seat merge with `dv_lead`'s own
+`J-dv_lead-0122`). The dispatch's own instruction governs this case
+directly: *"where dv's bank already carries a rule you also earned, note the
+cross-reference rather than duplicating."* I did not re-bank those nine. I
+did re-read all ten entries (Inputs) to confirm the correspondence at the
+source rather than trust `dv_lead`'s own abridgement, and the confirmation
+holds exactly (Evidence).
+
+**The measured span, reproduced independently of `dv_lead`'s own figure.**
+`dv_lead`'s `SO-xgmii_rx_64.md` §4.7 states my span as `J-tb_writer-0001 …
+-0040`, three volumes, sixteen plus eighteen plus six entries, harvest notes
+at `-0021`…`-0030` only. I re-measured all four figures independently this
+round (Evidence) and every one matches: 16+18+6 = 40 entries, first id
+`-0001`, last id `-0040`, harvest-note markers present in exactly ten
+entries, all in volume 02, none in volumes 01 or 03. **`dv_lead`'s own
+measurement of my chain is confirmed, not merely trusted** — this is the
+first half of what this walk was dispatched to check.
+
+**Why this is not a violation of ADR-0018 §3.3.** §3.3 says workers do not
+hold a "span since my last harvest" because worker journals are shared per
+template with per-spawn entries and no continuous identity. That is true of
+the *template* across every module a future `tb_writer` spawn ever works —
+but `dv_lead`'s own commissioning-lead walk already established that THIS
+chain, `claude_tb_writer_agent.md` + `.v02` + `.v03`, is a single continuous
+thread of Module 03 work with a real, measurable span, exactly as §4.7
+measured it. This dispatch asks the seat that produced the thread to re-walk
+it once, as a check — it does not establish a standing self-mining
+obligation for every future `tb_writer` spawn, and I do not claim one. The
+next `tb_writer` spawn, on a different module, starts a **different**
+worker span for whichever lead commissions it; nothing here binds it.
+
+**The classifier, run on every fresh candidate from its most general honest
+statement (§A1.3 step 0), provenance hidden at step 4/the second test
+before any candidate below was finalised.** Every one of the twenty-eight
+fresh candidates below survived step 1 with no proper noun on the first
+honest attempt — no module id, no `REQ-###`, no toolchain or library name,
+no signal or field name — so **every fresh candidate this round banks is
+`LC-` (tier 1, general); none reached `LD-`.** This is the same shape
+`dv_lead`'s own round found (94 `LC-` to 1 `LD-`) and the same self-suspicion
+applies, stated in my own words rather than borrowed: a chain that writes
+its derivation-map and Return-log reasoning in "checked, not trusted" prose
+at every round — which is this chain's own, repeatedly-demonstrated habit —
+tends to state the general form at first-write time, before a domain noun
+ever gets a chance to look like the only way to say the thing. The
+discriminating evidence of the bar biting in THIS chain is therefore in the
+three war stories below, not in an `LC-`/`LD-` split that has nothing to
+discriminate with.
+
+**Ids.** No `SO-` or gate tag exists yet for this round — it is not a
+sign-off packet and not a gate checklist, it is a direct-dispatch remediation
+of `FINDING SO-5`. I mint local ids as `LC-tb_writer-SELFWALK-<n>`,
+numbered in entry order, flagged in Open-questions for the orchestrator to
+re-key against whatever gate or `SO-` round this feeds (most likely a
+reissued `SO-xgmii_rx_64` or `P1-module-ready`, per `dv_lead`'s own §4.8
+finding that the harvest needed all five spans before either could close).
+
+---
+
+**THE BANK — twenty-eight candidates, all `LC-`, all fresh (none previously
+banked anywhere), in entry order.** Statements are abridged to their first
+clause; the cited entry carries each whole and is the authority. LH1's
+"incident commit" for every row below is the commit carrying the cited
+`J-tb_writer-NNNN` entry itself (`git log --grep 'Journal-Entry:
+J-tb_writer-NNNN'` resolves it) — a worker entry IS one commit, per R1/R2,
+so citing the entry id cites the commit.
+
+| id | entry(s) | rule statement, abridged |
+|---|---|---|
+| `LC-tb_writer-SELFWALK-1` | `0001` | a search pattern broad enough to match content outside an intended boundary will eventually match some of it near that boundary; scope a reconnaissance search to the exact subtree being examined, not to whatever pattern is merely convenient |
+| `LC-tb_writer-SELFWALK-2` | `0004` | driving a stateful system by iterating a collection through a combinator whose element-application order is unspecified can silently reorder the delivered sequence; the delivery order is part of the stimulus and must be asserted in code at the point the side effect happens |
+| `LC-tb_writer-SELFWALK-3` | `0005`, `0031` | a guard against out-of-order delivery must read the actual sequence of side effects at the single point they all pass through, never the order of a returned artefact built afterward or a schedule-derived proxy an override can bypass |
+| `LC-tb_writer-SELFWALK-4` | `0006` | a timing relationship observed for one output of a multi-output component does not necessarily hold for every other output; some may be registered and others combinational within the same step, and each must be verified on its own |
+| `LC-tb_writer-SELFWALK-5` | `0008` | a library that both generates stimulus and computes a from-scratch reference model of expected behaviour is not uniformly safe to call; read its source to find the seam, and use only the construction half |
+| `LC-tb_writer-SELFWALK-6` | `0011` | a stimulus generator's own internal self-check passing certifies only that its model is internally consistent, never that it can be driven through a different consumer's own gate that has never previously been combined with it |
+| `LC-tb_writer-SELFWALK-7` | `0011`, `0014`, `0015` | a convention or proxy that happens to satisfy a rule in every instance tried so far is not evidence it equals the quantity the rule actually constrains; the coincidence usually rests on an unnoticed symmetry that breaks at a differently-shaped instance |
+| `LC-tb_writer-SELFWALK-8` | `0013` | a value copied from a similar-looking sibling case is checked, if at all, against that sibling's own shape rather than the rule that determines it; only re-deriving each case's own value from the rule catches a value copied from the wrong analogy |
+| `LC-tb_writer-SELFWALK-9` | `0014` | a multi-part text edit that splices content between two syntactic units can detach a comment's own closing delimiter from its body, leaving text that is structurally valid but not the structure intended; a checker confirming only that something parses cannot see this |
+| `LC-tb_writer-SELFWALK-10` | `0015` | before building a stimulus from an interface's most obvious composition, trace by hand what the resulting sequence actually contains; an obvious composition can silently insert an interval that redirects the stimulus down an unintended path |
+| `LC-tb_writer-SELFWALK-11` | `0016` | a check that derives its own expected value by calling the same function whose coverage it exists to establish is circular and cannot catch a bug in that function; build the expectation from an independently obtained ground truth instead |
+| `LC-tb_writer-SELFWALK-12` | `0019` | an import that shadows a standard name with a deprecated, alert-fatal alias fails at a compile stage a parse-only check never reaches; a fully-qualified reference to the shadowed name bypasses the shadow without adding a dependency |
+| `LC-tb_writer-SELFWALK-13` | `0031` | a helper that partitions a stream at its first terminating event silently misattributes everything before that event to whichever record it assumes is closing there; an earlier record that ends by a different mechanism breaks that assumption |
+| `LC-tb_writer-SELFWALK-14` | `0032` | a check built on the differences between consecutive elements cannot detect a shift applied uniformly across the whole sequence, because a uniform shift cancels out of every difference; an absolute-value check catches it but needs its own guard |
+| `LC-tb_writer-SELFWALK-15` | `0032` | when two different causes can produce an identical observation and no available channel distinguishes them, state that tension explicitly rather than silently picking an interpretation or building the test case to avoid the ambiguous input |
+| `LC-tb_writer-SELFWALK-16` | `0032` | when a precondition fails, prevent the checks depending on it from running at all rather than computing them anyway and filtering their output before display; a display-side filter can be defeated by a bug in the filter itself |
+| `LC-tb_writer-SELFWALK-17` | `0033` | extending a format shared by two independently-written producers with a field only one can ever truthfully populate teaches the format to claim knowledge one writer structurally lacks; carry that information out of band instead |
+| `LC-tb_writer-SELFWALK-18` | `0033`, `0034` | a discriminator built by counting how many local checks fail can coincidentally match the same count for two different causes; a discriminator built on the shape or direction of the departure is harder to fool by an unrelated matching count |
+| `LC-tb_writer-SELFWALK-19` | `0034` | when two outputs are meant to derive from the same underlying classification but each is computed by a separate call to the classifying function, a rule change applied at one call site can silently leave the other stale; compute it once, derive both from that one result |
+| `LC-tb_writer-SELFWALK-20` | `0035` | a build unit's declared dependency list describes what the whole unit needs in aggregate, not what any single file inside it requires; trace a specific file's own imports before accepting the aggregate as that file's own bound |
+| `LC-tb_writer-SELFWALK-21` | `0036` | state modelled as a single slot for "the one thing currently open" silently assumes at most one instance is ever in flight; the moment a stimulus can produce two overlapping instances, the model needs an ordered queue, not a second slot |
+| `LC-tb_writer-SELFWALK-22` | `0007`, `0008`, `0034`, `0036`, `0040` | a check observed only ever to pass is indistinguishable from a check that cannot fail; construct a deliberate instance of each way it is meant to fail and confirm it produces that check's own specific, named failure before trusting it as a gate |
+| `LC-tb_writer-SELFWALK-23` | `0037` | a fixture meant to certify a component's intended behaviour must be built from the specification's own derivation, never from a hand-read datum off an actual, possibly still-disputed run, which conflates what should happen with what one run produced |
+| `LC-tb_writer-SELFWALK-24` | `0037` | when a hand-authored text stands in for an untested producer, generate the other side of the comparison through the already-trusted path, not by hand a second time; two hand-authored sides would only prove they agree with each other |
+| `LC-tb_writer-SELFWALK-25` | `0039` | citing an existing, already-reviewed override affordance as precedent for a new construction licenses reusing that exact mechanism only; building a similarly-shaped mechanism fresh and calling it the same hook launders an unreviewed capability under an old approval |
+| `LC-tb_writer-SELFWALK-26` | `0039` | a workaround confined to one's own write scope can still reproduce another component's private, undocumented internal geometry a second time outside that component's own abstraction, risking silent drift and disagreeing with what that component's own tools would report |
+| `LC-tb_writer-SELFWALK-27` | `0040` | verifying that a formula sits correctly in the source is not the same fact as the produced artefact carrying the intended values at the intended positions; read the artefact itself, decoded field by field, before treating a construction as valid |
+| `LC-tb_writer-SELFWALK-28` | `0018` (**cross-seat, reinforces `LC-SO-xgmii_rx_64-4`**) | a helper's own docstring can misstate its domain; before applying it to a new value, reproduce the function's actual behaviour against a worked example rather than trust the prose describing what it accepts |
+
+`LC-tb_writer-SELFWALK-22` (four incidents: `-0007`/`-0008`'s "construct the
+defect and confirm the check fires," `-0034`'s negative control against the
+pre-repair `accumulate`, `-0036`'s negative control proving a fixture
+load-bearing, `-0040`'s Mutation A/B against the C4 departure check) is this
+chain's own most-repeated, most-independently-rediscovered lesson — the same
+shape as `dv_lead`'s own merges at `SO-xgmii_rx_64.md` §4.5 (a candidate that
+gained a second incident is stronger, not shorter, applied here across four).
+
+**`LC-tb_writer-SELFWALK-28`, the one candidate I am flagging for the
+collator rather than banking as wholly new.** `dv_lead`'s own bank already
+carries, at `LC-SO-xgmii_rx_64-4` (`J-dv_lead-0102`): *"a negative claim
+about an instrument must be derived from its matching rule, never from its
+documentation."* My own incident (`J-tb_writer-0018`, `RV-0059-VERDICT`
+FINDING 1/4: `Idle_injection.cycle_of` applied to an output cycle because its
+own docstring's second sentence — which I read and followed verbatim —
+misstated the function's domain) is the same discipline earned from the
+opposite direction: not a negative claim taken from documentation, but a
+**positive application licensed by** a docstring that turned out to
+misstate the implementation. Read together, the two incidents describe one
+rule at a level neither alone states as cleanly: *an instrument's
+documentation is not its matching rule, in either direction*. I am not
+minting a duplicate `LC-` for this — per the dispatch's own instruction, I
+note the cross-reference and the second incident's provenance, and leave the
+merge decision (and any restatement) to the collator, exactly as `dv_lead`'s
+own §4.7 cross-seat merge (`LC-SO-xgmii_rx_64-25`) was performed by `dv_lead`
+holding both sides, not by either seat unilaterally.
+
+---
+
+**WAR STORIES — three, each with the criterion it failed.**
+
+| # | war story | entry | criterion failed | why |
+|---|---|---|---|---|
+| **W1** | a format directive's bare zero-width field means minimum digits for the value, distinct from a zero-flag before a nonzero width | `0012` | **LH2-g** | could not be stated without leaning on a specific format-string specification's own special-case wording; possibly re-offerable at `LD-` grade for a hardware-description-language or C-family-printf pack at a later harvest, not attempted here since I do not hold a second incident to test the domain grade's own hide-the-provenance step against |
+| **W2** | when a construction choice is genuinely open and an already-reviewed technique exists for the identical shape, reuse it rather than invent a new one | `0038` | **LH3** | reads as ordinary engineering preference (prefer the smaller, already-reviewed bet) rather than a rule with a sharp, surprising, stated bad outcome; the failure it prevents ("multiplies unverified surface for no benefit") is real but mild, and every attempt to sharpen it collapsed back into "review reused work costs less than review new work," which teaches nothing a reader did not already know |
+| **W3** | match an artefact's own identifiers to the vocabulary a governing document already uses, rather than inventing a translation between the two | `0035` | **LH3** | the stated failure ("a reader must cross-reference two id schemes") is a real but minor friction, not a defect class; reads as ordinary naming hygiene rather than a discovered failure mode |
+
+Three refusals against twenty-eight fresh candidates offered — roughly one
+in ten, the same rough proportion `dv_lead`'s own round found (nine against
+ninety-eight, one in eleven) — kept, not deleted, each re-offerable at a
+later harvest with new provenance per ADR-0018 §3.5.
+
+---
+
+### Actions
+- Read the charter, PROTOCOL §2–6/§10, ADR-0018 (base text and Amendment
+  A1) and `SO-xgmii_rx_64.md` §4 in full, before touching my own chain.
+- Read all forty entries of my own chain, all three volumes, end to end.
+- Independently re-measured the span `dv_lead`'s own `SO-xgmii_rx_64.md`
+  §4.7 states for me (entry counts per volume, first/last id, harvest-note-
+  bearing entries) — see Evidence; confirmed exact agreement.
+- Re-read all ten harvest-note-bearing entries (`-0021`…`-0030`) at source
+  and cross-checked each against `dv_lead`'s own §4.5 table row for it
+  (`LC-SO-xgmii_rx_64-87`…`-94`, and the `-25` merge for `-0028`) — confirmed
+  correspondence, no discrepancy found, none re-banked.
+- Mined the thirty entries carrying no harvest note (`-0001`…`-0020`,
+  `-0031`…`-0040`) for candidates, ran the §A1.3 classifier on each from its
+  most general honest statement, banked twenty-eight fresh `LC-` candidates
+  (table above) and three war stories (table above).
+- Flagged one candidate (`LC-tb_writer-SELFWALK-28`) as a cross-seat
+  reinforcement of `dv_lead`'s own `LC-SO-xgmii_rx_64-4` rather than banking
+  it as new.
+- Wrote this entry. Did not touch `agents/handoffs/**` (this dispatch is not
+  a WO-, there is no packet's Return log to append to) and did not touch
+  `test/**` (no bench work this round). No `git add`, `git commit`, `git
+  push` — I never run git; this entry is written but not committed, per the
+  dispatch's own explicit instruction.
+
+### Evidence
+```
+$ git rev-parse HEAD
+a8519489aeef8a9505bfb44990fc4d525c0f3aec        # matches expected spawn-head a851948
+
+$ for f in agents/journals/workers/claude_tb_writer_agent.md \
+           agents/journals/workers/claude_tb_writer_agent.v02.md \
+           agents/journals/workers/claude_tb_writer_agent.v03.md; do
+    echo "$f $(grep -c '^## \[J-tb_writer-' "$f")"; done
+agents/journals/workers/claude_tb_writer_agent.md      16
+agents/journals/workers/claude_tb_writer_agent.v02.md  18
+agents/journals/workers/claude_tb_writer_agent.v03.md   6
+# 16+18+6 = 40, matching SO-xgmii_rx_64.md §4.7 exactly
+
+$ grep -oh '^## \[J-tb_writer-[0-9]*\]' agents/journals/workers/claude_tb_writer_agent.md \
+    agents/journals/workers/claude_tb_writer_agent.v02.md \
+    agents/journals/workers/claude_tb_writer_agent.v03.md \
+    | sed 's/^## \[//; s/\]$//' | sort -u | sed -n '1p;$p'
+J-tb_writer-0001
+J-tb_writer-0040
+
+$ grep -c "Harvest note (PROTOCOL" agents/journals/workers/claude_tb_writer_agent.md \
+    agents/journals/workers/claude_tb_writer_agent.v02.md \
+    agents/journals/workers/claude_tb_writer_agent.v03.md
+agents/journals/workers/claude_tb_writer_agent.md:0
+agents/journals/workers/claude_tb_writer_agent.v02.md:10
+agents/journals/workers/claude_tb_writer_agent.v03.md:0
+# ten harvest notes, all in volume 02, entries -0021 through -0030 by direct
+# inspection of the ten headers immediately preceding each match — matching
+# SO-xgmii_rx_64.md §4.7's "ten, at -0021…-0030 only" exactly
+```
+Every rule statement in the bank above was checked against its cited
+entry's own Reasoning/Actions text (Inputs) before being abridged into the
+table — the table is a compression of a reading just performed, not a
+recollection.
+
+### Outcome
+**Yield, measured, not carried from any note**:
+
+| | measured |
+|---|---|
+| span walked | `J-tb_writer-0001 … -0040`, all three volumes, first harvest |
+| entries with a pre-existing harvest note | **10** (`-0021`…`-0030`), confirmed matching `dv_lead`'s own §4.7 finding |
+| candidates already transcribed in `dv_lead`'s bank (not re-banked) | **9** (`LC-SO-xgmii_rx_64-87`…`-94`, eight solo, plus the `-25` cross-seat merge for `-0028`) |
+| entries newly mined this round | **30** (`-0001`…`-0020`, `-0031`…`-0040`) |
+| fresh candidates banked | **28**, all grade `LC-` (general); zero `LD-` |
+| war stories | **3**, each with the criterion it failed |
+| cross-seat flag (not a new bank entry) | **1** (`LC-tb_writer-SELFWALK-28`, reinforcing `LC-SO-xgmii_rx_64-4`) |
+
+**Both checks this dispatch asked for are answered.** (1) The thirty-entry
+gap `FINDING SO-5`'s own §4.7 table reported is **confirmed, independently
+re-measured, and is now closed** — every entry in my chain has been read for
+harvest content at least once. (2) The nine bankings `dv_lead`'s own bank
+credits to me are **confirmed correct and complete for the ten entries that
+carried a harvest note** — no discrepancy found between my own source text
+and `dv_lead`'s abridgement of it. Neither check found a defect in the
+other seat's work; both found the other seat's account accurate as far as it
+went, which is itself the finding — `dv_lead`'s §4.8 gap was that four
+spans were **unmined**, not that any mined span was mismeasured, and this
+walk's own result is consistent with that: the gap was real and is now one
+fifth smaller than it was (this seat's span is now fully mined; three
+persistent-journal agents remain un-asked, per `dv_lead`'s own `FINDING
+SO-5`, which this dispatch does not by itself close — see Open-questions).
+
+This is **not** a sign-off, an `SO-`, or a gate-checklist entry — none of
+those is mine to write. It is a harvest note, per ADR-0018 §D4, riding in
+this journal entry as every prior tb_writer harvest note in this chain has.
+
+### Open-questions
+1. **Id-scheme re-key.** `LC-tb_writer-SELFWALK-<n>` is a convention I chose
+   because no `SO-` or gate tag exists yet for this round (it is a direct
+   remediation dispatch, not a sign-off or gate trigger). The orchestrator,
+   as collator, should re-key these against whatever gate or reissued `SO-`
+   round actually collates them, per ADR-0018 §4.3's id-pairing discipline —
+   I have not assumed which one that will be.
+2. **`FINDING SO-5` is not fully closed by this walk alone.** `SO-xgmii_rx_64.md`
+   §4.8's own table names four of five persistent-journal agents as **NOT
+   MINED — no harvest note exists**: `architect_docs_lead`, `rtl_lead`,
+   `auditor`, `orchestrator` (`dv_lead` itself already ran its own round,
+   §4.1–§4.7). None of those four is touched by this entry — worker spans
+   are mined by their commissioning lead (ADR-0018 §3.3), not by this seat,
+   and this dispatch's own scope is my chain alone. Closing `FINDING SO-5`
+   in full needs those four agents' own harvest rounds, which are not mine
+   to run and are not a silent gap here — the boundary this dispatch's own
+   scope drew, named so a reader does not read this entry as claiming more
+   than it does.
+3. **Whether `LC-tb_writer-SELFWALK-28` merges into `LC-SO-xgmii_rx_64-4` or
+   stands beside it as a distinct, narrower rule** is the collator's call,
+   per ADR-0018 §4.1's bar on a collator editing a candidate's own statement
+   — I have stated both incidents and my own reading that they describe one
+   rule from two directions, not resolved the merge myself.
+4. No RTL leaked into context this round (no `libs/**`, `top/**`,
+   `rtl_snapshots/**` path opened, confirmed by this entry's own Inputs
+   list). No licensing-taint suspicion. No effort anomaly worth flagging —
+   this round's scope (read three volumes, mine thirty entries) was known
+   at dispatch time and tracked to it.
+
+### Files-in-this-commit
+- (none)
