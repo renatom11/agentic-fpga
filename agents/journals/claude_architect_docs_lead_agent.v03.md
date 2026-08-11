@@ -2064,3 +2064,658 @@ an owner and a closing event, and a row is never dropped for being old).
 - docs/specs/modules/eth_axis_rx.md
 - docs/specs/modules/arp_eth_rx.md
 - docs/specs/modules/ip_eth_rx_64.md
+
+## [J-architect_docs_lead-0039] 2026-08-11T22:35Z | task:none | Two findings ruled and three carried items paid — `CSG-3` cured by neither of the two ways it was offered but by stating the restriction over the span it was short of, `AP-M04-2`'s survival claim struck at the site that issued the invitation, and `C-5` closed at the clause whose reference word had no referent
+
+### Trigger
+
+Orchestrator dispatch, spawn-head `9d68d10`. This is the **re-dispatch** of the
+round my previous spawn refused: that spawn ran on a rolled-back container where
+the SHAs its own dispatch cited did not resolve, and it stopped rather than
+write into a substrate that had lost the work it was supposed to build on
+(incident eight, credited at `J-orchestrator-0245`). The repository is restored,
+every SHA this dispatch cites resolves, and the dispatch is unchanged but for
+the spawn-head. **Declared sibling**: a `dv_lead` round with write set
+`agents/handoffs/WO-0080_*.md` (new) and `agents/journals/claude_dv_lead_agent.v08.md`.
+Disjoint from mine; neither file was opened for writing and the untracked
+`WO-0080` in the tree at the end of this round is the sibling's, not mine.
+
+Five items, two of them findings routed to me undecided by `J-dv_lead-0170` and
+three of them carried on my own ledger:
+
+1. **`FINDING CSG-3`** (MATERIAL) — REQ-901's stimulus restriction is stated over
+   two of the admission span's five closure events, and REQ-108's truncation
+   closure is uncovered while the class-(f) lift clause opens it. Filed without
+   holding the countersigned REQ-901 diff out of force, with two candidate cures
+   and neither chosen.
+2. **`FINDING AP-M04-2`** (MINOR) — SPEC-M04 §7's new closing sentence claims the
+   per-octet constant *"does survive REQ-016's idle injection"*, over a stimulus
+   class the same specification twice declares has no instance at that port.
+3. **Ledger item 48** — REQ-901 declares no divergence class at the M04 boundary
+   (`AP-xgmii_tx_64` §8 item 2).
+4. **Ledger item 49** and **item 52** — `C-5`, §0.6's window vacuous for
+   `error_underflow`, now a landed plan's dependency (`AP-xgmii_tx_64` §8 item 3)
+   and an open deferral in SPEC-M04's own §11.3.
+
+Precheck performed and passed **before reading the findings and before any
+write**:
+
+    git status --short              # empty
+    git rev-parse HEAD              # 9d68d107bf88525980aaeaffc36cefba742f5d94
+    git rev-parse --abbrev-ref HEAD # claude/fpga-hardcaml-agent-orchestration-37ceyf
+
+### Inputs
+
+- `agents/charters/architect_docs_lead.md` and `agents/PROTOCOL.md`, in full,
+  before any edit.
+- **The findings at their minting site**, not from the dispatch's paraphrase:
+  `agents/journals/claude_dv_lead_agent.v08.md`, `J-dv_lead-0170` entire —
+  §(a) the REQ-210 countersignature and its 1501-length re-derivation, §(b)
+  `FINDING AP-M04-2` word for word, §(c) the REQ-611 countersignature with dv's
+  withdrawal of its own second clause, §(d) the three stale `AP-M14` rows, §(e)
+  the REQ-901 countersignature and the record-only licence stated in dv's own
+  words, **§(f) `FINDING CSG-3` word for word including its two candidate cures
+  and dv's self-binding on `FI-4`/`FI-6`**, §(g), §(h), and the three
+  countersignature texts in its Outcome.
+- **`docs/specs/requirements.md` at HEAD**: §0.5 entire (the two tests, the
+  survival clause, what a monitor may demand), **§0.6 entire** (the three
+  reference-word clauses, the two italic notes, the counting convention, frame
+  conservation), REQ-105, REQ-106, REQ-107, REQ-108, REQ-110, REQ-111, REQ-206,
+  REQ-210, REQ-611, **REQ-901 entire**, §12's strobe appendix read row by row for
+  the absence-condition census, and §13's rows through
+  `J-orchestrator-0244`'s three transcriptions — so the diff I am amending is the
+  one **in force**, not the one I wrote at `-0038`.
+- **`docs/specs/modules/xgmii_tx_64.md`**: §3's REQ-016 and REQ-008 rows, §6.1,
+  §7 entire, §8, §9 entire, §10's REQ-206 and REQ-210 hooks, §11 all five rows,
+  §12, §13.
+- **`docs/specs/modules/xgmii_rx_64.md` §9**'s *"When a frame is open, and what
+  closes it"* paragraph and its two following notes — the span REQ-901 restates,
+  read to confirm my repair changes the **restriction** and not the span.
+- **`test/attack_plans/AP-xgmii_tx_64.md`**: §7.1 entire (BAR T1's three
+  conditions and its would-see/would-not-see table), §7.2, **§8 items 1–6**, §9's
+  creation row. Read at the minting site, as `-0038` was required to and as items
+  48 and 49 are quoted from.
+- `agents/journals/claude_architect_docs_lead_agent.v03.md`,
+  `J-architect_docs_lead-0038` entire, for the carried ledger restated below.
+- **A directory listing of `test/third_party/verilog-ethernet/`** (four files:
+  `axis_xgmii_rx_64.v`, `lfsr.v`, `COPYING`, `PROVENANCE.md`) — a listing, to
+  check dv's BAR T1(a) claim myself rather than carry it. **No third-party source
+  file was opened in this round**, no reference behaviour was derived from a
+  static read, and **no Essenceia/Nasdaq-HFT-FPGA material was touched**. Every
+  reference-side claim below is carried from a recital already in
+  `requirements.md` — class (e)'s line sweep at pin `77320a9` and the (g)/(h)
+  paragraph's lane-0 mechanism — and is labelled as carried at the point of use.
+
+### Reasoning
+
+---
+
+#### 1. `FINDING CSG-3` — SUSTAINED, and cured by neither cure it offered
+
+**The finding is right and the geometry is constructible from this document
+alone.** With the span written down, a frame closes on the earliest of five
+events. Part (i) barred a start character **inside an open frame**; part (ii)
+barred one **after an `/E/` closure**. REQ-108's truncation is a closure, so a
+start character after it is inside no open frame and part (i) does not reach it;
+it is not after an `/E/`, so part (ii) does not either. Present a frame of more
+than 1518 octets carrying **no terminate character**, then a start character in
+XGMII lane 0, then a normal frame: REQ-108 has ours truncate at 1514, mark,
+pulse `error_oversize` and resynchronise on the start character, so ours delivers
+**two** frames; the reference has no frame-length logic at all (class (e)'s own
+449-line sweep at pin `77320a9`, carried) and does not abort at a lane-0 start
+(the (g)/(h) paragraph's own mechanism, carried), so its frame is still open and
+the second is merged into it — **one** frame. Class (f) does not cover the
+merged-away frame: its exclusion runs *up to* the next start character and this
+frame's octets begin *at* it. **The divergence is on the following frame and at
+the sequence level, which is exactly what part (ii) exists to keep out.**
+
+**Both cures dv offered are correct and both are too small, for the same reason.**
+Extending part (ii) to the truncation closure repairs the case dv found; narrowing
+the lift repairs the clause that widened it. Neither touches the **shape** that
+produced the gap: a restriction enumerated case by case, written against a span
+enumerated closure by closure, with nothing making the two lists agree. Take
+either cure and the `clear` closure (REQ-009) is still uncovered — dv itself
+recorded `clear` as an observation rather than a finding only because no producer
+drives it mid-run today — and the **zero-delivered** member of the start-character
+closure is still admissible, because part (i) said *"that has already delivered an
+octet"*. Two more of the same gap, one of them already visible in the filing.
+
+**So the ruling is the third cure: state the restriction over the span.** The
+discriminator is not "after a truncation"; it is **whether the reference can be
+relied on to have closed the frame by the time the start character arrives**, and
+the answer is *only for the terminate character*:
+
+- **terminate (REQ-106)** — both designs close. Safe, and it is the only safe one.
+- **error character (REQ-105)** — the reference does close, but on a cycle decided
+  by the one-word look-ahead race classes (g) and (h) recite, so *whether it has
+  closed by then* is not derivable. Part (ii)'s original ground, unchanged.
+- **REQ-108's truncation** — the reference never closes on that account: it has no
+  length notion. `CSG-3`'s own mechanism.
+- **`clear` (REQ-009)** — this document has derived **no** reference-side
+  counterpart of any kind. The bar is keyed there on the **absence of a
+  derivation**, and I say so in the text rather than assert a reference behaviour
+  I have not derived. That distinction is the whole reason the clause is
+  admissible in a round where I refuse to read the reference.
+- **a later start character (REQ-110)** — part (i)'s subject, and it is widened:
+  the *"has already delivered an octet"* qualifier goes.
+
+**Why dropping that qualifier is a gain and not an over-reach, stated because it
+is the one place this ruling removes stimulus nobody asked me to remove.** The
+zero-delivered member is class **(h)**'s: such a frame is *"excluded entirely at
+this boundary, its accept-or-discard decision included"*. So a comparing run that
+drives it **compares nothing about that frame** — the only thing it can gain is
+the comparison of the frames that follow, and those are precisely what a merge
+destroys. The stimulus therefore had **no comparison value and carried the whole
+sequence hazard**, and barring it costs REQ-110 nothing it was ever getting: that
+row's own verification column already says both halves rest on its directed tests
+and that no sign-off packet may offer a co-simulation result for either. Class
+(h) is not made vacuous — its REQ-105 member (an error character at or before the
+frame's first octet) remains drivable, since part (ii) bars a *start* character in
+the window and not the frame's own terminate.
+
+**And the lift is struck rather than narrowed.** *"Both parts are lifted for the
+frame class that class (f) already excludes entirely, where nothing is compared in
+any case"* — the reason is true of the excluded frame and **false of the frame the
+start character opens**, which is dv's finding in one sentence. Narrowing it to
+"stimulus whose every divergence lies inside an excluded frame" would leave a
+clause that, under the repaired parts, licenses nothing the parts do not already
+allow: presenting a class-(e) or class-(f) frame is not restricted, and a start
+character after such a frame's own **terminate** character is legal because that
+is where the reference closes it too. A clause with no remaining work, whose only
+historical effect was to open the geometry, is better struck with its quotation
+preserved than kept in a narrowed form nobody can apply. Both statements go into
+the text so the strike is not silent.
+
+**The one-sentence form, and why I wrote one.** A restriction stated as two parts
+over five closures is not something a producer's guard can be reviewed against
+without re-deriving it, and re-derivation by two producers is the circularity
+`WO-0078` §6.3 exists to prevent. Its closed form is: **on a run that compares,
+every start character SHALL follow a terminate character**, the trace's first
+excepted. I did not assert that equivalence — I checked it, by enumerating every
+event trace up to length 8 over the span's own alphabet and comparing the two
+formulations trace by trace: **2 015 538 traces, zero mismatches** (Evidence 3).
+The same run reports that the repair moves **425 673** traces and every one of
+them in the direction legal → barred, which is the property a stimulus
+restriction must have: it can never admit something it used to refuse.
+
+**Two consequences I did not go looking for, and they are the reason this cure is
+the cheap one.** First, the same run shows **REQ-108's own verification geometry
+untouched** — the 1600-octet frame *with* its terminate character followed by a
+valid frame is legal before and after — so the repair costs the stimulus the
+requirement was written around exactly nothing. Second, and more useful to dv:
+under the repaired rule a guard whose span closes on the terminate character
+alone is **no longer wider than the rule for a comparing run**. dv's guard-width
+sentence was measured against the rule as it stood, and what it was pointing at
+were precisely the two gaps this ruling closes. So **nothing needs narrowing to
+conform**: `FI-4` and `FI-6` may stay as they are for every comparing run, and
+narrowing is a question only for a record-only run, which lifts the restriction
+anyway. dv's self-binding — no narrowing for the truncation geometry until
+`CSG-3` is ruled — is discharged without dv having to narrow anything. I state
+this as a consequence of the **rule** and mark the guard side as dv's
+measurement to make; I have not read either producer this round.
+
+**Class, force and countersignature.** The diff is **normative**: it changes what
+stimulus is legal in both directions, and it widens a restriction dv countersigned
+eleven hours ago. **dv_lead's re-countersignature is owed and the diff is NOT IN
+FORCE until it is transcribed** — until then the restriction as countersigned at
+`J-dv_lead-0170` governs, which means the gap stays open on paper. Nothing can
+drive it meanwhile: both guards refuse the geometry today and dv has bound itself
+not to narrow them. **Not E2** (no requirement, phase or role added or dropped).
+**No ADR**: the replaced reading is a coverage gap in a list, not a design choice
+among live alternatives, which is the same ground the 2026-08-04 and 2026-08-11
+rows took. **No E5**: no lead disputes anything; the only text overturned is mine.
+
+---
+
+#### 2. `FINDING AP-M04-2` — SUSTAINED, and cured where the invitation was issued
+
+dv's reading is right and the check is two citations long: REQ-016 carves M04's
+source interface out **in its own text**, SPEC-M04 §3's REQ-016 row says it a
+second time, and §7's own handshake bullet a third; a required source word not
+presented is REQ-206's **underflow**, which ends the frame in `/E/` then `/T/`
+with no FCS. So *"its per-octet constant does survive REQ-016's idle injection"*
+quantifies over an empty stimulus class at this port. **The claim is vacuous
+rather than false** — and vacuity is not why it has to go. It has to go because of
+what it invites: a bench writer reading §7 is told the constant survives
+injection, builds the wrapper, and the first injected cycle on a required cycle
+destroys the frame the monitor is measuring. That is `FINDING AP-M04-1`'s shape at
+the same module — a specification sentence from which a monitor can be built that
+no conformant design satisfies — and it arrived in the sentence I wrote to cure
+`AP-M04-1`.
+
+**Three cures were live and I took the third.** A bare **strike** loses the two
+§0.5 verdicts, which are load-bearing: they are why L is single-valued at all (no
+output word is assembled from two source words, so no output word can carry two
+latencies), and they are what a reader of §0.5's straddle/late-decision tests
+comes to §7 to find. A **defence with the vacuity stated** keeps a sentence whose
+only readers are the ones it misleads. So: keep both verdicts and say what they
+buy; **strike the survival claim with its own text quoted**; and add the
+prohibition at the site that issued the invitation — *a bench SHALL NOT build a
+REQ-016 idle-injection wrapper at this module's source interface*. The
+prohibition is the same instrument §10's REQ-210 hook already carries against
+asserting 8 per octet, at the section a bench writer reads first, and it brings
+this specification into agreement with `AP-xgmii_tx_64` §6's REQ-016 row, which
+has recorded the absence structurally since the plan was created.
+
+**Class and countersignature.** **Editorial** by §13's own test: no strobe, port,
+record, state, cycle table or latency constant moves; L, h, ΔC, the event delay
+and the prohibition on cross-measuring are untouched; M04 has no bench, so no
+committed test changes meaning. **No countersignature is owed**, and the reason is
+in dv's own signature: §(a) countersigned SPEC-M04 §7 *"with the one exception
+filed at (b)"* — this sentence, by name — and §(b) asked for the diff. A signature
+that carved a sentence out cannot be broken by removing it. What is genuinely new
+is the **prohibition**, and I say in §13 that if dv reads it as reaching stimulus
+it intends to drive, that is a fresh finding and takes a narrow round — the
+standing clause `-0031` and `-0033` wrote against themselves.
+
+---
+
+#### 3. Ledger item 48 — the M04-boundary class question, ruled rather than answered with classes
+
+`AP-xgmii_tx_64` §7.1(c) and §8 item 2 ask for divergence classes at the transmit
+boundary, because REQ-901 forbids citing a class not listed there and none of
+(a) … (h) names that port. **I cannot declare one, and the reason is not
+reluctance.** Every class in that list is *derived*: (e), (f), (g) and (h) each
+cite the vendored receive counterpart at a pin, down to line numbers, and (a) …
+(d) rest on configuration and requirement differences this document states in its
+own text. At the transmit boundary there is **neither**. I checked the tree myself
+rather than carry dv's measurement: `test/third_party/verilog-ethernet/` holds
+`axis_xgmii_rx_64.v`, `lfsr.v`, `COPYING` and `PROVENANCE.md`, and no transmit
+module. Vendoring one is a commit governed by ADR-0015 D2 and `PROVENANCE.md`'s
+own rules — its own commit, carrying the pin, the sizes, the hashes and a
+re-derived instance closure — and it is not in my write scope and not a spec
+round's to perform. **A class invented without a derivation would be the worst
+artefact this document could carry**: it excludes a comparison, so a wrong one
+silently forgives a real defect.
+
+**What I could do, and did.** The defect the item is really pointing at is that
+the list's **silence has been read as coverage**. A reader cannot tell from
+(a) … (h) whether the transmit boundary was considered and found divergence-free
+or never considered at all — and those two states license opposite acts. REQ-901
+now says which: the silence is **unexamined, not a finding of no divergence**; the
+event that makes the question answerable is the vendoring commit, named; and the
+standing consequence is restated where a packet author will hit it — no sign-off
+packet may cite a transmit-boundary co-simulation result as an anchor for any
+requirement. **Item 48 is therefore half discharged**: the question is ruled, the
+classes are not written, and the row keeps a closing event that is now an event
+and not a wish.
+
+---
+
+#### 4. Items 49 and 52 — `C-5`, and the reference word that had no referent
+
+§0.6's ceiling is *"the module's latency in cycles after the input word carrying
+the last octet of the offending frame"*. At `error_underflow` that word has no
+referent: the offending frame is cut short by a **missing** input word, so the
+first clause measures from an octet that never arrives, the second clause is about
+octets that arrive **after** a closure, and the third clause is for a frame that
+received **no** octet — which this frame is not. The window was therefore
+determinate at every module except the one whose strobe is an absence, and
+`AP-xgmii_tx_64` §8 item 3 states the consequence exactly: *a reader of §0.6 alone
+will find a window, apply it, and get a green that means nothing*.
+
+**The repair is a fourth clause, and it is general rather than an M04 exception.**
+Where the reported condition is decided on the **non-arrival of an input word**,
+the reference word is **the cycle on which the word was required and not
+presented** — the earliest cycle the condition is decidable, which is where §0.6's
+own opening sentence puts the window's floor. `error_underflow` is the only strobe
+in §12 whose condition is an absence (I read the appendix row by row rather than
+assume it: every other condition is decided on an octet, including
+`error_ip_truncated` and `error_tx_length_mismatch`, both decided on a `tlast`
+word), so the clause has exactly one instance today and is written so the next one
+inherits it instead of filing the same finding.
+
+**A trap of my own making, caught while writing it.** §0.6 says *"the module's
+latency in cycles (§0.5)"*, and until `-0038` M04 had one such figure. It now has
+**two** pinned in §7 — REQ-210's 1-cycle event delay and §0.5's ΔC = 2 — so my own
+two-constant repair made a **different document's** clause ambiguous at exactly
+the module this new clause reaches. The clause names ΔC and says why (it is the
+only latency §0.5 defines in cycles) and notes that a reader taking the other
+would compute a ceiling one cycle short. That is the second instance in two
+rounds of ledger item **50**'s pattern — a landed clause whose ground moves under
+an amendment made elsewhere — and this time the mover is me.
+
+**And the clause states what the window is worth here**, which is the half that
+makes it safe: §9 pins `error_underflow` on the same required cycle, so the pin
+sits at the window's **near** edge, the window carries no independent information,
+and a monitor built on it alone cannot convict a report the pin forbids. That is
+the disposition §0.6's own note already gives the no-octet class, on the same
+ground, so the fourth clause inherits an argument rather than inventing one.
+SPEC-M04 §11.3 closes on the repair and §9 gains the cross-reference, which is
+item **52**: opening a file and leaving its own open item is the omission the
+ledger exists to make countable, and this round opened §7, §9, §11 and §13.
+
+**Class**: editorial (it settles an undecided corner; no conformant design
+changes, and the only instrument it reaches is one that could not have been
+built). **dv's countersignature is owed** on it as on every §0.6 diff — item 14
+has said so since `-0023` — and it is **in force meanwhile**, because nothing
+rests on it that SPEC-M04 §9's pin did not already decide.
+
+---
+
+#### 5. The interaction the dispatch asked about: `CSG-3` and item 48 do not collapse
+
+They share a **principle** and nothing else, and I state both halves because
+either alone would be misleading.
+
+**The shared principle**: *a list stated over a domain must say what its silence
+about a member means.* `CSG-3` is a restriction stated over two of five closures,
+where the silence read as "not restricted". Item 48 is a class list stated over
+four boundaries, where the silence read as "no divergence". Both are cured by the
+same move — make the list's coverage of its own domain explicit — and both cures
+landed in this round because the principle is one thing to see.
+
+**Why they stay separate rulings.** Different objects (a **stimulus restriction**
+versus a **divergence class**), different boundaries (M03 receive versus M04
+transmit), and — decisively — different blockers: `CSG-3` is closable by arithmetic
+on this document, which is why it closes today, while item 48 cannot be closed by
+any amount of writing, because the derivation it needs does not exist in this
+repository. Ruling one does **not** discharge the other's substance, and a §13 row
+claiming otherwise would be the kind of claim `AP-M04-1` was filed against. They
+are two rows, in the same diff, with the shared principle named in each.
+
+---
+
+#### 6. What this round refused
+
+- **I refused to declare a divergence class at the transmit boundary** (§3), and
+  I refused to declare one for `CSG-1`'s two shapes or for `CSG-3`'s geometry. A
+  class is a commitment about a run; there is still no run.
+- **I refused to widen my write set.** No `test/**` byte: `AP-xgmii_tx_64`'s stale
+  `M04-J3` quotation and the three stale `AP-M14` rows dv named at §(d) are dv's,
+  and dv has already owned them. No `agents/handoffs/**` byte — the sibling round
+  owns a new packet there and `SO-xgmii_rx_64.md`'s gate-table re-measurement is
+  dv's own open item. No PROTOCOL, charter or ADR byte.
+- **I refused to read the reference or any third-party source.** The one place
+  where a reference behaviour would have settled a question — whether the
+  reference closes a frame on `clear` — is written as an **absence of
+  derivation**, and the restriction is keyed on that absence rather than on a
+  guess. A static read would have been the over-reach `RV-C4` §12 convicts, and it
+  would have been mine this time.
+- **I refused to repair `§0.5`'s survival clause**, which states its two tests as
+  properties of a module without saying that a module can pass them at a port
+  where the stimulus has no instance. M04 is the first such port and its own spec
+  now says so; whether §0.5 should say it generally is a `requirements.md` §0.5
+  round and a fresh countersignature, and this round already owes two. Carried as
+  item **53**.
+- **No harvest note.** PROTOCOL §7 and charter §8 attach the lessons harvest to a
+  module sign-off and to a phase gate; this round is neither, and it is not a
+  volume rotation (entry 0039 of volume 03). Declared rather than omitted, per the
+  same clause's discipline about nil yields.
+
+### Actions
+
+1. Read the charter and PROTOCOL in full; ran the precheck; read `J-dv_lead-0170`
+   entire at its minting site and the §13 transcription rows at HEAD before any
+   edit.
+2. `docs/specs/requirements.md`: **§0.6** gains the fourth reference-word clause
+   (and "Three clauses" becomes "Four", with the following note's *"that last
+   class"* disambiguated to the third clause's class); **REQ-901**'s restriction
+   is restated over the span, part (i) widened, part (ii) generalised, the lift
+   struck with its quotation preserved, the record-only licence's *"either
+   restricted situation"* repaired, the guard-width sentence dated with its
+   general form kept, and a new paragraph on what the class list's silence at a
+   boundary means; **REQ-108**'s and **REQ-110**'s verification columns brought
+   into agreement. Three §13 rows appended.
+3. `docs/specs/modules/xgmii_tx_64.md`: **§7**'s survival claim struck and
+   replaced with the two verdicts, the vacuity and the bench prohibition; **§9**'s
+   strobe-cycle paragraph gains §0.6's fourth-clause cross-reference; **§11.3**
+   closed; one §13 row appended.
+4. Wrote and ran the trace-enumeration check of Evidence 3 **after** drafting the
+   one-sentence form and **before** committing to it in the text, so the sentence
+   is a checked equivalence rather than a claim.
+5. Ran the table-integrity check of Evidence 2 and the stale-phrase census of
+   Evidence 4 over both edited files.
+6. Wrote this entry. **No `git add`, no `git commit`, no `git push`, no git write
+   of any kind.**
+
+### Evidence
+
+Reproducible from a checkout at this commit.
+
+**1. The precheck**, as run — reproduced under Trigger.
+
+**2. Table integrity across both edited files** (four of this round's edits are
+inside table cells, and a normative row that stops being a table row stops being
+readable):
+
+```sh
+python3 - <<'PY'
+for f in ["docs/specs/requirements.md","docs/specs/modules/xgmii_tx_64.md"]:
+    blk=[]
+    for n,l in enumerate(open(f,encoding="utf-8").read().split("\n"),1):
+        if l.startswith("|"): blk.append((n,l.count("|")))
+        else:
+            if len(blk)>1 and len({c for _,c in blk})>1: print("SPLIT ROW near",f,n)
+            blk=[]
+PY
+```
+
+Observed: **no output** — no split row in either file, and in particular the
+three new §13 rows and the rewritten REQ-901, REQ-108 and REQ-110 cells keep
+their column counts. (The three known false positives this check reports live in
+`ip_eth_rx_64.md`, which this round does not touch.)
+
+**3. The repaired restriction checked against its own one-sentence form, and
+against the geometry it is for.** The script models the span's closure semantics
+from REQ-901's own list and nothing else — it reads no repo file and no RTL, and
+it is a check on **the rule**, not on either design or either producer. Durable
+form (the run used
+`/tmp/claude-0/-home-user-agentic-fpga/681e6e34-cd2f-5f3e-a4c3-42391e4d282b/scratchpad/csg3_rule_check.py`,
+an **ephemeral** path stated as such per ADR-0003/F5; the logic below reproduces
+every number):
+
+```python
+# alphabet: S start, T terminate, E error, X REQ-108 truncation, C clear, o octet
+# span: a frame is open from S until the earliest of T, E, S, X, C
+# NEW  (i) no S inside an open frame; (ii) no S between a non-terminate closure
+#      of a frame and that frame's following T
+# OLD  (i) no S inside an open frame THAT HAS DELIVERED AN OCTET; (ii) no S after
+#      an E closure before the frame's T; plus the class-(f) lift
+# SENTENCE  every S follows a T, the trace's first excepted
+for L in range(1, 9):
+    for t in product("SToEXC", repeat=L):
+        assert legal(t, "new") == sentence(t)          # equivalence
+        assert not (legal(t, "new") and not legal(t, "old"))  # never admits more
+```
+
+Observed:
+
+```text
+traces enumerated (len 1..8 over SToEXC) : 2015538
+part (i)+(ii) NEW  vs one-sentence form  : mismatches = 0
+legality changed by the repair (old->new): 425673 traces, all in one direction: {True} -> {False}
+CSG-3 geometry (no terminate)  SoXSoT    old=True  new=False sentence=False
+REQ-108 verification geometry  SoXToSoT  old=True  new=True  sentence=True
+zero-delivered start abort     SSoT      old=True  new=False sentence=False
+```
+
+**What it buys and what it does not.** It buys three things: the one-sentence form
+a producer's guard can be reviewed against is **exactly** parts (i)+(ii), over two
+million traces with zero mismatches; the repair is **monotone** — every trace whose
+legality moves, moves from legal to barred, so nothing the old rule refused is
+newly admitted; and the geometry `CSG-3` constructs was legal and is now barred
+**while REQ-108's own verification geometry stays legal**, which is the cost
+question the ruling turns on. It buys nothing about the reference design, nothing
+about `FI-4` or `FI-6` — neither producer was opened — and nothing about any
+hardware: no bench was run and M04 and M03 have no bench here.
+
+**4. The stale-phrase census after the edits** — a restriction repaired in one
+place and restated in three is the site-list defect `-0038` convicted itself for:
+
+```sh
+grep -rn "already delivered an octet"  docs/
+grep -rn "lifted for the frame class"  docs/
+grep -rn "either restricted situation" docs/
+grep -rn "until a class is declared"   docs/
+grep -rn "does survive REQ-016"        docs/specs/
+```
+
+Observed: every remaining occurrence of the four restriction phrases is either
+inside a **quoted historical note** in the repaired paragraph itself, inside the
+(g)/(h) class paragraph (which is about classes and is unmoved), or inside a §13
+row that quotes the old text in order to convict it — REQ-110's column, the last
+live restatement, is repaired in this diff. The fifth grep returns the SPEC-M04
+§7 quotation of the struck sentence and its §13 row, and nothing else in
+`docs/specs/`.
+
+**5. The vendored tree, listed rather than carried** (item 48's premise):
+
+```sh
+ls test/third_party/verilog-ethernet/
+```
+
+Observed: `COPYING`, `PROVENANCE.md`, `axis_xgmii_rx_64.v`, `lfsr.v` — four
+files, no transmit module, which is `AP-xgmii_tx_64` §7.1(a)'s claim confirmed
+independently. **This is a directory listing; no file in it was opened.**
+
+**6. Confinement.** `git status --short` at the end of this round lists exactly
+the two specification files below plus this journal, and one **untracked**
+`agents/handoffs/WO-0080_*.md` that belongs to the declared sibling round and that
+I neither created nor opened. `git diff --stat` reports `2 files changed`.
+
+**Not claimed, stated so the absence does not read as coverage.** No bench was
+run; none exists for M03 or M04. Nothing here is a verification result. No RTL was
+read and no reference source was read; the two reference-side facts used inside
+the `CSG-3` reasoning are carried from recitals already in `requirements.md` and
+are labelled as carried. No `ifc_check` build was run and none is owed: no §4
+record moves in either file, so §12's existing evidence still witnesses every
+interface. `traceability.md` is untouched and owes nothing — this round adds no
+REQ id and moves no test-side row.
+
+### Outcome
+
+**DoD met on all five items; two are partial discharges and both say where the
+split falls.**
+
+- **`FINDING CSG-3` — RULED, SUSTAINED, cured by a third cure.** The restriction
+  is restated over the span: part (i) widened to any open frame, part (ii)
+  generalised to every non-terminate closure, the class-(f) lift struck, the
+  licence's *"either"* repaired, and a checked one-sentence form added.
+  **Normative; dv_lead's re-countersignature is owed and the diff is NOT IN FORCE
+  until it is transcribed.** Nothing is blocked meanwhile — both guards refuse the
+  geometry — and, if dv agrees, **nothing needs narrowing afterwards either**,
+  which is the finding's own binding released.
+- **`FINDING AP-M04-2` — RULED, SUSTAINED, cured at SPEC-M04 §7.** The survival
+  claim is struck with its quotation kept, the two §0.5 verdicts stay with what
+  they actually buy, and the bench prohibition lands at the section that issued
+  the invitation. **Editorial; no countersignature owed** (dv's own signature
+  excluded the sentence by name and requested the diff), and the new prohibition
+  is flagged for contest.
+- **Item 48 — HALF DISCHARGED.** The question is ruled: no class is writable at
+  the transmit boundary until the counterpart is vendored at a pin and derived,
+  and REQ-901 now records the silence as **unexamined rather than empty**, with
+  the vendoring commit named as the event that opens the question. The classes
+  themselves are not written and the row stays open.
+- **Items 49 and 52 — CLOSED, and with them carry-forward `C-5` and ledger item
+  14's remaining half.** §0.6 gains the fourth reference-word clause; SPEC-M04
+  §11.3 is closed and §9 carries the cross-reference. dv's countersignature is
+  owed on the §0.6 diff and it is in force meanwhile.
+- **Handoff**: to the orchestrator for commit; then **two countersignature
+  requests to dv_lead** — the REQ-901 `CSG-3` diff (normative, not in force until
+  transcribed) and the §0.6 fourth-clause diff (editorial, in force, signature
+  owed) — which may travel as one packet or two, dv's call, since neither blocks
+  the other. The SPEC-M04 §7/§9/§11.3 diff needs no signature and is in force on
+  commit.
+
+**Carried ledger, restated whole** (ADR-0017 §4.4's practice; every row carries an
+owner and a closing event, and a row is never dropped for being old).
+
+| # | Item | Owner | Closing event | This round |
+|---|---|---|---|---|
+| 1 | ADR-0016 §8's transcription mechanic is unwritten in PROTOCOL | orchestrator | a PROTOCOL §11 amendment | carried |
+| 2 | The generic shell's `LESSONS` transit is the orchestrator's and unexercised | orchestrator | the first harvest reaching the shell | carried |
+| 3 | PROTOCOL §11 does not describe the ADR-0016 §8 transcription mechanic | orchestrator | same transcription as #1 | carried; half spent |
+| 4 | ADR-0017 §4.4 owes a fifth step: the rotating entry restates any running carry-forward | me | an ADR-0017 amendment, or a deliberate decision to leave it to practice | carried, practised five times |
+| 5 | ADR-0018 §4.3's `LC-`/`LD-` ids have no per-miner namespace | me | an ADR-0018 amendment, or the collator ruling a scheme | CLOSED at `-0036` |
+| 6 | `R-SEAL-2` drafted and unproposed | me | a round that proposes it | carried |
+| 7 | ADR-0016 §7.2's immutability question, unanswered for the **active** volume | me | an ADR amendment or an explicit decision that R3 + history suffices | carried |
+| 8 | ADR-0019 is PROPOSED, not accepted; its §7 diffs are orchestrator-scope | orchestrator | acceptance or rejection | carried |
+| 9 | `agents/journals/INDEX.md` stale, silent on volumes, records me as "Not yet activated" | orchestrator | a gate-boundary refresh (PROTOCOL §9) | carried |
+| 10 | No owner for rotating a **shared worker-template** journal | orchestrator | a ruling, or an ADR-0017 clause | carried, overtaken |
+| 11 | `docs/gates/P1-module-ready-checklist.md` does not exist | orchestrator (file); me (content) | the checklist landing before the gate | CLOSED at `-0037` |
+| 12 | `P1-spec-freeze-checklist.md`'s ledger `C-7` ordinal | me | the next round opening that checklist | carried — this round opened no `docs/gates/` file |
+| 13 | `lessons-harvest-block.md` instantiation per gate | orchestrator | the first gate to instantiate it | carried, instantiations exist to be filled |
+| 14 | `C-5`'s §0.6 repair: vacuity case and the `-0021` case are **different** dispositions | me | any WO next opening `requirements.md` §0.6; owes dv's countersignature | **CLOSED this round.** The `-0021` case was repaired at `-0023` and the **vacuity** case lands here as §0.6's fourth reference-word clause; the two dispositions stayed different, as this row insisted. The residue is dv's countersignature, which moves to item 55 rather than keeping this row open |
+| 15 | "Last octet" received-versus-delivered undecided programme-wide (§0.6) | me | a ruling in `requirements.md` §0.6 | carried — **and this round opened §0.6 without taking it**, deliberately: the fourth clause is about a frame with **no** last octet, and folding an unrelated ruling into a diff dv must countersign would have made one signature answer two questions |
+| 16 | Three handoff packets restate "four classes" | me | a packet-text round | carried |
+| 17 | M03 has no §11 item tracking REQ-901 (e)/(f) to the first co-simulation run | me | the round that opens SPEC-M03 §11 | carried — **and it gains material**: (f)'s lift is struck and its terminate-less geometry is now barred stimulus, which is a fact that document's §11 would want |
+| 18 | REQ-901's configuration clause names three transmit-only parameters | me | a `requirements.md` round | carried — **this round opened REQ-901 twice and did not take it** again, for the same reason as `-0038`: the clause is about the reference's build configuration, and both of this round's REQ-901 edits are about coverage of a list |
+| 19 | The reference's disposition of a sub-5-octet frame | dv_lead (measurement); me (ruling) | a co-simulation round that measures it | carried |
+| 20 | The (e)/(f) reading should run over every error class families E–H assert | me, with dv | a scoping round before Phase 3 | carried |
+| 21 | `R-CI-4`'s gate-removal owner | orchestrator | naming the owner | carried |
+| 22 | The M03 RTL non-conformance against §9 ruling 9 | rtl_lead (fix); dv_lead (bug) | a `BUG-` round | carried |
+| 23 | SPEC-M03 §6.1 item 4 unscoped; §9's paragraph out of table order; `ifc_check.ml`'s stale note | me (first two); orchestrator (third) | the next round opening each file | carried — this round read SPEC-M03 §9 and edited no byte of it |
+| 24 | Requirements ledger open: `C-45`, `C-36`, ADR-0012's residual, REQ-007 at two modules, `C-38`, the `DRAFT` header, `C-2`, `C-3`, `C-5`, `C-7`, `C-9`'s REQ-903 half, `C-32`, `C-33`, `C-44` | me | each closes on the round that opens its clause | carried, **less `C-5`**, which closes this round at §0.6 and at SPEC-M04 §11.3 |
+| 25 | Two re-countersignatures and one concurrence owed at `-0013`'s SHA | dv_lead | dv countersigning | carried |
+| 26 | The M03-G6 window bound is looser than `-0021`'s ruling | me | reading whether dv tightened G6's window | carried, still unchecked |
+| 27 | dv's re-countersignature owed on the §0.6 diff (`-0023`) | dv_lead | dv countersigning | carried — **and this round is its second customer**: §0.6 now carries a fourth clause, so a contest of the `-0023` diff would arrive at a longer rule than it was written against |
+| 28 | dv's re-countersignature owed on the §0.5 + REQ-016 diff (`-0024`) | dv_lead | dv countersigning | carried — and this round leans on that diff a third time, at SPEC-M04 §7 |
+| 29 | Three module specs owe the same repair, named in §13's row (`-0024`) | me | a batch round over the three | CLOSED at `-0038` |
+| 30 | `AP-xgmii_rx_64.md` §4.I's M03-I4/M03-I5 cells are dv's to edit; joined by `FINDING SO-1-A`'s §6 repair | dv_lead | dv's next plan round | carried |
+| 31 | The design consequence owed as a work order, not absorbed (`-0025`) | me (WO); orchestrator (dispatch) | the WO issuing | carried |
+| 32 | `BUG-0002` cannot close on the `-0025` ruling; M03-I4/I6 remain red | dv_lead | a bug round | carried |
+| 33 | Option 2 (narrowing REQ-016 at an XGMII port) remains available only as **E2** | orchestrator → sponsor | an E2 escalation, or the option lapsing | carried; still the only E2 on this ledger. **This round touched REQ-016's carve-out at M04 and did not narrow anything**: the SPEC-M04 §7 repair states the existing carve-out, it does not extend it |
+| 34 | `FINDING CSG-1`'s class request: four cases, three outcomes, not dischargeable by widening (g) | dv_lead (carrier); me (class) | a record-only run measuring the reference's disposition on both shapes, then a class round on the measurement | carried — **and the stimulus it needs is now barred in one more way**: with part (i) widened, the zero-delivered member joins the two shapes outside a comparing run, so the record-only run has three geometries to measure and not two |
+| 35 | Two of my `-0033` repairs correct dv's finding rather than my own text and dv has not seen them | dv_lead | dv reading them, disputing or not | carried |
+| 36 | The `-0032` countersignature is owed; that diff is not in force until it lands | dv_lead | dv countersigning | CLOSED at `4e7331b` |
+| 37 | The REQ-110 delivered-octets case has no class and now has a stimulus bar (`-0032`) | me (class); dv (stimulus) | a class ruling | carried — **and the bar is restated over the span this round**, which changes its shape (it now takes in the zero-delivered case) without changing what it is waiting for |
+| 38 | `WO-0063` phase B's disclosure axis (`-0030`) | dv_lead | that phase closing | carried |
+| 39 | Whether any Phase-1 module other than M03 needs the `-0031` treatment | me | a survey round | carried |
+| 40 | The nine role-rewrites are the weakest part of `-0034`'s nil-domain declaration | auditor (sampling) | an auditor finding, or the collator accepting the tier | carried |
+| 41 | `-0030`'s stated interval is corrected but not retracted | me | nothing repairs it; the correcting notes are the only remedy | carried |
+| 42 | A2.4's five clerical edits to `docs/gates/lessons-harvest-block.md` | me | the next round opening `docs/gates/` | CLOSED at `-0037` |
+| 43 | A2 binds without countersignature; a contest by any seat is carried to an Amendment A3 | any contesting seat; me for drafting | a re-verdict without contest, or an A3 landing | carried, half spent |
+| 44 | The block's preamble still says an `SO-` instantiates §3's block *"verbatim"*, which A2-D1 qualifies | me | the next round opening the block | carried |
+| 45 | The `P1-module-ready` checklist's ledger `G-1 … G-11`; five rows are mine | me for those five | each `G-` row's own closing event | carried — **`G-3` gains material again**: two frozen specs take post-freeze diffs this round, one of them normative and unenforced until countersigned |
+| 46 | REQ-904's commissioned CI set-equality script does not exist | dv_lead (`tools/` scope); me for the `WO-` request | the script landing green | carried — **this round adds no REQ id**, so the set it would compare is unchanged for the second round running |
+| 47 | **Three countersignatures owed on `-0038`**: the REQ-210 + §0.5 diff, the REQ-611 diff, and the REQ-901 diff (normative, not in force until transcribed) | dv_lead | dv countersigning each | **CLOSED.** All three COUNTERSIGNED at `J-dv_lead-0170` §(a), §(c), §(e) and transcribed into §13 under `J-orchestrator-0244`; the REQ-901 diff has been in force since that row. Two findings came back with the signatures and are ruled this round |
+| 48 | **`AP-xgmii_tx_64` §8 item 2**: REQ-901 declares no divergence class at the M04 boundary, and its own text forbids citing a class not listed there | me | **restated**: the vendoring commit for `axis_xgmii_tx_64.v` at a pin (ADR-0015 D2, `PROVENANCE.md`), then a derivation round that writes the classes | **HALF DISCHARGED this round.** The question is ruled — no class is writable without a derivation, and none exists — and REQ-901 now records the silence as unexamined rather than empty, with the prohibition on citing a transmit-boundary result restated. **The classes are not written**, and cannot be by a spec round |
+| 49 | **`AP-xgmii_tx_64` §8 item 3** makes `C-5` a dependency of a landed plan: a reader of §0.6 alone finds a window, applies it to `error_underflow` and gets a green that means nothing | me | the `requirements.md` §0.6 round item 14 names | **CLOSED this round.** §0.6's fourth clause gives the window a determinate reference word at an absence-condition strobe and states in its own text that the window carries no independent information there, which is the "green that means nothing" pre-refuted at the site the reader reaches first |
+| 50 | **A closed ledger item can be reopened by a later ruling, and nothing detects it** | me | a survey of closed items whose grounds cite a since-amended §0.5/§0.6 clause | carried — **and this round is the second instance, with me as the mover**: `-0038` pinned two constants at M04 and thereby made §0.6's *"the module's latency in cycles"* ambiguous at that module. Caught while writing the fourth clause, not by a survey; the survey is still unscheduled and is still mine |
+| 51 | **`FINDING CSG-1`'s four cases have never been checked against a run**, and the record-only licence is what makes that possible — but nothing schedules it | dv_lead (the run); orchestrator (scheduling) | the first record-only run | carried — **and the run's subject grew this round** (item 34): three geometries, and dv's own `J-dv_lead-0170` open question 5 records that the machinery for such a run does not exist yet |
+| 52 | **SPEC-M04's own §11.3 carries `C-5` as a deferred item** and `-0038` opened SPEC-M04 §7 and §10 without touching §11.3 | me | the `C-5` round of items 14 and 49 | **CLOSED this round.** §11.3 is CLOSED against §0.6's fourth clause and §9 carries the cross-reference; the round that opened SPEC-M04 closed the open item it found there, which is what this row was for |
+| 53 | **§0.5 states its two tests as properties of a module**, and a module may pass them at a port where the stimulus they quantify over has **no instance** — M04 is the first such port and only its own §7 says so | me | a `requirements.md` §0.5 round, or a deliberate decision to leave the statement at the module | **new this round**, and it is `AP-M04-2`'s general form: a true test verdict does not license a stimulus the port refuses |
+| 54 | **Class (h)'s REQ-110 half now has no comparing-run instance** — part (i)'s widening bars the stimulus, class (h) still excludes the frame, and the class keeps its REQ-105 instance | me (the class); dv_lead (a record-only observation) | the class round of item 34, or an explicit note that (h)'s REQ-110 half is directed-test-only | **new this round.** Stated because a class whose stimulus is barred looks vacuous from outside, and the reason it is not is that the bar protects the *following* frame rather than the excluded one |
+| 55 | **Two countersignatures owed on this round**: the REQ-901 `CSG-3` diff (**normative**, NOT IN FORCE until transcribed) and the §0.6 fourth-clause diff (editorial, in force, signature owed — item 14's residue) | dv_lead | dv countersigning each | **new this round.** The SPEC-M04 §7/§9/§11.3 diff owes none, on dv's own carve-out at `J-dv_lead-0170` §(a) |
+
+- **No harvest note is owed** — PROTOCOL §7 and charter §8 attach it to an `SO-`
+  and to a phase gate, and this round is neither. Declared rather than omitted.
+- **No escalation.** **E2 not triggered** (no requirement, phase or role added or
+  dropped; item 33 remains the only E2 on this ledger and this round did not move
+  it). **E3 not triggered** — and it is worth one sentence why, since item 48
+  touches the licensing boundary: the ruling **declines** to vendor anything and
+  names the vendoring commit as someone else's act, which is the opposite of a
+  toolchain or licensing decision taken in-round. **E5 not triggered**: no lead
+  disputed anything, and both findings were routed to me undecided by their filer.
+
+### Open-questions
+
+1. **The REQ-901 `CSG-3` diff is not in force until dv's countersignature is
+   transcribed**, and until then the gap it repairs is open on paper. Nothing can
+   drive it (both guards refuse the geometry, and dv has bound itself not to
+   narrow them), but a producer round scheduled before the signature would be
+   scheduled against the old rule.
+2. **The claim dv should check hardest is not the cure but its consequence**: that
+   under the repaired rule a terminate-only guard is no longer wider than the rule
+   for a comparing run, so nothing needs narrowing. I derived that from the rule
+   and checked the rule against its one-sentence form; **I did not read either
+   producer**, and the guard side is dv's measurement to make.
+3. **Part (i)'s widening is the one place this ruling removes stimulus nobody
+   asked me to remove.** My ground is that class (h) already compares nothing
+   about that frame, so the comparison loses nothing — if dv reads the
+   zero-delivered start abort as stimulus it intends to drive on a comparing run,
+   that is a fresh finding and a narrow round.
+4. **Item 48's other half needs a work order, not a spec round**: vendoring
+   `axis_xgmii_tx_64.v` at a pin is `AP-xgmii_tx_64` §8 item 6's first condition
+   and it is scheduling, which makes it the orchestrator's to sequence and mine
+   only to state the dependency, which REQ-901 now does.
+5. **Item 50 is still the one I would most like someone else to check**, and this
+   round supplied its second instance — my own `-0038` diff moved the ground under
+   a clause in a different section of a different document. The survey is mine and
+   unscheduled.
+
+### Files-in-this-commit
+
+- docs/specs/requirements.md
+- docs/specs/modules/xgmii_tx_64.md
