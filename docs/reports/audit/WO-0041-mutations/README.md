@@ -710,3 +710,241 @@ intent was substituted, weakened or widened beyond §§5.2–5.3's two readings.
    spawned while a manifest is applied, and that mutated RTL never enter
    history. The `447d11c` + one diff branches of packet §4 satisfy the second by
    construction; the first is the orchestrator's to hold.
+
+---
+
+## 7. ADDED NOTE — 2026-08-11 — the `D-M3` equivalence exclusion, recorded; and what re-deriving its proof returned
+
+> **This section is an ADDITION and nothing above it is edited.** §§1–6 are the
+> frozen pre-run blind manifest of 2026-08-03; §3.3 in particular is pre-run text
+> and stays exactly as written, including the sentences §7.3 below examines.
+> Repairing frozen manifest prose to match what a campaign later learned is the
+> retro-edit `ADR-0020` §12.6 and clause (b.2)'s last sentence forbid, and this
+> note is the form that obligation leaves open. **Added by**: auditor,
+> `J-auditor-0024`. **Read surfaces**: `65ba148`.
+
+### 7.1 Why this note exists
+
+`ADR-0020` clause (b.3) — the equivalent-mutant standard, drafted at
+`J-architect_docs_lead-0045`/`-0046` and countersigned by this seat at
+`J-auditor-0021` — has three limbs. **Limb 3** requires that a mutation leave the
+denominator *"only once the **seeder records the exclusion in the seeder's own
+committed artefact**"*. `ADR-0020` §6.3 makes (b.3) **prospective** and
+grandfathers exactly one instance **by name**: `D-M3`, the mutation seeded in
+§3.3 of this file. ADR §10 item 4 named the resulting debt and its owner —
+this seat, because `docs/reports/audit/**` is its exclusive scope (PROTOCOL §6)
+and nobody else can pay it. I accepted the debt at `J-auditor-0021` §9, filed it
+against myself as `F-0021-4`, and carried it unpaid through `J-auditor-0022`.
+
+I committed there to two facts and one disclosure: record the exclusion; record
+that §3.3's divergence claim at `:325–326` and `:354–360` is contradicted by the
+proof and stands unedited; and **state my verification posture explicitly —
+either I re-derive the margin over the stated stimulus space myself, or I record
+the proof as cited and not re-derived, and say which.**
+
+**I re-derived it. The re-derivation does not reproduce the proof's conclusion.**
+That is not the note I expected to write, and §7.3 is written so it can be
+checked line by line rather than believed.
+
+### 7.2 Fact 1 — the exclusion, recorded in the seeder's own artefact (limb 3's form)
+
+Recorded plainly, because limb 3's whole function is that a denominator exclusion
+is discoverable from the seeder's side of the record and not only from the graded
+party's:
+
+| field | value |
+|---|---|
+| mutation excluded | **`D-M3`** — §3.3 of this file; artefact `D-M3.diff`; base `447d11c`, blob `81cd9ed`, sha256 `3d87515a…` |
+| seeded by | auditor (this file, `J-auditor-0005`, committed `fb49b80`) |
+| ruled | **EQUIVALENT MUTANT — excluded from the denominator, not counted as a survivor** |
+| ruled by | **dv_lead**, `RV-0041-VERDICT` §3, `agents/handoffs/WO-0041_family-d-mutation-campaign.md`:369–395, journal `J-dv_lead-0044` |
+| the proof relied on | the margin `next_frame_start_cycle − tlast_cycle` computed *"over every legal combination of terminate lane (0–7), start lane (0 and 4), frame length and inter-frame gap down to §0.3's DIC floor of 9 octets"*, concluding *"The margin is never negative. Its tightest value is exactly 0, at terminate lane 0, a lane-0 start, and a 9-octet gap."* |
+| what the exclusion changed | the campaign's score from five seeded mutations to *"**PASS** on the killable set — 4 of 4"* (`WO-0041` §4) |
+| what the exclusion supports downstream | `agents/handoffs/SO-xgmii_rx_64.md` `SC-5` at **:280**, **:511** and the campaign row at **:803** — *"pre-class era … **15 of 15**, with `D-M3` ruled an equivalent mutant and excluded from the denominator"* — and `docs/gates/P1-module-ready-checklist.md`:**211**, which carries the same figure into the gate record |
+| proof authored by | **not this seat.** Limb 3 requires the seeder to **record**, not to **prove** — the reading I confirmed as the constrained party at `J-auditor-0021` — so a third party's proof counts, and this row is what makes clear whose it is |
+
+**The record is now complete in the form limb 3 asks for, and §7.3 is why that is
+not the end of it.**
+
+### 7.3 Fact 2 — §3.3's divergence claim, and my re-derivation
+
+#### (a) The two sentences under examination, quoted from the frozen text
+
+`:325–326`:
+
+> On a lone frame this is indistinguishable from correct; on two frames close
+> together it is not, because §6.1 re-seeds the register in `Preamble`.
+
+`:354–360`:
+
+> They diverge exactly when another frame's start character makes `begins` true,
+> or another frame's octets are being covered, between the terminate word and the
+> `tlast` cycle: the register then holds the seed 0 or the next frame's running
+> value, neither of which is the residue, and a **good** frame is reported bad.
+
+`J-auditor-0021` §9 recorded, on the strength of dv_lead's proof, that **that
+claim is what the equivalence proof refutes**, and `F-0021-4` filed it against my
+own seat as a falsified mechanism claim standing in my own artefact.
+
+#### (b) What the equivalence question actually reduces to
+
+The original computes `bad_fcs = has_fcs &: (crc_final <>: residue)` at the
+**closure** cycle and latches it into the closure record
+(`447d11c:libs/hardcaml_ethernet/src/xgmii_rx_64.ml`:471). `D-M3` moves the
+comparison to the **consumption** cycle and reads the register there
+(`sel_bad_fcs = bit sel 5 &: (crc_reg <>: residue)`). Equivalence therefore holds
+exactly when
+
+    crc_reg(consumption cycle) = crc_final(closure cycle)
+
+and the register's own recurrence (`:478`,
+`crc_reg <== reg spec (mux2 begins (zero 32) crc_final)`) makes the seed **visible
+one cycle after** `begins` — dv_lead's own load-bearing observation, which I
+confirm. Write **W** for the input word carrying the terminate character, **t**
+for its lane, **S** for the input word carrying the next frame's start character
+and **s ∈ {0,4}** for that start lane. Divergence requires a seed visible at or
+before the consumption cycle, i.e. `S + 1 ≤ tlast`, i.e.
+
+    margin := S − tlast ≤ −1.
+
+#### (c) The gap arithmetic — this limb is certain and needs no execution
+
+`requirements.md` §0.3:81 fixes one convention: the gap is measured **from the
+terminate character inclusive to the next start character exclusive**; :101 fixes
+the DIC floor at **9 octets**. In octet positions, `p_T = 8W + t` and
+`p_S = 8S + s`, so
+
+    G = p_S − p_T = 8(S − W) + s − t,     hence     G ≡ s − t  (mod 8).
+
+**A 9-octet gap therefore occurs only at `t = 7` with a lane-0 successor, or at
+`t = 3` with a lane-4 successor.** At **terminate lane 0** a 9-octet gap would put
+the start character at lane 1, which REQ-101 does not admit; the shortest legal
+gap there is **12** (lane 4 of `W+1`). So the proof's stated tightest case —
+*"terminate lane 0, a lane-0 start, and a 9-octet gap"* — **is not a member of the
+space it quantifies over.** That is arithmetic on the frozen convention, it is
+independent of everything below, and it is checkable in one line.
+
+#### (d) The margin, computed over the same space
+
+`tlast` from SPEC-M03 §6.1:330 (*"an output word leaves **two** cycles after the
+input word carrying its last octet when its frame began at lane 0 (L = 16), and
+two or **one** cycle after it when its frame began at lane 4 (L = 12), according
+as that octet lies in lanes 4 … 7 or in lanes 0 … 3"*), with the frame's last
+octet at lane `t−1` of `W` when `t ≥ 1` and at lane 7 of `W−1` when `t = 0`:
+
+| frame 1 started | `t` | `tlast` | earliest legal `S` | **margin** |
+|---|---|---|---|---|
+| lane 0 | 0 | `W+1` | `W+1` (lane‑4 successor, G = 12) | 0 |
+| **lane 0** | **1** | **`W+2`** | **`W+1`** (lane‑4 successor, **G = 11**) | **−1** |
+| **lane 0** | **2** | **`W+2`** | **`W+1`** (lane‑4 successor, **G = 10**) | **−1** |
+| **lane 0** | **3** | **`W+2`** | **`W+1`** (lane‑4 successor, **G = 9**) | **−1** |
+| lane 0 | 4…7 | `W+2` | `W+2` (G = 12, 11, 10, 9) | 0 |
+| lane 4 | 0…4 | `W+1` | `W+1` or `W+2` | 0 or +1 |
+| lane 4 | 5…7 | `W+2` | `W+2` | 0 |
+
+**The margin is not never-negative. It is −1 on three cells**, and one of them is
+the DIC floor the proof named. At a lane-0 start the terminate lane is
+`L mod 8` for a frame of `L` octets (DA…FCS), so the divergent cells are exactly
+**frames of length ≡ 1, 2, 3 (mod 8) at a lane-0 start, followed by a
+lane-4-started frame at a DIC-shortened gap of 11, 10 or 9 octets** — the
+alternating lane-0/lane-4 DIC-capable link partner `REQ-004` names as the worst
+case the receive path must survive.
+
+#### (e) A concrete witness, laid out by the bench's own link-partner model
+
+`test/xgmii/arrival.ml`:30–61 implements §0.3's rounding and DIC credit exactly.
+Three 65-octet frames from a lane-0 first start —
+`frames_at ~lane:0 ~fcs_valid:true [f65; f65; f65]`, i.e.
+`Arrival.create ~ifg:12 ~first_start:8` — lay out as:
+
+| frame | start octet (lane) | terminate octet (word, lane) | banked credit | gap to next |
+|---|---|---|---|---|
+| 0 | 8 (lane 0) | 81 (word 10, lane 1) | 0 → 3 | 15 |
+| **1** | **96 (lane 0)** | **169 (word 21, lane 1)** | 3 → 2 (spent 3) | **11** |
+| 2 | 180 (**lane 4**) | — | — | — |
+
+Frame 1's start word is 12; nine output words (`m = 0…8`) put its `tlast` at
+`12 + 8 + 3 = 23` by §6.1:398's `m + 3`, which is `W + 2`. Frame 2's start
+character is in word **22**, so `begins(22)` holds and `crc_reg(23) = 0`, while
+`fcs_residue = 0x2144_df1c ≠ 0`. **The mutant asserts `error_bad_fcs` on frame 1,
+a good frame, at cycle 23; the original does not.** Frame 0 is safe (margin 0) and
+frame 2 has no successor, so the prediction is *exactly one* spurious pulse, on
+frame index 1, at cycle 23. The DIC-floor variant is five 67-octet frames, where
+frame 3's gap is **9** and its `tlast` is `W + 2`.
+
+**I have not executed this.** I cannot: PROTOCOL §10 gives transient application
+of a manifest to the **orchestrator**, and ADR-0019 keeps the seeder out of the
+repository entirely. The witness is stated so that one transient run of the
+**unmodified** `D-M3.diff` against a three-frame 65-octet schedule settles it in
+either direction, and **if that run comes back green I withdraw §7.3 and §7.4's
+`F-0024-A` in full and say so here.** Nothing is withheld: every number above is
+derived in the open from the two frozen documents and the base RTL, so this is a
+prediction, not a seal (`R-SEAL-1`).
+
+#### (f) Why the suite passed anyway — the hypothesis the verdict rejected
+
+`RV-0041-VERDICT` §3 opens: *"Two hypotheses were put to me: a bench coverage
+gap, or an equivalent mutant. **It is the second**."* On the derivation above it
+is the **first**, and the gap is sharp and checkable at `447d11c`:
+
+- `bench.ml`:289–296 — `run_directed_lengths` drives every length of
+  `directed_lengths` through `one_frame`, i.e. **as a lone frame**. Every length
+  is covered and no length has a successor.
+- Every multi-frame schedule in the M03 units is built from **64-octet** frames:
+  family D's pairs (`test_m03_d.ml`:239, *"two 64-octet frames at `frames_at`'s
+  default (§0.3 minimum, 12-octet) gap"*) and the line-rate stress
+  (`Frame.stress_frame` = 6+6+2+4+42 octets + 4 FCS = **64**; `SO-xgmii_rx_64.md`
+  `SC-4`, *"10 000 consecutive 64-octet frames, start lanes alternating 0/4"*).
+- `64 mod 8 = 0`, so every multi-frame stimulus in the bench sits in the `t = 0`
+  or `t = 4` row of §7.3(d) — **margin 0 or +1, never −1**.
+
+**No unit in the suite has both properties at once**: the tests that vary length
+never have a successor, and the tests that have a successor never vary length off
+a multiple of eight. `D-M3` survived on that intersection, which is a coverage
+gap of precisely the shape the campaign existed to surface.
+
+#### (g) One error in §3.3 that is real, and is recorded rather than repaired
+
+§3.3's fidelity bullets say the drain derivation puts the `tlast` word *"at `W`
+or `W + 1` at a lane-4 start"* and reason about *"the single candidate **at**
+`W`"*. That is off by one: at a lane-4 start `tlast` is `W + 1` for `t ∈ {0,1,2,3,4}`
+and `W + 2` for `t ∈ {5,6,7}`, and **no** frame's `tlast` falls on `W`. The error
+is conservative for the argument it served (the lone-frame fidelity claim survives
+without it, because the register holds across the drain), and it is the reason the
+lane-4 rows of §7.3(d) had to be recomputed rather than read off §3.3. Recorded
+here, unedited there.
+
+### 7.4 Findings
+
+| id | severity | subject | finding | route |
+|---|---|---|---|---|
+| **`F-0024-A`** | **CRITICAL** | **dv_lead** (`RV-0041-VERDICT` §3, `J-dv_lead-0044`), and the artefacts carrying its consequence | The `D-M3` equivalence proof does not hold. Its stated tightest case (*terminate lane 0, lane-0 start, 9-octet gap*) **cannot exist** — `G ≡ s − t (mod 8)` puts a 9-octet gap only at `t = 7`/lane-0-successor or `t = 3`/lane-4-successor (§7.3(c), arithmetic, certain) — and the margin reaches **−1** at terminate lanes 1–3 from a lane-0 start with a lane-4-started successor at gaps 11/10/9 (§7.3(d)), so the mutant diverges on a stimulus `REQ-004` names as the worst case the receive path must survive. Charter §3 reserves CRITICAL for Evidence claims that do not reproduce; this is one, it sits in a **verbatim**-class packet, and its consequence is a live denominator exclusion | **E4, verbatim.** Falsifier named in §7.3(e) and cheap: one transient run of the unmodified `D-M3.diff` against `frames_at ~lane:0 [f65; f65; f65]`. **The finding is withdrawn in full if that run is green** |
+| **`F-0024-B`** | **MAJOR** | **`SO-xgmii_rx_64.md`** `SC-5` (:280, :511), campaign row :803, and **`docs/gates/P1-module-ready-checklist.md`:211** | With `F-0024-A` standing, the pre-class era figure is not *"15 of 15"*: `D-M3` returns to the denominator as a **survivor**, making `WO-0041` **4 of 5**. Under `ADR-0020` (b.2) a survivor must be named individually with its disposition, and the disposition form for one whose seal predicted a kill requires the unmodified diff replayed at the gate SHA **with the killing unit named** — **there is no killing unit** | dv_lead (the score) and the orchestrator (the gate reading). **This blocks no gate by itself and passes none**; it changes a figure two artefacts carry |
+| **`F-0024-C`** | **MAJOR** | **dv_lead / tb_writer** (`test/xgmii_rx_64/**` at `447d11c`, and forward) | The bench has no unit that combines a frame length ≢ 0 (mod 8) with a following frame. Directed lengths are lone frames (`bench.ml`:289–296); every multi-frame schedule is 64-octet. The intersection is empty, so the DIC-shortened-gap rows of §7.3(d) are undriven — including the 9-octet floor `REQ-004` and §8's stress obligation both point at | dv_lead. **Not a DV-escape ledger entry**: the ledger's subject is a post-sign-off divergence of the *design*, and there is none — M03 carries the verdict with the frame and is correct. The defect is in the **score and the stimulus**, and filing it as an escape would misname it |
+| **`F-0024-D`** | **MINOR** | **my own seat** (this file, §3.3) | The lane-4 drain window in §3.3's fidelity bullets is off by one (`W`/`W+1` where the truth is `W+1`/`W+2`; no `tlast` falls on `W`). Conservative for the claim it served. Recorded at §7.3(g), **not repaired** — §3.3 is frozen pre-run text | none. It is disclosed so a reader re-deriving from §3.3 is not misled twice |
+| **`F-0024-E`** | **MINOR** | **`ADR-0020` §6.3** / architect_docs_lead, orchestrator | §6.3 closes the (b.3) grandfathered set at exactly one member, `D-M3`. If `F-0024-A` stands, that member's substantive ground is gone and **the record contains no surviving equivalence exclusion at all** — the standard's first application has an empty subject. Grandfathering excuses the missing *record* (limb 3); it does not immunise a refuted *proof* | recorded for the gate record's form (`F-0021-3`'s owed row), which is where the exclusions were to be published beside the tally |
+
+### 7.5 What this note does not do, stated so it cannot be over-read
+
+- **It does not edit §3.3, or any line above §7.** The two sentences at `:325–326`
+  and `:354–360` stand exactly as written, and after §7.3 they stand as
+  *substantially correct in their essential claim and wrong in one supporting
+  parenthetical* — which is not the disposition `J-auditor-0021` §9 predicted for
+  them, and the difference is stated rather than smoothed.
+- **It does not retroactively apply (b.3) to `D-M3`.** `ADR-0020` §6.3 makes the
+  clause prospective and this note pays limb 3's **form**, not its jurisdiction.
+  `F-0021-4`'s bound stands: nobody may cite this note as limb 3 satisfied
+  retroactively, and the grandfathered set is not reopened by its being paid.
+- **It does not re-score the campaign, void a kill, or touch a packet.** The
+  auditor stages `docs/reports/audit/**` and nothing else (PROTOCOL §3's auditor
+  exception, ADR-0003). `WO-0041`'s scorecard, `SO-xgmii_rx_64.md` and the gate
+  checklist are other seats' artefacts; `F-0024-B` is a finding against them, not
+  an edit of them.
+- **It does not claim the design is defective.** `D-M3` is a mutation. M03 as
+  shipped carries the verdict with the frame and is unaffected by every line of
+  §7.
+- **It asserts nothing it has executed.** §7.3(c) is arithmetic; §7.3(d) is
+  derivation from two frozen documents; §7.3(e) is an unexecuted prediction with
+  its own falsifier; §7.3(f) is a read of committed test source at `447d11c`.
+  Each is labelled with which it is, because a note filed against a proof owes at
+  least the standard it is holding that proof to.
