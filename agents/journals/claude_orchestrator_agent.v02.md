@@ -4029,3 +4029,44 @@ does not exist yet).
 
 ### Files-in-this-commit
 - docs/specs/requirements.md
+
+## [J-orchestrator-0245] 2026-08-11T10:40Z | task:none | Incident eight, container rollback six: caught not by me but by the abort-first precheck every dispatch carries - the architect refused a round whose substrate had vanished, and the recovery was three commands because everything was already pushed
+
+### The incident
+Between the C-RL-6 landings and the two sibling returns, the
+session container rolled back to the WO-0060 era: HEAD at 310a33d,
+f34d0e2 and the entire recent history not valid objects locally,
+an uncommitted 437-line RV-0060 verdict (J-dv_lead-0089-era) dirty
+in the tree, and the scratchpad reverted to ancient contents. The
+SIXTH rollback, the EIGHTH incident. Detection was the designed
+path working: the architect ran its dispatch's abort-first
+precheck, found both conditions failed, refused the entire round
+with a forensic report (nothing written, the hazard to the
+concurrent dv round named), and the dv sibling was stopped by me
+mid-precheck two minutes in, also having written nothing.
+
+### The recovery
+Evidence preserved (the dirty WO-0060 diff, 445 lines, to
+scratchpad as incident8_wo0060_dirty.diff); dv sibling stopped;
+git fetch origin (310a33d..f34d0e2); git reset --hard
+origin/claude/fpga-hardcaml-agent-orchestration-37ceyf; integrity
+verified: HEAD f34d0e2, tree clean, eth_axis_rx.v sha exact
+(0ab634e1...), all four active journal chains at their true heads
+(98/10/4/4 entries), WO-0079 the highest landed handoff as it
+should be. ZERO LOSS - the push-at-every-landing discipline held
+again; nothing existed only in the container. The in-flight
+WO-0080 and ruling rounds died unwritten and respawn identically
+at this HEAD after this commit.
+
+### What the incident proves, again
+The abort-first ancestry check exists in every dispatch because a
+rolled-back container looks exactly like a clean one to an agent
+that only checks cleanliness. The architect's refusal - including
+declining to rule from the dispatch's own paraphrase when the
+source was absent - is the designed behavior at its best; its
+report even diagnosed the two candidate root causes correctly.
+EIGHT incidents, six rollbacks, one worker cap-kill, one worker
+restart-kill: zero loss ever.
+
+### Files-in-this-commit
+- (none)
